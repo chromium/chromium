@@ -88,11 +88,12 @@ bool IsKAnon(const base::flat_map<std::string, bool>& kanon_keys,
              const blink::InterestGroup& interest_group,
              const auction_worklet::mojom::BidderWorkletBid* bid) {
   if (!IsKAnon(kanon_keys,
-               blink::KAnonKeyForAdBid(interest_group, bid->render_url))) {
+               blink::KAnonKeyForAdBid(interest_group, bid->ad_descriptor))) {
     return false;
   }
-  if (bid->ad_components.has_value()) {
-    for (const auto& component : bid->ad_components.value()) {
+  if (bid->ad_component_descriptors.has_value()) {
+    for (const blink::AdDescriptor& component :
+         bid->ad_component_descriptors.value()) {
       if (!IsKAnon(kanon_keys, blink::KAnonKeyForAdComponentBid(component))) {
         return false;
       }
@@ -360,8 +361,8 @@ InterestGroupAuction::Bid::Bid(
     BidRole bid_role,
     std::string ad_metadata,
     double bid,
-    GURL render_url,
-    std::vector<GURL> ad_components,
+    blink::AdDescriptor ad_descriptor,
+    std::vector<blink::AdDescriptor> ad_component_descriptors,
     base::TimeDelta bid_duration,
     absl::optional<uint32_t> bidding_signals_data_version,
     const blink::InterestGroup::Ad* bid_ad,
@@ -370,8 +371,8 @@ InterestGroupAuction::Bid::Bid(
     : bid_role(bid_role),
       ad_metadata(std::move(ad_metadata)),
       bid(bid),
-      render_url(std::move(render_url)),
-      ad_components(std::move(ad_components)),
+      ad_descriptor(std::move(ad_descriptor)),
+      ad_component_descriptors(std::move(ad_component_descriptors)),
       bid_duration(bid_duration),
       bidding_signals_data_version(bidding_signals_data_version),
       interest_group(&bid_state->bidder->interest_group),
@@ -384,6 +385,17 @@ InterestGroupAuction::Bid::Bid(
 InterestGroupAuction::Bid::Bid(Bid&) = default;
 
 InterestGroupAuction::Bid::~Bid() = default;
+
+std::vector<GURL> InterestGroupAuction::Bid::GetAdComponentUrls() const {
+  std::vector<GURL> ad_component_urls;
+  ad_component_urls.reserve(ad_component_descriptors.size());
+  base::ranges::transform(
+      ad_component_descriptors, std::back_inserter(ad_component_urls),
+      [](const blink::AdDescriptor& ad_component_descriptor) {
+        return ad_component_descriptor.url;
+      });
+  return ad_component_urls;
+}
 
 InterestGroupAuction::ScoredBid::ScoredBid(
     double score,
@@ -1309,7 +1321,7 @@ class InterestGroupAuction::BuyerHelper
         bid_state.bidder->interest_group;
     const blink::InterestGroup::Ad* matching_ad = FindMatchingAd(
         *interest_group.ads, bid_state.kanon_keys, interest_group, bid_role,
-        /*is_component_ad=*/false, mojo_bid->render_url);
+        /*is_component_ad=*/false, mojo_bid->ad_descriptor.url);
     if (!matching_ad) {
       generate_bid_client_receiver_set_.ReportBadMessage(
           "Bid render URL must be a valid ad URL");
@@ -1317,8 +1329,8 @@ class InterestGroupAuction::BuyerHelper
     }
 
     // Validate `ad_component` URLs, if present.
-    std::vector<GURL> ad_components;
-    if (mojo_bid->ad_components) {
+    std::vector<blink::AdDescriptor> ad_component_descriptors;
+    if (mojo_bid->ad_component_descriptors) {
       // Only InterestGroups with ad components should return bids with ad
       // components.
       if (!interest_group.ad_components) {
@@ -1327,7 +1339,8 @@ class InterestGroupAuction::BuyerHelper
         return nullptr;
       }
 
-      if (mojo_bid->ad_components->size() > blink::kMaxAdAuctionAdComponents) {
+      if (mojo_bid->ad_component_descriptors->size() >
+          blink::kMaxAdAuctionAdComponents) {
         generate_bid_client_receiver_set_.ReportBadMessage(
             "Too many ad component URLs");
         return nullptr;
@@ -1335,16 +1348,17 @@ class InterestGroupAuction::BuyerHelper
 
       // Validate each ad component URL is valid and appears in the interest
       // group's `ad_components` field.
-      for (const GURL& ad_component_url : *mojo_bid->ad_components) {
+      for (const blink::AdDescriptor& ad_component_descriptor :
+           *mojo_bid->ad_component_descriptors) {
         if (!FindMatchingAd(*interest_group.ad_components, bid_state.kanon_keys,
                             interest_group, bid_role, /*is_component_ad=*/true,
-                            ad_component_url)) {
+                            ad_component_descriptor.url)) {
           generate_bid_client_receiver_set_.ReportBadMessage(
               "Bid ad components URL must match a valid ad component URL");
           return nullptr;
         }
       }
-      ad_components = *std::move(mojo_bid->ad_components);
+      ad_component_descriptors = *std::move(mojo_bid->ad_component_descriptors);
     }
 
     // Validate `debug_loss_report_url` and `debug_win_report_url`, if present.
@@ -1363,7 +1377,7 @@ class InterestGroupAuction::BuyerHelper
 
     return std::make_unique<Bid>(
         bid_role, std::move(mojo_bid->ad), mojo_bid->bid,
-        std::move(mojo_bid->render_url), std::move(ad_components),
+        std::move(mojo_bid->ad_descriptor), std::move(ad_component_descriptors),
         mojo_bid->bid_duration, bidding_signals_data_version, matching_ad,
         &bid_state, auction_);
   }
@@ -1645,8 +1659,8 @@ InterestGroupAuction::CreateReporter(
   // winning interest group.
   winning_bid_info.storage_interest_group =
       std::move(winner->bid->bid_state->bidder);
-  winning_bid_info.render_url = winner->bid->render_url;
-  winning_bid_info.ad_components = winner->bid->ad_components;
+  winning_bid_info.render_url = winner->bid->ad_descriptor.url;
+  winning_bid_info.ad_components = winner->bid->GetAdComponentUrls();
   // Need the bid from the bidder itself. If the bid was from a component
   // auction, then `top_bid_->bid` will be the bid from the component auction,
   // which the component seller worklet may have modified, and thus the wrong
@@ -1663,11 +1677,12 @@ InterestGroupAuction::CreateReporter(
     //`metadata` is already in JSON so no quotes are needed.
     winning_bid_info.ad_metadata =
         base::StringPrintf(R"({"render_url":"%s","metadata":%s})",
-                           winner->bid->render_url.spec().c_str(),
+                           winner->bid->ad_descriptor.url.spec().c_str(),
                            winner->bid->bid_ad->metadata.value().c_str());
   } else {
-    winning_bid_info.ad_metadata = base::StringPrintf(
-        R"({"render_url":"%s"})", winner->bid->render_url.spec().c_str());
+    winning_bid_info.ad_metadata =
+        base::StringPrintf(R"({"render_url":"%s"})",
+                           winner->bid->ad_descriptor.url.spec().c_str());
   }
 
   InterestGroupAuctionReporter::SellerWinningBidInfo
@@ -2197,9 +2212,10 @@ base::flat_set<std::string> InterestGroupAuction::GetKAnonKeysToJoin() const {
         interest_group, scored_bid->bid->bid_ad->render_url));
     k_anon_keys_to_join.push_back(blink::KAnonKeyForAdNameReporting(
         interest_group, *scored_bid->bid->bid_ad));
-    for (const GURL& ad_component : scored_bid->bid->ad_components) {
+    for (const blink::AdDescriptor& ad_component_descriptor :
+         scored_bid->bid->ad_component_descriptors) {
       k_anon_keys_to_join.push_back(
-          blink::KAnonKeyForAdComponentBid(ad_component));
+          blink::KAnonKeyForAdComponentBid(ad_component_descriptor));
     }
   }
   return base::flat_set<std::string>(std::move(k_anon_keys_to_join));
@@ -2598,7 +2614,7 @@ InterestGroupAuction::CreateBidFromComponentAuctionWinner(
       bid_role, modified_bid_params->ad,
       modified_bid_params->has_bid ? modified_bid_params->bid
                                    : component_bid->bid,
-      component_bid->render_url, component_bid->ad_components,
+      component_bid->ad_descriptor, component_bid->ad_component_descriptors,
       component_bid->bid_duration, component_bid->bidding_signals_data_version,
       component_bid->bid_ad, component_bid->bid_state, component_bid->auction);
 }
@@ -2652,7 +2668,7 @@ void InterestGroupAuction::ScoreBidIfReady(std::unique_ptr<Bid> bid) {
       GetDirectFromSellerSellerSignals(url_builder),
       GetDirectFromSellerAuctionSignals(url_builder),
       GetOtherSellerParam(*bid_raw), bid_raw->interest_group->owner,
-      bid_raw->render_url, bid_raw->ad_components,
+      bid_raw->ad_descriptor.url, bid_raw->GetAdComponentUrls(),
       bid_raw->bid_duration.InMilliseconds(), SellerTimeout(), bid_trace_id,
       std::move(score_ad_remote));
 }

@@ -4,6 +4,8 @@
 
 module blink.mojom;
 
+import "url/mojom/url.mojom";
+
 // The dimensions that an ad for an interest group can be. Note that an interest
 // group can have more than one `InterestGroupSize` associated with it.
 struct AdSize {
@@ -19,4 +21,10 @@ struct AdSize {
   LengthUnit width_units;
   double height;
   LengthUnit height_units;
+};
+
+// Url with optional size specifications.
+struct AdDescriptor {
+  url.mojom.Url url;
+  AdSize? size;
 };

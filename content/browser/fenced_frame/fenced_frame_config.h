@@ -315,6 +315,8 @@ struct CONTENT_EXPORT FencedFrameProperties {
 
   absl::optional<FencedFrameProperty<gfx::Size>> container_size_;
 
+  // TODO(crbug.com/1420638): The representation of size in fenced frame config
+  // will need to work with the size carried with the winning bid.
   absl::optional<FencedFrameProperty<gfx::Size>> content_size_;
 
   absl::optional<FencedFrameProperty<bool>>

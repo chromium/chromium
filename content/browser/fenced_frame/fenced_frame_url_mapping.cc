@@ -14,6 +14,7 @@
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
+#include "third_party/blink/public/common/interest_group/ad_display_size.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -135,10 +136,10 @@ FencedFrameURLMapping::AddMappingForUrl(const GURL& url) {
 blink::FencedFrame::RedactedFencedFrameConfig
 FencedFrameURLMapping::AssignFencedFrameURLAndInterestGroupInfo(
     const GURL& urn_uuid,
-    const GURL& url,
+    const blink::AdDescriptor& ad_descriptor,
     AdAuctionData ad_auction_data,
     base::RepeatingClosure on_navigate_callback,
-    std::vector<GURL> ad_component_urls,
+    std::vector<blink::AdDescriptor> ad_component_descriptors,
     scoped_refptr<FencedFrameReporter> fenced_frame_reporter) {
   // Move pending mapped urn::uuid to `urn_uuid_to_url_map_`.
   auto pending_it = pending_urn_uuid_to_url_map_.find(urn_uuid);
@@ -152,8 +153,11 @@ FencedFrameURLMapping::AssignFencedFrameURLAndInterestGroupInfo(
   auto& config = urn_uuid_to_url_map_[urn_uuid];
 
   // Assign mapped URL and interest group info.
+  // TODO(crbug.com/1420638): Once the representation of size in fenced frame
+  // config is finalized, pass the ad size from the winning bid to its fenced
+  // frame config.
   config.urn_uuid_.emplace(urn_uuid);
-  config.mapped_url_.emplace(url, VisibilityToEmbedder::kOpaque,
+  config.mapped_url_.emplace(ad_descriptor.url, VisibilityToEmbedder::kOpaque,
                              VisibilityToContent::kTransparent);
   config.deprecated_should_freeze_initial_size_.emplace(
       true, VisibilityToEmbedder::kTransparent, VisibilityToContent::kOpaque);
@@ -163,11 +167,14 @@ FencedFrameURLMapping::AssignFencedFrameURLAndInterestGroupInfo(
   config.on_navigate_callback_ = std::move(on_navigate_callback);
 
   std::vector<FencedFrameConfig> nested_configs;
-  nested_configs.reserve(ad_component_urls.size());
-  for (auto& ad_component_url : ad_component_urls) {
+  nested_configs.reserve(ad_component_descriptors.size());
+  for (auto& ad_component_descriptor : ad_component_descriptors) {
     // This config has no urn:uuid. It will later be set when being read into
     // `nested_urn_config_pairs` in `GenerateURNConfigVectorForConfigs()`.
-    nested_configs.emplace_back(ad_component_url);
+    // TODO(crbug.com/1420638): Once the representation of size in fenced frame
+    // config is finalized, pass the ad component size from the winning bid to
+    // its fenced frame config.
+    nested_configs.emplace_back(ad_component_descriptor.url);
   }
   config.nested_configs_.emplace(std::move(nested_configs),
                                  VisibilityToEmbedder::kOpaque,

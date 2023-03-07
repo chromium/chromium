@@ -8,6 +8,7 @@ import "content/services/auction_worklet/public/mojom/private_aggregation_reques
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
 import "third_party/blink/public/mojom/devtools/devtools_agent.mojom";
+import "third_party/blink/public/mojom/interest_group/ad_display_size.mojom";
 import "third_party/blink/public/mojom/interest_group/interest_group_types.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
@@ -95,17 +96,17 @@ struct BidderWorkletBid {
   double bid;
 
   // Render URL of the bid.
-  url.mojom.Url render_url;
+  blink.mojom.AdDescriptor ad_descriptor;
 
   // Ad components associated with bid, if any. These allow a single ad to be
-  // composed of multiple smaller ads. The `render_url` is the main URL, and
-  // is responsible for laying out these ads URLs in its subframes.
+  // composed of multiple smaller ads. The `ad_descriptor` contains the main
+  // URL, and is responsible for laying out these ads URLs in its subframes.
   //
   // May only contain URLs matching the `render_url`s of the `ad_components`
   // of the InterestGroup that made this bid. May have at most 20 URLs. Must
   // be null if the InterestGroup making this bid has a null `ad_components`
   // field.
-  array<url.mojom.Url>? ad_components;
+  array<blink.mojom.AdDescriptor>? ad_component_descriptors;
 
   // How long it took to run the generateBid() script.
   mojo_base.mojom.TimeDelta bid_duration;

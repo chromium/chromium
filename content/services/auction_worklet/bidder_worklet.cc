@@ -182,14 +182,15 @@ bool BidderWorklet::IsKAnon(
   if (!BidderWorklet::IsKAnon(
           bidder_worklet_non_shared_params,
           blink::KAnonKeyForAdBid(url::Origin::Create(script_source_url),
-                                  script_source_url, bid->render_url))) {
+                                  script_source_url, bid->ad_descriptor))) {
     return false;
   }
-  if (bid->ad_components.has_value()) {
-    for (const auto& component : bid->ad_components.value()) {
+  if (bid->ad_component_descriptors.has_value()) {
+    for (const auto& ad_component_descriptor :
+         bid->ad_component_descriptors.value()) {
       if (!BidderWorklet::IsKAnon(
               bidder_worklet_non_shared_params,
-              blink::KAnonKeyForAdComponentBid(component))) {
+              blink::KAnonKeyForAdComponentBid(ad_component_descriptor))) {
         return false;
       }
     }

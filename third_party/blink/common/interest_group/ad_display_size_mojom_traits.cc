@@ -4,6 +4,8 @@
 
 #include "third_party/blink/public/common/interest_group/ad_display_size_mojom_traits.h"
 
+#include "url/mojom/url_gurl_mojom_traits.h"
+
 namespace mojo {
 
 bool StructTraits<blink::mojom::AdSizeDataView, blink::AdSize>::Read(
@@ -15,6 +17,15 @@ bool StructTraits<blink::mojom::AdSizeDataView, blink::AdSize>::Read(
   }
   out->width = data.width();
   out->height = data.height();
+  return true;
+}
+
+bool StructTraits<blink::mojom::AdDescriptorDataView, blink::AdDescriptor>::
+    Read(blink::mojom::AdDescriptorDataView data, blink::AdDescriptor* out) {
+  if (!data.ReadUrl(&out->url) || !data.ReadSize(&out->size)) {
+    return false;
+  }
+
   return true;
 }
 

@@ -317,7 +317,7 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
     ASSERT_TRUE(context_recycler.set_bid_bindings()->has_bid());
     mojom::BidderWorkletBidPtr bid =
         context_recycler.set_bid_bindings()->TakeBid();
-    EXPECT_EQ("https://example.com/ad1", bid->render_url);
+    EXPECT_EQ("https://example.com/ad1", bid->ad_descriptor.url);
     EXPECT_EQ(10.0, bid->bid);
     EXPECT_EQ(base::Milliseconds(500), bid->bid_duration);
   }
@@ -436,13 +436,14 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
     ASSERT_TRUE(context_recycler.set_bid_bindings()->has_bid());
     mojom::BidderWorkletBidPtr bid =
         context_recycler.set_bid_bindings()->TakeBid();
-    EXPECT_EQ("https://example.com/ad5", bid->render_url);
+    EXPECT_EQ("https://example.com/ad5", bid->ad_descriptor.url);
     EXPECT_EQ(15.0, bid->bid);
     EXPECT_EQ(base::Milliseconds(200), bid->bid_duration);
-    ASSERT_TRUE(bid->ad_components.has_value());
-    EXPECT_THAT(bid->ad_components.value(),
-                ElementsAre(GURL("https://example.com/portion3"),
-                            GURL("https://example.com/portion5")));
+    ASSERT_TRUE(bid->ad_component_descriptors.has_value());
+    EXPECT_THAT(
+        bid->ad_component_descriptors.value(),
+        ElementsAre(blink::AdDescriptor(GURL("https://example.com/portion3")),
+                    blink::AdDescriptor(GURL("https://example.com/portion5"))));
   }
 
   {
@@ -554,7 +555,7 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
     ASSERT_TRUE(context_recycler.set_bid_bindings()->has_bid());
     mojom::BidderWorkletBidPtr bid =
         context_recycler.set_bid_bindings()->TakeBid();
-    EXPECT_EQ("https://example.com/ad2", bid->render_url);
+    EXPECT_EQ("https://example.com/ad2", bid->ad_descriptor.url);
     EXPECT_EQ(10.0, bid->bid);
     EXPECT_EQ(base::Milliseconds(500), bid->bid_duration);
   }

@@ -14,7 +14,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/interest_group/auction_runner.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/interest_group_auction_reporter.h"
@@ -127,8 +126,8 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
       AuctionRunner* auction,
       bool manually_aborted,
       absl::optional<blink::InterestGroupKey> winning_group_key,
-      absl::optional<GURL> render_url,
-      std::vector<GURL> ad_component_urls,
+      absl::optional<blink::AdDescriptor> ad_descriptor,
+      std::vector<blink::AdDescriptor> ad_component_descriptors,
       std::vector<std::string> errors,
       std::unique_ptr<InterestGroupAuctionReporter> reporter);
 

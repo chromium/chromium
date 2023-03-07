@@ -20,6 +20,12 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
+namespace blink {
+
+struct AdDescriptor;
+
+}  // namespace blink
+
 namespace content {
 
 class FencedFrameURLMappingTestPeer;
@@ -88,10 +94,10 @@ class CONTENT_EXPORT FencedFrameURLMapping {
   blink::FencedFrame::RedactedFencedFrameConfig
   AssignFencedFrameURLAndInterestGroupInfo(
       const GURL& urn_uuid,
-      const GURL& url,
+      const blink::AdDescriptor& ad_descriptor,
       AdAuctionData auction_data,
       base::RepeatingClosure on_navigate_callback,
-      std::vector<GURL> ad_component_urls,
+      std::vector<blink::AdDescriptor> ad_component_descriptors,
       scoped_refptr<FencedFrameReporter> fenced_frame_reporter = nullptr);
 
   // Generate a URN that is not yet mapped to a URL.

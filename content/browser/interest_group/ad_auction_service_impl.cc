@@ -524,8 +524,8 @@ void AdAuctionServiceImpl::OnAuctionComplete(
     AuctionRunner* auction,
     bool manually_aborted,
     absl::optional<blink::InterestGroupKey> winning_group_key,
-    absl::optional<GURL> render_url,
-    std::vector<GURL> ad_component_urls,
+    absl::optional<blink::AdDescriptor> ad_descriptor,
+    std::vector<blink::AdDescriptor> ad_component_descriptors,
     std::vector<std::string> errors,
     std::unique_ptr<InterestGroupAuctionReporter> reporter) {
   // Remove `auction` from `auctions_` but temporarily keep it alive - on
@@ -547,7 +547,7 @@ void AdAuctionServiceImpl::OnAuctionComplete(
   auto* auction_result_metrics =
       AdAuctionResultMetrics::GetForPage(render_frame_host().GetPage());
 
-  if (!render_url) {
+  if (!ad_descriptor) {
     DCHECK(!reporter);
 
     std::move(callback).Run(manually_aborted, /*config=*/absl::nullopt);
@@ -565,9 +565,9 @@ void AdAuctionServiceImpl::OnAuctionComplete(
   }
 
   DCHECK(reporter);
-  // Should always be present with a render_url.
+  // Should always be present with a ad_descriptor->url.
   DCHECK(winning_group_key);
-  DCHECK(blink::IsValidFencedFrameURL(*render_url));
+  DCHECK(blink::IsValidFencedFrameURL(ad_descriptor->url));
   DCHECK(urn_uuid.is_valid());
 
   content::AdAuctionData ad_auction_data{winning_group_key->owner,
@@ -585,8 +585,8 @@ void AdAuctionServiceImpl::OnAuctionComplete(
 
   blink::FencedFrame::RedactedFencedFrameConfig config =
       fenced_frame_urls_map.AssignFencedFrameURLAndInterestGroupInfo(
-          urn_uuid, *render_url, std::move(ad_auction_data),
-          reporter->OnNavigateToWinningAdCallback(), ad_component_urls,
+          urn_uuid, *ad_descriptor, std::move(ad_auction_data),
+          reporter->OnNavigateToWinningAdCallback(), ad_component_descriptors,
           reporter->fenced_frame_reporter());
   std::move(callback).Run(/*manually_aborted=*/false, std::move(config));
 

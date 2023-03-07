@@ -13,9 +13,11 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
+#include "third_party/blink/public/common/interest_group/ad_display_size_utils.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -53,6 +55,13 @@ size_t EstimateFlatMapSize(
     result += pair.first.length() + sizeof(pair.second);
   }
   return result;
+}
+
+std::string ConvertAdSizeToString(const blink::AdSize& ad_size) {
+  return base::StrCat({base::NumberToString(ad_size.width),
+                       ConvertAdSizeUnitToString(ad_size.width_units), "\n",
+                       base::NumberToString(ad_size.height),
+                       ConvertAdSizeUnitToString(ad_size.height_units)});
 }
 
 }  // namespace
@@ -190,12 +199,7 @@ bool InterestGroup::IsValid() const {
       if (size_name == "") {
         return false;
       }
-      if (size_obj.width <= 0 || size_obj.height <= 0 ||
-          !std::isfinite(size_obj.width) || !std::isfinite(size_obj.height)) {
-        return false;
-      }
-      if (size_obj.width_units == AdSize::LengthUnit::kInvalid ||
-          size_obj.height_units == AdSize::LengthUnit::kInvalid) {
+      if (!IsValidAdSize(size_obj)) {
         return false;
       }
     }
@@ -303,27 +307,48 @@ bool InterestGroup::IsEqualForTesting(const InterestGroup& other) const {
              other.ads, other.ad_components, other.ad_sizes, other.size_groups);
 }
 
+std::string KAnonKeyForAdBid(const InterestGroup& group, const GURL& ad_url) {
+  return KAnonKeyForAdBid(group, blink::AdDescriptor(ad_url));
+}
+
 std::string KAnonKeyForAdBid(const blink::InterestGroup& group,
-                             const GURL& ad_url) {
+                             const blink::AdDescriptor& ad_descriptor) {
   DCHECK(group.ads);
   DCHECK(base::Contains(
-      *group.ads, ad_url,
+      *group.ads, ad_descriptor.url,
       [](const blink::InterestGroup::Ad& ad) { return ad.render_url; }))
-      << "No such ad: " << ad_url;
+      << "No such ad: " << ad_descriptor.url;
   DCHECK(group.bidding_url);
   return KAnonKeyForAdBid(group.owner, group.bidding_url.value_or(GURL()),
-                          ad_url);
+                          ad_descriptor);
 }
 
 std::string KAnonKeyForAdBid(const url::Origin& owner,
                              const GURL& bidding_url,
                              const GURL& ad_url) {
+  return KAnonKeyForAdBid(owner, bidding_url, blink::AdDescriptor(ad_url));
+}
+
+std::string KAnonKeyForAdBid(const url::Origin& owner,
+                             const GURL& bidding_url,
+                             const blink::AdDescriptor& ad_descriptor) {
   return "AdBid\n" + owner.GetURL().spec() + '\n' + bidding_url.spec() + '\n' +
-         ad_url.spec();
+         ad_descriptor.url.spec() +
+         (ad_descriptor.size.has_value()
+              ? '\n' + ConvertAdSizeToString(ad_descriptor.size.value())
+              : "");
 }
 
 std::string KAnonKeyForAdComponentBid(const GURL& ad_url) {
-  return "ComponentBid\n" + ad_url.spec();
+  return KAnonKeyForAdComponentBid(blink::AdDescriptor(ad_url));
+}
+
+std::string KAnonKeyForAdComponentBid(
+    const blink::AdDescriptor& ad_descriptor) {
+  return "ComponentBid\n" + ad_descriptor.url.spec() +
+         (ad_descriptor.size.has_value()
+              ? '\n' + ConvertAdSizeToString(ad_descriptor.size.value())
+              : "");
 }
 
 std::string KAnonKeyForAdNameReporting(const blink::InterestGroup& group,

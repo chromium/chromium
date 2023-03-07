@@ -27,6 +27,17 @@ blink::AdSize::LengthUnit ConvertUnitStringToUnitEnum(
 
 }  // namespace
 
+std::string ConvertAdSizeUnitToString(const blink::AdSize::LengthUnit& unit) {
+  switch (unit) {
+    case blink::AdSize::LengthUnit::kPixels:
+      return "px";
+    case blink::AdSize::LengthUnit::kScreenWidth:
+      return "sw";
+    case blink::AdSize::LengthUnit::kInvalid:
+      return "";
+  }
+}
+
 std::tuple<double, blink::AdSize::LengthUnit> ParseAdSizeString(
     const base::StringPiece input) {
   size_t split_pos = input.find_last_of("0123456789. ");
@@ -45,6 +56,22 @@ std::tuple<double, blink::AdSize::LengthUnit> ParseAdSizeString(
       ConvertUnitStringToUnitEnum(length_units_str);
 
   return {length_val, length_units};
+}
+
+bool IsValidAdSize(const blink::AdSize& size) {
+  // Disallow non-positive and non-finite values.
+  if (size.width <= 0 || size.height <= 0 || !std::isfinite(size.width) ||
+      !std::isfinite(size.height)) {
+    return false;
+  }
+
+  // Disallow invalid units.
+  if (size.width_units == blink::AdSize::LengthUnit::kInvalid ||
+      size.height_units == blink::AdSize::LengthUnit::kInvalid) {
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace blink

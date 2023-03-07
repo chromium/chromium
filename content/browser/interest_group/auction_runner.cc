@@ -272,8 +272,9 @@ void AuctionRunner::FailAuction(
   // types cannot be triggered anyway, so no need to pass it along.
   std::move(callback_).Run(this, manually_aborted,
                            /*winning_group_key=*/absl::nullopt,
-                           /*render_url=*/absl::nullopt,
-                           /*ad_component_urls=*/{}, auction_.TakeErrors(),
+                           /*ad_descriptor=*/absl::nullopt,
+                           /*ad_component_descriptors=*/{},
+                           auction_.TakeErrors(),
                            /*reporter=*/nullptr);
 }
 
@@ -369,8 +370,8 @@ void AuctionRunner::OnBidsGeneratedAndScored(bool success) {
   state_ = State::kSucceeded;
   std::move(callback_).Run(this, /*manually_aborted=*/false,
                            std::move(winning_group_key),
-                           auction_.top_bid()->bid->render_url,
-                           auction_.top_bid()->bid->ad_components,
+                           auction_.top_bid()->bid->ad_descriptor,
+                           auction_.top_bid()->bid->ad_component_descriptors,
                            std::move(errors), std::move(reporter));
 }
 

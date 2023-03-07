@@ -7,6 +7,7 @@
 
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/interest_group/ad_display_size.mojom-shared.h"
+#include "url/gurl.h"
 
 namespace blink {
 
@@ -34,6 +35,21 @@ struct BLINK_COMMON_EXPORT AdSize {
 
   double height;
   LengthUnit height_units;
+};
+
+struct BLINK_COMMON_EXPORT AdDescriptor {
+  AdDescriptor();
+  explicit AdDescriptor(GURL url, absl::optional<AdSize> size = absl::nullopt);
+  AdDescriptor(const AdDescriptor&);
+  AdDescriptor(AdDescriptor&&);
+  AdDescriptor& operator=(const AdDescriptor&);
+  AdDescriptor& operator=(AdDescriptor&&);
+  bool operator==(const AdDescriptor&) const;
+  bool operator!=(const AdDescriptor&) const;
+  ~AdDescriptor();
+
+  GURL url;
+  absl::optional<AdSize> size;
 };
 
 }  // namespace blink

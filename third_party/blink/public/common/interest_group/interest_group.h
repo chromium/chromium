@@ -181,9 +181,16 @@ using InterestGroupSet = std::set<InterestGroupKey>;
 // an auction.
 std::string BLINK_COMMON_EXPORT KAnonKeyForAdBid(const InterestGroup& group,
                                                  const GURL& ad_url);
+std::string BLINK_COMMON_EXPORT
+KAnonKeyForAdBid(const InterestGroup& group,
+                 const blink::AdDescriptor& ad_descriptor);
 std::string BLINK_COMMON_EXPORT KAnonKeyForAdBid(const url::Origin& owner,
                                                  const GURL& bidding_url,
                                                  const GURL& ad_url);
+std::string BLINK_COMMON_EXPORT
+KAnonKeyForAdBid(const url::Origin& owner,
+                 const GURL& bidding_url,
+                 const blink::AdDescriptor& ad_descriptor);
 
 // Calculates the k-anonymity key for an ad component that is used for
 // determining if an ad component is k-anonymous for the purposes of bidding and
@@ -191,6 +198,8 @@ std::string BLINK_COMMON_EXPORT KAnonKeyForAdBid(const url::Origin& owner,
 // only are concerned with micro-targetting. This means we can just use the ad
 // url as the k-anonymity key.
 std::string BLINK_COMMON_EXPORT KAnonKeyForAdComponentBid(const GURL& ad_url);
+std::string BLINK_COMMON_EXPORT
+KAnonKeyForAdComponentBid(const blink::AdDescriptor& ad_descriptor);
 
 // Calculates the k-anonymity key for reporting the interest group name in
 // reportWin along with the given Ad.

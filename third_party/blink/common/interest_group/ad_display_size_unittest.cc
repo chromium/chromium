@@ -39,11 +39,79 @@ TEST(AdSizeTest, OperatorCompare) {
   EXPECT_FALSE(ad_size_in_pixels == ad_size_in_pixels_small);
   EXPECT_TRUE(ad_size_in_pixels != ad_size_in_pixels_small);
 
-  // AdSizes with the same numeric values and units.
+  // Copied constructed.
   AdSize ad_size_in_pixels_clone = ad_size_in_pixels;
 
   EXPECT_TRUE(ad_size_in_pixels == ad_size_in_pixels_clone);
   EXPECT_FALSE(ad_size_in_pixels != ad_size_in_pixels_clone);
+
+  // Copy assignment.
+  ad_size_in_pixels_clone = ad_size_in_pixels;
+
+  EXPECT_TRUE(ad_size_in_pixels == ad_size_in_pixels_clone);
+  EXPECT_FALSE(ad_size_in_pixels != ad_size_in_pixels_clone);
+}
+
+TEST(AdDescriptorTest, Constructor) {
+  AdDescriptor default_constructed;
+  EXPECT_EQ(default_constructed.url, GURL());
+  EXPECT_EQ(default_constructed.size, absl::nullopt);
+
+  // The constructor should construct AdSize as absl::nullopt if only url is
+  // provided.
+  AdDescriptor constructed_with_url(kUrl1);
+
+  EXPECT_EQ(constructed_with_url.url, kUrl1);
+  EXPECT_EQ(constructed_with_url.size, absl::nullopt);
+
+  AdDescriptor constructed_with_url_ond_nullopt(kUrl1, absl::nullopt);
+
+  EXPECT_EQ(constructed_with_url_ond_nullopt.url, kUrl1);
+  EXPECT_EQ(constructed_with_url_ond_nullopt.size, absl::nullopt);
+
+  AdSize ad_size(100, AdSize::LengthUnit::kPixels, 50,
+                 AdSize::LengthUnit::kScreenWidth);
+  AdDescriptor constructed_with_url_ond_size(kUrl1, ad_size);
+
+  EXPECT_EQ(constructed_with_url_ond_size.url, kUrl1);
+  EXPECT_EQ(constructed_with_url_ond_size.size, ad_size);
+}
+
+TEST(AdDescriptorTest, OperatorCompare) {
+  // AdDescriptors with different urls.
+  AdDescriptor ad_descriptor_without_size(kUrl1);
+  AdDescriptor different_ad_descriptor_without_size(kUrl2);
+
+  EXPECT_FALSE(ad_descriptor_without_size ==
+               different_ad_descriptor_without_size);
+  EXPECT_TRUE(ad_descriptor_without_size !=
+              different_ad_descriptor_without_size);
+
+  AdDescriptor ad_descriptor_in_pixels(
+      kUrl1, AdSize(100, AdSize::LengthUnit::kPixels, 100,
+                    AdSize::LengthUnit::kPixels));
+
+  EXPECT_FALSE(ad_descriptor_without_size == ad_descriptor_in_pixels);
+  EXPECT_TRUE(ad_descriptor_without_size != ad_descriptor_in_pixels);
+
+  AdDescriptor ad_descriptor_screenwidth(
+      kUrl1, AdSize(100, AdSize::LengthUnit::kScreenWidth, 100,
+                    AdSize::LengthUnit::kScreenWidth));
+
+  EXPECT_FALSE(ad_descriptor_in_pixels == ad_descriptor_screenwidth);
+  EXPECT_TRUE(ad_descriptor_in_pixels != ad_descriptor_screenwidth);
+
+  // Copy constructed.
+  AdDescriptor ad_descriptor_in_pixels_clone = ad_descriptor_in_pixels;
+
+  EXPECT_TRUE(ad_descriptor_in_pixels == ad_descriptor_in_pixels_clone);
+  EXPECT_FALSE(ad_descriptor_in_pixels != ad_descriptor_in_pixels_clone);
+
+  // Copy assignment.
+  ad_descriptor_in_pixels_clone = ad_descriptor_in_pixels;
+
+  EXPECT_TRUE(ad_descriptor_in_pixels == ad_descriptor_in_pixels_clone);
+  EXPECT_FALSE(ad_descriptor_in_pixels != ad_descriptor_in_pixels_clone);
 }
 
 }  // namespace blink

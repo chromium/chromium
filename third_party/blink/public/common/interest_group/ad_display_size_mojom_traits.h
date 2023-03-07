@@ -8,6 +8,7 @@
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size.h"
 #include "third_party/blink/public/mojom/interest_group/ad_display_size.mojom-shared.h"
+#include "url/gurl.h"
 
 namespace mojo {
 
@@ -27,6 +28,22 @@ struct BLINK_COMMON_EXPORT
   }
 
   static bool Read(blink::mojom::AdSizeDataView data, blink::AdSize* out);
+};
+
+template <>
+struct BLINK_COMMON_EXPORT
+    StructTraits<blink::mojom::AdDescriptorDataView, blink::AdDescriptor> {
+  static GURL url(const blink::AdDescriptor& ad_descriptor) {
+    return ad_descriptor.url;
+  }
+
+  static absl::optional<blink::AdSize> size(
+      const blink::AdDescriptor& ad_descriptor) {
+    return ad_descriptor.size;
+  }
+
+  static bool Read(blink::mojom::AdDescriptorDataView data,
+                   blink::AdDescriptor* ad_descriptor);
 };
 
 }  // namespace mojo

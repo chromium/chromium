@@ -39,4 +39,27 @@ bool AdSize::operator!=(const AdSize& other) const {
 
 AdSize::~AdSize() = default;
 
+AdDescriptor::AdDescriptor() = default;
+
+AdDescriptor::AdDescriptor(GURL url, absl::optional<AdSize> size)
+    : url(url), size(size) {}
+
+AdDescriptor::AdDescriptor(const AdDescriptor&) = default;
+
+AdDescriptor::AdDescriptor(AdDescriptor&&) = default;
+
+AdDescriptor& AdDescriptor::operator=(const AdDescriptor&) = default;
+
+AdDescriptor& AdDescriptor::operator=(AdDescriptor&&) = default;
+
+bool AdDescriptor::operator==(const AdDescriptor& other) const {
+  return std::tie(url, size) == std::tie(other.url, other.size);
+}
+
+bool AdDescriptor::operator!=(const AdDescriptor& other) const {
+  return !(*this == other);
+}
+
+AdDescriptor::~AdDescriptor() = default;
+
 }  // namespace blink

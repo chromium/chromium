@@ -286,13 +286,13 @@ class BidderWorkletTest : public testing::Test {
         blink::mojom::InterestGroup::ExecutionMode::kCompatibilityMode;
 
     interest_group_ads_.clear();
-    interest_group_ads_.emplace_back(blink::InterestGroup::Ad(
-        GURL("https://response.test/"), /*metadata=*/absl::nullopt));
+    interest_group_ads_.emplace_back(GURL("https://response.test/"),
+                                     /*metadata=*/absl::nullopt);
 
     interest_group_ad_components_.reset();
     interest_group_ad_components_.emplace();
-    interest_group_ad_components_->emplace_back(blink::InterestGroup::Ad(
-        GURL("https://ad_component.test/"), /*metadata=*/absl::nullopt));
+    interest_group_ad_components_->emplace_back(
+        GURL("https://ad_component.test/"), /*metadata=*/absl::nullopt);
 
     kanon_keys_.clear();
     kanon_mode_ = auction_worklet::mojom::KAnonymityBidMode::kNone;
@@ -340,10 +340,11 @@ class BidderWorkletTest : public testing::Test {
                                           expression.c_str()));
 
     RunGenerateBidWithJavascriptExpectingResult(
-        script, mojom::BidderWorkletBid::New(
-                    /*ad=*/"null",
-                    /*bid=*/1, GURL("https://response.test/"),
-                    /*ad_components=*/absl::nullopt, base::TimeDelta()));
+        script,
+        mojom::BidderWorkletBid::New(
+            /*ad=*/"null",
+            /*bid=*/1, blink::AdDescriptor(GURL("https://response.test/")),
+            /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
   }
 
   // Configures `url_loader_factory_` to return a generateBid() script with the
@@ -417,12 +418,13 @@ class BidderWorkletTest : public testing::Test {
     if (expected_bid && bid_) {
       EXPECT_EQ(expected_bid->ad, bid_->ad);
       EXPECT_EQ(expected_bid->bid, bid_->bid);
-      EXPECT_EQ(expected_bid->render_url, bid_->render_url);
-      if (!expected_bid->ad_components) {
-        EXPECT_FALSE(bid_->ad_components);
+      EXPECT_EQ(expected_bid->ad_descriptor.url, bid_->ad_descriptor.url);
+      if (!expected_bid->ad_component_descriptors) {
+        EXPECT_FALSE(bid_->ad_component_descriptors);
       } else {
-        EXPECT_THAT(*bid_->ad_components,
-                    ::testing::ElementsAreArray(*expected_bid->ad_components));
+        EXPECT_THAT(*bid_->ad_component_descriptors,
+                    ::testing::ElementsAreArray(
+                        *expected_bid->ad_component_descriptors));
       }
       if (!expected_bid->bid_duration.is_zero())
         EXPECT_GE(bid_->bid_duration, expected_bid->bid_duration);
@@ -894,60 +896,61 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueAd) {
   // Missing `ad` field should be treated as null.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({bid:1, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New("null", 1, GURL("https://response.test/"),
-                                   /*ad_components=*/absl::nullopt,
-                                   base::TimeDelta()));
+      mojom::BidderWorkletBid::New(
+          "null", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
 
   // Explicitly setting an undefined ad value acts just like not setting an ad
   // value.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: globalThis.not_defined, bid:1, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New("null", 1, GURL("https://response.test/"),
-                                   /*ad_components=*/absl::nullopt,
-                                   base::TimeDelta()));
+      mojom::BidderWorkletBid::New(
+          "null", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
 
   // Make sure "ad" can be of a variety of JS object types.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: "ad", bid:1, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New("\"ad\"", 1, GURL("https://response.test/"),
-                                   /*ad_components=*/absl::nullopt,
-                                   base::TimeDelta()));
+      mojom::BidderWorkletBid::New(
+          "\"ad\"", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:1, render:"https://response.test/"})",
       mojom::BidderWorkletBid::New(
-          R"(["ad"])", 1, GURL("https://response.test/"),
-          /*ad_components=*/absl::nullopt, base::TimeDelta()));
+          R"(["ad"])", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: {a:1,b:null}, bid:1, render:"https://response.test/"})",
       mojom::BidderWorkletBid::New(
-          R"({"a":1,"b":null})", 1, GURL("https://response.test/"),
-          /*ad_components=*/absl::nullopt, base::TimeDelta()));
+          R"({"a":1,"b":null})", 1,
+          blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: [2.5,[]], bid:1, render:"https://response.test/"})",
       mojom::BidderWorkletBid::New(
-          "[2.5,[]]", 1, GURL("https://response.test/"),
-          /*ad_components=*/absl::nullopt, base::TimeDelta()));
+          "[2.5,[]]", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: -5, bid:1, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New("-5", 1, GURL("https://response.test/"),
-                                   /*ad_components=*/absl::nullopt,
-                                   base::TimeDelta()));
+      mojom::BidderWorkletBid::New(
+          "-5", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
   // Some values that can't be represented in JSON become null.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: 0/0, bid:1, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New("null", 1, GURL("https://response.test/"),
-                                   /*ad_components=*/absl::nullopt,
-                                   base::TimeDelta()));
+      mojom::BidderWorkletBid::New(
+          "null", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: [globalThis.not_defined], bid:1, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New("[null]", 1, GURL("https://response.test/"),
-                                   /*ad_components=*/absl::nullopt,
-                                   base::TimeDelta()));
+      mojom::BidderWorkletBid::New(
+          "[null]", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: [function() {return 1;}], bid:1, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New("[null]", 1, GURL("https://response.test/"),
-                                   /*ad_components=*/absl::nullopt,
-                                   base::TimeDelta()));
+      mojom::BidderWorkletBid::New(
+          "[null]", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
 
   // Other values JSON can't represent result in failing instead of null.
   RunGenerateBidWithReturnValueExpectingResult(
@@ -990,24 +993,24 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueBid) {
   // Valid positive bid values.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: "ad", bid:1, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New("\"ad\"", 1, GURL("https://response.test/"),
-                                   /*ad_components=*/absl::nullopt,
-                                   base::TimeDelta()));
+      mojom::BidderWorkletBid::New(
+          "\"ad\"", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: "ad", bid:1.5, render:"https://response.test/"})",
       mojom::BidderWorkletBid::New(
-          "\"ad\"", 1.5, GURL("https://response.test/"),
-          /*ad_components=*/absl::nullopt, base::TimeDelta()));
+          "\"ad\"", 1.5, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: "ad", bid:2, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New("\"ad\"", 2, GURL("https://response.test/"),
-                                   /*ad_components=*/absl::nullopt,
-                                   base::TimeDelta()));
+      mojom::BidderWorkletBid::New(
+          "\"ad\"", 2, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: "ad", bid:0.001, render:"https://response.test/"})",
       mojom::BidderWorkletBid::New(
-          "\"ad\"", 0.001, GURL("https://response.test/"),
-          /*ad_components=*/absl::nullopt, base::TimeDelta()));
+          "\"ad\"", 0.001, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
 
   // Bids <= 0.
   RunGenerateBidWithReturnValueExpectingResult(
@@ -1053,9 +1056,16 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueBid) {
 }
 
 TEST_F(BidderWorkletTest, GenerateBidReturnValueUrl) {
-  // Missing value.
+  // Missing render field.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:1})",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/ generateBid() bid has incorrect structure."});
+
+  // Missing ad and render fields.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({bid:1})",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
       {"https://url.test/ generateBid() bid has incorrect structure."});
@@ -1063,8 +1073,8 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueUrl) {
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:1, render:"https://response.test/"})",
       mojom::BidderWorkletBid::New(
-          "[\"ad\"]", 1, GURL("https://response.test/"),
-          /*ad_components=*/absl::nullopt, base::TimeDelta()));
+          "[\"ad\"]", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
 
   // Missing value with bid <= 0 is considered a valid no-bid case.
   RunGenerateBidWithReturnValueExpectingResult(
@@ -1168,17 +1178,17 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueAdComponents) {
       R"({ad: "ad",
         bid:1,
         render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New("\"ad\"", 1, GURL("https://response.test/"),
-                                   /*ad_components=*/absl::nullopt,
-                                   base::TimeDelta()));
+      mojom::BidderWorkletBid::New(
+          "\"ad\"", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: "ad",
         bid:1,
         render:"https://response.test/",
         adComponents:null})",
-      mojom::BidderWorkletBid::New("\"ad\"", 1, GURL("https://response.test/"),
-                                   /*ad_components=*/absl::nullopt,
-                                   base::TimeDelta()));
+      mojom::BidderWorkletBid::New(
+          "\"ad\"", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
 
   SetDefaultParameters();
 
@@ -1191,9 +1201,9 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueAdComponents) {
       R"({ad: "ad",
         bid:1,
         render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New("\"ad\"", 1, GURL("https://response.test/"),
-                                   /*ad_components=*/absl::nullopt,
-                                   base::TimeDelta()));
+      mojom::BidderWorkletBid::New(
+          "\"ad\"", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
 
   // Auction should fail if adComponents in return value is an unexpected type.
   RunGenerateBidWithReturnValueExpectingResult(
@@ -1215,7 +1225,8 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueAdComponents) {
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
       {"https://url.test/ generateBid() bid adComponents value must be an "
-       "array of strings."});
+       "array of strings or objects that contain the url string field and "
+       "optional width and height fields."});
 
   // Up to 20 values in the output adComponents output array are allowed (And
   // they can all be the same URL).
@@ -1248,29 +1259,29 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueAdComponents) {
           "https://ad_component.test/" /* 20 */,
         ]})",
       mojom::BidderWorkletBid::New(
-          "\"ad\"", 1, GURL("https://response.test/"),
-          /*ad_components=*/
-          std::vector<GURL>{
-              GURL("https://ad_component.test/") /* 1 */,
-              GURL("https://ad_component.test/") /* 2 */,
-              GURL("https://ad_component.test/") /* 3 */,
-              GURL("https://ad_component.test/") /* 4 */,
-              GURL("https://ad_component.test/") /* 5 */,
-              GURL("https://ad_component.test/") /* 6 */,
-              GURL("https://ad_component.test/") /* 7 */,
-              GURL("https://ad_component.test/") /* 8 */,
-              GURL("https://ad_component.test/") /* 9 */,
-              GURL("https://ad_component.test/") /* 10 */,
-              GURL("https://ad_component.test/") /* 11 */,
-              GURL("https://ad_component.test/") /* 12 */,
-              GURL("https://ad_component.test/") /* 13 */,
-              GURL("https://ad_component.test/") /* 14 */,
-              GURL("https://ad_component.test/") /* 15 */,
-              GURL("https://ad_component.test/") /* 16 */,
-              GURL("https://ad_component.test/") /* 17 */,
-              GURL("https://ad_component.test/") /* 18 */,
-              GURL("https://ad_component.test/") /* 19 */,
-              GURL("https://ad_component.test/") /* 20 */,
+          "\"ad\"", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/
+          std::vector<blink::AdDescriptor>{
+              blink::AdDescriptor(GURL("https://ad_component.test/")) /* 1 */,
+              blink::AdDescriptor(GURL("https://ad_component.test/")) /* 2 */,
+              blink::AdDescriptor(GURL("https://ad_component.test/")) /* 3 */,
+              blink::AdDescriptor(GURL("https://ad_component.test/")) /* 4 */,
+              blink::AdDescriptor(GURL("https://ad_component.test/")) /* 5 */,
+              blink::AdDescriptor(GURL("https://ad_component.test/")) /* 6 */,
+              blink::AdDescriptor(GURL("https://ad_component.test/")) /* 7 */,
+              blink::AdDescriptor(GURL("https://ad_component.test/")) /* 8 */,
+              blink::AdDescriptor(GURL("https://ad_component.test/")) /* 9 */,
+              blink::AdDescriptor(GURL("https://ad_component.test/")) /* 10 */,
+              blink::AdDescriptor(GURL("https://ad_component.test/")) /* 11 */,
+              blink::AdDescriptor(GURL("https://ad_component.test/")) /* 12 */,
+              blink::AdDescriptor(GURL("https://ad_component.test/")) /* 13 */,
+              blink::AdDescriptor(GURL("https://ad_component.test/")) /* 14 */,
+              blink::AdDescriptor(GURL("https://ad_component.test/")) /* 15 */,
+              blink::AdDescriptor(GURL("https://ad_component.test/")) /* 16 */,
+              blink::AdDescriptor(GURL("https://ad_component.test/")) /* 17 */,
+              blink::AdDescriptor(GURL("https://ad_component.test/")) /* 18 */,
+              blink::AdDescriptor(GURL("https://ad_component.test/")) /* 19 */,
+              blink::AdDescriptor(GURL("https://ad_component.test/")) /* 20 */,
           },
           base::TimeDelta()));
 
@@ -1548,7 +1559,8 @@ TEST_F(BidderWorkletTest, GenerateBidSetBidThrows) {
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
       {"https://url.test/:2 Uncaught TypeError: bid adComponents value must be "
-       "an array of strings."});
+       "an array of strings or objects that contain the url string field and "
+       "optional width and height fields."});
 
   // Up to 20 values in the output adComponents output array are allowed (And
   // they can all be the same URL).
@@ -1661,15 +1673,17 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupOwner) {
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: interestGroup.owner, bid:1, render:"https://response.test/"})",
       mojom::BidderWorkletBid::New(
-          R"("https://foo.test")", 1, GURL("https://response.test/"),
-          /*ad_components=*/absl::nullopt, base::TimeDelta()));
+          R"("https://foo.test")", 1,
+          blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
 
   interest_group_bidding_url_ = GURL("https://[::1]:40000/");
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: interestGroup.owner, bid:1, render:"https://response.test/"})",
       mojom::BidderWorkletBid::New(
-          R"("https://[::1]:40000")", 1, GURL("https://response.test/"),
-          /*ad_components=*/absl::nullopt, base::TimeDelta()));
+          R"("https://[::1]:40000")", 1,
+          blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
 }
 
 TEST_F(BidderWorkletTest, GenerateBidInterestGroupName) {
@@ -1680,22 +1694,23 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupName) {
   RunGenerateBidWithReturnValueExpectingResult(
       kGenerateBidBody,
       mojom::BidderWorkletBid::New(
-          R"("foo")", 1, GURL("https://response.test/"),
-          /*ad_components=*/absl::nullopt, base::TimeDelta()));
+          R"("foo")", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
 
   interest_group_name_ = R"("foo")";
   RunGenerateBidWithReturnValueExpectingResult(
       kGenerateBidBody,
       mojom::BidderWorkletBid::New(
-          R"("\"foo\"")", 1, GURL("https://response.test/"),
-          /*ad_components=*/absl::nullopt, base::TimeDelta()));
+          R"("\"foo\"")", 1,
+          blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
 
   interest_group_name_ = "[1]";
   RunGenerateBidWithReturnValueExpectingResult(
       kGenerateBidBody,
       mojom::BidderWorkletBid::New(
-          R"("[1]")", 1, GURL("https://response.test/"),
-          /*ad_components=*/absl::nullopt, base::TimeDelta()));
+          R"("[1]")", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
 }
 
 TEST_F(BidderWorkletTest,
@@ -1739,15 +1754,17 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupBiddingLogicUrl) {
   RunGenerateBidWithReturnValueExpectingResult(
       kGenerateBidBody,
       mojom::BidderWorkletBid::New(
-          R"("https://url.test/")", 1, GURL("https://response.test/"),
-          /*ad_components=*/absl::nullopt, base::TimeDelta()));
+          R"("https://url.test/")", 1,
+          blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
 
   interest_group_bidding_url_ = GURL("https://url.test/foo");
   RunGenerateBidWithReturnValueExpectingResult(
       kGenerateBidBody,
       mojom::BidderWorkletBid::New(
-          R"("https://url.test/foo")", 1, GURL("https://response.test/"),
-          /*ad_components=*/absl::nullopt, base::TimeDelta()));
+          R"("https://url.test/foo")", 1,
+          blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
 }
 
 TEST_F(BidderWorkletTest, GenerateBidInterestGroupBiddingWasmHelperUrl) {
@@ -1760,18 +1777,19 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupBiddingWasmHelperUrl) {
   RunGenerateBidWithReturnValueExpectingResult(
       kGenerateBidBody,
       mojom::BidderWorkletBid::New(
-          R"("missing")", 1, GURL("https://response.test/"),
-          /*ad_components=*/absl::nullopt, base::TimeDelta()));
+          R"("missing")", 1,
+          blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
 
   interest_group_wasm_url_ = GURL(kWasmUrl);
   AddResponse(&url_loader_factory_, GURL(kWasmUrl), kWasmMimeType,
               /*charset=*/absl::nullopt, ToyWasm());
   RunGenerateBidWithReturnValueExpectingResult(
       kGenerateBidBody,
-      mojom::BidderWorkletBid::New(R"("https://foo.test/helper.wasm")", 1,
-                                   GURL("https://response.test/"),
-                                   /*ad_components=*/absl::nullopt,
-                                   base::TimeDelta()));
+      mojom::BidderWorkletBid::New(
+          R"("https://foo.test/helper.wasm")", 1,
+          blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
 }
 
 TEST_F(BidderWorkletTest, GenerateBidInterestGroupDailyUpdateUrl) {
@@ -1784,16 +1802,17 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupDailyUpdateUrl) {
   RunGenerateBidWithReturnValueExpectingResult(
       kGenerateBidBody,
       mojom::BidderWorkletBid::New(
-          R"("missing")", 1, GURL("https://response.test/"),
-          /*ad_components=*/absl::nullopt, base::TimeDelta()));
+          R"("missing")", 1,
+          blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
 
   daily_update_url_ = GURL("https://url.test/daily_update");
   RunGenerateBidWithReturnValueExpectingResult(
       kGenerateBidBody,
-      mojom::BidderWorkletBid::New(R"("https://url.test/daily_update")", 1,
-                                   GURL("https://response.test/"),
-                                   /*ad_components=*/absl::nullopt,
-                                   base::TimeDelta()));
+      mojom::BidderWorkletBid::New(
+          R"("https://url.test/daily_update")", 1,
+          blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
 }
 
 TEST_F(BidderWorkletTest, GenerateBidInterestGroupTrustedBiddingSignalsUrl) {
@@ -1806,8 +1825,9 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupTrustedBiddingSignalsUrl) {
   RunGenerateBidWithReturnValueExpectingResult(
       kGenerateBidBody,
       mojom::BidderWorkletBid::New(
-          R"("missing")", 1, GURL("https://response.test/"),
-          /*ad_components=*/absl::nullopt, base::TimeDelta()));
+          R"("missing")", 1,
+          blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
 
   interest_group_trusted_bidding_signals_url_ =
       GURL("https://signals.test/foo.json");
@@ -1820,10 +1840,10 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupTrustedBiddingSignalsUrl) {
       "{}");
   RunGenerateBidWithReturnValueExpectingResult(
       kGenerateBidBody,
-      mojom::BidderWorkletBid::New(R"("https://signals.test/foo.json")", 1,
-                                   GURL("https://response.test/"),
-                                   /*ad_components=*/absl::nullopt,
-                                   base::TimeDelta()));
+      mojom::BidderWorkletBid::New(
+          R"("https://signals.test/foo.json")", 1,
+          blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
 }
 
 TEST_F(BidderWorkletTest, GenerateBidInterestGroupTrustedBiddingSignalsKeys) {
@@ -1836,16 +1856,17 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupTrustedBiddingSignalsKeys) {
   RunGenerateBidWithReturnValueExpectingResult(
       kGenerateBidBody,
       mojom::BidderWorkletBid::New(
-          R"("missing")", 1, GURL("https://response.test/"),
-          /*ad_components=*/absl::nullopt, base::TimeDelta()));
+          R"("missing")", 1,
+          blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
 
   // 0-length but non-null key list.
   interest_group_trusted_bidding_signals_keys_.emplace();
   RunGenerateBidWithReturnValueExpectingResult(
       kGenerateBidBody,
-      mojom::BidderWorkletBid::New(R"([])", 1, GURL("https://response.test/"),
-                                   /*ad_components=*/absl::nullopt,
-                                   base::TimeDelta()));
+      mojom::BidderWorkletBid::New(
+          R"([])", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
 
   interest_group_trusted_bidding_signals_keys_->push_back("2");
   interest_group_trusted_bidding_signals_keys_->push_back("1");
@@ -1853,8 +1874,9 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupTrustedBiddingSignalsKeys) {
   RunGenerateBidWithReturnValueExpectingResult(
       kGenerateBidBody,
       mojom::BidderWorkletBid::New(
-          R"(["2","1","3"])", 1, GURL("https://response.test/"),
-          /*ad_components=*/absl::nullopt, base::TimeDelta()));
+          R"(["2","1","3"])", 1,
+          blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
 }
 
 TEST_F(BidderWorkletTest, GenerateBidInterestGroupUserBiddingSignals) {
@@ -1868,30 +1890,30 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupUserBiddingSignals) {
   interest_group_user_bidding_signals_ = "foo";
   RunGenerateBidWithReturnValueExpectingResult(
       kGenerateBidBody,
-      mojom::BidderWorkletBid::New("null", 1, GURL("https://response.test/"),
-                                   /*ad_components=*/absl::nullopt,
-                                   base::TimeDelta()));
+      mojom::BidderWorkletBid::New(
+          "null", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
 
   interest_group_user_bidding_signals_ = R"("foo")";
   RunGenerateBidWithReturnValueExpectingResult(
       kGenerateBidBody,
       mojom::BidderWorkletBid::New(
-          R"("foo")", 1, GURL("https://response.test/"),
-          /*ad_components=*/absl::nullopt, base::TimeDelta()));
+          R"("foo")", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
 
   interest_group_user_bidding_signals_ = "[1]";
   RunGenerateBidWithReturnValueExpectingResult(
       kGenerateBidBody,
-      mojom::BidderWorkletBid::New("[1]", 1, GURL("https://response.test/"),
-                                   /*ad_components=*/absl::nullopt,
-                                   base::TimeDelta()));
+      mojom::BidderWorkletBid::New(
+          "[1]", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
 
   interest_group_user_bidding_signals_ = absl::nullopt;
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: interestGroup.userBiddingSignals === undefined, bid:1, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New("true", 1, GURL("https://response.test/"),
-                                   /*ad_components=*/absl::nullopt,
-                                   base::TimeDelta()));
+      mojom::BidderWorkletBid::New(
+          "true", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
 }
 
 // Test multiple GenerateBid calls on a single worklet, in parallel. Do this
@@ -1946,7 +1968,8 @@ TEST_F(BidderWorkletTest, GenerateBidParallel) {
                   const std::vector<std::string>& errors) {
                 EXPECT_EQ(bid_value, bid->bid);
                 EXPECT_EQ(base::NumberToString(bid_value), bid->ad);
-                EXPECT_EQ(GURL("https://response.test/"), bid->render_url);
+                EXPECT_EQ(GURL("https://response.test/"),
+                          bid->ad_descriptor.url);
                 EXPECT_FALSE(kanon_bid);
                 EXPECT_FALSE(has_data_version);
                 EXPECT_TRUE(errors.empty());
@@ -2055,7 +2078,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched1) {
                 const std::vector<std::string>& errors) {
               EXPECT_EQ(base::NumberToString(i), bid->ad);
               EXPECT_EQ(i + 1, bid->bid);
-              EXPECT_EQ(GURL("https://response.test/"), bid->render_url);
+              EXPECT_EQ(GURL("https://response.test/"), bid->ad_descriptor.url);
               EXPECT_FALSE(kanon_bid);
               EXPECT_EQ(10u, data_version);
               EXPECT_TRUE(has_data_version);
@@ -2172,7 +2195,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched2) {
                 const std::vector<std::string>& errors) {
               EXPECT_EQ(base::NumberToString(i), bid->ad);
               EXPECT_EQ(i + 1, bid->bid);
-              EXPECT_EQ(GURL("https://response.test/"), bid->render_url);
+              EXPECT_EQ(GURL("https://response.test/"), bid->ad_descriptor.url);
               EXPECT_FALSE(kanon_bid);
               EXPECT_EQ(42u, data_version);
               EXPECT_TRUE(has_data_version);
@@ -2298,7 +2321,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched3) {
               EXPECT_FALSE(kanon_bid);
               EXPECT_EQ(22u, data_version);
               EXPECT_TRUE(has_data_version);
-              EXPECT_EQ(GURL("https://response.test/"), bid->render_url);
+              EXPECT_EQ(GURL("https://response.test/"), bid->ad_descriptor.url);
               EXPECT_TRUE(errors.empty());
               ++num_generate_bid_calls;
               if (num_generate_bid_calls == kNumGenerateBidCalls)
@@ -2397,7 +2420,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelNotBatched) {
                 const std::vector<std::string>& errors) {
               EXPECT_EQ(base::NumberToString(i), bid->ad);
               EXPECT_EQ(i + 1, bid->bid);
-              EXPECT_EQ(GURL("https://response.test/"), bid->render_url);
+              EXPECT_EQ(GURL("https://response.test/"), bid->ad_descriptor.url);
               EXPECT_FALSE(kanon_bid);
               EXPECT_EQ(i, data_version);
               EXPECT_TRUE(has_data_version);
@@ -2622,15 +2645,15 @@ TEST_F(BidderWorkletTest, GenerateBidAuctionSignals) {
   RunGenerateBidWithReturnValueExpectingResult(
       kGenerateBidBody,
       mojom::BidderWorkletBid::New(
-          R"("foo")", 1, GURL("https://response.test/"),
-          /*ad_components=*/absl::nullopt, base::TimeDelta()));
+          R"("foo")", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
 
   auction_signals_ = "[1]";
   RunGenerateBidWithReturnValueExpectingResult(
       kGenerateBidBody,
-      mojom::BidderWorkletBid::New("[1]", 1, GURL("https://response.test/"),
-                                   /*ad_components=*/absl::nullopt,
-                                   base::TimeDelta()));
+      mojom::BidderWorkletBid::New(
+          "[1]", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
 }
 
 TEST_F(BidderWorkletTest, GenerateBidPerBuyerSignals) {
@@ -2647,22 +2670,22 @@ TEST_F(BidderWorkletTest, GenerateBidPerBuyerSignals) {
   RunGenerateBidWithReturnValueExpectingResult(
       kGenerateBidBody,
       mojom::BidderWorkletBid::New(
-          R"("foo")", 1, GURL("https://response.test/"),
-          /*ad_components=*/absl::nullopt, base::TimeDelta()));
+          R"("foo")", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
 
   per_buyer_signals_ = "[1]";
   RunGenerateBidWithReturnValueExpectingResult(
       kGenerateBidBody,
-      mojom::BidderWorkletBid::New("[1]", 1, GURL("https://response.test/"),
-                                   /*ad_components=*/absl::nullopt,
-                                   base::TimeDelta()));
+      mojom::BidderWorkletBid::New(
+          "[1]", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
 
   per_buyer_signals_ = absl::nullopt;
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: perBuyerSignals === null, bid:1, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New("true", 1, GURL("https://response.test/"),
-                                   /*ad_components=*/absl::nullopt,
-                                   base::TimeDelta()));
+      mojom::BidderWorkletBid::New(
+          "true", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
 }
 
 TEST_F(BidderWorkletTest, GenerateBidBrowserSignalSellerOrigin) {
@@ -2671,16 +2694,18 @@ TEST_F(BidderWorkletTest, GenerateBidBrowserSignalSellerOrigin) {
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: browserSignals.seller, bid:1, render:"https://response.test/"})",
       mojom::BidderWorkletBid::New(
-          R"("https://foo.test")", 1, GURL("https://response.test/"),
-          /*ad_components=*/absl::nullopt, base::TimeDelta()));
+          R"("https://foo.test")", 1,
+          blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
 
   browser_signal_seller_origin_ =
       url::Origin::Create(GURL("https://[::1]:40000/"));
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: browserSignals.seller, bid:1, render:"https://response.test/"})",
       mojom::BidderWorkletBid::New(
-          R"("https://[::1]:40000")", 1, GURL("https://response.test/"),
-          /*ad_components=*/absl::nullopt, base::TimeDelta()));
+          R"("https://[::1]:40000")", 1,
+          blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
 }
 
 TEST_F(BidderWorkletTest, GenerateBidBrowserSignalTopLevelSellerOrigin) {
@@ -2689,9 +2714,9 @@ TEST_F(BidderWorkletTest, GenerateBidBrowserSignalTopLevelSellerOrigin) {
       R"({ad: "topLevelSeller" in browserSignals,
           bid:1,
           render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New("false", 1, GURL("https://response.test/"),
-                                   /*ad_components=*/absl::nullopt,
-                                   base::TimeDelta()));
+      mojom::BidderWorkletBid::New(
+          "false", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
 
   // Need to set `allowComponentAuction` to true for a bid to be created when
   // topLevelSeller is non-null.
@@ -2701,8 +2726,9 @@ TEST_F(BidderWorkletTest, GenerateBidBrowserSignalTopLevelSellerOrigin) {
       R"({ad: browserSignals.topLevelSeller, bid:1, render:"https://response.test/",
           allowComponentAuction: true})",
       mojom::BidderWorkletBid::New(
-          R"("https://foo.test")", 1, GURL("https://response.test/"),
-          /*ad_components=*/absl::nullopt, base::TimeDelta()));
+          R"("https://foo.test")", 1,
+          blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
 }
 
 TEST_F(BidderWorkletTest, GenerateBidBrowserSignalTopWindowOrigin) {
@@ -2710,8 +2736,9 @@ TEST_F(BidderWorkletTest, GenerateBidBrowserSignalTopWindowOrigin) {
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: browserSignals.topWindowHostname, bid:1, render:"https://response.test/"})",
       mojom::BidderWorkletBid::New(
-          R"("top.window.test")", 1, GURL("https://response.test/"),
-          /*ad_components=*/absl::nullopt, base::TimeDelta()));
+          R"("top.window.test")", 1,
+          blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
 }
 
 TEST_F(BidderWorkletTest, GenerateBidBrowserSignalJoinCountBidCount) {
@@ -2732,18 +2759,18 @@ TEST_F(BidderWorkletTest, GenerateBidBrowserSignalJoinCountBidCount) {
         base::StringPrintf(
             R"({ad: %s, bid:1, render:"https://response.test/"})",
             test_case.name),
-        mojom::BidderWorkletBid::New("0", 1, GURL("https://response.test/"),
-                                     /*ad_components=*/absl::nullopt,
-                                     base::TimeDelta()));
+        mojom::BidderWorkletBid::New(
+            "0", 1, blink::AdDescriptor(GURL("https://response.test/")),
+            /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
 
     *test_case.value_ptr = 10;
     RunGenerateBidWithReturnValueExpectingResult(
         base::StringPrintf(
             R"({ad: %s, bid:1, render:"https://response.test/"})",
             test_case.name),
-        mojom::BidderWorkletBid::New("10", 1, GURL("https://response.test/"),
-                                     /*ad_components=*/absl::nullopt,
-                                     base::TimeDelta()));
+        mojom::BidderWorkletBid::New(
+            "10", 1, blink::AdDescriptor(GURL("https://response.test/")),
+            /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
     SetDefaultParameters();
   }
 }
@@ -2759,23 +2786,24 @@ TEST_F(BidderWorkletTest, GenerateBidAds) {
 
   // Adding an ad with a corresponding `renderUrl` should result in success.
   // Also check the `interestGroup.ads` field passed to Javascript.
-  interest_group_ads_.emplace_back(blink::InterestGroup::Ad(
-      GURL("https://response2.test/"), /*metadata=*/R"(["metadata"])"));
+  interest_group_ads_.emplace_back(GURL("https://response2.test/"),
+                                   /*metadata=*/R"(["metadata"])");
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: interestGroup.ads, bid:1, render:"https://response2.test/"})",
       mojom::BidderWorkletBid::New(
           "[{\"renderUrl\":\"https://response.test/\"},"
           "{\"renderUrl\":\"https://response2.test/"
           "\",\"metadata\":[\"metadata\"]}]",
-          1, GURL("https://response2.test/"), /*ad_components=*/absl::nullopt,
-          base::TimeDelta()));
+          1, blink::AdDescriptor(GURL("https://response2.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
 
   // Make sure `metadata` is treated as an object, instead of a raw string.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: interestGroup.ads[1].metadata[0], bid:1, render:"https://response.test/"})",
       mojom::BidderWorkletBid::New(
-          "\"metadata\"", 1, GURL("https://response.test/"),
-          /*ad_components=*/absl::nullopt, base::TimeDelta()));
+          "\"metadata\"", 1,
+          blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
 }
 
 TEST_F(BidderWorkletTest, GenerateBidAdComponents) {
@@ -2783,14 +2811,16 @@ TEST_F(BidderWorkletTest, GenerateBidAdComponents) {
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: 0, bid:1, render:"https://response.test/", adComponents:["https://ad_component.test/"]})",
       mojom::BidderWorkletBid::New(
-          "0", 1, GURL("https://response.test/"),
-          std::vector<GURL>{GURL("https://ad_component.test/")},
+          "0", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          std::vector<blink::AdDescriptor>{
+              blink::AdDescriptor(GURL("https://ad_component.test/"))},
           base::TimeDelta()));
   // Empty, but non-null, adComponents field.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: 0, bid:1, render:"https://response.test/", adComponents:[]})",
-      mojom::BidderWorkletBid::New("0", 1, GURL("https://response.test/"),
-                                   std::vector<GURL>(), base::TimeDelta()));
+      mojom::BidderWorkletBid::New(
+          "0", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          std::vector<blink::AdDescriptor>(), base::TimeDelta()));
 
   // An adComponent URL that's not in the InterestGroup's adComponents list
   // should fail.
@@ -2804,8 +2834,8 @@ TEST_F(BidderWorkletTest, GenerateBidAdComponents) {
   // Add a second ad component URL, this time with metadata.
   // Returning a list with both ads should result in success.
   // Also check the `interestGroup.ads` field passed to Javascript.
-  interest_group_ad_components_->emplace_back(blink::InterestGroup::Ad(
-      GURL("https://ad_component2.test/"), /*metadata=*/R"(["metadata"])"));
+  interest_group_ad_components_->emplace_back(
+      GURL("https://ad_component2.test/"), /*metadata=*/R"(["metadata"])");
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: interestGroup.adComponents,
         bid:1,
@@ -2815,9 +2845,10 @@ TEST_F(BidderWorkletTest, GenerateBidAdComponents) {
           "[{\"renderUrl\":\"https://ad_component.test/\"},"
           "{\"renderUrl\":\"https://ad_component2.test/"
           "\",\"metadata\":[\"metadata\"]}]",
-          1, GURL("https://response.test/"),
-          std::vector<GURL>{GURL("https://ad_component.test/"),
-                            GURL("https://ad_component2.test/")},
+          1, blink::AdDescriptor(GURL("https://response.test/")),
+          std::vector<blink::AdDescriptor>{
+              blink::AdDescriptor(GURL("https://ad_component.test/")),
+              blink::AdDescriptor(GURL("https://ad_component2.test/"))},
           base::TimeDelta()));
 }
 
@@ -2826,8 +2857,8 @@ TEST_F(BidderWorkletTest, GenerateBidAdComponents) {
 TEST_F(BidderWorkletTest, GenerateBidAllowComponentAuction) {
   // In all success cases, this is the returned bid.
   const auto kBidOnSuccess = mojom::BidderWorkletBid::New(
-      "null", 1, GURL("https://response.test/"),
-      /*ad_components=*/absl::nullopt, base::TimeDelta());
+      "null", 1, blink::AdDescriptor(GURL("https://response.test/")),
+      /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta());
 
   // Use a null `topLevelSellerOrigin`. `allowComponentAuction` value should be
   // ignored.
@@ -2938,10 +2969,11 @@ TEST_F(BidderWorkletTest, GenerateBidWasm) {
               /*charset=*/absl::nullopt, ToyWasm());
 
   RunGenerateBidWithJavascriptExpectingResult(
-      bid_script, mojom::BidderWorkletBid::New(
-                      R"([{"name":"test_const","kind":"global"}])", 1,
-                      GURL("https://response.test/"),
-                      /*ad_components=*/absl::nullopt, base::TimeDelta()));
+      bid_script,
+      mojom::BidderWorkletBid::New(
+          R"([{"name":"test_const","kind":"global"}])", 1,
+          blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
 }
 
 TEST_F(BidderWorkletTest, WasmReportWin) {
@@ -3174,8 +3206,9 @@ TEST_F(BidderWorkletTest, GenerateBidPrevWins) {
             R"({ad: %s, bid:1, render:"https://response.test/"})",
             test_case.ad),
         mojom::BidderWorkletBid::New(
-            test_case.expected_ad, 1, GURL("https://response.test/"),
-            /*ad_components=*/absl::nullopt, base::TimeDelta()));
+            test_case.expected_ad, 1,
+            blink::AdDescriptor(GURL("https://response.test/")),
+            /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
   }
 }
 
@@ -3203,9 +3236,9 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignals) {
   // made.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: trustedBiddingSignals, bid:1, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New("null", 1, GURL("https://response.test/"),
-                                   /*ad_components=*/absl::nullopt,
-                                   base::TimeDelta()));
+      mojom::BidderWorkletBid::New(
+          "null", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
   EXPECT_EQ(observed_requests += 1, url_loader_factory_.total_requests());
 
   // Request with TrustedBiddingSignals keys and null URL. No request should be
@@ -3214,9 +3247,9 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignals) {
       std::vector<std::string>({"key1", "key2"});
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: trustedBiddingSignals, bid:1, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New("null", 1, GURL("https://response.test/"),
-                                   /*ad_components=*/absl::nullopt,
-                                   base::TimeDelta()));
+      mojom::BidderWorkletBid::New(
+          "null", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
   EXPECT_EQ(observed_requests += 1, url_loader_factory_.total_requests());
 
   // Request with TrustedBiddingSignals URL and null keys. Request should be
@@ -3227,9 +3260,9 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignals) {
   AddBidderJsonResponse(&url_loader_factory_, kNoKeysSignalsUrl, kJson);
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: trustedBiddingSignals, bid:1, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New("null", 1, GURL("https://response.test/"),
-                                   /*ad_components=*/absl::nullopt,
-                                   base::TimeDelta()));
+      mojom::BidderWorkletBid::New(
+          "null", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
   EXPECT_EQ(observed_requests += 2, url_loader_factory_.total_requests());
 
   // Request with TrustedBiddingSignals URL and empty keys. Request should be
@@ -3238,9 +3271,9 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignals) {
   interest_group_trusted_bidding_signals_keys_ = std::vector<std::string>();
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: trustedBiddingSignals, bid:1, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New("null", 1, GURL("https://response.test/"),
-                                   /*ad_components=*/absl::nullopt,
-                                   base::TimeDelta()));
+      mojom::BidderWorkletBid::New(
+          "null", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
   EXPECT_EQ(observed_requests += 2, url_loader_factory_.total_requests());
   url_loader_factory_.ClearResponses();
 
@@ -3252,9 +3285,9 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignals) {
                                   net::HTTP_NOT_FOUND);
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: trustedBiddingSignals, bid:1, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New("null", 1, GURL("https://response.test/"),
-                                   /*ad_components=*/absl::nullopt,
-                                   base::TimeDelta()),
+      mojom::BidderWorkletBid::New(
+          "null", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()),
       /*expected_data_version=*/absl::nullopt,
       {"Failed to load "
        "https://signals.test/"
@@ -3268,8 +3301,9 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignals) {
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: trustedBiddingSignals, bid:1, render:"https://response.test/"})",
       mojom::BidderWorkletBid::New(
-          R"({"key1":1,"key2":[2]})", 1, GURL("https://response.test/"),
-          /*ad_components=*/absl::nullopt, base::TimeDelta()));
+          R"({"key1":1,"key2":[2]})", 1,
+          blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
   EXPECT_EQ(observed_requests += 2, url_loader_factory_.total_requests());
 }
 
@@ -3548,9 +3582,9 @@ TEST_F(BidderWorkletTest, GenerateBidDataVersion) {
       R"({"keys":{"key1":1}})", /*data_version=*/7u);
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: "ad", bid:browserSignals.dataVersion, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New(R"("ad")", 7, GURL("https://response.test/"),
-                                   /*ad_components=*/absl::nullopt,
-                                   base::TimeDelta()),
+      mojom::BidderWorkletBid::New(
+          R"("ad")", 7, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()),
       7u);
 }
 
@@ -3569,8 +3603,9 @@ TEST_F(BidderWorkletTest, GenerateBidWithSetBid) {
           )"),
       /*expected_bid=*/
       mojom::BidderWorkletBid::New(
-          "\"returned\"", 2, GURL("https://response.test/replacement"),
-          /*ad_components=*/absl::nullopt, base::TimeDelta()));
+          "\"returned\"", 2,
+          blink::AdDescriptor(GURL("https://response.test/replacement")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
 
   // Test the no-bid version as well.
   RunGenerateBidWithJavascriptExpectingResult(
@@ -3598,8 +3633,8 @@ TEST_F(BidderWorkletTest, GenerateBidExperimentGroupId) {
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: "ad", bid:123, render:"https://response.test/"})",
       mojom::BidderWorkletBid::New(
-          R"("ad")", 123, GURL("https://response.test/"),
-          /*ad_components=*/absl::nullopt, base::TimeDelta()));
+          R"("ad")", 123, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
 }
 
 TEST_F(BidderWorkletTest, GenerateBidTimedOut) {
@@ -3651,9 +3686,10 @@ TEST_F(BidderWorkletTest, GenerateBidTimedOutWithSetBid) {
             while (1)
           )"),
       /*expected_bid=*/
-      mojom::BidderWorkletBid::New("\"ad\"", 1, GURL("https://response.test/"),
-                                   /*ad_components=*/absl::nullopt,
-                                   AuctionV8Helper::kScriptTimeout),
+      mojom::BidderWorkletBid::New(
+          "\"ad\"", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt,
+          AuctionV8Helper::kScriptTimeout),
       /*expected_data_version=*/absl::nullopt,
       {"https://url.test/ execution of `generateBid` timed out."});
 
@@ -3701,8 +3737,10 @@ TEST_F(BidderWorkletTest, GenerateBidTimedOutWithSetBidTwice) {
           )"),
       /*expected_bid=*/
       mojom::BidderWorkletBid::New(
-          "\"ad2\"", 2, GURL("https://response.test/replacement"),
-          /*ad_components=*/absl::nullopt, AuctionV8Helper::kScriptTimeout),
+          "\"ad2\"", 2,
+          blink::AdDescriptor(GURL("https://response.test/replacement")),
+          /*ad_component_descriptors=*/absl::nullopt,
+          AuctionV8Helper::kScriptTimeout),
       /*expected_data_version=*/absl::nullopt,
       {"https://url.test/ execution of `generateBid` timed out."});
 
@@ -3759,9 +3797,9 @@ TEST_F(BidderWorkletTest, GenerateBidTimedOutWithSetBidMutateAfter) {
             while (1)
           )"),
       /*expected_bid=*/
-      mojom::BidderWorkletBid::New("\"ad\"", 1, GURL("https://response.test/"),
-                                   /*ad_components=*/absl::nullopt,
-                                   base::TimeDelta()),
+      mojom::BidderWorkletBid::New(
+          "\"ad\"", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()),
       /*expected_data_version=*/absl::nullopt,
       {"https://url.test/ execution of `generateBid` timed out."});
 }
@@ -3820,9 +3858,9 @@ TEST_F(BidderWorkletTest, GenerateBidSetPriority) {
             setPriority(9.0);
           )"),
       /*expected_bid=*/
-      mojom::BidderWorkletBid::New("\"ad\"", 1, GURL("https://response.test/"),
-                                   /*ad_components=*/absl::nullopt,
-                                   base::TimeDelta()),
+      mojom::BidderWorkletBid::New(
+          "\"ad\"", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()),
       /*expected_data_version=*/absl::nullopt,
       /*expected_errors=*/{},
       /*expected_debug_loss_report_url=*/absl::nullopt,
@@ -3909,9 +3947,9 @@ TEST_F(BidderWorkletTest, GenerateBidSetPrioritySignalsOverrides) {
             setPrioritySignalsOverride("key");
           )"),
       /*expected_bid=*/
-      mojom::BidderWorkletBid::New("null", 1, GURL("https://response.test/"),
-                                   /*ad_components=*/absl::nullopt,
-                                   base::TimeDelta()),
+      mojom::BidderWorkletBid::New(
+          "null", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()),
       /*expected_data_version=*/absl::nullopt,
       /*expected_errors=*/{},
       /*expected_debug_loss_report_url=*/absl::nullopt,
@@ -3926,9 +3964,9 @@ TEST_F(BidderWorkletTest, GenerateBidSetPrioritySignalsOverrides) {
             setPrioritySignalsOverride("key", undefined);
           )"),
       /*expected_bid=*/
-      mojom::BidderWorkletBid::New("null", 1, GURL("https://response.test/"),
-                                   /*ad_components=*/absl::nullopt,
-                                   base::TimeDelta()),
+      mojom::BidderWorkletBid::New(
+          "null", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()),
       /*expected_data_version=*/absl::nullopt,
       /*expected_errors=*/{},
       /*expected_debug_loss_report_url=*/absl::nullopt,
@@ -3943,9 +3981,9 @@ TEST_F(BidderWorkletTest, GenerateBidSetPrioritySignalsOverrides) {
             setPrioritySignalsOverride("key", null);
           )"),
       /*expected_bid=*/
-      mojom::BidderWorkletBid::New("null", 1, GURL("https://response.test/"),
-                                   /*ad_components=*/absl::nullopt,
-                                   base::TimeDelta()),
+      mojom::BidderWorkletBid::New(
+          "null", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()),
       /*expected_data_version=*/absl::nullopt,
       /*expected_errors=*/{},
       /*expected_debug_loss_report_url=*/absl::nullopt,
@@ -3960,9 +3998,9 @@ TEST_F(BidderWorkletTest, GenerateBidSetPrioritySignalsOverrides) {
             setPrioritySignalsOverride("key", 0);
           )"),
       /*expected_bid=*/
-      mojom::BidderWorkletBid::New("null", 1, GURL("https://response.test/"),
-                                   /*ad_components=*/absl::nullopt,
-                                   base::TimeDelta()),
+      mojom::BidderWorkletBid::New(
+          "null", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()),
       /*expected_data_version=*/absl::nullopt,
       /*expected_errors=*/{},
       /*expected_debug_loss_report_url=*/absl::nullopt,
@@ -3980,9 +4018,9 @@ TEST_F(BidderWorkletTest, GenerateBidSetPrioritySignalsOverrides) {
             setPrioritySignalsOverride("key", 6);
           )"),
       /*expected_bid=*/
-      mojom::BidderWorkletBid::New("null", 1, GURL("https://response.test/"),
-                                   /*ad_components=*/absl::nullopt,
-                                   base::TimeDelta()),
+      mojom::BidderWorkletBid::New(
+          "null", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()),
       /*expected_data_version=*/absl::nullopt,
       /*expected_errors=*/{},
       /*expected_debug_loss_report_url=*/absl::nullopt,
@@ -3999,9 +4037,9 @@ TEST_F(BidderWorkletTest, GenerateBidSetPrioritySignalsOverrides) {
             setPrioritySignalsOverride("key3", -6);
           )"),
       /*expected_bid=*/
-      mojom::BidderWorkletBid::New("null", 1, GURL("https://response.test/"),
-                                   /*ad_components=*/absl::nullopt,
-                                   base::TimeDelta()),
+      mojom::BidderWorkletBid::New(
+          "null", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()),
       /*expected_data_version=*/absl::nullopt,
       /*expected_errors=*/{},
       /*expected_debug_loss_report_url=*/absl::nullopt,
@@ -4090,15 +4128,15 @@ TEST_F(BidderWorkletTest, ForDebuggingOnlyReports) {
       CreateBasicGenerateBidScriptWithDebuggingReport(
           R"(forDebuggingOnly.reportAdAuctionLoss("https://loss.url"))"),
       mojom::BidderWorkletBid::New(
-          "[\"ad\"]", 1, GURL("https://response.test/"),
-          /*ad_components=*/absl::nullopt, base::TimeDelta()));
+          "[\"ad\"]", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
 
   RunGenerateBidWithJavascriptExpectingResult(
       CreateBasicGenerateBidScriptWithDebuggingReport(
           R"(forDebuggingOnly.reportAdAuctionWin("https://win.url"))"),
       mojom::BidderWorkletBid::New(
-          "[\"ad\"]", 1, GURL("https://response.test/"),
-          /*ad_components=*/absl::nullopt, base::TimeDelta()));
+          "[\"ad\"]", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
 }
 
 TEST_F(BidderWorkletTest, DeleteBeforeReportWinCallback) {
@@ -4538,7 +4576,7 @@ TEST_F(BidderWorkletTest, PauseOnStart) {
   ASSERT_TRUE(bid_);
   EXPECT_EQ("[\"ad\"]", bid_->ad);
   EXPECT_EQ(1, bid_->bid);
-  EXPECT_EQ(GURL("https://response.test/"), bid_->render_url);
+  EXPECT_EQ(GURL("https://response.test/"), bid_->ad_descriptor.url);
   EXPECT_THAT(bid_errors_, ::testing::UnorderedElementsAre());
 }
 
@@ -5189,8 +5227,8 @@ TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
           R"(forDebuggingOnly.reportAdAuctionLoss("https://loss.url");
             forDebuggingOnly.reportAdAuctionWin("https://win.url"))"),
       mojom::BidderWorkletBid::New(
-          "[\"ad\"]", 1, GURL("https://response.test/"),
-          /*ad_components=*/absl::nullopt, base::TimeDelta()),
+          "[\"ad\"]", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()),
       /*expected_data_version=*/absl::nullopt,
       /*expected_errors=*/{}, GURL("https://loss.url"),
       GURL("https://win.url"));
@@ -5200,8 +5238,8 @@ TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
       CreateBasicGenerateBidScriptWithDebuggingReport(
           R"(forDebuggingOnly.reportAdAuctionLoss("https://loss.url"))"),
       mojom::BidderWorkletBid::New(
-          "[\"ad\"]", 1, GURL("https://response.test/"),
-          /*ad_components=*/absl::nullopt, base::TimeDelta()),
+          "[\"ad\"]", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()),
       /*expected_data_version=*/absl::nullopt,
       /*expected_errors=*/{}, GURL("https://loss.url"),
       /*expected_debug_win_report_url=*/absl::nullopt);
@@ -5209,8 +5247,8 @@ TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
       CreateBasicGenerateBidScriptWithDebuggingReport(
           R"(forDebuggingOnly.reportAdAuctionWin("https://win.url"))"),
       mojom::BidderWorkletBid::New(
-          "[\"ad\"]", 1, GURL("https://response.test/"),
-          /*ad_components=*/absl::nullopt, base::TimeDelta()),
+          "[\"ad\"]", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()),
       /*expected_data_version=*/absl::nullopt,
       /*expected_errors=*/{}, /*expected_debug_loss_report_url=*/absl::nullopt,
       GURL("https://win.url"));
@@ -5260,8 +5298,8 @@ TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
           R"(try {forDebuggingOnly.reportAdAuctionLoss("http://loss.url")}
             catch (e) {})"),
       mojom::BidderWorkletBid::New(
-          "[\"ad\"]", 1, GURL("https://response.test/"),
-          /*ad_components=*/absl::nullopt, base::TimeDelta()),
+          "[\"ad\"]", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()),
       /*expected_data_version=*/absl::nullopt,
       /*expected_errors=*/{}, /*expected_debug_loss_report_url=*/absl::nullopt,
       /*expected_debug_win_report_url=*/absl::nullopt);
@@ -5274,8 +5312,8 @@ TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
           R"(forDebuggingOnly.reportAdAuctionLoss("https://loss.url");
             forDebuggingOnly.reportAdAuctionLoss("https://loss.url2"))"),
       mojom::BidderWorkletBid::New(
-          "[\"ad\"]", 1, GURL("https://response.test/"),
-          /*ad_components=*/absl::nullopt, base::TimeDelta()),
+          "[\"ad\"]", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()),
       /*expected_data_version=*/absl::nullopt,
       /*expected_errors=*/{}, GURL("https://loss.url2"),
       /*expected_debug_win_report_url=*/absl::nullopt);
@@ -5285,8 +5323,8 @@ TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
           R"(forDebuggingOnly.reportAdAuctionWin("https://win.url");
             forDebuggingOnly.reportAdAuctionWin("https://win.url2"))"),
       mojom::BidderWorkletBid::New(
-          "[\"ad\"]", 1, GURL("https://response.test/"),
-          /*ad_components=*/absl::nullopt, base::TimeDelta()),
+          "[\"ad\"]", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()),
       /*expected_data_version=*/absl::nullopt,
       /*expected_errors=*/{},
       /*expected_debug_loss_report_url=*/absl::nullopt,
@@ -5522,8 +5560,8 @@ TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
         )"),
         /*expected_bid=*/
         mojom::BidderWorkletBid::New(
-            "\"ad\"", 1, GURL("https://response.test/"),
-            /*ad_components=*/absl::nullopt, base::TimeDelta()),
+            "\"ad\"", 1, blink::AdDescriptor(GURL("https://response.test/")),
+            /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()),
         /*expected_data_version=*/absl::nullopt,
         /*expected_errors=*/{},
         /*expected_debug_loss_report_url=*/absl::nullopt,
@@ -5738,8 +5776,8 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
           )"),
         /*expected_bid=*/
         mojom::BidderWorkletBid::New(
-            "\"ad\"", 1, GURL("https://response.test/"),
-            /*ad_components=*/absl::nullopt, base::TimeDelta()),
+            "\"ad\"", 1, blink::AdDescriptor(GURL("https://response.test/")),
+            /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()),
         /*expected_data_version=*/absl::nullopt,
         /*expected_errors=*/{},
         /*expected_debug_loss_report_url=*/absl::nullopt,
@@ -5763,8 +5801,8 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
           )"),
         /*expected_bid=*/
         mojom::BidderWorkletBid::New(
-            "\"ad\"", 1, GURL("https://response.test/"),
-            /*ad_components=*/absl::nullopt, base::TimeDelta()),
+            "\"ad\"", 1, blink::AdDescriptor(GURL("https://response.test/")),
+            /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()),
         /*expected_data_version=*/absl::nullopt,
         /*expected_errors=*/{},
         /*expected_debug_loss_report_url=*/absl::nullopt,
@@ -5790,8 +5828,8 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
           )"),
         /*expected_bid=*/
         mojom::BidderWorkletBid::New(
-            "\"ad\"", 1, GURL("https://response.test/"),
-            /*ad_components=*/absl::nullopt, base::TimeDelta()),
+            "\"ad\"", 1, blink::AdDescriptor(GURL("https://response.test/")),
+            /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()),
         /*expected_data_version=*/absl::nullopt,
         /*expected_errors=*/{},
         /*expected_debug_loss_report_url=*/absl::nullopt,
@@ -5848,8 +5886,8 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
           )"),
         /*expected_bid=*/
         mojom::BidderWorkletBid::New(
-            "\"ad\"", 1, GURL("https://response.test/"),
-            /*ad_components=*/absl::nullopt, base::TimeDelta()),
+            "\"ad\"", 1, blink::AdDescriptor(GURL("https://response.test/")),
+            /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()),
         /*expected_data_version=*/absl::nullopt,
         /*expected_errors=*/{},
         /*expected_debug_loss_report_url=*/absl::nullopt,
@@ -5881,8 +5919,8 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
           )"),
         /*expected_bid=*/
         mojom::BidderWorkletBid::New(
-            "\"ad\"", 1, GURL("https://response.test/"),
-            /*ad_components=*/absl::nullopt, base::TimeDelta()),
+            "\"ad\"", 1, blink::AdDescriptor(GURL("https://response.test/")),
+            /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()),
         /*expected_data_version=*/absl::nullopt,
         /*expected_errors=*/{},
         /*expected_debug_loss_report_url=*/absl::nullopt,
@@ -5946,8 +5984,8 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
           )"),
         /*expected_bid=*/
         mojom::BidderWorkletBid::New(
-            "\"ad\"", 1, GURL("https://response.test/"),
-            /*ad_components=*/absl::nullopt, base::TimeDelta()),
+            "\"ad\"", 1, blink::AdDescriptor(GURL("https://response.test/")),
+            /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()),
         /*expected_data_version=*/absl::nullopt,
         /*expected_errors=*/{},
         /*expected_debug_loss_report_url=*/absl::nullopt,
@@ -5984,8 +6022,8 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
           )"),
         /*expected_bid=*/
         mojom::BidderWorkletBid::New(
-            "\"ad\"", 1, GURL("https://response.test/"),
-            /*ad_components=*/absl::nullopt, base::TimeDelta()),
+            "\"ad\"", 1, blink::AdDescriptor(GURL("https://response.test/")),
+            /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()),
         /*expected_data_version=*/absl::nullopt,
         /*expected_errors=*/{},
         /*expected_debug_loss_report_url=*/absl::nullopt,
@@ -6277,8 +6315,8 @@ TEST_F(BidderWorkletTest, KAnonSimulate) {
           R"({ad: ["ad"], bid:1, render:"https://response.test/"})",
           kSideEffectScript),
       mojom::BidderWorkletBid::New(
-          R"(["ad"])", 1, GURL("https://response.test/"),
-          /*ad_components=*/absl::nullopt, base::TimeDelta()),
+          R"(["ad"])", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()),
       /*expected_data_version=*/absl::nullopt,
       /*expected_errors=*/{},
       /*expected_debug_loss_report_url=*/absl::nullopt,
@@ -6297,8 +6335,8 @@ TEST_F(BidderWorkletTest, KAnonSimulate) {
           R"({ad: ["ad"], bid:1, render:"https://response.test/"})",
           kSideEffectScript),
       mojom::BidderWorkletBid::New(
-          R"(["ad"])", 1, GURL("https://response.test/"),
-          /*ad_components=*/absl::nullopt, base::TimeDelta()),
+          R"(["ad"])", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()),
       /*expected_data_version=*/absl::nullopt,
       /*expected_errors=*/{},
       /*expected_debug_loss_report_url=*/absl::nullopt,
@@ -6319,8 +6357,8 @@ TEST_F(BidderWorkletTest, KAnonSimulate) {
           render:interestGroup.ads[interestGroup.ads.length - 1].renderUrl})",
           kSideEffectScript),
       mojom::BidderWorkletBid::New(
-          R"(["ad"])", 2, GURL("https://response2.test/"),
-          /*ad_components=*/absl::nullopt, base::TimeDelta()),
+          R"(["ad"])", 2, blink::AdDescriptor(GURL("https://response2.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()),
       /*expected_data_version=*/absl::nullopt,
       /*expected_errors=*/{},
       /*expected_debug_loss_report_url=*/absl::nullopt,
@@ -6331,7 +6369,8 @@ TEST_F(BidderWorkletTest, KAnonSimulate) {
   ASSERT_FALSE(kanon_bid_->is_same_as_non_enforced());
   EXPECT_EQ(kanon_bid_->get_bid()->ad, R"(["ad"])");
   EXPECT_EQ(kanon_bid_->get_bid()->bid, 1);
-  EXPECT_EQ(kanon_bid_->get_bid()->render_url, GURL("https://response.test/"));
+  EXPECT_EQ(kanon_bid_->get_bid()->ad_descriptor.url,
+            GURL("https://response.test/"));
 
   // Authorize it.
   kanon_keys_.emplace(
@@ -6345,8 +6384,8 @@ TEST_F(BidderWorkletTest, KAnonSimulate) {
           render:interestGroup.ads[interestGroup.ads.length - 1].renderUrl})",
           kSideEffectScript),
       mojom::BidderWorkletBid::New(
-          R"(["ad"])", 2, GURL("https://response2.test/"),
-          /*ad_components=*/absl::nullopt, base::TimeDelta()),
+          R"(["ad"])", 2, blink::AdDescriptor(GURL("https://response2.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()),
       /*expected_data_version=*/absl::nullopt,
       /*expected_errors=*/{},
       /*expected_debug_loss_report_url=*/absl::nullopt,
@@ -6378,8 +6417,8 @@ TEST_F(BidderWorkletTest, KAnonEnforce) {
           kSideEffectScript),
       /*expected_bid=*/
       mojom::BidderWorkletBid::New(
-          R"(["ad"])", 1, GURL("https://response.test/"),
-          /*ad_components=*/absl::nullopt, base::TimeDelta()),
+          R"(["ad"])", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()),
       /*expected_data_version=*/absl::nullopt,
       /*expected_errors=*/
       {"https://url.test/ generateBid() bid render URL 'https://response.test/'"
@@ -6400,8 +6439,8 @@ TEST_F(BidderWorkletTest, KAnonEnforce) {
           R"({ad: ["ad"], bid:1, render:"https://response.test/"})",
           kSideEffectScript),
       mojom::BidderWorkletBid::New(
-          R"(["ad"])", 1, GURL("https://response.test/"),
-          /*ad_components=*/absl::nullopt, base::TimeDelta()),
+          R"(["ad"])", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()),
       /*expected_data_version=*/absl::nullopt,
       /*expected_errors=*/{},
       /*expected_debug_loss_report_url=*/absl::nullopt,
@@ -6422,8 +6461,8 @@ TEST_F(BidderWorkletTest, KAnonEnforce) {
           render:interestGroup.ads[interestGroup.ads.length - 1].renderUrl})",
           kSideEffectScript),
       mojom::BidderWorkletBid::New(
-          R"(["ad"])", 2, GURL("https://response2.test/"),
-          /*ad_components=*/absl::nullopt, base::TimeDelta()),
+          R"(["ad"])", 2, blink::AdDescriptor(GURL("https://response2.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()),
       /*expected_data_version=*/absl::nullopt,
       /*expected_errors=*/{},
       /*expected_debug_loss_report_url=*/absl::nullopt,
@@ -6434,7 +6473,8 @@ TEST_F(BidderWorkletTest, KAnonEnforce) {
   ASSERT_FALSE(kanon_bid_->is_same_as_non_enforced());
   EXPECT_EQ(kanon_bid_->get_bid()->ad, R"(["ad"])");
   EXPECT_EQ(kanon_bid_->get_bid()->bid, 1);
-  EXPECT_EQ(kanon_bid_->get_bid()->render_url, GURL("https://response.test/"));
+  EXPECT_EQ(kanon_bid_->get_bid()->ad_descriptor.url,
+            GURL("https://response.test/"));
 
   // Authorize it.
   kanon_keys_.emplace(
@@ -6448,8 +6488,8 @@ TEST_F(BidderWorkletTest, KAnonEnforce) {
           render:interestGroup.ads[interestGroup.ads.length - 1].renderUrl})",
           kSideEffectScript),
       mojom::BidderWorkletBid::New(
-          R"(["ad"])", 2, GURL("https://response2.test/"),
-          /*ad_components=*/absl::nullopt, base::TimeDelta()),
+          R"(["ad"])", 2, blink::AdDescriptor(GURL("https://response2.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()),
       /*expected_data_version=*/absl::nullopt,
       /*expected_errors=*/{},
       /*expected_debug_loss_report_url=*/absl::nullopt,
@@ -6487,15 +6527,17 @@ TEST_F(BidderWorkletTest, KAnonRerun) {
     execution_mode_ = execution_mode;
     SCOPED_TRACE(execution_mode_);
     RunGenerateBidWithJavascriptExpectingResult(
-        kScript, mojom::BidderWorkletBid::New(
-                     R"(["ad"])", 1, GURL("https://response2.test/"),
-                     /*ad_components=*/absl::nullopt, base::TimeDelta()));
+        kScript,
+        mojom::BidderWorkletBid::New(
+            R"(["ad"])", 1,
+            blink::AdDescriptor(GURL("https://response2.test/")),
+            /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
     ASSERT_TRUE(kanon_bid_);
     ASSERT_TRUE(kanon_bid_->is_bid());
     EXPECT_EQ(R"(["ad"])", kanon_bid_->get_bid()->ad);
     EXPECT_EQ(2, kanon_bid_->get_bid()->bid);
     EXPECT_EQ(GURL("https://response.test/"),
-              kanon_bid_->get_bid()->render_url);
+              kanon_bid_->get_bid()->ad_descriptor.url);
   }
 }
 
@@ -6551,24 +6593,24 @@ TEST_F(BidderWorkletTest, IsKAnonResult) {
   mojom::BidderWorkletBidPtr bid = mojom::BidderWorkletBid::New();
 
   // k-anon ad URL.
-  bid->render_url = kUrl1;
+  bid->ad_descriptor.url = kUrl1;
   EXPECT_TRUE(
       BidderWorklet::IsKAnon(params.get(), interest_group_bidding_url_, bid));
 
   // k-anon ad URL and component.
-  bid->ad_components.emplace();
-  bid->ad_components->push_back(kUrl2);
+  bid->ad_component_descriptors.emplace();
+  bid->ad_component_descriptors->emplace_back(kUrl2);
   EXPECT_TRUE(
       BidderWorklet::IsKAnon(params.get(), interest_group_bidding_url_, bid));
 
   // Non k-anon ad URL, k-anon component.
-  bid->render_url = kUrl4;
+  bid->ad_descriptor.url = kUrl4;
   EXPECT_FALSE(
       BidderWorklet::IsKAnon(params.get(), interest_group_bidding_url_, bid));
 
   // k-anon ad URL, one of the components non-k-anon.
-  bid->render_url = kUrl1;
-  bid->ad_components->push_back(kUrl3);
+  bid->ad_descriptor.url = kUrl1;
+  bid->ad_component_descriptors->emplace_back(kUrl3);
   EXPECT_FALSE(
       BidderWorklet::IsKAnon(params.get(), interest_group_bidding_url_, bid));
 }
@@ -6696,6 +6738,552 @@ TEST_F(BidderWorkletTest, CloseGenerateBidClientBeforeFinalize) {
 
   // The finalizer pipe must have been closed, too.
   EXPECT_FALSE(bid_finalizer.is_connected());
+}
+
+TEST_F(BidderWorkletTest, GenerateBidRenderUrlWithSize) {
+  // The 'render' field corresponds to an object that contains the url string.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({ad: "ad", bid: 1, render: {url: "https://response.test/"}})",
+      /*expected_bid=*/mojom::BidderWorkletBid::New(
+          "\"ad\"", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
+
+  // The 'render' field corresponds to an object that contains the url string
+  // and size.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({
+          ad: "ad",
+          bid: 1,
+          render: {
+            url: "https://response.test/",
+            width: "100sw",
+            height: "50px"
+          }
+        })",
+      /*expected_bid=*/mojom::BidderWorkletBid::New(
+          "\"ad\"", 1,
+          blink::AdDescriptor(
+              GURL("https://response.test/"),
+              blink::AdSize(100, blink::AdSize::LengthUnit::kScreenWidth, 50,
+                            blink::AdSize::LengthUnit::kPixels)),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
+
+  // The 'render' field corresponds to an object with an invalid field.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({ad: "ad", bid: 1, render: {foo: "https://response.test/"}})",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
+      {"https://url.test/ generateBid() bid has incorrect structure."});
+
+  // The 'render' field corresponds to an object with an invalid field.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({
+          ad: "ad",
+          bid: 1,
+          render: {
+            url: "https://response.test/",
+            width: "100sw",
+            height: "50px",
+            foo: 42
+          }
+        })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
+      {"https://url.test/ generateBid() bid has incorrect structure."});
+
+  // The 'render' field corresponds to an empty object.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({ad: "ad", bid: 1, render: {}})",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
+      {"https://url.test/ generateBid() bid has incorrect structure."});
+
+  // The 'render' field corresponds to an object without url string field.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({ad: "ad", bid: 1, render: {width: "100sw", height: "50px"}})",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
+      {"https://url.test/ generateBid() bid has incorrect structure."});
+
+  // Size is not of string type.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({
+          ad: "ad",
+          bid: 1,
+          render: {
+            url: "https://response.test/",
+            width: 100,
+            height: 50
+          }
+        })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
+      {"https://url.test/ generateBid() bid has incorrect structure."});
+
+  // Only width is specified.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({
+          ad: "ad",
+          bid: 1,
+          render: {
+            url: "https://response.test/",
+            width: "100sw"
+          }
+        })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
+      {"https://url.test/ generateBid() bid has incorrect structure."});
+
+  // Only height is specified.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({
+          ad: "ad",
+          bid: 1,
+          render: {
+            url: "https://response.test/",
+            height: "100sw"
+          }
+        })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
+      {"https://url.test/ generateBid() bid has incorrect structure."});
+
+  // Size has invalid units.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({
+          ad: "ad",
+          bid: 1,
+          render: {
+            url: "https://response.test/",
+            width: "100in",
+            height: "100px"
+          }
+        })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
+      {"https://url.test/ generateBid() bid has invalid size for render ad."});
+
+  // Size doesn't have units.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({
+          ad: "ad",
+          bid: 1,
+          render: {
+            url: "https://response.test/",
+            width: "100",
+            height: "100"
+          }
+        })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
+      {"https://url.test/ generateBid() bid has invalid size for render ad."});
+
+  // Size doesn't have numbers.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({
+          ad: "ad",
+          bid: 1,
+          render: {
+            url: "https://response.test/",
+            width: "sw",
+            height: "px"
+          }
+        })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
+      {"https://url.test/ generateBid() bid has invalid size for render ad."});
+
+  // Size is empty.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({
+          ad: "ad",
+          bid: 1,
+          render: {
+            url: "https://response.test/",
+            width: "",
+            height: ""
+          }
+        })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
+      {"https://url.test/ generateBid() bid has invalid size for render ad."});
+
+  // Size has zero value.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({
+          ad: "ad",
+          bid: 1,
+          render: {
+            url: "https://response.test/",
+            width: "0px",
+            height: "10px"
+          }
+        })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
+      {"https://url.test/ generateBid() bid has invalid size for render ad."});
+
+  // Size has negative value.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({
+          ad: "ad",
+          bid: 1,
+          render: {
+            url: "https://response.test/",
+            width: "-1px",
+            height: "10px"
+          }
+        })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
+      {"https://url.test/ generateBid() bid has invalid size for render ad."});
+}
+
+TEST_F(BidderWorkletTest, GenerateBidAdComponentsWithSize) {
+  // The 'adComponents' field corresponds to an array of object that has the url
+  // string.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({
+          ad: 0,
+          bid: 1,
+          render: "https://response.test/",
+          adComponents: [
+            {url: "https://ad_component.test/"}
+          ]
+        })",
+      /*expected_bid=*/mojom::BidderWorkletBid::New(
+          "0", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          std::vector<blink::AdDescriptor>{
+              blink::AdDescriptor(GURL("https://ad_component.test/"))},
+          base::TimeDelta()));
+
+  // The 'adComponents' field corresponds to an array of object that has the url
+  // string and size.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({
+          ad: 0,
+          bid: 1,
+          render: "https://response.test/",
+          adComponents: [
+            {
+              url: "https://ad_component.test/",
+              width: "100sw",
+              height: "50px"
+            }
+          ]
+        })",
+      /*expected_bid=*/mojom::BidderWorkletBid::New(
+          "0", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          std::vector<blink::AdDescriptor>{blink::AdDescriptor(
+              GURL("https://ad_component.test/"),
+              blink::AdSize(100, blink::AdSize::LengthUnit::kScreenWidth, 50,
+                            blink::AdSize::LengthUnit::kPixels))},
+          base::TimeDelta()));
+
+  // The 'adComponents' field corresponds to an array of objects.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({
+          ad: 0,
+          bid: 1,
+          render: "https://response.test/",
+          adComponents: [
+            {
+              url: "https://ad_component.test/",
+              width: "100sw",
+              height: "50px"
+            },
+            {
+              url: "https://ad_component.test/"
+            }
+          ]
+        })",
+      /*expected_bid=*/mojom::BidderWorkletBid::New(
+          "0", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          std::vector<blink::AdDescriptor>{
+              blink::AdDescriptor(
+                  GURL("https://ad_component.test/"),
+                  blink::AdSize(100, blink::AdSize::LengthUnit::kScreenWidth,
+                                50, blink::AdSize::LengthUnit::kPixels)),
+              blink::AdDescriptor(GURL("https://ad_component.test/"))},
+          base::TimeDelta()));
+
+  // The 'adComponents' field corresponds to an array of url string and objects.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({
+          ad: 0,
+          bid: 1,
+          render: "https://response.test/",
+          adComponents: [
+            {
+              url: "https://ad_component.test/",
+              width: "100sw",
+              height: "50px"
+            },
+            {
+              url: "https://ad_component.test/"
+            },
+            "https://ad_component.test/"
+          ]
+        })",
+      /*expected_bid=*/mojom::BidderWorkletBid::New(
+          "0", 1, blink::AdDescriptor(GURL("https://response.test/")),
+          std::vector<blink::AdDescriptor>{
+              blink::AdDescriptor(
+                  GURL("https://ad_component.test/"),
+                  blink::AdSize(100, blink::AdSize::LengthUnit::kScreenWidth,
+                                50, blink::AdSize::LengthUnit::kPixels)),
+              blink::AdDescriptor(GURL("https://ad_component.test/")),
+              blink::AdDescriptor(GURL("https://ad_component.test/"))},
+          base::TimeDelta()));
+
+  // The 'adComponents' field corresponds to an array of an object that has an
+  // invalid field.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({
+          ad: 0,
+          bid: 1,
+          render: "https://response.test/",
+          adComponents: [
+            {
+              foo: "https://ad_component.test/"
+            }
+          ]
+        })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
+      {"https://url.test/ generateBid() bid adComponents value must be an "
+       "array of strings or objects that contain the url string field and "
+       "optional width and height fields."});
+
+  // The 'adComponents' field corresponds to an array of an object that has an
+  // invalid field.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({
+          ad: 0,
+          bid: 1,
+          render:"https://response.test/",
+          adComponents: [
+            {
+              url: "https://ad_component.test/",
+              width: "100sw",
+              height: "50px",
+              foo: 42
+            }
+          ]
+        })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
+      {"https://url.test/ generateBid() bid adComponents value must be an "
+       "array of strings or objects that contain the url string field and "
+       "optional width and height fields."});
+
+  // The 'adComponents' field corresponds to an array of an empty object.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({
+          ad: 0,
+          bid: 1,
+          render: "https://response.test/",
+          adComponents: [
+            {}
+          ]
+        })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
+      {"https://url.test/ generateBid() bid adComponents value must be an "
+       "array of strings or objects that contain the url string field and "
+       "optional width and height fields."});
+
+  // The 'adComponents' field corresponds to an array of an object without url
+  // string field.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({
+          ad: 0,
+          bid: 1,
+          render:"https://response.test/",
+          adComponents: [
+            {
+              width: "100sw",
+              height: "50px"
+            }
+          ]
+        })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
+      {"https://url.test/ generateBid() bid adComponents value must be an "
+       "array of strings or objects that contain the url string field and "
+       "optional width and height fields."});
+
+  // Size is not of string type.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({
+          ad: 0,
+          bid: 1,
+          render: "https://response.test/",
+          adComponents: [
+            {
+              width: 100,
+              height: 50
+            }
+          ]
+        })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
+      {"https://url.test/ generateBid() bid adComponents value must be an "
+       "array of strings or objects that contain the url string field and "
+       "optional width and height fields."});
+
+  // Only width is specified.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({
+          ad: 0,
+          bid: 1,
+          render: "https://response.test/",
+          adComponents: [
+            {
+              url: "https://ad_component.test/",
+              width: "100sw"
+            }
+          ]
+        })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
+      {"https://url.test/ generateBid() bid adComponents value must be an "
+       "array of strings or objects that contain the url string field and "
+       "optional width and height fields."});
+
+  // Only height is specified.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({
+          ad: 0,
+          bid: 1,
+          render: "https://response.test/",
+          adComponents: [
+            {
+              url: "https://ad_component.test/",
+              height: "50px"
+            }
+          ]
+        })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
+      {"https://url.test/ generateBid() bid adComponents value must be an "
+       "array of strings or objects that contain the url string field and "
+       "optional width and height fields."});
+
+  // Size has invalid units.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({
+          ad: 0,
+          bid: 1,
+          render: "https://response.test/",
+          adComponents: [
+            {
+              url: "https://ad_component.test/",
+              width: "100in",
+              height: "100px"
+            }
+          ]
+        })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
+      {"https://url.test/ generateBid() bid adComponents have invalid size for "
+       "ad component."});
+
+  // Size doesn't have units.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({
+          ad: 0,
+          bid: 1,
+          render: "https://response.test/",
+          adComponents: [
+            {
+              url: "https://ad_component.test/",
+              width: "100",
+              height: "100"
+            }
+          ]
+        })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
+      {"https://url.test/ generateBid() bid adComponents have invalid size for "
+       "ad component."});
+
+  // Size doesn't have numbers.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({
+          ad: 0,
+          bid: 1,
+          render: "https://response.test/",
+          adComponents:
+          [
+            {
+              url: "https://ad_component.test/",
+              width: "sw",
+              height: "px"
+            }
+          ]
+        })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
+      {"https://url.test/ generateBid() bid adComponents have invalid size for "
+       "ad component."});
+
+  // Size is empty.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({
+          ad: 0,
+          bid: 1,
+          render: "https://response.test/",
+          adComponents: [
+            {
+              url: "https://ad_component.test/",
+              width: "",
+              height: ""
+            }
+          ]
+        })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
+      {"https://url.test/ generateBid() bid adComponents have invalid size for "
+       "ad component."});
+
+  // Size has zero value.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({
+          ad: 0,
+          bid: 1,
+          render: "https://response.test/",
+          adComponents: [
+            {
+              url: "https://ad_component.test/",
+              width: "0px",
+              height: "1px"
+            }
+          ]
+        })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
+      {"https://url.test/ generateBid() bid adComponents have invalid size for "
+       "ad component."});
+
+  // Size has negative value.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({
+          ad: 0,
+          bid: 1,
+          render: "https://response.test/",
+          adComponents: [
+            {
+              url: "https://ad_component.test/",
+              width: "-1px",
+              height: "5px"
+            }
+          ]
+        })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
+      {"https://url.test/ generateBid() bid adComponents have invalid size for "
+       "ad component."});
 }
 
 }  // namespace

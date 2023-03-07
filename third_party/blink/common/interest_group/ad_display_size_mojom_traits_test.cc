@@ -8,6 +8,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size.h"
 #include "third_party/blink/public/mojom/interest_group/ad_display_size.mojom.h"
+#include "url/gurl.h"
 
 namespace blink {
 
@@ -19,6 +20,18 @@ TEST(AdDisplaySizeStructTraitsTest, SerializeAndDeserializeAdSize) {
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<blink::mojom::AdSize>(
       ad_size, ad_size_clone));
   EXPECT_EQ(ad_size, ad_size_clone);
+}
+
+TEST(AdDisplaySizeStructTraitsTest, SerializeAndDeserializeAdDescriptor) {
+  blink::AdDescriptor ad_descriptor(
+      GURL("https://example.test/"),
+      blink::AdSize(300, blink::AdSize::LengthUnit::kPixels, 150,
+                    blink::AdSize::LengthUnit::kPixels));
+
+  blink::AdDescriptor ad_descriptor_clone;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<blink::mojom::AdDescriptor>(
+      ad_descriptor, ad_descriptor_clone));
+  EXPECT_EQ(ad_descriptor, ad_descriptor_clone);
 }
 
 }  // namespace blink

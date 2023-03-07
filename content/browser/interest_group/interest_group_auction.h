@@ -18,7 +18,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/interest_group_auction_reporter.h"
 #include "content/browser/interest_group/interest_group_storage.h"
@@ -305,8 +304,8 @@ class CONTENT_EXPORT InterestGroupAuction
     Bid(BidRole bid_role,
         std::string ad_metadata,
         double bid,
-        GURL render_url,
-        std::vector<GURL> ad_components,
+        blink::AdDescriptor ad_descriptor,
+        std::vector<blink::AdDescriptor> ad_component_descriptors,
         base::TimeDelta bid_duration,
         absl::optional<uint32_t> bidding_signals_data_version,
         const blink::InterestGroup::Ad* bid_ad,
@@ -324,6 +323,11 @@ class CONTENT_EXPORT InterestGroupAuction
                  : *bid_state->trace_id;
     }
 
+    // Get a vector of ad component urls. For compatible with functions
+    // expecting a vector of `GURL` instead of a vector of
+    // `blink::AdDescriptor`.
+    std::vector<GURL> GetAdComponentUrls() const;
+
     // Which auctions the bid participates in.
     BidRole bid_role;
 
@@ -331,8 +335,8 @@ class CONTENT_EXPORT InterestGroupAuction
     // auction_worklet::mojom::BidderWorkletBid.
     const std::string ad_metadata;
     const double bid;
-    const GURL render_url;
-    const std::vector<GURL> ad_components;
+    const blink::AdDescriptor ad_descriptor;
+    const std::vector<blink::AdDescriptor> ad_component_descriptors;
     const base::TimeDelta bid_duration;
     const absl::optional<uint32_t> bidding_signals_data_version;
 

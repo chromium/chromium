@@ -24,7 +24,6 @@
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/mojom/interest_group/ad_auction_service.mojom.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
-#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace blink {
@@ -57,33 +56,24 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   //
   // `winning_group_id` owner and name of the winning interest group (if any).
   //
-  // `render_url` URL of auction winning ad to render. Null if there is no
-  //  winner.
+  // `ad_descriptor` URL of auction winning ad to render with optional
+  // size. Null if there is no winner.
   //
-  // `ad_component_urls` is the list of ad component URLs returned by the
-  //  winning bidder. Null if there is no winner or no list was returned.
+  // `ad_component_descriptors` is the list of ad component URLs with
+  // optional size returned by the winning bidder. Null if there is no winner or
+  // no list was returned.
   //
   // `report_urls` Reporting URLs returned by seller worklet reportResult()
   //  methods and the winning bidder's reportWin() methods, if any.
   //
   // `errors` are various error messages to be used for debugging. These are too
   //  sensitive for the renderers to see.
-  //
-  // If k-anonymity enforcement is on, `render_url_without_kanon_enforced`
-  // and `ad_component_urls_without_kanon_enforced` would be set to what the
-  // winner would be without the enforcement. This may be identical to
-  // `render_url` and `ad_component_urls`.
-  //
-  // If k-anonymity simulation is on, `render_url_with_kanon_simulated` and
-  // `ad_component_urls_with_kanon_simulated` are what the winner would be if
-  // k-anonymity was being enforced. This may be identical to `render_url` and
-  // `ad_component_urls`.
   using RunAuctionCallback = base::OnceCallback<void(
       AuctionRunner* auction_runner,
       bool manually_aborted,
       absl::optional<blink::InterestGroupKey> winning_group_id,
-      absl::optional<GURL> render_url,
-      std::vector<GURL> ad_component_urls,
+      absl::optional<blink::AdDescriptor> ad_descriptor,
+      std::vector<blink::AdDescriptor> ad_component_descriptors,
       std::vector<std::string> errors,
       std::unique_ptr<InterestGroupAuctionReporter>
           interest_group_auction_reporter)>;
