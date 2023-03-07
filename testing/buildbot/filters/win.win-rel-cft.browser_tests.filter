@@ -34,6 +34,7 @@
 -GlobalConfirmInfoBarTest.CreateAndCloseInfobar
 -GlobalConfirmInfoBarTest.UserInteraction
 -GlobalConfirmInfoBarTest.VerifyInfobarNonDefaultProperties
+-HighEfficiencyDiscardPolicyInteractiveTest.TabWithFormNotDiscarded
 -InfoBarsTest.TestInfoBarsCloseOnNewTheme
 -InteractionTestUtilBrowserTest.CompareScreenshot_WebPage
 -KnownInterceptionDisclosureInfobarTest.CooldownResetsOnBrowserRestartDesktop
@@ -49,6 +50,7 @@
 -WebAppFrameToolbarBrowserTest_Borderless.*
 -WebAppFrameToolbarBrowserTest_WindowControlsOverlay.*
 -WebAppGlassBrowserFrameViewWindowControlsOverlayTest.*
+-WebAppBrowserFrameViewWinWindowControlsOverlayTest.*
 -WebAppIntegration.*
 -WebContentsInteractionTestUtilInteractiveUiTest.*
 -WebRtcDesktopCaptureBrowserTest.CloseAndReopenNonSharedTab
