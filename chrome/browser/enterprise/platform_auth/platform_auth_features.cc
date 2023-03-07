@@ -9,7 +9,7 @@
 namespace enterprise_auth {
 
 #if BUILDFLAG(IS_WIN)
-BASE_FEATURE(kCloudApAuth, "CloudApAuth", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCloudApAuth, "CloudApAuth", base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace enterprise_auth
