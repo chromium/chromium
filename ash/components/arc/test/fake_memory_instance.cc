@@ -19,10 +19,10 @@ void FakeMemoryInstance::DropCaches(DropCachesCallback callback) {
 void FakeMemoryInstance::Reclaim(mojom::ReclaimRequestPtr request,
                                  ReclaimCallback callback) {
   if (request->type == mojom::ReclaimType::ANON) {
-    std::move(callback).Run(mojom::ReclaimResponse::New(
+    std::move(callback).Run(mojom::ReclaimResult::New(
         reclaimed_anon_process_count_, unreclaimed_anon_process_count_));
   } else {
-    std::move(callback).Run(mojom::ReclaimResponse::New(
+    std::move(callback).Run(mojom::ReclaimResult::New(
         reclaimed_all_process_count_, unreclaimed_all_process_count_));
   }
 }

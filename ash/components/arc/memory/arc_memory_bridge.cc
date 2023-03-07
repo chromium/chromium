@@ -73,7 +73,7 @@ void ArcMemoryBridge::Reclaim(mojom::ReclaimRequestPtr request,
   auto* const memory_instance =
       ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->memory(), Reclaim);
   if (!memory_instance) {
-    std::move(callback).Run(mojom::ReclaimResponse::New(0, 0));
+    std::move(callback).Run(mojom::ReclaimResult::New(0, 0));
     return;
   }
   memory_instance->Reclaim(std::move(request), std::move(callback));

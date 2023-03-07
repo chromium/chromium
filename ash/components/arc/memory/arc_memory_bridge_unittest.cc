@@ -92,9 +92,9 @@ TEST_F(ArcMemoryBridgeTest, Reclaim_All_Success) {
   absl::optional<uint32_t> unreclaimed_result;
   bridge()->Reclaim(
       mojom::ReclaimRequest::New(mojom::ReclaimType::ALL),
-      base::BindLambdaForTesting([&](mojom::ReclaimResponsePtr response) {
-        reclaimed_result = response->reclaimed;
-        unreclaimed_result = response->unreclaimed;
+      base::BindLambdaForTesting([&](mojom::ReclaimResultPtr result) {
+        reclaimed_result = result->reclaimed;
+        unreclaimed_result = result->unreclaimed;
       }));
 
   ASSERT_TRUE(reclaimed_result);
@@ -112,9 +112,9 @@ TEST_F(ArcMemoryBridgeTest, Reclaim_Partial_Success) {
   absl::optional<uint32_t> unreclaimed_result;
   bridge()->Reclaim(
       mojom::ReclaimRequest::New(mojom::ReclaimType::ALL),
-      base::BindLambdaForTesting([&](mojom::ReclaimResponsePtr response) {
-        reclaimed_result = response->reclaimed;
-        unreclaimed_result = response->unreclaimed;
+      base::BindLambdaForTesting([&](mojom::ReclaimResultPtr result) {
+        reclaimed_result = result->reclaimed;
+        unreclaimed_result = result->unreclaimed;
       }));
 
   ASSERT_TRUE(reclaimed_result);
@@ -132,9 +132,9 @@ TEST_F(ArcMemoryBridgeTest, Reclaim_Anon_Partial_Success) {
   absl::optional<uint32_t> unreclaimed_result;
   bridge()->Reclaim(
       mojom::ReclaimRequest::New(mojom::ReclaimType::ANON),
-      base::BindLambdaForTesting([&](mojom::ReclaimResponsePtr response) {
-        reclaimed_result = response->reclaimed;
-        unreclaimed_result = response->unreclaimed;
+      base::BindLambdaForTesting([&](mojom::ReclaimResultPtr result) {
+        reclaimed_result = result->reclaimed;
+        unreclaimed_result = result->unreclaimed;
       }));
 
   ASSERT_TRUE(reclaimed_result);
@@ -153,9 +153,9 @@ TEST_F(ArcMemoryBridgeTest, Reclaim_NoInstance) {
   absl::optional<uint32_t> unreclaimed_result;
   bridge()->Reclaim(
       mojom::ReclaimRequest::New(mojom::ReclaimType::ALL),
-      base::BindLambdaForTesting([&](mojom::ReclaimResponsePtr response) {
-        reclaimed_result = response->reclaimed;
-        unreclaimed_result = response->unreclaimed;
+      base::BindLambdaForTesting([&](mojom::ReclaimResultPtr result) {
+        reclaimed_result = result->reclaimed;
+        unreclaimed_result = result->unreclaimed;
       }));
 
   ASSERT_TRUE(reclaimed_result);
