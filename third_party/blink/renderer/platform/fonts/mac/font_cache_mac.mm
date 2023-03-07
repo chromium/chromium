@@ -216,13 +216,8 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
   substitute_font_traits = [font_manager traitsOfFont:substitute_font];
   substitute_font_weight = [font_manager weightOfFont:substitute_font];
 
-  // TODO(eae): Remove once skia supports bold emoji. See
-  // https://bugs.chromium.org/p/skia/issues/detail?id=4904
-  // Bold emoji look the same as normal emoji, so syntheticBold isn't needed.
-  bool synthetic_bold =
-      IsAppKitFontWeightBold(weight) &&
-      !IsAppKitFontWeightBold(substitute_font_weight) &&
-      ![substitute_font.familyName isEqual:@"Apple Color Emoji"];
+  bool synthetic_bold = IsAppKitFontWeightBold(weight) &&
+                        !IsAppKitFontWeightBold(substitute_font_weight);
 
   std::unique_ptr<FontPlatformData> alternate_font = FontPlatformDataFromNSFont(
       substitute_font, platform_data.size(), font_description.SpecifiedSize(),
@@ -288,16 +283,11 @@ std::unique_ptr<FontPlatformData> FontCache::CreateFontPlatformData(
       UseHinting() ? [matched_font screenFont] : [matched_font printerFont];
   NSInteger app_kit_weight = ToAppKitFontWeight(font_description.Weight());
 
-  // TODO(eae): Remove once skia supports bold emoji. See
-  // https://bugs.chromium.org/p/skia/issues/detail?id=4904
-  // Bold emoji look the same as normal emoji, so syntheticBold isn't needed.
   bool synthetic_bold_requested = (IsAppKitFontWeightBold(app_kit_weight) &&
                                    !IsAppKitFontWeightBold(actual_weight)) ||
                                   font_description.IsSyntheticBold();
   bool synthetic_bold =
-      [platform_font.familyName isEqual:@"Apple Color Emoji"]
-          ? false
-          : synthetic_bold_requested && font_description.SyntheticBoldAllowed();
+      synthetic_bold_requested && font_description.SyntheticBoldAllowed();
 
   bool synthetic_italic_requested =
       ((traits & NSFontItalicTrait) && !(actual_traits & NSFontItalicTrait)) ||
