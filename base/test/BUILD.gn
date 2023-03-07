@@ -236,7 +236,6 @@ static_library("test_support") {
       "../ios/weak_nsobject.mm",
       "ios/wait_util.h",
       "ios/wait_util.mm",
-      "launcher/unit_test_launcher_ios.cc",
       "test_file_util_mac.cc",
       "test_listener_ios.h",
       "test_listener_ios.mm",
@@ -244,6 +243,11 @@ static_library("test_support") {
       "test_support_ios.mm",
     ]
     deps += [ ":google_test_runner_shared_headers" ]
+
+    # With blink, we use the standard unit_test_launcher.cc.
+    if (!use_blink) {
+      sources += [ "launcher/unit_test_launcher_ios.cc" ]
+    }
   }
 
   if (is_posix || is_fuchsia) {

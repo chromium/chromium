@@ -2141,9 +2141,7 @@ component("base") {
       "mac/bridging.h",
       "native_library_ios.mm",
       "power_monitor/power_monitor_device_source_ios.mm",
-      "process/launch_ios.cc",
       "process/process_metrics_ios.cc",
-      "process/process_stubs.cc",
       "profiler/stack_sampler_ios.cc",
       "system/sys_info_ios.mm",
     ]
@@ -2156,14 +2154,24 @@ component("base") {
         "ios/sim_header_shims.h",
         "mac/mach_port_rendezvous.cc",
         "mac/mach_port_rendezvous.h",
+        "process/launch_mac.cc",
         "process/memory_mac.mm",
+        "process/port_provider_mac.cc",
+        "process/port_provider_mac.h",
+        "process/process_handle_mac.cc",
         "process/process_iterator_ios.mm",
+        "process/process_mac.cc",
+        "process/process_posix.cc",
         "sync_socket_posix.cc",
         "synchronization/waitable_event_watcher_mac.cc",
       ]
       libs += [ "bsm" ]
     } else {
-      sources += [ "process/memory_stubs.cc" ]
+      sources += [
+        "process/launch_ios.cc",
+        "process/memory_stubs.cc",
+        "process/process_stubs.cc",
+      ]
     }
 
     if (is_cronet_build) {

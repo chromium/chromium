@@ -51,8 +51,11 @@
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "services/tracing/public/cpp/trace_startup.h"
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 #include "content/browser/child_process_task_port_provider_mac.h"
+#endif
+
+#if BUILDFLAG(IS_MAC)
 #include "content/browser/sandbox_support_mac_impl.h"
 #include "content/common/sandbox_support_mac.mojom.h"
 #endif
@@ -141,7 +144,7 @@ BrowserChildProcessHost* BrowserChildProcessHost::FromID(int child_process_id) {
   return nullptr;
 }
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 base::PortProvider* BrowserChildProcessHost::GetPortProvider() {
   return ChildProcessTaskPortProvider::GetInstance();
 }

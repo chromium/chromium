@@ -44,7 +44,7 @@ interface ChildProcess {
   ProcessShutdown();
 
   // Requests the child process send its Mach task port to the caller.
-  [EnableIf=is_mac]
+  [EnableIf=is_apple]
   GetTaskPort() => (handle<platform> task_port);
 
   // Tells the child process to begin or end IPC message logging.

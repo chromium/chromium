@@ -226,6 +226,12 @@ struct BASE_EXPORT LaunchOptions {
   // See base/mac/mach_port_rendezvous.h for details.
   MachPortsForRendezvous mach_ports_for_rendezvous;
 
+  // Apply a process scheduler policy to enable mitigations against CPU side-
+  // channel attacks.
+  bool enable_cpu_security_mitigations = false;
+#endif  // BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))
+
+#if BUILDFLAG(IS_MAC)
   // When a child process is launched, the system tracks the parent process
   // with a concept of "responsibility". The responsible process will be
   // associated with any requests for private data stored on the system via
@@ -233,10 +239,6 @@ struct BASE_EXPORT LaunchOptions {
   // code, the responsibility for the child process should be disclaimed so
   // that any TCC requests are not associated with the parent.
   bool disclaim_responsibility = false;
-
-  // Apply a process scheduler policy to enable mitigations against CPU side-
-  // channel attacks.
-  bool enable_cpu_security_mitigations = false;
 #endif  // BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))
 
 #if BUILDFLAG(IS_FUCHSIA)

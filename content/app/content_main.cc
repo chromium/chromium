@@ -286,7 +286,9 @@ RunContentProcess(ContentMainParams params,
     // TODO(crbug.com/1412835): Remove this initialization on iOS. Everything
     // runs in process for now as we have no fork.
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+#if !TARGET_OS_SIMULATOR
     command_line->AppendSwitch(switches::kSingleProcess);
+#endif
     command_line->AppendSwitch(switches::kEnableViewport);
     command_line->AppendSwitch(switches::kUseMobileUserAgent);
 #endif

@@ -227,8 +227,11 @@
 #include "media/mojo/mojom/video_encode_accelerator.mojom.h"
 #endif
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 #include "content/browser/child_process_task_port_provider_mac.h"
+#endif
+
+#if BUILDFLAG(IS_MAC)
 #include "content/browser/sandbox_support_mac_impl.h"
 #include "content/common/sandbox_support_mac.mojom.h"
 #endif
@@ -5107,7 +5110,7 @@ void RenderProcessHostImpl::OnProcessLaunched() {
       // Not all platforms launch processes in the same backgrounded state. Make
       // sure |priority_.visible| reflects this platform's initial process
       // state.
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
     priority_.visible =
         !child_process_launcher_->GetProcess().IsProcessBackgrounded(
             ChildProcessTaskPortProvider::GetInstance());

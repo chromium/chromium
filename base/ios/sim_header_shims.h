@@ -11,6 +11,10 @@
 #error File can only be included when USE_BLINK is true
 #endif
 
+#include <mach/kern_return.h>
+#include <mach/message.h>
+#include <sys/param.h>
+
 // This file includes the necessary headers that are not part of the
 // iOS public SDK in order to support multiprocess support on iOS.
 
@@ -35,6 +39,9 @@ const char* bootstrap_strerror(kern_return_t r);
 #define BOOTSTRAP_BAD_COUNT 1104
 #define BOOTSTRAP_NO_MEMORY 1105
 #define BOOTSTRAP_NO_CHILDREN 1106
+
+int proc_pidpath(int pid, void* buffer, uint32_t buffersize);
+#define PROC_PIDPATHINFO_MAXSIZE (4 * MAXPATHLEN)
 
 __END_DECLS
 

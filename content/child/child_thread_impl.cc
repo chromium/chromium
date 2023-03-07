@@ -88,7 +88,7 @@
 #endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // BUILDFLAG(IS_POSIX)
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 #include "base/mac/mach_port_rendezvous.h"
 #endif
 
@@ -224,7 +224,7 @@ mojo::IncomingInvitation InitializeMojoIPCChannel() {
 #elif BUILDFLAG(IS_FUCHSIA)
   endpoint = mojo::PlatformChannel::RecoverPassedEndpointFromCommandLine(
       *base::CommandLine::ForCurrentProcess());
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
   auto* client = base::MachPortRendezvousClient::GetInstance();
   if (!client) {
     LOG(ERROR) << "Mach rendezvous failed, terminating process (parent died?)";
@@ -300,7 +300,7 @@ class ChildThreadImpl::IOThreadState
                                        base::BindOnce(quit_closure_));
   }
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   void GetTaskPort(GetTaskPortCallback callback) override {
     mojo::PlatformHandle task_port(
         (base::mac::ScopedMachSendRight(task_self_trap())));

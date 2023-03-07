@@ -6137,7 +6137,7 @@ class AssertForegroundHelper {
   AssertForegroundHelper(const AssertForegroundHelper&) = delete;
   AssertForegroundHelper& operator=(const AssertForegroundHelper&) = delete;
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   // Asserts that |renderer_process| isn't backgrounded and reposts self to
   // check again shortly. |renderer_process| must outlive this
   // AssertForegroundHelper instance.
@@ -6151,7 +6151,7 @@ class AssertForegroundHelper {
                        std::cref(renderer_process), port_provider),
         base::Milliseconds(1));
   }
-#else   // BUILDFLAG(IS_MAC)
+#else   // BUILDFLAG(IS_APPLE)
   // Same as above without the Mac specific base::PortProvider.
   void AssertForegroundAndRepost(const base::Process& renderer_process) {
     ASSERT_FALSE(renderer_process.IsProcessBackgrounded());
@@ -6162,7 +6162,7 @@ class AssertForegroundHelper {
                        std::cref(renderer_process)),
         base::Milliseconds(1));
   }
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_APPLE)
 
  private:
   base::WeakPtrFactory<AssertForegroundHelper> weak_ptr_factory_{this};
@@ -6177,7 +6177,7 @@ class AssertForegroundHelper {
 // RenderProcessHost if present, to ensure that it is not used in the
 // cross-process navigation.
 // TODO(https://crbug.com/1197438): Flaky on Mac.
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 #define MAYBE_ForegroundNavigationIsNeverBackgroundedWithoutSpareProcess \
   DISABLED_ForegroundNavigationIsNeverBackgroundedWithoutSpareProcess
 #else
@@ -6191,10 +6191,10 @@ IN_PROC_BROWSER_TEST_P(
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   base::PortProvider* port_provider =
       BrowserChildProcessHost::GetPortProvider();
-#endif  //  BUILDFLAG(IS_MAC)
+#endif  //  BUILDFLAG(IS_APPLE)
 
   // Start off navigating to a.com and capture the process used to commit.
   EXPECT_TRUE(NavigateToURL(
@@ -6241,7 +6241,7 @@ IN_PROC_BROWSER_TEST_P(
   const base::Process& process = speculative_rph->GetProcess();
   EXPECT_TRUE(process.IsValid());
   AssertForegroundHelper assert_foreground_helper;
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   assert_foreground_helper.AssertForegroundAndRepost(process, port_provider);
 #else
   assert_foreground_helper.AssertForegroundAndRepost(process);
@@ -6267,10 +6267,10 @@ IN_PROC_BROWSER_TEST_P(
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   base::PortProvider* port_provider =
       BrowserChildProcessHost::GetPortProvider();
-#endif  //  BUILDFLAG(IS_MAC)
+#endif  //  BUILDFLAG(IS_APPLE)
 
   // Start off navigating to a.com and capture the process used to commit.
   EXPECT_TRUE(NavigateToURL(
@@ -6327,7 +6327,7 @@ IN_PROC_BROWSER_TEST_P(
   const base::Process& process = spare_rph->GetProcess();
   EXPECT_TRUE(process.IsValid());
   AssertForegroundHelper assert_foreground_helper;
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   assert_foreground_helper.AssertForegroundAndRepost(process, port_provider);
 #else
   assert_foreground_helper.AssertForegroundAndRepost(process);

@@ -60,7 +60,7 @@
 #include <sys/ucontext.h>
 #endif
 
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_MAC)
 #error "macOS should use launch_mac.cc"
 #endif
 

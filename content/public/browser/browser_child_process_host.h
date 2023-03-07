@@ -20,7 +20,7 @@
 #include "ipc/ipc_sender.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 #include "base/process/port_provider_mac.h"
 #endif
 
@@ -87,7 +87,7 @@ class CONTENT_EXPORT BrowserChildProcessHost : public IPC::Sender {
   // call this method so that the process is associated with this object.
   virtual void SetProcess(base::Process process) = 0;
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   // Returns a PortProvider used to get the task port for child processes.
   static base::PortProvider* GetPortProvider();
 #endif
