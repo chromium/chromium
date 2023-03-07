@@ -128,6 +128,7 @@ void ItemsBubbleController::UpdateSelectedCredentialInPasswordStore(
   if (currently_selected_password_.value().username_value ==
       updated_form.username_value) {
     password_store->UpdateLogin(updated_form);
+    currently_selected_password_ = updated_form;
     return;
   }
   if (updated_form.username_value.empty()) {

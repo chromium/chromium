@@ -257,6 +257,7 @@ TEST_F(ItemsBubbleControllerTest, OnUpdatePasswordNote) {
   EXPECT_CALL(*GetStore(), UpdateLogin(expected_updated_form, _));
   controller()->set_currently_selected_password(original_form);
   controller()->UpdateSelectedCredentialInPasswordStore(updated_form);
+  EXPECT_EQ(controller()->get_currently_selected_password(), updated_form);
 }
 
 TEST_F(ItemsBubbleControllerTest, OnUpdateUsername) {
