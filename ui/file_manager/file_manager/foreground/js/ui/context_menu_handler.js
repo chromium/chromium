@@ -37,10 +37,40 @@ import {positionPopupAtPoint} from './position_util.js';
 
       /** @private {boolean} */
       this.keyIsDown_ = false;
+
+      /** @private {?ResizeObserver} */
+      this.resizeObserver_ = null;
     }
 
     get menu() {
       return this.menu_;
+    }
+
+    /**
+     * @param {!HTMLElement} target
+     * @param {number} clientX
+     * @param {number} clientY
+     * @return {{x: number, y: number}}
+     * @private
+     */
+    getMenuPosition_(target, clientX, clientY) {
+      // When the user presses the context menu key (on the keyboard) we need
+      // to detect this.
+      let x;
+      let y;
+      if (this.keyIsDown_) {
+        const rect = target.getRectForContextMenu ?
+            target.getRectForContextMenu() :
+            target.getBoundingClientRect();
+        const offset = Math.min(rect.width, rect.height) / 2;
+        x = rect.left + offset;
+        y = rect.top + offset;
+      } else {
+        x = clientX;
+        y = clientY;
+      }
+
+      return {x, y};
     }
 
     /**
@@ -55,14 +85,23 @@ import {positionPopupAtPoint} from './position_util.js';
         return;
       }
 
+      const {x, y} = this.getMenuPosition_(
+          /** @type {!HTMLElement} */ (e.currentTarget), e.clientX, e.clientY);
       this.menu_ = menu;
       menu.classList.remove('hide-delayed');
-      menu.show({x: e.screenX, y: e.screenY});
+      menu.show({x, y});
       menu.contextElement = e.currentTarget;
 
       // When the menu is shown we steal a lot of events.
       const doc = menu.ownerDocument;
       const win = /** @type {!Window} */ (doc.defaultView);
+      if (this.resizeObserver_) {
+        this.resizeObserver_.disconnect();
+      }
+      this.resizeObserver_ = new ResizeObserver((entries) => {
+        positionPopupAtPoint(x, y, menu);
+      });
+      this.resizeObserver_.observe(menu);
       this.showingEvents_.add(doc, 'keydown', this, true);
       this.showingEvents_.add(doc, 'mousedown', this, true);
       this.showingEvents_.add(doc, 'touchstart', this, true);
@@ -72,7 +111,6 @@ import {positionPopupAtPoint} from './position_util.js';
       this.showingEvents_.add(win, 'blur', this);
       this.showingEvents_.add(menu, 'contextmenu', this);
       this.showingEvents_.add(menu, 'activate', this);
-      this.positionMenu_(e, menu);
 
       const ev = new Event('show');
       ev.element = menu.contextElement;
@@ -100,6 +138,10 @@ import {positionPopupAtPoint} from './position_util.js';
       const originalContextElement = menu.contextElement;
       menu.contextElement = null;
       this.showingEvents_.removeAll();
+      if (this.resizeObserver_) {
+        this.resizeObserver_.unobserve(menu);
+        this.resizeObserver_ = null;
+      }
       menu.selectedIndex = -1;
       this.menu_ = null;
 
@@ -112,35 +154,6 @@ import {positionPopupAtPoint} from './position_util.js';
       ev.element = originalContextElement;
       ev.menu = menu;
       this.dispatchEvent(ev);
-    }
-
-    /**
-     * Positions the menu
-     * @param {!Event} e The event object triggering the showing.
-     * @param {!Menu} menu The menu to position.
-     * @private
-     */
-    positionMenu_(e, menu) {
-      // TODO(arv): Handle scrolled documents when needed.
-
-      const element = e.currentTarget;
-      let x;
-      let y;
-      // When the user presses the context menu key (on the keyboard) we need
-      // to detect this.
-      if (this.keyIsDown_) {
-        const rect = element.getRectForContextMenu ?
-            element.getRectForContextMenu() :
-            element.getBoundingClientRect();
-        const offset = Math.min(rect.width, rect.height) / 2;
-        x = rect.left + offset;
-        y = rect.top + offset;
-      } else {
-        x = e.clientX;
-        y = e.clientY;
-      }
-
-      positionPopupAtPoint(x, y, menu);
     }
 
     /**

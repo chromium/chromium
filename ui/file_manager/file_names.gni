@@ -155,7 +155,6 @@ static_js_files = [
   "file_manager/foreground/js/task_history.js",
   "file_manager/foreground/js/thumbnail_loader.js",
   "file_manager/foreground/js/toolbar_controller.js",
-  "file_manager/foreground/js/webui_command_extender.js",
 
   # Metadata:
   "file_manager/foreground/js/metadata/byte_reader.js",

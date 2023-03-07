@@ -82,7 +82,6 @@ group("js_modules") {
     ":task_history",
     ":thumbnail_loader",
     ":toolbar_controller",
-    ":webui_command_extender",
   ]
 }
 
@@ -157,7 +156,6 @@ js_type_check("closure_compile_jsmodules") {
     ":task_history",
     ":thumbnail_loader",
     ":toolbar_controller",
-    ":webui_command_extender",
     "//ui/file_manager:js_from_ts",
   ]
 }
@@ -657,7 +655,6 @@ js_library("file_manager_commands") {
     ":file_selection",
     ":holding_space_util",
     ":path_component",
-    ":webui_command_extender",
     "ui:command",
     "ui:context_menu_handler",
     "ui:directory_tree",
@@ -1205,13 +1202,6 @@ js_library("toolbar_controller") {
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:volume_manager",
-  ]
-}
-
-js_library("webui_command_extender") {
-  deps = [
-    "ui:command",
-    "//ash/webui/common/resources:cr_deprecated",
   ]
 }
 

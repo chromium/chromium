@@ -64,6 +64,17 @@ import {MenuItem} from './menu_item.js';
     },
 
     /**
+     * Sets 'hidden' property of a Command instance which dispatches
+     * 'hiddenChange' event automatically, so that associated MenuItem can
+     * handle the event.
+     *
+     * @param {boolean} value New value of hidden property.
+     */
+    setHidden(value) {
+      this.hidden = value;
+    },
+
+    /**
      * Call this when there have been changes that might change whether the
      * command can be executed or not.
      * @param {Node=} opt_node Node for which to actuate command state.
