@@ -5444,7 +5444,6 @@ static_library("ui") {
       "//components/power_bookmarks/common",
       "//components/power_bookmarks/core:core",
       "//components/power_bookmarks/storage",
-      "//components/qr_code_generator",
       "//components/reading_list/features:flags",
       "//components/services/app_service/public/cpp:intents",
       "//components/services/screen_ai/buildflags",

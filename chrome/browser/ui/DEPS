@@ -14,7 +14,6 @@ include_rules = [
   "+components/omnibox",
   "+components/page_load_metrics/browser",
   "+components/power_bookmarks/core",
-  "+components/qr_code_generator",
   "+components/safety_check",
   "+components/saved_tab_groups",
   "+components/segmentation_platform/content",
