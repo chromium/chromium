@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.webengine.shell;
+package org.chromium.webengine.shell.topbar;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -49,8 +49,8 @@ public class TopBarImpl extends TopBar {
         mProgressBar = progressBar;
 
         mReloadButton = reloadButton;
-        mRefreshDrawable = mContext.getDrawable(R.drawable.ic_refresh);
-        mStopDrawable = mContext.getDrawable(R.drawable.ic_stop);
+        mRefreshDrawable = mContext.getDrawable(org.chromium.webengine.shell.R.drawable.ic_refresh);
+        mStopDrawable = mContext.getDrawable(org.chromium.webengine.shell.R.drawable.ic_stop);
 
         mTabCountButton = tabCountButton;
         mTabCountButton.setText(String.valueOf(getTabsCount()));

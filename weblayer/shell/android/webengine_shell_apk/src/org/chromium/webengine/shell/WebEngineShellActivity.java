@@ -37,6 +37,8 @@ import org.chromium.webengine.WebFragment;
 import org.chromium.webengine.WebMessageCallback;
 import org.chromium.webengine.WebMessageReplyProxy;
 import org.chromium.webengine.WebSandbox;
+import org.chromium.webengine.shell.topbar.TopBarImpl;
+import org.chromium.webengine.shell.topbar.TopBarObservers;
 
 import java.util.Arrays;
 

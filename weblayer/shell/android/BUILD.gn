@@ -148,12 +148,12 @@ android_library("webengine_shell_java") {
   sources = [
     "webengine_shell_apk/src/org/chromium/webengine/shell/DefaultObservers.java",
     "webengine_shell_apk/src/org/chromium/webengine/shell/InstrumentationActivity.java",
-    "webengine_shell_apk/src/org/chromium/webengine/shell/TopBar.java",
-    "webengine_shell_apk/src/org/chromium/webengine/shell/TopBarImpl.java",
-    "webengine_shell_apk/src/org/chromium/webengine/shell/TopBarObservers.java",
     "webengine_shell_apk/src/org/chromium/webengine/shell/WebEngineNavigationTestActivity.java",
     "webengine_shell_apk/src/org/chromium/webengine/shell/WebEngineShellActivity.java",
     "webengine_shell_apk/src/org/chromium/webengine/shell/WebEngineStateTestActivity.java",
+    "webengine_shell_apk/src/org/chromium/webengine/shell/topbar/TopBar.java",
+    "webengine_shell_apk/src/org/chromium/webengine/shell/topbar/TopBarImpl.java",
+    "webengine_shell_apk/src/org/chromium/webengine/shell/topbar/TopBarObservers.java",
   ]
 
   deps = [
