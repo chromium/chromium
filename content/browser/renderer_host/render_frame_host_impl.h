@@ -46,6 +46,7 @@
 #include "content/browser/buckets/bucket_context.h"
 #include "content/browser/can_commit_status.h"
 #include "content/browser/network/cross_origin_opener_policy_reporter.h"
+#include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/browser/renderer_host/back_forward_cache_metrics.h"
 #include "content/browser/renderer_host/browsing_context_state.h"
@@ -242,7 +243,6 @@ namespace internal {
 class DocumentServiceBase;
 }  // namespace internal
 
-class AgentSchedulingGroupHost;
 class BrowsingContextState;
 class CodeCacheHostImpl;
 class CrossOriginEmbedderPolicyReporter;
@@ -375,7 +375,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   ~RenderFrameHostImpl() override;
 
   // RenderFrameHost
-  int GetRoutingID() const override;
+  int GetRoutingID() const final;
   const blink::LocalFrameToken& GetFrameToken() const override;
   const base::UnguessableToken& GetReportingSource() override;
 
@@ -1501,7 +1501,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Returns the AgentSchedulingGroupHost associated with this
   // RenderFrameHostImpl.
-  virtual AgentSchedulingGroupHost& GetAgentSchedulingGroup();
+  AgentSchedulingGroupHost& GetAgentSchedulingGroup();
 
   // Returns associated remote for the blink::mojom::LocalMainFrame Mojo
   // interface. May be overridden by subclasses, e.g. tests which wish to
@@ -3866,6 +3866,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   const raw_ptr<RenderFrameHostDelegate> delegate_;
 
+  const int routing_id_;
+
   // The SiteInstance associated with this RenderFrameHost. All content drawn
   // in this RenderFrameHost is part of this SiteInstance. Cannot change over
   // time.
@@ -3885,6 +3887,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // to access it or its associated `AgentSchedulingGroupHost` (see
   // crbug.com/1297030).
   const base::SafeRef<AgentSchedulingGroupHost> agent_scheduling_group_;
+
+  const AgentSchedulingGroupHost::RouteOwner route_{
+      this, *agent_scheduling_group_, routing_id_};
 
   // Reference to the whole frame tree that this RenderFrameHost belongs to.
   // Allows this RenderFrameHost to add and remove nodes in response to
@@ -4059,8 +4064,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // TODO(kenrb): Later this will also be used on the top-level frame, when
   // RenderFrameHost owns its RenderViewHost.
   std::unique_ptr<RenderWidgetHostImpl> owned_render_widget_host_;
-
-  const int routing_id_;
 
   // Boolean indicating whether this RenderFrameHost is being actively used or
   // is waiting for mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame and
