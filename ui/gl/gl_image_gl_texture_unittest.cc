@@ -59,8 +59,8 @@ class GLImageGLTextureTestDelegate : public GLImageTestDelegateBase {
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size.width(), size.height(), 0,
                  GL_RGBA, GL_UNSIGNED_BYTE, pixels.get());
 
-    auto image =
-        media::GLImageGLTexture::CreateFromTexture(size, format, texture_id);
+    auto image = media::GLImageGLTexture::CreateFromTextureForTesting(
+        size, format, texture_id);
     EXPECT_TRUE(image);
 
     glDeleteTextures(1, &texture_id);
@@ -94,7 +94,8 @@ TYPED_TEST_P_WITH_EXPANSION(GLImageGLTextureToDmabufTest,
       this->delegate_.CreateSolidColorImage(image_size, image_color);
   ASSERT_TRUE(image);
 
-  gfx::NativePixmapHandle native_pixmap_handle = image->ExportHandle();
+  gfx::NativePixmapHandle native_pixmap_handle =
+      image->ExportHandleForTesting();
 
   for (auto& plane : native_pixmap_handle.planes) {
     EXPECT_TRUE(plane.fd.is_valid());

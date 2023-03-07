@@ -14,8 +14,15 @@
 
 namespace media {
 
+class VaapiPictureNativePixmapEgl;
+
+// GLImage subclass that is used by VaapiPictureNativePixmapEgl.
+// NOTE: No new usage of this class should be introduced, as it is in the
+// process of being eliminated.
 class GLImageGLTexture : public gl::GLImage {
- public:
+ private:
+  friend VaapiPictureNativePixmapEgl;
+
   // Create an EGLImage from a given GL texture.
   static scoped_refptr<GLImageGLTexture> CreateFromTexture(
       const gfx::Size& size,
@@ -25,16 +32,25 @@ class GLImageGLTexture : public gl::GLImage {
   // Export the wrapped EGLImage to dmabuf fds.
   gfx::NativePixmapHandle ExportHandle();
 
+ public:
+  // Allow usage from test contexts that are difficult to friend.
+  static scoped_refptr<GLImageGLTexture> CreateFromTextureForTesting(
+      const gfx::Size& size,
+      gfx::BufferFormat format,
+      uint32_t texture_id) {
+    return CreateFromTexture(size, format, texture_id);
+  }
+  gfx::NativePixmapHandle ExportHandleForTesting() { return ExportHandle(); }
+
+ private:
   // Overridden from GLImage:
   gfx::Size GetSize() override;
 
   // Binds image to texture currently bound to |target|.
   void BindTexImage(unsigned target);
 
- protected:
   ~GLImageGLTexture() override;
 
- private:
   GLImageGLTexture(const gfx::Size& size, gfx::BufferFormat format);
   // Create an EGLImage from a given GL texture. This EGLImage can be converted
   // to an external resource to be shared with other client APIs.
