@@ -630,7 +630,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
       if (ShouldReplaceTargetBuffer())
         resource_ = NewOrRecycledResource();
       resource()->CopyRenderingResultsToGpuMemoryBuffer(
-          surface_->makeImageSnapshot());
+          GetSkSurface()->makeImageSnapshot());
     }
 
     current_resource_has_write_access_ = false;
