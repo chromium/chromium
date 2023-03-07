@@ -272,7 +272,6 @@ TEST_F(BackgroundFetchRegistrationNotifierTest, NotifyWithoutObservers) {
 TEST_F(BackgroundFetchRegistrationNotifierTest, NotifyRecordsUnavailable) {
   auto observer = std::make_unique<TestRegistrationObserver>();
 
-  notifier_->NoteTotalRequests(kPrimaryUniqueId, /* num_total_requests= */ 1);
   notifier_->AddObserver(kPrimaryUniqueId, observer->GetRemote());
   ASSERT_TRUE(observer->records_available());
 
@@ -284,7 +283,6 @@ TEST_F(BackgroundFetchRegistrationNotifierTest, NotifyRequestCompleted) {
   auto observer = std::make_unique<TestRegistrationObserver>();
 
   notifier_->AddObserver(kPrimaryUniqueId, observer->GetRemote());
-  notifier_->NoteTotalRequests(kPrimaryUniqueId, /* num_total_requests= */ 1);
 
   // No observed URLs. Observers shouldn't have been notified.
   ASSERT_EQ(observer->completed_requests().size(), 0u);

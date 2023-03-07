@@ -128,18 +128,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="BackgroundFetch.PercentOfRequestsForWhichUpdatesAreSent"
-    units="%" expires_after="2021-11-30">
-  <owner>nator@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Records the percent of requests for which updates are received in the
-    renderer process from the browser process. Called when the completion event
-    for a background fetch has finished processing.
-  </summary>
-</histogram>
-
 <histogram name="BackgroundFetch.Storage{BackgroundFetchDatabaseStorageErrors}"
     enum="BackgroundFetchStorageError" expires_after="M99">
   <owner>rayankans@chromium.org</owner>

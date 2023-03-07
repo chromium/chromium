@@ -7,7 +7,6 @@
 #include "base/command_line.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_macros.h"
 #include "content/common/background_fetch/background_fetch_types.h"
 #include "content/public/common/content_switches.h"
 
@@ -47,18 +46,6 @@ void BackgroundFetchRegistrationNotifier::Notify(
 
 void BackgroundFetchRegistrationNotifier::NotifyRecordsUnavailable(
     const std::string& unique_id) {
-  auto iter = num_requests_and_updates_.find(unique_id);
-  if (iter == num_requests_and_updates_.end())
-    return;
-
-  // Record the percentage of requests we've sent updates for.
-  int num_updates_sent = iter->second.first;
-  int num_total_requests = iter->second.second;
-  UMA_HISTOGRAM_PERCENTAGE(
-      "BackgroundFetch.PercentOfRequestsForWhichUpdatesAreSent",
-      static_cast<int>(num_updates_sent * 100.0 / num_total_requests));
-  num_requests_and_updates_.erase(iter);
-
   for (auto it = observers_.begin(); it != observers_.end();) {
     if (it->first != unique_id) {
       it++;
@@ -102,11 +89,6 @@ void BackgroundFetchRegistrationNotifier::NotifyRequestCompleted(
         BackgroundFetchSettledFetch::CloneRequest(request),
         BackgroundFetchSettledFetch::CloneResponse(response));
   }
-
-  auto iter = num_requests_and_updates_.find(unique_id);
-  if (iter == num_requests_and_updates_.end())
-    return;
-  iter->second.first++;
 }
 
 void BackgroundFetchRegistrationNotifier::OnConnectionError(
@@ -117,14 +99,6 @@ void BackgroundFetchRegistrationNotifier::OnConnectionError(
                 [observer](const auto& unique_id_observer_ptr_pair) {
                   return unique_id_observer_ptr_pair.second.get() == observer;
                 });
-}
-
-void BackgroundFetchRegistrationNotifier::NoteTotalRequests(
-    const std::string& unique_id,
-    int num_total_requests) {
-  DCHECK(!num_requests_and_updates_.count(unique_id));
-  num_requests_and_updates_[unique_id] = {/* total_updates_sent= */ 0,
-                                          num_total_requests};
 }
 
 }  // namespace content

@@ -60,8 +60,6 @@ class CONTENT_EXPORT BackgroundFetchRegistrationNotifier {
   // |observers_| start getting updates about any requests with this URL.
   void AddObservedUrl(const std::string& unique_id, const GURL& url);
 
-  void NoteTotalRequests(const std::string& unique_id, int num_total_requests);
-
   base::WeakPtr<BackgroundFetchRegistrationNotifier> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
@@ -80,11 +78,6 @@ class CONTENT_EXPORT BackgroundFetchRegistrationNotifier {
 
   // URLs the observers care about, indexed by the unique_id of the observer.
   std::map<std::string, std::set<GURL>> observed_urls_;
-
-  // For the observer identified by |unique_id|, this stores the number of its
-  // requests, and the number for which updates are sent across the mojo pipe.
-  // This is used for UMA recording.
-  std::map<std::string, std::pair<int, int>> num_requests_and_updates_;
 
   base::WeakPtrFactory<BackgroundFetchRegistrationNotifier> weak_factory_{this};
 };
