@@ -458,6 +458,18 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Settings.TimeUntilInteractive" units="ms"
+    expires_after="2024-03-06">
+  <owner>wesokuhara@google.com</owner>
+  <owner>xiaohuic@chromium.org</owner>
+  <owner>cros-settings@google.com</owner>
+  <summary>
+    The time until the ChromeOS Settings WebUI is loaded, rendered, and
+    interactive for users (as in they can change a setting). Automatically
+    logged each time the app is opened (if not closed before interactive).
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Settings.UserActionOnSearchResultsShown"
     enum="OsSettingSearchBoxUserAction" expires_after="2023-08-20">
   <owner>xiaohuic@chromium.org</owner>
