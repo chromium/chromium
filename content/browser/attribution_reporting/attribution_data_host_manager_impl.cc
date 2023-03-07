@@ -13,6 +13,7 @@
 #include "base/check_op.h"
 #include "base/containers/flat_tree.h"
 #include "base/functional/bind.h"
+#include "base/functional/function_ref.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
@@ -42,7 +43,9 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/functional/overloaded.h"
 #include "content/browser/attribution_reporting/attribution_os_level_manager.h"
+#include "url/gurl.h"
 #endif
 
 namespace content {
@@ -175,11 +178,18 @@ class AttributionDataHostManagerImpl::ReceiverContext {
   GlobalRenderFrameHostId render_frame_id_;
 };
 
+#if BUILDFLAG(IS_ANDROID)
+struct AttributionDataHostManagerImpl::OsTrigger {
+  GURL registration_url;
+  url::Origin top_level_origin;
+};
+#endif
+
 struct AttributionDataHostManagerImpl::DelayedTrigger {
   // Logically const.
   base::TimeTicks delay_until;
 
-  AttributionTrigger trigger;
+  TriggerPayload trigger;
 
   GlobalRenderFrameHostId render_frame_id;
 
@@ -513,13 +523,8 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
       context->render_frame_id());
 }
 
-void AttributionDataHostManagerImpl::TriggerDataAvailable(
-    attribution_reporting::SuitableOrigin reporting_origin,
-    attribution_reporting::TriggerRegistration data,
-    absl::optional<network::TriggerAttestation> attestation) {
-  // This is validated by the Mojo typemapping.
-  DCHECK(reporting_origin.IsValid());
-
+void AttributionDataHostManagerImpl::MaybeBufferTrigger(
+    base::FunctionRef<TriggerPayload(const ReceiverContext&)> make_trigger) {
   ReceiverContext& context = receivers_.current_context();
 
   switch (context.registration_type()) {
@@ -535,19 +540,14 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
   }
 
   context.IncrementNumDataRegistered();
-
-  AttributionTrigger trigger(std::move(reporting_origin), std::move(data),
-                             /*destination_origin=*/context.context_origin(),
-                             std::move(attestation),
-                             context.is_within_fenced_frame());
+  auto trigger = make_trigger(context);
 
   // Handle the trigger immediately if we're not waiting for any sources to be
   // registered.
   if (data_hosts_in_source_mode_ == 0) {
     DCHECK(delayed_triggers_.empty());
     RecordTriggerQueueEvent(TriggerQueueEvent::kSkippedQueue);
-    attribution_manager_->HandleTrigger(std::move(trigger),
-                                        context.render_frame_id());
+    HandleTrigger(std::move(trigger), context.render_frame_id());
     return;
   }
 
@@ -579,7 +579,23 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
   }
 }
 
+void AttributionDataHostManagerImpl::TriggerDataAvailable(
+    attribution_reporting::SuitableOrigin reporting_origin,
+    attribution_reporting::TriggerRegistration data,
+    absl::optional<network::TriggerAttestation> attestation) {
+  // This is validated by the Mojo typemapping.
+  DCHECK(reporting_origin.IsValid());
+
+  MaybeBufferTrigger([&](const ReceiverContext& context) {
+    return AttributionTrigger(std::move(reporting_origin), std::move(data),
+                              /*destination_origin=*/context.context_origin(),
+                              std::move(attestation),
+                              context.is_within_fenced_frame());
+  });
+}
+
 #if BUILDFLAG(IS_ANDROID)
+
 void AttributionDataHostManagerImpl::OsSourceDataAvailable(
     const GURL& registration_url) {
   const ReceiverContext* context = GetReceiverContextForSource();
@@ -591,12 +607,44 @@ void AttributionDataHostManagerImpl::OsSourceDataAvailable(
       registration_url, context->context_origin(), context->input_event(),
       context->render_frame_id());
 }
+
+void AttributionDataHostManagerImpl::OsTriggerDataAvailable(
+    const GURL& registration_url) {
+  MaybeBufferTrigger([&](const ReceiverContext& context) {
+    return OsTrigger{
+        .registration_url = registration_url,
+        .top_level_origin = context.context_origin(),
+    };
+  });
+}
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 void AttributionDataHostManagerImpl::SetTriggerTimer(base::TimeDelta delay) {
   DCHECK(!delayed_triggers_.empty());
   trigger_timer_.Start(FROM_HERE, delay, this,
                        &AttributionDataHostManagerImpl::ProcessDelayedTrigger);
+}
+
+void AttributionDataHostManagerImpl::HandleTrigger(
+    TriggerPayload trigger,
+    GlobalRenderFrameHostId render_frame_id) {
+#if BUILDFLAG(IS_ANDROID)
+  absl::visit(base::Overloaded{
+                  [&](AttributionTrigger trigger) {
+                    attribution_manager_->HandleTrigger(std::move(trigger),
+                                                        render_frame_id);
+                  },
+                  [&](const OsTrigger& trigger) {
+                    attribution_manager_->HandleOsTrigger(
+                        trigger.registration_url, trigger.top_level_origin,
+                        render_frame_id);
+                  },
+              },
+              std::move(trigger));
+#else
+  attribution_manager_->HandleTrigger(std::move(trigger), render_frame_id);
+#endif
 }
 
 void AttributionDataHostManagerImpl::ProcessDelayedTrigger() {
@@ -606,8 +654,8 @@ void AttributionDataHostManagerImpl::ProcessDelayedTrigger() {
   delayed_triggers_.pop_front();
   DCHECK_LE(delayed_trigger.delay_until, base::TimeTicks::Now());
 
-  attribution_manager_->HandleTrigger(std::move(delayed_trigger.trigger),
-                                      delayed_trigger.render_frame_id);
+  HandleTrigger(std::move(delayed_trigger.trigger),
+                delayed_trigger.render_frame_id);
   RecordTriggerQueueEvent(TriggerQueueEvent::kProcessedWithDelay);
   delayed_trigger.RecordDelay();
 
@@ -676,8 +724,8 @@ void AttributionDataHostManagerImpl::OnSourceEligibleDataHostFinished(
                 "synchronously to avoid blocking for too long.");
 
   for (auto& delayed_trigger : delayed_triggers_) {
-    attribution_manager_->HandleTrigger(std::move(delayed_trigger.trigger),
-                                        delayed_trigger.render_frame_id);
+    HandleTrigger(std::move(delayed_trigger.trigger),
+                  delayed_trigger.render_frame_id);
     RecordTriggerQueueEvent(TriggerQueueEvent::kFlushed);
     delayed_trigger.RecordDelay();
   }

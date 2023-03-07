@@ -12,6 +12,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
@@ -28,6 +29,10 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "third_party/abseil-cpp/absl/types/variant.h"
+#endif
+
 namespace attribution_reporting {
 class SuitableOrigin;
 
@@ -43,7 +48,10 @@ class TimeTicks;
 namespace content {
 
 class AttributionManager;
+class AttributionTrigger;
 class StorableSource;
+
+struct GlobalRenderFrameHostId;
 
 // Manages a receiver set of all ongoing `AttributionDataHost`s and forwards
 // events to the `AttributionManager` that owns `this`. Because attributionsrc
@@ -121,6 +129,13 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
   // associated info to process them.
   struct BeaconSourceRegistrations;
 
+#if BUILDFLAG(IS_ANDROID)
+  struct OsTrigger;
+  using TriggerPayload = absl::variant<AttributionTrigger, OsTrigger>;
+#else
+  using TriggerPayload = AttributionTrigger;
+#endif
+
   // blink::mojom::AttributionDataHost:
   void SourceDataAvailable(
       attribution_reporting::SuitableOrigin reporting_origin,
@@ -131,6 +146,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
       absl::optional<network::TriggerAttestation> attestation) override;
 #if BUILDFLAG(IS_ANDROID)
   void OsSourceDataAvailable(const GURL& registration_url) override;
+  void OsTriggerDataAvailable(const GURL& registration_url) override;
 #endif
 
   const ReceiverContext* GetReceiverContextForSource();
@@ -159,6 +175,9 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
 
   void MaybeOnBeaconRegistrationsFinished(BeaconId beacon_id);
 
+  void HandleTrigger(TriggerPayload, GlobalRenderFrameHostId);
+  void MaybeBufferTrigger(
+      base::FunctionRef<TriggerPayload(const ReceiverContext&)>);
   void SetTriggerTimer(base::TimeDelta delay);
   void ProcessDelayedTrigger();
 

@@ -1163,6 +1163,69 @@ TEST_F(AttributionManagerImplTest, HandleOsSource) {
                                        AttributionInputEvent(), kFrameId);
 }
 
+TEST_F(AttributionManagerImplTest, HandleOsTrigger) {
+  const GURL kRegistrationUrl1("https://r1.test/x");
+  const GURL kRegistrationUrl2("https://r2.test/y");
+  const GURL kRegistrationUrl3;  // opaque
+  const GURL kRegistrationUrl4("https://r4.test/y");
+
+  const auto kTopLevelOrigin1 = url::Origin::Create(GURL("https://o1.test"));
+  const auto kTopLevelOrigin2 = url::Origin::Create(GURL("https://o2.test"));
+  const auto kTopLevelOrigin3 = url::Origin::Create(GURL("https://o3.test"));
+  const auto kTopLevelOrigin4 = url::Origin::Create(GURL("https://o4.test"));
+
+  auto os_level_manager = std::make_unique<MockAttributionOsLevelManager>();
+  auto* os_level_manager_ptr = os_level_manager.get();
+  OverrideOsLevelManager(std::move(os_level_manager));
+
+  cookie_checker_->AddOriginWithDebugCookieSet(
+      url::Origin::Create(kRegistrationUrl1));
+
+  {
+    InSequence seq;
+
+    EXPECT_CALL(*os_level_manager_ptr,
+                RegisterAttributionTrigger(kRegistrationUrl1, kTopLevelOrigin1,
+                                           /*is_debug_key_allowed=*/true));
+
+    EXPECT_CALL(*os_level_manager_ptr,
+                RegisterAttributionTrigger(kRegistrationUrl2, kTopLevelOrigin2,
+                                           /*is_debug_key_allowed=*/false));
+  }
+
+  // Dropped due to the URL being opaque.
+  EXPECT_CALL(
+      *os_level_manager_ptr,
+      RegisterAttributionTrigger(kRegistrationUrl3, kTopLevelOrigin3, _))
+      .Times(0);
+
+  // Prohibited by policy below.
+  EXPECT_CALL(
+      *os_level_manager_ptr,
+      RegisterAttributionTrigger(kRegistrationUrl4, kTopLevelOrigin4, _))
+      .Times(0);
+
+  attribution_manager_->HandleOsTrigger(kRegistrationUrl1, kTopLevelOrigin1,
+                                        kFrameId);
+  attribution_manager_->HandleOsTrigger(kRegistrationUrl2, kTopLevelOrigin2,
+                                        kFrameId);
+  attribution_manager_->HandleOsTrigger(kRegistrationUrl3, kTopLevelOrigin3,
+                                        kFrameId);
+
+  MockAttributionReportingContentBrowserClient browser_client;
+  EXPECT_CALL(
+      browser_client,
+      IsAttributionReportingOperationAllowed(
+          _, ContentBrowserClient::AttributionReportingOperation::kTrigger, _,
+          IsNull(), Pointee(kTopLevelOrigin4),
+          Pointee(url::Origin::Create(kRegistrationUrl4))))
+      .WillOnce(Return(false));
+  ScopedContentBrowserClientSetting setting(&browser_client);
+
+  attribution_manager_->HandleOsTrigger(kRegistrationUrl4, kTopLevelOrigin4,
+                                        kFrameId);
+}
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(AttributionManagerImplTest, ConversionsSentFromUI_ReportedImmediately) {

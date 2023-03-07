@@ -125,6 +125,7 @@ class MockDataHost : public mojom::blink::AttributionDataHost {
 
 #if BUILDFLAG(IS_ANDROID)
   void OsSourceDataAvailable(const KURL& registration_url) override {}
+  void OsTriggerDataAvailable(const KURL& registration_url) override {}
 #endif
 
   Vector<attribution_reporting::SourceRegistration> source_data_;

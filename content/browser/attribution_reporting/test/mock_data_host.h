@@ -71,6 +71,7 @@ class MockDataHost : public blink::mojom::AttributionDataHost {
       absl::optional<network::TriggerAttestation>) override;
 #if BUILDFLAG(IS_ANDROID)
   void OsSourceDataAvailable(const GURL& registration_url) override;
+  void OsTriggerDataAvailable(const GURL& registration_url) override;
 #endif
 
   size_t min_source_data_count_ = 0;

@@ -33,6 +33,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
+class GURL;
+
 namespace attribution_reporting {
 class SuitableOrigin;
 }  // namespace attribution_reporting
@@ -46,6 +48,10 @@ class UpdateableSequencedTaskRunner;
 namespace storage {
 class SpecialStoragePolicy;
 }  // namespace storage
+
+namespace url {
+class Origin;
+}  // namespace url
 
 namespace content {
 
@@ -65,6 +71,7 @@ struct SendResult;
 
 #if BUILDFLAG(IS_ANDROID)
 class AttributionOsLevelManager;
+struct AttributionInputEvent;
 #endif
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAttributionVerboseDebugReporting);
@@ -159,10 +166,15 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   attribution_reporting::mojom::OsSupport GetOsSupport() override;
 
 #if BUILDFLAG(IS_ANDROID)
+
   void HandleOsSource(const GURL& registration_url,
                       const url::Origin& top_level_origin,
                       AttributionInputEvent,
                       GlobalRenderFrameHostId render_frame_id) override;
+
+  void HandleOsTrigger(const GURL& registration_url,
+                       const url::Origin& top_level_origin,
+                       GlobalRenderFrameHostId render_frame_id) override;
 
   AttributionOsLevelManager* GetOsLevelManager() {
     return attribution_os_level_manager_.get();
@@ -256,6 +268,10 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
 #if BUILDFLAG(IS_ANDROID)
   void OverrideOsLevelManagerForTesting(
       std::unique_ptr<AttributionOsLevelManager>);
+  void HandleOsRegistration(const GURL& registration_url,
+                            const url::Origin& top_level_origin,
+                            absl::optional<AttributionInputEvent>,
+                            GlobalRenderFrameHostId);
   void ProcessNextOsEvent();
 #endif  // BUILDFLAG(IS_ANDROID)
 

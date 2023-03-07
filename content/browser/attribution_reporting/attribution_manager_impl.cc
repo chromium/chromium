@@ -1151,13 +1151,32 @@ void AttributionManagerImpl::OverrideOsLevelManagerForTesting(
 struct AttributionManagerImpl::OsRegistration {
   GURL registration_url;
   url::Origin top_level_origin;
-  AttributionInputEvent input_event;
+  // If `absl::nullopt`, represents an OS trigger. Otherwise, represents an OS
+  // source.
+  absl::optional<AttributionInputEvent> input_event;
 };
 
 void AttributionManagerImpl::HandleOsSource(
     const GURL& registration_url,
     const url::Origin& top_level_origin,
     AttributionInputEvent input_event,
+    GlobalRenderFrameHostId render_frame_id) {
+  HandleOsRegistration(registration_url, top_level_origin,
+                       std::move(input_event), render_frame_id);
+}
+
+void AttributionManagerImpl::HandleOsTrigger(
+    const GURL& registration_url,
+    const url::Origin& top_level_origin,
+    GlobalRenderFrameHostId render_frame_id) {
+  HandleOsRegistration(registration_url, top_level_origin,
+                       /*input_event=*/absl::nullopt, render_frame_id);
+}
+
+void AttributionManagerImpl::HandleOsRegistration(
+    const GURL& registration_url,
+    const url::Origin& top_level_origin,
+    absl::optional<AttributionInputEvent> input_event,
     GlobalRenderFrameHostId render_frame_id) {
   if (!attribution_os_level_manager_) {
     return;
@@ -1168,15 +1187,21 @@ void AttributionManagerImpl::HandleOsSource(
     return;
   }
 
+  auto operation = ContentBrowserClient::AttributionReportingOperation::kSource;
+  const url::Origin* source_origin = &top_level_origin;
+  const url::Origin* destination_origin = nullptr;
+  if (!input_event.has_value()) {
+    operation = ContentBrowserClient::AttributionReportingOperation::kTrigger;
+    source_origin = nullptr;
+    destination_origin = &top_level_origin;
+  }
+
   // TODO(https://crbug.com/1420704): Support separate behavior on webview for
   // allowing these.
-  if (!IsOperationAllowed(
-          storage_partition_.get(),
-          ContentBrowserClient::AttributionReportingOperation::kSource,
-          RenderFrameHost::FromID(render_frame_id),
-          /*source_origin=*/&top_level_origin,
-          /*destination_origin=*/nullptr,
-          /*reporting_origin=*/&registration_origin)) {
+  if (!IsOperationAllowed(storage_partition_.get(), operation,
+                          RenderFrameHost::FromID(render_frame_id),
+                          source_origin, destination_origin,
+                          /*reporting_origin=*/&registration_origin)) {
     return;
   }
 
@@ -1216,11 +1241,18 @@ void AttributionManagerImpl::ProcessNextOsEvent() {
 
             DCHECK(!manager->pending_os_events_.empty());
 
-            const auto& source = manager->pending_os_events_.front();
+            const auto& event = manager->pending_os_events_.front();
 
-            manager->attribution_os_level_manager_->RegisterAttributionSource(
-                source.registration_url, source.top_level_origin,
-                is_debug_key_allowed, source.input_event);
+            if (event.input_event.has_value()) {
+              manager->attribution_os_level_manager_->RegisterAttributionSource(
+                  event.registration_url, event.top_level_origin,
+                  is_debug_key_allowed, *event.input_event);
+            } else {
+              manager->attribution_os_level_manager_
+                  ->RegisterAttributionTrigger(event.registration_url,
+                                               event.top_level_origin,
+                                               is_debug_key_allowed);
+            }
 
             manager->pending_os_events_.pop_front();
             if (!manager->pending_os_events_.empty()) {

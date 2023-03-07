@@ -1908,6 +1908,7 @@ TEST_F(AttributionDataHostManagerImplTest, EventBeaconSource_DataReceived) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
+
 TEST_F(AttributionDataHostManagerImplTest, OsSourceAvailable) {
   const auto kTopLevelOrigin = *SuitableOrigin::Deserialize("https://a.test");
   const GURL kRegistrationUrl("https://b.test/x");
@@ -1924,6 +1925,24 @@ TEST_F(AttributionDataHostManagerImplTest, OsSourceAvailable) {
   data_host_remote->OsSourceDataAvailable(kRegistrationUrl);
   data_host_remote.FlushForTesting();
 }
+
+TEST_F(AttributionDataHostManagerImplTest, OsTriggerAvailable) {
+  const auto kTopLevelOrigin = *SuitableOrigin::Deserialize("https://a.test");
+  const GURL kRegistrationUrl("https://b.test/x");
+
+  EXPECT_CALL(mock_manager_,
+              HandleOsTrigger(kRegistrationUrl, *kTopLevelOrigin, kFrameId));
+
+  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  data_host_manager_.RegisterDataHost(
+      data_host_remote.BindNewPipeAndPassReceiver(), kTopLevelOrigin,
+      /*is_within_fenced_frame=*/false, RegistrationType::kSourceOrTrigger,
+      kFrameId);
+
+  data_host_remote->OsTriggerDataAvailable(kRegistrationUrl);
+  data_host_remote.FlushForTesting();
+}
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace

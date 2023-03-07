@@ -70,6 +70,7 @@ void MockDataHost::TriggerDataAvailable(
 
 #if BUILDFLAG(IS_ANDROID)
 void MockDataHost::OsSourceDataAvailable(const GURL& registration_url) {}
+void MockDataHost::OsTriggerDataAvailable(const GURL& registration_url) {}
 #endif
 
 std::unique_ptr<MockDataHost> GetRegisteredDataHost(
