@@ -408,6 +408,7 @@ void PaintArtifactCompositor::LayerizeGroup(
     // C. The next chunk belongs to some subgroup of the current group.
     const auto& chunk_effect = chunk_cursor->properties.Effect().Unalias();
     if (&chunk_effect == &current_group) {
+      recordreplay::Assert("[RUN-1470-1471] PaintArtifactCompositor::LayerizeGroup %d", chunk_cursor->id);
       pending_layers_.emplace_back(chunks, chunk_cursor);
       ++chunk_cursor;
       // force_draws_content doesn't apply to pending layers that require own
@@ -748,6 +749,8 @@ void PaintArtifactCompositor::Update(
     layer.SetEffectTreeIndex(effect_id);
     bool backface_hidden = transform.IsBackfaceHidden();
     layer.SetShouldCheckBackfaceVisibility(backface_hidden);
+
+    recordreplay::Assert("[RUN-1470-1471] %d", layer.subtree_property_changed());
 
     if (layer.subtree_property_changed())
       root_layer_->SetNeedsCommit();
