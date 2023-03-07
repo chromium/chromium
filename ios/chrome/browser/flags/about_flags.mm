@@ -84,14 +84,13 @@
 #import "ios/chrome/browser/ui/app_store_rating/features.h"
 #import "ios/chrome/browser/ui/autofill/features.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
-#import "ios/chrome/browser/ui/content_suggestions/field_trial_constants.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/download/features.h"
 #import "ios/chrome/browser/ui/first_run/trending_queries_field_trial.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_features.h"
 #import "ios/chrome/browser/ui/keyboard/features.h"
-#import "ios/chrome/browser/ui/ntp/field_trial_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_retention_field_trial_constants.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/open_in/features.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
@@ -500,12 +499,28 @@ const FeatureEntry::FeatureVariation kIOSNewPostRestoreExperienceVariations[] =
     {{"minimal", kIOSNewPostRestoreExperienceMinimal,
       std::size(kIOSNewPostRestoreExperienceMinimal), nullptr}};
 
-const FeatureEntry::FeatureParam kIOSPopularSitesExcludePopularApps[] = {
-    {ntp_tiles::kIOSPopularSitesExcludePopularAppsParam, "true"}};
-const FeatureEntry::FeatureVariation
-    kIOSPopularSitesImprovedSuggestionsVariations[] = {
-        {"(Exclude popular apps)", kIOSPopularSitesExcludePopularApps,
-         std::size(kIOSPopularSitesExcludePopularApps), nullptr}};
+const FeatureEntry::FeatureParam
+    kNewTabPageRetentionPopularSitesIncludePopularApps[] = {
+        {ntp_tiles::kNewTabPageRetentionParam, "1"}};
+const FeatureEntry::FeatureParam
+    kNewTabPageRetentionPopularSitesExcludePopularApps[] = {
+        {ntp_tiles::kNewTabPageRetentionParam, "2"}};
+const FeatureEntry::FeatureParam kNewTabPageRetentionTileAblationHideAll[] = {
+    {ntp_tiles::kNewTabPageRetentionParam, "4"}};
+const FeatureEntry::FeatureParam kNewTabPageRetentionTileAblationHideMVTOnly[] =
+    {{ntp_tiles::kNewTabPageRetentionParam, "5"}};
+const FeatureEntry::FeatureVariation kNewTabPageRetentionVariations[] = {
+    {"- Improved popular sites, Include popular apps",
+     kNewTabPageRetentionPopularSitesIncludePopularApps,
+     std::size(kNewTabPageRetentionPopularSitesIncludePopularApps), nullptr},
+    {"- Improved popular sites, Exclude popular apps",
+     kNewTabPageRetentionPopularSitesExcludePopularApps,
+     std::size(kNewTabPageRetentionPopularSitesExcludePopularApps), nullptr},
+    {"- Tile ablation, Hide all", kNewTabPageRetentionTileAblationHideAll,
+     std::size(kNewTabPageRetentionTileAblationHideAll), nullptr},
+    {"- Tile ablation, Hide MVT only",
+     kNewTabPageRetentionTileAblationHideMVTOnly,
+     std::size(kNewTabPageRetentionTileAblationHideMVTOnly), nullptr}};
 
 const FeatureEntry::FeatureParam kEnableExperienceKitMapsWithSrp[] = {
     {kExperienceKitMapsVariationName, kEnableExperienceKitMapsVariationSrp}};
@@ -550,12 +565,6 @@ const FeatureEntry::FeatureVariation kTabInactivityThresholdVariations[] = {
     {"Three weeks", kTabInactivityThresholdThreeWeeks,
      std::size(kTabInactivityThresholdThreeWeeks), nullptr},
 };
-
-const FeatureEntry::FeatureParam kTileAblationMVTOnly[] = {
-    {kTileAblationMVTOnlyParam, "true"}};
-const FeatureEntry::FeatureVariation kTileAblationVariations[] = {
-    {"Hide Only Most Visited", kTileAblationMVTOnly,
-     std::size(kTileAblationMVTOnly), nullptr}};
 
 const FeatureEntry::FeatureParam
     kCredentialProviderExtensionPromoOnPasswordSaved[] = {
@@ -879,11 +888,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kFeedHeaderSettings,
                                     kFeedHeaderSettingsVariations,
                                     "FeedHeaderSettings")},
-    {"enable-tile-ablation", flag_descriptions::kTileAblationName,
-     flag_descriptions::kTileAblationDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kTileAblation,
-                                    kTileAblationVariations,
-                                    "TileAblation")},
     {"shared-highlighting-amp",
      flag_descriptions::kIOSSharedHighlightingAmpName,
      flag_descriptions::kIOSSharedHighlightingAmpDescription, flags_ui::kOsIos,
@@ -1095,15 +1099,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(password_manager::features::
                             kIOSPasswordManagerCrossOriginIframeSupport)},
-    {"ios-popular-sites-improved-suggestions",
-     flag_descriptions::kIOSPopularSitesImprovedSuggestionsName,
-     flag_descriptions::kIOSPopularSitesImprovedSuggestionsDescription,
-     flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         ntp_tiles::kIOSPopularSitesImprovedSuggestions,
-         kIOSPopularSitesImprovedSuggestionsVariations,
-         field_trial_constants::
-             kIOSPopularSitesImprovedSuggestionsFieldTrialName)},
+    {"ios-new-tab-page-retention", flag_descriptions::kNewTabPageRetentionName,
+     flag_descriptions::kNewTabPageRetentionDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_tiles::kNewTabPageRetention,
+                                    kNewTabPageRetentionVariations,
+                                    ntp_tiles::kNewTabPageRetentionName)},
     {"omnibox-adaptive-suggestions-count",
      flag_descriptions::kAdaptiveSuggestionsCountName,
      flag_descriptions::kAdaptiveSuggestionsCountDescription, flags_ui::kOsIos,

@@ -267,8 +267,8 @@ TEST_F(PopularSitesTest,
        ShouldSucceedFetchingIOSExperimentalSitesWithPopularApps) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      ntp_tiles::kIOSPopularSitesImprovedSuggestions,
-      {{ntp_tiles::kIOSPopularSitesExcludePopularAppsParam, "false"}});
+      ntp_tiles::kNewTabPageRetention,
+      {{ntp_tiles::kNewTabPageRetentionParam, "1"}});
 
   SetCountryAndVersion("US", "5");
   RespondWithV5JSON(kIOSDefaultPopularSitesExperimentIncludeApps, {kWikipedia});
@@ -290,8 +290,8 @@ TEST_F(PopularSitesTest,
        ShouldSucceedFetchingIOSExperimentalSitesWithoutPopularApps) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      ntp_tiles::kIOSPopularSitesImprovedSuggestions,
-      {{ntp_tiles::kIOSPopularSitesExcludePopularAppsParam, "true"}});
+      ntp_tiles::kNewTabPageRetention,
+      {{ntp_tiles::kNewTabPageRetentionParam, "2"}});
 
   SetCountryAndVersion("US", "5");
   RespondWithV5JSON(kIOSDefaultPopularSitesExperimentExcludeApps, {kWikipedia});
