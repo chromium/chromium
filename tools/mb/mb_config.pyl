@@ -2730,7 +2730,7 @@
     'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck_reclient': [
       'gpu_tests', 'release_trybot_reclient', 'no_symbols', 'use_dummy_lastchange',
       'use_clang_coverage', 'partial_code_coverage_instrumentation', 'devtools_do_typecheck',
-      'enable_dangling_raw_ptr_checks'
+      'enable_dangling_raw_ptr_checks', 'enable_backup_ref_ptr_feature_flag',
     ],
 
     'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_do_typecheck_chrome_for_testing_reclient': [
@@ -4077,6 +4077,14 @@
     'dx12vk': {
       # TODO(https://crbug.com/1010584): Explicitly enable DirectX 12.
       'mixins': ['enable_vulkan'],
+    },
+
+    # Enables backup ref ptr by changing the default value of the feature flag.
+    # This sets the default value of PartitionAllocBackupRefPtr to enabled, with
+    # enabled-processes = non-renderer:
+    # https://source.chromium.org/chromium/chromium/src/+/main:base/allocator/partition_alloc_features.cc;drc=ec53a834a53b2d2f780e83614036a8dc89a247b5;l=105
+    'enable_backup_ref_ptr_feature_flag': {
+      'gn_args': 'enable_backup_ref_ptr_feature_flag=true',
     },
 
     'enable_blink_animation_use_time_delta': {
