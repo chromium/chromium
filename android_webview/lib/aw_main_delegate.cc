@@ -41,7 +41,8 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/embedder_support/switches.h"
-#include "components/gwp_asan/buildflags/buildflags.h"
+#include "components/memory_system/initializer.h"
+#include "components/memory_system/parameters.h"
 #include "components/metrics/unsent_log_store_metrics.h"
 #include "components/safe_browsing/android/safe_browsing_api_handler_bridge.h"
 #include "components/services/heap_profiling/public/cpp/profiling_client.h"
@@ -79,10 +80,6 @@
 #if BUILDFLAG(ENABLE_SPELLCHECK)
 #include "components/spellcheck/common/spellcheck_features.h"
 #endif  // ENABLE_SPELLCHECK
-
-#if BUILDFLAG(ENABLE_GWP_ASAN)
-#include "components/gwp_asan/client/gwp_asan.h"  // nogncheck
-#endif
 
 namespace android_webview {
 
@@ -436,22 +433,17 @@ absl::optional<int> AwMainDelegate::PostEarlyInitialization(
   }
 
   version_info::Channel channel = version_info::android::GetChannel();
-  [[maybe_unused]] const bool is_canary_dev =
-      (channel == version_info::Channel::CANARY ||
-       channel == version_info::Channel::DEV);
-  [[maybe_unused]] const std::string process_type =
+  const bool is_canary_dev = (channel == version_info::Channel::CANARY ||
+                              channel == version_info::Channel::DEV);
+  const std::string process_type =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kProcessType);
+  const bool gwp_asan_boost_sampling = is_canary_dev || is_browser_process;
 
-#if BUILDFLAG(ENABLE_GWP_ASAN_MALLOC)
-  gwp_asan::EnableForMalloc(is_canary_dev || is_browser_process,
-                            process_type.c_str());
-#endif
+  memory_system::Initializer()
+      .SetGwpAsanParameters(gwp_asan_boost_sampling, process_type)
+      .Initialize(memory_system_);
 
-#if BUILDFLAG(ENABLE_GWP_ASAN_PARTITIONALLOC)
-  gwp_asan::EnableForPartitionAlloc(is_canary_dev || is_browser_process,
-                                    process_type.c_str());
-#endif
   return absl::nullopt;
 }
 

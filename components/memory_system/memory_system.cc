@@ -1,0 +1,185 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/memory_system/memory_system.h"
+
+#include "base/allocator/buildflags.h"
+#include "build/build_config.h"
+#include "components/gwp_asan/buildflags/buildflags.h"
+#include "components/memory_system/parameters.h"
+
+#if BUILDFLAG(ENABLE_GWP_ASAN)
+#include "components/gwp_asan/client/gwp_asan.h"  // nogncheck
+#if BUILDFLAG(IS_CHROMEOS)
+#include "components/crash/core/app/crashpad.h"  // nogncheck
+#endif
+#endif
+
+#if BUILDFLAG(IS_IOS) && BUILDFLAG(USE_ALLOCATOR_SHIM)
+#include "base/allocator/partition_allocator/shim/allocator_interception_mac.h"
+#include "base/allocator/partition_allocator/shim/allocator_shim.h"
+#include "base/ios/ios_util.h"
+#include "base/metrics/histogram_functions.h"
+#endif
+
+// HeapProfilerController's dependencies are not compiled on iOS unless
+// AllocatorShim is enabled.
+#if !BUILDFLAG(IS_IOS) || BUILDFLAG(USE_ALLOCATOR_SHIM)
+#define HEAP_PROFILING_SUPPORTED 1
+#else
+#define HEAP_PROFILING_SUPPORTED 0
+#endif
+
+#if HEAP_PROFILING_SUPPORTED
+#include "components/heap_profiling/in_process/heap_profiler_controller.h"  // nogncheck
+#include "components/services/heap_profiling/public/cpp/profiling_client.h"  // nogncheck
+#endif
+
+namespace memory_system {
+namespace {
+
+#if BUILDFLAG(IS_IOS) && BUILDFLAG(USE_ALLOCATOR_SHIM)
+// Do not install allocator shim on iOS 13.4 due to high crash volume on this
+// particular version of OS. TODO(crbug.com/1108219): Remove this workaround
+// when/if the bug gets fixed.
+bool ShouldInstallAllocatorShim() {
+  return !base::ios::IsRunningOnOrLater(13, 4, 0) ||
+         base::ios::IsRunningOnOrLater(13, 5, 0);
+}
+#endif
+
+}  // namespace
+
+struct MemorySystem::Impl {
+  Impl();
+  ~Impl();
+
+  void Initialize(const absl::optional<GwpAsanParameters>& gwp_asan_parameters,
+                  const absl::optional<ProfilingClientParameters>&
+                      profiling_client_parameters);
+
+ private:
+  // Initialization functions for the various subsystems.
+
+  // Initialize GWP-ASan with the given set of parameters.
+  //
+  // Initialization will be performed if support for GWP-ASan is compiled in. On
+  // ChromeOs Crashpad must be enabled in addition.
+  void InitializeGwpASan(const GwpAsanParameters& gwp_asan_parameters);
+
+  // Initialize HeapProfiler with the given set of parameters.
+  void InitializeHeapProfiler(
+      const ProfilingClientParameters& profiling_client_parameters);
+
+  // Has the allocator shim been initialized successfully?
+  bool IsAllocatorShimInitialized();
+
+#if HEAP_PROFILING_SUPPORTED
+  std::unique_ptr<heap_profiling::HeapProfilerController>
+      heap_profiler_controller_;
+#endif
+
+#if BUILDFLAG(IS_IOS) && BUILDFLAG(USE_ALLOCATOR_SHIM)
+  const bool should_install_allocator_shim_ = ShouldInstallAllocatorShim();
+#endif
+};
+
+MemorySystem::Impl::Impl() {
+#if BUILDFLAG(IS_IOS) && BUILDFLAG(USE_ALLOCATOR_SHIM)
+  if (should_install_allocator_shim_) {
+    allocator_shim::InitializeAllocatorShim();
+  }
+#endif
+
+#if HEAP_PROFILING_SUPPORTED
+  // The TLS slot used by the memlog allocator shim needs to be initialized
+  // early to ensure that it gets assigned a low slot number. If it gets
+  // initialized too late, the glibc TLS system will require a malloc call in
+  // order to allocate storage for a higher slot number. Since malloc is hooked,
+  // this causes re-entrancy into the allocator shim, while the TLS object is
+  // partially-initialized, which the TLS object is supposed to protect again.
+  heap_profiling::InitTLSSlot();
+#endif
+}
+
+MemorySystem::Impl::~Impl() = default;
+
+void MemorySystem::Impl::Initialize(
+    const absl::optional<GwpAsanParameters>& gwp_asan_parameters,
+    const absl::optional<ProfilingClientParameters>&
+        profiling_client_parameters) {
+  if (!IsAllocatorShimInitialized()) {
+    return;
+  }
+
+  if (gwp_asan_parameters) {
+    InitializeGwpASan(*gwp_asan_parameters);
+  }
+
+  if (profiling_client_parameters) {
+    InitializeHeapProfiler(*profiling_client_parameters);
+  }
+}
+
+bool MemorySystem::Impl::IsAllocatorShimInitialized() {
+#if BUILDFLAG(IS_IOS) && BUILDFLAG(USE_ALLOCATOR_SHIM)
+  if (!should_install_allocator_shim_) {
+    return false;
+  }
+
+  const bool malloc_intercepted = allocator_shim::AreMallocZonesIntercepted();
+  base::UmaHistogramBoolean("IOS.Allocator.ShimInstalled", malloc_intercepted);
+
+  return malloc_intercepted;
+#else
+  return true;
+#endif
+}
+
+void MemorySystem::Impl::InitializeGwpASan(
+    const GwpAsanParameters& gwp_asan_parameters) {
+#if BUILDFLAG(ENABLE_GWP_ASAN)
+  // GWP-ASAN requires crashpad to gather alloc/dealloc stack traces, which is
+  // not always enabled on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+  if (!crash_reporter::IsCrashpadEnabled()) {
+    return;
+  }
+#endif
+
+#if BUILDFLAG(ENABLE_GWP_ASAN_MALLOC)
+  gwp_asan::EnableForMalloc(gwp_asan_parameters.boost_sampling,
+                            gwp_asan_parameters.process_type.c_str());
+#endif
+#if BUILDFLAG(ENABLE_GWP_ASAN_PARTITIONALLOC)
+  gwp_asan::EnableForPartitionAlloc(gwp_asan_parameters.boost_sampling,
+                                    gwp_asan_parameters.process_type.c_str());
+#endif
+#endif  // BUILDFLAG(ENABLE_GWP_ASAN)
+}
+
+void MemorySystem::Impl::InitializeHeapProfiler(
+    const ProfilingClientParameters& profiling_client_parameters) {
+#if HEAP_PROFILING_SUPPORTED
+  heap_profiler_controller_ =
+      std::make_unique<heap_profiling::HeapProfilerController>(
+          profiling_client_parameters.channel,
+          profiling_client_parameters.process_type);
+
+  heap_profiler_controller_->StartIfEnabled();
+#endif
+}
+
+MemorySystem::MemorySystem() : impl_(std::make_unique<Impl>()) {}
+
+MemorySystem::~MemorySystem() = default;
+
+void MemorySystem::Initialize(
+    const absl::optional<GwpAsanParameters>& gwp_asan_parameters,
+    const absl::optional<ProfilingClientParameters>&
+        profiling_client_parameters) {
+  impl_->Initialize(gwp_asan_parameters, profiling_client_parameters);
+}
+
+}  // namespace memory_system

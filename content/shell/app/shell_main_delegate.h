@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "build/build_config.h"
+#include "components/memory_system/memory_system.h"
 #include "content/public/app/content_main_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -72,6 +73,8 @@ class ShellMainDelegate : public ContentMainDelegate {
   std::unique_ptr<ShellContentRendererClient> renderer_client_;
   std::unique_ptr<ShellContentUtilityClient> utility_client_;
   std::unique_ptr<ShellContentClient> content_client_;
+
+  memory_system::MemorySystem memory_system_;
 };
 
 }  // namespace content

@@ -24,9 +24,10 @@
 #import "components/crash/core/common/crash_key.h"
 #import "components/crash/core/common/reporter_running_ios.h"
 #import "components/flags_ui/pref_service_flags_storage.h"
-#import "components/heap_profiling/in_process/heap_profiler_controller.h"
 #import "components/language/core/browser/language_usage_metrics.h"
 #import "components/language/core/browser/pref_names.h"
+#import "components/memory_system/initializer.h"
+#import "components/memory_system/parameters.h"
 #import "components/metrics/call_stack_profile_builder.h"
 #import "components/metrics/call_stack_profile_metrics_provider.h"
 #import "components/metrics/call_stack_profile_params.h"
@@ -83,11 +84,6 @@
 #import "ios/chrome/browser/rlz/rlz_tracker_delegate_impl.h"  // nogncheck
 #endif
 
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
-#import "base/allocator/partition_allocator/shim/allocator_interception_mac.h"
-#import "base/allocator/partition_allocator/shim/allocator_shim.h"
-#endif
-
 #if DCHECK_IS_ON()
 #import "ui/display/screen_base.h"
 #endif
@@ -111,16 +107,6 @@ void SetProtectionLevel(const base::FilePath& file_path, id level) {
   DCHECK(protection_set) << base::SysNSStringToUTF8(error.localizedDescription);
 }
 
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
-// Do not install allocator shim on iOS 13.4 due to high crash volume on this
-// particular version of OS. TODO(crbug.com/1108219): Remove this workaround
-// when/if the bug gets fixed.
-bool ShouldInstallAllocatorShim() {
-  return !base::ios::IsRunningOnOrLater(13, 4, 0) ||
-         base::ios::IsRunningOnOrLater(13, 5, 0);
-}
-#endif
-
 }  // namespace
 
 IOSChromeMainParts::IOSChromeMainParts(
@@ -139,14 +125,6 @@ IOSChromeMainParts::~IOSChromeMainParts() {
   display::ScreenBase* screen =
       static_cast<display::ScreenBase*>(display::Screen::GetScreen());
   DCHECK(!screen->HasDisplayObservers());
-#endif
-}
-
-void IOSChromeMainParts::PreEarlyInitialization() {
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
-  if (ShouldInstallAllocatorShim()) {
-    allocator_shim::InitializeAllocatorShim();
-  }
 #endif
 }
 
@@ -258,25 +236,10 @@ void IOSChromeMainParts::PreCreateThreads() {
   // Sync the CleanExitBeacon.
   metrics::CleanExitBeacon::SyncUseUserDefaultsBeacon();
 
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
-  // Do not install allocator shim on iOS 13.4 due to high crash volume on this
-  // particular version of OS. TODO(crbug.com/1108219): Remove this workaround
-  // when/if the bug gets fixed.
-  if (ShouldInstallAllocatorShim()) {
-    bool malloc_intercepted = allocator_shim::AreMallocZonesIntercepted();
-    base::UmaHistogramBoolean("IOS.Allocator.ShimInstalled",
-                              malloc_intercepted);
-
-    if (malloc_intercepted) {
-      // Start heap profiling as early as possible so it can start recording
-      // memory allocations. Requires the allocator shim to be enabled.
-      heap_profiler_controller_ =
-          std::make_unique<heap_profiling::HeapProfilerController>(
-              channel, metrics::CallStackProfileParams::Process::kBrowser);
-      heap_profiler_controller_->StartIfEnabled();
-    }
-  }
-#endif
+  memory_system::Initializer()
+      .SetProfilingClientParameters(
+          channel, metrics::CallStackProfileParams::Process::kBrowser)
+      .Initialize(memory_system_);
 
   variations::InitCrashKeys();
 

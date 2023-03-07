@@ -1,0 +1,55 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//base/allocator/allocator.gni")
+import("//build/config/compiler/compiler.gni")
+import("//components/gwp_asan/buildflags/buildflags.gni")
+
+# We use a source set instead of a component. Using a component leads to
+# duplicate symbols when creating a component build.
+source_set("memory_system") {
+  sources = [
+    "initializer.cc",
+    "initializer.h",
+    "memory_system.cc",
+    "memory_system.h",
+    "parameters.cc",
+    "parameters.h",
+  ]
+
+  public_deps = [
+    "//components/metrics:call_stack_profile_params",
+    "//components/version_info",
+    "//third_party/abseil-cpp:absl",
+  ]
+
+  deps = [
+    "//base",
+    "//base/allocator:buildflags",
+    "//components/gwp_asan/buildflags",
+  ]
+
+  if (enable_gwp_asan) {
+    deps += [ "//components/gwp_asan/client" ]
+    if (is_chromeos) {
+      deps += [
+        # for crash_reporter::IsCrashpadEnabled()
+        "//components/crash/core/app",
+      ]
+    }
+  }
+
+  if (is_chromeos) {
+    deps += [ "//build:chromeos_buildflags" ]
+  }
+
+  is_heap_profiling_supported = !is_ios || use_allocator_shim
+
+  if (is_heap_profiling_supported) {
+    deps += [
+      "//components/heap_profiling/in_process",
+      "//components/services/heap_profiling/public/cpp",
+    ]
+  }
+}

@@ -45,6 +45,7 @@ component("client") {
     "//base/allocator:buildflags",
     "//components/crash/core/common:crash_key",
     "//components/gwp_asan/common",
+    "//components/gwp_asan/common:crash_keys",
   ]
 
   if (is_android) {
@@ -73,6 +74,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/crash/core/common:crash_key",
     "//components/gwp_asan/common",
+    "//components/gwp_asan/common:crash_keys",
     "//testing/gmock",
     "//testing/gtest",
   ]

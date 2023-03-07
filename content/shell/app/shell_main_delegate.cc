@@ -21,6 +21,8 @@
 #include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
 #include "components/crash/core/common/crash_key.h"
+#include "components/memory_system/initializer.h"
+#include "components/memory_system/parameters.h"
 #include "content/common/content_constants_internal.h"
 #include "content/public/app/initialize_mojo_core.h"
 #include "content/public/browser/browser_main_runner.h"
@@ -361,6 +363,11 @@ absl::optional<int> ShellMainDelegate::PostEarlyInitialization(
   if (!ShouldInitializeMojo(invoked_in)) {
     InitializeMojoCore();
   }
+
+  // Shell Delegate has GWP ASan as well as Profiling Client disabled.
+  // Consequently we provide no parameters but empty ones.
+  memory_system::Initializer().Initialize(memory_system_);
+
   return absl::nullopt;
 }
 
