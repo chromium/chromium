@@ -933,7 +933,8 @@ IN_PROC_BROWSER_TEST_P(DictationTest, Punctuation) {
 
 // Verifies that Dictation cannot be toggled on using the keyboard shortcut if
 // a SODA download is in-progress.
-IN_PROC_BROWSER_TEST_P(DictationTest, NoToggleOnIfSodaDownloading) {
+// TODO(crbug.com/1422184): Flaky.
+IN_PROC_BROWSER_TEST_P(DictationTest, DISABLED_NoToggleOnIfSodaDownloading) {
   if (speech_recognition_type() != speech::SpeechRecognitionType::kOnDevice) {
     // SodaInstaller only works if on-device speech recognition is available.
     return;
