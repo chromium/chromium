@@ -11,6 +11,9 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "components/leveldb_proto/public/proto_database.h"
+// TODO(haileywang): Remove this include when moving RequestId out of
+// TrainingDataCache.
+#include "components/segmentation_platform/internal/data_collection/training_data_cache.h"
 #include "components/segmentation_platform/internal/database/segment_info_cache.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
@@ -39,6 +42,8 @@ class SegmentInfoDatabase {
   using SegmentInfoCallback =
       base::OnceCallback<void(absl::optional<proto::SegmentInfo>)>;
   using SegmentInfoProtoDb = leveldb_proto::ProtoDatabase<proto::SegmentInfo>;
+  using TrainingDataCallback =
+      base::OnceCallback<void(absl::optional<proto::TrainingData>)>;
 
   explicit SegmentInfoDatabase(std::unique_ptr<SegmentInfoProtoDb> database,
                                std::unique_ptr<SegmentInfoCache> cache);
@@ -58,6 +63,14 @@ class SegmentInfoDatabase {
   // Called to get the metadata for a given segment.
   virtual void GetSegmentInfo(SegmentId segment_id,
                               SegmentInfoCallback callback);
+
+  // Called to get the training data for a given segment and request ID. If
+  // delete_from_db is set to true, it will delete the corresponding entry in
+  // the cache and in the database.
+  virtual void GetTrainingData(SegmentId segment_id,
+                               TrainingDataCache::RequestId request_id,
+                               bool delete_from_db,
+                               TrainingDataCallback callback);
 
   // Called to save or update metadata for a segment. The previous data is
   // overwritten. If |segment_info| is empty, the segment will be deleted.
@@ -83,6 +96,12 @@ class SegmentInfoDatabase {
   virtual void SaveSegmentResult(SegmentId segment_id,
                                  absl::optional<proto::PredictionResult> result,
                                  SuccessCallback callback);
+
+  // Called to write partial training data for a given segment. New training
+  // data are appended to the existing ones.
+  virtual void SaveTrainingData(SegmentId segment_id,
+                                const proto::TrainingData& data,
+                                SuccessCallback callback);
 
  private:
   void OnDatabaseInitialized(SuccessCallback callback,

@@ -98,7 +98,22 @@ class SegmentInfoDatabaseTest : public testing::Test {
     db_->UpdateCallback(true);
   }
 
-  void VerifyResult(SegmentId segment_id, absl::optional<float> result) {
+  void WriteTrainingData(SegmentId segment_id, int64_t request_id, float data) {
+    proto::TrainingData training_data;
+    training_data.add_inputs(data);
+    training_data.set_request_id(request_id);
+
+    segment_db_->SaveTrainingData(segment_id, training_data, base::DoNothing());
+    if (!segment_info_cache_->GetSegmentInfo(segment_id).has_value()) {
+      db_->GetCallback(true);
+    }
+    db_->UpdateCallback(true);
+  }
+
+  void VerifyResult(SegmentId segment_id,
+                    absl::optional<float> result,
+                    absl::optional<std::vector<ModelProvider::Request>>
+                        training_inputs = absl::nullopt) {
     segment_db_->GetSegmentInfo(
         segment_id, base::BindOnce(&SegmentInfoDatabaseTest::OnGetSegment,
                                    base::Unretained(this)));
@@ -111,6 +126,16 @@ class SegmentInfoDatabaseTest : public testing::Test {
     if (result.has_value()) {
       EXPECT_THAT(get_segment_result_->prediction_result().result(),
                   testing::ElementsAre(result.value()));
+    }
+
+    if (training_inputs.has_value()) {
+      for (int i = 0; i < get_segment_result_->training_data_size(); i++) {
+        for (int j = 0; j < get_segment_result_->training_data(i).inputs_size();
+             j++) {
+          EXPECT_EQ(training_inputs.value()[i][j],
+                    get_segment_result_->training_data(i).inputs(j));
+        }
+      }
     }
   }
 
@@ -286,6 +311,38 @@ TEST_F(SegmentInfoDatabaseTest, WriteResult) {
   // Clear results and verify.
   WriteResult(kSegmentId, absl::nullopt);
   VerifyResult(kSegmentId, absl::nullopt);
+}
+
+TEST_F(SegmentInfoDatabaseTest, WriteTrainingData) {
+  // Initialize DB with one entry.
+  db_entries_.insert(
+      std::make_pair(ToString(kSegmentId), CreateSegment(kSegmentId)));
+  SetUpDB();
+
+  segment_db_->Initialize(base::DoNothing());
+  db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
+  db_->LoadCallback(true);
+  EXPECT_TRUE(segment_info_cache_->GetSegmentInfo(kSegmentId).has_value());
+
+  std::vector<ModelProvider::Request> expected_training_inputs;
+
+  // Add training data and verify.
+  WriteTrainingData(kSegmentId, /*request_id=*/0, /*data=*/0.4f);
+  expected_training_inputs.push_back({0.4f});
+  VerifyResult(kSegmentId, absl::nullopt, expected_training_inputs);
+
+  // Add another training data and verify.
+  int64_t request_id = 1;
+  WriteTrainingData(kSegmentId, request_id, /*data=*/0.9f);
+  expected_training_inputs.push_back({0.9f});
+  VerifyResult(kSegmentId, absl::nullopt, expected_training_inputs);
+
+  // Remove the last training data and verify.
+  segment_db_->GetTrainingData(kSegmentId,
+                               (TrainingDataCache::RequestId)request_id,
+                               /*delete_from_db=*/true, base::DoNothing());
+  expected_training_inputs.pop_back();
+  VerifyResult(kSegmentId, absl::nullopt, expected_training_inputs);
 }
 
 TEST_F(SegmentInfoDatabaseTest, WriteResultForTwoSegments) {

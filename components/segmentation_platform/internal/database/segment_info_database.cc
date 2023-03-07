@@ -7,6 +7,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "components/segmentation_platform/internal/data_collection/training_data_cache.h"
 
 namespace segmentation_platform {
 
@@ -45,6 +46,44 @@ void SegmentInfoDatabase::GetSegmentInfoForSegments(
 void SegmentInfoDatabase::GetSegmentInfo(SegmentId segment_id,
                                          SegmentInfoCallback callback) {
   std::move(callback).Run(cache_->GetSegmentInfo(segment_id));
+}
+
+void SegmentInfoDatabase::GetTrainingData(
+    SegmentId segment_id,
+    TrainingDataCache::RequestId request_id,
+    bool delete_from_db,
+    TrainingDataCallback callback) {
+  absl::optional<SegmentInfo> segment_info = cache_->GetSegmentInfo(segment_id);
+  absl::optional<proto::TrainingData> result;
+
+  // Ignore results if the metadata no longer exists.
+  if (!segment_info.has_value()) {
+    std::move(callback).Run(std::move(result));
+    return;
+  }
+
+  const auto& info = segment_info.value();
+  for (int i = 0; i < info.training_data_size(); i++) {
+    if (info.training_data(i).request_id() == request_id.GetUnsafeValue()) {
+      result = info.training_data(i);
+      break;
+    }
+  }
+
+  if (delete_from_db) {
+    // Delete the training data from cache and then post update to delete from
+    // database.
+    for (int i = 0; i < segment_info->training_data_size(); i++) {
+      if (segment_info->training_data(i).request_id() ==
+          request_id.GetUnsafeValue()) {
+        segment_info->mutable_training_data()->DeleteSubrange(i, 1);
+      }
+    }
+    UpdateSegment(segment_id, std::move(segment_info), base::DoNothing());
+  }
+
+  // Notify the client with the result.
+  std::move(callback).Run(std::move(result));
 }
 
 void SegmentInfoDatabase::UpdateSegment(
@@ -123,6 +162,23 @@ void SegmentInfoDatabase::SaveSegmentResult(
   UpdateSegment(segment_id, std::move(segment_info), std::move(callback));
 }
 
+void SegmentInfoDatabase::SaveTrainingData(SegmentId segment_id,
+                                           const proto::TrainingData& data,
+                                           SuccessCallback callback) {
+  auto segment_info = cache_->GetSegmentInfo(segment_id);
+
+  // Ignore data if the metadata no longer exists.
+  if (!segment_info.has_value()) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  // Update training data.
+  segment_info->add_training_data()->CopyFrom(data);
+
+  UpdateSegment(segment_id, std::move(segment_info), std::move(callback));
+}
+
 void SegmentInfoDatabase::OnDatabaseInitialized(
     SuccessCallback callback,
     leveldb_proto::Enums::InitStatus status) {
@@ -133,8 +189,8 @@ void SegmentInfoDatabase::OnDatabaseInitialized(
     return;
   }
 
-  // Initialize the cache by reading the database into the in-memory cache to be
-  // accessed hereafter.
+  // Initialize the cache by reading the database into the in-memory cache to
+  // be accessed hereafter.
   database_->LoadEntries(base::BindOnce(&SegmentInfoDatabase::OnLoadAllEntries,
                                         weak_ptr_factory_.GetWeakPtr(),
                                         std::move(callback)));
