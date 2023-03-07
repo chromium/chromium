@@ -25,7 +25,9 @@
           &gt;
           <ph name="PROXIES_TITLE" />
            öğesine gidin ve yapılandırmanızın "proxy yok" veya "doğrudan" olarak ayarlandığından emin olun.</translation>
+<translation id="6549378540556750549">Chromium ayrıca diğer <ph name="BEGIN_LINK_OSS" />açık kaynak yazılımlardan<ph name="END_LINK_OSS" /> yararlanılarak geliştirilmiştir.</translation>
 <translation id="6613594504749178791">Değişiklikleriniz, Chromium tekrar başlatıldığında geçerli olacak.</translation>
+<translation id="7681937895330411637">Chromium, <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> açık kaynak projesiyle hazırlanmıştır.</translation>
 <translation id="7861509383340276692">Chromium menüsü &gt;
           <ph name="SETTINGS_TITLE" />
           &gt;

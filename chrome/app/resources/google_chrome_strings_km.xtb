@@ -261,6 +261,7 @@ Google Chrome មិនអាចសង្គ្រោះការកំណត់
 <translation id="6010556343189461180">ដើម្បីទទួលបានកំណែថ្មីៗរបស់ Google Chrome នាពេលអនាគត អ្នកនឹងត្រូវការ macOS 10.15 ឡើងទៅ។ កុំព្យូទ័រនេះកំពុងប្រើ macOS 10.14។</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome នឹង​បិទ​ឥឡូវ​នេះ។}=1{Chrome នឹង​បិទ​ក្នុង​រយៈពេល 1 វិនាទី។}other{Chrome នឹង​បិទ​ក្នុង​រយៈពេល # វិនាទី។}}</translation>
 <translation id="6022659036123304283">ធ្វើឱ្យ Chrome ក្លាយជា​របស់អ្នក</translation>
+<translation id="6025087594896450715">Google Chrome នឹងចាប់ផ្ដើមឡើងវិញក្នុងរយៈពេល <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">បិទ</translation>
 <translation id="6070348360322141662">ដើម្បី​ទទួលបាន​សុវត្ថិភាព​បន្ថែម Google Chrome នឹង​អ៊ិនគ្រីប​ទិន្នន័យ​របស់​អ្នក</translation>
 <translation id="608006075545470555">បញ្ចូលកម្រងព័ត៌មានការងារទៅក្នុងកម្មវិធីរុករកតាមអ៊ីនធឺណិតនេះ</translation>
@@ -278,6 +279,7 @@ Google Chrome មិនអាចសង្គ្រោះការកំណត់
 <translation id="6327105987658262776">មិនមានកំណែថ្មីទេ។</translation>
 <translation id="6412673304250309937">ពិនិត្យ URL ធៀបនឹងបញ្ជីគេហទំព័រគ្មានសុវត្ថិភាព ដែលរក្សាទុកនៅក្នុង Chrome។ ប្រសិនបើគេហទំព័រណាមួយ​ព្យាយាមលួចពាក្យសម្ងាត់របស់អ្នក ឬនៅពេលអ្នកទាញយក​ឯកសារដែលអាចបង្កគ្រោះថ្នាក់នោះ Chrome ក៏ប្រហែលជាបញ្ជូន URL រួមជាមួយផ្នែកនៃខ្លឹមសារទំព័រ ទៅការរុករកដោយសុវត្ថិភាពផងដែរ។</translation>
 <translation id="6418662306461808273">ប្ដូរទៅកម្រងព័ត៌មាន Chrome ដែលមានស្រាប់ឬ?</translation>
+<translation id="6493527311031785448">Google Chrome កំពុងព្យាយាម<ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6506909944137591434">Chrome ត្រូវការ​ការអនុញ្ញាត​កាមេរ៉ា ដើម្បីបង្កើត​ផែនទី 3D នៃមជ្ឈដ្ឋានជុំវិញ​របស់អ្នក</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="659498884637196217">នៅក្នុង​កម្មវិធីគ្រប់គ្រង​ពាក្យសម្ងាត់ Google នៅលើ​ឧបករណ៍នេះ</translation>

@@ -2304,6 +2304,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6738516213925468394">Data honetan hasi ziren enkriptatzen zure datuak <ph name="BEGIN_LINK" />Sinkronizatzeko pasaesaldiaren<ph name="END_LINK" /> bidez: <ph name="TIME" />. Idatz ezazu sinkronizatzen hasteko.</translation>
 <translation id="674375294223700098">Zerbitzari-ziurtagiriaren errore ezezaguna.</translation>
 <translation id="6744009308914054259">Konexio baten zain zauden bitartean, Deskargak atalera joan zaitezke konexiorik behar ez duten artikuluak irakurtzera.</translation>
+<translation id="6745592621698551453">Eguneratu</translation>
 <translation id="6751487147225428522">ROC 8K (Txina)</translation>
 <translation id="6752086006821653994">Bideokonferentziak</translation>
 <translation id="6753269504797312559">Gidalerroaren balioa</translation>
@@ -2768,7 +2769,6 @@ Xehetasun gehiago:
 <translation id="7802523362929240268">Fidagarria da webgunea</translation>
 <translation id="7802989406998618639">Idatzi <ph name="SIDE_OF_CARD" /> dagoen <ph name="NUMBER_OF_DIGITS" /> digituko segurtasun-kodea, bankuak zeu zarela egiaztatu ahal izan dezan</translation>
 <translation id="780301667611848630">Ez, eskerrik asko</translation>
-<translation id="7805571567667010077">Erakundeak kudeatzen du</translation>
 <translation id="7805768142964895445">Egoera</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Inprimaki-iradokizuna Chrome-tik kendu nahi duzu?</translation>
@@ -2991,6 +2991,7 @@ Xehetasun gehiago:
 <translation id="8369073279043109617">Lortu beste kode bat</translation>
 <translation id="8371889962595521444">Erroko ziurtagiri pertsonalizatuak</translation>
 <translation id="8374636051559112948">Aldakorra</translation>
+<translation id="8378714024927312812">Erakundeak kudeatzen du</translation>
 <translation id="8380941800586852976">Arriskutsua</translation>
 <translation id="8381674639488873545">Behin edo gehiagotan kobratzen saia liteke, eta baliteke zordunketa horiek begien bistakoak ez izatea. <ph name="BEGIN_LINK" />Erakutsi hala ere<ph name="END_LINK" />.</translation>
 <translation id="8390725133630534698">Administratzailearen gidalerroek blokeatu egin dute <ph name="ORIGIN_NAME" /> domeinuko edukia <ph name="VM_NAME" /> makinara partekatzeko aukera</translation>

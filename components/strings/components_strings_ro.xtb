@@ -345,6 +345,7 @@
 <translation id="1733064249834771892">Fonturi</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Încearcă să contactezi administratorul sistemului.</translation>
+<translation id="1736158756193183352"><ph name="BEGIN_LINK" />Conectarea<ph name="END_LINK" /> la rețea</translation>
 <translation id="1736420071277903564">Computer</translation>
 <translation id="1740951997222943430">Introdu o lună de expirare validă</translation>
 <translation id="1741613555002899862">Trebuie specificată și trebuie să fie un șir valid când DnsOverHttpsMode este <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
@@ -1192,6 +1193,7 @@
 <translation id="3949601375789751990">Istoricul de navigare apare aici</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Nicio metodă de plată salvată</translation>
+<translation id="3950574001630941635">Repornește tutorialul</translation>
 <translation id="3950820424414687140">Conectează-te</translation>
 <translation id="3958057596965527988">4 x 4 in</translation>
 <translation id="3961148744525529027">Foaia handlerului pentru plăți este pe jumătate deschisă</translation>
@@ -2309,6 +2311,7 @@
 <translation id="6738516213925468394">Datele au fost criptate cu <ph name="BEGIN_LINK" />expresia de acces pentru sincronizare<ph name="END_LINK" /> la <ph name="TIME" />. Introdu expresia de acces pentru a începe sincronizarea.</translation>
 <translation id="674375294223700098">Eroare de certificat de server necunoscută.</translation>
 <translation id="6744009308914054259">În timp ce aștepți o conexiune, poți accesa Descărcările pentru a citi articole offline.</translation>
+<translation id="6745592621698551453">Actualizați acum</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Teleconferințe</translation>
 <translation id="6753269504797312559">Valoarea politicii</translation>
@@ -2773,7 +2776,6 @@ Detalii suplimentare:
 <translation id="7802523362929240268">Site-ul este legitim</translation>
 <translation id="7802989406998618639">Introdu codul de securitate din <ph name="NUMBER_OF_DIGITS" /> cifre în <ph name="SIDE_OF_CARD" />, pentru ca banca să-ți poată confirma identitatea</translation>
 <translation id="780301667611848630">Nu, mulțumesc</translation>
-<translation id="7805571567667010077">Gestionată de organizația ta</translation>
 <translation id="7805768142964895445">Stare</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Elimini sugestia pentru formular din Chrome?</translation>
@@ -2996,6 +2998,7 @@ Detalii suplimentare:
 <translation id="8369073279043109617">Obține un cod nou</translation>
 <translation id="8371889962595521444">Certificate rădăcină personalizate</translation>
 <translation id="8374636051559112948">Variază</translation>
+<translation id="8378714024927312812">Gestionat de organizația ta</translation>
 <translation id="8380941800586852976">Periculos</translation>
 <translation id="8381674639488873545">Aceste costuri pot fi unice sau recurente și ascunse. <ph name="BEGIN_LINK" />Afișează oricum<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Permiterea accesului de pe <ph name="ORIGIN_NAME" /> la <ph name="VM_NAME" /> a fost blocată de politica implementată de administrator</translation>

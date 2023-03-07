@@ -504,6 +504,11 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="3633097874324966332">Öffne die Bluetooth-Einstellungen, um das Gerät zu koppeln</translation>
 <translation id="3638400994746983214">Der Datenschutzbildschirm kann aktiviert oder deaktiviert werden. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Aktualisierung erforderlich</translation>
+<translation id="3653999174677652346"><ph name="EVENT_POSITION" />
+        <ph name="EVENT_SUMMARY" />,
+        <ph name="START_TIME" /> bis
+        <ph name="END_TIME" />,
+        <ph name="TIME_ZONE" />. Für weitere Details Termin in Google Kalender auswählen.</translation>
 <translation id="3659444876902283058">(Tag <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Ungefähr <ph name="TIME_LEFT" /> verbleibend (<ph name="PERCENTAGE" /> %).
 Schließe dein Gerät an eine Steckdose an.</translation>
@@ -1477,6 +1482,7 @@ Neuinstallation</translation>
 <translation id="8858369206579825206">Datenschutzeinstellungen</translation>
 <translation id="8870509716567206129">Das Teilen des Bildschirms wird in dieser App nicht unterstützt.</translation>
 <translation id="8874184842967597500">Nicht verbunden</translation>
+<translation id="8876148469852588625">Termin <ph name="EVENT_POSITION" /> von <ph name="EVENT_TOTAL_COUNT" /></translation>
 <translation id="8876661425082386199">Verbindung prüfen</translation>
 <translation id="8877788021141246043">Erinnerungen einrichten</translation>
 <translation id="8878886163241303700">Bildschirmerweiterung</translation>

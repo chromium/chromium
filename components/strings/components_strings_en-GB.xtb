@@ -376,6 +376,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1803351196216024260">Can ask to use your microphone</translation>
 <translation id="1807246157184219062">Light</translation>
 <translation id="1807528111851433570">Start sheet</translation>
+<translation id="180991881384371158">Your CVC is on the back of your card. It’s the last three digits at the top right of the signature box.</translation>
 <translation id="181000283860817563">Track prices across multiple sites</translation>
 <translation id="1810391395243432441">Protect passwords with your screen lock</translation>
 <translation id="1812527064848182527">landscape</translation>
@@ -640,6 +641,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2521736961081452453">Create form</translation>
 <translation id="2523886232349826891">Saved on this device only</translation>
 <translation id="2524461107774643265">Add More Information</translation>
+<translation id="2527451058878391043">Your CVC is on the front of your card. It’s the four-digit code at the top right above your card number.</translation>
 <translation id="2529899080962247600">This field should not have more than <ph name="MAX_ITEMS_LIMIT" /> entries. All further entries will be ignored.</translation>
 <translation id="253493526287553278">See promo code details</translation>
 <translation id="2535585790302968248">Open a new incognito tab to browse privately</translation>
@@ -2311,6 +2313,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6738516213925468394">Your data was encrypted with your <ph name="BEGIN_LINK" />sync passphrase<ph name="END_LINK" /> on <ph name="TIME" />. Enter it to start sync.</translation>
 <translation id="674375294223700098">Unknown server certificate error.</translation>
 <translation id="6744009308914054259">While waiting for a connection, you can visit Downloads to read offline articles.</translation>
+<translation id="6745592621698551453">Update now</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Teleconferencing</translation>
 <translation id="6753269504797312559">Policy Value</translation>
@@ -2775,7 +2778,6 @@ Additional details:
 <translation id="7802523362929240268">Site is legitimate</translation>
 <translation id="7802989406998618639">Enter the <ph name="NUMBER_OF_DIGITS" />-digit security code on the <ph name="SIDE_OF_CARD" /> so that your bank can verify that it's you</translation>
 <translation id="780301667611848630">No, thanks</translation>
-<translation id="7805571567667010077">Managed by your organisation</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Remove form suggestion from Chrome?</translation>
@@ -2998,6 +3000,7 @@ Additional details:
 <translation id="8369073279043109617">Get new code</translation>
 <translation id="8371889962595521444">Custom root certificates</translation>
 <translation id="8374636051559112948">Varies</translation>
+<translation id="8378714024927312812">Managed by your organisation</translation>
 <translation id="8380941800586852976">Dangerous</translation>
 <translation id="8381674639488873545">These charges could be one-time or recurring and may not be obvious. <ph name="BEGIN_LINK" />Show anyway<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Sharing from <ph name="ORIGIN_NAME" /> to <ph name="VM_NAME" /> has been blocked by administrator policy</translation>

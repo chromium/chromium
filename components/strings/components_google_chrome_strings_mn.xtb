@@ -37,4 +37,6 @@
 <translation id="8187289872471304532">Дараах урсгалын дарааллаар хандана уу
           Applications &gt; System Preferences &gt; Network &gt; Advanced &gt; Proxies
           мөн аливаа төлөөлөх сервер сонгосон байгаа бол үл сонгосон болгож өөрчлөх.</translation>
+<translation id="8232971017369963250">Chrome-г <ph name="BEGIN_LINK_CHROMIUM" />Chromium-н<ph name="END_LINK_CHROMIUM" /> нээлттэй эх кодын төслөөр боломжтой болгосон.</translation>
+<translation id="8279509328145658601">Chrome-г мөн <ph name="BEGIN_LINK_OSS" />нээлттэй эх кодтой бусад программ хангамжаар<ph name="END_LINK_OSS" /> боломжтой болгосон.</translation>
 </translationbundle>

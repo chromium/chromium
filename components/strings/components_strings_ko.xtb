@@ -2309,6 +2309,7 @@
 <translation id="6738516213925468394"><ph name="TIME" />자로 <ph name="BEGIN_LINK" />동기화 암호<ph name="END_LINK" />를 통해 데이터가 암호화되었습니다. 동기화를 시작하려면 암호를 입력하세요.</translation>
 <translation id="674375294223700098">알 수 없는 서버 인증서 오류입니다.</translation>
 <translation id="6744009308914054259">연결을 기다리는 동안 다운로드에서 오프라인 기사를 읽을 수 있습니다.</translation>
+<translation id="6745592621698551453">지금 업데이트</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">화상회의</translation>
 <translation id="6753269504797312559">정책 값</translation>
@@ -2772,7 +2773,6 @@
 <translation id="7802523362929240268">정상적인 사이트</translation>
 <translation id="7802989406998618639">은행에서 본인 인증을 할 수 있도록 <ph name="SIDE_OF_CARD" />의 <ph name="NUMBER_OF_DIGITS" />자리 보안 코드를 입력하세요.</translation>
 <translation id="780301667611848630">취소</translation>
-<translation id="7805571567667010077">조직에서 관리함</translation>
 <translation id="7805768142964895445">상태</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Chrome에서 추천검색어를 삭제하시겠습니까?</translation>
@@ -2995,6 +2995,7 @@
 <translation id="8369073279043109617">새 코드 받기</translation>
 <translation id="8371889962595521444">맞춤 루트 인증서</translation>
 <translation id="8374636051559112948">다양함</translation>
+<translation id="8378714024927312812">조직에서 관리</translation>
 <translation id="8380941800586852976">위험</translation>
 <translation id="8381674639488873545">이러한 금액 청구는 일회성이거나 반복적일 수 있으며 불분명한 방식으로 이루어질 수도 있습니다. <ph name="BEGIN_LINK" />사이트 표시하기<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">관리자 정책에 의해 <ph name="ORIGIN_NAME" />에서 <ph name="VM_NAME" /> VM으로 공유하는 작업이 차단되었습니다.</translation>

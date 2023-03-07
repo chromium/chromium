@@ -31,4 +31,6 @@
 <translation id="8187289872471304532">Zoaz
           Aplikazioak &gt; Sistemaren hobespenak &gt; Sarea &gt; Aurreratua &gt; Proxyak
           atalera eta desautatu hautatutako proxy guztiak.</translation>
+<translation id="8232971017369963250">Kode irekiko <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> proiektuak egiten du posible Chrome.</translation>
+<translation id="8279509328145658601"><ph name="BEGIN_LINK_OSS" />Kode irekiko beste software<ph name="END_LINK_OSS" /> batzuek ere posible egiten dute Chrome.</translation>
 </translationbundle>

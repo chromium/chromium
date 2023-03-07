@@ -27,7 +27,9 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           e asegúrate de que a túa configuración estea establecida en "sen proxy" ou en "directo".</translation>
+<translation id="6549378540556750549">Chromium tamén se creou grazas a outro <ph name="BEGIN_LINK_OSS" />software de código aberto<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Os cambios aplicaranse a próxima vez que reinicies Chromium.</translation>
+<translation id="7681937895330411637">Chromium creouse grazas ao proxecto de código aberto <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="7861509383340276692">Accede ao menú
         de Chromium &gt;
         <ph name="SETTINGS_TITLE" />

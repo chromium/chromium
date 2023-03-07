@@ -2311,6 +2311,7 @@
 <translation id="6738516213925468394"><ph name="TIME" />-დან თქვენი მონაცემები დაშიფრულია <ph name="BEGIN_LINK" />სინქრონიზაციის საიდუმლო ფრაზით<ph name="END_LINK" />. შეიყვანეთ ის სინქრონიზაციის დასაწყებად.</translation>
 <translation id="674375294223700098">უცნობი სერვერის სერტიფიკატის შეცდომა.</translation>
 <translation id="6744009308914054259">სანამ კავშირის აღდგენას ელოდებით, შეგიძლიათ გადახვიდეთ ჩამოტვირთვებზე და წაიკითხოთ სტატიები ხაზგარეშე რეჟიმში.</translation>
+<translation id="6745592621698551453">განახლება ახლა</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">ტელეკონფერენციები</translation>
 <translation id="6753269504797312559">წესის მნიშვნელობა</translation>
@@ -2775,7 +2776,6 @@
 <translation id="7802523362929240268">საიტი კანონიერია</translation>
 <translation id="7802989406998618639">ბანკმა თქვენი ვინაობა რომ დაადასტუროს, შეიყვანეთ <ph name="NUMBER_OF_DIGITS" />-ციფრიანი კოდი, რომელიც მოცემულია <ph name="SIDE_OF_CARD" /></translation>
 <translation id="780301667611848630">არა, მადლობთ</translation>
-<translation id="7805571567667010077">იმართება თქვენი ორგანიზაციის მიერ</translation>
 <translation id="7805768142964895445">სტატუსი</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">ამოიშალოს ფორმებისთვის განკუთვნილი შემოთავაზება Chrome-იდან?</translation>
@@ -2998,6 +2998,7 @@
 <translation id="8369073279043109617">ახალი კოდის მიღება</translation>
 <translation id="8371889962595521444">მორგებული ძირეული სერტიფიკატები</translation>
 <translation id="8374636051559112948">ცვალებადი</translation>
+<translation id="8378714024927312812">იმართება თქვენი ორგანიზაციის მიერ</translation>
 <translation id="8380941800586852976">სახიფათო</translation>
 <translation id="8381674639488873545">აღნიშნული გადახდები შეიძლება განხორციელდეს ერთჯერადად ან პერიოდულად და არ იყოს ადვილად შესამჩნევი. <ph name="BEGIN_LINK" />მაინც ჩვენება<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698"><ph name="ORIGIN_NAME" />-დან <ph name="VM_NAME" />-ში გაზიარება დაბლოკილია ადმინისტრატორის წესების მიხედვით</translation>

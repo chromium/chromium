@@ -2982,13 +2982,6 @@ La funzionalità verrà attivata per impostazione predefinita. Se il criterio vi
 Se il criterio viene impostato su Disabled, la funzionalità verrà disattivata.
 
 Questo criterio è una soluzione alternativa temporanea e verrà rimosso dopo il lancio di alcune nuove versioni (la rimozione è prevista nella versione M113).</translation>
-<translation id="3795413481405077588">Questo criterio consente a un amministratore di specificare le impostazioni relative alle app web installate.
-
-      Questo criterio associa un ID app web alla relativa impostazione specifica. È possibile impostare con l'ID speciale <ph name="DEFAULT_SCOPE" /> una configurazione predefinita che verrà applicata a tutte le app web senza una configurazione personalizzata in questo criterio.
-
-      Il campo <ph name="MANIFEST_ID_FIELD" /> è l'ID manifest dell'app web. Visita la pagina <ph name="WEB_APP_ID_REFERENCE_URL" /> per avere istruzioni su come stabilire l'ID manifest di un'app web installata.
-      Il campo <ph name="RUN_ON_OS_LOGIN_FIELD" /> consente di specificare se un'app web può essere eseguita durante l'accesso al sistema operativo. Se questo campo viene impostato su <ph name="BLOCKED" />, l'app web non verrà eseguita durante l'accesso al sistema operativo e l'utente non potrà attivare questa funzionalità in un secondo momento. Se questo campo viene impostato su <ph name="RUN_WINDOWED" />, l'app web verrà eseguita durante l'accesso al sistema operativo e l'utente non potrà disattivare questa funzionalità in un secondo momento. Se questo campo viene impostato su <ph name="ALLOWED" />, l'utente potrà configurare l'esecuzione dell'app web al momento dell'accesso al sistema operativo. Per la configurazione predefinita sono consentiti soltanto i valori <ph name="ALLOWED" /> e <ph name="BLOCKED" />.
-      </translation>
 <translation id="3796527892245558832">Selettore profilo disponibile all'avvio</translation>
 <translation id="3798922329287609568">La configurazione del criterio consente di limitare la modalità di stampa fronte/retro.
 

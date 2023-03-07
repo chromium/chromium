@@ -163,6 +163,7 @@
 <translation id="2346474577291266260">Выдатны (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Працягнуць</translation>
 <translation id="2364498172489649528">Пройдзена</translation>
+<translation id="2367335866686097760">Кнопка для вызначэння клавіш</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Адправіць справаздачу з водгукам</translation>
 <translation id="2407209115954268704">Стан блакіроўкі SIM-карты</translation>
@@ -235,7 +236,9 @@
 <translation id="319101249942218879">Відарыс аватара зменены</translation>
 <translation id="3192947282887913208">Аўдыяфайлы</translation>
 <translation id="3199982728237701504">Прылада для падачы дакументаў (абодвума бакамі)</translation>
+<translation id="3211671540163313381">D-pad для вызначэння клавіш</translation>
 <translation id="3226405216343213872">Ідзе пошук сканераў</translation>
+<translation id="3226657629376379887">Меню дзеянняў з макетам</translation>
 <translation id="3246869037381808805">Заданні друку, старэйшыя за 1 дзень, будуць выдалены</translation>
 <translation id="3268178239013324452">Збой: дзверцы прынтара адкрыты</translation>
 <translation id="3275506277319227640">Замацаваць <ph name="DIRECTION" /></translation>
@@ -568,6 +571,7 @@
 <translation id="6117895505466548728">"<ph name="TITLE" />" і <ph name="NUMBER" /> іншыя альбомы</translation>
 <translation id="6122191549521593678">У інтэрнэце</translation>
 <translation id="6122277663991249694">Сэрвіс спосабаў уводу Chrome OS</translation>
+<translation id="6136285399872347291">backspace</translation>
 <translation id="6137767437444130246">Сертыфікат карыстальніка</translation>
 <translation id="6146993107019042706">Каб закончыць, увядзіце новы пароль</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -802,6 +806,7 @@
 <translation id="8318753676953949627">Няма відарысаў</translation>
 <translation id="8336739000755212683">Змяніць відарыс уліковага запісу на прыладзе</translation>
 <translation id="8347227221149377169">Заданні друку</translation>
+<translation id="8351855506390808906">Кропка дотыку для вызначэння клавіш</translation>
 <translation id="8352772353338965963">Дадайце ўліковы запіс для функцыі ўваходу ў некалькі ўліковых запісаў. Гэта функцыя дае магчымасць пераключацца паміж уліковымі запісамі, у якія выкананы ўваход, без уводу пароля. Таму выкарыстоўвайце яе толькі для ўліковых запісаў, якім давяраеце.</translation>
 <translation id="8364946094152050673">Поле сервераў даменных імён пустое</translation>
 <translation id="8372477600026034341">Дадатковыя хосты</translation>
@@ -899,6 +904,7 @@
 <translation id="9138630967333032450">Shift злева</translation>
 <translation id="9149391708638971077">Выканаць праверку памяці</translation>
 <translation id="9157515863513902090">Замацаваць на большым баку</translation>
+<translation id="9161276708550942948">прабел</translation>
 <translation id="9173638680043580060">Застаецца менш за хвіліну</translation>
 <translation id="917720651393141712">Праверыць</translation>
 <translation id="9188992814426075118">Падсветка клавіятуры можа аўтаматычна падбірацца пад колер шпалер</translation>

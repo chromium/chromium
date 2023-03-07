@@ -126,6 +126,7 @@
 <translation id="1813414402673211292">ব্রাউজ করা ডেটা সাফ করুন</translation>
 <translation id="1815941218935345331">পাসকোড</translation>
 <translation id="1820259098641718022">পড়ার তালিকায় যোগ করা হয়েছে</translation>
+<translation id="1829392566394960110">{COUNT,plural, =0{চুরি হয়ে যাওয়া পাসওয়ার্ড}=1{চুরি হয়ে যাওয়া {COUNT}টি পাসওয়ার্ড}one{চুরি হয়ে যাওয়া {COUNT}টি পাসওয়ার্ড}other{চুরি হয়ে যাওয়া {COUNT}টি পাসওয়ার্ড}}</translation>
 <translation id="1832848789136765277">আপনার সিঙ্ক করা ডেটা সবসময় যাতে অ্যাক্সেস করতে পারেন তা নিশ্চিত করতে, নিজের পরিচয় যাচাই করুন</translation>
 <translation id="1870148520156231997">পাসওয়ার্ড দেখুন</translation>
 <translation id="1872096359983322073">টর্চ</translation>
@@ -721,6 +722,7 @@
 <translation id="6152406514676263192">আপনার আগ্রহের উপর ভিত্তি করে সবচেয়ে প্রাসঙ্গিক কন্টেন্টের জন্য সিঙ্ক করুন।</translation>
 <translation id="6159839020698489198">ঐচ্ছিক</translation>
 <translation id="6170450281939467187">অনুবাদ করা যায়নি</translation>
+<translation id="6173499589275053515">পাসওয়ার্ড আপনার Google অ্যাকাউন্ট, <ph name="EMAIL" />-এ সেভ করা আছে</translation>
 <translation id="6177442314419606057">Chrome-এ সার্চ করুন</translation>
 <translation id="6184086493125982861">ট্যাব দেখান</translation>
 <translation id="6187302354554850004">শেষে সিঙ্ক হয়েছে: <ph name="LAST_USED_TIME" /></translation>
@@ -728,6 +730,7 @@
 <translation id="6193424046394092997">{count,plural, =1{{title}-এ বুকমার্ক করা হয়েছে}one{{title}-এ বুকমার্ক করা হয়েছে}other{{title}-এ বুকমার্ক করা হয়েছে}}</translation>
 <translation id="6196207969502475924">ভয়েস সার্চ</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT}টি ট্যাব বন্ধ করুন}one{{COUNT}টি ট্যাব বন্ধ করুন}other{{COUNT}টি ট্যাব বন্ধ করুন}}</translation>
+<translation id="6213567400989743524">সতর্কতা বাতিল করা হয়েছে</translation>
 <translation id="6219550825416862075">আপনাকে আবার স্বাগত জানাই</translation>
 <translation id="6219688215832490856">কখনও অনুবাদ করবেন না</translation>
 <translation id="6223816392543092032">আপনার সবকটি ডিভাইসে বুকমার্ক, ইতিহাস, পাসওয়ার্ড এবং অন্যান্য সেটিংস পান।</translation>
@@ -751,6 +754,7 @@
 <translation id="6346549652287021269">নতুন ডাউনলোড শুরু করবেন?</translation>
 <translation id="6347953390226388422">{count,plural, =1{এই ডিভাইস ও আপনার Google অ্যাকাউন্ট (<ph name="USER_EMAIL" />) থেকে এই ঠিকানা মুছে ফেলা হবে।}one{এই ডিভাইস ও আপনার Google অ্যাকাউন্ট (<ph name="USER_EMAIL" />) থেকে এইসব ঠিকানা মুছে ফেলা হবে।}other{এই ডিভাইস ও আপনার Google অ্যাকাউন্ট (<ph name="USER_EMAIL" />) থেকে এইসব ঠিকানা মুছে ফেলা হবে।}}</translation>
 <translation id="634878792104344809">আপনার সমস্ত ডিভাইসে বুকমার্ক, পাসওয়ার্ড, ইতিহাস এবং আরও অনেক কিছু সিঙ্ক করুন</translation>
+<translation id="6355820205320395730">দুর্বল পাসওয়ার্ড সহজেই অনুমান করা যায়। শক্তিশালী পাসওয়ার্ড তৈরি করছেন কিনা তা ভাল করে দেখে নিন। <ph name="BEGIN_LINK" />নিরাপত্তা সংক্রান্ত আরও পরামর্শ দেখুন।<ph name="END_LINK" /></translation>
 <translation id="6361848730467328243"><ph name="DOMAIN_NAME" /> ফলো করুন</translation>
 <translation id="6362362396625799311">কোনো ছদ্মবেশী ট্যাব নেই</translation>
 <translation id="6363526231572697780">ব্যবহারকারীর নাম নেই</translation>
@@ -854,6 +858,7 @@
 <translation id="6888009575607455378">আপনি কি সত্যিই আপনার করা পরিবর্তন বাতিল করতে চান?</translation>
 <translation id="6896758677409633944">কপি</translation>
 <translation id="6897187120838603299">পাসওয়ার্ড আপনার ডিভাইসে সেভ করা হবে।</translation>
+<translation id="6913136913033237761"><ph name="FOLDER_NAME" />। শুধুমাত্র এই ডিভাইসে।</translation>
 <translation id="6914583639806229067">আপনার কপি করা ছবি সার্চ করুন</translation>
 <translation id="6914783257214138813">এক্সপোর্ট করা ফাইল যারা দেখতে পান তারা আপনার পাসওয়ার্ডগুলিও দেখতে পাবেন।</translation>
 <translation id="6930799952781667037">এই ভাষায় পরিবর্তন করতে ট্যাপ করুন।</translation>
@@ -1013,10 +1018,12 @@
 <translation id="8084285576995584326">আপনার Google অ্যাকাউন্টের ডেটা নিয়ন্ত্রণ করুন</translation>
 <translation id="809543534949702122">সার্চ ইতিহাস</translation>
 <translation id="8101409298456377967">পাসওয়ার্ড তৈরি, সেভ ও ম্যানেজ করুন যাতে আপনি সহজেই সাইট ও অ্যাপে সাইন-ইন করতে পারেন। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
+<translation id="8102130909719902723">N</translation>
 <translation id="8105368624971345109">বন্ধ করুন</translation>
 <translation id="8114753159095730575">ফাইল ডাউনলোড করা যাবে। স্ক্রিনের নিচের দিকে বিকল্পগুলি উপলভ্য।</translation>
 <translation id="81313319706244542">২. পাসওয়ার্ডে ট্যাপ করুন</translation>
 <translation id="8132598642024322408">আগে <ph name="PREVIOUS_PRICE" /> ছিল এখন <ph name="PRICE" />।</translation>
+<translation id="813370552429173916">প্রতিটি সাইট বা অ্যাপের জন্য অনন্য পাসওয়ার্ড ব্যবহার করুন। আগে ব্যবহার করা কোনও পাসওয়ার্ড খুঁজে পেলে, সেটি ব্যবহার করেও অন্যান্য অ্যাকাউন্ট অ্যাক্সেসের চেষ্টা করা হতে পারে। ওয়েবসাইট খুলতে ক্লিক করুন এবং পাসওয়ার্ড এখনই পরিবর্তন করুন।</translation>
 <translation id="8136856065410661948">এটি Chrome এবং Google Lens থেকে আপনার Apple ক্যালেন্ডারে ইভেন্ট তৈরি করতে ব্যবহার করা হবে।</translation>
 <translation id="8156478151976189188">'পাসওয়ার্ড সিঙ্ক' ফিচার কাজ করছে না</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" />টি অ্যাকাউন্ট</translation>
@@ -1028,6 +1035,7 @@
 <translation id="8225985093977202398">ক্যাশ করা ছবি এবং ফাইল</translation>
 <translation id="8237382152611443140">অটোফিল পাসওয়ার্ড সেটিংস খুলুন</translation>
 <translation id="8261506727792406068">মুছুন</translation>
+<translation id="8264966119170358612">Google-এর নয়, এমন ডেটার নিরাপত্তা লঙ্ঘনের সময় আপনার সেভ করা কিছু পাসওয়ার্ড ফাঁস হয়ে গেছে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="8271720166617117963">অ্যাক্সেপ্ট করে সাইন-ইন করুন</translation>
 <translation id="8278938988428169257">শব্দ বা বাক্যাংশ লিখুন</translation>
 <translation id="8281781826761538115">ডিফল্ট - <ph name="DEFAULT_LOCALE" /></translation>

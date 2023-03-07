@@ -2314,6 +2314,7 @@ Del</translation>
 <translation id="6738516213925468394">הנתונים שלך הוצפנו באמצעות <ph name="BEGIN_LINK" />ביטוי סיסמה לסנכרון<ph name="END_LINK" /> בתאריך <ph name="TIME" />. צריך להזין אותו כדי להתחיל את הסנכרון.</translation>
 <translation id="674375294223700098">שגיאת אישור שרת לא ידוע.</translation>
 <translation id="6744009308914054259">בזמן ההמתנה לחיבור אפשר לעבור אל 'הורדות' כדי לקרוא מאמרים אופליין.</translation>
+<translation id="6745592621698551453">עדכון</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">שיחות ועידה בוידיאו</translation>
 <translation id="6753269504797312559">ערך מדיניות</translation>
@@ -2778,7 +2779,6 @@ Del</translation>
 <translation id="7802523362929240268">האתר חוקי</translation>
 <translation id="7802989406998618639">יש להזין את קוד האבטחה בן <ph name="NUMBER_OF_DIGITS" /> הספרות שמופיע על <ph name="SIDE_OF_CARD" /> כדי שהבנק יוכל לאמת את זהותך</translation>
 <translation id="780301667611848630">לא תודה</translation>
-<translation id="7805571567667010077">מנוהלת על ידי הארגון שלך</translation>
 <translation id="7805768142964895445">סטטוס</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">‏האם להסיר מ-Chrome הצעות בשביל טפסים?</translation>
@@ -3001,6 +3001,7 @@ Del</translation>
 <translation id="8369073279043109617">לקבלת קוד חדש</translation>
 <translation id="8371889962595521444">אישורי בסיס בהתאמה אישית</translation>
 <translation id="8374636051559112948">משתנה</translation>
+<translation id="8378714024927312812">מנוהל על-ידי הארגון</translation>
 <translation id="8380941800586852976">מסוכן</translation>
 <translation id="8381674639488873545">החיובים האלה יכולים להיות חד פעמיים או חוזרים, והם לא תמיד מוצגים בצורה בולטת. <ph name="BEGIN_LINK" />אני רוצה להמשיך בכל זאת<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">השיתוף מ-<ph name="ORIGIN_NAME" /> אל <ph name="VM_NAME" /> חסום בהתאם למדיניות של מנהל המערכת</translation>

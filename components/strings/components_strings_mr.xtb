@@ -345,6 +345,7 @@
 <translation id="1733064249834771892">फॉंट</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">सिस्टम प्रशासकाशी संपर्क साधण्याचा प्रयत्न करा.</translation>
+<translation id="1736158756193183352">नेटवर्कमध्ये <ph name="BEGIN_LINK" />साइन इन करत आहे<ph name="END_LINK" /></translation>
 <translation id="1736420071277903564">काँप्युटर</translation>
 <translation id="1740951997222943430">वैध समाप्ती महिना एंटर करा</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode हे <ph name="SECURE_DNS_MODE_SECURE" /> असेल तेव्हा धोरण नमूद केलेले असणे आणि एक योग्य स्ट्रिंग असणे आवश्यक आहे.</translation>
@@ -1191,6 +1192,7 @@
 <translation id="3949601375789751990">तुमचा ब्राउझिंग इतिहास येथे दिसतो</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">सेव्ह केलेल्या पेमेंट पद्धती नाहीत</translation>
+<translation id="3950574001630941635">ट्यूटोरियल रीस्टार्ट करा</translation>
 <translation id="3950820424414687140">साइन इन करा</translation>
 <translation id="3958057596965527988">४ x ४ इं</translation>
 <translation id="3961148744525529027">पेमेंट हँडलर शीट अर्धे उघडलेले आहे</translation>
@@ -2309,6 +2311,7 @@
 <translation id="6738516213925468394">तुमचा डेटा तुमच्या <ph name="BEGIN_LINK" />सिंक पासफ्रेज<ph name="END_LINK" /> ने <ph name="TIME" /> वाजता एंक्रिप्ट केला गेला होता. सिंक सुरू करण्यासाठी तो एंटर करा.</translation>
 <translation id="674375294223700098">अज्ञात सर्व्हर सर्टिफिकेट एरर.</translation>
 <translation id="6744009308914054259">कनेक्शनची वाट पाहत असताना, तुम्ही ऑफलाइन लेख वाचण्यासाठी डाउनलोडवर जाऊ शकता.</translation>
+<translation id="6745592621698551453">आता अपडेट करा</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">टेलीकॉंफरन्सिंग</translation>
 <translation id="6753269504797312559">धोरण मूल्य</translation>
@@ -2773,7 +2776,6 @@
 <translation id="7802523362929240268">साइट कायदेशीर आहे</translation>
 <translation id="7802989406998618639"><ph name="SIDE_OF_CARD" /> बाजूस असलेला <ph name="NUMBER_OF_DIGITS" />-अंकी सुरक्षा कोड एंटर करा, जेणेकरून तुमची बॅक हे तुम्ही असल्याची पडताळणी करू शकेल</translation>
 <translation id="780301667611848630">नाही, नको</translation>
-<translation id="7805571567667010077">तुमच्या संस्थेने व्यवस्थापित केलेले</translation>
 <translation id="7805768142964895445">स्थिती</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Chrome मधून सूचना फॉर्म काढून टाकायचा?</translation>
@@ -2996,6 +2998,7 @@
 <translation id="8369073279043109617">नवीन कोड मिळवा</translation>
 <translation id="8371889962595521444">कस्टम रूट सर्टिफिकेट</translation>
 <translation id="8374636051559112948">बदलते</translation>
+<translation id="8378714024927312812">तुमच्या संस्थेकडून व्यवस्थापित केलेले</translation>
 <translation id="8380941800586852976">धोकादायक</translation>
 <translation id="8381674639488873545">हे शुल्क एका वेळचे किंवा आवर्ती असू शकते आणि ते उघड नसणे शक्य आहे. <ph name="BEGIN_LINK" />तरीही दाखवा<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">अ‍ॅडमिनिस्ट्रेटर धोरणाद्वारे <ph name="ORIGIN_NAME" /> वरून <ph name="VM_NAME" /> वर शेअर करणे ब्लॉक केले आहे</translation>

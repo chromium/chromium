@@ -236,9 +236,9 @@
 <translation id="319101249942218879">Slika avatara je promijenjena</translation>
 <translation id="3192947282887913208">Audio fajlovi</translation>
 <translation id="3199982728237701504">Ulagač za dokumente (dvostrano skeniranje)</translation>
-<translation id="3211671540163313381">Ploha za smjerove za mapiranje tipki</translation>
+<translation id="3211671540163313381">Dugmad za smjer za mapiranje tipki</translation>
 <translation id="3226405216343213872">Traženje skenera</translation>
-<translation id="3226657629376379887">Izbornik aktivnosti izgleda</translation>
+<translation id="3226657629376379887">Raspored menija radnji</translation>
 <translation id="3246869037381808805">Zadaci za štampanje stariji od 1 dana će se ukloniti</translation>
 <translation id="3268178239013324452">Nije uspjelo – poklopac je otvoren</translation>
 <translation id="3275506277319227640">Priključite <ph name="DIRECTION" /></translation>
@@ -806,7 +806,7 @@
 <translation id="8318753676953949627">Nema slika</translation>
 <translation id="8336739000755212683">Promijenite sliku računa uređaja</translation>
 <translation id="8347227221149377169">Zadaci štampanja</translation>
-<translation id="8351855506390808906">Točka dodira za mapiranje tipki</translation>
+<translation id="8351855506390808906">Tačka dodira za mapiranje tipki</translation>
 <translation id="8352772353338965963">Dodajte račun za višestruku prijavu. Svim računima na kojima je izvršena prijava je moguće pristupiti bez lozinke. Ovu funkciju treba koristiti isključivo s pouzdanim računima.</translation>
 <translation id="8364946094152050673">Prazni serveri naziva</translation>
 <translation id="8372477600026034341">Dodatni host računari</translation>
@@ -904,7 +904,7 @@
 <translation id="9138630967333032450">Lijeva tipka Shift</translation>
 <translation id="9149391708638971077">Pokreni test memorije</translation>
 <translation id="9157515863513902090">Priključite na većoj strani</translation>
-<translation id="9161276708550942948">razmaknica</translation>
+<translation id="9161276708550942948">razmak</translation>
 <translation id="9173638680043580060">Preostalo je manje od minute</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9188992814426075118">Tastatura može automatski prilagoditi pozadinsku sliku</translation>

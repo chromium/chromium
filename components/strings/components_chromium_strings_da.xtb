@@ -27,7 +27,9 @@
           &gt;
           <ph name="PROXIES_TITLE" />,
           og kontrollér, at din konfiguration er indstillet til "ingen proxy" eller "direkte".</translation>
+<translation id="6549378540556750549">Chromium leveres også ved hjælp af andet <ph name="BEGIN_LINK_OSS" />open source-software<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Dine ændringer træder i kraft, næste gang du genstarter Chromium.</translation>
+<translation id="7681937895330411637">Chromium leveres ved hjælp af open source-projektet <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="7861509383340276692">Gå til
           Chromium-menuen &gt;
           <ph name="SETTINGS_TITLE" />

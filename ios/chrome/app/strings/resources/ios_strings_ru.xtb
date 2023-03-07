@@ -81,6 +81,7 @@
 <translation id="149095475893949513">Этот сайт пытается скачать профиль конфигурации.</translation>
 <translation id="1491277525950327607">Для переключения нажмите дважды</translation>
 <translation id="1492417797159476138">Вы уже сохранили это имя пользователя для данного сайта.</translation>
+<translation id="1497590942294823549">Меню → Менеджер паролей</translation>
 <translation id="1498283581832036924">Данные аккаунта для сайта <ph name="WEBSITE" /> удалены не будут.</translation>
 <translation id="1506063256525392513">Это нужно, чтобы делать снимки, загружать фотографии и сканировать QR-коды.</translation>
 <translation id="1509486075633541495">Войдите в аккаунт</translation>
@@ -242,6 +243,7 @@
 <translation id="271033894570825754">Новый</translation>
 <translation id="2712127207578915686">Невозможно открыть файл</translation>
 <translation id="2718352093833049315">Только Wi-Fi</translation>
+<translation id="2737716090799520623">Если вы вошли в Chrome, сохраненные пароли будут добавляться в ваш аккаунт Google (<ph name="ACCOUNT" />). Отключить эту функцию можно в <ph name="BEGIN_LINK" />настройках<ph name="END_LINK" />.</translation>
 <translation id="2747003861858887689">Предыдущее поле</translation>
 <translation id="2749231692441336879">Вы подписались на "<ph name="CHANNEL_NAME" />".</translation>
 <translation id="2764831210418622012">только что</translation>
@@ -843,6 +845,7 @@
 <translation id="6801927553864092214">Чтобы посмотреть сайт анонимно, откройте вкладку в режиме инкогнито.</translation>
 <translation id="6807889908376551050">Показать все…</translation>
 <translation id="681368974849482173">Сохранено</translation>
+<translation id="6822587385560699678">Если эта функция включена, пароли сохраняются в аккаунте <ph name="ACCOUNT" />. Иначе они сохраняются только на этом устройстве.</translation>
 <translation id="683022620450280906">Вы можете использовать сохраненные пароли на любых устройствах. Они сохраняются в Google Менеджере паролей для аккаунта <ph name="EMAIL" />.</translation>
 <translation id="6831043979455480757">Перевести</translation>
 <translation id="6842136130964845393">Чтобы всегда иметь доступ к сохраненным паролям, подтвердите свою личность.</translation>

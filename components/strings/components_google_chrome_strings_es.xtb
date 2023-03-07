@@ -40,4 +40,6 @@
 <translation id="8187289872471304532">Accede a
           Aplicaciones &gt; Preferencias del Sistema &gt; Red &gt; Configuración avanzada &gt; Proxies
           y desactiva las casillas de verificación de los proxies seleccionados.</translation>
+<translation id="8232971017369963250">Chrome se ha podido crear gracias al proyecto de software libre <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
+<translation id="8279509328145658601">Chrome también se ha podido crear gracias a otro <ph name="BEGIN_LINK_OSS" />software libre<ph name="END_LINK_OSS" />.</translation>
 </translationbundle>

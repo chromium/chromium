@@ -2311,6 +2311,7 @@
 <translation id="6738516213925468394">تم ترميز بياناتك باستخدام <ph name="BEGIN_LINK" />عبارة مرور المزامنة<ph name="END_LINK" /> في <ph name="TIME" />. يُرجى إدخالها لبدء المزامنة.</translation>
 <translation id="674375294223700098">حدث خطأ غير معروف في شهادة الخادم.</translation>
 <translation id="6744009308914054259">أثناء انتظار اتصال، يمكنك الانتقال إلى مجلد "المحتوى الذي تم تنزيله" للاطِّلاع على المقالات بلا اتصال بالإنترنت.</translation>
+<translation id="6745592621698551453">التحديث الآن</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">مؤتمرات عن بُعد</translation>
 <translation id="6753269504797312559">قيمة السياسة</translation>
@@ -2775,7 +2776,6 @@
 <translation id="7802523362929240268">الموقع الإلكتروني مشروع</translation>
 <translation id="7802989406998618639">يُرجى إدخال رمز الأمان المكوّن من ‏<ph name="NUMBER_OF_DIGITS" /> أرقام المكتوب على <ph name="SIDE_OF_CARD" /> ليتمكّن المصرف من إثبات هويتك.</translation>
 <translation id="780301667611848630">لا، شكرًا</translation>
-<translation id="7805571567667010077">إذن تديره مؤسستك</translation>
 <translation id="7805768142964895445">الحالة</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">‏هل تريد إزالة اقتراح النموذج من Chrome؟</translation>
@@ -3000,6 +3000,7 @@
 <translation id="8369073279043109617">الحصول على رمز جديد</translation>
 <translation id="8371889962595521444">شهادات الجذر المُخصَّصة</translation>
 <translation id="8374636051559112948">يختلف من جهاز إلى آخر</translation>
+<translation id="8378714024927312812">بإدارة مؤسستك</translation>
 <translation id="8380941800586852976">ضارة</translation>
 <translation id="8381674639488873545">قد يتم تحصيل هذه الرسوم لمرة واحدة أو بشكل متكرِّر، وقد تكون غير واضحة. <ph name="BEGIN_LINK" />عرض على أي حال<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">تحظر سياسة المشرف إمكانية المشاركة من <ph name="ORIGIN_NAME" /> إلى <ph name="VM_NAME" />.</translation>

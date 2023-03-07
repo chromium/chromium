@@ -126,6 +126,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="1813414402673211292">Pastro të dhënat e shfletimit</translation>
 <translation id="1815941218935345331">Kodi i kalimit</translation>
 <translation id="1820259098641718022">U shtua te lista e leximit</translation>
+<translation id="1829392566394960110">{COUNT,plural, =0{Fjalëkalimet e komprometuara}=1{{COUNT} fjalëkalim i komprometuar}other{{COUNT} fjalëkalime të komprometuara}}</translation>
 <translation id="1832848789136765277">Për t'u siguruar që mund të qasesh gjithmonë te të dhënat e tua të sinkronizuara, verifiko që je ti</translation>
 <translation id="1870148520156231997">Zbulo fjalëkalimin</translation>
 <translation id="1872096359983322073">Elektriku</translation>
@@ -720,6 +721,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6152406514676263192">Sinkronizoje për përmbajtjet më të përshtatshme bazuar në interesat e tu.</translation>
 <translation id="6159839020698489198">opsionale</translation>
 <translation id="6170450281939467187">Përkthimi dështoi</translation>
+<translation id="6173499589275053515">Fjalëkalimi u ruajt në "Llogarinë tënde të Google", <ph name="EMAIL" /></translation>
 <translation id="6177442314419606057">Kërko në Chrome</translation>
 <translation id="6184086493125982861">Trego skedat</translation>
 <translation id="6187302354554850004">Sinkronizimi i fundit: <ph name="LAST_USED_TIME" /></translation>
@@ -727,6 +729,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6193424046394092997">{count,plural, =1{U shënua si faqeshënues te {title}}other{U shënuan si faqeshënues te {title}}}</translation>
 <translation id="6196207969502475924">Kërkimi me zë</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Mbyll {COUNT} skedë}other{Mbyll {COUNT} skeda}}</translation>
+<translation id="6213567400989743524">Paralajmërimet e hequra</translation>
 <translation id="6219550825416862075">Mirë se u ktheve</translation>
 <translation id="6219688215832490856">Asnjëherë mos përkthe</translation>
 <translation id="6223816392543092032">Merr faqeshënuesit, historikun, fjalëkalimet dhe cilësime të tjera në të gjitha pajisjet e tua.</translation>
@@ -750,6 +753,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6346549652287021269">Të niset shkarkim i ri?</translation>
 <translation id="6347953390226388422">{count,plural, =1{Kjo adresë do të fshihet nga "Llogaria jote e Google" (<ph name="USER_EMAIL" />) dhe nga kjo pajisje.}other{Këto adresa do të fshihen nga "Llogaria jote e Google" (<ph name="USER_EMAIL" />) dhe nga kjo pajisje.}}</translation>
 <translation id="634878792104344809">Sinkronizo fjalëkalimet, historikun tënd etj. në të gjitha pajisjet e tua</translation>
+<translation id="6355820205320395730">Fjalëkalimet e dobëta mund të gjenden me lehtësi. Sigurohu që po krijon fjalëkalime të forta. <ph name="BEGIN_LINK" />Shiko më shumë këshilla sigurie.<ph name="END_LINK" /></translation>
 <translation id="6361848730467328243">Ndiq <ph name="DOMAIN_NAME" /></translation>
 <translation id="6362362396625799311">Asnjë skedë "e fshehtë"</translation>
 <translation id="6363526231572697780">Nuk ka emër përdoruesi</translation>
@@ -853,6 +857,7 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="6888009575607455378">Je i sigurt që dëshiron t'i heqësh ndryshimet e tua?</translation>
 <translation id="6896758677409633944">Kopjo</translation>
 <translation id="6897187120838603299">Fjalëkalimi yt do të ruhet në pajisjen tënde.</translation>
+<translation id="6913136913033237761"><ph name="FOLDER_NAME" />. Vetëm në këtë pajisje.</translation>
 <translation id="6914583639806229067">Kërko për imazhin që kopjove</translation>
 <translation id="6914783257214138813">Fjalëkalimet e tua do të jenë të dukshme për këdo që mund ta shikojë skedarin e eksportuar.</translation>
 <translation id="6930799952781667037">Trokit për ta ndryshuar në këtë gjuhë.</translation>
@@ -1012,10 +1017,12 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8084285576995584326">Kontrollo të dhënat e "Llogarisë së Google"</translation>
 <translation id="809543534949702122">Historiku i kërkimeve</translation>
 <translation id="8101409298456377967">Krijo, ruaj dhe menaxho fjalëkalimet e tua që të mund të identifikohesh me lehtësi në sajte dhe aplikacione. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
+<translation id="8102130909719902723">E re</translation>
 <translation id="8105368624971345109">Çaktivizo</translation>
 <translation id="8114753159095730575">Ofrohet shkarkimi i skedarit. Opsionet ofrohen pranë fundit të ekranit.</translation>
 <translation id="81313319706244542">2. Trokit te "Fjalëkalimet"</translation>
 <translation id="8132598642024322408">Tani <ph name="PRICE" />, ishte <ph name="PREVIOUS_PRICE" />.</translation>
+<translation id="813370552429173916">Përdor një fjalëkalim unik për çdo sajt ose aplikacion. Nëse dikush zbulon një fjalëkalim të ripërdorur, ai mund të përdoret për të marrë qasje te llogaritë e tua të tjera. Kliko për të hapur sajtin e uebit dhe për t'i ndryshuar tani.</translation>
 <translation id="8136856065410661948">Kjo do të përdoret për të krijuar ngjarje në Apple Calendar nga Chrome dhe nga "Lentja e Google".</translation>
 <translation id="8156478151976189188">Sinkronizimi i fjalëkalimeve nuk po funksionon</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> llogari</translation>
@@ -1027,6 +1034,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8225985093977202398">Imazhet dhe skedarët në memorien specifike</translation>
 <translation id="8237382152611443140">Hap "Cilësimet e plotësimit automatik të fjalëkalimit"</translation>
 <translation id="8261506727792406068">Fshi</translation>
+<translation id="8264966119170358612">Disa nga fjalëkalimet e tua të ruajtura janë ekspozuar në një nxjerrje të paautorizuar të të dhënave nga një palë që nuk është Google. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="8271720166617117963">Pranoje dhe identifikohu</translation>
 <translation id="8278938988428169257">Fut një fjalë ose një frazë</translation>
 <translation id="8281781826761538115">Parazgjedhja - <ph name="DEFAULT_LOCALE" /></translation>

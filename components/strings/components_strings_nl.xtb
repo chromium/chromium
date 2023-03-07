@@ -345,6 +345,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1733064249834771892">lettertypen</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Probeer contact op te nemen met de systeembeheerder.</translation>
+<translation id="1736158756193183352"><ph name="BEGIN_LINK" />Inloggen<ph name="END_LINK" /> bij het netwerk</translation>
 <translation id="1736420071277903564">Computer</translation>
 <translation id="1740951997222943430">Geef een geldige vervalmaand op</translation>
 <translation id="1741613555002899862">Moet gespecificeerd zijn en een geldige tekenreeks zijn als DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> is.</translation>
@@ -1187,6 +1188,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3949601375789751990">Je browsegeschiedenis zie je hier</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Geen opgeslagen betaalmethoden</translation>
+<translation id="3950574001630941635">Tutorial opnieuw starten</translation>
 <translation id="3950820424414687140">Inloggen</translation>
 <translation id="3958057596965527988">4 x 4 inch</translation>
 <translation id="3961148744525529027">Blad voor betalingshandler is half geopend</translation>
@@ -2303,6 +2305,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6738516213925468394">Je gegevens zijn op <ph name="TIME" /> versleuteld met je <ph name="BEGIN_LINK" />wachtwoordzin voor synchronisatie<ph name="END_LINK" />. Geef deze op om de synchronisatie te starten.</translation>
 <translation id="674375294223700098">Onbekende fout met servercertificaat.</translation>
 <translation id="6744009308914054259">Terwijl je op een verbinding wacht, kun je naar Downloads gaan om offline artikelen te lezen.</translation>
+<translation id="6745592621698551453">Nu updaten</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Telefonisch vergaderen</translation>
 <translation id="6753269504797312559">Beleidswaarde</translation>
@@ -2767,7 +2770,6 @@ Aanvullende informatie:
 <translation id="7802523362929240268">Site is legitiem</translation>
 <translation id="7802989406998618639">Geef de beveiligingscode van <ph name="NUMBER_OF_DIGITS" /> cijfers op de <ph name="SIDE_OF_CARD" /> op, zodat je bank kan verifiëren dat jij het bent</translation>
 <translation id="780301667611848630">Nee, bedankt</translation>
-<translation id="7805571567667010077">Beheerd door je organisatie</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Formuliersuggestie verwijderen uit Chrome?</translation>
@@ -2990,6 +2992,7 @@ Aanvullende informatie:
 <translation id="8369073279043109617">Nieuwe code ophalen</translation>
 <translation id="8371889962595521444">Custom rootcertificaten</translation>
 <translation id="8374636051559112948">Varieert</translation>
+<translation id="8378714024927312812">Beheerd door je organisatie</translation>
 <translation id="8380941800586852976">Gevaarlijk</translation>
 <translation id="8381674639488873545">Deze kosten kunnen eenmalig of terugkerend zijn en zijn mogelijk niet duidelijk aangegeven. <ph name="BEGIN_LINK" />Toch bekijken<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Delen van <ph name="ORIGIN_NAME" /> naar <ph name="VM_NAME" /> is geblokkeerd op basis van beheerdersbeleid</translation>

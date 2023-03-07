@@ -1636,6 +1636,7 @@
 <translation id="2383825469508278924">שינוי המיפוי של מקשי המקלדת, מקשי הפונקציות ועוד</translation>
 <translation id="2387052489799050037">מעבר לדף הבית</translation>
 <translation id="2387602571959163792"><ph name="DESK_NAME" /> (הנוכחי)</translation>
+<translation id="2390226379317200116">אפשר להוסיף הערה או דעה על הדף הזה כדי לקרוא אותן מאוחר יותר.</translation>
 <translation id="2390347491606624519">‏לא ניתן להתחבר לשרת proxy, יש להיכנס שוב</translation>
 <translation id="2390782873446084770">‏סנכרון Wi-Fi</translation>
 <translation id="2391419135980381625">גופן רגיל</translation>
@@ -2327,6 +2328,7 @@
 <translation id="3003967365858406397">‏ה-<ph name="PHONE_NAME" /> ייצור חיבור Wi-Fi פרטי.</translation>
 <translation id="3005574332301273731">לא להציג</translation>
 <translation id="3006881078666935414">אין נתוני שימוש</translation>
+<translation id="3007410324195400631">הוספת הערות על הדף הזה</translation>
 <translation id="3007771295016901659">שכפול הכרטיסייה</translation>
 <translation id="3008232374986381779">‏הפעלת כלים, עורכים וסביבות פיתוח משולבות (IDE) של Linux ב-<ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">איפוס הרשאות</translation>
@@ -7346,7 +7348,7 @@
 <translation id="7615807797520072741">‏איפוס לגרסה הקלאסית של Chrome</translation>
 <translation id="7616214729753637086">רישום המכשיר מתבצע...</translation>
 <translation id="7617263010641145920">‏הפעלה של חנות Play</translation>
-<translation id="7617648809369507487">שימוש במצב שקט יותר של העברת הודעות</translation>
+<translation id="7617648809369507487">שימוש במצב שקט יותר של התראות</translation>
 <translation id="7621382409404463535">המערכת לא הצליחה לשמור את תצורת המכשיר.</translation>
 <translation id="7621595347123595643">לא תהיה אפשרות לשחזר נתונים מקומיים אם שוכחים את הסיסמה או קוד האימות.</translation>
 <translation id="7622114377921274169">בטעינה.</translation>
@@ -7727,6 +7729,7 @@
 <translation id="7940265372707990269">מיון לפי <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">‏המוּכנוּת לשיתוף אינטרנט (tethering):</translation>
 <translation id="7942349550061667556">אדום</translation>
+<translation id="7943349879009553083">האפשרות לא זמינה במצב אורח</translation>
 <translation id="7943368935008348579">‏הורדת קובצי ה-PDF</translation>
 <translation id="7943837619101191061">הוספת מיקום...</translation>
 <translation id="7944772052836377867">כדי לסנכרן צריך לאמת את הזהות שלך</translation>
@@ -8896,6 +8899,7 @@
 <translation id="8993945059918628059">יש לגעת עם האצבע בחיישן טביעות האצבע. נתוני טביעות האצבע נשמרים באופן מאובטח ואף פעם לא נשלחים ממכשיר <ph name="DEVICE_TYPE" />.</translation>
 <translation id="899403249577094719">‏כתובת אתר בסיסית של אישור Netscape</translation>
 <translation id="899657321862108550">‏ה-Chrome שלך, בכל מקום</translation>
+<translation id="899671834467367922">יש להתחבר כמשתמש אחר כדי להציג את ההערות ולהוסיף הערות בדף הזה.</translation>
 <translation id="8998078711690114234">סוג הקובץ הזה עלול להיות מסוכן. יש לשמור את הקובץ רק אם האתר <ph name="ORIGIN" /> מהימן</translation>
 <translation id="8999560016882908256">שגיאה בתחביר של קטע: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">יש לגעת בחיישן טביעות האצבע שבצד ימין של <ph name="DEVICE_TYPE" />. נתוני טביעות האצבע נשמרים באופן מאובטח ואף פעם לא נשלחים ממכשיר <ph name="DEVICE_TYPE" />.</translation>

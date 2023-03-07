@@ -2304,6 +2304,7 @@
 <translation id="6738516213925468394"><ph name="TIME" />க்கு உங்கள் தரவு உங்கள் <ph name="BEGIN_LINK" />ஒத்திசைவுக் கடவுச்சொற்றொடரைக்<ph name="END_LINK" /> கொண்டு என்க்ரிப்ட் செய்யப்பட்டது. ஒத்திசைவைத் தொடங்க, அதை உள்ளிடவும்.</translation>
 <translation id="674375294223700098">தெரியாத சேவையகச் சான்றிதழ் பிழை.</translation>
 <translation id="6744009308914054259">இணைப்புக்காகக் காத்திருக்கும்போது ​​ஆஃப்லைன் கட்டுரைகளைப் படிக்க, ‘பதிவிறக்கங்கள்’ என்பதைப் பார்க்கவும்.</translation>
+<translation id="6745592621698551453">இப்போது புதுப்பி</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">டெலி கான்ஃபிரன்ஸிங்</translation>
 <translation id="6753269504797312559">கொள்கை மதிப்பு</translation>
@@ -2768,7 +2769,6 @@
 <translation id="7802523362929240268">தளமானது சட்டப்பூர்வமானது</translation>
 <translation id="7802989406998618639">பணப் பரிவர்த்தனை செய்வது நீங்கள்தான் என்பதை உங்கள் பேங்க் சரிபார்க்கக்கூடிய வகையில் <ph name="SIDE_OF_CARD" /> உள்ள <ph name="NUMBER_OF_DIGITS" /> இலக்க பாதுகாப்புக் குறியீட்டை உள்ளிடவும்</translation>
 <translation id="780301667611848630">வேண்டாம்</translation>
-<translation id="7805571567667010077">உங்கள் நிறுவனத்தால் நிர்வகிக்கப்படுகிறது</translation>
 <translation id="7805768142964895445">நிலை</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Chrome இலிருந்து படிவப் பரிந்துரையை அகற்றவா?</translation>
@@ -2991,6 +2991,7 @@
 <translation id="8369073279043109617">புதிய குறியீட்டைப் பெறுக</translation>
 <translation id="8371889962595521444">பிரத்தியேகமான முதன்மை சான்றிதழ்கள்</translation>
 <translation id="8374636051559112948">மாறுபடும்</translation>
+<translation id="8378714024927312812">உங்கள் நிறுவனத்தால் நிர்வகிக்கப்படுகிறது</translation>
 <translation id="8380941800586852976">ஆபத்தானது</translation>
 <translation id="8381674639488873545">இந்தக் கட்டணங்கள் ஒருமுறை அல்லது தொடர்ந்து வசூலிக்கப்படலாம், அவை வெளிப்படையாகத் தெரிவிக்கப்படாமல் இருக்கலாம். <ph name="BEGIN_LINK" />எனினும் காண்பி<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698"><ph name="ORIGIN_NAME" /> என்ற தளத்திலிருந்து <ph name="VM_NAME" />க்குப் பகிர்வது நிர்வாகக் கொள்கையின்படி தடுக்கப்பட்டுள்ளது</translation>

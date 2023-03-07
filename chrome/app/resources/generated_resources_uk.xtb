@@ -562,6 +562,7 @@
 <translation id="1487335504823219454">Спеціальні налаштування ввімкнено</translation>
 <translation id="1493892686965953381">Очікування <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">Сайти можуть запитувати дозвіл на використання шрифтів, установлених на пристрої</translation>
+<translation id="1494429729245089920">Віртуальна машина "<ph name="VM_NAME" />" існує, але її тип не підтримується (має бути <ph name="APP_NAME" />). Зв’яжіться з адміністратором.</translation>
 <translation id="1495677929897281669">Назад на вкладку</translation>
 <translation id="1498498210836053409">Вимкнути режим залипання клавіш під час редагування тексту (Розумний режим залипання)</translation>
 <translation id="1500297251995790841">Невідомий пристрій [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>

@@ -2313,6 +2313,7 @@
 <translation id="6738516213925468394">Τα δεδομένα σας κρυπτογραφήθηκαν με τη <ph name="BEGIN_LINK" />φράση πρόσβασης συγχρονισμού<ph name="END_LINK" /> στις <ph name="TIME" />. Καταχωρίστε την, για να ξεκινήσει ο συγχρονισμός.</translation>
 <translation id="674375294223700098">Άγνωστο σφάλμα πιστοποιητικού διακομιστή</translation>
 <translation id="6744009308914054259">Ενώ περιμένετε για την επίτευξη κάποιας σύνδεσης, μπορείτε να μεταβείτε στις Λήψεις, για να διαβάσετε άρθρα εκτός σύνδεσης.</translation>
+<translation id="6745592621698551453">Ενημέρωση τώρα</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Τηλεσυνδιάσκεψη</translation>
 <translation id="6753269504797312559">Τιμή πολιτικής</translation>
@@ -2777,7 +2778,6 @@
 <translation id="7802523362929240268">Ο ιστότοπος είναι νόμιμος</translation>
 <translation id="7802989406998618639">Εισαγάγετε τον <ph name="NUMBER_OF_DIGITS" />-ψήφιο κωδικό ασφαλείας στο <ph name="SIDE_OF_CARD" /> για να επαληθεύσει η τράπεζα την ταυτότητά σας</translation>
 <translation id="780301667611848630">Όχι, ευχαριστώ</translation>
-<translation id="7805571567667010077">Υπό τη διαχείριση του οργανισμού σας</translation>
 <translation id="7805768142964895445">Κατάσταση</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Κατάργηση πρότασης φόρμας από το Chrome;</translation>
@@ -3001,6 +3001,7 @@
 <translation id="8369073279043109617">Λήψη νέου κωδικού</translation>
 <translation id="8371889962595521444">Προσαρμοσμένα πιστοποιητικά ρίζας</translation>
 <translation id="8374636051559112948">Ποικίλλει</translation>
+<translation id="8378714024927312812">Διαχειριζόμενο από τον οργανισμό σας</translation>
 <translation id="8380941800586852976">Επικίνδυνο</translation>
 <translation id="8381674639488873545">Αυτές οι χρεώσεις μπορεί να είναι εφάπαξ ή επαναλαμβανόμενες και ίσως να μην είναι εμφανείς.<ph name="BEGIN_LINK" />Εμφάνιση ούτως ή άλλως<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Η κοινοποίηση από το <ph name="ORIGIN_NAME" /> στο <ph name="VM_NAME" /> έχει αποκλειστεί από την πολιτική του διαχειριστή.</translation>

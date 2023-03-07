@@ -81,6 +81,7 @@
 <translation id="149095475893949513">ეს ვებსაიტი კონფიგურაციის პროფილის ჩამოტვირთვას ცდილობს.</translation>
 <translation id="1491277525950327607">პარამეტრის გადასართავად, შეეხეთ ორმაგად</translation>
 <translation id="1492417797159476138">მომხმარებლის ეს სახელი ამ საიტისთვის უკვე შეინახეთ</translation>
+<translation id="1497590942294823549">მენიუ → პაროლების მმართველი</translation>
 <translation id="1498283581832036924">თქვენი <ph name="WEBSITE" />-ის ანგარიში არ წაიშლება</translation>
 <translation id="1506063256525392513">საშუალებას გაძლევთ, გადაიღოთ და ატვირთოთ ფოტოები, ასევე, დაასკანიროთ QR კოდები</translation>
 <translation id="1509486075633541495">ვებსაიტში შესვლა</translation>
@@ -126,6 +127,7 @@
 <translation id="1813414402673211292">დათვალიერების მონაცემების გასუფთავება</translation>
 <translation id="1815941218935345331">საიდუმლო კოდი</translation>
 <translation id="1820259098641718022">დაემატა საკითხავ სიას</translation>
+<translation id="1829392566394960110">{COUNT,plural, =0{გატეხილი პაროლები}=1{{COUNT} გატეხილი პაროლი}other{{COUNT} გატეხილი პაროლი}}</translation>
 <translation id="1832848789136765277">იმაში დასარწმუნებლად, რომ ყოველთვის შეძლებთ თქვენს სინქრონიზებულ მონაცემებზე წვდომას, დაადასტურეთ, რომ ეს თქვენ ხართ</translation>
 <translation id="1870148520156231997">პაროლის გამოჩენა</translation>
 <translation id="1872096359983322073">ჩირაღდანი</translation>
@@ -241,6 +243,7 @@
 <translation id="271033894570825754">ახალი</translation>
 <translation id="2712127207578915686">ფაილის გახსნა შეუძლებელია</translation>
 <translation id="2718352093833049315">მხოლოდ Wi-Fi-ით</translation>
+<translation id="2737716090799520623">როცა Chrome-ში ხართ შესული, თქვენ მიერ შენახული პაროლები Google ანგარიშში გადაინაცვლებს (<ph name="ACCOUNT" />). ამ ფუნქციის გამოსართავად <ph name="BEGIN_LINK" />გადადით პარამეტრებში<ph name="END_LINK" />.</translation>
 <translation id="2747003861858887689">წინა ველი</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> თვალმიდევნებულია</translation>
 <translation id="2764831210418622012">ახლახან</translation>
@@ -720,6 +723,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="6152406514676263192">შეასრულეთ სინქრონიზაცია, ყველაზე რელევანტური კონტენტი რომ მიიღოთ თქვენს ინტერესებზე დაფუძნებით.</translation>
 <translation id="6159839020698489198">არასავალდებულო</translation>
 <translation id="6170450281939467187">თარგმნა ვერ მოხერხდა</translation>
+<translation id="6173499589275053515">პაროლი შეინახა თქვენს Google ანგარიშში (<ph name="EMAIL" />)</translation>
 <translation id="6177442314419606057">Chrome-ში ძიება</translation>
 <translation id="6184086493125982861">ჩანართების ჩვენება</translation>
 <translation id="6187302354554850004">ბოლო სინქრონიზაცია: <ph name="LAST_USED_TIME" /></translation>
@@ -727,6 +731,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="6193424046394092997">{count,plural, =1{ჩაინიშნა „{title}“-ში}other{ჩაინიშნა „{title}“-ში}}</translation>
 <translation id="6196207969502475924">ხმოვანი ძიება</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} ჩანართის დახურვა}other{{COUNT} ჩანართის დახურვა}}</translation>
+<translation id="6213567400989743524">დახურული გაფრთხილებები</translation>
 <translation id="6219550825416862075">კლავ მოგესალმებით</translation>
 <translation id="6219688215832490856">არასოდეს ითარგმნოს</translation>
 <translation id="6223816392543092032">იქონიეთ წვდომა თქვენს სანიშნეებზე, ისტორიაზე, პაროლებსა და სხვა პარამეტრებზე თქვენი ყველა მოწყობილობიდან.</translation>
@@ -750,6 +755,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="6346549652287021269">დაიწყოს ახალი ჩამოტვირთვა?</translation>
 <translation id="6347953390226388422">{count,plural, =1{ეს მისამართი წაიშლება როგორც თქვენი Google ანგარიშიდან (<ph name="USER_EMAIL" />), ისე ამ მოწყობილობიდან.}other{ეს მისამართები წაიშლება როგორც თქვენი Google ანგარიშიდან (<ph name="USER_EMAIL" />), ისე ამ მოწყობილობიდან.}}</translation>
 <translation id="634878792104344809">შეასრულეთ თქვენი პაროლების, ისტორიისა და სხვა კონტენტის სინქრონიზაცია თქვენს ყველა მოწყობილობას შორის</translation>
+<translation id="6355820205320395730">სუსტი პაროლები ადვილი გამოსაცნობია, დარწმუნდით, რომ ძლიერ პაროლს ქმნით. <ph name="BEGIN_LINK" />გაეცანით უსაფრთხოებასთან დაკავშირებულ სხვა რჩევებს.<ph name="END_LINK" /></translation>
 <translation id="6361848730467328243"><ph name="DOMAIN_NAME" />-ისთვის თვალის მიდევნება</translation>
 <translation id="6362362396625799311">ინკოგნიტო ჩანართები არ არის</translation>
 <translation id="6363526231572697780">მომხმარებლის სახელის გარეშე</translation>
@@ -839,6 +845,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="6801927553864092214">ვების კონფიდენციალურად დასათვალიერებლად გახსენით ინკოგნიტო ჩანართი</translation>
 <translation id="6807889908376551050">ყველას ჩვენება…</translation>
 <translation id="681368974849482173">ელემენტი შექმნილია</translation>
+<translation id="6822587385560699678">ჩართვის შემთხვევაში პაროლები შეინახება <ph name="ACCOUNT" />-ში. გამორთვის შემთხვევაში პაროლები შეინახება მხოლოდ ამ მოწყობილობაზე.</translation>
 <translation id="683022620450280906">შენახული პაროლების გამოყენება ნებისმიერ მოწყობილობაზე შეგიძლიათ. ისინი ინახება Google პაროლების მმართველში <ph name="EMAIL" />-თვის</translation>
 <translation id="6831043979455480757">თარგმნა</translation>
 <translation id="6842136130964845393">იმაში დასარწმუნებლად, რომ ყოველთვის შეძლებთ თქვენს შენახულ პაროლებზე წვდომას, დაადასტურეთ, რომ ეს თქვენ ხართ</translation>
@@ -853,6 +860,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="6888009575607455378">ნამდვილად გსურთ ცვლილებების გაუქმება?</translation>
 <translation id="6896758677409633944">კოპირება</translation>
 <translation id="6897187120838603299">თქვენი პაროლი თქვენს მოწყობილობაზე შეინახება.</translation>
+<translation id="6913136913033237761"><ph name="FOLDER_NAME" />. მხოლოდ ამ მოწყობილობაზე.</translation>
 <translation id="6914583639806229067">თქვენ მიერ კოპირებული სურათის ძიება</translation>
 <translation id="6914783257214138813">თქვენს პაროლებს დაინახავს ნებისმიერი, ვისაც ექნება წვდომა ექსპორტირებულ ფაილზე.</translation>
 <translation id="6930799952781667037">შეეხეთ ამ ენის შესაცვლელად.</translation>
@@ -1012,10 +1020,12 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="8084285576995584326">მართეთ თქვენი Google ანგარიშის მონაცემები</translation>
 <translation id="809543534949702122">ძიების ისტორია</translation>
 <translation id="8101409298456377967">შექმენით, შეინახეთ და მართეთ თქვენი პაროლები, რომ მარტივად შეხვიდეთ საიტებსა და აპებში. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
+<translation id="8102130909719902723">ა</translation>
 <translation id="8105368624971345109">გამორთვა</translation>
 <translation id="8114753159095730575">შესაძლებელია ფაილის ჩამოტვირთვა. ვარიანტები ხელმისაწვდომია ეკრანის ქვედა ნაწილთან.</translation>
 <translation id="81313319706244542">2. შეეხეთ „პაროლებს“</translation>
 <translation id="8132598642024322408">ამჟამად <ph name="PRICE" />, იყო <ph name="PREVIOUS_PRICE" />.</translation>
+<translation id="813370552429173916">გამოიყენეთ უნიკალური პაროლი თითოეული ვებსაიტისა თუ აპისთვის. თუ ვინმე გაიგებს პაროლს, რომელსაც რამდენიმე ადგილას იყენებთ, ის თქვენს სხვა ანგარიშებში წვდომასაც შეძლებს. დააწკაპუნეთ, რომ გახსნათ ვებსაიტი და პაროლები ახლავე შეცვალოთ.</translation>
 <translation id="8136856065410661948">ამის მეშვეობით შესაძლებელი გახდება, Chrome-ისა და Google Lens-ის მეშვეობით შექმნათ მოვლენები თქვენს Apple Calendar-ში.</translation>
 <translation id="8156478151976189188">პაროლების სინქრონიზაცია არ მუშაობს</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> ანგარიში</translation>
@@ -1027,6 +1037,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="8225985093977202398">ქეშირებული სურათები და ფაილები</translation>
 <translation id="8237382152611443140">გახსენით პაროლების ავტომატური შევსების პარამეტრები</translation>
 <translation id="8261506727792406068">წაშლა</translation>
+<translation id="8264966119170358612">თქვენი ზოგიერთი შენახული პაროლი გამჟღავნდა Google-ის მიღმა პერსონალურ მონაცემთა გაჟონვის დროს. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="8271720166617117963">მიღება და შესვლა</translation>
 <translation id="8278938988428169257">შეიყვანეთ სიტყვა ან ფრაზა</translation>
 <translation id="8281781826761538115">ნაგულისხმევი — <ph name="DEFAULT_LOCALE" /></translation>

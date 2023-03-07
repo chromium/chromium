@@ -3156,6 +3156,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3790417903123637354">Coś poszło nie tak. Spróbuj ponownie później</translation>
 <translation id="379082410132524484">Twoja karta straciła ważność</translation>
 <translation id="3792973596468118484">Rozszerzenia: <ph name="NUM_EXTENSIONS" /></translation>
+<translation id="3794792524918736965">Włącz Windows Hello</translation>
 <translation id="379500251094592809">Aby użyć funkcji Udostępnianie w pobliżu, dopilnuj, by obydwa urządzenia były odblokowane, znajdowały się blisko siebie i miały włączony Bluetooth. Jeśli chcesz coś udostępnić Chromebookowi, którego nie masz w kontaktach, upewnij się, że ma włączoną Widoczność w pobliżu (kliknij godzinę, by otworzyć pasek stanu, a potem włącz Widoczność w pobliżu). <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">Wyłączono</translation>
 <translation id="3795766489237825963">Odtwórz animacje</translation>
@@ -6417,6 +6418,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6790497603648687708">Dodano zdalnie: <ph name="EXTENSION_NAME" /></translation>
 <translation id="6790820461102226165">Dodaj osobę...</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
+<translation id="679486139907144816">Aby zalogować się na tej stronie przy użyciu klucza, musisz włączyć w ustawieniach Windows Hello. Następnie wróć na tę stronę i spróbuj ponownie.</translation>
 <translation id="6795371939514004514">Automatyczne skanowanie pozwala przechodzić między elementami na ekranie automatycznie. Gdy element zostanie podświetlony, kliknij „Wybierz”, aby go aktywować.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6796509790850723820">Renderuj</translation>
@@ -8337,6 +8339,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8513108775083588393">Autoobracanie</translation>
 <translation id="8514746246728959655">Użyj innego klucza bezpieczeństwa</translation>
 <translation id="8514955299594277296">Nie zezwalaj witrynom na zapisywanie danych na urządzeniu (niezalecane)</translation>
+<translation id="8517759303731677493">Edytuj…</translation>
 <translation id="8519895319663397036">Nie udało się zaimportować haseł. Rozmiar pliku powinien być mniejszy niż 150 KB.</translation>
 <translation id="8523493869875972733">Zachowaj zmiany</translation>
 <translation id="8523849605371521713">Dodane przez zasady</translation>

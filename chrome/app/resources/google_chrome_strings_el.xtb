@@ -257,6 +257,7 @@
 <translation id="6010556343189461180">Για τη λήψη μελλοντικών ενημερώσεων του Google Chrome, θα χρειαστείτε macOS 10.15 ή νεότερη έκδοση. Αυτός ο υπολογιστής χρησιμοποιεί macOS 10.14.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Το Chrome θα κλείσει τώρα.}=1{Το Chrome θα κλείσει σε 1 δευτερόλεπτο.}other{Το Chrome θα κλείσει σε # δευτερόλεπτα.}}</translation>
 <translation id="6022659036123304283">Προσαρμόστε το Chrome για εσάς</translation>
+<translation id="6025087594896450715">Θα γίνει επανεκκίνηση του Google Chrome σε <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Κλείσιμο</translation>
 <translation id="6070348360322141662">Για επιπλέον ασφάλεια, το Google Chrome θα κρυπτογραφήσει τα δεδομένα σας</translation>
 <translation id="608006075545470555">Προσθήκη προφίλ εργασίας σε αυτό το πρόγραμμα περιήγησης</translation>

@@ -126,6 +126,7 @@
 <translation id="1813414402673211292">બ્રાઉઝિંગ ડેટા સાફ કરો</translation>
 <translation id="1815941218935345331">પાસકોડ</translation>
 <translation id="1820259098641718022">વાંચન સૂચિમાં ઉમેર્યું</translation>
+<translation id="1829392566394960110">{COUNT,plural, =0{ચેડાં કરાયેલા પાસવર્ડ}=1{ચેડાં કરાયેલો {COUNT} પાસવર્ડ}one{ચેડાં કરાયેલો {COUNT} પાસવર્ડ}other{ચેડાં કરાયેલા {COUNT} પાસવર્ડ}}</translation>
 <translation id="1832848789136765277">તમે તમારો સિંક કરેલો ડેટા ગમે ત્યારે ઍક્સેસ કરી શકો છો, એની ખાતરી કરવા માટે, આ તમે જ છો તેની ચકાસણી કરો</translation>
 <translation id="1870148520156231997">પાસવર્ડ જણાવો</translation>
 <translation id="1872096359983322073">ટોર્ચ</translation>
@@ -720,6 +721,7 @@
 <translation id="6152406514676263192">તમારી રુચિઓના આધારે સૌથી વધુ સંબંધિત કન્ટેન્ટ જોવા માટે સિંક કરો.</translation>
 <translation id="6159839020698489198">વૈકલ્પિક</translation>
 <translation id="6170450281939467187">અનુવાદ નિષ્ફળ થયો</translation>
+<translation id="6173499589275053515">પાસવર્ડને તમારા Google એકાઉન્ટમાં સાચવ્યો, <ph name="EMAIL" /></translation>
 <translation id="6177442314419606057">Chromeમાં શોધો</translation>
 <translation id="6184086493125982861">ટૅબ્સ બતાવો</translation>
 <translation id="6187302354554850004">છેલ્લે સમન્વયિત કરેલું: <ph name="LAST_USED_TIME" /></translation>
@@ -727,6 +729,7 @@
 <translation id="6193424046394092997">{count,plural, =1{{title} પર બુકમાર્ક કર્યું}one{{title} પર બુકમાર્ક કર્યું}other{{title} પર બુકમાર્ક કર્યા}}</translation>
 <translation id="6196207969502475924">વૉઇસ શોધ</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} ટૅબ બંધ કરો}one{{COUNT} ટૅબ બંધ કરો}other{{COUNT} ટૅબ બંધ કરો}}</translation>
+<translation id="6213567400989743524">છોડી દીધેલી ચેતવણીઓ</translation>
 <translation id="6219550825416862075">આપનું ફરી સ્વાગત છે</translation>
 <translation id="6219688215832490856">ક્યારેય અનુવાદ કરશો નહીં</translation>
 <translation id="6223816392543092032">તમારા તમામ ડિવાઇસ પર તમારા બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને અન્ય સેટિંગ મેળવો.</translation>
@@ -750,6 +753,7 @@
 <translation id="6346549652287021269">નવું ડાઉનલોડ શરૂ કરીએ?</translation>
 <translation id="6347953390226388422">{count,plural, =1{આ સરનામું તમારા Google એકાઉન્ટ (<ph name="USER_EMAIL" />) અને આ ડિવાઇસમાંથી ડિલીટ કરવામાં આવશે.}one{આ સરનામું તમારા Google એકાઉન્ટ (<ph name="USER_EMAIL" />) અને આ ડિવાઇસમાંથી ડિલીટ કરવામાં આવશે.}other{આ સરનામા તમારા Google એકાઉન્ટ (<ph name="USER_EMAIL" />) અને આ ડિવાઇસમાંથી ડિલીટ કરવામાં આવશે.}}</translation>
 <translation id="634878792104344809">તમારા બધા ડિવાઇસ પર તમારા પાસવર્ડ, ઇતિહાસ અને બીજું ઘણું સિંક કરો</translation>
+<translation id="6355820205320395730">નબળા પાસવર્ડનું અનુમાન કરવું સરળ હોય છે. તમે સશક્ત પાસવર્ડ બનાવવાની ખાતરી કરો. <ph name="BEGIN_LINK" />સુરક્ષા સંબંધિત વધુ ટિપ જુઓ.<ph name="END_LINK" /></translation>
 <translation id="6361848730467328243"><ph name="DOMAIN_NAME" />ને ફૉલો કરો</translation>
 <translation id="6362362396625799311">કોઈ છુપા ટૅબ્સ નથી</translation>
 <translation id="6363526231572697780">કોઈ વપરાશકર્તાનું નામ નથી</translation>
@@ -853,6 +857,7 @@
 <translation id="6888009575607455378">શું તમે ખરેખર તમારા ફેરફારો કાઢી નાખવા ઇચ્છો છો?</translation>
 <translation id="6896758677409633944">કૉપિ કરો</translation>
 <translation id="6897187120838603299">તમારો પાસવર્ડ તમારા ડિવાઇસમાં સાચવવામાં આવશે.</translation>
+<translation id="6913136913033237761"><ph name="FOLDER_NAME" />. માત્ર આ જ ડિવાઇસ પર.</translation>
 <translation id="6914583639806229067">તમે કૉપિ કરેલી છબી માટે શોધ કરો</translation>
 <translation id="6914783257214138813">જે કોઈપણ તમારી નિકાસ કરેલ પાસવર્ડની ફાઇલને જોઈ શકશે, તેમને તમારા પાસવર્ડ પણ દૃશ્યક્ષમ થશે.</translation>
 <translation id="6930799952781667037">આ ભાષા પર બદલવા માટે ટૅપ કરો.</translation>
@@ -1012,10 +1017,12 @@
 <translation id="8084285576995584326">તમારા Google એકાઉન્ટનો ડેટા નિયંત્રિત કરો</translation>
 <translation id="809543534949702122">શોધ ઇતિહાસ</translation>
 <translation id="8101409298456377967">તમારા પાસવર્ડ બનાવો, સાચવો અને મેનેજ કરો, જેથી તમે સાઇટ અને ઍપમાં સરળતાથી સાઇન ઇન કરી શકો. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
+<translation id="8102130909719902723">નવો</translation>
 <translation id="8105368624971345109">બંધ કરો</translation>
 <translation id="8114753159095730575">ફાઇલ ડાઉનલોડ માટે ઉપલબ્ધ છે. સ્ક્રીનના તળિયે વિકલ્પો ઉપલબ્ધ છે.</translation>
 <translation id="81313319706244542">2. પાસવર્ડ પર ટૅપ કરો</translation>
 <translation id="8132598642024322408">હવે <ph name="PRICE" /> છે, પહેલાં <ph name="PREVIOUS_PRICE" /> હતી.</translation>
+<translation id="813370552429173916">દરેક સાઇટ અથવા ઍપ પર વિશિષ્ટ પાસવર્ડનો ઉપયોગ કરો. જો કોઈને ફરીથી ઉપયોગમાં લેવાયેલો પાસવર્ડ મળે, તો તે પાસવર્ડ તમારા અન્ય એકાઉન્ટને ઍક્સેસ કરવામાં ઉપયોગમાં લેવામાં આવી શકે છે. વેબસાઇટ ખોલવા ક્લિક કરો અને હમણાં જ પાસવર્ડ બદલો.</translation>
 <translation id="8136856065410661948">Chrome અને Google Lensમાંથી તમારા Apple Calendarમાં ઇવેન્ટ બનાવવા માટે, આનો ઉપયોગ કરવામાં આવશે.</translation>
 <translation id="8156478151976189188">પાસવર્ડ સિંક કાર્ય કરતું નથી</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> એકાઉન્ટ્સ</translation>
@@ -1027,6 +1034,7 @@
 <translation id="8225985093977202398">કૅશ કરેલી છબીઓ અને ફાઇલો</translation>
 <translation id="8237382152611443140">પાસવર્ડ ઑટોમૅટિક રીતે ભરવાની સુવિધાનાં સેટિંગ ખોલો</translation>
 <translation id="8261506727792406068">ડિલીટ કરો</translation>
+<translation id="8264966119170358612">તમારા અમુક સાચવેલા પાસવર્ડ બિન-Google ડેટા ઉલ્લંઘનમાં જાહેર કરવામાં આવ્યા હતા. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="8271720166617117963">સ્વીકારો અને સાઇન ઇન કરો</translation>
 <translation id="8278938988428169257">શબ્દ અથવા શબ્દસમૂહ દાખલ કરો</translation>
 <translation id="8281781826761538115">ડિફૉલ્ટ - <ph name="DEFAULT_LOCALE" /></translation>

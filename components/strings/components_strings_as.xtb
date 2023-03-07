@@ -2306,6 +2306,7 @@
 <translation id="6738516213925468394">আপোনাৰ ডেটাখিনি আপুনি <ph name="BEGIN_LINK" />ছিংক কৰি থোৱা পাছফ্ৰে'জ<ph name="END_LINK" />ৰ সহায়ত <ph name="TIME" />ত এনক্রিপ্ট কৰা হৈছিল। ছিংক আৰম্ভ কৰিবলৈ এইটো দিয়ক।</translation>
 <translation id="674375294223700098">ছাৰ্ভাৰ প্ৰমাণপত্ৰ সম্পর্কীয় কোনো অজ্ঞাত আসোঁৱাহ</translation>
 <translation id="6744009308914054259">সংযোগলৈ অপেক্ষা কৰি থকা সময়ত আপুনি ডাউনল’ড-লৈ গৈ অফলাইনত থকা লেখাসমূহ পঢ়িব পাৰে।</translation>
+<translation id="6745592621698551453">এতিয়াই আপডে’ট কৰক</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">টেলিকনফাৰেন্সিং</translation>
 <translation id="6753269504797312559">নীতিৰ মান</translation>
@@ -2770,7 +2771,6 @@
 <translation id="7802523362929240268">ছাইটটো বৈধ</translation>
 <translation id="7802989406998618639"><ph name="SIDE_OF_CARD" /> থকা <ph name="NUMBER_OF_DIGITS" /> টা অংকৰ সুৰক্ষা ক’ডটো দিয়ক যাতে আপোনাৰ বেংকে এয়া আপুনিয়েই বুলি সত্যাপন কৰিব পাৰে</translation>
 <translation id="780301667611848630">নালাগে, ধন্যবাদ</translation>
-<translation id="7805571567667010077">আপোনাৰ প্ৰতিষ্ঠানে পৰিচালনা কৰে</translation>
 <translation id="7805768142964895445">স্থিতি</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Chromeৰ পৰামৰ্শৰ পৰা আঁতৰাবনে?</translation>
@@ -2993,6 +2993,7 @@
 <translation id="8369073279043109617">নতুন ক’ড পাওক</translation>
 <translation id="8371889962595521444">কাষ্টম ৰুট প্ৰমাণপত্ৰ</translation>
 <translation id="8374636051559112948">ভিন্ন হয়</translation>
+<translation id="8378714024927312812">আপোনাৰ প্ৰতিষ্ঠানৰ দ্বাৰা পৰিচালিত</translation>
 <translation id="8380941800586852976">ক্ষতিকাৰক</translation>
 <translation id="8381674639488873545">এই মাচুলবোৰ এবাৰেই বা বাৰে বাৰে দিবলগীয়া হ’ব পাৰে আৰু সেয়া সুনিৰ্দিষ্ট নহ’ব পাৰে। <ph name="BEGIN_LINK" />যিকোনো প্ৰকাৰে দেখুৱাওক<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698"><ph name="ORIGIN_NAME" />ৰ পৰা <ph name="VM_NAME" />লৈ শ্বেয়াৰ কৰাৰ সুবিধাটো প্ৰশাসকৰ নীতিয়ে অৱৰোধ কৰিছে</translation>

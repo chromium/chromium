@@ -345,6 +345,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1733064249834771892">písma</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Skúste kontaktovať správcu systému.</translation>
+<translation id="1736158756193183352"><ph name="BEGIN_LINK" />Prihláste sa<ph name="END_LINK" /> do siete</translation>
 <translation id="1736420071277903564">Počítač</translation>
 <translation id="1740951997222943430">Zadajte platný mesiac vypršania platnosti</translation>
 <translation id="1741613555002899862">Keď je pravidlo DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" />, musíte ho špecifikovať a uviesť platný reťazec.</translation>
@@ -1188,6 +1189,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3949601375789751990">Tu sa zobrazí vaša história prehliadania</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Žiadne uložené spôsoby platby</translation>
+<translation id="3950574001630941635">Reštartovať návod</translation>
 <translation id="3950820424414687140">Prihlásiť sa</translation>
 <translation id="3958057596965527988">4 × 4 palcov</translation>
 <translation id="3961148744525529027">Hárok obslužného nástroja platieb je dopoly otvorený</translation>
@@ -2304,6 +2306,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6738516213925468394">Vaše údaje boli <ph name="TIME" /> zašifrované pomocou <ph name="BEGIN_LINK" />prístupovej frázy synchronizácie<ph name="END_LINK" />. Synchronizácia sa spustí po jej zadaní.</translation>
 <translation id="674375294223700098">Neznáma chyba spôsobená certifikátom servera.</translation>
 <translation id="6744009308914054259">Zatiaľ čo čakáte na pripojenie, môžete prejsť do priečinka stiahnutých súborov a prečítať si články v režime offline.</translation>
+<translation id="6745592621698551453">Aktualizovať</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Telekonferencie</translation>
 <translation id="6753269504797312559">Hodnota pravidla</translation>
@@ -2768,7 +2771,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7802523362929240268">Web je legitímny</translation>
 <translation id="7802989406998618639">Zadajte <ph name="NUMBER_OF_DIGITS" />-ciferný bezpečnostný kód zo <ph name="SIDE_OF_CARD" />, aby vaša banka mohla overiť vašu totožnosť</translation>
 <translation id="780301667611848630">Nie, ďakujem</translation>
-<translation id="7805571567667010077">Spravované vašou organizáciou</translation>
 <translation id="7805768142964895445">Stav</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Chcete návrh odstrániť z prehliadača Chrome?</translation>
@@ -2991,6 +2993,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8369073279043109617">Získať nový kód</translation>
 <translation id="8371889962595521444">Vlastné koreňové certifikáty</translation>
 <translation id="8374636051559112948">Rôzna</translation>
+<translation id="8378714024927312812">Spravované vašou organizáciou</translation>
 <translation id="8380941800586852976">Nebezpečná</translation>
 <translation id="8381674639488873545">Tieto poplatky môžu byť jednorazové alebo opakované a nemusia byť predvídateľné. <ph name="BEGIN_LINK" />Napriek tomu zobraziť<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Zdieľanie zo zdroja <ph name="ORIGIN_NAME" /> na miesto <ph name="VM_NAME" /> je blokované pravidlami správcu</translation>

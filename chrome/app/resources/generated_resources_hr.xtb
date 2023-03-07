@@ -6082,6 +6082,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6469557521904094793">Uključivanje mobilne mreže</translation>
 <translation id="6470823736074966819">Zanemari obavijesti</translation>
 <translation id="6472893788822429178">Pokaži gumb početne stranice</translation>
+<translation id="6474352027343282094">{COUNT,plural, =1{{COUNT} se zaporka sprema samo na ovaj uređaj. Da biste je upotrebljavali na svojim drugim uređajima, &lt;a target='_blank' href='chrome://password-manager/'&gt;spremite je na svoj Google račun&lt;/a&gt;.}one{{COUNT} zaporka sprema se samo na ovaj uređaj. Da biste ih upotrebljavali na drugim uređajima, &lt;a target='_blank' href='chrome://password-manager/'&gt;spremite ih na svoj Google račun&lt;/a&gt;.}few{{COUNT} zaporke spremaju se samo na ovaj uređaj. Da biste ih upotrebljavali na drugim uređajima, &lt;a target='_blank' href='chrome://password-manager/'&gt;spremite ih na svoj Google račun&lt;/a&gt;.}other{{COUNT} zaporki sprema se samo na ovaj uređaj. Da biste ih upotrebljavali na drugim uređajima, &lt;a target='_blank' href='chrome://password-manager/'&gt;spremite ih na svoj Google račun&lt;/a&gt;.}}</translation>
 <translation id="6474498546677193336">Prekid dijeljenja nije bio moguć jer jedna aplikacija koristi tu mapu. Dijeljenje mape prekinut će se kad se Linux isključi.</translation>
 <translation id="6474884162850599008">Prekini vezu računa Google diska</translation>
 <translation id="6475294023568239942">Oslobodite prostor na disku ili promijenite veličinu diska za Linux u postavkama</translation>
@@ -7579,6 +7580,7 @@ Pritisnite dodijeljeni prekidač ili tipku da biste uklonili dodjelu.</translati
 <translation id="7817361223956157679">Tipkovnica na zaslonu još uvijek ne funkcionira u Linux aplikacijama</translation>
 <translation id="7818135753970109980">Dodana je nova tema (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="7819605256207059717">Vaša je organizacija ovo blokirala</translation>
+<translation id="7820400255539998692">Izbrišite datoteku <ph name="FILENAME" /> kako osobe koje upotrebljavaju ovaj uređaj ne bi mogle vidjeti vaše zaporke</translation>
 <translation id="7820561748632634942">Želite li dodijeliti dodatne prekidače?</translation>
 <translation id="782057141565633384">K&amp;opiraj adresu videozapisa</translation>
 <translation id="7824864914877854148">Sigurnosno kopiranje ne može se dovršiti zbog pogreške</translation>

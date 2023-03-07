@@ -2309,6 +2309,7 @@
 <translation id="6738516213925468394">Vos données ont été chiffrées avec votre <ph name="BEGIN_LINK" />phrase de passe de synchronisation<ph name="END_LINK" /> le <ph name="TIME" />. Veuillez l'entrer pour commencer la synchronisation.</translation>
 <translation id="674375294223700098">Erreur inconnue de certificat de serveur.</translation>
 <translation id="6744009308914054259">En attendant la connexion, vous pouvez consulter vos téléchargements pour lire des articles hors connexion.</translation>
+<translation id="6745592621698551453">Mettre à jour maintenant</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Téléconférence</translation>
 <translation id="6753269504797312559">Valeur de la règle</translation>
@@ -2773,7 +2774,6 @@ Détails supplémentaires :
 <translation id="7802523362929240268">Site officiel</translation>
 <translation id="7802989406998618639">Saisissez le code de sécurité à <ph name="NUMBER_OF_DIGITS" /> chiffres sur le <ph name="SIDE_OF_CARD" /> afin que votre banque puisse vérifier qu'il s'agit bien de vous</translation>
 <translation id="780301667611848630">Non merci</translation>
-<translation id="7805571567667010077">Gérée par votre organisation</translation>
 <translation id="7805768142964895445">État</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Supprimer la suggestion de formulaire de Chrome?</translation>
@@ -2996,6 +2996,7 @@ Détails supplémentaires :
 <translation id="8369073279043109617">Obtenir un nouveau code</translation>
 <translation id="8371889962595521444">Certificats racines personnalisés</translation>
 <translation id="8374636051559112948">Variable</translation>
+<translation id="8378714024927312812">Géré par votre organisation</translation>
 <translation id="8380941800586852976">Dangereux</translation>
 <translation id="8381674639488873545">Ces frais peuvent être facturés une seule fois ou de manière récurrente et peuvent être cachés. <ph name="BEGIN_LINK" />Afficher quand même<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">La politique de l'administrateur bloque le partage de <ph name="ORIGIN_NAME" /> vers <ph name="VM_NAME" /></translation>

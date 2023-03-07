@@ -347,6 +347,7 @@
 <translation id="1733064249834771892">ఫాంట్‌లు</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">సిస్టమ్ నిర్వాహకుడిని సంప్రదించి ప్రయత్నించండి.</translation>
+<translation id="1736158756193183352">నెట్‌వర్క్‌కు <ph name="BEGIN_LINK" />సైన్ ఇన్ చేస్తోంది<ph name="END_LINK" /></translation>
 <translation id="1736420071277903564">కంప్యూటర్</translation>
 <translation id="1740951997222943430">చెల్లుబాటు అయ్యే గడువు ముగింపు నెలను నమోదు చేయండి</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode అనేది, <ph name="SECURE_DNS_MODE_SECURE" />గా సెట్ చేసి ఉన్నప్పుడు ఖచ్చితంగా పేర్కొనాలి, చెల్లుబాటు అయ్యే స్ట్రింగ్ అయి ఉండాలి.</translation>
@@ -1194,6 +1195,7 @@
 <translation id="3949601375789751990">మీ బ్రౌజింగ్ హిస్టరీ ఇక్కడ కనిపిస్తుంది</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">సేవ్ చేసిన చెల్లింపు పద్ధతులేవీ లేవు</translation>
+<translation id="3950574001630941635">ట్యుటోరియల్‌ను రీస్టార్ట్ చేయండి</translation>
 <translation id="3950820424414687140">సైన్ ఇన్</translation>
 <translation id="3958057596965527988">4 x 4 అంగుళాలు</translation>
 <translation id="3961148744525529027">చెల్లింపు హ్యాండ్లర్ షీట్ సగం తెరవబడింది</translation>
@@ -2311,6 +2313,7 @@
 <translation id="6738516213925468394"><ph name="TIME" /> తేదీన మీ <ph name="BEGIN_LINK" />సింక్‌ రహస్య పదబంధం <ph name="END_LINK" />తో మీ డేటా ఎన్‌క్రిప్ట్ చేయ‌బ‌డింది. సింక్‌ను ప్రారంభించడానికి దీన్ని నమోదు చేయండి.</translation>
 <translation id="674375294223700098">తెలియని సర్వర్ ప్రమాణపత్రం ఎర్రర్.</translation>
 <translation id="6744009308914054259">కనెక్షన్ కోసం వేచి ఉన్నప్పుడు, మీరు ఆఫ్‌లైన్ కథనాలను చదవడానికి డౌన్‌లోడ్‌లను సందర్శించవచ్చు.</translation>
+<translation id="6745592621698551453">ఇప్పుడే అప్‌డేట్ చేయి</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">టెలీకాన్ఫరెన్సింగ్</translation>
 <translation id="6753269504797312559">విధానం విలువ</translation>
@@ -2775,7 +2778,6 @@
 <translation id="7802523362929240268">సైట్ చట్టబద్ధమైనది</translation>
 <translation id="7802989406998618639"><ph name="SIDE_OF_CARD" /> ఉన్న <ph name="NUMBER_OF_DIGITS" /> అంకెల సెక్యూరిటీ కోడ్‌ను ఎంటర్ చేయండి, తద్వారా ఇది మీరేనని మీ బ్యాంక్ వెరిఫై చేస్తుంది</translation>
 <translation id="780301667611848630">వద్దు , ధన్యవాదాలు</translation>
-<translation id="7805571567667010077">మీ సంస్థ ద్వారా మేనేజ్ చేయబడుతుంది</translation>
 <translation id="7805768142964895445">స్థితి</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Chrome నుండి ఫారమ్ సూచనను తీసివేయాలా?</translation>
@@ -2998,6 +3000,7 @@
 <translation id="8369073279043109617">కొత్త కోడ్‌ను పొందండి</translation>
 <translation id="8371889962595521444">అనుకూల రూట్ సెట్టింగ్‌లు</translation>
 <translation id="8374636051559112948">మారుతుంది</translation>
+<translation id="8378714024927312812">మీ సంస్థ ద్వారా నిర్వహించబడుతున్నవి</translation>
 <translation id="8380941800586852976">అపాయకరమైనది</translation>
 <translation id="8381674639488873545">ఈ ఛార్జ్‌లు ఒకసారి చెల్లించేవి లేదా పునరావృతంగా చెల్లించాల్సినవి కావచ్చు, అది స్పష్టంగా పేర్కొనబడకపోవచ్చు. <ph name="BEGIN_LINK" />ఏదేమైనా చూపు<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698"><ph name="ORIGIN_NAME" /> నుండి <ph name="VM_NAME" />కు షేర్ చేయడం అడ్మినిస్ట్రేటర్ పాలసీ ద్వారా బ్లాక్ చేయబడింది</translation>

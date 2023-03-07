@@ -345,6 +345,7 @@
 <translation id="1733064249834771892">қаріптер</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Жүйе әкімшісіне хабарласып көріңіз.</translation>
+<translation id="1736158756193183352">Желіге <ph name="BEGIN_LINK" />кіру<ph name="END_LINK" /></translation>
 <translation id="1736420071277903564">Компьютер</translation>
 <translation id="1740951997222943430">Дұрыс жарамдылық мерзімі аяқталатын айды енгізіңіз</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode саясаты <ph name="SECURE_DNS_MODE_SECURE" /> мәніне орнатылғанда, сәйкес мән және жарамды жол көрсетілуі керек.</translation>
@@ -1191,6 +1192,7 @@
 <translation id="3949601375789751990">Браузер журналы осында шығады</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Ешқандай төлеу әдісі сақталмаған.</translation>
+<translation id="3950574001630941635">Оқулықты қайта бастау</translation>
 <translation id="3950820424414687140">Кіру</translation>
 <translation id="3958057596965527988">4 x 4 дюйм</translation>
 <translation id="3961148744525529027">Төлем өңдегіш парағы жартылай ашық.</translation>
@@ -2308,6 +2310,7 @@
 <translation id="6738516213925468394">Деректеріңіз <ph name="TIME" /> күні <ph name="BEGIN_LINK" />синхрондаудың құпия фразасымен<ph name="END_LINK" /> шифрланған. Синхрондау үшін оны енгізіңіз.</translation>
 <translation id="674375294223700098">Белгісіз сервер сертификатының қатесі.</translation>
 <translation id="6744009308914054259">Байланыстың орнауын күткен кезде, офлайн режимдегі мақалаларды оқу үшін "Жүктеп алынғандар" бөліміне кіруіңізге болады.</translation>
+<translation id="6745592621698551453">Қазір жаңарту</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Телеконференция</translation>
 <translation id="6753269504797312559">Саясат мәні</translation>
@@ -2772,7 +2775,6 @@
 <translation id="7802523362929240268">Сайт заңды</translation>
 <translation id="7802989406998618639">Банк сіз екеніңізді растауы үшін <ph name="SIDE_OF_CARD" /> бетіне <ph name="NUMBER_OF_DIGITS" /> цифрлы қауіпсіздік кодын енгізіңіз</translation>
 <translation id="780301667611848630">Жоқ, рақмет</translation>
-<translation id="7805571567667010077">Ұйымыңыз арқылы басқарылады</translation>
 <translation id="7805768142964895445">Күйі</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Chrome браузерінен форма ұсынысын өшіру қажет пе?</translation>
@@ -2995,6 +2997,7 @@
 <translation id="8369073279043109617">Жаңа код алу</translation>
 <translation id="8371889962595521444">Арнаулы түбірлік сертификаттар</translation>
 <translation id="8374636051559112948">Әртүрлі</translation>
+<translation id="8378714024927312812">Ұйым басқарады</translation>
 <translation id="8380941800586852976">Қауіпті</translation>
 <translation id="8381674639488873545">Бұл ақылар сізге білдіртпей бір рет не бірнеше қайтара алынуы мүмкін. <ph name="BEGIN_LINK" />Бәрібір көрсету<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698"><ph name="ORIGIN_NAME" /> сайтынан <ph name="VM_NAME" /> жүйесімен бөлісуге әкімші саясатымен тыйым салынған.</translation>

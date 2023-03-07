@@ -3169,6 +3169,7 @@
 <translation id="3790417903123637354">發生錯誤，請稍後再試</translation>
 <translation id="379082410132524484">你的卡片已過期</translation>
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> 項擴充功能</translation>
+<translation id="3794792524918736965">開啟 Windows Hello</translation>
 <translation id="379500251094592809">如要使用鄰近分享功能，請確認兩部裝置都已解鎖且彼此相鄰，並已開啟藍牙功能。如果要與未設為聯絡人的 Chromebook 分享內容，請確認該裝置已啟用鄰近分享瀏覽權限 (按一下電腦右下角的時間欄位即可開啟狀態區，再從中啟用鄰近分享瀏覽權限)。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">關閉</translation>
 <translation id="3795766489237825963">播放動畫</translation>
@@ -6423,6 +6424,7 @@
 <translation id="6790497603648687708">「<ph name="EXTENSION_NAME" />」是從遠端新增的項目</translation>
 <translation id="6790820461102226165">新增使用者...</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
+<translation id="679486139907144816">如要使用密碼金鑰登入這個網站，請務必在設定中開啟 Windows Hello，然後返回這個網站再試一次。</translation>
 <translation id="6795371939514004514">自動掃描功能會自動在畫面上的項目之間移動。當某個項目處於醒目顯示狀態，按下「選取」即可啟動該項目。</translation>
 <translation id="6795884519221689054">熊貓</translation>
 <translation id="6796509790850723820">算繪</translation>
@@ -8345,6 +8347,7 @@
 <translation id="8513108775083588393">自動旋轉</translation>
 <translation id="8514746246728959655">請改用其他安全金鑰</translation>
 <translation id="8514955299594277296">不允許網站在裝置上儲存資料 (不建議)</translation>
+<translation id="8517759303731677493">編輯…</translation>
 <translation id="8519895319663397036">無法匯入密碼，檔案大小不得超過 150 KB。</translation>
 <translation id="8523493869875972733">保留變更</translation>
 <translation id="8523849605371521713">依政策新增</translation>

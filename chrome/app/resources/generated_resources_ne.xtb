@@ -344,6 +344,7 @@
 <translation id="1303671224831497365">कुनै ब्लुटुथ यन्त्र भेट्टिएन</translation>
 <translation id="130491383855577612">Linux एप र फाइलहरू सफलतापूर्वक प्रतिस्थापन गरिएका छन्</translation>
 <translation id="1306390193749326011">तपाईं अब उप्रान्त यो पेजमा <ph name="MODULE_NAME" /> देख्नु हुने छैन</translation>
+<translation id="1306518237408758433"><ph name="BOOKMARK_TITLE" /> खोल्नुहोस्</translation>
 <translation id="1306606229401759371">सेटिङहरू बदल्नुहोस्</translation>
 <translation id="1307165550267142340">तपाईंको PIN सिर्जना गरियो</translation>
 <translation id="1307431692088049276">मलाई फेरि नसोधियोस्</translation>
@@ -433,6 +434,7 @@
 <translation id="1393283411312835250">घाम र बादल</translation>
 <translation id="1395730723686586365">अद्यतनकर्ता सुरु भयो</translation>
 <translation id="1395832189806039783">किबोर्डको फोकसका सहायताले वस्तु हाइलाइट गर्नुहोस्</translation>
+<translation id="1396120028054416908"><ph name="FOLDER_TITLE" /> मा फर्कनुहोस्</translation>
 <translation id="1396139853388185343">प्रिन्टर सेटअप गर्दा त्रुटि</translation>
 <translation id="1396963298126346194">तपाईंले प्रविष्ट गर्नुभएको इमेल र पासवर्ड मेल खाँदैनन्</translation>
 <translation id="1397500194120344683">कुनै पनि योग्य यन्त्र छैन। <ph name="LINK_BEGIN" />थप जान्नुहोस्।<ph name="LINK_END" /></translation>
@@ -555,6 +557,7 @@
 <translation id="1487335504823219454">सक्रिय - आफू अनुकूल सेटिङहरू</translation>
 <translation id="1493892686965953381"><ph name="LOAD_STATE_PARAMETER" /> लाई प्रतिक्षा गर्दै...</translation>
 <translation id="1494349716233667318">साइटहरूले तपाईंको डिभाइसमा इन्स्टल गरिएका फन्ट प्रयोग गर्ने अनुमति माग्न सक्छन्</translation>
+<translation id="1494429729245089920">"<ph name="VM_NAME" />" नाम गरेको भर्चुअल मेसिन छ तर त्यो वैध <ph name="APP_NAME" /> भर्चुअल मेसिन होइन जस्तो देखिन्छ। कृपया आफ्ना एड्मिनलाई सम्पर्क गर्नुहोस्।</translation>
 <translation id="1495677929897281669">ट्याबमा फर्कनुहोस्</translation>
 <translation id="1498498210836053409">पाठ सम्पादन गर्दा स्टिकी मोड निष्क्रिय पार्नुहोस् (स्मार्ट स्टिकी मोड)</translation>
 <translation id="1500297251995790841">अज्ञात यन्त्र [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
@@ -674,6 +677,7 @@
 <translation id="1596286373007273895">उपलब्ध छ</translation>
 <translation id="1596709061955594992">ब्लुटुथ अफ गरिएको छ। तपाईं उपलब्ध डिभाइसहरू हेर्न चाहनुहुन्छ भने ब्लुटुथ अन गर्नुहोस्।</translation>
 <translation id="1596780725094407793">- उप-डोमेनहरू समावेश हुन्छन्</translation>
+<translation id="1597852076552089763">बुकमार्कका विकल्पहरू</translation>
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> प्रयोग गरी <ph name="SITE_ETLD_PLUS_ONE" /> मा साइन इन गर्नुहोस्</translation>
 <translation id="1598233202702788831">अद्यावधिकहरू तपाईँको प्रशासकद्वारा असक्षम गरिएका छन्।</translation>
 <translation id="1600857548979126453">पृष्ठ डिबजर ब्याकएन्ड पहुँच गर्नुहोस्</translation>
@@ -1811,6 +1815,7 @@
 <translation id="25568951186001797">Fenced Frame: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2558569818338050235">तपाईंको ब्राउजिङ इतिहासका कारण तपाईंलाई देखाइने विज्ञापनहरू फरक पर्न सक्छन्</translation>
 <translation id="2559889124253841528">डिभाइसमा सेभ गर्नुहोस्</translation>
+<translation id="2561211427862644160">आफ्ना सबै बुकमार्कहरू यहाँ हेर्नुहोस्</translation>
 <translation id="2564520396658920462">AppleScript मार्फत JavaScript कार्यान्वयन गर्ने सुविधा निष्क्रिय पारिएको छ। मेनु बारबाट यो सुविधा सक्रिय गर्न हेर्नुहोस्&gt; विकासकर्ता &gt; Apple Events बाट JavaScript लाई अनुमति दिनुहोस् नामक विकल्पमा जानुहोस् । थप जानकारीका लागि https://support.google.com/chrome/?p=applescript मा जानुहोस्</translation>
 <translation id="2564653188463346023">परिष्कृत हिज्जे जाँच</translation>
 <translation id="2568694057933302218">इन्कोग्निटो मोडमा ब्राउज गर्दा साइटहरूले तपाईंले ब्राउजर प्रयोग विभिन्न साइटमा गर्नुभएको क्रियाकलाप हेर्न तपाईंका कुकीहरू प्रयोग गर्न सक्दैनन्। तपाईंले ब्राउजर प्रयोग गरी गर्नुभएको क्रियाकलाप विज्ञापन पर्सनलाइज गर्नेलगायतका अन्य कार्यहरू गर्न प्रयोग गरिँदैन। केही साइटका सुविधाहरूले काम नगर्न सक्छन्।</translation>
@@ -2416,6 +2421,7 @@
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" जोडि मिलाईयो</translation>
 <translation id="3093714882666365141">साइटहरूलाई भुक्तानी ह्यान्ड्लर इन्स्टल गर्ने अनुमति नदिइयोस्</translation>
 <translation id="3094141017404513551">तपाईंले नयाँ Chromium प्रोफाइल प्रयोग गर्नुभयो भने तपाईंको ब्राउजिङ इतिहास र <ph name="EXISTING_USER" /> को ब्राउजिङ इतिहास छुट्टाछुट्टै सुरक्षित गरिने छ</translation>
+<translation id="3094521107841754472">मूल्य <ph name="PREVIOUS_PRICE" /> बाट परिवर्तन भई <ph name="CURRENT_PRICE" /> भएको छ।</translation>
 <translation id="3095871294753148861">बुकमार्क, पासवर्ड र ब्राउजरसम्बन्धी अन्य डेटा प्राथमिक खातामा सिंक गरिन्छन्।</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{हानिकारक हुन सक्ने १ एक्स्टेन्सन निष्क्रिय पारिएको छ। तपाईं यसलाई हटाउन पनि सक्नुहुन्छ।}other{हानिकारक हुन सक्ने {NUM_EXTENSIONS} एक्स्टेन्सनहरू निष्क्रिय पारिएका छन्। तपाईं तिनीहरूलाई हटाउन पनि सक्नुहुन्छ।}}</translation>
 <translation id="3101126716313987672">मधुरो प्रकाश</translation>
@@ -2768,6 +2774,7 @@
 <translation id="3441653493275994384">स्क्रिन</translation>
 <translation id="3441663102605358937">यो खाता पुष्टि गर्न <ph name="ACCOUNT" /> मा फेरि साइन इन गर्नुहोस्</translation>
 <translation id="3442674350323953953"><ph name="DEVICE_OS" /> सुधार्ने प्रयोजनका लागि Google लाई तपाईंको हार्डवेयरसम्बन्धी डेटा प्रयोग गर्न दिनुहोस्। तपाईंले आफ्नो हार्डवेयरसम्बन्धी डेटा प्रयोग गर्ने अनुमति दिनुभएन भने पनि तपाईंको डिभाइसमा कुन अपडेट पठाउने भन्ने कुरा निर्धारण गर्ने प्रयोजनका लागि यो डेटा Google मा पठाइन्छ तर यो डेटा भण्डारण वा अन्य तरिकाले प्रयोग भने गरिँदैन।</translation>
+<translation id="3443744348829035122"><ph name="BRAND" /> टाइम आउट भयो</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> ले <ph name="FILENAME" /> हेर्न सक्ने छ</translation>
 <translation id="3445047461171030979">Google सहायकका द्रुत जवाफहरू</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> मिनेट</translation>
@@ -3311,6 +3318,7 @@
 <translation id="39103738135459590">सक्रिय गर्ने कोड</translation>
 <translation id="3911824782900911339">नयाँ ट्याब पृष्ठ</translation>
 <translation id="3914173277599553213">आवश्यक</translation>
+<translation id="3914568430265141791"><ph name="FOLDER_TITLE" /> फोल्डर खोल्नुहोस्</translation>
 <translation id="3915280005470252504">आवाजद्वारा खोज्नुहोस्</translation>
 <translation id="3916233823027929090">सुरक्षासम्बन्धी जाँचहरू गरिए</translation>
 <translation id="3916445069167113093">यस प्रकारको फाइलले तपाइँको कम्प्युटरलाई हानी गर्न सक्छ। के तपाइँ अझै पनि <ph name="FILE_NAME" /> राख्न चाहनुहुन्छ?</translation>
@@ -3441,6 +3449,7 @@
 <translation id="4022426551683927403">शब्दकोषमा &amp;थप्नुहोस्</translation>
 <translation id="4025039777635956441">चयन गरिएको साइट म्युट गर्नुहोस्</translation>
 <translation id="402707738228916911"><ph name="AUTHORIZE_INSTRUCTION_NAME" /> सम्बन्धी निर्देशन प्राप्त भयो</translation>
+<translation id="4027569221211770437"><ph name="FOLDER_TITLE" /> फोल्डर</translation>
 <translation id="4027958407426528157">मेरो <ph name="DEVICE_TYPE" /> मा इन्स्टल गरिएका एपहरूमा वेबसाइटहरू खोलिऊन्</translation>
 <translation id="4028467762035011525">इनपुट विधिहरू थप्नुहोस्</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" /> नामक पेजबाट अघिल्लो पेजमा फर्कनुहोस्</translation>
@@ -3495,6 +3504,7 @@
 <translation id="4077917118009885966">यो साइटमा विज्ञापनहरूमाथि रोक लगाइएको छ</translation>
 <translation id="4077919383365622693"><ph name="SITE" /> मा भण्डारण गरिएका सबै डेटा र कुकीहरू मेटाइने छन्।</translation>
 <translation id="4078738236287221428">आक्रामक</translation>
+<translation id="4078903002989614318">क्रमबद्ध र सूचीबद्ध गर्ने विकल्पहरू</translation>
 <translation id="4079140982534148664">हिज्जे जाँचसम्बन्धी परिष्कृत सुविधा प्रयोग गर्नुहोस्</translation>
 <translation id="4084682180776658562">बुकमार्क</translation>
 <translation id="4084835346725913160"><ph name="TAB_NAME" />बन्द गर्नुहोस्</translation>
@@ -3639,6 +3649,7 @@
 <translation id="4217571870635786043">श्रुतिलेखन</translation>
 <translation id="4218081191298393750">यो ट्याब म्युट गर्न स्पिकर जनाउने आइकनमा क्लिक गर्नुहोस्</translation>
 <translation id="4220648711404560261">सक्रिय गर्ने क्रममा त्रुटि हुन गयो।</translation>
+<translation id="4222917615373664617">मूल्य ट्र्याक गर्ने सुविधा अन छ। यसको <ph name="CURRENT_PRICE" /> पर्छ।</translation>
 <translation id="4223845867739585293">पासकी बनाउनुहोस्</translation>
 <translation id="4225397296022057997">सबै साइटहरूमा</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{यो एक्स्टेन्सन प्रयोग गर्न पाइँदैन}other{केही एक्स्टेन्सनहरू प्रयोग गर्न पाइँदैन}}</translation>
@@ -5798,6 +5809,7 @@
 <translation id="6212168817037875041">प्रदर्शन निष्क्रिय पार्नुहोस्</translation>
 <translation id="6212752530110374741">लिंक भएको इमेल पठाउनुहोस्</translation>
 <translation id="621470880408090483">साइटहरूलाई ब्लुटुथ चल्ने यन्त्रमा कनेक्ट गर्ने अनुमति नदिइयोस्</translation>
+<translation id="6215039389782910006">{1,plural, =1{तपाईंका पासवर्डहरूको सुरक्षार्थ १ मिनेटसम्म कुनै क्रियाकलाप नगरिएका खण्डमा <ph name="BRAND" /> लक हुन्छ}other{तपाईंका पासवर्डहरूको सुरक्षार्थ # मिनेटसम्म कुनै क्रियाकलाप नगरिएका खण्डमा <ph name="BRAND" /> लक हुन्छ}}</translation>
 <translation id="6216239400972191926">ब्लक गरिएका साइट तथा एपहरू</translation>
 <translation id="6216601812881225442">तपाईंको कन्टेनरको आकार बदल्न मिल्दैन। Linux लाई पहिले नै छुट्याइएको खाली ठाउँ थपघट गर्न ब्याक अप गर्नुहोस् र त्यसपछि उक्त ब्याकअपलाई नयाँ कन्टेनरमा रिस्टोर गर्नुहोस्।</translation>
 <translation id="6216696360484424239">स्वतः साइन इन गर्नुहोस्</translation>

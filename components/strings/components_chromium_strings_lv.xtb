@@ -26,7 +26,9 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           un pārliecinieties, vai konfigurācija ir iestatīta uz “no proxy” (bez starpniekservera) vai “direct” (tieša).</translation>
+<translation id="6549378540556750549">Pārlūku Chromium nodrošina arī cita <ph name="BEGIN_LINK_OSS" />atklātā pirmkoda programmatūra<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Izmaiņas stāsies spēkā, kad restartēsiet Chromium.</translation>
+<translation id="7681937895330411637">Pārlūku Chromium nodrošina <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> atklātā pirmkoda projekts.</translation>
 <translation id="7861509383340276692">Atveriet
         Chromium izvēlni &gt;
         <ph name="SETTINGS_TITLE" />

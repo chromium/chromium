@@ -487,6 +487,7 @@
 <translation id="2108755909498034140">ኮምፒውተርዎን ዳግም ያስጀምሩት</translation>
 <translation id="2111166930115883695">ለመጫወት ክፍተትን ይጫኑ</translation>
 <translation id="2112529237938317174">የፈቃድ ዝርዝሮችን አሳይ</translation>
+<translation id="2113232594265919362">ይህ ጣቢያ ኤችቲቲፒኤስ ስለማይደግፍ ይህን ማስጠንቀቂያ እያዩ ሲሆን በGoogle የላቀ ጥበቃ ፕሮግራም ሥር ነዎት <ph name="BEGIN_LEARN_MORE_LINK" />የበለጠ ለመረዳት<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2113977810652731515">ካርታ</translation>
 <translation id="2114841414352855701">በ<ph name="POLICY_NAME" /> ስለተሻረ ችላ ተብሏል።</translation>
 <translation id="2118132148597630479">ሲ5 ፖስታ</translation>
@@ -1208,6 +1209,7 @@
 <translation id="3990250421422698716">ሕትመት አጠናቅ</translation>
 <translation id="3992684624889376114">ስለዚህ ገጽ</translation>
 <translation id="399952081411886534">ማስታወቂያዎችን ይበልጥ የግል የሚያደርጉ ሌሎች ባህሪያት</translation>
+<translation id="4000598935132966791">በሚተዳደሩ አሳሾች ውስጥ ስለ ጣቢያ ገደቦች የበለጠ ይወቁ</translation>
 <translation id="4006465311664329701">Google Payን የሚጠቀሙ የመክፈያ ዘዴዎች፣ ቅናሾች እና አድራሻዎች</translation>
 <translation id="4009243425692662128">እርስዎ የሚያትሙት የገጾች ይዘት ለትንተና ወደ Google ደመና ወይም ሶስተኛ ወገኖች ይላካል። ለምሳሌ፣ አደጋን ሊያስከትል ለሚችል ውሂብ ሊቃኙ ይችላሉ።</translation>
 <translation id="4010758435855888356">የማከማቻ መዳረሻ ይፈቀድ?</translation>
@@ -2164,6 +2166,7 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />ተኪውን፣ ኬላውን እና ደህንነቱ የተጠበቀ የዲኤንኤስ ውቅረትን በመፈተሽ ላይ<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">ድርብ በግራ በኩል ስቴፕለር ምታ</translation>
+<translation id="6367196786591004737">ግቤትን ሰርዝ</translation>
 <translation id="6370022303958842211">እንደ መግባቶች (ያልተሳካ የመግባት ምክንያቶችን ጨምሮ)፣ መውጣቶች፣ መቆለፎች እና መከፈቶች ያሉ የመሣሪያ መዳረሻ እርምጃዎች</translation>
 <translation id="6374865374745447009">የመስኮት አስተዳደር</translation>
 <translation id="6377268785556383139">ለ«<ph name="SEARCH_TEXT" />» 1 ውጤት</translation>
@@ -2305,9 +2308,11 @@
 <translation id="6738516213925468394">የእርስዎ ውሂብ በ<ph name="TIME" /> ላይ በእርስዎ <ph name="BEGIN_LINK" />የስምረት ይለፍ ሐረግ<ph name="END_LINK" /> ተመስጥሯል። ስምረትን ለመጀመር ያስገቡት።</translation>
 <translation id="674375294223700098">ያልታወቀ የአገልጋይ እውቅና ማረጋገጫ ስህተት።</translation>
 <translation id="6744009308914054259">ግንኙነትን እየተጠባበቁ ሳሉ የመስመር ውጭ ጽሑፎችን ለማንበብ ውርዶችን መጎብኘት ይችላሉ።</translation>
+<translation id="6745592621698551453">አሁን አዘምን</translation>
 <translation id="6751487147225428522">አርኦሲ 8ኬ</translation>
 <translation id="6752086006821653994">ቴሌኮንፈረንሲንግ</translation>
 <translation id="6753269504797312559">የመምሪያ እሴት</translation>
+<translation id="6753434778807740853"><ph name="ENTRY_VOICEOVER" /> ግቤትን ሰርዝ</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">የእርስዎ መሣሪያ ተኝቷል።</translation>
 <translation id="6767985426384634228">አድራሻ ይዘምን?</translation>
@@ -2320,6 +2325,7 @@
 <translation id="678982761784843853">የተጠበቁ የይዘት መታወቂያዎች</translation>
 <translation id="6790428901817661496">አጫውት</translation>
 <translation id="679355240208270552">ነባሪው ፍለጋ በመምሪያ ስላልነቃ ችላ ተብሏል።</translation>
+<translation id="6794049111359324414">የ<ph name="APP_NAME" /> መተግበሪያ የWiFi አውታረ መረቦችን እንዲያዋቅር ይፈቀድ?</translation>
 <translation id="6794951432696553238">ከአሁን በኋላ Windows Helloን በመጠቀም የእርስዎን ካርዶች በበለጠ ፍጥነት ያረጋግጡ</translation>
 <translation id="6798460514924505775">ቹው 3 ፖስታ</translation>
 <translation id="6805030849054648206">ቢ6/ሲ4 ፖስታ</translation>
@@ -2767,7 +2773,6 @@
 <translation id="7802523362929240268">ጣቢያው ህጋዊ ነው</translation>
 <translation id="7802989406998618639">ባንክዎ እርስዎ መሆንዎን ማረጋገጥ እንዲችል በ<ph name="SIDE_OF_CARD" /> ላይ ያለውን ባለ <ph name="NUMBER_OF_DIGITS" />-አሃዝ የደህንነት ኮድ ያስገቡ</translation>
 <translation id="780301667611848630">አይ፣ አመሰግናለሁ</translation>
-<translation id="7805571567667010077">በእርስዎ ድርጅት የሚተዳደር</translation>
 <translation id="7805768142964895445">ሁኔታ</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">የአስተያየት ጥቆማ ከChrome ይወገድ?</translation>
@@ -2990,6 +2995,7 @@
 <translation id="8369073279043109617">አዲስ ኮድ ያግኙ</translation>
 <translation id="8371889962595521444">ብጁ የስር ቅንብሮች</translation>
 <translation id="8374636051559112948">ይለያያል</translation>
+<translation id="8378714024927312812">በእርስዎ ድርጅት የሚተዳደር</translation>
 <translation id="8380941800586852976">አደገኛ</translation>
 <translation id="8381674639488873545">እነዚህ ክፍያዎች የአንድ ጊዜ ወይም ተደጋጋሚ፣ እና የማያስታውቁ ሊሆኑ ይችላሉ። <ph name="BEGIN_LINK" />የሆነው ሆኖ አሳይ<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">ከ<ph name="ORIGIN_NAME" />ወደ <ph name="VM_NAME" /> ማጋራት በአስተዳዳሪ መመሪያ ታግዷል</translation>
@@ -3359,6 +3365,7 @@
     &lt;li&gt;«<ph name="SOFTWARE_NAME" />»ን ለማራገፍ ወይም ለማሰናከል ይሞክሩ&lt;/li&gt;
     &lt;li&gt;ከሌላ አውታረ መረብ ጋር ለመገናኘት ይሞክሩ&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="993612073656736454">ይህ መተግበሪያ አዳዲስ የWi-Fi አውታረ መረቦችን ለማዋቀር ፈቃድ እየጠየቀ ነው። ከውቅረት በኋላ የእርስዎ <ph name="DEVICE_TYPE" /> በራስ-ሰር ከተሳታፊ የWiFi አውታረ መረቦች ጋር ይገናኛል። <ph name="LEARN_MORE" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">ከGoogle Pay</translation>
 </translationbundle>

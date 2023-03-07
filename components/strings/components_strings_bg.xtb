@@ -2309,6 +2309,7 @@
 <translation id="6738516213925468394">На <ph name="TIME" /> данните ви бяха шифровани с <ph name="BEGIN_LINK" />пропуска ви за синхронизиране<ph name="END_LINK" />. Въведете го, за да стартирате синхронизирането.</translation>
 <translation id="674375294223700098">Неизвестна грешка в сертификата на сървъра.</translation>
 <translation id="6744009308914054259">Докато чакате да се установи връзка, можете да посетите страницата „Изтегляния“, за да четете офлайн статии.</translation>
+<translation id="6745592621698551453">Актуализиране сега</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Телеконференция</translation>
 <translation id="6753269504797312559">Стойност за правилото</translation>
@@ -2773,7 +2774,6 @@
 <translation id="7802523362929240268">Сайтът е легитимен</translation>
 <translation id="7802989406998618639">Въведете <ph name="NUMBER_OF_DIGITS" />-цифрения код за сигурност, който се намира на <ph name="SIDE_OF_CARD" />, за да може банката ви да потвърди, че това сте вие</translation>
 <translation id="780301667611848630">Не, благодаря</translation>
-<translation id="7805571567667010077">Управлява се от организацията ви</translation>
 <translation id="7805768142964895445">Състояние</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Предложението за формуляри да се премахне ли от Chrome?</translation>
@@ -2996,6 +2996,7 @@
 <translation id="8369073279043109617">Получаване на нов код</translation>
 <translation id="8371889962595521444">Персонализирани основни сертификати</translation>
 <translation id="8374636051559112948">Варира</translation>
+<translation id="8378714024927312812">Управлява се от организацията ви</translation>
 <translation id="8380941800586852976">Опасно</translation>
 <translation id="8381674639488873545">Тези таксувания може да са еднократни или периодични и е възможно да не са явни. <ph name="BEGIN_LINK" />Показване въпреки това<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Споделянето от <ph name="ORIGIN_NAME" /> в(ъв) <ph name="VM_NAME" /> е блокирано от администраторски правила</translation>

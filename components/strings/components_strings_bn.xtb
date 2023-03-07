@@ -345,6 +345,7 @@
 <translation id="1733064249834771892">ফন্ট</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">সিস্টেম প্রশাসকের সাথে যোগাযোগ করে দেখুন।</translation>
+<translation id="1736158756193183352">নেটওয়ার্কে <ph name="BEGIN_LINK" />সাইন-ইন করুন<ph name="END_LINK" /></translation>
 <translation id="1736420071277903564">কম্পিউটার</translation>
 <translation id="1740951997222943430">মেয়াদ শেষ হওয়ার মাসের সঠিক মান লিখুন</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> হলে অবশ্যই নির্দিষ্ট করে দিতে হবে এবং একটি সঠিক স্ট্রিং হতে হবে।</translation>
@@ -1193,6 +1194,7 @@
 <translation id="3949601375789751990">আপনার ব্রাউজিং এর ইতিহাস এখানে দেখা যায়</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">কোনও পেমেন্টের পদ্ধতি সেভ করা নেই</translation>
+<translation id="3950574001630941635">আবার টিউটোরিয়াল শুরু করুন</translation>
 <translation id="3950820424414687140">সাইন-ইন করুন</translation>
 <translation id="3958057596965527988">৪ x ৪ ইঞ্চি</translation>
 <translation id="3961148744525529027">পেমেন্ট হ্যান্ডলার শিট অর্ধেক খোলা আছে</translation>
@@ -2309,6 +2311,7 @@
 <translation id="6738516213925468394"><ph name="TIME" />-এ আপনার <ph name="BEGIN_LINK" />সিঙ্ক পাসফ্রেজ<ph name="END_LINK" /> দিয়ে ডেটা এনক্রিপ্ট করা হয়েছিল। সিঙ্ক শুরু করতে সেটি লিখুন।</translation>
 <translation id="674375294223700098">অজানা সার্ভার সার্টিফিকেট ত্রুটি৷</translation>
 <translation id="6744009308914054259">কানেকশনের জন্য অপেক্ষা করার সময়, আপনি ডাউনলোডে গিয়ে অফলাইন নিবন্ধগুলি পড়তে পারেন।</translation>
+<translation id="6745592621698551453">এখনই আপডেট করুন</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">টেলিকনফারেন্সিং</translation>
 <translation id="6753269504797312559">নীতি মান</translation>
@@ -2773,7 +2776,6 @@
 <translation id="7802523362929240268">সাইটটি বৈধ</translation>
 <translation id="7802989406998618639"><ph name="SIDE_OF_CARD" />-এ <ph name="NUMBER_OF_DIGITS" />-ডিজিটের নিরাপত্তা কোড লিখুন যাতে আপনার ব্যাঙ্ক আপনার পরিচয় যাচাই করতে পারে</translation>
 <translation id="780301667611848630">না থাক</translation>
-<translation id="7805571567667010077">আপনার সংস্থার মাধ্যমে ম্যানেজ করা হয়</translation>
 <translation id="7805768142964895445">স্থিতি</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Chrome থেকে ফর্ম প্রস্তাবনা সরাবেন?</translation>
@@ -2996,6 +2998,7 @@
 <translation id="8369073279043109617">নতুন কোড পান</translation>
 <translation id="8371889962595521444">কাস্টম রুট সার্টিফিকেট</translation>
 <translation id="8374636051559112948">একই রকম হয় না</translation>
+<translation id="8378714024927312812">আপনার প্রতিষ্ঠানের দ্বারা ম্যানেজ করা</translation>
 <translation id="8380941800586852976">বিপজ্জনক</translation>
 <translation id="8381674639488873545">এই চার্জ এককালীন হতে পারে বা তার পুনরাবৃত্তি হতে পারে এবং তা স্পষ্ট করে বোঝা নাও যেতে পারে। <ph name="BEGIN_LINK" />তবুও দেখান<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698"><ph name="ORIGIN_NAME" /> থেকে <ph name="VM_NAME" />-এ শেয়ার করা অ্যাডমিনিস্ট্রেটর পলিসির মাধ্যমে ব্লক করা হয়েছে</translation>

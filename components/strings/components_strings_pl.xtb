@@ -2309,6 +2309,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6738516213925468394">Twoje dane zostały zaszyfrowane <ph name="BEGIN_LINK" />hasłem synchronizacji<ph name="END_LINK" /> w dniu <ph name="TIME" />. Wpisz to hasło, by rozpocząć synchronizację.</translation>
 <translation id="674375294223700098">Nieznany błąd certyfikatu serwera.</translation>
 <translation id="6744009308914054259">Dopóki nie masz połączenia, możesz poczytać artykuły offline z Pobranych plików.</translation>
+<translation id="6745592621698551453">Aktualizuj teraz</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Telekonferencje</translation>
 <translation id="6753269504797312559">Wartość zasady</translation>
@@ -2773,7 +2774,6 @@ Dodatkowe informacje:
 <translation id="7802523362929240268">Strona spełnia wymagania prawne</translation>
 <translation id="7802989406998618639">Wpisz <ph name="NUMBER_OF_DIGITS" />-cyfrowy kod zabezpieczający, który znajduje się <ph name="SIDE_OF_CARD" />, aby Twój bank mógł się upewnić, że to Ty</translation>
 <translation id="780301667611848630">Nie, dziękuję</translation>
-<translation id="7805571567667010077">Profil zarządzany przez Twoją organizację</translation>
 <translation id="7805768142964895445">Stan</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Usunąć tę podpowiedź do formularza z Chrome?</translation>
@@ -2996,6 +2996,7 @@ Dodatkowe informacje:
 <translation id="8369073279043109617">Uzyskaj nowy kod</translation>
 <translation id="8371889962595521444">Niestandardowy certyfikat główny</translation>
 <translation id="8374636051559112948">Różne opcje</translation>
+<translation id="8378714024927312812">Zarządzane przez Twoją organizację</translation>
 <translation id="8380941800586852976">Niebezpieczna</translation>
 <translation id="8381674639488873545">Może to być opłata jednorazowa lub cykliczna, a informacje o niej mogą nie być wyraźnie podane. <ph name="BEGIN_LINK" />Pokaż mimo to<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Zasady administratora uniemożliwiają udostępnianie informacji z <ph name="ORIGIN_NAME" /> maszynie wirtualnej <ph name="VM_NAME" /></translation>

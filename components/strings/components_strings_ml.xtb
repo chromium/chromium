@@ -2310,6 +2310,7 @@
 <translation id="6738516213925468394"><ph name="TIME" />-ന് നിങ്ങളുടെ <ph name="BEGIN_LINK" />സമന്വയ പാസ്‌ഫ്രെയ്‌സ്<ph name="END_LINK" /> ഉപയോഗിച്ച് ഡാറ്റ എൻക്രിപ്‌റ്റ് ചെയ്‌തു. സമന്വയം ആരംഭിക്കുന്നതിന് ഇത് നൽകുക.</translation>
 <translation id="674375294223700098">അറിയപ്പെടാത്ത സെര്‍വര്‍ സര്‍ട്ടിഫിക്കറ്റ് പിശക്.</translation>
 <translation id="6744009308914054259">കണക്‌ഷനായി കാത്തിരിക്കുമ്പോൾ, ഓഫ്‌ലൈൻ ലേഖനങ്ങൾ വായിക്കാനായി നിങ്ങൾക്ക് ഡൗൺലോഡുകൾ സന്ദർശിക്കാം.</translation>
+<translation id="6745592621698551453">ഇപ്പോൾ അപ്‌ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">ടെലികോൺഫറൻസിംഗ്</translation>
 <translation id="6753269504797312559">നയ മൂല്യം</translation>
@@ -2772,7 +2773,6 @@
 <translation id="7802523362929240268">സൈറ്റ് നിയമാനുസൃതമാണ്</translation>
 <translation id="7802989406998618639"><ph name="SIDE_OF_CARD" /> കാണുന്ന <ph name="NUMBER_OF_DIGITS" />-അക്ക സുരക്ഷാ കോഡ് നൽകുക, അതുവഴി ഇത് നിങ്ങൾ തന്നെയാണെന്ന് പരിശോധിച്ചുറപ്പിക്കാൻ നിങ്ങളുടെ ബാങ്കിന് കഴിയും</translation>
 <translation id="780301667611848630">വേണ്ട നന്ദി</translation>
-<translation id="7805571567667010077">നിങ്ങളുടെ സ്ഥാപനം മാനേജ് ചെയ്യുന്നത്</translation>
 <translation id="7805768142964895445">നില</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Chrome-ൽ നിന്നുള്ള നിർദ്ദേശം നീക്കംചെയ്യണോ?</translation>
@@ -2995,6 +2995,7 @@
 <translation id="8369073279043109617">പുതിയ കോഡ് നേടുക</translation>
 <translation id="8371889962595521444">ഇഷ്‌ടാനുസൃത റൂട്ട് സർട്ടിഫിക്കറ്റുകൾ</translation>
 <translation id="8374636051559112948">വ്യത്യാസപ്പെടുന്നു</translation>
+<translation id="8378714024927312812">നിങ്ങളുടെ സ്ഥാപനം മാനേജ് ചെയ്യുന്നത്</translation>
 <translation id="8380941800586852976">അപകടകരമായത്</translation>
 <translation id="8381674639488873545">ഈ നിരക്കുകൾ ഒറ്റത്തവണ അടയ്ക്കുന്നതോ ആവർത്തിക്കുന്നതോ ആവാം, ഒപ്പം വ്യക്തമല്ലായിരിക്കാം. <ph name="BEGIN_LINK" />എന്തായാലും കാണിക്കുക<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698"><ph name="ORIGIN_NAME" /> -ൽ നിന്ന് <ph name="VM_NAME" /> എന്നതിലേക്ക് പങ്കിടുന്നത് അഡ്‌മിൻ നയം ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>

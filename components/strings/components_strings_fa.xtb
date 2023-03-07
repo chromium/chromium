@@ -2311,6 +2311,7 @@
 <translation id="6738516213925468394">داده‌ها با  <ph name="BEGIN_LINK" />گذرعبارت همگام‌سازی<ph name="END_LINK" /> شما در <ph name="TIME" /> رمز می‌شود. برای شروع همگام‌سازی، آن را وارد کنید.</translation>
 <translation id="674375294223700098">خطای ناشناس گواهی سرور.</translation>
 <translation id="6744009308914054259">وقتی درانتظار اتصال هستید، می‌توانید برای خواندن مقاله‌های آفلاین، «بارگیری‌ها» را مشاهده کنید.</translation>
+<translation id="6745592621698551453">اکنون به‌روز شود</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">کنفرانس ازراه‌دور</translation>
 <translation id="6753269504797312559">مقدار خط‌‌مشی</translation>
@@ -2775,7 +2776,6 @@
 <translation id="7802523362929240268">سایت مجاز است</translation>
 <translation id="7802989406998618639">کد امنیتی <ph name="NUMBER_OF_DIGITS" /> رقمی <ph name="SIDE_OF_CARD" /> را وارد کنید تا بانکتان بتواند هویت شما را تأیید کند</translation>
 <translation id="780301667611848630">نه متشکرم</translation>
-<translation id="7805571567667010077">توسط سازمانتان مدیریت می‌شود</translation>
 <translation id="7805768142964895445">وضعیت</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">‏پیشنهاد فرم از Chrome پاک شود؟</translation>
@@ -2998,6 +2998,7 @@
 <translation id="8369073279043109617">کد جدید دریافت کنید</translation>
 <translation id="8371889962595521444">گواهی‌نامه ریشه سفارشی</translation>
 <translation id="8374636051559112948">متفاوت است</translation>
+<translation id="8378714024927312812">توسط سازمانتان مدیریت می‌شود</translation>
 <translation id="8380941800586852976">خطرناک</translation>
 <translation id="8381674639488873545">ممکن است این هزینه‌ها یک‌باره یا تکرارشونده باشند و واضح نباشند. <ph name="BEGIN_LINK" />درهرصورت نمایش داده شود<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">براساس خط‌مشی سرپرست، هم‌رسانی از <ph name="ORIGIN_NAME" /> به <ph name="VM_NAME" /> مسدود شده است</translation>

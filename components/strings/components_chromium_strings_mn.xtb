@@ -27,7 +27,9 @@ LAN Тохиргоонууд руу орж
 &gt; 
 <ph name="PROXIES_TITLE" /> 
 тохиргоогоо "ямар ч прокси байхгүй" эсвэл "шууд" гэж зааж өгсөн байгаа эсэхийг шалгана уу.</translation>
+<translation id="6549378540556750549">Chromium-г мөн <ph name="BEGIN_LINK_OSS" />нээлттэй эх кодтой бусад программ хангамжаар<ph name="END_LINK_OSS" /> боломжтой болгосон.</translation>
 <translation id="6613594504749178791">Таныг Chromium дахин эхлүүлэхэд өөрчлөлт идэвхжинэ.</translation>
+<translation id="7681937895330411637">Chromium-г мөн <ph name="BEGIN_LINK_CHROMIUM" />Chromium-н<ph name="END_LINK_CHROMIUM" /> нээлттэй эх кодын төслөөр боломжтой болгосон.</translation>
 <translation id="7861509383340276692">Chromium цэс&gt; рүү орж
           <ph name="SETTINGS_TITLE" />
           &gt;

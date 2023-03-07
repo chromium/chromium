@@ -558,6 +558,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1487335504823219454">Zapnuto – vlastní nastavení</translation>
 <translation id="1493892686965953381">Čekání na <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">Weby mohou žádat o použití písem nainstalovaných v zařízení</translation>
+<translation id="1494429729245089920">Virtuální počítač „<ph name="VM_NAME" />“ existuje, ale zřejmě se nejedná o platný virtuální počítač <ph name="APP_NAME" />. Obraťte se na administrátora.</translation>
 <translation id="1495677929897281669">Zpět na kartu</translation>
 <translation id="1498498210836053409">Při úpravě textu vypnout režim Jedním prstem (chytrý režim Jedním prstem)</translation>
 <translation id="1500297251995790841">Neznámé zařízení [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
@@ -4856,7 +4857,6 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (vpravo)</translation>
 <translation id="534449933710420173">Nepojmenovaná složka</translation>
 <translation id="5345916423802287046">Spustit aplikaci při přihlášení</translation>
-<translation id="5349456828414077488">Použít certifikát poskytnutý správcem. Údaje poskytovaná doméně <ph name="DOMAIN" /> může zachytit administrátor.</translation>
 <translation id="5350293332385664455">Vypnout Asistenta Google</translation>
 <translation id="535123479159372765">Text zkopírovaný z jiného zařízení</translation>
 <translation id="5352033265844765294">Časové razítko</translation>

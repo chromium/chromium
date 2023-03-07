@@ -81,6 +81,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="149095475893949513">Web-lokacija pokušava preuzeti profil za konfiguraciju.</translation>
 <translation id="1491277525950327607">Dodirnite dvaput da biste promijenili postavku</translation>
 <translation id="1492417797159476138">Već ste spremili ovo korisničko ime za ovu web-lokaciju</translation>
+<translation id="1497590942294823549">Izbornik → Upravitelj zaporki</translation>
 <translation id="1498283581832036924">Vaš <ph name="WEBSITE" /> račun neće se izbrisati.</translation>
 <translation id="1506063256525392513">To vam omogućuje snimanje i prijenos fotografija te skeniranje QR kodova.</translation>
 <translation id="1509486075633541495">Prijavite se na web-lokaciju</translation>
@@ -242,6 +243,7 @@ Web-lokacije ne mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregled
 <translation id="271033894570825754">Novo</translation>
 <translation id="2712127207578915686">Datoteka nije otvorena</translation>
 <translation id="2718352093833049315">Samo na Wi-Fiju</translation>
+<translation id="2737716090799520623">Kada ste prijavljeni u Chrome, zaporke koje spremite prikazivat će se na vašem Google računu (<ph name="ACCOUNT" />). Da biste to isključili, <ph name="BEGIN_LINK" />otvorite postavke<ph name="END_LINK" />.</translation>
 <translation id="2747003861858887689">Prethodno polje</translation>
 <translation id="2749231692441336879">Praćenje web-lokacije <ph name="CHANNEL_NAME" /></translation>
 <translation id="2764831210418622012">upravo sada</translation>
@@ -843,6 +845,7 @@ Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće za u
 <translation id="6801927553864092214">Da biste pregledavali privatno, otvorite anonimnu karticu</translation>
 <translation id="6807889908376551050">Prikaži sve...</translation>
 <translation id="681368974849482173">Stavka je stvorena</translation>
+<translation id="6822587385560699678">Kada je uključeno, zaporke se spremaju na <ph name="ACCOUNT" />. Kad je isključeno, zaporke se spremaju samo na ovaj uređaj.</translation>
 <translation id="683022620450280906">Spremljene zaporke možete koristiti na bilo kojem uređaju. Spremaju se u Google upravitelj zaporki za <ph name="EMAIL" /></translation>
 <translation id="6831043979455480757">Prevedi</translation>
 <translation id="6842136130964845393">Da biste uvijek mogli pristupati spremljenim zaporkama, potvrdite da ste to vi</translation>

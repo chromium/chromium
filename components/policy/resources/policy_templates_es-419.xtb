@@ -3004,13 +3004,6 @@ La función estará habilitada de forma predeterminada. Si habilitas la polític
 Si la inhabilitas, se inhabilitará la función.
 
 Esta política es una solución temporal y se quitará en algunos momentos importantes (se prevé quitarla en la versión M113 de manera provisoria).</translation>
-<translation id="3795413481405077588">Esta política permite que un administrador especifique la configuración para las aplicaciones web instaladas.
-
-      Esta política asigna una ID de aplicación web a su parámetro de configuración específico. Es posible establecer una configuración predeterminada usando la ID especial <ph name="DEFAULT_SCOPE" />, que se aplicará a todas las aplicaciones web que no tengan una configuración personalizada en esta política.
-
-      El campo <ph name="MANIFEST_ID_FIELD" /> es la ID del manifiesto para la aplicación web. Consulta <ph name="WEB_APP_ID_REFERENCE_URL" /> para obtener instrucciones sobre cómo determinar la ID del manifiesto para una aplicación web instalada.
-      El campo <ph name="RUN_ON_OS_LOGIN_FIELD" /> especifica si una aplicación web puede ejecutarse durante el acceso al SO. Si este campo se establece como <ph name="BLOCKED" />, no se ejecutará la aplicación web durante el acceso al SO, y el usuario no podrá habilitar esta acción más tarde. Si este campo se establece como <ph name="RUN_WINDOWED" />, se ejecutará la aplicación web durante el acceso al SO, y el usuario no podrá inhabilitar esta acción más tarde. Si este campo se establece como <ph name="ALLOWED" />, el usuario podrá configurar la aplicación web para que se ejecute durante el acceso al SO. La configuración predeterminada solo permite los valores <ph name="ALLOWED" /> y <ph name="BLOCKED" />.
-      </translation>
 <translation id="3796527892245558832">Selector de perfiles disponible en el inicio</translation>
 <translation id="3798922329287609568">Si estableces la política, se restringirá el modo de impresión doble.
 

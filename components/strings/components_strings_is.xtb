@@ -2309,6 +2309,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6738516213925468394">Gögnin þín voru dulkóðuð með <ph name="BEGIN_LINK" />aðgangsorði samstillingar<ph name="END_LINK" /> <ph name="TIME" />. Sláðu það inn til að hefja samstillingu.</translation>
 <translation id="674375294223700098">Óþekkt villa í vottorði þjóns.</translation>
 <translation id="6744009308914054259">Á meðan þú bíður eftir tengingu geturðu skoðað „Niðurhal“ til að lesa greinar án nettengingar.</translation>
+<translation id="6745592621698551453">Uppfæra núna</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Símafundir</translation>
 <translation id="6753269504797312559">Gildi reglu</translation>
@@ -2773,7 +2774,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7802523362929240268">Vefsvæðið er traust</translation>
 <translation id="7802989406998618639">Sláðu inn <ph name="NUMBER_OF_DIGITS" /> tölustafa öryggiskóðann á <ph name="SIDE_OF_CARD" /> svo bankinn geti staðfest að þetta sért þú</translation>
 <translation id="780301667611848630">Nei, takk</translation>
-<translation id="7805571567667010077">Stjórnað af fyrirtækinu þínu</translation>
 <translation id="7805768142964895445">Staða</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Fjarlægja eyðublaðstillögu úr Chrome?</translation>
@@ -2996,6 +2996,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8369073279043109617">Fá nýjan kóða</translation>
 <translation id="8371889962595521444">Sérsniðin rótarvottorð</translation>
 <translation id="8374636051559112948">Breytileg</translation>
+<translation id="8378714024927312812">Stjórnað af fyrirtækinu þínu</translation>
 <translation id="8380941800586852976">Hættulegt</translation>
 <translation id="8381674639488873545">Greiðslur gætu verið stakar eða endurteknar og hugsanlega er ekki greinilegt að borga þurfi. <ph name="BEGIN_LINK" />Sýna samt<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Regla stjórnanda lokar á að hægt sé að deila frá <ph name="ORIGIN_NAME" /> í <ph name="VM_NAME" /></translation>

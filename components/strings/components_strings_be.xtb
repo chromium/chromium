@@ -345,6 +345,7 @@
 <translation id="1733064249834771892">шрыфты</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Звярніцеся да сістэмнага адміністратара.</translation>
+<translation id="1736158756193183352"><ph name="BEGIN_LINK" />Уваход<ph name="END_LINK" /> у сетку</translation>
 <translation id="1736420071277903564">Камп'ютар</translation>
 <translation id="1740951997222943430">Увядзіце сапраўдны месяц заканчэння тэрміну дзеяння</translation>
 <translation id="1741613555002899862">Гэта значэнне павінна быць вызначана і ўяўляць сабой сапраўдны радок, калі для палітыкі DnsOverHttpsMode зададзены параметр "<ph name="SECURE_DNS_MODE_SECURE" />".</translation>
@@ -1191,6 +1192,7 @@
 <translation id="3949601375789751990">Гісторыя прагляду сайтаў з'явіцца тут</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Няма захаваных спосабаў аплаты</translation>
+<translation id="3950574001630941635">Перазапусціць дапаможнік</translation>
 <translation id="3950820424414687140">Увайсці</translation>
 <translation id="3958057596965527988">4 x 4 цалі</translation>
 <translation id="3961148744525529027">Аркуш апрацоўшчыка плацяжоў адкрыты напалову</translation>
@@ -2308,6 +2310,7 @@
 <translation id="6738516213925468394">Даныя былі зашыфраваны з дапамогай <ph name="BEGIN_LINK" />фразы-пароля для сінхранізацыі<ph name="END_LINK" /> <ph name="TIME" />. Увядзіце яе, каб пачаць сінхранізацыю.</translation>
 <translation id="674375294223700098">Невядомая памылка сертыфіката сервера.</translation>
 <translation id="6744009308914054259">Пакуль чакаецца падключэнне, вы можаце пачытаць артыкулы, спампаваныя раней.</translation>
+<translation id="6745592621698551453">Абнавіць</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Тэлеканферэнцыі</translation>
 <translation id="6753269504797312559">Значэнне палітыкі</translation>
@@ -2773,7 +2776,6 @@
 <translation id="7802523362929240268">Сайт надзейны</translation>
 <translation id="7802989406998618639">Увядзіце <ph name="NUMBER_OF_DIGITS" />-значны код бяспекі на <ph name="SIDE_OF_CARD" />, каб банк мог спраўдзіць вашу асобу</translation>
 <translation id="780301667611848630">Не, дзякуй</translation>
-<translation id="7805571567667010077">Пад кіраваннем вашай арганізацыі</translation>
 <translation id="7805768142964895445">Стан</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Выдаліць прапанову аўтазапаўнення форм з Chrome?</translation>
@@ -2996,6 +2998,7 @@
 <translation id="8369073279043109617">Атрымайце новы</translation>
 <translation id="8371889962595521444">Карыстальніцкія каранёвыя сертыфікаты</translation>
 <translation id="8374636051559112948">Вар'іруецца</translation>
+<translation id="8378714024927312812">Пад кіраваннем вашай арганізацыі</translation>
 <translation id="8380941800586852976">Небяспечна</translation>
 <translation id="8381674639488873545">Плацяжы могуць быць аднаразовыя або рэгулярныя, і інфармацыю пра іх можа быць цяжка заўважыць. <ph name="BEGIN_LINK" />Усе роўна паказаць<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Палітыка, зададзеная адміністратарам, блакіруе абагульванне змесціва з сайта <ph name="ORIGIN_NAME" /> з віртуальнай машынай <ph name="VM_NAME" /></translation>

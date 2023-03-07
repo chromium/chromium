@@ -163,6 +163,7 @@
 <translation id="2346474577291266260">အလွန်ကောင်း (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">ဆက်လုပ်ရန်</translation>
 <translation id="2364498172489649528">အောင်မြင်သည်</translation>
+<translation id="2367335866686097760">ကီးနေရာချသည့်ကီး</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">တုံ့ပြန်ချက် အစီရင်ခံစာ ပို့ရန်</translation>
 <translation id="2407209115954268704">ဆင်းမ်လော့ခ် အခြေအနေ</translation>
@@ -235,7 +236,9 @@
 <translation id="319101249942218879">ကိုယ်စားပြုပုံ ပြောင်းလိုက်သည်</translation>
 <translation id="3192947282887913208">အသံ ဖိုင်များ</translation>
 <translation id="3199982728237701504">စာရွက်စာတမ်း ထည့်ရန်ဗန်း (နှစ်ဘက်သုံး)</translation>
+<translation id="3211671540163313381">ကီးနေရာချသည့် D-pad</translation>
 <translation id="3226405216343213872">စကင်ဖတ်စက်များ ရှာနေသည်</translation>
+<translation id="3226657629376379887">အပြင်အဆင် လုပ်ဆောင်ချက် မီနူး</translation>
 <translation id="3246869037381808805">1 ရက်အထက် ပရင့်ထုတ်ရန်ဖိုင်များကို ဖယ်ရှားပါမည်</translation>
 <translation id="3268178239013324452">မအောင်မြင်ပါ - တံခါးပွင့်နေသည်</translation>
 <translation id="3275506277319227640"><ph name="DIRECTION" /> တွင် နေရာချရန်</translation>
@@ -803,6 +806,7 @@
 <translation id="8318753676953949627">ပုံများ မရှိပါ</translation>
 <translation id="8336739000755212683">စက်ပစ္စည်း၏ အကောင့်ပုံ ပြောင်းရန်</translation>
 <translation id="8347227221149377169">ပရင့်ထုတ်ရန် ဖိုင်များ</translation>
+<translation id="8351855506390808906">ကီးနေရာချသည့် ထိမှတ်</translation>
 <translation id="8352772353338965963">အရာ အများအပြားထဲသို့ လက်မှတ်ထိုး ဝင်နိုင်ရန် အတွက် အကောင့် တစ်ခုကို ထည့်ပါ။ လက်မှတ်ထိုး ဝင်ထားသည့် အကောင့်များ အားလုံးကို စကားဝှက် မသုံးရဘဲ သုံးနိုင်မည် ဖြစ်ရာ၊ ဒီအင်္ဂါရပ်ကို ယုံကြည်ရသည့် အကောင့်များ အတွက်သာ အသုံးပြသင့်သည်။</translation>
 <translation id="8364946094152050673">အမည်ဆာဗာအလွတ်များ</translation>
 <translation id="8372477600026034341">အပို ဆာဗာပင်ရင်းများ</translation>
@@ -900,6 +904,7 @@
 <translation id="9138630967333032450">ဘယ်ဘက် shift</translation>
 <translation id="9149391708638971077">မှတ်ဉာဏ်စစ်ဆေးရန်</translation>
 <translation id="9157515863513902090">ပိုကြီးသောအခြမ်းတွင် နေရာချရန်</translation>
+<translation id="9161276708550942948">space ကီး</translation>
 <translation id="9173638680043580060">တစ်မိနစ်ပင် မကျန်တော့ပါ</translation>
 <translation id="917720651393141712">စမ်းသပ်မှု</translation>
 <translation id="9188992814426075118">ကီးဘုတ်က သင့်နောက်ခံကို အလိုအလျောက် တူညီအောင်လုပ်နိုင်သည်</translation>

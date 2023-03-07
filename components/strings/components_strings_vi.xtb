@@ -345,6 +345,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1733064249834771892">phông chữ</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Thử liên hệ với quản trị viên hệ thống.</translation>
+<translation id="1736158756193183352"><ph name="BEGIN_LINK" />Đăng nhập<ph name="END_LINK" /> vào mạng</translation>
 <translation id="1736420071277903564">Máy tính</translation>
 <translation id="1740951997222943430">Nhập tháng hết hạn hợp lệ</translation>
 <translation id="1741613555002899862">Phải được chỉ định và là một chuỗi hợp lệ khi DnsOverHttpsMode là <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
@@ -1192,6 +1193,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3949601375789751990">Lịch sử duyệt web của bạn xuất hiện ở đây</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Bạn chưa lưu phương thức thanh toán nào</translation>
+<translation id="3950574001630941635">Mở lại hướng dẫn từ đầu</translation>
 <translation id="3950820424414687140">Đăng nhập</translation>
 <translation id="3958057596965527988">4 x 4 inch</translation>
 <translation id="3961148744525529027">Trang tính trình xử lý thanh toán đang mở trên nửa màn hình</translation>
@@ -2309,6 +2311,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6738516213925468394">Dữ liệu của bạn đã được mã hóa bằng <ph name="BEGIN_LINK" />cụm mật khẩu đồng bộ hóa<ph name="END_LINK" /> vào <ph name="TIME" />. Hãy nhập cụm mật khẩu đó để bắt đầu đồng bộ hóa.</translation>
 <translation id="674375294223700098">Lỗi chứng chỉ máy chủ không xác định.</translation>
 <translation id="6744009308914054259">Trong khi chờ kết nối, bạn có thể chuyển đến phần Tệp đã tải xuống để đọc các tin bài khi không có mạng.</translation>
+<translation id="6745592621698551453">Cập nhật ngay bây giờ</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Hội nghị từ xa</translation>
 <translation id="6753269504797312559">Giá trị chính sách</translation>
@@ -2773,7 +2776,6 @@ Thông tin chi tiết bổ sung:
 <translation id="7802523362929240268">Trang web hợp pháp</translation>
 <translation id="7802989406998618639">Nhập mã bảo mật gồm <ph name="NUMBER_OF_DIGITS" /> chữ số trên <ph name="SIDE_OF_CARD" /> để ngân hàng có thể xác minh danh tính của bạn</translation>
 <translation id="780301667611848630">Không, cảm ơn</translation>
-<translation id="7805571567667010077">Do tổ chức của bạn quản lý</translation>
 <translation id="7805768142964895445">Trạng thái</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Xóa đề xuất biểu mẫu khỏi Chrome?</translation>
@@ -2996,6 +2998,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8369073279043109617">Nhận mã mới</translation>
 <translation id="8371889962595521444">Chứng chỉ gốc tùy chỉnh</translation>
 <translation id="8374636051559112948">Khác nhau</translation>
+<translation id="8378714024927312812">Do tổ chức của bạn quản lý</translation>
 <translation id="8380941800586852976">Nguy hiểm</translation>
 <translation id="8381674639488873545">Những khoản phí này có thể là khoản thu một lần hoặc định kỳ và có thể không rõ ràng. <ph name="BEGIN_LINK" />Vẫn hiển thị<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Chính sách của quản trị viên đã chặn thao tác chia sẻ từ <ph name="ORIGIN_NAME" /> với <ph name="VM_NAME" /></translation>

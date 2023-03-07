@@ -2309,6 +2309,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6738516213925468394">Amgryptiwyd eich data â'ch <ph name="BEGIN_LINK" />cyfrinymadrodd cysoni<ph name="END_LINK" /> ar <ph name="TIME" />. Rhowch eich cyfrinymadrodd i ddechrau cysoni.</translation>
 <translation id="674375294223700098">Gwall tystysgrif gweinydd anhysbys.</translation>
 <translation id="6744009308914054259">Wrth aros am gysylltiad, gallwch fynd i Lawrlwythiadau i ddarllen erthyglau all-lein.</translation>
+<translation id="6745592621698551453">Diweddaru nawr</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Telegynadledda</translation>
 <translation id="6753269504797312559">Gwerth polisi</translation>
@@ -2773,7 +2774,6 @@ Manylion ychwanegol:
 <translation id="7802523362929240268">Mae'r wefan yn gyfreithlon</translation>
 <translation id="7802989406998618639">Rhowch y cod diogelwch <ph name="NUMBER_OF_DIGITS" /> digid ar y <ph name="SIDE_OF_CARD" /> fel y gall eich banc gadarnhau mai chi sydd yno</translation>
 <translation id="780301667611848630">Dim diolch</translation>
-<translation id="7805571567667010077">Rheolir gan eich sefydliad</translation>
 <translation id="7805768142964895445">Statws</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Tynnu'r awgrym ffurflen o Chrome?</translation>
@@ -2996,6 +2996,7 @@ Manylion ychwanegol:
 <translation id="8369073279043109617">Cael cod newydd</translation>
 <translation id="8371889962595521444">Tystysgrifau gwreiddiau personol</translation>
 <translation id="8374636051559112948">Yn amrywio</translation>
+<translation id="8378714024927312812">Rheolir gan eich sefydliad</translation>
 <translation id="8380941800586852976">Peryglus</translation>
 <translation id="8381674639488873545">Gallai'r taliadau hyn fod yn untro neu'n ailadrodd ac mae'n bosib na fydd yn amlwg. <ph name="BEGIN_LINK" />Dangos beth bynnag<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Mae rhannu o <ph name="ORIGIN_NAME" /> i <ph name="VM_NAME" /> wedi'i rwystro gan bolisi gweinyddwr</translation>

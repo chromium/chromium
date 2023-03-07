@@ -348,6 +348,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1303671224831497365">Không tìm thấy thiết bị Bluetooth nào</translation>
 <translation id="130491383855577612">Đã thay thế thành công các ứng dụng và tệp Linux</translation>
 <translation id="1306390193749326011">Bạn sẽ không thấy lại <ph name="MODULE_NAME" /> trên trang này</translation>
+<translation id="1306518237408758433">Mở <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="1306606229401759371">Thay đổi cài đặt</translation>
 <translation id="1307165550267142340">Mã PIN của bạn đã được tạo</translation>
 <translation id="1307431692088049276">Đừng hỏi lại tôi</translation>
@@ -437,6 +438,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1393283411312835250">Mặt trời và những đám mây</translation>
 <translation id="1395730723686586365">Trình cập nhật đã bắt đầu</translation>
 <translation id="1395832189806039783">Đánh dấu mục bằng tiêu điểm lấy bằng bàn phím</translation>
+<translation id="1396120028054416908">Quay lại <ph name="FOLDER_TITLE" /></translation>
 <translation id="1396139853388185343">Lỗi khi thiết lập máy in</translation>
 <translation id="1396963298126346194">Tên người dùng và mật khẩu bạn đã nhập không khớp</translation>
 <translation id="1397500194120344683">Không có thiết bị nào đủ điều kiện. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
@@ -559,6 +561,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1487335504823219454">Bật - cài đặt tùy chỉnh</translation>
 <translation id="1493892686965953381">Đang đợi <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">Trang web có thể xin phép sử dụng phông chữ đã cài đặt trên thiết bị của bạn</translation>
+<translation id="1494429729245089920">Máy ảo "<ph name="VM_NAME" />" tồn tại nhưng có vẻ không phải là máy ảo <ph name="APP_NAME" /> hợp lệ. Vui lòng liên hệ với quản trị viên của bạn.</translation>
 <translation id="1495677929897281669">Quay lại thẻ</translation>
 <translation id="1498498210836053409">Tắt chế độ phím dính khi chỉnh sửa văn bản (Chế độ phím dính thông minh)</translation>
 <translation id="1500297251995790841">Thiết bị không xác định [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
@@ -680,6 +683,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1596286373007273895">Có sẵn</translation>
 <translation id="1596709061955594992">Bluetooth đang tắt. Để xem các thiết bị có thể ghép đôi, hãy bật Bluetooth.</translation>
 <translation id="1596780725094407793">– bao gồm các miền con</translation>
+<translation id="1597852076552089763">Tuỳ chọn về dấu trang</translation>
 <translation id="1598163867407640634">Sử dụng <ph name="SITE_ETLD_PLUS_ONE" /> bằng tài khoản <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1598233202702788831">Quản trị viên của bạn đã tắt bản cập nhật.</translation>
 <translation id="1600857548979126453">Truy cập chương trình phụ trợ trình gỡ lỗi trang</translation>
@@ -1829,6 +1833,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="25568951186001797">Khung bảo vệ: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2558569818338050235">Nhật ký duyệt web của bạn ảnh hưởng tới quảng cáo mà bạn thấy</translation>
 <translation id="2559889124253841528">Lưu vào thiết bị</translation>
+<translation id="2561211427862644160">Xem tất cả dấu trang của bạn ở đây</translation>
 <translation id="2564520396658920462">Tùy chọn thực thi JavaScript qua AppleScript đã bị tắt. Để bật tùy chọn này, từ thanh menu, hãy chuyển đến Xem&gt; Nhà phát triển &gt; Cho phép JavaScript từ Apple Events. Để biết thêm thông tin, hãy truy cập vào https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Cải thiện khả năng kiểm tra chính trả</translation>
 <translation id="2568694057933302218">Ở chế độ Ẩn danh, các trang web không thể dùng cookie để xem hoạt động duyệt web của bạn trên nhiều trang web. Thông tin về hoạt động duyệt web của bạn không được dùng cho các mục đích như cá nhân hoá quảng cáo. Các tính năng của một số trang web có thể không hoạt động.</translation>
@@ -2433,6 +2438,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3090871774332213558">Đã ghép nối "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3093714882666365141">Không cho phép trang web cài đặt trình xử lý thanh toán</translation>
 <translation id="3094141017404513551">Thao tác này sẽ tách biệt hoạt động duyệt web của bạn với <ph name="EXISTING_USER" /></translation>
+<translation id="3094521107841754472">Giá đã thay đổi từ <ph name="PREVIOUS_PRICE" /> thành <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Dấu trang, mật khẩu và dữ liệu khác của trình duyệt sẽ được đồng bộ hóa với tài khoản chính.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{Đã tắt 1 tiện ích có thể gây hại. Bạn cũng có thể xóa tiện ích này.}other{Đã tắt {NUM_EXTENSIONS} tiện ích có thể gây hại. Bạn cũng có thể xóa các tiện ích này.}}</translation>
 <translation id="3101126716313987672">Ánh sáng mờ</translation>
@@ -2785,6 +2791,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3441653493275994384">Màn hình</translation>
 <translation id="3441663102605358937">Đăng nhập lại vào <ph name="ACCOUNT" /> để xác minh tài khoản này</translation>
 <translation id="3442674350323953953">Cho phép Google dùng dữ liệu phần cứng của bạn để giúp cải thiện <ph name="DEVICE_OS" />. Nếu bạn từ chối, dữ liệu này vẫn sẽ được gửi tới Google để xác định các bản cập nhật thích hợp, nhưng sẽ không được lưu trữ hoặc sử dụng cho mục đích khác.</translation>
+<translation id="3443744348829035122">Đã hết thời gian chờ dành cho <ph name="BRAND" /></translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> sẽ xem được <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">Các câu trả lời nhanh của Trợ lý Google</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> phút</translation>
@@ -3329,6 +3336,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="39103738135459590">Mã kích hoạt</translation>
 <translation id="3911824782900911339">Trang thẻ mới</translation>
 <translation id="3914173277599553213">Bắt buộc</translation>
+<translation id="3914568430265141791">Mở thư mục <ph name="FOLDER_TITLE" /></translation>
 <translation id="3915280005470252504">Tìm kiếm bằng giọng nói</translation>
 <translation id="3916233823027929090">Đã kiểm tra bảo mật xong</translation>
 <translation id="3916445069167113093">Loại tệp này có thể gây hại cho máy tính của bạn. Bạn có muốn giữ tệp <ph name="FILE_NAME" /> không?</translation>
@@ -3460,6 +3468,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4022426551683927403">&amp;Thêm vào Từ điển</translation>
 <translation id="4025039777635956441">Tắt tiếng trang web đã chọn</translation>
 <translation id="402707738228916911">Đã nhận được hướng dẫn <ph name="AUTHORIZE_INSTRUCTION_NAME" /></translation>
+<translation id="4027569221211770437">Thư mục <ph name="FOLDER_TITLE" /></translation>
 <translation id="4027958407426528157">Mở trang web trong các ứng dụng đã cài đặt trên <ph name="DEVICE_TYPE" /></translation>
 <translation id="4028467762035011525">Thêm phương thức nhập</translation>
 <translation id="4029556917477724407">Quay về trang trước trang <ph name="PAGE_TITLE" /></translation>
@@ -3514,6 +3523,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4077917118009885966">Đã chặn quảng cáo trên trang web này</translation>
 <translation id="4077919383365622693">Tất cả dữ liệu và cookie do <ph name="SITE" /> lưu trữ sẽ bị xóa.</translation>
 <translation id="4078738236287221428">Linh hoạt</translation>
+<translation id="4078903002989614318">Tuỳ chọn sắp xếp và liệt kê</translation>
 <translation id="4079140982534148664">Sử dụng tính năng kiểm tra lỗi chính tả nâng cao</translation>
 <translation id="4084682180776658562">Dấu trang</translation>
 <translation id="4084835346725913160">Đóng <ph name="TAB_NAME" /></translation>
@@ -3658,6 +3668,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4217571870635786043">Nhập bằng giọng nói</translation>
 <translation id="4218081191298393750">Nhấp vào biểu tượng loa để tắt tiếng thẻ này</translation>
 <translation id="4220648711404560261">Đã xảy ra lỗi trong quá trình kích hoạt.</translation>
+<translation id="4222917615373664617">Tính năng theo dõi giá đang bật. Giá là <ph name="CURRENT_PRICE" />.</translation>
 <translation id="4223845867739585293">Tạo một mã xác thực</translation>
 <translation id="4225397296022057997">Trên tất cả các trang web</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Không được phép dùng tiện ích này}other{Không được phép dùng một số tiện ích}}</translation>
@@ -5820,6 +5831,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6212168817037875041">Tắt màn hình</translation>
 <translation id="6212752530110374741">Gửi liên kết qua email</translation>
 <translation id="621470880408090483">Không cho phép trang web kết nối với thiết bị Bluetooth</translation>
+<translation id="6215039389782910006">{1,plural, =1{Để bảo vệ mật khẩu của bạn, <ph name="BRAND" /> sẽ khoá sau 1 phút không hoạt động}other{Để bảo vệ mật khẩu của bạn, <ph name="BRAND" /> sẽ khoá sau # phút không hoạt động}}</translation>
 <translation id="6216239400972191926">Trang web và ứng dụng bị từ chối</translation>
 <translation id="6216601812881225442">Vùng chứa của bạn không hỗ trợ việc thay đổi dung lượng. Để điều chỉnh mức dung lượng được phân bổ sẵn cho Linux, hãy sao lưu rồi khôi phục dữ liệu sang một vùng chứa mới.</translation>
 <translation id="6216696360484424239">Đăng nhập tự động</translation>

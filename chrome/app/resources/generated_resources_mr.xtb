@@ -348,6 +348,7 @@
 <translation id="1303671224831497365">ब्लूटूथ डिव्हाइस सापडली नाहीत</translation>
 <translation id="130491383855577612">Linux अ‍ॅप्स आणि फाइल यशस्वीरीत्या बदलण्यात आल्या आहेत</translation>
 <translation id="1306390193749326011">तुम्हाला या पेजवर <ph name="MODULE_NAME" /> पुन्हा दिसणार नाही</translation>
+<translation id="1306518237408758433"><ph name="BOOKMARK_TITLE" /> उघडा</translation>
 <translation id="1306606229401759371">सेटिंग्ज बदला</translation>
 <translation id="1307165550267142340">तुमचा पिन तयार केला गेला आहे</translation>
 <translation id="1307431692088049276">मला पुन्हा विचारू नका</translation>
@@ -437,6 +438,7 @@
 <translation id="1393283411312835250">सूर्य आणि ढग</translation>
 <translation id="1395730723686586365">अद्यतनकर्ता सुरू</translation>
 <translation id="1395832189806039783">कीबोर्ड फोकस वापरून आयटम हायलाइट करणे करा</translation>
+<translation id="1396120028054416908"><ph name="FOLDER_TITLE" /> वर परत या</translation>
 <translation id="1396139853388185343">प्रिंटर सेट अप करण्यात एरर आली</translation>
 <translation id="1396963298126346194">तुम्ही एंटर केलेले वापरकर्ता नाव आणि पासवर्ड जुळत नाही</translation>
 <translation id="1397500194120344683">कोणतीही पात्र डिव्हाइस नाहीत. <ph name="LINK_BEGIN" />अधिक जाणून घ्या.<ph name="LINK_END" /></translation>
@@ -680,6 +682,7 @@
 <translation id="1596286373007273895">उपलब्ध आहे</translation>
 <translation id="1596709061955594992">ब्लूटूथ बंद आहे. उपलब्ध डिव्हाइस पाहण्यासाठी, ब्लूटूथ सुरू करा.</translation>
 <translation id="1596780725094407793">- सबडोमेन समाविष्ट आहेत</translation>
+<translation id="1597852076552089763">पर्याय बुकमार्क करा</translation>
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> सह <ph name="SITE_ETLD_PLUS_ONE" /> वापरा</translation>
 <translation id="1598233202702788831">तुमच्या ॲडमिनिस्ट्रेटरने अपडेट अक्षम केली आहेत.</translation>
 <translation id="1600857548979126453">पेज ‍डीबगर बॅकएंडला ॲक्सेस करा</translation>
@@ -1829,6 +1832,7 @@
 <translation id="25568951186001797">Fenced Frame: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2558569818338050235">तुमचा ब्राउझिंग इतिहास हा तुम्ही पाहता त्या जाहिरातींवर परिणाम करतो</translation>
 <translation id="2559889124253841528">डिव्हाइस मध्ये सेव्ह करा</translation>
+<translation id="2561211427862644160">तुमचे सर्व बुकमार्क येथे पहा</translation>
 <translation id="2564520396658920462">AppleScript द्वारे JavaScript एक्झिक्युट करणे बंद केले आहे. ते सुरू करण्यासाठी, मेनू बारवरून, पहा &gt; डेव्हलपर &gt; Apple इव्‍हेंटवरून JavaScript चालवू द्या यावर जा. अधिक माहितीसाठी: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">वर्धित केलेले स्पेल चेक</translation>
 <translation id="2568694057933302218">गुप्त मोडमध्ये असताना, साइटवरील तुमची ब्राउझिंग ॲक्टिव्हिटी पाहण्यासाठी साइट तुमच्या कुकी वापरू शकत नाहीत. जाहिराती पर्सनलाइझ करणे यासारख्या गोष्टींसाठी तुमची ब्राउझिंग अ‍ॅक्टिव्हिटी वापरली जात नाही. काही साइटवरील वैशिष्ट्ये कदाचित काम करणार नाहीत.</translation>
@@ -2433,6 +2437,7 @@
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" जोडले</translation>
 <translation id="3093714882666365141">साइटना पेमेंट हँडलर इंस्टॉल करण्याची अनुमती देऊ नका</translation>
 <translation id="3094141017404513551">हे तुमचे ब्राउझिंग <ph name="EXISTING_USER" /> पासून स्वतंत्र करेल</translation>
+<translation id="3094521107841754472">किंमत <ph name="PREVIOUS_PRICE" /> वरून <ph name="CURRENT_PRICE" /> वर बदलली आहे.</translation>
 <translation id="3095871294753148861">बुकमार्क, पासवर्ड आणि इतर ब्राउझर डेटा या गोष्टी प्राथमिक खात्याशी सिंक केल्या आहेत.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{हानीकारक असू शकणारे एक एक्स्टेंशन बंद आहे. तुम्ही ते काढूदेखील शकता.}other{हानीकारक असू शकणारी {NUM_EXTENSIONS} एक्स्टेंशन बंद आहेत. तुम्ही ती काढूदेखील शकता.}}</translation>
 <translation id="3101126716313987672">मंद लाइट</translation>
@@ -2785,6 +2790,7 @@
 <translation id="3441653493275994384">तपासा</translation>
 <translation id="3441663102605358937">या खात्याची पडताळणी करण्यासाठी <ph name="ACCOUNT" /> मध्ये पुन्हा साइन इन करा</translation>
 <translation id="3442674350323953953"><ph name="DEVICE_OS" /> मध्ये सुधारणा करण्यात मदत करण्यासाठी Google तुमचा हार्डवेअर वापरू द्या. तुम्ही नकार दिल्यास, योग्य ती अपडेट निर्धारित करण्यासाठी हा डेटा तरीही Google ला पाठवला जातो, पण स्टोअर केला जात नाही किंवा इतरत्र वापरला जात नाही.</translation>
+<translation id="3443744348829035122"><ph name="BRAND" /> टाइम आउट</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> ला <ph name="FILENAME" /> पाहता येईल</translation>
 <translation id="3445047461171030979">Google Assistant ची झटपट उत्तरे</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> मिनिटे</translation>
@@ -3183,6 +3189,7 @@
 <translation id="3790417903123637354">काहीतरी चूक झाली. नंतर पुन्हा प्रयत्न करा</translation>
 <translation id="379082410132524484">तुमचे कार्ड एक्सपायर झालेले आहे</translation>
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> एक्स्टेंशन</translation>
+<translation id="3794792524918736965">Windows Hello सुरू करा</translation>
 <translation id="379500251094592809">Nearby सह शेअरिंग वापरण्यासाठी, दोन्ही डिव्हाइस अनलॉक असल्याची, एकमेकांच्‍या जवळ धरल्‍याची आणि त्‍यांचे ब्लूटूथ सुरू असल्‍याची खात्री करा. तुम्ही तुमच्या संपर्कामध्ये नसलेल्या Chromebook सह शेअर करत असल्यास, त्यामध्ये Nearby दृश्यमानता सुरू असल्याची खात्री करा (वेळ निवडून स्थिती क्षेत्र उघडा, त्यानंतर Nearby दृश्यमानता सुरू करा) <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">बंद</translation>
 <translation id="3795766489237825963">अ‍ॅनिमेशन प्ले करा</translation>
@@ -3328,6 +3335,7 @@
 <translation id="39103738135459590">अ‍ॅक्टिव्हेशन कोड</translation>
 <translation id="3911824782900911339">नवीन टॅब पृष्‍ठ</translation>
 <translation id="3914173277599553213">आवश्यक</translation>
+<translation id="3914568430265141791"><ph name="FOLDER_TITLE" /> फोल्डर उघडा</translation>
 <translation id="3915280005470252504">व्हॉइसनुसार शोधा</translation>
 <translation id="3916233823027929090">सुरक्षा तपासण्या पूर्ण झाल्या</translation>
 <translation id="3916445069167113093">या प्रकारची फाइल तुमच्या कॉंप्युटरला हानी पोहचवू शकते. तुम्ही तरीसुद्धा <ph name="FILE_NAME" /> ठेवू इच्छिता?</translation>
@@ -3459,6 +3467,7 @@
 <translation id="4022426551683927403">शब्दकोशात &amp;जोडा</translation>
 <translation id="4025039777635956441">निवडलेली साइट म्यूट करा</translation>
 <translation id="402707738228916911"><ph name="AUTHORIZE_INSTRUCTION_NAME" /> सूचना मिळाली आहे</translation>
+<translation id="4027569221211770437"><ph name="FOLDER_TITLE" /> फोल्डर</translation>
 <translation id="4027958407426528157">तुमच्या <ph name="DEVICE_TYPE" /> वर इंस्टॉल केलेल्या अ‍ॅप्समध्ये वेबसाइट उघडा</translation>
 <translation id="4028467762035011525">इनपुट पद्धती जोडा</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" /> पेजवरून मागे जा</translation>
@@ -3513,6 +3522,7 @@
 <translation id="4077917118009885966">या साइटवर जाहिराती ब्लॉक केल्या आहेत</translation>
 <translation id="4077919383365622693"><ph name="SITE" /> ने स्टोअर केलेला सर्व डेटा आणि कुकी साफ केल्या जातील.</translation>
 <translation id="4078738236287221428">आक्रमक</translation>
+<translation id="4078903002989614318">क्रमाने लावणे आणि सूचीशी संबंधित पर्याय</translation>
 <translation id="4079140982534148664">वर्धित केलेले स्पेल चेक वापरा</translation>
 <translation id="4084682180776658562">बुकमार्क</translation>
 <translation id="4084835346725913160"><ph name="TAB_NAME" /> बंद करा</translation>
@@ -3655,6 +3665,7 @@
 <translation id="4217571870635786043">डिक्टेशन</translation>
 <translation id="4218081191298393750">हा टॅब म्यूट करण्यासाठी स्पीकर आयकनवर क्लिक करा</translation>
 <translation id="4220648711404560261">ॲक्टिव्हेट करताना एरर आली.</translation>
+<translation id="4222917615373664617">किमतीचा माग ठेवणे सुरू केले. किंमत <ph name="CURRENT_PRICE" /> आहे.</translation>
 <translation id="4223845867739585293">पासकी तयार करा</translation>
 <translation id="4225397296022057997">सर्व साइटवर</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{या एक्स्टेंशनला अनुमती नाही}other{काही एक्स्टेंशनला अनुमती नाही}}</translation>
@@ -5818,6 +5829,7 @@
 <translation id="6212168817037875041">डिस्प्ले बंद करा</translation>
 <translation id="6212752530110374741">ईमेल लिंक</translation>
 <translation id="621470880408090483">साइटना ब्लूटूथ डिव्‍हाइसशी कनेक्ट करण्याची अनुमती देऊ नका</translation>
+<translation id="6215039389782910006">{1,plural, =1{तुमचा पासवर्ड सुरक्षित ठेवण्यासाठी, <ph name="BRAND" /> हे एका मिनिटाच्या निष्क्रियतेनंतर लॉक होते}other{तुमचा पासवर्ड सुरक्षित ठेवण्यासाठी, <ph name="BRAND" /> हे # मिनिटांच्या निष्क्रियतेनंतर लॉक होते}}</translation>
 <translation id="6216239400972191926">नाकारलेल्या साइट आणि अ‍ॅप्स</translation>
 <translation id="6216601812881225442">तुमचा कंटेनर आकार बदलण्यास सपोर्ट करत नाही. Linux ला आधीच दिलेल्या जागेचे प्रमाण अ‍ॅडजस्ट करण्यासाठी, बॅकअप घ्या आणि त्यानंतर नवीन कंटेनरमध्ये रिस्टोअर करा.</translation>
 <translation id="6216696360484424239">आपोआप साइन इन करा</translation>
@@ -6441,6 +6453,7 @@
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> दूरस्थपणे जोडला</translation>
 <translation id="6790820461102226165">व्यक्ती जोडा...</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
+<translation id="679486139907144816">पासकी वापरून या साइटमध्ये साइन इन करण्यासाठी, तुम्ही सेटिंग्जमध्ये Windows Hello सुरू करणे आवश्यक आहे. त्यानंतर या साइटवर परत येऊन पुन्हा प्रयत्न करा.</translation>
 <translation id="6795371939514004514">ऑटो-स्कॅन हे तुम्हाला स्क्रीनवरील आयटमदरम्यान आपोआप नेव्हिगेट करू देते. एखादा आयटम हायलाइट केला जातो तेव्हा, तो अ‍ॅक्टिव्हेट करण्यासाठी “निवडा” दाबा.</translation>
 <translation id="6795884519221689054">पांडा</translation>
 <translation id="6796509790850723820">रेंडर करा</translation>
@@ -8361,6 +8374,7 @@
 <translation id="8513108775083588393">ऑटो-रोटेट</translation>
 <translation id="8514746246728959655">वेगळी सिक्युरिटी की वापरून पहा</translation>
 <translation id="8514955299594277296">साइटना तुमच्या डिव्हाइसवर डेटा सेव्ह करण्याची अनुमती देऊ नका (शिफारस केली जात नाही)</translation>
+<translation id="8517759303731677493">संपादित करा…</translation>
 <translation id="8519895319663397036">पासवर्ड इंपोर्ट करू शकत नाही. फाइलचा आकार १५० KB पेक्षा कमी असला पाहिजे.</translation>
 <translation id="8523493869875972733">बदल राहू द्या</translation>
 <translation id="8523849605371521713">धोरणाने जोडले</translation>

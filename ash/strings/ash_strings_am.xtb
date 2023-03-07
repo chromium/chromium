@@ -505,6 +505,11 @@
 <translation id="3633097874324966332">መሣሪያዎን ለማጣመር የብሉቱዝ ቅንብሮችን ይክፈቱ</translation>
 <translation id="3638400994746983214">የግላዊነት ማያ ገጽን ቀያይር። <ph name="STATE_TEXT" />።</translation>
 <translation id="3649505501900178324">ዝማኔ ጊዜው ደርሶ አልፏል</translation>
+<translation id="3653999174677652346"><ph name="EVENT_POSITION" />
+        <ph name="EVENT_SUMMARY" />,
+        <ph name="START_TIME" /> ከ
+        <ph name="END_TIME" />፣
+        <ph name="TIME_ZONE" />። ለተጨማሪ ዝርዝሮች በGoogle ቀን መቁጠሪያ ውስጥ ይምረጡ።</translation>
 <translation id="3659444876902283058">(ቀን <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063"><ph name="TIME_LEFT" /> ገደማ ቀርቷል (<ph name="PERCENTAGE" />%)።
 መሣሪያዎን ኃይል ላይ ይሰኩት።</translation>
@@ -1478,6 +1483,7 @@
 <translation id="8858369206579825206">የግላዊነት ቁጥጥሮች</translation>
 <translation id="8870509716567206129">መተግበሪያው የተከፈለ ማያ ገጽን አይደግፍም።</translation>
 <translation id="8874184842967597500">አልተገናኘም</translation>
+<translation id="8876148469852588625">ክስተት <ph name="EVENT_POSITION" /> ከ<ph name="EVENT_TOTAL_COUNT" /></translation>
 <translation id="8876661425082386199">ግንኙነትዎን ይፈትሹ</translation>
 <translation id="8877788021141246043">አስታዋሽ አዘጋጅ</translation>
 <translation id="8878886163241303700">ማያ ገጽ በማስቀጠል ላይ</translation>

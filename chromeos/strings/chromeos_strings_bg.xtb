@@ -163,6 +163,7 @@
 <translation id="2346474577291266260">Отлична (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Напред</translation>
 <translation id="2364498172489649528">Премината</translation>
+<translation id="2367335866686097760">Клавиш за задаване на функции за клавишите</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Изпращане на сигнал с отзиви</translation>
 <translation id="2407209115954268704">Състояние на заключване на SIM картата</translation>
@@ -235,7 +236,9 @@
 <translation id="319101249942218879">Изображението на аватара бе променено</translation>
 <translation id="3192947282887913208">Аудиофайлове</translation>
 <translation id="3199982728237701504">Подавач на документи (двустранно)</translation>
+<translation id="3211671540163313381">Контролен пад за задаване на функции за клавишите</translation>
 <translation id="3226405216343213872">Търсят се скенери</translation>
+<translation id="3226657629376379887">Меню с действия за оформлението</translation>
 <translation id="3246869037381808805">Заданията за отпечатване, по-стари от 1 ден, ще бъдат премахнати</translation>
 <translation id="3268178239013324452">Неуспешно – вратичката е отворена</translation>
 <translation id="3275506277319227640">Прикрепване: <ph name="DIRECTION" /></translation>
@@ -803,6 +806,7 @@
 <translation id="8318753676953949627">Няма изображения</translation>
 <translation id="8336739000755212683">Промяна на изображението за профила на устройството</translation>
 <translation id="8347227221149377169">Задания за отпечатване</translation>
+<translation id="8351855506390808906">Точка на докосване за задаване на функции за клавишите</translation>
 <translation id="8352772353338965963">Добавете профил към функцията за централизиран вход. Всички профили, в които влезете чрез нея, ще бъдат достъпни без парола, така че трябва да използвате тази функция само с надеждни профили.</translation>
 <translation id="8364946094152050673">Не са посочени сървъри за имена</translation>
 <translation id="8372477600026034341">Допълнителни хостове</translation>
@@ -900,6 +904,7 @@
 <translation id="9138630967333032450">Клавиш „shift“ вляво</translation>
 <translation id="9149391708638971077">Тестване на паметта</translation>
 <translation id="9157515863513902090">Прикрепване в по-голямата част</translation>
+<translation id="9161276708550942948">интервал</translation>
 <translation id="9173638680043580060">Остава по-малко от минута</translation>
 <translation id="917720651393141712">Тест</translation>
 <translation id="9188992814426075118">Фоновото осветление на клавиатурата може да се променя автоматично спрямо тапета ви</translation>

@@ -2311,6 +2311,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6738516213925468394">Vaši podaci su šifrirani vašim <ph name="BEGIN_LINK" />izrazom za pristup sinhroniziranju<ph name="END_LINK" /> u <ph name="TIME" />. Unesite ga da započnete sinhronizaciju.</translation>
 <translation id="674375294223700098">Nepoznata greška potvrde servera.</translation>
 <translation id="6744009308914054259">Posjetite Preuzimanja da pročitate članke van mreže dok čekate vezu.</translation>
+<translation id="6745592621698551453">Ažuriraj sada</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Telekonferencije</translation>
 <translation id="6753269504797312559">Vrijednost pravila</translation>
@@ -2775,7 +2776,6 @@ Dodatni detalji:
 <translation id="7802523362929240268">Web stranica je zakonita</translation>
 <translation id="7802989406998618639">Unesite <ph name="NUMBER_OF_DIGITS" />-cifreni sigurnosni kôd na <ph name="SIDE_OF_CARD" /> da banka može potvrditi da ste to zaista vi</translation>
 <translation id="780301667611848630">Ne, hvala</translation>
-<translation id="7805571567667010077">Upravlja vaša organizacija</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Ukloniti prijedlog obrasca iz Chromea?</translation>
@@ -2998,6 +2998,7 @@ Dodatni detalji:
 <translation id="8369073279043109617">Preuzmite novi kȏd</translation>
 <translation id="8371889962595521444">Prilagođeni temeljni certifikati</translation>
 <translation id="8374636051559112948">Varira</translation>
+<translation id="8378714024927312812">Ovim upravlja vaša organizacija</translation>
 <translation id="8380941800586852976">Opasno</translation>
 <translation id="8381674639488873545">Ti troškovi mogu biti jednokratni ili ponavljajući te također mogu biti diskretni. <ph name="BEGIN_LINK" />Ipak prikaži<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Dijeljenje sa <ph name="ORIGIN_NAME" /> na <ph name="VM_NAME" /> je blokirano pravilom administratora</translation>

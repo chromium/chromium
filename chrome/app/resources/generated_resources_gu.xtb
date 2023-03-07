@@ -347,6 +347,7 @@
 <translation id="1303671224831497365">કોઈ Bluetooth ડિવાઇસ મળ્યાં નથી</translation>
 <translation id="130491383855577612">Linux ઍપ અને ફાઇલો સફળતાપૂર્વક બદલી છે</translation>
 <translation id="1306390193749326011">તમે આ પેજ પર <ph name="MODULE_NAME" /> ફરીથી જોઈ શકશો નહીં</translation>
+<translation id="1306518237408758433"><ph name="BOOKMARK_TITLE" /> ખોલો</translation>
 <translation id="1306606229401759371">સેટિંગ બદલો</translation>
 <translation id="1307165550267142340">તમારો પિન બનાવ્યો હતો</translation>
 <translation id="1307431692088049276">મને ફરીથી પૂછશો નહીં</translation>
@@ -436,6 +437,7 @@
 <translation id="1393283411312835250">સૂર્ય અને વાદળો</translation>
 <translation id="1395730723686586365">અપડેટકર્તા પ્રારંભ કર્યું</translation>
 <translation id="1395832189806039783">કીબોર્ડના ફોકસ વડે આઇટમને હાઇલાઇટ કરો</translation>
+<translation id="1396120028054416908"><ph name="FOLDER_TITLE" /> પર પાછા જાઓ</translation>
 <translation id="1396139853388185343">પ્રિન્ટર સેટ કરવામાં ભૂલ</translation>
 <translation id="1396963298126346194">તમે દાખલ કરેલ વપરાશકર્તાનામ અને પાસવર્ડ મેળ ખાતા નથી</translation>
 <translation id="1397500194120344683">કોઈ પાત્ર ડિવાઇસ નથી. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
@@ -557,6 +559,7 @@
 <translation id="1487335504823219454">ચાલુ - કસ્ટમ સેટિંગ</translation>
 <translation id="1493892686965953381"><ph name="LOAD_STATE_PARAMETER" /> માટે પ્રતીક્ષારત...</translation>
 <translation id="1494349716233667318">સાઇટ તમારા ડિવાઇસમાં ઇન્સ્ટૉલ કરેલા ફૉન્ટનો ઉપયોગ કરવાનું પૂછી શકે છે</translation>
+<translation id="1494429729245089920">વર્ચ્યુઅલ મશીન "<ph name="VM_NAME" />" અસ્તિત્વમાં છે, પણ એવું નથી લાગતું કે તે કોઈ માન્ય <ph name="APP_NAME" /> વર્ચ્યુઅલ મશીન છે. કૃપા કરીને તમારા વ્યવસ્થાપકનો સંપર્ક કરો.</translation>
 <translation id="1495677929897281669">ટૅબ પર પાછા જાઓ</translation>
 <translation id="1498498210836053409">ટેક્સ્ટમાં ફેરફાર કરતી વખતે સ્ટીકી મોડ બંધ કરો (સ્માર્ટ સ્ટીકી મોડ)</translation>
 <translation id="1500297251995790841">અજાણ્યું ઉપકરણ [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
@@ -674,6 +677,7 @@
 <translation id="1596286373007273895">ઉપલબ્ધ</translation>
 <translation id="1596709061955594992">બ્લૂટૂથ બંધ છે. ઉપલબ્ધ ડિવાઇસ જોવા માટે, બ્લૂટૂથ ચાલુ કરો.</translation>
 <translation id="1596780725094407793">- સબડોમેન શામેલ છે</translation>
+<translation id="1597852076552089763">બુકમાર્કના વિકલ્પો</translation>
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> સાથે <ph name="SITE_ETLD_PLUS_ONE" />નો ઉપયોગ કરો</translation>
 <translation id="1598233202702788831">તમારા વ્યવસ્થાપક દ્વારા અપડેટ્સ અક્ષમ કરાયા છે.</translation>
 <translation id="1600857548979126453">પેજ ડિબગર બૅકએન્ડ ઍક્સેસ કરો</translation>
@@ -1812,6 +1816,7 @@
 <translation id="25568951186001797">Fenced Frame: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2558569818338050235">તમારો બ્રાઉઝિંગ ઇતિહાસ તમે જુઓ છો તે જાહેરાતોને અસર કરે છે</translation>
 <translation id="2559889124253841528">ડિવાઇસમાં સાચવો</translation>
+<translation id="2561211427862644160">તમારા તમામ બુકમાર્ક અહીં જુઓ</translation>
 <translation id="2564520396658920462">Executing JavaScript through AppleScript is turned off. To turn it on, from the menu bar, go to View &gt; Developer &gt; Allow JavaScript from Apple Events. For more information: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">વધારેલ જોડણીની તપાસ</translation>
 <translation id="2568694057933302218">છૂપા મોડમાં, વિવિધ સાઇટ પરની તમારી બ્રાઉઝિંગ પ્રવૃત્તિ જોવા માટે સાઇટ તમારી કુકીનો ઉપયોગ કરી શકતી નથી. તમારી બ્રાઉઝિંગ પ્રવૃત્તિનો ઉપયોગ જાહેરાતોને મનગમતી બનાવવા જેવી વસ્તુઓ માટે કરવામાં આવતો નથી. સુવિધાઓ કેટલીક સાઇટ પર કામ ન કરે એવું બની શકે છે.</translation>
@@ -2416,6 +2421,7 @@
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />"થી જોડી બનાવી</translation>
 <translation id="3093714882666365141">સાઇટને ચુકવણી હૅન્ડલર ઇન્સ્ટૉલ કરવાની મંજૂરી આપશો નહીં</translation>
 <translation id="3094141017404513551">આને કારણે તમારું બ્રાઉઝિંગ <ph name="EXISTING_USER" />થી અલગ થઈ જશે</translation>
+<translation id="3094521107841754472">કિંમત બદલીને <ph name="PREVIOUS_PRICE" />થી <ph name="CURRENT_PRICE" /> કરવામાં આવી છે.</translation>
 <translation id="3095871294753148861">બુકમાર્ક, પાસવર્ડ અને અન્ય બ્રાઉઝર ડેટાને પ્રાથમિક એકાઉન્ટ સાથે સિંક કરવામાં આવે છે.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{નુકસાન પહોંચાડવાની સંભાવના હોય એવું 1 એક્સ્ટેંશન બંધ છે. તમે તેને કાઢી નાખી પણ શકો છો.}one{નુકસાન પહોંચાડવાની સંભાવના હોય એવું {NUM_EXTENSIONS} એક્સ્ટેંશન બંધ છે. તમે તેને કાઢી નાખી પણ શકો છો.}other{નુકસાન પહોંચાડવાની સંભાવના હોય એવા {NUM_EXTENSIONS} એક્સ્ટેંશન બંધ છે. તમે તેમને કાઢી નાખી પણ શકો છો.}}</translation>
 <translation id="3101126716313987672">ઝાંખી લાઇટ</translation>
@@ -2768,6 +2774,7 @@
 <translation id="3441653493275994384">સ્કિન</translation>
 <translation id="3441663102605358937">આ એકાઉન્ટની ચકાસણી કરવા માટે <ph name="ACCOUNT" />માં ફરીથી સાઇન ઇ કરો</translation>
 <translation id="3442674350323953953"><ph name="DEVICE_OS" />ને બહેતર બનાવવામાં મદદ કરવા માટે, Googleને તમારા હાર્ડવેર ડેટાનો ઉપયોગ કરવા દો. જો તમે નકારશો, તો પણ આ ડેટા યોગ્ય અપડેટ નક્કી કરવા માટે Googleને મોકલવામાં આવે છે, પરંતુ ન તો તેને સ્ટોર કરવામાં આવે છે કે ન તો તેનો ઉપયોગ કરવામાં આવે છે.</translation>
+<translation id="3443744348829035122"><ph name="BRAND" />નો સમય સમાપ્ત થયો</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> <ph name="FILENAME" />ને જોઈ શકશે</translation>
 <translation id="3445047461171030979">Google Assistantનાં ઝડપી જવાબના સેટિંગ</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> મિનિટ</translation>
@@ -3166,6 +3173,7 @@
 <translation id="3790417903123637354">કંઈક ખોટું થયું હતું. થોડા સમય પછી ફરી પ્રયાસ કરો</translation>
 <translation id="379082410132524484">તમારા કાર્ડની સમયસીમા સમાપ્ત થઈ ગઈ છે</translation>
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> એક્સ્ટેન્શન</translation>
+<translation id="3794792524918736965">Windows Hello ચાલુ કરો</translation>
 <translation id="379500251094592809">'નજીકના શેર' સુવિધાનો ઉપયોગ કરવા માટે, ખાતરી કરો કે બન્ને ડિવાઇસ અનલૉક કરેલા અને નજીક જ હોય તેમજ તેમાં બ્લૂટૂથની સુવિધા ચાલુ કરેલી હોય. જો તમે તમારા સંપર્કોમાં ન હોય એવા Chromebook સાથે શેર કરી રહ્યાં હો, તો ખાતરી કરો કે તેમાં 'નજીકની દૃશ્યતા' સુવિધા ચાલુ કરી હોય (સમય પસંદ કરીને સ્ટેટસ એરિયા ખોલો, પછી 'નજીકની દૃશ્યતા' ચાલુ કરો) <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">બંધ</translation>
 <translation id="3795766489237825963">ઍનિમેશન ચલાવો</translation>
@@ -3311,6 +3319,7 @@
 <translation id="39103738135459590">સક્રિયકરણ કોડ</translation>
 <translation id="3911824782900911339">નવું ટૅબ પેજ</translation>
 <translation id="3914173277599553213">આવશ્યક</translation>
+<translation id="3914568430265141791">ફોલ્ડર <ph name="FOLDER_TITLE" /> ખોલો</translation>
 <translation id="3915280005470252504">વૉઇસ દ્વારા શોધો</translation>
 <translation id="3916233823027929090">સુરક્ષા તપાસ પૂરી થઈ</translation>
 <translation id="3916445069167113093">આ પ્રકારની ફાઇલ તમારા કમ્પ્યુટરને નુકસાન પહોંચાડી શકે છે. શું તમે તો પણ <ph name="FILE_NAME" /> ને રાખવા માગો છો?</translation>
@@ -3442,6 +3451,7 @@
 <translation id="4022426551683927403">શબ્દકોષમાં &amp;ઉમેરો</translation>
 <translation id="4025039777635956441">પસંદ કરેલી સાઇટને મ્યૂટ કરો</translation>
 <translation id="402707738228916911"><ph name="AUTHORIZE_INSTRUCTION_NAME" /> સૂચના મેળવી</translation>
+<translation id="4027569221211770437"><ph name="FOLDER_TITLE" /> ફોલ્ડર</translation>
 <translation id="4027958407426528157">તમારા <ph name="DEVICE_TYPE" /> પર ઇન્સ્ટૉલ કરેલી ઍપમાં વેબસાઇટ ખોલો</translation>
 <translation id="4028467762035011525">ઇનપુટ પદ્ધતિઓ ઉમેરો</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" /> પેજ પરથી પાછા ફરો</translation>
@@ -3496,6 +3506,7 @@
 <translation id="4077917118009885966">આ સાઇટ પર જાહેરાતો અવરોધિત કરી</translation>
 <translation id="4077919383365622693"><ph name="SITE" /> દ્વારા સ્ટોર થયેલો બધો ડેટા અને કુકી સાફ કરવામાં આવશે.</translation>
 <translation id="4078738236287221428">એગ્રેસિવ</translation>
+<translation id="4078903002989614318">સૉર્ટિંગ અને સૂચિના વિકલ્પો</translation>
 <translation id="4079140982534148664">વધુ સારી બનાવાયેલી જોડણીની તપાસનો ઉપયોગ કરો</translation>
 <translation id="4084682180776658562">બુકમાર્ક</translation>
 <translation id="4084835346725913160"><ph name="TAB_NAME" /> બંધ કરો</translation>
@@ -3640,6 +3651,7 @@
 <translation id="4217571870635786043">ડિક્ટેશન</translation>
 <translation id="4218081191298393750">આ ટૅબને મ્યૂટ કરવા માટે, સ્પીકરના આઇકન પર ક્લિક કરો</translation>
 <translation id="4220648711404560261">સક્રિયકરણ દરમ્યાન એક ભૂલ આવી.</translation>
+<translation id="4222917615373664617">કિંમત ટ્રૅક કરવાની સુવિધા ચાલુ છે. કિંમત <ph name="CURRENT_PRICE" /> છે.</translation>
 <translation id="4223845867739585293">કોઈ પાસકી બનાવો</translation>
 <translation id="4225397296022057997">બધી સાઇટ પર</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{આ એક્સ્ટેન્શન મંજૂરી ધરાવતું નથી}one{આ એક્સ્ટેન્શન મંજૂરી ધરાવતું નથી}other{કેટલાક એક્સ્ટેન્શન મંજૂરી ધરાવતા નથી}}</translation>
@@ -5803,6 +5815,7 @@ USB ડિવાઇસ</translation>
 <translation id="6212168817037875041">ડિસ્પ્લે બંધ કરો</translation>
 <translation id="6212752530110374741">લિંક ઇમેઇલ કરો</translation>
 <translation id="621470880408090483">સાઇટને બ્લૂટૂથ ડિવાઇસ સાથે કનેક્ટ કરવાની મંજૂરી આપશો નહીં</translation>
+<translation id="6215039389782910006">{1,plural, =1{તમારા પાસવર્ડને સુરક્ષિત રાખવા માટે, 1 મિનિટની નિષ્ક્રિયતા પછી <ph name="BRAND" /> લૉક થાય છે}one{તમારા પાસવર્ડને સુરક્ષિત રાખવા માટે, # મિનિટની નિષ્ક્રિયતા પછી <ph name="BRAND" /> લૉક થાય છે}other{તમારા પાસવર્ડને સુરક્ષિત રાખવા માટે, # મિનિટની નિષ્ક્રિયતા પછી <ph name="BRAND" /> લૉક થાય છે}}</translation>
 <translation id="6216239400972191926">નકારેલી સાઇટ અને ઍપ</translation>
 <translation id="6216601812881225442">તમારા કન્ટેનરનું કદ બદલવાની સુવિધા ઉપલબ્ધ નથી. Linux માટે અગાઉથી ફાળવેલી સ્પેસ ગોઠવવા માટે, બૅકઅપ લો અને ત્યાર બાદ નવા કન્ટેનરમાં રિસ્ટોર કરો.</translation>
 <translation id="6216696360484424239">ઑટોમેટિક રીતે સાઇન ઇન કરો</translation>
@@ -6428,6 +6441,7 @@ USB ડિવાઇસ</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> રિમોટ્લી ઉમેર્યું હતું</translation>
 <translation id="6790820461102226165">વ્યક્તિ ઉમેરો...</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
+<translation id="679486139907144816">આ સાઇટ પર પાસકી વડે સાઇન ઇન કરવા માટે, તમારે સેટિંગમાં જઈને Windows Hello ચાલુ કરવું જરૂરી છે. પછી આ સાઇટ પર આવીને ફરી પ્રયાસ કરો.</translation>
 <translation id="6795371939514004514">ઑટો-સ્કૅનની સુવિધા સ્ક્રીન પર ઑટોમૅટિક રીતે એક આઇટમથી બીજી પર જવાની સરળતા પ્રદાન કરે છે. જ્યારે કોઈ આઇટમ હાઇલાઇટ કરવામાં આવી હોય, ત્યારે તેને સક્રિય કરવા માટે “પસંદ કરો” દબાવો.</translation>
 <translation id="6795884519221689054">પાંડા</translation>
 <translation id="6796509790850723820">રેન્ડર કરો</translation>
@@ -8344,6 +8358,7 @@ USB ડિવાઇસ</translation>
 <translation id="8513108775083588393">ઑટો રોટેટ</translation>
 <translation id="8514746246728959655">અલગ સુરક્ષા કોડ અજમાવી જુઓ</translation>
 <translation id="8514955299594277296">સાઇટને તમારા ડિવાઇસ પર ડેટા સાચવવાની મંજૂરી આપશો નહીં (સુઝાવ આપવામાં આવતો નથી)</translation>
+<translation id="8517759303731677493">ફેરફાર કરો…</translation>
 <translation id="8519895319663397036">પાસવર્ડ આયાત કરી શકતા નથી. ફાઇલનું કદ 150 KB કરતાં ઓછું હોવું જોઈએ.</translation>
 <translation id="8523493869875972733">ફેરફારો રાખો</translation>
 <translation id="8523849605371521713">પૉલિસી દ્વારા ઉમેરાયેલું</translation>

@@ -2309,6 +2309,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6738516213925468394">Os teus datos encriptáronse coa túa <ph name="BEGIN_LINK" />frase de acceso de sincronización<ph name="END_LINK" /> o <ph name="TIME" />. Introdúcea para comezar a sincronización.</translation>
 <translation id="674375294223700098">Erro de certificado de servidor descoñecido.</translation>
 <translation id="6744009308914054259">Mentres esperas a que se recupere a conexión, podes ler artigos sen conexión en Descargas.</translation>
+<translation id="6745592621698551453">Actualizar agora</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Videoconferencias</translation>
 <translation id="6753269504797312559">Valor de política</translation>
@@ -2773,7 +2774,6 @@ Detalles adicionais:
 <translation id="7802523362929240268">O sitio é lexítimo</translation>
 <translation id="7802989406998618639">Indica o código de seguranza de <ph name="NUMBER_OF_DIGITS" /> díxitos que se atopa no <ph name="SIDE_OF_CARD" /> para que o banco poida verificar a túa identidade</translation>
 <translation id="780301667611848630">Non, grazas</translation>
-<translation id="7805571567667010077">Permiso xestionado pola túa organización</translation>
 <translation id="7805768142964895445">Estado</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Queres eliminar a suxestión de Chrome?</translation>
@@ -2996,6 +2996,7 @@ Detalles adicionais:
 <translation id="8369073279043109617">Xerar novo código</translation>
 <translation id="8371889962595521444">Certificados raíz personalizados</translation>
 <translation id="8374636051559112948">Varía</translation>
+<translation id="8378714024927312812">Xestionado pola túa organización</translation>
 <translation id="8380941800586852976">Perigoso</translation>
 <translation id="8381674639488873545">Estes cargos poden ser únicos ou periódicos e quizais non se indiquen de forma evidente. <ph name="BEGIN_LINK" />Mostrar de todas formas<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">A política do administrador bloqueou a función de compartir contido desde <ph name="ORIGIN_NAME" /> a <ph name="VM_NAME" /></translation>

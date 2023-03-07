@@ -2307,6 +2307,7 @@
 <translation id="6738516213925468394">Data <ph name="TIME" /> tarixində <ph name="BEGIN_LINK" />sinxronizasiya parolu<ph name="END_LINK" /> ilə şifrələnib. Sinxronizasiyanı başlatmaq üçün klikləyin.</translation>
 <translation id="674375294223700098">Naməlum server sertifikatı xətası</translation>
 <translation id="6744009308914054259">Bağlantı gözlənilərkən oflayn məqalələri oxumaq üçün Endirilənlərə baxa bilərsiniz.</translation>
+<translation id="6745592621698551453">İndi Güncəlləşdirin</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Telekonfrans</translation>
 <translation id="6753269504797312559">Siyasət dəyəri</translation>
@@ -2771,7 +2772,6 @@
 <translation id="7802523362929240268">Sayt qanunidir</translation>
 <translation id="7802989406998618639">Bankın kimliyinizi doğrulaması üçün <ph name="SIDE_OF_CARD" />ndəki <ph name="NUMBER_OF_DIGITS" /> rəqəmli təhlükəsizlik kodunu daxil edin</translation>
 <translation id="780301667611848630">Yox, çox sağ olun</translation>
-<translation id="7805571567667010077">Təşkilatınız tərəfindən idarə edilir</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Təkliflər Chrome'dan silinsin?</translation>
@@ -2994,6 +2994,7 @@
 <translation id="8369073279043109617">Yeni kod əldə edin</translation>
 <translation id="8371889962595521444">Əsas fərdi sertifikatlar</translation>
 <translation id="8374636051559112948">Fərqlənir</translation>
+<translation id="8378714024927312812">Təşkilatınız tərəfindən idarə olunur</translation>
 <translation id="8380941800586852976">Təhlükəli</translation>
 <translation id="8381674639488873545">Bu ödənişlər birdəfəlik və ya təkrarlanan ola bilər. Eyni zamanda görünməyə bilər. <ph name="BEGIN_LINK" />Hər bir halda göstərin<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698"><ph name="ORIGIN_NAME" /> mənbəyindən <ph name="VM_NAME" /> məkanına paylaşım etmək administrator siyasətinə əsasən bloklanıb</translation>

@@ -27,7 +27,9 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           і переконайтеся, що встановлено значення конфігурації "без проксі" чи "безпосередньо".</translation>
+<translation id="6549378540556750549">Chromium також працює завдяки іншому <ph name="BEGIN_LINK_OSS" />програмному забезпеченню з відкритим кодом<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Ваші зміни почнуть діяти після наступного перезапуску Chromium.</translation>
+<translation id="7681937895330411637">Chromium було створено на основі проекту програмного забезпечення з відкритим кодом <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="7861509383340276692">Перейдіть у
           меню Chromium &gt;
           <ph name="SETTINGS_TITLE" />

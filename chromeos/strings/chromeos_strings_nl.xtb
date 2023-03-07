@@ -163,6 +163,7 @@
 <translation id="2346474577291266260">Uitstekend (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Doorgaan</translation>
 <translation id="2364498172489649528">Geslaagd</translation>
+<translation id="2367335866686097760">Sleutel voor toetstoewijzing</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Feedbackrapport sturen</translation>
 <translation id="2407209115954268704">Simlockstatus</translation>
@@ -235,7 +236,9 @@
 <translation id="319101249942218879">Avatar-afbeelding gewijzigd</translation>
 <translation id="3192947282887913208">Audiobestanden</translation>
 <translation id="3199982728237701504">Documentfeeder (dubbelzijdig)</translation>
+<translation id="3211671540163313381">D-pad voor toetstoewijzing</translation>
 <translation id="3226405216343213872">Zoeken naar scanners</translation>
+<translation id="3226657629376379887">Actiemenu voor indeling</translation>
 <translation id="3246869037381808805">Afdruktaken ouder dan 1 dag worden verwijderd</translation>
 <translation id="3268178239013324452">Mislukt - Klep geopend</translation>
 <translation id="3275506277319227640">Vastzetten op <ph name="DIRECTION" /></translation>
@@ -803,6 +806,7 @@
 <translation id="8318753676953949627">Geen afbeeldingen</translation>
 <translation id="8336739000755212683">Accountafbeelding van apparaat wijzigen</translation>
 <translation id="8347227221149377169">Afdruktaken</translation>
+<translation id="8351855506390808906">Aanraakpunt voor toetstoewijzing</translation>
 <translation id="8352772353338965963">Een account toevoegen aan Toegang tot meerdere accounts. Alle ingelogde accounts zijn toegankelijk zonder wachtwoord, dus deze functie moet alleen worden gebruikt voor vertrouwde accounts.</translation>
 <translation id="8364946094152050673">Lege naamservers</translation>
 <translation id="8372477600026034341">Extra hosts</translation>
@@ -900,6 +904,7 @@
 <translation id="9138630967333032450">Shift links</translation>
 <translation id="9149391708638971077">Geheugentest uitvoeren</translation>
 <translation id="9157515863513902090">Vastzetten op grotere kant</translation>
+<translation id="9161276708550942948">spatie</translation>
 <translation id="9173638680043580060">Nog minder dan een minuut</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9188992814426075118">Je toetsenbord kan automatisch worden afgestemd op je achtergrond</translation>

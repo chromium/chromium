@@ -40,4 +40,6 @@
 <translation id="8187289872471304532">გადადით
           პროგრამები &gt; სისტემის პარამეტრები &gt; ქსელი &gt; მოწინავე &gt; პროქსი
           და გააუქმეთ ნებისმიერი არჩეული პროქსი.</translation>
+<translation id="8232971017369963250">Chrome არსებობს <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />-ის ღია კოდის პროექტის წყალობით.</translation>
+<translation id="8279509328145658601">Chrome, ასევე, მუშაობს <ph name="BEGIN_LINK_OSS" />ღია კოდის სხვა პროგრამული უზრუნველყოფის<ph name="END_LINK_OSS" /> დამსახურებით.</translation>
 </translationbundle>

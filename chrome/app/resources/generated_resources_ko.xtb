@@ -3185,6 +3185,7 @@
 <translation id="3790417903123637354">문제가 발생했습니다. 나중에 다시 시도해 보세요.</translation>
 <translation id="379082410132524484">카드가 만료됨</translation>
 <translation id="3792973596468118484">확장 프로그램 <ph name="NUM_EXTENSIONS" />개</translation>
+<translation id="3794792524918736965">Windows Hello 사용 설정</translation>
 <translation id="379500251094592809">Nearby Share를 사용하려면 두 기기가 모두 잠금 해제되어 있고 서로 가까이에 있으며 블루투스가 켜져 있어야 합니다. 연락처에 없는 Chromebook과 공유하려면 Nearby 전체 공개가 사용 설정되어 있는지 확인하세요. 시간을 선택하여 상태 영역을 열고 Nearby 전체 공개를 사용 설정하면 됩니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">사용 안함</translation>
 <translation id="3795766489237825963">애니메이션 재생</translation>
@@ -6442,6 +6443,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" />이(가) 원격으로 추가됨</translation>
 <translation id="6790820461102226165">사용자 추가...</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
+<translation id="679486139907144816">패스키로 사이트에 로그인하려면 설정에서 Windows Hello를 사용 설정해야 합니다. 그런 다음 이 사이트로 돌아와서 다시 시도하세요.</translation>
 <translation id="6795371939514004514">자동 스캔을 사용하면 화면에 있는 항목 간에 자동으로 이동할 수 있습니다. 항목이 강조표시된 상태에서 '선택'을 누르면 해당 항목이 활성화됩니다.</translation>
 <translation id="6795884519221689054">판다</translation>
 <translation id="6796509790850723820">렌더링</translation>
@@ -8365,6 +8367,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8513108775083588393">자동 회전</translation>
 <translation id="8514746246728959655">다른 보안 키를 사용해 보세요</translation>
 <translation id="8514955299594277296">사이트에서 기기에 데이터를 저장하도록 허용하지 않음(권장하지 않음)</translation>
+<translation id="8517759303731677493">수정…</translation>
 <translation id="8519895319663397036">비밀번호를 가져올 수 없습니다. 파일 크기가 150KB 미만이어야 합니다.</translation>
 <translation id="8523493869875972733">변경사항 유지</translation>
 <translation id="8523849605371521713">정책에 의해 추가</translation>

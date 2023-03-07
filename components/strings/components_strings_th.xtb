@@ -2308,6 +2308,7 @@
 <translation id="6738516213925468394">ข้อมูลของคุณเข้ารหัสลับไว้ด้วย<ph name="BEGIN_LINK" />รหัสผ่านการซิงค์<ph name="END_LINK" />เมื่อ <ph name="TIME" /> ป้อนรหัสผ่านเพื่อเริ่มซิงค์</translation>
 <translation id="674375294223700098">ข้อผิดพลาดใบรับรองของเซิร์ฟเวอร์ที่ไม่รู้จัก</translation>
 <translation id="6744009308914054259">ระหว่างที่รอการเชื่อมต่อ คุณไปที่หน้า "ดาวน์โหลด" เพื่ออ่านบทความออฟไลน์ได้</translation>
+<translation id="6745592621698551453">อัปเดตเลย</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">การประชุมทางไกล</translation>
 <translation id="6753269504797312559">ค่านโยบาย</translation>
@@ -2772,7 +2773,6 @@
 <translation id="7802523362929240268">ไซต์ถูกต้อง</translation>
 <translation id="7802989406998618639">ป้อนรหัสความปลอดภัย <ph name="NUMBER_OF_DIGITS" /> หลักบน<ph name="SIDE_OF_CARD" />เพื่อให้ธนาคารยืนยันว่าเป็นคุณ</translation>
 <translation id="780301667611848630">ไม่ ขอบคุณ</translation>
-<translation id="7805571567667010077">จัดการโดยองค์กรของคุณ</translation>
 <translation id="7805768142964895445">สถานะ</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">นำคำแนะนำสำหรับแบบฟอร์มออกจาก Chrome ไหม</translation>
@@ -2995,6 +2995,7 @@
 <translation id="8369073279043109617">ขอรหัสใหม่</translation>
 <translation id="8371889962595521444">ใบรับรองรูทที่กำหนดเอง</translation>
 <translation id="8374636051559112948">หลากหลาย</translation>
+<translation id="8378714024927312812">จัดการโดยองค์กร</translation>
 <translation id="8380941800586852976">อันตราย</translation>
 <translation id="8381674639488873545">การเรียกเก็บเงินเหล่านี้อาจเกิดขึ้นครั้งเดียวหรือเกิดขึ้นซ้ำๆ และอาจไม่แสดงอย่างชัดแจ้ง <ph name="BEGIN_LINK" />เปิดเว็บไซต์<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">นโยบายของผู้ดูแลระบบบล็อกการแชร์จาก <ph name="ORIGIN_NAME" /> ไปยัง <ph name="VM_NAME" /> ไว้</translation>

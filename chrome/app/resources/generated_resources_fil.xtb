@@ -3187,6 +3187,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3790417903123637354">Nagkaproblema. Subukan ulit sa ibang pagkakataon</translation>
 <translation id="379082410132524484">Nag-expire na ang iyong card</translation>
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> (na) extension</translation>
+<translation id="3794792524918736965">I-on ang Windows Hello</translation>
 <translation id="379500251094592809">Para magamit ang Nearby Share, tiyaking naka-unlock at magkalapit ang dalawang device, at naka-on ang Bluetooth ng mga ito. Kung nagbabahagi ka sa isang Chromebook na wala sa iyong mga contact, tiyaking naka-on ang visibility ng Nearby nito (buksan ang lugar ng status sa pamamagitan ng pagpili ng oras, pagkatapos ay i-on ang visibility ng Nearby) <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">Naka-off</translation>
 <translation id="3795766489237825963">I-play ang mga animation</translation>
@@ -4873,7 +4874,6 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (Kanan)</translation>
 <translation id="534449933710420173">Walang pangalang folder</translation>
 <translation id="5345916423802287046">Buksan ang app kapag nag-sign in ka</translation>
-<translation id="5349456828414077488">Gumagamit ng certificate na ibinigay ng administrator. Puwedeng harangin ng iyong administrator ang data sa pag-sign in na ibibigay mo sa <ph name="DOMAIN" /></translation>
 <translation id="5350293332385664455">I-off ang Google Assistant</translation>
 <translation id="535123479159372765">Nakopya ang text mula sa isa pang device</translation>
 <translation id="5352033265844765294">Time Stamping</translation>
@@ -6101,6 +6101,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6469557521904094793">I-on ang Cellular network</translation>
 <translation id="6470823736074966819">I-mute ang Mga Notification</translation>
 <translation id="6472893788822429178">Ipakita ang button na Home</translation>
+<translation id="6474352027343282094">{COUNT,plural, =1{Mase-save lang ang {COUNT} password sa device na ito. Para magamit ito sa iba mo pang device, &lt;a target='_blank' href='chrome://password-manager/'&gt;i-save ito sa iyong Google Account&lt;/a&gt;.}one{Mase-save lang ang {COUNT} password sa device na ito. Para magamit ang mga ito sa iba mo pang device, &lt;a target='_blank' href='chrome://password-manager/'&gt;i-save ang mga ito sa iyong Google Account&lt;/a&gt;.}other{Mase-save lang ang {COUNT} na password sa device na ito. Para magamit ang mga ito sa iba mo pang device, &lt;a target='_blank' href='chrome://password-manager/'&gt;i-save ang mga ito sa iyong Google Account&lt;/a&gt;.}}</translation>
 <translation id="6474498546677193336">Hindi ma-unshare dahil ginagamit ng isang application ang folder na ito. Ia-unshare ang folder kapag na-shut down ang Linux.</translation>
 <translation id="6474884162850599008">Alisin sa pagkakakonekta ang Google Drive account</translation>
 <translation id="6475294023568239942">Magbakante ng espasyo sa disk o i-resize ang Linux disk sa Mga Setting</translation>
@@ -6449,6 +6450,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6790497603648687708">Naidagdag mula sa malayo ang <ph name="EXTENSION_NAME" /></translation>
 <translation id="6790820461102226165">Magdagdag ng Tao...</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
+<translation id="679486139907144816">Para mag-sign in sa site na ito gamit ang isang passkey, kailangan mong i-on ang Windows Hello sa mga setting. Pagkatapos ay bumalik sa site na ito at subukan ulit.</translation>
 <translation id="6795371939514004514">Binibigyang-daan ka ng awtomatikong pag-scan na awtomatikong magpalipat-lipat sa mga item sa screen. Kapag naka-highlight ang isang item, pindutin ang “Piliin” para i-activate ito.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6796509790850723820">I-render</translation>
@@ -7595,6 +7597,7 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7817361223956157679">Hindi pa gumagana ang on-screen na keyboard sa mga app ng Linux</translation>
 <translation id="7818135753970109980">Nagdagdag ng bagong tema (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="7819605256207059717">Na-block ng iyong organisasyon</translation>
+<translation id="7820400255539998692">I-delete ang <ph name="FILENAME" />, para hindi makita ng ibang taong gumagamit ng device na ito ang iyong mga password</translation>
 <translation id="7820561748632634942">Magtalaga ng mga karagdagang switch?</translation>
 <translation id="782057141565633384">K&amp;opyahin ang address ng video</translation>
 <translation id="7824864914877854148">Hindi makumpleto ang pag-back up dahil sa error</translation>
@@ -8373,6 +8376,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8513108775083588393">I-auto rotate</translation>
 <translation id="8514746246728959655">Sumubok ng ibang security key</translation>
 <translation id="8514955299594277296">Huwag payagan ang mga site na mag-save ng data sa iyong device (hindi inirerekomenda)</translation>
+<translation id="8517759303731677493">I-edit…</translation>
 <translation id="8519895319663397036">Hindi ma-import ang mga password. Wala pa dapat 150 KB ang laki ng file.</translation>
 <translation id="8523493869875972733">Panatilihin ang Mga Pagbabago</translation>
 <translation id="8523849605371521713">Idinagdag ng patakaran</translation>

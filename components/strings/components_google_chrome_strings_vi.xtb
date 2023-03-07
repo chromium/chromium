@@ -40,4 +40,6 @@
 <translation id="8187289872471304532">Đi tới
           Ứng dụng&gt; Tùy chọn hệ thống &gt; Mạng &gt; Nâng cao &gt; Proxy
           và bỏ chọn bất kỳ proxy nào đã được chọn.</translation>
+<translation id="8232971017369963250">Chrome được cung cấp thông qua dự án nguồn mở <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
+<translation id="8279509328145658601">Chrome cũng được cung cấp thông qua <ph name="BEGIN_LINK_OSS" />phần mềm nguồn mở<ph name="END_LINK_OSS" /> khác.</translation>
 </translationbundle>

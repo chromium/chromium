@@ -2308,6 +2308,7 @@
 <translation id="6738516213925468394">ଆପଣଙ୍କର ଡାଟା <ph name="TIME" />ଟାରେ ଆପଣଙ୍କ <ph name="BEGIN_LINK" />ସିଙ୍କ୍ ପାସ୍‌ଫ୍ରେଜ୍<ph name="END_LINK" /> ମାଧ୍ୟମରେ ଏନ୍‌କ୍ରିପ୍ଟ କରାଯାଇଥିଲା। ସିଙ୍କ୍ ଆରମ୍ଭ କରିବାକୁ ଏହାକୁ ଲେଖନ୍ତୁ।</translation>
 <translation id="674375294223700098">ଅଜଣା ସର୍ଭର୍ ସାର୍ଟିଫିକେଟ୍ ତ୍ରୁଟି।</translation>
 <translation id="6744009308914054259">ଗୋଟିଏ ସଂଯୋଗ ପାଇଁ ଅପେକ୍ଷା କରୁଥିବା ସମୟରେ, ଅଫ୍‌ଲାଇନ୍ ଆର୍ଟିକଲ୍‍ଗୁଡିକୁ ପଢ଼ିବାକୁ ଆପଣ ଡାଉନ୍‌ଲୋଡ୍‌ଗୁଡ଼ିକୁ ଯାଇପାରିବେ।</translation>
+<translation id="6745592621698551453">ବର୍ତ୍ତମାନ ଅପ୍‌ଡେଟ୍‌ କରନ୍ତୁ</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">ଟେଲିକନଫରେନ୍ସିଂ</translation>
 <translation id="6753269504797312559">ନୀତି ମୂଲ୍ୟ</translation>
@@ -2772,7 +2773,6 @@
 <translation id="7802523362929240268">ସାଇଟ୍‍ ଆଇନ୍‌ସଙ୍ଗତ ଅଟେ</translation>
 <translation id="7802989406998618639"><ph name="SIDE_OF_CARD" />ରେ <ph name="NUMBER_OF_DIGITS" />-ଅଙ୍କ ବିଶିଷ୍ଟ ସୁରକ୍ଷା କୋଡ ଲେଖନ୍ତୁ ଯାହା ଫଳରେ ଏହା ଆପଣ ଅଟନ୍ତି ବୋଲି ଆପଣଙ୍କ ବେଙ୍କ ଯାଞ୍ଚ କରିପାରିବ</translation>
 <translation id="780301667611848630">ନାଁ, ଥାଉ</translation>
-<translation id="7805571567667010077">ଆପଣଙ୍କ ସଂସ୍ଥା ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି</translation>
 <translation id="7805768142964895445">ସ୍ଥିତି</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Chromeରୁ ଫର୍ମ ସମ୍ବନ୍ଧିତ ପରାମର୍ଶ କାଢ଼ିବେ?</translation>
@@ -2995,6 +2995,7 @@
 <translation id="8369073279043109617">ନୂଆ କୋଡ ପାଆନ୍ତୁ</translation>
 <translation id="8371889962595521444">କଷ୍ଟମ୍ ରୁଟ୍ ସାର୍ଟିଫିକେଟ୍</translation>
 <translation id="8374636051559112948">ଭିନ୍ନ ହୋଇଥାଏ</translation>
+<translation id="8378714024927312812">ଆପଣଙ୍କର ସଂସ୍ଥା ଦ୍ୱାରା ପରିଚାଳିତ</translation>
 <translation id="8380941800586852976">ବିପଜ୍ଜନକ</translation>
 <translation id="8381674639488873545">ଏହି ଶୁଳ୍କଗୁଡ଼ିକ ଗୋଟିଏ ଥର କିମ୍ବା ବାରମ୍ବାର ଲାଗୁ ହୋ‍ଇପାରେ ଏବଂ ସ୍ପଷ୍ଟ ହୋ‍ଇନପାରେ। <ph name="BEGIN_LINK" />ଯେକୌଣସି ଉପାୟରେ ଦେଖାନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">ଆଡମିନିଷ୍ଟ୍ରେଟର୍ ନୀତି ଦ୍ୱାରା <ph name="ORIGIN_NAME" />ରୁ <ph name="VM_NAME" />କୁ ସେୟାର୍ କରିବା ବ୍ଲକ୍ କରାଯାଇଛି</translation>

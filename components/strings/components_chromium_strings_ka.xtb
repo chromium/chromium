@@ -27,7 +27,9 @@
           &gt;
           <ph name="PROXIES_TITLE" />
          და დარწმუნდით, რომ კონფიგურაციაში დაყენებულია მნიშვნელობები „პროქსის გარეშე“ ან „პირდაპირი“</translation>
+<translation id="6549378540556750549">Chromium, ასევე, მუშაობს <ph name="BEGIN_LINK_OSS" />ღია კოდის სხვა პროგრამული უზრუნველყოფის<ph name="END_LINK_OSS" /> დამსახურებით.</translation>
 <translation id="6613594504749178791">თქვენი ცვლილებები გააქტიურდება Chromium-ის შემდეგი გაშვებისას.</translation>
+<translation id="7681937895330411637">Chromium არსებობს <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />-ის ღია კოდის პროექტის წყალობით.</translation>
 <translation id="7861509383340276692">გახსენით
          Chromium-ის მენიუ &gt;
           <ph name="SETTINGS_TITLE" />

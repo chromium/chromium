@@ -40,4 +40,6 @@
 <translation id="8187289872471304532">Перейдіть у меню
           Applications &gt; System Preferences &gt; Network &gt; Advanced &gt; Proxies (Програми &gt; Системні налаштування &gt; Мережа &gt; Розширені &gt; Проксі-сервери)
           і зніміть прапорці біля всіх вибраних проксі-серверів.</translation>
+<translation id="8232971017369963250">Chrome було створено на основі проекту програмного забезпечення з відкритим кодом <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
+<translation id="8279509328145658601">Chrome також працює завдяки іншому <ph name="BEGIN_LINK_OSS" />програмному забезпеченню з відкритим кодом<ph name="END_LINK_OSS" />.</translation>
 </translationbundle>

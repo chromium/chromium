@@ -348,6 +348,7 @@
 <translation id="1303671224831497365">找不到藍牙裝置</translation>
 <translation id="130491383855577612">已成功取代 Linux 應用程式和檔案</translation>
 <translation id="1306390193749326011">您將不會再在此頁面看到<ph name="MODULE_NAME" /></translation>
+<translation id="1306518237408758433">開「<ph name="BOOKMARK_TITLE" />」</translation>
 <translation id="1306606229401759371">變更設定</translation>
 <translation id="1307165550267142340">已建立 PIN</translation>
 <translation id="1307431692088049276">不要再問我</translation>
@@ -437,6 +438,7 @@
 <translation id="1393283411312835250">太陽和雲</translation>
 <translation id="1395730723686586365">更新程式已啟動</translation>
 <translation id="1395832189806039783">突顯鍵盤焦點所在項目</translation>
+<translation id="1396120028054416908">返去「<ph name="FOLDER_TITLE" />」</translation>
 <translation id="1396139853388185343">設定打印機時發生錯誤</translation>
 <translation id="1396963298126346194">您輸入的使用者名稱與密碼不符</translation>
 <translation id="1397500194120344683">沒有適用裝置。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -681,6 +683,7 @@
 <translation id="1596286373007273895">可用</translation>
 <translation id="1596709061955594992">藍牙已關閉。如要查看可用的裝置，請開啟藍牙。</translation>
 <translation id="1596780725094407793">- 包括子網域</translation>
+<translation id="1597852076552089763">書籤選項</translation>
 <translation id="1598163867407640634">透過 <ph name="SITE_ETLD_PLUS_ONE" /> 支付 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 費用</translation>
 <translation id="1598233202702788831">您的管理員已停用更新功能。</translation>
 <translation id="1600857548979126453">存取網頁偵錯工具後端</translation>
@@ -1830,6 +1833,7 @@
 <translation id="25568951186001797">隔離頁框：<ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2558569818338050235">您的瀏覽記錄會影響系統顯示的廣告</translation>
 <translation id="2559889124253841528">儲存至裝置</translation>
+<translation id="2561211427862644160">您的所有書籤會在這裡顯示</translation>
 <translation id="2564520396658920462">透過 AppleScript 執行 JavaScript 的功能已關閉。如要開啟此功能，請從選單列前往「檢視模式」&gt;「開發人員」&gt;「允許透過 Apple 活動執行 JavaScript」。如需瞭解詳情，請瀏覽：https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">強化的拼字檢查</translation>
 <translation id="2568694057933302218">在無痕模式下，網站無法使用 Cookie 瞭解您的跨網站瀏覽活動，因此無法根據瀏覽活動提供個人化廣告等服務。部分網站的功能可能會無法正常運作。</translation>
@@ -2434,6 +2438,7 @@
 <translation id="3090871774332213558">已配對「<ph name="DEVICE_NAME" />」</translation>
 <translation id="3093714882666365141">不允許網站安裝付款處理常式</translation>
 <translation id="3094141017404513551">這樣做會將您的瀏覽資料與 <ph name="EXISTING_USER" /> 分隔</translation>
+<translation id="3094521107841754472">價格已經由 <ph name="PREVIOUS_PRICE" /> 變成 <ph name="CURRENT_PRICE" />。</translation>
 <translation id="3095871294753148861">書籤、密碼和其他瀏覽器資料已與主要帳戶同步。</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{已停用 1 個可能有害的擴充程式，但您可將之移除。}other{已停用 {NUM_EXTENSIONS} 個可能有害的擴充程式，但您可將之移除。}}</translation>
 <translation id="3101126716313987672">光線昏暗</translation>
@@ -2786,6 +2791,7 @@
 <translation id="3441653493275994384">螢幕</translation>
 <translation id="3441663102605358937">請再次登入 <ph name="ACCOUNT" /> 以驗證此帳戶</translation>
 <translation id="3442674350323953953">允許 Google 使用硬件資料來協助改善 <ph name="DEVICE_OS" />。如果拒絕，此資料仍會傳送至 Google 以判斷適當的更新內容，但不會儲存或用於其他用途。</translation>
+<translation id="3443744348829035122">「<ph name="BRAND" />」逾時</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> 將可以查看「<ph name="FILENAME" />」</translation>
 <translation id="3445047461171030979">「Google 助理」快速解答</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> 分鐘</translation>
@@ -3330,6 +3336,7 @@
 <translation id="39103738135459590">啟動碼</translation>
 <translation id="3911824782900911339">新分頁</translation>
 <translation id="3914173277599553213">必填</translation>
+<translation id="3914568430265141791">開「<ph name="FOLDER_TITLE" />」資料夾</translation>
 <translation id="3915280005470252504">語音搜尋</translation>
 <translation id="3916233823027929090">已完成安全檢查</translation>
 <translation id="3916445069167113093">這種類型的檔案可能會損害您的電腦，您仍要保留 <ph name="FILE_NAME" /> 嗎？</translation>
@@ -3461,6 +3468,7 @@
 <translation id="4022426551683927403">新增到字典(&amp;A)</translation>
 <translation id="4025039777635956441">將已選取的網站設定為靜音</translation>
 <translation id="402707738228916911">已接收「<ph name="AUTHORIZE_INSTRUCTION_NAME" />」指示</translation>
+<translation id="4027569221211770437">「<ph name="FOLDER_TITLE" />」資料夾</translation>
 <translation id="4027958407426528157">使用 <ph name="DEVICE_TYPE" /> 上安裝的應用程式開啟網站</translation>
 <translation id="4028467762035011525">新增輸入方法</translation>
 <translation id="4029556917477724407">從「<ph name="PAGE_TITLE" />」頁面返回</translation>
@@ -3515,6 +3523,7 @@
 <translation id="4077917118009885966">已封鎖此網站的廣告</translation>
 <translation id="4077919383365622693">系統將會清除所有 <ph name="SITE" /> 儲存的資料和 Cookie。</translation>
 <translation id="4078738236287221428">積極</translation>
+<translation id="4078903002989614318">排序同埋清單選項</translation>
 <translation id="4079140982534148664">使用進階拼字檢查功能</translation>
 <translation id="4084682180776658562">書籤</translation>
 <translation id="4084835346725913160">關閉 <ph name="TAB_NAME" /></translation>
@@ -3659,6 +3668,7 @@
 <translation id="4217571870635786043">語音輸入</translation>
 <translation id="4218081191298393750">按一下「喇叭」圖示即可將此分頁設定為靜音</translation>
 <translation id="4220648711404560261">啟用時發生錯誤。</translation>
+<translation id="4222917615373664617">啟用咗價格追蹤功能價格係 <ph name="CURRENT_PRICE" />。</translation>
 <translation id="4223845867739585293">建立密鑰</translation>
 <translation id="4225397296022057997">在所有網站上</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{不允許這個擴充程式}other{不允許部分擴充程式}}</translation>
@@ -5819,6 +5829,7 @@
 <translation id="6212168817037875041">關閉螢幕</translation>
 <translation id="6212752530110374741">透過電郵傳送連結</translation>
 <translation id="621470880408090483">不允許網站連接藍牙裝置</translation>
+<translation id="6215039389782910006">{1,plural, =1{為保障密碼安全，「<ph name="BRAND" />」會在閒置 1 分鐘後鎖定}other{為保障密碼安全，「<ph name="BRAND" />」會在閒置 # 分鐘後鎖定}}</translation>
 <translation id="6216239400972191926">已封鎖的網站和應用程式</translation>
 <translation id="6216601812881225442">無法調整容器大小。如要調整預先分配給 Linux 的空間數量，請先備份容器，然後再復原至新容器。</translation>
 <translation id="6216696360484424239">自動登入</translation>

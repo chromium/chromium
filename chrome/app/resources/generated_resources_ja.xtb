@@ -556,6 +556,7 @@
 <translation id="1487335504823219454">オン - カスタム設定</translation>
 <translation id="1493892686965953381"><ph name="LOAD_STATE_PARAMETER" /> を待機しています...</translation>
 <translation id="1494349716233667318">サイトがデバイスにインストールされたフォントの使用を要求できるようにする</translation>
+<translation id="1494429729245089920">仮想マシン「<ph name="VM_NAME" />」は存在しますが、有効な <ph name="APP_NAME" /> 仮想マシンではないようです。管理者にお問い合わせください。</translation>
 <translation id="1495677929897281669">タブに戻る</translation>
 <translation id="1498498210836053409">テキストの編集時にキー固定モードをオフにする（スマート キー固定モード）</translation>
 <translation id="1500297251995790841">不明なデバイス [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
@@ -3161,6 +3162,7 @@
 <translation id="3790417903123637354">エラーが発生しました。しばらくしてからもう一度お試しください</translation>
 <translation id="379082410132524484">カードの有効期限が切れています</translation>
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> 件の拡張機能</translation>
+<translation id="3794792524918736965">Windows Hello をオンにする</translation>
 <translation id="379500251094592809">ニアバイシェアを使用するには、両方のデバイスでロックが解除されていること、お互いが近くにあること、Bluetooth が有効になっていることを確認してください。連絡先に登録されていない Chromebook とファイルを共有する場合は、その Chromebook で周辺ユーザーによる検出がオンになっていることも確認してください（時刻を選択してステータス領域を開き、周辺ユーザーによる検出をオンにします）。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">オフ</translation>
 <translation id="3795766489237825963">アニメーションを再生</translation>
@@ -6414,6 +6416,7 @@
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> がリモートで追加されました</translation>
 <translation id="6790820461102226165">ユーザーを追加...</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
+<translation id="679486139907144816">パスキーでこのサイトにログインするには、設定で Windows Hello をオンにしてください。その後、このサイトに戻って、もう一度お試しください。</translation>
 <translation id="6795371939514004514">自動スキャンを使用すると、画面上のアイテム間を自動的に移動できます。アイテムがハイライト表示されているときに「選択」を押すとアクティブになります。</translation>
 <translation id="6795884519221689054">パンダ</translation>
 <translation id="6796509790850723820">レンダリング</translation>
@@ -8334,6 +8337,7 @@
 <translation id="8513108775083588393">自動回転</translation>
 <translation id="8514746246728959655">別のセキュリティ キーを試す</translation>
 <translation id="8514955299594277296">サイトによるデバイスへのデータの保存を許可しない（非推奨）</translation>
+<translation id="8517759303731677493">編集…</translation>
 <translation id="8519895319663397036">パスワードをインポートできません。ファイルサイズを 150 KB より小さくしてください。</translation>
 <translation id="8523493869875972733">変更を保持</translation>
 <translation id="8523849605371521713">ポリシーにより追加</translation>

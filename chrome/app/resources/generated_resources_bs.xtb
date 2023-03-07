@@ -6108,6 +6108,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="6469557521904094793">Uključi mobilnu mrežu</translation>
 <translation id="6470823736074966819">Isključi zvuk obavještenja</translation>
 <translation id="6472893788822429178">Prikaz dugmeta za početni ekran</translation>
+<translation id="6474352027343282094">{COUNT,plural, =1{{COUNT} se zaporka sprema samo na ovaj uređaj. Da biste je upotrebljavali na svojim drugim uređajima, &lt;a target='_blank' href='chrome://password-manager/'&gt;spremite je na svoj Google račun&lt;/a&gt;.}one{{COUNT} zaporka sprema se samo na ovaj uređaj. Da biste ih upotrebljavali na drugim uređajima, &lt;a target='_blank' href='chrome://password-manager/'&gt;spremite ih na svoj Google račun&lt;/a&gt;.}few{{COUNT} zaporke spremaju se samo na ovaj uređaj. Da biste ih upotrebljavali na drugim uređajima, &lt;a target='_blank' href='chrome://password-manager/'&gt;spremite ih na svoj Google račun&lt;/a&gt;.}other{{COUNT} zaporki sprema se samo na ovaj uređaj. Da biste ih upotrebljavali na drugim uređajima, &lt;a target='_blank' href='chrome://password-manager/'&gt;spremite ih na svoj Google račun&lt;/a&gt;.}}</translation>
 <translation id="6474498546677193336">Poništavanje dijeljenja nije uspjelo jer neka aplikacija koristi ovaj folder. Dijeljenje foldera će se poništiti nakon sljedećeg isključivanja Linuxa.</translation>
 <translation id="6474884162850599008">Prekini vezu s računom za Google Disk</translation>
 <translation id="6475294023568239942">Oslobodite prostor ili promijenite veličinu Linux diska u Postavkama</translation>
@@ -6458,7 +6459,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="6790497603648687708">Ekstenzija <ph name="EXTENSION_NAME" /> je dodana daljinskim putem</translation>
 <translation id="6790820461102226165">Dodaj osobu...</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
-<translation id="679486139907144816">Da biste se na ovu web-lokaciju prijavili pomoću pristupnog ključa, u postavkama trebate uključiti Windows Hello. Zatim se vratite na ovu web-lokaciju i pokušajte ponovo.</translation>
+<translation id="679486139907144816">Za pristup ovoj web lokaciji pomoću pristupnog ključa uključite Windows Hello u postavkama. Zatim se vratite na ovu web lokaciju i pokušajte ponovo.</translation>
 <translation id="6795371939514004514">Automatsko skeniranje vam omogućava da se automatski krećete kroz stavke na ekranu. Kada je stavka istaknuta, pritisnite "Odaberi" da je aktivirate.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6796509790850723820">Iscrtaj</translation>
@@ -7605,6 +7606,7 @@ Pritisnite dodijeljeni prekidač ili tipku da uklonite dodjeljivanje.</translati
 <translation id="7817361223956157679">Tastatura na ekranu još uvijek ne radi u aplikacijama za Linux</translation>
 <translation id="7818135753970109980">Dodana je nova tema (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="7819605256207059717">Blokirala vaša organizacija</translation>
+<translation id="7820400255539998692">Izbrišite datoteku <ph name="FILENAME" /> kako osobe koje upotrebljavaju ovaj uređaj ne bi mogle vidjeti vaše zaporke</translation>
 <translation id="7820561748632634942">Dodijeliti dodatne prekidače?</translation>
 <translation id="782057141565633384">K&amp;opiraj adresu videozapisa</translation>
 <translation id="7824864914877854148">Izrada sigurnosne kopije nije uspjela zbog greške</translation>
@@ -8381,7 +8383,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8513108775083588393">Aut. rotiranje</translation>
 <translation id="8514746246728959655">Probajte drugi sigurnosni ključ</translation>
 <translation id="8514955299594277296">Nemojte dozvoliti web lokacijama da pohranjuju podatke na vašem uređaju (ne preporučuje se)</translation>
-<translation id="8517759303731677493">Uredi…</translation>
+<translation id="8517759303731677493">Uredite…</translation>
 <translation id="8519895319663397036">Nije moguće uvesti lozinke. Fajl treba biti manji od 150 kB.</translation>
 <translation id="8523493869875972733">Zadrži izmjene</translation>
 <translation id="8523849605371521713">Dodano pravilom</translation>

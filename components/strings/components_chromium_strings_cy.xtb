@@ -27,7 +27,9 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           a gwnewch yn siŵr bod eich ffurfweddiad wedi'i osod i "dim dirprwy weinydd" neu i "uniongyrchol."</translation>
+<translation id="6549378540556750549">Mae Chromium hefyd yn bosib oherwydd <ph name="BEGIN_LINK_OSS" />meddalwedd ffynhonnell agored<ph name="END_LINK_OSS" /> eraill.</translation>
 <translation id="6613594504749178791">Bydd eich newidiadau yn dod i rym y tro nesaf y byddwch yn ail-lansio Chromium.</translation>
+<translation id="7681937895330411637">Mae Chromium yn bosib oherwydd y prosiect ffynhonnell agored <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="7861509383340276692">Ewch i
           ddewislen Chromium &gt;
           <ph name="SETTINGS_TITLE" />

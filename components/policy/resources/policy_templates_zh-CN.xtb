@@ -2962,13 +2962,6 @@
 如果此政策已停用，系统会停用该功能。
 
 此政策只是一种临时的变通方案，会在几个里程碑后被移除（我们暂定在 M113 中移除它）。</translation>
-<translation id="3795413481405077588">此政策让管理员能够为已安装的 Web 应用指定设置。
-
-      使用此政策后，您可将某个 Web 应用 ID 映射到特定设置。您可以使用特殊 ID<ph name="DEFAULT_SCOPE" />设定默认配置，该配置会应用于未在此政策中设定自定义配置的所有 Web 应用。
-
-      <ph name="MANIFEST_ID_FIELD" />字段用于指明相应 Web 应用的清单 ID。如需了解怎样确定某个已安装 Web 应用的清单 ID，请参阅 <ph name="WEB_APP_ID_REFERENCE_URL" />。
-      <ph name="RUN_ON_OS_LOGIN_FIELD" />字段用于指定相应 Web 应用能否在操作系统登录期间运行。如果此字段设为<ph name="BLOCKED" />，Web 应用将不会在操作系统登录期间运行，而且用户无法在日后启用此设置。如果此字段设为<ph name="RUN_WINDOWED" />，Web 应用将会在操作系统登录期间运行，但用户无法在日后停用此设置。如果此字段设为<ph name="ALLOWED" />，用户将能够配置 Web 应用能否在操作系统登录期间运行。默认配置仅接受<ph name="ALLOWED" />值和<ph name="BLOCKED" />值。
-      </translation>
 <translation id="3796527892245558832">在浏览器启动时显示个人资料选择器</translation>
 <translation id="3798922329287609568">通过设置此政策，您可以限制双面打印模式。
 

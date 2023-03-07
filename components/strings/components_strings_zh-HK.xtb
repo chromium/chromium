@@ -345,6 +345,7 @@
 <translation id="1733064249834771892">字型</translation>
 <translation id="1734864079702812349">美國運通信用卡</translation>
 <translation id="1734878702283171397">請嘗試聯絡系統管理員。</translation>
+<translation id="1736158756193183352"><ph name="BEGIN_LINK" />登入<ph name="END_LINK" />網絡</translation>
 <translation id="1736420071277903564">電腦</translation>
 <translation id="1740951997222943430">請輸入有效的到期月份</translation>
 <translation id="1741613555002899862">將 DnsOverHttpsMode 設定為 <ph name="SECURE_DNS_MODE_SECURE" /> 時，必須指定有效的字串。</translation>
@@ -1191,6 +1192,7 @@
 <translation id="3949601375789751990">您的瀏覽記錄會在這裡顯示</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">尚未儲存任何付款方法</translation>
+<translation id="3950574001630941635">重新啟動教學課程</translation>
 <translation id="3950820424414687140">登入</translation>
 <translation id="3958057596965527988">4 x 4 吋</translation>
 <translation id="3961148744525529027">付款處理常式工作表只係顯示咁一半</translation>
@@ -2308,6 +2310,7 @@
 <translation id="6738516213925468394">您已於 <ph name="TIME" />使用<ph name="BEGIN_LINK" />同步密碼短語<ph name="END_LINK" />加密資料，請輸入密碼短語開始同步資料。</translation>
 <translation id="674375294223700098">不明的伺服器憑證錯誤。</translation>
 <translation id="6744009308914054259">等待連線時，您可以前往「下載」閱讀離線文章。</translation>
+<translation id="6745592621698551453">立即更新</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">電話會議</translation>
 <translation id="6753269504797312559">政策值</translation>
@@ -2772,7 +2775,6 @@
 <translation id="7802523362929240268">合法網站</translation>
 <translation id="7802989406998618639">輸入<ph name="SIDE_OF_CARD" />的 <ph name="NUMBER_OF_DIGITS" /> 位數安全碼，以便銀行驗證您的身份</translation>
 <translation id="780301667611848630">不用了，謝謝</translation>
-<translation id="7805571567667010077">由您的機構管理</translation>
 <translation id="7805768142964895445">狀態</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">要從 Chrome 中移除表格建議嗎？</translation>
@@ -2995,6 +2997,7 @@
 <translation id="8369073279043109617">取得新的驗證碼</translation>
 <translation id="8371889962595521444">自訂根憑證</translation>
 <translation id="8374636051559112948">不定</translation>
+<translation id="8378714024927312812">由您的機構管理</translation>
 <translation id="8380941800586852976">不安全</translation>
 <translation id="8381674639488873545">這些費用可能是一次性或會重複收取，而收費時亦可能難以察覺。<ph name="BEGIN_LINK" />仍要顯示<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">管理員政策已禁止將資料由 <ph name="ORIGIN_NAME" /> 分享到 <ph name="VM_NAME" /></translation>

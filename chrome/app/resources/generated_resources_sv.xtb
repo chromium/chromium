@@ -561,6 +561,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1487335504823219454">Aktiverat – anpassade inställningar</translation>
 <translation id="1493892686965953381">Väntar på <ph name="LOAD_STATE_PARAMETER" /> ...</translation>
 <translation id="1494349716233667318">Webbplatser kan begära tillstånd att använda teckensnitt som har installerats på enheten</translation>
+<translation id="1494429729245089920">Den virtuella maskinen <ph name="VM_NAME" /> finns men verkar inte vara en giltig <ph name="APP_NAME" />-VM. Kontakta administratören.</translation>
 <translation id="1495677929897281669">Tillbaka till flik</translation>
 <translation id="1498498210836053409">Inaktivera låstangentsläge när du redigerar text (smart låstangentsläge)</translation>
 <translation id="1500297251995790841">Okänd enhet [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>

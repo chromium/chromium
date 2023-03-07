@@ -345,6 +345,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1733064249834771892">pisave</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Poskusite se obrniti na skrbnika sistema.</translation>
+<translation id="1736158756193183352"><ph name="BEGIN_LINK" />Prijava<ph name="END_LINK" /> v omrežje</translation>
 <translation id="1736420071277903564">Računalnik</translation>
 <translation id="1740951997222943430">Vnesite veljaven mesec poteka veljavnosti</translation>
 <translation id="1741613555002899862">Mora biti navedeno in veljaven niz, ko je način pravilnika DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
@@ -1192,6 +1193,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3949601375789751990">Tu je prikazana zgodovina brskanja</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Ni shranjenih plačilnih sredstev</translation>
+<translation id="3950574001630941635">Znova zaženi vadnico</translation>
 <translation id="3950820424414687140">Prijava</translation>
 <translation id="3958057596965527988">4 x 4 palcev</translation>
 <translation id="3961148744525529027">List rutine za obravnavo plačil je napol odprt</translation>
@@ -2310,6 +2312,7 @@ Poleg tega lahko v nastavitvah Chroma kadar koli blokirate, da bi spletno mesto 
 <translation id="6738516213925468394">Podatki so bili šifrirani (<ph name="TIME" />) z vašim <ph name="BEGIN_LINK" />geslom za sinhronizacijo<ph name="END_LINK" />. Vnesite ga, če želite začeti sinhronizacijo.</translation>
 <translation id="674375294223700098">Neznana napaka potrdila strežnika.</translation>
 <translation id="6744009308914054259">Med čakanjem na povezavo lahko berete članke za branje brez povezave med prenosi.</translation>
+<translation id="6745592621698551453">Posodobi</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Telekonference</translation>
 <translation id="6753269504797312559">Vrednost pravilnika</translation>
@@ -2774,7 +2777,6 @@ Dodatne podrobnosti:
 <translation id="7802523362929240268">Spletno mesto je legitimno</translation>
 <translation id="7802989406998618639">Vnesite <ph name="NUMBER_OF_DIGITS" />-mestno varnostno kodo na <ph name="SIDE_OF_CARD" />, da bo lahko vaša banka potrdila vašo identiteto.</translation>
 <translation id="780301667611848630">Ne, hvala</translation>
-<translation id="7805571567667010077">Upravlja vaša organizacija</translation>
 <translation id="7805768142964895445">Stanje</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Želite odstraniti predlog obrazca iz Chroma?</translation>
@@ -2997,6 +2999,7 @@ Dodatne podrobnosti:
 <translation id="8369073279043109617">Pošiljanje nove kode</translation>
 <translation id="8371889962595521444">Korenska potrdila po meri</translation>
 <translation id="8374636051559112948">Se razlikuje</translation>
+<translation id="8378714024927312812">Upravlja vaša organizacija</translation>
 <translation id="8380941800586852976">Nevarno</translation>
 <translation id="8381674639488873545">Te bremenitve so lahko enkratne ali ponavljajoče se in morda niso očitne. <ph name="BEGIN_LINK" />Vseeno pokaži<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Deljenje iz vira <ph name="ORIGIN_NAME" /> v navidezni računalnik <ph name="VM_NAME" /> je blokiral pravilnik skrbnika.</translation>

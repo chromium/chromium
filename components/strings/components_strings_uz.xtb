@@ -2303,6 +2303,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6738516213925468394">Maʼlumotlaringiz <ph name="TIME" /> sanasida <ph name="BEGIN_LINK" />kodli ibora<ph name="END_LINK" /> bilan shifrlangan. Sinxronizatsiyani boshlash uchun uni kiriting.</translation>
 <translation id="674375294223700098">Sertifikat serverida noma’lum xato</translation>
 <translation id="6744009308914054259">Aloqa o‘rnatilguncha Yuklanmalar jildini ochib oflayn maqolalar o‘qishingiz mumkin.</translation>
+<translation id="6745592621698551453">Hozir yangilash</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Telekonferensiyalar</translation>
 <translation id="6753269504797312559">Siyosatdagi qiymat</translation>
@@ -2767,7 +2768,6 @@ Batafsil axborot:
 <translation id="7802523362929240268">Bu – xavfsiz sayt</translation>
 <translation id="7802989406998618639">Bank shaxsingizni tasdiqlashi uchun <ph name="SIDE_OF_CARD" /> kartasidagi <ph name="NUMBER_OF_DIGITS" /> raqamli himoya kodini kiritsang</translation>
 <translation id="780301667611848630">Kerak emas</translation>
-<translation id="7805571567667010077">Tashkilot tomonidan boshqariladi</translation>
 <translation id="7805768142964895445">Holat</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Bu taklif Chrome’dan o‘chirib tashlansinmi?</translation>
@@ -2990,6 +2990,7 @@ Batafsil axborot:
 <translation id="8369073279043109617">Yangi kod oling</translation>
 <translation id="8371889962595521444">Foydalanuvchiga tegishli root sertifikatlari</translation>
 <translation id="8374636051559112948">Farq qiladi</translation>
+<translation id="8378714024927312812">Tashkilotingiz tomonidan boshqariladi</translation>
 <translation id="8380941800586852976">Xavfli</translation>
 <translation id="8381674639488873545">To‘lov bir martalik, davomiy yoki umuman bo‘lmasligi ham mumkin. <ph name="BEGIN_LINK" />Ogohlantirish baribir chiqaversin<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698"><ph name="ORIGIN_NAME" /> saytidan <ph name="VM_NAME" /> tizimiga ulashishni administrator taqiqlagan</translation>

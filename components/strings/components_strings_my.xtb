@@ -2309,6 +2309,7 @@
 <translation id="6738516213925468394">သင့်ဒေတာများကို သင်၏ <ph name="BEGIN_LINK" />စင့်ခ်စကားဝှက်စာ<ph name="END_LINK" />ဖြင့် <ph name="TIME" /> တွင် အသွင်ဝှက်ထားပါသည်။ စင့်ခ်စလုပ်ရန် ၎င်းကိုထည့်ပါ။</translation>
 <translation id="674375294223700098">အမည်မသိ ဆာဗာ အသိမှတ်ပြုလက်မှတ် မှားယွင်းမှု</translation>
 <translation id="6744009308914054259">ချိတ်ဆက်မှုကို စောင့်နေစဉ် အော့ဖ်လိုင်းဆောင်းပါးများကို ဖတ်ရန် 'ဒေါင်းလုဒ်များ' သို့ သွားနိုင်သည်။</translation>
+<translation id="6745592621698551453">ယခု မွမ်းမံပါ</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">တယ်လီအစည်းအဝေးလုပ်ခြင်း</translation>
 <translation id="6753269504797312559">ပေါ်လစီတန်ဖိုး</translation>
@@ -2774,7 +2775,6 @@
 <translation id="7802523362929240268">တရားဝင် ဝဘ်ဆိုက်ဖြစ်ပါသည်</translation>
 <translation id="7802989406998618639">သင်ဖြစ်ကြောင်း သင့်ဘဏ်က အတည်ပြုနိုင်ရန် <ph name="SIDE_OF_CARD" /> ရှိ ဂဏန်း-<ph name="NUMBER_OF_DIGITS" /> လုံးပါ လုံခြုံရေးကုဒ်ကိုထည့်ပါ</translation>
 <translation id="780301667611848630">မလိုပါ</translation>
-<translation id="7805571567667010077">သင့်အဖွဲ့အစည်းက စီမံခန့်ခွဲသည်</translation>
 <translation id="7805768142964895445">အခြေအနေ</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Chrome မှပုံစံ အကြံပြုမှုများ ဖယ်ရှားမလား?</translation>
@@ -2998,6 +2998,7 @@
 <translation id="8369073279043109617">ကုဒ်အသစ် ရယူရန်</translation>
 <translation id="8371889962595521444">စိတ်ကြိုက် ပင်မအသိအမှတ်ပြုလက်မှတ်များ</translation>
 <translation id="8374636051559112948">ကွဲပြားသည်</translation>
+<translation id="8378714024927312812">သင်၏ 'အဖွဲ့အစည်း' က စီမံခန့်ခွဲထားသည်</translation>
 <translation id="8380941800586852976">အန္တရာယ်ရှိသော</translation>
 <translation id="8381674639488873545">ဤငွေကောက်ခံမှုများသည် တစ်ချိန်တစ်ခါတည်း ဖြစ်နိုင်သလို ထပ်တလဲလဲကောက်ခံမှုလည်း ဖြစ်နိုင်ပြီး သိသာမှုမရှိနိုင်ပါ။ <ph name="BEGIN_LINK" />မည်သို့ပင်ဖြစ်စေ ပြရန်<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698"><ph name="ORIGIN_NAME" /> မှ <ph name="VM_NAME" /> သို့ မျှဝေခြင်းကို စီမံခန့်ခွဲသူမူဝါဒက ပိတ်ထားသည်</translation>

@@ -260,6 +260,7 @@
 <translation id="5740126560802162366">ጣቢያዎች በመሣሪያዎ ላይ ውሂብ ማስቀመጥ ይችላሉ</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> ታግዷል</translation>
 <translation id="5804241973901381774">ፍቃዶች</translation>
+<translation id="5810805850857689118">ይህ እርምጃ ለ<ph name="ORIGIN" /> እና በሥሩ ለሚገኙ ሁሉም ጣቢያዎች ሁሉንም ውሂብ እና ኩኪዎች ያጸዳል</translation>
 <translation id="5860033963881614850">አጥፋ</translation>
 <translation id="5876056640971328065">ቪዲዮ ባለበት አቁም</translation>
 <translation id="5884085660368669834">የጣቢያ ምርጫ</translation>
@@ -412,6 +413,7 @@
 <translation id="8514955299594277296">ጣቢያዎች በመሣሪያዎ ላይ ውሂብ እንዲያስቀምጡ አይፍቀዱ (አይመከርም)</translation>
 <translation id="851751545965956758">ጣቢያዎች ከመሣሪያዎች ጋር እንዳይገናኙ አግድ</translation>
 <translation id="8525306231823319788">ሙሉ ማያ ገጽ</translation>
+<translation id="8528440122773422556">ይህ እርምጃ በ<ph name="ORIGIN" /> ሥር ወይም በእርስዎ መነሻ ማያ ገጽ ላይ በመተግበሪያው ሁሉም ጣቢያዎች የተከማቹትን ሁሉንም ውሂብ እና ኩኪዎች ያጸዳል</translation>
 <translation id="8541410041357371550">ይህ ጣቢያ ይበልጥ አግባብነት ያላቸው ማስታወቂያዎችን ለእርስዎ ለማሳየት የእርስዎን የማስታወቂያ ርዕሶች ከChrome ያገኛል</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{ለ<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> ጣቢያ የተፈቀደ ኩኪ}one{ለ<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> ጣቢያ የተፈቀደ ኩኪ}other{ለ<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> ጣቢያዎች የተፈቀዱ ኩኪዎች}}</translation>
 <translation id="857943718398505171">ተፈቅዷል (የሚመከር)</translation>
@@ -440,6 +442,7 @@
 <translation id="8986362086234534611">እርሳ</translation>
 <translation id="8990043154272859344">ከሁሉም ጣቢያዎች ዘግተው እንዲወጡ ይደረጋሉ</translation>
 <translation id="9019902583201351841">በእርስዎ ወላጆች የሚቀናበር</translation>
+<translation id="9039697262778250930">ከእነዚህ ጣቢያዎች በመለያ ሊወጡ ይችላሉ</translation>
 <translation id="9074739597929991885">ብሉቱዝ</translation>
 <translation id="9090268041676521955">ይህ ጣቢያ እንቅስቃሴዎን ማየት በሚችል አንድ ቡድን ውስጥ ነው። ይህ ቡድን በ<ph name="FPS_OWNER" /> የሚገለጽ ነው።</translation>
 <translation id="9106233582039520022">ኩኪዎችን ይሰረዙ?</translation>

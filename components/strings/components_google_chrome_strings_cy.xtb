@@ -40,4 +40,6 @@
 <translation id="8187289872471304532">Ewch i
           Rhaglenni &gt; Dewisiadau System &gt; Rhwydwaith &gt; Uwch &gt; Dirprwy Weinyddion
           a dad-diciwch unrhyw ddirprwy weinyddion sydd wedi'u ticio.</translation>
+<translation id="8232971017369963250">Mae Chrome yn bosib oherwydd y prosiect ffynhonnell agored <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
+<translation id="8279509328145658601">Mae Chrome hefyd yn bosib oherwydd <ph name="BEGIN_LINK_OSS" />feddalwedd ffynhonnell agored<ph name="END_LINK_OSS" /> eraill.</translation>
 </translationbundle>

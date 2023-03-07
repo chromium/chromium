@@ -345,6 +345,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1733064249834771892">fuentes</translation>
 <translation id="1734864079702812349">American Express</translation>
 <translation id="1734878702283171397">Intenta ponerte en contacto con el administrador del sistema.</translation>
+<translation id="1736158756193183352"><ph name="BEGIN_LINK" />Iniciando sesión<ph name="END_LINK" /> en la red</translation>
 <translation id="1736420071277903564">Ordenador</translation>
 <translation id="1740951997222943430">Introduce un mes de vencimiento válido</translation>
 <translation id="1741613555002899862">Se debe especificar y debe ser una cadena válida cuando DnsOverHttpsMode sea <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
@@ -949,7 +950,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3339440062908617027">Correr y pasear</translation>
 <translation id="3339446062576134663">Nube (Ash)</translation>
 <translation id="3340978935015468852">configuración</translation>
-<translation id="3342018947887487892">Después, un sitio que visites puede solicitar esta información, ya sea sobre tus temas de anuncios o sobre los anuncios sugeridos por los sitios que has visitado.</translation>
+<translation id="3342018947887487892">Más tarde, un sitio que visites puede solicitar esta información, ya sea sobre tus temas de anuncios o sobre los anuncios sugeridos por los sitios que has visitado.</translation>
 <translation id="3342366525167526994">Arte corporal</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">Cambiar la configuración de proxy...</translation>
@@ -1192,6 +1193,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3949601375789751990">Tu historial de navegación aparece aquí</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">No hay ningún método de pago guardado</translation>
+<translation id="3950574001630941635">Reiniciar tutorial</translation>
 <translation id="3950820424414687140">Iniciar sesión</translation>
 <translation id="3958057596965527988">4x4 pulgadas</translation>
 <translation id="3961148744525529027">La hoja del controlador de pagos está abierta en media pantalla</translation>
@@ -2309,6 +2311,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6738516213925468394">Tus datos están cifrados con tu <ph name="BEGIN_LINK" />frase de contraseña de sincronización<ph name="END_LINK" /> desde el <ph name="TIME" />. Introdúcela para iniciar la sincronización.</translation>
 <translation id="674375294223700098">Error de certificado de servidor desconocido</translation>
 <translation id="6744009308914054259">Mientras esperas a que haya conexión, puedes ir a Descargas para leer artículos sin conexión.</translation>
+<translation id="6745592621698551453">Actualizar ahora</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Teleconferencias</translation>
 <translation id="6753269504797312559">Valor de la política</translation>
@@ -2630,7 +2633,7 @@ Más información:
 <translation id="7507075214339298899">Sobre n.º 9</translation>
 <translation id="7508255263130623398">El ID de dispositivo de política devuelto está vacío o no coincide con el ID de dispositivo actual</translation>
 <translation id="7508870219247277067">Verde aguacate</translation>
-<translation id="7510225383966760306"><ph name="BEGIN_BOLD" />Cómo usan estos datos los sitios:<ph name="END_BOLD" /> los sitios pueden almacenar información sobre cosas que te gustan con Chrome. Por ejemplo, si visitas un sitio sobre entrenamiento para maratones, es posible que el sitio determine que te interesan las zapatillas para correr. Después, si visitas otro sitio, puede que ese sitio te muestre un anuncio de zapatillas para correr sugerido por el primer sitio.</translation>
+<translation id="7510225383966760306"><ph name="BEGIN_BOLD" />Cómo usan estos datos los sitios:<ph name="END_BOLD" /> los sitios pueden almacenar información sobre cosas que te gustan con Chrome. Por ejemplo, si visitas un sitio sobre entrenamiento para maratones, es posible que el sitio determine que te interesan las zapatillas para correr. Si más tarde visitas otro sitio, puede que ese sitio te muestre un anuncio de zapatillas para correr sugerido por el primer sitio.</translation>
 <translation id="7510269639068718544">Gatos</translation>
 <translation id="7511955381719512146">La red Wi-Fi que estás utilizando puede requerir que accedas a la página <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="7512685745044087310">No se le puede asignar el valor "Verdadero" a esta política y ser obligatoria, por lo que se ha cambiado a "recomendada".</translation>
@@ -2769,11 +2772,10 @@ Más información:
 <translation id="7791543448312431591">Añadir</translation>
 <translation id="7798389633136518089">Se ha ignorado porque la política no está configurada en la nube.</translation>
 <translation id="7800304661137206267">La conexión se ha encriptado mediante <ph name="CIPHER" />, con <ph name="MAC" /> para la autenticación del mensaje y con <ph name="KX" /> como mecanismo de intercambio de claves.</translation>
-<translation id="7800977246388195491">Chrome tiene en cuenta temas de interés basándose en tu historial de navegación reciente. Además, los sitios que visites pueden determinar lo que te gusta. Después, los sitios podrán solicitar esta información para mostrarte anuncios personalizados. Puedes elegir qué temas y sitios se usarán para mostrarte anuncios.</translation>
+<translation id="7800977246388195491">Chrome tiene en cuenta temas de interés basándose en tu historial de navegación reciente. Además, los sitios que visites pueden determinar lo que te gusta. Más adelante, los sitios podrán solicitar esta información para mostrarte anuncios personalizados. Puedes elegir qué temas y sitios se usarán para mostrarte anuncios.</translation>
 <translation id="7802523362929240268">El sitio web es legítimo</translation>
 <translation id="7802989406998618639">Introduce el código de seguridad de <ph name="NUMBER_OF_DIGITS" /> dígitos que figura en el <ph name="SIDE_OF_CARD" /> para que el banco pueda verificar tu identidad</translation>
 <translation id="780301667611848630">No, gracias</translation>
-<translation id="7805571567667010077">Gestionado por tu organización</translation>
 <translation id="7805768142964895445">Estado</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">¿Eliminar sugerencia de formulario de Chrome?</translation>
@@ -2996,6 +2998,7 @@ Más información:
 <translation id="8369073279043109617">Obtener nuevo código</translation>
 <translation id="8371889962595521444">Certificados raíz personalizados</translation>
 <translation id="8374636051559112948">Varía</translation>
+<translation id="8378714024927312812">Gestionado por tu organización</translation>
 <translation id="8380941800586852976">Peligroso</translation>
 <translation id="8381674639488873545">Estos cargos pueden ser únicos o periódicos, y es posible que no se indiquen de una forma evidente. <ph name="BEGIN_LINK" />Mostrar de todos modos<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">La política del administrador no permite compartir entre <ph name="ORIGIN_NAME" /> y <ph name="VM_NAME" />.</translation>

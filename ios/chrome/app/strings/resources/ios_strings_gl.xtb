@@ -126,6 +126,7 @@ Só pode ler os datos encriptados alguén que coñeza a túa frase de acceso. A 
 <translation id="1813414402673211292">Borrar datos de navegación</translation>
 <translation id="1815941218935345331">Contrasinal</translation>
 <translation id="1820259098641718022">Engadiuse a páxina á lista de lectura</translation>
+<translation id="1829392566394960110">{COUNT,plural, =0{Contrasinais vulnerados}=1{{COUNT} contrasinal vulnerado}other{{COUNT} contrasinais vulnerados}}</translation>
 <translation id="1832848789136765277">Para asegurarte de poder acceder sempre aos teus datos sincronizados, verifica a túa identidade</translation>
 <translation id="1870148520156231997">Mostrar contrasinal</translation>
 <translation id="1872096359983322073">Lanterna</translation>
@@ -720,6 +721,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6152406514676263192">Activa a sincronización para gozar do contido máis relevante baseado nos teus intereses.</translation>
 <translation id="6159839020698489198">opcional</translation>
 <translation id="6170450281939467187">Produciuse un erro ao realizar a tradución</translation>
+<translation id="6173499589275053515">O contrasinal gardouse na túa Conta de Google, <ph name="EMAIL" /></translation>
 <translation id="6177442314419606057">Busca en Chrome</translation>
 <translation id="6184086493125982861">Amosar pestanas</translation>
 <translation id="6187302354554850004">Última sincronización: <ph name="LAST_USED_TIME" /></translation>
@@ -727,6 +729,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6193424046394092997">{count,plural, =1{Marcador engadido a {title}}other{Marcadores engadidos a {title}}}</translation>
 <translation id="6196207969502475924">Busca por voz</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Pechar {COUNT} pestana}other{Pechar {COUNT} pestanas}}</translation>
+<translation id="6213567400989743524">Advertencias ignoradas</translation>
 <translation id="6219550825416862075">Dámosche a benvida de novo</translation>
 <translation id="6219688215832490856">Non traducir nunca</translation>
 <translation id="6223816392543092032">Accede aos teus marcadores, historial, contrasinais e outras opcións de configuración en todos os teus dispositivos.</translation>
@@ -750,6 +753,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6346549652287021269">Queres empezar unha nova descarga?</translation>
 <translation id="6347953390226388422">{count,plural, =1{Este enderezo eliminarase da túa Conta de Google (<ph name="USER_EMAIL" />) e do dispositivo.}other{Estes enderezos eliminaranse da túa Conta de Google (<ph name="USER_EMAIL" />) e do dispositivo.}}</translation>
 <translation id="634878792104344809">Sincroniza os contrasinais, o historial e máis datos en todos os teus dispositivos</translation>
+<translation id="6355820205320395730">Os contrasinais pouco seguros son fáciles de adiviñar. Asegúrate de crear contrasinais seguros. <ph name="BEGIN_LINK" />Ver máis consellos de seguranza<ph name="END_LINK" />.</translation>
 <translation id="6361848730467328243">Seguir <ph name="DOMAIN_NAME" /></translation>
 <translation id="6362362396625799311">Non hai pestanas do modo de incógnito</translation>
 <translation id="6363526231572697780">Sen nome de usuario</translation>
@@ -853,6 +857,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="6888009575607455378">Seguro que queres descartar os cambios que fixeches?</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6897187120838603299">O contrasinal gardarase no teu dispositivo.</translation>
+<translation id="6913136913033237761"><ph name="FOLDER_NAME" />. Só neste dispositivo.</translation>
 <translation id="6914583639806229067">Buscar imaxe que copiaches</translation>
 <translation id="6914783257214138813">Todas as persoas que poidan ver o ficheiro exportado tamén poderán ver os teus contrasinais.</translation>
 <translation id="6930799952781667037">Toca para cambiar a este idioma.</translation>
@@ -1012,10 +1017,12 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8084285576995584326">Controlar datos da túa Conta de Google</translation>
 <translation id="809543534949702122">Historial de busca</translation>
 <translation id="8101409298456377967">Crea, garda e xestiona os teus contrasinais para que poidas iniciar sesión facilmente nos sitios e nas aplicacións. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
+<translation id="8102130909719902723">N</translation>
 <translation id="8105368624971345109">Desactivar</translation>
 <translation id="8114753159095730575">Podes descargar ficheiros. Tes opcións dispoñibles na parte inferior da pantalla.</translation>
 <translation id="81313319706244542">2. Toca Passwords (Contrasinais)</translation>
 <translation id="8132598642024322408">Agora: <ph name="PRICE" />. Antes: <ph name="PREVIOUS_PRICE" />.</translation>
+<translation id="813370552429173916">Utiliza un contrasinal distinto para cada sitio ou aplicación. Se alguén descobre un contrasinal reutilizado, poderá acceder con el ás túas outras contas. Fai clic para abrir o sitio web e cambialos agora.</translation>
 <translation id="8136856065410661948">Usarase para crear eventos no teu calendario de Apple desde Chrome e Google Lens.</translation>
 <translation id="8156478151976189188">A sincronización de contrasinais non funciona</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> contas</translation>
@@ -1027,6 +1034,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8225985093977202398">Imaxes e ficheiros en caché</translation>
 <translation id="8237382152611443140">Abre os axustes de AutoFill Passwords (Autocompletar contrasinais)</translation>
 <translation id="8261506727792406068">Eliminar</translation>
+<translation id="8264966119170358612">Algúns dos teus contrasinais gardados quedaron expostos nunha violación da seguranza dos datos allea a Google. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="8271720166617117963">Aceptar e iniciar sesión</translation>
 <translation id="8278938988428169257">Escribe unha palabra ou frase</translation>
 <translation id="8281781826761538115">Idioma predeterminado: <ph name="DEFAULT_LOCALE" /></translation>

@@ -126,6 +126,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="1813414402673211292">Rensa webbinformation</translation>
 <translation id="1815941218935345331">Lösenord</translation>
 <translation id="1820259098641718022">Har lagts till i läslistan</translation>
+<translation id="1829392566394960110">{COUNT,plural, =0{Utsatta lösenord}=1{{COUNT} utsatt lösenord}other{{COUNT} utsatta lösenord}}</translation>
 <translation id="1832848789136765277">Verifiera din identitet så att du alltid får åtkomst till din synkroniserade data</translation>
 <translation id="1870148520156231997">Visa lösenord</translation>
 <translation id="1872096359983322073">Ficklampa</translation>
@@ -720,6 +721,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6152406514676263192">Synkronisera för att se det mest relevanta innehållet baserat på dina intressen.</translation>
 <translation id="6159839020698489198">valfritt</translation>
 <translation id="6170450281939467187">Det gick inte översätta</translation>
+<translation id="6173499589275053515">Lösenordet har sparats i Google-kontot <ph name="EMAIL" /></translation>
 <translation id="6177442314419606057">Sök i Chrome</translation>
 <translation id="6184086493125982861">Visa flikar</translation>
 <translation id="6187302354554850004">Synkroniserades senast: <ph name="LAST_USED_TIME" /></translation>
@@ -727,6 +729,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6193424046394092997">{count,plural, =1{Bokmärkt i {title}}other{Bokmärkt i {title}}}</translation>
 <translation id="6196207969502475924">Röstsökning</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Stäng {COUNT} flik}other{Stäng {COUNT} flikar}}</translation>
+<translation id="6213567400989743524">Ignorerade varningar</translation>
 <translation id="6219550825416862075">Välkommen tillbaka</translation>
 <translation id="6219688215832490856">Översätt aldrig</translation>
 <translation id="6223816392543092032">Använd bokmärken, historik och andra inställningar på alla dina enheter.</translation>
@@ -750,6 +753,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6346549652287021269">Starta ny nedladdning?</translation>
 <translation id="6347953390226388422">{count,plural, =1{Denna adress raderas från Google-kontot (<ph name="USER_EMAIL" />) och från enheten.}other{Dessa adresser raderas från Google-kontot (<ph name="USER_EMAIL" />) och från enheten.}}</translation>
 <translation id="634878792104344809">Synkronisera lösenord, historik med mera på alla dina enheter</translation>
+<translation id="6355820205320395730">Svaga lösenord är lätta att lista ut. Använd alltid starka lösenord. <ph name="BEGIN_LINK" />Här hittar du fler säkerhetstips.<ph name="END_LINK" /></translation>
 <translation id="6361848730467328243">Följ <ph name="DOMAIN_NAME" /></translation>
 <translation id="6362362396625799311">Inga inkognitoflikar</translation>
 <translation id="6363526231572697780">Inget användarnamn</translation>
@@ -853,6 +857,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="6888009575607455378">Vill du ignorera ändringarna?</translation>
 <translation id="6896758677409633944">Kopiera</translation>
 <translation id="6897187120838603299">Lösenordet sparas på din enhet.</translation>
+<translation id="6913136913033237761"><ph name="FOLDER_NAME" />. Bara på den här enheten.</translation>
 <translation id="6914583639806229067">Sök efter kopierad bild</translation>
 <translation id="6914783257214138813">Alla med tillgång till den exporterade filen kan läsa dina lösenord.</translation>
 <translation id="6930799952781667037">Tryck för att byta till det här språket.</translation>
@@ -1012,10 +1017,12 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8084285576995584326">Styr data i Google-kontot</translation>
 <translation id="809543534949702122">Sökhistorik</translation>
 <translation id="8101409298456377967">Skapa, spara och hantera dina lösenord så att du enkelt kan logga in på webbplatser och i appar. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
+<translation id="8102130909719902723">N</translation>
 <translation id="8105368624971345109">Inaktivera</translation>
 <translation id="8114753159095730575">En filnedladdning är tillgänglig. Alternativ visas nära skärmens nederkant.</translation>
 <translation id="81313319706244542">2. Tryck på Lösenord</translation>
 <translation id="8132598642024322408">Nedsatt från <ph name="PREVIOUS_PRICE" /> till <ph name="PRICE" />.</translation>
+<translation id="813370552429173916">Använd ett unikt lösenord till varje webbplats eller app. Om någon får tag på ett återanvänt lösenord kan det användas till att få åtkomst till dina andra konton. Klicka här för att öppna webbplatsen och ändra dem nu.</translation>
 <translation id="8136856065410661948">Detta används för att skapa händelser i Apple Kalender från Chrome och Google Lens.</translation>
 <translation id="8156478151976189188">Det går inte att synkronisera lösenord</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> konton</translation>
@@ -1027,6 +1034,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8225985093977202398">Cachelagrade bilder och filer</translation>
 <translation id="8237382152611443140">Öppna inställningarna för autofyllning av lösenord</translation>
 <translation id="8261506727792406068">Radera</translation>
+<translation id="8264966119170358612">Vissa av dina lösenord har läckts i samband med ett dataintrång utanför Google. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="8271720166617117963">Godkänn och logga in</translation>
 <translation id="8278938988428169257">Ange ett ord eller en fras</translation>
 <translation id="8281781826761538115">Standard – <ph name="DEFAULT_LOCALE" /></translation>

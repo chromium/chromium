@@ -349,6 +349,7 @@
 <translation id="1303671224831497365">Не се пронајдени уреди со Bluetooth</translation>
 <translation id="130491383855577612">Апликациите и датотеките на Linux се успешно заменети</translation>
 <translation id="1306390193749326011">Веќе нема да гледате <ph name="MODULE_NAME" /> на страницава</translation>
+<translation id="1306518237408758433">Отворете ја <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="1306606229401759371">Промени ги поставките</translation>
 <translation id="1307165550267142340">Вашиот PIN е создаден</translation>
 <translation id="1307431692088049276">Не прашувај ме повторно</translation>
@@ -438,6 +439,7 @@
 <translation id="1393283411312835250">Сонце и облаци</translation>
 <translation id="1395730723686586365">Ажурирањето започна</translation>
 <translation id="1395832189806039783">Нагласување ставка со фокусот на тастатурата</translation>
+<translation id="1396120028054416908">Назад на <ph name="FOLDER_TITLE" /></translation>
 <translation id="1396139853388185343">Грешка при поставување на печатачот</translation>
 <translation id="1396963298126346194">Корисничкото име и лозинката што ги внесовте не се совпаѓаат</translation>
 <translation id="1397500194120344683">Нема уреди што ги исполнуваат условите. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
@@ -560,6 +562,7 @@
 <translation id="1487335504823219454">Вклучено - приспособени поставки</translation>
 <translation id="1493892686965953381">Се чека <ph name="LOAD_STATE_PARAMETER" />…</translation>
 <translation id="1494349716233667318">Сајтовите може да прашуваат дали да ги користат фонтовите инсталирани на уредот</translation>
+<translation id="1494429729245089920">Постои виртуелна машина „<ph name="VM_NAME" />“, но се чини дека не е важечки тип виртуелна машина <ph name="APP_NAME" />. Контактирајте со администраторот.</translation>
 <translation id="1495677929897281669">Назад на картичката</translation>
 <translation id="1498498210836053409">Исклучи леплив режим при изменување текст (паметен леплив режим)</translation>
 <translation id="1500297251995790841">Непознат уред [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
@@ -681,6 +684,7 @@
 <translation id="1596286373007273895">Достапно</translation>
 <translation id="1596709061955594992">Bluetooth е исклучено. За да видите достапни уреди, вклучете Bluetooth.</translation>
 <translation id="1596780725094407793">- вклучува поддомени</translation>
+<translation id="1597852076552089763">Опции за обележувачи</translation>
 <translation id="1598163867407640634">Користете <ph name="SITE_ETLD_PLUS_ONE" /> со <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1598233202702788831">Ажурирањата се оневозможени од администраторот.</translation>
 <translation id="1600857548979126453">Пристапете кон задниот дел на отстранувачот на грешки на страница</translation>
@@ -1830,6 +1834,7 @@
 <translation id="25568951186001797">Изолирана рамка: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2558569818338050235">Вашата историја на прелистувањето влијае на рекламите што ги гледате</translation>
 <translation id="2559889124253841528">Зачувај на уредот</translation>
+<translation id="2561211427862644160">Погледнете ги сите ваши обележувачи тука</translation>
 <translation id="2564520396658920462">Извршувањето на JavaScript преку AppleScript е исклучено. За да го вклучите, од лентата со мени, одете на „Приказ &gt; Програмер &gt; Дозволи JavaScript“ од настаните на Apple. За повеќе информации: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Подобрена проверка на правописот</translation>
 <translation id="2568694057933302218">Додека сте во „Инкогнито“, сајтовите не може да користат колачиња за да ја следат вашата активност од прелистувањето на сајтови. Вашата активност од прелистувањето не се користи за нешта, како персонализирање реклами. Функциите на некои сајтови може да не функционираат</translation>
@@ -2434,6 +2439,7 @@
 <translation id="3090871774332213558">„<ph name="DEVICE_NAME" />“ се спари</translation>
 <translation id="3093714882666365141">Не им дозволувај на сајтовите да инсталираат ракувачи со плаќања</translation>
 <translation id="3094141017404513551">Ова ќе го оддели вашето прелистување од <ph name="EXISTING_USER" /></translation>
+<translation id="3094521107841754472">Цената се промени од <ph name="PREVIOUS_PRICE" /> на <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Обележувачите, лозинките и другите податоци од прелистувачот се синхронизираат со примарната сметка.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 потенцијално штетна екстензија е исклучена. Може и да ја отстраните.}one{{NUM_EXTENSIONS} потенцијално штетна екстензија е исклучена. Може и да ги отстраните.}other{{NUM_EXTENSIONS} потенцијално штетни екстензии се исклучени. Може и да ги отстраните.}}</translation>
 <translation id="3101126716313987672">Затемни светло</translation>
@@ -2786,6 +2792,7 @@
 <translation id="3441653493275994384">Екран</translation>
 <translation id="3441663102605358937">Најавете се на <ph name="ACCOUNT" /> повторно за да ја потврдите сметкава</translation>
 <translation id="3442674350323953953">Дозволете Google да ги користи хардверските податоци за да помогнете да се подобри <ph name="DEVICE_OS" />. Ако одбиете, податоциве сепак ќе се испраќаат во Google за да се одредат соодветните ажурирања, но не се чуваат, ниту се користат на друг начин.</translation>
+<translation id="3443744348829035122">Времето за <ph name="BRAND" /> истече</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> ќе може да ја прегледува <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">Брзи одговори од „Помошникот на Google“</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин.</translation>
@@ -3184,6 +3191,7 @@
 <translation id="3790417903123637354">Нешто тргна наопаку. Обидете се повторно подоцна</translation>
 <translation id="379082410132524484">Картичката ви е истечена</translation>
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> екстензии</translation>
+<translation id="3794792524918736965">Вклучување Windows Hello</translation>
 <translation id="379500251094592809">За да користите „Споделување во близина“, проверете дали двата уреда се отклучени, блиску еден до друг и дали имаат вклучено Bluetooth. Ако споделувате со Chromebook што не е во вашите контакти, проверете дали има вклучено „Видливост во близина“ (отворете ја статусната област, така што ќе го изберете времето, а потоа вклучете „Видливост во близина“) <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">Исклучено</translation>
 <translation id="3795766489237825963">Пушти ги анимациите</translation>
@@ -3329,6 +3337,7 @@
 <translation id="39103738135459590">Код за активација</translation>
 <translation id="3911824782900911339">Страница во нова картичка</translation>
 <translation id="3914173277599553213">Потребно</translation>
+<translation id="3914568430265141791">Отворете ја папката <ph name="FOLDER_TITLE" /></translation>
 <translation id="3915280005470252504">Барај со глас</translation>
 <translation id="3916233823027929090">Безбедносните проверки се извршени</translation>
 <translation id="3916445069167113093">Овој тип на датотека може да го оштети компјутерот. Дали сепак сакате да ја задржите датотеката <ph name="FILE_NAME" />?</translation>
@@ -3460,6 +3469,7 @@
 <translation id="4022426551683927403">&amp;Додај во речник</translation>
 <translation id="4025039777635956441">Исклучи звук на избраниот сајт</translation>
 <translation id="402707738228916911">Примени се упатства од <ph name="AUTHORIZE_INSTRUCTION_NAME" /></translation>
+<translation id="4027569221211770437">Папка <ph name="FOLDER_TITLE" /></translation>
 <translation id="4027958407426528157">Отворајте веб-сајтови во апликации инсталирани на вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="4028467762035011525">Додајте методи за внесување</translation>
 <translation id="4029556917477724407">Вратете се наназад од страницата <ph name="PAGE_TITLE" /></translation>
@@ -3514,6 +3524,7 @@
 <translation id="4077917118009885966">Рекламите се блокирани на сајтов</translation>
 <translation id="4077919383365622693">Сите податоци и колачиња складирани од <ph name="SITE" /> ќе се избришат.</translation>
 <translation id="4078738236287221428">Агресивно</translation>
+<translation id="4078903002989614318">Опции за подредување и наведување</translation>
 <translation id="4079140982534148664">Користи подобрена проверка на правопис</translation>
 <translation id="4084682180776658562">Обележувач</translation>
 <translation id="4084835346725913160">Затвори <ph name="TAB_NAME" /></translation>
@@ -3658,6 +3669,7 @@
 <translation id="4217571870635786043">Диктат</translation>
 <translation id="4218081191298393750">Кликнете на иконата за звучник за да го исклучите звукот на картичкава</translation>
 <translation id="4220648711404560261">Грешка при активацијата.</translation>
+<translation id="4222917615373664617">Овозможено е следење на цената. Цената е <ph name="CURRENT_PRICE" />.</translation>
 <translation id="4223845867739585293">Создајте лозинка</translation>
 <translation id="4225397296022057997">На сите сајтови</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Екстензијава не е дозволена}one{Некои екстензии не се дозволени}other{Некои екстензии не се дозволени}}</translation>
@@ -5819,6 +5831,7 @@
 <translation id="6212168817037875041">Исклучи го екранот</translation>
 <translation id="6212752530110374741">Испрати е-порака со линк</translation>
 <translation id="621470880408090483">Не им дозволувај на сајтовите да се поврзуваат со уреди со Bluetooth</translation>
+<translation id="6215039389782910006">{1,plural, =1{За да ја зачува безбедноста на лозинките, <ph name="BRAND" /> се заклучува по 1 минута неактивност}one{За да ја зачува безбедноста на лозинките, <ph name="BRAND" /> се заклучува по # минута неактивност}other{За да ја зачува безбедноста на лозинките, <ph name="BRAND" /> се заклучува по # минути неактивност}}</translation>
 <translation id="6216239400972191926">Одбиени сајтови и апликации</translation>
 <translation id="6216601812881225442">Вашиот контејнер не поддржува промена на големината. За да го приспособите количеството простор што однапред се доделува во Linux, направете бекап, па вратете го во нов контејнер.</translation>
 <translation id="6216696360484424239">Најавувајте се автоматски</translation>
@@ -6444,6 +6457,7 @@
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> е додадена далечински</translation>
 <translation id="6790820461102226165">Додај лице...</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
+<translation id="679486139907144816">За да се најавите на сајтов со криптографски клуч, треба да вклучите Windows Hello во поставките. Потоа вратете се на сајтов и обидете се повторно.</translation>
 <translation id="6795371939514004514">Автоматското скенирање ви дозволува да се движите автоматски низ ставките на екранот. Кога некоја ставка е нагласена, притиснете „Избери“ за да ја активирате.</translation>
 <translation id="6795884519221689054">Панда</translation>
 <translation id="6796509790850723820">Прикажи</translation>
@@ -8368,6 +8382,7 @@
 <translation id="8513108775083588393">Авт. ротирање</translation>
 <translation id="8514746246728959655">Обидете се со друг безбедносен клуч</translation>
 <translation id="8514955299594277296">Не дозволувајте сајтовите да зачувуваат податоци на вашиот уред (не се препорачува)</translation>
+<translation id="8517759303731677493">Изменете…</translation>
 <translation id="8519895319663397036">Не може да се увезат лозинките. Големината на датотеката треба да биде помала од 150 KB.</translation>
 <translation id="8523493869875972733">Откажи</translation>
 <translation id="8523849605371521713">Додадено од правилото</translation>

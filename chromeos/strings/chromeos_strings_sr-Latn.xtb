@@ -163,6 +163,7 @@
 <translation id="2346474577291266260">Odličan (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="2364498172489649528">Prošlo</translation>
+<translation id="2367335866686097760">Taster za mapiranje tastera</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Pošalji izveštaj sa povratnim informacijama</translation>
 <translation id="2407209115954268704">Status zaključavanja SIM kartice</translation>
@@ -235,7 +236,9 @@
 <translation id="319101249942218879">Slika avatara je promenjena</translation>
 <translation id="3192947282887913208">Audio datoteke</translation>
 <translation id="3199982728237701504">Uvlačenje dokumenta (dvostrano)</translation>
+<translation id="3211671540163313381">D-pad za mapiranje tastera</translation>
 <translation id="3226405216343213872">Traže se skeneri</translation>
+<translation id="3226657629376379887">Meni sa radnjama za raspored</translation>
 <translation id="3246869037381808805">Zadaci štampanja stariji od 1 dana se uklanjaju</translation>
 <translation id="3268178239013324452">Nije uspelo – vrata su otvorena</translation>
 <translation id="3275506277319227640">Fiksiraj u smeru <ph name="DIRECTION" /></translation>
@@ -803,6 +806,7 @@
 <translation id="8318753676953949627">Nema slika</translation>
 <translation id="8336739000755212683">Promenite sliku naloga na uređaju</translation>
 <translation id="8347227221149377169">Zadaci štampanja</translation>
+<translation id="8351855506390808906">Tačka kontakta za mapiranje tastera</translation>
 <translation id="8352772353338965963">Dodajte nalog za višestruko prijavljivanje. Svim prijavljenim nalozima se može pristupiti bez lozinke, pa ovu funkciju treba koristiti samo sa pouzdanim nalozima.</translation>
 <translation id="8364946094152050673">Prazni serveri za imena</translation>
 <translation id="8372477600026034341">Dodatni hostovi</translation>
@@ -900,6 +904,7 @@
 <translation id="9138630967333032450">Levi taster shift</translation>
 <translation id="9149391708638971077">Pokreni test memorije</translation>
 <translation id="9157515863513902090">Fiksiraj na većoj strani</translation>
+<translation id="9161276708550942948">razmak</translation>
 <translation id="9173638680043580060">Preostalo je manje od minuta</translation>
 <translation id="917720651393141712">Testiraj</translation>
 <translation id="9188992814426075118">Tastatura može automatski da se podudara sa pozadinom</translation>

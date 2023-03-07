@@ -345,6 +345,7 @@
 <translation id="1733064249834771892">фонтови</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Обидете се да контактирате со системскиот администратор.</translation>
+<translation id="1736158756193183352"><ph name="BEGIN_LINK" />Се најавувате<ph name="END_LINK" /> на мрежата</translation>
 <translation id="1736420071277903564">Компјутер</translation>
 <translation id="1740951997222943430">Внесете важечки месец на истекување</translation>
 <translation id="1741613555002899862">Мора да е одредена и важечка низа кога DnsOverHttpsMode е <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
@@ -1192,6 +1193,7 @@
 <translation id="3949601375789751990">Историјата на прелистување се појавува тука</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Нема зачувани начини на плаќање</translation>
+<translation id="3950574001630941635">Рестартирање упатство</translation>
 <translation id="3950820424414687140">Најави се</translation>
 <translation id="3958057596965527988">4 x 4 инчи</translation>
 <translation id="3961148744525529027">Листот на ракувачот со плаќања е отворен на половина екран</translation>
@@ -2309,6 +2311,7 @@
 <translation id="6738516213925468394">Податоците се шифрирани со вашата <ph name="BEGIN_LINK" />лозинка за синхронизација<ph name="END_LINK" /> на <ph name="TIME" />. Внесете ја за да започне синхронизацијата.</translation>
 <translation id="674375294223700098">Непозната грешка со сертификат на сервер.</translation>
 <translation id="6744009308914054259">Додека чекате врска, може да одите во „Преземања“ за да ги прочитате офлајн статиите.</translation>
+<translation id="6745592621698551453">Ажурирај сега</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Телеконференции</translation>
 <translation id="6753269504797312559">Вредност на политика</translation>
@@ -2773,7 +2776,6 @@
 <translation id="7802523362929240268">Сајтот е легитимен</translation>
 <translation id="7802989406998618639">Внесете го безбедносниот код со <ph name="NUMBER_OF_DIGITS" /> цифри на <ph name="SIDE_OF_CARD" /> за да може вашата банка да го потврди вашиот идентитет</translation>
 <translation id="780301667611848630">Не, фала</translation>
-<translation id="7805571567667010077">Управувано од вашата организација</translation>
 <translation id="7805768142964895445">Статус</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Отстрани ги предлозите за формулари од Chrome?</translation>
@@ -2996,6 +2998,7 @@
 <translation id="8369073279043109617">Преземете нов код</translation>
 <translation id="8371889962595521444">Приспособен сертификат за администраторски права</translation>
 <translation id="8374636051559112948">варира</translation>
+<translation id="8378714024927312812">Управувано од вашата организација</translation>
 <translation id="8380941800586852976">Опасно</translation>
 <translation id="8381674639488873545">Овие трошоци може да бидат еднократни или повторливи и може нема да бидат очигледни. <ph name="BEGIN_LINK" />Сепак прикажи<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Споделувањето од <ph name="ORIGIN_NAME" /> на <ph name="VM_NAME" /> е блокирано со правило на администраторот</translation>

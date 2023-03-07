@@ -126,6 +126,7 @@
 <translation id="1813414402673211292">Исчисти податоци од прелистување</translation>
 <translation id="1815941218935345331">Лозинка</translation>
 <translation id="1820259098641718022">Додаено во „Список за читање“</translation>
+<translation id="1829392566394960110">{COUNT,plural, =0{Компромитирани лозинки}=1{{COUNT} компромитирана лозинка}one{{COUNT} компромитирана лозинка}other{{COUNT} компромитирани лозинки}}</translation>
 <translation id="1832848789136765277">За да можете секогаш да пристапувате до податоците од синхронизацијата, потврдете дека сте вие</translation>
 <translation id="1870148520156231997">Прикажете ја лозинката</translation>
 <translation id="1872096359983322073">Светилка</translation>
@@ -720,6 +721,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6152406514676263192">Синхронизирање со најрелевантните содржини според вашите интереси.</translation>
 <translation id="6159839020698489198">изборно</translation>
 <translation id="6170450281939467187">Преведувањето не успеа</translation>
+<translation id="6173499589275053515">Лозинката е зачувана на вашата сметка на Google, <ph name="EMAIL" /></translation>
 <translation id="6177442314419606057">Пребарувајте во Chrome</translation>
 <translation id="6184086493125982861">Прикажи картички</translation>
 <translation id="6187302354554850004">Последна синхронизација: <ph name="LAST_USED_TIME" /></translation>
@@ -727,6 +729,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6193424046394092997">{count,plural, =1{Додаден е обележувач во {title}}one{Додадени се обележувачи во {title}}other{Додадени се обележувачи во {title}}}</translation>
 <translation id="6196207969502475924">Гласовно пребарување</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Затвори {COUNT} картичка}one{Затвори {COUNT} картичка}other{Затвори {COUNT} картички}}</translation>
+<translation id="6213567400989743524">Отфрлени предупредувања</translation>
 <translation id="6219550825416862075">Добре дојдовте назад</translation>
 <translation id="6219688215832490856">Никогаш не преведувај</translation>
 <translation id="6223816392543092032">Добијте ги обележувачите, историјата, лозинките и другите поставки на сите ваши уреди.</translation>
@@ -750,6 +753,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6346549652287021269">Дали да се започне ново преземање?</translation>
 <translation id="6347953390226388422">{count,plural, =1{Адресава ќе се избрише од вашата сметка на Google (<ph name="USER_EMAIL" />) и од уредов.}one{Адресиве ќе се избришат од вашата сметка на Google (<ph name="USER_EMAIL" />) и од уредов.}other{Адресиве ќе се избришат од вашата сметка на Google (<ph name="USER_EMAIL" />) и од уредов.}}</translation>
 <translation id="634878792104344809">Синхронизирајте ги вашите лозинки, историја и друго на сите ваши уреди</translation>
+<translation id="6355820205320395730">Слабите лозинки се лесни за погаѓање. Уверете се дека создавате силни лозинки. <ph name="BEGIN_LINK" />Погледнете повеќе совети за безбедност.<ph name="END_LINK" /></translation>
 <translation id="6361848730467328243">Следете го <ph name="DOMAIN_NAME" /></translation>
 <translation id="6362362396625799311">Нема инкогнито картички</translation>
 <translation id="6363526231572697780">Нема корисничко име</translation>
@@ -853,6 +857,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6888009575607455378">Дали сигурно сакате да ги отфрлите промените?</translation>
 <translation id="6896758677409633944">Копирај</translation>
 <translation id="6897187120838603299">Лозинката ќе се зачува на вашиот уред.</translation>
+<translation id="6913136913033237761"><ph name="FOLDER_NAME" />. Само на уредов.</translation>
 <translation id="6914583639806229067">Пребарувајте ја сликата што ја копиравте</translation>
 <translation id="6914783257214138813">Вашите лозинки ќе бидат видливи за секој што може да ја види извезената датотека.</translation>
 <translation id="6930799952781667037">Допрете за да се промени на овој јазик.</translation>
@@ -1012,10 +1017,12 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8084285576995584326">Контролирајте ги податоците од вашата сметка на Google</translation>
 <translation id="809543534949702122">Историја на пребарување</translation>
 <translation id="8101409298456377967">Создавајте, зачувувајте и управувајте со лозинки за лесно најавување на сајтови и апликации. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
+<translation id="8102130909719902723">Н</translation>
 <translation id="8105368624971345109">Исклучи</translation>
 <translation id="8114753159095730575">Достапна е датотека за преземање. Достапни се опции на дното на екранот.</translation>
 <translation id="81313319706244542">2. Допрете „Лозинки“</translation>
 <translation id="8132598642024322408">Сега <ph name="PRICE" />, беше <ph name="PREVIOUS_PRICE" />.</translation>
+<translation id="813370552429173916">Користете уникатна лозинка за секој сајт или апликација. Ако некој открие лозинка што повторно сте ја употребиле, може да ја искористи за пристап до другите ваши сметки. Кликнете за да го отворите веб-сајтот и да ги промените лозинките сега.</translation>
 <translation id="8136856065410661948">Ова ќе се користи за да се создаваат настани во вашиот „Календар на Apple“ од Chrome и Google Lens.</translation>
 <translation id="8156478151976189188">Синхронизацијата на лозинките не работи</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> сметки</translation>
@@ -1027,6 +1034,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8225985093977202398">Кеш: слики, датотеки</translation>
 <translation id="8237382152611443140">Отворете ги поставките за автоматско пополнување лозинки</translation>
 <translation id="8261506727792406068">Избриши</translation>
+<translation id="8264966119170358612">При упад во податоците што не се случи кај Google беа откриени некои од вашите зачувани лозинки. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="8271720166617117963">Прифати и најави се</translation>
 <translation id="8278938988428169257">Внесете збор или фраза</translation>
 <translation id="8281781826761538115">Стандардно - <ph name="DEFAULT_LOCALE" /></translation>

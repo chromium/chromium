@@ -345,6 +345,7 @@
 <translation id="1733064249834771892">ફૉન્ટ</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">સિસ્ટમ વ્યવસ્થાપકનો સંપર્ક કરવાનો પ્રયાસ કરો.</translation>
+<translation id="1736158756193183352">નેટવર્કમાં <ph name="BEGIN_LINK" />સાઇન ઇન કરવા<ph name="END_LINK" /> વિશે</translation>
 <translation id="1736420071277903564">કમ્પ્યુટર</translation>
 <translation id="1740951997222943430">એક માન્ય સમાપ્તિ મહિનો દાખલ કરો</translation>
 <translation id="1741613555002899862">જ્યારે DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> હોય, ત્યારે DnsOverHttpsTemplate પૉલિસી અને માન્ય સ્ટ્રિંગનો ઉલ્લેખ કરવો આવશ્યક છે.</translation>
@@ -1192,6 +1193,7 @@
 <translation id="3949601375789751990">તમારો બ્રાઉઝિંગ ઇતિહાસ અહીં દેખાય છે</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">કોઈ ચુકવણી પદ્ધતિ સાચવેલી નથી</translation>
+<translation id="3950574001630941635">ટ્યૂટૉરિઅલ ફરી શરૂ કરો</translation>
 <translation id="3950820424414687140">સાઇન ઇન</translation>
 <translation id="3958057596965527988">4 x 4 ઇંચ</translation>
 <translation id="3961148744525529027">ચુકવણી માટેની હૅન્ડલર શીટ અડધી ખુલ્લી છે</translation>
@@ -2309,6 +2311,7 @@
 <translation id="6738516213925468394">તમારો ડેટા <ph name="TIME" />ના રોજ તમારા <ph name="BEGIN_LINK" />સિંક પાસફ્રેઝ<ph name="END_LINK" /> સાથે એન્ક્રિપ્ટ કરવામાં આવ્યો હતો. સિંક શરૂ કરવા માટે એ દાખલ કરો.</translation>
 <translation id="674375294223700098">અજ્ઞાત સર્વર પ્રમાણપત્ર ભૂલ.</translation>
 <translation id="6744009308914054259">કનેક્શન માટે રાહ જોતી વખતે, ઑફલાઇન લેખ વાંચવા માટે તમે ડાઉનલોડની મુલાકાત લઈ શકો.</translation>
+<translation id="6745592621698551453">હવે અપડેટ કરો</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">ટેલીકૉન્ફરન્સિંગ</translation>
 <translation id="6753269504797312559">પૉલિસી મૂલ્ય</translation>
@@ -2773,7 +2776,6 @@
 <translation id="7802523362929240268">સાઇટ કાયદેસર છે</translation>
 <translation id="7802989406998618639"><ph name="SIDE_OF_CARD" />નો <ph name="NUMBER_OF_DIGITS" />-અંકનો સિક્યુરિટી કોડ દાખલ કરો, જેથી તમારી બેંક ચકાસી શકે કે આ તમે જ છો</translation>
 <translation id="780301667611848630">નહીં, આભાર</translation>
-<translation id="7805571567667010077">તમારી સંસ્થા દ્વારા મેનેજ કરવામાં આવે છે</translation>
 <translation id="7805768142964895445">સ્થિતિ</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Chrome માંથી ફોર્મ સૂચનો દૂર કરીએ?</translation>
@@ -2996,6 +2998,7 @@
 <translation id="8369073279043109617">નવો કોડ મેળવો</translation>
 <translation id="8371889962595521444">કસ્ટમ રૂટ પ્રમાણપત્રો</translation>
 <translation id="8374636051559112948">બદલાતી રહે છે</translation>
+<translation id="8378714024927312812">તમારી સંસ્થા દ્વારા મેનેજ કરેલ</translation>
 <translation id="8380941800586852976">જોખમી</translation>
 <translation id="8381674639488873545">આ શુલ્ક એક વખત લાગે અથવા પુનરાવર્તિત હોઈ શકે અને તેનો સ્પષ્ટ ખ્યાલ ન આવે તેમ પણ બને. <ph name="BEGIN_LINK" />તો પણ બતાવો<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">વ્યવસ્થાપકની નીતિને કારણે <ph name="ORIGIN_NAME" />થી <ph name="VM_NAME" />માં પેસ્ટ કરવાની સુવિધા બ્લૉક કરવામાં આવી છે</translation>

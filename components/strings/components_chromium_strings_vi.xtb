@@ -27,7 +27,9 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           và đảm bảo cấu hình của bạn được đặt thành "không có proxy" hoặc "trực tiếp".</translation>
+<translation id="6549378540556750549">Chromium cũng được cung cấp thông qua <ph name="BEGIN_LINK_OSS" />phần mềm nguồn mở<ph name="END_LINK_OSS" /> khác.</translation>
 <translation id="6613594504749178791">Các thay đổi của bạn sẽ có hiệu lực vào lần tới khi bạn chạy lại Chromium.</translation>
+<translation id="7681937895330411637">Chromium được cung cấp thông qua dự án nguồn mở <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="7861509383340276692">Chuyển đến
           menu Chromium &gt;
           <ph name="SETTINGS_TITLE" />

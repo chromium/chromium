@@ -557,6 +557,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1487335504823219454">Activée – Paramètres personnalisés</translation>
 <translation id="1493892686965953381">En attente de <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">Les sites peuvent demander à utiliser les polices installées sur votre appareil</translation>
+<translation id="1494429729245089920">La machine virtuelle "<ph name="VM_NAME" />" existe, mais elle ne semble pas être une machine virtuelle <ph name="APP_NAME" /> valide. Veuillez contacter votre administrateur.</translation>
 <translation id="1495677929897281669">Retour à l'onglet</translation>
 <translation id="1498498210836053409">Désactiver le mode persistant lors de la modification de texte (mode persistant intelligent)</translation>
 <translation id="1500297251995790841">Appareil inconnu [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
@@ -3169,6 +3170,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3790417903123637354">Un problème est survenu. Réessayez plus tard</translation>
 <translation id="379082410132524484">Votre carte est arrivée à expiration</translation>
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> extensions</translation>
+<translation id="3794792524918736965">Activer Windows Hello</translation>
 <translation id="379500251094592809">Pour utiliser le Partage à proximité, assurez-vous que les deux appareils sont déverrouillés, qu'ils sont proches l'un de l'autre et que le Bluetooth est activé sur les deux. Si vous partagez des fichiers avec un Chromebook qui ne figure pas dans vos contacts, assurez-vous que Visibilité à proximité est activé sur celui-ci. Pour cela, ouvrez la zone d'état en sélectionnant l'heure, puis activez "Visibilité à proximité". <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">Désactivé</translation>
 <translation id="3795766489237825963">Lire les animations</translation>
@@ -6430,6 +6432,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6790497603648687708">Ajout de l'extension <ph name="EXTENSION_NAME" /> effectué à distance</translation>
 <translation id="6790820461102226165">Ajouter un profil utilisateur…</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
+<translation id="679486139907144816">Pour vous connecter à ce site avec une clé d'accès, vous devez activer Windows Hello dans les paramètres. Ensuite, revenez sur ce site et réessayez.</translation>
 <translation id="6795371939514004514">L'exploration automatique permet de se déplacer automatiquement entre les éléments affichés. Quand un élément est en surbrillance, appuyez sur "Sélectionner" pour l'activer.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6796509790850723820">Afficher</translation>
@@ -8352,6 +8355,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8513108775083588393">Rotation auto</translation>
 <translation id="8514746246728959655">Essayer une autre clé de sécurité</translation>
 <translation id="8514955299594277296">Ne pas autoriser les sites à enregistrer des données sur votre appareil (déconseillé)</translation>
+<translation id="8517759303731677493">Modifier…</translation>
 <translation id="8519895319663397036">Impossible d'importer les mots de passe. La taille du fichier doit être inférieure à 150 Ko.</translation>
 <translation id="8523493869875972733">Conserver les modifications</translation>
 <translation id="8523849605371521713">Ajoutée en raison des règles</translation>

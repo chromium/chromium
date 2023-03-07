@@ -163,6 +163,7 @@
 <translation id="2346474577291266260">非常に強い（<ph name="SIGNAL_STRENGTH" />）</translation>
 <translation id="2359808026110333948">続行</translation>
 <translation id="2364498172489649528">成功</translation>
+<translation id="2367335866686097760">キーマッピングのキー</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">フィードバック レポートを送信</translation>
 <translation id="2407209115954268704">SIM ロック ステータス</translation>
@@ -235,7 +236,9 @@
 <translation id="319101249942218879">アバター画像を変更しました</translation>
 <translation id="3192947282887913208">音声ファイル</translation>
 <translation id="3199982728237701504">ドキュメント フィーダー（両面）</translation>
+<translation id="3211671540163313381">キーマッピングの D-pad</translation>
 <translation id="3226405216343213872">スキャナを検索しています</translation>
+<translation id="3226657629376379887">レイアウトの操作メニュー</translation>
 <translation id="3246869037381808805">昨日より前の印刷ジョブは削除されます</translation>
 <translation id="3268178239013324452">失敗 - 扉が開いています</translation>
 <translation id="3275506277319227640"><ph name="DIRECTION" /> に固定</translation>
@@ -616,6 +619,7 @@
 <translation id="650266656685499220">アルバムを作成するには、Google フォトにアクセスします</translation>
 <translation id="6516990319416533844">バッテリーの充電速度をテストするには、短時間で電池を消耗してください</translation>
 <translation id="6517239166834772319">使い方・ヒント</translation>
+<translation id="6526200165918397681">壁紙に合わせる</translation>
 <translation id="6527081081771465939">Wi-Fi のセキュリティ プロトコルが不明です</translation>
 <translation id="6535178685492749208">オフラインです。フィードバックは後で送信されます。</translation>
 <translation id="65587193855025101">フラットベッド</translation>
@@ -802,6 +806,7 @@
 <translation id="8318753676953949627">0 件の画像</translation>
 <translation id="8336739000755212683">デバイスのアカウント画像を変更</translation>
 <translation id="8347227221149377169">印刷ジョブ</translation>
+<translation id="8351855506390808906">キーマッピングのタッチポイント</translation>
 <translation id="8352772353338965963">マルチログインにアカウントを追加します。ログインしているすべてのアカウントにパスワードなしでアクセスできるようになるため、この機能は信頼できるアカウントでのみ使用してください。</translation>
 <translation id="8364946094152050673">ネームサーバーが空です</translation>
 <translation id="8372477600026034341">その他のホスト</translation>
@@ -899,6 +904,7 @@
 <translation id="9138630967333032450">左シフト</translation>
 <translation id="9149391708638971077">メモリテストを実行</translation>
 <translation id="9157515863513902090">大きい側に固定</translation>
+<translation id="9161276708550942948">スペース</translation>
 <translation id="9173638680043580060">残り 1 分未満</translation>
 <translation id="917720651393141712">テスト</translation>
 <translation id="9188992814426075118">キーボードのバックライトの色を壁紙に合わせて自動調整できます</translation>

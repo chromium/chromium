@@ -4880,7 +4880,6 @@
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (সোঁফালে)</translation>
 <translation id="534449933710420173">নামবিহীন ফ’ল্ডাৰ</translation>
 <translation id="5345916423802287046">আপুনি ছাইন ইন কৰিলে এপ্‌টো আৰম্ভ কৰক</translation>
-<translation id="5349456828414077488">প্ৰশাসকে প্ৰদান কৰা প্ৰমাণপত্ৰ ব্যৱহাৰ কৰা হৈছে। আপুনি <ph name="DOMAIN" />ক প্ৰদান কৰা ছাইন-ইন ডেটা আপোনাৰ প্ৰশাসকে অৱৰোধ কৰিব পাৰে</translation>
 <translation id="5350293332385664455">Google Assistant বন্ধ কৰক</translation>
 <translation id="535123479159372765">অন্য ডিভাইচৰ পৰা প্ৰতিলিপি কৰা পাঠ</translation>
 <translation id="5352033265844765294">সময়ৰ মোহৰ লগোৱা কাৰ্য</translation>
@@ -6109,6 +6108,7 @@
 <translation id="6469557521904094793">চেলুলাৰ নেটৱৰ্ক অন কৰক</translation>
 <translation id="6470823736074966819">জাননী মিউট কৰক</translation>
 <translation id="6472893788822429178">গৃহপৃষ্ঠালৈ যোৱা বুটামটো দেখুৱাওক</translation>
+<translation id="6474352027343282094">{COUNT,plural, =1{{COUNT} টা পাছৱৰ্ড কেৱল এই ডিভাইচটোত ছেভ কৰা হয়। এইটো আপোনাৰ আন ডিভাইচসমূহত ব্যৱহাৰ কৰিবলৈ, &lt;a target='_blank' href='chrome://password-manager/'&gt;এইটো আপোনাৰ Google একাউণ্টত ছেভ কৰক&lt;/a&gt;।}one{{COUNT} টা পাছৱৰ্ড কেৱল এই ডিভাইচটোত ছেভ কৰা হয়। সেইসমূহ আপোনাৰ আন ডিভাইচসমূহত ব্যৱহাৰ কৰিবলৈ, &lt;a target='_blank' href='chrome://password-manager/'&gt;সেইসমূহ আপোনাৰ Google একাউণ্টত ছেভ কৰক&lt;/a&gt;।}other{{COUNT} টা পাছৱৰ্ড কেৱল এই ডিভাইচটোত ছেভ কৰা হয়। সেইসমূহ আপোনাৰ আন ডিভাইচসমূহত ব্যৱহাৰ কৰিবলৈ, &lt;a target='_blank' href='chrome://password-manager/'&gt;সেইসমূহ আপোনাৰ Google একাউণ্টত ছেভ কৰক&lt;/a&gt;।}}</translation>
 <translation id="6474498546677193336">এটা এপ্লিকেশ্বনে এই ফ’ল্ডাৰটো ব্যৱহাৰ কৰি থকা কাৰণে শ্বেয়াৰ কৰাটো বাতিল কৰিব পৰা নগ’ল। পাছৰবাৰ Linux বন্ধ হ’লে ফ’ল্ডাৰটো শ্বেয়াৰ কৰাটো বাতিল কৰা হ’ব।</translation>
 <translation id="6474884162850599008">Google Drive একাউণ্ট সংযোগৰ পৰা আঁতৰাওক</translation>
 <translation id="6475294023568239942">ডিস্কৰ ঠাই খালী কৰক অথবা ছেটিঙত Linux ডিস্কৰ আকাৰ সলনি কৰক</translation>
@@ -7604,6 +7604,7 @@
 <translation id="7817361223956157679">অন-স্ক্রীণ কীব’ৰ্ডখনে এতিয়ালৈকে Linux এপত কাম কৰা হোৱা নাই</translation>
 <translation id="7818135753970109980">নতুন থীম যোগ কৰা হৈছে (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="7819605256207059717">আপোনাৰ প্ৰতিষ্ঠানে অৱৰোধ কৰিছে</translation>
+<translation id="7820400255539998692"><ph name="FILENAME" /> মচক, যাতে এই ডিভাইচটো ব্যৱহাৰ কৰা অন্য লোকে আপোনাৰ পাছৱৰ্ডসমূহ চাব নোৱাৰে</translation>
 <translation id="7820561748632634942">অতিৰিক্ত ছুইচ আবণ্টন কৰিবনে?</translation>
 <translation id="782057141565633384">ভিডিঅ’ৰ ঠিকনা প্ৰতি&amp;লিপি কৰক</translation>
 <translation id="7824864914877854148">কোনো আসোঁৱাহৰ বাবে বেক আপ সম্পূৰ্ণ কৰিব পৰা নগ'ল</translation>

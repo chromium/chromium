@@ -252,6 +252,7 @@
 <translation id="6010556343189461180">For å få fremtidige Google Chrome-oppdateringer må du ha macOS 10.15 eller nyere. Denne datamaskinen bruker macOS 10.14.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome lukkes nå.}=1{Chrome lukkes om 1 sekund.}other{Chrome lukkes om # sekunder.}}</translation>
 <translation id="6022659036123304283">Gi Chrome et personlig preg</translation>
+<translation id="6025087594896450715">Google Chrome startes på nytt om <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Lukk</translation>
 <translation id="6070348360322141662">Google Chrome krypterer dataene dine for å øke sikkerheten</translation>
 <translation id="608006075545470555">Legg til en jobbprofil i denne nettleseren</translation>

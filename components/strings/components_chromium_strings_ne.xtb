@@ -27,7 +27,9 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           र तपाइँको विन्यास "प्रोक्सी छैन" वand make sure your configuration is set to "no proxy" or "direct."</translation>
+<translation id="6549378540556750549">Chromium बनाउँदा <ph name="BEGIN_LINK_OSS" />खुला स्रोतका अन्य सफ्टवेयर<ph name="END_LINK_OSS" />को पनि मद्दत लिइएको छ।</translation>
 <translation id="6613594504749178791">तपाईंले अर्को पटक Chromium लाई पुन: लन्च गर्दा तपाईंका परिवर्तनहरू प्रभावमा आउनेछन्।</translation>
+<translation id="7681937895330411637">Chromium बनाउँदा <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> खुला स्रोतको परियोजनाको मद्दत लिइएको छ।</translation>
 <translation id="7861509383340276692">जानुहोस्
           क्रोमियम मेनुमा &gt;
           <ph name="SETTINGS_TITLE" />

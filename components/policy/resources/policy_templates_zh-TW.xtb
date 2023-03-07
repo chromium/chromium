@@ -2940,13 +2940,6 @@
 如果將這項政策設為停用，系統將停用這項功能。
 
 這項政策只是臨時解決方案，並將在日後的版本中移除 (暫定為 M113)。</translation>
-<translation id="3795413481405077588">這項政策可讓管理員針對已安裝的網頁應用程式指定設定。
-
-      這項政策可將網頁應用程式 ID 對應至特定的設定。你可以利用特殊 ID <ph name="DEFAULT_SCOPE" /> 指定預設設定，所有未透過此政策自訂設定的網頁應用程式一律會套用這項預設設定。
-
-      <ph name="MANIFEST_ID_FIELD" /> 欄位是這個網頁應用程式的資訊清單 ID。請參閱 <ph name="WEB_APP_ID_REFERENCE_URL" /> 的操作說明，瞭解如何決定已安裝網頁應用程式的資訊清單 ID。
-      <ph name="RUN_ON_OS_LOGIN_FIELD" /> 會指定網頁應用程式是否可在 OS 登入期間執行。如果將這個欄位設為 <ph name="BLOCKED" />，網頁應用程式不會在 OS 登入期間執行，使用者之後也無法啟用此欄位。如果將這個欄位設為 <ph name="RUN_WINDOWED" />，網頁應用程式就會在 OS 登入期間執行，而且使用者之後無法停用此欄位。如果將這個欄位設為 <ph name="ALLOWED" />，使用者則可將網頁應用程式設為在 OS 登入期間執行。請注意，預設設定可指定的值僅限 <ph name="ALLOWED" /> 和 <ph name="BLOCKED" />。
-      </translation>
 <translation id="3796527892245558832">瀏覽器啟動時顯示設定檔選擇畫面</translation>
 <translation id="3798922329287609568">你可以透過這項政策禁止使用雙面列印模式。
 

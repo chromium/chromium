@@ -2308,6 +2308,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="6738516213925468394">Idatha yakho ibethelwe <ph name="BEGIN_LINK" />ngomshwana wakho wokuvumelanisa<ph name="END_LINK" /> ngo-<ph name="TIME" />. Ifake ukuze uqale ukuvumelanisa.</translation>
 <translation id="674375294223700098">Iphutha leseva yesitifiketi elingaziwa.</translation>
 <translation id="6744009308914054259">Ngenkathi ulindele ukuxhumeka, ungavakashela kokulandiwe ukuze ufunde ama-athikili angaxhunyiwe kwi-inthanethi.</translation>
+<translation id="6745592621698551453">Buyekeza manje</translation>
 <translation id="6751487147225428522">I-ROC 8K</translation>
 <translation id="6752086006821653994">I-Teleconferencing</translation>
 <translation id="6753269504797312559">Inani lenqubomgomo</translation>
@@ -2772,7 +2773,6 @@ Imininingwane engeziwe:
 <translation id="7802523362929240268">Isayithi livumelekile</translation>
 <translation id="7802989406998618639">Faka ikhodi yenombolo yokuvikeleka engu-<ph name="NUMBER_OF_DIGITS" /> kokuthi <ph name="SIDE_OF_CARD" /> ukuze ibhange lakho likuqinisekise ukuthi unguwena</translation>
 <translation id="780301667611848630">Cha ngiyabonga</translation>
-<translation id="7805571567667010077">Kuphethwe inhlangano yakho</translation>
 <translation id="7805768142964895445">Isimo</translation>
 <translation id="7812922009395017822">I-Mir</translation>
 <translation id="7813600968533626083">Susa kusuka kusiphakamiso kusuka ku-Chrome?</translation>
@@ -2995,6 +2995,7 @@ Imininingwane engeziwe:
 <translation id="8369073279043109617">Thola ikhodi entsha</translation>
 <translation id="8371889962595521444">Izitifiketi zempande yangokwezifiso</translation>
 <translation id="8374636051559112948">Kuyahlukahluka</translation>
+<translation id="8378714024927312812">Kuphethwe inhlangano yakho</translation>
 <translation id="8380941800586852976">Okuyingozi</translation>
 <translation id="8381674639488873545">Lezi zinkokhelo zingaba ezesikhathi esisodwa noma ziphindeke futhi kungenzeka zingabi sobala. <ph name="BEGIN_LINK" />Bonisa noma kunjalo<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Ukwabelana kusuka ku-<ph name="ORIGIN_NAME" /> kuya ku-<ph name="VM_NAME" /> kuvinjelwe inqubomgomo yomlawuli</translation>

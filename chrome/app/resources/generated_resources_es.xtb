@@ -346,6 +346,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1303671224831497365">No se han encontrado dispositivos Bluetooth</translation>
 <translation id="130491383855577612">Las aplicaciones y los archivos de Linux se han sustituido correctamente</translation>
 <translation id="1306390193749326011">No volverás a ver <ph name="MODULE_NAME" /> en esta página</translation>
+<translation id="1306518237408758433">Abrir <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="1306606229401759371">Cambiar configuración</translation>
 <translation id="1307165550267142340">Se ha creado el PIN</translation>
 <translation id="1307431692088049276">No volver a preguntarme</translation>
@@ -435,6 +436,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1393283411312835250">Sol y nubes</translation>
 <translation id="1395730723686586365">Herramienta de actualización iniciada</translation>
 <translation id="1395832189806039783">Destacar elemento con el enfoque del teclado</translation>
+<translation id="1396120028054416908">Volver a <ph name="FOLDER_TITLE" /></translation>
 <translation id="1396139853388185343">No se ha podido configurar la impresora</translation>
 <translation id="1396963298126346194">El nombre de usuario y la contraseña que has introducido no coinciden</translation>
 <translation id="1397500194120344683">No hay ningún dispositivo apto. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
@@ -556,6 +558,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1487335504823219454">Activada: configuración personalizada</translation>
 <translation id="1493892686965953381">Esperando <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">Los sitios pueden solicitar permiso para usar las fuentes instaladas en tu dispositivo</translation>
+<translation id="1494429729245089920">La máquina virtual "<ph name="VM_NAME" />" existe, pero no es una máquina virtual válida de <ph name="APP_NAME" />. Ponte en contacto con tu administrador.</translation>
 <translation id="1495677929897281669">Volver a la pestaña</translation>
 <translation id="1498498210836053409">Desactivar el modo Persistente al editar texto (modo Persistente inteligente)</translation>
 <translation id="1500297251995790841">Dispositivo desconocido [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
@@ -677,6 +680,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1596286373007273895">Disponible</translation>
 <translation id="1596709061955594992">El Bluetooth está desactivado. Para ver los dispositivos disponibles, activa el Bluetooth.</translation>
 <translation id="1596780725094407793">(subdominios incluidos)</translation>
+<translation id="1597852076552089763">Opciones de marcadores</translation>
 <translation id="1598163867407640634">Usa <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1598233202702788831">El administrador ha inhabilitado las actualizaciones.</translation>
 <translation id="1600857548979126453">Acceder al servidor de depuración de página</translation>
@@ -1572,7 +1576,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2344032937402519675">No se ha podido conectar con el servidor. Revisa tu conexión de red e inténtalo de nuevo. Si sigues teniendo problemas, prueba a reiniciar tu Chromebook.</translation>
 <translation id="234559068082989648">Las versiones antiguas de las aplicaciones de Chrome no se abrirán después de diciembre del 2022. Ponte en contacto con tu administrador para que actualice esta aplicación a una versión nueva o para que la quite.</translation>
 <translation id="2345723121311404059">1 página a <ph name="PRINTER_NAME" /></translation>
-<translation id="23463457491630512">Por ejemplo, si visitas un sitio para comprar zapatillas para una maratón, es posible que el sitio considere que te interesa correr maratones. Después, si visitas un sitio diferente para registrarte en una carrera, ese sitio puede mostrarte un anuncio de zapatillas de correr basándose en tus intereses.</translation>
+<translation id="23463457491630512">Por ejemplo, si visitas un sitio para comprar zapatillas para una maratón, es posible que el sitio considere que te interesa correr maratones. Si más tarde visitas un sitio diferente para registrarte en una carrera, ese sitio puede mostrarte un anuncio de zapatillas de correr basándose en tus intereses.</translation>
 <translation id="2348176352564285430">Aplicación: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" />: permiso solicitado, pulsa Ctrl + Adelante para responder</translation>
 <translation id="234889437187286781">Error al cargar los datos</translation>
@@ -1815,6 +1819,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="25568951186001797">Marco delimitado: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2558569818338050235">Tu historial de navegación influye en los anuncios que ves</translation>
 <translation id="2559889124253841528">Guardar en el dispositivo</translation>
+<translation id="2561211427862644160">Consulta todos tus marcadores aquí</translation>
 <translation id="2564520396658920462">La ejecución de JavaScript a través de AppleScript está desactivada. Para activarla, en la barra de menú, accede a Ver &gt; Opciones para desarrolladores &gt; Permitir JavaScript desde Eventos de Apple. Puedes consultar más información en la página https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Corrector ortográfico mejorado</translation>
 <translation id="2568694057933302218">En modo Incógnito, los sitios no pueden usar las cookies para ver tu actividad de navegación en los diferentes sitios. La actividad de navegación no se usa, por ejemplo, para personalizar anuncios. Es posible que las funciones de algunos sitios no estén operativas.</translation>
@@ -1895,7 +1900,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2640299212685523844">Usar GTK</translation>
 <translation id="264083724974021997">Conectar con tu teléfono (cuadro de diálogo)</translation>
 <translation id="2642111877055905627">Balón de fútbol</translation>
-<translation id="2643064289437760082">Si quieres eliminar tus datos de medición de anuncios, puedes hacerlo en cualquier momento eliminando tus datos de navegación</translation>
+<translation id="2643064289437760082">Si quieres eliminar tus datos de medición de anuncios, puedes hacerlo en cualquier momento eliminando tus datos de navegación.</translation>
 <translation id="2643698698624765890">Para gestionar tus extensiones, haz clic en la opción Extensiones del menú Ventana.</translation>
 <translation id="2645047101481282803"><ph name="PROFILE_NAME" /> gestiona tu dispositivo.</translation>
 <translation id="2645388244376970260">Enviando esta pestaña a <ph name="DEVICE_NAME" /></translation>
@@ -2419,6 +2424,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3090871774332213558"><ph name="DEVICE_NAME" /> vinculado</translation>
 <translation id="3093714882666365141">No permitir que los sitios instalen controladores de pago</translation>
 <translation id="3094141017404513551">Esto separará tu navegación de la de <ph name="EXISTING_USER" /></translation>
+<translation id="3094521107841754472">El precio ha cambiado de <ph name="PREVIOUS_PRICE" /> a <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Los marcadores, las contraseñas y otros datos del navegador están sincronizados con la cuenta principal.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{Se ha desactivado 1 extensión potencialmente dañina. También puedes quitarla.}other{Se han desactivado {NUM_EXTENSIONS} extensiones potencialmente dañinas. También puedes quitarlas.}}</translation>
 <translation id="3101126716313987672">Atenuar luz</translation>
@@ -2485,7 +2491,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3160928651883997588">Preferencias de VPN</translation>
 <translation id="3161522574479303604">Todos los idiomas</translation>
 <translation id="3162853326462195145">Cuenta de centro educativo</translation>
-<translation id="3162899666601560689">Los sitios pueden usar cookies para mejorar tu experiencia de navegación, por ejemplo, para mantener tu sesión iniciada o recordar los artículos de tu carrito de la compra</translation>
+<translation id="3162899666601560689">Los sitios pueden usar cookies para mejorar tu experiencia de navegación, por ejemplo, para mantener tu sesión iniciada o recordar los artículos de tu carrito de la compra.</translation>
 <translation id="3163201441334626963">Producto <ph name="PRODUCT_ID" /> del proveedor <ph name="VENDOR_ID" /> desconocido</translation>
 <translation id="3163511056918491211">Restaura tus datos o cambia de dispositivo fácilmente cuando quieras. Tus copias de seguridad se suben a Google y se cifran con la contraseña de tu cuenta de Google.</translation>
 <translation id="3164329792803560526">Compartiendo esta pestaña con <ph name="APP_NAME" /></translation>
@@ -2606,7 +2612,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3289856944988573801">Para comprobar si hay actualizaciones, utiliza una conexión Ethernet o Wi-Fi.</translation>
 <translation id="3289886661311231677">Puedes bloquear los temas que no quieras que se compartan con los sitios. Chrome también elimina automáticamente los temas con una antigüedad superior a 4 semanas.</translation>
 <translation id="3290249595466894471">También envía una pequeña muestra de páginas, descargas, actividad de extensiones e información del sistema para ayudar a detectar nuevas amenazas.</translation>
-<translation id="3293181007446299124">Tu historial de navegación se conservará en tu dispositivo y será privado, y los informes se enviarán con retraso para proteger tu identidad</translation>
+<translation id="3293181007446299124">Tu historial de navegación se conservará en tu dispositivo y será privado, y los informes se enviarán con retraso para proteger tu identidad.</translation>
 <translation id="3293644607209440645">Enviar esta página</translation>
 <translation id="32939749466444286">El contenedor de Linux no se ha iniciado. Inténtalo de nuevo.</translation>
 <translation id="3294437725009624529">Invitado</translation>
@@ -2771,6 +2777,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3441653493275994384">Pantalla</translation>
 <translation id="3441663102605358937">Vuelve a iniciar sesión en <ph name="ACCOUNT" /> para verificar la cuenta</translation>
 <translation id="3442674350323953953">Permitir que Google use tus datos de hardware para ayudar a mejorar <ph name="DEVICE_OS" />. Si rechazas esta opción, los datos se enviarán a Google de todas formas para determinar las actualizaciones adecuadas, pero no se almacenarán ni se usarán de otro modo.</translation>
+<translation id="3443744348829035122">Tiempo de espera de <ph name="BRAND" /> agotado</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> podrá ver <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">Respuestas rápidas del Asistente de Google</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
@@ -3169,6 +3176,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3790417903123637354">Se ha producido un error. Vuelve a intentarlo más tarde.</translation>
 <translation id="379082410132524484">Tu tarjeta ha caducado</translation>
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> extensiones</translation>
+<translation id="3794792524918736965">Activa Windows Hello</translation>
 <translation id="379500251094592809">Para usar la función Compartir con Nearby, asegúrate de que los dos dispositivos estén desbloqueados, se encuentren cerca y tengan el Bluetooth activado. Si vas a compartir archivos con un Chromebook que no está en tus contactos, comprueba que esté activa la visibilidad de Nearby (selecciona la hora para abrir el área de estado y luego activa la visibilidad de Nearby). <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">Desactivado</translation>
 <translation id="3795766489237825963">Reproducir animaciones</translation>
@@ -3314,6 +3322,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="39103738135459590">Código de activación</translation>
 <translation id="3911824782900911339">Página Nueva pestaña</translation>
 <translation id="3914173277599553213">Obligatorio</translation>
+<translation id="3914568430265141791">Abrir carpeta <ph name="FOLDER_TITLE" /></translation>
 <translation id="3915280005470252504">Búsqueda por voz</translation>
 <translation id="3916233823027929090">Se han realizado las comprobaciones de seguridad</translation>
 <translation id="3916445069167113093">Este tipo de archivo puede dañar tu ordenador. ¿Quieres descargar <ph name="FILE_NAME" /> de todos modos?</translation>
@@ -3444,6 +3453,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4022426551683927403">&amp;Añadir al diccionario</translation>
 <translation id="4025039777635956441">Silenciar el sitio web seleccionado</translation>
 <translation id="402707738228916911">Instrucción <ph name="AUTHORIZE_INSTRUCTION_NAME" /> recibida</translation>
+<translation id="4027569221211770437">Carpeta <ph name="FOLDER_TITLE" /></translation>
 <translation id="4027958407426528157">Abrir sitios web en aplicaciones instaladas en tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="4028467762035011525">Añadir métodos de introducción de texto</translation>
 <translation id="4029556917477724407">Volver de la página <ph name="PAGE_TITLE" /></translation>
@@ -3498,6 +3508,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4077917118009885966">Los anuncios están bloqueados en este sitio web</translation>
 <translation id="4077919383365622693">Se borrarán todos los datos y las cookies guardados por <ph name="SITE" />.</translation>
 <translation id="4078738236287221428">Forzada</translation>
+<translation id="4078903002989614318">Opciones para ordenar y de lista</translation>
 <translation id="4079140982534148664">Usar la revisión ortográfica mejorada</translation>
 <translation id="4084682180776658562">Añadir a marcadores</translation>
 <translation id="4084835346725913160">Cerrar <ph name="TAB_NAME" /></translation>
@@ -3642,6 +3653,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4217571870635786043">Dictado</translation>
 <translation id="4218081191298393750">Haz clic en el icono de altavoz para silenciar esta pestaña</translation>
 <translation id="4220648711404560261">No se ha podido activar.</translation>
+<translation id="4222917615373664617">El seguimiento de precios está habilitado. El precio es <ph name="CURRENT_PRICE" />.</translation>
 <translation id="4223845867739585293">Crea una clave de acceso</translation>
 <translation id="4225397296022057997">En todos los sitios</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Esta extensión no está permitida}other{Algunas extensiones no están permitidas}}</translation>
@@ -3793,7 +3805,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4366138410738374926">Impresión iniciada</translation>
 <translation id="4367513928820380646">Revisar permisos quitados</translation>
 <translation id="4369215744064167350">Solicitud de sitio web aprobada</translation>
-<translation id="4369735607080757018">Algunos tipos de datos (como la hora del día en la que has visto un anuncio) se compartirán entre los sitios para medir el rendimiento de los anuncios</translation>
+<translation id="4369735607080757018">Algunos tipos de datos (como la hora del día en la que has visto un anuncio) se compartirán entre los sitios para medir el rendimiento de los anuncios.</translation>
 <translation id="4370975561335139969">La dirección de correo electrónico y la contraseña que has introducido no coinciden</translation>
 <translation id="4374805630006466253">Usar otro teléfono o tablet</translation>
 <translation id="4374831787438678295">Instalador de Linux</translation>
@@ -4143,7 +4155,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4666472247053585787">Visualiza notificaciones de tu teléfono en tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="4666911709726371538">Más aplicaciones</translation>
 <translation id="4667027203988048332">Qué datos se usan:</translation>
-<translation id="4668279686271488041">Los datos de medición de anuncios se eliminarán periódicamente de tu dispositivo</translation>
+<translation id="4668279686271488041">Los datos de medición de anuncios se eliminarán periódicamente de tu dispositivo.</translation>
 <translation id="4672759829555593783">Abrir <ph name="FILE_NAME" /> ahora</translation>
 <translation id="46733273239502219">También se borrarán los datos offline de las aplicaciones instaladas</translation>
 <translation id="4673442866648850031">Abrir las herramientas del lápiz óptico al quitarlo</translation>
@@ -4572,7 +4584,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="508059534790499809">Actualizar un ticket de Kerberos</translation>
 <translation id="5081960376148623587">Elige si quieres que las páginas se precarguen</translation>
 <translation id="5084328598860513926">Se ha interrumpido el flujo de configuración. Vuelve a intentarlo o ponte en contacto con el propietario o el administrador del dispositivo. Código de error: <ph name="ERROR_CODE" />.</translation>
-<translation id="5084622689760736648">Es más probable que los sitios funcionen como deben</translation>
+<translation id="5084622689760736648">Es más probable que los sitios funcionen como deben.</translation>
 <translation id="5085162214018721575">Buscando actualizaciones...</translation>
 <translation id="5086082738160935172">Dispositivos de interfaz humana (HID)</translation>
 <translation id="508645147179720015">La nota tiene más de 1000 caracteres</translation>
@@ -5803,6 +5815,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6212168817037875041">Apagar la pantalla</translation>
 <translation id="6212752530110374741">Enviar enlace por correo electrónico</translation>
 <translation id="621470880408090483">No permitir que los sitios se conecten a dispositivos Bluetooth</translation>
+<translation id="6215039389782910006">{1,plural, =1{Para proteger tus contraseñas, <ph name="BRAND" /> se bloquea después de 1 minuto de inactividad}other{Para proteger tus contraseñas, <ph name="BRAND" /> se bloquea después de # minutos de inactividad}}</translation>
 <translation id="6216239400972191926">Sitios y aplicaciones rechazados</translation>
 <translation id="6216601812881225442">Tu contenedor no puede cambiar de tamaño. Si quieres ajustar la cantidad de espacio asignado previamente a Linux, crea una copia de seguridad y restáurala en un nuevo contenedor.</translation>
 <translation id="6216696360484424239">Iniciar sesión automáticamente</translation>
@@ -6426,6 +6439,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6790497603648687708">Se ha añadido <ph name="EXTENSION_NAME" /> de forma remota</translation>
 <translation id="6790820461102226165">Añadir perfil...</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
+<translation id="679486139907144816">Para iniciar sesión en este sitio con una llave de acceso, tienes que activar Windows Hello en los ajustes. Después, vuelve a este sitio e inténtalo de nuevo.</translation>
 <translation id="6795371939514004514">La búsqueda automática te permite pasar de un elemento a otro en la pantalla de forma automática. Cuando haya un elemento resaltado, pulsa "Seleccionar" para activarlo.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6796509790850723820">Renderizar</translation>
@@ -7516,7 +7530,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7766838926148951335">Aceptar permisos</translation>
 <translation id="7767554953520855281">Los detalles se ocultan mientras compartes tu pantalla</translation>
 <translation id="7767972280546034736">Crea una clave de acceso para <ph name="APP_NAME" /></translation>
-<translation id="7768507955883790804">Los sitios usan esta opción cuando los visitas.</translation>
+<translation id="7768507955883790804">Los sitios usan esta opción automáticamente cuando los visitas.</translation>
 <translation id="7768526219335215384"><ph name="ORIGIN" /> podrá ver los archivos de <ph name="FOLDERNAME" /></translation>
 <translation id="7768770796815395237">Cambiar</translation>
 <translation id="7768784765476638775">Enunciar selección</translation>
@@ -7622,7 +7636,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7865127013871431856">Opciones del Traductor</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" />: vinculado</translation>
 <translation id="7869655448736341731">Cualquiera</translation>
-<translation id="787069710204604994">Por ejemplo, si visitas un sitio en el que se venden zapatillas para correr largas distancias, es posible que el sitio determine que te interesan los maratones. Después, si visitas otro sitio, puede que ese sitio te muestre un anuncio de zapatillas para correr sugerido por el primer sitio.</translation>
+<translation id="787069710204604994">Por ejemplo, si visitas un sitio en el que se venden zapatillas para correr largas distancias, es posible que el sitio determine que te interesan los maratones. Si más tarde visitas otro sitio, puede que ese sitio te muestre un anuncio de zapatillas para correr sugerido por el primer sitio.</translation>
 <translation id="7870730066603611552">Revisar opciones de sincronización después de la configuración</translation>
 <translation id="7870790288828963061">No se ha encontrado ninguna aplicación de kiosco con una versión más reciente. No hay nada que actualizar. Extrae el dispositivo USB.</translation>
 <translation id="7871049986386271121">Siempre en este sitio</translation>
@@ -8348,6 +8362,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8513108775083588393">Giro automático</translation>
 <translation id="8514746246728959655">Prueba con una llave de seguridad diferente</translation>
 <translation id="8514955299594277296">No permitir que los sitios guarden datos en tu dispositivo (no recomendado)</translation>
+<translation id="8517759303731677493">Editar…</translation>
 <translation id="8519895319663397036">No se pueden importar las contraseñas. El tamaño del archivo debe ser inferior a 150 kB.</translation>
 <translation id="8523493869875972733">Mantener cambios</translation>
 <translation id="8523849605371521713">Añadida por política</translation>
@@ -8389,7 +8404,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8557180006508471423">Activa Google Chrome en los servicios de localización de tu Mac</translation>
 <translation id="8557856025359704738">Fecha de la próxima descarga: <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
 <translation id="8559858985063901027">Claves de acceso</translation>
-<translation id="8559961053328923750">Chrome limita la cantidad total de datos que los sitios pueden compartir a través del navegador para medir el rendimiento de los anuncios</translation>
+<translation id="8559961053328923750">Chrome limita la cantidad total de datos que los sitios pueden compartir a través del navegador para medir el rendimiento de los anuncios.</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Abrir todas en una ventana &amp;nueva}=1{Abrir en una ventana &amp;nueva}other{Abrir todas ({COUNT}) en una ventana &amp;nueva}}</translation>
 <translation id="8561206103590473338">Elefante</translation>
 <translation id="8561565784790166472">Ten cuidado</translation>

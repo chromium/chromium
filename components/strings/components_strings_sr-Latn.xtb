@@ -345,6 +345,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1733064249834771892">fontovi</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Pokušajte da kontaktirate administratora sistema.</translation>
+<translation id="1736158756193183352"><ph name="BEGIN_LINK" />Prijavljivanje<ph name="END_LINK" /> na mrežu</translation>
 <translation id="1736420071277903564">Računar</translation>
 <translation id="1740951997222943430">Unesite važeći mesec isteka</translation>
 <translation id="1741613555002899862">Mora da se navede kao važeći niz kada je DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
@@ -1192,6 +1193,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3949601375789751990">Istorija pregledanja će se pojaviti ovde</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Nema sačuvanih načina plaćanja</translation>
+<translation id="3950574001630941635">Restratuj vodič</translation>
 <translation id="3950820424414687140">Prijavi me</translation>
 <translation id="3958057596965527988">4×4 in</translation>
 <translation id="3961148744525529027">Stranica obrađivača plaćanja je poluotvorena</translation>
@@ -2308,6 +2310,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6738516213925468394">Podaci su šifrovani pomoću <ph name="BEGIN_LINK" />pristupne fraze<ph name="END_LINK" /> (<ph name="TIME" />). Unesite je da biste započeli sinhronizaciju.</translation>
 <translation id="674375294223700098">Nepoznata greška sertifikata servera.</translation>
 <translation id="6744009308914054259">Dok čekate na vezu, posetite Preuzimanja i čitajte oflajn članke.</translation>
+<translation id="6745592621698551453">Ažuriraj odmah</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Telefonske konferencije</translation>
 <translation id="6753269504797312559">Vrednost smernica</translation>
@@ -2772,7 +2775,6 @@ Dodatni detalji:
 <translation id="7802523362929240268">Sajt je legitiman</translation>
 <translation id="7802989406998618639">Unesite <ph name="NUMBER_OF_DIGITS" />-cifreni bezbednosni kôd na <ph name="SIDE_OF_CARD" /> da bi banka mogla da potvrdi da ste to vi</translation>
 <translation id="780301667611848630">Ne, hvala</translation>
-<translation id="7805571567667010077">Upravlja organizacija</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Želite li da uklonite predlog iz Chrome-a?</translation>
@@ -2995,6 +2997,7 @@ Dodatni detalji:
 <translation id="8369073279043109617">Preuzmite nov kôd</translation>
 <translation id="8371889962595521444">Prilagođeni sertifikati osnovnog nivoa</translation>
 <translation id="8374636051559112948">Razlikuje se</translation>
+<translation id="8378714024927312812">Ovim upravlja organizacija</translation>
 <translation id="8380941800586852976">Opasno</translation>
 <translation id="8381674639488873545">Ti troškovi mogu da budu jednokratni ili periodični i možda nisu odmah vidljivi. <ph name="BEGIN_LINK" />Ipak prikaži<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Smernice za administratore blokiraju deljenje sa <ph name="ORIGIN_NAME" /> na lokaciju <ph name="VM_NAME" /></translation>

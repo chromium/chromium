@@ -487,6 +487,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2108755909498034140">Computer neu starten</translation>
 <translation id="2111166930115883695">Drücke die Leertaste, um das Spiel zu starten</translation>
 <translation id="2112529237938317174">Berechtigungsdetails anzeigen</translation>
+<translation id="2113232594265919362">Du siehst diese Warnung, weil diese Website kein HTTPS unterstützt und du das erweiterte Sicherheitsprogramm von Google nutzt. <ph name="BEGIN_LEARN_MORE_LINK" />Weitere Informationen<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2113977810652731515">Karte</translation>
 <translation id="2114841414352855701">Wird ignoriert, da sie von <ph name="POLICY_NAME" /> außer Kraft gesetzt wurde.</translation>
 <translation id="2118132148597630479">Umschlag C5</translation>
@@ -1207,6 +1208,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3990250421422698716">Jog-Versatz</translation>
 <translation id="3992684624889376114">Über diese Seite</translation>
 <translation id="399952081411886534">Weitere Funktionen, die den Datenschutz bei Werbung verbessern</translation>
+<translation id="4000598935132966791">Weitere Informationen zu Website-Beschränkungen in verwalteten Browsern</translation>
 <translation id="4006465311664329701">Zahlungsmethoden, Angebote und Adressen aus Google Pay</translation>
 <translation id="4009243425692662128">Die Inhalt der gedruckten Seiten wird zur Analyse an Google Cloud oder Drittanbieter gesendet. Er wird beispielsweise auf sensible Daten geprüft.</translation>
 <translation id="4010758435855888356">Zugriff auf Speicher erlauben?</translation>
@@ -2305,6 +2307,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6738516213925468394">Deine Daten wurden am <ph name="TIME" /> mit deiner <ph name="BEGIN_LINK" />Synchronisierungspassphrase<ph name="END_LINK" /> verschlüsselt. Gib diese ein, um die Synchronisierung zu starten.</translation>
 <translation id="674375294223700098">Fehler wegen unbekanntem Serverzertifikat</translation>
 <translation id="6744009308914054259">Während du auf eine Verbindung wartest, kannst du "Downloads" aufrufen und Offline-Artikel lesen.</translation>
+<translation id="6745592621698551453">Jetzt aktualisieren</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Telekonferenzen</translation>
 <translation id="6753269504797312559">Wert der Richtlinie</translation>
@@ -2769,7 +2772,6 @@ Weitere Details:
 <translation id="7802523362929240268">Website ist vertrauenswürdig</translation>
 <translation id="7802989406998618639">Gib den <ph name="NUMBER_OF_DIGITS" />-stelligen Sicherheitscode auf der <ph name="SIDE_OF_CARD" /> ein, damit deine Bank deine Identität bestätigen kann</translation>
 <translation id="780301667611848630">Kein Interesse</translation>
-<translation id="7805571567667010077">Wird von deiner Organisation verwaltet</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Vorschlag für das Formular aus Chrome entfernen?</translation>
@@ -2992,6 +2994,7 @@ Weitere Details:
 <translation id="8369073279043109617">Neuen Code anfordern</translation>
 <translation id="8371889962595521444">Benutzerdefinierte Root-Zertifikate</translation>
 <translation id="8374636051559112948">Variiert</translation>
+<translation id="8378714024927312812">Von deiner Organisation verwaltet</translation>
 <translation id="8380941800586852976">Schädlich</translation>
 <translation id="8381674639488873545">Diese Kosten können einmalig oder wiederkehrend sein und sind vielleicht nicht klar zu erkennen. <ph name="BEGIN_LINK" />Trotzdem anzeigen<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Die Administratorrichtlinie blockiert das Teilen von <ph name="ORIGIN_NAME" /> mit <ph name="VM_NAME" /></translation>

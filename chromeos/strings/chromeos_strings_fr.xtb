@@ -163,6 +163,7 @@
 <translation id="2346474577291266260">Excellente (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2364498172489649528">Réussi</translation>
+<translation id="2367335866686097760">Touche du mappage des touches</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Envoyer un rapport de commentaires</translation>
 <translation id="2407209115954268704">État du blocage SIM</translation>
@@ -235,7 +236,9 @@
 <translation id="319101249942218879">Image d'avatar modifiée</translation>
 <translation id="3192947282887913208">Fichiers audio</translation>
 <translation id="3199982728237701504">Chargeur de document (recto verso)</translation>
+<translation id="3211671540163313381">Pavé directionnel du mappage des touches</translation>
 <translation id="3226405216343213872">Recherche de scanners…</translation>
+<translation id="3226657629376379887">Menu d'actions de la mise en page</translation>
 <translation id="3246869037381808805">Les tâches d'impression de plus d'un jour seront supprimées</translation>
 <translation id="3268178239013324452">Échec – Capot de l'imprimante ouvert</translation>
 <translation id="3275506277319227640">Épingler à <ph name="DIRECTION" /></translation>
@@ -616,6 +619,7 @@
 <translation id="650266656685499220">Pour créer des albums, accédez à Google Photos</translation>
 <translation id="6516990319416533844">Pour évaluer le niveau de charge de la batterie, laissez votre batterie se décharger sur une courte période</translation>
 <translation id="6517239166834772319">Explorer</translation>
+<translation id="6526200165918397681">Faire correspondre au fond d'écran</translation>
 <translation id="6527081081771465939">Protocole de sécurité du réseau Wi-Fi inconnu</translation>
 <translation id="6535178685492749208">Vous êtes hors connexion. Les commentaires seront envoyés plus tard.</translation>
 <translation id="65587193855025101">Vitre du plateau</translation>
@@ -802,6 +806,7 @@
 <translation id="8318753676953949627">Aucune image</translation>
 <translation id="8336739000755212683">Modifier l'image du compte sur l'appareil</translation>
 <translation id="8347227221149377169">Tâches d'impression</translation>
+<translation id="8351855506390808906">Point de contact du mappage des touches</translation>
 <translation id="8352772353338965963">Ajoutez un compte à la connexion multicompte. Tous les comptes connectés sont accessibles sans mot de passe. Nous vous recommandons donc de n'utiliser cette fonctionnalité qu'avec des comptes fiables.</translation>
 <translation id="8364946094152050673">Serveurs de noms vides</translation>
 <translation id="8372477600026034341">Hôtes supplémentaires</translation>
@@ -899,6 +904,7 @@
 <translation id="9138630967333032450">Maj gauche</translation>
 <translation id="9149391708638971077">Lancer le test de mémoire</translation>
 <translation id="9157515863513902090">Épingler sur le côté plus grand</translation>
+<translation id="9161276708550942948">espace</translation>
 <translation id="9173638680043580060">Moins d'une minute restante</translation>
 <translation id="917720651393141712">Tester</translation>
 <translation id="9188992814426075118">Votre clavier peut être automatiquement assorti à votre fond d'écran</translation>

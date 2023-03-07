@@ -21,4 +21,6 @@
 <translation id="6855094794438142393">Gehe zum Chrome-Menü &gt; „<ph name="SETTINGS_TITLE" />“ &gt; „<ph name="ADVANCED_TITLE" />“ &gt; „<ph name="PROXIES_TITLE" />“ &gt; „LAN-Einstellungen“ und deaktiviere die Option „Proxyserver für LAN verwenden“.</translation>
 <translation id="7230956101631259640">Dies ist eine sichere Chrome-Seite</translation>
 <translation id="8187289872471304532">Gehe zu „Programme“ &gt; „Systemeinstellungen“ &gt; „Netzwerk“ &gt; „Erweitert“ &gt; „Proxys“ und deaktiviere alle ausgewählten Proxyserver.</translation>
+<translation id="8232971017369963250">Chrome wird durch das Open-Source-Projekt <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ermöglicht.</translation>
+<translation id="8279509328145658601">Chrome wird auch durch andere <ph name="BEGIN_LINK_OSS" />Open-Source-Software<ph name="END_LINK_OSS" /> ermöglicht.</translation>
 </translationbundle>

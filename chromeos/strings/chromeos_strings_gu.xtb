@@ -163,6 +163,7 @@
 <translation id="2346474577291266260">ઉત્તમ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">આગળ વધો</translation>
 <translation id="2364498172489649528">તપાસ પાર કરી</translation>
+<translation id="2367335866686097760">કીમૅપિંગ કી</translation>
 <translation id="2380886658946992094">કાનૂની</translation>
 <translation id="2391082728065870591">પ્રતિસાદ રિપોર્ટ મોકલો</translation>
 <translation id="2407209115954268704">સિમ કાર્ડનું લૉક સ્ટેટસ</translation>
@@ -235,7 +236,9 @@
 <translation id="319101249942218879">અવતારની છબી બદલવામાં આવી</translation>
 <translation id="3192947282887913208">ઑડિયો ફાઇલો</translation>
 <translation id="3199982728237701504">દસ્તાવેજનું ફીડર (બન્ને બાજુથી)</translation>
+<translation id="3211671540163313381">કીમૅપિંગ ડી-પૅડ</translation>
 <translation id="3226405216343213872">સ્કૅનર શોધી રહ્યાં છીએ</translation>
+<translation id="3226657629376379887">લેઆઉટ ક્રિયા મેનૂ</translation>
 <translation id="3246869037381808805">1 દિવસ કરતાં જૂના પ્રિન્ટ કાર્યો કાઢી નાખવામાં આવશે</translation>
 <translation id="3268178239013324452">નિષ્ફળ રહ્યું - પ્રિન્ટરનું ઢાંકણ ખૂલ્લું છે</translation>
 <translation id="3275506277319227640"><ph name="DIRECTION" /> બાજુએ ડૉક કરો</translation>
@@ -616,6 +619,7 @@
 <translation id="650266656685499220">આલ્બમ બનાવવા માટે, Google Photos પર જાઓ</translation>
 <translation id="6516990319416533844">બૅટરી ચાર્જિંગના રેટનું પરીક્ષણ કરવા માટે, થોડા સમય માટે તમારી બૅટરી વપરાવા દો</translation>
 <translation id="6517239166834772319">શોધખોળ કરો</translation>
+<translation id="6526200165918397681">વૉલપેપરનો મેળ કરો</translation>
 <translation id="6527081081771465939">વાઇ-ફાઇ સુરક્ષાનો અજાણ્યો પ્રોટોકૉલ</translation>
 <translation id="6535178685492749208">તમે ઑફલાઇન છો. પ્રતિસાદ થોડા સમય પછી મોકલવામાં આવશે.</translation>
 <translation id="65587193855025101">ફ્લૅટબેડ</translation>
@@ -802,6 +806,7 @@
 <translation id="8318753676953949627">કોઈ છબી ઉપલબ્ધ નથી</translation>
 <translation id="8336739000755212683">ડિવાઇસના એકાઉન્ટની છબી બદલો</translation>
 <translation id="8347227221149377169">પ્રિન્ટ કરવાના કામો</translation>
+<translation id="8351855506390808906">કીમૅપિંગ ટચ પૉઇન્ટ</translation>
 <translation id="8352772353338965963">એકથી વધુ સાઇન ઇન કરવા એક એકાઉન્ટ ઉમેરો. બધા સાઇન ઇન એકાઉન્ટ પાસવર્ડ વગર ઉપયોગ કરી શકાય છે, તેથી આ સુવિધા માત્ર વિશ્વસનીય એકાઉન્ટ સાથે ઉપયોગમાં આવવી જોઇએ.</translation>
 <translation id="8364946094152050673">સર્વરના કોઈ નામ આપવામાં આવ્યા નથી</translation>
 <translation id="8372477600026034341">અતિરિક્ત હોસ્ટ</translation>
@@ -899,6 +904,7 @@
 <translation id="9138630967333032450">ડાબી Shift કી</translation>
 <translation id="9149391708638971077">મેમરીનું પરીક્ષણ ચાલુ કરો</translation>
 <translation id="9157515863513902090">વધુ મોટી બાજુએ ડૉક કરો</translation>
+<translation id="9161276708550942948">space</translation>
 <translation id="9173638680043580060">એક મિનિટ કરતાં ઓછો સમય બાકી છે</translation>
 <translation id="917720651393141712">પરીક્ષણ કરો</translation>
 <translation id="9188992814426075118">તમારું કીબોર્ડ ઑટોમૅટિક રીતે તમારા વૉલપેપર સાથે મેળ કરી શકે છે</translation>

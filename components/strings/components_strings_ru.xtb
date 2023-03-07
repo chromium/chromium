@@ -345,6 +345,7 @@
 <translation id="1733064249834771892">Шрифты</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Обратитесь за помощью к системному администратору.</translation>
+<translation id="1736158756193183352"><ph name="BEGIN_LINK" />Вход<ph name="END_LINK" /> в сеть</translation>
 <translation id="1736420071277903564">Компьютер</translation>
 <translation id="1740951997222943430">Недопустимый формат месяца.</translation>
 <translation id="1741613555002899862">Необходимо указать значение и ввести действительную строку, если для правила DnsOverHttpsMode выбрано значение <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
@@ -1191,6 +1192,7 @@
 <translation id="3949601375789751990">История просмотров появится здесь</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Нет сохраненных способов оплаты.</translation>
+<translation id="3950574001630941635">Открыть руководство снова</translation>
 <translation id="3950820424414687140">Вход</translation>
 <translation id="3958057596965527988">4 x 4 дюйма</translation>
 <translation id="3961148744525529027">Лист с обработчиком платежа открыт на половину высоты</translation>
@@ -2308,6 +2310,7 @@
 <translation id="6738516213925468394">Данные были зашифрованы <ph name="TIME" /> с помощью <ph name="BEGIN_LINK" />кодовой фразы<ph name="END_LINK" />. Введите ее, чтобы начать синхронизацию.</translation>
 <translation id="674375294223700098">Неизвестная ошибка сертификата сервера.</translation>
 <translation id="6744009308914054259">В ожидании подключения вы можете открыть скачанные файлы и почитать статьи офлайн.</translation>
+<translation id="6745592621698551453">Обновить сейчас</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Телеконференцсвязь</translation>
 <translation id="6753269504797312559">Значение правила</translation>
@@ -2772,7 +2775,6 @@
 <translation id="7802523362929240268">Сайт безопасен</translation>
 <translation id="7802989406998618639">Введите <ph name="NUMBER_OF_DIGITS" />-значный защитный код (его можно найти <ph name="SIDE_OF_CARD" />), чтобы банк подтвердил вашу личность.</translation>
 <translation id="780301667611848630">Пропустить</translation>
-<translation id="7805571567667010077">Управляется вашей организацией</translation>
 <translation id="7805768142964895445">Состояние</translation>
 <translation id="7812922009395017822">Мир</translation>
 <translation id="7813600968533626083">Удалить подсказку из Chrome?</translation>
@@ -2995,6 +2997,7 @@
 <translation id="8369073279043109617">Получить новый код</translation>
 <translation id="8371889962595521444">Пользовательские корневые сертификаты</translation>
 <translation id="8374636051559112948">разный</translation>
+<translation id="8378714024927312812">Управляется вашей организацией</translation>
 <translation id="8380941800586852976">Опасно</translation>
 <translation id="8381674639488873545">Списание может быть разовым или повторяющимся без каких-либо уведомлений. <ph name="BEGIN_LINK" />Все равно продолжить<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Администратор запретил переносить контент со страницы <ph name="ORIGIN_NAME" /> в <ph name="VM_NAME" />.</translation>

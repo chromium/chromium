@@ -2310,6 +2310,7 @@
 <translation id="6738516213925468394">Ձեր տվյալները գաղտնագրվել են <ph name="BEGIN_LINK" />համաժամացման ձեր անցաբառի<ph name="END_LINK" /> միջոցով (<ph name="TIME" />): Համաժամացումը սկսելու համար մուտքագրեք անցաբառը:</translation>
 <translation id="674375294223700098">Սերվերի վկայագրի անհայտ սխալ:</translation>
 <translation id="6744009308914054259">Քանի դեռ կապը չի վերականգնվել, դուք կարող եք անցնել «Ներբեռնումներ» բաժին և կարդալ առցանց հոդվածները:</translation>
+<translation id="6745592621698551453">Թարմացնել հիմա</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Հեռակոնֆերանսներ</translation>
 <translation id="6753269504797312559">Կանոնի արժեքը</translation>
@@ -2774,7 +2775,6 @@
 <translation id="7802523362929240268">Կայքը անվտանգ է</translation>
 <translation id="7802989406998618639">Մուտքագրեք <ph name="SIDE_OF_CARD" /> գտնվող <ph name="NUMBER_OF_DIGITS" />-թվանշանից բաղկացած անվտանգության կոդը, որպեսզի բանկը կարողանա հաստատել ձեր ինքնությունը</translation>
 <translation id="780301667611848630">Ոչ</translation>
-<translation id="7805571567667010077">Կառավարվում է ձեր կազմակերպության կողմից</translation>
 <translation id="7805768142964895445">Կարգավիճակ</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Հեռացնե՞լ Chrome-ի առաջարկներից:</translation>
@@ -2997,6 +2997,7 @@
 <translation id="8369073279043109617">Ստանալ նոր կոդ</translation>
 <translation id="8371889962595521444">Հատուկ արմատային հավաստագրեր</translation>
 <translation id="8374636051559112948">Տարբեր</translation>
+<translation id="8378714024927312812">Կառավարվում է ձեր կազմակերպության կողմից</translation>
 <translation id="8380941800586852976">Վտանգավոր</translation>
 <translation id="8381674639488873545">Այս գանձումները կարող են մեկանգամյա կամ պարբերական լինել և հնարավոր է ակնհայտ չերևան: <ph name="BEGIN_LINK" />Միևնույն է ցուցադրել<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Դուք չեք կարող <ph name="ORIGIN_NAME" /> կայքից բովանդակություն փոխանցել <ph name="VM_NAME" />, քանի որ ադմինիստրատորն արգելափակել է այդ հնարավորությունը։</translation>

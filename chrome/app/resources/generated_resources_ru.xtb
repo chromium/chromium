@@ -349,6 +349,7 @@
 <translation id="1303671224831497365">Устройства Bluetooth не найдены</translation>
 <translation id="130491383855577612">Приложения и файлы Linux заменены.</translation>
 <translation id="1306390193749326011">Вы больше не будете видеть <ph name="MODULE_NAME" /> на этой странице.</translation>
+<translation id="1306518237408758433">Открыть страницу "<ph name="BOOKMARK_TITLE" />"</translation>
 <translation id="1306606229401759371">Изменить настройки</translation>
 <translation id="1307165550267142340">PIN-код создан.</translation>
 <translation id="1307431692088049276">Больше не спрашивать</translation>
@@ -438,6 +439,7 @@
 <translation id="1393283411312835250">Солнце и облака</translation>
 <translation id="1395730723686586365">Программа обновлений запущена</translation>
 <translation id="1395832189806039783">Выделять объект с помощью клавиатуры</translation>
+<translation id="1396120028054416908">Вернуться в папку "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="1396139853388185343">Не удалось настроить принтер</translation>
 <translation id="1396963298126346194">Неправильное имя пользователя или пароль</translation>
 <translation id="1397500194120344683">Нет подходящих устройств. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
@@ -680,6 +682,7 @@
 <translation id="1596286373007273895">Доступно</translation>
 <translation id="1596709061955594992">Bluetooth выключен. Включите его, чтобы увидеть доступные устройства.</translation>
 <translation id="1596780725094407793">и субдомены</translation>
+<translation id="1597852076552089763">Настройки закладок</translation>
 <translation id="1598163867407640634">Оплачивайте покупки на <ph name="SITE_ETLD_PLUS_ONE" /> через <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1598233202702788831">Функция обновления отключена администратором.</translation>
 <translation id="1600857548979126453">Доступ к работе отладчика страниц</translation>
@@ -1817,6 +1820,7 @@
 <translation id="25568951186001797">Элемент Fenced Frame: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2558569818338050235">Реклама для показа вам подбирается с учетом вашей истории браузера</translation>
 <translation id="2559889124253841528">Сохранить на устройстве</translation>
+<translation id="2561211427862644160">Здесь находятся все ваши закладки</translation>
 <translation id="2564520396658920462">Выполнение JavaScript через AppleScript отключено. Чтобы включить эту функцию, в строке меню выберите "Вид &gt; Разработчикам &gt; Разрешить JavaScript из событий Apple". Подробную информацию можно найти на этой странице: https://support.google.com/chrome/?p=applescript.</translation>
 <translation id="2564653188463346023">Расширенная проверка правописания</translation>
 <translation id="2568694057933302218">В режиме инкогнито сайты не могут применять файлы cookie, чтобы отслеживать ваши действия в браузере. Информация о таких действиях не используется, например, для показа персонализированной рекламы. Из-за этого функции некоторых сайтов могут стать недоступными.</translation>
@@ -2421,6 +2425,7 @@
 <translation id="3090871774332213558">Подключено устройство: <ph name="DEVICE_NAME" /></translation>
 <translation id="3093714882666365141">Запретить сайтам устанавливать обработчики платежей</translation>
 <translation id="3094141017404513551">Вы будете работать в браузере отдельно от пользователя <ph name="EXISTING_USER" />.</translation>
+<translation id="3094521107841754472">Цена изменилась: было <ph name="PREVIOUS_PRICE" />, стало <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Закладки, пароли и другие данные о работе в браузере синхронизируются с основным аккаунтом.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{Отключено 1 потенциально опасное расширение. Вы можете удалить его.}one{Отключено {NUM_EXTENSIONS} потенциально опасное расширение. Вы можете удалить их.}few{Отключено {NUM_EXTENSIONS} потенциально опасных расширения. Вы можете удалить их.}many{Отключено {NUM_EXTENSIONS} потенциально опасных расширений. Вы можете удалить их.}other{Отключено {NUM_EXTENSIONS} потенциально опасного расширения. Вы можете удалить их.}}</translation>
 <translation id="3101126716313987672">Тусклое освещение</translation>
@@ -2773,6 +2778,7 @@
 <translation id="3441653493275994384">Экран</translation>
 <translation id="3441663102605358937">Войдите в аккаунт <ph name="ACCOUNT" /> ещё раз, чтобы подтвердить его</translation>
 <translation id="3442674350323953953">Разрешить компании Google использовать данные о вашем оборудовании, чтобы улучшать <ph name="DEVICE_OS" />. Если вы откажетесь, эта информация все равно будет отправляться в Google для определения подходящих обновлений, но она не будет храниться или использоваться в других целях.</translation>
+<translation id="3443744348829035122"><ph name="BRAND" />: превышено время ожидания</translation>
 <translation id="3444726579402183581">Сайт <ph name="ORIGIN" /> сможет просматривать файл "<ph name="FILENAME" />".</translation>
 <translation id="3445047461171030979">Быстрые ответы Google Ассистента</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин.</translation>
@@ -3316,6 +3322,7 @@
 <translation id="39103738135459590">Код активации</translation>
 <translation id="3911824782900911339">Страница быстрого доступа</translation>
 <translation id="3914173277599553213">Обязательно</translation>
+<translation id="3914568430265141791">Открыть папку "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="3915280005470252504">Голосовой поиск</translation>
 <translation id="3916233823027929090">Проверка безопасности выполнена.</translation>
 <translation id="3916445069167113093">Файл этого типа может нанести вред компьютеру. Все равно сохранить <ph name="FILE_NAME" />?</translation>
@@ -3447,6 +3454,7 @@
 <translation id="4022426551683927403">Добавить в словарь</translation>
 <translation id="4025039777635956441">Отключить звук на выбранном сайте</translation>
 <translation id="402707738228916911">Получена инструкция: <ph name="AUTHORIZE_INSTRUCTION_NAME" /></translation>
+<translation id="4027569221211770437">Папка "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="4027958407426528157">Открывать сайты в приложениях, установленных на устройстве <ph name="DEVICE_TYPE" /></translation>
 <translation id="4028467762035011525">Добавить способы ввода</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" />: перейти на предыдущую страницу</translation>
@@ -3501,6 +3509,7 @@
 <translation id="4077917118009885966">Реклама заблокирована на этом сайте</translation>
 <translation id="4077919383365622693">Все данные и файлы cookie, хранящиеся на сайте <ph name="SITE" />, будут удалены.</translation>
 <translation id="4078738236287221428">Всегда</translation>
+<translation id="4078903002989614318">Параметры сортировки</translation>
 <translation id="4079140982534148664">Использовать расширенную проверку правописания</translation>
 <translation id="4084682180776658562">Закладка</translation>
 <translation id="4084835346725913160">Закрыть вкладку "<ph name="TAB_NAME" />"</translation>
@@ -3645,6 +3654,7 @@
 <translation id="4217571870635786043">Голосовой ввод</translation>
 <translation id="4218081191298393750">Нажмите на значок динамика, чтобы отключить звук на этой вкладке.</translation>
 <translation id="4220648711404560261">При активации произошла ошибка.</translation>
+<translation id="4222917615373664617">Включено отслеживание цен. Цена: <ph name="CURRENT_PRICE" />.</translation>
 <translation id="4223845867739585293">Создайте ключ доступа</translation>
 <translation id="4225397296022057997">На всех сайтах</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Это расширение запрещено}one{Некоторые расширения запрещены}few{Некоторые расширения запрещены}many{Некоторые расширения запрещены}other{Некоторые расширения запрещены}}</translation>
@@ -5806,6 +5816,7 @@
 <translation id="6212168817037875041">Выключать экран</translation>
 <translation id="6212752530110374741">Отправить ссылку по эл. почте</translation>
 <translation id="621470880408090483">Запретить сайтам подключаться к устройствам Bluetooth</translation>
+<translation id="6215039389782910006">{1,plural, =1{Для защиты ваших данных <ph name="BRAND" /> блокируется после 1 минуты бездействия.}one{Для защиты ваших данных <ph name="BRAND" /> блокируется после # минуты бездействия.}few{Для защиты ваших данных <ph name="BRAND" /> блокируется после # минут бездействия.}many{Для защиты ваших данных <ph name="BRAND" /> блокируется после # минут бездействия.}other{Для защиты ваших данных <ph name="BRAND" /> блокируется после # минуты бездействия.}}</translation>
 <translation id="6216239400972191926">Сайты и приложения, для которых пароли не сохраняются</translation>
 <translation id="6216601812881225442">Контейнер не поддерживает изменение размера. Чтобы скорректировать объем хранилища, предварительно определенного для Linux, выполните резервное копирование, а затем восстановите данные, используя новый контейнер.</translation>
 <translation id="6216696360484424239">Автоматический вход</translation>
@@ -6083,6 +6094,7 @@
 <translation id="6469557521904094793">Включить мобильную сеть</translation>
 <translation id="6470823736074966819">Отключить звук уведомлений</translation>
 <translation id="6472893788822429178">Показывать кнопку "Главная страница"</translation>
+<translation id="6474352027343282094">{COUNT,plural, =1{{COUNT} пароль сохранен только на этом устройстве. Чтобы он синхронизировался с другими устройствами, &lt;a target='_blank' href='chrome://password-manager/'&gt;добавьте его в аккаунт Google&lt;/a&gt;.}one{{COUNT} пароль сохранен только на этом устройстве. Чтобы они синхронизировались с другими устройствами, &lt;a target='_blank' href='chrome://password-manager/'&gt;добавьте их в аккаунт Google&lt;/a&gt;.}few{{COUNT} пароля сохранено только на этом устройстве. Чтобы они синхронизировались с другими устройствами, &lt;a target='_blank' href='chrome://password-manager/'&gt;добавьте их в аккаунт Google&lt;/a&gt;.}many{{COUNT} паролей сохранено только на этом устройстве. Чтобы они синхронизировались с другими устройствами, &lt;a target='_blank' href='chrome://password-manager/'&gt;добавьте их в аккаунт Google&lt;/a&gt;.}other{{COUNT} пароля сохранено только на этом устройстве. Чтобы они синхронизировались с другими устройствами, &lt;a target='_blank' href='chrome://password-manager/'&gt;добавьте их в аккаунт Google&lt;/a&gt;.}}</translation>
 <translation id="6474498546677193336">Папка используется приложением. Доступ к ней будет закрыт при следующем выключении Linux.</translation>
 <translation id="6474884162850599008">Отключить аккаунт Google Диска</translation>
 <translation id="6475294023568239942">Освободите пространство на диске Linux или увеличьте его размер в настройках.</translation>
@@ -7581,6 +7593,7 @@
 <translation id="7817361223956157679">Экранная клавиатура пока не работает в приложениях для Linux.</translation>
 <translation id="7818135753970109980">Добавлена новая тема (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="7819605256207059717">Заблокировано вашей организацией</translation>
+<translation id="7820400255539998692">Чтобы другие пользователи, которые работают с этим устройством, не могли посмотреть ваши пароли, удалите файл <ph name="FILENAME" />.</translation>
 <translation id="7820561748632634942">Назначить дополнительные переключатели?</translation>
 <translation id="782057141565633384">&amp;Копировать URL видео</translation>
 <translation id="7824864914877854148">При сохранении резервной копии произошла ошибка.</translation>

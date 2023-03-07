@@ -27,7 +27,9 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           এবং আপনার কনফিগারেশন "প্রক্সি নয়" বা "সরাসরি" তে সেট আছে কি না নিশ্চিত করুন৷</translation>
+<translation id="6549378540556750549">এছাড়াও Chromium অন্য <ph name="BEGIN_LINK_OSS" />ওপেন সোর্স সফ্টওয়্যার<ph name="END_LINK_OSS" /> দ্বারা পরিচালিত।</translation>
 <translation id="6613594504749178791">আপনার পরিবর্তনগুলি পরবর্তী সময় আপনি Chromium আবার চালু হলে ফলপ্রদ হবে৷</translation>
+<translation id="7681937895330411637">এছাড়াও Chromium <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ওপেন সোর্স প্রোজেক্ট দ্বারা পরিচালিত।</translation>
 <translation id="7861509383340276692">Chromium মেনুতে
         যান &gt;
         <ph name="SETTINGS_TITLE" />

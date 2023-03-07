@@ -27,7 +27,9 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           ja varmista, että asetus on "ei välityspalvelinta" tai "suora".</translation>
+<translation id="6549378540556750549">Muu <ph name="BEGIN_LINK_OSS" />avoimen lähdekoodin ohjelmisto<ph name="END_LINK_OSS" /> tukee Chromiumia.</translation>
 <translation id="6613594504749178791">Muutokset tulevat voimaan, kun käynnistät Chromiumin seuraavan kerran.</translation>
+<translation id="7681937895330411637">Chromiumin mahdollistivat avoimen lähdekoodin projekti <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="7861509383340276692">Avaa
         Chromium-valikko &gt;
        <ph name="SETTINGS_TITLE" />

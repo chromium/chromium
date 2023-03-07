@@ -345,6 +345,7 @@
 <translation id="1733064249834771892">фонтови</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Покушајте да контактирате администратора система.</translation>
+<translation id="1736158756193183352"><ph name="BEGIN_LINK" />Пријављивање<ph name="END_LINK" /> на мрежу</translation>
 <translation id="1736420071277903564">Рачунар</translation>
 <translation id="1740951997222943430">Унесите важећи месец истека</translation>
 <translation id="1741613555002899862">Мора да се наведе као важећи низ када је DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
@@ -1192,6 +1193,7 @@
 <translation id="3949601375789751990">Историја прегледања ће се појавити овде</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Нема сачуваних начина плаћања</translation>
+<translation id="3950574001630941635">Рестратуј водич</translation>
 <translation id="3950820424414687140">Пријави ме</translation>
 <translation id="3958057596965527988">4×4 in</translation>
 <translation id="3961148744525529027">Страница обрађивача плаћања је полуотворена</translation>
@@ -2308,6 +2310,7 @@
 <translation id="6738516213925468394">Подаци су шифровани помоћу <ph name="BEGIN_LINK" />приступне фразе<ph name="END_LINK" /> (<ph name="TIME" />). Унесите је да бисте започели синхронизацију.</translation>
 <translation id="674375294223700098">Непозната грешка сертификата сервера.</translation>
 <translation id="6744009308914054259">Док чекате на везу, посетите Преузимања и читајте офлајн чланке.</translation>
+<translation id="6745592621698551453">Ажурирај одмах</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Телефонске конференције</translation>
 <translation id="6753269504797312559">Вредност смерница</translation>
@@ -2772,7 +2775,6 @@
 <translation id="7802523362929240268">Сајт је легитиман</translation>
 <translation id="7802989406998618639">Унесите <ph name="NUMBER_OF_DIGITS" />-цифрени безбедносни кôд на <ph name="SIDE_OF_CARD" /> да би банка могла да потврди да сте то ви</translation>
 <translation id="780301667611848630">Не, хвала</translation>
-<translation id="7805571567667010077">Управља организација</translation>
 <translation id="7805768142964895445">Статус</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Желите ли да уклоните предлог из Chrome-а?</translation>
@@ -2995,6 +2997,7 @@
 <translation id="8369073279043109617">Преузмите нов кôд</translation>
 <translation id="8371889962595521444">Прилагођени сертификати основног нивоа</translation>
 <translation id="8374636051559112948">Разликује се</translation>
+<translation id="8378714024927312812">Овим управља организација</translation>
 <translation id="8380941800586852976">Опасно</translation>
 <translation id="8381674639488873545">Ти трошкови могу да буду једнократни или периодични и можда нису одмах видљиви. <ph name="BEGIN_LINK" />Ипак прикажи<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Смернице за администраторе блокирају дељење са <ph name="ORIGIN_NAME" /> на локацију <ph name="VM_NAME" /></translation>

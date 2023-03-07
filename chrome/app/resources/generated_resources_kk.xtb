@@ -346,6 +346,7 @@
 <translation id="1303671224831497365">Ешқандай Bluetooth құрылғысы табылмады</translation>
 <translation id="130491383855577612">Linux қолданбалары мен файлдары ауыстырылды.</translation>
 <translation id="1306390193749326011">Бұл бетте "<ph name="MODULE_NAME" />" қайта көрсетілмейді.</translation>
+<translation id="1306518237408758433"><ph name="BOOKMARK_TITLE" /> ашу</translation>
 <translation id="1306606229401759371">Параметрлерді өзгерту</translation>
 <translation id="1307165550267142340">PIN кодыңыз жасалды.</translation>
 <translation id="1307431692088049276">Қайта сұралмасын</translation>
@@ -435,6 +436,7 @@
 <translation id="1393283411312835250">Күн және бұлттар</translation>
 <translation id="1395730723686586365">Жаңарту құралы іске қосылды</translation>
 <translation id="1395832189806039783">Элементті пернетақта фокусымен ерекшелеу</translation>
+<translation id="1396120028054416908"><ph name="FOLDER_TITLE" /> қалтасына оралу</translation>
 <translation id="1396139853388185343">Принтерді реттеу кезінде қате кетті</translation>
 <translation id="1396963298126346194">Енгізілген пайдаланушы аты мен құпия сөз сәйкес келмейді</translation>
 <translation id="1397500194120344683">Жарамды құрылғы жоқ. <ph name="LINK_BEGIN" />Толығырақ ақпарат<ph name="LINK_END" /></translation>
@@ -675,6 +677,7 @@
 <translation id="1596286373007273895">Қолжетімді</translation>
 <translation id="1596709061955594992">Bluetooth өшірулі. Қолжетімді құрылғыларды көру үшін Bluetooth қосыңыз.</translation>
 <translation id="1596780725094407793">– ішкі домендерді қамтиды</translation>
+<translation id="1597852076552089763">Бетбелгі опциялары</translation>
 <translation id="1598163867407640634"><ph name="SITE_ETLD_PLUS_ONE" /> сайтын <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> көмегімен пайдалану</translation>
 <translation id="1598233202702788831">Әкімшіңіз жаңартуларды сөндірген.</translation>
 <translation id="1600857548979126453">Бет түзетуші серверіне кіру</translation>
@@ -1812,6 +1815,7 @@
 <translation id="25568951186001797">Fenced Frame элементі: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2558569818338050235">Браузерді қолдану тарихы сіз көретін жарнамаларға әсер етеді.</translation>
 <translation id="2559889124253841528">Құрылғыға сақтау</translation>
+<translation id="2561211427862644160">Барлық бетбелгіні осы жерден көре аласыз.</translation>
 <translation id="2564520396658920462">JavaScript сценарийін AppleScript арқылы орындау мүмкіндігі өшірулі. Оны қосу үшін мәзір жолағында "Көрініс &gt; Әзірлеуші &gt; JavaScript сценарийін Apple Events қызметінен рұқсат ету" тармағына өтіңіз. Толығырақ ақпарат мына бетте берілген: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Жақсартылған емле тексеру</translation>
 <translation id="2568694057933302218">Инкогнито режимінде сайттар сіздің сайттардағы браузерді пайдалану тарихыңызды көру үшін cookie файлдарыңызды пайдалана алмайды. Браузерді пайдалану тарихыңыз жарнамаларды жекелендіру сияқты нәрселер үшін пайдаланылмайды. Кейбір сайттың функциялары жұмыс істемеуі мүмкін.</translation>
@@ -2416,6 +2420,7 @@
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" жұптастырылған</translation>
 <translation id="3093714882666365141">Сайттардың төлем өңдегіштерін орнатуына рұқсат бермеу</translation>
 <translation id="3094141017404513551">Бұл браузерді пайдалану деректеріңізді <ph name="EXISTING_USER" /> пайдаланушысынан бөледі.</translation>
+<translation id="3094521107841754472">Баға <ph name="PREVIOUS_PRICE" /> сомасынан <ph name="CURRENT_PRICE" /> сомасына өзгерді.</translation>
 <translation id="3095871294753148861">Бетбелгілер, құпия сөздер және басқа браузерді пайдалану деректері негізгі аккаунтпен синхрондалады.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 зиянды болуы мүмкін кеңейтім өшірулі. Оны жоюға да болады.}other{{NUM_EXTENSIONS} зиянды болуы мүмкін кеңейтім өшірулі. Оларды жоюға да болады.}}</translation>
 <translation id="3101126716313987672">Күңгірт жарық</translation>
@@ -2768,6 +2773,7 @@
 <translation id="3441653493275994384">Экран</translation>
 <translation id="3441663102605358937">Осы аккаунтты растау үшін <ph name="ACCOUNT" /> аккаунтына қайта кіріңіз.</translation>
 <translation id="3442674350323953953"><ph name="DEVICE_OS" /> жүйесін жақсарту үшін Google-ға жабдық деректерін пайдалануға рұқсат беріңіз. Егер бас тартсаңыз, дұрыс жаңартуларды анықтау үшін Google-ға дерек жіберіле береді, бірақ ол сақталмайды немесе пайдаланылмайды.</translation>
+<translation id="3443744348829035122"><ph name="BRAND" /> уақыты өтіп кетті</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> домені <ph name="FILENAME" /> файлын көре алады.</translation>
 <translation id="3445047461171030979">Google Assistant жылдам жауаптары</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> минут</translation>
@@ -3312,6 +3318,7 @@
 <translation id="39103738135459590">Белсендіру коды</translation>
 <translation id="3911824782900911339">Жаңа қойынды беті</translation>
 <translation id="3914173277599553213">Қажет</translation>
+<translation id="3914568430265141791"><ph name="FOLDER_TITLE" /> қалтасын ашу</translation>
 <translation id="3915280005470252504">Дауыспен іздеу</translation>
 <translation id="3916233823027929090">Қауіпсіздік тексерісі жасалды.</translation>
 <translation id="3916445069167113093">Файлдың бұл түрі компьютеріңізге зиян келтіруі мүмкін. Бәрібір <ph name="FILE_NAME" /> сақтауды қалайсыз ба?</translation>
@@ -3443,6 +3450,7 @@
 <translation id="4022426551683927403">&amp;Сөздікке қосу</translation>
 <translation id="4025039777635956441">Таңдалған сайттағы дыбысты өшіру</translation>
 <translation id="402707738228916911"><ph name="AUTHORIZE_INSTRUCTION_NAME" /> нұсқауы алынды</translation>
+<translation id="4027569221211770437"><ph name="FOLDER_TITLE" /> қалтасы</translation>
 <translation id="4027958407426528157"><ph name="DEVICE_TYPE" /> құрылғысында орнатылған қолданбаларда веб-сайттарды ашу</translation>
 <translation id="4028467762035011525">Енгізу әдісін қосу</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" /> бетінен артқа қайту</translation>
@@ -3497,6 +3505,7 @@
 <translation id="4077917118009885966">Осы сайтта бөгелген жарнамалар</translation>
 <translation id="4077919383365622693"><ph name="SITE" /> арқылы сақталған барлық деректер мен cookie файлдары өшіріледі.</translation>
 <translation id="4078738236287221428">Мәжбүрлі</translation>
+<translation id="4078903002989614318">Сұрыптау және тізім опциялары</translation>
 <translation id="4079140982534148664">Жетілдірілген емле тексеру құралын пайдалану</translation>
 <translation id="4084682180776658562">Бетбелгі</translation>
 <translation id="4084835346725913160"><ph name="TAB_NAME" /> жабу</translation>
@@ -3641,6 +3650,7 @@
 <translation id="4217571870635786043">Мәтінді дауыспен енгізу</translation>
 <translation id="4218081191298393750">Бұл қойынды индикаторының дыбысын өшіру үшін динамик белгішесін басыңыз.</translation>
 <translation id="4220648711404560261">Іске қосу кезінде қате шықты.</translation>
+<translation id="4222917615373664617">Бағаларды бақылау қосулы. Бағасы: <ph name="CURRENT_PRICE" />.</translation>
 <translation id="4223845867739585293">Кіру кілтін жасаңыз</translation>
 <translation id="4225397296022057997">Барлық сайттарда</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Бұл кеңейтімге рұқсат берілмеді}other{Кейбір кеңейтімге рұқсат берілмеді}}</translation>
@@ -5798,6 +5808,7 @@
 <translation id="6212168817037875041">Дисплейді өшіру</translation>
 <translation id="6212752530110374741">Электрондық пошта сілтемесі</translation>
 <translation id="621470880408090483">Сайттардың Bluetooth құрылғыларына қосылуына рұқсат бермеу</translation>
+<translation id="6215039389782910006">{1,plural, =1{Құпия сөздерді қорғау үшін <ph name="BRAND" /> 1 минут әрекетсіздіктен кейін құлыптайды}other{Құпия сөздерді қорғау үшін <ph name="BRAND" /> # минут әрекетсіздіктен кейін құлыптайды.}}</translation>
 <translation id="6216239400972191926">Құпия сөздер сақталмайтын сайттар мен қолданбалар</translation>
 <translation id="6216601812881225442">Контейнердің өлшемін өзгерту мүмкін емес. Linux жүйесіне алдын ала орналастырылған бос орынның көлемін реттеу үшін оның сақтық көшірмесін жасап, жаңа контейнерде қалпына келтіріңіз.</translation>
 <translation id="6216696360484424239">Автоматты түрде кіру</translation>

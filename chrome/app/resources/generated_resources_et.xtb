@@ -3183,6 +3183,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3790417903123637354">Midagi läks valesti. Proovige hiljem uuesti</translation>
 <translation id="379082410132524484">Teie kaart on aegunud</translation>
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> laiendust</translation>
+<translation id="3794792524918736965">Lülitage sisse Windows Hello</translation>
 <translation id="379500251094592809">Läheduses jagamise kasutamiseks veenduge, et mõlemad seadmed oleksid avatud, lähestikku ja Bluetooth oleks sisse lülitatud. Kui jagate Chromebookiga, mis pole teie kontaktide hulgas, veenduge, et nähtavus läheduses oleks sisse lülitatud (avage olekuala, valides kellaaja, seejärel lülitage nähtavus läheduses sisse). <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">Väljas</translation>
 <translation id="3795766489237825963">Esita animatsioone</translation>
@@ -4872,7 +4873,6 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (parem)</translation>
 <translation id="534449933710420173">Nimeta kaust</translation>
 <translation id="5345916423802287046">Käivita rakendus sisselogimisel</translation>
-<translation id="5349456828414077488">Administraatori antud sertifikaadi kasutamine. Teie administraator saab domeenile <ph name="DOMAIN" /> esitatavad sisselogimisandmed kinni pidada</translation>
 <translation id="5350293332385664455">Google'i assistendi väljalülitamine</translation>
 <translation id="535123479159372765">Tekst kopeeriti muust seadmest</translation>
 <translation id="5352033265844765294">Ajatempel</translation>
@@ -6447,6 +6447,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> lisati kaugühenduse kaudu</translation>
 <translation id="6790820461102226165">Lisa isik ...</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
+<translation id="679486139907144816">Kui soovite saidile pääsuvõtmega sisse logida, peate seadetes sisse lülitama Windows Hello. Seejärel tulge sellele saidile tagasi ja proovige uuesti.</translation>
 <translation id="6795371939514004514">Automaatne skannimine võimaldab teil ekraanil kuvatud üksuste vahel automaatselt liikuda. Kui üksus on esile tõstetud, vajutage selle aktiveerimiseks nuppu „Vali“.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6796509790850723820">Renderda</translation>
@@ -8370,6 +8371,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8513108775083588393">Aut. pööramine</translation>
 <translation id="8514746246728959655">Proovige muud turvavõtit</translation>
 <translation id="8514955299594277296">Saitidel ei lubata teie seadmesse andmeid salvestada (pole soovitatav)</translation>
+<translation id="8517759303731677493">Muuda …</translation>
 <translation id="8519895319663397036">Ei saa paroole importida. Faili suurus peab olema alla 150 kB.</translation>
 <translation id="8523493869875972733">Säilita muudatused</translation>
 <translation id="8523849605371521713">Reegliga lisatud</translation>

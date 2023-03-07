@@ -348,6 +348,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1303671224831497365">Fant ingen Bluetooth-enheter</translation>
 <translation id="130491383855577612">Linux-apper og -filer er erstattet</translation>
 <translation id="1306390193749326011">Du kommer ikke til å se <ph name="MODULE_NAME" /> på denne siden mer</translation>
+<translation id="1306518237408758433">Åpne <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="1306606229401759371">Endre innstillingene</translation>
 <translation id="1307165550267142340">PIN-koden er opprettet</translation>
 <translation id="1307431692088049276">Ikke spør meg igjen</translation>
@@ -437,6 +438,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1393283411312835250">Sol og skyer</translation>
 <translation id="1395730723686586365">Oppdatereringsprogrammet er startet</translation>
 <translation id="1395832189806039783">Fremhev elementet med tastaturfokus</translation>
+<translation id="1396120028054416908">Tilbake til <ph name="FOLDER_TITLE" /></translation>
 <translation id="1396139853388185343">Feil ved konfigurasjonen av skriveren</translation>
 <translation id="1396963298126346194">Brukernavnet og passordet du skrev inn, stemmer ikke overens</translation>
 <translation id="1397500194120344683">Ingen kompatible enheter. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
@@ -678,6 +680,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1596286373007273895">Tilgjengelig</translation>
 <translation id="1596709061955594992">Bluetooth er slått av. For å se tilgjengelige enheter, slå på Bluetooth.</translation>
 <translation id="1596780725094407793">– inneholder underdomener</translation>
+<translation id="1597852076552089763">Bokmerkealternativer</translation>
 <translation id="1598163867407640634">Bruk <ph name="SITE_ETLD_PLUS_ONE" /> hos <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1598233202702788831">Administratoren din har slått av oppdateringer.</translation>
 <translation id="1600857548979126453">få tilgang til bakdata for sidefeilsøkingsprogrammet</translation>
@@ -1631,6 +1634,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2383825469508278924">Endre tastaturtilordninger, funksjonstaster med mer</translation>
 <translation id="2387052489799050037">Gå til startsiden</translation>
 <translation id="2387602571959163792"><ph name="DESK_NAME" /> (gjeldende)</translation>
+<translation id="2390226379317200116">Legg til et notat eller en tanke på denne siden for å se den senere.</translation>
 <translation id="2390347491606624519">Kan ikke koble til proxy-tjeneren – logg på på nytt</translation>
 <translation id="2390782873446084770">Wifi-synkronisering</translation>
 <translation id="2391419135980381625">Standardskrift</translation>
@@ -1824,6 +1828,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="25568951186001797">Avgjerdet ramme: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2558569818338050235">Nettleserloggen din påvirker hvilke annonser du ser</translation>
 <translation id="2559889124253841528">Lagre på enheten</translation>
+<translation id="2561211427862644160">Se alle bokmerkene dine her</translation>
 <translation id="2564520396658920462">Kjøring av JavaScript gjennom AppleScript er slått av. For å slå det på, gå til menylinjen og velg Vis &gt; Utvikler &gt; Tillat JavaScript fra Apple Events. For mer informasjon, se: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Bedre stavekontroll</translation>
 <translation id="2568694057933302218">Når du er i inkognito, kan ikke nettsteder bruke informasjonskapsler for å se nettleseraktiviteten din på andre nettsteder. Nettleseraktiviteten din brukes ikke til ting som personlig tilpasning av annonser. Det kan hende at funksjoner på noen nettsteder ikke fungerer.</translation>
@@ -2321,6 +2326,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3003967365858406397"><ph name="PHONE_NAME" />-enheten din oppretter en privat Wifi-tilkobling.</translation>
 <translation id="3005574332301273731">Ikke vis</translation>
 <translation id="3006881078666935414">Ingen bruksdata</translation>
+<translation id="3007410324195400631">Legg til notater om denne siden</translation>
 <translation id="3007771295016901659">Dupliser fanen</translation>
 <translation id="3008232374986381779">Kjør Linux-verktøy, -redigeringsverktøy og -IDE-er på <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Tilbakestill tillatelser</translation>
@@ -2428,6 +2434,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3090871774332213558">«<ph name="DEVICE_NAME" />» er tilkoblet</translation>
 <translation id="3093714882666365141">Ikke la nettsteder installere betalingsbehandlere</translation>
 <translation id="3094141017404513551">Surfingen din blir atskilt fra <ph name="EXISTING_USER" /></translation>
+<translation id="3094521107841754472">Prisen er endret fra <ph name="PREVIOUS_PRICE" /> til <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Bokmerker, passord og andre nettlesingsdata synkroniseres med primærkontoen.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 potensielt skadelig utvidelse er slått av. Du kan også fjerne den.}other{{NUM_EXTENSIONS} potensielt skadelige utvidelser er slått av. Du kan også fjerne dem.}}</translation>
 <translation id="3101126716313987672">Svakt lys</translation>
@@ -2780,6 +2787,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3441653493275994384">Skjerm</translation>
 <translation id="3441663102605358937">Logg på <ph name="ACCOUNT" /> på nytt for å verifisere denne kontoen</translation>
 <translation id="3442674350323953953">La Google bruke maskinvaredataene dine for å gjøre <ph name="DEVICE_OS" /> bedre. Hvis du avviser, blir dataene fremdeles sendt til Google for å fastslå riktige oppdateringer, men de blir ikke lagret eller brukt ellers.</translation>
+<translation id="3443744348829035122"><ph name="BRAND" /> er tidsavbrutt</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> får tilgang til å lese <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">Google Assistent-hurtigsvar</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
@@ -3324,6 +3332,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="39103738135459590">Aktiveringskode</translation>
 <translation id="3911824782900911339">Siden Ny fane</translation>
 <translation id="3914173277599553213">Påkrevd</translation>
+<translation id="3914568430265141791">Åpne mappen <ph name="FOLDER_TITLE" /></translation>
 <translation id="3915280005470252504">Søk med tale</translation>
 <translation id="3916233823027929090">Sikkerhetssjekkene er fullført</translation>
 <translation id="3916445069167113093">Denne filtypen kan skade datamaskinen. Ønsker du å beholde <ph name="FILE_NAME" /> likevel?</translation>
@@ -3453,6 +3462,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4022426551683927403">&amp;Legg til i ordliste</translation>
 <translation id="4025039777635956441">Kutt lyden for det valgte nettstedet</translation>
 <translation id="402707738228916911">En <ph name="AUTHORIZE_INSTRUCTION_NAME" />-instruksjon er mottatt</translation>
+<translation id="4027569221211770437"><ph name="FOLDER_TITLE" />-mappen</translation>
 <translation id="4027958407426528157">Åpne nettsteder i apper som er installert på <ph name="DEVICE_TYPE" /></translation>
 <translation id="4028467762035011525">Legg til inndatametoder</translation>
 <translation id="4029556917477724407">Tilbake fra siden <ph name="PAGE_TITLE" /></translation>
@@ -3507,6 +3517,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4077917118009885966">Annonser er blokkert på dette nettstedet</translation>
 <translation id="4077919383365622693">Alle data og informasjonskapsler som er lagret for <ph name="SITE" />, slettes.</translation>
 <translation id="4078738236287221428">Aggressiv</translation>
+<translation id="4078903002989614318">Sorterings- og listealternativer</translation>
 <translation id="4079140982534148664">Bruk forbedret stavekontroll</translation>
 <translation id="4084682180776658562">Legg til bokmerke</translation>
 <translation id="4084835346725913160">Lukk <ph name="TAB_NAME" /></translation>
@@ -3651,6 +3662,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4217571870635786043">Diktering</translation>
 <translation id="4218081191298393750">Klikk på høyttalerikonet for å kutte lyden for denne fanen</translation>
 <translation id="4220648711404560261">Det oppsto en feil under aktiveringen.</translation>
+<translation id="4222917615373664617">Prissporing er på. Prisen er <ph name="CURRENT_PRICE" />.</translation>
 <translation id="4223845867739585293">Opprett en tilgangsnøkkel</translation>
 <translation id="4225397296022057997">På alle nettsteder</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Denne utvidelsen er ikke tillatt}other{Noen utvidelser er ikke tillatt}}</translation>
@@ -5811,6 +5823,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6212168817037875041">Slå av skjermen</translation>
 <translation id="6212752530110374741">Send linken på e-post</translation>
 <translation id="621470880408090483">Ikke la nettsteder koble til Bluetooth-enheter</translation>
+<translation id="6215039389782910006">{1,plural, =1{For å beskytte passordene dine låses <ph name="BRAND" /> etter 1 minutt uten aktivitet}other{For å beskytte passordene dine låses <ph name="BRAND" /> etter # minutter uten aktivitet}}</translation>
 <translation id="6216239400972191926">Avviste nettsteder og apper</translation>
 <translation id="6216601812881225442">Beholderen støtter ikke størrelsesendringer. For å justere mengden plass som er forhåndsallokert til Linux, sikkerhetskopiér disken og gjenopprett den deretter i en ny beholder.</translation>
 <translation id="6216696360484424239">Logg på automatisk</translation>
@@ -7719,6 +7732,7 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7940265372707990269">Sorter etter <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Tilgjengelighet for internettdeling:</translation>
 <translation id="7942349550061667556">Rød</translation>
+<translation id="7943349879009553083">Ikke tilgjengelig i gjestemodus</translation>
 <translation id="7943368935008348579">Last ned PDF-filer</translation>
 <translation id="7943837619101191061">Legg til plassering</translation>
 <translation id="7944772052836377867">Synkronisering må bekrefte at det er deg</translation>
@@ -8887,6 +8901,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8993945059918628059">Trykk på fingeravtrykkssensoren med fingeren. Fingeravtrykksdataene lagres sikkert og sendes aldri fra <ph name="DEVICE_TYPE" />.</translation>
 <translation id="899403249577094719">Primære nettadresse for Netscape-sertifikat</translation>
 <translation id="899657321862108550">Din egen Chrome – uansett hvor du er</translation>
+<translation id="899671834467367922">Logg på som en annen bruker for å vise og ta notater på denne siden.</translation>
 <translation id="8998078711690114234">Denne filtypen kan være farlig. Du bør bare lagre denne filen hvis du stoler på <ph name="ORIGIN" /></translation>
 <translation id="8999560016882908256">Syntaksfeil i seksjon: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">Trykk på fingeravtrykkssensoren på høyre side av <ph name="DEVICE_TYPE" />. Fingeravtrykksdataene lagres sikkert og sendes aldri fra <ph name="DEVICE_TYPE" />.</translation>

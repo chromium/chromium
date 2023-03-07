@@ -559,6 +559,7 @@
 <translation id="1487335504823219454">Асаалттай - өөрчлөх тохиргоо</translation>
 <translation id="1493892686965953381"><ph name="LOAD_STATE_PARAMETER" />-ыг хүлээж байна...</translation>
 <translation id="1494349716233667318">Сайтууд таны төхөөрөмж дээр суулгасан фонтуудыг ашиглахыг хүсэх боломжтой</translation>
+<translation id="1494429729245089920">"<ph name="VM_NAME" />" виртуал машин байгаа хэдий ч хүчинтэй <ph name="APP_NAME" /> виртуал машин биш бололтой. Администратортайгаа холбогдоно уу.</translation>
 <translation id="1495677929897281669">Таб руу буцах</translation>
 <translation id="1498498210836053409">Текст засах үедээ бэхлэгч горимыг унтраах (Ухаалаг бэхлэгч горим)</translation>
 <translation id="1500297251995790841">Үл мэдэгдэх төхөөрөмж [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>

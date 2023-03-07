@@ -556,6 +556,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1487335504823219454">Activado: configuración personalizada</translation>
 <translation id="1493892686965953381">Agardando por <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">Os sitios poden pedirche permiso para utilizar os tipos de letra instalados no dispositivo</translation>
+<translation id="1494429729245089920">A máquina virtual <ph name="VM_NAME" /> existe, pero parece que non é unha máquina virtual válida de <ph name="APP_NAME" />. Fala coa persoa administradora.</translation>
 <translation id="1495677929897281669">Volver á pestana</translation>
 <translation id="1498498210836053409">Desactivar modo persistente cando se edite texto (modo persistente intelixente)</translation>
 <translation id="1500297251995790841">Dispositivo descoñecido [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>

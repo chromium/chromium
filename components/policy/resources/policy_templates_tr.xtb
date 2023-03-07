@@ -2998,13 +2998,6 @@ Bu özellik varsayılan olarak etkinleştirilir. Politika, Etkin değerine ayarl
 Politika, Devre Dışı değerine ayarlanırsa özellik devre dışı bırakılır.
 
 Bu politika geçici bir çözümdür ve birkaç kilometre taşından kaldırılacaktır (kaldırma işleminin geçici olarak M113 sürümünde gerçekleşmesi planlanmaktadır).</translation>
-<translation id="3795413481405077588">Bu politika, yöneticinin yüklenen web uygulamaları için ayarları belirtmesine olanak tanır.
-
-      Bu politika, web uygulaması kimliğini kendi özel ayarı ile eşleştirir. <ph name="DEFAULT_SCOPE" /> özel kimliği kullanılarak varsayılan bir yapılandırma ayarlanabilir. Bu varsayılan yapılandırma, bu politikada özel bir yapılandırma ayarlanmamış tüm web uygulamaları için geçerli olur.
-
-      <ph name="MANIFEST_ID_FIELD" /> alanı, web uygulamasının manifest kimliğidir. Yüklü bir web uygulamasının manifest kimliğini nasıl belirleyeceğinizle ilgili talimatlar için <ph name="WEB_APP_ID_REFERENCE_URL" /> adresine göz atın.
-      <ph name="RUN_ON_OS_LOGIN_FIELD" /> alanı, bir web uygulamasının OS girişi sırasında çalıştırılıp çalıştırılamayacağını belirtir. Bu alan, <ph name="BLOCKED" /> değerine ayarlanırsa OS girişi sırasında web uygulaması çalıştırılmaz. Kullanıcı, bu ayarı daha sonra etkinleştiremez. Bu alan, <ph name="RUN_WINDOWED" /> değerine ayarlanırsa OS girişi sırasında web uygulaması çalıştırılır. Kullanıcı, bu ayarı daha sonra devre dışı bırakamaz. Bu alan, <ph name="ALLOWED" /> değerine ayarlanırsa kullanıcı, OS girişi sırasında web uygulamasını çalışacak şekilde yapılandırabilir. Varsayılan yapılandırma, yalnızca <ph name="ALLOWED" /> ve <ph name="BLOCKED" /> değerlerine izin verir.
-      </translation>
 <translation id="3796527892245558832">Başlangıçta profil seçiciyi etkinleştir</translation>
 <translation id="3798922329287609568">Politika ayarlanırsa dupleks modunda yazdırma kısıtlanır.
 
@@ -5931,6 +5924,13 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
       Bu politika ayarlanmadan bırakılırsa hem kurumsal olarak yönetilen kullanıcılar hem de yönetilmeyen kullanıcılar için varsayılana izin verilir.</translation>
 <translation id="6640748114867542396">Yönetilen uzantıların Enterprise Hardware Platform API'yi kullanmasına izin verme</translation>
 <translation id="6641981670621198190">3D grafik API'ları için desteği devre dışı bırak</translation>
+<translation id="6644480111811011438">Bu politika, Birinci Taraf Grup özelliğini devre dışı bırakma yöntemi olarak sağlanmıştır.
+
+                  Bu politika ayarlanmadığında veya Etkin değerine ayarlandığında Birinci Taraf Grup özelliği etkinleştirilir.
+
+                  Bu politika Devre dışı değerine ayarlandığında Birinci Taraf Grup özelliği devre dışı bırakılır.
+
+                  Chrome'un, Birinci Taraf Grup ile ilgili entegrasyonları destekleyip desteklemediğini kontrol eder.</translation>
 <translation id="6646912445796087001">Dokunmatik klavyede çeşitli özellikleri açma veya kapama. Bu politika sadece "VirtualKeyboardEnabled" politikası etkinleştirildiğinde geçerlidir.
 
       Politikadaki bir özellik True (Doğru) değerine ayarlanırsa dokunmatik klavyede etkinleştirilir.
@@ -7389,6 +7389,32 @@ Geçerli değerler, 1 saniye ile 9.999 saniye aralığındadır. Politika ayarla
 <translation id="8020222525161221827">Üçüncü taraf Chrome OS kontrolü için Desk API'yi etkinleştirme</translation>
 <translation id="802147957407376460">Ekranı 0 derece döndür</translation>
 <translation id="8021777486638359878">Ses çalarken kullanıcıyı işlem yapmıyor olarak değerlendir</translation>
+<translation id="8022909529579794519">Bu ayar hangi <ph name="LACROS_NAME" /> tarayıcının kullanılacağını yapılandırır.
+
+Politika <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> değerine ayarlanırsa kullanıcı hangi <ph name="LACROS_NAME" /> tarayıcının
+(<ph name="LACROS_ROOTFS_NAME" /> veya <ph name="LACROS_STATEFUL_NAME" /> bölümü ikili
+programı) yükleneceğine karar verebilir.
+Kullanıcı herhangi bir tercih belirtmezse en yeni sürüme sahip ikili program seçilir.
+
+Politika <ph name="LACROS_SELECTION_ROOTFS_VALUE" /> değerine ayarlanırsa her
+zaman <ph name="LACROS_NAME" /> tarayıcının <ph name="LACROS_ROOTFS_NAME" />
+ikili dosyası yüklenir.
+
+Politika ayarlanmadan bırakılırsa varsayılan değer, kuruluş tarafından yönetilen kullanıcılar için <ph name="LACROS_SELECTION_ROOTFS_VALUE" />, yönetilmeyen kullanıcılar için <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> olur.
+
+Politika değeri değiştirildiğinde, tarayıcı sürümü
+mevcut sürümden daha eski olursa <ph name="LACROS_NAME" />
+tarayıcıda veri kaybı yaşanabilir. Örneğin, politika
+<ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> değeri yerine <ph name="LACROS_SELECTION_ROOTFS_VALUE" />
+olarak değiştirildiğinde ve ilk değerin güncellenmesi durumunda
+gerçekleşebilir. <ph name="PRODUCT_OS_NAME" />, <ph name="LACROS_ROOTFS_NAME" />
+<ph name="LACROS_NAME" /> tarayıcıyla birlikte güncellendiğinde ve <ph name="LACROS_STATEFUL_NAME" /> henüz
+güncellenmediyse de yaşanabilir.
+Bu tür durumlarda, veri taşıma işleminin düzgün gerçekleşeceği garanti edilmez.
+
+<ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> veya <ph name="LACROS_SELECTION_ROOTFS_VALUE" /> kullanmak
+güvenli bir seçenek olacaktır. <ph name="LACROS_SELECTION_ROOTFS_VALUE" /> değerinden <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> değerine geçiş
+yapmak da güvenli seçeneklerden biridir.</translation>
 <translation id="80243978433618492">URL parametreleriyle ilgili hiçbir filtrelemeye izin verme.</translation>
 <translation id="8025620823136567878">Uluslararası klavye kısayolları, tuşların glifiyle değil klavyedeki yeriyle eşleştirilir.</translation>
 <translation id="802776363472387903"><ph name="PLUGIN_VM_NAME" /> resminin SHA-256 karması.</translation>
@@ -8014,6 +8040,7 @@ Bu politika "true" (doğru) olarak ayarlanırsa kullanıcının tarayıcıyı ku
 
           Politika değeri milisaniye olarak belirtilmelidir.</translation>
 <translation id="859579553230883285">Kullanıcılar için <ph name="PRIVACY_SANDBOX_NAME" /> site tarafından önerilen reklam ayarını devre dışı bırak.</translation>
+<translation id="8597758693275075382">Yükleme sırasında sanal makineye iletilecek SMBIOS OEM dizeleri. Varsayılan olarak boş liste kullanılır.</translation>
 <translation id="8598786284856179541">Sürüm bilgilerinin raporlanmasını etkinleştir</translation>
 <translation id="859937827887158048">İndirilenlerin eşler arası otomatik güncellenmesine izin verme</translation>
 <translation id="8603454805657060638">Politika ayarlanırsa yönetici, bir cihazı yuvaya bağlarken MAC (medya erişim denetimi) adresini değiştirebilir. Bazı cihaz modellerine bir yuva bağlandığında, varsayılan olarak cihazın atanmış yuvasına ait MAC adresi, Ethernet ağında cihazın tanımlanmasına yardımcı olur.

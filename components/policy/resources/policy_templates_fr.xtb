@@ -2982,13 +2982,6 @@ Cette fonctionnalité sera activée par défaut. Si cette règle est activée ou
 Si elle est désactivée, la fonctionnalité est désactivée.
 
 Cette règle est une mesure temporaire et sera supprimée dans une future version (la suppression est envisagée pour M113).</translation>
-<translation id="3795413481405077588">Cette règle permet à un administrateur de définir des paramètres pour les applications Web installées.
-
-      Elle fait correspondre un ID d'application Web à son paramètre spécifique. Une configuration par défaut peut être définie avec l'ID spécial <ph name="DEFAULT_SCOPE" />, lequel s'applique à toutes les applications Web pour lesquelles aucune configuration personnalisée n'est définie dans cette règle.
-
-      Le champ <ph name="MANIFEST_ID_FIELD" /> contient l'ID du fichier manifeste pour l'application Web. Pour savoir comment déterminer l'ID du fichier manifeste d'une application Web qui a été installée, consultez la page <ph name="WEB_APP_ID_REFERENCE_URL" />.
-      Le champ <ph name="RUN_ON_OS_LOGIN_FIELD" /> indique si une application Web peut être exécutée pendant la connexion au système d'exploitation. Si ce champ est défini sur <ph name="BLOCKED" />, l'application Web ne s'exécutera pas pendant la connexion au système d'exploitation et l'utilisateur ne pourra pas activer ce champ plus tard. Si ce champ est défini sur <ph name="RUN_WINDOWED" />, l'application Web s'exécutera pendant la connexion au système d'exploitation et l'utilisateur ne pourra pas désactiver ce champ plus tard. Si ce champ est défini sur <ph name="ALLOWED" />, l'utilisateur pourra configurer l'application Web pour qu'elle s'exécute pendant la connexion au système d'exploitation. La configuration par défaut n'autorise que les valeurs <ph name="ALLOWED" /> et <ph name="BLOCKED" />.
-      </translation>
 <translation id="3796527892245558832">Outil de sélection du profil disponible au démarrage</translation>
 <translation id="3798922329287609568">La définition de cette règle limite l'impression en mode recto verso.
 
@@ -5905,6 +5898,13 @@ Si vous sélectionnez les options suivantes :
       Si cette règle n'est pas définie, le comportement par défaut sera autorisé pour les utilisateurs gérés par une entreprise et pour les utilisateurs non gérés.</translation>
 <translation id="6640748114867542396">Ne pas autoriser les extensions gérées à utiliser l'API Enterprise Hardware Platform</translation>
 <translation id="6641981670621198190">Désactiver la prise en charge des API 3D graphics</translation>
+<translation id="6644480111811011438">Permet de désactiver ou non la fonctionnalité d'ensembles internes.
+
+                  Si cette règle n'est pas configurée ou qu'elle est activée, la fonctionnalité d'ensembles internes est activée.
+
+                  Si elle est désactivée, la fonctionnalité l'est également.
+
+                  Cela détermine si Chrome accepte ou non les intégrations liées aux ensembles internes.</translation>
 <translation id="6646912445796087001">Permet d'activer ou de désactiver les différentes fonctionnalités du clavier à l'écran. Cette règle s'applique uniquement si la règle "VirtualKeyboardEnabled" est activée.
 
       Si une fonctionnalité de cette règle est définie sur "True", elle sera activée pour le clavier à l'écran.
@@ -7348,6 +7348,20 @@ Cette règle n'a aucune incidence lorsque la règle <ph name="SCREENSAVER_ENABLE
 <translation id="8020222525161221827">Activer l'API Desk pour le contrôle ChromeOS tiers</translation>
 <translation id="802147957407376460">Faire pivoter l'écran de 0 degré</translation>
 <translation id="8021777486638359878">Considérer l'utilisateur comme inactif pendant la lecture audio</translation>
+<translation id="8022909529579794519">Ce paramètre indique le navigateur <ph name="LACROS_NAME" /> à utiliser.
+
+Si la règle est définie sur "<ph name="LACROS_SELECTION_USER_CHOICE_VALUE" />", l'utilisateur peut choisir le navigateur <ph name="LACROS_NAME" /> à charger : binaire à partir de la partition <ph name="LACROS_ROOTFS_NAME" /> ou <ph name="LACROS_STATEFUL_NAME" />.
+Si l'utilisateur n'a défini aucune préférence, le binaire avec la version la plus récente sera sélectionné.
+
+Si la règle est définie sur "<ph name="LACROS_SELECTION_ROOTFS_VALUE" />", le binaire <ph name="LACROS_ROOTFS_NAME" /> du navigateur <ph name="LACROS_NAME" /> est toujours chargé.
+
+Si la règle n'est pas configurée, "<ph name="LACROS_SELECTION_ROOTFS_VALUE" />" est défini par défaut pour les utilisateurs gérés par l'entreprise et "<ph name="LACROS_SELECTION_USER_CHOICE_VALUE" />" pour les utilisateurs non gérés.
+
+Notez que modifier la valeur de la règle peut entraîner une perte de données du navigateur <ph name="LACROS_NAME" /> si, après modification, la version du navigateur est antérieure à la version actuelle. C'est le cas, par exemple, si la règle passe de "<ph name="LACROS_SELECTION_USER_CHOICE_VALUE" />" à "<ph name="LACROS_SELECTION_ROOTFS_VALUE" />" et que la première a été mise à jour. Ou bien si <ph name="PRODUCT_OS_NAME" /> a été mis à jour avec <ph name="LACROS_ROOTFS_NAME" />
+<ph name="LACROS_NAME" /> et que <ph name="LACROS_STATEFUL_NAME" /> n'a pas encore été mis à jour.
+Dans ces scénarios, la migration correcte des données n'est pas garantie.
+
+Nous vous recommandons d'utiliser "<ph name="LACROS_SELECTION_USER_CHOICE_VALUE" />" ou "<ph name="LACROS_SELECTION_ROOTFS_VALUE" />". Vous pouvez également passer de "<ph name="LACROS_SELECTION_ROOTFS_VALUE" />" à "<ph name="LACROS_SELECTION_USER_CHOICE_VALUE" />".</translation>
 <translation id="80243978433618492">Désactiver le filtrage des paramètres d'URL</translation>
 <translation id="8025620823136567878">Les raccourcis clavier internationaux sont associés à l'emplacement et non au glyphe des touches du clavier.</translation>
 <translation id="802776363472387903">Hachage SHA-256 de l'image <ph name="PLUGIN_VM_NAME" />.</translation>
@@ -7976,6 +7990,7 @@ Si vous définissez cette règle, vous devez désactiver la règle <ph name="PRI
 
           La valeur de la règle doit être indiquée en millisecondes.</translation>
 <translation id="859579553230883285">Désactivez le paramètre des annonces suggérées par le site de <ph name="PRIVACY_SANDBOX_NAME" /> pour vos utilisateurs.</translation>
+<translation id="8597758693275075382">Chaînes OEM SMBIOS à transmettre à la VM lors de l'installation. La liste vide est utilisée par défaut.</translation>
 <translation id="8598786284856179541">Activer les rapports sur les informations liées à la version</translation>
 <translation id="859937827887158048">Ne pas autoriser le téléchargement automatique de mises à jour peer-to-peer</translation>
 <translation id="8603454805657060638">Cette règle permet à l'administrateur de modifier l'adresse MAC (Media Access Control, contrôle d'accès au support) lors de la connexion d'un appareil à la station d'accueil. Lorsqu'une station d'accueil est connectée à certains modèles d'appareils, l'adresse MAC de la station d'accueil définie pour l'appareil est utilisée, par défaut, pour identifier l'appareil sur Ethernet.

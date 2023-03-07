@@ -258,6 +258,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="6010556343189461180">Als je toekomstige Google Chrome-updates wilt krijgen, heb je macOS 10.15 of hoger nodig. Deze computer gebruikt macOS 10.14.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome wordt nu gesloten.}=1{Chrome wordt over 1 seconde gesloten.}other{Chrome wordt over # seconden gesloten.}}</translation>
 <translation id="6022659036123304283">Personaliseer Chrome voor jou</translation>
+<translation id="6025087594896450715">Google Chrome wordt over <ph name="REMAINING_TIME" /> opnieuw opgestart</translation>
 <translation id="6040143037577758943">Sluiten</translation>
 <translation id="6070348360322141662">Je gegevens worden voor extra beveiliging door Google Chrome versleuteld</translation>
 <translation id="608006075545470555">Werkprofiel toevoegen aan deze browser</translation>

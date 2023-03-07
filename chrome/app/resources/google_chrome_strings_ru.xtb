@@ -269,6 +269,7 @@
 <translation id="6327105987658262776">Нет обновлений.</translation>
 <translation id="6412673304250309937">Сверяет URL со списком небезопасных сайтов в Chrome. Кроме того, если вы скачаете вредоносный файл или сайт попытается похитить ваш пароль, Chrome может отправить URL с образцами контента на проверку с помощью Безопасного просмотра.</translation>
 <translation id="6418662306461808273">Переключиться на существующий профиль Chrome?</translation>
+<translation id="6493527311031785448">Google Chrome пытается <ph name="AUTHENTICATION_PURPOSE" />.</translation>
 <translation id="6506909944137591434">Для создания 3D-карты места, в котором вы находитесь, браузеру Chrome требуется доступ к камере.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome для разработчиков</translation>
 <translation id="659498884637196217">В Google Менеджере паролей на этом устройстве</translation>

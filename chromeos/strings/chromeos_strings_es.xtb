@@ -163,6 +163,7 @@
 <translation id="2346474577291266260">Excelente (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2364498172489649528">Aprobado</translation>
+<translation id="2367335866686097760">Tecla de asignación de teclas</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Enviar informe de opinión</translation>
 <translation id="2407209115954268704">Estado de bloqueo de la SIM</translation>
@@ -235,7 +236,9 @@
 <translation id="319101249942218879">Se ha cambiado la imagen del avatar</translation>
 <translation id="3192947282887913208">Archivos de audio</translation>
 <translation id="3199982728237701504">Alimentador de documentos (dos caras)</translation>
+<translation id="3211671540163313381">Cruceta de asignación de teclas</translation>
 <translation id="3226405216343213872">Buscando escáneres</translation>
+<translation id="3226657629376379887">Menú de acciones de diseño</translation>
 <translation id="3246869037381808805">Los trabajos de impresión con más de 1 día de antigüedad se eliminarán</translation>
 <translation id="3268178239013324452">No se ha podido imprimir - Cierra la cubierta</translation>
 <translation id="3275506277319227640">Anclar en <ph name="DIRECTION" /></translation>
@@ -616,6 +619,7 @@
 <translation id="650266656685499220">Para crear álbumes, ve a Google Fotos</translation>
 <translation id="6516990319416533844">Para comprobar la velocidad de carga de la batería, deja que se use un poco</translation>
 <translation id="6517239166834772319">Explorar</translation>
+<translation id="6526200165918397681">Adaptar al fondo de pantalla</translation>
 <translation id="6527081081771465939">Protocolo de seguridad Wi-Fi desconocido</translation>
 <translation id="6535178685492749208">No tienes conexión. Los comentarios se enviarán más tarde.</translation>
 <translation id="65587193855025101">Escáner de superficie plana</translation>
@@ -802,6 +806,7 @@
 <translation id="8318753676953949627">Sin imágenes</translation>
 <translation id="8336739000755212683">Cambiar imagen de cuenta de dispositivo</translation>
 <translation id="8347227221149377169">Trabajos de impresión</translation>
+<translation id="8351855506390808906">Punto táctil de asignación de teclas</translation>
 <translation id="8352772353338965963">Se puede añadir una cuenta al inicio de sesión múltiple y acceder a todas las cuentas en las que se haya iniciado sesión sin una contraseña, por lo que esta función solo se debe utilizar con cuentas de confianza.</translation>
 <translation id="8364946094152050673">Servidores de nombres vacíos</translation>
 <translation id="8372477600026034341">Hosts adicionales</translation>
@@ -899,6 +904,7 @@
 <translation id="9138630967333032450">Mayús izquierda</translation>
 <translation id="9149391708638971077">Realizar prueba de memoria</translation>
 <translation id="9157515863513902090">Anclar en el lado más grande</translation>
+<translation id="9161276708550942948">barra espaciadora</translation>
 <translation id="9173638680043580060">Queda menos de 1 minuto</translation>
 <translation id="917720651393141712">Prueba</translation>
 <translation id="9188992814426075118">Tu teclado puede combinar automáticamente con tu fondo de pantalla</translation>

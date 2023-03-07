@@ -163,6 +163,7 @@
 <translation id="2346474577291266260">Τέλειο (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Συνέχεια</translation>
 <translation id="2364498172489649528">Επιτυχία</translation>
+<translation id="2367335866686097760">Πλήκτρο αντιστοίχισης πλήκτρων</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Αποστολή αναφοράς σχολίων</translation>
 <translation id="2407209115954268704">Κατάσταση κλειδώματος SIM</translation>
@@ -235,7 +236,9 @@
 <translation id="319101249942218879">Η εικόνα avatar άλλαξε</translation>
 <translation id="3192947282887913208">Αρχεία ήχου</translation>
 <translation id="3199982728237701504">Τροφοδότης εγγράφων (Διπλής όψης)</translation>
+<translation id="3211671540163313381">D-pad αντιστοίχισης πλήκτρων</translation>
 <translation id="3226405216343213872">Αναζήτηση για σαρωτές</translation>
+<translation id="3226657629376379887">Μενού ενεργειών διάταξης</translation>
 <translation id="3246869037381808805">Οι εργασίες εκτύπωσης που είναι παλαιότερες της 1 ημέρας θα καταργηθούν.</translation>
 <translation id="3268178239013324452">Σφάλμα - Η θύρα είναι ανοικτή</translation>
 <translation id="3275506277319227640">Αγκύρωση <ph name="DIRECTION" /></translation>
@@ -803,6 +806,7 @@
 <translation id="8318753676953949627">Δεν υπάρχουν εικόνες</translation>
 <translation id="8336739000755212683">Αλλαγή εικόνας λογαριασμού συσκευής</translation>
 <translation id="8347227221149377169">Εργασίες εκτύπωσης</translation>
+<translation id="8351855506390808906">Σημείο αφής αντιστοίχισης πλήκτρων</translation>
 <translation id="8352772353338965963">Προσθέστε έναν λογαριασμό στη σύνδεση σε πολλούς λογαριασμούς. Όλοι οι συνδεδεμένοι λογαριασμοί μπορούν να προσπελαστούν χωρίς κωδικό πρόσβασης, επομένως αυτή η δυνατότητα πρέπει να χρησιμοποιείται μόνο με αξιόπιστους λογαριασμούς.</translation>
 <translation id="8364946094152050673">Κενά ονόματα διακομιστών</translation>
 <translation id="8372477600026034341">Επιπλέον κεντρικοί υπολογιστές</translation>
@@ -900,6 +904,7 @@
 <translation id="9138630967333032450">Αριστερό shift</translation>
 <translation id="9149391708638971077">Εκτέλεση δοκιμής μνήμης</translation>
 <translation id="9157515863513902090">Αγκύρωση στη μεγαλύτερη πλευρά</translation>
+<translation id="9161276708550942948">πλήκτρο διαστήματος</translation>
 <translation id="9173638680043580060">Απομένει λιγότερο από ένα λεπτό</translation>
 <translation id="917720651393141712">Δοκιμή</translation>
 <translation id="9188992814426075118">Μπορεί να γίνει αυτόματη αντιστοίχιση του πληκτρολογίου με την ταπετσαρία σας</translation>

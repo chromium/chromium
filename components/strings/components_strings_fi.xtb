@@ -345,6 +345,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1733064249834771892">fontit</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Ota yhteyttä järjestelmänvalvojaan.</translation>
+<translation id="1736158756193183352"><ph name="BEGIN_LINK" />Kirjaudutaan sisään<ph name="END_LINK" /> verkkoon</translation>
 <translation id="1736420071277903564">Tietokone</translation>
 <translation id="1740951997222943430">Anna kelvollinen viimeinen voimassaolokuukausi.</translation>
 <translation id="1741613555002899862">On määritettävä kelvollisena merkkijonona, kun DnsOverHttpsMode on <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
@@ -1193,6 +1194,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3949601375789751990">Selaushistoriasi näkyy tässä.</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Ei tallennettuja maksutapoja</translation>
+<translation id="3950574001630941635">Katso ohje uudelleen</translation>
 <translation id="3950820424414687140">Kirjaudu sisään</translation>
 <translation id="3958057596965527988">4 x 4 tuumaa</translation>
 <translation id="3961148744525529027">Maksujenkäsittelytaulukko on puoliksi avattu</translation>
@@ -2310,6 +2312,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6738516213925468394">Datasi salattiin <ph name="BEGIN_LINK" />synkronoinnin tunnuslauseella<ph name="END_LINK" /> <ph name="TIME" />. Aloita synkronointi antamalla tunnuslause.</translation>
 <translation id="674375294223700098">Tuntematon palvelimen varmennevirhe.</translation>
 <translation id="6744009308914054259">Voit lukea artikkeleita offline-tilassa Lataukset-kohdassa, kun odotat yhteyden muodostamista.</translation>
+<translation id="6745592621698551453">Päivitä nyt</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Videoneuvottelut</translation>
 <translation id="6753269504797312559">Käytännön arvo</translation>
@@ -2774,7 +2777,6 @@ Lisätietoja:
 <translation id="7802523362929240268">Sivusto on luotettava</translation>
 <translation id="7802989406998618639">Lisää <ph name="NUMBER_OF_DIGITS" />-numeroinen turvakoodi (<ph name="SIDE_OF_CARD" />). Näin pankkisi voi vahvistaa henkilöllisyytesi</translation>
 <translation id="780301667611848630">Ei kiitos</translation>
-<translation id="7805571567667010077">Organisaatiosi hallinnoima</translation>
 <translation id="7805768142964895445">Tila</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Poistetaanko lomake-ehdotus Chromen tiedoista?</translation>
@@ -2997,6 +2999,7 @@ Lisätietoja:
 <translation id="8369073279043109617">Pyydä uusi koodi</translation>
 <translation id="8371889962595521444">Yksilöidyt juurivarmenteet</translation>
 <translation id="8374636051559112948">Vaihtelee</translation>
+<translation id="8378714024927312812">Organisaatiosi ylläpitämä</translation>
 <translation id="8380941800586852976">Vaarallinen</translation>
 <translation id="8381674639488873545">Veloitukset voivat olla kertaluontoisia tai toistuvia, eikä niitä välttämättä esitetä selkeästi. <ph name="BEGIN_LINK" />Näytä silti<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Järjestelmänvalvojakäytäntö on estänyt jakamisen (lähde: <ph name="ORIGIN_NAME" />, kohde: <ph name="VM_NAME" />)</translation>

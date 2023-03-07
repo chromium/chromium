@@ -249,6 +249,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1213254615020057352">Send usage and diagnostic data. Help improve your child's Android experience by automatically sending diagnostic, device and app usage data to Google. This won't be used to identify your child, and will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. This setting is enforced by the owner. The owner may choose to send diagnostic and usage data for this device to Google. If additional Web &amp; App Activity setting is turned on for your child, this data may be saved to their Google Account.</translation>
 <translation id="1213726621272705156">You won't see cards on this page again</translation>
 <translation id="121384500095351701">This file can't be downloaded securely</translation>
+<translation id="1214004433265298541">Certificate provided by your administrator who can view credentials for <ph name="DOMAIN" /></translation>
 <translation id="1215411991991485844">New background app added</translation>
 <translation id="1216542092748365687">Remove fingerprint</translation>
 <translation id="1216891999012841486">Learn more about fixing update errors</translation>
@@ -891,6 +892,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1766575458646819543">Exited full screen</translation>
 <translation id="1766957085594317166">Save passwords securely in your Google account and you'll never have to type them again</translation>
 <translation id="1767043563165955993">Use with Android apps</translation>
+<translation id="1767508543310534319">Punctuation echo</translation>
 <translation id="1768212860412467516">Send feedback for <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="1768278914020124551">Oops!  There was a problem contacting the logon server. Please check your network connection and the domain name, then try again.</translation>
 <translation id="1769104665586091481">Open Link in New &amp;Window</translation>
@@ -1917,6 +1919,9 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2642111877055905627">Football</translation>
 <translation id="2643064289437760082">You can always delete ad-measurement data by deleting your browsing data</translation>
 <translation id="2643698698624765890">Manage your extensions by clicking Extensions in the Window menu.</translation>
+<translation id="2643887015830197688">Upgrade navigations to HTTPS and warn you before loading sites that don't support it.
+
+    You can't change this setting because you have Advanced Protection enabled.</translation>
 <translation id="2645047101481282803">Your device is managed by <ph name="PROFILE_NAME" /></translation>
 <translation id="2645388244376970260">Casting this tab to <ph name="DEVICE_NAME" /></translation>
 <translation id="2645435784669275700">Chrome OS</translation>
@@ -2969,6 +2974,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="360180734785106144">Offer new features as they become available</translation>
 <translation id="3602290021589620013">Preview</translation>
 <translation id="3602870520245633055">Print and scan</translation>
+<translation id="3602894439067790744">Read numbers as</translation>
 <translation id="3603622770190368340">Obtain network certificate</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} account using same password}other{{COUNT} accounts using same password}}</translation>
 <translation id="3605780360466892872">Businessman</translation>
@@ -4883,7 +4889,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (right)</translation>
 <translation id="534449933710420173">Unnamed folder</translation>
 <translation id="5345916423802287046">Start app when you sign in</translation>
-<translation id="5349456828414077488">Using an administrator-provided certificate. Sign-in data that you provide to <ph name="DOMAIN" /> can be intercepted by your administrator</translation>
 <translation id="5350293332385664455">Turn off Google Assistant</translation>
 <translation id="535123479159372765">Text copied from other device</translation>
 <translation id="5352033265844765294">Time Stamping</translation>
@@ -4971,6 +4976,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5432145523462851548">Show <ph name="FILE_NAME" /> in folder</translation>
 <translation id="543338862236136125">Edit password</translation>
 <translation id="5434065355175441495">PKCS #1 RSA Encryption</translation>
+<translation id="5434294721803750644">Monitored connection</translation>
 <translation id="5435779377906857208">Always allow <ph name="HOST" /> to access your location</translation>
 <translation id="5436492226391861498">Waiting for proxy tunnel...</translation>
 <translation id="5436510242972373446">Search <ph name="SITE_NAME" />:</translation>
@@ -5376,6 +5382,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5804241973901381774">Permissions</translation>
 <translation id="5804259315582798390">Failed to enable local data recovery</translation>
 <translation id="5805268472388605531">Press and hold keyboard keys to see accent marks and special characters</translation>
+<translation id="5805354171420804923">Compare search results faster from the new side panel</translation>
 <translation id="5805697420284793859">Window manager</translation>
 <translation id="5806447147478173900">Total storage used by displayed sites: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (Default)</translation>
@@ -7264,6 +7271,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7520766081042531487">Incognito portal: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Show shortcuts</translation>
 <translation id="7522255036471229694">Say 'Ok Google'</translation>
+<translation id="7523117833414447032">When reading capitals</translation>
 <translation id="7523585675576642403">Rename profile</translation>
 <translation id="7525067979554623046">Create</translation>
 <translation id="7526658513669652747">{NUM_DOWNLOADS,plural, =1{1 more}other{{NUM_DOWNLOADS} more}}</translation>
@@ -7759,6 +7767,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7950629216186736592">Reason: LBS only supports http://, https:// and file:// URLs.</translation>
 <translation id="7951265006188088697">To add or manage Google Pay payment methods, visit your <ph name="BEGIN_LINK" />Google Account<ph name="END_LINK" /></translation>
 <translation id="795130320946928025">Turn off virtual card</translation>
+<translation id="795240231873601803">Use enterprise enrolment for work and school accounts</translation>
 <translation id="7952708427581814389">Sites can ask to see text and images on your clipboard</translation>
 <translation id="795282463722894016">Restore complete</translation>
 <translation id="7952904276017482715">Expected ID '<ph name="EXPECTED_ID" />', but ID was '<ph name="NEW_ID" />'</translation>
@@ -7963,6 +7972,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="81238879832906896">Yellow and white flower</translation>
 <translation id="8123975449645947908">Scroll backwards</translation>
 <translation id="8124313775439841391">Managed ONC</translation>
+<translation id="8129265306888404830">To use your email address from your organisation (<ph name="EMAIL_DOMAIN" />), you need to use enterprise enrolment. If this device is for your personal use, sign in with your personal Google Account.</translation>
 <translation id="813082847718468539">View site information</translation>
 <translation id="8131740175452115882">Confirm</translation>
 <translation id="8133297578569873332">Acceptable – FM</translation>

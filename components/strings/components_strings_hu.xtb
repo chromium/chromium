@@ -2307,6 +2307,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6738516213925468394">Adatai titkosítva lettek <ph name="BEGIN_LINK" />összetett szinkronizálási jelszavával<ph name="END_LINK" /> a következő időpontban: <ph name="TIME" />. Adja meg a jelszót a szinkronizálás megkezdéséhez.</translation>
 <translation id="674375294223700098">Ismeretlen szervertanúsítvány-hiba.</translation>
 <translation id="6744009308914054259">Miközben kapcsolatra vár, a Letöltések között elolvashatja az offline cikkeket.</translation>
+<translation id="6745592621698551453">Frissítés most</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Telekonferencia</translation>
 <translation id="6753269504797312559">Házirend értéke</translation>
@@ -2771,7 +2772,6 @@ További részletek:
 <translation id="7802523362929240268">A webhely valódi</translation>
 <translation id="7802989406998618639">Adja meg <ph name="SIDE_OF_CARD" /> található, <ph name="NUMBER_OF_DIGITS" /> számjegyből álló biztonsági kódot, hogy a bank ellenőrizni tudja a személyazonosságát</translation>
 <translation id="780301667611848630">Köszönöm, nem</translation>
-<translation id="7805571567667010077">A szervezete kezeli</translation>
 <translation id="7805768142964895445">Állapot</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Eltávolítja a javaslatot a Chrome-ból?</translation>
@@ -2994,6 +2994,7 @@ További részletek:
 <translation id="8369073279043109617">Új kód igénylése</translation>
 <translation id="8371889962595521444">Egyéni gyökérszintű tanúsítványok</translation>
 <translation id="8374636051559112948">Változó</translation>
+<translation id="8378714024927312812">Az Ön szervezete kezeli</translation>
 <translation id="8380941800586852976">Veszélyes</translation>
 <translation id="8381674639488873545">Egyszeri és ismétlődő díjakról is szó lehet, amelyek nem feltétlenül nyilvánvalóak. <ph name="BEGIN_LINK" />Megjelenítés mégis<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Rendszergazdai házirend tiltja a tartalmak megosztását innen: <ph name="ORIGIN_NAME" />, ide: <ph name="VM_NAME" /></translation>

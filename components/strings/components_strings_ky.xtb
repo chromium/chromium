@@ -2308,6 +2308,7 @@
 <translation id="6738516213925468394">Дайын-даректериңиз <ph name="BEGIN_LINK" />шайкештирүүчү өткөрүүчү сүйлөм<ph name="END_LINK" /> менен <ph name="TIME" /> шифрлеген. Шайкештирип баштоо үчүн, аны киргизиңиз.</translation>
 <translation id="674375294223700098">Сервер тастыктамасынын белгисиз катасы.</translation>
 <translation id="6744009308914054259">Интернет байланышын күткөнчө, Жүктөлүп алынган файлдарды ачып, макалаларды оффлайнда окуп туруңуз.</translation>
+<translation id="6745592621698551453">Азыр жаңыртуу</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Телеконференция</translation>
 <translation id="6753269504797312559">Саясат мааниси</translation>
@@ -2772,7 +2773,6 @@
 <translation id="7802523362929240268">Бул сайт коопсуз</translation>
 <translation id="7802989406998618639">Банк сиз экениңизди текшериши үчүн, <ph name="SIDE_OF_CARD" /> картаңыздагы <ph name="NUMBER_OF_DIGITS" /> орундуу коопсуздук кодун киргизиңиз</translation>
 <translation id="780301667611848630">Жок, рахмат</translation>
-<translation id="7805571567667010077">Уюмуңуз башкарат</translation>
 <translation id="7805768142964895445">Статусу</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Форма сунушу Chrome'дон алынып салынсынбы?</translation>
@@ -2995,6 +2995,7 @@
 <translation id="8369073279043109617">Жаңы код алуу</translation>
 <translation id="8371889962595521444">Ыңгайлаштырылган негизги тастыктамалар</translation>
 <translation id="8374636051559112948">Ар кандай</translation>
+<translation id="8378714024927312812">Уюмуңуз тарабынан башкарылат</translation>
 <translation id="8380941800586852976">Коркунучтуу</translation>
 <translation id="8381674639488873545">Алар бир жолу төлөнүүчү же кайталануучу төлөмдөр болушу мүмкүн, бирок алар ачык көрүнбөйт. <ph name="BEGIN_LINK" />Баары бир көрсөтүү<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698"><ph name="ORIGIN_NAME" /> сайтынан <ph name="VM_NAME" /> тутуму менен бөлүшүү аракети администратордун саясатына ылайык бөгөттөлгөн</translation>

@@ -2975,13 +2975,6 @@ De functie wordt standaard aangezet. Als je het beleid toepast of niet instelt, 
 Als je het beleid niet toepast, wordt de functie uitgezet.
 
 Dit beleid is een tijdelijke oplossing en wordt na bepaalde tijd verwijderd (de verwijdering is voorlopig gepland in M113).</translation>
-<translation id="3795413481405077588">Met dit beleid kan een beheerder instellingen voor geïnstalleerde web-apps opgeven.
-
-      Dit beleid wijst een web-app-ID toe aan de specifieke instelling. Met de speciale ID <ph name="DEFAULT_SCOPE" /> kan een standaardconfiguratie worden ingesteld die van toepassing is op alle web-apps waarvoor geen aangepaste configuratie is ingesteld in dit beleid.
-
-      Het veld <ph name="MANIFEST_ID_FIELD" /> is de manifest-ID voor de web-app. Ga naar <ph name="WEB_APP_ID_REFERENCE_URL" /> voor instructies om de manifest-ID voor een geïnstalleerde web-app te bepalen.
-Het veld <ph name="RUN_ON_OS_LOGIN_FIELD" /> geeft aan of een web-app kan worden uitgevoerd tijdens de OS-login. Als dit veld is ingesteld op <ph name="BLOCKED" />, wordt de web-app niet uitgevoerd tijdens de OS-login en kan de gebruiker dit later niet aanzetten. Als dit veld is ingesteld op <ph name="RUN_WINDOWED" />, wordt de web-app uitgevoerd tijdens de OS-login en kan de gebruiker dit later niet uitzetten. Als dit veld is ingesteld op <ph name="ALLOWED" />, kan de gebruiker instellen dat de web-app wordt uitgevoerd tijdens de OS-login. De standaardconfiguratie staat alleen de waarden <ph name="ALLOWED" /> en <ph name="BLOCKED" /> toe
-      </translation>
 <translation id="3796527892245558832">Profielkiezer beschikbaar bij opstarten</translation>
 <translation id="3798922329287609568">Als je dit beleid instelt, wordt de duplexstand voor afdrukken beperkt.
 

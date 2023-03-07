@@ -2309,6 +2309,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6738516213925468394">Seus dados foram criptografados com sua <ph name="BEGIN_LINK" />senha longa de sincronização<ph name="END_LINK" /> em <ph name="TIME" />. Digite-a para iniciar a sincronização.</translation>
 <translation id="674375294223700098">Erro, certificado de servidor desconhecido.</translation>
 <translation id="6744009308914054259">Enquanto espera por uma conexão, acesse "Downloads" para ler artigos off-line.</translation>
+<translation id="6745592621698551453">Atualizar agora</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Teleconferência</translation>
 <translation id="6753269504797312559">Valor da política</translation>
@@ -2773,7 +2774,6 @@ Mais detalhes:
 <translation id="7802523362929240268">O site é legítimo</translation>
 <translation id="7802989406998618639">Insira o código de segurança de <ph name="NUMBER_OF_DIGITS" /> dígitos que fica na <ph name="SIDE_OF_CARD" /> para o banco confirmar sua identidade.</translation>
 <translation id="780301667611848630">Não</translation>
-<translation id="7805571567667010077">Gerenciada pela sua organização</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Remover sugestão de formulário do Chrome?</translation>
@@ -2996,6 +2996,7 @@ Mais detalhes:
 <translation id="8369073279043109617">Gerar novo código</translation>
 <translation id="8371889962595521444">Personalizar certificados raiz</translation>
 <translation id="8374636051559112948">Varia</translation>
+<translation id="8378714024927312812">Gerenciado pela sua organização</translation>
 <translation id="8380941800586852976">Perigoso</translation>
 <translation id="8381674639488873545">Essas cobranças podem ser únicas ou recorrentes e talvez não sejam óbvias. <ph name="BEGIN_LINK" />Mostrar mesmo assim<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">A política do administrador bloqueou a opção de compartilhar conteúdo de <ph name="ORIGIN_NAME" /> para <ph name="VM_NAME" /></translation>

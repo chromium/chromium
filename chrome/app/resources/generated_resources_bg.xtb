@@ -3180,6 +3180,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3790417903123637354">Нещо се обърка. Опитайте отново по-късно</translation>
 <translation id="379082410132524484">Картата ви е изтекла</translation>
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> разширения</translation>
+<translation id="3794792524918736965">Включване на Windows Hello</translation>
 <translation id="379500251094592809">За да използвате „Споделяне наблизо“, двете устройства трябва да са отключени и да са близо едно до друго, както и функцията за Bluetooth да е включена. Ако споделяте с устройство Chromebook, което не е в контактите ви, не забравяйте да включите „Видимост наблизо“ (отворете лентата за състоянието, като изберете часа, и след това включете „Видимост наблизо“). <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">Изключено</translation>
 <translation id="3795766489237825963">Пускане на анимациите</translation>
@@ -6441,6 +6442,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6790497603648687708">Разширението <ph name="EXTENSION_NAME" /> бе добавено отдалечено</translation>
 <translation id="6790820461102226165">Добавяне на човек...</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
+<translation id="679486139907144816">За да влезете в този сайт посредством код за достъп, трябва да включите Windows Hello от настройките. След това се върнете на този сайт и опитайте отново.</translation>
 <translation id="6795371939514004514">Автоматичното сканиране позволява да се придвижвате автоматично през елементите на екрана. Когато даден елемент бъде откроен, натиснете „Избор“, за да го активирате.</translation>
 <translation id="6795884519221689054">Панда</translation>
 <translation id="6796509790850723820">Рендериране</translation>
@@ -8363,6 +8365,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8513108775083588393">Автоматично</translation>
 <translation id="8514746246728959655">Опитайте с друг ключ за сигурност</translation>
 <translation id="8514955299594277296">Забраняване на сайтовете да запазват данни на устройството ви (не се препоръчва)</translation>
+<translation id="8517759303731677493">Редактиране…</translation>
 <translation id="8519895319663397036">Импортирането на паролите не е възможно. Размерът на файла трябва да е по-малък от 150 КБ.</translation>
 <translation id="8523493869875972733">Запазване на промените</translation>
 <translation id="8523849605371521713">Добавено от правило</translation>

@@ -556,6 +556,7 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1487335504823219454">Açık - özel ayarlar</translation>
 <translation id="1493892686965953381"><ph name="LOAD_STATE_PARAMETER" /> bekleniyor...</translation>
 <translation id="1494349716233667318">Siteler, cihazımda yüklü yazı tiplerini kullanmak isteyebilir</translation>
+<translation id="1494429729245089920">"<ph name="VM_NAME" />" sanal makinesi mevcut, ancak geçerli bir <ph name="APP_NAME" /> sanal makinesi değil. Lütfen yöneticinizle iletişime geçin.</translation>
 <translation id="1495677929897281669">Sekmeye dön</translation>
 <translation id="1498498210836053409">Metin düzenlerken sabit modu kapat (Akıllı Sabit Mod)</translation>
 <translation id="1500297251995790841">Bilinmeyen cihaz [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>

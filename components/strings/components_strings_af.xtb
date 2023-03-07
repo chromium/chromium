@@ -345,6 +345,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1733064249834771892">lettertipes</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Probeer om die stelseladministrateur te kontak.</translation>
+<translation id="1736158756193183352"><ph name="BEGIN_LINK" />Meld tans aan<ph name="END_LINK" /> by die netwerk</translation>
 <translation id="1736420071277903564">Rekenaar</translation>
 <translation id="1740951997222943430">Voer 'n geldige vervalmaand in</translation>
 <translation id="1741613555002899862">Moet gespesifseer en 'n geldige string wees wanneer DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> is.</translation>
@@ -1192,6 +1193,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3949601375789751990">Jou blaaigeskiedenis verskyn hier</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Geen gestoorde betaalmetodes nie</translation>
+<translation id="3950574001630941635">Herbegin tutoriaal</translation>
 <translation id="3950820424414687140">Meld aan</translation>
 <translation id="3958057596965527988">4x4 dm.</translation>
 <translation id="3961148744525529027">Betalinghanteerdersigblad is halfoop</translation>
@@ -2309,6 +2311,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6738516213925468394">Jou data is om <ph name="TIME" /> met jou <ph name="BEGIN_LINK" />sinkroniseringwagfrase<ph name="END_LINK" /> geënkripeer. Voer dit in om sinkronisering te begin.</translation>
 <translation id="674375294223700098">Onbekende bedienersertifikaatfout.</translation>
 <translation id="6744009308914054259">Terwyl jy vir 'n verbinding wag, kan jy Aflaaie besoek om vanlyn artikels te lees.</translation>
+<translation id="6745592621698551453">Dateer nou op</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Telekonferensies</translation>
 <translation id="6753269504797312559">Beleidwaarde</translation>
@@ -2773,7 +2776,6 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7802523362929240268">Werf is eg</translation>
 <translation id="7802989406998618639">Voer die <ph name="NUMBER_OF_DIGITS" />-syfersekuriteitkode op die <ph name="SIDE_OF_CARD" /> in sodat jou bank kan verifieer dat dit jy is</translation>
 <translation id="780301667611848630">Nee, dankie</translation>
-<translation id="7805571567667010077">Bestuur deur jou organisasie</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Verwyder vormvoorstel uit Chrome?</translation>
@@ -2996,6 +2998,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8369073279043109617">Kry nuwe kode</translation>
 <translation id="8371889962595521444">Gepasmaakte kernsertifikate</translation>
 <translation id="8374636051559112948">Verskil</translation>
+<translation id="8378714024927312812">Bestuur deur jou organisasie</translation>
 <translation id="8380941800586852976">Gevaarlik</translation>
 <translation id="8381674639488873545">Hierdie heffings kan eenmalig of herhalend wees en is dalk nie ooglopend nie. <ph name="BEGIN_LINK" />Wys in elk geval<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Administrateurbeleid blokkeer plak van <ph name="ORIGIN_NAME" /> af na <ph name="VM_NAME" /> toe</translation>

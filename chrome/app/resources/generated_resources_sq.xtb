@@ -556,6 +556,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1487335504823219454">Aktive - cilësimet e personalizuara</translation>
 <translation id="1493892686965953381">Po pret për <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">Sajtet mund të kërkojnë të përdorin fontet e instaluara në pajisjen tënde</translation>
+<translation id="1494429729245089920">Pajisja virtuale "<ph name="VM_NAME" />" ekziston, por me sa duket nuk është një pajisje virtuale e vlefshme <ph name="APP_NAME" />. Kontakto me administratorin tënd.</translation>
 <translation id="1495677929897281669">Kthehu te skeda</translation>
 <translation id="1498498210836053409">Çaktivizo modalitetin "e ngjitur" kur modifikon tekstin (Modaliteti "i ngjitur" inteligjent)</translation>
 <translation id="1500297251995790841">Pajisje e panjohur [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>

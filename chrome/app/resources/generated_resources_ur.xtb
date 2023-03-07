@@ -558,6 +558,7 @@
 <translation id="1487335504823219454">آن - حسب ضرورت ترتیبات</translation>
 <translation id="1493892686965953381"><ph name="LOAD_STATE_PARAMETER" /> کیلئے منتظر…</translation>
 <translation id="1494349716233667318">سائٹس آپ کے آلے پر انسٹال کردہ فونٹس کا استعمال کرنے کے لیے پوچھ سکتی ہیں</translation>
+<translation id="1494429729245089920">ورچوئل مشین "<ph name="VM_NAME" />" موجود ہے لیکن یہ ایک درست <ph name="APP_NAME" /> ورچوئل مشین معلوم نہیں ہوتی ہے۔ براہ کرم اپنے منتظم سے رابطہ کریں۔</translation>
 <translation id="1495677929897281669">ٹیب پر واپس جائیں</translation>
 <translation id="1498498210836053409">ٹیکسٹ میں ترمیم کرتے وقت چپکنے والی وضع کو آف کریں (اسمارٹ چپکنے والی وضع)</translation>
 <translation id="1500297251995790841">نامعلوم آلہ [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
@@ -3176,6 +3177,7 @@
 <translation id="3790417903123637354">کچھ غلط ہو گیا۔ بعد میں دوبارہ کوشش کریں</translation>
 <translation id="379082410132524484">آپ کے کارڈ کی معیاد ختم ہو گئی ہے</translation>
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> ایکسٹینشنز</translation>
+<translation id="3794792524918736965">‏Windows Hello کو آن کریں</translation>
 <translation id="379500251094592809">‏قریبی آلات کے ساتھ اشتراک کا استعمال کرنے کے لئے یقینی بنائیں کہ دونوں آلات غیر مقفل ہیں، ایک دوسرے کے قریب ہیں اور بلوٹوتھ آن ہیں۔ اگر آپ کسی ایسے Chromebook کے ساتھ اشتراک کر رہے ہیں جو آپ کے رابطوں میں نہیں ہے تو یقینی بنائیں کہ اس میں قریبی آلات کی مرئیت آن ہے (وقت کو منتخب کر کے اسٹیٹس ایریا کھولیں، پھر قریبی آلات کی مرئیت کو آن کریں) <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">آف</translation>
 <translation id="3795766489237825963">اینیمیشنز چلائیں</translation>
@@ -6437,6 +6439,7 @@
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> کو دور سے شامل کر دیا گیا</translation>
 <translation id="6790820461102226165">شخص کو شامل کریں…</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
+<translation id="679486139907144816">‏پاس کی کے ساتھ اس سائٹ میں سائن ان کرنے کے لیے، آپ کو ترتیبات میں Windows Hello کو آن کرنا ہوگا۔ پھر اس سائٹ پر واپس جائیں اور دوبارہ کوشش کریں۔</translation>
 <translation id="6795371939514004514">خودکار اسکین سے آپ اسکرین پر موجود ایک آئٹم سے دوسرے آئٹم پر جا سکتے ہیں۔ جب کسی آئٹمز کو نمایاں کیا جاتا ہے تو اسے فعال کرنے کیلئے "منتخب کریں" دبائیں۔</translation>
 <translation id="6795884519221689054">پانڈا</translation>
 <translation id="6796509790850723820">رینڈر کریں</translation>
@@ -8358,6 +8361,7 @@
 <translation id="8513108775083588393">خودکار گھمائیں</translation>
 <translation id="8514746246728959655">کوئی مختلف سیکیورٹی کلید آزمائیں</translation>
 <translation id="8514955299594277296">سائٹس کو اپنے آلے پر ڈیٹا محفوظ کرنے کی اجازت نہ دیں (تجویز نہیں کی جاتی ہے)</translation>
+<translation id="8517759303731677493">ترمیم کریں…</translation>
 <translation id="8519895319663397036">‏پاس ورڈز درآمد نہیں کر سکتے۔ فائل کا سائز ‎150 KB سے کم ہونا چاہیے۔</translation>
 <translation id="8523493869875972733">تبدیلیاں برقرار رکھیں</translation>
 <translation id="8523849605371521713">پالیسی کے ذریعے شامل کیا گیا</translation>

@@ -261,6 +261,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="6010556343189461180">Jy het macOS 10.15 of nuwer nodig om in die toekoms Google Chrome-opdaterings te kry. Hierdie rekenaar gebruik macOS 10.14.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome gaan nou toemaak.}=1{Chrome gaan oor 1 sekonde toemaak.}other{Chrome gaan oor # sekondes toemaak.}}</translation>
 <translation id="6022659036123304283">Maak Chrome jou eie</translation>
+<translation id="6025087594896450715">Google Chrome sal oor <ph name="REMAINING_TIME" /> herbegin</translation>
 <translation id="6040143037577758943">Maak toe</translation>
 <translation id="6070348360322141662">Google Chrome sal jou data enkripteer vir bykomende sekuriteit</translation>
 <translation id="608006075545470555">Voeg werkprofiel by hierdie blaaier</translation>

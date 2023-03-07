@@ -2304,6 +2304,7 @@
 <translation id="6738516213925468394">您的数据已于 <ph name="TIME" />使用您的<ph name="BEGIN_LINK" />同步密码<ph name="END_LINK" />加密。输入该密码即可开始同步。</translation>
 <translation id="674375294223700098">未知的服务器证书错误。</translation>
 <translation id="6744009308914054259">在等待连接时，您可以前往“下载内容”页面阅读离线文章。</translation>
+<translation id="6745592621698551453">立即更新</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">远程会议</translation>
 <translation id="6753269504797312559">政策值</translation>
@@ -2768,7 +2769,6 @@
 <translation id="7802523362929240268">网站是合规的</translation>
 <translation id="7802989406998618639">输入<ph name="SIDE_OF_CARD" />的 <ph name="NUMBER_OF_DIGITS" /> 位数安全码，以便银行验证您的身份</translation>
 <translation id="780301667611848630">不用了，谢谢</translation>
-<translation id="7805571567667010077">由贵单位管理</translation>
 <translation id="7805768142964895445">状态</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">从 Chrome 中移除表单建议？</translation>
@@ -2991,6 +2991,7 @@
 <translation id="8369073279043109617">获取新的动态密码</translation>
 <translation id="8371889962595521444">自定义的根证书</translation>
 <translation id="8374636051559112948">视具体情况而定</translation>
+<translation id="8378714024927312812">由贵组织管理</translation>
 <translation id="8380941800586852976">危险</translation>
 <translation id="8381674639488873545">这些费用可能会一次性收取，也可能会周期性收取，而且可能不易察觉。<ph name="BEGIN_LINK" />仍然显示<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">管理员政策禁止将 <ph name="ORIGIN_NAME" /> 上的内容分享给 <ph name="VM_NAME" /></translation>

@@ -349,6 +349,7 @@
 <translation id="1303671224831497365">ಯಾವುದೇ ಬ್ಲೂಟೂತ್ ಸಾಧನಗಳು ಕಂಡುಬಂದಿಲ್ಲ</translation>
 <translation id="130491383855577612">Linux ಆ್ಯಪ್‌ಗಳು &amp; ಫೈಲ್‌ಗಳನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಬದಲಾಯಿಸಲಾಗಿದೆ</translation>
 <translation id="1306390193749326011">ಈ ಪುಟದಲ್ಲಿ ಪುನಃ <ph name="MODULE_NAME" /> ಅನ್ನು ನೋಡಲು ನಿಮಗೆ ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ</translation>
+<translation id="1306518237408758433"><ph name="BOOKMARK_TITLE" /> ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="1306606229401759371">ಸೆಟ್ಟಿಂಗ್‌‌ಗಳನ್ನು ಬದಲಾಯಿಸಿ</translation>
 <translation id="1307165550267142340">ನಿಮ್ಮ ಪಿನ್ ರಚಿಸಲಾಗಿದೆ</translation>
 <translation id="1307431692088049276">ಪುನಃ ನನ್ನನ್ನು ಕೇಳಬೇಡಿ</translation>
@@ -438,6 +439,7 @@
 <translation id="1393283411312835250">ಸೂರ್ಯ ಮತ್ತು ಮೇಘಗಳು</translation>
 <translation id="1395730723686586365">ನವೀಕರಣವು ಪ್ರಾರಂಭಗೊಂಡಿದೆ</translation>
 <translation id="1395832189806039783">ಕೀಬೋರ್ಡ್ ಫೋಕಸ್‌ನೊಂದಿಗೆ ಐಟಂ ಅನ್ನು ಹೈಲೈಟ್ ಮಾಡಿ</translation>
+<translation id="1396120028054416908"><ph name="FOLDER_TITLE" /> ಗೆ ಹಿಂತಿರುಗಿ</translation>
 <translation id="1396139853388185343">ಪ್ರಿಂಟರ್ ಹೊಂದಿಸುವಲ್ಲಿ ದೋಷ ಸಂಭವಿಸಿದೆ</translation>
 <translation id="1396963298126346194">ನೀವು ನಮೂದಿಸಿದ ಬಳಕೆದಾರ ಹೆಸರು ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್‌ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ</translation>
 <translation id="1397500194120344683">ಯಾವುದೇ ಅರ್ಹ ಸಾಧನಗಳಿಲ್ಲ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
@@ -683,6 +685,7 @@
 <translation id="1596286373007273895">ಲಭ್ಯ</translation>
 <translation id="1596709061955594992">ಬ್ಲೂಟೂತ್ ಆಫ್ ಆಗಿದೆ. ಲಭ್ಯವಿರುವ ಸಾಧನಗಳನ್ನು ನೋಡಲು, ಬ್ಲೂಟೂತ್ ಅನ್ನು ಆನ್ ಮಾಡಿ.</translation>
 <translation id="1596780725094407793">- ಉಪ-ಡೊಮೇನ್‌ಗಳನ್ನು ಒಳಗೊಂಡಿದೆ</translation>
+<translation id="1597852076552089763">ಬುಕ್‌ಮಾರ್ಕ್ ಆಯ್ಕೆಗಳು</translation>
 <translation id="1598163867407640634"><ph name="SITE_ETLD_PLUS_ONE" /> ಅನ್ನು <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ಜೊತೆ ಬಳಸಿ</translation>
 <translation id="1598233202702788831">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದ್ದಾರೆ.</translation>
 <translation id="1600857548979126453">ಡೀಬಗರ್ ಅನ್ನು ಹಿಂತೆಗೆದುಕೊಳ್ಳುವ ಪುಟವನ್ನು ಪ್ರವೇಶಿಸಿ</translation>
@@ -1823,6 +1826,7 @@
 <translation id="25568951186001797">ರಕ್ಷಣೆಯ ಫ್ರೇಮ್: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2558569818338050235">ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸ ನಿಮಗೆ ಕಾಣಿಸುವ ಜಾಹೀರಾತುಗಳ ಮೇಲೆ ಪ್ರಭಾವ ಬೀರುತ್ತದೆ</translation>
 <translation id="2559889124253841528">ಸಾಧನದಲ್ಲಿ ಉಳಿಸಿ</translation>
+<translation id="2561211427862644160">ನಿಮ್ಮ ಎಲ್ಲಾ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಇಲ್ಲಿ ನೋಡಿ</translation>
 <translation id="2564520396658920462">JavaScript ಅನ್ನು AppleScript ಮೂಲಕ ಎಕ್ಸಿಕ್ಯೂಟ್ ಮಾಡುವ ಸೌಲಭ್ಯವನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ. ಅದನ್ನು ಆನ್ ಮಾಡಲು, ಮೆನು ಬಾರ್‌ ಮೂಲಕ, ವೀಕ್ಷಣೆ &gt; ಡೆವಲಪರ್ &gt; Apple ಈವೆಂಟ್‌ಗಳಿಂದ JavaScript ಅನ್ನು ಅನುಮತಿಸಿಗೆ ಹೋಗಿ. ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ ಇಲ್ಲಿಗೆ ಭೇಟಿ ನೀಡಿ: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">ವರ್ಧಿತ ಕಾಗುಣಿತ ಪರೀಕ್ಷೆ</translation>
 <translation id="2568694057933302218">ಅಜ್ಞಾತದಲ್ಲಿರುವಾಗ, ಸೈಟ್‌ಗಳಾದ್ಯಂತ ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಚಟುವಟಿಕೆಯನ್ನು ನೋಡಲು ಸೈಟ್‌ಗಳು ನಿಮ್ಮ ಕುಕೀಗಳನ್ನು ಬಳಸಲು ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ. ಜಾಹೀರಾತುಗಳನ್ನು ವೈಯಕ್ತಿಕಗೊಳಿಸುವಂತಹ ವಿಷಯಗಳಿಗೆ ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಚಟುವಟಿಕೆಯನ್ನು ಬಳಸಲಾಗುವುದಿಲ್ಲ. ಕೆಲವು ಸೈಟ್‌ಗಳಲ್ಲಿ ಫೀಚರ್‌ಗಳು ಕಾರ್ಯನಿರ್ವಹಿಸದೇ ಇರಬಹುದು.</translation>
@@ -2427,6 +2431,7 @@
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" ಜೋಡಿಸಲಾಗಿದೆ</translation>
 <translation id="3093714882666365141">ಪಾವತಿ ಹ್ಯಾಂಡ್‌ಲರ್‌ಗಳನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಬೇಡಿ</translation>
 <translation id="3094141017404513551">ಇದು ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಅನ್ನು <ph name="EXISTING_USER" /> ನಿಂದ ಪ್ರತ್ಯೇಕಿಸುತ್ತದೆ</translation>
+<translation id="3094521107841754472">ಬೆಲೆಯು <ph name="PREVIOUS_PRICE" /> ನಿಂದ <ph name="CURRENT_PRICE" /> ಗೆ ಬದಲಾಗಿದೆ.</translation>
 <translation id="3095871294753148861">ಪ್ರಾಥಮಿಕ ಖಾತೆಯ ಜೊತೆಗೆ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಇತರ ಬ್ರೌಸಿಂಗ್‌ ಡೇಟಾವನ್ನು ಸಿಂಕ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 ಹಾನಿಕಾರಕ ವಿಸ್ತರಣೆಯು ಆಫ್ ಆಗಿದೆ. ಈಗಲೂ ನೀವು ಅದನ್ನು ತೆಗೆದುಹಾಕಬಹುದು.}one{{NUM_EXTENSIONS} ಹಾನಿಕಾರಕ ವಿಸ್ತರಣೆಗಳು ಆಫ್ ಆಗಿವೆ. ಈಗಲೂ ನೀವು ಅವುಗಳನ್ನು ತೆಗೆದುಹಾಕಬಹುದು.}other{{NUM_EXTENSIONS} ಹಾನಿಕಾರಕ ವಿಸ್ತರಣೆಗಳು ಆಫ್ ಆಗಿವೆ. ಈಗಲೂ ನೀವು ಅವುಗಳನ್ನು ತೆಗೆದುಹಾಕಬಹುದು.}}</translation>
 <translation id="3101126716313987672">ಡಿಮ್ ಲೈಟ್</translation>
@@ -2779,6 +2784,7 @@
 <translation id="3441653493275994384">ಸ್ಕ್ರೀನ್‌</translation>
 <translation id="3441663102605358937">ಈ ಖಾತೆಯನ್ನು ದೃಢೀಕರಿಸಲು <ph name="ACCOUNT" /> ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="3442674350323953953"><ph name="DEVICE_OS" /> ಅನ್ನು ಸುಧಾರಿಸಲು ನೆರವಾಗಲು Google ಗೆ ನಿಮ್ಮ ಹಾರ್ಡ್‌ವೇರ್ ಡೇಟಾ ಬಳಸಲು ಅನುಮತಿಸಿ. ನೀವು ನಿರಾಕರಿಸಿದರೆ, ಸೂಕ್ತವಾದ ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ನಿರ್ಧರಿಸಲು ಈ ಡೇಟಾವನ್ನು ಈಗಲೂ Google ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ ಆದರೆ ಅದನ್ನು ಬೇರೆ ರೀತಿಯಲ್ಲಿ ಸಂಗ್ರಹಿಸಲಾಗುವುದಿಲ್ಲ ಅಥವಾ ಬಳಸಲಾಗುವುದಿಲ್ಲ.</translation>
+<translation id="3443744348829035122"><ph name="BRAND" /> ಅವಧಿ ಮೀರಿದೆ</translation>
 <translation id="3444726579402183581"><ph name="FILENAME" /> ಅನ್ನು ವೀಕ್ಷಿಸಲು <ph name="ORIGIN" /> ಗೆ ಸಾಧ್ಯವಾಗುತ್ತದೆ</translation>
 <translation id="3445047461171030979">Google Assistant ತ್ವರಿತ ಉತ್ತರಗಳು</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> ನಿಮಿಷ</translation>
@@ -3323,6 +3329,7 @@
 <translation id="39103738135459590">ಸಕ್ರಿಯಗೊಳಿಸುವಿಕೆ ಕೋಡ್</translation>
 <translation id="3911824782900911339">ಹೊಸ ಟ್ಯಾಬ್ ಪುಟ</translation>
 <translation id="3914173277599553213">ಅಗತ್ಯವಿರುವುದು</translation>
+<translation id="3914568430265141791"><ph name="FOLDER_TITLE" /> ಫೋಲ್ಡರ್ ತೆರೆಯಿರಿ</translation>
 <translation id="3915280005470252504">ಧ್ವನಿ ಮೂಲಕ ಹುಡುಕಿ</translation>
 <translation id="3916233823027929090">ಭದ್ರತೆ ಪರಿಶೀಲನೆಗಳನ್ನು ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="3916445069167113093">ಈ ಫೈಲ್‌ನ ಪ್ರಕಾರವು ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ಗೆ ಹಾನಿಯನ್ನುಂಟು ಮಾಡಬಹುದು. ನೀವು <ph name="FILE_NAME" /> ಅನ್ನು ಹೇಗಿದ್ದರೂ ಇರಿಸಲು ಬಯಸುವಿರಾ?</translation>
@@ -3454,6 +3461,7 @@
 <translation id="4022426551683927403">ನಿಘಂಟಿಗೆ &amp;ಸೇರಿಸಿ</translation>
 <translation id="4025039777635956441">ಆಯ್ಕೆ ಮಾಡಿದ ಸೈಟ್ ಅನ್ನು ಮ್ಯೂಟ್ ಮಾಡಿ</translation>
 <translation id="402707738228916911"><ph name="AUTHORIZE_INSTRUCTION_NAME" /> ಸೂಚನೆಯನ್ನು ಸ್ವೀಕರಿಸಲಾಗಿದೆ</translation>
+<translation id="4027569221211770437"><ph name="FOLDER_TITLE" /> ಫೋಲ್ಡರ್‌</translation>
 <translation id="4027958407426528157">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿರುವ ಆ್ಯಪ್‌ಗಳಲ್ಲಿ ವೆಬ್‌ಸೈಟ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="4028467762035011525">ಇನ್‌ಪುಟ್ ವಿಧಾನಗಳನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" /> ಪುಟದಿಂದ ಹಿಂದಕ್ಕೆ</translation>
@@ -3508,6 +3516,7 @@
 <translation id="4077917118009885966">ಈ ಸೈಟ್‌ನಲ್ಲಿ ಜಾಹೀರಾತುಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="4077919383365622693"><ph name="SITE" /> ವೆಬ್‌ಸೈಟ್‌ ಮೂಲಕ ಸಂಗ್ರಹಿಸಲಾದ ಎಲ್ಲಾ ಡೇಟಾ ಮತ್ತು ಕುಕೀಗಳನ್ನು ತೆರವುಗೊಳಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="4078738236287221428">ಆಕ್ರಮಣಕಾರಿ</translation>
+<translation id="4078903002989614318">ವಿಂಗಡಣೆ ಮತ್ತು ಪಟ್ಟಿಯ ಆಯ್ಕೆಗಳು</translation>
 <translation id="4079140982534148664">ವರ್ಧಿತ ಕಾಗುಣಿತ ಪರೀಕ್ಷೆಯನ್ನು ಬಳಸಿ</translation>
 <translation id="4084682180776658562">ಬುಕ್‌ಮಾರ್ಕ್</translation>
 <translation id="4084835346725913160"><ph name="TAB_NAME" /> ಮುಚ್ಚಿ</translation>
@@ -3652,6 +3661,7 @@
 <translation id="4217571870635786043">ಉಕ್ತಲೇಖನ</translation>
 <translation id="4218081191298393750">ಈ ಟ್ಯಾಬ್ ಅನ್ನು ಮ್ಯೂಟ್ ಮಾಡಲು ಸ್ಪೀಕರ್ ಐಕಾನ್ ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="4220648711404560261">ಸಕ್ರಿಯಗೊಳಿಸುವಾಗ, ದೋಷ ಸಂಭವಿಸಿದೆ.</translation>
+<translation id="4222917615373664617">ಬೆಲೆ ಟ್ರ್ಯಾಕಿಂಗ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ. ಬೆಲೆಯು <ph name="CURRENT_PRICE" /> ಆಗಿದೆ.</translation>
 <translation id="4223845867739585293">ಪಾಸ್‌ಕೀ ಅನ್ನು ರಚಿಸಿ</translation>
 <translation id="4225397296022057997">ಎಲ್ಲಾ ಸೈಟ್‌ಗಳಲ್ಲಿ</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{ಈ ವಿಸ್ತರಣೆಯನ್ನು ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ}one{ಕೆಲವು ವಿಸ್ತರಣೆಗಳನ್ನು ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ}other{ಕೆಲವು ವಿಸ್ತರಣೆಗಳನ್ನು ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ}}</translation>
@@ -5815,6 +5825,7 @@
 <translation id="6212168817037875041">ಡಿಸ್‌ಪ್ಲೇ ಅನ್ನು ಆಫ್‌ ಮಾಡಿ</translation>
 <translation id="6212752530110374741">ಇಮೇಲ್ ಲಿಂಕ್</translation>
 <translation id="621470880408090483">ಬ್ಲೂಟೂತ್ ಸಾಧನಗಳಿಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಬೇಡಿ</translation>
+<translation id="6215039389782910006">{1,plural, =1{ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸುರಕ್ಷಿತವಾಗಿರಿಸಲು, ನಿಷ್ಕ್ರಿಯತೆಯ 1 ನಿಮಿಷದ ನಂತರ <ph name="BRAND" /> ಲಾಕ್ ಆಗುತ್ತದೆ}one{ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸುರಕ್ಷಿತವಾಗಿರಿಸಲು, ನಿಷ್ಕ್ರಿಯತೆಯ # ನಿಮಿಷಗಳ ನಂತರ <ph name="BRAND" /> ಲಾಕ್ ಆಗುತ್ತದೆ}other{ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸುರಕ್ಷಿತವಾಗಿರಿಸಲು, ನಿಷ್ಕ್ರಿಯತೆಯ # ನಿಮಿಷಗಳ ನಂತರ <ph name="BRAND" /> ಲಾಕ್ ಆಗುತ್ತದೆ}}</translation>
 <translation id="6216239400972191926">ನಿರಾಕರಿಸಲಾದ ಸೈಟ್‌ಗಳು ಹಾಗೂ ಆ್ಯಪ್‌ಗಳು</translation>
 <translation id="6216601812881225442">ಮರುಗಾತ್ರಗೊಳಿಸುವ ಡಿಸ್ಕ್ ಅನ್ನು ನಿಮ್ಮ ಕಂಟೇನರ್ ಬೆಂಬಲಿಸುವುದಿಲ್ಲ. Linux ಗೆ ಮೊದಲೇ ನಿಗದಿಪಡಿಸಿದ ಸ್ಥಳಾವಕಾಶದ ಪ್ರಮಾಣವನ್ನು ಹೊಂದಿಸಲು, ಬ್ಯಾಕಪ್ ಮಾಡಿ ನಂತರ ಹೊಸ ಕಂಟೇನರ್‌ಗೆ ಮರುಸ್ಥಾಪಿಸಿ.</translation>
 <translation id="6216696360484424239">ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸೈನ್‌ ಇನ್ ಮಾಡಿ</translation>

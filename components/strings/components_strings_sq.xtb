@@ -2308,6 +2308,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6738516213925468394">Të dhënat e tua u enkriptuan me <ph name="BEGIN_LINK" />frazën e kalimit për sinkronizimin<ph name="END_LINK" /> më <ph name="TIME" />. Fute atë për të nisur sinkronizmin.</translation>
 <translation id="674375294223700098">Gabim i panjohur i certifikatës së serverit</translation>
 <translation id="6744009308914054259">Ndërkohë që pret për një lidhje, mund të vizitosh "Shkarkimet" për të lexuar artikuj jashtë linje.</translation>
+<translation id="6745592621698551453">Përditësoje tani</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Telekonferencat</translation>
 <translation id="6753269504797312559">Vlera e politikës</translation>
@@ -2772,7 +2773,6 @@ Detaje shtesë:
 <translation id="7802523362929240268">Sajti është i ligjshëm</translation>
 <translation id="7802989406998618639">Fut kodin e sigurisë me <ph name="NUMBER_OF_DIGITS" /> shifra në <ph name="SIDE_OF_CARD" /> që banka të mund të verifikojë që je ti</translation>
 <translation id="780301667611848630">Jo, faleminderit</translation>
-<translation id="7805571567667010077">Menaxhohet nga organizata jote</translation>
 <translation id="7805768142964895445">Statusi</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Të hiqet sugjerimi i formularit nga Chrome?</translation>
@@ -2995,6 +2995,7 @@ Detaje shtesë:
 <translation id="8369073279043109617">Merr kod të ri</translation>
 <translation id="8371889962595521444">Certifikatat rrënjë të personalizuara</translation>
 <translation id="8374636051559112948">Ndryshon</translation>
+<translation id="8378714024927312812">Menaxhohet nga organizata jote</translation>
 <translation id="8380941800586852976">I rrezikshëm</translation>
 <translation id="8381674639488873545">Këto tarifa mund të jenë vetëm për një rast ose dhe të përsëritura, gjë që mund të mos jetë menjëherë e qartë. <ph name="BEGIN_LINK" />Shfaqi gjithsesi<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Ndarja nga <ph name="ORIGIN_NAME" /> te <ph name="VM_NAME" /> është bllokuar nga politika e administratorit</translation>

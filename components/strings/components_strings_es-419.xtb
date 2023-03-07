@@ -2310,6 +2310,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6738516213925468394">Tus datos se encriptaron con la <ph name="BEGIN_LINK" />frase de contraseña de sincronización<ph name="END_LINK" /> el <ph name="TIME" />. Ingresa la frase para iniciar la sincronización.</translation>
 <translation id="674375294223700098">Error de certificado de servidor desconocido.</translation>
 <translation id="6744009308914054259">Mientras esperas a que se restablezca la conexión, puedes visitar Descargas para leer artículos sin conexión.</translation>
+<translation id="6745592621698551453">Actualizar ahora</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Videoconferencias</translation>
 <translation id="6753269504797312559">Valor de la política</translation>
@@ -2774,7 +2775,6 @@ Detalles adicionales:
 <translation id="7802523362929240268">El sitio es legítimo</translation>
 <translation id="7802989406998618639">Ingresa el código de seguridad de <ph name="NUMBER_OF_DIGITS" /> dígitos en el <ph name="SIDE_OF_CARD" /> para que el banco pueda verificar tu identidad</translation>
 <translation id="780301667611848630">No, gracias</translation>
-<translation id="7805571567667010077">Administrado por tu organización</translation>
 <translation id="7805768142964895445">Estado</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">¿Confirmas que quieres quitar la sugerencia de formulario de Chrome?</translation>
@@ -2997,6 +2997,7 @@ Detalles adicionales:
 <translation id="8369073279043109617">Obtener un código nuevo</translation>
 <translation id="8371889962595521444">Certificados raíz personalizados</translation>
 <translation id="8374636051559112948">Variable</translation>
+<translation id="8378714024927312812">Administrado por tu organización</translation>
 <translation id="8380941800586852976">Peligrosa</translation>
 <translation id="8381674639488873545">Estos cargos pueden ser únicos o recurrentes, y es posible que no sean evidentes. <ph name="BEGIN_LINK" />Mostrar de todos modos<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Una política del administrador no permite compartir contenido de <ph name="ORIGIN_NAME" /> con <ph name="VM_NAME" /></translation>

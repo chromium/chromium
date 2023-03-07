@@ -39,4 +39,6 @@
 <translation id="8187289872471304532">Atveriet izvēlni
           Applications (Lietojumprogrammas) &gt; System Preferences (Sistēmas preferences) &gt; Network (Tīkls) &gt; Advanced (Papildu) &gt; (Proxies) Starpniekserveri
           un noņemiet atzīmes no visiem atzīmētajiem starpniekserveriem.</translation>
+<translation id="8232971017369963250">Pārlūku Chrome nodrošina <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> atklātā pirmkoda projekts.</translation>
+<translation id="8279509328145658601">Pārlūku Chrome nodrošina arī cita <ph name="BEGIN_LINK_OSS" />atklātā pirmkoda programmatūra<ph name="END_LINK_OSS" />.</translation>
 </translationbundle>

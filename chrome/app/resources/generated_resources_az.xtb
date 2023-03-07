@@ -3174,6 +3174,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3790417903123637354">Xəta baş verdi. Sonra cəhd edin</translation>
 <translation id="379082410132524484">Kartın vaxtı bitib</translation>
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> artırmaları</translation>
+<translation id="3794792524918736965">Windows Hello-nu aktiv edin</translation>
 <translation id="379500251094592809">Yaxınlıqda Paylaşımdan istifadə etmək üçün hər iki cihazın kiliddən çıxarılmış, bir-birinə yaxın və Bluetooth'un aktiv olduğuna əmin olun. Kontaktlarınızda olmayan Chromebook ilə paylaşırsınızsa, Yaxınlıqda görünmənin aktiv olduğuna əmin olun (vaxtı seçərək status sahəsini açın, sonra Yaxınlıqda görünməni aktiv edin) <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">Deaktiv</translation>
 <translation id="3795766489237825963">Animasiyaları oxudun</translation>
@@ -6432,6 +6433,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> uzaqdan əlavə edildi</translation>
 <translation id="6790820461102226165">Şəxs əlavə edin...</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
+<translation id="679486139907144816">Giriş açarı ilə bu sayta daxil olmaq üçün ayarlarda Windows Hello-nu aktiv etməlisiniz. Sonra bu sayta qayıdın və yenidən cəhd edin.</translation>
 <translation id="6795371939514004514">Avtomatik skanlama, ekrandakı elementlər arasında avtomatik olaraq keçid etməyinizə imkan verir. Element vurğulandıqda, onu aktivləşdirmək üçün "Seçin" düyməsini basın.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6796509790850723820">Göstərin</translation>
@@ -8353,6 +8355,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8513108775083588393">Avtodönüş</translation>
 <translation id="8514746246728959655">Başqa təhlükəsizlik açarından istifadə edin</translation>
 <translation id="8514955299594277296">Saytlara cihazınızda məlumat saxlamağa icazə verməyin (tövsiyə edilmir)</translation>
+<translation id="8517759303731677493">Redaktə edin…</translation>
 <translation id="8519895319663397036">Parolları import etmək mümkün deyil. Faylın ölçüsü 150 KB-dan kiçik olmalıdır.</translation>
 <translation id="8523493869875972733">Dəyişiklikləri Saxlayın</translation>
 <translation id="8523849605371521713">Siyasət tərəfindən əlavə edilib</translation>
