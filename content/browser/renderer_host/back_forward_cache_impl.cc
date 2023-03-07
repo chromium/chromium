@@ -21,6 +21,7 @@
 #include "build/build_config.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/renderer_host/back_forward_cache_can_store_document_result.h"
+#include "content/browser/renderer_host/back_forward_cache_metrics.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
@@ -1212,6 +1213,16 @@ void BackForwardCache::DisableForRenderFrameHost(
 
   if (auto* rfh = RenderFrameHostImpl::FromID(id))
     rfh->DisableBackForwardCache(reason, source_id);
+}
+
+// static
+void BackForwardCache::SetHadFormDataAssociated(Page& page) {
+  BackForwardCacheMetrics* metrics =
+      static_cast<RenderFrameHostImpl*>(&page.GetMainDocument())
+          ->GetBackForwardCacheMetrics();
+  if (metrics) {
+    metrics->SetHadFormDataAssociated(true);
+  }
 }
 
 void BackForwardCacheImpl::DisableForTesting(DisableForTestingReason reason) {

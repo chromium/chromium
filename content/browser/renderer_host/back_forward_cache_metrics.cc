@@ -472,6 +472,11 @@ void BackForwardCacheMetrics::RecordHistoryNavigationUMA(
   UMA_HISTOGRAM_ENUMERATION(
       "BackForwardCache.AllSites.HistoryNavigationOutcome", outcome);
 
+  if (had_form_data_associated()) {
+    UMA_HISTOGRAM_ENUMERATION("BackForwardCache.PageWithForm.RestoreResult",
+                              outcome);
+  }
+
   for (NotRestoredReason reason : page_store_result_->not_restored_reasons()) {
     DCHECK(!navigation->IsServedFromBackForwardCache());
     if (back_forward_cache_allowed) {
