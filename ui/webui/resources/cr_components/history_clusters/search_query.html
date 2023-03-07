@@ -4,12 +4,27 @@
     min-width: 0;
   }
 
+  :host-context([chrome-refresh-2023]):host {
+    --border-color: var(--color-suggestion-chip-border,
+        var(--cr-fallback-color-tonal-outline));
+    --icon-color: var(--color-suggestion-chip-icon,
+        var(--cr-fallback-color-primary));
+    --pill-padding-text: 12px;
+    --pill-padding-icon: 8px;
+    --pill-height: 28px;
+  }
+
   a {
     align-items: center;
     color: inherit;
     display: flex;
     outline: none;
     text-decoration: none;
+  }
+
+  :host-context([chrome-refresh-2023]) a {
+    overflow: hidden;
+    position: relative;
   }
 
   :host(:hover) a {
@@ -20,8 +35,30 @@
     background-color: var(--cr-active-background-color);
   }
 
+  :host-context([chrome-refresh-2023]):host(:hover) a {
+    background-color: transparent;
+  }
+
+  :host-context([chrome-refresh-2023]):host(:active) a {
+    background-color: transparent;
+  }
+
   :host-context(.focus-outline-visible) a:focus {
     box-shadow: inset 0 0 0 2px var(--cr-focus-outline-color);
+  }
+
+  :host-context([chrome-refresh-2023].focus-outline-visible) a:focus {
+    --pill-padding-icon: 9px;
+    --pill-padding-text: 13px;
+    border: none;
+    box-shadow: none;
+    outline: 2px solid var(--cr-focus-outline-color);
+    outline-offset: 0;
+  }
+
+  :host-context([chrome-refresh-2023]) span {
+    position: relative;
+    z-index: 1;
   }
 
   .icon {
@@ -31,9 +68,38 @@
     --cr-icon-ripple-margin: 0;
     --cr-icon-ripple-size: 20px;
   }
+
+  :host-context([chrome-refresh-2023]) .icon {
+    --cr-icon-ripple-size: 16px;
+    --cr-icon-size: 16px;
+  }
+
+  paper-ripple {
+    display: none;
+  }
+
+  :host-context([chrome-refresh-2023]) paper-ripple {
+    --paper-ripple-opacity: 1;
+    color: var(--cr-active-background-color);
+    display: block;
+  }
+
+  #hover-layer {
+    display: none;
+  }
+
+  :host-context([chrome-refresh-2023]):host(:hover) #hover-layer {
+    background: var(--cr-hover-background-color);
+    content: '';
+    display: block;
+    inset: 0;
+    pointer-events: none;
+    position: absolute;
+  }
 </style>
-<a class="pill pill-icon-start" href$="[[searchQuery.url.url]]"
+<a id="searchQueryLink" class="pill pill-icon-start" href$="[[searchQuery.url.url]]"
     on-click="onClick_" on-auxclick="onAuxClick_" on-keydown="onKeydown_">
+  <div id="hover-layer"></div>
   <span class="icon cr-icon"></span>
   <span class="truncate">[[searchQuery.query]]</span>
 </a>

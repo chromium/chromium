@@ -254,6 +254,8 @@ html[chrome-refresh-2023] {
   --cr-fallback-color-surface-variant: rgb(225, 227, 225);
   --cr-fallback-color-on-surface-variant: rgb(68, 71, 70);
 
+  --cr-fallback-color-tonal-outline: rgb(168, 199, 250);
+
   /* States */
   --cr-hover-background-color: var(--color-sys-state-hover,
       rgba(var(--cr-fallback-color-on-surface-rgb), .08));
@@ -286,5 +288,6 @@ html[chrome-refresh-2023] {
     --cr-fallback-color-on-surface-rgb: 227, 227, 227;
     --cr-fallback-color-surface-variant: rgb(68, 71, 70);
     --cr-fallback-color-on-surface-variant: rgb(196, 199, 197);
+    --cr-fallback-color-tonal-outline: rgb(0, 99, 155);
   }
 }

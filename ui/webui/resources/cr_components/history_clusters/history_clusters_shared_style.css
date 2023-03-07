@@ -25,6 +25,10 @@
   line-height: 1.5;  /* 21px */
 }
 
+:host-context([chrome-refresh-2023]) .pill {
+  font-size: 0.75rem; /* 12px */
+}
+
 .pill-icon-start {
   padding-inline-end: var(--pill-padding-text);
   padding-inline-start: var(--pill-padding-icon);
@@ -32,6 +36,10 @@
 
 .pill-icon-start .icon {
   margin-inline-end: 8px;
+}
+
+:host-context([chrome-refresh-2023]) .pill-icon-start .icon {
+  margin-inline-end: 4px;
 }
 
 .pill-icon-end {

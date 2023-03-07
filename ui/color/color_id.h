@@ -367,6 +367,8 @@
   E_CPONLY(kColorTableHeaderBackground) \
   E_CPONLY(kColorTableHeaderForeground) \
   E_CPONLY(kColorTableHeaderSeparator) \
+  E_CPONLY(kColorSuggestionChipBorder) \
+  E_CPONLY(kColorSuggestionChipIcon) \
   E_CPONLY(kColorTextfieldBackground) \
   E_CPONLY(kColorTextfieldBackgroundDisabled) \
   E_CPONLY(kColorTextfieldForeground) \

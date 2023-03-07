@@ -16,6 +16,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/base/ui_base_features.h"
 
 // Static
 void HistoryClustersUtil::PopulateSource(content::WebUIDataSource* source,
@@ -45,6 +46,9 @@ void HistoryClustersUtil::PopulateSource(content::WebUIDataSource* source,
       "isHistoryClustersImagesEnabled",
       history_clusters::GetConfig().images &&
           base::FeatureList::IsEnabled(image_service::kImageService));
+  source->AddString(
+      "chromeRefresh2023Attribute",
+      features::IsChromeRefresh2023() ? "chrome-refresh-2023" : "");
 
   static constexpr webui::LocalizedString kHistoryClustersStrings[] = {
       {"actionMenuDescription", IDS_HISTORY_CLUSTERS_ACTION_MENU_DESCRIPTION},
