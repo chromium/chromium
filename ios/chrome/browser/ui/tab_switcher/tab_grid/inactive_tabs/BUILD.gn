@@ -46,10 +46,26 @@ source_set("inactive_tabs_ui") {
 source_set("inactive_tabs_button") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "inactive_tabs_button_mediator.h",
+    "inactive_tabs_button_mediator.mm",
+  ]
+  deps = [
+    ":inactive_tabs_button_ui",
+    "//base",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/tabs/inactive_tabs:features",
+    "//ios/chrome/browser/web_state_list",
+  ]
+}
+
+source_set("inactive_tabs_button_ui") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
     "inactive_tabs_button.h",
     "inactive_tabs_button.mm",
     "inactive_tabs_button_header.h",
     "inactive_tabs_button_header.mm",
+    "inactive_tabs_count_consumer.h",
   ]
   deps = [
     "//ios/chrome/app/strings",

@@ -56,8 +56,8 @@ using ScopedWebStateObservation =
 @implementation InactiveTabsMediator
 
 - (instancetype)initWithConsumer:(id<TabCollectionConsumer>)consumer {
+  DCHECK(IsInactiveTabsEnabled());
   if (self = [super init]) {
-    DCHECK(IsInactiveTabsEnabled());
     _consumer = consumer;
     _webStateListObserverBridge =
         std::make_unique<WebStateListObserverBridge>(self);
@@ -85,7 +85,8 @@ using ScopedWebStateObservation =
   _scopedWebStateObservation->RemoveAllObservations();
 
   _inactiveBrowser = inactiveBrowser;
-  _webStateList = inactiveBrowser->GetWebStateList();
+  _webStateList =
+      inactiveBrowser ? inactiveBrowser->GetWebStateList() : nullptr;
 
   [_snapshotCache addObserver:self];
   if (_webStateList) {
