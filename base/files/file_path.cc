@@ -338,8 +338,22 @@ FilePath FilePath::DirName() const {
     // separator intact indicating alternate root.
     new_path.path_.resize(letter + 3);
   } else if (last_separator != 0) {
-    // path_ is somewhere else, trim the basename.
-    new_path.path_.resize(last_separator);
+    bool trim_to_basename = true;
+#if BUILDFLAG(IS_POSIX)
+    // On Posix, more than two leading separators are always collapsed to one.
+    // See
+    // https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap04.html#tag_04_13
+    // So, do not strip any of the separators, let
+    // StripTrailingSeparatorsInternal() take care of the extra.
+    if (AreAllSeparators(new_path.path_.substr(0, last_separator + 1))) {
+      new_path.path_.resize(last_separator + 1);
+      trim_to_basename = false;
+    }
+#endif  // BUILDFLAG(IS_POSIX)
+    if (trim_to_basename) {
+      // path_ is somewhere else, trim the basename.
+      new_path.path_.resize(last_separator);
+    }
   }
 
   new_path.StripTrailingSeparatorsInternal();
