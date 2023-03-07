@@ -14,11 +14,13 @@
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/shelf_context_menu.h"
+#include "chrome/grit/theme_resources.h"
 #include "chromeos/ui/wm/desks/desks_helper.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "extensions/common/constants.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/views/widget/native_widget_aura.h"
 
 namespace {
@@ -113,7 +115,12 @@ BrowserAppShelfItemController::GetAppMenuItems(
       const apps::BrowserWindowInstance* instance =
           registry_.GetBrowserWindowInstanceById(id);
       DCHECK(instance);
-      items.push_back({command_id, instance->window->GetTitle(), bitty_icon_});
+      const gfx::Image& icon =
+          ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+              instance->is_incognito ? IDR_ASH_SHELF_LIST_INCOGNITO_BROWSER
+                                     : IDR_ASH_SHELF_LIST_BROWSER);
+      items.push_back(
+          {command_id, instance->window->GetTitle(), icon.AsImageSkia()});
     } else {
       const apps::BrowserAppInstance* instance =
           registry_.GetAppInstanceById(id);

@@ -41,6 +41,10 @@ struct StructTraits<crosapi::mojom::BrowserWindowInstanceUpdateDataView,
       const apps::BrowserWindowInstanceUpdate& update) {
     return update.restored_browser_session_id;
   }
+
+  static bool is_incognito(const apps::BrowserWindowInstanceUpdate& update) {
+    return update.is_incognito;
+  }
 };
 
 template <>
