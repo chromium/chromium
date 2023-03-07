@@ -28,9 +28,7 @@ optimize_webui("bundle_lit") {
 }
 
 copy("copy_tslib") {
-  sources = [ rebase_path(
-          "//third_party/material_web_components/components-chromium/node_modules/tslib/tslib.js",
-          root_build_dir) ]
+  sources = [ "//third_party/material_web_components/components-chromium/node_modules/tslib/tslib.js" ]
   outputs = [ "$chrome_resources_dir/tslib/tslib.js" ]
 }
 
