@@ -1,8 +1,8 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/extensions/extensions_request_access_button_hover_card.h"
+#include "chrome/browser/ui/views/extensions/extensions_request_access_hover_card_coordinator.h"
 
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
@@ -10,27 +10,16 @@
 #include "chrome/browser/ui/views/chrome_widget_sublevel.h"
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
 #include "chrome/grit/generated_resources.h"
-#include "content/public/browser/web_contents.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/models/dialog_model_field.h"
-#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
-#include "ui/views/view.h"
 #include "ui/views/views_features.h"
 
-namespace {
-
-views::BubbleDialogModelHost* request_access_bubble = nullptr;
-
-}  // namespace
-
-// static
-void ExtensionsRequestAccessButtonHoverCard::ShowBubble(
+void ExtensionsRequestAccessHoverCardCoordinator::ShowBubble(
     content::WebContents* web_contents,
     views::View* anchor_view,
     ExtensionsContainer* extensions_container,
     std::vector<extensions::ExtensionId>& extension_ids) {
-  DCHECK(!request_access_bubble);
   DCHECK(web_contents);
   DCHECK(extensions_container);
   DCHECK(!extension_ids.empty());
@@ -41,8 +30,13 @@ void ExtensionsRequestAccessButtonHoverCard::ShowBubble(
       .OverrideShowCloseButton(false)
       // Make sure the widget is closed if the dialog gets destroyed while the
       // mouse is still on hover.
-      .SetDialogDestroyingCallback(
-          base::BindOnce(&ExtensionsRequestAccessButtonHoverCard::HideBubble));
+      .SetDialogDestroyingCallback(base::BindOnce(
+          &ExtensionsRequestAccessHoverCardCoordinator::HideBubble,
+          base::Unretained(this)));
+
+  // TODO(crbug.com/1325171): Use extensions::IconImage instead of getting the
+  // action's image. This requires the coordinator class to implement
+  // extensions::IconImage::Observer.
 
   const std::u16string url = GetCurrentHost(web_contents);
   if (extension_ids.size() == 1) {
@@ -73,7 +67,7 @@ void ExtensionsRequestAccessButtonHoverCard::ShowBubble(
   // button in an inactive window. Setting this to false creates the need to
   // explicitly hide the hovercard.
   bubble->SetCanActivate(false);
-  request_access_bubble = bubble.get();
+  bubble_tracker_.SetView(bubble->GetContentsView());
 
   auto* widget = views::BubbleDialogDelegate::CreateBubble(std::move(bubble));
   // Ensure the hover card Widget assumes the highest z-order to avoid occlusion
@@ -87,15 +81,13 @@ void ExtensionsRequestAccessButtonHoverCard::ShowBubble(
   widget->Show();
 }
 
-// static
-void ExtensionsRequestAccessButtonHoverCard::HideBubble() {
-  if (ExtensionsRequestAccessButtonHoverCard::IsShowing()) {
-    request_access_bubble->GetWidget()->Close();
-    request_access_bubble = nullptr;
+void ExtensionsRequestAccessHoverCardCoordinator::HideBubble() {
+  if (IsShowing()) {
+    bubble_tracker_.view()->GetWidget()->Close();
+    bubble_tracker_.SetView(nullptr);
   }
 }
 
-// static
-bool ExtensionsRequestAccessButtonHoverCard::IsShowing() {
-  return request_access_bubble != nullptr;
+bool ExtensionsRequestAccessHoverCardCoordinator::IsShowing() const {
+  return bubble_tracker_.view() != nullptr;
 }

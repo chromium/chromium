@@ -14,9 +14,10 @@ class WebContents;
 
 class Browser;
 class ExtensionsContainer;
+class ExtensionsRequestAccessHoverCardCoordinator;
 
-// Button in the toolbar bar that displays the extensions that requests access,
-// and grants them access.
+// Button in the toolbar bar that displays the extensions that requests
+// access, and are allowed to do so, and grants them access.
 class ExtensionsRequestAccessButton : public ToolbarButton {
  public:
   explicit ExtensionsRequestAccessButton(
@@ -45,6 +46,10 @@ class ExtensionsRequestAccessButton : public ToolbarButton {
   std::vector<extensions::ExtensionId> GetExtensionIdsForTesting() {
     return extension_ids_;
   }
+  ExtensionsRequestAccessHoverCardCoordinator*
+  GetHoverCardCoordinatorForTesting() {
+    return hover_card_coordinator_.get();
+  }
 
  private:
   // Runs `extension_ids_` actions in the current site.
@@ -54,6 +59,9 @@ class ExtensionsRequestAccessButton : public ToolbarButton {
 
   raw_ptr<Browser> browser_;
   raw_ptr<ExtensionsContainer> extensions_container_;
+
+  std::unique_ptr<ExtensionsRequestAccessHoverCardCoordinator>
+      hover_card_coordinator_;
 
   // Extensions included in the request access button.
   std::vector<extensions::ExtensionId> extension_ids_;

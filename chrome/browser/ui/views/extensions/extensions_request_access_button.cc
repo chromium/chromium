@@ -15,7 +15,8 @@
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/views/extensions/extensions_request_access_button_hover_card.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
+#include "chrome/browser/ui/views/extensions/extensions_request_access_hover_card_coordinator.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -43,7 +44,9 @@ ExtensionsRequestAccessButton::ExtensionsRequestAccessButton(
           base::BindRepeating(&ExtensionsRequestAccessButton::OnButtonPressed,
                               base::Unretained(this))),
       browser_(browser),
-      extensions_container_(extensions_container) {}
+      extensions_container_(extensions_container),
+      hover_card_coordinator_(
+          std::make_unique<ExtensionsRequestAccessHoverCardCoordinator>()) {}
 
 ExtensionsRequestAccessButton::~ExtensionsRequestAccessButton() = default;
 
@@ -67,12 +70,13 @@ void ExtensionsRequestAccessButton::Update(
 }
 
 void ExtensionsRequestAccessButton::MaybeShowHoverCard() {
-  if (ExtensionsRequestAccessButtonHoverCard::IsShowing() ||
-      !GetWidget()->IsMouseEventsEnabled())
+  if (hover_card_coordinator_->IsShowing() ||
+      !GetWidget()->IsMouseEventsEnabled()) {
     return;
+  }
 
-  ExtensionsRequestAccessButtonHoverCard::ShowBubble(
-      GetActiveWebContents(), this, extensions_container_, extension_ids_);
+  hover_card_coordinator_->ShowBubble(GetActiveWebContents(), this,
+                                      extensions_container_, extension_ids_);
 }
 
 std::u16string ExtensionsRequestAccessButton::GetTooltipText(
@@ -82,15 +86,16 @@ std::u16string ExtensionsRequestAccessButton::GetTooltipText(
 }
 
 void ExtensionsRequestAccessButton::OnButtonPressed() {
-  if (ExtensionsRequestAccessButtonHoverCard::IsShowing()) {
-    ExtensionsRequestAccessButtonHoverCard::HideBubble();
+  if (hover_card_coordinator_->IsShowing()) {
+    hover_card_coordinator_->HideBubble();
   }
 
   content::WebContents* web_contents = GetActiveWebContents();
   extensions::ExtensionActionRunner* action_runner =
       extensions::ExtensionActionRunner::GetForWebContents(web_contents);
-  if (!action_runner)
+  if (!action_runner) {
     return;
+  }
 
   DCHECK_GT(extension_ids_.size(), 0u);
   std::vector<const extensions::Extension*> extensions_to_run =
@@ -114,7 +119,7 @@ void ExtensionsRequestAccessButton::OnMouseEntered(
 }
 
 void ExtensionsRequestAccessButton::OnMouseExited(const ui::MouseEvent& event) {
-  ExtensionsRequestAccessButtonHoverCard::HideBubble();
+  hover_card_coordinator_->HideBubble();
 }
 
 content::WebContents* ExtensionsRequestAccessButton::GetActiveWebContents() {
