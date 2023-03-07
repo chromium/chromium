@@ -424,7 +424,6 @@ void ImmersiveModeController::OnTopViewBoundsChanged(const gfx::Rect& bounds) {
   NSSize size = overlay_view.frame.size;
   size.height = frame.size.height;
   [overlay_view setFrameSize:size];
-  PropagateFrameSizeToViewsSubviews(overlay_view);
   UpdateToolbarVisibility(last_used_style_);
 
   // If the toolbar is always visible, update the fullscreen min height.
