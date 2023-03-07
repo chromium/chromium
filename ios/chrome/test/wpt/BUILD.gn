@@ -17,6 +17,7 @@ script_test("wpt_tests_ios") {
     "chrome_ios",
     "--target",
     "Release",
+    "--webdriver-arg=--os=16.0",
   ]
   deps = [ ":all_tests" ]
   data = [
