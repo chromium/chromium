@@ -194,23 +194,22 @@ CSSCustomPropertyDeclaration* CSSVariableParser::ParseDeclarationValue(
 }
 
 CSSVariableReferenceValue* CSSVariableParser::ParseVariableReferenceValue(
-    CSSParserTokenRange range,
+    CSSTokenizedValue value,
     const CSSParserContext& context,
     bool is_animation_tainted) {
-  if (range.AtEnd()) {
+  if (value.range.AtEnd()) {
     return nullptr;
   }
 
   bool has_references;
-  if (!IsValidVariable(range, has_references)) {
+  if (!IsValidVariable(value.range, has_references)) {
     return nullptr;
   }
-  if (ParseCSSWideValue(range)) {
+  if (ParseCSSWideValue(value.range)) {
     return nullptr;
   }
   return MakeGarbageCollected<CSSVariableReferenceValue>(
-      CSSVariableData::Create({range, StringView()}, is_animation_tainted,
-                              has_references),
+      CSSVariableData::Create(value, is_animation_tainted, has_references),
       context);
 }
 

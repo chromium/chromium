@@ -149,8 +149,10 @@ PropertyRegistration* PropertyRegistration::MaybeCreateForDeclaredProperty(
     const CSSParserContext* parser_context =
         document.ElementSheet().Contents()->ParserContext();
     const bool is_animation_tainted = false;
-    initial = syntax->Parse(initial_variable_data->TokenRange(),
-                            *parser_context, is_animation_tainted);
+    initial =
+        syntax->Parse(CSSTokenizedValue{initial_variable_data->TokenRange(),
+                                        initial_variable_data->OriginalText()},
+                      *parser_context, is_animation_tainted);
     if (!initial) {
       return nullptr;
     }
@@ -212,8 +214,10 @@ void PropertyRegistration::registerProperty(
     CSSTokenizer tokenizer(property_definition->initialValue());
     const auto tokens = tokenizer.TokenizeToEOF();
     bool is_animation_tainted = false;
-    initial = syntax_definition->Parse(CSSParserTokenRange(tokens),
-                                       *parser_context, is_animation_tainted);
+    initial = syntax_definition->Parse(
+        CSSTokenizedValue{CSSParserTokenRange(tokens),
+                          property_definition->initialValue()},
+        *parser_context, is_animation_tainted);
     if (!initial) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kSyntaxError,

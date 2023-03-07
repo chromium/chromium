@@ -45,9 +45,9 @@ class CORE_EXPORT CustomProperty : public Variable {
   // The custom property is parsed according to the registered syntax (if
   // available).
   //
-  // NOTE: This is distinct from ParseSingleValue() because it will soon
-  // need to take in original_text, not just a token range.
-  const CSSValue* Parse(CSSParserTokenRange,
+  // NOTE: This is distinct from ParseSingleValue() because it takes in
+  // original_text, not just a token range.
+  const CSSValue* Parse(const CSSTokenizedValue,
                         const CSSParserContext&,
                         const CSSParserLocalContext&) const;
 
@@ -70,7 +70,7 @@ class CORE_EXPORT CustomProperty : public Variable {
                  const PropertyRegistration* registration);
   explicit CustomProperty(const PropertyRegistration* registration);
 
-  const CSSValue* ParseUntyped(CSSParserTokenRange,
+  const CSSValue* ParseUntyped(const CSSTokenizedValue&,
                                const CSSParserContext&,
                                const CSSParserLocalContext&) const;
 

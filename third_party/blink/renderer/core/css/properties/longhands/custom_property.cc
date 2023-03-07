@@ -152,9 +152,9 @@ void CustomProperty::ApplyValue(StyleResolverState& state,
       context = StrictCSSParserContext(
           state.GetDocument().GetExecutionContext()->GetSecureContextMode());
     }
-    CSSParserTokenRange range = data->TokenRange();
     const CSSValue* registered_value =
-        Parse(range, *context, CSSParserLocalContext());
+        Parse(CSSTokenizedValue{data->TokenRange(), data->OriginalText()},
+              *context, CSSParserLocalContext());
     if (!registered_value) {
       if (is_inherited_property) {
         ApplyInherit(state);
@@ -207,22 +207,21 @@ const CSSValue* CustomProperty::CSSValueFromComputedStyleInternal(
 }
 
 const CSSValue* CustomProperty::ParseUntyped(
-    CSSParserTokenRange range,
+    const CSSTokenizedValue& value,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context) const {
-  // TODO(crbug.com/661854): Pass through the original string when we have it.
   return CSSVariableParser::ParseDeclarationValue(
-      {range, StringView()}, local_context.IsAnimationTainted(), context);
+      value, local_context.IsAnimationTainted(), context);
 }
 
 const CSSValue* CustomProperty::Parse(
-    CSSParserTokenRange range,
+    CSSTokenizedValue value,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context) const {
   if (!registration_) {
-    return ParseUntyped(range, context, local_context);
+    return ParseUntyped(value, context, local_context);
   }
-  return registration_->Syntax().Parse(range, context,
+  return registration_->Syntax().Parse(value, context,
                                        local_context.IsAnimationTainted());
 }
 

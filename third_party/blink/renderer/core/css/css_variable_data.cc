@@ -188,7 +188,7 @@ const CSSValue* CSSVariableData::ParseForSyntax(
   DCHECK(!NeedsVariableResolution());
   // TODO(timloh): This probably needs a proper parser context for
   // relative URL resolution.
-  return syntax.Parse(TokenRange(),
+  return syntax.Parse(CSSTokenizedValue{TokenRange(), original_text_},
                       *StrictCSSParserContext(secure_context_mode),
                       is_animation_tainted_);
 }

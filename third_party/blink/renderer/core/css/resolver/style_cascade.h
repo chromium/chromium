@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/css/css_property_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
+#include "third_party/blink/renderer/core/css/parser/css_tokenized_value.h"
 #include "third_party/blink/renderer/core/css/properties/css_bitset.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/css/resolver/cascade_filter.h"
@@ -353,7 +354,7 @@ class CORE_EXPORT StyleCascade {
   // the declaration is "invalid at computed-value time".'
   //
   // https://drafts.css-houdini.org/css-properties-values-api-1/#fallbacks-in-var-references
-  bool ValidateFallback(const CustomProperty&, CSSParserTokenRange) const;
+  bool ValidateFallback(const CustomProperty&, CSSTokenizedValue) const;
   // Marks the CustomProperty as referenced by something. Needed to avoid
   // animating these custom properties on the compositor.
   void MarkIsReferenced(const CSSProperty& referencer,

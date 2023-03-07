@@ -1135,7 +1135,10 @@ bool StyleCascade::ResolveVarInto(CSSParserTokenRange range,
     bool success = ResolveTokensInto(range, resolver, fallback);
     // The fallback must match the syntax of the referenced custom property.
     // https://drafts.css-houdini.org/css-properties-values-api-1/#fallbacks-in-var-references
-    if (!ValidateFallback(property, fallback.TokenRange())) {
+    //
+    // NOTE: We don't need the original text here, because ValidateFallback()
+    // only validates the tokens; it doesn't store anything.
+    if (!ValidateFallback(property, {fallback.TokenRange(), StringView()})) {
       return false;
     }
     if (!data) {
@@ -1239,9 +1242,9 @@ bool StyleCascade::HasLineHeightDependency(const CustomProperty& property,
 }
 
 bool StyleCascade::ValidateFallback(const CustomProperty& property,
-                                    CSSParserTokenRange range) const {
+                                    CSSTokenizedValue value) const {
 #if DCHECK_IS_ON()
-  DCHECK(!HasUnresolvedReferences(range));
+  DCHECK(!HasUnresolvedReferences(value.range));
 #endif  // DCHECK_IS_ON()
   if (!property.IsRegistered()) {
     return true;
@@ -1250,7 +1253,7 @@ bool StyleCascade::ValidateFallback(const CustomProperty& property,
       state_.GetDocument().GetExecutionContext()->GetSecureContextMode();
   auto* context = StrictCSSParserContext(context_mode);
   auto local_context = CSSParserLocalContext();
-  return property.Parse(range, *context, local_context);
+  return property.Parse(value, *context, local_context);
 }
 
 void StyleCascade::MarkIsReferenced(const CSSProperty& referencer,

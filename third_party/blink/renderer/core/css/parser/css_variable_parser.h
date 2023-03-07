@@ -29,7 +29,7 @@ class CORE_EXPORT CSSVariableParser {
       bool is_animation_tainted,
       const CSSParserContext&);
   static CSSVariableReferenceValue* ParseVariableReferenceValue(
-      CSSParserTokenRange,
+      CSSTokenizedValue,
       const CSSParserContext&,
       bool is_animation_tainted);
 
