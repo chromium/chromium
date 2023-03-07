@@ -46,7 +46,7 @@ class MockAutofillClient : public TestAutofillClient {
   MOCK_METHOD(bool,
               ShowTouchToFillCreditCard,
               (base::WeakPtr<autofill::TouchToFillDelegate> delegate,
-               base::span<const autofill::CreditCard* const> cards_to_suggest),
+               base::span<const CreditCard> cards_to_suggest),
               (override));
   MOCK_METHOD(void, HideTouchToFillCreditCard, (), (override));
   MOCK_METHOD(void, HideAutofillPopup, (PopupHidingReason reason), (override));
@@ -54,8 +54,7 @@ class MockAutofillClient : public TestAutofillClient {
   void ExpectDelegateWeakPtrFromShowInvalidatedOnHide() {
     EXPECT_CALL(*this, ShowTouchToFillCreditCard)
         .WillOnce([this](base::WeakPtr<autofill::TouchToFillDelegate> delegate,
-                         base::span<const autofill::CreditCard* const>
-                             cards_to_suggest) {
+                         base::span<const CreditCard> cards_to_suggest) {
           captured_delegate_ = delegate;
           return true;
         });
@@ -113,6 +112,17 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
 }  // namespace
 
 class TouchToFillDelegateImplUnitTest : public testing::Test {
+ public:
+  static std::vector<CreditCard> GetCardsToSuggest(
+      std::vector<CreditCard*> credit_cards) {
+    std::vector<CreditCard> cards_to_suggest;
+    cards_to_suggest.reserve(credit_cards.size());
+    for (const CreditCard* card : credit_cards) {
+      cards_to_suggest.push_back(*card);
+    }
+    return cards_to_suggest;
+  }
+
  protected:
   void SetUp() override {
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
@@ -440,11 +450,13 @@ TEST_F(TouchToFillDelegateImplUnitTest, TryToShowTouchToFillShowsExpiredCards) {
   CreditCard expired_card = test::GetExpiredCreditCard();
   autofill_client_.GetPersonalDataManager()->AddCreditCard(credit_card);
   autofill_client_.GetPersonalDataManager()->AddCreditCard(expired_card);
-  std::vector<autofill::CreditCard*> credit_cards =
+  std::vector<CreditCard*> credit_cards =
       autofill_client_.GetPersonalDataManager()->GetCreditCardsToSuggest();
+
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
   EXPECT_CALL(autofill_client_,
-              ShowTouchToFillCreditCard(_, ElementsAreArray(credit_cards)));
+              ShowTouchToFillCreditCard(
+                  _, ElementsAreArray(GetCardsToSuggest(credit_cards))));
 
   TryToShowTouchToFill(/*expected_success=*/true);
 }
@@ -464,7 +476,7 @@ TEST_F(TouchToFillDelegateImplUnitTest,
   ASSERT_FALSE(disused_expired_card.IsCompleteValidCard());
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
   EXPECT_CALL(autofill_client_,
-              ShowTouchToFillCreditCard(_, ElementsAre(Pointee(credit_card))));
+              ShowTouchToFillCreditCard(_, ElementsAre(credit_card)));
 
   TryToShowTouchToFill(/*expected_success=*/true);
 }
@@ -523,11 +535,12 @@ TEST_F(TouchToFillDelegateImplUnitTest, PassTheCreditCardsToTheClient) {
   CreditCard credit_card2 = autofill::test::GetCreditCard2();
   autofill_client_.GetPersonalDataManager()->AddCreditCard(credit_card1);
   autofill_client_.GetPersonalDataManager()->AddCreditCard(credit_card2);
-  std::vector<autofill::CreditCard*> credit_cards =
+  std::vector<CreditCard*> credit_cards =
       autofill_client_.GetPersonalDataManager()->GetCreditCardsToSuggest();
 
   EXPECT_CALL(autofill_client_,
-              ShowTouchToFillCreditCard(_, ElementsAreArray(credit_cards)));
+              ShowTouchToFillCreditCard(
+                  _, ElementsAreArray(GetCardsToSuggest(credit_cards))));
 
   TryToShowTouchToFill(/*expected_success=*/true);
 

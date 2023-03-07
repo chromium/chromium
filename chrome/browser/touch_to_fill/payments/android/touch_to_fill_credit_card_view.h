@@ -18,10 +18,9 @@ class TouchToFillCreditCardView {
  public:
   virtual ~TouchToFillCreditCardView() = default;
 
-  virtual bool Show(
-      TouchToFillCreditCardViewController* controller,
-      base::span<const autofill::CreditCard* const> cards_to_suggest,
-      bool should_show_scan_credit_card) = 0;
+  virtual bool Show(TouchToFillCreditCardViewController* controller,
+                    base::span<const autofill::CreditCard> cards_to_suggest,
+                    bool should_show_scan_credit_card) = 0;
   virtual void Hide() = 0;
 };
 

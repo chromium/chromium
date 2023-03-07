@@ -22,7 +22,7 @@ TouchToFillCreditCardController::~TouchToFillCreditCardController() {
 bool TouchToFillCreditCardController::Show(
     std::unique_ptr<TouchToFillCreditCardView> view,
     base::WeakPtr<TouchToFillDelegate> delegate,
-    base::span<const autofill::CreditCard* const> cards_to_suggest) {
+    base::span<const autofill::CreditCard> cards_to_suggest) {
   // Abort if TTF surface is already shown.
   if (view_)
     return false;

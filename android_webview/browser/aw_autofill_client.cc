@@ -243,7 +243,7 @@ bool AwAutofillClient::IsTouchToFillCreditCardSupported() {
 
 bool AwAutofillClient::ShowTouchToFillCreditCard(
     base::WeakPtr<autofill::TouchToFillDelegate> delegate,
-    base::span<const autofill::CreditCard* const> cards_to_suggest) {
+    base::span<const autofill::CreditCard> cards_to_suggest) {
   NOTREACHED();
   return false;
 }

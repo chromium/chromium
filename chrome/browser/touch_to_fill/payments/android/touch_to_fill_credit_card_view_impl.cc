@@ -28,7 +28,7 @@ TouchToFillCreditCardViewImpl::~TouchToFillCreditCardViewImpl() {
 
 bool TouchToFillCreditCardViewImpl::Show(
     TouchToFillCreditCardViewController* controller,
-    base::span<const autofill::CreditCard* const> cards_to_suggest,
+    base::span<const autofill::CreditCard> cards_to_suggest,
     bool should_show_scan_credit_card) {
   if (java_object_)
     return false;  // Already shown.
@@ -58,7 +58,7 @@ bool TouchToFillCreditCardViewImpl::Show(
     Java_TouchToFillCreditCardViewBridge_setCreditCard(
         env, credit_cards_array, i,
         PersonalDataManagerAndroid::CreateJavaCreditCardFromNative(
-            env, *cards_to_suggest[i]));
+            env, cards_to_suggest[i]));
   }
   Java_TouchToFillCreditCardViewBridge_showSheet(
       env, java_object_, credit_cards_array, should_show_scan_credit_card);

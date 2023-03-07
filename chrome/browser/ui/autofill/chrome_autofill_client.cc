@@ -784,7 +784,7 @@ bool ChromeAutofillClient::IsTouchToFillCreditCardSupported() {
 
 bool ChromeAutofillClient::ShowTouchToFillCreditCard(
     base::WeakPtr<TouchToFillDelegate> delegate,
-    base::span<const autofill::CreditCard* const> cards_to_suggest) {
+    base::span<const autofill::CreditCard> cards_to_suggest) {
 #if BUILDFLAG(IS_ANDROID)
   return touch_to_fill_credit_card_controller_.Show(
       std::make_unique<TouchToFillCreditCardViewImpl>(web_contents()), delegate,
