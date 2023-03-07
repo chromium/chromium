@@ -80,7 +80,9 @@ int32_t AXTreeSourceViews::GetId(AXAuraObjWrapper* node) const {
 }
 
 void AXTreeSourceViews::CacheChildrenIfNeeded(AXAuraObjWrapper* node) {
-  DCHECK(!node->cached_children_);
+  if (node->cached_children_) {
+    return;
+  }
 
   node->cached_children_.emplace();
 
