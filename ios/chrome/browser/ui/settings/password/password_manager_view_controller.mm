@@ -335,6 +335,8 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
   // Whether the table view is in search mode. That is, it only has the search
   // bar potentially saved passwords and blocked sites.
   BOOL _tableIsInSearchMode;
+  // Whether the favicon metric was already logged.
+  BOOL _faviconMetricLogged;
 }
 
 // Object handling passwords export operations.
@@ -519,8 +521,12 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
 - (void)viewWillDisappear:(BOOL)animated {
   [super viewWillDisappear:animated];
 
-  // Record favicons metrics only if the feature is enabled.
-  [self logMetricsForFavicons];
+  // viewWillDisappear is also called if you drag the sheet down then release
+  // without actually closing.
+  if (!_faviconMetricLogged) {
+    [self logMetricsForFavicons];
+    _faviconMetricLogged = YES;
+  }
 
   // Dismiss the search bar if presented; otherwise UIKit may retain it and
   // cause a memory leak. If this dismissal happens before viewWillDisappear
@@ -2219,6 +2225,8 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
 
 // Logs metrics related to favicons for the Password Manager.
 - (void)logMetricsForFavicons {
+  DCHECK(!_faviconMetricLogged);
+
   int n_monograms = 0;
   int n_images = 0;
   std::vector sections_and_types = {
