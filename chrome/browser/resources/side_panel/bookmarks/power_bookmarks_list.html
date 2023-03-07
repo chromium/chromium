@@ -46,7 +46,7 @@
   :host-context([chrome-refresh-2023]) .sp-card {
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    min-height: 0;
   }
 
   .bookmarks {
@@ -174,7 +174,7 @@
           on-click="onBulkEditClicked_"></cr-icon-button>
     </sp-heading>
 
-    <div id="bookmarks" class="bookmarks"
+    <div id="bookmarks" class="bookmarks sp-scroller"
         hidden="[[!shownBookmarks_.length]]"
         role="[[getBookmarksListRole_(editing_)]]"
         aria-multiselectable="[[editing_]]" scrollable>

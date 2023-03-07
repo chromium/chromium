@@ -14,6 +14,7 @@ void AddMaterialSidePanelColorMixer(ui::ColorProvider* provider,
                                     const ui::ColorProviderManager::Key& key) {
   ui::ColorMixer& mixer = provider->AddMixer();
   mixer[kColorSidePanelContentBackground] = {ui::kColorSysSurface4};
+  mixer[kColorSidePanelScrollbarThumb] = {ui::kColorSysPrimary};
   mixer[kColorSidePanelCardBackground] = {ui::kColorSysSurface};
 
   mixer[kColorSidePanelBadgeBackground] = {ui::kColorSysSurfaceVariant};
