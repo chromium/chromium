@@ -93,9 +93,5 @@ public interface CredentialManagerLauncher {
      * @param completionCallback callback called with the intent if the retrieving was successful,
      *      or null if there was an error.
      */
-    /* TODO(https://crbug.com/1382531): Remove the default implementation once there is a real one
-     * overriding it.
-     */
-    default void getAccountSettingsIntent(String accountName, Callback<Intent> completionCallback) {
-    }
+    void getAccountSettingsIntent(String accountName, Callback<Intent> completionCallback);
 }

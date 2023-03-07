@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.password_manager;
 
 import android.app.PendingIntent;
+import android.content.Intent;
 
 import org.chromium.base.Callback;
 
@@ -47,5 +48,11 @@ public class FakeCredentialManagerLauncher implements CredentialManagerLauncher 
             return;
         }
         successCallback.onResult(mPendingIntent);
+    }
+
+    @Override
+    public void getAccountSettingsIntent(String accountName, Callback<Intent> completionCallback) {
+        // This is not currently used in tests.
+        assert false;
     }
 }
