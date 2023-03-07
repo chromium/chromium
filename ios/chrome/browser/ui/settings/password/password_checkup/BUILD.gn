@@ -32,8 +32,11 @@ source_set("password_checkup_ui") {
   ]
   deps = [
     ":password_checkup_utils",
+    "resources:password_checkup_header_background_color",
     "//base",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui/settings:settings_root",
+    "//ui/base",
   ]
 }
 

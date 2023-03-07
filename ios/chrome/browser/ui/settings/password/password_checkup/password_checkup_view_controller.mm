@@ -6,7 +6,10 @@
 
 #import "base/metrics/user_metrics.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_commands.h"
+#import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_utils.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -21,6 +24,24 @@
 @implementation PasswordCheckupViewController
 
 #pragma mark - UIViewController
+
+- (void)viewDidLoad {
+  [super viewDidLoad];
+
+  self.title = l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECKUP);
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+  self.navigationController.navigationBar.backgroundColor =
+      [UIColor colorNamed:@"password_checkup_header_background_color"];
+}
+
+- (void)willMoveToParentViewController:(UIViewController*)parent {
+  [super willMoveToParentViewController:parent];
+  // Set the navigation bar background color back to `nil`.
+  super.navigationController.navigationBar.backgroundColor = nil;
+}
 
 - (void)didMoveToParentViewController:(UIViewController*)parent {
   [super didMoveToParentViewController:parent];
