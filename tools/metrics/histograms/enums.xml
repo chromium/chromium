@@ -25374,6 +25374,7 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="15" label="Failed quad not damaged"/>
   <int value="16" label="Failed YUV video quad moved"/>
   <int value="17" label="Failed HDR tone mapping"/>
+  <int value="18" label="Failed YUV video quad no hdr metatdata"/>
 </enum>
 
 <enum name="DebugScenario">
@@ -30333,6 +30334,7 @@ Called by update_document_policy_enum.py.-->
     Resource data formats. Defined here:
     https://github.com/apitrace/dxsdk/blob/master/Include/dxgiformat.h
   </summary>
+  <int value="24" label="DXGI_FORMAT_R10G10B10A2_UNORM"/>
   <int value="87" label="DXGI_FORMAT_B8G8R8A8_UNORM"/>
   <int value="103" label="DXGI_FORMAT_NV12"/>
   <int value="107" label="DXGI_FORMAT_YUY2"/>
