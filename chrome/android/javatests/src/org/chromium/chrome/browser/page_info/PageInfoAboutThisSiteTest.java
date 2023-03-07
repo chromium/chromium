@@ -122,6 +122,9 @@ public class PageInfoAboutThisSiteTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         doReturn(true).when(mMockAboutThisSiteJni).isFeatureEnabled();
+        doReturn(R.drawable.ic_info_outline_grey_24dp)
+                .when(mMockAboutThisSiteJni)
+                .getJavaDrawableIconId();
         mMocker.mock(PageInfoAboutThisSiteControllerJni.TEST_HOOKS, mMockAboutThisSiteJni);
         mTestServerRule.setServerUsesHttps(true);
         sActivityTestRule.loadUrl(mTestServerRule.getServer().getURL(sSimpleHtml));
