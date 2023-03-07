@@ -22,10 +22,8 @@
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
 #include "components/password_manager/content/browser/content_password_manager_driver_factory_test_api.h"
-#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page_navigator.h"
@@ -54,24 +52,12 @@ class MockAutofillClient : public TestContentAutofillClient {
 
   ~MockAutofillClient() override = default;
 
-  PrefService* GetPrefs() override {
-    return const_cast<PrefService*>(std::as_const(*this).GetPrefs());
-  }
-  const PrefService* GetPrefs() const override { return &prefs_; }
-
-  user_prefs::PrefRegistrySyncable* GetPrefRegistry() {
-    return prefs_.registry();
-  }
-
   MOCK_METHOD(void,
               ShowAutofillPopup,
               (const PopupOpenArgs& open_args,
                base::WeakPtr<AutofillPopupDelegate> delegate),
               (override));
   MOCK_METHOD(void, HideAutofillPopup, (PopupHidingReason), (override));
-
- private:
-  sync_preferences::TestingPrefServiceSyncable prefs_;
 };
 
 }  // namespace
@@ -92,8 +78,6 @@ class ContentAutofillDriverBrowserTest : public InProcessBrowserTest,
 
   void SetUpOnMainThread() override {
     Observe(web_contents());
-    prefs::RegisterProfilePrefs(autofill_client().GetPrefRegistry());
-
     // Serve both a.com and b.com (and any other domain).
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());

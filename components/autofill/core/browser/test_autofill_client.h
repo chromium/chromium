@@ -141,10 +141,15 @@ class TestAutofillClientTemplate : public T {
   }
 
   PrefService* GetPrefs() override {
-    return const_cast<PrefService*>(std::as_const(*this).GetPrefs());
+    if (!prefs_) {
+      prefs_ = autofill::test::PrefServiceForTesting();
+    }
+    return prefs_.get();
   }
 
-  const PrefService* GetPrefs() const override { return prefs_.get(); }
+  const PrefService* GetPrefs() const override {
+    return const_cast<TestAutofillClientTemplate*>(this)->GetPrefs();
+  }
 
   syncer::SyncService* GetSyncService() override { return test_sync_service_; }
 

@@ -43,23 +43,6 @@ namespace autofill {
 
 namespace {
 
-class MockAutofillClient : public TestAutofillClient {
- public:
-  MockAutofillClient() : prefs_(test::PrefServiceForTesting()) {}
-
-  MockAutofillClient(const MockAutofillClient&) = delete;
-  MockAutofillClient& operator=(const MockAutofillClient&) = delete;
-
-  ~MockAutofillClient() override = default;
-  PrefService* GetPrefs() override {
-    return const_cast<PrefService*>(std::as_const(*this).GetPrefs());
-  }
-  const PrefService* GetPrefs() const override { return prefs_.get(); }
-
- private:
-  std::unique_ptr<PrefService> prefs_;
-};
-
 class MockSuggestionsHandler
     : public AutocompleteHistoryManager::SuggestionsHandler {
  public:
@@ -146,7 +129,7 @@ class AutocompleteHistoryManagerTest : public testing::Test {
 
   base::test::SingleThreadTaskEnvironment task_environment_;
   test::AutofillEnvironment autofill_environment_;
-  MockAutofillClient autofill_client_;
+  TestAutofillClient autofill_client_;
   scoped_refptr<MockAutofillWebDataService> web_data_service_;
   std::unique_ptr<AutocompleteHistoryManager> autocomplete_manager_;
   std::unique_ptr<PrefService> prefs_;

@@ -81,22 +81,6 @@ ContentAutofillDriverFactoryTestApi test_api(
   return ContentAutofillDriverFactoryTestApi(cadf);
 }
 
-class MockAutofillClient : public TestContentAutofillClient {
- public:
-  using TestContentAutofillClient::TestContentAutofillClient;
-  MockAutofillClient(MockAutofillClient&) = delete;
-  MockAutofillClient& operator=(MockAutofillClient&) = delete;
-  ~MockAutofillClient() override = default;
-
-  PrefService* GetPrefs() override {
-    return const_cast<PrefService*>(std::as_const(*this).GetPrefs());
-  }
-  const PrefService* GetPrefs() const override { return prefs_.get(); }
-
- private:
-  std::unique_ptr<PrefService> prefs_ = autofill::test::PrefServiceForTesting();
-};
-
 class MockAutofillDriver : public ContentAutofillDriver {
  public:
   MockAutofillDriver(content::RenderFrameHost* rfh,
@@ -112,7 +96,8 @@ class MockAutofillDriver : public ContentAutofillDriver {
 
 class MockBrowserAutofillManager : public BrowserAutofillManager {
  public:
-  MockBrowserAutofillManager(AutofillDriver* driver, MockAutofillClient* client)
+  MockBrowserAutofillManager(AutofillDriver* driver,
+                             TestContentAutofillClient* client)
       : BrowserAutofillManager(driver, client, "en-US") {}
   MockBrowserAutofillManager(MockBrowserAutofillManager&) = delete;
   MockBrowserAutofillManager& operator=(MockBrowserAutofillManager&) = delete;
@@ -261,7 +246,8 @@ class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    auto autofill_client = std::make_unique<MockAutofillClient>(web_contents());
+    auto autofill_client =
+        std::make_unique<TestContentAutofillClient>(web_contents());
     autofill_client_ = autofill_client.get();
     web_contents()->SetUserData(autofill_client_->UserDataKey(),
                                 std::move(autofill_client));
@@ -342,7 +328,7 @@ class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
     return test_api(autofill_client_->GetAutofillDriverFactory()).router();
   }
 
-  raw_ptr<MockAutofillClient> autofill_client_;
+  raw_ptr<TestContentAutofillClient> autofill_client_;
   autofill::test::AutofillEnvironment autofill_environment_;
   raw_ptr<NiceMock<MockAutofillDriver>> autofill_driver_;
   std::unique_ptr<NiceMock<MockAutofillExternalDelegate>> external_delegate_;
