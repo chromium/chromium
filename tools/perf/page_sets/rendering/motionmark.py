@@ -27,6 +27,10 @@ class MotionMarkPage(rendering_story.RenderingStory):
     self._score = 0
     self._scoreLowerBound = 0
     self._scoreUpperBound = 0
+    self._stories = []
+    self._storyScores = []
+    self._storyScoreLowerBounds = []
+    self._storyScoreUpperBounds = []
 
   def RunNavigateSteps(self, action_runner):
     action_runner.Navigate(self.url)
@@ -62,6 +66,22 @@ class MotionMarkPage(rendering_story.RenderingStory):
   @property
   def scoreUpperBound(self):
     return self._scoreUpperBound
+
+  @property
+  def stories(self):
+    return self._stories
+
+  @property
+  def storyScores(self):
+    return self._storyScores
+
+  @property
+  def storyScoreLowerBounds(self):
+    return self._storyScoreLowerBounds
+
+  @property
+  def storyScoreUpperBounds(self):
+    return self._storyScoreUpperBounds
 
   @classmethod
   def GetUrl(cls, suite_name, test_name, complexity):
@@ -321,6 +341,29 @@ class MotionMarkRampComposite(MotionMarkPage):
       self._score = score
       self._scoreLowerBound = lower
       self._scoreUpperBound = upper
+
+      # The MotionMark object is a non-iterable map, so we need to access the
+      # components manually. Currently we only run one iteration, this would
+      # need to be updated if we add iteration support in the future.
+      [stories, scores, lowerBounds,
+       upperBounds] = action_runner.EvaluateJavaScript('''const stories =
+                 window.benchmarkRunnerClient.results._results.
+                     iterationsResults[0].testsResults.MotionMark;
+             const scores = [];
+             const lowerBounds = [];
+             const upperBounds = [];
+             for (const val of Object.keys(stories)) {
+                  const story = stories[val];
+                  scores.push(story.score);
+                  lowerBounds.push(story.scoreLowerBound);
+                  upperBounds.push(story.scoreUpperBound);
+             }
+             [stories, scores, lowerBounds, upperBounds]''')
+
+      self._stories = stories
+      self._storyScores = scores
+      self._storyScoreLowerBounds = lowerBounds
+      self._storyScoreUpperBounds = upperBounds
 
     # Navigate to about:blank to stop rendering frames and let the device
     # cool down while the trace data for the story is processed.

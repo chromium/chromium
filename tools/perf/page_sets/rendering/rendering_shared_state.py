@@ -68,6 +68,17 @@ class RenderingSharedState(shared_page_state.SharedPageState):
       results.AddMeasurement('motionmarkUpper', unit,
                              [self.current_page.scoreUpperBound])
 
+      stories = self.current_page.stories
+      storyScores = self.current_page.storyScores
+      lowerBounds = self.current_page.storyScoreLowerBounds
+      upperBounds = self.current_page.storyScoreUpperBounds
+      score_index = 0
+      for story in stories:
+        results.AddMeasurement(story, unit, storyScores[score_index])
+        results.AddMeasurement(story + ' Lower', unit, lowerBounds[score_index])
+        results.AddMeasurement(story + ' Upper', unit, upperBounds[score_index])
+        score_index += 1
+
     if (self.current_page.TAGS and
         story_tags.KEY_IDLE_POWER in self.current_page.TAGS):
       try:
