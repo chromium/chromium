@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/gl/gl_image_gl_texture.h"
+#include "media/gpu/vaapi/gl_image_gl_texture.h"
 
 #include <vector>
 
@@ -33,7 +33,7 @@
 #define DRM_FORMAT_NV12 FOURCC('N', 'V', '1', '2')
 #define DRM_FORMAT_P010 FOURCC('P', '0', '1', '0')
 
-namespace gl {
+namespace media {
 namespace {
 
 // Returns corresponding internalformat if supported, and GL_NONE otherwise.
@@ -109,7 +109,7 @@ GLImageGLTexture::~GLImageGLTexture() {
   }
 
   const EGLBoolean result = eglDestroyImageKHR(
-      GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay(), egl_image_);
+      gl::GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay(), egl_image_);
   if (result == EGL_FALSE) {
     DLOG(ERROR) << "Error destroying EGLImage: " << ui::GetLastEGLErrorString();
   }
@@ -120,7 +120,7 @@ bool GLImageGLTexture::InitializeFromTexture(uint32_t texture_id) {
     LOG(ERROR) << "Unsupported format: " << gfx::BufferFormatToString(format_);
     return false;
   }
-  GLContext* current_context = GLContext::GetCurrent();
+  gl::GLContext* current_context = gl::GLContext::GetCurrent();
   if (!current_context || !current_context->IsCurrent(nullptr)) {
     LOG(ERROR) << "No gl context bound to the current thread";
     return false;
@@ -131,7 +131,7 @@ bool GLImageGLTexture::InitializeFromTexture(uint32_t texture_id) {
   DCHECK_NE(context_handle, EGL_NO_CONTEXT);
 
   egl_image_ =
-      eglCreateImageKHR(GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay(),
+      eglCreateImageKHR(gl::GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay(),
                         context_handle, EGL_GL_TEXTURE_2D_KHR,
                         reinterpret_cast<EGLClientBuffer>(texture_id), nullptr);
   if (egl_image_ == EGL_NO_IMAGE_KHR) {
@@ -161,8 +161,8 @@ gfx::NativePixmapHandle GLImageGLTexture::ExportHandle() {
   EGLuint64KHR modifiers = 0;
 
   if (!eglExportDMABUFImageQueryMESA(
-          GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay(), egl_image_, &fourcc,
-          &num_planes, &modifiers)) {
+          gl::GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay(), egl_image_,
+          &fourcc, &num_planes, &modifiers)) {
     LOG(ERROR) << "Error querying EGLImage: " << ui::GetLastEGLErrorString();
     return gfx::NativePixmapHandle();
   }
@@ -193,9 +193,9 @@ gfx::NativePixmapHandle GLImageGLTexture::ExportHandle() {
 
   // It is specified for eglExportDMABUFImageMESA that the app is responsible
   // for closing any fds retrieved.
-  if (!eglExportDMABUFImageMESA(GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay(),
-                                egl_image_, &fds[0], &strides[0],
-                                &offsets[0])) {
+  if (!eglExportDMABUFImageMESA(
+          gl::GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay(), egl_image_,
+          &fds[0], &strides[0], &offsets[0])) {
     LOG(ERROR) << "Error exporting EGLImage: " << ui::GetLastEGLErrorString();
     return gfx::NativePixmapHandle();
   }
@@ -232,4 +232,4 @@ unsigned GLImageGLTexture::GetInternalFormat() {
   return GLInternalFormat(format_);
 }
 
-}  // namespace gl
+}  // namespace media

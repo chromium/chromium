@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/gl/gl_image_gl_texture.h"
+#include "media/gpu/vaapi/gl_image_gl_texture.h"
 
 #include "build/build_config.h"
 #include "ui/gl/gl_bindings.h"
@@ -43,7 +43,7 @@ class GLImageGLTextureTestDelegate : public GLImageTestDelegateBase {
     return false;
   }
 
-  scoped_refptr<GLImageGLTexture> CreateSolidColorImage(
+  scoped_refptr<media::GLImageGLTexture> CreateSolidColorImage(
       const gfx::Size& size,
       const uint8_t color[4]) const {
     GLuint texture_id = GLTestHelper::CreateTexture(GetTextureTarget());
@@ -60,7 +60,7 @@ class GLImageGLTextureTestDelegate : public GLImageTestDelegateBase {
                  GL_RGBA, GL_UNSIGNED_BYTE, pixels.get());
 
     auto image =
-        gl::GLImageGLTexture::CreateFromTexture(size, format, texture_id);
+        media::GLImageGLTexture::CreateFromTexture(size, format, texture_id);
     EXPECT_TRUE(image);
 
     glDeleteTextures(1, &texture_id);
@@ -90,7 +90,7 @@ TYPED_TEST_P_WITH_EXPANSION(GLImageGLTextureToDmabufTest,
   const gfx::Size image_size(64, 64);
   const uint8_t* image_color = this->delegate_.GetImageColor();
 
-  scoped_refptr<GLImageGLTexture> image =
+  scoped_refptr<media::GLImageGLTexture> image =
       this->delegate_.CreateSolidColorImage(image_size, image_color);
   ASSERT_TRUE(image);
 

@@ -17,12 +17,9 @@ namespace gfx {
 class NativePixmap;
 }  // namespace gfx
 
-namespace gl {
-class GLImageGLTexture;
-}
-
 namespace media {
 
+class GLImageGLTexture;
 class VaapiWrapper;
 
 // Implementation of VaapiPictureNativePixmap for EGL backends, see
@@ -56,7 +53,7 @@ class VaapiPictureNativePixmapEgl : public VaapiPictureNativePixmap {
   VaapiStatus Initialize(scoped_refptr<gfx::NativePixmap> pixmap);
 
   // GLImage bound to the GL textures used by the VDA client.
-  scoped_refptr<gl::GLImageGLTexture> gl_image_;
+  scoped_refptr<GLImageGLTexture> gl_image_;
 };
 
 }  // namespace media

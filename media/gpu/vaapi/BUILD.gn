@@ -160,6 +160,8 @@ source_set("vaapi") {
 
   if (use_egl) {
     sources += [
+      "gl_image_gl_texture.cc",
+      "gl_image_gl_texture.h",
       "vaapi_picture_native_pixmap_egl.cc",
       "vaapi_picture_native_pixmap_egl.h",
     ]

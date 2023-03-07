@@ -2,20 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_GL_GL_IMAGE_GL_TEXTURE_H_
-#define UI_GL_GL_IMAGE_GL_TEXTURE_H_
+#ifndef MEDIA_GPU_VAAPI_GL_IMAGE_GL_TEXTURE_H_
+#define MEDIA_GPU_VAAPI_GL_IMAGE_GL_TEXTURE_H_
 
 #include <stdint.h>
 
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "ui/gfx/native_pixmap_handle.h"
-#include "ui/gl/gl_export.h"
 #include "ui/gl/gl_image.h"
 
-namespace gl {
+namespace media {
 
-class GL_EXPORT GLImageGLTexture : public GLImage {
+class GLImageGLTexture : public gl::GLImage {
  public:
   // Create an EGLImage from a given GL texture.
   static scoped_refptr<GLImageGLTexture> CreateFromTexture(
@@ -52,6 +51,6 @@ class GL_EXPORT GLImageGLTexture : public GLImage {
   bool has_image_dma_buf_export_;
 };
 
-}  // namespace gl
+}  // namespace media
 
-#endif  // UI_GL_GL_IMAGE_GL_TEXTURE_H_
+#endif  // MEDIA_GPU_VAAPI_GL_IMAGE_GL_TEXTURE_H_

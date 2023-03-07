@@ -6,13 +6,13 @@
 
 #include "base/file_descriptor_posix.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
+#include "media/gpu/vaapi/gl_image_gl_texture.h"
 #include "media/gpu/vaapi/va_surface.h"
 #include "media/gpu/vaapi/vaapi_status.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "ui/gfx/linux/native_pixmap_dmabuf.h"
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gl/gl_bindings.h"
-#include "ui/gl/gl_image_gl_texture.h"
 #include "ui/gl/scoped_binders.h"
 
 namespace media {
@@ -85,8 +85,8 @@ VaapiStatus VaapiPictureNativePixmapEgl::Allocate(gfx::BufferFormat format) {
     return VaapiStatus::Codes::kBadContext;
 
   // TODO(b/220336463): plumb the right color space.
-  auto image = gl::GLImageGLTexture::CreateFromTexture(visible_size_, format,
-                                                       texture_id_);
+  auto image =
+      GLImageGLTexture::CreateFromTexture(visible_size_, format, texture_id_);
   // Create an EGLImage from a gl texture
   if (!image) {
     DLOG(ERROR) << "Failed to initialize eglimage from texture id: "
