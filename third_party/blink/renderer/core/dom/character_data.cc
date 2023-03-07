@@ -39,11 +39,14 @@
 namespace blink {
 
 void CharacterData::MakeParkable() {
-  if (absl::holds_alternative<ParkableString>(data_))
+  if (is_parkable_) {
     return;
+  }
 
-  auto released = absl::get<String>(data_).ReleaseImpl();
-  data_ = ParkableString(std::move(released));
+  auto released = data_.ReleaseImpl();
+  data_.~String();
+  new (&parkable_data_) ParkableString(std::move(released));
+  is_parkable_ = true;
 }
 
 void CharacterData::setData(const String& data) {
@@ -195,7 +198,7 @@ void CharacterData::SetDataAndUpdate(const String& new_data,
                                      unsigned new_length,
                                      UpdateSource source) {
   String old_data = this->data();
-  data_ = new_data;
+  SetDataWithoutUpdate(new_data);
 
   DCHECK(!GetLayoutObject() || IsTextNode());
   if (auto* text_node = DynamicTo<Text>(this))

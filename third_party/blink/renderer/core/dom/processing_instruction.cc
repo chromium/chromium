@@ -74,11 +74,9 @@ String ProcessingInstruction::nodeName() const {
 }
 
 Node* ProcessingInstruction::Clone(Document& factory, CloneChildrenFlag) const {
-  DCHECK(absl::holds_alternative<String>(data_));
   // FIXME: Is it a problem that this does not copy local_href_?
   // What about other data members?
-  return MakeGarbageCollected<ProcessingInstruction>(factory, target_,
-                                                     absl::get<String>(data_));
+  return MakeGarbageCollected<ProcessingInstruction>(factory, target_, data_);
 }
 
 void ProcessingInstruction::DidAttributeChanged() {
@@ -100,13 +98,11 @@ bool ProcessingInstruction::CheckStyleSheet(String& href, String& charset) {
       parentNode() != GetDocument())
     return false;
 
-  DCHECK(absl::holds_alternative<String>(data_));
   // see http://www.w3.org/TR/xml-stylesheet/
   // ### support stylesheet included in a fragment of this (or another) document
   // ### make sure this gets called when adding from javascript
   bool attrs_ok;
-  const HashMap<String, String> attrs =
-      ParseAttributes(absl::get<String>(data_), attrs_ok);
+  const HashMap<String, String> attrs = ParseAttributes(data_, attrs_ok);
   if (!attrs_ok)
     return false;
   HashMap<String, String>::const_iterator i = attrs.find("type");
