@@ -1,0 +1,12 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_ios) {
+  import("//build/config/ios/bundle_data_from_filelist.gni")
+
+  bundle_data_from_filelist("test_bundle_data") {
+    testonly = true
+    filelist_name = "test_bundle_data.filelist"
+  }
+}

@@ -1430,6 +1430,10 @@ source_set("unit_tests") {
     "//ui/gfx:test_support",
   ]
 
+  if (is_ios) {
+    deps += [ "//third_party/text-fragments-polyfill:test_bundle_data" ]
+  }
+
   data_deps = [ ":unit_tests_data" ]
 
   if (use_aura) {
