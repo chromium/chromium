@@ -50,6 +50,10 @@ _OVERRIDES = [
     #('androidx_core_core/core-1.9.0-SNAPSHOT.aar',
     # 'https://androidx.dev/snapshots/builds/8545498/artifacts/repository/'
     # 'androidx/core/core/1.8.0-SNAPSHOT/core-1.8.0-20220505.122105-1.aar'),
+    ('androidx_recyclerview_recyclerview/recyclerview-1.4.0-SNAPSHOT.aar',
+     'https://androidx.dev/snapshots/builds/9668027/artifacts/repository/'
+     'androidx/recyclerview/recyclerview/1.4.0-SNAPSHOT/'
+     'recyclerview-1.4.0-20230228.234124-1.aar'),
 ]
 
 
