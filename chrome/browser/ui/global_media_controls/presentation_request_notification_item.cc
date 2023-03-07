@@ -24,7 +24,6 @@ content::MediaSession* g_media_session_for_test = nullptr;
 content::WebContents* GetWebContentsFromPresentationRequest(
     const content::PresentationRequest& request) {
   auto* rfh = content::RenderFrameHost::FromID(request.render_frame_host_id);
-  DCHECK(rfh);
   return content::WebContents::FromRenderFrameHost(rfh);
 }
 
@@ -74,7 +73,9 @@ PresentationRequestNotificationItem::PresentationRequestNotificationItem(
   // content API. Note that the content::MediaSession always exists, even when
   // the page has no media players.
   auto* web_contents = GetWebContentsFromPresentationRequest(request_);
-  DCHECK(web_contents);
+  if (!web_contents) {
+    return;
+  }
   auto* media_session = GetMediaSession(web_contents);
   DCHECK(media_session);
   media_session->AddObserver(observer_receiver_.BindNewPipeAndPassRemote());
@@ -111,7 +112,10 @@ void PresentationRequestNotificationItem::MediaSessionImagesChanged(
     const base::flat_map<media_session::mojom::MediaSessionImageType,
                          std::vector<media_session::MediaImage>>& images) {
   auto* web_contents = GetWebContentsFromPresentationRequest(request_);
-  DCHECK(web_contents);
+  if (!web_contents) {
+    return;
+  }
+
   auto* media_session = GetMediaSession(web_contents);
   DCHECK(media_session);
   media_session::MediaImageManager manager(
@@ -183,17 +187,17 @@ void PresentationRequestNotificationItem::UpdateViewWithMetadata() {
   media_session::MediaMetadata data =
       metadata_.value_or(media_session::MediaMetadata{});
 
-  auto* web_contents = GetWebContentsFromPresentationRequest(request_);
-  DCHECK(web_contents);
   if (media_message_center::IsOriginGoodForDisplay(request_.frame_origin)) {
     // `request_` has more accurate origin info than `metadata_` e.g. when the
     // request is from within an iframe.
     data.source_title =
         media_message_center::GetOriginNameForDisplay(request_.frame_origin);
   }
+
+  auto* web_contents = GetWebContentsFromPresentationRequest(request_);
   // If not empty, then `metadata_.artist` is likely to contain information
   // more relevant than the page title.
-  if (data.artist.empty()) {
+  if (web_contents && data.artist.empty()) {
     data.artist = web_contents->GetTitle();
   }
   view_->UpdateWithMediaMetadata(data);
@@ -217,14 +221,15 @@ void PresentationRequestNotificationItem::UpdateViewWithImages() {
 
   // Otherwise, get one ourselves.
   auto* web_contents = GetWebContentsFromPresentationRequest(request_);
-  DCHECK(web_contents);
-  favicon::FaviconDriver* favicon_driver =
-      favicon::ContentFaviconDriver::FromWebContents(web_contents);
-  if (favicon_driver) {
-    view_->UpdateWithFavicon(favicon_driver->GetFavicon().AsImageSkia());
-  } else {
-    view_->UpdateWithFavicon(gfx::ImageSkia());
+  if (web_contents) {
+    favicon::FaviconDriver* favicon_driver =
+        favicon::ContentFaviconDriver::FromWebContents(web_contents);
+    if (favicon_driver) {
+      view_->UpdateWithFavicon(favicon_driver->GetFavicon().AsImageSkia());
+      return;
+    }
   }
+  view_->UpdateWithFavicon(gfx::ImageSkia());
 }
 
 void PresentationRequestNotificationItem::OnArtworkBitmap(
