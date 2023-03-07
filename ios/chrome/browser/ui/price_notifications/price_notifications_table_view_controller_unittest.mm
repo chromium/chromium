@@ -108,10 +108,10 @@ TEST_F(PriceNotificationsTableViewControllerTest,
       base::mac::ObjCCast<PriceNotificationsTableViewController>(controller());
 
   [consumer setTrackableItem:nil currentlyTracking:NO];
-  TableViewLinkHeaderFooterItem* item =
-      GetHeaderItemFromSection<TableViewLinkHeaderFooterItem>(
+  TableViewTextHeaderFooterItem* item =
+      GetHeaderItemFromSection<TableViewTextHeaderFooterItem>(
           controller(), SectionIdentifierTableViewHeader);
-  NSString* tableHeadingText = item.text;
+  NSString* tableHeadingText = item.subtitle;
   TableViewTextHeaderFooterItem* trackableHeaderItem =
       GetHeaderItemFromSection<TableViewTextHeaderFooterItem>(
           controller(), SectionIdentifierTrackableItemsOnCurrentSite);
