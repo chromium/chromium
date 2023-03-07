@@ -105,7 +105,7 @@ WaylandFrameManager::WaylandFrameManager(WaylandWindow* window,
 }
 
 WaylandFrameManager::~WaylandFrameManager() {
-  ClearStates(true /* closing */);
+  ClearStates();
 }
 
 void WaylandFrameManager::RecordFrame(std::unique_ptr<WaylandFrame> frame) {
@@ -810,38 +810,22 @@ void WaylandFrameManager::Hide() {
   MaybeProcessSubmittedFrames();
 }
 
-void WaylandFrameManager::ClearStates(bool closing) {
+void WaylandFrameManager::ClearStates() {
   // Clear the previous fatal error message as it might have been set during
   // a playback.
   fatal_error_message_.clear();
 
   for (auto& frame : submitted_frames_) {
-    frame->wl_frame_callback.reset();
     for (auto& submitted : frame->submitted_buffers)
       submitted.second->OnExplicitRelease(submitted.first);
-    frame->submission_acked = true;
-    frame->submitted_buffers.clear();
-    if (!frame->feedback.has_value())
-      frame->feedback = gfx::PresentationFeedback::Failure();
   }
+  submitted_frames_.clear();
 
   for (auto& frame : pending_frames_) {
     DCHECK(frame)
         << "Can't perform OnChannelDestroyed() during a frame playback.";
-    frame->feedback = gfx::PresentationFeedback::Failure();
-    submitted_frames_.push_back(std::move(frame));
   }
   pending_frames_.clear();
-
-  if (closing)
-    return;
-
-  MaybeProcessSubmittedFrames();
-
-  DCHECK(submitted_frames_.empty() ||
-         (submitted_frames_.size() == 1 &&
-          submitted_frames_.back()->submission_acked &&
-          submitted_frames_.back()->presentation_acked));
 }
 
 // static
