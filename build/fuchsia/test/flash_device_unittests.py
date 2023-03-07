@@ -226,13 +226,15 @@ class FlashDeviceTest(unittest.TestCase):
                 mock.patch('os.path.exists', return_value=True), \
                 mock.patch('flash_device.running_unattended',
                            return_value=True), \
-                mock.patch('flash_device.pave') as mock_pave:
+                mock.patch('flash_device.pave') as mock_pave, \
+                mock.patch('flash_device.reboot_recovery') as mock_reboot:
             flash_device.update(_TEST_IMAGE_DIR,
                                 'update',
                                 'some-target-id',
                                 should_pave=True)
             mock_pave.assert_called_once_with(_TEST_IMAGE_DIR,
                                               'some-target-id')
+            mock_reboot.assert_called_once_with('some-target-id')
 
     # pylint: enable=no-self-use
 

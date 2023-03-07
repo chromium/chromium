@@ -257,6 +257,12 @@ def resolve_packages(packages: List[str], target_id: Optional[str]) -> None:
         retry_command(ssh_prefix + resolve_cmd)
 
 
+def reboot_recovery(target_id: Optional[str]) -> None:
+    """Reboot device into recovery partition."""
+    ssh_prefix = get_ssh_prefix(get_ssh_address(target_id))
+    subprocess.run(ssh_prefix + ['--', 'dm', 'reboot-recovery'], check=False)
+
+
 def retry_command(cmd: List[str], retries: int = 2,
                   **kwargs) -> Optional[subprocess.CompletedProcess]:
     """Helper function for retrying a subprocess.run command."""

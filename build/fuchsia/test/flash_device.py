@@ -15,7 +15,7 @@ import time
 from typing import Optional, Tuple
 
 from common import check_ssh_config_file, register_device_args, \
-                   run_ffx_command, SDK_ROOT
+                   reboot_recovery, run_ffx_command, SDK_ROOT
 from compatible_utils import get_sdk_hash, get_ssh_keys, pave, \
     running_unattended, add_exec_to_file, get_host_arch, find_image_in_sdk
 from ffx_integration import ScopedFfxConfig
@@ -175,9 +175,9 @@ def update(system_image_dir: str,
                 # TODO(crbug.com/1405525): We should check the device state
                 # before and after rebooting it to avoid unnecessary reboot or
                 # undesired state.
-                run_ffx_command(('target', 'reboot', '-r'),
-                                target,
-                                check=False)
+                # TODO(fxb/122617): Switch back to `ffx target reboot -r` when
+                # it works.
+                reboot_recovery(target)
             pave(system_image_dir, target)
             time.sleep(180)
         else:
