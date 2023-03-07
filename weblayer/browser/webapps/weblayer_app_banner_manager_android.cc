@@ -16,14 +16,6 @@ WebLayerAppBannerManagerAndroid::WebLayerAppBannerManagerAndroid(
 
 WebLayerAppBannerManagerAndroid::~WebLayerAppBannerManagerAndroid() = default;
 
-webapps::InstallableParams
-WebLayerAppBannerManagerAndroid::ParamsToPerformInstallableWebAppCheck() {
-  webapps::InstallableParams params =
-      AppBannerManagerAndroid::ParamsToPerformInstallableWebAppCheck();
-  params.fetch_screenshots = true;
-  return params;
-}
-
 void WebLayerAppBannerManagerAndroid::ShowAmbientBadge() {
   // TODO(crbug/1420605): Enable WebApk install BottomSheet/Banner for WebEngine
   // sandbox mode.

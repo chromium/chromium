@@ -28,12 +28,9 @@ class ChromeAppBannerManagerAndroid
 
  protected:
   // AppBannerManagerAndroid:
-  InstallableParams ParamsToPerformInstallableWebAppCheck() override;
   void OnDidPerformInstallableWebAppCheck(
       const InstallableData& result) override;
   void MaybeShowAmbientBadge() override;
-  void ShowAmbientBadge() override;
-  void ShowBannerUi(WebappInstallSource install_source) override;
   void RecordExtraMetricsForInstallEvent(
       AddToHomescreenInstaller::Event event,
       const AddToHomescreenParams& a2hs_params) override;

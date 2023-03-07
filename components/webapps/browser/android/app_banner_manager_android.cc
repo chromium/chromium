@@ -251,12 +251,16 @@ void AppBannerManagerAndroid::ShowBannerUi(WebappInstallSource install_source) {
   content::WebContents* contents = web_contents();
   DCHECK(contents);
 
-  auto a2hs_params = CreateAddToHomescreenParams(install_source);
+  bool was_shown = native_app_data_.is_null() &&
+                   MaybeShowPwaBottomSheetController(/* expand_sheet= */ true,
+                                                     install_source);
 
-  bool was_shown = AddToHomescreenCoordinator::ShowForAppBanner(
-      weak_factory_.GetWeakPtr(), std::move(a2hs_params),
-      base::BindRepeating(&AppBannerManagerAndroid::OnInstallEvent,
-                          weak_factory_.GetWeakPtr()));
+  if (!was_shown) {
+    was_shown = AddToHomescreenCoordinator::ShowForAppBanner(
+        weak_factory_.GetWeakPtr(), CreateAddToHomescreenParams(install_source),
+        base::BindRepeating(&AppBannerManagerAndroid::OnInstallEvent,
+                            weak_factory_.GetWeakPtr()));
+  }
 
   // If we are installing from the ambient badge, it will remove itself.
   if (install_source != WebappInstallSource::AMBIENT_BADGE_CUSTOM_TAB &&
@@ -688,9 +692,16 @@ void AppBannerManagerAndroid::ShowAmbientBadge() {
                                      : AddToHomescreenParams::AppType::NATIVE);
   badge_state_ = AmbientBadgeState::SHOWING;
 
-  if (base::FeatureList::IsEnabled(features::kInstallableAmbientBadgeMessage) &&
-      base::FeatureList::IsEnabled(
-          messages::kMessagesForAndroidInfrastructure)) {
+  WebappInstallSource install_source = InstallableMetrics::GetInstallSource(
+      web_contents(), InstallTrigger::AMBIENT_BADGE);
+  if (MaybeShowPwaBottomSheetController(/* expand_sheet= */ false,
+                                        install_source)) {
+    // Bottom sheet shown.
+    return;
+  } else if (base::FeatureList::IsEnabled(
+                 features::kInstallableAmbientBadgeMessage) &&
+             base::FeatureList::IsEnabled(
+                 messages::kMessagesForAndroidInfrastructure)) {
     message_controller_.EnqueueMessage(
         web_contents(), GetAppName(), primary_icon_, has_maskable_primary_icon_,
         manifest().start_url);

@@ -53,14 +53,6 @@ ChromeAppBannerManagerAndroid::ChromeAppBannerManagerAndroid(
 
 ChromeAppBannerManagerAndroid::~ChromeAppBannerManagerAndroid() = default;
 
-InstallableParams
-ChromeAppBannerManagerAndroid::ParamsToPerformInstallableWebAppCheck() {
-  InstallableParams params =
-      AppBannerManagerAndroid::ParamsToPerformInstallableWebAppCheck();
-  params.fetch_screenshots = true;
-  return params;
-}
-
 void ChromeAppBannerManagerAndroid::OnDidPerformInstallableWebAppCheck(
     const InstallableData& data) {
   if (data.NoBlockingErrors())
@@ -81,31 +73,6 @@ void ChromeAppBannerManagerAndroid::MaybeShowAmbientBadge() {
   }
 
   AppBannerManagerAndroid::MaybeShowAmbientBadge();
-}
-
-void ChromeAppBannerManagerAndroid::ShowAmbientBadge() {
-  WebappInstallSource install_source = InstallableMetrics::GetInstallSource(
-      web_contents(), InstallTrigger::AMBIENT_BADGE);
-  if (!MaybeShowPwaBottomSheetController(/* expand_sheet= */ false,
-                                         install_source)) {
-    AppBannerManagerAndroid::ShowAmbientBadge();
-  }
-}
-
-void ChromeAppBannerManagerAndroid::ShowBannerUi(
-    WebappInstallSource install_source) {
-  if (!native_app_data_.is_null()) {
-    AppBannerManagerAndroid::ShowBannerUi(install_source);
-    return;
-  }
-
-  if (!MaybeShowPwaBottomSheetController(/* expand_sheet= */ true,
-                                         install_source)) {
-    AppBannerManagerAndroid::ShowBannerUi(install_source);
-    return;
-  }
-
-  ReportStatus(SHOWING_WEB_APP_BANNER);
 }
 
 void ChromeAppBannerManagerAndroid::RecordExtraMetricsForInstallEvent(
