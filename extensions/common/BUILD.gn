@@ -417,6 +417,7 @@ static_library("common") {
     "permissions/usb_device_permission.h",
     "permissions/usb_device_permission_data.cc",
     "permissions/usb_device_permission_data.h",
+    "process_context_data.h",
     "script_constants.h",
     "stack_frame.cc",
     "stack_frame.h",

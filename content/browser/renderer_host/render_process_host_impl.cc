@@ -4867,6 +4867,20 @@ size_t RenderProcessHost::GetActiveViewCount() {
   return num_active_views;
 }
 
+WebExposedIsolationLevel RenderProcessHost::GetWebExposedIsolationLevel() {
+  WebExposedIsolationInfo info = GetProcessLock().GetWebExposedIsolationInfo();
+  if (info.is_isolated_application()) {
+    // TODO(crbug.com/1159832): Check the document policy once it's available to
+    // find out if this process is actually isolated.
+    return WebExposedIsolationLevel::kMaybeIsolatedApplication;
+  } else if (info.is_isolated()) {
+    // TODO(crbug.com/1159832): Check the document policy once it's available to
+    // find out if this process is actually isolated.
+    return WebExposedIsolationLevel::kMaybeIsolated;
+  }
+  return WebExposedIsolationLevel::kNotIsolated;
+}
+
 void RenderProcessHost::PostTaskWhenProcessIsReady(base::OnceClosure task) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!task.is_null());

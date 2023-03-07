@@ -431,6 +431,8 @@ source_set("browser_sources") {
     # which the extension system depends.
     "browser_frame_context_data.cc",
     "browser_frame_context_data.h",
+    "browser_process_context_data.cc",
+    "browser_process_context_data.h",
     "guest_view/web_view/javascript_dialog_helper.cc",
     "guest_view/web_view/javascript_dialog_helper.h",
     "guest_view/web_view/web_view_constants.cc",

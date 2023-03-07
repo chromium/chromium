@@ -20,6 +20,7 @@
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/web_exposed_isolation_level.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sender.h"
 #include "media/media_buildflags.h"
@@ -649,6 +650,11 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // Returns the current number of active views in this process.  Excludes
   // any RenderViewHosts that are swapped out.
   size_t GetActiveViewCount();
+
+  // Returns the isolation level of the RenderProcessHost's ProcessLock. We
+  // do not return the ProcessLock or WebExposedIsolationInfo because those
+  // are not exposed outside of //content for now.
+  WebExposedIsolationLevel GetWebExposedIsolationLevel();
 
   // Posts |task|, if this RenderProcessHost is ready or when it becomes ready
   // (see RenderProcessHost::IsReady method).  The |task| might not run at all
