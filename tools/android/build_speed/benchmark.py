@@ -27,7 +27,6 @@ import contextlib
 import dataclasses
 import functools
 import logging
-import os
 import pathlib
 import re
 import statistics
@@ -73,9 +72,11 @@ _SUPPORTED_EMULATORS = {
 
 _GN_ARGS = [
     'target_os="android"',
-    'use_goma=true',
     'incremental_install=true',
 ]
+
+_GOMA_GN_ARG = 'use_goma=true'
+_RECLIENT_GN_ARG = 'use_remoteexec=true'
 
 _TARGETS = {
     'bundle': 'monochrome_public_bundle',
@@ -508,6 +509,9 @@ def main():
                         help='Specify this to override the default target.')
     parser.add_argument('-j',
                         help='Pass -j to use ninja instead of autoninja.')
+    parser.add_argument('--use-reclient',
+                        action='store_true',
+                        help='Allow bots use reclient instead of goma.')
     parser.add_argument('-v',
                         '--verbose',
                         action='count',
@@ -531,6 +535,7 @@ def main():
         level=level, format='%(levelname).1s %(relativeCreated)6d %(message)s')
 
     gn_args = _GN_ARGS
+
     if args.emulator:
         devil_chromium.Initialize()
         logging.info('Using emulator %s', args.emulator)
@@ -541,13 +546,20 @@ def main():
         # mostly using emulator builds so this is more valuable to track.
         gn_args.append('target_cpu="x86"')
 
+    if args.use_reclient:
+        gn_args.append(_RECLIENT_GN_ARG)
+    else:
+        gn_args.append(_GOMA_GN_ARG)
+
     if args.target:
         target = args.target
     else:
         target = _TARGETS['bundle' if args.bundle else 'apk']
+
     results = run_benchmarks(args.benchmark, gn_args, out_dir, target,
                              args.repeat, args.no_server, args.emulator,
                              args.j)
+
     server_str = f'{"not " if args.no_server else ""}using build server'
     print(f'Summary ({server_str})')
     print(f'emulator: {args.emulator}')
