@@ -1001,8 +1001,11 @@ const base::FeatureParam<int>
     kBrowsingTopicsNumberOfEpochsOfObservationDataToUseForFiltering{
         &kBrowsingTopics,
         "number_of_epochs_of_observation_data_to_use_for_filtering", 3};
-// The max number of observed-by context domains to keep for each top topic.
-// The intent is to cap the in-use memory.
+// The max number of observed-by context domains to keep for each top topic
+// during the epoch topics calculation. The final number of domains associated
+// with each topic may be larger than this threshold, because that set of
+// domains will also include all domains associated with the topic's descendant
+// topics. The intent is to cap the in-use memory.
 const base::FeatureParam<int>
     kBrowsingTopicsMaxNumberOfApiUsageContextDomainsToKeepPerTopic{
         &kBrowsingTopics,

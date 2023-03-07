@@ -444,6 +444,9 @@ void BrowsingTopicsCalculator::OnGetTopicsForHostsCompleted(
   // For each top topic, derive the context domains that observed it
   std::vector<TopicAndDomains> top_topics_and_observing_domains;
 
+  const std::map<Topic, std::vector<Topic>> parent_to_child_topic_map =
+      GetParentToChildTopicMap();
+
   for (const Topic& topic : top_topics) {
     if (!privacy_sandbox_settings_->IsTopicAllowed(
             privacy_sandbox::CanonicalTopic(
@@ -456,6 +459,18 @@ void BrowsingTopicsCalculator::OnGetTopicsForHostsCompleted(
     std::set<HashedDomain> topic_observation_domains =
         GetTopicObservationDomains(topic, topic_hosts_map,
                                    host_context_domains_map_);
+
+    // Calculate descendant topics + their observing context domains
+    std::set<Topic> descendant_topics =
+        GetDescendantTopics(topic, parent_to_child_topic_map);
+    for (const Topic& descendant_topic : descendant_topics) {
+      std::set<HashedDomain> descendant_topic_observation_domains =
+          GetTopicObservationDomains(descendant_topic, topic_hosts_map,
+                                     host_context_domains_map_);
+      topic_observation_domains.insert(
+          descendant_topic_observation_domains.begin(),
+          descendant_topic_observation_domains.end());
+    }
 
     base::UmaHistogramCounts1000(
         "BrowsingTopics.EpochTopicsCalculation."
