@@ -72,7 +72,11 @@ macro_rules! impl_encodable_for_union {
         fn embed_size(
             context: &$crate::bindings::encoding::Context,
         ) -> $crate::bindings::encoding::Bits {
-            if context.is_union() { Self::nested_embed_size() } else { Self::inline_embed_size() }
+            if context.is_union() {
+                $crate::bindings::mojom::UNION_NESTED_EMBED_SIZE
+            } else {
+                $crate::bindings::mojom::UNION_INLINE_EMBED_SIZE
+            }
         }
         fn encode(
             self,
@@ -81,9 +85,14 @@ macro_rules! impl_encodable_for_union {
             context: $crate::bindings::encoding::Context,
         ) {
             if context.is_union() {
-                self.nested_encode(encoder, state, context);
+                $crate::bindings::mojom::encode_union_nested(self, encoder, state, context);
             } else {
-                self.inline_encode(encoder, state, context.set_is_union(true));
+                $crate::bindings::mojom::encode_union_inline(
+                    self,
+                    encoder,
+                    state,
+                    context.set_is_union(true),
+                );
             }
         }
         fn decode(
@@ -91,9 +100,9 @@ macro_rules! impl_encodable_for_union {
             context: $crate::bindings::encoding::Context,
         ) -> Result<Self, ValidationError> {
             if context.is_union() {
-                Self::nested_decode(decoder, context)
+                $crate::bindings::mojom::decode_union_nested(decoder, context)
             } else {
-                Self::inline_decode(decoder, context.set_is_union(true))
+                $crate::bindings::mojom::decode_union_inline(decoder, context.set_is_union(true))
             }
         }
     };

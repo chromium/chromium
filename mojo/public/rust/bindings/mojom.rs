@@ -121,71 +121,78 @@ pub trait MojomUnion: MojomEncodable {
 
     /// Decode the actual value of the union.
     fn decode_value(decoder: &mut Decoder, context: Context) -> Result<Self, ValidationError>;
+}
 
-    /// The embed_size for when the union acts as a pointer type.
-    fn nested_embed_size() -> Bits {
-        POINTER_BIT_SIZE
-    }
+pub const UNION_NESTED_EMBED_SIZE: Bits = POINTER_BIT_SIZE;
+pub const UNION_INLINE_EMBED_SIZE: Bits = Bits(8 * (UNION_SIZE as usize));
 
-    /// The encoding routine for when the union acts as a pointer type.
-    fn nested_encode(self, encoder: &mut Encoder, state: &mut EncodingState, _context: Context) {
-        let tag = DataHeaderValue::UnionTag(self.get_tag());
-        let data_header = DataHeader::new(UNION_SIZE, tag);
-        let (offset, mut new_state, new_context) = encoder.add(&data_header).unwrap();
-        state.encode_pointer(offset);
-        self.encode_value(encoder, &mut new_state, new_context.set_is_union(true));
-    }
+/// Encode a union indirectly by pointer.
+pub fn encode_union_nested<T: MojomUnion>(
+    val: T,
+    encoder: &mut Encoder,
+    state: &mut EncodingState,
+    _context: Context,
+) {
+    let tag = DataHeaderValue::UnionTag(val.get_tag());
+    let data_header = DataHeader::new(UNION_SIZE, tag);
+    let (offset, mut new_state, new_context) = encoder.add(&data_header).unwrap();
+    state.encode_pointer(offset);
+    val.encode_value(encoder, &mut new_state, new_context.set_is_union(true));
+}
 
-    /// The decoding routine for when the union acts as a pointer type.
-    fn nested_decode(decoder: &mut Decoder, context: Context) -> Result<Self, ValidationError> {
-        let global_offset = {
-            let state = decoder.get_mut(&context);
-            match state.decode_pointer() {
-                Some(ptr) => ptr as usize,
-                None => return Err(ValidationError::IllegalPointer),
-            }
-        };
-        if global_offset == (MOJOM_NULL_POINTER as usize) {
-            return Err(ValidationError::UnexpectedNullPointer);
+/// Encode a union directly in the current context.
+pub fn encode_union_inline<T: MojomUnion>(
+    val: T,
+    encoder: &mut Encoder,
+    state: &mut EncodingState,
+    context: Context,
+) {
+    state.align_to_bytes(8);
+    state.encode(UNION_SIZE as u32);
+    state.encode(val.get_tag());
+    val.encode_value(encoder, state, context.clone());
+    state.align_to_bytes(8);
+    state.align_to_byte();
+}
+
+/// Decode a union that is referenced by pointer.
+pub fn decode_union_nested<T: MojomUnion>(
+    decoder: &mut Decoder,
+    context: Context,
+) -> Result<T, ValidationError> {
+    let global_offset = {
+        let state = decoder.get_mut(&context);
+        match state.decode_pointer() {
+            Some(ptr) => ptr as usize,
+            None => return Err(ValidationError::IllegalPointer),
         }
-        match decoder.claim(global_offset as usize) {
-            Ok(new_context) => Self::decode_value(decoder, new_context),
-            Err(err) => Err(err),
-        }
+    };
+    if global_offset == (MOJOM_NULL_POINTER as usize) {
+        return Err(ValidationError::UnexpectedNullPointer);
     }
-
-    /// The embed_size for when the union is inlined into the current context.
-    fn inline_embed_size() -> Bits {
-        Bits(8 * (UNION_SIZE as usize))
+    match decoder.claim(global_offset as usize) {
+        Ok(new_context) => T::decode_value(decoder, new_context),
+        Err(err) => Err(err),
     }
+}
 
-    /// The encoding routine for when the union is inlined into the current
-    /// context.
-    fn inline_encode(self, encoder: &mut Encoder, state: &mut EncodingState, context: Context) {
-        state.align_to_bytes(8);
-        state.encode(UNION_SIZE as u32);
-        state.encode(self.get_tag());
-        self.encode_value(encoder, state, context.clone());
-        state.align_to_bytes(8);
+/// Decode a union stored inline in the current context.
+pub fn decode_union_inline<T: MojomUnion>(
+    decoder: &mut Decoder,
+    context: Context,
+) -> Result<T, ValidationError> {
+    {
+        let state = decoder.get_mut(&context);
         state.align_to_byte();
+        state.align_to_bytes(8);
     }
-
-    /// The decoding routine for when the union is inlined into the current
-    /// context.
-    fn inline_decode(decoder: &mut Decoder, context: Context) -> Result<Self, ValidationError> {
-        {
-            let state = decoder.get_mut(&context);
-            state.align_to_byte();
-            state.align_to_bytes(8);
-        }
-        let value = Self::decode_value(decoder, context.clone());
-        {
-            let state = decoder.get_mut(&context);
-            state.align_to_byte();
-            state.align_to_bytes(8);
-        }
-        value
+    let value = T::decode_value(decoder, context.clone());
+    {
+        let state = decoder.get_mut(&context);
+        state.align_to_byte();
+        state.align_to_bytes(8);
     }
+    value
 }
 
 /// A marker trait that marks Mojo handles as encodable.
