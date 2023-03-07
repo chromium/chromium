@@ -805,6 +805,11 @@ class OmniboxEditModel {
   // if equal.
   GURL old_focused_url_;
 
+  // Whether an existing `AutocompleteClient` should be used or a new one
+  // generated in some cases. This is related to a performance optimization and
+  // all new calls to an `AutocompleteClient` should use the existing client.
+  bool use_existing_autocomplete_client_;
+
   base::WeakPtrFactory<OmniboxEditModel> weak_factory_{this};
 };
 

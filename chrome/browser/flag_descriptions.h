@@ -1235,6 +1235,9 @@ extern const char kOmniboxRemoveExcessiveRecycledViewClearCallsDescription[];
 extern const char kOmniboxRevertModelBeforeClosingPopupName[];
 extern const char kOmniboxRevertModelBeforeClosingPopupDescription[];
 
+extern const char kOmniboxUseExistingAutocompleteClientName[];
+extern const char kOmniboxUseExistingAutocompleteClientDescription[];
+
 extern const char kOmniboxRichAutocompletionPromisingName[];
 extern const char kOmniboxRichAutocompletionPromisingDescription[];
 

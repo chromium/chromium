@@ -2165,6 +2165,12 @@ const char kOmniboxRevertModelBeforeClosingPopupDescription[] =
     "When reverting the omnibox view, revert the model before closing the "
     "popup to avoid some extra calculations.";
 
+const char kOmniboxUseExistingAutocompleteClientName[] =
+    "Omnibox use exisitng autocomplete client";
+const char kOmniboxUseExistingAutocompleteClientDescription[] =
+    "When querying autocomplete client from the omnibox edit model, use the "
+    "existing one instead of creating a new one.";
+
 const char kOmniboxZeroSuggestPrefetchingName[] =
     "Omnibox Zero Prefix Suggestion Prefetching on NTP";
 const char kOmniboxZeroSuggestPrefetchingDescription[] =

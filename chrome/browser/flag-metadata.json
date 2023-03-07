@@ -5461,6 +5461,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "omnibox-use-existing-autocomplete-client",
+    "owners": [ "ryansturm", "manukh", "chrome-desktop-search@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "omnibox-zero-suggest-in-memory-caching",
     "owners": [ "khalidpeer", "mahmadi", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 120

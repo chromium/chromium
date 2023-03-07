@@ -509,6 +509,12 @@ BASE_FEATURE(kRevertModelBeforeClosingPopup,
              "OmniboxRevertModelBeforeClosingPopup",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, an existing `AutocompleteClient` will be used instead of
+// generating a new one in `OmniboxEditModel`.
+BASE_FEATURE(kUseExistingAutocompleteClient,
+             "OmniboxUseExistingAutocompleteClient",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, Omnibox reports the Searchbox Stats in the gs_lcrp= param in the
 // Search Results Page URL.
 BASE_FEATURE(kReportSearchboxStats,
