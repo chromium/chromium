@@ -576,8 +576,8 @@ std::vector<NodeVector::size_type> MissingNodesIndices(
 
 #pragma mark - Cache position in table view.
 
-NSArray* CreateBookmarkPath(bookmarks::BookmarkModel* model,
-                            int64_t folder_id) {
+NSArray<NSNumber*>* CreateBookmarkPath(bookmarks::BookmarkModel* model,
+                                       int64_t folder_id) {
   // Create an array with root node id, if folder_id == root node.
   if (model->root_node()->id() == folder_id) {
     return @[ [NSNumber numberWithLongLong:model->root_node()->id()] ];
@@ -588,7 +588,7 @@ NSArray* CreateBookmarkPath(bookmarks::BookmarkModel* model,
     return nil;
   }
 
-  NSMutableArray* bookmarkPath = [NSMutableArray array];
+  NSMutableArray<NSNumber*>* bookmarkPath = [NSMutableArray array];
   [bookmarkPath addObject:[NSNumber numberWithLongLong:folder_id]];
   while (model->root_node()->id() != bookmark->id()) {
     bookmark = bookmark->parent();

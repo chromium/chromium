@@ -309,7 +309,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
     return stack;
   }
 
-  NSArray* path =
+  NSArray<NSNumber*>* path =
       bookmark_utils_ios::CreateBookmarkPath(self.bookmarks, cachedFolderID);
   if (!path) {
     return stack;
