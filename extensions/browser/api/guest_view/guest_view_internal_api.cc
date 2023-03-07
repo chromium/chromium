@@ -35,7 +35,7 @@ ExtensionFunction::ResponseAction GuestViewInternalCreateGuestFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(args()[1].is_dict());
 
   const std::string& view_type = args()[0].GetString();
-  base::Value& create_params = mutable_args()[1];
+  base::Value::Dict& create_params = mutable_args()[1].GetDict();
 
   // Since we are creating a new guest, we will create a GuestViewManager
   // if we don't already have one.
@@ -57,10 +57,10 @@ ExtensionFunction::ResponseAction GuestViewInternalCreateGuestFunction::Run() {
 
   // Add flag to |create_params| to indicate that the element size is specified
   // in logical units.
-  create_params.SetBoolKey(guest_view::kElementSizeIsLogical, true);
+  create_params.Set(guest_view::kElementSizeIsLogical, true);
 
-  guest_view_manager->CreateGuest(view_type, sender_web_contents,
-                                  create_params.GetDict(), std::move(callback));
+  guest_view_manager->CreateGuest(view_type, sender_web_contents, create_params,
+                                  std::move(callback));
   return did_respond() ? AlreadyResponded() : RespondLater();
 }
 
