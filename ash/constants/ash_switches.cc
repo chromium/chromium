@@ -814,6 +814,13 @@ const char kHiddenNetworkMigrationInterval[] =
 // follow the format "--hidden-network-migration-age=#", and should be >= 0.
 const char kHiddenNetworkMigrationAge[] = "hidden-network-migration-age";
 
+// Sets the channel from which the PPD files are loaded.
+const char kPrintingPpdChannel[] = "printing-ppd-channel";
+const char kPrintingPpdChannelProduction[] = "production";
+const char kPrintingPpdChannelStaging[] = "staging";
+const char kPrintingPpdChannelDev[] = "dev";
+const char kPrintingPpdChannelLocalhost[] = "localhost";
+
 // If set to "true", the profile requires policy during restart (policy load
 // must succeed, otherwise session restart should fail).
 const char kProfileRequiresPolicy[] = "profile-requires-policy";

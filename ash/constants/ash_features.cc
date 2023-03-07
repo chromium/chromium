@@ -1613,21 +1613,6 @@ BASE_FEATURE(kPreferConstantFrameRate,
              "PreferConstantFrameRate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Set the channel from which the PPD files are loaded.
-BASE_FEATURE(kPrintingPpdChannel,
-             "PrintingPpdChannel",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<PrintingPpdChannel>::Option
-    printing_ppd_channel_options[] = {
-        {PrintingPpdChannel::kProduction, "production"},
-        {PrintingPpdChannel::kStaging, "staging"},
-        {PrintingPpdChannel::kDev, "dev"},
-        {PrintingPpdChannel::kLocalhost, "localhost"}};
-const base::FeatureParam<PrintingPpdChannel> kPrintingPpdChannelParam{
-    &kPrintingPpdChannel, "channel", PrintingPpdChannel::kProduction,
-    &printing_ppd_channel_options};
-
 // Enables to allocate more video capture buffers.
 BASE_FEATURE(kMoreVideoCaptureBuffers,
              "MoreVideoCaptureBuffers",

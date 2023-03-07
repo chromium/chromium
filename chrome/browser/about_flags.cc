@@ -2953,6 +2953,20 @@ const FeatureEntry::Choice kAlwaysEnableHdcpChoices[] = {
     {flag_descriptions::kAlwaysEnableHdcpType1,
      ash::switches::kAlwaysEnableHdcp, "type1"},
 };
+
+const FeatureEntry::Choice kPrintingPpdChannelChoices[] = {
+    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
+    {ash::switches::kPrintingPpdChannelProduction,
+     ash::switches::kPrintingPpdChannel,
+     ash::switches::kPrintingPpdChannelProduction},
+    {ash::switches::kPrintingPpdChannelStaging,
+     ash::switches::kPrintingPpdChannel,
+     ash::switches::kPrintingPpdChannelStaging},
+    {ash::switches::kPrintingPpdChannelDev, ash::switches::kPrintingPpdChannel,
+     ash::switches::kPrintingPpdChannelDev},
+    {ash::switches::kPrintingPpdChannelLocalhost,
+     ash::switches::kPrintingPpdChannel,
+     ash::switches::kPrintingPpdChannelLocalhost}};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -9333,7 +9347,7 @@ const FeatureEntry kFeatureEntries[] = {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"printing-ppd-channel", flag_descriptions::kPrintingPpdChannelName,
      flag_descriptions::kPrintingPpdChannelDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kPrintingPpdChannel)},
+     MULTI_VALUE_TYPE(kPrintingPpdChannelChoices)},
 #endif
 
     {"storage-buckets", flag_descriptions::kStorageBucketsName,
