@@ -6512,7 +6512,7 @@
             ]
         }
     ],
-    "IOSScopedCriticalActionReuseEnabled": [
+    "IOSScopedCriticalActionReuse": [
         {
             "platforms": [
                 "ios"
