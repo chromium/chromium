@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <fuchsia/buildinfo/cpp/fidl.h>
+#include <fidl/fuchsia.buildinfo/cpp/fidl.h>
 
 #include "base/fuchsia/system_info.h"
 #include "base/test/gtest_util.h"
@@ -32,10 +32,10 @@ TEST(BuildInfoTest, GetCachedBuildInfo_CheckExpectedValues) {
 
   // TODO(crbug.com/1326674): Check for specific values once Fuchsia
   // completes the requested changes to the data returned from the fake.
-  EXPECT_TRUE(GetCachedBuildInfo().has_product_config());
-  EXPECT_TRUE(GetCachedBuildInfo().has_board_config());
-  EXPECT_TRUE(GetCachedBuildInfo().has_version());
-  EXPECT_TRUE(GetCachedBuildInfo().has_latest_commit_date());
+  EXPECT_TRUE(GetCachedBuildInfo().product_config().has_value());
+  EXPECT_TRUE(GetCachedBuildInfo().board_config().has_value());
+  EXPECT_TRUE(GetCachedBuildInfo().version().has_value());
+  EXPECT_TRUE(GetCachedBuildInfo().latest_commit_date().has_value());
 }
 
 }  // namespace base
