@@ -48,8 +48,10 @@
 namespace blink {
 
 void CanvasPath::closePath() {
-  if (UNLIKELY(path_.IsEmpty()))
+  if (UNLIKELY(IsEmpty())) {
     return;
+  }
+  UpdatePathFromLineIfNecessaryForMutation();
   if (identifiability_study_helper_.ShouldUpdateBuilder()) {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kClosePath);
   }
@@ -65,11 +67,16 @@ void CanvasPath::moveTo(double double_x, double double_y) {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kMoveTo, double_x,
                                                 double_y);
   }
+  gfx::PointF point(x, y);
   if (UNLIKELY(!IsTransformInvertible())) {
-    path_.MoveTo(GetTransform().MapPoint(gfx::PointF(x, y)));
-    return;
+    point = GetTransform().MapPoint(point);
   }
-  path_.MoveTo(gfx::PointF(x, y));
+  if (IsEmpty()) {
+    line_builder_.MoveTo(point);
+  } else {
+    UpdatePathFromLineIfNecessaryForMutation();
+    path_.MoveTo(point);
+  }
 }
 
 void CanvasPath::lineTo(double double_x, double double_y) {
@@ -87,9 +94,19 @@ void CanvasPath::lineTo(double double_x, double double_y) {
     p1 = GetTransform().MapPoint(p1);
   }
 
-  if (UNLIKELY(!path_.HasCurrentPoint()))
-    path_.MoveTo(p1);
+  if (UNLIKELY(IsEmpty())) {
+    line_builder_.MoveTo(p1);
+  }
 
+  if (line_builder_.CanCreateLineTo()) {
+    // `path_` may contain the move to, reset it so that if `path_` is needed
+    // it will be updated.
+    path_.Clear();
+    line_builder_.LineTo(p1);
+    DCHECK(IsLine());
+    return;
+  }
+  UpdatePathFromLineIfNecessaryForMutation();
   path_.AddLineTo(p1);
 }
 
@@ -105,6 +122,7 @@ void CanvasPath::quadraticCurveTo(double double_cpx,
   if (UNLIKELY(!std::isfinite(cpx) || !std::isfinite(cpy) ||
                !std::isfinite(x) || !std::isfinite(y)))
     return;
+  UpdatePathFromLineIfNecessaryForMutation();
   if (identifiability_study_helper_.ShouldUpdateBuilder()) {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kQuadradicCurveTo,
                                                 double_cpx, double_cpy,
@@ -140,6 +158,7 @@ void CanvasPath::bezierCurveTo(double double_cp1x,
                !std::isfinite(cp2x) || !std::isfinite(cp2y) ||
                !std::isfinite(x) || !std::isfinite(y)))
     return;
+  UpdatePathFromLineIfNecessaryForMutation();
   if (identifiability_study_helper_.ShouldUpdateBuilder()) {
     identifiability_study_helper_.UpdateBuilder(
         CanvasOps::kBezierCurveTo, double_cp1x, double_cp1y, double_cp2x,
@@ -182,6 +201,7 @@ void CanvasPath::arcTo(double double_x1,
         "The radius provided (" + String::Number(r) + ") is negative.");
     return;
   }
+  UpdatePathFromLineIfNecessaryForMutation();
   if (identifiability_study_helper_.ShouldUpdateBuilder()) {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kArcTo, double_x1,
                                                 double_y1, double_x2, double_y2,
@@ -397,6 +417,8 @@ void CanvasPath::arc(double double_x,
 
   if (UNLIKELY(!IsTransformInvertible()))
     return;
+
+  UpdatePathFromLineIfNecessaryForMutation();
   if (identifiability_study_helper_.ShouldUpdateBuilder()) {
     identifiability_study_helper_.UpdateBuilder(
         CanvasOps::kArc, double_x, double_y, double_radius, double_start_angle,
@@ -453,6 +475,8 @@ void CanvasPath::ellipse(double double_x,
 
   if (UNLIKELY(!IsTransformInvertible()))
     return;
+
+  UpdatePathFromLineIfNecessaryForMutation();
   if (identifiability_study_helper_.ShouldUpdateBuilder()) {
     identifiability_study_helper_.UpdateBuilder(
         CanvasOps::kEllipse, double_x, double_y, double_radius_x,
@@ -471,6 +495,7 @@ void CanvasPath::ellipse(double double_x,
     return;
   }
 
+  UpdatePathFromLineIfNecessaryForMutation();
   path_.AddEllipse(gfx::PointF(x, y), radius_x, radius_y, rotation, start_angle,
                    adjusted_end_angle);
 }
@@ -489,6 +514,7 @@ void CanvasPath::rect(double double_x,
   if (UNLIKELY(!std::isfinite(x) || !std::isfinite(y) ||
                !std::isfinite(width) || !std::isfinite(height)))
     return;
+  UpdatePathFromLineIfNecessaryForMutation();
   if (identifiability_study_helper_.ShouldUpdateBuilder()) {
     identifiability_study_helper_.UpdateBuilder(
         CanvasOps::kRect, double_x, double_y, double_width, double_height);
@@ -524,6 +550,7 @@ void CanvasPath::roundRect(
   if (UNLIKELY(!std::isfinite(x) || !std::isfinite(y) ||
                !std::isfinite(width) || !std::isfinite(height)))
     return;
+  UpdatePathFromLineIfNecessaryForMutation();
   // TODO(crbug.com/1234113): Instrument new canvas APIs.
   identifiability_study_helper_.set_encountered_skipped_ops();
 
@@ -638,7 +665,44 @@ void CanvasPath::roundRect(
             exception_state);
 }
 
+gfx::RectF CanvasPath::BoundingRect() const {
+  if (IsLine()) {
+    return line_builder_.BoundingRect();
+  }
+  UpdatePathFromLineIfNecessary();
+  return path_.BoundingRect();
+}
+
 void CanvasPath::Trace(Visitor* visitor) const {
   visitor->Trace(identifiability_study_helper_);
 }
+
+ALWAYS_INLINE gfx::RectF CanvasPath::LineBuilder::BoundingRect() const {
+  DCHECK_EQ(state_, State::kLine);
+  const float left = std::min(line_.start.x(), line_.end.x());
+  const float top = std::min(line_.start.y(), line_.end.y());
+  return gfx::RectF(left, top, std::abs(line_.start.x() - line_.end.x()),
+                    std::abs(line_.start.y() - line_.end.y()));
+}
+
+bool CanvasPath::UpdatePathFromLineIfNecessary() const {
+  if (!DoesPathNeedUpdatingFromLine()) {
+    return false;
+  }
+  DCHECK(path_.IsEmpty());
+  // If we get this far, there is a starting point, but possibly no ending
+  // point.
+  path_.MoveTo(line_builder_.starting_point());
+  if (IsLine()) {
+    path_.AddLineTo(line_builder_.ending_point());
+  }
+  return true;
+}
+
+void CanvasPath::UpdatePathFromLineIfNecessaryForMutation() {
+  if (UpdatePathFromLineIfNecessary() || !line_builder_.IsEmpty()) {
+    line_builder_.Clear();
+  }
+}
+
 }  // namespace blink

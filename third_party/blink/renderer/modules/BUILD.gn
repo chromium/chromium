@@ -432,6 +432,7 @@ source_set("unit_tests") {
     "cache_storage/cache_test.cc",
     "canvas/canvas2d/base_rendering_context_2d_test.cc",
     "canvas/canvas2d/canvas_color_cache_test.cc",
+    "canvas/canvas2d/canvas_path_test.cc",
     "canvas/canvas2d/canvas_rendering_context_2d_api_test.cc",
     "canvas/canvas2d/canvas_rendering_context_2d_test.cc",
     "canvas/canvas2d/canvas_style_test_utils.cc",

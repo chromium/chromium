@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 
@@ -49,6 +50,11 @@ class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin,
   DISALLOW_NEW();
 
  public:
+  struct PLATFORM_EXPORT Line {
+    gfx::PointF start;
+    gfx::PointF end;
+  };
+
   virtual ~CanvasPath() = default;
 
   void closePath();
@@ -120,6 +126,26 @@ class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin,
     return nullptr;
   }
 
+  const Path& GetPath() const {
+    UpdatePathFromLineIfNecessary();
+    return path_;
+  }
+
+  // Returns true if the CanvasPath represents a line. In some cases (such as
+  // using constructor that takes a Path) this can return false even though the
+  // path is a line.
+  bool IsLine() const { return line_builder_.HasLineTo(); }
+
+  // Returns the points that make up the line. Only valid if IsLine() is true.
+  const Line line() const {
+    DCHECK(IsLine());
+    return line_builder_.line();
+  }
+
+  bool IsEmpty() const { return line_builder_.IsEmpty() && path_.IsEmpty(); }
+
+  gfx::RectF BoundingRect() const;
+
   void Trace(Visitor*) const override;
 
  protected:
@@ -130,7 +156,16 @@ class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin,
   ALWAYS_INLINE void SetIsTransformInvertible(bool val) {
     is_transform_invertible_ = val;
   }
-  Path path_;
+
+  void Clear() {
+    line_builder_.Clear();
+    path_.Clear();
+  }
+
+  Path& GetModifiablePath() {
+    UpdatePathFromLineIfNecessaryForMutation();
+    return path_;
+  }
 
   // This mirrors state that is stored in CanvasRenderingContext2DState.  We
   // replicate it here so that IsTransformInvertible() can be a non-virtual
@@ -140,6 +175,76 @@ class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin,
   bool is_transform_invertible_ = true;
 
   IdentifiabilityStudyHelper identifiability_study_helper_;
+
+ private:
+  // Used to build up a line.
+  class LineBuilder {
+   public:
+    bool IsEmpty() const { return state_ == State::kEmpty; }
+
+    ALWAYS_INLINE void Clear() { state_ = State::kEmpty; }
+
+    void MoveTo(const gfx::PointF& point) {
+      DCHECK_EQ(state_, State::kEmpty);
+      state_ = State::kStartingPoint;
+      line_.start = point;
+    }
+
+    // Returns true if LineTo() may be called.
+    bool CanCreateLineTo() const { return state_ == State::kStartingPoint; }
+
+    void LineTo(const gfx::PointF& point) {
+      DCHECK(CanCreateLineTo());
+      state_ = State::kLine;
+      line_.end = point;
+    }
+
+    bool HasLineTo() const { return state_ == LineBuilder::State::kLine; }
+
+    const gfx::PointF& starting_point() const {
+      DCHECK(!IsEmpty());
+      return line_.start;
+    }
+
+    const gfx::PointF& ending_point() const {
+      DCHECK_EQ(state_, State::kLine);
+      return line_.end;
+    }
+
+    gfx::RectF BoundingRect() const;
+
+    ALWAYS_INLINE const Line& line() const {
+      DCHECK_EQ(state_, State::kLine);
+      return line_;
+    }
+
+   private:
+    enum class State {
+      kEmpty,
+      kStartingPoint,
+      kLine,  // Indicates LineTo() was called.
+    };
+
+    State state_ = State::kEmpty;
+    Line line_;
+  };
+
+  bool DoesPathNeedUpdatingFromLine() const {
+    return !line_builder_.IsEmpty() && path_.IsEmpty();
+  }
+
+  // Updates `path_` from `line_builder_` if necessary. Returns true if `path_`
+  // changed (false means `path_` was already up to date).
+  bool UpdatePathFromLineIfNecessary() const;
+
+  // Same as UpdatePathFromLineIfNecessary(), but also clears resets
+  //`line_builder_`
+  void UpdatePathFromLineIfNecessaryForMutation();
+
+  LineBuilder line_builder_;
+
+  // `path_` is lazily updated from `line_builder_`, so it needs to be mutable.
+  mutable Path path_;
 };
 
 ALWAYS_INLINE bool CanvasPath::IsTransformInvertible() const {

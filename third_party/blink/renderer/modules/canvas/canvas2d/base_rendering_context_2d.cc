@@ -165,7 +165,7 @@ void BaseRenderingContext2D::restore() {
 
   // Verify that the current state's transform is invertible.
   if (IsTransformInvertible())
-    path_.Transform(GetState().GetTransform());
+    GetModifiablePath().Transform(GetState().GetTransform());
 
   PopAndRestore();
 }
@@ -268,7 +268,7 @@ void BaseRenderingContext2D::endLayer() {
 
   // Verify that the current state's transform is invertible.
   if (IsTransformInvertible())
-    path_.Transform(GetState().GetTransform());
+    GetModifiablePath().Transform(GetState().GetTransform());
 
   // All saves performed since the last beginLayer are no-ops.
   while (state_stack_.back() &&
@@ -308,7 +308,7 @@ void BaseRenderingContext2D::PopAndRestore() {
 
     SetIsTransformInvertible(GetState().IsTransformInvertible());
     if (IsTransformInvertible())
-      path_.Transform(GetState().GetTransform().Inverse());
+      GetModifiablePath().Transform(GetState().GetTransform().Inverse());
 
     DCHECK(state_stack_.back()->GetSaveType() ==
            CanvasRenderingContext2DState::SaveType::kBeginEndLayer);
@@ -320,7 +320,7 @@ void BaseRenderingContext2D::PopAndRestore() {
 
   SetIsTransformInvertible(GetState().IsTransformInvertible());
   if (IsTransformInvertible())
-    path_.Transform(GetState().GetTransform().Inverse());
+    GetModifiablePath().Transform(GetState().GetTransform().Inverse());
 
   canvas->restore();
 
@@ -363,7 +363,7 @@ void BaseRenderingContext2D::ResetInternal() {
   state_stack_.resize(1);
   state_stack_.front() = MakeGarbageCollected<CanvasRenderingContext2DState>();
   SetIsTransformInvertible(true);
-  path_.Clear();
+  Clear();
   if (cc::PaintCanvas* c = GetPaintCanvas()) {
     // The canvas should always have an initial/unbalanced save frame, which
     // we use to reset the top level matrix and clip here.
@@ -849,7 +849,8 @@ void BaseRenderingContext2D::scale(double sx, double sy) {
     return;
 
   c->scale(fsx, fsy);
-  path_.Transform(AffineTransform().ScaleNonUniform(1.0 / fsx, 1.0 / fsy));
+  GetModifiablePath().Transform(
+      AffineTransform().ScaleNonUniform(1.0 / fsx, 1.0 / fsy));
 }
 
 void BaseRenderingContext2D::rotate(double angle_in_radians) {
@@ -873,7 +874,8 @@ void BaseRenderingContext2D::rotate(double angle_in_radians) {
   if (!IsTransformInvertible())
     return;
   c->rotate(ClampTo<float>(angle_in_radians * (180.0 / kPiFloat)));
-  path_.Transform(AffineTransform().RotateRadians(-angle_in_radians));
+  GetModifiablePath().Transform(
+      AffineTransform().RotateRadians(-angle_in_radians));
 }
 
 void BaseRenderingContext2D::translate(double tx, double ty) {
@@ -905,7 +907,7 @@ void BaseRenderingContext2D::translate(double tx, double ty) {
     return;
 
   c->translate(ftx, fty);
-  path_.Transform(AffineTransform().Translate(-ftx, -fty));
+  GetModifiablePath().Transform(AffineTransform().Translate(-ftx, -fty));
 }
 
 void BaseRenderingContext2D::transform(double m11,
@@ -944,7 +946,7 @@ void BaseRenderingContext2D::transform(double m11,
     return;
 
   c->concat(AffineTransformToSkM44(transform));
-  path_.Transform(transform.Inverse());
+  GetModifiablePath().Transform(transform.Inverse());
 }
 
 void BaseRenderingContext2D::resetTransform() {
@@ -969,7 +971,7 @@ void BaseRenderingContext2D::resetTransform() {
   c->setMatrix(SkM44());
 
   if (invertible_ctm)
-    path_.Transform(ctm);
+    GetModifiablePath().Transform(ctm);
   // When else, do nothing because all transform methods didn't update m_path
   // when CTM became non-invertible.
   // It means that resetTransform() restores m_path just before CTM became
@@ -1018,29 +1020,51 @@ AffineTransform BaseRenderingContext2D::GetTransform() const {
 }
 
 void BaseRenderingContext2D::beginPath() {
-  path_.Clear();
+  Clear();
   if (identifiability_study_helper_.ShouldUpdateBuilder()) {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kBeginPath);
   }
 }
 
 void BaseRenderingContext2D::DrawPathInternal(
-    const Path& path,
+    const CanvasPath& path,
     CanvasRenderingContext2DState::PaintType paint_type,
     SkPathFillType fill_type,
     UsePaintCache use_paint_cache) {
   if (path.IsEmpty())
     return;
 
-  SkPath sk_path = path.GetSkPath();
   gfx::RectF bounds(path.BoundingRect());
   if (std::isnan(bounds.x()) || std::isnan(bounds.y()) ||
       std::isnan(bounds.width()) || std::isnan(bounds.height()))
     return;
-  sk_path.setFillType(fill_type);
 
   if (paint_type == CanvasRenderingContext2DState::kStrokePaintType)
     InflateStrokeRect(bounds);
+
+  if (path.IsLine()) {
+    auto line = path.line();
+    Draw<OverdrawOp::kNone>(
+        [line](cc::PaintCanvas* c,
+               const cc::PaintFlags* flags)  // draw lambda
+        {
+          c->drawLine(SkFloatToScalar(line.start.x()),
+                      SkFloatToScalar(line.start.y()),
+                      SkFloatToScalar(line.end.x()),
+                      SkFloatToScalar(line.end.y()), *flags);
+        },
+        [](const SkIRect& rect)  // overdraw test lambda
+        { return false; },
+        bounds, paint_type,
+        GetState().HasPattern(paint_type)
+            ? CanvasRenderingContext2DState::kNonOpaqueImage
+            : CanvasRenderingContext2DState::kNoImage,
+        CanvasPerformanceMonitor::DrawType::kPath);
+    return;
+  }
+
+  SkPath sk_path = path.GetPath().GetSkPath();
+  sk_path.setFillType(fill_type);
 
   Draw<OverdrawOp::kNone>(
       [sk_path, use_paint_cache](cc::PaintCanvas* c,
@@ -1070,7 +1094,7 @@ void BaseRenderingContext2D::fill(const String& winding_rule_string) {
   if (identifiability_study_helper_.ShouldUpdateBuilder()) {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kFill, winding_rule);
   }
-  DrawPathInternal(path_, CanvasRenderingContext2DState::kFillPaintType,
+  DrawPathInternal(*this, CanvasRenderingContext2DState::kFillPaintType,
                    winding_rule, UsePaintCache::kDisabled);
 }
 
@@ -1081,16 +1105,15 @@ void BaseRenderingContext2D::fill(Path2D* dom_path,
     identifiability_study_helper_.UpdateBuilder(
         CanvasOps::kFill__Path, dom_path->GetIdentifiableToken(), winding_rule);
   }
-  DrawPathInternal(dom_path->GetPath(),
-                   CanvasRenderingContext2DState::kFillPaintType, winding_rule,
-                   path2d_use_paint_cache_);
+  DrawPathInternal(*dom_path, CanvasRenderingContext2DState::kFillPaintType,
+                   winding_rule, path2d_use_paint_cache_);
 }
 
 void BaseRenderingContext2D::stroke() {
   if (identifiability_study_helper_.ShouldUpdateBuilder()) {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kStroke);
   }
-  DrawPathInternal(path_, CanvasRenderingContext2DState::kStrokePaintType,
+  DrawPathInternal(*this, CanvasRenderingContext2DState::kStrokePaintType,
                    SkPathFillType::kWinding, UsePaintCache::kDisabled);
 }
 
@@ -1099,8 +1122,7 @@ void BaseRenderingContext2D::stroke(Path2D* dom_path) {
     identifiability_study_helper_.UpdateBuilder(
         CanvasOps::kStroke__Path, dom_path->GetIdentifiableToken());
   }
-  DrawPathInternal(dom_path->GetPath(),
-                   CanvasRenderingContext2DState::kStrokePaintType,
+  DrawPathInternal(*dom_path, CanvasRenderingContext2DState::kStrokePaintType,
                    SkPathFillType::kWinding, path2d_use_paint_cache_);
 }
 
@@ -1229,7 +1251,7 @@ void BaseRenderingContext2D::clip(const String& winding_rule_string) {
         CanvasOps::kClip,
         IdentifiabilitySensitiveStringToken(winding_rule_string));
   }
-  ClipInternal(path_, winding_rule_string, UsePaintCache::kDisabled);
+  ClipInternal(GetPath(), winding_rule_string, UsePaintCache::kDisabled);
 }
 
 void BaseRenderingContext2D::clip(Path2D* dom_path,
@@ -1246,7 +1268,7 @@ void BaseRenderingContext2D::clip(Path2D* dom_path,
 bool BaseRenderingContext2D::isPointInPath(const double x,
                                            const double y,
                                            const String& winding_rule_string) {
-  return IsPointInPathInternal(path_, x, y, winding_rule_string);
+  return IsPointInPathInternal(GetPath(), x, y, winding_rule_string);
 }
 
 bool BaseRenderingContext2D::isPointInPath(Path2D* dom_path,
@@ -1278,7 +1300,7 @@ bool BaseRenderingContext2D::IsPointInPathInternal(
 }
 
 bool BaseRenderingContext2D::isPointInStroke(const double x, const double y) {
-  return IsPointInStrokeInternal(path_, x, y);
+  return IsPointInStrokeInternal(GetPath(), x, y);
 }
 
 bool BaseRenderingContext2D::isPointInStroke(Path2D* dom_path,

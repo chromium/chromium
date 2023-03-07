@@ -613,7 +613,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
                     const SkIRect& clip_bounds,
                     CanvasPerformanceMonitor::DrawType);
 
-  void DrawPathInternal(const Path&,
+  void DrawPathInternal(const CanvasPath&,
                         CanvasRenderingContext2DState::PaintType,
                         SkPathFillType,
                         UsePaintCache);

@@ -348,7 +348,7 @@ void CanvasRenderingContext2D::SetShouldAntialias(bool do_aa) {
 }
 
 void CanvasRenderingContext2D::scrollPathIntoView() {
-  ScrollPathIntoViewInternal(path_);
+  ScrollPathIntoViewInternal(GetPath());
 }
 
 void CanvasRenderingContext2D::scrollPathIntoView(Path2D* path2d) {
@@ -1153,7 +1153,7 @@ CanvasRenderingContext2D::getContextAttributes() const {
 }
 
 void CanvasRenderingContext2D::drawFocusIfNeeded(Element* element) {
-  DrawFocusIfNeededInternal(path_, element);
+  DrawFocusIfNeededInternal(GetPath(), element);
 }
 
 void CanvasRenderingContext2D::drawFocusIfNeeded(Path2D* path2d,
