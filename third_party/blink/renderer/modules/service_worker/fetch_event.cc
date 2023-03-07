@@ -219,6 +219,7 @@ void FetchEvent::OnNavigationPreloadComplete(
   mojom::blink::ResourceTimingInfoPtr info = CreateResourceTimingInfo(
       request_time, request_->url(), &resource_response);
   info->response_end = completion_time;
+  info->allow_negative_values = true;
   WorkerGlobalScopePerformance::performance(*worker_global_scope)
       ->AddResourceTiming(std::move(info), "navigation");
 }
