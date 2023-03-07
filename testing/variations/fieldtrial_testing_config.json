@@ -2774,6 +2774,21 @@
             ]
         }
     ],
+    "ChromeOsARCVMArcOnDemand": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "ArcOnDemand",
+                    "enable_features": [
+                        "ArcOnDemand"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeStartRefactor": [
         {
             "platforms": [
