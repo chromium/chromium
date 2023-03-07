@@ -83,17 +83,6 @@ using device::BluetoothTransport;
 using device::BluetoothUUID;
 
 namespace {
-
-constexpr uint32_t kGattReadPermission =
-    BluetoothGattCharacteristic::Permission::PERMISSION_READ |
-    BluetoothGattCharacteristic::Permission::PERMISSION_READ_ENCRYPTED |
-    BluetoothGattCharacteristic::Permission::
-        PERMISSION_READ_ENCRYPTED_AUTHENTICATED;
-constexpr uint32_t kGattWritePermission =
-    BluetoothGattCharacteristic::Permission::PERMISSION_WRITE |
-    BluetoothGattCharacteristic::Permission::PERMISSION_WRITE_ENCRYPTED |
-    BluetoothGattCharacteristic::Permission::
-        PERMISSION_WRITE_ENCRYPTED_AUTHENTICATED;
 // Bluetooth Spec Vol 3, Part G, 3.3.3.3 Client Characteristic Configuration.
 constexpr uint8_t DISABLE_NOTIFICATION_VALUE = 0;
 constexpr uint8_t ENABLE_NOTIFICATION_VALUE = 1;
@@ -1623,9 +1612,6 @@ void ArcBluetoothBridge::ReadGattCharacteristic(
     return;
   }
 
-  // TODO(b/186866646#comment54): Investigate why
-  // characteristic->GetPermissions() may not have kGattReadPermission here.
-
   characteristic->ReadRemoteCharacteristic(
       base::BindOnce(&OnGattRead, std::move(callback)));
 }
@@ -1639,8 +1625,13 @@ void ArcBluetoothBridge::WriteGattCharacteristic(
     WriteGattCharacteristicCallback callback) {
   BluetoothRemoteGattCharacteristic* characteristic = FindGattCharacteristic(
       std::move(remote_addr), std::move(service_id), std::move(char_id));
-  DCHECK(characteristic);
-  DCHECK(characteristic->GetPermissions() & kGattWritePermission);
+  if (!characteristic) {
+    BLUETOOTH_LOG(ERROR) << __func__
+                         << " failed to write GATT characteristic, "
+                            "characteristic does not exist.";
+    std::move(callback).Run(mojom::BluetoothGattStatus::GATT_FAILURE);
+    return;
+  }
 
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   if (prepare) {
@@ -1679,8 +1670,6 @@ void ArcBluetoothBridge::ReadGattDescriptor(
     return;
   }
 
-  DCHECK(descriptor->GetPermissions() & kGattReadPermission);
-
   descriptor->ReadRemoteDescriptor(
       base::BindOnce(&OnGattRead, std::move(callback)));
 }
@@ -1703,8 +1692,6 @@ void ArcBluetoothBridge::WriteGattDescriptor(
     std::move(callback).Run(mojom::BluetoothGattStatus::GATT_FAILURE);
     return;
   }
-
-  DCHECK(descriptor->GetPermissions() & kGattWritePermission);
 
   if (value->value.empty()) {
     std::move(callback).Run(mojom::BluetoothGattStatus::GATT_FAILURE);

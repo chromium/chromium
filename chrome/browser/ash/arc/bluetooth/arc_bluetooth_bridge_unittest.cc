@@ -554,4 +554,46 @@ TEST_F(ArcBluetoothBridgeTest, WritingMissingDescriptorFailsGracefully) {
   run_loop.Run();
 }
 
+TEST_F(ArcBluetoothBridgeTest, ReadMissingCharacteristicFailsGracefully) {
+  base::RunLoop run_loop;
+
+  // Pass clearly invalid values to guarantee that we won't be able to find a
+  // valid GATT characteristic.
+  arc_bluetooth_bridge_->ReadGattCharacteristic(
+      /*remote_addr=*/mojom::BluetoothAddress::New(),
+      /*service_id=*/mojom::BluetoothGattServiceID::New(),
+      /*char_id=*/mojom::BluetoothGattID::New(),
+      base::BindOnce(
+          [](base::RepeatingClosure quit_closure,
+             mojom::BluetoothGattValuePtr value) {
+            ASSERT_TRUE(value);
+            EXPECT_TRUE(value->value.empty());
+            EXPECT_EQ(value->status, mojom::BluetoothGattStatus::GATT_FAILURE);
+            quit_closure.Run();
+          },
+          run_loop.QuitClosure()));
+  run_loop.Run();
+}
+
+TEST_F(ArcBluetoothBridgeTest, WriteMissingCharacteristicFailsGracefully) {
+  base::RunLoop run_loop;
+
+  // Pass clearly invalid values to guarantee that we won't be able to find a
+  // valid GATT characteristic.
+  arc_bluetooth_bridge_->WriteGattCharacteristic(
+      /*remote_addr=*/mojom::BluetoothAddress::New(),
+      /*service_id=*/mojom::BluetoothGattServiceID::New(),
+      /*char_id=*/mojom::BluetoothGattID::New(),
+      /*value=*/mojom::BluetoothGattValue::New(),
+      /*prepare=*/false,
+      base::BindOnce(
+          [](base::RepeatingClosure quit_closure,
+             mojom::BluetoothGattStatus status) {
+            EXPECT_EQ(status, mojom::BluetoothGattStatus::GATT_FAILURE);
+            quit_closure.Run();
+          },
+          run_loop.QuitClosure()));
+  run_loop.Run();
+}
+
 }  // namespace arc
