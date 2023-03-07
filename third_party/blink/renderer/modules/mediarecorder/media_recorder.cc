@@ -191,7 +191,7 @@ MediaRecorder::MediaRecorder(ExecutionContext* context,
       stream_(stream),
       mime_type_(options->mimeType()) {
   if (context->IsContextDestroyed()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Execution context is detached.");
     return;
   }
@@ -240,7 +240,7 @@ void MediaRecorder::start(ExceptionState& exception_state) {
 
 void MediaRecorder::start(int time_slice, ExceptionState& exception_state) {
   if (!GetExecutionContext() || GetExecutionContext()->IsContextDestroyed()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Execution context is detached.");
     return;
   }
@@ -270,7 +270,7 @@ void MediaRecorder::start(int time_slice, ExceptionState& exception_state) {
 
 void MediaRecorder::stop(ExceptionState& exception_state) {
   if (!GetExecutionContext() || GetExecutionContext()->IsContextDestroyed()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Execution context is detached.");
     return;
   }
@@ -283,7 +283,7 @@ void MediaRecorder::stop(ExceptionState& exception_state) {
 
 void MediaRecorder::pause(ExceptionState& exception_state) {
   if (!GetExecutionContext() || GetExecutionContext()->IsContextDestroyed()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Execution context is detached.");
     return;
   }
@@ -305,7 +305,7 @@ void MediaRecorder::pause(ExceptionState& exception_state) {
 
 void MediaRecorder::resume(ExceptionState& exception_state) {
   if (!GetExecutionContext() || GetExecutionContext()->IsContextDestroyed()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Execution context is detached.");
     return;
   }
@@ -326,7 +326,7 @@ void MediaRecorder::resume(ExceptionState& exception_state) {
 
 void MediaRecorder::requestData(ExceptionState& exception_state) {
   if (!GetExecutionContext() || GetExecutionContext()->IsContextDestroyed()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Execution context is detached.");
     return;
   }
