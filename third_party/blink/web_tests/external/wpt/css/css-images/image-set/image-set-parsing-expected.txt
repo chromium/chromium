@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 114 tests; 104 PASS, 10 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 126 tests; 116 PASS, 10 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS e.style['background-image'] = "image-set(url(example.png) 1x)" should set the property value
 PASS e.style['background-image'] = "-webkit-image-set(url(example.png) 1x)" should set the property value
 PASS e.style['background-image'] = "image-set('example.jpg' 1x)" should set the property value
@@ -22,10 +22,6 @@ PASS e.style['background-image'] = "image-set(none, url(example.png) 1x)" should
 PASS e.style['background-image'] = "-webkit-image-set(none, url(example.png) 1x)" should not set the property value
 PASS e.style['background-image'] = "image-set()" should not set the property value
 PASS e.style['background-image'] = "-webkit-image-set()" should not set the property value
-PASS e.style['background-image'] = "image-set(url(example.png) 0x)" should not set the property value
-PASS e.style['background-image'] = "-webkit-image-set(url(example.png) 0x)" should not set the property value
-PASS e.style['background-image'] = "image-set(url(example.png) -20x)" should not set the property value
-PASS e.style['background-image'] = "-webkit-image-set(url(example.png) -20x)" should not set the property value
 PASS e.style['background-image'] = "image-set('example.jpeg' 92pid url(example.png) 1x)" should not set the property value
 PASS e.style['background-image'] = "-webkit-image-set('example.jpeg' 92pid url(example.png) 1x)" should not set the property value
 PASS e.style['background-image'] = "image-set(url(example.png) 1x url(example.jpeg))" should not set the property value
@@ -74,6 +70,22 @@ PASS e.style['background-image'] = "image-set(url(\"example.png\") calc(2x - 1))
 PASS e.style['background-image'] = "-webkit-image-set(url(\"example.png\") calc(2x - 1))" should not set the property value
 PASS e.style['background-image'] = "image-set(url(\"example.png\") calc(1 + 4dpi))" should not set the property value
 PASS e.style['background-image'] = "-webkit-image-set(url(\"example.png\") calc(1 + 4dpi))" should not set the property value
+PASS e.style['background-image'] = "image-set(url(\"example.png\") 0x)" should set the property value
+PASS e.style['background-image'] = "-webkit-image-set(url(\"example.png\") 0x)" should set the property value
+PASS e.style['background-image'] = "image-set(url(\"example.png\") 0dppx)" should set the property value
+PASS e.style['background-image'] = "-webkit-image-set(url(\"example.png\") 0dppx)" should set the property value
+PASS e.style['background-image'] = "image-set(url(\"example.png\") 0dpi)" should set the property value
+PASS e.style['background-image'] = "-webkit-image-set(url(\"example.png\") 0dpi)" should set the property value
+PASS e.style['background-image'] = "image-set(url(\"example.png\") 0dpcm)" should set the property value
+PASS e.style['background-image'] = "-webkit-image-set(url(\"example.png\") 0dpcm)" should set the property value
+PASS e.style['background-image'] = "image-set(url(\"example.png\") -1x)" should set the property value
+PASS e.style['background-image'] = "-webkit-image-set(url(\"example.png\") -1x)" should set the property value
+PASS e.style['background-image'] = "image-set(url(\"example.png\") -3dppx)" should set the property value
+PASS e.style['background-image'] = "-webkit-image-set(url(\"example.png\") -3dppx)" should set the property value
+PASS e.style['background-image'] = "image-set(url(\"example.png\") -96dpi)" should set the property value
+PASS e.style['background-image'] = "-webkit-image-set(url(\"example.png\") -96dpi)" should set the property value
+PASS e.style['background-image'] = "image-set(url(\"example.png\") -113dpcm)" should set the property value
+PASS e.style['background-image'] = "-webkit-image-set(url(\"example.png\") -113dpcm)" should set the property value
 PASS e.style['background-image'] = "image-set(linear-gradient(black, white) 1x)" should set the property value
 PASS e.style['background-image'] = "-webkit-image-set(linear-gradient(black, white) 1x)" should set the property value
 PASS e.style['background-image'] = "image-set(repeating-linear-gradient(red, blue 25%) 1x)" should set the property value

@@ -3540,7 +3540,8 @@ static CSSImageSetOptionValue* ConsumeImageSetOption(
     }
 
     resolution = ConsumeResolution(range);
-    if (!resolution || resolution->GetDoubleValue() <= 0.0) {
+    if (!resolution || (resolution->GetDoubleValue() <= 0.0 &&
+                        !RuntimeEnabledFeatures::CSSImageSetEnabled())) {
       return nullptr;
     }
   }

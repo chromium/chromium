@@ -97,7 +97,7 @@ double CSSImageSetOptionValue::ComputedResolution() const {
 }
 
 bool CSSImageSetOptionValue::IsSupported() const {
-  return !type_ || type_->IsSupported();
+  return (!type_ || type_->IsSupported()) && (resolution_->DoubleValue() > 0.0);
 }
 
 String CSSImageSetOptionValue::CustomCSSText() const {

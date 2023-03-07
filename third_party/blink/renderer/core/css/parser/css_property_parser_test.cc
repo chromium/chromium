@@ -712,6 +712,14 @@ TEST(CSSPropertyParserTest, ImageSetResolutionUnitDpcm) {
                       "image-set(url(\"foo\") 37dpcm)");
 }
 
+TEST(CSSPropertyParserTest, ImageSetZeroResolution) {
+  TestImageSetParsing("image-set(url(foo) 0x)", "image-set(url(\"foo\") 0x)");
+}
+
+TEST(CSSPropertyParserTest, ImageSetNegativeResolution) {
+  TestImageSetParsing("image-set(url(foo) -1x)", "image-set(url(\"foo\") -1x)");
+}
+
 TEST(CSSPropertyParserTest, ImageSetUrlFunction) {
   TestImageSetParsing("image-set(url('foo') 1x)", "image-set(url(\"foo\") 1x)");
 }

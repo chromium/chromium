@@ -35,6 +35,4 @@ testInvalidImageSets('No comma', 'url(\'#a\') 1x url(\'#b\') 2x');
 
 testInvalidImageSets('Too many scale factor parameters', 'url(\'#a\') 1x 2x');
 
-testInvalidImageSets('Scale factor is 0', 'url(\'#a\') 0x');
-
 successfullyParsed = true;
