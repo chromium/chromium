@@ -371,8 +371,7 @@ class MODULES_EXPORT WebSocketChannelImpl final
   uint64_t identifier_;
   Member<BlobLoader> blob_loader_;
   WTF::Deque<Message> messages_;
-  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
-  WebSocketMessageChunkAccumulator message_chunks_;
+  Member<WebSocketMessageChunkAccumulator> message_chunks_;
   const Member<ExecutionContext> execution_context_;
 
   bool backpressure_ = false;

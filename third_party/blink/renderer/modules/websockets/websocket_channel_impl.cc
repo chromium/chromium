@@ -250,7 +250,8 @@ WebSocketChannelImpl::WebSocketChannelImpl(
     std::unique_ptr<SourceLocation> location)
     : client_(client),
       identifier_(CreateUniqueIdentifier()),
-      message_chunks_(execution_context->GetTaskRunner(TaskType::kNetworking)),
+      message_chunks_(MakeGarbageCollected<WebSocketMessageChunkAccumulator>(
+          execution_context->GetTaskRunner(TaskType::kNetworking))),
       execution_context_(execution_context),
       location_at_construction_(std::move(location)),
       websocket_(execution_context),
@@ -667,6 +668,7 @@ void WebSocketChannelImpl::Trace(Visitor* visitor) const {
   visitor->Trace(websocket_);
   visitor->Trace(handshake_client_receiver_);
   visitor->Trace(client_receiver_);
+  visitor->Trace(message_chunks_);
   WebSocketChannel::Trace(visitor);
 }
 
@@ -1057,18 +1059,18 @@ void WebSocketChannelImpl::ConsumeDataFrame(
     case network::mojom::blink::WebSocketMessageType::CONTINUATION:
       break;
     case network::mojom::blink::WebSocketMessageType::TEXT:
-      DCHECK_EQ(message_chunks_.GetSize(), 0u);
+      DCHECK_EQ(message_chunks_->GetSize(), 0u);
       receiving_message_type_is_text_ = true;
       break;
     case network::mojom::blink::WebSocketMessageType::BINARY:
-      DCHECK_EQ(message_chunks_.GetSize(), 0u);
+      DCHECK_EQ(message_chunks_->GetSize(), 0u);
       receiving_message_type_is_text_ = false;
       break;
   }
 
-  const size_t message_size_so_far = message_chunks_.GetSize();
+  const size_t message_size_so_far = message_chunks_->GetSize();
   if (message_size_so_far > std::numeric_limits<wtf_size_t>::max()) {
-    message_chunks_.Clear();
+    message_chunks_->Clear();
     FailAsError("Message size is too large.");
     return;
   }
@@ -1085,11 +1087,11 @@ void WebSocketChannelImpl::ConsumeDataFrame(
   }
 
   if (!fin) {
-    message_chunks_.Append(base::make_span(data, size));
+    message_chunks_->Append(base::make_span(data, size));
     return;
   }
 
-  Vector<base::span<const char>> chunks = message_chunks_.GetView();
+  Vector<base::span<const char>> chunks = message_chunks_->GetView();
   if (size > 0) {
     chunks.push_back(base::make_span(data, size));
   }
@@ -1110,7 +1112,7 @@ void WebSocketChannelImpl::ConsumeDataFrame(
   } else {
     client_->DidReceiveBinaryMessage(chunks);
   }
-  message_chunks_.Clear();
+  message_chunks_->Clear();
   received_text_is_all_ascii_ = true;
 }
 
@@ -1224,7 +1226,7 @@ void WebSocketChannelImpl::OnConnectionError(const base::Location& set_from,
 
 void WebSocketChannelImpl::Dispose() {
   connection_count_tracker_handle_.Decrement();
-  message_chunks_.Reset();
+  message_chunks_->Reset();
   has_initiated_opening_handshake_ = true;
   feature_handle_for_scheduler_.reset();
   handshake_throttle_.reset();
