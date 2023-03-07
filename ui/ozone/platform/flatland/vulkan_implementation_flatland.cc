@@ -73,7 +73,6 @@ bool VulkanImplementationFlatland::GetPhysicalDevicePresentationSupport(
 std::vector<const char*>
 VulkanImplementationFlatland::GetRequiredDeviceExtensions() {
   std::vector<const char*> result = {
-      VK_FUCHSIA_BUFFER_COLLECTION_EXTENSION_NAME,
       VK_FUCHSIA_EXTERNAL_MEMORY_EXTENSION_NAME,
       VK_FUCHSIA_EXTERNAL_SEMAPHORE_EXTENSION_NAME,
       VK_KHR_BIND_MEMORY_2_EXTENSION_NAME,
@@ -82,8 +81,13 @@ VulkanImplementationFlatland::GetRequiredDeviceExtensions() {
       VK_KHR_EXTERNAL_SEMAPHORE_EXTENSION_NAME,
       VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME,
       VK_KHR_MAINTENANCE1_EXTENSION_NAME,
-      VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME,
   };
+
+  // Following extensions are not supported by Swiftshader.
+  if (!use_swiftshader()) {
+    result.push_back(VK_FUCHSIA_BUFFER_COLLECTION_EXTENSION_NAME);
+    result.push_back(VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME);
+  }
 
   return result;
 }

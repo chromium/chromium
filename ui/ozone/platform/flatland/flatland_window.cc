@@ -274,7 +274,6 @@ void FlatlandWindow::Restore() {
 }
 
 PlatformWindowState FlatlandWindow::GetPlatformWindowState() const {
-  NOTIMPLEMENTED_LOG_ONCE();
   if (is_fullscreen_)
     return PlatformWindowState::kFullScreen;
   if (!is_view_attached_)

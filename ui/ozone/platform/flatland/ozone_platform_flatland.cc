@@ -120,7 +120,7 @@ class OzonePlatformFlatland : public OzonePlatform,
     static bool initialised = false;
     if (!initialised) {
       properties->message_pump_type_for_gpu = base::MessagePumpType::IO;
-      properties->supports_vulkan_swap_chain = true;
+      properties->supports_vulkan_swap_chain = false;
 
       initialised = true;
     }
