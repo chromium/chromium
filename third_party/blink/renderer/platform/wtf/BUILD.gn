@@ -300,6 +300,7 @@ source_set("wtf_unittests_sources") {
     "bit_field_test.cc",
     "bloom_filter_test.cc",
     "cross_thread_functional_test.cc",
+    "date_math_test.cc",
     "decimal_test.cc",
     "deque_test.cc",
     "doubly_linked_list_test.cc",

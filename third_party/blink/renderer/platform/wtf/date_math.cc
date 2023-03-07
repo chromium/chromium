@@ -680,9 +680,14 @@ absl::optional<base::Time> ParseDateFromNullTerminatedCharacters(
 }
 
 // See http://tools.ietf.org/html/rfc2822#section-3.3 for more information.
-String MakeRFC2822DateString(const base::Time date, int utc_offset) {
+absl::optional<String> MakeRFC2822DateString(const base::Time date,
+                                             int utc_offset) {
   base::Time::Exploded time_exploded;
   date.UTCExplode(&time_exploded);
+
+  if (!time_exploded.HasValidValues()) {
+    return absl::nullopt;
+  }
 
   StringBuilder string_builder;
   string_builder.Append(kWeekdayName[time_exploded.day_of_week]);
