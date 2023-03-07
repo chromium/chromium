@@ -46,8 +46,7 @@ bool Process::CanBackgroundProcesses() {
 
 bool Process::IsProcessBackgrounded(PortProvider* port_provider) const {
   DCHECK(IsValid());
-  if (port_provider == nullptr)
-    return false;
+  DCHECK(port_provider);
 
   mach_port_t task_port = port_provider->TaskForPid(Pid());
   if (task_port == TASK_NULL)
@@ -73,8 +72,11 @@ bool Process::IsProcessBackgrounded(PortProvider* port_provider) const {
 bool Process::SetProcessBackgrounded(PortProvider* port_provider,
                                      bool background) {
   DCHECK(IsValid());
-  if (port_provider == nullptr || !CanBackgroundProcesses())
+  DCHECK(port_provider);
+
+  if (!CanBackgroundProcesses()) {
     return false;
+  }
 
   mach_port_t task_port = port_provider->TaskForPid(Pid());
   if (task_port == TASK_NULL)
