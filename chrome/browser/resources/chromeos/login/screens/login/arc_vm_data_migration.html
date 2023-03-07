@@ -9,11 +9,6 @@ found in the LICENSE file.
     margin: 8px 0 8px 0;
   }
   div.warning {
-    border-bottom: var(--cr-separator-line);
-    padding-bottom: 19px;
-    padding-top: 21px;
-  }
-  div.warning-last-child {
     padding-bottom: 19px;
     padding-top: 21px;
   }
@@ -30,7 +25,7 @@ found in the LICENSE file.
 
 <oobe-loading-dialog id="loading-dialog" for-step="loading" role="dialog"
     title-key="loadingDialogTitle">
-  <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+  <iron-icon slot="icon" src="/images/arc_vm_data_migration_icon.svg">
 </oobe-loading-dialog>
 
 <oobe-adaptive-dialog id="welcome-dialog" for-step="welcome" role="dialog">
@@ -42,31 +37,27 @@ found in the LICENSE file.
       <b>[[i18nDynamic(locale, 'welcomeScreenDescriptionHeader')]]</b>
     </div>
     <div id="description-body">
-      [[i18nDynamic(locale, 'welcomeScreenDescriptionBody')]]
+      <p>[[i18nDynamic(locale, 'welcomeScreenUpdateDescription')]]</p>
+      <p>
+        [[i18nDynamic(locale, 'welcomeScreenBlockingBehaviorDescription')]]
+        [[i18nDynamic(locale, 'connectToChargerMessage')]]
+      </p>
     </div>
     <div class="message-container">
-      <div class="warning-last-child" hidden="[[hasEnoughFreeDiskSpace]]">
+      <div class="warning" hidden="[[hasEnoughFreeDiskSpace]]">
         <iron-icon slot="icon" icon="oobe-32:warning"></iron-icon>
         <span class="warning-message">
           [[i18nDynamic(locale, 'notEnoughFreeDiskSpaceMessage',
                         requiredFreeDiskSpaceInString)]]
         </span>
       </div>
-      <template is="dom-if" if="[[!hasEnoughBattery]]">
-        <div class="warning" hidden="[[isConnectedToCharger]]">
-          <iron-icon icon="oobe-32:warning"></iron-icon>
-          <span class="warning-message">
-            [[i18nDynamic(locale, 'connectToChargerMessage')]]
-          </span>
-        </div>
-        <div class="warning-last-child">
-          <iron-icon icon="oobe-32:warning"></iron-icon>
-          <span class="warning-message">
-            [[i18nDynamic(locale, 'notEnoughBatteryMessage',
-                          minimumBatteryPercent)]]
-          </span>
-        </div>
-      </template>
+      <div class="warning" hidden="[[hasEnoughBattery]]">
+        <iron-icon icon="oobe-32:warning"></iron-icon>
+        <span class="warning-message">
+          [[i18nDynamic(locale, 'notEnoughBatteryMessage',
+                        minimumBatteryPercent)]]
+        </span>
+      </div>
     </div>
   </div>
   <div slot="bottom-buttons">
@@ -93,23 +84,16 @@ found in the LICENSE file.
     </div>
     <div id="description-body">
       [[i18nDynamic(locale, 'resumeScreenDescriptionBody')]]
+      [[i18nDynamic(locale, 'connectToChargerMessage')]]
     </div>
     <div class="message-container">
-      <template is="dom-if" if="[[!hasEnoughBattery]]">
-        <div class="warning" hidden="[[isConnectedToCharger]]">
-          <iron-icon icon="oobe-32:warning"></iron-icon>
-          <span class="warning-message">
-            [[i18nDynamic(locale, 'connectToChargerMessage')]]
-          </span>
-        </div>
-        <div class="warning-last-child">
-          <iron-icon icon="oobe-32:warning"></iron-icon>
-          <span class="warning-message">
-            [[i18nDynamic(locale, 'notEnoughBatteryMessage',
-                          minimumBatteryPercent)]]
-          </span>
-        </div>
-      </template>
+      <div class="warning" hidden="[[hasEnoughBattery]]">
+        <iron-icon icon="oobe-32:warning"></iron-icon>
+        <span class="warning-message">
+          [[i18nDynamic(locale, 'notEnoughBatteryMessage',
+                        minimumBatteryPercent)]]
+        </span>
+      </div>
     </div>
   </div>
   <div slot="bottom-buttons">
@@ -120,7 +104,6 @@ found in the LICENSE file.
     </oobe-next-button>
   </div>
 </oobe-adaptive-dialog>
-
 
 <oobe-adaptive-dialog id="progress-dialog" for-step="progress" role="dialog">
   <iron-icon slot="icon" src="/images/arc_vm_data_migration_icon.svg">
@@ -138,6 +121,9 @@ found in the LICENSE file.
         step="0.1"
         indeterminate="[[isProgressIndeterminate_(migrationProgress)]]">
     </paper-progress>
+    <div id="progress-screen-connect-to-charger-message">
+      [[i18nDynamic(locale, 'connectToChargerMessage')]]
+    </div>
   </div>
   <div slot="content" class="flex layout vertical center center-justified">
     <img src="/images/update-no-waiting.svg"
