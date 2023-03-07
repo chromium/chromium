@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button_hover_card.h"
 
 #include "base/functional/bind.h"
+#include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/views/chrome_widget_sublevel.h"
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
@@ -27,10 +28,12 @@ views::BubbleDialogModelHost* request_access_bubble = nullptr;
 void ExtensionsRequestAccessButtonHoverCard::ShowBubble(
     content::WebContents* web_contents,
     views::View* anchor_view,
-    std::vector<ToolbarActionViewController*> actions) {
+    ExtensionsContainer* extensions_container,
+    std::vector<extensions::ExtensionId>& extension_ids) {
   DCHECK(!request_access_bubble);
   DCHECK(web_contents);
-  DCHECK(!actions.empty());
+  DCHECK(extensions_container);
+  DCHECK(!extension_ids.empty());
 
   ui::DialogModel::Builder dialog_builder =
       ui::DialogModel::Builder(std::make_unique<ui::DialogModelDelegate>());
@@ -42,17 +45,21 @@ void ExtensionsRequestAccessButtonHoverCard::ShowBubble(
           base::BindOnce(&ExtensionsRequestAccessButtonHoverCard::HideBubble));
 
   const std::u16string url = GetCurrentHost(web_contents);
-  if (actions.size() == 1) {
-    dialog_builder.SetIcon(GetIcon(actions[0], web_contents))
+  if (extension_ids.size() == 1) {
+    ToolbarActionViewController* action =
+        extensions_container->GetActionForId(extension_ids[0]);
+    dialog_builder.SetIcon(GetIcon(action, web_contents))
         .AddParagraph(ui::DialogModelLabel::CreateWithReplacements(
             IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_TOOLTIP_SINGLE_EXTENSION,
-            {ui::DialogModelLabel::CreatePlainText(actions[0]->GetActionName()),
+            {ui::DialogModelLabel::CreatePlainText(action->GetActionName()),
              ui::DialogModelLabel::CreateEmphasizedText(url)}));
   } else {
     dialog_builder.AddParagraph(ui::DialogModelLabel::CreateWithReplacement(
         IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_TOOLTIP_MULTIPLE_EXTENSIONS,
         ui::DialogModelLabel::CreateEmphasizedText(url)));
-    for (auto* action : actions) {
+    for (auto extension_id : extension_ids) {
+      ToolbarActionViewController* action =
+          extensions_container->GetActionForId(extension_id);
       dialog_builder.AddMenuItem(
           GetIcon(action, web_contents), action->GetActionName(),
           base::DoNothing(),

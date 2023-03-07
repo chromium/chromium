@@ -116,7 +116,8 @@ ExtensionsToolbarContainer::ExtensionsToolbarContainer(Browser* browser,
                         browser,
                         this,
                         extensions_menu_coordinator_.get()),
-                    std::make_unique<ExtensionsRequestAccessButton>(browser_))
+                    std::make_unique<ExtensionsRequestAccessButton>(browser_,
+                                                                    this))
               : nullptr),
       display_mode_(display_mode),
       action_hover_card_controller_(

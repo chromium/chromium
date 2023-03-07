@@ -6,16 +6,18 @@
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_REQUEST_ACCESS_BUTTON_HOVER_CARD_H_
 
 #include "content/public/browser/web_contents.h"
+#include "extensions/common/extension_id.h"
 #include "ui/views/view.h"
 
-class ToolbarActionViewController;
+class ExtensionsContainer;
 
 class ExtensionsRequestAccessButtonHoverCard {
  public:
   // Creates and shows the request access button bubble.
   static void ShowBubble(content::WebContents* web_contents,
                          views::View* anchor_view,
-                         std::vector<ToolbarActionViewController*> actions);
+                         ExtensionsContainer* extensions_container_,
+                         std::vector<extensions::ExtensionId>& extension_ids);
 
   // Hides the currently-showing request access button bubble, if any exists.
   static void HideBubble();

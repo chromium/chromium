@@ -193,15 +193,14 @@ TEST_F(ExtensionsToolbarControlsUnitTest,
   const GURL requested_url("http://www.requested-url.com");
 
   InstallExtensionWithPermissions("Extension A", {"activeTab"});
-  constexpr char kExtensionName[] = "Extension B";
   auto extension = InstallExtensionWithHostPermissions(
-      kExtensionName, {requested_url.spec(), "activeTab"});
+      "Extension B", {requested_url.spec(), "activeTab"});
   WithholdHostPermissions(extension.get());
 
   web_contents_tester->NavigateAndCommit(requested_url);
   EXPECT_TRUE(IsRequestAccessButtonVisible());
-  EXPECT_THAT(request_access_button()->GetExtensionsNamesForTesting(),
-              testing::ElementsAre(kExtensionName));
+  EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
+              testing::ElementsAre(extension->id()));
 
   web_contents_tester->NavigateAndCommit(
       GURL("http://www.non-requested-url.com"));

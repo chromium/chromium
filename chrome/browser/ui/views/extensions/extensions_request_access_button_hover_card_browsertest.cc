@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button_hover_card.h"
 
-#include "chrome/browser/ui/toolbar/test_toolbar_action_view_controller.h"
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_browsertest.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
@@ -25,15 +24,12 @@ class ExtensionsRequestAccessButtonHoverCardBrowserTest
   void ShowUi(const std::string& name) override {
     // Install extension so the extensions toolbar container, which will display
     // the request access button, is visible.
-    InstallExtension("Extension");
+    auto extension = InstallExtension("Extension");
     EXPECT_TRUE(extensions_container()->GetVisible());
 
     // Pretend an extension is requesting access.
-    auto controllerA = std::make_unique<TestToolbarActionViewController>("A");
-    std::vector<ToolbarActionViewController*> extensions_requesting_access;
-    extensions_requesting_access.push_back(controllerA.get());
-    request_access_button()->UpdateExtensionsRequestingAccess(
-        extensions_requesting_access);
+    std::vector<extensions::ExtensionId> extension_ids = {extension->id()};
+    request_access_button()->Update(extension_ids);
     request_access_button()->SetVisible(true);
 
     request_access_button()->MaybeShowHoverCard();
