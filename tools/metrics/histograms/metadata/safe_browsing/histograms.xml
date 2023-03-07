@@ -1392,30 +1392,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="SafeBrowsing.NavigationObserver.DroppedReferrerChainEntries.ClientRedirect"
-    units="units" expires_after="2023-10-27">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Logs the number of extra client redirect referrer chain entries that were
-    cleared. This is logged when the referrer chain is being created for Safe
-    Browsing pings (i.e. Phishguard, CSD).
-  </summary>
-</histogram>
-
-<histogram
-    name="SafeBrowsing.NavigationObserver.DroppedReferrerChainEntries.RecentNavigation"
-    units="units" expires_after="2023-04-16">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Logs the number of extra recent navigation (non-user gestured) referrer
-    chain entries that were cleared. This is logged when the referrer chain is
-    being created for Safe Browsing pings (i.e. Phishguard, CSD).
-  </summary>
-</histogram>
-
-<histogram
     name="SafeBrowsing.NavigationObserver.MissingInitiatorRenderFrameHostPortal"
     enum="BooleanExists" expires_after="2023-04-23">
   <owner>vollick@chromium.org</owner>
