@@ -1,5 +1,6 @@
 include_rules = [
   "+net",
+  "+media/cast/openscreen",
 
   # The browser and renderer code may not depend on eachother, and can only
   # depend on shared "public" and "common" code.

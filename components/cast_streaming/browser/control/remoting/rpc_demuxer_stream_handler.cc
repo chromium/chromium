@@ -9,7 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/cast_streaming/common/control/remoting/remoting_message_factories.h"
+#include "media/cast/openscreen/remoting_message_factories.h"
 #include "third_party/openscreen/src/cast/streaming/remoting.pb.h"
 
 using openscreen::cast::RpcMessenger;
@@ -61,7 +61,7 @@ void RpcDemuxerStreamHandler::OnRpcAcquireDemuxer(
         task_runner_, client_, process_message_cb_, handle_factory_.Run(),
         audio_stream_handle, MessageProcessor::Type::kAudio);
     std::unique_ptr<openscreen::cast::RpcMessage> message =
-        remoting::CreateMessageForDemuxerStreamInitialize(
+        media::cast::CreateMessageForDemuxerStreamInitialize(
             audio_message_processor_->local_handle());
     process_message_cb_.Run(audio_message_processor_->remote_handle(),
                             std::move(message));
@@ -72,7 +72,7 @@ void RpcDemuxerStreamHandler::OnRpcAcquireDemuxer(
         task_runner_, client_, process_message_cb_, handle_factory_.Run(),
         video_stream_handle, MessageProcessor::Type::kVideo);
     std::unique_ptr<openscreen::cast::RpcMessage> message =
-        remoting::CreateMessageForDemuxerStreamInitialize(
+        media::cast::CreateMessageForDemuxerStreamInitialize(
             video_message_processor_->local_handle());
     process_message_cb_.Run(video_message_processor_->remote_handle(),
                             std::move(message));
@@ -267,7 +267,8 @@ void RpcDemuxerStreamHandler::MessageProcessor::EnableBitstreamConverter(
   DCHECK(!bitstream_converter_enabled_cb_);
   bitstream_converter_enabled_cb_ = std::move(cb);
 
-  auto message = CreateMessageForDemuxerStreamEnableBitstreamConverter();
+  auto message =
+      media::cast::CreateMessageForDemuxerStreamEnableBitstreamConverter();
   process_message_cb_.Run(remote_handle(), std::move(message));
 }
 
@@ -294,7 +295,7 @@ void RpcDemuxerStreamHandler::MessageProcessor::OnNoBuffersAvailable() {
       1 + failed_consecutive_read_until_requests_;
   const int frames_to_request =
       kNumFramesInEachReadUntil * requests_to_account_for;
-  auto message = CreateMessageForDemuxerStreamReadUntil(
+  auto message = media::cast::CreateMessageForDemuxerStreamReadUntil(
       local_handle(), total_frames_received() + frames_to_request);
 
   // Only call every |kMinReadUntilCallFrequency| at most.
@@ -320,7 +321,7 @@ void RpcDemuxerStreamHandler::MessageProcessor::OnNoBuffersAvailable() {
 }
 
 void RpcDemuxerStreamHandler::MessageProcessor::OnError() {
-  auto message = CreateMessageForDemuxerStreamError();
+  auto message = media::cast::CreateMessageForDemuxerStreamError();
   process_message_cb_.Run(remote_handle(), std::move(message));
 }
 

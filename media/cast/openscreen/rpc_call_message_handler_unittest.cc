@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/cast_streaming/common/control/remoting/rpc_call_message_handler.h"
+#include "media/cast/openscreen/rpc_call_message_handler.h"
 
 #include <memory>
 
-#include "components/cast_streaming/common/control/remoting/remoting_proto_enum_utils.h"
-#include "components/cast_streaming/common/control/remoting/remoting_proto_utils.h"
 #include "media/base/media_util.h"
+#include "media/cast/openscreen/remoting_proto_enum_utils.h"
+#include "media/cast/openscreen/remoting_proto_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/openscreen/src/cast/streaming/remoting.pb.h"
@@ -18,8 +18,7 @@ using testing::Invoke;
 using testing::Return;
 using testing::StrictMock;
 
-namespace cast_streaming {
-namespace remoting {
+namespace media::cast {
 
 class RpcCallMessageHandlerTest : public testing::Test {
  public:
@@ -325,5 +324,4 @@ TEST_F(RpcCallMessageHandlerTest, OnRpcEnableBitstreamConverterCallback) {
       DispatchDemuxerStreamCBRpcCall(rpc.get(), &demuxer_stream_client_));
 }
 
-}  // namespace remoting
-}  // namespace cast_streaming
+}  // namespace media::cast

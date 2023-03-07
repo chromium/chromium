@@ -4,7 +4,7 @@
 
 #include "components/cast_streaming/browser/control/remoting/renderer_rpc_call_translator.h"
 
-#include "components/cast_streaming/common/control/remoting/remoting_message_factories.h"
+#include "media/cast/openscreen/remoting_message_factories.h"
 #include "third_party/openscreen/src/cast/streaming/remoting.pb.h"
 
 namespace cast_streaming::remoting {
@@ -59,52 +59,54 @@ void RendererRpcCallTranslator::OnRpcSetVolume(double volume) {
 void RendererRpcCallTranslator::OnTimeUpdate(base::TimeDelta media_time,
                                              base::TimeDelta max_time,
                                              base::TimeTicks capture_time) {
-  message_processor_.Run(remote_handle_,
-                         CreateMessageForMediaTimeUpdate(media_time));
+  message_processor_.Run(
+      remote_handle_, media::cast::CreateMessageForMediaTimeUpdate(media_time));
 }
 
 void RendererRpcCallTranslator::OnBufferingStateChange(
     media::BufferingState state,
     media::BufferingStateChangeReason reason) {
-  message_processor_.Run(remote_handle_,
-                         CreateMessageForBufferingStateChange(state));
+  message_processor_.Run(
+      remote_handle_, media::cast::CreateMessageForBufferingStateChange(state));
 }
 
 void RendererRpcCallTranslator::OnError(const media::PipelineStatus& status) {
-  message_processor_.Run(remote_handle_, CreateMessageForError());
+  message_processor_.Run(remote_handle_, media::cast::CreateMessageForError());
 }
 
 void RendererRpcCallTranslator::OnEnded() {
-  message_processor_.Run(remote_handle_, CreateMessageForMediaEnded());
+  message_processor_.Run(remote_handle_,
+                         media::cast::CreateMessageForMediaEnded());
 }
 
 void RendererRpcCallTranslator::OnAudioConfigChange(
     const media::AudioDecoderConfig& config) {
-  message_processor_.Run(remote_handle_,
-                         CreateMessageForAudioConfigChange(config));
+  message_processor_.Run(
+      remote_handle_, media::cast::CreateMessageForAudioConfigChange(config));
 }
 
 void RendererRpcCallTranslator::OnVideoConfigChange(
     const media::VideoDecoderConfig& config) {
-  message_processor_.Run(remote_handle_,
-                         CreateMessageForVideoConfigChange(config));
+  message_processor_.Run(
+      remote_handle_, media::cast::CreateMessageForVideoConfigChange(config));
 }
 
 void RendererRpcCallTranslator::OnVideoNaturalSizeChange(
     const gfx::Size& size) {
-  message_processor_.Run(remote_handle_,
-                         CreateMessageForVideoNaturalSizeChange(size));
+  message_processor_.Run(
+      remote_handle_,
+      media::cast::CreateMessageForVideoNaturalSizeChange(size));
 }
 
 void RendererRpcCallTranslator::OnVideoOpacityChange(bool opaque) {
-  message_processor_.Run(remote_handle_,
-                         CreateMessageForVideoOpacityChange(opaque));
+  message_processor_.Run(
+      remote_handle_, media::cast::CreateMessageForVideoOpacityChange(opaque));
 }
 
 void RendererRpcCallTranslator::OnStatisticsUpdate(
     const media::PipelineStatistics& stats) {
   message_processor_.Run(remote_handle_,
-                         CreateMessageForStatisticsUpdate(stats));
+                         media::cast::CreateMessageForStatisticsUpdate(stats));
 }
 
 void RendererRpcCallTranslator::OnWaiting(media::WaitingReason reason) {}
@@ -112,13 +114,15 @@ void RendererRpcCallTranslator::OnWaiting(media::WaitingReason reason) {}
 void RendererRpcCallTranslator::OnInitializeCompleted(
     openscreen::cast::RpcMessenger::Handle handle_at_time_of_sending,
     bool success) {
-  message_processor_.Run(handle_at_time_of_sending,
-                         CreateMessageForInitializationComplete(success));
+  message_processor_.Run(
+      handle_at_time_of_sending,
+      media::cast::CreateMessageForInitializationComplete(success));
 }
 
 void RendererRpcCallTranslator::OnFlushCompleted() {
   for (auto handle : flush_handles_) {
-    message_processor_.Run(handle, CreateMessageForFlushComplete());
+    message_processor_.Run(handle,
+                           media::cast::CreateMessageForFlushComplete());
   }
   flush_handles_.clear();
 }

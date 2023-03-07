@@ -13,11 +13,11 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/time/default_tick_clock.h"
-#include "components/cast_streaming/common/control/remoting/remoting_proto_utils.h"
 #include "media/cast/common/encoded_frame.h"
 #include "media/cast/common/frame_id.h"
 #include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/constants.h"
+#include "media/cast/openscreen/remoting_proto_utils.h"
 #include "media/cast/sender/frame_sender.h"
 #include "media/cast/test/utility/default_config.h"
 #include "media/mojo/common/media_type_converters.h"
@@ -44,7 +44,7 @@ void AreEqualExceptKeyframeImpl(const media::cast::SenderEncodedFrame& frame,
   }
 
   scoped_refptr<media::DecoderBuffer> received_buffer =
-      cast_streaming::remoting::ByteArrayToDecoderBuffer(
+      media::cast::ByteArrayToDecoderBuffer(
           reinterpret_cast<const uint8_t*>(frame.data.data()),
           frame.data.size());
   EXPECT_EQ(std::string(reinterpret_cast<const char*>(buffer.data()),

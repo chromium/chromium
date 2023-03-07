@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/cast_streaming/common/control/remoting/remoting_proto_enum_utils.h"
+#include "media/cast/openscreen/remoting_proto_enum_utils.h"
 
-namespace cast_streaming {
-namespace remoting {
+namespace media::cast {
 
 #define CASE_RETURN_OTHER(x) \
   case OriginType::x:        \
@@ -434,5 +433,4 @@ ToProtoDemuxerStreamStatus(media::DemuxerStream::Status value) {
   }
 }
 
-}  // namespace remoting
-}  // namespace cast_streaming
+}  // namespace media::cast

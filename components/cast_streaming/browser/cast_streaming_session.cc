@@ -14,11 +14,11 @@
 #include "components/cast_streaming/browser/control/remoting/remoting_decoder_buffer_factory.h"
 #include "components/cast_streaming/browser/frame/mirroring_decoder_buffer_factory.h"
 #include "components/cast_streaming/browser/frame/stream_consumer.h"
-#include "components/cast_streaming/common/config_conversions.h"
 #include "components/cast_streaming/common/public/features.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/media_switches.h"
 #include "media/base/timestamp_constants.h"
+#include "media/cast/openscreen/config_conversions.h"
 #include "media/mojo/common/mojo_decoder_buffer_converter.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 
@@ -49,15 +49,17 @@ StreamingInitializationInfo CreateMirroringInitializationInfo(
   absl::optional<StreamingInitializationInfo::AudioStreamInfo>
       audio_stream_info;
   if (receivers.audio_receiver) {
-    audio_stream_info.emplace(ToAudioDecoderConfig(receivers.audio_config),
-                              receivers.audio_receiver);
+    audio_stream_info.emplace(
+        media::cast::ToAudioDecoderConfig(receivers.audio_config),
+        receivers.audio_receiver);
   }
 
   absl::optional<StreamingInitializationInfo::VideoStreamInfo>
       video_stream_info;
   if (receivers.video_receiver) {
-    video_stream_info.emplace(ToVideoDecoderConfig(receivers.video_config),
-                              receivers.video_receiver);
+    video_stream_info.emplace(
+        media::cast::ToVideoDecoderConfig(receivers.video_config),
+        receivers.video_receiver);
   }
 
   return {session, std::move(audio_stream_info), std::move(video_stream_info),

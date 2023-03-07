@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CAST_STREAMING_COMMON_FRAME_DECODER_BUFFER_READER_H_
-#define COMPONENTS_CAST_STREAMING_COMMON_FRAME_DECODER_BUFFER_READER_H_
+#ifndef MEDIA_CAST_OPENSCREEN_DECODER_BUFFER_READER_H_
+#define MEDIA_CAST_OPENSCREEN_DECODER_BUFFER_READER_H_
 
 #include "base/containers/circular_deque.h"
 #include "base/functional/callback.h"
@@ -14,7 +14,7 @@
 #include "media/mojo/common/mojo_decoder_buffer_converter.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 
-namespace cast_streaming {
+namespace media::cast {
 
 // This class wraps functionality around reading a media::DecoderBuffer from
 // a mojo pipe, while providing synchronization around the following three
@@ -68,6 +68,6 @@ class DecoderBufferReader {
   base::WeakPtrFactory<DecoderBufferReader> weak_factory_;
 };
 
-}  // namespace cast_streaming
+}  // namespace media::cast
 
-#endif  // COMPONENTS_CAST_STREAMING_COMMON_FRAME_DECODER_BUFFER_READER_H_
+#endif  // MEDIA_CAST_OPENSCREEN_DECODER_BUFFER_READER_H_

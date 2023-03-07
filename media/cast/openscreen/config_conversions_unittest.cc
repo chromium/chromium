@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/cast_streaming/common/config_conversions.h"
+#include "media/cast/openscreen/config_conversions.h"
 
 #include "base/containers/contains.h"
 #include "media/base/media_util.h"
@@ -12,7 +12,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace cast_streaming {
+namespace media::cast {
 namespace {
 
 void ValidateAudioConfig(const media::AudioDecoderConfig& config,
@@ -231,4 +231,4 @@ TEST(ConfigConversionsTest, VideoConfigResolutionConversion) {
   ValidateVideoConfig(ToVideoCaptureConfig(decoder_config), capture_config);
 }
 
-}  // namespace cast_streaming
+}  // namespace media::cast

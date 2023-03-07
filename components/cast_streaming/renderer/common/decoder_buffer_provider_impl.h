@@ -12,9 +12,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/cast_streaming/common/frame/decoder_buffer_reader.h"
 #include "components/cast_streaming/renderer/public/decoder_buffer_provider.h"
 #include "media/base/decoder_buffer.h"
+#include "media/cast/openscreen/decoder_buffer_reader.h"
 #include "media/mojo/mojom/media_types.mojom-forward.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 
@@ -54,7 +54,7 @@ class DecoderBufferProviderImpl : public DecoderBufferProvider<TConfigType> {
     DCHECK(client_);
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
-    buffer_reader_ = std::make_unique<DecoderBufferReader>(
+    buffer_reader_ = std::make_unique<media::cast::DecoderBufferReader>(
         base::BindRepeating(
             &DecoderBufferProviderImpl<TConfigType>::OnBufferRead,
             weak_factory_.GetWeakPtr()),
@@ -132,7 +132,7 @@ class DecoderBufferProviderImpl : public DecoderBufferProvider<TConfigType> {
 
   const TConfigType config_;
   NewBufferCb new_buffer_callback_;
-  std::unique_ptr<DecoderBufferReader> buffer_reader_;
+  std::unique_ptr<media::cast::DecoderBufferReader> buffer_reader_;
   DeletionCb deletion_callback_;
   Client* client_;
 

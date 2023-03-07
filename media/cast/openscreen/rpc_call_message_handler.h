@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CAST_STREAMING_COMMON_CONTROL_REMOTING_RPC_CALL_MESSAGE_HANDLER_H_
-#define COMPONENTS_CAST_STREAMING_COMMON_CONTROL_REMOTING_RPC_CALL_MESSAGE_HANDLER_H_
+#ifndef MEDIA_CAST_OPENSCREEN_RPC_CALL_MESSAGE_HANDLER_H_
+#define MEDIA_CAST_OPENSCREEN_RPC_CALL_MESSAGE_HANDLER_H_
 
 #include "base/time/time.h"
 #include "media/base/audio_decoder_config.h"
@@ -11,14 +11,11 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/openscreen/src/cast/streaming/rpc_messenger.h"
 
-namespace openscreen {
-namespace cast {
+namespace openscreen::cast {
 class RpcMessage;
-}  // namespace cast
-}  // namespace openscreen
+}  // namespace openscreen::cast
 
-namespace cast_streaming {
-namespace remoting {
+namespace media::cast {
 
 // This class is responsible for translating between
 // openscreen::cast::RpcMessage commands (used by the remoting protocol) and
@@ -72,7 +69,6 @@ bool DispatchRendererRpcCall(openscreen::cast::RpcMessage* message,
 bool DispatchDemuxerStreamCBRpcCall(openscreen::cast::RpcMessage* message,
                                     RpcDemuxerStreamCBMessageHandler* client);
 
-}  // namespace remoting
-}  // namespace cast_streaming
+}  // namespace media::cast
 
-#endif  // COMPONENTS_CAST_STREAMING_COMMON_CONTROL_REMOTING_RPC_CALL_MESSAGE_HANDLER_H_
+#endif  // MEDIA_CAST_OPENSCREEN_RPC_CALL_MESSAGE_HANDLER_H_

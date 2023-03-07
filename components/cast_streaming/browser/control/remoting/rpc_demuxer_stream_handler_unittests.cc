@@ -136,7 +136,8 @@ class RpcDemuxerStreamHandlerTest : public testing::Test {
   void OnRpcBitstreamConverterEnabled(
       openscreen::cast::RpcMessenger::Handle handle,
       bool success) {
-    static_cast<RpcDemuxerStreamCBMessageHandler*>(&stream_handler_)
+    static_cast<media::cast::RpcDemuxerStreamCBMessageHandler*>(
+        &stream_handler_)
         ->OnRpcEnableBitstreamConverterCallback(handle, success);
   }
 
@@ -144,7 +145,8 @@ class RpcDemuxerStreamHandlerTest : public testing::Test {
       openscreen::cast::RpcMessenger::Handle handle,
       absl::optional<media::AudioDecoderConfig> audio_config,
       absl::optional<media::VideoDecoderConfig> video_config) {
-    static_cast<RpcDemuxerStreamCBMessageHandler*>(&stream_handler_)
+    static_cast<media::cast::RpcDemuxerStreamCBMessageHandler*>(
+        &stream_handler_)
         ->OnRpcInitializeCallback(handle, std::move(audio_config),
                                   std::move(video_config));
   }
@@ -154,7 +156,8 @@ class RpcDemuxerStreamHandlerTest : public testing::Test {
       absl::optional<media::AudioDecoderConfig> audio_config,
       absl::optional<media::VideoDecoderConfig> video_config,
       uint32_t total_frames_received) {
-    static_cast<RpcDemuxerStreamCBMessageHandler*>(&stream_handler_)
+    static_cast<media::cast::RpcDemuxerStreamCBMessageHandler*>(
+        &stream_handler_)
         ->OnRpcReadUntilCallback(handle, std::move(audio_config),
                                  std::move(video_config),
                                  total_frames_received);

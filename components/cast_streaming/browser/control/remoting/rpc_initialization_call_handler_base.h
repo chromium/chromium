@@ -9,7 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "components/cast_streaming/common/control/remoting/rpc_call_message_handler.h"
+#include "media/cast/openscreen/rpc_call_message_handler.h"
 #include "third_party/openscreen/src/cast/streaming/rpc_messenger.h"
 
 namespace openscreen::cast {
@@ -22,7 +22,7 @@ namespace cast_streaming::remoting {
 // handling RPC messages, implementers of this class only need to call a single
 // callback at the appropriate time.
 class RpcInitializationCallHandlerBase
-    : public RpcInitializationCallMessageHandler {
+    : public media::cast::RpcInitializationCallMessageHandler {
  public:
   ~RpcInitializationCallHandlerBase() override;
 

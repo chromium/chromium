@@ -14,9 +14,9 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/cast_streaming/browser/common/demuxer_stream_client.h"
-#include "components/cast_streaming/common/control/remoting/rpc_call_message_handler.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/video_decoder_config.h"
+#include "media/cast/openscreen/rpc_call_message_handler.h"
 #include "third_party/openscreen/src/cast/streaming/rpc_messenger.h"
 
 namespace base {
@@ -32,7 +32,8 @@ namespace cast_streaming::remoting {
 // Wrapper around all RPC operations associated with a DemuxerStream. This one
 // instance handles interactions with both audio and video DemuxerStream
 // instances.
-class RpcDemuxerStreamHandler : public RpcDemuxerStreamCBMessageHandler {
+class RpcDemuxerStreamHandler
+    : public media::cast::RpcDemuxerStreamCBMessageHandler {
  public:
   // Class responsible for handling callbacks from this class upon a change in
   // config.

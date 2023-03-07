@@ -7,10 +7,10 @@
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "components/cast_streaming/browser/public/receiver_config.h"
-#include "components/cast_streaming/common/config_conversions.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/channel_layout.h"
 #include "media/base/video_codecs.h"
+#include "media/cast/openscreen/config_conversions.h"
 #include "third_party/openscreen/src/cast/streaming/constants.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -74,7 +74,8 @@ openscreen::cast::VideoLimits ToOpenscreenVideoLimitsType(
 
   if (limits.codec) {
     osp_limits.applies_to_all_codecs = false;
-    osp_limits.codec = ToVideoCaptureConfigCodec(limits.codec.value());
+    osp_limits.codec =
+        media::cast::ToVideoCaptureConfigCodec(limits.codec.value());
   } else {
     osp_limits.applies_to_all_codecs = true;
   }
@@ -96,7 +97,8 @@ openscreen::cast::AudioLimits ToOpenscreenAudioLimitsType(
 
   if (limits.codec) {
     osp_limits.applies_to_all_codecs = false;
-    osp_limits.codec = ToAudioCaptureConfigCodec(limits.codec.value());
+    osp_limits.codec =
+        media::cast::ToAudioCaptureConfigCodec(limits.codec.value());
   } else {
     osp_limits.applies_to_all_codecs = true;
   }
@@ -137,13 +139,13 @@ openscreen::cast::ReceiverConstraints ToOpenscreenConstraints(
   audio_codecs.reserve(config.audio_codecs.size());
   base::ranges::transform(
       config.audio_codecs.begin(), config.audio_codecs.end(),
-      std::back_inserter(audio_codecs), ToAudioCaptureConfigCodec);
+      std::back_inserter(audio_codecs), media::cast::ToAudioCaptureConfigCodec);
 
   std::vector<openscreen::cast::VideoCodec> video_codecs;
   video_codecs.reserve(config.video_codecs.size());
   base::ranges::transform(
       config.video_codecs.begin(), config.video_codecs.end(),
-      std::back_inserter(video_codecs), ToVideoCaptureConfigCodec);
+      std::back_inserter(video_codecs), media::cast::ToVideoCaptureConfigCodec);
 
   openscreen::cast::ReceiverConstraints constraints(std::move(video_codecs),
                                                     std::move(audio_codecs));

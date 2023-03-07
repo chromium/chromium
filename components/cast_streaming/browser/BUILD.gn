@@ -42,6 +42,8 @@ source_set("browser") {
     "//components/cast_streaming/common:conversions",
     "//components/openscreen_platform",
     "//media",
+    "//media/cast/openscreen:config_conversions",
+    "//media/cast/openscreen:remoting_utils",
     "//media/mojo/common",
     "//media/mojo/mojom",
     "//mojo/public/cpp/system",

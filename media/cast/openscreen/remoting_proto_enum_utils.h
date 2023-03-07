@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CAST_STREAMING_COMMON_CONTROL_REMOTING_REMOTING_PROTO_ENUM_UTILS_H_
-#define COMPONENTS_CAST_STREAMING_COMMON_CONTROL_REMOTING_REMOTING_PROTO_ENUM_UTILS_H_
+#ifndef MEDIA_CAST_OPENSCREEN_REMOTING_PROTO_ENUM_UTILS_H_
+#define MEDIA_CAST_OPENSCREEN_REMOTING_PROTO_ENUM_UTILS_H_
 
 #include "media/base/audio_codecs.h"
 #include "media/base/buffering_state.h"
@@ -15,8 +15,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/openscreen/src/cast/streaming/remoting.pb.h"
 
-namespace cast_streaming {
-namespace remoting {
+namespace media::cast {
 
 // The following functions map between the enum values in media/base modules and
 // the equivalents in the media/remoting protobuf classes. The purpose of these
@@ -65,7 +64,6 @@ absl::optional<media::DemuxerStream::Status> ToDemuxerStreamStatus(
 absl::optional<openscreen::cast::DemuxerStreamReadUntilCallback::Status>
 ToProtoDemuxerStreamStatus(media::DemuxerStream::Status value);
 
-}  // namespace remoting
-}  // namespace cast_streaming
+}  // namespace media::cast
 
-#endif  // COMPONENTS_CAST_STREAMING_COMMON_CONTROL_REMOTING_REMOTING_PROTO_ENUM_UTILS_H_
+#endif  // MEDIA_CAST_OPENSCREEN_REMOTING_PROTO_ENUM_UTILS_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CAST_STREAMING_COMMON_CONTROL_REMOTING_REMOTING_PROTO_UTILS_H_
-#define COMPONENTS_CAST_STREAMING_COMMON_CONTROL_REMOTING_REMOTING_PROTO_UTILS_H_
+#ifndef MEDIA_CAST_OPENSCREEN_REMOTING_PROTO_UTILS_H_
+#define MEDIA_CAST_OPENSCREEN_REMOTING_PROTO_UTILS_H_
 
 #include <cstdint>
 #include <vector>
@@ -16,8 +16,7 @@
 #include "media/base/video_decoder_config.h"
 #include "third_party/openscreen/src/cast/streaming/remoting.pb.h"
 
-namespace cast_streaming {
-namespace remoting {
+namespace media::cast {
 
 // Utility class to convert data between media::DecoderBuffer and byte array.
 // It is to serialize media::DecoderBuffer structure except for actual data
@@ -75,7 +74,6 @@ void ConvertProtoToPipelineStatistics(
     const openscreen::cast::PipelineStatistics& stats_message,
     media::PipelineStatistics* stats);
 
-}  // namespace remoting
-}  // namespace cast_streaming
+}  // namespace media::cast
 
-#endif  // COMPONENTS_CAST_STREAMING_COMMON_CONTROL_REMOTING_REMOTING_PROTO_UTILS_H_
+#endif  // MEDIA_CAST_OPENSCREEN_REMOTING_PROTO_UTILS_H_

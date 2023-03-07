@@ -24,8 +24,8 @@ source_set("remoting") {
   ]
   deps = [
     "//components/cast_streaming/browser/common",
-    "//components/cast_streaming/common/control/remoting",
     "//media",
+    "//media/cast/openscreen:remoting_utils",
     "//media/mojo/common",
     "//media/mojo/mojom",
     "//mojo/public/cpp/system",

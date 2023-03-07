@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/cast_streaming/common/control/remoting/remoting_proto_utils.h"
+#include "media/cast/openscreen/remoting_proto_utils.h"
 
 #include <algorithm>
 
@@ -11,13 +11,11 @@
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "components/cast_streaming/common/control/remoting/remoting_proto_enum_utils.h"
 #include "media/base/encryption_scheme.h"
 #include "media/base/timestamp_constants.h"
+#include "media/cast/openscreen/remoting_proto_enum_utils.h"
 
-namespace cast_streaming {
-namespace remoting {
-
+namespace media::cast {
 namespace {
 
 constexpr size_t kPayloadVersionFieldSize = sizeof(uint8_t);
@@ -373,5 +371,4 @@ void ConvertProtoToPipelineStatistics(
   }
 }
 
-}  // namespace remoting
-}  // namespace cast_streaming
+}  // namespace media::cast

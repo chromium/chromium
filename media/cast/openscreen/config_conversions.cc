@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/cast_streaming/common/config_conversions.h"
+#include "media/cast/openscreen/config_conversions.h"
 
 #include "base/check.h"
 #include "base/notreached.h"
@@ -10,7 +10,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace cast_streaming {
+namespace media::cast {
 namespace {
 
 media::VideoCodecProfile ToVideoDecoderConfigCodecProfile(
@@ -169,4 +169,4 @@ media::VideoDecoderConfig ToVideoDecoderConfig(
       media::EmptyExtraData(), media::EncryptionScheme::kUnencrypted);
 }
 
-}  // namespace cast_streaming
+}  // namespace media::cast

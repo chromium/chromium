@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CAST_STREAMING_COMMON_CONFIG_CONVERSIONS_H_
-#define COMPONENTS_CAST_STREAMING_COMMON_CONFIG_CONVERSIONS_H_
+#ifndef MEDIA_CAST_OPENSCREEN_CONFIG_CONVERSIONS_H_
+#define MEDIA_CAST_OPENSCREEN_CONFIG_CONVERSIONS_H_
 
 #include <vector>
 
@@ -11,7 +11,7 @@
 #include "media/base/video_decoder_config.h"
 #include "third_party/openscreen/src/cast/streaming/capture_configs.h"
 
-namespace cast_streaming {
+namespace media::cast {
 
 // Utility functions to convert between media and Open Screen types.
 
@@ -45,6 +45,6 @@ std::vector<openscreen::cast::VideoCodec> ToVideoCaptureConfigCodecs(
       ToVideoCaptureConfigCodec(codecs)...};
 }
 
-}  // namespace cast_streaming
+}  // namespace media::cast
 
-#endif  // COMPONENTS_CAST_STREAMING_COMMON_CONFIG_CONVERSIONS_H_
+#endif  // MEDIA_CAST_OPENSCREEN_CONFIG_CONVERSIONS_H_

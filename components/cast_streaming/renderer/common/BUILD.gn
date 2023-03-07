@@ -22,6 +22,7 @@ source_set("common") {
     "//components/cast_streaming/common/frame",
     "//components/cast_streaming/renderer:decoder_buffer_provider",
     "//media",
+    "//media/cast/openscreen:decoder_buffer_reader",
     "//media/mojo/common",
     "//mojo/public/cpp/system",
   ]

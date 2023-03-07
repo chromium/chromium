@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CAST_STREAMING_COMMON_CONTROL_REMOTING_REMOTING_MESSAGE_FACTORIES_H_
-#define COMPONENTS_CAST_STREAMING_COMMON_CONTROL_REMOTING_REMOTING_MESSAGE_FACTORIES_H_
+#ifndef MEDIA_CAST_OPENSCREEN_REMOTING_MESSAGE_FACTORIES_H_
+#define MEDIA_CAST_OPENSCREEN_REMOTING_MESSAGE_FACTORIES_H_
 
 #include <memory>
 
@@ -27,8 +27,7 @@ class RpcMessage;
 }  // namespace cast
 }  // namespace openscreen
 
-namespace cast_streaming {
-namespace remoting {
+namespace media::cast {
 
 // Each of these methods creates an RpcMessage type representing the operation
 // called out in the name. They are intended to be used by a media::Renderer to
@@ -85,7 +84,6 @@ CreateMessageForDemuxerStreamEnableBitstreamConverter();
 std::unique_ptr<openscreen::cast::RpcMessage>
 CreateMessageForDemuxerStreamError();
 
-}  // namespace remoting
-}  // namespace cast_streaming
+}  // namespace media::cast
 
-#endif  // COMPONENTS_CAST_STREAMING_COMMON_CONTROL_REMOTING_REMOTING_MESSAGE_FACTORIES_H_
+#endif  // MEDIA_CAST_OPENSCREEN_REMOTING_MESSAGE_FACTORIES_H_

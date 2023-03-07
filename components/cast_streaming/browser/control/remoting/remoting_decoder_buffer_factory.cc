@@ -7,8 +7,8 @@
 #include <algorithm>
 
 #include "base/logging.h"
-#include "components/cast_streaming/common/control/remoting/remoting_proto_utils.h"
 #include "media/base/decoder_buffer.h"
+#include "media/cast/openscreen/remoting_proto_utils.h"
 #include "third_party/openscreen/src/cast/streaming/encoded_frame.h"
 
 namespace cast_streaming {
@@ -23,7 +23,7 @@ RemotingDecoderBufferFactory::ToDecoderBuffer(
     FrameContents& frame_contents) {
   auto span = frame_contents.Get();
   scoped_refptr<media::DecoderBuffer> decoder_buffer =
-      remoting::ByteArrayToDecoderBuffer(span.data(), span.size());
+      media::cast::ByteArrayToDecoderBuffer(span.data(), span.size());
   if (!decoder_buffer) {
     DLOG(WARNING) << "Deserialization failed!";
     return nullptr;

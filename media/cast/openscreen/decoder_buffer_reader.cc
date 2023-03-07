@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/cast_streaming/common/frame/decoder_buffer_reader.h"
+#include "media/cast/openscreen/decoder_buffer_reader.h"
 
 #include "base/functional/bind.h"
 
-namespace cast_streaming {
+namespace media::cast {
 
 DecoderBufferReader::DecoderBufferReader(
     NewBufferCb new_buffer_cb,
@@ -89,4 +89,4 @@ void DecoderBufferReader::OnBufferReadFromDataPipe(
   CompletePendingRead();
 }
 
-}  // namespace cast_streaming
+}  // namespace media::cast

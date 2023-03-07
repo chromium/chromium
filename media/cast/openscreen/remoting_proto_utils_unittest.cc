@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/cast_streaming/common/control/remoting/remoting_proto_utils.h"
+#include "media/cast/openscreen/remoting_proto_utils.h"
 
 #include <memory>
 #include <string>
@@ -24,8 +24,7 @@ using testing::_;
 using testing::Invoke;
 using testing::Return;
 
-namespace cast_streaming {
-namespace remoting {
+namespace media::cast {
 
 class ProtoUtilsTest : public testing::Test {
  protected:
@@ -218,5 +217,4 @@ TEST_F(ProtoUtilsTest, VideoDecoderConfigConversionTest) {
   ASSERT_TRUE(converted.Matches(video_config));
 }
 
-}  // namespace remoting
-}  // namespace cast_streaming
+}  // namespace media::cast

@@ -389,6 +389,7 @@ test("cast_unittests") {
     "//base/test:test_support",
     "//components/openscreen_platform",
     "//media:test_support",
+    "//media/cast/openscreen:unit_tests",
     "//media/test:run_all_unittests",
     "//mojo/public/cpp/bindings",
     "//net",

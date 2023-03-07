@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/cast_streaming/common/control/remoting/remoting_message_factories.h"
+#include "media/cast/openscreen/remoting_message_factories.h"
 
 #include <memory>
 #include <string>
@@ -10,13 +10,13 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
-#include "components/cast_streaming/common/control/remoting/remoting_proto_utils.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/encryption_scheme.h"
 #include "media/base/test_helpers.h"
 #include "media/base/video_decoder_config.h"
+#include "media/cast/openscreen/remoting_proto_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/openscreen/src/cast/streaming/remoting.pb.h"
@@ -25,8 +25,7 @@ using testing::_;
 using testing::Invoke;
 using testing::Return;
 
-namespace cast_streaming {
-namespace remoting {
+namespace media::cast {
 
 class RemotingMessageFactoriesTest : public testing::Test {
  protected:
@@ -220,5 +219,4 @@ TEST_F(RemotingMessageFactoriesTest, CreateMessageForDemuxerStreamError) {
   EXPECT_EQ(rpc->proc(), openscreen::cast::RpcMessage::RPC_DS_ONERROR);
 }
 
-}  // namespace remoting
-}  // namespace cast_streaming
+}  // namespace media::cast

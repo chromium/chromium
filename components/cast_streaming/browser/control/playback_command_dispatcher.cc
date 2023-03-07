@@ -8,7 +8,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/cast_streaming/browser/control/remoting/renderer_rpc_call_translator.h"
-#include "components/cast_streaming/common/control/remoting/rpc_call_message_handler.h"
+#include "media/cast/openscreen/rpc_call_message_handler.h"
 #include "media/mojo/mojom/renderer.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -151,23 +151,23 @@ void PlaybackCommandDispatcher::ProcessRemotingRpcMessageFromRemote(
            << ", handle=" << message->handle();
 
   const bool did_dispatch_as_initialization_call =
-      remoting::DispatchInitializationRpcCall(message.get(), this);
+      media::cast::DispatchInitializationRpcCall(message.get(), this);
   if (did_dispatch_as_initialization_call) {
     return;
   }
 
   const bool did_dispatch_as_renderer_call =
       renderer_call_translator_ &&
-      remoting::DispatchRendererRpcCall(message.get(),
-                                        renderer_call_translator_.get());
+      media::cast::DispatchRendererRpcCall(message.get(),
+                                           renderer_call_translator_.get());
   if (did_dispatch_as_renderer_call) {
     return;
   }
 
   const bool did_dispatch_as_demuxer_stream_callback =
       demuxer_stream_handler_ &&
-      remoting::DispatchDemuxerStreamCBRpcCall(message.get(),
-                                               demuxer_stream_handler_.get());
+      media::cast::DispatchDemuxerStreamCBRpcCall(
+          message.get(), demuxer_stream_handler_.get());
   if (did_dispatch_as_demuxer_stream_callback) {
     return;
   }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/cast_streaming/common/frame/decoder_buffer_reader.h"
+#include "media/cast/openscreen/decoder_buffer_reader.h"
 
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -11,7 +11,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace cast_streaming {
+namespace media::cast {
 namespace {
 
 constexpr uint32_t kDefaultDataPipeCapacityBytes = 512;
@@ -164,4 +164,4 @@ TEST_F(DecoderBufferReaderTest, AllDataPopulatedFirst) {
   EXPECT_TRUE(has_buffer_been_read_);
 }
 
-}  // namespace cast_streaming
+}  // namespace media::cast
