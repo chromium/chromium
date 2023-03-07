@@ -672,7 +672,7 @@ void AUAudioInputStream::Stop() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   deferred_start_cb_.Cancel();
   DVLOG(1) << __FUNCTION__ << " this " << this;
-  ;
+
   StopAgc();
   if (noise_reduction_suppressed_) {
     manager_->UnsuppressNoiseReduction(input_device_id_);
@@ -710,7 +710,6 @@ void AUAudioInputStream::Stop() {
 void AUAudioInputStream::Close() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DVLOG(1) << __FUNCTION__ << " this " << this;
-  ;
 
   // It is valid to call Close() before calling open or Start().
   // It is also valid to call Close() after Start() has been called.
