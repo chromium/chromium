@@ -3587,7 +3587,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.Notification.GroupNotification.SlideOut.AnimationSmoothness"
-    units="%" expires_after="2023-03-03">
+    units="%" expires_after="2023-06-15">
   <owner>amehfooz@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
