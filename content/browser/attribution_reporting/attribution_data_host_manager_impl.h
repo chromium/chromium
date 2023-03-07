@@ -77,7 +77,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
       AttributionInputEvent input_event) override;
   void NotifyNavigationRedirectRegistration(
       const blink::AttributionSrcToken& attribution_src_token,
-      std::string header_value,
+      const net::HttpResponseHeaders* headers,
       attribution_reporting::SuitableOrigin reporting_origin,
       const attribution_reporting::SuitableOrigin& source_origin,
       AttributionInputEvent input_event,

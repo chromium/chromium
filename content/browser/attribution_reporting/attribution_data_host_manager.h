@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <string>
-
 #include "base/memory/weak_ptr.h"
 #include "components/attribution_reporting/registration_type.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_beacon_id.h"
@@ -63,13 +61,13 @@ class AttributionDataHostManager
       const blink::AttributionSrcToken& attribution_src_token,
       AttributionInputEvent input_event) = 0;
 
-  // Notifies the manager that an attribution enabled navigation has registered
-  // a source header. May be called multiple times for the same navigation.
-  // Important: `header_value` is untrusted. Passes the topmost ancestor of the
+  // Notifies the manager that an attribution-enabled navigation has sent a
+  // response. May be called multiple times for the same navigation.
+  // Important: `headers` is untrusted. Passes the topmost ancestor of the
   // initiator render frame for obtaining the page access report.
   virtual void NotifyNavigationRedirectRegistration(
       const blink::AttributionSrcToken& attribution_src_token,
-      std::string header_value,
+      const net::HttpResponseHeaders* headers,
       attribution_reporting::SuitableOrigin reporting_origin,
       const attribution_reporting::SuitableOrigin& source_origin,
       AttributionInputEvent input_event,

@@ -734,9 +734,13 @@ TEST_F(AttributionDataHostManagerImplTest,
   auto reporter = *SuitableOrigin::Deserialize("https://report.test");
   auto source_site = *SuitableOrigin::Deserialize("https://source.test");
 
+  auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+  headers->SetHeader(kAttributionReportingRegisterSourceHeader,
+                     kRegisterSourceJson);
+
   const blink::AttributionSrcToken attribution_src_token;
   data_host_manager_.NotifyNavigationRedirectRegistration(
-      attribution_src_token, kRegisterSourceJson, reporter, source_site,
+      attribution_src_token, headers.get(), reporter, source_site,
       AttributionInputEvent(), AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId);
   // Wait for parsing to finish.
@@ -757,9 +761,13 @@ TEST_F(AttributionDataHostManagerImplTest,
   auto reporter = *SuitableOrigin::Deserialize("https://report.test");
   auto source_site = *SuitableOrigin::Deserialize("https://source.test");
 
+  auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+  headers->SetHeader(kAttributionReportingRegisterSourceHeader,
+                     kRegisterSourceJson);
+
   const blink::AttributionSrcToken attribution_src_token;
   data_host_manager_.NotifyNavigationRedirectRegistration(
-      attribution_src_token, kRegisterSourceJson, reporter, source_site,
+      attribution_src_token, headers.get(), reporter, source_site,
       AttributionInputEvent(), AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId);
   data_host_manager_.NotifyNavigationFailure(attribution_src_token,
@@ -778,16 +786,20 @@ TEST_F(AttributionDataHostManagerImplTest,
   auto reporter = *SuitableOrigin::Deserialize("https://report.test");
   auto source_site = *SuitableOrigin::Deserialize("https://source.test");
 
+  auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+  headers->SetHeader(kAttributionReportingRegisterSourceHeader,
+                     kRegisterSourceJson);
+
   const blink::AttributionSrcToken attribution_src_token;
   data_host_manager_.NotifyNavigationRedirectRegistration(
-      attribution_src_token, kRegisterSourceJson, reporter, source_site,
+      attribution_src_token, headers.get(), reporter, source_site,
       AttributionInputEvent(), AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId);
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());
 
   data_host_manager_.NotifyNavigationRedirectRegistration(
-      attribution_src_token, kRegisterSourceJson, reporter, source_site,
+      attribution_src_token, headers.get(), reporter, source_site,
       AttributionInputEvent(), AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId);
 
@@ -814,15 +826,21 @@ TEST_F(AttributionDataHostManagerImplTest,
                                  SourceRegistrationError::kInvalidJson));
 
   const blink::AttributionSrcToken attribution_src_token;
+  auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+
+  headers->SetHeader(kAttributionReportingRegisterSourceHeader,
+                     "!!!invalid json");
   data_host_manager_.NotifyNavigationRedirectRegistration(
-      attribution_src_token, "!!!invalid json", reporter, source_site,
+      attribution_src_token, headers.get(), reporter, source_site,
       AttributionInputEvent(), AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId);
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());
 
+  headers->SetHeader(kAttributionReportingRegisterSourceHeader,
+                     kRegisterSourceJson);
   data_host_manager_.NotifyNavigationRedirectRegistration(
-      attribution_src_token, kRegisterSourceJson, reporter, source_site,
+      attribution_src_token, headers.get(), reporter, source_site,
       AttributionInputEvent(), AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId);
 
@@ -853,9 +871,13 @@ TEST_F(AttributionDataHostManagerImplTest,
   auto reporter = *SuitableOrigin::Deserialize("https://report.test");
   auto source_site = *SuitableOrigin::Deserialize("https://source.test");
 
+  auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+  headers->SetHeader(kAttributionReportingRegisterSourceHeader,
+                     kRegisterSourceJson);
+
   const blink::AttributionSrcToken attribution_src_token;
   data_host_manager_.NotifyNavigationRedirectRegistration(
-      attribution_src_token, kRegisterSourceJson, reporter, source_site,
+      attribution_src_token, headers.get(), reporter, source_site,
       AttributionInputEvent(), AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId);
 
@@ -904,13 +926,17 @@ TEST_F(AttributionDataHostManagerImplTest,
   auto reporter = *SuitableOrigin::Deserialize("https://report.test");
   auto source_site = *SuitableOrigin::Deserialize("https://source.test");
 
+  auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+  headers->SetHeader(kAttributionReportingRegisterSourceHeader,
+                     kRegisterSourceJson);
+
   const blink::AttributionSrcToken attribution_src_token;
   data_host_manager_.NotifyNavigationRedirectRegistration(
-      attribution_src_token, kRegisterSourceJson, reporter, source_site,
+      attribution_src_token, headers.get(), reporter, source_site,
       AttributionInputEvent(), AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId);
   data_host_manager_.NotifyNavigationRedirectRegistration(
-      attribution_src_token, kRegisterSourceJson, reporter, source_site,
+      attribution_src_token, headers.get(), reporter, source_site,
       AttributionInputEvent(), AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId);
 
@@ -954,13 +980,17 @@ TEST_F(AttributionDataHostManagerImplTest,
   auto reporter = *SuitableOrigin::Deserialize("https://report.test");
   auto source_site = *SuitableOrigin::Deserialize("https://source.test");
 
+  auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+  headers->SetHeader(kAttributionReportingRegisterSourceHeader,
+                     kRegisterSourceJson);
+
   const blink::AttributionSrcToken attribution_src_token;
   data_host_manager_.NotifyNavigationRedirectRegistration(
-      attribution_src_token, kRegisterSourceJson, reporter, source_site,
+      attribution_src_token, headers.get(), reporter, source_site,
       AttributionInputEvent(), AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId);
   data_host_manager_.NotifyNavigationRedirectRegistration(
-      attribution_src_token, kRegisterSourceJson, reporter, source_site,
+      attribution_src_token, headers.get(), reporter, source_site,
       AttributionInputEvent(), AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId);
 
@@ -1518,9 +1548,13 @@ TEST_F(AttributionDataHostManagerImplTest,
   EXPECT_CALL(mock_manager_,
               HandleSource(SourceIsWithinFencedFrameIs(true), kFrameId));
 
+  auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+  headers->SetHeader(kAttributionReportingRegisterSourceHeader,
+                     kRegisterSourceJson);
+
   const blink::AttributionSrcToken attribution_src_token;
   data_host_manager_.NotifyNavigationRedirectRegistration(
-      attribution_src_token, kRegisterSourceJson,
+      attribution_src_token, headers.get(),
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
       /*source_origin=*/*SuitableOrigin::Deserialize("https://source.test"),
       AttributionInputEvent(), AttributionNavigationType::kAnchor,

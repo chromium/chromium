@@ -321,13 +321,20 @@ bool AttributionDataHostManagerImpl::RegisterNavigationDataHost(
 
 void AttributionDataHostManagerImpl::NotifyNavigationRedirectRegistration(
     const blink::AttributionSrcToken& attribution_src_token,
-    std::string header_value,
+    const net::HttpResponseHeaders* headers,
     SuitableOrigin reporting_origin,
     const SuitableOrigin& source_origin,
     AttributionInputEvent input_event,
     AttributionNavigationType nav_type,
     bool is_within_fenced_frame,
     GlobalRenderFrameHostId render_frame_id) {
+  std::string header_value;
+  if (!headers ||
+      !headers->GetNormalizedHeader(kAttributionReportingRegisterSourceHeader,
+                                    &header_value)) {
+    return;
+  }
+
   // Avoid costly isolated JSON parsing below if the header is obviously
   // invalid.
   if (header_value.empty()) {

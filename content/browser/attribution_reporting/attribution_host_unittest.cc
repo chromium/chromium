@@ -94,7 +94,7 @@ class MockDataHostManager : public AttributionDataHostManager {
   MOCK_METHOD(void,
               NotifyNavigationRedirectRegistration,
               (const blink::AttributionSrcToken& attribution_src_token,
-               std::string header_value,
+               const net::HttpResponseHeaders* headers,
                SuitableOrigin reporting_origin,
                const SuitableOrigin& source_origin,
                AttributionInputEvent input_event,
