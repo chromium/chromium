@@ -7,6 +7,7 @@
 
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/memory/raw_ptr_exclusion.h"
 
 // base::AutoReset<> is useful for setting a variable to a new value only within
@@ -28,6 +29,16 @@ class AutoReset {
       : scoped_variable_(scoped_variable),
         original_value_(
             std::exchange(*scoped_variable_, std::forward<U>(new_value))) {}
+
+  // A constructor that's useful for asserting the old value of
+  // `scoped_variable`, especially when it's inconvenient to check this before
+  // constructing the AutoReset object (e.g. in a class member initializer
+  // list).
+  template <typename U>
+  AutoReset(T* scoped_variable, U&& new_value, const T& expected_old_value)
+      : AutoReset(scoped_variable, new_value) {
+    DCHECK_EQ(original_value_, expected_old_value);
+  }
 
   AutoReset(AutoReset&& other)
       : scoped_variable_(std::exchange(other.scoped_variable_, nullptr)),
