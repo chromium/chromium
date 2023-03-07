@@ -16,7 +16,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/execution_context/navigator_base.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
 namespace blink {
 
@@ -26,7 +26,7 @@ class LockManager;
 class ScriptState;
 
 class StorageBucket final : public ScriptWrappable,
-                            public ExecutionContextLifecycleObserver {
+                            public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -69,12 +69,8 @@ class StorageBucket final : public ScriptWrappable,
                      bool success);
   void GetSandboxedFileSystem(ScriptPromiseResolver* resolver);
 
-  // ExecutionContextLifecycleObserver
-  void ContextDestroyed() override;
-
   // BucketHost in the browser process.
-  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
-  mojo::Remote<mojom::blink::BucketHost> remote_;
+  HeapMojoRemote<mojom::blink::BucketHost> remote_;
 
   Member<IDBFactory> idb_factory_;
   Member<LockManager> lock_manager_;

@@ -24,7 +24,8 @@ namespace blink {
 StorageBucket::StorageBucket(
     NavigatorBase* navigator,
     mojo::PendingRemote<mojom::blink::BucketHost> remote)
-    : ExecutionContextLifecycleObserver(navigator->GetExecutionContext()),
+    : ExecutionContextClient(navigator->GetExecutionContext()),
+      remote_(GetExecutionContext()),
       navigator_base_(navigator) {
   remote_.Bind(std::move(remote), GetExecutionContext()->GetTaskRunner(
                                       TaskType::kInternalDefault));
@@ -183,12 +184,13 @@ ScriptPromise StorageBucket::getDirectory(ScriptState* script_state,
 }
 
 void StorageBucket::Trace(Visitor* visitor) const {
+  visitor->Trace(remote_);
   visitor->Trace(idb_factory_);
   visitor->Trace(lock_manager_);
   visitor->Trace(navigator_base_);
   visitor->Trace(caches_);
   ScriptWrappable::Trace(visitor);
-  ExecutionContextLifecycleObserver::Trace(visitor);
+  ExecutionContextClient::Trace(visitor);
 }
 
 void StorageBucket::DidRequestPersist(ScriptPromiseResolver* resolver,
@@ -321,9 +323,4 @@ void StorageBucket::GetSandboxedFileSystem(ScriptPromiseResolver* resolver) {
       WTF::BindOnce(&StorageManagerFileSystemAccess::DidGetSandboxedFileSystem,
                     WrapPersistent(resolver)));
 }
-
-void StorageBucket::ContextDestroyed() {
-  remote_.reset();
-}
-
 }  // namespace blink
