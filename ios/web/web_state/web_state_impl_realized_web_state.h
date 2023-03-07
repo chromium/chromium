@@ -29,7 +29,7 @@ class WebUIIOS;
 // A few methods are not part of the API of WebStateImpl and thus will be
 // documented.
 class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate,
-                                             WebFramesManager::Observer {
+                                             public WebFramesManager::Observer {
  public:
   // Creates a RealizedWebState with a non-null pointer to the owning
   // WebStateImpl.
@@ -213,7 +213,7 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate,
   void WebFrameBecameAvailable(WebFramesManager* web_frames_manager,
                                WebFrame* web_frame) override;
   void WebFrameBecameUnavailable(WebFramesManager* web_frames_manager,
-                                 const std::string frame_id) override;
+                                 const std::string& frame_id) override;
 
   // Creates a WebUIIOS object for `url` that is owned by the called. Returns
   // nullptr if `url` does not correspond to a WebUI page.

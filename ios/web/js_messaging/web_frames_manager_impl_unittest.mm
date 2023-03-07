@@ -33,7 +33,7 @@ class FakeWebFramesManagerObserver : public WebFramesManagerImpl::Observer {
   }
 
   void WebFrameBecameUnavailable(WebFramesManager* web_frames_manager,
-                                 const std::string frame_id) override {
+                                 const std::string& frame_id) override {
     frames_.erase(frame_id);
   }
 

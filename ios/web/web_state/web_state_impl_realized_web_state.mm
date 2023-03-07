@@ -956,7 +956,7 @@ void WebStateImpl::RealizedWebState::WebFrameBecameAvailable(
 
 void WebStateImpl::RealizedWebState::WebFrameBecameUnavailable(
     WebFramesManager* web_frames_manager,
-    const std::string frame_id) {
+    const std::string& frame_id) {
   WebFrame* frame = web_frames_manager->GetFrameWithId(frame_id);
   if (!frame) {
     return;
