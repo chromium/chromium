@@ -107,9 +107,6 @@ void RecordCetAvailability() {
       reinterpret_cast<decltype(&IsUserCetAvailableInEnvironment)>(
           ::GetProcAddress(::GetModuleHandleW(L"kernel32.dll"),
                            "IsUserCetAvailableInEnvironment"));
-  auto get_process_mitigation_policy =
-      reinterpret_cast<decltype(&GetProcessMitigationPolicy)>(::GetProcAddress(
-          ::GetModuleHandleW(L"kernel32.dll"), "GetProcessMitigationPolicy"));
 
   if (is_user_cet_available_in_environment) {
     available = is_user_cet_available_in_environment(
@@ -117,11 +114,11 @@ void RecordCetAvailability() {
   }
   base::UmaHistogramBoolean("Windows.CetAvailable", available);
 
-  if (available && get_process_mitigation_policy) {
+  if (available) {
     PROCESS_MITIGATION_USER_SHADOW_STACK_POLICY policy = {0};
-    if (get_process_mitigation_policy(GetCurrentProcess(),
-                                      ProcessUserShadowStackPolicy, &policy,
-                                      sizeof(policy))) {
+    if (::GetProcessMitigationPolicy(GetCurrentProcess(),
+                                     ProcessUserShadowStackPolicy, &policy,
+                                     sizeof(policy))) {
       base::UmaHistogramBoolean("Windows.CetEnabled",
                                 policy.EnableUserShadowStack);
     }

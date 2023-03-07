@@ -606,20 +606,10 @@ bool IsJoinedToAzureAD() {
 bool IsUser32AndGdi32Available() {
   static auto is_user32_and_gdi32_available = []() {
     // If win32k syscalls aren't disabled, then user32 and gdi32 are available.
-
-    using GetProcessMitigationPolicyType =
-        decltype(GetProcessMitigationPolicy)*;
-    GetProcessMitigationPolicyType get_process_mitigation_policy_func =
-        reinterpret_cast<GetProcessMitigationPolicyType>(GetProcAddress(
-            GetModuleHandle(L"kernel32.dll"), "GetProcessMitigationPolicy"));
-
-    if (!get_process_mitigation_policy_func)
-      return true;
-
     PROCESS_MITIGATION_SYSTEM_CALL_DISABLE_POLICY policy = {};
-    if (get_process_mitigation_policy_func(GetCurrentProcess(),
-                                           ProcessSystemCallDisablePolicy,
-                                           &policy, sizeof(policy))) {
+    if (::GetProcessMitigationPolicy(GetCurrentProcess(),
+                                     ProcessSystemCallDisablePolicy, &policy,
+                                     sizeof(policy))) {
       return policy.DisallowWin32kSystemCalls == 0;
     }
 
