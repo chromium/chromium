@@ -4,35 +4,25 @@
 
 #include "third_party/blink/renderer/core/layout/style_retain_scope.h"
 
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
-#include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 
 namespace blink {
 
 namespace {
 
-StyleRetainScope** CurrentPtr() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<StyleRetainScope*>, current,
-                                  ());
-  return &*current;
-}
+ABSL_CONST_INIT thread_local StyleRetainScope* current = nullptr;
 
 }  // namespace
 
-StyleRetainScope::StyleRetainScope() {
-  StyleRetainScope** current_ptr = CurrentPtr();
-  parent_ = *current_ptr;
-  *current_ptr = this;
-}
+StyleRetainScope::StyleRetainScope() : resetter_(&current, this) {}
 
 StyleRetainScope::~StyleRetainScope() {
-  StyleRetainScope** current_ptr = CurrentPtr();
-  DCHECK_EQ(*current_ptr, this);
-  *current_ptr = parent_;
+  DCHECK_EQ(current, this);
 }
 
 StyleRetainScope* StyleRetainScope::Current() {
-  return *CurrentPtr();
+  return current;
 }
 
 }  // namespace blink

@@ -33,6 +33,7 @@
 
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
 namespace WTF {
@@ -49,7 +50,7 @@ WTF_EXPORT void Initialize();
 #if BUILDFLAG(IS_ANDROID) || (defined(COMPONENT_BUILD) && BUILDFLAG(IS_WIN))
 WTF_EXPORT bool IsMainThread();
 #else
-WTF_EXPORT extern thread_local bool g_is_main_thread;
+WTF_EXPORT extern ABSL_CONST_INIT thread_local bool g_is_main_thread;
 inline bool IsMainThread() {
   return g_is_main_thread;
 }

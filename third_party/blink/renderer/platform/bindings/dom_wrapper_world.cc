@@ -33,6 +33,7 @@
 #include <memory>
 #include <utility>
 
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "third_party/blink/public/platform/web_isolated_world_info.h"
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
 #include "third_party/blink/renderer/platform/bindings/v8_object_data_store.h"
@@ -253,11 +254,11 @@ void DOMWrapperWorld::SetNonMainWorldHumanReadableName(
   IsolatedWorldHumanReadableNames().Set(world_id, human_readable_name);
 }
 
+ABSL_CONST_INIT thread_local int next_world_id =
+    DOMWrapperWorld::kUnspecifiedWorldIdStart;
+
 // static
 int DOMWrapperWorld::GenerateWorldIdForType(WorldType world_type) {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<int>, next_world_id, ());
-  if (!next_world_id.IsSet())
-    *next_world_id = WorldId::kUnspecifiedWorldIdStart;
   switch (world_type) {
     case WorldType::kMain:
       return kMainWorldId;
@@ -279,10 +280,8 @@ int DOMWrapperWorld::GenerateWorldIdForType(WorldType world_type) {
     case WorldType::kForV8ContextSnapshotNonMain:
     case WorldType::kWorker:
     case WorldType::kShadowRealm: {
-      int32_t world_id = *next_world_id;
-      CHECK_GE(world_id, WorldId::kUnspecifiedWorldIdStart);
-      *next_world_id = world_id + 1;
-      return world_id;
+      CHECK_GE(next_world_id, kUnspecifiedWorldIdStart);
+      return next_world_id++;
     }
   }
   NOTREACHED();
