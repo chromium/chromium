@@ -275,12 +275,13 @@ def _OptimizeWithR8(options,
         tmp_mapping_path,
     ]
 
-    cmd += ['--map-diagnostics', 'info', 'warning']
-    # An "error" level diagnostic causes r8 to return an error exit code. Doing
-    # this allows our filter to decide what should/shouldn't break our build.
-    cmd += ['--map-diagnostics', 'error', 'warning']
     if options.disable_checks:
       cmd += ['--map-diagnostics:CheckDiscardDiagnostic', 'error', 'none']
+    else:
+      cmd += ['--map-diagnostics', 'info', 'warning']
+      # Our stderr filtering relies on all items starting with "Warning:".
+      # Errors will still cause build failures due to fail_on_output=True.
+      cmd += ['--map-diagnostics', 'error', 'warning']
 
     if options.min_api:
       cmd += ['--min-api', options.min_api]
