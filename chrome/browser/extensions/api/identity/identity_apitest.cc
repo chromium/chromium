@@ -2938,6 +2938,8 @@ enum class DeviceLocalAccountSessionType { kPublic, kAppKiosk, kWebKiosk };
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 class GetAuthTokenFunctionDeviceLocalAccountTestPlatformHelper {
  public:
+  const AccountId kFakeAccountId = AccountId::FromUserEmail("test@test");
+
   explicit GetAuthTokenFunctionDeviceLocalAccountTestPlatformHelper(
       DeviceLocalAccountSessionType session_type)
       : session_type_(session_type) {}
@@ -2950,26 +2952,34 @@ class GetAuthTokenFunctionDeviceLocalAccountTestPlatformHelper {
             : ash::LoginState::LoggedInUserType::LOGGED_IN_USER_KIOSK);
     auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
     user_manager::User* user = nullptr;
-    const AccountId account_id = AccountId::FromUserEmail("test@test");
     switch (session_type_) {
       case DeviceLocalAccountSessionType::kPublic:
-        user = user_manager->AddPublicAccountUser(account_id);
+        user = user_manager->AddPublicAccountUser(kFakeAccountId);
         break;
       case DeviceLocalAccountSessionType::kAppKiosk:
-        user = user_manager->AddKioskAppUser(account_id);
+        user = user_manager->AddKioskAppUser(kFakeAccountId);
         break;
       case DeviceLocalAccountSessionType::kWebKiosk:
-        user = user_manager->AddWebKioskAppUser(account_id);
+        user = user_manager->AddWebKioskAppUser(kFakeAccountId);
         break;
     }
     ASSERT_TRUE(user);
-    user_manager->UserLoggedIn(account_id, user->username_hash(),
+    user_manager->UserLoggedIn(kFakeAccountId, user->username_hash(),
                                /*browser_restart=*/false, /*is_child=*/false);
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(user_manager));
   }
 
-  void TearDownOnMainThread() { scoped_user_manager_.reset(); }
+  void TearDownOnMainThread() {
+    auto* fake_manager = static_cast<ash::FakeChromeUserManager*>(
+        user_manager::UserManager::Get());
+    // Explicitly removing the user is required; otherwise ProfileHelper keeps
+    // a dangling pointer to the User.
+    // TODO(b/208629291): Consider removing all users from ProfileHelper in the
+    // destructor of `ash::FakeChromeUserManager`.
+    fake_manager->RemoveUserFromList(kFakeAccountId);
+    scoped_user_manager_.reset();
+  }
 
  private:
   const DeviceLocalAccountSessionType session_type_;
