@@ -58,6 +58,7 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountAdditionResult {
   const GoogleServiceAuthError& error() const { return error_; }
 
   AccountAdditionResult(const AccountAdditionResult&);
+  AccountAdditionResult& operator=(const AccountAdditionResult&);
   ~AccountAdditionResult();
 
  private:
@@ -65,9 +66,9 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountAdditionResult {
                         const absl::optional<Account>& account,
                         const GoogleServiceAuthError& error);
 
-  const Status status_;
-  const absl::optional<Account> account_;
-  const GoogleServiceAuthError error_;
+  Status status_;
+  absl::optional<Account> account_;
+  GoogleServiceAuthError error_;
 };
 
 }  // namespace account_manager

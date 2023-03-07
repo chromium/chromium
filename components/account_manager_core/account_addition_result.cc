@@ -35,6 +35,9 @@ AccountAdditionResult AccountAdditionResult::FromError(
 AccountAdditionResult::AccountAdditionResult(const AccountAdditionResult&) =
     default;
 
+AccountAdditionResult& AccountAdditionResult::operator=(
+    const AccountAdditionResult&) = default;
+
 AccountAdditionResult::~AccountAdditionResult() = default;
 
 AccountAdditionResult::AccountAdditionResult(
