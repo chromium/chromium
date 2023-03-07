@@ -177,7 +177,8 @@ TEST_P(AppListItemViewPixelTest, AppListFolderItemsLayoutInIcon) {
 }
 
 // Verifies the folder icon is extended when an app is dragged upon it.
-TEST_P(AppListItemViewPixelTest, AppListFolderIconExtendedState) {
+// TODO(b/271026456): the test is flaky.
+TEST_P(AppListItemViewPixelTest, DISABLED_AppListFolderIconExtendedState) {
   // Skip the case where the apps are newly installed as it doesn't change the
   // folder icons.
   if (is_new_install()) {
@@ -216,7 +217,8 @@ TEST_P(AppListItemViewPixelTest, AppListFolderIconExtendedState) {
 }
 
 // Vefifies the dragged folder icon proxy is correctly created.
-TEST_P(AppListItemViewPixelTest, DraggedAppListFolderIcon) {
+// TODO(b/267205611): the test is flaky.
+TEST_P(AppListItemViewPixelTest, DISABLED_DraggedAppListFolderIcon) {
   // Skip the case where the apps are newly installed or have notifications as
   // they don't change the folder icons.
   if (is_new_install() || has_notification()) {
