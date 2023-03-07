@@ -11,6 +11,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/schedule_enums.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/test/test_image_downloader.h"
@@ -4130,7 +4131,7 @@ TEST_F(WallpaperControllerTest,
             controller_->GetDailyRefreshCollectionId(kAccountId1));
 }
 
-TEST_F(WallpaperControllerTest, UpdateWallpaperOnColorModeChanged) {
+TEST_F(WallpaperControllerTest, UpdateWallpaperOnScheduleCheckpointChanged) {
   SimulateUserLogin(kAccountId1);
 
   auto run_loop = std::make_unique<base::RunLoop>();
@@ -4156,10 +4157,9 @@ TEST_F(WallpaperControllerTest, UpdateWallpaperOnColorModeChanged) {
   EXPECT_EQ(1, GetWallpaperCount());
   EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kOnline);
 
-  // Change to light mode.
-  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-      prefs::kDarkModeEnabled, false);
-  controller_->OnColorModeChanged(false);
+  // Expect schedule checkpoint to change to reflect light mode.
+  controller_->OnCheckpointChanged(Shell::Get()->dark_light_mode_controller(),
+                                   ScheduleCheckpoint::kSunrise);
   RunAllTasksUntilIdle();
   EXPECT_EQ(2, GetWallpaperCount());
   WallpaperInfo expected = WallpaperInfo(OnlineWallpaperParams(
