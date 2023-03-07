@@ -704,8 +704,15 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
 
   src_url_matcher_->AddConditionSets(src_conditions_);
   dst_url_matcher_->AddConditionSets(dst_conditions_);
-
-  if (base::Contains(restrictions_map_, Restriction::kClipboard)) {
+  if (base::Contains(restrictions_map_, Restriction::kClipboard)
+  // TODO(b/269610458): It should be instantiated for files in
+  // Lacros as well.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      || (base::FeatureList::IsEnabled(
+              features::kDataLeakPreventionFilesRestriction) &&
+          request_to_daemon.rules_size() > 0)
+#endif
+  ) {
     DataTransferDlpController::Init(*this);
   } else {
     DataTransferDlpController::DeleteInstance();

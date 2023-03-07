@@ -15,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/chromeos/policy/dlp/data_transfer_dlp_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
@@ -1166,5 +1167,54 @@ TEST_F(DlpRulesManagerImplTest, TestOrderSameLevelPrinting) {
   rule_metadata.name.clear();
   rule_metadata.obfuscated_id.clear();
 }
+
+// TODO(b/269610458): Enable the test on Lacrod.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Tests creation and deletion of DataTransferDlpController.
+TEST_F(DlpRulesManagerImplTest, DataTransferDlpController) {
+  // There should be no instance given no rule is set yet.
+  EXPECT_FALSE(ui::DataTransferPolicyController::HasInstance());
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kDataLeakPreventionFilesRestriction);
+  chromeos::DlpClient::InitializeFake();
+
+  // Set only clipboard restriction, DataTransferDlpController should be
+  // instantiated.
+  dlp_test_util::DlpRule rule1(kRuleName1, "Report Clipboard", kRuleId1);
+  rule1.AddSrcUrl(kExampleUrl)
+      .AddRestriction(dlp::kClipboardRestriction, dlp::kReportLevel)
+      .AddDstUrl(kChatPattern);
+
+  UpdatePolicyPref({rule1});
+  EXPECT_TRUE(DataTransferDlpController::HasInstance());
+
+  // Remove the restrictions, DataTransferDlpController instance
+  // should be deleted.
+  UpdatePolicyPref({});
+  EXPECT_FALSE(DataTransferDlpController::HasInstance());
+
+  // Set only files restriction, DataTransferDlpController should be
+  // instantiated.
+  dlp_test_util::DlpRule rule2(kRuleName2, "Warn Files", kRuleId2);
+  rule2.AddSrcUrl(kExampleUrl)
+      .AddRestriction(dlp::kFilesRestriction, dlp::kWarnLevel)
+      .AddDstUrl(kChatPattern);
+
+  UpdatePolicyPref({rule2});
+  EXPECT_TRUE(DataTransferDlpController::HasInstance());
+
+  // Remove the restrictions, DataTransferDlpController instance
+  // should be deleted.
+  UpdatePolicyPref({});
+  EXPECT_FALSE(DataTransferDlpController::HasInstance());
+
+  // Set clipboard and files restrictions, DataTransferDlpController
+  // should be instantiated.
+  UpdatePolicyPref({rule1, rule2});
+  EXPECT_TRUE(DataTransferDlpController::HasInstance());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace policy
