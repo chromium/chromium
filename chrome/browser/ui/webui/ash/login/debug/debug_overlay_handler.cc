@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
+#include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -18,6 +19,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/common/chrome_paths.h"
 #include "ui/display/display_switches.h"
 #include "ui/snapshot/snapshot.h"
@@ -103,6 +105,8 @@ void DebugOverlayHandler::DeclareJSCallbacks() {
   AddCallback("debug.captureScreenshot",
               &DebugOverlayHandler::HandleCaptureScreenshot);
   AddCallback("debug.toggleColorMode", &DebugOverlayHandler::ToggleColorMode);
+  AddCallback("debug.switchWallpaper",
+              &DebugOverlayHandler::HandleSwitchWallpaper);
 }
 
 void DebugOverlayHandler::DeclareLocalizedValues(
@@ -145,6 +149,33 @@ void DebugOverlayHandler::HandleCaptureScreenshot(const std::string& name) {
 void DebugOverlayHandler::ToggleColorMode() {
   DarkLightModeController::Get()->SetDarkModeEnabledForTest(  // IN-TEST
       !DarkLightModeController::Get()->IsDarkModeEnabled());
+}
+
+void DebugOverlayHandler::HandleSwitchWallpaper(const std::string& color) {
+  if (color == "def") {
+    WallpaperControllerClientImpl::Get()->SetInitialWallpaper();
+    return;
+  }
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(1, 1);
+  if (color == "wh") {
+    bitmap.eraseColor(SK_ColorWHITE);
+  } else if (color == "bk") {
+    bitmap.eraseColor(SK_ColorBLACK);
+  } else if (color == "r") {
+    bitmap.eraseColor(SK_ColorRED);
+  } else if (color == "bl") {
+    bitmap.eraseColor(SK_ColorBLUE);
+  } else if (color == "gn") {
+    bitmap.eraseColor(SK_ColorGREEN);
+  } else if (color == "ye") {
+    bitmap.eraseColor(SK_ColorYELLOW);
+  } else {
+    return;
+  }
+  ash::WallpaperController::Get()->ShowOneShotWallpaper(
+      gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
 }
 
 }  // namespace ash
