@@ -111,7 +111,10 @@ if (enable_nocompile_tests) {
       ]
 
       if (is_apple && host_os != "mac") {
-        args += [ "--target=x86_64-apple-macos" ]
+        args += [
+          "--target=x86_64-apple-macos",
+          "-mmacosx-version-min=10.13",
+        ]
       }
 
       # Iterate over any extra include dirs and append them to the command line.
