@@ -265,6 +265,11 @@ void IOSChromeMainParts::PreCreateThreads() {
 void IOSChromeMainParts::PreMainMessageLoopRun() {
   application_context_->PreMainMessageLoopRun();
 
+  // Retrieve first run information for future use.
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&FirstRun::LoadSentinelInfo));
+
   // ContentSettingsPattern need to be initialized before creating the
   // ChromeBrowserState.
   ContentSettingsPattern::SetNonWildcardDomainNonPortSchemes(nullptr, 0);

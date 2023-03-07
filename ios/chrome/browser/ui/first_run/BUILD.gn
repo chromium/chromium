@@ -140,6 +140,7 @@ source_set("utils") {
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/settings/sync/utils",
     "//ios/web/public/thread",
+    "//third_party/abseil-cpp:absl",
     "//ui/gfx",
   ]
 }

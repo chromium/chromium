@@ -8,7 +8,11 @@
 #import <UIKit/UIKit.h>
 
 #include "ios/chrome/browser/first_run/first_run_metrics.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace base {
+class Time;
+}
 namespace signin {
 class IdentityManager;
 }
@@ -34,5 +38,9 @@ bool ShouldPresentFirstRunExperience();
 // Records what the default opt-in state for metrics reporting is in the local
 // prefs, based on whether the consent checkbox should be selected by default.
 void RecordMetricsReportingDefaultState();
+
+// If the first run sentinel file exist, returns the info; otherwise, return
+// `absl::nullopt`.
+absl::optional<base::Time> GetFirstRunTime();
 
 #endif  // IOS_CHROME_BROWSER_UI_FIRST_RUN_FIRST_RUN_UTIL_H_

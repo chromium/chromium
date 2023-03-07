@@ -8,6 +8,7 @@
 #define IOS_CHROME_BROWSER_FIRST_RUN_FIRST_RUN_H_
 
 #include "base/files/file.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -45,6 +46,10 @@ class FirstRun {
   // Returns true if this is the first time chrome is run for this user.
   static bool IsChromeFirstRun();
 
+  // If the first run sentinel file exist, returns the info; otherwise, return
+  // `absl::nullopt`.
+  static absl::optional<base::File::Info> GetSentinelInfo();
+
   // Creates the sentinel file that signals that chrome has been configured if
   // the file does not exist yet. Returns SENTINEL_RESULT_SUCCESS if the file
   // was created. If SENTINEL_RESULT_FILE_ERROR is returned, `error` is set to
@@ -54,6 +59,10 @@ class FirstRun {
   // Removes the sentinel file created in ConfigDone(). Returns false if the
   // sentinel file could not be removed.
   static bool RemoveSentinel();
+
+  // Retrieve the first run sentinel file info to be accessed in the future;
+  // note that this method should NOT be accessed from any non-blocking thread.
+  static void LoadSentinelInfo();
 
   // Get RLZ ping delay pref name.
   static const char* GetPingDelayPrefName();

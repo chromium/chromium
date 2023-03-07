@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
 
+#import "base/files/file.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/metrics/histogram_functions.h"
@@ -124,4 +125,12 @@ void RecordMetricsReportingDefaultState() {
             ? metrics::EnableMetricsDefault::OPT_OUT
             : metrics::EnableMetricsDefault::OPT_IN);
   });
+}
+
+absl::optional<base::Time> GetFirstRunTime() {
+  absl::optional<base::File::Info> info = FirstRun::GetSentinelInfo();
+  if (info.has_value()) {
+    return info.value().creation_time;
+  }
+  return absl::nullopt;
 }
