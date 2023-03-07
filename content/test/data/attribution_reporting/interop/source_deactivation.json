@@ -51,7 +51,10 @@
           "url": "https://reporter.test/register-source",
           "response": {
             "Attribution-Reporting-Register-Source": {
-              "destination": "https://destination.test",
+              "destination": [
+                "https://destination.test",
+                "https://destination2.test"
+              ],
               "source_event_id": "333",
               "priority": "1"
             }
@@ -98,6 +101,27 @@
               "event_trigger_data": [
                 {
                   "trigger_data": "2"
+                }
+              ]
+            }
+          }
+        }]
+      },
+      // Should not result in an event-level report as the third source was
+      // deactivated.
+      {
+        "timestamp": "1643321973100",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "destination_origin": "https://destination2.test"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-trigger",
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "event_trigger_data": [
+                {
+                  "trigger_data": "4"
                 }
               ]
             }

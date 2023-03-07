@@ -33,7 +33,10 @@
           "url": "https://reporter.test/register-source",
           "response": {
             "Attribution-Reporting-Register-Source": {
-              "destination": "https://example.destination.test",
+              "destination": [
+                "https://example.destination.test",
+                "https://another-destination.test"
+              ],
               "source_event_id": "111"
             }
           }
@@ -273,7 +276,7 @@
     "event_level_results": [
       {
         "payload": {
-          "attribution_destination": "https://destination.test",
+          "attribution_destination": [ "https://another-destination.test", "https://destination.test" ],
           "randomized_trigger_rate": 0.0024,
           "scheduled_report_time": "1643411973",
           "source_event_id": "111",
