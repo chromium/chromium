@@ -118,12 +118,20 @@ NSImage* IPHDotImage(const ui::ColorProvider* color_provider) {
 
 // --- Private API begin ---
 
-@interface NSCarbonMenuImpl : NSObject
+// Historically, all menu handling in macOS was handled by HI Toolbox, and the
+// bridge from Cocoa to Carbon to use Carbon's menus was the class
+// NSCarbonMenuImpl. However, starting in macOS 13, it looks like this is
+// changing, as now a NSCocoaMenuImpl class exists, which is optionally created
+// in -[NSMenu _createMenuImpl] and may possibly in the future be returned from
+// -[NSMenu _menuImpl]. Therefore, abstract away into a protocol the (one)
+// common method that this code uses that is present on both Impl classes.
+@protocol CrNSMenuImpl <NSObject>
+@optional
 - (void)highlightItemAtIndex:(NSInteger)index;
 @end
 
-@interface NSMenu ()
-- (NSCarbonMenuImpl*)_menuImpl;
+@interface NSMenu (Impl)
+- (id<CrNSMenuImpl>)_menuImpl;
 - (CGRect)_boundsIfOpen;
 @end
 
@@ -245,7 +253,7 @@ NSImage* IPHDotImage(const ui::ColorProvider* color_provider) {
       NSMenu* const menu_obj = note.object;
       if (alerted_index.has_value()) {
         if ([menu respondsToSelector:@selector(_menuImpl)]) {
-          NSCarbonMenuImpl* menuImpl = [menu_obj _menuImpl];
+          id<CrNSMenuImpl> menuImpl = [menu_obj _menuImpl];
           if ([menuImpl respondsToSelector:@selector(highlightItemAtIndex:)]) {
             const auto index =
                 base::checked_cast<NSInteger>(alerted_index.value());
