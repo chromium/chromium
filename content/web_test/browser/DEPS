@@ -20,6 +20,7 @@ include_rules = [
   "+third_party/test_fonts",
   "+ui/aura",
   "+ui/base/resource",
+  "+ui/ozone/public",
 ]
 
 specific_include_rules = {
