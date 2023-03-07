@@ -258,7 +258,6 @@ SkiaOutputDeviceDCompGLSurface::SkiaOutputDeviceDCompGLSurface(
   DCHECK(gl_surface_->SupportsDCLayers());
   DCHECK_EQ(gl_surface_->GetOrigin(), gfx::SurfaceOrigin::kTopLeft);
   DCHECK(gl_surface_->SupportsGpuVSync());
-  DCHECK(!gl_surface_->SupportsCommitOverlayPlanes());
 
   capabilities_.supports_post_sub_buffer = gl_surface_->SupportsPostSubBuffer();
   capabilities_.supports_delegated_ink = gl_surface_->SupportsDelegatedInk();
@@ -639,7 +638,7 @@ bool SkiaOutputDeviceDCompPresenter::ScheduleDCLayer(
 
 void SkiaOutputDeviceDCompPresenter::DoPresent(
     const gfx::Rect& rect,
-    gl::GLSurface::SwapCompletionCallback completion_callback,
+    gl::Presenter::SwapCompletionCallback completion_callback,
     BufferPresentedCallback feedback,
     gfx::FrameData data) {
   if (!ScheduleRootSurfaceAsOverlay()) {

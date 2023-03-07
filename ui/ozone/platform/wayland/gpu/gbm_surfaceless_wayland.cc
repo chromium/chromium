@@ -18,6 +18,7 @@
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gl/gl_bindings.h"
+#include "ui/gl/gl_display.h"
 #include "ui/ozone/common/egl_util.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_buffer_manager_gpu.h"
 #include "ui/ozone/platform/wayland/mojom/wayland_overlay_config.mojom.h"

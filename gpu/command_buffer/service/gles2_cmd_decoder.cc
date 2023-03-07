@@ -3583,10 +3583,6 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
   context_ = context;
   surface_ = surface;
 
-  // Set workarounds for the surface.
-  if (workarounds().rely_on_implicit_sync_for_swap_buffers)
-    surface_->SetRelyOnImplicitSync();
-
   // Create GPU Tracer for timing values.
   gpu_tracer_ = std::make_unique<GPUTracer>(this);
 
@@ -5323,11 +5319,6 @@ void GLES2DecoderImpl::Destroy(bool have_context) {
     return;
 
   DCHECK(!have_context || context_->IsCurrent(nullptr));
-
-  // Prepare to destroy the surface while the context is still current, because
-  // some surface destructors make GL calls.
-  if (surface_)
-    surface_->PrepareToDestroy(have_context);
 
 #if !BUILDFLAG(IS_ANDROID)
   // Destroy any textures that are pending destruction.

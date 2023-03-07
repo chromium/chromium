@@ -1981,8 +1981,6 @@ void SkiaOutputSurfaceImplOnGpu::SwapBuffersInternal(
 
   if (frame) {
     if (gl_surface_) {
-      gl_surface_->SetChoreographerVsyncIdForNextFrame(
-          frame->choreographer_vsync_id);
       if (frame->delegated_ink_metadata) {
         gl_surface_->SetDelegatedInkTrailStartPoint(
             std::move(frame->delegated_ink_metadata));
@@ -2239,8 +2237,6 @@ void SkiaOutputSurfaceImplOnGpu::CheckReadbackCompletion() {
 }
 
 void SkiaOutputSurfaceImplOnGpu::PreserveChildSurfaceControls() {
-  if (gl_surface_)
-    gl_surface_->PreserveChildSurfaceControls();
   if (presenter_) {
     presenter_->PreserveChildSurfaceControls();
   }

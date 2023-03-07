@@ -52,8 +52,6 @@ class SkiaOutputDeviceGL final : public SkiaOutputDevice {
   void PostSubBuffer(const gfx::Rect& rect,
                      BufferPresentedCallback feedback,
                      OutputSurfaceFrame frame) override;
-  void CommitOverlayPlanes(BufferPresentedCallback feedback,
-                           OutputSurfaceFrame frame) override;
   void EnsureBackbuffer() override;
   void DiscardBackbuffer() override;
   SkSurface* BeginPaint(

@@ -20,6 +20,10 @@
 #include "ui/ozone/platform/wayland/gpu/wayland_surface_gpu.h"
 #include "ui/ozone/public/swap_completion_callback.h"
 
+namespace gl {
+class GLDisplayEGL;
+}
+
 namespace ui {
 
 class WaylandBufferManagerGpu;

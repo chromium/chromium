@@ -48,33 +48,14 @@ namespace mojom {
 class DelegatedInkPointRenderer;
 }  // namespace mojom
 class ColorSpace;
-struct OverlayPlaneData;
-class GpuFence;
 class VSyncProvider;
 }  // namespace gfx
-
-namespace ui {
-struct CARendererLayerParams;
-}  // namespace ui
 
 namespace gl {
 
 struct DCLayerOverlayParams;
 class GLContext;
-class GLImage;
 class EGLTimestampClient;
-
-// OverlayImage is a platform specific type for overlay plane image data.
-#if BUILDFLAG(IS_OZONE)
-using OverlayImage = scoped_refptr<gfx::NativePixmap>;
-#elif BUILDFLAG(IS_APPLE)
-using OverlayImage = gfx::ScopedIOSurface;
-#elif BUILDFLAG(IS_ANDROID)
-using OverlayImage =
-    std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>;
-#else
-using OverlayImage = GLImage*;
-#endif
 
 // Encapsulates a surface that can be rendered to with GL, hiding platform
 // specific management.
@@ -100,12 +81,6 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
 
   // Destroys the surface.
   virtual void Destroy() = 0;
-
-  // Some implementations (macOS), in Destroy, will need to delete GL objects
-  // that exist in the current GL context. This method is called before the
-  // context's decoder (and potentially context itself) are destroyed, giving an
-  // opportunity for this cleanup.
-  virtual void PrepareToDestroy(bool have_context);
 
   // Resizes the surface, returning success. If failed, it is possible that the
   // context is no longer current.
@@ -144,18 +119,11 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
   // Get the underlying platform specific surface "handle".
   virtual void* GetHandle() = 0;
 
-  // Android SurfaceControl specific, notifies that we should not detach child
-  // surface controls during destruction.
-  virtual void PreserveChildSurfaceControls() {}
-
   // Returns whether or not the surface supports SwapBuffersWithBounds
   virtual bool SupportsSwapBuffersWithBounds();
 
   // Returns whether or not the surface supports PostSubBuffer.
   virtual bool SupportsPostSubBuffer();
-
-  // Returns whether or not the surface supports CommitOverlayPlanes.
-  virtual bool SupportsCommitOverlayPlanes();
 
   // Returns whether SwapBuffersAsync() is supported.
   virtual bool SupportsAsyncSwap();
@@ -212,23 +180,6 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
                                   PresentationCallback presentation_callback,
                                   gfx::FrameData data);
 
-  // Show overlay planes but don't swap the front and back buffers. This acts
-  // like SwapBuffers from the point of view of the client, but is cheaper when
-  // overlays account for all the damage. If it returns SWAP_FAILED,
-  // it is possible that the context is no longer current.
-  virtual gfx::SwapResult CommitOverlayPlanes(PresentationCallback callback,
-                                              gfx::FrameData data);
-
-  // Show overlay planes but don't swap the front and back buffers. On some
-  // platforms, we want to send SwapBufferAck only after the overlays are
-  // displayed on screen. The callback can be used to delay sending
-  // SwapBufferAck till that data is available. The callback should be run on
-  // the calling thread (i.e. same thread CommitOverlayPlanesAsync is called).
-  virtual void CommitOverlayPlanesAsync(
-      SwapCompletionCallback completion_callback,
-      PresentationCallback presentation_callback,
-      gfx::FrameData data);
-
   // Called after a context is made current with this surface. Returns false
   // on error.
   virtual bool OnMakeCurrent(GLContext* context);
@@ -261,21 +212,6 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
   // default. Does nothing if vsync cannot be changed.
   virtual void SetVSyncEnabled(bool enabled);
 
-  // Schedule an overlay plane to be shown at swap time, or on the next
-  // CommitOverlayPlanes call.
-  // |image| to be presented by the overlay.
-  // |bounds_rect| specify where it is supposed to be on the screen in pixels.
-  // |overlay_plane_data| specifies overlay data such as opacity, z_order, size,
-  // etc.
-  virtual bool ScheduleOverlayPlane(
-      OverlayImage image,
-      std::unique_ptr<gfx::GpuFence> gpu_fence,
-      const gfx::OverlayPlaneData& overlay_plane_data);
-
-  // Schedule a CALayer to be shown at swap time.
-  // All arguments correspond to their CALayer properties.
-  virtual bool ScheduleCALayer(const ui::CARendererLayerParams& params);
-
   virtual bool ScheduleDCLayer(std::unique_ptr<DCLayerOverlayParams> params);
 
   // Enables or disables DC layers, returning success. If failed, it is possible
@@ -283,10 +219,6 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
   virtual bool SetEnableDCLayers(bool enable);
 
   virtual bool IsSurfaceless() const;
-
-  // Returns true if this surface permits scheduling an isothetic sub-rectangle
-  // (i.e. viewport) of its contents for display.
-  virtual bool SupportsViewporter() const;
 
   virtual gfx::SurfaceOrigin GetOrigin() const;
 
@@ -310,9 +242,6 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
   // offset.
   virtual gfx::Vector2d GetDrawOffset() const;
 
-  // Tells the surface to rely on implicit sync when swapping buffers.
-  virtual void SetRelyOnImplicitSync();
-
   // Support for eglGetFrameTimestamps.
   virtual bool SupportsSwapTimestamps() const;
   virtual void SetEnableSwapTimestamps();
@@ -331,13 +260,7 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
 
   virtual void SetGpuVSyncEnabled(bool enabled);
 
-  virtual void SetVSyncDisplayID(int64_t display_id) {}
-
-  virtual void SetDisplayTransform(gfx::OverlayTransform transform) {}
   virtual void SetFrameRate(float frame_rate) {}
-  virtual void SetChoreographerVsyncIdForNextFrame(
-      absl::optional<int64_t> choreographer_vsync_id) {}
-
   static GLSurface* GetCurrent();
 
   virtual void SetCurrent();
@@ -357,8 +280,6 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
   // If a gpu preference is forced (by GPU driver bug workaround, etc), return
   // it. Otherwise, return the original input preference.
   static GpuPreference AdjustGpuPreference(GpuPreference gpu_preference);
-
-  virtual void SetCALayerErrorCode(gfx::CALayerResult ca_layer_error_code) {}
 
  protected:
   virtual ~GLSurface();
@@ -382,7 +303,6 @@ class GL_EXPORT GLSurfaceAdapter : public GLSurface {
   GLSurfaceAdapter& operator=(const GLSurfaceAdapter&) = delete;
 
   bool Initialize(GLSurfaceFormat format) override;
-  void PrepareToDestroy(bool have_context) override;
   void Destroy() override;
   bool Resize(const gfx::Size& size,
               float scale_factor,
@@ -412,18 +332,11 @@ class GL_EXPORT GLSurfaceAdapter : public GLSurface {
                           SwapCompletionCallback completion_callback,
                           PresentationCallback presentation_callback,
                           gfx::FrameData data) override;
-  gfx::SwapResult CommitOverlayPlanes(PresentationCallback callback,
-                                      gfx::FrameData data) override;
-  void CommitOverlayPlanesAsync(SwapCompletionCallback completion_callback,
-                                PresentationCallback presentation_callback,
-                                gfx::FrameData data) override;
   bool SupportsSwapBuffersWithBounds() override;
   bool SupportsPostSubBuffer() override;
-  bool SupportsCommitOverlayPlanes() override;
   bool SupportsAsyncSwap() override;
   gfx::Size GetSize() override;
   void* GetHandle() override;
-  void PreserveChildSurfaceControls() override;
   unsigned int GetBackingFramebufferObject() override;
   bool OnMakeCurrent(GLContext* context) override;
   bool SetBackbufferAllocation(bool allocated) override;
@@ -434,14 +347,9 @@ class GL_EXPORT GLSurfaceAdapter : public GLSurface {
   GLSurfaceFormat GetFormat() override;
   gfx::VSyncProvider* GetVSyncProvider() override;
   void SetVSyncEnabled(bool enabled) override;
-  bool ScheduleOverlayPlane(
-      OverlayImage image,
-      std::unique_ptr<gfx::GpuFence> gpu_fence,
-      const gfx::OverlayPlaneData& overlay_plane_data) override;
   bool ScheduleDCLayer(std::unique_ptr<DCLayerOverlayParams> params) override;
   bool SetEnableDCLayers(bool enable) override;
   bool IsSurfaceless() const override;
-  bool SupportsViewporter() const override;
   gfx::SurfaceOrigin GetOrigin() const override;
   bool BuffersFlipped() const override;
   bool SupportsDCLayers() const override;
@@ -449,17 +357,13 @@ class GL_EXPORT GLSurfaceAdapter : public GLSurface {
   bool SupportsOverridePlatformSize() const override;
   bool SetDrawRectangle(const gfx::Rect& rect) override;
   gfx::Vector2d GetDrawOffset() const override;
-  void SetRelyOnImplicitSync() override;
   bool SupportsSwapTimestamps() const override;
   void SetEnableSwapTimestamps() override;
   bool SupportsPlaneGpuFences() const override;
   int GetBufferCount() const override;
   bool SupportsGpuVSync() const override;
   void SetGpuVSyncEnabled(bool enabled) override;
-  void SetDisplayTransform(gfx::OverlayTransform transform) override;
   void SetFrameRate(float frame_rate) override;
-  void SetChoreographerVsyncIdForNextFrame(
-      absl::optional<int64_t> choreographer_vsync_id) override;
   void SetCurrent() override;
   bool IsCurrent() override;
 

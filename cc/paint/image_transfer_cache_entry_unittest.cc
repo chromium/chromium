@@ -157,7 +157,6 @@ class ImageTransferCacheEntryTest
   void TearDown() override {
     DeletePendingTextures();
     gr_context_.reset();
-    surface_->PrepareToDestroy(gl_context_->IsCurrent(surface_.get()));
     surface_.reset();
     gl_context_.reset();
     share_group_.reset();

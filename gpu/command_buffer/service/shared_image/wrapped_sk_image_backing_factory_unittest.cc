@@ -28,6 +28,7 @@
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_share_group.h"
+#include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_factory.h"
 

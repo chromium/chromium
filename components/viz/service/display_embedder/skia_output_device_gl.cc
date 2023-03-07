@@ -69,8 +69,7 @@ SkiaOutputDeviceGL::SkiaOutputDeviceGL(
   }
   capabilities_.pending_swap_params.max_pending_swaps =
       gl_surface_->GetBufferCount() - 1;
-  capabilities_.supports_commit_overlay_planes =
-      gl_surface_->SupportsCommitOverlayPlanes();
+  capabilities_.supports_commit_overlay_planes = false;
   capabilities_.supports_gpu_vsync = gl_surface_->SupportsGpuVSync();
 #if BUILDFLAG(IS_ANDROID)
   // TODO(weiliangc): This capability is used to check whether we should do
@@ -267,28 +266,6 @@ void SkiaOutputDeviceGL::PostSubBuffer(const gfx::Rect& rect,
     gfx::SwapResult result =
         gl_surface_->PostSubBuffer(rect.x(), rect.y(), rect.width(),
                                    rect.height(), std::move(feedback), data);
-    DoFinishSwapBuffers(surface_size, std::move(frame),
-                        gfx::SwapCompletionResult(result));
-  }
-}
-
-void SkiaOutputDeviceGL::CommitOverlayPlanes(BufferPresentedCallback feedback,
-                                             OutputSurfaceFrame frame) {
-  StartSwapBuffers({});
-
-  gfx::Size surface_size =
-      gfx::Size(sk_surface_->width(), sk_surface_->height());
-
-  auto data = frame.data;
-  if (supports_async_swap_) {
-    auto callback = base::BindOnce(
-        &SkiaOutputDeviceGL::DoFinishSwapBuffersAsync,
-        weak_ptr_factory_.GetWeakPtr(), surface_size, std::move(frame));
-    gl_surface_->CommitOverlayPlanesAsync(std::move(callback),
-                                          std::move(feedback), data);
-  } else {
-    gfx::SwapResult result =
-        gl_surface_->CommitOverlayPlanes(std::move(feedback), data);
     DoFinishSwapBuffers(surface_size, std::move(frame),
                         gfx::SwapCompletionResult(result));
   }

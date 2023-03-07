@@ -493,11 +493,6 @@ bool InProcessCommandBuffer::DestroyOnGpuThread() {
   if (have_context)
     cache_use = CreateCacheUse();
 
-  // Prepare to destroy the surface while the context is still current, because
-  // some surface destructors make GL calls.
-  if (surface_)
-    surface_->PrepareToDestroy(have_context);
-
   if (decoder_) {
     decoder_->Destroy(have_context);
     decoder_.reset();
