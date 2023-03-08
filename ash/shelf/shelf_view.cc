@@ -1515,7 +1515,8 @@ void ShelfView::PrepareForDrag(Pointer pointer, const ui::LocatedEvent& event) {
                              : kDragAndDropProxyScale;
     drag_icon_proxy_ = std::make_unique<AppDragIconProxy>(
         root_window, drag_view_->GetIconImage(), screen_location,
-        gfx::Vector2d(), scale_factor, /*is_folder_icon=*/false);
+        gfx::Vector2d(), scale_factor, /*is_folder_icon=*/false,
+        drag_view_->GetIconImage().size());
 
     if (pointer == MOUSE) {
       haptics_util::PlayHapticTouchpadEffect(
@@ -1674,7 +1675,7 @@ void ShelfView::HandleRipOffDrag(const ui::LocatedEvent& event) {
             root_window, drag_view_->GetIconImage(), screen_location,
             /*cursor_offset_from_center=*/gfx::Vector2d(),
             /*scale_factor=*/1.0f,
-            /*is_folder_icon=*/false);
+            /*is_folder_icon=*/false, drag_view_->GetIconImage().size());
       }
 
       // Re-insert the item and return simply false since the caller will handle
@@ -1707,7 +1708,7 @@ void ShelfView::HandleRipOffDrag(const ui::LocatedEvent& event) {
       drag_icon_proxy_ = std::make_unique<AppDragIconProxy>(
           root_window, drag_view_->GetIconImage(), screen_location,
           cursor_offset_from_center, /*scale_factor=*/1.0f,
-          /*is_folder_icon=*/false);
+          /*is_folder_icon=*/false, drag_view_->GetIconImage().size());
       delegate_->CancelScrollForItemDrag();
     }
 

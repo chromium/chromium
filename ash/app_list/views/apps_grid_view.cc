@@ -2591,11 +2591,17 @@ void AppsGridView::StartDragAndDropHostDrag() {
       drag_view_->GetIconBoundsInScreen().CenterPoint();
 
   const bool is_folder = drag_view_->item()->is_folder();
+  // Set the refreshed folder shadow size equal to the folder icon background
+  // circle.
+  const gfx::Size shadow_size =
+      is_folder && features::IsAppCollectionFolderRefreshEnabled()
+          ? app_list_config_->icon_visible_size()
+          : drag_view_->GetIconImage().size();
   drag_icon_proxy_ = std::make_unique<AppDragIconProxy>(
       GetWidget()->GetNativeWindow()->GetRootWindow(),
       drag_view_->GetIconImage(), location_in_screen,
       location_in_screen - icon_location_in_screen,
-      is_folder ? kDragAndDropProxyScale : 1.0f, is_folder);
+      is_folder ? kDragAndDropProxyScale : 1.0f, is_folder, shadow_size);
   drag_view_hider_ = std::make_unique<DragViewHider>(drag_view_);
 }
 

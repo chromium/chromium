@@ -37,12 +37,15 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "cc/paint/paint_flags.h"
+#include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_provider.h"
+#include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -243,6 +246,37 @@ class AppListItemView::FolderIconView : public views::View,
 
     size_t count = icons_in_folder - (FolderImage::kNumFolderTopItems - 1);
     return std::min(count, kMaxItemCounterCount);
+  }
+
+  gfx::ImageSkia CreateDragImage() {
+    const views::Widget* widget = GetWidget();
+    const float scale = widget->GetCompositor()->device_scale_factor();
+    const gfx::Rect paint_bounds(gfx::ScaleToCeiledSize(size(), scale));
+    const bool is_pixel_canvas = widget->GetCompositor()->is_pixel_canvas();
+    SkBitmap bitmap;
+    bitmap.allocN32Pixels(paint_bounds.width(), paint_bounds.height());
+    bitmap.eraseColor(SK_ColorTRANSPARENT);
+
+    // Draw the background circle of the icon.
+    SkCanvas canvas(bitmap);
+    SkPaint background_circle;
+    background_circle.setColor(
+        GetColorProvider()->GetColor(kColorAshControlBackgroundColorInactive));
+    background_circle.setStyle(SkPaint::kFill_Style);
+    background_circle.setAntiAlias(true);
+
+    gfx::Point center = paint_bounds.CenterPoint();
+    canvas.drawCircle(center.x(), center.y(),
+                      config_->icon_visible_dimension() / 2, background_circle);
+
+    auto list = base::MakeRefCounted<cc::DisplayItemList>();
+    ui::PaintContext context(list.get(), scale, paint_bounds, is_pixel_canvas);
+
+    Paint(views::PaintInfo::CreateRootPaintInfo(context, paint_bounds.size()));
+    list->Finalize();
+    list->Raster(&canvas, nullptr);
+
+    return gfx::ImageSkia::CreateFromBitmap(bitmap, scale);
   }
 
  private:
@@ -1187,7 +1221,7 @@ void AppListItemView::WriteDragData(const gfx::Point& press_pt,
 
   SetMouseDragging(true);
   if (item_weak_) {
-    data->provider().SetDragImage(icon_image_, press_pt.OffsetFromOrigin());
+    data->provider().SetDragImage(GetIconImage(), press_pt.OffsetFromOrigin());
     base::Pickle data_pickle;
     data_pickle.WriteString(item_weak_->id());
     data->SetPickledData(GetAppItemFormatType(), data_pickle);
@@ -1450,10 +1484,8 @@ gfx::Rect AppListItemView::GetIconBoundsInScreen() const {
 }
 
 gfx::ImageSkia AppListItemView::GetIconImage() const {
-  // TODO(b/262003933): Update the returned ImageSkia after the refreshed
-  // dragged folder icon is implemented.
   if (!use_item_icon_) {
-    return gfx::ImageSkia();
+    return folder_icon_->CreateDragImage();
   }
 
   if (!is_folder_) {

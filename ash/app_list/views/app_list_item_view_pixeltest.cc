@@ -191,8 +191,7 @@ TEST_P(AppListItemViewPixelTest, AppListFolderItemsLayoutInIcon) {
 }
 
 // Verifies the folder icon is extended when an app is dragged upon it.
-// TODO(b/271026456): the test is flaky.
-TEST_P(AppListItemViewPixelTest, DISABLED_AppListFolderIconExtendedState) {
+TEST_P(AppListItemViewPixelTest, AppListFolderIconExtendedState) {
   // Skip the case where the apps are newly installed as it doesn't change the
   // folder icons.
   if (is_new_install()) {
@@ -245,9 +244,7 @@ TEST_P(AppListItemViewPixelTest, DISABLED_AppListFolderIconExtendedState) {
 }
 
 // Vefifies the dragged folder icon proxy is correctly created.
-// TODO(b/262003933): Correct this pixeltest after the refreshed dragged folder
-// icon is implemented.
-TEST_P(AppListItemViewPixelTest, DISABLED_DraggedAppListFolderIcon) {
+TEST_P(AppListItemViewPixelTest, DraggedAppListFolderIcon) {
   // Skip the case where the apps are newly installed or have notifications as
   // they don't change the folder icons.
   if (is_new_install() || has_notification()) {
@@ -295,7 +292,7 @@ TEST_P(AppListItemViewPixelTest, DISABLED_DraggedAppListFolderIcon) {
       event_generator->MoveMouseTo(grid_center);
     }
 
-    const int revision_number = use_folder_icon_refresh() ? 2 : 1;
+    const int revision_number = use_folder_icon_refresh() ? 3 : 2;
 
     std::string filename = base::NumberToString(i + 1) + "_items_folder";
     EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
