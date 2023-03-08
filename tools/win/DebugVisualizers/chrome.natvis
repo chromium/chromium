@@ -225,43 +225,79 @@
     </Expand>
   </Type>
   <Type Name="base::Value" >
-    <DisplayString Condition="data_.index_==base::Value::NONE">None</DisplayString>
-    <DisplayString Condition="data_.index_==base::Value::BOOLEAN">Boolean {data_.state_.tail.head}</DisplayString>
-    <DisplayString Condition="data_.index_==base::Value::INTEGER">Integer {data_.state_.tail.tail.head}</DisplayString>
-    <DisplayString Condition="data_.index_==base::Value::DOUBLE">Double {*(double*)data_.state_.tail.tail.tail.head.v}</DisplayString>
-    <DisplayString Condition="data_.index_==base::Value::STRING">String {data_.state_.tail.tail.tail.tail.head,na}</DisplayString>
-    <DisplayString Condition="data_.index_==base::Value::BINARY">Binary</DisplayString>
-    <DisplayString Condition="data_.index_==base::Value::DICTIONARY">Dictionary {data_.state_.tail.tail.tail.tail.tail.tail.head.impl_.body_}</DisplayString>
-    <DisplayString Condition="data_.index_==base::Value::LIST">List {data_.state_.tail.tail.tail.tail.tail.tail.head.impl_.body_}</DisplayString>
-    <DisplayString Condition="data_.index_==base::Value::DEAD">Dead</DisplayString>
+    <DisplayString Condition="data_.index_ == base::Value::Type::NONE" Optional="true">None</DisplayString>
+    <DisplayString Condition="data_.index_ == base::Value::Type::BOOLEAN" Optional="true">Boolean {data_.state_.tail.head}</DisplayString>
+    <DisplayString Condition="data_.index_ == base::Value::Type::INTEGER" Optional="true">Integer {data_.state_.tail.tail.head}</DisplayString>
+    <DisplayString Condition="data_.index_ == base::Value::Type::DOUBLE" Optional="true">Double {*(double*)data_.state_.tail.tail.tail.head.v_}</DisplayString>
+    <DisplayString Condition="data_.index_ == base::Value::Type::STRING" Optional="true">String {data_.state_.tail.tail.tail.tail.head,na}</DisplayString>
+    <DisplayString Condition="data_.index_ == base::Value::Type::BINARY" Optional="true">Binary {data_.state_.tail.tail.tail.tail.tail.head}</DisplayString>
+    <DisplayString Condition="data_.index_ == base::Value::Type::DICT" Optional="true">Dictionary {data_.state_.tail.tail.tail.tail.tail.tail.head.storage_.body_}</DisplayString>
+    <DisplayString Condition="data_.index_ == base::Value::Type::LIST" Optional="true">List {data_.state_.tail.tail.tail.tail.tail.tail.tail.head.storage_}</DisplayString>
     <DisplayString>Unknown type</DisplayString>
     <Expand >
-      <Item Condition="data_.index_==base::Value::BOOLEAN" Name="[Value]">data_.state_.tail.head</Item>
-      <Item Condition="data_.index_==base::Value::INTEGER" Name="[Value]">data_.state_.tail.tail.head</Item>
-      <Item Condition="data_.index_==base::Value::DOUBLE" Name="[Value]">*(double*)data_.state_.tail.tail.tail.head.v</Item>
-      <Item Condition="data_.index_==base::Value::STRING" Name="[String]">data_.state_.tail.tail.tail.tail.head,na</Item>
+      <Item Condition="data_.index_ == base::Value::Type::BOOLEAN" Name="[value]" Optional="true">
+        data_.state_.tail.head
+      </Item>
+      <Item Condition="data_.index_ == base::Value::Type::INTEGER" Name="[value]" Optional="true">
+        data_.state_.tail.tail.head
+      </Item>
+      <Item Condition="data_.index_ == base::Value::Type::DOUBLE" Name="[value]" Optional="true">
+        *(double*)data_.state_.tail.tail.tail.head.v_
+      </Item>
+      <Item Condition="data_.index_ == base::Value::Type::STRING" Name="[value]" Optional="true">
+        data_.state_.tail.tail.tail.tail.head,na
+      </Item>
+      <Item Condition="data_.index_ == base::Value::Type::BINARY" Name="[value]" Optional="true">
+        data_.state_.tail.tail.tail.tail.tail.head
+      </Item>
       <!-- Dictionary -->
-      <Item Condition="data_.index_==base::Value::DICTIONARY" Name="[size]">
-      data_.state_.tail.tail.tail.tail.tail.tail.head.impl_.body_.__end_ -
-      data_.state_.tail.tail.tail.tail.tail.tail.head.impl_.body_.__begin_ </Item>
-      <ArrayItems Condition="data_.index_==base::Value::DICTIONARY">
+      <Item Condition="data_.index_ == base::Value::Type::DICT" Name="[size]" Optional="true">
+        data_.state_.tail.tail.tail.tail.tail.tail.head.storage_.body_.__end_ -
+        data_.state_.tail.tail.tail.tail.tail.tail.head.storage_.body_.__begin_
+      </Item>
+      <ArrayItems Condition="data_.index_ == base::Value::Type::DICT" Optional="true">
         <Size>
-          data_.state_.tail.tail.tail.tail.tail.tail.head.impl_.body_.__end_ -
-          data_.state_.tail.tail.tail.tail.tail.tail.head.impl_.body_.__begin_
+          data_.state_.tail.tail.tail.tail.tail.tail.head.storage_.body_.__end_ -
+          data_.state_.tail.tail.tail.tail.tail.tail.head.storage_.body_.__begin_
         </Size>
-        <ValuePointer>data_.state_.tail.tail.tail.tail.tail.tail.head.impl_.body_.__begin_</ValuePointer>
+        <ValuePointer>
+          data_.state_.tail.tail.tail.tail.tail.tail.head.storage_.body_.__begin_
+        </ValuePointer>
       </ArrayItems>
       <!-- List -->
-      <Item Condition="data_.index_==base::Value::LIST" Name="[size]">
-      data_.state_.tail.tail.tail.tail.tail.tail.head.impl_.body_.__end_ -
-      data_.state_.tail.tail.tail.tail.tail.tail.head.impl_.body_.__begin_ </Item>
-      <ArrayItems Condition="data_.index_==base::Value::LIST">
+      <Item Condition="data_.index_ == base::Value::Type::LIST" Name="[size]" Optional="true">
+        data_.state_.tail.tail.tail.tail.tail.tail.tail.head.storage_.__end_ -
+        data_.state_.tail.tail.tail.tail.tail.tail.tail.head.storage_.__begin_
+      </Item>
+      <ArrayItems Condition="data_.index_ == base::Value::Type::LIST" Optional="true">
         <Size>
-          data_.state_.tail.tail.tail.tail.tail.tail.head.impl_.body_.__end_ -
-          data_.state_.tail.tail.tail.tail.tail.tail.head.impl_.body_.__begin_
+          data_.state_.tail.tail.tail.tail.tail.tail.tail.head.storage_.__end_ -
+          data_.state_.tail.tail.tail.tail.tail.tail.tail.head.storage_.__begin_
         </Size>
-        <ValuePointer>(base::Value*)data_.state_.tail.tail.tail.tail.tail.tail.head.impl_.body_.__begin_</ValuePointer>
+        <ValuePointer>
+          data_.state_.tail.tail.tail.tail.tail.tail.tail.head.storage_.__begin_
+        </ValuePointer>
       </ArrayItems>
+    </Expand>
+  </Type>
+  <Type Name="base::Value::Dict" >
+    <DisplayString>Dictionary {storage_.body_}</DisplayString>
+    <Expand >
+      <Item Name="[size]">storage_.body_.__end_ - storage_.body_.__begin_</Item>
+        <ArrayItems>
+          <Size>storage_.body_.__end_ - storage_.body_.__begin_</Size>
+          <ValuePointer>storage_.body_.__begin_</ValuePointer>
+        </ArrayItems>
+    </Expand>
+  </Type>
+  <Type Name="base::Value::List" >
+    <DisplayString>List {storage_}</DisplayString>
+    <Expand >
+      <Item Name="[size]">storage_.__end_ - storage_.__begin_</Item>
+        <ArrayItems>
+          <Size>storage_.__end_ - storage_.__begin_</Size>
+          <ValuePointer>storage_.__begin_</ValuePointer>
+        </ArrayItems>
     </Expand>
   </Type>
 </AutoVisualizer>
