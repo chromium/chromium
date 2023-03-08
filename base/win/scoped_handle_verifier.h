@@ -13,7 +13,6 @@
 #include "base/hash/hash.h"
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock_impl.h"
-#include "base/threading/thread_local.h"
 #include "base/win/windows_types.h"
 
 namespace base {
@@ -57,11 +56,9 @@ struct ScopedHandleVerifierInfo {
 // from emitting an unrecognized attribute warning.
 #pragma warning(push)
 #pragma warning(disable : 5030)
-class [[clang::lto_visibility_public]] ScopedHandleVerifier {
+class [[clang::lto_visibility_public, nodiscard]] ScopedHandleVerifier {
 #pragma warning(pop)
  public:
-  explicit ScopedHandleVerifier(bool enabled);
-
   ScopedHandleVerifier(const ScopedHandleVerifier&) = delete;
   ScopedHandleVerifier& operator=(const ScopedHandleVerifier&) = delete;
 
@@ -81,6 +78,7 @@ class [[clang::lto_visibility_public]] ScopedHandleVerifier {
   virtual HMODULE GetModule() const;
 
  private:
+  explicit ScopedHandleVerifier(bool enabled);
   ~ScopedHandleVerifier();  // Not implemented.
 
   void StartTrackingImpl(HANDLE handle, const void* owner, const void* pc1,
@@ -96,7 +94,6 @@ class [[clang::lto_visibility_public]] ScopedHandleVerifier {
 
   base::debug::StackTrace creation_stack_;
   bool enabled_;
-  base::ThreadLocalBoolean closing_;
   raw_ptr<base::internal::LockImpl> lock_;
   std::unordered_map<HANDLE, ScopedHandleVerifierInfo, HandleHash> map_;
 };
