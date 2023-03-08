@@ -415,6 +415,11 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIBrowserTest,
   EXPECT_EQ(ReadCookies(GetFrame(), kHostB), CookieBundle("cross-site=b.test"));
   EXPECT_EQ(ReadCookies(GetNestedFrame(), kHostB), NoCookies());
 
+  // Subresource request from the cross-site iframe to an end point that's
+  // same-origin with the top-level does not enable cookie access.
+  EXPECT_EQ(CookiesFromFetch(GetFrame(), kHostA), "None");
+  EXPECT_EQ(CookiesFromFetch(GetNestedFrame(), kHostA), "None");
+
   // Navigate nested iframe to c.test and verify that the cookie is not
   // sent.
   NavigateNestedFrameTo(EchoCookiesURL(kHostC));
