@@ -38,7 +38,8 @@ TEST(NetworkIsolationKeyMojomTraitsTest, SerializeAndDeserialize) {
                 network::mojom::NetworkIsolationKey>(original, copied));
     EXPECT_EQ(original, copied);
     EXPECT_EQ(original.GetTopFrameSite(), copied.GetTopFrameSite());
-    if (net::NetworkIsolationKey::IsFrameSiteEnabled()) {
+    if (net::NetworkIsolationKey::GetMode() ==
+        net::NetworkIsolationKey::Mode::kFrameSiteEnabled) {
       EXPECT_EQ(original.GetFrameSite(), copied.GetFrameSite());
     }
     EXPECT_EQ(original.IsTransient(), copied.IsTransient());
@@ -49,7 +50,8 @@ TEST(NetworkIsolationKeyMojomTraitsTest, DeserializeFailure) {
   std::vector<uint8_t> serialized;
   net::NetworkIsolationKey deserialized;
 
-  if (net::NetworkIsolationKey::IsFrameSiteEnabled()) {
+  if (net::NetworkIsolationKey::GetMode() ==
+      net::NetworkIsolationKey::Mode::kFrameSiteEnabled) {
     auto empty_top_level_site = network::mojom::NetworkIsolationKey::New(
         /*top_frame_site=*/absl::nullopt,
         net::SchemefulSite(url::Origin::Create(GURL("http://a.test/"))),

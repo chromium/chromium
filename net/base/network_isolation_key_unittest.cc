@@ -18,8 +18,9 @@ namespace net {
 namespace {
 const char kDataUrl[] = "data:text/html,<body>Hello World</body>";
 
-TEST(NetworkIsolationKeyTest, IsFrameSiteEnabled) {
-  EXPECT_TRUE(NetworkIsolationKey::IsFrameSiteEnabled());
+TEST(NetworkIsolationKeyTest, GetMode) {
+  EXPECT_EQ(NetworkIsolationKey::GetMode(),
+            NetworkIsolationKey::Mode::kFrameSiteEnabled);
 }
 
 TEST(NetworkIsolationKeyTest, EmptyKey) {

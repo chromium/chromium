@@ -21,9 +21,12 @@ bool StructTraits<network::mojom::NetworkIsolationKeyDataView,
   }
 
   // A key is either fully empty or fully populated.
-  if (net::NetworkIsolationKey::IsFrameSiteEnabled() &&
-      (top_frame_site.has_value() != frame_site.has_value())) {
-    return false;
+  switch (net::NetworkIsolationKey::GetMode()) {
+    case net::NetworkIsolationKey::Mode::kFrameSiteEnabled:
+      if (top_frame_site.has_value() != frame_site.has_value()) {
+        return false;
+      }
+      break;
   }
 
   absl::optional<base::UnguessableToken> nonce;
@@ -36,12 +39,9 @@ bool StructTraits<network::mojom::NetworkIsolationKeyDataView,
       return false;
     *out = net::NetworkIsolationKey();
   } else {
-    *out =
-        net::NetworkIsolationKey(std::move(top_frame_site.value()),
-                                 net::NetworkIsolationKey::IsFrameSiteEnabled()
-                                     ? std::move(frame_site.value())
-                                     : net::SchemefulSite(),
-                                 nonce ? &nonce.value() : nullptr);
+    *out = net::NetworkIsolationKey(std::move(top_frame_site.value()),
+                                    std::move(frame_site.value()),
+                                    nonce ? &nonce.value() : nullptr);
   }
 
   return true;

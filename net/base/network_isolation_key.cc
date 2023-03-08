@@ -36,7 +36,7 @@ NetworkIsolationKey::NetworkIsolationKey(SchemefulSite&& top_frame_site,
                                          SchemefulSite&& frame_site,
                                          const base::UnguessableToken* nonce)
     : top_frame_site_(std::move(top_frame_site)),
-      frame_site_(IsFrameSiteEnabled()
+      frame_site_((GetMode() == Mode::kFrameSiteEnabled)
                       ? absl::make_optional(std::move(frame_site))
                       : absl::nullopt),
       nonce_(nonce ? absl::make_optional(*nonce) : absl::nullopt) {
@@ -82,9 +82,9 @@ absl::optional<std::string> NetworkIsolationKey::ToCacheKeyString() const {
   if (IsTransient())
     return absl::nullopt;
 
-  std::string frame_site_str =
-      " " + (IsFrameSiteEnabled() ? frame_site_->Serialize()
-                                  : top_frame_site_->Serialize());
+  std::string frame_site_str = " " + ((GetMode() == Mode::kFrameSiteEnabled)
+                                          ? frame_site_->Serialize()
+                                          : top_frame_site_->Serialize());
   return top_frame_site_->Serialize() + frame_site_str;
 }
 
@@ -102,8 +102,13 @@ std::string NetworkIsolationKey::ToDebugString() const {
 }
 
 bool NetworkIsolationKey::IsFullyPopulated() const {
-  return top_frame_site_.has_value() &&
-         (!IsFrameSiteEnabled() || frame_site_.has_value());
+  if (!top_frame_site_.has_value()) {
+    return false;
+  }
+  if (GetMode() == Mode::kFrameSiteEnabled && !frame_site_.has_value()) {
+    return false;
+  }
+  return true;
 }
 
 bool NetworkIsolationKey::IsTransient() const {
@@ -112,9 +117,16 @@ bool NetworkIsolationKey::IsTransient() const {
   return IsOpaque();
 }
 
+// static
+NetworkIsolationKey::Mode NetworkIsolationKey::GetMode() {
+  // NIKs are currently always triple-keyed, but we will experiment with
+  // 2.5-keying in crbug.com/1414808.
+  return Mode::kFrameSiteEnabled;
+}
+
 const absl::optional<SchemefulSite>& NetworkIsolationKey::GetFrameSite() const {
   // Frame site will be empty if double-keying is enabled.
-  CHECK(NetworkIsolationKey::IsFrameSiteEnabled());
+  CHECK(GetMode() == Mode::kFrameSiteEnabled);
   return frame_site_;
 }
 
@@ -122,15 +134,10 @@ bool NetworkIsolationKey::IsEmpty() const {
   return !top_frame_site_.has_value() && !frame_site_.has_value();
 }
 
-bool NetworkIsolationKey::IsFrameSiteEnabled() {
-  // NIKs are currently always triple-keyed, but we will experiment with
-  // 2.5-keying in crbug.com/1414808.
-  return true;
-}
-
 bool NetworkIsolationKey::IsOpaque() const {
   return top_frame_site_->opaque() ||
-         (IsFrameSiteEnabled() && frame_site_->opaque()) || nonce_.has_value();
+         (GetMode() == Mode::kFrameSiteEnabled && frame_site_->opaque()) ||
+         nonce_.has_value();
 }
 
 }  // namespace net

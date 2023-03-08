@@ -35,7 +35,8 @@ NetworkAnonymizationKey NetworkAnonymizationKey::CreateFromFrameSite(
 NetworkAnonymizationKey NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
     const net::NetworkIsolationKey& network_isolation_key) {
   // If NIK is double-keyed, a 2.5-keyed NAK cannot be constructed from it.
-  DCHECK(NetworkIsolationKey::IsFrameSiteEnabled());
+  DCHECK_EQ(NetworkIsolationKey::GetMode(),
+            NetworkIsolationKey::Mode::kFrameSiteEnabled);
 
   // We cannot create a valid NetworkAnonymizationKey from a NetworkIsolationKey
   // that is not fully populated.
