@@ -13,12 +13,11 @@
 #include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
-#include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_state.h"
 #include "components/drive/file_errors.h"
 #include "third_party/cros_system_api/constants/cryptohome.h"
 
@@ -551,11 +550,17 @@ PinManager::PinManager(Path profile_path, mojom::DriveFs* const drivefs)
       drivefs_(drivefs),
       space_getter_(base::BindRepeating(&GetFreeSpace)) {
   DCHECK(drivefs_);
+  RegisterNetworkObserver();
 }
 
 PinManager::~PinManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!InProgress(progress_.stage)) << "Pin manager is " << progress_.stage;
+
+  if (network_state_handler_) {
+    network_state_handler_->RemoveObserver(this, FROM_HERE);
+  }
+
   for (Observer& observer : observers_) {
     observer.OnDrop();
   }
@@ -1138,6 +1143,43 @@ void PinManager::OnMetadataForModifiedFile(
     PinSomeFiles();
     NotifyProgress();
   }
+}
+
+void PinManager::RegisterNetworkObserver() {
+  using ash::NetworkHandler;
+  if (!NetworkHandler::IsInitialized()) {
+    // Probably in test environment.
+    LOG(WARNING) << "No network handler";
+    return;
+  }
+
+  NetworkHandler* const network_handler = NetworkHandler::Get();
+  DCHECK(network_handler);
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!network_state_handler_);
+  network_state_handler_ = network_handler->network_state_handler();
+  DCHECK(network_state_handler_);
+  network_state_handler_->AddObserver(this, FROM_HERE);
+
+  const NetworkState* const network = network_state_handler_->DefaultNetwork();
+  portal_state_ = network ? network->GetPortalState() : PortalState::kUnknown;
+  VLOG(1) << "Network is " << portal_state_;
+}
+
+void PinManager::OnShuttingDown() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(network_state_handler_);
+  network_state_handler_->RemoveObserver(this, FROM_HERE);
+  network_state_handler_ = nullptr;
+}
+
+void PinManager::PortalStateChanged(
+    [[maybe_unused]] const NetworkState* const network,
+    const PortalState state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << "Network changed from " << portal_state_ << " to " << state;
+  portal_state_ = state;
 }
 
 }  // namespace drivefs::pinning

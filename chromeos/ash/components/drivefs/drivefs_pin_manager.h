@@ -25,6 +25,8 @@
 #include "base/timer/elapsed_timer.h"
 #include "chromeos/ash/components/drivefs/drivefs_host_observer.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "components/drive/file_errors.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -130,7 +132,8 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) Progress {
 //  - Rebuild the progress of bulk pinned items (if turned off mid way through a
 //    bulk pinning event).
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
-    : public DriveFsHostObserver {
+    : public DriveFsHostObserver,
+      ash::NetworkStateHandlerObserver {
  public:
   using Path = base::FilePath;
 
@@ -353,11 +356,35 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
         [](const Files::value_type& entry) { return entry.second.pinned; });
   }
 
+  // Types related to network state.
+  using NetworkStateHandler = ash::NetworkStateHandler;
+  using NetworkState = ash::NetworkState;
+  using PortalState = NetworkState::PortalState;
+
+  // If possible, registers this PinManager as a network observer.
+  void RegisterNetworkObserver();
+
+  // Called just before NetworkStateHandler is destroyed so that this observer
+  // can safely stop observing.
+  void OnShuttingDown() override;
+
+  // Called by the NetworkStateHandler to signal that the network conditions
+  // have changed.
+  void PortalStateChanged(const NetworkState* default_network,
+                          PortalState portal_state) override;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   const Path profile_path_ GUARDED_BY_CONTEXT(sequence_checker_);
   const raw_ptr<mojom::DriveFs, DanglingUntriaged> drivefs_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Source of NetworkState events.
+  raw_ptr<NetworkStateHandler> network_state_handler_
+      GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
+
+  // Network condition. By default, and for tests, assume it is online.
+  PortalState portal_state_ = PortalState::kOnline;
 
   // Should the feature actually pin files, or should it stop after checking the
   // space requirements?

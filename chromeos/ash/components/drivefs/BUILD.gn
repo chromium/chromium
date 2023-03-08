@@ -42,6 +42,7 @@ component("drivefs") {
     "//chromeos/ash/components/dbus/spaced",
     "//chromeos/ash/components/disks",
     "//chromeos/ash/components/drivefs/mojom",
+    "//chromeos/ash/components/network",
     "//chromeos/components/mojo_bootstrap",
     "//components/account_id",
     "//components/drive",
