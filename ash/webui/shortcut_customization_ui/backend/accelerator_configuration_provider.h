@@ -118,23 +118,10 @@ class AcceleratorConfigurationProvider
 
   AcceleratorConfigurationMap CreateConfigurationMap() const;
 
-  void PopulateAshAcceleratorConfig(
-      AcceleratorConfigurationMap& accelerator_config_output);
-
-  void PopulateAmbientAcceleratorConfig(
-      AcceleratorConfigurationMap& accelerator_config_output);
-
   void NotifyAcceleratorsUpdated();
 
-  void CreateAndAppendAliasedAccelerators(
-      const ui::Accelerator& accelerator,
-      bool locked,
-      mojom::AcceleratorType type,
-      mojom::AcceleratorState state,
-      std::vector<mojom::AcceleratorInfoPtr>& output);
-
-  // Set only for testing purposes, this will ignore the default layouts.
-  bool ignore_layouts_for_testing_ = false;
+  std::vector<mojom::AcceleratorInfoPtr> CreateAcceleratorInfos(
+      const std::vector<ui::Accelerator>& accelerators) const;
 
   std::vector<mojom::AcceleratorLayoutInfoPtr> layout_infos_;
 

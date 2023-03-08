@@ -330,7 +330,6 @@ class AcceleratorConfigurationProviderTest : public AshTestBase {
     non_configurable_actions_map_ =
         provider_->GetNonConfigurableAcceleratorsForTesting();
     fake_keyboard_manager_ = std::make_unique<FakeDeviceManager>();
-    provider_->ignore_layouts_for_testing_ = true;
     base::RunLoop().RunUntilIdle();
   }
 
@@ -934,14 +933,15 @@ TEST_F(AcceleratorConfigurationProviderTest, NonConfigurableReverseLookup) {
   }
 }
 
+// TODO(jimmyxgong): This is removing a default accelerator, update this when
+// disabling accelerators is implemented.
 TEST_F(AcceleratorConfigurationProviderTest, RemoveAccelerator) {
-  FakeAcceleratorsUpdatedObserver observer;
-  SetUpObserver(&observer);
-
   // Initialize with all custom accelerators.
   const AcceleratorData test_data[] = {
       {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
        TOGGLE_MIRROR_MODE},
+      {/*trigger_on_press=*/true, ui::VKEY_ZOOM, ui::EF_ALT_DOWN,
+       SWAP_PRIMARY_DISPLAY},
   };
   AshAcceleratorConfiguration* config =
       Shell::Get()->ash_accelerator_configuration();
@@ -962,22 +962,9 @@ TEST_F(AcceleratorConfigurationProviderTest, RemoveAccelerator) {
         // Verify the accelerator was removed.
         std::vector<ui::Accelerator> updated_accelerators =
             config->GetAllAccelerators();
-        EXPECT_EQ(0u, updated_accelerators.size());
-
-        // Now verify that removing the default for `TOGGLE_MIRROR_MODE` will
-        // only disable it from the config.
-        base::RunLoop().RunUntilIdle();
-        AcceleratorConfigurationProvider::AcceleratorConfigurationMap
-            actual_config = observer.config();
-        ExpectMojomAcceleratorsEqual(mojom::AcceleratorSource::kAsh, test_data,
-                                     mojo::Clone(actual_config));
-        std::vector<mojom::AcceleratorInfoPtr> actual_infos(mojo::Clone(
-            actual_config[mojom::AcceleratorSource::kAsh][TOGGLE_MIRROR_MODE]));
-        EXPECT_EQ(1u, actual_infos.size());
-        // A disabled default accelerator should be marked as `kDisabledByUser`.
-        EXPECT_EQ(mojom::AcceleratorState::kDisabledByUser,
-                  actual_infos[0]->state);
-        EXPECT_EQ(mojom::AcceleratorType::kDefault, actual_infos[0]->type);
+        EXPECT_EQ(1u, updated_accelerators.size());
+        ui::Accelerator expected_accelerator(ui::VKEY_ZOOM, ui::EF_ALT_DOWN);
+        EXPECT_EQ(expected_accelerator, updated_accelerators[0]);
       }));
   base::RunLoop().RunUntilIdle();
 }
