@@ -84,6 +84,13 @@ class MODULES_EXPORT ImageCapture final
 
   void Trace(Visitor*) const override;
 
+  void SetCapabilitiesForTesting(MediaTrackCapabilities* capabilities) {
+    capabilities_ = capabilities;
+  }
+  void SetSettingsForTesting(MediaTrackSettings* settings) {
+    settings_ = settings;
+  }
+
  private:
   using PromiseResolverFunction =
       base::OnceCallback<void(ScriptPromiseResolver*)>;
