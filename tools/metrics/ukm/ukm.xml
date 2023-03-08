@@ -7723,6 +7723,90 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="GamingInputOverlay.ActionRepositionOperationType">
+  <owner>pjlee@google.com</owner>
+  <owner>cuicuiruan@google.com</owner>
+  <owner>arc-gaming@google.com</owner>
+  <summary>
+    An event that is logged when key mapping position is changed.
+  </summary>
+  <metric name="OperationType" enum="ArcInputOverlayRepositionOperationType">
+    <summary>
+      Type about how the reposition is done.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="GamingInputOverlay.ActionRepositionWindowStateType">
+  <owner>pjlee@google.com</owner>
+  <owner>cuicuiruan@google.com</owner>
+  <owner>arc-gaming@google.com</owner>
+  <summary>
+    An event that is logged when key mapping position is changed.
+  </summary>
+  <metric name="WindowStateType" enum="ArcInputOverlayWindowStateType">
+    <summary>
+      Window state type when the reposition is done.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="GamingInputOverlay.ButtonGroupRepositionOperationType">
+  <owner>pjlee@google.com</owner>
+  <owner>cuicuiruan@google.com</owner>
+  <owner>arc-gaming@google.com</owner>
+  <summary>
+    An event that is logged when button group position is changed.
+  </summary>
+  <metric name="OperationType" enum="ArcInputOverlayRepositionOperationType">
+    <summary>
+      Type about how the reposition is done.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="GamingInputOverlay.ButtonGroupRepositionWindowStateType">
+  <owner>pjlee@google.com</owner>
+  <owner>cuicuiruan@google.com</owner>
+  <owner>arc-gaming@google.com</owner>
+  <summary>
+    An event that is logged when menu entry position is changed.
+  </summary>
+  <metric name="WindowStateType" enum="ArcInputOverlayWindowStateType">
+    <summary>
+      Window state type when the reposition is done.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="GamingInputOverlay.Customization">
   <owner>pjlee@google.com</owner>
   <owner>cuicuiruan@google.com</owner>
@@ -7778,6 +7862,48 @@ be describing additional metrics about the same event.
   <metric name="MappingHintStateOn" enum="Boolean">
     <summary>
       Whether the mapping hint for gaming input overlay is on.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="GamingInputOverlay.MenuEntryRepositionOperationType">
+  <owner>pjlee@google.com</owner>
+  <owner>cuicuiruan@google.com</owner>
+  <owner>arc-gaming@google.com</owner>
+  <summary>
+    An event that is logged when key mapping position is changed.
+  </summary>
+  <metric name="OperationType" enum="ArcInputOverlayRepositionOperationType">
+    <summary>
+      Type about how the reposition is done.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="GamingInputOverlay.MenuEntryRepositionWindowStateType">
+  <owner>pjlee@google.com</owner>
+  <owner>cuicuiruan@google.com</owner>
+  <owner>arc-gaming@google.com</owner>
+  <summary>
+    An event that is logged when menu entry position is changed.
+  </summary>
+  <metric name="WindowStateType" enum="ArcInputOverlayWindowStateType">
+    <summary>
+      Window state type when the reposition is done.
     </summary>
     <aggregation>
       <history>

@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "chrome/browser/ash/arc/input_overlay/constants.h"
+
 namespace arc::input_overlay {
 
 // A class is needed to access the private static functions of
@@ -20,6 +22,21 @@ class InputOverlayUkm {
                                                     bool enable);
 
   static void RecordInputOverlayCustomizedUsageUkm(std::string package_name);
+
+  static void RecordInputOverlayActionReposition(
+      const std::string& package_name,
+      RepositionType reposition_type,
+      InputOverlayWindowStateType state_type);
+
+  static void RecordInputOverlayMenuEntryReposition(
+      const std::string& package_name,
+      RepositionType reposition_type,
+      InputOverlayWindowStateType state_type);
+
+  static void RecordInputOverlayButtonGroupReposition(
+      const std::string& package_name,
+      RepositionType reposition_type,
+      InputOverlayWindowStateType state_type);
 };
 
 }  // namespace arc::input_overlay

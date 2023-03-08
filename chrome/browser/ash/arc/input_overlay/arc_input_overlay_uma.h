@@ -5,29 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_ARC_INPUT_OVERLAY_UMA_H_
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_ARC_INPUT_OVERLAY_UMA_H_
 
+#include <string>
+
+#include "chrome/browser/ash/arc/input_overlay/constants.h"
+
 namespace arc::input_overlay {
-
-// These values are about how the reposition is achieved.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class RepositionType {
-  kTouchscreenDragRepostion = 0,
-  kMouseDragRepostion = 1,
-  kKeyboardArrowKeyReposition = 2,
-  kMaxValue = kKeyboardArrowKeyReposition
-};
-
-// This is about the window state types when recording metrics data for user UI
-// reposition. These values are persisted to logs. Entries should not be
-// renumbered and numeric values should never be reused.
-enum class InputOverlayWindowStateType {
-  kInvalid = 0,
-  kNormal = 1,
-  kMaximized = 2,
-  kFullscreen = 3,
-  kSnapped = 4,
-  kMaxValue = kSnapped
-};
 
 void RecordInputOverlayFeatureState(bool enable);
 
@@ -36,16 +18,19 @@ void RecordInputOverlayMappingHintState(bool enable);
 void RecordInputOverlayCustomizedUsage();
 
 // Record when finishing action dragging or releasing arrow key.
-void RecordInputOverlayActionReposition(RepositionType reposition_type,
+void RecordInputOverlayActionReposition(const std::string& package_name,
+                                        RepositionType reposition_type,
                                         InputOverlayWindowStateType state_type);
 
 // Record when finishing menu entry dragging or releasing arrow key.
 void RecordInputOverlayMenuEntryReposition(
+    const std::string& package_name,
     RepositionType reposition_type,
     InputOverlayWindowStateType state_type);
 
 // Record when finishing button group dragging or releasing arrow key.
 void RecordInputOverlayButtonGroupReposition(
+    const std::string& package_name,
     RepositionType reposition_type,
     InputOverlayWindowStateType state_type);
 

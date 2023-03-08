@@ -136,6 +136,7 @@ void MenuEntryView::OnMouseReleased(const ui::MouseEvent& event) {
     SetCursor(ui::mojom::CursorType::kGrab);
     OnDragEnd();
     RecordInputOverlayMenuEntryReposition(
+        display_overlay_controller_->GetPackageName(),
         RepositionType::kMouseDragRepostion,
         display_overlay_controller_->GetWindowStateType());
   }
@@ -162,6 +163,7 @@ void MenuEntryView::OnGestureEvent(ui::GestureEvent* event) {
       OnDragEnd();
       event->SetHandled();
       RecordInputOverlayMenuEntryReposition(
+          display_overlay_controller_->GetPackageName(),
           RepositionType::kTouchscreenDragRepostion,
           display_overlay_controller_->GetWindowStateType());
       break;
@@ -190,6 +192,7 @@ bool MenuEntryView::OnKeyReleased(const ui::KeyEvent& event) {
   on_position_changed_callback_.Run(/*leave_focus=*/false,
                                     absl::make_optional(origin()));
   RecordInputOverlayMenuEntryReposition(
+      display_overlay_controller_->GetPackageName(),
       RepositionType::kKeyboardArrowKeyReposition,
       display_overlay_controller_->GetWindowStateType());
   return true;
