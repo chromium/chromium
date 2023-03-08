@@ -19,6 +19,10 @@ mojom("cros_camera_common") {
     "//ui/gfx/range/mojom",
   ]
   webui_module_path = "/media/capture/video/chromeos/mojom"
+
+  # ChromeOS is still heavily reliant on legacy bindings.
+  generate_legacy_js_bindings = true
+  use_typescript_sources = true
 }
 
 mojom("cros_camera") {

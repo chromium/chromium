@@ -429,3 +429,19 @@ export async function loadImage(
     image.src = src;
   });
 }
+
+/**
+ * Gets the mapping from name to enum value for a number enum.
+ *
+ * Note that in TypeScript, number enum contains both mapping from name to
+ * value and value to name, which most of the time isn't what we want.
+ */
+export function getNumberEnumMapping<T extends number>(
+    enumType: {[key: string]: T|string}): {[key: string]: T} {
+  return Object.fromEntries(Object.entries(enumType).flatMap(([k, v]) => {
+    if (typeof v === 'string') {
+      return [];
+    }
+    return [[k, v]];
+  }));
+}

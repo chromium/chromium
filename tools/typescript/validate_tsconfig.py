@@ -184,7 +184,6 @@ def validateRootDir(root_dir, gen_dir, root_gen_dir, is_ios):
   # here. The existing exceptions should be removed over time.
   exceptions = [
       # ChromeOS cases
-      'ash/webui/camera_app_ui/resources/js',
       'ash/webui/color_internals/mojom',
       'ash/webui/face_ml_app_ui/mojom',
       'ash/webui/sample_system_web_app_ui/mojom',

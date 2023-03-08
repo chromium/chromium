@@ -104,15 +104,9 @@ def get_tsc_paths(board):
     root_dir = get_chromium_root()
     target_gen_dir = os.path.join(root_dir, f'out_{board}/Release/gen')
 
-    cca_root = os.getcwd()
-    src_relative_dir = os.path.relpath(cca_root, root_dir)
-
-    webui_dir = os.path.join(target_gen_dir, src_relative_dir,
-                             'js/mojom-webui/*')
     resources_dir = os.path.join(target_gen_dir, 'ui/webui/resources/tsc/*')
 
     return {
-        '/mojom-webui/*': [os.path.relpath(webui_dir)],
         '//resources/*': [os.path.relpath(resources_dir)],
         'chrome://resources/*': [os.path.relpath(resources_dir)],
     }
@@ -126,11 +120,17 @@ def generate_tsconfig(board):
     root_dir = get_chromium_root()
     common_definitions = os.path.join(root_dir, 'tools/typescript/definitions')
 
+    target_gen_dir = os.path.join(root_dir, f'out_{board}/Release/gen')
+    src_relative_dir = os.path.relpath(cca_root, root_dir)
+    webui_dir = os.path.join(target_gen_dir, src_relative_dir)
+
     with open(os.path.join(cca_root, 'tsconfig_base.json')) as f:
         tsconfig = json.load(f)
 
     tsconfig['files'] = glob.glob('js/**/*.ts', recursive=True)
     tsconfig['files'].append(os.path.join(common_definitions, 'pending.d.ts'))
+    tsconfig['compilerOptions']['rootDir'] = root_dir
+    tsconfig['compilerOptions']['rootDirs'] = [cca_root, webui_dir]
     tsconfig['compilerOptions']['noEmit'] = True
     tsconfig['compilerOptions']['paths'] = get_tsc_paths(board)
     # TODO(b:269971867): Remove this once we have type definition for ffmpeg.js
@@ -150,14 +150,15 @@ def deploy(args):
     cca_root = os.getcwd()
 
     os.makedirs(DEPLOY_OUTPUT_TEMP_DIR, exist_ok=True)
-    js_out_dir = os.path.join(DEPLOY_OUTPUT_TEMP_DIR, 'js')
+    src_relative_dir = os.path.relpath(cca_root, root_dir)
+    js_out_dir = os.path.join(DEPLOY_OUTPUT_TEMP_DIR, src_relative_dir, 'js')
 
     generate_tsconfig(args.board)
 
     run_node([
         'typescript/bin/tsc',
         '--outDir',
-        js_out_dir,
+        DEPLOY_OUTPUT_TEMP_DIR,
         '--noEmit',
         'false',
         # Makes compilation faster
