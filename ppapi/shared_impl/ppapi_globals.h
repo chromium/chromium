@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/threading/thread_local.h"  // For testing purposes only.
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/c/pp_module.h"
 #include "ppapi/c/ppb_console.h"
