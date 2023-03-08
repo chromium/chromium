@@ -603,10 +603,8 @@ TEST_F(RestoreDataTest, Convert) {
   AddAppLaunchInfos();
   ModifyWindowInfos();
   ModifyThemeColors();
-  std::unique_ptr<base::Value> value =
-      std::make_unique<base::Value>(restore_data().ConvertToValue());
   std::unique_ptr<RestoreData> restore_data =
-      std::make_unique<RestoreData>(std::move(value));
+      std::make_unique<RestoreData>(this->restore_data().ConvertToValue());
   // Full restore is not responsible for serializing or deseraizling
   // TabGroupInfos.
   VerifyRestoreData(*restore_data, /*test_tab_group_infos=*/false);
@@ -616,10 +614,8 @@ TEST_F(RestoreDataTest, ConvertNullData) {
   restore_data().AddAppLaunchInfo(nullptr);
   EXPECT_TRUE(app_id_to_launch_list().empty());
 
-  std::unique_ptr<base::Value> value =
-      std::make_unique<base::Value>(restore_data().ConvertToValue());
   std::unique_ptr<RestoreData> restore_data =
-      std::make_unique<RestoreData>(std::move(value));
+      std::make_unique<RestoreData>(this->restore_data().ConvertToValue());
   EXPECT_TRUE(app_id_to_launch_list(*restore_data).empty());
 }
 

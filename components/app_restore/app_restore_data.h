@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/values.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/intent.h"
@@ -17,10 +18,6 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
-
-namespace base {
-class Value;
-}
 
 namespace app_restore {
 
@@ -32,7 +29,7 @@ struct WindowInfo;
 // written to the FullRestoreData file.
 struct COMPONENT_EXPORT(APP_RESTORE) AppRestoreData {
   AppRestoreData();
-  explicit AppRestoreData(base::Value&& value);
+  explicit AppRestoreData(base::Value::Dict&& value);
   explicit AppRestoreData(std::unique_ptr<AppLaunchInfo> app_launch_info);
 
   AppRestoreData(const AppRestoreData&) = delete;

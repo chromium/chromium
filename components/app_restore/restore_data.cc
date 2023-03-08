@@ -29,32 +29,38 @@ int32_t g_desk_template_window_restore_id = -1;
 
 RestoreData::RestoreData() = default;
 
-RestoreData::RestoreData(std::unique_ptr<base::Value> restore_data_value) {
-  if (!restore_data_value || !restore_data_value->is_dict()) {
+RestoreData::RestoreData(base::Value restore_data_value) {
+  base::Value::Dict* dict = restore_data_value.GetIfDict();
+  if (!dict) {
     DVLOG(0) << "Fail to parse full restore data. "
              << "Cannot find the full restore data dict.";
     return;
   }
 
-  for (auto iter : restore_data_value->DictItems()) {
+  for (auto iter : *dict) {
     const std::string& app_id = iter.first;
-    base::Value* value = restore_data_value->FindDictKey(app_id);
-    if (!value || !value->is_dict()) {
+    base::Value::Dict* value = dict->FindDict(app_id);
+    if (!value) {
       DVLOG(0) << "Fail to parse full restore data. "
                << "Cannot find the app restore data dict.";
       continue;
     }
 
-    for (auto data_iter : value->DictItems()) {
+    for (auto data_iter : *value) {
       int window_id = 0;
       if (!base::StringToInt(data_iter.first, &window_id)) {
         DVLOG(0) << "Fail to parse full restore data. "
                  << "Cannot find the valid id.";
         continue;
       }
+      base::Value::Dict* app_restore_data = value->FindDict(data_iter.first);
+      if (!app_restore_data) {
+        DVLOG(0) << "Fail to parse app restore data. "
+                 << "Cannot find the app restore data dict.";
+        continue;
+      }
       app_id_to_launch_list_[app_id][window_id] =
-          std::make_unique<AppRestoreData>(
-              std::move(*value->FindDictKey(data_iter.first)));
+          std::make_unique<AppRestoreData>(std::move(*app_restore_data));
     }
   }
 }

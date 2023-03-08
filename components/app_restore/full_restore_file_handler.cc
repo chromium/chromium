@@ -51,20 +51,19 @@ FullRestoreFileHandler::ReadFromFile() {
 
   // This JSON file is written by Chrome, so it is safe to deserialise it
   // in-process.
-  JSONStringValueDeserializer deserializer(full_restore_data);
-  int error_code;
-  std::string error_message;
-  auto full_restore_value =
-      deserializer.Deserialize(&error_code, &error_message);
-
-  if (!full_restore_value) {
-    DVLOG(0) << "Fail to deserialize json value from string with error code: "
-             << error_code << " and error message: " << error_message;
+  base::JSONReader::Result full_restore_value =
+      base::JSONReader::ReadAndReturnValueWithError(full_restore_data);
+  if (!full_restore_value.has_value()) {
+    DVLOG(0)
+        << "Fail to deserialize json value from string with error message: "
+        << full_restore_value.error().message << ", in line "
+        << full_restore_value.error().line << ", column "
+        << full_restore_value.error().column;
     return nullptr;
   }
 
   return std::make_unique<app_restore::RestoreData>(
-      std::move(full_restore_value));
+      std::move(*full_restore_value));
 }
 
 FullRestoreFileHandler::~FullRestoreFileHandler() = default;

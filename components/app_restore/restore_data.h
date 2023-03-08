@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/component_export.h"
+#include "base/values.h"
 #include "components/app_restore/app_restore_data.h"
 
 namespace base {
@@ -32,7 +33,7 @@ class COMPONENT_EXPORT(APP_RESTORE) RestoreData {
   using AppIdToLaunchList = std::map<std::string, LaunchList>;
 
   RestoreData();
-  explicit RestoreData(std::unique_ptr<base::Value> restore_data_value);
+  explicit RestoreData(base::Value restore_data_value);
   RestoreData(const RestoreData&) = delete;
   RestoreData& operator=(const RestoreData&) = delete;
   ~RestoreData();
