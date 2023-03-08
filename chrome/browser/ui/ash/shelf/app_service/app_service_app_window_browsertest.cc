@@ -436,7 +436,8 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowBorealisBrowserTest,
   // Generate a fake app.
   std::string app_id = MakeBorealisApp("vm", "container", "foo");
 
-  views::Widget* widget = CreateExoWindow("org.chromium.borealis.wmclass.foo");
+  views::Widget* widget =
+      CreateExoWindow("org.chromium.guest_os.borealis.wmclass.foo");
 
   EXPECT_EQ(1u,
             app_service_proxy_->InstanceRegistry().GetInstances(app_id).size());
@@ -449,8 +450,10 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowBorealisBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AppServiceAppWindowBorealisBrowserTest,
                        BorealisUnknownApp) {
-  views::Widget* widget = CreateExoWindow("org.chromium.borealis.wmclass.bar");
-  std::string app_id = "borealis_anon:org.chromium.borealis.wmclass.bar";
+  views::Widget* widget =
+      CreateExoWindow("org.chromium.guest_os.borealis.wmclass.bar");
+  std::string app_id =
+      "borealis_anon:org.chromium.guest_os.borealis.wmclass.bar";
 
   EXPECT_EQ(1u,
             app_service_proxy_->InstanceRegistry().GetInstances(app_id).size());
@@ -484,7 +487,8 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowBorealisBrowserTest,
   EXPECT_CALL(observer, OnSessionStarted());
   EXPECT_CALL(observer, OnAppStarted(app_id));
   EXPECT_CALL(observer, OnWindowStarted(app_id, testing::_));
-  views::Widget* widget = CreateExoWindow("org.chromium.borealis.wmclass.foo");
+  views::Widget* widget =
+      CreateExoWindow("org.chromium.guest_os.borealis.wmclass.foo");
 
   EXPECT_CALL(observer, OnWindowFinished(app_id, widget->GetNativeWindow()));
   EXPECT_CALL(observer, OnAppFinished(app_id, widget->GetNativeWindow()));

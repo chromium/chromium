@@ -101,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(BorealisSplashScreenViewBrowserTest,
   EXPECT_TRUE(VerifyUi());
   EXPECT_NE(nullptr, BorealisSplashScreenView::GetActiveViewForTesting());
   MakeAndTrackWindow(
-      "org.chromium.borealis.foobarbaz",
+      "org.chromium.guest_os.borealis.foobarbaz",
       &borealis::BorealisService::GetForProfile(browser()->profile())
            ->WindowManager());
   base::RunLoop().RunUntilIdle();

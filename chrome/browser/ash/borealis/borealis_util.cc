@@ -60,9 +60,6 @@ static constexpr char kJSONSpecsKey[] = "specs";
 static constexpr char kJSONSteamKey[] = "steam_runtime_version";
 
 // App IDs prefixed with this are identified with a numeric "Borealis ID".
-// TODO(b/244651040): Remove legacy prefix when sommelier changes are complete.
-const base::StringPiece kBorealisWindowWithIdPrefixLegacy(
-    "org.chromium.borealis.xprop.");
 const base::StringPiece kBorealisWindowWithIdPrefix(
     "org.chromium.guest_os.borealis.xprop.");
 
@@ -150,15 +147,9 @@ absl::optional<int> GetBorealisAppId(std::string exec) {
 
 absl::optional<int> GetBorealisAppId(const aura::Window* window) {
   const std::string* id = exo::GetShellApplicationId(window);
-  if (id) {
+  if (id && base::StartsWith(*id, kBorealisWindowWithIdPrefix)) {
     int borealis_id;
-    if (base::StartsWith(*id, kBorealisWindowWithIdPrefix) &&
-        base::StringToInt(id->substr(kBorealisWindowWithIdPrefix.size()),
-                          &borealis_id)) {
-      return borealis_id;
-    }
-    if (base::StartsWith(*id, kBorealisWindowWithIdPrefixLegacy) &&
-        base::StringToInt(id->substr(kBorealisWindowWithIdPrefixLegacy.size()),
+    if (base::StringToInt(id->substr(kBorealisWindowWithIdPrefix.size()),
                           &borealis_id)) {
       return borealis_id;
     }
