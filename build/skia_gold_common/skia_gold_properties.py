@@ -31,6 +31,7 @@ class SkiaGoldProperties():
     self._job_id = None
     self._local_pixel_tests = None
     self._no_luci_auth = None
+    self._disable_auth = None
     self._service_account = None
     self._bypass_skia_gold_functionality = None
     self._code_review_system = None
@@ -73,6 +74,10 @@ class SkiaGoldProperties():
   @property
   def no_luci_auth(self) -> bool:
     return self._no_luci_auth
+
+  @property
+  def disable_auth(self) -> bool:
+    return self._disable_auth
 
   @property
   def service_account(self) -> str:
@@ -158,6 +163,11 @@ class SkiaGoldProperties():
 
     if hasattr(args, 'no_luci_auth'):
       self._no_luci_auth = args.no_luci_auth
+
+    if hasattr(args, 'disable_auth'):
+      self._disable_auth = args.disable_auth
+      if self._disable_auth:
+        self._no_luci_auth = True
 
     if hasattr(args, 'service_account'):
       self._service_account = args.service_account
