@@ -193,6 +193,7 @@ class PrivacyHubController;
 class PrivacyScreenController;
 class ProjectingObserver;
 class ProjectorControllerImpl;
+class RasterScaleController;
 class RgbKeyboardManager;
 class RefreshRateThrottleController;
 class ResizeShadowController;
@@ -614,6 +615,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   MultiCaptureServiceClient* multi_capture_service_client() {
     return multi_capture_service_client_.get();
   }
+  RasterScaleController* raster_scale_controller() {
+    return raster_scale_controller_.get();
+  }
   ResizeShadowController* resize_shadow_controller() {
     return resize_shadow_controller_.get();
   }
@@ -949,6 +953,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<PersistentDesksBarController>
       persistent_desks_bar_controller_;
   std::unique_ptr<RgbKeyboardManager> rgb_keyboard_manager_;
+  std::unique_ptr<RasterScaleController> raster_scale_controller_;
   std::unique_ptr<ResizeShadowController> resize_shadow_controller_;
   std::unique_ptr<SessionControllerImpl> session_controller_;
   std::unique_ptr<FeatureDiscoveryDurationReporterImpl>
