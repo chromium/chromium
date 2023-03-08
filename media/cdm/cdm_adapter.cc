@@ -270,7 +270,8 @@ void CdmAdapter::Initialize(std::unique_ptr<media::SimpleCdmPromise> promise) {
     return;
   }
 
-  init_promise_id_ = cdm_promise_adapter_.SavePromise(std::move(promise));
+  init_promise_id_ =
+      cdm_promise_adapter_.SavePromise(std::move(promise), __func__);
 
   if (!cdm_->Initialize(cdm_config_.allow_distinctive_identifier,
                         cdm_config_.allow_persistent_state,
@@ -302,7 +303,8 @@ void CdmAdapter::SetServerCertificate(
     return;
   }
 
-  uint32_t promise_id = cdm_promise_adapter_.SavePromise(std::move(promise));
+  uint32_t promise_id =
+      cdm_promise_adapter_.SavePromise(std::move(promise), __func__);
   cdm_->SetServerCertificate(promise_id, certificate.data(),
                              certificate.size());
 }
@@ -313,7 +315,8 @@ void CdmAdapter::GetStatusForPolicy(
   DCHECK(task_runner_->BelongsToCurrentThread());
   TRACE_EVENT0("media", "CdmAdapter::GetStatusForPolicy");
 
-  uint32_t promise_id = cdm_promise_adapter_.SavePromise(std::move(promise));
+  uint32_t promise_id =
+      cdm_promise_adapter_.SavePromise(std::move(promise), __func__);
   DVLOG(2) << __func__ << ": promise_id = " << promise_id;
   if (!cdm_->GetStatusForPolicy(promise_id,
                                 ToCdmHdcpVersion(min_hdcp_version))) {
@@ -332,7 +335,8 @@ void CdmAdapter::CreateSessionAndGenerateRequest(
   DCHECK(task_runner_->BelongsToCurrentThread());
   TRACE_EVENT0("media", "CdmAdapter::CreateSessionAndGenerateRequest");
 
-  uint32_t promise_id = cdm_promise_adapter_.SavePromise(std::move(promise));
+  uint32_t promise_id =
+      cdm_promise_adapter_.SavePromise(std::move(promise), __func__);
   DVLOG(2) << __func__ << ": promise_id = " << promise_id;
 
   cdm_->CreateSessionAndGenerateRequest(
@@ -346,7 +350,8 @@ void CdmAdapter::LoadSession(CdmSessionType session_type,
   DCHECK(task_runner_->BelongsToCurrentThread());
   TRACE_EVENT1("media", "CdmAdapter::LoadSession", "session_id", session_id);
 
-  uint32_t promise_id = cdm_promise_adapter_.SavePromise(std::move(promise));
+  uint32_t promise_id =
+      cdm_promise_adapter_.SavePromise(std::move(promise), __func__);
   DVLOG(2) << __func__ << ": session_id = " << session_id
            << ", promise_id = " << promise_id;
 
@@ -362,7 +367,8 @@ void CdmAdapter::UpdateSession(const std::string& session_id,
   DCHECK(!response.empty());
   TRACE_EVENT1("media", "CdmAdapter::UpdateSession", "session_id", session_id);
 
-  uint32_t promise_id = cdm_promise_adapter_.SavePromise(std::move(promise));
+  uint32_t promise_id =
+      cdm_promise_adapter_.SavePromise(std::move(promise), __func__);
   DVLOG(2) << __func__ << ": session_id = " << session_id
            << ", promise_id = " << promise_id;
 
@@ -376,7 +382,8 @@ void CdmAdapter::CloseSession(const std::string& session_id,
   DCHECK(!session_id.empty());
   TRACE_EVENT1("media", "CdmAdapter::CloseSession", "session_id", session_id);
 
-  uint32_t promise_id = cdm_promise_adapter_.SavePromise(std::move(promise));
+  uint32_t promise_id =
+      cdm_promise_adapter_.SavePromise(std::move(promise), __func__);
   DVLOG(2) << __func__ << ": session_id = " << session_id
            << ", promise_id = " << promise_id;
 
@@ -389,7 +396,8 @@ void CdmAdapter::RemoveSession(const std::string& session_id,
   DCHECK(!session_id.empty());
   TRACE_EVENT1("media", "CdmAdapter::RemoveSession", "session_id", session_id);
 
-  uint32_t promise_id = cdm_promise_adapter_.SavePromise(std::move(promise));
+  uint32_t promise_id =
+      cdm_promise_adapter_.SavePromise(std::move(promise), __func__);
   DVLOG(2) << __func__ << ": session_id = " << session_id
            << ", promise_id = " << promise_id;
 

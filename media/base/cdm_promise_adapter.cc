@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/trace_event/trace_event.h"
+
 namespace media {
 
 namespace {
@@ -21,8 +23,7 @@ CdmPromise::SystemCode ToSystemCode(CdmPromiseAdapter::ClearReason reason) {
 
 }  // namespace
 
-CdmPromiseAdapter::CdmPromiseAdapter()
-    : next_promise_id_(kInvalidPromiseId + 1) {}
+CdmPromiseAdapter::CdmPromiseAdapter() = default;
 
 CdmPromiseAdapter::~CdmPromiseAdapter() {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -30,7 +31,8 @@ CdmPromiseAdapter::~CdmPromiseAdapter() {
   Clear(ClearReason::kDestruction);
 }
 
-uint32_t CdmPromiseAdapter::SavePromise(std::unique_ptr<CdmPromise> promise) {
+uint32_t CdmPromiseAdapter::SavePromise(std::unique_ptr<CdmPromise> promise,
+                                        const std::string& operation) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK_NE(kInvalidPromiseId, next_promise_id_);
 
@@ -39,6 +41,11 @@ uint32_t CdmPromiseAdapter::SavePromise(std::unique_ptr<CdmPromise> promise) {
     next_promise_id_++;
 
   promises_[promise_id] = std::move(promise);
+
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("media", "CdmPromise",
+                                    TRACE_ID_LOCAL(promise_id), "operation",
+                                    operation);
+
   return promise_id;
 }
 
@@ -50,6 +57,9 @@ void CdmPromiseAdapter::ResolvePromise(uint32_t promise_id,
     LOG(ERROR) << "Promise not found for " << promise_id;
     return;
   }
+
+  TRACE_EVENT_NESTABLE_ASYNC_END1(
+      "media", "CdmPromise", TRACE_ID_LOCAL(promise_id), "status", "resolved");
 
   // Sanity check the type before we do static_cast.
   CdmPromise::ResolveParameterType type = promise->GetResolveParameterType();
@@ -72,15 +82,21 @@ void CdmPromiseAdapter::RejectPromise(uint32_t promise_id,
     return;
   }
 
+  TRACE_EVENT_NESTABLE_ASYNC_END2("media", "CdmPromise",
+                                  TRACE_ID_LOCAL(promise_id), "status",
+                                  "rejected", "system_code", system_code);
+
   promise->reject(exception_code, system_code, error_message);
 }
 
 void CdmPromiseAdapter::Clear(ClearReason reason) {
   // Reject all outstanding promises.
   DCHECK(thread_checker_.CalledOnValidThread());
-  for (auto& promise : promises_) {
-    promise.second->reject(CdmPromise::Exception::INVALID_STATE_ERROR,
-                           ToSystemCode(reason), "Operation aborted.");
+  for (auto& [promise_id, promise] : promises_) {
+    TRACE_EVENT_NESTABLE_ASYNC_END1(
+        "media", "CdmPromise", TRACE_ID_LOCAL(promise_id), "status", "cleared");
+    promise->reject(CdmPromise::Exception::INVALID_STATE_ERROR,
+                    ToSystemCode(reason), "Operation aborted.");
   }
   promises_.clear();
 }
