@@ -10,13 +10,16 @@
 #include "ash/accelerators/accelerator_alias_converter.h"
 #include "ash/accelerators/ash_accelerator_configuration.h"
 #include "ash/public/cpp/accelerator_configuration.h"
+#include "ash/public/mojom/accelerator_info.mojom-forward.h"
 #include "ash/webui/shortcut_customization_ui/backend/accelerator_layout_table.h"
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/accelerator_map.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/chromeos/events/keyboard_capability.h"
@@ -40,12 +43,23 @@ class AcceleratorConfigurationProvider
       mojom::AcceleratorSource,
       std::map<AcceleratorActionId, std::vector<ui::Accelerator>>>;
 
+  // This Observer class is used to observe changes to the accelerator config.
+  class AcceleratorsUpdatedObserver : public base::CheckedObserver {
+   public:
+    ~AcceleratorsUpdatedObserver() override = default;
+    virtual void OnAcceleratorsUpdated(AcceleratorConfigurationMap config) = 0;
+  };
+
   AcceleratorConfigurationProvider();
   AcceleratorConfigurationProvider(const AcceleratorConfigurationProvider&) =
       delete;
   AcceleratorConfigurationProvider& operator=(
       const AcceleratorConfigurationProvider&) = delete;
   ~AcceleratorConfigurationProvider() override;
+
+  // Observer for non-mojo classes
+  void AddObserver(AcceleratorsUpdatedObserver* observer);
+  void RemoveObserver(AcceleratorsUpdatedObserver* observer);
 
   // shortcut_customization::mojom::AcceleratorConfigurationProvider:
   void IsMutable(ash::mojom::AcceleratorSource source,
@@ -72,6 +86,10 @@ class AcceleratorConfigurationProvider
   // ui::KeyboardCapability::Observer:
   void OnTopRowKeysAreFKeysChanged() override;
 
+  AcceleratorConfigurationMap GetAcceleratorConfig() const;
+  std::vector<mojom::AcceleratorLayoutInfoPtr> GetAcceleratorLayoutInfos()
+      const;
+
   void BindInterface(
       mojo::PendingReceiver<
           shortcut_customization::mojom::AcceleratorConfigurationProvider>
@@ -84,10 +102,10 @@ class AcceleratorConfigurationProvider
   }
 
   mojom::AcceleratorInfoPtr CreateTextAcceleratorInfo(
-      const NonConfigurableAcceleratorDetails& details);
+      const NonConfigurableAcceleratorDetails& details) const;
 
   mojom::TextAcceleratorPropertiesPtr CreateTextAcceleratorProperties(
-      const NonConfigurableAcceleratorDetails& details);
+      const NonConfigurableAcceleratorDetails& details) const;
 
  private:
   friend class AcceleratorConfigurationProviderTest;
@@ -98,7 +116,7 @@ class AcceleratorConfigurationProvider
 
   void UpdateKeyboards();
 
-  AcceleratorConfigurationMap CreateConfigurationMap();
+  AcceleratorConfigurationMap CreateConfigurationMap() const;
 
   void NotifyAcceleratorsUpdated();
 
@@ -134,6 +152,8 @@ class AcceleratorConfigurationProvider
   NonConfigAcceleratorActionMap non_configurable_accelerator_to_id_;
 
   mojo::Remote<shortcut_customization::mojom::AcceleratorsUpdatedObserver>
+      accelerators_updated_mojo_observer_;
+  base::ObserverList<AcceleratorsUpdatedObserver>
       accelerators_updated_observers_;
 
   base::WeakPtrFactory<AcceleratorConfigurationProvider> weak_ptr_factory_{

@@ -220,7 +220,11 @@ AcceleratorConfigurationProvider::~AcceleratorConfigurationProvider() {
 
   ui::DeviceDataManager::GetInstance()->RemoveObserver(this);
   input_method::InputMethodManager::Get()->RemoveObserver(this);
-  Shell::Get()->keyboard_capability()->RemoveObserver(this);
+
+  // In unit tests, the Shell instance may already be deleted at this point.
+  if (Shell::HasInstance()) {
+    Shell::Get()->keyboard_capability()->RemoveObserver(this);
+  }
 }
 
 void AcceleratorConfigurationProvider::IsMutable(
@@ -243,10 +247,20 @@ void AcceleratorConfigurationProvider::GetAccelerators(
 }
 
 void AcceleratorConfigurationProvider::AddObserver(
+    AcceleratorConfigurationProvider::AcceleratorsUpdatedObserver* observer) {
+  accelerators_updated_observers_.AddObserver(observer);
+}
+
+void AcceleratorConfigurationProvider::RemoveObserver(
+    AcceleratorConfigurationProvider::AcceleratorsUpdatedObserver* observer) {
+  accelerators_updated_observers_.RemoveObserver(observer);
+}
+
+void AcceleratorConfigurationProvider::AddObserver(
     mojo::PendingRemote<
         shortcut_customization::mojom::AcceleratorsUpdatedObserver> observer) {
-  accelerators_updated_observers_.reset();
-  accelerators_updated_observers_.Bind(std::move(observer));
+  accelerators_updated_mojo_observer_.reset();
+  accelerators_updated_mojo_observer_.Bind(std::move(observer));
 }
 
 void AcceleratorConfigurationProvider::OnInputDeviceConfigurationChanged(
@@ -267,6 +281,16 @@ void AcceleratorConfigurationProvider::InputMethodChanged(
 
 void AcceleratorConfigurationProvider::OnTopRowKeysAreFKeysChanged() {
   NotifyAcceleratorsUpdated();
+}
+
+AcceleratorConfigurationProvider::AcceleratorConfigurationMap
+AcceleratorConfigurationProvider::GetAcceleratorConfig() const {
+  return CreateConfigurationMap();
+}
+
+std::vector<mojom::AcceleratorLayoutInfoPtr>
+AcceleratorConfigurationProvider::GetAcceleratorLayoutInfos() const {
+  return mojo::Clone(layout_infos_);
 }
 
 void AcceleratorConfigurationProvider::GetAcceleratorLayoutInfos(
@@ -349,9 +373,13 @@ void AcceleratorConfigurationProvider::OnAcceleratorsUpdated(
 }
 
 void AcceleratorConfigurationProvider::NotifyAcceleratorsUpdated() {
-  if (accelerators_updated_observers_.is_bound()) {
-    accelerators_updated_observers_->OnAcceleratorsUpdated(
-        CreateConfigurationMap());
+  AcceleratorConfigurationMap config_map = CreateConfigurationMap();
+  if (accelerators_updated_mojo_observer_.is_bound()) {
+    accelerators_updated_mojo_observer_->OnAcceleratorsUpdated(
+        mojo::Clone(config_map));
+  }
+  for (auto& observer : accelerators_updated_observers_) {
+    observer.OnAcceleratorsUpdated(mojo::Clone(config_map));
   }
 }
 
@@ -373,7 +401,7 @@ AcceleratorConfigurationProvider::CreateAcceleratorInfos(
 
 mojom::TextAcceleratorPropertiesPtr
 AcceleratorConfigurationProvider::CreateTextAcceleratorProperties(
-    const NonConfigurableAcceleratorDetails& details) {
+    const NonConfigurableAcceleratorDetails& details) const {
   DCHECK(details.message_id.has_value());
   // Ambient accelerators that only contain plain text e.g., Drag the
   // link to the tab's address bar.
@@ -407,7 +435,7 @@ AcceleratorConfigurationProvider::CreateTextAcceleratorProperties(
 
 mojom::AcceleratorInfoPtr
 AcceleratorConfigurationProvider::CreateTextAcceleratorInfo(
-    const NonConfigurableAcceleratorDetails& details) {
+    const NonConfigurableAcceleratorDetails& details) const {
   mojom::AcceleratorInfoPtr info_mojom = mojom::AcceleratorInfo::New();
   info_mojom->locked = true;
   info_mojom->type = mojom::AcceleratorType::kDefault;
@@ -419,7 +447,7 @@ AcceleratorConfigurationProvider::CreateTextAcceleratorInfo(
 }
 
 AcceleratorConfigurationProvider::AcceleratorConfigurationMap
-AcceleratorConfigurationProvider::CreateConfigurationMap() {
+AcceleratorConfigurationProvider::CreateConfigurationMap() const {
   AcceleratorConfigurationMap accelerator_config;
   // For each source, create a mapping between <ActionId, AcceleratorInfoPtr>.
   for (const auto& [source, id_to_accelerators] : accelerators_mapping_) {

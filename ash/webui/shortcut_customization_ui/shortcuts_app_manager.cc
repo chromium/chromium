@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/webui/shortcut_customization_ui/backend/accelerator_configuration_provider.h"
 #include "ash/webui/shortcut_customization_ui/backend/search/search_concept_registry.h"
 #include "ash/webui/shortcut_customization_ui/backend/search/search_handler.h"
 #include "base/feature_list.h"
@@ -25,15 +26,48 @@ ShortcutsAppManager::ShortcutsAppManager(
         std::make_unique<SearchConceptRegistry>(*local_search_service_proxy);
     search_handler_ = std::make_unique<SearchHandler>();
   }
+  accelerator_configuration_provider_ =
+      std::make_unique<AcceleratorConfigurationProvider>();
+
+  accelerator_configuration_provider_->AddObserver(this);
+
+  // This sets the initial search concepts after the
+  // AcceleratorConfigurationProvider has finished construction. Future updates
+  // to the search registry are handled by the OnAcceleratorsUpdated observer.
+  SetSearchConcepts(
+      accelerator_configuration_provider_->GetAcceleratorConfig(),
+      accelerator_configuration_provider_->GetAcceleratorLayoutInfos());
 }
 
 ShortcutsAppManager::~ShortcutsAppManager() = default;
 
+// This KeyedService::Shutdown method is part of a two-phase shutdown process.
+// In the first phase, this Shutdown method is called, and is where we drop
+// references. Once all KeyedServices are finished with the first phase, the
+// services are deleted in the second phase.
 void ShortcutsAppManager::Shutdown() {
+  accelerator_configuration_provider_->RemoveObserver(this);
   // Note: These must be deleted in the opposite order of their creation to
   // prevent against UAF violations.
+  accelerator_configuration_provider_.reset();
   search_handler_.reset();
   search_concept_registry_.reset();
+}
+
+void ShortcutsAppManager::OnAcceleratorsUpdated(
+    shortcut_ui::AcceleratorConfigurationProvider::AcceleratorConfigurationMap
+        config) {
+  SetSearchConcepts(
+      std::move(config),
+      accelerator_configuration_provider_->GetAcceleratorLayoutInfos());
+}
+
+void ShortcutsAppManager::SetSearchConcepts(
+    shortcut_ui::AcceleratorConfigurationProvider::AcceleratorConfigurationMap
+        config,
+    std::vector<mojom::AcceleratorLayoutInfoPtr> layout_infos) {
+  // TODO(cambickel): Use accelerators to create search concepts and add them to
+  // the search concept registry.
 }
 
 }  // namespace ash::shortcut_ui

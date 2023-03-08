@@ -196,8 +196,6 @@ ShortcutCustomizationAppUI::ShortcutCustomizationAppUI(content::WebUI* web_ui)
   AddLocalizedStrings(source);
 
   AddFeatureFlags(source);
-
-  provider_ = std::make_unique<shortcut_ui::AcceleratorConfigurationProvider>();
 }
 
 ShortcutCustomizationAppUI::~ShortcutCustomizationAppUI() = default;
@@ -206,7 +204,10 @@ void ShortcutCustomizationAppUI::BindInterface(
     mojo::PendingReceiver<
         shortcut_customization::mojom::AcceleratorConfigurationProvider>
         receiver) {
-  provider_->BindInterface(std::move(receiver));
+  shortcut_ui::ShortcutsAppManagerFactory::GetForBrowserContext(
+      web_ui()->GetWebContents()->GetBrowserContext())
+      ->accelerator_configuration_provider()
+      ->BindInterface(std::move(receiver));
 }
 
 void ShortcutCustomizationAppUI::BindInterface(

@@ -97,6 +97,28 @@ class FakeDeviceManager {
   std::vector<ui::InputDevice> fake_keyboard_devices_;
 };
 class FakeAcceleratorsUpdatedObserver
+    : public shortcut_ui::AcceleratorConfigurationProvider::
+          AcceleratorsUpdatedObserver {
+ public:
+  FakeAcceleratorsUpdatedObserver() = default;
+  ~FakeAcceleratorsUpdatedObserver() override = default;
+
+  int num_times_notified() const { return num_times_notified_; }
+
+  void clear_num_times_notified() { num_times_notified_ = 0; }
+
+  // AcceleratorConfigurationProvider::AcceleratorsUpdatedObserver:
+  void OnAcceleratorsUpdated(
+      shortcut_ui::AcceleratorConfigurationProvider::AcceleratorConfigurationMap
+          config) override {
+    ++num_times_notified_;
+  }
+
+ private:
+  int num_times_notified_ = 0;
+};
+
+class FakeAcceleratorsUpdatedMojoObserver
     : public shortcut_customization::mojom::AcceleratorsUpdatedObserver {
  public:
   void OnAcceleratorsUpdated(
@@ -301,6 +323,10 @@ class AcceleratorConfigurationProviderTest : public AshTestBase {
     AshTestBase::SetUp();
 
     provider_ = std::make_unique<AcceleratorConfigurationProvider>();
+    provider_->AddObserver(&observer_);
+    // After the provider is constructed, the observer should not have been
+    // notified yet.
+    EXPECT_EQ(0, observer_.num_times_notified());
     non_configurable_actions_map_ =
         provider_->GetNonConfigurableAcceleratorsForTesting();
     fake_keyboard_manager_ = std::make_unique<FakeDeviceManager>();
@@ -308,6 +334,7 @@ class AcceleratorConfigurationProviderTest : public AshTestBase {
   }
 
   void TearDown() override {
+    provider_->RemoveObserver(&observer_);
     // `provider_` has a dependency on `input_method_manager_`.
     provider_.reset();
     AshTestBase::TearDown();
@@ -320,8 +347,8 @@ class AcceleratorConfigurationProviderTest : public AshTestBase {
     return provider_->connected_keyboards_;
   }
 
-  void SetUpObserver(FakeAcceleratorsUpdatedObserver* observer) {
-    provider_->AddObserver(observer->pending_remote());
+  void SetUpObserver(FakeAcceleratorsUpdatedMojoObserver* mojo_observer) {
+    provider_->AddObserver(mojo_observer->pending_remote());
     base::RunLoop().RunUntilIdle();
   }
 
@@ -369,6 +396,7 @@ class AcceleratorConfigurationProviderTest : public AshTestBase {
   // Test global singleton. Delete is handled by InputMethodManager::Shutdown().
   base::raw_ptr<TestInputMethodManager> input_method_manager_;
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_;
+  FakeAcceleratorsUpdatedObserver observer_;
 };
 
 TEST_F(AcceleratorConfigurationProviderTest, ResetReceiverOnBindInterface) {
@@ -405,22 +433,25 @@ TEST_F(AcceleratorConfigurationProviderTest, AshIsMutable) {
 }
 
 TEST_F(AcceleratorConfigurationProviderTest, InitialAccelInitCalls) {
-  FakeAcceleratorsUpdatedObserver observer;
-  SetUpObserver(&observer);
-  EXPECT_EQ(0, observer.num_times_notified());
+  FakeAcceleratorsUpdatedMojoObserver mojo_observer;
+  SetUpObserver(&mojo_observer);
+  EXPECT_EQ(0, mojo_observer.num_times_notified());
+  EXPECT_EQ(0, observer_.num_times_notified());
 
   Shell::Get()->ash_accelerator_configuration()->Initialize();
   base::RunLoop().RunUntilIdle();
 
   // Observer is initially notified twice, one for ash accelerators and the
   // other for deprecated accelerators.
-  EXPECT_EQ(2, observer.num_times_notified());
+  EXPECT_EQ(2, mojo_observer.num_times_notified());
+  EXPECT_EQ(2, observer_.num_times_notified());
 }
 
 TEST_F(AcceleratorConfigurationProviderTest, AshAcceleratorsUpdated) {
-  FakeAcceleratorsUpdatedObserver observer;
-  SetUpObserver(&observer);
-  EXPECT_EQ(0, observer.num_times_notified());
+  FakeAcceleratorsUpdatedMojoObserver mojo_observer;
+  SetUpObserver(&mojo_observer);
+  EXPECT_EQ(0, mojo_observer.num_times_notified());
+  EXPECT_EQ(0, observer_.num_times_notified());
 
   const AcceleratorData test_data[] = {
       {/*trigger_on_press=*/true, ui::VKEY_TAB, ui::EF_ALT_DOWN,
@@ -433,10 +464,11 @@ TEST_F(AcceleratorConfigurationProviderTest, AshAcceleratorsUpdated) {
   Shell::Get()->ash_accelerator_configuration()->Initialize(test_data);
   base::RunLoop().RunUntilIdle();
   // Notified once after instantiating the accelerators.
-  EXPECT_EQ(1, observer.num_times_notified());
+  EXPECT_EQ(1, mojo_observer.num_times_notified());
+  EXPECT_EQ(1, observer_.num_times_notified());
   // Verify observer received the correct accelerators.
   ExpectMojomAcceleratorsEqual(mojom::AcceleratorSource::kAsh, test_data,
-                               observer.config());
+                               mojo_observer.config());
 
   // Initialize with a new set of accelerators.
   const AcceleratorData updated_test_data[] = {
@@ -450,17 +482,18 @@ TEST_F(AcceleratorConfigurationProviderTest, AshAcceleratorsUpdated) {
   Shell::Get()->ash_accelerator_configuration()->Initialize(updated_test_data);
   base::RunLoop().RunUntilIdle();
   // Observers are notified again after a new set of accelerators are provided.
-  EXPECT_EQ(2, observer.num_times_notified());
+  EXPECT_EQ(2, mojo_observer.num_times_notified());
+  EXPECT_EQ(2, observer_.num_times_notified());
   // Verify observer has been updated with the new set of accelerators.
   ExpectMojomAcceleratorsEqual(mojom::AcceleratorSource::kAsh,
-                               updated_test_data, observer.config());
+                               updated_test_data, mojo_observer.config());
 }
 
 TEST_F(AcceleratorConfigurationProviderTest, ConnectedKeyboardsUpdated) {
-  FakeAcceleratorsUpdatedObserver observer;
-  SetUpObserver(&observer);
+  FakeAcceleratorsUpdatedMojoObserver mojo_observer;
+  SetUpObserver(&mojo_observer);
 
-  EXPECT_EQ(0, observer.num_times_notified());
+  EXPECT_EQ(0, mojo_observer.num_times_notified());
 
   ui::InputDevice expected_test_keyboard(
       1, ui::InputDeviceType::INPUT_DEVICE_INTERNAL, "Keyboard");
@@ -476,7 +509,7 @@ TEST_F(AcceleratorConfigurationProviderTest, ConnectedKeyboardsUpdated) {
 
   base::RunLoop().RunUntilIdle();
   // Adding a new keyboard should trigger the UpdatedAccelerators observer.
-  EXPECT_EQ(1, observer.num_times_notified());
+  EXPECT_EQ(1, mojo_observer.num_times_notified());
 }
 
 TEST_F(AcceleratorConfigurationProviderTest, ValidateAllAcceleratorLayouts) {
@@ -490,6 +523,9 @@ TEST_F(AcceleratorConfigurationProviderTest, ValidateAllAcceleratorLayouts) {
       [&](std::vector<mojom::AcceleratorLayoutInfoPtr> actual_layout_infos) {
         ValidateAcceleratorLayouts(actual_layout_infos);
       }));
+
+  // Validate that the non-callback version of this method returns correct data.
+  ValidateAcceleratorLayouts(provider_->GetAcceleratorLayoutInfos());
 }
 
 TEST_F(AcceleratorConfigurationProviderTest, TopRowKeyAcceleratorRemapped) {
@@ -500,9 +536,9 @@ TEST_F(AcceleratorConfigurationProviderTest, TopRowKeyAcceleratorRemapped) {
   fake_keyboard.sys_path = base::FilePath("path1");
   fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard, kKbdTopRowLayout2Tag);
 
-  FakeAcceleratorsUpdatedObserver observer;
-  SetUpObserver(&observer);
-  EXPECT_EQ(0, observer.num_times_notified());
+  FakeAcceleratorsUpdatedMojoObserver mojo_observer;
+  SetUpObserver(&mojo_observer);
+  EXPECT_EQ(0, mojo_observer.num_times_notified());
 
   // Top row keys are not function keys by default.
   EXPECT_FALSE(Shell::Get()->keyboard_capability()->TopRowKeysAreFKeys());
@@ -533,10 +569,10 @@ TEST_F(AcceleratorConfigurationProviderTest, TopRowKeyAcceleratorRemapped) {
   base::RunLoop().RunUntilIdle();
 
   // Notified once after instantiating the accelerators.
-  EXPECT_EQ(1, observer.num_times_notified());
+  EXPECT_EQ(1, mojo_observer.num_times_notified());
   // Verify observer received the correct accelerators.
   ExpectMojomAcceleratorsEqual(mojom::AcceleratorSource::kAsh, test_data,
-                               observer.config());
+                               mojo_observer.config());
 
   // Enable TopRowKeysAreFKeys.
   Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
@@ -544,7 +580,7 @@ TEST_F(AcceleratorConfigurationProviderTest, TopRowKeyAcceleratorRemapped) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(Shell::Get()->keyboard_capability()->TopRowKeysAreFKeys());
-  EXPECT_EQ(2, observer.num_times_notified());
+  EXPECT_EQ(2, mojo_observer.num_times_notified());
 
   // Initialize the same test_data again, but with
   // TopRowKeysAsFunctionKeysEnabled.
@@ -585,16 +621,16 @@ TEST_F(AcceleratorConfigurationProviderTest, TopRowKeyAcceleratorRemapped) {
        TOGGLE_FULLSCREEN},
   };
 
-  EXPECT_EQ(3, observer.num_times_notified());
+  EXPECT_EQ(3, mojo_observer.num_times_notified());
   // Verify observer received the top-row-remapped accelerators.
   ExpectMojomAcceleratorsEqual(mojom::AcceleratorSource::kAsh,
-                               expected_test_data, observer.config());
+                               expected_test_data, mojo_observer.config());
 }
 
 TEST_F(AcceleratorConfigurationProviderTest, SixPackKeyAcceleratorRemapped) {
-  FakeAcceleratorsUpdatedObserver observer;
-  SetUpObserver(&observer);
-  EXPECT_EQ(0, observer.num_times_notified());
+  FakeAcceleratorsUpdatedMojoObserver mojo_observer;
+  SetUpObserver(&mojo_observer);
+  EXPECT_EQ(0, mojo_observer.num_times_notified());
 
   // kImprovedKeyboardShortcuts is enabled.
   EXPECT_TRUE(::features::IsImprovedKeyboardShortcutsEnabled());
@@ -681,17 +717,17 @@ TEST_F(AcceleratorConfigurationProviderTest, SixPackKeyAcceleratorRemapped) {
   Shell::Get()->ash_accelerator_configuration()->Initialize(test_data);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(1, observer.num_times_notified());
+  EXPECT_EQ(1, mojo_observer.num_times_notified());
   // Verify observer received the correct remapped accelerators.
   ExpectMojomAcceleratorsEqual(mojom::AcceleratorSource::kAsh, expected_data,
-                               observer.config());
+                               mojo_observer.config());
 }
 
 TEST_F(AcceleratorConfigurationProviderTest,
        ReversedSixPackKeyAcceleratorRemapped) {
-  FakeAcceleratorsUpdatedObserver observer;
-  SetUpObserver(&observer);
-  EXPECT_EQ(0, observer.num_times_notified());
+  FakeAcceleratorsUpdatedMojoObserver mojo_observer;
+  SetUpObserver(&mojo_observer);
+  EXPECT_EQ(0, mojo_observer.num_times_notified());
 
   // kImprovedKeyboardShortcuts is enabled.
   EXPECT_TRUE(::features::IsImprovedKeyboardShortcutsEnabled());
@@ -787,26 +823,26 @@ TEST_F(AcceleratorConfigurationProviderTest,
   Shell::Get()->ash_accelerator_configuration()->Initialize(test_data);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(1, observer.num_times_notified());
+  EXPECT_EQ(1, mojo_observer.num_times_notified());
   // Verify observer received the correct remapped accelerators.
   ExpectMojomAcceleratorsEqual(mojom::AcceleratorSource::kAsh, expected_data,
-                               observer.config());
+                               mojo_observer.config());
 }
 
 TEST_F(AcceleratorConfigurationProviderTest, InputMethodChanged) {
-  FakeAcceleratorsUpdatedObserver observer;
-  SetUpObserver(&observer);
-  EXPECT_EQ(0, observer.num_times_notified());
+  FakeAcceleratorsUpdatedMojoObserver mojo_observer;
+  SetUpObserver(&mojo_observer);
+  EXPECT_EQ(0, mojo_observer.num_times_notified());
   Shell::Get()->ash_accelerator_configuration()->Initialize();
   base::RunLoop().RunUntilIdle();
   // Clear extraneous observer calls.
-  observer.clear_num_times_notified();
-  EXPECT_EQ(0, observer.num_times_notified());
+  mojo_observer.clear_num_times_notified();
+  EXPECT_EQ(0, mojo_observer.num_times_notified());
 
   // Change input method, expect observer to be called.
   input_method_manager_->NotifyInputMethodChanged();
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1, observer.num_times_notified());
+  EXPECT_EQ(1, mojo_observer.num_times_notified());
 }
 
 TEST_F(AcceleratorConfigurationProviderTest, TestGetKeyDisplay) {
@@ -822,10 +858,10 @@ TEST_F(AcceleratorConfigurationProviderTest, TestGetKeyDisplay) {
 }
 
 TEST_F(AcceleratorConfigurationProviderTest, NonConfigurableActions) {
-  FakeAcceleratorsUpdatedObserver observer;
-  SetUpObserver(&observer);
+  FakeAcceleratorsUpdatedMojoObserver mojo_observer;
+  SetUpObserver(&mojo_observer);
   base::RunLoop().RunUntilIdle();
-  auto config = observer.config();
+  auto config = mojo_observer.config();
   for (const auto& [id, accel_infos] :
        config[mojom::AcceleratorSource::kAmbient]) {
     for (const auto& info : accel_infos) {
