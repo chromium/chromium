@@ -629,6 +629,9 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
       DCHECK(!use_oop_rasterization_);
       if (ShouldReplaceTargetBuffer())
         resource_ = NewOrRecycledResource();
+      if (!resource() || !GetSkSurface()) {
+        return;
+      }
       resource()->CopyRenderingResultsToGpuMemoryBuffer(
           GetSkSurface()->makeImageSnapshot());
     }
