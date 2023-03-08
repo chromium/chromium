@@ -12,9 +12,9 @@
 namespace blink {
 namespace {
 
-Vector<webrtc::RtpHeaderExtensionCapability> GetHeaderExtensionsNegotiated(
+Vector<webrtc::RtpHeaderExtensionCapability> GetNegotiatedHeaderExtensions(
     const webrtc::RtpTransceiverInterface* webrtc_transceiver) {
-  auto std_extensions = webrtc_transceiver->HeaderExtensionsNegotiated();
+  auto std_extensions = webrtc_transceiver->GetNegotiatedHeaderExtensions();
   Vector<webrtc::RtpHeaderExtensionCapability> extensions;
   std::move(std_extensions.begin(), std_extensions.end(),
             std::back_inserter(extensions));
@@ -134,7 +134,7 @@ void TransceiverStateSurfacer::Initialize(
         webrtc_transceiver->direction(),
         blink::ToAbslOptional(webrtc_transceiver->current_direction()),
         blink::ToAbslOptional(webrtc_transceiver->fired_direction()),
-        GetHeaderExtensionsNegotiated(webrtc_transceiver.get()));
+        GetNegotiatedHeaderExtensions(webrtc_transceiver.get()));
   }
   is_initialized_ = true;
 }

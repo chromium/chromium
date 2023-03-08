@@ -279,7 +279,7 @@ class RTCRtpTransceiverImpl::RTCRtpTransceiverInternal
 
   webrtc::RTCError SetHeaderExtensionsToNegotiate(
       std::vector<webrtc::RtpHeaderExtensionCapability> header_extensions) {
-    return webrtc_transceiver_->SetOfferedRtpHeaderExtensions(
+    return webrtc_transceiver_->SetHeaderExtensionsToNegotiate(
         header_extensions);
   }
 
@@ -290,7 +290,7 @@ class RTCRtpTransceiverImpl::RTCRtpTransceiverInternal
 
   std::vector<webrtc::RtpHeaderExtensionCapability>
   GetHeaderExtensionsToNegotiate() const {
-    return webrtc_transceiver_->HeaderExtensionsToOffer();
+    return webrtc_transceiver_->GetHeaderExtensionsToNegotiate();
   }
 
  private:
