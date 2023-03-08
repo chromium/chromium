@@ -1194,15 +1194,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="AutocompleteActionPredictor.DatabaseRowCount" units="units"
-    expires_after="M85">
-  <owner>tbansal@chromium.org</owner>
-  <summary>
-    The distribution of row counts for the AutocompleteActionPredictorDatabase.
-    Each row contains information regarding the user's Omnibox use history.
-  </summary>
-</histogram>
-
 <histogram name="AutocompleteActionPredictor.MatchIsInDb" units="units"
     expires_after="2022-11-13">
   <owner>tbansal@chromium.org</owner>
