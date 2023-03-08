@@ -175,10 +175,6 @@ The test verifies functionality of querying style information for view-transitio
                                         value : 0px
                                     }
                                     [3] : {
-                                        name : transform-origin
-                                        value : left top
-                                    }
-                                    [4] : {
                                         name : pointer-events
                                         value : auto
                                     }
@@ -313,10 +309,6 @@ The test verifies functionality of querying style information for view-transitio
                                         value : 0px
                                     }
                                     [3] : {
-                                        name : transform-origin
-                                        value : left top
-                                    }
-                                    [4] : {
                                         name : pointer-events
                                         value : auto
                                     }
@@ -1782,10 +1774,6 @@ Dumping styles for : ::view-transition-group with id root{
                                 value : 0px
                             }
                             [3] : {
-                                name : transform-origin
-                                value : left top
-                            }
-                            [4] : {
                                 name : pointer-events
                                 value : auto
                             }
@@ -2494,10 +2482,6 @@ Dumping styles for : ::view-transition-group with id shared{
                                 value : 0px
                             }
                             [3] : {
-                                name : transform-origin
-                                value : left top
-                            }
-                            [4] : {
                                 name : pointer-events
                                 value : auto
                             }

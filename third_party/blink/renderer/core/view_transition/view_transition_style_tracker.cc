@@ -105,11 +105,24 @@ gfx::Transform ComputeViewportTransform(const LayoutObject& object) {
 
   auto transform = GeometryMapper::SourceToDestinationProjection(
       paint_properties.Transform(), root_properties.Transform());
+
   if (!transform.HasPerspective()) {
     transform.Round2dTranslationComponents();
   }
 
   return transform;
+}
+
+gfx::Transform ConvertFromTopLeftToCenter(
+    const gfx::Transform& transform_from_top_left,
+    const LayoutSize& box_size) {
+  gfx::Transform transform_from_center;
+  transform_from_center.Translate(-box_size.Width() / 2,
+                                  -box_size.Height() / 2);
+  transform_from_center.PreConcat(transform_from_top_left);
+  transform_from_center.Translate(box_size.Width() / 2, box_size.Height() / 2);
+
+  return transform_from_center;
 }
 
 }  // namespace
@@ -898,6 +911,9 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
         std::numeric_limits<float>::epsilon()) {
       border_box_size_in_css_space.Scale(effective_zoom / device_pixel_ratio_);
     }
+
+    snapshot_matrix = ConvertFromTopLeftToCenter(snapshot_matrix,
+                                                 border_box_size_in_css_space);
 
     PhysicalRect visual_overflow_rect_in_layout_space;
     if (auto* box = DynamicTo<LayoutBoxModelObject>(layout_object)) {
