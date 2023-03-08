@@ -679,15 +679,12 @@ bool GPUQueue::CopyFromCanvasSourceImage(
 #endif  // BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/1404632, crbug.com/1418291):
-// Using webgpu mailbox texture to upload cpu-backed resource on x86 and arm mac
-// builds uploads all 0. Disable that upload path if the image is not
-// texture-backed.
-#if defined(ARCH_CPU_X86_FAMILY) || defined(ARCH_CPU_ARM_FAMILY)
+// TODO(crbug.com/1418291):
+// Using webgpu mailbox texture to upload cpu-backed resource on mac uploads all 0.
+// Disable that upload path if the image is not texture-backed.
   if (!image->IsTextureBacked()) {
     use_webgpu_mailbox_texture = false;
   }
-#endif  // defined(ARCH_CPU_X86_FAMILY) || defined(ARCH_CPU_ARM_FAMILY)
 #endif  // BUILDFLAG(IS_MAC)
 
   bool noop = copy_size.width == 0 || copy_size.height == 0 ||
