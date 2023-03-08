@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
+import org.chromium.chrome.browser.omnibox.suggestions.ActionChipsDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProcessor;
@@ -49,9 +50,10 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
      * @param suggestionHost A handle to the object using the suggestions.
      */
     public AnswerSuggestionProcessor(Context context, SuggestionHost suggestionHost,
+            ActionChipsDelegate actionChipsDelegate,
             UrlBarEditingTextStateProvider editingTextProvider,
             Supplier<ImageFetcher> imageFetcherSupplier) {
-        super(context, suggestionHost, null);
+        super(context, suggestionHost, actionChipsDelegate, null);
         mSuggestionHost = suggestionHost;
         mPendingAnswerRequestUrls = new HashMap<>();
         mUrlBarEditingTextProvider = editingTextProvider;

@@ -28,7 +28,7 @@ import org.chromium.chrome.browser.history.HistoryActivity;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersCoordinator;
 import org.chromium.chrome.browser.omnibox.action.OmniboxActionType;
 import org.chromium.chrome.browser.omnibox.action.OmniboxPedalType;
-import org.chromium.chrome.browser.omnibox.suggestions.OmniboxPedalDelegate;
+import org.chromium.chrome.browser.omnibox.suggestions.ActionChipsDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
@@ -45,14 +45,14 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /**
- * Handle the clicks on the {@link OmniboxPedal}.
+ * Handle the events related to {@link OmniboxPedal}.
  */
-public class OmniboxPedalDelegateImpl implements OmniboxPedalDelegate {
+public class ActionChipsDelegateImpl implements ActionChipsDelegate {
     private final @NonNull Activity mActivity;
     private @Nullable HistoryClustersCoordinator mHistoryClustersCoordinator;
     private final ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
 
-    public OmniboxPedalDelegateImpl(@NonNull Activity activity,
+    public ActionChipsDelegateImpl(@NonNull Activity activity,
             OneshotSupplier<HistoryClustersCoordinator> historyClustersCoordinatorSupplier,
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
         mActivity = activity;
@@ -210,7 +210,7 @@ public class OmniboxPedalDelegateImpl implements OmniboxPedalDelegate {
                 // Please confirm the icon for the new pedals in
                 // chrome/browser/ui/omnibox/omnibox_pedal_implementations.cc, if the new pedal uses
                 // a special icon.
-                assert false : "New pedals need to confirm the icon and add the list above.";
+                assert false : "New pedals need to confirm the icon and add update list above.";
                 break;
         }
         return new ChipIcon(R.drawable.fre_product_logo, /*tintWithTextColor=*/false);
@@ -224,6 +224,7 @@ public class OmniboxPedalDelegateImpl implements OmniboxPedalDelegate {
             case OmniboxActionType.HISTORY_CLUSTERS:
                 return new ChipIcon(R.drawable.ic_journeys, /*tintWithTextColor=*/true);
             default:
+                assert false : "New actions need to confirm the icon and update the list above.";
                 return new ChipIcon(R.drawable.fre_product_logo, /*tintWithTextColor=*/false);
         }
     }

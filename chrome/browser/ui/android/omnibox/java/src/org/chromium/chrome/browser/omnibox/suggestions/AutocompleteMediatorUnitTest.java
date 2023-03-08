@@ -98,7 +98,7 @@ public class AutocompleteMediatorUnitTest {
     private @Mock TabModel mTabModel;
     private @Mock TabWindowManager mTabManager;
     private @Mock WindowAndroid mMockWindowAndroid;
-    private @Mock OmniboxPedalDelegate mPedalDelegate;
+    private @Mock ActionChipsDelegate mActionChipsDelegate;
     private @Mock LargeIconBridge.Natives mLargeIconBridgeJniMock;
 
     private PropertyModel mListModel;
@@ -126,7 +126,7 @@ public class AutocompleteMediatorUnitTest {
                     mAutocompleteDelegate, mTextStateProvider, mListModel,
                     new Handler(), () -> mModalDialogManager, null, null,
                     mLocationBarDataProvider, tab -> {}, mTabWindowManagerSupplier, url -> false,
-                    new DummyJankTracker(), mPedalDelegate);
+                    new DummyJankTracker(), mActionChipsDelegate);
             mMediator.setAutocompleteProfile(mProfile);
         });
         // clang-format on

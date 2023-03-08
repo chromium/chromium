@@ -38,7 +38,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ChromeActionModeHandler;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.app.omnibox.OmniboxPedalDelegateImpl;
+import org.chromium.chrome.browser.app.omnibox.ActionChipsDelegateImpl;
 import org.chromium.chrome.browser.app.tab_activity_glue.TabReparentingController;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -87,7 +87,7 @@ import org.chromium.chrome.browser.messages.MessageContainerObserver;
 import org.chromium.chrome.browser.messages.MessagesResourceMapperInitializer;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
-import org.chromium.chrome.browser.omnibox.suggestions.OmniboxPedalDelegate;
+import org.chromium.chrome.browser.omnibox.suggestions.ActionChipsDelegate;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceInteractionSource;
 import org.chromium.chrome.browser.paint_preview.DemoPaintPreview;
@@ -292,7 +292,7 @@ public class RootUiCoordinator
     private final Supplier<TabContentManager> mTabContentManagerSupplier;
     private final IntentRequestTracker mIntentRequestTracker;
     private final OneshotSupplier<TabReparentingController> mTabReparentingControllerSupplier;
-    private final OmniboxPedalDelegate mOmniboxPedalDelegate;
+    private final ActionChipsDelegate mActionChipsDelegate;
     private final boolean mInitializeUiWithIncognitoColors;
     private HistoryClustersCoordinator mHistoryClustersCoordinator;
     private final OneshotSupplierImpl<HistoryClustersCoordinator>
@@ -417,7 +417,7 @@ public class RootUiCoordinator
         mMenuOrKeyboardActionController.registerMenuOrKeyboardActionHandler(this);
         mActivityTabProvider = tabProvider;
 
-        mOmniboxPedalDelegate = new OmniboxPedalDelegateImpl(
+        mActionChipsDelegate = new ActionChipsDelegateImpl(
                 mActivity, mHistoryClustersCoordinatorSupplier, mModalDialogManagerSupplier);
 
         // This little bit of arithmetic is necessary because of Java doesn't like accepting
@@ -1158,7 +1158,7 @@ public class RootUiCoordinator
                     mTabContentManagerSupplier.get(), mTabCreatorManagerSupplier.get(),
                     mSnackbarManagerSupplier.get(), mJankTracker,
                     getMerchantTrustSignalsCoordinatorSupplier(), mTabReparentingControllerSupplier,
-                    mOmniboxPedalDelegate, mEphemeralTabCoordinatorSupplier,
+                    mActionChipsDelegate, mEphemeralTabCoordinatorSupplier,
                     mInitializeUiWithIncognitoColors, mBackPressManager);
             if (!mSupportsAppMenuSupplier.getAsBoolean()) {
                 mToolbarManager.getToolbar().disableMenuButton();

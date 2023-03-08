@@ -90,7 +90,7 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
             @NonNull Callback<Tab> bringToForegroundCallback,
             @NonNull Supplier<TabWindowManager> tabWindowManagerSupplier,
             @NonNull BookmarkState bookmarkState, @NonNull JankTracker jankTracker,
-            @NonNull OmniboxPedalDelegate omniboxPedalDelegate,
+            @NonNull ActionChipsDelegate actionChipsDelegate,
             @NonNull OmniboxSuggestionsDropdownScrollListener scrollListener) {
         mParent = parent;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
@@ -107,7 +107,7 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
                 urlBarEditingTextProvider, listModel, new Handler(), modalDialogManagerSupplier,
                 activityTabSupplier, shareDelegateSupplier, locationBarDataProvider,
                 bringToForegroundCallback, tabWindowManagerSupplier, bookmarkState, jankTracker,
-                omniboxPedalDelegate);
+                actionChipsDelegate);
         mMediator.initDefaultProcessors();
 
         mScrollListenerList.addObserver(scrollListener);

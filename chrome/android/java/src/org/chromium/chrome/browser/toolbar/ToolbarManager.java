@@ -85,7 +85,7 @@ import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.OverrideUrlLoadingDelegate;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
-import org.chromium.chrome.browser.omnibox.suggestions.OmniboxPedalDelegate;
+import org.chromium.chrome.browser.omnibox.suggestions.ActionChipsDelegate;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.page_info.ChromePageInfo;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
@@ -452,7 +452,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             @NonNull Supplier<MerchantTrustSignalsCoordinator>
                     merchantTrustSignalsCoordinatorSupplier,
             OneshotSupplier<TabReparentingController> tabReparentingControllerSupplier,
-            @NonNull OmniboxPedalDelegate omniboxPedalDelegate,
+            @NonNull ActionChipsDelegate actionChipsDelegate,
             Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
             boolean initializeWithIncognitoColors, @Nullable BackPressManager backPressManager) {
         TraceEvent.begin("ToolbarManager.ToolbarManager");
@@ -667,7 +667,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                     },
                     jankTracker,
                     merchantTrustSignalsCoordinatorSupplier,
-                    omniboxPedalDelegate, mControlsVisibilityDelegate,
+                    actionChipsDelegate, mControlsVisibilityDelegate,
                     ChromePureJavaExceptionReporter::reportJavaException, backPressManager,
                     toolbarLayout);
             // clang-format on

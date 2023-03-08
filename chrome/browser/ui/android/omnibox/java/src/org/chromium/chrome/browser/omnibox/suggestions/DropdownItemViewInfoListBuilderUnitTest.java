@@ -63,7 +63,7 @@ public class DropdownItemViewInfoListBuilderUnitTest {
     private @Mock SuggestionProcessor mMockSuggestionProcessor;
     private @Mock HeaderProcessor mMockHeaderProcessor;
     private @Mock DividerLineProcessor mMockDividerLineProcessor;
-    private @Mock OmniboxPedalDelegate mMockOmniboxPedalDelegate;
+    private @Mock ActionChipsDelegate mMockActionChipsDelegate;
     DropdownItemViewInfoListBuilder mBuilder;
 
     @Before
@@ -77,7 +77,7 @@ public class DropdownItemViewInfoListBuilderUnitTest {
         when(mMockHeaderProcessor.getViewTypeId()).thenReturn(OmniboxSuggestionUiType.HEADER);
 
         mBuilder = new DropdownItemViewInfoListBuilder(
-                () -> null, (url) -> false, mMockOmniboxPedalDelegate);
+                () -> null, (url) -> false, mMockActionChipsDelegate);
         mBuilder.registerSuggestionProcessor(mMockSuggestionProcessor);
         mBuilder.setHeaderProcessorForTest(mMockHeaderProcessor);
     }

@@ -167,7 +167,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
             @NonNull Callback<Tab> bringTabToFrontCallback,
             @NonNull Supplier<TabWindowManager> tabWindowManagerSupplier,
             @NonNull BookmarkState bookmarkState, @NonNull JankTracker jankTracker,
-            @NonNull OmniboxPedalDelegate omniboxPedalDelegate) {
+            @NonNull ActionChipsDelegate actionChipsDelegate) {
         mContext = context;
         mControllerProvider = controllerProvider;
         mDelegate = delegate;
@@ -181,11 +181,11 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
         mTabWindowManagerSupplier = tabWindowManagerSupplier;
         mSuggestionModels = mListPropertyModel.get(SuggestionListProperties.SUGGESTION_MODELS);
         mDropdownViewInfoListBuilder = new DropdownItemViewInfoListBuilder(
-                activityTabSupplier, bookmarkState, omniboxPedalDelegate);
+                activityTabSupplier, bookmarkState, actionChipsDelegate);
         mDropdownViewInfoListBuilder.setShareDelegateSupplier(shareDelegateSupplier);
         mDropdownViewInfoListManager =
                 new DropdownItemViewInfoListManager(mSuggestionModels, context);
-        mClearFocusCallback = () -> mDelegate.clearOmniboxFocus();
+        mClearFocusCallback = this::finishInteraction;
     }
 
     /**
@@ -538,6 +538,14 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
                 () -> mAutocomplete.deleteMatchElement(matchIndex, elementIndex));
     }
 
+    /**
+     * Terminate the interaction with the Omnibox.
+     */
+    @Override
+    public void finishInteraction() {
+        mDelegate.clearOmniboxFocus();
+    }
+
     public void showDeleteDialog(@NonNull AutocompleteMatch suggestion, @NonNull String titleText,
             Runnable deleteAction) {
         RecordUserAction.record("MobileOmniboxDeleteGesture");
@@ -876,7 +884,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
             //    beforeunload handlers) to start ASAP. This is implemented by the setting the
             //    clear_focus_asynchronously = true parameter.
             if (!mClearFocusAfterNavigation) {
-                mDelegate.clearOmniboxFocus();
+                finishInteraction();
             }
 
             if (suggestion.getType() == OmniboxSuggestionType.CLIPBOARD_IMAGE) {
@@ -889,7 +897,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
             if (mClearFocusAfterNavigationAsynchronously) {
                 mHandler.post(mClearFocusCallback);
             } else if (mClearFocusAfterNavigation) {
-                mDelegate.clearOmniboxFocus();
+                finishInteraction();
             }
         }
     }

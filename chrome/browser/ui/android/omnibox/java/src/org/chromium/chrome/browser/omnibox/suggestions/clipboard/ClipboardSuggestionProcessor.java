@@ -37,7 +37,7 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
      */
     public ClipboardSuggestionProcessor(
             Context context, SuggestionHost suggestionHost, FaviconFetcher faviconFetcher) {
-        super(context, suggestionHost, faviconFetcher);
+        super(context, suggestionHost, null, faviconFetcher);
     }
 
     @Override

@@ -10,9 +10,9 @@ import androidx.annotation.NonNull;
 import org.chromium.components.omnibox.action.OmniboxPedal;
 
 /**
- * An interface for handling interactions for Omnibox Pedals and actions.
+ * An interface for handling interactions for Omnibox Action Chips.
  */
-public interface OmniboxPedalDelegate {
+public interface ActionChipsDelegate {
     /**
      * Describes the ChipView decoration.
      */

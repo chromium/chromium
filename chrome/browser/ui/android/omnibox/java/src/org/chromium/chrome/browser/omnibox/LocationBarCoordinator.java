@@ -34,10 +34,10 @@ import org.chromium.chrome.browser.omnibox.LocationBarMediator.SaveOfflineButton
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator.PageInfoAction;
 import org.chromium.chrome.browser.omnibox.status.StatusView;
+import org.chromium.chrome.browser.omnibox.suggestions.ActionChipsDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate;
-import org.chromium.chrome.browser.omnibox.suggestions.OmniboxPedalDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownScrollListener;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
@@ -164,7 +164,7 @@ public class LocationBarCoordinator
             @NonNull BooleanSupplier isToolbarMicEnabledSupplier, JankTracker jankTracker,
             @Nullable Supplier<MerchantTrustSignalsCoordinator>
                     merchantTrustSignalsCoordinatorSupplier,
-            @NonNull OmniboxPedalDelegate omniboxPedalDelegate,
+            @NonNull ActionChipsDelegate actionChipsDelegate,
             BrowserStateBrowserControlsVisibilityDelegate browserControlsVisibilityDelegate,
             Callback<Throwable> reportExceptionCallback,
             @Nullable BackPressManager backPressManager,
@@ -206,7 +206,7 @@ public class LocationBarCoordinator
                 mOmniboxDropdownEmbedderImpl, mUrlCoordinator, modalDialogManagerSupplier,
                 activityTabSupplier, shareDelegateSupplier, locationBarDataProvider,
                 profileObservableSupplier, bringTabToFrontCallback, tabWindowManagerSupplier,
-                bookmarkState, jankTracker, omniboxPedalDelegate,
+                bookmarkState, jankTracker, actionChipsDelegate,
                 omniboxSuggestionsDropdownScrollListener);
         StatusView statusView = mLocationBarLayout.findViewById(R.id.location_bar_status);
         mStatusCoordinator = new StatusCoordinator(isTabletWindow(), statusView, mUrlCoordinator,

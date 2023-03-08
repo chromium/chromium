@@ -33,7 +33,7 @@ import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.WebContentsFactory;
-import org.chromium.chrome.browser.app.omnibox.OmniboxPedalDelegateImpl;
+import org.chromium.chrome.browser.app.omnibox.ActionChipsDelegateImpl;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.contextmenu.ContextMenuPopulatorFactory;
@@ -230,7 +230,7 @@ public class SearchActivity extends AsyncInitializationActivity
                 TabWindowManagerSingleton::getInstance, /*bookmarkState=*/(url) -> false,
                 VoiceToolbarButtonController::isToolbarMicEnabled, new DummyJankTracker(),
                 /*merchantTrustSignalsCoordinatorSupplier=*/null,
-                new OmniboxPedalDelegateImpl(this, new OneshotSupplierImpl<>(),
+                new ActionChipsDelegateImpl(this, new OneshotSupplierImpl<>(),
                         getModalDialogManagerSupplier()), null,
                 ChromePureJavaExceptionReporter::reportJavaException, backPressManager,
                 /*OmniboxSuggestionsDropdownScrollListener=*/this);

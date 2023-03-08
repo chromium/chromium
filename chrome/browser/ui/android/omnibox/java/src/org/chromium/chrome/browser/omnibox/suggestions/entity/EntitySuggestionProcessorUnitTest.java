@@ -108,7 +108,7 @@ public class EntitySuggestionProcessorUnitTest {
     @Before
     public void setUp() {
         mProcessor = new EntitySuggestionProcessor(
-                ContextUtils.getApplicationContext(), mSuggestionHost, () -> mImageFetcher);
+                ContextUtils.getApplicationContext(), mSuggestionHost, null, () -> mImageFetcher);
     }
 
     ImageFetcher.Params createParams(String url) {

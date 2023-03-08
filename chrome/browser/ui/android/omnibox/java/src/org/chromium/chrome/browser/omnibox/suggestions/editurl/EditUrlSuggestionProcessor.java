@@ -57,7 +57,7 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
     public EditUrlSuggestionProcessor(Context context, SuggestionHost suggestionHost,
             UrlBarDelegate locationBarDelegate, FaviconFetcher faviconFetcher,
             Supplier<Tab> tabSupplier, Supplier<ShareDelegate> shareDelegateSupplier) {
-        super(context, suggestionHost, faviconFetcher);
+        super(context, suggestionHost, null, faviconFetcher);
 
         mContext = context;
         mUrlBarDelegate = locationBarDelegate;
@@ -146,6 +146,7 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
 
     @Override
     public void onUrlFocusChange(boolean hasFocus) {
+        super.onUrlFocusChange(hasFocus);
         if (hasFocus) return;
         mHasClearedOmniboxForFocus = false;
     }
