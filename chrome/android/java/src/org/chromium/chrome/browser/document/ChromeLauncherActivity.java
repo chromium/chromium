@@ -51,7 +51,7 @@ public class ChromeLauncherActivity extends Activity {
         // The effect of this activity's theme is currently limited to CCTs, so we should only apply
         // dynamic colors when we enable them everywhere.
         if (ChromeFeatureList.sBaselineGm3SurfaceColors.isEnabled()) {
-            setTheme(R.style.SurfaceColorsThemeOverlay);
+            getTheme().applyStyle(R.style.SurfaceColorsThemeOverlay, /* force= */ true);
         }
         DynamicColors.applyToActivityIfAvailable(this);
     }
