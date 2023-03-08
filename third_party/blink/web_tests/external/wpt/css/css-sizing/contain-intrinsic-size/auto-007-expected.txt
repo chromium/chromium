@@ -5,13 +5,9 @@ PASS .test 3
 PASS .test 4
 PASS .test 5
 PASS .test 6
-FAIL .test 7 assert_equals: 
-<div class="columns test auto-width" data-expected-client-width="656" data-expected-client-height="0"></div>
-clientWidth expected 656 but got 1328
+PASS .test 7
 PASS .test 8
-FAIL .test 9 assert_equals: 
-<div class="columns test auto-both" data-expected-client-width="656" data-expected-client-height="120"></div>
-clientWidth expected 656 but got 1328
+PASS .test 9
 PASS .test 10
 PASS .test 11
 PASS .test 12

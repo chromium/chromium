@@ -349,6 +349,14 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::Layout() {
 
 MinMaxSizesResult NGColumnLayoutAlgorithm::ComputeMinMaxSizes(
     const MinMaxSizesFloatInput&) {
+  const LayoutUnit override_intrinsic_inline_size =
+      Node().OverrideIntrinsicContentInlineSize();
+  if (override_intrinsic_inline_size != kIndefiniteSize) {
+    const LayoutUnit size =
+        BorderScrollbarPadding().InlineSum() + override_intrinsic_inline_size;
+    return {{size, size}, /* depends_on_block_constraints */ false};
+  }
+
   // First calculate the min/max sizes of columns.
   NGConstraintSpace space = CreateConstraintSpaceForMinMax();
   NGFragmentGeometry fragment_geometry = CalculateInitialFragmentGeometry(
