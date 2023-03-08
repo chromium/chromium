@@ -21,6 +21,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/types/pass_key.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/browser/browser_frame_context_data.h"
 #include "extensions/browser/extension_function_histogram_value.h"
 #include "extensions/browser/quota_service.h"
 #include "extensions/common/constants.h"
@@ -270,6 +271,11 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // Retrieves the results of the function as a base::Value::List for testing
   // purposes.
   const base::Value::List* GetResultListForTest() const;
+
+  std::unique_ptr<extensions::BrowserFrameContextData> GetContextData() const {
+    return std::make_unique<extensions::BrowserFrameContextData>(
+        render_frame_host());
+  }
 
   // Retrieves any error string from the function.
   virtual const std::string& GetError() const;

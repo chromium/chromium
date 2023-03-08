@@ -16,6 +16,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "extensions/browser/api/extensions_api_client.h"
+#include "extensions/browser/browser_frame_context_data.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/guest_view/app_view/app_view_guest.h"
@@ -109,7 +110,9 @@ bool ExtensionsGuestViewManagerDelegate::IsGuestAvailableToContext(
                                                 ->GetProcess()
                                                 ->GetID(),
                                             &owner_site_url),
-      owner_site_url, util::GetBrowserContextId(context_));
+      owner_site_url, util::GetBrowserContextId(context_),
+      std::make_unique<BrowserFrameContextData>(
+          guest->owner_web_contents()->GetPrimaryMainFrame()));
 
   return availability.is_available();
 }

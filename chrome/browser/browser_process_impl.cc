@@ -194,6 +194,7 @@
 #include "chrome/common/extensions/chrome_extensions_client.h"
 #include "chrome/common/initialize_extensions_client.h"
 #include "components/storage_monitor/storage_monitor.h"
+#include "extensions/common/context_data.h"
 #include "extensions/common/extension_l10n_util.h"
 #endif
 
@@ -251,7 +252,8 @@ bool ControlledFrameBrowserAvailabilityCheck(
     const GURL& url,
     extensions::Feature::Platform platform,
     int context_id,
-    bool check_developer_mode) {
+    bool check_developer_mode,
+    std::unique_ptr<extensions::ContextData> context_data) {
   return false;
 }
 

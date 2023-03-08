@@ -55,10 +55,12 @@ NetworkingPrivateDelegate* GetDelegate(
 bool HasPrivateNetworkingAccess(const Extension* extension,
                                 Feature::Context context,
                                 const GURL& source_url,
-                                int context_id) {
+                                int context_id,
+                                std::unique_ptr<ContextData> context_data) {
   return ExtensionAPI::GetSharedInstance()
       ->IsAvailable("networkingPrivate", extension, context, source_url,
-                    CheckAliasStatus::NOT_ALLOWED, context_id)
+                    CheckAliasStatus::NOT_ALLOWED, context_id,
+                    std::move(context_data))
       .is_available();
 }
 
@@ -70,14 +72,18 @@ enum class PropertiesType { GET, SET };
 // Filters out all properties that are not allowed for the extension in the
 // provided context.
 // Returns list of removed keys.
-std::vector<std::string> FilterProperties(base::Value::Dict& properties,
-                                          PropertiesType type,
-                                          const Extension* extension,
-                                          Feature::Context context,
-                                          const GURL& source_url,
-                                          int context_id) {
-  if (HasPrivateNetworkingAccess(extension, context, source_url, context_id))
+std::vector<std::string> FilterProperties(
+    base::Value::Dict& properties,
+    PropertiesType type,
+    const Extension* extension,
+    Feature::Context context,
+    const GURL& source_url,
+    int context_id,
+    std::unique_ptr<ContextData> context_data) {
+  if (HasPrivateNetworkingAccess(extension, context, source_url, context_id,
+                                 std::move(context_data))) {
     return std::vector<std::string>();
+  }
 
   const char* const* filter = nullptr;
   size_t filter_size = 0;
@@ -165,7 +171,8 @@ void NetworkingPrivateGetPropertiesFunction::Result(
     return;
   }
   FilterProperties(result.value(), PropertiesType::GET, extension(),
-                   source_context_type(), source_url(), context_id());
+                   source_context_type(), source_url(), context_id(),
+                   GetContextData());
   Respond(WithArguments(std::move(*result)));
 }
 
@@ -200,7 +207,8 @@ void NetworkingPrivateGetManagedPropertiesFunction::Result(
     return;
   }
   FilterProperties(result.value(), PropertiesType::GET, extension(),
-                   source_context_type(), source_url(), context_id());
+                   source_context_type(), source_url(), context_id(),
+                   GetContextData());
   Respond(OneArgument(base::Value(std::move(*result))));
 }
 
@@ -228,7 +236,8 @@ ExtensionFunction::ResponseAction NetworkingPrivateGetStateFunction::Run() {
 
 void NetworkingPrivateGetStateFunction::Success(base::Value::Dict result) {
   FilterProperties(result, PropertiesType::GET, extension(),
-                   source_context_type(), source_url(), context_id());
+                   source_context_type(), source_url(), context_id(),
+                   GetContextData());
   Respond(OneArgument(base::Value(std::move(result))));
 }
 
@@ -250,9 +259,9 @@ NetworkingPrivateSetPropertiesFunction::Run() {
 
   base::Value::Dict properties = params->properties.ToValue();
 
-  std::vector<std::string> not_allowed_properties =
-      FilterProperties(properties, PropertiesType::SET, extension(),
-                       source_context_type(), source_url(), context_id());
+  std::vector<std::string> not_allowed_properties = FilterProperties(
+      properties, PropertiesType::SET, extension(), source_context_type(),
+      source_url(), context_id(), GetContextData());
   if (!not_allowed_properties.empty())
     return RespondNow(Error(InvalidPropertiesError(not_allowed_properties)));
 
@@ -297,9 +306,9 @@ NetworkingPrivateCreateNetworkFunction::Run() {
 
   base::Value::Dict properties_dict = params->properties.ToValue();
 
-  std::vector<std::string> not_allowed_properties =
-      FilterProperties(properties_dict, PropertiesType::SET, extension(),
-                       source_context_type(), source_url(), context_id());
+  std::vector<std::string> not_allowed_properties = FilterProperties(
+      properties_dict, PropertiesType::SET, extension(), source_context_type(),
+      source_url(), context_id(), GetContextData());
   if (!not_allowed_properties.empty())
     return RespondNow(Error(InvalidPropertiesError(not_allowed_properties)));
 
@@ -413,7 +422,8 @@ NetworkingPrivateGetVisibleNetworksFunction::Run() {
   // networkingPrivate permissions, i.e. apps that might have started using it
   // before its deprecation.
   if (!HasPrivateNetworkingAccess(extension(), source_context_type(),
-                                  source_url(), context_id())) {
+                                  source_url(), context_id(),
+                                  GetContextData())) {
     return RespondNow(Error(kPrivateOnlyError));
   }
 
@@ -456,7 +466,8 @@ NetworkingPrivateGetEnabledNetworkTypesFunction::Run() {
   // networkingPrivate permissions, i.e. apps that might have started using it
   // before its deprecation.
   if (!HasPrivateNetworkingAccess(extension(), source_context_type(),
-                                  source_url(), context_id())) {
+                                  source_url(), context_id(),
+                                  GetContextData())) {
     return RespondNow(Error(kPrivateOnlyError));
   }
 
@@ -667,7 +678,8 @@ NetworkingPrivateStartActivateFunction::
 ExtensionFunction::ResponseAction
 NetworkingPrivateStartActivateFunction::Run() {
   if (!HasPrivateNetworkingAccess(extension(), source_context_type(),
-                                  source_url(), context_id())) {
+                                  source_url(), context_id(),
+                                  GetContextData())) {
     return RespondNow(Error(kPrivateOnlyError));
   }
 
@@ -741,7 +753,8 @@ NetworkingPrivateUnlockCellularSimFunction::
 ExtensionFunction::ResponseAction
 NetworkingPrivateUnlockCellularSimFunction::Run() {
   if (!HasPrivateNetworkingAccess(extension(), source_context_type(),
-                                  source_url(), context_id())) {
+                                  source_url(), context_id(),
+                                  GetContextData())) {
     return RespondNow(Error(kPrivateOnlyError));
   }
 
@@ -780,7 +793,8 @@ NetworkingPrivateSetCellularSimStateFunction::
 ExtensionFunction::ResponseAction
 NetworkingPrivateSetCellularSimStateFunction::Run() {
   if (!HasPrivateNetworkingAccess(extension(), source_context_type(),
-                                  source_url(), context_id())) {
+                                  source_url(), context_id(),
+                                  GetContextData())) {
     return RespondNow(Error(kPrivateOnlyError));
   }
 
@@ -821,7 +835,8 @@ NetworkingPrivateSelectCellularMobileNetworkFunction::
 ExtensionFunction::ResponseAction
 NetworkingPrivateSelectCellularMobileNetworkFunction::Run() {
   if (!HasPrivateNetworkingAccess(extension(), source_context_type(),
-                                  source_url(), context_id())) {
+                                  source_url(), context_id(),
+                                  GetContextData())) {
     return RespondNow(Error(kPrivateOnlyError));
   }
 
@@ -889,7 +904,8 @@ NetworkingPrivateGetCertificateListsFunction::
 ExtensionFunction::ResponseAction
 NetworkingPrivateGetCertificateListsFunction::Run() {
   if (!HasPrivateNetworkingAccess(extension(), source_context_type(),
-                                  source_url(), context_id())) {
+                                  source_url(), context_id(),
+                                  GetContextData())) {
     return RespondNow(Error(kPrivateOnlyError));
   }
 

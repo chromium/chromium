@@ -59,6 +59,7 @@
 #include "extensions/browser/api/web_request/web_request_resource_type.h"
 #include "extensions/browser/api/web_request/web_request_time_tracker.h"
 #include "extensions/browser/api_activity_monitor.h"
+#include "extensions/browser/browser_frame_context_data.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_navigation_ui_data.h"
 #include "extensions/browser/extension_prefs.h"
@@ -745,7 +746,8 @@ bool WebRequestAPI::MaybeProxyURLLoaderFactory(
         if (feature
                 ->IsAvailableToContext(
                     nullptr, Feature::WEBUI_CONTEXT, embedder_url,
-                    util::GetBrowserContextId(browser_context))
+                    util::GetBrowserContextId(browser_context),
+                    std::make_unique<BrowserFrameContextData>(frame))
                 .is_available()) {
           skip_proxy = false;
         }

@@ -42,7 +42,8 @@ bool FeatureDelegatedCheck(const std::string& api_full_name,
                            const GURL& url,
                            Feature::Platform platform,
                            int context_id,
-                           bool check_developer_mode) {
+                           bool check_developer_mode,
+                           std::unique_ptr<ContextData> context_data) {
   return api_full_name == "AllowedFeature";
 }
 
@@ -75,7 +76,8 @@ TEST_F(ChromeExtensionsClientTest, FeatureDelegatedAvailabilityCheckMap) {
             .Run("AllowedFeature", /*extension=*/nullptr,
                  Feature::Context::UNSPECIFIED_CONTEXT, GURL(),
                  Feature::Platform::UNSPECIFIED_PLATFORM, /*context_id*/ 0,
-                 /*check_developer_mode=*/false);
+                 /*check_developer_mode=*/false,
+                 /*context_data=*/nullptr);
     EXPECT_TRUE(allowed_result);
 
     ASSERT_EQ(1u, map.count("DisallowedFeature"));
@@ -84,7 +86,8 @@ TEST_F(ChromeExtensionsClientTest, FeatureDelegatedAvailabilityCheckMap) {
             .Run("DisallowedFeature", /*extension=*/nullptr,
                  Feature::Context::UNSPECIFIED_CONTEXT, GURL(),
                  Feature::Platform::UNSPECIFIED_PLATFORM, /*context_id*/ 0,
-                 /*check_developer_mode=*/false);
+                 /*check_developer_mode=*/false,
+                 /*context_data=*/nullptr);
     EXPECT_FALSE(disallowed_result);
   }
 }

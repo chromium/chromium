@@ -246,9 +246,11 @@ Feature::Availability SimpleFeature::IsAvailableToContextForBind(
     const GURL& url,
     Feature::Platform platform,
     int context_id,
+    const ContextData* context_data,
     const Feature* feature) {
-  return feature->IsAvailableToContextImpl(extension, context, url, platform,
-                                           context_id, true);
+  return feature->IsAvailableToContextImpl(
+      extension, context, url, platform, context_id, true,
+      context_data ? context_data->Clone() : nullptr);
 }
 
 Feature::Availability SimpleFeature::IsAvailableToContextImpl(
@@ -257,7 +259,8 @@ Feature::Availability SimpleFeature::IsAvailableToContextImpl(
     const GURL& url,
     Platform platform,
     int context_id,
-    bool check_developer_mode) const {
+    bool check_developer_mode,
+    std::unique_ptr<ContextData> context_data) const {
   Availability environment_availability = GetEnvironmentAvailability(
       platform, GetCurrentChannel(), GetCurrentFeatureSessionType(), context_id,
       check_developer_mode);
@@ -289,9 +292,16 @@ Feature::Availability SimpleFeature::IsAvailableToContextImpl(
 
   // TODO(kalman): Assert that if the context was a webpage or WebUI context
   // then at some point a "matches" restriction was checked.
+
+  // NOTE: The current function (IsAvailableToContextImpl) owns |context_data|
+  // until it completes running. Each call to the bound thunk that
+  // CheckDependencies() makes will access the object and dereference its
+  // pointer. |context_data| must remain alive while it's bound to the thunk
+  // and the thunk lifespan should not run beyond the lifespan of
+  // IsAvailableToContextImpl().
   return CheckDependencies(base::BindRepeating(
       &IsAvailableToContextForBind, base::RetainedRef(extension), context, url,
-      platform, context_id));
+      platform, context_id, base::Unretained(context_data.get())));
 }
 
 Feature::Availability SimpleFeature::IsAvailableToEnvironment(

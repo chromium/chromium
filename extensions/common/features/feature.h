@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/strings/string_piece.h"
+#include "extensions/common/context_data.h"
 #include "extensions/common/hashed_extension_id.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
@@ -88,7 +89,8 @@ class Feature {
                                    const GURL& url,
                                    Platform platform,
                                    int context_id,
-                                   bool check_developer_mode)>;
+                                   bool check_developer_mode,
+                                   std::unique_ptr<ContextData> context_data)>;
 
   // Mapping Feature::name() to override function.
   using FeatureDelegatedAvailabilityCheckMap =
@@ -158,21 +160,25 @@ class Feature {
 
   // Returns true if the feature is available to be used in the specified
   // extension and context.
-  Availability IsAvailableToContext(const Extension* extension,
-                                    Context context,
-                                    const GURL& url,
-                                    int context_id) const {
+  Availability IsAvailableToContext(
+      const Extension* extension,
+      Context context,
+      const GURL& url,
+      int context_id,
+      std::unique_ptr<ContextData> context_data) const {
     return IsAvailableToContext(extension, context, url, GetCurrentPlatform(),
-                                context_id);
+                                context_id, std::move(context_data));
   }
 
-  Availability IsAvailableToContext(const Extension* extension,
-                                    Context context,
-                                    const GURL& url,
-                                    Platform platform,
-                                    int context_id) const {
+  Availability IsAvailableToContext(
+      const Extension* extension,
+      Context context,
+      const GURL& url,
+      Platform platform,
+      int context_id,
+      std::unique_ptr<ContextData> context_data) const {
     return IsAvailableToContextImpl(extension, context, url, platform,
-                                    context_id, true);
+                                    context_id, true, std::move(context_data));
   }
 
   Availability IsAvailableToContextIgnoringDevMode(const Extension* extension,
@@ -181,7 +187,8 @@ class Feature {
                                                    Platform platform,
                                                    int context_id) const {
     return IsAvailableToContextImpl(extension, context, url, platform,
-                                    context_id, false);
+                                    context_id, false,
+                                    /*context_data=*/nullptr);
   }
   // Returns true if the feature is available to the current environment,
   // without needing to know information about an Extension or any other
@@ -209,7 +216,8 @@ class Feature {
       const GURL& url,
       Platform platform,
       int context_id,
-      bool check_developer_mode) const = 0;
+      bool check_developer_mode,
+      std::unique_ptr<ContextData> context_data) const = 0;
 
   std::string name_;
   std::string alias_;

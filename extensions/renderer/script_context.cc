@@ -352,7 +352,8 @@ Feature::Availability ScriptContext::GetAvailability(
   }
   return ExtensionAPI::GetSharedInstance()->IsAvailable(
       api_name, extension, context_type_, url(), check_alias,
-      kRendererProfileId);
+      kRendererProfileId,
+      std::make_unique<RendererFrameContextData>(web_frame()));
 }
 
 std::string ScriptContext::GetContextTypeDescription() const {

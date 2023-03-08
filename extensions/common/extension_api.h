@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 #include <string>
-
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
@@ -16,6 +15,7 @@
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/values.h"
+#include "extensions/common/context_data.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/common/url_pattern_set.h"
@@ -108,7 +108,8 @@ class ExtensionAPI {
                                     Feature::Context context,
                                     const GURL& url,
                                     CheckAliasStatus check_alias,
-                                    int context_id);
+                                    int context_id,
+                                    std::unique_ptr<ContextData> context_data);
 
   // Determines whether an API, or any parts of that API, can be exposed to
   // |context|.
@@ -160,12 +161,14 @@ class ExtensionAPI {
 
   // Checks if |full_name| is available to provided context and extension under
   // associated API's alias name.
-  Feature::Availability IsAliasAvailable(const std::string& full_name,
-                                         const Feature& feature,
-                                         const Extension* extension,
-                                         Feature::Context context,
-                                         const GURL& url,
-                                         int context_id);
+  Feature::Availability IsAliasAvailable(
+      const std::string& full_name,
+      const Feature& feature,
+      const Extension* extension,
+      Feature::Context context,
+      const GURL& url,
+      int context_id,
+      std::unique_ptr<ContextData> context_data);
 
   // Loads a schema.
   void LoadSchema(const std::string& name, const base::StringPiece& schema);

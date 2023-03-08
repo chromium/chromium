@@ -22,6 +22,7 @@
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "extensions/browser/api_activity_monitor.h"
+#include "extensions/browser/browser_process_context_data.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/events/lazy_event_dispatcher.h"
 #include "extensions/browser/extension_host.h"
@@ -1030,7 +1031,8 @@ void EventRouter::DispatchEventToProcess(
       ExtensionAPI::GetSharedInstance()->IsAvailable(
           event.event_name, extension, target_context, listener_url,
           CheckAliasStatus::ALLOWED,
-          util::GetBrowserContextId(browser_context_));
+          util::GetBrowserContextId(browser_context_),
+          std::make_unique<BrowserProcessContextData>(process));
   if (!availability.is_available()) {
     // TODO(crbug.com/1412151): Ideally it shouldn't be possible to reach here,
     // because access is checked on registration. However, we don't always

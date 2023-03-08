@@ -34,6 +34,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/bad_message.h"
+#include "extensions/browser/browser_frame_context_data.h"
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/browser/extension_function_registry.h"
 #include "extensions/browser/extension_registry.h"
@@ -433,7 +434,7 @@ bool ExtensionFunction::HasPermission() const {
   Feature::Availability availability =
       ExtensionAPI::GetSharedInstance()->IsAvailable(
           name_, extension_.get(), source_context_type_, source_url(),
-          extensions::CheckAliasStatus::ALLOWED, context_id_);
+          extensions::CheckAliasStatus::ALLOWED, context_id_, GetContextData());
   return availability.is_available();
 }
 

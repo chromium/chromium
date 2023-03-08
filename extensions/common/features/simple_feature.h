@@ -17,6 +17,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/lazy_instance.h"
 #include "components/version_info/version_info.h"
+#include "extensions/common/context_data.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/manifest.h"
@@ -56,32 +57,42 @@ class SimpleFeature : public Feature {
 
   ~SimpleFeature() override;
 
-  Availability IsAvailableToContext(const Extension* extension,
-                                    Context context,
-                                    int context_id) const {
-    return IsAvailableToContext(extension, context, GURL(), context_id);
+  Availability IsAvailableToContext(
+      const Extension* extension,
+      Context context,
+      int context_id,
+      std::unique_ptr<ContextData> context_data) const {
+    return IsAvailableToContext(extension, context, GURL(), context_id,
+                                std::move(context_data));
   }
-  Availability IsAvailableToContext(const Extension* extension,
-                                    Context context,
-                                    Platform platform,
-                                    int context_id) const {
+  Availability IsAvailableToContext(
+      const Extension* extension,
+      Context context,
+      Platform platform,
+      int context_id,
+      std::unique_ptr<ContextData> context_data) const {
     return IsAvailableToContextImpl(extension, context, GURL(), platform,
-                                    context_id, true);
+                                    context_id, true, std::move(context_data));
   }
-  Availability IsAvailableToContext(const Extension* extension,
-                                    Context context,
-                                    const GURL& url,
-                                    int context_id) const {
+  Availability IsAvailableToContext(
+      const Extension* extension,
+      Context context,
+      const GURL& url,
+      int context_id,
+      std::unique_ptr<ContextData> context_data) const {
     return IsAvailableToContextImpl(extension, context, url,
-                                    GetCurrentPlatform(), context_id, true);
+                                    GetCurrentPlatform(), context_id, true,
+                                    std::move(context_data));
   }
-  Availability IsAvailableToContext(const Extension* extension,
-                                    Context context,
-                                    const GURL& url,
-                                    Platform platform,
-                                    int context_id) const {
+  Availability IsAvailableToContext(
+      const Extension* extension,
+      Context context,
+      const GURL& url,
+      Platform platform,
+      int context_id,
+      std::unique_ptr<ContextData> context_data) const {
     return IsAvailableToContextImpl(extension, context, url, platform,
-                                    context_id, true);
+                                    context_id, true, std::move(context_data));
   }
 
   // extension::Feature:
@@ -212,7 +223,8 @@ class SimpleFeature : public Feature {
       const GURL& url,
       Platform platform,
       int context_id,
-      bool check_developer_mode) const override;
+      bool check_developer_mode,
+      std::unique_ptr<ContextData> context_data) const override;
 
  private:
   friend struct FeatureComparator;
@@ -230,6 +242,7 @@ class SimpleFeature : public Feature {
       const GURL& url,
       Feature::Platform platform,
       int context_id,
+      const ContextData* context_data,
       const Feature* feature);
 
   static bool IsIdInList(const HashedExtensionId& hashed_id,
