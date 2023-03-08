@@ -427,6 +427,63 @@ event that Omaha listens to, so that Omaha processes can shut down gracefully.
 The updater then proceeds to overinstall the Omaha binaries with the updater
 binaries.
 
+#### Serializing Setup in the updater
+
+The updater needs to serialize the following command lines:
+
+* `--install`
+* `--uninstall-self`, `--uninstall`, `--uninstall-if-unused`
+* `--update`
+
+for each specific version, so that they do not trigger concurrency issues that
+lead to an undefined state of the installation such as missing/incorrect/corrupt
+files/tasks/services/registration.
+
+Errors may happen, such as a timeout due to not being able to acquire a lock,
+but the goals are to prevent corrupt states or a permanent deadlock.
+
+Since the versions are installed SxS, the classes corresponding to the above
+command lines, i.e., AppInstall, AppUninstall, and AppUpdate will take a
+version-specific setup lock at construction time, and then proceed to
+install/uninstall/update that specific version.
+
+All three of --uninstall-self, --uninstall, --uninstall-if-unused take the
+version-specific setup lock for that particular version first. --uninstall and
+--uninstall-if-unused call --uninstall-self on other versions that take their
+own version specific setup locks.
+
+The version-specific setup lock is always acquired first. The setup lock
+serializes the installation/uninstallation of files, services, tasks, for that
+specific version, and nothing else.
+
+The prefs global lock is a related lock used by the updater to serialize common
+access points. For instance, AppInstall calls `GetVersion`, which takes the
+prefs lock. The prefs lock is also used when swapping a new version to become
+the active updater.
+
+Here is an example flow that may result in an error, but will keep the state
+deterministic with the design above:
+
+* --uninstall-if-unused for active version A calls --uninstall-self for inactive
+version B.
+* At the same time, version B is trying to install itself via –install, and
+–install is waiting for `GetVersion`.
+* `GetVersion` is waiting on the global prefs lock, because
+--uninstall-if-unused is holding the global prefs lock.
+
+In this example flow, the following scenarios may occur:
+
+* `GetVersion` may timeout and fail –install on version B, in which case the
+–uninstall-self for version B gets the version-specific setup lock and proceeds
+to uninstall. Result: The user gets an error, and retries –install.
+* Version B’s uninstall may timeout getting the version-specific setup lock,
+returning back to version A, and version A proceeds to uninstall itself and
+releasing the global prefs lock, which allows version B’s –install to proceed.
+Result: the user gets a successful –install.
+* Version B’s uninstall may timeout getting the version-specific setup lock, and
+`GetVersion` may also timeout and fail the install on version B. Result: The
+user gets an error, and retries the install.
+
 ### Offline installs
 
 The updater supports offline installations, for which no update check or file

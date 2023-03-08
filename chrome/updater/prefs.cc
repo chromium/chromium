@@ -45,9 +45,13 @@ const char kPrefsAccessMutex[] = PREFS_ACCESS_MUTEX;
 
 UpdaterPrefsImpl::UpdaterPrefsImpl(std::unique_ptr<ScopedLock> lock,
                                    std::unique_ptr<PrefService> prefs)
-    : lock_(std::move(lock)), prefs_(std::move(prefs)) {}
+    : lock_(std::move(lock)), prefs_(std::move(prefs)) {
+  VLOG(1) << __func__;
+}
 
-UpdaterPrefsImpl::~UpdaterPrefsImpl() = default;
+UpdaterPrefsImpl::~UpdaterPrefsImpl() {
+  VLOG(1) << __func__;
+}
 
 PrefService* UpdaterPrefsImpl::GetPrefService() const {
   return prefs_.get();
@@ -101,8 +105,10 @@ scoped_refptr<GlobalPrefs> CreateGlobalPrefs(UpdaterScope scope) {
 
   std::unique_ptr<ScopedLock> lock =
       ScopedLock::Create(kPrefsAccessMutex, scope, base::Minutes(2));
-  if (!lock)
+  if (!lock) {
+    LOG(ERROR) << "Failed to acquire GlobalPrefs";
     return nullptr;
+  }
 
   const absl::optional<base::FilePath> global_prefs_dir =
       GetInstallDirectory(scope);

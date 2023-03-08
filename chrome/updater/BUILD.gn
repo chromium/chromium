@@ -444,6 +444,7 @@ if (is_win || is_mac || is_linux) {
   }
 
   process_version("branding_header") {
+    sources = [ "//chrome/VERSION" ]
     extra_args = [
       "-e",
       "BROWSER_NAME=\"$browser_name\"",
@@ -487,6 +488,8 @@ if (is_win || is_mac || is_linux) {
       "LEGACY_SERVICE_NAME_PREFIX=\"$legacy_service_name_prefix\"",
       "-e",
       "PREFS_ACCESS_MUTEX=\"$prefs_access_mutex\"",
+      "-e",
+      "SETUP_MUTEX=\"$setup_mutex_prefix.%s.%s.%s.%s\"%(MAJOR,MINOR,BUILD,PATCH)",
     ]
 
     template_file = "updater_branding.h.in"
@@ -663,6 +666,7 @@ if (is_win || is_mac || is_linux) {
     testonly = true
     sources = [
       "app/app_server_unittest.cc",
+      "constants_unittest.cc",
       "device_management/dm_client_unittest.cc",
       "device_management/dm_message_unittest.cc",
       "device_management/dm_policy_builder_for_testing.cc",

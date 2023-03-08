@@ -226,6 +226,10 @@ extern const char kDevOverrideKeyOverinstallTimeout[];
 // to complete.
 inline constexpr base::TimeDelta kWaitForAppInstaller = base::Minutes(15);
 
+// How long to wait for the common setup lock for
+// AppInstall/AppUninstall/AppUpdate.
+inline constexpr base::TimeDelta kWaitForSetupLock = base::Seconds(5);
+
 // The default last check period is 4.5 hours.
 inline constexpr base::TimeDelta kDefaultLastCheckPeriod =
     base::Hours(4) + base::Minutes(30);
@@ -391,6 +395,9 @@ constexpr int kErrorStattingPath = 72;
 constexpr int kErrorLaunchingProcess = 73;
 constexpr int kErrorPathOwnershipMismatch = 74;
 
+// A setup process could not acquire the lock needed to run.
+inline constexpr int kErrorFailedToLockSetupMutex = 75;
+
 // Policy Management constants.
 // The maximum value allowed for policy AutoUpdateCheckPeriodMinutes.
 inline constexpr int kMaxAutoUpdateCheckPeriodMinutes = 43200;
@@ -428,6 +435,9 @@ extern const char kSourceDMPolicyManager[];
 extern const char kSourceManagedPreferencePolicyManager[];
 extern const char kSourceDefaultValuesPolicyManager[];
 extern const char kSourceDictValuesPolicyManager[];
+
+// Serializes updater installs.
+extern const char kSetupMutex[];
 
 inline constexpr int kUninstallPingReasonUninstalled = 0;
 inline constexpr int kUninstallPingReasonUserNotAnOwner = 1;

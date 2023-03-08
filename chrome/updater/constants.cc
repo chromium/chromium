@@ -117,6 +117,8 @@ const char kSourceManagedPreferencePolicyManager[] = "ManagedPreference";
 const char kSourceDefaultValuesPolicyManager[] = "default";
 const char kSourceDictValuesPolicyManager[] = "DictValuePolicy";
 
+const char kSetupMutex[] = SETUP_MUTEX;
+
 #if BUILDFLAG(IS_MAC)
 // The user defaults suite name.
 const char kUserDefaultsSuiteName[] = MAC_BUNDLE_IDENTIFIER_STRING ".defaults";

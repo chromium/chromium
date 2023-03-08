@@ -12,6 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "chrome/updater/app/app.h"
+#include "chrome/updater/lock.h"
 #include "chrome/updater/splash_screen.h"
 
 namespace base {
@@ -58,6 +59,7 @@ class AppInstall : public App {
   ~AppInstall() override;
 
   // Overrides for App.
+  void Initialize() override;
   void FirstTaskRun() override;
 
   // Called after the version of the active updater has been retrieved.
@@ -77,6 +79,9 @@ class AppInstall : public App {
 
   // Bound to the main sequence.
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // Inter-process lock taken by AppInstall, AppUninstall, and AppUpdate.
+  std::unique_ptr<ScopedLock> setup_lock_;
 
   // The `app_id_` is parsed from the tag, if the the tag is present, or from
   // the command line argument --app-id.
