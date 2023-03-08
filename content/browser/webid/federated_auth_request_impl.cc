@@ -926,13 +926,24 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
 
   // TODO(crbug.com/1418719): Replace exclude_iframe based on client metadata
   // response.
-  bool exclude_iframe = true;
+  bool exclude_iframe = net::registry_controlled_domains::SameDomainOrHost(
+      GetEmbeddingOrigin(), origin(),
+      net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
   absl::optional<std::string> iframe_url_for_display = absl::nullopt;
   std::string top_frame_url_for_display =
       FormatOriginForDisplay(GetEmbeddingOrigin());
 
-  if (!exclude_iframe && GetEmbeddingOrigin() != origin()) {
+  if (!exclude_iframe) {
     iframe_url_for_display = FormatOriginForDisplay(origin());
+
+    // TODO(crbug.com/1422040): Decide what to do if we want to include iframe
+    // domain in the dialog but iframe_url_for_display is nullopt.
+    if (iframe_url_for_display->empty()) {
+      CompleteRequestWithError(FederatedAuthRequestResult::kError,
+                               /*token_status=*/absl::nullopt,
+                               /*should_delay_callback=*/false);
+      return;
+    }
   }
 
   // TODO(crbug.com/1383384): Handle auto_reauthn for multi IDP.
