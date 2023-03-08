@@ -190,6 +190,17 @@ GLDisplayEGL* GLContext::GetGLDisplayEGL() {
 #if BUILDFLAG(IS_APPLE)
 constexpr uint64_t kInvalidFenceId = 0;
 
+void GLContext::AddMetalSharedEventsForBackpressure(
+    std::vector<std::unique_ptr<gpu::BackpressureMetalSharedEvent>> events) {
+  // Only enqueue events if fences are supported since they are only consumed
+  // along with fences.
+  if (gl::GLFence::IsSupported()) {
+    for (auto& e : events) {
+      next_backpressure_events_.push_back(std::move(e));
+    }
+  }
+}
+
 uint64_t GLContext::BackpressureFenceCreate() {
   TRACE_EVENT0("gpu", "GLContext::BackpressureFenceCreate");
 
@@ -199,7 +210,8 @@ uint64_t GLContext::BackpressureFenceCreate() {
 
   if (gl::GLFence::IsSupported()) {
     next_backpressure_fence_ += 1;
-    backpressure_fences_[next_backpressure_fence_] = GLFence::Create();
+    backpressure_fences_[next_backpressure_fence_] = {
+        GLFence::Create(), std::move(next_backpressure_events_)};
     return next_backpressure_fence_;
   }
   glFinish();
@@ -216,8 +228,26 @@ void GLContext::BackpressureFenceWait(uint64_t fence_id) {
   auto found = backpressure_fences_.find(fence_id);
   if (found == backpressure_fences_.end())
     return;
-  std::unique_ptr<GLFence> fence = std::move(found->second);
+  auto [fence, events] = std::move(found->second);
   backpressure_fences_.erase(found);
+
+  // Poll for all Metal shared events to be signaled with a 1ms delay.
+  bool events_complete = false;
+  while (!events_complete) {
+    events_complete = true;
+    {
+      TRACE_EVENT0("gpu", "BackpressureMetalSharedEvent::HasCompleted");
+      for (const auto& e : events) {
+        if (!e->HasCompleted()) {
+          events_complete = false;
+          break;
+        }
+      }
+    }
+    if (!events_complete) {
+      base::PlatformThread::Sleep(base::Milliseconds(1));
+    }
+  }
 
   // While we could call GLFence::ClientWait, this performs a busy wait on
   // Mac, leading to high CPU usage. Instead we poll with a 1ms delay. This

@@ -103,6 +103,11 @@ void GLContextVirtual::ForceReleaseVirtuallyCurrent() {
 }
 
 #if BUILDFLAG(IS_APPLE)
+void GLContextVirtual::AddMetalSharedEventsForBackpressure(
+    std::vector<std::unique_ptr<BackpressureMetalSharedEvent>> events) {
+  shared_context_->AddMetalSharedEventsForBackpressure(std::move(events));
+}
+
 uint64_t GLContextVirtual::BackpressureFenceCreate() {
   return shared_context_->BackpressureFenceCreate();
 }

@@ -354,6 +354,18 @@ bool OverlayIOSurfaceRepresentation::BeginReadAccess(
     eglWaitUntilWorkScheduledANGLE(display->GetDisplay());
   }
 
+  gl::GLContext* context = gl::GLContext::GetCurrent();
+  if (context) {
+    std::vector<std::unique_ptr<SharedEventAndSignalValue>> signals =
+        static_cast<IOSurfaceImageBacking*>(backing())->TakeSharedEvents();
+
+    std::vector<std::unique_ptr<BackpressureMetalSharedEvent>>
+        backpressure_events(std::make_move_iterator(signals.begin()),
+                            std::make_move_iterator(signals.end()));
+    context->AddMetalSharedEventsForBackpressure(
+        std::move(backpressure_events));
+  }
+
   auto* gl_backing = static_cast<IOSurfaceImageBacking*>(backing());
   std::unique_ptr<gfx::GpuFence> fence = gl_backing->GetLastWriteGpuFence();
   if (fence)
@@ -485,20 +497,18 @@ void DawnIOSurfaceRepresentation::EndAccess() {
     SetCleared();
   }
 
-  if (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal) {
-    if (@available(macOS 10.14, *)) {
-      SharedImageBacking* backing = this->backing();
-      // Not possible to reach this with any other type of backing.
-      DCHECK_EQ(backing->GetType(), SharedImageBackingType::kIOSurface);
-      IOSurfaceImageBacking* iosurface_backing =
-          static_cast<IOSurfaceImageBacking*>(backing);
-      // Dawn's Metal backend has enqueued a MTLSharedEvent which
-      // consumers of the IOSurface must wait upon before attempting to
-      // use that IOSurface on another MTLDevice. Store this event in
-      // the underlying SharedImageBacking.
-      iosurface_backing->AddSharedEventAndSignalValue(descriptor.sharedEvent,
-                                                      descriptor.signaledValue);
-    }
+  if (@available(macOS 10.14, *)) {
+    SharedImageBacking* backing = this->backing();
+    // Not possible to reach this with any other type of backing.
+    DCHECK_EQ(backing->GetType(), SharedImageBackingType::kIOSurface);
+    IOSurfaceImageBacking* iosurface_backing =
+        static_cast<IOSurfaceImageBacking*>(backing);
+    // Dawn's Metal backend has enqueued a MTLSharedEvent which
+    // consumers of the IOSurface must wait upon before attempting to
+    // use that IOSurface on another MTLDevice. Store this event in
+    // the underlying SharedImageBacking.
+    iosurface_backing->AddSharedEventAndSignalValue(descriptor.sharedEvent,
+                                                    descriptor.signaledValue);
   }
 
   // All further operations on the textures are errors (they would be racy
@@ -546,6 +556,16 @@ SharedEventAndSignalValue::~SharedEventAndSignalValue() {
     }
   }
   shared_event_ = nil;
+}
+
+bool SharedEventAndSignalValue::HasCompleted() const {
+  if (@available(macOS 10.14, *)) {
+    if (shared_event_) {
+      return [static_cast<id<MTLSharedEvent>>(shared_event_) signaledValue] >=
+             signaled_value_;
+    }
+  }
+  return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

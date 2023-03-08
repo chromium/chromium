@@ -30,6 +30,15 @@ class GLDisplayEGL;
 
 namespace gpu {
 class GLContextVirtual;
+
+#if BUILDFLAG(IS_APPLE)
+class GL_EXPORT BackpressureMetalSharedEvent {
+ public:
+  virtual ~BackpressureMetalSharedEvent() = default;
+  virtual bool HasCompleted() const = 0;
+};
+#endif  // #if BUILDFLAG(IS_APPLE)
+
 }  // namespace gpu
 
 namespace gl {
@@ -250,6 +259,8 @@ class GL_EXPORT GLContext : public base::RefCounted<GLContext>,
 #endif  // USE_EGL
 
 #if BUILDFLAG(IS_APPLE)
+  virtual void AddMetalSharedEventsForBackpressure(
+      std::vector<std::unique_ptr<gpu::BackpressureMetalSharedEvent>> events);
   // Create a fence for all work submitted to this context so far, and return a
   // monotonically increasing handle to it. This returned handle never needs to
   // be freed. This method is used to create backpressure to throttle GL work
@@ -344,7 +355,13 @@ class GL_EXPORT GLContext : public base::RefCounted<GLContext>,
   bool context_lost_ = false;
 
 #if BUILDFLAG(IS_APPLE)
-  std::map<uint64_t, std::unique_ptr<GLFence>> backpressure_fences_;
+  using GLFenceAndMetalSharedEvents = std::pair<
+      std::unique_ptr<GLFence>,
+      std::vector<std::unique_ptr<gpu::BackpressureMetalSharedEvent>>>;
+
+  std::vector<std::unique_ptr<gpu::BackpressureMetalSharedEvent>>
+      next_backpressure_events_;
+  std::map<uint64_t, GLFenceAndMetalSharedEvents> backpressure_fences_;
   uint64_t next_backpressure_fence_ = 0;
 #endif
 };
