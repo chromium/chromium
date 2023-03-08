@@ -116,6 +116,11 @@ class ASH_EXPORT VideoConferenceTrayController
   // Updates the tray UI with the given `VideoConferenceMediaState`.
   void UpdateWithMediaState(VideoConferenceMediaState state);
 
+  // Returns true if any running media apps have been granted permission for
+  // camera/microphone.
+  bool HasCameraPermission() const;
+  bool HasMicrophonePermission() const;
+
   // Handles device usage from a VC app while the device is system disabled.
   virtual void HandleDeviceUsedWhileDisabled(
       crosapi::mojom::VideoConferenceMediaDevice device,

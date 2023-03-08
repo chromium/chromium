@@ -271,6 +271,14 @@ void VideoConferenceTrayController::UpdateWithMediaState(
   }
 }
 
+bool VideoConferenceTrayController::HasCameraPermission() const {
+  return state_.has_camera_permission;
+}
+
+bool VideoConferenceTrayController::HasMicrophonePermission() const {
+  return state_.has_microphone_permission;
+}
+
 void VideoConferenceTrayController::HandleDeviceUsedWhileDisabled(
     crosapi::mojom::VideoConferenceMediaDevice device,
     const std::u16string& app_name) {
