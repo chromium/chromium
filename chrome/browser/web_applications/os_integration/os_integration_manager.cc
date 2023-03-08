@@ -225,6 +225,10 @@ void OsIntegrationManager::Synchronize(
     const AppId& app_id,
     base::OnceClosure callback,
     absl::optional<SynchronizeOsOptions> options) {
+  DCHECK(registrar_->GetAppById(app_id))
+      << "Can't perform OS integration without the app existing in the "
+         "registrar.";
+
   if (!AreOsIntegrationSubManagersEnabled()) {
     std::move(callback).Run();
     return;
@@ -969,6 +973,7 @@ void OsIntegrationManager::WriteStateToDB(
   {
     ScopedRegistryUpdate update(sync_bridge_);
     WebApp* web_app = update->UpdateApp(app_id);
+    DCHECK(web_app);
     web_app->SetCurrentOsIntegrationStates(*desired_states.get());
   }
 
@@ -983,6 +988,10 @@ void OsIntegrationManager::OnShortcutsCreated(
     bool shortcuts_created) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(barrier);
+
+  if (registrar_ && !registrar_->GetAppById(app_id)) {
+    return;
+  }
 
   bool shortcut_creation_failure =
       !shortcuts_created && options.os_hooks[OsHookType::kShortcuts];
