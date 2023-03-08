@@ -3399,6 +3399,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Conversions.AggregatableReport.ExtraReportDelayForSuccessfulSend"
+    units="ms" expires_after="M117">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the &quot;extra&quot; non-scheduled time it took to confirm the
+    aggregatable attribution report was sent. This is primarily due to a
+    report's scheduled report time taking place while the browser is closed or
+    there is network issue. Recorded when an aggregatable report is successfully
+    sent.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.AggregatableReport.FilteredTriggerDataPercentage"
     units="%" expires_after="M117">
   <owner>linnan@chromium.org</owner>
@@ -3617,7 +3632,20 @@ chromium-metrics-reviews@google.com.
     Records the &quot;extra&quot; non-scheduled time it took to send a
     particular conversion report. This is primarily due to a report's scheduled
     report time taking place while the browser is closed. Recorded when a
-    conversion report is sent.
+    conversion report is to be sent.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.ExtraReportDelayForSuccessfulSend" units="ms"
+    expires_after="M117">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the &quot;extra&quot; non-scheduled time it took to confirm the
+    particular attribution report was sent. This is primarily due to a report's
+    scheduled report time taking place while the browser is closed. Recorded
+    when an attribution report is successfully sent.
   </summary>
 </histogram>
 

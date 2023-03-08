@@ -280,11 +280,19 @@ void LogMetricsOnReportCompleted(const AttributionReport& report,
 
 // Called when `report` is sent successfully.
 void LogMetricsOnReportSent(const AttributionReport& report) {
+  base::Time now = base::Time::Now();
   base::TimeDelta time_from_conversion_to_report_sent =
-      base::Time::Now() - report.attribution_info().time;
+      now - report.attribution_info().time;
+  base::TimeDelta time_since_original_report_time =
+      now - report.OriginalReportTime();
 
   switch (report.GetReportType()) {
     case AttributionReport::Type::kEventLevel:
+      UMA_HISTOGRAM_CUSTOM_TIMES(
+          "Conversions.ExtraReportDelayForSuccessfulSend",
+          time_since_original_report_time, base::Seconds(1), base::Days(24),
+          /*bucket_count=*/100);
+
       UMA_HISTOGRAM_COUNTS_1000(
           "Conversions.TimeFromTriggerToReportSentSuccessfully",
           time_from_conversion_to_report_sent.InHours());
@@ -295,6 +303,11 @@ void LogMetricsOnReportSent(const AttributionReport& report) {
           "TimeFromTriggerToReportSentSuccessfully",
           time_from_conversion_to_report_sent, base::Minutes(1), base::Days(24),
           50);
+
+      UMA_HISTOGRAM_CUSTOM_TIMES(
+          "Conversions.AggregatableReport.ExtraReportDelayForSuccessfulSend",
+          time_since_original_report_time, base::Seconds(1), base::Days(24),
+          /*bucket_count=*/50);
       break;
   }
 }

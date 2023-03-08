@@ -2375,6 +2375,69 @@ TEST_F(AttributionManagerImplTest,
       "Conversions.AggregatableReport.ReportSendOutcome2", 0, 1);
 }
 
+TEST_F(AttributionManagerImplTest, OnReportSent_RecordReportDelay) {
+  base::HistogramTester histograms;
+
+  attribution_manager_->HandleSource(TestAggregatableSourceProvider()
+                                         .GetBuilder()
+                                         .SetExpiry(kImpressionExpiry)
+                                         .Build(),
+                                     kFrameId);
+  attribution_manager_->HandleTrigger(
+      DefaultAggregatableTriggerBuilder().Build(), kFrameId);
+
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+    EXPECT_CALL(*aggregation_service_, AssembleReport).Times(0);
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(*aggregation_service_, AssembleReport)
+        .WillOnce([](AggregatableReportRequest request,
+                     AggregationService::AssemblyCallback callback) {
+          std::move(callback).Run(std::move(request),
+                                  CreateExampleAggregatableReport(),
+                                  AggregationService::AssemblyStatus::kOk);
+        });
+  }
+
+  SetConnectionTypeAndWaitForObserversToBeNotified(
+      network::mojom::ConnectionType::CONNECTION_NONE);
+
+  task_environment_.FastForwardBy(kFirstReportingWindow + base::Days(3));
+
+  checkpoint.Call(1);
+
+  std::vector<ReportSentCallback> report_sent_callbacks;
+  std::vector<AttributionReport> sent_reports;
+
+  // One event-level report, one aggregatable report.
+  EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+      .WillRepeatedly([&](AttributionReport report, bool is_debug_report,
+                          ReportSentCallback callback) {
+        report_sent_callbacks.push_back(std::move(callback));
+        sent_reports.push_back(std::move(report));
+      });
+
+  SetConnectionTypeAndWaitForObserversToBeNotified(
+      network::mojom::ConnectionType::CONNECTION_UNKNOWN);
+  task_environment_.FastForwardBy(base::Minutes(1));
+
+  ASSERT_THAT(report_sent_callbacks, SizeIs(2));
+  ASSERT_THAT(sent_reports, SizeIs(2));
+
+  std::move(report_sent_callbacks[0])
+      .Run(std::move(sent_reports[0]), SendResult(SendResult::Status::kSent));
+  std::move(report_sent_callbacks[1])
+      .Run(std::move(sent_reports[1]), SendResult(SendResult::Status::kSent));
+
+  histograms.ExpectUniqueTimeSample(
+      "Conversions.ExtraReportDelayForSuccessfulSend",
+      base::Days(3) + base::Minutes(1), 1);
+  histograms.ExpectUniqueTimeSample(
+      "Conversions.AggregatableReport.ExtraReportDelayForSuccessfulSend",
+      base::Days(3) + base::Minutes(1), 1);
+}
+
 TEST_F(AttributionManagerImplTest,
        AggregateReportAssemblyFailed_ReportNotSent) {
   base::HistogramTester histograms;
