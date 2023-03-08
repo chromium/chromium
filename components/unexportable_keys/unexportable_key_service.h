@@ -13,10 +13,10 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/types/expected.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/ref_counted_unexportable_signing_key.h"
+#include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "crypto/signature_verifier.h"
 
@@ -40,7 +40,7 @@ class UnexportableKeyTaskManager;
 // 1. Generate a new `UnexportableSigningKey` and obtain its key ID:
 //
 //  UnexportableKeyService& service = GetUnexportableKeyService();
-//  base::expected<UnexportableKeyId, UnexportableKeyService::Error> key_id;
+//  ServiceErrorOr<UnexportableKeyId> key_id;
 //  service.GenerateSigningKeySlowlyAsync(
 //      kAlgorithm, kPriority, [&key_id](auto result) { key_id = result; });
 //
@@ -53,7 +53,7 @@ class UnexportableKeyTaskManager;
 //    the wrapped key:
 //
 //  UnexportableKeyService& service = GetUnexportableKeyService();
-//  base::expected<UnexportableKeyId, UnexportableKeyService::Error> key_id;
+//  ServiceErrorOr<UnexportableKeyId> key_id;
 //  std::vector<uint8_t> wrapped_key = ReadFromDisk();
 //  service.FromWrappedSigningKeySlowlyAsync(
 //    wrapped_key, kPriority, [&key_id](auto result) { key_id = result; });
@@ -63,17 +63,6 @@ class UnexportableKeyTaskManager;
 //  service.SignSlowlyAsync(*key_id, kData, kPriority, std::move(callback));
 class UnexportableKeyService : public KeyedService {
  public:
-  // Various errors returned by this class.
-  enum class Error {
-    // Error details are unknown.
-    kUnknown,
-    // Provided key ID is unknown and doesn't correspond to any key.
-    kKeyNotFound,
-    // Newly generated key is the same as the existing one (should be extremely
-    // rare).
-    kKeyCollision,
-  };
-
   // `task_manager` must outlive `UnexportableKeyService`.
   explicit UnexportableKeyService(UnexportableKeyTaskManager& task_manager);
 
@@ -87,15 +76,14 @@ class UnexportableKeyService : public KeyedService {
   // this `UnexportableKeyService`.
   // The first supported value of `acceptable_algorithms` determines the type of
   // the key.
-  // Invokes `callback` with an `Error` if no supported hardware exists, if no
-  // value in `acceptable_algorithms` is supported, or if there was an error
-  // creating the key.
+  // Invokes `callback` with a `ServiceError` if no supported hardware exists,
+  // if no value in `acceptable_algorithms` is supported, or if there was an
+  // error creating the key.
   void GenerateSigningKeySlowlyAsync(
       base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
           acceptable_algorithms,
       BackgroundTaskPriority priority,
-      base::OnceCallback<void(base::expected<UnexportableKeyId, Error>)>
-          callback);
+      base::OnceCallback<void(ServiceErrorOr<UnexportableKeyId>)> callback);
 
   // Creates a new signing key from a `wrapped_key` asynchronously and returns
   // an ID of this key.
@@ -103,42 +91,41 @@ class UnexportableKeyService : public KeyedService {
   // this `UnexportableKeyService`.
   // `wrapped_key` can be read from disk but must have initially resulted from
   // calling `GetWrappedKey()` on a previous instance of `UnexportableKeyId`.
-  // Invokes `callback` with an `Error` if `wrapped_key` cannot be imported.
+  // Invokes `callback` with a `ServiceError` if `wrapped_key` cannot be
+  // imported.
   void FromWrappedSigningKeySlowlyAsync(
       base::span<const uint8_t> wrapped_key,
       BackgroundTaskPriority priority,
-      base::OnceCallback<void(base::expected<UnexportableKeyId, Error>)>
-          callback);
+      base::OnceCallback<void(ServiceErrorOr<UnexportableKeyId>)> callback);
 
   // Schedules a new asynchronous signing task.
   // Might return a cached result if a task with the same combination of
   // `signing_key` and `data` has been completed recently.
-  // Invokes `callback` with a signature of `data`, or an `Error` if `key_id` is
-  // not found or an error occurs during signing.
+  // Invokes `callback` with a signature of `data`, or a `ServiceError` if
+  // `key_id` is/ not found or an error occurs during signing.
   // `key_id` must have resulted from calling `GenerateSigningKeySlowlyAsync()`
   // or `FromWrappedSigningKeySlowlyAsync()`
   void SignSlowlyAsync(
       const UnexportableKeyId& key_id,
       base::span<const uint8_t> data,
       BackgroundTaskPriority priority,
-      base::OnceCallback<void(base::expected<std::vector<uint8_t>, Error>)>
-          callback);
+      base::OnceCallback<void(ServiceErrorOr<std::vector<uint8_t>>)> callback);
 
   // Returns an SPKI that contains the public key of a key that `key_id` refers
   // to.
-  // Returns an `Error` if `key_id` is not found.
+  // Returns a `ServiceError` if `key_id` is not found.
   // `key_id` must have resulted from calling `GenerateSigningKeySlowlyAsync()`
   // or `FromWrappedSigningKeySlowlyAsync()`
-  base::expected<std::vector<uint8_t>, Error> GetSubjectPublicKeyInfo(
+  ServiceErrorOr<std::vector<uint8_t>> GetSubjectPublicKeyInfo(
       UnexportableKeyId key_id) const;
 
   // Returns the encrypted private key of a key that `key_id` refers to. It is
   // encrypted to a key that is kept in hardware and the unencrypted private key
   // never exists in the CPU's memory.
-  // Returns an `Error` if `key_id` is not found.
+  // Returns a `ServiceError` if `key_id` is not found.
   // `key_id` must have resulted from calling `GenerateSigningKeySlowlyAsync()`
   // or `FromWrappedSigningKeySlowlyAsync()`
-  base::expected<std::vector<uint8_t>, Error> GetWrappedKey(
+  ServiceErrorOr<std::vector<uint8_t>> GetWrappedKey(
       UnexportableKeyId key_id) const;
 
  private:
@@ -160,14 +147,16 @@ class UnexportableKeyService : public KeyedService {
 
   // Callback for `GenerateSigningKeySlowlyAsync()`.
   void OnKeyGenerated(
-      base::OnceCallback<void(base::expected<UnexportableKeyId, Error>)>
+      base::OnceCallback<void(ServiceErrorOr<UnexportableKeyId>)>
           client_callback,
-      scoped_refptr<RefCountedUnexportableSigningKey> key);
+      ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>
+          key_or_error);
 
   // Callback for `FromWrappedSigningKeySlowlyAsync()`.
   void OnKeyCreatedFromWrappedKey(
       WrappedKeyMap::iterator pending_entry_it,
-      scoped_refptr<RefCountedUnexportableSigningKey> key);
+      ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>
+          key_or_error);
 
   const raw_ref<UnexportableKeyTaskManager> task_manager_;
 

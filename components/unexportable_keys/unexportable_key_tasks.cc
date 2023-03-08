@@ -17,10 +17,7 @@ namespace {
 absl::optional<std::vector<uint8_t>> SignSlowlyWithRefCountedKey(
     scoped_refptr<RefCountedUnexportableSigningKey> signing_key,
     base::span<const uint8_t> data) {
-  if (!signing_key) {
-    return absl::nullopt;
-  }
-
+  CHECK(signing_key);
   return signing_key->key().SignSlowly(data);
 }
 
