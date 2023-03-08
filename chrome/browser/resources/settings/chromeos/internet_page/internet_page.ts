@@ -22,16 +22,12 @@ import '../../settings_shared.css.js';
 import '../os_settings_page/os_settings_animated_pages.js';
 import '../os_settings_page/os_settings_subpage.js';
 import '../os_settings_icons.css.js';
-import './apn_subpage.js';
 import './cellular_setup_dialog.js';
 import './esim_rename_dialog.js';
 import './esim_remove_profile_dialog.js';
 import './hotspot_config_dialog.js';
 import './internet_config.js';
 import './internet_detail_menu.js';
-import './internet_detail_page.js';
-import './internet_known_networks_page.js';
-import './internet_subpage.js';
 import './network_summary.js';
 
 import {CellularSetupPageName} from 'chrome://resources/ash/common/cellular_setup/cellular_types.js';
@@ -763,7 +759,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
       // if visible, displays controls which are no longer functional. If this
       // case occurs, close the details page.
       const detailPage =
-          this.shadowRoot!.querySelector('settings-internet-detail-page');
+          this.shadowRoot!.querySelector('settings-internet-detail-subpage');
       if (detailPage) {
         detailPage.close();
       }

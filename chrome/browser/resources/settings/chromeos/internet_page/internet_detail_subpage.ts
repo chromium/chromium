@@ -60,7 +60,7 @@ import {routes} from '../os_settings_routes.js';
 import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
 
-import {getTemplate} from './internet_detail_page.html.js';
+import {getTemplate} from './internet_detail_subpage.html.js';
 import {InternetPageBrowserProxy, InternetPageBrowserProxyImpl} from './internet_page_browser_proxy.js';
 import {TetherConnectionDialogElement} from './tether_connection_dialog.js';
 
@@ -80,7 +80,7 @@ const SettingsInternetDetailPageElementBase =
 class SettingsInternetDetailPageElement extends
     SettingsInternetDetailPageElementBase {
   static get is() {
-    return 'settings-internet-detail-page' as const;
+    return 'settings-internet-detail-subpage' as const;
   }
 
   static get template() {

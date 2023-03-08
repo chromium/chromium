@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://os-settings/chromeos/os_settings.js';
+import 'chrome://os-settings/chromeos/lazy_load.js';
+
 import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 import {CellularSetupPageName} from 'chrome://resources/ash/common/cellular_setup/cellular_types.js';
 import {setESimManagerRemoteForTesting} from 'chrome://resources/ash/common/cellular_setup/mojo_interface_provider.js';
@@ -129,7 +132,7 @@ suite('InternetPage', function() {
 
   async function navigateToApnSubpage() {
     await navigateToCellularDetailPage();
-    internetPage.shadowRoot.querySelector('settings-internet-detail-page')
+    internetPage.shadowRoot.querySelector('settings-internet-detail-subpage')
         .shadowRoot.querySelector('#apnSubpageButton')
         .click();
     return await flushAsync();
@@ -181,8 +184,8 @@ suite('InternetPage', function() {
     if (subPage) {
       subPage.remove();
     }
-    const detailPage =
-        internetPage.shadowRoot.querySelector('settings-internet-detail-page');
+    const detailPage = internetPage.shadowRoot.querySelector(
+        'settings-internet-detail-subpage');
     if (detailPage) {
       detailPage.remove();
     }
@@ -704,7 +707,7 @@ suite('InternetPage', function() {
         await navigateToCellularDetailPage();
 
         const detailPage = internetPage.shadowRoot.querySelector(
-            'settings-internet-detail-page');
+            'settings-internet-detail-subpage');
         assertTrue(!!detailPage);
         assertTrue(!!detailPage.globalPolicy);
         assertFalse(
@@ -737,7 +740,7 @@ suite('InternetPage', function() {
         internetPage.currentRouteChanged(routes.KNOWN_NETWORKS, undefined);
 
         const knownNetworksPage = internetPage.shadowRoot.querySelector(
-            'settings-internet-known-networks-page');
+            'settings-internet-known-networks-subpage');
 
         // Confirm that the knownNetworkType_ was set to kWiFi.
         assertTrue(!!knownNetworksPage);
@@ -754,8 +757,8 @@ suite('InternetPage', function() {
     Router.getInstance().navigateToPreviousRoute();
     await windowPopstatePromise;
     await waitBeforeNextRender(internetPage);
-    const detailPage =
-        internetPage.shadowRoot.querySelector('settings-internet-detail-page');
+    const detailPage = internetPage.shadowRoot.querySelector(
+        'settings-internet-detail-subpage');
     await flushAsync();
 
     assertEquals(

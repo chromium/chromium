@@ -203,66 +203,6 @@ var OSSettingsAppManagementAppDetailsV3Test =
   }
 };
 
-// TODO(b/162365553) Move this test back into the list of tests below once
-// APN revamp is launched.
-var OSSettingsApnSubpageV3Test = class extends OSSettingsV3BrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/apn_subpage_tests.js';
-  }
-
-  /** @override */
-  get featureList() {
-    return {
-      enabled: super.featureList.enabled.concat(['ash::features::kApnRevamp'])
-    };
-  }
-};
-
-TEST_F('OSSettingsApnSubpageV3Test', 'AllJsTests', () => {
-  mocha.run();
-});
-
-// TODO(b/162365553) Move this test back into the list of tests below once
-// APN revamp is launched.
-var OSSettingsInternetDetailPageV3Test = class extends OSSettingsV3BrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/internet_detail_page_tests.js';
-  }
-
-  /** @override */
-  get featureList() {
-    return {
-      enabled: super.featureList.enabled.concat(['ash::features::kApnRevamp'])
-    };
-  }
-};
-
-TEST_F('OSSettingsInternetDetailPageV3Test', 'AllJsTests', () => {
-  mocha.run();
-});
-
-// TODO(b/162365553) Move this test back into the list of tests below once
-// APN revamp is launched.
-var OSSettingsInternetPageV3Test = class extends OSSettingsV3BrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/internet_page_tests.js';
-  }
-
-  /** @override */
-  get featureList() {
-    return {
-      enabled: super.featureList.enabled.concat(['ash::features::kApnRevamp'])
-    };
-  }
-};
-
-TEST_F('OSSettingsInternetPageV3Test', 'AllJsTests', () => {
-  mocha.run();
-});
-
 function crostiniTestGenPreamble() {
   GEN('crostini::FakeCrostiniFeatures fake_crostini_features;');
   GEN('fake_crostini_features.SetAll(true);');
@@ -308,6 +248,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
 [['AccessibilityPage', 'os_a11y_page_tests.js'],
  ['AboutPage', 'os_about_page_tests.js'],
  ['ApnDetailDialog', 'apn_detail_dialog_tests.js'],
+ [
+   'ApnSubpage', 'apn_subpage_tests.js',
+   {enabled: ['ash::features::kApnRevamp']}
+ ],
  ['AppsPage', 'apps_page_test.js'],
  ['AppNotificationsSubpage', 'app_notifications_subpage_tests.js'],
  ['AppManagementAppDetailsItem', 'app_management/app_details_item_test.js'],
@@ -392,7 +336,15 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['InputPage', 'input_page_test.js'],
  ['InternetConfig', 'internet_config_test.js'],
  ['InternetDetailMenu', 'internet_detail_menu_test.js'],
- ['InternetKnownNetworksPage', 'internet_known_networks_page_tests.js'],
+ [
+   'InternetDetailSubpage', 'internet_detail_subpage_tests.js',
+   {enabled: ['ash::features::kApnRevamp']}
+ ],
+ ['InternetKnownNetworksSubpage', 'internet_known_networks_subpage_tests.js'],
+ [
+   'InternetPage', 'internet_page_tests.js',
+   {enabled: ['ash::features::kApnRevamp']}
+ ],
  ['InternetSubpage', 'internet_subpage_tests.js'],
  ['KerberosAccounts', 'kerberos_accounts_test.js'],
  ['KerberosPage', 'kerberos_page_test.js'],

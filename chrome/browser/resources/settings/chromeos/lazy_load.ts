@@ -19,7 +19,11 @@ import './os_languages_page/os_languages_section.js';
 import './os_printing_page/os_printing_page.js';
 import './os_reset_page/os_reset_page.js';
 /** Subpages */
+import './internet_page/apn_subpage.js';
 import './internet_page/hotspot_subpage.js';
+import './internet_page/internet_detail_subpage.js';
+import './internet_page/internet_known_networks_subpage.js';
+import './internet_page/internet_subpage.js';
 // TODO(b/263414034) Determine if elements below adhere to the lazy loading
 // criteria and are needed here
 import './crostini_page/bruschetta_subpage.js';

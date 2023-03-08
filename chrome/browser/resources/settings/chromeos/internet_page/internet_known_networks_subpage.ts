@@ -33,7 +33,7 @@ import {routes} from '../os_settings_routes.js';
 import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
 import {Route} from '../router.js';
 
-import {getTemplate} from './internet_known_networks_page.html.js';
+import {getTemplate} from './internet_known_networks_subpage.html.js';
 
 interface SettingsInternetKnownNetworksPageElement {
   $: {
@@ -55,7 +55,7 @@ const SettingsInternetKnownNetworksPageElementBase =
 class SettingsInternetKnownNetworksPageElement extends
     SettingsInternetKnownNetworksPageElementBase {
   static get is() {
-    return 'settings-internet-known-networks-page' as const;
+    return 'settings-internet-known-networks-subpage' as const;
   }
 
   static get template() {
