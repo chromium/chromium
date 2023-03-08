@@ -34,13 +34,8 @@ namespace {
 // The estimated height of every folder cell.
 const CGFloat kEstimatedFolderCellHeight = 48.0;
 
-// Height of section headers/footers.
-const CGFloat kSectionHeaderHeight = 8.0;
-const CGFloat kSectionFooterHeight = 8.0;
-
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
-  SectionIdentifierAddFolder = kSectionIdentifierEnumZero,
-  SectionIdentifierBookmarkFolders,
+  SectionIdentifierBookmarkFolders = kSectionIdentifierEnumZero,
 };
 
 typedef NS_ENUM(NSInteger, ItemType) {
@@ -78,20 +73,6 @@ using bookmarks::BookmarkNode;
 
 // The browser for this ViewController.
 @property(nonatomic, readonly) Browser* browser;
-
-// Reloads the model and the updates `self.tableView` to reflect any model
-// changes.
-- (void)reloadModel;
-
-// Pushes on the navigation controller a view controller to create a new folder.
-- (void)pushFolderAddViewController;
-
-// Called when the user taps on a folder row. The cell is checked, the UI is
-// locked so that the user can't interact with it, then the delegate is
-// notified. Usual implementations of this delegate callback are to pop or
-// dismiss this controller on selection. The delay is here to let the user get a
-// visual feedback of the selection before this view disappears.
-- (void)delayedNotifyDelegateOfSelection;
 
 @end
 
@@ -191,61 +172,20 @@ using bookmarks::BookmarkNode;
 
 #pragma mark - UITableViewDelegate
 
-- (CGFloat)tableView:(UITableView*)tableView
-    heightForHeaderInSection:(NSInteger)section {
-  return kSectionHeaderHeight;
-}
-
-- (UIView*)tableView:(UITableView*)tableView
-    viewForHeaderInSection:(NSInteger)section {
-  CGRect headerViewFrame = CGRectMake(0, 0, CGRectGetWidth(tableView.frame),
-                                      [self tableView:tableView
-                                          heightForHeaderInSection:section]);
-  UIView* headerView = [[UIView alloc] initWithFrame:headerViewFrame];
-  if (section ==
-          [self.tableViewModel
-              sectionForSectionIdentifier:SectionIdentifierBookmarkFolders] &&
-      self.allowsNewFolders) {
-    CGRect separatorFrame =
-        CGRectMake(0, 0, CGRectGetWidth(headerView.bounds),
-                   1.0 / [[UIScreen mainScreen] scale]);  // 1-pixel divider.
-    UIView* separator = [[UIView alloc] initWithFrame:separatorFrame];
-    separator.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin |
-                                 UIViewAutoresizingFlexibleWidth;
-    separator.backgroundColor = [UIColor colorNamed:kSeparatorColor];
-    [headerView addSubview:separator];
-  }
-  return headerView;
-}
-
-- (CGFloat)tableView:(UITableView*)tableView
-    heightForFooterInSection:(NSInteger)section {
-  return kSectionFooterHeight;
-}
-
-- (UIView*)tableView:(UITableView*)tableView
-    viewForFooterInSection:(NSInteger)section {
-  return [[UIView alloc] init];
-}
-
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
   switch ([self.tableViewModel
       sectionIdentifierForSectionIndex:indexPath.section]) {
-    case SectionIdentifierAddFolder:
-      [self pushFolderAddViewController];
-      break;
-
     case SectionIdentifierBookmarkFolders: {
       int folderIndex = indexPath.row;
       // If new folders are allowed, the first cell on this section
-      // should call `pushFolderAddViewController`.
+      // should call `showBookmarksFolderEditor`.
       if (self.allowsNewFolders) {
         NSInteger itemType =
             [self.tableViewModel itemTypeForIndexPath:indexPath];
         if (itemType == ItemTypeCreateNewFolder) {
-          [self pushFolderAddViewController];
+          [self.delegate showBookmarksFolderEditor];
           return;
         }
         // If new folders are allowed, we need to offset by 1 to get
@@ -343,11 +283,6 @@ using bookmarks::BookmarkNode;
 
   // Delete any existing section.
   if ([self.tableViewModel
-          hasSectionForSectionIdentifier:SectionIdentifierAddFolder]) {
-    [self.tableViewModel
-        removeSectionWithIdentifier:SectionIdentifierAddFolder];
-  }
-  if ([self.tableViewModel
           hasSectionForSectionIdentifier:SectionIdentifierBookmarkFolders]) {
     [self.tableViewModel
         removeSectionWithIdentifier:SectionIdentifierBookmarkFolders];
@@ -357,13 +292,13 @@ using bookmarks::BookmarkNode;
   [self.tableViewModel
       addSectionWithIdentifier:SectionIdentifierBookmarkFolders];
 
-  // Adds default "Add Folder" item if needed.
+  // Adds default "New Folder" item if needed.
   if (self.allowsNewFolders) {
     TableViewBookmarksFolderItem* createFolderItem =
         [[TableViewBookmarksFolderItem alloc]
             initWithType:ItemTypeCreateNewFolder
                    style:BookmarksFolderStyleNewFolder];
-    // Add the "Add Folder" Item to the same section as the rest of the folder
+    // Add the "New Folder" Item to the same section as the rest of the folder
     // entries.
     [self.tableViewModel addItem:createFolderItem
          toSectionWithIdentifier:SectionIdentifierBookmarkFolders];
@@ -396,11 +331,6 @@ using bookmarks::BookmarkNode;
   }
 
   [self.tableView reloadData];
-}
-
-- (void)pushFolderAddViewController {
-  DCHECK(self.allowsNewFolders);
-  [self.delegate showBookmarksFolderEditor];
 }
 
 - (void)delayedNotifyDelegateOfSelection {
