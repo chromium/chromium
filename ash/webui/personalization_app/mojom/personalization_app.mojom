@@ -666,12 +666,6 @@ enum BacklightColor {
   kPurple = 7,
 
   kRainbow = 100,
-  // Indicates multi-zone customization is selected, not considered a valid
-  // color for setter APIs like |SetBacklightColor()| and
-  // |SetBacklightZoneColor()|, and only used by the backend. The actual zone
-  // colors are saved in
-  // |ash::prefs::kPersonalizationKeyboardBacklightZoneColors|.
-  kMultiZone = 101,
 };
 
 // Hex values of the colors displayed in the rgb keyboard section.

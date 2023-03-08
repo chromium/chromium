@@ -364,14 +364,17 @@ TEST_F(KeyboardBacklightColorControllerTest, SetBacklightZoneColor) {
   for (auto color : zone_colors) {
     EXPECT_EQ(color, default_color);
   }
+  // Expects the backligh color display type to be set to `kStatic`.
+  EXPECT_EQ(KeyboardBacklightColorController::DisplayType::kStatic,
+            controller_->GetDisplayType(account_id_1));
 
   // Updates one of the zone to a different color.
   const int zone = 3;
   const auto color_to_be_set = personalization_app::mojom::BacklightColor::kRed;
   controller_->SetBacklightZoneColor(zone, color_to_be_set, account_id_1);
-  // Expects the backligh color pref to be set to kMultiZone.
-  EXPECT_EQ(personalization_app::mojom::BacklightColor::kMultiZone,
-            controller_->GetBacklightColor(account_id_1));
+  // Expects the backligh color display type to be set to `kMultiZone`.
+  EXPECT_EQ(KeyboardBacklightColorController::DisplayType::kMultiZone,
+            controller_->GetDisplayType(account_id_1));
   // Expects zone color to be updated.
   zone_colors = controller_->GetBacklightZoneColors(account_id_1);
   EXPECT_EQ(color_to_be_set, zone_colors.at(zone));

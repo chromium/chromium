@@ -1327,6 +1327,11 @@ const char kPersonalizationKeyboardBacklightColor[] =
 const char kPersonalizationKeyboardBacklightZoneColors[] =
     "ash.personalization.keyboard_backlight_zone_colors";
 
+// This integer pref indicates the display type of the keyboard backlight color.
+// The value is one of `KeyboardBacklightColorController::DisplayType`.
+const char kPersonalizationKeyboardBacklightColorDisplayType[] =
+    "ash.personalization.keyboard_backlight_color_display_type";
+
 // Integer pref corresponding to the autozoom state, the value should be one of
 // cros::mojom::CameraAutoFramingState.
 const char kAutozoomState[] = "ash.camera.autozoom_state";

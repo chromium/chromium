@@ -32,6 +32,13 @@ class ASH_EXPORT KeyboardBacklightColorController
       public SessionObserver,
       public WallpaperControllerObserver {
  public:
+  // Used to indicate which display type is being set on the keyboard.
+  // TODO(b/266588717): Add a new value for rainbow color option.
+  enum class DisplayType {
+    kStatic = 0,
+    kMultiZone = 1,
+  };
+
   // Default brightness to be set by the `KeyboardBacklightColorController` when
   // the backlight is off and the user configures a new color.
   static constexpr double kDefaultBacklightBrightness = 40.0;
@@ -71,6 +78,10 @@ class ASH_EXPORT KeyboardBacklightColorController
   // |RgbKeyboardManager::GetZoneCount()|.
   std::vector<personalization_app::mojom::BacklightColor>
   GetBacklightZoneColors(const AccountId& account_id);
+
+  // Returns the current keyboard backlight color display type for user with
+  // |account_id|.
+  DisplayType GetDisplayType(const AccountId& account_id);
 
   // RgbKeyboardManagerObserver:
   void OnRgbKeyboardSupportedChanged(bool supported) override;
@@ -121,6 +132,10 @@ class ASH_EXPORT KeyboardBacklightColorController
       int zone,
       personalization_app::mojom::BacklightColor backlight_color,
       const AccountId& account_id);
+
+  // Used inside |SetBacklightColor()| and |SetBacklightZoneColors()| to set
+  // the keyboard backlight color display type for user with |account_id|.
+  void SetDisplayType(DisplayType type, const AccountId& account_id);
 
   // Toggles on the keyboard brightness at 40% if the backlight is off.
   void MaybeToggleOnKeyboardBrightness();

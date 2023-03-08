@@ -63,7 +63,6 @@ void PersonalizationAppKeyboardBacklightProviderImpl::SetBacklightColor(
     return;
   }
   DVLOG(4) << __func__ << " backlight_color=" << backlight_color;
-  DCHECK_NE(backlight_color, mojom::BacklightColor::kMultiZone);
   LogKeyboardBacklightColor(backlight_color);
   GetKeyboardBacklightColorController()->SetBacklightColor(
       backlight_color, GetAccountId(profile_));
@@ -86,8 +85,7 @@ void PersonalizationAppKeyboardBacklightProviderImpl::SetBacklightZoneColor(
 
   DVLOG(4) << __func__ << " zone=" << zone
            << " backlight_color=" << backlight_color;
-  DCHECK_NE(backlight_color, mojom::BacklightColor::kMultiZone);
-  LogKeyboardBacklightColor(mojom::BacklightColor::kMultiZone);
+  // TODO(b/266588717): Log zone customization metric.
   GetKeyboardBacklightColorController()->SetBacklightZoneColor(
       zone, backlight_color, GetAccountId(profile_));
   GetKeyboardBacklightColorController()

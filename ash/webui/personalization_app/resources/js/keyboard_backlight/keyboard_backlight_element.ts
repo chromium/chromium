@@ -362,9 +362,9 @@ export class KeyboardBacklight extends WithPersonalizationStore {
     this.$.zoneCustomizationRender.get().showModal();
   }
 
-  private getZoneCustomizationButtonAriaPressed_(selectedColor:
-                                                     BacklightColor) {
-    return (selectedColor === BacklightColor.kMultiZone).toString();
+  private getZoneCustomizationButtonAriaPressed_() {
+    // TODO(b/265854825): Handle selected state.
+    return 'false';
   }
 }
 
