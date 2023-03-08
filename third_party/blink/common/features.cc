@@ -106,7 +106,7 @@ BASE_FEATURE(kBackForwardCacheDedicatedWorker,
 
 BASE_FEATURE(kBackForwardCacheNotReachedOnJavaScriptExecution,
              "BackForwardCacheNotReachedOnJavaScriptExecution",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Allows pages with keepalive requests to stay eligible for the back/forward
 // cache. See https://crbug.com/1347101 for more details.
