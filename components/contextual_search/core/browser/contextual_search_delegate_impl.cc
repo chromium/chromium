@@ -168,8 +168,17 @@ void ContextualSearchDelegateImpl::StartSearchTermResolutionRequest(
 void ContextualSearchDelegateImpl::ResolveSearchTermFromContext(
     base::WeakPtr<ContextualSearchContext> context,
     SearchTermResolutionCallback callback) {
+  // TODO(crbug.com/1414459): Delete after finding a cause.
+  if (!context) {
+    DVLOG(0) << "Context is missing";
+  }
   DCHECK(context);
   GURL request_url(BuildRequestUrl(context.get()));
+
+  // TODO(crbug.com/1414459): Delete after finding a cause.
+  if (!request_url.is_valid()) {
+    DVLOG(0) << "Invalid url: " << request_url.possibly_invalid_spec();
+  }
   DCHECK(request_url.is_valid()) << request_url.possibly_invalid_spec();
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
