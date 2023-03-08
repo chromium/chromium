@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/webgpu/external_texture_helper.h"
 
 #include "media/base/video_frame.h"
+#include "media/base/video_transformation.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
@@ -23,6 +24,21 @@
 #include "third_party/skia/modules/skcms/skcms.h"
 
 namespace blink {
+namespace {
+WGPUExternalTextureRotation FromVideoRotation(media::VideoRotation rotation) {
+  switch (rotation) {
+    case media::VIDEO_ROTATION_0:
+      return WGPUExternalTextureRotation_Rotate0Degrees;
+    case media::VIDEO_ROTATION_90:
+      return WGPUExternalTextureRotation_Rotate90Degrees;
+    case media::VIDEO_ROTATION_180:
+      return WGPUExternalTextureRotation_Rotate180Degrees;
+    case media::VIDEO_ROTATION_270:
+      return WGPUExternalTextureRotation_Rotate270Degrees;
+  }
+  NOTREACHED();
+}
+}  // namespace
 
 std::array<float, 12> GetYUVToRGBMatrix(gfx::ColorSpace color_space,
                                         size_t bit_depth) {
@@ -236,6 +252,7 @@ ExternalTexture CreateExternalTexture(
   external_texture_desc.visibleSize = {
       static_cast<uint32_t>(visible_rect.width()),
       static_cast<uint32_t>(visible_rect.height())};
+
   const bool zero_copy =
       (media_video_frame->HasTextures() &&
        (media_video_frame->format() == media::PIXEL_FORMAT_NV12) &&
@@ -289,6 +306,14 @@ ExternalTexture CreateExternalTexture(
         color_space_conversion_constants.src_transfer_constants.data();
     external_texture_desc.dstTransferFunctionParameters =
         color_space_conversion_constants.dst_transfer_constants.data();
+
+    // Set ExternalTexture rotation and Y-axis flipY
+    const media::VideoFrameMetadata& metadata = media_video_frame->metadata();
+    if (metadata.transformation) {
+      external_texture_desc.rotation =
+          FromVideoRotation(metadata.transformation->rotation);
+      external_texture_desc.flipY = metadata.transformation->mirrored;
+    }
 
     external_texture.wgpu_external_texture =
         device->GetProcs().deviceCreateExternalTexture(device->GetHandle(),
