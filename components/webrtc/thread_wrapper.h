@@ -11,6 +11,7 @@
 #include <map>
 #include <memory>
 
+#include "base/auto_reset.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
@@ -137,6 +138,8 @@ class ThreadWrapper : public base::CurrentThread::DestructionObserver,
   // Called after a task has run. Move the return value of PrepareRunTask as
   // |task_start_timestamp|.
   void FinalizeRunTask(absl::optional<base::TimeTicks> task_start_timestamp);
+
+  const base::AutoReset<ThreadWrapper*> resetter_;
 
   // Task runner used to execute messages posted on this thread.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;

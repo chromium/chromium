@@ -10,7 +10,6 @@
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/metrics/field_trial.h"
-#include "base/threading/thread_local.h"
 
 namespace variations {
 
@@ -60,10 +59,6 @@ class COMPONENT_EXPORT(VARIATIONS) ChildProcessFieldTrialSyncer
   // base::FieldTrialList::Observer:
   void OnFieldTrialGroupFinalized(const std::string& trial_name,
                                   const std::string& group_name) override;
-
-  // Whether SetFieldTrialGroupFromBrowser() is being called on the current
-  // thread.
-  base::ThreadLocalBoolean in_set_field_trial_group_from_browser_;
 
   // Callback to invoke when a field trial is activated.
   const FieldTrialActivatedCallback activated_callback_;

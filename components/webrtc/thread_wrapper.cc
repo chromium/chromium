@@ -11,17 +11,17 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/lazy_instance.h"
 #include "base/location.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
-#include "base/threading/thread_local.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/rtc_base/physical_socket_server.h"
 #include "third_party/webrtc_overrides/api/location.h"
@@ -30,8 +30,12 @@
 
 namespace webrtc {
 namespace {
+
 constexpr base::TimeDelta kTaskLatencySampleDuration = base::Seconds(3);
-}
+
+ABSL_CONST_INIT thread_local ThreadWrapper* jingle_thread_wrapper = nullptr;
+
+}  // namespace
 
 // Class intended to conditionally live for the duration of ThreadWrapper
 // that periodically captures task latencies (definition in docs for
@@ -95,9 +99,6 @@ struct ThreadWrapper::PendingSend {
   base::WaitableEvent done_event;
 };
 
-base::LazyInstance<base::ThreadLocalPointer<ThreadWrapper>>::DestructorAtExit
-    g_jingle_thread_wrapper = LAZY_INSTANCE_INITIALIZER;
-
 // static
 void ThreadWrapper::EnsureForCurrentMessageLoop() {
   if (ThreadWrapper::current() == nullptr) {
@@ -111,17 +112,13 @@ void ThreadWrapper::EnsureForCurrentMessageLoop() {
 
 std::unique_ptr<ThreadWrapper> ThreadWrapper::WrapTaskRunner(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  DCHECK(!ThreadWrapper::current());
   DCHECK(task_runner->BelongsToCurrentThread());
-
-  std::unique_ptr<ThreadWrapper> result(new ThreadWrapper(task_runner));
-  g_jingle_thread_wrapper.Get().Set(result.get());
-  return result;
+  return base::WrapUnique(new ThreadWrapper(task_runner));
 }
 
 // static
 ThreadWrapper* ThreadWrapper::current() {
-  return g_jingle_thread_wrapper.Get().Get();
+  return jingle_thread_wrapper;
 }
 
 void ThreadWrapper::SetLatencyAndTaskDurationCallbacks(
@@ -134,6 +131,7 @@ void ThreadWrapper::SetLatencyAndTaskDurationCallbacks(
 ThreadWrapper::ThreadWrapper(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : Thread(std::make_unique<rtc::PhysicalSocketServer>()),
+      resetter_(&jingle_thread_wrapper, this, nullptr),
       task_runner_(task_runner),
       send_allowed_(false),
       pending_send_event_(base::WaitableEvent::ResetPolicy::MANUAL,
@@ -152,7 +150,6 @@ ThreadWrapper::~ThreadWrapper() {
   UnwrapCurrent();
   rtc::ThreadManager::Instance()->SetCurrentThread(nullptr);
   rtc::ThreadManager::Remove(this);
-  g_jingle_thread_wrapper.Get().Set(nullptr);
 
   CHECK(pending_send_messages_.empty());
   coalesced_tasks_.Clear();
