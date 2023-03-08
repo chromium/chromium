@@ -701,6 +701,86 @@ TEST_F(PasswordManagerViewControllerTest,
       }));
 }
 
+// Tests that the password manager is updated when passwords change while in
+// search mode.
+TEST_F(PasswordManagerViewControllerTest, TestChangePasswordsWhileSearching) {
+  root_view_controller_ = [[UIViewController alloc] init];
+  scoped_window_.Get().rootViewController = root_view_controller_;
+
+  PasswordManagerViewController* passwords_controller =
+      GetPasswordManagerViewController();
+
+  // Present the view controller.
+  __block bool presentation_finished = NO;
+  UINavigationController* navigation_controller =
+      [[UINavigationController alloc]
+          initWithRootViewController:passwords_controller];
+  [root_view_controller_ presentViewController:navigation_controller
+                                      animated:NO
+                                    completion:^{
+                                      presentation_finished = YES;
+                                    }];
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForUIElementTimeout, ^bool {
+        return presentation_finished;
+      }));
+
+  EXPECT_EQ(4, NumberOfSections());
+  EXPECT_TRUE([passwords_controller.tableViewModel
+      hasSectionForSectionIdentifier:SectionIdentifierSavePasswordsSwitch]);
+  EXPECT_TRUE([passwords_controller.tableViewModel
+      hasSectionForSectionIdentifier:SectionIdentifierPasswordCheck]);
+  EXPECT_TRUE([passwords_controller.tableViewModel
+      hasSectionForSectionIdentifier:SectionIdentifierPasswordsInOtherApps]);
+  // TODO(crbug.com/1361357): Update test after Export button is moved to
+  // Password Settings.
+  EXPECT_TRUE([passwords_controller.tableViewModel
+      hasSectionForSectionIdentifier:SectionIdentifierExportPasswordsButton]);
+
+  passwords_controller.navigationItem.searchController.active = YES;
+
+  // Add a password update.
+  AddSavedForm1();
+
+  // Simulate an update to passwords in other apps button that shouldn't be
+  // visible while in search.
+  [passwords_controller updatePasswordsInOtherAppsDetailedText];
+
+  EXPECT_EQ(2, NumberOfSections());
+  EXPECT_TRUE([passwords_controller.tableViewModel
+      hasSectionForSectionIdentifier:SectionIdentifierSavedPasswords]);
+  EXPECT_TRUE([passwords_controller.tableViewModel
+      hasSectionForSectionIdentifier:SectionIdentifierExportPasswordsButton]);
+  EXPECT_EQ(1, NumberOfItemsInSection(0));
+
+  passwords_controller.navigationItem.searchController.active = NO;
+
+  // Sections are restored after search is over.
+  EXPECT_EQ(5, NumberOfSections());
+  EXPECT_TRUE([passwords_controller.tableViewModel
+      hasSectionForSectionIdentifier:SectionIdentifierSavePasswordsSwitch]);
+  EXPECT_TRUE([passwords_controller.tableViewModel
+      hasSectionForSectionIdentifier:SectionIdentifierPasswordCheck]);
+  EXPECT_TRUE([passwords_controller.tableViewModel
+      hasSectionForSectionIdentifier:SectionIdentifierPasswordsInOtherApps]);
+  EXPECT_TRUE([passwords_controller.tableViewModel
+      hasSectionForSectionIdentifier:SectionIdentifierSavedPasswords]);
+  EXPECT_TRUE([passwords_controller.tableViewModel
+      hasSectionForSectionIdentifier:SectionIdentifierExportPasswordsButton]);
+
+  // Dismiss `view_controller_` and waits for the dismissal to finish.
+  __block bool dismissal_finished = NO;
+  [passwords_controller settingsWillBeDismissed];
+  [root_view_controller_ dismissViewControllerAnimated:NO
+                                            completion:^{
+                                              dismissal_finished = YES;
+                                            }];
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForUIElementTimeout, ^bool {
+        return dismissal_finished;
+      }));
+}
+
 // Tests that dismissing the Search Controller multiple times without presenting
 // it again doesn't cause a crash.
 TEST_F(PasswordManagerViewControllerTest,
