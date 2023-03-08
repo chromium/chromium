@@ -22,9 +22,11 @@ AX_BASE_EXPORT const char* ToString(ax::mojom::Event event);
 
 // ax::mojom::Role
 AX_BASE_EXPORT const char* ToString(ax::mojom::Role role);
+AX_BASE_EXPORT ax::mojom::Role StringToRole(const std::string& role);
 
 // ax::mojom::State
 AX_BASE_EXPORT const char* ToString(ax::mojom::State state);
+AX_BASE_EXPORT ax::mojom::State StringToState(const std::string& state);
 
 // ax::mojom::Action
 AX_BASE_EXPORT const char* ToString(ax::mojom::Action action);
@@ -42,15 +44,21 @@ AX_BASE_EXPORT const char* ToString(ax::mojom::Mutation mutation);
 // ax::mojom::StringAttribute
 AX_BASE_EXPORT const char* ToString(
     ax::mojom::StringAttribute string_attribute);
+AX_BASE_EXPORT ax::mojom::StringAttribute StringToStringAttribute(
+    const std::string& string_attribute);
 
 // ax::mojom::IntAttribute
 AX_BASE_EXPORT const char* ToString(ax::mojom::IntAttribute int_attribute);
+AX_BASE_EXPORT ax::mojom::IntAttribute StringToIntAttribute(
+    const std::string& int_attribute);
 
 // ax::mojom::FloatAttribute
 AX_BASE_EXPORT const char* ToString(ax::mojom::FloatAttribute float_attribute);
 
 // ax::mojom::BoolAttribute
 AX_BASE_EXPORT const char* ToString(ax::mojom::BoolAttribute bool_attribute);
+AX_BASE_EXPORT ax::mojom::BoolAttribute StringToBoolAttribute(
+    const std::string& bool_attribute);
 
 // ax::mojom::IntListAttribute
 AX_BASE_EXPORT const char* ToString(

@@ -13,6 +13,7 @@
 #include "ui/accessibility/ax_tree_update.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/test_ax_tree_manager.h"
+#include "ui/accessibility/test_ax_tree_update.h"
 
 namespace ui {
 
