@@ -2983,6 +2983,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       UIKeyCommand.cr_openNewTab,
       UIKeyCommand.cr_openNewIncognitoTab,
       UIKeyCommand.cr_openNewRegularTab,
+      UIKeyCommand.cr_close,
     ];
   }
 }

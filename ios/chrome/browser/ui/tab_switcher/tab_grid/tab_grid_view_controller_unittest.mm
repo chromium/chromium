@@ -145,6 +145,7 @@ TEST_F(TabGridViewControllerTest, ImplementsActions) {
   [view_controller_ keyCommand_find];
   [view_controller_ keyCommand_closeAll];
   [view_controller_ keyCommand_undo];
+  [view_controller_ keyCommand_close];
 }
 
 // Checks that metrics are correctly reported.
@@ -159,6 +160,7 @@ TEST_F(TabGridViewControllerTest, Metrics) {
   ExpectUMA(@"keyCommand_find", "MobileKeyCommandSearchTabs");
   ExpectUMA(@"keyCommand_closeAll", "MobileKeyCommandCloseAll");
   ExpectUMA(@"keyCommand_undo", "MobileKeyCommandUndo");
+  ExpectUMA(@"keyCommand_close", "MobileKeyCommandClose");
 }
 
 // This test ensure 2 things:
@@ -187,6 +189,7 @@ TEST_F(TabGridViewControllerTest, ValidateCommand_find) {
   }
 }
 
+// Checks when Close All and Undo keyboard shortcuts are possible.
 TEST_F(TabGridViewControllerTest, CanPerform_CloseAllAndUndo) {
   view_controller_ = [[TabGridViewController alloc]
       initWithPageConfiguration:TabGridPageConfiguration::kIncognitoPageOnly];
@@ -213,4 +216,10 @@ TEST_F(TabGridViewControllerTest, CanPerform_CloseAllAndUndo) {
   incognitoMediator.browser = nullptr;
   incognitoMediator = nil;
 }
+
+// Checks that the ESC keyboard shortcut is always possible.
+TEST_F(TabGridViewControllerTest, CanPerform_Close) {
+  EXPECT_TRUE(CanPerform(@"keyCommand_close"));
+}
+
 }  // namespace
