@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_components/history_clusters/history_clusters_shared_style.css.js';
+import './page_favicon.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -45,7 +46,9 @@ export class TileModuleElement extends I18nMixin
   }
 
   private computeLabel_(): string {
-    return this.visit.urlForDisplay;
+    let domain = (new URL(this.visit.normalizedUrl.url)).hostname;
+    domain = domain.replace('www.', '');
+    return domain;
   }
 }
 

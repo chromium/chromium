@@ -1,5 +1,5 @@
 <style include="history-clusters-shared-style">
-  #content {
+  :host {
     background:
         var(--color-new-tab-page-history-clusters-module-item-background);
     border-radius: 25px;
@@ -8,19 +8,16 @@
     width: 100%;
   }
 
-  :host([large-format]) #content {
-    display: flex;
-    flex-direction: column;
+  a:link,
+  a:visited,
+  a:hover,
+  a:active {
+    text-decoration: none;
   }
 
   :host([medium-format]) #content {
     display: flex;
     flex-direction: row;
-  }
-
-  :host([small-format]) #content {
-    display: flex;
-    flex-direction: column;
   }
 
   #image {
@@ -44,16 +41,11 @@
     display: none;
   }
 
-  /* TODO(crbug.com/1418528): Add favicon */
-  /*#icon {*/
-  /*  background-color: white;*/
-  /*  height: 16px;*/
-  /*  margin-inline-end: 8px;*/
-  /*  width: 16px;*/
-  /*}*/
-
-  :host([medium-format]) #icon {
-    margin-inline-start: 8px;
+  #icon {
+    background-color: white;
+    height: 16px;
+    margin-inline-end: 8px;
+    width: 16px;
   }
 
   #title {
@@ -65,7 +57,7 @@
   :host([large-format]) #title {
     height: 48px;
     max-width: 298px;
-    padding: 16px 24px 24px;
+    padding: 16px 16px 24px;
   }
 
   :host([medium-format]) #title {
@@ -85,13 +77,16 @@
     display: flex;
     flex-direction: row;
     font-size: 11px;
-    margin-inline-start: 24px;
+    margin-inline: 16px;
+  }
+
+  :host([medium-format]) #info-container {
+    margin-inline-start: 8px;
   }
 
   :host([small-format]) #info-container {
     height: 20px;
     margin-bottom: 14px;
-    margin-inline-start: 16px;
   }
 
   #label,
@@ -101,7 +96,7 @@
   }
 
   :host([large-format]) #label {
-    max-width: 200px;
+    max-width: 220px;
   }
 
   :host([medium-format]) #label {
@@ -109,7 +104,7 @@
   }
 
   :host([small-format]) #label,
-  #dot {
+  :host([small-format]) #dot {
     display: none;
   }
 
@@ -123,6 +118,9 @@
   <div id="text-container">
     <div id="title" class="truncate">[[visit.pageTitle]]</div>
     <div id="info-container">
+      <page-favicon id="icon" url="[[visit.normalizedUrl]]"
+        is-known-to-sync="[[visit.isKnownToSync]]">
+      </page-favicon>
       <div id="label" class="truncate"> [[label_]]</div>
       <span id="dot">&nbsp&#8226&nbsp</span>
       <div id="date">[[visit.relativeDate]]</div>
