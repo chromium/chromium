@@ -265632,16 +265632,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "692c59efc599c23c201a2424991c75a7207e41d9",
-     []
-    ],
-    "mtime.json": [
-     "76e9ed354a29c05138e963a7521bac4d49342f3e",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -310922,7 +310912,7 @@
        []
       ],
       "auto-007-expected.txt": [
-       "5a906a8f0492c65550382c5c6c79bc6371cceba1",
+       "3cba385e25565f292f970554cef1edcb3cc05fba",
        []
       ],
       "auto-007.html.ini": [
@@ -311063,14 +311053,6 @@
       ],
       "contain-intrinsic-size-029.html.ini": [
        "4b60d8fd355a214eef6c355275c397a86b3590c2",
-       []
-      ],
-      "contain-intrinsic-size-031-expected.txt": [
-       "87ff06f84e94f6ce96210b66cf4c5d9850032713",
-       []
-      ],
-      "contain-intrinsic-size-031.html.ini": [
-       "418a2ec0c47e70118ca4ba0f5c75d47fa908b4dd",
        []
       ],
       "resources": {
@@ -556556,7 +556538,7 @@
       ]
      ],
      "loaf-promise.html": [
-      "3e936ed04af9d9a0504ef58e4c7c87404c2268e6",
+      "226d06a8303410d8a4ba5a116df98fa56a588ad5",
       [
        null,
        {
@@ -587030,7 +587012,7 @@
       ]
      ],
      "animation-timeline-named-scroll-progress-timeline.tentative.html": [
-      "9f55e2d2c91ff0045ab452cd5e30a3e54d34fe2a",
+      "30461723386a2e5c0440856664ff49b2cfd380e6",
       [
        null,
        {}
