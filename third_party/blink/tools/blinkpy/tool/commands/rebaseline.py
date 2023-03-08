@@ -606,26 +606,6 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
                       for path in unstaged_changes
                       if re.match(baseline_re, path))
 
-    def _generic_baseline_paths(self, test_baseline_set):
-        """Returns absolute paths for generic baselines for the given tests.
-
-        Even when a test does not have a generic baseline, the path where it
-        would be is still included in the return value.
-        """
-        filesystem = self._tool.filesystem
-        baseline_paths = []
-        for test in test_baseline_set.all_tests():
-            filenames = [
-                self._file_name_for_expected_result(test, suffix)
-                for suffix in BASELINE_SUFFIX_LIST
-            ]
-            baseline_paths += [
-                filesystem.join(self._web_tests_dir(), filename)
-                for filename in filenames
-            ]
-        baseline_paths.sort()
-        return baseline_paths
-
     def _web_tests_dir(self):
         return self._tool.port_factory.get().web_tests_dir()
 

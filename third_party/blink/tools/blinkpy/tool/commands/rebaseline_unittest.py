@@ -273,21 +273,6 @@ class TestAbstractParallelRebaselineCommand(BaseTestCase):
                        'not_site_per_process_blink_web_tests (with patch)'),
                       build_steps_to_fetch)
 
-    def test_generic_baseline_paths(self):
-        test_baseline_set = TestBaselineSet(self.tool)
-        # Multiple ports shouldn't produce duplicate baseline paths.
-        test_baseline_set.add('passes/text.html', Build('MOCK Win7'))
-        test_baseline_set.add('passes/text.html', Build('MOCK Win10'))
-
-        # pylint: disable=protected-access
-        baseline_paths = self.command._generic_baseline_paths(
-            test_baseline_set)
-        self.assertEqual(baseline_paths, [
-            MOCK_WEB_TESTS + 'passes/text-expected.png',
-            MOCK_WEB_TESTS + 'passes/text-expected.txt',
-            MOCK_WEB_TESTS + 'passes/text-expected.wav',
-        ])
-
     def test_unstaged_baselines(self):
         git = self.tool.git()
         git.unstaged_changes = lambda: {
