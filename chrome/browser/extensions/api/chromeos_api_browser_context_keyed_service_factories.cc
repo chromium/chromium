@@ -9,12 +9,14 @@
 #include "chrome/browser/chromeos/extensions/file_system_provider/service_worker_lifetime_manager.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/external_logout_request/external_logout_request_event_handler_factory.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login_state/session_state_changed_event_dispatcher.h"
+#include "chrome/browser/chromeos/extensions/smart_card_provider_private/smart_card_provider_private_api.h"
 #include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service_factory.h"
 #include "chrome/browser/chromeos/platform_keys/extension_platform_keys_service_factory.h"
 #include "printing/buildflags/buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crostini/throttle/crostini_throttle.h"
+#include "chrome/browser/ash/extensions/autotest_private/autotest_private_api.h"
 #include "chrome/browser/ash/extensions/install_limiter_factory.h"
 #include "chrome/browser/ash/extensions/speech/speech_recognition_private_manager.h"
 #include "chrome/browser/ash/extensions/users_private/users_private_delegate_factory.h"
@@ -33,6 +35,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   chromeos::ExtensionPlatformKeysServiceFactory::GetInstance();
   chromeos::VpnServiceFactory::GetInstance();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  extensions::AutotestPrivateAPI::GetFactoryInstance();
   extensions::ExternalLogoutDoneEventHandlerFactory::GetInstance();
 #endif
   extensions::ExternalLogoutRequestEventHandlerFactory::GetInstance();
@@ -45,6 +48,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::PrintingMetricsService::GetFactoryInstance();
 #endif
   extensions::SessionStateChangedEventDispatcher::GetFactoryInstance();
+  extensions::SmartCardProviderPrivateAPI::GetFactoryInstance();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   extensions::SpeechRecognitionPrivateManager::EnsureFactoryBuilt();
   extensions::UsersPrivateDelegateFactory::GetInstance();

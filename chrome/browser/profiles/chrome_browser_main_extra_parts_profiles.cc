@@ -19,6 +19,7 @@
 #include "chrome/browser/autofill/autocomplete_history_manager_factory.h"
 #include "chrome/browser/autofill/autofill_image_fetcher_factory.h"
 #include "chrome/browser/autofill/autofill_offer_manager_factory.h"
+#include "chrome/browser/autofill/autofill_optimization_guide_factory.h"
 #include "chrome/browser/autofill/iban_manager_factory.h"
 #include "chrome/browser/autofill/merchant_promo_code_manager_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
@@ -172,6 +173,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_reader_registry_factory.h"
 #include "chrome/browser/web_data_service_factory.h"
 #include "chrome/browser/webid/federated_identity_api_permission_context_factory.h"
+#include "chrome/browser/webid/federated_identity_auto_reauthn_permission_context_factory.h"
 #include "chrome/browser/webid/federated_identity_permission_context_factory.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
@@ -193,6 +195,7 @@
 #include "components/policy/content/safe_search_service.h"
 #include "components/reading_list/features/reading_list_switches.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/services/screen_ai/buildflags/buildflags.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
@@ -218,6 +221,7 @@
 #include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
 #include "chrome/browser/accessibility/live_translate_controller_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/publishers/standalone_browser_extension_apps_factory.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_lifetime_manager_factory.h"
 #include "chrome/browser/cart/cart_service_factory.h"
 #include "chrome/browser/commerce/coupons/coupon_service_factory.h"
@@ -241,6 +245,8 @@
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/apps/app_deduplication_service/app_deduplication_service_factory.h"
 #include "chrome/browser/apps/app_preload_service/app_preload_service_factory.h"
+#include "chrome/browser/apps/app_service/publishers/web_apps_crosapi_factory.h"
+#include "chrome/browser/apps/app_service/subscriber_crosapi_factory.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability_factory.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ash/browser_context_keyed_service_factories.h"
@@ -256,6 +262,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/intent_helper/supported_links_infobar_prefs_service_factory.h"
+#include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/policy/messaging_layer/util/manual_test_heartbeat_event_factory.h"
 #include "chrome/browser/policy/networking/policy_cert_service_factory.h"
@@ -264,6 +271,11 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/profile_resetter/triggered_profile_resetter_factory.h"
+#include "chrome/browser/win/jumplist_factory.h"
+#endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#include "chrome/browser/recovery/recovery_install_global_error_factory.h"
 #endif
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
@@ -326,6 +338,7 @@
 #include "chrome/browser/lacros/account_manager/profile_account_manager_factory.h"
 #include "chrome/browser/lacros/cert/cert_db_initializer_factory.h"
 #include "chrome/browser/lacros/remote_apps/remote_apps_proxy_lacros_factory.h"
+#include "chrome/browser/speech/tts_client_factory_lacros.h"
 #include "chrome/browser/ui/startup/first_run_service.h"
 #endif
 
@@ -396,6 +409,11 @@
 #include "chrome/browser/user_notes/user_note_service_factory.h"
 #endif
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#include "chrome/browser/accessibility/ax_screen_ai_annotator_factory.h"
+#include "chrome/browser/accessibility/pdf_ocr_controller_factory.h"
+#endif
+
 namespace chrome {
 
 void AddProfilesExtraParts(ChromeBrowserMainParts* main_parts) {
@@ -458,6 +476,10 @@ void ChromeBrowserMainExtraPartsProfiles::
   ash::AccountAppsAvailabilityFactory::GetInstance();
   ash::SystemWebAppManagerFactory::GetInstance();
   apps::deduplication::AppDeduplicationServiceFactory::GetInstance();
+  apps::StandaloneBrowserExtensionAppsFactoryForApp::GetInstance();
+  apps::StandaloneBrowserExtensionAppsFactoryForExtension::GetInstance();
+  apps::SubscriberCrosapiFactory::GetInstance();
+  apps::WebAppsCrosapiFactory::GetInstance();
 #endif
 #if !BUILDFLAG(IS_ANDROID)
   apps::AppServiceProxyFactory::GetInstance();
@@ -477,6 +499,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   autofill::AutofillImageFetcherFactory::GetInstance();
   autofill::AutofillLogRouterFactory::GetInstance();
   autofill::AutofillOfferManagerFactory::GetInstance();
+  autofill::AutofillOptimizationGuideFactory::GetInstance();
   autofill::IBANManagerFactory::GetInstance();
   autofill::PersonalDataManagerFactory::GetInstance();
   autofill::MerchantPromoCodeManagerFactory::GetInstance();
@@ -504,6 +527,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   browsing_topics::BrowsingTopicsServiceFactory::GetInstance();
 #if defined(TOOLKIT_VIEWS)
   BubbleContentsWrapperServiceFactory::GetInstance();
+#endif
+#if BUILDFLAG(IS_CHROMEOS)
+  chromeos::CertificateProviderServiceFactory::GetInstance();
 #endif
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   chromeos::CleanupManagerLacrosFactory::GetInstance();
@@ -578,6 +604,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   FaviconServiceFactory::GetInstance();
   feature_engagement::TrackerFactory::GetInstance();
   FederatedIdentityApiPermissionContextFactory::GetInstance();
+  FederatedIdentityAutoReauthnPermissionContextFactory::GetInstance();
   FederatedIdentityPermissionContextFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   feedback::FeedbackUploaderFactoryChrome::GetInstance();
@@ -616,6 +643,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   InMemoryURLIndexFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   InstantServiceFactory::GetInstance();
+#endif
+#if BUILDFLAG(IS_WIN)
+  JumpListFactory::GetInstance();
 #endif
   KAnonymityServiceFactory::GetInstance();
   LanguageModelManagerFactory::GetInstance();
@@ -815,9 +845,11 @@ void ChromeBrowserMainExtraPartsProfiles::
   ReadingListManagerFactory::GetInstance();
   ReadingListNotificationServiceFactory::GetInstance();
 #endif
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  RecoveryInstallGlobalErrorFactory::GetInstance();
+#endif
   ReduceAcceptLanguageFactory::GetInstance();
   RendererUpdaterFactory::GetInstance();
-
 #if BUILDFLAG(IS_CHROMEOS)
   reporting::ManualTestHeartbeatEventFactory::GetInstance();
 #endif
@@ -840,6 +872,10 @@ void ChromeBrowserMainExtraPartsProfiles::
   safe_browsing::SafeBrowsingMetricsCollectorFactory::GetInstance();
   safe_browsing::SafeBrowsingNavigationObserverManagerFactory::GetInstance();
   safe_browsing::VerdictCacheManagerFactory::GetInstance();
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  screen_ai::AXScreenAIAnnotatorFactory::EnsureFactoryBuilt();
+  screen_ai::PdfOcrControllerFactory::GetInstance();
+#endif
 #if BUILDFLAG(IS_MAC)
   if (screentime::IsScreenTimeEnabled()) {
     screentime::HistoryBridgeFactory::GetInstance();
@@ -906,6 +942,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   TriggeredProfileResetterFactory::GetInstance();
 #endif
   TranslateModelServiceFactory::GetInstance();
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  TtsClientFactoryLacros::GetInstance();
+#endif
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
   TurnSyncOnHelper::EnsureFactoryBuilt();
 #endif

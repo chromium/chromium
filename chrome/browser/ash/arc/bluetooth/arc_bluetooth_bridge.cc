@@ -3171,6 +3171,7 @@ void ArcBluetoothBridge::OnBluetoothConnectingSocketReady(
 // static
 void ArcBluetoothBridge::EnsureFactoryBuilt() {
   ArcBluezBridgeFactory::GetInstance();
+  ArcFlossBridgeFactory::GetInstance();
 }
 
 ArcBluetoothBridge::BluetoothListeningSocket::BluetoothListeningSocket() =

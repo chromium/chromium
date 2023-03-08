@@ -46,6 +46,11 @@ ArcVmmManager* ArcVmmManager::GetForBrowserContext(
 }
 
 // static
+void ArcVmmManager::EnsureFactoryBuilt() {
+  ArcVmmManagerFactory::GetInstance();
+}
+
+// static
 ArcVmmManager* ArcVmmManager::GetForBrowserContextForTesting(
     content::BrowserContext* context) {
   return ArcVmmManagerFactory::GetForBrowserContextForTesting(context);

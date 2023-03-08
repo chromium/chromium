@@ -183,6 +183,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   file_manager::VolumeManagerFactory::GetInstance();
   file_system_provider::ServiceFactory::GetInstance();
   full_restore::FullRestoreServiceFactory::GetInstance();
+  guest_os::GuestOsMimeTypesServiceFactory::GetInstance();
   guest_os::GuestOsRegistryServiceFactory::GetInstance();
   guest_os::GuestOsServiceFactory::GetInstance();
   guest_os::GuestOsSessionTrackerFactory::GetInstance();

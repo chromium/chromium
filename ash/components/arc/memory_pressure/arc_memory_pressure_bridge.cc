@@ -139,4 +139,9 @@ void ArcMemoryPressureBridge::OnHostMemoryPressureComplete(uint32_t killed,
                                                        reclaimed / 1024);
 }
 
+// static
+void ArcMemoryPressureBridge::EnsureFactoryBuilt() {
+  ArcMemoryPressureBridgeFactory::GetInstance();
+}
+
 }  // namespace arc

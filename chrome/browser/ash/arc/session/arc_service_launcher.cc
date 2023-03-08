@@ -439,6 +439,7 @@ void ArcServiceLauncher::EnsureFactoriesBuilt() {
   ArcKioskBridge::EnsureFactoryBuilt();
   ArcLockScreenBridge::EnsureFactoryBuilt();
   ArcMediaSessionBridge::EnsureFactoryBuilt();
+  ArcMemoryPressureBridge::EnsureFactoryBuilt();
   ArcMetricsServiceFactory::GetInstance();
   ArcMetricsServiceProxy::EnsureFactoryBuilt();
   ArcMidisBridge::EnsureFactoryBuilt();
@@ -469,6 +470,7 @@ void ArcServiceLauncher::EnsureFactoriesBuilt() {
   ArcUsbHostBridge::EnsureFactoryBuilt();
   ArcUsbHostPermissionManagerFactory::GetInstance();
   ArcUserSessionService::EnsureFactoryBuilt();
+  ArcVmmManager::EnsureFactoryBuilt();
   ArcVolumeMounterBridge::EnsureFactoryBuilt();
   ArcWakeLockBridge::EnsureFactoryBuilt();
   ArcWallpaperService::EnsureFactoryBuilt();

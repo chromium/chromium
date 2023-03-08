@@ -42,6 +42,8 @@ class ArcVmmManager : public KeyedService {
     user_id_hash_ = user_id_hash;
   }
 
+  static void EnsureFactoryBuilt();
+
  private:
   // Accelerator target for experimental usage. Ctrl + Alt + Shift + O / P for
   // enable or disable vmm swap.
