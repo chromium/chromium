@@ -9051,6 +9051,23 @@
             ]
         }
     ],
+    "PartitionAllocLargeEmptySlotSpanRing": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PartitionAllocLargeEmptySlotSpanRing"
+                    ]
+                }
+            ]
+        }
+    ],
     "PartitionAllocLargeThreadCacheSizeAndroid": [
         {
             "platforms": [
