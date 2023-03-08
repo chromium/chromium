@@ -213,6 +213,7 @@ source_set("event_device_info") {
   ]
 
   visibility += [
+    "//ash:ash_unittests",
     "//ash/webui/diagnostics_ui/backend:*",
     "//chromeos/ash/services/cros_healthd/*",
     "//ui/chromeos/*",
@@ -233,7 +234,10 @@ source_set("event_device_info_test_utils") {
     "//base",
   ]
 
-  visibility += [ "//ash/webui/diagnostics_ui/backend:unit_tests" ]
+  visibility += [
+    "//ash:ash_unittests",
+    "//ash/webui/diagnostics_ui/backend:unit_tests",
+  ]
 }
 
 source_set("unittests") {

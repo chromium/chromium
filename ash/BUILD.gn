@@ -3589,6 +3589,8 @@ test("ash_unittests") {
     "//ui/events/devices",
     "//ui/events/devices:test_support",
     "//ui/events/ozone:ozone",
+    "//ui/events/ozone/evdev:event_device_info",
+    "//ui/events/ozone/evdev:event_device_info_test_utils",
     "//ui/gfx",
     "//ui/gfx:test_support",
     "//ui/gfx/geometry",

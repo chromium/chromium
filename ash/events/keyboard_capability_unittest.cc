@@ -10,11 +10,16 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/files/file_path.h"
+#include "base/ranges/algorithm.h"
 #include "components/prefs/pref_service.h"
 #include "device/udev_linux/fake_udev_loader.h"
+#include "ui/chromeos/events/mojom/modifier_key.mojom-shared.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/events/ozone/evdev/event_device_info.h"
+#include "ui/events/ozone/evdev/event_device_test_util.h"
 
 namespace ash {
 
@@ -25,6 +30,22 @@ constexpr char kKbdTopRowLayout1Tag[] = "1";
 constexpr char kKbdTopRowLayout2Tag[] = "2";
 constexpr char kKbdTopRowLayoutWilcoTag[] = "3";
 constexpr char kKbdTopRowLayoutDrallionTag[] = "4";
+
+constexpr int kDeviceId1 = 5;
+constexpr int kDeviceId2 = 10;
+
+// NOTE: This only creates a simple ui::InputDevice based on a device
+// capabilities report; it is not suitable for subclasses of ui::InputDevice.
+ui::InputDevice InputDeviceFromCapabilities(
+    int device_id,
+    const ui::DeviceCapabilities& capabilities) {
+  ui::EventDeviceInfo device_info = {};
+  ui::CapabilitiesToDeviceInfo(capabilities, &device_info);
+  return ui::InputDevice(
+      device_id, device_info.device_type(), device_info.name(),
+      device_info.phys(), base::FilePath(capabilities.path),
+      device_info.vendor_id(), device_info.product_id(), device_info.version());
+}
 
 class FakeDeviceManager {
  public:
@@ -96,6 +117,25 @@ class KeyboardCapabilityTest : public AshTestBase {
   void TearDown() override {
     keyboard_capability_->RemoveObserver(test_observer_.get());
     AshTestBase::TearDown();
+  }
+
+  ui::InputDevice AddFakeKeyboardInfoToKeyboardCapability(
+      int device_id,
+      ui::DeviceCapabilities capabilities,
+      ui::KeyboardCapability::DeviceType device_type) {
+    ui::KeyboardCapability::KeyboardInfo keyboard_info;
+    keyboard_info.device_type = device_type;
+    keyboard_info.event_device_info = std::make_unique<ui::EventDeviceInfo>();
+
+    ui::InputDevice fake_keyboard =
+        InputDeviceFromCapabilities(device_id, capabilities);
+    ui::CapabilitiesToDeviceInfo(capabilities,
+                                 keyboard_info.event_device_info.get());
+
+    keyboard_capability_->SetKeyboardInfoForTesting(fake_keyboard,
+                                                    std::move(keyboard_info));
+
+    return fake_keyboard;
   }
 
  protected:
@@ -221,7 +261,7 @@ TEST_F(KeyboardCapabilityTest, TestGetMappedFKeyIfExists) {
 TEST_F(KeyboardCapabilityTest, TestHasLauncherButton) {
   // Add a non-layout2 keyboard.
   ui::InputDevice fake_keyboard1(
-      /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+      /*id=*/kDeviceId1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
       /*name=*/"Keyboard1");
   fake_keyboard1.sys_path = base::FilePath("path1");
   fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard1, kKbdTopRowLayout1Tag);
@@ -235,7 +275,7 @@ TEST_F(KeyboardCapabilityTest, TestHasLauncherButton) {
 
   // Add a layout2 keyboard.
   ui::InputDevice fake_keyboard2(
-      /*id=*/2, /*type=*/ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+      /*id=*/kDeviceId2, /*type=*/ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
       /*name=*/"Keyboard2");
   fake_keyboard1.sys_path = base::FilePath("path2");
   fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard2, kKbdTopRowLayout2Tag);
@@ -267,6 +307,81 @@ TEST_F(KeyboardCapabilityTest, TestHasSixPackKey) {
   // External keyboard has six pack key.
   EXPECT_TRUE(keyboard_capability_->HasSixPackKey(fake_keyboard2));
   EXPECT_TRUE(keyboard_capability_->HasSixPackOnAnyKeyboard());
+}
+
+TEST_F(KeyboardCapabilityTest, TestRemoveDevicesFromList) {
+  const ui::InputDevice input_device1 = AddFakeKeyboardInfoToKeyboardCapability(
+      kDeviceId1, ui::kEveKeyboard,
+      ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard);
+  const ui::InputDevice input_device2 = AddFakeKeyboardInfoToKeyboardCapability(
+      kDeviceId2, ui::kHpUsbKeyboard,
+      ui::KeyboardCapability::DeviceType::kDeviceExternalGenericKeyboard);
+
+  ui::DeviceDataManagerTestApi().SetKeyboardDevices(
+      {input_device1, input_device2});
+  ASSERT_EQ(2u, keyboard_capability_->keyboard_info_map().size());
+
+  ui::DeviceDataManagerTestApi().SetKeyboardDevices({input_device1});
+  ASSERT_EQ(1u, keyboard_capability_->keyboard_info_map().size());
+  EXPECT_TRUE(keyboard_capability_->keyboard_info_map().contains(kDeviceId1));
+
+  ui::DeviceDataManagerTestApi().SetKeyboardDevices({});
+  ASSERT_EQ(0u, keyboard_capability_->keyboard_info_map().size());
+}
+
+class ModifierKeyTest : public KeyboardCapabilityTest,
+                        public testing::WithParamInterface<
+                            std::tuple<ui::DeviceCapabilities,
+                                       ui::KeyboardCapability::DeviceType,
+                                       std::vector<ui::mojom::ModifierKey>>> {};
+
+// Tests that the given `ui::DeviceCapabilities` and
+// `ui::KeyboardCapability::DeviceType` combo generates the given set of
+// modifier keys.
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ModifierKeyTest,
+    testing::ValuesIn(std::vector<
+                      std::tuple<ui::DeviceCapabilities,
+                                 ui::KeyboardCapability::DeviceType,
+                                 std::vector<ui::mojom::ModifierKey>>>{
+        {ui::kEveKeyboard,
+         ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard,
+         {ui::mojom::ModifierKey::kBackspace, ui::mojom::ModifierKey::kControl,
+          ui::mojom::ModifierKey::kMeta, ui::mojom::ModifierKey::kEscape,
+          ui::mojom::ModifierKey::kAlt, ui::mojom::ModifierKey::kAssistant}},
+        {ui::kDrobitKeyboard,
+         ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard,
+         {ui::mojom::ModifierKey::kBackspace, ui::mojom::ModifierKey::kControl,
+          ui::mojom::ModifierKey::kMeta, ui::mojom::ModifierKey::kEscape,
+          ui::mojom::ModifierKey::kAlt}},
+        {ui::kLogitechKeyboardK120,
+         ui::KeyboardCapability::DeviceType::kDeviceExternalGenericKeyboard,
+         {ui::mojom::ModifierKey::kBackspace, ui::mojom::ModifierKey::kControl,
+          ui::mojom::ModifierKey::kMeta, ui::mojom::ModifierKey::kEscape,
+          ui::mojom::ModifierKey::kAlt, ui::mojom::ModifierKey::kCapsLock}},
+        {ui::kHpUsbKeyboard,
+         ui::KeyboardCapability::DeviceType::kDeviceExternalGenericKeyboard,
+         {ui::mojom::ModifierKey::kBackspace, ui::mojom::ModifierKey::kControl,
+          ui::mojom::ModifierKey::kMeta, ui::mojom::ModifierKey::kEscape,
+          ui::mojom::ModifierKey::kAlt, ui::mojom::ModifierKey::kCapsLock}},
+        // Tests that an external chromeos keyboard correctly omits capslock.
+        {ui::kHpUsbKeyboard,
+         ui::KeyboardCapability::DeviceType::kDeviceExternalChromeOsKeyboard,
+         {ui::mojom::ModifierKey::kBackspace, ui::mojom::ModifierKey::kControl,
+          ui::mojom::ModifierKey::kMeta, ui::mojom::ModifierKey::kEscape,
+          ui::mojom::ModifierKey::kAlt}}}));
+
+TEST_P(ModifierKeyTest, TestGetModifierKeys) {
+  auto [capabilities, device_type, expected_modifier_keys] = GetParam();
+
+  const ui::InputDevice test_keyboard = AddFakeKeyboardInfoToKeyboardCapability(
+      kDeviceId1, capabilities, device_type);
+  auto modifier_keys = keyboard_capability_->GetModifierKeys(test_keyboard);
+
+  base::ranges::sort(expected_modifier_keys);
+  base::ranges::sort(modifier_keys);
+  EXPECT_EQ(expected_modifier_keys, modifier_keys);
 }
 
 }  // namespace ash

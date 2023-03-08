@@ -24,6 +24,7 @@
 #include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/chromeos/events/keyboard_capability.h"
 #include "ui/chromeos/events/mojom/modifier_key.mojom-shared.h"
 #include "ui/chromeos/events/pref_names.h"
 #include "ui/events/devices/device_data_manager.h"
@@ -948,28 +949,13 @@ EventRewriterChromeOS::GetKeyboardTopRowLayout(
 bool EventRewriterChromeOS::HasAssistantKeyOnKeyboard(
     const InputDevice& keyboard_device,
     bool* has_assistant_key) {
-  const char kDevNameProperty[] = "DEVNAME";
-  std::string dev_name;
-  if (!GetDeviceProperty(keyboard_device.sys_path, kDevNameProperty,
-                         &dev_name) ||
-      dev_name.empty()) {
+  std::unique_ptr<EventDeviceInfo> devinfo =
+      KeyboardCapability::CreateEventDeviceInfoFromInputDevice(keyboard_device);
+  if (!devinfo) {
     return false;
   }
 
-  base::ScopedFD fd(open(dev_name.c_str(), O_RDONLY));
-  if (fd.get() < 0) {
-    LOG(ERROR) << "Cannot open " << dev_name.c_str() << " : " << errno;
-    return false;
-  }
-
-  EventDeviceInfo devinfo;
-  if (!devinfo.Initialize(fd.get(), keyboard_device.sys_path)) {
-    LOG(ERROR) << "Failed to get device information for "
-               << keyboard_device.sys_path.value();
-    return false;
-  }
-
-  *has_assistant_key = devinfo.HasKeyEvent(KEY_ASSISTANT);
+  *has_assistant_key = devinfo->HasKeyEvent(KEY_ASSISTANT);
   return true;
 }
 

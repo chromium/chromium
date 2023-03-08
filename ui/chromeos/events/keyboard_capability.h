@@ -6,10 +6,14 @@
 #define UI_CHROMEOS_EVENTS_KEYBOARD_CAPABILITY_H_
 
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/flat_map.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/chromeos/events/mojom/modifier_key.mojom-shared.h"
 #include "ui/events/devices/input_device.h"
+#include "ui/events/devices/input_device_event_observer.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/events/ozone/evdev/event_device_info.h"
 
 namespace ui {
 
@@ -82,7 +86,7 @@ inline constexpr auto kReversedSixPackKeyToSystemKeyMap =
 
 // A keyboard util API to provide various keyboard capability information, such
 // as top row key layout, existence of certain keys, what is top right key, etc.
-class KeyboardCapability {
+class KeyboardCapability : public InputDeviceEventObserver {
  public:
   enum class DeviceType {
     kDeviceUnknown = 0,
@@ -139,10 +143,26 @@ class KeyboardCapability {
     virtual void SetTopRowKeysAsFKeysEnabledForTesting(bool enabled) = 0;
   };
 
+  struct KeyboardInfo {
+    KeyboardInfo();
+    KeyboardInfo(KeyboardInfo&&);
+    KeyboardInfo& operator=(KeyboardInfo&&);
+    KeyboardInfo(const KeyboardInfo&) = delete;
+    KeyboardInfo& operator=(const KeyboardInfo&) = delete;
+    ~KeyboardInfo();
+
+    DeviceType device_type;
+    std::unique_ptr<EventDeviceInfo> event_device_info;
+  };
+
   explicit KeyboardCapability(std::unique_ptr<Delegate> delegate);
   KeyboardCapability(const KeyboardCapability&) = delete;
   KeyboardCapability& operator=(const KeyboardCapability&) = delete;
-  ~KeyboardCapability();
+  ~KeyboardCapability() override;
+
+  // Generates an `EventDeviceInfo` from a given input device.
+  static std::unique_ptr<EventDeviceInfo> CreateEventDeviceInfoFromInputDevice(
+      const InputDevice& keyboard);
 
   void AddObserver(Observer* observer);
 
@@ -183,7 +203,28 @@ class KeyboardCapability {
   // Check if any of the connected keyboards has a six pack key.
   static bool HasSixPackOnAnyKeyboard();
 
+  // Returns the set of modifier keys present on the given keyboard.
+  std::vector<mojom::ModifierKey> GetModifierKeys(const InputDevice& keyboard);
+
+  // Takes a `KeyboardInfo` to use for testing the passed in keyboard.
+  void SetKeyboardInfoForTesting(const InputDevice& keyboard,
+                                 KeyboardInfo keyboard_info);
+
+  // InputDeviceEventObserver:
+  void OnDeviceListsComplete() override;
+  void OnInputDeviceConfigurationChanged(uint8_t input_device_types) override;
+
+  const base::flat_map<int, KeyboardInfo>& keyboard_info_map() {
+    return keyboard_info_map_;
+  }
+
  private:
+  const KeyboardInfo* GetKeyboardInfo(const InputDevice& keyboard);
+  void TrimKeyboardInfoMap();
+
+  // Stores event device info objects so they do not need to be constructed
+  // multiple times.
+  base::flat_map<int, KeyboardInfo> keyboard_info_map_;
   std::unique_ptr<Delegate> delegate_;
 };
 

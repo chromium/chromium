@@ -25,17 +25,22 @@
 #include "base/functional/bind.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "ui/chromeos/events/keyboard_capability.h"
 #include "ui/events/devices/input_device.h"
 
 namespace ash {
 
 namespace {
 mojom::KeyboardPtr BuildMojomKeyboard(const ui::InputDevice& keyboard) {
-  // TODO(dpad): Fully initialize the mojom::Keyboard object.
+  // TODO(dpad): Initialize the meta key property.
   mojom::KeyboardPtr mojom_keyboard = mojom::Keyboard::New();
   mojom_keyboard->id = keyboard.id;
   mojom_keyboard->name = keyboard.name;
   mojom_keyboard->device_key = BuildDeviceKey(keyboard);
+  mojom_keyboard->is_external =
+      keyboard.type != ui::InputDeviceType::INPUT_DEVICE_INTERNAL;
+  mojom_keyboard->modifier_keys =
+      Shell::Get()->keyboard_capability()->GetModifierKeys(keyboard);
   return mojom_keyboard;
 }
 
