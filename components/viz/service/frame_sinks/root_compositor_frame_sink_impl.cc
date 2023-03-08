@@ -31,6 +31,10 @@
 #include "components/viz/service/frame_sinks/external_begin_frame_source_android.h"
 #endif
 
+#if BUILDFLAG(IS_IOS)
+#include "components/viz/service/frame_sinks/external_begin_frame_source_ios.h"
+#endif
+
 namespace viz {
 
 class RootCompositorFrameSinkImpl::StandaloneBeginFrameObserver
@@ -130,6 +134,11 @@ RootCompositorFrameSinkImpl::Create(
         std::make_unique<ExternalBeginFrameSourceAndroid>(
             restart_id, params->refresh_rate,
             /*requires_align_with_java=*/false);
+#elif BUILDFLAG(IS_IOS)
+    // TODO(crbug.com/1413559): support setting frame rate.
+    hw_support_for_multiple_refresh_rates = false;
+    external_begin_frame_source =
+        std::make_unique<ExternalBeginFrameSourceIOS>(restart_id);
 #else
     if (params->disable_frame_rate_limit) {
       synthetic_begin_frame_source =

@@ -304,6 +304,14 @@ viz_component("service") {
 
     deps += [ "//ui/accelerated_widget_mac" ]
     frameworks = [ "IOSurface.framework" ]
+    if (is_ios) {
+      sources += [
+        "frame_sinks/external_begin_frame_source_ios.h",
+        "frame_sinks/external_begin_frame_source_ios.mm",
+      ]
+
+      frameworks += [ "CoreGraphics.framework" ]
+    }
   }
 
   if (is_android || use_ozone) {
