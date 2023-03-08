@@ -6948,7 +6948,7 @@
             ]
         }
     ],
-    "JourneysContentVisibility": [
+    "JourneysContentVisibilityFiltered": [
         {
             "platforms": [
                 "android",
@@ -6960,9 +6960,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20230123",
+                    "name": "Enabled_20230303",
                     "params": {
-                        "content_visibility_threshold": "0",
+                        "content_visibility_threshold": "0.5",
                         "supported_locales": "en-US,en,en-AU,en-CA,en-GB"
                     },
                     "enable_features": [
