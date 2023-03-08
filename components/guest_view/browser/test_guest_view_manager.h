@@ -101,8 +101,7 @@ class TestGuestViewManager : public GuestViewManager {
   FRIEND_TEST_ALL_PREFIXES(GuestViewManagerTest, ReuseIdForRecreatedGuestPage);
 
   // guest_view::GuestViewManager:
-  void AddGuest(int guest_instance_id,
-                content::WebContents* guest_web_contents) override;
+  void AddGuest(GuestViewBase* guest) override;
   void EmbedderProcessDestroyed(int embedder_process_id) override;
   void ViewGarbageCollected(int embedder_process_id,
                             int view_instance_id) override;

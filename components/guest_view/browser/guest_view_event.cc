@@ -19,8 +19,8 @@ GuestViewEvent::~GuestViewEvent() = default;
 
 void GuestViewEvent::Dispatch(GuestViewBase* guest, int instance_id) {
   DCHECK(args_) << "Dispatch was probably invoked twice!";
-  GuestViewManager::FromBrowserContext(guest->browser_context())
-      ->DispatchEvent(name_, std::move(*args_), guest, instance_id);
+  guest->GetGuestViewManager()->DispatchEvent(name_, std::move(*args_), guest,
+                                              instance_id);
 }
 
 }  // namespace guest_view

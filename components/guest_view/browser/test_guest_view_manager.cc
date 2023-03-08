@@ -168,13 +168,12 @@ void TestGuestViewManager::WaitForSingleViewGarbageCollected() {
     WaitForViewGarbageCollected();
 }
 
-void TestGuestViewManager::AddGuest(int guest_instance_id,
-                                    content::WebContents* guest_web_contents) {
-  GuestViewManager::AddGuest(guest_instance_id, guest_web_contents);
+void TestGuestViewManager::AddGuest(GuestViewBase* guest) {
+  GuestViewManager::AddGuest(guest);
 
   guest_view_watchers_.push_back(
       std::make_unique<content::FrameDeletedObserver>(
-          guest_web_contents->GetPrimaryMainFrame()));
+          guest->GetGuestMainFrame()));
 
   if (created_run_loop_)
     created_run_loop_->Quit();

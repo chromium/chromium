@@ -59,8 +59,7 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   static GuestViewBase* FromInstanceID(int owner_process_id, int instance_id);
 
   // Prefer using FromRenderFrameHost. See https://crbug.com/1362569.
-  static GuestViewBase* FromWebContents(
-      const content::WebContents* web_contents);
+  static GuestViewBase* FromWebContents(content::WebContents* web_contents);
 
   static GuestViewBase* FromRenderFrameHost(content::RenderFrameHost* rfh);
   static GuestViewBase* FromRenderFrameHostId(
