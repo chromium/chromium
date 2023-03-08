@@ -143,7 +143,7 @@ void TextFragmentsJavaScriptFeature::ScriptMessageReceived(
     manager->OnClick();
   } else if (*command == "textFragments.onClickWithSender") {
     absl::optional<CGRect> rect =
-        shared_highlighting::ParseRect(response->FindDictKey("rect"));
+        shared_highlighting::ParseRect(response->GetDict().FindDict("rect"));
     const std::string* text = response->FindStringKey("text");
 
     const base::Value::List* fragment_values_list =

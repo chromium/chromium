@@ -145,7 +145,7 @@ void AnnotationsJavaScriptFeature::ScriptMessageReceived(
   } else if (*command == "annotations.onClick") {
     const std::string* data = response->FindStringKey("data");
     absl::optional<CGRect> rect =
-        shared_highlighting::ParseRect(response->FindDictKey("rect"));
+        shared_highlighting::ParseRect(response->GetDict().FindDict("rect"));
     const std::string* text = response->FindStringKey("text");
     if (!data || !rect || !text) {
       return;

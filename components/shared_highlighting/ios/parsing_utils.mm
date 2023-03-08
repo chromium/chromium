@@ -4,7 +4,6 @@
 
 #import "components/shared_highlighting/ios/parsing_utils.h"
 
-#import "base/values.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #import "ios/web/public/web_state.h"
@@ -23,16 +22,15 @@ BOOL IsValidDictValue(const base::Value* value) {
   return value && value->is_dict() && !value->GetDict().empty();
 }
 
-absl::optional<CGRect> ParseRect(const base::Value* value) {
-  if (!IsValidDictValue(value)) {
+absl::optional<CGRect> ParseRect(const base::Value::Dict* dict) {
+  if (!dict || dict->empty()) {
     return absl::nullopt;
   }
 
-  const base::Value::Dict& dict = value->GetDict();
-  absl::optional<double> xValue = dict.FindDouble("x");
-  absl::optional<double> yValue = dict.FindDouble("y");
-  absl::optional<double> widthValue = dict.FindDouble("width");
-  absl::optional<double> heightValue = dict.FindDouble("height");
+  absl::optional<double> xValue = dict->FindDouble("x");
+  absl::optional<double> yValue = dict->FindDouble("y");
+  absl::optional<double> widthValue = dict->FindDouble("width");
+  absl::optional<double> heightValue = dict->FindDouble("height");
 
   if (!xValue || !yValue || !widthValue || !heightValue) {
     return absl::nullopt;

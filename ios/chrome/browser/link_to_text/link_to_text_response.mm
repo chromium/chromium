@@ -122,7 +122,7 @@ using shared_highlighting::TextFragment;
       TextFragment::FromValue(dict.Find("fragment"));
   const std::string* selectedText = dict.FindString("selectedText");
   absl::optional<CGRect> sourceRect =
-      shared_highlighting::ParseRect(dict.Find("selectionRect"));
+      shared_highlighting::ParseRect(dict.FindDict("selectionRect"));
 
   // All values must be present to have a valid payload.
   if (!title || !fragment || !selectedText || !sourceRect) {
