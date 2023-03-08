@@ -115,7 +115,8 @@ TotalDiskSpaceCalculator::TotalDiskSpaceCalculator(Profile* profile)
 TotalDiskSpaceCalculator::~TotalDiskSpaceCalculator() = default;
 
 void TotalDiskSpaceCalculator::PerformCalculation() {
-  if (profile_->IsGuestSession()) {
+  if (user_manager::UserManager::Get()
+          ->IsCurrentUserCryptohomeDataEphemeral()) {
     GetTotalDiskSpace();
     return;
   }

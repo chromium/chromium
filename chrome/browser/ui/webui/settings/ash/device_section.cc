@@ -29,6 +29,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -929,6 +930,10 @@ void AddDeviceDisplayStrings(content::WebUIDataSource* html_source) {
   html_source->AddLocalizedString(
       "displayArrangementText",
       IDS_SETTINGS_DISPLAY_ARRANGEMENT_WITH_KEYBOARD_TEXT);
+
+  html_source->AddBoolean(
+      "isCryptohomeDataEphemeral",
+      user_manager::UserManager::Get()->IsCurrentUserCryptohomeDataEphemeral());
 
   html_source->AddBoolean("unifiedDesktopAvailable",
                           IsUnifiedDesktopAvailable());

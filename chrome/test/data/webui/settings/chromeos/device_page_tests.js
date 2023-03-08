@@ -4,7 +4,7 @@
 
 import 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
-import {crosAudioConfigMojom, DevicePageBrowserProxyImpl, fakeCrosAudioConfig, FakeInputDeviceSettingsProvider, fakeKeyboards, fakeMice, fakePointingSticks, IdleBehavior, LidClosedBehavior, NoteAppLockScreenSupport, Router, routes, setCrosAudioConfigForTesting, setDisplayApiForTesting, setInputDeviceSettingsProviderForTesting, StorageSpaceState} from 'chrome://os-settings/chromeos/os_settings.js';
+import {crosAudioConfigMojom, DevicePageBrowserProxyImpl, fakeCrosAudioConfig, FakeInputDeviceSettingsProvider, fakeKeyboards, IdleBehavior, LidClosedBehavior, NoteAppLockScreenSupport, Router, routes, setCrosAudioConfigForTesting, setDisplayApiForTesting, setInputDeviceSettingsProviderForTesting, StorageSpaceState} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
@@ -3738,7 +3738,7 @@ suite('SettingsDevicePage', function() {
               .innerText);
 
       // In guest mode, the system row should be hidden.
-      storagePage.isGuest_ = true;
+      storagePage.isEphemeralUser_ = true;
       flush();
       assertFalse(
           isVisible(storagePage.shadowRoot.querySelector('#systemSize')));
@@ -3779,7 +3779,7 @@ suite('SettingsDevicePage', function() {
       assertEquals('322 MB', getStorageItemSubLabelFromId('otherUsersSize'));
 
       // If the user is in Guest mode, the row is not visible.
-      storagePage.isGuest_ = true;
+      storagePage.isEphemeralUser_ = true;
       webUIListenerCallback(
           'storage-other-users-size-changed', '322 MB', false);
       flush();
