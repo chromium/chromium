@@ -83,6 +83,13 @@ public final class SafeBrowsingBridge {
         return SafeBrowsingBridgeJni.get().isLeakDetectionUnauthenticatedEnabled();
     }
 
+    /**
+     * @return Whether the user is under Advanced Protection.
+     */
+    public static boolean isUnderAdvancedProtection() {
+        return SafeBrowsingBridgeJni.get().isUnderAdvancedProtection();
+    }
+
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
@@ -96,5 +103,6 @@ public final class SafeBrowsingBridge {
         boolean isSafeBrowsingManaged();
         boolean hasAccountForLeakCheckRequest();
         boolean isLeakDetectionUnauthenticatedEnabled();
+        boolean isUnderAdvancedProtection();
     }
 }

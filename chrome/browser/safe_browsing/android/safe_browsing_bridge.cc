@@ -10,6 +10,9 @@
 #include "chrome/browser/safe_browsing/android/jni_headers/SafeBrowsingBridge_jni.h"
 // NOTE: This target is transitively depended on by //chrome/browser and thus
 // can't depend on it.
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
+#include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"  // nogncheck
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check_impl.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -90,6 +93,15 @@ static jboolean JNI_SafeBrowsingBridge_IsLeakDetectionUnauthenticatedEnabled(
     JNIEnv* env) {
   return base::FeatureList::IsEnabled(
       password_manager::features::kLeakDetectionUnauthenticated);
+}
+
+static jboolean JNI_SafeBrowsingBridge_IsUnderAdvancedProtection(JNIEnv* env) {
+  Profile* profile =
+      ProfileManager::GetActiveUserProfile()->GetOriginalProfile();
+  return profile &&
+         safe_browsing::AdvancedProtectionStatusManagerFactory::GetForProfile(
+             profile)
+             ->IsUnderAdvancedProtection();
 }
 
 }  // namespace safe_browsing
