@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ash/child_accounts/usage_time_limit_processor.h"
 
-#include <algorithm>
 #include <string>
 #include <utility>
 
 #include "base/check_deref.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -1064,7 +1064,7 @@ base::TimeDelta DictToTimeDelta(const base::Value::Dict& policy_time) {
 
 // Transforms weekday strings into the Weekday enum.
 Weekday GetWeekday(std::string weekday) {
-  std::transform(weekday.begin(), weekday.end(), weekday.begin(), ::tolower);
+  base::ranges::transform(weekday, weekday.begin(), ::tolower);
   for (int i = 0; i < static_cast<int>(Weekday::kCount); i++) {
     if (weekday == kTimeLimitWeekdays[i]) {
       return static_cast<Weekday>(i);

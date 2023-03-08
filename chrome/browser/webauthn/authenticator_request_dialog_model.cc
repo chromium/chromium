@@ -868,11 +868,8 @@ void AuthenticatorRequestDialogModel::set_cable_transport_info(
 std::vector<std::string> AuthenticatorRequestDialogModel::paired_phone_names()
     const {
   std::vector<std::string> names;
-  std::transform(paired_phones_.begin(), paired_phones_.end(),
-                 std::back_inserter(names),
-                 [](const PairedPhone& phone) -> const std::string& {
-                   return phone.name;
-                 });
+  base::ranges::transform(paired_phones_, std::back_inserter(names),
+                          &PairedPhone::name);
   names.erase(std::unique(names.begin(), names.end()), names.end());
   return names;
 }

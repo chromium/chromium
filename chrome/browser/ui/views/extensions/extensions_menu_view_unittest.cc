@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -185,10 +186,9 @@ std::vector<std::string> ExtensionsMenuViewUnitTest::GetPinnedExtensionNames() {
   std::vector<ToolbarActionView*> views = GetPinnedExtensionViews();
   std::vector<std::string> result;
   result.resize(views.size());
-  std::transform(
-      views.begin(), views.end(), result.begin(), [](ToolbarActionView* view) {
-        return base::UTF16ToUTF8(view->view_controller()->GetActionName());
-      });
+  base::ranges::transform(views, result.begin(), [](ToolbarActionView* view) {
+    return base::UTF16ToUTF8(view->view_controller()->GetActionName());
+  });
   return result;
 }
 

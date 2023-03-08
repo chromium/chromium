@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/ash/assistant/assistant_test_mixin.h"
 
-#include <algorithm>
 #include <utility>
 #include <vector>
 
@@ -15,6 +14,7 @@
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/test/assistant_test_api.h"
 #include "base/auto_reset.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/scoped_run_loop_timeout.h"
@@ -528,13 +528,13 @@ std::vector<base::TimeDelta> AssistantTestMixin::ExpectAndReturnTimersResponse(
 
   // Transform the textual representation of our timers into TimeDelta objects.
   std::vector<base::TimeDelta> timers;
-  std::transform(timers_as_strings.begin(), timers_as_strings.end(),
-                 std::back_inserter(timers),
-                 [](const std::string& timer_as_string) {
-                   int seconds_remaining = 0;
-                   base::StringToInt(timer_as_string, &seconds_remaining);
-                   return base::Seconds(seconds_remaining);
-                 });
+  base::ranges::transform(timers_as_strings, std::back_inserter(timers),
+                          [](const std::string& timer_as_string) {
+                            int seconds_remaining = 0;
+                            base::StringToInt(timer_as_string,
+                                              &seconds_remaining);
+                            return base::Seconds(seconds_remaining);
+                          });
 
   return timers;
 }

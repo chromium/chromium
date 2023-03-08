@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <string>
@@ -16,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -239,11 +239,9 @@ class PageLoadMetricsBrowserTest : public InProcessBrowserTest {
   std::string GetRecordedPageLoadMetricNames() {
     auto entries = histogram_tester_->GetTotalCountsForPrefix("PageLoad.");
     std::vector<std::string> names;
-    std::transform(
-        entries.begin(), entries.end(), std::back_inserter(names),
-        [](const std::pair<std::string, base::HistogramBase::Count>& entry) {
-          return entry.first;
-        });
+    base::ranges::transform(
+        entries, std::back_inserter(names),
+        &base::HistogramTester::CountsMap::value_type::first);
     return base::JoinString(names, ",");
   }
 

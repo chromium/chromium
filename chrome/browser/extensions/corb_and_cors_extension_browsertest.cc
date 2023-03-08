@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
@@ -259,11 +260,10 @@ class CorbAndCorsExtensionBrowserTest : public CorbAndCorsExtensionTestBase {
         console_observer.messages();
 
     std::vector<std::string> messages;
-    std::transform(console_messages.begin(), console_messages.end(),
-                   std::back_inserter(messages),
-                   [](const ConsoleMessage& console_message) {
-                     return base::UTF16ToUTF8(console_message.message);
-                   });
+    base::ranges::transform(
+        console_messages, std::back_inserter(messages),
+        static_cast<std::string (*)(base::StringPiece16)>(&base::UTF16ToUTF8),
+        &ConsoleMessage::message);
 
     // We allow more than 1 console message, because the test might flakily see
     // extra console messages - see https://crbug.com/1085629.

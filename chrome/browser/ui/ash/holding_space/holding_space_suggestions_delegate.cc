@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/containers/adapters.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service_factory.h"
 
@@ -148,11 +149,8 @@ void HoldingSpaceSuggestionsDelegate::OnSuggestionsFetched(
 
   // Update `suggestions_by_type_`.
   std::vector<base::FilePath> updated_suggestions(suggestions->size());
-  std::transform(suggestions->cbegin(), suggestions->cend(),
-                 updated_suggestions.begin(),
-                 [](const FileSuggestData& raw_suggestion_data) {
-                   return raw_suggestion_data.file_path;
-                 });
+  base::ranges::transform(*suggestions, updated_suggestions.begin(),
+                          &FileSuggestData::file_path);
   suggestions_by_type_[GetItemTypeFromSuggestionType(type)] =
       std::move(updated_suggestions);
 

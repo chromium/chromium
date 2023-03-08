@@ -123,9 +123,8 @@ class SharingHubBubbleTest : public ChromeViewsTestBase {
         bubble(),
         base::BindRepeating(&ViewHasClassName, "SharingHubBubbleActionButton"));
     std::vector<sharing_hub::SharingHubBubbleActionButton*> concrete_actions;
-    std::transform(
-        actions.begin(), actions.end(), std::back_inserter(concrete_actions),
-        [](views::View* view) {
+    base::ranges::transform(
+        actions, std::back_inserter(concrete_actions), [](views::View* view) {
           return static_cast<sharing_hub::SharingHubBubbleActionButton*>(view);
         });
     return concrete_actions;

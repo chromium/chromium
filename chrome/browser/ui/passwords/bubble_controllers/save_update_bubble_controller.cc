@@ -7,6 +7,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
@@ -91,11 +92,9 @@ std::vector<password_manager::PasswordForm> DeepCopyForms(
     const std::vector<std::unique_ptr<password_manager::PasswordForm>>& forms) {
   std::vector<password_manager::PasswordForm> result;
   result.reserve(forms.size());
-  std::transform(
-      forms.begin(), forms.end(), std::back_inserter(result),
-      [](const std::unique_ptr<password_manager::PasswordForm>& form) {
-        return *form;
-      });
+  base::ranges::transform(
+      forms, std::back_inserter(result),
+      &std::unique_ptr<password_manager::PasswordForm>::operator*);
   return result;
 }
 

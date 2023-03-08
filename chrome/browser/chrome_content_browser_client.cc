@@ -4,7 +4,6 @@
 
 #include "chrome/browser/chrome_content_browser_client.h"
 
-#include <algorithm>
 #include <iterator>
 #include <map>
 #include <memory>
@@ -26,6 +25,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -7050,8 +7050,8 @@ void ChromeContentBrowserClient::IsClipboardPasteContentAllowed(
                                           base::SPLIT_WANT_NONEMPTY);
     std::vector<base::FilePath> paths;
     paths.reserve(string_paths.size());
-    std::transform(string_paths.cbegin(), string_paths.cend(),
-                   std::back_inserter(paths), base::FilePath::FromASCII);
+    base::ranges::transform(string_paths, std::back_inserter(paths),
+                            base::FilePath::FromASCII);
     auto fsd = std::make_unique<enterprise_connectors::FilesScanData>(paths);
     auto* fsd_ptr = fsd.get();
     fsd_ptr->ExpandPaths(base::BindOnce(&HandleExpandedPaths, std::move(fsd),

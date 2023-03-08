@@ -166,11 +166,10 @@ CreditCardAccessoryControllerImpl::GetSheetData() const {
   if (!unmasked_cards.empty()) {
     // Add the cached server cards first, so that they show up on the top of the
     // manual filling view.
-    std::transform(unmasked_cards.begin(), unmasked_cards.end(),
-                   std::back_inserter(info_to_add),
-                   [allow_filling](const CachedServerCardInfo* data) {
-                     return TranslateCachedCard(data, allow_filling);
-                   });
+    base::ranges::transform(unmasked_cards, std::back_inserter(info_to_add),
+                            [allow_filling](const CachedServerCardInfo* data) {
+                              return TranslateCachedCard(data, allow_filling);
+                            });
   }
   // Only add cards that are not present in the cache. Otherwise, we might
   // show duplicates.

@@ -57,14 +57,13 @@ const user_manager::User* GetActiveUser() {
 std::string HashUsername(const std::string& username) {
   unsigned char binmd[base::kSHA1Length];
   std::string lowercase(username);
-  std::transform(lowercase.begin(), lowercase.end(), lowercase.begin(),
-                 ::tolower);
+  base::ranges::transform(lowercase, lowercase.begin(), ::tolower);
   std::vector<uint8_t> data;
   base::ranges::copy(lowercase, std::back_inserter(data));
   base::SHA1HashBytes(data.data(), data.size(), binmd);
   std::string result = base::HexEncode(binmd, sizeof(binmd));
   // Stay compatible with CryptoLib::HexEncodeToBuffer()
-  std::transform(result.begin(), result.end(), result.begin(), ::tolower);
+  base::ranges::transform(result, result.begin(), ::tolower);
   return result;
 }
 

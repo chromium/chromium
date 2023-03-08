@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <algorithm>
 #include <map>
 #include <memory>
 #include <set>
@@ -16,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -338,12 +338,8 @@ class CrosNetworkConfigGuidsAvailableWaiter
       const std::vector<network_mojom::NetworkStatePropertiesPtr>&
           network_states) {
     std::set<std::string> guids;
-    std::transform(
-        network_states.begin(), network_states.end(),
-        std::inserter(guids, guids.begin()),
-        [](const network_mojom::NetworkStatePropertiesPtr& network_state) {
-          return network_state->guid;
-        });
+    base::ranges::transform(network_states, std::inserter(guids, guids.begin()),
+                            &network_mojom::NetworkStateProperties::guid);
     return guids;
   }
 

@@ -1454,8 +1454,8 @@ void BrowserThemePack::AddFileAtScaleToMap(const std::string& image_name,
 
 void BrowserThemePack::BuildSourceImagesArray(const FilePathMap& file_paths) {
   source_images_ = new int[file_paths.size() + 1];
-  std::transform(file_paths.begin(), file_paths.end(), source_images_.get(),
-                 [](const auto& entry) { return entry.first; });
+  base::ranges::transform(file_paths, source_images_.get(),
+                          &FilePathMap::value_type::first);
   source_images_[file_paths.size()] = -1;
 }
 

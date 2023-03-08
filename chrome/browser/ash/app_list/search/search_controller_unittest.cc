@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
@@ -88,11 +89,8 @@ class SearchControllerTest : public testing::Test {
     const auto& actual_results = model_updater_.search_results();
     EXPECT_EQ(actual_results.size(), expected_ids.size());
     std::vector<std::string> actual_ids;
-    std::transform(actual_results.begin(), actual_results.end(),
-                   std::back_inserter(actual_ids),
-                   [](const ChromeSearchResult* res) -> const std::string& {
-                     return res->id();
-                   });
+    base::ranges::transform(actual_results, std::back_inserter(actual_ids),
+                            &ChromeSearchResult::id);
     EXPECT_THAT(actual_ids, ElementsAreArray(expected_ids));
   }
 

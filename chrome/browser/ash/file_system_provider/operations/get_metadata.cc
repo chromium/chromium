@@ -6,12 +6,12 @@
 
 #include <stdint.h>
 
-#include <algorithm>
 #include <memory>
 #include <string>
 #include <tuple>
 #include <utility>
 
+#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "chrome/common/extensions/api/file_system_provider.h"
 #include "chrome/common/extensions/api/file_system_provider_internal.h"
@@ -123,10 +123,8 @@ bool ValidateIDLEntryMetadata(
     const std::string expected_prefix = "data:";
     std::string thumbnail_prefix =
         metadata.thumbnail->substr(0, expected_prefix.size());
-    std::transform(thumbnail_prefix.begin(),
-                   thumbnail_prefix.end(),
-                   thumbnail_prefix.begin(),
-                   ::tolower);
+    base::ranges::transform(thumbnail_prefix, thumbnail_prefix.begin(),
+                            ::tolower);
 
     if (expected_prefix != thumbnail_prefix)
       return false;

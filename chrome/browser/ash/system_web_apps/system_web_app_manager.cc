@@ -191,9 +191,9 @@ web_app::ExternalInstallOptions CreateInstallOptionsForSystemApp(
       delegate.ShouldHandleFileOpenIntents();
 
   const auto& search_terms = delegate.GetAdditionalSearchTerms();
-  std::transform(search_terms.begin(), search_terms.end(),
-                 std::back_inserter(install_options.additional_search_terms),
-                 [](int term) { return l10n_util::GetStringUTF8(term); });
+  base::ranges::transform(
+      search_terms, std::back_inserter(install_options.additional_search_terms),
+      &l10n_util::GetStringUTF8);
   return install_options;
 }
 

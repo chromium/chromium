@@ -4,9 +4,8 @@
 
 #include "extensions/browser/api/offscreen/offscreen_api.h"
 
-#include <algorithm>
-
 #include "base/functional/callback_helpers.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -451,9 +450,8 @@ IN_PROC_BROWSER_TEST_F(OffscreenApiTestWithoutFeature,
 
   // Turn our InstallWarnings into strings for easier testing.
   std::vector<std::string> string_warnings;
-  std::transform(install_warnings.begin(), install_warnings.end(),
-                 std::back_inserter(string_warnings),
-                 [](const InstallWarning& warning) { return warning.message; });
+  base::ranges::transform(install_warnings, std::back_inserter(string_warnings),
+                          &InstallWarning::message);
 
   static constexpr char kExpectedWarning[] =
       "'offscreen' requires the 'ExtensionsOffscreenDocuments' feature flag to "

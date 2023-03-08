@@ -125,13 +125,12 @@ std::string HashWallpaperFilesIdStr(const std::string& files_id_unhashed) {
 
   unsigned char binmd[base::kSHA1Length];
   std::string lowercase(files_id_unhashed);
-  std::transform(lowercase.begin(), lowercase.end(), lowercase.begin(),
-                 ::tolower);
+  base::ranges::transform(lowercase, lowercase.begin(), ::tolower);
   std::vector<uint8_t> data = *salt;
   base::ranges::copy(files_id_unhashed, std::back_inserter(data));
   base::SHA1HashBytes(data.data(), data.size(), binmd);
   std::string result = base::HexEncode(binmd, sizeof(binmd));
-  std::transform(result.begin(), result.end(), result.begin(), ::tolower);
+  base::ranges::transform(result, result.begin(), ::tolower);
   return result;
 }
 

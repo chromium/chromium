@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/exo/chrome_data_exchange_delegate.h"
 
-#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -13,6 +12,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/pickle.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -482,12 +482,12 @@ TEST_F(ChromeDataExchangeDelegateTest, ParseFileSystemSources) {
       "external/Downloads-test%2540example.com-hash/shared/file2",
   };
   std::vector<std::string> file_urls;
-  std::transform(file_names.begin(), file_names.end(),
-                 std::back_inserter(file_urls),
-                 [&file_manager_url](const std::string& name) {
-                   return base::StrCat({url::kFileSystemScheme, ":",
-                                        file_manager_url.Resolve(name).spec()});
-                 });
+  base::ranges::transform(
+      file_names, std::back_inserter(file_urls),
+      [&file_manager_url](const std::string& name) {
+        return base::StrCat({url::kFileSystemScheme, ":",
+                             file_manager_url.Resolve(name).spec()});
+      });
   std::u16string urls(base::ASCIIToUTF16(base::JoinString(file_urls, "\n")));
   base::Pickle pickle;
   ui::WriteCustomDataToPickle(

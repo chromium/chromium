@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/web_apps/file_handler_launch_dialog_view.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 

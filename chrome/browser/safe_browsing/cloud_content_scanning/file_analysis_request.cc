@@ -214,7 +214,7 @@ void FileAnalysisRequest::OnGotFileData(
                                      ? result_and_data.second.mime_type
                                      : cached_data_.mime_type;
   base::FilePath::StringType ext(file_name_.FinalExtension());
-  std::transform(ext.begin(), ext.end(), ext.begin(), tolower);
+  base::ranges::transform(ext, ext.begin(), tolower);
   if (IsZipFile(ext, mime_type)) {
     zip_analyzer_ = SandboxedZipAnalyzer::CreateAnalyzer(
         path_,

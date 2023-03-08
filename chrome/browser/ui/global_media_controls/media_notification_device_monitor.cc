@@ -129,10 +129,9 @@ void PollingDeviceMonitorImpl::OnDeviceDescriptionsRecieved(
   if (!base::ranges::equal(descriptions, device_ids_, std::equal_to<>(),
                            &media::AudioDeviceDescription::unique_id)) {
     device_ids_.clear();
-    std::transform(descriptions.begin(), descriptions.end(),
-                   std::back_inserter(device_ids_), [](auto& description) {
-                     return std::move(description.unique_id);
-                   });
+    base::ranges::transform(
+        descriptions, std::back_inserter(device_ids_),
+        [](auto& description) { return std::move(description.unique_id); });
     NotifyObservers();
   }
 

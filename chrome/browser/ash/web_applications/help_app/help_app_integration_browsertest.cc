@@ -131,9 +131,9 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2SearchInLauncher) {
   auto* system_app = GetManager().GetSystemApp(SystemWebAppType::HELP);
   std::vector<int> search_terms = system_app->GetAdditionalSearchTerms();
   std::vector<std::string> search_terms_strings;
-  std::transform(search_terms.begin(), search_terms.end(),
-                 std::back_inserter(search_terms_strings),
-                 [](int term) { return l10n_util::GetStringUTF8(term); });
+  base::ranges::transform(search_terms,
+                          std::back_inserter(search_terms_strings),
+                          &l10n_util::GetStringUTF8);
   EXPECT_EQ(std::vector<std::string>({"Get Help", "Perks", "Offers"}),
             search_terms_strings);
 }

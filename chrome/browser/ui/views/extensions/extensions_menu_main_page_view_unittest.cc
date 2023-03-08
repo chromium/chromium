@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_menu_main_page_view.h"
 
 #include "base/feature_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -52,9 +53,8 @@ std::vector<std::string> GetNamesFromMenuItems(
     std::vector<InstalledExtensionMenuItemView*> menu_items) {
   std::vector<std::string> names;
   names.resize(menu_items.size());
-  std::transform(
-      menu_items.begin(), menu_items.end(), names.begin(),
-      [](InstalledExtensionMenuItemView* item) {
+  base::ranges::transform(
+      menu_items, names.begin(), [](InstalledExtensionMenuItemView* item) {
         return base::UTF16ToUTF8(item->primary_action_button_for_testing()
                                      ->label_text_for_testing());
       });

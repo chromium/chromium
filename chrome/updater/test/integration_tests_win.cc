@@ -15,6 +15,7 @@
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
+#include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -475,9 +476,9 @@ void CallDispatchMethod(
   params.reserve(variant_params.size());
 
   // IDispatch::Invoke() expects the parameters in reverse order.
-  std::transform(variant_params.rbegin(), variant_params.rend(),
-                 std::back_inserter(params),
-                 [](const auto& param) { return param.Copy(); });
+  base::ranges::transform(base::Reversed(variant_params),
+                          std::back_inserter(params),
+                          &base::win::ScopedVariant::Copy);
 
   DISPPARAMS dp = {};
   if (!params.empty()) {

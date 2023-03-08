@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -419,8 +420,8 @@ class InputMethodPreferencesTest : public PreferencesTest {
   std::string ToInputMethodIds(const std::string& value) {
     std::vector<std::string> tokens = base::SplitString(
         value, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-    std::transform(tokens.begin(), tokens.end(), tokens.begin(),
-                   &extension_ime_util::GetInputMethodIDByEngineID);
+    base::ranges::transform(tokens, tokens.begin(),
+                            &extension_ime_util::GetInputMethodIDByEngineID);
     return base::JoinString(tokens, ",");
   }
 

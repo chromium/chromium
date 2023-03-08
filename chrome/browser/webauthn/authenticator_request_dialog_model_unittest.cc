@@ -4,13 +4,13 @@
 
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -147,7 +147,7 @@ base::StringPiece TransportAvailabilityParamToString(
 template <typename T, base::StringPiece (*F)(T)>
 std::string SetToString(base::flat_set<T> s) {
   std::vector<base::StringPiece> names;
-  std::transform(s.begin(), s.end(), std::back_inserter(names), F);
+  base::ranges::transform(s, std::back_inserter(names), F);
   return base::JoinString(names, ", ");
 }
 

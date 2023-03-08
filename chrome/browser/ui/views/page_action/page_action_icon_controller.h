@@ -69,6 +69,8 @@ class PageActionIconController : public PageActionIconViewObserver,
       const;
 
  private:
+  using IconViews = base::flat_map<PageActionIconType, PageActionIconView*>;
+
   // PageActionIconViewObserver:
   void OnPageActionIconViewShown(PageActionIconView* view) override;
   void OnPageActionIconViewClicked(PageActionIconView* view) override;
@@ -99,8 +101,7 @@ class PageActionIconController : public PageActionIconViewObserver,
 
   raw_ptr<ZoomView> zoom_icon_ = nullptr;
 
-  base::flat_map<PageActionIconType, PageActionIconView*>
-      page_action_icon_views_;
+  IconViews page_action_icon_views_;
 
   base::ScopedObservation<zoom::ZoomEventManager,
                           zoom::ZoomEventManagerObserver>

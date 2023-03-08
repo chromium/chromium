@@ -347,9 +347,9 @@ void PageActionIconController::ZoomChangedForActiveTab(bool can_show_bubble) {
 std::vector<const PageActionIconView*>
 PageActionIconController::GetPageActionIconViewsForTesting() const {
   std::vector<const PageActionIconView*> icon_views;
-  std::transform(page_action_icon_views_.cbegin(),
-                 page_action_icon_views_.cend(), std::back_inserter(icon_views),
-                 [](auto const& item) { return item.second; });
+  base::ranges::transform(page_action_icon_views_,
+                          std::back_inserter(icon_views),
+                          &IconViews::value_type::second);
   return icon_views;
 }
 

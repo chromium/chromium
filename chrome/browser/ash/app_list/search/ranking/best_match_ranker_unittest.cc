@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_list/search/ranking/best_match_ranker.h"
 
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/test/test_result.h"
 #include "chrome/browser/ash/app_list/search/types.h"
@@ -43,11 +44,11 @@ class BestMatchRankerTest : public testing::Test {
       std::vector<std::pair<std::string, int>> expected_ids_ranks) {
     EXPECT_EQ(expected_ids_ranks.size(), ranker_.best_matches_.size());
     std::vector<std::pair<std::string, int>> actual_ids_ranks;
-    std::transform(ranker_.best_matches_.begin(), ranker_.best_matches_.end(),
-                   std::back_inserter(actual_ids_ranks),
-                   [](auto res) -> const std::pair<std::string, int> {
-                     return {res->id(), res->scoring().best_match_rank()};
-                   });
+    base::ranges::transform(ranker_.best_matches_,
+                            std::back_inserter(actual_ids_ranks), [](auto res) {
+                              return std::make_pair(
+                                  res->id(), res->scoring().best_match_rank());
+                            });
     EXPECT_THAT(actual_ids_ranks, ElementsAreArray(expected_ids_ranks));
   }
 

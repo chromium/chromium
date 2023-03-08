@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -536,9 +537,8 @@ IN_PROC_BROWSER_TEST_F(CrossProfileDebuggerApiTest, GetTargets) {
     ASSERT_TRUE(value.is_list());
     const base::Value::List targets = std::move(value).TakeList();
     std::vector<std::string> urls;
-    std::transform(
-        targets.begin(), targets.end(), std::back_inserter(urls),
-        [](const base::Value& value) -> std::string {
+    base::ranges::transform(
+        targets, std::back_inserter(urls), [](const base::Value& value) {
           GURL::Replacements remove_port;
           remove_port.ClearPort();
           const std::string* url = value.GetDict().FindString("url");

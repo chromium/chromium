@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
@@ -73,9 +74,8 @@ std::vector<std::string> GetNamesFromMenuItems(
     std::vector<InstalledExtensionMenuItemView*> item_views) {
   std::vector<std::string> names;
   names.resize(item_views.size());
-  std::transform(
-      item_views.begin(), item_views.end(), names.begin(),
-      [](InstalledExtensionMenuItemView* item) {
+  base::ranges::transform(
+      item_views, names.begin(), [](InstalledExtensionMenuItemView* item) {
         return base::UTF16ToUTF8(item->primary_action_button_for_testing()
                                      ->label_text_for_testing());
       });
@@ -86,9 +86,8 @@ std::vector<std::string> GetNamesFromSiteAccessMenuItems(
     std::vector<SiteAccessMenuItemView*> item_views) {
   std::vector<std::string> names;
   names.resize(item_views.size());
-  std::transform(
-      item_views.begin(), item_views.end(), names.begin(),
-      [](SiteAccessMenuItemView* item) {
+  base::ranges::transform(
+      item_views, names.begin(), [](SiteAccessMenuItemView* item) {
         return base::UTF16ToUTF8(item->primary_action_button_for_testing()
                                      ->label_text_for_testing());
       });
