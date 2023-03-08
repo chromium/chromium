@@ -274,9 +274,11 @@ bool GLContextEGL::Initialize(GLSurface* compatible_surface,
   }
 
   if (gl_display_->ext->b_EGL_ANGLE_create_context_client_arrays) {
-    // Disable client arrays if the context supports it
     context_attributes.push_back(EGL_CONTEXT_CLIENT_ARRAYS_ENABLED_ANGLE);
-    context_attributes.push_back(EGL_FALSE);
+    context_attributes.push_back(
+        attribs.angle_create_context_client_arrays ? EGL_TRUE : EGL_FALSE);
+  } else {
+    DCHECK(!attribs.angle_create_context_client_arrays);
   }
 
   if (gl_display_->ext->b_EGL_ANGLE_robust_resource_initialization ||
