@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/ml/ml.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_activation.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operator.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
@@ -555,16 +556,17 @@ xnn_status DefineXnnNodeForConv2d(xnn_subgraph_t subgraph,
   XnnOutputRange output_range{.min = -std::numeric_limits<float>::infinity(),
                               .max = +std::numeric_limits<float>::infinity()};
   if (options->hasActivation()) {
-    switch (options->activation()->Kind()) {
+    switch (options->activation()->Operator()->Kind()) {
       case MLOperator::OperatorKind::kClamp:
       case MLOperator::OperatorKind::kRelu:
-        output_range = GetXnnOutputRangeForActivation(options->activation());
+        output_range =
+            GetXnnOutputRangeForActivation(options->activation()->Operator());
         break;
       default:
-        error_message =
-            "The fused operator (" +
-            MLOperator::OperatorKindToString(options->activation()->Kind()) +
-            ") is not supported by conv2d.";
+        error_message = "The fused operator (" +
+                        MLOperator::OperatorKindToString(
+                            options->activation()->Operator()->Kind()) +
+                        ") is not supported by conv2d.";
         return xnn_status_unsupported_parameter;
     }
   }

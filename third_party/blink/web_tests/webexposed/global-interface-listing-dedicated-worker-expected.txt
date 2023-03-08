@@ -831,6 +831,9 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker]     method createContext
 [Worker]     method createContextSync
+[Worker] interface MLActivation
+[Worker]     attribute @@toStringTag
+[Worker]     method constructor
 [Worker] interface MLContext
 [Worker]     attribute @@toStringTag
 [Worker]     method compute
@@ -866,9 +869,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method sub
 [Worker]     method transpose
 [Worker] interface MLOperand
-[Worker]     attribute @@toStringTag
-[Worker]     method constructor
-[Worker] interface MLOperator
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
 [Worker] interface MediaCapabilities

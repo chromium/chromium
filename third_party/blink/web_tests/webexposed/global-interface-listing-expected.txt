@@ -5168,6 +5168,9 @@ interface ML
     attribute @@toStringTag
     method constructor
     method createContext
+interface MLActivation
+    attribute @@toStringTag
+    method constructor
 interface MLContext
     attribute @@toStringTag
     method compute
@@ -5205,9 +5208,6 @@ interface MLModelLoader
     method constructor
     method load
 interface MLOperand
-    attribute @@toStringTag
-    method constructor
-interface MLOperator
     attribute @@toStringTag
     method constructor
 interface Magnetometer : Sensor

@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/modules/ml/buildflags.h"
 #include "third_party/blink/renderer/modules/ml/ml.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_activation.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -664,13 +665,13 @@ MLOperand* MLGraphBuilder::clamp(const MLOperand* input,
   return output;
 }
 
-MLOperator* MLGraphBuilder::clamp(const MLClampOptions* options,
-                                  ExceptionState& exception_state) {
+MLActivation* MLGraphBuilder::clamp(const MLClampOptions* options,
+                                    ExceptionState& exception_state) {
   if (!ValidateClampOptions(options, exception_state)) {
     return nullptr;
   }
   // Create the clamp operator that would be used as an activation function.
-  return MakeGarbageCollected<MLOperator>(
+  return MakeGarbageCollected<MLActivation>(
       this, MLOperator::OperatorKind::kClamp, options);
 }
 
@@ -966,11 +967,11 @@ MLOperand* MLGraphBuilder::hardSwish(const MLOperand* input,
   return output;
 }
 
-MLOperator* MLGraphBuilder::hardSwish(ExceptionState& exception_state) {
+MLActivation* MLGraphBuilder::hardSwish(ExceptionState& exception_state) {
   // Create the hard-swish operator that would be used as an activation
   // function.
-  return MakeGarbageCollected<MLOperator>(this,
-                                          MLOperator::OperatorKind::kHardSwish);
+  return MakeGarbageCollected<MLActivation>(
+      this, MLOperator::OperatorKind::kHardSwish);
 }
 
 MLOperand* MLGraphBuilder::averagePool2d(const MLOperand* input,
@@ -1006,10 +1007,10 @@ MLOperand* MLGraphBuilder::relu(const MLOperand* input,
   return output;
 }
 
-MLOperator* MLGraphBuilder::relu(ExceptionState& exception_state) {
+MLActivation* MLGraphBuilder::relu(ExceptionState& exception_state) {
   // Create the relu operator that would be used as an activation function.
-  return MakeGarbageCollected<MLOperator>(this,
-                                          MLOperator::OperatorKind::kRelu);
+  return MakeGarbageCollected<MLActivation>(this,
+                                            MLOperator::OperatorKind::kRelu);
 }
 
 MLOperand* MLGraphBuilder::reshape(
@@ -1234,10 +1235,10 @@ MLOperand* MLGraphBuilder::sigmoid(const MLOperand* input,
   return output;
 }
 
-MLOperator* MLGraphBuilder::sigmoid(ExceptionState& exception_state) {
+MLActivation* MLGraphBuilder::sigmoid(ExceptionState& exception_state) {
   // Create the sigmoid operator that would be used as an activation function.
-  return MakeGarbageCollected<MLOperator>(this,
-                                          MLOperator::OperatorKind::kSigmoid);
+  return MakeGarbageCollected<MLActivation>(this,
+                                            MLOperator::OperatorKind::kSigmoid);
 }
 
 MLOperand* MLGraphBuilder::softmax(const MLOperand* input,

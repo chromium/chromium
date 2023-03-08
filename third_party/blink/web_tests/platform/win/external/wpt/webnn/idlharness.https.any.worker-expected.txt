@@ -1,6 +1,6 @@
 This is a testharness.js-based test.
-Found 403 tests; 236 PASS, 167 FAIL, 0 TIMEOUT, 0 NOTRUN.
-FAIL idl_test setup promise_test: Unhandled rejection with value: object "NotSupportedError: The input layout nchw is not supported."
+Found 409 tests; 249 PASS, 160 FAIL, 0 TIMEOUT, 0 NOTRUN.
+FAIL idl_test setup promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'buildSync' on 'MLGraphBuilder': The input layout nchw is not supported."
 PASS idl_test validation
 PASS Partial interface MLContext: original interface defined
 PASS Partial interface MLContext: member names are unique
@@ -102,8 +102,8 @@ PASS WorkerNavigator includes NavigatorGPU: member names are unique
 PASS GPUBuffer includes GPUObjectBase: member names are unique
 PASS GPUTexture includes GPUObjectBase: member names are unique
 FAIL NavigatorML must be primary interface of navigator assert_own_property: self does not have own property "NavigatorML" expected property "NavigatorML" missing
-FAIL Stringification of navigator assert_class_string: class string of navigator expected "[object NavigatorML]" but got "[object Navigator]"
-PASS NavigatorML interface: navigator must inherit property "ml" with the proper type
+FAIL Stringification of navigator assert_class_string: class string of navigator expected "[object NavigatorML]" but got "[object WorkerNavigator]"
+FAIL NavigatorML interface: navigator must not have property "ml" assert_false: expected false got true
 PASS ML interface: existence and properties of interface object
 PASS ML interface object length
 PASS ML interface object name
@@ -112,14 +112,18 @@ PASS ML interface: existence and properties of interface prototype object's "con
 PASS ML interface: existence and properties of interface prototype object's @@unscopables property
 PASS ML interface: operation createContext(optional MLContextOptions)
 PASS ML interface: operation createContext(GPUDevice)
-PASS ML interface: member createContextSync
+PASS ML interface: operation createContextSync(optional MLContextOptions)
+PASS ML interface: operation createContextSync(GPUDevice)
 PASS ML must be primary interface of navigator.ml
 PASS Stringification of navigator.ml
 PASS ML interface: navigator.ml must inherit property "createContext(optional MLContextOptions)" with the proper type
 PASS ML interface: calling createContext(optional MLContextOptions) on navigator.ml with too few arguments must throw TypeError
 PASS ML interface: navigator.ml must inherit property "createContext(GPUDevice)" with the proper type
 PASS ML interface: calling createContext(GPUDevice) on navigator.ml with too few arguments must throw TypeError
-PASS ML interface: navigator.ml must not have property "createContextSync"
+PASS ML interface: navigator.ml must inherit property "createContextSync(optional MLContextOptions)" with the proper type
+PASS ML interface: calling createContextSync(optional MLContextOptions) on navigator.ml with too few arguments must throw TypeError
+PASS ML interface: navigator.ml must inherit property "createContextSync(GPUDevice)" with the proper type
+PASS ML interface: calling createContextSync(GPUDevice) on navigator.ml with too few arguments must throw TypeError
 PASS MLGraph interface: existence and properties of interface object
 PASS MLGraph interface object length
 PASS MLGraph interface object name
@@ -140,26 +144,27 @@ PASS MLOperand must be primary interface of filter
 PASS Stringification of filter
 PASS MLOperand must be primary interface of output
 PASS Stringification of output
-FAIL MLActivation interface: existence and properties of interface object assert_own_property: self does not have own property "MLActivation" expected property "MLActivation" missing
-FAIL MLActivation interface object length assert_own_property: self does not have own property "MLActivation" expected property "MLActivation" missing
-FAIL MLActivation interface object name assert_own_property: self does not have own property "MLActivation" expected property "MLActivation" missing
-FAIL MLActivation interface: existence and properties of interface prototype object assert_own_property: self does not have own property "MLActivation" expected property "MLActivation" missing
-FAIL MLActivation interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "MLActivation" expected property "MLActivation" missing
-FAIL MLActivation interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "MLActivation" expected property "MLActivation" missing
-FAIL MLActivation must be primary interface of relu assert_own_property: self does not have own property "MLActivation" expected property "MLActivation" missing
-FAIL Stringification of relu assert_class_string: class string of relu expected "[object MLActivation]" but got "[object MLOperator]"
+PASS MLActivation interface: existence and properties of interface object
+PASS MLActivation interface object length
+PASS MLActivation interface object name
+PASS MLActivation interface: existence and properties of interface prototype object
+PASS MLActivation interface: existence and properties of interface prototype object's "constructor" property
+PASS MLActivation interface: existence and properties of interface prototype object's @@unscopables property
+PASS MLActivation must be primary interface of relu
+PASS Stringification of relu
 PASS MLContext interface: existence and properties of interface object
 PASS MLContext interface object length
 PASS MLContext interface object name
 PASS MLContext interface: existence and properties of interface prototype object
 PASS MLContext interface: existence and properties of interface prototype object's "constructor" property
 PASS MLContext interface: existence and properties of interface prototype object's @@unscopables property
-PASS MLContext interface: member computeSync
+PASS MLContext interface: operation computeSync(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews)
 PASS MLContext interface: operation compute(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews)
 FAIL MLContext interface: operation createCommandEncoder() assert_own_property: interface prototype object missing non-static operation expected property "createCommandEncoder" missing
 PASS MLContext must be primary interface of context
 PASS Stringification of context
-PASS MLContext interface: context must not have property "computeSync"
+PASS MLContext interface: context must inherit property "computeSync(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews)" with the proper type
+PASS MLContext interface: calling computeSync(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews) on context with too few arguments must throw TypeError
 PASS MLContext interface: context must inherit property "compute(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews)" with the proper type
 PASS MLContext interface: calling compute(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews) on context with too few arguments must throw TypeError
 FAIL MLContext interface: context must inherit property "createCommandEncoder()" with the proper type assert_inherits: property "createCommandEncoder" not found in prototype chain
@@ -182,7 +187,7 @@ PASS MLGraphBuilder interface: operation input(DOMString, MLOperandDescriptor)
 FAIL MLGraphBuilder interface: operation constant(MLOperandDescriptor, MLBufferView) assert_equals: property has wrong .length expected 1 but got 2
 FAIL MLGraphBuilder interface: operation constant(double, optional MLOperandType) assert_equals: property has wrong .length expected 1 but got 2
 PASS MLGraphBuilder interface: operation build(MLNamedOperands)
-PASS MLGraphBuilder interface: member buildSync
+PASS MLGraphBuilder interface: operation buildSync(MLNamedOperands)
 FAIL MLGraphBuilder interface: operation batchNormalization(MLOperand, MLOperand, MLOperand, optional MLBatchNormalizationOptions) assert_own_property: interface prototype object missing non-static operation expected property "batchNormalization" missing
 PASS MLGraphBuilder interface: operation clamp(MLOperand, optional MLClampOptions)
 PASS MLGraphBuilder interface: operation clamp(optional MLClampOptions)
@@ -264,7 +269,8 @@ PASS MLGraphBuilder interface: builder must inherit property "constant(double, o
 PASS MLGraphBuilder interface: calling constant(double, optional MLOperandType) on builder with too few arguments must throw TypeError
 PASS MLGraphBuilder interface: builder must inherit property "build(MLNamedOperands)" with the proper type
 PASS MLGraphBuilder interface: calling build(MLNamedOperands) on builder with too few arguments must throw TypeError
-PASS MLGraphBuilder interface: builder must not have property "buildSync"
+PASS MLGraphBuilder interface: builder must inherit property "buildSync(MLNamedOperands)" with the proper type
+PASS MLGraphBuilder interface: calling buildSync(MLNamedOperands) on builder with too few arguments must throw TypeError
 FAIL MLGraphBuilder interface: builder must inherit property "batchNormalization(MLOperand, MLOperand, MLOperand, optional MLBatchNormalizationOptions)" with the proper type assert_inherits: property "batchNormalization" not found in prototype chain
 FAIL MLGraphBuilder interface: calling batchNormalization(MLOperand, MLOperand, MLOperand, optional MLBatchNormalizationOptions) on builder with too few arguments must throw TypeError assert_inherits: property "batchNormalization" not found in prototype chain
 PASS MLGraphBuilder interface: builder must inherit property "clamp(MLOperand, optional MLClampOptions)" with the proper type
@@ -401,7 +407,7 @@ FAIL MLGraphBuilder interface: calling tanh(MLOperand) on builder with too few a
 FAIL MLGraphBuilder interface: builder must inherit property "tanh()" with the proper type assert_inherits: property "tanh" not found in prototype chain
 PASS MLGraphBuilder interface: builder must inherit property "transpose(MLOperand, optional MLTransposeOptions)" with the proper type
 PASS MLGraphBuilder interface: calling transpose(MLOperand, optional MLTransposeOptions) on builder with too few arguments must throw TypeError
-PASS Navigator interface: attribute ml
-PASS Navigator interface: navigator must inherit property "ml" with the proper type
+PASS WorkerNavigator interface: attribute ml
+PASS WorkerNavigator interface: navigator must inherit property "ml" with the proper type
 Harness: the test ran to completion.
 

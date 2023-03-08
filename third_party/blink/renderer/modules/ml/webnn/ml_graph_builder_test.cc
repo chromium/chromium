@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_descriptor.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_activation.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_test_base.h"
@@ -1607,9 +1608,10 @@ TEST_F(MLGraphBuilderTest, ReluTest) {
     // Test building relu operator.
     auto* relu = builder->relu(scope.GetExceptionState());
     EXPECT_NE(relu, nullptr);
-    EXPECT_EQ(relu->Kind(), MLOperator::OperatorKind::kRelu);
-    EXPECT_EQ(relu->IsConnected(), false);
-    EXPECT_EQ(relu->Options(), nullptr);
+    EXPECT_NE(relu->Operator(), nullptr);
+    EXPECT_EQ(relu->Operator()->Kind(), MLOperator::OperatorKind::kRelu);
+    EXPECT_EQ(relu->Operator()->IsConnected(), false);
+    EXPECT_EQ(relu->Operator()->Options(), nullptr);
   }
 }
 
@@ -1649,9 +1651,11 @@ TEST_F(MLGraphBuilderTest, HardSwishTest) {
     // Test building hard-swish as a standalone operator.
     auto* hard_swish = builder->hardSwish(scope.GetExceptionState());
     EXPECT_NE(hard_swish, nullptr);
-    EXPECT_EQ(hard_swish->Kind(), MLOperator::OperatorKind::kHardSwish);
-    EXPECT_EQ(hard_swish->IsConnected(), false);
-    EXPECT_EQ(hard_swish->Options(), nullptr);
+    EXPECT_NE(hard_swish->Operator(), nullptr);
+    EXPECT_EQ(hard_swish->Operator()->Kind(),
+              MLOperator::OperatorKind::kHardSwish);
+    EXPECT_EQ(hard_swish->Operator()->IsConnected(), false);
+    EXPECT_EQ(hard_swish->Operator()->Options(), nullptr);
   }
 }
 
@@ -2524,9 +2528,10 @@ TEST_F(MLGraphBuilderTest, ClampTest) {
     auto* clamp =
         builder->clamp(MLClampOptions::Create(), scope.GetExceptionState());
     EXPECT_NE(clamp, nullptr);
-    EXPECT_EQ(clamp->Kind(), MLOperator::OperatorKind::kClamp);
-    EXPECT_EQ(clamp->IsConnected(), false);
-    EXPECT_NE(clamp->Options(), nullptr);
+    EXPECT_NE(clamp->Operator(), nullptr);
+    EXPECT_EQ(clamp->Operator()->Kind(), MLOperator::OperatorKind::kClamp);
+    EXPECT_EQ(clamp->Operator()->IsConnected(), false);
+    EXPECT_NE(clamp->Operator()->Options(), nullptr);
   }
 }
 
@@ -2612,9 +2617,10 @@ TEST_F(MLGraphBuilderTest, SigmoidTest) {
     // Test building sigmoid operator.
     auto* sigmoid = builder->sigmoid(scope.GetExceptionState());
     EXPECT_NE(sigmoid, nullptr);
-    EXPECT_EQ(sigmoid->Kind(), MLOperator::OperatorKind::kSigmoid);
-    EXPECT_EQ(sigmoid->IsConnected(), false);
-    EXPECT_EQ(sigmoid->Options(), nullptr);
+    EXPECT_NE(sigmoid->Operator(), nullptr);
+    EXPECT_EQ(sigmoid->Operator()->Kind(), MLOperator::OperatorKind::kSigmoid);
+    EXPECT_EQ(sigmoid->Operator()->IsConnected(), false);
+    EXPECT_EQ(sigmoid->Operator()->Options(), nullptr);
   }
 }
 

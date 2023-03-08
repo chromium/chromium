@@ -65,7 +65,6 @@ void MLOperator::Trace(Visitor* visitor) const {
   visitor->Trace(options_);
   visitor->Trace(inputs_);
   visitor->Trace(outputs_);
-  ScriptWrappable::Trace(visitor);
 }
 
 MLOperator::OperatorKind MLOperator::Kind() const {

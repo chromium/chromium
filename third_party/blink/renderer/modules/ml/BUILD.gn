@@ -23,6 +23,8 @@ blink_modules_sources("ml") {
     "ml_model_loader.h",
     "navigator_ml.cc",
     "navigator_ml.h",
+    "webnn/ml_activation.cc",
+    "webnn/ml_activation.h",
     "webnn/ml_graph.cc",
     "webnn/ml_graph.h",
     "webnn/ml_graph_builder.cc",
