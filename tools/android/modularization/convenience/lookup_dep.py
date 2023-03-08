@@ -332,8 +332,8 @@ class ClassLookupIndex:
   @staticmethod
   def _parse_full_java_class(source_path: pathlib.Path) -> str:
     """Guess the fully qualified class name from the path to the source file."""
-    if source_path.suffix != '.java':
-      logging.warning(f'"{source_path}" does not have the .java suffix')
+    if source_path.suffix not in ('.java', '.kt'):
+      logging.warning(f'"{source_path}" does not end in .java or .kt.')
       return None
 
     directory_path: pathlib.Path = source_path.parent
