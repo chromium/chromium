@@ -8768,6 +8768,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="OAuth2Login.PostMergeVerification"
     enum="PostMergeVerificationOutcome" expires_after="2021-06-17">
+  <obsolete>
+    Deprecated on 2023-03-03 in M113. The code that generated this histogram was
+    removed.
+  </obsolete>
   <owner>droger@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -8780,6 +8784,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="OAuth2Login.PreMergeVerification"
     enum="PostMergeVerificationOutcome" expires_after="2021-06-17">
+  <obsolete>
+    Deprecated on 2023-03-03 in M113. The code that generated this histogram was
+    removed.
+  </obsolete>
   <owner>droger@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>

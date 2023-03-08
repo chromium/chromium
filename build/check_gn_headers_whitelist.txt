@@ -20,7 +20,6 @@ cc/layers/performance_properties.h
 chrome/browser/android/android_theme_resources.h
 chrome/browser/android/resource_id.h
 chrome/browser/ash/login/signin/oauth2_login_manager.h
-chrome/browser/ash/login/signin/oauth2_login_verifier.h
 chrome/browser/ash/login/signin/oauth2_token_fetcher.h
 chrome/browser/ash/profiles/profile_helper.h
 chrome/browser/ash/settings/cros_settings.h

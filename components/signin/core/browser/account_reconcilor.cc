@@ -844,6 +844,10 @@ bool AccountReconcilor::IsReconcileBlocked() const {
   return account_reconcilor_lock_count_ > 0;
 }
 
+GoogleServiceAuthError AccountReconcilor::GetReconcileError() const {
+  return error_during_last_reconcile_;
+}
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 signin::ConsistencyCookieManager*
 AccountReconcilor::GetConsistencyCookieManager() {
