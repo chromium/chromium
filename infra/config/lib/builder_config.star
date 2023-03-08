@@ -208,6 +208,25 @@ def _clusterfuzz_archive(
         archive_subdir = archive_subdir,
     )
 
+def _bisect_archive(
+        *,
+        gs_bucket,
+        archive_subdir = None):
+    """The details for configuring bisect archiving.
+
+    Args:
+        gs_bucket: (str) The name of the Google Cloud Storage bucket to upload
+            the archive to.
+        archive_subdir: (str) An optional additional subdirectory within the
+            platform/target directory to upload the archive to.
+    """
+    if not gs_bucket:
+        fail("gs_bucket must be provided")
+    return struct(
+        gs_bucket = gs_bucket,
+        archive_subdir = archive_subdir,
+    )
+
 def _builder_spec(
         *,
         execution_mode = _execution_mode.COMPILE_AND_TEST,
@@ -221,7 +240,8 @@ def _builder_spec(
         perf_isolate_upload = None,
         expose_trigger_properties = None,
         skylab_upload_location = None,
-        clusterfuzz_archive = None):
+        clusterfuzz_archive = None,
+        bisect_archive = None):
     """Details for configuring execution for a single builder.
 
     Args:
@@ -261,6 +281,7 @@ def _builder_spec(
             the builder triggers tests on skylab.
         clusterfuzz_archive: (clusterfuzz_archive) The details of archiving for
             clusterfuzz.
+        bisect_archive: (bisect_archive) The details of archiving for bisection.
 
     Returns:
         A builder spec struct that can be passed to builder to set the builder
@@ -286,6 +307,7 @@ def _builder_spec(
         expose_trigger_properties = expose_trigger_properties,
         skylab_upload_location = skylab_upload_location,
         clusterfuzz_archive = clusterfuzz_archive,
+        bisect_archive = bisect_archive,
     )
 
 _rts_condition = _enum(
@@ -388,6 +410,7 @@ builder_config = struct(
     execution_mode = _execution_mode,
     skylab_upload_location = _skylab_upload_location,
     clusterfuzz_archive = _clusterfuzz_archive,
+    bisect_archive = _bisect_archive,
 
     # Function for defining gclient recipe module config
     gclient_config = _gclient_config,
