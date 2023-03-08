@@ -109,7 +109,7 @@ BrowserURLLoaderThrottle::CheckerOnSB::CheckerOnSB(
 
 BrowserURLLoaderThrottle::CheckerOnSB::~CheckerOnSB() {
   base::UmaHistogramMediumTimes(
-      "SafeBrowsing.BrowserThrottle.CheckerOnSBLifetime",
+      "SafeBrowsing.BrowserThrottle.CheckerOnIOLifetime",
       base::TimeTicks::Now() - creation_time_);
   if (mechanism_experimenter_) {
     mechanism_experimenter_->OnBrowserUrlLoaderThrottleCheckerOnSBDestructed();

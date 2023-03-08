@@ -387,6 +387,7 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(AwFeatures.WEBVIEW_CLIENT_SIDE_SAMPLING,
                     "If disabled, the client side sampling for user metrics will be turned off."
                             + " This have no effect if metrics reporting is disabled"),
+            Flag.baseFeature("SafeBrowsingOnUIThread"),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };
