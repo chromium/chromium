@@ -85,6 +85,14 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
   mixer[kColorToggleButtonTrackOff] = {kColorSysSurfaceVariant};
   mixer[kColorToggleButtonTrackOn] = {kColorSysPrimary};
   mixer[kColorToggleButtonTrackOnDisabled] = {kColorSysStateDisabledContainer};
+  mixer[kColorToolbarSearchFieldBackground] = {kColorSysBaseContainerElevated};
+  mixer[kColorToolbarSearchFieldBackgroundHover] = {kColorSysStateHoverCutout};
+  mixer[kColorToolbarSearchFieldBackgroundPressed] = {
+      kColorSysStateRippleNeutralOnSubtle};
+  mixer[kColorToolbarSearchFieldForeground] = {kColorSysOnSurface};
+  mixer[kColorToolbarSearchFieldForegroundPlaceholder] = {
+      kColorSysOnSurfaceSubtle};
+  mixer[kColorToolbarSearchFieldIcon] = {kColorSysOnSurfaceSubtle};
 }
 
 }  // namespace ui

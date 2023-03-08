@@ -395,6 +395,12 @@
   E_CPONLY(kColorToggleButtonTrackOff) \
   E_CPONLY(kColorToggleButtonTrackOn) \
   E_CPONLY(kColorToggleButtonTrackOnDisabled) \
+  E_CPONLY(kColorToolbarSearchFieldBackground) \
+  E_CPONLY(kColorToolbarSearchFieldBackgroundHover) \
+  E_CPONLY(kColorToolbarSearchFieldBackgroundPressed) \
+  E_CPONLY(kColorToolbarSearchFieldForeground) \
+  E_CPONLY(kColorToolbarSearchFieldForegroundPlaceholder) \
+  E_CPONLY(kColorToolbarSearchFieldIcon) \
   E_CPONLY(kColorTooltipBackground) \
   E_CPONLY(kColorTooltipForeground) \
   E_CPONLY(kColorTreeBackground) \
