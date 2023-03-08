@@ -28,6 +28,11 @@ enum OverlayPriority {
   kRequired
 };
 
+struct RoundedDisplayMasksInfo {
+  bool is_horizontally_positioned;
+  array<uint8, 2> radii;
+};
+
 struct DebugBorderQuadState {
   // Debug border color.
   skia.mojom.SkColor4f color;
@@ -96,6 +101,7 @@ struct TextureQuadState {
   gfx.mojom.HDRMetadata? hdr_metadata;
   gfx.mojom.Rect? damage_rect;
   OverlayPriority overlay_priority_hint;
+  RoundedDisplayMasksInfo rounded_display_masks_info;
 };
 
 struct TileQuadState {

@@ -111,6 +111,23 @@ struct EnumTraits<viz::mojom::OverlayPriority, viz::OverlayPriority> {
 };
 
 template <>
+struct StructTraits<viz::mojom::RoundedDisplayMasksInfoDataView,
+                    viz::TextureDrawQuad::RoundedDisplayMasksInfo> {
+  static bool is_horizontally_positioned(
+      const viz::TextureDrawQuad::RoundedDisplayMasksInfo& input) {
+    return input.is_horizontally_positioned;
+  }
+
+  static base::span<const uint8_t> radii(
+      const viz::TextureDrawQuad::RoundedDisplayMasksInfo& input) {
+    return input.radii;
+  }
+
+  static bool Read(viz::mojom::RoundedDisplayMasksInfoDataView data,
+                   viz::TextureDrawQuad::RoundedDisplayMasksInfo* out);
+};
+
+template <>
 struct UnionTraits<viz::mojom::DrawQuadStateDataView, viz::DrawQuad> {
   static viz::mojom::DrawQuadStateDataView::Tag GetTag(
       const viz::DrawQuad& quad) {
@@ -394,6 +411,13 @@ struct StructTraits<viz::mojom::TextureQuadStateDataView, viz::DrawQuad> {
     const viz::TextureDrawQuad* quad =
         viz::TextureDrawQuad::MaterialCast(&input);
     return quad->resource_size_in_pixels();
+  }
+
+  static viz::TextureDrawQuad::RoundedDisplayMasksInfo
+  rounded_display_masks_info(const viz::DrawQuad& input) {
+    const viz::TextureDrawQuad* quad =
+        viz::TextureDrawQuad::MaterialCast(&input);
+    return quad->rounded_display_masks_info;
   }
 
   static bool premultiplied_alpha(const viz::DrawQuad& input) {
