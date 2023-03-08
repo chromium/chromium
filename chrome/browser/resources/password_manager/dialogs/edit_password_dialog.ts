@@ -8,12 +8,14 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_textarea/cr_textarea.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import './add_password_dialog.js';
 import '../shared_style.css.js';
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import {CrTextareaElement} from 'chrome://resources/cr_elements/cr_textarea/cr_textarea.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -22,17 +24,19 @@ import {PasswordManagerImpl} from '../password_manager_proxy.js';
 import {Page, Router} from '../router.js';
 import {ShowPasswordMixin} from '../show_password_mixin.js';
 
+import {PASSWORD_NOTE_MAX_CHARACTER_COUNT, PASSWORD_NOTE_WARNING_CHARACTER_COUNT} from './add_password_dialog.js';
 import {getTemplate} from './edit_password_dialog.html.js';
 
 export interface EditPasswordDialogElement {
   $: {
-    dialog: CrDialogElement,
-    saveButton: CrButtonElement,
     cancelButton: CrButtonElement,
-    usernameInput: CrInputElement,
+    dialog: CrDialogElement,
     passwordInput: CrInputElement,
-    viewExistingPasswordLink: HTMLAnchorElement,
+    passwordNote: CrTextareaElement,
+    saveButton: CrButtonElement,
     showPasswordButton: CrIconButtonElement,
+    usernameInput: CrInputElement,
+    viewExistingPasswordLink: HTMLAnchorElement,
   };
 }
 
@@ -189,6 +193,26 @@ export class EditPasswordDialogElement extends EditPasswordDialogElementBase {
     Router.getInstance().navigateTo(
         Page.PASSWORD_DETAILS, this.conflictingUsernames_.get(this.username_));
     this.$.dialog.close();
+  }
+
+  private isNoteInputInvalid_(): boolean {
+    return this.note_.length >= PASSWORD_NOTE_MAX_CHARACTER_COUNT;
+  }
+
+  private getFirstNoteFooter_(): string {
+    return this.note_.length < PASSWORD_NOTE_WARNING_CHARACTER_COUNT ?
+        '' :
+        this.i18n(
+            'passwordNoteCharacterCountWarning',
+            PASSWORD_NOTE_MAX_CHARACTER_COUNT);
+  }
+
+  private getSecondNoteFooter_(): string {
+    return this.note_.length < PASSWORD_NOTE_WARNING_CHARACTER_COUNT ?
+        '' :
+        this.i18n(
+            'passwordNoteCharacterCount', this.note_.length,
+            PASSWORD_NOTE_MAX_CHARACTER_COUNT);
   }
 }
 

@@ -143,4 +143,44 @@ suite('EditPasswordDialogTest', function() {
     assertEquals(Page.PASSWORD_DETAILS, Router.getInstance().currentRoute.page);
     assertEquals('www.example.com', Router.getInstance().currentRoute.details);
   });
+
+  test('note validation works', async function() {
+    const password = createPasswordEntry(
+        {id: 1, url: 'test.com', username: 'vik', password: 'password69'});
+    password.affiliatedDomains = [createAffiliatedDomain('test.com')];
+    const dialog = document.createElement('edit-password-dialog');
+    dialog.credential = password;
+    document.body.appendChild(dialog);
+    await flushTasks();
+
+    assertFalse(dialog.$.passwordNote.invalid);
+
+    // Make note 899 characters long.
+    dialog.$.passwordNote.value = '.'.repeat(899);
+    assertFalse(dialog.$.passwordNote.invalid);
+    assertEquals('', dialog.$.passwordNote.firstFooter);
+    assertEquals('', dialog.$.passwordNote.secondFooter);
+
+    // After 900 characters there are footers.
+    dialog.$.passwordNote.value = '.'.repeat(900);
+    await flushTasks();
+    assertFalse(dialog.$.passwordNote.invalid);
+    assertEquals(
+        dialog.i18n('passwordNoteCharacterCountWarning', 1000),
+        dialog.$.passwordNote.firstFooter);
+    assertEquals(
+        dialog.i18n('passwordNoteCharacterCount', 900, 1000),
+        dialog.$.passwordNote.secondFooter);
+
+    // After 1000 characters note is no longer valid.
+    dialog.$.passwordNote.value = '.'.repeat(1000);
+    await flushTasks();
+    assertTrue(dialog.$.passwordNote.invalid);
+    assertEquals(
+        dialog.i18n('passwordNoteCharacterCountWarning', 1000),
+        dialog.$.passwordNote.firstFooter);
+    assertEquals(
+        dialog.i18n('passwordNoteCharacterCount', 1000, 1000),
+        dialog.$.passwordNote.secondFooter);
+  });
 });

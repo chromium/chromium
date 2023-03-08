@@ -42,13 +42,13 @@ export interface AddPasswordDialogElement {
  * When user enters more than or equal to 900 characters in the note field, a
  * footer will be displayed below the note to warn the user.
  */
-const PASSWORD_NOTE_WARNING_CHARACTER_COUNT = 900;
+export const PASSWORD_NOTE_WARNING_CHARACTER_COUNT = 900;
 
 /**
  * When user enters more than 1000 characters, the note will become invalid and
  * save button will be disabled.
  */
-const PASSWORD_NOTE_MAX_CHARACTER_COUNT = 1000;
+export const PASSWORD_NOTE_MAX_CHARACTER_COUNT = 1000;
 
 const AddPasswordDialogElementBase =
     ShowPasswordMixin(I18nMixin(PolymerElement));
