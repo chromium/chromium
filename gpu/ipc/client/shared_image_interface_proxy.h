@@ -66,6 +66,10 @@ class SharedImageInterfaceProxy {
                          const Mailbox& mailbox);
 
   void DestroySharedImage(const SyncToken& sync_token, const Mailbox& mailbox);
+  void AddReferenceToSharedImage(const SyncToken& sync_token,
+                                 const Mailbox& mailbox,
+                                 uint32_t usage);
+
   SyncToken GenVerifiedSyncToken();
   SyncToken GenUnverifiedSyncToken();
   void WaitSyncToken(const SyncToken& sync_token);

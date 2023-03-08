@@ -110,6 +110,7 @@ class GPU_GLES2_EXPORT SharedImageFactory {
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
   bool RegisterBacking(std::unique_ptr<SharedImageBacking> backing);
+  bool AddSecondaryReference(const gpu::Mailbox& mailbox);
 
   SharedContextState* GetSharedContextState() const {
     return shared_context_state_;

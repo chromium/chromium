@@ -96,6 +96,7 @@ class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
   bool CopyToGpuMemoryBuffer() override;
   gfx::Rect ClearedRect() const override;
   void SetClearedRect(const gfx::Rect& cleared_rect) override;
+  void OnAddSecondaryReference() override;
 
  protected:
   // SharedImageBacking implementation.
@@ -131,8 +132,11 @@ class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
     ElementHolder& operator=(const ElementHolder& other) = delete;
     ~ElementHolder();
 
-    // Returns the backing. Will invoke `create_callback` to create backing if
+    // Will invoke `create_callback` to create backing if
     // required.
+    void CreateBackingIfNecessary();
+
+    // Returns the backing. Will call `CreateBackingIfNecessary()`.
     SharedImageBacking* GetBacking();
 
     AccessStreamSet access_streams;

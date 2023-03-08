@@ -693,14 +693,27 @@ void CompoundImageBacking::SetLatestContent(SharedImageAccessStream stream,
   element.content_id_ = latest_content_id_;
 }
 
+void CompoundImageBacking::OnAddSecondaryReference() {
+  // When client adds a reference from another processes it expects this
+  // SharedImage can outlive original factory ref and so potentially
+  // SharedimageFactory. We should create all backings now as we might not have
+  // access to corresponding SharedImageBackingFactories later.
+  for (auto& element : elements_) {
+    element.CreateBackingIfNecessary();
+  }
+}
+
 CompoundImageBacking::ElementHolder::ElementHolder() = default;
 CompoundImageBacking::ElementHolder::~ElementHolder() = default;
 
-SharedImageBacking* CompoundImageBacking::ElementHolder::GetBacking() {
+void CompoundImageBacking::ElementHolder::CreateBackingIfNecessary() {
   if (create_callback) {
     std::move(create_callback).Run(backing);
   }
+}
 
+SharedImageBacking* CompoundImageBacking::ElementHolder::GetBacking() {
+  CreateBackingIfNecessary();
   return backing.get();
 }
 

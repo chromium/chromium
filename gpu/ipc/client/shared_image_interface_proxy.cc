@@ -480,6 +480,26 @@ scoped_refptr<gfx::NativePixmap> SharedImageInterfaceProxy::GetNativePixmap(
   return nullptr;
 }
 
+void SharedImageInterfaceProxy::AddReferenceToSharedImage(
+    const SyncToken& sync_token,
+    const Mailbox& mailbox,
+    uint32_t usage) {
+  std::vector<SyncToken> dependencies =
+      GenerateDependenciesFromSyncToken(std::move(sync_token), host_);
+  {
+    base::AutoLock lock(lock_);
+    AddMailbox(mailbox, usage);
+    // Note: we enqueue the IPC under the lock to guarantee monotonicity of the
+    // release ids as seen by the service.
+    last_flush_id_ = host_->EnqueueDeferredMessage(
+        mojom::DeferredRequestParams::NewSharedImageRequest(
+            mojom::DeferredSharedImageRequest::NewAddReferenceToSharedImage(
+                mojom::AddReferenceToSharedImageParams::New(
+                    mailbox, ++next_release_id_))),
+        std::move(dependencies));
+  }
+}
+
 void SharedImageInterfaceProxy::AddMailbox(const Mailbox& mailbox,
                                            uint32_t usage) {
   lock_.AssertAcquired();

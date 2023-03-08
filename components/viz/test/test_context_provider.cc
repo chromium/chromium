@@ -202,6 +202,13 @@ void TestSharedImageInterface::UpdateSharedImage(
   DCHECK(shared_images_.find(mailbox) != shared_images_.end());
 }
 
+void TestSharedImageInterface::AddReferenceToSharedImage(
+    const gpu::SyncToken& sync_token,
+    const gpu::Mailbox& mailbox,
+    uint32_t usage) {
+  shared_images_.insert(mailbox);
+}
+
 void TestSharedImageInterface::DestroySharedImage(
     const gpu::SyncToken& sync_token,
     const gpu::Mailbox& mailbox) {

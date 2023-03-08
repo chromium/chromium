@@ -158,8 +158,8 @@ class SharedImageRepresentationFactoryRef : public SharedImageRepresentation {
  public:
   SharedImageRepresentationFactoryRef(SharedImageManager* manager,
                                       SharedImageBacking* backing,
-                                      MemoryTypeTracker* tracker)
-      : SharedImageRepresentation(manager, backing, tracker) {}
+                                      MemoryTypeTracker* tracker,
+                                      bool is_primary);
 
   ~SharedImageRepresentationFactoryRef() override;
 
@@ -171,8 +171,12 @@ class SharedImageRepresentationFactoryRef : public SharedImageRepresentation {
   bool CopyToGpuMemoryBuffer() { return backing()->CopyToGpuMemoryBuffer(); }
   bool PresentSwapChain() { return backing()->PresentSwapChain(); }
   void RegisterImageFactory(SharedImageFactory* factory) {
+    DCHECK(is_primary_);
     backing()->RegisterImageFactory(factory);
   }
+
+ private:
+  const bool is_primary_;
 };
 
 class GPU_GLES2_EXPORT GLTextureImageRepresentationBase

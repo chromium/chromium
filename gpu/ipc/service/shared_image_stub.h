@@ -90,6 +90,8 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub : public MemoryTracker {
   void OnUpdateSharedImage(const Mailbox& mailbox,
                            uint32_t release_id,
                            gfx::GpuFenceHandle in_fence_handle);
+  void OnAddReference(const Mailbox& mailbox, uint32_t release_id);
+
   void OnDestroySharedImage(const Mailbox& mailbox);
   void OnRegisterSharedImageUploadBuffer(base::ReadOnlySharedMemoryRegion shm);
 #if BUILDFLAG(IS_WIN)
@@ -117,6 +119,7 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub : public MemoryTracker {
   scoped_refptr<SharedContextState> context_state_;
   std::unique_ptr<SharedImageFactory> factory_;
   uint64_t size_ = 0;
+
   // Holds shared memory used in initial data uploads.
   base::ReadOnlySharedMemoryRegion upload_memory_;
   base::ReadOnlySharedMemoryMapping upload_memory_mapping_;

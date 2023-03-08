@@ -135,6 +135,10 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
   void DestroySharedImage(const SyncToken& sync_token,
                           const Mailbox& mailbox) override;
 
+  void AddReferenceToSharedImage(const SyncToken& sync_token,
+                                 const Mailbox& mailbox,
+                                 uint32_t usage) override;
+
   // Creates a swap chain. Not reached in this implementation.
   SwapChainMailboxes CreateSwapChain(viz::SharedImageFormat format,
                                      const gfx::Size& size,

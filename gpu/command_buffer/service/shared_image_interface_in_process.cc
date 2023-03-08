@@ -494,4 +494,13 @@ void SharedImageInterfaceInProcess::ScheduleGpuTask(
   task_sequence_->ScheduleTask(std::move(task), std::move(sync_token_fences));
 }
 
+void SharedImageInterfaceInProcess::AddReferenceToSharedImage(
+    const SyncToken& sync_token,
+    const Mailbox& mailbox,
+    uint32_t usage) {
+  // Secondary references are required only by client processes, so it shouldn't
+  // be reachable here.
+  NOTREACHED();
+}
+
 }  // namespace gpu

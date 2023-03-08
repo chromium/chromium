@@ -87,6 +87,10 @@ class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
   uint32_t UsageForMailbox(const Mailbox& mailbox) override;
   void NotifyMailboxAdded(const Mailbox& mailbox, uint32_t usage) override;
 
+  void AddReferenceToSharedImage(const SyncToken& sync_token,
+                                 const Mailbox& mailbox,
+                                 uint32_t usage) override;
+
  private:
   Mailbox AddMailbox(const Mailbox& mailbox);
 

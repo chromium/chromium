@@ -160,6 +160,16 @@ class GPU_EXPORT SharedImageInterface {
   virtual void DestroySharedImage(const SyncToken& sync_token,
                                   const Mailbox& mailbox) = 0;
 
+  // Adds another owning reference to the SharedImage. It must be released via
+  // DestroySharedImage in the same way as for SharedImages created via
+  // CreateSharedImage(). Note: The image must have been created on different
+  // gpu channel and each can have only single reference.
+  // Note: `usage` must be the same value as passed to CreateSharedImage call
+  // and is just stored without validation.
+  virtual void AddReferenceToSharedImage(const SyncToken& sync_token,
+                                         const Mailbox& mailbox,
+                                         uint32_t usage) = 0;
+
   struct SwapChainMailboxes {
     Mailbox front_buffer;
     Mailbox back_buffer;

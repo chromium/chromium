@@ -690,6 +690,24 @@ bool SharedImageFactory::RegisterBacking(
   return true;
 }
 
+bool SharedImageFactory::AddSecondaryReference(const gpu::Mailbox& mailbox) {
+  if (shared_images_.contains(mailbox)) {
+    LOG(ERROR) << "AddSecondaryReference: Can't have more than one reference.";
+    return false;
+  }
+
+  std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
+      shared_image_manager_->AddSecondaryReference(mailbox,
+                                                   memory_tracker_.get());
+
+  if (!shared_image) {
+    return false;
+  }
+
+  shared_images_.emplace(std::move(shared_image));
+  return true;
+}
+
 SharedImageRepresentationFactory::SharedImageRepresentationFactory(
     SharedImageManager* manager,
     MemoryTracker* tracker)
