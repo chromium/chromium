@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "components/feature_engagement/public/configuration.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/feature_engagement/public/group_constants.h"
 
 namespace feature_engagement {
 
@@ -18,6 +19,7 @@ absl::optional<FeatureConfig> GetClientSideiOSPromoFeatureConfig(
     config->valid = true;
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(ANY, 0);
+    config->groups.push_back(kiOSFullscreenPromosGroup.name);
     config->used =
         EventConfig("app_store_promo_used", Comparator(EQUAL, 0), 365, 730);
     config->trigger =
