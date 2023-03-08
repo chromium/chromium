@@ -949,8 +949,10 @@ void AutocorrectManager::OnFocus(int context_id) {
 void AutocorrectManager::OnConnectedToSuggestionProvider(
     const ime::AutocorrectSuggestionProvider& suggestion_provider) {
   suggestion_provider_ = suggestion_provider;
-  pending_suggestion_provider_metric_ =
-      PendingSuggestionProviderMetric{.provider = suggestion_provider};
+  if (active_engine_id_ && IsUsEnglishId(*active_engine_id_)) {
+    pending_suggestion_provider_metric_ =
+        PendingSuggestionProviderMetric{.provider = suggestion_provider};
+  }
 }
 
 void AutocorrectManager::OnBlur() {

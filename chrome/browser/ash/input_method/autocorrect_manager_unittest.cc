@@ -3610,6 +3610,20 @@ TEST_P(AutocorrectSuggestionProviderMetric, IsNotRecordedWhenVkIsVisible) {
       /*expected_count=*/0);
 }
 
+TEST_P(AutocorrectSuggestionProviderMetric,
+       IsNotRecordedWhenAnEngineOtherThenEnglishIsActive) {
+  const AutocorrectSuggestionProvider& provider = GetParam();
+
+  manager_.OnActivate(kSpainSpanishEngineId);
+  manager_.OnFocus(kContextId);
+  manager_.OnConnectedToSuggestionProvider(provider);
+  manager_.OnKeyEvent(KeyA());
+
+  histogram_tester_.ExpectTotalCount(
+      /*name=*/kAutocorrectV2PkSuggestionProviderHistName,
+      /*expected_count=*/0);
+}
+
 TEST_P(AutocorrectSuggestionProviderMetric, IsRecordedCorrectly) {
   const AutocorrectSuggestionProvider& provider = GetParam();
 
