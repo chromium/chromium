@@ -22,9 +22,9 @@
 #include "chrome/browser/supervised_user/child_accounts/family_info_fetcher.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "chrome/browser/supervised_user/supervised_user_url_filter.h"
 #include "chrome/test/test_support_jni_headers/FamilyInfoFeedbackSourceTestBridge_jni.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/supervised_user_denylist.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -42,8 +42,9 @@ const char kFeedbackTagParentalControlSitesChild[] =
 }  // namespace
 
 class FamilyInfoFeedbackSourceForChildFilterBehaviorTest
-    : public testing::TestWithParam<
-          std::tuple<SupervisedUserURLFilter::FilteringBehavior, bool>> {
+    : public testing::TestWithParam<std::tuple<
+          supervised_user::SupervisedUserURLFilter::FilteringBehavior,
+          bool>> {
  public:
   FamilyInfoFeedbackSourceForChildFilterBehaviorTest()
       : env_(base::android::AttachCurrentThread()) {}
@@ -99,18 +100,19 @@ class FamilyInfoFeedbackSourceForChildFilterBehaviorTest
   // Returns the expected string representation of the Parental_Control_
   // Sites_Parent PSD field that is included in the feedback log.
   std::string GetFilterTypeAsString(
-      SupervisedUserURLFilter::FilteringBehavior behavior,
+      supervised_user::SupervisedUserURLFilter::FilteringBehavior behavior,
       bool safe_sites_enabled) {
     switch (behavior) {
-      case (SupervisedUserURLFilter::FilteringBehavior::BLOCK):
+      case (supervised_user::SupervisedUserURLFilter::FilteringBehavior::BLOCK):
         return "allow_certain_sites";
-      case (SupervisedUserURLFilter::FilteringBehavior::ALLOW):
+      case (supervised_user::SupervisedUserURLFilter::FilteringBehavior::ALLOW):
         if (safe_sites_enabled) {
           return "block_mature_sites";
         } else {
           return "allow_all_sites";
         }
-      case (SupervisedUserURLFilter::FilteringBehavior::INVALID):
+      case (
+          supervised_user::SupervisedUserURLFilter::FilteringBehavior::INVALID):
         return "";
     }
   }
@@ -149,8 +151,8 @@ TEST_P(FamilyInfoFeedbackSourceForChildFilterBehaviorTest,
       identity_test_env()->MakePrimaryAccountAvailable(
           kTestEmail, signin::ConsentLevel::kSignin);
 
-  SupervisedUserURLFilter::FilteringBehavior filtering_behavior =
-      std::get<0>(GetParam());
+  supervised_user::SupervisedUserURLFilter::FilteringBehavior
+      filtering_behavior = std::get<0>(GetParam());
   supervised_user_service_->GetURLFilter()->SetDefaultFilteringBehavior(
       filtering_behavior);
 
@@ -178,14 +180,18 @@ INSTANTIATE_TEST_SUITE_P(
     FilterBehaviourContainer,
     FamilyInfoFeedbackSourceForChildFilterBehaviorTest,
     ::testing::Values(
-        std::make_tuple(SupervisedUserURLFilter::FilteringBehavior::BLOCK,
-                        false),
-        std::make_tuple(SupervisedUserURLFilter::FilteringBehavior::BLOCK,
-                        true),
-        std::make_tuple(SupervisedUserURLFilter::FilteringBehavior::ALLOW,
-                        false),
-        std::make_tuple(SupervisedUserURLFilter::FilteringBehavior::ALLOW,
-                        true)));
+        std::make_tuple(
+            supervised_user::SupervisedUserURLFilter::FilteringBehavior::BLOCK,
+            false),
+        std::make_tuple(
+            supervised_user::SupervisedUserURLFilter::FilteringBehavior::BLOCK,
+            true),
+        std::make_tuple(
+            supervised_user::SupervisedUserURLFilter::FilteringBehavior::ALLOW,
+            false),
+        std::make_tuple(
+            supervised_user::SupervisedUserURLFilter::FilteringBehavior::ALLOW,
+            true)));
 
 class FamilyInfoFeedbackSourceTest
     : public testing::TestWithParam<FamilyInfoFetcher::FamilyMemberRole> {

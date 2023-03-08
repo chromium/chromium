@@ -12,11 +12,12 @@
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/supervised_user/supervised_user_interstitial.h"
 #include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "chrome/browser/supervised_user/supervised_user_url_filter.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "content/public/browser/navigation_handle.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -52,17 +53,17 @@ static_assert(FILTERING_BEHAVIOR_MAX * kHistogramFilteringBehaviorSpacing +
               "Invalid HistogramMax value");
 
 int GetHistogramValueForFilteringBehavior(
-    SupervisedUserURLFilter::FilteringBehavior behavior,
+    supervised_user::SupervisedUserURLFilter::FilteringBehavior behavior,
     supervised_user::FilteringBehaviorReason reason,
     bool uncertain) {
   switch (behavior) {
-    case SupervisedUserURLFilter::ALLOW:
+    case supervised_user::SupervisedUserURLFilter::ALLOW:
       if (reason == supervised_user::FilteringBehaviorReason::ALLOWLIST) {
         return FILTERING_BEHAVIOR_ALLOW_ALLOWLIST;
       }
       return uncertain ? FILTERING_BEHAVIOR_ALLOW_UNCERTAIN
                        : FILTERING_BEHAVIOR_ALLOW;
-    case SupervisedUserURLFilter::BLOCK:
+    case supervised_user::SupervisedUserURLFilter::BLOCK:
       switch (reason) {
         case supervised_user::FilteringBehaviorReason::DENYLIST:
           return FILTERING_BEHAVIOR_BLOCK_DENYLIST;
@@ -80,7 +81,7 @@ int GetHistogramValueForFilteringBehavior(
           NOTREACHED();
       }
       [[fallthrough]];
-    case SupervisedUserURLFilter::INVALID:
+    case supervised_user::SupervisedUserURLFilter::INVALID:
       NOTREACHED();
   }
   return 0;
@@ -97,7 +98,7 @@ int GetHistogramValueForTransitionType(ui::PageTransition transition_type) {
 
 void RecordFilterResultEvent(
     bool safesites_histogram,
-    SupervisedUserURLFilter::FilteringBehavior behavior,
+    supervised_user::SupervisedUserURLFilter::FilteringBehavior behavior,
     supervised_user::FilteringBehaviorReason reason,
     bool uncertain,
     ui::PageTransition transition_type) {
@@ -145,14 +146,14 @@ SupervisedUserNavigationThrottle::SupervisedUserNavigationThrottle(
                   navigation_handle->GetWebContents()->GetBrowserContext()))
               ->GetURLFilter()),
       deferred_(false),
-      behavior_(SupervisedUserURLFilter::INVALID) {}
+      behavior_(supervised_user::SupervisedUserURLFilter::INVALID) {}
 
 SupervisedUserNavigationThrottle::~SupervisedUserNavigationThrottle() {}
 
 content::NavigationThrottle::ThrottleCheckResult
 SupervisedUserNavigationThrottle::CheckURL() {
   deferred_ = false;
-  DCHECK_EQ(SupervisedUserURLFilter::INVALID, behavior_);
+  DCHECK_EQ(supervised_user::SupervisedUserURLFilter::INVALID, behavior_);
 
   // We do not yet support prerendering for supervised users.
   if (navigation_handle()->IsInPrerenderedMainFrame()) {
@@ -162,8 +163,9 @@ SupervisedUserNavigationThrottle::CheckURL() {
   GURL url = navigation_handle()->GetURL();
 
   bool skip_manual_parent_filter =
-      url_filter_->ShouldSkipParentManualAllowlistFiltering(
+      supervised_user::ShouldContentSkipParentAllowlistFiltering(
           navigation_handle()->GetWebContents()->GetOutermostWebContents());
+
   bool got_result = false;
 
   if (navigation_handle()->IsInPrimaryMainFrame()) {
@@ -179,11 +181,13 @@ SupervisedUserNavigationThrottle::CheckURL() {
                        weak_ptr_factory_.GetWeakPtr(), url));
   }
 
-  DCHECK_EQ(got_result, behavior_ != SupervisedUserURLFilter::INVALID);
+  DCHECK_EQ(got_result,
+            behavior_ != supervised_user::SupervisedUserURLFilter::INVALID);
   // If we got a "not blocked" result synchronously, don't defer.
-  deferred_ = !got_result || (behavior_ == SupervisedUserURLFilter::BLOCK);
+  deferred_ = !got_result ||
+              (behavior_ == supervised_user::SupervisedUserURLFilter::BLOCK);
   if (got_result)
-    behavior_ = SupervisedUserURLFilter::INVALID;
+    behavior_ = supervised_user::SupervisedUserURLFilter::INVALID;
   if (deferred_)
     return NavigationThrottle::DEFER;
   return NavigationThrottle::PROCEED;
@@ -233,10 +237,10 @@ const char* SupervisedUserNavigationThrottle::GetNameForLogging() {
 
 void SupervisedUserNavigationThrottle::OnCheckDone(
     const GURL& url,
-    SupervisedUserURLFilter::FilteringBehavior behavior,
+    supervised_user::SupervisedUserURLFilter::FilteringBehavior behavior,
     supervised_user::FilteringBehaviorReason reason,
     bool uncertain) {
-  DCHECK_EQ(SupervisedUserURLFilter::INVALID, behavior_);
+  DCHECK_EQ(supervised_user::SupervisedUserURLFilter::INVALID, behavior_);
 
   // If we got a result synchronously, pass it back to ShowInterstitialIfNeeded.
   if (!deferred_)
@@ -265,10 +269,11 @@ void SupervisedUserNavigationThrottle::OnCheckDone(
       navigation_observer->UpdateMainFrameFilteringStatus(behavior, reason);
   }
 
-  if (behavior == SupervisedUserURLFilter::BLOCK)
+  if (behavior == supervised_user::SupervisedUserURLFilter::BLOCK) {
     ShowInterstitial(url, reason);
-  else if (deferred_)
+  } else if (deferred_) {
     Resume();
+  }
 }
 
 void SupervisedUserNavigationThrottle::OnInterstitialResult(

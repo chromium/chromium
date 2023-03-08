@@ -35,6 +35,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
@@ -119,8 +120,9 @@ void SupervisedUserService::RegisterProfilePrefs(
 #endif
   registry->RegisterDictionaryPref(prefs::kSupervisedUserManualHosts);
   registry->RegisterDictionaryPref(prefs::kSupervisedUserManualURLs);
-  registry->RegisterIntegerPref(prefs::kDefaultSupervisedUserFilteringBehavior,
-                                SupervisedUserURLFilter::ALLOW);
+  registry->RegisterIntegerPref(
+      prefs::kDefaultSupervisedUserFilteringBehavior,
+      supervised_user::SupervisedUserURLFilter::ALLOW);
   registry->RegisterBooleanPref(prefs::kSupervisedUserSafeSites, true);
   for (const char* pref : supervised_user::kCustodianInfoPrefs) {
     registry->RegisterStringPref(pref, std::string());
@@ -163,7 +165,8 @@ void SupervisedUserService::SetDelegate(Delegate* delegate) {
   delegate_ = delegate;
 }
 
-SupervisedUserURLFilter* SupervisedUserService::GetURLFilter() {
+supervised_user::SupervisedUserURLFilter*
+SupervisedUserService::GetURLFilter() {
   return &url_filter_;
 }
 
@@ -254,7 +257,9 @@ SupervisedUserService::SupervisedUserService(
     signin::IdentityManager* identity_manager,
     PrefService& user_prefs,
     supervised_user::SupervisedUserSettingsService& settings_service,
-    ValidateURLSupportCallback check_webstore_url_callback)
+    ValidateURLSupportCallback check_webstore_url_callback,
+    std::unique_ptr<supervised_user::SupervisedUserURLFilter::Delegate>
+        url_filter_delegate)
     : user_prefs_(user_prefs),
       settings_service_(settings_service),
       profile_(profile),
@@ -264,7 +269,8 @@ SupervisedUserService::SupervisedUserService(
       is_profile_active_(false),
       did_init_(false),
       did_shutdown_(false),
-      url_filter_(std::move(check_webstore_url_callback)),
+      url_filter_(std::move(check_webstore_url_callback),
+                  std::move(url_filter_delegate)),
       denylist_state_(DenylistLoadState::NOT_LOADED) {
   url_filter_.AddObserver(this);
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -483,15 +489,15 @@ void SupervisedUserService::OnSupervisedUserIdChanged() {
 void SupervisedUserService::OnDefaultFilteringBehaviorChanged() {
   int behavior_value =
       user_prefs_->GetInteger(prefs::kDefaultSupervisedUserFilteringBehavior);
-  SupervisedUserURLFilter::FilteringBehavior behavior =
-      SupervisedUserURLFilter::BehaviorFromInt(behavior_value);
+  supervised_user::SupervisedUserURLFilter::FilteringBehavior behavior =
+      supervised_user::SupervisedUserURLFilter::BehaviorFromInt(behavior_value);
   url_filter_.SetDefaultFilteringBehavior(behavior);
   UpdateAsyncUrlChecker();
 
   for (SupervisedUserServiceObserver& observer : observer_list_)
     observer.OnURLFilterChanged();
 
-  SupervisedUserURLFilter::WebFilterType filter_type =
+  supervised_user::SupervisedUserURLFilter::WebFilterType filter_type =
       url_filter_.GetWebFilterType();
   if (!AreWebFilterPrefsDefault(*user_prefs_) &&
       current_web_filter_type_ != filter_type) {
@@ -521,7 +527,7 @@ void SupervisedUserService::OnSafeSitesSettingChanged() {
 
   UpdateAsyncUrlChecker();
 
-  SupervisedUserURLFilter::WebFilterType filter_type =
+  supervised_user::SupervisedUserURLFilter::WebFilterType filter_type =
       url_filter_.GetWebFilterType();
   if (!AreWebFilterPrefsDefault(*user_prefs_) &&
       current_web_filter_type_ != filter_type) {
@@ -533,12 +539,13 @@ void SupervisedUserService::OnSafeSitesSettingChanged() {
 void SupervisedUserService::UpdateAsyncUrlChecker() {
   int behavior_value =
       user_prefs_->GetInteger(prefs::kDefaultSupervisedUserFilteringBehavior);
-  SupervisedUserURLFilter::FilteringBehavior behavior =
-      SupervisedUserURLFilter::BehaviorFromInt(behavior_value);
+  supervised_user::SupervisedUserURLFilter::FilteringBehavior behavior =
+      supervised_user::SupervisedUserURLFilter::BehaviorFromInt(behavior_value);
 
   bool use_online_check =
       IsSafeSitesEnabled() ||
-      behavior == SupervisedUserURLFilter::FilteringBehavior::BLOCK;
+      behavior ==
+          supervised_user::SupervisedUserURLFilter::FilteringBehavior::BLOCK;
 
   if (use_online_check != url_filter_.HasAsyncURLChecker()) {
     if (use_online_check) {

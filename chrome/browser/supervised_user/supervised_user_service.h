@@ -19,10 +19,10 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/net/file_downloader.h"
-#include "chrome/browser/supervised_user/supervised_user_url_filter.h"
 #include "chrome/browser/supervised_user/web_approvals_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/supervised_user_denylist.h"
 #include "components/supervised_user/core/common/supervised_users.h"
 #include "components/sync/driver/sync_type_preference_provider.h"
@@ -45,7 +45,10 @@ class Browser;
 class PrefService;
 class Profile;
 class SupervisedUserServiceObserver;
+
+namespace supervised_user {
 class SupervisedUserURLFilter;
+}  // namespace supervised_user
 
 namespace base {
 class FilePath;
@@ -73,16 +76,17 @@ class PrefRegistrySyncable;
 // This class handles all the information related to a given supervised profile
 // (e.g. the default URL filtering behavior, or manual allowlist/denylist
 // overrides).
-class SupervisedUserService : public KeyedService,
+class SupervisedUserService
+    : public KeyedService,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-                              public extensions::ExtensionRegistryObserver,
-                              public extensions::ManagementPolicy::Provider,
+      public extensions::ExtensionRegistryObserver,
+      public extensions::ManagementPolicy::Provider,
 #endif
-                              public syncer::SyncTypePreferenceProvider,
+      public syncer::SyncTypePreferenceProvider,
 #if BUILDFLAG(IS_CHROMEOS)
-                              public BrowserListObserver,
+      public BrowserListObserver,
 #endif
-                              public SupervisedUserURLFilter::Observer {
+      public supervised_user::SupervisedUserURLFilter::Observer {
  public:
   class Delegate {
    public:
@@ -140,7 +144,7 @@ class SupervisedUserService : public KeyedService,
   // Returns the URL filter for filtering navigations and classifying sites in
   // the history view. Both this method and the returned filter may only be used
   // on the UI thread.
-  SupervisedUserURLFilter* GetURLFilter();
+  supervised_user::SupervisedUserURLFilter* GetURLFilter();
 
   // Get the string used to identify an extension install or update request.
   // Public for testing.
@@ -258,7 +262,9 @@ class SupervisedUserService : public KeyedService,
       signin::IdentityManager* identity_manager,
       PrefService& user_prefs,
       supervised_user::SupervisedUserSettingsService& settings_service,
-      ValidateURLSupportCallback check_webstore_url_callback);
+      ValidateURLSupportCallback check_webstore_url_callback,
+      std::unique_ptr<supervised_user::SupervisedUserURLFilter::Delegate>
+          url_filter_delegate);
 
   void SetActive(bool active);
 
@@ -398,7 +404,7 @@ class SupervisedUserService : public KeyedService,
   // True only when |Shutdown()| method has been called.
   bool did_shutdown_;
 
-  SupervisedUserURLFilter url_filter_;
+  supervised_user::SupervisedUserURLFilter url_filter_;
 
   // Store a set of extension ids approved by the custodian.
   // It is only relevant for SU-initiated installs.
@@ -435,8 +441,9 @@ class SupervisedUserService : public KeyedService,
   // prefs::kDefaultSupervisedUserFilteringBehavior and
   // prefs::kSupervisedUserSafeSites change. Uses this member to avoid duplicate
   // reports. Initialized in the SetActive().
-  SupervisedUserURLFilter::WebFilterType current_web_filter_type_ =
-      SupervisedUserURLFilter::WebFilterType::kMaxValue;
+  supervised_user::SupervisedUserURLFilter::WebFilterType
+      current_web_filter_type_ =
+          supervised_user::SupervisedUserURLFilter::WebFilterType::kMaxValue;
 
   base::WeakPtrFactory<SupervisedUserService> weak_ptr_factory_{this};
 };

@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/supervised_user/supervised_user_url_filter.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 
+#include <cstddef>
 #include <map>
 #include <memory>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
-#include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+namespace supervised_user {
 
 class SupervisedUserURLFilterTest : public ::testing::Test,
                                     public SupervisedUserURLFilter::Observer {
@@ -67,11 +67,18 @@ class SupervisedUserURLFilterTest : public ::testing::Test,
   base::test::TaskEnvironment task_environment_;
   base::RunLoop run_loop_;
   SupervisedUserURLFilter filter_ = SupervisedUserURLFilter(
-      base::BindRepeating([](const GURL& url) { return false; }));
+      base::BindRepeating([](const GURL& url) { return false; }),
+      std::make_unique<MockServiceDelegate>());
   SupervisedUserURLFilter::FilteringBehavior behavior_;
   supervised_user::FilteringBehaviorReason reason_;
 
  private:
+  class MockServiceDelegate
+      : public supervised_user::SupervisedUserURLFilter::Delegate {
+   public:
+    std::string GetCountryCode() override { return std::string(); }
+  };
+
   void ExpectURLCheckMatches(
       const std::string& url,
       SupervisedUserURLFilter::FilteringBehavior expected_behavior,
@@ -268,80 +275,56 @@ TEST_F(SupervisedUserURLFilterTest, UrlWithNonStandardUrlSchemeAllowed) {
 TEST_F(SupervisedUserURLFilterTest, HostMatchesPattern) {
   EXPECT_TRUE(SupervisedUserURLFilter::HostMatchesPattern("www.google.com",
                                                           "google.com"));
-  EXPECT_TRUE(
-      SupervisedUserURLFilter::HostMatchesPattern("www.google.com",
-                                                  "*.google.com"));
-  EXPECT_TRUE(
-      SupervisedUserURLFilter::HostMatchesPattern("google.com",
-                                                  "*.google.com"));
-  EXPECT_TRUE(
-      SupervisedUserURLFilter::HostMatchesPattern("accounts.google.com",
-                                                  "*.google.com"));
-  EXPECT_FALSE(
-      SupervisedUserURLFilter::HostMatchesPattern("www.google.de",
-                                                  "*.google.com"));
-  EXPECT_FALSE(
-      SupervisedUserURLFilter::HostMatchesPattern("notgoogle.com",
-                                                  "*.google.com"));
+  EXPECT_TRUE(SupervisedUserURLFilter::HostMatchesPattern("www.google.com",
+                                                          "*.google.com"));
+  EXPECT_TRUE(SupervisedUserURLFilter::HostMatchesPattern("google.com",
+                                                          "*.google.com"));
+  EXPECT_TRUE(SupervisedUserURLFilter::HostMatchesPattern("accounts.google.com",
+                                                          "*.google.com"));
+  EXPECT_FALSE(SupervisedUserURLFilter::HostMatchesPattern("www.google.de",
+                                                           "*.google.com"));
+  EXPECT_FALSE(SupervisedUserURLFilter::HostMatchesPattern("notgoogle.com",
+                                                           "*.google.com"));
 
-
-  EXPECT_TRUE(
-      SupervisedUserURLFilter::HostMatchesPattern("www.google.com",
-                                                  "www.google.*"));
-  EXPECT_TRUE(
-      SupervisedUserURLFilter::HostMatchesPattern("www.google.de",
-                                                  "www.google.*"));
-  EXPECT_TRUE(
-      SupervisedUserURLFilter::HostMatchesPattern("www.google.co.uk",
-                                                  "www.google.*"));
-  EXPECT_FALSE(
-      SupervisedUserURLFilter::HostMatchesPattern("www.google.blogspot.com",
-                                                  "www.google.*"));
-  EXPECT_FALSE(
-      SupervisedUserURLFilter::HostMatchesPattern("www.google",
-                                                  "www.google.*"));
+  EXPECT_TRUE(SupervisedUserURLFilter::HostMatchesPattern("www.google.com",
+                                                          "www.google.*"));
+  EXPECT_TRUE(SupervisedUserURLFilter::HostMatchesPattern("www.google.de",
+                                                          "www.google.*"));
+  EXPECT_TRUE(SupervisedUserURLFilter::HostMatchesPattern("www.google.co.uk",
+                                                          "www.google.*"));
+  EXPECT_FALSE(SupervisedUserURLFilter::HostMatchesPattern(
+      "www.google.blogspot.com", "www.google.*"));
+  EXPECT_FALSE(SupervisedUserURLFilter::HostMatchesPattern("www.google",
+                                                           "www.google.*"));
   EXPECT_TRUE(SupervisedUserURLFilter::HostMatchesPattern("google.com",
                                                           "www.google.*"));
-  EXPECT_FALSE(
-      SupervisedUserURLFilter::HostMatchesPattern("mail.google.com",
-                                                  "www.google.*"));
-  EXPECT_FALSE(
-      SupervisedUserURLFilter::HostMatchesPattern("www.googleplex.com",
-                                                  "www.google.*"));
-  EXPECT_FALSE(
-      SupervisedUserURLFilter::HostMatchesPattern("www.googleco.uk",
-                                                  "www.google.*"));
+  EXPECT_FALSE(SupervisedUserURLFilter::HostMatchesPattern("mail.google.com",
+                                                           "www.google.*"));
+  EXPECT_FALSE(SupervisedUserURLFilter::HostMatchesPattern("www.googleplex.com",
+                                                           "www.google.*"));
+  EXPECT_FALSE(SupervisedUserURLFilter::HostMatchesPattern("www.googleco.uk",
+                                                           "www.google.*"));
 
-
+  EXPECT_TRUE(SupervisedUserURLFilter::HostMatchesPattern("www.google.com",
+                                                          "*.google.*"));
   EXPECT_TRUE(
-      SupervisedUserURLFilter::HostMatchesPattern("www.google.com",
-                                                  "*.google.*"));
+      SupervisedUserURLFilter::HostMatchesPattern("google.com", "*.google.*"));
+  EXPECT_TRUE(SupervisedUserURLFilter::HostMatchesPattern("accounts.google.com",
+                                                          "*.google.*"));
+  EXPECT_TRUE(SupervisedUserURLFilter::HostMatchesPattern("mail.google.com",
+                                                          "*.google.*"));
+  EXPECT_TRUE(SupervisedUserURLFilter::HostMatchesPattern("www.google.de",
+                                                          "*.google.*"));
   EXPECT_TRUE(
-      SupervisedUserURLFilter::HostMatchesPattern("google.com",
-                                                  "*.google.*"));
-  EXPECT_TRUE(
-      SupervisedUserURLFilter::HostMatchesPattern("accounts.google.com",
-                                                  "*.google.*"));
-  EXPECT_TRUE(
-      SupervisedUserURLFilter::HostMatchesPattern("mail.google.com",
-                                                  "*.google.*"));
-  EXPECT_TRUE(
-      SupervisedUserURLFilter::HostMatchesPattern("www.google.de",
-                                                  "*.google.*"));
-  EXPECT_TRUE(
-      SupervisedUserURLFilter::HostMatchesPattern("google.de",
-                                                  "*.google.*"));
-  EXPECT_FALSE(
-      SupervisedUserURLFilter::HostMatchesPattern("google.blogspot.com",
-                                                  "*.google.*"));
+      SupervisedUserURLFilter::HostMatchesPattern("google.de", "*.google.*"));
+  EXPECT_FALSE(SupervisedUserURLFilter::HostMatchesPattern(
+      "google.blogspot.com", "*.google.*"));
   EXPECT_FALSE(
       SupervisedUserURLFilter::HostMatchesPattern("google", "*.google.*"));
-  EXPECT_FALSE(
-      SupervisedUserURLFilter::HostMatchesPattern("notgoogle.com",
-                                                  "*.google.*"));
-  EXPECT_FALSE(
-      SupervisedUserURLFilter::HostMatchesPattern("www.googleplex.com",
-                                                  "*.google.*"));
+  EXPECT_FALSE(SupervisedUserURLFilter::HostMatchesPattern("notgoogle.com",
+                                                           "*.google.*"));
+  EXPECT_FALSE(SupervisedUserURLFilter::HostMatchesPattern("www.googleplex.com",
+                                                           "*.google.*"));
 
   // Now test a few invalid patterns. They should never match.
   EXPECT_FALSE(
@@ -362,15 +345,12 @@ TEST_F(SupervisedUserURLFilterTest, HostMatchesPattern) {
       SupervisedUserURLFilter::HostMatchesPattern("www.google.com", "*.*.com"));
   EXPECT_FALSE(
       SupervisedUserURLFilter::HostMatchesPattern("www.google.com", "www.*.*"));
-  EXPECT_FALSE(
-      SupervisedUserURLFilter::HostMatchesPattern("www.google.com",
-                                                  "*.goo.*le.*"));
-  EXPECT_FALSE(
-      SupervisedUserURLFilter::HostMatchesPattern("www.google.com",
-                                                  "*google*"));
-  EXPECT_FALSE(
-      SupervisedUserURLFilter::HostMatchesPattern("www.google.com",
-                                                  "www.*.google.com"));
+  EXPECT_FALSE(SupervisedUserURLFilter::HostMatchesPattern("www.google.com",
+                                                           "*.goo.*le.*"));
+  EXPECT_FALSE(SupervisedUserURLFilter::HostMatchesPattern("www.google.com",
+                                                           "*google*"));
+  EXPECT_FALSE(SupervisedUserURLFilter::HostMatchesPattern("www.google.com",
+                                                           "www.*.google.com"));
 }
 
 TEST_F(SupervisedUserURLFilterTest, PatternsWithoutConflicts) {
@@ -520,3 +500,5 @@ TEST_F(SupervisedUserURLFilterTest, PlayTermsAlwaysAllowed) {
   EXPECT_FALSE(IsURLAllowlisted("https://play.google.com/"));
   EXPECT_FALSE(IsURLAllowlisted("https://play.google.com/about"));
 }
+
+}  // namespace supervised_user

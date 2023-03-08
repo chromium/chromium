@@ -248,7 +248,7 @@
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "chrome/browser/supervised_user/supervised_user_url_filter.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #endif
 
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
@@ -3260,11 +3260,12 @@ bool RenderViewContextMenu::IsSaveLinkAsEnabled() const {
       SupervisedUserServiceFactory::GetForProfile(profile);
   if (supervised_user_service &&
       supervised_user_service->IsURLFilteringEnabled()) {
-    SupervisedUserURLFilter* url_filter =
+    supervised_user::SupervisedUserURLFilter* url_filter =
         supervised_user_service->GetURLFilter();
     if (url_filter->GetFilteringBehaviorForURL(params_.link_url) !=
-        SupervisedUserURLFilter::FilteringBehavior::ALLOW)
+        supervised_user::SupervisedUserURLFilter::FilteringBehavior::ALLOW) {
       return false;
+    }
   }
 #endif
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_URL_FILTER_H_
-#define CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_URL_FILTER_H_
+#ifndef COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_URL_FILTER_H_
+#define COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_URL_FILTER_H_
 
 #include <map>
 #include <memory>
@@ -18,6 +18,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/safe_search_api/url_checker.h"
 #include "components/supervised_user/core/browser/supervised_user_error_page.h"
+#include "components/supervised_user/core/common/supervised_user_denylist.h"
 
 class GURL;
 
@@ -25,18 +26,14 @@ namespace base {
 class TaskRunner;
 }
 
-namespace supervised_user {
-class SupervisedUserDenylist;
-}  // namespace supervised_user
-
-namespace content {
-class WebContents;
-}  // namespace content
-
 class KidsChromeManagementClient;
 
 // Callback type for additional url validations.
 typedef base::RepeatingCallback<bool(const GURL&)> ValidateURLSupportCallback;
+
+namespace supervised_user {
+
+class SupervisedUserDenylist;
 
 // This class manages the filtering behavior for URLs, i.e. it tells callers
 // if a URL should be allowed or blocked. It uses information
@@ -102,6 +99,14 @@ class SupervisedUserURLFilter {
     kMaxValue = kBoth,
   };
 
+  // Provides access to functionality from services on which we don't want
+  // to depend directly.
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+    virtual std::string GetCountryCode() = 0;
+  };
+
   using FilteringBehaviorCallback =
       base::OnceCallback<void(FilteringBehavior,
                               supervised_user::FilteringBehaviorReason,
@@ -120,8 +125,9 @@ class SupervisedUserURLFilter {
                               bool uncertain) {}
   };
 
-  explicit SupervisedUserURLFilter(
-      ValidateURLSupportCallback check_webstore_url_callback);
+  SupervisedUserURLFilter(
+      ValidateURLSupportCallback check_webstore_url_callback,
+      std::unique_ptr<Delegate> delegate);
 
   SupervisedUserURLFilter(const SupervisedUserURLFilter&) = delete;
   SupervisedUserURLFilter& operator=(const SupervisedUserURLFilter&) = delete;
@@ -133,11 +139,6 @@ class SupervisedUserURLFilter {
   static const char* GetApprovedSitesCountHistogramNameForTest();
   static const char* GetBlockedSitesCountHistogramNameForTest();
   static const char* GetManagedSiteListConflictHistogramNameForTest();
-
-  // Returns true if the parental allowlist/blocklist should be skipped in
-  // |contents|. SafeSearch filtering is still applied to |contents|.
-  static bool ShouldSkipParentManualAllowlistFiltering(
-      content::WebContents* contents);
 
   static FilteringBehavior BehaviorFromInt(int behavior_value);
 
@@ -282,6 +283,8 @@ class SupervisedUserURLFilter {
   // (false).
   std::map<std::string, bool> host_map_;
 
+  std::unique_ptr<Delegate> service_delegate_;
+
   // Not owned.
   raw_ptr<const supervised_user::SupervisedUserDenylist> denylist_;
 
@@ -298,4 +301,6 @@ class SupervisedUserURLFilter {
   base::WeakPtrFactory<SupervisedUserURLFilter> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_URL_FILTER_H_
+}  // namespace supervised_user
+
+#endif  // COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_URL_FILTER_H_

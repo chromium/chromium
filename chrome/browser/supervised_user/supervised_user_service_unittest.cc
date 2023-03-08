@@ -93,7 +93,7 @@ class AsyncTestHelper {
 
 class SupervisedUserURLFilterObserver
     : public AsyncTestHelper,
-      public SupervisedUserURLFilter::Observer {
+      public supervised_user::SupervisedUserURLFilter::Observer {
  public:
   SupervisedUserURLFilterObserver() {}
 
@@ -104,7 +104,7 @@ class SupervisedUserURLFilterObserver
 
   ~SupervisedUserURLFilterObserver() {}
 
-  void Init(SupervisedUserURLFilter* url_filter) {
+  void Init(supervised_user::SupervisedUserURLFilter* url_filter) {
     scoped_observation_.Observe(url_filter);
   }
 
@@ -112,8 +112,8 @@ class SupervisedUserURLFilterObserver
   void OnSiteListUpdated() override { QuitRunLoop(); }
 
  private:
-  base::ScopedObservation<SupervisedUserURLFilter,
-                          SupervisedUserURLFilter::Observer>
+  base::ScopedObservation<supervised_user::SupervisedUserURLFilter,
+                          supervised_user::SupervisedUserURLFilter::Observer>
       scoped_observation_{this};
 };
 
@@ -227,7 +227,7 @@ TEST_F(SupervisedUserServiceTestUnsupervised, AreExtensionsPermissionsEnabled) {
 TEST_F(SupervisedUserServiceTest, MAYBE_DeprecatedFilterPolicy) {
   PrefService* prefs = profile_->GetPrefs();
   EXPECT_EQ(prefs->GetInteger(prefs::kDefaultSupervisedUserFilteringBehavior),
-            SupervisedUserURLFilter::ALLOW);
+            supervised_user::SupervisedUserURLFilter::ALLOW);
 
   ASSERT_DCHECK_DEATH(
       prefs->SetInteger(prefs::kDefaultSupervisedUserFilteringBehavior,
@@ -256,7 +256,8 @@ class SupervisedUserServiceExtensionTestBase
         SupervisedUserServiceFactory::GetForProfile(profile_.get());
     service->Init();
 
-    SupervisedUserURLFilter* url_filter = service->GetURLFilter();
+    supervised_user::SupervisedUserURLFilter* url_filter =
+        service->GetURLFilter();
     url_filter->SetBlockingTaskRunnerForTesting(
         base::SingleThreadTaskRunner::GetCurrentDefault());
     url_filter_observer_.Init(url_filter);

@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/supervised_user/extensions_utils.h"
+#include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
+#include <string>
 
 #include "base/strings/string_util.h"
+#include "chrome/common/url_constants.h"
 #include "components/url_matcher/url_util.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_urls.h"
@@ -50,6 +52,16 @@ bool IsSupportedChromeExtensionURL(const GURL& effective_url) {
 #else
   return false;
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+}
+
+bool ShouldContentSkipParentAllowlistFiltering(content::WebContents* contents) {
+  // Note that |contents| can be an inner WebContents. Get the outer most
+  // WebContents and check if it belongs to the EDUCoexistence login flow.
+  content::WebContents* outer_most_content =
+      contents->GetOutermostWebContents();
+
+  return outer_most_content->GetLastCommittedURL() ==
+         GURL(chrome::kChromeUIEDUCoexistenceLoginURLV2);
 }
 
 }  // namespace supervised_user

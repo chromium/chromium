@@ -78,11 +78,12 @@ void FamilyInfoFeedbackSource::OnGetFamilyMembersSuccess(
       ScopedJavaLocalRef<jstring> child_web_filter_type = nullptr;
       if (base::FeatureList::IsEnabled(kReportParentalControlSitesChild) &&
           member.role == FamilyMemberRole::CHILD) {
-        SupervisedUserURLFilter::WebFilterType web_filter_type =
-            supervised_user_service_->GetURLFilter()->GetWebFilterType();
+        supervised_user::SupervisedUserURLFilter::WebFilterType
+            web_filter_type =
+                supervised_user_service_->GetURLFilter()->GetWebFilterType();
         child_web_filter_type = ConvertUTF8ToJavaString(
-            env, SupervisedUserURLFilter::WebFilterTypeToDisplayString(
-                     web_filter_type));
+            env, supervised_user::SupervisedUserURLFilter::
+                     WebFilterTypeToDisplayString(web_filter_type));
       }
       Java_FamilyInfoFeedbackSource_processPrimaryAccountFamilyInfo(
           env, java_ref_, ConvertUTF8ToJavaString(env, role),

@@ -5,13 +5,16 @@
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 
 #include "base/functional/bind.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/supervised_user/extensions_utils.h"
 #include "chrome/browser/supervised_user/kids_chrome_management/kids_chrome_management_client_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
+#include "components/variations/service/variations_service.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -19,6 +22,23 @@
 #include "extensions/browser/extension_system_provider.h"
 #include "extensions/browser/extensions_browser_client.h"
 #endif
+
+class FilterDelegateImpl
+    : public supervised_user::SupervisedUserURLFilter::Delegate {
+ public:
+  std::string GetCountryCode() override {
+    std::string country;
+    variations::VariationsService* variations_service =
+        g_browser_process->variations_service();
+    if (variations_service) {
+      country = variations_service->GetStoredPermanentCountry();
+      if (country.empty()) {
+        country = variations_service->GetLatestCountry();
+      }
+    }
+    return country;
+  }
+};
 
 // static
 SupervisedUserService* SupervisedUserServiceFactory::GetForProfile(
@@ -51,7 +71,8 @@ KeyedService* SupervisedUserServiceFactory::BuildInstanceFor(Profile* profile) {
       *profile->GetPrefs(),
       *SupervisedUserSettingsServiceFactory::GetInstance()->GetForKey(
           profile->GetProfileKey()),
-      base::BindRepeating(supervised_user::IsSupportedChromeExtensionURL));
+      base::BindRepeating(supervised_user::IsSupportedChromeExtensionURL),
+      std::make_unique<FilterDelegateImpl>());
 }
 
 SupervisedUserServiceFactory::SupervisedUserServiceFactory()

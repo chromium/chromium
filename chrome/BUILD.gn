@@ -1624,10 +1624,6 @@ if (is_android) {
     ]
   }
 
-  java_cpp_enum("supervised_user_url_filter_enum_javagen") {
-    sources = [ "browser/supervised_user/supervised_user_url_filter.h" ]
-  }
-
   java_cpp_enum("context_menu_image_format_enum_javagen") {
     sources =
         [ "browser/android/context_menu/context_menu_native_delegate_impl.h" ]

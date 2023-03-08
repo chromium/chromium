@@ -18,7 +18,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
-#include "chrome/browser/supervised_user/supervised_user_url_filter.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/net/safe_search_util.h"
 #include "chrome/common/pref_names.h"
@@ -28,6 +27,7 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
@@ -126,7 +126,7 @@ void SupervisedUserPrefStore::OnNewSettingsAvailable(
   if (!settings.empty()) {
     // Set hardcoded prefs and defaults.
     prefs_->SetInteger(prefs::kDefaultSupervisedUserFilteringBehavior,
-                       SupervisedUserURLFilter::ALLOW);
+                       supervised_user::SupervisedUserURLFilter::ALLOW);
     prefs_->SetBoolean(prefs::kForceGoogleSafeSearch, true);
     prefs_->SetInteger(prefs::kForceYouTubeRestrict,
                        safe_search_util::YOUTUBE_RESTRICT_MODERATE);

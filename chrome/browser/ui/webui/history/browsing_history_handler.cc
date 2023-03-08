@@ -59,7 +59,7 @@
 #include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "chrome/browser/supervised_user/supervised_user_url_filter.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #endif
 
 using bookmarks::BookmarkModel;
@@ -247,7 +247,7 @@ base::Value::Dict HistoryEntryToValue(
       SupervisedUserServiceFactory::GetForProfile(profile);
   if (supervised_user_service &&
       supervised_user_service->IsURLFilteringEnabled()) {
-    SupervisedUserURLFilter* url_filter =
+    supervised_user::SupervisedUserURLFilter* url_filter =
         supervised_user_service->GetURLFilter();
     int filtering_behavior =
         url_filter->GetFilteringBehaviorForURL(entry.url.GetWithEmptyPath());

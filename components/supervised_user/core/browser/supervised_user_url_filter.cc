@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/supervised_user/supervised_user_url_filter.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 
 #include <memory>
 #include <utility>
@@ -15,16 +15,11 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/supervised_user/supervised_user_service.h"
-#include "chrome/common/url_constants.h"
 #include "components/supervised_user/core/browser/kids_chrome_management_client.h"
 #include "components/supervised_user/core/browser/kids_management_url_checker_client.h"
+#include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/supervised_user/core/common/supervised_user_denylist.h"
 #include "components/url_matcher/url_util.h"
-#include "components/variations/service/variations_service.h"
-#include "content/public/browser/web_contents.h"
-#include "extensions/buildflags/buildflags.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -33,7 +28,7 @@ using net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES;
 using net::registry_controlled_domains::EXCLUDE_UNKNOWN_REGISTRIES;
 using net::registry_controlled_domains::GetCanonicalHostRegistryLength;
 
-namespace {
+namespace supervised_user {
 
 SupervisedUserURLFilter::FilteringBehavior
 GetBehaviorFromSafeSearchClassification(
@@ -56,8 +51,9 @@ bool IsSameDomain(const GURL& url1, const GURL& url2) {
 bool SetFilteringBehaviorResult(
     SupervisedUserURLFilter::FilteringBehavior behavior,
     SupervisedUserURLFilter::FilteringBehavior* result) {
-  if (*result == behavior)
+  if (*result == behavior) {
     return false;
+  }
 
   // First time to find a match in allow/block list
   if (*result == SupervisedUserURLFilter::FilteringBehavior::INVALID) {
@@ -67,8 +63,9 @@ bool SetFilteringBehaviorResult(
 
   // Another match is found and doesn't have the same behavior. Block is
   // the preferred behvior, override the result only if the match is block.
-  if (behavior == SupervisedUserURLFilter::FilteringBehavior::BLOCK)
+  if (behavior == SupervisedUserURLFilter::FilteringBehavior::BLOCK) {
     *result = behavior;
+  }
 
   return true;
 }
@@ -98,11 +95,12 @@ bool IsAlwaysAllowedUrlPrefix(const GURL& effective_url) {
       // The Chrome sync dashboard is linked to from within Chrome settings.
       // Allow both the initial URL that is loaded, and the URL to which it
       // redirects.
-      chrome::kSyncGoogleDashboardURL, "https://chrome.google.com/sync"};
+      kSyncGoogleDashboardURL, "https://chrome.google.com/sync"};
 
   for (const char* allowedUrlPrefix : kAllowedUrlPrefixes) {
-    if (base::StartsWith(effective_url.spec(), allowedUrlPrefix))
+    if (base::StartsWith(effective_url.spec(), allowedUrlPrefix)) {
       return true;
+    }
   }
   return false;
 }
@@ -119,8 +117,6 @@ bool IsPlayStoreTermsOfServiceUrl(const GURL& effective_url) {
          (effective_url.path_piece().find(kPlayTermsPath) !=
           base::StringPiece::npos);
 }
-
-}  // namespace
 
 namespace {
 
@@ -152,8 +148,10 @@ constexpr char kBlockedSitesCountHistogramName[] =
 }  // namespace
 
 SupervisedUserURLFilter::SupervisedUserURLFilter(
-    ValidateURLSupportCallback check_webstore_url_callback)
+    ValidateURLSupportCallback check_webstore_url_callback,
+    std::unique_ptr<Delegate> service_delegate)
     : default_behavior_(ALLOW),
+      service_delegate_(std::move(service_delegate)),
       denylist_(nullptr),
       blocking_task_runner_(base::ThreadPool::CreateTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
@@ -190,18 +188,6 @@ SupervisedUserURLFilter::GetBlockedSitesCountHistogramNameForTest() {
 const char*
 SupervisedUserURLFilter::GetManagedSiteListConflictHistogramNameForTest() {
   return kManagedSiteListConflictHistogramName;
-}
-
-// static
-bool SupervisedUserURLFilter::ShouldSkipParentManualAllowlistFiltering(
-    content::WebContents* contents) {
-  // Note that |contents| can be an inner WebContents. Get the outer most
-  // WebContents and check if it belongs to the EDUCoexistence login flow.
-  content::WebContents* outer_most_content =
-      contents->GetOutermostWebContents();
-
-  return outer_most_content->GetLastCommittedURL() ==
-         GURL(SupervisedUserService::GetEduCoexistenceLoginUrl());
 }
 
 // static
@@ -246,8 +232,9 @@ bool SupervisedUserURLFilter::HostMatchesPattern(
     size_t registry_length = GetCanonicalHostRegistryLength(
         trimmed_host, EXCLUDE_UNKNOWN_REGISTRIES, EXCLUDE_PRIVATE_REGISTRIES);
     // A host without a known registry part does not match.
-    if (registry_length == 0)
+    if (registry_length == 0) {
       return false;
+    }
 
     trimmed_pattern.erase(trimmed_pattern.length() - 2);
     trimmed_host.erase(trimmed_host.length() - (registry_length + 1));
@@ -321,19 +308,22 @@ SupervisedUserURLFilter::GetFilteringBehaviorForURL(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   GURL effective_url = url_matcher::util::GetEmbeddedURL(url);
-  if (!effective_url.is_valid())
+  if (!effective_url.is_valid()) {
     effective_url = url;
+  }
 
   *reason = supervised_user::FilteringBehaviorReason::MANUAL;
 
-  if (IsExemptedFromGuardianApproval(effective_url))
+  if (IsExemptedFromGuardianApproval(effective_url)) {
     return ALLOW;
+  }
 
   // Check manual denylists and allowlists.
   FilteringBehavior manual_result =
       GetManualFilteringBehaviorForURL(effective_url);
-  if (manual_result != INVALID)
+  if (manual_result != INVALID) {
     return manual_result;
+  }
 
   // Check the static denylist, unless the default is to block anyway.
   if (!manual_only && default_behavior_ != BLOCK && denylist_ &&
@@ -381,8 +371,9 @@ SupervisedUserURLFilter::GetManualFilteringBehaviorForURL(const GURL& url) {
     }
   }
 
-  if (result != INVALID)
+  if (result != INVALID) {
     UMA_HISTOGRAM_BOOLEAN(kManagedSiteListConflictHistogramName, conflict);
+  }
 
   return result;
 }
@@ -398,8 +389,9 @@ bool SupervisedUserURLFilter::GetFilteringBehaviorForURLWithAsyncChecks(
   if (behavior == ALLOW &&
       reason != supervised_user::FilteringBehaviorReason::DEFAULT) {
     std::move(callback).Run(behavior, reason, false);
-    for (Observer& observer : observers_)
+    for (Observer& observer : observers_) {
       observer.OnURLChecked(url, behavior, reason, false);
+    }
     return true;
   }
 
@@ -409,8 +401,9 @@ bool SupervisedUserURLFilter::GetFilteringBehaviorForURLWithAsyncChecks(
     if (reason != supervised_user::FilteringBehaviorReason::DEFAULT ||
         behavior == BLOCK || !async_url_checker_) {
       std::move(callback).Run(behavior, reason, false);
-      for (Observer& observer : observers_)
+      for (Observer& observer : observers_) {
         observer.OnURLChecked(url, behavior, reason, false);
+      }
       return true;
     }
   }
@@ -430,8 +423,9 @@ bool SupervisedUserURLFilter::GetFilteringBehaviorForSubFrameURLWithAsyncChecks(
   // If the reason is not default, then it is manually allowed or blocked.
   if (reason != supervised_user::FilteringBehaviorReason::DEFAULT) {
     std::move(callback).Run(behavior, reason, false);
-    for (Observer& observer : observers_)
+    for (Observer& observer : observers_) {
       observer.OnURLChecked(url, behavior, reason, false);
+    }
     return true;
   }
 
@@ -441,8 +435,9 @@ bool SupervisedUserURLFilter::GetFilteringBehaviorForSubFrameURLWithAsyncChecks(
       !IsSameDomain(url, main_frame_url)) {
     // It is not in the same domain and is blocked.
     std::move(callback).Run(behavior, reason, false);
-    for (Observer& observer : observers_)
+    for (Observer& observer : observers_) {
       observer.OnURLChecked(url, behavior, reason, false);
+    }
     return true;
   }
 
@@ -483,14 +478,8 @@ void SupervisedUserURLFilter::SetManualURLs(std::map<GURL, bool> url_map) {
 
 void SupervisedUserURLFilter::InitAsyncURLChecker(
     KidsChromeManagementClient* kids_chrome_management_client) {
-  std::string country;
-  variations::VariationsService* variations_service =
-      g_browser_process->variations_service();
-  if (variations_service) {
-    country = variations_service->GetStoredPermanentCountry();
-    if (country.empty())
-      country = variations_service->GetLatestCountry();
-  }
+  DCHECK(service_delegate_);
+  std::string country = service_delegate_->GetCountryCode();
 
   std::unique_ptr<safe_search_api::URLCheckerClient> url_checker_client =
       std::make_unique<KidsManagementURLCheckerClient>(
@@ -532,8 +521,9 @@ SupervisedUserURLFilter::WebFilterType
 SupervisedUserURLFilter::GetWebFilterType() const {
   // If the default filtering behavior is not block, it means the web filter
   // was set to either "allow all sites" or "try to block mature sites".
-  if (default_behavior_ == BLOCK)
+  if (default_behavior_ == BLOCK) {
     return WebFilterType::kCertainSites;
+  }
 
   bool safe_sites_enabled = HasAsyncURLChecker() || HasDenylist();
   return safe_sites_enabled ? WebFilterType::kTryToBlockMatureSites
@@ -541,16 +531,18 @@ SupervisedUserURLFilter::GetWebFilterType() const {
 }
 
 void SupervisedUserURLFilter::ReportWebFilterTypeMetrics() const {
-  if (!is_filter_initialized_)
+  if (!is_filter_initialized_) {
     return;
+  }
 
   base::UmaHistogramEnumeration(kWebFilterTypeHistogramName,
                                 GetWebFilterType());
 }
 
 void SupervisedUserURLFilter::ReportManagedSiteListMetrics() const {
-  if (!is_filter_initialized_)
+  if (!is_filter_initialized_) {
     return;
+  }
 
   if (url_map_.empty() && host_map_.empty()) {
     base::UmaHistogramEnumeration(kManagedSiteListHistogramName,
@@ -633,3 +625,5 @@ void SupervisedUserURLFilter::CheckCallback(
         uncertain);
   }
 }
+
+}  // namespace supervised_user

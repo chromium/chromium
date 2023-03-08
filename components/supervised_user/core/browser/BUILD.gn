@@ -2,6 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
 static_library("browser") {
   sources = [
     "kids_chrome_management_client.cc",
@@ -14,6 +18,8 @@ static_library("browser") {
     "supervised_user_settings_service.h",
     "supervised_user_sync_model_type_controller.cc",
     "supervised_user_sync_model_type_controller.h",
+    "supervised_user_url_filter.cc",
+    "supervised_user_url_filter.h",
   ]
 
   public_deps = [
@@ -33,6 +39,7 @@ static_library("browser") {
     "//components/strings:components_strings_grit",
     "//components/supervised_user/core/common",
     "//components/sync",
+    "//components/url_matcher:url_matcher",
     "//google_apis",
     "//net",
     "//services/network/public/cpp",
@@ -49,6 +56,7 @@ source_set("unit_tests") {
     "supervised_user_error_page_unittest.cc",
     "supervised_user_settings_service_unittest.cc",
     "supervised_user_sync_model_type_controller_unittest.cc",
+    "supervised_user_url_filter_unittest.cc",
   ]
 
   deps = [
@@ -66,4 +74,10 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/base",
   ]
+}
+
+if (is_android) {
+  java_cpp_enum("supervised_user_url_filter_enum_javagen") {
+    sources = [ "supervised_user_url_filter.h" ]
+  }
 }

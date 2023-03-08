@@ -38,7 +38,7 @@
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "chrome/browser/supervised_user/supervised_user_url_filter.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #endif
 
 namespace search {
@@ -364,7 +364,8 @@ TEST_F(SearchTest, UseLocalNTPIfNTPURLIsBlockedForSupervisedUser) {
   // Block access to foo.com in the URL filter.
   SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForProfile(profile());
-  SupervisedUserURLFilter* url_filter = supervised_user_service->GetURLFilter();
+  supervised_user::SupervisedUserURLFilter* url_filter =
+      supervised_user_service->GetURLFilter();
   std::map<std::string, bool> hosts;
   hosts["foo.com"] = false;
   url_filter->SetManualHosts(std::move(hosts));

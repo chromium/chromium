@@ -127,7 +127,7 @@
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "chrome/browser/supervised_user/supervised_user_url_filter.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #endif
 
@@ -563,7 +563,8 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
   // Block access to http://www.google.com/ in the URL filter.
   SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForProfile(profile);
-  SupervisedUserURLFilter* url_filter = supervised_user_service->GetURLFilter();
+  supervised_user::SupervisedUserURLFilter* url_filter =
+      supervised_user_service->GetURLFilter();
   std::map<std::string, bool> hosts;
   hosts["www.google.com"] = false;
   url_filter->SetManualHosts(std::move(hosts));
