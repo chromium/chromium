@@ -721,6 +721,7 @@ const char* const kChromeHostURLs[] = {
     safe_browsing::kChromeUISafeBrowsingHost,
     kChromeUISyncInternalsHost,
 #if !BUILDFLAG(IS_ANDROID)
+    kChromeUITabSearchHost,
     kChromeUITermsHost,
 #endif
     kChromeUITranslateInternalsHost,
