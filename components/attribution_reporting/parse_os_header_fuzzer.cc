@@ -9,6 +9,7 @@
 #include "base/i18n/icu_util.h"
 #include "base/strings/string_piece.h"
 #include "components/attribution_reporting/os_registration.h"
+#include "url/gurl.h"
 
 namespace {
 

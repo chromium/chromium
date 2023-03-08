@@ -17,6 +17,7 @@
 #include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-forward.h"
 #include "third_party/blink/public/mojom/conversions/conversions.mojom.h"
@@ -28,6 +29,7 @@ class SuitableOrigin;
 namespace content {
 
 struct AttributionInputEvent;
+class RenderFrameHost;
 class RenderFrameHostImpl;
 class WebContents;
 

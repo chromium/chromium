@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_STORAGE_DELEGATE_H_
 
 #include <stdint.h>
+
 #include <vector>
 
 #include "base/sequence_checker.h"

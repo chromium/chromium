@@ -8,6 +8,7 @@
 #include <jni.h>
 
 #include "base/android/jni_android.h"
+#include "base/android/scoped_java_ref.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/sequence_checker.h"
