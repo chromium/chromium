@@ -80,10 +80,6 @@ input[type=checkbox] {
   -webkit-appearance: none;
 }
 
-[tabindex] {
-  outline: none; /* Prevent default focus ring style. */
-}
-
 [i18n-text] {
   user-select: none;
 }
@@ -91,10 +87,6 @@ input[type=checkbox] {
 .cancel-animate {
   animation: none !important;
   transition: none !important;
-}
-
-.circle button {
-  border-radius: 50%;
 }
 
 .buttons {
@@ -1506,8 +1498,11 @@ body:not(.video) #settings-video-resolution {
   background-image: url(/images/camera_button_fps_60_checked.svg);
 }
 
+[tabindex] {
+  outline: none; /* Prevent default focus ring style. */
+}
+
 [tabindex='0'] {
-  outline: none;
   outline-offset: 3px;
 }
 
