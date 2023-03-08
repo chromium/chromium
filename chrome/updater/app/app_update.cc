@@ -36,14 +36,15 @@ void AppUpdate::Initialize() {
 void AppUpdate::Uninitialize() {}
 
 void AppUpdate::FirstTaskRun() {
-  if (!setup_lock_) {
-    VLOG(0) << "Failed to acquire setup mutex; shutting down.";
-    Shutdown(kErrorFailedToLockSetupMutex);
+  if (WrongUser(updater_scope())) {
+    VLOG(0) << "The current user is not compatible with the current scope.";
+    Shutdown(kErrorWrongUser);
     return;
   }
 
-  if (WrongUser(updater_scope())) {
-    Shutdown(kErrorWrongUser);
+  if (!setup_lock_) {
+    VLOG(0) << "Failed to acquire setup mutex; shutting down.";
+    Shutdown(kErrorFailedToLockSetupMutex);
     return;
   }
 

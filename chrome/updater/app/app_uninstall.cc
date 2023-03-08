@@ -125,6 +125,12 @@ void AppUninstall::UninstallAll() {
 }
 
 void AppUninstall::FirstTaskRun() {
+  if (WrongUser(updater_scope())) {
+    VLOG(0) << "The current user is not compatible with the current scope.";
+    Shutdown(kErrorWrongUser);
+    return;
+  }
+
   if (!setup_lock_) {
     VLOG(0) << "Failed to acquire setup mutex; shutting down.";
     Shutdown(kErrorFailedToLockSetupMutex);
