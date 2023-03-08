@@ -33,7 +33,10 @@ class MockDelegate : public CrostiniUnsupportedActionNotifier::Delegate {
               GetLocalizedDisplayName,
               (const InputMethodDescriptor& descriptor),
               (override));
-  MOCK_METHOD(InputMethodDescriptor, GetCurrentInputMethod, (), (override));
+  MOCK_METHOD(absl::optional<ash::input_method::InputMethodDescriptor>,
+              GetCurrentInputMethod,
+              (),
+              (override));
   MOCK_METHOD(base::TimeDelta, ToastTimeout, (), (override));
   MOCK_METHOD(void,
               AddFocusObserver,

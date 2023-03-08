@@ -12,6 +12,7 @@
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "chrome/browser/profiles/profile.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 
@@ -41,7 +42,8 @@ class CrostiniUnsupportedActionNotifier
     virtual bool IsFocusedWindowCrostini();
 
     // Gets the descriptor for the currently active input method.
-    virtual ash::input_method::InputMethodDescriptor GetCurrentInputMethod();
+    virtual absl::optional<ash::input_method::InputMethodDescriptor>
+    GetCurrentInputMethod();
 
     // Is the current virtual keyboard visible.
     virtual bool IsVirtualKeyboardVisible();

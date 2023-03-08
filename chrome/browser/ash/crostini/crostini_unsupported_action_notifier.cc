@@ -131,7 +131,12 @@ void CrostiniUnsupportedActionNotifier::
     // not yet determine up front whether an app is supported or not.
     return;
   }
-  auto method = delegate_->GetCurrentInputMethod();
+  auto method_opt = delegate_->GetCurrentInputMethod();
+  if (!method_opt.has_value()) {
+    return;
+  }
+  auto method = *method_opt;
+
   if (IsIMESupportedByCrostini(method) ||
       !delegate_->IsFocusedWindowCrostini()) {
     return;
@@ -170,11 +175,15 @@ bool CrostiniUnsupportedActionNotifier::Delegate::IsFocusedWindowCrostini() {
           static_cast<int>(ash::AppType::CROSTINI_APP));
 }
 
-ash::input_method::InputMethodDescriptor
+absl::optional<ash::input_method::InputMethodDescriptor>
 CrostiniUnsupportedActionNotifier::Delegate::GetCurrentInputMethod() {
-  return ash::input_method::InputMethodManager::Get()
-      ->GetActiveIMEState()
-      ->GetCurrentInputMethod();
+  auto active_ime_state =
+      ash::input_method::InputMethodManager::Get()->GetActiveIMEState();
+  if (!active_ime_state) {
+    return absl::nullopt;
+  }
+
+  return active_ime_state->GetCurrentInputMethod();
 }
 
 bool CrostiniUnsupportedActionNotifier::Delegate::IsVirtualKeyboardVisible() {
