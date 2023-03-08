@@ -156,9 +156,12 @@ TEST_F(ProjectorXhrSenderTest, UseCredentials) {
           },
           test_response_body, run_loop.QuitClosure()));
 
-  // Verify that http request is sent without granting OAuth token.
   mock_app_client().test_url_loader_factory().AddResponse(kTestDriveRequestUrl,
                                                           test_response_body);
+
+  mock_app_client().GrantOAuthTokenFor(
+      kTestUserEmail,
+      /* expiry_time = */ base::Time::Now() + kExpiryTimeFromNow);
 
   run_loop.Run();
 }

@@ -262,6 +262,8 @@ TEST_F(ProjectorMessageHandlerUnitTest, SendXhr) {
   base::RunLoop run_loop;
   message_handler()->SetXhrRequestRunLoopQuitClosure(run_loop.QuitClosure());
   web_ui().HandleReceivedMessage("sendXhr", list_args);
+  mock_app_client().WaitForAccessRequest(kTestUserEmail);
+
   run_loop.Run();
 
   EXPECT_EQ(web_ui().call_data().size(), 1u);
@@ -314,6 +316,7 @@ TEST_F(ProjectorMessageHandlerUnitTest, SendXhrWithEmail) {
   base::RunLoop run_loop;
   message_handler()->SetXhrRequestRunLoopQuitClosure(run_loop.QuitClosure());
   web_ui().HandleReceivedMessage("sendXhr", list_args);
+  mock_app_client().WaitForAccessRequest(kTestUserEmail);
   run_loop.Run();
 
   EXPECT_EQ(web_ui().call_data().size(), 1u);
@@ -368,6 +371,8 @@ TEST_F(ProjectorMessageHandlerUnitTest, SendXhrFailed) {
   base::RunLoop run_loop;
   message_handler()->SetXhrRequestRunLoopQuitClosure(run_loop.QuitClosure());
   web_ui().HandleReceivedMessage("sendXhr", list_args);
+  mock_app_client().WaitForAccessRequest(kTestUserEmail);
+
   run_loop.Run();
 
   EXPECT_EQ(web_ui().call_data().size(), 1u);
