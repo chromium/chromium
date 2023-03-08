@@ -77,4 +77,10 @@ interface Page {
   // Callback when a bookmark with `bookmark_id` is observed to stop being
   // price tracked.
   PriceUntrackedForBookmark(int64 bookmark_id);
+
+  // Callback to notify the WebUI to show error UI when a track/untrack
+  // attempt for bookmark with `bookmark_id` failed. `attempted_track` is
+  // true when the failed operation is to track price, false when the
+  // failed operation is to untrack price.
+  OperationFailedForBookmark(int64 bookmark_id, bool attempted_track);
 };

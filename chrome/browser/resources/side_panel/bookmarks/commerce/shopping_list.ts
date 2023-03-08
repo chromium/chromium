@@ -6,8 +6,10 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/mwb_element_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
+import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import './icons.html.js';
 
+import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -24,6 +26,12 @@ export const ACTION_BUTTON_TRACK_IMAGE =
     'shopping-list:shopping-list-track-icon';
 export const ACTION_BUTTON_UNTRACK_IMAGE =
     'shopping-list:shopping-list-untrack-icon';
+
+export interface ShoppingListElement {
+  $: {
+    errorToast: CrToastElement,
+  };
+}
 
 export class ShoppingListElement extends PolymerElement {
   static get is() {
@@ -62,6 +70,7 @@ export class ShoppingListElement extends PolymerElement {
   private shoppingListApi_: ShoppingListApiProxy =
       ShoppingListApiProxyImpl.getInstance();
   private listenerIds_: number[] = [];
+  private retryOperationCallback_: () => void;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -73,6 +82,9 @@ export class ShoppingListElement extends PolymerElement {
                 this.onBookmarkPriceTracked(product)),
         callbackRouter.priceUntrackedForBookmark.addListener(
             (bookmarkId: bigint) => this.onBookmarkPriceUntracked(bookmarkId)),
+        callbackRouter.operationFailedForBookmark.addListener(
+            (bookmarkId: bigint, attemptedTrack: boolean) =>
+                this.onBookmarkOperationFailed(bookmarkId, attemptedTrack)),
     );
     try {
       this.open_ =
@@ -240,6 +252,26 @@ export class ShoppingListElement extends PolymerElement {
     this.set('productInfos.' + event.model.index + '.info.imageUrl.url', '');
     chrome.metricsPrivate.recordBoolean(
         'Commerce.PriceTracking.SidePanelImageLoad', false);
+  }
+
+  private onBookmarkOperationFailed(
+      bookmarkId: bigint, attemptedTrack: boolean) {
+    this.retryOperationCallback_ = () => {
+      if (attemptedTrack) {
+        this.shoppingListApi_.trackPriceForBookmark(bookmarkId);
+      } else {
+        this.shoppingListApi_.untrackPriceForBookmark(bookmarkId);
+      }
+    };
+    this.$.errorToast.show();
+  }
+
+  private onErrorRetryClicked_() {
+    if (this.retryOperationCallback_ == null) {
+      return;
+    }
+    this.retryOperationCallback_();
+    this.$.errorToast.hide();
   }
 }
 

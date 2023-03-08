@@ -228,6 +228,11 @@
   .action-button:focus {
     box-shadow: none;
   }
+
+  cr-toast {
+    justify-content: space-between;
+    margin: 58px 8px;
+  }
 </style>
 
 <div id="container" role="treeitem" aria-expanded="[[open_]]">
@@ -284,4 +289,10 @@
       </button>
     </template>
   </template>
+  <cr-toast id="errorToast" duration="5000">
+    <div>$i18n{shoppingListErrorMessage}</div>
+    <cr-button on-click="onErrorRetryClicked_">
+      $i18n{shoppingListErrorButton}
+    </cr-button>
+  </cr-toast>
 </div>

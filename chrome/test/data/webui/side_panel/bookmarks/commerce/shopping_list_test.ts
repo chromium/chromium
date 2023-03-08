@@ -386,4 +386,26 @@ suite('SidePanelShoppingListTest', () => {
                        '.action-button')! as HTMLElement;
     checkActionButtonStatus(actionButton, true);
   });
+
+  test('ShowErrorToastWhenTrackAndUntrackFailed', async () => {
+    shoppingListApi.getCallbackRouterRemote().operationFailedForBookmark(
+        products[0]!.bookmarkId, true);
+    await flushTasks();
+
+    assertTrue(shoppingList.$.errorToast.open);
+    shoppingList.$.errorToast.querySelector('cr-button')!.click();
+    let id = await shoppingListApi.whenCalled('trackPriceForBookmark');
+    assertEquals(id, products[0]!.bookmarkId);
+    assertFalse(shoppingList.$.errorToast.open);
+
+    shoppingListApi.getCallbackRouterRemote().operationFailedForBookmark(
+        products[1]!.bookmarkId, false);
+    await flushTasks();
+
+    assertTrue(shoppingList.$.errorToast.open);
+    shoppingList.$.errorToast.querySelector('cr-button')!.click();
+    id = await shoppingListApi.whenCalled('untrackPriceForBookmark');
+    assertEquals(id, products[1]!.bookmarkId);
+    assertFalse(shoppingList.$.errorToast.open);
+  });
 });

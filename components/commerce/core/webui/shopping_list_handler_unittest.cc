@@ -43,6 +43,8 @@ class MockPage : public shopping_list::mojom::Page {
   MOCK_METHOD1(PriceTrackedForBookmark,
                void(shopping_list::mojom::BookmarkProductInfoPtr product));
   MOCK_METHOD1(PriceUntrackedForBookmark, void(int64_t bookmark_id));
+  MOCK_METHOD2(OperationFailedForBookmark,
+               void(int64_t bookmark_id, bool is_tracked));
 };
 
 void GetEvaluationProductInfos(
@@ -186,6 +188,8 @@ TEST_F(ShoppingListHandlerTest, TestTrackProductSuccess) {
   EXPECT_CALL(page_,
               PriceTrackedForBookmark(MojoBookmarkInfoWithId(product->id())))
       .Times(1);
+  EXPECT_CALL(page_, OperationFailedForBookmark(testing::_, testing::_))
+      .Times(0);
 
   handler_->TrackPriceForBookmark(product->id());
 
@@ -205,6 +209,8 @@ TEST_F(ShoppingListHandlerTest, TestUntrackProductSuccess) {
               Unsubscribe(VectorHasSubscriptionWithId("123"), testing::_))
       .Times(1);
   EXPECT_CALL(page_, PriceUntrackedForBookmark(product->id())).Times(1);
+  EXPECT_CALL(page_, OperationFailedForBookmark(testing::_, testing::_))
+      .Times(0);
 
   handler_->UntrackPriceForBookmark(product->id());
 
@@ -227,6 +233,7 @@ TEST_F(ShoppingListHandlerTest, TestTrackProductFailure) {
   // "untrack" should be called once to undo the "track" change in the UI.
   EXPECT_CALL(page_, PriceUntrackedForBookmark(product->id())).Times(1);
   EXPECT_CALL(page_, PriceTrackedForBookmark(testing::_)).Times(0);
+  EXPECT_CALL(page_, OperationFailedForBookmark(product->id(), true)).Times(1);
 
   handler_->TrackPriceForBookmark(product->id());
 
@@ -249,6 +256,7 @@ TEST_F(ShoppingListHandlerTest, TestUntrackProductFailure) {
   // "track" should be called once to undo the "untrack" change in the UI.
   EXPECT_CALL(page_, PriceTrackedForBookmark(testing::_)).Times(1);
   EXPECT_CALL(page_, PriceUntrackedForBookmark(product->id())).Times(0);
+  EXPECT_CALL(page_, OperationFailedForBookmark(product->id(), false)).Times(1);
 
   handler_->UntrackPriceForBookmark(product->id());
 

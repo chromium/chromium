@@ -236,5 +236,9 @@ void ShoppingListHandler::onPriceTrackResult(int64_t bookmark_id,
   } else {
     remote_page_->PriceUntrackedForBookmark(bookmark_id);
   }
+  // Pass in whether the failed operation was to track or untrack price. It
+  // should be the reverse of the current tracking status since the operation
+  // failed.
+  remote_page_->OperationFailedForBookmark(bookmark_id, is_tracking);
 }
 }  // namespace commerce
