@@ -73,6 +73,10 @@ class InteractiveViewsTestPrivate
   std::map<ui::ElementContext, WindowHintCacheEntry> window_hint_cache_;
 };
 
+template <size_t N, typename F>
+using ViewArgType = std::remove_cv_t<
+    std::remove_pointer_t<ui::test::internal::NthArgumentOf<N, F>>>;
+
 }  // namespace internal
 
 }  // namespace views::test

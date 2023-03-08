@@ -366,4 +366,25 @@ TEST_F(InteractiveViewsTestTest, InParallelNamedView) {
                  CheckView(kViewName2, is_view(), button2_)));
 }
 
+// Test that various automatic binding methods work with verbs and conditions.
+TEST_F(InteractiveViewsTestTest, BindingMethods) {
+  UNCALLED_MOCK_CALLBACK(base::OnceClosure, correct);
+  UNCALLED_MOCK_CALLBACK(base::OnceClosure, incorrect);
+
+  auto get_second_tab = [](TabbedPane* tabs) { return tabs->GetTabAt(1U); };
+
+  EXPECT_CALL(correct, Run).Times(2);
+  RunTestSequence(
+      SelectTab(kTabbedPaneId, 1U),
+      NameViewRelative(kTabbedPaneId, kViewName, get_second_tab),
+      WithView(kViewName, [](TabbedPaneTab* tab) { EXPECT_NE(nullptr, tab); }),
+      IfView(
+          kViewName, [](const TabbedPaneTab* tab) { return tab != nullptr; },
+          Do(correct.Get()), Do(incorrect.Get())),
+      IfViewMatches(
+          kViewName,
+          [this](const TabbedPaneTab* tab) { return tabs_->GetIndexOf(tab); },
+          0U, Do(incorrect.Get()), Do(correct.Get())));
+}
+
 }  // namespace views::test

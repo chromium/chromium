@@ -6,13 +6,18 @@
 #define UI_BASE_INTERACTION_INTERACTIVE_TEST_INTERNAL_H_
 
 #include <memory>
+#include <tuple>
+#include <type_traits>
 
 #include "base/callback_list.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/rectify_callback.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -221,6 +226,175 @@ InteractiveTestPrivate::MultiStep InteractiveTestPrivate::PostTask(
                   std::move(task)))));
   return result;
 }
+
+template <typename T>
+constexpr bool IsCallbackValue = base::IsBaseCallback<T>::value;
+
+template <typename T, typename SFINAE = void>
+struct IsCallable {
+  static constexpr bool value = false;
+};
+
+template <typename T>
+struct IsCallable<T, std::void_t<decltype(&T::operator())>> {
+  static constexpr bool value = true;
+};
+
+template <typename T>
+constexpr bool IsCallableValue = IsCallable<std::remove_reference_t<T>>::value;
+
+template <typename T, typename SFINAE = void>
+struct IsFunctionPointer {
+  static constexpr bool value = false;
+};
+
+template <typename R, typename... Args>
+struct IsFunctionPointer<R (*)(Args...), void> {
+  static constexpr bool value = true;
+};
+
+template <typename T>
+constexpr bool IsFunctionPointerValue = IsFunctionPointer<T>::value;
+
+// Uses SFINAE to choose the correct implementation for `MaybeBind`.
+template <typename F, typename SFINAE = void>
+struct MaybeBindHelper;
+
+// Callbacks are already callbacks, so can be returned as-is.
+template <typename F>
+struct MaybeBindHelper<F, std::enable_if_t<IsCallbackValue<F>>> {
+  template <class G>
+  static auto MaybeBind(G&& function) {
+    return std::forward<G>(function);
+  }
+};
+
+// Callable objects with state can only be bound with
+// base::BindLambdaForTesting.
+template <typename F>
+struct MaybeBindHelper<
+    F,
+    std::enable_if_t<IsCallableValue<F> && !std::is_empty_v<F>>> {
+  template <class G>
+  static auto MaybeBind(G&& function) {
+    return base::BindLambdaForTesting(std::forward<G>(function));
+  }
+};
+
+// Function pointers and empty callable objects can be bound using
+// base::BindOnce.
+template <typename F>
+struct MaybeBindHelper<
+    F,
+    std::enable_if_t<(IsCallableValue<F> && std::is_empty_v<F>) ||
+                     IsFunctionPointerValue<F>>> {
+  template <class G>
+  static auto MaybeBind(G&& function) {
+    return base::BindOnce(std::forward<G>(function));
+  }
+};
+
+// base::DoNothing() is compatible with callbacks, so return it as-is.
+template <>
+struct MaybeBindHelper<decltype(base::DoNothing()), void> {
+  static auto MaybeBind(decltype(base::DoNothing()) function) {
+    return function;
+  }
+};
+
+// Optionally converts `function` to something that is compatible with a
+// base::OnceCallback.
+template <typename F>
+auto MaybeBind(F&& function) {
+  return MaybeBindHelper<F>::MaybeBind(std::forward<F>(function));
+}
+
+// Helper struct that captures information about what signature a function-like
+// object would have if it were bound.
+template <typename F>
+struct MaybeBindTypeHelper {
+  using CallbackType = std::invoke_result_t<decltype(&MaybeBind<F>), F>;
+  using ReturnType = typename CallbackType::ResultType;
+  using Signature = typename CallbackType::RunType;
+};
+
+// DoNothing always has a void return type but no defined signature.
+template <>
+struct MaybeBindTypeHelper<decltype(base::DoNothing())> {
+  using ReturnType = void;
+};
+
+template <typename T>
+struct ArgsExtractor;
+
+template <typename R, typename... Args>
+struct ArgsExtractor<R(Args...)> {
+  using holder = std::tuple<Args...>;
+};
+
+template <typename F>
+using ReturnTypeOf = MaybeBindTypeHelper<F>::ReturnType;
+
+template <size_t N, typename F>
+using NthArgumentOf = std::tuple_element_t<
+    N,
+    typename ArgsExtractor<typename MaybeBindTypeHelper<F>::Signature>::holder>;
+
+// Implementation for HasSignature that uses SFINAE to check whether the
+// signature of a callable object `F` matches signature `S`.
+template <typename F, typename S>
+struct HasSignatureHelper {
+  static constexpr bool value =
+      std::is_same_v<typename MaybeBindTypeHelper<F>::Signature, S>;
+};
+
+// DoNothing() can match any signature that returns void.
+template <typename... Args>
+struct HasSignatureHelper<decltype(base::DoNothing()), void(Args...)> {
+  static constexpr bool value = true;
+};
+
+template <typename F, typename S>
+constexpr bool HasSignature = HasSignatureHelper<F, S>::value;
+
+// Requires that `F` resolves to some kind of callable object with call
+// signature `S`; causes a compile failure on mismatch.
+template <typename F, typename S>
+using RequireSignature = std::enable_if_t<HasSignature<F, S>>;
+
+template <typename F, typename S>
+struct HasCompatibleSignatureHelper;
+
+// This is the leaf state for the recursive compatibility computation; see
+// below.
+template <typename F, typename R>
+struct HasCompatibleSignatureHelper<F, R()> {
+  static constexpr bool value = HasSignature<F, R()>;
+};
+
+// Implementation for `HasCompatibleSignature` and `RequireCompatibleSignature`.
+//
+// This removes arguments one by one from the left of the target signature `S`
+// to see if `F` has that signature. The recursion stops when one matches, or
+// when the arg list is empty (in which case the leaf state is hit, above).
+template <typename F, typename R, typename A, typename... Args>
+struct HasCompatibleSignatureHelper<F, R(A, Args...)> {
+  static constexpr bool value =
+      HasSignature<F, R(A, Args...)> ||
+      HasCompatibleSignatureHelper<F, R(Args...)>::value;
+};
+
+template <typename F, typename S>
+constexpr bool HasCompatibleSignature =
+    HasCompatibleSignatureHelper<F, S>::value;
+
+// Requires that `F` resolves to some kind of callable object whose signature
+// can be rectified to `S`; see `base::RectifyCallback` for more information.
+// (Basically, `F` can omit arguments from the left of `S`; these arguments
+// will be ignored.)
+template <typename F, typename S>
+using RequireCompatibleSignature =
+    std::enable_if_t<HasCompatibleSignature<F, S>>;
 
 // Converts an ElementSpecifier to an element ID or name and sets it onto
 // `builder`.
