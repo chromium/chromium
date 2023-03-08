@@ -4081,6 +4081,13 @@
        null,
        {}
       ]
+     ],
+     "visited-part-crash.html": [
+      "f4cb28995b181c330d3605a96546c1ffb33c4fb1",
+      [
+       null,
+       {}
+      ]
      ]
     }
    },
@@ -6116,6 +6123,15 @@
     ]
    },
    "scroll-animations": {
+    "crashtests": {
+     "invalid-animation-range.html": [
+      "43b23c93b607ac943d0c996f1baffed82dc5fbfe",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
     "scroll-timelines": {
      "animation-with-delay-crash.html": [
       "9d821f9e20f58eef9ff5aa0706fa528f3250935f",
@@ -17702,6 +17718,19 @@
        [
         [
          "/css/printing/input-file-print-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "page-name-002-print.html": [
+      "060b93b0bf9ac4fbe380810f3e5dc981faa645a2",
+      [
+       null,
+       [
+        [
+         "/css/printing/page-name-002-print-ref.html",
          "=="
         ]
        ],
@@ -83473,19 +83502,6 @@
        [
         [
          "/css/css-backgrounds/reference/60x60-green-background.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "simple-bg-color.html": [
-      "07bea44d21964b832cd9e4b4f32098ec41a2c206",
-      [
-       null,
-       [
-        [
-         "/css/css-backgrounds/simple-bg-color-ref.html",
          "=="
         ]
        ],
@@ -265632,6 +265648,16 @@
    }
   },
   "support": {
+   ".cache": {
+    "gitignore2.json": [
+     "ddaf6314467c922b9f2003184bfb637c6f9a337b",
+     []
+    ],
+    "mtime.json": [
+     "e6cda80cd01d09cac42aa70ca4965b0f7044736c",
+     []
+    ]
+   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -268600,6 +268626,10 @@
      ]
     },
     "critical-ch": {
+     "mis-matched.https.window.js.ini": [
+      "bc2184897a756fa7fe9781215aac1fa0014d6a12",
+      []
+     ],
      "navigation.https.window.js.ini": [
       "c60f3c1ecd9aaf2172c30b152756dea06561443d",
       []
@@ -268610,7 +268640,7 @@
      ],
      "resources": {
       "echo-critical-hint.py": [
-       "e4e77ad2a9a3bc9af2b76b6471f275db936bce4d",
+       "0913dbb19db57c3cacada72547dbe55d2a8e1688",
        []
       ],
       "util.js": [
@@ -282996,10 +283026,6 @@
        []
       ]
      },
-     "simple-bg-color-ref.html": [
-      "d8003b58e3ac1c5e917500a59b60c0d2e56287a3",
-      []
-     ],
      "support": {
       "100x100-blue-and-orange.png": [
        "70437d7bda2b56a921b523d4a81ca4df7be4321d",
@@ -318692,6 +318718,10 @@
       "5a2b59cb9054c464adf0ff7d444bd72dd0e69fa0",
       []
      ],
+     "preserve3d-and-flattening-002.html.ini": [
+      "e4d46ead9136c13c6033481d5f3e8fd09047883c",
+      []
+     ],
      "preserve3d-button-ref.html": [
       "e5e3c1ebfcdd7c832a211d17ac2f1ed6f4116252",
       []
@@ -319907,7 +319937,7 @@
       []
      ],
      "all-with-discrete.tentative.html.ini": [
-      "352ae24fc2f8d381f3e0aa434cc705170cf2be64",
+      "e2b05b96c91017f1f2d19bda46045b117ef3be51",
       []
      ],
      "animations": {
@@ -324181,7 +324211,7 @@
       []
      ],
      "fractional-translation-from-position.html.ini": [
-      "cb22267b22c1323ada6e9e605b563fa894abf1b1",
+      "9c2084ca54f2254563fd28445a0b60cc7e7859b9",
       []
      ],
      "fractional-translation-from-transform-ref.html": [
@@ -329818,6 +329848,10 @@
      ],
      "input-file-print.html.ini": [
       "f4ea262fa5b4de4a0e30bdf9d89ed76f1da41242",
+      []
+     ],
+     "page-name-002-print-ref.html": [
+      "17ecc93e57aee6910a524e3fa6b14ecc026f9b52",
       []
      ],
      "page-overflow-crash-print.html.ini": [
@@ -338704,12 +338738,20 @@
       "a69aab487239021088f944b0a8cee2dad4b3d111",
       []
      ],
+     "fetch.https.window.js.ini": [
+      "07ffff1851bbfa8fa11419ba7991d711dac31612",
+      []
+     ],
+     "fetch.window.js.ini": [
+      "480ba790be423c6571e573ed5407540ecae53eb6",
+      []
+     ],
      "iframe.tentative.https.window-expected.txt": [
       "db149f43b0235900c08ef033cfd0e41959abecda",
       []
      ],
      "iframe.tentative.https.window.js.ini": [
-      "6f3c2b3c10238f4e0699ff8b711d77350a8e3b3c",
+      "29a1ee33aba20ddd3e561ac78d81a200e8e911bc",
       []
      ],
      "iframe.tentative.window-expected.txt": [
@@ -338717,7 +338759,7 @@
       []
      ],
      "iframe.tentative.window.js.ini": [
-      "3a0139559d60d25a21cb1fa45825c8fce17334b4",
+      "748f04ef3af6a77924259ed88ba277dc171f1520",
       []
      ],
      "mixed-content-fetch.tentative.https.window-expected.txt": [
@@ -338754,6 +338796,14 @@
      ],
      "nested-worker.window.js.ini": [
       "3e9038297b08cca8bbe6b0f169f5ecea7c2f4c52",
+      []
+     ],
+     "preflight-cache.https.window.js.ini": [
+      "730ae07bdef0db7f3aa8573cb9b8c5b18232437f",
+      []
+     ],
+     "redirect.https.window.js.ini": [
+      "285947e683dff9d57ab56aff1b304e785bf94c4e",
       []
      ],
      "resources": {
@@ -338835,7 +338885,7 @@
       []
      ],
      "service-worker-fetch.https.window.js.ini": [
-      "f9793d5f7f32d3e1cea1e634044037541243c182",
+      "f793a9754359da02e7dc0907cd5f11b3e7b053bf",
       []
      ],
      "service-worker-update.https.window-expected.txt": [
@@ -338859,7 +338909,7 @@
       []
      ],
      "shared-worker-blob-fetch.https.window.js.ini": [
-      "43bc496ad9364b1ec1fe3715752b566ae4d0f290",
+      "01dba54d1472f415c43cf82ed7ce25f7f7abe23f",
       []
      ],
      "shared-worker-blob-fetch.window-expected.txt": [
@@ -338875,7 +338925,7 @@
       []
      ],
      "shared-worker-fetch.https.window.js.ini": [
-      "4009bb211131015b11ea3b5980d4ade2064a471f",
+      "7380b01f5c7d968d97d8237a2de54b286696349a",
       []
      ],
      "shared-worker-fetch.window-expected.txt": [
@@ -338910,12 +338960,16 @@
       "fa8c34f60503d122c7d0672f440e56dc540c9477",
       []
      ],
+     "worker-blob-fetch.window.js.ini": [
+      "eb5dd2d46fca085584da9a2cc794de7830ab7e8e",
+      []
+     ],
      "worker-fetch.https.window-expected.txt": [
       "c4e0af3e551c20ffcdcd9905691c0bdc7a4d5e10",
       []
      ],
      "worker-fetch.https.window.js.ini": [
-      "923b13cb9130924cce95c3d30b4ebd319277a80f",
+      "7fc1fd6c8a1c504dda6e890027c69c6184f5e167",
       []
      ],
      "worker-fetch.window-expected.txt": [
@@ -338923,7 +338977,15 @@
       []
      ],
      "worker-fetch.window.js.ini": [
-      "a89c125e3d83380153d8b3aaa510d456f7c31346",
+      "4457d855217e26be94fa38bf4d27b797265811d0",
+      []
+     ],
+     "xhr.https.window.js.ini": [
+      "2c03dd4f48e90a1c687c3af6a32d20d9601623e6",
+      []
+     ],
+     "xhr.window.js.ini": [
+      "b7f31e0e2d96ef65d542bd6b7bb6557d747ac380",
       []
      ]
     },
@@ -368670,7 +368732,7 @@
      []
     ],
     "pending_beacon-sendondiscard.tentative.https.window.js.ini": [
-     "f73183fa055aea3023112bc91eeb4debc95748cf",
+     "dcd9f14353d4bb82976fdfe4b5ff1e06f99cb5de",
      []
     ],
     "pending_beacon-sendonhidden.tentative.https.window.js.ini": [
@@ -415535,7 +415597,7 @@
     },
     "critical-ch": {
      "iframe.https.window.js": [
-      "f4dd295208fd4acddb084530cae772077004cab4",
+      "bbb9623752ea593a15e306152b49342c305a3420",
       [
        "client-hints/critical-ch/iframe.https.window.html",
        {
@@ -415549,7 +415611,7 @@
       ]
      ],
      "mis-matched-count.https.window.js": [
-      "54bd66789793babdc8aab812059d30aeaa21ba11",
+      "23d297837e6ce6cf6a12c5ef9909bb0441501c1b",
       [
        "client-hints/critical-ch/mis-matched-count.https.window.html",
        {
@@ -415567,7 +415629,7 @@
       ]
      ],
      "mis-matched.https.window.js": [
-      "9476640b3513d36850d26ab2154e0bd07db5d77d",
+      "10f9a30b6d257155f0d775f3baed4b0217294752",
       [
        "client-hints/critical-ch/mis-matched.https.window.html",
        {
@@ -415594,8 +415656,22 @@
        }
       ]
      ],
+     "navigation.multiple.https.window.js": [
+      "ff9cc210feb96f711c1e49f2ef64269bffacf12b",
+      [
+       "client-hints/critical-ch/navigation.multiple.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "resources/util.js"
+         ]
+        ]
+       }
+      ]
+     ],
      "non-secure.http.window.js": [
-      "cdd79243982a46d60177e8721479e9eab111e88c",
+      "b634f98e55c94132f8c96295b0b9199e00cd9b94",
       [
        "client-hints/critical-ch/non-secure.http.window.html",
        {
@@ -415626,8 +415702,26 @@
        }
       ]
      ],
+     "request-count.multiple.https.window.js": [
+      "602803b5d687435273d6e4a5e8a2cc419a028726",
+      [
+       "client-hints/critical-ch/request-count.multiple.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "resources/util.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ]
+        ]
+       }
+      ]
+     ],
      "subresource.https.window.js": [
-      "f8112b628d0f263959fd2a7dd8dfa066920f3514",
+      "81dfc303c62e03498314abbf9b80a2abc88d2a36",
       [
        "client-hints/critical-ch/subresource.https.window.html",
        {
@@ -415645,7 +415739,7 @@
       ]
      ],
      "unsafe-method.https.window.js": [
-      "0eca0eb8e9aea1c066d56b685f23ffadf3a6754f",
+      "37bbcb3315e1b14f8d45b35f3b9cfb2b2be602dc",
       [
        "client-hints/critical-ch/unsafe-method.https.window.html",
        {}
@@ -461856,7 +461950,7 @@
       ]
      ],
      "HTMLElement.html": [
-      "bd252282161b59a50b0ee991e7b2d28e94ddd74f",
+      "0a1d40199e633e9677da09f34e42200965b5241c",
       [
        null,
        {}
