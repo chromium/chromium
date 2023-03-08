@@ -330,16 +330,16 @@ std::shared_ptr<v8::TaskRunner> V8Platform::GetForegroundTaskRunner(
 }
 
 int V8Platform::NumberOfWorkerThreads() {
-  // V8Platform assumes the scheduler uses the same set of workers for default
-  // and user blocking tasks.
+  // V8Platform assumes the number of workers used by the scheduler for user
+  // blocking tasks is an upper bound.
   const size_t num_foreground_workers =
       base::ThreadPoolInstance::Get()
           ->GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
-              kDefaultTaskTraits);
-  DCHECK_EQ(num_foreground_workers,
+              kBlockingTaskTraits);
+  DCHECK_GE(num_foreground_workers,
             base::ThreadPoolInstance::Get()
                 ->GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
-                    kBlockingTaskTraits));
+                    kDefaultTaskTraits));
   return std::max(1, static_cast<int>(num_foreground_workers));
 }
 
