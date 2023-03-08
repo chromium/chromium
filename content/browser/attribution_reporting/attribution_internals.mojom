@@ -42,14 +42,10 @@ struct AggregatableHistogramContribution {
   uint32 value;
 };
 
-struct AttestationToken {
-  string value;
-};
-
 // Contains aggregatable attribution data to be displayed.
 struct WebUIReportAggregatableAttributionData {
   array<AggregatableHistogramContribution> contributions;
-  AttestationToken? attestation_token;
+  string? attestation_token;
   string aggregation_coordinator;
 };
 

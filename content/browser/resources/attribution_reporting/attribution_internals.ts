@@ -525,9 +525,7 @@ class AggregatableAttributionReport extends Report {
         ' ');
 
     this.attestationToken =
-        mojo.data.aggregatableAttributionData!.attestationToken ?
-        `${mojo.data.aggregatableAttributionData!.attestationToken.value}` :
-        '';
+        mojo.data.aggregatableAttributionData!.attestationToken || '';
 
     this.aggregationCoordinator =
         mojo.data.aggregatableAttributionData!.aggregationCoordinator;

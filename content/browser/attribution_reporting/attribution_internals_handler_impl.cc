@@ -166,15 +166,10 @@ attribution_internals::mojom::WebUIReportPtr WebUIReport(
                       contribution.value());
                 });
 
-            ai_mojom::AttestationTokenPtr attestation_token =
-                aggregatable_data.attestation_token
-                    ? ai_mojom::AttestationToken::New(
-                          *aggregatable_data.attestation_token)
-                    : nullptr;
-
             return ai_mojom::WebUIReportData::NewAggregatableAttributionData(
                 ai_mojom::WebUIReportAggregatableAttributionData::New(
-                    std::move(contributions), std::move(attestation_token),
+                    std::move(contributions),
+                    aggregatable_data.attestation_token,
                     aggregation_service::SerializeAggregationCoordinator(
                         aggregatable_data.aggregation_coordinator)));
           },
