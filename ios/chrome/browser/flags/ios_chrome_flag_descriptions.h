@@ -253,6 +253,11 @@ extern const char kEnableFeedImageCachingDescription[];
 extern const char kEnableFeedSyntheticCapabilitiesName[];
 extern const char kEnableFeedSyntheticCapabilitiesDescription[];
 
+// Title and description for the flag to enable follow management page instant
+// reload when opening.
+extern const char kEnableFollowManagementInstantReloadName[];
+extern const char kEnableFollowManagementInstantReloadDescription[];
+
 // Title and description for the flag to enable DMToken deletion.
 extern const char kDmTokenDeletionName[];
 extern const char kDmTokenDeletionDescription[];

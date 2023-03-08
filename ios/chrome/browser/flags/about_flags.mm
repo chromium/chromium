@@ -1412,6 +1412,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kBringYourOwnTabsIOS,
                                     kBringYourOwnTabsIOSVariations,
                                     "BringYourOwnTabsIOS")},
+    {"enable-follow-management-instant-reload",
+     flag_descriptions::kEnableFollowManagementInstantReloadName,
+     flag_descriptions::kEnableFollowManagementInstantReloadDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kEnableFollowManagementInstantReload)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

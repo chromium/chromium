@@ -67,6 +67,10 @@ BASE_FEATURE(kWebFeedFeedbackReroute,
              "WebFeedFeedbackReroute",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableFollowManagementInstantReload,
+             "EnableFollowManagementInstantReload",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #pragma mark - Feature parameters
 
 const char kDiscoverFeedSRSReconstructedTemplatesEnabled[] =
@@ -182,4 +186,8 @@ int FollowingFeedHeaderHeight() {
 
 bool IsWebFeedFeedbackRerouteEnabled() {
   return base::FeatureList::IsEnabled(kWebFeedFeedbackReroute);
+}
+
+bool IsFollowManagementInstantReloadEnabled() {
+  return base::FeatureList::IsEnabled(kEnableFollowManagementInstantReload);
 }

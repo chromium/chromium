@@ -342,6 +342,11 @@ const char kEnableFullscreenAPIName[] = "Enable Fullscreen API";
 const char kEnableFullscreenAPIDescription[] =
     "Enable the Fullscreen API for web content (iOS 16.0+).";
 
+const char kEnableFollowManagementInstantReloadName[] =
+    "Enable Follow Management Instant Reload";
+const char kEnableFollowManagementInstantReloadDescription[] =
+    "Enable follow management page instant reloading when being opened.";
+
 const char kPasswordsGroupingName[] =
     "Enable password grouping for the Password Manager";
 const char kPasswordsGroupingDescription[] =
