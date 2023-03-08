@@ -9,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/guid.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -123,9 +124,8 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
   }
 
   for (auto& suggestion : suggestions) {
-    suggestion.frontend_id =
-        MakeFrontendId(Suggestion::BackendId(),
-                       suggestion.GetPayload<Suggestion::BackendId>());
+    suggestion.frontend_id = MakeFrontendIdFromBackendId(
+        suggestion.GetPayload<Suggestion::BackendId>());
   }
 
   return suggestions;
@@ -202,9 +202,8 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
 
   for (Suggestion& suggestion : suggestions) {
     if (suggestion.frontend_id == 0) {
-      suggestion.frontend_id =
-          MakeFrontendId(suggestion.GetPayload<Suggestion::BackendId>(),
-                         Suggestion::BackendId());
+      suggestion.frontend_id = MakeFrontendIdFromBackendId(
+          suggestion.GetPayload<Suggestion::BackendId>());
     }
   }
 
@@ -365,41 +364,34 @@ std::u16string AutofillSuggestionGenerator::GetDisplayNicknameForCreditCard(
   return card.nickname();
 }
 
-// When sending IDs (across processes) to the renderer we pack credit card and
-// profile IDs into a single integer.  Credit card IDs are sent in the high
-// word and profile IDs are sent in the low word.
-int AutofillSuggestionGenerator::MakeFrontendId(
-    const Suggestion::BackendId& cc_backend_id,
-    const Suggestion::BackendId& profile_backend_id) {
-  InternalId cc_int_id = BackendIdToInternalId(cc_backend_id);
-  InternalId profile_int_id = BackendIdToInternalId(profile_backend_id);
+int AutofillSuggestionGenerator::MakeFrontendIdFromBackendId(
+    const Suggestion::BackendId& cc_or_address_backend_id) {
+  if (!base::IsValidGUID(*cc_or_address_backend_id)) {
+    return 0;
+  }
 
-  // Should fit in signed 16-bit integers. We use 16-bits each when combining
-  // below, and negative frontend IDs have special meaning so we can never use
-  // the high bit.
-  DCHECK(cc_int_id.value() <= std::numeric_limits<int16_t>::max());
-  DCHECK(profile_int_id.value() <= std::numeric_limits<int16_t>::max());
-
-  // Put CC in the high half of the bits.
-  return (cc_int_id.value() << std::numeric_limits<uint16_t>::digits) |
-         profile_int_id.value();
+  int& frontend_id = backend_to_frontend_map_[cc_or_address_backend_id];
+  if (!frontend_id) {
+    frontend_id = static_cast<int>(backend_to_frontend_map_.size());
+    frontend_to_backend_map_[frontend_id] = cc_or_address_backend_id;
+  }
+  DCHECK_GT(frontend_id, 0);
+  DCHECK_EQ(backend_to_frontend_map_.size(), frontend_to_backend_map_.size());
+  return frontend_id;
 }
 
-// When receiving IDs (across processes) from the renderer we unpack credit
-// card and profile IDs from a single integer.  Credit card IDs are stored in
-// the high word and profile IDs are stored in the low word.
-void AutofillSuggestionGenerator::SplitFrontendId(
-    int frontend_id,
-    Suggestion::BackendId* cc_backend_id,
-    Suggestion::BackendId* profile_backend_id) {
-  InternalId cc_int_id =
-      InternalId((frontend_id >> std::numeric_limits<uint16_t>::digits) &
-                 std::numeric_limits<uint16_t>::max());
-  InternalId profile_int_id =
-      InternalId(frontend_id & std::numeric_limits<uint16_t>::max());
-
-  *cc_backend_id = InternalIdToBackendId(cc_int_id);
-  *profile_backend_id = InternalIdToBackendId(profile_int_id);
+Suggestion::BackendId AutofillSuggestionGenerator::GetBackendIdFromFrontendId(
+    int frontend_id) {
+  if (frontend_id <= 0) {
+    NOTREACHED();
+    return Suggestion::BackendId();
+  }
+  const auto it = frontend_to_backend_map_.find(frontend_id);
+  if (it == frontend_to_backend_map_.end()) {
+    NOTREACHED();
+    return Suggestion::BackendId();
+  }
+  return it->second;
 }
 
 bool AutofillSuggestionGenerator::ShouldShowVirtualCardOption(
@@ -442,17 +434,6 @@ const CreditCard* AutofillSuggestionGenerator::GetServerCardForLocalCard(
     return *it;
 
   return nullptr;
-}
-
-InternalId AutofillSuggestionGenerator::BackendIdToInternalIdForTesting(
-    const Suggestion::BackendId& backend_id) {
-  return BackendIdToInternalId(backend_id);
-}
-
-Suggestion::BackendId
-AutofillSuggestionGenerator::InternalIdToBackendIdForTesting(
-    InternalId internal_id) {
-  return InternalIdToBackendId(internal_id);
 }
 
 // TODO(crbug.com/1346331): Separate logic for desktop, Android dropdown, and
@@ -724,33 +705,6 @@ void AutofillSuggestionGenerator::SetCardArtURL(
   if (image)
     suggestion.custom_icon = *image;
 #endif
-}
-
-InternalId AutofillSuggestionGenerator::BackendIdToInternalId(
-    const Suggestion::BackendId& backend_id) {
-  if (!base::IsValidGUID(*backend_id))
-    return InternalId();
-
-  InternalId& internal_id = backend_to_internal_map_[backend_id];
-  if (!internal_id) {
-    internal_id = InternalId(backend_to_internal_map_.size());
-    internal_to_backend_map_[internal_id] = backend_id;
-  }
-  DCHECK_EQ(internal_to_backend_map_.size(), backend_to_internal_map_.size());
-  return internal_id;
-}
-
-Suggestion::BackendId AutofillSuggestionGenerator::InternalIdToBackendId(
-    InternalId internal_id) {
-  if (!internal_id)
-    return Suggestion::BackendId();
-
-  const auto found = internal_to_backend_map_.find(internal_id);
-  if (found == internal_to_backend_map_.end()) {
-    NOTREACHED();
-    return Suggestion::BackendId();
-  }
-  return found->second;
 }
 
 }  // namespace autofill

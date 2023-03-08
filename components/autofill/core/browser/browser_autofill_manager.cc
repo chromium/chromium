@@ -2121,20 +2121,14 @@ bool BrowserAutofillManager::RefreshDataModels() {
 }
 
 CreditCard* BrowserAutofillManager::GetCreditCard(int unique_id) {
-  // Unpack the |unique_id| into component parts.
-  Suggestion::BackendId credit_card_id;
-  Suggestion::BackendId profile_id;
-  suggestion_generator_->SplitFrontendId(unique_id, &credit_card_id,
-                                         &profile_id);
+  Suggestion::BackendId credit_card_id =
+      suggestion_generator_->GetBackendIdFromFrontendId(unique_id);
   return personal_data_->GetCreditCardByGUID(credit_card_id.value());
 }
 
 AutofillProfile* BrowserAutofillManager::GetProfile(int unique_id) {
-  // Unpack the |unique_id| into component parts.
-  Suggestion::BackendId credit_card_id;
-  Suggestion::BackendId profile_id;
-  suggestion_generator_->SplitFrontendId(unique_id, &credit_card_id,
-                                         &profile_id);
+  Suggestion::BackendId profile_id =
+      suggestion_generator_->GetBackendIdFromFrontendId(unique_id);
 
   std::string guid = profile_id.value();
   if (base::IsValidGUID(guid))

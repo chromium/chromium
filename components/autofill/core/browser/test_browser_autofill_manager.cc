@@ -202,8 +202,8 @@ int TestBrowserAutofillManager::GetPackedCreditCardID(int credit_card_id) {
   std::string credit_card_guid =
       base::StringPrintf("00000000-0000-0000-0000-%012d", credit_card_id);
 
-  return suggestion_generator_for_test()->MakeFrontendId(
-      Suggestion::BackendId(credit_card_guid), Suggestion::BackendId());
+  return suggestion_generator_for_test()->MakeFrontendIdFromBackendId(
+      Suggestion::BackendId(credit_card_guid));
 }
 
 void TestBrowserAutofillManager::AddSeenForm(
@@ -291,9 +291,10 @@ void TestBrowserAutofillManager::SetExpectedObservedSubmission(bool expected) {
 
 int TestBrowserAutofillManager::MakeFrontendId(
     const MakeFrontendIdParams& params) {
-  return suggestion_generator_for_test()->MakeFrontendId(
-      Suggestion::BackendId(params.credit_card_id),
-      Suggestion::BackendId(params.profile_id));
+  return suggestion_generator_for_test()->MakeFrontendIdFromBackendId(
+      Suggestion::BackendId(params.credit_card_id.empty()
+                                ? params.profile_id
+                                : params.credit_card_id));
 }
 
 }  // namespace autofill
