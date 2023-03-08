@@ -70,7 +70,6 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_constants.h"
-#include "extensions/common/manifest_handlers/app_isolation_info.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
 #include "extensions/common/mojom/event_router.mojom.h"

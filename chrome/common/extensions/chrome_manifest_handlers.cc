@@ -20,7 +20,6 @@
 #include "chrome/common/extensions/manifest_handlers/natively_connectable_handler.h"
 #include "chrome/common/extensions/manifest_handlers/settings_overrides_handler.h"
 #include "chrome/common/extensions/manifest_handlers/theme_handler.h"
-#include "extensions/common/manifest_handlers/app_isolation_info.h"
 #include "extensions/common/manifest_handlers/options_page_info.h"
 #include "extensions/common/manifest_url_handlers.h"
 
@@ -42,7 +41,6 @@ void RegisterChromeManifestHandlers() {
   DCHECK(!ManifestHandler::IsRegistrationFinalized());
 
   registry->RegisterHandler(std::make_unique<AboutPageHandler>());
-  registry->RegisterHandler(std::make_unique<AppIsolationHandler>());
   registry->RegisterHandler(std::make_unique<AppLaunchManifestHandler>());
   registry->RegisterHandler(std::make_unique<DevToolsPageHandler>());
   registry->RegisterHandler(std::make_unique<HomepageURLHandler>());

@@ -10,7 +10,6 @@
 #include "extensions/common/error_utils.h"
 #include "extensions/common/features/simple_feature.h"
 #include "extensions/common/manifest_constants.h"
-#include "extensions/common/manifest_handlers/app_isolation_info.h"
 #include "extensions/common/manifest_handlers/csp_info.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/switches.h"
@@ -27,7 +26,10 @@ class PlatformAppsManifestTest : public ChromeManifestTest {
 TEST_F(PlatformAppsManifestTest, PlatformApps) {
   scoped_refptr<Extension> extension =
       LoadAndExpectSuccess("init_valid_platform_app.json");
-  EXPECT_TRUE(AppIsolationInfo::HasIsolatedStorage(extension.get()));
+  // Ensure this is treated as platform app, which causes it to have isolated
+  // storage in the browser process. See also
+  // ExtensionUtilUnittest.HasIsolatedStorage.
+  EXPECT_TRUE(extension->is_platform_app());
   EXPECT_FALSE(IncognitoInfo::IsSplitMode(extension.get()));
 
   extension =

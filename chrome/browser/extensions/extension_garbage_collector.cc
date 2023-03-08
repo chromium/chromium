@@ -24,6 +24,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/extensions/extension_garbage_collector_factory.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/install_tracker.h"
 #include "chrome/browser/extensions/pending_extension_manager.h"
 #include "components/crx_file/id_util.h"
@@ -37,7 +38,6 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/file_util.h"
-#include "extensions/common/manifest_handlers/app_isolation_info.h"
 
 namespace extensions {
 
@@ -223,7 +223,7 @@ void ExtensionGarbageCollector::GarbageCollectIsolatedStorageIfNeeded() {
   const ExtensionSet extensions =
       ExtensionRegistry::Get(context_)->GenerateInstalledExtensionsSet();
   for (const auto& ext : extensions) {
-    if (AppIsolationInfo::HasIsolatedStorage(ext.get())) {
+    if (extensions::util::LegacyHasIsolatedStorage(ext.get())) {
       active_paths.insert(
           util::GetStoragePartitionForExtensionId(ext->id(), context_)
               ->GetPath());

@@ -33,6 +33,13 @@ namespace util {
 // the Chrome OS sign-in profile.
 bool HasIsolatedStorage(const std::string& extension_id,
                         content::BrowserContext* context);
+bool HasIsolatedStorage(const Extension& extension,
+                        content::BrowserContext* context);
+
+// Returns whether `extension` has isolated storage due to being a platform app.
+// TODO(https://crbug.com/159932): Move all callers to HasIsolatedStorage, so
+// that Chrome OS sign-in profile cases are handled as well.
+bool LegacyHasIsolatedStorage(const Extension* extension);
 
 // Sets whether |extension_id| can run in an incognito window. Reloads the
 // extension if it's enabled since this permission is applied at loading time

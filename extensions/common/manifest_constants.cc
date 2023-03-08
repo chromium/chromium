@@ -67,7 +67,6 @@ const char kImeOptionsPage[] = "options_page";
 const char kIndicator[] = "indicator";
 const char kInputComponents[] = "input_components";
 const char kInputView[] = "input_view";
-const char kIsolation[] = "app.isolation";
 const char kKey[] = "key";
 const char kKiosk[] = "kiosk";
 const char kKioskAlwaysUpdate[] = "kiosk.always_update";

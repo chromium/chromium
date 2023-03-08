@@ -69,7 +69,6 @@ extern const char kImeOptionsPage[];
 extern const char kIndicator[];
 extern const char kInputComponents[];
 extern const char kInputView[];
-extern const char kIsolation[];
 extern const char kKey[];
 extern const char kKiosk[];
 extern const char kKioskAlwaysUpdate[];

@@ -30,7 +30,6 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_icon_set.h"
 #include "extensions/common/extension_urls.h"
-#include "extensions/common/manifest_handlers/app_isolation_info.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/manifest_handlers/permissions_parser.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -78,10 +77,14 @@ bool HasIsolatedStorage(const std::string& extension_id,
   const Extension* extension =
       ExtensionRegistry::Get(context)->enabled_extensions().GetByID(
           extension_id);
+  return extension && HasIsolatedStorage(*extension, context);
+}
 
+bool HasIsolatedStorage(const Extension& extension,
+                        content::BrowserContext* context) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const bool is_policy_extension =
-      extension && Manifest::IsPolicyLocation(extension->location());
+      Manifest::IsPolicyLocation(extension.location());
   Profile* profile = Profile::FromBrowserContext(context);
   if (profile && ash::ProfileHelper::IsSigninProfile(profile) &&
       is_policy_extension) {
@@ -89,7 +92,11 @@ bool HasIsolatedStorage(const std::string& extension_id,
   }
 #endif
 
-  return extension && AppIsolationInfo::HasIsolatedStorage(extension);
+  return LegacyHasIsolatedStorage(&extension);
+}
+
+bool LegacyHasIsolatedStorage(const Extension* extension) {
+  return extension->is_platform_app();
 }
 
 void SetIsIncognitoEnabled(const std::string& extension_id,
