@@ -86,7 +86,7 @@ class AcceleratorConfigurationProvider
   // ui::KeyboardCapability::Observer:
   void OnTopRowKeysAreFKeysChanged() override;
 
-  AcceleratorConfigurationMap GetAcceleratorConfig() const;
+  AcceleratorConfigurationMap GetAcceleratorConfig();
   std::vector<mojom::AcceleratorLayoutInfoPtr> GetAcceleratorLayoutInfos()
       const;
 
@@ -116,12 +116,25 @@ class AcceleratorConfigurationProvider
 
   void UpdateKeyboards();
 
-  AcceleratorConfigurationMap CreateConfigurationMap() const;
+  AcceleratorConfigurationMap CreateConfigurationMap();
+
+  void PopulateAshAcceleratorConfig(
+      AcceleratorConfigurationMap& accelerator_config_output);
+
+  void PopulateAmbientAcceleratorConfig(
+      AcceleratorConfigurationMap& accelerator_config_output);
 
   void NotifyAcceleratorsUpdated();
 
-  std::vector<mojom::AcceleratorInfoPtr> CreateAcceleratorInfos(
-      const std::vector<ui::Accelerator>& accelerators) const;
+  void CreateAndAppendAliasedAccelerators(
+      const ui::Accelerator& accelerator,
+      bool locked,
+      mojom::AcceleratorType type,
+      mojom::AcceleratorState state,
+      std::vector<mojom::AcceleratorInfoPtr>& output);
+
+  // Set only for testing purposes, this will ignore the default layouts.
+  bool ignore_layouts_for_testing_ = false;
 
   std::vector<mojom::AcceleratorLayoutInfoPtr> layout_infos_;
 
