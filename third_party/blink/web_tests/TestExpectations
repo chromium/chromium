@@ -6872,5 +6872,5 @@ crbug.com/1409713 virtual/view-transition/external/wpt/css/css-view-transitions/
 crbug.com/1409713 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/content-with-clip-max-texture-size.html [ Failure ]
 
 # Sheriff 2023-02-08
-crbug.com/1404951 external/wpt/credential-management/fedcm-network-requests.https.html [ Failure ]
-crbug.com/1404951 external/wpt/credential-management/fedcm-iframe.https.html [ Failure ]
+crbug.com/1422630 external/wpt/long-animation-frame/tentative/loaf-promise.html [ Failure ]
+crbug.com/1422630 external/wpt/long-animation-frame/tentative/loaf-script-block.html [ Failure ]

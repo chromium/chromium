@@ -1459,6 +1459,3 @@ crbug.com/1366717 http/tests/inspector-protocol/storage/indexed-db-set-items-by-
 
 crbug.com/1404951 external/wpt/credential-management/fedcm-network-requests.https.html [ Slow ]
 crbug.com/1404951 external/wpt/credential-management/fedcm-iframe.https.html [ Slow ]
-
-crbug.com/1422630 external/wpt/long-animation-frame/tentative/loaf-promise.html [ Slow ]
-crbug.com/1422630 external/wpt/long-animation-frame/tentative/loaf-script-block.html [ Slow ]
