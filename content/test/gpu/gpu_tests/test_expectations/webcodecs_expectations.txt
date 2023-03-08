@@ -110,12 +110,8 @@ crbug.com/1400465 [ fuchsia fuchsia-board-sherlock ] WebCodecs_EncodeDecode_* [ 
 # Camera tests fail with NotFoundError on Sherlock devices.
 crbug.com/1400512 [ fuchsia fuchsia-board-sherlock ] WebCodecs_DrawImage_camera [ Failure ]
 crbug.com/1400512 [ fuchsia fuchsia-board-sherlock ] WebCodecs_Encode_camera_* [ Failure ]
-crbug.com/1400512 [ fuchsia fuchsia-board-sherlock ] WebCodecs_GPUExternalTexture_expired_camera [ Failure ]
-crbug.com/1400512 [ fuchsia fuchsia-board-sherlock ] WebCodecs_GPUExternalTexture_expired_worker_camera [ Failure ]
 crbug.com/1400512 [ fuchsia fuchsia-board-sherlock ] WebCodecs_TexImage2d_camera [ Failure ]
 crbug.com/1400512 [ fuchsia fuchsia-board-sherlock ] WebCodecs_copyTo_camera [ Failure ]
-crbug.com/1400512 [ fuchsia fuchsia-board-sherlock ] WebCodecs_device_destroy_expired_texture_camera [ Failure ]
-crbug.com/1400512 [ fuchsia fuchsia-board-sherlock ] WebCodecs_texture_expired_from_destroyed_device_camera [ Failure ]
 
 # finder:enable-unused
 

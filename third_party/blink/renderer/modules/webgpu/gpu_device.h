@@ -18,6 +18,7 @@
 namespace blink {
 
 class ExecutionContext;
+class ExternalTextureCache;
 class HTMLCanvasElement;
 class GPUAdapter;
 class GPUBuffer;
@@ -81,6 +82,7 @@ class GPUDevice final : public EventTargetWithInlineData,
   ScriptPromise lost(ScriptState* script_state);
 
   GPUQueue* queue();
+  bool destroyed() const;
 
   void destroy(v8::Isolate* isolate);
 
@@ -92,6 +94,7 @@ class GPUDevice final : public EventTargetWithInlineData,
                                         unsigned int usage_flags,
                                         ExceptionState& exception_state);
   GPUSampler* createSampler(const GPUSamplerDescriptor* descriptor);
+
   GPUExternalTexture* importExternalTexture(
       ScriptState* script_state,
       const GPUExternalTextureDescriptor* descriptor,
@@ -142,9 +145,6 @@ class GPUDevice final : public EventTargetWithInlineData,
   void InjectError(WGPUErrorType type, const char* message);
   void AddConsoleWarning(const char* message);
 
-  void AddActiveExternalTexture(GPUExternalTexture* external_texture);
-  void RemoveActiveExternalTexture(GPUExternalTexture* external_texture);
-
   void TrackTextureWithMailbox(GPUTexture* texture);
   void UntrackTextureWithMailbox(GPUTexture* texture);
 
@@ -165,8 +165,6 @@ class GPUDevice final : public EventTargetWithInlineData,
 
   // Used by USING_PRE_FINALIZER.
   void Dispose();
-
-  void DestroyAllExternalTextures();
   void DissociateMailboxes();
   void UnmapAllMappableBuffers(v8::Isolate* isolate);
 
@@ -215,14 +213,12 @@ class GPUDevice final : public EventTargetWithInlineData,
   static constexpr int kMaxAllowedConsoleWarnings = 500;
   int allowed_console_warnings_remaining_ = kMaxAllowedConsoleWarnings;
 
-  // Keep a list of all active GPUExternalTexture. Eagerly destroy them
-  // when the device is destroyed (via .destroy) to free the memory.
-  HeapHashSet<WeakMember<GPUExternalTexture>> active_external_textures_;
-
   // Textures with mailboxes that should be dissociated before device.destroy().
   HeapHashSet<WeakMember<GPUTexture>> textures_with_mailbox_;
 
   HeapHashSet<WeakMember<GPUBuffer>> mappable_buffers_;
+
+  Member<ExternalTextureCache> external_texture_cache_;
 
   // This attribute records that whether GPUDevice is destroyed (via destroy()).
   bool destroyed_ = false;

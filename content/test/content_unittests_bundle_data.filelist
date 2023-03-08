@@ -792,8 +792,6 @@ data/gpu/webcodecs/encode-color-space.html
 data/gpu/webcodecs/encode-decode.html
 data/gpu/webcodecs/encode.html
 data/gpu/webcodecs/encoding-modes.html
-data/gpu/webcodecs/gpu-device-destroy-expire-active-external-texture.html
-data/gpu/webcodecs/gpu-external-texture-expired.html
 data/gpu/webcodecs/svc.html
 data/gpu/webcodecs/tex-image-2d.html
 data/gpu/webcodecs/webcodecs_common.js
