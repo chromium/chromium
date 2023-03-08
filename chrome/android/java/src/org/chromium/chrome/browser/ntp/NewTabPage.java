@@ -65,7 +65,6 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_resumption.SearchResumptionModuleCoordinator;
 import org.chromium.chrome.browser.search_resumption.SearchResumptionModuleUtils;
 import org.chromium.chrome.browser.share.ShareDelegate;
-import org.chromium.chrome.browser.share.crow.CrowButtonDelegate;
 import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.suggestions.SuggestionsNavigationDelegate;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegateImpl;
@@ -345,7 +344,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
             BottomSheetController bottomSheetController,
             Supplier<ShareDelegate> shareDelegateSupplier, WindowAndroid windowAndroid,
             JankTracker jankTracker, Supplier<Toolbar> toolbarSupplier,
-            SettingsLauncher settingsLauncher, CrowButtonDelegate crowButtonDelegate) {
+            SettingsLauncher settingsLauncher) {
         mConstructedTimeNs = System.nanoTime();
         TraceEvent.begin(TAG);
 
@@ -426,7 +425,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
 
         updateSearchProviderHasLogo();
         initializeMainView(activity, windowAndroid, snackbarManager, uma, isInNightMode,
-                shareDelegateSupplier, crowButtonDelegate, url);
+                shareDelegateSupplier, url);
 
         // It is possible that the NewTabPage is created when the Tab model hasn't been initialized.
         // For example, the user changes theme when a NTP is showing, which leads to the recreation
@@ -492,8 +491,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
      */
     protected void initializeMainView(Activity activity, WindowAndroid windowAndroid,
             SnackbarManager snackbarManager, NewTabPageUma uma, boolean isInNightMode,
-            Supplier<ShareDelegate> shareDelegateSupplier, CrowButtonDelegate crowButtonDelegate,
-            String url) {
+            Supplier<ShareDelegate> shareDelegateSupplier, String url) {
         Profile profile = Profile.fromWebContents(mTab.getWebContents());
 
         LayoutInflater inflater = LayoutInflater.from(activity);
@@ -501,7 +499,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
 
         FeedActionDelegate actionDelegate = new FeedActionDelegateImpl(activity, snackbarManager,
                 mNewTabPageManager.getNavigationDelegate(), BookmarkModel.getForProfile(profile),
-                crowButtonDelegate, BrowserUiUtils.HostSurface.NEW_TAB_PAGE) {
+                BrowserUiUtils.HostSurface.NEW_TAB_PAGE) {
             @Override
             public void openHelpPage() {
                 NewTabPageUma.recordAction(NewTabPageUma.ACTION_CLICKED_LEARN_MORE);

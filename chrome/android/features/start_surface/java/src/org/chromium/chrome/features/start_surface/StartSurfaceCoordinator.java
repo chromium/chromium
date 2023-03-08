@@ -55,7 +55,6 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.query_tiles.QueryTileSection;
 import org.chromium.chrome.browser.query_tiles.QueryTileUtils;
 import org.chromium.chrome.browser.share.ShareDelegate;
-import org.chromium.chrome.browser.share.crow.CrowButtonDelegate;
 import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesCoordinator;
 import org.chromium.chrome.browser.suggestions.tile.TileGroupDelegateImpl;
 import org.chromium.chrome.browser.tab.Tab;
@@ -124,7 +123,6 @@ public class StartSurfaceCoordinator implements StartSurface {
     // TODO(crbug.com/1315676): Directly return the supplier from {@link TabSwitcherCoordinator}.
     private final ObservableSupplierImpl<TabSwitcherCustomViewManager>
             mTabSwitcherCustomViewManagerSupplier;
-    private final CrowButtonDelegate mCrowButtonDelegate;
     private final OneshotSupplier<IncognitoReauthController> mIncognitoReauthControllerSupplier;
 
     @VisibleForTesting
@@ -267,7 +265,6 @@ public class StartSurfaceCoordinator implements StartSurface {
      * @param multiWindowModeStateDispatcher Gives access to the multi window mode state.
      * @param jankTracker Measures jank while feed or tab switcher are visible.
      * @param toolbarSupplier Supplies the {@link Toolbar}.
-     * @param crowButtonDelegate The {@link CrowButtonDelegate} to handle Crow click events.
      * @param backPressManager {@link BackPressManager} to handle back press.
      * @param incognitoReauthControllerSupplier {@link OneshotSupplier<IncognitoReauthController>}
      *         to detect pending re-auth when tab switcher is shown.
@@ -293,7 +290,7 @@ public class StartSurfaceCoordinator implements StartSurface {
             @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
             @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             @NonNull JankTracker jankTracker, @NonNull Supplier<Toolbar> toolbarSupplier,
-            @NonNull CrowButtonDelegate crowButtonDelegate, BackPressManager backPressManager,
+            BackPressManager backPressManager,
             @NonNull OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
             @NonNull OnClickListener tabSwitcherClickHandler) {
         mConstructedTimeNs = SystemClock.elapsedRealtimeNanos();
@@ -318,7 +315,6 @@ public class StartSurfaceCoordinator implements StartSurface {
         mMenuOrKeyboardActionController = menuOrKeyboardActionController;
         mMultiWindowModeStateDispatcher = multiWindowModeStateDispatcher;
         mToolbarSupplier = toolbarSupplier;
-        mCrowButtonDelegate = crowButtonDelegate;
         mIncognitoReauthControllerSupplier = incognitoReauthControllerSupplier;
 
         mTabSwitcherCustomViewManagerSupplier = new ObservableSupplierImpl<>();
@@ -509,7 +505,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                     parentView, mPropertyModel, mBottomSheetController, mParentTabSupplier,
                     new ScrollableContainerDelegateImpl(), mSnackbarManager, mShareDelegateSupplier,
                     mWindowAndroid, mTabModelSelector, mToolbarSupplier, mConstructedTimeNs,
-                    mSwipeRefreshLayout, mCrowButtonDelegate);
+                    mSwipeRefreshLayout);
         }
         mStartSurfaceMediator.initWithNative(
                 mIsStartSurfaceEnabled ? mOmniboxStubSupplier.get() : null,

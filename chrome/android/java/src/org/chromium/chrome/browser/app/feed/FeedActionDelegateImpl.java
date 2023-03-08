@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.offlinepages.RequestCoordinatorBridge;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.share.crow.CrowButtonDelegate;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
@@ -46,19 +45,17 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
     private final BookmarkModel mBookmarkModel;
     private final Context mActivityContext;
     private final SnackbarManager mSnackbarManager;
-    private final CrowButtonDelegate mCrowButtonDelegate;
 
     @BrowserUiUtils.HostSurface
     private int mHostSurface;
 
     public FeedActionDelegateImpl(Context activityContext, SnackbarManager snackbarManager,
             NativePageNavigationDelegate navigationDelegate, BookmarkModel bookmarkModel,
-            CrowButtonDelegate crowButtonDelegate, @BrowserUiUtils.HostSurface int hostSurface) {
+            @BrowserUiUtils.HostSurface int hostSurface) {
         mActivityContext = activityContext;
         mNavigationDelegate = navigationDelegate;
         mBookmarkModel = bookmarkModel;
         mSnackbarManager = snackbarManager;
-        mCrowButtonDelegate = crowButtonDelegate;
         mHostSurface = hostSurface;
     }
     @Override
@@ -124,17 +121,8 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
 
     @Override
     public void openCrow(String url) {
-        if (FeatureList.isInitialized()
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.SHARE_CROW_BUTTON_LAUNCH_TAB)) {
-            String tabUrl = mCrowButtonDelegate.getUrlForWebFlow(
-                    new GURL(url), GURL.emptyGURL(), /*isFollowing=*/true);
-            mNavigationDelegate.openUrl(
-                    WindowOpenDisposition.NEW_FOREGROUND_TAB, new LoadUrlParams(tabUrl));
-        } else {
-            mCrowButtonDelegate.launchCustomTab(
-                    /*tab=*/null, mActivityContext, new GURL(url), GURL.emptyGURL(),
-                    /*isFollowing=*/true);
-        }
+        // No-op; deprecated.
+        // TODO(crbug/1406011): Remove from the interface.
     }
 
     @Override

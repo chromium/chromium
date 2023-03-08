@@ -139,11 +139,6 @@ public class FeedStream implements Stream {
                             FeedUserActionType.TAPPED_ADD_TO_READING_LIST);
                     mActionDelegate.addToReadingList(options.getTitle(), url);
                     break;
-                case OpenMode.THANK_CREATOR:
-                    FeedStreamJni.get().reportOtherUserAction(mNativeFeedStream, FeedStream.this,
-                            FeedUserActionType.TAPPED_CROW_BUTTON);
-                    mActionDelegate.openCrow(url);
-                    break;
                 case OpenMode.NEW_TAB_IN_GROUP:
                     FeedStreamJni.get().reportOpenAction(mNativeFeedStream, FeedStream.this,
                             mMakeGURL.apply(url), getSliceIdFromView(options.actionSourceView()),

@@ -26,7 +26,6 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.share.crow.CrowButtonDelegateImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
@@ -93,8 +92,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             ((WebFeedMainMenuItem) view)
                     .initialize(mActivityTabProvider.get(), appMenuHandler,
                             WebFeedFaviconFetcher.createDefault(), mFeedLauncher,
-                            mModalDialogManager, mSnackbarManager, new CrowButtonDelegateImpl(),
-                            CreatorActivity.class);
+                            mModalDialogManager, mSnackbarManager, CreatorActivity.class);
         }
     }
 

@@ -74,36 +74,8 @@ found in the LICENSE file.
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
                   android:visibility="gone" />
-
-              <org.chromium.components.browser_ui.widget.chips.ChipView
-                  android:id="@+id/crow_chip_view"
-                  style="@style/MenuFooterChipInverse"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:layout_marginEnd="16dp"
-                  android:layout_marginStart="12dp"
-                  android:visibility="gone" />
           </LinearLayout>
       </LinearLayout>
-
-      <!-- Chips get pushed to a second row when both are displayed.
-           The second row is hidden by default. -->
-      <HorizontalScrollView
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:fillViewport="true">
-
-          <LinearLayout
-              android:id="@+id/footer_second_chip_row"
-              android:layout_width="wrap_content"
-              android:layout_marginTop="@dimen/divider_height"
-              android:layout_height="wrap_content"
-              android:orientation="horizontal"
-              android:visibility="gone">
-          </LinearLayout>
-
-      </HorizontalScrollView>
-
     </LinearLayout>
 
     <View

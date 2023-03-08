@@ -21,7 +21,6 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -50,7 +49,6 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feed.test.R;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.share.crow.CrowButtonDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -106,8 +104,6 @@ public final class WebFeedMainMenuItemTest {
     public WebFeedBridge.Natives mWebFeedBridgeJniMock;
     @Mock
     public UrlFormatter.Natives mUrlFormatterJniMock;
-    @Mock
-    private CrowButtonDelegate mCrowButtonDelegate;
 
     private Activity mActivity;
     private Class<?> mCreatorActivityClass;
@@ -180,7 +176,7 @@ public final class WebFeedMainMenuItemTest {
     public void initialize_emptyUrl_removesIcon() {
         doReturn(GURL.emptyGURL()).when(mTab).getOriginalUrl();
         mWebFeedMainMenuItem.initialize(mTab, mAppMenuHandler, mFaviconFetcher, mFeedLauncher,
-                mDialogManager, mSnackBarManager, mCrowButtonDelegate, mCreatorActivityClass);
+                mDialogManager, mSnackBarManager, mCreatorActivityClass);
         respondWithFeedMetadata(null);
         mFaviconFetcher.answerWithNull();
 
@@ -290,48 +286,6 @@ public final class WebFeedMainMenuItemTest {
 
     @Test
     @UiThreadTest
-    public void initialize_notFollowed_displaysFollowChip_crowPresent_displaysChipsOnSingleRow() {
-        initializeWebFeedMainMenuItem();
-        respondWithFeedMetadata(
-                createWebFeedMetadata(WebFeedSubscriptionStatus.NOT_SUBSCRIBED, GURL.emptyGURL()));
-
-        // Chip group with Follow chip should have same parent as the icon view.
-        doAnswer(invocation -> {
-            Callback callback = invocation.getArgument(1);
-            callback.onResult(true);
-            return null;
-        })
-                .when(mCrowButtonDelegate)
-                .isEnabledForSite(any(GURL.class), any(Callback.class));
-
-        ViewGroup chipsGroup = mWebFeedMainMenuItem.findViewById(R.id.chip_container);
-        View iconView = mWebFeedMainMenuItem.findViewById(R.id.icon);
-        assertEquals(iconView.getParent(), chipsGroup.getParent());
-    }
-
-    @Test
-    @UiThreadTest
-    public void initialize_notFollowed_displaysFollowChip_crowPresent_displaysChipsOnSecondRow() {
-        doAnswer(invocation -> {
-            Callback callback = invocation.getArgument(1);
-            callback.onResult(true);
-            return null;
-        })
-                .when(mCrowButtonDelegate)
-                .isEnabledForSite(any(GURL.class), any(Callback.class));
-
-        initializeWebFeedMainMenuItem();
-        respondWithFeedMetadata(
-                createWebFeedMetadata(WebFeedSubscriptionStatus.NOT_SUBSCRIBED, GURL.emptyGURL()));
-
-        // Chip group with Follow and Crow chips should be moved to a second row.
-        ViewGroup chipsGroup = mWebFeedMainMenuItem.findViewById(R.id.chip_container);
-        ViewGroup secondRowGroup = mWebFeedMainMenuItem.findViewById(R.id.footer_second_chip_row);
-        assertEquals(secondRowGroup, chipsGroup.getParent());
-    }
-
-    @Test
-    @UiThreadTest
     public void initialize_unfollowInProgress_succeeds() {
         initializeWebFeedMainMenuItem();
         respondWithFeedMetadata(createWebFeedMetadata(
@@ -428,7 +382,7 @@ public final class WebFeedMainMenuItemTest {
     private void initializeWebFeedMainMenuItem() {
         doReturn(TEST_URL).when(mTab).getOriginalUrl();
         mWebFeedMainMenuItem.initialize(mTab, mAppMenuHandler, mFaviconFetcher, mFeedLauncher,
-                mDialogManager, mSnackBarManager, mCrowButtonDelegate, mCreatorActivityClass);
+                mDialogManager, mSnackBarManager, mCreatorActivityClass);
     }
 
     /**

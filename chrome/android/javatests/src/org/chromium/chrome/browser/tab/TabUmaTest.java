@@ -90,7 +90,7 @@ public class TabUmaTest {
                 cta.getBrowserControlsManager(), cta.getActivityTabProvider(),
                 cta.getLifecycleDispatcher(), cta.getWindowAndroid(),
                 cta::getLastUserInteractionTime, cta::hadWarmStart, new DummyJankTracker(),
-                rootUiCoordinator.getToolbarManager()::getToolbar, /*crowButtonDelegate=*/ null);
+                rootUiCoordinator.getToolbarManager()::getToolbar);
         // clang-format on
     }
 

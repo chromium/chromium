@@ -177,7 +177,6 @@ android_resources("feed_java_resources") {
     "java/res/drawable/back_to_top_arrow.xml",
     "java/res/drawable/creator_content_unavailable_error_illustration.xml",
     "java/res/drawable/creator_general_error_illustration.xml",
-    "java/res/drawable/crow_icon.xml",
     "java/res/drawable/header_title_section_tab_background.xml",
     "java/res/drawable/header_title_tab_selected_background.xml",
     "java/res/drawable/rounded_corners.xml",

@@ -934,19 +934,6 @@ public class FeedStreamTest {
 
     @Test
     @SmallTest
-    public void testNavigateCrow() {
-        bindToView();
-
-        FeedStream.FeedSurfaceActionsHandler handler =
-                (FeedStream.FeedSurfaceActionsHandler) mContentManager.getContextValues(0).get(
-                        SurfaceActionsHandler.KEY);
-        handler.navigateCrow(TEST_URL);
-
-        verify(mActionDelegate).openCrow(TEST_URL);
-    }
-
-    @Test
-    @SmallTest
     public void testShowSnackbar() {
         bindToView();
         FeedStream.FeedActionsHandlerImpl handler =
