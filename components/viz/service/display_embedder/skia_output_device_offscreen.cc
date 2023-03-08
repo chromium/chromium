@@ -66,20 +66,16 @@ bool SkiaOutputDeviceOffscreen::Reshape(
   return true;
 }
 
-void SkiaOutputDeviceOffscreen::SwapBuffers(BufferPresentedCallback feedback,
-                                            OutputSurfaceFrame frame) {
+void SkiaOutputDeviceOffscreen::Present(
+    const absl::optional<gfx::Rect>& update_rect,
+    BufferPresentedCallback feedback,
+    OutputSurfaceFrame frame) {
   // Reshape should have been called first.
   DCHECK(backend_texture_.isValid());
 
   StartSwapBuffers(std::move(feedback));
   FinishSwapBuffers(gfx::SwapCompletionResult(gfx::SwapResult::SWAP_ACK),
                     gfx::Size(size_.width(), size_.height()), std::move(frame));
-}
-
-void SkiaOutputDeviceOffscreen::PostSubBuffer(const gfx::Rect& rect,
-                                              BufferPresentedCallback feedback,
-                                              OutputSurfaceFrame frame) {
-  return SwapBuffers(std::move(feedback), std::move(frame));
 }
 
 void SkiaOutputDeviceOffscreen::EnsureBackbuffer() {

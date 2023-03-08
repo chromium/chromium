@@ -73,19 +73,14 @@ bool SkiaOutputDeviceVulkanSecondaryCB::Reshape(
   return true;
 }
 
-void SkiaOutputDeviceVulkanSecondaryCB::SwapBuffers(
+void SkiaOutputDeviceVulkanSecondaryCB::Present(
+    const absl::optional<gfx::Rect>& update_rect,
     BufferPresentedCallback feedback,
     OutputSurfaceFrame frame) {
+  CHECK(!update_rect);
   StartSwapBuffers(std::move(feedback));
   FinishSwapBuffers(gfx::SwapCompletionResult(gfx::SwapResult::SWAP_ACK), size_,
                     std::move(frame));
-}
-
-void SkiaOutputDeviceVulkanSecondaryCB::PostSubBuffer(
-    const gfx::Rect& rect,
-    BufferPresentedCallback feedback,
-    OutputSurfaceFrame frame) {
-  CHECK(false);
 }
 
 SkSurface* SkiaOutputDeviceVulkanSecondaryCB::BeginPaint(

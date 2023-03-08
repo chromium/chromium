@@ -45,11 +45,9 @@ class SkiaOutputDeviceDComp : public SkiaOutputDevice {
   ~SkiaOutputDeviceDComp() override;
 
   // SkiaOutputDevice implementation:
-  void SwapBuffers(BufferPresentedCallback feedback,
-                   OutputSurfaceFrame frame) override;
-  void PostSubBuffer(const gfx::Rect& rect,
-                     BufferPresentedCallback feedback,
-                     OutputSurfaceFrame frame) override;
+  void Present(const absl::optional<gfx::Rect>& update_rect,
+               BufferPresentedCallback feedback,
+               OutputSurfaceFrame frame) override;
   void ScheduleOverlays(SkiaOutputSurface::OverlayList overlays) override;
 
  protected:

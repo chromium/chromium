@@ -2095,16 +2095,9 @@ void SkiaOutputSurfaceImplOnGpu::PostSubmit(
     output_device_->SetViewportSize(frame->size);
     output_device_->SchedulePrimaryPlane(output_surface_plane_);
 
-    if (frame->sub_buffer_rect) {
-      DCHECK(capabilities().supports_post_sub_buffer);
-      output_device_->PostSubBuffer(*frame->sub_buffer_rect,
-                                    buffer_presented_callback_,
-                                    std::move(*frame));
-
-    } else {
-      output_device_->SwapBuffers(buffer_presented_callback_,
-                                  std::move(*frame));
-    }
+    DCHECK(!frame->sub_buffer_rect || capabilities().supports_post_sub_buffer);
+    output_device_->Present(frame->sub_buffer_rect, buffer_presented_callback_,
+                            std::move(*frame));
   }
 
   // Reset the overlay plane information even on skipped swap.

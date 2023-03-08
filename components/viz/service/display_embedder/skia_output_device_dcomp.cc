@@ -144,18 +144,14 @@ SkiaOutputDeviceDComp::SkiaOutputDeviceDComp(
 
 SkiaOutputDeviceDComp::~SkiaOutputDeviceDComp() = default;
 
-void SkiaOutputDeviceDComp::SwapBuffers(BufferPresentedCallback feedback,
-                                        OutputSurfaceFrame frame) {
-  PostSubBuffer(gfx::Rect(size_), std::move(feedback), std::move(frame));
-}
-
-void SkiaOutputDeviceDComp::PostSubBuffer(const gfx::Rect& rect,
-                                          BufferPresentedCallback feedback,
-                                          OutputSurfaceFrame frame) {
+void SkiaOutputDeviceDComp::Present(
+    const absl::optional<gfx::Rect>& update_rect,
+    BufferPresentedCallback feedback,
+    OutputSurfaceFrame frame) {
   StartSwapBuffers({});
 
   DoPresent(
-      rect,
+      update_rect.value_or(gfx::Rect(size_)),
       base::BindOnce(&SkiaOutputDeviceDComp::OnPresentFinished,
                      weak_ptr_factory_.GetWeakPtr(), std::move(frame), size_),
       std::move(feedback), frame.data);
