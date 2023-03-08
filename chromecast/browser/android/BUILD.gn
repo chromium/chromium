@@ -51,9 +51,12 @@ java_cpp_template("cast_shell_build_config_gen") {
 common_resources = [
   "apk/res-values/values-v17/styles.xml",
   "apk/res-values/values/strings.xml",
+  "apk/res-values/values/colors.xml",
 ]
 
 extra_resources = [
+  "apk/res/drawable-anydpi-v26/ic_settings_cast.xml",
+  "apk/res/drawable-nodpi/ic_cast_vector.xml",
   "apk/res/drawable-hdpi/ic_notification_cast.png",
   "apk/res/drawable-hdpi/ic_settings_cast.png",
   "apk/res/drawable-mdpi/ic_notification_cast.png",

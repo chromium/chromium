@@ -1,0 +1,18 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="960"
+    android:viewportHeight="960">
+    <!-- Adaptive icons are 108dp. There is a 72x x 72x safe zone in the middle where the icon won't
+    be clipped -->
+    <group
+        android:name="scaleGroup"
+        android:pivotX="480"
+        android:pivotY="480"
+        android:scaleX=".5"
+        android:scaleY=".5">
+        <path
+            android:fillColor="@android:color/white"
+            android:pathData="M 141 160 L 821 160 Q 844 160 862.5 178.5 Q 881 197 881 220 L 881 740 Q 881 763 862.5 781.5 Q 844 800 821 800 L 481 800 L 481 740 L 821 740 Q 821 740 821 740 Q 821 740 821 740 L 821 220 Q 821 220 821 220 Q 821 220 821 220 L 141 220 Q 141 220 141 220 Q 141 220 141 220 L 141 396 L 81 396 L 81 220 Q 81 197 99 178.5 Q 117 160 141 160 Z M 81 800 L 181 800 Q 181 756.67 151.83 726.33 Q 122.67 696 81 696 L 81 800 Z M 241 800 L 301 800 Q 301 707 236.96 641.5 Q 172.93 576 81 576 L 81 636 Q 148 636 194.5 683.97 Q 241 731.94 241 800 Z M 81 456 L 81 516 Q 140 516 190.79 538.5 Q 241.58 561 279.19 599.29 Q 316.8 637.58 338.9 689.29 Q 361 741 361 800 L 421 800 Q 421 728.87 394.53 666.33 Q 368.06 603.8 322.03 556.9 Q 276 510 213.85 483 Q 151.7 456 81 456 Z Z" />
+    </group>
+</vector>
