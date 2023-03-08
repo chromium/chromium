@@ -2411,8 +2411,8 @@ public class ExternalNavigationHandlerTest {
 
     @Test
     @SmallTest
-    public void testBlockNonExportedActivity() {
-        mDelegate.add(new IntentActivity(YOUTUBE_URL, YOUTUBE_PACKAGE_NAME, false));
+    public void testBlockNonExportedActivity_Self() {
+        mDelegate.add(new IntentActivity(YOUTUBE_URL, SELF_PACKAGE_NAME, false));
 
         checkUrl(YOUTUBE_URL, redirectHandlerForLinkClick())
                 .expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);
