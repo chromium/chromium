@@ -110,7 +110,6 @@
 #include "components/client_hints/browser/client_hints_web_contents_observer.h"
 #include "components/commerce/content/browser/commerce_tab_helper.h"
 #include "components/commerce/core/commerce_feature_list.h"
-#include "components/commerce/core/shopping_service.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/download/content/factory/navigation_monitor_factory.h"
@@ -179,6 +178,7 @@
 #include "chrome/browser/ui/sync/browser_synced_tab_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "components/commerce/content/browser/hint/commerce_hint_tab_helper.h"
+#include "components/image_fetcher/core/image_fetcher_service.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/zoom/zoom_controller.h"
@@ -565,17 +565,13 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
     user_notes::UserNotesTabHelper::CreateForWebContents(web_contents);
   }
 
-  commerce::ShoppingService* shopping_service =
-      commerce::ShoppingServiceFactory::GetInstance()->GetForBrowserContext(
-          profile);
-  // The shopping service can be null in tests and is critical for the tab
-  // helper to be functional. If there's no service, don't create the helper.
-  if (shopping_service) {
-    commerce::ShoppingListUiTabHelper::CreateForWebContents(
-        web_contents, shopping_service,
-        ImageFetcherServiceFactory::GetForKey(profile->GetProfileKey()),
-        profile->GetPrefs());
-  }
+  // TODO(1360846): Consider using the in-memory cache instead.
+  commerce::ShoppingListUiTabHelper::CreateForWebContents(
+      web_contents,
+      commerce::ShoppingServiceFactory::GetForBrowserContext(profile),
+      BookmarkModelFactory::GetForBrowserContext(profile),
+      ImageFetcherServiceFactory::GetForKey(profile->GetProfileKey())
+          ->GetImageFetcher(image_fetcher::ImageFetcherConfig::kNetworkOnly));
 #endif
 
 #if BUILDFLAG(IS_WIN)

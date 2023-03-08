@@ -10,7 +10,6 @@
 #include "base/scoped_observation.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/subscriptions/subscriptions_observer.h"
-#include "components/image_fetcher/core/image_fetcher.h"
 #include "components/image_fetcher/core/request_metadata.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -18,14 +17,17 @@
 #include "ui/gfx/image/image.h"
 
 class GURL;
-class PrefService;
+
+namespace bookmarks {
+class BookmarkModel;
+}
 
 namespace content {
 class WebContents;
 }  // namespace content
 
 namespace image_fetcher {
-class ImageFetcherService;
+class ImageFetcher;
 }
 
 namespace commerce {
@@ -75,14 +77,14 @@ class ShoppingListUiTabHelper
   void SetShoppingServiceForTesting(ShoppingService* shopping_service);
 
  protected:
-  ShoppingListUiTabHelper(
-      content::WebContents* contents,
-      ShoppingService* shopping_service,
-      image_fetcher::ImageFetcherService* image_fetcher_service,
-      PrefService* prefs);
+  ShoppingListUiTabHelper(content::WebContents* contents,
+                          ShoppingService* shopping_service,
+                          bookmarks::BookmarkModel* model,
+                          image_fetcher::ImageFetcher* image_fetcher);
 
  private:
   friend class content::WebContentsUserData<ShoppingListUiTabHelper>;
+  friend class ShoppingListUiTabHelperTest;
 
   void HandleProductInfoResponse(const GURL& url,
                                  const absl::optional<ProductInfo>& info);
@@ -101,7 +103,7 @@ class ShoppingListUiTabHelper
   // The shopping service is tied to the lifetime of the browser context
   // which will always outlive this tab helper.
   raw_ptr<ShoppingService, DanglingUntriaged> shopping_service_;
-  raw_ptr<PrefService> prefs_;
+  raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
   raw_ptr<image_fetcher::ImageFetcher> image_fetcher_;
 
   // The URL of the last product image that was fetched.

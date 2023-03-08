@@ -6,7 +6,6 @@
 
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
-#include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -14,8 +13,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/price_tracking_utils.h"
-#include "components/image_fetcher/core/image_fetcher_service.h"
-#include "components/prefs/pref_service.h"
+#include "components/image_fetcher/core/image_fetcher.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/web_contents.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -60,17 +58,14 @@ constexpr char kImageFetcherUmaClient[] = "ShoppingList";
 ShoppingListUiTabHelper::ShoppingListUiTabHelper(
     content::WebContents* content,
     ShoppingService* shopping_service,
-    image_fetcher::ImageFetcherService* image_fetcher_service,
-    PrefService* prefs)
+    bookmarks::BookmarkModel* model,
+    image_fetcher::ImageFetcher* image_fetcher)
     : content::WebContentsObserver(content),
       content::WebContentsUserData<ShoppingListUiTabHelper>(*content),
       shopping_service_(shopping_service),
-      prefs_(prefs) {
-  if (image_fetcher_service) {
-    // TODO(1360846): Consider using the in-memory cache instead.
-    image_fetcher_ = image_fetcher_service->GetImageFetcher(
-        image_fetcher::ImageFetcherConfig::kNetworkOnly);
-  } else {
+      bookmark_model_(model),
+      image_fetcher_(image_fetcher) {
+  if (!image_fetcher_) {
     CHECK_IS_TEST();
   }
 
@@ -174,14 +169,11 @@ void ShoppingListUiTabHelper::UpdatePriceTrackingStateFromSubscriptions() {
   if (!cluster_id_for_page_.has_value())
     return;
 
-  bookmarks::BookmarkModel* const bookmark_model =
-      BookmarkModelFactory::GetForBrowserContext(
-          web_contents()->GetBrowserContext());
   const bookmarks::BookmarkNode* bookmark_node =
-      bookmark_model->GetMostRecentlyAddedUserNodeForURL(
+      bookmark_model_->GetMostRecentlyAddedUserNodeForURL(
           web_contents()->GetLastCommittedURL());
   commerce::IsBookmarkPriceTracked(
-      shopping_service_, bookmark_model, bookmark_node,
+      shopping_service_, bookmark_model_, bookmark_node,
       base::BindOnce(
           [](base::WeakPtr<ShoppingListUiTabHelper> helper, bool is_tracked) {
             if (!helper) {
