@@ -9,32 +9,53 @@
 
 namespace blink {
 
-TEST(CSSPropertyNamesTest, AlternativeAnimation) {
+TEST(CSSPropertyNamesTest, AlternativeAnimationWithTimeline) {
+  ScopedCSSAnimationDelayStartEndForTest start_end_enabled(false);
+
   {
-    ScopedCSSScrollTimelineForTest scoped_feature(false);
+    ScopedCSSScrollTimelineForTest scroll_timeline_enabled(false);
     EXPECT_EQ(
         CSSPropertyID::kAnimation,
         UnresolvedCSSPropertyID(/* execution_context */ nullptr, "animation"));
   }
 
   {
-    ScopedCSSScrollTimelineForTest scoped_feature(true);
+    ScopedCSSScrollTimelineForTest scroll_timeline_enabled(true);
     EXPECT_EQ(
-        CSSPropertyID::kAlternativeAnimation,
+        CSSPropertyID::kAlternativeAnimationWithTimeline,
+        UnresolvedCSSPropertyID(/* execution_context */ nullptr, "animation"));
+  }
+}
+
+TEST(CSSPropertyNamesTest, AlternativeAnimationWithDelayStartEnd) {
+  // CSSAnimationDelayStartEnd depends on CSSScrollTimeline.
+  ScopedCSSScrollTimelineForTest scroll_timeline_enabled(true);
+
+  {
+    ScopedCSSAnimationDelayStartEndForTest start_end_enabled(false);
+    EXPECT_EQ(
+        CSSPropertyID::kAlternativeAnimationWithTimeline,
+        UnresolvedCSSPropertyID(/* execution_context */ nullptr, "animation"));
+  }
+
+  {
+    ScopedCSSAnimationDelayStartEndForTest start_end_enabled(true);
+    EXPECT_EQ(
+        CSSPropertyID::kAlternativeAnimationWithDelayStartEnd,
         UnresolvedCSSPropertyID(/* execution_context */ nullptr, "animation"));
   }
 }
 
 TEST(CSSPropertyNamesTest, AlternativeAnimationDelay) {
   {
-    ScopedCSSScrollTimelineForTest scoped_feature(false);
+    ScopedCSSAnimationDelayStartEndForTest scoped_feature(false);
     EXPECT_EQ(CSSPropertyID::kAnimationDelay,
               UnresolvedCSSPropertyID(/* execution_context */ nullptr,
                                       "animation-delay"));
   }
 
   {
-    ScopedCSSScrollTimelineForTest scoped_feature(true);
+    ScopedCSSAnimationDelayStartEndForTest scoped_feature(true);
     EXPECT_EQ(CSSPropertyID::kAlternativeAnimationDelay,
               UnresolvedCSSPropertyID(/* execution_context */ nullptr,
                                       "animation-delay"));

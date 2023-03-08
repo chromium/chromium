@@ -471,8 +471,12 @@ String StylePropertySerializer::SerializeShorthand(
   switch (property_id) {
     case CSSPropertyID::kAnimation:
       return GetLayeredShorthandValue(animationShorthand());
-    case CSSPropertyID::kAlternativeAnimation:
-      return GetLayeredShorthandValue(alternativeAnimationShorthand());
+    case CSSPropertyID::kAlternativeAnimationWithTimeline:
+      return GetLayeredShorthandValue(
+          alternativeAnimationWithTimelineShorthand());
+    case CSSPropertyID::kAlternativeAnimationWithDelayStartEnd:
+      return GetLayeredShorthandValue(
+          alternativeAnimationWithDelayStartEndShorthand());
     case CSSPropertyID::kAlternativeAnimationDelay:
       return AnimationDelayShorthandValue();
     case CSSPropertyID::kAnimationRange:

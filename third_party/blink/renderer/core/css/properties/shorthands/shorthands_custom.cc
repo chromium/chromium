@@ -46,11 +46,11 @@ CSSValue* ConsumeAnimationValue(CSSPropertyID property,
                                 bool use_legacy_parsing) {
   switch (property) {
     case CSSPropertyID::kAnimationDelay:
-      DCHECK(!RuntimeEnabledFeatures::CSSScrollTimelineEnabled());
+      DCHECK(!RuntimeEnabledFeatures::CSSAnimationDelayStartEndEnabled());
       return css_parsing_utils::ConsumeTime(
           range, context, CSSPrimitiveValue::ValueRange::kAll);
     case CSSPropertyID::kAnimationDelayStart:
-      DCHECK(RuntimeEnabledFeatures::CSSScrollTimelineEnabled());
+      DCHECK(RuntimeEnabledFeatures::CSSAnimationDelayStartEndEnabled());
       return css_parsing_utils::ConsumeAnimationDelay(range, context);
     case CSSPropertyID::kAnimationDelayEnd:
       // New animation-* properties are  "reset only":
@@ -58,7 +58,7 @@ CSSValue* ConsumeAnimationValue(CSSPropertyID property,
       //
       // Returning nullptr here means that AnimationDelayEnd::InitialValue will
       // be used.
-      DCHECK(RuntimeEnabledFeatures::CSSScrollTimelineEnabled());
+      DCHECK(RuntimeEnabledFeatures::CSSAnimationDelayStartEndEnabled());
       return nullptr;
     case CSSPropertyID::kAnimationDirection:
       return css_parsing_utils::ConsumeIdent<
@@ -202,22 +202,44 @@ const CSSValue* Animation::CSSValueFromComputedStyleInternal(
                                        style.Animations());
 }
 
-bool AlternativeAnimation::ParseShorthand(
+bool AlternativeAnimationWithTimeline::ParseShorthand(
     bool important,
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context,
     HeapVector<CSSPropertyValue, 64>& properties) const {
-  return ParseAnimationShorthand(alternativeAnimationShorthand(), important,
-                                 range, context, local_context, properties);
+  return ParseAnimationShorthand(alternativeAnimationWithTimelineShorthand(),
+                                 important, range, context, local_context,
+                                 properties);
 }
 
-const CSSValue* AlternativeAnimation::CSSValueFromComputedStyleInternal(
+const CSSValue*
+AlternativeAnimationWithTimeline::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  return CSSValueFromComputedAnimation(alternativeAnimationShorthand(),
-                                       style.Animations());
+  return CSSValueFromComputedAnimation(
+      alternativeAnimationWithTimelineShorthand(), style.Animations());
+}
+
+bool AlternativeAnimationWithDelayStartEnd::ParseShorthand(
+    bool important,
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext& local_context,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  return ParseAnimationShorthand(
+      alternativeAnimationWithDelayStartEndShorthand(), important, range,
+      context, local_context, properties);
+}
+
+const CSSValue*
+AlternativeAnimationWithDelayStartEnd::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  return CSSValueFromComputedAnimation(
+      alternativeAnimationWithDelayStartEndShorthand(), style.Animations());
 }
 
 namespace {
@@ -317,7 +339,7 @@ bool AlternativeAnimationDelay::ParseShorthand(
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context,
     HeapVector<CSSPropertyValue, 64>& properties) const {
-  DCHECK(RuntimeEnabledFeatures::CSSScrollTimelineEnabled());
+  DCHECK(RuntimeEnabledFeatures::CSSAnimationDelayStartEndEnabled());
 
   using css_parsing_utils::AddProperty;
   using css_parsing_utils::ConsumeCommaIncludingWhitespace;

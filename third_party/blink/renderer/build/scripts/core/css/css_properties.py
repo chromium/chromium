@@ -166,6 +166,22 @@ class PropertyBase(object):
             and not self.runtime_flag \
             and not self.alternative
 
+    @property
+    def ultimate_property(self):
+        """Returns the ultimate property, which is the final property
+            in the alternative_of chain."""
+        if self.alternative_of:
+            return self.alternative_of.ultimate_property
+        return self
+
+    @property
+    def css_sample_id(self):
+        """Returns the CSSSampleId to use for this property."""
+        # Alternative properties use the same use-counter as the
+        # corresponding ultimate main property. In other words, alternative
+        # properties are use-counted the same way as their main properties.
+        return self.ultimate_property.enum_key
+
 
 def generate_property_field(default):
     # Must use 'default_factory' rather than 'default' for list/dict.

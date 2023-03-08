@@ -219,6 +219,7 @@ TEST_F(CSSComputedStyleDeclarationTest, UseCountComputedAnimationDelayZero) {
 TEST_F(CSSComputedStyleDeclarationTest,
        UseCountComputedAlternativeAnimationDelayZero) {
   ScopedCSSScrollTimelineForTest scroll_timeline_feature(true);
+  ScopedCSSAnimationDelayStartEndForTest delay_start_end_feature(false);
 
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
@@ -237,7 +238,8 @@ TEST_F(CSSComputedStyleDeclarationTest,
 
   // There is no animation property specified at all, so getting the computed
   // value should not trigger the counter.
-  EXPECT_TRUE(style->GetPropertyCSSValue(CSSPropertyID::kAlternativeAnimation));
+  EXPECT_TRUE(style->GetPropertyCSSValue(
+      CSSPropertyID::kAlternativeAnimationWithTimeline));
   EXPECT_TRUE(
       style->GetPropertyCSSValue(CSSPropertyID::kAlternativeAnimationDelay));
   EXPECT_FALSE(GetDocument().IsUseCounted(
@@ -247,12 +249,13 @@ TEST_F(CSSComputedStyleDeclarationTest,
   // -alternative-animation[-delay], because those properties are only in
   // use when 'CSSScrollTimeline' is enabled (which is the feature that would
   // ship the change that this use-counter is for in the first place).
-  div->SetInlineStyleProperty(CSSPropertyID::kAlternativeAnimation,
+  div->SetInlineStyleProperty(CSSPropertyID::kAlternativeAnimationWithTimeline,
                               "anim linear");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(GetDocument().IsUseCounted(
       WebFeature::kCSSGetComputedAnimationDelayZero));
-  EXPECT_TRUE(style->GetPropertyCSSValue(CSSPropertyID::kAlternativeAnimation));
+  EXPECT_TRUE(style->GetPropertyCSSValue(
+      CSSPropertyID::kAlternativeAnimationWithTimeline));
   EXPECT_TRUE(
       style->GetPropertyCSSValue(CSSPropertyID::kAlternativeAnimationDelay));
   EXPECT_FALSE(GetDocument().IsUseCounted(

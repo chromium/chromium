@@ -85,10 +85,8 @@ class CSSPropertyNamesWriter(json5_generator.Writer):
             for property_ in self._css_properties.gperf_properties
         ]
 
-        # Variants use the same use-counter as the corresponding main property.
         css_sample_id_pairs = [
-            (property_.enum_key, (property_.alternative_of
-                                  or property_).enum_key)
+            (property_.enum_key, property_.css_sample_id)
             for property_ in self._css_properties.properties_including_aliases
         ]
 

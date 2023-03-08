@@ -261,10 +261,10 @@ const CSSValue* AnimationDelay::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  // When CSSScrollTimeline is enabled, animation-delay is a shorthand
-  // which expands to animation-delay-start/end, therefore this should not
-  // be reachable without that feature.
-  DCHECK(!RuntimeEnabledFeatures::CSSScrollTimelineEnabled());
+  // When CSSAnimationDelayStartEndEnabled is enabled, animation-delay is a
+  // shorthand which expands to animation-delay-start/end, therefore this should
+  // not be reachable without that feature.
+  DCHECK(!RuntimeEnabledFeatures::CSSAnimationDelayStartEndEnabled());
   return ComputedStyleUtils::ValueForAnimationDelayStartList(
       style.Animations());
 }
@@ -280,7 +280,7 @@ const CSSValue* AnimationDelayStart::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  DCHECK(RuntimeEnabledFeatures::CSSScrollTimelineEnabled());
+  DCHECK(RuntimeEnabledFeatures::CSSAnimationDelayStartEndEnabled());
   return css_parsing_utils::ConsumeCommaSeparatedList(
       css_parsing_utils::ConsumeAnimationDelay, range, context);
 }
@@ -302,7 +302,7 @@ const CSSValue* AnimationDelayEnd::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  DCHECK(RuntimeEnabledFeatures::CSSScrollTimelineEnabled());
+  DCHECK(RuntimeEnabledFeatures::CSSAnimationDelayStartEndEnabled());
   return css_parsing_utils::ConsumeCommaSeparatedList(
       css_parsing_utils::ConsumeAnimationDelay, range, context);
 }

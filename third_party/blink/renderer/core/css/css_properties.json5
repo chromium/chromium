@@ -771,7 +771,7 @@
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       valid_for_keyframe: false,
-      runtime_flag: "CSSScrollTimeline",
+      runtime_flag: "CSSAnimationDelayStartEnd",
     },
     {
       name: "animation-delay-start",
@@ -785,7 +785,7 @@
       valid_for_marker: true,
       is_animation_property: true,
       valid_for_keyframe: false,
-      runtime_flag: "CSSScrollTimeline",
+      runtime_flag: "CSSAnimationDelayStartEnd",
     },
     {
       name: "animation-delay-end",
@@ -799,7 +799,7 @@
       valid_for_marker: true,
       is_animation_property: true,
       valid_for_keyframe: false,
-      runtime_flag: "CSSScrollTimeline",
+      runtime_flag: "CSSAnimationDelayStartEnd",
     },
     {
       name: "animation-direction",
@@ -6595,11 +6595,25 @@
       valid_for_keyframe: false,
     },
     {
-      // Variant of the "animation" shorthand which includes new longhands from
-      // Scroll-Linked Animations.
-      // https://drafts.csswg.org/scroll-animations-1/
-      name: "-alternative-animation",
+      // Variant of the "animation" shorthand which includes the
+      // animation-timeline longhand.
+      name: "-alternative-animation-with-timeline",
       alternative_of: "animation",
+      longhands: [
+        "animation-duration", "animation-timing-function",
+        "animation-delay", "animation-iteration-count", "animation-direction",
+        "animation-fill-mode", "animation-play-state", "animation-name",
+        "animation-timeline"
+      ],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      valid_for_keyframe: false,
+      runtime_flag: 'CSSScrollTimeline',
+    },
+    {
+      // Variant of the "animation" shorthand which includes the
+      // animation-delay-start and animation-delay-end longhands.
+      name: "-alternative-animation-with-delay-start-end",
+      alternative_of: "-alternative-animation-with-timeline",
       longhands: [
         "animation-duration", "animation-timing-function",
         "animation-delay-start", "animation-delay-end",
@@ -6609,7 +6623,7 @@
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       valid_for_keyframe: false,
-      runtime_flag: 'CSSScrollTimeline',
+      runtime_flag: 'CSSAnimationDelayStartEnd',
     },
     {
       name: "animation-range",
@@ -7719,10 +7733,16 @@
       // -webkit-animation directly to animation's alternative, because we have
       // to remember the -webkit-ness of the property to enable legacy parsing
       // behavior. (See CSSParserLocalContext::UseAliasParsing).
-      name: "-webkit-alternative-animation",
-      alias_for: "-alternative-animation",
+      name: "-webkit-alternative-animation-with-timeline",
+      alias_for: "-alternative-animation-with-timeline",
       alternative_of: "-webkit-animation",
       runtime_flag: "CSSScrollTimeline",
+    },
+    {
+      name: "-webkit-alternative-animation-with-delay-start-end",
+      alias_for: "-alternative-animation-with-delay-start-end",
+      alternative_of: "-webkit-alternative-animation-with-timeline",
+      runtime_flag: "CSSAnimationDelayStartEnd",
     },
     {
       name: "-webkit-animation-delay",
@@ -7732,7 +7752,7 @@
       name: "-webkit-alternative-animation-delay",
       alias_for: "-alternative-animation-delay",
       alternative_of: "-webkit-animation-delay",
-      runtime_flag: "CSSScrollTimeline",
+      runtime_flag: "CSSAnimationDelayStartEnd",
     },
     {
       name: "-webkit-animation-direction",

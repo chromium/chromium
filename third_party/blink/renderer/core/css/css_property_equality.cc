@@ -878,8 +878,9 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kAliasWebkitAlignContent:
     case CSSPropertyID::kAliasWebkitAlignItems:
     case CSSPropertyID::kAliasWebkitAlignSelf:
-    case CSSPropertyID::kAliasWebkitAlternativeAnimation:
     case CSSPropertyID::kAliasWebkitAlternativeAnimationDelay:
+    case CSSPropertyID::kAliasWebkitAlternativeAnimationWithDelayStartEnd:
+    case CSSPropertyID::kAliasWebkitAlternativeAnimationWithTimeline:
     case CSSPropertyID::kAliasWebkitAnimation:
     case CSSPropertyID::kAliasWebkitAnimationDelay:
     case CSSPropertyID::kAliasWebkitAnimationDirection:
@@ -1183,8 +1184,9 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return true;
 
     // Non-animateable properties
-    case CSSPropertyID::kAlternativeAnimation:
     case CSSPropertyID::kAlternativeAnimationDelay:
+    case CSSPropertyID::kAlternativeAnimationWithDelayStartEnd:
+    case CSSPropertyID::kAlternativeAnimationWithTimeline:
     case CSSPropertyID::kAnimation:
     case CSSPropertyID::kAnimationComposition:
     case CSSPropertyID::kAnimationDelay:
