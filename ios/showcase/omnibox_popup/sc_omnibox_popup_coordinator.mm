@@ -4,8 +4,8 @@
 
 #import "ios/showcase/omnibox_popup/sc_omnibox_popup_coordinator.h"
 
+#import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_view_controller.h"
-#import "ios/chrome/browser/ui/util/util_swift.h"
 #import "ios/showcase/common/coordinator.h"
 #import "ios/showcase/common/protocol_alerter.h"
 #import "ios/showcase/omnibox_popup/sc_omnibox_popup_container_view_controller.h"

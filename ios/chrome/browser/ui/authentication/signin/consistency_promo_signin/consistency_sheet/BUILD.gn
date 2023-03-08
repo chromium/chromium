@@ -20,11 +20,11 @@ source_set("consistency_sheet") {
   deps = [
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/ui/authentication/signin:signin_protected",
     "//ios/chrome/browser/ui/authentication/signin/consistency_promo_signin:layout",
     "//ios/chrome/browser/ui/image_util",
-    "//ios/chrome/browser/ui/util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
   ]

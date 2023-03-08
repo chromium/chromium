@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/bar_button_activity_indicator.h"
 
-#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

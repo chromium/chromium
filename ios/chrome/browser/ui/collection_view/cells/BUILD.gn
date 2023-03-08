@@ -23,9 +23,9 @@ source_set("cells") {
   deps = [
     "//base",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/list_model",
-    "//ios/chrome/browser/ui/util",
-    "//ios/chrome/browser/ui/util",
     "//ios/chrome/common",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",

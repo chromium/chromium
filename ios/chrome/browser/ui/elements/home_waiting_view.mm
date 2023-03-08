@@ -6,7 +6,7 @@
 
 #import <MaterialComponents/MaterialActivityIndicator.h>
 
-#import "ios/chrome/browser/ui/util/rtl_geometry.h"
+#import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

@@ -7,7 +7,7 @@
 #import <MaterialComponents/MaterialActivityIndicator.h>
 
 #import "base/check.h"
-#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_theme_resources.h"
 

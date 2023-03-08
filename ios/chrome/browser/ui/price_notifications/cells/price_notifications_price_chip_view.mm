@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_price_chip_view.h"
 
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_constants.h"
-#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 

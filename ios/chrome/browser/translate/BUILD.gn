@@ -59,7 +59,7 @@ source_set("translate") {
     "//ios/chrome/browser/infobars:public",
     "//ios/chrome/browser/language",
     "//ios/chrome/browser/optimization_guide",
-    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/url:constants",
     "//ios/components/webui:url_constants",
     "//third_party/metrics_proto",

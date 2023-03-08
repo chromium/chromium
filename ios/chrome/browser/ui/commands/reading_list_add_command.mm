@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/commands/reading_list_add_command.h"
 
-#import "ios/chrome/browser/ui/util/url_with_title.h"
+#import "ios/chrome/browser/shared/ui/util/url_with_title.h"
 #import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

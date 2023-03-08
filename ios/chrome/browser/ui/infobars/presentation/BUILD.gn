@@ -24,10 +24,10 @@ source_set("presentation") {
   deps = [
     ":positioner",
     "//base",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/infobars/banners:public",
     "//ios/chrome/browser/ui/overlays:presentation_controller",
     "//ios/chrome/browser/ui/overlays:util",
-    "//ios/chrome/browser/ui/util",
     "//ios/chrome/common/ui/colors",
   ]
 }

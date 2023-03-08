@@ -15,12 +15,12 @@ source_set("omnibox_popup") {
   ]
   deps = [
     "//ios/chrome/browser/net:crurl",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/omnibox:omnibox_suggestion_icon_util",
     "//ios/chrome/browser/ui/omnibox/popup:popup_internal",
     "//ios/chrome/browser/ui/omnibox/popup:popup_ui",
     "//ios/chrome/browser/ui/omnibox/popup:popup_ui_protocols",
     "//ios/chrome/browser/ui/toolbar/buttons",
-    "//ios/chrome/browser/ui/util",
     "//ios/chrome/common/ui/util",
     "//ios/showcase/common",
     "//url",

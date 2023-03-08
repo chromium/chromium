@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_ANIMATOR_H_
 #define IOS_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_ANIMATOR_H_
 
-#import "ios/chrome/browser/ui/util/optional_property_animator.h"
+#import "ios/chrome/browser/shared/ui/util/optional_property_animator.h"
 
 // Enum describing whether the animator should enter or exit fullscreen.
 enum class FullscreenAnimatorStyle : short {

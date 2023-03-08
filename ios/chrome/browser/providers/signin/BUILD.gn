@@ -26,7 +26,7 @@ source_set("chromium_signin_resources") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "chromium_signin_resources.mm" ]
   deps = [
-    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/public/provider/chrome/browser/signin:signin_resources_api",
   ]
   frameworks = [ "UIKit.framework" ]

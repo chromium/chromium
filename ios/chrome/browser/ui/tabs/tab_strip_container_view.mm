@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/tabs/tab_strip_container_view.h"
 
+#import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/tabs/tab_strip_view.h"
-#import "ios/chrome/browser/ui/util/rtl_geometry.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

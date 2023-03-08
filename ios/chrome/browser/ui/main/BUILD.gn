@@ -92,7 +92,7 @@ source_set("layout_guide_scene_agent") {
   deps = [
     ":observing_scene_agent",
     "//base",
-    "//ios/chrome/browser/ui/util:util_swift",
+    "//ios/chrome/browser/shared/ui/util:util_swift",
   ]
   frameworks = [ "UIKit.framework" ]
 }
@@ -183,6 +183,7 @@ source_set("scene") {
     "//ios/chrome/browser/sessions:scene_util",
     "//ios/chrome/browser/sessions:session_saving",
     "//ios/chrome/browser/sessions:session_service",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:capabilities_types",
     "//ios/chrome/browser/signin:system_identity_manager",
@@ -219,7 +220,6 @@ source_set("scene") {
     "//ios/chrome/browser/ui/tab_switcher/tab_grid",
     "//ios/chrome/browser/ui/thumb_strip:feature_flags",
     "//ios/chrome/browser/ui/toolbar/public",
-    "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/ui/whats_new:util",
     "//ios/chrome/browser/ui/whats_new/promo",
     "//ios/chrome/browser/url",

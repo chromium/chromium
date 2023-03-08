@@ -27,6 +27,7 @@ source_set("coordinators") {
     "//base",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/common/infobars",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/infobars:constants",
     "//ios/chrome/browser/ui/infobars/banners",
     "//ios/chrome/browser/ui/infobars/presentation",
@@ -40,7 +41,6 @@ source_set("coordinators") {
     "//ios/chrome/browser/ui/overlays/infobar_banner/sync_error",
     "//ios/chrome/browser/ui/overlays/infobar_banner/tailored_security",
     "//ios/chrome/browser/ui/overlays/infobar_banner/translate:mediators",
-    "//ios/chrome/browser/ui/util",
   ]
 }
 

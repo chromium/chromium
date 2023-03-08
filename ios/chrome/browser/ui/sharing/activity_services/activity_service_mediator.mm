@@ -14,6 +14,7 @@
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/ui/commands/qr_generation_commands.h"
@@ -37,7 +38,6 @@
 #import "ios/chrome/browser/ui/sharing/activity_services/data/share_image_data.h"
 #import "ios/chrome/browser/ui/sharing/activity_services/data/share_to_data.h"
 #import "ios/chrome/browser/ui/sharing/sharing_positioner.h"
-#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
 
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
-#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/components/ui_util/dynamic_type_util.h"
 

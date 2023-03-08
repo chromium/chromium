@@ -1105,7 +1105,7 @@ constexpr CGFloat kFullAvatarImageSize = 100;
 
 // Helper that returns whether the `traitCollection` has a regular vertical
 // and regular horizontal size class.
-// Copied from "ios/chrome/browser/ui/util/uikit_ui_util.mm"
+// Copied from "ios/chrome/browser/shared/ui/util/uikit_ui_util.mm"
 - (bool)isRegularXRegularSizeClass:(UITraitCollection*)traitCollection {
   return traitCollection.verticalSizeClass == UIUserInterfaceSizeClassRegular &&
          traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassRegular;

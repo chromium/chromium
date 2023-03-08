@@ -40,8 +40,8 @@ source_set("feature_flags") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui:feature_flags",
-    "//ios/chrome/browser/ui/util",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]

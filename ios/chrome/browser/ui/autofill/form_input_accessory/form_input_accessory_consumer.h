@@ -9,7 +9,7 @@
 
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/common/unique_ids.h"
-#import "ios/chrome/browser/ui/util/keyboard_observer_helper.h"
+#import "ios/chrome/browser/shared/ui/util/keyboard_observer_helper.h"
 
 @class FormSuggestion;
 @protocol FormInputAccessoryViewDelegate;

@@ -46,8 +46,8 @@ source_set("styler") {
     "chrome_table_view_styler.mm",
   ]
   public_deps = [
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui:feature_flags",
-    "//ios/chrome/browser/ui/util",
     "//ios/chrome/common/ui/colors",
   ]
 }
@@ -66,7 +66,7 @@ source_set("views") {
   deps = [
     ":constants",
     "//base",
-    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/colors",
     "//ios/third_party/material_components_ios",
   ]

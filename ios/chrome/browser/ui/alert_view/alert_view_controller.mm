@@ -8,10 +8,10 @@
 
 #import "base/check_op.h"
 #import "base/notreached.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/alert_view/alert_action.h"
 #import "ios/chrome/browser/ui/elements/gray_highlight_button.h"
 #import "ios/chrome/browser/ui/elements/text_field_configuration.h"
-#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 

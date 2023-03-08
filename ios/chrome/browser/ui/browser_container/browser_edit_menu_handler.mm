@@ -6,10 +6,10 @@
 
 #import "base/feature_list.h"
 #import "base/mac/foundation_util.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/link_to_text/link_to_text_delegate.h"
 #import "ios/chrome/browser/ui/partial_translate/partial_translate_delegate.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
-#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 

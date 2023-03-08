@@ -7,8 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/shared/ui/util/url_with_title.h"
 #import "ios/chrome/browser/ui/sharing/sharing_scenario.h"
-#import "ios/chrome/browser/ui/util/url_with_title.h"
 
 class GURL;
 

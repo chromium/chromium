@@ -15,8 +15,8 @@ source_set("views") {
   deps = [
     ":views_constants",
     "//base",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/authentication:authentication_constants",
-    "//ios/chrome/browser/ui/util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
   ]

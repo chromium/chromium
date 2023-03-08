@@ -29,11 +29,11 @@ source_set("credential_provider_promo") {
     "//ios/chrome/browser/promos_manager",
     "//ios/chrome/browser/promos_manager:features",
     "//ios/chrome/browser/promos_manager:types",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/main:observing_scene_agent",
     "//ios/chrome/browser/ui/promos_manager:promos",
-    "//ios/chrome/browser/ui/util",
     "//ios/public/provider/chrome/browser/branded_images:branded_images_api",
     "//ios/public/provider/chrome/browser/password_auto_fill:password_auto_fill_api",
   ]

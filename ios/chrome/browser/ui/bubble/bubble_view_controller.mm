@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller.h"
 
 #import "base/notreached.h"
-#import "ios/chrome/browser/ui/util/animation_util.h"
+#import "ios/chrome/browser/shared/ui/util/animation_util.h"
 #import "ios/chrome/common/material_timing.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

@@ -40,7 +40,7 @@ source_set("unit_tests") {
     "//components/strings",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/main:test_support",
-    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test/fakes",
     "//testing/gtest",

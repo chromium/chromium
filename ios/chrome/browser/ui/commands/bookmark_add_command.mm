@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/commands/bookmark_add_command.h"
 
+#import "ios/chrome/browser/shared/ui/util/url_with_title.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
-#import "ios/chrome/browser/ui/util/url_with_title.h"
 #import "ios/web/public/web_state.h"
 #import "url/gurl.h"
 
