@@ -336,8 +336,7 @@ void ScopedAppGLStateRestoreImpl::RestoreHWUIState(bool save_restore) {
     return;
   }
 
-  if (!save_restore)
-    return;
+  DCHECK(save_restore);
 
   glBindFramebufferEXT(GL_FRAMEBUFFER, framebuffer_binding_ext_);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_array_buffer_binding_);
