@@ -275,9 +275,10 @@ struct RawPtrNoOpImpl {
   }
 
   // This is for accounting only, used by unit tests.
-  static PA_ALWAYS_INLINE void IncrementSwapCountForTest() {}
-  static PA_ALWAYS_INLINE void IncrementLessCountForTest() {}
-  static PA_ALWAYS_INLINE void IncrementPointerToMemberOperatorCountForTest() {}
+  constexpr static PA_ALWAYS_INLINE void IncrementSwapCountForTest() {}
+  constexpr static PA_ALWAYS_INLINE void IncrementLessCountForTest() {}
+  constexpr static PA_ALWAYS_INLINE void
+  IncrementPointerToMemberOperatorCountForTest() {}
 };
 
 #if PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)

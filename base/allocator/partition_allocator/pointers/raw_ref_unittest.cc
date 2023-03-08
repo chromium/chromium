@@ -154,6 +154,46 @@ static_assert(
     std::is_same_v<const int*,
                    decltype(std::declval<raw_ref<const int>>().operator->())>);
 
+// Verify that raw_ref is a literal type, and its entire interface is constexpr.
+//
+// Constexpr destructors were introduced in C++20. PartitionAlloc's minimum
+// supported C++ version is C++17, so raw_ref is not a literal type in C++17.
+// Thus we only test for constexpr in C++20.
+#if defined(__cpp_constexpr) && __cpp_constexpr >= 201907L
+static_assert([]() constexpr {
+  struct IntBase {};
+  struct Int : public IntBase {
+    int i = 0;
+  };
+
+  Int* i = new Int();
+  {
+    raw_ref<Int> r(*i);              // raw_ref(T&)
+    r = *i;                          // operator=(T&)
+    raw_ref<Int> r2(r);              // raw_ref(const raw_ref&)
+    raw_ref<Int> r3(std::move(r2));  // raw_ref(raw_ref&&)
+    r2 = r;                          // operator=(const raw_ref&)
+    r3 = std::move(r2);              // operator=(raw_ref&&)
+    r2 = r;                          // Reset after move.
+    [[maybe_unused]] raw_ref<IntBase> r5(
+        r2);  // raw_ref(const raw_ref<Convertible>&)
+    [[maybe_unused]] raw_ref<IntBase> r6(
+        std::move(r2));         // raw_ref(raw_ref<Convertible>&&)
+    r2 = r;                     // Reset after move.
+    r5 = r2;                    // operator=(const raw_ref<Convertible>&)
+    r6 = std::move(r2);         // operator=(raw_ref<Convertible>&&)
+    raw_ref<Int>::from_ptr(i);  // from_ptr(T*)
+    (*r).i += 1;                // operator*()
+    r.get().i += 1;             // get()
+    r->i += 1;                  // operator->()
+    r2 = r;                     // Reset after move.
+    swap(r, r2);                // swap()
+  }
+  delete i;
+  return true;
+}());
+#endif
+
 TEST(RawRef, Construct) {
   int i = 1;
   auto r = raw_ref<int>(i);
