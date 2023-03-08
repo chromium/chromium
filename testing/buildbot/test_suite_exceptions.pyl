@@ -3543,6 +3543,7 @@
           # TODO(crbug.com/1264654): Fix the failed tests
           '--gtest_filter=-PacLibraryTest.ActualPacMyIpAddress*'
         ],
+        'ci_only': True,
         'swarming': {
           'shards': 3,
           'inverse_quickrun_shards': 4,
