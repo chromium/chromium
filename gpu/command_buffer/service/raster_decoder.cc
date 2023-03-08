@@ -2418,12 +2418,6 @@ void RasterDecoderImpl::DoReadbackYUVImagePixelsINTERNAL(
         *end_state);
   }
 
-  if (auto end_state = source_scoped_access->TakeEndState()) {
-    gr_context()->setBackendTextureState(
-        source_scoped_access->promise_image_texture()->backendTexture(),
-        *end_state);
-  }
-
   if (!end_semaphores.empty()) {
     GrFlushInfo flush_info = {
         .fNumSemaphores = end_semaphores.size(),
