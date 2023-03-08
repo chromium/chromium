@@ -178,10 +178,12 @@ class ASH_EXPORT ScheduledFeature
   // ash_unittests.
   PrefService* active_user_pref_service_ = nullptr;
 
-  // Tracks the upcoming feature state refresh per each user due to automatic
-  // schedules. This can be used to restore a manually toggled status while the
-  // schedule is being used. See MaybeRestoreSchedule().
-  struct ScheduleTargetState {
+  // Contains all of the data required to restore `ScheduledFeature` to a state
+  // it was in previously. This is maintained per user mainly so that
+  // `ScheduledFeature` can pick up where it left off when the active user
+  // changes. This includes restoring a manually toggled feature status. See
+  // `MaybeRestoreSchedule()`.
+  struct ScheduleSnapshot {
     // The time at which the feature will switch to `target_status` defined
     // below. `target_status` is not necessarily a change in status. See
     // comments above `ScheduleNextRefresh()`.
@@ -191,8 +193,7 @@ class ASH_EXPORT ScheduledFeature
     // feature's state was captured.
     ScheduleCheckpoint current_checkpoint;
   };
-  base::flat_map<PrefService*, ScheduleTargetState>
-      per_user_schedule_target_state_;
+  base::flat_map<PrefService*, ScheduleSnapshot> per_user_schedule_snapshot_;
 
   // The timer that schedules the start and end of this feature when the
   // schedule type is either kSunsetToSunrise or kCustom. Safe to assume this is

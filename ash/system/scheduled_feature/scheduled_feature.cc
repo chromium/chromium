@@ -226,21 +226,23 @@ bool ScheduledFeature::MaybeRestoreSchedule() {
   DCHECK(active_user_pref_service_);
   DCHECK_NE(GetScheduleType(), ScheduleType::kNone);
 
-  auto iter = per_user_schedule_target_state_.find(active_user_pref_service_);
-  if (iter == per_user_schedule_target_state_.end())
+  auto iter = per_user_schedule_snapshot_.find(active_user_pref_service_);
+  if (iter == per_user_schedule_snapshot_.end()) {
     return false;
+  }
 
-  const ScheduleTargetState& target_state = iter->second;
+  const ScheduleSnapshot& snapshot_to_restore = iter->second;
   const base::Time now = clock_->Now();
   // It may be that the device was suspended for a very long time that the
   // target time is no longer valid.
-  if (target_state.target_time <= now)
+  if (snapshot_to_restore.target_time <= now) {
     return false;
+  }
 
   VLOG(1) << "Restoring a previous schedule.";
-  current_checkpoint_ = target_state.current_checkpoint;
-  ScheduleNextRefresh(target_state.target_time - now,
-                      target_state.target_status);
+  current_checkpoint_ = snapshot_to_restore.current_checkpoint;
+  ScheduleNextRefresh(snapshot_to_restore.target_time - now,
+                      snapshot_to_restore.target_status);
   return true;
 }
 
@@ -414,8 +416,8 @@ void ScheduledFeature::ScheduleNextRefresh(base::TimeDelta delay,
   DCHECK_GE(delay, base::TimeDelta());
 
   const base::Time target_time = clock_->Now() + delay;
-  per_user_schedule_target_state_[active_user_pref_service_] =
-      ScheduleTargetState{target_time, target_status, current_checkpoint_};
+  per_user_schedule_snapshot_[active_user_pref_service_] =
+      ScheduleSnapshot{target_time, target_status, current_checkpoint_};
   base::OnceClosure timer_cb;
   if (target_status == GetEnabled()) {
     timer_cb =
