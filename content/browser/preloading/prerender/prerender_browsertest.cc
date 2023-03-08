@@ -3111,50 +3111,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MojoCapabilityControl_LoosenMode) {
   }
 }
 
-// Test that a PrerenderHost triggered by speculation rules is canceled when
-// it times out in the background.
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CancelPrerenderWhenTimeout) {
-  const GURL kInitialUrl = GetUrl("/empty.html");
-  const GURL kPrerenderUrl = GetUrl("/empty.html?prerender");
-
-  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-
-  int host_id = AddPrerender(kPrerenderUrl);
-  test::PrerenderHostObserver prerender_observer(*web_contents_impl(), host_id);
-
-  PrerenderHostRegistry* registry =
-      web_contents_impl()->GetPrerenderHostRegistry();
-
-  // The timers should not start yet when the prerendered page is in the
-  // foreground.
-  ASSERT_FALSE(registry->GetEmbedderTimerForTesting()->IsRunning());
-  ASSERT_FALSE(registry->GetSpeculationRulesTimerForTesting()->IsRunning());
-
-  // Inject mock time task runner.
-  auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
-  registry->SetTaskRunnerForTesting(task_runner);
-
-  // Changing the visibility state to HIDDEN will not stop prerendering
-  // immediately, but start the timers.
-  web_contents()->WasHidden();
-  ASSERT_TRUE(registry->GetEmbedderTimerForTesting()->IsRunning());
-  ASSERT_TRUE(registry->GetSpeculationRulesTimerForTesting()->IsRunning());
-
-  task_runner->FastForwardBy(
-      PrerenderHostRegistry::kTimeToLiveInBackgroundForSpeculationRules);
-
-  prerender_observer.WaitForDestroyed();
-  ASSERT_FALSE(registry->GetEmbedderTimerForTesting()->IsRunning());
-  ASSERT_FALSE(registry->GetSpeculationRulesTimerForTesting()->IsRunning());
-  histogram_tester().ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
-      PrerenderFinalStatus::kTimeoutBackgrounded, 1);
-}
-
-// Test that multiple PrerenderHosts triggered by speculation rules are canceled
-// when it times out in the background.
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
-                       CancelMultiplePrerendersWhenTimeout) {
+// Test that prerenders triggered by speculation rules are canceled when a
+// background timeout timer is fired.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CancelPrerendersWhenTimeout) {
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderUrl1 = GetUrl("/empty.html?prerender1");
   const GURL kPrerenderUrl2 = GetUrl("/empty.html?prerender2");
