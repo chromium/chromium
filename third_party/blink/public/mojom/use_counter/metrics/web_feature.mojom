@@ -3827,6 +3827,7 @@ enum WebFeature {
   kCSSAtRuleInitial = 4486,
   kPrivateAggregationApiFledgeExtensions = 4487,
   kDeprecatedInterestGroupDailyUpdateUrl = 4488,
+  kCSSColorGradientColorSpace = 4489,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

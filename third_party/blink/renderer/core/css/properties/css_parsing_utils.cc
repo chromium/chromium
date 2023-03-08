@@ -3145,6 +3145,7 @@ static CSSValue* ConsumeRadialGradient(CSSParserTokenRange& args,
 
   if (has_color_space) {
     result->SetColorInterpolationSpace(color_space, hue_interpolation_method);
+    context.Count(WebFeature::kCSSColorGradientColorSpace);
   }
 
   return ConsumeGradientColorStops(args, context, result,
@@ -3212,6 +3213,7 @@ static CSSValue* ConsumeLinearGradient(
 
   if (has_color_space) {
     result->SetColorInterpolationSpace(color_space, hue_interpolation_method);
+    context.Count(WebFeature::kCSSColorGradientColorSpace);
   }
 
   return ConsumeGradientColorStops(args, context, result,
@@ -3263,6 +3265,7 @@ static CSSValue* ConsumeConicGradient(CSSParserTokenRange& args,
 
   if (has_color_space) {
     result->SetColorInterpolationSpace(color_space, hue_interpolation_method);
+    context.Count(WebFeature::kCSSColorGradientColorSpace);
   }
 
   return ConsumeGradientColorStops(args, context, result,
