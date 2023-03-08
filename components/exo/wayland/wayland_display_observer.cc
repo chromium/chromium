@@ -22,17 +22,22 @@
 namespace exo {
 namespace wayland {
 
+WaylandDisplayObserver::WaylandDisplayObserver() = default;
+
+WaylandDisplayObserver::~WaylandDisplayObserver() = default;
+
 WaylandDisplayHandler::WaylandDisplayHandler(WaylandDisplayOutput* output,
                                              wl_resource* output_resource)
-    : output_(output), output_resource_(output_resource) {
-}
+    : output_(output), output_resource_(output_resource) {}
 
 WaylandDisplayHandler::~WaylandDisplayHandler() {
   ash::Shell::Get()->RemoveShellObserver(this);
-  for (auto& obs : observers_)
+  for (auto& obs : observers_) {
     obs.OnOutputDestroyed();
-  if (xdg_output_resource_)
+  }
+  if (xdg_output_resource_) {
     wl_resource_set_user_data(xdg_output_resource_, nullptr);
+  }
   output_->UnregisterOutput(output_resource_);
 }
 
@@ -47,8 +52,8 @@ void WaylandDisplayHandler::AddObserver(WaylandDisplayObserver* observer) {
   observers_.AddObserver(observer);
 
   display::Display display;
-  bool exists = display::Screen::GetScreen()->GetDisplayWithDisplayId(
-      output_->id(), &display);
+  bool exists =
+      display::Screen::GetScreen()->GetDisplayWithDisplayId(id(), &display);
   if (!exists) {
     // WaylandDisplayHandler is created asynchronously, and the
     // display can be deleted before created. This usually won't happen
@@ -81,12 +86,14 @@ void WaylandDisplayHandler::OnDisplayMetricsChanged(
     uint32_t changed_metrics) {
   DCHECK(output_resource_);
 
-  if (output_->id() != display.id())
+  if (id() != display.id()) {
     return;
+  }
 
   bool needs_done = false;
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     needs_done |= observer.SendDisplayMetrics(display, changed_metrics);
+  }
 
   if (needs_done) {
     if (wl_resource_get_version(output_resource_) >=
@@ -99,13 +106,13 @@ void WaylandDisplayHandler::OnDisplayMetricsChanged(
 
 void WaylandDisplayHandler::OnDisplayForNewWindowsChanged() {
   DCHECK(output_resource_);
-  if (output_->id() !=
-      display::Screen::GetScreen()->GetDisplayForNewWindows().id()) {
+  if (id() != display::Screen::GetScreen()->GetDisplayForNewWindows().id()) {
     return;
   }
 
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.SendActiveDisplay();
+  }
 }
 
 void WaylandDisplayHandler::OnXdgOutputCreated(
@@ -114,8 +121,7 @@ void WaylandDisplayHandler::OnXdgOutputCreated(
   xdg_output_resource_ = xdg_output_resource;
 
   display::Display display;
-  if (!display::Screen::GetScreen()->GetDisplayWithDisplayId(output_->id(),
-                                                             &display)) {
+  if (!display::Screen::GetScreen()->GetDisplayWithDisplayId(id(), &display)) {
     return;
   }
   OnDisplayMetricsChanged(display, 0xFFFFFFFF);
@@ -143,8 +149,9 @@ void WaylandDisplayHandler::XdgOutputSendDescription(const std::string& desc) {
 
 bool WaylandDisplayHandler::SendDisplayMetrics(const display::Display& display,
                                                uint32_t changed_metrics) {
-  if (!output_resource_)
+  if (!output_resource_) {
     return false;
+  }
 
   // There is no need to check DISPLAY_METRIC_PRIMARY because when primary
   // changes, bounds always changes. (new primary should have had non
@@ -197,8 +204,9 @@ void WaylandDisplayHandler::OnOutputDestroyed() {
 size_t WaylandDisplayHandler::CountObserversForTesting() const {
   size_t count = 0;
   for (auto& obs : observers_) {
-    if (&obs != this)
+    if (&obs != this) {
       count++;
+    }
   }
   return count;
 }

@@ -24,7 +24,7 @@ class WaylandDisplayOutput;
 // "done" event through WaylandDisplayHandler.
 class WaylandDisplayObserver : public base::CheckedObserver {
  public:
-  WaylandDisplayObserver() {}
+  WaylandDisplayObserver();
 
   // Returns |true| if the observer reported any changes and needs
   // to be followed by "done" event, |false| otherwise.
@@ -39,7 +39,7 @@ class WaylandDisplayObserver : public base::CheckedObserver {
   virtual void OnOutputDestroyed() = 0;
 
  protected:
-  ~WaylandDisplayObserver() override {}
+  ~WaylandDisplayObserver() override;
 };
 
 class WaylandDisplayHandler : public display::DisplayObserver,
@@ -69,7 +69,6 @@ class WaylandDisplayHandler : public display::DisplayObserver,
   void UnsetXdgOutputResource();
 
   size_t CountObserversForTesting() const;
-  WaylandDisplayOutput* GetWaylandDisplayOutputForTesting() { return output_; }
 
  protected:
   wl_resource* output_resource() const { return output_resource_; }

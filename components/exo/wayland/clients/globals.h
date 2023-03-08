@@ -46,6 +46,8 @@ struct Globals {
 
   std::unique_ptr<wl_registry> registry;
 
+  // TODO(aluh): Support multiple outputs, and probably other globals like
+  // aura_output, seat, etc.
   Object<wl_output> output;
   Object<wl_compositor> compositor;
   Object<wl_shm> shm;
