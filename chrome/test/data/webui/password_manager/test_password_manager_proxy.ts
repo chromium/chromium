@@ -43,6 +43,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     super([
       'addPassword',
       'cancelExportPasswords',
+      'changeSavedPassword',
       'exportPasswords',
       'extendAuthValidity',
       'isOptedInForAccountStorage',
@@ -206,6 +207,12 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
   addPassword(options: chrome.passwordsPrivate.AddPasswordOptions) {
     this.methodCalled('addPassword', options);
     return Promise.resolve();
+  }
+
+  changeSavedPassword(
+      id: number, params: chrome.passwordsPrivate.ChangeSavedPasswordParams) {
+    this.methodCalled('changeSavedPassword', {id, params});
+    return Promise.resolve(id);
   }
 
   removeSavedPassword(

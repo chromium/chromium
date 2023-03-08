@@ -103,6 +103,12 @@ export class EditPasswordDialogElement extends EditPasswordDialogElementBase {
         computed: 'computeUsernameErrorMessage_(credential, username_, ' +
             'conflictingUsernames_)',
       },
+
+      canEditPassword_: {
+        type: Boolean,
+        computed: 'computeCanEditPassword_(credential, username_, password_, ' +
+            'note_)',
+      },
     };
   }
 
@@ -116,13 +122,18 @@ export class EditPasswordDialogElement extends EditPasswordDialogElementBase {
   private setSavedPasswordsListener_: (
       (entries: chrome.passwordsPrivate.PasswordUiEntry[]) => void)|null = null;
 
-  override connectedCallback() {
-    super.connectedCallback();
+  override ready() {
+    super.ready();
     assert(this.credential.password);
 
     this.username_ = this.credential.username;
     this.password_ = this.credential.password;
     this.note_ = this.credential.note ?? '';
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+
     this.setSavedPasswordsListener_ = passwordList => {
       this.conflictingUsernames_ =
           getConflictingUsernames(this.credential, passwordList);
@@ -213,6 +224,25 @@ export class EditPasswordDialogElement extends EditPasswordDialogElementBase {
         this.i18n(
             'passwordNoteCharacterCount', this.note_.length,
             PASSWORD_NOTE_MAX_CHARACTER_COUNT);
+  }
+
+  private computeCanEditPassword_(): boolean {
+    return !this.doesUsernameExistAlready_() && !!this.password_ &&
+        this.password_.length > 0 && !this.isNoteInputInvalid_();
+  }
+
+  private onEditClick_() {
+    assert(this.computeCanEditPassword_());
+    const params: chrome.passwordsPrivate.ChangeSavedPasswordParams = {
+      username: this.username_,
+      password: this.password_,
+      note: this.note_,
+    };
+    PasswordManagerImpl.getInstance()
+        .changeSavedPassword(this.credential.id, params)
+        .finally(() => {
+          this.$.dialog.close();
+        });
   }
 }
 

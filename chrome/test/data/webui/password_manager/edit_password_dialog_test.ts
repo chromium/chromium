@@ -183,4 +183,30 @@ suite('EditPasswordDialogTest', function() {
         dialog.i18n('passwordNoteCharacterCount', 1000, 1000),
         dialog.$.passwordNote.secondFooter);
   });
+
+  test('password is updated', async function() {
+    const password = createPasswordEntry(
+        {id: 1, url: 'test.com', username: 'username', password: 'password69'});
+    password.affiliatedDomains = [createAffiliatedDomain('test.com')];
+    const dialog = document.createElement('edit-password-dialog');
+    dialog.credential = password;
+    document.body.appendChild(dialog);
+    await flushTasks();
+
+    // Enter website
+    dialog.$.usernameInput.value = 'username2';
+    dialog.$.passwordInput.value = 'sTroNgPA$$wOrD';
+    dialog.$.passwordNote.value = 'super secret note.';
+
+    assertFalse(dialog.$.saveButton.disabled);
+    dialog.$.saveButton.click();
+
+    const {id, params} =
+        await passwordManager.whenCalled('changeSavedPassword');
+
+    assertEquals(password.id, id);
+    assertEquals(dialog.$.usernameInput.value, params.username);
+    assertEquals(dialog.$.passwordInput.value, params.password);
+    assertEquals(dialog.$.passwordNote.value, params.note);
+  });
 });
