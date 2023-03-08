@@ -43,7 +43,6 @@ struct CARendererLayerParams;
 }  // namespace ui
 
 namespace gl {
-class GLContext;
 struct DCLayerOverlayParams;
 
 // OverlayImage is a platform specific type for overlay plane image data.
@@ -84,8 +83,6 @@ class GL_EXPORT Presenter : public base::RefCounted<Presenter> {
   virtual bool SupportsGpuVSync() const;
   virtual void SetGpuVSyncEnabled(bool enabled) {}
   virtual void SetVSyncDisplayID(int64_t display_id) {}
-
-  virtual bool OnMakeCurrent(GLContext* context);
 
   // Resizes the presenter, returning success.
   virtual bool Resize(const gfx::Size& size,

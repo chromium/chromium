@@ -60,8 +60,4 @@ bool Presenter::Resize(const gfx::Size& size,
   return true;
 }
 
-bool Presenter::OnMakeCurrent(GLContext* context) {
-  return true;
-}
-
 }  // namespace gl

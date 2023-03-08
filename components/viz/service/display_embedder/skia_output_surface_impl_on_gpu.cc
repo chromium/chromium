@@ -1958,9 +1958,6 @@ bool SkiaOutputSurfaceImplOnGpu::MakeCurrent(bool need_framebuffer) {
     if (gl_surface_) {
       gl_surface_->OnMakeCurrent(context_state_->context());
     }
-    if (presenter_) {
-      presenter_->OnMakeCurrent(context_state_->context());
-    }
   }
 
   context_state_->set_need_context_state_reset(true);
