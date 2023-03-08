@@ -76,22 +76,22 @@ constexpr bool kSecureContext = true;
 
 constexpr struct FeatureEntry kFeatureMap[] = {
     {
-        {AddressSpace::kPrivate, kNonSecureContext, AddressSpace::kLocal},
+        {AddressSpace::kPrivate, kNonSecureContext, AddressSpace::kLoopback},
         Feature::kAddressSpacePrivateNonSecureContextEmbeddedLocal,
         Feature::kAddressSpacePrivateNonSecureContextNavigatedToLocal,
     },
     {
-        {AddressSpace::kPrivate, kSecureContext, AddressSpace::kLocal},
+        {AddressSpace::kPrivate, kSecureContext, AddressSpace::kLoopback},
         Feature::kAddressSpacePrivateSecureContextEmbeddedLocal,
         Feature::kAddressSpacePrivateSecureContextNavigatedToLocal,
     },
     {
-        {AddressSpace::kPublic, kNonSecureContext, AddressSpace::kLocal},
+        {AddressSpace::kPublic, kNonSecureContext, AddressSpace::kLoopback},
         Feature::kAddressSpacePublicNonSecureContextEmbeddedLocal,
         Feature::kAddressSpacePublicNonSecureContextNavigatedToLocal,
     },
     {
-        {AddressSpace::kPublic, kSecureContext, AddressSpace::kLocal},
+        {AddressSpace::kPublic, kSecureContext, AddressSpace::kLoopback},
         Feature::kAddressSpacePublicSecureContextEmbeddedLocal,
         Feature::kAddressSpacePublicSecureContextNavigatedToLocal,
     },
@@ -106,12 +106,12 @@ constexpr struct FeatureEntry kFeatureMap[] = {
         Feature::kAddressSpacePublicSecureContextNavigatedToPrivate,
     },
     {
-        {AddressSpace::kUnknown, kNonSecureContext, AddressSpace::kLocal},
+        {AddressSpace::kUnknown, kNonSecureContext, AddressSpace::kLoopback},
         Feature::kAddressSpaceUnknownNonSecureContextEmbeddedLocal,
         Feature::kAddressSpaceUnknownNonSecureContextNavigatedToLocal,
     },
     {
-        {AddressSpace::kUnknown, kSecureContext, AddressSpace::kLocal},
+        {AddressSpace::kUnknown, kSecureContext, AddressSpace::kLoopback},
         Feature::kAddressSpaceUnknownSecureContextEmbeddedLocal,
         Feature::kAddressSpaceUnknownSecureContextNavigatedToLocal,
     },

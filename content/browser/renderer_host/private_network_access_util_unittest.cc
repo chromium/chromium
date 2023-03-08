@@ -81,7 +81,7 @@ std::map<DerivePolicyInput, Policy> DefaultPolicyMap() {
       {{kNonSecure, AddressSpace::kPrivate,
         PrivateNetworkRequestContext::kSubresource},
        Policy::kWarn},
-      {{kNonSecure, AddressSpace::kLocal,
+      {{kNonSecure, AddressSpace::kLoopback,
         PrivateNetworkRequestContext::kSubresource},
        Policy::kBlock},
       {{kSecure, AddressSpace::kUnknown,
@@ -93,7 +93,7 @@ std::map<DerivePolicyInput, Policy> DefaultPolicyMap() {
       {{kSecure, AddressSpace::kPrivate,
         PrivateNetworkRequestContext::kSubresource},
        Policy::kPreflightWarn},
-      {{kSecure, AddressSpace::kLocal,
+      {{kSecure, AddressSpace::kLoopback,
         PrivateNetworkRequestContext::kSubresource},
        Policy::kPreflightWarn},
       {{kNonSecure, AddressSpace::kUnknown,
@@ -105,7 +105,7 @@ std::map<DerivePolicyInput, Policy> DefaultPolicyMap() {
       {{kNonSecure, AddressSpace::kPrivate,
         PrivateNetworkRequestContext::kWorker},
        Policy::kWarn},
-      {{kNonSecure, AddressSpace::kLocal,
+      {{kNonSecure, AddressSpace::kLoopback,
         PrivateNetworkRequestContext::kWorker},
        Policy::kWarn},
       {{kSecure, AddressSpace::kUnknown, PrivateNetworkRequestContext::kWorker},
@@ -114,7 +114,8 @@ std::map<DerivePolicyInput, Policy> DefaultPolicyMap() {
        Policy::kPreflightWarn},
       {{kSecure, AddressSpace::kPrivate, PrivateNetworkRequestContext::kWorker},
        Policy::kPreflightWarn},
-      {{kSecure, AddressSpace::kLocal, PrivateNetworkRequestContext::kWorker},
+      {{kSecure, AddressSpace::kLoopback,
+        PrivateNetworkRequestContext::kWorker},
        Policy::kPreflightWarn},
   };
 }
@@ -167,13 +168,13 @@ TEST(PrivateNetworkAccessUtilTest, DerivePolicyNoPreflights) {
             PrivateNetworkRequestContext::kSubresource}] = Policy::kAllow;
   expected[{kSecure, AddressSpace::kPrivate,
             PrivateNetworkRequestContext::kSubresource}] = Policy::kAllow;
-  expected[{kSecure, AddressSpace::kLocal,
+  expected[{kSecure, AddressSpace::kLoopback,
             PrivateNetworkRequestContext::kSubresource}] = Policy::kAllow;
   expected[{kSecure, AddressSpace::kPublic,
             PrivateNetworkRequestContext::kWorker}] = Policy::kAllow;
   expected[{kSecure, AddressSpace::kPrivate,
             PrivateNetworkRequestContext::kWorker}] = Policy::kAllow;
-  expected[{kSecure, AddressSpace::kLocal,
+  expected[{kSecure, AddressSpace::kLoopback,
             PrivateNetworkRequestContext::kWorker}] = Policy::kAllow;
 
   TestPolicyMap(expected);
@@ -192,20 +193,20 @@ TEST(PrivateNetworkAccessUtilTest, DerivePolicyRespectPreflightResults) {
   expected[{kSecure, AddressSpace::kPrivate,
             PrivateNetworkRequestContext::kSubresource}] =
       Policy::kPreflightBlock;
-  expected[{kSecure, AddressSpace::kLocal,
+  expected[{kSecure, AddressSpace::kLoopback,
             PrivateNetworkRequestContext::kSubresource}] =
       Policy::kPreflightBlock;
   expected[{kSecure, AddressSpace::kPublic,
             PrivateNetworkRequestContext::kWorker}] = Policy::kPreflightBlock;
   expected[{kSecure, AddressSpace::kPrivate,
             PrivateNetworkRequestContext::kWorker}] = Policy::kPreflightBlock;
-  expected[{kSecure, AddressSpace::kLocal,
+  expected[{kSecure, AddressSpace::kLoopback,
             PrivateNetworkRequestContext::kWorker}] = Policy::kPreflightBlock;
 
   // Overriding these because we've disabled warnings only.
   expected[{kNonSecure, AddressSpace::kPublic,
             PrivateNetworkRequestContext::kWorker}] = Policy::kBlock;
-  expected[{kNonSecure, AddressSpace::kLocal,
+  expected[{kNonSecure, AddressSpace::kLoopback,
             PrivateNetworkRequestContext::kWorker}] = Policy::kBlock;
 
   TestPolicyMap(expected);
@@ -227,7 +228,7 @@ TEST(PrivateNetworkAccessUtilTest, DerivePolicyWarningOnlyForWorkers) {
   expected[{kSecure, AddressSpace::kPrivate,
             PrivateNetworkRequestContext::kSubresource}] =
       Policy::kPreflightBlock;
-  expected[{kSecure, AddressSpace::kLocal,
+  expected[{kSecure, AddressSpace::kLoopback,
             PrivateNetworkRequestContext::kSubresource}] =
       Policy::kPreflightBlock;
 

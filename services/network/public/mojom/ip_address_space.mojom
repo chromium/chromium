@@ -8,7 +8,7 @@ module network.mojom;
 // important, as it's used to determine whether preflights are required, as per
 // https://wicg.github.io/cors-rfc1918/#framework
 enum IPAddressSpace {
-  kLocal,    // loopback, link local
+  kLoopback, // loopback, link local
   kPrivate,  // Reserved by RFC1918
   kPublic,   // Everything else
 

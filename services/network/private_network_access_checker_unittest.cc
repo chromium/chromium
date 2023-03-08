@@ -512,7 +512,7 @@ TEST(PrivateNetworkAccessCheckerTest, CheckAllowedByPolicyPreflightWarn) {
       mojom::PrivateNetworkRequestPolicy::kPreflightWarn;
 
   ResourceRequest request;
-  request.target_ip_address_space = mojom::IPAddressSpace::kLocal;
+  request.target_ip_address_space = mojom::IPAddressSpace::kLoopback;
 
   PrivateNetworkAccessChecker checker(request, &client_security_state,
                                       mojom::kURLLoadOptionNone);
@@ -652,7 +652,7 @@ TEST(PrivateNetworkAccessCheckerTest, CachedTransportAddressSpace) {
   EXPECT_EQ(checker.Check(CachedTransport(LocalEndpoint())),
             Result::kBlockedByLoadOption);
 
-  EXPECT_EQ(checker.ResponseAddressSpace(), mojom::IPAddressSpace::kLocal);
+  EXPECT_EQ(checker.ResponseAddressSpace(), mojom::IPAddressSpace::kLoopback);
 }
 
 TEST(PrivateNetworkAccessCheckerTest, ResetTargetAddressSpace) {

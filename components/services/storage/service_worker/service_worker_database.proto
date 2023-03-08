@@ -62,7 +62,7 @@ message ServiceWorkerRegistrationData {
   // https://wicg.github.io/private-network-access/#framework
   enum IPAddressSpace {
     UNKNOWN = 0;
-    LOCAL = 1;
+    LOOPBACK = 1;
     PRIVATE = 2;
     PUBLIC = 3;
   }

@@ -81,11 +81,11 @@ Policy DerivePolicyForNonSecureContext(AddressSpace ip_address_space) {
                  ? Policy::kBlock
                  : Policy::kWarn;
     case AddressSpace::kPublic:
-    case AddressSpace::kLocal:
+    case AddressSpace::kLoopback:
       // Private network requests from non secure contexts are blocked if the
       // secure context restriction is enabled in general.
       //
-      // NOTE: We also set this when `ip_address_space` is `kLocal`, but that
+      // NOTE: We also set this when `ip_address_space` is `kLoopback`, but that
       // has no effect. Indeed, requests initiated from the local address space
       // are never considered private network requests - they cannot target
       // more-private address spaces.
@@ -199,7 +199,7 @@ AddressSpace IPAddressSpaceForSpecialScheme(const GURL& url,
 
   for (auto* scheme : special_content_schemes) {
     if (url.SchemeIs(scheme))
-      return AddressSpace::kLocal;
+      return AddressSpace::kLoopback;
   }
 
   // Some of these schemes are only known to the embedder. Query the embedder
