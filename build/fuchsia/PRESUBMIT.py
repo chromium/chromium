@@ -23,16 +23,12 @@ def CommonChecks(input_api, output_api):
   unit_tests = [
       J('binary_sizes_test.py'),
       J('binary_size_differ_test.py'),
-      J('device_target_test.py'),
       J('gcs_download_test.py'),
       J('update_images_test.py'),
       J('update_product_bundles_test.py'),
       J('update_sdk_test.py'),
   ]
 
-  # TODO(1309977): enable on Windows when fixed.
-  if os.name != 'nt':
-    unit_tests.extend([J('fvdl_target_test.py')])
   tests.extend(
       input_api.canned_checks.GetUnitTests(input_api,
                                            output_api,
