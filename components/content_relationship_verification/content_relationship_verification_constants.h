@@ -4,6 +4,7 @@
 
 #ifndef COMPONENTS_CONTENT_RELATIONSHIP_VERIFICATION_CONTENT_RELATIONSHIP_VERIFICATION_CONSTANTS_H_
 #define COMPONENTS_CONTENT_RELATIONSHIP_VERIFICATION_CONTENT_RELATIONSHIP_VERIFICATION_CONSTANTS_H_
+#include "third_party/blink/public/platform/resource_request_blocked_reason.h"
 
 namespace content_relationship_verification {
 
@@ -15,6 +16,10 @@ extern const char kCustomCancelReasonForURLLoader[];
 
 // error_code to use when content relationship verification blocks a request.
 extern const int kNetErrorCodeForContentRelationshipVerification;
+
+// extended_reason() to use when content relationship verification blocks a
+// request.
+extern const blink::ResourceRequestBlockedReason kExtendedErrorReason;
 
 }  // namespace content_relationship_verification
 

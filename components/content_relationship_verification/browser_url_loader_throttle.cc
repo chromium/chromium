@@ -108,8 +108,7 @@ void BrowserURLLoaderThrottle::OnCompleteCheck(std::string url,
   }
   delegate_->CancelWithExtendedError(
       kNetErrorCodeForContentRelationshipVerification,
-      static_cast<int>(blink::ResourceRequestBlockedReason::
-                           kContentRelationshipVerification),
+      static_cast<int>(kExtendedErrorReason),
       kCustomCancelReasonForURLLoader);
 }
 
