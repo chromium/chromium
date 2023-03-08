@@ -112,4 +112,4 @@ enum SelectionMode { "select", "start", "end", "preserve" };
     [Reflect, MeasureAs=IncrementalAttribute] attribute boolean incremental;
 };
 
-HTMLInputElement includes PopoverTargetElement;
+HTMLInputElement includes PopoverInvokerElement;
