@@ -1,7 +1,7 @@
 # This file will be used to set the caption and description of a policy group.
-# A policy group is a list of policies that are apply to the same realm. This is
+# A policy group is a list of policies that apply to the same realm. This is
 # used mostly for documentation and every policy should be in a group.
-# To craete a new policy group, simply create a directory under
+# To create a new policy group, simply create a directory under
 # `components/policy/resources/templates/policy_definitions` with the name of
 # the policy group, then copy this file there and update the caption and
 # description.
