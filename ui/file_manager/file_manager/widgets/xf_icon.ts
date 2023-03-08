@@ -342,10 +342,6 @@ function getCSS() {
       -webkit-mask-image: url(../foreground/images/files/ui/filetype_placeholder_generic.svg);
     }
 
-    :host([type="offline"]) span {
-      -webkit-mask-image: url(../foreground/images/files/ui/offline.svg);
-    }
-
     :host([type="tini"]) span {
       -webkit-mask-image: url(../foreground/images/filetype/filetype_tini.svg);
     }
