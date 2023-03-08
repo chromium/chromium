@@ -17,8 +17,6 @@ public interface FeedActionDelegate {
         // Total page visit time.
         public long visitTimeMs;
     }
-    /** Downloads a web page.*/
-    void downloadPage(String url);
 
     /**
      * Opens a url that was presented to the user as suggested content.
@@ -36,28 +34,35 @@ public interface FeedActionDelegate {
      * @param disposition A `org.chromium.ui.mojom.WindowOpenDisposition` value.
      * @param params What to load.
      */
-    void openUrl(int disposition, LoadUrlParams params);
+    default void openUrl(int disposition, LoadUrlParams params) {}
+
+    /**
+     * Downloads a web page.
+     * @param url url of the page to download.
+     */
+    default void downloadPage(String url) {}
 
     /**
      * Opens the NTP help page.
      */
-    void openHelpPage();
+    default void openHelpPage() {}
 
     /**
      * Add an item to the reading list.
      */
-    void addToReadingList(String title, String url);
+    default void addToReadingList(String title, String url) {}
 
     /**
      * Opens the Crow page for the url.
+     * @param url url of the page.
      */
-    void openCrow(String url);
+    default void openCrow(String url) {}
 
     /**
      * Opens a specific WebFeed by name.
      * @param webFeedName the relevant web feed name.
      */
-    void openWebFeed(String webFeedName);
+    default void openWebFeed(String webFeedName) {}
 
     //
     // Optional methods for handing events.
@@ -66,21 +71,25 @@ public interface FeedActionDelegate {
     /**
      * Informs that content on the Feed has changed.
      */
-    void onContentsChanged();
+    default void onContentsChanged() {}
 
     /**
      * Informs that the stream was created.
      */
-    void onStreamCreated();
+    default void onStreamCreated() {}
 
     /**
      * Shows a sign in activity as a result of a feed user action.
+     * @param signinAccessPoint the entry point for the signin.
      */
-    void showSyncConsentActivity(@SigninAccessPoint int signinAccessPoint);
+    default void showSyncConsentActivity(@SigninAccessPoint int signinAccessPoint) {}
 
     /**
      * Shows a sign in interstitial as a result of a feed user action.
+     * @param signinAccessPoint the entry point for the signin.
+     * @param mBottomSheetController bottomsheet controller attached to the activity.
+     * @param mWindowAndroid window used by the feed.
      */
-    void showSignInInterstitial(@SigninAccessPoint int signinAccessPoint,
-            BottomSheetController mBottomSheetController, WindowAndroid mWindowAndroid);
+    default void showSignInInterstitial(@SigninAccessPoint int signinAccessPoint,
+            BottomSheetController mBottomSheetController, WindowAndroid mWindowAndroid) {}
 }

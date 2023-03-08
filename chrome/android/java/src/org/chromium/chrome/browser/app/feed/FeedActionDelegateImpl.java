@@ -140,12 +140,6 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
     }
 
     @Override
-    public void onContentsChanged() {}
-
-    @Override
-    public void onStreamCreated() {}
-
-    @Override
     public void showSyncConsentActivity(@SigninAccessPoint int signinAccessPoint) {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_SHOW_SIGN_IN_COMMAND)) {
             SyncConsentActivityLauncherImpl.get().launchActivityIfAllowed(
