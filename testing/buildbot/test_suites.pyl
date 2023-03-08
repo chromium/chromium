@@ -2426,6 +2426,20 @@
       # once it exists.
       'base_unittests': {},
     },
+    'fuchsia_accessibility_content_browsertests': {
+      'accessibility_content_browsertests': {
+        'args': [
+          '--gtest_filter=All/DumpAccessibility*/fuchsia',
+          '--test-arg=--disable-gpu',
+          '--test-arg=--headless',
+          '--test-arg=--ozone-platform=headless',
+        ],
+        'swarming': {
+          'shards': 8,  # this may depend on runtime of a11y CQ
+        },
+        'test': 'content_browsertests',
+      },
+    },
 
     'fuchsia_chrome_large_gtests': {
       'browser_tests': {
@@ -2485,6 +2499,7 @@
       'compositor_unittests': {},
       'content_browsertests': {
         'args': [
+          '--gtest_filter=-All/DumpAccessibility*/fuchsia',
           '--test-arg=--disable-gpu',
           '--test-arg=--headless',
           '--test-arg=--ozone-platform=headless',
@@ -6181,6 +6196,12 @@
     'devtools_gtests': [
       'devtools_browser_tests',
       'blink_unittests',
+    ],
+
+    # Runs only the accessibility tests in CI/CQ to reduce accessibility
+    # failures that land.
+    'fuchsia_accessibility_browsertests': [
+      'fuchsia_accessibility_content_browsertests',
     ],
 
     'fuchsia_arm64_isolated_scripts': [

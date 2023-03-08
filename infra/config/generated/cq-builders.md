@@ -496,6 +496,15 @@ as required builders.
   Location filters:
   * [`//third_party/nearby/README.chromium`](https://cs.chromium.org/search?q=+file:third_party/nearby/README.chromium)
 
+* [fuchsia-x64-accessibility-rel](https://ci.chromium.org/p/chromium/builders/try/fuchsia-x64-accessibility-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""fuchsia-x64-accessibility-rel""))
+  * Experiment percentage: 100.0
+
+  Location filters:
+  * [`//third_party/blink/renderer/modules/accessibility/.+`](https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/accessibility/)
+  * [`//content/renderer/accessibility/.+`](https://cs.chromium.org/chromium/src/content/renderer/accessibility/)
+  * [`//content/browser/accessibility/.+`](https://cs.chromium.org/chromium/src/content/browser/accessibility/)
+  * [`//ui/accessibility/.+`](https://cs.chromium.org/chromium/src/ui/accessibility/)
+
 * [linux-1mbu-compile-fyi-rel](https://ci.chromium.org/p/chromium/builders/try/linux-1mbu-compile-fyi-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-1mbu-compile-fyi-rel""))
   * Experiment percentage: 5.0
 

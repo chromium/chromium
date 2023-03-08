@@ -503,6 +503,24 @@
     'name': 'chromium.accessibility',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
+      'fuchsia-x64-accessibility-rel': {
+        'additional_compile_targets': [
+          'content_browsertests',
+        ],
+        'mixins': [
+          'linux-bionic',
+        ],
+        'test_suites': {
+          'gtest_tests': 'fuchsia_accessibility_browsertests',
+        },
+        'swarming': {
+          'dimension_sets': [
+            {
+              'kvm': '1',
+            },
+          ],
+        },
+      },
       'linux-blink-web-tests-force-accessibility-rel': {
         'additional_compile_targets': [
           'blink_tests',
