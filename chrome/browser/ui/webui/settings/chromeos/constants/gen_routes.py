@@ -22,7 +22,9 @@ if CHROMIUM_SRC_PATH.name != 'src':
     raise AssertionError(
         f'CHROMIUM_SRC_PATH "{CHROMIUM_SRC_PATH}" should end in "src".')
 
-sys.path.append(os.path.join(CHROMIUM_SRC_PATH, "mojo/public/tools/mojom"))
+# Insert chromium mojom path to beginning to make sure we prefer this one.
+# https://crbug.com/1422422
+sys.path.insert(0, os.path.join(CHROMIUM_SRC_PATH, "mojo/public/tools/mojom"))
 from mojom.generate.module import Constant
 from mojom.generate.module import Module
 
