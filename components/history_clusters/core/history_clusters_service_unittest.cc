@@ -121,7 +121,7 @@ class TestClusteringBackend : public ClusteringBackend {
     WaitForGetClustersCall();
     EXPECT_THAT(GetVisitIds(LastClusteredVisits()),
                 testing::ElementsAreArray(expected_clustered_visit_ids));
-    FulfillCallback({fulfill_clusters});
+    FulfillCallback(fulfill_clusters);
   }
 
  private:
@@ -161,12 +161,6 @@ class HistoryClustersServiceTestBase : public testing::Test {
         /*engagement_score_provider=*/nullptr,
         /*template_url_service=*/nullptr,
         /*optimization_guide_decider=*/nullptr, pref_service_.get());
-    // These timers schedule `UpdateCluster()` requests. Disable them so tests
-    // can instead invoke `UpdateClusters()` in a controlled manner.
-    history_clusters_service_->update_clusters_after_startup_delay_timer_
-        .Stop();
-    history_clusters_service_->update_clusters_period_timer_.Stop();
-
     history_clusters_service_test_api_ =
         std::make_unique<HistoryClustersServiceTestApi>(
             history_clusters_service_.get(), history_service_.get());
@@ -174,6 +168,15 @@ class HistoryClustersServiceTestBase : public testing::Test {
     test_clustering_backend_ = test_backend.get();
     history_clusters_service_test_api_->SetClusteringBackendForTest(
         std::move(test_backend));
+
+    // Kick off an initial `UpdateCluster()` request so that `QueryClusters()`
+    // calls don't trigger an `UpdateCluster()` which would make testing very
+    // complicated, since there'd be 2 async flows going on in parallel.
+    history_clusters_service_->UpdateClusters();
+    // `UpdateClusters()` will fetch visits to cluster from the history thread.
+    // Block for the fetch to complete. There will be no subsequent model
+    // request, since the visits will be empty.
+    history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
   }
 
   // Add hardcoded completed visits with context annotations to the history

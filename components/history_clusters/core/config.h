@@ -95,13 +95,13 @@ struct Config {
 
   // No effect if `persist_clusters_in_history_db` is disabled. Determines how
   // soon to update clusters after startup in minutes. E.g., by default, will
-  // update clusters 60 minutes minutes after startup.
-  int persist_clusters_in_history_db_after_startup_delay_minutes = 60;
+  // update clusters 5 minutes minutes after startup.
+  int persist_clusters_in_history_db_after_startup_delay_minutes = 5;
 
   // No effect if `persist_clusters_in_history_db` is disabled. Determines how
   // often to update clusters in minutes. E.g., by default, will update clusters
-  // every 12 hours.
-  int persist_clusters_in_history_db_period_minutes = 12 * 60;
+  // every 1 hour.
+  int persist_clusters_in_history_db_period_minutes = 60;
 
   // No effect if `persist_clusters_in_history_db` is disabled. If disabled,
   // persistence occurs on a timer (see the above 2 params). If enabled, will
@@ -111,7 +111,7 @@ struct Config {
   // `persist_clusters_in_history_db_period_minutes`, but
   // `persist_clusters_in_history_db_after_startup_delay_minutes` will be
   // unused.
-  bool persist_on_query = false;
+  bool persist_on_query = true;
 
   // Hard cap on max clusters to fetch after exhausting unclustered visits and
   // fetching persisted clusters for the get most recent flow. Doesn't affect
