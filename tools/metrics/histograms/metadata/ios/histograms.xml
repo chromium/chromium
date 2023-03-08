@@ -770,7 +770,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Frame.FirstInputDelay.MainFrame" units="ms"
-    expires_after="2023-10-18">
+    expires_after="2023-03-06">
+  <obsolete>
+    Replaced by IOS.Frame.FirstInputDelay.MainFrame2 due to rebucketing.
+  </obsolete>
   <owner>danieltwhite@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>
@@ -788,7 +791,12 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="IOS.Frame.FirstInputDelay.MainFrame.AfterBackForwardCacheRestore"
-    units="ms" expires_after="2023-10-18">
+    units="ms" expires_after="2023-03-06">
+  <obsolete>
+    Replaced by
+    IOS.Frame.FirstInputDelay.MainFrame.AfterBackForwardCacheRestore2 due to
+    rebucketing.
+  </obsolete>
   <owner>danieltwhite@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>
@@ -804,8 +812,46 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="IOS.Frame.FirstInputDelay.MainFrame.AfterBackForwardCacheRestore2"
+    units="ms" expires_after="2024-02-27">
+  <owner>danieltwhite@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
+  <summary>
+    Many features include JavaScript injected logic that run in the WebKit
+    renderer process. One Web Vitals metric that evaluates user experience is
+    First Input Delay. First Input Delay is defined as the amount of time
+    between the a user's first interaction with the page and the page receiving
+    the input event for this interaction. This histogram captures the First
+    Input Delay time for user's main frame that is loaded from the Back/Forward
+    cache. This histogram's understanding of First Contentful Paint differs from
+    the traditional understanding because it does not aggregate and compare the
+    First Input Delay times across the frames on a page.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Frame.FirstInputDelay.MainFrame2" units="ms"
+    expires_after="2024-02-27">
+  <owner>danieltwhite@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
+  <summary>
+    Many features include JavaScript injected logic that run in the WebKit
+    renderer process. One Web Vitals metric that evaluates user experience is
+    First Input Delay. First Input Delay is defined as the amount of time
+    between the a user's first interaction with the page and the page receiving
+    the input event for this interaction. This histogram captures the First
+    Input Delay time for every main frame. This histogram's understanding of
+    First Input Delay differs from the traditional understanding because it does
+    not aggregate and compare the First Input Delay times across the frames on a
+    page.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Frame.FirstInputDelay.SubFrame" units="ms"
-    expires_after="2023-10-18">
+    expires_after="2023-03-06">
+  <obsolete>
+    Replaced by IOS.Frame.FirstInputDelay.SubFrame2 due to rebucketing.
+  </obsolete>
   <owner>danieltwhite@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>
@@ -823,7 +869,11 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="IOS.Frame.FirstInputDelay.SubFrame.AfterBackForwardCacheRestore"
-    units="ms" expires_after="2023-10-18">
+    units="ms" expires_after="2023-03-06">
+  <obsolete>
+    Replaced by IOS.Frame.FirstInputDelay.SubFrame.AfterBackForwardCacheRestore2
+    due to rebucketing.
+  </obsolete>
   <owner>danieltwhite@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>
@@ -836,6 +886,41 @@ chromium-metrics-reviews@google.com.
     cache. This histogram's understanding of First Contentful Paint differs from
     the traditional understanding because it does not aggregate and compare the
     First Input Delay times across the frames on a page.
+  </summary>
+</histogram>
+
+<histogram
+    name="IOS.Frame.FirstInputDelay.SubFrame.AfterBackForwardCacheRestore2"
+    units="ms" expires_after="2024-02-27">
+  <owner>danieltwhite@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
+  <summary>
+    Many features include JavaScript injected logic that run in the WebKit
+    renderer process. One Web Vitals metric that evaluates user experience is
+    First Input Delay. First Input Delay is defined as the amount of time
+    between the a user's first interaction with the page and the page receiving
+    the input event for this interaction. This histogram captures the First
+    Input Delay time for user's subframes that is loaded from the Back/Forward
+    cache. This histogram's understanding of First Contentful Paint differs from
+    the traditional understanding because it does not aggregate and compare the
+    First Input Delay times across the frames on a page.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Frame.FirstInputDelay.SubFrame2" units="ms"
+    expires_after="2024-02-27">
+  <owner>danieltwhite@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
+  <summary>
+    Many features include JavaScript injected logic that run in the WebKit
+    renderer process. One Web Vitals metric that evaluates user experience is
+    First Input Delay. First Input Delay is defined as the amount of time
+    between the a user's first interaction with the page and the page receiving
+    the input event for this interaction. This histogram captures the First
+    Input Delay time for user's subframes. This histogram's understanding of
+    First Contentful Paint differs from the traditional understanding because it
+    does not aggregate and compare the First Input Delay times across the frames
+    on a page.
   </summary>
 </histogram>
 
