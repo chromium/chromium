@@ -413,13 +413,6 @@ void InitializeDirectComposition(GLDisplayEGL* display) {
     return;
   }
 
-  // This will fail if the D3D device is "Microsoft Basic Display Adapter".
-  Microsoft::WRL::ComPtr<ID3D11VideoDevice> video_device;
-  if (FAILED(d3d11_device.As(&video_device))) {
-    DLOG(ERROR) << "Failed to retrieve video device";
-    return;
-  }
-
   // Load DLL at runtime since older Windows versions don't have dcomp.
   HMODULE dcomp_module = ::GetModuleHandle(L"dcomp.dll");
   if (!dcomp_module) {
