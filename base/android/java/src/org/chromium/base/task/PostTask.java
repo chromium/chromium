@@ -250,7 +250,8 @@ public class PostTask {
 
     @CalledByNative
     private static void onNativeSchedulerReady() {
-        assert !sNativeInitialized;
+        // Unit tests call this multiple times.
+        if (sNativeInitialized) return;
         sNativeInitialized = true;
         List<TaskRunnerImpl> preNativeTaskRunners;
         synchronized (sPreNativeTaskRunnerLock) {
@@ -259,19 +260,6 @@ public class PostTask {
         }
         for (TaskRunnerImpl taskRunner : preNativeTaskRunners) {
             taskRunner.initNativeTaskRunner();
-        }
-    }
-
-    // TODO(agrieve): Move this to a test-only java file.
-    @CalledByNative
-    private static void onNativeSchedulerShutdownForTesting() {
-        synchronized (sPreNativeTaskRunnerLock) {
-            sPreNativeTaskRunners = new ArrayList<>();
-        }
-        sNativeInitialized = false;
-        sTaskExecutors.set(0, new DefaultTaskExecutor());
-        for (int i = 1; i < sTaskExecutors.length(); ++i) {
-            sTaskExecutors.set(i, null);
         }
     }
 

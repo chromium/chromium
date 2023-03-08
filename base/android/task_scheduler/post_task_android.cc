@@ -14,12 +14,6 @@ void PostTaskAndroid::SignalNativeSchedulerReady() {
   Java_PostTask_onNativeSchedulerReady(base::android::AttachCurrentThread());
 }
 
-// static
-void PostTaskAndroid::SignalNativeSchedulerShutdownForTesting() {
-  Java_PostTask_onNativeSchedulerShutdownForTesting(
-      base::android::AttachCurrentThread());
-}
-
 void JNI_PostTask_PostDelayedTask(
     JNIEnv* env,
     jint priority,

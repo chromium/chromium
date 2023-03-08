@@ -715,7 +715,6 @@ void BrowserTestBase::SetUp() {
   // thread tear down.
   base::PermanentThreadAllowance::AllowBlocking();
 
-  base::PostTaskAndroid::SignalNativeSchedulerShutdownForTesting();
   BrowserTaskExecutor::Shutdown();
 #endif  // BUILDFLAG(IS_ANDROID)
 
