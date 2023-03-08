@@ -142,9 +142,7 @@ const AcceleratorAction kPreferredActions[] = {
 const size_t kPreferredActionsLength = std::size(kPreferredActions);
 
 const AcceleratorAction kReservedActions[] = {
-    POWER_PRESSED,
-    POWER_RELEASED,
-    SUSPEND,
+    POWER_PRESSED, POWER_RELEASED, LOCK_PRESSED, LOCK_RELEASED, SUSPEND,
 };
 
 const size_t kReservedActionsLength = std::size(kReservedActions);

@@ -1561,6 +1561,16 @@ TEST_F(AcceleratorControllerTest, PreferredReservedAccelerators) {
   EXPECT_FALSE(
       controller_->IsPreferred(ui::Accelerator(ui::VKEY_POWER, ui::EF_NONE)));
 
+  // Lock key is reserved on chromeos.
+  EXPECT_TRUE(
+      controller_->IsReserved(ui::Accelerator(ui::VKEY_SLEEP, ui::EF_NONE)));
+  EXPECT_FALSE(
+      controller_->IsPreferred(ui::Accelerator(ui::VKEY_SLEEP, ui::EF_NONE)));
+  EXPECT_TRUE(
+      controller_->IsReserved(ui::Accelerator(ui::VKEY_F13, ui::EF_NONE)));
+  EXPECT_FALSE(
+      controller_->IsPreferred(ui::Accelerator(ui::VKEY_F13, ui::EF_NONE)));
+
   // ALT+Tab are not reserved but preferred.
   EXPECT_FALSE(
       controller_->IsReserved(ui::Accelerator(ui::VKEY_TAB, ui::EF_ALT_DOWN)));
