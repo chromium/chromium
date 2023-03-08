@@ -398,7 +398,8 @@
 
   perfetto::TraceConfig perfetto_config = tracing::GetDefaultPerfettoConfig(
       base::trace_event::TraceConfig("-*,blink,cc,gpu,renderer.scheduler,"
-                                     "sequence_manager,v8,toplevel,viz",
+                                     "sequence_manager,v8,toplevel,viz,evdev,"
+                                     "input,benchmark",
                                      ""),
       /*privacy_filtering_enabled=*/false,
       /*convert_to_legacy_json=*/true);
