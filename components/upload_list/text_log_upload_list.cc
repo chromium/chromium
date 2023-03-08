@@ -30,11 +30,6 @@ constexpr char kJsonLogKeyState[] = "state";
 constexpr char kJsonLogKeySource[] = "source";
 constexpr char kJsonLogKeyPathHash[] = "path_hash";
 
-std::vector<std::string> SplitIntoLines(const std::string& file_contents) {
-  return base::SplitString(file_contents, base::kWhitespaceASCII,
-                           base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-}
-
 std::vector<std::string> SplitIntoComponents(const std::string& line) {
   return base::SplitString(line, ",", base::TRIM_WHITESPACE,
                            base::SPLIT_WANT_ALL);
@@ -93,6 +88,13 @@ bool CheckJsonUploadListOutOfRange(const base::Value& dict,
          CheckFieldOutOfRange(capture_time_string, begin, end);
 }
 }  // namespace
+
+// static
+std::vector<std::string> TextLogUploadList::SplitIntoLines(
+    const std::string& file_contents) {
+  return base::SplitString(file_contents, base::kWhitespaceASCII,
+                           base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+}
 
 TextLogUploadList::TextLogUploadList(const base::FilePath& upload_log_path)
     : upload_log_path_(upload_log_path) {}

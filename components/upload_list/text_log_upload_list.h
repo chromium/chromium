@@ -40,22 +40,26 @@ class TextLogUploadList : public UploadList {
  protected:
   ~TextLogUploadList() override;
 
+  // Splits a string into a vector of lines based on EOLs.
+  static std::vector<std::string> SplitIntoLines(
+      const std::string& file_contents);
+
   // UploadList:
   std::vector<std::unique_ptr<UploadList::UploadInfo>> LoadUploadList()
       override;
   void ClearUploadList(const base::Time& begin, const base::Time& end) override;
   void RequestSingleUpload(const std::string& local_id) override;
 
-  // Tries to parse one upload log line based on CSV format, then converts it to
-  // a UploadInfo entry. If the conversion succeeds, it returns a valid
+  // Tries to parse one upload log line based on CSV format, then converts it
+  // to a UploadInfo entry. If the conversion succeeds, it returns a valid
   // UploadInfo instance. Otherwise, it returns nullptr.
   virtual std::unique_ptr<UploadList::UploadInfo> TryParseCsvLogEntry(
       const std::string& log_line);
 
   // Tries to parse one upload log dictionary based on line-based JSON format
   // (no internal additional newline is permitted), then converts it to a
-  // UploadInfo entry. If the conversion succeeds, it returns a valid UploadInfo
-  // instance. Otherwise, it returns nullptr.
+  // UploadInfo entry. If the conversion succeeds, it returns a valid
+  // UploadInfo instance. Otherwise, it returns nullptr.
   virtual std::unique_ptr<UploadList::UploadInfo> TryParseJsonLogEntry(
       const base::Value& dict);
 
