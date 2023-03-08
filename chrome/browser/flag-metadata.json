@@ -5679,6 +5679,11 @@
     "expiry_milestone": 112
   },
   {
+    "name": "password-generation-bottom-sheet",
+    "owners": ["atsvirchkova@google.com", "ioanap"],
+    "expiry_milestone": 120
+  },
+  {
     "name": "password-import",
     "owners": [ "//components/password_manager/OWNERS" ],
     // The feature is already extensively used externally.

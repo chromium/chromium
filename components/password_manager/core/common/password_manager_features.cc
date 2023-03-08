@@ -215,6 +215,11 @@ BASE_FEATURE(kPasswordEditDialogWithDetails,
              "PasswordEditDialogWithDetails",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the Password generation bottom sheet.
+BASE_FEATURE(kPasswordGenerationBottomSheet,
+             "PasswordGenerationBottomSheet",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kShowUPMErrorNotification,
              "ShowUpmErrorNotification",
              base::FEATURE_DISABLED_BY_DEFAULT);
