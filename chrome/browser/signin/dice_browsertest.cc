@@ -42,6 +42,7 @@
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/login_ui_test_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -891,7 +892,20 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, MAYBE_NoDiceFromWebUI) {
   WaitForReconcilorUnblockedCount(0);
 }
 
-IN_PROC_BROWSER_TEST_F(DiceBrowserTest,
+// These tests should be removed once `features::kWebAuthFlowInBrowserTab` is
+// launched.
+class DiceBrowserTestWithWebAuthFlowInBrowserTabOff : public DiceBrowserTest {
+ public:
+  DiceBrowserTestWithWebAuthFlowInBrowserTabOff() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kWebAuthFlowInBrowserTab);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithWebAuthFlowInBrowserTabOff,
                        NoDiceExtensionConsent_LaunchWebAuthFlow) {
   auto web_auth_flow = std::make_unique<extensions::WebAuthFlow>(
       nullptr, browser()->profile(), https_server_.GetURL(kSigninURL),
@@ -899,8 +913,9 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest,
       extensions::WebAuthFlow::LAUNCH_WEB_AUTH_FLOW);
   web_auth_flow->Start();
 
-  if (dice_request_header_.empty())
+  if (dice_request_header_.empty()) {
     WaitForClosure(&signin_requested_quit_closure_);
+  }
 
   EXPECT_EQ(kNoDiceRequestHeader, dice_request_header_);
   EXPECT_EQ(0, reconcilor_blocked_count_);
@@ -911,7 +926,8 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest,
   base::RunLoop().RunUntilIdle();
 }
 
-IN_PROC_BROWSER_TEST_F(DiceBrowserTest, DiceExtensionConsent_GetAuthToken) {
+IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithWebAuthFlowInBrowserTabOff,
+                       DiceExtensionConsent_GetAuthToken) {
   // Signin from extension consent flow.
   class DummyDelegate : public extensions::WebAuthFlow::Delegate {
    public:

@@ -16,6 +16,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -49,6 +50,7 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/api/identity.h"
 #include "chrome/common/pref_names.h"
@@ -68,6 +70,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api_test_utils.h"
@@ -3428,76 +3431,17 @@ IN_PROC_BROWSER_TEST_F(RemoveCachedAuthTokenFunctionTest, MatchingToken) {
 
 class LaunchWebAuthFlowFunctionTest : public AsyncExtensionBrowserTest {
  public:
-  void SetUp() override {
-    GuestViewManager::set_factory_for_testing(&factory_);
-    AsyncExtensionBrowserTest::SetUp();
-  }
-
-  void TearDown() override {
-    AsyncExtensionBrowserTest::TearDown();
-    GuestViewManager::set_factory_for_testing(nullptr);
-  }
-
   void SetUpCommandLine(base::CommandLine* command_line) override {
     AsyncExtensionBrowserTest::SetUpCommandLine(command_line);
     // Reduce performance test variance by disabling background networking.
     command_line->AppendSwitch(switches::kDisableBackgroundNetworking);
   }
 
-  TestGuestViewManager* GetGuestViewManager() {
-    TestGuestViewManager* manager = static_cast<TestGuestViewManager*>(
-        TestGuestViewManager::FromBrowserContext(browser()->profile()));
-    // Test code may access the TestGuestViewManager before it would be created
-    // during creation of the first guest.
-    if (!manager) {
-      manager = static_cast<TestGuestViewManager*>(
-          GuestViewManager::CreateWithDelegate(
-              browser()->profile(),
-              ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate(
-                  browser()->profile())));
-    }
-    return manager;
-  }
-
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }
 
  private:
-  TestGuestViewManagerFactory factory_;
   base::HistogramTester histogram_tester_;
 };
-
-IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest, UserCloseWindow) {
-  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server.ServeFilesFromSourceDirectory(
-      "chrome/test/data/extensions/api_test/identity");
-  ASSERT_TRUE(https_server.Start());
-  GURL auth_url(https_server.GetURL("/interaction_required.html"));
-
-  scoped_refptr<IdentityLaunchWebAuthFlowFunction> function(
-      new IdentityLaunchWebAuthFlowFunction());
-  scoped_refptr<const Extension> empty_extension(
-      ExtensionBuilder("Test").Build());
-  function->set_extension(empty_extension.get());
-
-  std::string args =
-      "[{\"interactive\": true, \"url\": \"" + auth_url.spec() + "\"}]";
-  RunFunctionAsync(function.get(), args);
-
-  TestGuestViewManager* guest_view_manager = GetGuestViewManager();
-  auto* guest_view = guest_view_manager->WaitForSingleGuestViewCreated();
-  ASSERT_TRUE(guest_view);
-
-  guest_view_manager->WaitUntilAttached(guest_view);
-
-  auto* embedder_web_contents = guest_view->embedder_web_contents();
-  ASSERT_TRUE(embedder_web_contents);
-  embedder_web_contents->Close();
-
-  EXPECT_EQ(std::string(errors::kUserRejected), WaitForError(function.get()));
-  histogram_tester()->ExpectUniqueSample(
-      kLaunchWebAuthFlowResultHistogramName,
-      IdentityLaunchWebAuthFlowFunction::Error::kUserRejected, 1);
-}
 
 IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest, InteractionRequired) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
@@ -3738,6 +3682,115 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest,
       kLaunchWebAuthFlowResultHistogramName,
       IdentityLaunchWebAuthFlowFunction::Error::kNone, 1);
 }
+
+class LaunchWebAuthFlowFunctionTestWithWebAuthFlowInBrowserTabParam
+    : public LaunchWebAuthFlowFunctionTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  LaunchWebAuthFlowFunctionTestWithWebAuthFlowInBrowserTabParam() {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kWebAuthFlowInBrowserTab, use_tab_feature_enabled());
+  }
+
+  void SetUp() override {
+    GuestViewManager::set_factory_for_testing(&factory_);
+    LaunchWebAuthFlowFunctionTest::SetUp();
+  }
+
+  void TearDown() override {
+    LaunchWebAuthFlowFunctionTest::TearDown();
+    GuestViewManager::set_factory_for_testing(nullptr);
+  }
+
+ protected:
+  bool use_tab_feature_enabled() { return GetParam(); }
+
+  void CloseGuestView() {
+    TestGuestViewManager* guest_view_manager = GetGuestViewManager();
+    auto* guest_view = guest_view_manager->WaitForSingleGuestViewCreated();
+    ASSERT_TRUE(guest_view);
+
+    guest_view_manager->WaitUntilAttached(guest_view);
+
+    auto* embedder_web_contents = guest_view->embedder_web_contents();
+    ASSERT_TRUE(embedder_web_contents);
+    embedder_web_contents->Close();
+  }
+
+ private:
+  TestGuestViewManagerFactory factory_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  TestGuestViewManager* GetGuestViewManager() {
+    TestGuestViewManager* manager = static_cast<TestGuestViewManager*>(
+        TestGuestViewManager::FromBrowserContext(browser()->profile()));
+    // Test code may access the TestGuestViewManager before it would be created
+    // during creation of the first guest.
+    if (!manager) {
+      manager = static_cast<TestGuestViewManager*>(
+          GuestViewManager::CreateWithDelegate(
+              browser()->profile(),
+              ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate(
+                  browser()->profile())));
+    }
+    return manager;
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(
+    LaunchWebAuthFlowFunctionTestWithWebAuthFlowInBrowserTabParam,
+    UserCloseWindow) {
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.ServeFilesFromSourceDirectory(
+      "chrome/test/data/extensions/api_test/identity");
+  ASSERT_TRUE(https_server.Start());
+  GURL auth_url(https_server.GetURL("/interaction_required.html"));
+
+  scoped_refptr<IdentityLaunchWebAuthFlowFunction> function(
+      new IdentityLaunchWebAuthFlowFunction());
+  scoped_refptr<const Extension> empty_extension(
+      ExtensionBuilder("Test").Build());
+  function->set_extension(empty_extension.get());
+
+  content::TestNavigationObserver url_obvserver(auth_url);
+  if (use_tab_feature_enabled()) {
+    url_obvserver.StartWatchingNewWebContents();
+  }
+
+  std::string args =
+      "[{\"interactive\": true, \"url\": \"" + auth_url.spec() + "\"}]";
+  RunFunctionAsync(function.get(), args);
+
+  // Close the opened auth web contents.
+  // Depending on the feature `WebAuthFlowInBrowserTab`, close the opened
+  // GuestView (simulating the AppWindow), or close the new tab through the
+  // created WebContents.
+  if (use_tab_feature_enabled()) {
+    url_obvserver.Wait();
+
+    TabStripModel* tabs = browser()->tab_strip_model();
+    ASSERT_EQ(tabs->GetActiveWebContents()->GetURL(), auth_url);
+    tabs->CloseWebContentsAt(tabs->active_index(), 0);
+  } else {
+    CloseGuestView();
+  }
+
+  EXPECT_EQ(std::string(errors::kUserRejected), WaitForError(function.get()));
+  histogram_tester()->ExpectUniqueSample(
+      kLaunchWebAuthFlowResultHistogramName,
+      IdentityLaunchWebAuthFlowFunction::Error::kUserRejected, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    LaunchWebAuthFlowFunctionTestWithWebAuthFlowInBrowserTabParam,
+    testing::Bool(),
+    [](const testing::TestParamInfo<
+        LaunchWebAuthFlowFunctionTestWithWebAuthFlowInBrowserTabParam::
+            ParamType>& info) {
+      return base::StrCat(
+          {info.param ? "With" : "Without", "WebAuthFlowInBrowserTab"});
+    });
 
 class ClearAllCachedAuthTokensFunctionTest : public AsyncExtensionBrowserTest {
  public:
