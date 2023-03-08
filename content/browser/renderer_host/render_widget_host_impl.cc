@@ -1490,10 +1490,6 @@ void RenderWidgetHostImpl::ForwardMouseEventWithLatencyInfo(
   if (IsIgnoringInputEvents())
     return;
 
-  // Delegate must be non-null, due to |IsIgnoringInputEvents()| test.
-  if (delegate_->PreHandleMouseEvent(mouse_event))
-    return;
-
   auto* touch_emulator = GetExistingTouchEmulator();
   if (touch_emulator &&
       touch_emulator->HandleMouseEvent(mouse_event, GetView())) {

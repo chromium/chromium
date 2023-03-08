@@ -17,11 +17,6 @@ KeyboardEventProcessingResult RenderWidgetHostDelegate::PreHandleKeyboardEvent(
   return KeyboardEventProcessingResult::NOT_HANDLED;
 }
 
-bool RenderWidgetHostDelegate::PreHandleMouseEvent(
-    const blink::WebMouseEvent& event) {
-  return false;
-}
-
 bool RenderWidgetHostDelegate::HandleMouseEvent(
     const blink::WebMouseEvent& event) {
   return false;
