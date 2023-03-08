@@ -62,7 +62,7 @@ class WebAppCommand {
   // Returns if the command has been started yet.
   bool IsStarted() const { return command_manager() != nullptr; }
 
-  // Unique id generated for this command. Currently only used for debug values.
+  // Unique id generated for this command.
   Id id() const { return id_; }
 
   const std::string& name() const { return name_; }
