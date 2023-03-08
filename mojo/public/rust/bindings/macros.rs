@@ -32,13 +32,8 @@ macro_rules! impl_encodable_for_pointer {
             decoder: &mut $crate::bindings::decoding::Decoder,
             context: $crate::bindings::encoding::Context,
         ) -> Result<Self, ValidationError> {
-            let ptr = {
-                let state = decoder.get_mut(&context);
-                match state.decode_pointer() {
-                    Some(ptr) => ptr,
-                    None => return Err(ValidationError::IllegalPointer),
-                }
-            };
+            let state = decoder.get_mut(&context);
+            let ptr = state.decode_pointer()?;
             if ptr == $crate::bindings::mojom::MOJOM_NULL_POINTER {
                 Err(ValidationError::UnexpectedNullPointer)
             } else {

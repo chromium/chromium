@@ -108,6 +108,15 @@ impl MojoResult {
             MojoResult::InvalidResult => "Something went very wrong",
         }
     }
+
+    /// For convenience in code using `Result<_, _>`, maps Okay to Ok(()) and
+    /// other results to Err(self).
+    pub fn into_result(self) -> Result<(), MojoResult> {
+        match self {
+            MojoResult::Okay => Ok(()),
+            e => Err(e),
+        }
+    }
 }
 
 impl fmt::Display for MojoResult {
