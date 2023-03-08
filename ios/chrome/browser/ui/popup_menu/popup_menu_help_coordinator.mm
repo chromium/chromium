@@ -29,12 +29,6 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
-// Delay between the time the app launches, and the time the
-// menu button tip is shown.
-constexpr base::TimeDelta kMenuTipDelay = base::Seconds(1);
-}  // namespace
-
 @interface PopupMenuHelpCoordinator () <SceneStateObserver>
 
 // Bubble view controller presenter for popup menu tip.
@@ -181,6 +175,7 @@ constexpr base::TimeDelta kMenuTipDelay = base::Seconds(1);
           }
           [weakSelf showPopupMenuBubbleIfNecessary];
         }));
+    return;
   }
 
   // Skip if a presentation is already in progress
@@ -214,22 +209,12 @@ constexpr base::TimeDelta kMenuTipDelay = base::Seconds(1);
 
   // Present the bubble after the delay.
   self.popupMenuBubblePresenter = bubblePresenter;
-  __weak __typeof(self) weakSelf = self;
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, base::BindOnce(^{
-        [weakSelf presentPopupMenuBubbleAtAnchorPoint:anchorPoint];
-        [weakSelf.UIUpdater updateUIForIPHDisplayed:PopupMenuTypeToolsMenu];
-      }),
-      kMenuTipDelay);
-}
-
-// Actually presents the bubble.
-- (void)presentPopupMenuBubbleAtAnchorPoint:(CGPoint)anchorPoint {
   self.inSessionWithPopupMenuIPH = YES;
   [self.popupMenuBubblePresenter
       presentInViewController:self.baseViewController
                          view:self.baseViewController.view
                   anchorPoint:anchorPoint];
+  [self.UIUpdater updateUIForIPHDisplayed:PopupMenuTypeToolsMenu];
 }
 
 #pragma mark - Overflow Menu Bubble methods
