@@ -244,14 +244,15 @@ bool CastRuntimeMetricsRecorder::RecordJsonCastEvent(const std::string& event) {
     return false;
   }
 
-  const std::string* name = value->FindStringKey(kEventName);
+  const base::Value::Dict& value_dict = value->GetDict();
+  const std::string* name = value_dict.FindString(kEventName);
   if (!name) {
     DVLOG(3) << "Missing field:" << kEventName;
     return false;
   }
 
   // Gets event creation time. If unavailable use now.
-  absl::optional<double> maybe_event_time = value->FindDoubleKey(kEventTime);
+  absl::optional<double> maybe_event_time = value_dict.FindDouble(kEventTime);
   double event_time = 0;
   if (maybe_event_time && maybe_event_time.value() > 0) {
     event_time = maybe_event_time.value();
@@ -259,31 +260,33 @@ bool CastRuntimeMetricsRecorder::RecordJsonCastEvent(const std::string& event) {
     event_time = (base::TimeTicks::Now() - base::TimeTicks()).InMicroseconds();
   }
   // Gets App Id.
-  const std::string* maybe_app_id = value->FindStringKey(kEventAppId);
+  const std::string* maybe_app_id = value_dict.FindString(kEventAppId);
   std::string app_id;
   if (maybe_app_id) {
     app_id = *maybe_app_id;
   }
   // Gets session Id.
-  const std::string* maybe_session_id = value->FindStringKey(kEventSessionId);
+  const std::string* maybe_session_id = value_dict.FindString(kEventSessionId);
   std::string session_id;
   if (maybe_session_id) {
     session_id = *maybe_session_id;
   }
   // Gets SDK version.
-  const std::string* maybe_sdk_version = value->FindStringKey(kEventSdkVersion);
+  const std::string* maybe_sdk_version =
+      value_dict.FindString(kEventSdkVersion);
   std::string sdk_version;
   if (maybe_sdk_version) {
     sdk_version = *maybe_sdk_version;
   }
 
-  const base::Value* multiple_events = value->FindDictKey(kEventEventsPair);
+  const base::Value::Dict* multiple_events =
+      value_dict.FindDict(kEventEventsPair);
   if (!multiple_events) {
     std::unique_ptr<CastEventBuilder> event_builder(CreateEventBuilder(*name));
     PopulateEventBuilder(event_builder.get(), event_time, app_id, sdk_version,
                          session_id);
     absl::optional<double> maybe_event_value =
-        value->FindDoubleKey(kEventValue);
+        value_dict.FindDouble(kEventValue);
     if (maybe_event_value) {
       double event_value = maybe_event_value.value();
       DCHECK_EQ(event_value, std::nearbyint(event_value));
@@ -291,7 +294,7 @@ bool CastRuntimeMetricsRecorder::RecordJsonCastEvent(const std::string& event) {
       event_builder->SetExtraValue(static_cast<int64_t>(event_value));
     }
 
-    const std::string* audit_report = value->FindStringKey(kEventAuditReport);
+    const std::string* audit_report = value_dict.FindString(kEventAuditReport);
     if (audit_report) {
       event_builder->SetAuditReport(*audit_report);
     }
@@ -300,7 +303,7 @@ bool CastRuntimeMetricsRecorder::RecordJsonCastEvent(const std::string& event) {
     return true;
   }
 
-  for (auto kv : multiple_events->DictItems()) {
+  for (auto kv : *multiple_events) {
     absl::optional<double> maybe_event_value = kv.second.GetIfDouble();
     if (!maybe_event_value) {
       continue;
