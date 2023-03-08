@@ -92,18 +92,20 @@ class EVENTS_EXPORT PlatformEventSource {
   friend class ScopedEventDispatcher;
   friend class test::PlatformEventSourceTestAPI;
 
+  // Use a base::ObserverList<> instead of an std::vector<> to store the list of
+  // dispatchers, so that adding/removing dispatchers during an event dispatch
+  // is well-defined.
+  using PlatformEventDispatcherList =
+      base::ObserverList<PlatformEventDispatcher>::Unchecked;
+
   // This is invoked when the list of dispatchers changes (i.e. a new dispatcher
   // is added, or a dispatcher is removed).
   virtual void OnDispatcherListChanged();
 
   void OnOverriddenDispatcherRestored();
 
-  // Use an base::ObserverList<> instead of an std::vector<> to store the list
-  // of
-  // dispatchers, so that adding/removing dispatchers during an event dispatch
-  // is well-defined.
-  typedef base::ObserverList<PlatformEventDispatcher>::Unchecked
-      PlatformEventDispatcherList;
+  const base::AutoReset<PlatformEventSource*> resetter_;
+
   PlatformEventDispatcherList dispatchers_;
   PlatformEventDispatcher* overridden_dispatcher_;
 
