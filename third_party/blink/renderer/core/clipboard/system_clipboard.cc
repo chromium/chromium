@@ -575,14 +575,19 @@ bool SystemClipboard::Snapshot::HasPng(
 mojo_base::BigBuffer SystemClipboard::Snapshot::Png(
     mojom::blink::ClipboardBuffer buffer) const {
   DCHECK(HasPng(buffer));
-  return mojo_base::BigBuffer(png_->byte_span());
+  // Make an owning copy of the png to return to user.
+  base::span<const uint8_t> span =
+      base::make_span(png_.value().data(), png_.value().size());
+  return mojo_base::BigBuffer(span);
 }
 
 // TODO(https://crbug.com/1412180): Reduce data copies.
 void SystemClipboard::Snapshot::SetPng(mojom::blink::ClipboardBuffer buffer,
                                        const mojo_base::BigBuffer& png) {
   BindToBuffer(buffer);
-  png_ = mojo_base::BigBuffer(png.byte_span());
+  // Make an owning copy of the png to save locally.
+  base::span<const uint8_t> span = base::make_span(png.data(), png.size());
+  png_ = mojo_base::BigBuffer(span);
 }
 
 bool SystemClipboard::Snapshot::HasFiles(
