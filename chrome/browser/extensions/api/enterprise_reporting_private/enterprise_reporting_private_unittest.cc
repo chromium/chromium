@@ -968,6 +968,7 @@ class EnterpriseReportingPrivateGetContextInfoOSFirewallTest
     HRESULT hr =
         firewall_policy_->put_FirewallEnabled(active_profile_, enabled_);
     EXPECT_GE(hr, 0);
+    EnterpriseReportingPrivateGetContextInfoTest::TearDown();
   }
 
   extensions::api::enterprise_reporting_private::SettingValue
