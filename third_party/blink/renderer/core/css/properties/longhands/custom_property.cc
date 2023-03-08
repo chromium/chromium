@@ -128,18 +128,34 @@ void CustomProperty::ApplyValue(StyleResolverState& state,
     return;
   }
 
-  const auto& declaration = To<CSSCustomPropertyDeclaration>(value);
-
   bool is_inherited_property = IsInherited();
 
-  scoped_refptr<CSSVariableData> data = &declaration.Value();
-  DCHECK(!data->NeedsVariableResolution());
+  const auto* declaration = DynamicTo<CSSCustomPropertyDeclaration>(value);
 
-  builder.SetVariableData(name_, data, is_inherited_property);
+  // Unregistered custom properties can only accept
+  // CSSCustomPropertyDeclaration objects.
+  if (!registration_) {
+    // We can reach here without a CSSCustomPropertyDeclaration
+    // if we're removing a property registration while animating.
+    // TODO(andruud): Cancel animations if the registration changed.
+    if (declaration) {
+      CSSVariableData& data = declaration->Value();
+      DCHECK(!data.NeedsVariableResolution());
+      builder.SetVariableData(name_, &data, is_inherited_property);
+    }
+    return;
+  }
 
-  if (registration_) {
-    const CSSParserContext* context = declaration.ParserContext();
+  // Registered custom properties can accept either
+  // - A CSSCustomPropertyDeclaration, in which case we produce the
+  //   `registered_value` value from that, or:
+  // - Some other value (typically an interpolated value), which we'll use
+  //   as the `registered_value` directly.
 
+  const CSSParserContext* context =
+      declaration ? declaration->ParserContext() : nullptr;
+
+  if (!context) {
     // There is no "originating" CSSParserContext associated with the
     // declaration if it represents a "synthetic" token sequence such as those
     // constructed to represent interpolated (registered) custom properties. [1]
@@ -149,35 +165,39 @@ void CustomProperty::ApplyValue(StyleResolverState& state,
     //
     // [1]
     // https://drafts.css-houdini.org/css-properties-values-api-1/#equivalent-token-sequence
-    if (!context) {
-      context = StrictCSSParserContext(
-          state.GetDocument().GetExecutionContext()->GetSecureContextMode());
-    }
-    const CSSValue* registered_value =
-        Parse(CSSTokenizedValue{data->TokenRange(), data->OriginalText()},
-              *context, CSSParserLocalContext());
-    if (!registered_value) {
-      if (is_inherited_property) {
-        ApplyInherit(state);
-      } else {
-        ApplyInitial(state);
-      }
-      return;
-    }
-
-    // TODO(andruud): Eventually only `value_mode` should decide if we're
-    // animation-tainted or not.
-    bool is_animation_tainted =
-        data->IsAnimationTainted() || (value_mode == ValueMode::kAnimated);
-
-    registered_value = &StyleBuilderConverter::ConvertRegisteredPropertyValue(
-        state, *registered_value, context);
-    data = StyleBuilderConverter::ConvertRegisteredPropertyVariableData(
-        *registered_value, is_animation_tainted);
-
-    builder.SetVariableData(name_, data, is_inherited_property);
-    builder.SetVariableValue(name_, registered_value, is_inherited_property);
+    context = StrictCSSParserContext(
+        state.GetDocument().GetExecutionContext()->GetSecureContextMode());
   }
+
+  const CSSValue* registered_value = declaration ? nullptr : &value;
+
+  if (!registered_value) {
+    DCHECK(declaration);
+    CSSVariableData& data = declaration->Value();
+    registered_value =
+        Parse(CSSTokenizedValue{data.TokenRange(), data.OriginalText()},
+              *context, CSSParserLocalContext());
+  }
+
+  if (!registered_value) {
+    if (is_inherited_property) {
+      ApplyInherit(state);
+    } else {
+      ApplyInitial(state);
+    }
+    return;
+  }
+
+  bool is_animation_tainted = value_mode == ValueMode::kAnimated;
+
+  registered_value = &StyleBuilderConverter::ConvertRegisteredPropertyValue(
+      state, *registered_value, context);
+  scoped_refptr<CSSVariableData> data =
+      StyleBuilderConverter::ConvertRegisteredPropertyVariableData(
+          *registered_value, is_animation_tainted);
+
+  builder.SetVariableData(name_, data, is_inherited_property);
+  builder.SetVariableValue(name_, registered_value, is_inherited_property);
 }
 
 const CSSValue* CustomProperty::ParseSingleValue(
