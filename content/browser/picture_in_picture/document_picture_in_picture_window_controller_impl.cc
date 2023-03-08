@@ -245,4 +245,13 @@ void DocumentPictureInPictureWindowControllerImpl::ChildContentsObserver::
     std::move(contents_destroyed_cb_).Run();
 }
 
+void DocumentPictureInPictureWindowControllerImpl::ChildContentsObserver::
+    DidCloneToNewWebContents(WebContents*, WebContents*) {
+  // DocumentPictureInPictureWindows should never be duplicated, since there
+  // should only ever be one PiP window and the duplicated window bypasses some
+  // of the controller logic here. This is a regression check for
+  // https://crbug.com/1413919.
+  NOTREACHED();
+}
+
 }  // namespace content

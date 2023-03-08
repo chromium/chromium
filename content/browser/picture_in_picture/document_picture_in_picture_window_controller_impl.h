@@ -107,6 +107,9 @@ class CONTENT_EXPORT DocumentPictureInPictureWindowControllerImpl
     // If the PiP window is destroyed, notify the opener.
     void WebContentsDestroyed() override;
 
+    // The PiP window should never be duplicated.
+    void DidCloneToNewWebContents(WebContents*, WebContents*) override;
+
    private:
     // Called, via post, to request that the pip session end.
     base::OnceClosure force_close_cb_;
