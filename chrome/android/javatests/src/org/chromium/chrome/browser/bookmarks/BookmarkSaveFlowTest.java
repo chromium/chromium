@@ -88,6 +88,9 @@ public class BookmarkSaveFlowTest {
     @Mock
     private UserEducationHelper mUserEducationHelper;
 
+    @Mock
+    private Profile mProfile;
+
     private BookmarkSaveFlowCoordinator mBookmarkSaveFlowCoordinator;
     private BottomSheetController mBottomSheetController;
     private BottomSheetTestSupport mBottomSheetTestSupport;
@@ -106,7 +109,7 @@ public class BookmarkSaveFlowTest {
                     cta.getRootUiCoordinatorForTesting().getBottomSheetController();
             mBottomSheetTestSupport = new BottomSheetTestSupport(mBottomSheetController);
             mBookmarkSaveFlowCoordinator = new BookmarkSaveFlowCoordinator(
-                    cta, mBottomSheetController, mShoppingService, mUserEducationHelper);
+                    cta, mBottomSheetController, mShoppingService, mUserEducationHelper, mProfile);
             mBookmarkModel = mActivityTestRule.getActivity().getBookmarkModelForTesting();
         });
 

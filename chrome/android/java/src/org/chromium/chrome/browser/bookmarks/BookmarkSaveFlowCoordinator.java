@@ -45,6 +45,7 @@ public class BookmarkSaveFlowCoordinator {
     private final PropertyModelChangeProcessor<PropertyModel, ViewLookupCachingFrameLayout,
             PropertyKey> mChangeProcessor;
     private final DestroyChecker mDestroyChecker;
+    private final Profile mProfile;
 
     private BottomSheetController mBottomSheetController;
     private BookmarkSaveFlowBottomSheetContent mBottomSheetContent;
@@ -63,12 +64,13 @@ public class BookmarkSaveFlowCoordinator {
      */
     public BookmarkSaveFlowCoordinator(@NonNull Context context,
             @NonNull BottomSheetController bottomSheetController, ShoppingService shoppingService,
-            @NonNull UserEducationHelper userEducationHelper) {
+            @NonNull UserEducationHelper userEducationHelper, Profile profile) {
         mContext = context;
         mBottomSheetController = bottomSheetController;
         mUserEducationHelper = userEducationHelper;
         mBookmarkModel = BookmarkModel.getForProfile(Profile.getLastUsedRegularProfile());
         mDestroyChecker = new DestroyChecker();
+        mProfile = profile;
 
         mBookmarkSaveFlowView = LayoutInflater.from(mContext).inflate(
                 org.chromium.chrome.R.layout.bookmark_save_flow, /*root=*/null);
@@ -122,21 +124,25 @@ public class BookmarkSaveFlowCoordinator {
             setupAutodismiss();
         }
 
-        if (ShoppingFeatures.isShoppingListEligible()
-                && PriceTrackingUtils.isBookmarkPriceTracked(
-                        Profile.getLastUsedRegularProfile(), bookmarkId.getId())) {
-            if (shown) {
-                showShoppingSaveFlowIPH();
-            } else {
-                mBottomSheetController.addObserver(new EmptyBottomSheetObserver() {
-                    @Override
-                    public void onSheetContentChanged(BottomSheetContent newContent) {
-                        if (newContent == mBottomSheetContent) showShoppingSaveFlowIPH();
+        if (ShoppingFeatures.isShoppingListEligible()) {
+            PriceTrackingUtils.isBookmarkPriceTracked(mProfile, bookmarkId.getId(), (isTracked) -> {
+                if (isTracked) return;
 
-                        mBottomSheetController.removeObserver(this);
-                    }
-                });
-            }
+                if (shown) {
+                    showShoppingSaveFlowIPH();
+                } else {
+                    mBottomSheetController.addObserver(new EmptyBottomSheetObserver() {
+                        @Override
+                        public void onSheetContentChanged(BottomSheetContent newContent) {
+                            if (newContent == mBottomSheetContent) {
+                                showShoppingSaveFlowIPH();
+                            }
+
+                            mBottomSheetController.removeObserver(this);
+                        }
+                    });
+                }
+            });
         }
     }
 

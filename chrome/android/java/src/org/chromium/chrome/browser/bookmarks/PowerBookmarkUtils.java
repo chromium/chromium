@@ -59,28 +59,6 @@ public class PowerBookmarkUtils {
     }
 
     /**
-     * Checks if the bookmark associated with the given cluster id has price tracking enabled.
-     * @param clusterId The cluster id to lookup.
-     * @param bookmarkModel The {@link BookmarkModel} used to lookup bookmark data.
-     * @return The {@link BookmarkId} for the given tab or null.
-     */
-    public static boolean isPriceTrackingEnabledForClusterId(
-            Long clusterId, BookmarkModel bookmarkModel) {
-        List<BookmarkId> productIds = getBookmarkIdsForClusterId(clusterId, bookmarkModel);
-        for (BookmarkId productId : productIds) {
-            PowerBookmarkMeta meta = bookmarkModel.getPowerBookmarkMeta(productId);
-
-            // Return any of the bookmarks with the given cluster id are price-tracked.
-            if (meta != null && meta.hasShoppingSpecifics()
-                    && meta.getShoppingSpecifics().getIsPriceTracked()) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
      * Unified way to get the associated {@link CommerceSubscription} for a {@link
      * PowerBookmarkMeta}.
      * @param meta The {@link PowerBookmarkMeta} to create the {@link CommerceSubscription} for.

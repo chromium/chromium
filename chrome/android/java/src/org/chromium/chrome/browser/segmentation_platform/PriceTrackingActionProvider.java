@@ -16,12 +16,14 @@ import org.chromium.components.commerce.core.ShoppingService;
 public class PriceTrackingActionProvider implements ContextualPageActionController.ActionProvider {
     private final Supplier<ShoppingService> mShoppingServiceSupplier;
     private final Supplier<BookmarkModel> mBookmarkModelSupplier;
+    private final Supplier<Profile> mProfileSupplier;
 
     /** Constructor. */
     public PriceTrackingActionProvider(Supplier<ShoppingService> shoppingServiceSupplier,
-            Supplier<BookmarkModel> bookmarkModelSupplier) {
+            Supplier<BookmarkModel> bookmarkModelSupplier, Supplier<Profile> profileSupplier) {
         mShoppingServiceSupplier = shoppingServiceSupplier;
         mBookmarkModelSupplier = bookmarkModelSupplier;
+        mProfileSupplier = profileSupplier;
     }
 
     @Override
@@ -37,20 +39,22 @@ public class PriceTrackingActionProvider implements ContextualPageActionControll
                 return;
             }
 
-            BookmarkId bookmarkId = bookmarkModel.getUserBookmarkIdForTab(tab);
-            boolean isAlreadyPriceTracked = bookmarkId != null
-                    && PriceTrackingUtils.isBookmarkPriceTracked(
-                            Profile.getLastUsedRegularProfile(), bookmarkId.getId());
-            if (isAlreadyPriceTracked) {
-                signalAccumulator.setHasPriceTracking(false);
-                signalAccumulator.notifySignalAvailable();
-            } else {
-                shoppingService.getProductInfoForUrl(tab.getUrl(), (url, info) -> {
-                    boolean canTrackPrice = info != null;
+            shoppingService.getProductInfoForUrl(tab.getUrl(), (url, info) -> {
+                BookmarkId bookmarkId = bookmarkModel.getUserBookmarkIdForTab(tab);
+                boolean canTrackPrice = info != null;
+
+                if (bookmarkId == null) {
                     signalAccumulator.setHasPriceTracking(canTrackPrice);
                     signalAccumulator.notifySignalAvailable();
-                });
-            }
+                } else {
+                    PriceTrackingUtils.isBookmarkPriceTracked(
+                            mProfileSupplier.get(), bookmarkId.getId(), (isTracked) -> {
+                                // If the product is already tracked, don't make the icon available.
+                                signalAccumulator.setHasPriceTracking(!isTracked);
+                                signalAccumulator.notifySignalAvailable();
+                            });
+                }
+            });
         });
     }
 }

@@ -37,6 +37,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
@@ -89,6 +90,8 @@ public class PowerBookmarkShoppingItemRowRenderTest {
     private BookmarkModel mBookmarkModel;
     @Mock
     private SnackbarManager mSnackbarManager;
+    @Mock
+    private Profile mProfile;
 
     private Bitmap mBitmap;
     private PowerBookmarkShoppingItemRow mPowerBookmarkShoppingItemRow;
@@ -143,7 +146,8 @@ public class PowerBookmarkShoppingItemRowRenderTest {
                     .setText("Test Bookmark");
             ((TextView) mPowerBookmarkShoppingItemRow.findViewById(R.id.description))
                     .setText("http://google.com");
-            mPowerBookmarkShoppingItemRow.init(mImageFetcher, mBookmarkModel, mSnackbarManager);
+            mPowerBookmarkShoppingItemRow.init(
+                    mImageFetcher, mBookmarkModel, mSnackbarManager, mProfile);
             mPowerBookmarkShoppingItemRow.setCurrencyFormatterForTesting(mCurrencyFormatter);
         });
     }

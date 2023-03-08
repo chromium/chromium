@@ -54,13 +54,32 @@ void JNI_PriceTrackingUtils_SetPriceTrackingStateForBookmark(
       bookmark_created_by_price_tracking);
 }
 
-jboolean JNI_PriceTrackingUtils_IsBookmarkPriceTracked(
+void JNI_PriceTrackingUtils_IsBookmarkPriceTracked(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_profile,
-    jlong bookmark_id) {
-  // TODO(mdjones): The callback-based version will replace this in a
-  //                fast-followup.
-  return false;
+    jlong bookmark_id,
+    const JavaParamRef<jobject>& j_callback) {
+  Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
+  CHECK(profile);
+
+  ShoppingService* service =
+      ShoppingServiceFactory::GetForBrowserContext(profile);
+  bookmarks::BookmarkModel* model =
+      BookmarkModelFactory::GetForBrowserContext(profile);
+
+  CHECK(service);
+  CHECK(model);
+
+  const bookmarks::BookmarkNode* node =
+      bookmarks::GetBookmarkNodeByID(model, bookmark_id);
+
+  IsBookmarkPriceTracked(
+      service, model, node,
+      base::BindOnce(
+          [](const ScopedJavaGlobalRef<jobject>& callback, bool is_tracked) {
+            base::android::RunBooleanCallbackAndroid(callback, is_tracked);
+          },
+          ScopedJavaGlobalRef<jobject>(j_callback)));
 }
 
 }  // namespace commerce

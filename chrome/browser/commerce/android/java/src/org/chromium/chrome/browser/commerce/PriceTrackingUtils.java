@@ -33,8 +33,9 @@ public class PriceTrackingUtils {
                 profile, bookmarkId, enabled, callback, bookmarkCreatedForPriceTracking);
     }
 
-    public static boolean isBookmarkPriceTracked(Profile profile, long bookmarkId) {
-        return PriceTrackingUtilsJni.get().isBookmarkPriceTracked(profile, bookmarkId);
+    public static void isBookmarkPriceTracked(
+            Profile profile, long bookmarkId, Callback<Boolean> callback) {
+        PriceTrackingUtilsJni.get().isBookmarkPriceTracked(profile, bookmarkId, callback);
     }
 
     @NativeMethods
@@ -42,6 +43,6 @@ public class PriceTrackingUtils {
     public interface Natives {
         void setPriceTrackingStateForBookmark(Profile profile, long bookmarkId, boolean enabled,
                 Callback<Boolean> callback, boolean bookmarkCreatedForPriceTracking);
-        boolean isBookmarkPriceTracked(Profile profile, long bookmarkId);
+        void isBookmarkPriceTracked(Profile profile, long bookmarkId, Callback<Boolean> callback);
     }
 }

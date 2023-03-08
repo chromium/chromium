@@ -31,6 +31,7 @@ import org.chromium.base.FeatureList;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -57,6 +58,8 @@ public class PowerBookmarkShoppingItemRowTest extends BlankUiTestActivityTestCas
     private BookmarkModel mBookmarkModel;
     @Mock
     private SnackbarManager mSnackbarManager;
+    @Mock
+    private Profile mProfile;
 
     private Bitmap mBitmap;
     private PowerBookmarkShoppingItemRow mPowerBookmarkShoppingItemRow;
@@ -102,7 +105,8 @@ public class PowerBookmarkShoppingItemRowTest extends BlankUiTestActivityTestCas
                     .setText("Test Bookmark");
             ((TextView) mPowerBookmarkShoppingItemRow.findViewById(R.id.description))
                     .setText("http://google.com");
-            mPowerBookmarkShoppingItemRow.init(mImageFetcher, mBookmarkModel, mSnackbarManager);
+            mPowerBookmarkShoppingItemRow.init(
+                    mImageFetcher, mBookmarkModel, mSnackbarManager, mProfile);
             mPowerBookmarkShoppingItemRow.setCurrencyFormatterForTesting(mCurrencyFormatter);
         });
     }

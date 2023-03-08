@@ -126,12 +126,12 @@ public class BookmarkUtils {
             return;
         }
 
-        ShoppingService shoppingService =
-                ShoppingServiceFactory.getForProfile(Profile.getLastUsedRegularProfile());
+        Profile profile = Profile.getLastUsedRegularProfile();
+        ShoppingService shoppingService = ShoppingServiceFactory.getForProfile(profile);
 
         BookmarkSaveFlowCoordinator bookmarkSaveFlowCoordinator =
                 new BookmarkSaveFlowCoordinator(activity, bottomSheetController, shoppingService,
-                        new UserEducationHelper(activity, new Handler()));
+                        new UserEducationHelper(activity, new Handler()), profile);
         bookmarkSaveFlowCoordinator.show(
                 bookmarkId, fromExplicitTrackUi, wasBookmarkMoved, isNewBookmark);
     }

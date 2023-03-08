@@ -176,6 +176,31 @@ public class ShoppingService {
                 sub.idType, sub.managementType, sub.id, callback);
     }
 
+    /**
+     * Check if a subscription exists.
+     * @param sub The subscription details to check.
+     * @param callback A callback executed when the state of the subscription is known.
+     */
+    public void isSubscribed(CommerceSubscription sub, Callback<Boolean> callback) {
+        if (mNativeShoppingServiceAndroid == 0) return;
+
+        ShoppingServiceJni.get().isSubscribed(mNativeShoppingServiceAndroid, this, sub.type,
+                sub.idType, sub.managementType, sub.id, callback);
+    }
+
+    /**
+     * Check if a subscription exists from cached information. Use of the the callback-based version
+     * {@link #isSubscribed(CommerceSubscription, Callback)} is preferred.
+     * @param sub The subscription details to check.
+     * @return Whether the provided subscription is tracked by the user.
+     */
+    public boolean isSubscribedFromCache(CommerceSubscription sub) {
+        if (mNativeShoppingServiceAndroid == 0) return false;
+
+        return ShoppingServiceJni.get().isSubscribedFromCache(mNativeShoppingServiceAndroid, this,
+                sub.type, sub.idType, sub.managementType, sub.id);
+    }
+
     public void addSubscriptionsObserver(SubscriptionsObserver observer) {
         mSubscriptionsObservers.addObserver(observer);
     }
@@ -293,6 +318,10 @@ public class ShoppingService {
                 String seenCountry, Callback<Boolean> callback);
         void unsubscribe(long nativeShoppingServiceAndroid, ShoppingService caller, int type,
                 int idType, int managementType, String id, Callback<Boolean> callback);
+        void isSubscribed(long nativeShoppingServiceAndroid, ShoppingService caller, int type,
+                int idType, int managementType, String id, Callback<Boolean> callback);
+        boolean isSubscribedFromCache(long nativeShoppingServiceAndroid, ShoppingService caller,
+                int type, int idType, int managementType, String id);
         boolean isShoppingListEligible(long nativeShoppingServiceAndroid, ShoppingService caller);
         boolean isMerchantViewerEnabled(long nativeShoppingServiceAndroid, ShoppingService caller);
     }

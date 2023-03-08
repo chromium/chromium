@@ -201,6 +201,47 @@ void ShoppingServiceAndroid::Unsubscribe(
   shopping_service_->Unsubscribe(std::move(subs), std::move(callback));
 }
 
+void ShoppingServiceAndroid::IsSubscribed(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    jint j_type,
+    jint j_id_type,
+    jint j_management_type,
+    const JavaParamRef<jstring>& j_id,
+    const JavaParamRef<jobject>& j_callback) {
+  std::string id = ConvertJavaStringToUTF8(j_id);
+  CHECK(!id.empty());
+
+  CommerceSubscription sub(SubscriptionType(j_type), IdentifierType(j_id_type),
+                           id, ManagementType(j_management_type),
+                           kUnknownSubscriptionTimestamp, absl::nullopt);
+
+  shopping_service_->IsSubscribed(
+      std::move(sub),
+      base::BindOnce(
+          [](const ScopedJavaGlobalRef<jobject>& callback, bool is_tracked) {
+            base::android::RunBooleanCallbackAndroid(callback, is_tracked);
+          },
+          ScopedJavaGlobalRef<jobject>(j_callback)));
+}
+
+bool ShoppingServiceAndroid::IsSubscribedFromCache(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    jint j_type,
+    jint j_id_type,
+    jint j_management_type,
+    const JavaParamRef<jstring>& j_id) {
+  std::string id = ConvertJavaStringToUTF8(j_id);
+  CHECK(!id.empty());
+
+  CommerceSubscription sub(SubscriptionType(j_type), IdentifierType(j_id_type),
+                           id, ManagementType(j_management_type),
+                           kUnknownSubscriptionTimestamp, absl::nullopt);
+
+  return shopping_service_->IsSubscribedFromCache(std::move(sub));
+}
+
 void ShoppingServiceAndroid::OnSubscribe(
     const std::vector<CommerceSubscription>& subscriptions,
     bool succeeded) {

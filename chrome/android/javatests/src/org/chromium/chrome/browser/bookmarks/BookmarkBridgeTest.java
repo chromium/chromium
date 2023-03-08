@@ -19,20 +19,12 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RequiresRestart;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
-import org.chromium.components.commerce.core.CommerceSubscription;
-import org.chromium.components.commerce.core.IdentifierType;
-import org.chromium.components.commerce.core.ManagementType;
-import org.chromium.components.commerce.core.SubscriptionType;
-import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
-import org.chromium.components.power_bookmarks.ShoppingSpecifics;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.url.GURL;
 
@@ -361,37 +353,5 @@ public class BookmarkBridgeTest {
         Assert.assertEquals(
                 "https://www.google.com/", readingListItem.getUrl().getValidSpecOrEmpty());
         Assert.assertEquals("a", readingListItem.getTitle());
-    }
-
-    @Test
-    @SmallTest
-    @UiThreadTest
-    @Feature({"Bookmark"})
-    @Features.EnableFeatures({ChromeFeatureList.SHOPPING_LIST})
-    public void testProductUnsubscribeUpdatesBookmark() {
-        BookmarkId bookmark =
-                mBookmarkBridge.addBookmark(mMobileNode, 0, "a", new GURL("http://a.com"));
-        verifyBookmark(bookmark, "a", "http://a.com/", false, mMobileNode);
-
-        long offerId = 12345L;
-        ShoppingSpecifics specifics =
-                ShoppingSpecifics.newBuilder().setIsPriceTracked(true).setOfferId(offerId).build();
-        PowerBookmarkMeta meta =
-                PowerBookmarkMeta.newBuilder().setShoppingSpecifics(specifics).build();
-        mBookmarkBridge.setPowerBookmarkMeta(bookmark, meta);
-
-        // Check that the price is tracked prior to sending an unsubscribe event.
-        PowerBookmarkMeta originalMeta = mBookmarkBridge.getPowerBookmarkMeta(bookmark);
-        Assert.assertTrue(originalMeta.getShoppingSpecifics().getIsPriceTracked());
-
-        ArrayList<CommerceSubscription> subscriptions = new ArrayList<>();
-        subscriptions.add(
-                new CommerceSubscription(SubscriptionType.PRICE_TRACK, IdentifierType.OFFER_ID,
-                        Long.toString(offerId), ManagementType.USER_MANAGED, null));
-        mBookmarkBridge.getSubscriptionObserver().onUnsubscribe(subscriptions, true);
-
-        // The product with the unsubscribed ID should no longer be price tracked.
-        PowerBookmarkMeta updatedMeta = mBookmarkBridge.getPowerBookmarkMeta(bookmark);
-        Assert.assertFalse(updatedMeta.getShoppingSpecifics().getIsPriceTracked());
     }
 }

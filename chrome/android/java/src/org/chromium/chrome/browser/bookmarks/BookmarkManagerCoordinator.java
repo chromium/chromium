@@ -63,6 +63,7 @@ public class BookmarkManagerCoordinator implements SearchDelegate, BackPressHand
     private final SnackbarManager mSnackbarManager;
     private final BookmarkPromoHeader mPromoHeaderManager;
     private final BookmarkModel mBookmarkModel;
+    private final Profile mProfile;
 
     /**
      * Creates an instance of {@link BookmarkManager}. It also initializes resources,
@@ -77,6 +78,7 @@ public class BookmarkManagerCoordinator implements SearchDelegate, BackPressHand
     public BookmarkManagerCoordinator(Context context, ComponentName openBookmarkComponentName,
             boolean isDialogUi, boolean isIncognito, SnackbarManager snackbarManager,
             Profile profile) {
+        mProfile = profile;
         mImageFetcher =
                 ImageFetcherFactory.createImageFetcher(ImageFetcherConfig.IN_MEMORY_WITH_DISK_CACHE,
                         profile.getProfileKey(), GlobalDiscardableReferencePool.getReferencePool());
@@ -318,7 +320,7 @@ public class BookmarkManagerCoordinator implements SearchDelegate, BackPressHand
         PowerBookmarkShoppingItemRow row = (PowerBookmarkShoppingItemRow) inflateBookmarkRow(
                 parent, org.chromium.chrome.R.layout.power_bookmark_shopping_item_row);
         // TODO(https://crbug.com/1416611): Move init to view binding.
-        row.init(mImageFetcher, mBookmarkModel, mSnackbarManager);
+        row.init(mImageFetcher, mBookmarkModel, mSnackbarManager, mProfile);
         return row;
     }
 
