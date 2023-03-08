@@ -1527,7 +1527,7 @@ IN_PROC_BROWSER_TEST_F(NavigationMetricsRecorderIDNABrowserTest,
       static_cast<int>(IDNA2008DeviationCharacter::kEszett));
 
   // Should also work with full URLs.
-  TypeTextAndNavigate("http://faß.de/test_url");
+  TypeTextAndNavigate("https://faß.de/test_url");
   histograms.ExpectTotalCount(kHistogram, 3);
   histograms.ExpectBucketCount(kHistogram, false, 1);
   histograms.ExpectBucketCount(kHistogram, true, 2);
@@ -1538,7 +1538,7 @@ IN_PROC_BROWSER_TEST_F(NavigationMetricsRecorderIDNABrowserTest,
   test_ukm_recorder()->ExpectEntrySourceHasUrl(entries[0],
                                                GURL("https://fass.de"));
   test_ukm_recorder()->ExpectEntrySourceHasUrl(entries[1],
-                                               GURL("http://faß.de/test_url"));
+                                               GURL("https://faß.de/test_url"));
   test_ukm_recorder()->ExpectEntryMetric(
       entries[0], "Character",
       static_cast<int>(IDNA2008DeviationCharacter::kEszett));
@@ -1556,7 +1556,7 @@ IN_PROC_BROWSER_TEST_F(NavigationMetricsRecorderIDNABrowserTest,
   histograms.ExpectBucketCount(kHistogram, true, 2);
 
   // Shouldn't record deviation characters outside the hostname.
-  TypeTextAndNavigate("http://example.com/faß");
+  TypeTextAndNavigate("https://example.com/faß");
   histograms.ExpectTotalCount(kHistogram, 4);
   histograms.ExpectBucketCount(kHistogram, false, 2);
   histograms.ExpectBucketCount(kHistogram, true, 2);
