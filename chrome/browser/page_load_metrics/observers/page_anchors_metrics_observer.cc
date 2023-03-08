@@ -91,6 +91,9 @@ void PageAnchorsMetricsObserver::UserInteractionsData::
         1.3));
     builder.Record(ukm_recorder);
   }
+  // Clear the UserInteractionData for the next page load.
+  user_interactions_.clear();
+  navigation_start_to_click_.reset();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(
