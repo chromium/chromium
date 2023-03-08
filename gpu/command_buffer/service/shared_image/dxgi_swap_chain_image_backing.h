@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/service/shared_image/d3d_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
@@ -85,7 +86,8 @@ class GPU_GLES2_EXPORT DXGISwapChainImageBacking
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
   Microsoft::WRL::ComPtr<IDXGISwapChain1> dxgi_swap_chain_;
 
-  scoped_refptr<gles2::TexturePassthrough> gl_texture_;
+  // Holds a gles2::TexturePassthrough and corresponding egl image.
+  scoped_refptr<D3DImageBacking::GLTextureHolder> gl_texture_holder_;
 
   bool first_swap_ = true;
 };

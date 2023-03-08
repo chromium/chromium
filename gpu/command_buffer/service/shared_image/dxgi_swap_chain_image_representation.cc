@@ -53,15 +53,15 @@ GLTexturePassthroughDXGISwapChainBufferRepresentation::
         SharedImageManager* manager,
         SharedImageBacking* backing,
         MemoryTypeTracker* tracker,
-        scoped_refptr<gles2::TexturePassthrough> texture)
+        scoped_refptr<D3DImageBacking::GLTextureHolder> texture_holder)
     : GLTexturePassthroughImageRepresentation(manager, backing, tracker),
-      texture_(std::move(texture)) {}
+      texture_holder_(std::move(texture_holder)) {}
 
 const scoped_refptr<gles2::TexturePassthrough>&
 GLTexturePassthroughDXGISwapChainBufferRepresentation::GetTexturePassthrough(
     int plane_index) {
   DCHECK_EQ(plane_index, 0);
-  return texture_;
+  return texture_holder_->texture_passthrough();
 }
 
 GLTexturePassthroughDXGISwapChainBufferRepresentation::

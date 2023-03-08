@@ -35,7 +35,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "gpu/command_buffer/service/shared_image/d3d_image_backing_factory.h"
-#include "ui/gl/gl_image_d3d.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace gpu {

@@ -7,7 +7,6 @@
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_image/d3d_image_backing.h"
-#include "ui/gl/gl_image_d3d.h"
 #include "ui/gl/scoped_restore_texture.h"
 
 namespace gpu {
@@ -17,9 +16,10 @@ GLTexturePassthroughD3DImageRepresentation::
         SharedImageManager* manager,
         SharedImageBacking* backing,
         MemoryTypeTracker* tracker,
-        std::vector<scoped_refptr<gles2::TexturePassthrough>> textures)
+        std::vector<scoped_refptr<D3DImageBacking::GLTextureHolder>>
+            gl_texture_holders)
     : GLTexturePassthroughImageRepresentation(manager, backing, tracker),
-      textures_(std::move(textures)) {}
+      gl_texture_holders_(std::move(gl_texture_holders)) {}
 
 GLTexturePassthroughD3DImageRepresentation::
     ~GLTexturePassthroughD3DImageRepresentation() = default;
@@ -32,7 +32,12 @@ bool GLTexturePassthroughD3DImageRepresentation::
 const scoped_refptr<gles2::TexturePassthrough>&
 GLTexturePassthroughD3DImageRepresentation::GetTexturePassthrough(
     int plane_index) {
-  return textures_[plane_index];
+  return gl_texture_holders_[plane_index]->texture_passthrough();
+}
+
+void* GLTexturePassthroughD3DImageRepresentation::GetEGLImage() {
+  DCHECK(format().is_single_plane());
+  return gl_texture_holders_[0]->egl_image();
 }
 
 bool GLTexturePassthroughD3DImageRepresentation::BeginAccess(GLenum mode) {

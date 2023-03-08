@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
+#include "gpu/command_buffer/service/shared_image/d3d_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
@@ -21,8 +22,6 @@
 
 namespace gpu {
 
-class D3DImageBacking;
-
 // Representation of a D3DImageBacking as a GL TexturePassthrough.
 class GLTexturePassthroughD3DImageRepresentation
     : public GLTexturePassthroughImageRepresentation {
@@ -31,7 +30,8 @@ class GLTexturePassthroughD3DImageRepresentation
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
-      std::vector<scoped_refptr<gles2::TexturePassthrough>> textures);
+      std::vector<scoped_refptr<D3DImageBacking::GLTextureHolder>>
+          texture_holders);
   ~GLTexturePassthroughD3DImageRepresentation() override;
 
   bool NeedsSuspendAccessForDXGIKeyedMutex() const override;
@@ -39,11 +39,15 @@ class GLTexturePassthroughD3DImageRepresentation
   const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough(
       int plane_index) override;
 
+  void* GetEGLImage();
+
  private:
   bool BeginAccess(GLenum mode) override;
   void EndAccess() override;
 
-  std::vector<scoped_refptr<gles2::TexturePassthrough>> textures_;
+  // Holds a gles2::TexturePassthrough and corresponding egl image.
+  std::vector<scoped_refptr<D3DImageBacking::GLTextureHolder>>
+      gl_texture_holders_;
 };
 
 // Representation of a D3DImageBacking as a Dawn Texture

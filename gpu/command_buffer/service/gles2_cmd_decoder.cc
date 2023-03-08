@@ -134,10 +134,6 @@
 #include <OpenGL/CGLIOSurface.h>
 #endif  // BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(IS_WIN)
-#include "ui/gl/gl_image_d3d.h"
-#endif
-
 // Note: this undefs far and near so include this after other Windows headers.
 #include "third_party/angle/src/image_util/loadimage.h"
 

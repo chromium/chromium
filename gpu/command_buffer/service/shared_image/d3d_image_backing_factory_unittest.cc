@@ -236,6 +236,30 @@ TEST_F(D3DImageBackingFactoryTestSwapChain, CreateAndPresentSwapChain) {
   ASSERT_TRUE(backings.back_buffer);
   EXPECT_TRUE(backings.back_buffer->IsCleared());
 
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture;
+  auto* back_buffer_d3d_backing =
+      static_cast<D3DImageBacking*>(backings.back_buffer.get());
+  auto* front_buffer_d3d_backing =
+      static_cast<D3DImageBacking*>(backings.front_buffer.get());
+  ASSERT_TRUE(back_buffer_d3d_backing);
+  ASSERT_TRUE(front_buffer_d3d_backing);
+
+  EXPECT_EQ(S_OK, back_buffer_d3d_backing->GetSwapChainForTesting()->GetBuffer(
+                      /*buffer_index=*/0, IID_PPV_ARGS(&d3d11_texture)));
+  EXPECT_TRUE(d3d11_texture);
+  EXPECT_EQ(d3d11_texture,
+            back_buffer_d3d_backing->GetD3D11TextureForTesting());
+  d3d11_texture.Reset();
+
+  EXPECT_EQ(back_buffer_d3d_backing->GetSwapChainForTesting(),
+            front_buffer_d3d_backing->GetSwapChainForTesting());
+  EXPECT_EQ(S_OK, front_buffer_d3d_backing->GetSwapChainForTesting()->GetBuffer(
+                      /*buffer_index=*/1, IID_PPV_ARGS(&d3d11_texture)));
+  EXPECT_TRUE(d3d11_texture);
+  EXPECT_EQ(d3d11_texture,
+            front_buffer_d3d_backing->GetD3D11TextureForTesting());
+  d3d11_texture.Reset();
+
   std::unique_ptr<SharedImageRepresentationFactoryRef> back_factory_ref =
       shared_image_manager_.Register(std::move(backings.back_buffer),
                                      memory_type_tracker_.get());
@@ -243,46 +267,41 @@ TEST_F(D3DImageBackingFactoryTestSwapChain, CreateAndPresentSwapChain) {
       shared_image_manager_.Register(std::move(backings.front_buffer),
                                      memory_type_tracker_.get());
 
-  auto back_texture = shared_image_representation_factory_
-                          ->ProduceGLTexturePassthrough(back_buffer_mailbox)
-                          ->GetTexturePassthrough();
+  auto back_gl_representation =
+      shared_image_representation_factory_->ProduceGLTexturePassthrough(
+          back_buffer_mailbox);
+  EXPECT_TRUE(back_gl_representation);
+
+  std::unique_ptr<GLTexturePassthroughImageRepresentation::ScopedAccess>
+      back_scoped_access = back_gl_representation->BeginScopedAccess(
+          GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM,
+          SharedImageRepresentation::AllowUnclearedAccess::kYes);
+  EXPECT_TRUE(back_scoped_access);
+
+  auto back_texture = back_gl_representation->GetTexturePassthrough();
   ASSERT_TRUE(back_texture);
   EXPECT_EQ(back_texture->target(), static_cast<unsigned>(GL_TEXTURE_2D));
 
   GLuint back_texture_id = back_texture->service_id();
   EXPECT_NE(back_texture_id, 0u);
 
-  auto* back_image =
-      gl::GLImage::ToGLImageD3D(back_texture->GetLevelImage(GL_TEXTURE_2D, 0));
+  auto front_gl_representation =
+      shared_image_representation_factory_->ProduceGLTexturePassthrough(
+          front_buffer_mailbox);
+  EXPECT_TRUE(front_gl_representation);
 
-  auto front_texture = shared_image_representation_factory_
-                           ->ProduceGLTexturePassthrough(front_buffer_mailbox)
-                           ->GetTexturePassthrough();
+  std::unique_ptr<GLTexturePassthroughImageRepresentation::ScopedAccess>
+      front_scoped_access = front_gl_representation->BeginScopedAccess(
+          GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM,
+          SharedImageRepresentation::AllowUnclearedAccess::kYes);
+  EXPECT_TRUE(front_scoped_access);
+
+  auto front_texture = front_gl_representation->GetTexturePassthrough();
   ASSERT_TRUE(front_texture);
   EXPECT_EQ(front_texture->target(), static_cast<unsigned>(GL_TEXTURE_2D));
 
   GLuint front_texture_id = front_texture->service_id();
   EXPECT_NE(front_texture_id, 0u);
-
-  auto* front_image =
-      gl::GLImage::ToGLImageD3D(front_texture->GetLevelImage(GL_TEXTURE_2D, 0));
-
-  ASSERT_TRUE(back_image);
-
-  Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture;
-  EXPECT_EQ(S_OK, back_image->swap_chain()->GetBuffer(
-                      /*buffer_index=*/0, IID_PPV_ARGS(&d3d11_texture)));
-  EXPECT_TRUE(d3d11_texture);
-  EXPECT_EQ(d3d11_texture, back_image->texture());
-  d3d11_texture.Reset();
-
-  ASSERT_TRUE(front_image);
-
-  EXPECT_EQ(S_OK, front_image->swap_chain()->GetBuffer(
-                      /*buffer_index=*/1, IID_PPV_ARGS(&d3d11_texture)));
-  EXPECT_TRUE(d3d11_texture);
-  EXPECT_EQ(d3d11_texture, front_image->texture());
-  d3d11_texture.Reset();
 
   gl::GLApi* api = gl::g_current_gl_context;
   // Create a multisampled FBO.
