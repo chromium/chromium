@@ -45,8 +45,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -1112,17 +1110,6 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
                 mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter();
         if (filter == null) return;
         RecordHistogram.recordCount1MHistogram(TAB_ENTRIES_HISTOGRAM, filter.getCount());
-    }
-
-    private int getTabCount() {
-        if (mTabModelSelector.isTabStateInitialized()) {
-            return mTabModelSelector.getTabModelFilterProvider()
-                    .getCurrentTabModelFilter()
-                    .getCount();
-        } else {
-            return SharedPreferencesManager.getInstance().readInt(
-                    ChromePreferenceKeys.REGULAR_TAB_COUNT);
-        }
     }
 
     private void notifyBackPressStateChanged(boolean noop) {
