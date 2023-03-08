@@ -2335,6 +2335,56 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
                     .empty());
   }
 
+  // Invalid bucket dictionary, whose scale is NaN.
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary bucket_dict =
+        gin::Dictionary::CreateEmpty(helper_->isolate());
+    bucket_dict.Set("baseValue", std::string("winningBid"));
+    bucket_dict.Set("scale", std::numeric_limits<double>::quiet_NaN());
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", bucket_dict);
+    dict.Set("value", 1);
+
+    Run(scope, script, "test", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
+    EXPECT_THAT(error_msgs,
+                ElementsAre("https://example.org/script.js:12 Uncaught "
+                            "TypeError: Invalid bucket dictionary."));
+
+    EXPECT_TRUE(context_recycler.private_aggregation_bindings()
+                    ->TakePrivateAggregationRequests()
+                    .empty());
+  }
+
+  // Invalid bucket dictionary, whose scale is infinity.
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary bucket_dict =
+        gin::Dictionary::CreateEmpty(helper_->isolate());
+    bucket_dict.Set("baseValue", std::string("winningBid"));
+    bucket_dict.Set("scale", std::numeric_limits<double>::infinity());
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", bucket_dict);
+    dict.Set("value", 1);
+
+    Run(scope, script, "test", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
+    EXPECT_THAT(error_msgs,
+                ElementsAre("https://example.org/script.js:12 Uncaught "
+                            "TypeError: Invalid bucket dictionary."));
+
+    EXPECT_TRUE(context_recycler.private_aggregation_bindings()
+                    ->TakePrivateAggregationRequests()
+                    .empty());
+  }
+
   // Invalid bucket dictionary, whose offset is not a BigInt.
   {
     ContextRecyclerScope scope(context_recycler);

@@ -106,8 +106,10 @@ absl::optional<auction_worklet::mojom::SignalBucketPtr> GetSignalBucket(
     if (!js_scale->IsNumber()) {
       return absl::nullopt;
     }
-    // TODO(qingxinwu): Return empty if scale is NaN or infinite.
     scale = js_scale.As<v8::Number>()->Value();
+    if (!std::isfinite(scale)) {
+      return absl::nullopt;
+    }
   }
 
   v8::Local<v8::Value> js_offset;
@@ -161,8 +163,10 @@ absl::optional<auction_worklet::mojom::SignalValuePtr> GetSignalValue(
     if (!js_scale->IsNumber()) {
       return absl::nullopt;
     }
-    // TODO(b/266615909): Disallow scale being NaN or infinite.
     scale = js_scale.As<v8::Number>()->Value();
+    if (!std::isfinite(scale)) {
+      return absl::nullopt;
+    }
   }
 
   v8::Local<v8::Value> js_offset;
