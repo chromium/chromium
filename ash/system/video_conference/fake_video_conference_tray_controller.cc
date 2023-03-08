@@ -40,10 +40,9 @@ FakeVideoConferenceTrayController::~FakeVideoConferenceTrayController() {
 }
 
 void FakeVideoConferenceTrayController::SetCameraMuted(bool muted) {
-  camera_muted_ = muted;
   OnCameraSWPrivacySwitchStateChanged(
-      camera_muted_ ? cros::mojom::CameraPrivacySwitchState::ON
-                    : cros::mojom::CameraPrivacySwitchState::OFF);
+      muted ? cros::mojom::CameraPrivacySwitchState::ON
+            : cros::mojom::CameraPrivacySwitchState::OFF);
 }
 
 void FakeVideoConferenceTrayController::SetMicrophoneMuted(bool muted) {
@@ -53,11 +52,11 @@ void FakeVideoConferenceTrayController::SetMicrophoneMuted(bool muted) {
 }
 
 bool FakeVideoConferenceTrayController::GetCameraMuted() {
-  return camera_muted();
+  return camera_muted_by_software_switch();
 }
 
 bool FakeVideoConferenceTrayController::GetMicrophoneMuted() {
-  return microphone_muted();
+  return microphone_muted_;
 }
 
 void FakeVideoConferenceTrayController::GetMediaApps(

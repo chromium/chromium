@@ -298,12 +298,12 @@ TEST_F(VideoConferenceTrayTest, ToggleCameraButton) {
 
   // Click the button should mute the camera.
   LeftClickOn(camera_icon());
-  EXPECT_TRUE(controller()->camera_muted());
+  EXPECT_TRUE(controller()->GetCameraMuted());
   EXPECT_TRUE(camera_icon()->toggled());
 
   // Toggle again, should be unmuted.
   LeftClickOn(camera_icon());
-  EXPECT_FALSE(controller()->camera_muted());
+  EXPECT_FALSE(controller()->GetCameraMuted());
   EXPECT_FALSE(camera_icon()->toggled());
 }
 
@@ -314,12 +314,12 @@ TEST_F(VideoConferenceTrayTest, ToggleMicrophoneButton) {
 
   // Click the button should mute the microphone.
   LeftClickOn(audio_icon());
-  EXPECT_TRUE(controller()->microphone_muted());
+  EXPECT_TRUE(controller()->GetMicrophoneMuted());
   EXPECT_TRUE(audio_icon()->toggled());
 
   // Toggle again, should be unmuted.
   LeftClickOn(audio_icon());
-  EXPECT_FALSE(controller()->microphone_muted());
+  EXPECT_FALSE(controller()->GetMicrophoneMuted());
   EXPECT_FALSE(audio_icon()->toggled());
 }
 
@@ -454,7 +454,7 @@ TEST_F(VideoConferenceTrayTest, CameraButtonToggleAcrossDisplays) {
 
   // Mute the camera on the primary display.
   LeftClickOn(camera_icon());
-  ASSERT_TRUE(controller()->camera_muted());
+  ASSERT_TRUE(controller()->GetCameraMuted());
   ASSERT_TRUE(camera_icon()->toggled());
 
   // The secondary display camera icon should be toggled.
@@ -470,7 +470,7 @@ TEST_F(VideoConferenceTrayTest, CameraButtonToggleAcrossDisplays) {
 
   // The primary display camera icon should also not be toggled and the camera
   // should not be muted.
-  EXPECT_FALSE(controller()->camera_muted());
+  EXPECT_FALSE(controller()->GetCameraMuted());
   EXPECT_FALSE(camera_icon()->toggled());
 }
 
@@ -483,7 +483,7 @@ TEST_F(VideoConferenceTrayTest, AudioButtonToggleAcrossDisplays) {
 
   // Mute the audio on the primary display.
   LeftClickOn(audio_icon());
-  ASSERT_TRUE(controller()->microphone_muted());
+  ASSERT_TRUE(controller()->GetMicrophoneMuted());
   ASSERT_TRUE(audio_icon()->toggled());
 
   // The secondary display audio icon should be toggled.
@@ -498,7 +498,7 @@ TEST_F(VideoConferenceTrayTest, AudioButtonToggleAcrossDisplays) {
 
   // The primary display audio icon should also not be toggled and the audio
   // should not be muted.
-  EXPECT_FALSE(controller()->microphone_muted());
+  EXPECT_FALSE(controller()->GetMicrophoneMuted());
   EXPECT_FALSE(audio_icon()->toggled());
 }
 

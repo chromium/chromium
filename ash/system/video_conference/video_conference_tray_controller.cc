@@ -178,7 +178,7 @@ void VideoConferenceTrayController::ReturnToApp(
 void VideoConferenceTrayController::OnCameraSWPrivacySwitchStateChanged(
     cros::mojom::CameraPrivacySwitchState state) {
   camera_muted_by_software_switch_ =
-      state != cros::mojom::CameraPrivacySwitchState::ON;
+      state == cros::mojom::CameraPrivacySwitchState::ON;
 
   for (auto* root_window_controller :
        Shell::Get()->GetAllRootWindowControllers()) {
@@ -189,7 +189,7 @@ void VideoConferenceTrayController::OnCameraSWPrivacySwitchStateChanged(
                             ->video_conference_tray()
                             ->camera_icon();
 
-    camera_icon->SetToggled(!camera_muted_by_software_switch_);
+    camera_icon->SetToggled(camera_muted_by_software_switch_);
     camera_icon->UpdateCapturingState();
   }
 }

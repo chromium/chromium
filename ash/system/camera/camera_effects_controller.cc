@@ -376,6 +376,7 @@ void CameraEffectsController::InitializeEffectControls() {
         /*state_value=*/BackgroundBlurEffectState::kMaximum,
         /*string_id=*/
         IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_FULL);
+    effect->set_dependency_flags(VcHostedEffect::ResourceDependency::kCamera);
     AddEffect(std::move(effect));
   }
 
@@ -403,6 +404,7 @@ void CameraEffectsController::InitializeEffectControls() {
             /*effect_id=*/
             static_cast<int>(cros::mojom::CameraEffect::kPortraitRelight),
             /*value=*/absl::nullopt)));
+    effect->set_dependency_flags(VcHostedEffect::ResourceDependency::kCamera);
     AddEffect(std::move(effect));
   }
 

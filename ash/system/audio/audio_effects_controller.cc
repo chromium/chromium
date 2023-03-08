@@ -138,6 +138,7 @@ void AudioEffectsController::AddNoiseCancellationEffect() {
                           /*effect_id=*/
                           static_cast<int>(AudioEffectId::kNoiseCancellation),
                           /*value=*/0)));
+  effect->set_dependency_flags(VcHostedEffect::ResourceDependency::kMicrophone);
   AddEffect(std::move(effect));
 }
 

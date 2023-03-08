@@ -9,6 +9,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/command_line.h"
@@ -248,6 +249,23 @@ TEST_F(CameraEffectsControllerTest, PrefOnCameraEffectChanged) {
             CameraEffectsController::BackgroundBlurEffectState::kOff);
   EXPECT_FALSE(GetPortraitRelightingEffectState());
   EXPECT_FALSE(GetPortraitRelightingPref());
+}
+
+TEST_F(CameraEffectsControllerTest, ResourceDependencyFlags) {
+  SimulateUserLogin("testuser@gmail.com");
+
+  // Makes sure that all registered effects have the correct dependency flag.
+  auto* background_blur = camera_effects_controller()->GetEffect(0);
+  ASSERT_EQ(static_cast<int>(cros::mojom::CameraEffect::kBackgroundBlur),
+            background_blur->id());
+  EXPECT_EQ(VcHostedEffect::ResourceDependency::kCamera,
+            background_blur->dependency_flags());
+
+  auto* portrait_relight = camera_effects_controller()->GetEffect(1);
+  ASSERT_EQ(static_cast<int>(cros::mojom::CameraEffect::kPortraitRelight),
+            portrait_relight->id());
+  EXPECT_EQ(VcHostedEffect::ResourceDependency::kCamera,
+            portrait_relight->dependency_flags());
 }
 
 }  // namespace
