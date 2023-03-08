@@ -29,6 +29,7 @@
 #include <windows.h>
 #elif BUILDFLAG(IS_APPLE)
 #include <malloc/malloc.h>
+
 #include "base/allocator/partition_allocator/shim/allocator_interception_mac.h"
 #include "third_party/apple_apsl/malloc.h"
 #else
@@ -108,12 +109,13 @@ class AllocatorShimTest : public testing::Test {
                            size_t size,
                            void* context) {
     if (instance_) {
-      // Size 0xFEED a special sentinel for the NewHandlerConcurrency test.
+      // Size 0xFEED is a special sentinel for the NewHandlerConcurrency test.
       // Hitting it for the first time will cause a failure, causing the
       // invocation of the std::new_handler.
       if (size == 0xFEED) {
         if (!instance_->did_fail_realloc_0xfeed_once->Get()) {
-          instance_->did_fail_realloc_0xfeed_once->Set(true);
+          instance_->did_fail_realloc_0xfeed_once->Set(
+              instance_->did_fail_realloc_0xfeed_once.get());
           return nullptr;
         }
         return address;
@@ -258,7 +260,8 @@ class AllocatorShimTest : public testing::Test {
     aligned_reallocs_intercepted_by_size.resize(MaxSizeTracked());
     aligned_reallocs_intercepted_by_addr.resize(MaxSizeTracked());
     aligned_frees_intercepted_by_addr.resize(MaxSizeTracked());
-    did_fail_realloc_0xfeed_once = std::make_unique<base::ThreadLocalBoolean>();
+    did_fail_realloc_0xfeed_once =
+        std::make_unique<base::ThreadLocalStorage::Slot>();
     num_new_handler_calls.store(0, std::memory_order_release);
     instance_ = this;
 
@@ -300,7 +303,7 @@ class AllocatorShimTest : public testing::Test {
   std::vector<size_t> aligned_reallocs_intercepted_by_size;
   std::vector<size_t> aligned_reallocs_intercepted_by_addr;
   std::vector<size_t> aligned_frees_intercepted_by_addr;
-  std::unique_ptr<base::ThreadLocalBoolean> did_fail_realloc_0xfeed_once;
+  std::unique_ptr<base::ThreadLocalStorage::Slot> did_fail_realloc_0xfeed_once;
   std::atomic<uint32_t> num_new_handler_calls;
 
  private:
