@@ -243,6 +243,7 @@
     connectSharedWorker().then(() => {
       sharedWorker.port.onmessage = e => {
         domAutomationController.send(e.data.value === "foo");
+        sharedWorker.port.onmessage = null; // Only send a single response via domAutomationController.
       };
       sharedWorker.port.postMessage({});
     }).catch(failure_);
