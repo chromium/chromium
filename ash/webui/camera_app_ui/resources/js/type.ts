@@ -133,7 +133,6 @@ export enum Facing {
 
 export enum ViewName {
   CAMERA = 'view-camera',
-  DOCUMENT_MODE_DIALOG = 'view-document-mode-dialog',
   DOCUMENT_REVIEW = 'view-document-review',
   EXPERT_SETTINGS = 'view-expert-settings',
   FLASH = 'view-flash',
@@ -474,9 +473,6 @@ export class CameraSuspendError extends Error {
  */
 export enum LocalStorageKey {
   CUSTOM_VIDEO_PARAMETERS = 'customVideoParameters',
-  DOC_MODE_DIALOG_SHOWN = 'isDocModeDialogShown',
-  DOC_MODE_MULTI_PAGE_TOAST_SHOWN = 'isDocModeMultiPageToastShown',
-  DOC_MODE_TOAST_SHOWN = 'isDocModeToastShown',
   ENABLE_FPS_PICKER = 'enableFPSPicker',
   ENABLE_FULL_SIZED_VIDEO_SNAPSHOT = 'enableFullSizedVideoSnapshot',
   ENABLE_MULTISTREAM_RECORDING = 'enableMultistreamRecording',
@@ -491,7 +487,6 @@ export enum LocalStorageKey {
   PREF_DEVICE_VIDEO_RESOLUTION_FPS = 'deviceVideoResolutionFps',
   PREF_DEVICE_VIDEO_RESOLUTION_LEVEL = 'deviceVideoResolutionLevel',
   PRINT_PERFORMANCE_LOGS = 'printPerformanceLogs',
-  PTZ_TOAST_SHOWN = 'isPTZToastShown',
   SAVE_METADATA = 'saveMetadata',
   SHOW_ALL_RESOLUTIONS = 'showAllResolutions',
   SHOW_METADATA = 'showMetadata',

@@ -2,6 +2,31 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
+/*
+Use these custom properties to control the feature toasts, for example:
+
+#my-new-feature-button {
+  --ripple-start-height: 20px;
+  --ripple-start-width: 54px;
+
+  --toast-ref-x: right;
+  --toast-element-ref-x: right;
+  --toast-offset-x: 0;
+
+  --toast-ref-y: bottom;
+  --toast-element-ref-y: top;
+  --toast-offset-y: -30px;
+
+  --indicator-dot-ref-x: left;
+  --indicator-dot-element-ref-x: center;
+  --indicator-dot-offset-x: 0px;
+
+  --indicator-dot-ref-y: bottom;
+  --indicator-dot-element-ref-y: top;
+  --indicator-dot-offset-y: -14px;
+}
+*/
+
 @property --ripple-start-width {
   syntax: '<length>';
   inherits: false;

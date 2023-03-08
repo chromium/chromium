@@ -475,18 +475,6 @@ body.doc-mode-reviewing :is(#back-to-review-document, #document-page-count) {
 
 .document-preview-mode button[i18n-aria=add_new_page_button] {
   background-image: url(/images/document_review_add_page.svg);
-  --toast-ref-x: left;
-  --toast-element-ref-x: left;
-  --toast-offset-x: -24px;
-  --toast-ref-y: bottom;
-  --toast-element-ref-y: top;
-  --toast-offset-y: -24px;
-  --indicator-dot-ref-x: left;
-  --indicator-dot-element-ref-x: center;
-  --indicator-dot-offset-x: 0px;
-  --indicator-dot-ref-y: bottom;
-  --indicator-dot-element-ref-y: top;
-  --indicator-dot-offset-y: 0px;
 }
 
 .document-preview-mode button[i18n-aria=label_share] {

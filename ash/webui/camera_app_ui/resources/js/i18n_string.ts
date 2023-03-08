@@ -34,12 +34,6 @@ export enum I18nString {
   DIALOG_CANCEL_BUTTON = 'dialog_cancel_button',
   DIALOG_OK_BUTTON = 'dialog_ok_button',
   DOCUMENT_CORNER_MOVE_DESC = 'document_corner_move_desc',
-  DOCUMENT_MODE_DIALOG_GOT_IT = 'document_mode_dialog_got_it',
-  DOCUMENT_MODE_DIALOG_INTRO_TITLE = 'document_mode_dialog_intro_title',
-  DOCUMENT_MODE_DIALOG_MSG = 'document_mode_dialog_msg',
-  DOCUMENT_MODE_MULTI_PAGE_TOAST = 'document_mode_multi_page_toast',
-  DOWNLOADING_DOCUMENT_SCANNING_FEATURE =
-      'downloading_document_scanning_feature',
   ERROR_MSG_CAMERA_PAUSED = 'error_msg_camera_paused',
   ERROR_MSG_EMPTY_RECORDING = 'error_msg_empty_recording',
   ERROR_MSG_FILE_SYSTEM_FAILED = 'error_msg_file_system_failed',
@@ -132,9 +126,6 @@ export enum I18nString {
   // I18nString.NAME: Bypass the presubmit check for unused strings. Used here:
   // https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ash/web_applications/camera_app/camera_system_web_app_info.cc
   // NAME = 'name',
-  NEW_CONTROL_NAVIGATION = 'new_control_navigation',
-  NEW_CONTROL_TOAST = 'new_control_toast',
-  NEW_DOCUMENT_SCAN_TOAST = 'new_document_scan_toast',
   NEXT_PAGE_COUNT = 'next_page_count',
   NO_DOCUMENT_GUIDE_MSG = 'no_document_guide_msg',
   OPEN_GRID_PANEL_BUTTON = 'open_grid_panel_button',

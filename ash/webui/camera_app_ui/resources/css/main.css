@@ -622,9 +622,6 @@ body:not(.enable-ptz) #open-ptz-panel {
 }
 
 #open-ptz-panel {
-  --ripple-spread-ratio: 2;
-  --ripple-start-radius: 18px;
-
   background-image: url(/images/camera_button_ptz_panel_off.svg);
 }
 
@@ -691,7 +688,6 @@ body.doc-mode-reviewing #open-settings {
 }
 
 #view-camera,
-#view-document-mode-dialog,
 #view-document-review,
 #view-option-panel,
 #view-ptz-panel,
@@ -720,7 +716,6 @@ body.doc-mode-reviewing #open-settings {
 }
 
 body.view-camera #view-camera,
-body.view-document-mode-dialog #view-document-mode-dialog,
 body.view-document-review #view-document-review,
 body.view-option-panel #view-option-panel,
 body.view-ptz-panel #view-ptz-panel,

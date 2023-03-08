@@ -10,7 +10,6 @@
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/button.css">
     <link rel="stylesheet" href="/css/custom_toast.css">
-    <link rel="stylesheet" href="/css/document_mode_dialog.css">
     <link rel="stylesheet" href="/css/flash.css">
     <link rel="stylesheet" href="/css/inkdrop.css">
     <link rel="stylesheet" href="/css/mode/mode.css">
@@ -138,8 +137,7 @@
         <button id="open-grid-panel" tabindex="0" aria-haspopup="true"></button>
         <button id="open-timer-panel" tabindex="0" aria-haspopup="true">
         <button id="open-ptz-panel" tabindex="0" aria-haspopup="true"
-                i18n-label="open_ptz_panel_button"
-                i18n-new-feature="new_control_toast"></button>
+                i18n-label="open_ptz_panel_button"></button>
         </button>
       </div>
       <div id="scan-modes-group" class="mode-subgroup" role="radiogroup"
@@ -455,27 +453,6 @@
       <div class="document-pages" role="tablist" i18n-aria="scanned_page_list"
         aria-orientation="vertical"></div>
       <div class="document-preview" role="tabpanel"></div>
-    </div>
-    <div id="view-document-mode-dialog">
-      <div class="dialog-popup" role="dialog" aria-labelledby="dialog-msg"
-           aria-live="polite">
-        <div id="icon-scan-area">
-          <div class="scan-line"></div>
-          <div class="scan-corner top left"></div>
-          <div class="scan-corner top right"></div>
-          <div class="scan-corner bottom right"></div>
-          <div class="scan-corner bottom left"></div>
-          <div id="icon-document-area">
-            <div id="icon-document-g"></div>
-          </div>
-        </div>
-        <div class="dialog-title dialog-msg-holder"></div>
-        <div class="dialog-description" i18n-text="document_mode_dialog_msg">
-        </div>
-        <button class="dialog-positive-button text-button pill primary dark
-                inkdrop" tabindex="0" i18n-text="document_mode_dialog_got_it">
-        </button>
-      </div>
     </div>
     <div id="view-low-storage-dialog" class="dialog">
       <div class="low-storage-dialog-popup" role="dialog"

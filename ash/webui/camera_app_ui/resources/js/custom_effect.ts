@@ -7,7 +7,6 @@ import {assertExists, assertNotReached} from './assert.js';
 import * as dom from './dom.js';
 import {I18nString} from './i18n_string.js';
 import * as loadTimeData from './models/load_time_data.js';
-import {ChromeHelper} from './mojo/chrome_helper.js';
 import {speakMessage} from './spoken_msg.js';
 import * as state from './state.js';
 import * as util from './util.js';
@@ -104,9 +103,7 @@ type PositionInfos = Array<{
 }>;
 
 export enum IndicatorType {
-  DOC_MODE_MULTI_PAGE_AVAILABLE = 'doc_mode_multi_scan_available',
-  DOC_SCAN_AVAILABLE = 'doc_scan_available',
-  DOWNLOAD_DOCUMENT_SCANNER = 'download_document_scanner',
+  // NEW_FEATURE = 'new_feature',
 }
 
 /**
@@ -133,12 +130,6 @@ export function setup(): void {
 
 function getIndicatorI18nStringId(indicatorType: IndicatorType): I18nString {
   switch (indicatorType) {
-    case IndicatorType.DOWNLOAD_DOCUMENT_SCANNER:
-      return I18nString.DOWNLOADING_DOCUMENT_SCANNING_FEATURE;
-    case IndicatorType.DOC_SCAN_AVAILABLE:
-      return I18nString.NEW_DOCUMENT_SCAN_TOAST;
-    case IndicatorType.DOC_MODE_MULTI_PAGE_AVAILABLE:
-      return I18nString.DOCUMENT_MODE_MULTI_PAGE_TOAST;
     default:
       assertNotReached();
   }
@@ -146,13 +137,8 @@ function getIndicatorI18nStringId(indicatorType: IndicatorType): I18nString {
 
 function getIndicatorIcon(indicatorType: IndicatorType): string|null {
   switch (indicatorType) {
-    case IndicatorType.DOWNLOAD_DOCUMENT_SCANNER:
-      return '/images/download_dlc_toast_icon.svg';
-    case IndicatorType.DOC_SCAN_AVAILABLE:
-    case IndicatorType.DOC_MODE_MULTI_PAGE_AVAILABLE:
-      return '/images/new_feature_toast_icon.svg';
     default:
-      return null;
+      return '/images/new_feature_toast_icon.svg';
   }
 }
 
@@ -259,8 +245,9 @@ class NewFeatureToast extends Toast {
         dom.getFrom(template, '.custom-toast-text', HTMLSpanElement);
     const text = loadTimeData.getI18nMessage(i18nId);
     textElement.textContent = text;
-    const ariaLabel =
-        loadTimeData.getI18nMessage(I18nString.NEW_CONTROL_NAVIGATION, text);
+    const ariaLabelI18nId = util.assertEnumVariant(
+        I18nString, anchor.getAttribute('i18n-new-feature-label'));
+    const ariaLabel = loadTimeData.getI18nMessage(ariaLabelI18nId, text);
     toast.setAttribute('aria-label', ariaLabel);
 
     super(
@@ -414,35 +401,4 @@ export function focus(): void {
     return;
   }
   globalEffectPayload.toast.focus();
-}
-
-/**
- * Shows feature visual effect for PTZ options entry.
- */
-export function showPtzToast(parent: HTMLElement): void {
-  const ptzPanelEntry = dom.get('#open-ptz-panel', HTMLButtonElement);
-  const {hide, focusToast} = showNewFeature(ptzPanelEntry, parent);
-  focusToast();
-  ptzPanelEntry.addEventListener('click', hide, {once: true});
-}
-
-/**
- * Shows document scan feature is available indicator on the scan mode button.
- */
-export function showDocScanAvailableIndicator(parent: HTMLElement): void {
-  const scanModeButton = dom.get('input[data-mode="scan"]', HTMLInputElement);
-  showIndicator(scanModeButton, IndicatorType.DOC_SCAN_AVAILABLE, parent);
-}
-
-/**
- * Shows loading indicator toast for document mode when it's supported but not
- * yet ready.
- */
-export async function showDownloadingDocScanIndicator(parent: HTMLElement):
-    Promise<void> {
-  const docModeButton = dom.get('#scan-document-option', HTMLDivElement);
-  const {hide} = showIndicator(
-      docModeButton, IndicatorType.DOWNLOAD_DOCUMENT_SCANNER, parent);
-  await ChromeHelper.getInstance().checkDocumentModeReadiness();
-  hide();
 }

@@ -5,7 +5,6 @@
 css_files = [
   "button.css",
   "custom_toast.css",
-  "document_mode_dialog.css",
   "flash.css",
   "inkdrop.css",
   "main.css",

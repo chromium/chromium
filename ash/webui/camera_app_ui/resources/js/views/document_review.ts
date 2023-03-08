@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {assert, assertInstanceof, assertNotReached} from '../assert.js';
-import {IndicatorType, showIndicator} from '../custom_effect.js';
 import * as dom from '../dom.js';
 import {Point} from '../geometry.js';
 import {I18nString} from '../i18n_string.js';
@@ -16,17 +15,12 @@ import {
 } from '../metrics.js';
 import {Filenamer} from '../models/file_namer.js';
 import {getI18nMessage} from '../models/load_time_data.js';
-import {
-  getBool as getLocalStorage,
-  set as setLocalStorage,
-} from '../models/local_storage.js';
 import {ResultSaver} from '../models/result_saver.js';
 import {ChromeHelper} from '../mojo/chrome_helper.js';
 import * as nav from '../nav.js';
 import {speakMessage} from '../spoken_msg.js';
 import {show as showToast} from '../toast.js';
 import {
-  LocalStorageKey,
   MimeType,
   Rotation,
   ViewName,
@@ -116,12 +110,6 @@ export class DocumentReview extends View {
    * payload.
    */
   private pendingUpdatePayload: [number, PageInternal]|null = null;
-
-  /**
-   * The function to hide the multi-page available indicator at leave. Should be
-   * set once the indicator shows.
-   */
-  private hideMultiPageAvailableIndicator: (() => void)|null = null;
 
   /**
    * Count the fix times of each session (reset when page count is zero) for
@@ -323,9 +311,6 @@ export class DocumentReview extends View {
       this.modes[mode].show();
       this.mode = mode;
     }
-    if (this.mode === Mode.PREVIEW) {
-      this.showMultiPageAvailableIndicatorAtFirstTime();
-    }
   }
 
   /**
@@ -488,25 +473,7 @@ export class DocumentReview extends View {
     return dom.getFrom(node, `.${this.classes.thumbnail}`, HTMLImageElement);
   }
 
-  private showMultiPageAvailableIndicatorAtFirstTime() {
-    if (getLocalStorage(LocalStorageKey.DOC_MODE_MULTI_PAGE_TOAST_SHOWN)) {
-      return;
-    }
-    setLocalStorage(LocalStorageKey.DOC_MODE_MULTI_PAGE_TOAST_SHOWN, true);
-    const addPageButton = dom.getFrom(
-        this.root, 'button[i18n-aria=add_new_page_button]', HTMLButtonElement);
-    const {hide} = showIndicator(
-        addPageButton, IndicatorType.DOC_MODE_MULTI_PAGE_AVAILABLE);
-    addPageButton.addEventListener('click', hide, {once: true});
-    this.hideMultiPageAvailableIndicator = () => {
-      hide();
-      addPageButton.removeEventListener('click', hide);
-    };
-  }
-
   protected override leaving(): boolean {
-    this.hideMultiPageAvailableIndicator?.();
-    this.hideMultiPageAvailableIndicator = null;
     this.waitForUpdatingPage();
     if (this.pages.length === 0) {
       this.fixCount = 0;
