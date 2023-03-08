@@ -438,6 +438,28 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Compositing.Display.OverlayProcessorUsingStrategy.FramesAttemptingRequiredOverlays"
+    units="boolean" expires_after="2023-06-30">
+  <owner>zoraiznaeem@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Records once per frame, whether we will attempt to promote any required
+    overlay or not in that frame.
+  </summary>
+</histogram>
+
+<histogram
+    name="Compositing.Display.OverlayProcessorUsingStrategy.FramesScalingRequiredOverlays"
+    units="boolean" expires_after="2023-06-30">
+  <owner>zoraiznaeem@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Records zero or once per frame, whether we attempted scaling any required
+    overlay.
+  </summary>
+</histogram>
+
+<histogram
     name="Compositing.Display.OverlayProcessorUsingStrategy.NumOverlays{Counted}"
     units="overlay candidates" expires_after="2022-11-30">
   <owner>khaslett@chromium.org</owner>
@@ -473,6 +495,18 @@ chromium-metrics-reviews@google.com.
   <summary>
     Logged zero or one times per frame, whether we're using the
     AttemptingMultipleOverlays codepath this frame or why we arent.
+  </summary>
+</histogram>
+
+<histogram
+    name="Compositing.Display.OverlayProcessorUsingStrategy.WorkingScaleFactorForRequiredOverlays"
+    units="scale_factor" expires_after="2023-06-30">
+  <owner>zoraiznaeem@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Records the scale factor that is used to downscale successfully promoted
+    required candidates. It is only logged once per frame if a required overlay
+    is promoted. Note: The scale factor value is logged as `scale_factor * 100`.
   </summary>
 </histogram>
 
