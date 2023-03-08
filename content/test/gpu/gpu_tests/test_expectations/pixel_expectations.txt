@@ -318,6 +318,7 @@ crbug.com/1268120 [ mac asan ] Pixel_WebGPUDisplayP3 [ Failure ]
 
 crbug.com/1297636 [ asan intel mac-x86_64 monterey release ] Pixel_WebGPUImportUnaccelerated2DCanvas [ Failure ]
 crbug.com/1297636 [ mac-x86_64 mojave no-asan nvidia-0xfe9 release ] Pixel_WebGPUImportUnaccelerated2DCanvas [ Failure ]
+crbug.com/1297636 [ mac-x86_64 no-asan debug ] Pixel_WebGPUImportUnaccelerated2DCanvas [ Failure ]
 
 # Pixel_WebGPUDisplayP3 socket timeout on Mac FYI Retina Release (NVIDIA)
 crbug.com/1392819 [ mac nvidia no-asan ] Pixel_WebGPUDisplayP3 [ Failure ]
