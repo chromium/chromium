@@ -75,7 +75,8 @@ void XRFrameRequestCallbackCollection::ExecuteCallbacks(XRSession* session,
     DCHECK_NE(current_callback_async_tasks_.end(), it_async_task);
 
     probe::AsyncTask async_task(context_, it_async_task->value.get());
-    probe::UserCallback probe(context_, "XRRequestFrame", AtomicString(), true);
+    probe::UserCallback probe(context_, "XRSession", "XRRequestFrame",
+                              AtomicString(), true);
     it_frame_request->value->InvokeAndReportException(session, timestamp,
                                                       frame);
   }

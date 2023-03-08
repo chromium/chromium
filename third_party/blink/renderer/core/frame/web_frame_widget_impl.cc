@@ -314,8 +314,10 @@ void WebFrameWidgetImpl::BindLocalRoot(WebLocalFrame& local_root) {
   local_root_ = To<WebLocalFrameImpl>(local_root);
   if (RuntimeEnabledFeatures::LongAnimationFrameTimingEnabled() &&
       !IsHidden()) {
+    DCHECK(local_root_->GetFrame());
     animation_frame_timing_monitor_ =
-        MakeGarbageCollected<AnimationFrameTimingMonitor>(*this);
+        MakeGarbageCollected<AnimationFrameTimingMonitor>(
+            *this, local_root_->GetFrame()->GetProbeSink());
   }
 }
 
@@ -4286,8 +4288,10 @@ void WebFrameWidgetImpl::WasShown(bool was_evicted) {
 
   if (!animation_frame_timing_monitor_ &&
       RuntimeEnabledFeatures::LongAnimationFrameTimingEnabled()) {
+    DCHECK(local_root_->GetFrame());
     animation_frame_timing_monitor_ =
-        MakeGarbageCollected<AnimationFrameTimingMonitor>(*this);
+        MakeGarbageCollected<AnimationFrameTimingMonitor>(
+            *this, local_root_->GetFrame()->GetProbeSink());
   }
 }
 

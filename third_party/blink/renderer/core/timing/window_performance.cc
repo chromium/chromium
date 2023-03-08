@@ -626,16 +626,7 @@ void WindowPerformance::ReportLongAnimationFrameTiming(
                                 kRecordSwaps);
   }
 
-  // Scheduling the observers to own task, to avoid an even longer frame...
-  task_runner_->PostTask(
-      FROM_HERE, WTF::BindOnce(
-                     [](WeakPersistent<WindowPerformance> self,
-                        Persistent<PerformanceLongAnimationFrameTiming> entry) {
-                       if (self && self->DomWindow()) {
-                         self->NotifyObserversOfEntry(*entry);
-                       }
-                     },
-                     WrapWeakPersistent(this), WrapPersistent(entry)));
+  NotifyObserversOfEntry(*entry);
 }
 
 void WindowPerformance::AddElementTiming(const AtomicString& name,

@@ -7,8 +7,11 @@
 
 #include "third_party/blink/renderer/core/timing/animation_frame_timing_info.h"
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
+#include "third_party/blink/renderer/core/timing/performance_script_timing.h"
 
 namespace blink {
+
+using PerformanceScriptVector = HeapVector<Member<PerformanceScriptTiming>>;
 
 class PerformanceLongAnimationFrameTiming final : public PerformanceEntry {
   DEFINE_WRAPPERTYPEINFO();
@@ -28,6 +31,8 @@ class PerformanceLongAnimationFrameTiming final : public PerformanceEntry {
   DOMHighResTimeStamp renderStart() const;
   DOMHighResTimeStamp styleAndLayoutStart() const;
 
+  const PerformanceScriptVector& scripts() const;
+
   void Trace(Visitor*) const override;
 
  private:
@@ -36,6 +41,7 @@ class PerformanceLongAnimationFrameTiming final : public PerformanceEntry {
   base::TimeTicks time_origin_;
   bool cross_origin_isolated_capability_;
   Member<AnimationFrameTimingInfo> info_;
+  PerformanceScriptVector scripts_;
 };
 
 }  // namespace blink

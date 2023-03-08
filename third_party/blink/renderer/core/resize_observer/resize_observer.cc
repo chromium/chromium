@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_resize_observer_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_resize_observer_options.h"
+#include "third_party/blink/renderer/core/core_probes_inl.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -185,8 +186,12 @@ void ResizeObserver::DeliverObservations() {
   }
 
   DCHECK(callback_ || delegate_);
-  if (callback_)
+  if (callback_) {
+    probe::UserCallback callback_probe(
+        ExecutionContext::From(callback_->CallbackRelevantScriptState()),
+        "ResizeObserver", "callback", AtomicString(), false);
     callback_->InvokeAndReportException(this, entries, this);
+  }
   if (delegate_)
     delegate_->OnResize(entries);
   ClearObservations();

@@ -544,8 +544,9 @@ PerformanceEntryVector Performance::getEntriesByTypeInternal(
       entries = &longtask_buffer_;
       break;
 
-    // TaskAttribution entries are only associated to longtask entries.
+    // TaskAttribution & script entries are only associated to longtask entries.
     case PerformanceEntry::kTaskAttribution:
+    case PerformanceEntry::kScript:
       break;
 
     case PerformanceEntry::kLayoutShift:

@@ -178,7 +178,12 @@ void DOMTimer::Fired() {
   DEVTOOLS_TIMELINE_TRACE_EVENT("TimerFire", inspector_timer_fire_event::Data,
                                 context, timeout_id_);
   const bool is_interval = !RepeatInterval().is_zero();
-  probe::UserCallback probe(context, is_interval ? "setInterval" : "setTimeout",
+
+  // If this is needed in the future by workers etc., the interface name can be
+  // extracted from the ScriptWrappable.
+  const char* interface_name = context->IsWindow() ? "Window" : nullptr;
+  probe::UserCallback probe(context, interface_name,
+                            is_interval ? "setInterval" : "setTimeout",
                             g_null_atom, true);
   probe::AsyncTask async_task(context, &async_task_context_,
                               is_interval ? "fired" : nullptr);

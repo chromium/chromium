@@ -217,6 +217,8 @@ class CORE_EXPORT ScriptPromiseResolver
   Resolver resolver_;
   TraceWrapperV8Reference<v8::Value> value_;
   ExceptionContext exception_context_;
+  const char* class_like_name_ = nullptr;
+  const char* property_like_name_ = nullptr;
 
   // To support keepAliveWhilePending(), this object needs to keep itself
   // alive while in that state.

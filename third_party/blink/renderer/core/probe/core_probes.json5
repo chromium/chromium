@@ -25,6 +25,18 @@
         "ExecuteScript",
       ]
     },
+    AnimationFrameTimingMonitor: {
+      include_path: "third_party/blink/renderer/core/frame",
+      probes: [
+        "CallFunction",
+        "ExecuteScript",
+        "RecalculateStyle",
+        "UpdateLayout",
+        "CompileAndRunScript",
+        "UserCallback",
+        "WillHandlePromise"
+      ]
+    },
     InspectorIssueReporter: {
       probes: [
         "DidFailLoading",

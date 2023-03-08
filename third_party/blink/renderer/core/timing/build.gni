@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 blink_core_sources_timing = [
+  "animation_frame_timing_info.cc",
   "animation_frame_timing_info.h",
   "back_forward_cache_restoration.h",
   "back_forward_cache_restoration.cc",
@@ -55,6 +56,8 @@ blink_core_sources_timing = [
   "performance_paint_timing.h",
   "performance_resource_timing.cc",
   "performance_resource_timing.h",
+  "performance_script_timing.cc",
+  "performance_script_timing.h",
   "performance_server_timing.cc",
   "performance_server_timing.h",
   "performance_timing.cc",

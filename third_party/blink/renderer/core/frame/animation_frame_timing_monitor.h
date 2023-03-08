@@ -7,9 +7,11 @@
 
 #include "base/task/sequence_manager/task_time_observer.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/core_probe_sink.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/timing/animation_frame_timing_info.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
@@ -35,7 +37,7 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
     virtual bool ShouldReportLongAnimationFrameTiming() const = 0;
     virtual bool RequestedMainFramePending() = 0;
   };
-  explicit AnimationFrameTimingMonitor(Client&);
+  AnimationFrameTimingMonitor(Client&, CoreProbeSink*);
   AnimationFrameTimingMonitor(const AnimationFrameTimingMonitor&) = delete;
   AnimationFrameTimingMonitor& operator=(const AnimationFrameTimingMonitor&) =
       delete;
@@ -61,8 +63,51 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
     OnTaskCompleted(start_time, end_time, /*frame=*/nullptr);
   }
 
+  // probes
+  void WillHandlePromise(ExecutionContext*,
+                         bool resolving,
+                         const char* class_like,
+                         const char* property_like);
+  void Will(const probe::CompileAndRunScript&);
+  void Did(const probe::CompileAndRunScript&);
+  void Will(const probe::ExecuteScript&);
+  void Did(const probe::ExecuteScript&);
+  void Will(const probe::RecalculateStyle&);
+  void Did(const probe::RecalculateStyle&);
+  void Will(const probe::UpdateLayout&);
+  void Did(const probe::UpdateLayout&);
+  void Will(const probe::UserCallback&);
+  void Did(const probe::UserCallback&);
+  void Will(const probe::CallFunction&);
+  void Did(const probe::CallFunction&);
+
  private:
   Member<AnimationFrameTimingInfo> current_frame_timing_info_;
+  HeapVector<Member<ScriptTimingInfo>> current_scripts_;
+  struct PendingScriptInfo {
+    ScriptTimingInfo::Type type;
+    base::TimeTicks start_time;
+    base::TimeTicks execution_start_time;
+    base::TimeDelta style_duration;
+    base::TimeDelta layout_duration;
+    int layout_depth = 0;
+    const char* class_like_name = nullptr;
+    const char* property_like_name = nullptr;
+    ScriptTimingInfo::ScriptSourceLocation source_location;
+  };
+
+  ScriptTimingInfo* DidExecuteScript(const probe::ProbeBase& probe,
+                                     ExecutionContext* context);
+  ScriptTimingInfo* MaybeAddScript(ExecutionContext* context,
+                                   base::TimeTicks end_time);
+  void OnMicrotasksCompleted(ExecutionContext*);
+  bool ShouldAddScript(ExecutionContext*);
+  template <typename Probe>
+  ScriptTimingInfo* DidExecuteScript(const Probe& probe) {
+    return DidExecuteScript(probe, probe.context);
+  }
+
+  absl::optional<PendingScriptInfo> pending_script_info_;
   Client& client_;
 
   enum class State {
@@ -79,6 +124,8 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
     kRenderingFrame
   };
   State state_ = State::kIdle;
+
+  int user_callback_depth_ = 0;
 };
 
 }  // namespace blink

@@ -6,14 +6,85 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_ANIMATION_FRAME_TIMING_INFO_H_
 
 #include "base/time/time.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/platform/bindings/source_location.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
-// It would be marginally more efficient to have this as a struct and copy
-// without GC, but this class is going to be expanded to hold a vector of
-// scripts so making it GCed from the get go as the overhead would be
-// negligible.
+class ExecutionContext;
+class SourceLocation;
+
+class ScriptTimingInfo : public GarbageCollected<ScriptTimingInfo> {
+ public:
+  enum class Type {
+    kClassicScript,
+    kModuleScript,
+    kExecuteScript,
+    kUserCallback,
+    kEventHandler,
+    kPromiseResolve,
+    kPromiseReject
+  };
+
+  // Not using blink::SourceLocation directly as using it relies on stack traces
+  // even in simple cases. We often only need the URL (e.g script blocks) so
+  // this is a lighter-weight version.
+  struct ScriptSourceLocation {
+    WTF::String url;
+    WTF::String function_name;
+    unsigned int line_number = 0;
+    unsigned int column_number = 0;
+    static ScriptSourceLocation FromSourceLocation(SourceLocation& location) {
+      return ScriptSourceLocation{location.Url(), location.Function(),
+                                  location.LineNumber(),
+                                  location.ColumnNumber()};
+    }
+  };
+
+  ScriptTimingInfo(ExecutionContext* context,
+                   Type type,
+                   base::TimeTicks start_time,
+                   base::TimeTicks execution_start_time,
+                   base::TimeTicks end_time,
+                   base::TimeDelta style_duration,
+                   base::TimeDelta layout_duration);
+
+  void Trace(Visitor* visitor) const;
+  Type GetType() const { return type_; }
+  base::TimeTicks StartTime() const { return start_time_; }
+  base::TimeTicks ExecutionStartTime() const { return execution_start_time_; }
+  base::TimeTicks EndTime() const { return end_time_; }
+  base::TimeDelta StyleDuration() const { return style_duration_; }
+  base::TimeDelta LayoutDuration() const { return layout_duration_; }
+  const ScriptSourceLocation& GetSourceLocation() const {
+    return source_location_;
+  }
+  void SetSourceLocation(const ScriptSourceLocation& location) {
+    source_location_ = location;
+  }
+  const AtomicString& ClassLikeName() const { return class_like_name_; }
+  void SetClassLikeName(const AtomicString& name) { class_like_name_ = name; }
+  const AtomicString& PropertyLikeName() const { return property_like_name_; }
+  void SetPropertyLikeName(const AtomicString& name) {
+    property_like_name_ = name;
+  }
+  LocalDOMWindow* Window() const { return window_; }
+
+ private:
+  Type type_;
+  AtomicString class_like_name_ = WTF::g_empty_atom;
+  AtomicString property_like_name_ = WTF::g_empty_atom;
+  base::TimeTicks start_time_;
+  base::TimeTicks execution_start_time_;
+  base::TimeTicks end_time_;
+  base::TimeDelta style_duration_;
+  base::TimeDelta layout_duration_;
+  ScriptSourceLocation source_location_;
+  WeakMember<LocalDOMWindow> window_;
+};
+
 class AnimationFrameTimingInfo
     : public GarbageCollected<AnimationFrameTimingInfo> {
  public:
@@ -37,7 +108,15 @@ class AnimationFrameTimingInfo
     return RenderEndTime() - FrameStartTime();
   }
 
-  virtual void Trace(Visitor*) const {}
+  const HeapVector<Member<ScriptTimingInfo>>& Scripts() const {
+    return scripts_;
+  }
+
+  void SetScripts(const HeapVector<Member<ScriptTimingInfo>>& scripts) {
+    scripts_ = scripts;
+  }
+
+  virtual void Trace(Visitor*) const;
 
  private:
   // Measured at the beginning of the first task that caused a frame update,
@@ -53,6 +132,7 @@ class AnimationFrameTimingInfo
   // Measured after BeginMainFrame, or at the end of a task that did not trigger
   // a main frame update
   base::TimeTicks render_end_time;
+  HeapVector<Member<ScriptTimingInfo>> scripts_;
 };
 
 }  // namespace blink

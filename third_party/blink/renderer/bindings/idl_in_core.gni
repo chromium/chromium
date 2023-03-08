@@ -698,6 +698,7 @@ static_idl_files_in_core = get_path_info(
           "//third_party/blink/renderer/core/timing/performance_observer_init.idl",
           "//third_party/blink/renderer/core/timing/performance_paint_timing.idl",
           "//third_party/blink/renderer/core/timing/performance_resource_timing.idl",
+          "//third_party/blink/renderer/core/timing/performance_script_timing.idl",
           "//third_party/blink/renderer/core/timing/performance_server_timing.idl",
           "//third_party/blink/renderer/core/timing/performance_timing.idl",
           "//third_party/blink/renderer/core/timing/profiler.idl",
