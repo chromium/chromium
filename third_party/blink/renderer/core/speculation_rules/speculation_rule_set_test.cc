@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "services/network/public/mojom/no_vary_search.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
@@ -407,8 +408,14 @@ TEST_F(SpeculationRuleSetTest, DropUnrecognizedRules) {
           "urls": [
             "valid.html", "mailto:alice@example.com", "http://@:",
             "blob:https://bar"
-           ]
-         }]})",
+           ]},)"
+
+      // Invalid No-Vary-Search hint
+      R"nvs({
+        "source": "list",
+        "urls": ["no-source.html"],
+        "no_vary_search_expected": "params=(\"a\")"
+      }]})nvs",
       KURL("https://example.com/"), execution_context(), &parse_error);
   ASSERT_TRUE(rule_set);
   // The rule set itself is valid, however many of the individual rules are
@@ -1451,6 +1458,8 @@ TEST_F(DocumentRulesTest, HrefMatchesWithBaseURLAndRelativeTo) {
 TEST_F(DocumentRulesTest, DropInvalidRules) {
   ScopedSpeculationRulesDocumentRulesSelectorMatchesForTest
       enabled_selector_matches_{true};
+  ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_expected{
+      true};
   auto* rule_set = CreateRuleSet(
       R"({"prefetch": [)"
 
@@ -1564,6 +1573,12 @@ TEST_F(DocumentRulesTest, DropInvalidRules) {
       // selector.
       R"({"source": "document",
         "where": {"selector_matches": [".valid", "#invalid#"]}
+        },)"
+
+      // Invalid no_vary_search_expected value.
+      R"({"source": "list",
+        "urls": ["https://example.com/prefetch/list/page1.html"],
+        "no_vary_search_expected": 0
         },)"
 
       // valid document rule.
@@ -1843,6 +1858,42 @@ auto HasReferrerPolicy(
           "policy", &mojom::blink::Referrer::policy, matcher))));
 }
 
+auto HasNoVarySearchExpected() {
+  return ::testing::Pointee(::testing::Field(
+      "no_vary_search_expected",
+      &mojom::blink::SpeculationCandidate::no_vary_search_expected,
+      ::testing::IsTrue()));
+}
+
+auto NVSVariesOnKeyOrder() {
+  return ::testing::AllOf(
+      HasNoVarySearchExpected(),
+      ::testing::Pointee(::testing::Field(
+          "no_vary_search_expected",
+          &mojom::blink::SpeculationCandidate::no_vary_search_expected,
+          testing::Pointee(::testing::Field(
+              "vary_on_key_order",
+              &network::mojom::blink::NoVarySearch::vary_on_key_order,
+              ::testing::IsTrue())))));
+}
+
+template <typename... Matchers>
+auto NVSHasNoVaryParams(Matchers&&... params) {
+  return ::testing::ResultOf(
+      "no_vary_params",
+      [](const auto& nvs) {
+        if (!nvs->no_vary_search_expected ||
+            !nvs->no_vary_search_expected->search_variance ||
+            !nvs->no_vary_search_expected->search_variance
+                 ->is_no_vary_params()) {
+          return Vector<String>();
+        }
+        return nvs->no_vary_search_expected->search_variance
+            ->get_no_vary_params();
+      },
+      ::testing::UnorderedElementsAre(params...));
+}
+
 HTMLAnchorElement* AddAnchor(ContainerNode& parent, const String& href) {
   HTMLAnchorElement* link =
       MakeGarbageCollected<HTMLAnchorElement>(parent.GetDocument());
@@ -1881,6 +1932,40 @@ TEST_F(DocumentRulesTest, SpeculationCandidatesReportedAfterInitialization) {
   const auto& candidates = speculation_host.candidates();
   EXPECT_THAT(candidates, HasURLs(KURL("https://foo.com/doc.html"),
                                   KURL("https://foo.com/doc2.html")));
+}
+
+// Tests that speculation candidates based of existing links are reported after
+// a document rule is inserted. Test that the speculation candidates include
+// No-Vary-Search hint.
+TEST_F(DocumentRulesTest,
+       SpeculationCandidatesReportedAfterInitializationWithNVS) {
+  ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_expected{
+      true};
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+  Document& document = page_holder.GetDocument();
+
+  AddAnchor(*document.body(), "https://foo.com/doc.html");
+  AddAnchor(*document.body(), "https://bar.com/doc.html");
+  AddAnchor(*document.body(), "https://foo.com/doc2.html");
+
+  String speculation_script = R"nvs(
+    {"prefetch": [{
+      "source": "document",
+      "where": {"href_matches": "https://foo.com/*"},
+      "no_vary_search_expected": "params=(\"a\")"
+    }]}
+  )nvs";
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
+                                      speculation_script);
+
+  const auto& candidates = speculation_host.candidates();
+  EXPECT_THAT(candidates, HasURLs(KURL("https://foo.com/doc.html"),
+                                  KURL("https://foo.com/doc2.html")));
+  //  Check that the candidates have the correct No-Vary-Search hint.
+  EXPECT_THAT(candidates, ::testing::Each(::testing::AllOf(
+                              HasNoVarySearchExpected(), NVSVariesOnKeyOrder(),
+                              NVSHasNoVaryParams("a"))));
 }
 
 // Tests that a new speculation candidate is reported after different
@@ -3688,5 +3773,202 @@ TEST_F(SpeculationRuleSetTest, InvalidEagernessValue) {
   EXPECT_TRUE(candidates.empty());
 }
 
+// Test that a valid No-Vary-Search hint will generate a speculation
+// candidate.
+TEST_F(SpeculationRuleSetTest, ValidNoVarySearchHintValueGeneratesCandidate) {
+  ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_expected{
+      true};
+
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+
+  String speculation_script = R"({
+    "prefetch": [{
+        "source": "list",
+        "urls": ["https://example.com/prefetch/list/page1.html"],
+        "no_vary_search_expected": "params=(\"a\") "
+      }]
+    })";
+
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
+                                      speculation_script);
+  const auto& candidates = speculation_host.candidates();
+  EXPECT_EQ(candidates.size(), 1u);
+
+  // Check that the candidate has the correct No-Vary-Search hint.
+  EXPECT_THAT(candidates[0],
+              ::testing::AllOf(HasNoVarySearchExpected(), NVSVariesOnKeyOrder(),
+                               NVSHasNoVaryParams("a")));
+}
+
+// Tests that No-Vary-Search errors that cause the speculation rules to be
+// ignored are logged to the console.
+TEST_F(SpeculationRuleSetTest, ConsoleWarningForNoVarySearchHint) {
+  ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_expected{
+      true};
+
+  auto* chrome_client = MakeGarbageCollected<ConsoleCapturingChromeClient>();
+  DummyPageHolder page_holder(/*initial_view_size=*/{}, chrome_client);
+  page_holder.GetFrame().GetSettings()->SetScriptEnabled(true);
+
+  Document& document = page_holder.GetDocument();
+  HTMLScriptElement* script =
+      MakeGarbageCollected<HTMLScriptElement>(document, CreateElementFlags());
+  script->setAttribute(html_names::kTypeAttr, "speculationrules");
+  script->setText(
+      R"({
+    "prefetch": [{
+        "source": "list",
+        "urls": ["https://example.com/prefetch/list/page1.html"],
+        "no_vary_search_expected": 0
+      }]
+    })");
+  document.head()->appendChild(script);
+
+  EXPECT_TRUE(base::ranges::any_of(
+      chrome_client->ConsoleMessages(), [](const String& message) {
+        return message.Contains(
+            "no_vary_search_expected's value must be a string");
+      }));
+}
+
+TEST_F(SpeculationRuleSetTest, NoVarySearchHintParseError) {
+  ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_expected{
+      true};
+  {
+    String parse_error;
+    CreateRuleSet(R"({
+      "prefetch": [{
+          "source": "list",
+          "urls": ["https://example.com/prefetch/list/page1.html"],
+          "no_vary_search_expected": 0
+        }]
+      })",
+                  KURL("https://example.com"), execution_context(),
+                  &parse_error);
+    EXPECT_THAT(parse_error.Utf8(),
+                ::testing::HasSubstr(
+                    "no_vary_search_expected's value must be a string"));
+  }
+  {
+    String parse_error;
+    CreateRuleSet(R"({
+      "prefetch": [{
+          "source": "list",
+          "urls": ["https://example.com/prefetch/list/page1.html"],
+          "no_vary_search_expected": "?1"
+        }]
+      })",
+                  KURL("https://example.com"), execution_context(),
+                  &parse_error);
+    EXPECT_THAT(
+        parse_error.Utf8(),
+        ::testing::HasSubstr("No-Vary-Search hint value is not a dictionary"));
+  }
+  {
+    String parse_error;
+    CreateRuleSet(R"({
+      "prefetch": [{
+          "source": "list",
+          "urls": ["https://example.com/prefetch/list/page1.html"],
+          "no_vary_search_expected": "params=?0"
+        }
+      ]
+    })",
+                  KURL("https://example.com"), execution_context(),
+                  &parse_error);
+    EXPECT_THAT(
+        parse_error.Utf8(),
+        ::testing::HasSubstr(
+            "No-Vary-Search hint value is equivalent to the default search"
+            " variance"));
+  }
+  {
+    String parse_error;
+    CreateRuleSet(R"({
+      "prefetch": [{
+          "source": "list",
+          "urls": ["https://example.com/prefetch/list/page1.html"],
+          "no_vary_search_expected": "para"
+        }
+      ]
+    })",
+                  KURL("https://example.com"), execution_context(),
+                  &parse_error);
+    EXPECT_THAT(
+        parse_error.Utf8(),
+        ::testing::HasSubstr(
+            "No-Vary-Search hint value contains unknown dictionary keys"));
+  }
+  {
+    String parse_error;
+    CreateRuleSet(R"({
+      "prefetch": [{
+          "source": "list",
+          "urls": ["https://example.com/prefetch/list/page1.html"],
+          "no_vary_search_expected": "key-order=a"
+        }
+      ]
+    })",
+                  KURL("https://example.com"), execution_context(),
+                  &parse_error);
+    EXPECT_THAT(
+        parse_error.Utf8(),
+        ::testing::HasSubstr(
+            "No-Vary-Search hint value contains a \"key-order\" dictionary"));
+  }
+  {
+    String parse_error;
+    CreateRuleSet(R"({
+      "prefetch": [
+        {
+          "source": "list",
+          "urls": ["https://example.com/prefetch/list/page1.html"],
+          "no_vary_search_expected": "params=a"
+        }
+      ]
+    })",
+                  KURL("https://example.com"), execution_context(),
+                  &parse_error);
+    EXPECT_THAT(
+        parse_error.Utf8(),
+        ::testing::HasSubstr("contains a \"params\" dictionary value"
+                             " that is not a list of strings or a boolean"));
+  }
+  {
+    String parse_error;
+    CreateRuleSet(R"({
+      "prefetch": [{
+          "source": "list",
+          "urls": ["https://example.com/prefetch/list/page1.html"],
+          "no_vary_search_expected": "params,except=a"
+        }
+      ]
+    })",
+                  KURL("https://example.com"), execution_context(),
+                  &parse_error);
+    EXPECT_THAT(parse_error.Utf8(),
+                ::testing::HasSubstr("contains an \"except\" dictionary value"
+                                     " that is not a list of strings"));
+  }
+  {
+    String parse_error;
+    CreateRuleSet(R"({
+      "prefetch": [{
+          "source": "list",
+          "urls": ["https://example.com/prefetch/list/page1.html"],
+          "no_vary_search_expected": "except=(\"a\") "
+        }
+      ]
+    })",
+                  KURL("https://example.com"), execution_context(),
+                  &parse_error);
+    EXPECT_THAT(
+        parse_error.Utf8(),
+        ::testing::HasSubstr(
+            "contains an \"except\" dictionary key"
+            " without the \"params\" dictionary key being set to true."));
+  }
+}
 }  // namespace
 }  // namespace blink

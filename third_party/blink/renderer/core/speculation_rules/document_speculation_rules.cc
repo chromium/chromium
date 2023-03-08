@@ -494,7 +494,8 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
             rule->requires_anonymous_client_ip_when_cross_origin(),
             rule->target_browsing_context_name_hint().value_or(
                 mojom::blink::SpeculationTargetHint::kNoHint),
-            eagerness, rule_set, /*anchor=*/nullptr));
+            eagerness, rule->no_vary_search_expected().Clone(), rule_set,
+            /*anchor=*/nullptr));
       }
     }
   };
@@ -561,7 +562,7 @@ void DocumentSpeculationRules::AddLinkBasedSpeculationCandidates(
         MakeGarbageCollected<HeapVector<Member<SpeculationCandidate>>>();
     ExecutionContext* execution_context =
         GetSupplementable()->GetExecutionContext();
-    DCHECK(execution_context);
+    CHECK(execution_context);
 
     const auto push_link_candidates =
         [&link, &link_candidates, &execution_context, this](
@@ -613,7 +614,8 @@ void DocumentSpeculationRules::AddLinkBasedSpeculationCandidates(
                     rule->requires_anonymous_client_ip_when_cross_origin(),
                     rule->target_browsing_context_name_hint().value_or(
                         mojom::blink::SpeculationTargetHint::kNoHint),
-                    eagerness, rule_set, link);
+                    eagerness, rule->no_vary_search_expected().Clone(),
+                    rule_set, link);
             link_candidates->push_back(std::move(candidate));
           }
         };

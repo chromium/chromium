@@ -3109,6 +3109,10 @@
       origin_trial_allows_third_party: true,
     },
     {
+      name: "SpeculationRulesNoVarySearchHint",
+      base_feature: "none",
+    },
+    {
       name: "SpeculationRulesPointerDownHeuristics",
       base_feature_status: "enabled",
     },

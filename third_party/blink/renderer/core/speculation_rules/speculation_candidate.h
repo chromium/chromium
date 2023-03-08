@@ -29,6 +29,7 @@ class SpeculationCandidate : public GarbageCollected<SpeculationCandidate> {
                        bool requires_anonymous_client_ip_when_cross_origin,
                        mojom::blink::SpeculationTargetHint target_hint,
                        mojom::blink::SpeculationEagerness eagerness,
+                       network::mojom::blink::NoVarySearchPtr no_vary_search,
                        SpeculationRuleSet* rule_set,
                        HTMLAnchorElement* anchor);
   virtual ~SpeculationCandidate() = default;
@@ -54,6 +55,7 @@ class SpeculationCandidate : public GarbageCollected<SpeculationCandidate> {
   const bool requires_anonymous_client_ip_when_cross_origin_;
   const mojom::blink::SpeculationTargetHint target_hint_;
   const mojom::blink::SpeculationEagerness eagerness_;
+  const network::mojom::blink::NoVarySearchPtr no_vary_search_;
   const Member<SpeculationRuleSet> rule_set_;
   const Member<HTMLAnchorElement> anchor_;
 };

@@ -957,6 +957,29 @@ TEST_P(NoVarySearchPrefetchEnabledTest, ParsingSuccess) {
             test_data.expected_vary_on_key_order);
 }
 
+TEST(NoVarySearchHeaderValueParsingTest, ParsingSuccessForParseNoVarySearch) {
+  const auto no_vary_search_with_parse_error =
+      blink::ParseNoVarySearch(R"(params=("a"))");
+
+  ASSERT_TRUE(no_vary_search_with_parse_error);
+  ASSERT_TRUE(no_vary_search_with_parse_error->is_no_vary_search());
+  ASSERT_TRUE(
+      no_vary_search_with_parse_error->get_no_vary_search()->search_variance);
+  EXPECT_THAT(no_vary_search_with_parse_error->get_no_vary_search()
+                  ->search_variance->get_no_vary_params(),
+              Vector<String>({"a"}));
+  EXPECT_TRUE(
+      no_vary_search_with_parse_error->get_no_vary_search()->vary_on_key_order);
+}
+
+TEST(NoVarySearchHeaderValueParsingTest, ParsingFailureForParseNoVarySearch) {
+  const auto no_vary_search_with_parse_error =
+      blink::ParseNoVarySearch(R"(params="a")");
+
+  ASSERT_TRUE(no_vary_search_with_parse_error);
+  EXPECT_FALSE(no_vary_search_with_parse_error->is_no_vary_search());
+}
+
 Vector<NoVarySearchTestData> GetNoVarySearchParsingSuccessTestData() {
   static Vector<NoVarySearchTestData> test_data = {
       // params set to a list of strings with one element.

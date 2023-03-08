@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/speculation_rules/speculation_rule.h"
+
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_rule_predicate.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -15,13 +16,15 @@ SpeculationRule::SpeculationRule(
     RequiresAnonymousClientIPWhenCrossOrigin requires_anonymous_client_ip,
     absl::optional<mojom::blink::SpeculationTargetHint> target_hint,
     absl::optional<network::mojom::ReferrerPolicy> referrer_policy,
-    absl::optional<mojom::blink::SpeculationEagerness> eagerness)
+    absl::optional<mojom::blink::SpeculationEagerness> eagerness,
+    network::mojom::blink::NoVarySearchPtr no_vary_search_expected)
     : urls_(std::move(urls)),
       predicate_(predicate),
       requires_anonymous_client_ip_(requires_anonymous_client_ip),
       target_browsing_context_name_hint_(target_hint),
       referrer_policy_(referrer_policy),
-      eagerness_(eagerness) {}
+      eagerness_(eagerness),
+      no_vary_search_expected_(std::move(no_vary_search_expected)) {}
 
 SpeculationRule::~SpeculationRule() = default;
 

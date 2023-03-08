@@ -9,9 +9,9 @@
 #include <vector>
 
 #include "base/feature_list.h"
-#include "base/strings/stringprintf.h"
 #include "content/public/browser/render_frame_host.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/no_vary_search_header_parser.h"
 #include "services/network/public/mojom/no_vary_search.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -79,80 +79,18 @@ void NoVarySearchHelper::MaybeSendErrorsToConsole(
   if (!head.parsed_headers->no_vary_search_with_parse_error->is_parse_error()) {
     return;
   }
-
-  blink::mojom::ConsoleMessageLevel error_level =
-      blink::mojom::ConsoleMessageLevel::kError;
-  std::string error_message;
-  const std::string no_vary_search_spec =
-      "https://wicg.github.io/nav-speculation/no-vary-search.html";
-  switch (
-      head.parsed_headers->no_vary_search_with_parse_error->get_parse_error()) {
-    case network::mojom::NoVarySearchParseError::kOk:
-      // In case everything is ok do nothing.
-      return;
-    case network::mojom::NoVarySearchParseError::kDefaultValue:
-      error_level = blink::mojom::ConsoleMessageLevel::kWarning;
-      error_message = base::StringPrintf(
-          "No-Vary-Search header value received for prefetched url %s"
-          " is equivalent to the default search variance. No-Vary-Search"
-          " header can be safely removed. See No-Vary-Search specification for"
-          " more information: %s.",
-          url.spec().c_str(), no_vary_search_spec.c_str());
-      break;
-    case network::mojom::NoVarySearchParseError::kNotDictionary:
-      error_message = base::StringPrintf(
-          "No-Vary-Search header value received for prefetched url %s"
-          " is not a dictionary as defined in RFC8941: %s. The header"
-          " will be ignored. Please fix this error. See No-Vary-Search"
-          " specification for more information: %s.",
-          url.spec().c_str(),
-          "https://www.rfc-editor.org/rfc/rfc8941.html#name-dictionaries",
-          no_vary_search_spec.c_str());
-      break;
-    case network::mojom::NoVarySearchParseError::kUnknownDictionaryKey:
-      error_message = base::StringPrintf(
-          "No-Vary-Search header value received for prefetched url %s"
-          " contains unknown dictionary keys. Valid dictionary keys are:"
-          " \"params\", \"except\", \"key-order\". The header will be"
-          " ignored. Please fix this error. See No-Vary-Search"
-          " specification for more information: %s.",
-          url.spec().c_str(), no_vary_search_spec.c_str());
-      break;
-    case network::mojom::NoVarySearchParseError::kNonBooleanKeyOrder:
-      error_message = base::StringPrintf(
-          "No-Vary-Search header value received for prefetched url %s"
-          " contains a \"key-order\" dictionary value that is not a boolean."
-          " The header will be ignored. Please fix this error."
-          " See No-Vary-Search specification for more information: %s.",
-          url.spec().c_str(), no_vary_search_spec.c_str());
-      break;
-    case network::mojom::NoVarySearchParseError::kParamsNotStringList:
-      error_message = base::StringPrintf(
-          "No-Vary-Search header value received for prefetched url %s"
-          " contains a \"params\" dictionary value that is not a list of"
-          " strings. The header will be ignored. Please fix this error."
-          " See No-Vary-Search specification for more information: %s.",
-          url.spec().c_str(), no_vary_search_spec.c_str());
-      break;
-    case network::mojom::NoVarySearchParseError::kExceptNotStringList:
-      error_message = base::StringPrintf(
-          "No-Vary-Search header value received for prefetched url %s"
-          " contains an \"except\" dictionary value that is not a list of"
-          " strings. The header will be ignored. Please fix this error."
-          " See No-Vary-Search specification for more information: %s.",
-          url.spec().c_str(), no_vary_search_spec.c_str());
-      break;
-    case network::mojom::NoVarySearchParseError::kExceptWithoutTrueParams:
-      error_message = base::StringPrintf(
-          "No-Vary-Search header value received for prefetched url %s"
-          " contains an \"except\" dictionary key, without the \"params\""
-          " dictionary key being set to true. The header will be ignored."
-          " Please fix this error. See No-Vary-Search specification for"
-          " more information: %s.",
-          url.spec().c_str(), no_vary_search_spec.c_str());
-      break;
+  const auto parse_error =
+      head.parsed_headers->no_vary_search_with_parse_error->get_parse_error();
+  if (parse_error == network::mojom::NoVarySearchParseError::kOk) {
+    return;
   }
-  rfh.AddMessageToConsole(error_level, error_message);
+  blink::mojom::ConsoleMessageLevel error_level =
+      parse_error == network::mojom::NoVarySearchParseError::kDefaultValue
+          ? blink::mojom::ConsoleMessageLevel::kWarning
+          : blink::mojom::ConsoleMessageLevel::kError;
+  auto error_message = network::GetNoVarySearchConsoleMessage(parse_error, url);
+  CHECK(error_message);
+  rfh.AddMessageToConsole(error_level, error_message.value());
 }
 
 absl::optional<GURL> NoVarySearchHelper::MatchUrl(const GURL& url) const {
