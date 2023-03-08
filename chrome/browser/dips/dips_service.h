@@ -10,6 +10,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
+#include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "chrome/browser/dips/dips_redirect_info.h"
@@ -73,6 +74,9 @@ class DIPSService : public KeyedService {
 
   void OnTimerFiredForTesting() { OnTimerFired(); }
   void WaitForInitCompleteForTesting() { wait_for_prepopulating_.Run(); }
+  void WaitForFileDeletionCompleteForTesting() {
+    wait_for_file_deletion_.Run();
+  }
 
   void AddObserver(Observer* observer);
   void RemoveObserver(const Observer* observer);
@@ -113,6 +117,7 @@ class DIPSService : public KeyedService {
   bool ShouldBlockThirdPartyCookies() const;
   bool HasCookieException(const std::string& site) const;
 
+  base::RunLoop wait_for_file_deletion_;
   base::RunLoop wait_for_prepopulating_;
   raw_ptr<content::BrowserContext> browser_context_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;

@@ -9,7 +9,7 @@
 #include "chrome/browser/dips/dips_features.h"
 #include "chrome/browser/dips/dips_service.h"
 
-// static
+/* static */
 DIPSService* DIPSServiceFactory::GetForBrowserContext(
     content::BrowserContext* context) {
   return static_cast<DIPSService*>(
@@ -20,18 +20,13 @@ DIPSServiceFactory* DIPSServiceFactory::GetInstance() {
   return base::Singleton<DIPSServiceFactory>::get();
 }
 
-/*static*/
+/* static */
 ProfileSelections DIPSServiceFactory::CreateProfileSelections() {
   if (!base::FeatureList::IsEnabled(dips::kFeature)) {
     return ProfileSelections::BuildNoProfilesSelected();
   }
 
-  return ProfileSelections::Builder()
-      .WithRegular(ProfileSelection::kOwnInstance)
-      .WithGuest(ProfileSelection::kOffTheRecordOnly)
-      .WithSystem(ProfileSelection::kNone)
-      .WithAshInternals(ProfileSelection::kNone)
-      .Build();
+  return GetHumanProfileSelections();
 }
 
 DIPSServiceFactory::DIPSServiceFactory()

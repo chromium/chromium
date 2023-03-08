@@ -7,8 +7,23 @@
 #include "base/cxx17_backports.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
+#include "chrome/browser/profiles/profile_selections.h"
+#include "content/public/browser/browser_context.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
+
+base::FilePath GetDIPSFilePath(content::BrowserContext* context) {
+  return context->GetPath().Append(kDIPSFilename);
+}
+
+ProfileSelections GetHumanProfileSelections() {
+  return ProfileSelections::Builder()
+      .WithRegular(ProfileSelection::kOwnInstance)
+      .WithGuest(ProfileSelection::kOffTheRecordOnly)
+      .WithSystem(ProfileSelection::kNone)
+      .WithAshInternals(ProfileSelection::kNone)
+      .Build();
+}
 
 bool UpdateTimestampRange(TimestampRange& range, base::Time time) {
   if (!range.has_value()) {

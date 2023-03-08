@@ -4,12 +4,14 @@
 
 #include "chrome/browser/dips/dips_service.h"
 
+#include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
+#include "base/test/test_file_util.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -18,7 +20,6 @@
 #include "chrome/browser/dips/dips_state.h"
 #include "chrome/browser/dips/dips_test_utils.h"
 #include "chrome/browser/dips/dips_utils.h"
-#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -30,47 +31,12 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-// Enables or disables a base::Feature.
-class ScopedInitFeature {
- public:
-  explicit ScopedInitFeature(const base::Feature& feature, bool enable) {
-    if (enable) {
-      feature_list_.InitAndEnableFeature(feature);
-    } else {
-      feature_list_.InitAndDisableFeature(feature);
-    }
+class DIPSServiceTest : public testing::Test {
+ protected:
+  void WaitOnStorage(DIPSService* service) {
+    service->storage()->FlushPostedTasksForTesting();
   }
 
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Enables/disables the DIPS Feature and updates DIPSServiceFactory's
-// ProfileSelections to match.
-class ScopedInitDIPSFeature {
- public:
-  explicit ScopedInitDIPSFeature(bool enable)
-      // DIPSServiceFactory is a singleton, and we want to create it *before*
-      // constructing `init_feature_`, so that DIPSServiceFactory is initialized
-      // using the default value of dips::kFeature. We only want `init_feature_`
-      // to affect CreateProfileSelections(). We do this concisely by using the
-      // comma operator in the arguments to `init_feature_` to call
-      // DIPSServiceFactory::GetInstance() while ignoring its return value.
-      : init_feature_((DIPSServiceFactory::GetInstance(), dips::kFeature),
-                      enable),
-        override_profile_selections_(
-            DIPSServiceFactory::GetInstance(),
-            DIPSServiceFactory::CreateProfileSelections()) {}
-
- private:
-  ScopedInitFeature init_feature_;
-  profiles::testing::ScopedProfileSelectionsForFactoryTesting
-      override_profile_selections_;
-};
-
-using StateForURLCallback = base::OnceCallback<void(DIPSState)>;
-
-class DIPSServiceTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
 };
@@ -87,6 +53,48 @@ TEST_F(DIPSServiceTest, DontCreateServiceIfFeatureDisabled) {
 
   TestingProfile profile;
   EXPECT_EQ(DIPSService::Get(&profile), nullptr);
+}
+
+// Verifies that if database persistence is disabled via Finch, then when the
+// DIPS Service is constructed, it deletes any DIPS Database files for the
+// associated BrowserContext.
+TEST_F(DIPSServiceTest, DeleteDbFilesIfPersistenceDisabled) {
+  base::FilePath data_path = base::CreateUniqueTempDirectoryScopedToTest();
+  DIPSService* service;
+  std::unique_ptr<TestingProfile> profile;
+
+  // Ensure the DIPS feature is enabled and the database is set to be persisted.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      dips::kFeature, {{"persist_database", "true"}});
+
+  profile = TestingProfile::Builder().SetPath(data_path).Build();
+  service = DIPSService::Get(profile.get());
+  ASSERT_NE(service, nullptr);
+
+  // Ensure the database files have been created and are NOT deleted since the
+  // DIPS feature is enabled.
+  WaitOnStorage(service);
+  service->WaitForFileDeletionCompleteForTesting();
+  ASSERT_TRUE(base::PathExists(GetDIPSFilePath(profile.get())));
+
+  // Reset the feature list to set database persistence to false.
+  feature_list.Reset();
+  feature_list.InitAndEnableFeatureWithParameters(
+      dips::kFeature, {{"persist_database", "false"}});
+
+  // Reset the TestingProfile, then create a new instance with the same user
+  // data path.
+  profile.reset();
+  profile = TestingProfile::Builder().SetPath(data_path).Build();
+
+  service = DIPSService::Get(profile.get());
+  ASSERT_NE(service, nullptr);
+
+  // Ensure the database files ARE deleted since the DIPS feature is disabled.
+  WaitOnStorage(service);
+  service->WaitForFileDeletionCompleteForTesting();
+  EXPECT_FALSE(base::PathExists(GetDIPSFilePath(profile.get())));
 }
 
 class DIPSServiceStateRemovalTest : public testing::Test {

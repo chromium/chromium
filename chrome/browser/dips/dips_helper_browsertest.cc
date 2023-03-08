@@ -131,8 +131,6 @@ class URLCookieAccessObserver : public content::WebContentsObserver {
   base::RunLoop run_loop_;
 };
 
-using StateForURLCallback = base::OnceCallback<void(const DIPSState&)>;
-
 // Histogram names
 constexpr char kTimeToInteraction[] =
     "Privacy.DIPS.TimeFromStorageToInteraction.Standard";
@@ -206,8 +204,7 @@ class DIPSTabHelperBrowserTest : public PlatformBrowserTest,
   absl::optional<StateValue> GetDIPSState(const GURL& url) {
     absl::optional<StateValue> state;
 
-    StateForURL(url,
-                base::BindLambdaForTesting([&](const DIPSState& loaded_state) {
+    StateForURL(url, base::BindLambdaForTesting([&](DIPSState loaded_state) {
                   if (loaded_state.was_loaded()) {
                     state = loaded_state.ToStateValue();
                   }
@@ -852,7 +849,10 @@ IN_PROC_BROWSER_TEST_F(DIPSPrepopulateTest, PRE_PrepopulateExactlyOnce) {
   FlushLossyWebsiteSettings();
 }
 
-IN_PROC_BROWSER_TEST_F(DIPSPrepopulateTest, PrepopulateExactlyOnce) {
+// TODO (crbug.com/1418692): Rework this test to work without enabling and
+// disabling the DIPS feature, as opening a profile with the feature disabled
+// now causes any existing db files it has to be removed.
+IN_PROC_BROWSER_TEST_F(DIPSPrepopulateTest, DISABLED_PrepopulateExactlyOnce) {
   ASSERT_NE(dips_service, nullptr);  // Verify that DIPS is on.
   // Only the sites that were prepopulated the first time is in the database.
   auto a_state = GetDIPSState(GURL("http://a.test"));

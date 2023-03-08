@@ -3,6 +3,10 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/dips/dips_test_utils.h"
+
+#include "chrome/browser/dips/dips_cleanup_service_factory.h"
+#include "chrome/browser/dips/dips_features.h"
+#include "chrome/browser/dips/dips_service_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 RedirectChainObserver::RedirectChainObserver(DIPSService* service,
@@ -68,3 +72,36 @@ void EntryUrlsAre::DescribeNegationTo(std::ostream* os) const {
   *os << "does not have entries for '" << entry_name_ << "' whose URLs are "
       << testing::PrintToString(expected_urls_);
 }
+
+ScopedInitFeature::ScopedInitFeature(const base::Feature& feature,
+                                     bool enable,
+                                     const base::FieldTrialParams& params) {
+  if (enable) {
+    feature_list_.InitAndEnableFeatureWithParameters(feature, params);
+  } else {
+    feature_list_.InitAndDisableFeature(feature);
+  }
+}
+
+ScopedInitDIPSFeature::ScopedInitDIPSFeature(
+    bool enable,
+    const base::FieldTrialParams& params)
+    // DIPSServiceFactory and DIPSCleanupServiceFactory are singletons, and we
+    // want to create them *before* constructing `init_feature_`, so that they
+    // are initialized using the default value of dips::kFeature. We only want
+    // `init_feature_` to affect CreateProfileSelections(). We do this
+    // concisely by using the comma operator in the arguments to
+    // `init_feature_` to call DIPSServiceFactory::GetInstance() and
+    // DIPSCleanupServiceFactory::GetInstance() while ignoring their return
+    // values.
+    : init_feature_((DIPSServiceFactory::GetInstance(),
+                     DIPSCleanupServiceFactory::GetInstance(),
+                     dips::kFeature),
+                    enable,
+                    params),
+      override_profile_selections_for_dips_service_(
+          DIPSServiceFactory::GetInstance(),
+          DIPSServiceFactory::CreateProfileSelections()),
+      override_profile_selections_for_dips_cleanup_service_(
+          DIPSCleanupServiceFactory::GetInstance(),
+          DIPSCleanupServiceFactory::CreateProfileSelections()) {}
