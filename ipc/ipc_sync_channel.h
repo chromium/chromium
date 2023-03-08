@@ -72,6 +72,8 @@ class SyncMessage;
 // message loop pointer to proxy it to the ipc thread.
 class COMPONENT_EXPORT(IPC) SyncChannel : public ChannelProxy {
  public:
+  class ReceivedSyncMsgQueue;
+
   enum RestrictDispatchGroup {
     kRestrictDispatchGroup_None = 0,
   };
@@ -133,7 +135,6 @@ class COMPONENT_EXPORT(IPC) SyncChannel : public ChannelProxy {
   scoped_refptr<IPC::SyncMessageFilter> CreateSyncMessageFilter();
 
  protected:
-  class ReceivedSyncMsgQueue;
   friend class ReceivedSyncMsgQueue;
 
   // SyncContext holds the per object data for SyncChannel, so that SyncChannel
