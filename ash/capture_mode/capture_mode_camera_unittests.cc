@@ -4617,7 +4617,6 @@ TEST_F(CaptureModePrivacyIndicatorsTest, DuringRecordingPrivacyIndicators) {
       message_center->FindNotificationById(microphone_notification_id));
 
   StartRecordingFromSource(CaptureModeSource::kFullscreen);
-  EXPECT_TRUE(IsCameraIndicatorIconVisible());
   EXPECT_TRUE(IsMicrophoneIndicatorIconVisible());
   EXPECT_TRUE(message_center->FindNotificationById(camera_notification_id));
   EXPECT_TRUE(message_center->FindNotificationById(microphone_notification_id));

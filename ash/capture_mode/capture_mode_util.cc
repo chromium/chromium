@@ -49,6 +49,8 @@ constexpr float kScaleUpFactor = 0.8f;
 
 // The app IDs used for the capture mode camera and microphone recording privacy
 // indicators.
+// TODO(b/271523308): Use one id for both camera and microphone so that both
+// icons are displayed together during the start of screen capture.
 constexpr char kCameraPrivacyIndicatorId[] = "system-capture-mode-camera";
 constexpr char kMicrophonePrivacyIndicatorId[] =
     "system-capture-mode-microphone";

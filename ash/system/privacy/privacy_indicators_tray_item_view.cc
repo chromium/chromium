@@ -204,6 +204,11 @@ void PrivacyIndicatorsTrayItemView::Update(const std::string& app_id,
     return;
   }
 
+  const bool new_app = !use_camera_apps_.contains(app_id) &&
+                       !use_microphone_apps_.contains(app_id);
+  const bool was_camera_in_use = IsCameraUsed();
+  const bool was_mic_in_use = IsMicrophoneUsed();
+
   UpdateAccessStatus(app_id, /*is_accessed=*/is_camera_used, use_camera_apps_);
   UpdateAccessStatus(app_id,
                      /*is_accessed=*/is_microphone_used, use_microphone_apps_);
@@ -212,13 +217,28 @@ void PrivacyIndicatorsTrayItemView::Update(const std::string& app_id,
   if (!GetVisible())
     return;
 
-  camera_icon_->SetVisible(animation_state_ != AnimationState::kIdle &&
-                           IsCameraUsed());
-  microphone_icon_->SetVisible(animation_state_ != AnimationState::kIdle &&
-                               IsMicrophoneUsed());
+  // We only want to perform the animation and show the camera/microphone icons
+  // in these cases:
+  // * If this is a new app accessing camera/microphone, the icons will be shown
+  //   according to the access state of that particular app.
+  // * If this is an old app, but a new sensor is being accessed (was not in
+  //   used before), we will show the icons of the sensors in which that
+  //   particular app is accessing.
+  if (!new_app && !(IsCameraUsed() && !was_camera_in_use) &&
+      !(IsMicrophoneUsed() && !was_mic_in_use)) {
+    return;
+  }
+
+  camera_icon_->SetVisible(is_camera_used);
+  microphone_icon_->SetVisible(is_microphone_used);
 
   TooltipTextChanged();
   RecordPrivacyIndicatorsType();
+
+  // Perform animation if either one of the icon is visible.
+  if (camera_icon_->GetVisible() || microphone_icon_->GetVisible()) {
+    PerformAnimation();
+  }
 }
 
 void PrivacyIndicatorsTrayItemView::UpdateScreenShareStatus(
@@ -231,10 +251,14 @@ void PrivacyIndicatorsTrayItemView::UpdateScreenShareStatus(
   if (!GetVisible())
     return;
 
-  screen_share_icon_->SetVisible(animation_state_ != AnimationState::kIdle &&
-                                 is_screen_sharing_);
+  screen_share_icon_->SetVisible(is_screen_sharing_);
   TooltipTextChanged();
   RecordPrivacyIndicatorsType();
+
+  // Perform animation whever screen is start sharing.
+  if (is_screen_sharing_) {
+    PerformAnimation();
+  }
 }
 
 void PrivacyIndicatorsTrayItemView::UpdateAlignmentForShelf(Shelf* shelf) {
@@ -273,36 +297,11 @@ std::u16string PrivacyIndicatorsTrayItemView::GetTooltipText(
                                     {cam_and_mic_status, screen_share_status},
                                     /*offsets=*/nullptr);
 }
-
 void PrivacyIndicatorsTrayItemView::PerformVisibilityAnimation(bool visible) {
-  EndAllAnimations();
-
-  if (!visible)
-    return;
-
-  // Start a multi-part animation:
-  // 1. kExpand: Expands to the fully expanded state, showing all icons.
-  // 2. kDwellInExpand: Then dwells at this size for `kDwellInExpandDuration`.
-  // 3. kOnlyLongerSideShrink: After that, collapses the long side first.
-  // 4. kBothSideShrink: Before the long side shrinks completely, collapses the
-  // short side to the final size (a green dot).
-  expand_animation_->Start();
-  animation_state_ = AnimationState::kExpand;
-  StartRecordAnimationSmoothness(GetWidget(), throughput_tracker_);
-
-  // At the same time, fade in icons.
-  if (camera_icon_->GetVisible()) {
-    FadeInView(camera_icon_, kCameraIconFadeInDuration,
-               "Ash.PrivacyIndicators.CameraIcon.AnimationSmoothness");
-  }
-  if (microphone_icon_->GetVisible()) {
-    FadeInView(microphone_icon_, kMicAndScreenshareFadeInDuration,
-               "Ash.PrivacyIndicators.MicrophoneIcon.AnimationSmoothness");
-  }
-  if (screen_share_icon_->GetVisible()) {
-    FadeInView(screen_share_icon_, kMicAndScreenshareFadeInDuration,
-               "Ash.PrivacyIndicators.ScreenshareIcon.AnimationSmoothness");
-  }
+  // This view will not perform `TrayItemView`'s visibility animation since it
+  // has its own animation. We need to create our own function to trigger the
+  // animation rather than overriding this to avoid triggering overlapping
+  // animations when visibility changes.
 }
 
 void PrivacyIndicatorsTrayItemView::HandleLocaleChange() {
@@ -425,6 +424,35 @@ void PrivacyIndicatorsTrayItemView::AnimationCanceled(
   EndAllAnimations();
 
   UpdateBoundsInset();
+}
+
+void PrivacyIndicatorsTrayItemView::PerformAnimation() {
+  // End all previous animations before starting a new sequence of animations.
+  EndAllAnimations();
+
+  // Start a multi-part animation:
+  // 1. kExpand: Expands to the fully expanded state, showing all icons.
+  // 2. kDwellInExpand: Then dwells at this size for `kDwellInExpandDuration`.
+  // 3. kOnlyLongerSideShrink: After that, collapses the long side first.
+  // 4. kBothSideShrink: Before the long side shrinks completely, collapses the
+  //    short side to the final size (a green dot).
+  expand_animation_->Start();
+  animation_state_ = AnimationState::kExpand;
+  StartRecordAnimationSmoothness(GetWidget(), throughput_tracker_);
+
+  // At the same time, fade in icons.
+  if (camera_icon_->GetVisible()) {
+    FadeInView(camera_icon_, kCameraIconFadeInDuration,
+               "Ash.PrivacyIndicators.CameraIcon.AnimationSmoothness");
+  }
+  if (microphone_icon_->GetVisible()) {
+    FadeInView(microphone_icon_, kMicAndScreenshareFadeInDuration,
+               "Ash.PrivacyIndicators.MicrophoneIcon.AnimationSmoothness");
+  }
+  if (screen_share_icon_->GetVisible()) {
+    FadeInView(screen_share_icon_, kMicAndScreenshareFadeInDuration,
+               "Ash.PrivacyIndicators.ScreenshareIcon.AnimationSmoothness");
+  }
 }
 
 void PrivacyIndicatorsTrayItemView::OnSessionStateChanged(
