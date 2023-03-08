@@ -124,8 +124,6 @@ void Location::WriteIntoTrace(perfetto::TracedValue context) const {
 #define RETURN_ADDRESS() nullptr
 #endif
 
-#if SUPPORTS_LOCATION_BUILTINS
-
 #if BUILDFLAG(ENABLE_LOCATION_SOURCE)
 // static
 NOINLINE Location Location::Current(const char* function_name,
@@ -139,14 +137,6 @@ NOINLINE Location Location::Current(const char* function_name,
 NOINLINE Location Location::Current(const char* file_name) {
   return Location(file_name + kStrippedPrefixLength, RETURN_ADDRESS());
 }
-#endif
-
-#else
-
-NOINLINE Location Location::Current() {
-  return Location(nullptr, RETURN_ADDRESS());
-}
-
 #endif
 
 //------------------------------------------------------------------------------
