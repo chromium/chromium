@@ -245,4 +245,28 @@ TEST_F(KeyboardCapabilityTest, TestHasLauncherButton) {
   EXPECT_TRUE(keyboard_capability_->HasLauncherButton());
 }
 
+TEST_F(KeyboardCapabilityTest, TestHasSixPackKey) {
+  // Add an internal keyboard.
+  ui::InputDevice fake_keyboard1(
+      /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+      /*name=*/"Keyboard1");
+  fake_keyboard1.sys_path = base::FilePath("path1");
+  fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard1, kKbdTopRowLayout1Tag);
+
+  // Internal keyboard doesn't have six pack key.
+  EXPECT_FALSE(keyboard_capability_->HasSixPackKey(fake_keyboard1));
+  EXPECT_FALSE(keyboard_capability_->HasSixPackOnAnyKeyboard());
+
+  // Add an external keyboard.
+  ui::InputDevice fake_keyboard2(
+      /*id=*/2, /*type=*/ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH,
+      /*name=*/"Keyboard2");
+  fake_keyboard1.sys_path = base::FilePath("path2");
+  fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard2, kKbdTopRowLayout1Tag);
+
+  // External keyboard has six pack key.
+  EXPECT_TRUE(keyboard_capability_->HasSixPackKey(fake_keyboard2));
+  EXPECT_TRUE(keyboard_capability_->HasSixPackOnAnyKeyboard());
+}
+
 }  // namespace ash

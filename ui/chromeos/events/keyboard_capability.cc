@@ -94,4 +94,24 @@ bool KeyboardCapability::HasLauncherButton(
          KeyboardTopRowLayout::kKbdTopRowLayout2;
 }
 
+// static
+bool KeyboardCapability::HasSixPackKey(const InputDevice& keyboard) {
+  // If the keyboard is an internal keyboard, return false. Otherwise, return
+  // true. This is correct for most of the keyboards. Edge cases will be handled
+  // later.
+  // TODO(zhangwenyu): handle edge cases when this logic doesn't apply.
+  return keyboard.type != InputDeviceType::INPUT_DEVICE_INTERNAL;
+}
+
+// static
+bool KeyboardCapability::HasSixPackOnAnyKeyboard() {
+  for (const ui::InputDevice& keyboard :
+       ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
+    if (ui::KeyboardCapability::HasSixPackKey(keyboard)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace ui

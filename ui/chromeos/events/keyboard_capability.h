@@ -177,6 +177,12 @@ class KeyboardCapability {
   bool HasLauncherButton(
       const absl::optional<InputDevice>& keyboard = absl::nullopt);
 
+  // Check if a keyboard has a six pack key.
+  static bool HasSixPackKey(const InputDevice& keyboard);
+
+  // Check if any of the connected keyboards has a six pack key.
+  static bool HasSixPackOnAnyKeyboard();
+
  private:
   std::unique_ptr<Delegate> delegate_;
 };

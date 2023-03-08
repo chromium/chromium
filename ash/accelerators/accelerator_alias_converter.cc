@@ -114,10 +114,12 @@ std::vector<ui::Accelerator>
 AcceleratorAliasConverter::CreateReversedSixPackAliases(
     const ui::Accelerator& accelerator) const {
   // To find the reversed six pack alias, an accelerator must include [Search]
-  // key, and must be one of the reversed six pack keys.
+  // key, and must be one of the reversed six pack keys. And the connected
+  // keyboards must have six pack keys.
   if (!accelerator.IsCmdDown() ||
       !::features::IsImprovedKeyboardShortcutsEnabled() ||
-      !ui::KeyboardCapability::IsReversedSixPackKey(accelerator.key_code())) {
+      !ui::KeyboardCapability::IsReversedSixPackKey(accelerator.key_code()) ||
+      !ui::KeyboardCapability::HasSixPackOnAnyKeyboard()) {
     return std::vector<ui::Accelerator>();
   }
 

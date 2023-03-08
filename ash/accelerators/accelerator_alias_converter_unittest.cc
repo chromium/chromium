@@ -263,7 +263,7 @@ TEST_P(TopRowAliasTest, CheckTopRowAlias) {
   }
 }
 
-class SixPackAliasTest
+class SixPackAliasTestWithExternalKeyboard
     : public AcceleratorAliasConverterTest,
       public testing::WithParamInterface<AcceleratorAliasConverterTestData> {
   void SetUp() override {
@@ -271,17 +271,19 @@ class SixPackAliasTest
     AcceleratorAliasConverterTestData test_data = GetParam();
     accelerator_ = test_data.accelerator_;
     expected_accelerator_ = test_data.expected_accelerator_;
+    fake_keyboard_manager_ = std::make_unique<FakeDeviceManager>();
   }
 
  protected:
   ui::Accelerator accelerator_;
   absl::optional<ui::Accelerator> expected_accelerator_;
+  std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
     // Empty to simplify gtest output
     ,
-    SixPackAliasTest,
+    SixPackAliasTestWithExternalKeyboard,
     testing::ValuesIn(std::vector<AcceleratorAliasConverterTestData>{
         // [Search] as original modifier prevents remapping.
         {ui::Accelerator{ui::VKEY_ZOOM, ui::EF_COMMAND_DOWN}, absl::nullopt},
@@ -330,7 +332,107 @@ INSTANTIATE_TEST_SUITE_P(
          ui::Accelerator{ui::VKEY_HOME,
                          ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN}}}));
 
-TEST_P(SixPackAliasTest, CheckSixPackAlias) {
+TEST_P(SixPackAliasTestWithExternalKeyboard, CheckSixPackAlias) {
+  fake_keyboard_manager_->RemoveAllDevices();
+  ui::InputDevice fake_keyboard(
+      /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH,
+      /*name=*/kKbdTopRowLayout1Tag);
+  fake_keyboard.sys_path = base::FilePath("path");
+  fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard, kKbdTopRowLayout1Tag);
+
+  AcceleratorAliasConverter accelerator_alias_converter_;
+
+  std::vector<ui::Accelerator> accelerator_alias =
+      accelerator_alias_converter_.CreateAcceleratorAlias(accelerator_);
+
+  if (expected_accelerator_.has_value()) {
+    // Accelerator has valid a remapping.
+    EXPECT_EQ(2u, accelerator_alias.size());
+    EXPECT_EQ(expected_accelerator_, accelerator_alias[0]);
+    EXPECT_EQ(accelerator_, accelerator_alias[1]);
+  } else {
+    // Accelerator doesn't have a valid remapping.
+    EXPECT_EQ(1u, accelerator_alias.size());
+    EXPECT_EQ(accelerator_, accelerator_alias[0]);
+  }
+}
+
+class SixPackAliasTestWithInternalKeyboard
+    : public AcceleratorAliasConverterTest,
+      public testing::WithParamInterface<AcceleratorAliasConverterTestData> {
+  void SetUp() override {
+    AcceleratorAliasConverterTest::SetUp();
+    AcceleratorAliasConverterTestData test_data = GetParam();
+    accelerator_ = test_data.accelerator_;
+    expected_accelerator_ = test_data.expected_accelerator_;
+    fake_keyboard_manager_ = std::make_unique<FakeDeviceManager>();
+  }
+
+ protected:
+  ui::Accelerator accelerator_;
+  absl::optional<ui::Accelerator> expected_accelerator_;
+  std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    // Empty to simplify gtest output
+    ,
+    SixPackAliasTestWithInternalKeyboard,
+    testing::ValuesIn(std::vector<AcceleratorAliasConverterTestData>{
+        // A keyboard without six pack keys should not affect the aliasing of
+        // six pack key, but only affect the aliasing of reversed six pack key.
+
+        // [Search] as original modifier prevents remapping.
+        {ui::Accelerator{ui::VKEY_ZOOM, ui::EF_COMMAND_DOWN}, absl::nullopt},
+        // key_code not as six pack key prevents remapping.
+        {ui::Accelerator{ui::VKEY_TAB, ui::EF_ALT_DOWN}, absl::nullopt},
+        // [Shift] + [Delete] should not be remapped.
+        {ui::Accelerator{ui::VKEY_DELETE, ui::EF_SHIFT_DOWN}, absl::nullopt},
+        // [Shift] + [Insert] should not be remapped.
+        {ui::Accelerator{ui::VKEY_INSERT, ui::EF_SHIFT_DOWN}, absl::nullopt},
+        // For Insert: [modifiers] -> [Search] + [Shift] + [original_modifiers].
+        {ui::Accelerator{ui::VKEY_INSERT, ui::EF_ALT_DOWN},
+         ui::Accelerator{ui::VKEY_BACK, ui::EF_COMMAND_DOWN |
+                                            ui::EF_SHIFT_DOWN |
+                                            ui::EF_ALT_DOWN}},
+        // For other six-pack-keys: [modifiers] -> [Search] +
+        // [original_modifiers].
+        {ui::Accelerator{ui::VKEY_DELETE, ui::EF_ALT_DOWN},
+         ui::Accelerator{ui::VKEY_BACK, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN}},
+
+        // Below are tests for reversed six pack alias.
+        // All reversed six pack aliasing which work with an external
+        // keyboard should stop working with an internal keyboard.
+        // [Back] + [Search] -> None.
+        {ui::Accelerator{ui::VKEY_BACK, ui::EF_COMMAND_DOWN}, absl::nullopt},
+        // [Back] + [Shift] + [Search] -> None.
+        {ui::Accelerator{ui::VKEY_BACK,
+                         ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN},
+         absl::nullopt},
+        // // [Back] + [Shift] + [Search] + [Alt] -> None.
+        {ui::Accelerator{ui::VKEY_BACK, ui::EF_COMMAND_DOWN |
+                                            ui::EF_SHIFT_DOWN |
+                                            ui::EF_ALT_DOWN},
+         absl::nullopt},
+        // [Back] + [Search] + [Alt] -> None.
+        {ui::Accelerator{ui::VKEY_BACK, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN},
+         absl::nullopt},
+        // [Left] + [Search] + [Alt] -> None.
+        {ui::Accelerator{ui::VKEY_LEFT, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN},
+         absl::nullopt},
+        // [Left] + [Search] + [Shift] + [Alt] -> None.
+        {ui::Accelerator{ui::VKEY_LEFT, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN |
+                                            ui::EF_SHIFT_DOWN},
+         absl::nullopt}}));
+
+TEST_P(SixPackAliasTestWithInternalKeyboard, CheckSixPackAlias) {
+  fake_keyboard_manager_->RemoveAllDevices();
+  ui::InputDevice fake_keyboard(
+      /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+      /*name=*/kKbdTopRowLayout1Tag);
+  fake_keyboard.sys_path = base::FilePath("path");
+  fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard, kKbdTopRowLayout2Tag);
+
   AcceleratorAliasConverter accelerator_alias_converter_;
 
   std::vector<ui::Accelerator> accelerator_alias =
