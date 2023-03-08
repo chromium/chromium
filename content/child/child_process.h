@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -97,10 +98,14 @@ class CONTENT_EXPORT ChildProcess {
   static ChildProcess* current();
 
  private:
-  int ref_count_;
+  const base::AutoReset<ChildProcess*> resetter_;
+
+  int ref_count_ = 0;
 
   // An event that will be signalled when we shutdown.
-  base::WaitableEvent shutdown_event_;
+  base::WaitableEvent shutdown_event_{
+      base::WaitableEvent::ResetPolicy::MANUAL,
+      base::WaitableEvent::InitialState::NOT_SIGNALED};
 
   // The thread that handles IO events.
   std::unique_ptr<base::Thread> io_thread_;
