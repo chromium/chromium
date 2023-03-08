@@ -17,7 +17,6 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/guid.h"
-#include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
@@ -29,7 +28,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_local.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/child_process_security_policy_impl.h"
@@ -75,6 +73,7 @@
 #include "media/capture/video/fake_video_capture_device_factory.h"
 #include "media/capture/video/video_capture_system_impl.h"
 #include "media/mojo/mojom/display_media_information.mojom.h"
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
@@ -106,8 +105,7 @@ using blink::mojom::MediaDeviceType;
 
 namespace content {
 
-base::LazyInstance<base::ThreadLocalPointer<MediaStreamManager>>::Leaky
-    g_media_stream_manager_tls_ptr = LAZY_INSTANCE_INITIALIZER;
+ABSL_CONST_INIT thread_local MediaStreamManager* media_stream_manager = nullptr;
 
 using blink::MediaStreamDevice;
 using blink::MediaStreamDevices;
@@ -1583,13 +1581,12 @@ void MediaStreamManager::SendMessageToNativeLog(const std::string& message) {
   }
   VLOG(1) << message;
 
-  MediaStreamManager* msm = g_media_stream_manager_tls_ptr.Pointer()->Get();
-  if (!msm) {
+  if (!media_stream_manager) {
     // MediaStreamManager hasn't been initialized. This is allowed in tests.
     return;
   }
 
-  msm->AddLogMessageOnIOThread(message);
+  media_stream_manager->AddLogMessageOnIOThread(message);
 }
 
 MediaStreamManager::MediaStreamManager(media::AudioSystem* audio_system)
@@ -3207,7 +3204,7 @@ void MediaStreamManager::InitializeMaybeAsync(
   // threads since attaching to the VM is required and we may have to access
   // the MSM from callback threads that we don't own and don't want to
   // attach.
-  g_media_stream_manager_tls_ptr.Pointer()->Set(this);
+  media_stream_manager = this;
 
   audio_input_device_manager_ =
       base::MakeRefCounted<AudioInputDeviceManager>(audio_system_);
@@ -3418,25 +3415,24 @@ void MediaStreamManager::RegisterNativeLogCallback(
     int renderer_host_id,
     base::RepeatingCallback<void(const std::string&)> callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  MediaStreamManager* msm = g_media_stream_manager_tls_ptr.Pointer()->Get();
-  if (!msm) {
+  if (!media_stream_manager) {
     DLOG(ERROR) << "No MediaStreamManager on the IO thread.";
     return;
   }
 
-  msm->DoNativeLogCallbackRegistration(renderer_host_id, std::move(callback));
+  media_stream_manager->DoNativeLogCallbackRegistration(renderer_host_id,
+                                                        std::move(callback));
 }
 
 // static
 void MediaStreamManager::UnregisterNativeLogCallback(int renderer_host_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  MediaStreamManager* msm = g_media_stream_manager_tls_ptr.Pointer()->Get();
-  if (!msm) {
+  if (!media_stream_manager) {
     DLOG(ERROR) << "No MediaStreamManager on the IO thread.";
     return;
   }
 
-  msm->DoNativeLogCallbackUnregistration(renderer_host_id);
+  media_stream_manager->DoNativeLogCallbackUnregistration(renderer_host_id);
 }
 
 void MediaStreamManager::AddLogMessageOnIOThread(const std::string& message) {
@@ -3751,7 +3747,7 @@ void MediaStreamManager::WillDestroyCurrentMessageLoop() {
   audio_input_device_manager_ = nullptr;
   video_capture_manager_ = nullptr;
   media_devices_manager_ = nullptr;
-  g_media_stream_manager_tls_ptr.Pointer()->Set(nullptr);
+  media_stream_manager = nullptr;
   requests_.clear();
 }
 
@@ -3952,10 +3948,9 @@ void MediaStreamManager::GetMediaDeviceIDForHMAC(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     base::OnceCallback<void(const absl::optional<std::string>&)> callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  MediaStreamManager* msm = g_media_stream_manager_tls_ptr.Pointer()->Get();
   MediaDevicesManager::BoolDeviceTypes requested_types;
   requested_types[static_cast<size_t>(device_type)] = true;
-  msm->media_devices_manager()->EnumerateDevices(
+  media_stream_manager->media_devices_manager()->EnumerateDevices(
       requested_types,
       base::BindOnce(&FinalizeGetMediaDeviceIDForHMAC, device_type,
                      std::move(salt), std::move(security_origin),

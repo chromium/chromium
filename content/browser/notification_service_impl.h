@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/auto_reset.h"
 #include "base/observer_list.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/notification_service.h"
@@ -80,6 +81,8 @@ class CONTENT_EXPORT NotificationServiceImpl : public NotificationService {
   void RemoveObserver(NotificationObserver* observer,
                       int type,
                       const NotificationSource& source);
+
+  const base::AutoReset<NotificationServiceImpl*> resetter_;
 
   // Keeps track of the observers for each type of notification.
   // Until we get a prohibitively large number of notification types,
