@@ -20,26 +20,21 @@
 SearchCompanionSidePanelCoordinator::SearchCompanionSidePanelCoordinator(
     Browser* browser)
     : BrowserUserData<SearchCompanionSidePanelCoordinator>(*browser),
-      browser_(browser) {}
+      browser_(browser) {
+  browser_->tab_strip_model()->AddObserver(this);
+}
 
 SearchCompanionSidePanelCoordinator::~SearchCompanionSidePanelCoordinator() =
     default;
 
-BrowserView* SearchCompanionSidePanelCoordinator::GetBrowserView() {
-  return BrowserView::GetBrowserViewForBrowser(&GetBrowser());
-}
-
-void SearchCompanionSidePanelCoordinator::CreateAndRegisterEntry(
-    SidePanelRegistry* global_registry) {
-  // TODO(b/269331995): Localize menu item label.
-  std::u16string label(u"Companion");
-  global_registry->Register(std::make_unique<SidePanelEntry>(
-      SidePanelEntry::Id::kSearchCompanion, label,
-      ui::ImageModel::FromVectorIcon(kJourneysIcon, ui::kColorIcon,
-                                     /*icon_size=*/16),
-      base::BindRepeating(
-          &SearchCompanionSidePanelCoordinator::CreateCompanionWebView,
-          base::Unretained(this))));
+void SearchCompanionSidePanelCoordinator::
+    CreateAndRegisterEntriesForExistingWebContents(
+        TabStripModel* tab_strip_model) {
+  for (int index = 0; index < tab_strip_model->GetTabCount(); index++) {
+    auto* contextual_registry =
+        SidePanelRegistry::Get(tab_strip_model->GetWebContentsAt(index));
+    contextual_registry->Register(CreateCompanionEntry());
+  }
 }
 
 std::unique_ptr<views::View>
@@ -85,6 +80,39 @@ bool SearchCompanionSidePanelCoordinator::Show() {
   }
 
   return true;
+}
+
+BrowserView* SearchCompanionSidePanelCoordinator::GetBrowserView() {
+  return BrowserView::GetBrowserViewForBrowser(&GetBrowser());
+}
+
+void SearchCompanionSidePanelCoordinator::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  if (change.type() == TabStripModelChange::Type::kInserted) {
+    for (const auto& inserted_tab : change.GetInsert()->contents) {
+      auto* contextual_registry = SidePanelRegistry::Get(inserted_tab.contents);
+      if (contextual_registry &&
+          !contextual_registry->GetEntryForKey(
+              SidePanelEntry::Key(SidePanelEntry::Id::kSearchCompanion))) {
+        contextual_registry->Register(CreateCompanionEntry());
+      }
+    }
+  }
+}
+
+std::unique_ptr<SidePanelEntry>
+SearchCompanionSidePanelCoordinator::CreateCompanionEntry() {
+  // TODO(b/269331995): Localize menu item label.
+  std::u16string label(u"Companion");
+  return std::make_unique<SidePanelEntry>(
+      SidePanelEntry::Id::kSearchCompanion, label,
+      ui::ImageModel::FromVectorIcon(kJourneysIcon, ui::kColorIcon,
+                                     /*icon_size=*/16),
+      base::BindRepeating(
+          &SearchCompanionSidePanelCoordinator::CreateCompanionWebView,
+          base::Unretained(this)));
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SearchCompanionSidePanelCoordinator);
