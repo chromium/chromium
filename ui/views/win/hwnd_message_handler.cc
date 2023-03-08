@@ -2782,6 +2782,11 @@ void HWNDMessageHandler::OnSizing(UINT param, RECT* rect) {
   if (!aspect_ratio_.has_value())
     return;
 
+  // Validate the window edge param because we are seeing DCHECKs caused by
+  // invalid values. See https://crbug.com/1418231.
+  if (param < WMSZ_LEFT || param > WMSZ_BOTTOMRIGHT) {
+    return;
+  }
   gfx::Rect window_rect(*rect);
   SizeWindowToAspectRatio(param, &window_rect);
 
