@@ -107,6 +107,7 @@ struct ConfigureData {
   chromeos::WindowStateType state_type = chromeos::WindowStateType::kDefault;
   bool is_resizing = false;
   bool is_active = false;
+  float raster_scale = 1.0f;
 };
 
 uint32_t Configure(ConfigureData* config_data,
@@ -120,6 +121,7 @@ uint32_t Configure(ConfigureData* config_data,
   config_data->state_type = state_type;
   config_data->is_resizing = resizing;
   config_data->is_active = activated;
+  config_data->raster_scale = raster_scale;
   return 0;
 }
 
@@ -3085,6 +3087,27 @@ TEST_F(ShellSurfaceTest, SetImmersiveModeTriggersConfigure) {
   shell_surface->SetUseImmersiveForFullscreen(true);
 
   EXPECT_EQ(times_configured, 1);
+}
+
+TEST_F(ShellSurfaceTest,
+       SetRasterScaleWindowPropertyConfiguresRasterScaleAndWaitsForAck) {
+  ConfigureData config_data;
+  constexpr gfx::Size buffer_size(256, 256);
+
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder(buffer_size).BuildShellSurface();
+
+  shell_surface->set_configure_callback(
+      base::BindRepeating(&Configure, base::Unretained(&config_data)));
+
+  auto* window = shell_surface->GetWidget()->GetNativeWindow();
+  window->SetProperty(aura::client::kRasterScale, 0.1f);
+  shell_surface->AcknowledgeConfigure(0);
+  EXPECT_EQ(0.1f, config_data.raster_scale);
+
+  window->SetProperty(aura::client::kRasterScale, 1.0f);
+  shell_surface->AcknowledgeConfigure(0);
+  EXPECT_EQ(1.0f, config_data.raster_scale);
 }
 
 }  // namespace exo
