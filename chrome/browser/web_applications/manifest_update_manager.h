@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -207,6 +208,8 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
   bool hang_update_checks_for_testing_ = false;
 
   base::OnceClosure load_finished_callback_;
+
+  base::WeakPtrFactory<ManifestUpdateManager> weak_factory_{this};
 };
 
 }  // namespace web_app
