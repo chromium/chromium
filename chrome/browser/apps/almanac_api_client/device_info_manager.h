@@ -47,7 +47,11 @@ struct DeviceInfo {
   // The version info of the device.
   VersionInfo version_info;
 
-  // The locale chosen by the user.
+  // The locale chosen by the user (e.g. "en-AU"). If no user preference is
+  // available, which happens during OOBE, instead falls back to the language
+  // the UI is currently showing in. This may be less specific (e.g. "en-GB"
+  // instead of "en-AU"), or may conflict with sync data (e.g. signing into a
+  // "fr" device with an account that has "de" in prefs).
   std::string locale;
 };
 

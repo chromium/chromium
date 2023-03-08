@@ -17,8 +17,8 @@ source_set("almanac_api_client") {
   deps = [
     "//ash/constants",
     "//base",
+    "//chrome/browser:browser_process",
     "//chrome/browser/apps:user_type_filter",
-    "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/common:channel_info",
     "//chromeos/version",

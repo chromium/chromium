@@ -8,6 +8,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/apps/user_type_filter.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
 #include "chromeos/version/version_loader.h"
@@ -55,6 +56,11 @@ void DeviceInfoManager::GetDeviceInfo(
   PrefService* prefs = profile_->GetPrefs();
   DCHECK(prefs);
   device_info.locale = prefs->GetString(language::prefs::kApplicationLocale);
+  // If there's no stored locale preference, fall back to the current UI
+  // language.
+  if (device_info.locale.empty()) {
+    device_info.locale = g_browser_process->GetApplicationLocale();
+  }
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
