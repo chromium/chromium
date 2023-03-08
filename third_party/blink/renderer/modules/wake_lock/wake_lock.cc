@@ -139,7 +139,8 @@ ScriptPromise WakeLock::request(ScriptState* script_state,
   }
 
   // 7. Let promise be a new promise.
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise promise = resolver->Promise();
 
   switch (type.AsEnum()) {

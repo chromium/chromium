@@ -152,6 +152,9 @@ class CORE_EXPORT ScriptPromiseResolver
   // promise is pending and the associated ExecutionContext isn't stopped.
   void KeepAliveWhilePending();
 
+  void SetClassLikeName(const char* name) { class_like_name_ = name; }
+  void SetPropertyName(const char* name) { property_like_name_ = name; }
+
   void Trace(Visitor*) const override;
 
  private:

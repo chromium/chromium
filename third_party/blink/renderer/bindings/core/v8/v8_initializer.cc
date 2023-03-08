@@ -648,6 +648,7 @@ v8::MaybeLocal<v8::Promise> HostImportModuleDynamically(
           context, v8_host_defined_options, referrer_resource_url);
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  resolver->SetPropertyName("import");
   ScriptPromise promise = resolver->Promise();
   modulator->ResolveDynamically(module_request, referrer_info, resolver);
   return v8::Local<v8::Promise>::Cast(promise.V8Value());

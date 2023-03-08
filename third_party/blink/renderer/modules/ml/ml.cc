@@ -50,8 +50,8 @@ ScriptPromise ML::createContext(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  ScriptPromiseResolver* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromiseResolver* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
 
   auto promise = resolver->Promise();
 

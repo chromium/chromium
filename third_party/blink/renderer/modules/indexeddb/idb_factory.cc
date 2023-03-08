@@ -262,7 +262,8 @@ ScriptPromise IDBFactory::GetDatabaseInfo(ScriptState* script_state,
   UseCounter::Count(ExecutionContext::From(script_state),
                     WebFeature::kIndexedDBRead);
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
 
   ExecutionContext* context = ExecutionContext::From(script_state);
   DCHECK(context->IsContextThread());

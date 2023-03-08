@@ -56,6 +56,8 @@ ScriptPromiseResolver::ScriptPromiseResolver(
     const ExceptionContext& exception_context)
     : ScriptPromiseResolver(script_state) {
   exception_context_ = exception_context;
+  class_like_name_ = exception_context.GetClassName();
+  property_like_name_ = exception_context.GetPropertyName();
 }
 
 ScriptPromiseResolver::~ScriptPromiseResolver() = default;

@@ -108,7 +108,8 @@ ScriptPromise DOMScheduler::postTask(
   }
 
   DCHECK(task_queue);
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   MakeGarbageCollected<DOMTask>(resolver, callback_function, signal, task_queue,
                                 base::Milliseconds(options->delay()));
   return resolver->Promise();

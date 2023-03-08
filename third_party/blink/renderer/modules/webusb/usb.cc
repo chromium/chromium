@@ -132,7 +132,8 @@ ScriptPromise USB::getDevices(ScriptState* script_state,
   }
 
   EnsureServiceConnection();
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   get_devices_requests_.insert(resolver);
   service_->GetDevices(WTF::BindOnce(&USB::OnGetDevices, WrapPersistent(this),
                                      WrapPersistent(resolver)));

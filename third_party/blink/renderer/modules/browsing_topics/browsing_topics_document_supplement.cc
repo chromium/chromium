@@ -98,8 +98,8 @@ ScriptPromise BrowsingTopicsDocumentSupplement::GetBrowsingTopics(
                       mojom::blink::WebFeature::kPrivacySandboxAdsAPIs);
   }
 
-  ScriptPromiseResolver* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromiseResolver* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise promise = resolver->Promise();
 
   // See https://github.com/jkarlin/topics#specific-details for the restrictions

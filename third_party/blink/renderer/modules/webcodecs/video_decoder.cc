@@ -311,7 +311,8 @@ ScriptPromise VideoDecoder::isConfigSupported(ScriptState* script_state,
   // If hardware is preferred, asynchronously check for a hardware decoder.
   HardwarePreference hw_pref = GetHardwareAccelerationPreference(*config_copy);
   if (hw_pref == HardwarePreference::kPreferHardware) {
-    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+        script_state, exception_state.GetContext());
     ScriptPromise promise = resolver->Promise();
     RetrieveGpuFactoriesWithKnownDecoderSupport(CrossThreadBindOnce(
         &DecoderSupport_OnKnown, MakeUnwrappingCrossThreadHandle(support),

@@ -69,7 +69,8 @@ ScriptPromise IdleManager::RequestPermission(ScriptState* script_state,
         permission_service_.BindNewPipeAndPassReceiver(std::move(task_runner)));
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise promise = resolver->Promise();
 
   permission_service_->RequestPermission(

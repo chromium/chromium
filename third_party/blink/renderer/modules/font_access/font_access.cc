@@ -99,7 +99,8 @@ ScriptPromise FontAccess::QueryLocalFontsImpl(ScriptState* script_state,
   }
   DCHECK(remote_.is_bound());
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise promise = resolver->Promise();
   remote_->EnumerateLocalFonts(resolver->WrapCallbackInScriptScope(
       WTF::BindOnce(&FontAccess::DidGetEnumerationResponse,

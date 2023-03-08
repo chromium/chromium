@@ -92,7 +92,8 @@ ScriptPromise InternalsPermission::setPermission(
       permission_automation.BindNewPipeAndPassReceiver());
   DCHECK(permission_automation.is_bound());
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise promise = resolver->Promise();
   auto* raw_permission_automation = permission_automation.get();
   raw_permission_automation->SetPermission(

@@ -1125,7 +1125,8 @@ CredentialsContainer::CredentialsContainer(Navigator& navigator)
 ScriptPromise CredentialsContainer::get(ScriptState* script_state,
                                         const CredentialRequestOptions* options,
                                         ExceptionState& exception_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise promise = resolver->Promise();
   ExecutionContext* context = ExecutionContext::From(script_state);
 

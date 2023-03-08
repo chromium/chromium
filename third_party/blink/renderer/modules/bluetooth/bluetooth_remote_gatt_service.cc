@@ -148,7 +148,8 @@ ScriptPromise BluetoothRemoteGATTService::GetCharacteristicsImpl(
     return ScriptPromise();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise promise = resolver->Promise();
   device_->gatt()->AddToActiveAlgorithms(resolver);
 

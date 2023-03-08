@@ -78,8 +78,8 @@ ScriptPromise SerialPortUnderlyingSink::write(
   if (exception_state.HadException())
     return ScriptPromise();
 
-  pending_operation_ =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  pending_operation_ = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise promise = pending_operation_->Promise();
 
   WriteData();
@@ -96,8 +96,8 @@ ScriptPromise SerialPortUnderlyingSink::close(ScriptState* script_state,
   data_pipe_.reset();
   abort_handle_.Clear();
 
-  pending_operation_ =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  pending_operation_ = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   serial_port_->Drain(WTF::BindOnce(&SerialPortUnderlyingSink::OnFlushOrDrain,
                                     WrapPersistent(this)));
   return pending_operation_->Promise();
@@ -121,8 +121,8 @@ ScriptPromise SerialPortUnderlyingSink::abort(ScriptState* script_state,
     return ScriptPromise::CastUndefined(script_state);
   }
 
-  pending_operation_ =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  pending_operation_ = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   serial_port_->Flush(device::mojom::blink::SerialPortFlushMode::kTransmit,
                       WTF::BindOnce(&SerialPortUnderlyingSink::OnFlushOrDrain,
                                     WrapPersistent(this)));

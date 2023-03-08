@@ -90,7 +90,8 @@ void BluetoothRemoteGATTServer::ConnectCallback(
 ScriptPromise BluetoothRemoteGATTServer::connect(
     ScriptState* script_state,
     ExceptionState& exception_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise promise = resolver->Promise();
 
   if (!device_->GetBluetooth()->IsServiceBound()) {
@@ -232,7 +233,8 @@ ScriptPromise BluetoothRemoteGATTServer::GetPrimaryServicesImpl(
     return ScriptPromise();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise promise = resolver->Promise();
   AddToActiveAlgorithms(resolver);
 

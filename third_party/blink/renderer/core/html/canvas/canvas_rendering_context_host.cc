@@ -375,7 +375,8 @@ ScriptPromise CanvasRenderingContextHost::convertToBlob(
   scoped_refptr<StaticBitmapImage> image_bitmap = RenderingContext()->GetImage(
       CanvasResourceProvider::FlushReason::kToBlob);
   if (image_bitmap) {
-    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+        script_state, exception_state.GetContext());
     CanvasAsyncBlobCreator::ToBlobFunctionType function_type =
         CanvasAsyncBlobCreator::kOffscreenCanvasConvertToBlobPromise;
     auto* execution_context = ExecutionContext::From(script_state);

@@ -79,7 +79,8 @@ ScriptPromise ServiceWorkerRegistrationNotifications::showNotification(
       "Notifications.PersistentNotificationActionCount",
       options->actions().size(), 17);
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise promise = resolver->Promise();
 
   ServiceWorkerRegistrationNotifications::From(execution_context, registration)

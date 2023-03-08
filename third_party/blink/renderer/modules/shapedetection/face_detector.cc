@@ -61,7 +61,8 @@ ScriptPromise FaceDetector::DoDetect(ScriptState* script_state,
                                       "Face detection service unavailable.");
     return ScriptPromise();
   }
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   face_service_requests_.insert(resolver);
   face_service_->Detect(

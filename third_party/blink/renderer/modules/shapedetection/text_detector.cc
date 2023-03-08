@@ -42,7 +42,8 @@ ScriptPromise TextDetector::DoDetect(ScriptState* script_state,
                                       "Text detection service unavailable.");
     return ScriptPromise();
   }
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   text_service_requests_.insert(resolver);
   text_service_->Detect(

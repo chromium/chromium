@@ -78,8 +78,8 @@ ScriptPromise PaymentManager::enableDelegations(
       std::move(mojo_delegations),
       WTF::BindOnce(&PaymentManager::OnEnableDelegationsResponse,
                     WrapPersistent(this)));
-  enable_delegations_resolver_ =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  enable_delegations_resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   return enable_delegations_resolver_->Promise();
 }
 

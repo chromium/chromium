@@ -6524,8 +6524,8 @@ ScriptPromise Document::hasPrivateToken(ScriptState* script_state,
                                         const String& issuer,
                                         const String& type,
                                         ExceptionState& exception_state) {
-  ScriptPromiseResolver* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromiseResolver* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
 
   ScriptPromise promise = resolver->Promise();
 
@@ -6648,8 +6648,8 @@ ScriptPromise Document::hasRedemptionRecord(ScriptState* script_state,
                                             const String& issuer,
                                             const String& type,
                                             ExceptionState& exception_state) {
-  ScriptPromiseResolver* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromiseResolver* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
 
   ScriptPromise promise = resolver->Promise();
 

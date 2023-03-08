@@ -146,7 +146,8 @@ ScriptPromise BarcodeDetector::DoDetect(ScriptState* script_state,
                                       "Barcode detection service unavailable.");
     return ScriptPromise();
   }
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   detect_requests_.insert(resolver);
   service_->Detect(

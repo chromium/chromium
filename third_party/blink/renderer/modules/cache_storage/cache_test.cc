@@ -78,8 +78,8 @@ class ScopedFetcherForTests final
     }
 
     if (response_) {
-      auto* resolver =
-          MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+      auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+          script_state, exception_state.GetContext());
       const ScriptPromise promise = resolver->Promise();
       resolver->Resolve(response_);
       response_ = nullptr;

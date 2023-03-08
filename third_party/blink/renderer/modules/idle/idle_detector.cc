@@ -163,7 +163,8 @@ ScriptPromise IdleDetector::start(ScriptState* script_state,
   receiver_.set_disconnect_handler(WTF::BindOnce(
       &IdleDetector::OnMonitorDisconnected, WrapWeakPersistent(this)));
 
-  resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise promise = resolver_->Promise();
   IdleManager::From(context)->AddMonitor(
       std::move(remote),

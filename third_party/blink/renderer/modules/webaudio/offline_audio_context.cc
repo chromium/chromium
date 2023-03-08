@@ -185,8 +185,8 @@ ScriptPromise OfflineAudioContext::startOfflineRendering(
 
   DCHECK(!is_rendering_started_);
 
-  complete_resolver_ =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  complete_resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
 
   // Allocate the AudioBuffer to hold the rendered result.
   float sample_rate = DestinationHandler().SampleRate();
@@ -295,7 +295,8 @@ ScriptPromise OfflineAudioContext::suspendContext(
       return ScriptPromise();
     }
 
-    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+        script_state, exception_state.GetContext());
     promise = resolver->Promise();
 
     scheduled_suspends_.insert(frame, resolver);

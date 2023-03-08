@@ -784,8 +784,8 @@ ScriptPromise WebGLRenderingContextBase::makeXRCompatible(
   if (make_xr_compatible_resolver_)
     return make_xr_compatible_resolver_->Promise();
 
-  make_xr_compatible_resolver_ =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  make_xr_compatible_resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise promise = make_xr_compatible_resolver_->Promise();
 
   MakeXrCompatibleAsync();

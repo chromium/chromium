@@ -70,7 +70,8 @@ ScriptPromise DOMWindowDigitalGoods::GetDigitalGoodsService(
     return ScriptPromise();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   auto* execution_context = ExecutionContext::From(script_state);
   DCHECK(execution_context);

@@ -26,7 +26,8 @@ ScriptPromise InternalsStorageAccess::setStorageAccess(
       storage_access_automation.BindNewPipeAndPassReceiver());
   DCHECK(storage_access_automation.is_bound());
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise promise = resolver->Promise();
   auto* raw_storage_access_automation = storage_access_automation.get();
   raw_storage_access_automation->SetStorageAccess(

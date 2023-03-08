@@ -666,7 +666,8 @@ ScriptPromise XRSession::requestReferenceSpace(
   DCHECK(reference_space);
   reference_spaces_.push_back(reference_space);
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise promise = resolver->Promise();
   resolver->Resolve(reference_space);
 
@@ -1305,7 +1306,8 @@ ScriptPromise XRSession::requestLightProbe(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise promise = resolver->Promise();
 
   if (!world_light_probe_) {
@@ -1333,8 +1335,8 @@ ScriptPromise XRSession::end(ScriptState* script_state,
 
   ForceEnd(ShutdownPolicy::kWaitForResponse);
 
-  end_session_resolver_ =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  end_session_resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise promise = end_session_resolver_->Promise();
 
   DVLOG(1) << __func__ << ": returning promise";
