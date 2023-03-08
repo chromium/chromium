@@ -39,6 +39,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/views/controls/editable_combobox/editable_combobox.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/focus/focus_manager.h"
 
 using base::Bucket;
@@ -590,4 +591,61 @@ IN_PROC_BROWSER_TEST_F(PasswordManagementRevampedBubbleInteractiveUiTest,
       password_manager::metrics_util::PasswordManagementBubbleInteractions::
           kPasswordShowButtonClicked,
       1);
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordManagementRevampedBubbleInteractiveUiTest,
+                       DisplaysNewUsernameAfterEditing) {
+  base::HistogramTester histogram_tester;
+
+  SetupManagingPasswords();
+  EXPECT_FALSE(IsBubbleShowing());
+  ExecuteManagePasswordsCommand();
+  ASSERT_TRUE(IsBubbleShowing());
+
+  auto* bubble = PasswordBubbleViewBase::manage_password_bubble();
+  test_form()->username_value = u"";
+  static_cast<ManagePasswordsView*>(bubble)->DisplayDetailsOfPasswordForTesting(
+      *test_form());
+
+  auto* edit_username_row = bubble->GetViewByID(static_cast<int>(
+      password_manager::ManagePasswordsViewIDs::kEditUsernameRow));
+  auto* read_username_row = bubble->GetViewByID(static_cast<int>(
+      password_manager::ManagePasswordsViewIDs::kReadUsernameRow));
+  ASSERT_FALSE(edit_username_row->GetVisible());
+  ASSERT_TRUE(read_username_row->GetVisible());
+  ASSERT_EQ(static_cast<views::Label*>(
+                bubble->GetViewByID(static_cast<int>(
+                    password_manager::ManagePasswordsViewIDs::kUsernameLabel)))
+                ->GetText(),
+            u"No username");
+
+  ClickOnView(bubble->GetViewByID(static_cast<int>(
+      password_manager::ManagePasswordsViewIDs::kEditUsernameButton)));
+  EXPECT_TRUE(edit_username_row->GetVisible());
+  EXPECT_FALSE(read_username_row->GetVisible());
+
+  auto* username_textfield =
+      static_cast<views::Textfield*>(bubble->GetViewByID(static_cast<int>(
+          password_manager::ManagePasswordsViewIDs::kUsernameTextField)));
+  EXPECT_EQ(username_textfield->GetText(), u"");
+
+  username_textfield->SetText(u"new_username");
+  bubble->AcceptDialog();
+  EXPECT_EQ(static_cast<views::Label*>(
+                bubble->GetViewByID(static_cast<int>(
+                    password_manager::ManagePasswordsViewIDs::kUsernameLabel)))
+                ->GetText(),
+            u"new_username");
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "PasswordManager.PasswordManagementBubble.UserAction"),
+      ElementsAre(
+          Bucket(password_manager::metrics_util::
+                     PasswordManagementBubbleInteractions::
+                         kUsernameEditButtonClicked,
+                 1),
+          Bucket(password_manager::metrics_util::
+                     PasswordManagementBubbleInteractions::kUsernameAdded,
+                 1)));
 }

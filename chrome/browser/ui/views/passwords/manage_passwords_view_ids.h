@@ -10,13 +10,24 @@ namespace password_manager {
 // Defines an enumeration of IDs that can uniquely identify a view within the
 // scope of password management bubble. Used to validate views in browser tests.
 enum class ManagePasswordsViewIDs {
+  // The following ids are for credential list views.
   kManagePasswordsButton = 1,
+
+  // The following ids are for username in the details views.
   kCopyUsernameButton,
-  kCopyPasswordButton,
   kEditUsernameButton,
-  kEditNoteButton,
+  kEditUsernameRow,
+  kReadUsernameRow,
+  kUsernameTextField,
+  kUsernameLabel,
+
+  // The following ids are for password in the details views.
+  kCopyPasswordButton,
   kRevealPasswordButton,
   kPasswordLabel,
+
+  // The following ids are for note in the details views.
+  kEditNoteButton,
 };
 
 }  // namespace password_manager

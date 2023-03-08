@@ -221,6 +221,8 @@ std::unique_ptr<views::View> CreateEditUsernameRow(
   // TODO(crbug.com/1382017): use internationalized string.
   (*textfield)->SetAccessibleName(u"Username");
   (*textfield)
+      ->SetID(static_cast<int>(ManagePasswordsViewIDs::kUsernameTextField));
+  (*textfield)
       ->SetProperty(
           views::kFlexBehaviorKey,
           views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
@@ -291,6 +293,10 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
     : switched_to_edit_mode_callback_(
           std::move(switched_to_edit_mode_callback)) {
   SetOrientation(views::BoxLayout::Orientation::kVertical);
+  std::unique_ptr<views::Label> username_label =
+      CreateUsernameLabel(password_form);
+  username_label->SetID(
+      static_cast<int>(ManagePasswordsViewIDs::kUsernameLabel));
   if (!password_form.username_value.empty()) {
     auto copy_username_button_callback =
         base::BindRepeating(&WriteToClipboard, password_form.username_value)
@@ -300,7 +306,7 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
                 PasswordManagementBubbleInteractions::
                     kUsernameCopyButtonClicked));
     AddChildView(CreateDetailsRow(
-        kAccountCircleIcon, CreateUsernameLabel(password_form),
+        kAccountCircleIcon, std::move(username_label),
         vector_icons::kContentCopyIcon,
         l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_UI_COPY_USERNAME),
         std::move(copy_username_button_callback),
@@ -310,14 +316,18 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
     // action
     // button tooltip text.
     read_username_row_ = AddChildView(CreateDetailsRow(
-        kAccountCircleIcon, CreateUsernameLabel(password_form),
-        vector_icons::kEditIcon, u"Edit Username",
+        kAccountCircleIcon, std::move(username_label), vector_icons::kEditIcon,
+        u"Edit Username",
         base::BindRepeating(
             &ManagePasswordsDetailsView::SwitchToEditUsernameMode,
             base::Unretained(this)),
         ManagePasswordsViewIDs::kEditUsernameButton));
+    read_username_row_->SetID(
+        static_cast<int>(ManagePasswordsViewIDs::kReadUsernameRow));
     edit_username_row_ = AddChildView(
         CreateEditUsernameRow(password_form, &username_textfield_));
+    edit_username_row_->SetID(
+        static_cast<int>(ManagePasswordsViewIDs::kEditUsernameRow));
     edit_username_row_->SetVisible(false);
   }
 
@@ -389,6 +399,8 @@ void ManagePasswordsDetailsView::SwitchToEditUsernameMode() {
   switched_to_edit_mode_callback_.Run();
   DCHECK(username_textfield_);
   username_textfield_->RequestFocus();
+  LogUserInteractionsInPasswordManagementBubble(
+      PasswordManagementBubbleInteractions::kUsernameEditButtonClicked);
 }
 
 void ManagePasswordsDetailsView::SwitchToEditNoteMode() {

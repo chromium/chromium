@@ -79166,6 +79166,8 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="Username copied"/>
   <int value="4" label="Password copied"/>
   <int value="5" label="Password revealed"/>
+  <int value="6" label="Username edit button clicked"/>
+  <int value="7" label="Username added"/>
 </enum>
 
 <enum name="PasswordManager.AssistantStoppedBubble.CloseReason">

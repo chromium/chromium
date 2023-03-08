@@ -147,6 +147,9 @@ void ItemsBubbleController::UpdateSelectedCredentialInPasswordStore(
   password_store->UpdateLoginWithPrimaryKey(
       updated_form, currently_selected_password_.value());
   currently_selected_password_ = updated_form;
+
+  metrics_util::LogUserInteractionsInPasswordManagementBubble(
+      metrics_util::PasswordManagementBubbleInteractions::kUsernameAdded);
 }
 
 void ItemsBubbleController::AuthenticateUserAndDisplayDetailsOf(
