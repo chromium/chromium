@@ -51,7 +51,7 @@ TEST_F(BookmarksHomeViewControllerTest,
     controller.applicationCommandsHandler = mockApplicationCommandHandler;
     controller.snackbarCommandsHandler = mockSnackbarCommandHandler;
 
-    [controller setRootNode:bookmark_model_->mobile_node()];
+    controller.displayedFolderNode = bookmark_model_->mobile_node();
     // Two sections: Messages and Bookmarks.
     EXPECT_EQ(2, [controller numberOfSectionsInTableView:controller.tableView]);
   }
@@ -85,7 +85,7 @@ TEST_F(BookmarksHomeViewControllerTest, Metrics) {
     controller.applicationCommandsHandler = mockApplicationCommandHandler;
     controller.snackbarCommandsHandler = mockSnackbarCommandHandler;
 
-    [controller setRootNode:bookmark_model_->mobile_node()];
+    controller.displayedFolderNode = bookmark_model_->mobile_node();
     base::UserActionTester user_action_tester;
     std::string user_action = "MobileKeyCommandClose";
     ASSERT_EQ(user_action_tester.GetActionCount(user_action), 0);

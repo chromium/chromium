@@ -217,9 +217,6 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 @implementation BookmarksHomeViewController {
   // Bridge to register for bookmark changes in the profile model.
   std::unique_ptr<BookmarkModelBridge> _profileBridge;
-
-  // The root node, whose child nodes are shown in the bookmark table view.
-  const bookmarks::BookmarkNode* _rootNode;
   // The bookmark node that was choosen by an entity outside of the Bookmarks UI
   // and is selected when the view is loaded.
   const bookmarks::BookmarkNode* _externalBookmark;
@@ -263,10 +260,6 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   _profileBridge.reset();
 }
 
-- (void)setRootNode:(const bookmarks::BookmarkNode*)rootNode {
-  _rootNode = rootNode;
-}
-
 - (void)setExternalBookmark:(const bookmarks::BookmarkNode*)node {
   _externalBookmark = node;
 }
@@ -293,7 +286,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   // reconstructing from cache, or there will be a loading flicker if this gets
   // done on viewDidLoad.
   [self setupNavigationForBookmarksHomeViewController:self
-                                    usingBookmarkNode:_rootNode];
+                                    usingBookmarkNode:self.displayedFolderNode];
   [stack addObject:self];
 
   int64_t cachedFolderID;
@@ -330,7 +323,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
     }
 
     BookmarksHomeViewController* controller =
-        [self createControllerWithRootFolder:node];
+        [self createControllerWithDisplayedFolderNode:node];
     // Configure the controller's Navigationbar at this time when
     // reconstructing from cache, or there will be a loading flicker if this
     // gets done on viewDidLoad.
@@ -474,12 +467,12 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 #pragma mark - Protected
 
 - (void)loadBookmarkViews {
-  DCHECK(_rootNode);
+  DCHECK(self.displayedFolderNode);
   [self loadModel];
 
   self.sharedState = [[BookmarksHomeSharedState alloc]
       initWithProfileBookmarkModel:_profileBookmarks
-                 displayedRootNode:_rootNode];
+                 displayedRootNode:self.displayedFolderNode];
   self.sharedState.tableViewModel = self.tableViewModel;
   self.sharedState.tableView = self.tableView;
   self.sharedState.observer = self;
@@ -512,7 +505,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   [self.mediator startMediating];
 
   [self setupNavigationForBookmarksHomeViewController:self
-                                    usingBookmarkNode:_rootNode];
+                                    usingBookmarkNode:self.displayedFolderNode];
 
   [self setupContextBar];
 
@@ -531,10 +524,10 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 - (void)cacheIndexPathRow {
   // Cache IndexPathRow for BookmarkTableView.
   int topMostVisibleIndexPathRow = [self topMostVisibleIndexPathRow];
-  if (_rootNode) {
+  if (self.displayedFolderNode) {
     [BookmarkPathCache
         cacheBookmarkTopMostRowWithPrefService:self.browserState->GetPrefs()
-                                      folderId:_rootNode->id()
+                                      folderId:self.displayedFolderNode->id()
                                     topMostRow:topMostVisibleIndexPathRow];
   } else {
     // TODO(crbug.com/1061882):Remove DCHECK once we know the root cause of the
@@ -779,7 +772,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
       // Build reversed list of controllers.
       BookmarksHomeViewController* controller =
-          [self createControllerWithRootFolder:cursor];
+          [self createControllerWithDisplayedFolderNode:cursor];
       [stack insertObject:controller atIndex:0];
 
       // Setup now, so that the back button labels shows parent folder
@@ -821,7 +814,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
     return;
   }
   BookmarksHomeViewController* controller =
-      [self createControllerWithRootFolder:folder];
+      [self createControllerWithDisplayedFolderNode:folder];
   [self.navigationController pushViewController:controller animated:YES];
 }
 
@@ -895,7 +888,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   [self.snackbarCommandsHandler
       showSnackbarMessage:
           bookmark_utils_ios::UpdateBookmarkPositionWithUndoToast(
-              node, _rootNode, position, self.profileBookmarks,
+              node, self.displayedFolderNode, position, self.profileBookmarks,
               self.browserState)];
 }
 
@@ -974,12 +967,12 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 #pragma mark - BookmarkModelBridgeObserver
 
 - (void)bookmarkModelLoaded {
-  DCHECK(!_rootNode);
-  [self setRootNode:self.profileBookmarks->root_node()];
+  DCHECK(!self.displayedFolderNode);
+  self.displayedFolderNode = self.profileBookmarks->root_node();
 
   // If the view hasn't loaded yet, then return early. The eventual call to
   // viewDidLoad will properly initialize the views.  This early return must
-  // come *after* the call to setRootNode above.
+  // come *after* setting displayedFolderNode above.
   if (![self isViewLoaded]) {
     return;
   }
@@ -1046,7 +1039,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
 - (void)bookmarkNodeDeleted:(const BookmarkNode*)node
                  fromFolder:(const BookmarkNode*)folder {
-  if (_rootNode == node) {
+  if (self.displayedFolderNode == node) {
     [self setTableViewEditing:NO];
   }
 }
@@ -1065,7 +1058,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 #pragma mark - private
 
 - (BOOL)isDisplayingBookmarkRoot {
-  return _rootNode == self.profileBookmarks->root_node();
+  return self.displayedFolderNode == self.profileBookmarks->root_node();
 }
 
 // Check if any of our controller is presenting. We don't consider when this
@@ -1220,11 +1213,11 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                     animated:YES];
 }
 
-- (BookmarksHomeViewController*)createControllerWithRootFolder:
-    (const bookmarks::BookmarkNode*)folder {
+- (BookmarksHomeViewController*)createControllerWithDisplayedFolderNode:
+    (const bookmarks::BookmarkNode*)displayedFolderNode {
   BookmarksHomeViewController* controller =
       [[BookmarksHomeViewController alloc] initWithBrowser:self.browser];
-  [controller setRootNode:folder];
+  controller.displayedFolderNode = displayedFolderNode;
   controller.homeDelegate = self.homeDelegate;
   controller.applicationCommandsHandler = self.applicationCommandsHandler;
   controller.snackbarCommandsHandler = self.snackbarCommandsHandler;
@@ -2591,8 +2584,9 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   [self.snackbarCommandsHandler
       showSnackbarMessage:
           bookmark_utils_ios::CreateBookmarkAtPositionWithUndoToast(
-              base::SysUTF8ToNSString(URL.spec()), URL, _rootNode, index,
-              self.profileBookmarks, self.browserState)];
+              base::SysUTF8ToNSString(URL.spec()), URL,
+              self.displayedFolderNode, index, self.profileBookmarks,
+              self.browserState)];
 }
 
 @end

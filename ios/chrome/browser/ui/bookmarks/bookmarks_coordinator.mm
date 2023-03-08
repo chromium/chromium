@@ -247,8 +247,8 @@ enum class PresentedState {
 }
 
 - (void)presentBookmarks {
-  [self presentBookmarksAtRootNode:self.bookmarkModel->root_node()
-                 selectingBookmark:nil];
+  [self presentBookmarksAtDisplayedFolderNode:self.bookmarkModel->root_node()
+                            selectingBookmark:nil];
 }
 
 - (void)presentFolderChooser {
@@ -555,8 +555,8 @@ enum class PresentedState {
   const BookmarkNode* existingBookmark =
       self.bookmarkModel->GetMostRecentlyAddedUserNodeForURL(
           command.URLs.firstObject.URL);
-  [self presentBookmarksAtRootNode:self.bookmarkModel->mobile_node()
-                 selectingBookmark:existingBookmark];
+  [self presentBookmarksAtDisplayedFolderNode:self.bookmarkModel->mobile_node()
+                            selectingBookmark:existingBookmark];
 }
 
 #pragma mark - Private
@@ -645,8 +645,10 @@ enum class PresentedState {
 // Presents the bookmarks browser modally. If `selectingBookmark` is non-nil,
 // then the bookmarks modal is changed to edit mode and `selectingBookmark` is
 // identified in the list of bookmarks and selected.
-- (void)presentBookmarksAtRootNode:(const BookmarkNode*)rootNode
-                 selectingBookmark:(const BookmarkNode*)bookmarkNode {
+- (void)presentBookmarksAtDisplayedFolderNode:
+            (const BookmarkNode*)displayedFolderNode
+                            selectingBookmark:
+                                (const BookmarkNode*)bookmarkNode {
   DCHECK_EQ(PresentedState::NONE, self.currentPresentedState);
   DCHECK(!self.bookmarkNavigationController);
 
@@ -662,9 +664,9 @@ enum class PresentedState {
     // Set the root node if the model has been loaded. If the model has not been
     // loaded yet, the root node will be set in BookmarksHomeViewController
     // after the model is finished loading.
-    [self.bookmarkBrowser setRootNode:rootNode];
+    self.bookmarkBrowser.displayedFolderNode = displayedFolderNode;
     [self.bookmarkBrowser setExternalBookmark:bookmarkNode];
-    if (rootNode == self.bookmarkModel->root_node()) {
+    if (displayedFolderNode == self.bookmarkModel->root_node()) {
       replacementViewControllers =
           [self.bookmarkBrowser cachedViewControllerStack];
     }

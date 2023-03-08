@@ -54,15 +54,15 @@ class GURL;
 // Handler for Snackbar Commands.
 @property(nonatomic, weak) id<SnackbarCommands> snackbarCommandsHandler;
 
+// The bookmark folder currently being displayed.
+@property(nonatomic, assign) const bookmarks::BookmarkNode* displayedFolderNode;
+
 // Initializers.
 - (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithStyle:(UITableViewStyle)tableViewStyle NS_UNAVAILABLE;
 
 // Called before the instance is deallocated.
 - (void)shutdown;
-
-// Setter to set _rootNode value.
-- (void)setRootNode:(const bookmarks::BookmarkNode*)rootNode;
 
 // Setter to set _externalBookmark value.
 - (void)setExternalBookmark:(const bookmarks::BookmarkNode*)node;

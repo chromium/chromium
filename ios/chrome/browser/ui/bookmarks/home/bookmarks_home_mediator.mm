@@ -146,7 +146,7 @@ const int kMaxBookmarksSearchResults = 50;
 
 #pragma mark - Initial Model Setup
 
-// Computes the bookmarks table view based on the current root node.
+// Computes the bookmarks table view based on the currently displayed node.
 - (void)computeBookmarkTableViewData {
   [self deleteAllItemsOrAddSectionWithIdentifier:
             BookmarksHomeSectionIdentifierBookmarks];
@@ -170,12 +170,13 @@ const int kMaxBookmarksSearchResults = 50;
   [self updateTableViewBackground];
 }
 
-// Generate the table view data when the current root node is a child node.
+// Generate the table view data when the currently displayed node is a child
+// node.
 - (void)generateTableViewData {
   if (!self.sharedState.tableViewDisplayedRootNode) {
     return;
   }
-  // Add all bookmarks and folders of the current root node to the table.
+  // Add all bookmarks and folders of the currently displayed node to the table.
   for (const auto& child :
        self.sharedState.tableViewDisplayedRootNode->children()) {
     BookmarksHomeNodeItem* nodeItem = [[BookmarksHomeNodeItem alloc]
@@ -189,8 +190,8 @@ const int kMaxBookmarksSearchResults = 50;
   }
 }
 
-// Generate the table view data when the current root node is the outermost
-// root.
+// Generate the table view data when the current currently displayed node is the
+// outermost root.
 - (void)generateTableViewDataForRootNode {
   // If all the permanent nodes are empty, do not create items for any of them.
   if (![self hasBookmarksOrFolders]) {
@@ -296,8 +297,8 @@ const int kMaxBookmarksSearchResults = 50;
 }
 
 - (void)updateTableViewBackground {
-  // If the current root node is the outermost root, check if we need to show
-  // the spinner backgound.  Otherwise, check if we need to show the empty
+  // If the currently displayed node is the outermost root, check if we need to
+  // show the spinner backgound. Otherwise, check if we need to show the empty
   // background.
   if (self.sharedState.tableViewDisplayedRootNode ==
       self.sharedState.profileBookmarkModel->root_node()) {
@@ -410,7 +411,7 @@ const int kMaxBookmarksSearchResults = 50;
   if (self.sharedState.currentlyShowingSearchResults) {
     [self.consumer refreshContents];
   }
-  // The current root folder's children changed. Reload everything.
+  // The currently displayed folder's children changed. Reload everything.
   // (When adding new folder, table is already been updated. So no need to
   // reload here.)
   if (bookmarkNode == self.sharedState.tableViewDisplayedRootNode &&
@@ -429,7 +430,7 @@ const int kMaxBookmarksSearchResults = 50;
             toParent:(const BookmarkNode*)newParent {
   if (oldParent == self.sharedState.tableViewDisplayedRootNode ||
       newParent == self.sharedState.tableViewDisplayedRootNode) {
-    // A folder was added or removed from the current root folder.
+    // A folder was added or removed from the currently displayed folder.
     [self.consumer refreshContents];
   }
 }
