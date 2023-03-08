@@ -384,8 +384,39 @@ void DualReadingListModel::SetEntryDistilledInfoIfExists(
     int64_t distilation_size,
     base::Time distilation_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/1402196): Implement.
-  NOTIMPLEMENTED();
+  DCHECK(loaded());
+
+  scoped_refptr<const ReadingListEntry> entry = GetEntryByURL(url);
+  if (!entry) {
+    return;
+  }
+
+  const bool notify_observers =
+      entry->DistilledState() != ReadingListEntry::PROCESSED ||
+      entry->DistilledPath() != distilled_path;
+
+  if (notify_observers) {
+    NotifyObserversWithWillUpdateEntry(url);
+  }
+
+  // The update propagates to both underlying ReadingListModelImpl instances
+  // even if the `entry` distilled path is equal to `distilled_path`. This is
+  // because if `entry` was a merged entry, then its distilled path is equal to
+  // the local entry's distilled path and the account entry may have a different
+  // distilled path.
+  {
+    base::AutoReset<bool> auto_reset_suppress_observer_notifications(
+        &suppress_observer_notifications_, true);
+    local_or_syncable_model_->SetEntryDistilledInfoIfExists(
+        url, distilled_path, distilled_url, distilation_size, distilation_time);
+    account_model_->SetEntryDistilledInfoIfExists(
+        url, distilled_path, distilled_url, distilation_size, distilation_time);
+  }
+
+  if (notify_observers) {
+    NotifyObserversWithDidUpdateEntry(url);
+    NotifyObserversWithDidApplyChanges();
+  }
 }
 
 void DualReadingListModel::AddObserver(ReadingListModelObserver* observer) {

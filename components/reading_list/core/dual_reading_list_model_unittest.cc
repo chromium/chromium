@@ -4,6 +4,7 @@
 
 #include "components/reading_list/core/dual_reading_list_model.h"
 
+#include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
@@ -74,6 +75,11 @@ class TestEntryBuilder {
     return *this;
   }
 
+  TestEntryBuilder& SetDistilledInfo(const base::FilePath& distilation_path) {
+    distilation_path_ = distilation_path;
+    return *this;
+  }
+
   scoped_refptr<ReadingListEntry> Build() {
     auto entry = base::MakeRefCounted<ReadingListEntry>(url_, "entry_title",
                                                         creation_time_);
@@ -94,6 +100,12 @@ class TestEntryBuilder {
       entry->SetDistilledState(distilation_state_.value());
     }
 
+    if (distilation_path_.has_value()) {
+      entry->SetDistilledInfo(distilation_path_.value(),
+                              GURL("http://kDistilledURL.com/"), 1,
+                              base::Time::FromTimeT(1));
+    }
+
     return entry;
   }
 
@@ -105,6 +117,7 @@ class TestEntryBuilder {
   absl::optional<base::Time> update_read_time_;
   absl::optional<base::TimeDelta> estimated_read_time_;
   absl::optional<ReadingListEntry::DistillationState> distilation_state_;
+  absl::optional<base::FilePath> distilation_path_;
 };
 
 class DualReadingListModelTest : public testing::Test {
@@ -468,27 +481,27 @@ TEST_F(DualReadingListModelTest, NeedsExplicitUploadToSyncServerWhenSignedOut) {
 
 TEST_F(DualReadingListModelTest,
        NeedsExplicitUploadToSyncServerWhenSignedInSyncDisabled) {
-  const GURL kLocalUrl("http://local_url.com/");
-  const GURL kAccountUrl("http://account_url.com/");
-  const GURL kCommonUrl("http://common_url.com/");
+  const GURL kLocalURL("http://local_url.com/");
+  const GURL kAccountURL("http://account_url.com/");
+  const GURL kCommonURL("http://common_url.com/");
   ASSERT_TRUE(ResetStorageAndMimicSignedInSyncDisabled(
-      /*initial_local_entries_builders=*/{TestEntryBuilder(kLocalUrl,
+      /*initial_local_entries_builders=*/{TestEntryBuilder(kLocalURL,
                                                            clock_.Now()),
-                                          TestEntryBuilder(kCommonUrl,
+                                          TestEntryBuilder(kCommonURL,
                                                            clock_.Now())},
       /*initial_account_entries_builders=*/{
-          TestEntryBuilder(kAccountUrl, clock_.Now()),
-          TestEntryBuilder(kCommonUrl, clock_.Now())}));
-  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kLocalUrl),
+          TestEntryBuilder(kAccountURL, clock_.Now()),
+          TestEntryBuilder(kCommonURL, clock_.Now())}));
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kLocalURL),
             StorageStateForTesting::kExistsInLocalOrSyncableModelOnly);
-  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kAccountUrl),
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kAccountURL),
             StorageStateForTesting::kExistsInAccountModelOnly);
-  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kCommonUrl),
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kCommonURL),
             StorageStateForTesting::kExistsInBothModels);
 
-  EXPECT_TRUE(dual_model_->NeedsExplicitUploadToSyncServer(kLocalUrl));
-  EXPECT_FALSE(dual_model_->NeedsExplicitUploadToSyncServer(kAccountUrl));
-  EXPECT_FALSE(dual_model_->NeedsExplicitUploadToSyncServer(kCommonUrl));
+  EXPECT_TRUE(dual_model_->NeedsExplicitUploadToSyncServer(kLocalURL));
+  EXPECT_FALSE(dual_model_->NeedsExplicitUploadToSyncServer(kAccountURL));
+  EXPECT_FALSE(dual_model_->NeedsExplicitUploadToSyncServer(kCommonURL));
   EXPECT_FALSE(dual_model_->NeedsExplicitUploadToSyncServer(
       GURL("http://non_existing_url.com/")));
 }
@@ -956,7 +969,6 @@ TEST_F(DualReadingListModelTest,
   // entry is equal to the creation time.
   ASSERT_TRUE(dual_model_->GetEntryByURL(kUrl)->IsRead());
 
-  testing::InSequence seq;
   EXPECT_CALL(observer_, ReadingListWillUpdateEntry).Times(0);
   EXPECT_CALL(observer_, ReadingListDidUpdateEntry).Times(0);
   EXPECT_CALL(observer_, ReadingListDidApplyChanges).Times(0);
@@ -1094,7 +1106,6 @@ TEST_F(DualReadingListModelTest,
   // updated.
   ASSERT_EQ(dual_model_->GetEntryByURL(kUrl)->Title(), "merge_view_title");
 
-  testing::InSequence seq;
   EXPECT_CALL(observer_, ReadingListWillUpdateEntry).Times(0);
   EXPECT_CALL(observer_, ReadingListDidUpdateEntry).Times(0);
   EXPECT_CALL(observer_, ReadingListDidApplyChanges).Times(0);
@@ -1246,7 +1257,6 @@ TEST_F(DualReadingListModelTest,
   ASSERT_EQ(dual_model_->GetEntryByURL(kUrl)->EstimatedReadTime(),
             base::Minutes(2));
 
-  testing::InSequence seq;
   EXPECT_CALL(observer_, ReadingListWillUpdateEntry).Times(0);
   EXPECT_CALL(observer_, ReadingListDidUpdateEntry).Times(0);
   EXPECT_CALL(observer_, ReadingListDidApplyChanges).Times(0);
@@ -1362,7 +1372,6 @@ TEST_F(DualReadingListModelTest,
   ASSERT_EQ(dual_model_->GetEntryByURL(kUrl)->DistilledState(),
             ReadingListEntry::DISTILLATION_ERROR);
 
-  testing::InSequence seq;
   EXPECT_CALL(observer_, ReadingListWillUpdateEntry).Times(0);
   EXPECT_CALL(observer_, ReadingListDidUpdateEntry).Times(0);
   EXPECT_CALL(observer_, ReadingListDidApplyChanges).Times(0);
@@ -1372,6 +1381,179 @@ TEST_F(DualReadingListModelTest,
 
   EXPECT_EQ(account_model_ptr_->GetEntryByURL(kUrl)->DistilledState(),
             ReadingListEntry::DISTILLATION_ERROR);
+}
+
+TEST_F(DualReadingListModelTest,
+       SetEntryDistilledInfoIfExistsForNonExistingEntry) {
+  ASSERT_TRUE(ResetStorageAndTriggerLoadCompletion());
+
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
+            StorageStateForTesting::kNotFound);
+  ASSERT_THAT(dual_model_->GetEntryByURL(kUrl), IsNull());
+
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry).Times(0);
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry).Times(0);
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges).Times(0);
+
+  dual_model_->SetEntryDistilledInfoIfExists(
+      kUrl, base::FilePath(FILE_PATH_LITERAL("distilled/page.html")),
+      /*kDistilledURL=*/GURL(("http://example.com/distilled")),
+      /*kDistillationSize=*/50,
+      /*kDistillationTime=*/base::Time::FromTimeT(100));
+}
+
+TEST_F(DualReadingListModelTest, SetEntryDistilledInfoIfExistsForLocalEntry) {
+  ASSERT_TRUE(ResetStorageAndTriggerLoadCompletion(
+      /*initial_local_or_syncable_entries_builders=*/{TestEntryBuilder(
+          kUrl, clock_.Now())},
+      /*initial_account_entries_builders=*/{}));
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
+            StorageStateForTesting::kExistsInLocalOrSyncableModelOnly);
+
+  testing::InSequence seq;
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
+
+  const base::FilePath kDistilledPath(FILE_PATH_LITERAL("distilled/page.html"));
+  const GURL kDistilledURL("http://url.com/distilled");
+  const int64_t kDistillationSize = 50;
+  const int64_t kDistillationTime = 100;
+  dual_model_->SetEntryDistilledInfoIfExists(
+      kUrl, kDistilledPath, kDistilledURL, kDistillationSize,
+      base::Time::FromTimeT(kDistillationTime));
+
+  scoped_refptr<const ReadingListEntry> entry =
+      dual_model_->GetEntryByURL(kUrl);
+  EXPECT_EQ(entry->DistilledState(), ReadingListEntry::PROCESSED);
+  EXPECT_EQ(entry->DistilledPath(), kDistilledPath);
+  EXPECT_EQ(entry->DistilledURL(), kDistilledURL);
+  EXPECT_EQ(entry->DistillationSize(), kDistillationSize);
+  EXPECT_EQ(entry->DistillationTime(),
+            kDistillationTime * base::Time::kMicrosecondsPerSecond);
+}
+
+TEST_F(DualReadingListModelTest, SetEntryDistilledInfoIfExistsForAccountEntry) {
+  ASSERT_TRUE(ResetStorageAndTriggerLoadCompletion(
+      /*initial_local_or_syncable_entries_builders=*/{},
+      /*initial_account_entries_builders=*/{
+          TestEntryBuilder(kUrl, clock_.Now())}));
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
+            StorageStateForTesting::kExistsInAccountModelOnly);
+
+  testing::InSequence seq;
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
+
+  const base::FilePath kDistilledPath(FILE_PATH_LITERAL("distilled/page.html"));
+  const GURL kDistilledURL("http://url.com/distilled");
+  const int64_t kDistillationSize = 50;
+  const int64_t kDistillationTime = 100;
+  dual_model_->SetEntryDistilledInfoIfExists(
+      kUrl, kDistilledPath, kDistilledURL, kDistillationSize,
+      base::Time::FromTimeT(kDistillationTime));
+
+  scoped_refptr<const ReadingListEntry> entry =
+      dual_model_->GetEntryByURL(kUrl);
+  EXPECT_EQ(entry->DistilledState(), ReadingListEntry::PROCESSED);
+  EXPECT_EQ(entry->DistilledPath(), kDistilledPath);
+  EXPECT_EQ(entry->DistilledURL(), kDistilledURL);
+  EXPECT_EQ(entry->DistillationSize(), kDistillationSize);
+  EXPECT_EQ(entry->DistillationTime(),
+            kDistillationTime * base::Time::kMicrosecondsPerSecond);
+}
+
+TEST_F(DualReadingListModelTest, SetEntryDistilledInfoIfExistsForCommonEntry) {
+  ASSERT_TRUE(ResetStorageAndTriggerLoadCompletion(
+      /*initial_local_or_syncable_entries_builders=*/
+      {TestEntryBuilder(kUrl, clock_.Now())
+           .SetDistilledInfo(
+               base::FilePath(FILE_PATH_LITERAL("old_distilled/page.html")))},
+      /*initial_account_entries_builders=*/
+      {TestEntryBuilder(kUrl, clock_.Now())}));
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
+            StorageStateForTesting::kExistsInBothModels);
+
+  scoped_refptr<const ReadingListEntry> merged_entry =
+      dual_model_->GetEntryByURL(kUrl);
+  // The expected distilled info of the merged entry is the distilled info of
+  // the local entry.
+  ASSERT_EQ(merged_entry->DistilledState(), ReadingListEntry::PROCESSED);
+  ASSERT_EQ(merged_entry->DistilledPath(),
+            base::FilePath(FILE_PATH_LITERAL("old_distilled/page.html")));
+
+  testing::InSequence seq;
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
+
+  const base::FilePath kDistilledPath(FILE_PATH_LITERAL("distilled/page.html"));
+  const GURL kDistilledURL("http://url.com/distilled");
+  const int64_t kDistillationSize = 50;
+  const int64_t kDistillationTime = 100;
+  dual_model_->SetEntryDistilledInfoIfExists(
+      kUrl, kDistilledPath, kDistilledURL, kDistillationSize,
+      base::Time::FromTimeT(kDistillationTime));
+
+  merged_entry = dual_model_->GetEntryByURL(kUrl);
+  EXPECT_EQ(merged_entry->DistilledState(), ReadingListEntry::PROCESSED);
+  EXPECT_EQ(merged_entry->DistilledPath(), kDistilledPath);
+  EXPECT_EQ(merged_entry->DistilledURL(), kDistilledURL);
+  EXPECT_EQ(merged_entry->DistillationSize(), kDistillationSize);
+  EXPECT_EQ(merged_entry->DistillationTime(),
+            kDistillationTime * base::Time::kMicrosecondsPerSecond);
+
+  scoped_refptr<const ReadingListEntry> local_entry =
+      local_or_syncable_model_ptr_->GetEntryByURL(kUrl);
+  EXPECT_EQ(local_entry->DistilledState(), ReadingListEntry::PROCESSED);
+  EXPECT_EQ(local_entry->DistilledPath(), kDistilledPath);
+  EXPECT_EQ(local_entry->DistilledURL(), kDistilledURL);
+  EXPECT_EQ(local_entry->DistillationSize(), kDistillationSize);
+  EXPECT_EQ(local_entry->DistillationTime(),
+            kDistillationTime * base::Time::kMicrosecondsPerSecond);
+}
+
+TEST_F(DualReadingListModelTest,
+       SetEntryDistilledInfoIfExistsForMergedEntryHasSameDistilledPath) {
+  const base::FilePath kDistilledPath(FILE_PATH_LITERAL("distilled/page.html"));
+  ASSERT_TRUE(ResetStorageAndTriggerLoadCompletion(
+      /*initial_local_or_syncable_entries_builders=*/
+      {TestEntryBuilder(kUrl, clock_.Now()).SetDistilledInfo(kDistilledPath)},
+      /*initial_account_entries_builders=*/
+      {TestEntryBuilder(kUrl, clock_.Now())}));
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
+            StorageStateForTesting::kExistsInBothModels);
+
+  ASSERT_EQ(account_model_ptr_->GetEntryByURL(kUrl)->DistilledState(),
+            ReadingListEntry::WAITING);
+
+  scoped_refptr<const ReadingListEntry> entry =
+      dual_model_->GetEntryByURL(kUrl);
+  // The expected distilled info of the merged entry is the distilled info of
+  // the local entry.
+  ASSERT_EQ(entry->DistilledState(), ReadingListEntry::PROCESSED);
+  ASSERT_EQ(entry->DistilledPath(), kDistilledPath);
+
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry).Times(0);
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry).Times(0);
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges).Times(0);
+
+  const GURL kDistilledURL("http://url.com/distilled");
+  const int64_t kDistillationSize = 50;
+  const int64_t kDistillationTime = 100;
+  dual_model_->SetEntryDistilledInfoIfExists(
+      kUrl, kDistilledPath, kDistilledURL, kDistillationSize,
+      base::Time::FromTimeT(kDistillationTime));
+
+  scoped_refptr<const ReadingListEntry> account_entry =
+      account_model_ptr_->GetEntryByURL(kUrl);
+  EXPECT_EQ(account_entry->DistilledState(), ReadingListEntry::PROCESSED);
+  EXPECT_EQ(account_entry->DistilledPath(), kDistilledPath);
+  EXPECT_EQ(account_entry->DistilledURL(), kDistilledURL);
+  EXPECT_EQ(account_entry->DistillationSize(), kDistillationSize);
+  EXPECT_EQ(account_entry->DistillationTime(),
+            kDistillationTime * base::Time::kMicrosecondsPerSecond);
 }
 
 // Tests that new line characters and spaces are collapsed in title.
