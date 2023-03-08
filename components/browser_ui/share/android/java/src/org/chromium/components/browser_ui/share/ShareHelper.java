@@ -28,6 +28,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.browser_ui.share.ShareParams.TargetChosenCallback;
 import org.chromium.ui.base.WindowAndroid;
@@ -148,6 +149,7 @@ public class ShareHelper {
          * @param sharingIntent The intent with {@link Intent.ACTION_SEND}.
          */
         protected void sendChooserIntent(WindowAndroid window, Intent sharingIntent) {
+            ThreadUtils.assertOnUiThread();
             final Context context = ContextUtils.getApplicationContext();
             final String packageName = context.getPackageName();
             synchronized (LOCK) {
@@ -199,6 +201,7 @@ public class ShareHelper {
 
         @Override
         public void onReceive(Context context, Intent intent) {
+            ThreadUtils.assertOnUiThread();
             // Ignore intents that's not initiated from Chrome.
             if (!IntentUtils.isTrustedIntentFromSelf(intent)) return;
 
@@ -238,6 +241,7 @@ public class ShareHelper {
 
         @VisibleForTesting
         public static void resetForTesting() {
+            ThreadUtils.assertOnUiThread();
             synchronized (LOCK) {
                 sTargetChosenReceiveAction = null;
                 if (sLastRegisteredReceiver != null) {
