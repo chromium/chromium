@@ -4366,6 +4366,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Crypto.TPMDuration.Virtual.{Operation}{SignatureAlgorithm}"
+    units="ms" expires_after="2024-03-01">
+  <owner>kristianm@chromium.org</owner>
+  <owner>agl@chromium.org</owner>
+  <summary>
+    Collected on Windows at startup. Records status for various virtual TPM
+    operations that Chrome artificially triggers on startup for measurement
+    purposes. Note that if new key creation fails, wrapped key creation and
+    message signing will not take place.
+  </summary>
+  <token key="Operation">
+    <variant name="MessageSigning"/>
+    <variant name="NewKeyCreation"/>
+    <variant name="WrappedKeyCreation"/>
+  </token>
+  <token key="SignatureAlgorithm">
+    <variant name="ECDSA"/>
+    <variant name="RSA"/>
+  </token>
+</histogram>
+
 <histogram name="Crypto.TPMDuration.{Operation}{SignatureAlgorithm}" units="ms"
     expires_after="2023-12-01">
   <owner>kristianm@chromium.org</owner>
@@ -4378,6 +4399,28 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="Operation">
     <variant name="MessageSigning"/>
+    <variant name="NewKeyCreation"/>
+    <variant name="WrappedKeyCreation"/>
+  </token>
+  <token key="SignatureAlgorithm">
+    <variant name="ECDSA"/>
+    <variant name="RSA"/>
+  </token>
+</histogram>
+
+<histogram name="Crypto.TPMOperation.Virtual.{Operation}{SignatureAlgorithm}"
+    enum="BooleanSuccess" expires_after="2023-12-01">
+  <owner>kristianm@chromium.org</owner>
+  <owner>agl@chromium.org</owner>
+  <summary>
+    Collected on Windows at startup. Records status for various virtual TPM
+    actions that Chrome artificially triggers on startup for measurement
+    purposes. Note that if new key creation fails, wrapped key creation and
+    message signing will not take place.
+  </summary>
+  <token key="Operation">
+    <variant name="MessageSigning"/>
+    <variant name="MessageVerify"/>
     <variant name="NewKeyCreation"/>
     <variant name="WrappedKeyCreation"/>
   </token>
@@ -4417,6 +4460,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     Collected on Windows at startup. Records whether a TPM is present and, if
     so, what the best supported algorithm is.
+  </summary>
+</histogram>
+
+<histogram name="Crypto.TPMSupportType" enum="TPMType"
+    expires_after="2024-03-01">
+  <owner>kristianm@chromium.org</owner>
+  <owner>agl@chromium.org</owner>
+  <summary>
+    Collected on Windows at startup. Records whether a virtual and/or hardware
+    TPM is present.
   </summary>
 </histogram>
 

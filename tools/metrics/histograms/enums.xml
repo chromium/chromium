@@ -102188,6 +102188,13 @@ would be helpful to identify which type is being sent.
   <int value="1" label="TPM Take Ownership Failed"/>
 </enum>
 
+<enum name="TPMType">
+  <int value="0" label="None"/>
+  <int value="1" label="HW"/>
+  <int value="2" label="Virtual"/>
+  <int value="3" label="Both"/>
+</enum>
+
 <enum name="TPMVersionFingerprint">
 <!--
 Full version information for the fingerprint enum values:

@@ -25,6 +25,16 @@ enum class TPMSupport {
   kMaxValue = 2,
 };
 
+// Note that values here are used in a recorded histogram. Don't change
+// the values of existing members.
+enum class TPMType {
+  kNone = 0,
+  kHW = 1,
+  kVirtual = 2,
+  kBoth = 3,
+  kMaxValue = 3,
+};
+
 // Exported for testing
 CRYPTO_EXPORT void MeasureTpmOperationsInternalForTesting();
 }  // namespace internal
