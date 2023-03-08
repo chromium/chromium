@@ -1,87 +1,88 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
 Copyright 2022 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/sb_enhanced_sheet"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:gravity="start"
-    android:orientation="vertical">
+    android:layout_height="wrap_content">
 
-    <TextView
-        android:drawablePadding="16dp"
-        android:layout_gravity="start"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginVertical="8dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/privacy_guide_safe_browsing_enhanced_title"
-        style="@style/TextAppearance.Headline.Primary" />
-
-    <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationHeading
+    <LinearLayout
+        android:id="@+id/sb_enhanced_sheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:titleText="@string/privacy_guide_when_on" />
+        android:layout_marginHorizontal="@dimen/all_content_marginHorizontal"
+        android:orientation="vertical">
 
-    <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationItem
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:iconImage="@drawable/ic_security_grey"
-        app:iconTint="@macro/default_icon_color"
-        app:summaryText="@string/privacy_guide_sb_enhanced_item_one" />
+        <TextView
+            android:drawablePadding="16dp"
+            android:layout_marginVertical="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/privacy_guide_safe_browsing_enhanced_title"
+            style="@style/TextAppearance.Headline.Primary" />
 
-    <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationItem
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:iconImage="@drawable/ic_google_24dp"
-        app:summaryText="@string/privacy_guide_sb_enhanced_item_two" />
+        <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationHeading
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:titleText="@string/privacy_guide_when_on" />
 
-    <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationItem
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:iconImage="@drawable/ic_globe_24dp"
-        app:summaryText="@string/privacy_guide_sb_enhanced_item_three" />
+        <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationItem
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:iconImage="@drawable/ic_security_grey"
+            app:iconTint="@macro/default_icon_color"
+            app:summaryText="@string/privacy_guide_sb_enhanced_item_one" />
 
-    <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationItem
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:iconImage="@drawable/ic_vpn_key_grey"
-        app:iconTint="@macro/default_icon_color"
-        app:summaryText="@string/privacy_guide_sb_enhanced_item_four" />
+        <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationItem
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:iconImage="@drawable/ic_google_24dp"
+            app:summaryText="@string/privacy_guide_sb_enhanced_item_two" />
 
-    <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationHeading
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:titleText="@string/privacy_guide_things_to_consider" />
+        <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationItem
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:iconImage="@drawable/ic_globe_24dp"
+            app:summaryText="@string/privacy_guide_sb_enhanced_item_three" />
 
-    <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationItem
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:iconImage="@drawable/ic_bar_chart_24dp"
-        app:summaryText="@string/privacy_guide_sb_enhanced_item_five" />
+        <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationItem
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:iconImage="@drawable/ic_vpn_key_grey"
+            app:iconTint="@macro/default_icon_color"
+            app:summaryText="@string/privacy_guide_sb_enhanced_item_four" />
 
-    <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationItem
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:iconImage="@drawable/ic_web_asset_24dp"
-        app:summaryText="@string/privacy_guide_sb_enhanced_item_six" />
+        <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationHeading
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:titleText="@string/privacy_guide_things_to_consider" />
 
-    <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationItem
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:iconImage="@drawable/ic_account_circle_24dp"
-        app:summaryText="@string/privacy_guide_sb_enhanced_item_seven" />
+        <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationItem
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:iconImage="@drawable/ic_bar_chart_24dp"
+            app:summaryText="@string/privacy_guide_sb_enhanced_item_five" />
 
-    <!-- Extra empty space, necessary due to crbug.com/1287979. -->
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="16dp"
-        android:visibility="invisible" />
+        <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationItem
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:iconImage="@drawable/ic_web_asset_24dp"
+            app:summaryText="@string/privacy_guide_sb_enhanced_item_six" />
 
-</LinearLayout>
+        <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationItem
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:iconImage="@drawable/ic_account_circle_24dp"
+            app:summaryText="@string/privacy_guide_sb_enhanced_item_seven" />
+
+        <!-- Extra empty space, necessary due to crbug.com/1287979. -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="16dp"
+            android:visibility="invisible" />
+
+    </LinearLayout>
+</ScrollView>

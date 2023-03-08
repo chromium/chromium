@@ -12,7 +12,7 @@ found in the LICENSE file.
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
+        android:layout_marginHorizontal="@dimen/all_content_marginHorizontal"
         android:animateLayoutChanges="true"
         android:orientation="vertical">
 
@@ -20,20 +20,17 @@ found in the LICENSE file.
             android:layout_marginVertical="@dimen/welcome_done_step_illustration_marginVertical"
             android:layout_height="120dp"
             android:layout_width="250dp"
+            android:layout_gravity="center_horizontal"
             android:importantForAccessibility="no"
             app:srcCompat="@drawable/privacy_guide_done_image" />
 
         <TextView
-            android:layout_gravity="start"
-            android:layout_marginHorizontal="16dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/privacy_guide_done_title"
             style="@style/TextAppearance.Headline.Primary" />
 
         <TextView
-            android:layout_gravity="start"
-            android:layout_marginHorizontal="16dp"
             android:layout_marginBottom="8dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -48,7 +45,6 @@ found in the LICENSE file.
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/done_step_explanation_marginHorizontal"
             android:layout_marginBottom="@dimen/done_step_explanation_marginBottom"
             android:orientation="horizontal">
 
@@ -81,7 +77,6 @@ found in the LICENSE file.
             android:id="@+id/waa_explanation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/done_step_explanation_marginHorizontal"
             android:layout_marginBottom="@dimen/done_step_explanation_marginBottom"
             android:orientation="horizontal">
 
