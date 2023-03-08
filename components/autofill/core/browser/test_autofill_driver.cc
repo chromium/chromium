@@ -11,13 +11,17 @@
 
 namespace autofill {
 
-TestAutofillDriver::TestAutofillDriver()
 #if !BUILDFLAG(IS_IOS)
+TestAutofillDriver::TestAutofillDriver()
     : ContentAutofillDriver(/*render_frame_host=*/nullptr,
-                            /*autofill_router=*/nullptr)
+                            /*autofill_router=*/nullptr) {}
+
+TestAutofillDriver::TestAutofillDriver(content::RenderFrameHost* rfh,
+                                       ContentAutofillRouter* router)
+    : ContentAutofillDriver(rfh, router) {}
+#else
+TestAutofillDriver::TestAutofillDriver() {}
 #endif
-{
-}
 
 TestAutofillDriver::~TestAutofillDriver() = default;
 

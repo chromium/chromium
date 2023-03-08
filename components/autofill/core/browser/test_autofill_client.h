@@ -74,8 +74,7 @@ namespace autofill {
 template <typename T>
 class TestAutofillClientTemplate : public T {
  public:
-  static_assert(std::is_same_v<AutofillClient, T> ||
-                std::is_base_of_v<AutofillClient, T>);
+  static_assert(std::is_base_of_v<AutofillClient, T>);
 
   using T::T;
   TestAutofillClientTemplate(const TestAutofillClientTemplate&) = delete;
@@ -729,6 +728,8 @@ class TestAutofillClientTemplate : public T {
 
 // A simple `AutofillClient` for tests. Consider `TestContentAutofillClient` as
 // an alternative for tests where the content layer is visible.
+//
+// Consider using TestAutofillClientInjector in browser tests.
 using TestAutofillClient = TestAutofillClientTemplate<AutofillClient>;
 
 }  // namespace autofill

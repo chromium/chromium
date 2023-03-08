@@ -19,6 +19,8 @@ namespace autofill {
 //   web_contents->SetUserData(client->UserData(), std::move(client));
 //   ...
 //   web_contents->RemoveUserData(client->UserData());
+//
+// Consider using TestAutofillClientInjector, especially in browser tests.
 class TestContentAutofillClient
     : public TestAutofillClientTemplate<ContentAutofillClient> {
  public:

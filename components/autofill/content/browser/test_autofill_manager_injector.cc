@@ -12,7 +12,8 @@ namespace autofill {
 size_t TestAutofillManagerInjectorBase::num_instances_ = 0;
 
 TestAutofillManagerInjectorBase::TestAutofillManagerInjectorBase() {
-  CHECK(!some_instance_is_alive());
+  CHECK(!some_instance_is_alive())
+      << "At most one instance is allowed per TestAutofillManagerInjector";
   ++num_instances_;
 }
 

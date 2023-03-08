@@ -1,0 +1,173 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_AUTOFILL_CONTENT_BROWSER_TEST_AUTOFILL_DRIVER_INJECTOR_H_
+#define COMPONENTS_AUTOFILL_CONTENT_BROWSER_TEST_AUTOFILL_DRIVER_INJECTOR_H_
+
+#include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/content/browser/content_autofill_driver_factory.h"
+#include "components/autofill/content/browser/content_autofill_driver_factory_test_api.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
+#include "content/public/test/browser_test_utils.h"
+
+namespace autofill {
+
+// Asserts that at construction time, no other TestAutofillDriverInjector is
+// alive.
+class TestAutofillDriverInjectorBase {
+ public:
+  static bool some_instance_is_alive() { return num_instances_ > 0; }
+
+  TestAutofillDriverInjectorBase(const TestAutofillDriverInjectorBase&) =
+      delete;
+  TestAutofillDriverInjectorBase& operator=(
+      const TestAutofillDriverInjectorBase&) = delete;
+
+ protected:
+  TestAutofillDriverInjectorBase();
+  ~TestAutofillDriverInjectorBase();
+
+ private:
+  static size_t num_instances_;
+};
+
+// RAII type that installs new AutofillDrivers of type `T` in all newly
+// navigated frames in all newly created WebContents.
+//
+// The driver's AutofillManager is a fresh BrowserAutofillManager.
+//
+// To prevent hard-to-find bugs, only one TestAutofillDriverInjector may be
+// alive at a time. It must not be created before a TestAutofillClientInjector
+// and not after a TestAutofillManagerInjector. These conditions are CHECKed.
+//
+// Usage:
+//
+//   class AutofillFooTest : public ... {
+//    public:
+//     TestAutofillDriver* autofill_driver(content::RenderFrameHost* rfh) {
+//       return autofill_driver_injector_[rfh];
+//     }
+//
+//    private:
+//     TestAutofillDriverInjector<TestAutofillDriver> autofill_driver_injector_;
+//   };
+template <typename T>
+class TestAutofillDriverInjector : TestAutofillDriverInjectorBase {
+ public:
+  static_assert(std::is_base_of_v<ContentAutofillDriver, T>);
+
+  TestAutofillDriverInjector() = default;
+  TestAutofillDriverInjector(const TestAutofillDriverInjector&) = delete;
+  TestAutofillDriverInjector& operator=(const TestAutofillDriverInjector&) =
+      delete;
+  ~TestAutofillDriverInjector() = default;
+
+  T* operator[](content::WebContents* web_contents) const {
+    return (*this)[web_contents->GetPrimaryMainFrame()];
+  }
+
+  T* operator[](content::RenderFrameHost* rfh) const {
+    auto it = drivers_.find(rfh);
+    return it != drivers_.end() ? it->second : nullptr;
+  }
+
+ private:
+  // Replaces every newly created production-code ContentAutofillDriver for the
+  // given WebContents with a test driver created by
+  // `T(content::RenderFrameHost*, ContentAutofillRouter*)` and sets its
+  // AutofillManager to a new `BrowserAutofillManager` with locale "en-US".
+  //
+  // One challenge is that the ContentAutofillClient may not exist yet at the
+  // time the Injector is created. (Because TabHelpers::AttachTabHelpers() is
+  // run later.)
+  //
+  // We therefore defer registering the ContentAutofillDriverFactory::Observer
+  // until the first RenderFrameCreated() event. This event comes late enough
+  // that ContentAutofillClient has been created but no ContentAutofillDriver
+  // has been created yet.
+  class Injector : public content::WebContentsObserver,
+                   public ContentAutofillDriverFactory::Observer {
+   public:
+    Injector(TestAutofillDriverInjector* owner,
+             content::WebContents* web_contents)
+        : WebContentsObserver(web_contents), owner_(owner) {}
+    Injector(const Injector&) = delete;
+    Injector& operator=(const Injector&) = delete;
+    ~Injector() override = default;
+
+    void RenderFrameCreated(content::RenderFrameHost* rfh) override {
+      if (observation_.IsObserving()) {
+        return;
+      }
+      if (auto* client =
+              ContentAutofillClient::FromWebContents(web_contents())) {
+        observation_.Observe(client->GetAutofillDriverFactory());
+      }
+    }
+
+    void OnContentAutofillDriverFactoryDestroyed(
+        ContentAutofillDriverFactory& factory) override {
+      observation_.Reset();
+    }
+
+    // Replaces the just created `driver` with a new test driver.
+    void OnContentAutofillDriverCreated(
+        ContentAutofillDriverFactory& factory,
+        ContentAutofillDriver& driver) override {
+      content::RenderFrameHost* rfh = driver.render_frame_host();
+      ContentAutofillDriverFactoryTestApi test_api(&factory);
+      ContentAutofillRouter* router = &test_api.router();
+      std::unique_ptr<T> new_driver = CreateDriver(rfh, router);
+      owner_->drivers_[rfh] = new_driver.get();
+      // This is spectacularly hacky as it relies on an implementation detail of
+      // ContentAutofillDriverFactory::DriverForFrame(), which fires this event:
+      //
+      // DriverForFrame() has just created `driver` and still holds a reference
+      // to the std::unique_ptr<> that owns `driver`. By calling SetDriver(), we
+      // mutate that reference. This looks sketchy, but it is "safe" because
+      // std::[unordered_]map<>::operator[]() does not invalidate references.
+      test_api.SetDriver(driver.render_frame_host(), std::move(new_driver));
+    }
+
+    void OnContentAutofillDriverWillBeDeleted(
+        ContentAutofillDriverFactory& factory,
+        ContentAutofillDriver& driver) override {
+      owner_->drivers_.erase(driver.render_frame_host());
+    }
+
+   private:
+    std::unique_ptr<T> CreateDriver(content::RenderFrameHost* rfh,
+                                    ContentAutofillRouter* router) {
+      auto* client = ContentAutofillClient::FromWebContents(web_contents());
+      auto driver = std::make_unique<T>(rfh, router);
+      driver->set_autofill_manager(std::make_unique<BrowserAutofillManager>(
+          driver.get(), client, "en-US"));
+      return driver;
+    }
+
+    raw_ptr<TestAutofillDriverInjector> owner_;
+    base::ScopedObservation<ContentAutofillDriverFactory,
+                            ContentAutofillDriverFactory::Observer>
+        observation_{this};
+  };
+
+  void ObserveWebContentsAndInjectDriver(content::WebContents* web_contents) {
+    injectors_.push_back(std::make_unique<Injector>(this, web_contents));
+  }
+
+  std::vector<std::unique_ptr<Injector>> injectors_;
+  std::map<content::RenderFrameHost*, T*> drivers_;
+
+  // Registers the lambda for the lifetime of `subscription_`.
+  base::CallbackListSubscription subscription_ =
+      content::RegisterWebContentsCreationCallback(base::BindRepeating(
+          &TestAutofillDriverInjector::ObserveWebContentsAndInjectDriver,
+          base::Unretained(this)));
+};
+
+}  // namespace autofill
+
+#endif  // COMPONENTS_AUTOFILL_CONTENT_BROWSER_TEST_AUTOFILL_DRIVER_INJECTOR_H_

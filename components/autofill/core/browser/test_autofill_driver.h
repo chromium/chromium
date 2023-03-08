@@ -16,7 +16,12 @@
 
 #if !BUILDFLAG(IS_IOS)
 #include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/content/browser/content_autofill_router.h"
 #include "components/webauthn/core/browser/internal_authenticator.h"
+
+namespace content {
+class RenderFrameHost;
+}
 #endif
 
 namespace autofill {
@@ -29,6 +34,10 @@ class TestAutofillDriver : public ContentAutofillDriver {
 #endif
  public:
   TestAutofillDriver();
+#if !BUILDFLAG(IS_IOS)
+  TestAutofillDriver(content::RenderFrameHost* rfh,
+                     ContentAutofillRouter* client);
+#endif
   TestAutofillDriver(const TestAutofillDriver&) = delete;
   TestAutofillDriver& operator=(const TestAutofillDriver&) = delete;
   ~TestAutofillDriver() override;

@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "components/autofill/content/browser/test_autofill_driver_injector.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 
 namespace autofill {
@@ -13,8 +14,14 @@ namespace autofill {
 size_t TestAutofillClientInjectorBase::num_instances_ = 0;
 
 TestAutofillClientInjectorBase::TestAutofillClientInjectorBase() {
-  CHECK(!some_instance_is_alive());
-  CHECK(!TestAutofillManagerInjectorBase::some_instance_is_alive());
+  CHECK(!some_instance_is_alive())
+      << "At most one instance is allowed per TestAutofillClientInjectors";
+  CHECK(!TestAutofillDriverInjectorBase::some_instance_is_alive())
+      << "TestAutofillClientInjector must be created before any "
+         "TestAutofillDriverInjector";
+  CHECK(!TestAutofillManagerInjectorBase::some_instance_is_alive())
+      << "TestAutofillClientInjector must be created before any "
+         "TestAutofillManagerInjector";
   ++num_instances_;
 }
 

@@ -26,7 +26,6 @@
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
-#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/common/pref_names.h"
@@ -37,8 +36,8 @@
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/autofill/content/browser/content_autofill_driver_factory.h"
-#include "components/autofill/content/browser/content_autofill_driver_factory_test_api.h"
+#include "components/autofill/content/browser/test_autofill_client_injector.h"
+#include "components/autofill/content/browser/test_autofill_driver_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -1023,36 +1022,25 @@ class RenderViewContestMenuAutofillTest
   }
 
   void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
-    auto autofill_client =
-        std::make_unique<autofill::TestContentAutofillClient>(web_contents());
-    autofill_client->set_personal_data_manager(
-        std::make_unique<autofill::TestPersonalDataManager>());
-    autofill_client_ = autofill_client.get();
-    web_contents()->SetUserData(autofill_client_->UserDataKey(),
-                                std::move(autofill_client));
-  }
-
-  void TearDown() override {
-    web_contents()->RemoveUserData(autofill_client_->UserDataKey());
-    ChromeRenderViewHostTestHarness::TearDown();
+    RenderViewContextMenuPrefsTest::SetUp();
+    if (IsIncognito()) {
+      SetContents(content::WebContentsTester::CreateTestWebContents(
+          profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true), nullptr));
+    }
   }
 
  protected:
   // Returns true if the test needs to run in incognito mode.
   bool IsIncognito() const { return GetParam(); }
 
-  void InjectAutofillDriver(
-      content::RenderFrameHost* rfh,
-      std::unique_ptr<autofill::TestAutofillDriver> driver) {
-    autofill::ContentAutofillDriverFactoryTestApi(
-        autofill_client_->GetAutofillDriverFactory())
-        .SetDriver(rfh, std::move(driver));
+  autofill::TestContentAutofillClient* autofill_client() {
+    return autofill_client_injector_[web_contents()];
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<autofill::TestContentAutofillClient> autofill_client_;
+  autofill::TestAutofillClientInjector<autofill::TestContentAutofillClient>
+      autofill_client_injector_;
 };
 
 INSTANTIATE_TEST_SUITE_P(AutofillContextMenuTest,
@@ -1067,25 +1055,12 @@ TEST_P(RenderViewContestMenuAutofillTest, ShowAutofillOptions) {
   DCHECK(pdm);
   pdm->AddServerCreditCardForTest(
       std::make_unique<autofill::CreditCard>(autofill::test::GetCreditCard()));
-  if (IsIncognito()) {
-    // Verify that Autofill context menu items are displayed on a number field
-    // in Incognito.
-    std::unique_ptr<content::WebContents> incognito_web_contents(
-        content::WebContentsTester::CreateTestWebContents(
-            profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
-            nullptr));
 
-    content::WebContentsTester::For(incognito_web_contents.get())
-        ->NavigateAndCommit(GURL("http://www.foo.com/"));
-  } else {
-    NavigateAndCommit(GURL("http://www.foo.com/"));
-  }
+  NavigateAndCommit(GURL("http://www.foo.com/"));
   content::ContextMenuParams params = CreateParams(MenuItem::EDITABLE);
   params.input_field_type =
       blink::mojom::ContextMenuDataInputFieldType::kPlainText;
 
-  InjectAutofillDriver(web_contents()->GetPrimaryMainFrame(),
-                       std::make_unique<autofill::TestAutofillDriver>());
   auto menu = std::make_unique<TestRenderViewContextMenu>(
       *web_contents()->GetPrimaryMainFrame(), params);
   menu->Init();
