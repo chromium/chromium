@@ -3743,6 +3743,7 @@ Hal ini dihapus di M112.</translation>
 <translation id="4480694116501920047">Paksakan SafeSearch</translation>
 <translation id="4481202456143946404">Versi Persyaratan Layanan yang valid berasal dari Google3 CL yang menerapkan versi Persyaratan baru.</translation>
 <translation id="4481952213163895432">Nonaktifkan frasa pengaktif Asisten Google</translation>
+<translation id="4482784169143060077">Mengaktifkan upgrade HTTPS otomatis</translation>
 <translation id="4483120730995943109">Fungsi setTimeout() JavaScript dengan waktu tunggu 0 md tidak akan dibulatkan ke 1 md.</translation>
 <translation id="4483649828988077221">Nonaktifkan Update Otomatis</translation>
 <translation id="4484515651939984695">Menentukan durasi (dalam detik) perangkat transmisi yang dipilih dengan kode akses atau kode QR untuk tetap berada dalam daftar perangkat transmisi pada menu <ph name="PRODUCT_NAME" />.</translation>
@@ -3764,6 +3765,7 @@ Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, li
 <translation id="449784980858429908">Otomatis memberikan izin ke situs untuk menghubungkan semua port serial.</translation>
 <translation id="4499376951770369935">Update Chrome OS disetel ke versi yang telah ditentukan dalam manifes aplikasi kios</translation>
 <translation id="450080746522343150">Blokir semua download.</translation>
+<translation id="4501388411278568771">Upgrade HTTPS dapat diterapkan bergantung pada status peluncuran fitur.</translation>
 <translation id="45036050223225148">Nonaktifkan eksperimen Encrypted ClientHello TLS</translation>
 <translation id="4503935079903510542">Disk image yang dapat di-booting UEFI digunakan untuk menginstal VM di perangkat x86_64p.</translation>
 <translation id="4508728400492074981">Mengontrol kebijakan untuk fitur Set Pihak Pertama.</translation>
@@ -5531,6 +5533,7 @@ Waktu tunggu tidak ada aktivitas untuk memulai screensaver dan interval saat gam
 <translation id="6181304954168534748">Hash SHA-256 template desktop.</translation>
 <translation id="6181618732396778048">Jangan izinkan situs apa pun meminta akses tulis ke file atau direktori</translation>
 <translation id="6181783961196084973">Nilai tombol alih pengumpulan data aktivitas aplikasi. Jika disetel ke benar (true), aktivitas aplikasi pengguna akan dilaporkan ke server dengan tujuan untuk ditampilkan di aplikasi <ph name="PRODUCT_NAME" /> anak dan orang tua. Jika disetel ke salah (false), fitur Batas waktu per aplikasi akan tetap berfungsi, tetapi tidak ada data yang akan dilaporkan ke server dan oleh karena itu, tidak ada data yang akan ditampilkan di <ph name="PRODUCT_NAME" />.</translation>
+<translation id="6182206125906000651">Nonaktifkan Upgrade HTTPS.</translation>
 <translation id="6182563940865917569">Izinkan Chrome memutar media secara otomatis</translation>
 <translation id="6184385589352532028">Jangan aktifkan Desk API untuk kontrol ChromeOS pihak ketiga</translation>
 <translation id="6190367314942602985">Laporkan informasi Identifikasi Pengguna</translation>
@@ -5852,6 +5855,16 @@ mengetahui detail tambahan.</translation>
 <translation id="6424486395812679373">Lakukan pemeriksaan Safe Browsing pada semua file yang didownload</translation>
 <translation id="6433697627431665375">Cegah data <ph name="PRODUCT_NAME" /> disertakan dalam cadangan</translation>
 <translation id="6436052172226685535">Perilaku default untuk LBS.</translation>
+<translation id="6438472072089952201"><ph name="PRODUCT_NAME" /> mencoba mengupgrade beberapa
+navigasi dari HTTP ke HTTPS, jika memungkinkan. Kebijakan ini dapat digunakan untuk
+menonaktifkan perilaku ini. Jika disetel ke "true" atau tidak disetel, fitur ini akan
+diaktifkan secara default.
+
+Kebijakan <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> terpisah
+dapat digunakan untuk mengecualikan nama host atau pola nama host tertentu agar tidak
+diupgrade ke HTTPS oleh fitur ini.
+
+Lihat juga kebijakan <ph name="HTTPS_ONLY_MODE_POLICY_NAME" />.</translation>
 <translation id="6438972408080276697">Jika kebijakan ditetapkan ke Benar (True), laporan peristiwa tombol saat penginstalan aplikasi Android yang dipicu kebijakan akan dikirimkan ke Google. Jika kebijakan ditetapkan ke Salah (False), tidak ada peristiwa yang direkam.</translation>
 <translation id="6440051664870270040">Izinkan situs menavigasi dan membuka (jendela) pop-up sekaligus</translation>
 <translation id="6446366416439249472">Nonaktifkan sinkronisasi Google Drive melalui koneksi seluler</translation>

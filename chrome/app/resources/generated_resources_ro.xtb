@@ -1891,6 +1891,9 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2642111877055905627">Minge de fotbal</translation>
 <translation id="2643064289437760082">Poți să ștergi oricând datele despre cuantificarea anunțurilor dacă ștergi datele de navigare</translation>
 <translation id="2643698698624765890">Gestionați extensiile făcând clic pe Extensii în meniul Window (Fereastră).</translation>
+<translation id="2643887015830197688">Doresc actualizarea navigărilor la HTTPS și un avertisment înainte de încărcarea site-urilor care nu acceptă acest protocol.
+
+    Nu poți schimba această setare deoarece ai activată Protecția avansată.</translation>
 <translation id="2645047101481282803">Dispozitivul este gestionat de <ph name="PROFILE_NAME" /></translation>
 <translation id="2645388244376970260">Se proiectează fila pe <ph name="DEVICE_NAME" /></translation>
 <translation id="2645435784669275700">Sistemul de operare Chrome</translation>

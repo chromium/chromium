@@ -3716,6 +3716,7 @@ Chính sách này đã bị loại bỏ ở M112.</translation>
 <translation id="4480694116501920047">Buộc Tìm kiếm an toàn</translation>
 <translation id="4481202456143946404">Phiên bản hợp lệ của Điều khoản dịch vụ bắt nguồn từ Google3 Cl, nơi phiên bản mới của Điều khoản được ra mắt.</translation>
 <translation id="4481952213163895432">Tắt cụm từ kích hoạt Trợ lý Google</translation>
+<translation id="4482784169143060077">Bật các bản nâng cấp HTTPS tự động</translation>
 <translation id="4483120730995943109">Hàm JavaScript setTimeout() có thời gian chờ 0 ms sẽ không được làm tròn thành 1 ms.</translation>
 <translation id="4483649828988077221">Tắt tính năng tự động cập nhật</translation>
 <translation id="4484515651939984695">Chỉ định thời gian (tính bằng giây) mà một thiết bị truyền được chọn có mã truy cập hoặc mã QR xuất hiện trong danh sách thiết bị truyền của trình đơn <ph name="PRODUCT_NAME" />.</translation>
@@ -3737,6 +3738,7 @@ Nếu bạn không đặt hoặc để trống chính sách này thì sẽ khôn
 <translation id="449784980858429908">Tự động cấp quyền cho các trang web để kết nối tất cả các cổng nối tiếp.</translation>
 <translation id="4499376951770369935">Bản cập nhật ChromeOS được đặt thành phiên bản xác định trong tệp kê khai ứng dụng kiosk</translation>
 <translation id="450080746522343150">Chặn tải tất cả các tệp xuống.</translation>
+<translation id="4501388411278568771">Các bản nâng cấp HTTPS có thể được áp dụng tuỳ thuộc vào trạng thái khởi chạy tính năng.</translation>
 <translation id="45036050223225148">Tắt thử nghiệm ClientHello được mã hoá của TLS (Bảo mật tầng truyền tải)</translation>
 <translation id="4503935079903510542">Hình ảnh đĩa có thể khởi động theo chuẩn UEFI được dùng để cài đặt máy ảo trên thiết bị x86_64.</translation>
 <translation id="4508728400492074981">Kiểm soát chính sách cho tính năng First-Party Sets.</translation>
@@ -5467,6 +5469,7 @@ Bạn có thể điều chỉnh thời gian chờ ở trạng thái không hoạ
 <translation id="6181304954168534748">Hàm băm SHA-256 của mẫu không gian làm việc.</translation>
 <translation id="6181618732396778048">Không cho phép trang web nào yêu cầu quyền ghi các tệp và thư mục</translation>
 <translation id="6181783961196084973">Bật/Tắt giá trị của bộ sưu tập hoạt động trong ứng dụng. Nếu bạn đặt thành bật, hoạt động của người dùng trong ứng dụng sẽ được báo cáo cho máy chủ nhằm mục đích hiển thị hoạt động đó trong ứng dụng <ph name="PRODUCT_NAME" /> dành cho con và cha mẹ. Nếu bạn đặt thành tắt, tính năng Giới hạn thời gian cho mỗi ứng dụng sẽ vẫn hoạt động, nhưng sẽ không có dữ liệu nào được báo cáo cho máy chủ và hiển thị trong <ph name="PRODUCT_NAME" />.</translation>
+<translation id="6182206125906000651">Tắt các bản nâng cấp HTTPS.</translation>
 <translation id="6182563940865917569">Cho phép Chrome tự động phát nội dung nghe nhìn</translation>
 <translation id="6184385589352532028">Không bật Desk API để bên thứ ba kiểm soát ChromeOS</translation>
 <translation id="6190367314942602985">Báo cáo thông tin nhận dạng người dùng</translation>
@@ -5764,6 +5767,16 @@ Xem thêm thông tin chi tiết tại https://developer.chrome.com/blog/immutabl
 <translation id="6424486395812679373">Thực hiện quá trình kiểm tra của tính năng Duyệt web an toàn đối với tất cả tệp tải xuống</translation>
 <translation id="6433697627431665375">Không cho phép đưa dữ liệu của <ph name="PRODUCT_NAME" /> vào bản sao lưu</translation>
 <translation id="6436052172226685535">Hành vi mặc định cho tính năng Hỗ trợ trình duyệt cũ.</translation>
+<translation id="6438472072089952201"><ph name="PRODUCT_NAME" /> cố gắng nâng cấp một số
+thao tác điều hướng từ HTTP lên HTTPS khi có thể. Bạn có thể sử dụng chính sách này để
+vô hiệu hoá hành vi này. Nếu đặt thành "true" ("đúng") hoặc không đặt, tính năng này sẽ
+được bật theo mặc định.
+
+Bạn có thể sử dụng chính sách <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> riêng biệt
+để miễn trừ việc nâng cấp lên HTTPS nhờ tính năng này
+cho các tên máy chủ hoặc mẫu tên máy chủ cụ thể.
+
+Ngoài ra, hãy xem chính sách <ph name="HTTPS_ONLY_MODE_POLICY_NAME" />.</translation>
 <translation id="6438972408080276697">Nếu bạn đặt chính sách này thành True, thì các báo cáo về sự kiện cài đặt ứng dụng Android chính do chính sách kích hoạt sẽ được gửi tới Google. Nếu bạn đặt chính sách này thành False, thì sẽ không có sự kiện nào được ghi lại.</translation>
 <translation id="6440051664870270040">Cho phép các trang web chuyển tới và mở các cửa sổ bật lên cùng một lúc</translation>
 <translation id="6446366416439249472">Tắt tính năng đồng bộ hoá Google Drive qua kết nối di động</translation>

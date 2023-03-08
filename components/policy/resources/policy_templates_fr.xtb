@@ -3711,6 +3711,7 @@ Cette fonctionnalité a été supprimée dans M112.</translation>
 <translation id="4480694116501920047">Forcer SafeSearch</translation>
 <translation id="4481202456143946404">Version valide des conditions d'utilisation dérivée de la liste des modifications Google3, qui a introduit la nouvelle version des conditions.</translation>
 <translation id="4481952213163895432">Désactiver le mot clé de l'Assistant Google</translation>
+<translation id="4482784169143060077">Activer les mises à niveau automatiques vers HTTPS</translation>
 <translation id="4483120730995943109">Les fonctions JavaScript setTimeout() dont le délai d'expiration est défini sur 0 ms ne seront pas ramenées à 1 ms.</translation>
 <translation id="4483649828988077221">Désactiver les mises à jour automatiques</translation>
 <translation id="4484515651939984695">Définir la durée d'affichage (en secondes) d'un appareil Cast sélectionné via un code d'accès ou un code QR dans la liste des appareils Cast du menu <ph name="PRODUCT_NAME" />.</translation>
@@ -3732,6 +3733,7 @@ Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez co
 <translation id="449784980858429908">Autoriser automatiquement les sites à se connecter à tous les ports série.</translation>
 <translation id="4499376951770369935">Les mises à jour de ChromeOS sont configurées sur la version définie dans le fichier manifeste de l'appli kiosque</translation>
 <translation id="450080746522343150">Bloquer tous les téléchargements.</translation>
+<translation id="4501388411278568771">Des mises à niveau HTTPS peuvent être appliquées en fonction de l'état du lancement des fonctionnalités.</translation>
 <translation id="45036050223225148">Désactiver le test TLS Encrypted ClientHello</translation>
 <translation id="4503935079903510542">Image de disque de démarrage UEFI utilisé pour installer la VM sur des appareils x86_64.</translation>
 <translation id="4508728400492074981">Contrôle les règles pour la fonctionnalité d'ensembles propriétaires.</translation>
@@ -5448,6 +5450,7 @@ Vous pouvez modifier le délai d'inactivité avant l'affichage de l'économiseur
 <translation id="6181304954168534748">Hachage SHA-256 du modèle de bureau.</translation>
 <translation id="6181618732396778048">Interdire à tous les sites de demander l'accès en écriture aux fichiers et répertoires</translation>
 <translation id="6181783961196084973">Valeur du paramètre de collecte de l'activité dans les applis. Si la règle est définie sur "True", l'activité de l'utilisateur dans les applications est transmise au serveur afin d'être affichée dans l'appli <ph name="PRODUCT_NAME" /> utilisée par l'enfant et les parents. Si la règle est définie sur "False", les limites de temps spécifiques à chaque application sont quand même applicables, mais aucune donnée n'est transmise au serveur ni affichée dans <ph name="PRODUCT_NAME" />.</translation>
+<translation id="6182206125906000651">Désactiver les mises à niveau HTTPS</translation>
 <translation id="6182563940865917569">Autoriser Chrome à lire automatiquement le contenu multimédia</translation>
 <translation id="6184385589352532028">Ne pas activer l'API Desk pour le contrôle ChromeOS tiers</translation>
 <translation id="6190367314942602985">Enregistrer les informations d'identification de l'utilisateur</translation>
@@ -5742,6 +5745,11 @@ Pour en savoir plus, consultez https://developer.chrome.com/blog/immutable-docum
 <translation id="6424486395812679373">Procéder aux vérifications de la navigation sécurisée pour tous les fichiers téléchargés</translation>
 <translation id="6433697627431665375">Exclure des sauvegardes les données de <ph name="PRODUCT_NAME" /></translation>
 <translation id="6436052172226685535">Comportement par défaut de LBS.</translation>
+<translation id="6438472072089952201"><ph name="PRODUCT_NAME" /> essaie de mettre à niveau une partie de la navigation de HTTP vers HTTPS, lorsque cela est possible. Cette règle peut servir à désactiver ce comportement. Si elle est définie sur "True" ou n'est pas configurée, cette fonctionnalité est activée par défaut.
+
+La règle <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> distincte permet d'éviter que cette fonctionnalité mette à niveau des noms d'hôte ou des modèles du nom d'hôte spécifiques vers HTTPS.
+
+Voir également la règle <ph name="HTTPS_ONLY_MODE_POLICY_NAME" />.</translation>
 <translation id="6438972408080276697">Si la règle est définie sur "True", des rapports sur les événements critiques d'installation d'applications Android déclenchée par des règles sont transmis à Google. Si elle est définie sur "False", aucun événement n'est enregistré.</translation>
 <translation id="6440051664870270040">Autoriser les sites à parcourir et à ouvrir des pop-up simultanément</translation>
 <translation id="6446366416439249472">Désactiver la synchronisation de Google Drive via des connexions au réseau mobile</translation>

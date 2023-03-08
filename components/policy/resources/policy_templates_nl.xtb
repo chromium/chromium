@@ -3702,6 +3702,7 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
 <translation id="4480694116501920047">SafeSearch afdwingen</translation>
 <translation id="4481202456143946404">De geldige versie van de Servicevoorwaarden die zijn afgeleid van Google3 cl waarbij de nieuwe versie van de Voorwaarden is geïntroduceerd.</translation>
 <translation id="4481952213163895432">Het hotword voor de Google Assistent uitzetten</translation>
+<translation id="4482784169143060077">Automatische HTTPS-upgrades aanzetten</translation>
 <translation id="4483120730995943109">JavaScript-functie setTimeout() met een time-out van 0 ms wordt niet vastgezet op 1 ms.</translation>
 <translation id="4483649828988077221">Automatisch updaten uitzetten</translation>
 <translation id="4484515651939984695">Hiermee geef je op hoelang (in seconden) een cast-apparaat dat via een toegangscode of QR-code is geselecteerd, in de lijst met cast-apparaten van het <ph name="PRODUCT_NAME" />-menu blijft staan.</translation>
@@ -3723,6 +3724,7 @@ Ga naar https://support.google.com/chrome/a?p=url_blocklist_filter_format voor u
 <translation id="449784980858429908">Automatisch rechten aan sites geven om verbinding te maken met alle seriële poorten.</translation>
 <translation id="4499376951770369935">ChromeOS-updates zijn ingesteld volgens de versie die is gedefinieerd in het manifest van de kiosk-app</translation>
 <translation id="450080746522343150">Alle downloads blokkeren.</translation>
+<translation id="4501388411278568771">HTTPS-upgrades kunnen worden toegepast, afhankelijk van de lanceringsstatus van de functie.</translation>
 <translation id="45036050223225148">Het ClientHallo-experiment met TLS-versleuteling uitzetten</translation>
 <translation id="4503935079903510542">De UEFI-opstartschijfimage die wordt gebruikt om de VM te installeren op x86_64-apparaten.</translation>
 <translation id="4508728400492074981">Beheert het beleid voor de functie First-Party Sets.</translation>
@@ -5418,6 +5420,7 @@ Als je dit beleid instelt, worden afhankelijk van de waarde verschillende van de
 <translation id="6181304954168534748">De SHA-256-hash van de bureautemplate.</translation>
 <translation id="6181618732396778048">Geen sites toestemming geven om schrijftoegang tot bestanden en directory's te vragen</translation>
 <translation id="6181783961196084973">De waarde van de schakelaar voor de verzameling van app-activiteit. Als de schakelaar is ingesteld op True, wordt app-activiteit gerapporteerd aan de server zodat het te zien is in de <ph name="PRODUCT_NAME" />-app van het kind en de ouder. Als ingesteld op False, werkt de functie voor tijdslimieten per app nog steeds, maar worden er geen gegevens gerapporteerd aan de server en getoond in <ph name="PRODUCT_NAME" />.</translation>
+<translation id="6182206125906000651">HTTPS-upgrades uitzetten.</translation>
 <translation id="6182563940865917569">Toestaan dat Chrome media automatisch afspeelt</translation>
 <translation id="6184385589352532028">Desk API niet aanzetten voor ChromeOS-beheer door derden</translation>
 <translation id="6190367314942602985">Gegevens over de identiteit van gebruikers rapporteren</translation>
@@ -5710,6 +5713,11 @@ Zie https://developer.chrome.com/blog/immutable-document-domain/ voor meer infor
 <translation id="6424486395812679373">Safe Browsing-checks uitvoeren op alle gedownloade bestanden</translation>
 <translation id="6433697627431665375">Voorkomen dat <ph name="PRODUCT_NAME" />-gegevens in back-ups worden opgenomen</translation>
 <translation id="6436052172226685535">Standaardgedrag voor LBS.</translation>
+<translation id="6438472072089952201"><ph name="PRODUCT_NAME" /> probeert waar mogelijk bepaalde navigatie te upgraden van HTTP naar HTTPS. Je kunt dit beleid gebruiken om dit gedrag uit te zetten. Als je dit instelt op True of niet instelt, wordt deze functie standaard aangezet.
+
+Het afzonderlijke beleid <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> kan worden gebruikt om te voorkomen dat specifieke hostnamen of hostnaampatronen door deze functie worden geüpgraded naar HTTPS.
+
+Zie ook het beleid <ph name="HTTPS_ONLY_MODE_POLICY_NAME" />.</translation>
 <translation id="6438972408080276697">Als het beleid wordt ingesteld op True, worden rapporten over belangrijke, op basis van beleid geactiveerde installatiegebeurtenissen voor Android-apps naar Google gestuurd. Er worden geen gebeurtenissen geregistreerd als het beleid is ingesteld op False.</translation>
 <translation id="6440051664870270040">Toestaan dat sites tegelijkertijd kunnen navigeren en pop-ups kunnen openen</translation>
 <translation id="6446366416439249472">Google Drive-synchronisatie via mobiele verbindingen uitzetten</translation>

@@ -3708,6 +3708,7 @@ WebSQL in unsicheren Kontexten wurde in M112 entfernt.</translation>
 <translation id="4480694116501920047">SafeSearch erzwingen</translation>
 <translation id="4481202456143946404">Gültige Version der Nutzungsbedingungen, basierend auf den mit Google3 CL eingeführten Bedingungen.</translation>
 <translation id="4481952213163895432">Google Assistant-Hotword deaktivieren</translation>
+<translation id="4482784169143060077">Automatische HTTPS-Upgrades aktivieren</translation>
 <translation id="4483120730995943109">JavaScript-Funktion setTimeout() mit einem Zeitlimit von 0 ms wird nicht auf 1 ms aufgerundet.</translation>
 <translation id="4483649828988077221">Automatische Updates deaktivieren</translation>
 <translation id="4484515651939984695">Gibt an, wie lange (in Sekunden) ein Übertragungsgerät, das mit einem Zugriffscode oder QR-Code ausgewählt wurde, im <ph name="PRODUCT_NAME" />-Menü für Übertragungsgeräte angezeigt wird.</translation>
@@ -3729,6 +3730,7 @@ Weitere Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du un
 <translation id="449784980858429908">Websites automatisch die Berechtigung erteilen, eine Verbindung zu allen seriellen Ports herzustellen.</translation>
 <translation id="4499376951770369935">ChromeOS-Updates werden auf die Version gesetzt, die im Manifest der Kiosk-App definiert ist</translation>
 <translation id="450080746522343150">Alle Downloads blockieren.</translation>
+<translation id="4501388411278568771">Je nach Funktionseinführungsstatus können HTTPS-Upgrades angewendet werden.</translation>
 <translation id="45036050223225148">Test für Encrypted ClientHello deaktivieren</translation>
 <translation id="4503935079903510542">Das Image des UEFI-Bootlaufwerks, das zum Installieren der VM auf x86_64-Geräten verwendet wird.</translation>
 <translation id="4508728400492074981">Hiermit werden die Richtlinien für die Funktion „First-Party-Sets“ gesteuert.</translation>
@@ -5424,6 +5426,7 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 <translation id="6181304954168534748">SHA-256-Hash der Desktopvorlage.</translation>
 <translation id="6181618732396778048">Websites nicht erlauben, um Schreibzugriff auf Dateien und Verzeichnisse zu bitten</translation>
 <translation id="6181783961196084973">Wert der Schaltfläche zum Umschalten der App-Aktivitätserfassung. Wenn diese Option auf „true“ gesetzt ist, werden die App-Aktivitäten von Nutzern an den Server gesendet, damit sie in der <ph name="PRODUCT_NAME" />-App des Kindes und des Elternteils angezeigt werden können. Ist sie auf „false“ gesetzt, funktionieren App-spezifische Zeitlimits zwar weiterhin, es werden jedoch keine Daten an den Server gesendet, sodass sie nicht in <ph name="PRODUCT_NAME" /> angezeigt werden können.</translation>
+<translation id="6182206125906000651">HTTPS-Upgrades deaktivieren.</translation>
 <translation id="6182563940865917569">Automatische Wiedergabe von Medien in Chrome zulassen</translation>
 <translation id="6184385589352532028">Desk API für die ChromeOS-Steuerung durch Drittanbieter nicht aktivieren</translation>
 <translation id="6190367314942602985">Personenbezogene Daten erfassen</translation>
@@ -5719,6 +5722,11 @@ Weitere Informationen findest du unter https://developer.chrome.com/blog/immutab
 <translation id="6424486395812679373">Safe Browsing-Überprüfung für alle Dateidownloads ausführen</translation>
 <translation id="6433697627431665375"><ph name="PRODUCT_NAME" />-Daten nicht in Sicherungen einschließen</translation>
 <translation id="6436052172226685535">Standardverhalten für die Unterstützung älterer Browser.</translation>
+<translation id="6438472072089952201"><ph name="PRODUCT_NAME" /> versucht nach Möglichkeit, einige Navigationen von HTTP auf HTTPS zu aktualisieren. Diese Richtlinie kann verwendet werden, um dieses Verhalten zu deaktivieren. Wenn sie auf „true“ gesetzt oder nicht konfiguriert ist, ist diese Funktion standardmäßig aktiviert.
+
+Die separate Richtlinie <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> kann verwendet werden, um bestimmte Hostnamen oder Hostnamenmuster von der Aktualisierung auf HTTPS durch diese Funktion auszuschließen.
+
+Weitere Informationen findest du in der Richtlinie <ph name="HTTPS_ONLY_MODE_POLICY_NAME" />.</translation>
 <translation id="6438972408080276697">Wenn diese Richtlinie auf "True" gesetzt ist, werden Informationen über wichtige richtlinienbasierte Android-App-Installationsereignisse an Google gesendet. Wenn die Richtlinie auf "False" gesetzt ist, werden keine Ereignisse erfasst.</translation>
 <translation id="6440051664870270040">Websites erlauben, gleichzeitig auf andere Websites weiterzuleiten und Pop-ups zu öffnen</translation>
 <translation id="6446366416439249472">Google Drive-Synchronisierung über Mobilfunkverbindungen deaktivieren</translation>

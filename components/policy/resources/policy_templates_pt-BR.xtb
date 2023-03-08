@@ -3733,6 +3733,7 @@ A remoção foi feita na versão M112.</translation>
 <translation id="4480694116501920047">Forçar SafeSearch</translation>
 <translation id="4481202456143946404">A versão válida dos Termos de Serviço derivados do Google3 CL que introduziu uma nova versão dos Termos.</translation>
 <translation id="4481952213163895432">Desativar a hotword do Google Assistente</translation>
+<translation id="4482784169143060077">Ativar upgrades automáticos do HTTPS</translation>
 <translation id="4483120730995943109">A função setTimeout() do JavaScript com um tempo limite de 0 ms não vai ser limitada a 1 ms.</translation>
 <translation id="4483649828988077221">Desativar a atualização automática</translation>
 <translation id="4484515651939984695">Especificar por quanto tempo (em segundos) um dispositivo de transmissão selecionado com um código de acesso ou QR permanece na lista aparelhos desse tipo no menu do <ph name="PRODUCT_NAME" />.</translation>
@@ -3754,6 +3755,7 @@ Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos
 <translation id="449784980858429908">Permitir automaticamente que os sites se conectem a todas as portas seriais.</translation>
 <translation id="4499376951770369935">As atualizações do Chrome OS são configuradas de acordo com a versão definida no manifesto do app de quiosque</translation>
 <translation id="450080746522343150">Bloquear todos os downloads.</translation>
+<translation id="4501388411278568771">Os upgrades do HTTPS podem ser aplicados dependendo do status de lançamento do recurso.</translation>
 <translation id="45036050223225148">Desativar o experimento Encrypted ClientHello do TLS</translation>
 <translation id="4503935079903510542">A imagem de disco inicializável pelo UEFI usada para instalar a VM em dispositivos x86_64.</translation>
 <translation id="4508728400492074981">Controla as políticas do recurso First-Party Sets.</translation>
@@ -5516,6 +5518,7 @@ O tempo limite de inatividade para iniciar o protetor de tela e o intervalo de e
 <translation id="6181304954168534748">A hash SHA-256 do modelo de espaço de trabalho.</translation>
 <translation id="6181618732396778048">Não permitir que qualquer site solicite acesso de gravação de arquivos ou diretórios</translation>
 <translation id="6181783961196084973">O valor da alternância da coleta de atividade em apps. Se ele for definido como verdadeiro, a atividade em apps será enviada ao servidor para ser exibida no app <ph name="PRODUCT_NAME" /> da criança e do familiar responsável. Se definido como falso o recurso de limites de tempo por app ainda funcionará, mas nenhum dado será enviado ao servidor ou exibido no <ph name="PRODUCT_NAME" />.</translation>
+<translation id="6182206125906000651">Desativar upgrades do HTTPS.</translation>
 <translation id="6182563940865917569">Permitir que o Chrome inicie mídia automaticamente</translation>
 <translation id="6184385589352532028">Não ativar a API Desk para o controle do Chrome OS de terceiros</translation>
 <translation id="6190367314942602985">Reportar informações de identificação do usuário</translation>
@@ -5834,6 +5837,16 @@ Confira mais detalhes em https://developer.chrome.com/blog/immutable-document-do
 <translation id="6424486395812679373">Realizar as verificações do "Navegação segura" em todos os arquivos transferidos por download</translation>
 <translation id="6433697627431665375">Evitar que os dados do <ph name="PRODUCT_NAME" /> sejam incluídos em backups</translation>
 <translation id="6436052172226685535">Comportamento padrão para LBS.</translation>
+<translation id="6438472072089952201">O <ph name="PRODUCT_NAME" /> tenta fazer upgrade de algumas
+navegações de HTTP para HTTPS, quando possível. Essa política pode ser usada para
+desativar esse comportamento. Se definido como "verdadeiro" ou não for definido, esse recurso será
+ativado por padrão.
+
+A política <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> separada
+pode ser usada para evitar que determinados nomes de host ou padrões de nome de host sejam
+atualizados para HTTPS por esse recurso.
+
+Consulte também a política <ph name="HTTPS_ONLY_MODE_POLICY_NAME" />.</translation>
 <translation id="6438972408080276697">Se a política for definida como verdadeira, o Google receberá informações sobre eventos importantes e acionados por políticas relacionados à instalação de apps Android. Se a política for definida como falsa, nenhum evento será capturado.</translation>
 <translation id="6440051664870270040">Permitir que sites naveguem e abram pop-ups simultaneamente</translation>
 <translation id="6446366416439249472">Desativar a sincronização do Google Drive em conexões de celular</translation>
