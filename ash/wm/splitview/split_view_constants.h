@@ -29,42 +29,44 @@ constexpr int kSplitviewLabelPreferredHeightDp = 36;
 // The amount of round applied to the corners of a split view label.
 constexpr int kSplitviewLabelRoundRectRadiusDp = 18;
 
-// The thickness of the divider when it is not being dragged.
+// The thickness of the `split_view_divider_` when it is not being dragged.
 constexpr int kSplitviewDividerShortSideLength =
     chromeos::wm::kSplitviewDividerShortSideLength;
 
-// The thickness of the divider during dragging.
+// The thickness of the `split_view_divider_` during dragging.
 constexpr int kSplitviewDividerEnlargedShortSideLength = 16;
 
 // The time duration for the window transformation animations.
 constexpr auto kSplitviewWindowTransformDuration = base::Milliseconds(250);
 
-// The time duration for the divider animations when dragging starts and ends.
+// The time duration for the `split_view_divider_` animations when dragging
+// starts and ends.
 constexpr auto kSplitviewDividerSelectionStatusChangeDuration =
     base::Milliseconds(250);
 
-// The time duration for the divider spawning animation.
+// The time duration for the `split_view_divider_` spawning animation.
 constexpr auto kSplitviewDividerSpawnDuration = base::Milliseconds(100);
 
-// The delay before the divider spawning animation.
+// The delay before the `split_view_divider_` spawning animation.
 constexpr auto kSplitviewDividerSpawnDelay = base::Milliseconds(183);
 
-// The thickness of the divider's handler.
+// The thickness of the `split_view_divider_`'s handler.
 constexpr int kSplitviewWhiteBarShortSideLength = 2;
 
-// The length of the divider's handler.
+// The length of the `split_view_divider_`'s handler.
 constexpr int kSplitviewWhiteBarLongSideLength = 16;
 
-// The corner radius of the divider's handler.
+// The corner radius of the `split_view_divider_`'s handler.
 constexpr int kSplitviewWhiteBarCornerRadius = 1;
 
-// The radius of the circular handler when the divider is being dragged.
+// The radius of the circular handler when the `split_view_divider_` is being
+// dragged.
 constexpr int kSplitviewWhiteBarRadius = 4;
 
-// The length of the divider's handler when it spawns.
+// The length of the `split_view_divider_`'s handler when it spawns.
 constexpr int kSplitviewWhiteBarSpawnLongSideLength = 2;
 
-// The distance from the divider to where its handler spawns.
+// The distance from the `split_view_divider_` to where its handler spawns.
 constexpr int kSplitviewWhiteBarSpawnUnsignedOffset = 2;
 
 // The opacity of the drag-to-snap or cannot-snap drag indicator.

@@ -137,33 +137,33 @@ class ASH_EXPORT MultiWindowResizeController
                                  int x_in_parent,
                                  int y_in_parent) const;
 
-  // Returns the first window touching |window|.
+  // Returns the first window touching `window`.
   aura::Window* FindWindowTouching(aura::Window* window,
                                    Direction direction) const;
 
-  // Places any windows touching |start| into |others|.
+  // Places any windows touching `start` into `others`.
   void FindWindowsTouching(aura::Window* start,
                            Direction direction,
                            std::vector<aura::Window*>* others) const;
 
-  // Starts/Stops observing |window|.
+  // Starts/Stops observing `window`.
   void StartObserving(aura::Window* window);
   void StopObserving(aura::Window* window);
 
-  // Check if we're observing |window|.
+  // Check if we're observing `window`.
   bool IsObserving(aura::Window* window) const;
 
   // Shows the resizer if the mouse is still at a valid location. This is called
-  // from the |show_timer_|.
+  // from the `show_timer_`.
   void ShowIfValidMouseLocation();
 
-  // Shows the widget immediately.
+  // Shows the `resize_widget_` and `lock_widget_` immediately.
   void ShowNow();
 
-  // Returns true if the widget is showing.
+  // Returns true if the `resize_widget_` and `lock_widget_` are showing.
   bool IsShowing() const;
 
-  // Hides the resize widget and lock widget if it gets created.
+  // Hides the `resize_widget_` and `lock_widget_` if they get created.
   void Hide();
 
   // Resets the window resizer and hides the resize widget.

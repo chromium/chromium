@@ -254,7 +254,7 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
       aura::Window* window_for_minimum_size,
       float snap_ratio);
 
-  // Gets snapped bounds in screen coordinates for |kDefaultSnapRatio|.
+  // Gets snapped bounds in screen coordinates for `kDefaultSnapRatio`.
   gfx::Rect GetSnappedWindowBoundsInScreen(
       SnapPosition snap_position,
       aura::Window* window_for_minimum_size);
@@ -264,11 +264,11 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // current bounds in screen coordinates.
   bool ShouldUseWindowBoundsDuringFastResize();
 
-  // Gets the default value of |divider_position_|.
+  // Gets the default value of the `divider_position_`.
   int GetDefaultDividerPosition() const;
 
-  // Calculates the new divider position to move |divider_position_| to, such
-  // that the primary window will occupy |snap_ratio| of the screen, and the
+  // Calculates the new divider position to move `divider_position_` to, such
+  // that the primary window will occupy `snap_ratio` of the screen, and the
   // secondary window will occupy the rest.
   int GetDividerPosition(SnapPosition snap_position, float snap_ratio) const;
 
@@ -284,7 +284,7 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // manages the window(s).
   void EndSplitView(EndReason end_reason = EndReason::kNormal);
 
-  // Returns true if |window| is a snapped window in splitview.
+  // Returns true if `window` is a snapped window in splitview.
   bool IsWindowInSplitView(const aura::Window* window) const;
 
   // This function is only supposed to be called during clamshell <-> tablet
@@ -295,9 +295,9 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // on the middle split position).
   void InitDividerPositionForTransition(int divider_position);
 
-  // Returns true if |window| is in a transitinal state which means that
-  // |SplitViewController| has already changed its internal snapped state for
-  // |window| but the snapped state has not been applied to |window|'s window
+  // Returns true if `window` is in a transitinal state which means that
+  // `SplitViewController` has already changed its internal snapped state for
+  // `window` but the snapped state has not been applied to `window`'s window
   // state yet. The transional state can be happen in some clients (e.g. ARC
   // app) which handle window states asynchronously.
   bool IsWindowInTransitionalState(const aura::Window* window) const;

@@ -734,10 +734,13 @@ SplitViewController::SplitViewController(aura::Window* root_window)
 }
 
 SplitViewController::~SplitViewController() {
-  if (Shell::Get()->tablet_mode_controller())
+  if (Shell::Get()->tablet_mode_controller()) {
     Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
-  if (Shell::Get()->accessibility_controller())
+  }
+  if (Shell::Get()->accessibility_controller()) {
     Shell::Get()->accessibility_controller()->RemoveObserver(this);
+  }
+
   EndSplitView(EndReason::kRootWindowDestroyed);
 }
 
@@ -829,7 +832,7 @@ void SplitViewController::OnWMEvent(aura::Window* window,
   // feature flag `kSnapGroup` is enabled and the feature param
   // `kAutomaticallyLockGroup` is true, the window should be managed by
   // `SplitViewController`. Otherwise, the window should be snapped normally and
-  // should not be managed by `SplitViewController`.
+  // should be managed by `WindowState`.
   if (split_view_type_ == SplitViewType::kClamshellType &&
       !(in_overview || ShouldAutomaticallyGroupOnWindowsSnappedInClamshell())) {
     return;
@@ -1153,12 +1156,13 @@ gfx::Rect SplitViewController::GetSnappedWindowBoundsInScreen(
   DCHECK(window_for_minimum_size || minimum == 0);
   if (window_size < minimum) {
     if (in_tablet && !is_resizing_) {
-      // If |window_for_minimum_size| really gets snapped, then the divider will
-      // be adjusted to its default position. Compute |window_size| accordingly.
+      // If window with `window_for_minimum_size` gets snapped, the
+      // `split_view_divider_` will then be adjusted to its default position and
+      // `window_size` will be computed accordingly.
       window_size = work_area_size / 2 - kSplitviewDividerShortSideLength / 2;
-      // If |work_area_size| is odd, then the default divider position is
-      // rounded down, toward the left or top, but then if |snap_left_or_top| is
-      // false, that means |window_size| should now be rounded up.
+      // If `work_area_size` is odd, then the default divider position is
+      // rounded down, toward the left or top, but then if `snap_left_or_top` is
+      // false, that means `window_size` should now be rounded up.
       if (!snap_left_or_top && work_area_size % 2 == 1)
         ++window_size;
     } else {
@@ -1180,21 +1184,22 @@ gfx::Rect SplitViewController::GetSnappedWindowBoundsInScreen(
     }
   }
 
-  // Get the parameter values for which |gfx::Rect::SetByBounds| would recreate
-  // |work_area_bounds_in_screen|.
+  // Get the parameter values for which `gfx::Rect::SetByBounds` would recreate
+  // `work_area_bounds_in_screen`.
   int left = work_area_bounds_in_screen.x();
   int top = work_area_bounds_in_screen.y();
   int right = work_area_bounds_in_screen.right();
   int bottom = work_area_bounds_in_screen.bottom();
 
-  // Make |snapped_window_bounds_in_screen| by modifying one of the above four
+  // Make `snapped_window_bounds_in_screen` by modifying one of the above four
   // values: the one that represents the inner edge of the snapped bounds.
   int& left_or_top = horizontal ? left : top;
   int& right_or_bottom = horizontal ? right : bottom;
-  if (snap_left_or_top)
+  if (snap_left_or_top) {
     right_or_bottom = left_or_top + window_size;
-  else
+  } else {
     left_or_top = right_or_bottom - window_size;
+  }
 
   gfx::Rect snapped_window_bounds_in_screen;
   snapped_window_bounds_in_screen.SetByBounds(left, top, right, bottom);
@@ -1844,8 +1849,10 @@ void SplitViewController::OnOverviewModeEnding(
 
   // Tablet split view mode is active. If it still only has one snapped window,
   // snap the first snappable window in the overview grid on the other side.
-  if (state_ == State::kBothSnapped)
+  if (state_ == State::kBothSnapped) {
     return;
+  }
+
   OverviewGrid* current_grid =
       overview_session->GetGridWithRootWindow(root_window_);
   if (!current_grid || current_grid->empty())
@@ -2104,18 +2111,20 @@ void SplitViewController::OnKeyboardOccludedBoundsChanged(
 void SplitViewController::OnWindowActivated(ActivationReason reason,
                                             aura::Window* gained_active,
                                             aura::Window* lost_active) {
-  if (!features::IsAdjustSplitViewForVKEnabled())
+  if (!features::IsAdjustSplitViewForVKEnabled()) {
     return;
+  }
 
   // If the bottom window is moved for the virtual keyboard (the split view
   // divider bar is unadjustable), when the bottom window lost active, restore
   // to the original layout.
-  if (!split_view_divider_ || split_view_divider_->IsAdjustable())
+  if (!split_view_divider_ || split_view_divider_->IsAdjustable()) {
     return;
+  }
 
-  // It should be in portrait mode.
-  if (IsLayoutHorizontal(root_window_))
+  if (IsLayoutHorizontal(root_window_)) {
     return;
+  }
 
   aura::Window* bottom_window = GetPhysicalRightOrBottomWindow();
   if (!bottom_window)
@@ -2142,8 +2151,9 @@ void SplitViewController::StartObserving(aura::Window* window) {
     Shell::Get()->shadow_controller()->UpdateShadowForWindow(window);
     window->AddObserver(this);
     WindowState::Get(window)->AddObserver(this);
-    if (split_view_divider_)
+    if (split_view_divider_) {
       split_view_divider_->AddObservedWindow(window);
+    }
   }
 }
 
@@ -2461,8 +2471,9 @@ void SplitViewController::EndTabletSplitViewAfterResizingIfAppropriate() {
 aura::Window* SplitViewController::GetActiveWindowAfterResizingUponExit() {
   DCHECK(InSplitViewMode());
 
-  if (!ShouldEndTabletSplitViewAfterResizing())
+  if (!ShouldEndTabletSplitViewAfterResizing()) {
     return nullptr;
+  }
 
   return divider_position_ == 0 ? GetPhysicalRightOrBottomWindow()
                                 : GetPhysicalLeftOrTopWindow();
@@ -2565,21 +2576,24 @@ void SplitViewController::OnSnappedWindowDetached(aura::Window* window,
   // the window that is not going to be destroyed, we still need its bounds and
   // state to be updated to match the updated divider position before detaching
   // it from splitview.
-  if (is_window_destroyed)
+  if (is_window_destroyed) {
     StopObserving(position_of_snapped_window);
+  }
 
   // Stop resizing if one of the snapped window is detached from split
   // view.
   const bool is_divider_animating = IsDividerAnimating();
   if (is_resizing_ || is_divider_animating) {
     is_resizing_ = false;
-    if (is_divider_animating)
+    if (is_divider_animating) {
       StopAndShoveAnimatedDivider();
+    }
     EndResizeWithDividerImpl();
   }
 
-  if (!is_window_destroyed)
+  if (!is_window_destroyed) {
     StopObserving(position_of_snapped_window);
+  }
 
   if (!primary_window_ && !secondary_window_) {
     // If there is no snapped window at this moment, ends split view mode. Note
