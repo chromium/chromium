@@ -182,7 +182,7 @@ class DriveFsHost::MountState : public DriveFsSession,
         // Currently, download syncing (AKA downsync) events are not reliably
         // delivered by DriveFs. Therefore, let's not show inline sync status
         // indicators for them until this is fixed on DriveFs/Cello.
-        if (!event->is_upload) {
+        if (event->is_download) {
           continue;
         }
 

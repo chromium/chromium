@@ -523,8 +523,8 @@ struct ItemEvent {
 
   [MinVersion=1] ItemEventReason reason = kTransfer;
 
-  // True if it's an upload event, else it's a download event.
-  [MinVersion=2] bool is_upload = true;
+  // True if it's a download event, else it's an upload event.
+  [MinVersion=2] bool is_download = false;
 };
 
 struct SyncingStatus {
