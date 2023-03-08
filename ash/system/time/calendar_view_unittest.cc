@@ -196,7 +196,16 @@ class CalendarViewTest : public AshTestBase {
         ->selected_date_;
   }
 
-  views::View* up_next_view() { return calendar_view_->up_next_view_; }
+  CalendarUpNextView* up_next_view() { return calendar_view_->up_next_view_; }
+
+  views::View* up_next_scroll_contents() {
+    return calendar_view_->up_next_view_->content_view_;
+  }
+
+  // Executes the given task immediately rather than waiting for the timer.
+  void run_upcoming_events_timer_task() {
+    calendar_view_->check_upcoming_events_timer_.user_task().Run();
+  }
 
   views::View* calendar_sliding_surface_view() {
     return calendar_view_->calendar_sliding_surface_;
@@ -2213,6 +2222,19 @@ class CalendarViewWithJellyEnabledTest : public CalendarViewTest {
     return event_list;
   }
 
+  // Assumes current time is "18 Nov 2021 10:00 GMT".
+  std::unique_ptr<google_apis::calendar::EventList>
+  CreateMockEventListWithTwoEventsOneEndingInOneMin() {
+    auto event_list = std::make_unique<google_apis::calendar::EventList>();
+    event_list->set_time_zone("Greenwich Mean Time");
+    event_list->InjectItemForTesting(calendar_test_utils::CreateEvent(
+        "id_0", "summary_0", "18 Nov 2021 10:00 GMT", "18 Nov 2021 13:30 GMT"));
+    event_list->InjectItemForTesting(calendar_test_utils::CreateEvent(
+        "id_0", "summary_0", "18 Nov 2021 09:00 GMT", "18 Nov 2021 10:01 GMT"));
+
+    return event_list;
+  }
+
   // Assumes current time is "18 Nov 2021 23:55 GMT".
   std::unique_ptr<google_apis::calendar::EventList>
   CreateMockEventListStartingFivePastMidnight() {
@@ -2409,6 +2431,42 @@ TEST_F(
   // When fetched events are now more than two hours away, then up next
   // should have been destroyed.
   EXPECT_FALSE(up_next_view());
+}
+
+// Tests the following:
+// - 2 upcoming events are displayed in the up next view
+// - Time passes so that one event has ended
+// - Up next refreshes to show the 1 upcoming event (as the other has now ended)
+TEST_F(CalendarViewWithJellyEnabledTest,
+       ShouldHideCompletedEventsInTheUpNextView) {
+  base::Time date;
+  ASSERT_TRUE(base::Time::FromString("18 Nov 2021 10:00 GMT", &date));
+  // Set time override.
+  SetFakeNow(date);
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &CalendarViewTest::FakeTimeNow, /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr);
+
+  CreateCalendarView();
+  MockEventsFetched(calendar_utils::GetStartOfMonthUTC(date),
+                    CreateMockEventListWithTwoEventsOneEndingInOneMin());
+
+  // Up next should be shown with the 2 events.
+  EXPECT_TRUE(up_next_view());
+  EXPECT_EQ(size_t(2), up_next_scroll_contents()->children().size());
+
+  // Move base::Time::Now to 1 minute past the event end time and force the
+  // upcoming events timer to fire.
+  base::Time time_one_min_past_event_end;
+  ASSERT_TRUE(base::Time::FromString("18 Nov 2021 10:02 GMT",
+                                     &time_one_min_past_event_end));
+  SetFakeNow(time_one_min_past_event_end);
+  run_upcoming_events_timer_task();
+
+  // Up next should still be showing but with a single event as the other has
+  // ended.
+  EXPECT_TRUE(up_next_view());
+  EXPECT_EQ(size_t(1), up_next_scroll_contents()->children().size());
 }
 
 TEST_F(CalendarViewWithJellyEnabledTest,

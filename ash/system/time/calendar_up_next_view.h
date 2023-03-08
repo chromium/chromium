@@ -11,10 +11,6 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 
-namespace views {
-class BoxLayout;
-}
-
 namespace ash {
 
 // This view displays a scrollable list of `CalendarEventListItemView` for the
@@ -30,6 +26,10 @@ class ASH_EXPORT CalendarUpNextView : public views::View {
   CalendarUpNextView& operator=(const CalendarUpNextView& other) = delete;
   ~CalendarUpNextView() override;
 
+  // Called by a timer in the calendar whilst the up next view is open to
+  // refresh any ongoing events.
+  void RefreshEvents();
+
   // Returns the `SkPath` for the background of the `CalendarUpNextView`.
   SkPath GetClipPath() const;
 
@@ -44,8 +44,7 @@ class ASH_EXPORT CalendarUpNextView : public views::View {
 
   // Populates the scroll view with events.
   void UpdateEvents(
-      const std::list<google_apis::calendar::CalendarEvent>& events,
-      views::BoxLayout* content_layout_manager);
+      const std::list<google_apis::calendar::CalendarEvent>& events);
 
   // Callbacks for scroll buttons.
   void OnScrollLeftButtonPressed(const ui::Event& event);
@@ -72,6 +71,10 @@ class ASH_EXPORT CalendarUpNextView : public views::View {
   views::Button* left_scroll_button_;
   views::Button* right_scroll_button_;
   views::ScrollView* const scroll_view_;
+
+  // The current events displayed in calendar up next. Serves as a cache to diff
+  // against when refreshing events.
+  SingleDayEventList displayed_events_;
 
   // The content of the horizontal `scroll_view`, which carries a list of
   // `CalendarEventListItemView`.

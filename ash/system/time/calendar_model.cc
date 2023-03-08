@@ -85,6 +85,9 @@ void SortByDateAscending(
     std::list<google_apis::calendar::CalendarEvent>& events) {
   events.sort([](google_apis::calendar::CalendarEvent& a,
                  google_apis::calendar::CalendarEvent& b) {
+    if (a.start_time().date_time() == b.start_time().date_time()) {
+      return a.end_time().date_time() < b.end_time().date_time();
+    }
     return a.start_time().date_time() < b.start_time().date_time();
   });
 }

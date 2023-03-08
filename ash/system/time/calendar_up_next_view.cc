@@ -148,6 +148,14 @@ int GetFirstVisibleChildIndex(std::vector<views::View*> event_views,
   return 0;
 }
 
+// Checks if both lists contain the same events by comparing their event IDs.
+// The event IDs should be the same (unique per Calendar) and in the same order.
+bool SameEventIds(const std::list<google_apis::calendar::CalendarEvent>& a,
+                  const std::list<google_apis::calendar::CalendarEvent>& b) {
+  auto proj = &google_apis::calendar::CalendarEvent::id;
+  return base::ranges::equal(a, b, base::ranges::equal_to(), proj, proj);
+}
+
 }  // namespace
 
 CalendarUpNextView::CalendarUpNextView(
@@ -229,20 +237,22 @@ CalendarUpNextView::CalendarUpNextView(
   scroll_view_->InsertBeforeInFocusList(todays_events_button_container_);
 
   // Contents.
-  const auto events = calendar_view_controller_->UpcomingEvents();
-  auto* content_layout_manager =
-      content_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
-          calendar_utils::kUpNextBetweenChildSpacing));
+  content_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
+      calendar_utils::kUpNextBetweenChildSpacing));
 
   // Populate the contents of the scroll view.
-  UpdateEvents(events, content_layout_manager);
+  RefreshEvents();
 }
 
 CalendarUpNextView::~CalendarUpNextView() = default;
 
 SkPath CalendarUpNextView::GetClipPath() const {
   return CalendarUpNextViewBackground::GetPath(size());
+}
+
+void CalendarUpNextView::RefreshEvents() {
+  UpdateEvents(calendar_view_controller_->UpcomingEvents());
 }
 
 void CalendarUpNextView::Layout() {
@@ -267,8 +277,12 @@ void CalendarUpNextView::Layout() {
 }
 
 void CalendarUpNextView::UpdateEvents(
-    const std::list<google_apis::calendar::CalendarEvent>& events,
-    views::BoxLayout* content_layout_manager) {
+    const std::list<google_apis::calendar::CalendarEvent>& events) {
+  if (SameEventIds(displayed_events_, events)) {
+    return;
+  }
+
+  displayed_events_ = events;
   content_view_->RemoveAllChildViews();
 
   calendar_metrics::RecordUpNextEventCount(events.size());
@@ -286,18 +300,22 @@ void CalendarUpNextView::UpdateEvents(
             SelectedDateParams{now, selected_date_midnight,
                                selected_date_midnight_utc},
             /*event=*/event, /*ui_params=*/
-            UIParams{/*round_top_corners=*/true, /*round_bottom_corners=*/true,
+            UIParams{/*round_top_corners=*/true,
+                     /*round_bottom_corners=*/true,
                      /*show_event_list_dot=*/false,
                      /*fixed_width=*/kLabelFullWidth},
             /*event_list_item_index=*/
             EventListItemIndex{/*item_index=*/1,
                                /*total_count_of_events=*/1}));
 
-    content_layout_manager->SetFlexForView(child_view, 1);
+    static_cast<views::BoxLayout*>(content_view_->GetLayoutManager())
+        ->SetFlexForView(child_view, 1);
 
     // Hide scroll buttons if we have a single event.
     left_scroll_button_->SetVisible(false);
     right_scroll_button_->SetVisible(false);
+
+    content_view_->InvalidateLayout();
 
     return;
   }
@@ -325,6 +343,8 @@ void CalendarUpNextView::UpdateEvents(
   // Show scroll buttons if we have multiple events.
   left_scroll_button_->SetVisible(true);
   right_scroll_button_->SetVisible(true);
+
+  content_view_->InvalidateLayout();
 }
 
 void CalendarUpNextView::OnScrollLeftButtonPressed(const ui::Event& event) {

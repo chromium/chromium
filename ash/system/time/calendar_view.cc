@@ -2073,6 +2073,7 @@ void CalendarView::MaybeShowUpNextView() {
   }
 
   if (up_next_view_) {
+    up_next_view_->RefreshEvents();
     return;
   }
 
