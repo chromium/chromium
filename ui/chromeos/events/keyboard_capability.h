@@ -206,6 +206,9 @@ class KeyboardCapability : public InputDeviceEventObserver {
   // Returns the set of modifier keys present on the given keyboard.
   std::vector<mojom::ModifierKey> GetModifierKeys(const InputDevice& keyboard);
 
+  // Returns the device type of the given keyboard.
+  DeviceType GetDeviceType(const InputDevice& keyboard);
+
   // Takes a `KeyboardInfo` to use for testing the passed in keyboard.
   void SetKeyboardInfoForTesting(const InputDevice& keyboard,
                                  KeyboardInfo keyboard_info);

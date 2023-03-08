@@ -8,8 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
-#include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -31,8 +29,28 @@
 namespace ash {
 
 namespace {
+
+mojom::MetaKey GetMetaKeyForKeyboard(const ui::InputDevice& keyboard) {
+  const auto device_type =
+      Shell::Get()->keyboard_capability()->GetDeviceType(keyboard);
+  switch (device_type) {
+    case ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard:
+    case ui::KeyboardCapability::DeviceType::kDeviceExternalChromeOsKeyboard:
+    case ui::KeyboardCapability::DeviceType::kDeviceHotrodRemote:
+    case ui::KeyboardCapability::DeviceType::kDeviceUnknown:
+    case ui::KeyboardCapability::DeviceType::kDeviceVirtualCoreKeyboard:
+      return Shell::Get()->keyboard_capability()->HasLauncherButton(keyboard)
+                 ? mojom::MetaKey::kLauncher
+                 : mojom::MetaKey::kSearch;
+    case ui::KeyboardCapability::DeviceType::kDeviceExternalAppleKeyboard:
+      return mojom::MetaKey::kCommand;
+    case ui::KeyboardCapability::DeviceType::kDeviceExternalGenericKeyboard:
+    case ui::KeyboardCapability::DeviceType::kDeviceExternalUnknown:
+      return mojom::MetaKey::kExternalMeta;
+  };
+}
+
 mojom::KeyboardPtr BuildMojomKeyboard(const ui::InputDevice& keyboard) {
-  // TODO(dpad): Initialize the meta key property.
   mojom::KeyboardPtr mojom_keyboard = mojom::Keyboard::New();
   mojom_keyboard->id = keyboard.id;
   mojom_keyboard->name = keyboard.name;
@@ -41,6 +59,7 @@ mojom::KeyboardPtr BuildMojomKeyboard(const ui::InputDevice& keyboard) {
       keyboard.type != ui::InputDeviceType::INPUT_DEVICE_INTERNAL;
   mojom_keyboard->modifier_keys =
       Shell::Get()->keyboard_capability()->GetModifierKeys(keyboard);
+  mojom_keyboard->meta_key = GetMetaKeyForKeyboard(keyboard);
   return mojom_keyboard;
 }
 
