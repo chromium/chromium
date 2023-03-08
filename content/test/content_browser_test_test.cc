@@ -403,4 +403,44 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, RunTimeoutInstalled) {
 #endif
 }
 
+enum class SkipLocation {
+  kSetUpInProcessBrowserTestFixture,
+  kSetUpCommandLine,
+  kSetUpOnMainThread,
+};
+
+class SkipFixtureBrowserTest
+    : public ContentBrowserTest,
+      public ::testing::WithParamInterface<SkipLocation> {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    if (GetParam() == SkipLocation::kSetUpInProcessBrowserTestFixture) {
+      GTEST_SKIP();
+    }
+  }
+
+  void SetUpCommandLine(base::CommandLine*) override {
+    if (GetParam() == SkipLocation::kSetUpCommandLine) {
+      GTEST_SKIP();
+    }
+  }
+
+  void SetUpOnMainThread() override {
+    if (GetParam() == SkipLocation::kSetUpOnMainThread) {
+      GTEST_SKIP();
+    }
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(SkipFixtureBrowserTest, Skip) {
+  EXPECT_TRUE(false);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SkipFixtureBrowserTest,
+    ::testing::Values(SkipLocation::kSetUpInProcessBrowserTestFixture,
+                      SkipLocation::kSetUpCommandLine,
+                      SkipLocation::kSetUpOnMainThread));
+
 }  // namespace content
