@@ -177,6 +177,43 @@ base::RepeatingCallback<bool(const std::string&)> GetScopePredicate(
   });
 }
 
+base::RepeatingCallback<bool(const std::string&)> MatchAppPriority(
+    const std::string& app_id,
+    UpdateService::Priority priority) {
+  return base::BindLambdaForTesting([&app_id, priority](
+                                        const std::string& request_body) {
+    const bool is_match = [&app_id, priority, &request_body]() {
+      const absl::optional<base::Value> doc =
+          base::JSONReader::Read(request_body);
+      if (!doc || !doc->is_dict()) {
+        return false;
+      }
+      const base::Value::List* app_list =
+          doc->GetDict().FindListByDottedPath("request.app");
+      if (!app_list) {
+        return false;
+      }
+      for (const base::Value& app : *app_list) {
+        if (const auto* dict = app.GetIfDict()) {
+          if (const auto* appid = dict->FindString("appid"); *appid == app_id) {
+            if (const auto* install_source =
+                    dict->FindString("installsource")) {
+              return (*install_source == "ondemand") ==
+                     (priority == UpdateService::Priority::kForeground);
+            }
+          }
+        }
+      }
+      return priority != UpdateService::Priority::kForeground;
+    }();
+    if (!is_match) {
+      ADD_FAILURE() << R"(Request does not match "ismachine": )"
+                    << request_body;
+    }
+    return is_match;
+  });
+}
+
 void RunUpdaterWithSwitch(const base::Version& version,
                           UpdaterScope scope,
                           const std::string& command,
@@ -197,6 +234,7 @@ void ExpectSequence(UpdaterScope scope,
                     ScopedServer* test_server,
                     const std::string& app_id,
                     const std::string& install_data_index,
+                    UpdateService::Priority priority,
                     int event_type,
                     const base::Version& from_version,
                     const base::Version& to_version,
@@ -222,7 +260,7 @@ void ExpectSequence(UpdaterScope scope,
                          install_data_index.c_str())
                          .c_str()
                    : "")),
-       GetScopePredicate(scope)},
+       GetScopePredicate(scope), MatchAppPriority(app_id, priority)},
       GetUpdateResponse(app_id, install_data_index,
                         test_server->base_url().spec(), to_version, crx_path,
                         kDoNothingCRXRun, {}));
@@ -594,9 +632,10 @@ void ExpectUpdateCheckSequence(UpdaterScope scope,
                                ScopedServer* test_server,
                                const std::string& app_id,
                                const std::string& install_data_index,
+                               UpdateService::Priority priority,
                                const base::Version& from_version,
                                const base::Version& to_version) {
-  ExpectSequence(scope, test_server, app_id, install_data_index, 3,
+  ExpectSequence(scope, test_server, app_id, install_data_index, priority, 3,
                  from_version, to_version, /*is_update_check_only*/ true);
 }
 
@@ -604,9 +643,10 @@ void ExpectUpdateSequence(UpdaterScope scope,
                           ScopedServer* test_server,
                           const std::string& app_id,
                           const std::string& install_data_index,
+                          UpdateService::Priority priority,
                           const base::Version& from_version,
                           const base::Version& to_version) {
-  ExpectSequence(scope, test_server, app_id, install_data_index, 3,
+  ExpectSequence(scope, test_server, app_id, install_data_index, priority, 3,
                  from_version, to_version, /*is_update_check_only*/ false);
 }
 
@@ -614,9 +654,10 @@ void ExpectInstallSequence(UpdaterScope scope,
                            ScopedServer* test_server,
                            const std::string& app_id,
                            const std::string& install_data_index,
+                           UpdateService::Priority priority,
                            const base::Version& from_version,
                            const base::Version& to_version) {
-  ExpectSequence(scope, test_server, app_id, install_data_index, 2,
+  ExpectSequence(scope, test_server, app_id, install_data_index, priority, 2,
                  from_version, to_version, /*is_update_check_only*/ false);
 }
 

@@ -81,31 +81,34 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
       ScopedServer* test_server,
       const std::string& app_id,
       const std::string& install_data_index,
+      UpdateService::Priority priority,
       const base::Version& from_version,
       const base::Version& to_version) const override {
-    updater::test::ExpectUpdateCheckSequence(updater_scope_, test_server,
-                                             app_id, install_data_index,
-                                             from_version, to_version);
+    updater::test::ExpectUpdateCheckSequence(
+        updater_scope_, test_server, app_id, install_data_index, priority,
+        from_version, to_version);
   }
 
   void ExpectUpdateSequence(ScopedServer* test_server,
                             const std::string& app_id,
                             const std::string& install_data_index,
+                            UpdateService::Priority priority,
                             const base::Version& from_version,
                             const base::Version& to_version) const override {
     updater::test::ExpectUpdateSequence(updater_scope_, test_server, app_id,
-                                        install_data_index, from_version,
-                                        to_version);
+                                        install_data_index, priority,
+                                        from_version, to_version);
   }
 
   void ExpectInstallSequence(ScopedServer* test_server,
                              const std::string& app_id,
                              const std::string& install_data_index,
+                             UpdateService::Priority priority,
                              const base::Version& from_version,
                              const base::Version& to_version) const override {
     updater::test::ExpectInstallSequence(updater_scope_, test_server, app_id,
-                                         install_data_index, from_version,
-                                         to_version);
+                                         install_data_index, priority,
+                                         from_version, to_version);
   }
 
   void ExpectVersionActive(const std::string& version) const override {
