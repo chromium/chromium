@@ -11,6 +11,7 @@
 #import "base/files/file_util.h"
 #import "base/functional/bind.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/strings/escape.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/thread_pool.h"
@@ -157,28 +158,51 @@ void ARQuickLookTabHelper::DidFinishDownload() {
     return;
   }
 
-  NSURL* file_url = [NSURL
-      fileURLWithPath:base::SysUTF8ToNSString(
-                          download_task_->GetResponsePath().AsUTF8Unsafe())];
-
-  std::string key_value;
-  const GURL url = ConvertRefToQueryInUrl(download_task_->GetOriginalUrl());
-
-  bool allow_content_scaling = true;
-  if (net::GetValueForKeyInQuery(url, kContentScalingKey, &key_value)) {
-    // Scaling is disabled if the value is set to 0.
-    allow_content_scaling = (key_value != "0");
+  GURL url = download_task_->GetOriginalUrl();
+  if (url.SchemeIsBlob()) {
+    // If the download was a blob: URL, the task URL looks like the following
+    // "blob:https://example.com/...%23..." (i.e. the real URL but some of the
+    // characters such as `#` have been encoded). Extract the path from the
+    // blob: URL and decode it as a component to recreate the real URL.
+    //
+    // This is a hack as the https://www.w3.org/TR/FileAPI/#url seems to imply
+    // that the fragment needs to be stripped from the URL when creating a blob
+    // URL, but this appears to work well enough for https://crbug.com/1341660
+    // issue.
+    url = GURL(base::UnescapeURLComponent(
+        url.path(),
+        base::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS));
   }
 
-  NSURL* canonical_url = nil;
-  if (net::GetValueForKeyInQuery(url, kCanonicalWebPageURLKey, &key_value)) {
-    // Ignore extracted value if not a valid URL.
-    const GURL extracted_url(key_value);
-    if (extracted_url.is_valid()) {
-      canonical_url = net::NSURLWithGURL(extracted_url);
+  // Convert the URL ref into query parameter to allow parsing of the URL
+  // ref using net::GetValueForKeyInQuery(...) (net doesn't provide a way
+  // to parse the ref).
+  url = ConvertRefToQueryInUrl(url);
+
+  bool allow_content_scaling = true;
+  {
+    std::string key_value;
+    if (net::GetValueForKeyInQuery(url, kContentScalingKey, &key_value)) {
+      // Scaling is disabled if the value is set to 0.
+      allow_content_scaling = (key_value != "0");
     }
   }
 
+  NSURL* canonical_url = nil;
+  {
+    std::string key_value;
+    if (net::GetValueForKeyInQuery(url, kCanonicalWebPageURLKey, &key_value)) {
+      // Ignore extracted value if not a valid URL.
+      const GURL extracted_url(key_value);
+      if (extracted_url.is_valid()) {
+        canonical_url = net::NSURLWithGURL(extracted_url);
+      }
+    }
+  }
+
+  NSURL* file_url = [NSURL
+      fileURLWithPath:base::SysUTF8ToNSString(
+                          download_task_->GetResponsePath().AsUTF8Unsafe())];
   [delegate_ presentUSDZFileWithURL:file_url
                        canonicalURL:canonical_url
                            webState:web_state_
