@@ -6452,6 +6452,21 @@
             ]
         }
     ],
+    "IOSPasswordBottomSheet": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSPasswordBottomSheet"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSPasswordManagerCrossOriginIframeSupport": [
         {
             "platforms": [

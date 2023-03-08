@@ -1099,6 +1099,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(password_manager::features::
                             kIOSPasswordManagerCrossOriginIframeSupport)},
+    {"ios-password-bottom-sheet",
+     flag_descriptions::kIOSPasswordBottomSheetName,
+     flag_descriptions::kIOSPasswordBottomSheetDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(password_manager::features::kIOSPasswordBottomSheet)},
     {"ios-new-tab-page-retention", flag_descriptions::kNewTabPageRetentionName,
      flag_descriptions::kNewTabPageRetentionDescription, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_tiles::kNewTabPageRetention,

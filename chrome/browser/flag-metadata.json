@@ -4436,6 +4436,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "ios-password-bottom-sheet",
+    "owners": ["veronguyen", "sugoi", "tmartino", "bling-integrations-team@google.com"],
+    "expiry_milestone": 117
+  },
+  {
     "name": "ios-password-checkup",
     "owners": ["noemies", "eic", "bling-integrations-team@google.com"],
     "expiry_milestone": 117
