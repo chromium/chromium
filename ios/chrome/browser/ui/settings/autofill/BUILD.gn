@@ -96,6 +96,7 @@ source_set("unit_tests") {
     "autofill_credit_card_table_view_controller_unittest.mm",
     "autofill_credit_card_util_unittest.mm",
     "autofill_profile_edit_mediator_unittest.mm",
+    "autofill_profile_edit_table_view_controller_unittest.mm",
     "autofill_profile_table_view_controller_unittest.mm",
   ]
   deps = [

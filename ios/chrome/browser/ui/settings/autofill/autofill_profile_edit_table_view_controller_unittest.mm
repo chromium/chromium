@@ -7,26 +7,20 @@
 #import <memory>
 
 #import "base/feature_list.h"
-#import "base/guid.h"
+#import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
-#import "components/autofill/core/browser/data_model/autofill_profile.h"
-#import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/common/autofill_features.h"
-#import "ios/chrome/browser/application_context/application_context.h"
-#import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/ui/settings/autofill/autofill_profile_edit_consumer.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_profile_edit_table_view_controller_delegate.h"
-#import "ios/chrome/browser/ui/settings/personal_data_manager_finished_profile_tasks_waiter.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
-#import "ios/chrome/browser/webdata_services/web_data_service_factory.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -43,129 +37,90 @@ const char16_t kTestAddressLine2[] = u"Near the lake";
 const char16_t kTestCity[] = u"Springfield";
 const char16_t kTestState[] = u"IL";
 const char16_t kTestZip[] = u"55123";
-const char16_t kTestCountryCode[] = u"US";
 const char16_t kTestCountry[] = u"United States";
 const char16_t kTestPhone[] = u"16502530000";
 const char16_t kTestEmail[] = u"test@email.com";
 
-static NSArray* FindTextFieldDescendants(UIView* root) {
-  NSMutableArray* textFields = [NSMutableArray array];
-  NSMutableArray* descendants = [NSMutableArray array];
-
-  [descendants addObject:root];
-
-  while ([descendants count]) {
-    UIView* view = [descendants objectAtIndex:0];
-    if ([view isKindOfClass:[UITextField class]]) {
-      [textFields addObject:view];
-    }
-
-    [descendants addObjectsFromArray:[view subviews]];
-    [descendants removeObjectAtIndex:0];
-  }
-
-  return textFields;
-}
 }  // namespace
 
-@interface AutofillProfileEditTableViewControllerTestDelegate
-    : NSObject <AutofillProfileEditTableViewControllerDelegate>
+@interface AutofillProfileEditFakeConsumer : NSObject
+
+- (void)createAccountProfile;
+
+@property(nonatomic, weak) id<AutofillProfileEditConsumer> consumer;
+
 @end
 
-@implementation AutofillProfileEditTableViewControllerTestDelegate
+@implementation AutofillProfileEditFakeConsumer
 
-- (void)willSelectCountryWithCurrentlySelectedCountry:(NSString*)country {
+- (void)didSelectCountry:(NSString*)country {
 }
 
-- (void)didEditAutofillProfile:(autofill::AutofillProfile*)profile {
+- (void)setConsumer:(id<AutofillProfileEditConsumer>)consumer {
+  if (_consumer == consumer) {
+    return;
+  }
+
+  _consumer = consumer;
+  [self createProfileData];
 }
 
-- (void)viewDidDisappear {
+- (void)createProfileData {
+  [self.consumer
+      setHonorificPrefix:base::SysUTF16ToNSString(kTestHonorificPrefix)];
+  [self.consumer setFullName:base::SysUTF16ToNSString(kTestFullName)];
+  [self.consumer setCompanyName:base::SysUTF16ToNSString(kTestCompany)];
+  [self.consumer
+      setHomeAddressLine1:base::SysUTF16ToNSString(kTestAddressLine1)];
+  [self.consumer
+      setHomeAddressLine2:base::SysUTF16ToNSString(kTestAddressLine2)];
+  [self.consumer setHomeAddressCity:base::SysUTF16ToNSString(kTestCity)];
+  [self.consumer setHomeAddressState:base::SysUTF16ToNSString(kTestState)];
+  [self.consumer setHomeAddressZip:base::SysUTF16ToNSString(kTestZip)];
+  [self.consumer setHomeAddressCountry:base::SysUTF16ToNSString(kTestCountry)];
+  [self.consumer setHomePhoneWholeNumber:base::SysUTF16ToNSString(kTestPhone)];
+  [self.consumer setEmailAddress:base::SysUTF16ToNSString(kTestEmail)];
+}
+
+- (void)createAccountProfile {
+  [self.consumer setAccountProfile:YES];
 }
 
 @end
 
 namespace {
 
-class AutofillProfileEditTableViewControllerTest : public PlatformTest {
+class AutofillProfileEditTableViewControllerTest
+    : public ChromeTableViewControllerTest {
  protected:
-  AutofillProfileEditTableViewControllerTest() {
-    TestChromeBrowserState::Builder test_cbs_builder;
-    test_cbs_builder.AddTestingFactory(
-        ios::WebDataServiceFactory::GetInstance(),
-        ios::WebDataServiceFactory::GetDefaultFactory());
-    chrome_browser_state_ = test_cbs_builder.Build();
-    personal_data_manager_ =
-        autofill::PersonalDataManagerFactory::GetForBrowserState(
-            chrome_browser_state_.get());
-    if (base::FeatureList::IsEnabled(
-            autofill::features::kAutofillUseAlternativeStateNameMap)) {
-      personal_data_manager_->personal_data_manager_cleaner_for_testing()
-          ->alternative_state_name_map_updater_for_testing()
-          ->set_local_state_for_testing(local_state_.Get());
-    }
-    personal_data_manager_->OnSyncServiceInitialized(nullptr);
-    delegate_ =
-        [[AutofillProfileEditTableViewControllerTestDelegate alloc] init];
+  void SetUp() override {
+    ChromeTableViewControllerTest::SetUp();
+    delegate_mock_ = OCMProtocolMock(
+        @protocol(AutofillProfileEditTableViewControllerDelegate));
+    fake_consumer_ = [[AutofillProfileEditFakeConsumer alloc] init];
+    CreateController();
+    CheckController();
+    fake_consumer_.consumer =
+        base::mac::ObjCCastStrict<AutofillProfileEditTableViewController>(
+            controller());
+
+    // Reload the model so that the consumer changes are propogated.
+    [controller() loadModel];
   }
 
-  void LoadController(bool is_account_profile = false) {
-    PersonalDataManagerFinishedProfileTasksWaiter waiter(
-        personal_data_manager_);
-
-    std::string guid = base::GenerateGUID();
-
-    autofill::AutofillProfile autofill_profile;
-    autofill_profile =
-        autofill::AutofillProfile(guid, "https://www.example.com/");
-    autofill_profile.SetRawInfo(autofill::NAME_HONORIFIC_PREFIX,
-                                kTestHonorificPrefix);
-    autofill_profile.SetRawInfo(autofill::NAME_FULL, kTestFullName);
-    autofill_profile.SetRawInfo(autofill::COMPANY_NAME, kTestCompany);
-    autofill_profile.SetRawInfo(autofill::ADDRESS_HOME_LINE1,
-                                kTestAddressLine1);
-    autofill_profile.SetRawInfo(autofill::ADDRESS_HOME_LINE2,
-                                kTestAddressLine2);
-    autofill_profile.SetRawInfo(autofill::ADDRESS_HOME_CITY, kTestCity);
-    autofill_profile.SetRawInfo(autofill::ADDRESS_HOME_STATE, kTestState);
-    autofill_profile.SetRawInfo(autofill::ADDRESS_HOME_ZIP, kTestZip);
-    autofill_profile.SetRawInfo(autofill::ADDRESS_HOME_COUNTRY,
-                                kTestCountryCode);
-    autofill_profile.SetRawInfo(autofill::PHONE_HOME_WHOLE_NUMBER, kTestPhone);
-    autofill_profile.SetRawInfo(autofill::EMAIL_ADDRESS, kTestEmail);
-    if (is_account_profile) {
-      autofill_profile.set_source_for_testing(
-          autofill::AutofillProfile::Source::kAccount);
-      personal_data_manager_->AddProfile(autofill_profile);
-    } else {
-      personal_data_manager_->SaveImportedProfile(autofill_profile);
-    }
-    waiter.Wait();  // Wait for the completion of the asynchronous operation.
-
-    autofill_profile_edit_controller_ =
-        [[AutofillProfileEditTableViewController alloc]
-            initWithDelegate:delegate_
-                     profile:&autofill_profile
-                   userEmail:(is_account_profile
-                                  ? base::SysUTF16ToNSString(kTestEmail)
-                                  : nil)];
-
-    // Load the view to force the loading of the model.
-    [autofill_profile_edit_controller_ loadViewIfNeeded];
+  ChromeTableViewController* InstantiateController() override {
+    return [[AutofillProfileEditTableViewController alloc]
+        initWithDelegate:delegate_mock_
+               userEmail:nil];
   }
 
-  web::WebTaskEnvironment task_environment_;
-  IOSChromeScopedTestingLocalState local_state_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
-  autofill::PersonalDataManager* personal_data_manager_;
-  AutofillProfileEditTableViewController* autofill_profile_edit_controller_;
-  AutofillProfileEditTableViewControllerTestDelegate* delegate_ = nil;
+  AutofillProfileEditFakeConsumer* fake_consumer_;
+  id delegate_mock_;
 };
 
 // Default test case of no addresses or credit cards.
 TEST_F(AutofillProfileEditTableViewControllerTest, TestInitialization) {
-  LoadController();
-  TableViewModel* model = [autofill_profile_edit_controller_ tableViewModel];
+  TableViewModel* model = [controller() tableViewModel];
   int rowCnt =
       base::FeatureList::IsEnabled(
           autofill::features::kAutofillEnableSupportForHonorificPrefixes)
@@ -178,9 +133,8 @@ TEST_F(AutofillProfileEditTableViewControllerTest, TestInitialization) {
 
 // Adding a single address results in an address section.
 TEST_F(AutofillProfileEditTableViewControllerTest, TestOneProfile) {
-  LoadController();
-  TableViewModel* model = [autofill_profile_edit_controller_ tableViewModel];
-  UITableView* tableView = [autofill_profile_edit_controller_ tableView];
+  TableViewModel* model = [controller() tableViewModel];
+  //  UITableView* tableView = [autofill_profile_edit_controller_ tableView];
 
   std::vector<const char16_t*> expected_values = {
       kTestFullName, kTestCompany, kTestAddressLine1, kTestAddressLine2,
@@ -195,28 +149,41 @@ TEST_F(AutofillProfileEditTableViewControllerTest, TestOneProfile) {
   EXPECT_EQ(expected_values.size(), (size_t)[model numberOfItemsInSection:0]);
 
   for (size_t row = 0; row < expected_values.size(); row++) {
-    NSIndexPath* path = [NSIndexPath indexPathForRow:row inSection:0];
-    UIView* cell = [autofill_profile_edit_controller_ tableView:tableView
-                                          cellForRowAtIndexPath:path];
-    NSArray* textFields = FindTextFieldDescendants(cell);
-    EXPECT_TRUE([textFields count] > 0);
-    UITextField* field = [textFields objectAtIndex:0];
-    EXPECT_TRUE([field isKindOfClass:[UITextField class]]);
-    EXPECT_TRUE([[field text]
-        isEqualToString:base::SysUTF16ToNSString(expected_values[row])]);
+    TableViewTextEditItem* cell =
+        static_cast<TableViewTextEditItem*>(GetTableViewItem(0, row));
+    EXPECT_NSEQ(base::SysUTF16ToNSString(expected_values[row]),
+                cell.textFieldValue);
   }
 }
+
+class AutofillProfileEditTableViewControllerTestWithUnionViewEnabled
+    : public AutofillProfileEditTableViewControllerTest {
+ protected:
+  AutofillProfileEditTableViewControllerTestWithUnionViewEnabled() {
+    scoped_feature_list_.InitAndEnableFeature(
+        autofill::features::kAutofillAccountProfilesUnionView);
+  }
+
+  ChromeTableViewController* InstantiateController() override {
+    return [[AutofillProfileEditTableViewController alloc]
+        initWithDelegate:delegate_mock_
+               userEmail:base::SysUTF16ToNSString(kTestEmail)];
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
 // Tests the footer text of the view controller for the address profiles with
 // source kAccount when `autofill::features::kAutofillAccountProfilesUnionView`
 // is enabled.
-TEST_F(AutofillProfileEditTableViewControllerTest, TestFooterTextWithEmail) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      autofill::features::kAutofillAccountProfilesUnionView);
-  LoadController(true);
+TEST_F(AutofillProfileEditTableViewControllerTestWithUnionViewEnabled,
+       TestFooterTextWithEmail) {
+  [fake_consumer_ createAccountProfile];
 
-  TableViewModel* model = [autofill_profile_edit_controller_ tableViewModel];
+  // Reload the model so that the consumer changes are propogated.
+  [controller() loadModel];
+
+  TableViewModel* model = [controller() tableViewModel];
 
   NSString* expected_footer_text = l10n_util::GetNSStringF(
       IDS_IOS_SETTINGS_AUTOFILL_ACCOUNT_ADDRESS_FOOTER_TEXT, kTestEmail);
