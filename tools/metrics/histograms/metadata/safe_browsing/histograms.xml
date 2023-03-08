@@ -2087,6 +2087,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Logs the outcome of displaying the {PromptType} when a signed-in, syncing
     user changes their account tailored security setting to {Status}.
+
+    Notification prompts were removed in M113 along with the corresponding UX.
   </summary>
   <token key="Status">
     <variant name="Disabled" summary="disabled"/>
@@ -2094,7 +2096,6 @@ chromium-metrics-reviews@google.com.
   </token>
   <token key="PromptType">
     <variant name="Message" summary="android or iOS message"/>
-    <variant name="Notification" summary="desktop notification"/>
   </token>
 </histogram>
 

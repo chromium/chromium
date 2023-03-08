@@ -227,10 +227,6 @@ BASE_FEATURE(kSuspiciousSiteTriggerQuotaFeature,
              "SafeBrowsingSuspiciousSiteTriggerQuota",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTailoredSecurityDesktopNotice,
-             "TailoredSecurityDesktopNotice",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kTailoredSecurityDialogRetryMechanism,
              "TailoredSecurityDialogRetryMechanism",
@@ -317,7 +313,6 @@ constexpr struct {
     {&kSimplifiedUrlDisplay, true},
     {&kStrictDownloadTimeout, true},
     {&kSuspiciousSiteTriggerQuotaFeature, true},
-    {&kTailoredSecurityDesktopNotice, true},
     {&kTailoredSecurityIntegration, true},
     {&kThreatDomDetailsTagAndAttributeFeature, false},
     {&kVisualFeaturesForReusePings, true},

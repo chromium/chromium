@@ -225,12 +225,6 @@ extern const base::FeatureParam<int> kStrictDownloadTimeoutMilliseconds;
 // Controls the daily quota for the suspicious site trigger.
 BASE_DECLARE_FEATURE(kSuspiciousSiteTriggerQuotaFeature);
 
-// Controls whether to automatically enable Enhanced Protection for desktop
-// tailored security users. If not enabled, users of tailored security are
-// notified that they can enable Enhanced Protection through an operating system
-// notification.
-BASE_DECLARE_FEATURE(kTailoredSecurityDesktopNotice);
-
 // Enable a retry for the tailored security dialogs when the dialog
 // fails to show for a user whose google account has sync turned on.
 BASE_DECLARE_FEATURE(kTailoredSecurityDialogRetryMechanism);

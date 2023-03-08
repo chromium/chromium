@@ -38,9 +38,6 @@ class TailoredSecurityNotificationHandler : public NotificationHandler {
                base::OnceClosure completed_closure) override;
 };
 
-void DisplayTailoredSecurityConsentedModalDesktop(Profile* profile,
-                                                  bool enable);
-
 void DisplayTailoredSecurityUnconsentedPromotionNotification(Profile* profile);
 
 }  // namespace safe_browsing

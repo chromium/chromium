@@ -12,7 +12,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_notification_result.h"
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service_util.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_policy_handler.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -86,29 +85,25 @@ void ChromeTailoredSecurityService::OnSyncNotificationMessageRequest(
                      // Unretained is safe because |this| owns |message_|.
                      base::Unretained(this)));
 #else
-  if (base::FeatureList::IsEnabled(kTailoredSecurityDesktopNotice)) {
-    Browser* browser = chrome::FindBrowserWithProfile(profile_);
-    if (!browser) {
-      if (is_enabled) {
-        RecordEnabledNotificationResult(
-            TailoredSecurityNotificationResult::kNoBrowserAvailable);
-      }
-      return;
+  Browser* browser = chrome::FindBrowserWithProfile(profile_);
+  if (!browser) {
+    if (is_enabled) {
+      RecordEnabledNotificationResult(
+          TailoredSecurityNotificationResult::kNoBrowserAvailable);
     }
-    if (!browser->window()) {
-      if (is_enabled) {
-        RecordEnabledNotificationResult(
-            TailoredSecurityNotificationResult::kNoBrowserWindowAvailable);
-      }
-    }
-    SetSafeBrowsingState(profile_->GetPrefs(),
-                         is_enabled ? SafeBrowsingState::ENHANCED_PROTECTION
-                                    : SafeBrowsingState::STANDARD_PROTECTION,
-                         /*is_esb_enabled_in_sync=*/is_enabled);
-    DisplayDesktopDialog(browser, is_enabled);
-  } else {
-    DisplayTailoredSecurityConsentedModalDesktop(profile_, is_enabled);
+    return;
   }
+  if (!browser->window()) {
+    if (is_enabled) {
+      RecordEnabledNotificationResult(
+          TailoredSecurityNotificationResult::kNoBrowserWindowAvailable);
+    }
+  }
+  SetSafeBrowsingState(profile_->GetPrefs(),
+                       is_enabled ? SafeBrowsingState::ENHANCED_PROTECTION
+                                  : SafeBrowsingState::STANDARD_PROTECTION,
+                       /*is_esb_enabled_in_sync=*/is_enabled);
+  DisplayDesktopDialog(browser, is_enabled);
 #endif
   if (is_enabled) {
     RecordEnabledNotificationResult(TailoredSecurityNotificationResult::kShown);

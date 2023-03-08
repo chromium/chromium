@@ -8278,35 +8278,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_TAILORED_SECURITY_DISPLAY_SOURCE" desc="The name of the source showing the notification">
         Safe Browsing
       </message>
-      <message name="IDS_TAILORED_SECURITY_CONSENTED_ENABLE_NOTIFICATION_TITLE" desc="The title of the notification asking if the user wants to enable Enhanced Safe Browsing">
-        Turn on enhanced security?
-      </message>
-      <if expr="use_titlecase">
-        <message name="IDS_TAILORED_SECURITY_CONSENTED_ENABLE_NOTIFICATION_ACCEPT" desc="The text on the 'accept' button asking if the user wants to enable Enhanced Safe Browsing">
-          Turn On
-        </message>
-      </if>
-      <if expr="not use_titlecase">
-        <message name="IDS_TAILORED_SECURITY_CONSENTED_ENABLE_NOTIFICATION_ACCEPT" desc="The text on the 'accept' button asking if the user wants to enable Enhanced Safe Browsing">
-          Turn on
-        </message>
-      </if>
-      <message name="IDS_TAILORED_SECURITY_CONSENTED_DISABLE_NOTIFICATION_TITLE" desc="The title of the notification telling the user that Enhanced Safe Browsing was disabled">
-        Turn off enhanced security?
-      </message>
-      <message name="IDS_TAILORED_SECURITY_CONSENTED_DISABLE_NOTIFICATION_DESCRIPTION" desc="The text of the notification telling the user that Enhanced Safe Browsing was disabled">
-        You turned off Enhanced Safe Browsing in your account.
-      </message>
-      <if expr="use_titlecase">
-        <message name="IDS_TAILORED_SECURITY_CONSENTED_DISABLE_NOTIFICATION_TURN_OFF" desc="The text on the 'turn off' button asking if the user wants to enable Enhanced Safe Browsing">
-          Turn Off
-        </message>
-      </if>
-      <if expr="not use_titlecase">
-        <message name="IDS_TAILORED_SECURITY_CONSENTED_DISABLE_NOTIFICATION_TURN_OFF" desc="The text on the 'turn off' button asking if the user wants to enable Enhanced Safe Browsing">
-          Turn off
-        </message>
-      </if>
 
       <!-- Password Manager -->
       <if expr="use_titlecase">
