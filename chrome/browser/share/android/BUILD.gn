@@ -38,7 +38,6 @@ android_resources("java_resources") {
 generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/chrome/browser/share/BitmapDownloadRequest.java",
-    "java/src/org/chromium/chrome/browser/share/crow/CrowBridge.java",
     "java/src/org/chromium/chrome/browser/share/link_to_text/LinkToTextBridge.java",
     "java/src/org/chromium/chrome/browser/share/long_screenshots/bitmap_generation/LongScreenshotsTabService.java",
     "java/src/org/chromium/chrome/browser/share/long_screenshots/bitmap_generation/LongScreenshotsTabServiceFactory.java",
