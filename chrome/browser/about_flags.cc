@@ -6843,12 +6843,14 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(blink::features::kStorageAccessAPI)},
 
     {"enable-unsafe-webgpu", flag_descriptions::kUnsafeWebGPUName,
-     flag_descriptions::kUnsafeWebGPUDescription, kOsAll,
+     flag_descriptions::kUnsafeWebGPUDescription,
+     kOsMac | kOsLinux | kOsCrOS | kOsLacros | kOsWin | kOsFuchsia,
      SINGLE_VALUE_TYPE(switches::kEnableUnsafeWebGPU)},
 
     {"enable-webgpu-developer-features",
      flag_descriptions::kWebGpuDeveloperFeaturesName,
-     flag_descriptions::kWebGpuDeveloperFeaturesDescription, kOsAll,
+     flag_descriptions::kWebGpuDeveloperFeaturesDescription,
+     kOsMac | kOsLinux | kOsCrOS | kOsLacros | kOsWin | kOsFuchsia,
      SINGLE_VALUE_TYPE(switches::kEnableWebGPUDeveloperFeatures)},
 
 #if BUILDFLAG(IS_ANDROID)
