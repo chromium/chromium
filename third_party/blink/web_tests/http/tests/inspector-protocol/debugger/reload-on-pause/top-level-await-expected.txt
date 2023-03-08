@@ -1,0 +1,4 @@
+Don't crash reloading while paused in top-level await
+Paused on debugger statement.
+Successfully reloaded.
+

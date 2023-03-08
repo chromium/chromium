@@ -1,0 +1,4 @@
+Don't crash reloading while paused in a fetch handler
+Paused on debugger statement.
+Successfully reloaded.
+
