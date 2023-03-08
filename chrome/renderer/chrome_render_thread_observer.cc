@@ -54,7 +54,7 @@
 #include "third_party/blink/public/web/web_view.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/renderer/chromeos_merge_session_loader_throttle.h"
+#include "chrome/renderer/ash_merge_session_loader_throttle.h"
 #endif
 
 using blink::WebCache;
@@ -114,7 +114,7 @@ void ChromeRenderThreadObserver::ChromeOSListener::MergeSessionComplete() {
 
 ChromeRenderThreadObserver::ChromeOSListener::ChromeOSListener()
     : session_merged_callbacks_(base::MakeRefCounted<DelayedCallbackGroup>(
-          MergeSessionLoaderThrottle::GetMergeSessionTimeout(),
+          AshMergeSessionLoaderThrottle::GetMergeSessionTimeout(),
           GetCallbackGroupTaskRunner())),
       merge_session_running_(true) {}
 

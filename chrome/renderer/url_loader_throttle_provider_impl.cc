@@ -38,7 +38,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/renderer/chromeos_merge_session_loader_throttle.h"
+#include "chrome/renderer/ash_merge_session_loader_throttle.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
@@ -193,7 +193,7 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
       ChromeRenderThreadObserver::GetDynamicParams()));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  throttles.emplace_back(std::make_unique<MergeSessionLoaderThrottle>(
+  throttles.emplace_back(std::make_unique<AshMergeSessionLoaderThrottle>(
       chrome_content_renderer_client_->GetChromeObserver()
           ->chromeos_listener()));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

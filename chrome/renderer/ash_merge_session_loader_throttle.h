@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_RENDERER_CHROMEOS_MERGE_SESSION_LOADER_THROTTLE_H_
-#define CHROME_RENDERER_CHROMEOS_MERGE_SESSION_LOADER_THROTTLE_H_
+#ifndef CHROME_RENDERER_ASH_MERGE_SESSION_LOADER_THROTTLE_H_
+#define CHROME_RENDERER_ASH_MERGE_SESSION_LOADER_THROTTLE_H_
 
 #include <memory>
 #include <string>
@@ -17,21 +17,21 @@
 
 // This is used to throttle XHR resource requests on Chrome OS while the
 // merge session is running (or a timeout).
-class MergeSessionLoaderThrottle
+class AshMergeSessionLoaderThrottle
     : public blink::URLLoaderThrottle,
-      public base::SupportsWeakPtr<MergeSessionLoaderThrottle> {
+      public base::SupportsWeakPtr<AshMergeSessionLoaderThrottle> {
  public:
   static base::TimeDelta GetMergeSessionTimeout();
 
-  explicit MergeSessionLoaderThrottle(
+  explicit AshMergeSessionLoaderThrottle(
       scoped_refptr<ChromeRenderThreadObserver::ChromeOSListener>
           chromeos_listener);
 
-  MergeSessionLoaderThrottle(const MergeSessionLoaderThrottle&) = delete;
-  MergeSessionLoaderThrottle& operator=(const MergeSessionLoaderThrottle&) =
-      delete;
+  AshMergeSessionLoaderThrottle(const AshMergeSessionLoaderThrottle&) = delete;
+  AshMergeSessionLoaderThrottle& operator=(
+      const AshMergeSessionLoaderThrottle&) = delete;
 
-  ~MergeSessionLoaderThrottle() override;
+  ~AshMergeSessionLoaderThrottle() override;
 
  private:
   bool MaybeDeferForMergeSession(
@@ -54,7 +54,7 @@ class MergeSessionLoaderThrottle
   bool is_xhr_ = false;
   scoped_refptr<ChromeRenderThreadObserver::ChromeOSListener>
       chromeos_listener_;
-  base::WeakPtrFactory<MergeSessionLoaderThrottle> weak_ptr_factory_{this};
+  base::WeakPtrFactory<AshMergeSessionLoaderThrottle> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_RENDERER_CHROMEOS_MERGE_SESSION_LOADER_THROTTLE_H_
+#endif  // CHROME_RENDERER_ASH_MERGE_SESSION_LOADER_THROTTLE_H_

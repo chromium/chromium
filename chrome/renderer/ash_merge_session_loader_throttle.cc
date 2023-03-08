@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/renderer/chromeos_merge_session_loader_throttle.h"
+#include "chrome/renderer/ash_merge_session_loader_throttle.h"
 
 #include <utility>
 
@@ -15,7 +15,7 @@
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 
 // static
-base::TimeDelta MergeSessionLoaderThrottle::GetMergeSessionTimeout() {
+base::TimeDelta AshMergeSessionLoaderThrottle::GetMergeSessionTimeout() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kShortMergeSessionTimeoutForTest)) {
     return base::Seconds(1);
@@ -24,24 +24,25 @@ base::TimeDelta MergeSessionLoaderThrottle::GetMergeSessionTimeout() {
   }
 }
 
-MergeSessionLoaderThrottle::MergeSessionLoaderThrottle(
+AshMergeSessionLoaderThrottle::AshMergeSessionLoaderThrottle(
     scoped_refptr<ChromeRenderThreadObserver::ChromeOSListener>
         chromeos_listener)
     : chromeos_listener_(std::move(chromeos_listener)) {}
 
-MergeSessionLoaderThrottle::~MergeSessionLoaderThrottle() = default;
+AshMergeSessionLoaderThrottle::~AshMergeSessionLoaderThrottle() = default;
 
-bool MergeSessionLoaderThrottle::MaybeDeferForMergeSession(
+bool AshMergeSessionLoaderThrottle::MaybeDeferForMergeSession(
     const GURL& url,
     DelayedCallbackGroup::Callback resume_callback) {
-  if (!chromeos_listener_ || !chromeos_listener_->IsMergeSessionRunning())
+  if (!chromeos_listener_ || !chromeos_listener_->IsMergeSessionRunning()) {
     return false;
+  }
 
   chromeos_listener_->RunWhenMergeSessionFinished(std::move(resume_callback));
   return true;
 }
 
-void MergeSessionLoaderThrottle::WillStartRequest(
+void AshMergeSessionLoaderThrottle::WillStartRequest(
     network::ResourceRequest* request,
     bool* defer) {
   is_xhr_ = request->resource_type ==
@@ -49,13 +50,13 @@ void MergeSessionLoaderThrottle::WillStartRequest(
   if (is_xhr_ && request->url.SchemeIsHTTPOrHTTPS() &&
       MaybeDeferForMergeSession(
           request->url,
-          base::BindOnce(&MergeSessionLoaderThrottle::ResumeLoader,
+          base::BindOnce(&AshMergeSessionLoaderThrottle::ResumeLoader,
                          weak_ptr_factory_.GetWeakPtr()))) {
     *defer = true;
   }
 }
 
-void MergeSessionLoaderThrottle::WillRedirectRequest(
+void AshMergeSessionLoaderThrottle::WillRedirectRequest(
     net::RedirectInfo* redirect_info,
     const network::mojom::URLResponseHead& /* response_head */,
     bool* defer,
@@ -65,15 +66,15 @@ void MergeSessionLoaderThrottle::WillRedirectRequest(
   if (is_xhr_ && redirect_info->new_url.SchemeIsHTTPOrHTTPS() &&
       MaybeDeferForMergeSession(
           redirect_info->new_url,
-          base::BindOnce(&MergeSessionLoaderThrottle::ResumeLoader,
+          base::BindOnce(&AshMergeSessionLoaderThrottle::ResumeLoader,
                          weak_ptr_factory_.GetWeakPtr()))) {
     *defer = true;
   }
 }
 
-void MergeSessionLoaderThrottle::DetachFromCurrentSequence() {}
+void AshMergeSessionLoaderThrottle::DetachFromCurrentSequence() {}
 
-void MergeSessionLoaderThrottle::ResumeLoader(
+void AshMergeSessionLoaderThrottle::ResumeLoader(
     DelayedCallbackGroup::RunReason run_reason) {
   LOG_IF(ERROR, run_reason == DelayedCallbackGroup::RunReason::TIMEOUT)
       << "Merge session loader throttle timeout.";
