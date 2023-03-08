@@ -28,6 +28,7 @@
 #include "chrome/browser/ash/privacy_hub/privacy_hub_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/sync/sync_error_notifier_factory.h"
+#include "chrome/browser/ash/wallpaper_handlers/backdrop_fetcher_delegate.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/tablet_mode/tablet_mode_page_behavior.h"
@@ -211,7 +212,8 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   // WallpaperControllerClientImpl singleton instance via
   // ash::ChromeUserManagerImpl.
   wallpaper_controller_client_ =
-      std::make_unique<WallpaperControllerClientImpl>();
+      std::make_unique<WallpaperControllerClientImpl>(
+          std::make_unique<wallpaper_handlers::BackdropFetcherDelegateImpl>());
   wallpaper_controller_client_->Init();
 
   session_controller_client_ = std::make_unique<SessionControllerClientImpl>();

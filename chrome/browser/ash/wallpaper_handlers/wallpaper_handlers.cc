@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.h"
 
 #include <map>
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -41,6 +42,7 @@
 #include "net/base/load_flags.h"
 #include "net/base/url_util.h"
 #include "net/http/http_status_code.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"

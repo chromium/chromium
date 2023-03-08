@@ -20,9 +20,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
-#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
-#include "url/gurl.h"
 
 class AccountId;
 
@@ -30,13 +28,19 @@ namespace {
 class WallpaperControllerClientImplTest;
 }
 
+namespace wallpaper_handlers {
+class BackdropFetcherDelegate;
+}  // namespace wallpaper_handlers
+
 // Handles chrome-side wallpaper control alongside the ash-side controller.
 class WallpaperControllerClientImpl
     : public ash::WallpaperControllerClient,
       public file_manager::VolumeManagerObserver,
       public session_manager::SessionManagerObserver {
  public:
-  WallpaperControllerClientImpl();
+  explicit WallpaperControllerClientImpl(
+      std::unique_ptr<wallpaper_handlers::BackdropFetcherDelegate>
+          backdrop_fetcher_delegate);
 
   WallpaperControllerClientImpl(const WallpaperControllerClientImpl&) = delete;
   WallpaperControllerClientImpl& operator=(
@@ -208,6 +212,9 @@ class WallpaperControllerClientImpl
   std::map<AccountId,
            std::unique_ptr<wallpaper_handlers::GooglePhotosPhotosFetcher>>
       google_photos_photos_fetchers_;
+
+  const std::unique_ptr<wallpaper_handlers::BackdropFetcherDelegate>
+      backdrop_fetcher_delegate_;
 
   base::ScopedMultiSourceObservation<file_manager::VolumeManager,
                                      file_manager::VolumeManagerObserver>

@@ -10,6 +10,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
+#include "chrome/browser/ash/wallpaper_handlers/test_backdrop_fetcher_delegate.h"
 #include "chrome/browser/ui/ash/test_wallpaper_controller.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -59,7 +60,8 @@ class WallpaperControllerClientImplTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_;
   TestWallpaperController controller_;
-  WallpaperControllerClientImpl client_;
+  WallpaperControllerClientImpl client_{
+      std::make_unique<wallpaper_handlers::TestBackdropFetcherDelegate>()};
 };
 
 TEST_F(WallpaperControllerClientImplTest, Construction) {

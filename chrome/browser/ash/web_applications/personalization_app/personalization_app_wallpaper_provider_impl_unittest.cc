@@ -32,6 +32,7 @@
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/ash/wallpaper_handlers/mock_wallpaper_handlers.h"
+#include "chrome/browser/ash/wallpaper_handlers/test_backdrop_fetcher_delegate.h"
 #include "chrome/browser/ash/web_applications/personalization_app/mock_personalization_app_manager.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_manager_factory.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -241,8 +242,9 @@ class PersonalizationAppWallpaperProviderImplTest : public testing::Test {
  protected:
   // testing::Test:
   void SetUp() override {
-    wallpaper_controller_client_ =
-        std::make_unique<WallpaperControllerClientImpl>();
+    wallpaper_controller_client_ = std::make_unique<
+        WallpaperControllerClientImpl>(
+        std::make_unique<wallpaper_handlers::TestBackdropFetcherDelegate>());
     wallpaper_controller_client_->InitForTesting(&test_wallpaper_controller_);
 
     ASSERT_TRUE(profile_manager_.SetUp());
@@ -259,8 +261,10 @@ class PersonalizationAppWallpaperProviderImplTest : public testing::Test {
         content::WebContents::CreateParams(profile_));
     web_ui_.set_web_contents(web_contents_.get());
 
-    wallpaper_provider_ =
-        std::make_unique<PersonalizationAppWallpaperProviderImpl>(&web_ui_);
+    wallpaper_provider_ = std::make_unique<
+        PersonalizationAppWallpaperProviderImpl>(
+        &web_ui_,
+        std::make_unique<wallpaper_handlers::TestBackdropFetcherDelegate>());
 
     wallpaper_provider_->BindInterface(
         wallpaper_provider_remote_.BindNewPipeAndPassReceiver());
