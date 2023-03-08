@@ -60,6 +60,10 @@ void SamplingController::StartSession() {
   started_ = true;
 }
 
+bool SamplingController::HasSamplers() {
+  return !samplers_.empty();
+}
+
 bool SamplingController::OnSamplingEvent() {
   DCHECK(started_);
 

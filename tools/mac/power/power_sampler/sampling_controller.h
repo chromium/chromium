@@ -42,6 +42,9 @@ class SamplingController {
   // Returns true iff this controller has all the samples it wants.
   bool OnSamplingEvent();
 
+  // Returns true if any samplers have been added.
+  bool HasSamplers();
+
   // Call once after the last call to OnSamplingEvent.
   // Will notify monitors that a session has ended.
   void EndSession();
