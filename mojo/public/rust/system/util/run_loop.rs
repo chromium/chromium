@@ -19,6 +19,8 @@
 //! another thread's run-loop, this is as-of-yet unsupported, and
 //! Rust should complain loudly when you try to do any threading here.
 
+use crate::*;
+
 use std::cell::RefCell;
 use std::cmp::{Eq, Ord, Ordering, PartialEq, PartialOrd};
 use std::collections::BinaryHeap;
@@ -26,13 +28,8 @@ use std::collections::HashMap;
 use std::i64;
 use std::vec::Vec;
 
-use crate::system;
-use crate::system::core;
-use crate::system::wait_set;
-use crate::system::{Handle, MojoResult, MOJO_INDEFINITE};
-
 /// Define the equivalent of MOJO_INDEFINITE for absolute deadlines
-const MOJO_INDEFINITE_ABSOLUTE: system::MojoTimeTicks = 0;
+const MOJO_INDEFINITE_ABSOLUTE: MojoTimeTicks = 0;
 
 // TODO(mknyszek): The numbers below are arbitrary and come from the C++
 // bindings, and should probably be changed at some point
@@ -89,7 +86,7 @@ struct HandlerInfo<'h> {
     /// The handle for which we are waiting.
     ///
     /// We keep this handle around so that we may easily re-register.
-    handle: system::MojoHandle,
+    handle: MojoHandle,
 
     /// The handler, boxed up.
     ///
@@ -104,7 +101,7 @@ struct HandlerInfo<'h> {
     /// This is the most recently updated deadline that
     /// we should be watching out for. All others for this
     /// token may be considered "stale".
-    deadline: system::MojoTimeTicks,
+    deadline: MojoTimeTicks,
 }
 
 /// A wrapper struct for carrying the task as well as some information about
@@ -118,7 +115,7 @@ struct TaskInfo<'t> {
     /// This is the most recently updated deadline that
     /// we should be watching out for. All others for this
     /// token may be considered "stale".
-    deadline: system::MojoTimeTicks,
+    deadline: MojoTimeTicks,
 }
 
 impl<'t> TaskInfo<'t> {
@@ -129,7 +126,7 @@ impl<'t> TaskInfo<'t> {
     }
 
     /// Getter for the current absolute deadline held inside.
-    pub fn deadline(&self) -> system::MojoTimeTicks {
+    pub fn deadline(&self) -> MojoTimeTicks {
         self.deadline
     }
 }
@@ -172,7 +169,7 @@ struct DeadlineInfo {
     token: Token,
 
     /// An absolute deadline in terms of time ticks.
-    deadline: system::MojoTimeTicks,
+    deadline: MojoTimeTicks,
 }
 
 impl DeadlineInfo {
@@ -182,7 +179,7 @@ impl DeadlineInfo {
     }
 
     /// Getter for the absolute deadline inside.
-    pub fn deadline(&self) -> system::MojoTimeTicks {
+    pub fn deadline(&self) -> MojoTimeTicks {
         self.deadline
     }
 }
@@ -218,16 +215,16 @@ impl Ord for DeadlineInfo {
 
 /// Convert a mojo deadline (which is a relative deadline to "now") to
 /// an absolute deadline based on time ticks.
-fn absolute_deadline(deadline: system::MojoDeadline) -> system::MojoTimeTicks {
+fn absolute_deadline(deadline: MojoDeadline) -> MojoTimeTicks {
     if deadline == MOJO_INDEFINITE {
         return MOJO_INDEFINITE_ABSOLUTE;
     }
     let mut converted = MOJO_INDEFINITE_ABSOLUTE;
-    let max_time_ticks = i64::MAX as system::MojoDeadline;
+    let max_time_ticks = i64::MAX as MojoDeadline;
     if deadline <= max_time_ticks {
         let now = core::get_time_ticks_now();
         if deadline <= (max_time_ticks - (now as u64)) {
-            converted = (deadline as system::MojoTimeTicks) + now
+            converted = (deadline as MojoTimeTicks) + now
         }
     }
     converted
@@ -294,8 +291,8 @@ impl<'h, 't> RunLoop<'h, 't> {
     pub fn register<H>(
         &mut self,
         handle: &dyn Handle,
-        signals: system::HandleSignals,
-        deadline: system::MojoDeadline,
+        signals: HandleSignals,
+        deadline: MojoDeadline,
         handler: H,
     ) -> Token
     where
@@ -326,8 +323,8 @@ impl<'h, 't> RunLoop<'h, 't> {
     pub fn reregister(
         &mut self,
         token: &Token,
-        signals: system::HandleSignals,
-        deadline: system::MojoDeadline,
+        signals: HandleSignals,
+        deadline: MojoDeadline,
     ) -> bool {
         match self.handlers.get_mut(&token) {
             Some(info) => {
@@ -346,7 +343,7 @@ impl<'h, 't> RunLoop<'h, 't> {
                 // It's perfectly okay for the handle to be invalid, so although this
                 // is all unsafe, the whole system should just call the handler with an
                 // error.
-                let mut dummy = unsafe { system::acquire(info.handle) };
+                let mut dummy = unsafe { acquire(info.handle) };
                 let result = self.handle_set.add(&dummy, signals, token.to_cookie());
                 assert_eq!(result, MojoResult::Okay);
                 dummy.invalidate();
@@ -376,7 +373,7 @@ impl<'h, 't> RunLoop<'h, 't> {
     /// Adds a task to be run by the runloop after some delay.
     ///
     /// Returns a token if the delay is valid, otherwise returns None.
-    pub fn post_task<F>(&mut self, task: F, delay: system::MojoTimeTicks) -> Result<(), ()>
+    pub fn post_task<F>(&mut self, task: F, delay: MojoTimeTicks) -> Result<(), ()>
     where
         F: FnOnce(&mut RunLoop) + 't,
     {
@@ -393,7 +390,7 @@ impl<'h, 't> RunLoop<'h, 't> {
     ///
     /// Removes stale deadline entries as they are found, but
     /// does not otherwise modify the heap of deadlines.
-    fn get_next_deadline(&mut self) -> system::MojoTimeTicks {
+    fn get_next_deadline(&mut self) -> MojoTimeTicks {
         debug_assert!(!self.handlers.is_empty());
         let top_task_deadline = match self.tasks.peek() {
             Some(info) => info.deadline(),
@@ -421,7 +418,7 @@ impl<'h, 't> RunLoop<'h, 't> {
     /// owners of the results by calling their given callbacks.
     ///
     /// We do NOT dequeue notified handles.
-    fn notify_of_results(&mut self, results: &[system::WaitSetResult]) {
+    fn notify_of_results(&mut self, results: &[WaitSetResult]) {
         assert!(!self.handlers.is_empty());
         for wait_set_result in results {
             let token = Token(wait_set_result.cookie.0);
@@ -477,7 +474,7 @@ impl<'h, 't> RunLoop<'h, 't> {
     /// owners of the expiration by calling their given callbacks.
     ///
     /// We do NOT dequeue notified handles.
-    fn notify_of_expired(&mut self, expired_deadline: system::MojoTimeTicks) {
+    fn notify_of_expired(&mut self, expired_deadline: MojoTimeTicks) {
         assert!(!self.handlers.is_empty());
         let mut top = match self.deadlines.peek() {
             Some(info) => info.clone(),
@@ -554,7 +551,7 @@ impl<'h, 't> RunLoop<'h, 't> {
     /// handles this thread has registered. This method returns immediately as
     /// soon as any one handle has its signals satisfied, fails to ever have its
     /// signals satisfied, or reaches its deadline.
-    fn wait(&mut self, results_buffer: &mut Vec<system::WaitSetResult>) {
+    fn wait(&mut self, results_buffer: &mut Vec<WaitSetResult>) {
         assert!(!(self.handlers.is_empty() && self.tasks.is_empty()));
         self.execute_ready_tasks();
         // If after executing a task we quit or there are no handles,
@@ -610,8 +607,7 @@ impl<'h, 't> RunLoop<'h, 't> {
         }
         self.running = true;
         self.should_quit = false;
-        let mut buffer: Vec<system::WaitSetResult> =
-            Vec::with_capacity(INITIAL_WAIT_SET_NUM_RESULTS);
+        let mut buffer: Vec<WaitSetResult> = Vec::with_capacity(INITIAL_WAIT_SET_NUM_RESULTS);
         // Loop while we haven't been signaled to quit, and there's something to
         // run or wait on.
         while !self.should_quit && !(self.handlers.is_empty() && self.tasks.is_empty()) {

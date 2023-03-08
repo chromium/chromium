@@ -8,13 +8,13 @@
 //! and the result being caught in the test! macro. If a test function
 //! returns without panicking, it is assumed to pass.
 
+use crate::mojom_validation::*;
+
 use mojo::bindings::mojom::{MojomInterface, MojomInterfaceRecv, MojomInterfaceSend};
 use mojo::system::message_pipe;
 use mojo::system::{Handle, HandleSignals};
 
 use std::thread;
-
-use crate::util::mojom_validation::*;
 
 // Tests basic client and server interaction over a thread
 mojo_test!(send_and_recv, {

@@ -61,7 +61,7 @@ pub mod types {
     pub type MojoResultCode = raw_ffi::MojoResult;
 }
 
-use crate::system::ffi::types::*;
+use crate::ffi::types::*;
 
 #[allow(non_camel_case_types)]
 pub type c_void = std::ffi::c_void;

@@ -9,9 +9,9 @@ use std::ptr;
 use std::slice;
 use std::vec;
 
-use crate::system::ffi;
-use crate::system::handle::{self, CastHandle, Handle, UntypedHandle};
-use crate::system::mojo_types::*;
+use crate::ffi;
+use crate::handle::{self, CastHandle, Handle, UntypedHandle};
+use crate::mojo_types::*;
 
 bitflags::bitflags! {
     #[derive(Default)]
@@ -319,13 +319,13 @@ impl<T> Consumer<T> {
 
 impl<T> CastHandle for Consumer<T> {
     /// Generates a Consumer from an untyped handle wrapper
-    /// See mojo::system::handle for information on untyped vs. typed
+    /// See crate::handle for information on untyped vs. typed
     unsafe fn from_untyped(handle: handle::UntypedHandle) -> Self {
         Consumer::<T> { handle: handle, _elem_type: marker::PhantomData }
     }
 
     /// Consumes this object and produces a plain handle wrapper
-    /// See mojo::system::handle for information on untyped vs. typed
+    /// See crate::handle for information on untyped vs. typed
     fn as_untyped(self) -> handle::UntypedHandle {
         self.handle
     }
@@ -334,7 +334,7 @@ impl<T> CastHandle for Consumer<T> {
 impl<T> Handle for Consumer<T> {
     /// Returns the native handle wrapped by this structure.
     ///
-    /// See mojo::system::handle for information on handle wrappers
+    /// See crate::handle for information on handle wrappers
     fn get_native_handle(&self) -> MojoHandle {
         self.handle.get_native_handle()
     }
@@ -394,13 +394,13 @@ impl<T> Producer<T> {
 
 impl<T> CastHandle for Producer<T> {
     /// Generates a Consumer from an untyped handle wrapper
-    /// See mojo::system::handle for information on untyped vs. typed
+    /// See crate::handle for information on untyped vs. typed
     unsafe fn from_untyped(handle: handle::UntypedHandle) -> Self {
         Producer::<T> { handle: handle, _elem_type: marker::PhantomData }
     }
 
     /// Consumes this object and produces a plain handle wrapper
-    /// See mojo::system::handle for information on untyped vs. typed
+    /// See crate::handle for information on untyped vs. typed
     fn as_untyped(self) -> handle::UntypedHandle {
         self.handle
     }
@@ -409,7 +409,7 @@ impl<T> CastHandle for Producer<T> {
 impl<T> Handle for Producer<T> {
     /// Returns the native handle wrapped by this structure.
     ///
-    /// See mojo::system::handle for information on handle wrappers
+    /// See crate::handle for information on handle wrappers
     fn get_native_handle(&self) -> MojoHandle {
         self.handle.get_native_handle()
     }

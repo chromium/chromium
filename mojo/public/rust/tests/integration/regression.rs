@@ -9,11 +9,10 @@
 //! returns without panicking, it is assumed to pass.
 
 use mojo::bindings::decoding::{Decoder, ValidationError};
-use mojo::bindings::encoding;
-use mojo::bindings::encoding::{Context, DataHeaderValue, Encoder, EncodingState};
+use mojo::bindings::encoding::{self, Context, DataHeaderValue, Encoder, EncodingState};
+use mojo::bindings::impl_encodable_for_pointer;
 use mojo::bindings::mojom::{MojomEncodable, MojomPointer, MojomStruct};
-use mojo::system;
-use mojo::system::UntypedHandle;
+use mojo::system::{self, UntypedHandle};
 
 const STRUCT_A_VERSIONS: [(u32, u32); 1] = [(0, 16)];
 

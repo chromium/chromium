@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-use crate::bindings::decoding::{Decoder, ValidationError};
-use crate::bindings::encoding;
-use crate::bindings::encoding::{
-    Context, DataHeaderValue, Encoder, EncodingState, DATA_HEADER_SIZE,
-};
-use crate::bindings::mojom::{MojomEncodable, MojomPointer, MojomStruct};
+use crate::decoding::{Decoder, ValidationError};
+use crate::encoding;
+use crate::encoding::{Context, DataHeaderValue, Encoder, EncodingState, DATA_HEADER_SIZE};
+use crate::impl_encodable_for_pointer;
+use crate::mojom::{MojomEncodable, MojomPointer, MojomStruct};
 
 /// A flag for the message header indicating that no flag has been set.
 pub const MESSAGE_HEADER_NO_FLAG: u32 = 0;

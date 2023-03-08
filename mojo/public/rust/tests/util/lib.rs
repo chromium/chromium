@@ -4,8 +4,6 @@
 
 //! This module contains useful functions and macros for testing.
 
-pub mod mojom_validation;
-
 use std::env;
 use std::ffi::{CStr, CString};
 use std::os::raw::c_char;
@@ -18,6 +16,7 @@ use std::vec::Vec;
 /// Note: this macro is quite delicate because of rustmt's inconsistent handling
 /// of macro invocations. Slight changes to macro syntax can make rustfmt ignore
 /// the inside of an invocation, which is not what we want.
+#[macro_export]
 macro_rules! mojo_test {
     {$i: ident, $(#[$attr:meta])* $b:block} => {
         #[test]
@@ -25,7 +24,7 @@ macro_rules! mojo_test {
         #[ $attr ]
         )*
         fn $i() {
-            $crate::util::init();
+            $crate::init();
             $b
         }
     }

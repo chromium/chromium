@@ -8,23 +8,21 @@
 #![allow(unused_variables)]
 #![allow(dead_code)]
 
-use mojo::bindings::decoding;
-use mojo::bindings::decoding::{Decoder, ValidationError};
-use mojo::bindings::encoding;
+use mojo::bindings::decoding::{self, Decoder, ValidationError};
 use mojo::bindings::encoding::{
-    Context, DataHeaderValue, Encoder, EncodingState, DATA_HEADER_SIZE,
+    self, Context, DataHeaderValue, Encoder, EncodingState, DATA_HEADER_SIZE,
 };
-use mojo::bindings::message;
-use mojo::bindings::message::MessageHeader;
-use mojo::bindings::mojom;
+use mojo::bindings::message::{self, MessageHeader};
 use mojo::bindings::mojom::{
-    MojomEncodable, MojomInterface, MojomInterfaceRecv, MojomInterfaceSend, MojomMessage,
+    self, MojomEncodable, MojomInterface, MojomInterfaceRecv, MojomInterfaceSend, MojomMessage,
     MojomMessageOption, MojomPointer, MojomStruct, MojomUnion, UNION_SIZE,
 };
 
-use mojo::system;
-use mojo::system::message_pipe;
-use mojo::system::{CastHandle, UntypedHandle};
+use mojo::bindings::{
+    impl_encodable_for_interface, impl_encodable_for_pointer, impl_encodable_for_union,
+};
+
+use mojo::system::{self, message_pipe, CastHandle, UntypedHandle};
 
 use std::collections::HashMap;
 use std::vec::Vec;

@@ -8,6 +8,8 @@
 //! and the result being caught in the test! macro. If a test function
 //! returns without panicking, it is assumed to pass.
 
+use crate::mojom_validation::*;
+
 use mojo::bindings::encoding::Context;
 use mojo::bindings::message::MessageHeader;
 use mojo::bindings::mojom::{MojomInterface, MojomPointer, MojomStruct};
@@ -16,9 +18,6 @@ use mojo::system;
 use mojo::system::Handle;
 
 use std::collections::HashMap;
-
-use crate::util;
-use crate::util::mojom_validation::*;
 
 /// This macro is a wrapper for the tests! macro as it takes advantage of the
 /// shared code between tests.
@@ -41,7 +40,7 @@ macro_rules! encoding_tests {
     ($($name:ident { MessageHeader => $header_cls:expr, $req_type:ident => $cls:expr } )*) => {
         $(
         mojo_test!($name, {
-            let data = include_str!(concat!("../../interfaces/bindings/tests/data/validation/",
+            let data = include_str!(concat!("../../../interfaces/bindings/tests/data/validation/",
                                             stringify!($name),
                                             ".data"));
             match util::parse_validation_test(data) {

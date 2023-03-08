@@ -13,12 +13,12 @@
 //! data pipes, and shared buffers. Typed handles wrap untyped handles
 //! but act much the same as untyped handles.
 
-use crate::system::ffi;
-use crate::system::wait::*;
+use crate::ffi;
+use crate::wait::*;
 
 // This full import is intentional; nearly every type in mojo_types needs to be
 // used.
-use crate::system::mojo_types::*;
+use crate::mojo_types::*;
 
 /// The CastHandle trait defines an interface to convert between
 /// typed and untyped handles. These are only used internally for

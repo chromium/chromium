@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-use crate::bindings::decoding::{Decoder, DecodingState, ValidationError};
-use crate::bindings::encoding;
-use crate::bindings::encoding::{
+use crate::decoding::{Decoder, DecodingState, ValidationError};
+use crate::encoding;
+use crate::encoding::{
     Bits, Context, DataHeader, DataHeaderValue, Encoder, EncodingState, DATA_HEADER_SIZE,
 };
-use crate::bindings::message::MessageHeader;
+use crate::impl_encodable_for_pointer;
+use crate::message::MessageHeader;
 
 use std::cmp::Eq;
 use std::collections::HashMap;
@@ -15,10 +16,10 @@ use std::hash::Hash;
 use std::mem;
 use std::vec::Vec;
 
-use crate::system::data_pipe;
-use crate::system::message_pipe;
-use crate::system::shared_buffer;
-use crate::system::{CastHandle, Handle, MojoResult, UntypedHandle};
+use system::data_pipe;
+use system::message_pipe;
+use system::shared_buffer;
+use system::{CastHandle, Handle, MojoResult, UntypedHandle};
 
 /// The size of a Mojom map plus header in bytes.
 const MAP_SIZE: usize = 24;

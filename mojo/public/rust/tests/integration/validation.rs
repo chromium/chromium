@@ -8,11 +8,10 @@
 //! and the result being caught in the test! macro. If a test function
 //! returns without panicking, it is assumed to pass.
 
+use crate::mojom_validation::*;
+
 use mojo::bindings::mojom::MojomMessageOption;
 use mojo::system;
-
-use crate::util;
-use crate::util::mojom_validation::*;
 
 /// This macro is a wrapper for the tests! macro as it takes advantage of the
 /// shared code between tests.
@@ -26,10 +25,10 @@ macro_rules! validation_tests {
     ($($name:ident => $req_type:ident;)*) => {
         $(
         mojo_test!($name, {
-            let data = include_str!(concat!("../../interfaces/bindings/tests/data/validation/",
+            let data = include_str!(concat!("../../../interfaces/bindings/tests/data/validation/",
                                             stringify!($name),
                                             ".data"));
-            let expected = include_str!(concat!("../../interfaces/bindings/tests/data/validation/",
+            let expected = include_str!(concat!("../../../interfaces/bindings/tests/data/validation/",
                                                 stringify!($name),
                                                 ".expected")).trim();
             match util::parse_validation_test(data) {

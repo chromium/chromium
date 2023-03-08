@@ -14,7 +14,7 @@
 //! a whole because it is intended to be used that way. It contains
 //! all of the basic types needed by all system-level Mojo bindings.
 
-use crate::system::ffi::types::{self, *};
+use crate::ffi::types::{self, *};
 use std::fmt;
 use std::u64;
 
@@ -26,7 +26,7 @@ pub use types::MojoTimeTicks;
 pub type MojoDeadline = u64;
 pub static MOJO_INDEFINITE: MojoDeadline = u64::MAX;
 
-pub use crate::system::wait_set::WaitSetResult;
+pub use crate::wait_set::WaitSetResult;
 
 /// MojoResult represents anything that can happen
 /// as a result of performing some operation in Mojo.

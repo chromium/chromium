@@ -2,17 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-use crate::bindings::encoding::{
+use crate::encoding::{
     Bits, Context, DataHeader, DataHeaderValue, MojomPrimitive, DATA_HEADER_SIZE,
 };
-use crate::bindings::mojom::{MojomEncodable, MOJOM_NULL_POINTER, UNION_SIZE};
+use crate::mojom::{MojomEncodable, MOJOM_NULL_POINTER, UNION_SIZE};
 
 use std::mem;
 use std::ptr;
 use std::vec::Vec;
 
-use crate::system;
-use crate::system::{CastHandle, Handle, UntypedHandle};
+use system::{self, CastHandle, Handle, UntypedHandle};
 
 #[derive(Debug, Eq, PartialEq)]
 pub enum ValidationError {

@@ -7,12 +7,12 @@ use std::vec;
 
 use std::convert::TryInto;
 
-use crate::system::ffi;
-use crate::system::handle;
-use crate::system::handle::{CastHandle, Handle};
+use crate::ffi;
+use crate::handle;
+use crate::handle::{CastHandle, Handle};
 // This full import is intentional; nearly every type in mojo_types needs to be
 // used.
-use crate::system::mojo_types::*;
+use crate::mojo_types::*;
 
 use ffi::c_void;
 
@@ -239,13 +239,13 @@ impl MessageEndpoint {
 
 impl CastHandle for MessageEndpoint {
     /// Generates a MessageEndpoint from an untyped handle wrapper
-    /// See mojo::system::handle for information on untyped vs. typed
+    /// See crate::handle for information on untyped vs. typed
     unsafe fn from_untyped(handle: handle::UntypedHandle) -> Self {
         MessageEndpoint { handle: handle }
     }
 
     /// Consumes this object and produces a plain handle wrapper
-    /// See mojo::system::handle for information on untyped vs. typed
+    /// See crate::handle for information on untyped vs. typed
     fn as_untyped(self) -> handle::UntypedHandle {
         self.handle
     }
@@ -254,7 +254,7 @@ impl CastHandle for MessageEndpoint {
 impl Handle for MessageEndpoint {
     /// Returns the native handle wrapped by this structure.
     ///
-    /// See mojo::system::handle for information on handle wrappers
+    /// See crate::handle for information on handle wrappers
     fn get_native_handle(&self) -> MojoHandle {
         self.handle.get_native_handle()
     }

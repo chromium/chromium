@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#![feature(maybe_uninit_slice)]
+// Require unsafe blocks for unsafe operations even in an unsafe fn.
+#![deny(unsafe_op_in_unsafe_fn)]
+
 mod ffi;
 mod handle;
 mod mojo_types;
@@ -14,7 +18,13 @@ pub mod trap;
 pub mod wait;
 pub mod wait_set;
 
+/// Provides extra utilities that don't directly wrap Mojo APIs, but build on
+/// top of them and may be generally useful.
+pub mod util {
+    pub mod run_loop;
+}
+
 // In order to keep the interface clean, we re-export basic Mojo and handle
 // types and traits here in the system module.
-pub use crate::system::handle::*;
-pub use crate::system::mojo_types::*;
+pub use crate::handle::*;
+pub use crate::mojo_types::*;

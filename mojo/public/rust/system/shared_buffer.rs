@@ -5,12 +5,12 @@
 use std::ptr;
 use std::slice;
 
-use crate::system::ffi;
+use crate::ffi;
 // This full import is intentional; nearly every type in mojo_types needs to be
 // used.
-use crate::system::handle;
-use crate::system::handle::{CastHandle, Handle};
-use crate::system::mojo_types::*;
+use crate::handle;
+use crate::handle::{CastHandle, Handle};
+use crate::mojo_types::*;
 
 use super::UntypedHandle;
 
@@ -182,13 +182,13 @@ impl SharedBuffer {
 
 impl CastHandle for SharedBuffer {
     /// Generates a SharedBuffer from an untyped handle wrapper
-    /// See mojo::system::handle for information on untyped vs. typed
+    /// See crate::handle for information on untyped vs. typed
     unsafe fn from_untyped(handle: handle::UntypedHandle) -> Self {
         SharedBuffer { handle: handle }
     }
 
     /// Consumes this object and produces a plain handle wrapper
-    /// See mojo::system::handle for information on untyped vs. typed
+    /// See crate::handle for information on untyped vs. typed
     fn as_untyped(self) -> handle::UntypedHandle {
         self.handle
     }
@@ -197,7 +197,7 @@ impl CastHandle for SharedBuffer {
 impl Handle for SharedBuffer {
     /// Returns the native handle wrapped by this structure.
     ///
-    /// See mojo::system::handle for information on handle wrappers
+    /// See crate::handle for information on handle wrappers
     fn get_native_handle(&self) -> MojoHandle {
         self.handle.get_native_handle()
     }

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,14 @@
 //! Test failure is defined as the function returning via panicking
 //! and the result being caught in the test! macro. If a test function
 //! returns without panicking, it is assumed to pass.
+
+#![feature(assert_matches)]
+#![feature(maybe_uninit_write_slice)]
+
+#[macro_use]
+extern crate test_util as util;
+
+mod run_loop;
 
 use mojo::system::data_pipe;
 use mojo::system::message_pipe;

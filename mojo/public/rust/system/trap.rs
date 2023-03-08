@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-use crate::system::ffi::{self, raw_ffi, types::MojoTriggerCondition};
-use crate::system::handle::*;
-use crate::system::mojo_types::*;
+use crate::ffi::{self, raw_ffi, types::MojoTriggerCondition};
+use crate::handle::*;
+use crate::mojo_types::*;
 
 use std::collections::HashMap;
 use std::convert::TryFrom;
