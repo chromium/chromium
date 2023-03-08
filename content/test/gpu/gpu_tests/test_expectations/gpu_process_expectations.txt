@@ -126,6 +126,8 @@ crbug.com/1099576 [ amd-0x6821 mac ] GpuProcess_mac_webgl_backgrounded_high_perf
 
 crbug.com/1384930 [ android android-sm-a135m ] GpuProcess_visibility [ RetryOnFailure ]
 
+crbug.com/1422012 [ mac amd-0x67ef ] GpuProcess_mac_webgl_backgrounded_high_performance [ Failure ]
+crbug.com/1422012 [ mac amd-0x67ef ] GpuProcess_mac_webgl_terminated_high_performance [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

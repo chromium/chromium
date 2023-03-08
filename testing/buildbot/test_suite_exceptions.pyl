@@ -3516,6 +3516,14 @@
       'Linux ChromiumOS MSan Tests',  # https://crbug.com/831676
       'Linux MSan Tests',  # https://crbug.com/831676
     ],
+    'replacements': {
+      # TODO(crbug.com/1382149): Remove when experiment is finished
+      'Mac FYI Experimental Retina Release (AMD)': {
+        'args': {
+          '--gtest_filter': '*Detection*:-FaceDetectionImplMacTest.ScanOneFace*',
+        },
+      },
+    },
     'modifications': {
       'Linux ASan LSan Tests (1)': {
         'swarming': {
@@ -4152,6 +4160,11 @@
           '--enable-metal-debug-layers',
         ],
       },
+      'Mac FYI Experimental Retina Release (AMD)': {
+        'args': [
+          '--enable-metal-debug-layers',
+        ],
+      },
       'Mac FYI Release (Intel)': {
         'args': [
           '--enable-metal-debug-layers',
@@ -4246,6 +4259,11 @@
       'Mac FYI ASAN (Intel)': {
         'args': [
           '--extra-browser-args=--disable-metal-shader-cache',
+          '--enable-metal-debug-layers',
+        ],
+      },
+      'Mac FYI Experimental Retina Release (AMD)': {
+        'args': [
           '--enable-metal-debug-layers',
         ],
       },
