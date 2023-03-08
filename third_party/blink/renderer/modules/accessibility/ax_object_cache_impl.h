@@ -56,7 +56,6 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
-#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -601,7 +600,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   // Helper to clean up any references to the AXObject's AXID.
   void RemoveReferencesToAXID(AXID);
 
-  mojo::Remote<mojom::blink::RenderAccessibilityHost>&
+  HeapMojoRemote<mojom::blink::RenderAccessibilityHost>&
   GetOrCreateRemoteRenderAccessibilityHost();
   WebLocalFrameClient* GetWebLocalFrameClient() const;
   void ProcessDeferredAccessibilityEventsImpl(Document&);
@@ -941,8 +940,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   // instead.
   static bool use_ax_menu_list_;
 
-  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
-  mojo::Remote<mojom::blink::RenderAccessibilityHost>
+  HeapMojoRemote<mojom::blink::RenderAccessibilityHost>
       render_accessibility_host_;
 
   Member<BlinkAXTreeSource> ax_tree_source_;

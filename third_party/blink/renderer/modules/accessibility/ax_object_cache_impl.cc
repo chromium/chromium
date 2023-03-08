@@ -684,6 +684,7 @@ AXObjectCacheImpl::AXObjectCacheImpl(Document& document,
       accessibility_event_permission_(mojom::blink::PermissionStatus::ASK),
       permission_service_(document.GetExecutionContext()),
       permission_observer_receiver_(this, document.GetExecutionContext()),
+      render_accessibility_host_(document.GetExecutionContext()),
       ax_tree_source_(BlinkAXTreeSource::Create(*this)),
       ax_tree_serializer_(std::make_unique<ui::AXTreeSerializer<AXObject*>>(
           ax_tree_source_,
@@ -4137,11 +4138,12 @@ bool AXObjectCacheImpl::AddPendingEvent(const ui::AXEvent& event,
   return true;
 }
 
-mojo::Remote<blink::mojom::blink::RenderAccessibilityHost>&
+HeapMojoRemote<blink::mojom::blink::RenderAccessibilityHost>&
 AXObjectCacheImpl::GetOrCreateRemoteRenderAccessibilityHost() {
   if (!render_accessibility_host_) {
     GetDocument().GetFrame()->GetBrowserInterfaceBroker().GetInterface(
-        render_accessibility_host_.BindNewPipeAndPassReceiver());
+        render_accessibility_host_.BindNewPipeAndPassReceiver(
+            document_->GetTaskRunner(TaskType::kUserInteraction)));
   }
   return render_accessibility_host_;
 }
@@ -4532,6 +4534,7 @@ void AXObjectCacheImpl::Trace(Visitor* visitor) const {
   visitor->Trace(tree_update_callback_queue_popup_);
   visitor->Trace(nodes_with_pending_children_changed_);
   visitor->Trace(nodes_with_spelling_or_grammar_markers_);
+  visitor->Trace(render_accessibility_host_);
   visitor->Trace(ax_tree_source_);
   visitor->Trace(dirty_objects_);
   visitor->Trace(aria_notifications_);
