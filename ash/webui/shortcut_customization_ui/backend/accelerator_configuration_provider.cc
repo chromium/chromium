@@ -173,16 +173,6 @@ mojom::AcceleratorInfoPtr CreateStandardAcceleratorInfo(
   return info_mojom;
 }
 
-// Create base accelerator info using accelerator.
-mojom::AcceleratorInfoPtr CreateBaseAcceleratorInfo(
-    const ui::Accelerator& accelerator) {
-  // TODO(longbowei): Some accelerators should not be locked when customization
-  // is allowed.
-  return CreateStandardAcceleratorInfo(accelerator, /*locked=*/true,
-                                       GetAcceleratorType(accelerator),
-                                       mojom::AcceleratorState::kEnabled);
-}
-
 }  // namespace
 
 namespace shortcut_ui {
@@ -383,20 +373,22 @@ void AcceleratorConfigurationProvider::NotifyAcceleratorsUpdated() {
   }
 }
 
-std::vector<mojom::AcceleratorInfoPtr>
-AcceleratorConfigurationProvider::CreateAcceleratorInfos(
-    const std::vector<ui::Accelerator>& accelerators) const {
-  std::vector<mojom::AcceleratorInfoPtr> infos_mojom;
-  for (const auto& accelerator : accelerators) {
-    // Get the alias accelerators by doing F-Keys remapping and
-    // (reversed) six-pack-keys remapping if applicable.
-    std::vector<ui::Accelerator> accelerator_aliases =
-        accelerator_alias_converter_.CreateAcceleratorAlias(accelerator);
-    for (const auto& accelerator_alias : accelerator_aliases) {
-      infos_mojom.push_back(CreateBaseAcceleratorInfo(accelerator_alias));
-    }
+void AcceleratorConfigurationProvider::CreateAndAppendAliasedAccelerators(
+    const ui::Accelerator& accelerator,
+    bool locked,
+    mojom::AcceleratorType type,
+    mojom::AcceleratorState state,
+    std::vector<mojom::AcceleratorInfoPtr>& output) {
+  // Get the alias accelerators by doing F-Keys remapping and
+  // (reversed) six-pack-keys remapping if applicable.
+  std::vector<ui::Accelerator> accelerator_aliases =
+      accelerator_alias_converter_.CreateAcceleratorAlias(accelerator);
+  output.reserve(output.size() + accelerator_aliases.size());
+
+  for (const auto& accelerator_alias : accelerator_aliases) {
+    output.push_back(CreateStandardAcceleratorInfo(
+        accelerator_alias, locked, GetAcceleratorType(accelerator), state));
   }
-  return infos_mojom;
 }
 
 mojom::TextAcceleratorPropertiesPtr
@@ -449,18 +441,69 @@ AcceleratorConfigurationProvider::CreateTextAcceleratorInfo(
 AcceleratorConfigurationProvider::AcceleratorConfigurationMap
 AcceleratorConfigurationProvider::CreateConfigurationMap() const {
   AcceleratorConfigurationMap accelerator_config;
-  // For each source, create a mapping between <ActionId, AcceleratorInfoPtr>.
-  for (const auto& [source, id_to_accelerators] : accelerators_mapping_) {
-    base::flat_map<AcceleratorActionId, std::vector<mojom::AcceleratorInfoPtr>>
-        accelerators_mojom;
-    for (const auto& [action_id, accelerators] : id_to_accelerators) {
-      accelerators_mojom.emplace(action_id,
-                                 CreateAcceleratorInfos(accelerators));
-    }
-    accelerator_config.emplace(source, std::move(accelerators_mojom));
-  }
+  PopulateAshAcceleratorConfig(accelerator_config);
+  PopulateAmbientAcceleratorConfig(accelerator_config);
+  return accelerator_config;
+}
 
-  // Add non-configuarable accelerators.
+void AcceleratorConfigurationProvider::PopulateAshAcceleratorConfig(
+    AcceleratorConfigurationMap& accelerator_config_output) {
+  const auto& id_to_accelerators =
+      accelerators_mapping_.at(mojom::AcceleratorSource::kAsh);
+  auto& output_action_id_to_accelerators =
+      accelerator_config_output[mojom::AcceleratorSource::kAsh];
+
+  for (const auto& layout_info : kAcceleratorLayouts) {
+    if (layout_info.source != mojom::AcceleratorSource::kAsh) {
+      // Only ash accelerators can have dynamically modified properties.
+      // Note that ambient accelerators cannot be in kAsh.
+      continue;
+    }
+
+    const auto& id_to_accelerator_iter =
+        id_to_accelerators.find(layout_info.action_id);
+    // For tests, we only want to test a subset of accelerators so it's possible
+    // that we don't have accelerators for the given `layout_info`.
+    if (id_to_accelerator_iter == id_to_accelerators.end() &&
+        ignore_layouts_for_testing_) {
+      continue;
+    } else {
+      DCHECK(id_to_accelerator_iter != id_to_accelerators.end());
+    }
+
+    const auto& accelerators = id_to_accelerator_iter->second;
+
+    // Check if the default accelerators are available, if not re-add them but
+    // mark them as disabled.
+    const std::vector<ui::Accelerator>& default_accelerators =
+        ash_accelerator_configuration_->GetDefaultAcceleratorsForId(
+            layout_info.action_id);
+    for (const auto& default_accelerator : default_accelerators) {
+      if (base::Contains(accelerators, default_accelerator)) {
+        continue;
+      }
+
+      // Append the missing default accelerators but marked as disabled by user.
+      CreateAndAppendAliasedAccelerators(
+          default_accelerator, layout_info.locked,
+          mojom::AcceleratorType::kDefault,
+          mojom::AcceleratorState::kDisabledByUser,
+          output_action_id_to_accelerators[layout_info.action_id]);
+    }
+
+    for (const auto& accelerator : accelerators) {
+      // TODO(jimmyxgong): Check pref storage to determine whether the
+      // AcceleratorType was user-added or default.
+      CreateAndAppendAliasedAccelerators(
+          accelerator, layout_info.locked, mojom::AcceleratorType::kDefault,
+          mojom::AcceleratorState::kEnabled,
+          output_action_id_to_accelerators[layout_info.action_id]);
+    }
+  }
+}
+
+void AcceleratorConfigurationProvider::PopulateAmbientAcceleratorConfig(
+    AcceleratorConfigurationMap& accelerator_config_output) {
   ActionIdToAcceleratorsInfoMap non_configurable_accelerators;
   for (const auto& [ambient_action_id, accelerators_details] :
        non_configurable_actions_mapping_) {
@@ -468,9 +511,14 @@ AcceleratorConfigurationProvider::CreateConfigurationMap() const {
       // These properties should only be set for text based layout accelerators
       DCHECK(!accelerators_details.replacements.has_value());
       DCHECK(!accelerators_details.message_id.has_value());
-      non_configurable_accelerators.emplace(
-          ambient_action_id,
-          CreateAcceleratorInfos(accelerators_details.accelerators.value()));
+      for (const auto& non_config_accelerator :
+           accelerators_details.accelerators.value()) {
+        CreateAndAppendAliasedAccelerators(
+            non_config_accelerator,
+            /*locked=*/true, mojom::AcceleratorType::kDefault,
+            mojom::AcceleratorState::kEnabled,
+            non_configurable_accelerators[ambient_action_id]);
+      }
     } else {
       // This property should only be set for standard accelerators
       DCHECK(!accelerators_details.accelerators.has_value());
@@ -483,9 +531,8 @@ AcceleratorConfigurationProvider::CreateConfigurationMap() const {
                                             std::move(text_accelerators_info));
     }
   }
-  accelerator_config.emplace(mojom::AcceleratorSource::kAmbient,
-                             std::move(non_configurable_accelerators));
-  return accelerator_config;
+  accelerator_config_output.emplace(mojom::AcceleratorSource::kAmbient,
+                                    std::move(non_configurable_accelerators));
 }
 
 }  // namespace shortcut_ui
