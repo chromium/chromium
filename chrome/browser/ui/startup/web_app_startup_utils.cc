@@ -101,9 +101,16 @@ class StartupWebAppCreator
     if (app_id.empty())
       return false;
 
-    base::AdoptRef(new StartupWebAppCreator(command_line, cur_dir, profile,
-                                            is_first_run, app_id))
-        ->Start();
+    scoped_refptr<StartupWebAppCreator> web_app_startup =
+        base::AdoptRef(new StartupWebAppCreator(command_line, cur_dir, profile,
+                                                is_first_run, app_id));
+    // Even though the launch commands can be scheduled before the provider is
+    // started, there is logic filtering out incorrect file & protocol launches
+    // that happens without locks first, and that has to wait until the database
+    // is loaded.
+    WebAppProvider::GetForWebApps(profile)->on_registry_ready().Post(
+        FROM_HERE,
+        base::BindOnce(&StartupWebAppCreator::Start, web_app_startup));
     return true;
   }
 
