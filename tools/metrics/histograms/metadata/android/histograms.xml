@@ -998,16 +998,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.Download.Rename.Result"
-    enum="Android.Download.Rename.Result" expires_after="2021-08-09">
-  <owner>hesen@chromium.org</owner>
-  <owner>clank-downloads@google.com</owner>
-  <summary>
-    Records various error codes when users try to rename a download in a
-    download home, recorded when backend rename callback is compeleted.
-  </summary>
-</histogram>
-
 <histogram name="Android.DownloadManager.Cancel"
     enum="Android.DownloadManager.Cancel.CancelFrom" expires_after="M85">
   <owner>shaktisahu@chromium.org</owner>
