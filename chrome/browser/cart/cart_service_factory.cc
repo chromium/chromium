@@ -8,6 +8,17 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "content/public/browser/storage_partition.h"
 
+namespace {
+
+std::unique_ptr<KeyedService> BuildCartService(
+    content::BrowserContext* browser_context) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  DCHECK(!profile->IsOffTheRecord());
+  return std::make_unique<CartService>(profile);
+}
+
+}  // namespace
+
 // static
 CartServiceFactory* CartServiceFactory::GetInstance() {
   return base::Singleton<CartServiceFactory>::get();
@@ -21,6 +32,12 @@ CartService* CartServiceFactory::GetForProfile(Profile* profile) {
 
   return static_cast<CartService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
+}
+
+// static
+BrowserContextKeyedServiceFactory::TestingFactory
+CartServiceFactory::GetDefaultFactory() {
+  return base::BindRepeating(&BuildCartService);
 }
 
 CartServiceFactory::CartServiceFactory()
@@ -39,7 +56,5 @@ CartServiceFactory::~CartServiceFactory() = default;
 
 KeyedService* CartServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  DCHECK(!context->IsOffTheRecord());
-
-  return new CartService(Profile::FromBrowserContext(context));
+  return BuildCartService(context).release();
 }

@@ -21,6 +21,9 @@ class CartServiceFactory : public ProfileKeyedServiceFactory {
   // Acquire CartService - there is one per profile.
   static CartService* GetForProfile(Profile* profile);
 
+  // Returns the default factory, useful in tests where it's null by default.
+  static TestingFactory GetDefaultFactory();
+
  private:
   friend struct base::DefaultSingletonTraits<CartServiceFactory>;
 
