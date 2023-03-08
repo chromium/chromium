@@ -408,7 +408,8 @@ def main(argv):
         key_sync = getElementFromShadowRoot(driver, device_trust_connector,
                                             '#key-sync').text
         if dtc_policy_enabled.casefold() == 'true'.casefold(
-        ) and key_manager_initialized.casefold() == 'true'.casefold():
+        ) and key_manager_initialized.casefold() == 'true'.casefold(
+        ) and '200' in key_sync:
           break
         time.sleep(6)
 
