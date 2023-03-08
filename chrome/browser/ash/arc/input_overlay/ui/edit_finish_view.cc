@@ -280,6 +280,8 @@ void EditFinishView::SetFocusRing() {
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kGroup);
   GetViewAccessibility().OverrideName(
       l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_LAYOUT_ACCTIONS_MENU));
+  // TODO(b/260868602): Use formal localized string once it is ready.
+  GetViewAccessibility().OverrideDescription(u"Press arrow keys to reposition");
   views::FocusRing::Install(this);
   views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                 kButtonCornerRadius);

@@ -645,4 +645,14 @@ bool TouchPoint::OnKeyReleased(const ui::KeyEvent& event) {
   return static_cast<ActionView*>(parent())->ApplyKeyReleased(event);
 }
 
+void TouchPoint::OnFocus() {
+  // TODO(b/260868602): Use formal localized string once it is ready.
+  static_cast<ActionView*>(parent())->ShowFocusInfoMsg(
+      "Press arrow keys to reposition", this);
+}
+
+void TouchPoint::OnBlur() {
+  static_cast<ActionView*>(parent())->RemoveMessage();
+}
+
 }  // namespace arc::input_overlay
