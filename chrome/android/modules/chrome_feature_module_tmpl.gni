@@ -99,6 +99,7 @@ template("chrome_feature_module") {
                              "manifest_package",
                              "min_sdk_version",
                              "package_id",
+                             "parent_module_target",
                              "target_sdk_version",
                              "version_code",
                              "version_name",
@@ -115,6 +116,9 @@ template("chrome_feature_module") {
     }
     if (defined(_module_desc.java_deps)) {
       deps += _module_desc.java_deps
+    }
+    if (defined(invoker.deps)) {
+      deps += invoker.deps
     }
 
     # Don't embed more translations than required (http://crbug.com/932017).

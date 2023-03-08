@@ -203,6 +203,8 @@ template("write_build_config") {
         _public_deps_configs += [ _dep_config ]
       }
     }
+    inputs += _deps_configs
+    inputs += _public_deps_configs
     _rebased_deps_configs = rebase_path(_deps_configs, root_build_dir)
     _rebased_public_deps_configs =
         rebase_path(_public_deps_configs, root_build_dir)
@@ -270,15 +272,16 @@ template("write_build_config") {
     if (defined(invoker.annotation_processor_deps) &&
         invoker.annotation_processor_deps != []) {
       _processor_configs = []
-      foreach(_processor_dep, invoker.annotation_processor_deps) {
-        _dep_label = get_label_info(_processor_dep, "label_no_toolchain")
-        _dep_gen_dir = get_label_info(_processor_dep, "target_gen_dir")
-        _dep_name = get_label_info(_processor_dep, "name")
+      foreach(_dep_label, invoker.annotation_processor_deps) {
         deps += [ "$_dep_label$build_config_target_suffix" ]
-        _processor_configs += [ "$_dep_gen_dir/$_dep_name.build_config.json" ]
+        _dep_gen_dir = get_label_info(_dep_label, "target_gen_dir")
+        _dep_name = get_label_info(_dep_label, "name")
+        _dep_config = "$_dep_gen_dir/$_dep_name.build_config.json"
+        _processor_configs += [ _dep_config ]
       }
       _rebased_processor_configs =
           rebase_path(_processor_configs, root_build_dir)
+      inputs += _processor_configs
       args += [ "--annotation-processor-configs=$_rebased_processor_configs" ]
     }
 
@@ -315,15 +318,15 @@ template("write_build_config") {
     }
 
     if (defined(invoker.apk_under_test)) {
-      deps += [ "${invoker.apk_under_test}$build_config_target_suffix" ]
-      apk_under_test_gen_dir =
-          get_label_info(invoker.apk_under_test, "target_gen_dir")
-      apk_under_test_name = get_label_info(invoker.apk_under_test, "name")
-      apk_under_test_config =
-          "$apk_under_test_gen_dir/$apk_under_test_name.build_config.json"
+      _dep_label = invoker.apk_under_test
+      _dep_gen_dir = get_label_info(_dep_label, "target_gen_dir")
+      _dep_name = get_label_info(_dep_label, "name")
+      _dep_config = "$_dep_gen_dir/$_dep_name.build_config.json"
+      inputs += [ _dep_config ]
+      deps += [ "$_dep_label$build_config_target_suffix" ]
       args += [
         "--tested-apk-config",
-        rebase_path(apk_under_test_config, root_build_dir),
+        rebase_path(_dep_config, root_build_dir),
       ]
     }
 
@@ -539,16 +542,27 @@ template("write_build_config") {
       ]
     }
     if (defined(invoker.base_module_target)) {
-      _base_label =
-          get_label_info(invoker.base_module_target, "label_no_toolchain")
-      _dep_gen_dir = get_label_info(_base_label, "target_gen_dir")
-      _dep_name = get_label_info(_base_label, "name")
-      deps += [ "$_base_label$build_config_target_suffix" ]
-      _base_module_build_config = "$_dep_gen_dir/$_dep_name.build_config.json"
-      inputs += [ _base_module_build_config ]
+      _dep_label = invoker.base_module_target
+      _dep_gen_dir = get_label_info(_dep_label, "target_gen_dir")
+      _dep_name = get_label_info(_dep_label, "name")
+      _dep_config = "$_dep_gen_dir/$_dep_name.build_config.json"
+      deps += [ "$_dep_label$build_config_target_suffix" ]
+      inputs += [ _dep_config ]
       args += [
         "--base-module-build-config",
-        rebase_path(_base_module_build_config, root_build_dir),
+        rebase_path(_dep_config, root_build_dir),
+      ]
+    }
+    if (defined(invoker.parent_module_target)) {
+      _dep_label = invoker.parent_module_target
+      _dep_gen_dir = get_label_info(_dep_label, "target_gen_dir")
+      _dep_name = get_label_info(_dep_label, "name")
+      _dep_config = "$_dep_gen_dir/$_dep_name.build_config.json"
+      deps += [ "$_dep_label$build_config_target_suffix" ]
+      inputs += [ _dep_config ]
+      args += [
+        "--parent-module-build-config",
+        rebase_path(_dep_config, root_build_dir),
       ]
     }
     if (defined(invoker.module_name)) {
@@ -3588,6 +3602,7 @@ if (enable_java_templates) {
                                "main_class",
                                "mergeable_android_manifests",
                                "module_name",
+                               "parent_module_target",
                                "proguard_configs",
                                "proguard_enabled",
                                "proguard_mapping_path",

@@ -134,6 +134,13 @@ template("chrome_bundle") {
       version_name = chrome_version_name
       version_code = _version_code
 
+      if (defined(_module_desc.uses_split)) {
+        assert(
+            _module_desc.uses_split == "chrome",
+            "Build logic supports only uses_split=chrome. Found uses_split=${_module_desc.uses_split}")
+        parent_module_target = ":${_bundle_target_name}__chrome_bundle_module"
+      }
+
       if (defined(invoker.expected_android_manifest_template)) {
         expected_android_manifest_version_code_offset = chrome_version_code
         expected_android_manifest =

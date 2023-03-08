@@ -3065,6 +3065,7 @@ if (enable_java_templates && is_android) {
                                "javac_args",
                                "mergeable_android_manifests",
                                "native_lib_placeholders",
+                               "parent_module_target",
                                "processor_args_javac",
                                "secondary_abi_loadable_modules",
                                "secondary_native_lib_placeholders",
@@ -3732,6 +3733,7 @@ if (enable_java_templates && is_android) {
             "native_lib_placeholders",
             "no_xml_namespaces",
             "package_id",
+            "parent_module_target",
             "png_to_webp",
             "processor_args_javac",
             "proguard_configs",
@@ -3766,6 +3768,10 @@ if (enable_java_templates && is_android) {
           ])
       is_bundle_module = true
       generate_buildconfig_java = _is_base_module
+      if (defined(uses_split)) {
+        assert(defined(parent_module_target),
+               "Must set parent_module_target when uses_split is set")
+      }
     }
   }
 
