@@ -32917,6 +32917,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1086" label="CredentialProviderPromoEnabled"/>
   <int value="1087"
       label="RemoteAccessHostAllowEnterpriseRemoteSupportConnections"/>
+  <int value="1088" label="ClientSidePhishingProtectionAllowed"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
@@ -91283,6 +91284,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="14" label="NO_CLASSIFY_HAS_DELAYED_WARNING"/>
   <int value="15" label="LOCAL_RESOURCE"/>
   <int value="16" label="CHROME_UI_PAGE"/>
+  <int value="17" label="NOT_ALLOWED_BY_POLICY"/>
 </enum>
 
 <enum name="SBClientDownloadCheckDownloadStats">

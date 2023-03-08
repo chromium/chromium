@@ -12,3 +12,4 @@ SafeBrowsing:
   - SafeBrowsingProtectionLevel
   - SafeBrowsingAllowlistDomains
   - RealTimeDownloadProtectionRequestAllowed
+  - ClientSidePhishingProtectionAllowed

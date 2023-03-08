@@ -26,6 +26,11 @@ namespace prefs {
 // A list of times at which CSD pings were sent.
 extern const char kSafeBrowsingCsdPingTimestamps[];
 
+// A boolean indicating if client side phishing protection is allowed
+// by policy. If false, no protection is performed. If true, follow other Safe
+// Browsing settings.
+extern const char kSafeBrowsingCsdPhishingProtectionAllowedByPolicy[];
+
 // Boolean that is true when SafeBrowsing is enabled.
 extern const char kSafeBrowsingEnabled[];
 
@@ -259,6 +264,10 @@ bool IsSafeBrowsingPolicyManaged(const PrefService& prefs);
 // request uploads are disabled. Otherwise, Download Protection will depend on
 // other Safe Browsing settings.
 bool IsRealTimeDownloadProtectionRequestAllowed(const PrefService& prefs);
+
+// Returns whether Safe Browsing client side phishing protection is allowed for
+// the user.
+bool IsCsdPhishingProtectionAllowed(const PrefService& prefs);
 
 // Updates UMA metrics about Safe Browsing Extended Reporting states.
 void RecordExtendedReportingMetrics(const PrefService& prefs);

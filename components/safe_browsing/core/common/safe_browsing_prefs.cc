@@ -70,6 +70,8 @@ GURL GetSimplifiedURL(const GURL& url) {
 namespace prefs {
 const char kSafeBrowsingCsdPingTimestamps[] =
     "safebrowsing.csd_ping_timestamps";
+const char kSafeBrowsingCsdPhishingProtectionAllowedByPolicy[] =
+    "safebrowsing.csd_phishing_protection_allowed_by_policy";
 const char kSafeBrowsingEnabled[] = "safebrowsing.enabled";
 const char kSafeBrowsingEnhanced[] = "safebrowsing.enhanced";
 const char kSafeBrowsingEnterpriseRealTimeUrlCheckMode[] =
@@ -194,6 +196,11 @@ bool IsRealTimeDownloadProtectionRequestAllowed(const PrefService& prefs) {
       prefs::kRealTimeDownloadProtectionRequestAllowedByPolicy);
 }
 
+bool IsCsdPhishingProtectionAllowed(const PrefService& prefs) {
+  return prefs.GetBoolean(
+      prefs::kSafeBrowsingCsdPhishingProtectionAllowedByPolicy);
+}
+
 void RecordExtendedReportingMetrics(const PrefService& prefs) {
   // This metric tracks the extended browsing opt-in based on whichever setting
   // the user is currently seeing. It tells us whether extended reporting is
@@ -204,6 +211,8 @@ void RecordExtendedReportingMetrics(const PrefService& prefs) {
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(prefs::kSafeBrowsingCsdPingTimestamps);
+  registry->RegisterBooleanPref(
+      prefs::kSafeBrowsingCsdPhishingProtectionAllowedByPolicy, true);
   registry->RegisterBooleanPref(prefs::kSafeBrowsingScoutReportingEnabled,
                                 false);
   registry->RegisterBooleanPref(
@@ -362,6 +371,10 @@ base::Value::List GetSafeBrowsingPoliciesList(PrefService* prefs) {
       prefs::kRealTimeDownloadProtectionRequestAllowedByPolicy));
   preferences_list.Append(
       prefs::kRealTimeDownloadProtectionRequestAllowedByPolicy);
+  preferences_list.Append(prefs->GetBoolean(
+      prefs::kSafeBrowsingCsdPhishingProtectionAllowedByPolicy));
+  preferences_list.Append(
+      prefs::kSafeBrowsingCsdPhishingProtectionAllowedByPolicy);
   return preferences_list;
 }
 

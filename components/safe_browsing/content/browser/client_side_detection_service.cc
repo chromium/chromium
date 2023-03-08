@@ -270,11 +270,25 @@ void ClientSideDetectionService::StartClientReportPhishingRequest(
               "you and your device from dangerous sites' in Chrome settings "
               "under Privacy. This feature is enabled by default."
             chrome_policy {
+              subProto1 {
+                ClientSidePhishingProtectionAllowed {
+                  ClientSidePhishingProtectionAllowed: false
+                }
+              }
+            }
+            chrome_policy {
+              SafeBrowsingProtectionLevel {
+                policy_options {mode: MANDATORY}
+                SafeBrowsingProtectionLevel: 0
+              }
+            }
+            chrome_policy {
               SafeBrowsingEnabled {
                 policy_options {mode: MANDATORY}
                 SafeBrowsingEnabled: false
               }
             }
+            deprecated_policies: "SafeBrowsingEnabled"
           })");
   auto resource_request = std::make_unique<network::ResourceRequest>();
   if (!access_token.empty()) {
