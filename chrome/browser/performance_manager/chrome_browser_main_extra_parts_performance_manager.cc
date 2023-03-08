@@ -32,6 +32,7 @@
 #include "components/performance_manager/embedder/graph_features.h"
 #include "components/performance_manager/embedder/performance_manager_lifetime.h"
 #include "components/performance_manager/embedder/performance_manager_registry.h"
+#include "components/performance_manager/graph/policies/bfcache_policy.h"
 #include "components/performance_manager/performance_manager_feature_observer_client.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/decorators/page_load_tracker_decorator_helper.h"
@@ -73,7 +74,6 @@
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/performance_manager/user_tuning/user_performance_tuning_notifier.h"
 #include "chrome/browser/tab_contents/form_interaction_tab_helper.h"
-#include "components/performance_manager/graph/policies/bfcache_policy.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace {
@@ -193,14 +193,11 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
         std::make_unique<performance_manager::metrics::PageTimelineMonitor>());
   }
 
-  // TODO(crbug.com/1225070): Consider using this policy on Android.
-#if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
           performance_manager::features::kBFCachePerformanceManagerPolicy)) {
     graph->PassToGraph(
         std::make_unique<performance_manager::policies::BFCachePolicy>());
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 content::FeatureObserverClient*

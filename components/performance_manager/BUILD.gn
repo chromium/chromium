@@ -80,6 +80,8 @@ static_library("performance_manager") {
     "graph/page_node_impl.h",
     "graph/page_node_impl_describer.cc",
     "graph/page_node_impl_describer.h",
+    "graph/policies/bfcache_policy.cc",
+    "graph/policies/bfcache_policy.h",
     "graph/policies/process_priority_policy.cc",
     "graph/policies/process_priority_policy.h",
     "graph/process_node.cc",
@@ -237,10 +239,6 @@ static_library("performance_manager") {
       "public/decorators/site_data_recorder.h",
       "public/persistence/site_data/feature_usage.h",
       "public/persistence/site_data/site_data_reader.h",
-
-      # TODO(crbug.com/1225070): Consider using this policy on Android.
-      "graph/policies/bfcache_policy.cc",
-      "graph/policies/bfcache_policy.h",
     ]
 
     public_deps += [
