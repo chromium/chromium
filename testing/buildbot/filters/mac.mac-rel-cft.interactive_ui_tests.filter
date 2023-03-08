@@ -1,3 +1,12 @@
+# Run a smoke set of browser interactive tests relevant to CfT (crbug.com/1421409)
+DevToolsManagerDelegateTest.*
+KeyboardLockInteractiveBrowserTest.*
+KeyboardAccessTest.*
+MenuControllerUITest.*
+MenuItemViewTest*
+WebContentsInteractionTestUtilInteractiveUiTest.*
+BrowserFocusTest.*
+
 # Filter out failing infobar tests from Chrome for Testing trybots
 
 # Chrome for Testing (CfT) adds a global info bar.
