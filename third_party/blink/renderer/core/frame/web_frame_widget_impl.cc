@@ -3804,6 +3804,14 @@ void WebFrameWidgetImpl::CopyToFindPboard() {
   To<WebLocalFrameImpl>(focused_frame)->CopyToFindPboard();
 }
 
+void WebFrameWidgetImpl::CenterSelection() {
+  WebLocalFrame* focused_frame = FocusedWebLocalFrameInWidget();
+  if (!focused_frame) {
+    return;
+  }
+  To<WebLocalFrameImpl>(focused_frame)->CenterSelection();
+}
+
 void WebFrameWidgetImpl::Paste() {
   WebLocalFrame* focused_frame = FocusedWebLocalFrameInWidget();
   if (!focused_frame)

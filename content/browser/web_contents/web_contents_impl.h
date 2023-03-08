@@ -447,6 +447,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void Cut() override;
   void Copy() override;
   void CopyToFindPboard() override;
+  void CenterSelection() override;
   void Paste() override;
   void PasteAndMatchStyle() override;
   void Delete() override;

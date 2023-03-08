@@ -795,6 +795,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   void Cut() override;
   void Copy() override;
   void CopyToFindPboard() override;
+  void CenterSelection() override;
   void Paste() override;
   void PasteAndMatchStyle() override;
   void Delete() override;

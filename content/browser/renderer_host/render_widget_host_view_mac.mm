@@ -2058,6 +2058,13 @@ void RenderWidgetHostViewMac::CopyToFindPboard() {
     web_contents->CopyToFindPboard();
 }
 
+void RenderWidgetHostViewMac::CenterSelection() {
+  WebContents* web_contents = GetWebContents();
+  if (web_contents) {
+    web_contents->CenterSelection();
+  }
+}
+
 void RenderWidgetHostViewMac::Paste() {
   if (auto* delegate = GetFocusedRenderWidgetHostDelegate()) {
     delegate->Paste();

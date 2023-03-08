@@ -893,6 +893,7 @@ class WebContents : public PageNavigator,
   virtual void Cut() = 0;
   virtual void Copy() = 0;
   virtual void CopyToFindPboard() = 0;
+  virtual void CenterSelection() = 0;
   virtual void Paste() = 0;
   virtual void PasteAndMatchStyle() = 0;
   virtual void Delete() = 0;

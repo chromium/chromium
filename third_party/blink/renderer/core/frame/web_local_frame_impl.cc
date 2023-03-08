@@ -867,6 +867,12 @@ void WebLocalFrameImpl::CopyToFindPboard() {
     GetFrame()->GetSystemClipboard()->CopyToFindPboard(SelectionAsText());
 }
 
+void WebLocalFrameImpl::CenterSelection() {
+  if (HasSelection()) {
+    GetFrame()->Selection().RevealSelection(ScrollAlignment::CenterAlways());
+  }
+}
+
 gfx::PointF WebLocalFrameImpl::GetScrollOffset() const {
   if (ScrollableArea* scrollable_area = LayoutViewport())
     return scrollable_area->ScrollPosition();

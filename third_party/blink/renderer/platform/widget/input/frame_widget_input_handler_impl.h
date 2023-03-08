@@ -75,6 +75,7 @@ class PLATFORM_EXPORT FrameWidgetInputHandlerImpl
   void Cut() override;
   void Copy() override;
   void CopyToFindPboard() override;
+  void CenterSelection() override;
   void Paste() override;
   void PasteAndMatchStyle() override;
   void Replace(const String& word) override;

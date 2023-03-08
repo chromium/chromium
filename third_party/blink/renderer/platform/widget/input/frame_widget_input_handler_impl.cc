@@ -223,6 +223,16 @@ void FrameWidgetInputHandlerImpl::CopyToFindPboard() {
       main_thread_frame_widget_input_handler_));
 }
 
+void FrameWidgetInputHandlerImpl::CenterSelection() {
+  RunOnMainThread(base::BindOnce(
+      [](base::WeakPtr<mojom::blink::FrameWidgetInputHandler> handler) {
+        if (handler) {
+          handler->CenterSelection();
+        }
+      },
+      main_thread_frame_widget_input_handler_));
+}
+
 void FrameWidgetInputHandlerImpl::Paste() {
   RunOnMainThread(
       base::BindOnce(&FrameWidgetInputHandlerImpl::ExecuteCommandOnMainThread,

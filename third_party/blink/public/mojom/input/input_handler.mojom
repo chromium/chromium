@@ -337,6 +337,7 @@ interface FrameWidgetInputHandler {
   Cut();
   Copy();
   CopyToFindPboard();
+  CenterSelection();
   Paste();
   PasteAndMatchStyle();
   Delete();

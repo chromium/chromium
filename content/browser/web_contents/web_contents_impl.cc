@@ -4983,6 +4983,19 @@ void WebContentsImpl::CopyToFindPboard() {
 #endif
 }
 
+void WebContentsImpl::CenterSelection() {
+  OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::CenterSelection");
+#if BUILDFLAG(IS_MAC)
+  auto* input_handler = GetFocusedFrameWidgetInputHandler();
+  if (!input_handler) {
+    return;
+  }
+
+  last_interaction_time_ = ui::EventTimeForNow();
+  input_handler->CenterSelection();
+#endif
+}
+
 void WebContentsImpl::Paste() {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::Paste");
   auto* input_handler = GetFocusedFrameWidgetInputHandler();

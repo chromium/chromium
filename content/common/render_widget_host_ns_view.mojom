@@ -236,6 +236,7 @@ interface RenderWidgetHostNSViewHost {
   Cut();
   Copy();
   CopyToFindPboard();
+  CenterSelection();
   Paste();
   PasteAndMatchStyle();
   SelectAll();
@@ -255,4 +256,3 @@ interface RenderWidgetHostNSViewHost {
   // Send the token for the NSWindow in which this NSView is being displayed.
   SetRemoteAccessibilityWindowToken(array<uint8> window_token);
 };
-

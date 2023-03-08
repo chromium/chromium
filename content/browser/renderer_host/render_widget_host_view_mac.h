@@ -399,6 +399,7 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   void Cut() override;
   void Copy() override;
   void CopyToFindPboard() override;
+  void CenterSelection() override;
   void Paste() override;
   void PasteAndMatchStyle() override;
   void SelectAll() override;
