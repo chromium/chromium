@@ -86,7 +86,7 @@ IN_PROC_BROWSER_TEST_P(TrustTokenParametersBrowsertest,
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   ExecuteScriptAsync(
-      shell(), JsReplace("fetch($1, {trustToken: ", trust_token_url) +
+      shell(), JsReplace("fetch($1, {privateToken: ", trust_token_url) +
                    expected_params_and_serialization.serialized_params + "});");
 
   monitor.WaitForUrls();
@@ -124,7 +124,7 @@ IN_PROC_BROWSER_TEST_P(TrustTokenParametersBrowsertest,
   EXPECT_TRUE(ExecJs(
       shell(), JsReplace("let iframe = document.createElement('iframe');"
                          "iframe.src = $1;"
-                         "iframe.trustToken = $2;"
+                         "iframe.privateToken = $2;"
                          "document.body.appendChild(iframe);",
                          trust_token_url,
                          expected_params_and_serialization.serialized_params)));
@@ -160,7 +160,7 @@ IN_PROC_BROWSER_TEST_P(TrustTokenParametersBrowsertest,
              base::StringPrintf(
                  JsReplace("let request = new XMLHttpRequest();"
                            "request.open($1, $2);"
-                           "request.setTrustToken(%s);"
+                           "request.setPrivateToken(%s);"
                            "request.send();",
                            "GET", trust_token_url)
                      .c_str(),

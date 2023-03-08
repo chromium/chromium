@@ -259,7 +259,7 @@ static_idl_files_in_core = get_path_info(
           "//third_party/blink/renderer/core/fetch/request_init.idl",
           "//third_party/blink/renderer/core/fetch/response.idl",
           "//third_party/blink/renderer/core/fetch/response_init.idl",
-          "//third_party/blink/renderer/core/fetch/trust_token.idl",
+          "//third_party/blink/renderer/core/fetch/private_token.idl",
           "//third_party/blink/renderer/core/fetch/window_fetch.idl",
           "//third_party/blink/renderer/core/fetch/worker_fetch.idl",
           "//third_party/blink/renderer/core/fileapi/blob.idl",

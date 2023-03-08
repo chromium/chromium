@@ -68,14 +68,14 @@ IN_PROC_BROWSER_TEST_F(DevToolsTrustTokenBrowsertest,
 
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { trustToken: { type: 'private-state-token',
+        { privateToken: { type: 'private-state-token',
                         version: 1, operation: 'token-request' } })
         .then(()=>'Success'); )",
                                       server_.GetURL("a.test", "/issue"))));
 
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { trustToken: { type: 'private-state-token',
+        { privateToken: { type: 'private-state-token',
                         version: 1, operation: 'token-redemption' } })
         .then(()=>'Success'); )",
                                       server_.GetURL("a.test", "/redeem"))));
@@ -90,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTrustTokenBrowsertest,
   // 3) Issue another redemption, and verify its served from cache.
   EXPECT_EQ("NoModificationAllowedError",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { trustToken: { type: 'private-state-token',
+        { privateToken: { type: 'private-state-token',
                         version: 1, operation: 'token-redemption' } })
         .catch(err => err.name); )",
                                       server_.GetURL("a.test", "/redeem"))));
@@ -131,13 +131,13 @@ IN_PROC_BROWSER_TEST_F(DevToolsTrustTokenBrowsertest, FetchEndToEnd) {
   // request.
   std::string command = R"(
   (async () => {
-    await fetch('/issue', {trustToken: {type: 'private-state-token',
+    await fetch('/issue', {privateToken: {type: 'private-state-token',
                                         version: 1,
                                         operation: 'token-request'}});
-    await fetch('/redeem', {trustToken: {type: 'private-state-token',
+    await fetch('/redeem', {privateToken: {type: 'private-state-token',
                                          version: 1,
                                          operation: 'token-redemption'}});
-    await fetch('/sign', {trustToken: {type: 'private-state-token',
+    await fetch('/sign', {privateToken: {type: 'private-state-token',
                                        version: 1,
                                        operation: 'send-redemption-record',
                                   issuers: [$1]}});
@@ -173,10 +173,10 @@ IN_PROC_BROWSER_TEST_F(DevToolsTrustTokenBrowsertest, IframeEndToEnd) {
   // request.
   std::string command = R"(
   (async () => {
-    await fetch('/issue', {trustToken: {type: 'private-state-token',
+    await fetch('/issue', {privateToken: {type: 'private-state-token',
                                         version: 1,
                                         operation: 'token-request'}});
-    await fetch('/redeem', {trustToken: {type: 'private-state-token',
+    await fetch('/redeem', {privateToken: {type: 'private-state-token',
                                          version: 1,
                                          operation: 'token-redemption'}});
     return 'Success'; })(); )";
@@ -196,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTrustTokenBrowsertest, IframeEndToEnd) {
     EXPECT_TRUE(ExecJs(
         shell(), JsReplace(
                      R"( const myFrame = document.getElementById('test_iframe');
-                         myFrame.trustToken = $1;
+                         myFrame.privateToken = $1;
                          myFrame.src = $2;)",
                      trust_token, path)));
     TestNavigationObserver load_observer(shell()->web_contents());
@@ -238,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTrustTokenBrowsertest,
 
   // 3) Request some Trust Tokens.
   EXPECT_EQ("OperationError", EvalJs(shell(), R"(fetch('/issue',
-        { trustToken: { type: 'private-state-token',
+        { privateToken: { type: 'private-state-token',
                         version: 1, operation: 'token-request' } })
         .then(()=>'Success').catch(err => err.name); )"));
 
@@ -266,7 +266,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTrustTokenBrowsertest, GetTrustTokens) {
   // 4) Request some Trust Tokens.
   std::string command = R"(
   (async () => {
-    await fetch('/issue', {trustToken: {type: 'private-state-token',
+    await fetch('/issue', {privateToken: {type: 'private-state-token',
                                         version: 1,
                                         operation: 'token-request'}});
     return 'Success'; })(); )";
@@ -292,7 +292,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTrustTokenBrowsertest, ClearTrustTokens) {
   // 3) Request some Trust Tokens.
   std::string command = R"(
   (async () => {
-    await fetch('/issue', {trustToken: {type: 'private-state-token',
+    await fetch('/issue', {privateToken: {type: 'private-state-token',
                                         version: 1,
                                         operation: 'token-request'}});
     return 'Success'; })(); )";

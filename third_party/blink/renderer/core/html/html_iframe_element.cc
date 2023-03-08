@@ -293,7 +293,7 @@ void HTMLIFrameElement::ParseAttribute(
       required_policy_ = value;
       UpdateRequiredPolicy();
     }
-  } else if (name == html_names::kTrusttokenAttr) {
+  } else if (name == html_names::kPrivatetokenAttr) {
     UseCounter::Count(GetDocument(), WebFeature::kTrustTokenIframe);
     trust_token_ = value;
   } else {

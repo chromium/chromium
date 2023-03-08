@@ -31,7 +31,6 @@
 #include "services/network/public/mojom/trust_tokens.mojom-blink.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_trust_token.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document_parser_client.h"
@@ -67,6 +66,7 @@ class DocumentParser;
 class ExceptionState;
 class ExecutionContext;
 class FormData;
+class PrivateToken;
 class ScriptState;
 class TextResourceDecoder;
 class ThreadableLoader;
@@ -145,7 +145,7 @@ class CORE_EXPORT XMLHttpRequest final
   void setRequestHeader(const AtomicString& name,
                         const AtomicString& value,
                         ExceptionState&);
-  void setTrustToken(const TrustToken*, ExceptionState&);
+  void setPrivateToken(const PrivateToken*, ExceptionState&);
   void overrideMimeType(const AtomicString& override, ExceptionState&);
   String getAllResponseHeaders() const;
   const AtomicString& getResponseHeader(const AtomicString&) const;
@@ -162,7 +162,7 @@ class CORE_EXPORT XMLHttpRequest final
   String responseType();
   void setResponseType(const String&, ExceptionState&);
   String responseURL();
-  DOMException* trustTokenOperationError() const {
+  DOMException* privateTokenOperationError() const {
     return trust_token_operation_error_;
   }
 

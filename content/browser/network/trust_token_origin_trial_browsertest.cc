@@ -37,7 +37,7 @@
 // As an example, consider
 //
 //    fetch("https://chromium.org", {
-//        trustToken: {
+//        privateToken: {
 //            version: 1,
 //            operation: 'token-request'}})
 //
@@ -362,7 +362,7 @@ IN_PROC_BROWSER_TEST_P(TrustTokenOriginTrialBrowsertest,
   std::string command;
   switch (interface) {
     case Interface::kFetch:
-      command = JsReplace("fetch($1, {trustToken: ", kTrustTokenUrl) +
+      command = JsReplace("fetch($1, {privateToken: ", kTrustTokenUrl) +
                 expected_params_and_serialization.serialized_params + "});";
       break;
     case Interface::kIframe:

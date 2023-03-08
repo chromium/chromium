@@ -9,7 +9,7 @@
 
     promise_test(function () {
         return fetch('/wpt_internal/trust-tokens/resources/trust_token_issuance.py', {
-            trustToken: { type: 'private-state-token', version: 1, operation: 'token-request' }
+            privateToken: { type: 'private-state-token', version: 1, operation: 'token-request' }
         }).then(function (response) {
             assert_equals(response.status, 200);
             assert_equals(response.headers.get('Sec-Trust-Token'), null);
@@ -18,7 +18,7 @@
 
     promise_test(function () {
         return fetch('/wpt_internal/trust-tokens/resources/trust_token_redemption.py', {
-            trustToken: { type: 'private-state-token', version: 1, operation: 'token-redemption' }
+            privateToken: { type: 'private-state-token', version: 1, operation: 'token-redemption' }
         }).then(function (response) {
             assert_equals(response.status, 200);
             assert_equals(response.headers.get('Sec-Trust-Token'), null);
@@ -28,7 +28,7 @@
     promise_test(function () {
         const host_info = get_host_info();
         return fetch('/wpt_internal/trust-tokens/resources/trust_token_send_redemption_record.py', {
-            trustToken: {
+            privateToken: {
                 type: 'private-state-token',
                 version: 1,
                 operation: 'send-redemption-record',
@@ -42,7 +42,7 @@
   test(function() {
       assert_throws_js(TypeError,
                        () => new Request('https://some-issuer.test',
-                                         {trustToken: {
+                                         {privateToken: {
                                              type: 'private-state-token',
                                              version: 2,
                                              operation: 'token-request'
@@ -53,7 +53,7 @@
   test(function() {
       assert_throws_js(TypeError,
                        () => new Request('https://some-issuer.test',
-                                         {trustToken: {
+                                         {privateToken: {
                                              type: 'unknown-token',
                                              version: 1,
                                              operation: 'token-request'
@@ -64,7 +64,7 @@
   test(function() {
       assert_throws_js(TypeError,
                        () => new Request('https://some-issuer.test',
-                                         {trustToken: {
+                                         {privateToken: {
                                              version: 1,
                                              operation: 'token-request'
                                          }}),

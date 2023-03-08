@@ -39,6 +39,7 @@
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url_request.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_private_token.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview_blob_document_formdata_urlsearchparams_usvstring.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
 #include "third_party/blink/renderer/core/dom/document_parser.h"
@@ -1433,8 +1434,8 @@ void XMLHttpRequest::SetRequestHeaderInternal(const AtomicString& name,
   }
 }
 
-void XMLHttpRequest::setTrustToken(const TrustToken* trust_token,
-                                   ExceptionState& exception_state) {
+void XMLHttpRequest::setPrivateToken(const PrivateToken* trust_token,
+                                     ExceptionState& exception_state) {
   // These precondition checks are copied from |setRequestHeader|.
   if (state_ != kOpened || send_flag_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
