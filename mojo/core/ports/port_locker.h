@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/auto_reset.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "mojo/core/ports/port_ref.h"
 
@@ -62,6 +63,10 @@ class PortLocker {
 #endif
 
  private:
+#if DCHECK_IS_ON()
+  const base::AutoReset<const PortLocker*> resetter_;
+#endif
+
   // `port_refs_` is not a raw_ptr<T> for performance reasons: PortLocker is
   // usually short-lived (e.g. allocated on the stack) + the stack (not on the
   // heap).
