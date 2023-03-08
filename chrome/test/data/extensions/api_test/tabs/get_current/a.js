@@ -4,6 +4,6 @@
 
 window.onload = function() {
   chrome.tabs.getCurrent(function(tab) {
-    chrome.extension.getBackgroundPage().onCompleteGetCurrentTab(tab);
+    chrome.runtime.sendMessage(tab);
   });
 };
