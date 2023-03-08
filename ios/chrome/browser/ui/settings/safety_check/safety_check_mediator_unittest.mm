@@ -76,7 +76,7 @@ typedef NS_ENUM(NSInteger, SafetyCheckItemType) {
 };
 
 // The size of trailing symbol icons.
-NSInteger kTrailingSymbolImagePointSize = 22;
+NSInteger kTrailingSymbolImagePointSize = 18;
 
 using password_manager::InsecureCredential;
 using password_manager::InsecureType;
