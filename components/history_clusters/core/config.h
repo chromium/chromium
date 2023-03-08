@@ -207,7 +207,7 @@ struct Config {
   // experiment group with `omnibox_history_cluster_provider_shortcuts` enabled
   // don't have lingering effects when they leave the group. Meaningless if
   // `omnibox_history_cluster_provider` is disabled.
-  bool omnibox_history_cluster_provider_shortcuts = false;
+  bool omnibox_history_cluster_provider_shortcuts = true;
 
   // Whether journey suggestions from the `ShortcutsProvider` can be default.
   // Journey suggestions from the `HistoryClusterProvider` can never be default.
