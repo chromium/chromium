@@ -101,6 +101,11 @@ void AppWebMessagePort::PostMessage(
   DCHECK(runner_->BelongsToCurrentThread());
   DCHECK(descriptor_.IsValid());
   DCHECK(connector_);
+  if (connector_->encountered_error()) {
+    LOG(ERROR)
+        << "Failed to send message to renderer, connector encountered error.";
+    return;
+  }
   blink::TransferableMessage transferable_message =
       blink::EncodeWebMessagePayload(ConvertToWebMessagePayloadFromJava(
           base::android::ScopedJavaLocalRef<jobject>(j_message_payload)));
