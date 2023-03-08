@@ -12,6 +12,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/bits.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
@@ -43,6 +44,7 @@
 #include "gpu/command_buffer/service/webgpu_decoder.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/webgpu/callback.h"
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
@@ -89,8 +91,6 @@ WGPUAdapterType PowerPreferenceToDawnAdapterType(
       return WGPUAdapterType_CPU;
   }
 }
-
-}  // namespace
 
 class WebGPUDecoderImpl final : public WebGPUDecoder {
  public:
@@ -962,6 +962,10 @@ constexpr WebGPUDecoderImpl::CommandInfo WebGPUDecoderImpl::command_info[] = {
 #undef WEBGPU_CMD_OP
 };
 
+// This variable is set to DawnWireServer's parent decoder during execution of
+// HandleCommands. It is cleared to nullptr after.
+ABSL_CONST_INIT thread_local WebGPUDecoderImpl* parent_decoder = nullptr;
+
 // DawnWireServer is a wrapper around dawn::wire::WireServer which allows
 // overriding some of the WGPU procs the server delegates calls to.
 // It has a special feature that around HandleDawnCommands, its owning
@@ -971,10 +975,6 @@ constexpr WebGPUDecoderImpl::CommandInfo WebGPUDecoderImpl::command_info[] = {
 // which loads the WebGPUDecoderImpl from thread-local storage and forwards
 // the call to the member function.
 class DawnWireServer : public dawn::wire::WireServer {
-  // This variable is set to DawnWireServer's parent decoder during
-  // execution of HandleCommands. It is cleared to nullptr after.
-  thread_local static WebGPUDecoderImpl* tls_parent_decoder;
-
   // Base template for specialization.
   template <auto Method>
   struct ProcForDecoderMethodImpl;
@@ -1003,13 +1003,13 @@ class DawnWireServer : public dawn::wire::WireServer {
   ~DawnWireServer() override = default;
 
   // Handle Dawn commands. Forward the call to the base class, but
-  // set |tls_parent_decoder| around it.
+  // set |parent_decoder| around it.
   const volatile char* HandleCommands(const volatile char* commands,
                                       size_t size) override {
-    tls_parent_decoder = decoder_;
+    const base::AutoReset<WebGPUDecoderImpl*> resetter_(&parent_decoder,
+                                                        decoder_);
     const volatile char* rv =
         dawn::wire::WireServer::HandleCommands(commands, size);
-    tls_parent_decoder = nullptr;
     return rv;
   }
 
@@ -1028,9 +1028,8 @@ class DawnWireServer : public dawn::wire::WireServer {
     using Proc = R (*)(Args...);
     Proc operator()() {
       return [](Args... args) -> R {
-        WebGPUDecoderImpl* decoder = tls_parent_decoder;
-        DCHECK(decoder);
-        return (decoder->*Method)(std::forward<Args>(args)...);
+        DCHECK(parent_decoder);
+        return (parent_decoder->*Method)(std::forward<Args>(args)...);
       };
     }
   };
@@ -1038,7 +1037,7 @@ class DawnWireServer : public dawn::wire::WireServer {
   raw_ptr<WebGPUDecoderImpl> decoder_;
 };
 
-thread_local WebGPUDecoderImpl* DawnWireServer::tls_parent_decoder = nullptr;
+}  // namespace
 
 WebGPUDecoder* CreateWebGPUDecoderImpl(
     DecoderClient* client,

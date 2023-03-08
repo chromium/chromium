@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -30,7 +31,7 @@ class Scheduler;
 
 // Selectively allow ScheduleTask if DefaultDisallowScheduleTaskOnCurrentThread
 // is used for a thread.
-class GPU_GLES2_EXPORT ScopedAllowScheduleGpuTask {
+class GPU_GLES2_EXPORT [[maybe_unused, nodiscard]] ScopedAllowScheduleGpuTask {
  public:
   ScopedAllowScheduleGpuTask(const ScopedAllowScheduleGpuTask&) = delete;
   ScopedAllowScheduleGpuTask& operator=(const ScopedAllowScheduleGpuTask&) =
@@ -53,7 +54,7 @@ class GPU_GLES2_EXPORT ScopedAllowScheduleGpuTask {
   ScopedAllowScheduleGpuTask();
 
 #if DCHECK_IS_ON()
-  const bool original_value_;
+  const base::AutoReset<bool> resetter_;
 #endif
 };
 
