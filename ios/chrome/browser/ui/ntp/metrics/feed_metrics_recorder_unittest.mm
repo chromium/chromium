@@ -40,6 +40,8 @@ class FeedMetricsRecorderTest : public PlatformTest {
   const int kMinScrollForGoodVisitTests = 50;
   // Used for time based tests.
   const base::TimeDelta kAddedTimeForMockClock = base::Seconds(5);
+  const base::TimeDelta kTimeForFeedTimeMetric = base::Minutes(2);
+  const base::TimeDelta kOneDay = base::Hours(24);
   void TearDown() override {
     [recorder resetGoodVisitSession];
     PlatformTest::TearDown();
@@ -157,7 +159,6 @@ TEST_F(FeedMetricsRecorderTest,
 #pragma mark - AllFeeds Time Based Tests
 
 TEST_F(FeedMetricsRecorderTest, GoodVisit_GoodTimeInFeed) {
-  // Fast forward the clock to build time.
   base::ScopedMockClockOverride mock_clock;
 
   [recorder recordNTPDidChangeVisibility:YES];
@@ -176,7 +177,6 @@ TEST_F(FeedMetricsRecorderTest, GoodVisit_GoodTimeInFeed) {
 
 // Tests that a Short Click Visit is recorded appropriately.
 TEST_F(FeedMetricsRecorderTest, GoodVisit_ShortClickVisit) {
-  // Fast forward the clock to build time.
   base::ScopedMockClockOverride mock_clock;
   // Trigger article click
   [recorder recordOpenURLInSameTab];
@@ -193,7 +193,6 @@ TEST_F(FeedMetricsRecorderTest, GoodVisit_ShortClickVisit) {
 
 // Tests that the session expires accordingly.
 TEST_F(FeedMetricsRecorderTest, GoodVisit_SessionExpiration) {
-  // Fast forward the clock to build time.
   base::ScopedMockClockOverride mock_clock;
   histogram_tester_->ExpectBucketCount(kAllFeedsEngagementTypeHistogram,
                                        FeedEngagementType::kGoodVisit, 0);
@@ -294,7 +293,6 @@ TEST_F(FeedMetricsRecorderTest,
 #pragma mark - Discover Feed Time Based Good Visit tests
 
 TEST_F(FeedMetricsRecorderTest, GoodVisit_GoodTimeInFeedDiscover) {
-  // Fast forward the clock to build time.
   base::ScopedMockClockOverride mock_clock;
 
   [recorder recordNTPDidChangeVisibility:YES];
@@ -310,7 +308,6 @@ TEST_F(FeedMetricsRecorderTest, GoodVisit_GoodTimeInFeedDiscover) {
 
 // Tests that a Short Click Visit is recorded appropriately.
 TEST_F(FeedMetricsRecorderTest, GoodVisit_ShortClickVisitDiscover) {
-  // Fast forward the clock to build time.
   base::ScopedMockClockOverride mock_clock;
   // Trigger article click
   [recorder recordOpenURLInSameTab];
@@ -405,7 +402,6 @@ TEST_F(FeedMetricsRecorderTest,
 #pragma mark - Following Feed Time Based Good Visit tests
 
 TEST_F(FeedMetricsRecorderTest, GoodVisit_GoodTimeInFeedFollowing) {
-  // Fast forward the clock to build time.
   base::ScopedMockClockOverride mock_clock;
   // Change feed to Following.
   OCMStub([mockedDelegate selectedFeed]).andReturn(FeedTypeFollowing);
@@ -423,7 +419,6 @@ TEST_F(FeedMetricsRecorderTest, GoodVisit_GoodTimeInFeedFollowing) {
 
 // Tests that a Short Click Visit is recorded appropriately.
 TEST_F(FeedMetricsRecorderTest, GoodVisit_ShortClickVisitFollowing) {
-  // Fast forward the clock to build time.
   base::ScopedMockClockOverride mock_clock;
   // Change feed to Following.
   OCMStub([mockedDelegate selectedFeed]).andReturn(FeedTypeFollowing);
@@ -437,4 +432,33 @@ TEST_F(FeedMetricsRecorderTest, GoodVisit_ShortClickVisitFollowing) {
   [recorder recordNTPDidChangeVisibility:YES];
   histogram_tester_->ExpectBucketCount(kFollowingFeedEngagementTypeHistogram,
                                        FeedEngagementType::kGoodVisit, 1);
+}
+
+#pragma mark - Time Spent in Feed tests.
+
+// Tests that the time spent in feed is recorded appropriately.
+TEST_F(FeedMetricsRecorderTest, TimeSpent_RecordedCorrectly) {
+  base::ScopedMockClockOverride mock_clock;
+  // Make the feed visible.
+  [recorder recordNTPDidChangeVisibility:YES];
+  // Advance clock.
+  mock_clock.Advance(kTimeForFeedTimeMetric);
+  // Hide feed again.
+  [recorder recordNTPDidChangeVisibility:NO];
+  EXPECT_EQ(kTimeForFeedTimeMetric, recorder.timeSpentInFeed);
+}
+
+// Tests that the time spent in feed histogram has recorded appropriately after
+// 24hrs have elapsed.
+TEST_F(FeedMetricsRecorderTest, TimeSpent_DailyHistogramReported) {
+  base::ScopedMockClockOverride mock_clock;
+  // Make the feed visible.
+  [recorder recordNTPDidChangeVisibility:YES];
+  // Hide feed again.
+  [recorder recordNTPDidChangeVisibility:NO];
+  recorder.timeSpentInFeed = kTimeForFeedTimeMetric;
+  mock_clock.Advance(kOneDay + base::Seconds(1));
+  [recorder recordNTPDidChangeVisibility:YES];
+  histogram_tester_->ExpectUniqueTimeSample(kTimeSpentInFeedHistogram,
+                                            kTimeForFeedTimeMetric, 1);
 }

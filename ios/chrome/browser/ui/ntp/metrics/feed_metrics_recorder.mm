@@ -62,8 +62,7 @@ using feed::FeedUserActionType;
     base::Time lastInteractionTimeForFollowingGoodVisits;
 // The timestamp when the feed becomes visible again for Good Visits. It
 // is reset when a new Good Visit session starts
-@property(nonatomic, assign)
-    base::Time feedBecameVisibleTimeForGoodVisitSession;
+@property(nonatomic, assign) base::Time feedBecameVisibleTime;
 // The time the user has spent in the feed during a Good Visit session.
 // This property is preserved across NTP usages if they are part of the same
 // Good Visit Session.
@@ -71,6 +70,10 @@ using feed::FeedUserActionType;
     NSTimeInterval previousTimeInFeedForGoodVisitSession;
 @property(nonatomic, assign) NSTimeInterval discoverPreviousTimeInFeedGV;
 @property(nonatomic, assign) NSTimeInterval followingPreviousTimeInFeedGV;
+
+// The aggregate of time a user has spent in the feed for
+// `ContentSuggestions.Feed.TimeSpentInFeed`
+@property(nonatomic, assign) base::TimeDelta timeSpentInFeed;
 
 // Timer to signal end of session.
 @property(nonatomic, strong) NSTimer* sessionEndTimer;
@@ -181,6 +184,11 @@ using feed::FeedUserActionType;
           base::Time::FromNSDate(lastInteractionTimeForFollowingGoodVisitsDate);
     }
 
+    // Total time spent in feed metrics.
+    [self recordTimeSpentInFeedIfDayIsDone];
+    self.timeSpentInFeed =
+        base::Seconds([defaults doubleForKey:kTimeSpentInFeedAggregateKey]);
+
     self.previousTimeInFeedForGoodVisitSession =
         [defaults doubleForKey:kLongFeedVisitTimeAggregateKey];
     self.discoverPreviousTimeInFeedGV =
@@ -193,7 +201,7 @@ using feed::FeedUserActionType;
     // interaction.
     NSDate* articleVisitStart = base::mac::ObjCCast<NSDate>(
         [defaults objectForKey:kArticleVisitTimestampKey]);
-    self.feedBecameVisibleTimeForGoodVisitSession = base::Time::Now();
+    self.feedBecameVisibleTime = base::Time::Now();
 
     if (articleVisitStart) {
       // Report Good Visit if user came back to the NTP after spending
@@ -213,7 +221,13 @@ using feed::FeedUserActionType;
     // Once the NTP becomes hidden, check for Good Visit which updates
     // `self.previousTimeInFeedForGoodVisitSession` and then we save it to
     // defaults.
+
+    // Also calculate total aggregate for the time in feed aggregate metric.
+    self.timeSpentInFeed = base::Time::Now() - self.feedBecameVisibleTime;
+
     [self checkEngagementGoodVisitWithInteraction:NO];
+    [defaults setDouble:self.timeSpentInFeed.InSecondsF()
+                 forKey:kTimeSpentInFeedAggregateKey];
     [defaults setDouble:self.previousTimeInFeedForGoodVisitSession
                  forKey:kLongFeedVisitTimeAggregateKey];
     [defaults setDouble:self.discoverPreviousTimeInFeedGV
@@ -1069,8 +1083,7 @@ using feed::FeedUserActionType;
     (FeedType)currentFeed {
   // Add the time spent since last recording.
   base::Time now = base::Time::Now();
-  base::TimeDelta additionalTimeInFeed =
-      now - self.feedBecameVisibleTimeForGoodVisitSession;
+  base::TimeDelta additionalTimeInFeed = now - self.feedBecameVisibleTime;
   self.previousTimeInFeedForGoodVisitSession =
       self.previousTimeInFeedForGoodVisitSession +
       additionalTimeInFeed.InSecondsF();
@@ -1126,7 +1139,7 @@ using feed::FeedUserActionType;
   self.lastInteractionTimeForGoodVisits = now;
   [defaults setObject:now.ToNSDate() forKey:kLastInteractionTimeForGoodVisits];
 
-  self.feedBecameVisibleTimeForGoodVisitSession = now;
+  self.feedBecameVisibleTime = now;
 
   self.goodVisitScroll = NO;
 
@@ -1156,6 +1169,51 @@ using feed::FeedUserActionType;
                  forKey:kLastInteractionTimeForFollowingGoodVisits];
     self.followingPreviousTimeInFeedGV = 0;
     self.goodVisitReportedFollowing = NO;
+  }
+}
+
+// Records the time a user has spent in the feed for a day when 24hrs have
+// passed.
+- (void)recordTimeSpentInFeedIfDayIsDone {
+  // The midnight time for the day in which the
+  // `ContentSuggestions.Feed.TimeSpentInFeed` was last recorded.
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  NSDate* lastInteractionReported = base::mac::ObjCCast<NSDate>(
+      [defaults objectForKey:kLastDayTimeInFeedReportedKey]);
+  base::Time lastInteractionReportedInTime;
+  if (lastInteractionReported != nil) {
+    lastInteractionReportedInTime =
+        base::Time::FromNSDate(lastInteractionReported);
+  }
+
+  DCHECK(self.timeSpentInFeed >= base::Seconds(0));
+
+  BOOL shouldResetData = NO;
+  if (lastInteractionReported) {
+    base::TimeDelta sinceDayStart =
+        (base::Time::Now() - lastInteractionReportedInTime);
+    if (sinceDayStart >= base::Days(1) || sinceDayStart < -base::Hours(1)) {
+      // Check if the user has spent any time in the feed.
+      if (self.timeSpentInFeed > base::Seconds(0)) {
+        UMA_HISTOGRAM_LONG_TIMES(kTimeSpentInFeedHistogram,
+                                 self.timeSpentInFeed);
+      }
+      shouldResetData = YES;
+    }
+  } else {
+    shouldResetData = YES;
+  }
+
+  if (shouldResetData) {
+    lastInteractionReported =
+        [NSDate dateWithTimeIntervalSince1970:base::Time::Now().ToDoubleT()];
+    // Save to Defaults
+    [defaults setObject:lastInteractionReported
+                 forKey:kLastDayTimeInFeedReportedKey];
+    // Reset time spent in feed aggregate.
+    self.timeSpentInFeed = base::Seconds(0);
+    [defaults setDouble:self.timeSpentInFeed.InSecondsF()
+                 forKey:kTimeSpentInFeedAggregateKey];
   }
 }
 

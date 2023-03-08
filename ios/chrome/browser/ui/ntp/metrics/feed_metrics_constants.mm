@@ -28,9 +28,13 @@ NSString* const kLastInteractionTimeForDiscoverGoodVisits =
     @"LastInteractionTimeForGoodVisitsDiscover";
 NSString* const kLastInteractionTimeForFollowingGoodVisits =
     @"LastInteractionTimeForGoodVisitsFollowing";
+NSString* const kLastDayTimeInFeedReportedKey = @"LastDayTimeInFeedReported";
+NSString* const kTimeSpentInFeedAggregateKey = @"TimeSpentInFeedAggregate";
 
 #pragma mark - Histograms
 
+const char kTimeSpentInFeedHistogram[] =
+    "ContentSuggestions.Feed.TimeSpentInFeed";
 const char kDiscoverFeedUserActionHistogram[] =
     "ContentSuggestions.Feed.UserActions";
 const char kDiscoverFeedUserActionCommandHistogram[] =
