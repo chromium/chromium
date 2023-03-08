@@ -12,87 +12,73 @@
 		</dict>
 		<dict>
 			<key>Type</key>
-			<string>PSTextFieldSpecifier</string>
+			<string>PSTitleValueSpecifier</string>
 			<key>Title</key>
 			<string>feedModel: didBeginReload:</string>
 			<key>Key</key>
 			<string>FeedModelDidBeginReloadTimestamp</string>
 			<key>DefaultValue</key>
 			<string></string>
-			<key>KeyboardType</key>
-			<string>Alphabet</string>
 		</dict>
 		<dict>
 			<key>Type</key>
-			<string>PSTextFieldSpecifier</string>
+			<string>PSTitleValueSpecifier</string>
 			<key>Title</key>
 			<string>refresh FeedModel:</string>
 			<key>Key</key>
 			<string>RefreshFeedModelTimestamp</string>
 			<key>DefaultValue</key>
 			<string></string>
-			<key>KeyboardType</key>
-			<string>Alphabet</string>
 		</dict>
 		<dict>
 			<key>Type</key>
-			<string>PSTextFieldSpecifier</string>
+			<string>PSTitleValueSpecifier</string>
 			<key>Title</key>
 			<string>Forced foreground</string>
 			<key>Key</key>
 			<string>FeedLastForcedForegroundRefreshTimestamp</string>
 			<key>DefaultValue</key>
 			<string></string>
-			<key>KeyboardType</key>
-			<string>Alphabet</string>
 		</dict>
 		<dict>
 			<key>Type</key>
-			<string>PSTextFieldSpecifier</string>
+			<string>PSTitleValueSpecifier</string>
 			<key>Title</key>
 			<string>Non forced foreground</string>
 			<key>Key</key>
 			<string>FeedLastNonForcedForegroundRefreshTimestamp</string>
 			<key>DefaultValue</key>
 			<string></string>
-			<key>KeyboardType</key>
-			<string>Alphabet</string>
 		</dict>
 		<dict>
 			<key>Type</key>
-			<string>PSTextFieldSpecifier</string>
+			<string>PSTitleValueSpecifier</string>
 			<key>Title</key>
 			<string>Visible foreground</string>
 			<key>Key</key>
 			<string>FeedLastVisibleForegroundRefreshTimestamp</string>
 			<key>DefaultValue</key>
 			<string></string>
-			<key>KeyboardType</key>
-			<string>Alphabet</string>
 		</dict>
 		<dict>
 			<key>Type</key>
-			<string>PSTextFieldSpecifier</string>
+			<string>PSTitleValueSpecifier</string>
 			<key>Title</key>
 			<string>Non visible foreground</string>
 			<key>Key</key>
 			<string>FeedLastNonVisibleForegroundRefreshTimestamp</string>
 			<key>DefaultValue</key>
 			<string></string>
-			<key>KeyboardType</key>
-			<string>Alphabet</string>
 		</dict>
 		<dict>
 			<key>Type</key>
-			<string>PSTextFieldSpecifier</string>
+			<string>PSTitleValueSpecifier</string>
 			<key>Title</key>
 			<string>Background refresh</string>
 			<key>Key</key>
 			<string>FeedLastBackgroundRefreshTimestamp</string>
 			<key>DefaultValue</key>
 			<string></string>
-			<key>KeyboardType</key>
-			<string>Alphabet</string>
 		</dict>
 		<dict>
 			<key>Title</key>
