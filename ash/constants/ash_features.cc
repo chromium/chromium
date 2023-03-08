@@ -545,11 +545,6 @@ BASE_FEATURE(kDockedMagnifier,
              "DockedMagnifier",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables dragging an unpinned open app to pinned app side to pin.
-BASE_FEATURE(kDragUnpinnedAppToPin,
-             "DragUnpinnedAppToPin",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, DriveFS will be used for Drive sync.
 BASE_FEATURE(kDriveFs, "DriveFS", base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -2471,10 +2466,6 @@ bool IsInputDeviceSettingsSplitEnabled() {
 
 bool IsDisplayAlignmentAssistanceEnabled() {
   return base::FeatureList::IsEnabled(kDisplayAlignAssist);
-}
-
-bool IsDragUnpinnedAppToPinEnabled() {
-  return base::FeatureList::IsEnabled(kDragUnpinnedAppToPin);
 }
 
 bool IsDriveFsMirroringEnabled() {

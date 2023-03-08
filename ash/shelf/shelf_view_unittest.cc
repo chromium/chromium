@@ -647,17 +647,6 @@ const char*
         ShelfButtonPressedMetricTracker::
             kTimeBetweenWindowMinimizedAndActivatedActionsHistogramName;
 
-class ShelfViewDragToPinTest : public ShelfViewTest {
- public:
-  ShelfViewDragToPinTest() {
-    feature_list_.InitAndEnableFeature(features::kDragUnpinnedAppToPin);
-  }
-  ~ShelfViewDragToPinTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 TEST_P(LtrRtlShelfViewTest, VisibleShelfItemsBounds) {
   // Add 3 pinned apps, and a normal app.
   AddAppShortcut();
@@ -799,7 +788,7 @@ TEST_P(LtrRtlShelfViewTest, SimultaneousDrag) {
 }
 
 // Ensure that the behavior of pinning by dragging works as expected.
-TEST_F(ShelfViewDragToPinTest, DragAppsToPin) {
+TEST_F(ShelfViewTest, DragAppsToPin) {
   std::vector<std::pair<ShelfID, views::View*>> id_map;
   SetupForDragTest(&id_map);
   size_t pinned_apps_size = id_map.size();
@@ -861,7 +850,7 @@ TEST_F(ShelfViewDragToPinTest, DragAppsToPin) {
 
 // Check that separator index updates as expected when a drag view is dragged
 // over it.
-TEST_F(ShelfViewDragToPinTest, DragAppAroundSeparator) {
+TEST_F(ShelfViewTest, DragAppAroundSeparator) {
   std::vector<std::pair<ShelfID, views::View*>> id_map;
   SetupForDragTest(&id_map);
   const size_t pinned_apps_size = id_map.size();

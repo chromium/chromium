@@ -1862,9 +1862,6 @@ std::pair<size_t, size_t> ShelfView::GetDragRange(size_t index) {
 }
 
 bool ShelfView::ShouldUpdateDraggedViewPinStatus(size_t dragged_view_index) {
-  if (!features::IsDragUnpinnedAppToPinEnabled())
-    return false;
-
   if (!base::Contains(visible_views_indices_, dragged_view_index)) {
     DCHECK(model_->in_shelf_party());
     return false;
@@ -1895,9 +1892,6 @@ bool ShelfView::ShouldUpdateDraggedViewPinStatus(size_t dragged_view_index) {
 }
 
 bool ShelfView::CanDragAcrossSeparator(views::View* drag_view) const {
-  if (!features::IsDragUnpinnedAppToPinEnabled())
-    return false;
-
   DCHECK(drag_view);
 
   // Only unpinned running apps on shelf can be dragged across the separator to
