@@ -124,11 +124,14 @@ void EnableCrashReporter(const std::string& process_type) {
   crash_reporter::InitializeCrashpad(process_type.empty(), process_type);
   if (process_type.empty()) {
     base::android::InitJavaExceptionReporter();
+    // Only use the Java exception filter for the main process; in the child,
+    // we assume all exceptions are interesting as there is no app code in the
+    // process to generate irrelevant exceptions.
+    base::android::SetJavaExceptionFilter(base::BindRepeating(
+        &AwCrashReporterClient::JavaExceptionFilter, base::Unretained(client)));
   } else {
     base::android::InitJavaExceptionReporterForChildProcess();
   }
-  base::android::SetJavaExceptionFilter(base::BindRepeating(
-      &AwCrashReporterClient::JavaExceptionFilter, base::Unretained(client)));
   g_enabled = true;
 }
 
