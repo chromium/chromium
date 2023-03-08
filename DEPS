@@ -4706,9 +4706,9 @@ hooks = [
                 '--gs_url_base=chromeos-prebuilt/afdo-job/orderfiles/vetted',
     ],
   },
-  # Download AFDO profiles for Chrome OS for each architecture.
+  # Download AFDO profiles for ChromeOS for each architecture.
   {
-    'name': 'Fetch Chrome OS AFDO profiles (from Intel Atom cores)',
+    'name': 'Fetch ChromeOS AFDO profiles (from Intel Atom cores)',
     'pattern': '.',
     'condition': 'checkout_chromeos or checkout_simplechrome',
     'action': [ 'python3',
@@ -4720,7 +4720,7 @@ hooks = [
     ],
   },
   {
-    'name': 'Fetch Chrome OS AFDO profiles (from Intel big cores)',
+    'name': 'Fetch ChromeOS AFDO profiles (from Intel Big cores)',
     'pattern': '.',
     'condition': 'checkout_chromeos or checkout_simplechrome',
     'action': [ 'python3',
@@ -4732,7 +4732,7 @@ hooks = [
     ],
   },
   {
-    'name': 'Fetch Chrome OS AFDO profiles (from Arm)',
+    'name': 'Fetch ChromeOS AFDO profiles (from Arm)',
     'pattern': '.',
     'condition': 'checkout_chromeos or checkout_simplechrome',
     'action': [ 'python3',
@@ -4740,6 +4740,18 @@ hooks = [
                 '--newest_state=src/chromeos/profiles/arm.afdo.newest.txt',
                 '--local_state=src/chromeos/profiles/arm.afdo.local.txt',
                 '--output_name=src/chromeos/profiles/arm.afdo.prof',
+                '--gs_url_base=chromeos-prebuilt/afdo-job/vetted/release',
+    ],
+  },
+  {
+    'name': 'Fetch ChromeOS AFDO profiles (experimental Arm profile)',
+    'pattern': '.',
+    'condition': 'checkout_chromeos or checkout_simplechrome',
+    'action': [ 'python3',
+                'src/tools/download_optimization_profile.py',
+                '--newest_state=src/chromeos/profiles/arm-exp.afdo.newest.txt',
+                '--local_state=src/chromeos/profiles/arm-exp.afdo.local.txt',
+                '--output_name=src/chromeos/profiles/arm-exp.afdo.prof',
                 '--gs_url_base=chromeos-prebuilt/afdo-job/vetted/release',
     ],
   },

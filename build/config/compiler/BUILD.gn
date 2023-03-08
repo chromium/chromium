@@ -2314,10 +2314,12 @@ if (is_clang && is_a_target_toolchain) {
     if (is_android || is_castos) {
       _clang_sample_profile = "//chrome/android/profiles/afdo.prof"
     } else {
-      assert(chromeos_afdo_platform == "atom" ||
-                 chromeos_afdo_platform == "bigcore" ||
-                 chromeos_afdo_platform == "arm",
-             "Only atom, bigcore and arm are valid Chrome OS profiles.")
+      assert(
+          chromeos_afdo_platform == "atom" ||
+              chromeos_afdo_platform == "bigcore" ||
+              chromeos_afdo_platform == "arm" ||
+              chromeos_afdo_platform == "arm-exp",
+          "Only 'atom', 'bigcore', 'arm' and 'arm-exp' are valid ChromeOS profiles.")
       _clang_sample_profile =
           "//chromeos/profiles/${chromeos_afdo_platform}.afdo.prof"
     }
