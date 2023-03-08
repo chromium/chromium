@@ -14,6 +14,10 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
+if (is_ios) {
+  import("//build/config/ios/bundle_data_from_filelist.gni")
+}
+
 visibility = [ "//third_party/blink/renderer/*" ]
 
 config("modules_implementation") {
@@ -706,6 +710,13 @@ source_set("unit_tests") {
     ":accessibility_unittests_data",
     ":mediastream_unittests_data",
   ]
+}
+
+if (is_ios) {
+  bundle_data_from_filelist("accessibility_selection_test_bundle_data") {
+    testonly = true
+    filelist_name = "accessibility/testing/data/selection/accessibility_selection_test_bundle_data.filelist"
+  }
 }
 
 group("accessibility_unittests_data") {

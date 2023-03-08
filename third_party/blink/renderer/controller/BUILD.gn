@@ -150,6 +150,7 @@ test("blink_unittests") {
       ":blink_unittests_bundle_data",
       ":blink_unittests_pak_bundle_data",
       "//media/test:media_bundle_data",
+      "//third_party/blink/renderer/modules:accessibility_selection_test_bundle_data",
     ]
   } else {
     data_deps = [

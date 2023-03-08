@@ -37,6 +37,10 @@ def CheckChange(input_api, output_api):
             input_api, output_api,
             'core/animation/test_data/animation_test_bundle_data',
             'core/animation/test_data')
+        results += presubmit_support.CheckBundleData(
+            input_api, output_api,
+            'modules/accessibility/testing/data/selection/accessibility_selection_test_bundle_data'
+        )
     finally:
         sys.path = old_sys_path
     return results
