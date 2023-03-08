@@ -22,12 +22,12 @@ import {
   Script,
   Session,
 } from '../protocol/protocol.js';
+import {LogType, LoggerFn} from '../utils/log.js';
 import {BrowsingContextProcessor} from './domains/context/browsingContextProcessor.js';
 import {BrowsingContextStorage} from './domains/context/browsingContextStorage.js';
 import {CdpConnection} from './CdpConnection.js';
 import {EventEmitter} from '../utils/EventEmitter.js';
 import {IEventManager} from './domains/events/EventManager.js';
-import {LoggerFn} from '../utils/log.js';
 import {OutgoingBidiMessage} from './OutgoingBidiMessage.js';
 import {RealmStorage} from './domains/script/realmStorage.js';
 
@@ -89,6 +89,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
   #contextProcessor: BrowsingContextProcessor;
   #eventManager: IEventManager;
   #parser: BidiParser;
+  #logger?: LoggerFn;
 
   constructor(
     realmStorage: RealmStorage,
@@ -101,6 +102,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
   ) {
     super();
     this.#eventManager = eventManager;
+    this.#logger = logger;
     this.#contextProcessor = new BrowsingContextProcessor(
       realmStorage,
       cdpConnection,
@@ -234,7 +236,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
         );
       } else {
         const error = e as Error;
-        console.error(error);
+        this.#logger?.(LogType.bidi, error);
         this.emit(
           'response',
           OutgoingBidiMessage.createResolved(
