@@ -104,10 +104,10 @@ inline constexpr size_t kOrderSubIndexMask[PA_BITS_PER_SIZE_T + 1] = {
 // The class used to generate the bucket lookup table at compile-time.
 class BucketIndexLookup final {
  public:
-  PA_ALWAYS_INLINE constexpr static uint16_t GetIndexForDenserBuckets(
+  PA_ALWAYS_INLINE static constexpr uint16_t GetIndexForDenserBuckets(
       size_t size);
-  PA_ALWAYS_INLINE constexpr static uint16_t GetIndexFor8Buckets(size_t size);
-  PA_ALWAYS_INLINE constexpr static uint16_t GetIndex(size_t size);
+  PA_ALWAYS_INLINE static constexpr uint16_t GetIndexFor8Buckets(size_t size);
+  PA_ALWAYS_INLINE static constexpr uint16_t GetIndex(size_t size);
 
   constexpr BucketIndexLookup() {
     constexpr uint16_t sentinel_bucket_index = kNumBuckets;

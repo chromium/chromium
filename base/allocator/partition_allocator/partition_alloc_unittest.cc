@@ -3509,7 +3509,7 @@ TEST_P(PartitionAllocTest, SmallReallocDoesNotMoveTrailingCookie) {
 }
 
 TEST_P(PartitionAllocTest, ZeroFill) {
-  constexpr static size_t kAllZerosSentinel =
+  static constexpr size_t kAllZerosSentinel =
       std::numeric_limits<size_t>::max();
   for (size_t size : kTestSizes) {
     char* p = static_cast<char*>(

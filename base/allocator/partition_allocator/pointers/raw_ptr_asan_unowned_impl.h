@@ -27,13 +27,13 @@ template <bool IsAdjustablePtr>
 struct RawPtrAsanUnownedImpl {
   // Wraps a pointer.
   template <typename T>
-  constexpr static PA_ALWAYS_INLINE T* WrapRawPtr(T* ptr) {
+  static constexpr PA_ALWAYS_INLINE T* WrapRawPtr(T* ptr) {
     return ptr;
   }
 
   // Notifies the allocator when a wrapped pointer is being removed or replaced.
   template <typename T>
-  constexpr static PA_ALWAYS_INLINE void ReleaseWrappedPtr(T* wrapped_ptr) {
+  static constexpr PA_ALWAYS_INLINE void ReleaseWrappedPtr(T* wrapped_ptr) {
     if (!partition_alloc::internal::base::is_constant_evaluated()) {
       ProbeForLowSeverityLifetimeIssue(wrapped_ptr);
     }
@@ -42,7 +42,7 @@ struct RawPtrAsanUnownedImpl {
   // Unwraps the pointer, while asserting that memory hasn't been freed. The
   // function is allowed to crash on nullptr.
   template <typename T>
-  constexpr static PA_ALWAYS_INLINE T* SafelyUnwrapPtrForDereference(
+  static constexpr PA_ALWAYS_INLINE T* SafelyUnwrapPtrForDereference(
       T* wrapped_ptr) {
     // ASAN will catch use of dereferenced ptr without additional probing.
     return wrapped_ptr;
@@ -51,7 +51,7 @@ struct RawPtrAsanUnownedImpl {
   // Unwraps the pointer, while asserting that memory hasn't been freed. The
   // function must handle nullptr gracefully.
   template <typename T>
-  constexpr static PA_ALWAYS_INLINE T* SafelyUnwrapPtrForExtraction(
+  static constexpr PA_ALWAYS_INLINE T* SafelyUnwrapPtrForExtraction(
       T* wrapped_ptr) {
     if (!partition_alloc::internal::base::is_constant_evaluated()) {
       ProbeForLowSeverityLifetimeIssue(wrapped_ptr);
@@ -62,14 +62,14 @@ struct RawPtrAsanUnownedImpl {
   // Unwraps the pointer, without making an assertion on whether memory was
   // freed or not.
   template <typename T>
-  constexpr static PA_ALWAYS_INLINE T* UnsafelyUnwrapPtrForComparison(
+  static constexpr PA_ALWAYS_INLINE T* UnsafelyUnwrapPtrForComparison(
       T* wrapped_ptr) {
     return wrapped_ptr;
   }
 
   // Upcasts the wrapped pointer.
   template <typename To, typename From>
-  constexpr static PA_ALWAYS_INLINE To* Upcast(From* wrapped_ptr) {
+  static constexpr PA_ALWAYS_INLINE To* Upcast(From* wrapped_ptr) {
     static_assert(std::is_convertible<From*, To*>::value,
                   "From must be convertible to To.");
     // Note, this cast may change the address if upcasting to base that lies in
@@ -93,12 +93,12 @@ struct RawPtrAsanUnownedImpl {
       typename Z,
       typename =
           std::enable_if_t<partition_alloc::internal::is_offset_type<Z>, void>>
-  constexpr static PA_ALWAYS_INLINE T* Retreat(T* wrapped_ptr, Z delta_elems) {
+  static constexpr PA_ALWAYS_INLINE T* Retreat(T* wrapped_ptr, Z delta_elems) {
     return wrapped_ptr - delta_elems;
   }
 
   template <typename T>
-  constexpr static PA_ALWAYS_INLINE ptrdiff_t GetDeltaElems(T* wrapped_ptr1,
+  static constexpr PA_ALWAYS_INLINE ptrdiff_t GetDeltaElems(T* wrapped_ptr1,
                                                             T* wrapped_ptr2) {
     return wrapped_ptr1 - wrapped_ptr2;
   }
@@ -106,7 +106,7 @@ struct RawPtrAsanUnownedImpl {
   // Returns a copy of a wrapped pointer, without making an assertion on whether
   // memory was freed or not.
   template <typename T>
-  constexpr static PA_ALWAYS_INLINE T* Duplicate(T* wrapped_ptr) {
+  static constexpr PA_ALWAYS_INLINE T* Duplicate(T* wrapped_ptr) {
     return wrapped_ptr;
   }
 
@@ -121,20 +121,20 @@ struct RawPtrAsanUnownedImpl {
   // `WrapRawPtrForDuplication` and `UnsafelyUnwrapPtrForDuplication` are used
   // to create a new raw_ptr<T> from another raw_ptr<T> of a different flavor.
   template <typename T>
-  constexpr static PA_ALWAYS_INLINE T* WrapRawPtrForDuplication(T* ptr) {
+  static constexpr PA_ALWAYS_INLINE T* WrapRawPtrForDuplication(T* ptr) {
     return ptr;
   }
 
   template <typename T>
-  constexpr static PA_ALWAYS_INLINE T* UnsafelyUnwrapPtrForDuplication(
+  static constexpr PA_ALWAYS_INLINE T* UnsafelyUnwrapPtrForDuplication(
       T* wrapped_ptr) {
     return wrapped_ptr;
   }
 
   // This is for accounting only, used by unit tests.
-  constexpr static PA_ALWAYS_INLINE void IncrementSwapCountForTest() {}
-  constexpr static PA_ALWAYS_INLINE void IncrementLessCountForTest() {}
-  constexpr static PA_ALWAYS_INLINE void
+  static constexpr PA_ALWAYS_INLINE void IncrementSwapCountForTest() {}
+  static constexpr PA_ALWAYS_INLINE void IncrementLessCountForTest() {}
+  static constexpr PA_ALWAYS_INLINE void
   IncrementPointerToMemberOperatorCountForTest() {}
 };
 
