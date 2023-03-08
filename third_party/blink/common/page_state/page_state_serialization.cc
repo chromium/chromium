@@ -168,6 +168,10 @@ struct SerializeObject {
   bool parse_error;
 };
 
+// IMPORTANT: When making updates to the PageState serialization code, be sure
+// to first read
+// https://chromium.googlesource.com/chromium/src/+/main/docs/modifying_session_history_serialization.md
+
 // Version ID of serialized format.
 // 11: Min version
 // 12: Adds support for contains_passwords in HTTP body

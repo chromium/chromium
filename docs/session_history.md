@@ -76,6 +76,8 @@ The joint session history of a tab is persisted so that tabs can be restored
 (e.g., between Chromium restarts, after closing a tab, or on another device).
 This requires serializing the state in each NavigationEntry and its tree of
 FrameNavigationEntries, using a PageState object and other metadata.
+See [Modifying Session History Serialization](modifying_session_history_serialization.md)
+for how to safely add new values to be saved and restored.
 
 Not everything in NavigationEntry is persisted. All data members of
 NavigationEntryImpl and FrameNavigationEntry should be documented with whether
