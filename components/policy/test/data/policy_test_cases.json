@@ -22526,5 +22526,8 @@
         }
       }
     ]
+  },
+  "UserAvatarCustomizationSelectorsEnabled": {
+    "reason_for_missing_test": "TODO(b/271606439): Feature not yet implemented"
   }
 }

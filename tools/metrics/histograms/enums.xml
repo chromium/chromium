@@ -32923,6 +32923,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1087"
       label="RemoteAccessHostAllowEnterpriseRemoteSupportConnections"/>
   <int value="1088" label="ClientSidePhishingProtectionAllowed"/>
+  <int value="1089" label="UserAvatarCustomizationSelectorsEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

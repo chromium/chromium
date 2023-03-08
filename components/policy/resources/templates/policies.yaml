@@ -1087,6 +1087,8 @@ policies:
   1086: CredentialProviderPromoEnabled
   1087: RemoteAccessHostAllowEnterpriseRemoteSupportConnections
   1088: ClientSidePhishingProtectionAllowed
+  1089: UserAvatarCustomizationSelectorsEnabled
+
 atomic_groups:
   1: Homepage
   2: RemoteAccess
