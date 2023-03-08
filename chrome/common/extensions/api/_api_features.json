@@ -127,10 +127,7 @@
     "dependencies": ["permission:autotestPrivate"],
     "contexts": ["blessed_extension"]
   },
-  "bookmarkManagerPrivate": [{
-    "dependencies": ["permission:bookmarkManagerPrivate"],
-    "contexts": ["blessed_extension"]
-  }, {
+  "bookmarkManagerPrivate": {
     "channel": "stable",
     "contexts": ["webui"],
     "matches": [
@@ -138,7 +135,7 @@
       "chrome://bookmarks-side-panel.top-chrome/*",
       "chrome://read-later.top-chrome/*"
     ]
-  }],
+  },
   "bookmarks": [{
     "dependencies": ["permission:bookmarks"],
     "contexts": ["blessed_extension"],

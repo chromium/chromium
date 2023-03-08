@@ -36560,7 +36560,7 @@ Called by update_extension_permission.py.-->
   <int value="17" label="kBackground"/>
   <int value="18" label="kBluetoothPrivate"/>
   <int value="19" label="kBookmark"/>
-  <int value="20" label="kBookmarkManagerPrivate"/>
+  <int value="20" label="kDeleted_BookmarkManagerPrivate"/>
   <int value="21" label="kBrailleDisplayPrivate"/>
   <int value="22" label="kBrowser"/>
   <int value="23" label="kBrowsingData"/>

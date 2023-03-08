@@ -43,7 +43,7 @@ enum APIPermissionID {
   kBackground = 17,
   kBluetoothPrivate = 18,
   kBookmark = 19,
-  kBookmarkManagerPrivate = 20,
+  kDeleted_BookmarkManagerPrivate = 20,
   kBrailleDisplayPrivate = 21,
   kBrowser = 22,
   kBrowsingData = 23,

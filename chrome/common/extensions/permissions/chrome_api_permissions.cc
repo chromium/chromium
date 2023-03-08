@@ -136,8 +136,6 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
      APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kAutoTestPrivate, "autotestPrivate",
      APIPermissionInfo::kFlagCannotBeOptional},
-    {APIPermissionID::kBookmarkManagerPrivate, "bookmarkManagerPrivate",
-     APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kChromeosInfoPrivate, "chromeosInfoPrivate",
      APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kCommandLinePrivate, "commandLinePrivate",
