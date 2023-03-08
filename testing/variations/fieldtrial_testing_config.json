@@ -2581,6 +2581,21 @@
             ]
         }
     ],
+    "ChromeOSARCVMArcOnDemand": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "ArcOnDemand",
+                    "enable_features": [
+                        "ArcOnDemand"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeOSARCVMReclaimThrottle": [
         {
             "platforms": [
@@ -2764,21 +2779,6 @@
                     },
                     "enable_features": [
                         "ChromeOSZramWriteback"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ChromeOsARCVMArcOnDemand": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "ArcOnDemand",
-                    "enable_features": [
-                        "ArcOnDemand"
                     ]
                 }
             ]
