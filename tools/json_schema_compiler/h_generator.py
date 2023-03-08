@@ -337,9 +337,6 @@ class _Generator(object):
 
     c = Code()
     (c.Sblock('struct Params {')
-      .Append('static std::unique_ptr<Params> CreateDeprecated(%s);' %
-                  self._GenerateParams(
-                      ('const base::Value::List& args',)))
       .Append('static absl::optional<Params> Create(%s);' %
                   self._GenerateParams(
                       ('const base::Value::List& args',)))
