@@ -674,12 +674,18 @@ void AuthSessionAuthenticator::DoLoginAsKiosk(
     steps.push_back(base::BindOnce(&MountPerformer::MountEphemeralDirectory,
                                    mount_performer_->AsWeakPtr()));
   } else {
+    steps.push_back(
+        base::BindOnce(&AuthSessionAuthenticator::RecordCreatingNewUser,
+                       weak_factory_.GetWeakPtr()));
     steps.push_back(base::BindOnce(&MountPerformer::CreateNewUser,
                                    mount_performer_->AsWeakPtr()));
     steps.push_back(base::BindOnce(&MountPerformer::MountPersistentDirectory,
                                    mount_performer_->AsWeakPtr()));
     steps.push_back(base::BindOnce(&AuthFactorEditor::AddKioskKey,
                                    auth_factor_editor_->AsWeakPtr()));
+    steps.push_back(
+        base::BindOnce(&AuthSessionAuthenticator::RecordFirstAuthFactorAdded,
+                       weak_factory_.GetWeakPtr()));
   }
   RunOperationChain(std::move(context), std::move(steps),
                     std::move(success_callback), std::move(error_callback));
