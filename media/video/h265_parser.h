@@ -85,12 +85,15 @@ struct MEDIA_EXPORT H265ScalingListData {
   // are actually used. Also change it in the accelerator delegate if that is
   // done.
   // Syntax elements.
-  int scaling_list_dc_coef_16x16[kNumScalingListMatrices];
-  int scaling_list_dc_coef_32x32[kNumScalingListMatrices];
-  int scaling_list_4x4[kNumScalingListMatrices][kScalingListSizeId0Count];
-  int scaling_list_8x8[kNumScalingListMatrices][kScalingListSizeId1To3Count];
-  int scaling_list_16x16[kNumScalingListMatrices][kScalingListSizeId1To3Count];
-  int scaling_list_32x32[kNumScalingListMatrices][kScalingListSizeId1To3Count];
+  uint8_t scaling_list_dc_coef_16x16[kNumScalingListMatrices];
+  uint8_t scaling_list_dc_coef_32x32[kNumScalingListMatrices];
+  uint8_t scaling_list_4x4[kNumScalingListMatrices][kScalingListSizeId0Count];
+  uint8_t scaling_list_8x8[kNumScalingListMatrices]
+                          [kScalingListSizeId1To3Count];
+  uint8_t scaling_list_16x16[kNumScalingListMatrices]
+                            [kScalingListSizeId1To3Count];
+  uint8_t scaling_list_32x32[kNumScalingListMatrices]
+                            [kScalingListSizeId1To3Count];
 };
 
 struct MEDIA_EXPORT H265StRefPicSet {

@@ -25,13 +25,13 @@ namespace media {
 namespace {
 
 // From Table 7-6.
-constexpr int kDefaultScalingListSize1To3Matrix0To2[] = {
+constexpr uint8_t kDefaultScalingListSize1To3Matrix0To2[] = {
     16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 17, 16, 17, 16, 17, 18,
     17, 18, 18, 17, 18, 21, 19, 20, 21, 20, 19, 21, 24, 22, 22, 24,
     24, 22, 22, 24, 25, 25, 27, 30, 27, 25, 25, 29, 31, 35, 35, 31,
     29, 36, 41, 44, 41, 36, 47, 54, 54, 47, 65, 70, 65, 88, 88, 115,
 };
-constexpr int kDefaultScalingListSize1To3Matrix3To5[] = {
+constexpr uint8_t kDefaultScalingListSize1To3Matrix3To5[] = {
     16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 17, 17, 17, 17, 17, 18,
     18, 18, 18, 18, 18, 20, 20, 20, 20, 20, 20, 20, 24, 24, 24, 24,
     24, 24, 24, 24, 25, 25, 25, 25, 25, 25, 25, 28, 28, 28, 28, 28,
@@ -56,7 +56,7 @@ void FillInDefaultScalingListData(H265ScalingListData* scaling_list_data,
     return;
   }
 
-  int* dst;
+  uint8_t* dst;
   switch (size_id) {
     case 1:
       dst = scaling_list_data->scaling_list_8x8[matrix_id];
@@ -68,7 +68,7 @@ void FillInDefaultScalingListData(H265ScalingListData* scaling_list_data,
       dst = scaling_list_data->scaling_list_32x32[matrix_id];
       break;
   }
-  const int* src;
+  const uint8_t* src;
   if (matrix_id < 3)
     src = kDefaultScalingListSize1To3Matrix0To2;
   else
@@ -1466,8 +1466,8 @@ H265Parser::Result H265Parser::ParseScalingListData(
         } else {
           int ref_matrix_id = matrix_id - scaling_list_pred_matrix_id_delta *
                                               (size_id == 3 ? 3 : 1);
-          int* dst;
-          int* src;
+          uint8_t* dst;
+          uint8_t* src;
           int count = H265ScalingListData::kScalingListSizeId1To3Count;
           switch (size_id) {
             case 0:
@@ -1503,23 +1503,21 @@ H265Parser::Result H265Parser::ParseScalingListData(
         int coef_num = std::min(64, (1 << (4 + (size_id << 1))));
         if (size_id > 1) {
           if (size_id == 2) {
-            READ_SE_OR_RETURN(
-                &scaling_list_data->scaling_list_dc_coef_16x16[matrix_id]);
-            IN_RANGE_OR_RETURN(
-                scaling_list_data->scaling_list_dc_coef_16x16[matrix_id], -7,
-                247);
+            int scaling_list_dc_coef_16x16_minus_8;
+            READ_SE_OR_RETURN(&scaling_list_dc_coef_16x16_minus_8);
+            IN_RANGE_OR_RETURN(scaling_list_dc_coef_16x16_minus_8, -7, 247);
             // This is parsed as minus8;
-            scaling_list_data->scaling_list_dc_coef_16x16[matrix_id] += 8;
+            scaling_list_data->scaling_list_dc_coef_16x16[matrix_id] =
+                scaling_list_dc_coef_16x16_minus_8 + 8;
             next_coef =
                 scaling_list_data->scaling_list_dc_coef_16x16[matrix_id];
           } else {  // size_id == 3
-            READ_SE_OR_RETURN(
-                &scaling_list_data->scaling_list_dc_coef_32x32[matrix_id]);
-            IN_RANGE_OR_RETURN(
-                scaling_list_data->scaling_list_dc_coef_32x32[matrix_id], -7,
-                247);
+            int scaling_list_dc_coef_32x32_minus_8;
+            READ_SE_OR_RETURN(&scaling_list_dc_coef_32x32_minus_8);
+            IN_RANGE_OR_RETURN(scaling_list_dc_coef_32x32_minus_8, -7, 247);
             // This is parsed as minus8;
-            scaling_list_data->scaling_list_dc_coef_32x32[matrix_id] += 8;
+            scaling_list_data->scaling_list_dc_coef_32x32[matrix_id] =
+                scaling_list_dc_coef_32x32_minus_8 + 8;
             next_coef =
                 scaling_list_data->scaling_list_dc_coef_32x32[matrix_id];
           }
