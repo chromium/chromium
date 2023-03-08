@@ -103,7 +103,10 @@ class FastCheckoutClientImpl
       DestroyingAutofillDriver_ResetsAutofillManagerPointer);
   FRIEND_TEST_ALL_PREFIXES(
       FastCheckoutClientImplTest,
-      OnOptionsSelected_SavesFormsAndAutofillDataSelections);
+      OnOptionsSelected_LocalCard_SavesFormsAndAutofillDataSelections);
+  FRIEND_TEST_ALL_PREFIXES(
+      FastCheckoutClientImplTest,
+      OnOptionsSelected_ServerCard_SavesFormsAndAutofillDataSelections);
   FRIEND_TEST_ALL_PREFIXES(FastCheckoutClientImplTest,
                            OnAfterLoadedServerPredictions_FillsForms);
   FRIEND_TEST_ALL_PREFIXES(
@@ -180,7 +183,7 @@ class FastCheckoutClientImpl
   autofill::AutofillProfile* GetSelectedAutofillProfile();
 
   // Returns a pointer to the credit card corresponding to
-  // `selected_credit_card_guid_`. Stops the run if it's a `nullptr`.
+  // `selected_credit_card_id_`. Stops the run if it's a `nullptr`.
   autofill::CreditCard* GetSelectedCreditCard();
 
   // Triggers reparse with a delay of `kSleepBetweenTriggerReparseCalls`.
@@ -225,7 +228,10 @@ class FastCheckoutClientImpl
   absl::optional<std::string> selected_autofill_profile_guid_;
 
   // Credit card selected by the user in the bottomsheet.
-  absl::optional<std::string> selected_credit_card_guid_;
+  absl::optional<std::string> selected_credit_card_id_;
+
+  // Specifis whether the selected credit card is local or a server card.
+  bool selected_credit_card_is_local_ = true;
 
   // The origin for which `TryToStart()` was triggered.
   url::Origin origin_;
