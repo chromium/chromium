@@ -1,4 +1,4 @@
-# This workflow will run headful and headless e2e tests.
+# This workflow will run headful and headless E2E tests.
 
 name: E2E tests
 
@@ -10,19 +10,15 @@ on:
 jobs:
   e2e:
     timeout-minutes: 15
-    runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
+        os: [ubuntu-latest, macos-latest]
         head: [headful, headless]
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Install chrome-dev
-        run: |
-          wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-          sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
-          sudo apt-get update
-          sudo apt-get install -y google-chrome-unstable
       - name: Set up node.js
         uses: actions/setup-node@v3
         with:
@@ -30,6 +26,10 @@ jobs:
           cache: npm
       - name: Install and build npm dependencies
         run: npm ci
+      - name: Install Chromium
+        run: |
+          # browsers from @puppeteer/browsers
+          echo "chromium_binary=$(npx browsers install chromium@latest | cut -f 2 -d' ')" >> $GITHUB_ENV
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -37,8 +37,12 @@ jobs:
           cache: pip
       - name: Install Python dependencies
         run: pip install -r tests/requirements.txt
-      - name: Run e2e tests
-        run: CHANNEL=chrome-dev xvfb-run --auto-servernum npm run e2e-${{ matrix.head }}
+      - name: Run E2E tests
+        if: runner.os == 'Linux'
+        run: PUPPETEER_EXECUTABLE_PATH="${{ env.chromium_binary }}" xvfb-run --auto-servernum npm run e2e-${{ matrix.head }}
+      - name: Run E2E tests
+        if: runner.os == 'macOS'
+        run: PUPPETEER_EXECUTABLE_PATH="${{ env.chromium_binary }}" npm run e2e-${{ matrix.head }}
 
 env:
   FORCE_COLOR: 3

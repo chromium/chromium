@@ -48,15 +48,10 @@ jobs:
       - name: Set up hosts
         run: ./wpt make-hosts-file | sudo tee -a /etc/hosts
         working-directory: wpt
-      # TODO: Install a pinned version of Chromium. This may become possible
-      # after https://github.com/web-platform-tests/wpt/issues/28970.
       - name: Install Chromium
-        # This installs dev chrome to `/usr/bin/google-chrome-unstable`.
         run: |
-          wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-          sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
-          sudo apt-get update
-          sudo apt-get install -y google-chrome-unstable
+          # browsers from @puppeteer/browsers
+          echo "chromium_binary=$(npx browsers install chromium@latest | cut -f 2 -d' ')" >> $GITHUB_ENV
       - name: Run tests
         # For verbose logging, add --log-mach - --log-mach-level info
         run: >
@@ -64,7 +59,7 @@ jobs:
           ./wpt/wpt run
           --webdriver-binary runBiDiServer.sh
           ${{ matrix.wpt_headless_argument }}
-          --binary /usr/bin/google-chrome-unstable
+          --binary ${{ env.chromium_binary }}
           --manifest MANIFEST.json
           --metadata wpt-metadata/mapper/${{ matrix.head }}
           --log-wptreport out/wptreport-mapper.json
