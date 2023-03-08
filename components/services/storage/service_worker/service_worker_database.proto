@@ -63,7 +63,7 @@ message ServiceWorkerRegistrationData {
   enum IPAddressSpace {
     UNKNOWN = 0;
     LOOPBACK = 1;
-    PRIVATE = 2;
+    LOCAL = 2;
     PUBLIC = 3;
   }
 

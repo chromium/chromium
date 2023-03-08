@@ -80,7 +80,7 @@ TEST(IPAddressSpaceTest, IPEndPointToIPAddressSpaceV4Public) {
 // three "Private Use" address blocks defined in RFC 1918 is `private`.
 TEST(IPAddressSpaceTest, IPEndPointToIPAddressSpaceV4PrivateUse) {
   EXPECT_EQ(IPAddressToIPAddressSpace(PrivateIPv4Address()),
-            IPAddressSpace::kPrivate);
+            IPAddressSpace::kLocal);
 
   // 10.0.0.0/8
 
@@ -90,9 +90,9 @@ TEST(IPAddressSpaceTest, IPEndPointToIPAddressSpaceV4PrivateUse) {
 
   // Lower and upper bounds (inclusive).
   EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(10, 0, 0, 0)),
-            IPAddressSpace::kPrivate);
+            IPAddressSpace::kLocal);
   EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(10, 255, 255, 255)),
-            IPAddressSpace::kPrivate);
+            IPAddressSpace::kLocal);
 
   // Upper bound (exclusive).
   EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(11, 0, 0, 0)),
@@ -106,9 +106,9 @@ TEST(IPAddressSpaceTest, IPEndPointToIPAddressSpaceV4PrivateUse) {
 
   // Lower and upper bounds (inclusive).
   EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(172, 16, 0, 0)),
-            IPAddressSpace::kPrivate);
+            IPAddressSpace::kLocal);
   EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(172, 31, 255, 255)),
-            IPAddressSpace::kPrivate);
+            IPAddressSpace::kLocal);
 
   // Upper bound (exclusive).
   EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(172, 32, 0, 0)),
@@ -122,9 +122,9 @@ TEST(IPAddressSpaceTest, IPEndPointToIPAddressSpaceV4PrivateUse) {
 
   // Lower and upper bounds (inclusive).
   EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(192, 168, 0, 0)),
-            IPAddressSpace::kPrivate);
+            IPAddressSpace::kLocal);
   EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(192, 168, 255, 255)),
-            IPAddressSpace::kPrivate);
+            IPAddressSpace::kLocal);
 
   // Upper bound (exclusive).
   EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(169, 169, 0, 0)),
@@ -140,9 +140,9 @@ TEST(IPAddressSpaceTest, IPEndPointToIPAddressSpaceV4LinkLocal) {
 
   // Lower and upper bounds (inclusive).
   EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(169, 254, 0, 0)),
-            IPAddressSpace::kPrivate);
+            IPAddressSpace::kLocal);
   EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(169, 254, 255, 255)),
-            IPAddressSpace::kPrivate);
+            IPAddressSpace::kLocal);
 
   // Upper bound (exclusive).
   EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(169, 255, 0, 0)),
@@ -193,10 +193,10 @@ TEST(IPAddressSpaceTest, IPEndPointToIPAddressSpaceV6UniqueLocal) {
 
   // Lower and upper bounds (inclusive).
   EXPECT_EQ(IPAddressToIPAddressSpace(ParseIPAddress("fc00::")),
-            IPAddressSpace::kPrivate);
+            IPAddressSpace::kLocal);
   EXPECT_EQ(IPAddressToIPAddressSpace(
                 ParseIPAddress("fdff:ffff:ffff:ffff:ffff:ffff:ffff:ffff")),
-            IPAddressSpace::kPrivate);
+            IPAddressSpace::kLocal);
 
   // Upper bound (exclusive).
   EXPECT_EQ(IPAddressToIPAddressSpace(ParseIPAddress("fe00::")),
@@ -213,10 +213,10 @@ TEST(IPAddressSpaceTest, IPEndPointToIPAddressSpaceV6LinkLocalUnicast) {
 
   // Lower and upper bounds (inclusive).
   EXPECT_EQ(IPAddressToIPAddressSpace(ParseIPAddress("fe80::")),
-            IPAddressSpace::kPrivate);
+            IPAddressSpace::kLocal);
   EXPECT_EQ(IPAddressToIPAddressSpace(
                 ParseIPAddress("febf:ffff:ffff:ffff:ffff:ffff:ffff:ffff")),
-            IPAddressSpace::kPrivate);
+            IPAddressSpace::kLocal);
 
   // Upper bound (exclusive).
   EXPECT_EQ(IPAddressToIPAddressSpace(ParseIPAddress("fec0::")),
@@ -246,7 +246,7 @@ TEST(IPAddressSpaceTest, IPEndPointToAddressSpaceIPv4MappedIPv6) {
 
   EXPECT_EQ(IPAddressToIPAddressSpace(
                 net::ConvertIPv4ToIPv4MappedIPv6(PrivateIPv4Address())),
-            IPAddressSpace::kPrivate);
+            IPAddressSpace::kLocal);
 
   EXPECT_EQ(IPAddressToIPAddressSpace(
                 net::ConvertIPv4ToIPv4MappedIPv6(IPAddress::IPv4Localhost())),
@@ -293,7 +293,7 @@ TEST(IPAddressSpaceTest, IPEndPointToAddressSpaceOverrideMultiple) {
             IPAddressSpace::kPublic);
 
   EXPECT_EQ(IPEndPointToIPAddressSpace(IPEndPoint(IPAddress(8, 8, 8, 8), 8888)),
-            IPAddressSpace::kPrivate);
+            IPAddressSpace::kLocal);
 }
 
 // Verifies that invalid entries in the command-line switch comma-separated list
@@ -314,7 +314,7 @@ TEST(IPAddressSpaceTest, IPEndPointToAddressSpaceOverrideInvalid) {
 
   // Valid override applies, despite preceding garbage.
   EXPECT_EQ(IPEndPointToIPAddressSpace(IPEndPoint(IPAddress(1, 2, 3, 4), 80)),
-            IPAddressSpace::kPrivate);
+            IPAddressSpace::kLocal);
 }
 
 // Verifies that command-line overrides that overlap with previously-given
@@ -381,7 +381,7 @@ TEST(IPAddressSpaceTest, IPEndPointToAddressSpaceOverrideV6) {
   // Exact match.
   EXPECT_EQ(
       IPEndPointToIPAddressSpace(IPEndPoint(ParseIPAddress("2020::1"), 1234)),
-      IPAddressSpace::kPrivate);
+      IPAddressSpace::kLocal);
 }
 
 TEST(IPAddressSpaceTest, TransportInfoToIPAddressSpaceProxiedIsUnknown) {
@@ -437,7 +437,7 @@ TEST(IPAddressSpaceTest, IsLessPublicAddressSpaceThanLocal) {
                                         IPAddressSpace::kLoopback));
 
   EXPECT_TRUE(IsLessPublicAddressSpace(IPAddressSpace::kLoopback,
-                                       IPAddressSpace::kPrivate));
+                                       IPAddressSpace::kLocal));
   EXPECT_TRUE(IsLessPublicAddressSpace(IPAddressSpace::kLoopback,
                                        IPAddressSpace::kPublic));
   EXPECT_TRUE(IsLessPublicAddressSpace(IPAddressSpace::kLoopback,
@@ -445,14 +445,14 @@ TEST(IPAddressSpaceTest, IsLessPublicAddressSpaceThanLocal) {
 }
 
 TEST(IPAddressSpaceTest, IsLessPublicAddressSpaceThanPrivate) {
-  EXPECT_FALSE(IsLessPublicAddressSpace(IPAddressSpace::kPrivate,
+  EXPECT_FALSE(IsLessPublicAddressSpace(IPAddressSpace::kLocal,
                                         IPAddressSpace::kLoopback));
-  EXPECT_FALSE(IsLessPublicAddressSpace(IPAddressSpace::kPrivate,
-                                        IPAddressSpace::kPrivate));
+  EXPECT_FALSE(
+      IsLessPublicAddressSpace(IPAddressSpace::kLocal, IPAddressSpace::kLocal));
 
-  EXPECT_TRUE(IsLessPublicAddressSpace(IPAddressSpace::kPrivate,
+  EXPECT_TRUE(IsLessPublicAddressSpace(IPAddressSpace::kLocal,
                                        IPAddressSpace::kPublic));
-  EXPECT_TRUE(IsLessPublicAddressSpace(IPAddressSpace::kPrivate,
+  EXPECT_TRUE(IsLessPublicAddressSpace(IPAddressSpace::kLocal,
                                        IPAddressSpace::kUnknown));
 }
 
@@ -460,7 +460,7 @@ TEST(IPAddressSpaceTest, IsLessPublicAddressSpaceThanPublic) {
   EXPECT_FALSE(IsLessPublicAddressSpace(IPAddressSpace::kPublic,
                                         IPAddressSpace::kLoopback));
   EXPECT_FALSE(IsLessPublicAddressSpace(IPAddressSpace::kPublic,
-                                        IPAddressSpace::kPrivate));
+                                        IPAddressSpace::kLocal));
   EXPECT_FALSE(IsLessPublicAddressSpace(IPAddressSpace::kPublic,
                                         IPAddressSpace::kPublic));
   EXPECT_FALSE(IsLessPublicAddressSpace(IPAddressSpace::kPublic,
@@ -471,7 +471,7 @@ TEST(IPAddressSpaceTest, IsLessPublicAddressSpaceThanUnknown) {
   EXPECT_FALSE(IsLessPublicAddressSpace(IPAddressSpace::kUnknown,
                                         IPAddressSpace::kLoopback));
   EXPECT_FALSE(IsLessPublicAddressSpace(IPAddressSpace::kUnknown,
-                                        IPAddressSpace::kPrivate));
+                                        IPAddressSpace::kLocal));
   EXPECT_FALSE(IsLessPublicAddressSpace(IPAddressSpace::kUnknown,
                                         IPAddressSpace::kPublic));
   EXPECT_FALSE(IsLessPublicAddressSpace(IPAddressSpace::kUnknown,
@@ -544,7 +544,7 @@ TEST(IPAddressSpaceUtilTest, CalculateClientAddressSpaceIPAddress) {
   CalculateClientAddressSpaceParams params(url_list_via_service_worker,
                                            parsed_headers, remote_endpoint);
 
-  EXPECT_EQ(IPAddressSpace::kPrivate,
+  EXPECT_EQ(IPAddressSpace::kLocal,
             CalculateClientAddressSpace(GURL("http://foo.test"), params));
 }
 
@@ -580,7 +580,7 @@ TEST(IPAddressSpaceTest, CalculateClientAddressSpaceOverride) {
 
   remote_endpoint = IPEndPoint(IPAddress(8, 8, 8, 8), 8888);
 
-  EXPECT_EQ(IPAddressSpace::kPrivate,
+  EXPECT_EQ(IPAddressSpace::kLocal,
             CalculateClientAddressSpace(GURL("http://foo.test"), params));
 }
 
@@ -594,7 +594,7 @@ TEST(IPAddressSpaceTest, CalculateResourceAddressSpaceIPAddress) {
       IPAddressSpace::kLoopback,
       CalculateResourceAddressSpace(
           GURL("http://foo.test"), IPEndPoint(IPAddress::IPv4Localhost(), 80)));
-  EXPECT_EQ(IPAddressSpace::kPrivate,
+  EXPECT_EQ(IPAddressSpace::kLocal,
             CalculateResourceAddressSpace(
                 GURL("http://foo.test"), IPEndPoint(PrivateIPv4Address(), 80)));
   EXPECT_EQ(IPAddressSpace::kPublic,
@@ -615,7 +615,7 @@ TEST(IPAddressSpaceTest, CalculateResourceAddressSpaceOverride) {
       CalculateResourceAddressSpace(GURL("http://foo.test"),
                                     IPEndPoint(IPAddress(10, 2, 3, 4), 80)));
   EXPECT_EQ(
-      IPAddressSpace::kPrivate,
+      IPAddressSpace::kLocal,
       CalculateResourceAddressSpace(GURL("http://foo.test"),
                                     IPEndPoint(IPAddress(8, 8, 8, 8), 8888)));
 }

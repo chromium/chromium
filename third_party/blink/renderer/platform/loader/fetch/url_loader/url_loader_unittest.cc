@@ -521,11 +521,11 @@ TEST_F(URLLoaderTest, ResponseAddressSpace) {
   KURL url("http://foo.example");
 
   network::mojom::URLResponseHead head;
-  head.response_address_space = network::mojom::IPAddressSpace::kPrivate;
+  head.response_address_space = network::mojom::IPAddressSpace::kLocal;
 
   WebURLResponse response = WebURLResponse::Create(url, head, true, -1);
 
-  EXPECT_EQ(network::mojom::IPAddressSpace::kPrivate, response.AddressSpace());
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLocal, response.AddressSpace());
 }
 
 TEST_F(URLLoaderTest, ClientAddressSpace) {

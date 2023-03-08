@@ -476,7 +476,7 @@ Request* Request::CreateRequestWithRequestOrString(
     if (init->targetAddressSpace() == "local") {
       request->SetTargetAddressSpace(network::mojom::IPAddressSpace::kLoopback);
     } else if (init->targetAddressSpace() == "private") {
-      request->SetTargetAddressSpace(network::mojom::IPAddressSpace::kPrivate);
+      request->SetTargetAddressSpace(network::mojom::IPAddressSpace::kLocal);
     } else if (init->targetAddressSpace() == "public") {
       request->SetTargetAddressSpace(network::mojom::IPAddressSpace::kPublic);
     } else if (init->targetAddressSpace() == "unknown") {
@@ -983,7 +983,8 @@ String Request::targetAddressSpace() const {
     case network::mojom::IPAddressSpace::kLoopback:
       // TODO(https://crbug.com/1418287): replace this with "loopback"
       return "local";
-    case network::mojom::IPAddressSpace::kPrivate:
+    case network::mojom::IPAddressSpace::kLocal:
+      // TODO(https://crbug.com/1418287): replace this with "local"
       return "private";
     case network::mojom::IPAddressSpace::kPublic:
       return "public";

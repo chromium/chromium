@@ -66,14 +66,14 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, TargetIpAddressSpaceSimple) {
   // Pretend we just hit a private IP address unexpectedly.
   NotifyLoaderClientOnComplete(CorsErrorStatus(
       mojom::CorsError::kUnexpectedPrivateNetworkAccess,
-      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kPrivate));
+      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal));
 
   // The CORS URL loader restarts a new preflight request.
   RunUntilCreateLoaderAndStartCalled();
 
   // The second request expects the same IP address space.
   EXPECT_EQ(GetRequest().target_ip_address_space,
-            mojom::IPAddressSpace::kPrivate);
+            mojom::IPAddressSpace::kLocal);
 
   NotifyLoaderClientOnReceiveResponse({
       {"Access-Control-Allow-Origin", "https://example.com"},
@@ -87,7 +87,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, TargetIpAddressSpaceSimple) {
 
   // The actual request expects the same IP address space.
   EXPECT_EQ(GetRequest().target_ip_address_space,
-            mojom::IPAddressSpace::kPrivate);
+            mojom::IPAddressSpace::kLocal);
 }
 
 TEST_F(CorsURLLoaderPrivateNetworkAccessTest, TargetIpAddressSpacePreflight) {
@@ -110,14 +110,14 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, TargetIpAddressSpacePreflight) {
   // Pretend we just hit a private IP address unexpectedly.
   NotifyLoaderClientOnComplete(CorsErrorStatus(
       mojom::CorsError::kUnexpectedPrivateNetworkAccess,
-      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kPrivate));
+      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal));
 
   // The CORS URL loader restarts a new preflight request.
   RunUntilCreateLoaderAndStartCalled();
 
   // The second request expects the same IP address space.
   EXPECT_EQ(GetRequest().target_ip_address_space,
-            mojom::IPAddressSpace::kPrivate);
+            mojom::IPAddressSpace::kLocal);
 
   NotifyLoaderClientOnReceiveResponse({
       {"Access-Control-Allow-Methods", "PUT"},
@@ -132,7 +132,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, TargetIpAddressSpacePreflight) {
 
   // The actual request expects the same IP address space.
   EXPECT_EQ(GetRequest().target_ip_address_space,
-            mojom::IPAddressSpace::kPrivate);
+            mojom::IPAddressSpace::kLocal);
 }
 
 TEST_F(CorsURLLoaderPrivateNetworkAccessTest, RequestHeadersSimple) {
@@ -151,7 +151,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, RequestHeadersSimple) {
 
   NotifyLoaderClientOnComplete(CorsErrorStatus(
       mojom::CorsError::kUnexpectedPrivateNetworkAccess,
-      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kPrivate));
+      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal));
 
   RunUntilCreateLoaderAndStartCalled();
 
@@ -183,7 +183,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, RequestHeadersPreflight) {
 
   NotifyLoaderClientOnComplete(CorsErrorStatus(
       mojom::CorsError::kUnexpectedPrivateNetworkAccess,
-      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kPrivate));
+      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal));
 
   RunUntilCreateLoaderAndStartCalled();
 
@@ -207,7 +207,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, MissingResponseHeaderSimple) {
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnComplete(CorsErrorStatus(
       mojom::CorsError::kUnexpectedPrivateNetworkAccess,
-      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kPrivate));
+      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal));
 
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnReceiveResponse({
@@ -220,7 +220,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, MissingResponseHeaderSimple) {
 
   CorsErrorStatus expected_status(
       mojom::CorsError::kPreflightMissingAllowPrivateNetwork);
-  expected_status.target_address_space = mojom::IPAddressSpace::kPrivate;
+  expected_status.target_address_space = mojom::IPAddressSpace::kLocal;
   EXPECT_THAT(client().completion_status().cors_error_status,
               Optional(expected_status));
 }
@@ -239,7 +239,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, MissingResponseHeaderPreflight) {
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnComplete(CorsErrorStatus(
       mojom::CorsError::kUnexpectedPrivateNetworkAccess,
-      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kPrivate));
+      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal));
 
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnReceiveResponse({
@@ -253,7 +253,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, MissingResponseHeaderPreflight) {
 
   CorsErrorStatus expected_status(
       mojom::CorsError::kPreflightMissingAllowPrivateNetwork);
-  expected_status.target_address_space = mojom::IPAddressSpace::kPrivate;
+  expected_status.target_address_space = mojom::IPAddressSpace::kLocal;
   EXPECT_THAT(client().completion_status().cors_error_status,
               Optional(expected_status));
 }
@@ -269,7 +269,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, InvalidResponseHeaderSimple) {
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnComplete(CorsErrorStatus(
       mojom::CorsError::kUnexpectedPrivateNetworkAccess,
-      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kPrivate));
+      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal));
 
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnReceiveResponse({
@@ -283,7 +283,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, InvalidResponseHeaderSimple) {
 
   CorsErrorStatus expected_status(
       mojom::CorsError::kPreflightInvalidAllowPrivateNetwork, "invalid-value");
-  expected_status.target_address_space = mojom::IPAddressSpace::kPrivate;
+  expected_status.target_address_space = mojom::IPAddressSpace::kLocal;
   EXPECT_THAT(client().completion_status().cors_error_status,
               Optional(expected_status));
 }
@@ -302,7 +302,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, InvalidResponseHeaderPreflight) {
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnComplete(CorsErrorStatus(
       mojom::CorsError::kUnexpectedPrivateNetworkAccess,
-      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kPrivate));
+      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal));
 
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnReceiveResponse({
@@ -317,7 +317,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, InvalidResponseHeaderPreflight) {
 
   CorsErrorStatus expected_status(
       mojom::CorsError::kPreflightInvalidAllowPrivateNetwork, "invalid-value");
-  expected_status.target_address_space = mojom::IPAddressSpace::kPrivate;
+  expected_status.target_address_space = mojom::IPAddressSpace::kLocal;
   EXPECT_THAT(client().completion_status().cors_error_status,
               Optional(expected_status));
 }
@@ -333,7 +333,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, SuccessSimple) {
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnComplete(CorsErrorStatus(
       mojom::CorsError::kUnexpectedPrivateNetworkAccess,
-      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kPrivate));
+      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal));
 
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnReceiveResponse({
@@ -368,7 +368,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, SuccessPreflight) {
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnComplete(CorsErrorStatus(
       mojom::CorsError::kUnexpectedPrivateNetworkAccess,
-      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kPrivate));
+      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal));
 
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnReceiveResponse({
@@ -405,7 +405,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, SuccessNoCors) {
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnComplete(CorsErrorStatus(
       mojom::CorsError::kUnexpectedPrivateNetworkAccess,
-      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kPrivate));
+      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal));
 
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnReceiveResponse({
@@ -436,7 +436,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, CachesPreflightResult) {
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnComplete(CorsErrorStatus(
       mojom::CorsError::kUnexpectedPrivateNetworkAccess,
-      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kPrivate));
+      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal));
 
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnReceiveResponse({
@@ -459,7 +459,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, CachesPreflightResult) {
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnComplete(CorsErrorStatus(
       mojom::CorsError::kUnexpectedPrivateNetworkAccess,
-      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kPrivate));
+      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal));
 
   RunUntilCreateLoaderAndStartCalled();
 
@@ -506,7 +506,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, DoesNotShareCache) {
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnComplete(CorsErrorStatus(
       mojom::CorsError::kUnexpectedPrivateNetworkAccess,
-      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kPrivate));
+      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal));
 
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnReceiveResponse({
@@ -619,7 +619,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnSimpleNetError) {
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnComplete(CorsErrorStatus(
       mojom::CorsError::kUnexpectedPrivateNetworkAccess,
-      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kPrivate));
+      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal));
 
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnComplete(net::ERR_INVALID_ARGUMENT);
@@ -642,8 +642,8 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnSimpleNetError) {
       *devtools_observer.cors_error_params();
   EXPECT_EQ(error_params.status,
             CorsErrorStatus(mojom::CorsError::kInvalidResponse,
-                            mojom::IPAddressSpace::kPrivate,
-                            mojom::IPAddressSpace::kPrivate));
+                            mojom::IPAddressSpace::kLocal,
+                            mojom::IPAddressSpace::kLocal));
   EXPECT_TRUE(error_params.is_warning);
   ASSERT_TRUE(error_params.client_security_state);
   EXPECT_TRUE(error_params.client_security_state->is_web_secure_context);
@@ -691,7 +691,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnSimpleTimeout) {
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnComplete(CorsErrorStatus(
       mojom::CorsError::kUnexpectedPrivateNetworkAccess,
-      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kPrivate));
+      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal));
 
   RunUntilCreateLoaderAndStartCalled();
   // Here we intentionally wait for PreflightLoader to be timed out instead
@@ -715,8 +715,8 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnSimpleTimeout) {
       *devtools_observer.cors_error_params();
   EXPECT_EQ(error_params.status,
             CorsErrorStatus(mojom::CorsError::kInvalidResponse,
-                            mojom::IPAddressSpace::kPrivate,
-                            mojom::IPAddressSpace::kPrivate));
+                            mojom::IPAddressSpace::kLocal,
+                            mojom::IPAddressSpace::kLocal));
   EXPECT_TRUE(error_params.is_warning);
   ASSERT_TRUE(error_params.client_security_state);
   EXPECT_TRUE(error_params.client_security_state->is_web_secure_context);
@@ -764,7 +764,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnPreflightNoTimeout) {
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnComplete(CorsErrorStatus(
       mojom::CorsError::kUnexpectedPrivateNetworkAccess,
-      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kPrivate));
+      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal));
 
   RunUntilCreateLoaderAndStartCalled();
 
@@ -832,7 +832,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyBlockPreflightNoTimeout) {
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnComplete(CorsErrorStatus(
       mojom::CorsError::kUnexpectedPrivateNetworkAccess,
-      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kPrivate));
+      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal));
 
   RunUntilCreateLoaderAndStartCalled();
 
@@ -895,7 +895,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnSimpleCorsError) {
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnComplete(CorsErrorStatus(
       mojom::CorsError::kUnexpectedPrivateNetworkAccess,
-      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kPrivate));
+      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal));
 
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnReceiveResponse();
@@ -946,7 +946,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest,
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnComplete(CorsErrorStatus(
       mojom::CorsError::kUnexpectedPrivateNetworkAccess,
-      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kPrivate));
+      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal));
 
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnReceiveResponse({
@@ -1001,7 +1001,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest,
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnComplete(CorsErrorStatus(
       mojom::CorsError::kUnexpectedPrivateNetworkAccess,
-      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kPrivate));
+      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal));
 
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnReceiveResponse({
@@ -1056,7 +1056,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnPreflightNetError) {
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnComplete(CorsErrorStatus(
       mojom::CorsError::kUnexpectedPrivateNetworkAccess,
-      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kPrivate));
+      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal));
 
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnComplete(net::ERR_INVALID_ARGUMENT);
@@ -1113,7 +1113,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnPreflightCorsError) {
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnComplete(CorsErrorStatus(
       mojom::CorsError::kUnexpectedPrivateNetworkAccess,
-      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kPrivate));
+      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal));
 
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnReceiveResponse();
@@ -1123,7 +1123,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnPreflightCorsError) {
   EXPECT_THAT(client().completion_status().cors_error_status,
               Optional(CorsErrorStatus(
                   mojom::CorsError::kPreflightMissingAllowOriginHeader,
-                  network::mojom::IPAddressSpace::kPrivate,
+                  network::mojom::IPAddressSpace::kLocal,
                   network::mojom::IPAddressSpace::kUnknown)));
 
   EXPECT_THAT(
@@ -1142,7 +1142,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnPreflightCorsError) {
   EXPECT_EQ(
       error_params.status,
       CorsErrorStatus(mojom::CorsError::kPreflightMissingAllowOriginHeader,
-                      network::mojom::IPAddressSpace::kPrivate,
+                      network::mojom::IPAddressSpace::kLocal,
                       network::mojom::IPAddressSpace::kUnknown));
   EXPECT_FALSE(error_params.is_warning);
   ASSERT_TRUE(error_params.client_security_state);
@@ -1196,7 +1196,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest,
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnComplete(CorsErrorStatus(
       mojom::CorsError::kUnexpectedPrivateNetworkAccess,
-      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kPrivate));
+      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal));
 
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnReceiveResponse({
@@ -1222,7 +1222,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest,
 
   CorsErrorStatus expected_status(
       mojom::CorsError::kPreflightMissingAllowPrivateNetwork);
-  expected_status.target_address_space = mojom::IPAddressSpace::kPrivate;
+  expected_status.target_address_space = mojom::IPAddressSpace::kLocal;
 
   const MockDevToolsObserver::OnCorsErrorParams& error_params =
       *devtools_observer.cors_error_params();
@@ -1295,7 +1295,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnSameOriginNetError) {
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnComplete(CorsErrorStatus(
       mojom::CorsError::kUnexpectedPrivateNetworkAccess,
-      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kPrivate));
+      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal));
 
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnComplete(net::ERR_INVALID_ARGUMENT);
@@ -1319,8 +1319,8 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnSameOriginNetError) {
       *devtools_observer.cors_error_params();
   EXPECT_EQ(error_params.status,
             CorsErrorStatus(mojom::CorsError::kInvalidResponse,
-                            network::mojom::IPAddressSpace::kPrivate,
-                            network::mojom::IPAddressSpace::kPrivate));
+                            network::mojom::IPAddressSpace::kLocal,
+                            network::mojom::IPAddressSpace::kLocal));
   EXPECT_TRUE(error_params.is_warning);
   ASSERT_TRUE(error_params.client_security_state);
   EXPECT_TRUE(error_params.client_security_state->is_web_secure_context);
@@ -1358,7 +1358,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnSameOriginCorsError) {
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnComplete(CorsErrorStatus(
       mojom::CorsError::kUnexpectedPrivateNetworkAccess,
-      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kPrivate));
+      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal));
 
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnReceiveResponse();
@@ -1384,7 +1384,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnSameOriginCorsError) {
   EXPECT_EQ(
       error_params.status,
       CorsErrorStatus(mojom::CorsError::kPreflightMissingAllowOriginHeader,
-                      network::mojom::IPAddressSpace::kPrivate,
+                      network::mojom::IPAddressSpace::kLocal,
                       network::mojom::IPAddressSpace::kUnknown));
   EXPECT_TRUE(error_params.is_warning);
   ASSERT_TRUE(error_params.client_security_state);
@@ -1424,7 +1424,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest,
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnComplete(CorsErrorStatus(
       mojom::CorsError::kUnexpectedPrivateNetworkAccess,
-      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kPrivate));
+      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal));
 
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnReceiveResponse({
@@ -1450,7 +1450,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest,
 
   CorsErrorStatus expected_status(
       mojom::CorsError::kPreflightMissingAllowPrivateNetwork);
-  expected_status.target_address_space = mojom::IPAddressSpace::kPrivate;
+  expected_status.target_address_space = mojom::IPAddressSpace::kLocal;
 
   const MockDevToolsObserver::OnCorsErrorParams& error_params =
       *devtools_observer.cors_error_params();
@@ -1500,7 +1500,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyBlockNetError) {
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnComplete(CorsErrorStatus(
       mojom::CorsError::kUnexpectedPrivateNetworkAccess,
-      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kPrivate));
+      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal));
 
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnComplete(net::ERR_INVALID_ARGUMENT);
@@ -1553,7 +1553,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyBlockCorsError) {
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnComplete(CorsErrorStatus(
       mojom::CorsError::kUnexpectedPrivateNetworkAccess,
-      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kPrivate));
+      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal));
 
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnReceiveResponse();
@@ -1563,7 +1563,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyBlockCorsError) {
   EXPECT_THAT(client().completion_status().cors_error_status,
               Optional(CorsErrorStatus(
                   mojom::CorsError::kPreflightMissingAllowOriginHeader,
-                  network::mojom::IPAddressSpace::kPrivate,
+                  network::mojom::IPAddressSpace::kLocal,
                   network::mojom::IPAddressSpace::kUnknown)));
 
   EXPECT_THAT(histogram_tester.GetAllSamples(kPreflightErrorHistogramName),
@@ -1579,7 +1579,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyBlockCorsError) {
   EXPECT_EQ(
       error_params.status,
       CorsErrorStatus(mojom::CorsError::kPreflightMissingAllowOriginHeader,
-                      network::mojom::IPAddressSpace::kPrivate,
+                      network::mojom::IPAddressSpace::kLocal,
                       network::mojom::IPAddressSpace::kUnknown));
   EXPECT_FALSE(error_params.is_warning);
   ASSERT_TRUE(error_params.client_security_state);
@@ -1630,7 +1630,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest,
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnComplete(CorsErrorStatus(
       mojom::CorsError::kUnexpectedPrivateNetworkAccess,
-      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kPrivate));
+      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal));
 
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnReceiveResponse({
@@ -1644,7 +1644,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest,
 
   CorsErrorStatus expected_status(
       mojom::CorsError::kPreflightMissingAllowPrivateNetwork);
-  expected_status.target_address_space = mojom::IPAddressSpace::kPrivate;
+  expected_status.target_address_space = mojom::IPAddressSpace::kLocal;
   EXPECT_THAT(client().completion_status().cors_error_status,
               Optional(expected_status));
 
@@ -1708,7 +1708,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest,
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnComplete(CorsErrorStatus(
       mojom::CorsError::kUnexpectedPrivateNetworkAccess,
-      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kPrivate));
+      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal));
 
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnReceiveResponse({
@@ -1723,7 +1723,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest,
 
   CorsErrorStatus expected_status(
       mojom::CorsError::kPreflightInvalidAllowPrivateNetwork, "invalid-value");
-  expected_status.target_address_space = mojom::IPAddressSpace::kPrivate;
+  expected_status.target_address_space = mojom::IPAddressSpace::kLocal;
   EXPECT_THAT(client().completion_status().cors_error_status,
               Optional(expected_status));
 
@@ -1779,7 +1779,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyOnRequestOnly) {
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnComplete(CorsErrorStatus(
       mojom::CorsError::kUnexpectedPrivateNetworkAccess,
-      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kPrivate));
+      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal));
 
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnComplete(net::ERR_INVALID_ARGUMENT);
@@ -1815,7 +1815,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyOnFactoryOnly) {
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnComplete(CorsErrorStatus(
       mojom::CorsError::kUnexpectedPrivateNetworkAccess,
-      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kPrivate));
+      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal));
 
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnComplete(net::ERR_INVALID_ARGUMENT);
@@ -1858,7 +1858,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyOnFactoryAndRequest) {
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnComplete(CorsErrorStatus(
       mojom::CorsError::kUnexpectedPrivateNetworkAccess,
-      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kPrivate));
+      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal));
 
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnComplete(net::ERR_INVALID_ARGUMENT);

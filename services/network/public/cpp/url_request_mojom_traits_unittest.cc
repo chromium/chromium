@@ -106,7 +106,7 @@ TEST(URLRequestMojomTraitsTest, Roundtrips_ResourceRequest) {
           {net::SourceStream::SourceType::TYPE_BROTLI,
            net::SourceStream::SourceType::TYPE_GZIP,
            net::SourceStream::SourceType::TYPE_DEFLATE});
-  original.target_ip_address_space = mojom::IPAddressSpace::kPrivate;
+  original.target_ip_address_space = mojom::IPAddressSpace::kLocal;
   original.has_storage_access = false;
 
   original.trusted_params = ResourceRequest::TrustedParams();
