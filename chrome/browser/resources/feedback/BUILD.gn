@@ -40,6 +40,7 @@ build_webui("build") {
     "js/autofill_metadata.ts",
     "js/feedback.ts",
     "js/feedback_util.ts",
+    "js/logs_map_page.ts",
     "js/questionnaire.ts",
     "js/sys_info.ts",
     "js/take_screenshot.ts",
