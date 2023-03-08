@@ -78,7 +78,7 @@
 /cpuinfo/src
 /crc32c/src
 /cros
-/cros_components
+/cros-components/src
 /cros_system_api
 /custom_tabs_client/src
 /cygwin
