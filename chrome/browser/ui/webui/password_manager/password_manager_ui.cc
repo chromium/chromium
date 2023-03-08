@@ -191,6 +191,8 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
     {"viewExistingPassword", IDS_PASSWORD_MANAGER_UI_VIEW_EXISTING_PASSWORD},
     {"viewExistingPasswordAriaDescription",
      IDS_PASSWORD_MANAGER_UI_VIEW_EXISTING_PASSWORD_ARIA_DESCRIPTION},
+    {"viewPasswordAriaDescription",
+     IDS_PASSWORD_MANAGER_UI_VIEW_PASSWORD_ARIA_DESCRIPTION},
     {"weakPasswordsDescription",
      IDS_PASSWORD_MANAGER_UI_WEAK_PASSWORDS_DESCRIPTION},
     {"weakPasswordsEmpty", IDS_PASSWORD_MANAGER_UI_NO_WEAK_PASSWORDS},
