@@ -23,7 +23,6 @@ import '../os_settings_page_styles.css.js';
 import '../../settings_shared.css.js';
 import '../os_settings_icons.html.js';
 import '../os_reset_page/os_powerwash_dialog.js';
-import './detailed_build_info.js';
 import './update_warning_dialog.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';

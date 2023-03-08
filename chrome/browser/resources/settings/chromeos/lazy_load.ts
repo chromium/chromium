@@ -24,6 +24,7 @@ import './internet_page/hotspot_subpage.js';
 import './internet_page/internet_detail_subpage.js';
 import './internet_page/internet_known_networks_subpage.js';
 import './internet_page/internet_subpage.js';
+import './os_about_page/detailed_build_info_subpage.js';
 // TODO(b/263414034) Determine if elements below adhere to the lazy loading
 // criteria and are needed here
 import './crostini_page/bruschetta_subpage.js';

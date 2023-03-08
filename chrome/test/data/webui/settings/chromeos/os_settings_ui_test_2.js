@@ -216,8 +216,8 @@ suite('os-settings-ui', () => {
         const settingsMain = ui.shadowRoot.querySelector('os-settings-main');
         const aboutPage =
             settingsMain.shadowRoot.querySelector('os-settings-about-page');
-        const detailedBuildInfoPage =
-            aboutPage.shadowRoot.querySelector('settings-detailed-build-info');
+        const detailedBuildInfoPage = aboutPage.shadowRoot.querySelector(
+            'settings-detailed-build-info-subpage');
         await waitBeforeNextRender(detailedBuildInfoPage);
         assertTrue(isVisible(detailedBuildInfoPage));
       });

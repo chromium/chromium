@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview 'settings-detailed-build-info' contains detailed build
+ * @fileoverview 'settings-detailed-build-info-subpage' contains detailed build
  * information for ChromeOS.
  */
 
@@ -33,7 +33,7 @@ import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route} from '../router.js';
 
 import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, browserChannelToI18nId, ChannelInfo, VersionInfo} from './about_page_browser_proxy.js';
-import {getTemplate} from './detailed_build_info.html.js';
+import {getTemplate} from './detailed_build_info_subpage.html.js';
 import {DeviceNameBrowserProxy, DeviceNameBrowserProxyImpl, DeviceNameMetadata} from './device_name_browser_proxy.js';
 import {DeviceNameState} from './device_name_util.js';
 
@@ -43,12 +43,14 @@ declare global {
   }
 }
 
-const SettingsDetailedBuildInfoBase = DeepLinkingMixin(RouteObserverMixin(
-    PrefsMixin(I18nMixin(WebUiListenerMixin(PolymerElement)))));
+const SettingsDetailedBuildInfoSubpageBase =
+    DeepLinkingMixin(RouteObserverMixin(
+        PrefsMixin(I18nMixin(WebUiListenerMixin(PolymerElement)))));
 
-class SettingsDetailedBuildInfoElement extends SettingsDetailedBuildInfoBase {
+class SettingsDetailedBuildInfoSubpageElement extends
+    SettingsDetailedBuildInfoSubpageBase {
   static get is() {
-    return 'settings-detailed-build-info';
+    return 'settings-detailed-build-info-subpage' as const;
   }
 
   static get template() {
@@ -420,9 +422,11 @@ class SettingsDetailedBuildInfoElement extends SettingsDetailedBuildInfoBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'settings-detailed-build-info': SettingsDetailedBuildInfoElement;
+    [SettingsDetailedBuildInfoSubpageElement.is]:
+        SettingsDetailedBuildInfoSubpageElement;
   }
 }
 
 customElements.define(
-    SettingsDetailedBuildInfoElement.is, SettingsDetailedBuildInfoElement);
+    SettingsDetailedBuildInfoSubpageElement.is,
+    SettingsDetailedBuildInfoSubpageElement);
