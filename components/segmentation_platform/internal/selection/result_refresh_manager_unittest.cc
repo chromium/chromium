@@ -35,7 +35,7 @@ const char kTestClient2[] = "client_2";
 
 // Test Ids.
 const proto::SegmentId kSegmentId =
-    proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
+    proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SEARCH_USER;
 
 class MockResultProvider : public SegmentResultProvider {
  public:

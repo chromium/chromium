@@ -33,7 +33,8 @@ void ResultRefreshManager::RefreshModelResults(
         result_providers) {
   result_providers_ = std::move(result_providers);
   for (const auto& config : configs_) {
-    if (config->on_demand_execution) {
+    if (config->on_demand_execution ||
+        !metadata_utils::HasMigratedToMultiOutput(config.get())) {
       continue;
     }
     auto* segment_result_provider =
