@@ -6030,6 +6030,9 @@ class FencedFrameAutomaticBeaconBrowserTest
     // Whether there is a call to `setReportEventDataForAutomaticBeacons()`.
     bool register_beacon_data = true;
 
+    // Whether the initiating frame should have user activation when navigating.
+    bool initiator_has_user_activation = true;
+
     // Whether we expect the beacon to send properly or not.
     bool expected_success = true;
   };
@@ -6139,8 +6142,6 @@ class FencedFrameAutomaticBeaconBrowserTest
                               ->GetPrimaryFrameTree()
                               .root();
 
-    TestFrameNavigationObserver root_observer(root);
-
     // Create a FencedFrameReporter and pass it reporting metadata.
     scoped_refptr<FencedFrameReporter> fenced_frame_reporter =
         CreateFencedFrameReporter();
@@ -6183,6 +6184,14 @@ class FencedFrameAutomaticBeaconBrowserTest
         ExecJs(root, JsReplace("fenced_frame.src = $1;", starting_urn)));
     fenced_frame_observer.WaitForCommit();
 
+    // ExecJs() by default gives its execution target transient user activation.
+    // If the test requires a frame to not have user activation, that must be
+    // specified in the function call's `options` parameter for every ExecJs()
+    // call made on the frame.
+    EvalJsOptions fenced_frame_execjs_options =
+        config.initiator_has_user_activation ? EXECUTE_SCRIPT_DEFAULT_OPTIONS
+                                             : EXECUTE_SCRIPT_NO_USER_GESTURE;
+
     if (config.register_beacon_data) {
       EXPECT_TRUE(ExecJs(
           fenced_frame_root_node,
@@ -6191,14 +6200,15 @@ class FencedFrameAutomaticBeaconBrowserTest
                     "eventData: $1,"
                     "destination: ['seller', 'buyer']"
                     "});",
-                    config.message,
-                    blink::kFencedFrameTopNavigationBeaconType)));
+                    config.message, blink::kFencedFrameTopNavigationBeaconType),
+          fenced_frame_execjs_options));
     }
-    EXPECT_TRUE(
-        ExecJs(fenced_frame_root_node,
-               JsReplace("window.open($1, '_unfencedTop');", navigation_url)));
 
-    root_observer.Wait();
+    content::WebContentsAddedObserver popup_observer;
+    EXPECT_TRUE(ExecJs(fenced_frame_root_node,
+                       JsReplace("window.open($1, '_blank');", navigation_url),
+                       fenced_frame_execjs_options));
+    WaitForLoadStop(popup_observer.GetWebContents());
 
     if (!config.expected_success) {
       // Send a message indicating that the top-level navigation happened.
@@ -6294,6 +6304,17 @@ IN_PROC_BROWSER_TEST_F(FencedFrameAutomaticBeaconBrowserTest,
       .starting_url = {"a.test", "/fenced_frames/title1.html"},
       .navigation_url = {"b.test", "/fenced_frames/title1.html"},
       .register_beacon_data = false,
+      .expected_success = false,
+  };
+  RunTest(config);
+}
+
+IN_PROC_BROWSER_TEST_F(FencedFrameAutomaticBeaconBrowserTest,
+                       NoUserActivation) {
+  Config config = {
+      .starting_url = {"a.test", "/fenced_frames/title1.html"},
+      .navigation_url = {"b.test", "/fenced_frames/title1.html"},
+      .initiator_has_user_activation = false,
       .expected_success = false,
   };
   RunTest(config);

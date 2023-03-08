@@ -8045,6 +8045,14 @@ void RenderFrameHostImpl::MaybeSendFencedFrameReportingBeacon(
     return;
   }
 
+  // Automatic beacons can only be sent if the initiating frame had transient
+  // user activation when it navigated.
+  if (navigation_request.GetNavigationInitiatorActivationAndAdStatus() ==
+      blink::mojom::NavigationInitiatorActivationAndAdStatus::
+          kDidNotStartWithTransientActivation) {
+    return;
+  }
+
   if (!navigation_request.GetInitiatorFrameToken().has_value()) {
     return;
   }
