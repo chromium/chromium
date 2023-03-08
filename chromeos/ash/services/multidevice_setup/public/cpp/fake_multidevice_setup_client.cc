@@ -149,6 +149,11 @@ void FakeMultiDeviceSetupClient::TriggerEventForDebugging(
       type, std::move(callback));
 }
 
+void FakeMultiDeviceSetupClient::SetQuickStartPhoneInstanceID(
+    const std::string& qs_phone_instance_id) {
+  qs_phone_instance_id_ = qs_phone_instance_id;
+}
+
 }  // namespace multidevice_setup
 
 }  // namespace ash

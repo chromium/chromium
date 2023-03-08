@@ -71,6 +71,8 @@ class MultiDeviceSetupClientImpl : public MultiDeviceSetupClient,
       mojom::EventTypeForDebugging type,
       mojom::MultiDeviceSetup::TriggerEventForDebuggingCallback callback)
       override;
+  void SetQuickStartPhoneInstanceID(
+      const std::string& qs_phone_instance_id) override;
 
   // mojom::HostStatusObserver:
   void OnHostStatusChanged(

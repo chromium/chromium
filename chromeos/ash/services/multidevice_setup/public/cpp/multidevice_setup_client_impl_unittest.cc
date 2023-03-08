@@ -344,6 +344,20 @@ class MultiDeviceSetupClientImplTest : public testing::Test {
     EXPECT_EQ(expect_success, trigger_event_for_debugging_success_);
   }
 
+  void CallSetQuickStartPhoneInstanceID(
+      const std::string& qs_phone_instance_id) {
+    EXPECT_EQ(0u,
+              fake_multidevice_setup_->set_qs_phone_instance_id_args().size());
+
+    client_->SetQuickStartPhoneInstanceID(qs_phone_instance_id);
+    SendPendingMojoMessages();
+
+    EXPECT_EQ(1u,
+              fake_multidevice_setup_->set_qs_phone_instance_id_args().size());
+    EXPECT_EQ(qs_phone_instance_id,
+              fake_multidevice_setup_->set_qs_phone_instance_id_args().front());
+  }
+
   MultiDeviceSetupClient* client() { return client_.get(); }
 
   base::HistogramTester histogram_tester_;
@@ -587,6 +601,12 @@ TEST_F(MultiDeviceSetupClientImplTest, TestTriggerEventForDebugging_Failure) {
   CallTriggerEventForDebugging(
       mojom::EventTypeForDebugging::kNewUserPotentialHostExists,
       false /* expect_success */);
+}
+
+TEST_F(MultiDeviceSetupClientImplTest, TestSetQuickStartPhoneInstanceID) {
+  InitializeClient();
+  CallSetQuickStartPhoneInstanceID(
+      "phoneInstanceID1" /* qs_phone_instance_id */);
 }
 
 }  // namespace multidevice_setup

@@ -108,6 +108,14 @@ bool MultiDeviceSetupScreen::MaybeSkip(WizardContext& context) {
         command_line->GetSwitchValueASCII(kQuickStartPhoneInstanceIDSwitch);
   }
 
+  // Use WizardContext here to check if user already connected phone during
+  // Quick Start. If so, the multidevice setup screen will display UI
+  // enhancements.
+  const std::string& phone_instance_id = context.quick_start_phone_instance_id;
+  if (!phone_instance_id.empty()) {
+    setup_client_->SetQuickStartPhoneInstanceID(phone_instance_id);
+  }
+
   // Do not skip if potential host exists but none is set yet.
   if (setup_client_->GetHostStatus().first ==
       multidevice_setup::mojom::HostStatus::kEligibleHostExistsButNoHostSet) {

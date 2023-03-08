@@ -121,6 +121,7 @@ static_library("test_support") {
     ":cpp",
     "//chromeos/ash/services/multidevice_setup",
     "//chromeos/ash/services/multidevice_setup/public/mojom",
+    "//testing/gmock",
     "//url",
   ]
 

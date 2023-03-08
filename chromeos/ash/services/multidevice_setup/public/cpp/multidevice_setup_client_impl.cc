@@ -168,6 +168,11 @@ void MultiDeviceSetupClientImpl::TriggerEventForDebugging(
                                                       std::move(callback));
 }
 
+void MultiDeviceSetupClientImpl::SetQuickStartPhoneInstanceID(
+    const std::string& qs_phone_instance_id) {
+  multidevice_setup_remote_->SetQuickStartPhoneInstanceID(qs_phone_instance_id);
+}
+
 void MultiDeviceSetupClientImpl::OnHostStatusChanged(
     mojom::HostStatus host_status,
     const absl::optional<multidevice::RemoteDevice>& host_device) {
