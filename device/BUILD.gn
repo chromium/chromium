@@ -21,6 +21,35 @@ is_linux_without_udev = (is_linux || is_chromeos) && !use_udev
 test("device_unittests") {
   sources = [
     "base/synchronization/one_writer_seqlock_unittest.cc",
+    "bluetooth/adapter_unittest.cc",
+    "bluetooth/advertisement_unittest.cc",
+    "bluetooth/bluetooth_adapter_unittest.cc",
+    "bluetooth/bluetooth_advertisement_unittest.cc",
+    "bluetooth/bluetooth_device_unittest.cc",
+    "bluetooth/bluetooth_discovery_filter_unittest.cc",
+    "bluetooth/bluetooth_local_gatt_characteristic_unittest.cc",
+    "bluetooth/bluetooth_local_gatt_descriptor_unittest.cc",
+    "bluetooth/bluetooth_local_gatt_service_unittest.cc",
+    "bluetooth/bluetooth_remote_gatt_characteristic_unittest.cc",
+    "bluetooth/bluetooth_remote_gatt_descriptor_unittest.cc",
+    "bluetooth/bluetooth_remote_gatt_service_unittest.cc",
+    "bluetooth/device_unittest.cc",
+    "bluetooth/public/cpp/bluetooth_uuid_unittest.cc",
+    "bluetooth/server_socket_unittest.cc",
+    "bluetooth/socket_unittest.cc",
+    "bluetooth/string_util_icu_unittest.cc",
+    "bluetooth/test/bluetooth_gatt_server_test.cc",
+    "bluetooth/test/bluetooth_gatt_server_test.h",
+    "bluetooth/test/bluetooth_test.cc",
+    "bluetooth/test/bluetooth_test.h",
+    "bluetooth/test/mock_pairing_delegate.cc",
+    "bluetooth/test/mock_pairing_delegate.h",
+    "bluetooth/test/test_bluetooth_adapter_observer.cc",
+    "bluetooth/test/test_bluetooth_adapter_observer.h",
+    "bluetooth/test/test_bluetooth_advertisement_observer.cc",
+    "bluetooth/test/test_bluetooth_advertisement_observer.h",
+    "bluetooth/test/test_bluetooth_local_gatt_service_delegate.cc",
+    "bluetooth/test/test_bluetooth_local_gatt_service_delegate.h",
     "gamepad/abstract_haptic_gamepad_unittest.cc",
     "gamepad/dualshock4_controller_unittest.cc",
     "gamepad/gamepad_blocklist_unittest.cc",
@@ -33,44 +62,9 @@ test("device_unittests") {
     "test/run_all_unittests.cc",
   ]
 
-  if (!is_ios) {
+  if (is_apple) {
     sources += [
-      # TODO(crbug.com/1414708): Enable bluetooth tests on iOS.
-      "bluetooth/adapter_unittest.cc",
-      "bluetooth/advertisement_unittest.cc",
-      "bluetooth/bluetooth_adapter_unittest.cc",
-      "bluetooth/bluetooth_advertisement_unittest.cc",
-      "bluetooth/bluetooth_device_unittest.cc",
-      "bluetooth/bluetooth_discovery_filter_unittest.cc",
-      "bluetooth/bluetooth_local_gatt_characteristic_unittest.cc",
-      "bluetooth/bluetooth_local_gatt_descriptor_unittest.cc",
-      "bluetooth/bluetooth_local_gatt_service_unittest.cc",
-      "bluetooth/bluetooth_remote_gatt_characteristic_unittest.cc",
-      "bluetooth/bluetooth_remote_gatt_descriptor_unittest.cc",
-      "bluetooth/bluetooth_remote_gatt_service_unittest.cc",
-      "bluetooth/device_unittest.cc",
-      "bluetooth/public/cpp/bluetooth_uuid_unittest.cc",
-      "bluetooth/server_socket_unittest.cc",
-      "bluetooth/socket_unittest.cc",
-      "bluetooth/string_util_icu_unittest.cc",
-      "bluetooth/test/bluetooth_gatt_server_test.cc",
-      "bluetooth/test/bluetooth_gatt_server_test.h",
-      "bluetooth/test/bluetooth_test.cc",
-      "bluetooth/test/bluetooth_test.h",
-      "bluetooth/test/mock_pairing_delegate.cc",
-      "bluetooth/test/mock_pairing_delegate.h",
-      "bluetooth/test/test_bluetooth_adapter_observer.cc",
-      "bluetooth/test/test_bluetooth_adapter_observer.h",
-      "bluetooth/test/test_bluetooth_advertisement_observer.cc",
-      "bluetooth/test/test_bluetooth_advertisement_observer.h",
-      "bluetooth/test/test_bluetooth_local_gatt_service_delegate.cc",
-      "bluetooth/test/test_bluetooth_local_gatt_service_delegate.h",
-    ]
-  }
-
-  if (is_mac) {
-    sources += [
-      "bluetooth/bluetooth_adapter_mac_unittest.mm",
+      "bluetooth/bluetooth_low_energy_adapter_apple_unittest.mm",
       "bluetooth/bluetooth_low_energy_advertisement_manager_mac_unittest.mm",
       "bluetooth/test/bluetooth_test_mac.h",
       "bluetooth/test/bluetooth_test_mac.mm",
@@ -85,6 +79,10 @@ test("device_unittests") {
       "bluetooth/test/mock_bluetooth_central_manager_mac.h",
       "bluetooth/test/mock_bluetooth_central_manager_mac.mm",
     ]
+  }
+
+  if (is_mac) {
+    sources += [ "bluetooth/bluetooth_adapter_mac_unittest.mm" ]
   }
 
   if (is_android) {
@@ -125,6 +123,10 @@ test("device_unittests") {
     "//components/device_event_log",
     "//device/base",
     "//device/base/synchronization",
+    "//device/bluetooth",
+    "//device/bluetooth:deprecated_experimental_mojo",
+    "//device/bluetooth:fake_bluetooth",
+    "//device/bluetooth:mocks",
     "//device/gamepad",
     "//device/gamepad:test_helpers",
     "//device/gamepad/public/cpp:shared_with_blink",
@@ -142,6 +144,7 @@ test("device_unittests") {
   ]
 
   data_deps = [
+    "bluetooth/strings:bluetooth_test_strings",
     "//testing/buildbot/filters:device_unittests_filters",
     "//ui/resources:ui_test_pak_data",
   ]
@@ -149,15 +152,9 @@ test("device_unittests") {
   if (!is_ios) {
     # TODO(crbug.com/1414708): Enable possible features on iOS.
     deps += [
-      "//device/bluetooth",
-      "//device/bluetooth:deprecated_experimental_mojo",
-      "//device/bluetooth:fake_bluetooth",
-      "//device/bluetooth:mocks",
       "//device/fido",
       "//device/fido:test_support",
     ]
-
-    data_deps += [ "bluetooth/strings:bluetooth_test_strings" ]
   }
 
   # Most of the FIDO implementation is not compiled in for Android.
@@ -344,14 +341,19 @@ test("device_unittests") {
     ]
   }
 
-  if (is_mac) {
+  if (is_apple) {
     deps += [ "//third_party/ocmock" ]
     ldflags = [ "-ObjC" ]
     frameworks = [
       "CoreBluetooth.framework",
-      "IOBluetooth.framework",
       "IOKit.framework",
       "Foundation.framework",
+    ]
+  }
+
+  if (is_mac) {
+    frameworks += [
+      "IOBluetooth.framework",
       "Security.framework",
     ]
   }

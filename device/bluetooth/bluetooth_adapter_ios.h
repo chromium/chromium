@@ -28,7 +28,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterIOS
   BluetoothAdapterIOS& operator=(const BluetoothAdapterIOS&) = delete;
 
  protected:
-  friend class BluetoothAdapterMacTest;
+  friend class BluetoothLowEnergyAdapterAppleTest;
 
   // BluetoothAdapter override:
   base::WeakPtr<BluetoothAdapter> GetWeakPtr() override;

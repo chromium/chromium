@@ -116,7 +116,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyDeviceMac
 
  private:
   friend class BluetoothLowEnergyAdapterApple;
-  friend class BluetoothAdapterMacTest;
+  friend class BluetoothLowEnergyAdapterAppleTest;
   friend class BluetoothLowEnergyPeripheralBridge;
   friend class BluetoothRemoteGattServiceMac;
   friend class BluetoothTestMac;
