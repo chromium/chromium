@@ -35,7 +35,7 @@ export class BaseAutomationHandler {
   /**
    * Adds an event listener to this handler.
    * @param {EventType} eventType
-   * @param {!function(!AutomationEvent): void} eventCallback
+   * @param {!function(!AutomationEvent)} eventCallback
    * @protected
    */
   addListener_(eventType, eventCallback) {
