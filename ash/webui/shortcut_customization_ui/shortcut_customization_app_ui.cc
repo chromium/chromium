@@ -158,7 +158,6 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
       {"iconLabelPrivacyScreenToggle",
        IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_PRIVACY_SCREEN_TOGGLE},
       {"iconLabelSettings", IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_SETTINGS},
-      {"iconLabelSpace", IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_SPACE},
       {"iconLabelZoomToggle",
        IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_ZOOM_TOGGLE},
   };

@@ -60,7 +60,6 @@ export const keyToIconNameMap: {[key: string]: string} = {
   'PrintScreen': 'screenshot',
   'PrivacyScreenToggle': 'electronic-privacy-screen',
   'Settings': 'settings',
-  'Space': 'space-bar',
   'ToggleDictation': 'dictation-toggle',
   'ZoomToggle': 'fullscreen',
 };
