@@ -4882,10 +4882,35 @@ TEST_P(URLLoaderCookieSettingOverridesTest,
                   ExpectedCookieSettingOverridesForCrossSiteRedirect()));
 }
 
-// TODO(crbug.com/1401089): Add test case for two-time redirects with the first
-// redirect cross-site and the second redirect same-site, to verify the enum
-// gets removed for the first redirect and added for the second.
+TEST_P(URLLoaderCookieSettingOverridesTest,
+       CookieSettingOverrides_OnCrossSiteToSameSite) {
+  GURL cross_site_to_same_site_redirect_url = test_server()->GetURL(
+      kHostnameWithAliases,
+      "/server-redirect?" + test_server()->GetURL("/empty.html").spec());
 
+  base::RunLoop delete_run_loop;
+  ResourceRequest request =
+      CreateResourceRequest("GET", cross_site_to_same_site_redirect_url);
+  request.request_initiator = test_server()->GetOrigin();
+  SetUpRequest(request);
+
+  mojo::Remote<mojom::URLLoader> loader;
+  std::unique_ptr<URLLoader> url_loader;
+  context().mutable_factory_params().process_id = mojom::kBrowserProcessId;
+  url_loader = URLLoaderOptions().MakeURLLoader(
+      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader.BindNewPipeAndPassReceiver(), request, client()->CreateRemote());
+
+  client()->RunUntilRedirectReceived();
+  loader->FollowRedirect({}, {}, {}, absl::nullopt);
+  client()->RunUntilComplete();
+  delete_run_loop.Run();
+  EXPECT_THAT(test_network_delegate()->cookie_setting_overrides_records(),
+              ElementsAre(ExpectedCookieSettingOverridesForCrossSiteRedirect(),
+                          ExpectedCookieSettingOverridesForCrossSiteRedirect(),
+                          ExpectedCookieSettingOverrides(),
+                          ExpectedCookieSettingOverrides()));
+}
 INSTANTIATE_TEST_SUITE_P(All,
                          URLLoaderCookieSettingOverridesTest,
                          testing::Combine(testing::Bool(),
