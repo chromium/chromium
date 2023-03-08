@@ -171,8 +171,6 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
         mImageView.setScaleType(ImageView.ScaleType.FIT_START);
         mImageView.setImageBitmap(mFullBitmap);
 
-        LongScreenshotsMetrics.logLongScreenshotsEvent(
-                LongScreenshotsMetrics.LongScreenshotsEvent.DIALOG_OPEN);
         mDialog.setOnShowListener(this);
         mDialog.show();
     }
@@ -186,9 +184,6 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
     }
 
     public void areaSelectionDone(View view) {
-        // TODO(1163193): Delete all bitmaps.
-        LongScreenshotsMetrics.logLongScreenshotsEvent(
-                LongScreenshotsMetrics.LongScreenshotsEvent.DIALOG_OK);
         mDialog.cancel();
         mDone = true;
         if (mDoneCallback != null) {
@@ -198,8 +193,6 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
     }
 
     public void areaSelectionClose(View view) {
-        LongScreenshotsMetrics.logLongScreenshotsEvent(
-                LongScreenshotsMetrics.LongScreenshotsEvent.DIALOG_CANCEL);
         mDialog.cancel();
     }
 
@@ -314,7 +307,6 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
         Bitmap cropped =
                 Bitmap.createBitmap(mFullBitmap, 0, startY, mFullBitmap.getWidth(), endY - startY);
         mFullBitmap = null;
-        LongScreenshotsMetrics.logBitmapSelectedHeightPx(endY - startY);
         return cropped;
     }
 

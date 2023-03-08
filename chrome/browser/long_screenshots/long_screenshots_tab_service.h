@@ -43,11 +43,6 @@ class LongScreenshotsTabService
   // Define a list of statuses to describe the calling of paint preview and
   // generation of the bitmap.
   //
-  // When updating this, also update LongScreenshotsMetrics in
-  // /chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/long_screenshots/LongScreenshotsMetrics.java
-  // and SharingLongScreenshotsEvent in enums.xml
-  // and logCaptureResultStatus() in ./bitmap_generation/BitmapGenerator.java
-  //
   // A Java counterpart will be generated for this enum.
   // GENERATED_JAVA_ENUM_PACKAGE: (
   // org.chromium.chrome.browser.share.long_screenshots.bitmap_generation)
