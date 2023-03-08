@@ -327,6 +327,14 @@ TEST_F(NetworkEventsObserverConnectionStateTest, MultipleEvents) {
   ASSERT_TRUE(event_reported);
   VerifyConnectionState(result_metric_data, kWifiGuid, NOT_CONNECTED);
 
+  // Duplicate events should not be reported even if another connection event
+  // was observed in between.
+  event_reported = false;
+  network_events_observer.OnConnectionStateChanged(kWifiIdleGuid,
+                                                   NetworkState::kNotConnected);
+
+  ASSERT_FALSE(event_reported);
+
   // Different event with same guid should be reported.
   event_reported = false;
   network_events_observer.OnConnectionStateChanged(kWifiGuid,

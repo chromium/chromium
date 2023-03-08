@@ -19,7 +19,6 @@
 #include "chromeos/ash/components/network/network_type_pattern.h"
 #include "chromeos/services/network_health/public/mojom/network_health_types.mojom.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 namespace {
@@ -48,15 +47,12 @@ void NetworkEventsObserver::OnConnectionStateChanged(
     chromeos::network_health::mojom::NetworkState state) {
   using NetworkStateMojom = chromeos::network_health::mojom::NetworkState;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (last_reported_connection_guid_.has_value() &&
-      last_reported_connection_guid_.value() == guid &&
-      last_reported_connection_state_.has_value() &&
-      last_reported_connection_state_.value() == state) {
+  if (base::Contains(connection_state_map_, guid) &&
+      connection_state_map_.at(guid) == state) {
     DVLOG(1) << "Connection state already reported";
     return;
   }
-  last_reported_connection_guid_ = guid;
-  last_reported_connection_state_ = state;
+  connection_state_map_[guid] = state;
 
   MetricData metric_data;
   metric_data.mutable_event_data()->set_type(
@@ -126,11 +122,10 @@ void NetworkEventsObserver::SetReportingEnabled(bool is_enabled) {
       ::chromeos::network_health::mojom::NetworkEventsObserver>::
       SetReportingEnabled(is_enabled);
   if (!is_enabled) {
+    // Reset connection state fields.
+    connection_state_map_.clear();
     return;
   }
-  // Reset connection state fields.
-  last_reported_connection_guid_ = absl::nullopt;
-  last_reported_connection_state_ = absl::nullopt;
 
   // Get signal strength.
   low_signal_reported_ = false;
