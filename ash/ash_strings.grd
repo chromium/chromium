@@ -3172,31 +3172,31 @@ Connect your device to power.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_CYCLE_BACKWARD_MRU" translateable="false" desc="Label for accelerator action - Cycle backwards in the MRU window list.">
         Cycle backwards in the MRU window list
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_CYCLE_FORWARD_MRU" translateable="false" desc="Label for accelerator action - Cycle forwards in the MRU window list.">
-        Cycle forwards in the MRU window list
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_CYCLE_FORWARD_MRU" translateable="false" desc="Label for accelerator action - Cycle forwards in the most recently used window list.">
+        Cycle forwards in the most recently used window list
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DESKS_ACTIVATE_DESK_LEFT" translateable="false" desc="Label for accelerator action - Activate desk on left.">
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DESKS_ACTIVATE_DESK_LEFT" desc="Label for accelerator action - Activate desk on left.">
         Activate desk on left
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DESKS_ACTIVATE_DESK_RIGHT" translateable="false" desc="Label for accelerator action - Activate desk on right.">
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DESKS_ACTIVATE_DESK_RIGHT" desc="Label for accelerator action - Activate desk on right.">
         Activate desk on right
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DESKS_MOVE_ACTIVE_ITEM_LEFT" translateable="false" desc="Label for accelerator action - Move active window to desk on left.">
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DESKS_MOVE_ACTIVE_ITEM_LEFT" desc="Label for accelerator action - Move active window to desk on left.">
         Move active window to desk on left
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DESKS_MOVE_ACTIVE_ITEM_RIGHT" translateable="false" desc="Label for accelerator action - Move active window to desk on right.">
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DESKS_MOVE_ACTIVE_ITEM_RIGHT" desc="Label for accelerator action - Move active window to desk on right.">
         Move active window to desk on right
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DESKS_NEW_DESK" translateable="false" desc="Label for accelerator action - Create new desk.">
-        Create a new desk
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DESKS_NEW_DESK" desc="Label for accelerator action - Create new desk.">
+        Create new desk
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DESKS_REMOVE_CURRENT_DESK" translateable="false" desc="Label for accelerator action - Remove current desk.">
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DESKS_REMOVE_CURRENT_DESK" desc="Label for accelerator action - Remove current desk.">
         Remove current desk
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DESKS_ACTIVATE" translateable="false" desc="Label for accelerator action - Go to desk 1 to 8.">
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DESKS_ACTIVATE" desc="Label for accelerator action - Go to desk 1 to 8.">
         Go to desk 1 to 8
       </message>
-      <message name="IDS_ASH_ACCELERATOR_ACTIONDESKS_TOGGLE_ASSIGN_TO_ALL_DESKS" translateable="false" desc="Label for accelerator action - Assign active window to all desk.">
+      <message name="IDS_ASH_ACCELERATOR_ACTIONDESKS_TOGGLE_ASSIGN_TO_ALL_DESKS" desc="Label for accelerator action - Assign active window to all desk.">
         Assign active window to all desks
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DISABLE_CAPS_LOCK" translateable="false" desc="Label for accelerator action - Disable Caps Lock.">
@@ -3277,7 +3277,7 @@ Connect your device to power.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_MICROPHONE_MUTE_TOGGLE" translateable="false" desc="Label for accelerator action - Toggle mute microphone.">
         Toggle mute microphone
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_MOVE_ACTIVE_WINDOW_BETWEEN_DISPLAYS" translateable="false" desc="Label for accelerator action - Move active window between displays.">
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_MOVE_ACTIVE_WINDOW_BETWEEN_DISPLAYS" desc="Label for accelerator action - Move active window between displays.">
         Move active window between displays
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_NEW_INCOGNITO_WINDOW" translateable="false" desc="Label for accelerator action - Open new Incognito window.">
@@ -3406,7 +3406,7 @@ Connect your device to power.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_FLOATING" translateable="false" desc="Label for accelerator action - Toggle floating.">
         Toggle floating
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_FULLSCREEN" translateable="false" desc="Label for accelerator action - Enter or exit fullscreen.">
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_FULLSCREEN" desc="Label for accelerator action - Enter or exit fullscreen.">
         Enter or exit fullscreen
       </message>
        <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_FULLSCREEN_MAGNIFIER" desc="Label for accelerator action - Turn fullscreen magnifer on or off.">
@@ -3415,7 +3415,7 @@ Connect your device to power.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_HIGH_CONTRAST" desc="Label for accelerator action - Turn on high contrast mode.">
         Turn on high contrast mode
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_MAXIMIZED" translateable="false" desc="Label for accelerator action - Maximize window.">
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_MAXIMIZED" desc="Label for accelerator action - Maximize window.">
         Maximize window
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_MIRROR_MODE" translateable="false" desc="Label for accelerator action - Mirror monitors.">
@@ -3445,13 +3445,13 @@ Connect your device to power.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_VOLUME_UP" translateable="false" desc="Label for accelerator action - Turn volume up.">
         Turn volume up
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_WINDOW_CYCLE_SNAP_LEFT" translateable="false" desc="Label for accelerator action - Turn volume down.">
-        Dock a window on the left
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_WINDOW_CYCLE_SNAP_LEFT" translateable="false" desc="Label for accelerator action - Keep window on left.">
+        Keep window on left
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_WINDOW_CYCLE_SNAP_RIGHT" translateable="false" desc="Label for accelerator action - Keep window on right.">
-        Dock a window on the right
+        Keep window on right
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_WINDOW_MINIMIZE" translateable="false" desc="Label for accelerator action - Minimize window.">
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_WINDOW_MINIMIZE" desc="Label for accelerator action - Minimize window.">
         Minimize window
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_MINIMIZE_TOP_WINDOW_ON_BACK" translateable="false" desc="Label for accelerator action - Minimize top window on back.">
@@ -3574,8 +3574,8 @@ Connect your device to power.
       <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_CLOSE_TAB" translateable="false" desc="Label for accelerator action - Close the current tab.">
         Close the current tab
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_CLOSE_WINDOW" translateable="false" desc="Label for accelerator action - Close the current window.">
-        Close the current window
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_CLOSE_WINDOW" desc="Label for accelerator action - Close current window.">
+        Close current window
       </message>
       <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_SELECT_LAST_TAB" translateable="false" desc="Label for accelerator action - Go to the last tab in the window.">
         Go to the last tab in the window
@@ -3745,8 +3745,8 @@ Connect your device to power.
       <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_OPEN_PAGE_IN_NEW_TAB" translateable="false" desc="Label for accelerator description - Open the webpage in a new tab.">
         Open the webpage in a new tab
       </message>
-      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_CYCLE_BACKWARD_MRU" translateable="false" desc="Label for accelerator description - Open the window that has been unused for the longest time.">
-        Open the window that has been unused for the longest time
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_CYCLE_BACKWARD_MRU" translateable="false" desc="Label for accelerator description - Cycle backwards in the most recently used window list.">
+        Cycle backwards in the most recently used window list
       </message>
       <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_RIGHT_CLICK" translateable="false" desc="Label for accelerator description - Right-click a link.">
         Right-click a link
