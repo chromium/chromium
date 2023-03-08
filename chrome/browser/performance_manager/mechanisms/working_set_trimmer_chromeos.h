@@ -42,7 +42,7 @@ class WorkingSetTrimmerChromeOS : public WorkingSetTrimmer {
 
   // WorkingSetTrimmer implementation:
   bool PlatformSupportsWorkingSetTrim() override;
-  bool TrimWorkingSet(const ProcessNode* process_node) override;
+  void TrimWorkingSet(const ProcessNode* process_node) override;
 
  private:
   friend class base::NoDestructor<WorkingSetTrimmerChromeOS>;
@@ -57,7 +57,7 @@ class WorkingSetTrimmerChromeOS : public WorkingSetTrimmer {
       content::BrowserContext* context);
 
   // TrimWorkingSet based on ProcessId |pid|.
-  bool TrimWorkingSet(base::ProcessId pid);
+  void TrimWorkingSet(base::ProcessId pid);
 
   // Asks vm_concierge to trim ARCVM's memory in the same way as TrimWorkingSet.
   // The function must be called on the UI thread.

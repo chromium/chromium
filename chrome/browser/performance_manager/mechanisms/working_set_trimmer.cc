@@ -27,7 +27,7 @@ class NoOpWorkingSetTrimmer : public WorkingSetTrimmer {
 
   // WorkingSetTrimmer implementation:
   bool PlatformSupportsWorkingSetTrim() override { return false; }
-  bool TrimWorkingSet(const ProcessNode* node) override { return false; }
+  void TrimWorkingSet(const ProcessNode* node) override {}
 };
 
 }  // namespace

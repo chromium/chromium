@@ -116,7 +116,7 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy {
   virtual void TrimArcProcesses();
   virtual bool IsArcProcessEligibleForReclaim(
       const arc::ArcProcess& arc_process);
-  virtual bool TrimArcProcess(base::ProcessId pid);
+  virtual void TrimArcProcess(base::ProcessId pid);
 
   // TrimArcVmProcesses will ask the delegate if it is safe to reclaim memory
   // from ARCVM, and do that when it is. These are virtual for testing.
