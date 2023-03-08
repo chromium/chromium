@@ -112,7 +112,7 @@ constexpr net::NetworkTrafficAnnotationTag
         net::DefineNetworkTrafficAnnotation("wallpaper_download_google_photo",
                                             R"(
       semantics {
-        sender: "ChromeOS Wallpaper Picker"
+        sender: "ChromeOS Wallpaper Controller"
         description:
           "When the user selects a photo from their Google Photos collection, "
           "the image must be downloaded at a high enough resolution to display "
@@ -122,6 +122,15 @@ constexpr net::NetworkTrafficAnnotationTag
                  "sync."
         data: "Stored credentials for the user's Google account."
         destination: GOOGLE_OWNED_SERVICE
+        internal {
+          contacts {
+            email: "assistive-eng@google.com"
+          }
+        }
+        user_data {
+          type: ACCESS_TOKEN
+        }
+        last_reviewed: "2023-03-06"
       }
       policy {
         cookies_allowed: NO
@@ -139,7 +148,7 @@ constexpr net::NetworkTrafficAnnotationTag
         net::DefineNetworkTrafficAnnotation("wallpaper_online_downloader",
                                             R"(
       semantics {
-        sender: "ChromeOS Online Wallpaper Downloader"
+        sender: "ChromeOS Wallpaper Controller"
         description:
           "When the user selects a photo from their desktop wallpaper "
           "collection, the image must be downloaded at a high enough "
@@ -149,6 +158,15 @@ constexpr net::NetworkTrafficAnnotationTag
         "the wallpaper collection"
         data: "None. These URLs are publicly accessible."
         destination: GOOGLE_OWNED_SERVICE
+        internal {
+          contacts {
+            email: "assitive-eng@google.com"
+          }
+        }
+        user_data {
+          type: NONE
+        }
+        last_reviewed: "2023-03-06"
       }
      policy {
         cookies_allowed: NO
