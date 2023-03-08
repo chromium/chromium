@@ -1728,11 +1728,9 @@ Status WebViewImpl::ResolveElementReferences(
   if (!maybe_key) {
     for (auto it = arg_dict->begin(); status.IsOk() && it != arg_dict->end();
          ++it) {
-      if (it->second.is_dict()) {
-        status = ResolveElementReferences(&(it->second), nodes, context_id,
-                                          object_group_name, expected_loader_id,
-                                          w3c_compliant);
-      }
+      status = ResolveElementReferences(&(it->second), nodes, context_id,
+                                        object_group_name, expected_loader_id,
+                                        w3c_compliant);
     }
     return status;
   }
