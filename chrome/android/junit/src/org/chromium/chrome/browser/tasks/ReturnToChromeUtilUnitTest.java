@@ -46,7 +46,6 @@ import org.chromium.chrome.browser.tasks.ReturnToChromeUtilUnitTest.ShadowHomepa
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtilUnitTest.ShadowHomepagePolicyManager;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtilUnitTest.ShadowSysUtils;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
-import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.segmentation_platform.SegmentSelectionResult;
@@ -61,6 +60,7 @@ import org.chromium.url.JUnitTestGURLs;
 @Config(manifest = Config.NONE,
         shadows = {ShadowHomepageManager.class, ShadowHomepagePolicyManager.class,
                 ShadowSysUtils.class})
+@Features.EnableFeatures({ChromeFeatureList.START_SURFACE_WITH_ACCESSIBILITY})
 public class ReturnToChromeUtilUnitTest {
     /** Shadow for {@link HomepageManager}. */
     @Implements(HomepageManager.class)
@@ -136,7 +136,6 @@ public class ReturnToChromeUtilUnitTest {
         Assert.assertFalse(SysUtils.isLowEndDevice());
 
         // Sets accessibility:
-        StartSurfaceConfiguration.SUPPORT_ACCESSIBILITY.setForTesting(true);
         ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(false);
 
         // Sets for !DeviceFormFactor.isNonMultiDisplayContextOnTablet():

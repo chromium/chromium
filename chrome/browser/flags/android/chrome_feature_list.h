@@ -182,6 +182,7 @@ BASE_DECLARE_FEATURE(kStartSurfaceOnTablet);
 BASE_DECLARE_FEATURE(kStartSurfaceReturnTime);
 BASE_DECLARE_FEATURE(kStartSurfaceRefactor);
 BASE_DECLARE_FEATURE(kStartSurfaceDisabledFeedImprovement);
+BASE_DECLARE_FEATURE(kStartSurfaceWithAccessibility);
 BASE_DECLARE_FEATURE(kUmaBackgroundSessions);
 BASE_DECLARE_FEATURE(kUpdateNotificationScheduleServiceImmediateShowOption);
 BASE_DECLARE_FEATURE(kUseLibunwindstackNativeUnwinderAndroid);

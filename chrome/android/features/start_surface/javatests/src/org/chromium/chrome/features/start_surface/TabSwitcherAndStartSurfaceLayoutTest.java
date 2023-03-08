@@ -1716,7 +1716,8 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
             ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
-            ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
+            ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study",
+        ChromeFeatureList.START_SURFACE_WITH_ACCESSIBILITY})
     public void testUndoClosure_AccessibilityMode() throws Exception {
         // clang-format on
         TestThreadUtils.runOnUiThreadBlocking(

@@ -55,11 +55,6 @@ public class StartSurfaceConfiguration {
             new BooleanCachedFieldTrialParameter(
                     ChromeFeatureList.START_SURFACE_ANDROID, SHOW_TABS_IN_MRU_ORDER_PARAM, false);
 
-    private static final String SUPPORT_ACCESSIBILITY_PARAM = "support_accessibility";
-    public static final BooleanCachedFieldTrialParameter SUPPORT_ACCESSIBILITY =
-            new BooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.START_SURFACE_ANDROID, SUPPORT_ACCESSIBILITY_PARAM, true);
-
     private static final String BEHAVIOURAL_TARGETING_PARAM = "behavioural_targeting";
     public static final StringCachedFieldTrialParameter BEHAVIOURAL_TARGETING =
             new StringCachedFieldTrialParameter(
