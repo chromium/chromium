@@ -7432,6 +7432,9 @@ bool ChromeContentBrowserClient::OpenExternally(
     WindowOpenDisposition disposition) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const bool from_webui = opener->GetWebUI() != nullptr;
+  const bool is_lacros_primary =
+      crosapi::lacros_startup_state::IsLacrosPrimaryEnabled();
+  const bool is_lacros_only = !crosapi::browser_util::IsAshWebBrowserEnabled();
 
   // If Lacros is the primary browser, we intercept requests from Ash WebUIs and
   // redirect them to Lacros via crosapi. This is to make window.open and <a
@@ -7442,9 +7445,9 @@ bool ChromeContentBrowserClient::OpenExternally(
   // window.open that make use of the return value (these will have to be dealt
   // with separately) as well as some existing links that currently must remain
   // in Ash.
+  // If Lacros is the only browser, we do this even for non-WebUI sources.
   bool should_open_in_lacros =
-      from_webui && crosapi::lacros_startup_state::IsLacrosEnabled() &&
-      crosapi::lacros_startup_state::IsLacrosPrimaryEnabled() &&
+      (is_lacros_only || (is_lacros_primary && from_webui)) &&
       disposition != WindowOpenDisposition::NEW_POPUP &&
       !url.SchemeIs(content::kChromeDevToolsScheme) &&
       !url.SchemeIs(content::kChromeUIScheme) &&
@@ -7477,7 +7480,7 @@ bool ChromeContentBrowserClient::OpenExternally(
   // If Lacros is the only browser, we intercept any WebUI URLs that would be
   // opened in a regular browser window. We open these with the OsUrlHandler SWA
   // instead, which will load them in an app window (no navigation bar).
-  if (from_webui && !crosapi::browser_util::IsAshWebBrowserEnabled() &&
+  if (from_webui && is_lacros_only &&
       // Kiosk sessions don't support SWA and already hide the navigation bar.
       !profiles::IsKioskSession() &&
       // Terminal's tabs must remain in the Terminal SWA.
