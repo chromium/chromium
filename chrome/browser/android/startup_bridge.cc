@@ -16,8 +16,6 @@ namespace android_startup {
 void LoadFullBrowser() {
   if (g_browser_process)
     return;
-  UMA_HISTOGRAM_BOOLEAN("Android.NativeStartupBridge.LoadFullBrowser",
-                        true /*requested*/);
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_NativeStartupBridge_loadFullBrowser(env);
 }

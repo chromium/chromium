@@ -2324,17 +2324,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.NativeStartupBridge.LoadFullBrowser"
-    enum="BooleanRequested" expires_after="2021-09-12">
-  <owner>mheikal@chromium.org</owner>
-  <owner>hnakashima@chromium.org</owner>
-  <owner>hanxi@chromium.org</owner>
-  <summary>
-    The number of times full-browser mode is requested to be loaded from native
-    code (running in reduced mode).
-  </summary>
-</histogram>
-
 <histogram name="Android.NTP.Impression" enum="NTPImpressionType"
     expires_after="2023-07-09">
   <owner>finkm@chromium.org</owner>
