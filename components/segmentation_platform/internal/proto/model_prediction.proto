@@ -22,6 +22,9 @@ message TrainingData {
 
   // The training collection request id.
   optional int64 request_id = 3;
+
+  // The time at which output should be ready to be recorded.
+  optional int64 observation_trigger_timestamp = 4;
 }
 
 // Top level message for a segment. Contains both the model metadata and

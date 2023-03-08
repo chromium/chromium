@@ -22,7 +22,7 @@ import "components/segmentation_platform/public/proto/types.proto";
 // field.
 // Version 3 supports trigger configurations for training data collection.
 enum CurrentVersion {
-  METADATA_VERSION = 2;
+  METADATA_VERSION = 3;
 }
 
 // Version information for segmentation models.

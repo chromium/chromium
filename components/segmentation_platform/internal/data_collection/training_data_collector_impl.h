@@ -113,6 +113,13 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
   base::Time ComputeObservationTiming(const proto::SegmentInfo& info,
                                       base::Time prediction_time) const;
 
+  // Returns whether to store the training data to disk.
+  bool FillTrainingData(TrainingRequestId request_id,
+                        const TrainingTimings& training_request,
+                        const ModelProvider::Request& input_tensors,
+                        const proto::SegmentInfo& segment_info,
+                        proto::TrainingData& training_data);
+
   const raw_ptr<SegmentInfoDatabase> segment_info_database_;
   const raw_ptr<processing::FeatureListQueryProcessor>
       feature_list_query_processor_;
