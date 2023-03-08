@@ -685,19 +685,40 @@ suite('SecurityPage_SafeBrowsing', function() {
             'recordSafeBrowsingInteractionHistogram'));
   });
 
-  test('enhancedProtectionAutoExpanded', function() {
+  test('standardProtectionExpandedIfNoQueryParam', function() {
     // Standard protection should be pre-expanded if there is no param.
     Router.getInstance().navigateTo(routes.SECURITY);
+    assertEquals(
+        page.prefs.generated.safe_browsing.value, SafeBrowsingSetting.STANDARD);
     assertFalse(page.$.safeBrowsingEnhanced.expanded);
     assertTrue(page.$.safeBrowsingStandard.expanded);
+  });
+
+  test('enhancedProtectionExpandedIfEsbCollapseDisabled', function() {
     // Enhanced protection should be pre-expanded if the param is set to
-    // enhanced.
+    // enhanced and enableEsbCollapse is false.
+    loadTimeData.overrideValues({enableEsbCollapse: false});
     Router.getInstance().navigateTo(
         routes.SECURITY,
         /* dynamicParams= */ new URLSearchParams('q=enhanced'));
     assertEquals(
-        SafeBrowsingSetting.STANDARD, page.prefs.generated.safe_browsing.value);
+        page.prefs.generated.safe_browsing.value, SafeBrowsingSetting.STANDARD);
     assertTrue(page.$.safeBrowsingEnhanced.expanded);
     assertFalse(page.$.safeBrowsingStandard.expanded);
   });
+
+  test('enhancedProtectionCollapsedIfEsbCollapseEnabled', function() {
+    // Enhanced protection should be collapsed if the param is set to
+    // enhanced and enableEsbCollapse is true.
+    loadTimeData.overrideValues({enableEsbCollapse: true});
+
+    Router.getInstance().navigateTo(
+        routes.SECURITY,
+        /* dynamicParams= */ new URLSearchParams('q=enhanced'));
+    assertEquals(
+        page.prefs.generated.safe_browsing.value, SafeBrowsingSetting.STANDARD);
+    assertFalse(page.$.safeBrowsingEnhanced.expanded);
+    assertFalse(page.$.safeBrowsingStandard.expanded);
+  });
+
 });
