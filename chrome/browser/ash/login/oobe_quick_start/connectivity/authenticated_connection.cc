@@ -10,6 +10,7 @@
 #include "base/json/json_writer.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connection.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
@@ -71,8 +72,10 @@ const char kNotifySourceOfUpdateMessageKey[] = "isForcedUpdateRequired";
 
 AuthenticatedConnection::AuthenticatedConnection(
     NearbyConnection* nearby_connection,
-    mojo::SharedRemote<mojom::QuickStartDecoder> remote)
-    : Connection(nearby_connection) {
+    mojo::SharedRemote<mojom::QuickStartDecoder> remote,
+    RandomSessionId session_id,
+    SharedSecret shared_secret)
+    : Connection(nearby_connection, session_id, shared_secret) {
   decoder_ = std::move(remote);
 }
 

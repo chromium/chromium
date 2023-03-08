@@ -43,6 +43,16 @@ const std::vector<uint8_t> kExpectedGetInfoRequest = {0x04};
 const char kNotifySourceOfUpdateMessageKey[] = "isForcedUpdateRequired";
 constexpr uint8_t kSuccess = 0x00;
 
+// 32 random bytes to use as the shared secret.
+constexpr std::array<uint8_t, 32> kSharedSecret = {
+    0x54, 0xbd, 0x40, 0xcf, 0x8a, 0x7c, 0x2f, 0x6a, 0xca, 0x15, 0x59,
+    0xcf, 0xf3, 0xeb, 0x31, 0x08, 0x90, 0x73, 0xef, 0xda, 0x87, 0xd4,
+    0x23, 0xc0, 0x55, 0xd5, 0x83, 0x5b, 0x04, 0x28, 0x49, 0xf2};
+
+// 6 random bytes to use as the RandomSessionId.
+constexpr std::array<uint8_t, 6> kRandomSessionId = {0x6b, 0xb3, 0x85,
+                                                     0x27, 0xbb, 0x28};
+
 }  // namespace
 
 class AuthenticatedConnectionTest : public testing::Test {
@@ -56,11 +66,12 @@ class AuthenticatedConnectionTest : public testing::Test {
     fake_nearby_connection_ = std::make_unique<FakeNearbyConnection>();
     fake_quick_start_decoder_ = std::make_unique<FakeQuickStartDecoder>();
     NearbyConnection* nearby_connection = fake_nearby_connection_.get();
-
+    RandomSessionId session_id(kRandomSessionId);
     authenticated_connection_ = std::make_unique<AuthenticatedConnection>(
         nearby_connection,
         mojo::SharedRemote<ash::quick_start::mojom::QuickStartDecoder>(
-            fake_quick_start_decoder_->GetRemote()));
+            fake_quick_start_decoder_->GetRemote()),
+        session_id, kSharedSecret);
   }
 
   std::string CreateFidoClientDataJson(url::Origin origin) {

@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/connection.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/wifi_credentials.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connection.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
@@ -32,9 +33,10 @@ class AuthenticatedConnection : public Connection {
   using RequestWifiCredentialsCallback =
       base::OnceCallback<void(absl::optional<WifiCredentials>)>;
 
-  explicit AuthenticatedConnection(
-      NearbyConnection* nearby_connection,
-      mojo::SharedRemote<mojom::QuickStartDecoder> remote);
+  AuthenticatedConnection(NearbyConnection* nearby_connection,
+                          mojo::SharedRemote<mojom::QuickStartDecoder> remote,
+                          RandomSessionId session_id,
+                          SharedSecret shared_secret);
 
   AuthenticatedConnection(AuthenticatedConnection&) = delete;
   AuthenticatedConnection& operator=(AuthenticatedConnection&) = delete;

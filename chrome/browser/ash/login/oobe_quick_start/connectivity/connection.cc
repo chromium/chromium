@@ -6,12 +6,24 @@
 
 #include "base/json/json_writer.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connection.h"
+#include "crypto/random.h"
 
 namespace ash::quick_start {
 
-Connection::Connection(NearbyConnection* nearby_connection)
-    : nearby_connection_(nearby_connection) {}
+Connection::Connection(NearbyConnection* nearby_connection,
+                       RandomSessionId session_id,
+                       SharedSecret shared_secret)
+    : nearby_connection_(nearby_connection),
+      random_session_id_(session_id),
+      shared_secret_(shared_secret) {}
+
+Connection::Connection(NearbyConnection* nearby_connection,
+                       RandomSessionId session_id)
+    : nearby_connection_(nearby_connection), random_session_id_(session_id) {
+  crypto::RandBytes(shared_secret_);
+}
 
 void Connection::SendPayload(const base::Value::Dict& message_payload) {
   std::string json_serialized_payload;
