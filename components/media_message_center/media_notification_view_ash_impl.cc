@@ -36,7 +36,7 @@ constexpr auto kTitleLabelInsets = gfx::Insets::TLBR(10, 0, 0, 0);
 constexpr int kMainSeparator = 12;
 constexpr int kMainRowSeparator = 8;
 constexpr int kMediaInfoSeparator = 4;
-constexpr int kPlayPauseContainerSeperator = 8;
+constexpr int kPlayPauseContainerSeparator = 8;
 constexpr int kPlayPauseIconSize = 26;
 constexpr int kControlsIconSize = 20;
 constexpr int kBackgroundCornerRadius = 12;
@@ -48,9 +48,6 @@ constexpr auto kArtworkSize = gfx::Size(80, 80);
 constexpr auto kPlayPauseButtonSize = gfx::Size(48, 48);
 constexpr auto kControlsButtonSize = gfx::Size(32, 32);
 
-// TODO(jazzhsu): Make sure the media button style match the mock. 1. The play
-// pause button should always have a background; 2. Figure out the hover effect
-// for the rest of the controls.
 class MediaButton : public views::ImageButton {
  public:
   MediaButton(PressedCallback callback, int icon_size, gfx::Size button_size)
@@ -59,8 +56,7 @@ class MediaButton : public views::ImageButton {
     views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                   button_size.height() / 2);
     views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
-    views::InkDrop::Get(this)->SetBaseColorCallback(base::BindRepeating(
-        &MediaButton::GetForegroundColor, base::Unretained(this)));
+    views::InkDrop::Get(this)->SetBaseColor(foreground_color_);
     SetImageHorizontalAlignment(ImageButton::ALIGN_CENTER);
     SetImageVerticalAlignment(ImageButton::ALIGN_MIDDLE);
     SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
@@ -93,8 +89,6 @@ class MediaButton : public views::ImageButton {
   }
 
  private:
-  SkColor GetForegroundColor() { return foreground_color_; }
-
   SkColor foreground_color_ = gfx::kPlaceholderColor;
   SkColor foreground_disabled_color_ = gfx::kPlaceholderColor;
   int icon_size_;
@@ -175,18 +169,20 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
   artist_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   artist_label_->SetEnabledColor(theme_->secondary_text_color);
 
-  // |play_payse_container| holds the play/pause button and dismiss button.
+  // |play_pause_container| holds the play/pause button and dismiss button.
   auto* play_pause_container =
       main_row->AddChildView(std::make_unique<views::View>());
   play_pause_container
       ->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical, gfx::Insets(),
-          kPlayPauseContainerSeperator))
+          kPlayPauseContainerSeparator))
       ->set_cross_axis_alignment(views::BoxLayout::CrossAxisAlignment::kEnd);
 
   play_pause_container->AddChildView(std::move(dismiss_button));
   play_pause_button_ =
       CreateMediaButton(play_pause_container, MediaSessionAction::kPlay);
+  play_pause_button_->SetBackground(views::CreateRoundedRectBackground(
+      theme_->background_color, kPlayPauseButtonSize.height() / 2));
 
   // |controls_row| holds all available media action buttons and the progress
   // bar.
@@ -237,9 +233,9 @@ MediaButton* MediaNotificationViewAshImpl::CreateMediaButton(
   button->set_tag(static_cast<int>(action));
   button->SetButtonColor(theme_->enabled_icon_color,
                          theme_->disabled_icon_color);
+
   auto* button_ptr = parent->AddChildView(std::move(button));
   action_buttons_.push_back(button_ptr);
-
   return button_ptr;
 }
 
