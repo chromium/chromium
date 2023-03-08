@@ -121,32 +121,29 @@ import './os_toolbar/os_toolbar.js';
 import './parental_controls_page/parental_controls_page.js';
 import './settings_scheduler_slider/settings_scheduler_slider.js';
 
-import * as nearbyShareMojom from '/shared/mojo/nearby_share.mojom-webui.js';
 import {startColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-
-import * as appNotificationHandlerMojom from '../mojom-webui/app_notification_handler.mojom-webui.js';
-import * as crosAudioConfigMojom from '../mojom-webui/cros_audio_config.mojom-webui.js';
-import * as routesMojom from '../mojom-webui/routes.mojom-webui.js';
-import * as personalizationSearchMojom from '../mojom-webui/search/personalization_search.mojom-webui.js';
-import * as searchMojom from '../mojom-webui/search/search.mojom-webui.js';
-import * as searchResultIconMojom from '../mojom-webui/search/search_result_icon.mojom-webui.js';
-import * as userActionRecorderMojom from '../mojom-webui/search/user_action_recorder.mojom-webui.js';
-import * as settingMojom from '../mojom-webui/setting.mojom-webui.js';
-
-import * as fakeCrosAudioConfig from './device_page/fake_cros_audio_config.js';
 
 /**
  * With the optimize_webui() build step, the generated JS files are bundled
  * into a single JS file. The exports below are necessary so they can be
  * imported into browser tests.
  */
+export * as nearbyShareMojom from '/shared/mojo/nearby_share.mojom-webui.js';
 export {getContactManager, observeContactManager, setContactManagerForTesting} from '/shared/nearby_contact_manager.js';
 export {getNearbyShareSettings, observeNearbyShareSettings, setNearbyShareSettingsForTesting} from '/shared/nearby_share_settings.js';
 export {NearbySettings, NearbyShareSettingsMixin} from '/shared/nearby_share_settings_mixin.js';
 export {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 export {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 export {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';
+export * as appNotificationHandlerMojom from '../mojom-webui/app_notification_handler.mojom-webui.js';
+export * as crosAudioConfigMojom from '../mojom-webui/cros_audio_config.mojom-webui.js';
+export * as routesMojom from '../mojom-webui/routes.mojom-webui.js';
+export * as personalizationSearchMojom from '../mojom-webui/search/personalization_search.mojom-webui.js';
+export * as searchMojom from '../mojom-webui/search/search.mojom-webui.js';
+export * as searchResultIconMojom from '../mojom-webui/search/search_result_icon.mojom-webui.js';
+export * as userActionRecorderMojom from '../mojom-webui/search/user_action_recorder.mojom-webui.js';
+export * as settingMojom from '../mojom-webui/setting.mojom-webui.js';
 export {ProfileInfoBrowserProxyImpl} from '../people_page/profile_info_browser_proxy.js';
 export {PageStatus, StatusAction, SyncBrowserProxyImpl} from '../people_page/sync_browser_proxy.js';
 export {SettingsPrefsElement} from '../prefs/prefs.js';
@@ -154,6 +151,7 @@ export {CrSettingsPrefs} from '../prefs/prefs_types.js';
 export {PrivacyPageBrowserProxyImpl, SecureDnsMode, SecureDnsUiManagementMode} from '../privacy_page/privacy_page_browser_proxy.js';
 export {setCrosAudioConfigForTesting} from './device_page/cros_audio_config.js';
 export {DevicePageBrowserProxy, DevicePageBrowserProxyImpl, IdleBehavior, LidClosedBehavior, NoteAppLockScreenSupport, setDisplayApiForTesting, StorageSpaceState} from './device_page/device_page_browser_proxy.js';
+export * as fakeCrosAudioConfig from './device_page/fake_cros_audio_config.js';
 export {fakeKeyboards, fakeMice, fakePointingSticks, fakeTouchpads} from './device_page/fake_input_device_data.js';
 export {FakeInputDeviceSettingsProvider} from './device_page/fake_input_device_settings_provider.js';
 export {getInputDeviceSettingsProvider, setInputDeviceSettingsProviderForTesting, setupFakeInputDeviceSettingsProvider} from './device_page/input_device_mojo_interface_provider.js';
@@ -215,18 +213,6 @@ export {PersonalizationHubBrowserProxy, PersonalizationHubBrowserProxyImpl} from
 export {Route, Router} from './router.js';
 export {getPersonalizationSearchHandler, setPersonalizationSearchHandlerForTesting} from './search/personalization_search_handler.js';
 export {getSettingsSearchHandler, setSettingsSearchHandlerForTesting} from './search/settings_search_handler.js';
-export {
-  appNotificationHandlerMojom,
-  crosAudioConfigMojom,
-  fakeCrosAudioConfig,
-  nearbyShareMojom,
-  personalizationSearchMojom,
-  routesMojom,
-  searchMojom,
-  searchResultIconMojom,
-  settingMojom,
-  userActionRecorderMojom,
-};
 
 // TODO(b/257329722) After the Jelly experiment is launched, add the CSS link
 // element directly to the HTML.
