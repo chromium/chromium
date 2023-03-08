@@ -4903,15 +4903,15 @@ void Document::SetActiveElement(Element* new_active_element) {
 
 void Document::RemoveFocusedElementOfSubtree(Node& node,
                                              bool among_children_only) {
-  if (!focused_element_)
+  if (!node.isConnected() || !focused_element_ ||
+      !node.IsShadowIncludingInclusiveAncestorOf(*focused_element_)) {
     return;
-
-  // We can't be focused if we're not in the document.
-  if (!node.isConnected())
-    return;
-  bool contains = node.IsShadowIncludingInclusiveAncestorOf(*focused_element_);
-  if (contains && (focused_element_ != &node || !among_children_only))
+  }
+  const auto& focused_element = *node.GetTreeScope().AdjustedFocusedElement();
+  if (focused_element.IsDescendantOf(&node) ||
+      (!among_children_only && node == focused_element)) {
     ClearFocusedElement();
+  }
 }
 
 static Element* SkipDisplayNoneAncestors(Element* element) {
