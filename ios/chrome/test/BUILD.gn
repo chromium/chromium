@@ -345,6 +345,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/ui/overlays/test_modality:unit_tests",
     "//ios/chrome/browser/ui/overlays/web_content_area/alerts:unit_tests",
     "//ios/chrome/browser/ui/page_info:unit_tests",
+    "//ios/chrome/browser/ui/partial_translate:unit_tests",
     "//ios/chrome/browser/ui/popup_menu:unit_tests",
     "//ios/chrome/browser/ui/popup_menu/overflow_menu:unit_tests",
     "//ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history:unit_tests",

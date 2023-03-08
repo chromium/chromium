@@ -23,3 +23,28 @@ source_set("partial_translate") {
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [ "partial_translate_mediator_unittest.mm" ]
+  deps = [
+    ":partial_translate",
+    "//base/test:test_support",
+    "//components/sync_preferences",
+    "//components/sync_preferences:test_support",
+    "//components/translate/core/browser:translate_pref_names",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/browser_container:edit_menu_alert_delegate",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/web:web_internal",
+    "//ios/chrome/browser/web_selection",
+    "//ios/chrome/browser/web_state_list",
+    "//ios/chrome/browser/web_state_list:test_support",
+    "//ios/chrome/test/providers/partial_translate",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}
