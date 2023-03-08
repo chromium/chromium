@@ -21,9 +21,6 @@ using session_manager::SessionState;
 namespace ash {
 namespace {
 
-const char kAsh_ActiveWindowShowTypeOverTime[] =
-    "Ash.ActiveWindowShowTypeOverTime";
-
 const char kAsh_Shelf_NumberOfItems[] = "Ash.Shelf.NumberOfItems";
 
 const char kAsh_Shelf_NumberOfPinnedItems[] = "Ash.Shelf.NumberOfPinnedItems";
@@ -118,15 +115,6 @@ TEST_F(UserMetricsRecorderTest,
   histograms().ExpectTotalCount(kAsh_Shelf_NumberOfPinnedItems, 1);
   histograms().ExpectTotalCount(kAsh_Shelf_NumberOfUnpinnedItems, 1);
   histograms().ExpectTotalCount(kAsh_NotificationBadgeShownPref, 1);
-}
-
-// Verifies recording of stats which are always recorded by
-// RecordPeriodicMetrics.
-TEST_F(UserMetricsRecorderTest, VerifyStatsRecordedByRecordPeriodicMetrics) {
-  CreateUserSessions(1);
-  test_api().RecordPeriodicMetrics();
-
-  histograms().ExpectTotalCount(kAsh_ActiveWindowShowTypeOverTime, 1);
 }
 
 // Verify the shelf item counts recorded by the

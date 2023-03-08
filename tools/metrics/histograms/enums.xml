@@ -1377,17 +1377,6 @@ Unknown properties are collapsed to zero. -->
   <int value="2" label="Joined using streamline configuration"/>
 </enum>
 
-<enum name="ActiveWindowShowType">
-  <int value="0" label="No Active Window"/>
-  <int value="1" label="Other"/>
-  <int value="2" label="Maximized"/>
-  <int value="3" label="Fullscreen"/>
-  <int value="4" label="Snapped"/>
-  <int value="5" label="Pinned"/>
-  <int value="6" label="TrustedPinned"/>
-  <int value="7" label="Picture in picture"/>
-</enum>
-
 <enum name="ActivityTrackerCollectInitStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Unknown directory"/>

@@ -148,15 +148,6 @@ chromium-metrics-reviews@google.com.
   <summary>Captures usage of Alt+[ and Alt+].</summary>
 </histogram>
 
-<histogram name="Ash.ActiveWindowShowTypeOverTime" enum="ActiveWindowShowType"
-    expires_after="M85">
-  <owner>kuscher@google.com</owner>
-  <summary>
-    The show type of the active window tracked over time by logging on a regular
-    basis (30 minutes).
-  </summary>
-</histogram>
-
 <histogram name="Ash.AmbientMode.Activation.{TabletOrClamshell}"
     enum="AmbientUiMode" expires_after="2023-12-01">
   <owner>cowmoo@google.com</owner>
