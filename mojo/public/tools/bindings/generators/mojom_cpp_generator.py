@@ -408,6 +408,7 @@ class Generator(generator.Generator):
         "should_inline": ShouldInlineStruct,
         "should_inline_union": ShouldInlineUnion,
         "is_array_kind": mojom.IsArrayKind,
+        "is_bool_kind": mojom.IsBoolKind,
         "is_enum_kind": mojom.IsEnumKind,
         "is_nullable_value_kind_packed_field":
         pack.IsNullableValueKindPackedField,

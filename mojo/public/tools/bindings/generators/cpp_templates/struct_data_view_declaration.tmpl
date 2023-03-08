@@ -64,8 +64,9 @@ class {{struct.name}}DataView {
       return absl::nullopt;
     }
 {%-         endif %}
+
     return data_->{{has_value_pf.field.name}}
-        ? absl::make_optional(data_->{{value_pf.field.name}})
+        ? absl::make_optional({{ "!!" if kind|is_bool_kind }}data_->{{value_pf.field.name}})
         : absl::nullopt;
   }
 

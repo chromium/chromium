@@ -65,6 +65,13 @@ absl::optional<TypemappedEnum> Transform(absl::optional<TypemappedEnum> in) {
   }
 }
 
+absl::optional<bool> Transform(absl::optional<bool> in) {
+  if (!in.has_value()) {
+    return absl::nullopt;
+  }
+  return !in.value();
+}
+
 absl::optional<uint8_t> Transform(absl::optional<uint8_t> in) {
   if (!in.has_value()) {
     return absl::nullopt;
@@ -167,7 +174,9 @@ class InterfaceV1Impl : public mojom::InterfaceV1 {
         out_mapped_enum_value));
   }
 
-  void MethodWithNumerics(bool has_u8_value,
+  void MethodWithNumerics(bool has_bool_value,
+                          bool bool_value,
+                          bool has_u8_value,
                           uint8_t u8_value,
                           bool has_u16_value,
                           uint16_t u16_value,
@@ -188,6 +197,8 @@ class InterfaceV1Impl : public mojom::InterfaceV1 {
                           bool has_double_value,
                           double double_value,
                           MethodWithNumericsCallback callback) override {
+    auto [out_has_bool_value, out_bool_value] =
+        FromOpt(Transform(ToOpt(has_bool_value, bool_value)));
     auto [out_has_u8_value, out_u8_value] =
         FromOpt(Transform(ToOpt(has_u8_value, u8_value)));
     auto [out_has_u16_value, out_u16_value] =
@@ -208,18 +219,20 @@ class InterfaceV1Impl : public mojom::InterfaceV1 {
         FromOpt(Transform(ToOpt(has_float_value, float_value)));
     auto [out_has_double_value, out_double_value] =
         FromOpt(Transform(ToOpt(has_double_value, double_value)));
-    std::move(callback).Run(out_has_u8_value, out_u8_value, out_has_u16_value,
-                            out_u16_value, out_has_u32_value, out_u32_value,
-                            out_has_u64_value, out_u64_value, out_has_i8_value,
-                            out_i8_value, out_has_i16_value, out_i16_value,
-                            out_has_i32_value, out_i32_value, out_has_i64_value,
-                            out_i64_value, out_has_float_value, out_float_value,
-                            out_has_double_value, out_double_value);
+    std::move(callback).Run(
+        out_has_bool_value, out_bool_value, out_has_u8_value, out_u8_value,
+        out_has_u16_value, out_u16_value, out_has_u32_value, out_u32_value,
+        out_has_u64_value, out_u64_value, out_has_i8_value, out_i8_value,
+        out_has_i16_value, out_i16_value, out_has_i32_value, out_i32_value,
+        out_has_i64_value, out_i64_value, out_has_float_value, out_float_value,
+        out_has_double_value, out_double_value);
   }
 
   void MethodWithStructWithNumerics(
       mojom::CompatibleStructWithNumericsPtr in,
       MethodWithStructWithNumericsCallback callback) override {
+    auto [out_has_bool_value, out_bool_value] =
+        FromOpt(Transform(ToOpt(in->has_bool_value, in->bool_value)));
     auto [out_has_u8_value, out_u8_value] =
         FromOpt(Transform(ToOpt(in->has_u8_value, in->u8_value)));
     auto [out_has_u16_value, out_u16_value] =
@@ -241,12 +254,12 @@ class InterfaceV1Impl : public mojom::InterfaceV1 {
     auto [out_has_double_value, out_double_value] =
         FromOpt(Transform(ToOpt(in->has_double_value, in->double_value)));
     std::move(callback).Run(mojom::CompatibleStructWithNumerics::New(
-        out_has_u8_value, out_u8_value, out_has_u16_value, out_u16_value,
-        out_has_u32_value, out_u32_value, out_has_u64_value, out_u64_value,
-        out_has_i8_value, out_i8_value, out_has_i16_value, out_i16_value,
-        out_has_i32_value, out_i32_value, out_has_i64_value, out_i64_value,
-        out_has_float_value, out_float_value, out_has_double_value,
-        out_double_value));
+        out_has_bool_value, out_bool_value, out_has_u8_value, out_u8_value,
+        out_has_u16_value, out_u16_value, out_has_u32_value, out_u32_value,
+        out_has_u64_value, out_u64_value, out_has_i8_value, out_i8_value,
+        out_has_i16_value, out_i16_value, out_has_i32_value, out_i32_value,
+        out_has_i64_value, out_i64_value, out_has_float_value, out_float_value,
+        out_has_double_value, out_double_value));
   }
 
   void MethodWithVersionedArgs(
@@ -291,7 +304,8 @@ class InterfaceV2Impl : public mojom::InterfaceV2 {
         Transform(in->enum_value), Transform(in->mapped_enum_value)));
   }
 
-  void MethodWithNumerics(absl::optional<uint8_t> u8_value,
+  void MethodWithNumerics(absl::optional<bool> bool_value,
+                          absl::optional<uint8_t> u8_value,
                           absl::optional<uint16_t> u16_value,
                           absl::optional<uint32_t> u32_value,
                           absl::optional<uint64_t> u64_value,
@@ -302,25 +316,27 @@ class InterfaceV2Impl : public mojom::InterfaceV2 {
                           absl::optional<float> float_value,
                           absl::optional<double> double_value,
                           MethodWithNumericsCallback callback) override {
-    std::move(callback).Run(Transform(u8_value), Transform(u16_value),
-                            Transform(u32_value), Transform(u64_value),
-                            Transform(i8_value), Transform(i16_value),
-                            Transform(i32_value), Transform(i64_value),
-                            Transform(float_value), Transform(double_value));
+    std::move(callback).Run(
+        Transform(bool_value), Transform(u8_value), Transform(u16_value),
+        Transform(u32_value), Transform(u64_value), Transform(i8_value),
+        Transform(i16_value), Transform(i32_value), Transform(i64_value),
+        Transform(float_value), Transform(double_value));
   }
 
   void MethodWithStructWithNumerics(
       mojom::StructWithNumericsPtr in,
       MethodWithStructWithNumericsCallback callback) override {
     std::move(callback).Run(mojom::StructWithNumerics::New(
-        Transform(in->u8_value), Transform(in->u16_value),
-        Transform(in->u32_value), Transform(in->u64_value),
-        Transform(in->i8_value), Transform(in->i16_value),
-        Transform(in->i32_value), Transform(in->i64_value),
-        Transform(in->float_value), Transform(in->double_value)));
+        Transform(in->bool_value), Transform(in->u8_value),
+        Transform(in->u16_value), Transform(in->u32_value),
+        Transform(in->u64_value), Transform(in->i8_value),
+        Transform(in->i16_value), Transform(in->i32_value),
+        Transform(in->i64_value), Transform(in->float_value),
+        Transform(in->double_value)));
   }
 
   void MethodWithVersionedArgs(
+      absl::optional<bool> bool_value,
       absl::optional<uint8_t> u8_value,
       absl::optional<uint16_t> u16_value,
       absl::optional<uint32_t> u32_value,
@@ -338,6 +354,7 @@ class InterfaceV2Impl : public mojom::InterfaceV2 {
       case CallerVersion::kV1:
         // A caller using the V1 interface will not know about the new
         // arguments, so they should all equal absl::nullopt.
+        EXPECT_EQ(absl::nullopt, bool_value);
         EXPECT_EQ(absl::nullopt, u8_value);
         EXPECT_EQ(absl::nullopt, u16_value);
         EXPECT_EQ(absl::nullopt, u32_value);
@@ -352,6 +369,7 @@ class InterfaceV2Impl : public mojom::InterfaceV2 {
         EXPECT_EQ(absl::nullopt, mapped_enum_value);
         break;
       case CallerVersion::kV2:
+        EXPECT_EQ(true, bool_value);
         EXPECT_EQ(uint8_t{1}, u8_value);
         EXPECT_EQ(uint16_t{2}, u16_value);
         EXPECT_EQ(uint32_t{4}, u32_value);
@@ -367,8 +385,8 @@ class InterfaceV2Impl : public mojom::InterfaceV2 {
         break;
     }
     std::move(callback).Run(
-        uint8_t{128}, uint16_t{64}, uint32_t{32}, uint64_t{16}, int8_t{-8},
-        int16_t{-4}, int32_t{-2}, int64_t{-1}, -0.5f, 0.25,
+        false, uint8_t{128}, uint16_t{64}, uint32_t{32}, uint64_t{16},
+        int8_t{-8}, int16_t{-4}, int32_t{-2}, int64_t{-1}, -0.5f, 0.25,
         mojom::RegularEnum::kThatValue, TypemappedEnum::kValueOne);
   }
 
@@ -379,6 +397,7 @@ class InterfaceV2Impl : public mojom::InterfaceV2 {
       case CallerVersion::kV1:
         // A caller using the V1 interface will not know about the new
         // arguments, so they should all equal absl::nullopt.
+        EXPECT_EQ(absl::nullopt, in->bool_value);
         EXPECT_EQ(absl::nullopt, in->u8_value);
         EXPECT_EQ(absl::nullopt, in->u16_value);
         EXPECT_EQ(absl::nullopt, in->u32_value);
@@ -393,6 +412,7 @@ class InterfaceV2Impl : public mojom::InterfaceV2 {
         EXPECT_EQ(absl::nullopt, in->mapped_enum_value);
         break;
       case CallerVersion::kV2:
+        EXPECT_EQ(true, in->bool_value);
         EXPECT_EQ(uint8_t{1}, in->u8_value);
         EXPECT_EQ(uint16_t{2}, in->u16_value);
         EXPECT_EQ(uint32_t{4}, in->u32_value);
@@ -408,8 +428,8 @@ class InterfaceV2Impl : public mojom::InterfaceV2 {
         break;
     }
     std::move(callback).Run(mojom::VersionedStructV2::New(
-        uint8_t{128}, uint16_t{64}, uint32_t{32}, uint64_t{16}, int8_t{-8},
-        int16_t{-4}, int32_t{-2}, int64_t{-1}, -0.5f, 0.25,
+        false, uint8_t{128}, uint16_t{64}, uint32_t{32}, uint64_t{16},
+        int8_t{-8}, int16_t{-4}, int32_t{-2}, int64_t{-1}, -0.5f, 0.25,
         mojom::RegularEnum::kThatValue, TypemappedEnum::kValueOne));
   }
 
@@ -747,6 +767,7 @@ TEST_F(NullableNumericsAndEnums, MethodStructWithEnumsCompatibility) {
 TEST_F(NullableNumericsAndEnums, StructWithNumerics) {
   {
     auto input = mojom::StructWithNumerics::New();
+    input->bool_value = true;
     input->u8_value = absl::nullopt;
     input->u16_value = 16;
     input->u32_value = absl::nullopt;
@@ -762,20 +783,22 @@ TEST_F(NullableNumericsAndEnums, StructWithNumerics) {
     ASSERT_TRUE(
         SerializeAndDeserialize<mojom::StructWithNumerics>(input, output));
 
-    EXPECT_EQ(absl::nullopt, input->u8_value);
-    EXPECT_EQ(16u, input->u16_value);
-    EXPECT_EQ(absl::nullopt, input->u32_value);
-    EXPECT_EQ(64u, input->u64_value);
-    EXPECT_EQ(-8, input->i8_value);
-    EXPECT_EQ(absl::nullopt, input->i16_value);
-    EXPECT_EQ(-32, input->i32_value);
-    EXPECT_EQ(absl::nullopt, input->i64_value);
-    EXPECT_EQ(absl::nullopt, input->float_value);
-    EXPECT_EQ(-64.0, input->double_value);
+    EXPECT_EQ(true, output->bool_value);
+    EXPECT_EQ(absl::nullopt, output->u8_value);
+    EXPECT_EQ(16u, output->u16_value);
+    EXPECT_EQ(absl::nullopt, output->u32_value);
+    EXPECT_EQ(64u, output->u64_value);
+    EXPECT_EQ(-8, output->i8_value);
+    EXPECT_EQ(absl::nullopt, output->i16_value);
+    EXPECT_EQ(-32, output->i32_value);
+    EXPECT_EQ(absl::nullopt, output->i64_value);
+    EXPECT_EQ(absl::nullopt, output->float_value);
+    EXPECT_EQ(-64.0, output->double_value);
   }
 
   {
     auto input = mojom::StructWithNumerics::New();
+    input->bool_value = absl::nullopt;
     input->u8_value = 8;
     input->u16_value = absl::nullopt;
     input->u32_value = 32;
@@ -791,16 +814,17 @@ TEST_F(NullableNumericsAndEnums, StructWithNumerics) {
     ASSERT_TRUE(
         SerializeAndDeserialize<mojom::StructWithNumerics>(input, output));
 
-    EXPECT_EQ(8u, input->u8_value);
-    EXPECT_EQ(absl::nullopt, input->u16_value);
-    EXPECT_EQ(32u, input->u32_value);
-    EXPECT_EQ(absl::nullopt, input->u64_value);
-    EXPECT_EQ(absl::nullopt, input->i8_value);
-    EXPECT_EQ(-16, input->i16_value);
-    EXPECT_EQ(absl::nullopt, input->i32_value);
-    EXPECT_EQ(-64, input->i64_value);
-    EXPECT_EQ(-32.0f, input->float_value);
-    EXPECT_EQ(absl::nullopt, input->double_value);
+    EXPECT_EQ(absl::nullopt, output->bool_value);
+    EXPECT_EQ(8u, output->u8_value);
+    EXPECT_EQ(absl::nullopt, output->u16_value);
+    EXPECT_EQ(32u, output->u32_value);
+    EXPECT_EQ(absl::nullopt, output->u64_value);
+    EXPECT_EQ(absl::nullopt, output->i8_value);
+    EXPECT_EQ(-16, output->i16_value);
+    EXPECT_EQ(absl::nullopt, output->i32_value);
+    EXPECT_EQ(-64, output->i64_value);
+    EXPECT_EQ(-32.0f, output->float_value);
+    EXPECT_EQ(absl::nullopt, output->double_value);
   }
 }
 
@@ -815,18 +839,22 @@ TEST_F(NullableNumericsAndEnums, MethodNumericArgsCompatibility) {
     {
       base::RunLoop loop;
       remote->MethodWithNumerics(
-          false, /* ignored */ uint8_t{0}, true, uint16_t{16}, false,
+          true, true, false, /* ignored */ uint8_t{0}, true, uint16_t{16},
+          false,
           /* ignored */ uint32_t{0}, true, uint64_t{64}, true, int8_t{-8},
           false, /* ignored */ int16_t{0}, true, int32_t{-32}, false,
           int64_t{0}, false, /* ignored */ 0.0f, true, -64.0,
           base::BindLambdaForTesting(
-              [&](bool has_u8_value, uint8_t u8_value, bool has_u16_value,
-                  uint16_t u16_value, bool has_u32_value, uint32_t u32_value,
-                  bool has_u64_value, uint64_t u64_value, bool has_i8_value,
-                  int8_t i8_value, bool has_i16_value, int16_t i16_value,
-                  bool has_i32_value, int32_t i32_value, bool has_i64_value,
-                  int64_t i64_value, bool has_float_value, float float_value,
+              [&](bool has_bool_value, bool bool_value, bool has_u8_value,
+                  uint8_t u8_value, bool has_u16_value, uint16_t u16_value,
+                  bool has_u32_value, uint32_t u32_value, bool has_u64_value,
+                  uint64_t u64_value, bool has_i8_value, int8_t i8_value,
+                  bool has_i16_value, int16_t i16_value, bool has_i32_value,
+                  int32_t i32_value, bool has_i64_value, int64_t i64_value,
+                  bool has_float_value, float float_value,
                   bool has_double_value, double double_value) {
+                EXPECT_TRUE(has_bool_value);
+                EXPECT_EQ(false, bool_value);
                 EXPECT_FALSE(has_u8_value);
                 EXPECT_TRUE(has_u16_value);
                 // Note: the seemingly more obvious ~uint16_t{16} is not used
@@ -853,19 +881,22 @@ TEST_F(NullableNumericsAndEnums, MethodNumericArgsCompatibility) {
     {
       base::RunLoop loop;
       remote->MethodWithNumerics(
-          true, uint8_t{8}, false, /* ignored */ uint16_t{0}, true,
-          uint32_t{32}, false, /* ignored */ uint64_t{0}, false,
+          false, /* ignored */ false, true, uint8_t{8}, false,
+          /* ignored */ uint16_t{0}, true, uint32_t{32}, false,
+          /* ignored */ uint64_t{0}, false,
           /* ignored */ int8_t{0}, true, int16_t{-16}, false,
           /* ignored */ int32_t{0}, true, int64_t{-64}, true, -32.0f, false,
           /* ignored */ -0.0,
           base::BindLambdaForTesting(
-              [&](bool has_u8_value, uint8_t u8_value, bool has_u16_value,
-                  uint16_t u16_value, bool has_u32_value, uint32_t u32_value,
-                  bool has_u64_value, uint64_t u64_value, bool has_i8_value,
-                  int8_t i8_value, bool has_i16_value, int16_t i16_value,
-                  bool has_i32_value, int32_t i32_value, bool has_i64_value,
-                  int64_t i64_value, bool has_float_value, float float_value,
+              [&](bool has_bool_value, bool bool_value, bool has_u8_value,
+                  uint8_t u8_value, bool has_u16_value, uint16_t u16_value,
+                  bool has_u32_value, uint32_t u32_value, bool has_u64_value,
+                  uint64_t u64_value, bool has_i8_value, int8_t i8_value,
+                  bool has_i16_value, int16_t i16_value, bool has_i32_value,
+                  int32_t i32_value, bool has_i64_value, int64_t i64_value,
+                  bool has_float_value, float float_value,
                   bool has_double_value, double double_value) {
+                EXPECT_FALSE(has_bool_value);
                 EXPECT_TRUE(has_u8_value);
                 // Note: the seemingly more obvious ~uint8_t{8} is not used
                 // here because using ~ when sizeof(integer) < sizeof(int)
@@ -900,9 +931,11 @@ TEST_F(NullableNumericsAndEnums, MethodNumericArgsCompatibility) {
     {
       base::RunLoop loop;
       remote->MethodWithNumerics(
-          absl::nullopt, uint16_t{16}, absl::nullopt, uint64_t{64}, int8_t{-8},
-          absl::nullopt, int32_t{-32}, absl::nullopt, absl::nullopt, -64.0,
-          base::BindLambdaForTesting([&](absl::optional<uint8_t> u8_value,
+          true, absl::nullopt, uint16_t{16}, absl::nullopt, uint64_t{64},
+          int8_t{-8}, absl::nullopt, int32_t{-32}, absl::nullopt, absl::nullopt,
+          -64.0,
+          base::BindLambdaForTesting([&](absl::optional<bool> bool_value,
+                                         absl::optional<uint8_t> u8_value,
                                          absl::optional<uint16_t> u16_value,
                                          absl::optional<uint32_t> u32_value,
                                          absl::optional<uint64_t> u64_value,
@@ -912,6 +945,7 @@ TEST_F(NullableNumericsAndEnums, MethodNumericArgsCompatibility) {
                                          absl::optional<int64_t> i64_value,
                                          absl::optional<float> float_value,
                                          absl::optional<double> double_value) {
+            EXPECT_EQ(false, bool_value);
             EXPECT_EQ(absl::nullopt, u8_value);
             // Note: the seemingly more obvious ~uint16_t{16} is not used
             // here because using ~ when sizeof(integer) < sizeof(int)
@@ -933,9 +967,11 @@ TEST_F(NullableNumericsAndEnums, MethodNumericArgsCompatibility) {
     {
       base::RunLoop loop;
       remote->MethodWithNumerics(
-          uint8_t{8}, absl::nullopt, uint32_t{32}, absl::nullopt, absl::nullopt,
-          int16_t{-16}, absl::nullopt, int64_t{-64}, -32.0f, absl::nullopt,
-          base::BindLambdaForTesting([&](absl::optional<uint8_t> u8_value,
+          absl::nullopt, uint8_t{8}, absl::nullopt, uint32_t{32}, absl::nullopt,
+          absl::nullopt, int16_t{-16}, absl::nullopt, int64_t{-64}, -32.0f,
+          absl::nullopt,
+          base::BindLambdaForTesting([&](absl::optional<bool> bool_value,
+                                         absl::optional<uint8_t> u8_value,
                                          absl::optional<uint16_t> u16_value,
                                          absl::optional<uint32_t> u32_value,
                                          absl::optional<uint64_t> u64_value,
@@ -945,6 +981,7 @@ TEST_F(NullableNumericsAndEnums, MethodNumericArgsCompatibility) {
                                          absl::optional<int64_t> i64_value,
                                          absl::optional<float> float_value,
                                          absl::optional<double> double_value) {
+            EXPECT_EQ(absl::nullopt, bool_value);
             // Note: the seemingly more obvious ~uint8_t{8} is not used
             // here because using ~ when sizeof(integer) < sizeof(int)
             // automatically promotes to an int. 🙃
@@ -977,12 +1014,15 @@ TEST_F(NullableNumericsAndEnums, MethodStructWithNumericsCompatibility) {
       base::RunLoop loop;
       remote->MethodWithStructWithNumerics(
           mojom::CompatibleStructWithNumerics::New(
-              false, /* ignored */ uint8_t{0}, true, uint16_t{16}, false,
+              true, true, false, /* ignored */ uint8_t{0}, true, uint16_t{16},
+              false,
               /* ignored */ uint32_t{0}, true, uint64_t{64}, true, int8_t{-8},
               false, /* ignored */ int16_t{0}, true, int32_t{-32}, false,
               int64_t{0}, false, /* ignored */ 0.0f, true, -64.0),
           base::BindLambdaForTesting(
               [&](mojom::CompatibleStructWithNumericsPtr out) {
+                EXPECT_TRUE(out->has_bool_value);
+                EXPECT_EQ(false, out->bool_value);
                 EXPECT_FALSE(out->has_u8_value);
                 EXPECT_TRUE(out->has_u16_value);
                 // Note: the seemingly more obvious ~uint16_t{16} is not used
@@ -1010,13 +1050,15 @@ TEST_F(NullableNumericsAndEnums, MethodStructWithNumericsCompatibility) {
       base::RunLoop loop;
       remote->MethodWithStructWithNumerics(
           mojom::CompatibleStructWithNumerics::New(
-              true, uint8_t{8}, false, /* ignored */ uint16_t{0}, true,
-              uint32_t{32}, false, /* ignored */ uint64_t{0}, false,
+              false, /* ignored */ false, true, uint8_t{8}, false,
+              /* ignored */ uint16_t{0}, true, uint32_t{32}, false,
+              /* ignored */ uint64_t{0}, false,
               /* ignored */ int8_t{0}, true, int16_t{-16}, false,
               /* ignored */ int32_t{0}, true, int64_t{-64}, true, -32.0f, false,
               /* ignored */ -0.0),
           base::BindLambdaForTesting(
               [&](mojom::CompatibleStructWithNumericsPtr out) {
+                EXPECT_FALSE(out->has_bool_value);
                 EXPECT_TRUE(out->has_u8_value);
                 // Note: the seemingly more obvious ~uint8_t{8} is not used
                 // here because using ~ when sizeof(integer) < sizeof(int)
@@ -1052,10 +1094,11 @@ TEST_F(NullableNumericsAndEnums, MethodStructWithNumericsCompatibility) {
       base::RunLoop loop;
       remote->MethodWithStructWithNumerics(
           mojom::StructWithNumerics::New(
-              absl::nullopt, uint16_t{16}, absl::nullopt, uint64_t{64},
+              true, absl::nullopt, uint16_t{16}, absl::nullopt, uint64_t{64},
               int8_t{-8}, absl::nullopt, int32_t{-32}, absl::nullopt,
               absl::nullopt, -64.0),
           base::BindLambdaForTesting([&](mojom::StructWithNumericsPtr out) {
+            EXPECT_EQ(false, out->bool_value);
             EXPECT_EQ(absl::nullopt, out->u8_value);
             // Note: the seemingly more obvious ~uint16_t{16} is not used
             // here because using ~ when sizeof(integer) < sizeof(int)
@@ -1078,10 +1121,11 @@ TEST_F(NullableNumericsAndEnums, MethodStructWithNumericsCompatibility) {
       base::RunLoop loop;
       remote->MethodWithStructWithNumerics(
           mojom::StructWithNumerics::New(
-              uint8_t{8}, absl::nullopt, uint32_t{32}, absl::nullopt,
-              absl::nullopt, int16_t{-16}, absl::nullopt, int64_t{-64}, -32.0f,
-              absl::nullopt),
+              absl::nullopt, uint8_t{8}, absl::nullopt, uint32_t{32},
+              absl::nullopt, absl::nullopt, int16_t{-16}, absl::nullopt,
+              int64_t{-64}, -32.0f, absl::nullopt),
           base::BindLambdaForTesting([&](mojom::StructWithNumericsPtr out) {
+            EXPECT_EQ(absl::nullopt, out->bool_value);
             // Note: the seemingly more obvious ~uint8_t{8} is not used
             // here because using ~ when sizeof(integer) < sizeof(int)
             // automatically promotes to an int. 🙃
@@ -1167,11 +1211,12 @@ TEST_F(NullableNumericsAndEnums, Versioning) {
     {
       base::RunLoop loop;
       remote->MethodWithVersionedArgs(
-          uint8_t{1}, uint16_t{2}, uint32_t{4}, uint64_t{8}, int8_t{-16},
+          true, uint8_t{1}, uint16_t{2}, uint32_t{4}, uint64_t{8}, int8_t{-16},
           int16_t{-32}, int32_t{-64}, int64_t{-128}, 256.0f, -512.0,
           mojom::RegularEnum::kThisValue, TypemappedEnum::kValueTwo,
           base::BindLambdaForTesting(
-              [&](absl::optional<uint8_t> out_u8_value,
+              [&](absl::optional<bool> out_bool_value,
+                  absl::optional<uint8_t> out_u8_value,
                   absl::optional<uint16_t> out_u16_value,
                   absl::optional<uint32_t> out_u32_value,
                   absl::optional<uint64_t> out_u64_value,
@@ -1186,6 +1231,7 @@ TEST_F(NullableNumericsAndEnums, Versioning) {
                 // An implementation based on the V1 interface will not know
                 // about the new arguments, so they should all equal
                 // absl::nullopt.
+                EXPECT_EQ(absl::nullopt, out_bool_value);
                 EXPECT_EQ(absl::nullopt, out_u8_value);
                 EXPECT_EQ(absl::nullopt, out_u16_value);
                 EXPECT_EQ(absl::nullopt, out_u32_value);
@@ -1207,13 +1253,15 @@ TEST_F(NullableNumericsAndEnums, Versioning) {
       base::RunLoop loop;
       remote->MethodWithVersionedStruct(
           mojom::VersionedStructV2::New(
-              uint8_t{1}, uint16_t{2}, uint32_t{4}, uint64_t{8}, int8_t{-16},
-              int16_t{-32}, int32_t{-64}, int64_t{-128}, 256.0f, -512.0,
-              mojom::RegularEnum::kThisValue, TypemappedEnum::kValueTwo),
+              true, uint8_t{1}, uint16_t{2}, uint32_t{4}, uint64_t{8},
+              int8_t{-16}, int16_t{-32}, int32_t{-64}, int64_t{-128}, 256.0f,
+              -512.0, mojom::RegularEnum::kThisValue,
+              TypemappedEnum::kValueTwo),
           base::BindLambdaForTesting([&](mojom::VersionedStructV2Ptr out) {
             // An implementation based on the V1 interface will not know
             // about the new arguments, so they should all equal
             // absl::nullopt.
+            EXPECT_EQ(absl::nullopt, out->bool_value);
             EXPECT_EQ(absl::nullopt, out->u8_value);
             EXPECT_EQ(absl::nullopt, out->u16_value);
             EXPECT_EQ(absl::nullopt, out->u32_value);
@@ -1242,11 +1290,12 @@ TEST_F(NullableNumericsAndEnums, Versioning) {
     {
       base::RunLoop loop;
       remote->MethodWithVersionedArgs(
-          uint8_t{1}, uint16_t{2}, uint32_t{4}, uint64_t{8}, int8_t{-16},
+          true, uint8_t{1}, uint16_t{2}, uint32_t{4}, uint64_t{8}, int8_t{-16},
           int16_t{-32}, int32_t{-64}, int64_t{-128}, 256.0f, -512.0,
           mojom::RegularEnum::kThisValue, TypemappedEnum::kValueTwo,
           base::BindLambdaForTesting(
-              [&](absl::optional<uint8_t> out_u8_value,
+              [&](absl::optional<bool> out_bool_value,
+                  absl::optional<uint8_t> out_u8_value,
                   absl::optional<uint16_t> out_u16_value,
                   absl::optional<uint32_t> out_u32_value,
                   absl::optional<uint64_t> out_u64_value,
@@ -1258,6 +1307,7 @@ TEST_F(NullableNumericsAndEnums, Versioning) {
                   absl::optional<double> out_double_value,
                   absl::optional<mojom::RegularEnum> out_enum_value,
                   absl::optional<TypemappedEnum> out_mapped_enum_value) {
+                EXPECT_EQ(false, out_bool_value);
                 EXPECT_EQ(uint8_t{128}, out_u8_value);
                 EXPECT_EQ(uint16_t{64}, out_u16_value);
                 EXPECT_EQ(uint32_t{32}, out_u32_value);
@@ -1279,10 +1329,12 @@ TEST_F(NullableNumericsAndEnums, Versioning) {
       base::RunLoop loop;
       remote->MethodWithVersionedStruct(
           mojom::VersionedStructV2::New(
-              uint8_t{1}, uint16_t{2}, uint32_t{4}, uint64_t{8}, int8_t{-16},
-              int16_t{-32}, int32_t{-64}, int64_t{-128}, 256.0f, -512.0,
-              mojom::RegularEnum::kThisValue, TypemappedEnum::kValueTwo),
+              true, uint8_t{1}, uint16_t{2}, uint32_t{4}, uint64_t{8},
+              int8_t{-16}, int16_t{-32}, int32_t{-64}, int64_t{-128}, 256.0f,
+              -512.0, mojom::RegularEnum::kThisValue,
+              TypemappedEnum::kValueTwo),
           base::BindLambdaForTesting([&](mojom::VersionedStructV2Ptr out) {
+            EXPECT_EQ(false, out->bool_value);
             EXPECT_EQ(uint8_t{128}, out->u8_value);
             EXPECT_EQ(uint16_t{64}, out->u16_value);
             EXPECT_EQ(uint32_t{32}, out->u32_value);

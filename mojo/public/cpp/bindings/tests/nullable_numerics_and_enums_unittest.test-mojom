@@ -28,7 +28,9 @@ struct CompatibleStructWithEnums {
 };
 
 struct StructWithNumerics {
+  bool? bool_value;
   uint8? u8_value;
+
   uint16? u16_value;
   uint32? u32_value;
   uint64? u64_value;
@@ -43,6 +45,9 @@ struct StructWithNumerics {
 };
 
 struct CompatibleStructWithNumerics {
+  bool has_bool_value;
+  bool bool_value;
+
   bool has_u8_value;
   uint8 u8_value;
   bool has_u16_value;
@@ -72,6 +77,8 @@ struct VersionedStructV1 {
 };
 
 struct VersionedStructV2 {
+  [MinVersion=1] bool? bool_value;
+
   [MinVersion=1] uint8? u8_value;
   [MinVersion=1] uint16? u16_value;
   [MinVersion=1] uint32? u32_value;
@@ -102,6 +109,8 @@ interface InterfaceV1 {
       => (CompatibleStructWithEnums out);
 
   MethodWithNumerics@3(
+      bool has_bool_value,
+      bool bool_value,
       bool has_u8_value,
       uint8 u8_value,
       bool has_u16_value,
@@ -123,6 +132,8 @@ interface InterfaceV1 {
       bool has_double_value,
       double double_value
   ) => (
+      bool has_bool_value,
+      bool bool_value,
       bool has_u8_value,
       uint8 u8_value,
       bool has_u16_value,
@@ -160,6 +171,7 @@ interface InterfaceV2 {
   MethodWithStructWithEnums@2(StructWithEnums in) => (StructWithEnums out);
 
   MethodWithNumerics@3(
+      bool? bool_value,
       uint8? u8_value,
       uint16? u16_value,
       uint32? u32_value,
@@ -171,6 +183,7 @@ interface InterfaceV2 {
       float? float_value,
       double? double_value
   ) => (
+      bool? bool_value,
       uint8? u8_value,
       uint16? u16_value,
       uint32? u32_value,
@@ -187,6 +200,7 @@ interface InterfaceV2 {
       => (StructWithNumerics out);
 
   MethodWithVersionedArgs@5(
+      [MinVersion=1] bool? bool_value,
       [MinVersion=1] uint8? u8_value,
       [MinVersion=1] uint16? u16_value,
       [MinVersion=1] uint32? u32_value,
@@ -200,6 +214,7 @@ interface InterfaceV2 {
       [MinVersion=1] RegularEnum? enum_value,
       [MinVersion=1] TypemappedEnum? mapped_enum_value
   ) => (
+      [MinVersion=1] bool? bool_value,
       [MinVersion=1] uint8? u8_value,
       [MinVersion=1] uint16? u16_value,
       [MinVersion=1] uint32? u32_value,
