@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <type_traits>
 #include <utility>
 
 #include "base/metrics/histogram_functions.h"
@@ -72,12 +73,14 @@ NetworkState::~NetworkState() = default;
 bool NetworkState::PropertyChanged(const std::string& key,
                                    const base::Value& value) {
   // Keep care that these properties are the same as in |GetProperties|.
-  if (ManagedStatePropertyChanged(key, value))
+  if (ManagedStatePropertyChanged(key, value)) {
     return true;
+  }
   if (key == shill::kSignalStrengthProperty) {
     int signal_strength = signal_strength_;
-    if (!GetIntegerValue(key, value, &signal_strength))
+    if (!GetIntegerValue(key, value, &signal_strength)) {
       return false;
+    }
     if (signal_strength_ > 0 && abs(signal_strength - signal_strength_) <
                                     kSignalStrengthChangeThreshold) {
       return false;
@@ -86,8 +89,9 @@ bool NetworkState::PropertyChanged(const std::string& key,
     return true;
   } else if (key == shill::kWifiSignalStrengthRssiProperty) {
     int rssi = rssi_;
-    if (!GetIntegerValue(key, value, &rssi))
+    if (!GetIntegerValue(key, value, &rssi)) {
       return false;
+    }
     if (rssi == rssi_) {
       return false;
     }
@@ -95,8 +99,9 @@ bool NetworkState::PropertyChanged(const std::string& key,
     return true;
   } else if (key == shill::kStateProperty) {
     std::string connection_state;
-    if (!GetStringValue(key, value, &connection_state))
+    if (!GetStringValue(key, value, &connection_state)) {
       return false;
+    }
     SetConnectionState(connection_state);
     return true;
   } else if (key == shill::kVisibleProperty) {
@@ -105,10 +110,12 @@ bool NetworkState::PropertyChanged(const std::string& key,
     return GetBooleanValue(key, value, &connectable_);
   } else if (key == shill::kErrorProperty) {
     std::string error;
-    if (!GetStringValue(key, value, &error))
+    if (!GetStringValue(key, value, &error)) {
       return false;
-    if (ErrorIsValid(error))
+    }
+    if (ErrorIsValid(error)) {
       last_error_ = error;
+    }
     return true;
   } else if (key == shill::kWifiFrequency) {
     return GetIntegerValue(key, value, &frequency_);
@@ -158,8 +165,9 @@ bool NetworkState::PropertyChanged(const std::string& key,
     return GetStringValue(key, value, &profile_path_);
   } else if (key == shill::kWifiHexSsid) {
     std::string ssid_hex;
-    if (!GetStringValue(key, value, &ssid_hex))
+    if (!GetStringValue(key, value, &ssid_hex)) {
       return false;
+    }
     raw_ssid_.clear();
     return base::HexStringToBytes(ssid_hex, &raw_ssid_);
   } else if (key == shill::kWifiBSsid) {
@@ -220,20 +228,23 @@ bool NetworkState::PropertyChanged(const std::string& key,
   } else if (key == shill::kUIDataProperty) {
     std::unique_ptr<NetworkUIData> ui_data =
         shill_property_util::GetUIDataFromValue(value);
-    if (!ui_data)
+    if (!ui_data) {
       return false;
+    }
     onc_source_ = ui_data->onc_source();
     return true;
   } else if (key == shill::kProbeUrlProperty) {
     std::string probe_url_string;
-    if (!GetStringValue(key, value, &probe_url_string))
+    if (!GetStringValue(key, value, &probe_url_string)) {
       return false;
+    }
     probe_url_ = GURL(probe_url_string);
     return true;
   } else if (key == shill::kUplinkSpeedPropertyKbps) {
     uint32_t max_uplink_speed_kbps;
-    if (!GetUInt32Value(key, value, &max_uplink_speed_kbps))
+    if (!GetUInt32Value(key, value, &max_uplink_speed_kbps)) {
       return false;
+    }
     if (max_uplink_speed_kbps_.has_value() &&
         max_uplink_speed_kbps == max_uplink_speed_kbps_.value()) {
       return false;
@@ -242,8 +253,9 @@ bool NetworkState::PropertyChanged(const std::string& key,
     return true;
   } else if (key == shill::kDownlinkSpeedPropertyKbps) {
     uint32_t max_downlink_speed_kbps;
-    if (!GetUInt32Value(key, value, &max_downlink_speed_kbps))
+    if (!GetUInt32Value(key, value, &max_downlink_speed_kbps)) {
       return false;
+    }
     if (max_downlink_speed_kbps_.has_value() &&
         max_downlink_speed_kbps == max_downlink_speed_kbps_.value()) {
       return false;
@@ -322,8 +334,9 @@ void NetworkState::GetStateProperties(base::Value::Dict* dictionary) const {
   }
 
   // Wireless properties
-  if (!NetworkTypePattern::Wireless().MatchesType(type()))
+  if (!NetworkTypePattern::Wireless().MatchesType(type())) {
     return;
+  }
 
   if (visible()) {
     dictionary->Set(shill::kConnectableProperty, connectable());
@@ -378,8 +391,9 @@ std::string NetworkState::GetGateway() const {
 GURL NetworkState::GetWebProxyAutoDiscoveryUrl() const {
   std::string url = GetStringFromDictionary(
       ipv4_config_, shill::kWebProxyAutoDiscoveryUrlProperty);
-  if (url.empty())
+  if (url.empty()) {
     return GURL();
+  }
   GURL gurl(url);
   if (!gurl.is_valid()) {
     NET_LOG(ERROR) << "Invalid WebProxyAutoDiscoveryUrl: " << NetworkId(this)
@@ -414,8 +428,9 @@ void NetworkState::ClearError() {
 }
 
 std::string NetworkState::connection_state() const {
-  if (!visible())
+  if (!visible()) {
     return shill::kStateIdle;
+  }
 
   return connection_state_;
 }
@@ -423,8 +438,9 @@ std::string NetworkState::connection_state() const {
 void NetworkState::SetConnectionState(const std::string& connection_state) {
   DCHECK(IsValidConnectionState(connection_state)) << connection_state;
 
-  if (connection_state == connection_state_)
+  if (connection_state == connection_state_) {
     return;
+  }
   const std::string prev_connection_state = connection_state_;
   connection_state_ = connection_state;
   if (StateIsConnected(connection_state_) ||
@@ -539,12 +555,15 @@ std::string NetworkState::GetSpecifier() const {
     NET_LOG(ERROR) << "GetSpecifier called before update: " << NetworkId(this);
     return std::string();
   }
-  if (type() == shill::kTypeWifi)
+  if (type() == shill::kTypeWifi) {
     return name() + "_" + security_class_;
-  if (type() == shill::kTypeCellular && !iccid().empty())
+  }
+  if (type() == shill::kTypeCellular && !iccid().empty()) {
     return iccid();
-  if (!name().empty())
+  }
+  if (!name().empty()) {
     return type() + "_" + name();
+  }
   return type();  // For unnamed networks, i.e. Ethernet.
 }
 
@@ -555,33 +574,43 @@ void NetworkState::SetGuid(const std::string& guid) {
 network_config::mojom::ActivationStateType
 NetworkState::GetMojoActivationState() const {
   using network_config::mojom::ActivationStateType;
-  if (activation_state_.empty())
+  if (activation_state_.empty()) {
     return ActivationStateType::kUnknown;
-  if (activation_state_ == shill::kActivationStateActivated)
+  }
+  if (activation_state_ == shill::kActivationStateActivated) {
     return ActivationStateType::kActivated;
-  if (activation_state_ == shill::kActivationStateActivating)
+  }
+  if (activation_state_ == shill::kActivationStateActivating) {
     return ActivationStateType::kActivating;
-  if (activation_state_ == shill::kActivationStateNotActivated)
+  }
+  if (activation_state_ == shill::kActivationStateNotActivated) {
     return ActivationStateType::kNotActivated;
-  if (activation_state_ == shill::kActivationStatePartiallyActivated)
+  }
+  if (activation_state_ == shill::kActivationStatePartiallyActivated) {
     return ActivationStateType::kPartiallyActivated;
+  }
   NET_LOG(ERROR) << "Unexpected shill activation state: " << activation_state_;
   return ActivationStateType::kUnknown;
 }
 
 network_config::mojom::SecurityType NetworkState::GetMojoSecurity() const {
   using network_config::mojom::SecurityType;
-  if (!IsSecure())
+  if (!IsSecure()) {
     return SecurityType::kNone;
-  if (IsDynamicWep())
+  }
+  if (IsDynamicWep()) {
     return SecurityType::kWep8021x;
+  }
 
-  if (security_class_ == shill::kSecurityClassWep)
+  if (security_class_ == shill::kSecurityClassWep) {
     return SecurityType::kWepPsk;
-  if (security_class_ == shill::kSecurityClassPsk)
+  }
+  if (security_class_ == shill::kSecurityClassPsk) {
     return SecurityType::kWpaPsk;
-  if (security_class_ == shill::kSecurityClass8021x)
+  }
+  if (security_class_ == shill::kSecurityClass8021x) {
     return SecurityType::kWpaEap;
+  }
   NET_LOG(ERROR) << "Unsupported shill security class: " << security_class_;
   return SecurityType::kNone;
 }
@@ -589,18 +618,24 @@ network_config::mojom::SecurityType NetworkState::GetMojoSecurity() const {
 NetworkState::NetworkTechnologyType NetworkState::GetNetworkTechnologyType()
     const {
   const std::string& network_type = type();
-  if (network_type == shill::kTypeCellular)
+  if (network_type == shill::kTypeCellular) {
     return NetworkTechnologyType::kCellular;
-  if (network_type == shill::kTypeEthernet)
+  }
+  if (network_type == shill::kTypeEthernet) {
     return NetworkTechnologyType::kEthernet;
-  if (network_type == shill::kTypeEthernetEap)
+  }
+  if (network_type == shill::kTypeEthernetEap) {
     return NetworkTechnologyType::kEthernet;
-  if (network_type == kTypeTether)
+  }
+  if (network_type == kTypeTether) {
     return NetworkTechnologyType::kTether;
-  if (network_type == shill::kTypeVPN)
+  }
+  if (network_type == shill::kTypeVPN) {
     return NetworkTechnologyType::kVPN;
-  if (network_type == shill::kTypeWifi)
+  }
+  if (network_type == shill::kTypeWifi) {
     return NetworkTechnologyType::kWiFi;
+  }
   NOTREACHED() << "Unknown network type: " << network_type;
   return NetworkTechnologyType::kUnknown;
 }
@@ -713,35 +748,31 @@ void NetworkState::SetVpnProvider(const std::string& id,
     vpn_provider_ = nullptr;
     return;
   }
-  if (!vpn_provider_)
+  if (!vpn_provider_) {
     vpn_provider_ = std::make_unique<VpnProviderInfo>();
+  }
   vpn_provider_->id = id;
   vpn_provider_->type = type;
 }
 
-std::ostream& operator<<(std::ostream& stream,
-                         const NetworkState::PortalState& portal_state) {
-  switch (portal_state) {
-    case NetworkState::PortalState::kUnknown:
-      stream << "Unknown";
-      break;
-    case NetworkState::PortalState::kOnline:
-      stream << "Online";
-      break;
-    case NetworkState::PortalState::kPortalSuspected:
-      stream << "PortalSuspected";
-      break;
-    case NetworkState::PortalState::kPortal:
-      stream << "Portal";
-      break;
-    case NetworkState::PortalState::kProxyAuthRequired:
-      stream << "ProxyAuthRequired";
-      break;
-    case NetworkState::PortalState::kNoInternet:
-      stream << "NoInternet";
-      break;
+std::ostream& operator<<(std::ostream& out,
+                         const NetworkState::PortalState& state) {
+  using PortalState = NetworkState::PortalState;
+  switch (state) {
+#define PRINT(s)          \
+  case PortalState::k##s: \
+    return out << #s;
+    PRINT(Unknown)
+    PRINT(Online)
+    PRINT(PortalSuspected)
+    PRINT(Portal)
+    PRINT(ProxyAuthRequired)
+    PRINT(NoInternet)
+#undef PRINT
   }
-  return stream;
+
+  return out << "PortalState("
+             << static_cast<std::underlying_type_t<PortalState>>(state) << ")";
 }
 
 }  // namespace ash
