@@ -5,6 +5,7 @@
 #include "components/keyed_service/core/dependency_manager.h"
 
 #include <ostream>
+#include <string>
 
 #include "base/check.h"
 #include "base/debug/dump_without_crashing.h"
@@ -40,6 +41,23 @@ void DependencyManager::AddComponent(KeyedServiceBaseFactory* component) {
          "for all factories in a method called "
          "Ensure.*KeyedServiceFactoriesBuilt().";
 #endif  // DCHECK_IS_ON()
+
+  if (do_not_allow_factory_registration_) {
+#if DCHECK_IS_ON()
+    NOTREACHED()
+        << "Trying to register KeyedService Factory: `" << component->name()
+        << "` after the call to the main registration function `"
+        << registration_function_name_error_message_
+        << "`. Please add a "
+           "call your factory `KeyedServiceFactory::GetInstance()` in the "
+           "previous method or to the appropriate "
+           "`EnsureBrowserContextKeyedServiceFactoriesBuilt()` function to "
+           "properly register your factory.";
+#else
+    base::debug::DumpWithoutCrashing();
+#endif
+  }
+
   dependency_graph_.AddNode(component);
 }
 
@@ -206,4 +224,11 @@ void DependencyManager::DumpDependenciesAsGraphviz(
 
 DependencyGraph& DependencyManager::GetDependencyGraphForTesting() {
   return dependency_graph_;
+}
+
+void DependencyManager::DoNotAllowKeyedServiceFactoryRegistration(
+    const std::string& registration_function_name_error_message) {
+  do_not_allow_factory_registration_ = true;
+  registration_function_name_error_message_ =
+      registration_function_name_error_message;
 }
