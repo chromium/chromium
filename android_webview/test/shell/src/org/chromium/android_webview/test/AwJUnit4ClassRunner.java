@@ -29,6 +29,9 @@ import java.util.List;
  * which exercise code which cannot depend on single vs. multi process.
  */
 public final class AwJUnit4ClassRunner extends BaseJUnit4ClassRunner {
+    // This should match the definition in Android test runner scripts: bit.ly/3ynoREM
+    private static final String MULTIPROCESS_TEST_NAME_SUFFIX = "__multiprocess_mode";
+
     private final TestHook mWebViewMultiProcessHook = (targetContext, testMethod) -> {
         if (testMethod instanceof WebViewMultiProcessFrameworkMethod) {
             CommandLine.getInstance().appendSwitch(AwSwitches.WEBVIEW_SANDBOXED_RENDERER);
@@ -95,7 +98,7 @@ public final class AwJUnit4ClassRunner extends BaseJUnit4ClassRunner {
     /**
      * Custom FrameworkMethod class indicate this test method will run in multiprocess mode.
      *
-     * The clas also add "__multiprocess_mode" postfix to the test name.
+     * The class also adds MULTIPROCESS_TEST_NAME_SUFFIX postfix to the test name.
      */
     private static class WebViewMultiProcessFrameworkMethod extends FrameworkMethod {
         public WebViewMultiProcessFrameworkMethod(FrameworkMethod method) {
@@ -104,7 +107,7 @@ public final class AwJUnit4ClassRunner extends BaseJUnit4ClassRunner {
 
         @Override
         public String getName() {
-            return super.getName() + "__multiprocess_mode";
+            return super.getName() + MULTIPROCESS_TEST_NAME_SUFFIX;
         }
 
         @Override
