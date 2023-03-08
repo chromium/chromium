@@ -201,8 +201,12 @@ class SyncConsentTest
     OobeScreenWaiter(SyncConsentScreenView::kScreenId).Wait();
   }
 
-  void LoginAndWaitForSyncConsentScreen() {
+  void LoginAndWaitForSyncConsentScreen(bool is_known_capability) {
     login_manager_mixin_.LoginAsNewRegularUser();
+
+    if (is_known_capability) {
+      SetIsMinorUser(is_minor_user_);
+    }
 
     // If the screen has already exited, don't try to show it again.
     // Although, sync consent screen is not the first screen in the onboarding
@@ -233,8 +237,7 @@ class SyncConsentTest
 
   // Attempts to log in and show sync consent screen if it is not to be skipped.
   void LoginAndShowSyncConsentScreenWithCapability() {
-    LoginAndWaitForSyncConsentScreen();
-    SetIsMinorUser(is_minor_user_);
+    LoginAndWaitForSyncConsentScreen(true);
     GetSyncConsentScreen()->SetProfileSyncEngineInitializedForTesting(true);
     if (!GetSyncConsentScreen()->IsProfileSyncDisabledByPolicyForTest() &&
         LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build)
@@ -242,7 +245,7 @@ class SyncConsentTest
   }
 
   void LoginToSyncConsentScreenWithUnknownCapability() {
-    LoginAndWaitForSyncConsentScreen();
+    LoginAndWaitForSyncConsentScreen(false);
     GetSyncConsentScreen()->SetProfileSyncEngineInitializedForTesting(true);
     GetSyncConsentScreen()->OnStateChanged(nullptr);
   }
@@ -338,27 +341,14 @@ IN_PROC_BROWSER_TEST_F(SyncConsentTest, SkippedSyncDisabledByPolicy) {
   histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Sync-consent", 0);
 }
 
-// Flaky. http://b/260014328
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_PRE_AbortedSetup DISABLED_PRE_AbortedSetup
-#else
-#define MAYBE_PRE_AbortedSetup PRE_AbortedSetup
-#endif
-IN_PROC_BROWSER_TEST_F(SyncConsentTest, MAYBE_PRE_AbortedSetup) {
+IN_PROC_BROWSER_TEST_F(SyncConsentTest, PRE_AbortedSetup) {
   LoginAndShowSyncConsentScreenWithCapability();
   WaitForScreenShown();
   test::OobeJS().CreateVisibilityWaiter(true, {kSyncConsent})->Wait();
   test::OobeJS().ExpectVisiblePath(kOverviewDialog);
 }
-#undef MAYBE_PRE_AbortedSetup
 
-// Flaky. http://b/260014328
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_AbortedSetup DISABLED_AbortedSetup
-#else
-#define MAYBE_AbortedSetup AbortedSetup
-#endif
-IN_PROC_BROWSER_TEST_F(SyncConsentTest, MAYBE_AbortedSetup) {
+IN_PROC_BROWSER_TEST_F(SyncConsentTest, AbortedSetup) {
   EXPECT_EQ(session_manager::SessionState::LOGIN_PRIMARY,
             session_manager::SessionManager::Get()->session_state());
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
@@ -371,18 +361,8 @@ IN_PROC_BROWSER_TEST_F(SyncConsentTest, MAYBE_AbortedSetup) {
   EXPECT_TRUE(settings->IsSyncEverythingEnabled());
   EXPECT_TRUE(settings->IsSyncAllOsTypesEnabled());
 }
-#undef MAYBE_AbortedSetup
 
-// TODO(crbug.com/1312384): Test failed on linux-chromeos-dbg.
-#if !defined(NDEBUG)
-#define MAYBE_SyncConsentRecorder DISABLED_SyncConsentRecorder
-#elif BUILDFLAG(IS_CHROMEOS)  // TODO(crbug.com/1402468): Test failed on Linux
-                              // Chromium OS ASan
-#define MAYBE_SyncConsentRecorder DISABLED_SyncConsentRecorder
-#else
-#define MAYBE_SyncConsentRecorder SyncConsentRecorder
-#endif
-IN_PROC_BROWSER_TEST_F(SyncConsentTest, MAYBE_SyncConsentRecorder) {
+IN_PROC_BROWSER_TEST_F(SyncConsentTest, SyncConsentRecorder) {
   EXPECT_EQ(g_browser_process->GetApplicationLocale(), "en-US");
   LoginAndShowSyncConsentScreenWithCapability();
   WaitForScreenShown();
@@ -443,14 +423,7 @@ class SyncConsentTestWithModesParams
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/1312384): Test failed on linux-chromeos-dbg.
-// TODO(crbug.com/1392782): Test failed on MSan/LSan.
-#if !defined(NDEBUG) || defined(MEMORY_SANITIZER) || defined(LEAK_SANITIZER)
-#define MAYBE_Accept DISABLED_Accept
-#else
-#define MAYBE_Accept Accept
-#endif
-IN_PROC_BROWSER_TEST_P(SyncConsentTestWithModesParams, MAYBE_Accept) {
+IN_PROC_BROWSER_TEST_P(SyncConsentTestWithModesParams, Accept) {
   LoginAndShowSyncConsentScreenWithCapability();
   WaitForScreenShown();
 
@@ -516,15 +489,7 @@ class SyncConsentTestWithReviewParams
   bool is_review_settings_checked_;
 };
 
-// TODO(crbug.com/1311979): Test failed on ChromeOS.
-// TODO(crbug.com/1392782): Test failed on chromium/ci/Linux ChromiumOS.
-#undef MAYBE_Accept
-#if !defined(NDEBUG) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_Accept DISABLED_Accept
-#else
-#define MAYBE_Accept Accept
-#endif
-IN_PROC_BROWSER_TEST_P(SyncConsentTestWithReviewParams, MAYBE_Accept) {
+IN_PROC_BROWSER_TEST_P(SyncConsentTestWithReviewParams, Accept) {
   LoginAndShowSyncConsentScreenWithCapability();
   WaitForScreenShown();
 
@@ -560,14 +525,7 @@ class SyncConsentTestWithParams
   ~SyncConsentTestWithParams() override = default;
 };
 
-// Disabled due to flakiness: crbug.com/1309452
-#if !defined(NDEBUG)
-#define MAYBE_SyncConsentTestWithLocale DISABLED_SyncConsentTestWithLocale
-#else
-#define MAYBE_SyncConsentTestWithLocale SyncConsentTestWithLocale
-#endif
-IN_PROC_BROWSER_TEST_P(SyncConsentTestWithParams,
-                       MAYBE_SyncConsentTestWithLocale) {
+IN_PROC_BROWSER_TEST_P(SyncConsentTestWithParams, SyncConsentTestWithLocale) {
   EXPECT_EQ(g_browser_process->GetApplicationLocale(), "en-US");
   SwitchLanguage(GetParam());
   LoginAndShowSyncConsentScreenWithCapability();
@@ -701,14 +659,7 @@ class SyncConsentMinorModeTest : public SyncConsentTest {
   base::test::ScopedFeatureList sync_feature_list_;
 };
 
-// TODO(crbug.com/1312384): Test failed on linux-chromeos-dbg and MSAN and LSAN.
-#undef MAYBE_Accept
-#if !defined(NDEBUG) || defined(MEMORY_SANITIZER) || defined(LEAK_SANITIZER)
-#define MAYBE_Accept DISABLED_Accept
-#else
-#define MAYBE_Accept Accept
-#endif
-IN_PROC_BROWSER_TEST_F(SyncConsentMinorModeTest, MAYBE_Accept) {
+IN_PROC_BROWSER_TEST_F(SyncConsentMinorModeTest, Accept) {
   LoginAndShowSyncConsentScreenWithCapability();
   WaitForScreenShown();
 
@@ -769,14 +720,7 @@ IN_PROC_BROWSER_TEST_F(SyncConsentMinorModeTest, MAYBE_Accept) {
                                        true, 1);
 }
 
-// TODO(crbug.com/1312384): Test failed on linux-chromeos-dbg.
-// TODO(crbug.com/1392782): Test failed on MSan/LSan.
-#if !defined(NDEBUG) || defined(MEMORY_SANITIZER) || defined(LEAK_SANITIZER)
-#define MAYBE_Decline DISABLED_Decline
-#else
-#define MAYBE_Decline Decline
-#endif
-IN_PROC_BROWSER_TEST_F(SyncConsentMinorModeTest, MAYBE_Decline) {
+IN_PROC_BROWSER_TEST_F(SyncConsentMinorModeTest, Decline) {
   LoginAndShowSyncConsentScreenWithCapability();
   WaitForScreenShown();
 
@@ -838,26 +782,14 @@ IN_PROC_BROWSER_TEST_F(SyncConsentMinorModeTest, MAYBE_Decline) {
                                        false, 1);
 }
 
-// TODO(crbug.com/1312384): Test failed on linux-chromeos-dbg.
-#if !defined(NDEBUG)
-#define MAYBE_PRE_AbortedSetup DISABLED_PRE_AbortedSetup
-#else
-#define MAYBE_PRE_AbortedSetup PRE_AbortedSetup
-#endif
-IN_PROC_BROWSER_TEST_F(SyncConsentMinorModeTest, MAYBE_PRE_AbortedSetup) {
+IN_PROC_BROWSER_TEST_F(SyncConsentMinorModeTest, PRE_AbortedSetup) {
   LoginAndShowSyncConsentScreenWithCapability();
   WaitForScreenShown();
   test::OobeJS().CreateVisibilityWaiter(true, {kSyncConsent})->Wait();
   test::OobeJS().ExpectVisiblePath(kOverviewDialog);
 }
 
-// TODO(crbug.com/1312384): Test failed on linux-chromeos-dbg.
-#if !defined(NDEBUG)
-#define MAYBE_AbortedSetup DISABLED_AbortedSetup
-#else
-#define MAYBE_AbortedSetup AbortedSetup
-#endif
-IN_PROC_BROWSER_TEST_F(SyncConsentMinorModeTest, MAYBE_AbortedSetup) {
+IN_PROC_BROWSER_TEST_F(SyncConsentMinorModeTest, AbortedSetup) {
   EXPECT_EQ(session_manager::SessionState::LOGIN_PRIMARY,
             session_manager::SessionManager::Get()->session_state());
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
@@ -905,7 +837,7 @@ IN_PROC_BROWSER_TEST_F(SyncConsentTimeoutTest,
   auto overviewDialogWaiter =
       test::OobeJS().CreateVisibilityWaiter(true, {kOverviewDialog});
 
-  LoginAndWaitForSyncConsentScreen();
+  LoginAndWaitForSyncConsentScreen(true);
   WaitForScreenShown();
 
   overviewDialogWaiter->Wait();
