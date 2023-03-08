@@ -10,8 +10,8 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/schedule_enums.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
-#include "ash/public/cpp/wallpaper/online_wallpaper_variant.h"
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -29,11 +29,6 @@ class WallpaperControllerClient;
 // Resolves wallpaper variants from WallpaperInfo for WallpaperController.
 class ASH_EXPORT OnlineWallpaperVariantInfoFetcher {
  public:
-  enum class ColorMode {
-    kDarkMode = 0,
-    kLightMode,
-  };
-
   OnlineWallpaperVariantInfoFetcher();
 
   OnlineWallpaperVariantInfoFetcher(const OnlineWallpaperVariantInfoFetcher&) =
@@ -55,27 +50,27 @@ class ASH_EXPORT OnlineWallpaperVariantInfoFetcher {
   // designated by asset_id in |info|.
   void FetchOnlineWallpaper(const AccountId& account_id,
                             const WallpaperInfo& info,
-                            OnlineWallpaperVariantInfoFetcher::ColorMode mode,
+                            ScheduleCheckpoint checkpoint,
                             FetchParamsCallback callback);
 
   // Always fetches a new daily refresh wallpaper and calls |callback| with a
   // fully populated OnlineWallpaperParams.
   bool FetchDailyWallpaper(const AccountId& account_id,
                            const WallpaperInfo& info,
-                           OnlineWallpaperVariantInfoFetcher::ColorMode mode,
+                           ScheduleCheckpoint checkpoint,
                            FetchParamsCallback callback);
 
  private:
   // An internal representation of the partial information required to construct
   // a complete OnlineWallpaperParams object as provided by the caller of
   // Fetch*.
-  class OnlineWallpaperRequest {
+  struct OnlineWallpaperRequest {
    public:
     OnlineWallpaperRequest(const AccountId& account_id,
                            const std::string& collection_id,
                            WallpaperLayout layout,
                            bool daily_refresh_enabled,
-                           OnlineWallpaperVariantInfoFetcher::ColorMode mode);
+                           ScheduleCheckpoint checkpoint);
     OnlineWallpaperRequest(const OnlineWallpaperRequest&) = delete;
     OnlineWallpaperRequest& operator=(const OnlineWallpaperRequest&) = delete;
     ~OnlineWallpaperRequest();
@@ -84,7 +79,7 @@ class ASH_EXPORT OnlineWallpaperVariantInfoFetcher {
     std::string collection_id;
     WallpaperLayout layout;
     bool daily_refresh_enabled;
-    OnlineWallpaperVariantInfoFetcher::ColorMode mode;
+    ScheduleCheckpoint checkpoint;
   };
 
   // Handles the response for a single random image in a collection and proceeds
