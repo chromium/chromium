@@ -16,6 +16,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
@@ -104,15 +105,13 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
     // TODO(crbug/1022172): Should be package-protected once modularization is complete.
     public ShareSheetCoordinator(BottomSheetController controller,
             ActivityLifecycleDispatcher lifecycleDispatcher, Supplier<Tab> tabProvider,
-            ShareSheetPropertyModelBuilder modelBuilder, Callback<Tab> printTab,
-            LargeIconBridge iconBridge, boolean isIncognito,
+            Callback<Tab> printTab, LargeIconBridge iconBridge, boolean isIncognito,
             ImageEditorModuleProvider imageEditorModuleProvider, Tracker featureEngagementTracker,
             Profile profile) {
         mBottomSheetController = controller;
         mLifecycleDispatcher = lifecycleDispatcher;
         mLifecycleDispatcher.register(this);
         mTabProvider = tabProvider;
-        mPropertyModelBuilder = modelBuilder;
         mPrintTabCallback = printTab;
         mIsIncognito = isIncognito;
         mImageEditorModuleProvider = imageEditorModuleProvider;
@@ -136,6 +135,8 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         mIconBridge = iconBridge;
         mFeatureEngagementTracker = featureEngagementTracker;
         mProfile = profile;
+        mPropertyModelBuilder = new ShareSheetPropertyModelBuilder(mBottomSheetController,
+                ContextUtils.getApplicationContext().getPackageManager(), mProfile);
         mShareSheetUsageRankingHelper = new ShareSheetUsageRankingHelper(mBottomSheetController,
                 mBottomSheet, mShareStartTime, mLinkGenerationStatusForMetrics,
                 mLinkToggleMetricsDetails, mPropertyModelBuilder, mProfile);

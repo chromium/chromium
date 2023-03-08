@@ -35,13 +35,11 @@ import java.util.Set;
  * Handles displaying the share sheet. The version used depends on several conditions:
  *
  * <ul>
- *   <li>Android K and below: custom share dialog
  *   <li>Android L+: system share sheet
  *   <li>#chrome-sharing-hub enabled: custom share sheet
  * </ul>
  */
-// TODO(crbug/1022172): Should be package-protected once modularization is complete.
-public class ShareSheetPropertyModelBuilder {
+class ShareSheetPropertyModelBuilder {
     public static final int MAX_NUM_APPS = 7;
     // Variations parameter name for the comma-separated list of third-party activity names.
     private static final String PARAM_SHARING_HUB_THIRD_PARTY_APPS = "sharing-hub-third-party-apps";
@@ -67,8 +65,7 @@ public class ShareSheetPropertyModelBuilder {
     private final PackageManager mPackageManager;
     private final Profile mProfile;
 
-    // TODO(crbug/1022172): Should be package-protected once modularization is complete.
-    public ShareSheetPropertyModelBuilder(BottomSheetController bottomSheetController,
+    ShareSheetPropertyModelBuilder(BottomSheetController bottomSheetController,
             PackageManager packageManager, Profile profile) {
         mBottomSheetController = bottomSheetController;
         mPackageManager = packageManager;

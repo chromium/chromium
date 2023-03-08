@@ -10,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.AppHooks;
@@ -23,7 +22,6 @@ import org.chromium.chrome.browser.printing.TabPrinter;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextHelper;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetCoordinator;
-import org.chromium.chrome.browser.share.share_sheet.ShareSheetPropertyModelBuilder;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -279,13 +277,11 @@ public class ShareDelegateImpl implements ShareDelegate {
                 ShareHelper.recordShareSource(ShareHelper.ShareSourceAndroid.CHROME_SHARE_SHEET);
                 boolean isIncognito = tabModelSelectorSupplier.hasValue()
                         && tabModelSelectorSupplier.get().isIncognitoSelected();
-                ShareSheetCoordinator coordinator = new ShareSheetCoordinator(controller,
-                        lifecycleDispatcher, tabProvider,
-                        new ShareSheetPropertyModelBuilder(controller,
-                                ContextUtils.getApplicationContext().getPackageManager(), profile),
-                        printCallback, new LargeIconBridge(profile), isIncognito,
-                        AppHooks.get().getImageEditorModuleProvider(),
-                        TrackerFactory.getTrackerForProfile(profile), profile);
+                ShareSheetCoordinator coordinator =
+                        new ShareSheetCoordinator(controller, lifecycleDispatcher, tabProvider,
+                                printCallback, new LargeIconBridge(profile), isIncognito,
+                                AppHooks.get().getImageEditorModuleProvider(),
+                                TrackerFactory.getTrackerForProfile(profile), profile);
                 coordinator.showInitialShareSheet(params, chromeShareExtras, shareStartTime);
             } else {
                 RecordHistogram.recordEnumeratedHistogram(
