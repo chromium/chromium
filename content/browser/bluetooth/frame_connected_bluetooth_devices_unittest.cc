@@ -81,6 +81,8 @@ class FrameConnectedBluetoothDevicesTest
 
     // Create subframe to simulate two maps on the same WebContents.
     contents()->GetPrimaryMainFrame()->InitializeRenderFrameIfNeeded();
+    contents()->GetPrimaryMainFrame()->SetLastCommittedOriginForTesting(
+        url::Origin::Create(GURL("https://blah.com")));
     TestRenderFrameHost* subframe =
         contents()->GetPrimaryMainFrame()->AppendChild("bluetooth_frame");
     subframe->InitializeRenderFrameIfNeeded();

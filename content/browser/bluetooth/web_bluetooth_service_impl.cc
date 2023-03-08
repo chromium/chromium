@@ -84,7 +84,7 @@ constexpr char kScanClientNameRequestLeScan[] = "Web Bluetooth requestLeScan()";
 // The renderer performs its own checks so a request that gets to the browser
 // process indicates some failure to check for fenced frames.
 const char kFencedFrameError[] =
-    "Use Web Bluetooth API is blocked in a fenced frame tree.";
+    "Use of Web Bluetooth API is blocked in a <fencedframe> tree.";
 
 blink::mojom::WebBluetoothResult TranslateGATTErrorAndRecord(
     GattErrorCode error_code,
@@ -544,6 +544,14 @@ WebBluetoothServiceImpl* WebBluetoothServiceImpl::Create(
     // a fenced frame. Anything getting past the renderer checks must be marked
     // as a bad request.
     mojo::ReportBadMessage(kFencedFrameError);
+    return nullptr;
+  }
+
+  if (render_frame_host->GetOutermostMainFrame()
+          ->GetLastCommittedOrigin()
+          .opaque()) {
+    mojo::ReportBadMessage(
+        "Web Bluetooth is not allowed from an opaque origin.");
     return nullptr;
   }
 

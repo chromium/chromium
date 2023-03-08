@@ -57,7 +57,7 @@ bool HasValidFilter(
         std::vector<blink::mojom::WebBluetoothLeScanFilterPtr>>& filters);
 
 // Implementation of Mojo WebBluetoothService located in
-// third_party/WebKit/public/platform/modules/bluetooth.
+// third_party/blink/renderer/modules/bluetooth.
 // It handles Web Bluetooth API requests coming from Blink / renderer
 // process and uses the platform abstraction of device/bluetooth.
 // WebBluetoothServiceImpl is not thread-safe and should be created on the
