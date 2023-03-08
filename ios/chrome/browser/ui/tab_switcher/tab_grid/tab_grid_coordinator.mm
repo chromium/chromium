@@ -681,7 +681,7 @@
   if (IsInactiveTabsEnabled()) {
     self.inactiveTabsButtonMediator = [[InactiveTabsButtonMediator alloc]
         initWithConsumer:baseViewController.regularTabsConsumer
-            webStateList:_inactiveBrowser->GetWebStateList()->AsWeakPtr()];
+            webStateList:_inactiveBrowser->GetWebStateList()];
   }
 
   self.incognitoTabsMediator = [[TabGridMediator alloc]

@@ -6,8 +6,8 @@
 
 #import "base/notreached.h"
 #import "base/scoped_multi_source_observation.h"
+#import "base/scoped_observation.h"
 #import "components/favicon/ios/web_favicon_driver.h"
-#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache_observer.h"
@@ -26,48 +26,72 @@
 #endif
 
 using ScopedWebStateListObservation =
-    base::ScopedMultiSourceObservation<WebStateList, WebStateListObserver>;
+    base::ScopedObservation<WebStateList, WebStateListObserver>;
 using ScopedWebStateObservation =
     base::ScopedMultiSourceObservation<web::WebState, web::WebStateObserver>;
 
 @interface InactiveTabsMediator () <CRWWebStateObserver,
                                     SnapshotCacheObserver,
                                     WebStateListObserving> {
-  // Observers for WebStateList.
+  // The UI consumer to which updates are made.
+  __weak id<TabCollectionConsumer> _consumer;
+  // The list of inactive tabs.
+  WebStateList* _webStateList;
+  // The snapshot cache of _webStateList.
+  __weak SnapshotCache* _snapshotCache;
+  // The observers of _webStateList.
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserverBridge;
   std::unique_ptr<ScopedWebStateListObservation> _scopedWebStateListObservation;
-  // Observers for WebStates.
+  // The observers of web states from _webStateList.
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserverBridge;
   std::unique_ptr<ScopedWebStateObservation> _scopedWebStateObservation;
+  // The short-term cache for grid thumbnails.
+  NSMutableDictionary<NSString*, UIImage*>* _appearanceCache;
 }
-
-// The UI consumer to which updates are made.
-@property(nonatomic, weak, readonly) id<TabCollectionConsumer> consumer;
-// The list of inactive tabs.
-@property(nonatomic, assign, readonly) WebStateList* webStateList;
-// The snapshot cache of `webStateList`.
-@property(nonatomic, weak, readonly) SnapshotCache* snapshotCache;
-// The short-term cache for grid thumbnails.
-@property(nonatomic, strong, readonly)
-    NSMutableDictionary<NSString*, UIImage*>* appearanceCache;
 
 @end
 
 @implementation InactiveTabsMediator
 
-- (instancetype)initWithConsumer:(id<TabCollectionConsumer>)consumer {
+- (instancetype)initWithConsumer:(id<TabCollectionConsumer>)consumer
+                    webStateList:(WebStateList*)webStateList
+                   snapshotCache:(SnapshotCache*)snapshotCache {
   DCHECK(IsInactiveTabsEnabled());
-  if (self = [super init]) {
+  DCHECK(consumer);
+  DCHECK(webStateList);
+  self = [super init];
+  if (self) {
     _consumer = consumer;
+    _webStateList = webStateList;
+
+    // Observe the web state list.
     _webStateListObserverBridge =
         std::make_unique<WebStateListObserverBridge>(self);
     _scopedWebStateListObservation =
         std::make_unique<ScopedWebStateListObservation>(
             _webStateListObserverBridge.get());
+    _scopedWebStateListObservation->Observe(_webStateList);
+
+    // Observe all web states from the list.
     _webStateObserverBridge =
         std::make_unique<web::WebStateObserverBridge>(self);
     _scopedWebStateObservation = std::make_unique<ScopedWebStateObservation>(
         _webStateObserverBridge.get());
+    NSMutableArray* items = [[NSMutableArray alloc] init];
+    for (int i = 0; i < _webStateList->count(); i++) {
+      web::WebState* webState = _webStateList->GetWebStateAt(i);
+      _scopedWebStateObservation->AddObservation(webState);
+      [items addObject:GetTabSwitcherItem(webState)];
+    }
+
+    // Push the tabs to the consumer.
+    [_consumer populateItems:items selectedItemID:nil];
+
+    // TODO(crbug.com/1421321): The snapshot cache never returns snapshots.
+    // Investigate why.
+    _snapshotCache = snapshotCache;
+    [_snapshotCache addObserver:self];
+
     _appearanceCache = [[NSMutableDictionary alloc] init];
   }
   return self;
@@ -75,25 +99,6 @@ using ScopedWebStateObservation =
 
 - (void)dealloc {
   [_snapshotCache removeObserver:self];
-}
-
-#pragma mark - Public properties
-
-- (void)setInactiveBrowser:(Browser*)inactiveBrowser {
-  [_snapshotCache removeObserver:self];
-  _scopedWebStateListObservation->RemoveAllObservations();
-  _scopedWebStateObservation->RemoveAllObservations();
-
-  _inactiveBrowser = inactiveBrowser;
-  _webStateList =
-      inactiveBrowser ? inactiveBrowser->GetWebStateList() : nullptr;
-
-  [_snapshotCache addObserver:self];
-  if (_webStateList) {
-    _scopedWebStateListObservation->AddObservation(_webStateList);
-    [self addWebStateObservations];
-    [self populateConsumerItems];
-  }
 }
 
 #pragma mark - CRWWebStateObserver
@@ -158,7 +163,7 @@ using ScopedWebStateObservation =
 
 - (void)preloadSnapshotsForVisibleGridItems:
     (NSSet<NSString*>*)visibleGridItems {
-  for (int i = 0; i <= self.webStateList->count() - 1; i++) {
+  for (int i = 0; i <= _webStateList->count() - 1; i++) {
     web::WebState* web_state = _webStateList->GetWebStateAt(i);
     NSString* identifier = web_state->GetStableIdentifier();
 
@@ -167,9 +172,9 @@ using ScopedWebStateObservation =
       continue;
     }
 
-    __weak __typeof(self) weakSelf = self;
+    __weak __typeof(_appearanceCache) weakAppearanceCache = _appearanceCache;
     auto cacheImage = ^(UIImage* image) {
-      weakSelf.appearanceCache[identifier] = image;
+      weakAppearanceCache[identifier] = image;
     };
 
     [self snapshotForIdentifier:identifier completion:cacheImage];
@@ -231,6 +236,19 @@ using ScopedWebStateObservation =
 }
 
 - (void)webStateList:(WebStateList*)webStateList
+    didDetachWebState:(web::WebState*)webState
+              atIndex:(int)atIndex {
+  // No-op.
+}
+
+- (void)webStateList:(WebStateList*)webStateList
+    willCloseWebState:(web::WebState*)webState
+              atIndex:(int)atIndex
+           userAction:(BOOL)userAction {
+  // No-op.
+}
+
+- (void)webStateList:(WebStateList*)webStateList
     didChangeActiveWebState:(web::WebState*)newWebState
                 oldWebState:(web::WebState*)oldWebState
                     atIndex:(int)atIndex
@@ -252,24 +270,10 @@ using ScopedWebStateObservation =
   NOTREACHED();
 }
 
-#pragma mark - Private
-
-// Add observers to all web states from the list.
-- (void)addWebStateObservations {
-  for (int i = 0; i < _webStateList->count(); i++) {
-    web::WebState* webState = _webStateList->GetWebStateAt(i);
-    _scopedWebStateObservation->AddObservation(webState);
-  }
-}
-
-// Calls `-populateItems:selectedItemID:` on the consumer.
-- (void)populateConsumerItems {
-  NSMutableArray* items = [[NSMutableArray alloc] init];
-  for (int i = 0; i < _webStateList->count(); i++) {
-    web::WebState* webState = _webStateList->GetWebStateAt(i);
-    [items addObject:GetTabSwitcherItem(webState)];
-  }
-  [_consumer populateItems:items selectedItemID:nil];
+- (void)webStateListDestroyed:(WebStateList*)webStateList {
+  DCHECK_EQ(webStateList, _webStateList);
+  _scopedWebStateListObservation.reset();
+  _webStateList = nullptr;
 }
 
 @end

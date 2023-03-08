@@ -7,10 +7,13 @@
 #import <UIKit/UIKit.h>
 
 #import "base/notreached.h"
+#import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_view_controller.h"
+#import "ios/chrome/browser/web_state_list/web_state_list.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -56,9 +59,12 @@ const NSTimeInterval kDuration = 0.2;
   self.viewController.gridViewController.delegate = self;
 
   // Create the mediator.
+  SnapshotCache* snapshotCache =
+      SnapshotBrowserAgent::FromBrowser(self.browser)->snapshot_cache();
   self.mediator = [[InactiveTabsMediator alloc]
-      initWithConsumer:self.viewController.gridViewController];
-  self.mediator.inactiveBrowser = self.browser;
+      initWithConsumer:self.viewController.gridViewController
+          webStateList:self.browser->GetWebStateList()
+         snapshotCache:snapshotCache];
   self.viewController.gridViewController.imageDataSource = self.mediator;
 
   // Add the view controller to the hierarchy.

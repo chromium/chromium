@@ -7,8 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#import "base/memory/weak_ptr.h"
-
 @protocol InactiveTabsCountConsumer;
 class WebStateList;
 
@@ -18,7 +16,7 @@ class WebStateList;
 
 // Initializer with `consumer` as the receiver of `webStateList` count updates.
 - (instancetype)initWithConsumer:(id<InactiveTabsCountConsumer>)consumer
-                    webStateList:(base::WeakPtr<WebStateList>)webStateList
+                    webStateList:(WebStateList*)webStateList
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

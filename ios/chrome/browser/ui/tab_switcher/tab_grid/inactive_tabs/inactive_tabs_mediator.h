@@ -9,16 +9,18 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_image_data_source.h"
 
-class Browser;
+@class SnapshotCache;
 @protocol TabCollectionConsumer;
+class WebStateList;
 
+// This mediator provides data to the Inactive Tabs grid and handles
+// interactions.
 @interface InactiveTabsMediator : NSObject <GridImageDataSource>
 
-// The inactive browser reference.
-@property(nonatomic, assign) Browser* inactiveBrowser;
-
-// Initializer with `consumer` as the receiver of model layer updates.
+// Initializer with `consumer` as the receiver of `webStateList` updates.
 - (instancetype)initWithConsumer:(id<TabCollectionConsumer>)consumer
+                    webStateList:(WebStateList*)webStateList
+                   snapshotCache:(SnapshotCache*)snapshotCache
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
