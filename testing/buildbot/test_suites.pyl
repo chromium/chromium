@@ -4133,13 +4133,6 @@
       },
     },
 
-    'lacros_skylab': {
-      'lacros_all_tast_tests': {
-        'tast_expr': '("group:mainline" && "dep:lacros" && !informational)',
-        'timeout_sec': 10800,
-      },
-    },
-
     'lacros_skylab_amd64_fyi': {
       'lacros_fyi_tast_tests': {
         'tast_expr': '("group:mainline" && "dep:lacros" && !informational)',
@@ -4147,29 +4140,6 @@
       },
       'ozone_unittests': {
         'timeout_sec': 3600,
-      },
-    },
-
-    'lacros_skylab_arm64_tests': {
-      'lacros_fyi_tast_tests': {
-        'tast_expr': '("group:mainline" && "dep:lacros_unstable" && !informational)',
-        'timeout_sec': 10800,
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-      },
-    },
-
-    # TODO(crbug.com/1283076): ozone_unittests and viz_unittests have failures
-    # remove the filter when the tests are shown to be stable in
-    # lacros-arm-generic-chrome-fyi
-    'lacros_skylab_arm_tests': {
-      'lacros_all_tast_tests': {
-        'tast_expr': '("group:mainline" && "dep:lacros" && !informational)',
-        'timeout_sec': 10800,
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
       },
     },
 
@@ -4190,10 +4160,10 @@
     },
 
     # Lacros tests that run on Skylab, and these tests are usually HW sensative,
-    # For example, Tast tests and GPU/display related gtest tests.
+    # Currently we only run Tast tests.
     'lacros_skylab_tests': {
       'lacros_all_tast_tests': {
-        'tast_expr': '("group:mainline" && "dep:lacros" && !informational)',
+        'tast_expr': '("group:mainline" && ("dep:lacros_stable" || "dep:lacros") && !informational)',
         'timeout_sec': 10800,
         'mixins': [
           'has_native_resultdb_integration',
@@ -7300,7 +7270,7 @@
     },
 
     'lacros_amd64_generic_rel_skylab_fyi': {
-      'lacros_skylab': {
+      'lacros_skylab_tests': {
         'variants': [
           'CROS_OCTOPUS_FULL',
           'CROS_EVE_FULL',
@@ -7309,7 +7279,7 @@
     },
 
     'lacros_arm64_generic_rel_skylab': {
-      'lacros_skylab': {
+      'lacros_skylab_tests': {
         'variants': [
           'CROS_KEVIN_PUBLIC',
         ]
@@ -7317,7 +7287,7 @@
     },
 
     'lacros_arm64_generic_rel_skylab_fyi': {
-      'lacros_skylab': {
+      'lacros_skylab_tests': {
         'variants': [
           'CROS_JACUZZI_PUBLIC',
           'CROS_JACUZZI_CQ_PUBLIC',
@@ -7327,7 +7297,7 @@
     },
 
     'lacros_arm_generic_rel_skylab': {
-      'lacros_skylab': {
+      'lacros_skylab_tests': {
         'variants': [
           'CROS_JACUZZI_PUBLIC',
         ]
@@ -7335,7 +7305,7 @@
     },
 
     'lacros_arm_generic_rel_skylab_fyi': {
-      'lacros_skylab': {
+      'lacros_skylab_tests': {
         'variants': [
           'CROS_JACUZZI_PUBLIC',
           'CROS_KEVIN_PUBLIC',
@@ -7417,7 +7387,7 @@
 
     # Check go/lacros-on-skylab for details of Skylab configurations.
     'lacros_skylab_arm': {
-      'lacros_skylab_arm_tests': {
+      'lacros_skylab_tests': {
         'variants': [
           'CROS_JACUZZI_RELEASE_LKGM',
           'CROS_JACUZZI_RELEASE_DEV',
@@ -7428,7 +7398,7 @@
     },
 
     'lacros_skylab_arm64': {
-      'lacros_skylab_arm64_tests': {
+      'lacros_skylab_tests': {
         'variants': [
           'CROS_HEROBRINE_RELEASE_LKGM',
         ]
