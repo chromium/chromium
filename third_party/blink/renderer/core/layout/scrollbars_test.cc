@@ -3046,15 +3046,9 @@ INSTANTIATE_TEST_SUITE_P(NonOverlay,
                          ScrollbarColorSchemeTest,
                          testing::Values(false));
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
-// Not able to paint non-overlay scrollbars through ThemeEngine on Android or
-// Mac.
-#define MAYBE_ThemeEnginePaint DISABLED_ThemeEnginePaint
-#else
-#define MAYBE_ThemeEnginePaint ThemeEnginePaint
-#endif
+TEST_P(ScrollbarColorSchemeTest, ThemeEnginePaint) {
+  USE_NON_OVERLAY_SCROLLBARS();
 
-TEST_P(ScrollbarColorSchemeTest, MAYBE_ThemeEnginePaint) {
   ScopedStubThemeEngine scoped_theme;
 
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
