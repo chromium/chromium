@@ -59332,6 +59332,7 @@
           "--browser-ui-tests-verify-pixels",
           "--enable-pixel-output-in-tests",
           "--test-launcher-filter-file=../../testing/buildbot/filters/pixel_tests.filter",
+          "--test-launcher-jobs=1",
           "--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer",
           "--git-revision=${got_revision}"
         ],
@@ -62747,6 +62748,7 @@
           "--browser-ui-tests-verify-pixels",
           "--enable-pixel-output-in-tests",
           "--test-launcher-filter-file=../../testing/buildbot/filters/pixel_tests.filter",
+          "--test-launcher-jobs=1",
           "--git-revision=${got_revision}"
         ],
         "isolate_profile_data": true,

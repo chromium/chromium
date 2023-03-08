@@ -4733,6 +4733,7 @@
           '--browser-ui-tests-verify-pixels',
           '--enable-pixel-output-in-tests',
           '--test-launcher-filter-file=../../testing/buildbot/filters/pixel_tests.filter',
+          '--test-launcher-jobs=1',
         ],
         'test': 'browser_tests',
         'mixins': [
