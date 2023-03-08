@@ -316,8 +316,6 @@ component("gl") {
       "gl_angle_util_win.h",
       "gl_fence_win.cc",
       "gl_fence_win.h",
-      "gl_image_d3d.cc",
-      "gl_image_d3d.h",
       "hdr_metadata_helper_win.cc",
       "hdr_metadata_helper_win.h",
       "swap_chain_presenter.cc",
@@ -582,7 +580,6 @@ test("gl_unittests") {
       "delegated_ink_point_renderer_gpu_unittest.cc",
       "direct_composition_surface_win_unittest.cc",
       "gl_fence_win_unittest.cc",
-      "gl_image_d3d_unittest.cc",
       "hdr_metadata_helper_win_unittest.cc",
     ]
   }
