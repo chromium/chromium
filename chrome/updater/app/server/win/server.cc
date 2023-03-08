@@ -378,14 +378,19 @@ bool ComServerApp::MigrateLegacyUpdaters(
       continue;
     }
 
-    std::wstring brand_code;
-    if (key.ReadValue(kRegValueBrandCode, &brand_code) == ERROR_SUCCESS) {
-      registration.brand_code = base::SysWideToUTF8(brand_code);
-    }
+    base::win::RegKey client_state_key;
+    if (client_state_key.Open(root, GetAppClientStateKey(app_id).c_str(),
+                              Wow6432(KEY_READ)) == ERROR_SUCCESS) {
+      std::wstring brand_code;
+      if (client_state_key.ReadValue(kRegValueBrandCode, &brand_code) ==
+          ERROR_SUCCESS) {
+        registration.brand_code = base::SysWideToUTF8(brand_code);
+      }
 
-    std::wstring ap;
-    if (key.ReadValue(kRegValueAP, &ap) == ERROR_SUCCESS) {
-      registration.ap = base::SysWideToUTF8(ap);
+      std::wstring ap;
+      if (client_state_key.ReadValue(kRegValueAP, &ap) == ERROR_SUCCESS) {
+        registration.ap = base::SysWideToUTF8(ap);
+      }
     }
 
     register_callback.Run(registration);

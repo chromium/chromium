@@ -1456,6 +1456,14 @@ void SetupFakeLegacyUpdater(UpdaterScope scope) {
           Wow6432(KEY_WRITE)),
       ERROR_SUCCESS);
   ASSERT_EQ(key.WriteValue(kRegValuePV, L"99.0.0.1"), ERROR_SUCCESS);
+  key.Close();
+
+  ASSERT_EQ(
+      key.Create(root,
+                 GetAppClientStateKey(L"{8A69D345-D564-463C-AFF1-A69D9E530F96}")
+                     .c_str(),
+                 Wow6432(KEY_WRITE)),
+      ERROR_SUCCESS);
   ASSERT_EQ(key.WriteValue(kRegValueBrandCode, L"GGLS"), ERROR_SUCCESS);
   ASSERT_EQ(key.WriteValue(kRegValueAP, L"TestAP"), ERROR_SUCCESS);
   key.Close();
