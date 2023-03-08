@@ -5,7 +5,7 @@
 #ifndef UI_EVENTS_FUCHSIA_UTIL_POINTER_EVENT_UTILITY_H_
 #define UI_EVENTS_FUCHSIA_UTIL_POINTER_EVENT_UTILITY_H_
 
-#include <fuchsia/ui/pointer/cpp/fidl.h>
+#include <fidl/fuchsia.ui.pointer/cpp/fidl.h>
 #include <ui/gfx/geometry/point_f.h>
 #include <ui/gfx/geometry/rect_f.h>
 #include <zircon/types.h>
@@ -19,10 +19,8 @@
 namespace {
 constexpr gfx::RectF kRect(0, 0, 20, 20);
 constexpr std::array<float, 9> kIdentity = {1, 0, 0, 0, 1, 0, 0, 0, 1};
-constexpr fuchsia::ui::pointer::TouchInteractionId kIxnOne = {
-    .device_id = 1u,
-    .pointer_id = 1u,
-    .interaction_id = 2u};
+const fuchsia_ui_pointer::TouchInteractionId kIxnOne = {
+    {.device_id = 1u, .pointer_id = 1u, .interaction_id = 2u}};
 constexpr uint32_t kMouseDeviceId = 123;
 }  // namespace
 
@@ -36,32 +34,31 @@ class TouchEventBuilder {
 
   TouchEventBuilder& SetTime(zx::time time);
   TouchEventBuilder& IncrementTime();
-  TouchEventBuilder& SetId(fuchsia::ui::pointer::TouchInteractionId id);
-  TouchEventBuilder& SetPhase(fuchsia::ui::pointer::EventPhase phase);
+  TouchEventBuilder& SetId(fuchsia_ui_pointer::TouchInteractionId id);
+  TouchEventBuilder& SetPhase(fuchsia_ui_pointer::EventPhase phase);
   TouchEventBuilder& SetPosition(gfx::PointF position);
   TouchEventBuilder& SetView(gfx::RectF view);
   TouchEventBuilder& SetViewport(gfx::RectF viewport);
   TouchEventBuilder& SetTransform(std::array<float, 9> transform);
   TouchEventBuilder& SetTouchInteractionStatus(
-      fuchsia::ui::pointer::TouchInteractionStatus touch_interaction_status);
+      fuchsia_ui_pointer::TouchInteractionStatus touch_interaction_status);
 
   TouchEventBuilder& WithoutSample();
 
-  fuchsia::ui::pointer::TouchEvent Build() const;
+  fuchsia_ui_pointer::TouchEvent Build() const;
 
  private:
-  fuchsia::ui::pointer::TouchPointerSample BuildSample() const;
-  fuchsia::ui::pointer::TouchInteractionResult BuildResult() const;
+  fuchsia_ui_pointer::TouchPointerSample BuildSample() const;
+  fuchsia_ui_pointer::TouchInteractionResult BuildResult() const;
 
   zx::time time_{1u};
-  fuchsia::ui::pointer::TouchInteractionId id_ = kIxnOne;
-  fuchsia::ui::pointer::EventPhase phase_ =
-      fuchsia::ui::pointer::EventPhase::ADD;
+  fuchsia_ui_pointer::TouchInteractionId id_ = kIxnOne;
+  fuchsia_ui_pointer::EventPhase phase_ = fuchsia_ui_pointer::EventPhase::kAdd;
   gfx::PointF position_ = {10.f, 10.f};
   gfx::RectF view_ = kRect;
   gfx::RectF viewport_ = kRect;
   std::array<float, 9> transform_ = kIdentity;
-  absl::optional<fuchsia::ui::pointer::TouchInteractionStatus>
+  absl::optional<fuchsia_ui_pointer::TouchInteractionStatus>
       touch_interaction_status_;
 
   bool include_sample_ = true;
@@ -94,12 +91,12 @@ class MouseEventBuilder {
   MouseEventBuilder& WithoutDeviceInfo();
   MouseEventBuilder& WithoutViewParameters();
 
-  fuchsia::ui::pointer::MouseEvent Build() const;
+  fuchsia_ui_pointer::MouseEvent Build() const;
 
  private:
-  fuchsia::ui::pointer::MousePointerSample BuildSample() const;
-  fuchsia::ui::pointer::ViewParameters BuildViewParameters() const;
-  fuchsia::ui::pointer::MouseDeviceInfo BuildDeviceInfo() const;
+  fuchsia_ui_pointer::MousePointerSample BuildSample() const;
+  fuchsia_ui_pointer::ViewParameters BuildViewParameters() const;
+  fuchsia_ui_pointer::MouseDeviceInfo BuildDeviceInfo() const;
 
   zx::time time_{1u};
   uint32_t device_id_ = kMouseDeviceId;

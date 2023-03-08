@@ -4,7 +4,8 @@
 
 #include "ui/events/fuchsia/pointer_events_handler.h"
 
-#include <fuchsia/ui/pointer/cpp/fidl.h>
+#include <fidl/fuchsia.ui.pointer/cpp/fidl.h>
+#include <fidl/fuchsia.ui.pointer/cpp/hlcpp_conversion.h>
 #include <gtest/gtest.h>
 #include <lib/fidl/cpp/binding.h>
 #include <lib/ui/scenic/cpp/testing/fake_mouse_source.h>
@@ -29,7 +30,7 @@
 namespace ui {
 namespace {
 
-namespace fup = fuchsia::ui::pointer;
+namespace fup = fuchsia_ui_pointer;
 
 // Builds a vector of move-only values.
 template <typename T, class... Args>
@@ -48,8 +49,8 @@ class PointerEventsHandlerTest : public ::testing::Test {
       : fake_touch_source_binding_(&fake_touch_source_),
         fake_mouse_source_binding_(&fake_mouse_source_) {
     pointer_handler_ = std::make_unique<PointerEventsHandler>(
-        fake_touch_source_binding_.NewBinding(),
-        fake_mouse_source_binding_.NewBinding());
+        fidl::HLCPPToNatural(fake_touch_source_binding_.NewBinding()),
+        fidl::HLCPPToNatural(fake_mouse_source_binding_.NewBinding()));
   }
 
   ~PointerEventsHandlerTest() override { MouseEvent::ResetLastClickForTest(); }
@@ -64,8 +65,8 @@ class PointerEventsHandlerTest : public ::testing::Test {
   std::unique_ptr<PointerEventsHandler> pointer_handler_;
 
  private:
-  fidl::Binding<fup::TouchSource> fake_touch_source_binding_;
-  fidl::Binding<fup::MouseSource> fake_mouse_source_binding_;
+  fidl::Binding<fuchsia::ui::pointer::TouchSource> fake_touch_source_binding_;
+  fidl::Binding<fuchsia::ui::pointer::MouseSource> fake_mouse_source_binding_;
 };
 
 TEST_F(PointerEventsHandlerTest, Watch_EventCallbacksAreIndependent) {
@@ -76,9 +77,10 @@ TEST_F(PointerEventsHandlerTest, Watch_EventCallbacksAreIndependent) {
 
   std::vector touch_events = MakeVector<fup::TouchEvent>(
       TouchEventBuilder()
-          .SetTouchInteractionStatus(fup::TouchInteractionStatus::GRANTED)
+          .SetTouchInteractionStatus(fup::TouchInteractionStatus::kGranted)
           .Build());
-  fake_touch_source_.ScheduleCallback(std::move(touch_events));
+  fake_touch_source_.ScheduleCallback(
+      fidl::NaturalToHLCPP(std::move(touch_events)));
   RunLoopUntilIdle();
 
   ASSERT_EQ(events.size(), 1u);
@@ -88,7 +90,8 @@ TEST_F(PointerEventsHandlerTest, Watch_EventCallbacksAreIndependent) {
 
   std::vector mouse_events = MakeVector<fup::MouseEvent>(
       MouseEventBuilder().SetPressedButtons({0}).Build());
-  fake_mouse_source_.ScheduleCallback(std::move(mouse_events));
+  fake_mouse_source_.ScheduleCallback(
+      fidl::NaturalToHLCPP(std::move(mouse_events)));
   RunLoopUntilIdle();
 
   ASSERT_EQ(events.size(), 2u);
@@ -108,9 +111,9 @@ TEST_F(PointerEventsHandlerTest, Data_FuchsiaTimeVersusChromeTime) {
   std::vector events = MakeVector<fup::TouchEvent>(
       TouchEventBuilder()
           .SetTime(zx::time{1111783u})
-          .SetTouchInteractionStatus(fup::TouchInteractionStatus::GRANTED)
+          .SetTouchInteractionStatus(fup::TouchInteractionStatus::kGranted)
           .Build());
-  fake_touch_source_.ScheduleCallback(std::move(events));
+  fake_touch_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   RunLoopUntilIdle();
 
   ASSERT_EQ(touch_events.size(), 1u);
@@ -130,7 +133,7 @@ TEST_F(PointerEventsHandlerTest, Phase_ChromeMouseEventTypesAreSynthesized) {
   // EF_RIGHT_MOUSE_BUTTON
   std::vector events = MakeVector<fup::MouseEvent>(
       MouseEventBuilder().SetPressedButtons({0}).SetButtons({2, 0, 1}).Build());
-  fake_mouse_source_.ScheduleCallback(std::move(events));
+  fake_mouse_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   RunLoopUntilIdle();
 
   ASSERT_EQ(mouse_events.size(), 1u);
@@ -145,7 +148,7 @@ TEST_F(PointerEventsHandlerTest, Phase_ChromeMouseEventTypesAreSynthesized) {
                                            .WithoutViewParameters()
                                            .WithoutDeviceInfo()
                                            .Build());
-  fake_mouse_source_.ScheduleCallback(std::move(events));
+  fake_mouse_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   RunLoopUntilIdle();
 
   ASSERT_EQ(mouse_events.size(), 1u);
@@ -159,7 +162,7 @@ TEST_F(PointerEventsHandlerTest, Phase_ChromeMouseEventTypesAreSynthesized) {
                                            .WithoutViewParameters()
                                            .WithoutDeviceInfo()
                                            .Build());
-  fake_mouse_source_.ScheduleCallback(std::move(events));
+  fake_mouse_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   RunLoopUntilIdle();
 
   ASSERT_EQ(mouse_events.size(), 1u);
@@ -173,7 +176,7 @@ TEST_F(PointerEventsHandlerTest, Phase_ChromeMouseEventTypesAreSynthesized) {
                                            .WithoutViewParameters()
                                            .WithoutDeviceInfo()
                                            .Build());
-  fake_mouse_source_.ScheduleCallback(std::move(events));
+  fake_mouse_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   RunLoopUntilIdle();
 
   ASSERT_EQ(mouse_events.size(), 1u);
@@ -192,7 +195,7 @@ TEST_F(PointerEventsHandlerTest, Phase_ChromeMouseEventFlagsAreSynthesized) {
   // Fuchsia button press -> Chrome ET_MOUSE_PRESSED and EF_RIGHT_MOUSE_BUTTON
   std::vector events = MakeVector<fup::MouseEvent>(
       MouseEventBuilder().SetPressedButtons({0}).SetButtons({2, 0, 1}).Build());
-  fake_mouse_source_.ScheduleCallback(std::move(events));
+  fake_mouse_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   RunLoopUntilIdle();
 
   ASSERT_EQ(mouse_events.size(), 1u);
@@ -207,7 +210,7 @@ TEST_F(PointerEventsHandlerTest, Phase_ChromeMouseEventFlagsAreSynthesized) {
                                            .WithoutViewParameters()
                                            .WithoutDeviceInfo()
                                            .Build());
-  fake_mouse_source_.ScheduleCallback(std::move(events));
+  fake_mouse_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   RunLoopUntilIdle();
 
   ASSERT_EQ(mouse_events.size(), 2u);
@@ -229,7 +232,7 @@ TEST_F(PointerEventsHandlerTest, Phase_ChromeMouseEventFlagCombo) {
   // and EF_RIGHT_MOUSE_BUTTON
   std::vector events = MakeVector<fup::MouseEvent>(
       MouseEventBuilder().SetPressedButtons({0, 1}).Build());
-  fake_mouse_source_.ScheduleCallback(std::move(events));
+  fake_mouse_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   RunLoopUntilIdle();
 
   ASSERT_EQ(mouse_events.size(), 2u);
@@ -253,7 +256,7 @@ TEST_F(PointerEventsHandlerTest, ChromeMouseEventDoubleClick) {
       MouseEventBuilder().SetPressedButtons({0}).IncrementTime().Build(),
       MouseEventBuilder().SetPressedButtons({}).IncrementTime().Build());
 
-  fake_mouse_source_.ScheduleCallback(std::move(events));
+  fake_mouse_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   RunLoopUntilIdle();
 
   ASSERT_EQ(mouse_events.size(), 4u);
@@ -305,7 +308,7 @@ TEST_F(PointerEventsHandlerTest, MouseMultiButtonDrag) {
       // mouse move.
       MouseEventBuilder().SetPosition({12.f, 11.f}).IncrementTime().Build());
 
-  fake_mouse_source_.ScheduleCallback(std::move(events));
+  fake_mouse_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   RunLoopUntilIdle();
 
   ASSERT_EQ(mouse_events.size(), 7u);
@@ -338,7 +341,7 @@ TEST_F(PointerEventsHandlerTest, MouseWheelEvent) {
   // receive a vertical scroll
   std::vector events = MakeVector<fup::MouseEvent>(
       MouseEventBuilder().SetScroll({0, 1}).Build());
-  fake_mouse_source_.ScheduleCallback(std::move(events));
+  fake_mouse_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   RunLoopUntilIdle();
 
   ASSERT_EQ(mouse_events.size(), 1u);
@@ -351,7 +354,7 @@ TEST_F(PointerEventsHandlerTest, MouseWheelEvent) {
   // receive a horizontal scroll
   events = MakeVector<fup::MouseEvent>(
       MouseEventBuilder().SetScroll({1, 0}).Build());
-  fake_mouse_source_.ScheduleCallback(std::move(events));
+  fake_mouse_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   RunLoopUntilIdle();
 
   ASSERT_EQ(mouse_events.size(), 1u);
@@ -376,7 +379,7 @@ TEST_F(PointerEventsHandlerTest, MouseWheelEventDeltaInPhysicalPixel) {
                                       .SetScroll({0, 1})
                                       .SetScrollInPhysicalPixel({0, 100})
                                       .Build());
-  fake_mouse_source_.ScheduleCallback(std::move(events));
+  fake_mouse_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   RunLoopUntilIdle();
 
   ASSERT_EQ(mouse_events.size(), 1u);
@@ -391,7 +394,7 @@ TEST_F(PointerEventsHandlerTest, MouseWheelEventDeltaInPhysicalPixel) {
                                            .SetScroll({1, 0})
                                            .SetScrollInPhysicalPixel({100, 0})
                                            .Build());
-  fake_mouse_source_.ScheduleCallback(std::move(events));
+  fake_mouse_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   RunLoopUntilIdle();
 
   ASSERT_EQ(mouse_events.size(), 1u);
@@ -417,7 +420,7 @@ TEST_F(PointerEventsHandlerTest, ScrollEventDeltaInPhysicalPixel) {
                                       .SetScrollInPhysicalPixel({0, 100})
                                       .SetIsPrecisionScroll(true)
                                       .Build());
-  fake_mouse_source_.ScheduleCallback(std::move(events));
+  fake_mouse_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   RunLoopUntilIdle();
 
   ASSERT_EQ(mouse_events.size(), 1u);
@@ -433,7 +436,7 @@ TEST_F(PointerEventsHandlerTest, ScrollEventDeltaInPhysicalPixel) {
                                            .SetScrollInPhysicalPixel({100, 0})
                                            .SetIsPrecisionScroll(true)
                                            .Build());
-  fake_mouse_source_.ScheduleCallback(std::move(events));
+  fake_mouse_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   RunLoopUntilIdle();
 
   ASSERT_EQ(mouse_events.size(), 1u);
@@ -458,7 +461,7 @@ TEST_F(PointerEventsHandlerTest, ScrollEventDeltaInPhysicalPixelNoTickDelta) {
                                       .SetScrollInPhysicalPixel({0, 100})
                                       .SetIsPrecisionScroll(true)
                                       .Build());
-  fake_mouse_source_.ScheduleCallback(std::move(events));
+  fake_mouse_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   RunLoopUntilIdle();
 
   ASSERT_EQ(mouse_events.size(), 1u);
@@ -473,7 +476,7 @@ TEST_F(PointerEventsHandlerTest, ScrollEventDeltaInPhysicalPixelNoTickDelta) {
                                            .SetScrollInPhysicalPixel({100, 0})
                                            .SetIsPrecisionScroll(true)
                                            .Build());
-  fake_mouse_source_.ScheduleCallback(std::move(events));
+  fake_mouse_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   RunLoopUntilIdle();
 
   ASSERT_EQ(mouse_events.size(), 1u);
@@ -508,7 +511,7 @@ TEST_F(PointerEventsHandlerTest, MouseWheelEventWithButtonPressed) {
           .SetScroll({0, 1})
           .IncrementTime()
           .Build());
-  fake_mouse_source_.ScheduleCallback(std::move(events));
+  fake_mouse_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
 
   RunLoopUntilIdle();
 
@@ -542,7 +545,7 @@ TEST_F(PointerEventsHandlerTest, MouseWheelEventWithButtonDownBundled) {
   std::vector events = MakeVector<fup::MouseEvent>(
       MouseEventBuilder().SetPressedButtons({0}).SetScroll({0, 1}).Build());
 
-  fake_mouse_source_.ScheduleCallback(std::move(events));
+  fake_mouse_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
 
   RunLoopUntilIdle();
 
@@ -567,9 +570,9 @@ TEST_F(PointerEventsHandlerTest, Phase_ChromeTouchEventTypesAreSynthesized) {
   std::vector events = MakeVector<fup::TouchEvent>(
       TouchEventBuilder()
           .SetTime(zx::time{1111000u})
-          .SetTouchInteractionStatus(fup::TouchInteractionStatus::GRANTED)
+          .SetTouchInteractionStatus(fup::TouchInteractionStatus::kGranted)
           .Build());
-  fake_touch_source_.ScheduleCallback(std::move(events));
+  fake_touch_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   RunLoopUntilIdle();
 
   ASSERT_EQ(touch_events.size(), 1u);
@@ -579,9 +582,9 @@ TEST_F(PointerEventsHandlerTest, Phase_ChromeTouchEventTypesAreSynthesized) {
   // Fuchsia CHANGE -> Chrome ET_TOUCH_MOVED
   events = MakeVector<fup::TouchEvent>(TouchEventBuilder()
                                            .SetTime(zx::time{2222000u})
-                                           .SetPhase(fup::EventPhase::CHANGE)
+                                           .SetPhase(fup::EventPhase::kChange)
                                            .Build());
-  fake_touch_source_.ScheduleCallback(std::move(events));
+  fake_touch_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   RunLoopUntilIdle();
 
   ASSERT_EQ(touch_events.size(), 1u);
@@ -591,9 +594,9 @@ TEST_F(PointerEventsHandlerTest, Phase_ChromeTouchEventTypesAreSynthesized) {
   // Fuchsia REMOVE -> Chrome ET_TOUCH_RELEASED
   events = MakeVector<fup::TouchEvent>(TouchEventBuilder()
                                            .SetTime(zx::time{3333000u})
-                                           .SetPhase(fup::EventPhase::REMOVE)
+                                           .SetPhase(fup::EventPhase::kRemove)
                                            .Build());
-  fake_touch_source_.ScheduleCallback(std::move(events));
+  fake_touch_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   RunLoopUntilIdle();
 
   ASSERT_EQ(touch_events.size(), 1u);
@@ -612,9 +615,9 @@ TEST_F(PointerEventsHandlerTest, Phase_FuchsiaCancelBecomesChromeCancel) {
   std::vector events = MakeVector<fup::TouchEvent>(
       TouchEventBuilder()
           .SetTime(zx::time{1111000u})
-          .SetTouchInteractionStatus(fup::TouchInteractionStatus::GRANTED)
+          .SetTouchInteractionStatus(fup::TouchInteractionStatus::kGranted)
           .Build());
-  fake_touch_source_.ScheduleCallback(std::move(events));
+  fake_touch_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   RunLoopUntilIdle();
 
   ASSERT_EQ(touch_events.size(), 1u);
@@ -624,9 +627,9 @@ TEST_F(PointerEventsHandlerTest, Phase_FuchsiaCancelBecomesChromeCancel) {
   // Fuchsia CANCEL -> Chrome CANCEL
   events = MakeVector<fup::TouchEvent>(TouchEventBuilder()
                                            .SetTime(zx::time{2222000u})
-                                           .SetPhase(fup::EventPhase::CANCEL)
+                                           .SetPhase(fup::EventPhase::kCancel)
                                            .Build());
-  fake_touch_source_.ScheduleCallback(std::move(events));
+  fake_touch_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   RunLoopUntilIdle();
 
   ASSERT_EQ(touch_events.size(), 1u);
@@ -650,9 +653,9 @@ TEST_F(PointerEventsHandlerTest, Coordinates_CorrectMapping) {
           .SetView(gfx::RectF(0, 0, 20, 20))
           .SetViewport(gfx::RectF(0, 0, 20, 20))
           .SetTransform({1, 0, 0, 0, 1, 0, 0, 0, 1})
-          .SetTouchInteractionStatus(fup::TouchInteractionStatus::GRANTED)
+          .SetTouchInteractionStatus(fup::TouchInteractionStatus::kGranted)
           .Build());
-  fake_touch_source_.ScheduleCallback(std::move(events));
+  fake_touch_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   RunLoopUntilIdle();
 
   ASSERT_EQ(touch_events.size(), 1u);
@@ -669,10 +672,10 @@ TEST_F(PointerEventsHandlerTest, Coordinates_CorrectMapping) {
           .SetView(gfx::RectF(0, 0, 20, 20))
           .SetViewport(gfx::RectF(0, 0, 20, 20))
           .SetTransform({1, 0, 0, 0, 1, 0, 10, 10, 1})
-          .SetPhase(fup::EventPhase::CHANGE)
+          .SetPhase(fup::EventPhase::kChange)
           .SetPosition({0.f, 0.f})
           .Build());
-  fake_touch_source_.ScheduleCallback(std::move(events));
+  fake_touch_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   RunLoopUntilIdle();
 
   ASSERT_EQ(touch_events.size(), 1u);
@@ -689,10 +692,10 @@ TEST_F(PointerEventsHandlerTest, Coordinates_CorrectMapping) {
           .SetView(gfx::RectF(0, 0, 20, 20))
           .SetViewport(gfx::RectF(0, 0, 20, 20))
           .SetTransform({0.5f, 0, 0, 0, 0.5f, 0, 0, 0, 1})
-          .SetPhase(fup::EventPhase::CHANGE)
+          .SetPhase(fup::EventPhase::kChange)
           .SetPosition({20.f, 20.f})
           .Build());
-  fake_touch_source_.ScheduleCallback(std::move(events));
+  fake_touch_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   RunLoopUntilIdle();
 
   ASSERT_EQ(touch_events.size(), 1u);
@@ -713,9 +716,9 @@ TEST_F(PointerEventsHandlerTest, Coordinates_PressedEventClampedToView) {
   std::vector events = MakeVector<fup::TouchEvent>(
       TouchEventBuilder()
           .SetPosition({10.f, kSmallDiscrepancy})
-          .SetTouchInteractionStatus(fup::TouchInteractionStatus::GRANTED)
+          .SetTouchInteractionStatus(fup::TouchInteractionStatus::kGranted)
           .Build());
-  fake_touch_source_.ScheduleCallback(std::move(events));
+  fake_touch_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   RunLoopUntilIdle();
 
   ASSERT_EQ(touch_events.size(), 1u);
@@ -750,36 +753,38 @@ TEST_F(PointerEventsHandlerTest, Protocol_ResponseMatchesEarlierEvents) {
 
       // Fuchsia ptr 1 ADD sample. Yes response.
       TouchEventBuilder()
-          .SetId({.device_id = 0u, .pointer_id = 1u, .interaction_id = 3u})
+          .SetId({{.device_id = 0u, .pointer_id = 1u, .interaction_id = 3u}})
           .SetPosition({10.f, 10.f})
           .Build(),
 
       // Fuchsia ptr 2 ADD sample. Yes response.
       TouchEventBuilder()
-          .SetId({.device_id = 0u, .pointer_id = 2u, .interaction_id = 3u})
+          .SetId({{.device_id = 0u, .pointer_id = 2u, .interaction_id = 3u}})
           .SetPosition({5.f, 5.f})
           .Build(),
 
       // Fuchsia ptr 3 ADD sample. Yes response.
       TouchEventBuilder()
-          .SetId({.device_id = 0u, .pointer_id = 3u, .interaction_id = 3u})
+          .SetId({{.device_id = 0u, .pointer_id = 3u, .interaction_id = 3u}})
           .SetPosition({1.f, 1.f})
           .Build());
-  fake_touch_source_.ScheduleCallback(std::move(events));
+  fake_touch_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   RunLoopUntilIdle();
 
-  const auto responses = fake_touch_source_.UploadedResponses();
-  ASSERT_TRUE(responses.has_value());
-  ASSERT_EQ(responses.value().size(), 4u);
+  auto hlcpp_responses = fake_touch_source_.UploadedResponses();
+  ASSERT_TRUE(hlcpp_responses.has_value());
+  const std::vector<fuchsia_ui_pointer::TouchResponse> responses =
+      fidl::HLCPPToNatural(hlcpp_responses.value());
+  ASSERT_EQ(responses.size(), 4u);
   // Event 0 did not carry a sample, so no response.
-  EXPECT_FALSE(responses.value()[0].has_response_type());
+  EXPECT_FALSE(responses[0].response_type().has_value());
   // Events 1-3 had a sample, must have a response.
-  EXPECT_TRUE(responses.value()[1].has_response_type());
-  EXPECT_EQ(responses.value()[1].response_type(), fup::TouchResponseType::YES);
-  EXPECT_TRUE(responses.value()[2].has_response_type());
-  EXPECT_EQ(responses.value()[2].response_type(), fup::TouchResponseType::YES);
-  EXPECT_TRUE(responses.value()[3].has_response_type());
-  EXPECT_EQ(responses.value()[3].response_type(), fup::TouchResponseType::YES);
+  EXPECT_TRUE(responses[1].response_type().has_value());
+  EXPECT_EQ(responses[1].response_type().value(), fup::TouchResponseType::kYes);
+  EXPECT_TRUE(responses[2].response_type().has_value());
+  EXPECT_EQ(responses[2].response_type().value(), fup::TouchResponseType::kYes);
+  EXPECT_TRUE(responses[3].response_type().has_value());
+  EXPECT_EQ(responses[3].response_type().value(), fup::TouchResponseType::kYes);
 }
 
 TEST_F(PointerEventsHandlerTest, Protocol_LateGrant) {
@@ -793,7 +798,7 @@ TEST_F(PointerEventsHandlerTest, Protocol_LateGrant) {
   // Fuchsia ADD, no grant result - buffer it.
   std::vector events = MakeVector<fup::TouchEvent>(
       TouchEventBuilder().SetTime(zx::time{1111000u}).Build());
-  fake_touch_source_.ScheduleCallback(std::move(events));
+  fake_touch_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   RunLoopUntilIdle();
 
   ASSERT_EQ(touch_events.size(), 0u);
@@ -802,9 +807,9 @@ TEST_F(PointerEventsHandlerTest, Protocol_LateGrant) {
   // Fuchsia CHANGE, no grant result - buffer it.
   events = MakeVector<fup::TouchEvent>(TouchEventBuilder()
                                            .SetTime(zx::time{2222000u})
-                                           .SetPhase(fup::EventPhase::CHANGE)
+                                           .SetPhase(fup::EventPhase::kChange)
                                            .Build());
-  fake_touch_source_.ScheduleCallback(std::move(events));
+  fake_touch_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   RunLoopUntilIdle();
 
   ASSERT_EQ(touch_events.size(), 0u);
@@ -814,10 +819,10 @@ TEST_F(PointerEventsHandlerTest, Protocol_LateGrant) {
   events = MakeVector<fup::TouchEvent>(
       TouchEventBuilder()
           .SetTime(zx::time{3333000u})
-          .SetTouchInteractionStatus(fup::TouchInteractionStatus::GRANTED)
+          .SetTouchInteractionStatus(fup::TouchInteractionStatus::kGranted)
           .WithoutSample()
           .Build());
-  fake_touch_source_.ScheduleCallback(std::move(events));
+  fake_touch_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   RunLoopUntilIdle();
 
   ASSERT_EQ(touch_events.size(), 2u);
@@ -828,9 +833,9 @@ TEST_F(PointerEventsHandlerTest, Protocol_LateGrant) {
   // Fuchsia CHANGE, grant result - release immediately.
   events = MakeVector<fup::TouchEvent>(TouchEventBuilder()
                                            .SetTime(zx::time{4444000u})
-                                           .SetPhase(fup::EventPhase::CHANGE)
+                                           .SetPhase(fup::EventPhase::kChange)
                                            .Build());
-  fake_touch_source_.ScheduleCallback(std::move(events));
+  fake_touch_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   RunLoopUntilIdle();
 
   ASSERT_EQ(touch_events.size(), 1u);
@@ -852,9 +857,9 @@ TEST_F(PointerEventsHandlerTest, Protocol_LateGrantCombo) {
   std::vector events =
       MakeVector<fup::TouchEvent>(TouchEventBuilder()
                                       .SetTime(zx::time{1111000u})
-                                      .SetPhase(fup::EventPhase::ADD)
+                                      .SetPhase(fup::EventPhase::kAdd)
                                       .Build());
-  fake_touch_source_.ScheduleCallback(std::move(events));
+  fake_touch_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   RunLoopUntilIdle();
 
   ASSERT_EQ(touch_events.size(), 0u);
@@ -863,9 +868,9 @@ TEST_F(PointerEventsHandlerTest, Protocol_LateGrantCombo) {
   // Fuchsia CHANGE, no grant result - buffer it.
   events = MakeVector<fup::TouchEvent>(TouchEventBuilder()
                                            .SetTime(zx::time{2222000u})
-                                           .SetPhase(fup::EventPhase::CHANGE)
+                                           .SetPhase(fup::EventPhase::kChange)
                                            .Build());
-  fake_touch_source_.ScheduleCallback(std::move(events));
+  fake_touch_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   RunLoopUntilIdle();
 
   ASSERT_EQ(touch_events.size(), 0u);
@@ -875,10 +880,10 @@ TEST_F(PointerEventsHandlerTest, Protocol_LateGrantCombo) {
   events = MakeVector<fup::TouchEvent>(
       TouchEventBuilder()
           .SetTime(zx::time{3333000u})
-          .SetPhase(fup::EventPhase::CHANGE)
-          .SetTouchInteractionStatus(fup::TouchInteractionStatus::GRANTED)
+          .SetPhase(fup::EventPhase::kChange)
+          .SetTouchInteractionStatus(fup::TouchInteractionStatus::kGranted)
           .Build());
-  fake_touch_source_.ScheduleCallback(std::move(events));
+  fake_touch_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   RunLoopUntilIdle();
 
   ASSERT_EQ(touch_events.size(), 3u);
@@ -906,10 +911,10 @@ TEST_F(PointerEventsHandlerTest, Protocol_EarlyGrant) {
   std::vector events = MakeVector<fup::TouchEvent>(
       TouchEventBuilder()
           .SetTime(zx::time{1111000u})
-          .SetPhase(fup::EventPhase::ADD)
-          .SetTouchInteractionStatus(fup::TouchInteractionStatus::GRANTED)
+          .SetPhase(fup::EventPhase::kAdd)
+          .SetTouchInteractionStatus(fup::TouchInteractionStatus::kGranted)
           .Build());
-  fake_touch_source_.ScheduleCallback(std::move(events));
+  fake_touch_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   RunLoopUntilIdle();
 
   ASSERT_EQ(touch_events.size(), 1u);
@@ -919,9 +924,9 @@ TEST_F(PointerEventsHandlerTest, Protocol_EarlyGrant) {
   // Fuchsia CHANGE, after grant result - release immediately.
   events = MakeVector<fup::TouchEvent>(TouchEventBuilder()
                                            .SetTime(zx::time{2222000u})
-                                           .SetPhase(fup::EventPhase::CHANGE)
+                                           .SetPhase(fup::EventPhase::kChange)
                                            .Build());
-  fake_touch_source_.ScheduleCallback(std::move(events));
+  fake_touch_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   RunLoopUntilIdle();
 
   ASSERT_EQ(touch_events.size(), 1u);
@@ -941,9 +946,9 @@ TEST_F(PointerEventsHandlerTest, Protocol_LateDeny) {
   std::vector events =
       MakeVector<fup::TouchEvent>(TouchEventBuilder()
                                       .SetTime(zx::time{1111000u})
-                                      .SetPhase(fup::EventPhase::ADD)
+                                      .SetPhase(fup::EventPhase::kAdd)
                                       .Build());
-  fake_touch_source_.ScheduleCallback(std::move(events));
+  fake_touch_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   RunLoopUntilIdle();
 
   ASSERT_EQ(touch_events.size(), 0u);
@@ -952,9 +957,9 @@ TEST_F(PointerEventsHandlerTest, Protocol_LateDeny) {
   // Fuchsia CHANGE, no grant result - buffer it.
   events = MakeVector<fup::TouchEvent>(TouchEventBuilder()
                                            .SetTime(zx::time{2222000u})
-                                           .SetPhase(fup::EventPhase::CHANGE)
+                                           .SetPhase(fup::EventPhase::kChange)
                                            .Build());
-  fake_touch_source_.ScheduleCallback(std::move(events));
+  fake_touch_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   RunLoopUntilIdle();
 
   ASSERT_EQ(touch_events.size(), 0u);
@@ -964,10 +969,10 @@ TEST_F(PointerEventsHandlerTest, Protocol_LateDeny) {
   events = MakeVector<fup::TouchEvent>(
       TouchEventBuilder()
           .SetTime(zx::time{3333000u})
-          .SetTouchInteractionStatus(fup::TouchInteractionStatus::DENIED)
+          .SetTouchInteractionStatus(fup::TouchInteractionStatus::kDenied)
           .WithoutSample()
           .Build());
-  fake_touch_source_.ScheduleCallback(std::move(events));
+  fake_touch_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   RunLoopUntilIdle();
 
   ASSERT_EQ(touch_events.size(), 0u);  // Do not release to client!
@@ -986,9 +991,9 @@ TEST_F(PointerEventsHandlerTest, Protocol_LateDenyCombo) {
   std::vector events =
       MakeVector<fup::TouchEvent>(TouchEventBuilder()
                                       .SetTime(zx::time{1111000u})
-                                      .SetPhase(fup::EventPhase::ADD)
+                                      .SetPhase(fup::EventPhase::kAdd)
                                       .Build());
-  fake_touch_source_.ScheduleCallback(std::move(events));
+  fake_touch_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   RunLoopUntilIdle();
 
   ASSERT_EQ(touch_events.size(), 0u);
@@ -997,9 +1002,9 @@ TEST_F(PointerEventsHandlerTest, Protocol_LateDenyCombo) {
   // Fuchsia CHANGE, no grant result - buffer it.
   events = MakeVector<fup::TouchEvent>(TouchEventBuilder()
                                            .SetTime(zx::time{2222000u})
-                                           .SetPhase(fup::EventPhase::CHANGE)
+                                           .SetPhase(fup::EventPhase::kChange)
                                            .Build());
-  fake_touch_source_.ScheduleCallback(std::move(events));
+  fake_touch_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   RunLoopUntilIdle();
 
   ASSERT_EQ(touch_events.size(), 0u);
@@ -1009,10 +1014,10 @@ TEST_F(PointerEventsHandlerTest, Protocol_LateDenyCombo) {
   events = MakeVector<fup::TouchEvent>(
       TouchEventBuilder()
           .SetTime(zx::time{3333000u})
-          .SetPhase(fup::EventPhase::CANCEL)
-          .SetTouchInteractionStatus(fup::TouchInteractionStatus::DENIED)
+          .SetPhase(fup::EventPhase::kCancel)
+          .SetTouchInteractionStatus(fup::TouchInteractionStatus::kDenied)
           .Build());
-  fake_touch_source_.ScheduleCallback(std::move(events));
+  fake_touch_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   RunLoopUntilIdle();
 
   ASSERT_EQ(touch_events.size(), 0u);  // Do not release to client!
@@ -1027,22 +1032,22 @@ TEST_F(PointerEventsHandlerTest, Protocol_PointersAreIndependent) {
       }));
   RunLoopUntilIdle();  // Server gets watch call.
 
-  constexpr fup::TouchInteractionId kIxnTwo = {
-      .device_id = 1u, .pointer_id = 2u, .interaction_id = 2u};
+  const fup::TouchInteractionId kIxnTwo = {
+      {.device_id = 1u, .pointer_id = 2u, .interaction_id = 2u}};
 
   // Fuchsia ptr1 ADD and ptr2 ADD, no grant result for either - buffer them.
   std::vector events =
       MakeVector<fup::TouchEvent>(TouchEventBuilder()
                                       .SetTime(zx::time{1111000u})
-                                      .SetPhase(fup::EventPhase::ADD)
+                                      .SetPhase(fup::EventPhase::kAdd)
                                       .Build(),
                                   TouchEventBuilder()
                                       .SetTime(zx::time{1111000u})
                                       .SetId(kIxnTwo)
-                                      .SetPhase(fup::EventPhase::ADD)
+                                      .SetPhase(fup::EventPhase::kAdd)
                                       .SetPosition({15.f, 15.f})
                                       .Build());
-  fake_touch_source_.ScheduleCallback(std::move(events));
+  fake_touch_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   RunLoopUntilIdle();
 
   ASSERT_EQ(touch_events.size(), 0u);
@@ -1053,10 +1058,10 @@ TEST_F(PointerEventsHandlerTest, Protocol_PointersAreIndependent) {
       TouchEventBuilder()
           .SetTime(zx::time{2222000u})
           .SetId(kIxnTwo)
-          .SetTouchInteractionStatus(fup::TouchInteractionStatus::GRANTED)
+          .SetTouchInteractionStatus(fup::TouchInteractionStatus::kGranted)
           .WithoutSample()
           .Build());
-  fake_touch_source_.ScheduleCallback(std::move(events));
+  fake_touch_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   RunLoopUntilIdle();
 
   ASSERT_EQ(touch_events.size(), 1u);
@@ -1068,10 +1073,10 @@ TEST_F(PointerEventsHandlerTest, Protocol_PointersAreIndependent) {
   events = MakeVector<fup::TouchEvent>(
       TouchEventBuilder()
           .SetTime(zx::time{3333000u})
-          .SetTouchInteractionStatus(fup::TouchInteractionStatus::GRANTED)
+          .SetTouchInteractionStatus(fup::TouchInteractionStatus::kGranted)
           .WithoutSample()
           .Build());
-  fake_touch_source_.ScheduleCallback(std::move(events));
+  fake_touch_source_.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   RunLoopUntilIdle();
 
   ASSERT_EQ(touch_events.size(), 1u);

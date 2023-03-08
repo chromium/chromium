@@ -4,8 +4,9 @@
 
 #include "ui/ozone/platform/flatland/flatland_window.h"
 
+#include <fidl/fuchsia.ui.pointer/cpp/fidl.h>
+#include <fidl/fuchsia.ui.pointer/cpp/hlcpp_conversion.h>
 #include <fuchsia/ui/composition/cpp/fidl.h>
-#include <fuchsia/ui/pointer/cpp/fidl.h>
 #include <fuchsia/ui/views/cpp/fidl.h>
 #include <lib/ui/scenic/cpp/testing/fake_flatland.h>
 #include <lib/ui/scenic/cpp/testing/fake_touch_source.h>
@@ -161,11 +162,13 @@ class FlatlandWindowTest : public ::testing::Test {
         flatland_window_.get(), &FlatlandWindow::OnViewRefFocusedWatchResult));
   }
 
-  void SetTouchSourceHandle(
-      fuchsia::ui::pointer::TouchSourceHandle touch_source_handle) {
-    fuchsia::ui::pointer::MouseSourceHandle mouse_source;
+  void SetTouchSource(
+      fidl::ClientEnd<fuchsia_ui_pointer::TouchSource> touch_source) {
+    auto mouse_endpoints =
+        fidl::CreateEndpoints<fuchsia_ui_pointer::MouseSource>();
+    EXPECT_TRUE(mouse_endpoints.is_ok()) << mouse_endpoints.status_string();
     flatland_window_->pointer_handler_ = std::make_unique<PointerEventsHandler>(
-        std::move(touch_source_handle), std::move(mouse_source));
+        std::move(touch_source), std::move(mouse_endpoints->client));
     flatland_window_->pointer_handler_->StartWatching(base::BindRepeating(
         &FlatlandWindow::DispatchEvent,
         // This is safe since |flatland_window_| is a class member.
@@ -267,7 +270,7 @@ TEST_F(FlatlandWindowTest, AppliesDevicePixelRatio) {
   scenic::FakeTouchSource fake_touch_source;
   fidl::Binding<fuchsia::ui::pointer::TouchSource> fake_touch_source_binding(
       &fake_touch_source);
-  SetTouchSourceHandle(fake_touch_source_binding.NewBinding());
+  SetTouchSource(fidl::HLCPPToNatural(fake_touch_source_binding.NewBinding()));
   task_environment_.RunUntilIdle();
 
   // Send a touch event and expect coordinates to be the same as TouchEvent.
@@ -280,14 +283,13 @@ TEST_F(FlatlandWindowTest, AppliesDevicePixelRatio) {
         EXPECT_EQ(event->AsTouchEvent()->location_f().y(), kLocationY);
         event_received = true;
       });
-  std::vector<fuchsia::ui::pointer::TouchEvent> events;
-  events.push_back(
-      TouchEventBuilder()
-          .SetPosition({kLocationX, kLocationY})
-          .SetTouchInteractionStatus(
-              fuchsia::ui::pointer::TouchInteractionStatus::GRANTED)
-          .Build());
-  fake_touch_source.ScheduleCallback(std::move(events));
+  std::vector<fuchsia_ui_pointer::TouchEvent> events;
+  events.push_back(TouchEventBuilder()
+                       .SetPosition({kLocationX, kLocationY})
+                       .SetTouchInteractionStatus(
+                           fuchsia_ui_pointer::TouchInteractionStatus::kGranted)
+                       .Build());
+  fake_touch_source.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(event_received);
 
@@ -307,13 +309,12 @@ TEST_F(FlatlandWindowTest, AppliesDevicePixelRatio) {
         event_received = true;
       });
   events.clear();
-  events.push_back(
-      TouchEventBuilder()
-          .SetPosition({kLocationX, kLocationY})
-          .SetTouchInteractionStatus(
-              fuchsia::ui::pointer::TouchInteractionStatus::GRANTED)
-          .Build());
-  fake_touch_source.ScheduleCallback(std::move(events));
+  events.push_back(TouchEventBuilder()
+                       .SetPosition({kLocationX, kLocationY})
+                       .SetTouchInteractionStatus(
+                           fuchsia_ui_pointer::TouchInteractionStatus::kGranted)
+                       .Build());
+  fake_touch_source.ScheduleCallback(fidl::NaturalToHLCPP(std::move(events)));
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(event_received);
 }

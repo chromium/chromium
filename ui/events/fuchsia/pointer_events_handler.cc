@@ -4,6 +4,8 @@
 
 #include "ui/events/fuchsia/pointer_events_handler.h"
 
+#include <lib/async/default.h>
+
 #include <cmath>
 #include <limits>
 #include <memory>
@@ -17,56 +19,52 @@
 #include "ui/events/pointer_details.h"
 #include "ui/events/types/event_type.h"
 
-namespace fuchsia {
-namespace ui {
-namespace pointer {
+namespace fuchsia_ui_pointer {
 // For using TouchInteractionId as a map key.
 bool operator==(const TouchInteractionId& a, const TouchInteractionId& b) {
-  return a.device_id == b.device_id && a.pointer_id == b.pointer_id &&
-         a.interaction_id == b.interaction_id;
+  return a.device_id() == b.device_id() && a.pointer_id() == b.pointer_id() &&
+         a.interaction_id() == b.interaction_id();
 }
-}  // namespace pointer
-}  // namespace ui
-}  // namespace fuchsia
+}  // namespace fuchsia_ui_pointer
 
 namespace ui {
-
-namespace fup = fuchsia::ui::pointer;
 
 namespace {
 
 const int kWheelDelta = 120;
 
-void IssueTouchTraceEvent(const fup::TouchEvent& event) {
-  DCHECK(event.has_trace_flow_id()) << "API guarantee";
+void IssueTouchTraceEvent(const fuchsia_ui_pointer::TouchEvent& event) {
+  DCHECK(event.trace_flow_id()) << "API guarantee";
   TRACE_EVENT_WITH_FLOW0("input", "dispatch_event_to_client",
-                         event.trace_flow_id(), TRACE_EVENT_FLAG_FLOW_OUT);
+                         event.trace_flow_id().value(),
+                         TRACE_EVENT_FLAG_FLOW_OUT);
 }
 
-void IssueMouseTraceEvent(const fup::MouseEvent& event) {
-  DCHECK(event.has_trace_flow_id()) << "API guarantee";
+void IssueMouseTraceEvent(const fuchsia_ui_pointer::MouseEvent& event) {
+  DCHECK(event.trace_flow_id()) << "API guarantee";
   TRACE_EVENT_WITH_FLOW0("input", "dispatch_event_to_client",
-                         event.trace_flow_id(), TRACE_EVENT_FLAG_FLOW_OUT);
+                         event.trace_flow_id().value(),
+                         TRACE_EVENT_FLAG_FLOW_OUT);
 }
 
-bool HasValidTouchSample(const fup::TouchEvent& event) {
-  if (!event.has_pointer_sample()) {
+bool HasValidTouchSample(const fuchsia_ui_pointer::TouchEvent& event) {
+  if (!event.pointer_sample()) {
     return false;
   }
-  DCHECK(event.pointer_sample().has_interaction()) << "API guarantee";
-  DCHECK(event.pointer_sample().has_phase()) << "API guarantee";
-  DCHECK(event.pointer_sample().has_position_in_viewport()) << "API guarantee";
+  DCHECK(event.pointer_sample()->interaction()) << "API guarantee";
+  DCHECK(event.pointer_sample()->phase()) << "API guarantee";
+  DCHECK(event.pointer_sample()->position_in_viewport()) << "API guarantee";
   return true;
 }
 
-bool HasValidMouseSample(const fup::MouseEvent& event) {
-  if (!event.has_pointer_sample()) {
+bool HasValidMouseSample(const fuchsia_ui_pointer::MouseEvent& event) {
+  if (!event.pointer_sample()) {
     return false;
   }
   const auto& sample = event.pointer_sample();
-  DCHECK(sample.has_device_id()) << "API guarantee";
-  DCHECK(sample.has_position_in_viewport()) << "API guarantee";
-  DCHECK(!sample.has_pressed_buttons() || sample.pressed_buttons().size() > 0)
+  DCHECK(sample->device_id()) << "API guarantee";
+  DCHECK(sample->position_in_viewport()) << "API guarantee";
+  DCHECK(!sample->pressed_buttons() || sample->pressed_buttons()->size() > 0)
       << "API guarantee";
 
   return true;
@@ -120,27 +118,29 @@ std::array<float, 2> ViewportToViewCoordinates(
   }
 }
 
-EventType GetEventTypeFromTouchEventPhase(fup::EventPhase phase) {
+EventType GetEventTypeFromTouchEventPhase(
+    fuchsia_ui_pointer::EventPhase phase) {
   switch (phase) {
-    case fup::EventPhase::ADD:
+    case fuchsia_ui_pointer::EventPhase::kAdd:
       return ET_TOUCH_PRESSED;
-    case fup::EventPhase::CHANGE:
+    case fuchsia_ui_pointer::EventPhase::kChange:
       return ET_TOUCH_MOVED;
-    case fup::EventPhase::REMOVE:
+    case fuchsia_ui_pointer::EventPhase::kRemove:
       return ET_TOUCH_RELEASED;
-    case fup::EventPhase::CANCEL:
+    case fuchsia_ui_pointer::EventPhase::kCancel:
       return ET_TOUCH_CANCELLED;
   }
 }
 
 // TODO(crbug.com/1271730): Check if chrome gestures require strict boundaries.
-std::array<float, 2> ClampToViewSpace(const float x,
-                                      const float y,
-                                      const fup::ViewParameters& p) {
-  const float min_x = p.view.min[0];
-  const float min_y = p.view.min[1];
-  const float max_x = p.view.max[0];
-  const float max_y = p.view.max[1];
+std::array<float, 2> ClampToViewSpace(
+    const float x,
+    const float y,
+    const fuchsia_ui_pointer::ViewParameters& p) {
+  const float min_x = p.view().min()[0];
+  const float min_y = p.view().min()[1];
+  const float max_x = p.view().max()[0];
+  const float max_y = p.view().max()[1];
   if (min_x <= x && x < max_x && min_y <= y && y < max_y) {
     return {x, y};  // No clamping to perform.
   }
@@ -160,28 +160,29 @@ std::array<float, 2> ClampToViewSpace(const float x,
 // The gestures expect a gesture to start within the logical view space, and
 // is not tolerant of floating point drift. This function coerces just the DOWN
 // event's coordinate to start within the logical view.
-TouchEvent CreateTouchEventDraft(const fup::TouchEvent& event,
-                                 const fup::ViewParameters& view_parameters) {
+TouchEvent CreateTouchEventDraft(
+    const fuchsia_ui_pointer::TouchEvent& event,
+    const fuchsia_ui_pointer::ViewParameters& view_parameters) {
   DCHECK(HasValidTouchSample(event)) << "precondition";
   const auto& sample = event.pointer_sample();
-  const auto& interaction = sample.interaction();
+  const auto& interaction = sample->interaction();
 
-  auto timestamp = base::TimeTicks::FromZxTime(event.timestamp());
-  auto event_type = GetEventTypeFromTouchEventPhase(sample.phase());
+  auto timestamp = base::TimeTicks::FromZxTime(event.timestamp().value());
+  auto event_type = GetEventTypeFromTouchEventPhase(sample->phase().value());
 
   // TODO(crbug.com/1276571): Consider packing device_id field into PointerId.
-  DCHECK_LE(interaction.pointer_id, 31U);
+  DCHECK_LE(interaction->pointer_id(), 31U);
   PointerDetails pointer_details(EventPointerType::kTouch,
-                                 interaction.pointer_id);
+                                 interaction->pointer_id());
   // View parameters can change mid-interaction; apply transform on the fly.
   auto logical =
-      ViewportToViewCoordinates(sample.position_in_viewport(),
-                                view_parameters.viewport_to_view_transform);
+      ViewportToViewCoordinates(sample->position_in_viewport().value(),
+                                view_parameters.viewport_to_view_transform());
   // TODO(fxbug.dev/88580): Consider setting hover via
   // ui::TouchEvent::set_hovering().
   gfx::PointF location(logical[0], logical[1]);
-  gfx::PointF root_location(sample.position_in_viewport()[0],
-                            sample.position_in_viewport()[1]);
+  gfx::PointF root_location(sample->position_in_viewport().value()[0],
+                            sample->position_in_viewport().value()[1]);
   return TouchEvent(event_type, location, root_location, timestamp,
                     pointer_details);
 }
@@ -196,7 +197,7 @@ TouchEvent CreateTouchEventDraft(const fup::TouchEvent& event,
 // button order (kMousePrimaryButton, etc). The device-assigned button
 // IDs are provided in priority order in MouseEvent.device_info (at the start of
 // channel connection), and maps from device button ID (given in
-// fup::MouseEvent) to Chrome ui::EventFlags.
+// fuchsia_ui_pointer::MouseEvent) to Chrome ui::EventFlags.
 //
 // Scroll data, if available, gets packed into the |scroll_delta_x| or
 // |scroll_delta_y| fields, and the |signal_kind| field is set to kScroll.
@@ -207,21 +208,22 @@ TouchEvent CreateTouchEventDraft(const fup::TouchEvent& event,
 // is not tolerant of floating point drift. This function coerces just the DOWN
 // event's coordinate to start within the logical view.
 std::unique_ptr<MouseEvent> CreateMouseEventDraft(
-    const fup::MouseEvent& event,
+    const fuchsia_ui_pointer::MouseEvent& event,
     const EventType event_type,
     const int pressed_buttons_flags,
     const int changed_buttons_flags,
-    const fup::ViewParameters& view_parameters,
-    const fup::MouseDeviceInfo& device_info) {
+    const fuchsia_ui_pointer::ViewParameters& view_parameters,
+    const fuchsia_ui_pointer::MouseDeviceInfo& device_info) {
   DCHECK(HasValidMouseSample(event)) << "precondition";
   const auto& sample = event.pointer_sample();
 
-  auto timestamp = base::TimeTicks::FromZxTime(event.timestamp());
-  PointerDetails pointer_details(EventPointerType::kMouse, sample.device_id());
+  auto timestamp = base::TimeTicks::FromZxTime(event.timestamp().value());
+  PointerDetails pointer_details(EventPointerType::kMouse,
+                                 sample->device_id().value());
   // View parameters can change mid-interaction; apply transform on the fly.
   auto logical =
-      ViewportToViewCoordinates(sample.position_in_viewport(),
-                                view_parameters.viewport_to_view_transform);
+      ViewportToViewCoordinates(sample->position_in_viewport().value(),
+                                view_parameters.viewport_to_view_transform());
 
   // Ensure gesture recognition: DOWN starts in the logical view space.
   if (event_type == ET_MOUSE_PRESSED) {
@@ -229,34 +231,25 @@ std::unique_ptr<MouseEvent> CreateMouseEventDraft(
   }
 
   auto location = gfx::PointF(logical[0], logical[1]);
-  auto root_location = gfx::PointF(sample.position_in_viewport()[0],
-                                   sample.position_in_viewport()[1]);
+  auto root_location = gfx::PointF(sample->position_in_viewport().value()[0],
+                                   sample->position_in_viewport().value()[1]);
 
   if (event_type == ET_MOUSEWHEEL) {
     // TODO(fxbug.dev/92938): Maybe also support ctrl+wheel event here.
 
-    const int tick_x_120ths =
-        sample.has_scroll_h()
-            ? static_cast<int>(sample.scroll_h()) * kWheelDelta
-            : 0;
-    const int tick_y_120ths =
-        sample.has_scroll_v()
-            ? static_cast<int>(sample.scroll_v()) * kWheelDelta
-            : 0;
+    const int tick_x_120ths = sample->scroll_h().value_or(0) * kWheelDelta;
+    const int tick_y_120ths = sample->scroll_v().value_or(0) * kWheelDelta;
 
     // Fuchsia reports suggested scroll pixel in physical, but for old version,
     // Fuchsia reports wheel rotated ticks need to multiple |kWheelDelta| for
     // pixel offset.
     const float offset_x =
-        sample.has_scroll_h_physical_pixel()
-            ? static_cast<float>(sample.scroll_h_physical_pixel())
-            : static_cast<float>(tick_x_120ths);
+        sample->scroll_h_physical_pixel().value_or(tick_x_120ths);
     const float offset_y =
-        sample.has_scroll_v_physical_pixel()
-            ? static_cast<float>(sample.scroll_v_physical_pixel())
-            : static_cast<float>(tick_y_120ths);
+        sample->scroll_v_physical_pixel().value_or(tick_y_120ths);
 
-    if (sample.has_is_precision_scroll() && sample.is_precision_scroll()) {
+    if (sample->is_precision_scroll().has_value() &&
+        sample->is_precision_scroll().value()) {
       // For precision scroll device, mostly are touchpads for now, need to use
       // ScrollEvent instead of MouseWheelEvent to prevent animation
       // interpolation in smooth scrolling.
@@ -282,16 +275,11 @@ std::unique_ptr<MouseEvent> CreateMouseEventDraft(
 
 }  // namespace
 
-PointerEventsHandler::PointerEventsHandler(fup::TouchSourceHandle touch_source,
-                                           fup::MouseSourceHandle mouse_source)
-    : touch_source_(touch_source.Bind()), mouse_source_(mouse_source.Bind()) {
-  touch_source_.set_error_handler([](zx_status_t status) {
-    ZX_LOG(ERROR, status) << "fuchsia.ui.pointer.TouchSource disconnected.";
-  });
-  mouse_source_.set_error_handler([](zx_status_t status) {
-    ZX_LOG(ERROR, status) << "fuchsia.ui.pointer.MouseSource disconnected.";
-  });
-}
+PointerEventsHandler::PointerEventsHandler(
+    fidl::ClientEnd<fuchsia_ui_pointer::TouchSource> touch_source,
+    fidl::ClientEnd<fuchsia_ui_pointer::MouseSource> mouse_source)
+    : touch_source_(std::move(touch_source), async_get_default_dispatcher()),
+      mouse_source_(std::move(mouse_source), async_get_default_dispatcher()) {}
 
 PointerEventsHandler::~PointerEventsHandler() = default;
 
@@ -306,10 +294,10 @@ void PointerEventsHandler::StartWatching(
   event_callback_ = event_callback;
 
   // Start watching both channels.
-  touch_source_->Watch(
-      std::vector<fup::TouchResponse>(),
-      fit::bind_member(this, &PointerEventsHandler::OnTouchSourceWatchResult));
-  mouse_source_->Watch(
+  touch_source_->Watch(std::vector<fuchsia_ui_pointer::TouchResponse>())
+      .Then(fit::bind_member(this,
+                             &PointerEventsHandler::OnTouchSourceWatchResult));
+  mouse_source_->Watch().Then(
       fit::bind_member(this, &PointerEventsHandler::OnMouseSourceWatchResult));
 }
 
@@ -338,21 +326,26 @@ void PointerEventsHandler::StartWatching(
 //       flush_to_client(buffer[event.result.interaction])
 //     delete buffer[event.result.interaction]
 void PointerEventsHandler::OnTouchSourceWatchResult(
-    std::vector<fup::TouchEvent> events) {
+    fidl::Result<fuchsia_ui_pointer::TouchSource::Watch>& watch_result) {
+  if (watch_result.is_error()) {
+    ZX_DLOG(ERROR, watch_result.error_value().status()) << " in " << __func__;
+    return;
+  }
+  auto& events = watch_result->events();
   TRACE_EVENT0("input", "PointerEventsHandler::OnTouchSourceWatchResult");
-  std::vector<fup::TouchResponse> touch_responses;
-  for (const fup::TouchEvent& event : events) {
+  std::vector<fuchsia_ui_pointer::TouchResponse> touch_responses;
+  for (const fuchsia_ui_pointer::TouchEvent& event : events) {
     IssueTouchTraceEvent(event);
-    fup::TouchResponse
+    fuchsia_ui_pointer::TouchResponse
         response;  // Response per event, matched on event's index.
-    if (event.has_view_parameters()) {
-      touch_view_parameters_ = std::move(event.view_parameters());
+    if (event.view_parameters()) {
+      touch_view_parameters_ = std::move(event.view_parameters().value());
     }
     if (HasValidTouchSample(event)) {
       const auto& sample = event.pointer_sample();
-      const auto& interaction = sample.interaction();
-      if (sample.phase() == fup::EventPhase::ADD &&
-          !event.has_interaction_result()) {
+      const auto& interaction = sample->interaction().value();
+      if (sample->phase().value() == fuchsia_ui_pointer::EventPhase::kAdd &&
+          !event.interaction_result()) {
         touch_buffer_.emplace(interaction, std::vector<TouchEvent>());
       }
 
@@ -366,12 +359,13 @@ void PointerEventsHandler::OnTouchSourceWatchResult(
 
       // TODO(fxbug.dev/89296): Consider deriving response from
       // Event::handled().
-      response.set_response_type(fup::TouchResponseType::YES);
+      response.response_type(fuchsia_ui_pointer::TouchResponseType::kYes);
     }
-    if (event.has_interaction_result()) {
+    if (event.interaction_result()) {
       const auto& result = event.interaction_result();
-      const auto& interaction = result.interaction;
-      if (result.status == fup::TouchInteractionStatus::GRANTED &&
+      const auto& interaction = result->interaction();
+      if (result->status() ==
+              fuchsia_ui_pointer::TouchInteractionStatus::kGranted &&
           touch_buffer_.count(interaction) > 0) {
         for (auto& touch : touch_buffer_[interaction]) {
           event_callback_.Run(&touch);
@@ -382,44 +376,49 @@ void PointerEventsHandler::OnTouchSourceWatchResult(
     touch_responses.push_back(std::move(response));
   }
 
-  touch_source_->Watch(
-      std::move(touch_responses),
-      fit::bind_member(this, &PointerEventsHandler::OnTouchSourceWatchResult));
+  touch_source_->Watch(std::move(touch_responses))
+      .Then(fit::bind_member(this,
+                             &PointerEventsHandler::OnTouchSourceWatchResult));
 }
 
 void PointerEventsHandler::OnMouseSourceWatchResult(
-    std::vector<fup::MouseEvent> events) {
+    fidl::Result<fuchsia_ui_pointer::MouseSource::Watch>& watch_result) {
+  if (watch_result.is_error()) {
+    DLOG(ERROR) << "OnMouseSourceWatchResult: "
+                << watch_result.error_value().status_string();
+    return;
+  }
+  auto& events = watch_result->events();
   TRACE_EVENT0("input", "PointerEventsHandler::OnMouseSourceWatchResult");
-  for (fup::MouseEvent& event : events) {
+  for (fuchsia_ui_pointer::MouseEvent& event : events) {
     IssueMouseTraceEvent(event);
-    if (event.has_device_info()) {
-      const auto& id = event.device_info().id();
-      mouse_device_info_[id] = std::move(*event.mutable_device_info());
+    if (event.device_info()) {
+      const auto& id = event.device_info()->id().value();
+      mouse_device_info_[id] = std::move(event.device_info().value());
     }
-    if (event.has_view_parameters()) {
-      mouse_view_parameters_ = std::move(event.view_parameters());
+    if (event.view_parameters()) {
+      mouse_view_parameters_ = std::move(event.view_parameters().value());
     }
     if (HasValidMouseSample(event)) {
       const auto& sample = event.pointer_sample();
-      const auto& id = sample.device_id();
+      const auto& id = sample->device_id().value();
       DCHECK(mouse_view_parameters_.has_value()) << "API guarantee";
       DCHECK(mouse_device_info_.count(id) > 0) << "API guarantee";
 
-      int pressed_buttons =
-          sample.has_pressed_buttons()
-              ? FuchsiaButtonVectorToChromeButtonBitmap(
-                    sample.pressed_buttons(), mouse_device_info_[id].buttons())
-              : 0;
+      int pressed_buttons = sample->pressed_buttons()
+                                ? FuchsiaButtonVectorToChromeButtonBitmap(
+                                      sample->pressed_buttons().value(),
+                                      mouse_device_info_[id].buttons().value())
+                                : 0;
       int previous_buttons = mouse_down_[id];
       int changed_buttons = pressed_buttons ^ previous_buttons;
 
       // Update mouse_down_ for the next Fuchsia event.
       mouse_down_[id] = pressed_buttons;
 
-      const bool is_wheel_event = sample.has_scroll_v() ||
-                                  sample.has_scroll_h() ||
-                                  sample.has_scroll_h_physical_pixel() ||
-                                  sample.has_scroll_v_physical_pixel();
+      const bool is_wheel_event = sample->scroll_v() || sample->scroll_h() ||
+                                  sample->scroll_h_physical_pixel() ||
+                                  sample->scroll_v_physical_pixel();
       // Do not filterout mouse wheel here, because the wheel event may be
       // bundled with button down and button up event. Chromium will need to
       // split it to 2 events.
@@ -477,7 +476,7 @@ void PointerEventsHandler::OnMouseSourceWatchResult(
     }
   }
 
-  mouse_source_->Watch(
+  mouse_source_->Watch().Then(
       fit::bind_member(this, &PointerEventsHandler::OnMouseSourceWatchResult));
 }
 
