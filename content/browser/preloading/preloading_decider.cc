@@ -82,7 +82,7 @@ void PreloadingDecider::OnPointerHover(const GURL& url) {
     // otherwise try to preconnect to it.
     if (MaybePrerender(url)) {
       AddPreloadingPrediction(url,
-                              preloading_predictor::kUrlPointerDownOnAnchor);
+                              preloading_predictor::kUrlPointerHoverOnAnchor);
       return;
     }
     if (ShouldWaitForPrerenderResult(url))
