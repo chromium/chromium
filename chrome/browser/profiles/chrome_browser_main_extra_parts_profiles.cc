@@ -370,6 +370,7 @@
 #endif
 
 #if defined(TOOLKIT_VIEWS)
+#include "chrome/browser/bookmarks/bookmark_expanded_state_tracker_factory.h"
 #include "chrome/browser/ui/views/bubble/bubble_contents_wrapper_service_factory.h"
 #endif
 
@@ -517,6 +518,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   BluetoothChooserContextFactory::GetInstance();
   BookmarkModelFactory::GetInstance();
   BookmarkUndoServiceFactory::GetInstance();
+#if defined(TOOLKIT_VIEWS)
+  BookmarkExpandedStateTrackerFactory::GetInstance();
+#endif
   if (breadcrumbs::IsEnabled()) {
     BreadcrumbManagerKeyedServiceFactory::GetInstance();
   }

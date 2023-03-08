@@ -19,7 +19,6 @@
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
-#include "components/bookmarks/browser/bookmark_expanded_state_tracker.h"
 #include "components/bookmarks/browser/bookmark_load_details.h"
 #include "components/bookmarks/browser/bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
@@ -149,9 +148,6 @@ void BookmarkModel::Load(PrefService* pref_service,
   // If the store is non-null, it means Load was already invoked. Load should
   // only be invoked once.
   DCHECK(!store_);
-
-  expanded_state_tracker_ =
-      std::make_unique<BookmarkExpandedStateTracker>(this, pref_service);
 
   const base::FilePath file_path = profile_path.Append(kBookmarksFileName);
 

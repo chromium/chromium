@@ -6481,6 +6481,10 @@ static_library("browser") {
 
   if (toolkit_views) {
     sources += [
+      "bookmarks/bookmark_expanded_state_tracker.cc",
+      "bookmarks/bookmark_expanded_state_tracker.h",
+      "bookmarks/bookmark_expanded_state_tracker_factory.cc",
+      "bookmarks/bookmark_expanded_state_tracker_factory.h",
       "page_load_metrics/observers/side_search_page_load_metrics_observer.cc",
       "page_load_metrics/observers/side_search_page_load_metrics_observer.h",
     ]

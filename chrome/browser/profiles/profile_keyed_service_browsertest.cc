@@ -336,6 +336,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "BluetoothPrivateAPI",
     "BluetoothSocketEventDispatcher",
     "BookmarkManagerPrivateAPI",
+#if defined(TOOLKIT_VIEWS)
+    "BookmarkExpandedStateTracker",
+#endif
     "BookmarkModel",
     "BookmarkSyncServiceFactory",
     "BookmarkUndoService",

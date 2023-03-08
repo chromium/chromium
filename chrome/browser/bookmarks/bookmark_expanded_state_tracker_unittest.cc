@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/bookmarks/browser/bookmark_expanded_state_tracker.h"
+#include "chrome/browser/bookmarks/bookmark_expanded_state_tracker.h"
 
 #include <memory>
 
@@ -18,8 +18,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-namespace bookmarks {
 
 class BookmarkExpandedStateTrackerTest : public testing::Test {
  public:
@@ -40,7 +38,8 @@ class BookmarkExpandedStateTrackerTest : public testing::Test {
   base::ScopedTempDir scoped_temp_dir_;
   base::test::TaskEnvironment task_environment_;
   TestingPrefServiceSimple prefs_;
-  std::unique_ptr<BookmarkModel> model_;
+  std::unique_ptr<bookmarks::BookmarkModel> model_;
+  std::unique_ptr<BookmarkExpandedStateTracker> tracker_;
 };
 
 BookmarkExpandedStateTrackerTest::BookmarkExpandedStateTrackerTest() = default;
@@ -49,12 +48,15 @@ BookmarkExpandedStateTrackerTest::~BookmarkExpandedStateTrackerTest() = default;
 
 void BookmarkExpandedStateTrackerTest::SetUp() {
   ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
-  prefs_.registry()->RegisterListPref(prefs::kBookmarkEditorExpandedNodes);
-  prefs_.registry()->RegisterListPref(prefs::kManagedBookmarks);
-  model_ =
-      std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
+  prefs_.registry()->RegisterListPref(
+      bookmarks::prefs::kBookmarkEditorExpandedNodes);
+  prefs_.registry()->RegisterListPref(bookmarks::prefs::kManagedBookmarks);
+  model_ = std::make_unique<bookmarks::BookmarkModel>(
+      std::make_unique<bookmarks::TestBookmarkClient>());
+  tracker_ = std::make_unique<BookmarkExpandedStateTracker>(&prefs_);
+  tracker_->Init(model_.get());
   model_->Load(&prefs_, scoped_temp_dir_.GetPath());
-  test::WaitForBookmarkModelToLoad(model_.get());
+  bookmarks::test::WaitForBookmarkModelToLoad(model_.get());
 }
 
 void BookmarkExpandedStateTrackerTest::TearDown() {
@@ -64,45 +66,39 @@ void BookmarkExpandedStateTrackerTest::TearDown() {
 
 // Various assertions for SetExpandedNodes.
 TEST_F(BookmarkExpandedStateTrackerTest, SetExpandedNodes) {
-  BookmarkExpandedStateTracker* tracker = model_->expanded_state_tracker();
-
   // Should start out initially empty.
-  EXPECT_TRUE(tracker->GetExpandedNodes().empty());
+  EXPECT_TRUE(tracker_->GetExpandedNodes().empty());
 
   BookmarkExpandedStateTracker::Nodes nodes;
   nodes.insert(model_->bookmark_bar_node());
-  tracker->SetExpandedNodes(nodes);
-  EXPECT_EQ(nodes, tracker->GetExpandedNodes());
+  tracker_->SetExpandedNodes(nodes);
+  EXPECT_EQ(nodes, tracker_->GetExpandedNodes());
 
   // Add a folder and mark it expanded.
-  const BookmarkNode* n1 =
+  const bookmarks::BookmarkNode* n1 =
       model_->AddFolder(model_->bookmark_bar_node(), 0, u"x");
   nodes.insert(n1);
-  tracker->SetExpandedNodes(nodes);
-  EXPECT_EQ(nodes, tracker->GetExpandedNodes());
+  tracker_->SetExpandedNodes(nodes);
+  EXPECT_EQ(nodes, tracker_->GetExpandedNodes());
 
   // Remove the folder, which should remove it from the list of expanded nodes.
   model_->Remove(model_->bookmark_bar_node()->children().front().get());
   nodes.erase(n1);
   n1 = nullptr;
-  EXPECT_EQ(nodes, tracker->GetExpandedNodes());
+  EXPECT_EQ(nodes, tracker_->GetExpandedNodes());
 }
 
 TEST_F(BookmarkExpandedStateTrackerTest, RemoveAllUserBookmarks) {
-  BookmarkExpandedStateTracker* tracker = model_->expanded_state_tracker();
-
   // Add a folder and mark it expanded.
-  const BookmarkNode* n1 =
+  const bookmarks::BookmarkNode* n1 =
       model_->AddFolder(model_->bookmark_bar_node(), 0, u"x");
   BookmarkExpandedStateTracker::Nodes nodes;
   nodes.insert(n1);
-  tracker->SetExpandedNodes(nodes);
+  tracker_->SetExpandedNodes(nodes);
   // Verify that the node is present.
-  EXPECT_EQ(nodes, tracker->GetExpandedNodes());
+  EXPECT_EQ(nodes, tracker_->GetExpandedNodes());
   // Call remove all.
   model_->RemoveAllUserBookmarks();
   // Verify node is not present.
-  EXPECT_TRUE(tracker->GetExpandedNodes().empty());
+  EXPECT_TRUE(tracker_->GetExpandedNodes().empty());
 }
-
-}  // namespace bookmarks
