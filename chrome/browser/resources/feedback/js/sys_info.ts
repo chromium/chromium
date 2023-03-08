@@ -77,7 +77,7 @@ function getSystemInformation():
  */
 function expand(
     button: HTMLElement, valueDiv: HTMLElement, delayFactor: number) {
-  button.textContent = loadTimeData.getString('sysinfoPageCollapseBtn');
+  button.textContent = loadTimeData.getString('logsMapPageCollapseBtn');
   // Show the spinner container.
   const valueCell = valueDiv.parentNode as HTMLElement;
   valueCell.removeAttribute('aria-hidden');
@@ -98,7 +98,7 @@ function expand(
  * @param valueDiv The div that contains the multiline logs.
  */
 function collapse(button: HTMLElement, valueDiv: HTMLElement) {
-  button.textContent = loadTimeData.getString('sysinfoPageExpandBtn');
+  button.textContent = loadTimeData.getString('logsMapPageExpandBtn');
   (valueDiv.parentNode as HTMLElement).className = 'number-collapsed';
   // Don't have screen readers announce the empty cell.
   const valueCell = valueDiv.parentNode as HTMLElement;
@@ -181,7 +181,7 @@ function createButtonCell(key: string, isMultiLine: boolean): HTMLElement {
     button.setAttribute('aria-controls', '' + key + '-value');
     button.setAttribute('aria-labelledby', `${id} ${key}`);
     button.onclick = changeCollapsedStatus;
-    button.textContent = loadTimeData.getString('sysinfoPageExpandBtn');
+    button.textContent = loadTimeData.getString('logsMapPageExpandBtn');
     buttonCell.appendChild(button);
     multilineRowsCount++;
   } else {

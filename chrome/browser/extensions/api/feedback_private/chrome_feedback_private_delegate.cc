@@ -103,12 +103,15 @@ base::Value::Dict ChromeFeedbackPrivateDelegate::GetStrings(
   // Add the localized strings needed for the "system information" page.
   SET_STRING("sysinfoPageTitle", IDS_FEEDBACK_SYSINFO_PAGE_TITLE);
   SET_STRING("sysinfoPageDescription", IDS_ABOUT_SYS_DESC);
-  SET_STRING("sysinfoPageTableTitle", IDS_ABOUT_SYS_TABLE_TITLE);
-  SET_STRING("sysinfoPageExpandAllBtn", IDS_ABOUT_SYS_EXPAND_ALL);
-  SET_STRING("sysinfoPageCollapseAllBtn", IDS_ABOUT_SYS_COLLAPSE_ALL);
-  SET_STRING("sysinfoPageExpandBtn", IDS_ABOUT_SYS_EXPAND);
-  SET_STRING("sysinfoPageCollapseBtn", IDS_ABOUT_SYS_COLLAPSE);
-  SET_STRING("sysinfoPageStatusLoading", IDS_FEEDBACK_SYSINFO_PAGE_LOADING);
+
+  // Add the localized strings shared by the "autofill metadata" and "system
+  // information" page.
+  SET_STRING("logsMapPageTableTitle", IDS_ABOUT_SYS_TABLE_TITLE);
+  SET_STRING("logsMapPageExpandAllBtn", IDS_ABOUT_SYS_EXPAND_ALL);
+  SET_STRING("logsMapPageCollapseAllBtn", IDS_ABOUT_SYS_COLLAPSE_ALL);
+  SET_STRING("logsMapPageExpandBtn", IDS_ABOUT_SYS_EXPAND);
+  SET_STRING("logsMapPageCollapseBtn", IDS_ABOUT_SYS_COLLAPSE);
+  SET_STRING("logsMapPageStatusLoading", IDS_FEEDBACK_SYSINFO_PAGE_LOADING);
 #undef SET_STRING
 
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
