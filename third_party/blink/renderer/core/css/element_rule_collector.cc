@@ -273,7 +273,6 @@ ElementRuleCollector::ElementRuleCollector(
       mode_(SelectorChecker::kResolvingStyle),
       can_use_fast_reject_(
           selector_filter_.ParentStackIsConsistent(context.ParentNode())),
-      same_origin_only_(false),
       matching_ua_rules_(false),
       inside_link_(inside_link),
       result_(result) {
@@ -419,12 +418,6 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
       if (perf_trace_enabled) {
         selector_statistics_collector.SetWasFastRejected();
       }
-      continue;
-    }
-
-    // Don't return cross-origin rules if we did not explicitly ask for them
-    // through SetSameOriginOnly.
-    if (same_origin_only_ && !rule_data.HasDocumentSecurityOrigin()) {
       continue;
     }
 

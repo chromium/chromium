@@ -212,7 +212,7 @@ class CORE_EXPORT StyleSheetContents final
   }
 
   bool HasRuleSet() { return rule_set_.Get(); }
-  RuleSet& EnsureRuleSet(const MediaQueryEvaluator&, AddRuleFlags);
+  RuleSet& EnsureRuleSet(const MediaQueryEvaluator&);
   void ClearRuleSet();
 
   String SourceMapURL() const { return source_map_url_; }

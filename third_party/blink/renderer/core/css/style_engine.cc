@@ -722,14 +722,7 @@ RuleSet* StyleEngine::RuleSetForSheet(CSSStyleSheet& sheet) {
   if (!sheet.MatchesMediaQueries(EnsureMediaQueryEvaluator())) {
     return nullptr;
   }
-
-  AddRuleFlags add_rule_flags = kRuleHasNoSpecialState;
-  if (document_->GetExecutionContext()->GetSecurityOrigin()->CanRequest(
-          sheet.BaseURL())) {
-    add_rule_flags = kRuleHasDocumentSecurityOrigin;
-  }
-  return &sheet.Contents()->EnsureRuleSet(*media_query_evaluator_,
-                                          add_rule_flags);
+  return &sheet.Contents()->EnsureRuleSet(*media_query_evaluator_);
 }
 
 RuleSet* StyleEngine::RuleSetScope::RuleSetForSheet(StyleEngine& engine,

@@ -1835,7 +1835,6 @@ void StyleResolver::CollectPseudoRulesForElement(
   collector.FinishAddingPresentationalHints();
 
   if (rules_to_include & kAuthorCSSRules) {
-    collector.SetSameOriginOnly(!(rules_to_include & kCrossOriginCSSRules));
     MatchAuthorRules(element, ScopedResolverFor(element), collector);
   }
 }

@@ -2297,9 +2297,8 @@ TEST_F(StyleResolverTestCQ, StyleRulesForElementContainerQuery) {
   auto* target = GetDocument().getElementById("target");
   auto& resolver = GetDocument().GetStyleResolver();
 
-  auto* rule_list = resolver.StyleRulesForElement(
-      target,
-      StyleResolver::kAuthorCSSRules | StyleResolver::kCrossOriginCSSRules);
+  auto* rule_list =
+      resolver.StyleRulesForElement(target, StyleResolver::kAuthorCSSRules);
   ASSERT_TRUE(rule_list);
   ASSERT_EQ(rule_list->size(), 1u)
       << "The empty #target rule in the container query should be collected";

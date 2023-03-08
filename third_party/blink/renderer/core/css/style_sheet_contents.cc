@@ -746,14 +746,13 @@ void StyleSheetContents::ClearReferencedFromResource() {
   referenced_from_resource_ = nullptr;
 }
 
-RuleSet& StyleSheetContents::EnsureRuleSet(const MediaQueryEvaluator& medium,
-                                           AddRuleFlags add_rule_flags) {
+RuleSet& StyleSheetContents::EnsureRuleSet(const MediaQueryEvaluator& medium) {
   if (rule_set_ && rule_set_->DidMediaQueryResultsChange(medium)) {
     rule_set_ = nullptr;
   }
   if (!rule_set_) {
     rule_set_ = MakeGarbageCollected<RuleSet>();
-    rule_set_->AddRulesFromSheet(this, medium, add_rule_flags);
+    rule_set_->AddRulesFromSheet(this, medium);
   }
   return *rule_set_.Get();
 }

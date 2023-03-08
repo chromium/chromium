@@ -172,8 +172,7 @@ StyleEngineTest::ScheduleInvalidationsForRules(TreeScope& tree_scope,
   sheet->ParseString(css_text);
   HeapHashSet<Member<RuleSet>> rule_sets;
   RuleSet& rule_set =
-      sheet->EnsureRuleSet(MediaQueryEvaluator(GetDocument().GetFrame()),
-                           kRuleHasDocumentSecurityOrigin);
+      sheet->EnsureRuleSet(MediaQueryEvaluator(GetDocument().GetFrame()));
   rule_set.CompactRulesIfNeeded();
   if (rule_set.NeedsFullRecalcForRuleSetInvalidation()) {
     return kRuleSetInvalidationFullRecalc;

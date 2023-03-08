@@ -141,7 +141,6 @@ class CORE_EXPORT ElementRuleCollector {
   void SetPseudoElementStyleRequest(const StyleRequest& request) {
     pseudo_style_request_ = request;
   }
-  void SetSameOriginOnly(bool f) { same_origin_only_ = f; }
 
   void SetMatchingUARules(bool matching_ua_rules) {
     matching_ua_rules_ = matching_ua_rules;
@@ -275,7 +274,6 @@ class CORE_EXPORT ElementRuleCollector {
   StyleRequest pseudo_style_request_;
   SelectorChecker::Mode mode_;
   bool can_use_fast_reject_;
-  bool same_origin_only_;
   bool matching_ua_rules_;
   EInsideLink inside_link_;
 

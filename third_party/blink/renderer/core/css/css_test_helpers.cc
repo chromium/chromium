@@ -52,7 +52,7 @@ CSSRuleList* TestStyleSheet::CssRules() {
 
 RuleSet& TestStyleSheet::GetRuleSet() {
   RuleSet& rule_set = style_sheet_->Contents()->EnsureRuleSet(
-      MediaQueryEvaluator(document_->GetFrame()), kRuleHasNoSpecialState);
+      MediaQueryEvaluator(document_->GetFrame()));
   rule_set.CompactRulesIfNeeded();
   return rule_set;
 }

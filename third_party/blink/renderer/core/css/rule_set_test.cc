@@ -626,8 +626,7 @@ class RuleSetCascadeLayerTest : public SimTest {
     return To<HTMLStyleElement>(GetDocument().QuerySelector("style"))
         ->sheet()
         ->Contents()
-        ->EnsureRuleSet(MediaQueryEvaluator(GetDocument().GetFrame()),
-                        kRuleHasNoSpecialState);
+        ->EnsureRuleSet(MediaQueryEvaluator(GetDocument().GetFrame()));
   }
 
   const CascadeLayer* GetLayerByRule(const RuleData& rule) {

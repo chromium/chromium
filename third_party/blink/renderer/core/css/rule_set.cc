@@ -117,8 +117,6 @@ RuleData::RuleData(StyleRule* rule,
       position_(position),
       specificity_(Selector().Specificity() + extra_specificity),
       link_match_type_(DetermineLinkMatchType(add_rule_flags, Selector())),
-      has_document_security_origin_(
-          (add_rule_flags & kRuleHasDocumentSecurityOrigin) != 0),
       valid_property_filter_(
           static_cast<std::underlying_type_t<ValidPropertyFilter>>(
               DetermineValidPropertyFilter(add_rule_flags, Selector()))),
@@ -706,7 +704,6 @@ bool RuleSet::MatchMediaForAddRules(const MediaQueryEvaluator& evaluator,
 
 void RuleSet::AddRulesFromSheet(StyleSheetContents* sheet,
                                 const MediaQueryEvaluator& medium,
-                                AddRuleFlags add_rule_flags,
                                 CascadeLayer* cascade_layer) {
   TRACE_EVENT0("blink", "RuleSet::addRulesFromSheet");
 
@@ -731,12 +728,11 @@ void RuleSet::AddRulesFromSheet(StyleSheetContents* sheet,
           GetOrAddSubLayer(cascade_layer, import_rule->GetLayerName());
     }
     if (import_rule->GetStyleSheet()) {
-      AddRulesFromSheet(import_rule->GetStyleSheet(), medium, add_rule_flags,
-                        import_layer);
+      AddRulesFromSheet(import_rule->GetStyleSheet(), medium, import_layer);
     }
   }
 
-  AddChildRules(sheet->ChildRules(), medium, add_rule_flags,
+  AddChildRules(sheet->ChildRules(), medium, kRuleHasNoSpecialState,
                 nullptr /* container_query */, cascade_layer, nullptr);
 }
 

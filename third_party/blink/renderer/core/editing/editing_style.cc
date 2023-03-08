@@ -1519,9 +1519,7 @@ static MutableCSSPropertyValueSet* StyleFromMatchedRulesForElement(
 
 void EditingStyle::MergeStyleFromRules(Element* element) {
   MutableCSSPropertyValueSet* style_from_matched_rules =
-      StyleFromMatchedRulesForElement(
-          element,
-          StyleResolver::kAuthorCSSRules | StyleResolver::kCrossOriginCSSRules);
+      StyleFromMatchedRulesForElement(element, StyleResolver::kAuthorCSSRules);
   // Styles from the inline style declaration, held in the variable "style",
   // take precedence over those from matched rules.
   if (mutable_style_)
