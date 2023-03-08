@@ -226,6 +226,7 @@ source_set("web_internal") {
     ":web",
     "//base",
     "//base/allocator:buildflags",
+    "//build:blink_buildflags",
     "//components/autofill/ios/browser",
     "//components/autofill/ios/form_util:form_handler_feature",
     "//components/content_settings/core/browser",

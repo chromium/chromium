@@ -58,7 +58,6 @@ class ContentWebState : public WebState {
   void Stop() override;
   const NavigationManager* GetNavigationManager() const override;
   NavigationManager* GetNavigationManager() override;
-  const WebFramesManager* GetPageWorldWebFramesManager() const override;
   WebFramesManager* GetPageWorldWebFramesManager() override;
   const SessionCertificatePolicyCache* GetSessionCertificatePolicyCache()
       const override;
@@ -83,6 +82,7 @@ class ContentWebState : public WebState {
   const GURL& GetVisibleURL() const override;
   const GURL& GetLastCommittedURL() const override;
   GURL GetCurrentURL(URLVerificationTrustLevel* trust_level) const override;
+  WebFramesManager* GetWebFramesManager(ContentWorld world) override;
   CRWWebViewProxyType GetWebViewProxy() const override;
   void AddObserver(WebStateObserver* observer) override;
   void RemoveObserver(WebStateObserver* observer) override;

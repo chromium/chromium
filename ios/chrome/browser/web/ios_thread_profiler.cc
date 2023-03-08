@@ -21,9 +21,14 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/sequence_local_storage_slot.h"
+#include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "components/metrics/call_stack_profile_builder.h"
 #include "components/metrics/call_stack_profile_metrics_provider.h"
+
+#if BUILDFLAG(USE_BLINK)
+#include "base/process/port_provider_mac.h"
+#endif
 
 using CallStackProfileBuilder = metrics::CallStackProfileBuilder;
 using CallStackProfileParams = metrics::CallStackProfileParams;
@@ -40,7 +45,12 @@ IOSThreadProfiler* g_main_thread_instance = nullptr;
 constexpr double kFractionOfExecutionTimeToSample = 0.02;
 
 bool IsCurrentProcessBackgrounded() {
+#if BUILDFLAG(USE_BLINK)
+  base::SelfPortProvider self_provider;
+  return base::Process::Current().IsProcessBackgrounded(&self_provider);
+#else
   return base::Process::Current().IsProcessBackgrounded();
+#endif
 }
 
 base::StackSamplingProfiler::UnwindersFactory CreateCoreUnwindersFactory() {

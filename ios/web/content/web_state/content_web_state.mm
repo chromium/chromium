@@ -119,10 +119,6 @@ NavigationManager* ContentWebState::GetNavigationManager() {
   return navigation_manager_.get();
 }
 
-const WebFramesManager* ContentWebState::GetPageWorldWebFramesManager() const {
-  return web_frames_manager_.get();
-}
-
 WebFramesManager* ContentWebState::GetPageWorldWebFramesManager() {
   return web_frames_manager_.get();
 }
@@ -218,6 +214,10 @@ GURL ContentWebState::GetCurrentURL(
     URLVerificationTrustLevel* trust_level) const {
   static GURL url("https://https://www.chromium.org/blink");
   return url;
+}
+
+WebFramesManager* ContentWebState::GetWebFramesManager(ContentWorld world) {
+  return web_frames_manager_.get();
 }
 
 CRWWebViewProxyType ContentWebState::GetWebViewProxy() const {
