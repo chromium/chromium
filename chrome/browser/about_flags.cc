@@ -2002,19 +2002,6 @@ const FeatureEntry::FeatureVariation kNtpSafeBrowsingModuleVariations[] = {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kTranslateForceTriggerOnEnglishGeo[] = {
-    {language::kOverrideModelKey, language::kOverrideModelGeoValue},
-    {language::kEnforceRankerKey, "false"}};
-const FeatureEntry::FeatureParam kTranslateForceTriggerOnEnglishBackoff[] = {
-    {language::kOverrideModelKey, language::kOverrideModelDefaultValue},
-    {language::kEnforceRankerKey, "false"},
-    {language::kBackoffThresholdKey, "0"}};
-const FeatureEntry::FeatureVariation
-    kTranslateForceTriggerOnEnglishVariations[] = {
-        {"(Geo model without Ranker)", kTranslateForceTriggerOnEnglishGeo,
-         std::size(kTranslateForceTriggerOnEnglishGeo), nullptr},
-        {"(Zero threshold)", kTranslateForceTriggerOnEnglishBackoff,
-         std::size(kTranslateForceTriggerOnEnglishBackoff), nullptr}};
 
 const FeatureEntry::FeatureParam kRelatedSearchesUrl = {"stamp", "1Ru"};
 const FeatureEntry::FeatureParam kRelatedSearchesContent = {"stamp", "1Rc"};
@@ -4043,12 +4030,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableVulkanDescription,
      kOsWin | kOsLinux | kOsAndroid, FEATURE_VALUE_TYPE(features::kVulkan)},
 #if BUILDFLAG(IS_ANDROID)
-    {"translate-force-trigger-on-english",
-     flag_descriptions::kTranslateForceTriggerOnEnglishName,
-     flag_descriptions::kTranslateForceTriggerOnEnglishDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(language::kOverrideTranslateTriggerInIndia,
-                                    kTranslateForceTriggerOnEnglishVariations,
-                                    "OverrideTranslateTriggerInIndia")},
     {"translate-assist-content", flag_descriptions::kTranslateAssistContentName,
      flag_descriptions::kTranslateAssistContentDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(language::kTranslateAssistContent)},

@@ -129,6 +129,7 @@
 #include "components/language/core/browser/language_usage_metrics.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/language/core/common/language_experiments.h"
+#include "components/language/core/common/language_util.h"
 #include "components/metrics/call_stack_profile_metrics_provider.h"
 #include "components/metrics/call_stack_profile_params.h"
 #include "components/metrics/clean_exit_beacon.h"

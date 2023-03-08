@@ -21,7 +21,7 @@
 #include "components/language/core/browser/pref_names.h"
 #include "components/language/core/browser/ulp_metrics_logger.h"
 #include "components/language/core/browser/url_language_histogram.h"
-#include "components/language/core/common/language_experiments.h"
+#include "components/language/core/common/language_util.h"
 #include "components/language/core/language_model/fluent_language_model.h"
 #include "components/language/core/language_model/ulp_language_model.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -139,8 +139,8 @@ void PrepareLanguageModels(Profile* const profile,
     manager->SetPrimaryModel(language::LanguageModelManager::ModelType::FLUENT);
   }
 
-    // On Android, additionally create a ULPLanguageModel and populate it with
-    // ULP data.
+  // On Android, additionally create a ULPLanguageModel and populate it with
+  // ULP data.
 #if BUILDFLAG(IS_ANDROID)
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},

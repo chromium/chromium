@@ -1165,11 +1165,7 @@ TEST_F(TranslatePrefsTest, CanTranslateLanguage) {
 
   {  // English in force translate experiment scoped feature.
     base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeatureWithParameters(
-        language::kOverrideTranslateTriggerInIndia,
-        {{"override_model", "heuristic"},
-         {"enforce_ranker", "false"},
-         {"backoff_threshold", "1"}});
+    translate_prefs_->SetShouldForceTriggerTranslateOnEnglishPagesForTesting();
     EXPECT_TRUE(translate_prefs_->CanTranslateLanguage("en"));
   }
 }

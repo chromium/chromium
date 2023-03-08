@@ -42,6 +42,8 @@ namespace translate {
 
 namespace {
 
+const int kForceTriggerBackoffThreshold = 4;
+
 // Returns whether or not the given list includes at least one language with
 // the same base as the input language.
 // For example: "en-US" and "en-UK" share the same base "en".
@@ -239,6 +241,7 @@ void TranslatePrefs::ResetToDefaults() {
   prefs_->ClearPref(kPrefTranslateIgnoredCount);
   prefs_->ClearPref(kPrefTranslateAcceptedCount);
   prefs_->ClearPref(prefs::kPrefTranslateRecentTarget);
+  force_translate_on_english_for_testing_ = false;
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   prefs_->ClearPref(kPrefTranslateAutoAlwaysCount);
@@ -869,12 +872,28 @@ void TranslatePrefs::GetUserSelectedLanguageList(
   language_prefs_->GetUserSelectedLanguagesList(languages);
 }
 
+bool TranslatePrefs::ShouldForceTriggerTranslateOnEnglishPages() {
+  if (!language::OverrideTranslateTriggerInIndia() &&
+      !force_translate_on_english_for_testing_) {
+    return false;
+  }
+
+  return GetForceTriggerOnEnglishPagesCount() < kForceTriggerBackoffThreshold;
+}
+
+bool TranslatePrefs::force_translate_on_english_for_testing_ = false;
+
+// static
+void TranslatePrefs::SetShouldForceTriggerTranslateOnEnglishPagesForTesting() {
+  force_translate_on_english_for_testing_ = true;
+}
+
 bool TranslatePrefs::CanTranslateLanguage(base::StringPiece language) {
   // Under this experiment, translate English page even though English may be
   // blocked.
-  if (language == "en" && language::ShouldForceTriggerTranslateOnEnglishPages(
-                              GetForceTriggerOnEnglishPagesCount()))
+  if (language == "en" && ShouldForceTriggerTranslateOnEnglishPages()) {
     return true;
+  }
 
   return !IsBlockedLanguage(language);
 }

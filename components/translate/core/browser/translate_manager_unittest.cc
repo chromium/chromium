@@ -343,10 +343,8 @@ TEST_F(TranslateManagerTest, GetTargetLanguageFromModel) {
 }
 
 TEST_F(TranslateManagerTest,
-       OverrideTriggerWithIndiaEnglishExperiment_SourceUnspecified) {
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      language::kOverrideTranslateTriggerInIndia,
-      {{"override_model", "heuristic"}, {"enforce_ranker", "false"}});
+       OverrideTriggerWithIndiaEnglish_SourceUnspecified) {
+  TranslatePrefs::SetShouldForceTriggerTranslateOnEnglishPagesForTesting();
   TranslateManager::SetIgnoreMissingKeyForTesting(true);
   mock_language_model_.details = {
       MockLanguageModel::LanguageDetails("en", 1.0),
@@ -379,10 +377,8 @@ TEST_F(TranslateManagerTest,
                           Bucket(metrics::INITIATION_STATUS_SHOW_ICON, 1)));
 }
 
-TEST_F(TranslateManagerTest, OverrideTriggerWithIndiaEnglishExperiment) {
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      language::kOverrideTranslateTriggerInIndia,
-      {{"override_model", "heuristic"}, {"enforce_ranker", "false"}});
+TEST_F(TranslateManagerTest, OverrideTriggerWithIndiaEnglish) {
+  TranslatePrefs::SetShouldForceTriggerTranslateOnEnglishPagesForTesting();
   TranslateManager::SetIgnoreMissingKeyForTesting(true);
   mock_language_model_.details = {
       MockLanguageModel::LanguageDetails("en", 1.0),
@@ -415,53 +411,9 @@ TEST_F(TranslateManagerTest, OverrideTriggerWithIndiaEnglishExperiment) {
                           Bucket(metrics::INITIATION_STATUS_SHOW_ICON, 1)));
 }
 
-TEST_F(TranslateManagerTest,
-       OverrideTriggerWithIndiaEnglishExperimentThresholdAlreadyReached) {
+TEST_F(TranslateManagerTest, OverrideTriggerWithIndiaEnglishReachThreshold) {
+  TranslatePrefs::SetShouldForceTriggerTranslateOnEnglishPagesForTesting();
   manager_->set_application_locale("en");
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      language::kOverrideTranslateTriggerInIndia,
-      {{"override_model", "heuristic"},
-       {"enforce_ranker", "false"},
-       {"backoff_threshold", "0"}});
-  TranslateManager::SetIgnoreMissingKeyForTesting(true);
-  mock_language_model_.details = {
-      MockLanguageModel::LanguageDetails("en", 1.0),
-      MockLanguageModel::LanguageDetails("hi", 0.5),
-  };
-  ON_CALL(mock_translate_client_, IsTranslatableURL(GURL::EmptyGURL()))
-      .WillByDefault(Return(true));
-  language::AcceptLanguagesService accept_languages(&prefs_,
-                                                    accept_languages_prefs);
-  ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
-      .WillByDefault(Return(&accept_languages));
-  ON_CALL(mock_translate_client_,
-          ShowTranslateUI(_, _, _, _, false /* triggered_from_menu */))
-      .WillByDefault(Return(true));
-
-  translate_manager_ = std::make_unique<TranslateManager>(
-      &mock_translate_client_, &mock_translate_ranker_, &mock_language_model_);
-
-  ExpectHighestPriorityTriggerDecision(
-      TriggerDecision::kDisabledSimilarLanguages);
-
-  base::HistogramTester histogram_tester;
-  prefs_.SetBoolean(prefs::kOfferTranslateEnabled, true);
-  translate_manager_->GetLanguageState()->LanguageDetermined("en", true);
-  network_notifier_.SimulateOnline();
-
-  translate_manager_->InitiateTranslation("en");
-  histogram_tester.ExpectUniqueSample(
-      kInitiationStatusName, metrics::INITIATION_STATUS_SIMILAR_LANGUAGES, 1);
-}
-
-TEST_F(TranslateManagerTest,
-       OverrideTriggerWithIndiaEnglishExperimentReachingThreshold) {
-  manager_->set_application_locale("en");
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      language::kOverrideTranslateTriggerInIndia,
-      {{"override_model", "heuristic"},
-       {"enforce_ranker", "false"},
-       {"backoff_threshold", "1"}});
   TranslateManager::SetIgnoreMissingKeyForTesting(true);
   mock_language_model_.details = {
       MockLanguageModel::LanguageDetails("en", 1.0),
@@ -491,24 +443,37 @@ TEST_F(TranslateManagerTest,
               ElementsAre(Bucket(metrics::INITIATION_STATUS_SHOW_INFOBAR, 1),
                           Bucket(metrics::INITIATION_STATUS_SHOW_ICON, 1)));
 
-  // Initiate translation again. No other UI should be shown because the
-  // threshold has been reached.
+  // Initiate translation #2.
+  translate_manager_->InitiateTranslation("en");
+  EXPECT_THAT(histogram_tester.GetAllSamples(kInitiationStatusName),
+              ElementsAre(Bucket(metrics::INITIATION_STATUS_SHOW_INFOBAR, 2),
+                          Bucket(metrics::INITIATION_STATUS_SHOW_ICON, 2)));
+
+  // Initiate translation #3.
+  translate_manager_->InitiateTranslation("en");
+  EXPECT_THAT(histogram_tester.GetAllSamples(kInitiationStatusName),
+              ElementsAre(Bucket(metrics::INITIATION_STATUS_SHOW_INFOBAR, 3),
+                          Bucket(metrics::INITIATION_STATUS_SHOW_ICON, 3)));
+
+  // Initiate translation #4.
+  translate_manager_->InitiateTranslation("en");
+  EXPECT_THAT(histogram_tester.GetAllSamples(kInitiationStatusName),
+              ElementsAre(Bucket(metrics::INITIATION_STATUS_SHOW_INFOBAR, 4),
+                          Bucket(metrics::INITIATION_STATUS_SHOW_ICON, 4)));
+
+  // Threshold should be reached after 4th translation. No other UI should be
+  // shown because the threshold has been reached.
   translate_manager_->InitiateTranslation("en");
   EXPECT_THAT(
       histogram_tester.GetAllSamples(kInitiationStatusName),
       ElementsAre(Bucket(metrics::INITIATION_STATUS_SIMILAR_LANGUAGES, 1),
-                  Bucket(metrics::INITIATION_STATUS_SHOW_INFOBAR, 1),
-                  Bucket(metrics::INITIATION_STATUS_SHOW_ICON, 1)));
+                  Bucket(metrics::INITIATION_STATUS_SHOW_INFOBAR, 4),
+                  Bucket(metrics::INITIATION_STATUS_SHOW_ICON, 4)));
 }
 
-TEST_F(TranslateManagerTest,
-       OverrideTriggerWithIndiaEnglishExperimentAcceptPrompt) {
+TEST_F(TranslateManagerTest, OverrideTriggerWithIndiaEnglishAcceptPrompt) {
+  TranslatePrefs::SetShouldForceTriggerTranslateOnEnglishPagesForTesting();
   manager_->set_application_locale("en");
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      language::kOverrideTranslateTriggerInIndia,
-      {{"override_model", "heuristic"},
-       {"enforce_ranker", "false"},
-       {"backoff_threshold", "1"}});
   TranslateManager::SetIgnoreMissingKeyForTesting(true);
   mock_language_model_.details = {
       MockLanguageModel::LanguageDetails("en", 1.0),
@@ -555,10 +520,8 @@ TEST_F(TranslateManagerTest,
                           Bucket(metrics::INITIATION_STATUS_SHOW_ICON, 3)));
 }
 
-TEST_F(TranslateManagerTest, ShouldHonorExperimentRankerEnforcement_Enforce) {
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      language::kOverrideTranslateTriggerInIndia,
-      {{"override_model", "heuristic"}, {"enforce_ranker", "true"}});
+TEST_F(TranslateManagerTest, ShouldHonorRankerEnforcement_Enforce) {
+  TranslatePrefs::SetShouldForceTriggerTranslateOnEnglishPagesForTesting();
   TranslateManager::SetIgnoreMissingKeyForTesting(true);
   mock_language_model_.details = {
       MockLanguageModel::LanguageDetails("en", 1.0),
@@ -595,46 +558,6 @@ TEST_F(TranslateManagerTest, ShouldHonorExperimentRankerEnforcement_Enforce) {
       ElementsAre(Bucket(metrics::INITIATION_STATUS_ABORTED_BY_RANKER, 1),
                   Bucket(metrics::INITIATION_STATUS_SHOW_ICON, 1),
                   Bucket(metrics::INITIATION_STATUS_SUPPRESS_INFOBAR, 1)));
-}
-
-TEST_F(TranslateManagerTest,
-       ShouldHonorExperimentRankerEnforcement_DontEnforce) {
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      language::kOverrideTranslateTriggerInIndia,
-      {{"override_model", "heuristic"}, {"enforce_ranker", "false"}});
-  TranslateManager::SetIgnoreMissingKeyForTesting(true);
-  mock_language_model_.details = {
-      MockLanguageModel::LanguageDetails("hi", 1.),
-  };
-  ON_CALL(mock_translate_client_, IsTranslatableURL(GURL::EmptyGURL()))
-      .WillByDefault(Return(true));
-  language::AcceptLanguagesService accept_languages(&prefs_,
-                                                    accept_languages_prefs);
-  ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
-      .WillByDefault(Return(&accept_languages));
-  ON_CALL(mock_translate_client_, ShowTranslateUI(_, _, _, _, _))
-      .WillByDefault(Return(true));
-
-  // Simulate that Ranker decides to suppress the translation UI. This should
-  // not be honored since "enforce_ranker" is "true" in the experiment params.
-  mock_translate_ranker_.set_should_offer_translation(false);
-
-  translate_manager_ = std::make_unique<TranslateManager>(
-      &mock_translate_client_, &mock_translate_ranker_, &mock_language_model_);
-
-  ExpectHighestPriorityTriggerDecision(TriggerDecision::kShowUI);
-
-  base::HistogramTester histogram_tester;
-  prefs_.SetBoolean(prefs::kOfferTranslateEnabled, true);
-  translate_manager_->GetLanguageState()->LanguageDetermined("fr", true);
-  network_notifier_.SimulateOnline();
-  EXPECT_EQ("hi", TranslateManager::GetTargetLanguage(
-                      &translate_prefs_, &mock_language_model_, "en"));
-  translate_manager_->InitiateTranslation("fr");
-  EXPECT_TRUE(translate_manager_->GetLanguageState()->translate_enabled());
-  EXPECT_THAT(histogram_tester.GetAllSamples(kInitiationStatusName),
-              ElementsAre(Bucket(metrics::INITIATION_STATUS_SHOW_INFOBAR, 1),
-                          Bucket(metrics::INITIATION_STATUS_SHOW_ICON, 1)));
 }
 
 TEST_F(TranslateManagerTest, LanguageAddedToAcceptLanguagesAfterTranslation) {
