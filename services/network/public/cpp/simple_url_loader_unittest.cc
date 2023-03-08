@@ -3938,18 +3938,17 @@ TEST(SimpleURLLoaderThrottleTest, BatchingDisabled_FeatureDisabled) {
 
 TEST(SimpleURLLoaderThrottleTest,
      BatchingDisabled_TrafficAnnotationIsNotSpecified) {
-  SimpleURLLoaderThrottle::ResetConfigForTesting();
   net::NetworkTrafficAnnotationTag traffic_annotation =
       TRAFFIC_ANNOTATION_FOR_TESTS;
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kBatchSimpleURLLoader);
+  SimpleURLLoaderThrottle::ResetConfigForTesting();
 
   ASSERT_FALSE(SimpleURLLoaderThrottle::IsBatchingEnabled(traffic_annotation));
 }
 
 TEST(SimpleURLLoaderThrottleTest, BatchingEnabled_OneTrafficAnnotation) {
-  SimpleURLLoaderThrottle::ResetConfigForTesting();
   net::NetworkTrafficAnnotationTag traffic_annotation =
       TRAFFIC_ANNOTATION_FOR_TESTS;
 
@@ -3961,12 +3960,12 @@ TEST(SimpleURLLoaderThrottleTest, BatchingEnabled_OneTrafficAnnotation) {
       features::kBatchSimpleURLLoader,
       {{kBatchSimpleURLLoaderEnabledTrafficAnnotationHashesParam,
         traffic_annotation_hashes}});
+  SimpleURLLoaderThrottle::ResetConfigForTesting();
 
   ASSERT_TRUE(SimpleURLLoaderThrottle::IsBatchingEnabled(traffic_annotation));
 }
 
 TEST(SimpleURLLoaderThrottleTest, BatchingEnabled_TwoTrafficAnnotations) {
-  SimpleURLLoaderThrottle::ResetConfigForTesting();
   net::NetworkTrafficAnnotationTag traffic_annotation1 =
       TRAFFIC_ANNOTATION_FOR_TESTS;
   net::NetworkTrafficAnnotationTag traffic_annotation2 =
@@ -3985,6 +3984,7 @@ TEST(SimpleURLLoaderThrottleTest, BatchingEnabled_TwoTrafficAnnotations) {
       features::kBatchSimpleURLLoader,
       {{kBatchSimpleURLLoaderEnabledTrafficAnnotationHashesParam,
         traffic_annotation_hashes}});
+  SimpleURLLoaderThrottle::ResetConfigForTesting();
 
   ASSERT_TRUE(SimpleURLLoaderThrottle::IsBatchingEnabled(traffic_annotation1));
   ASSERT_TRUE(SimpleURLLoaderThrottle::IsBatchingEnabled(traffic_annotation2));
