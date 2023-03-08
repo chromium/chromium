@@ -58,6 +58,7 @@ blink_core_sources_exported = [
   "web_searchable_form_data.cc",
   "web_security_policy.cc",
   "web_select_element.cc",
+  "web_select_menu_element.cc",
   "web_selector.cc",
   "web_serialized_script_value.cc",
   "web_settings_impl.cc",

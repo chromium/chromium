@@ -167,8 +167,14 @@ bool IsMonthInput(const blink::WebInputElement& element);
 // Returns true if |element| is a text input element.
 bool IsTextInput(const blink::WebInputElement& element);
 
+// Returns true if `element` is either a select or a selectmenu element.
+bool IsSelectOrSelectMenuElement(const blink::WebFormControlElement& element);
+
 // Returns true if |element| is a select element.
 bool IsSelectElement(const blink::WebFormControlElement& element);
+
+// Returns true if `element` is a selectmenu element.
+bool IsSelectMenuElement(const blink::WebFormControlElement& element);
 
 // Returns true if |element| is a textarea element.
 bool IsTextAreaElement(const blink::WebFormControlElement& element);

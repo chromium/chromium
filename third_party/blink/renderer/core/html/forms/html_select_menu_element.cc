@@ -222,6 +222,17 @@ HTMLSelectMenuElement::PartType HTMLSelectMenuElement::AssignedPartType(
   return PartType::kNone;
 }
 
+HTMLSelectMenuElement::ListItems HTMLSelectMenuElement::GetListItems() const {
+  ListItems list_items;
+  for (Node* node = SelectMenuPartTraversal::FirstChild(*this); node;
+       node = SelectMenuPartTraversal::Next(*node, this)) {
+    if (IsValidOptionPart(node, /*show_warning=*/false)) {
+      list_items.push_back(To<HTMLOptionElement>(node));
+    }
+  }
+  return list_items;
+}
+
 void HTMLSelectMenuElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   DCHECK(IsShadowHost(this));
 

@@ -55,6 +55,7 @@
 #include "third_party/blink/public/web/web_option_element.h"
 #include "third_party/blink/public/web/web_remote_frame.h"
 #include "third_party/blink/public/web/web_select_element.h"
+#include "third_party/blink/public/web/web_select_menu_element.h"
 
 using blink::WebAutofillState;
 using blink::WebDocument;
@@ -69,6 +70,7 @@ using blink::WebLocalFrame;
 using blink::WebNode;
 using blink::WebOptionElement;
 using blink::WebSelectElement;
+using blink::WebSelectMenuElement;
 using blink::WebString;
 using blink::WebVector;
 using blink::mojom::GenericIssueErrorType;
@@ -960,25 +962,34 @@ ButtonTitleList InferButtonTitlesForForm(const WebElement& root_element) {
   return result;
 }
 
-// Fills |option_strings| with the values of the <option> elements present in
-// |select_element|.
-void GetOptionStringsFromElement(const WebSelectElement& select_element,
-                                 std::vector<SelectOption>* options) {
-  DCHECK(!select_element.IsNull());
+// Returns the list items for the passed-in <select> or <selectmenu>.
+WebVector<WebElement> GetListItemsForSelectOrSelectMenu(
+    const WebFormControlElement& element) {
+  if (IsSelectElement(element)) {
+    return element.To<WebSelectElement>().GetListItems();
+  } else {
+    DCHECK(IsSelectMenuElement(element));
+    return element.To<WebSelectMenuElement>().GetListItems();
+  }
+}
 
+// Fills `options` with the <option> elements present in `option_elements`.
+void FilterOptionElementsAndGetOptionStrings(
+    const WebVector<WebElement>& option_elements,
+    std::vector<SelectOption>* options) {
   options->clear();
-  WebVector<WebElement> list_items = select_element.GetListItems();
 
   // Constrain the maximum list length to prevent a malicious site from DOS'ing
   // the browser, without entirely breaking autocomplete for some extreme
   // legitimate sites: http://crbug.com/49332 and http://crbug.com/363094
-  if (list_items.size() > kMaxListSize)
+  if (option_elements.size() > kMaxListSize) {
     return;
+  }
 
-  options->reserve(list_items.size());
-  for (const auto& list_item : list_items) {
-    if (IsOptionElement(list_item)) {
-      const WebOptionElement option = list_item.To<WebOptionElement>();
+  options->reserve(option_elements.size());
+  for (const auto& option_element : option_elements) {
+    if (IsOptionElement(option_element)) {
+      const WebOptionElement option = option_element.To<WebOptionElement>();
       options->push_back({.value = option.Value().Utf16(),
                           .content = option.GetText().Utf16()});
     }
@@ -2052,9 +2063,18 @@ bool IsTextInput(const WebInputElement& element) {
   return !element.IsNull() && element.IsTextField();
 }
 
+bool IsSelectOrSelectMenuElement(const WebFormControlElement& element) {
+  return IsSelectElement(element) || IsSelectMenuElement(element);
+}
+
 bool IsSelectElement(const WebFormControlElement& element) {
   return !element.IsNull() &&
          element.FormControlTypeForAutofill() == "select-one";
+}
+
+bool IsSelectMenuElement(const WebFormControlElement& element) {
+  return !element.IsNull() &&
+         element.FormControlTypeForAutofill() == "selectmenu";
 }
 
 bool IsTextAreaElement(const WebFormControlElement& element) {
@@ -2268,9 +2288,11 @@ void WebFormControlElementToFormField(
     // Nothing more to do in this case.
   } else if (extract_mask & EXTRACT_OPTIONS) {
     // Set option strings on the field if available.
-    DCHECK(IsSelectElement(element));
-    const WebSelectElement select_element = element.To<WebSelectElement>();
-    GetOptionStringsFromElement(select_element, &field->options);
+    DCHECK(IsSelectOrSelectMenuElement(element));
+    WebVector<WebElement> element_list_items =
+        GetListItemsForSelectOrSelectMenu(element);
+    FilterOptionElementsAndGetOptionStrings(element_list_items,
+                                            &field->options);
   }
   if (extract_mask & EXTRACT_BOUNDS) {
     if (auto* local_frame = element.GetDocument().GetFrame()) {
@@ -2293,10 +2315,11 @@ void WebFormControlElementToFormField(
 
   std::u16string value = element.Value().Utf16();
 
-  if (IsSelectElement(element) && (extract_mask & EXTRACT_OPTION_TEXT)) {
-    const WebSelectElement select_element = element.To<WebSelectElement>();
-    // Convert the |select_element| value to text if requested.
-    WebVector<WebElement> list_items = select_element.GetListItems();
+  if (IsSelectOrSelectMenuElement(element) &&
+      (extract_mask & EXTRACT_OPTION_TEXT)) {
+    // Convert the |element| value to text if requested.
+    WebVector<WebElement> list_items =
+        GetListItemsForSelectOrSelectMenu(element);
     for (const auto& list_item : list_items) {
       if (IsOptionElement(list_item)) {
         const WebOptionElement option_element =
