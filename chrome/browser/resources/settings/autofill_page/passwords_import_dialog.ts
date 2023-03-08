@@ -33,6 +33,7 @@ import {getTemplate} from './passwords_import_dialog.html.js';
 export interface PasswordsImportDialogElement {
   $: {
     dialog: CrDialogElement,
+    dialogTitle: HTMLElement,
     descriptionText: HTMLElement,
     successTip: HTMLElement,
     failuresSummary: HTMLElement,
@@ -376,6 +377,25 @@ export class PasswordsImportDialogElement extends
         assertNotReached();
     }
   }
+
+  private getDialogTitleText_(): string {
+    switch (this.dialogState) {
+      case ImportDialogState.START:
+      case ImportDialogState.ALREADY_ACTIVE:
+        return this.i18n('importPasswordsTitle');
+      case ImportDialogState.ERROR:
+        return this.i18n('importPasswordsErrorTitle');
+      case ImportDialogState.SUCCESS:
+        assert(this.results_);
+        if (!this.results_.failedImports.length) {
+          return this.i18n('importPasswordsSuccessTitle');
+        }
+        return this.i18n('importPasswordsCompleteTitle');
+      default:
+        assertNotReached();
+    }
+  }
+
   private getCloseButtonText_(): string {
     switch (this.dialogState) {
       case ImportDialogState.START:

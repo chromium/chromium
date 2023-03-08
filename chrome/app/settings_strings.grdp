@@ -865,8 +865,17 @@
   <message name="IDS_SETTINGS_PASSWORDS_IMPORT_MENU_ITEM" desc="A menu item in the More Actions menu above the password list in Chrome's settings. Selecting this action will open a dialog, through which the user can import passwords.">
     Import passwords
   </message>
-  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_TITLE" desc="The title of a dialog, which offers the ability for the user to import passwords into Chrome Password Manager.">
+  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_TITLE" desc="The title of a dialog, which offers the ability for the user to import passwords into Password Manager.">
     Import passwords
+  </message>
+  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_SUCCESS_TITLE" desc="The title of a dialog, which offers the ability for the user to import passwords into Password Manager. Shown when import has successfully finished with no errors.">
+    Import successful!
+  </message>
+  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_COMPLETE_TITLE" desc="The title of a dialog, which offers the ability for the user to import passwords into Password Manager. Shown when import has successfully finished, but some errors were found in the imported file.">
+    Import complete
+  </message>
+  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_ERROR_TITLE" desc="The title of a dialog, which offers the ability for the user to import passwords into Password Manager. Shown when no passwords were imported due to some error.">
+    Something went wrong
   </message>
   <message name="IDS_SETTINGS_PASSWORDS_IMPORT_CHOOSE_FILE" desc="A button in the dialog for importing passwords from Chrome. Passwords will be imported from the file, which the user will be asked to choose after initiating this action.">
     Select file
@@ -900,7 +909,7 @@
     Delete <ph name="FILENAME">&lt;span class="file-name"&gt;$1&lt;/span&gt;<ex>&lt;span class="file-name"&gt;filename.csv&lt;/span&gt;</ex></ph>, so others who use this device can't see your passwords
   </message>
   <message name="IDS_SETTINGS_PASSWORDS_IMPORT_ERROR_UNKNOWN" desc="Message is shown on the dialog for importing passwords if no passwords were imported and we don't know the cause of error. Probably error in the backend or in our systems.">
-    Something went wrong and your passwords weren't imported
+    Your passwords weren't imported
   </message>
   <message name="IDS_SETTINGS_PASSWORDS_IMPORT_ERROR_BAD_FORMAT" desc="Message is shown on the dialog for importing passwords if no passwords were imported because file is not formated correctly">
     Can't import passwords. Check <ph name="FILENAME">&lt;span class="file-name"&gt;$1&lt;/span&gt;<ex>&lt;span class="file-name"&gt;filename.csv&lt;/span&gt;</ex></ph> and make sure it's formatted correctly. <ph name="BEGIN_LINK">&lt;a href="$2" target="_blank"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
