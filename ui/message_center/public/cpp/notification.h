@@ -407,6 +407,12 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
   const gfx::Image& image() const { return optional_fields_.image; }
   void set_image(const gfx::Image& image) { optional_fields_.image = image; }
 
+#if BUILDFLAG(IS_CHROMEOS)
+  void set_image_path(const base::FilePath& image_path) {
+    optional_fields_.image_path = image_path;
+  }
+#endif
+
   const gfx::Image& small_image() const { return optional_fields_.small_image; }
   void set_small_image(const gfx::Image& image) {
     optional_fields_.small_image = image;
