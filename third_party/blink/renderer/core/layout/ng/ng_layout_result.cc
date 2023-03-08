@@ -105,14 +105,6 @@ NGLayoutResult::NGLayoutResult(NGBoxFragmentBuilderPassKey passkey,
         builder->initial_break_before_.value_or(EBreakBetween::kAuto));
     bitfields_.final_break_after =
         static_cast<unsigned>(builder->previous_break_after_);
-
-    if ((builder->start_page_name_ != g_null_atom &&
-         builder->start_page_name_) ||
-        builder->previous_page_name_) {
-      RareData* rare_data = EnsureRareData();
-      rare_data->start_page_name = builder->start_page_name_;
-      rare_data->end_page_name = builder->previous_page_name_;
-    }
   }
 
   if (builder->table_column_count_) {
@@ -338,9 +330,6 @@ void NGLayoutResult::CheckSameForSimplifiedLayout(
   DCHECK(EndMarginStrut() == other.EndMarginStrut());
   DCHECK(MinimalSpaceShortage() == other.MinimalSpaceShortage());
   DCHECK_EQ(TableColumnCount(), other.TableColumnCount());
-
-  DCHECK_EQ(StartPageName(), other.StartPageName());
-  DCHECK_EQ(EndPageName(), other.EndPageName());
 
   DCHECK_EQ(bitfields_.has_forced_break, other.bitfields_.has_forced_break);
   DCHECK_EQ(bitfields_.is_self_collapsing, other.bitfields_.is_self_collapsing);
