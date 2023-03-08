@@ -89,7 +89,9 @@
         <div class="blocked-site-content flex-centered" first$="[[!index]]">
           <div class="label site-url">[[item.urls.shown]]</div>
           <cr-icon-button class="icon-clear" id="removeBlockedValueButton"
-              on-click="onRemoveBlockedSiteClick_"></cr-icon-button>
+              on-click="onRemoveBlockedSiteClick_"
+              aria-label="[[getAriaLabelForBlockedSite_(item)]]">
+          </cr-icon-button>
         </div>
       </div>
     </template>

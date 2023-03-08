@@ -216,6 +216,11 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   private shouldHideTrustedVaultBanner_(): boolean {
     return this.trustedVaultBannerState_ === TrustedVaultBannerState.NOT_SHOWN;
   }
+
+  private getAriaLabelForBlockedSite_(
+      blockedSite: chrome.passwordsPrivate.ExceptionEntry): string {
+    return this.i18n('removeBlockedAriaDescription', blockedSite.urls.shown);
+  }
 }
 
 declare global {
