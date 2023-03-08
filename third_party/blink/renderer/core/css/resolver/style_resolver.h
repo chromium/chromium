@@ -165,6 +165,8 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
       PseudoId,
       const AtomicString& view_transition_name,
       unsigned rules_to_include = kAllCSSRules);
+  // Note that StyleRulesForElement will behave as if all links are
+  // unvisited; the :visited pseudo class will never match.
   StyleRuleList* StyleRulesForElement(Element*, unsigned rules_to_include);
   HeapHashMap<CSSPropertyName, Member<const CSSValue>> CascadedValuesForElement(
       Element*,

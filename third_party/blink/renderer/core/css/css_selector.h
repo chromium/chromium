@@ -525,7 +525,7 @@ class CORE_EXPORT CSSSelector {
   // flags in MatchResult.
   //
   // This always starts out false, and is set when we bucket a given
-  // RuleData (by calling ComputeEntirelyCoveredByBucketing()).
+  // RuleData (by calling MarkAsCoveredByBucketing()).
   unsigned is_covered_by_bucketing_ : 1;
 
   void SetPseudoType(PseudoType pseudo_type) {

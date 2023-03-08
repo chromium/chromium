@@ -274,6 +274,7 @@ ElementRuleCollector::ElementRuleCollector(
       can_use_fast_reject_(
           selector_filter_.ParentStackIsConsistent(context.ParentNode())),
       matching_ua_rules_(false),
+      suppress_visited_(false),
       inside_link_(inside_link),
       result_(result) {
   if (!g_selector_stats_tracing_enabled) {
@@ -349,11 +350,12 @@ bool SlowMatchWithNoResultFlags(
     SelectorChecker::SelectorCheckingContext& context,
     const CSSSelector& selector,
     const RuleData& rule_data,
+    bool suppress_visited,
     unsigned expected_proximity = std::numeric_limits<unsigned>::max()) {
   SelectorChecker::MatchResult result;
   context.selector = &selector;
-  context.match_visited =
-      rule_data.LinkMatchType() == CSSSelector::kMatchVisited;
+  context.match_visited = !suppress_visited && rule_data.LinkMatchType() ==
+                                                   CSSSelector::kMatchVisited;
   bool match = checker.Match(context, result);
   DCHECK_EQ(0, result.flags);
   DCHECK_EQ(kPseudoIdNone, result.dynamic_pseudo);
@@ -443,12 +445,12 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
       if (context.style_scope != nullptr &&
           RuntimeEnabledFeatures::CSSScopeEnabled() &&
           !checker.CheckInStyleScope(context, result)) {
-        DCHECK(
-            !SlowMatchWithNoResultFlags(checker, context, selector, rule_data));
+        DCHECK(!SlowMatchWithNoResultFlags(checker, context, selector,
+                                           rule_data, suppress_visited_));
         continue;
       }
       DCHECK(SlowMatchWithNoResultFlags(checker, context, selector, rule_data,
-                                        result.proximity));
+                                        suppress_visited_, result.proximity));
     } else if (context.vtt_originating_element == nullptr &&
                rule_data.SelectorIsEasy()) {
       if (pseudo_style_request_.pseudo_id != kPseudoIdNone) {
@@ -461,9 +463,9 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
           !checker.CheckInStyleScope(context, result)) {
         easy_match = false;
       }
-      DCHECK_EQ(easy_match,
-                SlowMatchWithNoResultFlags(checker, context, selector,
-                                           rule_data, result.proximity))
+      DCHECK_EQ(easy_match, SlowMatchWithNoResultFlags(
+                                checker, context, selector, rule_data,
+                                suppress_visited_, result.proximity))
           << "Mismatch for selector " << selector.SelectorText()
           << " on element " << context.element;
       if (!easy_match) {
@@ -472,9 +474,8 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
     } else {
       context.selector = &selector;
       context.match_visited =
+          !suppress_visited_ &&
           rule_data.LinkMatchType() == CSSSelector::kMatchVisited;
-      DCHECK(!context.match_visited ||
-             inside_link_ != EInsideLink::kNotInsideLink);
       bool match = checker.Match(context, result);
       result_.AddFlags(result.flags);
       if (!match) {
@@ -730,19 +731,6 @@ void ElementRuleCollector::CollectMatchingRules(
   if (element.IsLink()) {
     for (const auto bundle : match_request.AllRuleSets()) {
       CollectMatchingRulesForList(bundle.rule_set->LinkPseudoClassRules(),
-                                  match_request, bundle.rule_set,
-                                  bundle.style_sheet, bundle.style_sheet_index,
-                                  checker);
-    }
-  }
-  if (inside_link_ != EInsideLink::kNotInsideLink) {
-    // Collect rules for visited links regardless of whether they affect
-    // rendering to prevent sniffing of visited links via CSS transitions.
-    // If the visited or unvisited style changes and an affected property has
-    // a transition rule, we create a transition even if it has no visible
-    // effect.
-    for (const auto bundle : match_request.AllRuleSets()) {
-      CollectMatchingRulesForList(bundle.rule_set->VisitedDependentRules(),
                                   match_request, bundle.rule_set,
                                   bundle.style_sheet, bundle.style_sheet_index,
                                   checker);
