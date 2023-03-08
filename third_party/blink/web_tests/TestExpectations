@@ -3702,6 +3702,7 @@ crbug.com/1399631 external/wpt/css/filter-effects/animation/backdrop-filter-inte
 crbug.com/1399631 external/wpt/css/filter-effects/animation/backdrop-filter-interpolation-003.html [ Crash Failure Pass Timeout ]
 crbug.com/1399631 external/wpt/css/filter-effects/animation/filter-interpolation-003.html [ Crash Failure Pass Timeout ]
 crbug.com/1399631 transitions/unanimatable-properties.html [ Crash Failure Pass Timeout ]
+crbug.com/1399631 external/wpt/css/css-transitions/all-with-discrete.tentative.html [ Crash Failure Pass Timeout ]
 
 # Tests failing when enabling new modern media controls
 crbug.com/832157 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cue-rendering-after-controls-added.html [ Crash Failure Pass Timeout ]
