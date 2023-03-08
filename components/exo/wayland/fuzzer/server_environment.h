@@ -27,9 +27,12 @@ class ServerEnvironment : public WaylandClientTestHelper {
 
   ~ServerEnvironment() override;
 
-  void SetUpOnUIThread(base::WaitableEvent* event) override;
+  void RunOnUiThread(base::OnceClosure task);
+  void RunOnUiThreadBlocking(base::OnceClosure task);
 
  private:
+  void OneTimeSetupOnUiThread();
+
   std::unique_ptr<aura::Env> env_;
   base::test::TaskEnvironment task_environment_;
   base::Thread ui_thread_;
