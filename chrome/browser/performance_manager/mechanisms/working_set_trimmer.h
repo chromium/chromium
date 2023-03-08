@@ -30,7 +30,8 @@ class WorkingSetTrimmer {
   // Returns true if the WorkingSetTrimmer is supported on the current platform.
   virtual bool PlatformSupportsWorkingSetTrim() = 0;
 
-  virtual void TrimWorkingSet(const ProcessNode* process_node) = 0;
+  // Returns true if working set trim succeeded for the provided ProcessNode.
+  virtual bool TrimWorkingSet(const ProcessNode* process_node) = 0;
 
  protected:
   // A WorkingSetTrimmer should never be created directly it should only be

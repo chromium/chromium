@@ -57,7 +57,7 @@ bool WorkingSetTrimmerChromeOS::PlatformSupportsWorkingSetTrim() {
   return kPlatformSupported;
 }
 
-void WorkingSetTrimmerChromeOS::TrimWorkingSet(base::ProcessId pid) {
+bool WorkingSetTrimmerChromeOS::TrimWorkingSet(base::ProcessId pid) {
   const std::string reclaim_file = base::StringPrintf("/proc/%d/reclaim", pid);
   const std::string kReclaimMode = "all";
   bool success = base::WriteFile(base::FilePath(reclaim_file), kReclaimMode);
@@ -65,6 +65,7 @@ void WorkingSetTrimmerChromeOS::TrimWorkingSet(base::ProcessId pid) {
   // We won't log an error if reclaim failed due to the process being dead.
   PLOG_IF(ERROR, success && errno != ENOENT)
       << "Write failed on " << reclaim_file << " mode: " << kReclaimMode;
+  return success;
 }
 
 void WorkingSetTrimmerChromeOS::TrimArcVmWorkingSet(
@@ -135,11 +136,12 @@ void WorkingSetTrimmerChromeOS::OnDropArcVmCaches(
   arc_session_manager->TrimVmMemory(std::move(callback), page_limit);
 }
 
-void WorkingSetTrimmerChromeOS::TrimWorkingSet(
+bool WorkingSetTrimmerChromeOS::TrimWorkingSet(
     const ProcessNode* process_node) {
-  if (process_node->GetProcess().IsValid()) {
-    TrimWorkingSet(process_node->GetProcessId());
-  }
+  if (!process_node->GetProcess().IsValid())
+    return false;
+
+  return TrimWorkingSet(process_node->GetProcessId());
 }
 
 }  // namespace mechanism

@@ -235,14 +235,14 @@ WorkingSetTrimmerPolicyChromeOS::GetTrimmer() {
       mechanism::WorkingSetTrimmer::GetInstance());
 }
 
-void WorkingSetTrimmerPolicyChromeOS::TrimArcProcess(base::ProcessId pid) {
+bool WorkingSetTrimmerPolicyChromeOS::TrimArcProcess(base::ProcessId pid) {
   SetArcProcessLastTrimTime(pid, base::TimeTicks::Now());
 
   static int arc_processes_trimmed = 0;
   base::UmaHistogramCounts10000("Memory.WorkingSetTrim.ArcProcessTrimCount",
                                 ++arc_processes_trimmed);
 
-  GetTrimmer()->TrimWorkingSet(pid);
+  return GetTrimmer()->TrimWorkingSet(pid);
 }
 
 void WorkingSetTrimmerPolicyChromeOS::TrimReceivedArcProcesses(
