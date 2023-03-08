@@ -111,7 +111,8 @@ class SafeBrowsingQueryManager
 
   // Queries the Safe Browsing database using SafeBrowsingUrlCheckerImpls. This
   // class may be constructed on the UI thread but otherwise must only be used
-  // and destroyed on the IO thread.
+  // and destroyed on the IO thread. If kSafeBrowsingOnUIThread is enabled this
+  // is used on the UI thread.
   class UrlCheckerClient : public base::SupportsWeakPtr<UrlCheckerClient> {
    public:
     UrlCheckerClient();

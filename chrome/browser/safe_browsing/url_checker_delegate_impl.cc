@@ -103,6 +103,8 @@ UrlCheckerDelegateImpl::~UrlCheckerDelegateImpl() = default;
 void UrlCheckerDelegateImpl::MaybeDestroyNoStatePrefetchContents(
     content::WebContents::OnceGetter web_contents_getter) {
   // Destroy the prefetch with FINAL_STATUS_SAFE_BROWSING.
+  // Keep a post task here to avoid possible reentrancy into safe browsing
+  // code if it is running on the UI thread.
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&DestroyNoStatePrefetchContents,
                                 std::move(web_contents_getter)));
@@ -114,6 +116,8 @@ void UrlCheckerDelegateImpl::StartDisplayingBlockingPageHelper(
     const net::HttpRequestHeaders& headers,
     bool is_main_frame,
     bool has_user_gesture) {
+  // Keep a post task here to avoid possible reentrancy into safe browsing
+  // code if it is running on the UI thread.
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&SafeBrowsingUIManager::StartDisplayingBlockingPage,
@@ -125,6 +129,8 @@ void UrlCheckerDelegateImpl::
     StartObservingInteractionsForDelayedBlockingPageHelper(
         const security_interstitials::UnsafeResource& resource,
         bool is_main_frame) {
+  // Keep a post task here to avoid possible reentrancy into safe browsing
+  // code if it is running on the UI thread.
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&CreateSafeBrowsingUserInteractionObserver,
                                 resource, is_main_frame, ui_manager_));
@@ -156,6 +162,8 @@ bool UrlCheckerDelegateImpl::ShouldSkipRequestCheck(
 void UrlCheckerDelegateImpl::NotifySuspiciousSiteDetected(
     const base::RepeatingCallback<content::WebContents*()>&
         web_contents_getter) {
+  // Keep a post task here to avoid possible reentrancy into safe browsing
+  // code if it is running on the UI thread.
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&NotifySuspiciousSiteTriggerDetected,
                                 web_contents_getter));
@@ -177,6 +185,8 @@ void UrlCheckerDelegateImpl::CheckLookupMechanismExperimentEligibility(
     const security_interstitials::UnsafeResource& resource,
     base::OnceCallback<void(bool)> callback,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner) {
+  // Keep a post task here to avoid possible reentrancy into safe browsing
+  // code if it is running on the UI thread.
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -188,6 +198,8 @@ void UrlCheckerDelegateImpl::CheckExperimentEligibilityAndStartBlockingPage(
     const security_interstitials::UnsafeResource& resource,
     base::OnceCallback<void(bool)> callback,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner) {
+  // Keep a post task here to avoid possible reentrancy into safe browsing
+  // code if it is running on the UI thread.
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&SafeBrowsingUIManager::

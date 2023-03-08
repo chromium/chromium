@@ -341,23 +341,35 @@ class TestSBClient : public base::RefCountedThreadSafe<TestSBClient>,
   std::string GetThreatHash() const { return threat_hash_; }
 
   void CheckDownloadUrl(const std::vector<GURL>& url_chain) {
-    content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&TestSBClient::CheckDownloadUrlOnIOThread,
-                                  this, url_chain));
+    if (base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)) {
+      CheckDownloadUrlOnSBThread(url_chain);
+    } else {
+      content::GetIOThreadTaskRunner({})->PostTask(
+          FROM_HERE, base::BindOnce(&TestSBClient::CheckDownloadUrlOnSBThread,
+                                    this, url_chain));
+    }
     content::RunMessageLoop();  // Will stop in OnCheckDownloadUrlResult.
   }
 
   void CheckBrowseUrl(const GURL& url) {
-    content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&TestSBClient::CheckBrowseUrlOnIOThread, this, url));
+    if (base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)) {
+      CheckBrowseUrlOnSBThread(url);
+    } else {
+      content::GetIOThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(&TestSBClient::CheckBrowseUrlOnSBThread, this, url));
+    }
     content::RunMessageLoop();  // Will stop in OnCheckBrowseUrlResult.
   }
 
   void CheckResourceUrl(const GURL& url) {
-    content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&TestSBClient::CheckResourceUrlOnIOThread, this, url));
+    if (base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)) {
+      CheckResourceUrlOnSBThread(url);
+    } else {
+      content::GetIOThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(&TestSBClient::CheckResourceUrlOnSBThread, this, url));
+    }
     content::RunMessageLoop();  // Will stop in OnCheckResourceUrlResult.
   }
 
@@ -365,7 +377,7 @@ class TestSBClient : public base::RefCountedThreadSafe<TestSBClient>,
   friend class base::RefCountedThreadSafe<TestSBClient>;
   ~TestSBClient() override {}
 
-  void CheckDownloadUrlOnIOThread(const std::vector<GURL>& url_chain) {
+  void CheckDownloadUrlOnSBThread(const std::vector<GURL>& url_chain) {
     bool synchronous_safe_signal =
         safe_browsing_service_->database_manager()->CheckDownloadUrl(url_chain,
                                                                      this);
@@ -376,7 +388,7 @@ class TestSBClient : public base::RefCountedThreadSafe<TestSBClient>,
     }
   }
 
-  void CheckBrowseUrlOnIOThread(const GURL& url) {
+  void CheckBrowseUrlOnSBThread(const GURL& url) {
     SBThreatTypeSet threat_types = CreateSBThreatTypeSet(
         {SB_THREAT_TYPE_URL_PHISHING, SB_THREAT_TYPE_URL_MALWARE,
          SB_THREAT_TYPE_URL_UNWANTED, SB_THREAT_TYPE_BILLING});
@@ -394,7 +406,7 @@ class TestSBClient : public base::RefCountedThreadSafe<TestSBClient>,
     }
   }
 
-  void CheckResourceUrlOnIOThread(const GURL& url) {
+  void CheckResourceUrlOnSBThread(const GURL& url) {
     bool synchronous_safe_signal =
         safe_browsing_service_->database_manager()->CheckResourceUrl(url, this);
     if (synchronous_safe_signal) {

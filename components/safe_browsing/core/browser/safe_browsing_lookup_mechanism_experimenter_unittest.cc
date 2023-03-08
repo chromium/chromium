@@ -171,7 +171,7 @@ class PretendCheckerOnIO {
         time_to_self_destruct);
   }
   ~PretendCheckerOnIO() {
-    mechanism_experimenter_->OnBrowserUrlLoaderThrottleCheckerOnIODestructed();
+    mechanism_experimenter_->OnBrowserUrlLoaderThrottleCheckerOnSBDestructed();
   }
   scoped_refptr<SafeBrowsingLookupMechanismExperimenter> GetExperimenter() {
     return mechanism_experimenter_;
@@ -955,7 +955,7 @@ TEST_F(SafeBrowsingLookupMechanismExperimenterTest, TestTimeouts) {
 
 TEST_F(SafeBrowsingLookupMechanismExperimenterTest, TestEmptyExperiment) {
   // After one second, calls into mechanism_experimenter's
-  // |OnBrowserUrlLoaderThrottleCheckerOnIODestructed|, which ends the
+  // |OnBrowserUrlLoaderThrottleCheckerOnSBDestructed|, which ends the
   // experiment.
   new PretendCheckerOnIO(
       /*time_to_will_process_response=*/base::Seconds(3),

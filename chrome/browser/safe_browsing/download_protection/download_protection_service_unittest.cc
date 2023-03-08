@@ -127,6 +127,7 @@ using content::BrowserThread;
 using content::FileSystemAccessWriteItem;
 using ::testing::_;
 using ::testing::Assign;
+using ::testing::AtMost;
 using ::testing::ContainerEq;
 using ::testing::DoAll;
 using ::testing::ElementsAre;
@@ -2456,16 +2457,25 @@ TEST_F(DownloadProtectionServiceTest, TestDownloadItemDestroyed) {
                 MatchDownloadAllowlistUrl(_))
         .WillRepeatedly(Return(false));
 
-    // Expects that MockDownloadItem will go out of scope while asynchronous
-    // processing is checking allowlist, and thus will return after allowlist
-    // check rather than continuing to process the download, since
-    // OnDownloadDestroyed will be called to terminate the processing.
+    int expect_count;
+    if (base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)) {
+      expect_count = 1;
+    } else {
+      // Expects that MockDownloadItem will go out of scope while asynchronous
+      // processing is checking allowlist, and thus will return after allowlist
+      // check rather than continuing to process the download, since
+      // OnDownloadDestroyed will be called to terminate the processing.
+      expect_count = 0;
+    }
+
+    // Note 'AtMost' is used because on Mac timing differences make the mocks
+    // not reached when kSafeBrowsingOnUIThread is enabled.
     EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _))
-        .Times(0);
+        .Times(AtMost(expect_count));
     EXPECT_CALL(*binary_feature_extractor_.get(),
                 ExtractImageFeatures(
                     tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _))
-        .Times(0);
+        .Times(AtMost(expect_count));
 
     download_service_->CheckClientDownload(
         &item, base::BindRepeating(
@@ -3876,6 +3886,17 @@ TEST_F(DownloadProtectionServiceTest,
       /*tmp_path_literal=*/FILE_PATH_LITERAL("a.exe.crswap"),
       /*final_path_literal=*/FILE_PATH_LITERAL("a.exe"));
   item->browser_context = profile1;
+
+  if (base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)) {
+    // Note 'AtMost' is used below because on Mac timing differences make the
+    // mocks not reached.
+    EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _))
+        .Times(AtMost(1));
+    EXPECT_CALL(*binary_feature_extractor_.get(),
+                ExtractImageFeatures(
+                    tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _))
+        .Times(AtMost(1));
+  }
 
   RunLoop run_loop;
   download_service_->CheckFileSystemAccessWrite(

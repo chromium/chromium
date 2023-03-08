@@ -16,6 +16,7 @@
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -125,11 +126,16 @@ void PPAPIDownloadRequest::Start() {
                      weakptr_factory_.GetWeakPtr()),
       service_->GetDownloadRequestTimeout());
 
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&PPAPIDownloadRequest::CheckAllowlistsOnIOThread,
-                     requestor_url_, database_manager_,
-                     weakptr_factory_.GetWeakPtr()));
+  if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
+    CheckAllowlistsOnSBThread(requestor_url_, database_manager_,
+                              weakptr_factory_.GetWeakPtr());
+  } else {
+    content::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&PPAPIDownloadRequest::CheckAllowlistsOnSBThread,
+                       requestor_url_, database_manager_,
+                       weakptr_factory_.GetWeakPtr()));
+  }
 }
 
 // static
@@ -146,12 +152,15 @@ void PPAPIDownloadRequest::WebContentsDestroyed() {
   Finish(RequestOutcome::REQUEST_DESTROYED, DownloadCheckResult::UNKNOWN);
 }
 
-// Allowlist checking needs to the done on the IO thread.
-void PPAPIDownloadRequest::CheckAllowlistsOnIOThread(
+// Allowlist checking needs to the done on the SB thread.
+void PPAPIDownloadRequest::CheckAllowlistsOnSBThread(
     const GURL& requestor_url,
     scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
     base::WeakPtr<PPAPIDownloadRequest> download_request) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(
+      base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
+          ? content::BrowserThread::UI
+          : content::BrowserThread::IO);
   DVLOG(2) << " checking allowlists for requestor URL:" << requestor_url;
 
   bool url_was_allowlisted =

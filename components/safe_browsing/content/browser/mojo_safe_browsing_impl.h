@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/supports_user_data.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
 #include "components/safe_browsing/core/common/safe_browsing_url_checker.mojom.h"
@@ -25,7 +26,8 @@ namespace safe_browsing {
 // SafeBrowsing URL checks.
 // A MojoSafeBrowsingImpl instance is destructed when the Mojo message pipe is
 // disconnected or |resource_context_| is destructed.
-class MojoSafeBrowsingImpl : public mojom::SafeBrowsing {
+class MojoSafeBrowsingImpl : public mojom::SafeBrowsing,
+                             public base::SupportsUserData::Data {
  public:
   MojoSafeBrowsingImpl(const MojoSafeBrowsingImpl&) = delete;
   MojoSafeBrowsingImpl& operator=(const MojoSafeBrowsingImpl&) = delete;
@@ -40,10 +42,12 @@ class MojoSafeBrowsingImpl : public mojom::SafeBrowsing {
       mojo::PendingReceiver<mojom::SafeBrowsing> receiver);
 
  private:
-  MojoSafeBrowsingImpl(
-      scoped_refptr<UrlCheckerDelegate> delegate,
-      int render_process_id,
-      base::WeakPtr<content::ResourceContext> resource_context);
+  // Needed since there's a Clone method in two parent classes.
+  using base::SupportsUserData::Data::Clone;
+
+  MojoSafeBrowsingImpl(scoped_refptr<UrlCheckerDelegate> delegate,
+                       int render_process_id,
+                       base::SupportsUserData* user_data);
 
   // mojom::SafeBrowsing implementation.
   void CreateCheckerAndCheck(
@@ -62,15 +66,15 @@ class MojoSafeBrowsingImpl : public mojom::SafeBrowsing {
   void OnMojoDisconnect();
 
   // This is an instance of SafeBrowserUserData that is set as user-data on
-  // |resource_context_|. SafeBrowserUserData owns |this|.
+  // |user_data_|. SafeBrowserUserData owns |this|.
   raw_ptr<const void> user_data_key_ = nullptr;
 
   mojo::ReceiverSet<mojom::SafeBrowsing> receivers_;
   scoped_refptr<UrlCheckerDelegate> delegate_;
   int render_process_id_ = MSG_ROUTING_NONE;
 
-  // Not owned by this object.
-  base::WeakPtr<content::ResourceContext> resource_context_;
+  // Guaranteed to outlive this object as it owns it.
+  base::SupportsUserData* user_data_;
 };
 
 }  // namespace safe_browsing

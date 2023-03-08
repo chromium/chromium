@@ -116,11 +116,13 @@ class V4Database {
       const ListInfos& list_infos,
       NewDatabaseReadyCallback new_db_callback);
 
-  // Initialize state that lives on the IO thread.
-  void InitializeOnIOSequence();
+  // Initialize state that lives on the IO thread or UI thread if
+  // kSafeBrowsingOnUIThread is enabled.
+  void InitializeOnSBThread();
 
-  // Destroy state that lives on the IO thread.
-  void StopOnIO();
+  // Destroy state that lives on the IO thread or UI thread if
+  // kSafeBrowsingOnUIThread is enabled.
+  void StopOnSBThread();
 
   V4Database(const V4Database&) = delete;
   V4Database& operator=(const V4Database&) = delete;
@@ -241,9 +243,9 @@ class V4Database {
   // Log the difference in time between database updates in a UMA histogram.
   void RecordDatabaseUpdateLatency();
 
-  // Used to verify that certain methods are called on the client-designated IO
-  // sequence (see InitializeOnIOSequence()).
-  SEQUENCE_CHECKER(io_sequence_checker_);
+  // Used to verify that certain methods are called on the client-designated SB
+  // sequence (see InitializeOnSBThread()).
+  SEQUENCE_CHECKER(sb_sequence_checker_);
 
   const scoped_refptr<base::SequencedTaskRunner> db_task_runner_;
 

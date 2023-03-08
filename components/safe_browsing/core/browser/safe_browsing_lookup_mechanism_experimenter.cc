@@ -255,7 +255,7 @@ void SafeBrowsingLookupMechanismExperimenter::MaybeCompleteExperiment() {
       !latest_check->url_real_time_details.results.has_value() ||
       num_checks_with_eligibility_determined_ < checks_to_run_.size() ||
       (!will_process_response_reached_time_.has_value() &&
-       !is_browser_url_loader_throttle_checker_on_io_destructed_)) {
+       !is_browser_url_loader_throttle_checker_on_sb_destructed_)) {
     // The results are not yet complete.
     return;
   }
@@ -556,8 +556,8 @@ void SafeBrowsingLookupMechanismExperimenter::SetCheckExperimentEligibility(
 }
 
 void SafeBrowsingLookupMechanismExperimenter::
-    OnBrowserUrlLoaderThrottleCheckerOnIODestructed() {
-  is_browser_url_loader_throttle_checker_on_io_destructed_ = true;
+    OnBrowserUrlLoaderThrottleCheckerOnSBDestructed() {
+  is_browser_url_loader_throttle_checker_on_sb_destructed_ = true;
   if (!will_process_response_reached_time_.has_value()) {
     MaybeCompleteExperiment();
     // Normally it can be dangerous to run code after a call to

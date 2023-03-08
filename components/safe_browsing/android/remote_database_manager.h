@@ -27,7 +27,7 @@ struct V4ProtocolConfig;
 class RemoteSafeBrowsingDatabaseManager : public SafeBrowsingDatabaseManager {
  public:
   // Construct RemoteSafeBrowsingDatabaseManager.
-  // Must be initialized by calling StartOnIOThread() before using.
+  // Must be initialized by calling StartOnSBThread() before using.
   RemoteSafeBrowsingDatabaseManager();
 
   RemoteSafeBrowsingDatabaseManager(const RemoteSafeBrowsingDatabaseManager&) =
@@ -63,10 +63,10 @@ class RemoteSafeBrowsingDatabaseManager : public SafeBrowsingDatabaseManager {
   bool MatchMalwareIP(const std::string& ip_address) override;
   safe_browsing::ThreatSource GetThreatSource() const override;
   bool IsDownloadProtectionEnabled() const override;
-  void StartOnIOThread(
+  void StartOnSBThread(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const V4ProtocolConfig& config) override;
-  void StopOnIOThread(bool shutdown) override;
+  void StopOnSBThread(bool shutdown) override;
 
   //
   // RemoteSafeBrowsingDatabaseManager implementation

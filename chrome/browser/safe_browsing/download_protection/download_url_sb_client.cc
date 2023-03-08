@@ -11,6 +11,7 @@
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/download_item_utils.h"
 
@@ -55,7 +56,9 @@ void DownloadUrlSBClient::OnDownloadDestroyed(
 }
 
 void DownloadUrlSBClient::StartCheck() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)
+                          ? content::BrowserThread::UI
+                          : content::BrowserThread::IO);
   if (!database_manager_.get() ||
       database_manager_->CheckDownloadUrl(url_chain_, this)) {
     CheckDone(SB_THREAT_TYPE_SAFE);

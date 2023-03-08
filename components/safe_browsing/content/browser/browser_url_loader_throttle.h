@@ -53,15 +53,15 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
                               bool /* did_perform_real_time_check */,
                               bool /* did_check_allowlist */)>;
 
-  // CheckerOnIO handles calling methods on SafeBrowsingUrlCheckerImpl, which
+  // CheckerOnSB handles calling methods on SafeBrowsingUrlCheckerImpl, which
   // must be called on the IO thread. The results are synced back to the
   // throttle.
   // TODO(http://crbug.com/824843): Remove this if safe browsing is moved to the
   // UI thread.
-  class CheckerOnIO
-      : public base::SupportsWeakPtr<BrowserURLLoaderThrottle::CheckerOnIO> {
+  class CheckerOnSB
+      : public base::SupportsWeakPtr<BrowserURLLoaderThrottle::CheckerOnSB> {
    public:
-    CheckerOnIO(
+    CheckerOnSB(
         GetDelegateCallback delegate_getter,
         int frame_tree_node_id,
         base::RepeatingCallback<content::WebContents*()> web_contents_getter,
@@ -75,7 +75,7 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
         base::WeakPtr<HashRealTimeService> hash_realtime_service,
         bool is_mechanism_experiment_allowed);
 
-    ~CheckerOnIO();
+    ~CheckerOnSB();
 
     // Starts the initial safe browsing check. This check and future checks may
     // be skipped after checking with the UrlCheckerDelegate.
@@ -166,7 +166,7 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
                            bool* defer) override;
   const char* NameForLoggingWillProcessResponse() override;
 
-  CheckerOnIO* GetIOCheckerForTesting();
+  CheckerOnSB* GetSBCheckerForTesting();
 
  private:
   // |web_contents_getter| is used for displaying SafeBrowsing UI when
@@ -180,7 +180,7 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
       base::WeakPtr<HashRealTimeService> hash_realtime_service);
 
   // |slow_check| indicates whether it reports the result of a slow check.
-  // (Please see comments of CheckerOnIO::OnCheckUrlResult() for what slow check
+  // (Please see comments of CheckerOnSB::OnCheckUrlResult() for what slow check
   // means).
   void OnCompleteCheck(bool slow_check,
                        bool proceed,
@@ -195,8 +195,9 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
   // Called when a slow safe browsing check is ongoing.
   void NotifySlowCheck();
 
-  // Destroys |io_checker_| on the IO thread.
-  void DeleteCheckerOnIO();
+  // Destroys |sb_checker_| on the IO thread, or UI thread if
+  // kSafeBrowsingOnUIThread is enabled.
+  void DeleteCheckerOnSB();
 
   size_t pending_checks_ = 0;
   // How many slow checks that haven't received results.
@@ -221,7 +222,7 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
   // Whether future safe browsing checks should be skipped.
   bool skip_checks_ = false;
 
-  std::unique_ptr<CheckerOnIO> io_checker_;
+  std::unique_ptr<CheckerOnSB> sb_checker_;
 
   // Metric suffix for the URL lookup service.
   std::string url_lookup_service_metric_suffix_;

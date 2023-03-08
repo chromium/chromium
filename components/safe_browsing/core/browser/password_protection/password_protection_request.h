@@ -171,7 +171,7 @@ class PasswordProtectionRequest
   // Start checking the allowlist.
   void CheckAllowlist();
 
-  static void OnAllowlistCheckDoneOnIO(
+  static void OnAllowlistCheckDoneOnSB(
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       base::WeakPtr<PasswordProtectionRequest> weak_request,
       bool match_allowlist);

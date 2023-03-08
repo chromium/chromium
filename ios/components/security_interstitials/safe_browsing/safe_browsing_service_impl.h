@@ -56,7 +56,8 @@ class SafeBrowsingServiceImpl : public SafeBrowsingService {
   // A helper class for enabling/disabling Safe Browsing and maintaining state
   // on the IO thread. This class may be constructed and destroyed on the UI
   // thread, but all of its other methods should only be called on the IO
-  // thread.
+  // thread. If kSafeBrowsingOnUIThread is enabled then it will be used on the
+  // UI thread.
   class IOThreadEnabler : public base::RefCountedThreadSafe<IOThreadEnabler> {
    public:
     IOThreadEnabler(scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
@@ -99,7 +100,8 @@ class SafeBrowsingServiceImpl : public SafeBrowsingService {
     void SetUpURLLoaderFactory(
         scoped_refptr<SafeBrowsingServiceImpl> safe_browsing_service);
 
-    // This tracks whether the service is running.
+    // This tracks whether the service is running. Only used if
+    // kSafeBrowsingOnUIThread is enabled.
     bool enabled_ = false;
 
     // This tracks whether ShutDown() has been called.
@@ -148,6 +150,10 @@ class SafeBrowsingServiceImpl : public SafeBrowsingService {
   // the IO thread.
   scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
       safe_browsing_db_manager_;
+
+  // This tracks whether the service is running. Only used if
+  // kSafeBrowsingOnUIThread is enabled.
+  bool enabled_ = false;
 
   // This watches for changes to the Safe Browsing opt-out preference.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;

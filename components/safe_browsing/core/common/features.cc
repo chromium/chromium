@@ -211,6 +211,10 @@ BASE_FEATURE(kSafeBrowsingLookupMechanismExperiment,
              "SafeBrowsingLookupMechanismExperiment",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSafeBrowsingOnUIThread,
+             "SafeBrowsingOnUIThread",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSafeBrowsingRemoveCookiesInAuthRequests,
              "SafeBrowsingRemoveCookiesInAuthRequests",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -214,6 +214,9 @@ BASE_DECLARE_FEATURE(kSafeBrowsingEnterpriseCsd);
 // the main comparison anchor.
 BASE_DECLARE_FEATURE(kSafeBrowsingLookupMechanismExperiment);
 
+// Run Safe Browsing code on UI thread.
+BASE_DECLARE_FEATURE(kSafeBrowsingOnUIThread);
+
 // Controls whether cookies are removed when the access token is present.
 BASE_DECLARE_FEATURE(kSafeBrowsingRemoveCookiesInAuthRequests);
 

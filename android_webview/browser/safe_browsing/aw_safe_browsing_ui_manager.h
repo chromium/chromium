@@ -64,9 +64,10 @@ class AwSafeBrowsingUIManager : public safe_browsing::BaseUIManager {
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory();
 
   // Called on the IO thread to get a SharedURLLoaderFactory that can be used on
-  // the IO thread.
+  // the IO thread. If kSafeBrowsingOnUIThread is enabled it's called on the UI
+  // thread.
   scoped_refptr<network::SharedURLLoaderFactory>
-  GetURLLoaderFactoryOnIOThread();
+  GetURLLoaderFactoryOnSBThread();
 
  protected:
   ~AwSafeBrowsingUIManager() override;
@@ -78,18 +79,18 @@ class AwSafeBrowsingUIManager : public safe_browsing::BaseUIManager {
       const UnsafeResource& unsafe_resource) override;
 
   // Called on the UI thread to create a URLLoaderFactory interface ptr for
-  // the IO thread.
-  void CreateURLLoaderFactoryForIO(
+  // the SB thread.
+  void CreateURLLoaderFactoryForSB(
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver);
 
   // This is what owns the URLRequestContext inside the network service. This is
   // used by SimpleURLLoader for Safe Browsing requests.
   std::unique_ptr<safe_browsing::SafeBrowsingNetworkContext> network_context_;
 
-  // A SharedURLLoaderFactory and its interfaceptr used on the IO thread.
-  mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_on_io_;
+  // A SharedURLLoaderFactory and its interfaceptr used on the SB thread.
+  mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_on_sb_;
   scoped_refptr<network::WeakWrapperSharedURLLoaderFactory>
-      shared_url_loader_factory_on_io_;
+      shared_url_loader_factory_on_sb_;
 };
 
 }  // namespace android_webview

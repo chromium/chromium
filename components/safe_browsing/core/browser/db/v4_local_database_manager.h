@@ -88,10 +88,10 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   safe_browsing::ThreatSource GetThreatSource() const override;
   bool IsDownloadProtectionEnabled() const override;
 
-  void StartOnIOThread(
+  void StartOnSBThread(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const V4ProtocolConfig& config) override;
-  void StopOnIOThread(bool shutdown) override;
+  void StopOnSBThread(bool shutdown) override;
 
   // The stores/lists to always get full hashes for, regardless of which store
   // the hash prefix matched. We request all lists since it makes the full hash
@@ -107,7 +107,7 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
 
  protected:
   // Construct V4LocalDatabaseManager.
-  // Must be initialized by calling StartOnIOThread() before using.
+  // Must be initialized by calling StartOnSBThread() before using.
   V4LocalDatabaseManager(
       const base::FilePath& base_path,
       ExtendedReportingLevelCallback extended_reporting_level_callback,
@@ -325,7 +325,7 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   // while the database was loading from disk.
   void ProcessQueuedChecks();
 
-  // Called on StopOnIOThread, it responds to the clients that are (1) waiting
+  // Called on StopOnSBThread, it responds to the clients that are (1) waiting
   // for the database to become available with the verdict as SAFE, or (2)
   // waiting for a full hash response from the SafeBrowsing service.
   void RespondSafeToQueuedAndPendingChecks();
@@ -431,7 +431,8 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // The database that manages the stores containing the hash prefix updates.
-  // All writes to this variable must happen on the IO thread only.
+  // All writes to this variable must happen on the IO thread only unless
+  // kSafeBrowsingOnUIThread is enabled in which case it'll be UI thread.
   std::unique_ptr<V4Database, base::OnTaskRunnerDeleter> v4_database_;
 
   // The protocol manager that downloads the hash prefix updates.

@@ -189,10 +189,14 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
     // csd-allowlist check has to be done on the IO thread because it
     // uses the SafeBrowsing service class.
     if (ShouldClassifyForPhishing()) {
-      content::GetIOThreadTaskRunner({})->PostTask(
-          FROM_HERE,
-          base::BindOnce(&ShouldClassifyUrlRequest::CheckSafeBrowsingDatabase,
-                         this, url_));
+      if (base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)) {
+        CheckSafeBrowsingDatabase(url_);
+      } else {
+        content::GetIOThreadTaskRunner({})->PostTask(
+            FROM_HERE,
+            base::BindOnce(&ShouldClassifyUrlRequest::CheckSafeBrowsingDatabase,
+                           this, url_));
+      }
     }
   }
 
@@ -257,7 +261,9 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
   }
 
   void CheckSafeBrowsingDatabase(const GURL& url) {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)
+                            ? content::BrowserThread::UI
+                            : content::BrowserThread::IO);
     PreClassificationCheckResult phishing_reason = NO_CLASSIFY_MAX;
 
     // When doing debug feature dumps, ignore the allowlist.
@@ -288,16 +294,22 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
   void OnAllowlistCheckDoneOnIO(const GURL& url,
                                 PreClassificationCheckResult phishing_reason,
                                 bool match_allowlist) {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)
+                            ? content::BrowserThread::UI
+                            : content::BrowserThread::IO);
     // We don't want to call the classification callbacks from the IO
     // thread so we simply pass the results of this method to CheckCache()
     // which is called on the UI thread;
     if (match_allowlist) {
       phishing_reason = NO_CLASSIFY_MATCH_CSD_ALLOWLIST;
     }
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&ShouldClassifyUrlRequest::CheckCache, this,
-                                  phishing_reason));
+    if (base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)) {
+      CheckCache(phishing_reason);
+    } else {
+      content::GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE, base::BindOnce(&ShouldClassifyUrlRequest::CheckCache, this,
+                                    phishing_reason));
+    }
   }
 
   void CheckCache(PreClassificationCheckResult phishing_reason) {

@@ -87,7 +87,7 @@ class SafeBrowsingService {
   GetSafeBrowsingUrlCheckerDelegate();
 
   // Safe to call multiple times; invocations after the first will be no-ops.
-  void StartSafeBrowsingDBManagerOnIOThread();
+  void StartSafeBrowsingDBManagerOnSBThread();
   void CreateSafeBrowsingUIManager();
   void CreateTriggerManager();
   void CreateAndStartSafeBrowsingDBManager();
@@ -95,7 +95,7 @@ class SafeBrowsingService {
   GetURLLoaderFactoryOnIOThread();
   void CreateURLLoaderFactoryForIO(
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver);
-  void StopDBManagerOnIOThread();
+  void StopDBManagerOnSBThread();
 
   // The UI manager handles showing interstitials. Accessed on both UI and IO
   // thread.
