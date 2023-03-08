@@ -16,6 +16,7 @@
 #include "crypto/signature_verifier.h"
 #include "crypto/unexportable_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace unexportable_keys {
 
@@ -32,12 +33,21 @@ class UnexportableKeyTaskManagerTest : public testing::Test {
 
   UnexportableKeyTaskManager& task_manager() { return task_manager_; }
 
+  void DisableKeyProvider() {
+    // Using `emplace()` to destroy the existing scoped object before
+    // constructing a new one.
+    scoped_key_provider_.emplace<crypto::ScopedNullUnexportableKeyProvider>();
+  }
+
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::ThreadPoolExecutionMode::
           QUEUED};  // QUEUED - tasks don't run until `RunUntilIdle()` is
                     // called.
-  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  // Provides a mock key provider by default.
+  absl::variant<crypto::ScopedMockUnexportableKeyProvider,
+                crypto::ScopedNullUnexportableKeyProvider>
+      scoped_key_provider_;
   UnexportableKeyTaskManager task_manager_;
 };
 
@@ -56,7 +66,8 @@ TEST_F(UnexportableKeyTaskManagerTest, GenerateKeyAsync) {
   EXPECT_NE(future.Get().value(), nullptr);
 }
 
-TEST_F(UnexportableKeyTaskManagerTest, GenerateKeyAsync_Failure) {
+TEST_F(UnexportableKeyTaskManagerTest,
+       GenerateKeyAsyncFailureUnsupportedAlgorithm) {
   base::test::TestFuture<
       ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>>
       future;
@@ -69,6 +80,19 @@ TEST_F(UnexportableKeyTaskManagerTest, GenerateKeyAsync_Failure) {
   RunBackgroundTasks();
   EXPECT_EQ(future.Get(),
             base::unexpected(ServiceError::kAlgorithmNotSupported));
+}
+
+TEST_F(UnexportableKeyTaskManagerTest, GenerateKeyAsyncFailureNoKeyProvider) {
+  DisableKeyProvider();
+  base::test::TestFuture<
+      ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>>
+      future;
+  auto supported_algorithm = {crypto::SignatureVerifier::ECDSA_SHA256};
+  task_manager().GenerateSigningKeySlowlyAsync(
+      supported_algorithm, BackgroundTaskPriority::kBestEffort,
+      future.GetCallback());
+  RunBackgroundTasks();
+  EXPECT_EQ(future.Get(), base::unexpected(ServiceError::kNoKeyProvider));
 }
 
 TEST_F(UnexportableKeyTaskManagerTest, FromWrappedKeyAsync) {
@@ -105,7 +129,7 @@ TEST_F(UnexportableKeyTaskManagerTest, FromWrappedKeyAsync) {
             unwrapped_key->key().GetSubjectPublicKeyInfo());
 }
 
-TEST_F(UnexportableKeyTaskManagerTest, FromWrappedKeyAsync_Failure) {
+TEST_F(UnexportableKeyTaskManagerTest, FromWrappedKeyAsyncFailureEmptyKey) {
   base::test::TestFuture<
       ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>>
       future;
@@ -115,6 +139,35 @@ TEST_F(UnexportableKeyTaskManagerTest, FromWrappedKeyAsync_Failure) {
       future.GetCallback());
   RunBackgroundTasks();
   EXPECT_EQ(future.Get(), base::unexpected(ServiceError::kCryptoApiFailed));
+}
+
+TEST_F(UnexportableKeyTaskManagerTest,
+       FromWrappedKeyAsyncFailureNoKeyProvider) {
+  // First, obtain a valid wrapped key.
+  base::test::TestFuture<
+      ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>>
+      generate_key_future;
+  auto supported_algorithm = {crypto::SignatureVerifier::ECDSA_SHA256};
+  task_manager().GenerateSigningKeySlowlyAsync(
+      supported_algorithm, BackgroundTaskPriority::kBestEffort,
+      generate_key_future.GetCallback());
+  RunBackgroundTasks();
+  ASSERT_TRUE(generate_key_future.Get().has_value());
+  scoped_refptr<RefCountedUnexportableSigningKey> key =
+      generate_key_future.Get().value();
+  std::vector<uint8_t> wrapped_key = key->key().GetWrappedKey();
+
+  // Second, emulate the key provider being not available and check that
+  // `FromWrappedSigningKeySlowlyAsync()` returns a corresponding error.
+  DisableKeyProvider();
+  base::test::TestFuture<
+      ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>>
+      future;
+  task_manager().FromWrappedSigningKeySlowlyAsync(
+      wrapped_key, kTestToken, BackgroundTaskPriority::kBestEffort,
+      future.GetCallback());
+  RunBackgroundTasks();
+  EXPECT_EQ(future.Get(), base::unexpected(ServiceError::kNoKeyProvider));
 }
 
 TEST_F(UnexportableKeyTaskManagerTest, SignAsync) {
@@ -149,7 +202,7 @@ TEST_F(UnexportableKeyTaskManagerTest, SignAsync) {
   EXPECT_TRUE(verifier.VerifyFinal());
 }
 
-TEST_F(UnexportableKeyTaskManagerTest, SignAsync_NullKey) {
+TEST_F(UnexportableKeyTaskManagerTest, SignAsyncNullKey) {
   base::test::TestFuture<ServiceErrorOr<std::vector<uint8_t>>> sign_future;
   std::vector<uint8_t> data = {4, 8, 15, 16, 23, 42};
   task_manager().SignSlowlyAsync(nullptr, data,

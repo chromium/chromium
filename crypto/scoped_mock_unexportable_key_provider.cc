@@ -114,6 +114,10 @@ std::unique_ptr<UnexportableKeyProvider> GetUnexportableKeyProviderMock() {
   return std::make_unique<SoftwareProvider>();
 }
 
+std::unique_ptr<UnexportableKeyProvider> GetUnexportableKeyProviderNull() {
+  return nullptr;
+}
+
 }  // namespace
 
 ScopedMockUnexportableKeyProvider::ScopedMockUnexportableKeyProvider() {
@@ -122,6 +126,15 @@ ScopedMockUnexportableKeyProvider::ScopedMockUnexportableKeyProvider() {
 }
 
 ScopedMockUnexportableKeyProvider::~ScopedMockUnexportableKeyProvider() {
+  internal::SetUnexportableKeyProviderForTesting(nullptr);
+}
+
+ScopedNullUnexportableKeyProvider::ScopedNullUnexportableKeyProvider() {
+  internal::SetUnexportableKeyProviderForTesting(
+      GetUnexportableKeyProviderNull);
+}
+
+ScopedNullUnexportableKeyProvider::~ScopedNullUnexportableKeyProvider() {
   internal::SetUnexportableKeyProviderForTesting(nullptr);
 }
 
