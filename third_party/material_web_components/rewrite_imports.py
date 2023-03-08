@@ -51,8 +51,13 @@ def main(argv):
 
     def _map_import(import_path):
         for regex in import_mappings.keys():
-            if re.match(f"^{regex}$", import_path):
-                return import_mappings[regex]
+            import_match = re.match(f"^{regex}(.*)", import_path)
+            if import_match:
+                is_targetting_directory = regex[-1] == "/"
+                if is_targetting_directory:
+                    return import_mappings[regex] + import_match.group(1)
+                else:
+                    return import_mappings[regex]
         generated_import_match = re.match(r'^generated:(.*)', import_path)
         if generated_import_match:
             return generated_import_match.group(1)
