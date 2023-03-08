@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/web_selection/web_selection_response.h"
 
 #import "base/strings/sys_string_conversions.h"
-#import "base/values.h"
 #import "components/shared_highlighting/ios/parsing_utils.h"
 #import "ios/web/public/web_state.h"
 
@@ -24,11 +23,10 @@
 
 @implementation WebSelectionResponse
 
-+ (instancetype)selectionResponseWithValue:(const base::Value&)value
-                                  webState:(web::WebState*)webState {
++ (instancetype)selectionResponseWithDict:(const base::Value::Dict&)dict
+                                 webState:(web::WebState*)webState {
   DCHECK(webState);
 
-  const base::Value::Dict& dict = value.GetDict();
   const std::string* selectedText = dict.FindString("selectedText");
   absl::optional<CGRect> sourceRect =
       shared_highlighting::ParseRect(dict.FindDict("selectionRect"));

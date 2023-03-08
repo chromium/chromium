@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/web_selection/web_selection_java_script_feature.h"
 
 #import "base/no_destructor.h"
+#import "base/values.h"
 #import "ios/chrome/browser/web_selection/web_selection_java_script_feature_observer.h"
 #import "ios/chrome/browser/web_selection/web_selection_response.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
@@ -23,13 +24,13 @@ const char kWebSelectionFunctionName[] = "webSelection.getSelectedText";
 const char kScriptHandlerName[] = "WebSelection";
 
 WebSelectionResponse* ParseResponse(base::WeakPtr<web::WebState> weak_web_state,
-                                    const base::Value* value) {
+                                    const base::Value::Dict& dict) {
   web::WebState* web_state = weak_web_state.get();
-  if (!web_state || !value) {
+  if (!web_state) {
     return [WebSelectionResponse invalidResponse];
   }
-  return [WebSelectionResponse selectionResponseWithValue:*value
-                                                 webState:web_state];
+  return [WebSelectionResponse selectionResponseWithDict:dict
+                                                webState:web_state];
 }
 
 }  // namespace
@@ -95,7 +96,7 @@ void WebSelectionJavaScriptFeature::ScriptMessageReceived(
     return;
   }
   WebSelectionResponse* web_response =
-      ParseResponse(web_state->GetWeakPtr(), response);
+      ParseResponse(web_state->GetWeakPtr(), response->GetDict());
   if (![web_response isValid]) {
     // No not forward invalid response.
     return;

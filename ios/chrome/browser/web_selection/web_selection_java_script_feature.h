@@ -7,7 +7,6 @@
 
 #import "base/no_destructor.h"
 #import "base/observer_list.h"
-#import "base/values.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 
 namespace web {
