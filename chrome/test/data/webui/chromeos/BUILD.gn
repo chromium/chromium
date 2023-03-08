@@ -66,7 +66,7 @@ ts_library("build_ts") {
   root_dir = "."
   out_dir = "$target_gen_dir/tsc"
   composite = true
-  tsconfig_base = "tsconfig_base.json"
+  tsconfig_base = "../tsconfig_base.json"
   in_files = [
     "arc_account_picker/test_util.js",
     "ash_common/i18n_behavior_test.js",
