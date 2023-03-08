@@ -60,7 +60,9 @@ enum class FastCheckoutRunOutcome {
   kAutofillProfileDeleted = 11,
   // Credit card was deleted since its selection in the UI.
   kCreditCardDeleted = 12,
-  kMaxValue = kCreditCardDeleted
+  // Page was refreshed during a run.
+  kPageRefreshed = 13,
+  kMaxValue = kPageRefreshed
 };
 
 // Represents the state of the bottomsheet.
