@@ -673,7 +673,6 @@ TEST_F(PublisherTest, BuiltinAppsOnApps) {
 class LegacyPackagedAppLacorsNotPrimaryPublisherTest : public PublisherTest {
  public:
   LegacyPackagedAppLacorsNotPrimaryPublisherTest() {
-    crosapi::browser_util::SetLacrosEnabledForTest(true);
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitAndDisableFeature(ash::features::kLacrosPrimary);
   }
@@ -683,6 +682,10 @@ class LegacyPackagedAppLacorsNotPrimaryPublisherTest : public PublisherTest {
   LegacyPackagedAppLacorsNotPrimaryPublisherTest& operator=(
       const LegacyPackagedAppLacorsNotPrimaryPublisherTest&) = delete;
   ~LegacyPackagedAppLacorsNotPrimaryPublisherTest() override = default;
+
+ private:
+  const base::AutoReset<bool> resettter_ =
+      crosapi::browser_util::SetLacrosEnabledForTest(true);
 };
 
 TEST_F(LegacyPackagedAppLacorsNotPrimaryPublisherTest,

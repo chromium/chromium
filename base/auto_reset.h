@@ -22,7 +22,7 @@
 namespace base {
 
 template <typename T>
-class AutoReset {
+class [[maybe_unused, nodiscard]] AutoReset {
  public:
   template <typename U>
   AutoReset(T* scoped_variable, U&& new_value)

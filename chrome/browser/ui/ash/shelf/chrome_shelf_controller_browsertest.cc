@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/auto_reset.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 
 #include <stddef.h>
@@ -33,6 +32,7 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
@@ -642,9 +642,7 @@ class UnpinnedBrowserShortcutTest : public extensions::ExtensionBrowserTest {
   UnpinnedBrowserShortcutTest(const UnpinnedBrowserShortcutTest&) = delete;
   UnpinnedBrowserShortcutTest& operator=(const UnpinnedBrowserShortcutTest&) =
       delete;
-  ~UnpinnedBrowserShortcutTest() override {
-    crosapi::browser_util::SetLacrosPrimaryBrowserForTest(absl::nullopt);
-  }
+  ~UnpinnedBrowserShortcutTest() override = default;
 
   ash::ShelfModel* shelf_model() { return controller_->shelf_model(); }
 
@@ -662,7 +660,7 @@ class UnpinnedBrowserShortcutTest : public extensions::ExtensionBrowserTest {
   ChromeShelfController* controller_ = nullptr;
 
  private:
-  base::AutoReset<absl::optional<bool>> set_lacros_primary_ =
+  const base::AutoReset<absl::optional<bool>> set_lacros_primary_ =
       crosapi::browser_util::SetLacrosPrimaryBrowserForTest(true);
 };
 
