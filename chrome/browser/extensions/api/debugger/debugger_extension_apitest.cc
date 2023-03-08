@@ -7,6 +7,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/switches.h"
+#include "net/dns/mock_host_resolver.h"
 
 class ExtensionApiTestWithSwitch : public extensions::ExtensionApiTest {
  public:
@@ -15,8 +16,19 @@ class ExtensionApiTestWithSwitch : public extensions::ExtensionApiTest {
     command_line->AppendSwitch(switches::kSilentDebuggerExtensionAPI);
     command_line->AppendSwitch(extensions::switches::kExtensionsOnChromeURLs);
   }
+
+ protected:
+  void SetUpOnMainThread() override {
+    ExtensionApiTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(StartEmbeddedTestServer());
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTestWithSwitch, ExtensionDebugger) {
   ASSERT_TRUE(RunExtensionTest("debugger_extension")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionApiTestWithSwitch, ExtensionTracing) {
+  ASSERT_TRUE(RunExtensionTest("tracing_extension")) << message_;
 }
