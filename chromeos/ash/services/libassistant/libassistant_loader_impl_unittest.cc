@@ -7,7 +7,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
@@ -23,9 +22,6 @@ class LibassistantLoaderImplTest : public ::testing::Test {
       delete;
   ~LibassistantLoaderImplTest() override = default;
 
- protected:
-  base::test::ScopedFeatureList feature_list_;
-
  private:
   base::test::TaskEnvironment environment_;
 };
@@ -35,31 +31,7 @@ TEST_F(LibassistantLoaderImplTest, ShouldCreateInstance) {
   EXPECT_TRUE(loader);
 }
 
-TEST_F(LibassistantLoaderImplTest, ShouldRunCallbackWithoutDlcFeature) {
-  // Enable LibAssistantV2 will also enable LibAssistantDlc. Therefore, in this
-  // test, we disable both.
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{assistant::features::kEnableLibAssistantDlc,
-                             assistant::features::kEnableLibAssistantV2});
-
-  auto* loader = LibassistantLoaderImpl::GetInstance();
-  EXPECT_TRUE(loader);
-
-  base::RunLoop run_loop;
-  loader->Load(base::BindOnce(
-      [](base::RunLoop* run_loop, bool success) {
-        EXPECT_TRUE(success);
-        run_loop->Quit();
-      },
-      &run_loop));
-  run_loop.Run();
-}
-
 TEST_F(LibassistantLoaderImplTest, ShouldRunCallbackWithDlcFeature) {
-  feature_list_.InitAndEnableFeature(
-      assistant::features::kEnableLibAssistantDlc);
-
   auto* loader = LibassistantLoaderImpl::GetInstance();
   EXPECT_TRUE(loader);
 

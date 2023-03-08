@@ -195,16 +195,7 @@ class AssistantTimersBrowserTest : public MixinBasedInProcessBrowserTest,
   AssistantTimersBrowserTest() {
     // Disable V2 feature because LibAssistant V2 binary does not run on linux
     // bot.
-    if (GetParam()) {
-      feature_list_.InitWithFeatures(
-          /*enabled_features=*/{features::kEnableLibAssistantDlc},
-          /*disabled_features=*/{features::kEnableLibAssistantV2});
-    } else {
-      feature_list_.InitWithFeatures(
-          /*enabled_features=*/{},
-          /*disabled_features=*/{features::kEnableLibAssistantDlc,
-                                 features::kEnableLibAssistantV2});
-    }
+    feature_list_.InitAndDisableFeature(features::kEnableLibAssistantV2);
 
     // Do not log to file in test. Otherwise multiple tests may create/delete
     // the log file at the same time. See http://crbug.com/1307868.
@@ -244,7 +235,7 @@ class AssistantTimersBrowserTest : public MixinBasedInProcessBrowserTest,
 
 // Timer notifications should be dismissed when disabling Assistant in settings.
 // Flaky. See https://crbug.com/1196564.
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     AssistantTimersBrowserTest,
     DISABLED_ShouldDismissTimerNotificationsWhenDisablingAssistant) {
   tester()->StartAssistantAndWaitForReady();
@@ -275,7 +266,7 @@ IN_PROC_BROWSER_TEST_P(
 // Pressing the "STOP" action button in a timer notification should result in
 // the timer being removed.
 // Flaky. See https://crbug.com/1196564.
-IN_PROC_BROWSER_TEST_P(AssistantTimersBrowserTest,
+IN_PROC_BROWSER_TEST_F(AssistantTimersBrowserTest,
                        DISABLED_ShouldRemoveTimerWhenStoppingViaNotification) {
   tester()->StartAssistantAndWaitForReady();
 
@@ -316,7 +307,7 @@ IN_PROC_BROWSER_TEST_P(AssistantTimersBrowserTest,
 }
 
 // Verifies that timer notifications are ticked at regular intervals.
-IN_PROC_BROWSER_TEST_P(AssistantTimersBrowserTest,
+IN_PROC_BROWSER_TEST_F(AssistantTimersBrowserTest,
                        ShouldTickNotificationsAtRegularIntervals) {
   // Observe notifications.
   MockMessageCenterObserver mock;
@@ -405,9 +396,5 @@ IN_PROC_BROWSER_TEST_P(AssistantTimersBrowserTest,
       }));
   notification_update_run_loop.Run();
 }
-
-INSTANTIATE_TEST_SUITE_P(/* no label */,
-                         AssistantTimersBrowserTest,
-                         /*values=*/testing::Bool());
 
 }  // namespace ash::assistant

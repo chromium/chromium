@@ -52,10 +52,6 @@ BASE_FEATURE(kEnableLibAssistantV2,
              "LibAssistantV2",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableLibAssistantDlc,
-             "LibAssistantDlc",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 bool IsAppSupportEnabled() {
   return base::FeatureList::IsEnabled(
       assistant::features::kAssistantAppSupport);
@@ -102,11 +98,6 @@ bool IsLibAssistantSandboxEnabled() {
 
 bool IsLibAssistantV2Enabled() {
   return base::FeatureList::IsEnabled(kEnableLibAssistantV2);
-}
-
-bool IsLibAssistantDlcEnabled() {
-  return IsLibAssistantV2Enabled() ||
-         base::FeatureList::IsEnabled(kEnableLibAssistantDlc);
 }
 
 }  // namespace ash::assistant::features

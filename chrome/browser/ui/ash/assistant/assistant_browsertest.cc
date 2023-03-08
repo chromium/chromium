@@ -57,16 +57,7 @@ class AssistantBrowserTest : public MixinBasedInProcessBrowserTest,
   AssistantBrowserTest() {
     // Disable V2 feature because LibAssistant V2 binary does not run on linux
     // bot.
-    if (GetParam()) {
-      feature_list_.InitWithFeatures(
-          /*enabled_features=*/{features::kEnableLibAssistantDlc},
-          /*disabled_features=*/{features::kEnableLibAssistantV2});
-    } else {
-      feature_list_.InitWithFeatures(
-          /*enabled_features=*/{},
-          /*disabled_features=*/{features::kEnableLibAssistantDlc,
-                                 features::kEnableLibAssistantV2});
-    }
+    feature_list_.InitAndDisableFeature(features::kEnableLibAssistantV2);
 
     // Do not log to file in test. Otherwise multiple tests may create/delete
     // the log file at the same time. See http://crbug.com/1307868.
@@ -163,7 +154,7 @@ class AssistantBrowserTest : public MixinBasedInProcessBrowserTest,
                              kVersion};
 };
 
-IN_PROC_BROWSER_TEST_P(AssistantBrowserTest,
+IN_PROC_BROWSER_TEST_F(AssistantBrowserTest,
                        ShouldOpenAssistantUiWhenPressingAssistantKey) {
   tester()->StartAssistantAndWaitForReady();
 
@@ -175,13 +166,11 @@ IN_PROC_BROWSER_TEST_P(AssistantBrowserTest,
       /*wait_for_opening_animation=*/false);
 
   EXPECT_TRUE(tester()->IsVisible());
-  if (features::IsLibAssistantDlcEnabled()) {
-    histogram_tester()->ExpectTotalCount(kDlcInstallResultHistogram, 1);
-    histogram_tester()->ExpectTotalCount(kDlcLoadStatusHistogram, 1);
-  }
+  histogram_tester()->ExpectTotalCount(kDlcInstallResultHistogram, 1);
+  histogram_tester()->ExpectTotalCount(kDlcLoadStatusHistogram, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(AssistantBrowserTest, ShouldDisplayTextResponse) {
+IN_PROC_BROWSER_TEST_F(AssistantBrowserTest, ShouldDisplayTextResponse) {
   tester()->StartAssistantAndWaitForReady();
 
   ShowAssistantUi();
@@ -196,7 +185,7 @@ IN_PROC_BROWSER_TEST_P(AssistantBrowserTest, ShouldDisplayTextResponse) {
   });
 }
 
-IN_PROC_BROWSER_TEST_P(AssistantBrowserTest,
+IN_PROC_BROWSER_TEST_F(AssistantBrowserTest,
                        ShouldDisplayTextResponseWithTwoContiniousQueries) {
   tester()->StartAssistantAndWaitForReady();
 
@@ -213,7 +202,7 @@ IN_PROC_BROWSER_TEST_P(AssistantBrowserTest,
   });
 }
 
-IN_PROC_BROWSER_TEST_P(AssistantBrowserTest, ShouldDisplayCardResponse) {
+IN_PROC_BROWSER_TEST_F(AssistantBrowserTest, ShouldDisplayCardResponse) {
   tester()->StartAssistantAndWaitForReady();
 
   ShowAssistantUi();
@@ -224,7 +213,7 @@ IN_PROC_BROWSER_TEST_P(AssistantBrowserTest, ShouldDisplayCardResponse) {
   tester()->ExpectCardResponse("Mount Everest");
 }
 
-IN_PROC_BROWSER_TEST_P(AssistantBrowserTest, ShouldTurnUpVolume) {
+IN_PROC_BROWSER_TEST_F(AssistantBrowserTest, ShouldTurnUpVolume) {
   tester()->StartAssistantAndWaitForReady();
 
   ShowAssistantUi();
@@ -246,7 +235,7 @@ IN_PROC_BROWSER_TEST_P(AssistantBrowserTest, ShouldTurnUpVolume) {
                          cras));
 }
 
-IN_PROC_BROWSER_TEST_P(AssistantBrowserTest, ShouldTurnDownVolume) {
+IN_PROC_BROWSER_TEST_F(AssistantBrowserTest, ShouldTurnDownVolume) {
   tester()->StartAssistantAndWaitForReady();
 
   ShowAssistantUi();
@@ -268,7 +257,7 @@ IN_PROC_BROWSER_TEST_P(AssistantBrowserTest, ShouldTurnDownVolume) {
                          cras));
 }
 
-IN_PROC_BROWSER_TEST_P(AssistantBrowserTest, ShouldTurnUpBrightness) {
+IN_PROC_BROWSER_TEST_F(AssistantBrowserTest, ShouldTurnUpBrightness) {
   tester()->StartAssistantAndWaitForReady();
 
   ShowAssistantUi();
@@ -282,7 +271,7 @@ IN_PROC_BROWSER_TEST_P(AssistantBrowserTest, ShouldTurnUpBrightness) {
   ExpectBrightnessUp();
 }
 
-IN_PROC_BROWSER_TEST_P(AssistantBrowserTest, ShouldTurnDownBrightness) {
+IN_PROC_BROWSER_TEST_F(AssistantBrowserTest, ShouldTurnDownBrightness) {
   tester()->StartAssistantAndWaitForReady();
 
   ShowAssistantUi();
@@ -296,7 +285,7 @@ IN_PROC_BROWSER_TEST_P(AssistantBrowserTest, ShouldTurnDownBrightness) {
   ExpectBrightnessDown();
 }
 
-IN_PROC_BROWSER_TEST_P(AssistantBrowserTest,
+IN_PROC_BROWSER_TEST_F(AssistantBrowserTest,
                        ShouldPuntWhenChangingUnsupportedSetting) {
   tester()->StartAssistantAndWaitForReady();
 
@@ -310,7 +299,7 @@ IN_PROC_BROWSER_TEST_P(AssistantBrowserTest,
 }
 
 // TODO(crbug.com/1112278): Disabled because it's flaky.
-IN_PROC_BROWSER_TEST_P(AssistantBrowserTest,
+IN_PROC_BROWSER_TEST_F(AssistantBrowserTest,
                        DISABLED_ShouldShowSingleErrorOnNetworkDown) {
   tester()->StartAssistantAndWaitForReady();
 
@@ -335,9 +324,5 @@ IN_PROC_BROWSER_TEST_P(AssistantBrowserTest,
   // the interaction.
   CloseAssistantUi();
 }
-
-INSTANTIATE_TEST_SUITE_P(/* no label */,
-                         AssistantBrowserTest,
-                         /*values=*/testing::Bool());
 
 }  // namespace ash::assistant
