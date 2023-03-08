@@ -162,6 +162,15 @@ class BackForwardCacheMetrics
     kMaxValue = kServedFromBackForwardCache,
   };
 
+  // Please keep in sync with BackForwardCachePageWithFormStorable
+  // in tools/metrics/histograms/enums.xml. These values should not be
+  // renumbered.
+  enum class PageWithFormStorable {
+    kPageSeen = 0,
+    kPageStored = 1,
+    kMaxValue = kPageStored,
+  };
+
   // Gets the metrics object for a committed navigation.
   // Note that this object will not be used if the entry we are navigating to
   // already has the BackForwardCacheMetrics object (which happens for history
@@ -247,6 +256,13 @@ class BackForwardCacheMetrics
   // kBrowsingInstanceNotSwapped).
   void UpdateNotRestoredReasonsForNavigation(NavigationRequest* navigation);
 
+  // Used to specify whether any document within the page that this
+  // BackForwardCacheMetrics is associated with has any form data.
+  void SetHadFormDataAssociated(bool had_form_data_associated) {
+    had_form_data_associated_ = had_form_data_associated;
+  }
+  bool had_form_data_associated() const { return had_form_data_associated_; }
+
   // Exported for testing.
   // The DisabledReason's source and id combined to give a unique uint64.
   CONTENT_EXPORT static uint64_t MetricValue(BackForwardCache::DisabledReason);
@@ -315,6 +331,13 @@ class BackForwardCacheMetrics
   // These values are updated only for cross-document main frame navigations.
   bool previous_navigation_is_history_ = false;
   bool previous_navigation_is_served_from_bfcache_ = false;
+
+  // Whether any document within the page that this BackForwardCacheMetrics
+  // associated with has any form data. This state is not persisted and only
+  // set in Android Custom tabs for now.
+  // TODO(crbug.com/1403292): Set this boolean for all platforms or gated with
+  // android build flag.
+  bool had_form_data_associated_ = false;
 
   // ====== Post-navigation reuse boundary ========
   // The variables above these are kept after we finished

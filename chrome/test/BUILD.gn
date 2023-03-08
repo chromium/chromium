@@ -941,6 +941,7 @@ if (is_android) {
 
     sources = [
       "../browser/android/customtabs/custom_tabs_browsertest.cc",
+      "../browser/android/customtabs/tab_interaction_recorder_browsertest.cc",
       "../browser/android/historical_tab_saver_browsertest.cc",
       "../browser/android/webapk/webapk_icon_hasher_browsertest.cc",
       "../browser/browsing_data/access_context_audit_browsertest.cc",
@@ -999,6 +1000,8 @@ if (is_android) {
     ]
 
     deps += [
+      "//components/autofill/content/browser:test_support",
+      "//components/back_forward_cache:back_forward_cache",
       "//components/browsing_data/core:core",
       "//components/enterprise:enterprise",
       "//components/enterprise:test_support",

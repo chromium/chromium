@@ -17,6 +17,7 @@
 
 namespace content {
 
+class Page;
 class RenderFrameHost;
 
 // Public API for the BackForwardCache.
@@ -111,6 +112,13 @@ class CONTENT_EXPORT BackForwardCache {
       GlobalRenderFrameHostId id,
       DisabledReason reason,
       absl::optional<ukm::SourceId> source_id = absl::nullopt);
+
+  // Helper function to be used when the input |page| has seen any form data
+  // associated. This state will be set on the BackForwardCacheMetrics
+  // associated with the main frame, is not persisted across session restores,
+  // and only set in Android Custom tabs for now.
+  // TODO(crbug.com/1403292): Set this boolean for all platforms.
+  static void SetHadFormDataAssociated(Page& page);
 
   // List of reasons the BackForwardCache was disabled for a specific test. If a
   // test needs to be disabled for a reason not covered below, please add to

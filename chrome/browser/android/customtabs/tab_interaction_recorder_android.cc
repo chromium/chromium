@@ -15,8 +15,10 @@
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/autofill_manager.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -69,6 +71,43 @@ void AutofillObserverImpl::OnTextFieldDidChange(autofill::AutofillManager&) {
 
 void AutofillObserverImpl::OnTextFieldDidScroll(autofill::AutofillManager&) {
   OnFormInteraction();
+}
+
+void AutofillObserverImpl::OnAfterFormsSeen(
+    AutofillManager& manager,
+    base::span<const autofill::FormGlobalId> forms) {
+  RenderFrameHost* rfh = RenderFrameHost::FromID(global_id_);
+  // Only mark has form associated data for the RFH observed. This is to
+  // metigate the fact that AutofillManager will dispatch |OnAfterFormsSeen| to
+  // *all* observers regardless where the RFH the observer lives in has a form.
+  if (!rfh) {
+    return;
+  }
+
+  // Check whether the form seen lives in the observed RFH.
+  bool forms_in_rfh = false;
+  for (auto form_id : forms) {
+    if (form_id.frame_token ==
+        autofill::LocalFrameToken(rfh->GetFrameToken().value())) {
+      forms_in_rfh = true;
+      break;
+    }
+  }
+  if (!forms_in_rfh) {
+    return;
+  }
+
+  // Set the had form data associated value in the page's
+  // BackForwardCacheMetrics. Note that this means that if |rfh| is a subframe
+  // it's possible that the page will still be marked as having a form data
+  // associated with it even though |rfh| had navigated to another document and
+  // there is no longer any document with forms in the page.
+  content::BackForwardCache::SetHadFormDataAssociated(rfh->GetPage());
+
+  // Create the form interaction user data meaning the page has seen a form
+  // attached.
+  FormInteractionData::GetOrCreateForCurrentDocument(
+      rfh->GetOutermostMainFrame());
 }
 
 void AutofillObserverImpl::Invalidate() {
