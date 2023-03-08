@@ -110,7 +110,8 @@ TrainingDataCollectorImpl::TrainingDataCollectorImpl(
       configs_(configs),
       clock_(clock),
       result_prefs_(std::make_unique<SegmentationResultPrefs>(profile_prefs)),
-      training_cache_(std::make_unique<TrainingDataCache>()),
+      training_cache_(std::make_unique<TrainingDataCache>(
+          storage_service->segment_info_database())),
       default_model_manager_(storage_service->default_model_manager()) {}
 
 TrainingDataCollectorImpl::~TrainingDataCollectorImpl() {
@@ -427,8 +428,17 @@ void TrainingDataCollectorImpl::OnGetTrainingTensorsAtDecisionTime(
     const ModelProvider::Request& input_tensors,
     const ModelProvider::Response& output_tensors) {
   // Store inputs to cache.
-  training_cache_->StoreInputs(segment_info.segment_id(), request_id,
-                               training_request.prediction_time, input_tensors);
+  proto::TrainingData training_data;
+  for (const auto& input : input_tensors) {
+    training_data.add_inputs(input);
+  }
+  training_data.set_decision_timestamp(
+      training_request.prediction_time.ToDeltaSinceWindowsEpoch()
+          .InMicroseconds());
+  training_data.set_request_id(request_id.GetUnsafeValue());
+  training_cache_->StoreInputs(segment_info.segment_id(),
+                               std::move(training_data),
+                               /*save_to_db=*/false);
 
   // Set up delayed output recordings based on time delay triggers defined
   // in model metadata.
@@ -452,10 +462,16 @@ void TrainingDataCollectorImpl::OnObservationTrigger(
     return;
 
   // Retrieve input tensor from cache.
-  absl::optional<proto::TrainingData> input =
-      training_cache_->GetInputsAndDelete(segment_info.segment_id(),
-                                          request_id);
+  training_cache_->GetInputsAndDelete(
+      segment_info.segment_id(), request_id,
+      base::BindOnce(&TrainingDataCollectorImpl::OnGetStoredTrainingData,
+                     weak_ptr_factory_.GetWeakPtr(), param, segment_info));
+}
 
+void TrainingDataCollectorImpl::OnGetStoredTrainingData(
+    const absl::optional<ImmediaCollectionParam>& param,
+    const proto::SegmentInfo& segment_info,
+    absl::optional<proto::TrainingData> input) {
   if (!input.has_value())
     return;
 
@@ -473,14 +489,13 @@ void TrainingDataCollectorImpl::OnObservationTrigger(
       /*process_option=*/FeatureListQueryProcessor::ProcessOption::kOutputsOnly,
       base::BindOnce(
           &TrainingDataCollectorImpl::OnGetOutputsOnObservationTrigger,
-          weak_ptr_factory_.GetWeakPtr(), param, request_id, segment_info,
+          weak_ptr_factory_.GetWeakPtr(), param, segment_info,
           ModelProvider::Response(input.value().inputs().begin(),
                                   input.value().inputs().end())));
 }
 
 void TrainingDataCollectorImpl::OnGetOutputsOnObservationTrigger(
     const absl::optional<ImmediaCollectionParam>& param,
-    TrainingRequestId request_id,
     const proto::SegmentInfo& segment_info,
     const ModelProvider::Request& cached_input_tensors,
     bool has_error,

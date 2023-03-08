@@ -84,9 +84,13 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
       const ModelProvider::Request& input_tensors,
       const ModelProvider::Response& output_tensors);
 
+  void OnGetStoredTrainingData(
+      const absl::optional<ImmediaCollectionParam>& param,
+      const proto::SegmentInfo& segment_info,
+      absl::optional<proto::TrainingData> input);
+
   void OnGetOutputsOnObservationTrigger(
       const absl::optional<ImmediaCollectionParam>& param,
-      TrainingRequestId request_id,
       const proto::SegmentInfo& segment_info,
       const ModelProvider::Request& cached_input_tensors,
       bool has_error,

@@ -36,6 +36,13 @@ class TestSegmentInfoDatabase : public SegmentInfoDatabase {
   void SaveSegmentResult(SegmentId segment_id,
                          absl::optional<proto::PredictionResult> result,
                          SuccessCallback callback) override;
+  void SaveTrainingData(SegmentId segment_id,
+                        const proto::TrainingData& data,
+                        SuccessCallback callback) override;
+  void GetTrainingData(SegmentId segment_id,
+                       TrainingRequestId request_id,
+                       bool delete_from_db,
+                       TrainingDataCallback callback) override;
 
   // Test helper methods.
   void AddUserActionFeature(SegmentId segment_id,
