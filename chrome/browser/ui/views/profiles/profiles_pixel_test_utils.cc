@@ -64,12 +64,13 @@ void SetUpPixelTestCommandLine(
     command_line->AppendSwitch(switches::kForceDarkMode);
   }
   if (params.use_right_to_left_language) {
-    command_line->AppendSwitchASCII(switches::kLang, "ar");
+    const std::string language = "ar-XB";
+    command_line->AppendSwitchASCII(switches::kLang, language);
 
     // On Linux & Lacros the command line switch has no effect, we need to use
     // environment variables to change the language.
     env_variables = std::make_unique<base::ScopedEnvironmentVariableOverride>(
-        "LANGUAGE", "ar");
+        "LANGUAGE", language);
   }
 }
 
