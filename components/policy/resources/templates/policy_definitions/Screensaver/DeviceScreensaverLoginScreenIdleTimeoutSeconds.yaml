@@ -1,10 +1,10 @@
-caption: Device screensaver idle timeout.
+caption: Device screensaver login screen idle timeout.
 desc: |-
-  Configures the time in seconds that the device will wait idle before showing the screensaver for the sign-in screen.
+  Configures the time in seconds that the device will wait idle before showing the screensaver for the login screen.
 
   Valid values range from 1 second to 9999 seconds. Leaving the policy unset means <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> uses the default value of 7 seconds.
 
-  This policy will not have any effect when the <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME">DeviceScreensaverEnabled</ph> policy is set to false.
+  This policy will not have any effect when the <ph name="DEVICE_SCREENSAVER_LOGIN_SCREEN_ENABLED_POLICY_NAME">DeviceScreensaverLoginScreenEnabled</ph> policy is set to false.
 
 device_only: true
 default: 7

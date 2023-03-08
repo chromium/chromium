@@ -22306,28 +22306,28 @@
       }
     ]
   },
-  "ScreensaverEnabled" : {
+  "ScreensaverLockScreenEnabled" : {
     "reason_for_missing_test": "TODO(b/175142676): Feature not yet implemented"
   },
-  "ScreensaverIdleTimeoutSeconds" : {
+  "ScreensaverLockScreenIdleTimeoutSeconds" : {
     "reason_for_missing_test": "TODO(b/175142676): Feature not yet implemented"
   },
-  "ScreensaverImageDisplayIntervalSeconds" : {
+  "ScreensaverLockScreenImageDisplayIntervalSeconds" : {
     "reason_for_missing_test": "TODO(b/175142676): Feature not yet implemented"
   },
-  "ScreensaverImages" : {
+  "ScreensaverLockScreenImages" : {
     "reason_for_missing_test": "TODO(b/175142676): Feature not yet implemented"
   },
-  "DeviceScreensaverEnabled" : {
+  "DeviceScreensaverLoginScreenEnabled" : {
     "reason_for_missing_test": "TODO(b/175142676): Feature not yet implemented"
   },
-  "DeviceScreensaverIdleTimeoutSeconds" : {
+  "DeviceScreensaverLoginScreenIdleTimeoutSeconds" : {
     "reason_for_missing_test": "TODO(b/175142676): Feature not yet implemented"
   },
-  "DeviceScreensaverImageDisplayIntervalSeconds" : {
+  "DeviceScreensaverLoginScreenImageDisplayIntervalSeconds" : {
     "reason_for_missing_test": "TODO(b/175142676): Feature not yet implemented"
   },
-  "DeviceScreensaverImages" : {
+  "DeviceScreensaverLoginScreenImages" : {
     "reason_for_missing_test": "TODO(b/175142676): Feature not yet implemented"
   },
   "MixedContentAutoupgradeEnabled": {
