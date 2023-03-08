@@ -1347,6 +1347,67 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Network.DnsProxy.PlainTextProbe.{Family}.Errors"
+    enum="DnsProxy.QueryResult" expires_after="2023-05-07">
+  <owner>jasongustaman@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Diagnostic metric for ChromeOS DNS proxy that records any errors that occur
+    during DNS probes made by the service. A value will be recorded whenever the
+    probe completes in error.
+  </summary>
+  <token key="Family">
+    <variant name="IPv4"/>
+    <variant name="IPv6"/>
+  </token>
+</histogram>
+
+<histogram name="Network.DnsProxy.PlainTextProbe.{Family}.FailedRetries"
+    units="count" expires_after="2023-05-07">
+  <owner>jasongustaman@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Diagnostic metric for ChromeOS DNS proxy that records number of retries for
+    failing probes. A value will be recorded whenever the probe completes in
+    error.
+  </summary>
+  <token key="Family">
+    <variant name="IPv4"/>
+    <variant name="IPv6"/>
+  </token>
+</histogram>
+
+<histogram name="Network.DnsProxy.PlainTextProbe.{Family}.Results"
+    enum="DnsProxy.QueryResult" expires_after="2023-05-07">
+  <owner>jasongustaman@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Diagnostic metric for ChromeOS DNS proxy that records the results of the DNS
+    probes made by the service. A value will be recorded whenever the probe
+    completes.
+  </summary>
+  <token key="Family">
+    <variant name="IPv4"/>
+    <variant name="IPv6"/>
+  </token>
+</histogram>
+
+<histogram name="Network.DnsProxy.PlainTextProbe.{Family}.ResultsWithRetries"
+    enum="DnsProxy.QueryResult" expires_after="2023-05-07">
+  <owner>jasongustaman@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Diagnostic metric for ChromeOS DNS proxy that records the results of the DNS
+    probes made by the service. A value will be recorded whenever the probe
+    completes. However, on error it is only recorded if it is a consistent
+    error, meaning if it fails even after certain amount of retries.
+  </summary>
+  <token key="Family">
+    <variant name="IPv4"/>
+    <variant name="IPv6"/>
+  </token>
+</histogram>
+
 <histogram name="Network.DnsProxy.Query.Failed{Stage}Duration" units="ms"
     expires_after="2023-05-07">
   <owner>garrick@chromium.org</owner>
