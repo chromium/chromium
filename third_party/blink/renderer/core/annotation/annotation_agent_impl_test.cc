@@ -780,6 +780,10 @@ TEST_F(AnnotationAgentImplTest, ScrollIntoViewCollapsedRange) {
   host.BindToAgent(*agent);
   agent->Attach();
 
+  // Attachment should fail for this collapsed range.
+  EXPECT_FALSE(agent->IsAttached());
+  host.FlushForTesting();
+
   // Ensure calling ScrollIntoView doesn't crash.
   host.agent_->ScrollIntoView();
   host.FlushForTesting();

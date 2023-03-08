@@ -80,8 +80,12 @@ void AnnotationAgentImpl::Attach() {
 }
 
 bool AnnotationAgentImpl::IsAttached() const {
+  // An attached range may have !IsCollapsed but converting to EphemeralRange
+  // results in IsCollapsed. For an example, see
+  // AnnotationAgentImplTest.ScrollIntoViewCollapsedRange.
   return attached_range_ && attached_range_->IsConnected() &&
-         !attached_range_->IsCollapsed();
+         !attached_range_->IsCollapsed() &&
+         !attached_range_->ToEphemeralRange().IsCollapsed();
 }
 
 bool AnnotationAgentImpl::IsBoundForTesting() const {
@@ -128,13 +132,7 @@ void AnnotationAgentImpl::ScrollIntoView() const {
     return;
 
   EphemeralRangeInFlatTree range = attached_range_->ToEphemeralRange();
-
-  // TODO(bokan): This should be checked in IsAttached.
-  bool range_has_nodes = range.Nodes().begin() != range.Nodes().end();
-  if (!range_has_nodes) {
-    return;
-  }
-
+  CHECK(range.Nodes().begin() != range.Nodes().end());
   Node& first_node = *range.Nodes().begin();
 
   Document& document = *owning_container_->GetSupplementable();
