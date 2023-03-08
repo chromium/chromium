@@ -163,6 +163,7 @@
 <translation id="2346474577291266260">Excel·lent (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2364498172489649528">Comprovació superada</translation>
+<translation id="2367335866686097760">Clau del mapatge de teclat</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Envia un informe de suggeriments</translation>
 <translation id="2407209115954268704">Estat de bloqueig de la SIM</translation>
@@ -235,7 +236,9 @@
 <translation id="319101249942218879">La imatge d'avatar ha canviat</translation>
 <translation id="3192947282887913208">Fitxers d'àudio</translation>
 <translation id="3199982728237701504">Alimentador de documents (a dues cares)</translation>
+<translation id="3211671540163313381">Creu direccional del mapatge de teclat</translation>
 <translation id="3226405216343213872">S'estan cercant escàners</translation>
+<translation id="3226657629376379887">Menú d'accions de disseny</translation>
 <translation id="3246869037381808805">Se suprimiran les tasques d'impressió amb una antiguitat superior a 1 dia</translation>
 <translation id="3268178239013324452">Error: porta oberta</translation>
 <translation id="3275506277319227640">Ancora a <ph name="DIRECTION" /></translation>
@@ -803,6 +806,7 @@
 <translation id="8318753676953949627">Cap imatge</translation>
 <translation id="8336739000755212683">Canvia la imatge del compte del dispositiu</translation>
 <translation id="8347227221149377169">Tasques d'impressió</translation>
+<translation id="8351855506390808906">Punt tàctil del mapatge de teclat</translation>
 <translation id="8352772353338965963">Afegiu un compte per a l'inici de sessió múltiple. Es pot accedir a tots el comptes registrats sense contrasenya, de manera que només hauríeu d'utilitzar aquesta funció en comptes de confiança.</translation>
 <translation id="8364946094152050673">Servidors de noms buits</translation>
 <translation id="8372477600026034341">Amfitrions addicionals</translation>
@@ -900,6 +904,7 @@
 <translation id="9138630967333032450">Maj esquerra</translation>
 <translation id="9149391708638971077">Executa la prova de memòria</translation>
 <translation id="9157515863513902090">Ancora al costat més gran</translation>
+<translation id="9161276708550942948">espai</translation>
 <translation id="9173638680043580060">Queda menys d'un minut</translation>
 <translation id="917720651393141712">Prova</translation>
 <translation id="9188992814426075118">El teclat pot coincidir automàticament amb el fons de pantalla</translation>

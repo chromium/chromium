@@ -345,6 +345,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1733064249834771892">tipos de letra</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Tenta poñerte en contacto coa persoa que administra o sistema.</translation>
+<translation id="1736158756193183352"><ph name="BEGIN_LINK" />Inicia sesión<ph name="END_LINK" /> na rede</translation>
 <translation id="1736420071277903564">Ordenador</translation>
 <translation id="1740951997222943430">Introduce un mes de caducidade válido</translation>
 <translation id="1741613555002899862">Debe especificarse e ser unha cadea válida cando DnsOverHttpsMode é <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
@@ -1192,6 +1193,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3949601375789751990">O teu historial de navegación aparece aquí</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Non hai ningún método de pago gardado</translation>
+<translation id="3950574001630941635">Reiniciar titorial</translation>
 <translation id="3950820424414687140">Iniciar sesión</translation>
 <translation id="3958057596965527988">4 x 4 polgadas</translation>
 <translation id="3961148744525529027">A folla do controlador de pagos está medio aberta</translation>

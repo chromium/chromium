@@ -163,6 +163,7 @@
 <translation id="2346474577291266260">Чудовий сигнал (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Продовжити</translation>
 <translation id="2364498172489649528">Виконано</translation>
+<translation id="2367335866686097760">Клавіша для опції "Прив’язка клавіш"</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Надіслати відгук</translation>
 <translation id="2407209115954268704">Статус блокування SIM-карти</translation>
@@ -235,7 +236,9 @@
 <translation id="319101249942218879">Аватар змінено</translation>
 <translation id="3192947282887913208">Аудіофайли</translation>
 <translation id="3199982728237701504">Пристрій автоподачі документів (двосторонній)</translation>
+<translation id="3211671540163313381">Панель керування для опції "Прив’язка клавіш"</translation>
 <translation id="3226405216343213872">Пошук сканерів</translation>
+<translation id="3226657629376379887">Меню дій для макета</translation>
 <translation id="3246869037381808805">Завдання друку, старіші за 1 день, буде вилучено</translation>
 <translation id="3268178239013324452">Не надруковано – відкрито кришку принтера</translation>
 <translation id="3275506277319227640">Закріпити <ph name="DIRECTION" /></translation>
@@ -803,6 +806,7 @@
 <translation id="8318753676953949627">Немає зображень</translation>
 <translation id="8336739000755212683">Змінити зображення облікового запису на пристрої</translation>
 <translation id="8347227221149377169">Завдання друку</translation>
+<translation id="8351855506390808906">Точка дотику для опції "Прив’язка клавіш"</translation>
 <translation id="8352772353338965963">Додайте обліковий запис для паралельного входу. Доступ до всіх облікових записів, у які ви ввійшли, можна отримувати без пароля, тому цю функцію варто використовувати лише з надійними обліковими записами.</translation>
 <translation id="8364946094152050673">Сервери імен порожні</translation>
 <translation id="8372477600026034341">Додаткові хости</translation>
@@ -900,6 +904,7 @@
 <translation id="9138630967333032450">Ліва клавіша Shift</translation>
 <translation id="9149391708638971077">Виконати перевірку пам'яті</translation>
 <translation id="9157515863513902090">Закріпити на більшій половині</translation>
+<translation id="9161276708550942948">пробіл</translation>
 <translation id="9173638680043580060">Залишилося менше хвилини</translation>
 <translation id="917720651393141712">Перевірити</translation>
 <translation id="9188992814426075118">Колір підсвічування клавіатури може автоматично підлаштовуватися до фонового малюнка</translation>

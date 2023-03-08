@@ -163,6 +163,7 @@
 <translation id="2346474577291266260">Sangat baik (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Lanjutkan</translation>
 <translation id="2364498172489649528">Lulus</translation>
+<translation id="2367335866686097760">Tombol konfigurasi tombol</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Kirim Laporan Masukan</translation>
 <translation id="2407209115954268704">Status Kunci SIM</translation>
@@ -235,7 +236,9 @@
 <translation id="319101249942218879">Gambar avatar diubah</translation>
 <translation id="3192947282887913208">File Audio</translation>
 <translation id="3199982728237701504">Pengumpan Dokumen (Dua Sisi)</translation>
+<translation id="3211671540163313381">D-pad konfigurasi tombol</translation>
 <translation id="3226405216343213872">Mencari pemindai</translation>
+<translation id="3226657629376379887">Menu tindakan tata letak</translation>
 <translation id="3246869037381808805">Tugas pencetakan yang sudah lebih dari 1 hari akan dihapus</translation>
 <translation id="3268178239013324452">Gagal - Tutup terbuka</translation>
 <translation id="3275506277319227640">Kaitkan ke <ph name="DIRECTION" /></translation>
@@ -803,6 +806,7 @@
 <translation id="8318753676953949627">Tidak Ada Gambar</translation>
 <translation id="8336739000755212683">Ubah gambar akun perangkat</translation>
 <translation id="8347227221149377169">Pekerjaan cetak</translation>
+<translation id="8351855506390808906">Titik sentuh konfigurasi tombol</translation>
 <translation id="8352772353338965963">Tambahkan akun ke fitur masuk banyak akun. Semua akun yang masuk dapat diakses tanpa menggunakan sandi, sebaiknya hanya gunakan akun ini dengan akun tepercaya.</translation>
 <translation id="8364946094152050673">Server nama kosong</translation>
 <translation id="8372477600026034341">Host tambahan</translation>
@@ -900,6 +904,7 @@
 <translation id="9138630967333032450">Shift kiri</translation>
 <translation id="9149391708638971077">Jalankan pengujian Memori</translation>
 <translation id="9157515863513902090">Kaitkan ke sisi yang lebih besar</translation>
+<translation id="9161276708550942948">spasi</translation>
 <translation id="9173638680043580060">Kurang dari satu menit lagi</translation>
 <translation id="917720651393141712">Uji</translation>
 <translation id="9188992814426075118">Keyboard dapat otomatis menyesuaikan dengan wallpaper Anda</translation>

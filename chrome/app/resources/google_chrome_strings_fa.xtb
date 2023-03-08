@@ -253,6 +253,7 @@
 <translation id="6010556343189461180">‏برای دریافت به‌روزرسانی‌های بعدی Google Chrome، باید macOS نسخه ۱۰.۱۵ یا بالاتر داشته باشید. این رایانه از macOS نسخه ۱۰.۱۴ استفاده می‌کند.</translation>
 <translation id="6022388122721048220">{0,plural, =0{‏Chrome اکنون بسته می‌شود.}=1{‏Chrome تا یک ثانیه دیگر بسته می‌شود.}one{‏Chrome تا # ثانیه دیگر بسته می‌شود.}other{‏Chrome تا # ثانیه دیگر بسته می‌شود.}}</translation>
 <translation id="6022659036123304283">‏Chrome را برای خود اختصاصی کنید</translation>
+<translation id="6025087594896450715">‏Google Chrome تا <ph name="REMAINING_TIME" /> دیگر بازراه‌اندازی خواهد شد</translation>
 <translation id="6040143037577758943">بستن</translation>
 <translation id="6070348360322141662">‏برای امنیت بیشتر، Google Chrome داده‌های شما را رمزگذاری می‌کند</translation>
 <translation id="608006075545470555">افزودن نمایه کاری به این مرورگر</translation>
@@ -270,6 +271,7 @@
 <translation id="6327105987658262776">به‌روزرسانی دردسترس نیست.</translation>
 <translation id="6412673304250309937">‏نشانی‌های وب را با فهرست سایت‌های ناامنی که در Chrome ذخیره شده است مقایسه می‌کند. اگر سایتی تلاش کند گذرواژه شما را به‌سرقت ببرد، یا وقتی فایل مخربی بارگیری می‌کنید، Chrome ممکن است نشانی‌های وب را نیز به همراه بخش‌های کوچکی از محتوای صفحه، به «مرور ایمن» ارسال کند.</translation>
 <translation id="6418662306461808273">‏به نمایه Chrome موجود می‌روید؟</translation>
+<translation id="6493527311031785448">‏Google Chrome در تلاش است <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6506909944137591434">‏Chrome برای ایجاد نقشه سه‌بعدی از محیط اطرافتان به اجازه دوربین نیاز دارد</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="659498884637196217">‏در «مدیر گذرواژه Google» در این دستگاه</translation>

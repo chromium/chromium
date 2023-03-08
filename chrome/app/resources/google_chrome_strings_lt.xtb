@@ -261,6 +261,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="6010556343189461180">Jei norite gauti būsimus „Google Chrome“ naujinius, jums reikės 10.15 ar naujesnės „macOS“ versijos. Šiame kompiuteryje naudojama 10.14 versijos „macOS“.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Dabar „Chrome“ bus uždaryta.}=1{„Chrome“ bus uždaryta po vienos sekundės.}one{„Chrome“ bus uždaryta po # sekundės.}few{„Chrome“ bus uždaryta po # sekundžių.}many{„Chrome“ bus uždaryta po # sekundės.}other{„Chrome“ bus uždaryta po # sekundžių.}}</translation>
 <translation id="6022659036123304283">Suasmeninkite „Chrome“</translation>
+<translation id="6025087594896450715">„Google Chrome“ bus paleista iš naujo po <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Uždaryti</translation>
 <translation id="6070348360322141662">Kad būtų papildomai užtikrintas saugumas, „Google Chrome“ užšifruos duomenis</translation>
 <translation id="608006075545470555">Darbo profilio pridėjimas prie šios naršyklės</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
+<translation id="1347497506789975534">הצגת אמצעי התשלום שנשמרו</translation>
 <translation id="1383876407941801731">חיפוש</translation>
 <translation id="1717486229951421299">רשימת פרטי הכניסה למילוי במגע פתוחה בחצי מגובה המסך.</translation>
 <translation id="207576718733492531">רשימת פרטי הכניסה למילוי במגע סגורה.</translation>
@@ -14,10 +15,12 @@
 <translation id="4694050069269396220">אם הכתובת <ph name="ORIGIN" /> מהימנה מבחינתך, אפשר להשתמש בסיסמה שנשמרה באתר אחר.</translation>
 <translation id="5016175294846053194">הצעות המילוי האוטומטי מוצגות מעל למקלדת</translation>
 <translation id="5441504010984421144">רשימת פרטי הכניסה למילוי במגע פתוחה בגובה המלא של המסך.</translation>
+<translation id="6296921860874265377">הצגת הסיסמאות שנשמרו והאפשרויות של הסיסמאות</translation>
 <translation id="6393156038355142111">הצעת סיסמה חזקה</translation>
 <translation id="6558703547256592471">כדאי לנסות להשתמש בסיסמה ייחודית בכל אתר.</translation>
 <translation id="7029809446516969842">סיסמאות</translation>
 <translation id="7594473730623999723">יש להחליק כדי לראות עוד הצעות</translation>
+<translation id="7873973044507799456">הצגת הכתובות שנשמרו</translation>
 <translation id="7992095260806105436">‏ניתן להשתמש בהצעות המילוי האוטומטי של Chrome</translation>
 <translation id="8507520749471379845">סיסמאות זמינות</translation>
 <translation id="8705308553596171387">ללא סיסמה</translation>

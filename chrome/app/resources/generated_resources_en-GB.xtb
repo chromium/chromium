@@ -213,6 +213,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1178581264944972037">Pause</translation>
 <translation id="117916940443676133">Your security key is not protected with a PIN. To manage sign-in data, first create a PIN.</translation>
 <translation id="1181037720776840403">Remove</translation>
+<translation id="1181366777303791449">on <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1183237619868651138">Can't install <ph name="EXTERNAL_CRX_FILE" /> in local cache.</translation>
 <translation id="1184709369107246085">The application <ph name="APPLICATION_NAME" /> requires a valid <ph name="APPLICATION_NAME" /> URL.</translation>
 <translation id="1185924365081634987">You may also try to <ph name="GUEST_SIGNIN_LINK_START" />browse as guest<ph name="GUEST_SIGNIN_LINK_END" /> to fix this network error.</translation>
@@ -2725,6 +2726,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3378627645871606983">Permissions allowed for Steam apply to all Steam games and apps.</translation>
 <translation id="337920581046691015"><ph name="PRODUCT_NAME" /> will be installed.</translation>
 <translation id="3380365263193509176">Unknown error</translation>
+<translation id="3380831556454930637">The app <ph name="APP_NAME" /> has been configured by your admin to run on OS login</translation>
 <translation id="3382073616108123819">Oops!  The system failed to determine device identifiers for this device.</translation>
 <translation id="3382200254148930874">Stopping supervision...</translation>
 <translation id="338323348408199233">Block traffic without VPN</translation>
@@ -9177,6 +9179,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="922152298093051471">Customise Chrome</translation>
 <translation id="923467487918828349">Show all</translation>
 <translation id="924818813611903184">Manage languages in Chrome OS settings</translation>
+<translation id="925270020047573546">Casting desktop audio is not supported on this device.</translation>
 <translation id="929117907539171075">Offline data in installed app will also be cleared</translation>
 <translation id="930268624053534560">Detailed Timestamps</translation>
 <translation id="930893132043726269">Currently roaming</translation>

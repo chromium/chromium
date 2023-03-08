@@ -260,6 +260,7 @@
 <translation id="6010556343189461180">Каб атрымліваць наступныя абнаўленні Google Chrome, вам патрэбная версія macOS 10.15 ці пазнейшая. На гэтым камп'ютары выкарыстоўваецца macOS 10.14.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Браўзер Chrome будзе зараз закрыты.}=1{Браўзер Chrome будзе закрыты праз 1 секунду.}one{Браўзер Chrome будзе закрыты праз # секунду.}few{Браўзер Chrome будзе закрыты праз # секунды.}many{Браўзер Chrome будзе закрыты праз # секунд.}other{Браўзер Chrome будзе закрыты праз # секунды.}}</translation>
 <translation id="6022659036123304283">Наладзьце Chrome пад сябе</translation>
+<translation id="6025087594896450715">Google Chrome перазапусціцца праз <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Закрыць</translation>
 <translation id="6070348360322141662">Для дадатковай бяспекі Google Chrome будзе шыфраваць вашы даныя</translation>
 <translation id="608006075545470555">Дадаванне працоўнага профілю ў гэты браўзер</translation>

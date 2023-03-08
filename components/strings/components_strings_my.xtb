@@ -345,6 +345,7 @@
 <translation id="1733064249834771892">ဖောင့်များ</translation>
 <translation id="1734864079702812349">AmEx</translation>
 <translation id="1734878702283171397">စနစ်စီမံခန့်ခွဲသူကို ဆက်သွယ်ကြည့်ပါ။</translation>
+<translation id="1736158756193183352">ကွန်ရက်သို့ <ph name="BEGIN_LINK" />လက်မှတ်ထိုးဝင်ပါ<ph name="END_LINK" /></translation>
 <translation id="1736420071277903564">ကွန်ပျူတာ</translation>
 <translation id="1740951997222943430">မှန်ကန်သည့် ကုန်ဆုံးမည့်လကို ထည့်ပါ</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode က <ph name="SECURE_DNS_MODE_SECURE" /> ဖြစ်သောအခါ သတ်မှတ်ထားပြီး မှန်ကန်သောလိုင်း ဖြစ်ရမည်။</translation>
@@ -1192,6 +1193,7 @@
 <translation id="3949601375789751990">သင်ဖွင့်ကြည့်ထားသော မှတ်တမ်းသည် ဤနေရာတွင် ပေါ်ပါသည်</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">သိမ်းထားသော ငွေပေးချေမှု နည်းလမ်းများ မရှိပါ</translation>
+<translation id="3950574001630941635">ရှင်းလင်းပို့ချချက် ပြန်စရန်</translation>
 <translation id="3950820424414687140">ဝင်ရောက်</translation>
 <translation id="3958057596965527988">၄ x ၄ လက်မ</translation>
 <translation id="3961148744525529027">ငွေပေးချေမှု ကိုင်တွယ်သည့်စနစ်စာမျက်နှာကို တစ်ဝက်ဖွင့်ထားသည်</translation>

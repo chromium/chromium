@@ -20,6 +20,7 @@
 <translation id="2339201583852607431">Пароль будет сохранен в вашем аккаунте Google (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">Chrome сообщает геоданные только тем сайтам, которые вы разрешили.</translation>
 <translation id="2347208864470321755">Когда эта функция включена, Chrome будет предлагать перевести страницы с помощью Переводчика Google. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
+<translation id="2414068465746584414">В настройках устройства откройте раздел "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" и выберите Chrome</translation>
 <translation id="2427791862912929107">В Chrome можно устанавливать параметры обработки данных в интернете и скорости загрузки веб-страниц.
 <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="2444854139071078915">Чтобы легко вводить сохраненные пароли в других приложениях, укажите значение Chrome для параметра "Автозаполнение".</translation>

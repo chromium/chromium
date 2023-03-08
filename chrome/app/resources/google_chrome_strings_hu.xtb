@@ -253,6 +253,7 @@
 <translation id="6010556343189461180">Ha a jövőben Google Chrome-frissítéseket szeretne kapni, akkor a macOS 10.15-ös vagy újabb verziójára lesz szüksége. Ezen a számítógépen a macOS 10.14 fut.</translation>
 <translation id="6022388122721048220">{0,plural, =0{A Chrome most bezárul.}=1{A Chrome 1 másodperc múlva bezárul.}other{A Chrome # másodperc múlva bezárul.}}</translation>
 <translation id="6022659036123304283">Tegye személyessé a Chrome-ot</translation>
+<translation id="6025087594896450715">A Google Chrome újraindul <ph name="REMAINING_TIME" /> múlva</translation>
 <translation id="6040143037577758943">Bezárás</translation>
 <translation id="6070348360322141662">A nagyobb biztonság érdekében a Google Chrome titkosítja az Ön adatait</translation>
 <translation id="608006075545470555">Munkaprofil hozzáadása a böngészőhöz</translation>

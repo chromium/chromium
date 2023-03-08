@@ -253,6 +253,7 @@
 <translation id="6010556343189461180">Sinulla on oltava macOS 10.15 tai uudempi, jotta saat tulevia Google Chromen päivityksiä. Tällä tietokoneella on macOS 10.14.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome suljetaan nyt.}=1{Chrome suljetaan 1 sekunnin kuluttua.}other{Chrome suljetaan # sekunnin kuluttua.}}</translation>
 <translation id="6022659036123304283">Tee Chromesta näköisesi</translation>
+<translation id="6025087594896450715">Google Chrome käynnistyy uudelleen, kun <ph name="REMAINING_TIME" /> on kulunut</translation>
 <translation id="6040143037577758943">Sulje</translation>
 <translation id="6070348360322141662">Google Chrome lisää suojausta salaamalla tietosi</translation>
 <translation id="608006075545470555">Lisää työprofiili tähän selaimeen</translation>

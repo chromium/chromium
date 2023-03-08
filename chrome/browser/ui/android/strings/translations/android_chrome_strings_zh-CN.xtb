@@ -42,6 +42,7 @@
 <translation id="1204692632633423444">Chrome 操作按钮：<ph name="ACTION" /></translation>
 <translation id="1206892813135768548">复制链接文字</translation>
 <translation id="1209206284964581585">暂时隐藏</translation>
+<translation id="1226851825267005295">使用 Google 帐号登录 Chrome 后，您可以管理自己的偏好设置。</translation>
 <translation id="1227058898775614466">导航历史记录</translation>
 <translation id="1231733316453485619">开启同步功能？</translation>
 <translation id="123724288017357924">重新加载当前网页（忽略缓存的内容）</translation>
@@ -349,7 +350,7 @@
 <translation id="2951071800649516099">将网页添加到阅读清单以供日后阅读</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> 个未读页面}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> 个未读页面}}</translation>
 <translation id="2961210776189273067">称谓</translation>
-<translation id="296370266220139811">节省时间并减少输入操作</translation>
+<translation id="296370266220139811">节省时间，打字更少</translation>
 <translation id="2979025552038692506">所选的无痕模式标签页</translation>
 <translation id="2979639724566107830">在新窗口中打开</translation>
 <translation id="2981364137500752533">您最多只能打开 5 个窗口。</translation>
@@ -874,7 +875,7 @@
 <translation id="5813552293717797987">此浏览器由 <ph name="PARENT_NAME_1" /> 和 <ph name="PARENT_NAME_2" /> 管理。</translation>
 <translation id="5814131985548525293">在此处输入内容或点按麦克风图标即可开始搜索</translation>
 <translation id="5814749351757353073">随时掌握您最喜爱的网站的最新动态</translation>
-<translation id="5822875253699806474">如果想快速重新访问浏览过的网站，请同步您的标签页和历史记录</translation>
+<translation id="5822875253699806474">如果想快速访问浏览过的网站，请同步您的标签页和历史记录</translation>
 <translation id="583281660410589416">未知</translation>
 <translation id="5833984609253377421">分享链接</translation>
 <translation id="5834764604050996579">如需扫描二维码，请允许 Chrome 使用您的摄像头</translation>
@@ -1445,7 +1446,7 @@
 <translation id="8712637175834984815">知道了</translation>
 <translation id="8725066075913043281">重试</translation>
 <translation id="8746155870861185046">分享突出显示的内容</translation>
-<translation id="874726034427945498">如果想于在地址栏中输入内容时获得更好的建议，请同步您的标签页和历史记录</translation>
+<translation id="874726034427945498">为了在地址栏中获得更好的建议，请同步您的标签页和历史记录</translation>
 <translation id="8748850008226585750">内容已隐藏</translation>
 <translation id="8756969031206844760">要更新密码吗？</translation>
 <translation id="8765470054473112089">当您在地址栏或搜索框中输入内容时，Chrome 会将您输入的内容发送给默认搜索引擎，以便为您提供更好的建议。在无痕模式下，此设置处于关闭状态。</translation>

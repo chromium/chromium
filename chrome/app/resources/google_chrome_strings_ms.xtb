@@ -253,6 +253,7 @@
 <translation id="6010556343189461180">Untuk mendapatkan kemaskinian Google Chrome yang akan datang, anda memerlukan macOS 10.15 atau yang lebih baharu. Komputer ini menggunakan macOS 10.14.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome akan ditutup sekarang.}=1{Chrome akan ditutup dalam masa 1 saat.}other{Chrome akan ditutup dalam masa # saat.}}</translation>
 <translation id="6022659036123304283">Peribadikan Chrome anda</translation>
+<translation id="6025087594896450715">Google Chrome akan dimulakan semula dalam masa <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Tutup</translation>
 <translation id="6070348360322141662">Untuk keselamatan tambahan, Google Chrome akan menyulitkan data anda</translation>
 <translation id="608006075545470555">Tambahkan Profil Kerja pada penyemak imbas ini</translation>

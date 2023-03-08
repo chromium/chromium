@@ -260,6 +260,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6010556343189461180">Vous devez disposer de macOS 10.15 ou d'une version ultérieure pour recevoir les futures mises à jour de Google Chrome. Cet ordinateur fonctionne sous macOS 10.14.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome va maintenant se fermer.}=1{Chrome se fermera dans 1 seconde.}one{Chrome se fermera dans # seconde.}other{Chrome se fermera dans # secondes.}}</translation>
 <translation id="6022659036123304283">Appropriez-vous Chrome</translation>
+<translation id="6025087594896450715">Google Chrome redémarrera dans <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Fermer</translation>
 <translation id="6070348360322141662">Pour une sécurité accrue, Google Chrome va crypter vos données</translation>
 <translation id="608006075545470555">Ajouter le profil professionnel à ce navigateur</translation>

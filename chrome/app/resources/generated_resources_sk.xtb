@@ -1627,6 +1627,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2383825469508278924">Zmena priradenie klávesov klávesnice, funkčných klávesov a ďalšie možnosti</translation>
 <translation id="2387052489799050037">Prechod na domovskú obrazovku</translation>
 <translation id="2387602571959163792"><ph name="DESK_NAME" /> (aktuálne)</translation>
+<translation id="2390226379317200116">Pridajte poznámku alebo pripomienku k tejto stránke a vráťte sa sem neskôr.</translation>
 <translation id="2390347491606624519">K proxy serveru sa nedá pripojiť, prihláste sa znova</translation>
 <translation id="2390782873446084770">Synchronizácia Wi-Fi</translation>
 <translation id="2391419135980381625">Štandardné písmo</translation>
@@ -2318,6 +2319,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3003967365858406397">Telefón <ph name="PHONE_NAME" /> vytvorí súkromné pripojenie Wi‑Fi.</translation>
 <translation id="3005574332301273731">Nezobraziť</translation>
 <translation id="3006881078666935414">Žiadne údaje o používaní</translation>
+<translation id="3007410324195400631">Pridajte poznámky o tejto stránke</translation>
 <translation id="3007771295016901659">Duplikovať kartu</translation>
 <translation id="3008232374986381779">Spustite nástroje aj editory pre systém Linux a súbory IDE vo svojom zariadení <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Obnoviť povolenia</translation>
@@ -3177,6 +3179,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3790417903123637354">Vyskytol sa problém. Skúste to neskôr.</translation>
 <translation id="379082410132524484">Platnosť vašej karty vypršala</translation>
 <translation id="3792973596468118484">Rozšírenia: <ph name="NUM_EXTENSIONS" /></translation>
+<translation id="3794792524918736965">Zapnite Windows Hello</translation>
 <translation id="379500251094592809">Ak chcete používať Zdieľanie nablízku, obe zariadenia musia byť odomknuté, blízko seba a mať zapnuté rozhranie Bluetooth. Ak zdieľate s Chromebookom, ktorý nie je vo vašich kontaktoch, uistite sa, či má zapnutú viditeľnosť nablízku (otvorte stavovú oblasť výberom času a potom zapnite Viditeľnosť nablízku).<ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">Vypnuté</translation>
 <translation id="3795766489237825963">Prehrať animácie</translation>
@@ -6444,6 +6447,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="6790497603648687708">Rozšírenie <ph name="EXTENSION_NAME" /> bolo pridané vzdialene</translation>
 <translation id="6790820461102226165">Pridať osobu...</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
+<translation id="679486139907144816">Ak sa chcete na tomto webe prihlásiť prístupovým kľúčom, musíte v nastaveniach zapnúť Windows Hello. Potom sa vráťte na tento web a skúste to znova.</translation>
 <translation id="6795371939514004514">Automatické prehľadávanie vám umožňuje prechádzať po položkách na obrazovke automaticky. Po zvýraznení aktivujte položku stlačením tlačidla Vybrať.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6796509790850723820">Vykresliť</translation>
@@ -7728,6 +7732,7 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="7940265372707990269">Zoradiť podľa: <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Pripravenosť na zdieľanie dátového pripojenia:</translation>
 <translation id="7942349550061667556">Červená</translation>
+<translation id="7943349879009553083">Nedostupné v režime pre hostí</translation>
 <translation id="7943368935008348579">Stiahnuť súbory PDF</translation>
 <translation id="7943837619101191061">Pridať umiestnenie...</translation>
 <translation id="7944772052836377867">Synchronizácia potrebuje overiť vašu totožnosť</translation>
@@ -8366,6 +8371,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8513108775083588393">Aut. otáčanie</translation>
 <translation id="8514746246728959655">Vyskúšajte iný bezpečnostný kľúč</translation>
 <translation id="8514955299594277296">Nepovoliť webom ukladať dáta v zariadení (neodporúča sa)</translation>
+<translation id="8517759303731677493">Upraviť…</translation>
 <translation id="8519895319663397036">Heslá sa nedajú importovať. Súbor musí byť menší než 150 kB.</translation>
 <translation id="8523493869875972733">Zachovať zmeny</translation>
 <translation id="8523849605371521713">Pridané pravidlom</translation>
@@ -8897,6 +8903,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8993945059918628059">Dotknite sa senzora odtlačkov prstov. Údaje odtlačkov prstov sa bezpečne uložia a nikdy neopustia vaše zariadenie (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="899403249577094719">Netscape – základná webová adresa certifikátu</translation>
 <translation id="899657321862108550">Váš Chrome, všade</translation>
+<translation id="899671834467367922">Ak chcete zobraziť túto stránku a robiť si na nej poznámky, prihláste sa ako iný používateľ.</translation>
 <translation id="8998078711690114234">Tento typ súboru môže byť nebezpečný. Uložte si ho, iba ak je pre vás web <ph name="ORIGIN" /> dôveryhodný.</translation>
 <translation id="8999560016882908256">Chyba syntaxe sekcie: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">Dotknite sa senzora odtlačkov prstov na pravej strane zariadenia (<ph name="DEVICE_TYPE" />). Údaje odtlačkov prstov sa bezpečne uložia a nikdy neopustia vaše zariadenie (<ph name="DEVICE_TYPE" />).</translation>

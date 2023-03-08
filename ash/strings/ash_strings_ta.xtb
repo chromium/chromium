@@ -125,9 +125,11 @@
 <translation id="1550406609415860283">கிடைக்கும் சாதனங்கள்</translation>
 <translation id="1550523713251050646">மேலும் விருப்பங்களுக்குக் கிளிக் செய்யவும்</translation>
 <translation id="1555130319947370107">நீலம்</translation>
+<translation id="1576623706766186887">மேக்னிஃபயர் இயக்கப்பட்டிருக்கும்போது சிறிதாக்கு</translation>
 <translation id="1589090746204042747">இந்த அமர்விலுள்ள உங்கள் அனைத்துச் செயல்பாடுகளையும் அணுகுதல்</translation>
 <translation id="1610778689852195798">"செயல்தவிர்"</translation>
 <translation id="1611993646327628135">இயக்கு</translation>
+<translation id="1618835956950524778">ஷெல்ஃப்பில் ‘தொடக்கி’ பட்டனை ஹைலைட் செய்</translation>
 <translation id="1620510694547887537">கேமரா</translation>
 <translation id="1632985212731562677">அமைப்புகள் &gt; அணுகலம்சங்கள் என்பதற்குச் சென்று சுவிட்ச் அணுகலை முடக்கலாம்.</translation>
 <translation id="163517899691012366">தொந்தரவு செய்ய வேண்டாம் அம்சம் இயக்கப்பட்டிருக்கும்போது அறிவிப்புகள் ஒலியடக்கப்படும்</translation>
@@ -149,6 +151,7 @@
 <translation id="1715293566947629045">சுயவிவரத்தை முடக்குகிறது. சில நிமிடங்கள் காத்திருக்கவும்.</translation>
 <translation id="1719094688023114093">'உடனடி வசனம்' இயக்கப்பட்டது.</translation>
 <translation id="1720011244392820496">வைஃபை ஒத்திசைவை இயக்குங்கள்</translation>
+<translation id="1731815243805539470">முந்தைய பயனருக்கு மாற்று</translation>
 <translation id="1733996486177697563">டார்க், லைட் ஆகிய தீம்களுக்கு இடையே மாறுதல். டெஸ்க்டாப்பைத் தொட்டுப் பிடித்து 'வால்பேப்பர் &amp; ஸ்டைல்' என்பதைத் தேர்ந்தெடுக்கவும்.</translation>
 <translation id="1736898441010944794">புளூடூத் சாதனங்களுக்கு "<ph name="NAME" />" காட்டப்படும்.</translation>
 <translation id="174102739345480129">மார்க்கர் முடக்கத்தில் உள்ளது.</translation>
@@ -194,6 +197,7 @@
 <translation id="1919743966458266018">செயல் நிர்வாகியைத் திறப்பதற்கான ஷார்ட்கட் மாற்றப்பட்டது. <ph name="OLD_SHORTCUT" /> க்குப் பதிலாக <ph name="NEW_SHORTCUT" /> ஐப் பயன்படுத்தவும்.</translation>
 <translation id="1923539912171292317">தன்னியக்க கிளிக்குகள்</translation>
 <translation id="1928739107511554905">புதுப்பிப்பைப் பெற, டச்ஸ்கிரீனைப் பயன்படுத்தி, கீபோர்டு இணைக்கப்பட்ட உங்கள் Chromebookஐ மீண்டும் தொடங்கவும்.</translation>
+<translation id="1948405482892809935">அடுத்த பயனருக்கு மாற்று</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1954252331066828794">ஸ்கிரீன் ரெக்கார்டிங் முடிந்தது</translation>
 <translation id="1957958912175573503">எனது மொழியை அமை</translation>
@@ -306,6 +310,7 @@
 <translation id="2596078834055697711">சாளரத்தை ஸ்கிரீன்ஷாட் எடுக்கும்</translation>
 <translation id="2598725286293895280">டெஸ்க்கில் ஆதரிக்கப்படாத ஆப்ஸ் உள்ளன</translation>
 <translation id="2607678425161541573">ஆன்லைன் உள்நுழைவு அவசியம்</translation>
+<translation id="2612614436418177118">ஆப்ஸ் கட்டக் காட்சியில் ஆப்ஸ் ஐகானை நகர்த்தும்</translation>
 <translation id="2620016719323068571">உங்கள் <ph name="CATEGORY" />, ஃபைல்கள், ஆப்ஸ் மற்றும் பலவற்றைத் தேடுக...</translation>
 <translation id="2620436844016719705">அமைப்பு</translation>
 <translation id="2621713457727696555">பாதுகாக்கப்பட்ட வைஃபை நெட்வொர்க்</translation>
@@ -332,6 +337,7 @@
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"நீக்கு"</translation>
 <translation id="2750941250130734256">செயலிலுள்ள சாளரம் அன்-டாக் செய்யப்பட்டது.</translation>
+<translation id="2761723519669354964">ஷெல்ஃப்பில் இருந்து ஹைலைட் செய்யப்பட்டதைத் திறக்கும்</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> சாதனத்தை <ph name="MANAGER" /> நிர்வகிக்கிறது</translation>
 <translation id="2782591952652094792">படமெடுப்புப் பயன்முறையிலிருந்து வெளியேறும்</translation>
 <translation id="2791421900609674576">நீங்கள் விட்ட இடத்தில் இருந்து தொடர்வதற்கு உதவும் வகையில் பரிந்துரைகள் காட்டப்படும். தொட்டுப் பிடிப்பதன் மூலம் அவற்றை அகற்றலாம்.</translation>
@@ -369,6 +375,7 @@
 <translation id="2970920913501714344">ஆப்ஸ், நீட்டிப்புகள் மற்றும் தீம்களை நிறுவுதல்</translation>
 <translation id="2977598380246111477">அடுத்த எண்</translation>
 <translation id="2985148236010982088">அனைத்து ஆப்ஸையும் காட்டு</translation>
+<translation id="29859347674873492">Explore ஆப்ஸில் உதவிப் பிரிவைத் திற</translation>
 <translation id="2992327365391326550">சாதனத்தின் மைக்ரோஃபோன் பட்டன் முடக்கப்பட்டுள்ளது.</translation>
 <translation id="2996462380875591307">டாக் செய்யப்பட்ட பெரிதாக்கி இயக்கப்பட்டது. அதை முடக்க, Ctrl+Search+Dயை மீண்டும் அழுத்தவும்.</translation>
 <translation id="3000461861112256445">மோனோ ஆடியோ</translation>
@@ -395,6 +402,7 @@
 <translation id="3100274880412651815">படமெடுப்புப் பயன்முறையை நிராகரிக்கும்</translation>
 <translation id="3105917916468784889">ஸ்கிரீன் ஷாட்டை எடுக்கும்</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (புளூடூத்)</translation>
+<translation id="3113492864356515707">ஷெல்ஃப்பில் முந்தையதை ஹைலைட் செய்யும்</translation>
 <translation id="3120421559657122717">சாதனத்தை ஷட் டவுன் செய்யவா?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">புதுப்பிக்க மீண்டும் தொடங்குக</translation>
@@ -436,6 +444,7 @@
 <translation id="3340978935015468852">அமைப்புகள்</translation>
 <translation id="3341303451326249809">ஸ்கிரீன்ஷாட் எடுக்கப்பட்டது</translation>
 <translation id="334252345105450327">ஸ்கிரீன்ஷாட் எடுங்கள்</translation>
+<translation id="3349345708646875009">செயல் நிர்வாகியைத் திற</translation>
 <translation id="3351879221545518001">தற்போது திரையை அலைபரப்புகிறீர்கள்.</translation>
 <translation id="3364721542077212959">ஸ்டைலஸ் கருவிகள்</translation>
 <translation id="3365977133351922112">உங்கள் மொபைல் தூரமாக உள்ளது. அதை அருகில் கொண்டுவரவும்.</translation>
@@ -450,6 +459,7 @@
 <translation id="3405101454990027959">மைக்ரோஃபோனுக்கான அணுகலை வழங்கு</translation>
 <translation id="3410336247007142655">டார்க் தீம் அமைப்புகளைக் காட்டும்</translation>
 <translation id="3413817803639110246">பார்ப்பதற்கு எதுவுமில்லை</translation>
+<translation id="3423744722495840645">தொடக்கியைத் திற/மூடுக</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" />ல் இருந்து துண்டிக்கும்</translation>
 <translation id="3430396595145920809">பின்செல்ல, வலது பக்கத்திலிருந்து ஸ்வைப் செய்யவும்</translation>
 <translation id="3431517721463707585">டெஸ்க் 14</translation>
@@ -514,6 +524,7 @@
 <translation id="3659814201068740063">சுமார் <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%) சாதனத்தைப் பயன்படுத்தலாம்.
 சாதனத்தை சார்ஜ் செய்யவும்.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> நிர்வகிக்கப்பட்ட பயனர்</translation>
+<translation id="367531336287639526">முகவரிப் பட்டியின் இடப்புறத்தில் உள்ள முதல் ஐகானைத் தேர்ந்தெடு</translation>
 <translation id="36813544980941320">உங்கள் மொபைல், <ph name="DEVICE_NAME" /> சாதனம் ஆகியவற்றுக்கு இடையே வைஃபை நெட்வொர்க்குகள் பகிரப்படும்</translation>
 <translation id="3694122362646626770">இணையதளங்கள்</translation>
 <translation id="3702809606464356667">தற்போதைய டெஸ்க்கில் உள்ள சாளரங்களைக் காட்டுகிறது, அனைத்து டெஸ்க்குகளிலும் உள்ள சாளரங்களைக் காட்ட, மேல்நோக்கிய அம்புக்குறி விசையை அழுத்தவும்</translation>
@@ -575,6 +586,7 @@
 <translation id="4017989525502048489">லேசர் பாயிண்டர்</translation>
 <translation id="401993194061514265">அடையாளங்காட்டி இல்லை. Screencast ஆப்ஸ் மீண்டும் திறக்கும்.</translation>
 <translation id="4021716437419160885">கீழே நகர்த்து</translation>
+<translation id="4022497978915111141">சாதனத்தை லாக் செய்</translation>
 <translation id="4024840464866786680">உங்கள் பின் (PIN) மற்றும் கடவுச்சொல்லை மறந்துவிட்டாலோ சமீபத்தில் உங்கள் Google கணக்கின் கடவுச்சொல்லை மாற்றியிருந்தாலோ இந்தக் கடவுச்சொல்லை மீட்டெடுக்க முயலுங்கள்.</translation>
 <translation id="4028481283645788203">மேலும் பாதுகாப்பிற்குக் கடவுச்சொல் அவசியம்</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
@@ -777,6 +789,7 @@
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> ஒரு புதிய ஃபோனுடன் இணைக்கப்பட்டுள்ளது</translation>
 <translation id="5035389544768382859">திரை உள்ளமைவை உறுதிசெய்யுங்கள்</translation>
 <translation id="5042305953558921026">மேலோட்டப் பயன்முறை விசை</translation>
+<translation id="5043679421800073804">ஷெல்ஃப்பில் கடைசி ஐகானைக் கிளிக் செய் அல்லது தட்டு</translation>
 <translation id="504465286040788597">முந்தைய பத்தி</translation>
 <translation id="5045550434625856497">தவறான கடவுச்சொல்</translation>
 <translation id="5078796286268621944">தவறான PIN</translation>
@@ -810,6 +823,7 @@
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> என்ற சாதனத்துடன் இணைக்கப்பட்டுள்ளது. பேட்டரி: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">சேமிக்கப்பட்ட டெஸ்க்குகள் எதுவுமில்லை</translation>
 <translation id="5260676007519551770">மேசை 4</translation>
+<translation id="5278086053818066789">ChromeVoxஸை (பேச்சுவடிவ விளக்கம்) இயக்கு/முடக்கு</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> ஆப்ஸில் புதிய அறிவிப்புகள் உள்ளன.</translation>
 <translation id="5283198616748585639">1 நிமிடத்தைச் சேர்</translation>
 <translation id="528468243742722775">நிறுத்து</translation>
@@ -836,6 +850,7 @@
 <translation id="536019650977002321">ஆடியோவை ரெக்கார்டு செய்ய உங்கள் நிர்வாகி அனுமதிக்கவில்லை. கூடுதல் தகவல்களுக்கு நிர்வாகியைத் தொடர்புகொள்ளவும்.</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> பேச்சு ஃபைல்கள் பகுதியளவு பதிவிறக்கப்பட்டன</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> இந்த உலாவிப் பக்கத்திற்குச் செல்</translation>
+<translation id="5369717264580061086">Files ஆப்ஸில் ஃபைலின் மாதிரிக்காட்சியைக் காட்டும்</translation>
 <translation id="5377367976106153749">கேமரா அணுகலை இயக்க வேண்டுமா?</translation>
 <translation id="5379115545237091094">அதிகபட்சம் முயன்றுவிட்டீர்கள்</translation>
 <translation id="5391307769715781764">சேமிக்கப்பட்ட டெஸ்க்கை மாற்றவா?</translation>
@@ -855,6 +870,8 @@
 <translation id="5465662442746197494">உதவி தேவையா?</translation>
 <translation id="547979256943495781">ஷெல்ஃப் வலப்புறம் உள்ளது</translation>
 <translation id="5491186829646618080">நிலைபொருள் புதுப்பிப்புகள் உள்ளன</translation>
+<translation id="5503884284981862082">Google Assistantடைத் திற/மூடுக</translation>
+<translation id="5506975627792768506">மேக்னிஃபயரை இயக்கு அல்லது முடக்கு</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">eSIM சுயவிவரங்கள் அனைத்தையும் உங்கள் நிர்வாகி அகற்றிவிட்டார். கூடுதல் தகவல்களுக்கு, நிர்வாகியைத் தொடர்புகொள்ளவும்.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> இணைக்கப்படுகிறது.</translation>
@@ -864,6 +881,7 @@
 <translation id="5537725057119320332">அலைபரப்பு</translation>
 <translation id="5546397813406633847">கடவுச்சொல்லை மீட்டெடு</translation>
 <translation id="554893713779400387">சொல்வதை எழுதுவதை நிலைமாற்று</translation>
+<translation id="5551456515017410630">கேலெண்டரைத் திற/மூடுக</translation>
 <translation id="5558091555391176027">அருகிலுள்ளவற்றுடன் பகிர்தல் அம்சத்தின் அதிகத் தெரிவுநிலைப் பயன்முறையை இயக்கும்/முடக்கும்.</translation>
 <translation id="5560420195677022218">மொபைல் ஆப்ஸை <ph name="DEVICE_TYPE" /> இல் பார்க்கலாம்</translation>
 <translation id="556042886152191864">பட்டன்</translation>
@@ -953,6 +971,7 @@
 <translation id="598882571027504733">புதுப்பிப்பைப் பெற, கீபோர்டு இணைக்கப்பட்ட உங்கள் Chromebookஐ மீண்டும் தொடங்கவும்.</translation>
 <translation id="6002179289567220515">ஒரு கேமராவை முடக்க சாதனச் சுவிட்ச்சைப் பயன்படுத்தியுள்ளீர்கள். அனைத்துக் கேமராக்களின் அணுகலையும் நீங்கள் முடக்கலாம்.</translation>
 <translation id="6012623610530968780"><ph name="TOTAL_PAGE_NUM" /> இல் <ph name="SELECTED_PAGE" />வது பக்கம்</translation>
+<translation id="601304062528754300">ஷெல்ஃப்பில் அடுத்ததை ஹைலைட் செய்யும்</translation>
 <translation id="6018164090099858612">கண்ணாடிப் பயன்முறையிலிருந்து வெளியேறுகிறது</translation>
 <translation id="602001110135236999">இடப்புறம் செல்</translation>
 <translation id="6022924867608035986">தேடல்பெட்டியிலிருக்கும் உரையை அழிக்கும்</translation>
@@ -989,6 +1008,7 @@
 <translation id="615957422585914272">ஸ்கிரீன் கீபோர்டைக் காட்டு</translation>
 <translation id="6165508094623778733">மேலும் அறிக</translation>
 <translation id="6166852626429024716">உங்கள் சாதனம், ஆப்ஸ், அமைப்புகள், இணையம் ஆகியவற்றில் தேடுக...</translation>
+<translation id="6168318496333165060">Diagnostics ஆப்ஸைத் திற</translation>
 <translation id="6179832488876878285">முக்கியமான கோப்புகளை இங்கே பின் (pin) செய்யலாம். பின் செய்ய Files ஆப்ஸைத் திறக்கவும்.</translation>
 <translation id="6182592640011875895">டெஸ்க்கைத் திற</translation>
 <translation id="619279033188484792">மொபைலில் உள்ள சமீபத்திய படங்கள், மீடியா, அறிவிப்புகள் ஆகியவற்றை <ph name="DEVICE_TYPE" /> இல் பார்க்கலாம்</translation>
@@ -996,12 +1016,14 @@
 <translation id="6193431488227440296">Dev</translation>
 <translation id="6200515304866777730">ஆப்ஸால் ஆதரிக்கப்படவில்லை</translation>
 <translation id="6210042900243040400"><ph name="EMAIL" /> என்ற கணக்கில் இதற்குமுன்பு சேமிக்கப்பட்ட <ph name="NAME" /> சாதனத்தை இணைக்கவும்</translation>
+<translation id="6213808132343683860">ஸ்கிரீன்ஷாட் அல்லது ஸ்கிரீன் ரெக்கார்டிங்கைப் பகுதியளவு எடு</translation>
 <translation id="6220928844947387476">இப்போது ஒரே சமயத்தில் உங்கள் வீடியோவையும் திரையையும் ரெக்கார்டு செய்யலாம்</translation>
 <translation id="622484624075952240">கீழ்</translation>
 <translation id="623116199192908855">உங்கள் Chromebookகில் இருந்து ஸ்கிரீனை அலைபரப்பவும்</translation>
 <translation id="6231419273573514727">சாதனத்தின் செயல்திறன் குறைக்கப்பட்டிருக்கலாம்</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> தற்போது கேமராவையும் மைக்ரோஃபோனையும் பயன்படுத்துகிறது</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6247728804802644171">அறிவிப்புகளைத் திற</translation>
 <translation id="6254629735336163724">கிடைமட்ட நிலையில் பூட்டப்பட்டது</translation>
 <translation id="6259254695169772643">தேர்ந்தெடுக்க, ஸ்டைலஸைப் பயன்படுத்தலாம்</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: செயல்படுத்துகிறது...</translation>
@@ -1010,6 +1032,7 @@
 <translation id="6284232397434400372">தெளிவு மாற்றப்பட்டது</translation>
 <translation id="6288235558961782912">பெற்றோரின் அனுமதியுடன் <ph name="USER_EMAIL_ADDRESS" /> பயனரைப் பின்னர் மறுபடியும் சேர்க்கலாம்.</translation>
 <translation id="6291221004442998378">சார்ஜ் ஏறவில்லை</translation>
+<translation id="6309219492973062892">1-8 வரையிலான ஷெல்ஃப் ஐகான்களைக் கிளிக் செய் அல்லது தட்டு</translation>
 <translation id="6315170314923504164">Voice</translation>
 <translation id="6330012934079202188">எல்லா டெஸ்க்குகளிலும் உள்ள சாளரங்களைக் காட்டுகிறது, தற்போதைய டெஸ்க்கில் உள்ள சாளரங்களைக் காட்ட, மேல்நோக்கிய அம்புக்குறி விசையை அழுத்தவும்</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> என்பது நிர்வகிக்கப்பட்ட ஓர் அமர்வாகும், <ph name="MANAGER" /> இதை நிர்வகிக்கிறது</translation>
@@ -1105,7 +1128,9 @@
 <translation id="6786750046913594791">ஃபோல்டரை மூடு</translation>
 <translation id="6787595647772650851">கடைசி அமர்வை மீட்டெடு</translation>
 <translation id="6790428901817661496">இயக்கு</translation>
+<translation id="679368458793552943">மேக்னிஃபயர் இயக்கப்பட்டிருக்கும்போது பெரிதாக்கு</translation>
 <translation id="6801878137098616817">சமீபத்தில் திருத்தப்பட்டது</translation>
+<translation id="6802196538183166658">நேரத்தைத் தேர்ந்தெடுப்பதன் மூலம் விரைவு அமைப்புகளைத் திற</translation>
 <translation id="6802687695197837794">கேமரா, மைக்ரோஃபோனைப் பயன்படுத்த அனுமதி கேட்கும் <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> ஆப்ஸ் மற்றும் ஆப்ஸ், இணையதளங்கள் அனைத்திற்கும் அணுகலை இது வழங்கும்</translation>
 <translation id="6803622936009808957">ஆதரிக்கும் தெளிவுகள் கிடைக்காததால் காட்சிகளைப் பிரதிபலிக்க முடியவில்லை. பதிலாக நீட்டிக்கப்பட்ட டெஸ்க்டாப்பிற்குச் சென்றது.</translation>
 <translation id="6812232930908427253">டெஸ்க்கைச் சேமிக்க முடியவில்லை. மிகவும் அதிகமான சாளரங்கள்/உலாவிப் பக்கங்கள் உள்ளன.</translation>
@@ -1166,6 +1191,7 @@
 <translation id="7088960765736518739">ஸ்விட்ச் அணுகல்</translation>
 <translation id="7098053464892629930">கிடைக்கக்கூடிய அனைத்து அம்சங்களையும் பார்க்க <ph name="NAME" /> ஆப்ஸை Google playயில் பதிவிறக்கவும்</translation>
 <translation id="7098389117866926363">USB-C சாதனம் (பின்பக்கம் உள்ள இடது போர்ட்)</translation>
+<translation id="7100906357717321275">Files ஆப்ஸில் உள்ள மறைக்கப்பட்ட ஃபைல்களைக் காட்டு</translation>
 <translation id="7106330611027933926">டெஸ்க்பாரைக் காட்டு</translation>
 <translation id="7116969082764510092">டெஸ்க் 11</translation>
 <translation id="7118268675952955085">ஸ்கிரீன்ஷாட்</translation>
@@ -1211,6 +1237,7 @@
 <translation id="7384028040782072252">உங்கள் ஆப்ஸை மறுவரிசைப்படுத்த, எங்கேயாவது வலது கிளிக் செய்யவும்</translation>
 <translation id="7386767620098596324">நெட்வொர்க் இணைப்பை இயக்கும்/முடக்கும். <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">அமைப்புகளுக்குச் சென்று பிறகு எப்போது வேண்டுமானாலும் அமைத்துக்கொள்ளலாம்.</translation>
+<translation id="7401222354741467707">ஸ்கிரீன்ஷாட் அல்லது ஸ்கிரீன் ரெக்கார்டிங்கை முழுமையாக எடு</translation>
 <translation id="7405710164030118432">இந்தச் சாதனத்தை அன்லாக் செய்ய உங்கள் Family Linkகின் முதல்நிலை அணுகல் குறியீட்டை உள்ளிடவும்</translation>
 <translation id="7406608787870898861">மொபைல் நெட்வொர்க் அமைவை நிறைவு செய்யுங்கள்</translation>
 <translation id="740790383907119240">ஆப்ஸ் ஷார்ட்கட்கள்</translation>
@@ -1255,6 +1282,7 @@
 <translation id="761736749114493194">'கேமரா ஃபிரேமிங்' அம்சத்தை இயக்கும்/முடக்கும். <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7634648064048557203">கேமரா மாதிரிக்காட்சி கீழ் வலது மூலையில் பொருத்தப்பட்டது</translation>
+<translation id="7638572816805275740">சாளரத்தை ஸ்கிரீன்ஷாட் எடு அல்லது ஸ்கிரீனை ரெக்கார்டு செய்</translation>
 <translation id="7642106959537987271">கலர் இன்வெர்ஷன் பயன்முறை</translation>
 <translation id="7642647758716480637"><ph name="NETWORK_NAME" />க்கான அமைப்புகளைத் திறக்கும், <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (உரிமையாளர்)</translation>
@@ -1318,6 +1346,7 @@
 <translation id="7944023924886109030">இன்றைக்கான எல்லா நிகழ்வுகளையும் காட்டும்</translation>
 <translation id="7963992254934562106"><ph name="PHONE_NAME" /> இலிருந்து</translation>
 <translation id="7968693143708939792">ஃபோல்டரைத் தேர்ந்தெடு...</translation>
+<translation id="797512352675305461">முழுத்திரை மேக்னிஃபயரை இயக்கு அல்லது முடக்கு</translation>
 <translation id="7977927628060636163">மொபைல் நெட்வொர்க்குகளைத் தேடுகிறது...</translation>
 <translation id="7982789257301363584">நெட்வொர்க்</translation>
 <translation id="7984197416080286869">கைரேகையை அதிகபட்சம் முயன்றுவிட்டீர்கள்</translation>
@@ -1341,9 +1370,11 @@
 <translation id="8091153018031979607">தொடங்கும் நேரம்: <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">தானியங்குப் புதுப்பிப்புகள்</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" />க்குத் திரையை அனுப்புவதை நிறுத்து</translation>
+<translation id="810637681351706236">ஷெல்ஃப்பில் பின்செய்த ஆப்ஸை அகற்று</translation>
 <translation id="8113423164597455979">எல்லா ஆப்ஸுக்கும் இயக்கு</translation>
 <translation id="8113515504791187892">பேசும் திரை பட்டன்</translation>
 <translation id="8120151603115102514">மொபைலில் பூட்டுத்திரை இல்லை. Chromebookகை திறக்க கடவுச்சொல் உள்ளிடுக</translation>
+<translation id="8127095419621171197">கால்குலேட்டர் ஆப்ஸைத் திற</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">உறுதிப்படுத்து</translation>
 <translation id="8131994907636310308">வரிசைப்படுத்துவதற்கான டோஸ்ட்டை மூடும்</translation>
@@ -1361,6 +1392,7 @@
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> என்ற கணக்கிற்கான தகவலைக் காட்டும் உரையாடலைத் திறக்கும்</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" />ஐப் பயன்படுத்துகிறது</translation>
 <translation id="8183592608247778598">மொபைலில் உள்ள சமீபத்திய படங்கள், மீடியா, அறிவிப்புகள், ஆப்ஸ் ஆகியவற்றை <ph name="DEVICE_TYPE" /> இல் பார்க்கலாம்</translation>
+<translation id="8185090165691050712">அளவு மாற்றத்தை லாக் செய்யும் பயன்முறைக்கான மெனுவை இயக்கு/முடக்கு</translation>
 <translation id="8192202700944119416">அறிவிப்புகள் மறைக்கப்பட்டுள்ளன.</translation>
 <translation id="8196787716797768628">ஆப்ஸுக்கு இடையே விரைவாக மாறுவதற்கும் டேப்லெட் பயன்முறையில் உங்கள் Chromebookகை அணுகுவதற்கும் சைகைகளைப் பயன்படுத்தலாம்.</translation>
 <translation id="8200772114523450471">மீண்டும் தொடங்கு</translation>
@@ -1369,6 +1401,7 @@
 <translation id="8214996719228530800">Canary சேனல்</translation>
 <translation id="8219451629189078428">இந்தச் சமயத்தின்போது உங்கள் Chromebook ஆனில் இருப்பதுடன் பிளக் பாயிண்ட்டில் செருகப்பட்டிருக்கவும் வேண்டும். சார்ஜர், அடாப்டர் கேபிள்கள் போன்றவை உங்கள் Chromebook, பிளக் பாயிண்ட் ஆகிய இரண்டிலும் சரியாகச் செருகப்பட்டிருப்பதை உறுதிசெய்துகொள்ளவும். Chromebookகை ஆஃப் செய்ய வேண்டாம்.</translation>
 <translation id="8230305195727960608">கலர் இன்வெர்ஷன் பயன்முறை</translation>
+<translation id="8233140502441622270">Keyboard shortcuts ஆப்ஸைத் திற</translation>
 <translation id="8236042855478648955">இடைவேளைக்கான நேரம்</translation>
 <translation id="8246282815785366524">மீண்டும் வரவேற்கிறோம், <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />, மொபைல் பேட்டரி: <ph name="BATTERY_STATUS" /></translation>
@@ -1453,6 +1486,7 @@
 <translation id="8676770494376880701">குறைந்த சக்தியிலான சார்ஜர் இணைக்கப்பட்டுள்ளது</translation>
 <translation id="8683506306463609433">செயல்திறன் டிரேஸிங் இயக்கத்தில்</translation>
 <translation id="8703634754197148428">ரெக்கார்டு செய்யத் தொடங்கும். ரெக்கார்டிங் தொடங்கியதும் Alt + Shift + L விசைகளை ஒன்றாக அழுத்தி ஷெல்ஃபிற்குச் செல்லலாம். அதில் 'ரெக்கார்டிங்கை நிறுத்து' பட்டன் இருக்கும்</translation>
+<translation id="870917907284186124">சொல்வதை எழுதும் வசதியை (குரல் மூலம் எழுதுதல்) இயக்கு/முடக்கு</translation>
 <translation id="8721053961083920564">ஒலியை இயக்கும். <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">முழுத்திரையைப் படமெடுக்கும்</translation>
 <translation id="8731487213223706745">முடியும் நேரம்: <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
@@ -1463,6 +1497,7 @@
 <translation id="8755498163081687682">உங்கள் அடையாளத்தைச் சரிபாருங்கள்: இது நீங்கள்தான் என்பதை <ph name="ORIGIN_NAME" /> உறுதிப்படுத்த விரும்புகிறது</translation>
 <translation id="875593634123171288">VPN அமைப்புகளைக் காண்பிக்கும்</translation>
 <translation id="8759408218731716181">பல உள்நுழைவை அமைக்க முடியாது</translation>
+<translation id="8763883995157866248">சாதனத்தை உறக்கப் பயன்முறைக்கு அமை</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, நிறுவப்பட்ட ஆப்ஸ், தடுக்கப்பட்டுள்ளது</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" /> உடன் இணைக்கும்</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
@@ -1483,6 +1518,7 @@
 <translation id="8858369206579825206">தனியுரிமைக் கட்டுப்பாடுகள்</translation>
 <translation id="8870509716567206129">திரையைப் பிரிப்பதைப் ஆப்ஸ் ஆதரிக்கவில்லை.</translation>
 <translation id="8874184842967597500">இணைக்கப்படவில்லை</translation>
+<translation id="8875021410787719674">கீழ்வலது மூலை, தொடக்கி, முகவரிப் பட்டி, புக்மார்க் பட்டி, திறந்துள்ள இணையதளங்கள், பதிவிறக்கங்கள் ஆகியவற்றிற்கு இடையே நகர்</translation>
 <translation id="8876148469852588625"><ph name="EVENT_TOTAL_COUNT" /> நிகழ்வுகளில் <ph name="EVENT_POSITION" />வது</translation>
 <translation id="8876661425082386199">இணைய இணைப்பைச் சரிபார்க்கவும்</translation>
 <translation id="8877788021141246043">நினைவூட்டலை அமை</translation>
@@ -1501,6 +1537,7 @@
 <translation id="8940956008527784070">பேட்டரி குறைவு (<ph name="PERCENTAGE" />%)</translation>
 <translation id="8949925099261528566">இணைக்கப்பட்டுள்ளது, ஆனால் இணைய இணைப்பு இல்லை</translation>
 <translation id="8951539504029375108">அங்கீகரிக்கப்பட்ட Thunderbolt சாதனங்கள் மட்டுமே உங்கள் Chromebook சாதனத்தில் ஆதரிக்கப்படும்</translation>
+<translation id="8980862970816311842">ஆப்ஸ் கட்டக் காட்சியில் உள்ள ஃபோல்டருக்கு உள்ளே/வெளியே ஆப்ஸ் ஐகானை நகர்த்தும்</translation>
 <translation id="8982906748181120328">‘அருகில் பகிர்தல்’ தெரிவுநிலை</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> பயன்படுத்தப்படுகிறது</translation>

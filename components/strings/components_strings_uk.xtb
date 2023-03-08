@@ -345,6 +345,7 @@
 <translation id="1733064249834771892">шрифти</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Зв’яжіться із системним адміністратором.</translation>
+<translation id="1736158756193183352"><ph name="BEGIN_LINK" />Увійдіть<ph name="END_LINK" /> у мережу</translation>
 <translation id="1736420071277903564">Комп'ютер</translation>
 <translation id="1740951997222943430">Введіть дійсний місяць закінчення терміну дії</translation>
 <translation id="1741613555002899862">Якщо параметр DnsOverHttpsMode має значення <ph name="SECURE_DNS_MODE_SECURE" />, потрібно вказати правило, яке має бути дійсним рядком.</translation>
@@ -1192,6 +1193,7 @@
 <translation id="3949601375789751990">Тут відображається ваша історія веб-перегляду</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Немає збережених способів оплати</translation>
+<translation id="3950574001630941635">Переглянути навчальний посібник знову</translation>
 <translation id="3950820424414687140">Вхід</translation>
 <translation id="3958057596965527988">4 x 4 дюйм.</translation>
 <translation id="3961148744525529027">Аркуш обробника платежу відкрито на половину висоти</translation>
@@ -1384,7 +1386,7 @@
 <translation id="437040971055499437">Трапляється подія системи безпеки</translation>
 <translation id="4371591986692297148">неактивна</translation>
 <translation id="4372948949327679948">Очікуване значення: <ph name="VALUE_TYPE" />.</translation>
-<translation id="4375864595697821259">Ви можете будь-коли знову включити тему в список тих, з-поміж яких Chrome може обирати, визнаючи ваші інтереси</translation>
+<translation id="4375864595697821259">Ви можете будь-коли додати раніше заблоковану тему в список, за яким Chrome може визначати ваші інтереси</translation>
 <translation id="4377125064752653719">Ви пробували зв’язатися з доменом <ph name="DOMAIN" />, проте сервер надав сертифікат, відкликаний його видавцем. Це означає, що не варто довіряти обліковим даним системи захисту, наданим сервером. Можливо, ви обмінюєтеся даними зі зловмисником.</translation>
 <translation id="4378154925671717803">Телефон</translation>
 <translation id="4384395682990721132">A4x3</translation>

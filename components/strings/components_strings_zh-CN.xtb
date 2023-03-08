@@ -345,6 +345,7 @@
 <translation id="1733064249834771892">字体</translation>
 <translation id="1734864079702812349">美国运通卡</translation>
 <translation id="1734878702283171397">请尝试联系系统管理员。</translation>
+<translation id="1736158756193183352"><ph name="BEGIN_LINK" />正在登录<ph name="END_LINK" />网络</translation>
 <translation id="1736420071277903564">计算机</translation>
 <translation id="1740951997222943430">请输入有效的失效月份</translation>
 <translation id="1741613555002899862">当 DnsOverHttpsMode 是“<ph name="SECURE_DNS_MODE_SECURE" />”时，必须将此政策指定为有效字符串。</translation>
@@ -1188,6 +1189,7 @@
 <translation id="3949601375789751990">您的浏览记录会显示在此处</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">尚未保存任何付款方式</translation>
+<translation id="3950574001630941635">重启教程</translation>
 <translation id="3950820424414687140">登录</translation>
 <translation id="3958057596965527988">4 x 4 英寸</translation>
 <translation id="3961148744525529027">付款处理程序工作表已在下半屏中打开</translation>

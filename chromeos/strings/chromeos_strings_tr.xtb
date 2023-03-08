@@ -163,6 +163,7 @@
 <translation id="2346474577291266260">Mükemmel (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Devam et</translation>
 <translation id="2364498172489649528">Başarılı oldu</translation>
+<translation id="2367335866686097760">Tuş eşleme anahtarı</translation>
 <translation id="2380886658946992094">Hukuk</translation>
 <translation id="2391082728065870591">Geri Bildirim Raporu Gönder</translation>
 <translation id="2407209115954268704">SIM Kilitleme Durumu</translation>
@@ -235,7 +236,9 @@
 <translation id="319101249942218879">Avatar resmi değiştirildi</translation>
 <translation id="3192947282887913208">Ses Dosyaları</translation>
 <translation id="3199982728237701504">Doküman Besleyici (İki taraflı)</translation>
+<translation id="3211671540163313381">Tuş eşleme D-pad'i</translation>
 <translation id="3226405216343213872">Tarayıcılar aranıyor</translation>
+<translation id="3226657629376379887">Düzen işlemleri menüsü</translation>
 <translation id="3246869037381808805">1 günden daha eski yazdırma işleri kaldırılır</translation>
 <translation id="3268178239013324452">İşlem başarısız - Kapak açık</translation>
 <translation id="3275506277319227640"><ph name="DIRECTION" /> tarafa sabitleyin</translation>
@@ -803,6 +806,7 @@
 <translation id="8318753676953949627">Resim Yok</translation>
 <translation id="8336739000755212683">Cihaz hesap görüntüsünü değiştir</translation>
 <translation id="8347227221149377169">Yazdırma işleri</translation>
+<translation id="8351855506390808906">Tuş eşleme dokunma noktası</translation>
 <translation id="8352772353338965963">Çoklu oturum açmaya bir hesap ekleyin. Oturum açılmış tüm hesaplara şifresiz erişilebileceği için bu özellik sadece güvenilir hesaplarla kullanılmalıdır.</translation>
 <translation id="8364946094152050673">Alan adı sunucuları boş</translation>
 <translation id="8372477600026034341">Ekstra ana makineler</translation>
@@ -900,6 +904,7 @@
 <translation id="9138630967333032450">Sol üst karakter</translation>
 <translation id="9149391708638971077">Bellek testini çalıştır</translation>
 <translation id="9157515863513902090">Büyük olan tarafa sabitleyin</translation>
+<translation id="9161276708550942948">boşluk</translation>
 <translation id="9173638680043580060">Bir dakikadan az kaldı</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9188992814426075118">Klavyeniz duvar kağıdınızla otomatik olarak eşleşebilir</translation>

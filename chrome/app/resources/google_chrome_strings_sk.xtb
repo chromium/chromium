@@ -259,6 +259,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="6010556343189461180">Ak chcete dostávať budúce aktualizácie prehliadača Google Chrome, musíte používať systém macOS 10.15 alebo novší. V tomto počítači používate macOS 10.14.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome sa teraz zavrie.}=1{Chrome sa zavrie o 1 sekundu.}few{Chrome sa zavrie o # sekundy.}many{Chrome sa zavrie o # sekundy.}other{Chrome sa zavrie o # sekúnd.}}</translation>
 <translation id="6022659036123304283">Upravte si Chrome podľa seba</translation>
+<translation id="6025087594896450715">Google Chrome sa reštartuje o <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Zavrieť</translation>
 <translation id="6070348360322141662">V záujme vyššej miery zabezpečenia budú dáta v prehliadači Google Chrome šifrované</translation>
 <translation id="608006075545470555">Pridanie pracovného profilu do tohto prehliadača</translation>

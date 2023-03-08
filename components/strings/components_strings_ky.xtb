@@ -345,6 +345,7 @@
 <translation id="1733064249834771892">ариптер</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Тутум администраторуна кайрылып көрүңүз.</translation>
+<translation id="1736158756193183352">Тармакка <ph name="BEGIN_LINK" />кирүү<ph name="END_LINK" /></translation>
 <translation id="1736420071277903564">Компьютер</translation>
 <translation id="1740951997222943430">Мөөнөтү аяктоочу айды туура киргизиңиз</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> деп жана мааниси туура көрсөтүлүшү керек.</translation>
@@ -1191,6 +1192,7 @@
 <translation id="3949601375789751990">Серептөө таржымалыңыз бул жерде көрүнөт</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Сакталган төлөм ыкмалары жок</translation>
+<translation id="3950574001630941635">Үйрөткүчтү кайра ачуу</translation>
 <translation id="3950820424414687140">Кирүү</translation>
 <translation id="3958057596965527988">4 x 4 дюйм</translation>
 <translation id="3961148744525529027">Төлөм иштетүүчү барактын жарымы ачылып турат</translation>

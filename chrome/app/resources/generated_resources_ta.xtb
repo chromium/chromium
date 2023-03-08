@@ -348,6 +348,7 @@
 <translation id="1303671224831497365">புளூடூத் சாதனங்கள் இல்லை</translation>
 <translation id="130491383855577612">Linux ஆப்ஸ் &amp; ஃபைல்கள்  வெற்றிகரமாக மாற்றப்பட்டன</translation>
 <translation id="1306390193749326011">இந்தப் பக்கத்தில் <ph name="MODULE_NAME" /> காட்டப்படாது</translation>
+<translation id="1306518237408758433"><ph name="BOOKMARK_TITLE" /> ஐத் திறக்கும்</translation>
 <translation id="1306606229401759371">அமைப்புகளை மாற்று</translation>
 <translation id="1307165550267142340">உங்கள் பின் உருவாக்கப்பட்டது</translation>
 <translation id="1307431692088049276">மீண்டும் கேட்காதே</translation>
@@ -437,6 +438,7 @@
 <translation id="1393283411312835250">சூரியனும் மேகமும்</translation>
 <translation id="1395730723686586365">புதுப்பிப்பான் தொடங்கியது</translation>
 <translation id="1395832189806039783">கீபோர்டு ஃபோகஸைப் பயன்படுத்தி ஹைலைட் செய்</translation>
+<translation id="1396120028054416908"><ph name="FOLDER_TITLE" />க்கு மீண்டும் செல்லும்</translation>
 <translation id="1396139853388185343">பிரிண்டரை அமைப்பதில் பிழை</translation>
 <translation id="1396963298126346194">நீங்கள் உள்ளிட்ட பயனர்பெயரும் கடவுச்சொல்லும் பொருந்தவில்லை</translation>
 <translation id="1397500194120344683">தகுதியான சாதனங்கள் இல்லை. <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
@@ -681,6 +683,7 @@
 <translation id="1596286373007273895">கிடைக்கிறது</translation>
 <translation id="1596709061955594992">புளூடூத் முடக்கப்பட்டுள்ளது. கிடைக்கக்கூடிய சாதனங்களைப் பார்க்க அதை இயக்கவும்.</translation>
 <translation id="1596780725094407793">- துணை டொமைன்களுக்கும் பொருந்தும்</translation>
+<translation id="1597852076552089763">புக்மார்க் விருப்பங்கள்</translation>
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> மூலம் <ph name="SITE_ETLD_PLUS_ONE" /> இணையதளத்தைப் பயன்படுத்துங்கள்</translation>
 <translation id="1598233202702788831">உங்கள் நிர்வாகியால் புதுப்பிப்புகள் முடக்கப்பட்டுள்ளன.</translation>
 <translation id="1600857548979126453">பக்கப் பிழைத்திருத்தியின் பின்தளத்தை அணுகலாம்</translation>
@@ -1830,6 +1833,7 @@
 <translation id="25568951186001797">ஃபென்ஸ்டு ஃபிரேம்: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2558569818338050235">நீங்கள் இதுவரை இணையத்தில் பார்த்தவற்றைப் பொறுத்தே விளம்பரங்கள் உங்களுக்குக் காட்டப்படும்</translation>
 <translation id="2559889124253841528">சாதனத்தில் சேமி</translation>
+<translation id="2561211427862644160">உங்கள் புக்மார்க்குகள் அனைத்தையும் இங்கே பாருங்கள்</translation>
 <translation id="2564520396658920462">AppleScript மூலம் JavaScriptடை இயக்குவது முடக்கப்பட்டுள்ளது. அதை இயக்க, மெனுப் பட்டியிலிருந்து காட்டு &gt; டெவெலப்பர் &gt; Apple Events இலிருந்து JavaScriptடை அனுமதி என்பதைக் கிளிக் செய்யவும். கூடுதல் தகவலை இதில் அறியலாம்: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">மேம்படுத்தப்பட்ட எழுத்துப் பிழை சரிபார்ப்பான்</translation>
 <translation id="2568694057933302218">மறைநிலைப் பயன்முறையில் இருக்கும்போது தளங்கள் முழுவதிலும் உங்கள் உலாவல் செயல்பாட்டைப் பார்க்க உங்கள் குக்கீகளைத் தளங்கள் பயன்படுத்த முடியாது. விளம்பரங்களைப் பிரத்தியேகமாக்குதல் போன்றவற்றுக்கு உங்கள் உலாவல் செயல்பாடு பயன்படுத்தப்படாது. சில தளங்களில் உள்ள குறிப்பிட்ட அம்சங்கள் செயல்படாமல் போகக்கூடும்.</translation>
@@ -2434,6 +2438,7 @@
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" இணைக்கப்பட்டது</translation>
 <translation id="3093714882666365141">பேமெண்ட் ஹேண்ட்லர்களை நிறுவ தளங்களை அனுமதிக்காதே</translation>
 <translation id="3094141017404513551">இதனால் <ph name="EXISTING_USER" /> பயனரிடமிருந்து உங்கள் உலாவல் தனிப்பட்டதாக வைத்திருக்கப்படும்</translation>
+<translation id="3094521107841754472"><ph name="PREVIOUS_PRICE" />ல் இருந்து <ph name="CURRENT_PRICE" /> என விலை மாற்றப்பட்டுள்ளது.</translation>
 <translation id="3095871294753148861">புக்மார்க்குகள், கடவுச்சொற்கள், பிற உலாவித் தரவு ஆகியவை முதன்மைக் கணக்குடன் ஒத்திசைக்கப்படும்.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{தீங்கிழைக்கச் சாத்தியமுள்ள 1 நீட்டிப்பு முடக்கப்பட்டுள்ளது. அதை நீங்கள் அகற்றவும் செய்யலாம்.}other{தீங்கிழைக்கச் சாத்தியமுள்ள {NUM_EXTENSIONS} நீட்டிப்புகள் முடக்கப்பட்டுள்ளன. அவற்றை நீங்கள் அகற்றவும் செய்யலாம்.}}</translation>
 <translation id="3101126716313987672">டிம் லைட்</translation>
@@ -2786,6 +2791,7 @@
 <translation id="3441653493275994384">பார்</translation>
 <translation id="3441663102605358937">இந்தக் கணக்கைச் சரிபார்க்க, <ph name="ACCOUNT" /> என்ற கணக்கில் மீண்டும் உள்நுழையவும்</translation>
 <translation id="3442674350323953953"><ph name="DEVICE_OS" /> ஐ மேம்படுத்த உதவுவதற்காக உங்கள் வன்பொருள் தரவைப் பயன்படுத்த Googleளை அனுமதிக்கும். நீங்கள் நிராகரித்தாலும், சரியான புதுப்பிப்புகள் உங்களுக்குக் கிடைக்க இந்தத் தரவு Googleளுக்கு அனுப்பப்படும். ஆனால் இது சேமிக்கப்படாது, வேறு எதற்காகவும் பயன்படுத்தப்படாது.</translation>
+<translation id="3443744348829035122"><ph name="BRAND" /> அங்கீகரிப்பு நேரம் முடிந்தது</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> டொமைனால் <ph name="FILENAME" /> ஃபைலைப் படிக்க முடியும்</translation>
 <translation id="3445047461171030979">Google Assistant விரைவான பதில்கள்</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> நி.</translation>
@@ -3330,6 +3336,7 @@
 <translation id="39103738135459590">செயல்படுத்தல் குறியீடு</translation>
 <translation id="3911824782900911339">புதிய தாவல் பக்கம்</translation>
 <translation id="3914173277599553213">அவசியம்</translation>
+<translation id="3914568430265141791"><ph name="FOLDER_TITLE" /> ஃபோல்டரைத் திறக்கும்</translation>
 <translation id="3915280005470252504">குரலினால் தேடு</translation>
 <translation id="3916233823027929090">பாதுகாப்புச் சோதனைகள் முடிந்தன</translation>
 <translation id="3916445069167113093">இவ்வகையான ஃபைல் உங்கள் கம்ப்யூட்டரைப் பாதிக்கக்கூடும். இருப்பினும் <ph name="FILE_NAME" /> ஐ வைத்திருக்க வேண்டுமா?</translation>
@@ -3461,6 +3468,7 @@
 <translation id="4022426551683927403">அகராதியில் &amp;சேர்</translation>
 <translation id="4025039777635956441">தேர்வுசெய்துள்ள இணையதளத்தை முடக்கு</translation>
 <translation id="402707738228916911"><ph name="AUTHORIZE_INSTRUCTION_NAME" /> வழிமுறை பெறப்பட்டது</translation>
+<translation id="4027569221211770437"><ph name="FOLDER_TITLE" /> ஃபோல்டர்</translation>
 <translation id="4027958407426528157">உங்கள் <ph name="DEVICE_TYPE" /> சாதனத்தில் நிறுவியுள்ள ஆப்ஸில் இணையதளங்களைத் திறக்கும்</translation>
 <translation id="4028467762035011525">உள்ளீட்டு முறைகளைச் சேர்</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" /> பக்கத்தில் இருந்து முந்தைய பக்கத்திற்குச் செல்</translation>
@@ -3515,6 +3523,7 @@
 <translation id="4077917118009885966">இந்தத் தளத்தில் விளம்பரங்கள் தடுக்கப்பட்டன</translation>
 <translation id="4077919383365622693"><ph name="SITE" /> தளத்தால் சேமிக்கப்பட்ட எல்லா தரவும் குக்கீகளும் அழிக்கப்படும்.</translation>
 <translation id="4078738236287221428">கட்டாயப்படுத்து</translation>
+<translation id="4078903002989614318">வரிசைப்படுத்துதல் மற்றும் பட்டியல் விருப்பங்கள்</translation>
 <translation id="4079140982534148664">'மேம்பட்ட எழுத்துப் பிழை சரிபார்க்கும்' அம்சத்தைப் பயன்படுத்து</translation>
 <translation id="4084682180776658562">புக்மார்க்</translation>
 <translation id="4084835346725913160"><ph name="TAB_NAME" />ஐ மூடு</translation>
@@ -3659,6 +3668,7 @@
 <translation id="4217571870635786043">சொல்வதை எழுதுவது</translation>
 <translation id="4218081191298393750">இந்தப் பக்கத்தை ஒலியடக்க, ஸ்பீக்கர் ஐகானைக் கிளிக் செய்யவும்</translation>
 <translation id="4220648711404560261">செயலாக்கும் போது பிழை ஏற்பட்டது.</translation>
+<translation id="4222917615373664617">விலைக் கண்காணிப்பு இயக்கப்பட்டுள்ளது. தற்போதைய விலை: <ph name="CURRENT_PRICE" />.</translation>
 <translation id="4223845867739585293">கடவுச்சாவியை உருவாக்குங்கள்</translation>
 <translation id="4225397296022057997">எல்லாத் தளங்களிலும்</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{இந்த நீட்டிப்பிற்கு அனுமதி இல்லை}other{சில நீட்டிப்புகளுக்கு அனுமதி இல்லை}}</translation>
@@ -5822,6 +5832,7 @@
 <translation id="6212168817037875041">திரையை அணை</translation>
 <translation id="6212752530110374741">இணைப்பை மின்னஞ்சல் செய்</translation>
 <translation id="621470880408090483">புளூடூத் சாதனங்களுடன் இணைவதற்குத் தளங்களை அனுமதிக்காதே</translation>
+<translation id="6215039389782910006">{1,plural, =1{உங்கள் கடவுச்சொற்களைப் பாதுகாக்க, 1 நிமிடத்திற்கு எந்தச் செயல்பாடும் இல்லையெனில் <ph name="BRAND" /> லாக் செய்யப்படும்}other{உங்கள் கடவுச்சொற்களைப் பாதுகாக்க, # நிமிடங்களுக்கு எந்தச் செயல்பாடும் இல்லையெனில் <ph name="BRAND" /> லாக் செய்யப்படும்}}</translation>
 <translation id="6216239400972191926">நிராகரிக்கப்பட்ட தளங்களும் ஆப்ஸும்</translation>
 <translation id="6216601812881225442">அளவை மாற்றுவதை உங்கள் கண்டெய்னர் ஆதரிக்கவில்லை. Linuxஸுக்கு முன்கூட்டியே ஒதுக்கப்பட்ட இடத்தின் அளவை மாற்றியமைக்க, காப்புப் பிரதி எடுத்து புதிய கண்டெய்னரில் மீட்டெடுக்கவும்.</translation>
 <translation id="6216696360484424239">தானாக உள்நுழைதல்</translation>

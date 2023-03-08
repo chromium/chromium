@@ -163,6 +163,7 @@
 <translation id="2346474577291266260">Отличный (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Продолжить</translation>
 <translation id="2364498172489649528">Завершено</translation>
+<translation id="2367335866686097760">Клавиша для привязки клавиш</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Отправить отзыв с отчетом</translation>
 <translation id="2407209115954268704">Статус блокировки SIM-карты</translation>
@@ -235,7 +236,9 @@
 <translation id="319101249942218879">Аватар изменен</translation>
 <translation id="3192947282887913208">Аудиофайлы</translation>
 <translation id="3199982728237701504">Автоподатчик документов (двусторонний)</translation>
+<translation id="3211671540163313381">D-pad для привязки клавиш</translation>
 <translation id="3226405216343213872">Поиск сканеров…</translation>
+<translation id="3226657629376379887">Меню действий, связанных с раскладкой</translation>
 <translation id="3246869037381808805">Задания печати, хранящиеся дольше 1 дня, будут удалены</translation>
 <translation id="3268178239013324452">Сбой: крышка открыта</translation>
 <translation id="3275506277319227640">Закрепить <ph name="DIRECTION" /></translation>
@@ -803,6 +806,7 @@
 <translation id="8318753676953949627">Нет изображений</translation>
 <translation id="8336739000755212683">Изменить фото профиля на устройстве</translation>
 <translation id="8347227221149377169">Задания печати</translation>
+<translation id="8351855506390808906">Точка касания для привязки клавиш</translation>
 <translation id="8352772353338965963">Добавить аккаунт в систему множественного входа. Для доступа к аккаунтам, в которые выполнен вход, пароль не требуется, поэтому эту функцию следует использовать только для надежных аккаунтов.</translation>
 <translation id="8364946094152050673">Не указаны серверы доменных имен.</translation>
 <translation id="8372477600026034341">Дополнительные хосты</translation>
@@ -900,6 +904,7 @@
 <translation id="9138630967333032450">Левая клавиша Shift</translation>
 <translation id="9149391708638971077">Запустить проверку памяти</translation>
 <translation id="9157515863513902090">Закрепить на широкой стороне</translation>
+<translation id="9161276708550942948">пробел</translation>
 <translation id="9173638680043580060">Осталось меньше минуты…</translation>
 <translation id="917720651393141712">Проверить</translation>
 <translation id="9188992814426075118">Цвет клавиатуры может автоматически подстраиваться под цвет обоев.</translation>

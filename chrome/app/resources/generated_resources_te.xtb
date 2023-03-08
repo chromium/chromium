@@ -6109,6 +6109,7 @@
 <translation id="6469557521904094793">సెల్యూలార్ నెట్‌వర్క్ ఆన్ చేయడం</translation>
 <translation id="6470823736074966819">నోటిఫికేషన్‌లను మ్యూట్ చేయండి</translation>
 <translation id="6472893788822429178">హోమ్ బటన్‌ను చూపించు</translation>
+<translation id="6474352027343282094">{COUNT,plural, =1{ఈ పరికరంలో {COUNT} పాస్‌వర్డ్ మాత్రమే సేవ్ చేయబడుతుంది. దాన్ని మీ ఇతర పరికరాలలో ఉపయోగించడానికి, &lt;a target='_blank' href='chrome://password-manager/'&gt;దాన్ని మీ Google ఖాతాకు సేవ్ చేయండి&lt;/a&gt;.}other{ఈ పరికరంలో {COUNT} పాస్‌వర్డ్‌లు మాత్రమే సేవ్ చేయబడతాయి. వాటిని మీ ఇతర పరికరాలలో ఉపయోగించడానికి, &lt;a target='_blank' href='chrome://password-manager/'&gt;వాటిని మీ Google ఖాతాకు సేవ్ చేయండి&lt;/a&gt;.}}</translation>
 <translation id="6474498546677193336">ఒక యాప్ ఈ ఫోల్డర్‌ను ఉపయోగిస్తోంది కాబట్టి షేరింగ్‌ను తీసివేయలేకపోయాము. Linux మళ్లీ షట్ డౌన్ అయినప్పుడు ఫోల్డర్ షేరింగ్ తీసివేయబడుతుంది.</translation>
 <translation id="6474884162850599008">Google Drive ఖాతాను డిస్‌కనెక్ట్ చేయి</translation>
 <translation id="6475294023568239942">సెట్టింగ్‌లలో డిస్క్ స్పేస్‌ను ఖాళీ చేయండి లేదా Linux డిస్క్ సైజ్‌ మార్చండి</translation>
@@ -7601,6 +7602,7 @@
 <translation id="7817361223956157679">స్క్రీన్‌పై కీబోర్డ్ ఇంకా Linux యాప్‌లలో పనిచేయడం లేదు</translation>
 <translation id="7818135753970109980">కొత్త థీమ్ జోడించబడింది (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="7819605256207059717">మీ సంస్థ బ్లాక్ చేసింది</translation>
+<translation id="7820400255539998692"><ph name="FILENAME" />‌ను తొలగించండి, తద్వారా ఈ పరికరాన్ని ఉపయోగించే ఇతర వ్యక్తులు మీ పాస్‌వర్డ్‌లను చూడలేరు</translation>
 <translation id="7820561748632634942">అదనపు స్విచ్‌లను అసైన్ చేయాలా?</translation>
 <translation id="782057141565633384">వీడియో అడ్రస్‌ను కా&amp;పీ చేయండి</translation>
 <translation id="7824864914877854148">ఒక ఎర్రర్ కారణంగా బ్యాకప్ చేయడం పూర్తి కాలేదు</translation>

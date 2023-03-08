@@ -345,6 +345,7 @@
 <translation id="1733064249834771892">шрифтове</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Свържете се със системния администратор.</translation>
+<translation id="1736158756193183352"><ph name="BEGIN_LINK" />Влизане<ph name="END_LINK" /> в мрежата</translation>
 <translation id="1736420071277903564">Компютър</translation>
 <translation id="1740951997222943430">Въведете валиден месец на изтичане</translation>
 <translation id="1741613555002899862">Трябва да бъде посочено посредством валиден низ, когато за правилото DnsOverHttpsMode е зададено <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
@@ -1192,6 +1193,7 @@
 <translation id="3949601375789751990">Тук се показва историята ви на сърфиране</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Няма запазени начини на плащане</translation>
+<translation id="3950574001630941635">Рестартиране на урока</translation>
 <translation id="3950820424414687140">Вход</translation>
 <translation id="3958057596965527988">4 x 4 инча</translation>
 <translation id="3961148744525529027">Листът на инструмента за обработване на плащания е наполовина отворен</translation>
