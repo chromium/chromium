@@ -413,7 +413,7 @@ public class CompositorViewHolder extends FrameLayout
                 // Set the size of NTP if we're in the attached state as it may have not been sized
                 // properly when initializing tab. See the comment in #initializeTab() for why.
                 if (tab != null && tab.isNativePage() && isAttachedToWindow(tab.getView())) {
-                    updateWebContentsSize(tab, tab.getView());
+                    updateWebContentsSize(tab);
                 }
             }
 
@@ -642,10 +642,8 @@ public class CompositorViewHolder extends FrameLayout
         }
 
         // Notify the WebContents that the size has changed.
-        View contentView = getContentView();
-        if (contentView != null) {
-            updateWebContentsSize(getCurrentTab(), contentView);
-        }
+        updateWebContentsSize(getCurrentTab());
+
         // Notify the compositor layout that the size has changed.  The layout does not drive
         // the WebContents sizing, so this needs to be done in addition to the above size update.
         onViewportChanged();
@@ -871,7 +869,8 @@ public class CompositorViewHolder extends FrameLayout
         return mCompositorView.getActiveSurfaceView();
     }
 
-    private Tab getCurrentTab() {
+    @VisibleForTesting
+    Tab getCurrentTab() {
         if (mLayoutManager == null || mTabModelSelector == null) return null;
         Tab currentTab = mTabModelSelector.getCurrentTab();
 
@@ -905,7 +904,7 @@ public class CompositorViewHolder extends FrameLayout
             for (int i = 0; i < tabModel.getCount(); ++i) {
                 Tab tab = tabModel.getTabAt(i);
                 if (tab == null) continue;
-                updateWebContentsSize(tab, tab.getContentView());
+                updateWebContentsSize(tab);
             }
         }
     }
@@ -919,16 +918,16 @@ public class CompositorViewHolder extends FrameLayout
      * Window, this method will force it to layout and use that size.
      *
      * @param tab {@link Tab} for which the size of the view is set.
-     * @param view {@link View} of the content.
      */
     @VisibleForTesting
-    void updateWebContentsSize(Tab tab, View view) {
+    void updateWebContentsSize(Tab tab) {
         // When in VR, the CompositorView doesn't control the size of the WebContents.
         if (mIsInVr) return;
-
-        if (tab == null || tab.getWebContents() == null || view == null) return;
+        if (tab == null) return;
 
         WebContents webContents = tab.getWebContents();
+        View view = tab.getContentView();
+        if (webContents == null || view == null) return;
 
         Point viewportSize = getViewportSize();
         int width = viewportSize.x;
@@ -1092,7 +1091,7 @@ public class CompositorViewHolder extends FrameLayout
             int bottomControlsHeight, int bottomControlsMinHeight) {
         if (mTabVisible == null) return;
         onBrowserControlsHeightChanged();
-        updateWebContentsSize(mTabVisible, mTabVisible.getContentView());
+        updateWebContentsSize(getCurrentTab());
         onViewportChanged();
     }
 
@@ -1100,7 +1099,7 @@ public class CompositorViewHolder extends FrameLayout
     public void onTopControlsHeightChanged(int topControlsHeight, int topControlsMinHeight) {
         if (mTabVisible == null) return;
         onBrowserControlsHeightChanged();
-        updateWebContentsSize(mTabVisible, mTabVisible.getContentView());
+        updateWebContentsSize(getCurrentTab());
         onViewportChanged();
     }
 
@@ -1134,7 +1133,7 @@ public class CompositorViewHolder extends FrameLayout
             }
         }
         // Reflect the changes that may have happened in in view/control size.
-        updateWebContentsSize(getCurrentTab(), getContentView());
+        updateWebContentsSize(getCurrentTab());
         if (controlsResizeViewChanged) {
             // Send this after updateWebContentsSize, so that RenderWidgetHost doesn't
             // SynchronizeVisualProperties in a partly-updated state.
@@ -1665,11 +1664,12 @@ public class CompositorViewHolder extends FrameLayout
 
         if (tab.getView() == null) return;
 
-        // TextView with compound drawables in the NTP gets a wrong width when measure/layout is
-        // performed in the unattached state. Delay the layout till #onLayoutChange().
-        // See https://crbug.com/876686.
-        if (tab.isNativePage() && !isAttachedToWindow(tab.getView())) return;
-        updateWebContentsSize(tab, tab.getView());
+        // Update WebContents' size only if the currently visible View is the ContentView. If
+        // unattached, the ContentView will be sized here to ensure it stays in sync with
+        // WebContents but other types of Views can just wait for layout as usual.
+        if (tab.getView() != tab.getContentView()) return;
+
+        updateWebContentsSize(tab);
     }
 
     @Override

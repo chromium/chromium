@@ -139,12 +139,14 @@ public class CompositorViewHolderUnitTest {
         mCompositorViewHolder = spy(new CompositorViewHolder(mContext));
         mCompositorViewHolder.setCompositorViewForTesting(mCompositorView);
         mCompositorViewHolder.setBrowserControlsManager(mBrowserControlsManager);
-        when(mCompositorViewHolder.getContentView()).thenReturn(mContentView);
-        when(mCompositorViewHolder.getWebContents()).thenReturn(mWebContents);
+        when(mCompositorViewHolder.getCurrentTab()).thenReturn(mTab);
         when(mTab.getWebContents()).thenReturn(mWebContents);
+        when(mTab.getContentView()).thenReturn(mContentView);
+        when(mTab.getView()).thenReturn(mContentView);
 
         IBinder windowToken = mock(IBinder.class);
         when(mContainerView.getWindowToken()).thenReturn(windowToken);
+        when(mContentView.getWindowToken()).thenReturn(windowToken);
     }
 
     private List<EventSource> observeTouchAndMotionEvents() {
@@ -344,7 +346,7 @@ public class CompositorViewHolderUnitTest {
         when(mCompositorViewHolder.getWidth()).thenReturn(fullViewportWidth);
         when(mCompositorViewHolder.getHeight()).thenReturn(adjustedHeight);
 
-        mCompositorViewHolder.updateWebContentsSize(mTab, mContainerView);
+        mCompositorViewHolder.updateWebContentsSize(mTab);
 
         // Expect fullViewportHeight since in OVERLAYS_CONTENT the keyboard doesn't cause a resize
         // to the WebContents.
@@ -361,7 +363,7 @@ public class CompositorViewHolderUnitTest {
         when(mCompositorViewHolder.getWidth()).thenReturn(fullViewportWidth);
         when(mCompositorViewHolder.getHeight()).thenReturn(fullViewportHeight);
 
-        mCompositorViewHolder.updateWebContentsSize(mTab, mContainerView);
+        mCompositorViewHolder.updateWebContentsSize(mTab);
         verify(mWebContents, times(1)).setSize(fullViewportWidth, fullViewportHeight);
         verify(mCompositorViewHolder, times(1))
                 .notifyVirtualKeyboardOverlayRect(mWebContents, 0, 0, 0, 0);
@@ -382,7 +384,7 @@ public class CompositorViewHolderUnitTest {
 
         // Ensure updating the WebContents size doesn't dispatch a keyboard geometry event to
         // web content.
-        mCompositorViewHolder.updateWebContentsSize(mTab, mContainerView);
+        mCompositorViewHolder.updateWebContentsSize(mTab);
         verify(mWebContents, times(1)).setSize(viewportWidth, viewportHeight);
         verify(mCompositorViewHolder, times(0))
                 .notifyVirtualKeyboardOverlayRect(mWebContents, 0, 0, 0, 0);
@@ -405,7 +407,7 @@ public class CompositorViewHolderUnitTest {
         when(mCompositorViewHolder.getWidth()).thenReturn(fullViewportWidth);
         when(mCompositorViewHolder.getHeight()).thenReturn(adjustedHeight);
 
-        mCompositorViewHolder.updateWebContentsSize(mTab, mContainerView);
+        mCompositorViewHolder.updateWebContentsSize(mTab);
 
         // In RESIZES_VISUAL mode, CompositorViewHolder ensures that size changes from the virtual
         // keyboard don't affect the WebContents' size.
@@ -430,7 +432,7 @@ public class CompositorViewHolderUnitTest {
         when(mCompositorViewHolder.getWidth()).thenReturn(fullViewportWidth);
         when(mCompositorViewHolder.getHeight()).thenReturn(adjustedHeight);
 
-        mCompositorViewHolder.updateWebContentsSize(mTab, mContainerView);
+        mCompositorViewHolder.updateWebContentsSize(mTab);
 
         // In RESIZES_CONTENT mode, CompositorViewHolder resizes the WebContents by the keyboard
         // height.
@@ -442,7 +444,7 @@ public class CompositorViewHolderUnitTest {
     @Test
     public void testOverlayGeometryWhenViewNotAttachedToWindow() {
         mCompositorViewHolder.updateVirtualKeyboardMode(VirtualKeyboardMode.OVERLAYS_CONTENT);
-        when(mContainerView.getWindowToken()).thenReturn(null);
+        when(mContentView.getWindowToken()).thenReturn(null);
         // Viewport dimensions while keyboard is hidden.
         int fullViewportHeight = 941;
         int fullViewportWidth = 1080;
@@ -458,7 +460,7 @@ public class CompositorViewHolderUnitTest {
 
         // Ensure updateWebContentsSize in OVERLAYS_CONTENT mode doesn't send keyboard geometry
         // events to content if the view is detached.
-        mCompositorViewHolder.updateWebContentsSize(mTab, mContainerView);
+        mCompositorViewHolder.updateWebContentsSize(mTab);
         verify(mCompositorViewHolder, times(0))
                 .notifyVirtualKeyboardOverlayRect(mWebContents, 0, 0, 0, 0);
     }
