@@ -236,21 +236,46 @@ public class PartialCustomTabSideSheetStrategyTest {
     }
 
     @Test
-    public void enterAndExitHtmlFullscreen() {
-        var strategy = createPcctSideSheetStrategy(2000);
-        assertFalse(getWindowAttributes().isFullscreen());
-        int height = getWindowAttributes().height;
-        int width = getWindowAttributes().width;
+    public void noShadowsFullWidth() {
         doReturn(47)
                 .when(mPCCTTestRule.mResources)
                 .getDimensionPixelSize(eq(org.chromium.chrome.R.dimen.custom_tabs_shadow_offset));
+
+        mPCCTTestRule.configLandscapeMode();
+        createLeftPcctSideSheetStrategy(3000);
+
+        mPCCTTestRule.verifyWindowFlagsSet();
+        assertTabIsAtFullLandscapeHeight();
+        assertEquals("Side-sheet has wrong width", DEVICE_WIDTH_LANDSCAPE,
+                mPCCTTestRule.mRealMetrics.widthPixels);
+        assertEquals("Right margin should be zero because side sheet is max width", 0,
+                mPCCTTestRule.mLayoutParams.rightMargin);
+
+        mPCCTTestRule.configPortraitMode();
+        createPcctSideSheetStrategy(2000);
+        assertEquals(
+                "Side-sheet has wrong width", DEVICE_WIDTH, mPCCTTestRule.mRealMetrics.widthPixels);
+        assertEquals("Left margin should be zero because side sheet is max width", 0,
+                mPCCTTestRule.mLayoutParams.leftMargin);
+    }
+
+    @Test
+    public void enterAndExitHtmlFullscreen() {
+        doReturn(47)
+                .when(mPCCTTestRule.mResources)
+                .getDimensionPixelSize(eq(org.chromium.chrome.R.dimen.custom_tabs_shadow_offset));
+        var strategy = createPcctSideSheetStrategy(1000);
+        assertFalse(getWindowAttributes().isFullscreen());
+        int height = getWindowAttributes().height;
+        int width = getWindowAttributes().width;
+        mPCCTTestRule.verifyWindowFlagsSet();
 
         strategy.setFullscreenSupplierForTesting(() -> mFullscreen);
 
         mFullscreen = true;
         strategy.onEnterFullscreen(null, null);
         assertTrue(getWindowAttributes().isFullscreen());
-        assertEquals("Shadow should be removed.", 0, strategy.getShadowOffsetForTesting());
+        assertEquals("Shadow should be removed.", 0, mPCCTTestRule.mLayoutParams.leftMargin);
         verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(DEVICE_HEIGHT), eq(DEVICE_WIDTH));
         clearInvocations(mPCCTTestRule.mOnResizedCallback);
 
@@ -260,7 +285,7 @@ public class PartialCustomTabSideSheetStrategyTest {
         assertFalse(getWindowAttributes().isFullscreen());
         assertEquals(height, getWindowAttributes().height);
         assertEquals(width, getWindowAttributes().width);
-        assertNotEquals("Shadow should be restored.", 0, strategy.getShadowOffsetForTesting());
+        assertNotEquals("Shadow should be restored.", 0, mPCCTTestRule.mLayoutParams.leftMargin);
         verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(height), eq(width));
     }
 

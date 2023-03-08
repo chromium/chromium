@@ -88,7 +88,6 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
     private final AnimatorListener mSpinnerFadeoutAnimatorListener;
     private final @Px int mUnclampedInitialHeight;
     private final boolean mIsFixedHeight;
-    private final int mSideShadowOffsetPx;
 
     private @Px int mFullyExpandedAdjustmentHeight;
     private TabAnimator mTabAnimator;
@@ -157,9 +156,6 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
 
         mUnclampedInitialHeight = initialHeight;
         mIsFixedHeight = isFixedHeight;
-        mSideShadowOffsetPx =
-                mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_shadow_offset)
-                * SIDE_SHADOW_MULTIPLIER;
     }
 
     @Override
@@ -455,7 +451,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
             }
         }
 
-        int sideMargin = isMaxWidthBottomSheet ? mSideShadowOffsetPx : 0;
+        int sideMargin = isMaxWidthBottomSheet ? shadowOffset : 0;
         if (handleView != null) {
             ViewGroup.MarginLayoutParams lp =
                     (ViewGroup.MarginLayoutParams) handleView.getLayoutParams();
@@ -475,7 +471,9 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
 
     @Override
     protected boolean shouldHaveNoShadowOffset() {
-        return mStatus == HeightStatus.TOP;
+        return mStatus == HeightStatus.TOP
+                || (ChromeFeatureList.sCctResizableSideSheet.isEnabled()
+                        && mActivity.getWindow().getAttributes().y <= getFullyExpandedY());
     }
 
     @Override

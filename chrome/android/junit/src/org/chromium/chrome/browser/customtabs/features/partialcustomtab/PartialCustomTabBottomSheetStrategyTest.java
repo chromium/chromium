@@ -1027,6 +1027,26 @@ public class PartialCustomTabBottomSheetStrategyTest {
     }
 
     @Test
+    @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
+    public void noTopShadowFullHeightBottomSheet() {
+        doReturn(8)
+                .when(mPCCTTestRule.mResources)
+                .getDimensionPixelSize(eq(R.dimen.custom_tabs_shadow_offset));
+
+        mPCCTTestRule.configPortraitMode();
+        PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(3000);
+        PartialCustomTabHandleStrategy handleStrategy = strategy.createHandleStrategyForTesting();
+        assertEquals("Top margin should be zero because there is no shadow", 0,
+                mPCCTTestRule.mLayoutParams.topMargin);
+
+        mPCCTTestRule.configLandscapeMode();
+        strategy = createPcctAtHeight(3000);
+        handleStrategy = strategy.createHandleStrategyForTesting();
+        assertEquals("Top margin should be zero because there is no shadow", 0,
+                mPCCTTestRule.mLayoutParams.topMargin);
+    }
+
+    @Test
     public void expandToFullHeightOnFindInPage() {
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(800);
         doReturn(mPCCTTestRule.mDragBarBackground).when(mPCCTTestRule.mDragBar).getBackground();
