@@ -86,16 +86,41 @@ network::mojom::TCPConnectedSocketOptionsPtr CreateTCPConnectedSocketOptions(
   return tcp_connected_socket_options;
 }
 
-content::DirectSocketsDelegate* GetDelegate() {
-  return GetContentClient()->browser()->GetDirectSocketsDelegate();
-}
-
 #if BUILDFLAG(ENABLE_MDNS)
 bool ResemblesMulticastDNSName(base::StringPiece hostname) {
   return base::EndsWith(hostname, ".local") ||
          base::EndsWith(hostname, ".local.");
 }
 #endif  // !BUILDFLAG(ENABLE_MDNS)
+
+bool ValidateAddressAndPort(RenderFrameHost& rfh,
+                            const std::string& address,
+                            uint16_t port,
+                            DirectSocketsDelegate::ProtocolType protocol) {
+  auto* delegate = GetContentClient()->browser()->GetDirectSocketsDelegate();
+  if (!delegate) {
+    // No additional rules from the embedder.
+    return true;
+  }
+
+  return delegate->ValidateAddressAndPort(
+      rfh.GetBrowserContext(), rfh.GetProcess()->GetProcessLock().lock_url(),
+      address, port, protocol);
+}
+
+bool ValidateAddressAndPort(RenderFrameHost& rfh,
+                            const net::IPEndPoint& ip_endpoint,
+                            DirectSocketsDelegate::ProtocolType protocol) {
+  return ValidateAddressAndPort(rfh, ip_endpoint.address().ToString(),
+                                ip_endpoint.port(), protocol);
+}
+
+bool ValidateAddressAndPort(RenderFrameHost& rfh,
+                            const net::HostPortPair& host_port_pair,
+                            DirectSocketsDelegate::ProtocolType protocol) {
+  return ValidateAddressAndPort(rfh, host_port_pair.host(),
+                                host_port_pair.port(), protocol);
+}
 
 }  // namespace
 
@@ -132,13 +157,8 @@ void DirectSocketsServiceImpl::OpenTCPSocket(
     OpenTCPSocketCallback callback) {
   net::HostPortPair remote_addr = options->remote_addr;
 
-  if (auto* delegate = GetDelegate();
-      delegate &&
-      !delegate->ValidateAddressAndPort(
-          render_frame_host().GetBrowserContext(),
-          render_frame_host().GetProcess()->GetProcessLock().lock_url(),
-          remote_addr.host(), remote_addr.port(),
-          blink::mojom::DirectSocketProtocolType::kTcp)) {
+  if (!ValidateAddressAndPort(render_frame_host(), remote_addr,
+                              DirectSocketsDelegate::ProtocolType::kTcp)) {
     std::move(callback).Run(net::ERR_ACCESS_DENIED, absl::nullopt,
                             absl::nullopt, mojo::ScopedDataPipeConsumerHandle(),
                             mojo::ScopedDataPipeProducerHandle());
@@ -172,13 +192,9 @@ void DirectSocketsServiceImpl::OpenConnectedUDPSocket(
     OpenConnectedUDPSocketCallback callback) {
   net::HostPortPair remote_addr = options->remote_addr;
 
-  if (auto* delegate = GetDelegate();
-      delegate &&
-      !delegate->ValidateAddressAndPort(
-          render_frame_host().GetBrowserContext(),
-          render_frame_host().GetProcess()->GetProcessLock().lock_url(),
-          remote_addr.host(), remote_addr.port(),
-          blink::mojom::DirectSocketProtocolType::kUdp)) {
+  if (!ValidateAddressAndPort(
+          render_frame_host(), remote_addr,
+          DirectSocketsDelegate::ProtocolType::kConnectedUdp)) {
     std::move(callback).Run(net::ERR_ACCESS_DENIED, absl::nullopt,
                             absl::nullopt);
     return;
@@ -209,15 +225,8 @@ void DirectSocketsServiceImpl::OpenBoundUDPSocket(
     mojo::PendingReceiver<network::mojom::RestrictedUDPSocket> receiver,
     mojo::PendingRemote<network::mojom::UDPSocketListener> listener,
     OpenBoundUDPSocketCallback callback) {
-  net::IPEndPoint local_addr = options->local_addr;
-
-  if (auto* delegate = GetDelegate();
-      delegate &&
-      !delegate->ValidateAddressAndPort(
-          render_frame_host().GetBrowserContext(),
-          render_frame_host().GetProcess()->GetProcessLock().lock_url(),
-          local_addr.ToStringWithoutPort(), local_addr.port(),
-          blink::mojom::DirectSocketProtocolType::kUdpServer)) {
+  if (!ValidateAddressAndPort(render_frame_host(), options->local_addr,
+                              DirectSocketsDelegate::ProtocolType::kBoundUdp)) {
     std::move(callback).Run(net::ERR_ACCESS_DENIED,
                             /*local_addr=*/absl::nullopt);
     return;
@@ -228,7 +237,7 @@ void DirectSocketsServiceImpl::OpenBoundUDPSocket(
   underlying_socket_options->receive_buffer_size = options->receive_buffer_size;
 
   GetNetworkContext()->CreateRestrictedUDPSocket(
-      std::move(local_addr),
+      options->local_addr,
       /*mode=*/network::mojom::RestrictedUDPSocketMode::BOUND,
       /*traffic_annotation=*/
       net::MutableNetworkTrafficAnnotationTag(kDirectSocketsTrafficAnnotation),
@@ -240,6 +249,14 @@ void DirectSocketsServiceImpl::OpenTCPServerSocket(
     blink::mojom::DirectTCPServerSocketOptionsPtr options,
     mojo::PendingReceiver<network::mojom::TCPServerSocket> socket,
     OpenTCPServerSocketCallback callback) {
+  if (!ValidateAddressAndPort(
+          render_frame_host(), options->local_addr,
+          DirectSocketsDelegate::ProtocolType::kTcpServer)) {
+    std::move(callback).Run(net::ERR_ACCESS_DENIED,
+                            /*local_addr=*/absl::nullopt);
+    return;
+  }
+
   auto server_options = network::mojom::TCPServerSocketOptions::New();
 
   // Default if |options->backlog| is 0.

@@ -28,12 +28,6 @@ enum DirectSocketFailureType {
   kEnterprisePolicy = 6
 };
 
-enum DirectSocketProtocolType {
-  kTcp = 0,
-  kUdp = 1,
-  kUdpServer = 2,
-};
-
 struct DirectTCPSocketOptions {
   network.mojom.HostPortPair remote_addr;
   network.mojom.IPEndPoint? local_addr;
