@@ -165,7 +165,7 @@ UIButton* BubbleCloseButton() {
   // iOS 15.
   if (@available(iOS 15, *)) {
     UIButtonConfiguration* buttonConfiguration =
-        UIButtonConfiguration.plainButtonConfiguration;
+        [UIButtonConfiguration plainButtonConfiguration];
     [buttonConfiguration setImage:buttonImage];
     [buttonConfiguration setContentInsets:NSDirectionalEdgeInsetsMake(
                                               kCloseButtonTopTrailingPadding,

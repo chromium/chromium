@@ -179,7 +179,7 @@ constexpr CGFloat kSignInPromoHeadlineFontSize = 17.0;
     // iOS 15.
     if (@available(iOS 15, *)) {
       UIButtonConfiguration* buttonConfiguration =
-          UIButtonConfiguration.plainButtonConfiguration;
+          [UIButtonConfiguration plainButtonConfiguration];
       _primaryButton = [UIButton buttonWithConfiguration:buttonConfiguration
                                            primaryAction:nil];
     }

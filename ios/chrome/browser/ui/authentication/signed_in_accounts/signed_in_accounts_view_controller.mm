@@ -169,7 +169,7 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
   // iOS 15.
   if (@available(iOS 15, *)) {
     UIButtonConfiguration* buttonConfiguration =
-        UIButtonConfiguration.plainButtonConfiguration;
+        [UIButtonConfiguration plainButtonConfiguration];
     buttonConfiguration.contentInsets =
         NSDirectionalEdgeInsetsMake(8, 16, 8, 16);
     _primaryButton = [UIButton buttonWithConfiguration:buttonConfiguration
@@ -201,7 +201,7 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
   // iOS 15.
   if (@available(iOS 15, *)) {
     UIButtonConfiguration* buttonConfiguration =
-        UIButtonConfiguration.plainButtonConfiguration;
+        [UIButtonConfiguration plainButtonConfiguration];
     buttonConfiguration.contentInsets =
         NSDirectionalEdgeInsetsMake(8, 16, 8, 16);
     _secondaryButton = [UIButton buttonWithConfiguration:buttonConfiguration

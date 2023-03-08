@@ -305,7 +305,7 @@ UIImage* DefaultFaviconImage() {
   // iOS 15.
   if (@available(iOS 15, *)) {
     UIButtonConfiguration* buttonConfiguration =
-        UIButtonConfiguration.plainButtonConfiguration;
+        [UIButtonConfiguration plainButtonConfiguration];
     buttonConfiguration.contentInsets =
         NSDirectionalEdgeInsetsMake(kTabCloseTopInset, kTabCloseLeftInset,
                                     kTabCloseBottomInset, kTabCloseRightInset);

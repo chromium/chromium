@@ -21,7 +21,7 @@ UIButton* PrimaryActionButton(BOOL pointer_interaction_enabled) {
   // iOS 15.
   if (@available(iOS 15, *)) {
     UIButtonConfiguration* buttonConfiguration =
-        UIButtonConfiguration.plainButtonConfiguration;
+        [UIButtonConfiguration plainButtonConfiguration];
     buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
         kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
     primary_blue_button.configuration = buttonConfiguration;

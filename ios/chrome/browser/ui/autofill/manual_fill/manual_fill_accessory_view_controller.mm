@@ -193,7 +193,7 @@ static NSTimeInterval MFAnimationDuration = 0.2;
   // iOS 15.
   if (@available(iOS 15, *)) {
     UIButtonConfiguration* buttonConfiguration =
-        UIButtonConfiguration.plainButtonConfiguration;
+        [UIButtonConfiguration plainButtonConfiguration];
     buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(0, 2, 0, 2);
     self.passwordButton.configuration = buttonConfiguration;
   }

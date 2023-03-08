@@ -153,7 +153,7 @@
   // iOS 15.
   if (@available(iOS 15, *)) {
     UIButtonConfiguration* buttonConfiguration =
-        UIButtonConfiguration.plainButtonConfiguration;
+        [UIButtonConfiguration plainButtonConfiguration];
     buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
         0, kHorizontalEdgeInset, 0, kHorizontalEdgeInset);
     button.configuration = buttonConfiguration;

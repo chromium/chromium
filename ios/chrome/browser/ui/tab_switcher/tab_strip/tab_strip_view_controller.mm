@@ -79,7 +79,7 @@ const CGFloat kNewTabButtonBottomImageInset = -2.0;
   // iOS 15.
   if (@available(iOS 15, *)) {
     UIButtonConfiguration* buttonConfiguration =
-        UIButtonConfiguration.plainButtonConfiguration;
+        [UIButtonConfiguration plainButtonConfiguration];
     buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
         0, kNewTabButtonLeadingImageInset, kNewTabButtonBottomImageInset, 0);
     self.buttonNewTab.configuration = buttonConfiguration;

@@ -51,7 +51,7 @@ const CGFloat kTrackButtonTopPadding = 4;
   // iOS 15.
   if (@available(iOS 15, *)) {
     UIButtonConfiguration* buttonConfiguration =
-        UIButtonConfiguration.plainButtonConfiguration;
+        [UIButtonConfiguration plainButtonConfiguration];
     buttonConfiguration.contentInsets =
         NSDirectionalEdgeInsetsMake(kTrackButtonTopPadding, horizontalPadding,
                                     kTrackButtonTopPadding, horizontalPadding);

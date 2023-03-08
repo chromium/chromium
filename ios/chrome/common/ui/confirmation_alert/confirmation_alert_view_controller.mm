@@ -706,7 +706,7 @@ const CGFloat kFaviconBadgeSideLength = 24;
   // iOS 15.
   if (@available(iOS 15, *)) {
     UIButtonConfiguration* buttonConfiguration =
-        UIButtonConfiguration.plainButtonConfiguration;
+        [UIButtonConfiguration plainButtonConfiguration];
     buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
         kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
     secondaryActionButton.configuration = buttonConfiguration;
@@ -746,7 +746,7 @@ const CGFloat kFaviconBadgeSideLength = 24;
   // iOS 15.
   if (@available(iOS 15, *)) {
     UIButtonConfiguration* buttonConfiguration =
-        UIButtonConfiguration.plainButtonConfiguration;
+        [UIButtonConfiguration plainButtonConfiguration];
     buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
         kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
     tertiaryActionButton.configuration = buttonConfiguration;

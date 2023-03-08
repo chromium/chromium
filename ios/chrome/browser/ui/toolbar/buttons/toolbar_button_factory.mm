@@ -236,7 +236,7 @@ const CGFloat kSymbolToolbarPointSize = 24;
   // iOS 15.
   if (@available(iOS 15, *)) {
     UIButtonConfiguration* buttonConfiguration =
-        UIButtonConfiguration.plainButtonConfiguration;
+        [UIButtonConfiguration plainButtonConfiguration];
     buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
         0, kCancelButtonHorizontalInset, 0, kCancelButtonHorizontalInset);
     cancelButton.configuration = buttonConfiguration;

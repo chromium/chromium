@@ -250,7 +250,7 @@ NSString* const kFormInputAccessoryViewAccessibilityID =
   // iOS 15.
   if (@available(iOS 15, *)) {
     UIButtonConfiguration* buttonConfiguration =
-        UIButtonConfiguration.plainButtonConfiguration;
+        [UIButtonConfiguration plainButtonConfiguration];
     buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
         0, ManualFillCloseButtonLeftInset, 0, ManualFillCloseButtonRightInset);
     closeButton.configuration = buttonConfiguration;

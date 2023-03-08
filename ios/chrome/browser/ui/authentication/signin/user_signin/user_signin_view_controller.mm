@@ -142,7 +142,14 @@ enum AuthenticationButtonType {
         setTitle:l10n_util::GetNSString(
                      IDS_IOS_ACCOUNT_UNIFIED_CONSENT_ADD_ACCOUNT)
         forState:UIControlStateNormal];
-    [self.primaryActionButton setImage:nil forState:UIControlStateNormal];
+    // TODO(crbug.com/1418068): Simplify after minimum version required is >=
+    // iOS 15.
+    if (@available(iOS 15, *)) {
+      DCHECK(self.primaryActionButton.configuration);
+      self.primaryActionButton.configuration.image = nil;
+    } else {
+      [self.primaryActionButton setImage:nil forState:UIControlStateNormal];
+    }
     self.primaryActionButton.tag = AuthenticationButtonTypeAddAccount;
     self.primaryActionButton.accessibilityIdentifier =
         kAddAccountAccessibilityIdentifier;
@@ -160,8 +167,17 @@ enum AuthenticationButtonType {
     // Set button "more" down directional arrow image.
     UIImage* buttonImage = [[UIImage imageNamed:@"signin_confirmation_more"]
         imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    [self.primaryActionButton setImage:buttonImage
-                              forState:UIControlStateNormal];
+
+    // TODO(crbug.com/1418068): Simplify after minimum version required is >=
+    // iOS 15.
+    if (@available(iOS 15, *)) {
+      DCHECK(self.primaryActionButton.configuration);
+      self.primaryActionButton.configuration.image = buttonImage;
+    } else {
+      [self.primaryActionButton setImage:buttonImage
+                                forState:UIControlStateNormal];
+    }
+
     if (UIApplication.sharedApplication.userInterfaceLayoutDirection ==
         UIUserInterfaceLayoutDirectionLeftToRight) {
       // TODO(crbug.com/1418068): Simplify after minimum version required is >=
@@ -196,7 +212,14 @@ enum AuthenticationButtonType {
     [self.primaryActionButton
         setTitle:l10n_util::GetNSString(self.acceptSigninButtonStringId)
         forState:UIControlStateNormal];
-    [self.primaryActionButton setImage:nil forState:UIControlStateNormal];
+    // TODO(crbug.com/1418068): Simplify after minimum version required is >=
+    // iOS 15.
+    if (@available(iOS 15, *)) {
+      DCHECK(self.primaryActionButton.configuration);
+      self.primaryActionButton.configuration.image = nil;
+    } else {
+      [self.primaryActionButton setImage:nil forState:UIControlStateNormal];
+    }
     self.primaryActionButton.tag = AuthenticationButtonTypeConfirmation;
     self.primaryActionButton.accessibilityIdentifier =
         kConfirmationAccessibilityIdentifier;
@@ -266,7 +289,7 @@ enum AuthenticationButtonType {
   // iOS 15.
   if (@available(iOS 15, *)) {
     UIButtonConfiguration* buttonConfiguration =
-        UIButtonConfiguration.plainButtonConfiguration;
+        [UIButtonConfiguration plainButtonConfiguration];
     self.primaryActionButton =
         [UIButton buttonWithConfiguration:buttonConfiguration
                             primaryAction:nil];
@@ -287,7 +310,7 @@ enum AuthenticationButtonType {
   // iOS 15.
   if (@available(iOS 15, *)) {
     UIButtonConfiguration* buttonConfiguration =
-        UIButtonConfiguration.plainButtonConfiguration;
+        [UIButtonConfiguration plainButtonConfiguration];
     self.secondaryActionButton =
         [UIButton buttonWithConfiguration:buttonConfiguration
                             primaryAction:nil];

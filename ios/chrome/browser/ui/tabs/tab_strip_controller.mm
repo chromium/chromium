@@ -553,7 +553,7 @@ const CGFloat kSymbolSize = 18;
     // iOS 15.
     if (@available(iOS 15, *)) {
       UIButtonConfiguration* buttonConfiguration =
-          UIButtonConfiguration.plainButtonConfiguration;
+          [UIButtonConfiguration plainButtonConfiguration];
       buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
           0, kNewTabButtonLeadingImageInset, kNewTabButtonBottomImageInset, 0);
       _buttonNewTab.configuration = buttonConfiguration;

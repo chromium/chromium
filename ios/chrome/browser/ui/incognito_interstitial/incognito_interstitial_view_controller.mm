@@ -281,7 +281,7 @@ const int kURLLabelDefaultNumberOfLines = 3;
     // iOS 15.
     if (@available(iOS 15, *)) {
       UIButtonConfiguration* buttonConfiguration =
-          UIButtonConfiguration.plainButtonConfiguration;
+          [UIButtonConfiguration plainButtonConfiguration];
       buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
           CGFLOAT_EPSILON, CGFLOAT_EPSILON, CGFLOAT_EPSILON, CGFLOAT_EPSILON);
       _expandURLButton.configuration = buttonConfiguration;
