@@ -54236,7 +54236,6 @@
           "--log-wptreport",
           "--xvfb"
         ],
-        "experiment_percentage": 100,
         "isolate_name": "wpt_tests_isolate_content_shell",
         "merge": {
           "args": [
@@ -54269,7 +54268,6 @@
           "--flag-specific",
           "highdpi"
         ],
-        "experiment_percentage": 100,
         "isolate_name": "wpt_tests_isolate_content_shell",
         "merge": {
           "args": [
@@ -54303,7 +54301,6 @@
           "--flag-specific",
           "disable-site-isolation-trials"
         ],
-        "experiment_percentage": 100,
         "isolate_name": "wpt_tests_isolate_content_shell",
         "merge": {
           "args": [
@@ -54373,7 +54370,6 @@
         "args": [
           "--log-wptreport"
         ],
-        "experiment_percentage": 100,
         "isolate_name": "wpt_tests_isolate",
         "merge": {
           "args": [
@@ -58825,7 +58821,6 @@
           "--log-wptreport",
           "--xvfb"
         ],
-        "experiment_percentage": 100,
         "isolate_name": "wpt_tests_isolate_content_shell",
         "isolate_profile_data": true,
         "merge": {
@@ -64984,7 +64979,6 @@
           "--target",
           "Release_x64"
         ],
-        "experiment_percentage": 100,
         "isolate_name": "wpt_tests_isolate_content_shell",
         "isolate_profile_data": true,
         "merge": {
@@ -65023,7 +65017,6 @@
           "--target",
           "Release_x64"
         ],
-        "experiment_percentage": 100,
         "isolate_name": "wpt_tests_isolate_content_shell",
         "isolate_profile_data": true,
         "merge": {

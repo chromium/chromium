@@ -231,6 +231,10 @@ class BuilderList:
         steps = self._steps(builder_name)
         return steps[step_name].get('product', 'content_shell')
 
+    def has_experimental_steps(self, builder_name):
+        steps = self.step_names_for_builder(builder_name)
+        return any(['experimental' in step for step in steps])
+
     def flag_specific_option(self, builder_name, step_name):
         steps = self._steps(builder_name)
         # TODO(crbug/1291020): We cannot validate the step name here because

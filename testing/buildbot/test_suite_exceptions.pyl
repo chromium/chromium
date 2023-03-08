@@ -4663,6 +4663,22 @@
         'swarming': {
           'shards': 8,
         },
+        'experiment_percentage': 100,
+      },
+      'mac10.15-wpt-content-shell-fyi-rel': {
+        'experiment_percentage': 100,
+      },
+      'mac11-wpt-content-shell-fyi-rel': {
+        'experiment_percentage': 100,
+      },
+      'mac12-arm64-wpt-content-shell-fyi-rel': {
+        'experiment_percentage': 100,
+      },
+      'mac13-arm64-wpt-content-shell-fyi-rel': {
+        'experiment_percentage': 100,
+      },
+      'mac13-wpt-content-shell-fyi-rel': {
+        'experiment_percentage': 100,
       },
       'win10-wpt-content-shell-fyi-rel': {
         'args': [

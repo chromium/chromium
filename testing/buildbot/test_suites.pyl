@@ -5635,7 +5635,6 @@
         'swarming': {
           'shards': 15,
         },
-        'experiment_percentage': 100,
       },
     },
 
@@ -5656,7 +5655,6 @@
         'swarming': {
           'shards': 15,
         },
-        'experiment_percentage': 100,
       },
     },
 
@@ -5701,7 +5699,6 @@
         'swarming': {
           'shards': 3,
         },
-        'experiment_percentage': 100,
       },
     },
 
@@ -5770,7 +5767,6 @@
         'swarming': {
           'shards': 10,
         },
-        'experiment_percentage': 100,
       },
     },
   },

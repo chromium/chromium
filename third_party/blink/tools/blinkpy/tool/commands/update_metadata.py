@@ -408,7 +408,8 @@ class UpdateMetadata(Command):
         # builders are green and no longer experimental.
         build_ids = [
             build.build_id for build, (_, status) in build_statuses.items()
-            if build.build_id and (status == 'FAILURE' or status == 'SUCCESS')
+            if build.build_id and (status == 'FAILURE' or self._tool.builders.
+                                   has_experimental_steps(build.builder_name))
         ]
         urls = self._tool.results_fetcher.fetch_wpt_report_urls(*build_ids)
         if build_ids and not urls:
