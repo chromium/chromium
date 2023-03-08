@@ -27,7 +27,7 @@ message ShoppingSpecifics {
   optional uint64 product_cluster_id = 4;
 
   // Whether the product is currently being tracked.
-  optional bool is_price_tracked = 5;
+  optional bool is_price_tracked = 5 [deprecated = true];
 
   // The offer id for the product.
   optional fixed64 offer_id = 6;

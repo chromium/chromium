@@ -133,10 +133,9 @@ ShoppingService::ShoppingService(
       this, bookmark_model_, pref_service_);
 
   // In testing, the objects required for metrics may be null.
-  if (pref_service_ && bookmark_model_) {
+  if (pref_service_ && bookmark_model_ && subscriptions_manager_) {
     scheduled_metrics_manager_ =
-        std::make_unique<metrics::ScheduledMetricsManager>(pref_service_,
-                                                           bookmark_model_);
+        std::make_unique<metrics::ScheduledMetricsManager>(pref_service_, this);
   }
 }
 

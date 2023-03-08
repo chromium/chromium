@@ -251,8 +251,9 @@ void BookmarkBubbleView::ShowBubble(
 
     const gfx::Image& product_image = tab_helper->GetProductImage();
     if (product_info.has_value() && !product_image.IsEmpty()) {
-      bool is_price_tracked =
-          commerce::IsBookmarkPriceTracked(bookmark_model, bookmark_node);
+      bool is_price_tracked = shopping_service->IsSubscribedFromCache(
+          commerce::BuildUserSubscriptionForClusterId(
+              product_info->product_cluster_id));
       dialog_model_builder.AddSeparator().AddCustomField(
           std::make_unique<views::BubbleDialogModelHost::CustomView>(
               std::make_unique<PriceTrackingView>(

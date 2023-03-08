@@ -25,6 +25,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -75,6 +76,14 @@ class PriceTrackingIconViewInteractiveTest : public InProcessBrowserTest {
     bookmarks::BookmarkModel* bookmark_model =
         BookmarkModelFactory::GetForBrowserContext(browser()->profile());
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
+
+    // Remove the original tab helper so we don't get into a bad situation when
+    // we go to replace the shopping service with the mock one. The old tab
+    // helper is still holding a reference to the original shopping service and
+    // other dependencies which we switch out below (leaving some dangling
+    // pointers on destruction).
+    browser()->tab_strip_model()->GetActiveWebContents()->RemoveUserData(
+        commerce::ShoppingListUiTabHelper::UserDataKey());
 
     mock_shopping_service_ = static_cast<commerce::MockShoppingService*>(
         commerce::ShoppingServiceFactory::GetInstance()

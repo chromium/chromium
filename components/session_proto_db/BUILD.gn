@@ -9,6 +9,8 @@ source_set("core") {
   sources = [ "session_proto_storage.h" ]
 
   deps = [ "//components/leveldb_proto" ]
+
+  public_deps = [ "//third_party/leveldatabase" ]
 }
 
 source_set("session_proto_db") {

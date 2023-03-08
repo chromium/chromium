@@ -39,6 +39,14 @@ class BookmarkBubbleViewBrowserTest : public DialogBrowserTest {
       const BookmarkBubbleViewBrowserTest&) = delete;
 
   void SetUpOnMainThread() override {
+    auto* helper = commerce::ShoppingListUiTabHelper::FromWebContents(
+        browser()->tab_strip_model()->GetActiveWebContents());
+
+    // Clear the original shopping service before we replace it with the new one
+    // so we're not dealing with dangling pointers on destruction (of both the
+    // service itself and its observers).
+    helper->SetShoppingServiceForTesting(nullptr);
+
     mock_shopping_service_ = static_cast<commerce::MockShoppingService*>(
         commerce::ShoppingServiceFactory::GetInstance()
             ->SetTestingFactoryAndUse(
@@ -46,6 +54,8 @@ class BookmarkBubbleViewBrowserTest : public DialogBrowserTest {
                 base::BindRepeating([](content::BrowserContext* context) {
                   return commerce::MockShoppingService::Build();
                 })));
+
+    helper->SetShoppingServiceForTesting(mock_shopping_service_);
   }
 
   // DialogBrowserTest:
@@ -65,6 +75,7 @@ class BookmarkBubbleViewBrowserTest : public DialogBrowserTest {
     if (name == "bookmark_details_on_trackable_product") {
       mock_shopping_service_->SetResponseForGetProductInfoForUrl(
           commerce::ProductInfo());
+      mock_shopping_service_->SetIsSubscribedCallbackValue(false);
       MockShoppingListUiTabHelper::CreateForWebContents(
           browser()->tab_strip_model()->GetActiveWebContents());
       MockShoppingListUiTabHelper* mock_tab_helper =

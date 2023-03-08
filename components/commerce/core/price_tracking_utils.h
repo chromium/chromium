@@ -24,13 +24,16 @@ class BookmarkNode;
 
 namespace commerce {
 
+struct CommerceSubscription;
 struct ProductInfo;
 class ShoppingService;
 
-// Return whether a bookmark is price tracked. This does not check the
-// subscriptions backend, only the flag in the bookmark meta.
-bool IsBookmarkPriceTracked(bookmarks::BookmarkModel* model,
-                            const bookmarks::BookmarkNode* node);
+// Return whether a bookmark is price tracked. The result is passed to
+// |callback|.
+void IsBookmarkPriceTracked(ShoppingService* service,
+                            bookmarks::BookmarkModel* model,
+                            const bookmarks::BookmarkNode* node,
+                            base::OnceCallback<void(bool)> callback);
 
 // Return whether the |node| is a product bookmark.
 bool IsProductBookmark(bookmarks::BookmarkModel* model,
@@ -75,13 +78,18 @@ std::vector<const bookmarks::BookmarkNode*> GetBookmarksWithClusterId(
     uint64_t cluster_id,
     size_t max_count = 0);
 
-// Get all bookmarks that are price tracked. This only checks the bit in the
-// bookmark metadata and does not make a call to the backend. The returned
-// vector of BookmarkNodes is owned by the caller, but the nodes pointed to
-// are not -- those live for as long as the BookmarkModel (|model|) is alive
-// which has the same lifetime as the current BrowserContext.
-std::vector<const bookmarks::BookmarkNode*> GetAllPriceTrackedBookmarks(
-    bookmarks::BookmarkModel* model);
+// Gets all bookmarks that are price tracked. This method may make a call to the
+// subscriptions backend if the information is stale. The list of price tracked
+// bookmarks is provided as a param to the callback passed to this function.
+// Ownership of the vector of bookmark nodes is transferred to the caller, but
+// the individual bookmarks that the pointers reference are not -- those exist
+// only as long as the BookmarkModel does (which is bound to the browser
+// context).
+void GetAllPriceTrackedBookmarks(
+    ShoppingService* shopping_service,
+    bookmarks::BookmarkModel* bookmark_model,
+    base::OnceCallback<void(std::vector<const bookmarks::BookmarkNode*>)>
+        callback);
 
 // Get all shopping bookmarks. The returned vector of BookmarkNodes is owned by
 // the caller, but the nodes pointed to are not -- those live for as long as
@@ -104,6 +112,10 @@ void MaybeEnableEmailNotifications(PrefService* pref_service);
 // Whether the email notification is explicitly disabled by the user. Return
 // false if we are using the default preference value.
 bool IsEmailDisabledByUser(PrefService* pref_service);
+
+// Build a user-tracked price tracking subscription object for the provided
+// cluster ID.
+CommerceSubscription BuildUserSubscriptionForClusterId(uint64_t cluster_id);
 
 }  // namespace commerce
 

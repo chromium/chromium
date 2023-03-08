@@ -183,6 +183,7 @@ TEST_F(BookmarkBubbleViewTest, PriceTrackingViewIsVisible) {
 
   SimulateProductImageIsAvailable(/*with_valid_image=*/true);
 
+  mock_shopping_service->SetIsSubscribedCallbackValue(false);
   mock_shopping_service->SetResponseForGetProductInfoForUrl(
       commerce::ProductInfo());
   CreateBubbleView();

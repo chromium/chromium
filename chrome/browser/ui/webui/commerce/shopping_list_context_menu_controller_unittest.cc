@@ -52,6 +52,8 @@ class ShoppingListContextMenuControllerTest : public testing::Test {
     return bookmarks::GetBookmarkNodeByID(bookmark_model_.get(), bookmark_id_);
   }
 
+  MockShoppingService* shopping_service() { return shopping_service_.get(); }
+
   commerce::ShoppingListContextMenuController* controller() {
     return controller_.get();
   }
@@ -71,7 +73,13 @@ class ShoppingListContextMenuControllerTest : public testing::Test {
 };
 
 TEST_F(ShoppingListContextMenuControllerTest, AddMenuItem) {
-  ASSERT_TRUE(IsBookmarkPriceTracked(bookmark_model(), bookmark_node()));
+  shopping_service()->SetIsSubscribedCallbackValue(true);
+
+  // Make sure the subscription is checked against the shopping service. It
+  // should be checked twice -- once each for subscribe and unsubscribe.
+  EXPECT_CALL(*shopping_service(),
+              IsSubscribedFromCache(SubscriptionWithId("123")))
+      .Times(2);
 
   controller()->AddPriceTrackingItemForBookmark();
   ASSERT_EQ(menu_mode()->GetItemCount(), 1UL);
@@ -81,15 +89,7 @@ TEST_F(ShoppingListContextMenuControllerTest, AddMenuItem) {
             l10n_util::GetStringUTF16(IDS_SIDE_PANEL_UNTRACK_BUTTON));
   menu_mode()->Clear();
 
-  std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
-      power_bookmarks::GetNodePowerBookmarkMeta(bookmark_model(),
-                                                bookmark_node());
-  power_bookmarks::ShoppingSpecifics* specifics =
-      meta->mutable_shopping_specifics();
-  specifics->set_is_price_tracked(false);
-  power_bookmarks::SetNodePowerBookmarkMeta(bookmark_model(), bookmark_node(),
-                                            std::move(meta));
-  ASSERT_FALSE(IsBookmarkPriceTracked(bookmark_model(), bookmark_node()));
+  shopping_service()->SetIsSubscribedCallbackValue(false);
 
   controller()->AddPriceTrackingItemForBookmark();
   ASSERT_EQ(menu_mode()->GetItemCount(), 1UL);
@@ -100,21 +100,31 @@ TEST_F(ShoppingListContextMenuControllerTest, AddMenuItem) {
 }
 
 TEST_F(ShoppingListContextMenuControllerTest, ExecuteMenuCommand) {
-  ASSERT_TRUE(IsBookmarkPriceTracked(bookmark_model(), bookmark_node()));
+  shopping_service()->SetIsSubscribedCallbackValue(true);
 
+  // Make sure unsubscribe is called with the expected cluster ID.
+  EXPECT_CALL(*shopping_service(),
+              Unsubscribe(VectorHasSubscriptionWithId("123"), testing::_));
   ASSERT_TRUE(controller()->ExecuteCommand(
       IDC_BOOKMARK_BAR_UNTRACK_PRICE_FOR_SHOPPING_BOOKMARK));
   task_environment_.RunUntilIdle();
-  ASSERT_FALSE(IsBookmarkPriceTracked(bookmark_model(), bookmark_node()));
+
+  shopping_service()->SetIsSubscribedCallbackValue(false);
+
   ASSERT_EQ(0, user_action_tester_.GetActionCount(
                    "Commerce.PriceTracking.SidePanel.Track.ContextMenu"));
   ASSERT_EQ(1, user_action_tester_.GetActionCount(
                    "Commerce.PriceTracking.SidePanel.Untrack.ContextMenu"));
 
+  // Make sure subscribe is called with the expected cluster ID.
+  EXPECT_CALL(*shopping_service(),
+              Subscribe(VectorHasSubscriptionWithId("123"), testing::_));
   ASSERT_TRUE(controller()->ExecuteCommand(
       IDC_BOOKMARK_BAR_TRACK_PRICE_FOR_SHOPPING_BOOKMARK));
   task_environment_.RunUntilIdle();
-  ASSERT_TRUE(IsBookmarkPriceTracked(bookmark_model(), bookmark_node()));
+
+  shopping_service()->SetIsSubscribedCallbackValue(true);
+
   ASSERT_EQ(1, user_action_tester_.GetActionCount(
                    "Commerce.PriceTracking.SidePanel.Track.ContextMenu"));
   ASSERT_EQ(1, user_action_tester_.GetActionCount(

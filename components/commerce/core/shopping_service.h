@@ -99,6 +99,7 @@ class ShoppingBookmarkModelObserver;
 class SubscriptionsManager;
 class SubscriptionsObserver;
 class WebWrapper;
+enum class SubscriptionType;
 struct CommerceSubscription;
 
 // Information returned by the product info APIs.

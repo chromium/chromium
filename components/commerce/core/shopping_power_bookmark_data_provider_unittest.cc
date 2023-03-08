@@ -13,11 +13,10 @@
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/commerce/core/mock_shopping_service.h"
-#include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/shopping_power_bookmark_data_provider.h"
 #include "components/commerce/core/shopping_service.h"
-#include "components/commerce/core/test_utils.h"
 #include "components/power_bookmarks/core/power_bookmark_service.h"
+#include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -54,10 +53,8 @@ class ShoppingPowerBookmarkDataProviderTest : public testing::Test {
   std::unique_ptr<ShoppingPowerBookmarkDataProvider> data_provider_;
 };
 
-// Ensure a new bookmark with a cluster ID that is already tracked by the user
-// is automatically tracked.
-TEST_F(ShoppingPowerBookmarkDataProviderTest,
-       PriceTrackingStateForNewBookmark_Tracked) {
+// Ensure metadata is attached for the new bookmark.
+TEST_F(ShoppingPowerBookmarkDataProviderTest, EnsureMetaAttached) {
   uint64_t cluster_id = 12345L;
 
   const bookmarks::BookmarkNode* new_bookmark = bookmark_model_->AddNewURL(
@@ -71,44 +68,10 @@ TEST_F(ShoppingPowerBookmarkDataProviderTest,
   info.product_cluster_id = cluster_id;
 
   shopping_service_->SetResponseForGetProductInfoForUrl(info);
-  shopping_service_->SetIsClusterIdTrackedByUserResponse(true);
-
-  // Add a product that is already tracked with the same cluster ID as the new
-  // product.
-  AddProductBookmark(bookmark_model_.get(), u"Product",
-                     GURL("http://example.com/1"), cluster_id, true);
 
   data_provider_->AttachMetadataForNewBookmark(new_bookmark, meta.get());
-  base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(IsBookmarkPriceTracked(bookmark_model_.get(), new_bookmark));
-}
-
-TEST_F(ShoppingPowerBookmarkDataProviderTest,
-       PriceTrackingStateForNewBookmark_NotTracked) {
-  uint64_t cluster_id = 12345L;
-
-  const bookmarks::BookmarkNode* new_bookmark = bookmark_model_->AddNewURL(
-      bookmark_model_->other_node(), 0, u"Title", GURL("https://example.com"));
-
-  std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
-      std::make_unique<power_bookmarks::PowerBookmarkMeta>();
-
-  ProductInfo info;
-  info.title = "Product";
-  info.product_cluster_id = cluster_id;
-
-  shopping_service_->SetResponseForGetProductInfoForUrl(info);
-  shopping_service_->SetIsClusterIdTrackedByUserResponse(false);
-
-  // Add a product with the same ID that isn't tracked.
-  AddProductBookmark(bookmark_model_.get(), u"Product",
-                     GURL("http://example.com/1"), cluster_id, false);
-
-  data_provider_->AttachMetadataForNewBookmark(new_bookmark, meta.get());
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_FALSE(IsBookmarkPriceTracked(bookmark_model_.get(), new_bookmark));
+  EXPECT_EQ(meta->shopping_specifics().product_cluster_id(), cluster_id);
 }
 
 }  // namespace
