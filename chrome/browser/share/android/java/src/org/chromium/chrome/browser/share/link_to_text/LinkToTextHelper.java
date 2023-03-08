@@ -178,6 +178,7 @@ public class LinkToTextHelper {
         if (producer == null) {
             getExistingSelectorsFromFrameAtIndex(
                     selectorsList, renderFrameHosts, callback, index + 1);
+            return;
         }
 
         getExistingSelectorsForFrame(producer, (selectors) -> {
@@ -233,11 +234,11 @@ public class LinkToTextHelper {
      * This checks that the URL has a text fragment selector (e.g: #:~:text=selector) attached.
      *
      * @param url The url which may include the text fragment.
-     * @returns whether or not the url had a text fragment selector.
+     * @return whether or not the url had a text fragment selector.
      */
     public static boolean hasTextFragment(GURL url) {
         Uri uri = Uri.parse(url.getSpec());
         String fragment = uri.getEncodedFragment();
-        return fragment != null ? fragment.contains(TEXT_FRAGMENT_PREFIX) : false;
+        return (fragment != null) && fragment.contains(TEXT_FRAGMENT_PREFIX);
     }
 }
