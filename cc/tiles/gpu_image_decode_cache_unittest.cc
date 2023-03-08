@@ -2952,7 +2952,7 @@ TEST_P(GpuImageDecodeCacheTest,
        NonLazyImageUploadTaskCancelledMultipleClients) {
   if (do_yuv_decode_) {
     // YUV bitmap images do not happen, so this test will always skip for YUV.
-    GTEST_SKIP();
+    return;
   }
 
   auto cache = CreateCache();
