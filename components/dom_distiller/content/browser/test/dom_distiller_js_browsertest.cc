@@ -75,6 +75,13 @@ class DomDistillerJsTest : public content::ContentBrowserTest {
     content::ContentBrowserTest::SetUpOnMainThread();
   }
 
+  // content::ContentBrowserTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+#if BUILDFLAG(IS_FUCHSIA)
+    command_line->AppendSwitchNative("ozone-platform", "headless");
+#endif
+  }
+
   void OnJsTestExecutionDone(base::Value value) {
     result_ = std::move(value);
     std::move(js_test_execution_done_callback_).Run();
