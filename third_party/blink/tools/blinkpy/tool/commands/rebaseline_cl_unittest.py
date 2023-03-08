@@ -331,15 +331,14 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
         for build in self.builds:
             self.tool.results_fetcher.set_results(build,
                                                   self.web_test_resultdb)
-        with mock.patch('blinkpy.common.message_pool.get'):
-            exit_code = self.command.execute(
-                self.command_options(resultDB=True), [], self.tool)
-            self.assertEqual(exit_code, 0)
-            self.assertLog([
-                'INFO: All builds finished.\n',
-                'INFO: Rebaselining one/missing.html\n',
-                'INFO: Rebaselining two/image-fail.html\n',
-            ])
+        exit_code = self.command.execute(self.command_options(resultDB=True),
+                                         [], self.tool)
+        self.assertEqual(exit_code, 0)
+        self.assertLog([
+            'INFO: All builds finished.\n',
+            'INFO: Rebaselining one/missing.html\n',
+            'INFO: Rebaselining two/image-fail.html\n',
+        ])
 
     def test_execute_with_test_name_file(self):
         fs = self.mac_port.host.filesystem
@@ -643,40 +642,39 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
                               Build('MOCK Try Win', 5000, 'Build-1'),
                               'blink_web_tests (with patch)')
         self.command.rebaseline(self.command_options(), test_baseline_set)
-        self.assertEqual(self.tool.executive.calls,
-                         [[[
-                             'python',
-                             'echo',
-                             'copy-existing-baselines-internal',
-                             '--test',
-                             'one/flaky-fail.html',
-                             '--suffixes',
-                             'wav',
-                             '--port-name',
-                             'test-win-win7',
-                         ]],
-                          [[
-                              'python',
-                              'echo',
-                              'rebaseline-test-internal',
-                              '--test',
-                              'one/flaky-fail.html',
-                              '--suffixes',
-                              'wav',
-                              '--port-name',
-                              'test-win-win7',
-                              '--builder',
-                              'MOCK Try Win',
-                              '--build-number',
-                              '5000',
-                              '--step-name',
-                              'blink_web_tests (with patch)',
-                          ]]])
-        self.tool.main.assert_called_once_with([
-            'echo',
-            'optimize-baselines',
-            '--no-manifest-update',
-            'one/flaky-fail.html',
+        self.tool.main.assert_has_calls([
+            mock.call([
+                'echo',
+                'copy-existing-baselines-internal',
+                '--test',
+                'one/flaky-fail.html',
+                '--suffixes',
+                'wav',
+                '--port-name',
+                'test-win-win7',
+            ]),
+            mock.call([
+                'echo',
+                'rebaseline-test-internal',
+                '--test',
+                'one/flaky-fail.html',
+                '--suffixes',
+                'wav',
+                '--port-name',
+                'test-win-win7',
+                '--builder',
+                'MOCK Try Win',
+                '--build-number',
+                '5000',
+                '--step-name',
+                'blink_web_tests (with patch)',
+            ]),
+            mock.call([
+                'echo',
+                'optimize-baselines',
+                '--no-manifest-update',
+                'one/flaky-fail.html',
+            ]),
         ])
 
     def test_rebaseline_command_invocations_multiple_steps(self):
@@ -712,42 +710,69 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             self.command_options(builders=['MOCK Try Linux Multiple Steps']),
             ['one/text-fail.html', 'one/does-not-exist.html'], self.tool)
         self.assertEqual(exit_code, 0)
-        self.assertEqual(sorted(self.tool.executive.calls[0]), [
-            [
-                'python', 'echo', 'copy-existing-baselines-internal', '--test',
-                'one/text-fail.html', '--suffixes', 'txt', '--port-name',
-                'test-linux-trusty'
-            ],
-            [
-                'python', 'echo', 'copy-existing-baselines-internal', '--test',
-                'one/text-fail.html', '--suffixes', 'txt', '--port-name',
-                'test-linux-trusty', '--flag-specific',
-                'disable-site-isolation-trials'
-            ],
-        ])
-        self.assertEqual(sorted(self.tool.executive.calls[1]), [
-            [
-                'python', 'echo', 'rebaseline-test-internal', '--test',
-                'one/text-fail.html', '--suffixes', 'txt', '--port-name',
-                'test-linux-trusty', '--builder',
-                'MOCK Try Linux Multiple Steps', '--build-number', '9000',
-                '--step-name', 'blink_web_tests (with patch)'
-            ],
-            [
-                'python', 'echo', 'rebaseline-test-internal', '--test',
-                'one/text-fail.html', '--suffixes', 'txt', '--port-name',
-                'test-linux-trusty', '--flag-specific',
-                'disable-site-isolation-trials', '--builder',
-                'MOCK Try Linux Multiple Steps', '--build-number', '9000',
+        self.tool.main.assert_has_calls([
+            mock.call([
+                'echo',
+                'copy-existing-baselines-internal',
+                '--test',
+                'one/text-fail.html',
+                '--suffixes',
+                'txt',
+                '--port-name',
+                'test-linux-trusty',
+            ]),
+            mock.call([
+                'echo',
+                'copy-existing-baselines-internal',
+                '--test',
+                'one/text-fail.html',
+                '--suffixes',
+                'txt',
+                '--port-name',
+                'test-linux-trusty',
+                '--flag-specific',
+                'disable-site-isolation-trials',
+            ]),
+            mock.call([
+                'echo',
+                'rebaseline-test-internal',
+                '--test',
+                'one/text-fail.html',
+                '--suffixes',
+                'txt',
+                '--port-name',
+                'test-linux-trusty',
+                '--builder',
+                'MOCK Try Linux Multiple Steps',
+                '--build-number',
+                '9000',
                 '--step-name',
-                'not_site_per_process_blink_web_tests (with patch)'
-            ],
-        ])
-        self.tool.main.assert_called_once_with([
-            'echo',
-            'optimize-baselines',
-            '--no-manifest-update',
-            'one/text-fail.html',
+                'blink_web_tests (with patch)',
+            ]),
+            mock.call([
+                'echo',
+                'rebaseline-test-internal',
+                '--test',
+                'one/text-fail.html',
+                '--suffixes',
+                'txt',
+                '--port-name',
+                'test-linux-trusty',
+                '--flag-specific',
+                'disable-site-isolation-trials',
+                '--builder',
+                'MOCK Try Linux Multiple Steps',
+                '--build-number',
+                '9000',
+                '--step-name',
+                'not_site_per_process_blink_web_tests (with patch)',
+            ]),
+            mock.call([
+                'echo',
+                'optimize-baselines',
+                '--no-manifest-update',
+                'one/text-fail.html',
+            ]),
         ])
 
     def test_execute_missing_results_with_no_fill_missing_prompts(self):
