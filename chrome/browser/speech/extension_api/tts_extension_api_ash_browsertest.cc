@@ -288,4 +288,16 @@ IN_PROC_BROWSER_TEST_F(AshTtsApiTest, SpeakLacrosUtteranceWithAshSpeechEngine) {
   EXPECT_TRUE(TtsEventReceivedEq(content::TTS_EVENT_END));
 }
 
+IN_PROC_BROWSER_TEST_F(AshTtsApiTest, IsSpeaking) {
+  if (!ash_starter_.HasLacrosArgument()) {
+    return;
+  }
+
+  // Load Ash tts engine extension, register the tts engine events, and
+  // call tts.isSpeaking before/during/after tts.speak.
+  ASSERT_TRUE(RunExtensionTest("tts/is_speaking/", {},
+                               {.ignore_manifest_warnings = true}))
+      << message_;
+}
+
 }  // namespace extensions

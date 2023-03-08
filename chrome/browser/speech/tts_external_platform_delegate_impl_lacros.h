@@ -25,12 +25,6 @@ class ExternalPlatformDelegateImplLacros
       const GURL& source_url,
       std::vector<content::VoiceData>* out_voices) override;
   void Enqueue(std::unique_ptr<content::TtsUtterance> utterance) override;
-  void OnTtsEvent(content::BrowserContext* browser_context,
-                  int utterance_id,
-                  content::TtsEventType event_type,
-                  int char_index,
-                  int length,
-                  const std::string& error_message) override;
   void Stop(const GURL& source_url) override;
   void Pause() override;
   void Resume() override;
