@@ -925,6 +925,8 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/privacy_guide/android:java",
       "//chrome/browser/privacy_guide/android:junit",
       "//chrome/browser/profiles/android:java",
+      "//chrome/browser/quick_delete:java",
+      "//chrome/browser/quick_delete:junit",
       "//chrome/browser/safety_check/android:java",
       "//chrome/browser/safety_check/android:junit",
       "//chrome/browser/search_engines/android:java",

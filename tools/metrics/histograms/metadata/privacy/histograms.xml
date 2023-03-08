@@ -422,6 +422,17 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram name="Privacy.QuickDelete" enum="PrivacyQuickDelete"
+    expires_after="M116">
+  <owner>roagarwal@chromium.org</owner>
+  <owner>eokoyomon@chromium.org</owner>
+  <owner>fsenra@google.com</owner>
+  <summary>
+    Tracks interactions with the Quick Delete feature, including the entry
+    points and the dialog.
+  </summary>
+</histogram>
+
 <histogram name="Privacy.ThirdPartyCookieBlockingEnabledForSite" enum="Boolean"
     expires_after="2022-04-10">
   <obsolete>

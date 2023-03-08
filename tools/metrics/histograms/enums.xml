@@ -85390,6 +85390,12 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="14" label="Screen Sharing, Microphone, and Camera are in use"/>
 </enum>
 
+<enum name="PrivacyQuickDelete">
+  <int value="0" label="Entry from menu item clicked"/>
+  <int value="1" label="Delete button on dialog clicked"/>
+  <int value="2" label="Cancel button on dialog clicked"/>
+</enum>
+
 <enum name="PrivacySandboxAggregationServiceKeyFetcherStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Download error"/>
