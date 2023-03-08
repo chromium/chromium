@@ -26,7 +26,7 @@ namespace {
 const ::ash::mojom::Keyboard kKeyboard1 =
     ::ash::mojom::Keyboard(/*name=*/"AT Translated Set 2",
                            /*is_external=*/false,
-                           /*id=*/0,
+                           /*id=*/1,
                            /*device_key=*/"fake-device-key1",
                            /*meta_key=*/::ash::mojom::MetaKey::kLauncher,
                            /*modifier_keys=*/{},
@@ -34,31 +34,41 @@ const ::ash::mojom::Keyboard kKeyboard1 =
 const ::ash::mojom::Keyboard kKeyboard2 =
     ::ash::mojom::Keyboard(/*name=*/"Logitech K580",
                            /*is_external=*/true,
-                           /*id=*/1,
+                           /*id=*/2,
                            /*device_key=*/"fake-device-key2",
                            /*meta_key=*/::ash::mojom::MetaKey::kExternalMeta,
                            /*modifier_keys=*/{},
                            ::ash::mojom::KeyboardSettings::New());
 const ::ash::mojom::Touchpad kTouchpad1 =
     ::ash::mojom::Touchpad(/*name=*/"test touchpad",
-                           /*id=*/2,
+                           /*id=*/3,
                            /*device_key=*/"fake-device-key3",
                            ::ash::mojom::TouchpadSettings::New());
 const ::ash::mojom::Touchpad kTouchpad2 =
     ::ash::mojom::Touchpad(/*name=*/"Logitech T650",
-                           /*id=*/3,
+                           /*id=*/4,
                            /*device_key=*/"fake-device-key4",
                            ::ash::mojom::TouchpadSettings::New());
 const ::ash::mojom::PointingStick kPointingStick1 =
     ::ash::mojom::PointingStick(/*name=*/"test pointing stick",
-                                /*id=*/4,
+                                /*id=*/5,
                                 /*device_key=*/"fake-device-key5",
                                 ::ash::mojom::PointingStickSettings::New());
 const ::ash::mojom::PointingStick kPointingStick2 =
     ::ash::mojom::PointingStick(/*name=*/"Lexmark-Unicomp FSR",
-                                /*id=*/5,
+                                /*id=*/6,
                                 /*device_key=*/"fake-device-key6",
                                 ::ash::mojom::PointingStickSettings::New());
+const ::ash::mojom::Mouse kMouse1 =
+    ::ash::mojom::Mouse(/*name=*/"Razer Basilisk V3",
+                        /*id=*/7,
+                        /*device_key=*/"fake-device-key7",
+                        ::ash::mojom::MouseSettings::New());
+const ::ash::mojom::Mouse kMouse2 =
+    ::ash::mojom::Mouse(/*name=*/"MX Anywhere 2S",
+                        /*id=*/8,
+                        /*device_key=*/"fake-device-key8",
+                        ::ash::mojom::MouseSettings::New());
 template <typename T>
 void ExpectListsEqual(const std::vector<T>& expected_list,
                       const std::vector<T>& actual_list) {
@@ -145,6 +155,23 @@ class FakePointingStickSettingsObserver
   int num_times_called_ = 0;
 };
 
+class FakeMouseSettingsObserver : public mojom::MouseSettingsObserver {
+ public:
+  void OnMouseListUpdated(std::vector<::ash::mojom::MousePtr> mice) override {
+    mice_ = std::move(mice);
+    ++num_times_called_;
+  }
+
+  const std::vector<::ash::mojom::MousePtr>& mice() { return mice_; }
+
+  int num_times_called() { return num_times_called_; }
+  mojo::Receiver<mojom::MouseSettingsObserver> receiver{this};
+
+ private:
+  std::vector<::ash::mojom::MousePtr> mice_;
+  int num_times_called_ = 0;
+};
+
 class FakeInputDeviceSettingsController : public InputDeviceSettingsController {
  public:
   // InputDeviceSettingsController:
@@ -208,11 +235,18 @@ class FakeInputDeviceSettingsController : public InputDeviceSettingsController {
   }
   void AddMouse(::ash::mojom::MousePtr mouse) {
     mice_.push_back(std::move(mouse));
+    observer_->OnMouseConnected(*mice_.back());
   }
   void RemoveMouse(uint32_t device_id) {
-    base::EraseIf(mice_, [device_id](const auto& mouse) {
+    auto iter = base::ranges::find_if(mice_, [device_id](const auto& mouse) {
       return mouse->id == device_id;
     });
+    if (iter == mice_.end()) {
+      return;
+    }
+    auto temp_mouse = std::move(*iter);
+    mice_.erase(iter);
+    observer_->OnMouseDisconnected(*temp_mouse);
   }
   void AddTouchpad(::ash::mojom::TouchpadPtr touchpad) {
     touchpads_.push_back(std::move(touchpad));
@@ -326,6 +360,33 @@ TEST_F(InputDeviceSettingsProviderTest, TestKeyboardSettingsObeserver) {
   ExpectListsEqual(expected_keyboards, fake_observer.keyboards());
 }
 
+TEST_F(InputDeviceSettingsProviderTest, TestMouseSettingsObeserver) {
+  std::vector<::ash::mojom::MousePtr> expected_mice;
+  expected_mice.push_back(kMouse1.Clone());
+  controller_->AddMouse(kMouse1.Clone());
+
+  FakeMouseSettingsObserver fake_observer;
+  provider_->ObserveMouseSettings(
+      fake_observer.receiver.BindNewPipeAndPassRemote());
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1, fake_observer.num_times_called());
+  ExpectListsEqual(expected_mice, fake_observer.mice());
+
+  expected_mice.push_back(kMouse2.Clone());
+  controller_->AddMouse(kMouse2.Clone());
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(2, fake_observer.num_times_called());
+  ExpectListsEqual(expected_mice, fake_observer.mice());
+
+  expected_mice.pop_back();
+  controller_->RemoveMouse(kMouse2.id);
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(3, fake_observer.num_times_called());
+  ExpectListsEqual(expected_mice, fake_observer.mice());
+}
 TEST_F(InputDeviceSettingsProviderTest, TestTouchpadSettingsObeserver) {
   std::vector<::ash::mojom::TouchpadPtr> expected_touchpads;
   expected_touchpads.push_back(kTouchpad1.Clone());

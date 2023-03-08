@@ -27,6 +27,13 @@ interface PointingStickSettingsObserver {
   OnPointingStickListUpdated(array<ash.mojom.PointingStick> pointSticks);
 };
 
+// Interface for observing mouse settings changes in OSSettings SWA.
+interface MouseSettingsObserver {
+  // Notifies MouseSettingsObserver when the list of connected mice
+  // and their settings are updated.
+  OnMouseListUpdated(array<ash.mojom.Mouse> mice);
+};
+
 // Interface for fetching and configuring input device settings in OSSettings.
 interface InputDeviceSettingsProvider {
   // Returns the list of currently connected keyboards.
@@ -47,4 +54,9 @@ interface InputDeviceSettingsProvider {
   // of the current state via its ObservePointingStickSettings function.
   ObservePointingStickSettings(
       pending_remote<PointingStickSettingsObserver> observer);
+  // Registers an observer which will be notified every time
+  // a mouse connects/disconnects or when settings change.
+  // The observer which is registered is immediately informed
+  // of the current state via its ObserveMouseSettings function.
+  ObserveMouseSettings(pending_remote<MouseSettingsObserver> observer);
 };

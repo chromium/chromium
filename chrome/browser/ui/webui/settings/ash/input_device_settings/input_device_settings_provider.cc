@@ -67,6 +67,15 @@ void InputDeviceSettingsProvider::ObservePointingStickSettings(
       InputDeviceSettingsController::Get()->GetConnectedPointingSticks());
 }
 
+void InputDeviceSettingsProvider::ObserveMouseSettings(
+    mojo::PendingRemote<mojom::MouseSettingsObserver> observer) {
+  DCHECK(features::IsInputDeviceSettingsSplitEnabled());
+  DCHECK(InputDeviceSettingsController::Get());
+  const auto id = mouse_settings_observers_.Add(std::move(observer));
+  mouse_settings_observers_.Get(id)->OnMouseListUpdated(
+      InputDeviceSettingsController::Get()->GetConnectedMice());
+}
+
 void InputDeviceSettingsProvider::OnKeyboardConnected(
     const ::ash::mojom::Keyboard& keyboard) {
   NotifyKeyboardsUpdated();
@@ -97,6 +106,16 @@ void InputDeviceSettingsProvider::OnPointingStickDisconnected(
   NotifyPointingSticksUpdated();
 }
 
+void InputDeviceSettingsProvider::OnMouseConnected(
+    const ::ash::mojom::Mouse& mouse) {
+  NotifyMiceUpdated();
+}
+
+void InputDeviceSettingsProvider::OnMouseDisconnected(
+    const ::ash::mojom::Mouse& mouse) {
+  NotifyMiceUpdated();
+}
+
 void InputDeviceSettingsProvider::NotifyKeyboardsUpdated() {
   DCHECK(InputDeviceSettingsController::Get());
   for (const auto& observer : keyboard_settings_observers_) {
@@ -118,6 +137,14 @@ void InputDeviceSettingsProvider::NotifyPointingSticksUpdated() {
   for (const auto& observer : pointing_stick_settings_observers_) {
     observer->OnPointingStickListUpdated(
         InputDeviceSettingsController::Get()->GetConnectedPointingSticks());
+  }
+}
+
+void InputDeviceSettingsProvider::NotifyMiceUpdated() {
+  DCHECK(InputDeviceSettingsController::Get());
+  for (const auto& observer : mouse_settings_observers_) {
+    observer->OnMouseListUpdated(
+        InputDeviceSettingsController::Get()->GetConnectedMice());
   }
 }
 
