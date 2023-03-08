@@ -44,7 +44,7 @@ void ReadAnythingModel::Init(const std::string& font_name,
   // If this profile has previously selected choices that were saved to
   // prefs, check they are still a valid, and then assign if so.
   if (font_model_->IsValidFontName(font_name)) {
-    font_model_->SetDefaultIndexFromPrefsFontName(font_name);
+    font_model_->SetSelectedIndex(font_model_->GetFontNameIndex(font_name));
   }
 
   font_scale_ = GetValidFontScale(font_scale);
@@ -70,7 +70,7 @@ void ReadAnythingModel::Init(const std::string& font_name,
     letter_spacing_model_->SetSelectedIndex(letter_spacing_index);
   }
 
-  font_name_ = font_model_->GetFontNameAt(font_model_->GetStartingStateIndex());
+  font_name_ = font_model_->GetFontNameAt(font_model_->GetSelectedIndex());
   colors_combobox_index_ = colors_model_->GetSelectedIndex().value();
   auto& initial_colors = colors_model_->GetColorsAt(colors_combobox_index_);
   foreground_color_id_ = initial_colors.foreground_color_id;
@@ -95,6 +95,9 @@ void ReadAnythingModel::RemoveObserver(Observer* obs) {
 void ReadAnythingModel::SetSelectedFontByIndex(size_t new_index) {
   // Check that the index is valid.
   DCHECK(font_model_->IsValidFontIndex(new_index));
+
+  // Keep track of current selection for GetDefaultIndex().
+  font_model_->SetSelectedIndex(new_index);
 
   // Update state and notify listeners
   font_name_ = font_model_->GetFontNameAt(new_index);
@@ -215,15 +218,23 @@ bool ReadAnythingFontModel::IsValidFontIndex(size_t index) {
   return index < GetItemCount();
 }
 
-void ReadAnythingFontModel::SetDefaultIndexFromPrefsFontName(
-    std::string prefs_font_name) {
-  auto it =
-      base::ranges::find(font_choices_, base::UTF8ToUTF16(prefs_font_name));
-  default_index_ = static_cast<size_t>(it - font_choices_.begin());
+size_t ReadAnythingFontModel::GetFontNameIndex(std::string font_name) {
+  auto it = base::ranges::find(font_choices_, base::UTF8ToUTF16(font_name));
+  return static_cast<size_t>(it - font_choices_.begin());
 }
 
+// ui::Combobox needs a default option to show whenever Read Anything is
+// reopened in the same browser window.
 absl::optional<size_t> ReadAnythingFontModel::GetDefaultIndex() const {
-  return default_index_;
+  return selected_index_;
+}
+
+absl::optional<size_t> ReadAnythingFontModel::GetDefaultIndexForTesting() {
+  return selected_index_;
+}
+
+void ReadAnythingFontModel::SetSelectedIndex(size_t index) {
+  selected_index_ = index;
 }
 
 size_t ReadAnythingFontModel::GetItemCount() const {

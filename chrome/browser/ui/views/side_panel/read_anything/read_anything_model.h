@@ -41,9 +41,13 @@ class ReadAnythingFontModel : public ui::ComboboxModel {
   std::string GetFontNameAt(size_t index);
   bool IsValidFontName(const std::string& font_name);
   bool IsValidFontIndex(size_t index);
-  void SetDefaultIndexFromPrefsFontName(std::string prefs_font_name);
+  size_t GetFontNameIndex(std::string font_name);
+  void SetSelectedIndex(size_t index);
   std::string GetLabelFontListAt(size_t index);
-  size_t GetStartingStateIndex() { return GetDefaultIndex().value(); }
+  size_t GetSelectedIndex() { return selected_index_; }
+
+  // Used by tests only.
+  absl::optional<size_t> GetDefaultIndexForTesting();
 
  protected:
   // ui::Combobox implementation:
@@ -56,8 +60,7 @@ class ReadAnythingFontModel : public ui::ComboboxModel {
   // Styled font names for the drop down options in front-end.
   std::vector<std::u16string> font_choices_;
 
-  // Default index for drop down, either zero or populated from prefs.
-  size_t default_index_ = 0;
+  size_t selected_index_ = 0;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

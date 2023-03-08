@@ -243,4 +243,10 @@ TEST_F(ReadAnythingModelTest, FontModelGetCurrentFontName) {
   EXPECT_EQ("Times New Roman", GetFontModel()->GetFontNameAt(5));
 }
 
+TEST_F(ReadAnythingModelTest, DefaultIndexSetOnSetSelectedFontByIndex) {
+  size_t testIndex = 2;
+  model_->SetSelectedFontByIndex(testIndex);
+  EXPECT_EQ(testIndex, GetFontModel()->GetDefaultIndexForTesting().value());
+}
+
 #endif  // !defined(ADDRESS_SANITIZER)
