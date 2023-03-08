@@ -1624,7 +1624,6 @@ crbug.com/1035708 [ Debug Mac12 ] wpt_internal/css/css-pseudo/spelling-error-col
 crbug.com/1035708 [ Debug Mac13-arm64 ] wpt_internal/css/css-pseudo/spelling-error-color-dynamic-004.html [ Failure ]
 crbug.com/1035708 wpt_internal/css/css-pseudo/grammar-error-color-003.html [ Failure ]
 crbug.com/1035708 wpt_internal/css/css-pseudo/grammar-error-color-dynamic-001.html [ Failure ]
-crbug.com/1035708 wpt_internal/css/css-pseudo/grammar-error-color-dynamic-002.html [ Failure ]
 crbug.com/1035708 [ Debug Mac12 ] wpt_internal/css/css-pseudo/grammar-error-color-dynamic-003.html [ Failure ]
 crbug.com/1035708 [ Debug Mac12 ] wpt_internal/css/css-pseudo/grammar-error-color-dynamic-004.html [ Failure ]
 crbug.com/1147859 external/wpt/css/css-pseudo/target-text-004.html [ Failure ]
@@ -3129,7 +3128,7 @@ crbug.com/626703 [ Release Win ] external/wpt/selection/contenteditable/initial-
 crbug.com/626703 external/wpt/geolocation-API/non-fully-active.https.html [ Timeout ]
 crbug.com/626703 external/wpt/selection/textcontrols/selectionchange-bubble.html [ Timeout ]
 crbug.com/626703 external/wpt/density-size-correction/density-corrected-image-svg-aspect-ratio-cross-origin.sub.html [ Failure ]
-crbug.com/626703 external/wpt/density-size-correction/image-set-003.html [ Failure ]
+crbug.com/626703 [ Debug Mac12 ] external/wpt/density-size-correction/image-set-003.html [ Failure ]
 crbug.com/626703 external/wpt/webrtc-extensions/transfer-datachannel-service-worker.https.html [ Timeout ]
 crbug.com/626703 external/wpt/webrtc-extensions/transfer-datachannel.html [ Timeout ]
 crbug.com/626703 [ Win ] external/wpt/websockets/Create-blocked-port.any.worker.html?wpt_flags=h2 [ Failure Timeout ]
@@ -5535,7 +5534,12 @@ crbug.com/1269535 http/tests/misc/resource-timing-sizes-multipart.html [ Failure
 
 # Sheriff 2021-11-12
 crbug.com/1268594 [ Linux ] css3/filters/composited-layer-bounds-after-sw-blur-animation.html [ Failure Pass ]
-crbug.com/1268594 [ Mac ] css3/filters/composited-layer-bounds-after-sw-blur-animation.html [ Failure Pass ]
+crbug.com/1268594 [ Debug Mac ] css3/filters/composited-layer-bounds-after-sw-blur-animation.html [ Failure Pass ]
+crbug.com/1268594 [ Mac11 Release ] css3/filters/composited-layer-bounds-after-sw-blur-animation.html [ Failure Pass ]
+crbug.com/1268594 [ Mac12 Release ] css3/filters/composited-layer-bounds-after-sw-blur-animation.html [ Failure Pass ]
+crbug.com/1268594 [ Mac12-arm64 Release ] css3/filters/composited-layer-bounds-after-sw-blur-animation.html [ Failure Pass ]
+crbug.com/1268594 [ Mac13 Release ] css3/filters/composited-layer-bounds-after-sw-blur-animation.html [ Failure Pass ]
+crbug.com/1268594 [ Mac13-arm64 Release ] css3/filters/composited-layer-bounds-after-sw-blur-animation.html [ Failure Pass ]
 crbug.com/1268594 [ Win ] css3/filters/composited-layer-bounds-after-sw-blur-animation.html [ Failure Pass ]
 
 # Security OWP fixit week
@@ -6207,7 +6211,6 @@ crbug.com/1395840 [ Mac11 Release ] http/tests/accessibility/slow-document-load.
 crbug.com/1395840 [ Mac11-arm64 Release ] http/tests/accessibility/slow-document-load.html [ Failure ]
 crbug.com/1395840 [ Mac12 Release ] http/tests/accessibility/slow-document-load.html [ Failure ]
 crbug.com/1395840 [ Mac12-arm64 Release ] http/tests/accessibility/slow-document-load.html [ Failure ]
-crbug.com/1395840 [ Mac13-arm64 Release ] http/tests/accessibility/slow-document-load.html [ Failure ]
 crbug.com/1406027 [ Win ] virtual/media-foundation-for-clear-dcomp/media/controls/overflow-menu-hide-on-resize.html [ Failure ]
 crbug.com/1289607 [ Linux ] external/wpt/cookie-store/cookieStore_subscribe_arguments.https.any.html [ Failure ]
 crbug.com/1408294 [ Debug Linux ] virtual/gpu/external/wpt/mediacapture-record/MediaRecorder-canvas-media-source.https.html [ Failure ]
