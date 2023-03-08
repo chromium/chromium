@@ -78,6 +78,9 @@ void ExpectInstalled(UpdaterScope scope);
 // Installs the updater.
 void Install(UpdaterScope scope);
 
+// Installs the updater and an app.
+void InstallUpdaterAndApp(UpdaterScope scope, const std::string& app_id);
+
 // Expects that the updater is installed on the system and the specified
 // version is active.
 void ExpectVersionActive(UpdaterScope scope, const std::string& version);

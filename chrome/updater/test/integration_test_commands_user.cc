@@ -47,6 +47,10 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
 
   void Install() const override { updater::test::Install(updater_scope_); }
 
+  void InstallUpdaterAndApp(const std::string& app_id) const override {
+    updater::test::InstallUpdaterAndApp(updater_scope_, app_id);
+  }
+
   void ExpectInstalled() const override {
     updater::test::ExpectInstalled(updater_scope_);
   }

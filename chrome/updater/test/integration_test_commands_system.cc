@@ -70,6 +70,10 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
 
   void Install() const override { RunCommand("install"); }
 
+  void InstallUpdaterAndApp(const std::string& app_id) const override {
+    RunCommand("install_updater_and_app", {Param("app_id", app_id)});
+  }
+
   void ExpectInstalled() const override { RunCommand("expect_installed"); }
 
   void Uninstall() const override { RunCommand("uninstall"); }
