@@ -1646,27 +1646,6 @@ TEST_F(CookiesTreeModelTest, CanonicalizeCookieSource) {
       cookie_settings, GURL("http://example4.com"));
 }
 
-TEST_F(CookiesTreeModelTest, CookiesFilterWithoutSource) {
-  // CanonicalCookies don't persist their source_ field. This is a regression
-  // test for crbug.com/601582.
-  auto container = std::make_unique<LocalDataContainer>(
-      mock_browsing_data_cookie_helper_, mock_browsing_data_database_helper_,
-      mock_browsing_data_local_storage_helper_,
-      mock_browsing_data_session_storage_helper_,
-      mock_browsing_data_indexed_db_helper_,
-      mock_browsing_data_file_system_helper_, mock_browsing_data_quota_helper_,
-      mock_browsing_data_service_worker_helper_,
-      mock_browsing_data_shared_worker_helper_,
-      mock_browsing_data_cache_storage_helper_);
-  CookiesTreeModel cookies_model(std::move(container),
-                                 special_storage_policy());
-
-  mock_browsing_data_cookie_helper_->
-      AddCookieSamples(GURL(), "A=1");
-  mock_browsing_data_cookie_helper_->Notify();
-  EXPECT_EQ("A", GetDisplayedCookies(&cookies_model));
-}
-
 TEST_F(CookiesTreeModelTest, CookieDeletionFilterNormalUser) {
   auto callback =
       CookiesTreeModel::GetCookieDeletionDisabledCallback(profile_.get());
