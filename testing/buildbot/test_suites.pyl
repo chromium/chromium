@@ -2490,7 +2490,13 @@
       'boringssl_ssl_tests': {},
       'capture_unittests': {},
       'color_unittests': {},
-      'components_browsertests': {},
+      'components_browsertests': {
+        'args': [
+          '--test-arg=--disable-gpu',
+          '--test-arg=--headless',
+          '--test-arg=--ozone-platform=headless',
+        ],
+      },
       'components_unittests': {
         'swarming': {
           'shards': 2,
