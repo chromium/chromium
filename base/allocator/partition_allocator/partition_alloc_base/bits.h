@@ -75,7 +75,7 @@ inline T* AlignUp(T* ptr, size_t alignment) {
 // instructions have defined behaviour for 0. We could drop to raw __asm__ to
 // do better, but we'll avoid doing that unless we see proof that we need to.
 template <typename T, int bits = sizeof(T) * 8>
-PA_ALWAYS_INLINE constexpr
+constexpr PA_ALWAYS_INLINE
     typename std::enable_if<std::is_unsigned<T>::value && sizeof(T) <= 8,
                             int>::type
     CountLeadingZeroBits(T value) {
@@ -101,7 +101,7 @@ PA_ALWAYS_INLINE constexpr
 }
 
 template <typename T, int bits = sizeof(T) * 8>
-PA_ALWAYS_INLINE constexpr
+constexpr PA_ALWAYS_INLINE
     typename std::enable_if<std::is_unsigned<T>::value && sizeof(T) <= 8,
                             int>::type
     CountTrailingZeroBits(T value) {

@@ -41,7 +41,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
     return setup_.regular_pool_base_mask_;
   }
 #else
-  static PA_ALWAYS_INLINE constexpr uintptr_t RegularPoolBaseMask() {
+  static constexpr PA_ALWAYS_INLINE uintptr_t RegularPoolBaseMask() {
     return kRegularPoolBaseMask;
   }
 #endif
@@ -76,10 +76,10 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
     }
     return std::make_pair(pool, address - base);
   }
-  static PA_ALWAYS_INLINE constexpr size_t ConfigurablePoolMaxSize() {
+  static constexpr PA_ALWAYS_INLINE size_t ConfigurablePoolMaxSize() {
     return kConfigurablePoolMaxSize;
   }
-  static PA_ALWAYS_INLINE constexpr size_t ConfigurablePoolMinSize() {
+  static constexpr PA_ALWAYS_INLINE size_t ConfigurablePoolMinSize() {
     return kConfigurablePoolMinSize;
   }
 
@@ -170,7 +170,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
     return RegularPoolSize() * 2;
   }
 #else
-  static PA_ALWAYS_INLINE constexpr size_t CorePoolsSize() {
+  static constexpr PA_ALWAYS_INLINE size_t CorePoolsSize() {
     return RegularPoolSize() * 2;
   }
 #endif  // PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)

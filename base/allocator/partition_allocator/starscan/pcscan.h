@@ -95,7 +95,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PCScan final {
   // Registers a newly allocated super page for |root|.
   static void RegisterNewSuperPage(Root* root, uintptr_t super_page_base);
 
-  PA_ALWAYS_INLINE static void MoveToQuarantine(void* object,
+  static PA_ALWAYS_INLINE void MoveToQuarantine(void* object,
                                                 size_t usable_size,
                                                 uintptr_t slot_start,
                                                 size_t slot_size);
@@ -114,7 +114,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PCScan final {
   static void JoinScanIfNeeded();
 
   // Checks if there is a PCScan task currently in progress.
-  PA_ALWAYS_INLINE static bool IsInProgress();
+  static PA_ALWAYS_INLINE bool IsInProgress();
 
   // Sets process name (used for histograms). |name| must be a string literal.
   static void SetProcessName(const char* name);
@@ -135,7 +135,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PCScan final {
 
   static void UninitForTesting();
 
-  inline static PCScanScheduler& scheduler();
+  static inline PCScanScheduler& scheduler();
 
   // Registers reporting class.
   static void RegisterStatsReporter(partition_alloc::StatsReporter* reporter);
@@ -157,7 +157,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PCScan final {
     kSweepingAndFinishing
   };
 
-  PA_ALWAYS_INLINE static PCScan& Instance();
+  static PA_ALWAYS_INLINE PCScan& Instance();
 
   PA_ALWAYS_INLINE bool IsJoinable() const;
   PA_ALWAYS_INLINE void SetJoinableIfSafepointEnabled(bool);

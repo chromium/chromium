@@ -92,7 +92,7 @@ class CompressedPointerBaseGlobal final {
     return g_base_.base;
   }
 
-  PA_ALWAYS_INLINE static bool IsSet() {
+  static PA_ALWAYS_INLINE bool IsSet() {
     PA_DCHECK(IsBaseConsistent());
     return (g_base_.base & ~kUsefulBitsMask) != 0;
   }
@@ -107,7 +107,7 @@ class CompressedPointerBaseGlobal final {
     char cache_line[kPartitionCachelineSize];
   } g_base_ PA_CONSTINIT;
 
-  PA_ALWAYS_INLINE static bool IsBaseConsistent() {
+  static PA_ALWAYS_INLINE bool IsBaseConsistent() {
     return kUsefulBitsMask == (g_base_.base & kUsefulBitsMask);
   }
 
@@ -128,19 +128,19 @@ class PA_TRIVIAL_ABI CompressedPointer final {
  public:
   using UnderlyingType = uint32_t;
 
-  PA_ALWAYS_INLINE constexpr CompressedPointer() = default;
+  constexpr PA_ALWAYS_INLINE CompressedPointer() = default;
   PA_ALWAYS_INLINE explicit CompressedPointer(T* ptr) : value_(Compress(ptr)) {}
-  PA_ALWAYS_INLINE constexpr explicit CompressedPointer(std::nullptr_t)
+  constexpr PA_ALWAYS_INLINE explicit CompressedPointer(std::nullptr_t)
       : value_(0u) {}
 
-  PA_ALWAYS_INLINE constexpr CompressedPointer(const CompressedPointer&) =
+  constexpr PA_ALWAYS_INLINE CompressedPointer(const CompressedPointer&) =
       default;
-  PA_ALWAYS_INLINE constexpr CompressedPointer(
+  constexpr PA_ALWAYS_INLINE CompressedPointer(
       CompressedPointer&& other) noexcept = default;
 
   template <typename U,
             std::enable_if_t<std::is_convertible_v<U*, T*>>* = nullptr>
-  PA_ALWAYS_INLINE constexpr CompressedPointer(
+  constexpr PA_ALWAYS_INLINE CompressedPointer(
       const CompressedPointer<U>& other) {
     if constexpr (internal::IsDecayedSame<T, U>) {
       // When pointers have the same type modulo constness, avoid the
@@ -156,20 +156,20 @@ class PA_TRIVIAL_ABI CompressedPointer final {
 
   template <typename U,
             std::enable_if_t<std::is_convertible_v<U*, T*>>* = nullptr>
-  PA_ALWAYS_INLINE constexpr CompressedPointer(
+  constexpr PA_ALWAYS_INLINE CompressedPointer(
       CompressedPointer<U>&& other) noexcept
       : CompressedPointer(other) {}
 
   ~CompressedPointer() = default;
 
-  PA_ALWAYS_INLINE constexpr CompressedPointer& operator=(
+  constexpr PA_ALWAYS_INLINE CompressedPointer& operator=(
       const CompressedPointer&) = default;
-  PA_ALWAYS_INLINE constexpr CompressedPointer& operator=(
+  constexpr PA_ALWAYS_INLINE CompressedPointer& operator=(
       CompressedPointer&& other) noexcept = default;
 
   template <typename U,
             std::enable_if_t<std::is_convertible_v<U*, T*>>* = nullptr>
-  PA_ALWAYS_INLINE constexpr CompressedPointer& operator=(
+  constexpr PA_ALWAYS_INLINE CompressedPointer& operator=(
       const CompressedPointer<U>& other) {
     CompressedPointer copy(other);
     value_ = copy.value_;
@@ -178,27 +178,27 @@ class PA_TRIVIAL_ABI CompressedPointer final {
 
   template <typename U,
             std::enable_if_t<std::is_convertible_v<U*, T*>>* = nullptr>
-  PA_ALWAYS_INLINE constexpr CompressedPointer& operator=(
+  constexpr PA_ALWAYS_INLINE CompressedPointer& operator=(
       CompressedPointer<U>&& other) noexcept {
     *this = other;
     return *this;
   }
 
   // Don't perform compression when assigning to nullptr.
-  PA_ALWAYS_INLINE constexpr CompressedPointer& operator=(std::nullptr_t) {
+  constexpr PA_ALWAYS_INLINE CompressedPointer& operator=(std::nullptr_t) {
     value_ = 0u;
     return *this;
   }
 
   PA_ALWAYS_INLINE T* get() const { return Decompress(value_); }
 
-  PA_ALWAYS_INLINE constexpr bool is_nonnull() const { return value_; }
+  constexpr PA_ALWAYS_INLINE bool is_nonnull() const { return value_; }
 
-  PA_ALWAYS_INLINE constexpr UnderlyingType GetAsIntegral() const {
+  constexpr PA_ALWAYS_INLINE UnderlyingType GetAsIntegral() const {
     return value_;
   }
 
-  PA_ALWAYS_INLINE constexpr explicit operator bool() const {
+  constexpr PA_ALWAYS_INLINE explicit operator bool() const {
     return is_nonnull();
   }
 
@@ -214,7 +214,7 @@ class PA_TRIVIAL_ABI CompressedPointer final {
     return get();
   }
 
-  PA_ALWAYS_INLINE constexpr void swap(CompressedPointer& other) {
+  constexpr PA_ALWAYS_INLINE void swap(CompressedPointer& other) {
     std::swap(value_, other.value_);
   }
 
@@ -274,7 +274,7 @@ class PA_TRIVIAL_ABI CompressedPointer final {
 };
 
 template <typename T>
-PA_ALWAYS_INLINE constexpr void swap(CompressedPointer<T>& a,
+constexpr PA_ALWAYS_INLINE void swap(CompressedPointer<T>& a,
                                      CompressedPointer<T>& b) {
   a.swap(b);
 }
@@ -296,61 +296,61 @@ PA_ALWAYS_INLINE bool operator==(CompressedPointer<T> a,
 }
 
 template <typename T, typename U>
-PA_ALWAYS_INLINE constexpr bool operator==(CompressedPointer<T> a, U* b) {
+constexpr PA_ALWAYS_INLINE bool operator==(CompressedPointer<T> a, U* b) {
   // Do compression, since it is less expensive.
   return a == static_cast<CompressedPointer<U>>(b);
 }
 
 template <typename T, typename U>
-PA_ALWAYS_INLINE constexpr bool operator==(T* a, CompressedPointer<U> b) {
+constexpr PA_ALWAYS_INLINE bool operator==(T* a, CompressedPointer<U> b) {
   return b == a;
 }
 
 template <typename T>
-PA_ALWAYS_INLINE constexpr bool operator==(CompressedPointer<T> a,
+constexpr PA_ALWAYS_INLINE bool operator==(CompressedPointer<T> a,
                                            std::nullptr_t) {
   return !a.is_nonnull();
 }
 
 template <typename T, typename U>
-PA_ALWAYS_INLINE constexpr bool operator==(std::nullptr_t,
+constexpr PA_ALWAYS_INLINE bool operator==(std::nullptr_t,
                                            CompressedPointer<U> b) {
   return b == nullptr;
 }
 
 // operators!=.
 template <typename T, typename U>
-PA_ALWAYS_INLINE constexpr bool operator!=(CompressedPointer<T> a,
+constexpr PA_ALWAYS_INLINE bool operator!=(CompressedPointer<T> a,
                                            CompressedPointer<U> b) {
   return !(a == b);
 }
 
 template <typename T, typename U>
-PA_ALWAYS_INLINE constexpr bool operator!=(CompressedPointer<T> a, U* b) {
+constexpr PA_ALWAYS_INLINE bool operator!=(CompressedPointer<T> a, U* b) {
   // Do compression, since it is less expensive.
   return a != static_cast<CompressedPointer<U>>(b);
 }
 
 template <typename T, typename U>
-PA_ALWAYS_INLINE constexpr bool operator!=(T* a, CompressedPointer<U> b) {
+constexpr PA_ALWAYS_INLINE bool operator!=(T* a, CompressedPointer<U> b) {
   return b != a;
 }
 
 template <typename T>
-PA_ALWAYS_INLINE constexpr bool operator!=(CompressedPointer<T> a,
+constexpr PA_ALWAYS_INLINE bool operator!=(CompressedPointer<T> a,
                                            std::nullptr_t) {
   return a.is_nonnull();
 }
 
 template <typename T, typename U>
-PA_ALWAYS_INLINE constexpr bool operator!=(std::nullptr_t,
+constexpr PA_ALWAYS_INLINE bool operator!=(std::nullptr_t,
                                            CompressedPointer<U> b) {
   return b != nullptr;
 }
 
 // operators<.
 template <typename T, typename U>
-PA_ALWAYS_INLINE constexpr bool operator<(CompressedPointer<T> a,
+constexpr PA_ALWAYS_INLINE bool operator<(CompressedPointer<T> a,
                                           CompressedPointer<U> b) {
   if constexpr (internal::IsDecayedSame<T, U>) {
     // When pointers have the same type modulo constness, simply compare
@@ -365,20 +365,20 @@ PA_ALWAYS_INLINE constexpr bool operator<(CompressedPointer<T> a,
 }
 
 template <typename T, typename U>
-PA_ALWAYS_INLINE constexpr bool operator<(CompressedPointer<T> a, U* b) {
+constexpr PA_ALWAYS_INLINE bool operator<(CompressedPointer<T> a, U* b) {
   // Do compression, since it is less expensive.
   return a < static_cast<CompressedPointer<U>>(b);
 }
 
 template <typename T, typename U>
-PA_ALWAYS_INLINE constexpr bool operator<(T* a, CompressedPointer<U> b) {
+constexpr PA_ALWAYS_INLINE bool operator<(T* a, CompressedPointer<U> b) {
   // Do compression, since it is less expensive.
   return static_cast<CompressedPointer<T>>(a) < b;
 }
 
 // operators<=.
 template <typename T, typename U>
-PA_ALWAYS_INLINE constexpr bool operator<=(CompressedPointer<T> a,
+constexpr PA_ALWAYS_INLINE bool operator<=(CompressedPointer<T> a,
                                            CompressedPointer<U> b) {
   if constexpr (internal::IsDecayedSame<T, U>) {
     // When pointers have the same type modulo constness, simply compare
@@ -393,51 +393,51 @@ PA_ALWAYS_INLINE constexpr bool operator<=(CompressedPointer<T> a,
 }
 
 template <typename T, typename U>
-PA_ALWAYS_INLINE constexpr bool operator<=(CompressedPointer<T> a, U* b) {
+constexpr PA_ALWAYS_INLINE bool operator<=(CompressedPointer<T> a, U* b) {
   // Do compression, since it is less expensive.
   return a <= static_cast<CompressedPointer<U>>(b);
 }
 
 template <typename T, typename U>
-PA_ALWAYS_INLINE constexpr bool operator<=(T* a, CompressedPointer<U> b) {
+constexpr PA_ALWAYS_INLINE bool operator<=(T* a, CompressedPointer<U> b) {
   // Do compression, since it is less expensive.
   return static_cast<CompressedPointer<T>>(a) <= b;
 }
 
 // operators>.
 template <typename T, typename U>
-PA_ALWAYS_INLINE constexpr bool operator>(CompressedPointer<T> a,
+constexpr PA_ALWAYS_INLINE bool operator>(CompressedPointer<T> a,
                                           CompressedPointer<U> b) {
   return !(a <= b);
 }
 
 template <typename T, typename U>
-PA_ALWAYS_INLINE constexpr bool operator>(CompressedPointer<T> a, U* b) {
+constexpr PA_ALWAYS_INLINE bool operator>(CompressedPointer<T> a, U* b) {
   // Do compression, since it is less expensive.
   return a > static_cast<CompressedPointer<U>>(b);
 }
 
 template <typename T, typename U>
-PA_ALWAYS_INLINE constexpr bool operator>(T* a, CompressedPointer<U> b) {
+constexpr PA_ALWAYS_INLINE bool operator>(T* a, CompressedPointer<U> b) {
   // Do compression, since it is less expensive.
   return static_cast<CompressedPointer<T>>(a) > b;
 }
 
 // operators>=.
 template <typename T, typename U>
-PA_ALWAYS_INLINE constexpr bool operator>=(CompressedPointer<T> a,
+constexpr PA_ALWAYS_INLINE bool operator>=(CompressedPointer<T> a,
                                            CompressedPointer<U> b) {
   return !(a < b);
 }
 
 template <typename T, typename U>
-PA_ALWAYS_INLINE constexpr bool operator>=(CompressedPointer<T> a, U* b) {
+constexpr PA_ALWAYS_INLINE bool operator>=(CompressedPointer<T> a, U* b) {
   // Do compression, since it is less expensive.
   return a >= static_cast<CompressedPointer<U>>(b);
 }
 
 template <typename T, typename U>
-PA_ALWAYS_INLINE constexpr bool operator>=(T* a, CompressedPointer<U> b) {
+constexpr PA_ALWAYS_INLINE bool operator>=(T* a, CompressedPointer<U> b) {
   // Do compression, since it is less expensive.
   return static_cast<CompressedPointer<T>>(a) >= b;
 }
@@ -448,38 +448,38 @@ PA_ALWAYS_INLINE constexpr bool operator>=(T* a, CompressedPointer<U> b) {
 template <typename T>
 class PA_TRIVIAL_ABI UncompressedPointer final {
  public:
-  PA_ALWAYS_INLINE constexpr UncompressedPointer() = default;
-  PA_ALWAYS_INLINE constexpr explicit UncompressedPointer(T* ptr) : ptr_(ptr) {}
-  PA_ALWAYS_INLINE constexpr explicit UncompressedPointer(std::nullptr_t)
+  constexpr PA_ALWAYS_INLINE UncompressedPointer() = default;
+  constexpr PA_ALWAYS_INLINE explicit UncompressedPointer(T* ptr) : ptr_(ptr) {}
+  constexpr PA_ALWAYS_INLINE explicit UncompressedPointer(std::nullptr_t)
       : ptr_(nullptr) {}
 
-  PA_ALWAYS_INLINE constexpr UncompressedPointer(const UncompressedPointer&) =
+  constexpr PA_ALWAYS_INLINE UncompressedPointer(const UncompressedPointer&) =
       default;
-  PA_ALWAYS_INLINE constexpr UncompressedPointer(
+  constexpr PA_ALWAYS_INLINE UncompressedPointer(
       UncompressedPointer&& other) noexcept = default;
 
   template <typename U,
             std::enable_if_t<std::is_convertible_v<U*, T*>>* = nullptr>
-  PA_ALWAYS_INLINE constexpr UncompressedPointer(
+  constexpr PA_ALWAYS_INLINE UncompressedPointer(
       const UncompressedPointer<U>& other)
       : ptr_(other.ptr_) {}
 
   template <typename U,
             std::enable_if_t<std::is_convertible_v<U*, T*>>* = nullptr>
-  PA_ALWAYS_INLINE constexpr UncompressedPointer(
+  constexpr PA_ALWAYS_INLINE UncompressedPointer(
       UncompressedPointer<U>&& other) noexcept
       : ptr_(std::move(other.ptr_)) {}
 
   ~UncompressedPointer() = default;
 
-  PA_ALWAYS_INLINE constexpr UncompressedPointer& operator=(
+  constexpr PA_ALWAYS_INLINE UncompressedPointer& operator=(
       const UncompressedPointer&) = default;
-  PA_ALWAYS_INLINE constexpr UncompressedPointer& operator=(
+  constexpr PA_ALWAYS_INLINE UncompressedPointer& operator=(
       UncompressedPointer&& other) noexcept = default;
 
   template <typename U,
             std::enable_if_t<std::is_convertible_v<U*, T*>>* = nullptr>
-  PA_ALWAYS_INLINE constexpr UncompressedPointer& operator=(
+  constexpr PA_ALWAYS_INLINE UncompressedPointer& operator=(
       const UncompressedPointer<U>& other) {
     ptr_ = other.ptr_;
     return *this;
@@ -487,38 +487,38 @@ class PA_TRIVIAL_ABI UncompressedPointer final {
 
   template <typename U,
             std::enable_if_t<std::is_convertible_v<U*, T*>>* = nullptr>
-  PA_ALWAYS_INLINE constexpr UncompressedPointer& operator=(
+  constexpr PA_ALWAYS_INLINE UncompressedPointer& operator=(
       UncompressedPointer<U>&& other) noexcept {
     ptr_ = std::move(other.ptr_);
     return *this;
   }
 
-  PA_ALWAYS_INLINE constexpr UncompressedPointer& operator=(std::nullptr_t) {
+  constexpr PA_ALWAYS_INLINE UncompressedPointer& operator=(std::nullptr_t) {
     ptr_ = nullptr;
     return *this;
   }
 
-  PA_ALWAYS_INLINE constexpr T* get() const { return ptr_; }
+  constexpr PA_ALWAYS_INLINE T* get() const { return ptr_; }
 
-  PA_ALWAYS_INLINE constexpr bool is_nonnull() const { return ptr_; }
+  constexpr PA_ALWAYS_INLINE bool is_nonnull() const { return ptr_; }
 
-  PA_ALWAYS_INLINE constexpr explicit operator bool() const {
+  constexpr PA_ALWAYS_INLINE explicit operator bool() const {
     return is_nonnull();
   }
 
   template <typename U = T,
             std::enable_if_t<!std::is_void_v<std::remove_cv_t<U>>>* = nullptr>
-  PA_ALWAYS_INLINE constexpr U& operator*() const {
+  constexpr PA_ALWAYS_INLINE U& operator*() const {
     PA_DCHECK(is_nonnull());
     return *get();
   }
 
-  PA_ALWAYS_INLINE constexpr T* operator->() const {
+  constexpr PA_ALWAYS_INLINE T* operator->() const {
     PA_DCHECK(is_nonnull());
     return get();
   }
 
-  PA_ALWAYS_INLINE constexpr void swap(UncompressedPointer& other) {
+  constexpr PA_ALWAYS_INLINE void swap(UncompressedPointer& other) {
     std::swap(ptr_, other.ptr_);
   }
 
@@ -530,134 +530,134 @@ class PA_TRIVIAL_ABI UncompressedPointer final {
 };
 
 template <typename T>
-PA_ALWAYS_INLINE constexpr void swap(UncompressedPointer<T>& a,
+constexpr PA_ALWAYS_INLINE void swap(UncompressedPointer<T>& a,
                                      UncompressedPointer<T>& b) {
   a.swap(b);
 }
 
 // operators==.
 template <typename T, typename U>
-PA_ALWAYS_INLINE constexpr bool operator==(UncompressedPointer<T> a,
+constexpr PA_ALWAYS_INLINE bool operator==(UncompressedPointer<T> a,
                                            UncompressedPointer<U> b) {
   return a.get() == b.get();
 }
 
 template <typename T, typename U>
-PA_ALWAYS_INLINE constexpr bool operator==(UncompressedPointer<T> a, U* b) {
+constexpr PA_ALWAYS_INLINE bool operator==(UncompressedPointer<T> a, U* b) {
   return a == static_cast<UncompressedPointer<U>>(b);
 }
 
 template <typename T, typename U>
-PA_ALWAYS_INLINE constexpr bool operator==(T* a, UncompressedPointer<U> b) {
+constexpr PA_ALWAYS_INLINE bool operator==(T* a, UncompressedPointer<U> b) {
   return b == a;
 }
 
 template <typename T>
-PA_ALWAYS_INLINE constexpr bool operator==(UncompressedPointer<T> a,
+constexpr PA_ALWAYS_INLINE bool operator==(UncompressedPointer<T> a,
                                            std::nullptr_t) {
   return !a.is_nonnull();
 }
 
 template <typename T, typename U>
-PA_ALWAYS_INLINE constexpr bool operator==(std::nullptr_t,
+constexpr PA_ALWAYS_INLINE bool operator==(std::nullptr_t,
                                            UncompressedPointer<U> b) {
   return b == nullptr;
 }
 
 // operators!=.
 template <typename T, typename U>
-PA_ALWAYS_INLINE constexpr bool operator!=(UncompressedPointer<T> a,
+constexpr PA_ALWAYS_INLINE bool operator!=(UncompressedPointer<T> a,
                                            UncompressedPointer<U> b) {
   return !(a == b);
 }
 
 template <typename T, typename U>
-PA_ALWAYS_INLINE constexpr bool operator!=(UncompressedPointer<T> a, U* b) {
+constexpr PA_ALWAYS_INLINE bool operator!=(UncompressedPointer<T> a, U* b) {
   return a != static_cast<UncompressedPointer<U>>(b);
 }
 
 template <typename T, typename U>
-PA_ALWAYS_INLINE constexpr bool operator!=(T* a, UncompressedPointer<U> b) {
+constexpr PA_ALWAYS_INLINE bool operator!=(T* a, UncompressedPointer<U> b) {
   return b != a;
 }
 
 template <typename T>
-PA_ALWAYS_INLINE constexpr bool operator!=(UncompressedPointer<T> a,
+constexpr PA_ALWAYS_INLINE bool operator!=(UncompressedPointer<T> a,
                                            std::nullptr_t) {
   return a.is_nonnull();
 }
 
 template <typename T, typename U>
-PA_ALWAYS_INLINE constexpr bool operator!=(std::nullptr_t,
+constexpr PA_ALWAYS_INLINE bool operator!=(std::nullptr_t,
                                            UncompressedPointer<U> b) {
   return b != nullptr;
 }
 
 // operators<.
 template <typename T, typename U>
-PA_ALWAYS_INLINE constexpr bool operator<(UncompressedPointer<T> a,
+constexpr PA_ALWAYS_INLINE bool operator<(UncompressedPointer<T> a,
                                           UncompressedPointer<U> b) {
   return a.get() < b.get();
 }
 
 template <typename T, typename U>
-PA_ALWAYS_INLINE constexpr bool operator<(UncompressedPointer<T> a, U* b) {
+constexpr PA_ALWAYS_INLINE bool operator<(UncompressedPointer<T> a, U* b) {
   return a < static_cast<UncompressedPointer<U>>(b);
 }
 
 template <typename T, typename U>
-PA_ALWAYS_INLINE constexpr bool operator<(T* a, UncompressedPointer<U> b) {
+constexpr PA_ALWAYS_INLINE bool operator<(T* a, UncompressedPointer<U> b) {
   return static_cast<UncompressedPointer<T>>(a) < b;
 }
 
 // operators<=.
 template <typename T, typename U>
-PA_ALWAYS_INLINE constexpr bool operator<=(UncompressedPointer<T> a,
+constexpr PA_ALWAYS_INLINE bool operator<=(UncompressedPointer<T> a,
                                            UncompressedPointer<U> b) {
   return a.get() <= b.get();
 }
 
 template <typename T, typename U>
-PA_ALWAYS_INLINE constexpr bool operator<=(UncompressedPointer<T> a, U* b) {
+constexpr PA_ALWAYS_INLINE bool operator<=(UncompressedPointer<T> a, U* b) {
   return a <= static_cast<UncompressedPointer<U>>(b);
 }
 
 template <typename T, typename U>
-PA_ALWAYS_INLINE constexpr bool operator<=(T* a, UncompressedPointer<U> b) {
+constexpr PA_ALWAYS_INLINE bool operator<=(T* a, UncompressedPointer<U> b) {
   return static_cast<UncompressedPointer<T>>(a) <= b;
 }
 
 // operators>.
 template <typename T, typename U>
-PA_ALWAYS_INLINE constexpr bool operator>(UncompressedPointer<T> a,
+constexpr PA_ALWAYS_INLINE bool operator>(UncompressedPointer<T> a,
                                           UncompressedPointer<U> b) {
   return !(a <= b);
 }
 
 template <typename T, typename U>
-PA_ALWAYS_INLINE constexpr bool operator>(UncompressedPointer<T> a, U* b) {
+constexpr PA_ALWAYS_INLINE bool operator>(UncompressedPointer<T> a, U* b) {
   return a > static_cast<UncompressedPointer<U>>(b);
 }
 
 template <typename T, typename U>
-PA_ALWAYS_INLINE constexpr bool operator>(T* a, UncompressedPointer<U> b) {
+constexpr PA_ALWAYS_INLINE bool operator>(T* a, UncompressedPointer<U> b) {
   return static_cast<UncompressedPointer<T>>(a) > b;
 }
 
 // operators>=.
 template <typename T, typename U>
-PA_ALWAYS_INLINE constexpr bool operator>=(UncompressedPointer<T> a,
+constexpr PA_ALWAYS_INLINE bool operator>=(UncompressedPointer<T> a,
                                            UncompressedPointer<U> b) {
   return !(a < b);
 }
 
 template <typename T, typename U>
-PA_ALWAYS_INLINE constexpr bool operator>=(UncompressedPointer<T> a, U* b) {
+constexpr PA_ALWAYS_INLINE bool operator>=(UncompressedPointer<T> a, U* b) {
   return a >= static_cast<UncompressedPointer<U>>(b);
 }
 
 template <typename T, typename U>
-PA_ALWAYS_INLINE constexpr bool operator>=(T* a, UncompressedPointer<U> b) {
+constexpr PA_ALWAYS_INLINE bool operator>=(T* a, UncompressedPointer<U> b) {
   return static_cast<UncompressedPointer<T>>(a) >= b;
 }
 

@@ -209,14 +209,14 @@ struct SlotSpanMetadata {
   // |slot_span| pointer may be the result of an offset calculation and
   // therefore cannot be trusted. The objective of these functions is to
   // sanitize this input.
-  PA_ALWAYS_INLINE static uintptr_t ToSlotSpanStart(
-      const SlotSpanMetadata* slot_span);
-  PA_ALWAYS_INLINE static SlotSpanMetadata* FromAddr(uintptr_t address);
-  PA_ALWAYS_INLINE static SlotSpanMetadata* FromSlotStart(uintptr_t slot_start);
-  PA_ALWAYS_INLINE static SlotSpanMetadata* FromObject(void* object);
-  PA_ALWAYS_INLINE static SlotSpanMetadata* FromObjectInnerAddr(
+  static PA_ALWAYS_INLINE uintptr_t
+  ToSlotSpanStart(const SlotSpanMetadata* slot_span);
+  static PA_ALWAYS_INLINE SlotSpanMetadata* FromAddr(uintptr_t address);
+  static PA_ALWAYS_INLINE SlotSpanMetadata* FromSlotStart(uintptr_t slot_start);
+  static PA_ALWAYS_INLINE SlotSpanMetadata* FromObject(void* object);
+  static PA_ALWAYS_INLINE SlotSpanMetadata* FromObjectInnerAddr(
       uintptr_t address);
-  PA_ALWAYS_INLINE static SlotSpanMetadata* FromObjectInnerPtr(void* ptr);
+  static PA_ALWAYS_INLINE SlotSpanMetadata* FromObjectInnerPtr(void* ptr);
 
   PA_ALWAYS_INLINE PartitionSuperPageExtentEntry<thread_safe>*
   ToSuperPageExtent() const;
@@ -405,7 +405,7 @@ struct PartitionPage {
   bool has_valid_span_after_this : 1;
   uint8_t unused;
 
-  PA_ALWAYS_INLINE static PartitionPage* FromAddr(uintptr_t address);
+  static PA_ALWAYS_INLINE PartitionPage* FromAddr(uintptr_t address);
 };
 #pragma pack(pop)
 static_assert(sizeof(PartitionPage<ThreadSafe>) == kPageMetadataSize,

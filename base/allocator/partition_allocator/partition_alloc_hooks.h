@@ -72,7 +72,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAllocHooks {
                                            const char* type_name);
   static bool ReallocOverrideHookIfEnabled(size_t* out, void* address);
 
-  PA_ALWAYS_INLINE static QuarantineOverrideHook* GetQuarantineOverrideHook() {
+  static PA_ALWAYS_INLINE QuarantineOverrideHook* GetQuarantineOverrideHook() {
     return quarantine_override_hook_.load(std::memory_order_acquire);
   }
 

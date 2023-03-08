@@ -41,7 +41,7 @@ class PartitionFreelistEntry;
 
 class EncodedPartitionFreelistEntryPtr {
  private:
-  explicit PA_ALWAYS_INLINE constexpr EncodedPartitionFreelistEntryPtr(
+  explicit constexpr PA_ALWAYS_INLINE EncodedPartitionFreelistEntryPtr(
       std::nullptr_t)
       : encoded_(Transform(0)) {}
   explicit PA_ALWAYS_INLINE EncodedPartitionFreelistEntryPtr(void* ptr)
@@ -52,17 +52,17 @@ class EncodedPartitionFreelistEntryPtr {
     return reinterpret_cast<PartitionFreelistEntry*>(Transform(encoded_));
   }
 
-  PA_ALWAYS_INLINE constexpr uintptr_t Inverted() const { return ~encoded_; }
+  constexpr PA_ALWAYS_INLINE uintptr_t Inverted() const { return ~encoded_; }
 
-  PA_ALWAYS_INLINE constexpr void Override(uintptr_t encoded) {
+  constexpr PA_ALWAYS_INLINE void Override(uintptr_t encoded) {
     encoded_ = encoded;
   }
 
-  explicit PA_ALWAYS_INLINE constexpr operator bool() const { return encoded_; }
+  explicit constexpr PA_ALWAYS_INLINE operator bool() const { return encoded_; }
 
   // Transform() works the same in both directions, so can be used for
   // encoding and decoding.
-  PA_ALWAYS_INLINE static constexpr uintptr_t Transform(uintptr_t address) {
+  static constexpr PA_ALWAYS_INLINE uintptr_t Transform(uintptr_t address) {
     // We use bswap on little endian as a fast transformation for two reasons:
     // 1) On 64 bit architectures, the pointer is very unlikely to be a
     //    canonical address. Therefore, if an object is freed and its vtable is
@@ -215,7 +215,7 @@ class PartitionFreelistEntry {
     return SlotStartPtr2Addr(this);
   }
 
-  PA_ALWAYS_INLINE constexpr bool IsEncodedNextPtrZero() const {
+  constexpr PA_ALWAYS_INLINE bool IsEncodedNextPtrZero() const {
     return !encoded_next_;
   }
 
