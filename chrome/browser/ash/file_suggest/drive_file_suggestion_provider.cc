@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_util.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -79,6 +80,7 @@ DriveFileSuggestionProvider::DriveFileSuggestionProvider(
           drive::DriveIntegrationServiceFactory::GetInstance()->GetForProfile(
               profile_)),
       item_suggest_cache_(std::make_unique<ItemSuggestCache>(
+          g_browser_process->GetApplicationLocale(),
           profile,
           profile->GetDefaultStoragePartition()
               ->GetURLLoaderFactoryForBrowserProcess())),
