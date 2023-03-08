@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.content_creation.notes;
 import android.graphics.Typeface;
 import android.os.Looper;
 
-import org.chromium.base.Callback;
 import org.chromium.chrome.browser.content_creation.notes.fonts.GoogleFontService;
 import org.chromium.chrome.browser.content_creation.notes.fonts.TypefaceRequest;
 import org.chromium.chrome.browser.content_creation.notes.fonts.TypefaceResponse;
@@ -64,16 +63,6 @@ public class NoteCreationMediator {
         }
 
         mImageService.resolveBackgrounds(backgrounds, () -> { onBackgroundsResolved(templates); });
-    }
-
-    /**
-     * Starts the publishing of the note.
-     * @param selectedText The text (quote) that was selected by the user.
-     * @param shareUrl The URL linking to the quote on this page.
-     * @param callback The method to callback once the publishing is done.
-     */
-    public void publishNote(String selectedText, String shareUrl, Callback<String> callback) {
-        mNoteService.publishNote(selectedText, shareUrl, callback);
     }
 
     private void onBackgroundsResolved(List<NoteTemplate> templates) {

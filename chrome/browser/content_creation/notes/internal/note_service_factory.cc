@@ -10,7 +10,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/channel_info.h"
 #include "components/content_creation/notes/core/note_service.h"
-#include "components/content_creation/notes/core/server/notes_repository.h"
 #include "components/content_creation/notes/core/templates/template_store.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/variations/service/variations_service.h"
@@ -61,13 +60,7 @@ KeyedService* NoteServiceFactory::BuildServiceInstanceFor(
   Profile* profile = Profile::FromBrowserContext(context);
 
   return new NoteService(std::make_unique<TemplateStore>(
-                             profile->GetPrefs(),
-                             profile->GetURLLoaderFactory(), GetCountryCode()),
-                         std::make_unique<NotesRepository>(
-                             IdentityManagerFactory::GetForProfile(profile),
-                             context->GetDefaultStoragePartition()
-                                 ->GetURLLoaderFactoryForBrowserProcess(),
-                             chrome::GetChannel()));
+      profile->GetPrefs(), profile->GetURLLoaderFactory(), GetCountryCode()));
 }
 
 }  // namespace content_creation

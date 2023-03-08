@@ -4213,10 +4213,6 @@ const char kXsurfaceMetricsReportingName[] = "Xsurface Metrics Reporting";
 const char kXsurfaceMetricsReportingDescription[] =
     "Allows metrics reporting state to be passed to Xsurface";
 
-const char kWebNotesPublishName[] = "WebNotes Publish";
-const char kWebNotesPublishDescription[] =
-    "Allows users to save their created notes.";
-
 const char kWebNotesDynamicTemplatesName[] = "Dynamic Templates";
 const char kWebNotesDynamicTemplatesDescription[] =
     "Allows templates to be modified remotely on short notice.";

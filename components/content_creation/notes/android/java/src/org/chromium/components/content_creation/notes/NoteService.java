@@ -18,14 +18,4 @@ public interface NoteService {
      * Called to get the list of available Note templates.
      */
     void getTemplates(Callback<List<NoteTemplate>> callback);
-
-    /**
-     * Whether the Publish feature is available.
-     */
-    boolean isPublishAvailable();
-
-    /**
-     * Called to publish the note to the server.
-     */
-    void publishNote(String selectedText, String shareUrl, Callback<String> callback);
 }

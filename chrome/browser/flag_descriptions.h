@@ -2413,9 +2413,6 @@ extern const char kWebFeedSortDescription[];
 extern const char kXsurfaceMetricsReportingName[];
 extern const char kXsurfaceMetricsReportingDescription[];
 
-extern const char kWebNotesPublishName[];
-extern const char kWebNotesPublishDescription[];
-
 extern const char kWebNotesDynamicTemplatesName[];
 extern const char kWebNotesDynamicTemplatesDescription[];
 

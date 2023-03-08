@@ -10,7 +10,6 @@ static_library("test_support") {
   ]
   deps = [
     "//base",
-    "//components/content_creation/notes/core/server",
     "//components/content_creation/notes/core/templates",
     "//testing/gmock",
     "//testing/gtest",

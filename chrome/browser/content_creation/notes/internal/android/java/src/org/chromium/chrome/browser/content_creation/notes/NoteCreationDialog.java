@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewTreeObserver;
 import android.view.accessibility.AccessibilityEvent;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -50,7 +49,6 @@ public class NoteCreationDialog extends DialogFragment {
     private String mSelectedText;
     private int mSelectedItemIndex;
     private Toast mToast;
-    private boolean mIsPublishAvailable;
     private int mNbTemplateSwitches;
     private boolean mInitialized;
     private Runnable mExecuteActionForAccessibility;
@@ -61,13 +59,11 @@ public class NoteCreationDialog extends DialogFragment {
     private NoteDialogObserver mNoteDialogObserver;
 
     public void initDialog(NoteDialogObserver noteDialogObserver, String urlDomain, String title,
-            String selectedText, boolean isPublishAvailable,
-            Runnable executeActionForAccessibility) {
+            String selectedText, Runnable executeActionForAccessibility) {
         mNoteDialogObserver = noteDialogObserver;
         mUrlDomain = urlDomain;
         mTitle = title;
         mSelectedText = selectedText;
-        mIsPublishAvailable = isPublishAvailable;
         mInitialized = true;
         mExecuteActionForAccessibility = executeActionForAccessibility;
     }
@@ -89,11 +85,6 @@ public class NoteCreationDialog extends DialogFragment {
 
         setTopMargin();
         addOrRemoveScrollView();
-
-        if (mIsPublishAvailable) {
-            Button publishButton = (Button) mContentView.findViewById(R.id.publish);
-            publishButton.setVisibility(View.VISIBLE);
-        }
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEBNOTES_DYNAMIC_TEMPLATES)) {
             View titleView = mContentView.findViewById(R.id.title);

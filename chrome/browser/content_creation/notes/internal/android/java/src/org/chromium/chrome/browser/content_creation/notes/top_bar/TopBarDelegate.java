@@ -14,11 +14,6 @@ public interface TopBarDelegate {
     public void dismiss();
 
     /**
-     * Invoked when the user signals a request to publish the note.
-     */
-    public void publish();
-
-    /**
      * Invoked when the user requests the main action to be executed
      * via the top bar.
      */

@@ -6,8 +6,6 @@
 #define COMPONENTS_CONTENT_CREATION_NOTES_CORE_TEST_MOCKS_H_
 
 #include "base/functional/callback.h"
-#include "components/content_creation/notes/core/server/note_data.h"
-#include "components/content_creation/notes/core/server/notes_repository.h"
 #include "components/content_creation/notes/core/templates/note_template.h"
 #include "components/content_creation/notes/core/templates/template_store.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -21,14 +19,6 @@ class MockTemplateStore : public TemplateStore {
   ~MockTemplateStore() override;
 
   MOCK_METHOD1(GetTemplates, void(GetTemplatesCallback));
-};
-
-class MockNotesRepository : public NotesRepository {
- public:
-  explicit MockNotesRepository();
-  ~MockNotesRepository() override;
-
-  MOCK_METHOD2(PublishNote, void(const NoteData&, PublishNoteCallback));
 };
 
 }  // namespace test
