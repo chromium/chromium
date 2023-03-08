@@ -174,35 +174,24 @@ group("gn_all") {
 
   if (use_blink) {
     deps += [
-      "//components/viz:viz_unittests",
-      "//content/shell:content_shell",
-      "//device:device_unittests",
-      "//gpu:gpu_unittests",
-      "//mojo:mojo_unittests",
-      "//storage:storage_unittests",
-      "//ui/gl:gl_unittests",
-    ]
-  }
-
-  if (!is_ios) {
-    deps += [
-      ":chromedriver_group",
       "//cc:cc_unittests",
-      "//components:components_browsertests",
       "//components/policy:policy_templates",
       "//components/url_formatter/tools:format_url",
       "//components/viz:viz_perftests",
+      "//components/viz:viz_unittests",
+      "//content/shell:content_shell",
       "//content/test:content_browsertests",
       "//content/test:content_unittests",
+      "//device:device_unittests",
       "//gpu:gpu_benchmark",
-      "//ipc:ipc_tests",
+      "//gpu:gpu_unittests",
       "//media:media_unittests",
       "//media/capture:capture_unittests",
       "//media/midi:midi_unittests",
       "//media/mojo:media_mojo_unittests",
       "//mojo",
       "//mojo:mojo_unittests",
-      "//net:net_perftests",
+      "//storage:storage_unittests",
       "//third_party/blink/common:blink_common_unittests",
       "//third_party/blink/renderer/controller:blink_unittests",
       "//third_party/blink/renderer/platform:blink_platform_unittests",
@@ -211,12 +200,26 @@ group("gn_all") {
       "//third_party/libjingle_xmpp:libjingle_xmpp_unittests",
       "//tools/imagediff",
       "//ui/display:display_unittests",
-      "//ui/events:events_unittests",
+      "//ui/gl:gl_unittests",
       "//ui/latency:latency_unittests",
       "//ui/native_theme:native_theme_unittests",
       "//ui/touch_selection:ui_touch_selection_unittests",
-      "//url/ipc:url_ipc_unittests",
       "//v8:gn_all",
+    ]
+
+    if (!v8_use_external_startup_data) {
+      deps += [ "//v8:v8_snapshot" ]
+    }
+  }
+
+  if (!is_ios) {
+    deps += [
+      ":chromedriver_group",
+      "//components:components_browsertests",
+      "//ipc:ipc_tests",
+      "//net:net_perftests",
+      "//ui/events:events_unittests",
+      "//url/ipc:url_ipc_unittests",
     ]
   }
 
@@ -251,9 +254,6 @@ group("gn_all") {
       foreach(_target_suffix, telemetry_android_browser_target_suffixes) {
         deps += [ "//chrome/test:telemetry_perf_unittests${_target_suffix}" ]
       }
-    }
-    if (!v8_use_external_startup_data) {
-      deps += [ "//v8:v8_snapshot" ]
     }
   } else {
     deps += [
@@ -516,34 +516,39 @@ group("gn_all") {
   }
 
   # TODO(GYP): Figure out which of these should (and can) build
-  # for Chrome OS and iOS.
-  if (!is_chromeos_ash && !is_ios) {
+  # for Chrome OS and iOS (without blink).
+  if (!is_chromeos_ash && use_blink) {
     deps += [
-      "//base:build_utf8_validator_tables",
-      "//base:check_example",
       "//cc:cc_perftests",
-      "//components:components_perftests",
       "//device:device_unittests",
       "//gin:gin_shell",
       "//gin:gin_unittests",
       "//gpu:command_buffer_perftests",
       "//gpu:gl_tests",
       "//gpu:gpu_perftests",
-      "//ipc:ipc_perftests",
       "//media:media_perftests",
-      "//net:dump_cache",
       "//third_party/libphonenumber:libphonenumber_unittests",
       "//ui/compositor:compositor_unittests",
     ]
 
-    if (!is_android && !is_castos) {
+    if (!is_ios) {
+      deps += [
+        "//base:build_utf8_validator_tables",
+        "//base:check_example",
+        "//components:components_perftests",
+        "//ipc:ipc_perftests",
+        "//net:dump_cache",
+      ]
+    }
+
+    if (!is_android && !is_castos && !is_ios) {
       deps += [
         "//chrome/test:load_library_perf_tests",
         "//chrome/test:sync_performance_tests",
       ]
     }
 
-    if (!is_android) {
+    if (!is_android && !is_ios) {
       deps += [
         "//courgette:courgette",
         "//courgette:courgette_fuzz",
