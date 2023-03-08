@@ -34,7 +34,7 @@ void SetupSectionLabel(views::Label* label) {
 
 }  // namespace
 
-GlanceablesView::GlanceablesView(bool show_session_restore) {
+GlanceablesView::GlanceablesView() {
   // Inside border insets are set in OnBoundsChanged() when this view is added
   // to the widget.
   layout_ = SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -72,19 +72,17 @@ GlanceablesView::GlanceablesView(bool show_session_restore) {
   right_column->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
 
-  if (show_session_restore) {
-    // The "Restore last session" label.
-    restore_session_label_ =
-        right_column->AddChildView(std::make_unique<views::Label>());
-    SetupSectionLabel(restore_session_label_);
-    restore_session_label_->SetText(
-        l10n_util::GetStringUTF16(IDS_GLANCEABLES_RESTORE_SESSION));
+  // The "Restore last session" label.
+  restore_session_label_ =
+      right_column->AddChildView(std::make_unique<views::Label>());
+  SetupSectionLabel(restore_session_label_);
+  restore_session_label_->SetText(
+      l10n_util::GetStringUTF16(IDS_GLANCEABLES_RESTORE_SESSION));
 
-    restore_view_ =
-        right_column->AddChildView(std::make_unique<GlanceablesRestoreView>());
-    restore_view_->SetProperty(views::kMarginsKey,
-                               gfx::Insets::TLBR(12, 0, 0, 0));
-  }
+  restore_view_ =
+      right_column->AddChildView(std::make_unique<GlanceablesRestoreView>());
+  restore_view_->SetProperty(views::kMarginsKey,
+                             gfx::Insets::TLBR(12, 0, 0, 0));
 
   // Share space equally between the two columns.
   container_layout->SetFlexForView(left_column, 1);
@@ -107,8 +105,7 @@ void GlanceablesView::OnThemeChanged() {
   views::View::OnThemeChanged();
   // TODO(crbug.com/1353119): Use color provider.
   up_next_label_->SetEnabledColor(gfx::kGoogleGrey200);
-  if (restore_session_label_)
-    restore_session_label_->SetEnabledColor(gfx::kGoogleGrey200);
+  restore_session_label_->SetEnabledColor(gfx::kGoogleGrey200);
 }
 
 }  // namespace ash

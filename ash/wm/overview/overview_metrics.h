@@ -49,8 +49,8 @@ enum class OverviewEndAction {
   kShelfAlignmentChanged,
   kDevTools,
   kTests,
-  kShowGlanceables,
-  kMaxValue = kShowGlanceables,
+  kShowGlanceables_DEPRECATED,
+  kMaxValue = kShowGlanceables_DEPRECATED,
 };
 void RecordOverviewEndAction(OverviewEndAction type);
 

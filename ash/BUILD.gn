@@ -590,8 +590,6 @@ component("ash") {
     "glanceables/glanceables_weather_view.h",
     "glanceables/glanceables_welcome_label.cc",
     "glanceables/glanceables_welcome_label.h",
-    "glanceables/glanceables_window_hider.cc",
-    "glanceables/glanceables_window_hider.h",
     "glanceables/signout_screenshot_handler.cc",
     "glanceables/signout_screenshot_handler.h",
     "host/ash_window_tree_host.cc",

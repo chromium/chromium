@@ -105,10 +105,4 @@ IN_PROC_BROWSER_TEST_F(GlanceablesBrowserTest, ShowsAndHide) {
 
   // Glanceables should close because a window opened.
   EXPECT_FALSE(glanceables_controller()->IsShowing());
-
-  // Simulate re-showing glanceables from overview.
-  glanceables_controller()->ShowFromOverview();
-
-  // Glanceables are showing.
-  EXPECT_TRUE(glanceables_controller()->IsShowing());
 }
