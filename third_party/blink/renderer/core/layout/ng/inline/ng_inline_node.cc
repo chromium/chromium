@@ -46,10 +46,12 @@
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/platform/fonts/font_performance.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/ng_shape_cache.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/run_segmenter.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_spacing.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 
@@ -99,14 +101,37 @@ class ReusingTextShaper final {
 
  public:
   ReusingTextShaper(NGInlineItemsData* data,
-                    const HeapVector<NGInlineItem>* reusable_items)
+                    const HeapVector<NGInlineItem>* reusable_items,
+                    const bool allow_shape_cache)
       : data_(*data),
         reusable_items_(reusable_items),
-        shaper_(data->text_content) {}
+        shaper_(data->text_content),
+        allow_shape_cache_(allow_shape_cache) {}
 
-  scoped_refptr<ShapeResult> Shape(const NGInlineItem& start_item,
-                                   const Font& font,
-                                   unsigned end_offset) {
+  scoped_refptr<const ShapeResult> Shape(const NGInlineItem& start_item,
+                                         const Font& font,
+                                         unsigned end_offset) {
+    ShapeCacheEntry* entry = nullptr;
+    if (allow_shape_cache_) {
+      DCHECK(RuntimeEnabledFeatures::LayoutNGShapeCacheEnabled());
+      NGShapeCache* cache = font.GetNGShapeCache();
+      const TextDirection direction = start_item.Direction();
+      entry = cache->Add(shaper_.GetText(), direction);
+      if (entry && *entry) {
+        return *entry;
+      }
+    }
+    scoped_refptr<const ShapeResult> result =
+        ShapeWithoutCache(start_item, font, end_offset);
+    if (entry) {
+      *entry = result;
+    }
+    return result;
+  }
+
+  scoped_refptr<ShapeResult> ShapeWithoutCache(const NGInlineItem& start_item,
+                                               const Font& font,
+                                               unsigned end_offset) {
     const unsigned start_offset = start_item.StartOffset();
     DCHECK_LT(start_offset, end_offset);
 
@@ -212,6 +237,7 @@ class ReusingTextShaper final {
   NGInlineItemsData& data_;
   const HeapVector<NGInlineItem>* const reusable_items_;
   HarfBuzzShaper shaper_;
+  const bool allow_shape_cache_;
 };
 
 // The function is templated to indicate the purpose of collected inlines:
@@ -1224,9 +1250,35 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
   const String& text_content = data->text_content;
   HeapVector<NGInlineItem>* items = &data->items;
 
-  // Provide full context of the entire node to the shaper.
-  ReusingTextShaper shaper(data, previous_items);
   ShapeResultSpacing<String> spacing(text_content, IsSvgText());
+
+  // For consistency with similar usages of ShapeCache (e.g. canvas) and in
+  // order to avoid caching bugs (e.g. with scripts having Arabic joining)
+  // NGShapeCache is only enabled when the IFC is made of a single text item. To
+  // be efficient, NGShapeCache only stores entries for short strings and
+  // without memory copy, so don't allow it if the text item is too long or if
+  // the start/end offsets match a substring. Don't allow it either if a call to
+  // ApplySpacing is needed to avoid a costly copy of the ShapeResult in the
+  // loop below.
+  auto ShapeCacheAllowedFor = [&override_font, &spacing,
+                               &text_content](const NGInlineItem& single_item) {
+    if (!(single_item.Type() == NGInlineItem::kText &&
+          single_item.StartOffset() == 0 &&
+          single_item.EndOffset() == text_content.length())) {
+      return false;
+    }
+    const Font& font =
+        override_font ? *override_font : single_item.FontWithSvgScaling();
+    return !spacing.SetSpacing(font.GetFontDescription());
+  };
+
+  const bool allow_shape_cache =
+      RuntimeEnabledFeatures::LayoutNGShapeCacheEnabled() &&
+      text_content.length() <= NGShapeCache::MaxTextLengthOfEntries() &&
+      items->size() == 1 && ShapeCacheAllowedFor((*items)[0]);
+
+  // Provide full context of the entire node to the shaper.
+  ReusingTextShaper shaper(data, previous_items, allow_shape_cache);
 
   DCHECK(!data->segments ||
          data->segments->EndOffset() == text_content.length());
@@ -1352,12 +1404,15 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
     }
 
     // Shape each item with the full context of the entire node.
-    scoped_refptr<ShapeResult> shape_result =
+    scoped_refptr<const ShapeResult> shape_result =
         shaper.Shape(start_item, font, end_offset);
 
     if (UNLIKELY(spacing.SetSpacing(font.GetFontDescription()))) {
       DCHECK(!IsTextCombine()) << GetLayoutBlockFlow();
-      shape_result->ApplySpacing(spacing);
+      DCHECK(!allow_shape_cache);
+      // The ShapeResult is actually not a reusable entry of NGShapeCache,
+      // so it is safe to mutate it.
+      const_cast<ShapeResult*>(shape_result.get())->ApplySpacing(spacing);
     }
 
     // If the text is from one item, use the ShapeResult as is.

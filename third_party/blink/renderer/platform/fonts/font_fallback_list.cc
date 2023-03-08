@@ -73,6 +73,7 @@ void FontFallbackList::ReleaseFontData() {
       FontCache::Get().ReleaseFontData(To<SimpleFontData>(font_list_[i].get()));
     }
   }
+  ng_shape_cache_.reset();  // Clear the weak pointer to the cache instance.
   shape_cache_.reset();  // Clear the weak pointer to the cache instance.
 }
 

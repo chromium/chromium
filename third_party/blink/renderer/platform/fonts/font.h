@@ -53,6 +53,7 @@ class PaintFlags;
 
 namespace blink {
 
+class NGShapeCache;
 struct CharacterRange;
 class FontSelector;
 class ShapeCache;
@@ -195,6 +196,10 @@ class PLATFORM_EXPORT Font {
   // loaded. This *should* not happen but in reality it does ever now and then
   // when, for whatever reason, the last resort font cannot be loaded.
   const SimpleFontData* PrimaryFont() const;
+
+  // Access the NG shape cache associated with this particular font object.
+  // Should *not* be retained across layout calls as it may become invalid.
+  NGShapeCache* GetNGShapeCache() const;
 
   // Access the shape cache associated with this particular font object.
   // Should *not* be retained across layout calls as it may become invalid.

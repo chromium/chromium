@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/platform/fonts/fallback_list_composite_key.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_selector.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/ng_shape_cache.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_cache.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -75,6 +76,18 @@ class PLATFORM_EXPORT FontFallbackList : public RefCounted<FontFallbackList> {
 
   FontSelector* GetFontSelector() const;
   uint16_t Generation() const { return generation_; }
+
+  NGShapeCache* GetNGShapeCache(const FontDescription& font_description) {
+    if (!ng_shape_cache_) {
+      FallbackListCompositeKey key = CompositeKey(font_description);
+      ng_shape_cache_ = FontCache::Get().GetNGShapeCache(key)->GetWeakPtr();
+    }
+    DCHECK(ng_shape_cache_);
+    if (GetFontSelector()) {
+      ng_shape_cache_->ClearIfVersionChanged(GetFontSelector()->Version());
+    }
+    return ng_shape_cache_.get();
+  }
 
   ShapeCache* GetShapeCache(const FontDescription& font_description) {
     if (!shape_cache_) {
@@ -142,6 +155,7 @@ class PLATFORM_EXPORT FontFallbackList : public RefCounted<FontFallbackList> {
   bool is_invalid_ : 1;
   bool nullify_primary_font_data_for_test_ : 1;
 
+  base::WeakPtr<NGShapeCache> ng_shape_cache_;
   base::WeakPtr<ShapeCache> shape_cache_;
 };
 

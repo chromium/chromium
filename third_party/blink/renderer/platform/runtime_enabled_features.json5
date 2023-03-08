@@ -1941,6 +1941,11 @@
       status: "stable",
     },
     {
+      name: "LayoutNGShapeCache",
+      status: "test",
+      base_feature: "LayoutNGShapeCache",
+    },
+    {
       name: "LayoutNGSubgrid",
       status: "test",
       base_feature: "none",

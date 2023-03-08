@@ -817,6 +817,7 @@ void StyleEngine::UpdateGenericFontFamilySettings() {
   if (resolver_) {
     resolver_->InvalidateMatchedPropertiesCache();
   }
+  FontCache::Get().InvalidateNGShapeCache();
   FontCache::Get().InvalidateShapeCache();
 }
 

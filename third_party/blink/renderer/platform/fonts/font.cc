@@ -495,6 +495,10 @@ int Font::OffsetForPosition(const TextRun& run,
   return shaper.OffsetForPosition(run, x_float, partial_glyphs, break_glyphs);
 }
 
+NGShapeCache* Font::GetNGShapeCache() const {
+  return EnsureFontFallbackList()->GetNGShapeCache(font_description_);
+}
+
 ShapeCache* Font::GetShapeCache() const {
   return EnsureFontFallbackList()->GetShapeCache(font_description_);
 }
