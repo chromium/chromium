@@ -1972,12 +1972,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Provisioning.TimeDelta.Failure{ArcUserTypes}" units="ms"
-    expires_after="2022-11-01">
-  <owner>alexchau@google.com</owner>
-  <owner>phweiss@google.com</owner>
+    expires_after="2024-03-08">
+  <owner>mhasank@google.com</owner>
+  <owner>arc-core@google.com</owner>
   <summary>
     Elapsed time from the signing in process start to call to onSignInFailed.
-    {ArcUserTypes}
+    Warning: this histogram was expired from 2022-11-01 to 2023-03-08; data may
+    be missing. {ArcUserTypes}
   </summary>
   <token key="ArcUserTypes" variants="ArcUserTypes">
     <variant name=""/>
@@ -1985,12 +1986,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Provisioning.TimeDelta.Success{ArcUserTypes}" units="ms"
-    expires_after="2022-11-01">
-  <owner>alexchau@google.com</owner>
-  <owner>phweiss@google.com</owner>
+    expires_after="2024-03-08">
+  <owner>mhasank@google.com</owner>
+  <owner>arc-core@google.com</owner>
   <summary>
     Elapsed time from the signing in process start to successful call to
-    onSignInComplete. {ArcUserTypes}
+    onSignInComplete. Warning: this histogram was expired from 2022-11-01 to
+    2023-03-08; data may be missing. {ArcUserTypes}
   </summary>
   <token key="ArcUserTypes" variants="ArcUserTypes">
     <variant name=""/>
