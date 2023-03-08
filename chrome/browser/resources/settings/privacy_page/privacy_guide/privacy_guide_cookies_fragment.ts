@@ -15,7 +15,7 @@ import '../../privacy_page/collapse_radio_button.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyGuideSettingsStates} from '../../metrics_browser_proxy.js';
+import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyGuideSettingsStates, PrivacyGuideStepsEligibleAndReached} from '../../metrics_browser_proxy.js';
 import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 import {CookiePrimarySetting} from '../../site_settings/site_settings_prefs_browser_proxy.js';
 
@@ -71,6 +71,9 @@ export class PrivacyGuideCookiesFragmentElement extends
     this.startStateBlock3PIncognito_ =
         this.getPref('generated.cookie_primary_setting').value ===
         CookiePrimarySetting.BLOCK_THIRD_PARTY_INCOGNITO;
+    this.metricsBrowserProxy_
+        .recordPrivacyGuideStepsEligibleAndReachedHistogram(
+            PrivacyGuideStepsEligibleAndReached.COOKIES_REACHED);
   }
 
   private onViewExitFinish_() {

@@ -308,7 +308,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Settings.PrivacyGuide.FlowLength" units="steps"
     expires_after="2023-07-30">
   <owner>rainhard@chromium.org</owner>
-  <owner>msramek@chromium.org</owner>
+  <owner>aisulu@chromium.org</owner>
   <owner>chrome-friendly-settings@google.com</owner>
   <summary>
     The number of settings steps that can be shown in the Privacy Guide flow.
@@ -336,6 +336,19 @@ chromium-metrics-reviews@google.com.
     Records whether or not the user kept the same settings or changed it, and
     the corresponding value, on every |Next| or |Back| button click inside of
     Privacy guide.
+  </summary>
+</histogram>
+
+<histogram name="Settings.PrivacyGuide.StepsEligibleAndReached"
+    enum="SettingsPrivacyGuideStepsEligibleAndReached"
+    expires_after="2023-08-21">
+  <owner>rainhard@chromium.org</owner>
+  <owner>aisulu@chromium.org</owner>
+  <owner>chrome-friendly-settings@google.com</owner>
+  <summary>
+    Records which steps were set to be eligible to be shown when user clicks
+    'Next' button in the Welcome step. Records which steps were reached when
+    user reaches the individual step in the flow.
   </summary>
 </histogram>
 

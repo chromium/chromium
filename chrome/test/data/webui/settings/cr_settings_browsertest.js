@@ -1042,6 +1042,13 @@ function registerTest(testName, module, caseName) {
    ],
  ],
  [
+   'PrivacyGuideIntegration',
+   'privacy_guide_integration_test.js',
+   [
+     'PrivacyGuideEligibleReachedMetricsTests',
+   ],
+ ],
+ [
    'PrivacyGuideFragments',
    'privacy_guide_fragments_test.js',
    [

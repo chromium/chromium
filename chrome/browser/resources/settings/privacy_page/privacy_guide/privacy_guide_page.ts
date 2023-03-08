@@ -23,12 +23,12 @@ import './step_indicator.js';
 import {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../../hats_browser_proxy.js';
 import {loadTimeData} from '../../i18n_setup.js';
-import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyGuideInteractions} from '../../metrics_browser_proxy.js';
+import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyGuideInteractions, PrivacyGuideStepsEligibleAndReached} from '../../metrics_browser_proxy.js';
 import {SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '../../people_page/sync_browser_proxy.js';
 import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 import {CrSettingsPrefs} from '../../prefs/prefs_types.js';
@@ -48,6 +48,24 @@ interface PrivacyGuideStepComponents {
   previousStep?: PrivacyGuideStep;
   onBackwardNavigation?(): void;
   isAvailable(): boolean;
+}
+
+function eligibilityToRecord(step: PrivacyGuideStep):
+    PrivacyGuideStepsEligibleAndReached {
+  switch (step) {
+    case PrivacyGuideStep.MSBB:
+      return PrivacyGuideStepsEligibleAndReached.MSBB_ELIGIBLE;
+    case PrivacyGuideStep.HISTORY_SYNC:
+      return PrivacyGuideStepsEligibleAndReached.HISTORY_SYNC_ELIGIBLE;
+    case PrivacyGuideStep.SAFE_BROWSING:
+      return PrivacyGuideStepsEligibleAndReached.SAFE_BROWSING_ELIGIBLE;
+    case PrivacyGuideStep.COOKIES:
+      return PrivacyGuideStepsEligibleAndReached.COOKIES_ELIGIBLE;
+    case PrivacyGuideStep.COMPLETION:
+      return PrivacyGuideStepsEligibleAndReached.COMPLETION_ELIGIBLE;
+    default:
+      assertNotReached();
+  }
 }
 
 export interface SettingsPrivacyGuidePageElement {
@@ -184,6 +202,7 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
                 'Settings.PrivacyGuide.NextClickWelcome');
             this.metricsBrowserProxy_.recordPrivacyGuideFlowLengthHistogram(
                 this.computeStepIndicatorModel().total);
+            this.recordEligibleSteps_();
           },
         },
       ],
@@ -342,6 +361,26 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
 
   private onNextButtonClick_() {
     this.navigateForward_();
+  }
+
+  private recordEligibleSteps_(): void {
+    for (const key in PrivacyGuideStep) {
+      const step = PrivacyGuideStep[key as keyof typeof PrivacyGuideStep];
+      if (step === PrivacyGuideStep.WELCOME) {
+        // This card has no status since it is always eligible to be shown and
+        // is always reached.
+        continue;
+      }
+
+      const component = this.privacyGuideStepToComponentsMap_.get(step);
+      assert(component);
+      if (!component.isAvailable()) {
+        continue;
+      }
+      this.metricsBrowserProxy_
+          .recordPrivacyGuideStepsEligibleAndReachedHistogram(
+              eligibilityToRecord(step));
+    }
   }
 
   private navigateForward_() {

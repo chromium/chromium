@@ -15,7 +15,7 @@ import '../../privacy_page/collapse_radio_button.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyGuideSettingsStates} from '../../metrics_browser_proxy.js';
+import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyGuideSettingsStates, PrivacyGuideStepsEligibleAndReached} from '../../metrics_browser_proxy.js';
 import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 import {SafeBrowsingSetting} from '../../privacy_page/security_page.js';
 
@@ -70,6 +70,9 @@ export class PrivacyGuideSafeBrowsingFragmentElement extends
   private onViewEnterStart_() {
     this.startStateEnhanced_ = this.getPref('generated.safe_browsing').value ===
         SafeBrowsingSetting.ENHANCED;
+    this.metricsBrowserProxy_
+        .recordPrivacyGuideStepsEligibleAndReachedHistogram(
+            PrivacyGuideStepsEligibleAndReached.SAFE_BROWSING_REACHED);
   }
 
   private onViewExitFinish_() {
