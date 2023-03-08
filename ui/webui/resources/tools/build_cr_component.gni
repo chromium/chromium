@@ -237,8 +237,18 @@ template("build_cr_component") {
 
     composite = true
 
-    if (!defined(invoker.ts_use_local_config) || invoker.ts_use_local_config) {
-      tsconfig_base = "tsconfig_base.json"
+    if (defined(invoker.ts_tsconfig_base)) {
+      tsconfig_base = invoker.ts_tsconfig_base
+    } else {
+      if ((defined(invoker.web_component_files) ||
+           defined(invoker.icons_html_files)) &&
+          (!defined(invoker.html_to_wrapper_template) ||
+           invoker.html_to_wrapper_template != "native")) {
+        # Default tsconfig is tsconfig_base_polymer.json for Polymer UIs.
+        # tsconfig_base is left unset (defaults to
+        # //tools/typescript/tsconfig_base.json) for non-Polymer UIs.
+        tsconfig_base = "//tools/typescript/tsconfig_base_polymer.json"
+      }
     }
 
     in_files = ts_files

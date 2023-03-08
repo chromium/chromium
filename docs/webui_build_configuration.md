@@ -695,7 +695,7 @@ ts_definitions: Same as build_webui()
 ts_deps: Same as build_webui()
 ts_extra_deps: Same as build_webui()
 ts_path_mappings: Same as build_webui()
-ts_use_local_config: Same as build_webui()
+ts_tsconfig_base: Same as build_webui()
 
 Other params:
 grd_prefix: See |grd_prefix| in generate_grd(). Required parameter.
