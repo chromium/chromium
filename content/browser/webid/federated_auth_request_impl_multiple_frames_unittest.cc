@@ -234,9 +234,11 @@ class FederatedAuthRequestImplMultipleFramesTest
     blink::mojom::IdentityProviderLoginHintPtr login_hint_ptr =
         blink::mojom::IdentityProviderLoginHint::New(/*email=*/"", /*id=*/"",
                                                      /*login_hint=*/false);
-    auto idp_ptr = blink::mojom::IdentityProviderConfig::New(
+    auto config_ptr = blink::mojom::IdentityProviderConfig::New(
         GURL(kProviderUrlFull), kClientId, kNonce, std::move(login_hint_ptr));
-    std::vector<blink::mojom::IdentityProviderConfigPtr> idp_ptrs;
+    std::vector<blink::mojom::IdentityProviderPtr> idp_ptrs;
+    blink::mojom::IdentityProviderPtr idp_ptr =
+        blink::mojom::IdentityProvider::NewFederated(std::move(config_ptr));
     idp_ptrs.push_back(std::move(idp_ptr));
     auto get_params = blink::mojom::IdentityProviderGetParameters::New(
         std::move(idp_ptrs), /*auto_reauthn=*/true,

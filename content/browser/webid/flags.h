@@ -42,6 +42,9 @@ bool IsFedCmLoginHintEnabled();
 // Whether the IdP Registration API is enabled.
 bool IsFedCmIdPRegistrationEnabled();
 
+// Whether the Web Identity MDocs API is enabled.
+bool IsWebIdentityMDocsEnabled();
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_WEBID_FLAGS_H_

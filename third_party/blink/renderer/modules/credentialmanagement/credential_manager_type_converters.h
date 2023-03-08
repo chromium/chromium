@@ -205,6 +205,13 @@ struct TypeConverter<blink::mojom::blink::IdentityProviderConfigPtr,
 };
 
 template <>
+struct TypeConverter<blink::mojom::blink::IdentityProviderPtr,
+                     blink::IdentityProviderConfig> {
+  static blink::mojom::blink::IdentityProviderPtr Convert(
+      const blink::IdentityProviderConfig&);
+};
+
+template <>
 struct MODULES_EXPORT
     TypeConverter<blink::mojom::blink::RpContext,
                   blink::V8IdentityCredentialRequestOptionsContext> {

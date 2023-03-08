@@ -721,16 +721,18 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     std::vector<blink::mojom::IdentityProviderGetParametersPtr> idp_get_params;
     for (const auto& identity_provider :
          request_parameters.identity_providers) {
-      std::vector<blink::mojom::IdentityProviderConfigPtr> idp_ptrs;
+      std::vector<blink::mojom::IdentityProviderPtr> idp_ptrs;
       blink::mojom::IdentityProviderLoginHintPtr login_hint_ptr =
           blink::mojom::IdentityProviderLoginHint::New(
               identity_provider.login_hint.email,
               identity_provider.login_hint.id,
               identity_provider.login_hint.is_required);
-      blink::mojom::IdentityProviderConfigPtr idp_ptr =
+      blink::mojom::IdentityProviderConfigPtr config =
           blink::mojom::IdentityProviderConfig::New(
               GURL(identity_provider.provider), identity_provider.client_id,
               identity_provider.nonce, std::move(login_hint_ptr));
+      blink::mojom::IdentityProviderPtr idp_ptr =
+          blink::mojom::IdentityProvider::NewFederated(std::move(config));
       idp_ptrs.push_back(std::move(idp_ptr));
       blink::mojom::IdentityProviderGetParametersPtr get_params =
           blink::mojom::IdentityProviderGetParameters::New(

@@ -1392,8 +1392,20 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
     }
 
     int provider_index = 0;
-    Vector<mojom::blink::IdentityProviderConfigPtr> identity_provider_ptrs;
+    Vector<mojom::blink::IdentityProviderPtr> identity_provider_ptrs;
     for (const auto& provider : options->identity()->providers()) {
+      if (RuntimeEnabledFeatures::WebIdentityMDocsEnabled() &&
+          !RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled()) {
+        // TODO(https://crbug.com/1416939): make sure the MDocs API
+        // works well with the Multiple IdP API.
+        if (provider->hasMdoc()) {
+          auto identity_provider =
+              blink::mojom::blink::IdentityProvider::From(*provider);
+          identity_provider_ptrs.push_back(std::move(identity_provider));
+          continue;
+        }
+      }
+
       // TODO(kenrb): Add some renderer-side validation here, such as
       // validating |provider|, and making sure the calling context is legal.
       // Some of this has not been spec'd yet.
@@ -1415,8 +1427,8 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
         return promise;
       }
 
-      mojom::blink::IdentityProviderConfigPtr identity_provider =
-          blink::mojom::blink::IdentityProviderConfig::From(*provider);
+      mojom::blink::IdentityProviderPtr identity_provider =
+          blink::mojom::blink::IdentityProvider::From(*provider);
       identity_provider_ptrs.push_back(std::move(identity_provider));
     }
 

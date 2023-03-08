@@ -85,22 +85,24 @@ void WebIdentityRequester::AppendGetCall(
     return;
   }
 
-  Vector<mojom::blink::IdentityProviderConfigPtr> idp_ptrs;
+  Vector<mojom::blink::IdentityProviderPtr> idp_ptrs;
   for (const auto& provider : providers) {
-    mojom::blink::IdentityProviderConfigPtr idp =
+    mojom::blink::IdentityProviderConfigPtr config =
         blink::mojom::blink::IdentityProviderConfig::From(*provider);
-    if (provider_to_resolver_.Contains(KURL(idp->config_url))) {
+    if (provider_to_resolver_.Contains(KURL(config->config_url))) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotAllowedError,
           "More than one navigator.credentials.get calls to the same "
           "provider."));
       return;
     }
+    mojom::blink::IdentityProviderPtr idp =
+        mojom::blink::IdentityProvider::NewFederated(std::move(config));
     idp_ptrs.push_back(std::move(idp));
   }
 
   for (const auto& idp_ptr : idp_ptrs) {
-    provider_to_resolver_.insert(KURL(idp_ptr->config_url),
+    provider_to_resolver_.insert(KURL(idp_ptr->get_federated()->config_url),
                                  WrapPersistent(resolver));
   }
 

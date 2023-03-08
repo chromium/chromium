@@ -426,6 +426,27 @@ void FederatedAuthRequestImpl::RequestToken(
     return;
   }
 
+  if (idp_get_params_ptrs[0]->providers[0]->is_mdoc()) {
+    if (!IsWebIdentityMDocsEnabled() ||
+        IsFedCmMultipleIdentityProvidersEnabled()) {
+      // TODO(https://crbug.com/1416939): Support calling the MDocs API with the
+      // Multi IdP API support.
+      std::move(callback).Run(RequestTokenStatus::kError, absl::nullopt, "");
+      return;
+    }
+    // TODO(https://crbug.com/1416939): make an Android API call to
+    // the underlying OS to fetch a real mdoc, as oppose to returning
+    // a fake / test one.
+    std::move(callback).Run(RequestTokenStatus::kSuccess, absl::nullopt,
+                            "test-mdoc");
+
+    // TODO(https://crbug.com/1416939): rather than returning early,
+    // we would ultimately like to make the mdocs response reconcile with the
+    // federated identities, so that they can be presented to the user in an
+    // unified manner.
+    return;
+  }
+
   // Check that providers are non-empty.
   for (auto& idp_get_params_ptr : idp_get_params_ptrs) {
     if (idp_get_params_ptr->providers.size() == 0) {
@@ -436,10 +457,10 @@ void FederatedAuthRequestImpl::RequestToken(
 
   if (!fedcm_metrics_) {
     // TODO(crbug.com/1307709): Handle FedCmMetrics for multiple IDPs.
-    fedcm_metrics_ =
-        CreateFedCmMetrics(idp_get_params_ptrs[0]->providers[0]->config_url,
-                           render_frame_host().GetPageUkmSourceId(),
-                           /*is_disabled=*/idp_get_params_ptrs.size() > 1);
+    fedcm_metrics_ = CreateFedCmMetrics(
+        idp_get_params_ptrs[0]->providers[0]->get_federated()->config_url,
+        render_frame_host().GetPageUkmSourceId(),
+        /*is_disabled=*/idp_get_params_ptrs.size() > 1);
   }
 
   if (HasPendingRequest()) {
@@ -495,7 +516,8 @@ void FederatedAuthRequestImpl::RequestToken(
   for (auto& idp_get_params_ptr : idp_get_params_ptrs) {
     for (auto& idp_ptr : idp_get_params_ptr->providers) {
       // Throw an error if duplicate IDPs are specified.
-      const bool is_unique_idp = unique_idps.insert(idp_ptr->config_url).second;
+      const bool is_unique_idp =
+          unique_idps.insert(idp_ptr->get_federated()->config_url).second;
       if (!is_unique_idp) {
         CompleteRequestWithError(FederatedAuthRequestResult::kError,
                                  /*token_status=*/absl::nullopt,
@@ -504,7 +526,7 @@ void FederatedAuthRequestImpl::RequestToken(
       }
 
       if (!network::IsOriginPotentiallyTrustworthy(
-              url::Origin::Create(idp_ptr->config_url))) {
+              url::Origin::Create(idp_ptr->get_federated()->config_url))) {
         CompleteRequestWithError(FederatedAuthRequestResult::kError,
                                  TokenStatus::kIdpNotPotentiallyTrustworthy,
                                  /*should_delay_callback=*/false);
@@ -516,7 +538,7 @@ void FederatedAuthRequestImpl::RequestToken(
       // IDP use case.
       bool has_failing_idp_signin_status =
           webid::ShouldFailAccountsEndpointRequestBecauseNotSignedInWithIdp(
-              idp_ptr->config_url, permission_delegate_);
+              idp_ptr->get_federated()->config_url, permission_delegate_);
 
       if (has_failing_idp_signin_status &&
           GetFedCmIdpSigninStatusMode() == FedCmIdpSigninStatusMode::ENABLED) {
@@ -530,15 +552,15 @@ void FederatedAuthRequestImpl::RequestToken(
 
   for (auto& idp_get_params_ptr : idp_get_params_ptrs) {
     for (auto& idp_ptr : idp_get_params_ptr->providers) {
-      idp_order_.push_back(idp_ptr->config_url);
+      idp_order_.push_back(idp_ptr->get_federated()->config_url);
       blink::mojom::RpContext rp_context =
           IsFedCmRpContextEnabled() ? idp_get_params_ptr->context
                                     : blink::mojom::RpContext::kSignIn;
-      const GURL& idp_config_url = idp_ptr->config_url;
+      const GURL& idp_config_url = idp_ptr->get_federated()->config_url;
       token_request_get_infos_.emplace(
           idp_config_url,
           IdentityProviderGetInfo(
-              std::move(idp_ptr),
+              std::move(idp_ptr->get_federated()),
               idp_get_params_ptr->auto_reauthn && IsFedCmAutoReauthnEnabled(),
               rp_context));
     }
