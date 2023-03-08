@@ -88,8 +88,17 @@
   <message name="IDS_DOM_DISTILLER_WEBUI_TITLE" desc="The title to show on the DOM Distiller debug page.">
     DOM Distiller
   </message>
-  <message name="IDS_DOM_DISTILLER_VIEWER_TITLE_SUFFIX" desc="The suffix to show after the page title to indicate we are in reader mode. For example, if the page title was 'An Article', this would be appended to create the title 'An Article - Reader Mode'.">
-    Reader Mode
-  </message>
+  <if expr="is_android">
+    <then>
+      <message name="IDS_DOM_DISTILLER_VIEWER_TITLE_SUFFIX" desc="The suffix to show after the page title to indicate we are in reader mode. For example, if the page title was 'An Article', this would be appended to create the title 'An Article - Simplified View'.">
+        Simplified View
+      </message>
+    </then>
+    <else>
+      <message name="IDS_DOM_DISTILLER_VIEWER_TITLE_SUFFIX" desc="The suffix to show after the page title to indicate we are in reader mode. For example, if the page title was 'An Article', this would be appended to create the title 'An Article - Reader Mode'.">
+        Reader Mode
+      </message>
+    </else>
+  </if>
 
 </grit-part>

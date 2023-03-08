@@ -104,7 +104,10 @@ public class ReaderModeTest implements CustomMainActivityStart {
     public DownloadTestRule mDownloadTestRule = new DownloadTestRule(this);
 
     private static final String TEST_PAGE = "/chrome/test/data/dom_distiller/simple_article.html";
-    private static final String TITLE = "Test Page Title";
+    // Suffix added to page titles, string is defined as IDS_DOM_DISTILLER_VIEWER_TITLE_SUFFIX in
+    // dom_distiller_strings.grdp.
+    private static final String TITLE_SUFFIX = " - Simplified View";
+    private static final String PAGE_TITLE = "Test Page Title" + TITLE_SUFFIX;
     private static final String CONTENT = "Lorem ipsum";
 
     @SuppressWarnings("FieldCanBeLocal")
@@ -152,7 +155,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
                 () -> Criteria.checkThat(customTabActivity.getActivityTab(), notNullValue()));
         @NonNull
         Tab distillerViewerTab = Objects.requireNonNull(customTabActivity.getActivityTab());
-        waitForDistillation(TITLE, distillerViewerTab);
+        waitForDistillation(PAGE_TITLE, distillerViewerTab);
     }
 
     @Test
@@ -175,7 +178,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
                 () -> Criteria.checkThat(customTabActivity.getActivityTab(), notNullValue()));
         @NonNull
         Tab distillerViewerTab = Objects.requireNonNull(customTabActivity.getActivityTab());
-        waitForDistillation(TITLE, distillerViewerTab);
+        waitForDistillation(PAGE_TITLE, distillerViewerTab);
     }
 
     @Test
@@ -226,7 +229,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
                 () -> Criteria.checkThat(customTabActivity.getActivityTab(), notNullValue()));
         @NonNull
         Tab distillerViewerTab = Objects.requireNonNull(customTabActivity.getActivityTab());
-        waitForDistillation(TITLE, distillerViewerTab);
+        waitForDistillation(PAGE_TITLE, distillerViewerTab);
         assertTrue(distillerViewerTab.isIncognito());
 
         return customTabActivity;
@@ -269,7 +272,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             tab.getUserDataHost().getUserData(ReaderModeManager.USER_DATA_KEY).activateReaderMode();
         });
-        waitForDistillation(TITLE, mDownloadTestRule.getActivity().getActivityTab());
+        waitForDistillation(PAGE_TITLE, mDownloadTestRule.getActivity().getActivityTab());
     }
 
     @Test
@@ -286,7 +289,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
         CriteriaHelper.pollUiThread(() -> customTabActivity.getActivityTab() != null);
         @NonNull
         Tab distillerViewerTab = Objects.requireNonNull(customTabActivity.getActivityTab());
-        waitForDistillation(TITLE, distillerViewerTab);
+        waitForDistillation(PAGE_TITLE, distillerViewerTab);
 
         testPreference(customTabActivity, distillerViewerTab);
     }
@@ -299,11 +302,11 @@ public class ReaderModeTest implements CustomMainActivityStart {
                     "Failing on Lollipop Phone Tester (https://crbug.com/1120830) and test-n-phone (https://crbug.com/1160911)")
     public void
     testPreferenceInTab() throws TimeoutException {
-        mDownloadTestRule.loadUrl(
-                DomDistillerUrlUtils.getDistillerViewUrlFromUrl(DOM_DISTILLER_SCHEME, mURL, TITLE));
+        mDownloadTestRule.loadUrl(DomDistillerUrlUtils.getDistillerViewUrlFromUrl(
+                DOM_DISTILLER_SCHEME, mURL, PAGE_TITLE));
 
         Tab tab = mDownloadTestRule.getActivity().getActivityTab();
-        waitForDistillation(TITLE, tab);
+        waitForDistillation(PAGE_TITLE, tab);
 
         testPreference(mDownloadTestRule.getActivity(), tab);
     }
