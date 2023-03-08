@@ -29,11 +29,15 @@ enum class WarningType {
 // Struct used to obtain the password counts associated with the different
 // insecure types.
 struct InsecurePasswordCounts {
-  int compromisedCount;
-  int dismissedCount;
-  int reusedCount;
-  int weakCount;
+  int compromised_count;
+  int dismissed_count;
+  int reused_count;
+  int weak_count;
 };
+
+// Operator overload for the InsecurePasswordCounts struct.
+bool operator==(const InsecurePasswordCounts& lhs,
+                const InsecurePasswordCounts& rhs);
 
 // Returns the type of warning with the highest priority, the descending order
 // of priority being:

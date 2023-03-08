@@ -26,6 +26,15 @@ constexpr base::TimeDelta kJustCheckedTimeThreshold = base::Minutes(1);
 
 namespace password_manager {
 
+bool operator==(const InsecurePasswordCounts& lhs,
+                const InsecurePasswordCounts& rhs) {
+  std::tuple lhs_tuple = std::tie(lhs.compromised_count, lhs.dismissed_count,
+                                  lhs.reused_count, lhs.weak_count);
+  std::tuple rhs_tuple = std::tie(rhs.compromised_count, rhs.dismissed_count,
+                                  rhs.reused_count, rhs.weak_count);
+  return lhs_tuple == rhs_tuple;
+}
+
 WarningType GetWarningOfHighestPriority(
     const std::vector<password_manager::CredentialUIEntry>&
         insecure_credentials) {
@@ -64,15 +73,15 @@ InsecurePasswordCounts CountInsecurePasswordsPerInsecureType(
     // If a compromised credential is muted, we don't want to take it into
     // account in the compromised count.
     if (credential.IsMuted()) {
-      counts.dismissedCount++;
+      counts.dismissed_count++;
     } else if (IsCompromised(credential)) {
-      counts.compromisedCount++;
+      counts.compromised_count++;
     }
     if (credential.IsReused()) {
-      counts.reusedCount++;
+      counts.reused_count++;
     }
     if (credential.IsWeak()) {
-      counts.weakCount++;
+      counts.weak_count++;
     }
   }
   return counts;
@@ -86,13 +95,13 @@ int GetPasswordCountForWarningType(
       CountInsecurePasswordsPerInsecureType(insecure_credentials);
   switch (warningType) {
     case WarningType::kCompromisedPasswordsWarning:
-      return counts.compromisedCount;
+      return counts.compromised_count;
     case WarningType::kReusedPasswordsWarning:
-      return counts.reusedCount;
+      return counts.reused_count;
     case WarningType::kWeakPasswordsWarning:
-      return counts.weakCount;
+      return counts.weak_count;
     case WarningType::kDismissedWarningsWarning:
-      return counts.dismissedCount;
+      return counts.dismissed_count;
     case WarningType::kNoInsecurePasswordsWarning:
       return 0;
   }
