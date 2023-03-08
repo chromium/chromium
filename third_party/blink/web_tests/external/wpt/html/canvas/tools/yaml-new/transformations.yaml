@@ -44,8 +44,6 @@
     ctx.fillRect(0, 0, 100, 50);
     ctx.restore();
 
-    canvas.toDataURL();
-
     @assert pixel 50,25 == 0,255,0,255;
   expected: green
 
