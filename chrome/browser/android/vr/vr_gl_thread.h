@@ -72,28 +72,6 @@ class VrGLThread : public base::android::JavaHandlerThread,
 
   // UiBrowserInterface implementation (UI calling to VrShell).
   void ExitPresent() override;
-  void ExitFullscreen() override;
-  void Navigate(GURL gurl, NavigationMethod method) override;
-  void NavigateBack() override;
-  void NavigateForward() override;
-  void ReloadTab() override;
-  void OpenNewTab(bool incognito) override;
-  void OpenBookmarks() override;
-  void OpenRecentTabs() override;
-  void OpenHistory() override;
-  void OpenDownloads() override;
-  void OpenShare() override;
-  void OpenSettings() override;
-  void CloseAllIncognitoTabs() override;
-  void OpenFeedback() override;
-  void CloseHostedDialog() override;
-  void OnUnsupportedMode(UiUnsupportedMode mode) override;
-  void OnExitVrPromptResult(ExitVrPromptChoice choice,
-                            UiUnsupportedMode reason) override;
-  void SetVoiceSearchActive(bool active) override;
-  void StartAutocomplete(const AutocompleteRequest& request) override;
-  void StopAutocomplete() override;
-  void ShowPageInfo() override;
 
   // BrowserUiInterface implementation (Browser calling to UI).
   void SetWebVrMode(bool enabled) override;
