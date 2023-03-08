@@ -497,8 +497,7 @@ void DeepScanningRequest::PopulateRequest(FileAnalysisRequest* request,
 void DeepScanningRequest::PrepareClientDownloadRequest(
     const base::FilePath& current_path,
     std::unique_ptr<FileAnalysisRequest> request) {
-  if (base::FeatureList::IsEnabled(kSafeBrowsingEnterpriseCsd) &&
-      trigger_ == DeepScanTrigger::TRIGGER_POLICY) {
+  if (trigger_ == DeepScanTrigger::TRIGGER_POLICY) {
     download_request_maker_ = DownloadRequestMaker::CreateFromDownloadItem(
         new BinaryFeatureExtractor(), item_);
     download_request_maker_->Start(base::BindOnce(
@@ -735,9 +734,8 @@ bool DeepScanningRequest::ReportOnlyScan() {
   if (trigger_ == DeepScanTrigger::TRIGGER_APP_PROMPT)
     return false;
 
-  return base::FeatureList::IsEnabled(kConnectorsScanningReportOnlyUI) &&
-         analysis_settings_.block_until_verdict ==
-             enterprise_connectors::BlockUntilVerdict::kNoBlock;
+  return analysis_settings_.block_until_verdict ==
+         enterprise_connectors::BlockUntilVerdict::kNoBlock;
 }
 
 void DeepScanningRequest::AcknowledgeRequest(EventResult event_result) {

@@ -4704,43 +4704,18 @@ TEST_F(DownloadProtectionServiceTest, ESBRequestScanFalseWhenTooLarge) {
   EXPECT_TRUE(IsResult(DownloadCheckResult::UNCOMMON));
 }
 
-// Test fixture with the enterprise CSD checks either enabled or disabled.
-class EnterpriseCsdDownloadTest : public DownloadProtectionServiceTestBase,
-                                  public ::testing::WithParamInterface<bool> {
+class EnterpriseCsdDownloadTest : public DownloadProtectionServiceTestBase {
  public:
-  EnterpriseCsdDownloadTest() {
-    // Enable the feature early to prevent race condition trying to access
-    // the enabled features set.  This happens for example when the history
-    // service is started below.
-    if (flag_enabled()) {
-      EnableFeatures({kSafeBrowsingEnterpriseCsd,
-                      kSafeBrowsingDisableConsumerCsdForEnterprise});
-    } else {
-      DisableFeatures({kSafeBrowsingEnterpriseCsd,
-                       kSafeBrowsingDisableConsumerCsdForEnterprise});
-    }
-  }
-
-  bool flag_enabled() const { return GetParam(); }
+  EnterpriseCsdDownloadTest() = default;
 };
 
-TEST_P(EnterpriseCsdDownloadTest, SkipsConsumerCsdWhenEnabled) {
+TEST_F(EnterpriseCsdDownloadTest, SkipsConsumerCsdWhenEnabled) {
   NiceMockDownloadItem item;
   PrepareBasicDownloadItem(&item, {"http://www.evil.com/a.exe"},  // url_chain
                            "http://www.google.com/",              // referrer
                            FILE_PATH_LITERAL("a.tmp"),            // tmp_path
                            FILE_PATH_LITERAL("a.exe"));           // final_path
   content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
-
-  if (!flag_enabled()) {
-    EXPECT_CALL(*sb_service_->mock_database_manager(),
-                MatchDownloadAllowlistUrl(_))
-        .WillRepeatedly(Return(false));
-    EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _));
-    EXPECT_CALL(*binary_feature_extractor_.get(),
-                ExtractImageFeatures(
-                    tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _));
-  }
 
   SetAnalysisConnector(profile()->GetPrefs(),
                        enterprise_connectors::FILE_DOWNLOADED, R"(
@@ -4768,26 +4743,17 @@ TEST_P(EnterpriseCsdDownloadTest, SkipsConsumerCsdWhenEnabled) {
                           base::Unretained(this), run_loop.QuitClosure()));
   run_loop.Run();
 
-  EXPECT_EQ(HasClientDownloadRequest(), !flag_enabled());
+  EXPECT_EQ(HasClientDownloadRequest(), false);
   EXPECT_TRUE(test_upload_service->was_called());
 }
 
-TEST_P(EnterpriseCsdDownloadTest, PopulatesCsdFieldWhenEnabled) {
+TEST_F(EnterpriseCsdDownloadTest, PopulatesCsdFieldWhenEnabled) {
   NiceMockDownloadItem item;
   PrepareBasicDownloadItem(&item, {"http://www.evil.com/a.exe"},  // url_chain
                            "http://www.google.com/",              // referrer
                            FILE_PATH_LITERAL("a.tmp"),            // tmp_path
                            FILE_PATH_LITERAL("a.exe"));           // final_path
   content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
-  if (!flag_enabled()) {
-    EXPECT_CALL(*sb_service_->mock_database_manager(),
-                MatchDownloadAllowlistUrl(_))
-        .WillRepeatedly(Return(false));
-    EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _));
-    EXPECT_CALL(*binary_feature_extractor_.get(),
-                ExtractImageFeatures(
-                    tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _));
-  }
 
   SetAnalysisConnector(profile()->GetPrefs(),
                        enterprise_connectors::FILE_DOWNLOADED,
@@ -4816,11 +4782,10 @@ TEST_P(EnterpriseCsdDownloadTest, PopulatesCsdFieldWhenEnabled) {
   run_loop.Run();
 
   EXPECT_TRUE(test_upload_service->was_called());
-  EXPECT_EQ(test_upload_service->last_request().request_data().has_csd(),
-            flag_enabled());
+  EXPECT_EQ(test_upload_service->last_request().request_data().has_csd(), true);
 }
 
-TEST_P(EnterpriseCsdDownloadTest, StillDoesMetadataCheckForLargeFile) {
+TEST_F(EnterpriseCsdDownloadTest, StillDoesMetadataCheckForLargeFile) {
   NiceMockDownloadItem item;
   PrepareBasicDownloadItem(&item, {"http://www.evil.com/a.exe"},  // url_chain
                            "http://www.google.com/",              // referrer
@@ -4864,7 +4829,5 @@ TEST_P(EnterpriseCsdDownloadTest, StillDoesMetadataCheckForLargeFile) {
   EXPECT_TRUE(test_upload_service->was_called());
   EXPECT_TRUE(IsResult(DownloadCheckResult::SAFE));
 }
-
-INSTANTIATE_TEST_SUITE_P(, EnterpriseCsdDownloadTest, testing::Bool());
 
 }  // namespace safe_browsing
