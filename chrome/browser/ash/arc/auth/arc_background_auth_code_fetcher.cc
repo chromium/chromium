@@ -44,7 +44,6 @@ constexpr char kErrorDescription[] = "error_description";
 constexpr char kDeviceId[] = "device_id";
 constexpr char kDeviceType[] = "device_type";
 constexpr char kDeviceTypeArc[] = "arc_plus_plus";
-constexpr char kLoginScopedToken[] = "login_scoped_token";
 constexpr char kClientId[] = "client_id";
 constexpr char kClientIdArc[] =
     "1070009224336-sdh77n7uot3oc99ais00jmuft6sk2fg9.apps.googleusercontent.com";
@@ -62,9 +61,6 @@ signin::ScopeSet GetAccessTokenScopes() {
 }
 
 }  // namespace
-
-const char kAuthTokenExchangeEndPoint[] =
-    "https://www.googleapis.com/oauth2/v4/ExchangeToken";
 
 const char kTokenBootstrapEndPoint[] =
     "https://oauthtokenbootstrap.googleapis.com/v1/tokenbootstrap";
@@ -128,22 +124,14 @@ void ArcBackgroundAuthCodeFetcher::OnAccessTokenFetchComplete(
     return;
   }
 
-  bool use_new_endpoint =
-      base::FeatureList::IsEnabled(arc::kEnableTokenBootstrapEndpoint);
-
   user_manager::KnownUser known_user(g_browser_process->local_state());
   const std::string device_id = known_user.GetDeviceId(
       multi_user_util::GetAccountIdFromProfile(profile_));
   DCHECK(!device_id.empty());
 
   base::Value::Dict request_data;
-  if (use_new_endpoint) {
-    request_data.Set(kRefreshToken, token_info.token);
-    request_data.Set(kClientId, kClientIdArc);
-  } else {
-    // TODO(b/264416977): Remove this code path after M112
-    request_data.Set(kLoginScopedToken, token_info.token);
-  }
+  request_data.Set(kRefreshToken, token_info.token);
+  request_data.Set(kClientId, kClientIdArc);
   request_data.Set(kDeviceType, kDeviceTypeArc);
   request_data.Set(kDeviceId, device_id);
   std::string request_string;
@@ -181,12 +169,7 @@ void ArcBackgroundAuthCodeFetcher::OnAccessTokenFetchComplete(
         policy_exception_justification: "Not implemented."
   })");
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  if (use_new_endpoint) {
-    resource_request->url = GURL(kTokenBootstrapEndPoint);
-  } else {
-    // TODO(b/264416977): Remove this code path after M112
-    resource_request->url = GURL(kAuthTokenExchangeEndPoint);
-  }
+  resource_request->url = GURL(kTokenBootstrapEndPoint);
   resource_request->load_flags = net::LOAD_DISABLE_CACHE |
                                  net::LOAD_BYPASS_CACHE |
                                  (bypass_proxy_ ? net::LOAD_BYPASS_PROXY : 0);

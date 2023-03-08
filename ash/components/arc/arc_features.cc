@@ -83,11 +83,6 @@ BASE_FEATURE(kEnablePerVmCoreScheduling,
              "ArcEnablePerVmCoreScheduling",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables use of new endpoint for fetching ARC sign-in token.
-BASE_FEATURE(kEnableTokenBootstrapEndpoint,
-             "ArcEnableTokenBootstrapEndpoint",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether to use ARC TTS caching to optimize ARC boot.
 BASE_FEATURE(kEnableTTSCaching,
              "ArcEnableTTSCaching",
