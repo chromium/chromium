@@ -55,8 +55,6 @@ class WebViewPasswordManagerClientTest : public PlatformTest {
 
     pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kCredentialsEnableService, true);
-    pref_service_.registry()->RegisterDictionaryPref(
-        password_manager::prefs::kAccountStoragePerAccountSettings);
 
     profile_store_->Init(&pref_service_, /*affiliated_match_helper=*/nullptr);
     account_store_->Init(&pref_service_, /*affiliated_match_helper=*/nullptr);

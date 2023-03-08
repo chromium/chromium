@@ -58,8 +58,6 @@ class CWVSyncControllerTest : public PlatformTest {
 
     pref_service_.registry()->RegisterDictionaryPref(
         autofill::prefs::kAutofillSyncTransportOptIn);
-    pref_service_.registry()->RegisterDictionaryPref(
-        password_manager::prefs::kAccountStoragePerAccountSettings);
 
     // Change the default transport state to be disabled.
     sync_service_.SetTransportState(

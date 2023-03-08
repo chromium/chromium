@@ -61,8 +61,6 @@ class WebViewSyncClientTest : public PlatformTest {
                 /*sync_invalidations_service=*/nullptr) {
     pref_service_.registry()->RegisterBooleanPref(
         prefs::kSavingBrowserHistoryDisabled, true);
-    pref_service_.registry()->RegisterDictionaryPref(
-        password_manager::prefs::kAccountStoragePerAccountSettings);
     pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kWereOldGoogleLoginsRemoved, false);
     profile_password_store_->Init(&pref_service_,

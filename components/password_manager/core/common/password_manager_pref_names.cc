@@ -70,9 +70,10 @@ const char kWasAutoSignInFirstRunExperienceShown[] =
 const char kWereOldGoogleLoginsRemoved[] =
     "profile.were_old_google_logins_removed";
 
-// TODO(crbug.com/1392699): Make this pref desktop-only.
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 const char kAccountStoragePerAccountSettings[] =
     "profile.password_account_storage_settings";
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
 const char kSyncPasswordHash[] = "profile.sync_password_hash";
 

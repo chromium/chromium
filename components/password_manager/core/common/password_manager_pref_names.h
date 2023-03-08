@@ -153,10 +153,12 @@ extern const char kWasAutoSignInFirstRunExperienceShown[];
 // performed.
 extern const char kWereOldGoogleLoginsRemoved[];
 
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 // A dictionary of account-storage-related settings that exist per Gaia account
 // (e.g. whether that user has opted in). It maps from hash of Gaia ID to
 // dictionary of key-value pairs.
 extern const char kAccountStoragePerAccountSettings[];
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
 // String that represents the sync password hash.
 extern const char kSyncPasswordHash[];

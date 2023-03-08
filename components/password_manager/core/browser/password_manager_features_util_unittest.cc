@@ -20,6 +20,7 @@ namespace password_manager {
 namespace features_util {
 namespace {
 
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 base::Value::Dict CreateOptedInAccountPref() {
   base::Value::Dict global_pref;
   base::Value::Dict account_pref;
@@ -27,13 +28,17 @@ base::Value::Dict CreateOptedInAccountPref() {
   global_pref.Set("some_gaia_hash", std::move(account_pref));
   return global_pref;
 }
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+
 }  // namespace
 
 class PasswordManagerFeaturesUtilTestBase {
  public:
   PasswordManagerFeaturesUtilTestBase() {
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
     pref_service_.registry()->RegisterDictionaryPref(
         prefs::kAccountStoragePerAccountSettings);
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   }
 
  protected:
@@ -125,9 +130,11 @@ TEST_F(PasswordManagerFeaturesUtilWithoutAccountStorageTest,
 }
 
 TEST_F(PasswordManagerFeaturesUtilTest, ShowAccountStorageResignIn) {
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   // Add an account to prefs which opted into using the account-storage.
   pref_service_.SetDict(prefs::kAccountStoragePerAccountSettings,
                         CreateOptedInAccountPref());
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
   // SyncService is not running (because no user is signed-in).
   SetSyncStateNotSignedIn();
@@ -144,9 +151,11 @@ TEST_F(PasswordManagerFeaturesUtilTest, ShowAccountStorageResignIn) {
 
 TEST_F(PasswordManagerFeaturesUtilWithoutAccountStorageTest,
        ShowAccountStorageReSignin) {
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   // Add an account to prefs which opted into using the account-storage.
   pref_service_.SetDict(prefs::kAccountStoragePerAccountSettings,
                         CreateOptedInAccountPref());
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
   // SyncService is not running (because no user is signed-in).
   SetSyncStateNotSignedIn();
@@ -157,9 +166,11 @@ TEST_F(PasswordManagerFeaturesUtilWithoutAccountStorageTest,
 
 TEST_F(PasswordManagerFeaturesUtilTest,
        DontShowAccountStorageResignIn_SyncActive) {
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   // Add an account to prefs which opted into using the account-storage.
   pref_service_.SetDict(prefs::kAccountStoragePerAccountSettings,
                         CreateOptedInAccountPref());
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
   // SyncService is running (for a different signed-in user).
   CoreAccountInfo account;
