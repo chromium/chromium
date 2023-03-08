@@ -126,20 +126,20 @@ static constexpr char kCrossDocumentCachedResource[] =
 
 const std::string ResourceTypeName(ResourceType type) {
   switch (type) {
-    RESOURCE_TYPE_NAME(CSSStyleSheet)
-    RESOURCE_TYPE_NAME(Font)
-    RESOURCE_TYPE_NAME(Image)
-    RESOURCE_TYPE_NAME(LinkPrefetch)
-    RESOURCE_TYPE_NAME(Manifest)
-    RESOURCE_TYPE_NAME(Audio)
-    RESOURCE_TYPE_NAME(Video)
-    RESOURCE_TYPE_NAME(Mock)
-    RESOURCE_TYPE_NAME(Raw)
-    RESOURCE_TYPE_NAME(Script)
-    RESOURCE_TYPE_NAME(SVGDocument)
-    RESOURCE_TYPE_NAME(TextTrack)
-    RESOURCE_TYPE_NAME(SpeculationRules)
-    RESOURCE_TYPE_NAME(XSLStyleSheet)
+    RESOURCE_TYPE_NAME(Image)             // 1
+    RESOURCE_TYPE_NAME(CSSStyleSheet)     // 2
+    RESOURCE_TYPE_NAME(Script)            // 3
+    RESOURCE_TYPE_NAME(Font)              // 4
+    RESOURCE_TYPE_NAME(Raw)               // 5
+    RESOURCE_TYPE_NAME(SVGDocument)       // 6
+    RESOURCE_TYPE_NAME(XSLStyleSheet)     // 7
+    RESOURCE_TYPE_NAME(LinkPrefetch)      // 8
+    RESOURCE_TYPE_NAME(TextTrack)         // 9
+    RESOURCE_TYPE_NAME(Audio)             // 10
+    RESOURCE_TYPE_NAME(Video)             // 11
+    RESOURCE_TYPE_NAME(Manifest)          // 12
+    RESOURCE_TYPE_NAME(SpeculationRules)  // 13
+    RESOURCE_TYPE_NAME(Mock)              // 14
   }
 }
 
