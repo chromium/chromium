@@ -9,6 +9,8 @@
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/browser/ui/country_combobox_model.h"
 #import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/ui/autofill/autofill_ui_type.h"
+#import "ios/chrome/browser/ui/autofill/autofill_ui_type_util.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_profile_edit_consumer.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_profile_edit_mediator_delegate.h"
@@ -43,17 +45,21 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 @end
 
-@implementation AutofillProfileEditMediator
+@implementation AutofillProfileEditMediator {
+  autofill::AutofillProfile* _autofillProfile;
+}
 
 - (instancetype)initWithDelegate:
                     (id<AutofillProfileEditMediatorDelegate>)delegate
              personalDataManager:(autofill::PersonalDataManager*)dataManager
+                 autofillProfile:(autofill::AutofillProfile*)autofillProfile
                      countryCode:(NSString*)countryCode {
   self = [super init];
 
   if (self) {
     DCHECK(dataManager);
     _personalDataManager = dataManager;
+    _autofillProfile = autofillProfile;
     _delegate = delegate;
     _selectedCountryCode = countryCode;
 
@@ -67,8 +73,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
   if (_consumer == consumer) {
     return;
   }
+
   _consumer = consumer;
+
+  [self sendAutofillProfileDataToConsumer];
   [self updateRequirementsForCountryCode:self.selectedCountryCode];
+  [_consumer setAccountProfile:(_autofillProfile->source() ==
+                                autofill::AutofillProfile::Source::kAccount)];
 }
 
 #pragma mark - Public
@@ -90,8 +101,42 @@ typedef NS_ENUM(NSInteger, ItemType) {
                                         countryList:self.allCountries];
 }
 
-- (void)didEditAutofillProfile:(autofill::AutofillProfile*)profile {
-  _personalDataManager->UpdateProfile(*profile);
+- (void)didEditAutofillProfile {
+  _personalDataManager->UpdateProfile(*_autofillProfile);
+
+  // Push the saved profile data to the consumer.
+  [self sendAutofillProfileDataToConsumer];
+}
+
+- (BOOL)fieldValueEmptyOnProfileLoadForType:
+    (autofill::ServerFieldType)serverFieldType {
+  return _autofillProfile
+      ->GetInfo(serverFieldType,
+                GetApplicationContext()->GetApplicationLocale())
+      .empty();
+}
+
+- (void)updateProfileMetadataWithValue:(NSString*)value
+                     forAutofillUIType:(AutofillUIType)autofillUIType {
+  autofill::ServerFieldType serverFieldType =
+      AutofillTypeFromAutofillUIType(autofillUIType);
+
+  // Since the country field is a text field, we should use SetInfo() to
+  // make sure they get converted to country codes.
+  // Use SetInfo for fullname to propogate the change to the name_first,
+  // name_middle and name_last subcomponents.
+  if (autofillUIType == AutofillUITypeProfileHomeAddressCountry ||
+      autofillUIType == AutofillUITypeProfileFullName) {
+    _autofillProfile->SetInfoWithVerificationStatus(
+        autofill::AutofillType(serverFieldType),
+        base::SysNSStringToUTF16(value),
+        GetApplicationContext()->GetApplicationLocale(),
+        autofill::VerificationStatus::kUserVerified);
+  } else {
+    _autofillProfile->SetRawInfoWithVerificationStatus(
+        serverFieldType, base::SysNSStringToUTF16(value),
+        autofill::VerificationStatus::kUserVerified);
+  }
 }
 
 - (void)viewDidDisappear {
@@ -147,6 +192,55 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self.consumer setCityRequired:country.requires_city()];
   [self.consumer setStateRequired:country.requires_state()];
   [self.consumer setZipRequired:country.requires_zip()];
+}
+
+// Informs the consumer of the profile's data.
+- (void)sendAutofillProfileDataToConsumer {
+  for (const AutofillProfileFieldDisplayInfo& field : kProfileFieldsToDisplay) {
+    AutofillUIType autofillUIType =
+        AutofillUITypeFromAutofillType(field.autofillType);
+    NSString* fieldValue = base::SysUTF16ToNSString(_autofillProfile->GetInfo(
+        autofill::AutofillType(field.autofillType),
+        GetApplicationContext()->GetApplicationLocale()));
+    switch (autofillUIType) {
+      case AutofillUITypeProfileHonorificPrefix:
+        [self.consumer setHonorificPrefix:fieldValue];
+        break;
+      case AutofillUITypeProfileCompanyName:
+        [self.consumer setCompanyName:fieldValue];
+        break;
+      case AutofillUITypeProfileFullName:
+        [self.consumer setFullName:fieldValue];
+        break;
+      case AutofillUITypeProfileHomeAddressLine1:
+        [self.consumer setHomeAddressLine1:fieldValue];
+        break;
+      case AutofillUITypeProfileHomeAddressLine2:
+        [self.consumer setHomeAddressLine2:fieldValue];
+        break;
+      case AutofillUITypeProfileHomeAddressCity:
+        [self.consumer setHomeAddressCity:fieldValue];
+        break;
+      case AutofillUITypeProfileHomeAddressState:
+        [self.consumer setHomeAddressState:fieldValue];
+        break;
+      case AutofillUITypeProfileHomeAddressZip:
+        [self.consumer setHomeAddressZip:fieldValue];
+        break;
+      case AutofillUITypeProfileHomeAddressCountry:
+        [self.consumer setHomeAddressCountry:fieldValue];
+        break;
+      case AutofillUITypeProfileHomePhoneWholeNumber:
+        [self.consumer setHomePhoneWholeNumber:fieldValue];
+        break;
+      case AutofillUITypeProfileEmailAddress:
+        [self.consumer setEmailAddress:fieldValue];
+        break;
+      default:
+        NOTREACHED();
+        break;
+    }
+  }
 }
 
 @end

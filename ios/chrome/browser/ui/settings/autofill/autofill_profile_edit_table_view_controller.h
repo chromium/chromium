@@ -10,10 +10,6 @@
 
 @protocol AutofillProfileEditTableViewControllerDelegate;
 
-namespace autofill {
-class AutofillProfile;
-}  // namespace autofill
-
 // The table view for the Autofill profile edit settings.
 @interface AutofillProfileEditTableViewController
     : AutofillEditTableViewController <AutofillProfileEditConsumer>
@@ -22,7 +18,6 @@ class AutofillProfile;
 // `profile` and `userEmail`.
 - (instancetype)initWithDelegate:
                     (id<AutofillProfileEditTableViewControllerDelegate>)delegate
-                         profile:(autofill::AutofillProfile*)profile
                        userEmail:(NSString*)userEmail NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;

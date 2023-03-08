@@ -80,11 +80,11 @@
   self.mediator = [[AutofillProfileEditMediator alloc]
          initWithDelegate:self
       personalDataManager:personalDataManager
+          autofillProfile:&_autofillProfile
               countryCode:base::SysUTF8ToNSString(countryCode)];
 
   self.viewController = [[AutofillProfileEditTableViewController alloc]
       initWithDelegate:self.mediator
-               profile:&_autofillProfile
              userEmail:[self syncingUserEmail]];
   self.mediator.consumer = self.viewController;
 

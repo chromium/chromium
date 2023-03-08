@@ -43,6 +43,22 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @property(nonatomic, assign) BOOL stateRequired;
 @property(nonatomic, assign) BOOL zipRequired;
 
+// Stores the value displayed in the fields.
+@property(nonatomic, assign) NSString* honorificPrefix;
+@property(nonatomic, assign) NSString* companyName;
+@property(nonatomic, assign) NSString* fullName;
+@property(nonatomic, assign) NSString* homeAddressLine1;
+@property(nonatomic, assign) NSString* homeAddressLine2;
+@property(nonatomic, assign) NSString* homeAddressCity;
+@property(nonatomic, assign) NSString* homeAddressState;
+@property(nonatomic, assign) NSString* homeAddressZip;
+@property(nonatomic, assign) NSString* homeAddressCountry;
+@property(nonatomic, assign) NSString* homePhoneWholeNumber;
+@property(nonatomic, assign) NSString* emailAddress;
+
+// YES, if the profile's source is autofill::AutofillProfile::Source::kAccount.
+@property(nonatomic, assign) BOOL accountProfile;
+
 @property(nonatomic, assign) NSString* countrySelected;
 @end
 
@@ -77,12 +93,15 @@ class AutofillProfileEditMediatorTest : public PlatformTest {
           ->set_local_state_for_testing(local_state_.Get());
     }
 
+    autofill::AutofillProfile autofill_profile;
+
     autofill_profile_edit_mediator_delegate_mock_ =
         OCMProtocolMock(@protocol(AutofillProfileEditMediatorDelegate));
 
     autofill_profile_edit_mediator_ = [[AutofillProfileEditMediator alloc]
            initWithDelegate:autofill_profile_edit_mediator_delegate_mock_
         personalDataManager:personal_data_manager_
+            autofillProfile:&autofill_profile
                 countryCode:@"US"];
     fake_consumer_ = [[FakeAutofillProfileEditConsumer alloc] init];
     autofill_profile_edit_mediator_.consumer = fake_consumer_;
