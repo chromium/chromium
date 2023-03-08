@@ -2976,7 +2976,7 @@
     },
     {
       name: "SendMouseEventsDisabledFormControls",
-      status: "stable",
+      status: "experimental",
       public: true,
     },
     {
