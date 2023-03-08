@@ -1051,8 +1051,12 @@ NSString* SerializedValue(const base::Value* value) {
     return handlerCalled;
   });
 
-  BOOL success = completed && !blockError;
+  DLOG_IF(ERROR, !completed) << "JavaScript execution timed out.";
+  DLOG_IF(ERROR, blockError) << "JavaScript execution of:\n"
+                             << script << "\nfailed with error:\n"
+                             << base::SysNSStringToUTF8(blockError.description);
 
+  BOOL success = completed && !blockError;
   JavaScriptExecutionResult* result =
       [[JavaScriptExecutionResult alloc] initWithResult:blockResult
                                     successfulExecution:success];
