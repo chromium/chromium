@@ -19,6 +19,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PasswordManagerImpl} from '../password_manager_proxy.js';
+import {Page, Router} from '../router.js';
 import {ShowPasswordMixin} from '../show_password_mixin.js';
 
 import {getTemplate} from './edit_password_dialog.html.js';
@@ -30,6 +31,7 @@ export interface EditPasswordDialogElement {
     cancelButton: CrButtonElement,
     usernameInput: CrInputElement,
     passwordInput: CrInputElement,
+    viewExistingPasswordLink: HTMLAnchorElement,
     showPasswordButton: CrIconButtonElement,
   };
 }
@@ -78,6 +80,10 @@ export class EditPasswordDialogElement extends EditPasswordDialogElementBase {
   static get properties() {
     return {
       credential: Object,
+      showRedirect: {
+        type: Boolean,
+        value: false,
+      },
 
       username_: String,
       password_: String,
@@ -97,6 +103,7 @@ export class EditPasswordDialogElement extends EditPasswordDialogElementBase {
   }
 
   credential: chrome.passwordsPrivate.PasswordUiEntry;
+  showRedirect: boolean;
   private username_: string;
   private password_: string;
   private note_: string;
@@ -159,6 +166,29 @@ export class EditPasswordDialogElement extends EditPasswordDialogElementBase {
     return this.i18n(
         'editPasswordFootnote',
         this.credential.affiliatedDomains[0]?.name ?? '');
+  }
+
+  private showRedirect_(): boolean {
+    return this.showRedirect && this.doesUsernameExistAlready_();
+  }
+
+  private getViewExistingPasswordAriaDescription_(): string {
+    if (!this.conflictingUsernames_) {
+      return '';
+    }
+    return this.conflictingUsernames_.has(this.username_) ?
+        this.i18n(
+            'viewExistingPasswordAriaDescription', this.username_,
+            this.conflictingUsernames_.get(this.username_)!) :
+        '';
+  }
+
+  private onViewExistingPasswordClick_(e: Event) {
+    e.preventDefault();
+    assert(this.conflictingUsernames_.has(this.username_));
+    Router.getInstance().navigateTo(
+        Page.PASSWORD_DETAILS, this.conflictingUsernames_.get(this.username_));
+    this.$.dialog.close();
   }
 }
 

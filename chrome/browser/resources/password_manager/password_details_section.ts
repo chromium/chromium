@@ -101,7 +101,14 @@ export class PasswordDetailsSectionElement extends
   private async assignMatchingGroup(groupName: string) {
     const groups =
         await PasswordManagerImpl.getInstance().getCredentialGroups();
-    const selectedGroup = groups.find(group => group.name === groupName);
+    let selectedGroup = groups.find(group => group.name === groupName);
+    if (!selectedGroup) {
+      // Check if any password in a group has matching domain.
+      selectedGroup = groups.find(
+          group => group.entries.some(
+              entry => entry.affiliatedDomains?.some(
+                  domain => domain.name === groupName)));
+    }
     if (!selectedGroup) {
       this.navigateBack_();
       return;

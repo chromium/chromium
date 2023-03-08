@@ -4,9 +4,9 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {PasswordManagerImpl} from 'chrome://password-manager/password_manager.js';
+import {Page, PasswordManagerImpl, Router} from 'chrome://password-manager/password_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
@@ -106,5 +106,41 @@ suite('EditPasswordDialogTest', function() {
     assertEquals(
         dialog.i18n('usernameAlreadyUsed', 'www.example.com'),
         dialog.$.usernameInput.errorMessage);
+  });
+
+  test('view duplicated password', async function() {
+    passwordManager.data.passwords = [
+      createPasswordEntry(
+          {url: 'www.example.com', username: 'test', password: 'pass'}),
+      createPasswordEntry(
+          {url: 'www.example2.com', username: 'test2', password: 'pass'}),
+    ];
+    passwordManager.data.passwords[0]!.affiliatedDomains =
+        [createAffiliatedDomain('www.example.com')];
+    passwordManager.data.passwords[1]!.affiliatedDomains = [
+      createAffiliatedDomain('www.example.com'),
+      createAffiliatedDomain('www.example2.com'),
+    ];
+
+    const dialog = document.createElement('edit-password-dialog');
+    dialog.credential = passwordManager.data.passwords[1]!;
+    document.body.appendChild(dialog);
+    await flushTasks();
+
+    // Update username to the same value as other credential and observe error.
+    dialog.$.usernameInput.value = 'test';
+    assertTrue(dialog.$.usernameInput.invalid);
+    assertEquals(
+        dialog.i18n('usernameAlreadyUsed', 'www.example.com'),
+        dialog.$.usernameInput.errorMessage);
+
+    assertTrue(dialog.$.viewExistingPasswordLink.hidden);
+    dialog.showRedirect = true;
+
+    assertFalse(dialog.$.viewExistingPasswordLink.hidden);
+
+    dialog.$.viewExistingPasswordLink.click();
+    assertEquals(Page.PASSWORD_DETAILS, Router.getInstance().currentRoute.page);
+    assertEquals('www.example.com', Router.getInstance().currentRoute.details);
   });
 });
