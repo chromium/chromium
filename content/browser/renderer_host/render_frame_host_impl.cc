@@ -11089,6 +11089,14 @@ void RenderFrameHostImpl::BindSerialService(
     return;
   }
 
+  // Rejects using Serial API when the top-level document has an opaque origin.
+  if (GetOutermostMainFrame()->GetLastCommittedOrigin().opaque()) {
+    mojo::ReportBadMessage(
+        "Web Serial is not allowed when the top-level document has an opaque "
+        "origin.");
+    return;
+  }
+
   SerialService::GetOrCreateForCurrentDocument(this)->Bind(std::move(receiver));
 }
 
