@@ -1432,16 +1432,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Arc.IntentHelper.OpenType" enum="ArcIntentHelperOpenType"
-    expires_after="2020-08-16">
-  <owner>hashimoto@google.com</owner>
-  <owner>arc-core@google.com</owner>
-  <summary>
-    Types of things opened via ARC IntentHelperHost interface. Recorded when one
-    of the &quot;open&quot; methods of the interface is called.
-  </summary>
-</histogram>
-
 <histogram name="Arc.LaunchedWithGhostWindow" units="apps"
     expires_after="2023-07-09">
   <owner>sstan@chromium.org</owner>
