@@ -2309,6 +2309,7 @@ TEST(Iterator, InvalidUseWithReserveCrashesWithSanitizers) {
   }
   // ptr will become invalidated on rehash.
   const int64_t* ptr = &*it;
+  (void)ptr;
 
   // erase decreases size but does not decrease reserved growth so the next
   // insertion still invalidates iterators.
@@ -2319,8 +2320,9 @@ TEST(Iterator, InvalidUseWithReserveCrashesWithSanitizers) {
   EXPECT_DEATH_IF_SUPPORTED(*it, kInvalidIteratorDeathMessage);
   EXPECT_DEATH_IF_SUPPORTED(void(it == t.begin()),
                             kInvalidIteratorDeathMessage);
-  EXPECT_DEATH_IF_SUPPORTED(std::cout << *ptr,
-                            "heap-use-after-free|use-of-uninitialized-value");
+#ifdef ABSL_HAVE_ADDRESS_SANITIZER
+  EXPECT_DEATH_IF_SUPPORTED(std::cout << *ptr, "heap-use-after-free");
+#endif
 }
 
 TEST(Table, ReservedGrowthUpdatesWhenTableDoesntGrow) {
@@ -2336,6 +2338,22 @@ TEST(Table, ReservedGrowthUpdatesWhenTableDoesntGrow) {
   t.insert(200);
   // `it` shouldn't have been invalidated.
   EXPECT_EQ(*it, 0);
+}
+
+TEST(Table, GenerationInfoResetsOnClear) {
+  if (!SwisstableGenerationsEnabled()) GTEST_SKIP() << "Generations disabled.";
+  if (kMsvc) GTEST_SKIP() << "MSVC doesn't support | in regexp.";
+
+  IntTable t;
+  for (int i = 0; i < 1000; ++i) t.insert(i);
+  t.reserve(t.size() + 100);
+
+  t.clear();
+
+  t.insert(0);
+  auto it = t.begin();
+  t.insert(1);
+  EXPECT_DEATH_IF_SUPPORTED(*it, kInvalidIteratorDeathMessage);
 }
 
 TEST(Table, InvalidReferenceUseCrashesWithSanitizers) {
@@ -2362,11 +2380,13 @@ TEST(Iterator, InvalidComparisonDifferentTables) {
 
   IntTable t1, t2;
   IntTable::iterator default_constructed_iter;
-  // TODO(b/254649633): Currently, we can't detect when end iterators from
-  // different empty tables are compared. If we allocate generations separately
-  // from control bytes, then we could do so.
-  // EXPECT_DEATH_IF_SUPPORTED(void(t1.end() == t2.end()),
-  //                           "Invalid iterator comparison.*empty hashtable");
+  // We randomly use one of N empty generations for generations from empty
+  // hashtables. In general, we won't always detect when iterators from
+  // different empty hashtables are compared, but in this test case, we
+  // should deterministically detect the error due to our randomness yielding
+  // consecutive random generations.
+  EXPECT_DEATH_IF_SUPPORTED(void(t1.end() == t2.end()),
+                            "Invalid iterator comparison.*empty hashtables");
   EXPECT_DEATH_IF_SUPPORTED(void(t1.end() == default_constructed_iter),
                             "Invalid iterator comparison.*default-constructed");
   t1.insert(0);

@@ -2966,7 +2966,6 @@ EXPORTS
     ?PushNew@?$SampleRecorder@UHashtablezInfo@container_internal@absl@@@profiling_internal@absl@@AAEXPAUHashtablezInfo@container_internal@3@@Z
     ?PutPaddedString@FormatSinkImpl@str_format_internal@absl@@QAE_NVstring_view@3@HH_N@Z
     ?PutTwoDigits@numbers_internal@absl@@YAXIPAD@Z
-    ?RandomSeed@container_internal@absl@@YAIXZ
     ?RawEnableLogPrefix@log_internal@absl@@YAX_N@Z
     ?RawLog@raw_log_internal@absl@@YAXW4LogSeverity@2@PBDH1ZZ
     ?RawLoggingFullySupported@raw_log_internal@absl@@YA_NXZ

@@ -153,55 +153,54 @@ function(absl_cc_library)
 
   # Generate a pkg-config file for every library:
   if(ABSL_ENABLE_INSTALL)
-    if(NOT ABSL_CC_LIB_TESTONLY)
-      if(absl_VERSION)
-        set(PC_VERSION "${absl_VERSION}")
-      else()
-        set(PC_VERSION "head")
-      endif()
-      if(NOT _build_type STREQUAL "dll")
-        set(LNK_LIB "${LNK_LIB} -labsl_${_NAME}")
-      endif()
-      foreach(dep ${ABSL_CC_LIB_DEPS})
-        if(${dep} MATCHES "^absl::(.*)")
-          # for DLL builds many libs are not created, but add
-          # the pkgconfigs nevertheless, pointing to the dll.
-          if(_build_type STREQUAL "dll")
-            # hide this MATCHES in an if-clause so it doesn't overwrite
-            # the CMAKE_MATCH_1 from (${dep} MATCHES "^absl::(.*)")
-            if(NOT PC_DEPS MATCHES "abseil_dll")
-              # Join deps with commas.
-              if(PC_DEPS)
-                set(PC_DEPS "${PC_DEPS},")
-              endif()
-              # don't duplicate dll-dep if it exists already
-              set(PC_DEPS "${PC_DEPS} abseil_dll = ${PC_VERSION}")
-              set(LNK_LIB "${LNK_LIB} -labseil_dll")
-            endif()
-          else()
+    if(absl_VERSION)
+      set(PC_VERSION "${absl_VERSION}")
+    else()
+      set(PC_VERSION "head")
+    endif()
+    if(NOT _build_type STREQUAL "dll")
+      set(LNK_LIB "${LNK_LIB} -labsl_${_NAME}")
+    endif()
+    foreach(dep ${ABSL_CC_LIB_DEPS})
+      if(${dep} MATCHES "^absl::(.*)")
+        # for DLL builds many libs are not created, but add
+        # the pkgconfigs nevertheless, pointing to the dll.
+        if(_build_type STREQUAL "dll")
+          # hide this MATCHES in an if-clause so it doesn't overwrite
+          # the CMAKE_MATCH_1 from (${dep} MATCHES "^absl::(.*)")
+          if(NOT PC_DEPS MATCHES "abseil_dll")
             # Join deps with commas.
             if(PC_DEPS)
               set(PC_DEPS "${PC_DEPS},")
             endif()
-            set(PC_DEPS "${PC_DEPS} absl_${CMAKE_MATCH_1} = ${PC_VERSION}")
+            # don't duplicate dll-dep if it exists already
+            set(PC_DEPS "${PC_DEPS} abseil_dll = ${PC_VERSION}")
+            set(LNK_LIB "${LNK_LIB} -labseil_dll")
           endif()
-        endif()
-      endforeach()
-      foreach(cflag ${ABSL_CC_LIB_COPTS})
-        if(${cflag} MATCHES "^(-Wno|/wd)")
-          # These flags are needed to suppress warnings that might fire in our headers.
-          set(PC_CFLAGS "${PC_CFLAGS} ${cflag}")
-        elseif(${cflag} MATCHES "^(-W|/w[1234eo])")
-          # Don't impose our warnings on others.
-        elseif(${cflag} MATCHES "^-m")
-          # Don't impose CPU instruction requirements on others, as
-          # the code performs feature detection on runtime.
         else()
-          set(PC_CFLAGS "${PC_CFLAGS} ${cflag}")
+          # Join deps with commas.
+          if(PC_DEPS)
+            set(PC_DEPS "${PC_DEPS},")
+          endif()
+          set(PC_DEPS "${PC_DEPS} absl_${CMAKE_MATCH_1} = ${PC_VERSION}")
         endif()
-      endforeach()
-      string(REPLACE ";" " " PC_LINKOPTS "${ABSL_CC_LIB_LINKOPTS}")
-      FILE(GENERATE OUTPUT "${CMAKE_BINARY_DIR}/lib/pkgconfig/absl_${_NAME}.pc" CONTENT "\
+      endif()
+    endforeach()
+    foreach(cflag ${ABSL_CC_LIB_COPTS})
+      if(${cflag} MATCHES "^(-Wno|/wd)")
+        # These flags are needed to suppress warnings that might fire in our headers.
+        set(PC_CFLAGS "${PC_CFLAGS} ${cflag}")
+      elseif(${cflag} MATCHES "^(-W|/w[1234eo])")
+        # Don't impose our warnings on others.
+      elseif(${cflag} MATCHES "^-m")
+        # Don't impose CPU instruction requirements on others, as
+        # the code performs feature detection on runtime.
+      else()
+        set(PC_CFLAGS "${PC_CFLAGS} ${cflag}")
+      endif()
+    endforeach()
+    string(REPLACE ";" " " PC_LINKOPTS "${ABSL_CC_LIB_LINKOPTS}")
+    FILE(GENERATE OUTPUT "${CMAKE_BINARY_DIR}/lib/pkgconfig/absl_${_NAME}.pc" CONTENT "\
 prefix=${CMAKE_INSTALL_PREFIX}\n\
 exec_prefix=\${prefix}\n\
 libdir=${CMAKE_INSTALL_FULL_LIBDIR}\n\
@@ -214,9 +213,8 @@ Version: ${PC_VERSION}\n\
 Requires:${PC_DEPS}\n\
 Libs: -L\${libdir} ${PC_LINKOPTS} $<$<NOT:$<BOOL:${ABSL_CC_LIB_IS_INTERFACE}>>:${LNK_LIB}>\n\
 Cflags: -I\${includedir}${PC_CFLAGS}\n")
-      INSTALL(FILES "${CMAKE_BINARY_DIR}/lib/pkgconfig/absl_${_NAME}.pc"
-              DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
-    endif()
+    INSTALL(FILES "${CMAKE_BINARY_DIR}/lib/pkgconfig/absl_${_NAME}.pc"
+            DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
   endif()
 
   if(NOT ABSL_CC_LIB_IS_INTERFACE)
@@ -332,9 +330,7 @@ Cflags: -I\${includedir}${PC_CFLAGS}\n")
     endif()
   endif()
 
-  # TODO currently we don't install googletest alongside abseil sources, so
-  # installed abseil can't be tested.
-  if(NOT ABSL_CC_LIB_TESTONLY AND ABSL_ENABLE_INSTALL)
+  if(ABSL_ENABLE_INSTALL)
     install(TARGETS ${_NAME} EXPORT ${PROJECT_NAME}Targets
           RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
           LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

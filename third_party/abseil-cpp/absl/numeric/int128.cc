@@ -216,9 +216,9 @@ std::ostream& operator<<(std::ostream& os, uint128 v) {
     } else if (adjustfield == std::ios::internal &&
                (flags & std::ios::showbase) &&
                (flags & std::ios::basefield) == std::ios::hex && v != 0) {
-      rep.insert(2, count, os.fill());
+      rep.insert(size_t{2}, count, os.fill());
     } else {
-      rep.insert(0, count, os.fill());
+      rep.insert(size_t{0}, count, os.fill());
     }
   }
 
@@ -314,16 +314,16 @@ std::ostream& operator<<(std::ostream& os, int128 v) {
         break;
       case std::ios::internal:
         if (print_as_decimal && (rep[0] == '+' || rep[0] == '-')) {
-          rep.insert(1, count, os.fill());
+          rep.insert(size_t{1}, count, os.fill());
         } else if ((flags & std::ios::basefield) == std::ios::hex &&
                    (flags & std::ios::showbase) && v != 0) {
-          rep.insert(2, count, os.fill());
+          rep.insert(size_t{2}, count, os.fill());
         } else {
-          rep.insert(0, count, os.fill());
+          rep.insert(size_t{0}, count, os.fill());
         }
         break;
       default:  // std::ios::right
-        rep.insert(0, count, os.fill());
+        rep.insert(size_t{0}, count, os.fill());
         break;
     }
   }

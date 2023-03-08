@@ -28,18 +28,17 @@ namespace container_internal {
 
 // A single block of empty control bytes for tables without any slots allocated.
 // This enables removing a branch in the hot path of find().
-// We have 17 bytes because there may be a generation counter. Any constant is
-// fine for the generation counter.
-alignas(16) ABSL_CONST_INIT ABSL_DLL const ctrl_t kEmptyGroup[17] = {
+alignas(16) ABSL_CONST_INIT ABSL_DLL const ctrl_t kEmptyGroup[16] = {
     ctrl_t::kSentinel, ctrl_t::kEmpty, ctrl_t::kEmpty, ctrl_t::kEmpty,
     ctrl_t::kEmpty,    ctrl_t::kEmpty, ctrl_t::kEmpty, ctrl_t::kEmpty,
     ctrl_t::kEmpty,    ctrl_t::kEmpty, ctrl_t::kEmpty, ctrl_t::kEmpty,
-    ctrl_t::kEmpty,    ctrl_t::kEmpty, ctrl_t::kEmpty, ctrl_t::kEmpty,
-    static_cast<ctrl_t>(0)};
+    ctrl_t::kEmpty,    ctrl_t::kEmpty, ctrl_t::kEmpty, ctrl_t::kEmpty};
 
 #ifdef ABSL_INTERNAL_NEED_REDUNDANT_CONSTEXPR_DECL
 constexpr size_t Group::kWidth;
 #endif
+
+namespace {
 
 // Returns "random" seed.
 inline size_t RandomSeed() {
@@ -56,6 +55,18 @@ inline size_t RandomSeed() {
   size_t value = counter.fetch_add(1, std::memory_order_relaxed);
 #endif  // ABSL_HAVE_THREAD_LOCAL
   return value ^ static_cast<size_t>(reinterpret_cast<uintptr_t>(&counter));
+}
+
+}  // namespace
+
+GenerationType* EmptyGeneration() {
+  if (SwisstableGenerationsEnabled()) {
+    constexpr size_t kNumEmptyGenerations = 1024;
+    static constexpr GenerationType kEmptyGenerations[kNumEmptyGenerations]{};
+    return const_cast<GenerationType*>(
+        &kEmptyGenerations[RandomSeed() % kNumEmptyGenerations]);
+  }
+  return nullptr;
 }
 
 bool CommonFieldsGenerationInfoEnabled::

@@ -509,6 +509,7 @@ EXPORTS
     ?DurationFromTimespec@absl@@YA?AVDuration@1@Utimespec@@@Z
     ?DurationFromTimeval@absl@@YA?AVDuration@1@Utimeval@@@Z
     ?Empty@CRCImpl@crc_internal@absl@@UBEXPAI@Z
+    ?EmptyGeneration@container_internal@absl@@YAPAEXZ
     ?EmptyString@Status@absl@@CAPBV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@XZ
     ?EnableDebugLog@CondVar@absl@@QAEXPBD@Z
     ?EnableDebugLog@Mutex@absl@@QAEXPBD@Z
