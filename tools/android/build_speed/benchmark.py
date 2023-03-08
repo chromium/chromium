@@ -206,6 +206,7 @@ def _backup_file(file_path: pathlib.Path):
         finally:
             if file_path.exists():
                 file_path.unlink()
+        return
     file_backup_path = file_path.with_suffix('.backup')
     logging.info('Creating %s for backup', file_backup_path)
     # Move the original file and copy back to preserve metadata.
@@ -406,13 +407,6 @@ def _format_result(time_taken: List[float]) -> str:
         list_of_times = ', '.join(f'{t:.1f}s' for t in time_taken)
         result += f' avg [sd: {standard_deviation:.1f}s] ({list_of_times})'
     return result
-
-
-def _get_benchmark_for_name(name: str) -> Benchmark:
-    for benchmark in _BENCHMARKS:
-        if benchmark.name == name:
-            return benchmark
-    assert False, f'{name} is not a valid name.'
 
 
 def _parse_benchmarks(benchmarks: List[str]) -> Iterator[Benchmark]:
