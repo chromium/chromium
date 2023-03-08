@@ -111,7 +111,8 @@ void CustomProperty::ApplyInherit(StyleResolverState& state) const {
 }
 
 void CustomProperty::ApplyValue(StyleResolverState& state,
-                                const CSSValue& value) const {
+                                const CSSValue& value,
+                                ValueMode value_mode) const {
   ComputedStyleBuilder& builder = state.StyleBuilder();
   DCHECK(!value.IsCSSWideKeyword());
 
@@ -164,10 +165,15 @@ void CustomProperty::ApplyValue(StyleResolverState& state,
       return;
     }
 
+    // TODO(andruud): Eventually only `value_mode` should decide if we're
+    // animation-tainted or not.
+    bool is_animation_tainted =
+        data->IsAnimationTainted() || (value_mode == ValueMode::kAnimated);
+
     registered_value = &StyleBuilderConverter::ConvertRegisteredPropertyValue(
         state, *registered_value, context);
     data = StyleBuilderConverter::ConvertRegisteredPropertyVariableData(
-        *registered_value, data->IsAnimationTainted());
+        *registered_value, is_animation_tainted);
 
     builder.SetVariableData(name_, data, is_inherited_property);
     builder.SetVariableValue(name_, registered_value, is_inherited_property);

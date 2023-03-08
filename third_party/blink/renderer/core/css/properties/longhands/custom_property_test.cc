@@ -10,6 +10,8 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
@@ -259,6 +261,40 @@ TEST_F(CustomPropertyTest, ParseAnchorQueriesAsLengthPercentage) {
     ASSERT_TRUE(value);
     EXPECT_EQ("calc(anchor(--foo top) + anchor-size(--foo width))",
               value->CssText());
+  }
+}
+
+TEST_F(CustomPropertyTest, ValueMode) {
+  RegisterProperty(GetDocument(), "--x", "<length>", "0px", false);
+
+  CustomProperty property("--x", GetDocument());
+
+  scoped_refptr<CSSVariableData> data =
+      css_test_helpers::CreateVariableData("100px");
+  ASSERT_FALSE(data->IsAnimationTainted());
+  auto* declaration = MakeGarbageCollected<CSSCustomPropertyDeclaration>(
+      data, /* parser_context */ nullptr);
+
+  // ValueMode::kNormal
+  {
+    StyleResolverState state(GetDocument(), *GetDocument().documentElement(),
+                             /* StyleRecalcContext */ nullptr, StyleRequest());
+    state.SetStyle(*GetDocument().GetStyleResolver().InitialStyleForElement());
+    property.ApplyValue(state, *declaration, CSSProperty::ValueMode::kNormal);
+    scoped_refptr<const ComputedStyle> style = state.TakeStyle();
+    ASSERT_TRUE(style->GetVariableData("--x"));
+    EXPECT_FALSE(style->GetVariableData("--x")->IsAnimationTainted());
+  }
+
+  // ValueMode::kAnimated
+  {
+    StyleResolverState state(GetDocument(), *GetDocument().documentElement(),
+                             /* StyleRecalcContext */ nullptr, StyleRequest());
+    state.SetStyle(*GetDocument().GetStyleResolver().InitialStyleForElement());
+    property.ApplyValue(state, *declaration, CSSProperty::ValueMode::kAnimated);
+    scoped_refptr<const ComputedStyle> style = state.TakeStyle();
+    ASSERT_TRUE(style->GetVariableData("--x"));
+    EXPECT_TRUE(style->GetVariableData("--x")->IsAnimationTainted());
   }
 }
 

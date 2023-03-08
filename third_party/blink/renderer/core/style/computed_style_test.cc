@@ -838,11 +838,13 @@ TEST_F(ComputedStyleTest, ApplyColorSchemeLightOnDark) {
   CSSValueList* light_value = CSSValueList::CreateSpaceSeparated();
   light_value->Append(*CSSIdentifierValue::Create(CSSValueID::kLight));
 
-  To<Longhand>(ref.GetProperty()).ApplyValue(state, *dark_value);
+  To<Longhand>(ref.GetProperty())
+      .ApplyValue(state, *dark_value, CSSProperty::ValueMode::kNormal);
   EXPECT_EQ(mojom::blink::ColorScheme::kDark,
             state.StyleBuilder().UsedColorScheme());
 
-  To<Longhand>(ref.GetProperty()).ApplyValue(state, *light_value);
+  To<Longhand>(ref.GetProperty())
+      .ApplyValue(state, *light_value, CSSProperty::ValueMode::kNormal);
   EXPECT_EQ(mojom::blink::ColorScheme::kLight,
             state.StyleBuilder().UsedColorScheme());
 }
@@ -948,7 +950,8 @@ TEST_F(ComputedStyleTest, StrokeWidthZoomAndCalc) {
       CSSMathExpressionNumericLiteral::Create(CSSNumericLiteralValue::Create(
           10, CSSPrimitiveValue::UnitType::kNumber)));
 
-  To<Longhand>(GetCSSPropertyStrokeWidth()).ApplyValue(state, *calc_value);
+  To<Longhand>(GetCSSPropertyStrokeWidth())
+      .ApplyValue(state, *calc_value, CSSProperty::ValueMode::kNormal);
   scoped_refptr<const ComputedStyle> style = state.TakeStyle();
   auto* computed_value = To<Longhand>(GetCSSPropertyStrokeWidth())
                              .CSSValueFromComputedStyleInternal(

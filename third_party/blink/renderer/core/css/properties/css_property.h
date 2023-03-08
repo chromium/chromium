@@ -212,6 +212,12 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
         repetition_separator_(repetition_separator),
         flags_(flags) {}
 
+  enum class ValueMode {
+    kNormal,
+    // https://drafts.csswg.org/css-variables/#animation-tainted
+    kAnimated,
+  };
+
  private:
   uint16_t property_id_;
   char repetition_separator_;

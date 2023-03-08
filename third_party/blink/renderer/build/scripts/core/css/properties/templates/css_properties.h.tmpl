@@ -119,7 +119,7 @@ class {{class_name}} final : public {{property.superclass}} {
   {% if property.style_builder_declare %}
   void ApplyInitial(StyleResolverState&) const override;
   void ApplyInherit(StyleResolverState&) const override;
-  void ApplyValue(StyleResolverState&, const CSSValue&) const override;
+  void ApplyValue(StyleResolverState&, const CSSValue&, ValueMode) const override;
   {% endif %}
   {% endif %} {# not is_alias #}
 };

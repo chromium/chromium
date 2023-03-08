@@ -612,7 +612,8 @@ const CSSValue* BackdropFilter::CSSValueFromComputedStyleInternal(
 }
 
 void BackdropFilter::ApplyValue(StyleResolverState& state,
-                                const CSSValue& value) const {
+                                const CSSValue& value,
+                                ValueMode) const {
   state.StyleBuilder().SetBackdropFilter(
       StyleBuilderConverter::ConvertFilterOperations(state, value,
                                                      PropertyID()));
@@ -710,7 +711,8 @@ void UseCountBackgroundClip(Document& document, const CSSValue& value) {
 // TODO(crbug.com/1339290): Revert to use the generated implementation once the
 // use counters are no longer needed. Also remove UseCountBackgroundClip above.
 void BackgroundClip::ApplyValue(StyleResolverState& state,
-                                const CSSValue& value) const {
+                                const CSSValue& value,
+                                ValueMode) const {
   Document& document = state.GetDocument();
   FillLayer* curr_child = &state.StyleBuilder().AccessBackgroundLayers();
   FillLayer* prev_child = nullptr;
@@ -925,7 +927,8 @@ void BaselineShift::ApplyInherit(StyleResolverState& state) const {
 }
 
 void BaselineShift::ApplyValue(StyleResolverState& state,
-                               const CSSValue& value) const {
+                               const CSSValue& value,
+                               ValueMode) const {
   ComputedStyleBuilder& builder = state.StyleBuilder();
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     EBaselineShiftType baseline_shift_type = EBaselineShiftType::kLength;
@@ -1199,7 +1202,8 @@ const CSSValue* BorderImageSource::InitialValue() const {
 }
 
 void BorderImageSource::ApplyValue(StyleResolverState& state,
-                                   const CSSValue& value) const {
+                                   const CSSValue& value,
+                                   ValueMode) const {
   state.StyleBuilder().SetBorderImageSource(
       state.GetStyleImage(CSSPropertyID::kBorderImageSource, value));
 }
@@ -1784,7 +1788,9 @@ void Color::ApplyInherit(StyleResolverState& state) const {
   builder.SetColorIsCurrentColor(state.ParentStyle()->ColorIsCurrentColor());
 }
 
-void Color::ApplyValue(StyleResolverState& state, const CSSValue& value) const {
+void Color::ApplyValue(StyleResolverState& state,
+                       const CSSValue& value,
+                       ValueMode) const {
   // As per the spec, 'color: currentColor' is treated as 'color: inherit'
   ComputedStyleBuilder& builder = state.StyleBuilder();
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
@@ -1940,7 +1946,8 @@ void ColorScheme::ApplyInherit(StyleResolverState& state) const {
 }
 
 void ColorScheme::ApplyValue(StyleResolverState& state,
-                             const CSSValue& value) const {
+                             const CSSValue& value,
+                             ValueMode) const {
   const CSSValueList* scheme_list = DynamicTo<CSSValueList>(value);
   DCHECK(scheme_list || (value.IsIdentifierValue() &&
                          DynamicTo<CSSIdentifierValue>(value)->GetValueID() ==
@@ -2404,7 +2411,8 @@ void Content::ApplyInherit(StyleResolverState& state) const {
 }
 
 void Content::ApplyValue(StyleResolverState& state,
-                         const CSSValue& value) const {
+                         const CSSValue& value,
+                         ValueMode) const {
   DCHECK(value.IsScopedValue());
   ComputedStyleBuilder& builder = state.StyleBuilder();
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
@@ -2651,7 +2659,8 @@ void Cursor::ApplyInherit(StyleResolverState& state) const {
 }
 
 void Cursor::ApplyValue(StyleResolverState& state,
-                        const CSSValue& value) const {
+                        const CSSValue& value,
+                        ValueMode) const {
   ComputedStyleBuilder& builder = state.StyleBuilder();
   builder.ClearCursorList();
   if (auto* value_list = DynamicTo<CSSValueList>(value)) {
@@ -2723,7 +2732,8 @@ const CSSValue* Direction::CSSValueFromComputedStyleInternal(
 }
 
 void Direction::ApplyValue(StyleResolverState& state,
-                           const CSSValue& value) const {
+                           const CSSValue& value,
+                           ValueMode) const {
   state.StyleBuilder().SetDirection(
       To<CSSIdentifierValue>(value).ConvertTo<TextDirection>());
 }
@@ -2867,7 +2877,8 @@ void Display::ApplyInherit(StyleResolverState& state) const {
 }
 
 void Display::ApplyValue(StyleResolverState& state,
-                         const CSSValue& value) const {
+                         const CSSValue& value,
+                         ValueMode) const {
   ComputedStyleBuilder& builder = state.StyleBuilder();
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     builder.SetDisplay(identifier_value->ConvertTo<EDisplay>());
@@ -2981,7 +2992,8 @@ const CSSValue* Filter::CSSValueFromComputedStyleInternal(
 }
 
 void Filter::ApplyValue(StyleResolverState& state,
-                        const CSSValue& value) const {
+                        const CSSValue& value,
+                        ValueMode) const {
   state.StyleBuilder().SetFilter(StyleBuilderConverter::ConvertFilterOperations(
       state, value, PropertyID()));
 }
@@ -3523,7 +3535,8 @@ void InternalVisitedColor::ApplyInherit(StyleResolverState& state) const {
 }
 
 void InternalVisitedColor::ApplyValue(StyleResolverState& state,
-                                      const CSSValue& value) const {
+                                      const CSSValue& value,
+                                      ValueMode) const {
   ComputedStyleBuilder& builder = state.StyleBuilder();
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
   if (identifier_value &&
@@ -3808,7 +3821,8 @@ void GridTemplateAreas::ApplyInherit(StyleResolverState& state) const {
 }
 
 void GridTemplateAreas::ApplyValue(StyleResolverState& state,
-                                   const CSSValue& value) const {
+                                   const CSSValue& value,
+                                   ValueMode) const {
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     DCHECK_EQ(identifier_value->GetValueID(), CSSValueID::kNone);
     ApplyInitial(state);
@@ -4523,7 +4537,8 @@ void InternalForcedColor::ApplyInherit(StyleResolverState& state) const {
 }
 
 void InternalForcedColor::ApplyValue(StyleResolverState& state,
-                                     const CSSValue& value) const {
+                                     const CSSValue& value,
+                                     ValueMode) const {
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
   if (identifier_value &&
       identifier_value->GetValueID() == CSSValueID::kCurrentcolor) {
@@ -4608,7 +4623,8 @@ void InternalForcedVisitedColor::ApplyInherit(StyleResolverState& state) const {
 }
 
 void InternalForcedVisitedColor::ApplyValue(StyleResolverState& state,
-                                            const CSSValue& value) const {
+                                            const CSSValue& value,
+                                            ValueMode) const {
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
   if (identifier_value &&
       identifier_value->GetValueID() == CSSValueID::kCurrentcolor) {
@@ -4833,7 +4849,8 @@ const CSSValue* ListStyleImage::CSSValueFromComputedStyleInternal(
 }
 
 void ListStyleImage::ApplyValue(StyleResolverState& state,
-                                const CSSValue& value) const {
+                                const CSSValue& value,
+                                ValueMode) const {
   state.StyleBuilder().SetListStyleImage(
       state.GetStyleImage(CSSPropertyID::kListStyleImage, value));
 }
@@ -4879,7 +4896,8 @@ const CSSValue* ListStyleType::CSSValueFromComputedStyleInternal(
 }
 
 void ListStyleType::ApplyValue(StyleResolverState& state,
-                               const CSSValue& value) const {
+                               const CSSValue& value,
+                               ValueMode) const {
   DCHECK(value.IsScopedValue());
   ComputedStyleBuilder& builder = state.StyleBuilder();
   if (const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
@@ -5177,7 +5195,8 @@ const CSSValue* MathDepth::CSSValueFromComputedStyleInternal(
 }
 
 void MathDepth::ApplyValue(StyleResolverState& state,
-                           const CSSValue& value) const {
+                           const CSSValue& value,
+                           ValueMode) const {
   ComputedStyleBuilder& builder = state.StyleBuilder();
   if (const auto* list = DynamicTo<CSSValueList>(value)) {
     DCHECK_EQ(list->length(), 1U);
@@ -5625,7 +5644,8 @@ void OutlineStyle::ApplyInherit(StyleResolverState& state) const {
 }
 
 void OutlineStyle::ApplyValue(StyleResolverState& state,
-                              const CSSValue& value) const {
+                              const CSSValue& value,
+                              ValueMode) const {
   ComputedStyleBuilder& builder = state.StyleBuilder();
   const auto& identifier_value = To<CSSIdentifierValue>(value);
   builder.SetOutlineStyleIsAuto(
@@ -5774,7 +5794,8 @@ void OverflowX::ApplyInherit(StyleResolverState& state) const {
 }
 
 void OverflowX::ApplyValue(StyleResolverState& state,
-                           const CSSValue& value) const {
+                           const CSSValue& value,
+                           ValueMode) const {
   ComputedStyleBuilder& builder = state.StyleBuilder();
   auto converted_value =
       To<CSSIdentifierValue>(value).ConvertTo<blink::EOverflow>();
@@ -5811,7 +5832,8 @@ void OverflowY::ApplyInherit(StyleResolverState& state) const {
 }
 
 void OverflowY::ApplyValue(StyleResolverState& state,
-                           const CSSValue& value) const {
+                           const CSSValue& value,
+                           ValueMode) const {
   ComputedStyleBuilder& builder = state.StyleBuilder();
   auto converted_value =
       To<CSSIdentifierValue>(value).ConvertTo<blink::EOverflow>();
@@ -6327,7 +6349,8 @@ const CSSValue* Resize::CSSValueFromComputedStyleInternal(
 }
 
 void Resize::ApplyValue(StyleResolverState& state,
-                        const CSSValue& value) const {
+                        const CSSValue& value,
+                        ValueMode) const {
   const CSSIdentifierValue& identifier_value = To<CSSIdentifierValue>(value);
 
   EResize r = EResize::kNone;
@@ -7149,7 +7172,9 @@ void Size::ApplyInitial(StyleResolverState& state) const {}
 
 void Size::ApplyInherit(StyleResolverState& state) const {}
 
-void Size::ApplyValue(StyleResolverState& state, const CSSValue& value) const {
+void Size::ApplyValue(StyleResolverState& state,
+                      const CSSValue& value,
+                      ValueMode) const {
   ComputedStyleBuilder& builder = state.StyleBuilder();
   builder.ResetPageSizeType();
   gfx::SizeF size;
@@ -7456,7 +7481,8 @@ const CSSValue* TextAlign::CSSValueFromComputedStyleInternal(
 }
 
 void TextAlign::ApplyValue(StyleResolverState& state,
-                           const CSSValue& value) const {
+                           const CSSValue& value,
+                           ValueMode) const {
   ComputedStyleBuilder& builder = state.StyleBuilder();
   const auto* ident_value = DynamicTo<CSSIdentifierValue>(value);
   if (ident_value &&
@@ -7631,7 +7657,8 @@ const CSSValue* TextIndent::CSSValueFromComputedStyleInternal(
 }
 
 void TextIndent::ApplyValue(StyleResolverState& state,
-                            const CSSValue& value) const {
+                            const CSSValue& value,
+                            ValueMode) const {
   Length length_or_percentage_value;
 
   for (auto& list_value : To<CSSValueList>(value)) {
@@ -7664,7 +7691,8 @@ void TextOrientation::ApplyInherit(StyleResolverState& state) const {
 }
 
 void TextOrientation::ApplyValue(StyleResolverState& state,
-                                 const CSSValue& value) const {
+                                 const CSSValue& value,
+                                 ValueMode) const {
   state.SetTextOrientation(
       To<CSSIdentifierValue>(value).ConvertTo<ETextOrientation>());
 }
@@ -8250,7 +8278,8 @@ void VerticalAlign::ApplyInherit(StyleResolverState& state) const {
 }
 
 void VerticalAlign::ApplyValue(StyleResolverState& state,
-                               const CSSValue& value) const {
+                               const CSSValue& value,
+                               ValueMode) const {
   ComputedStyleBuilder& builder = state.StyleBuilder();
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     builder.SetVerticalAlign(identifier_value->ConvertTo<EVerticalAlign>());
@@ -8381,7 +8410,8 @@ void AppRegion::ApplyInitial(StyleResolverState& state) const {}
 void AppRegion::ApplyInherit(StyleResolverState& state) const {}
 
 void AppRegion::ApplyValue(StyleResolverState& state,
-                           const CSSValue& value) const {
+                           const CSSValue& value,
+                           ValueMode) const {
   const auto& identifier_value = To<CSSIdentifierValue>(value);
   state.StyleBuilder().SetDraggableRegionMode(
       identifier_value.GetValueID() == CSSValueID::kDrag
@@ -8446,7 +8476,8 @@ const CSSValue* WebkitBorderImage::CSSValueFromComputedStyleInternal(
 }
 
 void WebkitBorderImage::ApplyValue(StyleResolverState& state,
-                                   const CSSValue& value) const {
+                                   const CSSValue& value,
+                                   ValueMode) const {
   NinePieceImage image;
   CSSToStyleMap::MapNinePieceImage(state, CSSPropertyID::kWebkitBorderImage,
                                    value, image);
@@ -8693,7 +8724,8 @@ const CSSValue* WebkitLocale::CSSValueFromComputedStyleInternal(
 }
 
 void WebkitLocale::ApplyValue(StyleResolverState& state,
-                              const CSSValue& value) const {
+                              const CSSValue& value,
+                              ValueMode) const {
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     DCHECK_EQ(identifier_value->GetValueID(), CSSValueID::kAuto);
     state.GetFontBuilder().SetLocale(nullptr);
@@ -8766,7 +8798,8 @@ const CSSValue* WebkitMaskBoxImageSource::CSSValueFromComputedStyleInternal(
 }
 
 void WebkitMaskBoxImageSource::ApplyValue(StyleResolverState& state,
-                                          const CSSValue& value) const {
+                                          const CSSValue& value,
+                                          ValueMode) const {
   state.StyleBuilder().SetMaskBoxImageSource(
       state.GetStyleImage(CSSPropertyID::kWebkitMaskBoxImageSource, value));
 }
@@ -9236,7 +9269,8 @@ void TextEmphasisStyle::ApplyInherit(StyleResolverState& state) const {
 }
 
 void TextEmphasisStyle::ApplyValue(StyleResolverState& state,
-                                   const CSSValue& value) const {
+                                   const CSSValue& value,
+                                   ValueMode) const {
   ComputedStyleBuilder& builder = state.StyleBuilder();
   if (const auto* list = DynamicTo<CSSValueList>(value)) {
     DCHECK_EQ(list->length(), 2U);
@@ -9682,7 +9716,8 @@ void WhiteSpace::ApplyInherit(StyleResolverState& state) const {
 }
 
 void WhiteSpace::ApplyValue(StyleResolverState& state,
-                            const CSSValue& value) const {
+                            const CSSValue& value,
+                            ValueMode) const {
   ComputedStyleBuilder& builder = state.StyleBuilder();
   builder.SetWhiteSpace(
       To<CSSIdentifierValue>(value).ConvertTo<blink::EWhiteSpace>());
@@ -9836,7 +9871,8 @@ void WillChange::ApplyInherit(StyleResolverState& state) const {
 }
 
 void WillChange::ApplyValue(StyleResolverState& state,
-                            const CSSValue& value) const {
+                            const CSSValue& value,
+                            ValueMode) const {
   bool will_change_contents = false;
   bool will_change_scroll_position = false;
   Vector<CSSPropertyID> will_change_properties;
@@ -9904,7 +9940,8 @@ void WritingMode::ApplyInherit(StyleResolverState& state) const {
 }
 
 void WritingMode::ApplyValue(StyleResolverState& state,
-                             const CSSValue& value) const {
+                             const CSSValue& value,
+                             ValueMode) const {
   state.SetWritingMode(
       To<CSSIdentifierValue>(value).ConvertTo<blink::WritingMode>());
 }
@@ -10000,7 +10037,9 @@ void Zoom::ApplyInherit(StyleResolverState& state) const {
   state.SetZoom(state.ParentStyle()->Zoom());
 }
 
-void Zoom::ApplyValue(StyleResolverState& state, const CSSValue& value) const {
+void Zoom::ApplyValue(StyleResolverState& state,
+                      const CSSValue& value,
+                      ValueMode) const {
   state.SetZoom(StyleBuilderConverter::ConvertZoom(state, value));
 }
 
