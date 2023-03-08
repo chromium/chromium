@@ -177,7 +177,7 @@ struct Session {
 
 Session* GetThreadLocalSession();
 
-void SetThreadLocalSession(std::unique_ptr<Session> session);
+void SetThreadLocalSession(std::unique_ptr<Session> new_session);
 
 namespace internal {
 Status SplitChannel(std::string* channel,

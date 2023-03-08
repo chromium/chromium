@@ -11,22 +11,20 @@
 
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/threading/thread_local.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/chrome.h"
 #include "chrome/test/chromedriver/chrome/status.h"
 #include "chrome/test/chromedriver/chrome/web_view.h"
 #include "chrome/test/chromedriver/logging.h"
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace {
 
-base::LazyInstance<base::ThreadLocalPointer<Session>>::DestructorAtExit
-    lazy_tls_session = LAZY_INSTANCE_INITIALIZER;
+ABSL_CONST_INIT thread_local Session* session = nullptr;
 
 }  // namespace
 
@@ -282,9 +280,9 @@ void Session::CloseAllConnections() {
 }
 
 Session* GetThreadLocalSession() {
-  return lazy_tls_session.Pointer()->Get();
+  return session;
 }
 
-void SetThreadLocalSession(std::unique_ptr<Session> session) {
-  lazy_tls_session.Pointer()->Set(session.release());
+void SetThreadLocalSession(std::unique_ptr<Session> new_session) {
+  session = new_session.release();
 }
