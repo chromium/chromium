@@ -126,7 +126,7 @@ AutofillUiTest::AutofillUiTest()
           base::BindRepeating(&AutofillUiTest::HandleKeyPressEvent,
                               base::Unretained(this))) {}
 
-AutofillUiTest::~AutofillUiTest() {}
+AutofillUiTest::~AutofillUiTest() = default;
 
 void AutofillUiTest::SetUpOnMainThread() {
   // Make autofill popup stay open by ignoring external changes when possible.

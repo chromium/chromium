@@ -384,7 +384,7 @@ class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
 
  private:
   // Required for using some `autofill::test` functions inside the test class.
-  autofill::test::AutofillEnvironment autofill_environment_;
+  autofill::test::AutofillUnitTestEnvironment autofill_test_environment_;
   std::unique_ptr<MockAutofillClient> autofill_client_;
   raw_ptr<MockFastCheckoutController> fast_checkout_controller_;
   std::unique_ptr<autofill::TestAutofillDriver> autofill_driver_;

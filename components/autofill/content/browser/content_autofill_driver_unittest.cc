@@ -128,7 +128,7 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
   bool GetCalledClearPreviewedForm() { return called_clear_previewed_form_; }
 
   // Returns data received via mojo interface method
-  // mojom::AutofillAent::FillFieldWithValue().
+  // mojom::AutofillAgent::FillFieldWithValue().
   bool GetString16FillFieldWithValue(const FieldGlobalId& field,
                                      std::u16string* value) {
     if (!value_fill_field_ || value_renderer_id_ != field.renderer_id)
@@ -139,7 +139,7 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
   }
 
   // Returns data received via mojo interface method
-  // mojom::AutofillAent::PreviewFieldWithValue().
+  // mojom::AutofillAgent::PreviewFieldWithValue().
   bool GetString16PreviewFieldWithValue(const FieldGlobalId field,
                                         std::u16string* value) {
     if (!value_preview_field_ || value_renderer_id_ != field.renderer_id)
@@ -150,7 +150,7 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
   }
 
   // Returns data received via mojo interface method
-  // mojom::AutofillAent::AcceptDataListSuggestion().
+  // mojom::AutofillAgent::AcceptDataListSuggestion().
   bool GetString16AcceptDataListSuggestion(FieldGlobalId field,
                                            std::u16string* value) {
     if (!value_accept_data_ || value_renderer_id_ != field.renderer_id)
@@ -398,7 +398,7 @@ class ContentAutofillDriverTest : public content::RenderViewHostTestHarness,
 
   bool autofill_across_iframes_ = false;
   base::test::ScopedFeatureList scoped_feature_list_;
-  test::AutofillEnvironment autofill_environment_;
+  test::AutofillUnitTestEnvironment autofill_test_environment_;
 
   TestContentAutofillClient* client_;
   ContentAutofillDriverFactory* factory_;

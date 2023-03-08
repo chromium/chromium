@@ -149,7 +149,7 @@ class AutofillContextMenuManagerTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<AutofillContextMenuManager> autofill_context_menu_manager_;
   base::test::ScopedFeatureList feature_;
   raw_ptr<MockAutofillDriver> driver_;
-  test::AutofillEnvironment autofill_environment_;
+  test::AutofillUnitTestEnvironment autofill_test_environment_;
 };
 
 // Tests that the Autofill context menu is correctly set up.

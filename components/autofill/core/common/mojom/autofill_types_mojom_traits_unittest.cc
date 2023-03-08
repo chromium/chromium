@@ -170,7 +170,7 @@ class AutofillTypeTraitsTestImpl : public testing::Test,
 
  private:
   base::test::TaskEnvironment task_environment_;
-  test::AutofillEnvironment autofill_environment_;
+  test::AutofillUnitTestEnvironment autofill_test_environment_;
 
   mojo::ReceiverSet<TypeTraitsTest> receivers_;
 };

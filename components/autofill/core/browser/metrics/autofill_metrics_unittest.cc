@@ -6974,7 +6974,7 @@ class AutofillMetricsParseQueryResponseTest : public testing::Test {
   }
 
  protected:
-  test::AutofillEnvironment autofill_environment_;
+  test::AutofillUnitTestEnvironment autofill_test_environment_;
   std::vector<std::unique_ptr<FormStructure>> owned_forms_;
   std::vector<FormStructure*> forms_;
 };

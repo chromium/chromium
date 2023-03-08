@@ -97,6 +97,7 @@ class AutofillPopupControllerBrowserTest : public InProcessBrowserTest {
         *autofill_driver_->autofill_manager());
   }
 
+  test::AutofillBrowserTestEnvironment autofill_test_environment_;
   raw_ptr<ContentAutofillDriver> autofill_driver_ = nullptr;
   raw_ptr<TestAutofillExternalDelegate> autofill_external_delegate_ = nullptr;
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> disable_animation_;

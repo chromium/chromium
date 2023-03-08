@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
+#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/browser_autofill_manager_test_delegate.h"
 #include "components/autofill/core/browser/test_event_waiter.h"
@@ -152,6 +153,7 @@ class AutofillUiTest : public InProcessBrowserTest,
   // with it.
   content::RenderWidgetHost::KeyPressEventCallback key_press_event_sink_;
 
+  test::AutofillBrowserTestEnvironment autofill_test_environment_;
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> disable_animation_;
 };
 

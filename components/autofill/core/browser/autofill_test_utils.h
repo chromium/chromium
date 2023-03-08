@@ -9,6 +9,8 @@
 #include <string>
 #include <vector>
 
+#include "base/feature_list.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -78,29 +80,43 @@ using FormGroupValues = std::vector<FormGroupValue>;
 
 using RandomizeFrame = base::StrongAlias<struct RandomizeFrameTag, bool>;
 
-// AutofillEnvironment encapsulates global state for test data that should
+// AutofillTestEnvironment encapsulates global state for test data that should
 // be reset automatically after each test.
-class AutofillEnvironment {
+class AutofillTestEnvironment {
  public:
-  static AutofillEnvironment& GetCurrent(const base::Location& = FROM_HERE);
+  static AutofillTestEnvironment& GetCurrent(const base::Location& = FROM_HERE);
 
-  AutofillEnvironment();
-  AutofillEnvironment(const AutofillEnvironment&) = delete;
-  AutofillEnvironment& operator=(const AutofillEnvironment&) = delete;
-  ~AutofillEnvironment();
+  AutofillTestEnvironment(const AutofillTestEnvironment&) = delete;
+  AutofillTestEnvironment& operator=(const AutofillTestEnvironment&) = delete;
+  ~AutofillTestEnvironment();
 
   LocalFrameToken NextLocalFrameToken();
   FormRendererId NextFormRendererId();
   FieldRendererId NextFieldRendererId();
 
+ protected:
+  AutofillTestEnvironment();
+
  private:
-  static AutofillEnvironment* current_instance_;
+  static AutofillTestEnvironment* current_instance_;
 
   // Use some distinct 64 bit numbers to start the counters.
   uint64_t local_frame_token_counter_high_ = 0xAAAAAAAAAAAAAAAA;
   uint64_t local_frame_token_counter_low_ = 0xBBBBBBBBBBBBBBBB;
   FormRendererId::underlying_type form_renderer_id_counter_ = 10;
   FieldRendererId::underlying_type field_renderer_id_counter_ = 10;
+};
+
+// This encapsulates global unittest state.
+class AutofillUnitTestEnvironment : public AutofillTestEnvironment {
+ public:
+  AutofillUnitTestEnvironment() = default;
+};
+
+// This encapsulates global browsertest state.
+class AutofillBrowserTestEnvironment : public AutofillTestEnvironment {
+ public:
+  AutofillBrowserTestEnvironment();
 };
 
 // Creates non-empty LocalFrameToken. If `randomize` is false, the
@@ -110,12 +126,12 @@ LocalFrameToken MakeLocalFrameToken(
 
 // Creates new, pairwise distinct FormRendererIds.
 inline FormRendererId MakeFormRendererId() {
-  return AutofillEnvironment::GetCurrent().NextFormRendererId();
+  return AutofillTestEnvironment::GetCurrent().NextFormRendererId();
 }
 
 // Creates new, pairwise distinct FieldRendererIds.
 inline FieldRendererId MakeFieldRendererId() {
-  return AutofillEnvironment::GetCurrent().NextFieldRendererId();
+  return AutofillTestEnvironment::GetCurrent().NextFieldRendererId();
 }
 
 // Creates new, pairwise distinct FormGlobalIds. If `randomize` is true, the

@@ -100,7 +100,7 @@ class AutofillContextMenuManagerFeedbackUIBrowserTest
   }
 
  protected:
-  test::AutofillEnvironment autofill_environment_;
+  test::AutofillBrowserTestEnvironment autofill_test_environment_;
   std::unique_ptr<TestRenderViewContextMenu> render_view_context_menu_;
   std::unique_ptr<AutofillContextMenuManager> autofill_context_menu_manager_;
   base::test::ScopedFeatureList feature_;

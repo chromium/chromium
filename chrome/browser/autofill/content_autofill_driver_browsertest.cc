@@ -138,6 +138,7 @@ class ContentAutofillDriverBrowserTest : public InProcessBrowserTest,
   base::OnceClosure same_document_navigation_callback_;
   base::OnceClosure subframe_navigation_callback_;
 
+  test::AutofillBrowserTestEnvironment autofill_test_environment_;
   TestAutofillClientInjector<testing::NiceMock<MockAutofillClient>>
       autofill_client_injector_;
   content::test::PrerenderTestHelper prerender_helper_;

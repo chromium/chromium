@@ -161,6 +161,7 @@ class AutofillServerTest : public InProcessBrowserTest {
   }
 
  private:
+  test::AutofillBrowserTestEnvironment autofill_test_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -170,7 +171,7 @@ MATCHER_P(EqualsUploadProto, expected_const, "") {
   if (!request.ParseFromString(arg))
     return false;
 
-  // Remove metadata because it is randomised and won't match.
+  // Remove metadata because it is randomized and won't match.
   EXPECT_EQ(request.upload().has_randomized_form_metadata(),
             expected.upload().has_randomized_form_metadata());
   request.mutable_upload()->clear_randomized_form_metadata();

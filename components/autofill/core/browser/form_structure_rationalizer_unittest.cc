@@ -122,7 +122,7 @@ class FormStructureRationalizerTest : public testing::Test {
 
  protected:
   base::test::ScopedFeatureList scoped_features_;
-  test::AutofillEnvironment autofill_environment_;
+  test::AutofillUnitTestEnvironment autofill_test_environment_;
 };
 
 FormStructureRationalizerTest::FormStructureRationalizerTest() {
@@ -742,13 +742,13 @@ struct RationalizationTypeRelationshipsTestParams {
 class RationalizationFieldTypeFilterTest
     : public testing::Test,
       public testing::WithParamInterface<ServerFieldType> {
-  test::AutofillEnvironment autofill_environment_;
+  test::AutofillUnitTestEnvironment autofill_test_environment_;
 };
 class RationalizationFieldTypeRelationshipsTest
     : public testing::Test,
       public testing::WithParamInterface<
           RationalizationTypeRelationshipsTestParams> {
-  test::AutofillEnvironment autofill_environment_;
+  test::AutofillUnitTestEnvironment autofill_test_environment_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

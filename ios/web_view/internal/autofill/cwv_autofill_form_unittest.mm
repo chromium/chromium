@@ -34,7 +34,7 @@ TEST_F(CWVAutofillFormTest, Initialization) {
   ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
       pak_path, ui::kScaleFactorNone);
 
-  autofill::test::AutofillEnvironment autofill_environment_;
+  autofill::test::AutofillUnitTestEnvironment autofill_test_environment_;
   autofill::FormData form_data;
   autofill::test::CreateTestAddressFormData(&form_data);
   std::unique_ptr<autofill::FormStructure> form_structure =

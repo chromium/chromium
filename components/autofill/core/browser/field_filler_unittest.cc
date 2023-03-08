@@ -144,7 +144,7 @@ class AutofillFieldFillerTest : public testing::Test {
   AutofillProfile* address() { return &address_; }
 
  private:
-  test::AutofillEnvironment autofill_environment_;
+  test::AutofillUnitTestEnvironment autofill_test_environment_;
   CreditCard credit_card_;
   AutofillProfile address_;
 };
@@ -246,7 +246,7 @@ TEST_F(AutofillFieldFillerTest, Type_CreditCardOverrideHtml_ServerPredicitons) {
   EXPECT_EQ(NAME_FULL, field.Type().GetStorableType());
 }
 
-// Tests that if both autocomplete attibutes and server agree it's a phone
+// Tests that if both autocomplete attributes and server agree it's a phone
 // field, always use server predicted type. If they disagree with autocomplete
 // says it's a phone field, always use autocomplete attribute.
 TEST_F(AutofillFieldFillerTest,
@@ -755,7 +755,7 @@ INSTANTIATE_TEST_SUITE_P(
 
         // Tests for features::kAutofillFillCreditCardAsPerFormatString:
 
-        // Base case works regardless of captialization.
+        // Base case works regardless of capitalization.
         FillUtilExpirationDateTestCase{
             HtmlFieldType::kCreditCardExpDate2DigitYear, 0, u"03/22", true,
             "mm/yy"},

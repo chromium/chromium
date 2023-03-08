@@ -56,7 +56,7 @@ class IBANSaveManagerTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-  test::AutofillEnvironment autofill_environment_;
+  test::AutofillUnitTestEnvironment autofill_test_environment_;
   TestAutofillClient autofill_client_;
 
   std::unique_ptr<IBANSaveManager> iban_save_manager_;

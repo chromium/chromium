@@ -238,7 +238,7 @@ class AutofillAutocompleteTest : public InProcessBrowserTest {
 
   Profile* current_profile() { return active_browser_->profile(); }
 
-  test::AutofillEnvironment autofill_environment_;
+  test::AutofillBrowserTestEnvironment autofill_test_environment_;
   raw_ptr<Browser> active_browser_ = nullptr;
 };
 
@@ -283,7 +283,7 @@ IN_PROC_BROWSER_TEST_F(AutofillAutocompleteTest,
   // AutocompleteHistoryManager.
   NavigateToFile(kSimpleFormFileName);
 
-  // The checkup is executed asynchronsouly on startup and may not have
+  // The checkup is executed asynchronously on startup and may not have
   // finished, yet.
   WaitForPrefValue(pref_service(),
                    prefs::kAutocompleteLastVersionRetentionPolicy,

@@ -103,7 +103,7 @@ class IBANManagerTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-  autofill::test::AutofillEnvironment autofill_environment_;
+  test::AutofillUnitTestEnvironment autofill_test_environment_;
   MockSuggestionsHandler suggestions_handler_;
   TestAutofillClient autofill_client_;
   TestPersonalDataManager personal_data_manager_;

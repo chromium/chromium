@@ -165,7 +165,7 @@ class FormStructureTestImpl : public test::FormStructureTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  test::AutofillEnvironment autofill_environment_;
+  test::AutofillUnitTestEnvironment autofill_test_environment_;
 };
 
 class ParameterizedFormStructureTest
@@ -1000,7 +1000,7 @@ TEST_F(FormStructureTestImpl,
 
   FormFieldData field;
 
-  // Set a valid autocompelete attribute to the first field.
+  // Set a valid autocomplete attribute to the first field.
   test::CreateTestFormField("First Name", "firstname", "", "text", "given-name",
                             &field);
   form.fields.push_back(field);
@@ -1013,7 +1013,7 @@ TEST_F(FormStructureTestImpl,
   EXPECT_TRUE(FormShouldBeQueried(form));
 
   // As a side effect of parsing small forms (if any of the heuristics, query,
-  // or upload minimmums are disabled, we'll autofill fields with an
+  // or upload minimums are disabled, we'll autofill fields with an
   // autocomplete attribute, even if its the only field in the form.
   {
     FormData form_copy = form;
@@ -6385,7 +6385,7 @@ TEST_F(
 }
 
 // Tests if all the fields in the form belong to the same section when the
-// second field has the autcomplete-section attribute set.
+// second field has the autocomplete-section attribute set.
 TEST_F(FormStructureTestImpl, FromEmptyAutocompleteSectionToDefinedOne) {
   base::test::ScopedFeatureList enabled;
   enabled.InitAndEnableFeature(features::kAutofillUseNewSectioningMethod);
@@ -6497,7 +6497,8 @@ TEST_F(FormStructureTestImpl, FindFieldsEligibleForManualFilling) {
 
   test_api(&form_structure).IdentifySections(/*ignore_autocomplete=*/false);
   std::vector<FieldGlobalId> expected_result;
-  // Only credit card related and unknown fields are elible for manual filling.
+  // Only credit card related and unknown fields are eligible for manual
+  // filling.
   expected_result.push_back(full_name_id);
   expected_result.push_back(unknown_id);
 

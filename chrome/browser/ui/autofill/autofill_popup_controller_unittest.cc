@@ -262,8 +262,9 @@ class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
   void TearDown() override {
     // This will make sure the controller and the view (if any) are both
     // cleaned up.
-    if (autofill_popup_controller_)
+    if (autofill_popup_controller_) {
       autofill_popup_controller_->DoHide();
+    }
 
     external_delegate_.reset();
     web_contents()->RemoveUserData(autofill_client_->UserDataKey());
@@ -329,7 +330,7 @@ class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
   }
 
   raw_ptr<TestContentAutofillClient> autofill_client_;
-  autofill::test::AutofillEnvironment autofill_environment_;
+  test::AutofillUnitTestEnvironment autofill_environment_;
   raw_ptr<NiceMock<MockAutofillDriver>> autofill_driver_;
   std::unique_ptr<NiceMock<MockAutofillExternalDelegate>> external_delegate_;
   std::unique_ptr<NiceMock<MockAutofillPopupView>> autofill_popup_view_;

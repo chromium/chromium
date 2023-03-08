@@ -81,46 +81,48 @@ std::string GetRandomCardNumber() {
 
 }  // namespace
 
-AutofillEnvironment* AutofillEnvironment::current_instance_ = nullptr;
+AutofillTestEnvironment* AutofillTestEnvironment::current_instance_ = nullptr;
 
-AutofillEnvironment& AutofillEnvironment::GetCurrent(
+AutofillTestEnvironment& AutofillTestEnvironment::GetCurrent(
     const base::Location& location) {
   CHECK(current_instance_)
       << location.ToString() << " "
-      << "tried to access the current AutofillEnvironment, but none "
-         "exists. Add an autofill::test::AutofillEnvironment member to "
-         "test your test fixture.";
+      << "tried to access the current AutofillTestEnvironment, but none "
+         "exists. Add an autofill::test::Autofill(Browser|Unit)TestEnvironment "
+         "member to test your test fixture.";
   return *current_instance_;
 }
 
-AutofillEnvironment::AutofillEnvironment() {
-  CHECK(!current_instance_) << "An autofill::test::AutofillEnvironment has "
+AutofillTestEnvironment::AutofillTestEnvironment() {
+  CHECK(!current_instance_) << "An autofill::test::AutofillTestEnvironment has "
                                "already been registered.";
   current_instance_ = this;
 }
 
-AutofillEnvironment::~AutofillEnvironment() {
+AutofillTestEnvironment::~AutofillTestEnvironment() {
   CHECK_EQ(current_instance_, this);
   current_instance_ = nullptr;
 }
 
-LocalFrameToken AutofillEnvironment::NextLocalFrameToken() {
+LocalFrameToken AutofillTestEnvironment::NextLocalFrameToken() {
   return LocalFrameToken(base::UnguessableToken::CreateForTesting(
       ++local_frame_token_counter_high_, ++local_frame_token_counter_low_));
 }
 
-FormRendererId AutofillEnvironment::NextFormRendererId() {
+FormRendererId AutofillTestEnvironment::NextFormRendererId() {
   return FormRendererId(++form_renderer_id_counter_);
 }
 
-FieldRendererId AutofillEnvironment::NextFieldRendererId() {
+FieldRendererId AutofillTestEnvironment::NextFieldRendererId() {
   return FieldRendererId(++field_renderer_id_counter_);
 }
+
+AutofillBrowserTestEnvironment::AutofillBrowserTestEnvironment() = default;
 
 LocalFrameToken MakeLocalFrameToken(RandomizeFrame randomize) {
   if (*randomize) {
     return LocalFrameToken(
-        AutofillEnvironment::GetCurrent().NextLocalFrameToken());
+        AutofillTestEnvironment::GetCurrent().NextLocalFrameToken());
   } else {
     return LocalFrameToken(
         base::UnguessableToken::CreateForTesting(98765, 43210));

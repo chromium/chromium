@@ -397,7 +397,7 @@ class CreditCardSaveManagerTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-  test::AutofillEnvironment autofill_environment_;
+  test::AutofillUnitTestEnvironment autofill_test_environment_;
   MockAutofillClient autofill_client_{
       std::make_unique<MockPersonalDataManager>()};
   std::unique_ptr<MockVirtualCardEnrollmentManager>
@@ -3107,7 +3107,7 @@ TEST_F(CreditCardSaveManagerTest, DuplicateMaskedCreditCard_NoUpload) {
   credit_card_form.fields[3].value = ASCIIToUTF16(test::NextYear());
   credit_card_form.fields[4].value = u"123";
 
-  // Local save prompt should not be shown as there is alredy masked
+  // Local save prompt should not be shown as there is already masked
   // card with same |TypeAndLastFourDigits|.
   FormSubmitted(credit_card_form);
   EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());

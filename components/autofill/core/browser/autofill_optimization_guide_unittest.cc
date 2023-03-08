@@ -58,7 +58,7 @@ class AutofillOptimizationGuideTest : public testing::Test {
  protected:
   std::unique_ptr<AutofillOptimizationGuide> autofill_optimization_guide_;
   std::unique_ptr<MockOptimizationGuideDecider> decider_;
-  test::AutofillEnvironment autofill_environment_;
+  test::AutofillUnitTestEnvironment autofill_test_environment_;
 };
 
 TEST_F(AutofillOptimizationGuideTest, EnsureIntegratorInitializedCorrectly) {
