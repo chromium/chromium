@@ -262,17 +262,7 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   // for (const auto& child : AllChildren()) {}.
   AllChildrenRange AllChildren() const { return AllChildrenRange(this); }
 
-  // Derivative utils for AXPlatformNodeDelegate::GetHypertextRangeBoundsRect
-  gfx::Rect GetUnclippedRootFrameHypertextRangeBoundsRect(
-      const int start_offset,
-      const int end_offset,
-      ui::AXOffscreenResult* offscreen_result = nullptr) const;
-
   // Derivative utils for AXPlatformNodeDelegate::GetInnerTextRangeBoundsRect
-  gfx::Rect GetUnclippedScreenInnerTextRangeBoundsRect(
-      const int start_offset,
-      const int end_offset,
-      ui::AXOffscreenResult* offscreen_result = nullptr) const;
   gfx::Rect GetUnclippedRootFrameInnerTextRangeBoundsRect(
       const int start_offset,
       const int end_offset,

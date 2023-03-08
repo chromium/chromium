@@ -336,24 +336,6 @@ gfx::RectF BrowserAccessibility::GetLocation() const {
   return GetData().relative_bounds.bounds;
 }
 
-gfx::Rect BrowserAccessibility::GetUnclippedRootFrameHypertextRangeBoundsRect(
-    const int start_offset,
-    const int end_offset,
-    ui::AXOffscreenResult* offscreen_result) const {
-  return GetHypertextRangeBoundsRect(
-      start_offset, end_offset, ui::AXCoordinateSystem::kRootFrame,
-      ui::AXClippingBehavior::kUnclipped, offscreen_result);
-}
-
-gfx::Rect BrowserAccessibility::GetUnclippedScreenInnerTextRangeBoundsRect(
-    const int start_offset,
-    const int end_offset,
-    ui::AXOffscreenResult* offscreen_result) const {
-  return GetInnerTextRangeBoundsRect(
-      start_offset, end_offset, ui::AXCoordinateSystem::kScreenDIPs,
-      ui::AXClippingBehavior::kUnclipped, offscreen_result);
-}
-
 gfx::Rect BrowserAccessibility::GetUnclippedRootFrameInnerTextRangeBoundsRect(
     const int start_offset,
     const int end_offset,
