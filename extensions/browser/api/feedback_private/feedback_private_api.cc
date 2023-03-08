@@ -43,7 +43,7 @@
 #include "extensions/browser/api/feedback_private/log_source_access_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-using extensions::api::feedback_private::SystemInformation;
+using extensions::api::feedback_private::LogsMapEntry;
 using feedback::FeedbackData;
 
 namespace extensions {
@@ -52,11 +52,10 @@ namespace feedback_private = api::feedback_private;
 
 using feedback_private::FeedbackFlow;
 using feedback_private::FeedbackInfo;
+using feedback_private::LogsMapEntry;
 using feedback_private::LogSource;
-using feedback_private::SystemInformation;
 
-using SystemInformationList =
-    std::vector<api::feedback_private::SystemInformation>;
+using LogsMap = std::vector<api::feedback_private::LogsMapEntry>;
 
 static base::LazyInstance<BrowserContextKeyedAPIFactory<FeedbackPrivateAPI>>::
     DestructorAtExit g_factory = LAZY_INSTANCE_INITIALIZER;
@@ -165,8 +164,9 @@ void SendFeedback(content::BrowserContext* browser_context,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   if (feedback_info.system_information) {
-    for (const SystemInformation& info : *feedback_info.system_information)
+    for (const LogsMapEntry& info : *feedback_info.system_information) {
       feedback_data->AddLog(std::move(info.key), std::move(info.value));
+    }
   }
 
   auto landing_page_type = GetLandingPageType(*feedback_data);
@@ -246,7 +246,7 @@ std::unique_ptr<FeedbackInfo> FeedbackPrivateAPI::CreateFeedbackInfo(
 
   // Any extra diagnostics information should be added to the sys info.
   if (!extra_diagnostics.empty()) {
-    SystemInformation extra_info;
+    LogsMapEntry extra_info;
     extra_info.key = "EXTRA_DIAGNOSTICS";
     extra_info.value = extra_diagnostics;
     info->system_information->emplace_back(std::move(extra_info));
@@ -297,7 +297,7 @@ FeedbackPrivateGetSystemInformationFunction::Run() {
 
 void FeedbackPrivateGetSystemInformationFunction::OnCompleted(
     std::unique_ptr<system_logs::SystemLogsResponse> sys_info) {
-  SystemInformationList sys_info_list;
+  LogsMap sys_info_list;
   if (sys_info) {
     sys_info_list.reserve(sys_info->size());
     for (auto& itr : *sys_info) {
@@ -308,7 +308,7 @@ void FeedbackPrivateGetSystemInformationFunction::OnCompleted(
       // that don't go through this.
       if (FeedbackCommon::IncludeInSystemLogs(itr.first,
                                               send_all_crash_report_ids_)) {
-        SystemInformation sys_info_entry;
+        LogsMapEntry sys_info_entry;
         sys_info_entry.key = std::move(itr.first);
         sys_info_entry.value = std::move(itr.second);
         sys_info_list.emplace_back(std::move(sys_info_entry));

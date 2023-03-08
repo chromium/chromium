@@ -37,7 +37,7 @@ let feedbackInfo: chrome.feedbackPrivate.FeedbackInfo = {
 
 
 class FeedbackHelper {
-  getSystemInformation(): Promise<chrome.feedbackPrivate.SystemInformation[]> {
+  getSystemInformation(): Promise<chrome.feedbackPrivate.LogsMapEntry[]> {
     return new Promise(
         resolve => chrome.feedbackPrivate.getSystemInformation(resolve));
   }

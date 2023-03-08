@@ -61,7 +61,7 @@ function getButtonForValueDiv(valueDiv: HTMLElement) {
 }
 
 function getSystemInformation():
-    Promise<chrome.feedbackPrivate.SystemInformation[]> {
+    Promise<chrome.feedbackPrivate.LogsMapEntry[]> {
   return new Promise(
       resolve => chrome.feedbackPrivate.getSystemInformation(resolve));
 }
@@ -273,7 +273,7 @@ function createTableRowWrapper(key: string, value: string): () => void {
  * incrementally.
  * @param systemInfo The system information that will be used to fill the table.
  */
-function createTable(systemInfo: chrome.feedbackPrivate.SystemInformation[]) {
+function createTable(systemInfo: chrome.feedbackPrivate.LogsMapEntry[]) {
   for (const key in systemInfo) {
     const item = systemInfo[key]!;
     tableCreationClosuresQueue.push(
