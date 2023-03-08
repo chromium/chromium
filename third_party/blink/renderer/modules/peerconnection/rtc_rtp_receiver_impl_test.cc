@@ -154,7 +154,7 @@ TEST_F(RTCRtpReceiverImplTest, GetStats) {
   // not perform any stats filtering, we just set it to a dummy value.
   rtc::scoped_refptr<webrtc::RTCStatsReport> webrtc_report =
       webrtc::RTCStatsReport::Create(webrtc::Timestamp::Micros(0));
-  webrtc_report->AddStats(std::make_unique<webrtc::RTCInboundRTPStreamStats>(
+  webrtc_report->AddStats(std::make_unique<webrtc::RTCInboundRtpStreamStats>(
       "stats-id", webrtc::Timestamp::Micros(1234)));
   peer_connection_->SetGetStatsReport(webrtc_report.get());
 

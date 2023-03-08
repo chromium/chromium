@@ -184,7 +184,7 @@ RTCCodecStats* ToV8Stat(ScriptState* script_state,
 
 RTCInboundRtpStreamStats* ToV8Stat(
     ScriptState* script_state,
-    const webrtc::RTCInboundRTPStreamStats& webrtc_stat,
+    const webrtc::RTCInboundRtpStreamStats& webrtc_stat,
     bool expose_hardware_caps,
     bool unship_deprecated_stats) {
   RTCInboundRtpStreamStats* v8_stat =
@@ -443,7 +443,7 @@ RTCRemoteInboundRtpStreamStats* ToV8Stat(
 
 RTCOutboundRtpStreamStats* ToV8Stat(
     ScriptState* script_state,
-    const webrtc::RTCOutboundRTPStreamStats& webrtc_stat,
+    const webrtc::RTCOutboundRtpStreamStats& webrtc_stat,
     bool expose_hardware_caps,
     bool unship_deprecated_stats) {
   RTCOutboundRtpStreamStats* v8_stat =
@@ -1154,11 +1154,11 @@ RTCStats* RTCStatsToIDL(ScriptState* script_state,
     v8_stats = ToV8Stat(script_state, stat.cast_to<webrtc::RTCCodecStats>());
   } else if (strcmp(stat.type(), "inbound-rtp") == 0) {
     v8_stats =
-        ToV8Stat(script_state, stat.cast_to<webrtc::RTCInboundRTPStreamStats>(),
+        ToV8Stat(script_state, stat.cast_to<webrtc::RTCInboundRtpStreamStats>(),
                  expose_hardware_caps, unship_deprecated_stats);
   } else if (strcmp(stat.type(), "outbound-rtp") == 0) {
     v8_stats = ToV8Stat(script_state,
-                        stat.cast_to<webrtc::RTCOutboundRTPStreamStats>(),
+                        stat.cast_to<webrtc::RTCOutboundRtpStreamStats>(),
                         expose_hardware_caps, unship_deprecated_stats);
   } else if (strcmp(stat.type(), "remote-inbound-rtp") == 0) {
     v8_stats = ToV8Stat(script_state,
