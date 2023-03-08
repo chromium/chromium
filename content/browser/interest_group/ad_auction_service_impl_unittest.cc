@@ -6845,8 +6845,9 @@ function scoreAd(
 }
 
 // TODO(crbug.com/1356654): Update when use counter coverage is improved.
+// TODO(crbug.com/1408576): Flaky.
 TEST_F(AdAuctionServiceImplPrivateAggregationEnabledTest,
-       PrivateAggregationUseCountersNotLoggedOnFailedInvocation) {
+       DISABLED_PrivateAggregationUseCountersNotLoggedOnFailedInvocation) {
   constexpr char kBiddingScript[] = R"(
 function generateBid(
     interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
@@ -6982,8 +6983,9 @@ class AdAuctionServiceImplPrivateAggregationDisabledTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+// TODO(crbug.com/1408576): Flaky.
 TEST_F(AdAuctionServiceImplPrivateAggregationDisabledTest,
-       PrivateAggregationNotExposed) {
+       DISABLED_PrivateAggregationNotExposed) {
   constexpr char kBiddingScript[] = R"(
 function generateBid(
     interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
@@ -7024,8 +7026,9 @@ function scoreAd(
   EXPECT_EQ(auction_result, absl::nullopt);
 }
 
+// TODO(crbug.com/1408576): Flaky.
 TEST_F(AdAuctionServiceImplPrivateAggregationDisabledTest,
-       PrivateAggregationUseCounterNotLogged) {
+       DISABLED_PrivateAggregationUseCounterNotLogged) {
   constexpr char kBiddingScript[] = R"(
 function generateBid(
     interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
