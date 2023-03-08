@@ -11,6 +11,7 @@
 
 #include "ash/ambient/ambient_access_token_controller.h"
 #include "ash/ambient/ambient_constants.h"
+#include "ash/ambient/ambient_managed_photo_controller.h"
 #include "ash/ambient/ambient_photo_cache.h"
 #include "ash/ambient/ambient_photo_controller.h"
 #include "ash/ambient/test/ambient_ash_test_helper.h"
@@ -22,6 +23,7 @@
 #include "ash/ambient/ui/jitter_calculator.h"
 #include "ash/ambient/ui/media_string_view.h"
 #include "ash/ambient/ui/photo_view.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
@@ -206,6 +208,14 @@ void AmbientAshTestBase::TearDown() {
 void AmbientAshTestBase::SetAmbientModeEnabled(bool enabled) {
   Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
       ambient::prefs::kAmbientModeEnabled, enabled);
+
+  // TODO (b/269576509) : Integrate with managed screensaver policy
+  if (ash::features::IsAmbientModeManagedScreensaverEnabled()) {
+    // We early return in case the managed screensaver is enabled, as
+    // the photo controller will not exist when the managed screensaver
+    // code path is being used.
+    return;
+  }
 
   if (enabled) {
     photo_controller()->set_photo_cache_for_testing(
@@ -551,6 +561,10 @@ AmbientController* AmbientAshTestBase::ambient_controller() {
 
 AmbientPhotoController* AmbientAshTestBase::photo_controller() {
   return ambient_controller()->ambient_photo_controller();
+}
+
+AmbientManagedPhotoController* AmbientAshTestBase::managed_photo_controller() {
+  return ambient_controller()->ambient_managed_photo_controller();
 }
 
 AmbientPhotoCache* AmbientAshTestBase::photo_cache() {
