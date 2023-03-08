@@ -45,7 +45,7 @@ bool IsHoveredOrPressedState(views::Button::ButtonState button_state) {
 }
 
 // Gets the string for the direction (top/bottom/left/right) of the split
-// button. Used in various tooltips or a11y names.
+// button. Used in various for a11y names.
 std::u16string GetDirectionString(bool left_top, bool portrait_mode) {
   int message_id;
   if (left_top) {
@@ -57,25 +57,6 @@ std::u16string GetDirectionString(bool left_top, bool portrait_mode) {
         portrait_mode ? IDS_MULTITASK_MENU_BOTTOM : IDS_MULTITASK_MENU_RIGHT;
   }
   return l10n_util::GetStringUTF16(message_id);
-}
-
-std::u16string GetTooltipName(SplitButtonView::SplitButtonType type,
-                              bool left_top,
-                              bool portrait_mode) {
-  int template_id;
-  switch (type) {
-    case SplitButtonView::SplitButtonType::kHalfButtons:
-      template_id = IDS_MULTITASK_MENU_HALF_BUTTON_TOOLTIP_NAME;
-      break;
-    case SplitButtonView::SplitButtonType::kPartialButtons:
-      // Left/top button is always the larger one.
-      template_id = left_top
-                        ? IDS_MULTITASK_MENU_PARTIAL_BUTTON_LARGE_TOOLTIP_NAME
-                        : IDS_MULTITASK_MENU_PARTIAL_BUTTON_SMALL_TOOLTIP_NAME;
-      return l10n_util::GetStringUTF16(template_id);
-  }
-  return l10n_util::GetStringFUTF16(
-      template_id, GetDirectionString(left_top, portrait_mode));
 }
 
 std::u16string GetA11yName(SplitButtonView::SplitButtonType type,
@@ -106,7 +87,6 @@ class SplitButtonView::SplitButton : public views::Button {
  public:
   SplitButton(views::Button::PressedCallback pressed_callback,
               base::RepeatingClosure hovered_pressed_callback,
-              const std::u16string& tooltip_name,
               const std::u16string& a11y_name,
               const gfx::Insets& insets)
       : views::Button(std::move(pressed_callback)),
@@ -118,7 +98,6 @@ class SplitButtonView::SplitButton : public views::Button {
     // ring matches the parent border.
     views::InstallRoundRectHighlightPathGenerator(
         this, insets - kPreferredInsets, kMultitaskBaseButtonBorderRadius);
-    SetTooltipText(tooltip_name);
     SetAccessibleName(a11y_name);
   }
 
@@ -189,12 +168,10 @@ SplitButtonView::SplitButtonView(SplitButtonType type,
 
   left_top_button_ = AddChildView(std::make_unique<SplitButton>(
       on_left_top_press, on_hover_pressed,
-      GetTooltipName(type, /*left_top=*/true, is_portrait_mode),
       GetA11yName(type, /*left_top=*/true, is_portrait_mode),
       is_portrait_mode ? kTopButtonInsets : kLeftButtonInsets));
   right_bottom_button_ = AddChildView(std::make_unique<SplitButton>(
       on_right_bottom_press, on_hover_pressed,
-      GetTooltipName(type, /*left_top=*/false, is_portrait_mode),
       GetA11yName(type, /*left_top=*/false, is_portrait_mode),
       is_portrait_mode ? kBottomButtonInsets : kRightButtonInsets));
 

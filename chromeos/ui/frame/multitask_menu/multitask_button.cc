@@ -37,7 +37,7 @@ MultitaskButton::MultitaskButton(PressedCallback callback,
   views::InkDrop::Get(this)->SetBaseColor(kMultitaskButtonDefaultColor);
   views::InstallRoundRectHighlightPathGenerator(
       this, gfx::Insets(), kMultitaskBaseButtonBorderRadius);
-  SetTooltipText(name);
+  SetAccessibleName(name);
 }
 
 void MultitaskButton::PaintButtonContents(gfx::Canvas* canvas) {
@@ -92,7 +92,8 @@ void MultitaskButton::PaintButtonContents(gfx::Canvas* canvas) {
 }
 
 void MultitaskButton::OnThemeChanged() {
-  // TODO(shidi): Implement the theme change after dark/light mode integration.
+  // TODO(b/261642511): Implement the theme change after dark/light mode
+  // integration.
   views::Button::OnThemeChanged();
 }
 
