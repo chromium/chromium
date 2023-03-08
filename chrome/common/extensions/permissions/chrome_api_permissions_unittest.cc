@@ -27,7 +27,6 @@ TEST(ChromeAPIPermissionsUnitTest, AllApiPermissionsHaveACorrespondingFeature) {
 
   std::string kKnownBad[] = {
       "bookmarkManagerPrivate",
-      "downloadsInternal",
       "fileBrowserHandlerInternal",
       "homepage",
       "searchProvider",

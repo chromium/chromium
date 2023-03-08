@@ -36592,7 +36592,7 @@ Called by update_extension_permission.py.-->
   <int value="49" label="kDns"/>
   <int value="50" label="kDocumentScan"/>
   <int value="51" label="kDownloads"/>
-  <int value="52" label="kDownloadsInternal"/>
+  <int value="52" label="kDeleted_DownloadsInternal"/>
   <int value="53" label="kDownloadsOpen"/>
   <int value="54" label="kDownloadsShelf"/>
   <int value="55" label="kDeleted_EasyUnlockPrivate"/>

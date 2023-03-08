@@ -75,7 +75,7 @@ enum APIPermissionID {
   kDns = 49,
   kDocumentScan = 50,
   kDownloads = 51,
-  kDownloadsInternal = 52,
+  kDeleted_DownloadsInternal = 52,
   kDownloadsOpen = 53,
   kDownloadsShelf = 54,
   kDeleted_EasyUnlockPrivate = 55,

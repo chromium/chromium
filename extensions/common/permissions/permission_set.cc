@@ -280,10 +280,6 @@ void PermissionSet::CleanExplicitHostPaths() {
 }
 
 void PermissionSet::InitImplicitPermissions() {
-  // The downloads permission implies the internal version as well.
-  if (apis_.find(APIPermissionID::kDownloads) != apis_.end())
-    apis_.insert(APIPermissionID::kDownloadsInternal);
-
   // The fileBrowserHandler permission implies the internal version as well.
   if (apis_.find(APIPermissionID::kFileBrowserHandler) != apis_.end())
     apis_.insert(APIPermissionID::kFileBrowserHandlerInternal);
