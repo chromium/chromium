@@ -13,7 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
 #include "base/task/current_thread.h"
-#include "base/threading/thread_local_storage.h"
+#include "base/threading/thread_local.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/scoped_variant.h"
 #include "ui/base/ime/ime_key_event_dispatcher.h"
@@ -643,29 +643,15 @@ TSFBridgeImpl::TSFDocument* TSFBridgeImpl::GetAssociatedDocument() {
   return &it->second;
 }
 
-void Finalize(void* data) {
-  TSFBridgeImpl* delegate = static_cast<TSFBridgeImpl*>(data);
-  delete delegate;
-}
-
-base::ThreadLocalStorage::Slot& TSFBridgeTLS() {
-  static base::NoDestructor<base::ThreadLocalStorage::Slot> tsf_bridge_tls(
-      &Finalize);
-  return *tsf_bridge_tls;
-}
-
-// Get the TSFBridge from the thread-local storage without its ownership.
-TSFBridgeImpl* GetThreadLocalTSFBridge() {
-  return static_cast<TSFBridgeImpl*>(TSFBridgeTLS().Get());
+base::ThreadLocalOwnedPointer<TSFBridge>& GetThreadLocalTSFBridge() {
+  static base::NoDestructor<base::ThreadLocalOwnedPointer<TSFBridge>>
+      tsf_bridge;
+  return *tsf_bridge;
 }
 
 }  // namespace
 
 // TsfBridge  -----------------------------------------------------------------
-
-TSFBridge::TSFBridge() {}
-
-TSFBridge::~TSFBridge() {}
 
 // static
 HRESULT TSFBridge::Initialize() {
@@ -674,19 +660,18 @@ HRESULT TSFBridge::Initialize() {
     return E_FAIL;
   }
 
-  TSFBridgeImpl* delegate = static_cast<TSFBridgeImpl*>(TSFBridgeTLS().Get());
-  if (delegate)
+  if (GetThreadLocalTSFBridge().Get()) {
     return S_OK;
+  }
+
   // If we aren't supporting TSF early out.
   if (!base::FeatureList::IsEnabled(features::kTSFImeSupport))
     return E_FAIL;
 
-  delegate = new TSFBridgeImpl();
-  ReplaceThreadLocalTSFBridge(delegate);
+  auto delegate = std::make_unique<TSFBridgeImpl>();
   HRESULT hr = delegate->Initialize();
-  if (FAILED(hr)) {
-    // reset the TSFBridge as the initialization has failed.
-    ReplaceThreadLocalTSFBridge(nullptr);
+  if (SUCCEEDED(hr)) {
+    ReplaceThreadLocalTSFBridge(std::move(delegate));
   }
   return hr;
 }
@@ -698,17 +683,16 @@ void TSFBridge::InitializeForTesting() {
   }
   if (!base::FeatureList::IsEnabled(features::kTSFImeSupport))
     return;
-  ReplaceThreadLocalTSFBridge(new MockTSFBridge());
+  ReplaceThreadLocalTSFBridge(std::make_unique<MockTSFBridge>());
 }
 
 // static
-void TSFBridge::ReplaceThreadLocalTSFBridge(TSFBridge* new_instance) {
+void TSFBridge::ReplaceThreadLocalTSFBridge(
+    std::unique_ptr<TSFBridge> new_instance) {
   if (!base::CurrentUIThread::IsSet()) {
     return;
   }
-  TSFBridge* old_instance = GetThreadLocalTSFBridge();
-  TSFBridgeTLS().Set(new_instance);
-  delete old_instance;
+  GetThreadLocalTSFBridge().Set(std::move(new_instance));
 }
 
 // static
@@ -719,12 +703,8 @@ void TSFBridge::Shutdown() {
 
 // static
 TSFBridge* TSFBridge::GetInstance() {
-  if (!base::CurrentUIThread::IsSet()) {
-    return nullptr;
-  }
-
-  TSFBridgeImpl* delegate = GetThreadLocalTSFBridge();
-  return delegate;
+  return base::CurrentUIThread::IsSet() ? GetThreadLocalTSFBridge().Get()
+                                        : nullptr;
 }
 
 }  // namespace ui
