@@ -11,6 +11,11 @@
 
   const result = await session.evaluateAsync("triggerDialog()");
   testRunner.log(result);
-  await dp.FedCm.onceDialogShown();
+  let msg = await dp.FedCm.onceDialogShown();
+  if (msg.error) {
+    testRunner.log(msg.error);
+  } else {
+    testRunner.log(msg.params.accounts, "accounts: ");
+  }
   testRunner.completeTest();
 })

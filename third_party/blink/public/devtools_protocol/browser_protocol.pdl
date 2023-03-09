@@ -10900,7 +10900,19 @@ experimental domain Preload
 
 # This domain allows interacting with the FedCM dialog.
 experimental domain FedCm
+  # Corresponds to IdentityRequestAccount
+  type Account extends object
+    properties
+      string accountId
+      string email
+      string name
+      string givenName
+      string pictureUrl
+      string idpConfigUrl
+
   event dialogShown
+    parameters
+      array of Account accounts
 
   command enable
   command disable

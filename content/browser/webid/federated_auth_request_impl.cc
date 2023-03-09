@@ -946,13 +946,14 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
     }
   }
 
+  DCHECK(idp_data_for_display_.empty());
+
   // TODO(crbug.com/1383384): Handle auto_reauthn for multi IDP.
   bool idp_enabled_auto_reauthn = true;
-  std::vector<IdentityProviderData> idp_data_for_display;
   for (const auto& idp : idp_order_) {
     auto idp_info_it = idp_infos_.find(idp);
     if (idp_info_it != idp_infos_.end() && idp_info_it->second->data) {
-      idp_data_for_display.push_back(*idp_info_it->second->data);
+      idp_data_for_display_.push_back(*idp_info_it->second->data);
       idp_enabled_auto_reauthn &= idp_info_it->second->auto_reauthn;
     }
   }
@@ -1004,7 +1005,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
     IdentityRequestAccount account{*auto_reauthn_account};
     IdentityProviderData idp{*auto_reauthn_idp};
     idp.accounts = {account};
-    idp_data_for_display = {idp};
+    idp_data_for_display_ = {idp};
   }
 
   // TODO(crbug.com/1408520): opt-out affordance is not included in the origin
@@ -1030,7 +1031,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   // IDPs are failing in the multi IDP case.
   request_dialog_controller_->ShowAccountsDialog(
       WebContents::FromRenderFrameHost(&render_frame_host()),
-      top_frame_url_for_display, iframe_url_for_display, idp_data_for_display,
+      top_frame_url_for_display, iframe_url_for_display, idp_data_for_display_,
       auto_reauthn ? SignInMode::kAuto : SignInMode::kExplicit,
       show_auto_reauthn_checkbox,
       base::BindOnce(&FederatedAuthRequestImpl::OnAccountSelected,
@@ -1580,6 +1581,7 @@ void FederatedAuthRequestImpl::CleanUp() {
   select_account_time_ = base::TimeTicks();
   token_response_time_ = base::TimeTicks();
   idp_infos_.clear();
+  idp_data_for_display_.clear();
   fetch_data_ = FetchData();
   idp_order_.clear();
   metrics_endpoints_.clear();

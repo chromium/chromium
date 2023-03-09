@@ -44,9 +44,32 @@ DispatchResponse FedCmHandler::Disable() {
 
 void FedCmHandler::OnDialogShown() {
   DCHECK(frontend_);
-  if (enabled_) {
-    frontend_->DialogShown();
+  if (!enabled_) {
+    return;
   }
+
+  auto* auth_request = GetFederatedAuthRequest();
+  const auto* idp_data =
+      auth_request ? &auth_request->GetSortedIdpData() : nullptr;
+  DCHECK(idp_data);
+  DCHECK(!idp_data->empty());
+
+  auto accounts = std::make_unique<Array<FedCm::Account>>();
+  for (const auto& data : *idp_data) {
+    for (const IdentityRequestAccount& account : data.accounts) {
+      std::unique_ptr<FedCm::Account> entry =
+          FedCm::Account::Create()
+              .SetAccountId(account.id)
+              .SetEmail(account.email)
+              .SetName(account.name)
+              .SetGivenName(account.given_name)
+              .SetPictureUrl(account.picture.spec())
+              .SetIdpConfigUrl(data.idp_metadata.config_url.spec())
+              .Build();
+      accounts->push_back(std::move(entry));
+    }
+  }
+  frontend_->DialogShown(std::move(accounts));
 }
 
 FederatedAuthRequestPageData* FedCmHandler::GetPageData() {
@@ -55,6 +78,14 @@ FederatedAuthRequestPageData* FedCmHandler::GetPageData() {
   }
   Page& page = frame_host_->GetPage();
   return PageUserData<FederatedAuthRequestPageData>::GetOrCreateForPage(page);
+}
+
+FederatedAuthRequestImpl* FedCmHandler::GetFederatedAuthRequest() {
+  FederatedAuthRequestPageData* page_data = GetPageData();
+  if (!page_data) {
+    return nullptr;
+  }
+  return page_data->PendingWebIdentityRequest();
 }
 
 }  // namespace content::protocol

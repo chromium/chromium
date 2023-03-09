@@ -87,11 +87,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // Rejects the pending request if it has not been resolved naturally yet.
   void OnRejectRequest();
 
-  // For use by the devtools protocol for browser automation.
-  IdentityRequestDialogController* GetDialogController() {
-    return request_dialog_controller_.get();
-  }
-
   struct IdentityProviderGetInfo {
     IdentityProviderGetInfo(blink::mojom::IdentityProviderConfigPtr,
                             bool auto_reauthn,
@@ -122,6 +117,15 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
     blink::mojom::RpContext rp_context{blink::mojom::RpContext::kSignIn};
     absl::optional<IdentityProviderData> data;
   };
+
+  // For use by the devtools protocol for browser automation.
+  IdentityRequestDialogController* GetDialogController() {
+    return request_dialog_controller_.get();
+  }
+
+  const std::vector<IdentityProviderData>& GetSortedIdpData() const {
+    return idp_data_for_display_;
+  }
 
  private:
   friend class FederatedAuthRequestImplTest;
@@ -293,6 +297,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   // Populated by MaybeShowAccountsDialog().
   base::flat_map<GURL, std::unique_ptr<IdentityProviderInfo>> idp_infos_;
+  std::vector<IdentityProviderData> idp_data_for_display_;
 
   raw_ptr<FederatedIdentityApiPermissionContextDelegate>
       api_permission_delegate_ = nullptr;

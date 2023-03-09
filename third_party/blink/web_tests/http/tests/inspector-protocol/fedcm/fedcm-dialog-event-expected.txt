@@ -1,3 +1,13 @@
 Check that the dialogShown event works after enabling the FedCm domain
 OK
+accounts: [
+    [0] : {
+        accountId : 1234
+        email : john_doe@idp.example
+        givenName : John
+        idpConfigUrl : https://devtools.test:8443/resources/fedcm/fedcm.json
+        name : John Doe
+        pictureUrl : https://idp.example/profile/123
+    }
+]
 

@@ -13,6 +13,7 @@
 #include "content/common/content_export.h"
 
 namespace content {
+class FederatedAuthRequestImpl;
 class FederatedAuthRequestPageData;
 }  // namespace content
 
@@ -45,6 +46,7 @@ class FedCmHandler : public DevToolsDomainHandler, public FedCm::Backend {
   DispatchResponse Disable() override;
 
   FederatedAuthRequestPageData* GetPageData();
+  FederatedAuthRequestImpl* GetFederatedAuthRequest();
 
   RenderFrameHostImpl* frame_host_ = nullptr;
   std::unique_ptr<FedCm::Frontend> frontend_;
