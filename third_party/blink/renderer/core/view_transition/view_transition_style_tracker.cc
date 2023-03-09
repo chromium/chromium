@@ -378,9 +378,16 @@ bool ViewTransitionStyleTracker::FlattenAndVerifyElements(
     VectorOf<Element>& elements,
     VectorOf<AtomicString>& transition_names,
     absl::optional<RootData>& root_data) {
-  // If the root element doesn't generate a layout object then there can't be
-  // any elements participating in the transition since no element can generate
-  // a box. This is a valid state for things like entry or exit animations.
+  // Fail if the document element does not exist, since that's the place where
+  // we attach pseudo elements, and if it's not there, we can't do a transition.
+  if (!document_->documentElement()) {
+    return false;
+  }
+
+  // If the root element exists but doesn't generate a layout object then there
+  // can't be any elements participating in the transition since no element can
+  // generate a box. This is a valid state for things like entry or exit
+  // animations.
   if (!document_->documentElement()->GetLayoutObject()) {
     return true;
   }
@@ -809,6 +816,10 @@ PseudoElement* ViewTransitionStyleTracker::CreatePseudoElement(
 bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
   DCHECK_GE(document_->Lifecycle().GetState(),
             DocumentLifecycle::kPrePaintClean);
+  // Abort if the document element is not there.
+  if (!document_->documentElement()) {
+    return false;
+  }
 
   if (!document_->documentElement()->GetLayoutObject()) {
     // If we have any view transition elements, while having no
@@ -832,6 +843,7 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
 
   // Use the document element's effective zoom, since that's what the parent
   // effective zoom would be.
+  DCHECK(document_->documentElement());
   float device_pixel_ratio = document_->documentElement()
                                  ->GetLayoutObject()
                                  ->StyleRef()
@@ -850,6 +862,7 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
     if (!element_data->target_element)
       continue;
 
+    DCHECK(document_->documentElement());
     DCHECK_NE(element_data->target_element, document_->documentElement());
     auto* layout_object = element_data->target_element->GetLayoutObject();
     // TODO(khushalsagar): Verify that skipping a transition when things become
@@ -951,6 +964,7 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
     PseudoId live_content_element = HasLiveNewContent()
                                         ? kPseudoIdViewTransitionNew
                                         : kPseudoIdViewTransitionOld;
+    DCHECK(document_->documentElement());
     if (auto* pseudo_element =
             document_->documentElement()->GetNestedPseudoElement(
                 live_content_element, entry.key)) {
@@ -1242,10 +1256,11 @@ void ViewTransitionStyleTracker::InvalidateStyle() {
   ua_style_sheet_.reset();
   document_->GetStyleEngine().InvalidateUAViewTransitionStyle();
 
-  auto* originating_element = document_->documentElement();
-  originating_element->SetNeedsStyleRecalc(
-      kLocalStyleChange, StyleChangeReasonForTracing::Create(
-                             style_change_reason::kViewTransition));
+  if (auto* originating_element = document_->documentElement()) {
+    originating_element->SetNeedsStyleRecalc(
+        kLocalStyleChange, StyleChangeReasonForTracing::Create(
+                               style_change_reason::kViewTransition));
+  }
 
   auto invalidate_style = [](PseudoElement* pseudo_element) {
     pseudo_element->SetNeedsStyleRecalc(
