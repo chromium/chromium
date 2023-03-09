@@ -113,7 +113,7 @@ TEST_F(UrlIdentityTest, AllowlistedTypesAreAllowed) {
      {},
      {
          .type = Type::kFile,
-         .name = u"This file",
+         .name = u"file:///tmp/index.html",
      }},
   };
 
@@ -198,7 +198,7 @@ TEST_F(UrlIdentityTest, FileOptionsTest) {
        {},
        {
            .type = Type::kFile,
-           .name = u"This file",
+           .name = u"file:///tmp/index.html",
        }},
   };
 

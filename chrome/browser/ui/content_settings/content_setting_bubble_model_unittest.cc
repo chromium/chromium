@@ -59,6 +59,12 @@
 #include "services/device/public/cpp/test/fake_geolocation_manager.h"
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 using content::WebContentsTester;
 using content_settings::PageSpecificContentSettings;
 using custom_handlers::ProtocolHandler;
@@ -1019,6 +1025,37 @@ TEST_F(ContentSettingBubbleModelTest, FileURL) {
       content_setting_bubble_model->bubble_content().radio_group.radio_items[0];
   ASSERT_NE(std::u16string::npos, title.find(base::UTF8ToUTF16(file_url)));
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+class ContentSettingBubbleModelIsolatedWebAppTest
+    : public ContentSettingBubbleModelTest {
+ protected:
+  void InstallIsolatedWebApp(const std::string& app_name, const GURL& url) {
+    web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
+    web_app::AddDummyIsolatedAppToRegistry(profile(), url, app_name);
+  }
+};
+
+#include "chrome/browser/web_applications/web_app_provider.h"
+TEST_F(ContentSettingBubbleModelIsolatedWebAppTest, IsolatedWebAppUrl) {
+  const GURL app_url(
+      "isolated-app://"
+      "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
+  const std::string app_name("Test IWA Name");
+
+  InstallIsolatedWebApp(app_name, app_url);
+  NavigateAndCommit(app_url);
+  PageSpecificContentSettings::GetForFrame(
+      web_contents()->GetPrimaryMainFrame())
+      ->OnContentBlocked(ContentSettingsType::IMAGES);
+  std::unique_ptr<ContentSettingBubbleModel> content_setting_bubble_model(
+      ContentSettingBubbleModel::CreateContentSettingBubbleModel(
+          nullptr, web_contents(), ContentSettingsType::IMAGES));
+  std::u16string title =
+      content_setting_bubble_model->bubble_content().radio_group.radio_items[0];
+  ASSERT_NE(std::u16string::npos, title.find(base::UTF8ToUTF16(app_name)));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(ContentSettingBubbleModelTest, RegisterProtocolHandler) {
   const GURL page_url("https://toplevel.example/");

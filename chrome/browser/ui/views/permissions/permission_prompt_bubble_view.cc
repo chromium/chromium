@@ -68,8 +68,17 @@ UrlIdentity GetUrlIdentity(Browser* browser,
   DCHECK(!delegate.Requests().empty());
   GURL origin_url = delegate.GetRequestingOrigin();
 
-  return UrlIdentity::CreateFromUrl(browser ? browser->profile() : nullptr,
-                                    origin_url, allowed_types, options);
+  UrlIdentity url_identity =
+      UrlIdentity::CreateFromUrl(browser ? browser->profile() : nullptr,
+                                 origin_url, allowed_types, options);
+
+  if (url_identity.type == UrlIdentity::Type::kFile) {
+    // File URLs will show the same constant.
+    url_identity.name =
+        l10n_util::GetStringUTF16(IDS_PERMISSIONS_BUBBLE_PROMPT_THIS_FILE);
+  }
+
+  return url_identity;
 }
 
 // Determines whether the current request should also display an
