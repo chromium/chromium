@@ -301,6 +301,12 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
     return;
   }
 
+  NewTabPageTabHelper* NTPHelper =
+      NewTabPageTabHelper::FromWebState(self.webState);
+  if (NTPHelper) {
+    self.selectedFeed = NTPHelper->GetNextNTPFeedType();
+  }
+
   // NOTE: anything that executes below WILL NOT execute for OffTheRecord
   // browsers!
 
@@ -1608,6 +1614,12 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
 
     if (visible) {
       if ([self isFollowingFeedAvailable]) {
+        NewTabPageTabHelper* helper =
+            NewTabPageTabHelper::FromWebState(self.webState);
+        self.shouldScrollIntoFeed = helper->GetNextNTPScrolledToFeed();
+        [self selectFeedType:helper->GetNextNTPFeedType()];
+        helper->SetNextNTPFeedType(NewTabPageTabHelper::DefaultFeedType());
+
         self.NTPViewController.shouldScrollIntoFeed = self.shouldScrollIntoFeed;
         // Reassign the sort type in case it changed in another tab.
         self.feedHeaderViewController.followingFeedSortType =
@@ -1619,10 +1631,6 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
         self.feedMetricsRecorder.feedControlDelegate = self;
         self.feedMetricsRecorder.followDelegate = self;
       }
-      NewTabPageTabHelper* helper =
-          NewTabPageTabHelper::FromWebState(self.webState);
-      self.shouldScrollIntoFeed = helper->GetNextNTPScrolledToFeed();
-      [self selectFeedType:helper->GetNextNTPFeedType()];
     } else {
       // Unfocus omnibox, to prevent it from lingering when it should be
       // dismissed (for example, when navigating away or when changing feed

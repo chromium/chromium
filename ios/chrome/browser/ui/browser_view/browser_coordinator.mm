@@ -2553,8 +2553,13 @@ enum class ToolbarKind {
   NewTabPageCoordinator* NTPCoordinator = self.NTPCoordinator;
   DCHECK(NTPCoordinator);
   if (NTPHelper->IsActive()) {
-    [NTPCoordinator start];
-    [NTPCoordinator didNavigateToNTP];
+    // Starting the NTPCoordinator triggers its visibility, so we only
+    // explicitly call `didNavigateToNTP` if the NTP was already started.
+    if (NTPCoordinator.started) {
+      [NTPCoordinator didNavigateToNTP];
+    } else {
+      [NTPCoordinator start];
+    }
   } else {
     [NTPCoordinator didNavigateAwayFromNTP];
   }

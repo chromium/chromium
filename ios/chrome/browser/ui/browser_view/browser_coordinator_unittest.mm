@@ -315,14 +315,18 @@ TEST_F(BrowserCoordinatorTest, NewTabPageTabHelperDelegate) {
   // Insert the web_state into the Browser.
   InsertWebState();
 
-  // Open a NTP and expect a call to the NTP coordinator.
-  [[mockNTPCoordinator expect] didNavigateToNTP];
+  // Open an NTP to start the coordinator.
   OpenURL(GURL("chrome://newtab/"));
   EXPECT_OCMOCK_VERIFY(mockNTPCoordinator);
 
   // Open a non-NTP page and expect a call to the NTP coordinator.
   [[mockNTPCoordinator expect] didNavigateAwayFromNTP];
   OpenURL(GURL("chrome://version/"));
+  EXPECT_OCMOCK_VERIFY(mockNTPCoordinator);
+
+  // Open another NTP and expect a navigation call.
+  [[mockNTPCoordinator expect] didNavigateToNTP];
+  OpenURL(GURL("chrome://newtab/"));
   EXPECT_OCMOCK_VERIFY(mockNTPCoordinator);
 
   [browser_coordinator stop];
