@@ -30,7 +30,7 @@ namespace crashpad {
 //! loop required to monitor for this message.
 //!
 //! Users should subclass this class and receive notifications by implementing
-//! the SessionEndWatcherEvent() method.
+//! the SessionEnding() method.
 class SessionEndWatcher : public Thread {
  public:
   SessionEndWatcher();
