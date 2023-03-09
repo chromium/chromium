@@ -374,10 +374,6 @@ The client records the `cohort`, `cohortname`, and `cohorthint` values from the
 server in each update response (even if there is no-update) and reports them on
 subsequent update checks.
 
-#### Install Source and update disposition.
-All application installs and user-initiated application updates are processed
-as foreground operations and with an `installsource` set to "ondemand".
-
 ### Installer APIs
 As part of installing or updating an application, the updater executes the
 application's installer. The API for the application installer is platform-
