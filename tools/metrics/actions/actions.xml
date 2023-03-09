@@ -19623,6 +19623,14 @@ should be able to be added at any place in this file.
   <description>User pressed 'Paste and Go' in the app menu.</description>
 </action>
 
+<action name="MobileMenuPinTab">
+  <owner>ewannpv@chromium.org</owner>
+  <owner>pakzhygitov@google.com</owner>
+  <description>
+    User tapped on the 'Pin Tab' action in the iOS overflow menu.
+  </description>
+</action>
+
 <action name="MobileMenuPriceNotifications">
   <owner>danieltwhite@google.com</owner>
   <owner>ajuma@chromium.org</owner>
@@ -19761,6 +19769,14 @@ should be able to be added at any place in this file.
   <owner>sczs@chromium.org</owner>
   <owner>tinazwang@chromium.org</owner>
   <description>User pressed the unfollow option in the app menu.</description>
+</action>
+
+<action name="MobileMenuUnpinTab">
+  <owner>ewannpv@chromium.org</owner>
+  <owner>pakzhygitov@google.com</owner>
+  <description>
+    User tapped on the 'Unpin Tab' action in the iOS overflow menu.
+  </description>
 </action>
 
 <action name="MobileMenuVoiceSearch">
@@ -20942,6 +20958,24 @@ should be able to be added at any place in this file.
   <owner>seblalancette@chromium.org</owner>
   <description>
     The user took a screenshot of a single chrome window. iOS only.
+  </description>
+</action>
+
+<action name="MobileSnackbarUndoPinAction">
+  <owner>ewannpv@chromium.org</owner>
+  <owner>pakzhygitov@google.com</owner>
+  <description>
+    User tapped on the UNDO button of the snackbar displayed after pinning a tab
+    from the iOS overflow menu.
+  </description>
+</action>
+
+<action name="MobileSnackbarUndoUnpinAction">
+  <owner>ewannpv@chromium.org</owner>
+  <owner>pakzhygitov@google.com</owner>
+  <description>
+    User tapped on the UNDO button of the snackbar displayed after unpinning a
+    tab from the iOS overflow menu.
   </description>
 </action>
 

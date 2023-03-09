@@ -67,6 +67,9 @@
 #error "This file requires ARC support."
 #endif
 
+using base::RecordAction;
+using base::UserMetricsAction;
+
 namespace {
 // Returns the corresponding command type for a Popup menu `type`.
 PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
@@ -180,15 +183,13 @@ enum class IOSOverflowMenuActionType {
 #pragma mark - PopupMenuCommands
 
 - (void)showNavigationHistoryBackPopupMenu {
-  base::RecordAction(
-      base::UserMetricsAction("MobileToolbarShowTabHistoryMenu"));
+  RecordAction(UserMetricsAction("MobileToolbarShowTabHistoryMenu"));
   [self presentPopupOfType:PopupMenuTypeNavigationBackward
       fromLayoutGuideNamed:kBackButtonGuide];
 }
 
 - (void)showNavigationHistoryForwardPopupMenu {
-  base::RecordAction(
-      base::UserMetricsAction("MobileToolbarShowTabHistoryMenu"));
+  RecordAction(UserMetricsAction("MobileToolbarShowTabHistoryMenu"));
   [self presentPopupOfType:PopupMenuTypeNavigationForward
       fromLayoutGuideNamed:kForwardButtonGuide];
 }
@@ -200,13 +201,13 @@ enum class IOSOverflowMenuActionType {
 }
 
 - (void)showTabGridButtonPopup {
-  base::RecordAction(base::UserMetricsAction("MobileToolbarShowTabGridMenu"));
+  RecordAction(UserMetricsAction("MobileToolbarShowTabGridMenu"));
   [self presentPopupOfType:PopupMenuTypeTabGrid
       fromLayoutGuideNamed:kTabSwitcherGuide];
 }
 
 - (void)showNewTabButtonPopup {
-  base::RecordAction(base::UserMetricsAction("MobileToolbarShowNewTabMenu"));
+  RecordAction(UserMetricsAction("MobileToolbarShowNewTabMenu"));
   [self presentPopupOfType:PopupMenuTypeNewTab
       fromLayoutGuideNamed:kNewTabButtonGuide];
 }
@@ -263,7 +264,6 @@ enum class IOSOverflowMenuActionType {
 - (void)showSnackbarForPinnedState:(BOOL)pinnedState
                           webState:(web::WebState*)webState {
   DCHECK(IsPinnedTabsOverflowEnabled());
-
   int messageId = pinnedState ? IDS_IOS_SNACKBAR_MESSAGE_PINNED_TAB
                               : IDS_IOS_SNACKBAR_MESSAGE_UNPINNED_TAB;
 
@@ -271,6 +271,12 @@ enum class IOSOverflowMenuActionType {
   base::WeakPtr<Browser> weakBrowser = self.browser->AsWeakPtr();
 
   void (^undoAction)() = ^{
+    if (pinnedState) {
+      RecordAction(UserMetricsAction("MobileSnackbarUndoPinAction"));
+    } else {
+      RecordAction(UserMetricsAction("MobileSnackbarUndoUnpinAction"));
+    }
+
     Browser* browser = weakBrowser.get();
     if (!browser) {
       return;
