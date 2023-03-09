@@ -909,6 +909,9 @@ void SearchBoxView::SetAutocompleteText(
   if (!ShouldProcessAutocomplete())
     return;
 
+  // Clear existing autocomplete text and reset the highlight range.
+  ClearAutocompleteText();
+
   const std::u16string& current_text = search_box()->GetText();
   // Currrent text is a prefix of autocomplete text.
   DCHECK(base::StartsWith(autocomplete_text, current_text,
@@ -916,6 +919,7 @@ void SearchBoxView::SetAutocompleteText(
   // Autocomplete text should not be the same as current search box text.
   DCHECK(autocomplete_text != current_text);
   // Autocomplete text should not be the same as highlighted text.
+
   const std::u16string& highlighted_text =
       autocomplete_text.substr(highlight_range_.start());
   DCHECK(highlighted_text != current_text);
