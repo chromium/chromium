@@ -284,4 +284,17 @@ TEST_F(PermissionsParserTest, ChromeFavicon) {
   }
 }
 
+TEST_F(PermissionsParserTest, InternalPermissionsAreNotAllowedInTheManifest) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "My Extension",
+           "manifest_version": 3,
+           "version": "0.1",
+           "permissions": ["searchProvider"]
+         })";
+  LoadAndExpectError(
+      ManifestData::FromJSON(kManifest),
+      "Permission 'searchProvider' cannot be specified in the manifest.");
+}
+
 }  // namespace extensions
