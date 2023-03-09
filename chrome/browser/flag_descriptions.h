@@ -333,6 +333,9 @@ extern const char kAutofillMoreProminentPopupDescription[];
 extern const char kAutofillUseImprovedLabelDisambiguationName[];
 extern const char kAutofillUseImprovedLabelDisambiguationDescription[];
 
+extern const char kAutofillVirtualCardsOnTouchToFillAndroidName[];
+extern const char kAutofillVirtualCardsOnTouchToFillAndroidDescription[];
+
 extern const char kBackForwardCacheName[];
 extern const char kBackForwardCacheDescription[];
 
