@@ -257,7 +257,7 @@ void MediaRecorder::start(int time_slice, ExceptionState& exception_state) {
   }
 
   if (stream_->getTracks().size() == 0) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kUnknownError,
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "The MediaRecorder cannot start because"
                                       "there are no audio or video tracks "
                                       "available.");
