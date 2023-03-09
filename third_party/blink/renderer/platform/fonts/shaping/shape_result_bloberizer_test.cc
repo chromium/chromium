@@ -565,7 +565,13 @@ TEST_F(ShapeResultBloberizerTest, LatinMultRunNG) {
       }});
 }
 
-TEST_F(ShapeResultBloberizerTest, SupplementaryMultiRunNG) {
+// TODO(crbug.com/1422946): not yet supported on iOS.
+#if BUILDFLAG(IS_IOS)
+#define MAYBE_SupplementaryMultiRunNG DISABLED_SupplementaryMultiRunNG
+#else
+#define MAYBE_SupplementaryMultiRunNG SupplementaryMultiRunNG
+#endif  // BUILDFLAG(IS_IOS)
+TEST_F(ShapeResultBloberizerTest, MAYBE_SupplementaryMultiRunNG) {
   TextDirection direction = TextDirection::kLtr;
   // 𠜎𠜱𠝹𠱓𠱸𠲖𠳏𠳕
   const UChar kStrSupp[] = {0xD841, 0xDF0E, 0xD841, 0xDF31, 0xD841, 0xDF79,
