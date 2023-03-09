@@ -17,4 +17,7 @@ interface PageHandler {
 
   // Open the URLs as a new tab group and clobber the existing NTP.
   OpenUrlsInTabGroup(array<url.mojom.Url> urls);
+
+  // Dismisses a cluster by marking its associated visits as not relevant.
+  DismissCluster(array<history_clusters.mojom.URLVisit> visits);
 };

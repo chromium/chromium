@@ -123,8 +123,8 @@ class HistoryService : public KeyedService {
 
   // Context ids are used to scope page IDs (see AddPage). These contexts
   // must tell us when they are being invalidated so that we can clear
-  // out any cached data associated with that context.
-  void ClearCachedDataForContextID(ContextID context_id);
+  // out any cached data associated with that context. Virtual for testing.
+  virtual void ClearCachedDataForContextID(ContextID context_id);
 
   // Clears all on-demand favicons from thumbnail database.
   void ClearAllOnDemandFavicons();
@@ -616,8 +616,9 @@ class HistoryService : public KeyedService {
       base::OnceClosure callback,
       base::CancelableTaskTracker* tracker);
 
-  // Sets scores of cluster visits to 0 to hide them from the webUI.
-  base::CancelableTaskTracker::TaskId HideVisits(
+  // Sets scores of cluster visits to 0 to hide them from the webUI. Virtual for
+  // testing.
+  virtual base::CancelableTaskTracker::TaskId HideVisits(
       const std::vector<VisitID>& visit_ids,
       base::OnceClosure callback,
       base::CancelableTaskTracker* tracker);

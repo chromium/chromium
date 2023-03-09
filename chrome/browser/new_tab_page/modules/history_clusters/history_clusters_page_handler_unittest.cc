@@ -9,9 +9,11 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/ui/side_panel/history_clusters/history_clusters_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -19,6 +21,7 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/history/core/browser/history_context.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/test/history_service_test_util.h"
 #include "components/history_clusters/core/history_clusters_types.h"
@@ -30,6 +33,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+#include <vector>
 
 namespace {
 
@@ -54,6 +59,19 @@ class MockHistoryClustersTabHelper
       : HistoryClustersTabHelper(web_contents) {}
 };
 
+class MockHistoryService : public history::HistoryService {
+ public:
+  MockHistoryService() : HistoryService() {}
+
+  MOCK_METHOD1(ClearCachedDataForContextID,
+               void(history::ContextID context_id));
+  MOCK_METHOD3(HideVisits,
+               base::CancelableTaskTracker::TaskId(
+                   const std::vector<history::VisitID>& visit_ids,
+                   base::OnceClosure callback,
+                   base::CancelableTaskTracker* tracker));
+};
+
 }  // namespace
 
 class HistoryClustersPageHandlerTest : public BrowserWithTestWindowTest {
@@ -70,6 +88,9 @@ class HistoryClustersPageHandlerTest : public BrowserWithTestWindowTest {
         content::WebContents::CreateParams(profile()));
     mock_history_clusters_tab_helper_ =
         MockHistoryClustersTabHelper::CreateForWebContents(web_contents_.get());
+    mock_history_service_ =
+        static_cast<MockHistoryService*>(HistoryServiceFactory::GetForProfile(
+            profile(), ServiceAccessType::EXPLICIT_ACCESS));
     handler_ = std::make_unique<HistoryClustersPageHandler>(
         mojo::PendingReceiver<ntp::history_clusters::mojom::PageHandler>(),
         web_contents_.get());
@@ -89,6 +110,8 @@ class HistoryClustersPageHandlerTest : public BrowserWithTestWindowTest {
     return *mock_history_clusters_tab_helper_;
   }
 
+  MockHistoryService& mock_history_service() { return *mock_history_service_; }
+
   HistoryClustersPageHandler& handler() { return *handler_; }
 
  private:
@@ -99,6 +122,11 @@ class HistoryClustersPageHandlerTest : public BrowserWithTestWindowTest {
                                      -> std::unique_ptr<KeyedService> {
                return std::make_unique<
                    history_clusters::TestHistoryClustersService>();
+             })},
+            {HistoryServiceFactory::GetInstance(),
+             base::BindRepeating([](content::BrowserContext* context)
+                                     -> std::unique_ptr<KeyedService> {
+               return std::make_unique<MockHistoryService>();
              })}};
   }
 
@@ -106,6 +134,7 @@ class HistoryClustersPageHandlerTest : public BrowserWithTestWindowTest {
       test_history_clusters_service_;
   std::unique_ptr<content::WebContents> web_contents_;
   raw_ptr<MockHistoryClustersTabHelper> mock_history_clusters_tab_helper_;
+  raw_ptr<MockHistoryService> mock_history_service_;
   std::unique_ptr<HistoryClustersPageHandler> handler_;
 };
 
@@ -301,4 +330,27 @@ TEST_F(HistoryClustersPageHandlerTest, OpenUrlsInTabGroup) {
 
   TabGroupModel* tab_group_model = tab_strip_model->group_model();
   ASSERT_EQ(1u, tab_group_model->ListTabGroups().size());
+}
+
+TEST_F(HistoryClustersPageHandlerTest, DismissCluster) {
+  std::vector<history::VisitID> visit_ids;
+  EXPECT_CALL(mock_history_service(), HideVisits)
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&visit_ids](const std::vector<history::VisitID>& visit_ids_arg,
+                       base::OnceClosure callback_arg,
+                       base::CancelableTaskTracker* tracker_arg)
+              -> base::CancelableTaskTracker::TaskId {
+            visit_ids = visit_ids_arg;
+            return 0;
+          }));
+
+  auto visit_mojom = history_clusters::mojom::URLVisit::New();
+  visit_mojom->visit_id = 1;
+  std::vector<history_clusters::mojom::URLVisitPtr> visits_mojom;
+  visits_mojom.push_back(std::move(visit_mojom));
+
+  handler().DismissCluster(std::move(visits_mojom));
+  ASSERT_EQ(1u, visit_ids.size());
+  ASSERT_EQ(1u, visit_ids.front());
 }

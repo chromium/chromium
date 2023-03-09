@@ -13,6 +13,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters.mojom.h"
 #include "chrome/browser/profiles/profile.h"
@@ -26,6 +27,7 @@
 #include "components/history_clusters/core/history_clusters_service_task.h"
 #include "components/history_clusters/core/history_clusters_util.h"
 #include "components/history_clusters/public/mojom/history_cluster_types.mojom.h"
+#include "components/keyed_service/core/service_access_type.h"
 #include "components/search/ntp_features.h"
 #include "url/url_util.h"
 
@@ -164,11 +166,18 @@ void HistoryClustersPageHandler::CallbackWithClusterData(
   std::set<GURL> seen_urls = {};
   history_clusters::CullNonProminentOrDuplicateClusters("", clusters,
                                                         &seen_urls);
+  // Cull clusters that do not have the minimum number of visits to be eligible
+  // for display.
+  base::EraseIf(clusters, [&](auto& cluster) {
+    // Cull visits that have a zero relevance score.
+    base::EraseIf(cluster.visits,
+                  [&](auto& visit) { return visit.score == 0.0; });
 
-  history_clusters::HideAndCullLowScoringVisits(clusters, kMinRequiredVisits);
+    return cluster.visits.size() < kMinRequiredVisits;
+  });
   history_clusters::CoalesceRelatedSearches(clusters);
-  // Cull clusters that do not have the minimum required of related searches to
-  // be eligible for display.
+  // Cull clusters that do not have the minimum required number of related
+  // searches to be eligible for display.
   base::EraseIf(clusters, [&](auto& cluster) {
     return cluster.related_searches.size() < kMinRequiredRelatedSearches;
   });
@@ -281,4 +290,21 @@ void HistoryClustersPageHandler::OpenUrlsInTabGroup(
   tab_indices.insert(tab_indices.begin(), model->GetIndexOfWebContents(
                                               model->GetActiveWebContents()));
   model->AddToNewGroup(tab_indices);
+}
+
+void HistoryClustersPageHandler::DismissCluster(
+    const std::vector<history_clusters::mojom::URLVisitPtr> visits) {
+  if (visits.empty()) {
+    return;
+  }
+
+  std::vector<history::VisitID> visit_ids;
+  base::ranges::transform(
+      visits, std::back_inserter(visit_ids),
+      [](const auto& url_visit_ptr) { return url_visit_ptr->visit_id; });
+
+  auto* history_service = HistoryServiceFactory::GetForProfile(
+      profile_, ServiceAccessType::EXPLICIT_ACCESS);
+  history_service->HideVisits(visit_ids, base::BindOnce([]() {}),
+                              &hide_visits_task_tracker_);
 }
