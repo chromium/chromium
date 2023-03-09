@@ -128,14 +128,6 @@ const CSSValue* CSSValueFromComputedAnimation(
           CSSTimingData::GetRepeated(animation_data->TimingFunctionList(), i)));
       list->Append(*ComputedStyleUtils::ValueForAnimationDelayStart(
           CSSTimingData::GetRepeated(animation_data->DelayStartList(), i)));
-      if (CSSAnimationData::InitialDelayEnd() !=
-          CSSTimingData::GetRepeated(animation_data->DelayEndList(), i)) {
-        DCHECK_EQ(shorthand.length(), 10u);
-        DCHECK_EQ(shorthand.properties()[3]->PropertyID(),
-                  CSSPropertyID::kAnimationDelayEnd);
-        list->Append(*ComputedStyleUtils::ValueForAnimationDelayEnd(
-            CSSTimingData::GetRepeated(animation_data->DelayEndList(), i)));
-      }
       list->Append(*ComputedStyleUtils::ValueForAnimationIterationCount(
           CSSTimingData::GetRepeated(animation_data->IterationCountList(), i)));
       list->Append(*ComputedStyleUtils::ValueForAnimationDirection(
@@ -146,16 +138,16 @@ const CSSValue* CSSValueFromComputedAnimation(
           CSSTimingData::GetRepeated(animation_data->PlayStateList(), i)));
       list->Append(*MakeGarbageCollected<CSSCustomIdentValue>(
           animation_data->NameList()[i]));
-      // When serializing shorthands, a component value must be omitted
-      // if doesn't change the meaning of the overall value.
-      // https://drafts.csswg.org/cssom/#serializing-css-values
+      // The shorthand can not represent the following properties if they have
+      // non-initial values. This is because they are always reset to their
+      // initial value by the shorthand.
       if (CSSAnimationData::InitialTimeline() !=
           animation_data->GetTimeline(i)) {
-        DCHECK_EQ(shorthand.length(), 10u);
-        DCHECK_EQ(shorthand.properties()[9]->PropertyID(),
-                  CSSPropertyID::kAnimationTimeline);
-        list->Append(*ComputedStyleUtils::ValueForAnimationTimeline(
-            animation_data->GetTimeline(i)));
+        return nullptr;
+      }
+      if (CSSAnimationData::InitialDelayEnd() !=
+          CSSTimingData::GetRepeated(animation_data->DelayEndList(), i)) {
+        return nullptr;
       }
       animations_list->Append(*list);
     }

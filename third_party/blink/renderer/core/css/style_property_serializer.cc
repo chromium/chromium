@@ -1536,22 +1536,24 @@ String StylePropertySerializer::GetLayeredShorthandValue(
 
       bool is_initial_value = value->IsInitialValue();
 
-      // When serializing shorthands, a component value must be omitted
-      // if doesn't change the meaning of the overall value.
-      // https://drafts.csswg.org/cssom/#serializing-css-values
+      // The shorthand can not represent the following properties if they have
+      // non-initial values. This is because they are always reset to their
+      // initial value by the shorthand.
       if (property->IDEquals(CSSPropertyID::kAnimationTimeline)) {
-        if (auto* ident = DynamicTo<CSSIdentifierValue>(value)) {
-          if (ident->GetValueID() ==
-              CSSAnimationData::InitialTimeline().GetKeyword()) {
-            DCHECK(RuntimeEnabledFeatures::CSSScrollTimelineEnabled());
-            is_initial_value = true;
-          }
+        auto* ident = DynamicTo<CSSIdentifierValue>(value);
+        if (!ident || (ident->GetValueID() !=
+                       CSSAnimationData::InitialTimeline().GetKeyword())) {
+          DCHECK(RuntimeEnabledFeatures::CSSScrollTimelineEnabled());
+          return g_empty_string;
         }
+        is_initial_value = true;
       }
-
       if (property->IDEquals(CSSPropertyID::kAnimationDelayEnd)) {
-        is_initial_value = CSSToStyleMap::MapAnimationDelayEnd(*value) ==
-                           CSSTimingData::InitialDelayEnd();
+        if (CSSToStyleMap::MapAnimationDelayEnd(*value) !=
+            CSSTimingData::InitialDelayEnd()) {
+          return g_empty_string;
+        }
+        is_initial_value = true;
       }
 
       if (!is_initial_value) {
