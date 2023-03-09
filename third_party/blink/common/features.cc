@@ -463,9 +463,12 @@ BASE_FEATURE(kDropInputEventsBeforeFirstPaint,
 
 // Drop touch-end dispatch from `InputHandlerProxy` when all other touch-events
 // in current interaction sequence are dropeed.
+//
+// TODO(https://crbug.com/1417126): This is disabled because of a suspicious
+// flake in AR/XR tests.
 BASE_FEATURE(kDroppedTouchSequenceIncludesTouchEnd,
              "DroppedTouchSequenceIncludesTouchEnd",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // File handling icons. https://crbug.com/1218213
 BASE_FEATURE(kFileHandlingIcons,
