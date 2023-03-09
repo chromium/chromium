@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
@@ -28,10 +27,9 @@ import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 
-import org.chromium.base.metrics.UmaRecorder;
-import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.test.util.browser.Features;
@@ -106,9 +104,6 @@ public class FirstRunFlowSequencerTest {
     }
 
     @Mock
-    private UmaRecorder mUmaRecorderMock;
-
-    @Mock
     private IdentityManager mIdentityManagerMock;
 
     private ActivityController<Activity> mActivityController;
@@ -117,7 +112,6 @@ public class FirstRunFlowSequencerTest {
 
     @Before
     public void setUp() {
-        UmaRecorderHolder.setNonNativeDelegate(mUmaRecorderMock);
         Profile.setLastUsedProfileForTesting(mock(Profile.class));
         IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
         when(IdentityServicesProvider.get().getIdentityManager(Profile.getLastUsedRegularProfile()))
@@ -135,7 +129,6 @@ public class FirstRunFlowSequencerTest {
     public void tearDown() {
         mActivityController.pause().stop().destroy();
         FirstRunFlowSequencer.setDelegateForTesting(null);
-        UmaRecorderHolder.resetForTesting();
     }
 
     @Test
@@ -143,11 +136,13 @@ public class FirstRunFlowSequencerTest {
     public void testFlowOneChildAccount() {
         mAccountManagerTestRule.addAccount(CHILD_ACCOUNT_NAME);
         mDelegate.isSyncAllowed = true;
+        HistogramWatcher numberOfAccountsHistogram = HistogramWatcher.newSingleRecordWatcher(
+                "Signin.AndroidDeviceAccountsNumberWhenEnteringFRE", 1);
 
         TestFirstRunFlowSequencer sequencer = new TestFirstRunFlowSequencer(mActivity);
         sequencer.start();
 
-        verifyNumberOfAccountsRecorded(1);
+        numberOfAccountsHistogram.assertExpected();
         assertTrue(sequencer.calledOnFlowIsKnown);
 
         Bundle bundle = sequencer.returnedBundle;
@@ -162,11 +157,13 @@ public class FirstRunFlowSequencerTest {
     public void testFlowShowSearchEnginePage() {
         mDelegate.isSyncAllowed = true;
         mDelegate.shouldShowSearchEnginePage = true;
+        HistogramWatcher numberOfAccountsHistogram = HistogramWatcher.newSingleRecordWatcher(
+                "Signin.AndroidDeviceAccountsNumberWhenEnteringFRE", 0);
 
         TestFirstRunFlowSequencer sequencer = new TestFirstRunFlowSequencer(mActivity);
         sequencer.start();
 
-        verifyNumberOfAccountsRecorded(0);
+        numberOfAccountsHistogram.assertExpected();
         assertTrue(sequencer.calledOnFlowIsKnown);
 
         Bundle bundle = sequencer.returnedBundle;
@@ -181,11 +178,13 @@ public class FirstRunFlowSequencerTest {
     public void testFlowHideSyncConsentPageWhenUserIsNotSignedIn() {
         mDelegate.isSyncAllowed = true;
         mDelegate.shouldShowSearchEnginePage = false;
+        HistogramWatcher numberOfAccountsHistogram = HistogramWatcher.newSingleRecordWatcher(
+                "Signin.AndroidDeviceAccountsNumberWhenEnteringFRE", 0);
 
         TestFirstRunFlowSequencer sequencer = new TestFirstRunFlowSequencer(mActivity);
         sequencer.start();
 
-        verifyNumberOfAccountsRecorded(0);
+        numberOfAccountsHistogram.assertExpected();
         assertTrue(sequencer.calledOnFlowIsKnown);
         final Bundle bundle = sequencer.returnedBundle;
         assertFalse(bundle.getBoolean(FirstRunActivityBase.SHOW_SYNC_CONSENT_PAGE));
@@ -201,22 +200,18 @@ public class FirstRunFlowSequencerTest {
         when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(true);
         mDelegate.isSyncAllowed = true;
         mDelegate.shouldShowSearchEnginePage = false;
+        HistogramWatcher numberOfAccountsHistogram = HistogramWatcher.newSingleRecordWatcher(
+                "Signin.AndroidDeviceAccountsNumberWhenEnteringFRE", 1);
 
         TestFirstRunFlowSequencer sequencer = new TestFirstRunFlowSequencer(mActivity);
         sequencer.start();
 
-        verifyNumberOfAccountsRecorded(1);
+        numberOfAccountsHistogram.assertExpected();
         assertTrue(sequencer.calledOnFlowIsKnown);
         final Bundle bundle = sequencer.returnedBundle;
         assertTrue(bundle.getBoolean(FirstRunActivityBase.SHOW_SYNC_CONSENT_PAGE));
         assertFalse(bundle.getBoolean(FirstRunActivityBase.SHOW_SEARCH_ENGINE_PAGE));
         assertFalse(bundle.getBoolean(SyncConsentFirstRunFragment.IS_CHILD_ACCOUNT));
         assertEquals(3, bundle.size());
-    }
-
-    private void verifyNumberOfAccountsRecorded(int numberOfAccounts) {
-        verify(mUmaRecorderMock)
-                .recordExponentialHistogram("Signin.AndroidDeviceAccountsNumberWhenEnteringFRE",
-                        numberOfAccounts, 1, 1_000_000, 50);
     }
 }
