@@ -673,25 +673,25 @@ TEST_F(PublisherTest, BuiltinAppsOnApps) {
   VerifyAppTypeIsInitialized(AppType::kBuiltIn);
 }
 
-class LegacyPackagedAppLacorsNotPrimaryPublisherTest : public PublisherTest {
+class LegacyPackagedAppLacrosNotPrimaryPublisherTest : public PublisherTest {
  public:
-  LegacyPackagedAppLacorsNotPrimaryPublisherTest() {
+  LegacyPackagedAppLacrosNotPrimaryPublisherTest() {
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitAndDisableFeature(ash::features::kLacrosPrimary);
   }
 
-  LegacyPackagedAppLacorsNotPrimaryPublisherTest(
-      const LegacyPackagedAppLacorsNotPrimaryPublisherTest&) = delete;
-  LegacyPackagedAppLacorsNotPrimaryPublisherTest& operator=(
-      const LegacyPackagedAppLacorsNotPrimaryPublisherTest&) = delete;
-  ~LegacyPackagedAppLacorsNotPrimaryPublisherTest() override = default;
+  LegacyPackagedAppLacrosNotPrimaryPublisherTest(
+      const LegacyPackagedAppLacrosNotPrimaryPublisherTest&) = delete;
+  LegacyPackagedAppLacrosNotPrimaryPublisherTest& operator=(
+      const LegacyPackagedAppLacrosNotPrimaryPublisherTest&) = delete;
+  ~LegacyPackagedAppLacrosNotPrimaryPublisherTest() override = default;
 
  private:
-  const base::AutoReset<bool> resettter_ =
+  const base::AutoReset<bool> resetter_ =
       BrowserSupport::SetLacrosEnabledForTest(true);
 };
 
-TEST_F(LegacyPackagedAppLacorsNotPrimaryPublisherTest,
+TEST_F(LegacyPackagedAppLacrosNotPrimaryPublisherTest,
        LegacyPackagedAppsOnApps) {
   ASSERT_FALSE(crosapi::browser_util::IsLacrosPrimaryBrowser());
 
@@ -721,25 +721,25 @@ TEST_F(LegacyPackagedAppLacorsNotPrimaryPublisherTest,
   VerifyAppTypeIsInitialized(AppType::kChromeApp);
 }
 
-class LegacyPackagedAppLacorsPrimaryPublisherTest : public PublisherTest {
+class LegacyPackagedAppLacrosPrimaryPublisherTest : public PublisherTest {
  public:
-  LegacyPackagedAppLacorsPrimaryPublisherTest() {
+  LegacyPackagedAppLacrosPrimaryPublisherTest() {
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitAndEnableFeature(ash::features::kLacrosPrimary);
   }
 
-  LegacyPackagedAppLacorsPrimaryPublisherTest(
-      const LegacyPackagedAppLacorsNotPrimaryPublisherTest&) = delete;
-  LegacyPackagedAppLacorsPrimaryPublisherTest& operator=(
-      const LegacyPackagedAppLacorsNotPrimaryPublisherTest&) = delete;
-  ~LegacyPackagedAppLacorsPrimaryPublisherTest() override = default;
+  LegacyPackagedAppLacrosPrimaryPublisherTest(
+      const LegacyPackagedAppLacrosNotPrimaryPublisherTest&) = delete;
+  LegacyPackagedAppLacrosPrimaryPublisherTest& operator=(
+      const LegacyPackagedAppLacrosNotPrimaryPublisherTest&) = delete;
+  ~LegacyPackagedAppLacrosPrimaryPublisherTest() override = default;
 
  private:
   base::AutoReset<bool> set_lacros_enabled_ =
       BrowserSupport::SetLacrosEnabledForTest(true);
 };
 
-TEST_F(LegacyPackagedAppLacorsPrimaryPublisherTest, LegacyPackagedAppsOnApps) {
+TEST_F(LegacyPackagedAppLacrosPrimaryPublisherTest, LegacyPackagedAppsOnApps) {
   ASSERT_TRUE(crosapi::browser_util::IsLacrosPrimaryBrowser());
 
   // Re-init AppService to verify the init process.
