@@ -505,10 +505,7 @@ void WindowEventDispatcher::OnEventProcessingStarted(ui::Event* event) {
   observer_notifiers_.push(std::make_unique<ObserverNotifier>(this, *event));
 }
 
-void WindowEventDispatcher::OnEventProcessingFinished(
-    ui::Event* event,
-    ui::EventTarget* target,
-    const ui::EventDispatchDetails& details) {
+void WindowEventDispatcher::OnEventProcessingFinished(ui::Event* event) {
   if (in_shutdown_)
     return;
 

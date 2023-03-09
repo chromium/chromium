@@ -222,10 +222,7 @@ class AURA_EXPORT WindowEventDispatcher : public ui::EventProcessor,
   // Overridden from ui::EventProcessor:
   ui::EventTarget* GetRootForEvent(ui::Event* event) override;
   void OnEventProcessingStarted(ui::Event* event) override;
-  void OnEventProcessingFinished(
-      ui::Event* event,
-      ui::EventTarget* target,
-      const ui::EventDispatchDetails& details) override;
+  void OnEventProcessingFinished(ui::Event* event) override;
 
   // Overridden from ui::EventDispatcherDelegate.
   bool CanDispatchToTarget(ui::EventTarget* target) override;
