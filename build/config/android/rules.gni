@@ -3191,6 +3191,7 @@ if (enable_java_templates && is_android) {
             # Pure dex-merge.
             enable_desugar = false
           } else {
+            unprocessed_jar_path_filearg = "@FileArg(${_rebased_build_config}:deps_info:unprocessed_jar_path)"
             input_classes_filearg =
                 "@FileArg($_rebased_build_config:deps_info:device_classpath)"
           }

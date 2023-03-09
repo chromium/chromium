@@ -1569,8 +1569,6 @@ if (enable_java_templates) {
       }
     } else {  # !_proguard_enabled
       _is_library = defined(invoker.is_library) && invoker.is_library
-      assert(!(defined(invoker.input_classes_filearg) && _is_library))
-      assert(_is_library == defined(invoker.unprocessed_jar_path))
       _input_class_jars = []
       if (defined(invoker.input_class_jars)) {
         _input_class_jars = invoker.input_class_jars
@@ -1664,10 +1662,6 @@ if (enable_java_templates) {
         if (defined(invoker.input_classes_filearg)) {
           inputs += [ invoker.build_config ]
           args += [ "--class-inputs-filearg=${invoker.input_classes_filearg}" ]
-
-          # Required for the same reason as unprocessed_jar_path is added to
-          # classpath (see note below).
-          args += [ "--classpath=${invoker.input_classes_filearg}" ]
         }
         if (_input_class_jars != []) {
           inputs += _input_class_jars
@@ -1699,14 +1693,15 @@ if (enable_java_templates) {
           # filtered out via jar_excluded_patterns.
           # Must come first in classpath in order to take precedence over
           # deps that defined the same classes (via jar_excluded_patterns).
-          if (defined(invoker.unprocessed_jar_path)) {
+          if (defined(invoker.unprocessed_jar_path_filearg)) {
+            args += [
+              "--classpath",
+              invoker.unprocessed_jar_path_filearg,
+            ]
+          } else if (defined(invoker.unprocessed_jar_path)) {
             args += [
               "--classpath",
               rebase_path(invoker.unprocessed_jar_path, root_build_dir),
-
-              # Pass the full classpath to find new dependencies that are not in
-              # the .desugardeps file.
-              "--classpath=@FileArg($_rebased_build_config:deps_info:javac_full_interface_classpath)",
             ]
             inputs += [ invoker.unprocessed_jar_path ]
           }
@@ -1717,6 +1712,17 @@ if (enable_java_templates) {
             rebase_path(_desugar_dependencies_path, root_build_dir),
             "--bootclasspath=@FileArg($_rebased_build_config:android:sdk_jars)",
           ]
+
+          # When passing entire classpath as .class files (rather than .dex
+          # files), do not add the corresponding interface .jars to the
+          # classpath. https://crbug.com/1407924
+          if (!defined(invoker.input_classes_filearg)) {
+            args += [
+              # Pass the full classpath to find new dependencies that are not in
+              # the .desugardeps file.
+              "--classpath=@FileArg($_rebased_build_config:deps_info:javac_full_interface_classpath)",
+            ]
+          }
         }
 
         if (defined(invoker.custom_assertion_handler)) {
