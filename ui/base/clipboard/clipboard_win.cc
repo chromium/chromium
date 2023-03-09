@@ -773,7 +773,7 @@ void ClipboardWin::WriteData(const ClipboardFormatType& format,
 
   char* data = static_cast<char*>(::GlobalLock(hdata));
   memcpy(data, data_data, data_len);
-  ::GlobalUnlock(data);
+  ::GlobalUnlock(hdata);
   WriteToClipboard(format, hdata);
 }
 
