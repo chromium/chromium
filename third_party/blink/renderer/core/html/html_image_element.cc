@@ -605,11 +605,8 @@ LayoutSize HTMLImageElement::DensityCorrectedIntrinsicDimensions() const {
       image_content->DevicePixelRatioHeaderValue() > 0)
     pixel_density = 1 / image_content->DevicePixelRatioHeaderValue();
 
-  RespectImageOrientationEnum respect_image_orientation =
-      LayoutObject::ShouldRespectImageOrientation(GetLayoutObject());
-
   LayoutSize natural_size(
-      image_content->IntrinsicSize(respect_image_orientation));
+      image_content->GetImage()->Size(kRespectImageOrientation));
   natural_size.Scale(pixel_density);
   return natural_size;
 }
