@@ -470,6 +470,7 @@ GetPedalImplementations(bool incognito, bool testing) {
 
   if (!incognito) {
     add(new OmniboxPedalClearBrowsingData(incognito));
+    add(new OmniboxPedalViewChromeHistory());
   }
 
   add(new OmniboxPedalManagePasswords());
@@ -478,7 +479,6 @@ GetPedalImplementations(bool incognito, bool testing) {
   add(new OmniboxPedalLaunchIncognito());
   add(new OmniboxPedalRunChromeSafetyCheck());
   add(new OmniboxPedalManageChromeSettings());
-  add(new OmniboxPedalViewChromeHistory());
   add(new OmniboxPedalPlayChromeDinoGame());
 
   return pedals;
