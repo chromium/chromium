@@ -53,19 +53,9 @@ typedef AutocompleteMatchType ACMatchType;
 
 namespace {
 
-constexpr bool is_android =
-#if BUILDFLAG(IS_ANDROID)
-    true;
-#else
-    false;
-#endif
-
-constexpr bool is_ios =
-#if BUILDFLAG(IS_IOS)
-    true;
-#else
-    false;
-#endif
+constexpr bool is_android = !!BUILDFLAG(IS_ANDROID);
+constexpr bool is_ios = !!BUILDFLAG(IS_IOS);
+constexpr bool is_desktop = !(is_android || is_ios);
 
 // Rotates |it| to be in the front of |matches|.
 // |it| must be a valid iterator of |matches| or equal to |matches->end()|.
@@ -348,9 +338,13 @@ void AutocompleteResult::SortAndCull(
 
   // If `kGroupingFramework` is enabled and the current input & platform are
   // supported, delegate to the framework.
+  //
+  // - Include both Desktop ZPS and prefixed suggestions.
+  // - Include Android ZPS only (no prefixed suggestions),
+  // - IOS is currently not included.
   const bool is_zero_suggest = input.IsZeroSuggest();
   if (base::FeatureList::IsEnabled(omnibox::kGroupingFramework) &&
-      !is_android && !is_ios) {
+      (is_desktop || (is_android && is_zero_suggest))) {
     // Grouping requires all matches have a group ID. To keep providers 'dumb',
     // they only assign IDs when their ID isn't obvious from the match type.
     // Most matches will instead set IDs here to keep providers 'dumb' and the
@@ -370,14 +364,20 @@ void AutocompleteResult::SortAndCull(
 
     PSections sections;
     if (is_zero_suggest) {
+#if BUILDFLAG(IS_ANDROID)
+      sections.push_back(
+          std::make_unique<AndroidZpsSection>(suggestion_groups_map_));
+#else   // !BUILDFLAG(IS_ANDROID)
       sections.push_back(
           std::make_unique<DesktopZpsSection>(suggestion_groups_map_));
+
       if (page_classification == OmniboxEventProto::NTP_REALBOX &&
           base::FeatureList::IsEnabled(omnibox::kKeepSecondaryZeroSuggest)) {
         // Allow secondary zero-prefix suggestions in the NTP realbox, if any.
         sections.push_back(std::make_unique<DesktopSecondaryZpsSection>(
             suggestion_groups_map_));
       }
+#endif  // !BUILDFLAG(IS_ANDROID)
     } else {
       sections.push_back(
           std::make_unique<DesktopNonZpsSection>(suggestion_groups_map_));

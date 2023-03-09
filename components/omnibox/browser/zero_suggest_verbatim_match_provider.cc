@@ -92,5 +92,5 @@ void ZeroSuggestVerbatimMatchProvider::Start(const AutocompleteInput& input,
     return;
 
   match.provider = this;
-  matches_.push_back(match);
+  matches_.push_back(std::move(match));
 }
