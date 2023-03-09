@@ -33,8 +33,10 @@ from typing import (
 
 from blinkpy.common import path_finder
 from blinkpy.common.host import Host
+from blinkpy.common.memoized import memoized
 from blinkpy.common.net.git_cl import BuildStatuses, GitCL
 from blinkpy.common.net.rpc import Build, RPCError
+from blinkpy.common.system.filesystem import FileSystem
 from blinkpy.common.system.user import User
 from blinkpy.tool import grammar
 from blinkpy.tool.commands.build_resolver import (
@@ -47,7 +49,13 @@ from blinkpy.web_tests.port.base import Port
 
 path_finder.bootstrap_wpt_imports()
 from manifest import manifest as wptmanifest
-from wptrunner import manifestupdate, metadata, testloader, wpttest
+from wptrunner import (
+    manifestexpected,
+    manifestupdate,
+    metadata,
+    testloader,
+    wpttest,
+)
 from wptrunner.wptmanifest import node as wptnode
 from wptrunner.wptmanifest.backends import conditional
 from wptrunner.wptmanifest.parser import ParseError
@@ -162,6 +170,7 @@ class UpdateMetadata(Command):
         updater = MetadataUpdater.from_manifests(
             manifests,
             self.generate_configs(),
+            self._tool.filesystem,
             self._explicit_include_patterns(options, args),
             options.exclude,
             overwrite_conditions=options.overwrite_conditions,
@@ -463,13 +472,13 @@ class UpdateMetadata(Command):
                 '%r is neither a regular file nor a directory' % value)
         setattr(parser.values, option.dest, reports)
 
-    def generate_configs(self) -> FrozenSet[metadata.RunInfo]:
+    def generate_configs(self) -> Dict[metadata.RunInfo, Port]:
         """Construct run info representing all Chromium test environments.
 
         Each property in a config represents a value that metadata keys can be
         conditioned on (e.g., 'os').
         """
-        configs = set()
+        configs = {}
         wptrunner_builders = {
             builder
             for builder in self._tool.builders.all_builder_names()
@@ -480,29 +489,31 @@ class UpdateMetadata(Command):
             port_name = self._tool.builders.port_name_for_builder_name(builder)
             _, build_config, *_ = self._tool.builders.specifiers_for_builder(
                 builder)
-            port = self._tool.port_factory.get(
-                port_name, optparse.Values({
-                    'configuration': build_config,
-                }))
 
             for step in self._tool.builders.step_names_for_builder(builder):
                 flag_specific = self._tool.builders.flag_specific_option(
                     builder, step)
+                port = self._tool.port_factory.get(
+                    port_name,
+                    optparse.Values({
+                        'configuration': build_config,
+                        'flag_specific': flag_specific,
+                    }))
                 product = self._tool.builders.product_for_build_step(
                     builder, step)
-                configs.add(
-                    metadata.RunInfo({
-                        'product':
-                        product,
-                        'os':
-                        port.operating_system(),
-                        'port':
-                        port.version(),
-                        'debug':
-                        port.get_option('configuration') == 'Debug',
-                        'flag_specific':
-                        flag_specific or ''
-                    }))
+                config = metadata.RunInfo({
+                    'product':
+                    product,
+                    'os':
+                    port.operating_system(),
+                    'port':
+                    port.version(),
+                    'debug':
+                    port.get_option('configuration') == 'Debug',
+                    'flag_specific':
+                    flag_specific or '',
+                })
+                configs[config] = port
         return configs
 
 
@@ -520,18 +531,20 @@ class MetadataUpdater:
     min_results_for_update: ClassVar[int] = 4
 
     def __init__(
-            self,
-            test_files: TestFileMap,
-            configs: FrozenSet[metadata.RunInfo],
-            primary_properties: Optional[List[str]] = None,
-            dependent_properties: Optional[Mapping[str, str]] = None,
-            overwrite_conditions: Literal['yes', 'no', 'fill'] = 'fill',
-            disable_intermittent: Optional[str] = None,
-            keep_statuses: bool = False,
-            bug: Optional[int] = None,
-            dry_run: bool = False,
+        self,
+        test_files: TestFileMap,
+        configs: Dict[metadata.RunInfo, Port],
+        fs: FileSystem,
+        primary_properties: Optional[List[str]] = None,
+        dependent_properties: Optional[Mapping[str, str]] = None,
+        overwrite_conditions: Literal['yes', 'no', 'fill'] = 'fill',
+        disable_intermittent: Optional[str] = None,
+        keep_statuses: bool = False,
+        bug: Optional[int] = None,
+        dry_run: bool = False,
     ):
         self._configs = configs
+        self._fs = fs
         self._default_expected = _default_expected_by_type()
         self._primary_properties = primary_properties or [
             'debug',
@@ -551,7 +564,8 @@ class MetadataUpdater:
     @classmethod
     def from_manifests(cls,
                        manifests: ManifestMap,
-                       configs: FrozenSet[metadata.RunInfo],
+                       configs: Dict[metadata.RunInfo, Port],
+                       fs: FileSystem,
                        include: Optional[List[str]] = None,
                        exclude: Optional[List[str]] = None,
                        **options) -> 'MetadataUpdater':
@@ -584,7 +598,7 @@ class MetadataUpdater:
                                               manifest))
             finally:
                 manifest.itertypes = itertypes
-        return cls(test_files, configs, **options)
+        return cls(test_files, configs, fs, **options)
 
     def collect_results(self, reports: Iterable[io.TextIOBase]) -> Set[str]:
         """Parse and record test results."""
@@ -649,7 +663,12 @@ class MetadataUpdater:
             # instead of replaying every result.
             if not updated_configs:
                 continue
-            missing_configs = self._enabled_configs(test) - updated_configs
+            enabled_configs = {
+                config
+                for config in self._configs
+                if not self._config_disabled(test_file, test, config)
+            }
+            missing_configs = enabled_configs - updated_configs
             for config in missing_configs:
                 self._updater.suite_start({'run_info': config.data})
                 self._updater.test_start({'test': test.id})
@@ -693,6 +712,10 @@ class MetadataUpdater:
 
         See also: crbug.com/1422011
         """
+        # Use a `manifestupdate.ExpectedManifest` here instead of a
+        # `manifestexpected.ExpectedManifest` because the former is
+        # conditionally compiled, meaning keys can be evaluated against
+        # different run info without needing to re-read the file.
         expectations = test_file.expected(
             (self._primary_properties, self._dependent_properties),
             update_intermittent=(not self._disable_intermittent),
@@ -730,18 +753,52 @@ class MetadataUpdater:
         subtest_data = subtests.get(subtest_id, [])
         return frozenset(run_info for _, run_info, _ in subtest_data)
 
-    def _enabled_configs(
-            self,
-            node: manifestupdate.TestNode,
-    ) -> FrozenSet[metadata.RunInfo]:
-        """Find which configurations a (sub)test is enabled for."""
-        configs = set()
-        for config in self._configs:
-            with contextlib.suppress(KeyError):
-                if node.disabled(config):
-                    continue
-            configs.add(config)
-        return configs
+    def _config_disabled(
+        self,
+        test_file: metadata.TestFileData,
+        test: manifestupdate.TestNode,
+        config: metadata.RunInfo,
+    ) -> bool:
+        """Check if a test is disabled for a given configuration."""
+        with contextlib.suppress(KeyError):
+            port = self._configs[config]
+            if port.default_smoke_test_only():
+                finder = path_finder.PathFinder(self._fs)
+                test_id = test.id
+                if test_id.startswith('/'):
+                    test_id = test_id[1:]
+                if (not finder.is_wpt_internal_path(test_id)
+                        and not finder.is_wpt_path(test_id)):
+                    test_id = finder.wpt_prefix() + test_id
+                if port.skipped_due_to_smoke_tests(test_id):
+                    return True
+        with contextlib.suppress(KeyError):
+            return test.get('disabled', config)
+        test_dir = test_file.test_path
+        while test_dir:
+            test_dir = self._fs.dirname(test_dir)
+            abs_test_dir = self._fs.join(test_file.metadata_path, test_dir)
+            disabled = self._directory_disabled(abs_test_dir, config)
+            if disabled is not None:
+                return disabled
+        return False
+
+    @memoized
+    def _directory_disabled(self, dir_path: str,
+                            config: metadata.RunInfo) -> Optional[bool]:
+        """Check if a `__dir__.ini` in the given directory disables tests.
+
+        Returns:
+            * True if the directory disables tests.
+            * False if the directory explicitly enables tests.
+            * None if the key is not present (e.g., `__dir__.ini` doesn't
+              exist). We may need to search other `__dir__.ini` to get a
+              conclusive answer.
+        """
+        metadata_path = self._fs.join(dir_path, '__dir__.ini')
+        manifest = manifestexpected.get_dir_manifest(metadata_path,
+                                                     config.data)
+        return manifest.disabled if manifest else None
 
     def update(self, test_file: metadata.TestFileData) -> bool:
         """Update and serialize the AST of a metadata file.
