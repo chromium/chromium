@@ -56,6 +56,7 @@
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_presentation_delegate.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_table_view_controller.h"
 #import "ios/chrome/browser/ui/recent_tabs/synced_sessions.h"
+#import "ios/chrome/browser/ui/recent_tabs/synced_sessions_util.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 #import "ios/chrome/browser/ui/sharing/sharing_params.h"
 #import "ios/chrome/browser/ui/snackbar/snackbar_coordinator.h"
@@ -1152,16 +1153,9 @@
       "Mobile.RecentTabsManager.TotalTabsFromOtherDevicesOpenAll",
       session->tabs.size());
 
-  for (auto const& tab : session->tabs) {
-    UrlLoadParams params = UrlLoadParams::InNewTab(tab->virtual_url);
-    params.SetInBackground(YES);
-    params.web_params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
-    params.load_strategy =
-        self.baseViewController.remoteTabsViewController.loadStrategy;
-    params.in_incognito =
-        self.regularBrowser->GetBrowserState()->IsOffTheRecord();
-    UrlLoadingBrowserAgent::FromBrowser(self.regularBrowser)->Load(params);
-  }
+  OpenDistantTabsInBackground(
+      session->tabs, self.regularBrowser,
+      self.baseViewController.remoteTabsViewController.loadStrategy);
 
   [self showActiveRegularTabFromRecentTabs];
 }

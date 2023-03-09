@@ -121,8 +121,16 @@ source_set("synced_sessions") {
   sources = [
     "synced_sessions.h",
     "synced_sessions.mm",
+    "synced_sessions_util.h",
+    "synced_sessions_util.mm",
   ]
-  deps = [ "//ios/chrome/browser/sync" ]
+  deps = [
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/url_loading",
+    "//ios/chrome/browser/url_loading:url_loading_params_header",
+  ]
   public_deps = [ "//components/sync_sessions" ]
 }
 
