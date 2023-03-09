@@ -33,6 +33,17 @@
       aura_shell (i.e. Weston).
     </description>
 
+    <enum name="key_state" bitfield="true">
+      <description
+          summary="whether to press, release, or press and release a key">
+        These flags signal which key events to emulate: press; release; or
+        press, then release.
+      </description>
+      <!-- same values as ui_controls::KeyEventType -->
+      <entry name="press" value="1"/>
+      <entry name="release" value="2"/>
+    </enum>
+
     <enum name="mouse_button">
       <description summary="which mouse button to emulate">
         Which mouse button to emulate an event for.
@@ -44,8 +55,9 @@
     </enum>
 
     <enum name="mouse_button_state" bitfield="true">
-      <description summary="whether to press, release or click a mouse button">
-        These flags signal whether to emulate a mouse button up or down event.
+      <description summary="whether to press, release, or click a mouse button">
+        These flags signal which mouse button events to emulate: press; release;
+        or press, then release.
       </description>
       <!-- same values as ui_controls::MouseButtonState -->
       <entry name="up" value="1"/>
@@ -66,8 +78,7 @@
 
     <enum name="touch_type" bitfield="true">
       <description summary="type of touch to be generated">
-        These flags signal whether an to emulate a touch press, release, or
-        move.
+        These flags signal whether to emulate a touch press, release, or move.
       </description>
       <!-- same values as ui_controls::TouchType -->
       <entry name="press" value="1"/>
@@ -75,16 +86,18 @@
       <entry name="move" value="4"/>
     </enum>
 
-    <request name="send_key_press">
-      <description summary="emulate a key press and release">
-        Requests the compositor to emulate a key press and release for the key
-        corresponding to the given keycode, together with the specified
-        modifiers. The compositor will decide which specific events to generate
-        in response to this request. After the compositor has finished
-        processing this request, a request_processed event with a matching `id`
-        will be emitted.
+    <request name="send_key_events">
+      <description summary="emulate a key press/release/press and release">
+        Requests the compositor to emulate a key press, release, or press and
+        release for the key corresponding to the given keycode, together with
+        the specified modifiers. The compositor will decide which specific
+        events to generate in response to this request. After the compositor has
+        finished processing this request, a request_processed event with a
+        matching `id` will be emitted.
       </description>
       <arg name="key" type="uint" summary="evdev key code"/>
+      <arg name="key_state" type="uint" enum="key_state"
+           summary="whether to press, release, or press and release the key"/>
       <arg name="pressed_modifiers" type="uint" enum="modifier"
            summary="pressed modifier keys"/>
       <arg name="id" type="uint"
