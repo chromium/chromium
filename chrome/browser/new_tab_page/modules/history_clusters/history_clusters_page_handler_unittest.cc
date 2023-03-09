@@ -7,7 +7,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -28,10 +27,12 @@
 #include "components/history_clusters/core/test_history_clusters_service.h"
 #include "components/history_clusters/public/mojom/history_cluster_types.mojom.h"
 #include "components/search/ntp_features.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
 #include <vector>
@@ -160,7 +161,10 @@ history::Cluster SampleCluster() {
                           {{u"apples", history::ClusterKeywordData()},
                            {u"Red Oranges", history::ClusterKeywordData()}},
                           /*should_show_on_prominent_ui_surfaces=*/true,
-                          /*label=*/base::UTF8ToUTF16(kSampleLabel));
+                          /*label=*/
+                          l10n_util::GetStringFUTF16(
+                              IDS_HISTORY_CLUSTERS_CLUSTER_LABEL_SEARCH_TERMS,
+                              base::UTF8ToUTF16(kSampleLabel)));
 }
 
 TEST_F(HistoryClustersPageHandlerTest, GetCluster) {

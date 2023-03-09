@@ -29,6 +29,8 @@
 #include "components/history_clusters/public/mojom/history_cluster_types.mojom.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/search/ntp_features.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/url_util.h"
 
 namespace {
@@ -141,7 +143,10 @@ history::Cluster GenerateSampleCluster(int num_visits, int num_images) {
   return history::Cluster(
       0, sample_visits, {},
       /*should_show_on_prominent_ui_surfaces=*/true,
-      /*label=*/base::UTF8ToUTF16(kSampleSearchQuery),
+      /*label=*/
+      l10n_util::GetStringFUTF16(
+          IDS_HISTORY_CLUSTERS_CLUSTER_LABEL_SEARCH_TERMS,
+          base::UTF8ToUTF16(kSampleSearchQuery)),
       /*raw_label=*/base::UTF8ToUTF16(kSampleSearchQuery), {},
       {"new google products", "google devices", "google stuff"}, 0);
 }
