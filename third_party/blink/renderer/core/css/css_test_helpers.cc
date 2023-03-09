@@ -223,6 +223,13 @@ const CSSValue* ParseValue(Document& document, String syntax, String value) {
 }
 
 CSSSelectorList* ParseSelectorList(const String& string) {
+  return ParseSelectorList(string, CSSNestingType::kNone,
+                           /*parent_rule_for_nesting=*/nullptr);
+}
+
+CSSSelectorList* ParseSelectorList(const String& string,
+                                   CSSNestingType nesting_type,
+                                   const StyleRule* parent_rule_for_nesting) {
   auto* context = MakeGarbageCollected<CSSParserContext>(
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
   auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
@@ -231,8 +238,7 @@ CSSSelectorList* ParseSelectorList(const String& string) {
   CSSParserTokenRange range(tokens);
   HeapVector<CSSSelector> arena;
   base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
-      range, context, CSSNestingType::kNone,
-      /*parent_rule_for_nesting=*/nullptr, sheet, arena);
+      range, context, nesting_type, parent_rule_for_nesting, sheet, arena);
   return CSSSelectorList::AdoptSelectorVector(vector);
 }
 

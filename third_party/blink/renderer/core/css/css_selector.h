@@ -28,6 +28,7 @@
 
 #include "base/check_op.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/parser/css_nesting_type.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_mode.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
@@ -348,6 +349,10 @@ class CORE_EXPORT CSSSelector {
                         bool has_arguments,
                         CSSParserMode);
   void SetUnparsedPlaceholder(const AtomicString&);
+  // If this simple selector contains a parent selector (&), returns kNesting.
+  // Otherwise, if this simple selector contains a :scope pseudo-class,
+  // returns kScope. Otherwise, returns kNone.
+  CSSNestingType GetNestingType() const;
   void UpdatePseudoPage(const AtomicString&, const Document*);
   static PseudoType NameToPseudoType(const AtomicString&,
                                      bool has_arguments,
@@ -494,6 +499,10 @@ class CORE_EXPORT CSSSelector {
   bool FollowsPart() const;
   // Returns true if the immediately preceeding simple selector is ::slotted.
   bool FollowsSlotted() const;
+
+  // True if the selector was added implicitly. This can happen for e.g.
+  // nested rules that would otherwise lack the nesting selector (&).
+  bool IsImplicit() const { return is_implicitly_added_; }
 
   void Trace(Visitor* visitor) const;
 

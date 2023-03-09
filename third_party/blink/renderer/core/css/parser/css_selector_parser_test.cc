@@ -1201,4 +1201,90 @@ INSTANTIATE_TEST_SUITE_P(NestedHasSelectorValidity,
                          SelectorParseTestForHasForgivingParsing,
                          testing::ValuesIn(forgiving_has_nesting_data));
 
+static absl::optional<CSSSelector::PseudoType> GetImplicitlyAddedPseudo(
+    String inner_rule,
+    CSSNestingType nesting_type) {
+  auto dummy_holder = std::make_unique<DummyPageHolder>(gfx::Size(500, 500));
+  Document& document = dummy_holder->GetDocument();
+
+  auto* parent_rule_for_nesting =
+      nesting_type == CSSNestingType::kNone
+          ? nullptr
+          : DynamicTo<StyleRule>(
+                css_test_helpers::ParseRule(document, "div {}"));
+
+  CSSSelectorList* list = css_test_helpers::ParseSelectorList(
+      inner_rule, nesting_type, parent_rule_for_nesting);
+  if (!list || !list->First()) {
+    return absl::nullopt;
+  }
+  const CSSSelector* last = list->First();
+  while (!last->IsLastInTagHistory()) {
+    last = last->TagHistory();
+  }
+  if (last->Match() != CSSSelector::kPseudoClass || !last->IsImplicit()) {
+    return absl::nullopt;
+  }
+  return last->GetPseudoType();
+}
+
+TEST(CSSSelectorParserTest, NestingContextImpliedDescendant) {
+  // Nesting selector (&)
+  EXPECT_EQ(CSSSelector::kPseudoParent,
+            GetImplicitlyAddedPseudo(".foo", CSSNestingType::kNesting));
+  EXPECT_EQ(
+      CSSSelector::kPseudoParent,
+      GetImplicitlyAddedPseudo(".foo:is(.bar)", CSSNestingType::kNesting));
+  EXPECT_EQ(CSSSelector::kPseudoParent,
+            GetImplicitlyAddedPseudo("> .foo", CSSNestingType::kNesting));
+  EXPECT_EQ(absl::nullopt,
+            GetImplicitlyAddedPseudo(".foo > &", CSSNestingType::kNesting));
+  EXPECT_EQ(absl::nullopt, GetImplicitlyAddedPseudo(".foo > :is(.b, &)",
+                                                    CSSNestingType::kNesting));
+  EXPECT_EQ(absl::nullopt,
+            GetImplicitlyAddedPseudo("& .foo", CSSNestingType::kNesting));
+
+  // :scope
+  EXPECT_EQ(CSSSelector::kPseudoScope,
+            GetImplicitlyAddedPseudo(".foo", CSSNestingType::kScope));
+  EXPECT_EQ(CSSSelector::kPseudoScope,
+            GetImplicitlyAddedPseudo(".foo:is(.bar)", CSSNestingType::kScope));
+  EXPECT_EQ(CSSSelector::kPseudoScope,
+            GetImplicitlyAddedPseudo("> .foo", CSSNestingType::kScope));
+  // :scope makes a selector :scope-containing:
+  EXPECT_EQ(absl::nullopt,
+            GetImplicitlyAddedPseudo(".foo > :scope", CSSNestingType::kScope));
+  EXPECT_EQ(absl::nullopt, GetImplicitlyAddedPseudo(".foo > :is(.b, :scope)",
+                                                    CSSNestingType::kScope));
+  EXPECT_EQ(absl::nullopt,
+            GetImplicitlyAddedPseudo(":scope .foo", CSSNestingType::kScope));
+  // '&' also makes a selector :scope-containing:
+  EXPECT_EQ(absl::nullopt,
+            GetImplicitlyAddedPseudo(".foo > &", CSSNestingType::kScope));
+  EXPECT_EQ(absl::nullopt, GetImplicitlyAddedPseudo(".foo > :is(.b, &)",
+                                                    CSSNestingType::kScope));
+  EXPECT_EQ(absl::nullopt,
+            GetImplicitlyAddedPseudo("& .foo", CSSNestingType::kScope));
+
+  // kNone
+  EXPECT_EQ(absl::nullopt,
+            GetImplicitlyAddedPseudo(".foo", CSSNestingType::kNone));
+  EXPECT_EQ(absl::nullopt,
+            GetImplicitlyAddedPseudo(".foo:is(.bar)", CSSNestingType::kNone));
+  EXPECT_EQ(absl::nullopt,
+            GetImplicitlyAddedPseudo("> .foo", CSSNestingType::kNone));
+  EXPECT_EQ(absl::nullopt,
+            GetImplicitlyAddedPseudo(".foo > &", CSSNestingType::kNone));
+  EXPECT_EQ(absl::nullopt, GetImplicitlyAddedPseudo(".foo > :is(.b, &)",
+                                                    CSSNestingType::kNone));
+  EXPECT_EQ(absl::nullopt,
+            GetImplicitlyAddedPseudo("& .foo", CSSNestingType::kNone));
+  EXPECT_EQ(absl::nullopt,
+            GetImplicitlyAddedPseudo(".foo > :scope", CSSNestingType::kNone));
+  EXPECT_EQ(absl::nullopt, GetImplicitlyAddedPseudo(".foo > :is(.b, :scope)",
+                                                    CSSNestingType::kNone));
+  EXPECT_EQ(absl::nullopt,
+            GetImplicitlyAddedPseudo(":scope .foo", CSSNestingType::kNone));
+}
+
 }  // namespace blink

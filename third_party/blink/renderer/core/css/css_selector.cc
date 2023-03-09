@@ -865,6 +865,19 @@ void CSSSelector::SetUnparsedPlaceholder(const AtomicString& value) {
   SetValue(value);
 }
 
+CSSNestingType CSSSelector::GetNestingType() const {
+  switch (GetPseudoType()) {
+    case CSSSelector::kPseudoParent:
+    case CSSSelector::kPseudoParentUnparsed:
+      return CSSNestingType::kNesting;
+    case CSSSelector::kPseudoScope:
+      // TODO(crbug.com/1280240): Handle unparsed :scope.
+      return CSSNestingType::kScope;
+    default:
+      return CSSNestingType::kNone;
+  }
+}
+
 static void SerializeIdentifierOrAny(const AtomicString& identifier,
                                      const AtomicString& any,
                                      StringBuilder& builder) {
