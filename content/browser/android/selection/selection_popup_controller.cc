@@ -170,12 +170,14 @@ bool SelectionPopupController::ShowSelectionMenu(
                           params.source_type == ui::MENU_SOURCE_TOUCH_HANDLE ||
                           params.source_type == ui::MENU_SOURCE_STYLUS;
 
+  const bool from_mouse = params.source_type == ui::MENU_SOURCE_MOUSE;
+
   const bool from_selection_adjustment =
       params.source_type == ui::MENU_SOURCE_ADJUST_SELECTION ||
       params.source_type == ui::MENU_SOURCE_ADJUST_SELECTION_RESET;
 
   // If source_type is not in the list then return.
-  if (!from_touch && !from_selection_adjustment)
+  if (!from_touch && !from_mouse && !from_selection_adjustment)
     return false;
 
   // Don't show paste pop-up for non-editable textarea.
