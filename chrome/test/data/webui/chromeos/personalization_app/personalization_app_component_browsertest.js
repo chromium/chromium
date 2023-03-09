@@ -79,6 +79,7 @@ var PersonalizationAppComponentBrowserTest = class extends PolymerTest {
    'GooglePhotosSharedAlbumDialogTest',
    'google_photos_shared_album_dialog_element_test.js'
  ],
+ ['ZoneCustomizationTest', 'zone_customization_element_test.js'],
 ].forEach(test => registerTest(...test));
 
 function registerTest(testName, module, caseName) {

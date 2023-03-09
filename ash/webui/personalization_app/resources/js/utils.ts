@@ -10,8 +10,26 @@ import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {AmbientModeAlbum, GooglePhotosAlbum} from './../personalization_app.mojom-webui.js';
+import {AmbientModeAlbum, BacklightColor, BLUE_COLOR, GooglePhotosAlbum, GREEN_COLOR, INDIGO_COLOR, PURPLE_COLOR, RED_COLOR, WHITE_COLOR, YELLOW_COLOR} from './../personalization_app.mojom-webui.js';
 import {isPersonalizationJellyEnabled} from './load_time_booleans.js';
+
+export interface ColorInfo {
+  hexVal: string;
+  enumVal: BacklightColor;
+}
+
+export const WALLPAPER: string = 'wallpaper';
+export const WHITE: string = 'whiteColor';
+export const RED: string = 'redColor';
+export const YELLOW: string = 'yellowColor';
+export const GREEN: string = 'greenColor';
+export const BLUE: string = 'blueColor';
+export const INDIGO: string = 'indigoColor';
+export const PURPLE: string = 'purpleColor';
+export const RAINBOW: string = 'rainbow';
+
+export const staticColorIds =
+    [WALLPAPER, WHITE, RED, YELLOW, GREEN, BLUE, INDIGO, PURPLE];
 
 export type PersonalizationAppSelectionEvent =
     MouseEvent&{type: 'click'}|KeyboardEvent&{key: 'Enter'};
@@ -100,6 +118,43 @@ export function convertToRgbHexStr(hexVal: number): string {
       (hexVal & 0x0FFFFFF)
           .toString(STRING_LENGTH)
           .padStart(PADDING_LENGTH, '0')}`;
+}
+
+/**
+ * Returns the mapping of preset colors to their hex value and enum value in
+ * BacklightColor.
+ */
+export function getPresetColors(): Record<string, ColorInfo> {
+  return {
+    [WHITE]: {
+      hexVal: convertToRgbHexStr(WHITE_COLOR),
+      enumVal: BacklightColor.kWhite,
+    },
+    [RED]: {
+      hexVal: convertToRgbHexStr(RED_COLOR),
+      enumVal: BacklightColor.kRed,
+    },
+    [YELLOW]: {
+      hexVal: convertToRgbHexStr(YELLOW_COLOR),
+      enumVal: BacklightColor.kYellow,
+    },
+    [GREEN]: {
+      hexVal: convertToRgbHexStr(GREEN_COLOR),
+      enumVal: BacklightColor.kGreen,
+    },
+    [BLUE]: {
+      hexVal: convertToRgbHexStr(BLUE_COLOR),
+      enumVal: BacklightColor.kBlue,
+    },
+    [INDIGO]: {
+      hexVal: convertToRgbHexStr(INDIGO_COLOR),
+      enumVal: BacklightColor.kIndigo,
+    },
+    [PURPLE]: {
+      hexVal: convertToRgbHexStr(PURPLE_COLOR),
+      enumVal: BacklightColor.kPurple,
+    },
+  };
 }
 
 /**

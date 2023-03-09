@@ -2609,6 +2609,9 @@
         <message name="IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_WALLPAPER_COLOR_DESCRIPTION" desc="The description for the button that allows users to select a keyboard backlight wallpaper-extracted color.">
           Match wallpaper
         </message>
+        <message name="IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_ZONE_TITLE" desc="Title of the zone colors in the keyboard backlight customization dialog of personalization hub.">
+          Zone <ph name="ZONE_NUMBER">$1<ex>1</ex></ph>
+        </message>
 
         <!-- Personalization App Search Results -->
         <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_TITLE" desc="Text for search result item which, when clicked, navigates the user to personalization app.">

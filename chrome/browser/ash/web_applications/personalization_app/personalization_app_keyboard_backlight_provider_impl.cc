@@ -24,6 +24,8 @@
 
 namespace ash::personalization_app {
 
+using DisplayType = KeyboardBacklightColorController::DisplayType;
+
 PersonalizationAppKeyboardBacklightProviderImpl::
     PersonalizationAppKeyboardBacklightProviderImpl(content::WebUI* web_ui)
     : profile_(Profile::FromWebUI(web_ui)) {}
@@ -44,8 +46,9 @@ void PersonalizationAppKeyboardBacklightProviderImpl::
   keyboard_backlight_observer_remote_.reset();
   keyboard_backlight_observer_remote_.Bind(std::move(observer));
 
-  // Call it once to get the status of color preset.
-  NotifyBacklightColorChanged();
+  // Call it once to get the current status of backlight state (backlight color
+  // is either static color or multi-zone colors).
+  NotifyBacklightStateChanged();
 
   // Bind wallpaper observer now that rgb keyboard section is ready and visible
   // to users.
@@ -70,7 +73,10 @@ void PersonalizationAppKeyboardBacklightProviderImpl::SetBacklightColor(
       ->keyboard_backlight_color_nudge_controller()
       ->SetUserPerformedAction();
 
-  NotifyBacklightColorChanged();
+  // Get the current status of backlight state as backlight color has changed.
+  // Notifies backlight changed to a static color or rainbow color to highlight
+  // the selected state of color icon button.
+  NotifyBacklightStateChanged();
 }
 
 void PersonalizationAppKeyboardBacklightProviderImpl::SetBacklightZoneColor(
@@ -92,11 +98,10 @@ void PersonalizationAppKeyboardBacklightProviderImpl::SetBacklightZoneColor(
       ->keyboard_backlight_color_nudge_controller()
       ->SetUserPerformedAction();
 
-  // Notifies backlight changed to |kMultizone| to highlight the selected state
-  // of customization button.
-  NotifyBacklightColorChanged();
-
-  // TODO(b/265855838): Notify backlight zone colors have changed.
+  // Get the current status of backlight state as backlight color has changed to
+  // zone colors. Notifies backlight changed to |kMultizone| to highlight the
+  // selected state of customization button.
+  NotifyBacklightStateChanged();
 }
 
 void PersonalizationAppKeyboardBacklightProviderImpl::ShouldShowNudge(
@@ -135,11 +140,40 @@ PersonalizationAppKeyboardBacklightProviderImpl::
 }
 
 void PersonalizationAppKeyboardBacklightProviderImpl::
+    NotifyBacklightStateChanged() {
+  const auto displayType =
+      GetKeyboardBacklightColorController()->GetDisplayType(
+          GetAccountId(profile_));
+  switch (displayType) {
+    case DisplayType::kStatic: {
+      NotifyBacklightColorChanged();
+      return;
+    }
+    case DisplayType::kMultiZone: {
+      NotifyBacklightZoneColorsChanged();
+      return;
+    }
+  }
+}
+
+void PersonalizationAppKeyboardBacklightProviderImpl::
     NotifyBacklightColorChanged() {
   DCHECK(keyboard_backlight_observer_remote_.is_bound());
-  keyboard_backlight_observer_remote_->OnBacklightColorChanged(
-      GetKeyboardBacklightColorController()->GetBacklightColor(
-          GetAccountId(profile_)));
+
+  keyboard_backlight_observer_remote_->OnBacklightStateChanged(
+      ash::personalization_app::mojom::CurrentBacklightState::NewColor(
+          GetKeyboardBacklightColorController()->GetBacklightColor(
+              GetAccountId(profile_))));
+}
+
+void PersonalizationAppKeyboardBacklightProviderImpl::
+    NotifyBacklightZoneColorsChanged() {
+  DCHECK(keyboard_backlight_observer_remote_.is_bound());
+
+  keyboard_backlight_observer_remote_->OnBacklightStateChanged(
+      ash::personalization_app::mojom::CurrentBacklightState::NewZoneColors(
+          GetKeyboardBacklightColorController()->GetBacklightZoneColors(
+              GetAccountId(profile_))));
 }
 
 }  // namespace ash::personalization_app

@@ -676,11 +676,19 @@ const uint32 kBlueColor = 0x00A3C2;
 const uint32 kIndigoColor = 0x4285F4;
 const uint32 kPurpleColor = 0xB76DF8;
 
+union CurrentBacklightState {
+  // Set if the user has selected a specific color as backlight color.
+  BacklightColor color;
+
+  // Set if the user has selected multi-zone colors as backlight color.
+  array<BacklightColor> zone_colors;
+};
+
 // Receives information whenever there are keyboard backlight related changes
 // such as backlight colors.
 interface KeyboardBacklightObserver {
-  // Notifies the JS side about the current state of the backlight color.
-  OnBacklightColorChanged(BacklightColor color);
+  // Notifies the JS side about the current backlight state.
+  OnBacklightStateChanged(CurrentBacklightState currentBacklightState);
 
   // Notifies the JS side the current wallpaper-extracted color.
   OnWallpaperColorChanged(skia.mojom.SkColor wallpaper_color);

@@ -64,8 +64,14 @@ class PersonalizationAppKeyboardBacklightProviderImpl
  private:
   KeyboardBacklightColorController* GetKeyboardBacklightColorController();
 
+  // Notify webUI the current status of backlight state.
+  void NotifyBacklightStateChanged();
+
   // Notify webUI the current state of backlight color.
   void NotifyBacklightColorChanged();
+
+  // Notify webUI the current state of backlight zone colors.
+  void NotifyBacklightZoneColorsChanged();
 
   // Pointer to profile of user that opened personalization SWA. Not owned.
   raw_ptr<Profile> const profile_ = nullptr;
