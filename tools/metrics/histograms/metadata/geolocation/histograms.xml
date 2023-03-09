@@ -109,13 +109,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Geolocation.NetworkLocationRequest.NetError"
-    enum="NetErrorCodes" expires_after="2023-04-16">
-  <owner>JamesHollyer@chromium.org</owner>
-  <owner>device-dev@chromium.org</owner>
-  <summary>Network errors in NetworkLocationRequest.</summary>
-</histogram>
-
 <histogram name="Geolocation.NetworkLocationRequest.ResponseCode"
     enum="HttpResponseCode" expires_after="2023-08-20">
   <owner>mattreynolds@chromium.org</owner>
