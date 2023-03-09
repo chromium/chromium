@@ -14,18 +14,7 @@ namespace app_list {
 
 class SystemInfoAnswerResult : public ChromeSearchResult {
  public:
-  enum class SystemInfoCategory {
-    kUnknown = 0,
-    kSettings = 1,
-    kDiagnostics = 2
-  };
-
-  enum class AnswerCardDisplayType {
-    kUnknown = 0,
-    kBarChart = 1,
-    kTextCard = 2,
-    kMulitElementBarChart = 3
-  };
+  enum class SystemInfoCategory { kSettings, kDiagnostics };
 
   SystemInfoAnswerResult(Profile* profile,
                          const std::u16string& query,
@@ -34,8 +23,8 @@ class SystemInfoAnswerResult : public ChromeSearchResult {
                          double relevance_score,
                          const std::u16string& title,
                          const std::u16string& description,
-                         AnswerCardDisplayType card_display_type,
-                         SystemInfoCategory system_info_category);
+                         SystemInfoCategory system_info_category,
+                         ash::SystemInfoAnswerCardData answer_card_info);
   SystemInfoAnswerResult(const SystemInfoAnswerResult&) = delete;
   SystemInfoAnswerResult& operator=(const SystemInfoAnswerResult&) = delete;
 

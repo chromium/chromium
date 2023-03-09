@@ -13,6 +13,7 @@
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom-forward.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
+#include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "components/version_info/version_info.h"
 #include "components/version_info/version_string.h"
 #include "content/public/test/browser_task_environment.h"
@@ -104,6 +105,16 @@ void SetCrosHealthdCpuScalingResponse(const std::vector<uint32_t>& cpu_speeds) {
   SetCrosHealthdCpuResponse(usage_data, {50}, cpu_speeds);
 }
 
+void SetCrosHealthdMemoryUsageResponse(uint32_t total_memory_kib,
+                                       uint32_t free_memory_kib,
+                                       uint32_t available_memory_kib) {
+  healthd_mojom::MemoryInfoPtr memory_info = healthd_mojom::MemoryInfo::New(
+      total_memory_kib, free_memory_kib, available_memory_kib,
+      /*page_faults_since_last_boot=*/0);
+  SetProbeTelemetryInfoResponse(/*battery_info=*/nullptr, /*cpu_info=*/nullptr,
+                                /*memory_info=*/std::move(memory_info));
+}
+
 }  // namespace
 
 class SystemInfoCardProviderTest : public testing::Test {
@@ -146,8 +157,8 @@ class SystemInfoCardProviderTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   ::ash::mojo_service_manager::FakeMojoServiceManager fake_service_manager_;
-  std::unique_ptr<Profile> profile_;
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
+  std::unique_ptr<Profile> profile_;
   std::unique_ptr<TestSearchController> search_controller_;
   std::unique_ptr<SystemInfoCardProvider> provider_;
 };
@@ -174,6 +185,8 @@ TEST_F(SystemInfoCardProviderTest, version) {
   EXPECT_EQ(results()[0]->result_type(),
             ash::AppListSearchResultType::kSystemInfo);
   EXPECT_EQ(results()[0]->metrics_type(), ash::SYSTEM_INFO);
+  EXPECT_EQ(results()[0]->system_info_answer_card_data()->display_type,
+            ash::SystemInfoAnswerCardDisplayType::kTextCard);
 
   ASSERT_EQ(results()[0]->title_text_vector().size(), 1u);
   const auto& title = results()[0]->title_text_vector()[0];
@@ -211,6 +224,8 @@ TEST_F(SystemInfoCardProviderTest, cpu) {
   EXPECT_EQ(results()[0]->result_type(),
             ash::AppListSearchResultType::kSystemInfo);
   EXPECT_EQ(results()[0]->metrics_type(), ash::SYSTEM_INFO);
+  EXPECT_EQ(results()[0]->system_info_answer_card_data()->display_type,
+            ash::SystemInfoAnswerCardDisplayType::kTextCard);
 
   ASSERT_EQ(results()[0]->title_text_vector().size(), 1u);
   const auto& title = results()[0]->title_text_vector()[0];
@@ -222,6 +237,42 @@ TEST_F(SystemInfoCardProviderTest, cpu) {
   const auto& details = results()[0]->details_text_vector()[0];
   ASSERT_EQ(details.GetType(), ash::SearchResultTextItemType::kString);
   EXPECT_EQ(details.GetText(), u"Temperature: 35°C - Current speed: 0.01GHz");
+  EXPECT_TRUE(details.GetTextTags().empty());
+}
+
+TEST_F(SystemInfoCardProviderTest, memory) {
+  const uint32_t total_memory_kib = 8000000;
+  const uint32_t free_memory_kib = 2000000;
+  const uint32_t available_memory_kib = 4000000;
+
+  SetCrosHealthdMemoryUsageResponse(total_memory_kib, free_memory_kib,
+                                    available_memory_kib);
+
+  StartSearch(u"memory");
+  Wait();
+
+  ASSERT_FALSE(results().empty());
+  EXPECT_EQ(results().size(), 1u);
+  EXPECT_EQ(results()[0]->display_type(),
+            ash::SearchResultDisplayType::kAnswerCard);
+  EXPECT_EQ(results()[0]->result_type(),
+            ash::AppListSearchResultType::kSystemInfo);
+  EXPECT_EQ(results()[0]->metrics_type(), ash::SYSTEM_INFO);
+  EXPECT_EQ(results()[0]->system_info_answer_card_data()->display_type,
+            ash::SystemInfoAnswerCardDisplayType::kBarChart);
+  EXPECT_EQ(results()[0]->system_info_answer_card_data()->bar_chart_percentage,
+            50);
+
+  ASSERT_EQ(results()[0]->title_text_vector().size(), 1u);
+  const auto& title = results()[0]->title_text_vector()[0];
+  ASSERT_EQ(title.GetType(), ash::SearchResultTextItemType::kString);
+  EXPECT_EQ(title.GetText(), u"");
+  EXPECT_TRUE(title.GetTextTags().empty());
+
+  ASSERT_EQ(results()[0]->details_text_vector().size(), 1u);
+  const auto& details = results()[0]->details_text_vector()[0];
+  ASSERT_EQ(details.GetType(), ash::SearchResultTextItemType::kString);
+  EXPECT_EQ(details.GetText(), u"3.8 GB of 7.6 GB available");
   EXPECT_TRUE(details.GetTextTags().empty());
 }
 

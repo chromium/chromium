@@ -5,6 +5,7 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "base/check.h"
 
 namespace ash {
 
@@ -215,6 +216,32 @@ SearchResultIconInfo::SearchResultIconInfo(const SearchResultIconInfo& other)
     : icon(other.icon), dimension(other.dimension), shape(other.shape) {}
 
 SearchResultIconInfo::~SearchResultIconInfo() = default;
+
+////////////////////////////////////////////////////////////////////////////////
+// SearchResultSystemInfoAnswerCardInfo:
+
+SystemInfoAnswerCardData::SystemInfoAnswerCardData() = default;
+
+SystemInfoAnswerCardData::SystemInfoAnswerCardData(
+    SystemInfoAnswerCardDisplayType display_type)
+    : display_type(display_type) {}
+
+SystemInfoAnswerCardData::SystemInfoAnswerCardData(double bar_chart_percentage)
+    : display_type(SystemInfoAnswerCardDisplayType::kBarChart),
+      bar_chart_percentage(bar_chart_percentage) {}
+
+SystemInfoAnswerCardData::SystemInfoAnswerCardData(
+    std::map<SearchResultSystemInfoStorageType, int64_t>
+        storage_type_to_size_map)
+    : display_type(SystemInfoAnswerCardDisplayType::kMultiElementBarChart),
+      storage_type_to_size(std::move(storage_type_to_size_map)) {
+  DCHECK(!storage_type_to_size.empty());
+}
+
+SystemInfoAnswerCardData::~SystemInfoAnswerCardData() = default;
+
+SystemInfoAnswerCardData::SystemInfoAnswerCardData(
+    const SystemInfoAnswerCardData& other) = default;
 
 ////////////////////////////////////////////////////////////////////////////////
 // SearchResultTag:

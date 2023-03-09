@@ -85,6 +85,7 @@ class SystemInfoCardProvider : public SearchProvider,
   ::ash::settings::TotalDiskSpaceCalculator total_disk_space_calculator_;
   ::ash::settings::FreeDiskSpaceCalculator free_disk_space_calculator_;
   ::ash::settings::MyFilesSizeCalculator my_files_size_calculator_;
+  ::ash::settings::DriveOfflineSizeCalculator drive_offline_size_calculator_;
   ::ash::settings::BrowsingDataSizeCalculator browsing_data_size_calculator_;
   ::ash::settings::AppsSizeCalculator apps_size_calculator_;
   ::ash::settings::CrostiniSizeCalculator crostini_size_calculator_;

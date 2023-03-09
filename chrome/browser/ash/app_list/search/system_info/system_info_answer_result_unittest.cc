@@ -19,6 +19,8 @@
 
 namespace app_list::test {
 namespace {
+using AnswerCardInfo = ash::SystemInfoAnswerCardData;
+const char kChromeUIDiagnosticsAppUrl[] = "chrome://diagnostics";
 
 // Creates a 50x50 yellow test icon.
 gfx::ImageSkia GetTestIcon() {
@@ -41,15 +43,14 @@ class SystemInfoAnswerResultTest : public testing::Test {
   std::unique_ptr<Profile> profile_;
 };
 
-TEST_F(SystemInfoAnswerResultTest, Settings) {
+TEST_F(SystemInfoAnswerResultTest, version) {
+  AnswerCardInfo answer_card_info(
+      ash::SystemInfoAnswerCardDisplayType::kTextCard);
   SystemInfoAnswerResult result(
       profile_.get(), u"query", "path", GetTestIcon(), 0.8,
       u"Version 108.0.5359.37 (Official Build) beta (64-bit)",
       u"Click here to check for updates",
-      SystemInfoAnswerResult::AnswerCardDisplayType::kTextCard,
-      SystemInfoAnswerResult::SystemInfoCategory::kSettings);
-  EXPECT_EQ(result.title(),
-            u"Version 108.0.5359.37 (Official Build) beta (64-bit)");
+      SystemInfoAnswerResult::SystemInfoCategory::kSettings, answer_card_info);
   EXPECT_EQ(result.id(), "os-settings://path");
   EXPECT_EQ(result.display_type(), DisplayType::kAnswerCard);
   EXPECT_EQ(result.category(), Category::kSettings);
@@ -59,6 +60,11 @@ TEST_F(SystemInfoAnswerResultTest, Settings) {
   EXPECT_EQ(result.icon().shape, ash::SearchResultIconShape::kDefault);
   EXPECT_TRUE(gfx::BitmapsAreEqual(*result.icon().icon.bitmap(),
                                    *GetTestIcon().bitmap()));
+  EXPECT_EQ(result.system_info_answer_card_data()->display_type,
+            ash::SystemInfoAnswerCardDisplayType::kTextCard);
+  EXPECT_EQ(result.accessible_name(),
+            u"Version 108.0.5359.37 (Official Build) beta (64-bit), Click here "
+            u"to check for updates");
 
   ASSERT_EQ(result.title_text_vector().size(), 1u);
   const auto& title = result.title_text_vector()[0];
@@ -71,6 +77,40 @@ TEST_F(SystemInfoAnswerResultTest, Settings) {
   const auto& details = result.details_text_vector()[0];
   ASSERT_EQ(details.GetType(), ash::SearchResultTextItemType::kString);
   EXPECT_EQ(details.GetText(), u"Click here to check for updates");
+  EXPECT_TRUE(details.GetTextTags().empty());
+}
+
+TEST_F(SystemInfoAnswerResultTest, memory) {
+  AnswerCardInfo answer_card_info(54.8);
+  SystemInfoAnswerResult result(
+      profile_.get(), u"query", "", GetTestIcon(), 0.8, u"",
+      u"5.16 GB of 15.52 GB available",
+      SystemInfoAnswerResult::SystemInfoCategory::kDiagnostics,
+      answer_card_info);
+  EXPECT_EQ(result.id(), kChromeUIDiagnosticsAppUrl);
+  EXPECT_EQ(result.display_type(), DisplayType::kAnswerCard);
+  EXPECT_EQ(result.category(), Category::kSettings);
+  EXPECT_EQ(result.result_type(), ResultType::kSystemInfo);
+  EXPECT_EQ(result.metrics_type(), ash::SYSTEM_INFO);
+  EXPECT_EQ(result.icon().dimension, kAppIconDimension);
+  EXPECT_EQ(result.icon().shape, ash::SearchResultIconShape::kDefault);
+  EXPECT_TRUE(gfx::BitmapsAreEqual(*result.icon().icon.bitmap(),
+                                   *GetTestIcon().bitmap()));
+  EXPECT_EQ(result.system_info_answer_card_data()->display_type,
+            ash::SystemInfoAnswerCardDisplayType::kBarChart);
+  EXPECT_EQ(result.system_info_answer_card_data()->bar_chart_percentage, 54.8);
+  EXPECT_EQ(result.accessible_name(), u"5.16 GB of 15.52 GB available");
+
+  ASSERT_EQ(result.title_text_vector().size(), 1u);
+  const auto& title = result.title_text_vector()[0];
+  ASSERT_EQ(title.GetType(), ash::SearchResultTextItemType::kString);
+  EXPECT_EQ(title.GetText(), u"");
+  EXPECT_TRUE(title.GetTextTags().empty());
+
+  ASSERT_EQ(result.details_text_vector().size(), 1u);
+  const auto& details = result.details_text_vector()[0];
+  ASSERT_EQ(details.GetType(), ash::SearchResultTextItemType::kString);
+  EXPECT_EQ(details.GetText(), u"5.16 GB of 15.52 GB available");
   EXPECT_TRUE(details.GetTextTags().empty());
 }
 

@@ -101,6 +101,10 @@ class ChromeSearchResult {
   const IconInfo& icon() const { return metadata_->icon; }
   const gfx::ImageSkia& chip_icon() const { return metadata_->chip_icon; }
   const ui::ImageModel& badge_icon() const { return metadata_->badge_icon; }
+  const absl::optional<ash::SystemInfoAnswerCardData>
+  system_info_answer_card_data() const {
+    return metadata_->system_info_answer_card_data;
+  }
 
   // The following methods set Chrome side data here, and call model updater
   // interface to update Ash.
@@ -135,6 +139,8 @@ class ChromeSearchResult {
   void SetChipIcon(const gfx::ImageSkia& icon);
   void SetBadgeIcon(const ui::ImageModel& badge_icon);
   void SetUseBadgeIconBackground(bool use_badge_icon_background);
+  void SetSystemInfoAnswerCardData(
+      ash::SystemInfoAnswerCardData answer_card_info);
 
   void SetSearchResultMetadata();
 
@@ -209,6 +215,7 @@ class ChromeSearchResult {
   // Only used when the categorical search flag is enabled.
   app_list::Scoring scoring_;
 
+  // This field specifies the omnibox answer card type.
   crosapi::mojom::SearchResult::AnswerType answer_type_;
 
   // Relevance scores keyed by a string describing the ranking method it was

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_list/search/system_info/system_info_card_provider.h"
 
+#include <iomanip>
 #include <memory>
 #include <optional>
 #include <string>
@@ -48,8 +49,13 @@ using ::ash::cros_healthd::mojom::TelemetryInfoPtr;
 using ::ash::string_matching::FuzzyTokenizedStringMatch;
 using ::ash::string_matching::TokenizedString;
 using ::chromeos::settings::mojom::kAboutChromeOsSectionPath;
+using AnswerCardInfo = ::ash::SystemInfoAnswerCardData;
 
 constexpr double kRelevanceThreshold = 0.64;
+
+double ConvertKBtoBytes(uint32_t amount) {
+  return static_cast<double>(amount) * 1024;
+}
 
 }  // namespace
 
@@ -57,6 +63,7 @@ SystemInfoCardProvider::SystemInfoCardProvider(Profile* profile)
     : total_disk_space_calculator_(profile),
       free_disk_space_calculator_(profile),
       my_files_size_calculator_(profile),
+      drive_offline_size_calculator_(profile),
       browsing_data_size_calculator_(profile),
       apps_size_calculator_(profile),
       crostini_size_calculator_(profile),
@@ -196,6 +203,34 @@ void SystemInfoCardProvider::OnMemoryUsageUpdated(TelemetryInfoPtr info_ptr) {
   }
 
   memory_info_ = GetMemoryInfo(*info_ptr);
+  if (!memory_info_) {
+    LOG(ERROR) << "Memory information not provided by croshealthd";
+    return;
+  }
+
+  std::u16string available_memory_gb =
+      ui::FormatBytes(ConvertKBtoBytes(memory_info_->available_memory_kib));
+  std::u16string total_memory_gb =
+      ui::FormatBytes(ConvertKBtoBytes(memory_info_->total_memory_kib));
+
+  double used_memory_kb =
+      memory_info_->total_memory_kib - memory_info_->available_memory_kib;
+  double memory_usage_percentage =
+      static_cast<double>(used_memory_kb) * 100 /
+      static_cast<double>(memory_info_->total_memory_kib);
+
+  std::u16string description =
+      l10n_util::GetStringFUTF16(IDS_ASH_MEMORY_USAGE_IN_LAUNCHER_DESCRIPTION,
+                                 available_memory_gb, total_memory_gb);
+
+  AnswerCardInfo answer_card_info(memory_usage_percentage);
+  SearchProvider::Results new_results;
+  new_results.emplace_back(std::make_unique<SystemInfoAnswerResult>(
+      profile_, last_query_, /*url_path=*/"", diagnostics_icon_, relevance_,
+      /*title=*/u"", description,
+      SystemInfoAnswerResult::SystemInfoCategory::kDiagnostics,
+      answer_card_info));
+  SwapResults(&new_results);
 }
 
 void SystemInfoCardProvider::UpdateMemoryUsage() {
@@ -258,12 +293,15 @@ void SystemInfoCardProvider::OnCpuUsageUpdated(TelemetryInfoPtr info_ptr) {
           static_cast<double>(
               cpu_usage_->GetScalingAverageCurrentFrequencyKhz() / 10000) /
           100));
+
+  AnswerCardInfo answer_card_info(
+      ash::SystemInfoAnswerCardDisplayType::kTextCard);
   SearchProvider::Results new_results;
   new_results.emplace_back(std::make_unique<SystemInfoAnswerResult>(
       profile_, last_query_, /*url_path=*/"", diagnostics_icon_, relevance_,
       title, description,
-      SystemInfoAnswerResult::AnswerCardDisplayType::kTextCard,
-      SystemInfoAnswerResult::SystemInfoCategory::kDiagnostics));
+      SystemInfoAnswerResult::SystemInfoCategory::kDiagnostics,
+      answer_card_info));
   SwapResults(&new_results);
 }
 
@@ -340,12 +378,14 @@ void SystemInfoCardProvider::UpdateChromeOsVersion() {
       processor_variation);
   std::u16string description =
       l10n_util::GetStringUTF16(IDS_SETTINGS_ABOUT_PAGE_CHECK_FOR_UPDATES);
+
+  AnswerCardInfo answer_card_info(
+      ash::SystemInfoAnswerCardDisplayType::kTextCard);
   SearchProvider::Results new_results;
   new_results.emplace_back(std::make_unique<SystemInfoAnswerResult>(
       profile_, last_query_, kAboutChromeOsSectionPath, os_settings_icon_,
       relevance_, version_string, description,
-      SystemInfoAnswerResult::AnswerCardDisplayType::kTextCard,
-      SystemInfoAnswerResult::SystemInfoCategory::kSettings));
+      SystemInfoAnswerResult::SystemInfoCategory::kSettings, answer_card_info));
   SwapResults(&new_results);
 }
 
@@ -353,6 +393,7 @@ void SystemInfoCardProvider::UpdateStorageInfo() {
   total_disk_space_calculator_.StartCalculation();
   free_disk_space_calculator_.StartCalculation();
   my_files_size_calculator_.StartCalculation();
+  drive_offline_size_calculator_.StartCalculation();
   browsing_data_size_calculator_.StartCalculation();
   apps_size_calculator_.StartCalculation();
   crostini_size_calculator_.StartCalculation();
@@ -363,6 +404,7 @@ void SystemInfoCardProvider::StartObservingCalculators() {
   total_disk_space_calculator_.AddObserver(this);
   free_disk_space_calculator_.AddObserver(this);
   my_files_size_calculator_.AddObserver(this);
+  drive_offline_size_calculator_.AddObserver(this);
   browsing_data_size_calculator_.AddObserver(this);
   apps_size_calculator_.AddObserver(this);
   crostini_size_calculator_.AddObserver(this);
@@ -373,6 +415,7 @@ void SystemInfoCardProvider::StopObservingCalculators() {
   total_disk_space_calculator_.RemoveObserver(this);
   free_disk_space_calculator_.RemoveObserver(this);
   my_files_size_calculator_.RemoveObserver(this);
+  drive_offline_size_calculator_.RemoveObserver(this);
   browsing_data_size_calculator_.RemoveObserver(this);
   apps_size_calculator_.RemoveObserver(this);
   crostini_size_calculator_.RemoveObserver(this);

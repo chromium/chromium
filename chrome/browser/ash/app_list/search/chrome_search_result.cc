@@ -196,6 +196,12 @@ void ChromeSearchResult::SetUseBadgeIconBackground(
   SetSearchResultMetadata();
 }
 
+void ChromeSearchResult::SetSystemInfoAnswerCardData(
+    ash::SystemInfoAnswerCardData answer_card_info) {
+  metadata_->system_info_answer_card_data = answer_card_info;
+  SetSearchResultMetadata();
+}
+
 void ChromeSearchResult::SetSearchResultMetadata() {
   AppListModelUpdater* updater = model_updater();
   if (updater)
