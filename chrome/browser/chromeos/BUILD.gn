@@ -295,6 +295,8 @@ source_set("chromeos") {
 
   if (is_chromeos_ash) {
     sources += [
+      "app_mode/kiosk_troubleshooting_controller_ash.cc",
+      "app_mode/kiosk_troubleshooting_controller_ash.h",
       "extensions/login_screen/login/cleanup/cleanup_manager_ash.cc",
       "extensions/login_screen/login/cleanup/cleanup_manager_ash.h",
       "extensions/login_screen/login/cleanup/clipboard_cleanup_handler.cc",

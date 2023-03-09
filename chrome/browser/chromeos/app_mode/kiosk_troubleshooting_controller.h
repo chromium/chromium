@@ -27,7 +27,7 @@ class KioskTroubleshootingController {
       delete;
   KioskTroubleshootingController& operator=(
       const KioskTroubleshootingController&) = delete;
-  ~KioskTroubleshootingController();
+  virtual ~KioskTroubleshootingController();
 
   // Returns `false` if `prefs::kKioskTroubleshootingToolsEnabled` preference is
   // not found in the pref service, otherwise returns its value.

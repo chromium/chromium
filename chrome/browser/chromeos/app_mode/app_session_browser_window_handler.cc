@@ -16,6 +16,10 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "kiosk_troubleshooting_controller_ash.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace chromeos {
 
 const char kKioskNewBrowserWindowHistogram[] = "Kiosk.NewBrowserWindow";
@@ -31,11 +35,21 @@ AppSessionBrowserWindowHandler::AppSessionBrowserWindowHandler(
       on_browser_window_added_callback_(on_browser_window_added_callback),
       shutdown_app_session_callback_(std::move(shutdown_app_session_callback)),
       app_session_policies_(profile_->GetPrefs()) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  kiosk_troubleshooting_controller_ =
+      std::make_unique<ash::KioskTroubleshootingControllerAsh>(
+          profile_->GetPrefs(),
+          base::BindOnce(&AppSessionBrowserWindowHandler::ShutdownAppSession,
+                         weak_ptr_factory_.GetWeakPtr()));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   kiosk_troubleshooting_controller_ =
       std::make_unique<KioskTroubleshootingController>(
           profile_->GetPrefs(),
           base::BindOnce(&AppSessionBrowserWindowHandler::ShutdownAppSession,
                          weak_ptr_factory_.GetWeakPtr()));
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   BrowserList::AddObserver(this);
 }
 
@@ -57,6 +71,17 @@ void AppSessionBrowserWindowHandler::HandleNewBrowserWindow(Browser* browser) {
     return;
   }
 
+  if (IsNewBrowserWindowAllowed(browser)) {
+    base::UmaHistogramEnumeration(
+        kKioskNewBrowserWindowHistogram,
+        KioskBrowserWindowType::kOpenedRegularBrowser);
+    LOG(WARNING) << "Open additional fullscreen browser window in kiosk session"
+                 << ", url=" << url_string;
+    chrome::ToggleFullscreenMode(browser);
+    on_browser_window_added_callback_.Run(/*is_closing=*/false);
+    return;
+  }
+
   if (IsDevToolsAllowedBrowser(browser)) {
     base::UmaHistogramEnumeration(
         kKioskNewBrowserWindowHistogram,
@@ -65,13 +90,10 @@ void AppSessionBrowserWindowHandler::HandleNewBrowserWindow(Browser* browser) {
     return;
   }
 
-  if (IsNewBrowserWindowAllowed(browser)) {
+  if (IsNormalTroubleshootingBrowserAllowed(browser)) {
     base::UmaHistogramEnumeration(
         kKioskNewBrowserWindowHistogram,
-        KioskBrowserWindowType::kOpenedRegularBrowser);
-    LOG(WARNING) << "Open additional fullscreen browser window in kiosk session"
-                 << ", url=" << url_string;
-    chrome::ToggleFullscreenMode(browser);
+        KioskBrowserWindowType::kOpenedTroubleshootingNormalBrowser);
     on_browser_window_added_callback_.Run(/*is_closing=*/false);
     return;
   }
@@ -161,6 +183,13 @@ bool AppSessionBrowserWindowHandler::IsNewBrowserWindowAllowed(
 bool AppSessionBrowserWindowHandler::IsDevToolsAllowedBrowser(
     Browser* browser) const {
   return browser->is_type_devtools() &&
+         kiosk_troubleshooting_controller_
+             ->AreKioskTroubleshootingToolsEnabled();
+}
+
+bool AppSessionBrowserWindowHandler::IsNormalTroubleshootingBrowserAllowed(
+    Browser* browser) const {
+  return browser->is_type_normal() &&
          kiosk_troubleshooting_controller_
              ->AreKioskTroubleshootingToolsEnabled();
 }

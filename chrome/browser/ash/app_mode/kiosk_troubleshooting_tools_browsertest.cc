@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_mode/app_session_ash.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
 #include "chrome/browser/ash/login/app_mode/test/web_kiosk_base_test.h"
 #include "chrome/browser/chromeos/app_mode/app_session_browser_window_handler.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
@@ -12,6 +13,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -30,16 +32,20 @@ class KioskTroubleshootingToolsTest : public WebKioskBaseTest {
   KioskTroubleshootingToolsTest& operator=(
       const KioskTroubleshootingToolsTest&) = delete;
 
-  void EnableDevTools() const {
-    initial_browser()->profile()->GetPrefs()->SetInteger(
-        prefs::kDevToolsAvailability, static_cast<int>(kAllowed));
+  void UpdateTroubleshootingToolsPolicy(bool enable) {
+    profile()->GetPrefs()->SetBoolean(prefs::kKioskTroubleshootingToolsEnabled,
+                                      enable);
   }
 
-  void ExpectOpenDevTools() const {
+  void EnableDevTools() const {
+    profile()->GetPrefs()->SetInteger(prefs::kDevToolsAvailability,
+                                      static_cast<int>(kAllowed));
+  }
+
+  void ExpectOpenBrowser(chromeos::KioskBrowserWindowType window_type) const {
     EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
-    histogram.ExpectBucketCount(
-        chromeos::kKioskNewBrowserWindowHistogram,
-        chromeos::KioskBrowserWindowType::kOpenedDevToolsBrowser, 1);
+    histogram.ExpectBucketCount(chromeos::kKioskNewBrowserWindowHistogram,
+                                window_type, 1);
     histogram.ExpectTotalCount(chromeos::kKioskNewBrowserWindowHistogram, 1);
   }
 
@@ -48,8 +54,19 @@ class KioskTroubleshootingToolsTest : public WebKioskBaseTest {
     EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
   }
 
+  Browser* OpenRegularBrowser() const {
+    return Browser::Create(
+        Browser::CreateParams(profile(), /* user_gesture=*/true));
+  }
+
+  Profile* profile() const { return initial_browser()->profile(); }
+
   Browser* initial_browser() const {
     return BrowserList::GetInstance()->get(0);
+  }
+
+  AppSessionAsh* app_session() const {
+    return WebKioskAppManager::Get()->app_session();
   }
 
  protected:
@@ -61,19 +78,15 @@ IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
   InitializeRegularOnlineKiosk();
   ExpectOnlyKioskAppOpen();
 
-  initial_browser()->profile()->GetPrefs()->SetBoolean(
-      prefs::kKioskTroubleshootingToolsEnabled, true);
-
+  UpdateTroubleshootingToolsPolicy(/*enable=*/true);
   EnableDevTools();
   DevToolsWindowTesting::OpenDevToolsWindowSync(initial_browser(),
                                                 /* is_docked= */ false);
-  ExpectOpenDevTools();
+  ExpectOpenBrowser(chromeos::KioskBrowserWindowType::kOpenedDevToolsBrowser);
 
   // Shut down the session when kiosk troubleshooting tools get disabled.
-  initial_browser()->profile()->GetPrefs()->SetBoolean(
-      prefs::kKioskTroubleshootingToolsEnabled, false);
-  auto* app_session = WebKioskAppManager::Get()->app_session();
-  EXPECT_TRUE(app_session->is_shutting_down());
+  UpdateTroubleshootingToolsPolicy(/*enable=*/false);
+  EXPECT_TRUE(app_session()->is_shutting_down());
 }
 
 IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
@@ -81,8 +94,7 @@ IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
   InitializeRegularOnlineKiosk();
   ExpectOnlyKioskAppOpen();
 
-  initial_browser()->profile()->GetPrefs()->SetBoolean(
-      prefs::kKioskTroubleshootingToolsEnabled, true);
+  UpdateTroubleshootingToolsPolicy(/*enable=*/true);
 
   // Devtools are not enabled, but disabled by default.
   DevToolsWindowTesting::OpenDevToolsWindowSync(initial_browser(),
@@ -109,6 +121,81 @@ IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
       chromeos::kKioskNewBrowserWindowHistogram,
       chromeos::KioskBrowserWindowType::kClosedRegularBrowser, 1);
   histogram.ExpectTotalCount(chromeos::kKioskNewBrowserWindowHistogram, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
+                       NewWindowBasicShowAndShutdown) {
+  InitializeRegularOnlineKiosk();
+  UpdateTroubleshootingToolsPolicy(/*enable=*/true);
+  ExpectOnlyKioskAppOpen();
+
+  OpenRegularBrowser();
+  EXPECT_FALSE(ShouldBrowserBeClosedByAppSessionBrowserHander(app_session()));
+
+  ExpectOpenBrowser(
+      chromeos::KioskBrowserWindowType::kOpenedTroubleshootingNormalBrowser);
+
+  // Shut down the session when kiosk troubleshooting tools get disabled.
+  UpdateTroubleshootingToolsPolicy(/*enable=*/false);
+  EXPECT_TRUE(app_session()->is_shutting_down());
+}
+
+IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
+                       OpenAllTroubleshootingTools) {
+  InitializeRegularOnlineKiosk();
+  UpdateTroubleshootingToolsPolicy(/*enable=*/true);
+  ExpectOnlyKioskAppOpen();
+  EnableDevTools();
+
+  DevToolsWindowTesting::OpenDevToolsWindowSync(initial_browser(),
+                                                /* is_docked= */ false);
+
+  OpenRegularBrowser();
+  EXPECT_FALSE(ShouldBrowserBeClosedByAppSessionBrowserHander(app_session()));
+
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 3u);
+  histogram.ExpectBucketCount(
+      chromeos::kKioskNewBrowserWindowHistogram,
+      chromeos::KioskBrowserWindowType::kOpenedDevToolsBrowser, 1);
+  histogram.ExpectBucketCount(
+      chromeos::kKioskNewBrowserWindowHistogram,
+      chromeos::KioskBrowserWindowType::kOpenedTroubleshootingNormalBrowser, 1);
+  histogram.ExpectTotalCount(chromeos::kKioskNewBrowserWindowHistogram, 2);
+}
+
+IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
+                       NewWindowDisalloweddNoShow) {
+  InitializeRegularOnlineKiosk();
+  ExpectOnlyKioskAppOpen();
+
+  OpenRegularBrowser();
+  EXPECT_TRUE(ShouldBrowserBeClosedByAppSessionBrowserHander(app_session()));
+
+  histogram.ExpectBucketCount(
+      chromeos::kKioskNewBrowserWindowHistogram,
+      chromeos::KioskBrowserWindowType::kClosedRegularBrowser, 1);
+  histogram.ExpectTotalCount(chromeos::kKioskNewBrowserWindowHistogram, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest, NewWindowAddTab) {
+  InitializeRegularOnlineKiosk();
+  UpdateTroubleshootingToolsPolicy(/*enable=*/true);
+  ExpectOnlyKioskAppOpen();
+
+  Browser* new_browser = OpenRegularBrowser();
+  new_browser->window()->Show();
+  EXPECT_FALSE(ShouldBrowserBeClosedByAppSessionBrowserHander(app_session()));
+
+  ExpectOpenBrowser(
+      chromeos::KioskBrowserWindowType::kOpenedTroubleshootingNormalBrowser);
+  int initial_number_of_tabs = new_browser->tab_strip_model()->count();
+
+  ui_test_utils::NavigateToURLWithDisposition(
+      new_browser, GURL("https://www.google.com/"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  EXPECT_EQ(new_browser->tab_strip_model()->count(),
+            initial_number_of_tabs + 1);
 }
 
 }  // namespace

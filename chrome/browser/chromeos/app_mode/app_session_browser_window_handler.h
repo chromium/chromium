@@ -27,7 +27,8 @@ enum class KioskBrowserWindowType {
   kClosedRegularBrowser = 1,
   kOpenedRegularBrowser = 2,
   kOpenedDevToolsBrowser = 3,
-  kMaxValue = kOpenedDevToolsBrowser,
+  kOpenedTroubleshootingNormalBrowser = 4,
+  kMaxValue = kOpenedTroubleshootingNormalBrowser,
 };
 
 // This class monitors for the addition and removal of new browser windows
@@ -70,6 +71,10 @@ class AppSessionBrowserWindowHandler : public BrowserListObserver {
 
   // Returns true if open devtools browser and it is allowed by policy.
   bool IsDevToolsAllowedBrowser(Browser* browser) const;
+
+  // Returns true if open normal browser and it is allowed by troubleshooting
+  // policy.
+  bool IsNormalTroubleshootingBrowserAllowed(Browser* browser) const;
 
   // Returns true in case of the initial browser window existed for web kiosks.
   bool ShouldExitKioskWhenLastBrowserRemoved() const;
