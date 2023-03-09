@@ -92,6 +92,7 @@ mojom("mojom_platform") {
     "image_downloader/image_downloader.mojom",
     "input/focus_type.mojom",
     "input/gesture_event.mojom",
+    "input/handwriting_gesture_result.mojom",
     "input/input_event.mojom",
     "input/input_event_result.mojom",
     "input/input_handler.mojom",

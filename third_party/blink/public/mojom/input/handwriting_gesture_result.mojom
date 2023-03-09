@@ -1,0 +1,23 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// These are used in histograms, do not remove/renumber entries.
+// These are mirrors of the HANDWRITING_GESTURE_RESULT_... constants defined in
+// InputConnection.java.
+enum HandwritingGestureResult {
+  // InputConnection#HANDWRITING_GESTURE_RESULT_UNKNOWN
+  kUnknown = 0,
+  // InputConnection#HANDWRITING_GESTURE_RESULT_SUCCESS
+  kSuccess = 1,
+  // InputConnection#HANDWRITING_GESTURE_RESULT_UNSUPPORTED
+  kUnsupported = 2,
+  // InputConnection#HANDWRITING_GESTURE_RESULT_FAILED
+  kFailed = 3,
+  // InputConnection#HANDWRITING_GESTURE_RESULT_CANCELLED
+  kCancelled = 4,
+  // InputConnection#HANDWRITING_GESTURE_RESULT_FALLBACK
+  kFallback = 5,
+};

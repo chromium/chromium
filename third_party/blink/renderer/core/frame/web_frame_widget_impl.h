@@ -428,7 +428,8 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   // mojom::blink::FrameWidgetInputHandler overrides:
   void HandleStylusWritingGestureAction(
-      mojom::blink::StylusWritingGestureDataPtr gesture_data) override;
+      mojom::blink::StylusWritingGestureDataPtr gesture_data,
+      HandleStylusWritingGestureActionCallback callback) override;
 
   // Sets the display mode, which comes from the top-level browsing context and
   // is applied to all widgets.

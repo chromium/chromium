@@ -46,10 +46,6 @@ public class StylusGestureHandler implements InvocationHandler {
     static final int GRANULARITY_WORD = 1;
     // HandwritingGesture#GRANULARITY_CHARACTER
     static final int GRANULARITY_CHARACTER = 2;
-    // InputConnection#HANDWRITING_GESTURE_RESULT_SUCCESS
-    static final int HANDWRITING_GESTURE_RESULT_SUCCESS = 1;
-    // InputConnection#HANDWRITING_GESTURE_RESULT_UNSUPPORTED
-    static final int HANDWRITING_GESTURE_RESULT_UNSUPPORTED = 2;
 
     private static final String TAG = "StylusGestureHandler";
 
@@ -80,7 +76,7 @@ public class StylusGestureHandler implements InvocationHandler {
     }
 
     private final InputConnection mFallback;
-    private final Callback<StylusWritingGestureData> mOnGestureCallback;
+    private final Callback<OngoingGesture> mOnGestureCallback;
 
     /**
      * If StylusRichGestures are enabled, return a proxy class so that we can handle calls to
@@ -93,8 +89,7 @@ public class StylusGestureHandler implements InvocationHandler {
      */
     @OptIn(markerClass = androidx.core.os.BuildCompat.PrereleaseSdkCheck.class)
     public static @Nullable InputConnection maybeProxyInputConnection(
-            @Nullable InputConnection inputConnection,
-            Callback<StylusWritingGestureData> onGestureCallback) {
+            @Nullable InputConnection inputConnection, Callback<OngoingGesture> onGestureCallback) {
         if (inputConnection == null || !BuildCompat.isAtLeastU()
                 || !ContentFeatureList.isEnabled(
                         org.chromium.blink_public.common.BlinkFeatures.STYLUS_RICH_GESTURES)) {
@@ -123,20 +118,14 @@ public class StylusGestureHandler implements InvocationHandler {
         StylusWritingGestureData gestureData = createGesture(args[0]);
         Executor executor = (Executor) args[1];
         IntConsumer consumer = (IntConsumer) args[2];
-        // TODO(crbug.com/1418296) Add a way to detect success/failure of gestures from blink.
-        if (executor != null && consumer != null) {
-            executor.execute(()
-                                     -> consumer.accept(gestureData == null
-                                                     ? HANDWRITING_GESTURE_RESULT_UNSUPPORTED
-                                                     : HANDWRITING_GESTURE_RESULT_SUCCESS));
-        }
+        OngoingGesture gesture = new OngoingGesture(gestureData, executor, consumer);
         // Callback should be run on the UI thread.
-        PostTask.postTask(UiThreadTaskTraits.USER_BLOCKING, mOnGestureCallback.bind(gestureData));
+        PostTask.postTask(UiThreadTaskTraits.USER_BLOCKING, mOnGestureCallback.bind(gesture));
         return null;
     }
 
     private StylusGestureHandler(
-            InputConnection fallback, Callback<StylusWritingGestureData> onGestureCallback) {
+            InputConnection fallback, Callback<OngoingGesture> onGestureCallback) {
         mFallback = fallback;
         mOnGestureCallback = onGestureCallback;
     }
