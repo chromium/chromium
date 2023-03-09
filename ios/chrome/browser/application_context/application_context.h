@@ -11,10 +11,6 @@
 
 #include "base/memory/scoped_refptr.h"
 
-namespace breadcrumbs {
-class BreadcrumbPersistentStorageManager;
-}
-
 namespace component_updater {
 class ComponentUpdateService;
 }
@@ -170,11 +166,6 @@ class ApplicationContext {
 
   // Gets the Fullscreen Promos Manager.
   virtual PromosManager* GetPromosManager() = 0;
-
-  // Returns the BreadcrumbPersistentStorageManager writing breadcrumbs to disk.
-  // Will be null if breadcrumb collection is not enabled.
-  virtual breadcrumbs::BreadcrumbPersistentStorageManager*
-  GetBreadcrumbPersistentStorageManager() = 0;
 
   // Returns the SingleSignOnService instance used by this application.
   virtual id<SingleSignOnService> GetSSOService() = 0;

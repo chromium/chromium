@@ -54,17 +54,17 @@ void DoWriteEventsToFile(const base::FilePath& file_path,
 }
 
 // Returns breadcrumb events stored at |file_path|.
-std::vector<std::string> DoGetStoredEvents(const base::FilePath& file_path) {
+std::string DoGetStoredEvents(const base::FilePath& file_path) {
   base::File events_file(file_path,
                          base::File::FLAG_OPEN | base::File::FLAG_READ);
   if (!events_file.IsValid()) {
     // File may not yet exist.
-    return std::vector<std::string>();
+    return std::string();
   }
 
   size_t file_size = events_file.GetLength();
   if (file_size <= 0) {
-    return std::vector<std::string>();
+    return std::string();
   }
 
   // Do not read more than |kPersistedFilesizeInBytes|, in case the file was
@@ -79,49 +79,14 @@ std::vector<std::string> DoGetStoredEvents(const base::FilePath& file_path) {
   std::vector<uint8_t> data;
   data.resize(file_size);
   if (!events_file.ReadAndCheck(/*offset=*/0, data)) {
-    return std::vector<std::string>();
+    return std::string();
   }
 
-  const std::string persisted_events(data.begin(), data.end());
-  const std::string all_events =
-      persisted_events.substr(/*pos=*/0, strlen(persisted_events.c_str()));
-  return base::SplitString(all_events, kEventSeparator, base::TRIM_WHITESPACE,
-                           base::SPLIT_WANT_NONEMPTY);
-}
-
-// Returns the total length of stored breadcrumb events at |file_path|. The
-// file is opened and the length of the string contents calculated because
-// the file size is always constant. (Due to base::MemoryMappedFile filling the
-// unused space with \0s.
-size_t DoGetStoredEventsLength(const base::FilePath& file_path) {
-  base::File events_file(file_path,
-                         base::File::FLAG_OPEN | base::File::FLAG_READ);
-  if (!events_file.IsValid()) {
-    return 0;
-  }
-
-  size_t file_size = events_file.GetLength();
-  if (file_size <= 0) {
-    return 0;
-  }
-
-  // Do not read more than |kPersistedFilesizeInBytes|, in case the file was
-  // corrupted. If |kPersistedFilesizeInBytes| has been reduced since the last
-  // breadcrumbs file was saved, this could result in a one time loss of the
-  // oldest breadcrumbs which is ok because the decision has already been made
-  // to reduce the size of the stored breadcrumbs.
-  if (file_size > kPersistedFilesizeInBytes) {
-    file_size = kPersistedFilesizeInBytes;
-  }
-
-  std::vector<uint8_t> data;
-  data.resize(file_size);
-  if (!events_file.ReadAndCheck(/*offset=*/0, data)) {
-    return 0;
-  }
-
-  const std::string persisted_events(data.begin(), data.end());
-  return strlen(persisted_events.c_str());
+  std::string persisted_events(data.begin(), data.end());
+  // Resize from the length of the entire file to only the portion containing
+  // data, i.e., exclude trailing \0s.
+  persisted_events.resize(strlen(persisted_events.c_str()));
+  return persisted_events;
 }
 
 // Returns a newline-delimited string containing all breadcrumbs held by the
@@ -161,21 +126,24 @@ BreadcrumbPersistentStorageManager::BreadcrumbPersistentStorageManager(
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
       weak_ptr_factory_(this) {
   task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&DoGetStoredEventsLength, breadcrumbs_file_path_),
-      base::BindOnce(
-          &BreadcrumbPersistentStorageManager::InitializeFilePosition,
-          weak_ptr_factory_.GetWeakPtr()));
+      FROM_HERE, base::BindOnce(&DoGetStoredEvents, breadcrumbs_file_path_),
+      base::BindOnce(&BreadcrumbPersistentStorageManager::Initialize,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 BreadcrumbPersistentStorageManager::~BreadcrumbPersistentStorageManager() =
     default;
 
-void BreadcrumbPersistentStorageManager::GetStoredEvents(
-    base::OnceCallback<void(std::vector<std::string>)> callback) {
-  task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&DoGetStoredEvents, breadcrumbs_file_path_),
-      std::move(callback));
+void BreadcrumbPersistentStorageManager::Initialize(
+    const std::string& previous_session_events) {
+  breadcrumbs::BreadcrumbManager::GetInstance().SetPreviousSessionEvents(
+      base::SplitString(previous_session_events, kEventSeparator,
+                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
+  file_position_ = previous_session_events.length();
+
+  // Write any startup events that have accumulated while waiting for the file
+  // position to be set.
+  WriteEvents();
 }
 
 void BreadcrumbPersistentStorageManager::Write(const std::string& events,
@@ -214,14 +182,6 @@ bool BreadcrumbPersistentStorageManager::CheckForFileConsent() {
 
   should_create_files = is_metrics_and_crash_reporting_enabled;
   return should_create_files;
-}
-
-void BreadcrumbPersistentStorageManager::InitializeFilePosition(
-    size_t file_size) {
-  file_position_ = file_size;
-  // Write any startup events that have accumulated while waiting for this
-  // function to run.
-  WriteEvents();
 }
 
 void BreadcrumbPersistentStorageManager::WriteEvents() {

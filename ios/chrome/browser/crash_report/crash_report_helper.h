@@ -5,9 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_CRASH_REPORT_CRASH_REPORT_HELPER_H_
 #define IOS_CHROME_BROWSER_CRASH_REPORT_CRASH_REPORT_HELPER_H_
 
-#include <string>
-#include <vector>
-
 @class NSString;
 
 namespace web {
@@ -50,9 +47,6 @@ void StopMonitoringTabStateForWebStateList(WebStateList* web_state_list);
 // Clear any state about the urls loaded in the given WebStateList; this should
 // be called when the WebStateList is deactivated.
 void ClearStateForWebStateList(WebStateList* web_state_list);
-
-// Sets breadcrumb events associated with the previous application session.
-void SetPreviousSessionEvents(const std::vector<std::string>& events);
 
 }  // namespace crash_report_helper
 

@@ -231,12 +231,6 @@ PromosManager* TestingApplicationContext::GetPromosManager() {
   return promos_manager_.get();
 }
 
-breadcrumbs::BreadcrumbPersistentStorageManager*
-TestingApplicationContext::GetBreadcrumbPersistentStorageManager() {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  return nullptr;
-}
-
 id<SingleSignOnService> TestingApplicationContext::GetSSOService() {
   DCHECK(thread_checker_.CalledOnValidThread());
   if (!single_sign_on_service_) {

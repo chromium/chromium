@@ -17,10 +17,6 @@ class CommandLine;
 class SequencedTaskRunner;
 }  // namespace base
 
-namespace breadcrumbs {
-class BreadcrumbPersistentStorageManager;
-}
-
 class ApplicationBreadcrumbsLogger;
 
 namespace network {
@@ -81,8 +77,6 @@ class ApplicationContextImpl : public ApplicationContext {
   network::NetworkConnectionTracker* GetNetworkConnectionTracker() override;
   BrowserPolicyConnectorIOS* GetBrowserPolicyConnector() override;
   PromosManager* GetPromosManager() override;
-  breadcrumbs::BreadcrumbPersistentStorageManager*
-  GetBreadcrumbPersistentStorageManager() override;
   id<SingleSignOnService> GetSSOService() override;
   SystemIdentityManager* GetSystemIdentityManager() override;
   segmentation_platform::OTRWebStateObserver*

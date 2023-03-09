@@ -20,7 +20,6 @@
 #import "base/task/thread_pool.h"
 #import "base/time/default_clock.h"
 #import "base/time/default_tick_clock.h"
-#import "components/breadcrumbs/core/breadcrumb_persistent_storage_manager.h"
 #import "components/breadcrumbs/core/crash_reporter_breadcrumb_observer.h"
 #import "components/breadcrumbs/core/features.h"
 #import "components/component_updater/component_updater_service.h"
@@ -490,14 +489,6 @@ PromosManager* ApplicationContextImpl::GetPromosManager() {
         GetLocalState(), base::DefaultClock::GetInstance());
   }
   return promos_manager_.get();
-}
-
-breadcrumbs::BreadcrumbPersistentStorageManager*
-ApplicationContextImpl::GetBreadcrumbPersistentStorageManager() {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  return application_breadcrumbs_logger_
-             ? application_breadcrumbs_logger_->GetPersistentStorageManager()
-             : nullptr;
 }
 
 id<SingleSignOnService> ApplicationContextImpl::GetSSOService() {

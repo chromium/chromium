@@ -16,8 +16,6 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/path_service.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
-#import "components/breadcrumbs/core/breadcrumb_persistent_storage_manager.h"
 #import "components/breadcrumbs/core/features.h"
 #import "components/component_updater/component_updater_service.h"
 #import "components/component_updater/crl_set_remover.h"
@@ -341,8 +339,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 - (void)scheduleAppDistributionPings;
 // Asynchronously schedule the init of the memoryDebuggerManager.
 - (void)scheduleMemoryDebuggingTools;
-// Starts logging breadcrumbs.
-- (void)startLoggingBreadcrumbs;
 // Asynchronously kick off regular free memory checks.
 - (void)startFreeMemoryMonitoring;
 // Asynchronously schedules the reset of the failed startup attempt counter.
@@ -569,7 +565,9 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   [[PreviousSessionInfo sharedInstance] resetConnectedSceneSessionIDs];
 
   if (base::FeatureList::IsEnabled(breadcrumbs::kLogBreadcrumbs)) {
-    [self startLoggingBreadcrumbs];
+    // Start logging breadcrumbs.
+    BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
+        self.appState.mainBrowserState);
   }
 
   // Send "Chrome Opened" event to the feature_engagement::Tracker on cold
@@ -1145,20 +1143,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   // No need for a post-task or a deferred initialisation as the memory
   // monitoring already happens on a background sequence.
   StartFreeMemoryMonitor();
-}
-
-- (void)startLoggingBreadcrumbs {
-  BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
-      self.appState.mainBrowserState);
-
-  // Get stored persistent breadcrumbs from last run to set on crash reports.
-  breadcrumbs::BreadcrumbPersistentStorageManager* persistentStorageManager =
-      GetApplicationContext()->GetBreadcrumbPersistentStorageManager();
-  DCHECK(persistentStorageManager);
-  persistentStorageManager->GetStoredEvents(
-      base::BindOnce(^(std::vector<std::string> events) {
-        crash_report_helper::SetPreviousSessionEvents(events);
-      }));
 }
 
 - (void)scheduleLowPriorityStartupTasks {

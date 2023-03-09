@@ -148,8 +148,6 @@ class TestingBrowserProcess : public BrowserProcess {
   HidSystemTrayIcon* hid_system_tray_icon() override;
 #endif
   BuildState* GetBuildState() override;
-  breadcrumbs::BreadcrumbPersistentStorageManager*
-  GetBreadcrumbPersistentStorageManager() override;
 
   // Set the local state for tests. Consumer is responsible for cleaning it up
   // afterwards (using ScopedTestingLocalState, for example).

@@ -480,11 +480,6 @@ BuildState* TestingBrowserProcess::GetBuildState() {
 #endif
 }
 
-breadcrumbs::BreadcrumbPersistentStorageManager*
-TestingBrowserProcess::GetBreadcrumbPersistentStorageManager() {
-  return nullptr;
-}
-
 resource_coordinator::TabManager* TestingBrowserProcess::GetTabManager() {
   return resource_coordinator_parts()->tab_manager();
 }

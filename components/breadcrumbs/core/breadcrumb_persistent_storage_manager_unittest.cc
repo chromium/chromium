@@ -13,6 +13,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
@@ -32,13 +33,15 @@ constexpr unsigned long kEventCountTooManyForPersisting =
 // `last_logged_event` matches the last persisted event.
 bool ValidatePersistedEvents(const std::string& last_logged_event,
                              std::vector<std::string> persisted_events) {
-  if (persisted_events.empty())
+  if (persisted_events.empty()) {
     return false;
+  }
 
   // The newest event is at the back of the vector.
   const std::string last_event = persisted_events.back();
-  if (last_event.find(last_logged_event) == std::string::npos)
+  if (last_event.find(last_logged_event) == std::string::npos) {
     return false;
+  }
 
   // The oldest event is at the front of the vector.
   const std::string first_event = persisted_events.front();
@@ -67,33 +70,39 @@ class BreadcrumbPersistentStorageManagerTest : public PlatformTest {
  protected:
   BreadcrumbPersistentStorageManagerTest() {
     EXPECT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
+  }
+
+  ~BreadcrumbPersistentStorageManagerTest() override = default;
+
+  // Reads the breadcrumbs file and returns the events it contains.
+  std::vector<std::string> GetPersistedEvents() {
+    base::File breadcrumbs_file(
+        GetBreadcrumbPersistentStorageFilePath(scoped_temp_dir_.GetPath()),
+        base::File::FLAG_OPEN | base::File::FLAG_READ);
+    if (!breadcrumbs_file.IsValid()) {
+      return std::vector<std::string>();
+    }
+    base::File::Info file_info;
+    if (!breadcrumbs_file.GetInfo(&file_info)) {
+      return std::vector<std::string>();
+    }
+
+    std::vector<uint8_t> data;
+    data.resize(file_info.size);
+    if (!breadcrumbs_file.ReadAndCheck(/*offset=*/0, data)) {
+      return std::vector<std::string>();
+    }
+    const std::string events(data.begin(), data.end());
+    return base::SplitString(events.c_str(), "\n", base::TRIM_WHITESPACE,
+                             base::SPLIT_WANT_NONEMPTY);
+  }
+
+  void CreateBreadcrumbPersistentStorageManager() {
     persistent_storage_ = std::make_unique<BreadcrumbPersistentStorageManager>(
         scoped_temp_dir_.GetPath(),
         /*is_metrics_enabled_callback=*/base::BindRepeating(
             &BreadcrumbPersistentStorageManagerTest::is_metrics_enabled,
             base::Unretained(this)));
-  }
-
-  ~BreadcrumbPersistentStorageManagerTest() override = default;
-
-  // Calls `GetStoredEvents()` and wait for its posted tasks to complete.
-  std::vector<std::string> GetPersistedEvents() {
-    base::RunLoop run_loop;
-    persistent_storage_->GetStoredEvents(
-        base::BindOnce(&BreadcrumbPersistentStorageManagerTest::WaitForEvents,
-                       base::Unretained(this), run_loop.QuitClosure()));
-    run_loop.Run();
-    return events_;
-  }
-
-  // Run `quit_closure` to signal to the run loop that the function being tested
-  // has completed, and sets `events_` to the `events` vector received from the
-  // function being tested (so that tests may make assertions about the events).
-  void WaitForEvents(base::OnceClosure quit_closure,
-                     std::vector<std::string> events) {
-    events_.clear();
-    events_ = events;
-    std::move(quit_closure).Run();
   }
 
   bool is_metrics_enabled() { return is_metrics_enabled_; }
@@ -110,14 +119,13 @@ class BreadcrumbPersistentStorageManagerTest : public PlatformTest {
  private:
   std::unique_ptr<BreadcrumbPersistentStorageManager> persistent_storage_;
 
-  // Stores events returned by BreadcrumbPersistentStorageManager::GetEvents().
-  std::vector<std::string> events_;
-
   bool is_metrics_enabled_ = true;
 };
 
 // Ensures that logged events are persisted.
 TEST_F(BreadcrumbPersistentStorageManagerTest, PersistEvents) {
+  CreateBreadcrumbPersistentStorageManager();
+
   breadcrumb_manager_service_.AddEvent("event");
 
   // Advance clock to trigger writing final events.
@@ -131,6 +139,8 @@ TEST_F(BreadcrumbPersistentStorageManagerTest, PersistEvents) {
 // Ensures that persisted events do not grow too large when events are logged
 // very quickly one after the other.
 TEST_F(BreadcrumbPersistentStorageManagerTest, PersistLargeBucket) {
+  CreateBreadcrumbPersistentStorageManager();
+
   std::string event;
   unsigned long event_count = 0;
   while (event_count < kEventCountTooManyForPersisting) {
@@ -152,6 +162,8 @@ TEST_F(BreadcrumbPersistentStorageManagerTest, PersistLargeBucket) {
 // Ensures that persisted events do not grow too large for events logged a few
 // seconds apart from each other.
 TEST_F(BreadcrumbPersistentStorageManagerTest, PersistManyEventsOverTime) {
+  CreateBreadcrumbPersistentStorageManager();
+
   std::string event;
   unsigned long event_count = 0;
   while (event_count < kEventCountTooManyForPersisting) {
@@ -196,6 +208,8 @@ TEST_F(BreadcrumbPersistentStorageManagerTest,
   ASSERT_TRUE(file.Flush());
   file.Close();
 
+  CreateBreadcrumbPersistentStorageManager();
+
   const auto events = GetPersistedEvents();
   EXPECT_GT(events.size(), 1ul);
   EXPECT_LT(events.size(), written_events);
@@ -204,6 +218,8 @@ TEST_F(BreadcrumbPersistentStorageManagerTest,
 // Ensures that the breadcrumbs file is deleted if metrics consent is not
 // provided, and recreated if it is re-enabled.
 TEST_F(BreadcrumbPersistentStorageManagerTest, ChangeMetricsConsent) {
+  CreateBreadcrumbPersistentStorageManager();
+
   const base::FilePath breadcrumbs_file_path =
       GetBreadcrumbPersistentStorageFilePath(scoped_temp_dir_.GetPath());
 
