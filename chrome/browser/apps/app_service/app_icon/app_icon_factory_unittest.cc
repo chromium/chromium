@@ -52,6 +52,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "components/services/app_service/public/cpp/features.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #endif
 
 namespace apps {
@@ -383,8 +384,6 @@ class AppServiceAppIconTest : public AppIconFactoryTest {
     ash::CiceroneClient::InitializeFake();
     profile_ = std::make_unique<TestingProfile>();
     proxy_ = AppServiceProxyFactory::GetForProfile(profile_.get());
-    scoped_decode_request_for_testing_ =
-        std::make_unique<ScopedDecodeRequestForTesting>();
 
     crostini_test_helper_ =
         std::make_unique<crostini::CrostiniTestHelper>(profile_.get());
@@ -442,8 +441,7 @@ class AppServiceAppIconTest : public AppIconFactoryTest {
   std::unique_ptr<TestingProfile> profile_;
   raw_ptr<AppServiceProxy> proxy_;
   std::unique_ptr<apps::FakePublisherForIconTest> fake_publisher_;
-  std::unique_ptr<ScopedDecodeRequestForTesting>
-      scoped_decode_request_for_testing_;
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 
   std::unique_ptr<crostini::CrostiniTestHelper> crostini_test_helper_;
 

@@ -17,6 +17,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/services/app_service/public/cpp/features.h"
 #include "content/public/test/browser_task_environment.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/utility/utility.h"
 #include "ui/base/layout.h"
@@ -103,8 +104,6 @@ class AppServiceArcAppIconTest : public ArcAppsIconFactoryTest {
     ArcAppsIconFactoryTest::SetUp();
 
     proxy_ = AppServiceProxyFactory::GetForProfile(profile());
-    scoped_decode_request_for_testing_ =
-        std::make_unique<ScopedDecodeRequestForTesting>();
   }
 
   void GenerateArcAppUncompressedIcon(const std::string app_id,
@@ -179,8 +178,7 @@ class AppServiceArcAppIconTest : public ArcAppsIconFactoryTest {
 
  private:
   raw_ptr<AppServiceProxy> proxy_;
-  std::unique_ptr<ScopedDecodeRequestForTesting>
-      scoped_decode_request_for_testing_;
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 
 TEST_F(AppServiceArcAppIconTest, GetCompressedIconDataForUncompressedIcon) {

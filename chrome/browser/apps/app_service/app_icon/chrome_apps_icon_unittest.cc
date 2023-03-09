@@ -21,6 +21,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/image_loader.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/codec/png_codec.h"
@@ -200,8 +201,6 @@ class AppServiceChromeAppIconTest : public ChromeAppsIconFactoryTest {
     proxy_ = AppServiceProxyFactory::GetForProfile(profile());
     fake_icon_loader_ = std::make_unique<apps::FakeIconLoader>(proxy_);
     OverrideAppServiceProxyInnerIconLoader(fake_icon_loader_.get());
-    scoped_decode_request_for_testing_ =
-        std::make_unique<ScopedDecodeRequestForTesting>();
   }
 
   void OverrideAppServiceProxyInnerIconLoader(apps::IconLoader* icon_loader) {
@@ -252,8 +251,7 @@ class AppServiceChromeAppIconTest : public ChromeAppsIconFactoryTest {
  private:
   raw_ptr<AppServiceProxy> proxy_;
   std::unique_ptr<apps::FakeIconLoader> fake_icon_loader_;
-  std::unique_ptr<ScopedDecodeRequestForTesting>
-      scoped_decode_request_for_testing_;
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 
 TEST_F(AppServiceChromeAppIconTest, GetCompressedIconDataForCompressedIcon) {

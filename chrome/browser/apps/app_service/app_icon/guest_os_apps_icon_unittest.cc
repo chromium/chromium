@@ -24,6 +24,7 @@
 #include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "content/public/test/browser_task_environment.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -65,9 +66,6 @@ class AppServiceGuestOSIconTest : public testing::Test {
     crostini_test_helper_ =
         std::make_unique<crostini::CrostiniTestHelper>(profile());
     crostini_test_helper()->ReInitializeAppServiceIntegration();
-
-    scoped_decode_request_for_testing_ =
-        std::make_unique<ScopedDecodeRequestForTesting>();
   }
 
   void TearDown() override {
@@ -142,8 +140,7 @@ class AppServiceGuestOSIconTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
   base::raw_ptr<ash::FakeCiceroneClient> fake_cicerone_client_;
   std::unique_ptr<TestingProfile> profile_;
-  std::unique_ptr<ScopedDecodeRequestForTesting>
-      scoped_decode_request_for_testing_;
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   base::raw_ptr<AppServiceProxy> proxy_;
   std::unique_ptr<crostini::CrostiniTestHelper> crostini_test_helper_;
 };
