@@ -145,12 +145,20 @@ TEST_F(EcheStreamStatusChangeHandlerTest, OnStreamStatusChanged) {
   EXPECT_EQ(mojom::StreamStatus::kStreamStatusInitializing,
             GetObservedStreamStatus());
 
+  NotifyStreamStatus(mojom::StreamStatus::kStreamStatusConnected);
+  EXPECT_EQ(mojom::StreamStatus::kStreamStatusConnected,
+            GetObservedStreamStatus());
+
   NotifyStreamStatus(mojom::StreamStatus::kStreamStatusStarted);
   EXPECT_EQ(mojom::StreamStatus::kStreamStatusStarted,
             GetObservedStreamStatus());
 
   NotifyStreamStatus(mojom::StreamStatus::kStreamStatusStopped);
   EXPECT_EQ(mojom::StreamStatus::kStreamStatusStopped,
+            GetObservedStreamStatus());
+
+  NotifyStreamStatus(mojom::StreamStatus::kStreamStatusFailed);
+  EXPECT_EQ(mojom::StreamStatus::kStreamStatusFailed,
             GetObservedStreamStatus());
 }
 

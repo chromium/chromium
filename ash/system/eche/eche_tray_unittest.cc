@@ -273,7 +273,7 @@ TEST_F(EcheTrayTest, EcheTrayCreatesBubbleButHideFirst) {
   EXPECT_FALSE(phone_hub_tray()->eche_loading_indicator()->GetAnimating());
 }
 
-TEST_F(EcheTrayTest, EcheTrayCreatesBubbleButStreamStatusChanged) {
+TEST_F(EcheTrayTest, EcheTrayCreatesBubbleButStreamStatusChangedToStopped) {
   // Verify the eche tray button is not active, and the eche tray bubble
   // is not shown initially.
   EXPECT_FALSE(eche_tray()->is_active());
@@ -302,6 +302,41 @@ TEST_F(EcheTrayTest, EcheTrayCreatesBubbleButStreamStatusChanged) {
   // Change the streaming status, the bubble should be closed.
   eche_tray()->OnStreamStatusChanged(
       eche_app::mojom::StreamStatus::kStreamStatusStopped);
+  // Wait for the tray bubble widget to close.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(eche_tray()->is_active());
+  EXPECT_FALSE(eche_tray()->GetVisible());
+}
+
+TEST_F(EcheTrayTest, EcheTrayCreatesBubbleButStreamStatusChangedToFailed) {
+  // Verify the eche tray button is not active, and the eche tray bubble
+  // is not shown initially.
+  EXPECT_FALSE(eche_tray()->is_active());
+  EXPECT_FALSE(eche_tray()->get_bubble_wrapper_for_test());
+
+  // Allow us to create the bubble but it is not visible until we need this
+  // bubble to show up.
+  eche_tray()->LoadBubble(GURL("http://google.com"), CreateTestImage(),
+                          u"app 1", u"your phone");
+
+  EXPECT_FALSE(eche_tray()->is_active());
+  EXPECT_TRUE(eche_tray()->get_bubble_wrapper_for_test());
+  EXPECT_FALSE(
+      eche_tray()->get_bubble_wrapper_for_test()->bubble_view()->GetVisible());
+
+  // When the streaming status changes, the bubble should show up.
+  eche_tray()->OnStreamStatusChanged(
+      eche_app::mojom::StreamStatus::kStreamStatusStarted);
+  // Wait for the tray bubble widget to open.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(eche_tray()->is_active());
+  EXPECT_TRUE(eche_tray()->get_bubble_wrapper_for_test());
+  EXPECT_TRUE(
+      eche_tray()->get_bubble_wrapper_for_test()->bubble_view()->GetVisible());
+
+  // Change the streaming status, the bubble should be closed.
+  eche_tray()->OnStreamStatusChanged(
+      eche_app::mojom::StreamStatus::kStreamStatusFailed);
   // Wait for the tray bubble widget to close.
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(eche_tray()->is_active());

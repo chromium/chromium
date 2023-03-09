@@ -376,6 +376,13 @@ void EcheTray::OnStreamStatusChanged(eche_app::mojom::StreamStatus status) {
     case eche_app::mojom::StreamStatus::kStreamStatusInitializing:
       is_stream_started_ = false;
       break;
+    case eche_app::mojom::StreamStatus::kStreamStatusConnected:
+      is_stream_started_ = false;
+      break;
+    case eche_app::mojom::StreamStatus::kStreamStatusFailed:
+      is_stream_started_ = false;
+      PurgeAndClose();
+      break;
     case eche_app::mojom::StreamStatus::kStreamStatusUnknown:
       PA_LOG(WARNING) << "Unexpected stream status";
       is_stream_started_ = false;
