@@ -177,18 +177,6 @@
   },
   # In Xcode 12, "iPad Pro (12.9-inch)" requires a generation suffix in
   # "platform" arg.
-  'SIM_IPAD_PRO_2ND_GEN_14_5': {
-    'args': [
-      '--platform',
-      'iPad Pro (12.9-inch) (2nd generation)',
-      '--version',
-      '14.5',
-    ],
-    'identifier': 'iPad Pro (12.9-inch) (2nd generation) 14.5',
-    'mixins': [
-      'ios_runtime_cache_14_5',
-    ],
-  },
   'SIM_IPAD_PRO_3RD_GEN_16_2': {
     'args': [
       '--platform',
