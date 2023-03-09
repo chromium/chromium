@@ -29,7 +29,7 @@ struct LineBreakResults {
   LineBreakResults(const NGInlineNode& node, const NGConstraintSpace& space)
       : node_(node), space_(space) {}
 
-  wtf_size_t size() const { return lines_.size(); }
+  wtf_size_t Size() const { return lines_.size(); }
   LayoutUnit LineWidthSum() const {
     return std::accumulate(lines_.begin(), lines_.end(), LayoutUnit(),
                            [](LayoutUnit acc, const LineBreakResult& item) {
@@ -38,7 +38,7 @@ struct LineBreakResults {
   }
   const NGInlineBreakToken* BreakToken() const { return break_token_; }
 
-  void clear() {
+  void Clear() {
     break_token_ = nullptr;
     lines_.clear();
   }
@@ -90,7 +90,7 @@ struct LineBreakResults {
                                   const NGInlineBreakToken* stop_at = nullptr) {
     DCHECK_GT(epsilon, LayoutUnit());  // 0 may cause an infinite loop
     DCHECK_GT(num_lines, 0u);
-    DCHECK_EQ(size(), 0u);
+    DCHECK_EQ(Size(), 0u);
     LayoutUnit upper = max_available_width;
     LayoutUnit lower = min_available_width;
     while (lower + epsilon < upper) {
@@ -100,10 +100,10 @@ struct LineBreakResults {
       if (status != Status::kFinished) {
         lower = middle;
       } else {
-        DCHECK_LE(size(), num_lines);
+        DCHECK_LE(Size(), num_lines);
         upper = middle;
       }
-      clear();
+      Clear();
     }
     DCHECK_GE(upper, min_available_width);
     DCHECK_LE(upper, max_available_width);
@@ -192,7 +192,7 @@ absl::optional<LayoutUnit> NGParagraphLineBreaker::AttemptParagraphBalancing(
     }
     DCHECK(!normal_lines.BreakToken());
   }
-  const wtf_size_t num_lines = normal_lines.size();
+  const wtf_size_t num_lines = normal_lines.Size();
   DCHECK_LE(num_lines, kMaxLinesToBalance);
   if (num_lines <= 1) {
     return absl::nullopt;  // Balancing not needed for single line paragraphs.
