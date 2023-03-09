@@ -59,15 +59,9 @@ class PLATFORM_EXPORT MetricsHelper {
   scheduling_metrics::ThreadMetrics thread_metrics_;
 
   scheduling_metrics::TaskDurationMetricReporter<ThreadType>
-      thread_task_duration_reporter_;
-  scheduling_metrics::TaskDurationMetricReporter<ThreadType>
       thread_task_cpu_duration_reporter_;
   scheduling_metrics::TaskDurationMetricReporter<ThreadType>
-      foreground_thread_task_duration_reporter_;
-  scheduling_metrics::TaskDurationMetricReporter<ThreadType>
       foreground_thread_task_cpu_duration_reporter_;
-  scheduling_metrics::TaskDurationMetricReporter<ThreadType>
-      background_thread_task_duration_reporter_;
   scheduling_metrics::TaskDurationMetricReporter<ThreadType>
       background_thread_task_cpu_duration_reporter_;
 };

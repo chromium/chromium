@@ -638,24 +638,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="RendererScheduler.TaskDurationPerThreadType2"
-    enum="RendererSchedulerThreadType" expires_after="M85">
-  <owner>altimin@chromium.org</owner>
-  <owner>lpy@chromium.org</owner>
-  <summary>
-    Total duration (reported in full seconds) of renderer tasks split by per
-    thread type. Note that partial seconds are rounded up/down so that they
-    average to the correct value when many reports are added. For more details,
-    check base::ScaledLinearHistogram.
-
-    Used to compare CPU usage of tasks from different threads. Reported each
-    time a task is completed.
-
-    Note that this metric discards tasks longer than 30 seconds because they are
-    considered to be a result of measurement glitch.
-  </summary>
-</histogram>
-
 <histogram name="RendererScheduler.TaskTime2" units="microseconds"
     expires_after="never">
   <owner>sunyunjia@chromium.org</owner>

@@ -4989,7 +4989,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="Background" label=""/>
   <suffix name="Foreground" label=""/>
   <affected-histogram name="RendererScheduler.TaskDurationPerTaskType2"/>
-  <affected-histogram name="RendererScheduler.TaskDurationPerThreadType2"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="RendererScheduler_TaskDurationPerTaskTypeSplit"
