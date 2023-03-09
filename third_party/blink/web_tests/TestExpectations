@@ -1118,7 +1118,6 @@ crbug.com/882385 external/wpt/css/css-contain/quote-scoping-001.html [ Failure ]
 crbug.com/882385 external/wpt/css/css-contain/quote-scoping-002.html [ Failure ]
 crbug.com/882385 external/wpt/css/css-contain/quote-scoping-003.html [ Failure ]
 crbug.com/882385 external/wpt/css/css-contain/quote-scoping-004.html [ Failure ]
-crbug.com/1315275 external/wpt/css/css-contain/content-visibility/content-visibility-canvas.html [ Failure ]
 crbug.com/1315275 external/wpt/css/css-contain/content-visibility/content-visibility-video.html [ Failure ]
 crbug.com/1400979 external/wpt/css/css-contain/container-queries/nested-query-containers.html [ Crash Failure Pass Timeout ]
 
