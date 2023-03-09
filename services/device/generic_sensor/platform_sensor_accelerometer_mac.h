@@ -5,10 +5,8 @@
 #ifndef SERVICES_DEVICE_GENERIC_SENSOR_PLATFORM_SENSOR_ACCELEROMETER_MAC_H_
 #define SERVICES_DEVICE_GENERIC_SENSOR_PLATFORM_SENSOR_ACCELEROMETER_MAC_H_
 
-#include <memory>
-
 #include "base/memory/weak_ptr.h"
-#include "base/task/sequenced_task_runner.h"
+#include "base/threading/sequence_bound.h"
 #include "base/timer/timer.h"
 #include "services/device/generic_sensor/platform_sensor.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading.h"
@@ -48,9 +46,7 @@ class PlatformSensorAccelerometerMac : public PlatformSensor {
 
   void OnReadingAvailable(SensorReading reading);
 
-  scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
-  std::unique_ptr<BlockingTaskRunnerHelper, base::OnTaskRunnerDeleter>
-      blocking_task_helper_;
+  base::SequenceBound<BlockingTaskRunnerHelper> blocking_task_helper_;
 
   SensorReading reading_;
 
