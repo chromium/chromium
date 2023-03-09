@@ -12751,21 +12751,6 @@
             ]
         }
     ],
-    "UseAVCaptureDeviceDiscoverySessionDeviceMonitor": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UseAVCaptureDeviceDiscoverySessionDeviceMonitor"
-                    ]
-                }
-            ]
-        }
-    ],
     "UseBoringSSLForRandBytes": [
         {
             "platforms": [
