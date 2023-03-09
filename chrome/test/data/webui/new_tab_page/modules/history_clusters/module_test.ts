@@ -6,12 +6,13 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {Cluster, SearchQuery, URLVisit} from 'chrome://new-tab-page/history_cluster_types.mojom-webui.js';
 import {PageHandlerRemote} from 'chrome://new-tab-page/history_clusters.mojom-webui.js';
-import {HistoryClusterLayoutType, historyClustersDescriptor, HistoryClustersModuleElement, HistoryClustersProxyImpl, LAYOUT_1_MIN_IMAGE_VISITS, LAYOUT_1_MIN_VISITS, LAYOUT_2_MIN_IMAGE_VISITS, LAYOUT_2_MIN_VISITS, LAYOUT_3_MIN_IMAGE_VISITS, LAYOUT_3_MIN_VISITS, MIN_RELATED_SEARCHES} from 'chrome://new-tab-page/lazy_load.js';
+import {DismissModuleEvent, HistoryClusterLayoutType, historyClustersDescriptor, HistoryClustersModuleElement, HistoryClustersProxyImpl, LAYOUT_1_MIN_IMAGE_VISITS, LAYOUT_1_MIN_VISITS, LAYOUT_2_MIN_IMAGE_VISITS, LAYOUT_2_MIN_VISITS, LAYOUT_3_MIN_IMAGE_VISITS, LAYOUT_3_MIN_VISITS, MIN_RELATED_SEARCHES} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeMetricsPrivate, MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {installMock} from '../../test_support.js';
 
@@ -361,5 +362,33 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
     const headerElement = $$(moduleElement, 'ntp-module-header');
     assertTrue(!!headerElement);
     assertModuleHeaderTitle(headerElement, 'Resume your journey for SRP');
+  });
+
+  test('Backend is notified when module is dismissed', async () => {
+    const sampleClusterLabel = '"Sample Journey"';
+    const sampleCluster = createSampleCluster({label: sampleClusterLabel});
+    handler.setResultFor(
+        'getCluster', Promise.resolve({cluster: sampleCluster}));
+
+    const moduleElement = await historyClustersDescriptor.initialize(0) as
+        HistoryClustersModuleElement;
+
+    document.body.append(moduleElement);
+    assertTrue(!!moduleElement);
+    await handler.whenCalled('getCluster');
+    await waitAfterNextRender(moduleElement);
+
+    const waitForDismissEvent = eventToPromise('dismiss-module', moduleElement);
+    const dismissButton =
+        moduleElement.shadowRoot!.querySelector('ntp-module-header')!
+            .shadowRoot!.querySelector<HTMLElement>('#dismissButton')!;
+    dismissButton.click();
+    const dismissEvent: DismissModuleEvent = await waitForDismissEvent;
+    assertEquals(`${sampleCluster.label!} hidden`, dismissEvent.detail.message);
+    const visits = await handler.whenCalled('dismissCluster');
+    assertEquals(3, visits.length);
+    visits.forEach((visit: URLVisit, index: number) => {
+      assertEquals(index, Number(visit.visitId));
+    });
   });
 });

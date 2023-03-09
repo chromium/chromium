@@ -9,7 +9,7 @@ import './tile.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Cluster, URLVisit} from '../../history_cluster_types.mojom-webui.js';
-import {I18nMixin} from '../../i18n_setup.js';
+import {I18nMixin, loadTimeData} from '../../i18n_setup.js';
 import {ModuleDescriptor} from '../module_descriptor.js';
 
 import {HistoryClustersProxyImpl} from './history_clusters_proxy.js';
@@ -72,6 +72,19 @@ export class HistoryClustersModuleElement extends I18nMixin
 
   private isLayout_(type: HistoryClusterLayoutType): boolean {
     return type === this.layoutType;
+  }
+
+  private onDismissButtonClick_() {
+    HistoryClustersProxyImpl.getInstance().handler.dismissCluster(
+        [this.searchResultPage, ...this.cluster.visits]);
+    this.dispatchEvent(new CustomEvent('dismiss-module', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        message:
+            loadTimeData.getStringF('dismissModuleToastMessage', this.title_),
+      },
+    }));
   }
 
   private onShowAllClick_() {

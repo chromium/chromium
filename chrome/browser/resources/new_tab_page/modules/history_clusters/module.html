@@ -55,12 +55,11 @@
 </style>
 <div id="content">
   <ntp-module-header
-    disable-text="[[i18n('modulesDisableButtonText', title_)]]"
-    show-dismiss-button
-    dismiss-text="[[i18n('modulesDismissButtonText', title_)]]"
-    on-disable-button-click="onDisableButtonClick_"
-    show-info-button on-info-button-click="onInfoButtonClick_"
-    icon-src="chrome://resources/images/icon_journeys.svg">
+      disable-text="[[i18n('modulesDisableButtonText', title_)]]"
+      dismiss-text="[[i18n('modulesDismissButtonText', title_)]]"
+      show-info-button show-dismiss-button
+      on-dismiss-button-click="onDismissButtonClick_"
+      icon-src="chrome://resources/images/icon_journeys.svg">
     [[i18n('modulesJourneysResumeJourney', title_)]]
     <button id="showAllButton" type="button" on-click="onShowAllClick_"
             slot="title-actions">

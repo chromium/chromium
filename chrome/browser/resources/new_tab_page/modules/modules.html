@@ -136,11 +136,13 @@
 </div>
 <cr-toast id="removeModuleToast" duration="10000">
   <div id="removeModuleToastMessage">[[removedModuleData_.message]]</div>
-  <cr-button id="undoRemoveModuleButton"
-      aria-label="$i18n{undoDescription}"
-      on-click="onUndoRemoveModuleButtonClick_">
-    $i18n{undo}
-  </cr-button>
+  <template is="dom-if" if="[[removedModuleData_.undo]]">
+    <cr-button id="undoRemoveModuleButton"
+        aria-label="$i18n{undoDescription}"
+        on-click="onUndoRemoveModuleButtonClick_">
+      $i18n{undo}
+    </cr-button>
+  </template>
 </cr-toast>
 <cr-toast id="removeModuleFreToast" duration="10000">
   <div id="removeModuleFreToastMessage">

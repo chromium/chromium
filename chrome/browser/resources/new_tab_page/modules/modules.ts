@@ -21,7 +21,7 @@ import {ModuleWrapperElement} from './module_wrapper.js';
 import {getTemplate} from './modules.html.js';
 
 export type DismissModuleEvent =
-    CustomEvent<{message: string, restoreCallback: () => void}>;
+    CustomEvent<{message: string, restoreCallback?: () => void}>;
 export type DisableModuleEvent = DismissModuleEvent;
 
 declare global {
@@ -151,7 +151,7 @@ export class ModulesElement extends PolymerElement {
   private modulesRedesignedLayoutEnabled_: boolean;
   private modulesShownToUser: boolean;
   private modulesVisibilityDetermined_: boolean;
-  private removedModuleData_: {message: string, undo: () => void}|null;
+  private removedModuleData_: {message: string, undo?: () => void}|null;
 
   private setDisabledModulesListenerId_: number|null = null;
   private setModulesFreVisibilityListenerId_: number|null = null;
@@ -363,11 +363,14 @@ export class ModulesElement extends PolymerElement {
     const restoreCallback = e.detail.restoreCallback;
     this.removedModuleData_ = {
       message: e.detail.message,
-      undo: () => {
-        this.splice('dismissedModules_', this.dismissedModules_.indexOf(id), 1);
-        restoreCallback();
-        NewTabPageProxy.getInstance().handler.onRestoreModule(id);
-      },
+      undo: restoreCallback ?
+          () => {
+            this.splice(
+                'dismissedModules_', this.dismissedModules_.indexOf(id), 1);
+            restoreCallback();
+            NewTabPageProxy.getInstance().handler.onRestoreModule(id);
+          } :
+          undefined,
     };
     if (!this.dismissedModules_.includes(id)) {
       this.push('dismissedModules_', id);
@@ -419,7 +422,7 @@ export class ModulesElement extends PolymerElement {
     }
 
     // Restore the module.
-    this.removedModuleData_.undo();
+    this.removedModuleData_.undo!();
 
     // Notify the user.
     this.$.removeModuleToast.hide();

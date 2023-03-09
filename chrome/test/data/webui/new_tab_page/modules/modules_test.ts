@@ -10,6 +10,7 @@ import {PageCallbackRouter, PageHandlerRemote, PageRemote} from 'chrome://new-ta
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeMetricsPrivate, MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
 import {assertNotStyle, assertStyle, capture, createElement, initNullModule, installMock, render} from '../test_support.js';
@@ -416,7 +417,11 @@ suite('NewTabPageModulesModulesTest', () => {
       assertFalse(restoreCalled);
 
       // Act.
-      modulesElement.$.undoRemoveModuleButton.click();
+      await waitAfterNextRender(modulesElement);
+      const undoRemoveModuleButton =
+          modulesElement.shadowRoot!.querySelector('#undoRemoveModuleButton') as
+          HTMLElement;
+      undoRemoveModuleButton.click();
 
       // Assert.
       assertDeepEquals(['foo', false], handler.getArgs('setModuleDisabled')[1]);
@@ -456,6 +461,53 @@ suite('NewTabPageModulesModulesTest', () => {
 
       // Assert: no crash.
     });
+  });
+
+  test('modules can be dismissed with no restore action', async () => {
+    const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
+    moduleRegistry.setResultFor('getDescriptors', [fooDescriptor]);
+
+    // Act.
+    const modulesElement = await createModulesElement([
+      {
+        descriptor: fooDescriptor,
+        element: createElement(),
+      },
+    ]);
+    callbackRouterRemote.setDisabledModules(false, []);
+    await callbackRouterRemote.$.flushForTesting();
+
+    const moduleWrappers =
+        modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper');
+    const moduleWrapperContainers =
+        modulesElement.shadowRoot!.querySelectorAll('.module-container');
+    assertEquals(1, moduleWrappers.length);
+    assertEquals(1, moduleWrapperContainers.length);
+    assertNotStyle(moduleWrappers[0]!, 'display', 'none');
+    assertNotStyle(moduleWrapperContainers[0]!, 'display', 'none');
+    assertFalse(modulesElement.$.removeModuleToast.open);
+
+    // Act.
+    moduleWrappers[0]!.dispatchEvent(new CustomEvent('dismiss-module', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        message: 'Foo',
+      },
+    }));
+    await waitAfterNextRender(modulesElement);
+
+    // Assert.
+    assertNotStyle(moduleWrappers[0]!, 'display', 'none');
+    assertStyle(moduleWrapperContainers[0]!, 'display', 'none');
+    assertTrue(modulesElement.$.removeModuleToast.open);
+    assertEquals(
+        'Foo', modulesElement.$.removeModuleToastMessage.textContent!.trim());
+    assertEquals(1, handler.getCallCount('onDismissModule'));
+    assertEquals('foo', handler.getArgs('onDismissModule')[0]);
+    assertEquals(
+        null,
+        modulesElement.shadowRoot!.querySelector('#undoRemoveModuleButton'));
   });
 
   test('modules can be dismissed and restored', async () => {
@@ -508,7 +560,11 @@ suite('NewTabPageModulesModulesTest', () => {
     assertFalse(restoreCalled);
 
     // Act.
-    modulesElement.$.undoRemoveModuleButton.click();
+    await waitAfterNextRender(modulesElement);
+    const undoRemoveModuleButton =
+        modulesElement.shadowRoot!.querySelector('#undoRemoveModuleButton') as
+        HTMLElement;
+    undoRemoveModuleButton.click();
 
     // Assert.
     assertNotStyle(moduleWrappers[0]!, 'display', 'none');
@@ -574,7 +630,11 @@ suite('NewTabPageModulesModulesTest', () => {
     assertFalse(restoreCalled);
 
     // Act.
-    modulesElement.$.undoRemoveModuleButton.click();
+    await waitAfterNextRender(modulesElement);
+    const undoRemoveModuleButton =
+        modulesElement.shadowRoot!.querySelector('#undoRemoveModuleButton') as
+        HTMLElement;
+    undoRemoveModuleButton.click();
 
     // Assert.
     assertDeepEquals(['foo', false], handler.getArgs('setModuleDisabled')[1]);
@@ -994,8 +1054,12 @@ suite('NewTabPageModulesModulesTest', () => {
       assertEquals(1, moduleWrappers.indexOf(tallModule));
       assertEquals(2, moduleWrappers.indexOf(shortModule1));
 
-      // Act.
-      modulesElement.$.undoRemoveModuleButton.click();
+      // // Act.
+      await waitAfterNextRender(modulesElement);
+      const undoRemoveModuleButton =
+          modulesElement.shadowRoot!.querySelector('#undoRemoveModuleButton') as
+          HTMLElement;
+      undoRemoveModuleButton.click();
 
       // Assert.
       assertDeepEquals(['bar', false], handler.getArgs('setModuleDisabled')[1]);

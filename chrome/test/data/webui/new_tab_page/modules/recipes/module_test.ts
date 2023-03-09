@@ -207,18 +207,19 @@ suite('NewTabPageModulesRecipesTest', () => {
         moduleElement.shadowRoot!.querySelector('ntp-module-header')!
             .shadowRoot!.querySelector<HTMLElement>('#dismissButton')!;
     dismissButton.click();
-    const dismissEvent: DismissModuleEvent = await waitForDismissEvent;
-    const toastMessage = dismissEvent.detail.message;
-    const restoreCallback = dismissEvent.detail.restoreCallback;
 
     // Assert.
+    const dismissEvent: DismissModuleEvent = await waitForDismissEvent;
+    const toastMessage = dismissEvent.detail.message;
     const moduleHeaderTitle =
         moduleElement.shadowRoot!.querySelector(
                                      'ntp-module-header')!.textContent!.trim();
     assertEquals(moduleHeaderTitle + ' hidden', toastMessage);
+    assertTrue(!!dismissEvent.detail.restoreCallback);
     assertEquals('Hello world', await handler.whenCalled('dismissTask'));
 
     // Act.
+    const restoreCallback = dismissEvent.detail.restoreCallback!;
     restoreCallback();
 
     // Assert.
