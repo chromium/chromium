@@ -4,6 +4,7 @@
 
 #include "base/process/process.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -250,6 +251,7 @@ void AtExitHandler(void*) {
 }
 
 class ThreadLocalObject {
+ public:
   ~ThreadLocalObject() {
     // Thread-local storage should not be destructed at
     // Process::TerminateCurrentProcessImmediately.
@@ -258,7 +260,8 @@ class ThreadLocalObject {
 };
 
 MULTIPROCESS_TEST_MAIN(TerminateCurrentProcessImmediatelyWithCode0) {
-  base::ThreadLocalPointer<ThreadLocalObject> object;
+  base::ThreadLocalOwnedPointer<ThreadLocalObject> object;
+  object.Set(std::make_unique<ThreadLocalObject>());
   base::AtExitManager::RegisterCallback(&AtExitHandler, nullptr);
   Process::TerminateCurrentProcessImmediately(0);
 }

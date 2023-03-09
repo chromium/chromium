@@ -447,8 +447,8 @@ namespace internal {
 // GetAppOutputInternal() to join a process. GetAppOutputInternal() can't itself
 // be a friend of ScopedAllowBaseSyncPrimitives because it is in the anonymous
 // namespace.
-class GetAppOutputScopedAllowBaseSyncPrimitives
-    : public base::ScopedAllowBaseSyncPrimitives {};
+class [[maybe_unused, nodiscard]] GetAppOutputScopedAllowBaseSyncPrimitives
+    : public base::ScopedAllowBaseSyncPrimitives{};
 
 }  // namespace internal
 
