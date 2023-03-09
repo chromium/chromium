@@ -207,7 +207,14 @@ void ApnMigrator::OnGetManagedProperties(
             cellular_dict, ::onc::cellular::kAPN);
     if (selected_apn && pre_revamp_custom_apn->access_point_name ==
                             selected_apn->access_point_name->active_value) {
-      // TODO(b/162365553): Implement this case.
+      NET_LOG(EVENT) << "Managed network's selected APN matches the saved "
+                     << "custom APN, migrating APN: " << guid;
+      // Ensure the network is enabled when it's migrated so that it's attempted
+      // to be used by the new UI.
+      pre_revamp_custom_apn->state =
+          chromeos::network_config::mojom::ApnState::kEnabled;
+      remote_cros_network_config_->CreateCustomApn(
+          guid, std::move(pre_revamp_custom_apn));
     } else {
       NET_LOG(EVENT)
           << "Managed network's selected APN doesn't match the saved custom "
