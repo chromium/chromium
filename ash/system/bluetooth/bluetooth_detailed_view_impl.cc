@@ -54,7 +54,6 @@ BluetoothDetailedViewImpl::BluetoothDetailedViewImpl(
     : BluetoothDetailedView(delegate),
       TrayDetailedView(detailed_view_delegate) {
   CreateTitleRow(IDS_ASH_STATUS_TRAY_BLUETOOTH);
-  CreateTitleSettingsButton();
   CreateScrollableList();
   CreateTopContainer();
   CreateMainContainer();
@@ -151,7 +150,7 @@ void BluetoothDetailedViewImpl::HandleViewClicked(views::View* view) {
       static_cast<BluetoothDeviceListItemView*>(view)->device_properties());
 }
 
-void BluetoothDetailedViewImpl::CreateTitleSettingsButton() {
+void BluetoothDetailedViewImpl::CreateExtraTitleRowButtons() {
   DCHECK(!settings_button_);
 
   tri_view()->SetContainerVisible(TriView::Container::END, /*visible=*/true);

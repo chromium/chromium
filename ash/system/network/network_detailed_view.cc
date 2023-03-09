@@ -40,7 +40,6 @@ NetworkDetailedView::NetworkDetailedView(
   CreateTitleRow(list_type_ == ListType::LIST_TYPE_NETWORK
                      ? IDS_ASH_STATUS_TRAY_NETWORK
                      : IDS_ASH_STATUS_TRAY_VPN);
-  CreateTitleRowButtons();
   CreateScrollableList();
   // TODO(b/207089013): add metrics for UI surface displayed.
 }
@@ -63,7 +62,7 @@ void NetworkDetailedView::HandleViewClicked(views::View* view) {
       static_cast<NetworkListItemView*>(view)->network_properties());
 }
 
-void NetworkDetailedView::CreateTitleRowButtons() {
+void NetworkDetailedView::CreateExtraTitleRowButtons() {
   DCHECK(!info_button_);
   tri_view()->SetContainerVisible(TriView::Container::END, true);
 

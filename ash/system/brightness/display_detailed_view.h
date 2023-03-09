@@ -37,8 +37,8 @@ class ASH_EXPORT DisplayDetailedView : public TrayDetailedView {
   views::View* GetScrollContentForTest();
 
  private:
-  // Creates the `settings_button_` on the right end of the title row.
-  void CreateTitleSettingsButton();
+  // TrayDetailedView:
+  void CreateExtraTitleRowButtons() override;
 
   // Callback of the `settings_button_` to open the display system settings
   // page.

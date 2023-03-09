@@ -47,7 +47,6 @@ DisplayDetailedView::DisplayDetailedView(
       unified_system_tray_controller_(tray_controller) {
   CreateScrollableList();
   CreateTitleRow(IDS_ASH_STATUS_TRAY_DISPLAY);
-  CreateTitleSettingsButton();
   // Sets the margin for `ScrollView` to leave some space for the focus ring.
   scroller()->SetProperty(views::kMarginsKey, kScrollViewMargin);
 
@@ -105,7 +104,7 @@ views::View* DisplayDetailedView::GetScrollContentForTest() {
   return scroll_content();
 }
 
-void DisplayDetailedView::CreateTitleSettingsButton() {
+void DisplayDetailedView::CreateExtraTitleRowButtons() {
   DCHECK(!settings_button_);
 
   tri_view()->SetContainerVisible(TriView::Container::END, /*visible=*/true);

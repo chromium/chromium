@@ -47,12 +47,10 @@ class ASH_EXPORT BluetoothDetailedViewImpl : public BluetoothDetailedView,
 
   // TrayDetailedView:
   void HandleViewClicked(views::View* view) override;
+  void CreateExtraTitleRowButtons() override;
 
  private:
   friend class BluetoothDetailedViewImplTest;
-
-  // Creates and configures the title section settings button.
-  void CreateTitleSettingsButton();
 
   // Creates the top rounded container, which contains the main on/off toggle.
   void CreateTopContainer();
