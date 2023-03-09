@@ -879,7 +879,7 @@
     This folder
   </message>
   <message name="IDS_FILE_BROWSER_SEARCH_OPTIONS_RECENCY_ALL_TIME" desc="Text shown in search options if search results are not limited by time">
-    All time
+    Any time
   </message>
   <message name="IDS_FILE_BROWSER_SEARCH_OPTIONS_RECENCY_TODAY" desc="Text shown in search options if search results are limited to files modified today">
     Today
