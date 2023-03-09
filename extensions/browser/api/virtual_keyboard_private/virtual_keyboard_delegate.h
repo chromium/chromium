@@ -7,6 +7,7 @@
 
 #include <set>
 #include <string>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/values.h"
@@ -14,6 +15,10 @@
 #include "extensions/common/api/virtual_keyboard_private.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
+
+namespace ash {
+class ClipboardHistoryItem;
+}  // namespace ash
 
 namespace extensions {
 
@@ -27,7 +32,7 @@ class VirtualKeyboardDelegate {
   using OnSetModeCallback = base::OnceCallback<void(bool success)>;
 
   using OnGetClipboardHistoryCallback =
-      base::OnceCallback<void(base::Value history)>;
+      base::OnceCallback<void(std::vector<ash::ClipboardHistoryItem> history)>;
 
   using OnRestrictFeaturesCallback = base::OnceCallback<void(
       api::virtual_keyboard::FeatureRestrictions update)>;

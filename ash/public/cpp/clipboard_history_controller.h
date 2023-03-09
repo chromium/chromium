@@ -11,26 +11,23 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/functional/callback_forward.h"
 #include "base/observer_list_types.h"
-#include "base/values.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "ui/base/ui_base_types.h"
-
-namespace base {
-class Value;
-}  // namespace base
 
 namespace gfx {
 class Rect;
 }  // namespace gfx
 
 namespace ash {
+class ClipboardHistoryItem;
 class ScopedClipboardHistoryPause;
 
 // An interface implemented in Ash to enable the Chrome side to show the
 // clipboard history menu.
 class ASH_PUBLIC_EXPORT ClipboardHistoryController {
  public:
-  using GetHistoryValuesCallback = base::OnceCallback<void(base::Value)>;
+  using GetHistoryValuesCallback =
+      base::OnceCallback<void(std::vector<ClipboardHistoryItem>)>;
 
   class Observer : public base::CheckedObserver {
    public:

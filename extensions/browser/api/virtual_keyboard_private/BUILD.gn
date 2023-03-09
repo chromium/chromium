@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 assert(enable_extensions,
@@ -15,7 +16,14 @@ source_set("virtual_keyboard_private") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [ "//extensions/common/api" ]
+  deps = [
+    "//content/public/browser",
+    "//extensions/common/api",
+  ]
+
+  if (is_chromeos_ash) {
+    deps += [ "//ash" ]
+  }
 
   public_deps = [
     ":virtual_keyboard_delegate",

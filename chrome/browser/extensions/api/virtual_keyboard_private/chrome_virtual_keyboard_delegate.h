@@ -9,7 +9,6 @@
 
 #include "ash/public/cpp/clipboard_history_controller.h"
 #include "base/memory/weak_ptr.h"
-#include "base/values.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_delegate.h"
 #include "extensions/common/api/virtual_keyboard.h"

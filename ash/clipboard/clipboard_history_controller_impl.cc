@@ -44,7 +44,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/unguessable_token.h"
-#include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
@@ -71,17 +70,6 @@
 namespace ash {
 
 namespace {
-
-constexpr char kIDKey[] = "id";
-constexpr char kImageDataKey[] = "imageData";
-constexpr char kTextDataKey[] = "textData";
-constexpr char kDisplayFormatKey[] = "displayFormat";
-constexpr char kTimeCopiedKey[] = "timeCopied";
-
-constexpr char kTextFormat[] = "text";
-constexpr char kPngFormat[] = "png";
-constexpr char kHtmlFormat[] = "html";
-constexpr char kFileFormat[] = "file";
 
 ui::ClipboardNonBacked* GetClipboard() {
   auto* clipboard = ui::ClipboardNonBacked::GetForCurrentThread();
@@ -480,17 +468,16 @@ void ClipboardHistoryControllerImpl::GetHistoryValuesWithEncodedPNGs(
     return;
   }
 
-  base::Value::List item_results;
+  std::vector<ClipboardHistoryItem> item_results;
 
   // Check after asynchronous PNG encoding finishes to make sure we have not
   // entered a state where clipboard history is disabled, e.g., a locked screen.
   if (!clipboard_history_util::IsEnabledInCurrentMode()) {
-    std::move(callback).Run(base::Value(std::move(item_results)));
+    std::move(callback).Run(std::move(item_results));
     return;
   }
 
   bool all_images_encoded = true;
-  // Get the clipboard data for each clipboard history item.
   for (auto& item : clipboard_history_->GetItems()) {
     if (item.display_format() == ClipboardHistoryItem::DisplayFormat::kPng &&
         !item.data().maybe_png().has_value()) {
@@ -510,46 +497,7 @@ void ClipboardHistoryControllerImpl::GetHistoryValuesWithEncodedPNGs(
       }
     }
 
-    base::Value::Dict item_dict;
-    item_dict.Set(kIDKey, item.id().ToString());
-    item_dict.Set(kTimeCopiedKey, item.time_copied().ToJsTimeIgnoringNull());
-    if (const auto& maybe_image = item.display_image()) {
-      item_dict.Set(kImageDataKey, webui::GetBitmapDataUrl(
-                                       *maybe_image->GetImage().ToSkBitmap()));
-    }
-    switch (item.display_format()) {
-      case ClipboardHistoryItem::DisplayFormat::kText:
-        item_dict.Set(kTextDataKey, item.display_text());
-        item_dict.Set(kDisplayFormatKey, kTextFormat);
-        break;
-      case ClipboardHistoryItem::DisplayFormat::kPng:
-        item_dict.Set(kDisplayFormatKey, kPngFormat);
-        break;
-      case ClipboardHistoryItem::DisplayFormat::kHtml:
-        item_dict.Set(kDisplayFormatKey, kHtmlFormat);
-        break;
-      case ClipboardHistoryItem::DisplayFormat::kFile:
-        DCHECK(!item_dict.contains(kImageDataKey));
-
-        const auto& icon = item.icon();
-        DCHECK(icon.has_value());
-
-        const auto* active_window = window_util::GetActiveWindow();
-        const auto* color_provider =
-            ColorUtil::GetColorProviderSourceForWindow(
-                active_window ? active_window
-                              : Shell::Get()->GetPrimaryRootWindow())
-                ->GetColorProvider();
-        DCHECK(color_provider);
-
-        item_dict.Set(
-            kImageDataKey,
-            webui::GetBitmapDataUrl(*icon->Rasterize(color_provider).bitmap()));
-        item_dict.Set(kTextDataKey, item.display_text());
-        item_dict.Set(kDisplayFormatKey, kFileFormat);
-        break;
-    }
-    item_results.Append(std::move(item_dict));
+    item_results.emplace_back(item);
   }
 
   if (!all_images_encoded) {
@@ -557,7 +505,7 @@ void ClipboardHistoryControllerImpl::GetHistoryValuesWithEncodedPNGs(
     return;
   }
 
-  std::move(callback).Run(base::Value(std::move(item_results)));
+  std::move(callback).Run(std::move(item_results));
 }
 
 std::vector<std::string> ClipboardHistoryControllerImpl::GetHistoryItemIds()

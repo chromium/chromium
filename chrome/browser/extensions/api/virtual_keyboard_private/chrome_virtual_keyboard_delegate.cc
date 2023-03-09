@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/clipboard/clipboard_history_item.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/clipboard_history_controller.h"
 #include "ash/public/cpp/clipboard_image_model_factory.h"
@@ -355,14 +356,16 @@ void ChromeVirtualKeyboardDelegate::GetClipboardHistory(
   // Do not leak clipboard history items if the screen is locked.
   if (ash::ScreenLocker::default_screen_locker() &&
       ash::ScreenLocker::default_screen_locker()->locked()) {
-    std::move(get_history_callback).Run(base::Value(base::Value::Type::LIST));
+    std::move(get_history_callback)
+        .Run(std::vector<ash::ClipboardHistoryItem>());
     return;
   }
 
   ash::ClipboardHistoryController* clipboard_history_controller =
       ash::ClipboardHistoryController::Get();
   if (!clipboard_history_controller) {
-    std::move(get_history_callback).Run(base::Value(base::Value::Type::LIST));
+    std::move(get_history_callback)
+        .Run(std::vector<ash::ClipboardHistoryItem>());
     return;
   }
 
