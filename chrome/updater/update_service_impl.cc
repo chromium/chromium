@@ -535,12 +535,14 @@ void UpdateServiceImpl::Install(const RegistrationRequest& registration,
       cancellation_callbacks_.emplace(registration.app_id, base::DoNothing());
   pos->second = update_client_->Install(
       registration.app_id,
-      base::BindOnce(&GetComponents, config_, persisted_data_,
-                     AppClientInstallData({std::make_pair(
-                         registration.app_id, client_install_data)}),
-                     AppInstallDataIndex({std::make_pair(registration.app_id,
-                                                         install_data_index)}),
-                     false, false, PolicySameVersionUpdate::kAllowed),
+      base::BindOnce(
+          &GetComponents, config_, persisted_data_,
+          AppClientInstallData(
+              {std::make_pair(registration.app_id, client_install_data)}),
+          AppInstallDataIndex(
+              {std::make_pair(registration.app_id, install_data_index)}),
+          priority == Priority::kForeground,
+          /*update_blocked=*/false, PolicySameVersionUpdate::kAllowed),
       MakeUpdateClientCrxStateChangeCallback(config_, state_update),
       MakeUpdateClientCallback(std::move(callback))
           .Then(base::BindOnce(

@@ -13,6 +13,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/updater/update_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
@@ -216,6 +217,7 @@ void ExpectUpdateCheckSequence(UpdaterScope scope,
                                ScopedServer* test_server,
                                const std::string& app_id,
                                const std::string& install_data_index,
+                               UpdateService::Priority priority,
                                const base::Version& from_version,
                                const base::Version& to_version);
 
@@ -223,6 +225,7 @@ void ExpectUpdateSequence(UpdaterScope scope,
                           ScopedServer* test_server,
                           const std::string& app_id,
                           const std::string& install_data_index,
+                          UpdateService::Priority priority,
                           const base::Version& from_version,
                           const base::Version& to_version);
 
@@ -230,6 +233,7 @@ void ExpectInstallSequence(UpdaterScope scope,
                            ScopedServer* test_server,
                            const std::string& app_id,
                            const std::string& install_data_index,
+                           UpdateService::Priority priority,
                            const base::Version& from_version,
                            const base::Version& to_version);
 

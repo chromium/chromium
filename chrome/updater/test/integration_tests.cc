@@ -312,19 +312,23 @@ class IntegrationTest : public ::testing::Test {
   void ExpectUpdateCheckSequence(ScopedServer* test_server,
                                  const std::string& app_id,
                                  const std::string& install_data_index,
+                                 UpdateService::Priority priority,
                                  const base::Version& from_version,
                                  const base::Version& to_version) {
-    test_commands_->ExpectUpdateCheckSequence(
-        test_server, app_id, install_data_index, from_version, to_version);
+    test_commands_->ExpectUpdateCheckSequence(test_server, app_id,
+                                              install_data_index, priority,
+                                              from_version, to_version);
   }
 
   void ExpectUpdateSequence(ScopedServer* test_server,
                             const std::string& app_id,
                             const std::string& install_data_index,
+                            UpdateService::Priority priority,
                             const base::Version& from_version,
                             const base::Version& to_version) {
-    test_commands_->ExpectUpdateSequence(
-        test_server, app_id, install_data_index, from_version, to_version);
+    test_commands_->ExpectUpdateSequence(test_server, app_id,
+                                         install_data_index, priority,
+                                         from_version, to_version);
   }
 
   void ExpectSelfUpdateSequence(ScopedServer* test_server) {
@@ -334,10 +338,12 @@ class IntegrationTest : public ::testing::Test {
   void ExpectInstallSequence(ScopedServer* test_server,
                              const std::string& app_id,
                              const std::string& install_data_index,
+                             UpdateService::Priority priority,
                              const base::Version& from_version,
                              const base::Version& to_version) {
-    test_commands_->ExpectInstallSequence(
-        test_server, app_id, install_data_index, from_version, to_version);
+    test_commands_->ExpectInstallSequence(test_server, app_id,
+                                          install_data_index, priority,
+                                          from_version, to_version);
   }
 
   void StressUpdateService() { test_commands_->StressUpdateService(); }
@@ -474,6 +480,7 @@ TEST_F(IntegrationTest, QualifyUpdater) {
 
   ASSERT_NO_FATAL_FAILURE(
       ExpectUpdateSequence(&test_server, kQualificationAppId, "",
+                           UpdateService::Priority::kBackground,
                            base::Version("0.1"), base::Version("0.2")));
 
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
@@ -497,9 +504,9 @@ TEST_F(IntegrationTest, SelfUpdate) {
   ASSERT_NO_FATAL_FAILURE(Install());
 
   base::Version next_version(base::StringPrintf("%s1", kUpdaterVersion));
-  ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(&test_server, kUpdaterAppId, "",
-                                               base::Version(kUpdaterVersion),
-                                               next_version));
+  ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(
+      &test_server, kUpdaterAppId, "", UpdateService::Priority::kBackground,
+      base::Version(kUpdaterVersion), next_version));
 
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_TRUE(WaitForUpdaterExit());
@@ -513,9 +520,9 @@ TEST_F(IntegrationTest, SelfUpdateWithWakeAll) {
   ASSERT_NO_FATAL_FAILURE(Install());
 
   base::Version next_version(base::StringPrintf("%s1", kUpdaterVersion));
-  ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(&test_server, kUpdaterAppId, "",
-                                               base::Version(kUpdaterVersion),
-                                               next_version));
+  ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(
+      &test_server, kUpdaterAppId, "", UpdateService::Priority::kBackground,
+      base::Version(kUpdaterVersion), next_version));
 
   ASSERT_NO_FATAL_FAILURE(RunWakeAll());
   ASSERT_TRUE(WaitForUpdaterExit());
@@ -571,7 +578,8 @@ TEST_F(IntegrationTest, CheckForUpdate) {
   const std::string kAppId("test");
   ASSERT_NO_FATAL_FAILURE(InstallApp(kAppId));
   ASSERT_NO_FATAL_FAILURE(ExpectUpdateCheckSequence(
-      &test_server, kAppId, "", base::Version("0.1"), base::Version("1")));
+      &test_server, kAppId, "", UpdateService::Priority::kForeground,
+      base::Version("0.1"), base::Version("1")));
   ASSERT_NO_FATAL_FAILURE(Update(kAppId, "", /*do_update_check_only=*/true));
 
   ASSERT_NO_FATAL_FAILURE(Uninstall());
@@ -584,14 +592,16 @@ TEST_F(IntegrationTest, UpdateApp) {
   const std::string kAppId("test");
   ASSERT_NO_FATAL_FAILURE(InstallApp(kAppId));
   base::Version v1("1");
-  ASSERT_NO_FATAL_FAILURE(
-      ExpectUpdateSequence(&test_server, kAppId, "", base::Version("0.1"), v1));
+  ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(
+      &test_server, kAppId, "", UpdateService::Priority::kBackground,
+      base::Version("0.1"), v1));
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
 
   base::Version v2("2");
   const std::string kInstallDataIndex("test_install_data_index");
   ASSERT_NO_FATAL_FAILURE(
-      ExpectUpdateSequence(&test_server, kAppId, kInstallDataIndex, v1, v2));
+      ExpectUpdateSequence(&test_server, kAppId, kInstallDataIndex,
+                           UpdateService::Priority::kForeground, v1, v2));
   ASSERT_NO_FATAL_FAILURE(Update(kAppId, kInstallDataIndex,
                                  /*do_update_check_only=*/false));
 
@@ -609,7 +619,8 @@ TEST_F(IntegrationTest, InstallUpdaterAndApp) {
   const std::string kAppId("test");
   const base::Version v1("1");
   ASSERT_NO_FATAL_FAILURE(ExpectInstallSequence(
-      &test_server, kAppId, "", base::Version({0, 0, 0, 0}), v1));
+      &test_server, kAppId, "", UpdateService::Priority::kForeground,
+      base::Version({0, 0, 0, 0}), v1));
 
   ASSERT_NO_FATAL_FAILURE(InstallUpdaterAndApp(kAppId));
   ASSERT_TRUE(WaitForUpdaterExit());
@@ -626,7 +637,8 @@ TEST_F(IntegrationTest, Handoff) {
   const std::string kAppId("test");
   const base::Version v1("1");
   ASSERT_NO_FATAL_FAILURE(ExpectInstallSequence(
-      &test_server, kAppId, "", base::Version({0, 0, 0, 0}), v1));
+      &test_server, kAppId, "", UpdateService::Priority::kForeground,
+      base::Version({0, 0, 0, 0}), v1));
   ASSERT_NO_FATAL_FAILURE(RunHandoff(kAppId));
   ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kAppId, v1));
@@ -648,9 +660,11 @@ TEST_F(IntegrationTest, ForceInstallApp) {
   base::Version v0point1("0.1");
   base::Version v1("1");
   ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(
-      &test_server, kAppId, "", base::Version("0.0.0.0"), v0point1));
+      &test_server, kAppId, "", UpdateService::Priority::kBackground,
+      base::Version("0.0.0.0"), v0point1));
   ASSERT_NO_FATAL_FAILURE(
-      ExpectUpdateSequence(&test_server, kAppId, "", v0point1, v1));
+      ExpectUpdateSequence(&test_server, kAppId, "",
+                           UpdateService::Priority::kBackground, v0point1, v1));
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
 
   ASSERT_TRUE(WaitForUpdaterExit());
@@ -718,8 +732,9 @@ TEST_F(IntegrationTest, LegacyPolicyStatus) {
   const std::string kAppId("test");
   ASSERT_NO_FATAL_FAILURE(InstallApp(kAppId));
   base::Version v1("1");
-  ASSERT_NO_FATAL_FAILURE(
-      ExpectUpdateSequence(&test_server, kAppId, "", base::Version("0.1"), v1));
+  ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(
+      &test_server, kAppId, "", UpdateService::Priority::kBackground,
+      base::Version("0.1"), v1));
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kAppId, v1));
 
@@ -845,6 +860,7 @@ TEST_F(IntegrationTest, SelfUpdateFromOldReal) {
   // Qualify the new instance.
   ASSERT_NO_FATAL_FAILURE(
       ExpectUpdateSequence(&test_server, kQualificationAppId, "",
+                           UpdateService::Priority::kBackground,
                            base::Version("0.1"), base::Version("0.2")));
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_TRUE(WaitForUpdaterExit());
@@ -870,6 +886,7 @@ TEST_F(IntegrationTest, UninstallIfUnusedSelfAndOldReal) {
   // Qualify the new instance.
   ASSERT_NO_FATAL_FAILURE(
       ExpectUpdateSequence(&test_server, kQualificationAppId, "",
+                           UpdateService::Priority::kBackground,
                            base::Version("0.1"), base::Version("0.2")));
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_TRUE(WaitForUpdaterExit());
@@ -1090,9 +1107,9 @@ TEST_F(IntegrationTestLegacyUpdate3Web, DisabledPolicy) {
 
 // TODO(crbug.com/1396103): Re-enable after implementing `checkForUpdate`.
 TEST_F(IntegrationTestLegacyUpdate3Web, DISABLED_CheckForUpdate) {
-  ASSERT_NO_FATAL_FAILURE(ExpectUpdateCheckSequence(test_server_.get(), kAppId,
-                                                    "", base::Version("0.1"),
-                                                    base::Version("0.2")));
+  ASSERT_NO_FATAL_FAILURE(ExpectUpdateCheckSequence(
+      test_server_.get(), kAppId, "", UpdateService::Priority::kForeground,
+      base::Version("0.1"), base::Version("0.2")));
   ASSERT_NO_FATAL_FAILURE(
       ExpectLegacyUpdate3WebSucceeds(kAppId, STATE_UPDATE_AVAILABLE, S_OK));
 }
@@ -1105,9 +1122,9 @@ TEST_F(IntegrationTestLegacyUpdate3Web, Update) {
                                                     base::Version("0.2")));
 #endif  // #if 0
 
-  ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(test_server_.get(), kAppId, "",
-                                               base::Version("0.1"),
-                                               base::Version("0.2")));
+  ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(
+      test_server_.get(), kAppId, "", UpdateService::Priority::kForeground,
+      base::Version("0.1"), base::Version("0.2")));
   ASSERT_NO_FATAL_FAILURE(
       ExpectLegacyUpdate3WebSucceeds(kAppId, STATE_INSTALL_COMPLETE, S_OK));
 }
