@@ -17,6 +17,7 @@ import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ConnectivityStatus} from 'chrome://resources/mojo/chromeos/ash/services/device_sync/public/mojom/device_sync.mojom-webui.js';
 import {HostDevice} from 'chrome://resources/mojo/chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-webui.js';
 
+import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from './mojo_api.js';
 import {MultiDeviceSetupDelegate} from './multidevice_setup_delegate.js';
 import {getTemplate} from './start_setup_page.html.js';
 import {UiPageContainerBehavior} from './ui_page_container_behavior.js';
@@ -40,6 +41,17 @@ Polymer({
   is: 'start-setup-page',
 
   properties: {
+    /* The localized loadTimeData string for the
+     * StartSetupPage header text, dependent on whether
+     * a user is on OOBE and previously connected their phone during Quick
+     * Start.
+     * */
+    headerTextId: {
+      type: String,
+      value: 'startSetupPageHeader',
+      notify: true,
+    },
+
     /** Overridden from UiPageContainerBehavior. */
     forwardButtonTextId: {
       type: String,
@@ -112,12 +124,23 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    /**
+     * Provider of an interface to the MultiDeviceSetup Mojo service.
+     * @private {!MojoInterfaceProvider}
+     */
+    mojoInterfaceProvider_: Object,
   },
 
   behaviors: [
     UiPageContainerBehavior,
     WebUIListenerBehavior,
   ],
+
+  /** @override */
+  created() {
+    this.mojoInterfaceProvider_ = MojoInterfaceProviderImpl.getInstance();
+  },
 
   /** @override */
   attached() {
@@ -154,6 +177,19 @@ Polymer({
       helpArticleLinks[i].onclick = this.fire.bind(
           this, 'open-learn-more-webview-requested', helpArticleLinks[i].href);
     }
+
+    this.mojoInterfaceProvider_.getMojoServiceRemote()
+        .getQuickStartPhoneInstanceID()
+        .then((responseParams) => {
+          if (!responseParams.qsPhoneInstanceId) {
+            return;
+          }
+
+          this.headerTextId = 'startSetupPageAfterQuickStartHeader';
+        })
+        .catch((error) => {
+          console.warn('Mojo service failure: ' + error);
+        });
   },
 
   /**
