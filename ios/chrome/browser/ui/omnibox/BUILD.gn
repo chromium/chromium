@@ -80,7 +80,7 @@ source_set("omnibox_util") {
     "//base",
     "//components/omnibox/browser",
     "//components/security_state/core",
-    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/icons:symbols",
   ]
   public_deps = [
@@ -166,8 +166,8 @@ source_set("omnibox_internal") {
     "//ios/chrome/browser/search_engines:search_engines_util",
     "//ios/chrome/browser/sessions",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/default_promo",
     "//ios/chrome/browser/ui/default_promo:utils",
@@ -268,7 +268,7 @@ source_set("eg2_tests") {
     ":features",
     "//components/strings:components_strings_grit",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
     "//ios/chrome/browser/ui/omnibox/popup:popup_accessibility_identifier_constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
@@ -331,7 +331,7 @@ source_set("features") {
   ]
   public_deps = [ "//base" ]
   deps = [
-    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/shared/public/features",
     "//ui/base",
   ]
 }

@@ -19,7 +19,7 @@
 #import "components/variations/variations_associated_data.h"
 #import "ios/chrome/browser/browsing_data/browsing_data_features.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

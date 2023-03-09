@@ -70,6 +70,6 @@ source_set("util") {
     "//ios/chrome/browser/promos_manager",
     "//ios/chrome/browser/promos_manager:constants",
     "//ios/chrome/browser/promos_manager:features",
-    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/shared/public/features",
   ]
 }

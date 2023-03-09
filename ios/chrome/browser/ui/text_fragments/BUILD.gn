@@ -37,7 +37,7 @@ source_set("eg2_tests") {
     "//components/shared_highlighting/core/common",
     "//components/shared_highlighting/ios",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/test:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",

@@ -5,9 +5,9 @@
 #import "ios/chrome/browser/ui/settings/cells/search_engine_item.h"
 
 #import "base/mac/foundation_util.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "net/base/mac/url_conversions.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"

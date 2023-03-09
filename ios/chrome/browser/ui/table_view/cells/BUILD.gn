@@ -68,7 +68,7 @@ source_set("cells") {
     "//components/url_formatter",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/net:crurl",
-    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/elements",
     "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/list_model",

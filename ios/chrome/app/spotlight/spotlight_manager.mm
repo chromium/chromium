@@ -10,7 +10,7 @@
 #import "ios/chrome/app/spotlight/reading_list_spotlight_manager.h"
 #import "ios/chrome/app/spotlight/topsites_spotlight_manager.h"
 #import "ios/chrome/browser/flags/system_flags.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

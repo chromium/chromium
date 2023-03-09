@@ -20,9 +20,9 @@
 #import "ios/chrome/browser/first_run/first_run.h"
 #import "ios/chrome/browser/first_run/first_run_metrics.h"
 #import "ios/chrome/browser/flags/system_flags.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_util.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "ui/gfx/ios/NSString+CrStringDrawing.h"
 

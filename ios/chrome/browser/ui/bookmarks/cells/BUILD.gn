@@ -48,7 +48,7 @@ source_set("unit_tests") {
   deps = [
     ":cells",
     "//base/test:test_support",
-    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/collection_view/cells",
     "//ios/chrome/browser/ui/table_view:styler",
     "//ios/third_party/material_components_ios",

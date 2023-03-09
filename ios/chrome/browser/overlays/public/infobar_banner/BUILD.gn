@@ -69,7 +69,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/infobars/test",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/infobar_banner",
-    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/infobars/test",
     "//ios/chrome/browser/ui/settings/sync/utils",
     "//ios/chrome/browser/ui/settings/sync/utils/test",

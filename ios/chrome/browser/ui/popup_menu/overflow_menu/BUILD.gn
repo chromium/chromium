@@ -156,7 +156,7 @@ source_set("feature_flags") {
   deps = [
     "//base",
     "//components/password_manager/core/common:features",
-    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/shared/public/features",
   ]
 }
 
@@ -187,8 +187,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/passwords:store_factory",
     "//ios/chrome/browser/policy:test_support",
     "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/popup_menu:constants",
     "//ios/chrome/browser/ui/popup_menu/overflow_menu:feature_flags",
     "//ios/chrome/browser/ui/toolbar/test",

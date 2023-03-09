@@ -71,7 +71,7 @@ source_set("eg2_tests") {
     ":eg_test_support+eg2",
     "//base:base",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing:block_swizzler",
     "//ios/testing/earl_grey:eg_test_support+eg2",

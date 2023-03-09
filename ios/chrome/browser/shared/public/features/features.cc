@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
+#include "ios/chrome/browser/shared/public/features/features.h"
 
 BASE_FEATURE(kDefaultBrowserBlueDotPromo,
              "DefaultBrowserBlueDotPromo",

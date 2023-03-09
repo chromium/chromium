@@ -27,8 +27,8 @@ source_set("elements") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/elements:constants",
     "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/colors",
@@ -79,7 +79,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/main:test_support",
-    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/test:test_support",
     "//testing/gtest",
     "//third_party/ocmock",

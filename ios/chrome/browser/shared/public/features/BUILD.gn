@@ -4,6 +4,9 @@
 
 source_set("features") {
   configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [ "features.h" ]
-  deps = [ "//ios/chrome/browser/ui:feature_flags" ]
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+  public_deps = [ "//base" ]
 }

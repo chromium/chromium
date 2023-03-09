@@ -15,7 +15,7 @@ source_set("open_in") {
     "//base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/browser_state",
-    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/web/public",
     "//ui/base:base",
     "//url",

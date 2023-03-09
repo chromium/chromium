@@ -54,7 +54,7 @@ source_set("symbols") {
   deps = [
     ":buildflags",
     "//base",
-    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/icons/resources:arrow_clockwise",
     "//ios/chrome/browser/ui/icons/resources:arrow_triangle_slash_circlepath",
     "//ios/chrome/browser/ui/icons/resources:camera",

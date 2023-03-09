@@ -40,8 +40,8 @@ source_set("feature_flags") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/ui:feature_flags",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
@@ -59,7 +59,7 @@ source_set("eg2_tests") {
     ":feature_flags",
     "//base",
     "//base/test:test_support",
-    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/fullscreen:feature_flags",
     "//ios/chrome/test:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",

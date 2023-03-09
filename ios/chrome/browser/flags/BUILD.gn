@@ -64,10 +64,10 @@ source_set("flags") {
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/promos_manager:features",
     "//ios/chrome/browser/screen_time:buildflags",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/tabs:features",
     "//ios/chrome/browser/tabs/inactive_tabs:features",
     "//ios/chrome/browser/text_selection:text_selection_utils",
-    "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/app_store_rating:features",
     "//ios/chrome/browser/ui/autofill:features",
     "//ios/chrome/browser/ui/content_suggestions:feature_flags",
@@ -114,7 +114,7 @@ source_set("system_flags") {
     "//components/password_manager/core/common:features",
     "//components/variations",
     "//ios/chrome/browser/browsing_data:feature_flags",
-    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/shared/public/features",
   ]
 }
 
