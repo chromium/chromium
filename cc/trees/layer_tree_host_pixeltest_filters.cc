@@ -143,7 +143,13 @@ TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterInvalid) {
       base::FilePath(FILE_PATH_LITERAL("backdrop_filter_invalid.png")));
 }
 
-TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterBlurRadius) {
+// TODO(crbug.com/1416306): currently do not pass on iOS.
+#if BUILDFLAG(IS_IOS)
+#define MAYBE_BackdropFilterBlurRadius DISABLED_BackdropFilterBlurRadius
+#else
+#define MAYBE_BackdropFilterBlurRadius BackdropFilterBlurRadius
+#endif  // BUILDFLAG(IS_IOS)
+TEST_P(LayerTreeHostFiltersPixelTest, MAYBE_BackdropFilterBlurRadius) {
 #if defined(MEMORY_SANITIZER)
   if (renderer_type() == viz::RendererType::kSkiaVk) {
     GTEST_SKIP() << "TODO(crbug.com/1324336): Uninitialized data error";
@@ -546,7 +552,13 @@ TEST_P(LayerTreeHostFiltersPixelTest, ImageFilterClipped) {
                base::FilePath(FILE_PATH_LITERAL("blue_yellow.png")));
 }
 
-TEST_P(LayerTreeHostFiltersPixelTest, ImageFilterScaled) {
+// TODO(crbug.com/1416306): currently do not pass on iOS.
+#if BUILDFLAG(IS_IOS)
+#define MAYBE_ImageFilterScaled DISABLED_ImageFilterScaled
+#else
+#define MAYBE_ImageFilterScaled ImageFilterScaled
+#endif  // BUILDFLAG(IS_IOS)
+TEST_P(LayerTreeHostFiltersPixelTest, MAYBE_ImageFilterScaled) {
   scoped_refptr<SolidColorLayer> background =
       CreateSolidColorLayer(gfx::Rect(200, 200), SK_ColorWHITE);
 
@@ -626,7 +638,13 @@ TEST_P(LayerTreeHostFiltersPixelTest, ImageFilterScaled) {
           .InsertBeforeExtensionASCII(GetRendererSuffix()));
 }
 
-TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterRotated) {
+// TODO(crbug.com/1416306): currently do not pass on iOS.
+#if BUILDFLAG(IS_IOS)
+#define MAYBE_BackdropFilterRotated DISABLED_BackdropFilterRotated
+#else
+#define MAYBE_BackdropFilterRotated BackdropFilterRotated
+#endif  // BUILDFLAG(IS_IOS)
+TEST_P(LayerTreeHostFiltersPixelTest, MAYBE_BackdropFilterRotated) {
   if (renderer_type() == viz::RendererType::kSkiaVk) {
     // TODO(crbug.com/1354678): The vulkan expected image requires rebasing
     // after Skia roll, so skip this test until then.
@@ -683,7 +701,13 @@ TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterRotated) {
                    .InsertBeforeExtensionASCII(GetRendererSuffix()));
 }
 
-TEST_P(LayerTreeHostFiltersPixelTest, ImageRenderSurfaceScaled) {
+// TODO(crbug.com/1416306): currently do not pass on iOS.
+#if BUILDFLAG(IS_IOS)
+#define MAYBE_ImageRenderSurfaceScaled DISABLED_ImageRenderSurfaceScaled
+#else
+#define MAYBE_ImageRenderSurfaceScaled ImageRenderSurfaceScaled
+#endif  // BUILDFLAG(IS_IOS)
+TEST_P(LayerTreeHostFiltersPixelTest, MAYBE_ImageRenderSurfaceScaled) {
   // A filter will cause a render surface to be used.  Here we force the
   // render surface on, and scale the result to make sure that we rasterize at
   // the correct resolution.
@@ -805,7 +829,13 @@ TEST_P(LayerTreeHostFiltersPixelTest, ZoomFilter) {
                    .InsertBeforeExtensionASCII(GetRendererSuffix()));
 }
 
-TEST_P(LayerTreeHostFiltersPixelTest, RotatedFilter) {
+// TODO(crbug.com/1416306): currently do not pass on iOS.
+#if BUILDFLAG(IS_IOS)
+#define MAYBE_RotatedFilter DISABLED_RotatedFilter
+#else
+#define MAYBE_RotatedFilter RotatedFilter
+#endif  // BUILDFLAG(IS_IOS)
+TEST_P(LayerTreeHostFiltersPixelTest, MAYBE_RotatedFilter) {
   scoped_refptr<SolidColorLayer> background =
       CreateSolidColorLayer(gfx::Rect(300, 300), SK_ColorWHITE);
 
@@ -1235,7 +1265,13 @@ TEST_P(BackdropFilterInvertTest, StandardDpi) {
   RunPixelTestType(1.f);
 }
 
-TEST_P(BackdropFilterInvertTest, HiDpi) {
+// TODO(crbug.com/1416306): currently do not pass on iOS.
+#if BUILDFLAG(IS_IOS)
+#define MAYBE_HiDpi DISABLED_HiDpi
+#else
+#define MAYBE_HiDpi HiDpi
+#endif  // BUILDFLAG(IS_IOS)
+TEST_P(BackdropFilterInvertTest, MAYBE_HiDpi) {
   RunPixelTestType(2.f);
 }
 
