@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PASSWORDS_MANAGE_PASSWORDS_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ui/passwords/bubble_controllers/items_bubble_controller.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -51,6 +52,12 @@ class ManagePasswordsView : public PasswordBubbleViewBase {
   void RecreateLayout();
 
   void SwitchToReadingMode();
+  void SwitchToListView();
+
+  // Resets `auth_timer_` to restart counting till auto-navigation to the list
+  // view. It should be called upon user activity to make sure the back
+  // navigation doesn't happen while the user is interacting with the bubble.
+  void ExtendAuthValidity();
 
   // Called when the favicon is loaded. If |favicon| isn't empty, it sets
   // |favicon_| and invokes RecreateLayout().
@@ -74,6 +81,11 @@ class ManagePasswordsView : public PasswordBubbleViewBase {
 
   ItemsBubbleController controller_;
   raw_ptr<PageSwitcherView> page_container_ = nullptr;
+
+  // Used to keep track of the time once the user passed the auth challenge to
+  // navigate to the details view. Once it runs out, SwitchToListView() will be
+  // run.
+  base::RetainingOneShotTimer auth_timer_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PASSWORDS_MANAGE_PASSWORDS_VIEW_H_

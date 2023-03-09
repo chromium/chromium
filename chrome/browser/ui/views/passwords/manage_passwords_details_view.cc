@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/functional/callback_forward.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -118,7 +119,8 @@ std::unique_ptr<views::View> CreateDetailsRow(
 }
 
 std::unique_ptr<views::View> CreatePasswordLabelWithEyeIconView(
-    std::unique_ptr<views::Label> password_label) {
+    std::unique_ptr<views::Label> password_label,
+    base::RepeatingClosure on_eye_icon_clicked) {
   auto password_label_with_eye_icon_view =
       std::make_unique<views::BoxLayoutView>();
   auto* password_label_ptr = password_label_with_eye_icon_view->AddChildView(
@@ -143,20 +145,22 @@ std::unique_ptr<views::View> CreatePasswordLabelWithEyeIconView(
   views::SetToggledImageFromVectorIconWithColorId(
       eye_icon, views::kEyeCrossedIcon, ui::kColorIcon, ui::kColorIconDisabled);
 
-  eye_icon->SetCallback(base::BindRepeating(
-      [](views::ToggleImageButton* toggle_button,
-         views::Label* password_label) {
-        password_label->SetObscured(!password_label->GetObscured());
-        toggle_button->SetToggled(!toggle_button->GetToggled());
+  eye_icon->SetCallback(
+      base::BindRepeating(
+          [](views::ToggleImageButton* toggle_button,
+             views::Label* password_label) {
+            password_label->SetObscured(!password_label->GetObscured());
+            toggle_button->SetToggled(!toggle_button->GetToggled());
 
-        if (!password_label->GetObscured()) {
-          password_manager::metrics_util::
-              LogUserInteractionsInPasswordManagementBubble(
-                  PasswordManagementBubbleInteractions::
-                      kPasswordShowButtonClicked);
-        }
-      },
-      eye_icon, password_label_ptr));
+            if (!password_label->GetObscured()) {
+              password_manager::metrics_util::
+                  LogUserInteractionsInPasswordManagementBubble(
+                      PasswordManagementBubbleInteractions::
+                          kPasswordShowButtonClicked);
+            }
+          },
+          eye_icon, password_label_ptr)
+          .Then(std::move(on_eye_icon_clicked)));
 
   return password_label_with_eye_icon_view;
 }
@@ -289,9 +293,11 @@ std::unique_ptr<views::View> ManagePasswordsDetailsView::CreateTitleView(
 
 ManagePasswordsDetailsView::ManagePasswordsDetailsView(
     password_manager::PasswordForm password_form,
-    base::RepeatingClosure switched_to_edit_mode_callback)
+    base::RepeatingClosure switched_to_edit_mode_callback,
+    base::RepeatingClosure on_activity_callback)
     : switched_to_edit_mode_callback_(
-          std::move(switched_to_edit_mode_callback)) {
+          std::move(switched_to_edit_mode_callback)),
+      on_activity_callback_(std::move(on_activity_callback)) {
   SetOrientation(views::BoxLayout::Orientation::kVertical);
   std::unique_ptr<views::Label> username_label =
       CreateUsernameLabel(password_form);
@@ -300,6 +306,7 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
   if (!password_form.username_value.empty()) {
     auto copy_username_button_callback =
         base::BindRepeating(&WriteToClipboard, password_form.username_value)
+            .Then(on_activity_callback_)
             .Then(base::BindRepeating(
                 &password_manager::metrics_util::
                     LogUserInteractionsInPasswordManagementBubble,
@@ -326,6 +333,8 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
         static_cast<int>(ManagePasswordsViewIDs::kReadUsernameRow));
     edit_username_row_ = AddChildView(
         CreateEditUsernameRow(password_form, &username_textfield_));
+    text_changed_subscriptions_.push_back(
+        username_textfield_->AddTextChangedCallback(on_activity_callback_));
     edit_username_row_->SetID(
         static_cast<int>(ManagePasswordsViewIDs::kEditUsernameRow));
     edit_username_row_->SetVisible(false);
@@ -337,6 +346,7 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
       static_cast<int>(ManagePasswordsViewIDs::kPasswordLabel));
   auto copy_password_button_callback =
       base::BindRepeating(&WriteToClipboard, password_form.password_value)
+          .Then(on_activity_callback_)
           .Then(base::BindRepeating(
               &password_manager::metrics_util::
                   LogUserInteractionsInPasswordManagementBubble,
@@ -345,7 +355,8 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
   AddChildView(CreateDetailsRow(
       kKeyIcon,
       password_form.federation_origin.opaque()
-          ? CreatePasswordLabelWithEyeIconView(std::move(password_label))
+          ? CreatePasswordLabelWithEyeIconView(std::move(password_label),
+                                               on_activity_callback_)
           : std::move(password_label),
       vector_icons::kContentCopyIcon,
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_UI_COPY_PASSWORD),
@@ -365,6 +376,8 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
       ManagePasswordsViewIDs::kEditNoteButton));
   edit_note_row_ =
       AddChildView(CreateEditNoteRow(password_form, &note_textarea_));
+  text_changed_subscriptions_.push_back(
+      note_textarea_->AddTextChangedCallback(on_activity_callback_));
   edit_note_row_->SetVisible(false);
 }
 
@@ -373,6 +386,7 @@ ManagePasswordsDetailsView::~ManagePasswordsDetailsView() = default;
 void ManagePasswordsDetailsView::SwitchToReadingMode() {
   read_note_row_->SetVisible(true);
   edit_note_row_->SetVisible(false);
+  on_activity_callback_.Run();
 }
 
 absl::optional<std::u16string>
@@ -399,6 +413,7 @@ void ManagePasswordsDetailsView::SwitchToEditUsernameMode() {
   switched_to_edit_mode_callback_.Run();
   DCHECK(username_textfield_);
   username_textfield_->RequestFocus();
+  on_activity_callback_.Run();
   LogUserInteractionsInPasswordManagementBubble(
       PasswordManagementBubbleInteractions::kUsernameEditButtonClicked);
 }
@@ -408,5 +423,6 @@ void ManagePasswordsDetailsView::SwitchToEditNoteMode() {
   edit_note_row_->SetVisible(true);
   switched_to_edit_mode_callback_.Run();
   DCHECK(note_textarea_);
+  on_activity_callback_.Run();
   note_textarea_->RequestFocus();
 }
