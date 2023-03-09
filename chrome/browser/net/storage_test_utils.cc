@@ -4,7 +4,6 @@
 
 #include "chrome/browser/net/storage_test_utils.h"
 
-#include "base/strings/stringprintf.h"
 #include "content/public/test/browser_test_utils.h"
 
 namespace storage::test {
@@ -24,22 +23,19 @@ const std::vector<std::string> kCrossTabCommunicationTypes{
 };
 
 constexpr char kRequestStorageAccess[] =
-    "document.requestStorageAccess().then("
-    "  () => { window.domAutomationController.send(true); },"
-    "  () => { window.domAutomationController.send(false); },"
-    ");";
+    "document.requestStorageAccess()"
+    "  .then(() => document.hasStorageAccess())"
+    "  .catch(() => false);";
 
 constexpr char kRequestStorageAccessForOrigin[] =
-    "document.requestStorageAccessForOrigin('%s').then("
-    "  () => { window.domAutomationController.send(true); },"
-    "  () => { window.domAutomationController.send(false); },"
+    "document.requestStorageAccessForOrigin($1).then("
+    "  () => true,"
+    "  () => false,"
     ");";
 
 constexpr char kHasStorageAccess[] =
-    "document.hasStorageAccess().then("
-    "  (result) => { window.domAutomationController.send(result); },"
-    "  () => { window.domAutomationController.send(false); },"
-    ");";
+    "document.hasStorageAccess()"
+    "  .catch(() => false);";
 
 std::vector<std::string> GetStorageTypesForFrame(bool include_cookies) {
   std::vector<std::string> types(kStorageTypesForFrame);
@@ -149,25 +145,19 @@ void ExpectCrossTabInfoForFrame(content::RenderFrameHost* frame,
   EXPECT_THAT(actual, testing::UnorderedElementsAreArray(expected_elts));
 }
 
-bool RequestStorageAccessForFrame(content::RenderFrameHost* frame) {
-  return content::EvalJs(frame, kRequestStorageAccess,
-                         content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
-      .ExtractBool();
+bool RequestAndCheckStorageAccessForFrame(content::RenderFrameHost* frame) {
+  return content::EvalJs(frame, kRequestStorageAccess).ExtractBool();
 }
 
 bool RequestStorageAccessForOrigin(content::RenderFrameHost* frame,
                                    const std::string& origin) {
   return content::EvalJs(
-             frame,
-             base::StringPrintf(kRequestStorageAccessForOrigin, origin.c_str()),
-             content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+             frame, content::JsReplace(kRequestStorageAccessForOrigin, origin))
       .ExtractBool();
 }
 
 bool HasStorageAccessForFrame(content::RenderFrameHost* frame) {
-  return content::EvalJs(frame, kHasStorageAccess,
-                         content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
-      .ExtractBool();
+  return content::EvalJs(frame, kHasStorageAccess).ExtractBool();
 }
 
 std::string FetchWithCredentials(content::RenderFrameHost* frame,

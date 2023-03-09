@@ -13,8 +13,7 @@ namespace content {
 class RenderFrameHost;
 }  // namespace content
 
-namespace storage {
-namespace test {
+namespace storage::test {
 
 // Gets the text content of a given frame.
 std::string GetFrameContent(content::RenderFrameHost* frame);
@@ -34,9 +33,10 @@ void SetCrossTabInfoForFrame(content::RenderFrameHost* frame);
 void ExpectCrossTabInfoForFrame(content::RenderFrameHost* frame, bool expected);
 
 // Helper to request storage access for a frame using
-// document.requestStorageAccess(). Returns true if the promise resolves; false
-// if it rejects.
-bool RequestStorageAccessForFrame(content::RenderFrameHost* frame);
+// document.requestStorageAccess(). Returns true if the promise resolves *and*
+// if a subsequent call to `document.hasStorageAccess()` resolves and returns
+// true; false otherwise.
+bool RequestAndCheckStorageAccessForFrame(content::RenderFrameHost* frame);
 // Helper to request storage access with a site override for a frame using
 // document.requestStorageAccessForOrigin(origin). Returns true if the promise
 // resolves; false if it rejects.
@@ -54,6 +54,5 @@ std::string FetchWithCredentials(content::RenderFrameHost* frame,
                                  const GURL& url,
                                  const bool cors_enabled);
 
-}  // namespace test
-}  // namespace storage
+}  // namespace storage::test
 #endif  // CHROME_BROWSER_NET_STORAGE_TEST_UTILS_H_
