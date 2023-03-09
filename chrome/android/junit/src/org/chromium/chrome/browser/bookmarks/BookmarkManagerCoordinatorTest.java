@@ -8,7 +8,6 @@ import android.app.Activity;
 import android.view.View;
 import android.widget.FrameLayout;
 
-import androidx.test.core.app.ActivityScenario;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Assert;
@@ -80,7 +79,6 @@ public class BookmarkManagerCoordinatorTest {
     @Mock
     BookmarkModel mBookmarkModel;
 
-    private ActivityScenario<TestActivity> mActivityScenario;
     private Activity mActivity;
     private BookmarkManagerCoordinator mCoordinator;
 
