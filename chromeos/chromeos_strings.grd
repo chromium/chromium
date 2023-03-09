@@ -4037,6 +4037,15 @@
         <message name="IDS_INPUT_OVERLAY_KEY_LABEL_SPACE" desc="Name for symbol of space key. Spoken by screen readers when symbol space renders in key label and gets focus but the symbol name not visually rendered.">
           space
         </message>
+        <message name="IDS_INPUT_OVERLAY_EDIT_MENU_FOCUS" desc="Spoken by screen readers when action layout menu (save button group) is focused. The content is not rendered.">
+          Reposition with mouse or arrow keys.
+        </message>
+        <message name="IDS_INPUT_OVERLAY_EDIT_INSTRUCTIONS_ALPHAV2" desc="Text presented via a tooltip so the user knows how to interact and edit key-bindings.">
+          Click on any key to customize your button. Reposition key with mouse or arrow keys.
+        </message>
+        <message name="IDS_INPUT_OVERLAY_EDIT_INSTRUCTIONS_TOUCH_POINT_FOCUS" desc="Text presented via a tooltip so the user knows how to interact when the touch point is focused.">
+          Move the blue touch point to an action. Select the associated key to customize.
+        </message>
         <!-- End of Arc Input Overlay -->
       </if>
     </messages>

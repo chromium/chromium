@@ -646,9 +646,10 @@ bool TouchPoint::OnKeyReleased(const ui::KeyEvent& event) {
 }
 
 void TouchPoint::OnFocus() {
-  // TODO(b/260868602): Use formal localized string once it is ready.
   static_cast<ActionView*>(parent())->ShowFocusInfoMsg(
-      "Press arrow keys to reposition", this);
+      l10n_util::GetStringUTF8(
+          IDS_INPUT_OVERLAY_EDIT_INSTRUCTIONS_TOUCH_POINT_FOCUS),
+      this);
 }
 
 void TouchPoint::OnBlur() {
