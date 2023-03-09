@@ -233,49 +233,7 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
 }
 
 TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
-       TestStartLookup_RequestWithDmToken) {
-  GURL url("http://example.test/");
-  SetUpRTLookupResponse(RTLookupResponse::ThreatInfo::DANGEROUS,
-                        RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING, 60,
-                        "example.test/",
-                        RTLookupResponse::ThreatInfo::COVERING_MATCH);
-  SetDMTokenForTesting(policy::DMToken::CreateValidTokenForTesting("dm_token"));
-  ReferrerChain returned_referrer_chain;
-  EXPECT_CALL(*referrer_chain_provider_,
-              IdentifyReferrerChainByPendingEventURL(_, _, _))
-      .WillOnce(DoAll(SetArgPointee<2>(returned_referrer_chain),
-                      Return(ReferrerChainProvider::SUCCESS)));
-
-  base::MockCallback<RTLookupResponseCallback> response_callback;
-  enterprise_rt_service()->StartLookup(
-      url, last_committed_url_, is_mainframe_,
-      base::BindOnce(
-          [](std::unique_ptr<RTLookupRequest> request, std::string token) {
-            EXPECT_EQ("http://example.test/", request->url());
-            EXPECT_EQ("dm_token", request->dm_token());
-            EXPECT_EQ(ChromeUserPopulation::SAFE_BROWSING,
-                      request->population().user_population());
-            EXPECT_TRUE(request->population().is_history_sync_enabled());
-            EXPECT_EQ(ChromeUserPopulation::NOT_MANAGED,
-                      request->population().profile_management_status());
-            EXPECT_TRUE(request->population().is_under_advanced_protection());
-            EXPECT_EQ("", token);
-          }),
-      response_callback.Get(), content::GetIOThreadTaskRunner({}));
-
-  EXPECT_CALL(response_callback, Run(/* is_rt_lookup_successful */ true,
-                                     /* is_cached_response */ false, _));
-
-  task_environment_.RunUntilIdle();
-
-  // Check the response is cached.
-  EXPECT_NE(nullptr, GetCachedRealTimeUrlVerdict(url));
-}
-
-TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
        TestStartLookup_RequestWithDmTokenAndAccessToken) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kRealTimeUrlFilteringForEnterprise);
   GURL url("http://example.test/");
   SetUpRTLookupResponse(RTLookupResponse::ThreatInfo::DANGEROUS,
                         RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING, 60,

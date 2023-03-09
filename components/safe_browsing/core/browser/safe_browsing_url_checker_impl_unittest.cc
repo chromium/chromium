@@ -726,10 +726,8 @@ TEST_F(SafeBrowsingUrlCheckerTest,
                                 /*expected_bucket_count=*/1);
 }
 
-TEST_F(
-    SafeBrowsingUrlCheckerTest,
-    CheckUrl_RealTimeEnabledSafeBrowsingDisabled_ManagedWarn_FeatureEnabled) {
-  scoped_feature_list_.InitAndEnableFeature(kRealTimeUrlFilteringForEnterprise);
+TEST_F(SafeBrowsingUrlCheckerTest,
+       CheckUrl_RealTimeEnabledSafeBrowsingDisabled_ManagedWarn) {
   auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
       /*real_time_lookup_enabled=*/true, /*can_check_safe_browsing_db=*/false);
 
@@ -750,33 +748,8 @@ TEST_F(
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(
-    SafeBrowsingUrlCheckerTest,
-    CheckUrl_RealTimeEnabledSafeBrowsingDisabled_ManagedWarn_FeatureNotEnabled) {
-  auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
-      /*real_time_lookup_enabled=*/true, /*can_check_safe_browsing_db=*/false);
-
-  GURL url("https://example.test/");
-  url_lookup_service_->SetThreatTypeForUrl(
-      url, SB_THREAT_TYPE_MANAGED_POLICY_WARN, /*should_complete_lookup=*/true);
-
-  base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
-      callback;
-  // Should not show warning page because feature is not enabled.
-  EXPECT_CALL(
-      *url_checker_delegate_,
-      StartDisplayingBlockingPageHelper(
-          IsSameThreatSource(ThreatSource::REAL_TIME_CHECK), _, _, _, _))
-      .Times(0);
-  safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
-
-  task_environment_.RunUntilIdle();
-}
-
-TEST_F(
-    SafeBrowsingUrlCheckerTest,
-    CheckUrl_RealTimeEnabledSafeBrowsingDisabled_ManagedBlock_FeatureEnabled) {
-  scoped_feature_list_.InitAndEnableFeature(kRealTimeUrlFilteringForEnterprise);
+TEST_F(SafeBrowsingUrlCheckerTest,
+       CheckUrl_RealTimeEnabledSafeBrowsingDisabled_ManagedBlock) {
   auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
       /*real_time_lookup_enabled=*/true, /*can_check_safe_browsing_db=*/false);
 
@@ -793,30 +766,6 @@ TEST_F(
       StartDisplayingBlockingPageHelper(
           IsSameThreatSource(ThreatSource::REAL_TIME_CHECK), _, _, _, _))
       .Times(1);
-  safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
-
-  task_environment_.RunUntilIdle();
-}
-
-TEST_F(
-    SafeBrowsingUrlCheckerTest,
-    CheckUrl_RealTimeEnabledSafeBrowsingDisabled_ManagedBlock_FeatureNotEnabled) {
-  auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
-      /*real_time_lookup_enabled=*/true, /*can_check_safe_browsing_db=*/false);
-
-  GURL url("https://example.test/");
-  url_lookup_service_->SetThreatTypeForUrl(url,
-                                           SB_THREAT_TYPE_MANAGED_POLICY_BLOCK,
-                                           /*should_complete_lookup=*/true);
-
-  base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
-      callback;
-  // Should not show blocking page because the feature is not enabled.
-  EXPECT_CALL(
-      *url_checker_delegate_,
-      StartDisplayingBlockingPageHelper(
-          IsSameThreatSource(ThreatSource::REAL_TIME_CHECK), _, _, _, _))
-      .Times(0);
   safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
 
   task_environment_.RunUntilIdle();
