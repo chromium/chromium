@@ -887,6 +887,9 @@ SkiaOutputSurface::OverlayList MakeOverlayList(
   for (auto& mailbox : mailboxes) {
     OutputPresenter::OverlayPlaneCandidate overlay;
     overlay.mailbox = mailbox;
+#if BUILDFLAG(IS_APPLE)
+    overlay.transform = gfx::Transform();
+#endif
     overlay_list.push_back(overlay);
   }
   return overlay_list;

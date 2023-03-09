@@ -132,10 +132,10 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // Mailbox from resource_id. It is used by SkiaRenderer.
   gpu::Mailbox mailbox;
 
-#if BUILDFLAG(IS_WIN)
   gfx::ProtectedVideoType protected_video_type =
       gfx::ProtectedVideoType::kClear;
 
+#if BUILDFLAG(IS_WIN)
   bool is_video_fullscreen_letterboxing = false;
 #endif
 
@@ -198,6 +198,16 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
 
   // Specifies the rounded corners of overlay candidate, in target space.
   gfx::RRectF rounded_corners;
+
+  // Layers in a non-zero sorting context exist in the same 3D space and should
+  // intersect.
+  unsigned sorting_context_id = 0;
+
+  // The edge anti-aliasing mask property for the CALayer.
+  unsigned edge_aa_mask = 0;
+
+  // If we need nearest neighbor filter for displaying this overlay.
+  bool nearest_neighbor_filter = false;
 
   // A (ideally) unique key used to temporally identify a specific overlay
   // candidate. This key can have collisions more that would be expected by the

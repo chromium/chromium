@@ -32,12 +32,7 @@ namespace viz {
 // destroyed on the gpu thread.
 class VIZ_SERVICE_EXPORT OverlayProcessorOnGpu {
  public:
-#if BUILDFLAG(IS_APPLE)
-  using CandidateList = CALayerOverlayList;
-#else
-  // Default.
   using CandidateList = OverlayCandidateList;
-#endif
 
   explicit OverlayProcessorOnGpu(
       gpu::DisplayCompositorMemoryAndTaskControllerOnGpu*

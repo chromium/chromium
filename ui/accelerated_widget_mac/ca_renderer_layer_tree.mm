@@ -728,7 +728,7 @@ CARendererLayerTree::ContentLayer::ContentLayer(
     const gfx::ColorSpace& io_surface_color_space,
     unsigned edge_aa_mask,
     float opacity,
-    unsigned filter,
+    bool nearest_neighbor_filter,
     gfx::HDRMode hdr_mode,
     absl::optional<gfx::HDRMetadata> hdr_metadata,
     gfx::ProtectedVideoType protected_video_type)
@@ -741,12 +741,10 @@ CARendererLayerTree::ContentLayer::ContentLayer(
       io_surface_color_space_(io_surface_color_space),
       ca_edge_aa_mask_(0),
       opacity_(opacity),
-      ca_filter_(filter == GL_LINEAR ? kCAFilterLinear : kCAFilterNearest),
+      ca_filter_(nearest_neighbor_filter ? kCAFilterNearest : kCAFilterLinear),
       hdr_mode_(hdr_mode),
       hdr_metadata_(hdr_metadata),
       protected_video_type_(protected_video_type) {
-  DCHECK(filter == GL_LINEAR || filter == GL_NEAREST);
-
   // On Mac OS Sierra, solid color layers are not color converted to the output
   // monitor color space, but IOSurface-backed layers are color converted. Note
   // that this is only the case when the CALayers are shared across processes.
@@ -914,7 +912,7 @@ void CARendererLayerTree::TransformLayer::AddContentLayer(
       this, params.io_surface, base::ScopedCFTypeRef<CVPixelBufferRef>(),
       params.contents_rect, params.rect, params.background_color,
       params.io_surface_color_space, params.edge_aa_mask, params.opacity,
-      params.filter, params.hdr_mode, params.hdr_metadata,
+      params.nearest_neighbor_filter, params.hdr_mode, params.hdr_metadata,
       params.protected_video_type);
 }
 

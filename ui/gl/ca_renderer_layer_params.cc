@@ -19,7 +19,7 @@ CARendererLayerParams::CARendererLayerParams(
     SkColor4f background_color,
     unsigned edge_aa_mask,
     float opacity,
-    unsigned filter,
+    bool nearest_neighbor_filter,
     gfx::HDRMode hdr_mode,
     absl::optional<gfx::HDRMetadata> hdr_metadata,
     gfx::ProtectedVideoType protected_video_type)
@@ -35,7 +35,7 @@ CARendererLayerParams::CARendererLayerParams(
       background_color(background_color),
       edge_aa_mask(edge_aa_mask),
       opacity(opacity),
-      filter(filter),
+      nearest_neighbor_filter(nearest_neighbor_filter),
       hdr_mode(hdr_mode),
       hdr_metadata(hdr_metadata),
       protected_video_type(protected_video_type) {}

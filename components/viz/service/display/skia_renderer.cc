@@ -2685,20 +2685,20 @@ void SkiaRenderer::ScheduleOverlays() {
     DCHECK(!overlay.mailbox.IsZero());
   }
 #elif BUILDFLAG(IS_APPLE)
-  for (CALayerOverlay& ca_layer_overlay : current_frame()->overlay_list) {
+  for (OverlayCandidate& ca_layer_overlay : current_frame()->overlay_list) {
     if (ca_layer_overlay.rpdq) {
       PrepareRenderPassOverlay(&ca_layer_overlay);
       locks.emplace_back(ca_layer_overlay.mailbox);
       continue;
     }
     // Some overlays are for solid-color layers.
-    if (!ca_layer_overlay.contents_resource_id)
+    if (!ca_layer_overlay.resource_id) {
       continue;
+    }
 
     // TODO(https://crbug.com/894929): Track IOSurface in-use instead of just
     // unlocking after the next SwapBuffers is completed.
-    locks.emplace_back(resource_provider(),
-                       ca_layer_overlay.contents_resource_id);
+    locks.emplace_back(resource_provider(), ca_layer_overlay.resource_id);
     auto& lock = locks.back();
 
     // Sync tokens ensure the texture to be overlaid is available before
@@ -3572,8 +3572,8 @@ void SkiaRenderer::PrepareRenderPassOverlay(
 
 #if BUILDFLAG(IS_APPLE)
   // Adjust |bounds_rect| to contain the whole buffer and at the right location.
-  overlay->bounds_rect.set_origin(gfx::PointF(filter_bounds.origin()));
-  overlay->bounds_rect.set_size(gfx::SizeF(buffer_size));
+  overlay->display_rect.set_origin(gfx::PointF(filter_bounds.origin()));
+  overlay->display_rect.set_size(gfx::SizeF(buffer_size));
 #else   // BUILDFLAG(IS_OZONE)
   // Adjust |display_rect| to be include the expanded |filter_bounds|, and
   // transformed.

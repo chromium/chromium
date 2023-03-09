@@ -42,7 +42,7 @@ struct GL_EXPORT CARendererLayerParams {
                         SkColor4f background_color,
                         unsigned edge_aa_mask,
                         float opacity,
-                        unsigned filter,
+                        bool nearest_neighbor_filter,
                         gfx::HDRMode hdr_mode,
                         absl::optional<gfx::HDRMetadata> hdr_metadata,
                         gfx::ProtectedVideoType protected_video_type);
@@ -61,7 +61,7 @@ struct GL_EXPORT CARendererLayerParams {
   SkColor4f background_color;
   unsigned edge_aa_mask;
   float opacity;
-  unsigned filter;
+  bool nearest_neighbor_filter;
   const gfx::HDRMode hdr_mode;
   absl::optional<gfx::HDRMetadata> hdr_metadata;
   gfx::ProtectedVideoType protected_video_type;

@@ -122,12 +122,8 @@ class VIZ_SERVICE_EXPORT OutputPresenter {
       const OverlayProcessorInterface::OutputSurfaceOverlayPlane& plane,
       Image* image,
       bool is_submitted) = 0;
-#if BUILDFLAG(IS_APPLE)
-  using OverlayPlaneCandidate = CALayerOverlay;
-#else
-  // Default.
+
   using OverlayPlaneCandidate = OverlayCandidate;
-#endif
   using ScopedOverlayAccess = gpu::OverlayImageRepresentation::ScopedReadAccess;
   virtual void ScheduleOverlayPlane(
       const OverlayPlaneCandidate& overlay_plane_candidate,

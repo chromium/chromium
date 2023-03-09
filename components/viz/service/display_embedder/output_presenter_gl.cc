@@ -329,19 +329,19 @@ void OutputPresenterGL::ScheduleOverlayPlane(
   }
 #elif BUILDFLAG(IS_APPLE)
   presenter_->ScheduleCALayer(ui::CARendererLayerParams(
-      overlay_plane_candidate.is_clipped,
-      gfx::ToEnclosingRect(overlay_plane_candidate.clip_rect),
-      overlay_plane_candidate.rounded_corner_bounds,
+      overlay_plane_candidate.clip_rect.has_value(),
+      overlay_plane_candidate.clip_rect.value_or(gfx::Rect()),
+      overlay_plane_candidate.rounded_corners,
       overlay_plane_candidate.sorting_context_id,
-      gfx::Transform(overlay_plane_candidate.transform),
+      absl::get<gfx::Transform>(overlay_plane_candidate.transform),
       access ? access->GetIOSurface() : gfx::ScopedIOSurface(),
       access ? access->representation()->color_space() : gfx::ColorSpace(),
-      overlay_plane_candidate.contents_rect,
-      gfx::ToEnclosingRect(overlay_plane_candidate.bounds_rect),
-      overlay_plane_candidate.background_color,
+      overlay_plane_candidate.uv_rect,
+      gfx::ToEnclosingRect(overlay_plane_candidate.display_rect),
+      overlay_plane_candidate.color.value_or(SkColors::kTransparent),
       overlay_plane_candidate.edge_aa_mask, overlay_plane_candidate.opacity,
-      overlay_plane_candidate.filter, overlay_plane_candidate.hdr_mode,
-      overlay_plane_candidate.hdr_metadata,
+      overlay_plane_candidate.nearest_neighbor_filter,
+      overlay_plane_candidate.hdr_mode, overlay_plane_candidate.hdr_metadata,
       overlay_plane_candidate.protected_video_type));
 #endif
 }

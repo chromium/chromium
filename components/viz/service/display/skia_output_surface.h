@@ -51,16 +51,7 @@ struct RenderPassGeometry;
 class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
                                              public ExternalUseClient {
  public:
-#if BUILDFLAG(IS_ANDROID)
   using OverlayList = std::vector<OverlayCandidate>;
-#elif BUILDFLAG(IS_APPLE)
-  using OverlayList = CALayerOverlayList;
-#elif BUILDFLAG(IS_OZONE)
-  using OverlayList = std::vector<OverlayCandidate>;
-#else
-  // Default.
-  using OverlayList = std::vector<OverlayCandidate>;
-#endif
 
   explicit SkiaOutputSurface(OutputSurface::Type type);
 
