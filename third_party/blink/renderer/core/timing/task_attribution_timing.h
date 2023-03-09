@@ -26,7 +26,7 @@ class TaskAttributionTiming final : public PerformanceEntry {
 
   void Trace(Visitor*) const override;
 
-  TaskAttributionTiming(const AtomicString& type,
+  TaskAttributionTiming(const AtomicString& name,
                         const AtomicString& container_type,
                         const AtomicString& container_src,
                         const AtomicString& container_id,
