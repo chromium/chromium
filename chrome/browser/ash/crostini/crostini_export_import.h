@@ -89,6 +89,10 @@ class CrostiniExportImport : public KeyedService,
     OnceTrackerFactory tracker_factory;
   };
 
+  // Call this method to ensure that the factory for this KeyedService is built
+  // (necessary for embedders that disallow lazy initialization of factories).
+  static void EnsureFactoryBuilt();
+
   static CrostiniExportImport* GetForProfile(Profile* profile);
 
   explicit CrostiniExportImport(Profile* profile);

@@ -68,6 +68,10 @@ class CrostiniExportImportFactory : public ProfileKeyedServiceFactory {
   }
 };
 
+void CrostiniExportImport::EnsureFactoryBuilt() {
+  CrostiniExportImportFactory::GetInstance();
+}
+
 CrostiniExportImport* CrostiniExportImport::GetForProfile(Profile* profile) {
   return CrostiniExportImportFactory::GetForProfile(profile);
 }
