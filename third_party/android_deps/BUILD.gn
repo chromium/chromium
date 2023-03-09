@@ -1371,6 +1371,16 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  java_prebuilt("io_grpc_grpc_context_java") {
+    jar_path = "libs/io_grpc_grpc_context/grpc-context-1.49.0.jar"
+    output_name = "io_grpc_grpc_context"
+    supports_android = true
+
+    # https://crbug.com/1412551
+    requires_android = true
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("io_grpc_grpc_protobuf_lite_java") {
     jar_path = "libs/io_grpc_grpc_protobuf_lite/grpc-protobuf-lite-1.49.0.jar"
     output_name = "io_grpc_grpc_protobuf_lite"
@@ -2232,23 +2242,6 @@ if (!limit_android_deps) {
       ":org_jetbrains_kotlin_kotlin_stdlib_jdk8_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("io_grpc_grpc_context_java") {
-    jar_path = "libs/io_grpc_grpc_context/grpc-context-1.49.0.jar"
-    output_name = "io_grpc_grpc_context"
-    supports_android = true
-
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-
-    # https://crbug.com/1412551
-    requires_android = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
