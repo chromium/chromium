@@ -359,7 +359,7 @@ void SigninViewController::ShowDiceSigninTab(
   GURL signin_url =
       signin_reason == signin_metrics::Reason::kAddSecondaryAccount
           ? signin::GetAddAccountURLForDice(email_hint, continue_url)
-          : signin::GetChromeSyncURLForDice(email_hint, continue_url);
+          : signin::GetChromeSyncURLForDice({email_hint, continue_url});
 
   content::WebContents* active_contents = nullptr;
   if (access_point == signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE) {

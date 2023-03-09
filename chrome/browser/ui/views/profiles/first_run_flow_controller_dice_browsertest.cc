@@ -26,6 +26,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "net/base/url_util.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -104,7 +105,8 @@ IN_PROC_BROWSER_TEST_F(FirstRunFlowControllerDiceBrowserTest, SignInAndSync) {
   web_contents()->GetWebUI()->ProcessWebUIMessage(
       web_contents()->GetURL(), "continueWithAccount", base::Value::List());
 
-  WaitForLoadStop(GaiaUrls::GetInstance()->signin_chrome_sync_dice());
+  WaitForLoadStop(net::AppendQueryParameter(
+      GaiaUrls::GetInstance()->signin_chrome_sync_dice(), "flow", "promo"));
   histogram_tester.ExpectUniqueSample(
       "Signin.SignIn.Started",
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
@@ -171,7 +173,8 @@ IN_PROC_BROWSER_TEST_F(FirstRunFlowControllerDiceBrowserTest,
   EXPECT_EQ(true, content::EvalJs(view()->GetPickerContents(),
                                   kClickSignInButtonJSString));
 
-  WaitForLoadStop(GaiaUrls::GetInstance()->signin_chrome_sync_dice());
+  WaitForLoadStop(net::AppendQueryParameter(
+      GaiaUrls::GetInstance()->signin_chrome_sync_dice(), "flow", "promo"));
   EXPECT_EQ(true, content::EvalJs(view()->GetPickerContents(),
                                   kAreButtonsDisabledJSString));
 

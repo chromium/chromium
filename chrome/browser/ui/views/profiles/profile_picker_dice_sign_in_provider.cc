@@ -14,6 +14,8 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/dice_tab_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_features.h"
+#include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/sync/sync_encryption_keys_tab_helper.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -29,19 +31,11 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "google_apis/gaia/gaia_auth_util.h"
-#include "google_apis/gaia/gaia_urls.h"
 #include "net/base/url_util.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
 
 namespace {
-
-GURL GetSigninURL(bool dark_mode) {
-  GURL signin_url = GaiaUrls::GetInstance()->signin_chrome_sync_dice();
-  if (dark_mode)
-    signin_url = net::AppendQueryParameter(signin_url, "color_scheme", "dark");
-  return signin_url;
-}
 
 bool IsExternalURL(const GURL& url) {
   // Empty URL is used initially, about:blank is used to stop navigation after
@@ -187,7 +181,7 @@ void ProfilePickerDiceSignInProvider::NavigationStateChanged(
     // Use |redirect_url| and not |continue_url|, so that the DiceTabHelper can
     // redirect to chrome:// URLs such as the NTP.
     tab_helper->InitializeSigninFlow(
-        GetSigninURL(host_->ShouldUseDarkColors()), signin_access_point_,
+        BuildSigninURL(), signin_access_point_,
         signin_metrics::Reason::kSigninPrimaryAccount,
         signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
         GURL(chrome::kChromeUINewTabURL));
@@ -290,7 +284,7 @@ void ProfilePickerDiceSignInProvider::OnProfileInitialized(
                      // host itself.
                      base::Unretained(host_), /*visible=*/true)
           .Then(base::BindOnce(std::move(switch_finished_callback), true));
-  host_->ShowScreen(contents(), GetSigninURL(host_->ShouldUseDarkColors()),
+  host_->ShowScreen(contents(), BuildSigninURL(),
                     std::move(navigation_finished_closure));
 }
 
@@ -304,4 +298,14 @@ void ProfilePickerDiceSignInProvider::FinishFlow(bool is_saml) {
   contents()->SetDelegate(nullptr);
   identity_manager_observation_.Reset();
   std::move(callback_).Run(profile_.get(), is_saml, std::move(contents_));
+}
+
+GURL ProfilePickerDiceSignInProvider::BuildSigninURL() const {
+  return signin::GetChromeSyncURLForDice({
+      .request_dark_scheme = host_->ShouldUseDarkColors(),
+      .for_promo_flow =
+          base::FeatureList::IsEnabled(kPromoGaiaFlow) ||
+          signin_access_point_ ==
+              signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE,
+  });
 }

@@ -98,6 +98,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/common/extension_id.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "net/base/url_util.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -520,7 +521,8 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
 
     // The DICE navigation happens in a new web contents (for the profile being
     // created), wait for it.
-    WaitForLoadStop(GaiaUrls::GetInstance()->signin_chrome_sync_dice());
+    WaitForLoadStop(net::AppendQueryParameter(
+        GaiaUrls::GetInstance()->signin_chrome_sync_dice(), "flow", "promo"));
     return static_cast<Profile*>(web_contents()->GetBrowserContext());
   }
 

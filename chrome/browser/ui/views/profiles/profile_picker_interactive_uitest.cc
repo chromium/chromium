@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 
 #include "base/check.h"
@@ -19,7 +20,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
-#include "google_apis/gaia/gaia_urls.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom.h"
 #include "ui/events/keycodes/dom/dom_key.h"
@@ -202,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
                                     switch_finished_callback.Get());
 
   // Switch to the signin webview.
-  WaitForLoadStop(GaiaUrls::GetInstance()->signin_chrome_sync_dice());
+  WaitForLoadStop(signin::GetChromeSyncURLForDice({.for_promo_flow = true}));
 
   // Close the picker with the keyboard.
   EXPECT_TRUE(ProfilePicker::IsOpen());
@@ -243,7 +243,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
                                     switch_finished_callback.Get());
 
   // Switch to the signin webview.
-  WaitForLoadStop(GaiaUrls::GetInstance()->signin_chrome_sync_dice());
+  WaitForLoadStop(signin::GetChromeSyncURLForDice({.for_promo_flow = true}));
 
   // Navigate back with the keyboard.
   SendBackKeyboardCommand();
