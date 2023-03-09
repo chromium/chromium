@@ -223,6 +223,24 @@ device::mojom::SmartCardProtocol ToDeviceMojomSmartCardProtocol(
   }
 }
 
+template <class PendingType>
+std::unique_ptr<PendingType> Extract(
+    std::map<extensions::SmartCardProviderPrivateAPI::RequestId,
+             std::unique_ptr<PendingType>>& pending_map,
+    extensions::SmartCardProviderPrivateAPI::RequestId request_id) {
+  auto it = pending_map.find(request_id);
+  if (it == pending_map.end()) {
+    return nullptr;
+  }
+
+  std::unique_ptr<PendingType> pending = std::move(it->second);
+  CHECK(pending);
+
+  pending_map.erase(it);
+
+  return pending;
+}
+
 }  // namespace
 
 namespace extensions {
@@ -365,18 +383,16 @@ void SmartCardProviderPrivateAPI::ReportEstablishContextResult(
     SmartCardResultPtr result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto it = pending_establish_context_.find(request_id);
-  if (it == pending_establish_context_.end()) {
-    if (result->is_success() && !scard_context.is_null()) {
+  std::unique_ptr<PendingEstablishContext> pending =
+      Extract(pending_establish_context_, request_id);
+  if (!pending) {
+    if (result->is_success() && scard_context) {
       LOG(WARNING) << "Releasing scard_context from an unknown "
                       "EstablishContext request.";
       ProviderReleaseContext(scard_context);
     }
     return;
   }
-
-  std::unique_ptr<PendingEstablishContext> pending = std::move(it->second);
-  pending_establish_context_.erase(it);
 
   SmartCardCreateContextResultPtr context_result;
 
@@ -407,13 +423,11 @@ void SmartCardProviderPrivateAPI::ReportReleaseContextResult(
     SmartCardResultPtr result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto it = pending_release_context_.find(request_id);
-  if (it == pending_release_context_.end()) {
+  std::unique_ptr<PendingReleaseContext> pending =
+      Extract(pending_release_context_, request_id);
+  if (!pending) {
     return;
   }
-
-  std::unique_ptr<PendingReleaseContext> pending = std::move(it->second);
-  pending_release_context_.erase(it);
 
   if (result->is_error()) {
     // There's nothing really to be done about it.
@@ -427,13 +441,11 @@ void SmartCardProviderPrivateAPI::ReportListReadersResult(
     SmartCardResultPtr result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto it = pending_list_readers_.find(request_id);
-  if (it == pending_list_readers_.end()) {
+  std::unique_ptr<PendingListReaders> pending =
+      Extract(pending_list_readers_, request_id);
+  if (!pending) {
     return;
   }
-
-  std::unique_ptr<PendingListReaders> pending = std::move(it->second);
-  pending_list_readers_.erase(it);
 
   std::move(pending->callback)
       .Run(result->is_success()
@@ -447,13 +459,11 @@ void SmartCardProviderPrivateAPI::ReportGetStatusChangeResult(
     SmartCardResultPtr result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto it = pending_get_status_change_.find(request_id);
-  if (it == pending_get_status_change_.end()) {
+  std::unique_ptr<PendingGetStatusChange> pending =
+      Extract(pending_get_status_change_, request_id);
+  if (!pending) {
     return;
   }
-
-  std::unique_ptr<PendingGetStatusChange> pending = std::move(it->second);
-  pending_get_status_change_.erase(it);
 
   device::mojom::SmartCardStatusChangeResultPtr status_change_result;
 
@@ -475,16 +485,14 @@ void SmartCardProviderPrivateAPI::ReportConnectResult(
     SmartCardResultPtr result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto it = pending_connect_.find(request_id);
-  if (it == pending_connect_.end()) {
+  std::unique_ptr<PendingConnect> pending =
+      Extract(pending_connect_, request_id);
+  if (!pending) {
     // TODO(crbug.com/1386175): Send disconnect request to PC/SC provider
     // if the handle is valid and the result is success to avoid leaking
     // this seemingly unrequested connection.
     return;
   }
-
-  std::unique_ptr<PendingConnect> pending = std::move(it->second);
-  pending_connect_.erase(it);
 
   device::mojom::SmartCardConnectResultPtr connect_result;
 
