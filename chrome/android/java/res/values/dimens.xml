@@ -110,24 +110,10 @@ found in the LICENSE file.
     <dimen name="compositor_background_tab_elevation">@dimen/default_elevation_4</dimen>
 
     <!-- First Run Experience dimensions -->
-    <dimen name="fre_content_margin">24dp</dimen>
-    <dimen name="fre_vertical_spacing">32dp</dimen>
-    <dimen name="fre_landscape_top_padding">72dp</dimen>
-
-    <dimen name="fre_image_bottom_margin">36dp</dimen>
     <dimen name="fre_tos_image_height">110dp</dimen>
-    <dimen name="fre_tos_checkbox_padding">12dp</dimen>
-    <dimen name="fre_tos_bottom_margin">16dp</dimen>
     <dimen name="fre_loading_spinner_size">48dp</dimen>
-    <dimen name="fre_bottom_loading_spinner_size">24dp</dimen>
     <dimen name="fre_policy_privacy_disclaimer_icon_size">18dp</dimen>
     <dimen name="fre_policy_privacy_disclaimer_icon_padding">8dp</dimen>
-    <dimen name="fre_policy_privacy_disclaimer_top_margin">16dp</dimen>
-
-    <dimen name="fre_button_vertical_margin">24dp</dimen>
-
-
-    <dimen name="fre_button_vertical_margin_small">16dp</dimen>
 
     <!-- Account Signin dimensions -->
     <!-- The Account Signin page appears in the First Run Experience (amongst other places), so uses

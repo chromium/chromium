@@ -50,8 +50,5 @@
 # TODO(crbug/1382163)
 -org.chromium.chrome.browser.signin.SyncConsentFragmentTest.testSyncConsentFragmentNewAccount
 
-# TODO(crbug/1383670)
--org.chromium.chrome.browser.firstrun.TosAndUmaFirstRunFragmentWithEnterpriseSupportTest.testRenderWhenMetricsReportingAreDisabledWithUmaDialogForChildAccount
-
 # TODO(crbug/1383879)
 -org.chromium.chrome.browser.partnercustomizations.PartnerHomepageIntegrationTest.testCloseAllTabs

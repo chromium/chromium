@@ -84,9 +84,6 @@ public class ChromeSmokeTest {
     }
 
     private void navigateThroughFRE() {
-        // Used in ToSAndUMAFirstRunFragment FRE page.
-        IUi2Locator termsAcceptButton = Ui2Locators.withAnyResEntry(R.id.terms_accept);
-
         // Used in SyncConsentFirstRunFragment FRE page.
         IUi2Locator noAddAccountButton = Ui2Locators.withAnyResEntry(R.id.negative_button);
 
@@ -114,7 +111,6 @@ public class ChromeSmokeTest {
         // These locators show up in one FRE page or another
         IUi2Locator[] frePageDetectors = new IUi2Locator[] {
                 playServicesUpdateText,
-                termsAcceptButton,
                 signinSkipButton,
                 signinContinueButton,
                 signinProgressSpinner,
@@ -139,9 +135,6 @@ public class ChromeSmokeTest {
                 if (uiLocatorHelper.isOnScreen(updatePlayServicesPanel)) {
                     UiAutomatorUtils.getInstance().clickOutsideOf(updatePlayServicesPanel);
                 }
-            } else if (uiLocatorHelper.isOnScreen(termsAcceptButton)) {
-                // Click on the accept terms in FRE.
-                UiAutomatorUtils.getInstance().click(termsAcceptButton);
             } else if (uiLocatorHelper.isOnScreen(noAddAccountButton)) {
                 // Do not add an account.
                 UiAutomatorUtils.getInstance().click(noAddAccountButton);

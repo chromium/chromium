@@ -6,8 +6,6 @@ found in the LICENSE file.
 -->
 
 <resources>
-    <dimen name="fre_content_margin">60dp</dimen>
-
     <!-- Copy of corresponding abc_* values from AppCompat. Used by
          TabbedModeFirstRunActivity to simulate DialogWhenLarge layout. -->
     <item type="dimen" name="dialog_fixed_width_major">60%</item>

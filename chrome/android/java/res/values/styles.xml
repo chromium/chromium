@@ -231,30 +231,6 @@ found in the LICENSE file.
         <item name="android:layout_weight">1</item>
     </style>
 
-    <!-- First Run Experience -->
-    <!-- Avoid using @font/accent_font, a downloaded font, on text that could appear in the first
-         couple of frames of app start. It may not be ready yet, see https://crbug.com/1119990 -->
-    <style name="TextAppearance.FreFirstFrameTitle" parent="TextAppearance.Headline.Primary" >
-        <item name="android:fontFamily">sans-serif</item>
-    </style>
-    <!-- Match the fontFamily in ui/android/java/res/values/styles.xml -->
-    <style name="TextAppearance.FreFirstFrameButton" parent="TextAppearance.Button.Text.Filled">
-        <item name="android:fontFamily">sans-serif-medium</item>
-    </style>
-    <style name="FreTitle">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:gravity">center</item>
-        <item name="android:lineSpacingMultiplier">1.4</item>
-        <item name="android:textAppearance">@style/TextAppearance.Headline.Primary</item>
-    </style>
-    <style name="FreWelcomePageTitle" parent="FreTitle">
-        <item name="android:textAppearance">@style/TextAppearance.FreFirstFrameTitle</item>
-    </style>
-    <style name="FreAcceptTosButton" parent="FilledButton.Flat">
-        <item name="android:textAppearance">@style/TextAppearance.FreFirstFrameButton</item>
-    </style>
-
     <!-- Generic Overlay Panel styles -->
     <style name="OverlayPanelTextViewLayout">
         <item name="android:layout_width">match_parent</item>

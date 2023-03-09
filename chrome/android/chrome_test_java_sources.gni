@@ -191,7 +191,6 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/firstrun/FirstRunActivitySigninAndSyncTest.java",
   "javatests/src/org/chromium/chrome/browser/firstrun/FirstRunActivityTestObserver.java",
   "javatests/src/org/chromium/chrome/browser/firstrun/FirstRunIntegrationTest.java",
-  "javatests/src/org/chromium/chrome/browser/firstrun/TosAndUmaFirstRunFragmentWithEnterpriseSupportTest.java",
   "javatests/src/org/chromium/chrome/browser/fullscreen/FullscreenManagerTest.java",
   "javatests/src/org/chromium/chrome/browser/fullscreen/FullscreenManagerTestUtils.java",
   "javatests/src/org/chromium/chrome/browser/gcore/MockConnectedTask.java",
