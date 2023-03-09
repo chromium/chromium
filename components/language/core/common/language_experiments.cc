@@ -28,7 +28,7 @@ BASE_FEATURE(kDetailedLanguageSettings,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kDesktopDetailedLanguageSettings,
              "DesktopDetailedLanguageSettings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kTranslateAssistContent,
              "TranslateAssistContent",
              base::FEATURE_DISABLED_BY_DEFAULT);
