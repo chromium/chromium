@@ -515,18 +515,7 @@ void vp8_sixtap_predict16x16_c(unsigned char* src_ptr,
                                int yoffset,
                                unsigned char* dst_ptr,
                                int dst_pitch);
-void vp8_sixtap_predict16x16_neon(unsigned char* src_ptr,
-                                  int src_pixels_per_line,
-                                  int xoffset,
-                                  int yoffset,
-                                  unsigned char* dst_ptr,
-                                  int dst_pitch);
-RTCD_EXTERN void (*vp8_sixtap_predict16x16)(unsigned char* src_ptr,
-                                            int src_pixels_per_line,
-                                            int xoffset,
-                                            int yoffset,
-                                            unsigned char* dst_ptr,
-                                            int dst_pitch);
+#define vp8_sixtap_predict16x16 vp8_sixtap_predict16x16_c
 
 void vp8_sixtap_predict4x4_c(unsigned char* src_ptr,
                              int src_pixels_per_line,
@@ -680,9 +669,6 @@ static void setup_rtcd_internal(void) {
   vp8_short_walsh4x4 = vp8_short_walsh4x4_c;
   if (flags & HAS_NEON)
     vp8_short_walsh4x4 = vp8_short_walsh4x4_neon;
-  vp8_sixtap_predict16x16 = vp8_sixtap_predict16x16_c;
-  if (flags & HAS_NEON)
-    vp8_sixtap_predict16x16 = vp8_sixtap_predict16x16_neon;
   vp8_sixtap_predict4x4 = vp8_sixtap_predict4x4_c;
   if (flags & HAS_NEON)
     vp8_sixtap_predict4x4 = vp8_sixtap_predict4x4_neon;
