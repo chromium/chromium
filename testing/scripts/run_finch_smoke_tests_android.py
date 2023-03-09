@@ -496,6 +496,7 @@ class FinchTestCase(common.BaseIsolatedScriptArgsAdapter):
                         type=lambda processes: max(0, int(processes)),
                         default=1,
                         help='Number of emulator to run.')
+    common.add_emulator_args(parser)
     # Add arguments used by Skia Gold.
     FinchSkiaGoldProperties.AddCommandLineArguments(parser)
 
@@ -1189,7 +1190,6 @@ def main(args):
         required=False,
         help='path to write test results JSON object to')
 
-  common.add_emulator_args(parser)
   script_common.AddDeviceArguments(parser)
   script_common.AddEnvironmentArguments(parser)
   logging_common.AddLoggingArguments(parser)
