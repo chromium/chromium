@@ -266,6 +266,7 @@ extern const char kStyleChange[];
 extern const char kDomChanged[];
 extern const char kTextChanged[];
 extern const char kPrintingChanged[];
+extern const char kPaintPreview[];
 extern const char kAttributeChanged[];
 extern const char kColumnsChanged[];
 extern const char kChildAnonymousBlockChanged[];
