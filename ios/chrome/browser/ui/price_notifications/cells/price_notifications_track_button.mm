@@ -46,24 +46,9 @@ const CGFloat kTrackButtonTopPadding = 4;
       price_notifications::CalculateTrackButtonHorizontalPadding(
           self.superview.superview.frame.size.width,
           self.titleLabel.intrinsicContentSize.width);
-
-  // TODO(crbug.com/1418068): Simplify after minimum version required is >=
-  // iOS 15.
-  if (@available(iOS 15, *)) {
-    UIButtonConfiguration* buttonConfiguration =
-        [UIButtonConfiguration plainButtonConfiguration];
-    buttonConfiguration.contentInsets =
-        NSDirectionalEdgeInsetsMake(kTrackButtonTopPadding, horizontalPadding,
-                                    kTrackButtonTopPadding, horizontalPadding);
-    self.configuration = buttonConfiguration;
-  }
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-  else {
-    self.contentEdgeInsets =
-        UIEdgeInsetsMake(kTrackButtonTopPadding, horizontalPadding,
-                         kTrackButtonTopPadding, horizontalPadding);
-  }
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+  self.contentEdgeInsets =
+      UIEdgeInsetsMake(kTrackButtonTopPadding, horizontalPadding,
+                       kTrackButtonTopPadding, horizontalPadding);
 
   price_notifications::WidthConstraintValues constraintValues =
       price_notifications::CalculateTrackButtonWidthConstraints(
