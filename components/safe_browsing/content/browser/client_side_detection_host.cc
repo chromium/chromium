@@ -560,8 +560,7 @@ void ClientSideDetectionHost::PhishingDetectionDone(
       verdict->clear_visual_features();
     }
 
-    if (IsEnhancedProtectionEnabled(*delegate_->GetPrefs()) &&
-        base::FeatureList::IsEnabled(kClientSideDetectionReferrerChain)) {
+    if (IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
       delegate_->AddReferrerChain(verdict.get(), current_url_,
                                   current_outermost_main_frame_id_);
     }

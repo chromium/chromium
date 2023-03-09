@@ -41,10 +41,6 @@ BASE_FEATURE(kClientSideDetectionModelTag,
              "ClientSideDetectionTag",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kClientSideDetectionReferrerChain,
-             "ClientSideDetectionReferrerChain",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kClientSideDetectionTypeForceRequest,
              "ClientSideDetectionTypeForceRequest",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -262,10 +258,6 @@ BASE_FEATURE(kThreatDomDetailsTagAndAttributeFeature,
              "ThreatDomDetailsTagAttributes",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kVisualFeaturesForReusePings,
-             "VisualFeaturesInReusePings",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kVisualFeaturesSizes,
              "VisualFeaturesSizes",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -300,7 +292,6 @@ constexpr struct {
     {&kClientSideDetectionKillswitch, true},
     {&kClientSideDetectionModelOptimizationGuide, true},
     {&kClientSideDetectionModelIsFlatBuffer, true},
-    {&kClientSideDetectionReferrerChain, true},
     {&kClientSideDetectionTypeForceRequest, true},
     {&kComponentUpdaterAndroidProtegoAllowlist, true},
     {&kConnectorsScanningAccessToken, true},
@@ -335,7 +326,6 @@ constexpr struct {
     {&kSuspiciousSiteTriggerQuotaFeature, true},
     {&kTailoredSecurityIntegration, true},
     {&kThreatDomDetailsTagAndAttributeFeature, false},
-    {&kVisualFeaturesForReusePings, true},
     {&kVisualFeaturesSizes, true},
 };
 

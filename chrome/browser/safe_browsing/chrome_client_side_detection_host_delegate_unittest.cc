@@ -45,8 +45,6 @@ class ChromeClientSideDetectionHostDelegateTest
         browser()->tab_strip_model()->GetWebContentsAt(0),
         HostContentSettingsMapFactory::GetForProfile(profile),
         navigation_observer_manager_);
-    scoped_feature_list_.InitAndEnableFeature(
-        kClientSideDetectionReferrerChain);
   }
 
   void TearDown() override {
@@ -61,7 +59,6 @@ class ChromeClientSideDetectionHostDelegateTest
  protected:
   raw_ptr<SafeBrowsingNavigationObserverManager> navigation_observer_manager_;
   std::unique_ptr<SafeBrowsingNavigationObserver> navigation_observer_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ChromeClientSideDetectionHostDelegateTest, GetReferrerChain) {

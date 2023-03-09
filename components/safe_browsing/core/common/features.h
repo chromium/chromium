@@ -39,9 +39,6 @@ BASE_DECLARE_FEATURE(kClientSideDetectionModelTag);
 // `kClientSideDetectionModelHighMemoryTag`.
 const char kClientSideDetectionTagParamName[] = "reporter_omaha_tag";
 
-// Enables client side detection referrer chain.
-BASE_DECLARE_FEATURE(kClientSideDetectionReferrerChain);
-
 // Enables force request CSD-P ping when RT Lookup Response has FORCE_REQUEST in
 // the client_side_detection_type field
 BASE_DECLARE_FEATURE(kClientSideDetectionTypeForceRequest);
@@ -257,9 +254,6 @@ BASE_DECLARE_FEATURE(kTailoredSecurityIntegration);
 // "tag2" if they have attribute "foo" set. All tag names and attributes should
 // be lower case.
 BASE_DECLARE_FEATURE(kThreatDomDetailsTagAndAttributeFeature);
-
-// Controls whether we send visual features in password reuse pings.
-BASE_DECLARE_FEATURE(kVisualFeaturesForReusePings);
 
 // Controls the behavior of visual features in CSD pings. This feature is
 // checked for the final size of the visual features and the minimum size of
