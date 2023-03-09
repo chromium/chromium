@@ -604,6 +604,12 @@ AXObject::AXObject(AXObjectCacheImpl& ax_object_cache)
       role_(ax::mojom::blink::Role::kUnknown),
       explicit_container_id_(0),
       last_modification_count_(-1),
+      cached_is_ignored_(false),
+      cached_is_ignored_but_included_in_tree_(false),
+      cached_is_inert_(false),
+      cached_is_aria_hidden_(false),
+      cached_is_descendant_of_disabled_node_(false),
+      cached_can_set_focus_attribute_(false),
       cached_live_region_root_(nullptr),
       cached_aria_column_index_(0),
       cached_aria_row_index_(0),
@@ -2925,9 +2931,19 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
       is_ignored && ComputeAccessibilityIsIgnoredButIncludedInTree();
   bool included_in_tree_changed = false;
 
-  bool is_included_in_tree = !is_ignored || is_ignored_but_included_in_tree;
-  if (is_included_in_tree != LastKnownIsIncludedInTreeValue()) {
-    included_in_tree_changed = true;
+  // If the child's "included in tree" state changes, we will be notifying the
+  // parent to recompute it's children.
+  // Exceptions:
+  // - Caller passes in |notify_parent_of_ignored_changes = false| -- this
+  //   occurs when this is a new child, or when a parent is in the middle of
+  //   adding this child, and doing this would be redundant.
+  // - Inline text boxes: their "included in tree" state is entirely dependent
+  //   on their static text parent.
+  if (notify_parent_of_ignored_changes &&
+      RoleValue() != ax::mojom::blink::Role::kInlineTextBox) {
+    bool is_included_in_tree = !is_ignored || is_ignored_but_included_in_tree;
+    if (is_included_in_tree != LastKnownIsIncludedInTreeValue())
+      included_in_tree_changed = true;
   }
 
   // Presence of inline text children depends on ignored state.
@@ -2937,19 +2953,11 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
     SetNeedsToUpdateChildren();
   }
 
-  // If the child's "included in tree" state changes, we will be notifying the
-  // parent to recompute it's children.
-  // Exceptions:
-  // - Caller passes in |notify_parent_of_ignored_changes = false| -- this
-  //   occurs when this is a new child, or when a parent is in the middle of
-  //   adding this child, and doing this would be redundant.
-  // - Inline text boxes: their "included in tree" state is entirely dependent
-  //   on their static text parent.
+  // Call children changed on included ancestor.
   // This must be called before cached_is_ignored_* are updated, otherwise a
   // performance optimization depending on LastKnownIsIncludedInTreeValue()
   // may misfire.
-  if (included_in_tree_changed && notify_parent_of_ignored_changes &&
-      RoleValue() != ax::mojom::blink::Role::kInlineTextBox) {
+  if (included_in_tree_changed) {
     if (AXObject* parent = CachedParentObject()) {
       // Defers a ChildrenChanged() on the first included ancestor.
       // Must defer it, otherwise it can cause reentry into
@@ -2983,12 +2991,6 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
     cached_local_bounding_box_rect_for_accessibility_ =
         GetLayoutObject()->LocalBoundingBoxRectForAccessibility();
   }
-
-#if DCHECK_IS_ON()
-  if (included_in_tree_changed) {
-    AXObjectCache().UpdateIncludedNodeCount(this);
-  }
-#endif
 }
 
 bool AXObject::ComputeAccessibilityIsIgnored(
@@ -7039,11 +7041,8 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
       }
     }
 
-    if (!GetDocument()) {
+    if (!GetDocument())
       string_builder = string_builder + " missingDocument";
-    } else if (!GetDocument()->GetFrame()) {
-      string_builder = string_builder + " closedDocument";
-    }
 
     // Add properties of interest that often contribute to errors:
     if (HasARIAOwns(GetElement())) {

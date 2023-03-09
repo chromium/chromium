@@ -678,6 +678,7 @@ AXObjectCacheImpl::AXObjectCacheImpl(Document& document,
                                      const ui::AXMode& ax_mode)
     : document_(document),
       ax_mode_(ax_mode),
+      modification_count_(0),
       validation_message_axid_(0),
       active_aria_modal_dialog_(nullptr),
       relation_cache_(std::make_unique<AXRelationCache>(this)),
@@ -1505,12 +1506,6 @@ void AXObjectCacheImpl::Remove(AXID ax_id, bool notify_parent) {
   AXObject* obj = it != objects_.end() ? it->value : nullptr;
   if (!obj)
     return;
-
-#if DCHECK_IS_ON()
-  if (obj->LastKnownIsIncludedInTreeValue()) {
-    --included_node_count_;
-  }
-#endif
 
   if (notify_parent && !has_been_disposed_) {
     ChildrenChangedOnAncestorOf(obj);
@@ -2555,11 +2550,6 @@ void AXObjectCacheImpl::ProcessInvalidatedObjects(Document& document) {
       RemoveIncludedSubtree(current, /* remove_root */ false);
     }
 
-#if DCHECK_IS_ON()
-    if (current->LastKnownIsIncludedInTreeValue()) {
-      --included_node_count_;
-    }
-#endif
     AXID retained_axid = current->AXObjectID();
     // Remove from relevant maps, but not from relation cache, as the relations
     // between AXIDs will still be the same.
@@ -3984,10 +3974,8 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
     DCHECK_GT(update.nodes.size(), 0U);
 
     for (auto& node_data : update.nodes) {
-      AXID id = node_data.id;
-      DCHECK(id);
-      VLOG(1) << "*** Serialize: " << ObjectFromAXID(id)->ToString(true);
-      already_serialized_ids.insert(id);
+      DCHECK(node_data.id);
+      already_serialized_ids.insert(node_data.id);
     }
 
     DCHECK(already_serialized_ids.Contains(obj->AXObjectID()))
@@ -4047,87 +4035,7 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
     VLOG(1) << "AXEvent: " << event.event_type << " on "
             << ObjectFromAXID(event.id);
   }
-
-#if DCHECK_IS_ON()
-  if (!HasDirtyObjects()) {
-    CheckTreeConsistency();
-  }
-#endif
 }
-
-#if DCHECK_IS_ON()
-void AXObjectCacheImpl::CheckTreeConsistency() {
-  // If all serializations are complete, check that the number of included nodes
-  // being serialized is the same as the number of included nodes according to
-  // the AXObjectCache.
-  if (included_node_count_ != ax_tree_serializer_->ClientTreeNodeCount()) {
-    // There was an inconsistency in the node count: provide a helpful message
-    // to facilitate debugging.
-    std::ostringstream msg;
-    msg << "AXTreeSerializer should have the expected number of included nodes:"
-        << "\n* AXObjectCache: " << included_node_count_
-        << "\n* Serializer: " << ax_tree_serializer_->ClientTreeNodeCount();
-    for (const auto& id_to_object_entry : objects_) {
-      AXObject* obj = id_to_object_entry.value;
-      if (obj->LastKnownIsIncludedInTreeValue()) {
-        if (!ax_tree_serializer_->IsInClientTree(obj)) {
-          if (obj->IsMissingParent()) {
-            msg << "\n* Included node not serialized, is missing parent: "
-                << obj->ToString(true, true);
-          } else if (!obj->GetDocument()->GetFrame()) {
-            msg << "\n* Included node not serialized, in closed document: "
-                << obj->ToString(true, true);
-          } else {
-            bool included_state_stale = !obj->AccessibilityIsIncludedInTree();
-            msg << "\n* Included node not serialized: " << obj->ToString(true);
-            if (included_state_stale) {
-              msg << "\n  Included state was stale.";
-            }
-            msg << "\n  Parent: " << obj->CachedParentObject()->ToString(true);
-          }
-        }
-      }
-    }
-    for (AXID id : ax_tree_serializer_->ClientTreeNodeIds()) {
-      AXObject* obj = ObjectFromAXID(id);
-      if (!obj) {
-        msg << "\n* Serialized node does not exist: " << id;
-        if (AXObject* parent = ax_tree_serializer_->ParentOf(id)) {
-          msg << "\n* Parent = " << parent->ToString(true);
-        }
-      } else if (!obj->LastKnownIsIncludedInTreeValue()) {
-        msg << "\n* Serialized an unincluded node: " << obj->ToString(true);
-      }
-    }
-    DCHECK(false) << msg.str();
-  }
-
-  constexpr size_t kMaxNodesForDeepSlowConsistencyCheck = 100;
-  if (included_node_count_ > kMaxNodesForDeepSlowConsistencyCheck) {
-    return;
-  }
-
-  DCHECK_EQ(included_node_count_, RecursiveIncludedNodeCount(Root()));
-}
-
-size_t AXObjectCacheImpl::RecursiveIncludedNodeCount(AXObject* subtree) {
-  size_t count = 1;  // For |subtree| itself.
-  for (const auto& child : subtree->ChildrenIncludingIgnored()) {
-    count += RecursiveIncludedNodeCount(child);
-  }
-  return count;
-}
-#endif
-
-#if DCHECK_IS_ON()
-void AXObjectCacheImpl::UpdateIncludedNodeCount(const AXObject* obj) {
-  if (obj->LastKnownIsIncludedInTreeValue()) {
-    ++included_node_count_;
-  } else {
-    --included_node_count_;
-  }
-}
-#endif
 
 bool AXObjectCacheImpl::AddPendingEvent(const ui::AXEvent& event,
                                         bool insert_at_beginning) {
