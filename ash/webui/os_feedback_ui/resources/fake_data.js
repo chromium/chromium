@@ -84,6 +84,8 @@ export const fakeFeedbackContext = {
   fromAssistant: false,
   assistantDebugInfoAllowed: false,
   fromSettingsSearch: false,
+  fromAutofill: false,
+  autofillMetadata: '',
   traceId: 1,
 };
 
@@ -95,6 +97,8 @@ export const fakeEmptyFeedbackContext = {
   fromAssistant: false,
   assistantDebugInfoAllowed: false,
   fromSettingsSearch: false,
+  fromAutofill: false,
+  autofillMetadata: '',
   traceId: 0,
 };
 
@@ -106,6 +110,8 @@ export const fakeInternalUserFeedbackContext = {
   fromAssistant: true,
   assistantDebugInfoAllowed: false,
   fromSettingsSearch: true,
+  fromAutofill: false,
+  autofillMetadata: '',
   traceId: 1,
 };
 

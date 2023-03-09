@@ -59,6 +59,8 @@ export const AdditionalContextQueryParam = {
   PAGE_URL: 'page_url',
   FROM_ASSISTANT: 'from_assistant',
   FROM_SETTINGS_SEARCH: 'from_settings_search',
+  FROM_AUTOFILL: 'from_autofill',
+  AUTOFILL_METADATA: 'autofill_metadata',
 };
 
 /**
@@ -186,6 +188,13 @@ export class FeedbackFlowElement extends PolymerElement {
     this.shouldShowBluetoothCheckbox_;
 
     /**
+     * Whether to show the autofill checkbox in share data page.
+     * @type {boolean}
+     * @protected
+     */
+    this.shouldShowAutofillCheckbox_;
+
+    /**
      * Whether to show the assistant checkbox in share data page.
      * @type {boolean}
      */
@@ -264,6 +273,8 @@ export class FeedbackFlowElement extends PolymerElement {
       this.shouldShowAssistantCheckbox_ = !!this.feedbackContext_ &&
           this.feedbackContext_.isInternalAccount &&
           this.feedbackContext_.fromAssistant;
+      this.shouldShowAutofillCheckbox_ =
+          !!this.feedbackContext_ && this.feedbackContext_.fromAutofill;
     });
 
     window.addEventListener('message', event => {
@@ -385,6 +396,14 @@ export class FeedbackFlowElement extends PolymerElement {
     const fromSettingsSearch =
         params.get(AdditionalContextQueryParam.FROM_SETTINGS_SEARCH);
     this.set('feedbackContext_.fromSettingsSearch', !!fromSettingsSearch);
+
+    const fromAutofill = params.get(AdditionalContextQueryParam.FROM_AUTOFILL);
+    this.feedbackContext_.fromAutofill = !!fromAutofill;
+    const autofillMetadata =
+        params.get(AdditionalContextQueryParam.AUTOFILL_METADATA);
+    if (autofillMetadata) {
+      this.feedbackContext_.autofillMetadata = autofillMetadata;
+    }
   }
 
   /**

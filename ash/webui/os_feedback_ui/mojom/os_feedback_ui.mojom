@@ -80,6 +80,12 @@ struct FeedbackContext {
   bool assistant_debug_info_allowed;
   // Whether or not the feedback app is opened from OS Settings Search.
   bool from_settings_search;
+  // Whether or not the feedback app is opened from autofill context menu.
+  bool from_autofill;
+  // Autofill metadata provided by source CrOS application by
+  // setting the autofill_metadata query parameter when opening the CrOS
+  // Feedback app.
+  string? autofill_metadata;
   // The URL of the page that this issue was being experienced on.
   url.mojom.Url?  page_url;
   // Extra diagnostics information provided by source CrOS application by
@@ -139,6 +145,9 @@ struct Report {
   // Whether or not the report has sendBluetoothLogs
   // flag set true by internal google account only.
   bool send_bluetooth_logs;
+  // Whether or not to send autofill metadata with this report. Set by internal
+  // google account only.
+  bool include_autofill_metadata;
 };
 
 // The first action taken on the confirmation page.
