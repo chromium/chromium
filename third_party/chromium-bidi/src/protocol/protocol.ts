@@ -25,6 +25,22 @@ export interface EventResponse<MethodType, ParamsType> {
   params: ParamsType;
 }
 
+export type Method =
+  | 'browsingContext.close'
+  | 'browsingContext.create'
+  | 'browsingContext.getTree'
+  | 'browsingContext.navigate'
+  | 'cdp.getSession'
+  | 'cdp.sendCommand'
+  | 'cdp.sendMessage'
+  | 'script.callFunction'
+  | 'script.disown'
+  | 'script.evaluate'
+  | 'script.getRealms'
+  | 'session.status'
+  | 'session.subscribe'
+  | 'session.unsubscribe';
+
 export namespace Message {
   export type OutgoingMessage =
     | CommandResponse
@@ -33,7 +49,7 @@ export namespace Message {
 
   export type RawCommandRequest = {
     id: number;
-    method: string;
+    method: Method;
     params: object;
     channel?: string;
   };
@@ -206,7 +222,6 @@ export namespace CommonDataTypes {
   //   RegExpLocalValue //
   //   SetLocalValue //
   // }
-
   export type LocalValue =
     | PrimitiveProtocolValue
     | ArrayLocalValue
@@ -390,7 +405,7 @@ export namespace CommonDataTypes {
     namespaceURI?: string;
     childNodeCount: number;
     children?: [NodeRemoteValue];
-    attributes?: unknown;
+    attributes?: Record<string, string>;
     shadowRoot?: NodeRemoteValue | null;
   };
 
@@ -402,6 +417,7 @@ export namespace CommonDataTypes {
   export type BrowsingContext = string;
 }
 
+/** @see https://w3c.github.io/webdriver-bidi/#module-script */
 export namespace Script {
   export type Command =
     | EvaluateCommand
@@ -580,10 +596,10 @@ export namespace Script {
 
   export type CallFunctionParameters = {
     functionDeclaration: string;
+    awaitPromise: boolean;
     target: Target;
     arguments?: ArgumentValue[];
     this?: ArgumentValue;
-    awaitPromise: boolean;
     resultOwnership?: OwnershipModel;
   };
 
@@ -712,7 +728,6 @@ export namespace BrowsingContext {
 
   export type CloseResult = {result: {}};
 
-  // events
   export type LoadEvent = EventResponse<EventNames.LoadEvent, NavigationInfo>;
 
   export type DomContentLoadedEvent = EventResponse<
@@ -746,7 +761,7 @@ export namespace BrowsingContext {
   export const AllEvents = 'browsingContext';
 }
 
-// https://w3c.github.io/webdriver-bidi/#module-log
+/** @see https://w3c.github.io/webdriver-bidi/#module-log */
 export namespace Log {
   export type LogEntry = GenericLogEntry | ConsoleLogEntry | JavascriptLogEntry;
   export type Event = LogEntryAddedEvent;
@@ -833,6 +848,7 @@ export namespace CDP {
   }
 }
 
+/** @see https://w3c.github.io/webdriver-bidi/#module-session */
 export namespace Session {
   export type Command = StatusCommand | SubscribeCommand | UnsubscribeCommand;
 

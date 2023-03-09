@@ -42,9 +42,9 @@ export interface BidiParser {
   parseDisownParams(params: object): Script.DisownParameters;
   parseSendCommandParams(params: object): CDP.SendCommandParams;
   parseGetSessionParams(params: object): CDP.GetSessionParams;
+  parseSubscribeParams(params: object): Session.SubscribeParameters;
   parseNavigateParams(params: object): BrowsingContext.NavigateParameters;
   parseGetTreeParams(params: object): BrowsingContext.GetTreeParameters;
-  parseSubscribeParams(params: object): Session.SubscribeParameters;
   parseCreateParams(params: object): BrowsingContext.CreateParameters;
   parseCloseParams(params: object): BrowsingContext.CloseParameters;
 }
@@ -68,14 +68,14 @@ class BidiNoOpParser implements BidiParser {
   parseGetSessionParams(params: object): CDP.GetSessionParams {
     return params as CDP.GetSessionParams;
   }
+  parseSubscribeParams(params: object): Session.SubscribeParameters {
+    return params as Session.SubscribeParameters;
+  }
   parseNavigateParams(params: object): BrowsingContext.NavigateParameters {
     return params as BrowsingContext.NavigateParameters;
   }
   parseGetTreeParams(params: object): BrowsingContext.GetTreeParameters {
     return params as BrowsingContext.GetTreeParameters;
-  }
-  parseSubscribeParams(params: object): Session.SubscribeParameters {
-    return params as Session.SubscribeParameters;
   }
   parseCreateParams(params: object): BrowsingContext.CreateParameters {
     return params as BrowsingContext.CreateParameters;

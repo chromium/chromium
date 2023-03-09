@@ -126,7 +126,6 @@ export namespace CommonDataTypes {
   //   RegExpLocalValue //
   //   SetLocalValue //
   // }
-
   // `LocalValue` is a recursive type, so lazy declaration is needed:
   // https://github.com/colinhacks/zod#recursive-types
   export type LocalValue =
@@ -345,7 +344,7 @@ export namespace CommonDataTypes {
     namespaceURI?: string;
     childNodeCount: number;
     children?: [NodeRemoteValue];
-    attributes?: unknown;
+    attributes?: Record<string, string>;
     shadowRoot?: NodeRemoteValue | null;
   };
 
@@ -358,6 +357,7 @@ export namespace CommonDataTypes {
   export type BrowsingContext = zod.infer<typeof BrowsingContextSchema>;
 }
 
+/** @see https://w3c.github.io/webdriver-bidi/#module-script */
 export namespace Script {
   export type Command =
     | EvaluateCommand
@@ -460,7 +460,7 @@ export namespace Script {
 
   export type GetRealmsParameters = zod.infer<typeof GetRealmsParametersSchema>;
 
-  export function parseGetRealmsParams(params: unknown): GetRealmsParameters {
+  export function parseGetRealmsParams(params: object): GetRealmsParameters {
     return parseObject(params, GetRealmsParametersSchema);
   }
 
@@ -516,7 +516,7 @@ export namespace Script {
   });
   export type EvaluateParameters = zod.infer<typeof EvaluateParametersSchema>;
 
-  export function parseEvaluateParams(params: unknown): EvaluateParameters {
+  export function parseEvaluateParams(params: object): EvaluateParameters {
     return parseObject(params, EvaluateParametersSchema);
   }
 
@@ -536,7 +536,7 @@ export namespace Script {
 
   export type DisownParameters = zod.infer<typeof DisownParametersSchema>;
 
-  export function parseDisownParams(params: unknown): DisownParameters {
+  export function parseDisownParams(params: object): DisownParameters {
     return parseObject(params, DisownParametersSchema);
   }
 
@@ -567,7 +567,7 @@ export namespace Script {
   >;
 
   export function parseCallFunctionParams(
-    params: unknown
+    params: object
   ): CallFunctionParameters {
     return parseObject(params, ScriptCallFunctionParametersSchema);
   }
@@ -593,7 +593,7 @@ export namespace Script {
   };
 }
 
-// https://w3c.github.io/webdriver-bidi/#module-browsingContext
+/** @see https://w3c.github.io/webdriver-bidi/#module-browsingContext */
 export namespace BrowsingContext {
   export type Command =
     | GetTreeCommand
@@ -624,7 +624,7 @@ export namespace BrowsingContext {
   });
   export type GetTreeParameters = zod.infer<typeof GetTreeParametersSchema>;
 
-  export function parseGetTreeParams(params: unknown): GetTreeParameters {
+  export function parseGetTreeParams(params: object): GetTreeParameters {
     return parseObject(params, GetTreeParametersSchema);
   }
 
@@ -663,7 +663,7 @@ export namespace BrowsingContext {
   });
   export type NavigateParameters = zod.infer<typeof NavigateParametersSchema>;
 
-  export function parseNavigateParams(params: unknown): NavigateParameters {
+  export function parseNavigateParams(params: object): NavigateParameters {
     return parseObject(params, NavigateParametersSchema);
   }
 
@@ -690,7 +690,7 @@ export namespace BrowsingContext {
   });
   export type CreateParameters = zod.infer<typeof CreateParametersSchema>;
 
-  export function parseCreateParams(params: unknown): CreateParameters {
+  export function parseCreateParams(params: object): CreateParameters {
     return parseObject(params, CreateParametersSchema);
   }
 
@@ -711,13 +711,12 @@ export namespace BrowsingContext {
   });
   export type CloseParameters = zod.infer<typeof CloseParametersSchema>;
 
-  export function parseCloseParams(params: unknown): CloseParameters {
+  export function parseCloseParams(params: object): CloseParameters {
     return parseObject(params, CloseParametersSchema);
   }
 
   export type CloseResult = {result: {}};
 
-  // events
   export type LoadEvent = EventResponse<EventNames.LoadEvent, NavigationInfo>;
 
   export type DomContentLoadedEvent = EventResponse<
@@ -751,7 +750,7 @@ export namespace BrowsingContext {
   }
 }
 
-// https://w3c.github.io/webdriver-bidi/#module-log
+/** @see https://w3c.github.io/webdriver-bidi/#module-log */
 export namespace Log {
   export type LogEntry = GenericLogEntry | ConsoleLogEntry | JavascriptLogEntry;
   export type Event = LogEntryAddedEvent;
@@ -810,7 +809,7 @@ export namespace CDP {
   });
   export type SendCommandParams = zod.infer<typeof SendCommandParamsSchema>;
 
-  export function parseSendCommandParams(params: unknown): SendCommandParams {
+  export function parseSendCommandParams(params: object): SendCommandParams {
     return parseObject(params, SendCommandParamsSchema);
   }
 
@@ -826,7 +825,7 @@ export namespace CDP {
   });
   export type GetSessionParams = zod.infer<typeof GetSessionParamsSchema>;
 
-  export function parseGetSessionParams(params: unknown): GetSessionParams {
+  export function parseGetSessionParams(params: object): GetSessionParams {
     return parseObject(params, GetSessionParamsSchema);
   }
 
@@ -850,6 +849,7 @@ export namespace CDP {
   }
 }
 
+/** @see https://w3c.github.io/webdriver-bidi/#module-session */
 export namespace Session {
   export type Command = StatusCommand | SubscribeCommand | UnsubscribeCommand;
 
@@ -897,7 +897,7 @@ export namespace Session {
   });
   export type SubscribeParameters = zod.infer<typeof SubscribeParametersSchema>;
 
-  export function parseSubscribeParams(params: unknown): SubscribeParameters {
+  export function parseSubscribeParams(params: object): SubscribeParameters {
     return parseObject(params, SubscribeParametersSchema);
   }
 

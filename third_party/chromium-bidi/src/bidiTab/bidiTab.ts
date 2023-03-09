@@ -287,14 +287,14 @@ class BidiParserImpl implements BidiParser {
   parseGetSessionParams(params: object): CDP.GetSessionParams {
     return Parser.CDP.parseGetSessionParams(params);
   }
+  parseSubscribeParams(params: object): Session.SubscribeParameters {
+    return Parser.Session.parseSubscribeParams(params);
+  }
   parseNavigateParams(params: object): BrowsingContext.NavigateParameters {
     return Parser.BrowsingContext.parseNavigateParams(params);
   }
   parseGetTreeParams(params: object): BrowsingContext.GetTreeParameters {
     return Parser.BrowsingContext.parseGetTreeParams(params);
-  }
-  parseSubscribeParams(params: object): Session.SubscribeParameters {
-    return Parser.Session.parseSubscribeParams(params);
   }
   parseCreateParams(params: object): BrowsingContext.CreateParameters {
     return Parser.BrowsingContext.parseCreateParams(params);
