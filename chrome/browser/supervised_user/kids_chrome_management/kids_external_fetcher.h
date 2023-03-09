@@ -47,14 +47,14 @@ class KidsExternalFetcherStatus {
   using NetOrHttpErrorType = base::StrongAlias<class NetOrHttpErrorTag, int>;
 
   enum State {
-    NO_ERROR = 0,                   // No error.
+    OK = 0,
     GOOGLE_SERVICE_AUTH_ERROR = 1,  // Error occurred during the access token
                                     // fetching phase. See
                                     // GetGoogleServiceAuthError for details.
-    NET_OR_HTTP_ERROR = 2,          // The request was performed, but network or
-                            // http returned errors. This is default chromium
+    NET_OR_HTTP_ERROR = 2,  // The request was performed, but network or http
+                            // returned errors. This is default chromium
                             // approach to combine those two error domains.
-    INVALID_RESPONSE = 3,  // The request was performed without error, but http
+    INVALID_RESPONSE = 3,   // The request was performed without error, but http
                            // response could not be processed or was unexpected.
     DATA_ERROR = 4,  // The request was parsed, but did not contain all required
                      // data. Not signalled by this fetcher itself, but might be

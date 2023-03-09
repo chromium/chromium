@@ -238,10 +238,10 @@ TEST_F(FamilyInfoFetcherTest, GetFamilyMembersSuccess) {
   EXPECT_CALL(*this, OnGetFamilyMembersSuccess(members));
   SendValidGetFamilyMembersResponse(members);
 
-  EXPECT_EQ(histogram_tester_.GetBucketCount(
-                "Signin.ListFamilyMembersRequest.Status",
-                KidsExternalFetcherStatus::State::NO_ERROR),
-            1);
+  EXPECT_EQ(
+      histogram_tester_.GetBucketCount("Signin.ListFamilyMembersRequest.Status",
+                                       KidsExternalFetcherStatus::State::OK),
+      1);
 }
 
 TEST_F(FamilyInfoFetcherTest, GetTokenFailureForStartGetFamilyMembers) {

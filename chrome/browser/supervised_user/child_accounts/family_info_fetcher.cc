@@ -56,7 +56,7 @@ const char kListFamilyMembersRequestLatencyHistogramName[] =
 namespace {
 std::string ToStatusKey(KidsExternalFetcherStatus::State status) {
   switch (status) {
-    case KidsExternalFetcherStatus::NO_ERROR:
+    case KidsExternalFetcherStatus::OK:
       return "NoError";
     case KidsExternalFetcherStatus::GOOGLE_SERVICE_AUTH_ERROR:
       return "AuthError";
@@ -378,7 +378,7 @@ void FamilyInfoFetcher::FamilyMembersFetched(const std::string& response) {
     consumer_->OnFailure(ErrorCode::kServiceError);
     return;
   }
-  RecordMetrics(KidsExternalFetcherStatus::State::NO_ERROR,
+  RecordMetrics(KidsExternalFetcherStatus::State::OK,
                 simple_url_loader_start_time_);
   consumer_->OnGetFamilyMembersSuccess(members);
 }

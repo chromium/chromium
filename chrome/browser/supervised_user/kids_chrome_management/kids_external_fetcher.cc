@@ -119,7 +119,7 @@ std::string CreateMetricKey(StringPiece metric_id, StringPiece metric_suffix) {
 // chromium/src/tools/metrics/histograms/metadata/signin/histograms.xml/histogram-configuration/histograms/histogram[@name='Signin.ListFamilyMembersRequest.{Status}.*']
 std::string ConvertStateToMetricLabel(KidsExternalFetcherStatus::State state) {
   switch (state) {
-    case KidsExternalFetcherStatus::NO_ERROR:
+    case KidsExternalFetcherStatus::OK:
       return "NoError";
     case KidsExternalFetcherStatus::GOOGLE_SERVICE_AUTH_ERROR:
       return "AuthError";
@@ -330,7 +330,7 @@ KidsExternalFetcherStatus& KidsExternalFetcherStatus::operator=(
     const KidsExternalFetcherStatus& other) = default;
 
 KidsExternalFetcherStatus KidsExternalFetcherStatus::Ok() {
-  return KidsExternalFetcherStatus(State::NO_ERROR);
+  return KidsExternalFetcherStatus(State::OK);
 }
 KidsExternalFetcherStatus KidsExternalFetcherStatus::GoogleServiceAuthError(
     class GoogleServiceAuthError error) {
@@ -348,7 +348,7 @@ KidsExternalFetcherStatus KidsExternalFetcherStatus::DataError() {
 }
 
 bool KidsExternalFetcherStatus::IsOk() const {
-  return state_ == State::NO_ERROR;
+  return state_ == State::OK;
 }
 bool KidsExternalFetcherStatus::IsTransientError() const {
   if (state_ == State::NET_OR_HTTP_ERROR) {

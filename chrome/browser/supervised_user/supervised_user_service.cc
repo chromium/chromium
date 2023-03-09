@@ -90,7 +90,7 @@ constexpr char const* kAllowlistExtensionIds[] = {
 base::FilePath GetDenylistPath() {
   base::FilePath denylist_dir;
   base::PathService::Get(chrome::DIR_USER_DATA, &denylist_dir);
-  return denylist_dir.AppendASCII(supervised_user::kDenylistFilename);
+  return denylist_dir.Append(supervised_user::kDenylistFilename);
 }
 
 bool AreWebFilterPrefsDefault(const PrefService& pref_service) {
