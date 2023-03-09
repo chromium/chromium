@@ -22,6 +22,7 @@
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/focus_cycler.h"
 #include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/game_dashboard/game_dashboard_controller.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/media/media_controller_impl.h"
@@ -508,7 +509,7 @@ bool CanToggleGameDashboard() {
     return false;
   }
   aura::Window* window = window_util::GetActiveWindow();
-  return window && IsArcWindow(window);
+  return window && GameDashboardController::CanStart(window);
 }
 
 bool CanToggleMultitaskMenu() {
@@ -1316,7 +1317,12 @@ void ToggleGameDashboard() {
   DCHECK(features::IsGameDashboardEnabled());
   aura::Window* window = window_util::GetActiveWindow();
   DCHECK(window);
-  // TODO(phshah): Connect to the game dashboard controller.
+  auto* controller = Shell::Get()->game_dashboard_controller();
+  if (!controller->IsActive(window)) {
+    controller->Start(window);
+  } else {
+    controller->ToggleMenu(window);
+  }
 }
 
 void ToggleHighContrast() {

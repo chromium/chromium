@@ -12,6 +12,7 @@
 #include "ash/accessibility/accessibility_event_handler_manager.h"
 #include "ash/ash_export.h"
 #include "ash/constants/ash_features.h"
+#include "ash/game_dashboard/game_dashboard_controller.h"
 #include "ash/in_session_auth/in_session_auth_dialog_controller_impl.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/shelf_types.h"
@@ -249,6 +250,10 @@ class DiagnosticsLogController;
 namespace federated {
 class FederatedServiceControllerImpl;
 }  // namespace federated
+
+namespace game_dashboard {
+class GameDashboardController;
+}  // namespace game_dashboard
 
 namespace quick_pair {
 class Mediator;
@@ -506,6 +511,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   FocusCycler* focus_cycler() { return focus_cycler_.get(); }
   FullscreenMagnifierController* fullscreen_magnifier_controller() {
     return fullscreen_magnifier_controller_.get();
+  }
+  GameDashboardController* game_dashboard_controller() {
+    return game_dashboard_controller_.get();
   }
   GeolocationController* geolocation_controller() {
     return geolocation_controller_.get();
@@ -908,6 +916,7 @@ class ASH_EXPORT Shell : public SessionObserver,
       firmware_update_notification_controller_;
   std::unique_ptr<FocusCycler> focus_cycler_;
   std::unique_ptr<FloatController> float_controller_;
+  std::unique_ptr<GameDashboardController> game_dashboard_controller_;
   std::unique_ptr<GeolocationController> geolocation_controller_;
   std::unique_ptr<GlanceablesController> glanceables_controller_;
   std::unique_ptr<HoldingSpaceController> holding_space_controller_;

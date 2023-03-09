@@ -71,6 +71,7 @@
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/frame/snap_controller_impl.h"
 #include "ash/frame_throttler/frame_throttling_controller.h"
+#include "ash/game_dashboard/game_dashboard_controller.h"
 #include "ash/glanceables/glanceables_controller.h"
 #include "ash/glanceables/glanceables_delegate.h"
 #include "ash/host/ash_window_tree_host_init_params.h"
@@ -837,6 +838,8 @@ Shell::~Shell() {
   window_cycle_controller_.reset();
   overview_controller_.reset();
 
+  game_dashboard_controller_.reset();
+
   // This must be destroyed before deleting all the windows below in
   // `CloseAllRootWindowChildWindows()`, since shutting down the session will
   // need to access those windows and it will be a UAF.
@@ -1164,6 +1167,10 @@ void Shell::Init(
 
   capture_mode_controller_ = std::make_unique<CaptureModeController>(
       shell_delegate_->CreateCaptureModeDelegate());
+
+  if (features::IsGameDashboardEnabled()) {
+    game_dashboard_controller_ = std::make_unique<GameDashboardController>();
+  }
 
   // Accelerometer file reader starts listening to tablet mode controller.
   AccelerometerReader::GetInstance()->StartListenToTabletModeController();
