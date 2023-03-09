@@ -4,19 +4,22 @@
 
 var tabIds = [];
 
+const scriptUrl = '_test_resources/api_test/tabs/basics/tabs_util.js';
+let loadScript = chrome.test.loadScript(scriptUrl);
+
+loadScript.then(async function() {
 chrome.test.runTests([
   function setUp() {
-    chrome.tabs.create({"url": pageUrl("a")}, function(tab) {
+    chrome.tabs.create({"url": pageUrl("a")}, pass(function(tab) {
       tabIds.push(tab.id);
-    });
-    chrome.tabs.create({"url": pageUrl("b")}, function(tab) {
+    }));
+    chrome.tabs.create({"url": pageUrl("b")}, pass(function(tab) {
       tabIds.push(tab.id);
-    });
-    chrome.tabs.create({"url": pageUrl("c")}, function(tab) {
+    }));
+    chrome.tabs.create({"url": pageUrl("c")}, pass(function(tab) {
       tabIds.push(tab.id);
-    });
-    chrome.windows.create({"url": pageUrl("xxx")}, pass(function(tab) {}));
-  },
+    }));
+    },
 
   function testBasicSetup() {
     waitForAllTabs(pass(function() {
@@ -78,4 +81,4 @@ chrome.test.runTests([
         assertEq(pageUrl("neutrinos"), tab.pendingUrl);
     }));
   }
-]);
+])});

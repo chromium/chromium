@@ -156,8 +156,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Size) {
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabUpdate) {
-  ASSERT_TRUE(RunExtensionTest("tabs/basics", {.extension_url = "update.html"}))
-      << message_;
+  ASSERT_TRUE(RunExtensionTest("tabs/basics/update")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Pinned) {
