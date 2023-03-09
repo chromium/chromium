@@ -1,0 +1,6 @@
+include_rules = [
+  # TODO(crbug.com/1421729): Remove this include once the folders have been
+  # moved.
+  "+ios/chrome/browser/ui",
+  "+ios/chrome/browser",
+]
