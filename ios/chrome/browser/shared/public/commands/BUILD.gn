@@ -1,0 +1,23 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Copyright 2023 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("commands") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "application_commands.h",
+    "browser_commands.h",
+    "command_dispatcher.h",
+    "load_query_commands.h",
+    "new_tab_page_commands.h",
+    "open_new_tab_command.h",
+    "reading_list_add_command.h",
+    "show_signin_command.h",
+    "snackbar_commands.h",
+  ]
+  deps = [ "//ios/chrome/browser/ui/commands" ]
+}
