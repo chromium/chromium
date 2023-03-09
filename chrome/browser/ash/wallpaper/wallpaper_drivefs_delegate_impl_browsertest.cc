@@ -72,9 +72,8 @@ void SaveTestWallpaperFile(const AccountId& account_id, base::FilePath target) {
     ASSERT_TRUE(base::CreateDirectory(target.DirName()));
   }
   auto data = EncodeImage(CreateTestImage());
-  size_t size =
-      base::WriteFile(target, data->front_as<const char>(), data->size());
-  ASSERT_EQ(size, data->size());
+  ASSERT_TRUE(
+      base::WriteFile(target, base::make_span(data->front(), data->size())));
 }
 
 }  // namespace

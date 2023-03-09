@@ -108,11 +108,9 @@ TEST_F(CpuDataCollectorTest, ReadCpuFreqTimeInState) {
   ASSERT_TRUE(base::CreateTemporaryFile(&time_in_state_path_cpu0_));
   ASSERT_TRUE(base::CreateTemporaryFile(&time_in_state_path_cpu1_));
   ASSERT_TRUE(
-      base::WriteFile(time_in_state_path_cpu0_, kTimeInStateContentCpu0,
-                      static_cast<int>(strlen(kTimeInStateContentCpu0))) != -1);
+      base::WriteFile(time_in_state_path_cpu0_, kTimeInStateContentCpu0));
   ASSERT_TRUE(
-      base::WriteFile(time_in_state_path_cpu1_, kTimeInStateContentCpu1,
-                      static_cast<int>(strlen(kTimeInStateContentCpu1))) != -1);
+      base::WriteFile(time_in_state_path_cpu1_, kTimeInStateContentCpu1));
 
   std::vector<std::string> cpu_freq_state_names;
   CpuDataCollector::StateOccupancySample freq_sample_cpu0;
@@ -132,9 +130,7 @@ TEST_F(CpuDataCollectorTest, ReadCpuFreqTimeInState) {
 
 TEST_F(CpuDataCollectorTest, ReadCpuFreqAllTimeInState) {
   ASSERT_TRUE(base::CreateTemporaryFile(&all_time_in_state_path_));
-  ASSERT_TRUE(
-      base::WriteFile(all_time_in_state_path_, kAllTimeInStateContent,
-                      static_cast<int>(strlen(kAllTimeInStateContent))) != -1);
+  ASSERT_TRUE(base::WriteFile(all_time_in_state_path_, kAllTimeInStateContent));
 
   std::vector<std::string> cpu_freq_state_names;
   std::vector<CpuDataCollector::StateOccupancySample> freq_samples;
@@ -155,9 +151,8 @@ TEST_F(CpuDataCollectorTest, ReadCpuFreqAllTimeInState) {
 
 TEST_F(CpuDataCollectorTest, ReadCpuFreqAllTimeInStateNA) {
   ASSERT_TRUE(base::CreateTemporaryFile(&all_time_in_state_path_));
-  ASSERT_TRUE(base::WriteFile(
-                  all_time_in_state_path_, kAllTimeInStateContentNA,
-                  static_cast<int>(strlen(kAllTimeInStateContentNA))) != -1);
+  ASSERT_TRUE(
+      base::WriteFile(all_time_in_state_path_, kAllTimeInStateContentNA));
 
   std::vector<std::string> cpu_freq_state_names;
   std::vector<CpuDataCollector::StateOccupancySample> freq_samples;
@@ -182,9 +177,8 @@ TEST_F(CpuDataCollectorTest, ReadCpuFreqAllTimeInStateNA) {
 
 TEST_F(CpuDataCollectorTest, ReadCpuFreqAllTimeInStateOff) {
   ASSERT_TRUE(base::CreateTemporaryFile(&all_time_in_state_path_));
-  ASSERT_TRUE(base::WriteFile(
-                  all_time_in_state_path_, kAllTimeInStateContentOff,
-                  static_cast<int>(strlen(kAllTimeInStateContentOff))) != -1);
+  ASSERT_TRUE(
+      base::WriteFile(all_time_in_state_path_, kAllTimeInStateContentOff));
 
   std::vector<std::string> cpu_freq_state_names;
   std::vector<CpuDataCollector::StateOccupancySample> freq_samples;

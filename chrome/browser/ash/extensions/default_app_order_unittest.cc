@@ -59,7 +59,7 @@ class DefaultAppOrderTest : public testing::Test {
   void CreateExternalOrderFile(const std::string& content) {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     base::FilePath external_file = temp_dir_.GetPath().Append(kTestFile);
-    base::WriteFile(external_file, content.c_str(), content.size());
+    base::WriteFile(external_file, content);
     SetExternalFile(external_file);
   }
 

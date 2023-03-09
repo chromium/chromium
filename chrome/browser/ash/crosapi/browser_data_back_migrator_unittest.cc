@@ -76,9 +76,8 @@ void CreateDirectoryAndFile(const base::FilePath& directory_path,
                             const char* file_content,
                             int file_size) {
   ASSERT_TRUE(base::CreateDirectory(directory_path));
-  ASSERT_EQ(base::WriteFile(directory_path.Append(file_path), file_content,
-                            file_size),
-            file_size);
+  ASSERT_TRUE(base::WriteFile(directory_path.Append(file_path),
+                              base::StringPiece(file_content, file_size)));
 }
 
 void SetUpExtensions(const base::FilePath& ash_profile_dir,

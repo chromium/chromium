@@ -68,7 +68,7 @@ void WriteAppLocale(std::string app_locale) {
     return;
 
   // Ignore errors because we're shutting down and we can't recover.
-  base::WriteFile(cache_file, output.data(), static_cast<int>(output.size()));
+  base::WriteFile(cache_file, output);
 }
 
 }  // namespace startup_settings_cache

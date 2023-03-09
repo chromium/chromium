@@ -80,9 +80,8 @@ void UserPolicyMixin::SetUpUserKeysFile(const std::string& user_key_bits) {
       user_keys_dir.AppendASCII(sanitized_username).AppendASCII("policy.pub");
 
   CHECK(base::CreateDirectory(user_key_file.DirName()));
-  int write_result = base::WriteFile(user_key_file, user_key_bits.data(),
-                                     user_key_bits.length());
-  DCHECK_EQ(static_cast<int>(user_key_bits.length()), write_result);
+  bool success = base::WriteFile(user_key_file, user_key_bits);
+  DCHECK(success);
 }
 
 void UserPolicyMixin::SetUpPolicy() {

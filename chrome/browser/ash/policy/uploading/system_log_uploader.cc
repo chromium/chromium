@@ -86,8 +86,7 @@ std::string ZipFiles(
   for (const auto& syslog_entry : *system_logs) {
     base::FilePath file_name = base::FilePath(syslog_entry.first).BaseName();
     base::FilePath file_path(temp_dir.GetPath().Append(file_name));
-    if (!base::WriteFile(file_path, syslog_entry.second.c_str(),
-                         syslog_entry.second.size())) {
+    if (!base::WriteFile(file_path, syslog_entry.second)) {
       PLOG(ERROR) << "Can't write log file: " << file_path.value();
       continue;
     }

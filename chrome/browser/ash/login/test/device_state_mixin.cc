@@ -64,8 +64,7 @@ cryptohome::SerializedInstallAttributes BuildInstallAttributes(
 }
 
 void WriteFile(const base::FilePath& path, const std::string& blob) {
-  CHECK_EQ(base::checked_cast<int>(blob.length()),
-           base::WriteFile(path, blob.data(), blob.length()));
+  CHECK(base::WriteFile(path, blob));
 }
 
 }  // namespace

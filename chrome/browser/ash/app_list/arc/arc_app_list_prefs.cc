@@ -164,10 +164,7 @@ bool WriteIconFile(const base::FilePath& icon_path,
 
   base::CreateDirectory(icon_path.DirName());
 
-  int wrote = base::WriteFile(icon_path,
-                              reinterpret_cast<const char*>(&icon_png_data[0]),
-                              icon_png_data.size());
-  if (wrote != static_cast<int>(icon_png_data.size())) {
+  if (!base::WriteFile(icon_path, icon_png_data)) {
     VLOG(2) << "Failed to write ARC icon file: " << icon_path.MaybeAsASCII()
             << ".";
     if (!base::DeleteFile(icon_path)) {

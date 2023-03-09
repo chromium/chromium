@@ -94,7 +94,7 @@ bool DataController::WriteProtoToFile(std::unique_ptr<AppDataProto> proto,
   if (!proto->SerializeToString(&proto_str)) {
     return false;
   }
-  return base::WriteFile(file_path, proto_str.data(), proto_str.size()) > 0;
+  return base::WriteFile(file_path, proto_str);
 }
 
 }  // namespace arc::input_overlay

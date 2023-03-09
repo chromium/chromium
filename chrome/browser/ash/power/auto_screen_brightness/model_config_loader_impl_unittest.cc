@@ -93,12 +93,7 @@ class ModelConfigLoaderImplTest : public testing::Test {
       return;
 
     CHECK(!temp_params_path_.empty());
-
-    const int bytes_written =
-        base::WriteFile(temp_params_path_, params.data(), params.size());
-    ASSERT_EQ(bytes_written, static_cast<int>(params.size()))
-        << "Wrote " << bytes_written << " byte(s) instead of " << params.size()
-        << " to " << temp_params_path_;
+    ASSERT_TRUE(base::WriteFile(temp_params_path_, params));
   }
 
   content::BrowserTaskEnvironment task_environment_;

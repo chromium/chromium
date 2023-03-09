@@ -47,9 +47,9 @@ class CopyMigratorTest : public ::testing::Test {
     ASSERT_TRUE(user_data_dir_.CreateUniqueTempDir());
     from_dir_ = user_data_dir_.GetPath().Append("user");
 
-    ASSERT_TRUE(base::WriteFile(user_data_dir_.GetPath().Append(
-                                    kFirstRun) /* .../'First Run' */,
-                                "", 0) == 0);
+    ASSERT_TRUE(base::WriteFile(
+        user_data_dir_.GetPath().Append(kFirstRun) /* .../'First Run' */,
+        base::StringPiece()));
     ASSERT_TRUE(base::CreateDirectory(
         from_dir_.Append(kDownloads) /* .../user/Downloads/ */));
     ASSERT_TRUE(base::CreateDirectory(from_dir_.Append(
@@ -59,30 +59,28 @@ class CopyMigratorTest : public ::testing::Test {
             .Append(
                 kDownloads) /* .../user/Affiliation Database/Downloads/ */));
     ASSERT_TRUE(base::WriteFile(from_dir_.Append(kCache) /* .../user/Cache/ */,
-                                kDataContent, kFileSize));
+                                kDataContent));
     ASSERT_TRUE(base::WriteFile(
         from_dir_.Append(kFullRestoreData) /* .../user/FullRestoreData/ */,
-        kDataContent, kFileSize));
+        kDataContent));
     ASSERT_TRUE(
         base::WriteFile(from_dir_.Append(kDownloads)
                             .Append(kDataFile) /* .../user/Downloads/data */,
-                        kDataContent, kFileSize));
-    ASSERT_TRUE(
-        base::WriteFile(from_dir_.Append(kCookies) /* .../user/Cookies */,
-                        kDataContent, kFileSize));
-    ASSERT_TRUE(
-        base::WriteFile(from_dir_.Append(kBookmarks) /* .../user/Bookmarks */,
-                        kDataContent, kFileSize));
+                        kDataContent));
+    ASSERT_TRUE(base::WriteFile(
+        from_dir_.Append(kCookies) /* .../user/Cookies */, kDataContent));
+    ASSERT_TRUE(base::WriteFile(
+        from_dir_.Append(kBookmarks) /* .../user/Bookmarks */, kDataContent));
     ASSERT_TRUE(base::WriteFile(
         from_dir_.Append(kAffiliationDatabase)
             .Append(kDataFile) /* .../user/Affiliation Database/data */,
-        kDataContent, kFileSize));
+        kDataContent));
     ASSERT_TRUE(base::WriteFile(
         from_dir_.Append(kAffiliationDatabase)
             .Append(kDownloads)
             .Append(
                 kDataFile) /* .../user/Affiliation Database/Downloads/data */,
-        kDataContent, kFileSize));
+        kDataContent));
   }
 
   void TearDown() override { EXPECT_TRUE(user_data_dir_.Delete()); }

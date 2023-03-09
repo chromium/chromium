@@ -79,7 +79,8 @@ bool SetupDummyOfflinePolicyDir(const std::string& account_id,
     return false;
   }
 
-  if (base::WriteFile(policy_dir.AppendASCII("device_policy"), "", 0) != 0) {
+  if (!base::WriteFile(policy_dir.AppendASCII("device_policy"),
+                       base::StringPiece())) {
     LOG(ERROR) << "Failed to create device_policy file";
     return false;
   }
@@ -95,9 +96,8 @@ bool SetupDummyOfflinePolicyDir(const std::string& account_id,
     policy.set_policy_data(policy_data.SerializeAsString());
     policy_blob = policy.SerializeAsString();
   }
-  if (base::WriteFile(policy_dir.AppendASCII("local_account_policy"),
-                      policy_blob.data(), policy_blob.size()) !=
-      static_cast<int>(policy_blob.size())) {
+  if (!base::WriteFile(policy_dir.AppendASCII("local_account_policy"),
+                       policy_blob)) {
     LOG(ERROR) << "Failed to create local_account_policy file";
     return false;
   }

@@ -117,10 +117,7 @@ TEST_F(MemoryMetricsTest, TestWithTimer) {
 // Tests timer cancellation.
 TEST_F(MemoryMetricsTest, CancelBeforeFirstRun) {
   Init(300);
-  int bytes_written = base::WriteFile(GetTestFileName(), kFileContents1,
-                                      sizeof(kFileContents1) - 1);
-
-  EXPECT_EQ(static_cast<int>(sizeof(kFileContents1) - 1), bytes_written);
+  EXPECT_TRUE(base::WriteFile(GetTestFileName(), kFileContents1));
 
   //  Repeating timer comes on - but we will cancel before first iteration.
   Cit()->Start();
@@ -147,10 +144,7 @@ TEST_F(MemoryMetricsTest, CancelBeforeFirstRun) {
 // Tests basic collection of PSI metrics with period=60.
 TEST_F(MemoryMetricsTest, SunnyDay2) {
   Init(60);
-  int bytes_written = base::WriteFile(GetTestFileName(), kFileContents1,
-                                      sizeof(kFileContents1) - 1);
-
-  EXPECT_EQ(static_cast<int>(sizeof(kFileContents1) - 1), bytes_written);
+  EXPECT_TRUE(base::WriteFile(GetTestFileName(), kFileContents1));
 
   Cit()->CollectEvents();
 
@@ -163,10 +157,7 @@ TEST_F(MemoryMetricsTest, SunnyDay2) {
 // Tests basic collection of PSI metrics with period=300.
 TEST_F(MemoryMetricsTest, SunnyDay3) {
   Init(300);
-  int bytes_written = base::WriteFile(GetTestFileName(), kFileContents1,
-                                      sizeof(kFileContents1) - 1);
-
-  EXPECT_EQ(static_cast<int>(sizeof(kFileContents1) - 1), bytes_written);
+  EXPECT_TRUE(base::WriteFile(GetTestFileName(), kFileContents1));
 
   Cit()->CollectEvents();
 
