@@ -92,6 +92,13 @@ enum class DEVICE_BLUETOOTH_EXPORT GattStatus {
   kOutOfRange = 0xFF,
 };
 
+// GATT WriteCharacteristic D-Bus method results.
+enum class DEVICE_BLUETOOTH_EXPORT GattWriteRequestStatus {
+  kSuccess = 0,
+  kFail = 1,
+  kBusy = 2,
+};
+
 struct DEVICE_BLUETOOTH_EXPORT GattDescriptor {
   device::BluetoothUUID uuid;
   int32_t instance_id;
@@ -405,12 +412,13 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattManagerClient
                                            const AuthRequired auth_required);
 
   // Writes a characteristic on a connected device with given |handle|.
-  virtual void WriteCharacteristic(ResponseCallback<Void> callback,
-                                   const std::string& remote_device,
-                                   const int32_t handle,
-                                   const WriteType write_type,
-                                   const AuthRequired auth_required,
-                                   const std::vector<uint8_t> data);
+  virtual void WriteCharacteristic(
+      ResponseCallback<GattWriteRequestStatus> callback,
+      const std::string& remote_device,
+      const int32_t handle,
+      const WriteType write_type,
+      const AuthRequired auth_required,
+      const std::vector<uint8_t> data);
 
   // Reads the descriptor for a given characteristic |handle|.
   virtual void ReadDescriptor(ResponseCallback<Void> callback,

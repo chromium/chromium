@@ -116,7 +116,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicFloss
   void OnWriteCharacteristic(base::OnceClosure callback,
                              ErrorCallback error_callback,
                              std::vector<uint8_t> data,
-                             DBusResult<Void> result);
+                             DBusResult<GattWriteRequestStatus> result);
 
  private:
   friend class BluetoothRemoteGattServiceFloss;
