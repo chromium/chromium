@@ -35,6 +35,7 @@
 
 namespace content {
 
+class FencedFrameURLMapping;
 class InterestGroupManagerImpl;
 class RenderFrameHost;
 class RenderFrameHostImpl;
@@ -123,6 +124,7 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   void OnAuctionComplete(
       RunAdAuctionCallback callback,
       GURL urn_uuid,
+      const FencedFrameURLMapping* fenced_frame_urls_map,
       AuctionRunner* auction,
       bool manually_aborted,
       absl::optional<blink::InterestGroupKey> winning_group_key,

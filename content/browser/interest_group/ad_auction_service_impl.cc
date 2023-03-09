@@ -259,7 +259,8 @@ void AdAuctionServiceImpl::RunAdAuction(
       std::move(abort_receiver),
       base::BindOnce(&AdAuctionServiceImpl::OnAuctionComplete,
                      base::Unretained(this), std::move(callback),
-                     std::move(urn_uuid.value())));
+                     std::move(urn_uuid.value()),
+                     base::Unretained(&fenced_frame_urls_map)));
   AuctionRunner* raw_auction = auction.get();
   auctions_.emplace(raw_auction, std::move(auction));
 }
@@ -522,6 +523,7 @@ bool AdAuctionServiceImpl::IsInterestGroupAPIAllowed(
 void AdAuctionServiceImpl::OnAuctionComplete(
     RunAdAuctionCallback callback,
     GURL urn_uuid,
+    const FencedFrameURLMapping* fenced_frame_urls_map,
     AuctionRunner* auction,
     bool manually_aborted,
     absl::optional<blink::InterestGroupKey> winning_group_key,
@@ -573,8 +575,10 @@ void AdAuctionServiceImpl::OnAuctionComplete(
 
   content::AdAuctionData ad_auction_data{winning_group_key->owner,
                                          winning_group_key->name};
-  FencedFrameURLMapping& fenced_frame_urls_map =
+  FencedFrameURLMapping& current_fenced_frame_urls_map =
       GetFrame()->GetPage().fenced_frame_urls_map();
+  // The auction must operate on the same fenced frame mapping.
+  CHECK_EQ(fenced_frame_urls_map, &current_fenced_frame_urls_map);
 
   // Set up reporting for any fenced frame that's navigated to the winning bid's
   // URL. Use a URLLoaderFactory that will automatically reconnect on network
@@ -585,7 +589,7 @@ void AdAuctionServiceImpl::OnAuctionComplete(
           ->GetURLLoaderFactoryForBrowserProcess();
 
   blink::FencedFrame::RedactedFencedFrameConfig config =
-      fenced_frame_urls_map.AssignFencedFrameURLAndInterestGroupInfo(
+      current_fenced_frame_urls_map.AssignFencedFrameURLAndInterestGroupInfo(
           urn_uuid, *ad_descriptor, std::move(ad_auction_data),
           reporter->OnNavigateToWinningAdCallback(), ad_component_descriptors,
           reporter->fenced_frame_reporter());

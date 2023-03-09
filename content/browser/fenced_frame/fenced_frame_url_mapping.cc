@@ -142,8 +142,11 @@ FencedFrameURLMapping::AssignFencedFrameURLAndInterestGroupInfo(
     std::vector<blink::AdDescriptor> ad_component_descriptors,
     scoped_refptr<FencedFrameReporter> fenced_frame_reporter) {
   // Move pending mapped urn::uuid to `urn_uuid_to_url_map_`.
+  // TODO(crbug.com/1422301): Remove the check for whether `urn_uuid` has been
+  // mapped already once the crash is resolved.
+  CHECK(!IsMapped(urn_uuid));
   auto pending_it = pending_urn_uuid_to_url_map_.find(urn_uuid);
-  DCHECK(pending_it != pending_urn_uuid_to_url_map_.end());
+  CHECK(pending_it != pending_urn_uuid_to_url_map_.end());
   pending_urn_uuid_to_url_map_.erase(pending_it);
 
   bool emplaced = false;
@@ -191,8 +194,8 @@ absl::optional<GURL> FencedFrameURLMapping::GeneratePendingMappedURN() {
   }
 
   GURL urn_uuid = GenerateUrnUuid();
-  DCHECK(!IsMapped(urn_uuid));
-  DCHECK(!IsPendingMapped(urn_uuid));
+  CHECK(!IsMapped(urn_uuid));
+  CHECK(!IsPendingMapped(urn_uuid));
 
   pending_urn_uuid_to_url_map_.emplace(
       urn_uuid, std::set<raw_ptr<MappingResultObserver>>());
