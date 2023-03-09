@@ -817,8 +817,6 @@ static_library("browser") {
     "metrics/shutdown_watcher_helper.h",
     "metrics/tab_footprint_aggregator.cc",
     "metrics/tab_footprint_aggregator.h",
-    "metrics/testing/metrics_reporting_pref_helper.cc",
-    "metrics/testing/metrics_reporting_pref_helper.h",
     "metrics/thread_watcher_report_hang.cc",
     "metrics/thread_watcher_report_hang.h",
     "metrics/ukm_background_recorder_service.cc",

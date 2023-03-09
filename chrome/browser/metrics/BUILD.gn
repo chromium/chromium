@@ -7,6 +7,8 @@ import("//components/metrics/generate_expired_histograms_array.gni")
 source_set("test_support") {
   testonly = true
   sources = [
+    "testing/metrics_reporting_pref_helper.cc",
+    "testing/metrics_reporting_pref_helper.h",
     "testing/sync_metrics_test_utils.cc",
     "testing/sync_metrics_test_utils.h",
   ]
