@@ -551,9 +551,10 @@ int32_t AXTreeSourceArc::GetId(AccessibilityInfoDataWrapper* info_data) const {
 
 void AXTreeSourceArc::CacheChildrenIfNeeded(
     AccessibilityInfoDataWrapper* info_data) {
-  if (!info_data->cached_children_) {
-    info_data->cached_children_.emplace();
+  if (info_data->cached_children_) {
+    return;
   }
+  info_data->cached_children_.emplace();
   GetChildren(info_data, &(*info_data->cached_children_));
 }
 
