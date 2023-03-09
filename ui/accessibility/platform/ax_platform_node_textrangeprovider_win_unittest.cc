@@ -5353,66 +5353,16 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderFindText) {
 
 TEST_F(AXPlatformNodeTextRangeProviderTest,
        FindTextWithEmbeddedObjectCharacter) {
-  // ++1 kRootWebArea
-  // ++++2 kList
-  // ++++++3 kListItem
-  // ++++++++4 kStaticText
-  // ++++++++++5 kInlineTextBox
-  // ++++++6 kListItem
-  // ++++++++7 kStaticText
-  // ++++++++++8 kInlineTextBox
-  ui::AXNodeData root_1;
-  ui::AXNodeData list_2;
-  ui::AXNodeData list_item_3;
-  ui::AXNodeData static_text_4;
-  ui::AXNodeData inline_box_5;
-  ui::AXNodeData list_item_6;
-  ui::AXNodeData static_text_7;
-  ui::AXNodeData inline_box_8;
-
-  root_1.id = 1;
-  list_2.id = 2;
-  list_item_3.id = 3;
-  static_text_4.id = 4;
-  inline_box_5.id = 5;
-  list_item_6.id = 6;
-  static_text_7.id = 7;
-  inline_box_8.id = 8;
-
-  root_1.role = ax::mojom::Role::kRootWebArea;
-  root_1.child_ids = {list_2.id};
-
-  list_2.role = ax::mojom::Role::kList;
-  list_2.child_ids = {list_item_3.id, list_item_6.id};
-
-  list_item_3.role = ax::mojom::Role::kListItem;
-  list_item_3.child_ids = {static_text_4.id};
-
-  static_text_4.role = ax::mojom::Role::kStaticText;
-  static_text_4.SetName("foo");
-  static_text_4.child_ids = {inline_box_5.id};
-
-  inline_box_5.role = ax::mojom::Role::kInlineTextBox;
-  inline_box_5.SetName("foo");
-
-  list_item_6.role = ax::mojom::Role::kListItem;
-  list_item_6.child_ids = {static_text_7.id};
-
-  static_text_7.role = ax::mojom::Role::kStaticText;
-  static_text_7.child_ids = {inline_box_8.id};
-  static_text_7.SetName("bar");
-
-  inline_box_8.role = ax::mojom::Role::kInlineTextBox;
-  inline_box_8.SetName("bar");
-
-  ui::AXTreeUpdate update;
-  ui::AXTreeData tree_data;
-  tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
-  update.tree_data = tree_data;
-  update.has_tree_data = true;
-  update.root_id = root_1.id;
-  update.nodes = {root_1, list_2, list_item_3, static_text_4,
-                  inline_box_5, list_item_6, static_text_7, inline_box_8};
+  TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kList
+    ++++++3 kListItem
+    ++++++++4 kStaticText name="foo"
+    ++++++++++5 kInlineTextBox name="foo"
+    ++++++6 kListItem
+    ++++++++7 kStaticText name="bar"
+    ++++++++++8 kInlineTextBox name="bar"
+  )HTML"));
 
   Init(update);
 
@@ -6573,75 +6523,25 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 
 TEST_F(AXPlatformNodeTextRangeProviderTest,
        TestNormalizeTextRangeForceSameAnchorOnDegenerateRange) {
-  // ++1 kRootWebArea
-  // ++++2 kGenericContainer
-  // ++++++3 kImage
-  // ++++4 kTextField
-  // ++++++5 kGenericContainer
-  // ++++++++6 kStaticText
-  // ++++++++++7 kInlineTextBox
-  ui::AXNodeData root_1;
-  ui::AXNodeData generic_container_2;
-  ui::AXNodeData line_break_3;
-  ui::AXNodeData text_field_4;
-  ui::AXNodeData generic_container_5;
-  ui::AXNodeData static_text_6;
-  ui::AXNodeData inline_box_7;
+  TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kGenericContainer boolAttribute=kIsLineBreakingObject,true
+    ++++++3 kImage
+    ++++4 kTextField state=kEditable
+    ++++++5 kGenericContainer
+    ++++++++6 kStaticText name="3.14"
+    ++++++++++7 kInlineTextBox name="3.14"
+  )HTML"));
 
-  root_1.id = 1;
-  generic_container_2.id = 2;
-  line_break_3.id = 3;
-  text_field_4.id = 4;
-  generic_container_5.id = 5;
-  static_text_6.id = 6;
-  inline_box_7.id = 7;
-
-  root_1.role = ax::mojom::Role::kRootWebArea;
-  root_1.child_ids = {generic_container_2.id, text_field_4.id};
-
-  generic_container_2.role = ax::mojom::Role::kGenericContainer;
-  generic_container_2.AddBoolAttribute(
-      ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
-  generic_container_2.child_ids = {line_break_3.id};
-
-  line_break_3.role = ax::mojom::Role::kLineBreak;
-
-  text_field_4.role = ax::mojom::Role::kTextField;
-  text_field_4.AddState(ax::mojom::State::kEditable);
-  text_field_4.child_ids = {generic_container_5.id};
-  text_field_4.SetValue("3.14");
-
-  generic_container_5.role = ax::mojom::Role::kGenericContainer;
-  generic_container_5.child_ids = {static_text_6.id};
-
-  static_text_6.role = ax::mojom::Role::kStaticText;
-  static_text_6.child_ids = {inline_box_7.id};
-  static_text_6.SetName("3.14");
-
-  inline_box_7.role = ax::mojom::Role::kInlineTextBox;
-  inline_box_7.SetName("3.14");
-
-  ui::AXTreeUpdate update;
-  ui::AXTreeData tree_data;
-  tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
-  update.tree_data = tree_data;
-  update.has_tree_data = true;
-  update.root_id = root_1.id;
-  update.nodes.push_back(root_1);
-  update.nodes.push_back(generic_container_2);
-  update.nodes.push_back(line_break_3);
-  update.nodes.push_back(text_field_4);
-  update.nodes.push_back(generic_container_5);
-  update.nodes.push_back(static_text_6);
-  update.nodes.push_back(inline_box_7);
+  update.nodes[3].SetValue("3.14");
 
   const AXTree* tree = Init(update);
 
-  const AXNode* line_break_3_node = tree->GetFromId(line_break_3.id);
-  const AXNode* inline_box_7_node = tree->GetFromId(inline_box_7.id);
+  const AXNode* line_break_3_node = tree->GetFromId(3);
+  const AXNode* inline_box_7_node = tree->GetFromId(7);
 
   AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
-      AXPlatformNodeFromNode(GetNodeFromTree(tree_data.tree_id, 1)));
+      AXPlatformNodeFromNode(GetNodeFromTree(tree->GetAXTreeID(), 1)));
 
   // start: TextPosition, anchor_id=3, text_offset=1, annotated_text=/xFFFC<>
   // end  : TextPosition, anchor_id=7, text_offset=0, annotated_text=<p>i
@@ -7517,75 +7417,22 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, CaretAtEndOfTextFieldReadOnly) {
   // normalize to other positions, so we should expect the
   // 'UIA_IsReadOnlyAttributeId' attribute queried at this position to return
   // false.
-  // ++1 kRootWebArea
-  // ++++2 kTextField editable value="hello"
-  // ++++++3 kGenericContainer editable isLineBreakingObject=true
-  // ++++++++4 kStaticText editable name="hello"
-  // ++++++++++5 kInlineTextBox editable name="hello"
-  // ++++6 kStaticText name="abc"
-  // ++++++7 kInlineTextBox name="abc"
-  AXNodeData root_1;
-  AXNodeData text_field_2;
-  AXNodeData generic_container_3;
-  AXNodeData static_text_4;
-  AXNodeData inline_text_5;
-  AXNodeData static_text_6;
-  AXNodeData inline_text_7;
-
-  root_1.id = 1;
-  text_field_2.id = 2;
-  generic_container_3.id = 3;
-  static_text_4.id = 4;
-  inline_text_5.id = 5;
-  static_text_6.id = 6;
-  inline_text_7.id = 7;
-
-  root_1.role = ax::mojom::Role::kRootWebArea;
-  root_1.child_ids = {text_field_2.id, static_text_6.id};
-
-  text_field_2.role = ax::mojom::Role::kTextField;
-  text_field_2.AddState(ax::mojom::State::kEditable);
-  text_field_2.SetValue("hello");
-  text_field_2.child_ids = {generic_container_3.id};
-
-  generic_container_3.role = ax::mojom::Role::kGenericContainer;
-  generic_container_3.AddState(ax::mojom::State::kEditable);
-  generic_container_3.AddBoolAttribute(
-      ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
-  generic_container_3.child_ids = {static_text_4.id};
-
-  static_text_4.role = ax::mojom::Role::kStaticText;
-  static_text_4.SetName("hello");
-  static_text_4.AddState(ax::mojom::State::kEditable);
-  static_text_4.child_ids = {inline_text_5.id};
-
-  inline_text_5.role = ax::mojom::Role::kInlineTextBox;
-  inline_text_5.SetName("hello");
-  inline_text_5.AddState(ax::mojom::State::kEditable);
-
-  static_text_6.role = ax::mojom::Role::kStaticText;
-  static_text_6.SetName("abc");
-  static_text_6.child_ids = {inline_text_7.id};
-
-  inline_text_7.role = ax::mojom::Role::kInlineTextBox;
-  inline_text_7.SetName("abc");
-
-  ui::AXTreeUpdate update;
-  ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
-  update.root_id = root_1.id;
-  update.tree_data.tree_id = tree_id;
-  update.has_tree_data = true;
-  update.nodes = {root_1,        text_field_2,  generic_container_3,
-                  static_text_4, inline_text_5, static_text_6,
-                  inline_text_7};
+  TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kTextField state=kEditable
+    ++++++3 kGenericContainer state=kEditable boolAttribute=kIsLineBreakingObject,true
+    ++++++++4 kStaticText state=kEditable name="hello"
+    ++++++++++5 kInlineTextBox state=kEditable name="hello"
+    ++++6 kStaticText name="abc"
+  )HTML"));
 
   const AXTree* tree = Init(update);
-  const AXNode* inline_text_5_node = tree->GetFromId(inline_text_5.id);
+  const AXNode* inline_text_5_node = tree->GetFromId(5);
 
   // Making |owner| AXID:1 so that |TestAXNodeWrapper::BuildAllWrappers|
   // will build the entire tree.
   AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
-      AXPlatformNodeFromNode(GetNodeFromTree(tree_id, 1)));
+      AXPlatformNodeFromNode(GetNodeFromTree(tree->GetAXTreeID(), 1)));
 
   ComPtr<AXPlatformNodeTextRangeProviderWin> range;
   base::win::ScopedVariant expected_variant;
@@ -7637,98 +7484,32 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   // ends at the beginning of the next paragraph. The range only contains the
   // generated newline character. The readonly attribute value returned should
   // be the one of the common anchor of the start and end endpoint.
-
-  // ++1 kRootWebArea
-  // ++++2 kGenericContainer
-  // ++++++3 kImage
-  // ++++++4 kTextField editable
-  // ++++5 kGenericContainer editable
-  // ++++++6 kImage
-  // ++++++7 kTextField editable
-  // ++++8 kGenericContainer
-  // ++++++9 kTextField editable
-  // ++++++10 kTextField editable
-  AXNodeData root_1;
-  AXNodeData generic_container_2;
-  AXNodeData image_3;
-  AXNodeData text_field_4;
-  AXNodeData generic_container_5;
-  AXNodeData image_6;
-  AXNodeData text_field_7;
-  AXNodeData generic_container_8;
-  AXNodeData text_field_9;
-  AXNodeData text_field_10;
-
-  root_1.id = 1;
-  generic_container_2.id = 2;
-  image_3.id = 3;
-  text_field_4.id = 4;
-  generic_container_5.id = 5;
-  image_6.id = 6;
-  text_field_7.id = 7;
-  generic_container_8.id = 8;
-  text_field_9.id = 9;
-  text_field_10.id = 10;
-
-  root_1.role = ax::mojom::Role::kRootWebArea;
-  root_1.child_ids = {generic_container_2.id, generic_container_5.id,
-                      generic_container_8.id};
-
-  generic_container_2.role = ax::mojom::Role::kGenericContainer;
-  generic_container_2.child_ids = {image_3.id, text_field_4.id};
-
-  image_3.role = ax::mojom::Role::kImage;
-  image_3.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
-                           true);
-
-  text_field_4.role = ax::mojom::Role::kTextField;
-  text_field_4.AddState(ax::mojom::State::kEditable);
-
-  generic_container_5.role = ax::mojom::Role::kGenericContainer;
-  generic_container_5.AddState(ax::mojom::State::kEditable);
-  generic_container_5.child_ids = {image_6.id, text_field_7.id};
-
-  image_6.role = ax::mojom::Role::kImage;
-  image_6.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
-                           true);
-
-  text_field_7.role = ax::mojom::Role::kTextField;
-  text_field_7.AddState(ax::mojom::State::kEditable);
-
-  generic_container_8.role = ax::mojom::Role::kGenericContainer;
-  generic_container_8.child_ids = {text_field_9.id, text_field_10.id};
-
-  text_field_9.role = ax::mojom::Role::kTextField;
-  text_field_9.AddState(ax::mojom::State::kEditable);
-  text_field_9.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
-                                true);
-
-  text_field_10.role = ax::mojom::Role::kTextField;
-  text_field_10.AddState(ax::mojom::State::kEditable);
-
-  ui::AXTreeUpdate update;
-  ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
-  update.root_id = root_1.id;
-  update.tree_data.tree_id = tree_id;
-  update.has_tree_data = true;
-  update.nodes = {root_1,       generic_container_2, image_3,
-                  text_field_4, generic_container_5, image_6,
-                  text_field_7, generic_container_8, text_field_9,
-                  text_field_10};
+  TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kGenericContainer
+    ++++++3 kImage boolAttribute=kIsLineBreakingObject,true
+    ++++++4 kTextField state=kEditable
+    ++++5 kGenericContainer state=kEditable
+    ++++++6 kImage boolAttribute=kIsLineBreakingObject,true
+    ++++++7 kTextField state=kEditable
+    ++++8 kGenericContainer
+    ++++++9 kTextField state=kEditable boolAttribute=kIsLineBreakingObject,true
+    ++++++10 kTextField state=kEditable
+  )HTML"));
 
   const AXTree* tree = Init(update);
 
-  const AXNode* image_3_node = tree->GetFromId(image_3.id);
-  const AXNode* image_6_node = tree->GetFromId(image_6.id);
-  const AXNode* text_field_4_node = tree->GetFromId(text_field_4.id);
-  const AXNode* text_field_7_node = tree->GetFromId(text_field_7.id);
-  const AXNode* text_field_9_node = tree->GetFromId(text_field_9.id);
-  const AXNode* text_field_10_node = tree->GetFromId(text_field_10.id);
+  const AXNode* image_3_node = tree->GetFromId(3);
+  const AXNode* image_6_node = tree->GetFromId(6);
+  const AXNode* text_field_4_node = tree->GetFromId(4);
+  const AXNode* text_field_7_node = tree->GetFromId(7);
+  const AXNode* text_field_9_node = tree->GetFromId(9);
+  const AXNode* text_field_10_node = tree->GetFromId(10);
 
   // Making |owner| AXID:1 so that |TestAXNodeWrapper::BuildAllWrappers|
   // will build the entire tree.
   AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
-      AXPlatformNodeFromNode(GetNodeFromTree(tree_id, 1)));
+      AXPlatformNodeFromNode(GetNodeFromTree(tree->GetAXTreeID(), 1)));
 
   base::win::ScopedVariant expected_variant;
 
