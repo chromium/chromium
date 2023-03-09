@@ -41,6 +41,9 @@ MOTIONMARK = Tag('motionmark',
                  'Motionmark benchmark stories (fixed complexity)')
 MOTIONMARK_RAMP = Tag('motionmark_ramp',
                       'Motionmark benchmark stories (ramped complexity)')
+MOTIONMARK_FIXED_2_SECONDS = Tag(
+    'motionmark_fixed_2_seconds',
+    'Motionmark benchmark stories running with fixed complexity for 2 seconds')
 PATHOLOGICAL_MOBILE_SITES = Tag(
     'pathological_mobile_sites', 'Pathological mobile sites')
 REPAINT_DESKTOP = Tag(

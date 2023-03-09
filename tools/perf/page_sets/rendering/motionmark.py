@@ -371,3 +371,85 @@ class MotionMarkRampComposite(MotionMarkPage):
 
   def WillStartTracing(self, chrome_trace_config):
     chrome_trace_config.record_mode = 'record-until-full'
+
+
+class MotionMarkFixed2SecondsPage(MotionMarkPage):
+  ABSTRACT_STORY = True
+  TAGS = [story_tags.MOTIONMARK, story_tags.MOTIONMARK_FIXED_2_SECONDS]
+  SUPPORTED_PLATFORMS = platforms.ALL_PLATFORMS
+
+  def RunPageInteractions(self, action_runner):
+    with action_runner.CreateInteraction('Filter'):
+      action_runner.Wait(2)
+
+    # Navigate to about:blank to stop rendering frames and let the device
+    # cool down while the trace data for the story is processed.
+    action_runner.Navigate('about:blank')
+
+  @classmethod
+  def GetFixed2SecondsUrl(cls, suite_name, test_name, complexity):
+    # Strip unwanted characters from names
+    for ch in [' ', '.', ',']:
+      suite_name = suite_name.replace(ch, '')
+      test_name = test_name.replace(ch, '')
+
+    return ('https://browserbench.org/MotionMark1.2/developer.html'
+            '?suite-name=%s'
+            '&test-name=%s'
+            '&complexity=%d'
+            '&test-interval=1'
+            '&display=minimal'
+            '&tiles=big'
+            '&controller=fixed'
+            '&kalman-process-error=1'
+            '&kalman-measurement-error=4'
+            '&time-measurement=raf') % (suite_name, test_name, complexity)
+
+
+#Numbers for complexity based on MotionMark score for chrome build without PGO
+class MotionMarkFixed2SecondsMultiply(MotionMarkFixed2SecondsPage):
+  BASE_NAME = 'motionmark_fixed_2_seconds_multiply'
+  URL = MotionMarkFixed2SecondsPage.GetFixed2SecondsUrl('MotionMark',
+                                                        'Multiply', 1396)
+
+
+class MotionMarkFixed2SecondsCanvasArcs(MotionMarkFixed2SecondsPage):
+  BASE_NAME = 'motionmark_fixed_2_seconds_canvas_arcs'
+  URL = MotionMarkFixed2SecondsPage.GetFixed2SecondsUrl('MotionMark',
+                                                        'Canvas Arcs', 6194)
+
+
+class MotionMarkFixed2SecondsLeaves(MotionMarkFixed2SecondsPage):
+  BASE_NAME = 'motionmark_fixed_2_seconds_leaves'
+  URL = MotionMarkFixed2SecondsPage.GetFixed2SecondsUrl('MotionMark', 'Leaves',
+                                                        1377)
+
+
+class MotionMarkFixed2SecondsPaths(MotionMarkFixed2SecondsPage):
+  BASE_NAME = 'motionmark_fixed_2_seconds_paths'
+  URL = MotionMarkFixed2SecondsPage.GetFixed2SecondsUrl('MotionMark', 'Paths',
+                                                        29172)
+
+
+class MotionMarkFixed2SecondsCanvasLines(MotionMarkFixed2SecondsPage):
+  BASE_NAME = 'motionmark_fixed_2_seconds_canvas_lines'
+  URL = MotionMarkFixed2SecondsPage.GetFixed2SecondsUrl('MotionMark',
+                                                        'Canvas Lines', 16520)
+
+
+class MotionMarkFixed2SecondsImages(MotionMarkFixed2SecondsPage):
+  BASE_NAME = 'motionmark_fixed_2_seconds_images'
+  URL = MotionMarkFixed2SecondsPage.GetFixed2SecondsUrl('MotionMark', 'Images',
+                                                        102)
+
+
+class MotionMarkFixed2SecondsDesign(MotionMarkFixed2SecondsPage):
+  BASE_NAME = 'motionmark_fixed_2_seconds_design'
+  URL = MotionMarkFixed2SecondsPage.GetFixed2SecondsUrl('MotionMark', 'Design',
+                                                        213)
+
+
+class MotionMarkFixed2SecondsSuits(MotionMarkFixed2SecondsPage):
+  BASE_NAME = 'motionmark_fixed_2_seconds_suits'
+  URL = MotionMarkFixed2SecondsPage.GetFixed2SecondsUrl('MotionMark', 'Suits',
+                                                        1299)
