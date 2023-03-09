@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view_chromeos_test_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -43,7 +44,9 @@
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
 #include "ash/wm/overview/overview_controller.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
+#include "ash/wm/tablet_mode/tablet_mode_multitask_menu_event_handler.h"
+#include "ash/wm/tablet_mode/tablet_mode_window_manager.h"
 #include "base/functional/callback_helpers.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
@@ -96,6 +99,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_pin_type.h"
@@ -1299,6 +1303,8 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest,
   EXPECT_EQ(inset_normal, inset_in_overview_mode);
 }
 
+// TODO(b/270175923): Consider using WebUiTabStripOverrideTest, since it
+// makes sense for it to always be enabled.
 class FloatBrowserNonClientFrameViewChromeOSTest
     : public TopChromeMdParamTest<InProcessBrowserTest> {
  public:
@@ -1313,6 +1319,56 @@ class FloatBrowserNonClientFrameViewChromeOSTest
   base::test::ScopedFeatureList scoped_feature_list_{
       chromeos::wm::features::kWindowLayoutMenu};
 };
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_P(FloatBrowserNonClientFrameViewChromeOSTest,
+                       TabletModeMultitaskMenu) {
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  ASSERT_NO_FATAL_FAILURE(
+      ash::ShellTestApi().SetTabletModeEnabledForTest(true));
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  Widget* widget = browser_view->GetWidget();
+  aura::Window* window = widget->GetNativeWindow();
+  ui::test::EventGenerator event_generator(window->GetRootWindow());
+
+  // A normal tap on the top center of the window and in the omnibox
+  // bounds will focus the omnibox.
+  const gfx::Rect omnibox_bounds =
+      browser_view->GetViewByID(VIEW_ID_OMNIBOX)->GetBoundsInScreen();
+  ASSERT_NO_FATAL_FAILURE(
+      event_generator.GestureTapAt(omnibox_bounds.top_center()));
+  ASSERT_NO_FATAL_FAILURE(
+      ui_test_utils::WaitForViewFocus(browser(), VIEW_ID_OMNIBOX, true));
+
+  // Swipe down from the top center opens the multitask menu.
+  event_generator.SetTouchRadius(10, 5);
+  const gfx::Point top_center(window->bounds().CenterPoint().x(), -1);
+  event_generator.PressTouch(top_center);
+  event_generator.MoveTouchBy(0, 100);
+  event_generator.ReleaseTouch();
+  ASSERT_NO_FATAL_FAILURE(
+      ui_test_utils::WaitForViewFocus(browser(), VIEW_ID_OMNIBOX, false));
+  auto* multitask_menu_event_handler =
+      ash::TabletModeControllerTestApi()
+          .tablet_mode_window_manager()
+          ->tablet_mode_multitask_menu_event_handler();
+  EXPECT_TRUE(multitask_menu_event_handler->multitask_menu());
+
+  if (browser_view->webui_tab_strip()) {
+    // The tab strip doesn't get shown if the menu is.
+    ASSERT_FALSE(browser_view->webui_tab_strip()->GetVisible());
+  }
+
+  // Tap on the omnibox outside the menu takes focus and closes the menu.
+  ASSERT_NO_FATAL_FAILURE(
+      event_generator.GestureTapAt(omnibox_bounds.left_center()));
+  ASSERT_NO_FATAL_FAILURE(
+      ui_test_utils::WaitForViewFocus(browser(), VIEW_ID_OMNIBOX, true));
+  EXPECT_FALSE(multitask_menu_event_handler->multitask_menu());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 IN_PROC_BROWSER_TEST_P(FloatBrowserNonClientFrameViewChromeOSTest,
                        BrowserHeaderVisibilityInTabletModeTest) {
