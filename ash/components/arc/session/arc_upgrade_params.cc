@@ -37,9 +37,7 @@ UpgradeParams::UpgradeParams()
       skip_gms_core_cache(base::CommandLine::ForCurrentProcess()->HasSwitch(
           ash::switches::kArcDisableGmsCoreCache)),
       skip_tts_cache(base::CommandLine::ForCurrentProcess()->HasSwitch(
-                         ash::switches::kArcDisableTtsCache) ||
-                     !base::FeatureList::IsEnabled(arc::kEnableTTSCacheSetup)) {
-}
+          ash::switches::kArcDisableTtsCache)) {}
 
 UpgradeParams::UpgradeParams(const UpgradeParams& other) = default;
 UpgradeParams::UpgradeParams(UpgradeParams&& other) = default;

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/components/arc/arc_features.h"
+
 #include "base/feature_list.h"
 
 namespace arc {
@@ -41,12 +42,10 @@ BASE_FEATURE(kEnableArcIdleManager,
              "ArcIdleManager",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-
 // For test purposes, ignore battery status changes, allowing Doze mode to
 // kick in even if we do not receive powerd changes related to battery.
 const base::FeatureParam<bool> kEnableArcIdleManagerIgnoreBatteryForPLT{
     &kEnableArcIdleManager, "ignore_battery_for_test", false};
-
 
 // Controls whether files shared to ARC Nearby Share are shared through the
 // FuseBox filesystem, instead of the default method (through a temporary path
@@ -81,17 +80,6 @@ BASE_FEATURE(kEnableLazyWebViewInit,
 //    so the Tast test uses the updated ArcEnablePerVmCoreScheduling setting.
 BASE_FEATURE(kEnablePerVmCoreScheduling,
              "ArcEnablePerVmCoreScheduling",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Controls whether to use ARC TTS caching to optimize ARC boot.
-BASE_FEATURE(kEnableTTSCaching,
-             "ArcEnableTTSCaching",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Controls whether to use pregenerated ARC TTS cache to optimize ARC boot and
-// also whether or not TTS cache is used.
-BASE_FEATURE(kEnableTTSCacheSetup,
-             "ArcEnableTTSCacheSetup",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether we should delegate audio focus requests from ARC to Chrome.

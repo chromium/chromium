@@ -27,12 +27,5 @@ TEST(ArcUpgradeParamsTest, Constructor_DefaultTtsState) {
   EXPECT_FALSE(upgradeParams.skip_tts_cache);
 }
 
-TEST(ArcUpgradeParamsTest, Constructor_WithTtsCacheSetupFeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(arc::kEnableTTSCacheSetup, true);
-  UpgradeParams upgradeParams;
-  EXPECT_FALSE(upgradeParams.skip_tts_cache);
-}
-
 }  // namespace
 }  // namespace arc

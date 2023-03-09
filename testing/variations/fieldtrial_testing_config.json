@@ -560,36 +560,6 @@
             ]
         }
     ],
-    "ArcEnableTTSCacheSetupRelaunch": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ArcEnableTTSCacheSetup"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ArcEnableTTSCaching": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ArcEnableTTSCaching"
-                    ]
-                }
-            ]
-        }
-    ],
     "ArcGameMode": [
         {
             "platforms": [
