@@ -49,7 +49,9 @@ class UnifiedKeyboardBrightnessView : public UnifiedSliderView,
         model_(model) {
     if (features::IsRgbKeyboardEnabled() &&
         Shell::Get()->rgb_keyboard_manager()->IsRgbKeyboardSupported()) {
-      button()->SetBackgroundColor(keyboardBrightnessIconBackgroundColor);
+      if (button()) {
+        button()->SetBackgroundColor(keyboardBrightnessIconBackgroundColor);
+      }
       AddChildView(CreateKeyboardBacklightColorButton());
     }
     model_->AddObserver(this);
