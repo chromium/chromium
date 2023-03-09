@@ -5,9 +5,12 @@
 import {assert} from 'chrome://resources/ash/common/assert.js';
 
 import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
-import {str, strf} from '../../common/js/util.js';
+import {str, strf, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {Crostini} from '../../externs/background/crostini.js';
+import {addUiEntry, removeUiEntry} from '../../state/actions/ui_entries.js';
+import {crostiniPlaceHolderKey} from '../../state/reducers/volumes.js';
+import {getStore} from '../../state/store.js';
 
 import {constants} from './constants.js';
 import {DirectoryModel} from './directory_model.js';
@@ -55,14 +58,20 @@ export class CrostiniController {
     // Setup Linux files fake root.
     let crostiniNavigationModelItem;
     if (this.crostini_.isEnabled(constants.DEFAULT_CROSTINI_VM)) {
+      const crostiniEntry = new FakeEntryImpl(
+          str('LINUX_FILES_ROOT_LABEL'), VolumeManagerCommon.RootType.CROSTINI);
       crostiniNavigationModelItem = new NavigationModelFakeItem(
           str('LINUX_FILES_ROOT_LABEL'), NavigationModelItemType.CROSTINI,
-          new FakeEntryImpl(
-              str('LINUX_FILES_ROOT_LABEL'),
-              VolumeManagerCommon.RootType.CROSTINI));
+          crostiniEntry);
       crostiniNavigationModelItem.disabled = this.disabled_;
+      if (util.isFilesAppExperimental()) {
+        getStore().dispatch(addUiEntry({entry: crostiniEntry}));
+      }
     } else {
       crostiniNavigationModelItem = null;
+      if (util.isFilesAppExperimental()) {
+        getStore().dispatch(removeUiEntry({key: crostiniPlaceHolderKey}));
+      }
     }
     this.directoryTree_.dataModel.linuxFilesItem = crostiniNavigationModelItem;
     // Redraw the tree to ensure 'Linux files' is added/removed.

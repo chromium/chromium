@@ -390,6 +390,7 @@ js_library("volume_manager_impl") {
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:volume_info",
     "//ui/file_manager/file_manager/externs:volume_manager",
+    "//ui/file_manager/file_manager/externs/ts:store",
   ]
 }
 
@@ -421,6 +422,7 @@ js_library("volume_manager_util") {
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:volume_info",
+    "//ui/file_manager/file_manager/externs/ts:store",
   ]
 }
 

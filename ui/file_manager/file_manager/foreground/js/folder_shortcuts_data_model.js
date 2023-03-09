@@ -10,6 +10,8 @@ import {FilteredVolumeManager} from '../../common/js/filtered_volume_manager.js'
 import {metrics} from '../../common/js/metrics.js';
 import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {addFolderShortcut, refreshFolderShortcut, removeFolderShortcut} from '../../state/actions/folder_shortcuts.js';
+import {getStore} from '../../state/store.js';
 
 /**
  * The drive mount path used in the persisted storage. It must be '/drive'.
@@ -35,6 +37,7 @@ export class FolderShortcutsDataModel extends EventTarget {
     this.pendingPaths_ = {};  // Hash map for easier deleting.
     this.unresolvablePaths_ = {};
     this.lastDriveRootURL_ = null;
+    this.store_ = getStore();
 
     // Queue to serialize resolving entries.
     this.queue_ = new AsyncQueue();
@@ -181,6 +184,9 @@ export class FolderShortcutsDataModel extends EventTarget {
         }
         // If something changed, then save.
         if (changed) {
+          if (util.isFilesAppExperimental()) {
+            this.store_.dispatch(refreshFolderShortcut({entries: this.array_}));
+          }
           this.save_();
         }
         queueCallback();
@@ -310,6 +316,9 @@ export class FolderShortcutsDataModel extends EventTarget {
    */
   add(value) {
     const result = this.addInternal_(value);
+    if (util.isFilesAppExperimental()) {
+      this.store_.dispatch(addFolderShortcut(value));
+    }
     metrics.recordUserAction('FolderShortcut.Add');
     this.save_();
     return result;
@@ -361,6 +370,9 @@ export class FolderShortcutsDataModel extends EventTarget {
   remove(value) {
     const result = this.removeInternal_(value);
     if (result !== -1) {
+      if (util.isFilesAppExperimental()) {
+        this.store_.dispatch(removeFolderShortcut(value));
+      }
       this.save_();
       metrics.recordUserAction('FolderShortcut.Remove');
     }

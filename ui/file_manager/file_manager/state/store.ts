@@ -19,8 +19,10 @@ export type Store = BaseStore<State, Action>;
 /**
  * Store singleton instance.
  * It's only exposed via `getStore()` to guarantee it's a single instance.
+ * TODO(b/272120634): Use window.store temporarily, uncomment below code after
+ * the duplicate store issue is resolved.
  */
-let store: null|Store = null;
+// let store: null|Store = null;
 
 /**
  * Returns the singleton instance for the Files app's Store.
@@ -29,12 +31,14 @@ let store: null|Store = null;
  * at the app's main entry point.
  */
 export function getStore(): Store {
-  if (!store) {
-    store =
+  // TODO(b/272120634): Put the store on window to prevent Store being created
+  // twice.
+  if (!window.store) {
+    window.store =
         new BaseStore<State, Action>({allEntries: {}} as State, rootReducer);
   }
 
-  return store;
+  return window.store;
 }
 
 export function getEmptyState(): State {
