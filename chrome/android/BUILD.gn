@@ -1488,6 +1488,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/privacy_sandbox/android:java",
       "//chrome/browser/privacy_sandbox/android:javatests",
       "//chrome/browser/profiles/android:java",
+      "//chrome/browser/quick_delete:java",
       "//chrome/browser/safe_browsing/android:java",
       "//chrome/browser/safe_browsing/android:javatests",
       "//chrome/browser/safety_check/android:java",

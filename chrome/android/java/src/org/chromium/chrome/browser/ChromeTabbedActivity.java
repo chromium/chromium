@@ -129,6 +129,7 @@ import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
+import org.chromium.chrome.browser.quick_delete.QuickDeleteMetricsDelegate;
 import org.chromium.chrome.browser.read_later.ReadingListBackPressHandler;
 import org.chromium.chrome.browser.read_later.ReadingListUtils;
 import org.chromium.chrome.browser.reengagement.ReengagementNotificationController;
@@ -2215,6 +2216,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 && QuickDeleteController.isQuickDeleteEnabled()) {
             assert !mTabModelSelector.getCurrentModel().isIncognito()
                 : "Quick delete is not supported in Incognito.";
+
+            QuickDeleteMetricsDelegate.recordHistogram(
+                    QuickDeleteMetricsDelegate.PrivacyQuickDelete.MENU_ITEM_CLICKED);
 
             QuickDeleteController.create(getModalDialogManager(), getSnackbarManager())
                     .triggerQuickDeleteFlow();
