@@ -134,8 +134,12 @@ cast_streaming::ReceiverConfig CreateConfig(
           audio_limits, converted_codec,
           &cast_streaming::ReceiverConfig::AudioLimits::codec);
       DCHECK(it != audio_limits.end());
-      it->max_sample_rate =
-          std::max(it->max_sample_rate, info.max_samples_per_second);
+      if (it->max_sample_rate) {
+        it->max_sample_rate =
+            std::max(it->max_sample_rate.value(), info.max_samples_per_second);
+      } else {
+        it->max_sample_rate = info.max_samples_per_second;
+      }
       it->channel_layout = ::media::GuessChannelLayout(info.max_audio_channels);
     }
   }

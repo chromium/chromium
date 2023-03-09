@@ -80,13 +80,18 @@ openscreen::cast::VideoLimits ToOpenscreenVideoLimitsType(
     osp_limits.applies_to_all_codecs = true;
   }
 
-  osp_limits.max_dimensions =
-      ToOpenscreenType(limits.max_dimensions, limits.max_frame_rate);
+  osp_limits.max_dimensions = ToOpenscreenType(
+      limits.max_dimensions,
+      limits.max_frame_rate.value_or(openscreen::cast::kDefaultFrameRate));
   osp_limits.max_delay =
       std::chrono::milliseconds(limits.max_delay.InMilliseconds());
   osp_limits.max_pixels_per_second = limits.max_pixels_per_second;
-  osp_limits.min_bit_rate = limits.min_bit_rate;
-  osp_limits.max_bit_rate = limits.max_bit_rate;
+  if (limits.min_bit_rate) {
+    osp_limits.min_bit_rate = limits.min_bit_rate.value();
+  }
+  if (limits.max_bit_rate) {
+    osp_limits.max_bit_rate = limits.max_bit_rate.value();
+  }
 
   return osp_limits;
 }
@@ -106,9 +111,15 @@ openscreen::cast::AudioLimits ToOpenscreenAudioLimitsType(
   osp_limits.max_channels = GetMaxChannelCount(limits.channel_layout);
   osp_limits.max_delay =
       std::chrono::milliseconds(limits.max_delay.InMilliseconds());
-  osp_limits.max_sample_rate = limits.max_sample_rate;
-  osp_limits.min_bit_rate = limits.min_bit_rate;
-  osp_limits.max_bit_rate = limits.max_bit_rate;
+  if (limits.max_sample_rate) {
+    osp_limits.max_sample_rate = limits.max_sample_rate.value();
+  }
+  if (limits.min_bit_rate) {
+    osp_limits.min_bit_rate = limits.min_bit_rate.value();
+  }
+  if (limits.max_bit_rate) {
+    osp_limits.max_bit_rate = limits.max_bit_rate.value();
+  }
 
   return osp_limits;
 }
@@ -116,8 +127,9 @@ openscreen::cast::AudioLimits ToOpenscreenAudioLimitsType(
 openscreen::cast::Display ToOpenscreenDisplayType(
     const ReceiverConfig::Display& display) {
   openscreen::cast::Display osp_display;
-  osp_display.dimensions =
-      ToOpenscreenType(display.dimensions, display.max_frame_rate);
+  osp_display.dimensions = ToOpenscreenType(
+      display.dimensions,
+      display.max_frame_rate.value_or(openscreen::cast::kDefaultFrameRate));
   osp_display.can_scale_content = display.can_scale_content;
   return osp_display;
 }

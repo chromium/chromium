@@ -30,8 +30,6 @@ class ReceiverConfig;
 // |message_port| and with a given |demuxer_connector|. On destruction,
 // the Cast Streaming Receiver Session will be terminated if it was ever
 // started.
-// TODO(crbug.com/1220176): Forward declare ReceiverSession::Preferences instead
-// of requiring the import above.
 class ReceiverSession {
  public:
   class Client {
