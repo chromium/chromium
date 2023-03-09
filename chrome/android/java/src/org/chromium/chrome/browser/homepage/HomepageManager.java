@@ -148,26 +148,24 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
      */
     public static String getDefaultHomepageUri() {
         
-        return "https://www.baidu.com";
+        if (PartnerBrowserCustomizations.getInstance().isHomepageProviderAvailableAndEnabled()) {
+            return PartnerBrowserCustomizations.getInstance().getHomePageUrl().getSpec();
+        }
 
-        // if (PartnerBrowserCustomizations.getInstance().isHomepageProviderAvailableAndEnabled()) {
-        //     return PartnerBrowserCustomizations.getInstance().getHomePageUrl().getSpec();
-        // }
+        String homepagePartnerDefaultUri;
+        String homepagePartnerDefaultGurlSerialized =
+                SharedPreferencesManager.getInstance().readString(
+                        ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL, "");
+        if (!homepagePartnerDefaultGurlSerialized.equals("")) {
+            homepagePartnerDefaultUri =
+                    GURL.deserialize(homepagePartnerDefaultGurlSerialized).getSpec();
+        } else {
+            homepagePartnerDefaultUri = SharedPreferencesManager.getInstance().readString(
+                    ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_URI, "");
+        }
+        if (!homepagePartnerDefaultUri.equals("")) return homepagePartnerDefaultUri;
 
-        // String homepagePartnerDefaultUri;
-        // String homepagePartnerDefaultGurlSerialized =
-        //         SharedPreferencesManager.getInstance().readString(
-        //                 ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL, "");
-        // if (!homepagePartnerDefaultGurlSerialized.equals("")) {
-        //     homepagePartnerDefaultUri =
-        //             GURL.deserialize(homepagePartnerDefaultGurlSerialized).getSpec();
-        // } else {
-        //     homepagePartnerDefaultUri = SharedPreferencesManager.getInstance().readString(
-        //             ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_URI, "");
-        // }
-        // if (!homepagePartnerDefaultUri.equals("")) return homepagePartnerDefaultUri;
-
-        // return UrlConstants.NTP_NON_NATIVE_URL;
+        return UrlConstants.NTP_ABOUT_URL;
     }
 
     /**

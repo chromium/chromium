@@ -347,10 +347,10 @@
                     },
                     "enable_features": [
                         "RequestDesktopSiteExceptions",
+                        "RequestDesktopSiteDefaults",
                         "RequestDesktopSiteExceptionsDowngrade"
                     ],
                     "disable_features": [
-                        "RequestDesktopSiteDefaults",
                         "RequestDesktopSiteDefaultsControl",
                         "RequestDesktopSiteDefaultsDowngrade"
                     ]
@@ -363,10 +363,10 @@
                     "enable_features": [
                         "RequestDesktopSiteExceptions",
                         "RequestDesktopSiteExceptionsDowngrade",
+                        "RequestDesktopSiteDefaults",
                         "RequestDesktopSiteZoom"
                     ],
                     "disable_features": [
-                        "RequestDesktopSiteDefaults",
                         "RequestDesktopSiteDefaultsControl",
                         "RequestDesktopSiteDefaultsDowngrade"
                     ]
