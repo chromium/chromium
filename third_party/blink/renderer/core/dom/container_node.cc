@@ -887,16 +887,13 @@ void ContainerNode::RemoveChildren(SubtreeModificationAction action) {
       }
     }
 
-    ChildrenChange change = {ChildrenChangeType::kAllChildrenRemoved,
-                             ChildrenChangeSource::kAPI,
-                             has_element_child
-                                 ? ChildrenChangeAffectsElements::kYes
-                                 : ChildrenChangeAffectsElements::kNo,
-                             nullptr,
-                             nullptr,
-                             nullptr,
-                             std::move(removed_nodes),
-                             String()};
+    ChildrenChange change = {
+        .type = ChildrenChangeType::kAllChildrenRemoved,
+        .by_parser = ChildrenChangeSource::kAPI,
+        .affects_elements = has_element_child
+                                ? ChildrenChangeAffectsElements::kYes
+                                : ChildrenChangeAffectsElements::kNo,
+        .removed_nodes = std::move(removed_nodes)};
     ChildrenChanged(change);
   }
 

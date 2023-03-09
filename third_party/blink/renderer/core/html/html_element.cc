@@ -2437,8 +2437,9 @@ void HTMLElement::AdjustDirectionalityIfNeededAfterChildrenChanged(
   Node* stay_within = nullptr;
   bool has_strong_directionality;
   if (change.type == ChildrenChangeType::kTextChanged) {
+    CHECK(change.old_text);
     TextDirection old_text_direction =
-        DetermineDirectionality(change.old_text, &has_strong_directionality);
+        DetermineDirectionality(*change.old_text, &has_strong_directionality);
     auto* character_data = DynamicTo<CharacterData>(change.sibling_changed);
     DCHECK(character_data);
     TextDirection new_text_direction = DetermineDirectionality(

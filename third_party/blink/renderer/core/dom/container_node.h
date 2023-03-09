@@ -318,16 +318,17 @@ class CORE_EXPORT ContainerNode : public Node {
                                        Node* unchanged_next,
                                        ChildrenChangeSource by_parser) {
       ChildrenChange change = {
-          node.IsElementNode() ? ChildrenChangeType::kElementInserted
-                               : ChildrenChangeType::kNonElementInserted,
-          by_parser,
-          node.IsElementNode() ? ChildrenChangeAffectsElements::kYes
-                               : ChildrenChangeAffectsElements::kNo,
-          &node,
-          unchanged_previous,
-          unchanged_next,
-          {},
-          String()};
+          .type = node.IsElementNode()
+                      ? ChildrenChangeType::kElementInserted
+                      : ChildrenChangeType::kNonElementInserted,
+          .by_parser = by_parser,
+          .affects_elements = node.IsElementNode()
+                                  ? ChildrenChangeAffectsElements::kYes
+                                  : ChildrenChangeAffectsElements::kNo,
+          .sibling_changed = &node,
+          .sibling_before_change = unchanged_previous,
+          .sibling_after_change = unchanged_next,
+      };
       return change;
     }
 
@@ -336,16 +337,16 @@ class CORE_EXPORT ContainerNode : public Node {
                                      Node* next_sibling,
                                      ChildrenChangeSource by_parser) {
       ChildrenChange change = {
-          node.IsElementNode() ? ChildrenChangeType::kElementRemoved
-                               : ChildrenChangeType::kNonElementRemoved,
-          by_parser,
-          node.IsElementNode() ? ChildrenChangeAffectsElements::kYes
-                               : ChildrenChangeAffectsElements::kNo,
-          &node,
-          previous_sibling,
-          next_sibling,
-          {},
-          String()};
+          .type = node.IsElementNode() ? ChildrenChangeType::kElementRemoved
+                                       : ChildrenChangeType::kNonElementRemoved,
+          .by_parser = by_parser,
+          .affects_elements = node.IsElementNode()
+                                  ? ChildrenChangeAffectsElements::kYes
+                                  : ChildrenChangeAffectsElements::kNo,
+          .sibling_changed = &node,
+          .sibling_before_change = previous_sibling,
+          .sibling_after_change = next_sibling,
+      };
       return change;
     }
 
@@ -364,27 +365,27 @@ class CORE_EXPORT ContainerNode : public Node {
 
     bool ByParser() const { return by_parser == ChildrenChangeSource::kParser; }
 
-    ChildrenChangeType type;
-    ChildrenChangeSource by_parser;
-    ChildrenChangeAffectsElements affects_elements;
-    Node* sibling_changed = nullptr;
+    const ChildrenChangeType type;
+    const ChildrenChangeSource by_parser;
+    const ChildrenChangeAffectsElements affects_elements;
+    Node* const sibling_changed = nullptr;
     // |siblingBeforeChange| is
     //  - siblingChanged.previousSibling before node removal
     //  - siblingChanged.previousSibling after single node insertion
     //  - previousSibling of the first inserted node after multiple node
     //    insertion
-    Node* sibling_before_change = nullptr;
+    Node* const sibling_before_change = nullptr;
     // |siblingAfterChange| is
     //  - siblingChanged.nextSibling before node removal
     //  - siblingChanged.nextSibling after single node insertion
     //  - nextSibling of the last inserted node after multiple node insertion.
-    Node* sibling_after_change = nullptr;
+    Node* const sibling_after_change = nullptr;
     // List of removed nodes for ChildrenChangeType::kAllChildrenRemoved.
     // Only populated if ChildrenChangedAllChildrenRemovedNeedsList() returns
     // true.
-    HeapVector<Member<Node>> removed_nodes;
-    // |old_text| is mostly empty, only used for text node changes.
-    const String& old_text;
+    const HeapVector<Member<Node>> removed_nodes;
+    // Non-null if and only if |type| is ChildrenChangeType::kTextChanged.
+    const String* const old_text = nullptr;
   };
 
   // Notifies the node that it's list of children have changed (either by adding

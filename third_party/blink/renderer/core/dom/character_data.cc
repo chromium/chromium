@@ -225,16 +225,15 @@ void CharacterData::DidModifyData(const String& old_data, UpdateSource source) {
 
   if (parentNode()) {
     ContainerNode::ChildrenChange change = {
-        ContainerNode::ChildrenChangeType::kTextChanged,
-        source == kUpdateFromParser
-            ? ContainerNode::ChildrenChangeSource::kParser
-            : ContainerNode::ChildrenChangeSource::kAPI,
-        ContainerNode::ChildrenChangeAffectsElements::kNo,
-        this,
-        previousSibling(),
-        nextSibling(),
-        {},
-        old_data};
+        .type = ContainerNode::ChildrenChangeType::kTextChanged,
+        .by_parser = source == kUpdateFromParser
+                         ? ContainerNode::ChildrenChangeSource::kParser
+                         : ContainerNode::ChildrenChangeSource::kAPI,
+        .affects_elements = ContainerNode::ChildrenChangeAffectsElements::kNo,
+        .sibling_changed = this,
+        .sibling_before_change = previousSibling(),
+        .sibling_after_change = nextSibling(),
+        .old_text = &old_data};
     parentNode()->ChildrenChanged(change);
   }
 
