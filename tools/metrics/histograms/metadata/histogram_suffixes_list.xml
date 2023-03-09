@@ -6265,6 +6265,10 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Media.VideoCapture.Windows.ImageCaptureOutcome"/>
 </histogram_suffixes>
 
+<!-- TODO(crbug.com/401026): Convert to Patterned Histograms:
+  chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#patterned-histograms
+-->
+
 <histogram_suffixes name="WrenchMenuActionTimings" separator=".">
   <suffix name="About" label=""/>
   <suffix name="AppInfo" label=""/>
@@ -6313,6 +6317,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="SiteSettings" label=""/>
   <suffix name="TaskManager" label=""/>
   <suffix name="ViewSource" label=""/>
+  <suffix name="VisitChromeWebStore" label=""/>
   <suffix name="Win8MetroRestart" label=""/>
   <suffix name="WinDesktopRestart" label=""/>
   <suffix name="ZoomMinus" label=""/>

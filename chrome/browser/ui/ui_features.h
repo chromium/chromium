@@ -39,6 +39,8 @@ BASE_DECLARE_FEATURE(kChromeTipsInMainMenuNewBadge);
 
 BASE_DECLARE_FEATURE(kChromeWhatsNewUI);
 
+BASE_DECLARE_FEATURE(kExtensionsMenuInAppMenu);
+
 #if !defined(ANDROID)
 BASE_DECLARE_FEATURE(kAccessCodeCastUI);
 #endif

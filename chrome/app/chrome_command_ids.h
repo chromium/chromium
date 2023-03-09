@@ -231,7 +231,10 @@
 #define IDC_LACROS_DATA_MIGRATION      40265
 #endif
 
-#define IDC_PERFORMANCE                40266
+#define IDC_PERFORMANCE                             40266
+#define IDC_EXTENSIONS_SUBMENU                         40267
+#define IDC_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS       40268
+#define IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE  40269
 
 // Spell-check
 // Insert any additional suggestions before _LAST; these have to be consecutive.

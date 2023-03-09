@@ -48,6 +48,12 @@ BASE_FEATURE(kChromeWhatsNewUI,
 #endif
 );
 
+// Create new Extensions app menu option (removing "More Tools -> Extensions")
+// with submenu to manage extensions and visit chrome web store.
+BASE_FEATURE(kExtensionsMenuInAppMenu,
+             "kExtensionsMenuInAppMenu",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if !defined(ANDROID)
 // Enables "Access Code Cast" UI.
 BASE_FEATURE(kAccessCodeCastUI,

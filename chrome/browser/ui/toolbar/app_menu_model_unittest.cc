@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/menu_model_test.h"
@@ -115,7 +116,29 @@ class AppMenuModelTest : public BrowserWithTestWindowTest,
                                   ui::Accelerator* accelerator) const override {
     return false;
   }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
 };
+
+class ExtensionsMenuModelTest : public AppMenuModelTest,
+                                public testing::WithParamInterface<bool> {
+ public:
+  ExtensionsMenuModelTest() {
+    feature_list_.InitWithFeatureState(features::kExtensionsMenuInAppMenu,
+                                       GetParam());
+  }
+
+  ExtensionsMenuModelTest(const ExtensionsMenuModelTest&) = delete;
+  ExtensionsMenuModelTest& operator=(const ExtensionsMenuModelTest&) = delete;
+
+  ~ExtensionsMenuModelTest() override = default;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ExtensionsMenuModelTest,
+    /* features::kNewExtensionsTopLevelMenu enabled */ testing::Bool());
 
 // Copies parts of MenuModelTest::Delegate and combines them with the
 // AppMenuModel since AppMenuModel is now a SimpleMenuModel::Delegate and
@@ -256,6 +279,27 @@ TEST_F(AppMenuModelTest, GlobalError) {
   EXPECT_EQ(0, error2->execute_count());
   model.ActivatedAt(index2.value());
   EXPECT_EQ(1, error1->execute_count());
+}
+
+// Tests that extensions sub menu (when enabled) generates the correct elements
+// or does not generate its elements when disabled.
+TEST_P(ExtensionsMenuModelTest, ExtensionsMenu) {
+  AppMenuModel model(this, browser());
+  model.Init();
+
+  if (GetParam()) {  // Menu enabled
+    ASSERT_TRUE(model.GetIndexOfCommandId(IDC_EXTENSIONS_SUBMENU));
+    ui::MenuModel* extensions_submenu = model.GetSubmenuModelAt(
+        model.GetIndexOfCommandId(IDC_EXTENSIONS_SUBMENU).value());
+    ASSERT_NE(extensions_submenu, nullptr);
+    ASSERT_EQ(2ul, extensions_submenu->GetItemCount());
+    EXPECT_EQ(IDC_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS,
+              extensions_submenu->GetCommandIdAt(0));
+    EXPECT_EQ(IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE,
+              extensions_submenu->GetCommandIdAt(1));
+  } else {
+    EXPECT_FALSE(model.GetIndexOfCommandId(IDC_EXTENSIONS_SUBMENU));
+  }
 }
 
 TEST_F(AppMenuModelTest, EnabledPerformanceItem) {

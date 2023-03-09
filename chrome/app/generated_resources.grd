@@ -1484,6 +1484,15 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_SHOW_EXTENSIONS" desc="The show extensions menu in the app menu">
           &amp;Extensions
         </message>
+        <message name="IDS_EXTENSIONS_SUBMENU" desc="The extensions menu in the app menu (title case).">
+          &amp;Extensions
+        </message>
+        <message name="IDS_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS_ITEM" desc="The text for the link in the extensions menu, in the app menu, to visit chrome://extensions to view all extensions installed (title case).">
+          Manage Extensions
+        </message>
+        <message name="IDS_EXTENSIONS_SUBMENU_CHROME_WEBSTORE_ITEM" desc="The text for the link in the extensions menu, in the app menu, to visit the Chrome Web Store to get more extensions (title case).">
+          Visit Chrome Web Store
+        </message>
         <message name="IDS_SHOW_PERFORMANCE" desc="The text label of the Performance menu item">
           Performance
         </message>
@@ -1524,6 +1533,15 @@ are declared in tools/grit/grit_rule.gni.
         </message>
         <message name="IDS_SHOW_EXTENSIONS" desc="In Title Case: The show extensions menu in the app menu">
           &amp;Extensions
+        </message>
+        <message name="IDS_EXTENSIONS_SUBMENU" desc="In Title Case: The extensions menu in the app menu.">
+          &amp;Extensions
+        </message>
+        <message name="IDS_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS_ITEM" desc="In Title Case: The text for the link in the extensions menu, in the app menu, to visit chrome://extensions to view all extensions installed.">
+          Manage Extensions
+        </message>
+        <message name="IDS_EXTENSIONS_SUBMENU_CHROME_WEBSTORE_ITEM" desc="In Title Case: The text for the link in the extensions menu, in the app menu, to visit the Chrome Web Store to get more extensions.">
+          Visit Chrome Web Store
         </message>
         <message name="IDS_SHOW_PERFORMANCE" desc="In Title Case: The text label of the Performance menu item">
           Performance

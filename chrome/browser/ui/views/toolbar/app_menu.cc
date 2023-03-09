@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/scoped_new_badge_tracker.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_menu_delegate.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
@@ -982,6 +983,11 @@ bool AppMenu::IsCommandEnabled(int command_id) const {
 
   if (command_id == IDC_MORE_TOOLS_MENU)
     return true;
+
+  if (base::FeatureList::IsEnabled(features::kExtensionsMenuInAppMenu) &&
+      command_id == IDC_EXTENSIONS_SUBMENU) {
+    return true;
+  }
 
   if (command_id == IDC_SHARING_HUB_MENU)
     return true;
