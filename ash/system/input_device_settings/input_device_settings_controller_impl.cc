@@ -273,9 +273,17 @@ InputDeviceSettingsControllerImpl::GetConnectedPointingSticks() {
 void InputDeviceSettingsControllerImpl::SetKeyboardSettings(
     DeviceId id,
     mojom::KeyboardSettingsPtr settings) {
-  DCHECK(base::Contains(keyboards_, id));
   DCHECK(active_pref_service_);
-  auto& found_keyboard = *keyboards_.at(id);
+
+  // If a device with the given id does not exist, do nothing.
+  auto found_keyboard_iter = keyboards_.find(id);
+  if (found_keyboard_iter == keyboards_.end()) {
+    return;
+  }
+
+  // TODO(dpad): Validate incoming settings to make sure the settings can apply
+  // to the given device.
+  auto& found_keyboard = *found_keyboard_iter->second;
   found_keyboard.settings = settings.Clone();
   keyboard_pref_handler_->UpdateKeyboardSettings(active_pref_service_,
                                                  found_keyboard);
@@ -294,9 +302,17 @@ void InputDeviceSettingsControllerImpl::SetKeyboardSettings(
 void InputDeviceSettingsControllerImpl::SetTouchpadSettings(
     DeviceId id,
     mojom::TouchpadSettingsPtr settings) {
-  DCHECK(base::Contains(touchpads_, id));
   DCHECK(active_pref_service_);
-  auto& found_touchpad = *touchpads_.at(id);
+
+  // If a device with the given id does not exist, do nothing.
+  auto found_touchpad_iter = touchpads_.find(id);
+  if (found_touchpad_iter == touchpads_.end()) {
+    return;
+  }
+
+  // TODO(dpad): Validate incoming settings to make sure the settings can apply
+  // to the given device.
+  auto& found_touchpad = *found_touchpad_iter->second;
   found_touchpad.settings = settings.Clone();
   touchpad_pref_handler_->UpdateTouchpadSettings(active_pref_service_,
                                                  found_touchpad);
@@ -315,9 +331,17 @@ void InputDeviceSettingsControllerImpl::SetTouchpadSettings(
 void InputDeviceSettingsControllerImpl::SetMouseSettings(
     DeviceId id,
     mojom::MouseSettingsPtr settings) {
-  DCHECK(base::Contains(mice_, id));
   DCHECK(active_pref_service_);
-  auto& found_mouse = *mice_.at(id);
+
+  // If a device with the given id does not exist, do nothing.
+  auto found_mouse_iter = mice_.find(id);
+  if (found_mouse_iter == mice_.end()) {
+    return;
+  }
+
+  // TODO(dpad): Validate incoming settings to make sure the settings can apply
+  // to the given device.
+  auto& found_mouse = *found_mouse_iter->second;
   found_mouse.settings = settings.Clone();
   mouse_pref_handler_->UpdateMouseSettings(active_pref_service_, found_mouse);
   DispatchMouseSettingsChanged(id);
@@ -335,9 +359,17 @@ void InputDeviceSettingsControllerImpl::SetMouseSettings(
 void InputDeviceSettingsControllerImpl::SetPointingStickSettings(
     DeviceId id,
     mojom::PointingStickSettingsPtr settings) {
-  DCHECK(base::Contains(pointing_sticks_, id));
   DCHECK(active_pref_service_);
-  auto& found_pointing_stick = *pointing_sticks_.at(id);
+
+  // If a device with the given id does not exist, do nothing.
+  auto found_pointing_stick_iter = pointing_sticks_.find(id);
+  if (found_pointing_stick_iter == pointing_sticks_.end()) {
+    return;
+  }
+
+  // TODO(dpad): Validate incoming settings to make sure the settings can apply
+  // to the given device.
+  auto& found_pointing_stick = *found_pointing_stick_iter->second;
   found_pointing_stick.settings = settings.Clone();
   pointing_stick_pref_handler_->UpdatePointingStickSettings(
       active_pref_service_, found_pointing_stick);

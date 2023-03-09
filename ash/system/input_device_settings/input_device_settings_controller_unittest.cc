@@ -266,6 +266,20 @@ TEST_F(InputDeviceSettingsControllerTest, KeyboardSettingsUpdated) {
   EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_updated(), 1u);
 }
 
+// Tests that given an invalid id, keyboard settings are not updated and
+// observers are not notified.
+TEST_F(InputDeviceSettingsControllerTest, KeyboardSettingsUpdatedInvalidId) {
+  controller()->OnKeyboardListUpdated({kSampleKeyboardUsb}, {});
+
+  EXPECT_EQ(observer_->num_keyboards_connected(), 1u);
+  EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_initialized(), 1u);
+  controller()->SetKeyboardSettings((DeviceId)kSampleKeyboardUsb.id + 1,
+                                    mojom::KeyboardSettings::New());
+
+  EXPECT_EQ(observer_->num_keyboards_settings_updated(), 0u);
+  EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_updated(), 0u);
+}
+
 TEST_F(InputDeviceSettingsControllerTest, KeyboardSettingsUpdateMultiple) {
   // The SetKeyboardSettings call should update both keyboards since they have
   // the same |device_key|.
