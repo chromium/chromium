@@ -62,4 +62,8 @@
   completion(NO, error);
 }
 
+- (void)clearLocalDataForForIdentity:(CWVIdentity*)identity {
+  // No op.
+}
+
 @end
