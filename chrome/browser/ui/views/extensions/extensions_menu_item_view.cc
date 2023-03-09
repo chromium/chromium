@@ -16,7 +16,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/extensions/extension_site_access_combobox_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -66,72 +65,6 @@ void SetButtonIconWithColor(HoverButton* button,
 }
 
 }  // namespace
-
-SiteAccessMenuItemView::SiteAccessMenuItemView(
-    Browser* browser,
-    std::unique_ptr<ToolbarActionViewController> controller)
-    : browser_(browser), controller_(std::move(controller)) {
-  // Items with kSiteAccess type should only be created if their
-  // associated extension has or requests access to the current page.
-  DCHECK(controller_->GetSiteInteraction(
-             browser->tab_strip_model()->GetActiveWebContents()) !=
-         extensions::SitePermissionsHelper::SiteInteraction::kNone);
-
-  // Create the combobox model that will be used by the builder.
-  auto* extension = extensions::ExtensionRegistry::Get(browser_->profile())
-                        ->enabled_extensions()
-                        .GetByID(controller_->GetId());
-  auto combobox_model =
-      std::make_unique<ExtensionSiteAccessComboboxModel>(browser_, extension);
-  site_access_combobox_model_ = combobox_model.get();
-
-  views::Builder<SiteAccessMenuItemView>(this)
-      .SetOrientation(views::LayoutOrientation::kHorizontal)
-      .SetIgnoreDefaultMainAxisMargins(true)
-      // Set so the extension button receives enter/exit on children to retain
-      // hover status when hovering child views.
-      .SetNotifyEnterExitOnChild(true)
-      .AddChildren(
-          views::Builder<ExtensionsMenuButton>(
-              std::make_unique<ExtensionsMenuButton>(browser_,
-                                                     controller_.get()))
-              .CopyAddressTo(&primary_action_button_)
-              .SetProperty(views::kFlexBehaviorKey,
-                           views::FlexSpecification(
-                               views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kUnbounded)),
-          views::Builder<views::Combobox>(
-              std::make_unique<views::Combobox>(std::move(combobox_model)))
-              .CopyAddressTo(&site_access_combobox_)
-              .SetAccessibleName(l10n_util::GetStringUTF16(
-                  IDS_ACCNAME_EXTENSIONS_MENU_SITE_ACCESS_COMBOBOX))
-              .SetCallback(base::BindRepeating(
-                  &SiteAccessMenuItemView::OnComboboxSelectionChanged,
-                  base::Unretained(this))))
-      .BuildChildren();
-}
-
-SiteAccessMenuItemView::~SiteAccessMenuItemView() = default;
-
-void SiteAccessMenuItemView::Update() {
-  view_controller()->UpdateState();
-
-  content::WebContents* web_contents =
-      browser_->tab_strip_model()->GetActiveWebContents();
-  if (!web_contents)
-    return;
-  int index = site_access_combobox_model_->GetCurrentSiteAccessIndex();
-  site_access_combobox_->SetSelectedIndex(index);
-}
-
-void SiteAccessMenuItemView::SetSiteAccessComboboxVisible(bool visibility) {
-  site_access_combobox_->SetVisible(visibility);
-}
-
-void SiteAccessMenuItemView::OnComboboxSelectionChanged() {
-  site_access_combobox_model_->HandleSelection(
-      site_access_combobox_->GetSelectedIndex().value());
-}
 
 InstalledExtensionMenuItemView::InstalledExtensionMenuItemView(
     Browser* browser,
@@ -335,9 +268,6 @@ void InstalledExtensionMenuItemView::OnPinButtonPressed() {
 bool InstalledExtensionMenuItemView::IsContextMenuRunningForTesting() const {
   return context_menu_controller_->IsMenuRunning();
 }
-
-BEGIN_METADATA(SiteAccessMenuItemView, views::View)
-END_METADATA
 
 BEGIN_METADATA(InstalledExtensionMenuItemView, views::View)
 END_METADATA
