@@ -272,6 +272,10 @@ void MediaRouterMojoImpl::CreateRoute(const MediaSource::Id& source_id,
   }
 }
 
+// TODO(crbug.com/1418747): The auto-join and/or "mirroring to flinging"
+// features result in multiple presentations with identical presentation IDs
+// of "auto-join".  This is a latent bug because the rest of the code assumes
+// presentation IDs are unique.
 void MediaRouterMojoImpl::JoinRoute(const MediaSource::Id& source_id,
                                     const std::string& presentation_id,
                                     const url::Origin& origin,

@@ -51,27 +51,6 @@ constexpr char kHistogramSessionLengthOffscreenTab[] =
 constexpr char kHistogramSessionLengthTab[] =
     "MediaRouter.CastStreaming.Session.Length.Tab";
 
-class MockCastSessionTrackerObserver : public CastSessionTracker::Observer {
- public:
-  MockCastSessionTrackerObserver() = default;
-  ~MockCastSessionTrackerObserver() override = default;
-
-  MOCK_METHOD(void,
-              OnSessionAddedOrUpdated,
-              (const MediaSinkInternal& sink, const CastSession& session));
-  MOCK_METHOD(void, OnSessionRemoved, (const MediaSinkInternal& sink));
-  MOCK_METHOD(void,
-              OnMediaStatusUpdated,
-              (const MediaSinkInternal& sink,
-               const base::Value::Dict& media_status,
-               absl::optional<int> request_id));
-  MOCK_METHOD(void,
-              OnSourceChanged,
-              (const std::string& media_route_id,
-               int old_frame_tree_node_id,
-               int frame_tree_node_id));
-};
-
 class MockMirroringServiceHostFactory
     : public mirroring::MirroringServiceHostFactory {
  public:
@@ -134,7 +113,7 @@ class MirroringActivityTest
     route.set_presentation_id(kPresentationId);
     activity_ = std::make_unique<MirroringActivity>(
         route, kAppId, &message_handler_, &session_tracker_, frame_tree_node_id,
-        cast_data, on_stop_.Get());
+        cast_data, on_stop_.Get(), on_source_changed_.Get());
 
     activity_->CreateMojoBindings(&media_router_);
     activity_->CreateMirroringServiceHost(&mirroring_service_host_factory_);
@@ -167,6 +146,7 @@ class MirroringActivityTest
   NiceMock<MockMirroringServiceHostFactory> mirroring_service_host_factory_;
   NiceMock<MockMojoMediaRouter> media_router_;
   base::MockCallback<MirroringActivity::OnStopCallback> on_stop_;
+  base::MockCallback<OnSourceChangedCallback> on_source_changed_;
   std::unique_ptr<MirroringActivity> activity_;
 };
 
@@ -466,14 +446,11 @@ TEST_F(MirroringActivityTest, SendMessageToClient) {
 
 TEST_F(MirroringActivityTest, OnSourceChanged) {
   MakeActivity();
-  MockCastSessionTrackerObserver session_tracker_observer_;
-  session_tracker_.AddObserver(&session_tracker_observer_);
 
   // A random int indicating the new tab source.
   const int new_tab_source = 3;
 
-  EXPECT_CALL(session_tracker_observer_,
-              OnSourceChanged(kRouteId, kFrameTreeNodeId, new_tab_source));
+  EXPECT_CALL(on_source_changed_, Run(kFrameTreeNodeId, new_tab_source));
 
   EXPECT_CALL(*mirroring_service_, GetTabSourceId())
       .WillOnce(testing::Return(new_tab_source));
@@ -481,8 +458,8 @@ TEST_F(MirroringActivityTest, OnSourceChanged) {
   EXPECT_EQ(activity_->frame_tree_node_id_, kFrameTreeNodeId);
   activity_->OnSourceChanged();
   EXPECT_EQ(activity_->frame_tree_node_id_, new_tab_source);
+  RunUntilIdle();
   testing::Mock::VerifyAndClearExpectations(mirroring_service_);
-  testing::Mock::VerifyAndClearExpectations(&session_tracker_observer_);
 
   // Nothing should happen as no value was returned for tab source.
   EXPECT_CALL(*mirroring_service_, GetTabSourceId())

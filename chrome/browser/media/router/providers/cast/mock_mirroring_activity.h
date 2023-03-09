@@ -14,7 +14,8 @@ class MockMirroringActivity : public MirroringActivity {
  public:
   MockMirroringActivity(const MediaRoute& route,
                         const std::string& app_id,
-                        OnStopCallback on_stop);
+                        OnStopCallback on_stop,
+                        OnSourceChangedCallback on_source_changed);
   ~MockMirroringActivity() override;
 
   MOCK_METHOD(void, CreateMojoBindings, (mojom::MediaRouter * media_router));

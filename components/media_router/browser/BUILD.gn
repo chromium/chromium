@@ -88,6 +88,8 @@ source_set("browser") {
       "logger_impl.h",
       "media_router_debugger.cc",
       "media_router_debugger.h",
+      "mirroring_to_flinging_switcher.cc",
+      "mirroring_to_flinging_switcher.h",
       "presentation/presentation_navigation_policy.cc",
       "presentation/presentation_navigation_policy.h",
     ]
@@ -145,6 +147,7 @@ source_set("unit_tests") {
       "issue_manager_unittest.cc",
       "logger_impl_unittest.cc",
       "media_router_debugger_unittest.cc",
+      "mirroring_to_flinging_switcher_unittest.cc",
     ]
   }
 }

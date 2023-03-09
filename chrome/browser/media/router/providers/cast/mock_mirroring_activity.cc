@@ -6,16 +6,19 @@
 
 namespace media_router {
 
-MockMirroringActivity::MockMirroringActivity(const MediaRoute& route,
-                                             const std::string& app_id,
-                                             OnStopCallback on_stop)
+MockMirroringActivity::MockMirroringActivity(
+    const MediaRoute& route,
+    const std::string& app_id,
+    OnStopCallback on_stop,
+    OnSourceChangedCallback on_source_changed)
     : MirroringActivity(route,
                         app_id,
                         nullptr,
                         nullptr,
                         0,
                         CastSinkExtraData(),
-                        std::move(on_stop)) {}
+                        std::move(on_stop),
+                        std::move(on_source_changed)) {}
 
 MockMirroringActivity::~MockMirroringActivity() = default;
 

@@ -78,11 +78,6 @@ class MockCastSessionObserver : public CastSessionTracker::Observer {
               (const MediaSinkInternal& sink,
                const base::Value::Dict& media_status,
                absl::optional<int> request_id));
-  MOCK_METHOD(void,
-              OnSourceChanged,
-              (const std::string& media_route_id,
-               int old_frame_tree_node_id,
-               int frame_tree_node_id));
 };
 
 class CastSessionTrackerTest : public testing::Test {

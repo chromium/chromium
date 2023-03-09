@@ -31,6 +31,10 @@ class AppActivity;
 class MirroringActivity;
 class CastSessionTracker;
 
+using OnSourceChangedCallback =
+    base::RepeatingCallback<void(int old_frame_tree_node_id,
+                                 int frame_tree_node_id)>;
+
 class CastActivityFactoryForTest {
  public:
   virtual std::unique_ptr<AppActivity> MakeAppActivity(
@@ -39,7 +43,8 @@ class CastActivityFactoryForTest {
   virtual std::unique_ptr<MirroringActivity> MakeMirroringActivity(
       const MediaRoute& route,
       const std::string& app_id,
-      base::OnceClosure on_stop) = 0;
+      base::OnceClosure on_stop,
+      OnSourceChangedCallback on_source_changed) = 0;
 };
 
 class CastActivity {

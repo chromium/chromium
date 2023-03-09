@@ -51,7 +51,8 @@ class MirroringActivity : public CastActivity,
                     CastSessionTracker* session_tracker,
                     int frame_tree_node_id,
                     const CastSinkExtraData& cast_data,
-                    OnStopCallback callback);
+                    OnStopCallback callback,
+                    OnSourceChangedCallback source_changed_callback);
   ~MirroringActivity() override;
 
   virtual void CreateMojoBindings(mojom::MediaRouter* media_router);
@@ -150,6 +151,7 @@ class MirroringActivity : public CastActivity,
   int frame_tree_node_id_;
   const CastSinkExtraData cast_data_;
   OnStopCallback on_stop_;
+  OnSourceChangedCallback source_changed_callback_;
   base::WeakPtrFactory<MirroringActivity> weak_ptr_factory_{this};
 };
 

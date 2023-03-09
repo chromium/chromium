@@ -27,9 +27,8 @@
 #include "chrome/browser/media/router/providers/cast/cast_activity_manager.h"
 #include "chrome/browser/media/router/providers/cast/cast_internal_message_util.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/media_router/browser/media_router.h"
-#include "components/media_router/browser/media_router_factory.h"
-#include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
+#include "components/media_router/browser/media_router_debugger.h"
+#include "components/media_router/browser/mirroring_to_flinging_switcher.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
 #include "components/media_router/common/providers/cast/channel/cast_message_util.h"
@@ -37,11 +36,7 @@
 #include "components/media_router/common/providers/cast/channel/enum_table.h"
 #include "components/media_router/common/route_request_result.h"
 #include "components/mirroring/mojom/session_parameters.mojom.h"
-#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
-#include "content/public/browser/presentation_request.h"
-#include "content/public/browser/web_contents.h"
 #include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -151,42 +146,6 @@ bool ShouldForceLetterboxing(base::StringPiece model_name) {
   return model_name.find("Nest Hub") != base::StringPiece::npos;
 }
 
-void AutoSwitchToFlingingIfNeeded(const std::string& sink_id,
-                                  int frame_tree_node_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  auto* web_contents =
-      content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
-  if (!web_contents)
-    return;
-
-  base::WeakPtr<WebContentsPresentationManager>
-      web_contents_presentation_manager =
-          WebContentsPresentationManager::Get(web_contents);
-  if (!web_contents_presentation_manager ||
-      !web_contents_presentation_manager->HasDefaultPresentationRequest()) {
-    return;
-  }
-
-  auto* media_router = MediaRouterFactory::GetApiForBrowserContextIfExists(
-      web_contents->GetBrowserContext());
-  if (!media_router)
-    return;
-
-  const auto& presentation_request =
-      web_contents_presentation_manager->GetDefaultPresentationRequest();
-  const auto source_id =
-      MediaSource::ForPresentationUrl(presentation_request.presentation_urls[0])
-          .id();
-  bool incognito = web_contents->GetBrowserContext()->IsOffTheRecord();
-  media_router->JoinRoute(
-      source_id, kAutoJoinPresentationId, presentation_request.frame_origin,
-      web_contents,
-      base::BindOnce(&WebContentsPresentationManager::OnPresentationResponse,
-                     std::move(web_contents_presentation_manager),
-                     presentation_request),
-      base::TimeDelta(), incognito);
-}
-
 bool IsRtcpReportingEnabled(int frame_tree_node_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto* debugger = MediaRouterDebugger::GetForFrameTreeNode(frame_tree_node_id);
@@ -203,12 +162,14 @@ MirroringActivity::MirroringActivity(
     CastSessionTracker* session_tracker,
     int frame_tree_node_id,
     const CastSinkExtraData& cast_data,
-    OnStopCallback callback)
+    OnStopCallback callback,
+    OnSourceChangedCallback source_changed_callback)
     : CastActivity(route, app_id, message_handler, session_tracker),
       mirroring_type_(GetMirroringType(route)),
       frame_tree_node_id_(frame_tree_node_id),
       cast_data_(cast_data),
-      on_stop_(std::move(callback)) {}
+      on_stop_(std::move(callback)),
+      source_changed_callback_(std::move(source_changed_callback)) {}
 
 MirroringActivity::~MirroringActivity() {
   if (!did_start_mirroring_timestamp_) {
@@ -370,20 +331,17 @@ void MirroringActivity::LogErrorMessage(const std::string& message) {
 void MirroringActivity::OnSourceChanged() {
   DCHECK(host_);
   absl::optional<int> frame_tree_node_id = host_->GetTabSourceId();
-  if (!frame_tree_node_id || frame_tree_node_id == frame_tree_node_id_) {
+  if (!source_changed_callback_ || !frame_tree_node_id ||
+      frame_tree_node_id == frame_tree_node_id_) {
     return;
   }
 
-  session_tracker_->OnSourceChanged(route_.media_route_id(),
-                                    frame_tree_node_id_, *frame_tree_node_id);
+  source_changed_callback_.Run(frame_tree_node_id_, *frame_tree_node_id);
   frame_tree_node_id_ = *frame_tree_node_id;
 
-  // Posting to UI thread, as while obtaining WebContents instance through
-  // `FromFrameTreeNodeId()`, a call to `GloballyFindByID()` would happen and
-  // that is only allowed on UI thread.
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&AutoSwitchToFlingingIfNeeded,
-                                route_.media_sink_id(), frame_tree_node_id_));
+      FROM_HERE,
+      base::BindOnce(&SwitchToFlingingIfPossible, frame_tree_node_id_));
 }
 
 void MirroringActivity::OnMessage(mirroring::mojom::CastMessagePtr message) {

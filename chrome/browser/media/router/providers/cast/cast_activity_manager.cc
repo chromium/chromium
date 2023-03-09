@@ -541,12 +541,17 @@ CastActivity* CastActivityManager::AddMirroringActivity(
   auto on_stop =
       base::BindOnce(&CastActivityManager::OnActivityStopped,
                      weak_ptr_factory_.GetWeakPtr(), route.media_route_id());
-  auto activity = cast_activity_factory_for_test_
-                      ? cast_activity_factory_for_test_->MakeMirroringActivity(
-                            route, app_id, std::move(on_stop))
-                      : std::make_unique<MirroringActivity>(
-                            route, app_id, message_handler_, session_tracker_,
-                            frame_tree_node_id, cast_data, std::move(on_stop));
+  auto on_source_changed = base::BindRepeating(
+      &CastActivityManager::OnSourceChanged, weak_ptr_factory_.GetWeakPtr(),
+      route.media_route_id());
+  auto activity =
+      cast_activity_factory_for_test_
+          ? cast_activity_factory_for_test_->MakeMirroringActivity(
+                route, app_id, std::move(on_stop), std::move(on_source_changed))
+          : std::make_unique<MirroringActivity>(
+                route, app_id, message_handler_, session_tracker_,
+                frame_tree_node_id, cast_data, std::move(on_stop),
+                std::move(on_source_changed));
   activity->CreateMojoBindings(media_router_);
   activity->CreateMirroringServiceHost();
   auto* const activity_ptr = activity.get();
@@ -666,6 +671,7 @@ void CastActivityManager::OnMediaStatusUpdated(
 void CastActivityManager::OnSourceChanged(const std::string& media_route_id,
                                           int old_frame_tree_node_id,
                                           int frame_tree_node_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto current_it = routes_by_frame_.find(old_frame_tree_node_id);
   if (current_it == routes_by_frame_.end() ||
       current_it->second != media_route_id) {

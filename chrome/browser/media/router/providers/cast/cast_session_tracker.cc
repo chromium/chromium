@@ -55,15 +55,6 @@ CastSession* CastSessionTracker::GetSessionById(
   return it != sessions_by_sink_id_.end() ? it->second.get() : nullptr;
 }
 
-void CastSessionTracker::OnSourceChanged(const std::string& media_route_id,
-                                         int old_frame_tree_node_id,
-                                         int frame_tree_node_id) {
-  for (auto& observer : observers_) {
-    observer.OnSourceChanged(media_route_id, old_frame_tree_node_id,
-                             frame_tree_node_id);
-  }
-}
-
 CastSessionTracker::CastSessionTracker(
     MediaSinkServiceBase* media_sink_service,
     cast_channel::CastMessageHandler* message_handler,
