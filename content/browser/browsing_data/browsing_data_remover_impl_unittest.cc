@@ -225,11 +225,6 @@ class StoragePartitionRemovalTestStoragePartition
     std::move(callback).Run();
   }
 
-  void ClearDataForAllBuckets(const blink::StorageKey& storage_key,
-                              base::OnceClosure callback) override {
-    std::move(callback).Run();
-  }
-
  private:
   std::vector<StoragePartitionRemovalData> storage_partition_removal_data_;
   network::TestNetworkContext network_context_;
@@ -1839,50 +1834,20 @@ TEST_F(BrowsingDataRemoverImplTest, RemoveStorageBucketsAndReply) {
 
    public:
     void RemoveBuckets() {
+      auto storage_key =
+          blink::StorageKey::CreateFromStringForTesting("https://example.com");
+
+      std::set<std::string> buckets{"drafts"};
+      StoragePartitionRemovalTestStoragePartition storage_partition;
       TestBrowserContext browser_context;
       BrowsingDataRemoverImpl remover =
           BrowsingDataRemoverImpl(&browser_context);
-
-      StoragePartitionRemovalTestStoragePartition storage_partition;
-      std::set<std::string> buckets{"drafts"};
-      auto storage_key =
-          blink::StorageKey::CreateFromStringForTesting("https://example.com");
 
       remover.OverrideStoragePartitionForTesting(&storage_partition);
       remover.RemoveStorageBucketsAndReply(
           storage_key, buckets,
           base::BindOnce(&TestObserver::OnBrowsingDataRemoverDone,
                          base::Unretained(this), 0));
-    }
-
-   public:
-    ~TestObserver() override = default;
-  };
-
-  TestObserver observer;
-  observer.RemoveBuckets();
-}
-
-TEST_F(BrowsingDataRemoverImplTest, RemoveAllStorageBucketsAndReply) {
-  class TestObserver : public BrowsingDataRemover::Observer {
-    void OnBrowsingDataRemoverDone(uint64_t failed_data_types) override {
-      EXPECT_EQ(failed_data_types, 0U);
-    }
-
-   public:
-    void RemoveBuckets() {
-      TestBrowserContext browser_context;
-      BrowsingDataRemoverImpl remover =
-          BrowsingDataRemoverImpl(&browser_context);
-
-      StoragePartitionRemovalTestStoragePartition storage_partition;
-      auto storage_key =
-          blink::StorageKey::CreateFromStringForTesting("https://example.com");
-
-      remover.OverrideStoragePartitionForTesting(&storage_partition);
-      remover.RemoveAllStorageBucketsAndReply(
-          storage_key, base::BindOnce(&TestObserver::OnBrowsingDataRemoverDone,
-                                      base::Unretained(this), 0));
     }
 
    public:
