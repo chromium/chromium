@@ -125,6 +125,11 @@ int ContentPasswordManagerDriver::GetId() const {
   return id_;
 }
 
+int ContentPasswordManagerDriver::GetFrameId() const {
+  // Use the associated FrameTreeNode ID as the Frame ID.
+  return render_frame_host_->GetFrameTreeNodeId();
+}
+
 void ContentPasswordManagerDriver::SetPasswordFillData(
     const autofill::PasswordFormFillData& form_data) {
   password_autofill_manager_.OnAddPasswordFillData(form_data);

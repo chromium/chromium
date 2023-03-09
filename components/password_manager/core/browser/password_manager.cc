@@ -1016,7 +1016,7 @@ void PasswordManager::OnPasswordFormsRendered(
       driver &&
 #endif
       !driver->IsInPrimaryMainFrame() &&
-      submitted_manager->driver_id() != driver->GetId()) {
+      submitted_manager->GetFrameId() != driver->GetFrameId()) {
     // Frames different from the main frame and the frame of the submitted form
     // are unlikely relevant to success of submission.
     return;
