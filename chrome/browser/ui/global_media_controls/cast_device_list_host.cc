@@ -163,7 +163,9 @@ void CastDeviceListHost::OnCastingStarted() {
 void CastDeviceListHost::StartCasting(const media_router::UIMediaSink& sink) {
   auto cast_mode = GetPreferredCastMode(sink.cast_modes, sink.icon_type);
   if (!cast_mode) {
-    NOTREACHED() << "Cast mode is not supported.";
+    // The UI calls this method asynchronously over Mojo, so by the time this
+    // gets called it's possible for the set of Cast modes to no longer be
+    // valid.
     return;
   }
   cast_controller_->StartCasting(sink.id, cast_mode.value());
