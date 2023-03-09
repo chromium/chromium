@@ -2138,51 +2138,22 @@ std::string PersonalDataManager::SaveImportedIBAN(IBAN& imported_iban) {
   return AddIBAN(imported_iban);
 }
 
-void PersonalDataManager::LogStoredProfileMetrics() const {
-  if (!has_logged_stored_profile_metrics_) {
-    autofill_metrics::LogStoredProfileMetrics(GetProfiles());
-    // Only log this info once per Chrome user profile load.
-    has_logged_stored_profile_metrics_ = true;
+void PersonalDataManager::LogStoredDataMetrics() const {
+  if (has_logged_stored_data_metrics_) {
+    return;
   }
-}
+  // Only log this info once per Chrome user profile load.
+  has_logged_stored_data_metrics_ = true;
 
-void PersonalDataManager::LogStoredCreditCardMetrics() const {
-  if (!has_logged_stored_credit_card_metrics_) {
-    AutofillMetrics::LogStoredCreditCardMetrics(
-        local_credit_cards_, server_credit_cards_,
-        GetServerCardWithArtImageCount(), kDisusedDataModelTimeDelta);
-
-    // Only log this info once per Chrome user profile load.
-    has_logged_stored_credit_card_metrics_ = true;
-  }
-}
-
-void PersonalDataManager::LogStoredIbanMetrics() const {
-  if (!has_logged_stored_iban_metrics_) {
-    autofill_metrics::LogStoredIbanMetrics(local_ibans_,
-                                           kDisusedDataModelTimeDelta);
-
-    // Only log this info once per Chrome user profile load.
-    has_logged_stored_iban_metrics_ = true;
-  }
-}
-
-void PersonalDataManager::LogStoredOfferMetrics() const {
-  if (!has_logged_stored_offer_metrics_) {
-    autofill_metrics::LogStoredOfferMetrics(autofill_offer_data_);
-    // Only log this info once per Chrome user profile load.
-    has_logged_stored_offer_metrics_ = true;
-  }
-}
-
-void PersonalDataManager::LogStoredVirtualCardUsageMetrics() const {
-  if (!has_logged_stored_virtual_card_usage_metrics_) {
-    autofill_metrics::LogStoredVirtualCardUsageCount(
-        autofill_virtual_card_usage_data_.size());
-
-    // Only log this info once per chrome user profile load.
-    has_logged_stored_virtual_card_usage_metrics_ = true;
-  }
+  autofill_metrics::LogStoredProfileMetrics(GetProfiles());
+  AutofillMetrics::LogStoredCreditCardMetrics(
+      local_credit_cards_, server_credit_cards_,
+      GetServerCardWithArtImageCount(), kDisusedDataModelTimeDelta);
+  autofill_metrics::LogStoredIbanMetrics(local_ibans_,
+                                         kDisusedDataModelTimeDelta);
+  autofill_metrics::LogStoredOfferMetrics(autofill_offer_data_);
+  autofill_metrics::LogStoredVirtualCardUsageCount(
+      autofill_virtual_card_usage_data_.size());
 }
 
 std::string PersonalDataManager::MostCommonCountryCodeFromProfiles() const {

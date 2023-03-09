@@ -710,24 +710,8 @@ class PersonalDataManager : public KeyedService,
   void CancelPendingServerQuery(WebDataServiceBase::Handle* handle);
 
   // The first time this is called, logs a UMA metrics about the user's autofill
-  // addresses. On subsequent calls, does nothing.
-  void LogStoredProfileMetrics() const;
-
-  // The first time this is called, logs an UMA metric about the user's autofill
-  // credit cards. On subsequent calls, does nothing.
-  void LogStoredCreditCardMetrics() const;
-
-  // The first time this is called, logs an UMA metric about the user's autofill
-  // IBANs. On subsequent calls, does nothing.
-  void LogStoredIbanMetrics() const;
-
-  // The first time this is called, logs UMA metrics about the users's autofill
-  // offer data. On subsequent calls, does nothing.
-  void LogStoredOfferMetrics() const;
-
-  // The first time this is called, logs UMA metrics about the users's autofill
-  // virtual card usage data. On subsequent calls, does nothing.
-  void LogStoredVirtualCardUsageMetrics() const;
+  // addresses, credit card, offer and IBAN. On subsequent calls, does nothing.
+  void LogStoredDataMetrics() const;
 
   // Whether the server cards are enabled and should be suggested to the user.
   virtual bool ShouldSuggestServerCards() const;
@@ -978,21 +962,9 @@ class PersonalDataManager : public KeyedService,
   // Default value is false.
   bool is_off_the_record_ = false;
 
-  // Whether we have already logged the stored profile metrics this session.
-  mutable bool has_logged_stored_profile_metrics_ = false;
-
-  // Whether we have already logged the stored credit card metrics this session.
-  mutable bool has_logged_stored_credit_card_metrics_ = false;
-
-  // Whether we have already logged the stored IBAN metrics this session.
-  mutable bool has_logged_stored_iban_metrics_ = false;
-
-  // Whether we have already logged the stored offer metrics this session.
-  mutable bool has_logged_stored_offer_metrics_ = false;
-
-  // Whether we have already logged the stored virtual card usage metrics this
-  // session.
-  mutable bool has_logged_stored_virtual_card_usage_metrics_ = false;
+  // Whether we have already logged the stored profile, credit card, IBAN, offer
+  // and virtual card usage metrics this session.
+  mutable bool has_logged_stored_data_metrics_ = false;
 
   // An observer to listen for changes to prefs::kAutofillCreditCardEnabled.
   std::unique_ptr<BooleanPrefMember> credit_card_enabled_pref_;
