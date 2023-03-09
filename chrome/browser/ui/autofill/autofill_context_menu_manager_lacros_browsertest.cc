@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_test.h"
@@ -54,6 +55,9 @@ class AutofillContextMenuManagerFeedbackUILacrosBrowserTest
   std::unique_ptr<TestRenderViewContextMenu> render_view_context_menu_;
   std::unique_ptr<AutofillContextMenuManager> autofill_context_menu_manager_;
   base::test::ScopedFeatureList feature_;
+
+ private:
+  test::AutofillBrowserTestEnvironment autofill_test_environment_;
 };
 
 IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUILacrosBrowserTest,

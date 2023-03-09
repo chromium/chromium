@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "content/public/browser/web_contents.h"
@@ -93,6 +94,9 @@ class PopupBaseViewBrowsertest : public InProcessBrowserTest {
  protected:
   testing::NiceMock<MockAutofillPopupViewDelegate> mock_delegate_;
   raw_ptr<PopupBaseView> view_ = nullptr;
+
+ private:
+  test::AutofillBrowserTestEnvironment autofill_test_environment_;
 };
 
 IN_PROC_BROWSER_TEST_F(PopupBaseViewBrowsertest, CorrectBoundsTest) {

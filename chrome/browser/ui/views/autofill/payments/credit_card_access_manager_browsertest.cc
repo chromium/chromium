@@ -86,6 +86,7 @@ class CreditCardAccessManagerBrowserTest : public InProcessBrowserTest {
   }
 
  private:
+  test::AutofillBrowserTestEnvironment autofill_test_environment_;
   TestAutofillManagerInjector<TestAutofillManager> autofill_manager_injector_;
 };
 
