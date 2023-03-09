@@ -178,10 +178,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
                               ErrorCallback error_callback,
                               DBusResult<Void> ret);
 
-  using WeaklyOwnedConnectCallback =
-      WeaklyOwnedCallback<absl::optional<ConnectErrorCode>>;
-  std::unique_ptr<WeaklyOwnedConnectCallback>
-      pending_callback_on_connect_profiles_;
+  absl::optional<ConnectCallback> pending_callback_on_connect_profiles_ =
+      absl::nullopt;
 
   absl::optional<base::OnceClosure> pending_callback_on_init_props_ =
       absl::nullopt;
