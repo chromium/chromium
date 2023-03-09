@@ -375,10 +375,12 @@ void PaymentHandlerWebFlowViewController::PopulateSheetHeaderView(
         /*tooltip_text=*/l10n_util::GetStringUTF16(IDS_PAYMENT_HANDLER_ICON)));
     app_icon_view->SetID(
         static_cast<int>(DialogViewID::PAYMENT_APP_HEADER_ICON));
+    // TODO(crbug.com/1422991): If the downloaded app icon was a vector image,
+    // see if we can store and rasterize it here instead of at download time.
     float adjusted_width =
-        base::checked_cast<float>(icon_bitmap->width()) *
+        icon_bitmap->width() *
         (IconSizeCalculator::kPaymentAppDeviceIndependentIdealIconHeight /
-         icon_bitmap->height());
+         base::checked_cast<float>(icon_bitmap->height()));
     app_icon_view->SetImageSize(gfx::Size(
         adjusted_width,
         IconSizeCalculator::kPaymentAppDeviceIndependentIdealIconHeight));

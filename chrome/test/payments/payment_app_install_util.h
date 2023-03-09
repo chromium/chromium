@@ -20,6 +20,7 @@ class PaymentAppInstallUtil {
   enum class IconInstall {
     kWithIcon,
     kWithoutIcon,
+    kWithLargeIcon,
   };
 
   // Install the payment app specified by `hostname`, e.g., "a.com".
