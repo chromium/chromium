@@ -3062,6 +3062,9 @@ extern const char kEnableFakeKeyboardHeuristicDescription[];
 extern const char kEnableNeuralStylusPalmRejectionName[];
 extern const char kEnableNeuralStylusPalmRejectionDescription[];
 
+extern const char kEnableEdgeDetectionName[];
+extern const char kEnableEdgeDetectionDescription[];
+
 extern const char kEnableOsFeedbackName[];
 extern const char kEnableOsFeedbackDescription[];
 

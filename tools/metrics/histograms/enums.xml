@@ -60920,6 +60920,7 @@ from previous Chrome versions.
   <int value="-582300629" label="UserNotes:enabled"/>
   <int value="-581236612" label="ConnectivityDiagnosticsWebUi:disabled"/>
   <int value="-580897686" label="SharedHighlightingAmp:enabled"/>
+  <int value="-579897981" label="EnableEdgeDetection:enabled"/>
   <int value="-579656054" label="CCTResizableSideSheetForThirdParties:enabled"/>
   <int value="-579192400" label="disable-input-view"/>
   <int value="-577982497" label="CupsPrintersUiOverhaul:enabled"/>
@@ -64986,6 +64987,7 @@ from previous Chrome versions.
   <int value="1722748383" label="EnableAppReinstallZeroState:disabled"/>
   <int value="1723601083" label="enable-app-window-controls"/>
   <int value="1724247189" label="StylusHandwriting:enabled"/>
+  <int value="1724706885" label="EnableEdgeDetection:disabled"/>
   <int value="1724800383" label="AsmJsToWebAssembly:disabled"/>
   <int value="1725438666" label="NewStyleNotifications:enabled"/>
   <int value="1729369067" label="StartSurfaceDisabledFeedImprovement:disabled"/>

@@ -6683,6 +6683,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableNeuralStylusPalmRejectionDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ui::kEnableNeuralPalmDetectionFilter)},
 
+    {"enable-edge-detection", flag_descriptions::kEnableEdgeDetectionName,
+     flag_descriptions::kEnableEdgeDetectionDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ui::kEnableEdgeDetection)},
+
     {"enable-os-feedback", flag_descriptions::kEnableOsFeedbackName,
      flag_descriptions::kEnableOsFeedbackDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kOsFeedback)},
