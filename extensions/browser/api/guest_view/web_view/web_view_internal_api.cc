@@ -1072,7 +1072,7 @@ uint32_t WebViewInternalClearDataFunction::GetRemovalMask() {
   }
 
   uint32_t remove_mask = 0;
-  for (const auto kv : args()[2].DictItems()) {
+  for (const auto kv : args()[2].GetDict()) {
     if (!kv.second.is_bool()) {
       bad_message_ = true;
       return 0;

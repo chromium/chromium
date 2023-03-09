@@ -492,7 +492,7 @@ bool BrowsingDataRemoveFunction::GetRemovalMask(uint64_t* removal_mask) {
     return false;
 
   *removal_mask = 0;
-  for (const auto kv : args()[1].DictItems()) {
+  for (const auto kv : args()[1].GetDict()) {
     if (!kv.second.is_bool())
       return false;
     if (kv.second.GetBool())

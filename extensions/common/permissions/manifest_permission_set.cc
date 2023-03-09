@@ -69,8 +69,8 @@ bool ManifestPermissionSet::ParseFromJSON(
     // Permission `value` should be a string or a single key dict.
     if (value.is_string()) {
       permission_name = value.GetString();
-    } else if (value.is_dict() && value.DictSize() == 1u) {
-      auto dict_iter = value.DictItems().begin();
+    } else if (value.is_dict() && value.GetDict().size() == 1u) {
+      auto dict_iter = value.GetDict().begin();
       permission_name = dict_iter->first;
       permission_value = &dict_iter->second;
     } else {

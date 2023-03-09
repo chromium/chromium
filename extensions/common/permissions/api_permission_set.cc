@@ -154,8 +154,9 @@ bool APIPermissionSet::ParseFromJSON(
     // permission should be a string or a single key dict.
     if (permissions[i].is_string()) {
       permission_str = permissions[i].GetString();
-    } else if (permissions[i].is_dict() && permissions[i].DictSize() == 1) {
-      auto dict_iter = permissions[i].DictItems().begin();
+    } else if (permissions[i].is_dict() &&
+               permissions[i].GetDict().size() == 1) {
+      auto dict_iter = permissions[i].GetDict().begin();
       permission_str = dict_iter->first;
       permission_value = &dict_iter->second;
     } else {
