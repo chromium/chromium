@@ -274,6 +274,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
                            browserContainerViewController:container_
                                       keyCommandsProvider:key_commands_provider_
                                              dependencies:dependencies];
+    bvc_.webUsageEnabled = YES;
 
     id NTPCoordinator_ =
         [[NewTabPageCoordinator alloc] initWithBrowser:browser_.get()];

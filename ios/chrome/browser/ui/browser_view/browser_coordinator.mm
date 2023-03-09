@@ -238,6 +238,9 @@ enum class ToolbarKind {
 // Whether the coordinator is started.
 @property(nonatomic, assign, getter=isStarted) BOOL started;
 
+// Whether web usage is enabled for the WebStates in `self.browser`.
+@property(nonatomic, assign, getter=isWebUsageEnabled) BOOL webUsageEnabled;
+
 // Handles command dispatching, provided by the Browser instance.
 @property(nonatomic, weak) CommandDispatcher* dispatcher;
 
@@ -479,8 +482,9 @@ enum class ToolbarKind {
 - (void)stop {
   if (!self.started)
     return;
-  [super stop];
 
+  self.started = NO;
+  [super stop];
   self.active = NO;
   [self uninstallDelegatesForBrowserState];
   [self uninstallDelegatesForBrowser];
@@ -490,7 +494,6 @@ enum class ToolbarKind {
   [self stopChildCoordinators];
   [self destroyViewController];
   [self destroyViewControllerDependencies];
-  self.started = NO;
 }
 
 #pragma mark - Public
@@ -521,9 +524,7 @@ enum class ToolbarKind {
         ->GetForBrowserState(browserState)
         ->SetEnabled(active);
   }
-
-  // TODO(crbug.com/1272516): Update the WebUsageEnablerBrowserAgent as part of
-  // setting active/inactive.
+  self.webUsageEnabled = active;
   self.viewController.active = active;
 
   // Stop the NTP on web usage toggle. This happens when clearing browser
@@ -587,6 +588,16 @@ enum class ToolbarKind {
 
 #pragma mark - Private
 
+- (void)setWebUsageEnabled:(BOOL)webUsageEnabled {
+  if (!self.browser->GetBrowserState() || !self.started) {
+    return;
+  }
+  WebUsageEnablerBrowserAgent::FromBrowser(self.browser)
+      ->SetWebUsageEnabled(webUsageEnabled);
+  _webUsageEnabled = webUsageEnabled;
+  self.viewController.webUsageEnabled = webUsageEnabled;
+}
+
 // Displays activity overlay.
 - (void)showActivityOverlay {
   self.activityOverlayCoordinator = [[ActivityOverlayCoordinator alloc]
@@ -638,8 +649,8 @@ enum class ToolbarKind {
 
 // Shuts down the BrowserViewController.
 - (void)destroyViewController {
-  // TODO(crbug.com/1272516): Set the WebUsageEnablerBrowserAgent to disabled.
   self.viewController.active = NO;
+  self.viewController.webUsageEnabled = NO;
 
   // TODO(crbug.com/1415244): Remove when BVC will no longer handle commands.
   [self.dispatcher stopDispatchingToTarget:self.viewController];
@@ -2372,13 +2383,10 @@ enum class ToolbarKind {
   WebStateList* webStateList = self.browser->GetWebStateList();
   DCHECK_NE(webStateList->GetIndexOfWebState(webState),
             WebStateList::kInvalidIndex);
-  BOOL isWebUsageEnabled =
-      self.browser->GetBrowserState() && self.started &&
-      WebUsageEnablerBrowserAgent::FromBrowser(self.browser)
-          ->IsWebUsageEnabled();
 
-  if (!isWebUsageEnabled || webState != webStateList->GetActiveWebState())
+  if (!self.webUsageEnabled || webState != webStateList->GetActiveWebState()) {
     return @[];
+  }
 
   NSMutableArray<UIView*>* overlays = [NSMutableArray array];
 

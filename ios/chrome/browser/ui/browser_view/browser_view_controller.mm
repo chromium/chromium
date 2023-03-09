@@ -327,8 +327,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 @property(nonatomic, strong) IncognitoReauthView* blockingView;
 // Whether the controller is currently dismissing a presented view controller.
 @property(nonatomic, assign, getter=isDismissingModal) BOOL dismissingModal;
-// Whether web usage is enabled for the WebStates in `self.browser`.
-@property(nonatomic, assign, getter=isWebUsageEnabled) BOOL webUsageEnabled;
 // Whether a new tab animation is occurring.
 @property(nonatomic, assign, getter=isInNewTabAnimation) BOOL inNewTabAnimation;
 // Whether BVC prefers to hide the status bar. This value is used to determine
@@ -634,22 +632,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   }
 }
 
-// TODO(crbug.com/1272516): Change webUsageEnabled to be a regular BOOL ivar.
-- (BOOL)isWebUsageEnabled {
-  return self.browserState && !_isShutdown &&
-         WebUsageEnablerBrowserAgent::FromBrowser(self.browser)
-             ->IsWebUsageEnabled();
-}
-
-// TODO(crbug.com/1272516): Change webUsageEnabled to be a regular BOOL ivar.
-// BrowserCoordinator should update the WebUsageEnablerBrowserAgent.
-- (void)setWebUsageEnabled:(BOOL)webUsageEnabled {
-  if (!self.browserState || _isShutdown)
-    return;
-  WebUsageEnablerBrowserAgent::FromBrowser(self.browser)
-      ->SetWebUsageEnabled(webUsageEnabled);
-}
-
 - (void)setInNewTabAnimation:(BOOL)inNewTabAnimation {
   if (_inNewTabAnimation == inNewTabAnimation)
     return;
@@ -859,7 +841,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   }
   _active = active;
 
-  self.webUsageEnabled = active;
   [self updateBroadcastState];
 
   if (active) {
@@ -1151,8 +1132,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   // If the controller is suspended, or has been paged out due to low memory,
   // updating the view will be handled when it's displayed again.
-  if (!self.webUsageEnabled || !self.contentArea)
+  if (!self.webUsageEnabled || !self.contentArea) {
     return;
+  }
   // Update the displayed WebState (if any; the switcher may not have created
   // one yet) in case it changed while showing the switcher.
   if (self.currentWebState)
@@ -3077,8 +3059,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   }
   // Do nothing if browsing is currently suspended.  The BVC will set everything
   // up correctly when browsing resumes.
-  if (!self.visible || !self.webUsageEnabled)
+  if (!self.visible || !self.webUsageEnabled) {
     return;
+  }
 
   self.inNewTabAnimation = YES;
   __weak __typeof(self) weakSelf = self;

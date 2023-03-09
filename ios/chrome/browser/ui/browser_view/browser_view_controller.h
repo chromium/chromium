@@ -137,6 +137,9 @@ typedef struct {
 // text to speech is playing.
 @property(nonatomic, assign, readonly, getter=isPlayingTTS) BOOL playingTTS;
 
+// Whether web usage is enabled for the WebStates in `self.browser`.
+@property(nonatomic) BOOL webUsageEnabled;
+
 // The container used for infobar banner overlays.
 @property(nonatomic, strong)
     UIViewController* infobarBannerOverlayContainerViewController;
