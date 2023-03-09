@@ -1082,6 +1082,10 @@ policies:
   1081: DeviceSystemAecEnabled
   1082: HttpAllowlist
   1083: HttpsUpgradesEnabled
+  1084: ''
+  1085: ''
+  1086: CredentialProviderPromoEnabled
+
 atomic_groups:
   1: Homepage
   2: RemoteAccess

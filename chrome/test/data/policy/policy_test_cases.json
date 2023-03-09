@@ -22291,5 +22291,8 @@
         }
       }
     ]
+  },
+  "CredentialProviderPromoEnabled" : {
+    "reason_for_missing_test": "Maps into an iOS-specific pref"
   }
 }

@@ -65,7 +65,10 @@ NSString* const kLearnMoreAnimation = @"CPE_promo_animation_edu_how_to_enable";
           prefs::kIosCredentialProviderPromoStopPromo) ||
       (promoSeenInCurrentSession &&
        trigger != CredentialProviderPromoTrigger::RemindMeLater);
+  BOOL policyEnabled = GetApplicationContext()->GetLocalState()->GetBoolean(
+      prefs::kIosCredentialProviderPromoPolicyEnabled);
   return !impressionLimitMet && IsCredentialProviderExtensionPromoEnabled() &&
+         policyEnabled &&
          !password_manager_util::IsCredentialProviderEnabledOnStartup(
              self.prefService);
 }
