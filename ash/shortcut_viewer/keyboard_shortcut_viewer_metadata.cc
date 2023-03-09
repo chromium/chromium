@@ -1416,19 +1416,17 @@ const std::vector<ash::KeyboardShortcutItem>& GetKeyboardShortcutItemList() {
       item_list->emplace_back(toggle_all_desks_shortcut);
     }
 
-    if (ash::features::IsCalendarViewEnabled()) {
-      const ash::KeyboardShortcutItem toggle_calendar = {
-          // |categories|
-          {ShortcutCategory::kSystemAndDisplay},
-          IDS_KSV_DESCRIPTION_TOGGLE_CALENDAR,
-          {},
-          // |accelerator_ids|
-          {},
-          // |shortcut_key_codes|
-          {{ui::VKEY_COMMAND, ui::VKEY_UNKNOWN, ui::VKEY_C}}};
+    const ash::KeyboardShortcutItem toggle_calendar = {
+        // |categories|
+        {ShortcutCategory::kSystemAndDisplay},
+        IDS_KSV_DESCRIPTION_TOGGLE_CALENDAR,
+        {},
+        // |accelerator_ids|
+        {},
+        // |shortcut_key_codes|
+        {{ui::VKEY_COMMAND, ui::VKEY_UNKNOWN, ui::VKEY_C}}};
 
-      item_list->emplace_back(toggle_calendar);
-    }
+    item_list->emplace_back(toggle_calendar);
 
     for (auto& item : *item_list) {
       if (item.shortcut_key_codes.empty() && !item.accelerator_ids.empty()) {
@@ -1444,15 +1442,17 @@ const std::vector<ash::KeyboardShortcutItem>& GetKeyboardShortcutItemList() {
             // ui::VKEY_UNKNOWN is used as a separator and will be shown as a
             // highlighted "+" sign between the bubble views and the rest of the
             // text.
-            if (!item.shortcut_key_codes.empty())
+            if (!item.shortcut_key_codes.empty()) {
               item.shortcut_key_codes.push_back(ui::VKEY_UNKNOWN);
+            }
             item.shortcut_key_codes.push_back(GetKeyCodeForModifier(modifier));
           }
         }
         // For non grouped accelerators, we need to populate the key as well.
         if (item.accelerator_ids.size() == 1) {
-          if (!item.shortcut_key_codes.empty())
+          if (!item.shortcut_key_codes.empty()) {
             item.shortcut_key_codes.push_back(ui::VKEY_UNKNOWN);
+          }
           item.shortcut_key_codes.push_back(accelerator_id.keycode);
         }
       }

@@ -489,10 +489,6 @@ bool CanSwapPrimaryDisplay() {
   return display::Screen::GetScreen()->GetNumDisplays() > 1;
 }
 
-bool CanToggleCalendar() {
-  return features::IsCalendarViewEnabled();
-}
-
 bool CanToggleDictation() {
   return Shell::Get()->accessibility_controller()->dictation().enabled();
 }

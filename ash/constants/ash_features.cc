@@ -286,10 +286,6 @@ BASE_FEATURE(kBorealisStorageBallooning,
              "BorealisStorageBallooning",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable or disable calendar view from the system tray. Also enables the system
-// tray to show date in the shelf when the screen is sufficiently large.
-BASE_FEATURE(kCalendarView, "CalendarView", base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable or disable debug mode for CalendarModel.
 BASE_FEATURE(kCalendarModelDebugMode,
              "CalendarModelDebugMode",
@@ -2374,10 +2370,6 @@ bool IsBentoBarEnabled() {
 
 bool IsBluetoothQualityReportEnabled() {
   return base::FeatureList::IsEnabled(kBluetoothQualityReport);
-}
-
-bool IsCalendarViewEnabled() {
-  return base::FeatureList::IsEnabled(kCalendarView);
 }
 
 bool IsCalendarModelDebugModeEnabled() {

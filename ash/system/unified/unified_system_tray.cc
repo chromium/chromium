@@ -175,10 +175,9 @@ bool UnifiedSystemTray::UiDelegate::ShowMessageCenter() {
 void UnifiedSystemTray::UiDelegate::HideMessageCenter() {}
 
 UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
-    : TrayBackgroundView(
-          shelf,
-          TrayBackgroundViewCatalogName::kUnifiedSystem,
-          (features::IsCalendarViewEnabled() ? kEndRounded : kAllRounded)),
+    : TrayBackgroundView(shelf,
+                         TrayBackgroundViewCatalogName::kUnifiedSystem,
+                         kEndRounded),
       ui_delegate_(std::make_unique<UiDelegate>(this)),
       model_(base::MakeRefCounted<UnifiedSystemTrayModel>(shelf)),
       slider_bubble_controller_(

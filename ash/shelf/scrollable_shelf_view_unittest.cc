@@ -91,10 +91,12 @@ class InkDropAnimationWaiter : public views::InkDropObserver {
   void InkDropRippleAnimationEnded(
       views::InkDropState ink_drop_state) override {
     if (ink_drop_state != views::InkDropState::ACTIVATED &&
-        ink_drop_state != views::InkDropState::HIDDEN)
+        ink_drop_state != views::InkDropState::HIDDEN) {
       return;
-    if (run_loop_.get())
+    }
+    if (run_loop_.get()) {
       run_loop_->Quit();
+    }
   }
 
   views::Button* button_ = nullptr;
@@ -159,8 +161,9 @@ class ScrollableShelfViewTest : public ShelfTestBase {
   void AddAppShortcutsUntilRightArrowIsShown() {
     ASSERT_FALSE(scrollable_shelf_view_->right_arrow()->GetVisible());
 
-    while (!scrollable_shelf_view_->right_arrow()->GetVisible())
+    while (!scrollable_shelf_view_->right_arrow()->GetVisible()) {
       AddAppShortcut();
+    }
   }
 
   void CheckFirstAndLastTappableIconsBounds() {
@@ -256,8 +259,9 @@ TEST_F(ScrollableShelfViewTest, CorrectUIAfterDisplayRotationShortToLong) {
   // Adds enough app icons so that after display rotation the scrollable
   // shelf is still in overflow mode.
   const int num = display.bounds().height() / shelf_view_->GetButtonSize();
-  for (int i = 0; i < num; i++)
+  for (int i = 0; i < num; i++) {
     AddAppShortcut();
+  }
 
   // Because the display's height is greater than the display's width,
   // the scrollable shelf is in overflow mode before display rotation.
@@ -572,8 +576,9 @@ TEST_P(ScrollableShelfViewRTLTest, DragIconToNewPage) {
 // (https://crbug.com/1035596).
 TEST_P(ScrollableShelfViewRTLTest, CheckTappableIndicesOnSecondDisplay) {
   constexpr size_t icon_number = 5;
-  for (size_t i = 0; i < icon_number; i++)
+  for (size_t i = 0; i < icon_number; i++) {
     AddAppShortcut();
+  }
 
   // Adds the second display.
   UpdateDisplay("600x800,600x800");
@@ -597,8 +602,9 @@ TEST_P(ScrollableShelfViewRTLTest, CheckTappableIndicesOnSecondDisplay) {
 // after switching to tablet mode (https://crbug.com/1017979).
 TEST_P(ScrollableShelfViewRTLTest, CorrectUIAfterSwitchingToTablet) {
   // Add enough app shortcuts to ensure that at least three pages of icons show.
-  for (int i = 0; i < 25; i++)
+  for (int i = 0; i < 25; i++) {
     AddAppShortcut();
+  }
   ASSERT_EQ(ScrollableShelfView::kShowRightArrowButton,
             scrollable_shelf_view_->layout_strategy_for_test());
 
@@ -658,8 +664,9 @@ TEST_P(ScrollableShelfViewRTLTest, CorrectUIAfterSwitchingToTablet) {
 TEST_P(ScrollableShelfViewRTLTest, CorrectUIInTabletWithoutOverflow) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
 
-  for (int i = 0; i < 3; i++)
+  for (int i = 0; i < 3; i++) {
     AddAppShortcut();
+  }
   ASSERT_EQ(ScrollableShelfView::kNotShowArrowButtons,
             scrollable_shelf_view_->layout_strategy_for_test());
 
@@ -1215,8 +1222,9 @@ TEST_P(ScrollableShelfViewRTLTest, FeedbackForAppPinning) {
             scrollable_shelf_view_->layout_strategy_for_test());
 
   // Pins the icons of running apps to the shelf.
-  for (size_t i = 0; i < 2 * num; i++)
+  for (size_t i = 0; i < 2 * num; i++) {
     AddAppShortcut(ShelfItemType::TYPE_APP);
+  }
 
   {
     ShelfID shelf_id = AddAppShortcut();
@@ -1242,22 +1250,21 @@ class ScrollableShelfViewWithAppScalingTest : public ScrollableShelfViewTest {
   ~ScrollableShelfViewWithAppScalingTest() override = default;
 
   void SetUp() override {
-    // When the calendar view is enabled, the status widget's bounds could vary
-    // under different dates. For example, "June 10" is longer than "June 9".
+    // With the calendar view, the status widget's bounds could vary under
+    // different dates. For example, "June 10" is longer than "June 9".
     // Therefore, the code below sets the constant date to avoid flakiness.
-    if (features::IsCalendarViewEnabled()) {
-      scoped_locale_ =
-          std::make_unique<base::test::ScopedRestoreICUDefaultLocale>("en_US"),
-      time_zone_ = std::make_unique<base::test::ScopedRestoreDefaultTimezone>(
-          "America/Chicago");
 
-      constexpr char kFakeNowTimeString[] = "Sunday, 5 June 2022 14:30:00 CDT";
-      ASSERT_TRUE(base::Time::FromString(kFakeNowTimeString,
-                                         &TimeOverrideHelper::current_time));
-      time_override_ = std::make_unique<base::subtle::ScopedTimeClockOverrides>(
-          &TimeOverrideHelper::TimeNow, /*time_ticks_override=*/nullptr,
-          /*thread_ticks_override=*/nullptr);
-    }
+    scoped_locale_ =
+        std::make_unique<base::test::ScopedRestoreICUDefaultLocale>("en_US"),
+    time_zone_ = std::make_unique<base::test::ScopedRestoreDefaultTimezone>(
+        "America/Chicago");
+
+    constexpr char kFakeNowTimeString[] = "Sunday, 5 June 2022 14:30:00 CDT";
+    ASSERT_TRUE(base::Time::FromString(kFakeNowTimeString,
+                                       &TimeOverrideHelper::current_time));
+    time_override_ = std::make_unique<base::subtle::ScopedTimeClockOverrides>(
+        &TimeOverrideHelper::TimeNow, /*time_ticks_override=*/nullptr,
+        /*thread_ticks_override=*/nullptr);
 
     ScrollableShelfViewTest::SetUp();
 
@@ -1306,10 +1313,8 @@ class ScrollableShelfViewWithAppScalingTest : public ScrollableShelfViewTest {
 // its children's sizes if there is insufficient space for shelf buttons to show
 // without scrolling.
 TEST_F(ScrollableShelfViewWithAppScalingTest, AppScalingBasics) {
-  if (features::IsCalendarViewEnabled())
-    PopulateAppShortcut(kAppCountWithShowingDateTray);
-  else
-    PopulateAppShortcut(kAppCount);
+  PopulateAppShortcut(kAppCountWithShowingDateTray);
+
   HotseatWidget* hotseat_widget =
       GetPrimaryShelf()->shelf_widget()->hotseat_widget();
   EXPECT_EQ(HotseatDensity::kNormal, hotseat_widget->target_hotseat_density());
@@ -1352,10 +1357,8 @@ TEST_F(ScrollableShelfViewWithAppScalingTest, AppScalingBasics) {
 // Verifies that app scaling works as expected with hotseat state transition.
 TEST_F(ScrollableShelfViewWithAppScalingTest,
        VerifyWithHotseatStateTransition) {
-  if (features::IsCalendarViewEnabled())
-    PopulateAppShortcut(kAppCountWithShowingDateTray);
-  else
-    PopulateAppShortcut(kAppCount);
+  PopulateAppShortcut(kAppCountWithShowingDateTray);
+
   HotseatWidget* hotseat_widget =
       GetPrimaryShelf()->shelf_widget()->hotseat_widget();
   EXPECT_EQ(HotseatDensity::kNormal, hotseat_widget->target_hotseat_density());

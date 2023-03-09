@@ -4972,12 +4972,6 @@ const char kCalendarJellyName[] = "Enable Calendar Jelly features";
 const char kCalendarJellyDescription[] =
     "Enables Jelly changes for the sys tray Calendar views.";
 
-const char kCalendarViewName[] =
-    "Productivity experiment: Monthly Calendar View";
-const char kCalendarViewDescription[] =
-    "Show Monthly Calendar View with Google Calendar events to increase "
-    "productivity by helping users view their schedules more quickly.";
-
 const char kCaptureModeDemoToolsName[] =
     "Enable demo tools feature in screen capture";
 const char kCaptureModeDemoToolsDescription[] =

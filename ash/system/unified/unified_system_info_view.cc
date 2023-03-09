@@ -118,9 +118,6 @@ DateView::DateView(UnifiedSystemTrayController* controller)
   Update();
 
   Shell::Get()->system_tray_model()->clock()->AddObserver(this);
-  if (!features::IsCalendarViewEnabled())
-    SetEnabled(
-        Shell::Get()->system_tray_model()->clock()->IsSettingsAvailable());
   SetInstallFocusRingOnFocus(true);
   views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
@@ -141,7 +138,7 @@ void DateView::OnButtonPressed(const ui::Event& event) {
   quick_settings_metrics_util::RecordQsButtonActivated(
       QsButtonCatalogName::kDateViewButton);
 
-  if (features::IsCalendarViewEnabled() && controller_->IsExpanded()) {
+  if (controller_->IsExpanded()) {
     controller_->ShowCalendarView(
         calendar_metrics::CalendarViewShowSource::kDateView,
         calendar_metrics::GetEventType(event));
@@ -155,13 +152,10 @@ void DateView::Update() {
   base::Time now = base::Time::Now();
   label_->SetText(l10n_util::GetStringFUTF16(
       IDS_ASH_STATUS_TRAY_DATE, FormatDayOfWeek(now), FormatDate(now)));
-  if (features::IsCalendarViewEnabled()) {
-    SetAccessibleName(l10n_util::GetStringFUTF16(
-        IDS_ASH_CALENDAR_ENTRY_ACCESSIBLE_DESCRIPTION,
-        TimeFormatFriendlyDateAndTime(now)));
-  } else {
-    SetAccessibleName(TimeFormatFriendlyDateAndTime(now));
-  }
+
+  SetAccessibleName(
+      l10n_util::GetStringFUTF16(IDS_ASH_CALENDAR_ENTRY_ACCESSIBLE_DESCRIPTION,
+                                 TimeFormatFriendlyDateAndTime(now)));
 }
 
 gfx::Insets DateView::GetInsets() const {
@@ -202,8 +196,9 @@ class ManagementPowerDateComboView : public views::View {
       separator_view_->SetPreferredLength(kUnifiedSystemInfoHeight);
 
       const bool use_smart_charging_ui = UseSmartChargingUI();
-      if (use_smart_charging_ui)
+      if (use_smart_charging_ui) {
         AddChildView(std::make_unique<BatteryIconView>(controller));
+      }
       AddChildView(std::make_unique<BatteryLabelView>(controller,
                                                       use_smart_charging_ui));
     }

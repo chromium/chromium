@@ -680,7 +680,7 @@ bool AcceleratorControllerImpl::CanPerformAction(
           accelerator, previous_accelerator,
           accelerator_history_->currently_pressed_keys());
     case TOGGLE_CALENDAR:
-      return accelerators::CanToggleCalendar();
+      return true;
     case TOGGLE_CAPS_LOCK:
       return CanHandleToggleCapsLock(
           accelerator, previous_accelerator,

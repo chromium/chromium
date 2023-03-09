@@ -162,8 +162,9 @@ class AsyncContextMenuShelfItemDelegate : public ShelfItemDelegate {
 
   bool RunPendingContextMenuCallback(
       std::unique_ptr<ui::SimpleMenuModel> model) {
-    if (pending_context_menu_callback_.is_null())
+    if (pending_context_menu_callback_.is_null()) {
       return false;
+    }
     std::move(pending_context_menu_callback_).Run(std::move(model));
     return true;
   }
@@ -392,8 +393,9 @@ class ShelfViewTest : public AshTestBase {
     // Set a delegate; some tests require one to select the item.
     model_->ReplaceShelfItemDelegate(
         item.id, std::make_unique<ShelfItemSelectionTracker>());
-    if (wait_for_animations)
+    if (wait_for_animations) {
       test_api_->RunMessageLoopUntilAnimationsDone();
+    }
     return item.id;
   }
   ShelfID AddAppShortcut() { return AddItem(TYPE_PINNED_APP, true); }
@@ -527,8 +529,9 @@ class ShelfViewTest : public AshTestBase {
     if (progressively) {
       int sgn = dist_x > 0 ? 1 : -1;
       dist_x = abs(dist_x);
-      for (; dist_x; dist_x -= std::min(10, dist_x))
+      for (; dist_x; dist_x -= std::min(10, dist_x)) {
         DoDrag(sgn * std::min(10, abs(dist_x)), 0, button, pointer, to);
+      }
     } else {
       DoDrag(dist_x, dist_y, button, pointer, to);
     }
@@ -550,12 +553,14 @@ class ShelfViewTest : public AshTestBase {
       ContinueDrag(button, pointer, button_index, destination_index, false);
     } else if (button_index < destination_index) {
       for (int cur_index = button_index + 1; cur_index <= destination_index;
-           cur_index++)
+           cur_index++) {
         ContinueDrag(button, pointer, cur_index - 1, cur_index, true);
+      }
     } else if (button_index > destination_index) {
       for (int cur_index = button_index - 1; cur_index >= destination_index;
-           cur_index--)
+           cur_index--) {
         ContinueDrag(button, pointer, cur_index + 1, cur_index, true);
+      }
     }
     return button;
   }
@@ -1318,8 +1323,9 @@ TEST_P(LtrRtlShelfViewTest, ShouldHideTooltipTest) {
   // The tooltip shouldn't hide if the mouse is on normal buttons.
   for (size_t i = 0; i < test_api_->GetButtonCount(); i++) {
     ShelfAppButton* button = test_api_->GetButton(i);
-    if (!button)
+    if (!button) {
       continue;
+    }
     EXPECT_FALSE(shelf_view_->ShouldHideTooltip(
         button->GetMirroredBounds().CenterPoint()))
         << "ShelfView tries to hide on button " << i;
@@ -1332,11 +1338,13 @@ TEST_P(LtrRtlShelfViewTest, ShouldHideTooltipTest) {
   int right = 0;
   for (size_t i = 0; i < test_api_->GetButtonCount(); ++i) {
     ShelfAppButton* button = test_api_->GetButton(i);
-    if (!button)
+    if (!button) {
       continue;
+    }
     right = button->GetBoundsInScreen().x();
-    if (right > left)
+    if (right > left) {
       break;
+    }
   }
 
   gfx::Point test_point(left + (right - left) / 2,
@@ -1358,8 +1366,9 @@ TEST_P(LtrRtlShelfViewTest, ShouldHideTooltipTest) {
   gfx::Rect all_area;
   for (size_t i = 0; i < test_api_->GetButtonCount(); i++) {
     ShelfAppButton* button = test_api_->GetButton(i);
-    if (!button)
+    if (!button) {
       continue;
+    }
 
     all_area.Union(button->GetMirroredBounds());
   }
@@ -1382,8 +1391,9 @@ TEST_P(LtrRtlShelfViewTest, ShouldHideTooltipWithAppListWindowTest) {
   // The tooltip shouldn't hide if the mouse is on normal buttons.
   for (size_t i = 2; i < test_api_->GetButtonCount(); i++) {
     ShelfAppButton* button = test_api_->GetButton(i);
-    if (!button)
+    if (!button) {
       continue;
+    }
 
     EXPECT_FALSE(shelf_view_->ShouldHideTooltip(
         button->GetMirroredBounds().CenterPoint()))
@@ -2526,11 +2536,13 @@ class ShelfViewVisibleBoundsTest : public ShelfViewTest,
     gfx::Rect visible_bounds = shelf_view_->GetVisibleItemsBoundsInScreen();
     gfx::Rect shelf_bounds = shelf_view_->GetBoundsInScreen();
     EXPECT_TRUE(shelf_bounds.Contains(visible_bounds));
-    for (size_t i = 0; i < test_api_->GetButtonCount(); ++i)
+    for (size_t i = 0; i < test_api_->GetButtonCount(); ++i) {
       if (ShelfAppButton* button = test_api_->GetButton(i)) {
-        if (button->GetVisible())
+        if (button->GetVisible()) {
           EXPECT_TRUE(visible_bounds.Contains(button->GetBoundsInScreen()));
+        }
       }
+    }
   }
 
  private:
@@ -3256,13 +3268,10 @@ TEST_F(ShelfViewFocusTest, FocusCyclingBetweenShelfAndStatusWidget) {
   ExpectNotFocused(shelf_view_);
   ExpectFocused(status_area_);
 
-  // If calendar view is enabled, move the focusing ring from the date tray to
-  // the unified tray.
-  if (features::IsCalendarViewEnabled()) {
-    DoTab();
-    ExpectNotFocused(shelf_view_);
-    ExpectFocused(status_area_);
-  }
+  // Move the focusing ring from the date tray to the unified tray.
+  DoTab();
+  ExpectNotFocused(shelf_view_);
+  ExpectFocused(status_area_);
 
   // And keep going forward, now we should be cycling back to the first shelf
   // element.
@@ -3287,13 +3296,10 @@ TEST_F(ShelfViewFocusTest, UnfocusWithEsc) {
   ExpectNotFocused(shelf_view_);
   ExpectFocused(status_area_);
 
-  // If calendar view is enabled, move the focusing ring from the unified tray
-  // to the date tray.
-  if (features::IsCalendarViewEnabled()) {
-    DoShiftTab();
-    ExpectNotFocused(shelf_view_);
-    ExpectFocused(status_area_);
-  }
+  // Move the focusing ring from the unified tray to the date tray.
+  DoShiftTab();
+  ExpectNotFocused(shelf_view_);
+  ExpectFocused(status_area_);
 
   // Advance backwards to the last element of the shelf.
   DoShiftTab();
@@ -3559,8 +3565,9 @@ INSTANTIATE_TEST_SUITE_P(
 
 // Exercises the party animation.
 TEST_P(ShelfPartyTest, PartyAnimation) {
-  for (int i = 0; i < 16; ++i)
+  for (int i = 0; i < 16; ++i) {
     AddAppShortcut();
+  }
   model_->ToggleShelfParty();
   task_environment()->FastForwardBy(base::Seconds(2));
   model_->ToggleShelfParty();

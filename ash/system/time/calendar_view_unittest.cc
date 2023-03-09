@@ -95,8 +95,9 @@ class CalendarViewTest : public AshTestBase {
     for (const auto* child_view : month->children()) {
       auto* current_date_cell =
           static_cast<const views::LabelButton*>(child_view);
-      if (day != current_date_cell->GetText())
+      if (day != current_date_cell->GetText()) {
         continue;
+      }
 
       date_cell = current_date_cell;
       break;
@@ -667,14 +668,17 @@ TEST_F(CalendarViewTest,
   const int scroll_up_count = 10;
   const int scroll_down_count = scroll_up_count - 1;
   // Scroll up.
-  for (int i = 0; i < scroll_up_count; ++i)
+  for (int i = 0; i < scroll_up_count; ++i) {
     ScrollUpOneMonth();
+  }
   // Return to today.
-  for (int i = 0; i < scroll_up_count; ++i)
+  for (int i = 0; i < scroll_up_count; ++i) {
     ScrollDownOneMonth();
+  }
   // Scroll down from today.
-  for (int i = 0; i < scroll_down_count; ++i)
+  for (int i = 0; i < scroll_down_count; ++i) {
     ScrollDownOneMonth();
+  }
 
   DestroyCalendarViewWidget();
 
@@ -711,8 +715,9 @@ class DateCellFocusChangeListener : public views::FocusChangeListener {
                          views::View* focused_now) override {}
   void OnDidChangeFocus(views::View* focused_before,
                         views::View* focused_now) override {
-    if (found_)
+    if (found_) {
       return;
+    }
 
     steps_taken_++;
     found_ = static_cast<const views::LabelButton*>(focused_now)->GetText() ==
@@ -1389,8 +1394,9 @@ class CalendarViewAnimationTest : public AshTestBase {
     for (const auto* child_view : month->children()) {
       auto* current_date_cell =
           static_cast<const views::LabelButton*>(child_view);
-      if (day != current_date_cell->GetText())
+      if (day != current_date_cell->GetText()) {
         continue;
+      }
 
       date_cell = current_date_cell;
       break;
@@ -2074,8 +2080,8 @@ class CalendarViewWithMessageCenterTest : public AshTestBase {
 
   void SetUp() override {
     scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitWithFeatures(
-        {features::kCalendarView, features::kNotificationsRefresh}, {});
+    scoped_feature_list_->InitWithFeatures({features::kNotificationsRefresh},
+                                           {});
     AshTestBase::SetUp();
   }
 
@@ -2123,8 +2129,9 @@ class CalendarViewWithMessageCenterTest : public AshTestBase {
     while ((current_focusable_view =
                 message_center_focus_manager()->GetNextFocusableView(
                     current_focusable_view, widget, /*reverse=*/false,
-                    /*dont_loop=*/true)))
+                    /*dont_loop=*/true))) {
       count++;
+    }
     return count;
   }
 
@@ -2166,8 +2173,9 @@ TEST_F(CalendarViewWithMessageCenterTest,
   PressTab();
 
   // Keep tabbing until exiting the message center.
-  for (int i = 0; i < number_of_focusable_views_in_message_center; i++)
+  for (int i = 0; i < number_of_focusable_views_in_message_center; i++) {
     PressTab();
+  }
 
   // The "back to today" `PillButton` is the first focused view.
   EXPECT_STREQ(calendar_focus_manager()->GetFocusedView()->GetClassName(),
@@ -2177,8 +2185,9 @@ TEST_F(CalendarViewWithMessageCenterTest,
   PressShiftTab();
 
   // Keep tabbing backwards until exiting the message center.
-  for (int i = 0; i < number_of_focusable_views_in_message_center; i++)
+  for (int i = 0; i < number_of_focusable_views_in_message_center; i++) {
     PressShiftTab();
+  }
 
   // Today's date cell should be focused now.
   EXPECT_EQ(current_date_cell_view, calendar_focus_manager()->GetFocusedView());
@@ -2195,8 +2204,7 @@ class CalendarViewWithJellyEnabledTest : public CalendarViewTest {
 
   void SetUp() override {
     scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitWithFeatures(
-        {features::kCalendarView, features::kCalendarJelly}, {});
+    scoped_feature_list_->InitWithFeatures({features::kCalendarJelly}, {});
     CalendarViewTest::SetUp();
   }
 
