@@ -68,6 +68,10 @@ declare_args() {
   # recommended to enable PA-E above, but isn't strictly necessary. Embedders
   # can create and use PA partitions explicitly.
   enable_pointer_compression_support = false
+
+  # Enables a bounds check when two pointers (at least one being raw_ptr) are
+  # subtracted (if supported by the underlying implementation).
+  enable_pointer_subtraction_check = false
 }
 
 declare_args() {
@@ -204,6 +208,7 @@ if (!use_partition_alloc) {
   enable_backup_ref_ptr_slow_checks = false
   enable_dangling_raw_ptr_checks = false
   enable_dangling_raw_ptr_perf_experiment = false
+  enable_pointer_subtraction_check = false
   backup_ref_ptr_poison_oob_ptr = false
   use_starscan = false
 }

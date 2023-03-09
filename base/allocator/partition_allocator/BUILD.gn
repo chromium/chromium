@@ -433,6 +433,7 @@ buildflag_header("partition_alloc_buildflags") {
     "ENABLE_DANGLING_RAW_PTR_CHECKS=$enable_dangling_raw_ptr_checks",
     "ENABLE_DANGLING_RAW_PTR_FEATURE_FLAG=$enable_dangling_raw_ptr_feature_flag",
     "ENABLE_DANGLING_RAW_PTR_PERF_EXPERIMENT=$enable_dangling_raw_ptr_perf_experiment",
+    "ENABLE_POINTER_SUBTRACTION_CHECK=$enable_pointer_subtraction_check",
     "BACKUP_REF_PTR_POISON_OOB_PTR=$backup_ref_ptr_poison_oob_ptr",
     "PUT_REF_COUNT_IN_PREVIOUS_SLOT=$put_ref_count_in_previous_slot",
     "USE_ASAN_BACKUP_REF_PTR=$use_asan_backup_ref_ptr",

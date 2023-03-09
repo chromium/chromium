@@ -365,8 +365,10 @@ struct RawPtrBackupRefImpl {
     if (partition_alloc::internal::base::is_constant_evaluated()) {
       return wrapped_ptr1 - wrapped_ptr2;
     }
+
     T* unpoisoned_ptr1 = UnpoisonPtr(wrapped_ptr1);
     T* unpoisoned_ptr2 = UnpoisonPtr(wrapped_ptr2);
+#if BUILDFLAG(ENABLE_POINTER_SUBTRACTION_CHECK)
     if (partition_alloc::internal::base::is_constant_evaluated()) {
       return unpoisoned_ptr1 - unpoisoned_ptr2;
     }
@@ -382,6 +384,7 @@ struct RawPtrBackupRefImpl {
     } else {
       PA_BASE_CHECK(!IsSupportedAndNotNull(address2));
     }
+#endif  // BUILDFLAG(ENABLE_POINTER_SUBTRACTION_CHECK)
     return unpoisoned_ptr1 - unpoisoned_ptr2;
   }
 

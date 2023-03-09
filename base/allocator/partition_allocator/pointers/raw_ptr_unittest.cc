@@ -1657,7 +1657,7 @@ void RunBackupRefPtrImplAdvanceTest(
   **protected_arr_ptr = 4;
   protected_arr_ptr++;
   EXPECT_DEATH_IF_SUPPORTED(** protected_arr_ptr = 4, "");
-#endif
+#endif  // BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
 
   allocator.root()->Free(ptr);
 }
@@ -1736,6 +1736,7 @@ TEST_F(BackupRefPtrTest, GetDeltaElems) {
             checked_cast<ptrdiff_t>(requested_size));
   EXPECT_EQ(protected_ptr1 - protected_ptr1_4,
             -checked_cast<ptrdiff_t>(requested_size));
+#if BUILDFLAG(ENABLE_POINTER_SUBTRACTION_CHECK)
   EXPECT_CHECK_DEATH(protected_ptr2 - protected_ptr1);
   EXPECT_CHECK_DEATH(protected_ptr1 - protected_ptr2);
   EXPECT_CHECK_DEATH(protected_ptr2 - protected_ptr1_4);
@@ -1744,6 +1745,7 @@ TEST_F(BackupRefPtrTest, GetDeltaElems) {
   EXPECT_CHECK_DEATH(protected_ptr1 - protected_ptr2_2);
   EXPECT_CHECK_DEATH(protected_ptr2_2 - protected_ptr1_4);
   EXPECT_CHECK_DEATH(protected_ptr1_4 - protected_ptr2_2);
+#endif  // BUILDFLAG(ENABLE_POINTER_SUBTRACTION_CHECK)
   EXPECT_EQ(protected_ptr2_2 - protected_ptr2, 1);
   EXPECT_EQ(protected_ptr2 - protected_ptr2_2, -1);
 
@@ -1973,7 +1975,8 @@ TEST_F(BackupRefPtrTest, RawPtrDeleteWithoutExtractAsDangling) {
 #else
   allocator_.root()->Free(ptr.get());
   ptr = nullptr;
-#endif
+#endif  // BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS) && \
+        // !BUILDFLAG(ENABLE_DANGLING_RAW_PTR_PERF_EXPERIMENT)
 }
 
 TEST_F(BackupRefPtrTest, SpatialAlgoCompat) {
@@ -1990,14 +1993,14 @@ TEST_F(BackupRefPtrTest, SpatialAlgoCompat) {
       reinterpret_cast<int*>(allocator_.root()->Alloc(requested_size, ""));
   int* ptr_end = ptr + requested_elements;
 
-  RawPtrCountingImpl::ClearCounters();
-
   CountingRawPtr<int> protected_ptr = ptr;
   CountingRawPtr<int> protected_ptr_end = protected_ptr + requested_elements;
 
 #if BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
   EXPECT_DEATH_IF_SUPPORTED(*protected_ptr_end = 1, "");
 #endif
+
+  RawPtrCountingImpl::ClearCounters();
 
   int gen_val = 1;
   std::generate(protected_ptr, protected_ptr_end, [&gen_val]() {

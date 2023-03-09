@@ -481,6 +481,8 @@ struct MTECheckedPtrImpl {
     if (partition_alloc::internal::base::is_constant_evaluated()) {
       return wrapped_ptr1 - wrapped_ptr2;
     }
+
+#if BUILDFLAG(ENABLE_POINTER_SUBTRACTION_CHECK)
     // Ensure that both pointers come from the same allocation.
     //
     // Disambiguation: UntagPtr removes the hardware MTE tag, whereas this
@@ -497,6 +499,7 @@ struct MTECheckedPtrImpl {
       PA_BASE_CHECK(tag1 == tag2);
       return wrapped_ptr1 - wrapped_ptr2;
     }
+#endif  // BUILDFLAG(ENABLE_POINTER_SUBTRACTION_CHECK)
 
     // If one or the other arg come untagged, we have to perform the
     // subtraction entirely without tags.
@@ -1093,11 +1096,13 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   }
 
   // Do not disable operator+() and operator-().
-  // They provide OOB checks. Keep them enabled, which may be blocked later when
-  // attempting to apply the += or -= operation, when disabled. In the absence
-  // of operators +/-, the compiler is free to implicitly convert to the
-  // underlying T* representation and perform ordinary pointer arithmetic, thus
-  // invalidating the purpose behind disabling them.
+  // They provide OOB checks, which prevent from assigning an arbitrary value to
+  // raw_ptr, leading BRP to modifying arbitrary memory thinking it's ref-count.
+  // Keep them enabled, which may be blocked later when attempting to apply the
+  // += or -= operation, when disabled. In the absence of operators +/-, the
+  // compiler is free to implicitly convert to the underlying T* representation
+  // and perform ordinary pointer arithmetic, thus invalidating the purpose
+  // behind disabling them.
   template <typename Z>
   friend constexpr PA_ALWAYS_INLINE raw_ptr operator+(const raw_ptr& p,
                                                       Z delta_elems) {
