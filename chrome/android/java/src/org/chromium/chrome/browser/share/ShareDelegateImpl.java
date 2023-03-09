@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.printing.TabPrinter;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.share.android_share_sheet.AndroidShareSheetController;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextHelper;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetCoordinator;
 import org.chromium.chrome.browser.tab.SadTab;
@@ -286,9 +287,8 @@ public class ShareDelegateImpl implements ShareDelegate {
             } else {
                 RecordHistogram.recordEnumeratedHistogram(
                         "Sharing.DefaultSharesheetAndroid.Opened", shareOrigin, ShareOrigin.COUNT);
-                // Profile can be null here since it is checked later on before being used.
-                ShareHelper.shareWithSystemShareSheetUi(
-                        params, profile, chromeShareExtras.saveLastUsed());
+                AndroidShareSheetController.showShareSheet(params, chromeShareExtras, controller,
+                        tabProvider, tabModelSelectorSupplier, profileSupplier, printCallback);
             }
         }
     }

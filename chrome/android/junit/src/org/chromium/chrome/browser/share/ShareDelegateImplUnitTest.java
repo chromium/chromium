@@ -4,8 +4,9 @@
 
 package org.chromium.chrome.browser.share;
 
+import android.app.Activity;
+
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -15,6 +16,7 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -33,8 +35,10 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.share.ShareDelegateImpl.ShareSheetDelegate;
+import org.chromium.chrome.browser.share.ShareDelegateImplUnitTest.ShadowAndroidShareSheetController;
 import org.chromium.chrome.browser.share.ShareDelegateImplUnitTest.ShadowShareHelper;
 import org.chromium.chrome.browser.share.ShareDelegateImplUnitTest.ShadowShareSheetCoordinator;
+import org.chromium.chrome.browser.share.android_share_sheet.AndroidShareSheetController;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -47,11 +51,14 @@ import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.WindowAndroid;
 
+import java.lang.ref.WeakReference;
+
 /**
  * Unit test for {@link ShareDelegateImpl} that mocked out most native class calls.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {ShadowShareSheetCoordinator.class, ShadowShareHelper.class})
+@Config(shadows = {ShadowShareSheetCoordinator.class, ShadowShareHelper.class,
+                ShadowAndroidShareSheetController.class})
 @Features.EnableFeatures(ChromeFeatureList.SHARE_SHEET_MIGRATION_ANDROID)
 public class ShareDelegateImplUnitTest {
     @Rule
@@ -74,6 +81,8 @@ public class ShareDelegateImplUnitTest {
     @Mock
     private WindowAndroid mWindowAndroid;
     @Mock
+    private Activity mActivity;
+    @Mock
     private LargeIconBridgeJni mLargeIconBridgeJni;
     @Mock
     private AppHooksImpl mAppHooks;
@@ -87,6 +96,7 @@ public class ShareDelegateImplUnitTest {
         mJniMocker.mock(LargeIconBridgeJni.TEST_HOOKS, mLargeIconBridgeJni);
         AppHooks.setInstanceForTesting(mAppHooks);
         TrackerFactory.setTrackerForTests(mTracker);
+        Mockito.doReturn(new WeakReference<>(mActivity)).when(mWindowAndroid).getActivity();
 
         mShareDelegate = new ShareDelegateImpl(mBottomSheetController, mActivityLifecycleDispatcher,
                 (() -> mTab), (() -> mTabModelSelector), (() -> mProfile), new ShareSheetDelegate(),
@@ -99,6 +109,7 @@ public class ShareDelegateImplUnitTest {
         TrackerFactory.setTrackerForTests(null);
         ShadowShareSheetCoordinator.reset();
         ShadowShareHelper.reset();
+        ShadowAndroidShareSheetController.reset();
     }
 
     @Test
@@ -141,19 +152,12 @@ public class ShareDelegateImplUnitTest {
         Assert.assertFalse("ShareSheetCoordinator should not be used.",
                 ShadowShareSheetCoordinator.sChromeShareSheetShowed);
         Assert.assertTrue("shareWithSystemShareSheetUi not called.",
-                ShadowShareHelper.sShareWithSystemShareSheetUiCalled);
+                ShadowAndroidShareSheetController.sShareWithSystemShareSheetUiCalled);
     }
 
     @Implements(ShareHelper.class)
     static class ShadowShareHelper {
-        static boolean sShareWithSystemShareSheetUiCalled;
         static boolean sShareWithLastUsedComponentCalled;
-
-        @Implementation
-        protected static void shareWithSystemShareSheetUi(
-                ShareParams params, @Nullable Profile profile, boolean saveLastUsed) {
-            sShareWithSystemShareSheetUiCalled = true;
-        }
 
         @Implementation
         protected static void shareWithLastUsedComponent(@NonNull ShareParams params) {
@@ -161,7 +165,6 @@ public class ShareDelegateImplUnitTest {
         }
 
         public static void reset() {
-            sShareWithSystemShareSheetUiCalled = false;
             sShareWithLastUsedComponentCalled = false;
         }
     }
@@ -190,6 +193,25 @@ public class ShareDelegateImplUnitTest {
 
         public static void reset() {
             sChromeShareSheetShowed = false;
+        }
+    }
+
+    @Implements(AndroidShareSheetController.class)
+    static class ShadowAndroidShareSheetController {
+        static boolean sShareWithSystemShareSheetUiCalled;
+
+        // Directly call share helper, as we don't care about whether the right params are used in
+        // this test.
+        @Implementation
+        public static void showShareSheet(ShareParams params, ChromeShareExtras chromeShareExtras,
+                BottomSheetController controller, Supplier<Tab> tabProvider,
+                Supplier<TabModelSelector> tabModelSelectorSupplier,
+                Supplier<Profile> profileSupplier, Callback<Tab> printCallback) {
+            sShareWithSystemShareSheetUiCalled = true;
+        }
+
+        public static void reset() {
+            sShareWithSystemShareSheetUiCalled = false;
         }
     }
 }
