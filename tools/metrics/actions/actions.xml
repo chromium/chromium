@@ -21542,6 +21542,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileTabPinned">
+  <owner>ewannpv@chromium.org</owner>
+  <owner>pakzhygitov@google.com</owner>
+  <description>
+    User pins a Tab. This includes pinning a tab from the tab strip, tab grid
+    and overflow menu.
+  </description>
+</action>
+
 <action name="MobileTabReturnedToCurrentTab">
   <owner>yusufo@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
@@ -21612,6 +21621,15 @@ should be able to be added at any place in this file.
   <owner>clank-large-form-factors@google.com</owner>
   <description>
     User switched tabs via the tab strip on tablets. Recorded for Android only.
+  </description>
+</action>
+
+<action name="MobileTabUnpinned">
+  <owner>ewannpv@chromium.org</owner>
+  <owner>pakzhygitov@google.com</owner>
+  <description>
+    User unpins a Tab. This includes unpinning a tab from the tab strip, tab
+    grid and overflow menu.
   </description>
 </action>
 

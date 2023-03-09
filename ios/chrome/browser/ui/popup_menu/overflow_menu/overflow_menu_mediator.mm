@@ -63,6 +63,7 @@
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_utils.h"
 #import "ios/chrome/browser/ui/sharing/sharing_params.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
@@ -264,9 +265,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   if (!webState || !webStateList) {
     return;
   }
-
-  int webStateIndex = webStateList->GetIndexOfWebState(webState);
-  webStateList->SetWebStatePinnedAt(webStateIndex, pinned);
+  SetWebStatePinnedState(webStateList, webState->GetStableIdentifier(), pinned);
 }
 
 - (instancetype)init {

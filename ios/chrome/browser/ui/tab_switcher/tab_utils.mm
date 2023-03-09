@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_list.h"
@@ -19,6 +21,9 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+using base::RecordAction;
+using base::UserMetricsAction;
 
 int GetWebStateIndex(WebStateList* web_state_list, NSString* identifier) {
   for (int i = 0; i < web_state_list->count(); i++) {
@@ -116,6 +121,12 @@ TabItem* GetTabItem(WebStateList* web_state_list,
 int SetWebStatePinnedState(WebStateList* web_state_list,
                            NSString* identifier,
                            BOOL pin_state) {
+  if (pin_state) {
+    RecordAction(UserMetricsAction("MobileTabPinned"));
+  } else {
+    RecordAction(UserMetricsAction("MobileTabUnpinned"));
+  }
+
   int index = GetTabIndex(web_state_list, identifier,
                           /*pinned=*/!pin_state);
   if (index == WebStateList::kInvalidIndex) {
