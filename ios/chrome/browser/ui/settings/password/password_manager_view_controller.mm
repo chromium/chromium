@@ -212,7 +212,8 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
     PasswordCheckUIState passwordCheckState) {
   switch (passwordCheckState) {
     case PasswordCheckStateUnmutedCompromisedPasswords:
-      return [UIColor colorNamed:kRedColor];
+      return [UIColor
+          colorNamed:IsPasswordGroupingEnabled() ? kRed500Color : kRedColor];
     case PasswordCheckStateReusedPasswords:
     case PasswordCheckStateWeakPasswords:
     case PasswordCheckStateDismissedWarnings:
