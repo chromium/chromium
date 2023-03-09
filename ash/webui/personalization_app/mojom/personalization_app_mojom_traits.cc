@@ -401,10 +401,8 @@ MojomAnimationTheme EnumTraits<MojomAnimationTheme, ash::AmbientTheme>::ToMojom(
       return MojomAnimationTheme::kFeelTheBreeze;
     case ash::AmbientTheme::kFloatOnBy:
       return MojomAnimationTheme::kFloatOnBy;
-    case ash::AmbientTheme::kVideoNewMexico:
-      return MojomAnimationTheme::kVideoNewMexico;
-    case ash::AmbientTheme::kVideoClouds:
-      return MojomAnimationTheme::kVideoClouds;
+    case ash::AmbientTheme::kVideo:
+      return MojomAnimationTheme::kVideo;
   }
 }
 
@@ -421,11 +419,8 @@ bool EnumTraits<MojomAnimationTheme, ash::AmbientTheme>::FromMojom(
     case MojomAnimationTheme::kFloatOnBy:
       *output = ash::AmbientTheme::kFloatOnBy;
       return true;
-    case MojomAnimationTheme::kVideoNewMexico:
-      *output = ash::AmbientTheme::kVideoNewMexico;
-      return true;
-    case MojomAnimationTheme::kVideoClouds:
-      *output = ash::AmbientTheme::kVideoClouds;
+    case MojomAnimationTheme::kVideo:
+      *output = ash::AmbientTheme::kVideo;
       return true;
   }
   NOTREACHED();

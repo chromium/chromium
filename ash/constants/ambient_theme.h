@@ -25,9 +25,8 @@ enum class AmbientTheme {
   kFloatOnBy = 2,
   // Scenic videos that get played on loop at full screen. The videos are static
   // and Google-owned.
-  kVideoNewMexico = 3,
-  kVideoClouds = 4,
-  kMaxValue = kVideoClouds,
+  kVideo = 3,
+  kMaxValue = kVideo,
 };
 
 inline constexpr AmbientTheme kDefaultAmbientTheme = AmbientTheme::kSlideshow;

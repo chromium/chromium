@@ -17,10 +17,8 @@ base::StringPiece ToString(AmbientTheme theme) {
       return "FeelTheBreeze";
     case AmbientTheme::kFloatOnBy:
       return "FloatOnBy";
-    case AmbientTheme::kVideoNewMexico:
-      return "NewMexico";
-    case AmbientTheme::kVideoClouds:
-      return "Clouds";
+    case AmbientTheme::kVideo:
+      return "Video";
   }
 }
 

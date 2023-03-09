@@ -12,6 +12,8 @@ component("constants") {
   sources = [
     "ambient_theme.cc",
     "ambient_theme.h",
+    "ambient_video.cc",
+    "ambient_video.h",
     "app_types.h",
     "ash_constants.cc",
     "ash_constants.h",

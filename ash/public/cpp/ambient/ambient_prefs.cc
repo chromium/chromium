@@ -19,6 +19,11 @@ namespace prefs {
 // theme".
 constexpr char kAmbientTheme[] = "ash.ambient.animation_theme";
 
+constexpr char kAmbientUiSettings[] = "ash.ambient.ui_settings";
+
+constexpr char kAmbientUiSettingsFieldTheme[] = "theme";
+constexpr char kAmbientUiSettingsFieldVideo[] = "video";
+
 constexpr char kAmbientBackdropClientId[] = "ash.ambient.backdrop.client.id";
 
 constexpr char kAmbientModeEnabled[] = "settings.ambient_mode.enabled";

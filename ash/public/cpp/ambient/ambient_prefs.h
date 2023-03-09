@@ -13,7 +13,21 @@ namespace prefs {
 
 // Integer pref corresponding to the ambient mode theme that the user has
 // selected (see AmbientTheme enum).
+// DEPRECATED: Use |kAmbientUiSettings| instead; that's the successor.
 ASH_PUBLIC_EXPORT extern const char kAmbientTheme[];
+
+// Dictionary pref capturing the ambient UI that the user has selected:
+// {
+//   // Required.
+//   "theme": <integer value of |AmbientTheme| enum>
+//   // Which video the user picked. Only used if the "theme" is |kVideo|.
+//   "video": <integer value of |AmbientVideo| enum>
+// }
+ASH_PUBLIC_EXPORT extern const char kAmbientUiSettings[];
+
+// Fields in the |kAmbientUiSettings| dictionary.
+ASH_PUBLIC_EXPORT extern const char kAmbientUiSettingsFieldTheme[];
+ASH_PUBLIC_EXPORT extern const char kAmbientUiSettingsFieldVideo[];
 
 // A GUID for backdrop client.
 ASH_PUBLIC_EXPORT extern const char kAmbientBackdropClientId[];
