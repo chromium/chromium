@@ -25495,6 +25495,11 @@ Called by update_debug_scenarios.py.-->
   <int value="50" label="Calculator"/>
   <int value="51" label="FirmwareUpdateApp"/>
   <int value="52" label="Google TV"/>
+  <int value="53" label="Google Calendar"/>
+  <int value="54" label="Google Chat"/>
+  <int value="55" label="Google Meet"/>
+  <int value="56" label="Google Maps"/>
+  <int value="57" label="Google Messages"/>
 </enum>
 
 <enum name="DefaultBrowserAsyncAttemptResult">

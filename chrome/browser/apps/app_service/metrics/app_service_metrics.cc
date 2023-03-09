@@ -248,6 +248,16 @@ void RecordAppLaunch(const std::string& app_id,
   } else if (app_id == arc::kGoogleTVAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kGoogleTv, launch_source);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  } else if (app_id == web_app::kGoogleCalendarAppId) {
+    RecordDefaultAppLaunch(DefaultAppName::kGoogleCalendar, launch_source);
+  } else if (app_id == web_app::kGoogleChatAppId) {
+    RecordDefaultAppLaunch(DefaultAppName::kGoogleChat, launch_source);
+  } else if (app_id == web_app::kGoogleMeetAppId) {
+    RecordDefaultAppLaunch(DefaultAppName::kGoogleMeet, launch_source);
+  } else if (app_id == web_app::kGoogleMapsAppId) {
+    RecordDefaultAppLaunch(DefaultAppName::kGoogleMaps, launch_source);
+  } else if (app_id == web_app::kMessagesAppId) {
+    RecordDefaultAppLaunch(DefaultAppName::kGoogleMessages, launch_source);
   }
 
   // Above are default apps; below are built-in apps.

@@ -68,9 +68,14 @@ enum class DefaultAppName {
   kCalculator = 50,
   kFirmwareUpdateApp = 51,
   kGoogleTv = 52,
+  kGoogleCalendar = 53,
+  kGoogleChat = 54,
+  kGoogleMeet = 55,
+  kGoogleMaps = 56,
+  kGoogleMessages = 57,
   // Add any new values above this one, and update kMaxValue to the highest
   // enumerator value.
-  kMaxValue = kGoogleTv,
+  kMaxValue = kGoogleMessages,
 };
 
 // The built-in app's histogram name. This is used for logging so do not change
