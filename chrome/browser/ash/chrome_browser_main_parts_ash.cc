@@ -220,6 +220,7 @@
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector_stub.h"
 #include "chromeos/ash/components/network/system_token_cert_db_storage.h"
+#include "chromeos/ash/components/osauth/public/auth_parts.h"
 #include "chromeos/ash/components/peripheral_notification/peripheral_notification_manager.h"
 #include "chromeos/ash/components/power/dark_resume_controller.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -833,6 +834,8 @@ int ChromeBrowserMainPartsAsh::PreMainMessageLoopRun() {
 
   auth_metrics_recorder_ =
       base::WrapUnique<AuthMetricsRecorder>(new AuthMetricsRecorder());
+
+  auth_parts_ = AuthParts::Create();
 
   return ChromeBrowserMainPartsLinux::PreMainMessageLoopRun();
 }

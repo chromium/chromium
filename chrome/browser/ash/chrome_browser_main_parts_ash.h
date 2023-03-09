@@ -65,6 +65,7 @@ namespace ash {
 class AccessibilityEventRewriterDelegateImpl;
 class ArcKioskAppManager;
 class AudioSurveyHandler;
+class AuthParts;
 class BluetoothPrefStateObserver;
 class BulkPrintersCalculatorFactory;
 class CameraGeneralSurveyHandler;
@@ -305,6 +306,7 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<traffic_counters::TrafficCountersHandler>
       traffic_counters_handler_;
   std::unique_ptr<ash::AuthMetricsRecorder> auth_metrics_recorder_;
+  std::unique_ptr<ash::AuthParts> auth_parts_;
 
   std::unique_ptr<video_conference::VideoConferenceManagerClientImpl>
       video_conference_manager_client_;

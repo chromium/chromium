@@ -3465,6 +3465,8 @@ source_set("ash") {
     "//chromeos/ash/components/multidevice",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/network/portal_detector",
+    "//chromeos/ash/components/osauth/impl",
+    "//chromeos/ash/components/osauth/public",
     "//chromeos/ash/components/phonehub",
     "//chromeos/ash/components/phonehub/proto",
     "//chromeos/ash/components/policy",

@@ -11,6 +11,10 @@ assert(is_chromeos_ash,
 component("impl") {
   defines = [ "IS_CHROMEOS_ASH_COMPONENTS_OSAUTH_IMPL" ]
   public_deps = [ "//chromeos/ash/components/osauth/public" ]
-  deps = []
-  sources = []
+
+  deps = [ "//base" ]
+  sources = [
+    "auth_parts_impl.cc",
+    "auth_parts_impl.h",
+  ]
 }
