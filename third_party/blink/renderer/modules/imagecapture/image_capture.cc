@@ -238,6 +238,12 @@ void CopySettings(const MediaTrackSettings* source,
   }
 }
 
+bool IsBooleanFalseConstraint(
+    V8UnionBooleanOrConstrainDoubleRangeOrDouble* constraint) {
+  DCHECK(constraint);
+  return constraint->IsBoolean() && !constraint->GetAsBoolean();
+}
+
 bool TrackIsInactive(const MediaStreamTrack& track) {
   // Spec instructs to return an exception if the Track's readyState() is not
   // "live". Also reject if the track is disabled or muted.
@@ -520,6 +526,22 @@ bool ImageCapture::CheckAndApplyMediaTrackConstraintsToSettings(
     media::mojom::blink::PhotoSettings* settings,
     const MediaTrackConstraints* constraints,
     ScriptPromiseResolver* resolver) {
+  if (!IsPageVisible()) {
+    for (const MediaTrackConstraintSet* constraint_set :
+         AllSupportedConstraintSets(constraints)) {
+      if ((constraint_set->hasPan() &&
+           !IsBooleanFalseConstraint(constraint_set->pan())) ||
+          (constraint_set->hasTilt() &&
+           !IsBooleanFalseConstraint(constraint_set->tilt())) ||
+          (constraint_set->hasZoom() &&
+           !IsBooleanFalseConstraint(constraint_set->zoom()))) {
+        resolver->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kSecurityError, "the page is not visible"));
+        return false;
+      }
+    }
+  }
+
   MediaTrackConstraintSet* temp_constraint_set =
       current_constraint_set_ ? current_constraint_set_.Get()
                               : MediaTrackConstraintSet::Create();
@@ -730,11 +752,6 @@ bool ImageCapture::CheckAndApplyMediaTrackConstraintsToSettings(
     settings->has_pan =
         constraint_set->hasPan() && constraint_set->pan()->IsDouble();
     if (settings->has_pan) {
-      if (!IsPageVisible()) {
-        resolver->Reject(MakeGarbageCollected<DOMException>(
-            DOMExceptionCode::kSecurityError, "the page is not visible"));
-        return false;
-      }
       const auto pan = constraint_set->pan()->GetAsDouble();
       if (pan < capabilities_->pan()->min() ||
           pan > capabilities_->pan()->max()) {
@@ -749,11 +766,6 @@ bool ImageCapture::CheckAndApplyMediaTrackConstraintsToSettings(
     settings->has_tilt =
         constraint_set->hasTilt() && constraint_set->tilt()->IsDouble();
     if (settings->has_tilt) {
-      if (!IsPageVisible()) {
-        resolver->Reject(MakeGarbageCollected<DOMException>(
-            DOMExceptionCode::kSecurityError, "the page is not visible"));
-        return false;
-      }
       const auto tilt = constraint_set->tilt()->GetAsDouble();
       if (tilt < capabilities_->tilt()->min() ||
           tilt > capabilities_->tilt()->max()) {
@@ -768,11 +780,6 @@ bool ImageCapture::CheckAndApplyMediaTrackConstraintsToSettings(
     settings->has_zoom =
         constraint_set->hasZoom() && constraint_set->zoom()->IsDouble();
     if (settings->has_zoom) {
-      if (!IsPageVisible()) {
-        resolver->Reject(MakeGarbageCollected<DOMException>(
-            DOMExceptionCode::kSecurityError, "the page is not visible"));
-        return false;
-      }
       const auto zoom = constraint_set->zoom()->GetAsDouble();
       if (zoom < capabilities_->zoom()->min() ||
           zoom > capabilities_->zoom()->max()) {
