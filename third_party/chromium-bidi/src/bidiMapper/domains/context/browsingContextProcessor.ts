@@ -237,6 +237,15 @@ export class BrowsingContextProcessor {
     );
   }
 
+  async process_browsingContext_captureScreenshot(
+    params: BrowsingContext.CaptureScreenshotParameters
+  ): Promise<BrowsingContext.CaptureScreenshotResult> {
+    const context = this.#browsingContextStorage.getKnownContext(
+      params.context
+    );
+    return context.captureScreenshot();
+  }
+
   async #getRealm(target: Script.Target): Promise<Realm> {
     if ('realm' in target) {
       return this.#realmStorage.getRealm({

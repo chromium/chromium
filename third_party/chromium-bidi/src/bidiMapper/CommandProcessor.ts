@@ -47,6 +47,9 @@ export interface BidiParser {
   parseGetTreeParams(params: object): BrowsingContext.GetTreeParameters;
   parseCreateParams(params: object): BrowsingContext.CreateParameters;
   parseCloseParams(params: object): BrowsingContext.CloseParameters;
+  parseCaptureScreenshotParams(
+    params: object
+  ): BrowsingContext.CaptureScreenshotParameters;
 }
 
 class BidiNoOpParser implements BidiParser {
@@ -82,6 +85,11 @@ class BidiNoOpParser implements BidiParser {
   }
   parseCloseParams(params: object): BrowsingContext.CloseParameters {
     return params as BrowsingContext.CloseParameters;
+  }
+  parseCaptureScreenshotParams(
+    params: object
+  ): BrowsingContext.CaptureScreenshotParameters {
+    return params as BrowsingContext.CaptureScreenshotParameters;
   }
 }
 
@@ -174,6 +182,10 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
       case 'browsingContext.navigate':
         return this.#contextProcessor.process_browsingContext_navigate(
           this.#parser.parseNavigateParams(commandData.params)
+        );
+      case 'browsingContext.captureScreenshot':
+        return this.#contextProcessor.process_browsingContext_captureScreenshot(
+          this.#parser.parseCaptureScreenshotParams(commandData.params)
         );
 
       case 'script.getRealms':

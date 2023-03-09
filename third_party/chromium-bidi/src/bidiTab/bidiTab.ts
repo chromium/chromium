@@ -302,6 +302,11 @@ class BidiParserImpl implements BidiParser {
   parseCloseParams(params: object): BrowsingContext.CloseParameters {
     return Parser.BrowsingContext.parseCloseParams(params);
   }
+  parseCaptureScreenshotParams(
+    params: object
+  ): BrowsingContext.CaptureScreenshotParameters {
+    return Parser.BrowsingContext.parseCaptureScreenshotParams(params);
+  }
 }
 
 // Needed to filter out info related to BiDi target.

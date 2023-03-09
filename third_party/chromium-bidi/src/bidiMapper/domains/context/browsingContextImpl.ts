@@ -559,4 +559,19 @@ export class BrowsingContextImpl {
     }
     return maybeSandboxes[0]!;
   }
+
+  async captureScreenshot(): Promise<BrowsingContext.CaptureScreenshotResult> {
+    const [, result] = await Promise.all([
+      // TODO: Either make this a proposal in the BiDi spec, or focus the
+      // original tab right after the screenshot is taken.
+      // The screenshot command gets blocked until we focus the active tab.
+      this.#cdpClient.sendCommand('Page.bringToFront'),
+      this.#cdpClient.sendCommand('Page.captureScreenshot', {}),
+    ]);
+    return {
+      result: {
+        data: result.data,
+      },
+    };
+  }
 }

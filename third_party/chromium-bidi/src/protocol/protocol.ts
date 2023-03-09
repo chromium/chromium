@@ -26,6 +26,7 @@ export interface EventResponse<MethodType, ParamsType> {
 }
 
 export type Method =
+  | 'browsingContext.captureScreenshot'
   | 'browsingContext.close'
   | 'browsingContext.create'
   | 'browsingContext.getTree'
@@ -630,12 +631,14 @@ export namespace BrowsingContext {
     | GetTreeCommand
     | NavigateCommand
     | CreateCommand
-    | CloseCommand;
+    | CloseCommand
+    | CaptureScreenshotCommand;
   export type CommandResult =
     | GetTreeResult
     | NavigateResult
     | CreateResult
-    | CloseResult;
+    | CloseResult
+    | CaptureScreenshotResult;
   export type Event =
     | LoadEvent
     | DomContentLoadedEvent
@@ -727,6 +730,21 @@ export namespace BrowsingContext {
   };
 
   export type CloseResult = {result: {}};
+
+  export type CaptureScreenshotCommand = {
+    method: 'browsingContext.captureScreenshot';
+    params: CaptureScreenshotParameters;
+  };
+
+  export type CaptureScreenshotParameters = {
+    context: CommonDataTypes.BrowsingContext;
+  };
+
+  export type CaptureScreenshotResult = {
+    result: {
+      data: string;
+    };
+  };
 
   export type LoadEvent = EventResponse<EventNames.LoadEvent, NavigationInfo>;
 
