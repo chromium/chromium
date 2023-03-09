@@ -6878,3 +6878,4 @@ crbug.com/1422959 virtual/text-antialias/colrv1-variable.html [ Pass Failure ]
 
 # Sheriff 2023-03-09
 crbug.com/1422653 external/wpt/long-animation-frame/tentative/* [ Pass Failure ]
+crbug.com/1422653 virtual/threaded/external/wpt/long-animation-frame/tentative/* [ Pass Failure ]
