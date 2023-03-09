@@ -460,13 +460,13 @@ class PA_TRIVIAL_ABI UncompressedPointer final {
 
   template <typename U,
             std::enable_if_t<std::is_convertible_v<U*, T*>>* = nullptr>
-  constexpr PA_ALWAYS_INLINE UncompressedPointer(
+  constexpr PA_ALWAYS_INLINE explicit UncompressedPointer(
       const UncompressedPointer<U>& other)
       : ptr_(other.ptr_) {}
 
   template <typename U,
             std::enable_if_t<std::is_convertible_v<U*, T*>>* = nullptr>
-  constexpr PA_ALWAYS_INLINE UncompressedPointer(
+  constexpr PA_ALWAYS_INLINE explicit UncompressedPointer(
       UncompressedPointer<U>&& other) noexcept
       : ptr_(std::move(other.ptr_)) {}
 
