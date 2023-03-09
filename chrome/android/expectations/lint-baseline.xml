@@ -1977,17 +1977,6 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: ViewType.INVALID, ViewType.PERSONALIZED_SIGNIN_PROMO, ViewType.PERSONALIZED_SYNC_PROMO, ViewType.SYNC_PROMO, ViewType.FOLDER, ViewType.BOOKMARK, ViewType.DIVIDER, ViewType.SECTION_HEADER, ViewType.SHOPPING_POWER_BOOKMARK, ViewType.TAG_CHIP_LIST"
-        errorLine1="                ViewType.SHOPPING_FILTER, /*bookmarkItem=*/null, /*sectionHeaderData=*/null);"
-        errorLine2="                         ~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkListEntry.java"
-            line="109"
-            column="26"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
         message="Must be one of: CustomTabsUiType.DEFAULT, CustomTabsUiType.MEDIA_VIEWER, CustomTabsUiType.INFO_PAGE, CustomTabsUiType.READER_MODE, CustomTabsUiType.MINIMAL_UI_WEBAPP, CustomTabsUiType.OFFLINE_PAGE"
         errorLine1="        intent.putExtra(CustomTabIntentDataProvider.EXTRA_UI_TYPE, CustomTabsUiType.READ_LATER);"
         errorLine2="                                                                                    ~~~~~~~~~~">
@@ -4118,28 +4107,6 @@
             file="../../media/capture/video/android/java/src/org/chromium/media/PhotoCapabilities.java"
             line="121"
             column="70"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: PriceTrackingState.PRICE_TRACKING_SHOWN, PriceTrackingState.PRICE_TRACKING_ENABLED, PriceTrackingState.PRICE_TRACKING_DISABLED"
-        errorLine1="                PriceTrackingState.COUNT);"
-        errorLine2="                                   ~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/bookmarks/PowerBookmarkMetrics.java"
-            line="29"
-            column="36"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: PriceTrackingState.PRICE_TRACKING_SHOWN, PriceTrackingState.PRICE_TRACKING_ENABLED, PriceTrackingState.PRICE_TRACKING_DISABLED"
-        errorLine1="                PriceTrackingState.COUNT);"
-        errorLine2="                                   ~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/bookmarks/PowerBookmarkMetrics.java"
-            line="37"
-            column="36"/>
     </issue>
 
     <issue

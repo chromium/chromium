@@ -14,7 +14,7 @@ public class PowerBookmarkMetrics {
     // numeric values should never be reused. Keep up-to-date with the PriceTrackingState enum in
     // tools/metrics/histograms/enums.xml.
     @IntDef({PriceTrackingState.PRICE_TRACKING_SHOWN, PriceTrackingState.PRICE_TRACKING_ENABLED,
-            PriceTrackingState.PRICE_TRACKING_DISABLED})
+            PriceTrackingState.PRICE_TRACKING_DISABLED, PriceTrackingState.COUNT})
     public @interface PriceTrackingState {
         int PRICE_TRACKING_SHOWN = 0;
         int PRICE_TRACKING_ENABLED = 1;
