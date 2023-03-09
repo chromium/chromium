@@ -149,7 +149,7 @@ class OmniboxPedalSetChromeAsDefaultBrowser : public OmniboxPedal {
           {
               true,
               true,
-              IDS_IOS_OMNIBOX_PEDAL_SYNONYMS_SET_CHROME_AS_DEFAULT_BROWSER_ONE_REQUIRED_HOW_TO_MAKE_CHROME_MY_DEFAULT_BROWSER,
+              IDS_OMNIBOX_PEDAL_SYNONYMS_SET_CHROME_AS_DEFAULT_BROWSER_ONE_REQUIRED_HOW_TO_MAKE_CHROME_MY_DEFAULT_BROWSER,
           },
           {
               false,
