@@ -189,7 +189,7 @@ class MockWorkingSetTrimmerPolicyChromeOS
   features::TrimOnMemoryPressureParams& params() { return params_; }
 
   // Mock methods related to tab (renderer) per process reclaim.
-  MOCK_METHOD1(TrimWorkingSet, bool(const ProcessNode*));
+  MOCK_METHOD1(TrimWorkingSet, void(const ProcessNode*));
   MOCK_METHOD1(OnMemoryPressure,
                void(base::MemoryPressureListener::MemoryPressureLevel level));
 
@@ -198,7 +198,7 @@ class MockWorkingSetTrimmerPolicyChromeOS
   MOCK_METHOD2(TrimReceivedArcProcesses,
                void(int, arc::ArcProcessService::OptionalArcProcessList));
   MOCK_METHOD1(IsArcProcessEligibleForReclaim, bool(const arc::ArcProcess&));
-  MOCK_METHOD1(TrimArcProcess, bool(const base::ProcessId));
+  MOCK_METHOD1(TrimArcProcess, void(const base::ProcessId));
 
   // Mock methods related to ARCVM process trimming.
   MOCK_METHOD1(TrimArcVmProcesses,

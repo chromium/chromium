@@ -86,7 +86,7 @@ void WorkingSetTrimmerPolicy::SetLastTrimTime(const ProcessNode* process_node,
   data->last_trim_ = time;
 }
 
-bool WorkingSetTrimmerPolicy::TrimWorkingSet(const ProcessNode* process_node) {
+void WorkingSetTrimmerPolicy::TrimWorkingSet(const ProcessNode* process_node) {
   auto* trimmer = mechanism::WorkingSetTrimmer::GetInstance();
   DCHECK(trimmer);
 
@@ -95,10 +95,8 @@ bool WorkingSetTrimmerPolicy::TrimWorkingSet(const ProcessNode* process_node) {
     UMA_HISTOGRAM_COUNTS_10000("Memory.WorkingSetTrim.RendererTrimCount",
                                ++renderers_trimmed);
     SetLastTrimTimeNow(process_node);
-    return trimmer->TrimWorkingSet(process_node);
+    trimmer->TrimWorkingSet(process_node);
   }
-
-  return false;
 }
 
 base::Value::Dict WorkingSetTrimmerPolicy::DescribeProcessNodeData(

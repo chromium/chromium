@@ -23,7 +23,7 @@ class WorkingSetTrimmerWin : public WorkingSetTrimmer {
   ~WorkingSetTrimmerWin() override;
 
   bool PlatformSupportsWorkingSetTrim() override;
-  bool TrimWorkingSet(const ProcessNode* process_node) override;
+  void TrimWorkingSet(const ProcessNode* process_node) override;
 
  private:
   friend class base::NoDestructor<WorkingSetTrimmerWin>;

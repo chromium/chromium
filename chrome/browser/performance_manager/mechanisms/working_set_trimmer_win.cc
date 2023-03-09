@@ -18,24 +18,25 @@ namespace mechanism {
 WorkingSetTrimmerWin::WorkingSetTrimmerWin() = default;
 WorkingSetTrimmerWin::~WorkingSetTrimmerWin() = default;
 
-bool WorkingSetTrimmerWin::TrimWorkingSet(const ProcessNode* process_node) {
+void WorkingSetTrimmerWin::TrimWorkingSet(const ProcessNode* process_node) {
   // Open a new handle to the process with the specific access needed.
   const base::Process& process = process_node->GetProcess();
-  if (!process.IsValid())
-    return false;
+  if (!process.IsValid()) {
+    return;
+  }
 
   base::Process process_copy = base::Process::OpenWithAccess(
       process.Pid(), PROCESS_QUERY_LIMITED_INFORMATION | PROCESS_SET_QUOTA);
   if (!process_copy.IsValid()) {
     DPLOG(ERROR) << "Working set not emptied because process handle could not "
                     "be obtained.";
-    return false;
+    return;
   }
 
-  BOOL empty_working_set_success = ::EmptyWorkingSet(process.Handle());
+  [[maybe_unused]] BOOL empty_working_set_success =
+      ::EmptyWorkingSet(process.Handle());
   DPLOG_IF(ERROR, !empty_working_set_success)
       << "Working set not emptied because EmptyWorkingSet() failed";
-  return empty_working_set_success;
 }
 
 bool WorkingSetTrimmerWin::PlatformSupportsWorkingSetTrim() {
