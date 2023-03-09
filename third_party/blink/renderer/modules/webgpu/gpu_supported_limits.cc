@@ -23,6 +23,7 @@
   X(maxStorageBuffersPerShaderStage)           \
   X(maxStorageTexturesPerShaderStage)          \
   X(maxUniformBuffersPerShaderStage)           \
+  X(maxFragmentCombinedOutputResources)        \
   X(maxUniformBufferBindingSize)               \
   X(maxStorageBufferBindingSize)               \
   X(minUniformBufferOffsetAlignment)           \
