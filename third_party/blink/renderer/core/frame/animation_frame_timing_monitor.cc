@@ -56,11 +56,26 @@ void AnimationFrameTimingMonitor::WillPerformStyleAndLayoutCalculation() {
 
 void AnimationFrameTimingMonitor::DidBeginMainFrame() {
   DCHECK(current_frame_timing_info_ && state_ == State::kRenderingFrame);
+  DCHECK(!desired_render_start_time_.is_null());
   current_frame_timing_info_->SetRenderEndTime(base::TimeTicks::Now());
+
+  // These would be (non-event) scripts that are handled while rendering, e.g.
+  // ResizeObserver and requestAnimationFrame callbacks.
+  // Their desired execution time would be set to the frame's desired render
+  // start time.
+  for (ScriptTimingInfo* script : current_scripts_) {
+    if (script->DesiredExecutionStartTime().is_null()) {
+      script->SetDesiredExecutionStartTime(desired_render_start_time_);
+    }
+  }
   current_frame_timing_info_->SetScripts(current_scripts_);
   if (current_frame_timing_info_->Duration() >= kLongAnimationFrameDuration) {
+    current_frame_timing_info_->SetDesiredRenderStartTime(
+        desired_render_start_time_);
     client_.ReportLongAnimationFrameTiming(current_frame_timing_info_);
   }
+
+  desired_render_start_time_ = base::TimeTicks();
   current_frame_timing_info_.Clear();
   current_scripts_.clear();
   state_ = State::kIdle;
@@ -72,9 +87,11 @@ void AnimationFrameTimingMonitor::WillProcessTask(base::TimeTicks start_time) {
   }
 }
 
-void AnimationFrameTimingMonitor::OnTaskCompleted(base::TimeTicks start_time,
-                                                  base::TimeTicks end_time,
-                                                  LocalFrame* frame) {
+void AnimationFrameTimingMonitor::OnTaskCompleted(
+    base::TimeTicks start_time,
+    base::TimeTicks end_time,
+    base::TimeTicks desired_execution_time,
+    LocalFrame* frame) {
   HeapVector<Member<ScriptTimingInfo>> scripts;
 
   if (state_ != State::kProcessingTask) {
@@ -82,6 +99,18 @@ void AnimationFrameTimingMonitor::OnTaskCompleted(base::TimeTicks start_time,
   }
 
   bool should_report = client_.ShouldReportLongAnimationFrameTiming();
+  if (should_report && !desired_execution_time.is_null()) {
+    // These would be (non-event) scripts that are executed outside of the
+    // rendering phase. e.g. a timer callback or deferred script blocks.
+    // Their desired execution time would be set to the time the task was
+    // posted to the event loop - in the case of a timer this would be the
+    // timer expiry time.
+    for (ScriptTimingInfo* script : current_scripts_) {
+      if (script->DesiredExecutionStartTime().is_null()) {
+        script->SetDesiredExecutionStartTime(desired_execution_time);
+      }
+    }
+  }
 
   if (client_.RequestedMainFramePending() && should_report) {
     current_frame_timing_info_ =
@@ -362,6 +391,9 @@ void AnimationFrameTimingMonitor::Did(const probe::UserCallback& probe_data) {
           : probe_data.class_like_name);
   info->SetPropertyLikeName(probe_data.name ? probe_data.name
                                             : probe_data.atomic_name);
+  if (Event* event = probe_data.event) {
+    info->SetDesiredExecutionStartTime(event->PlatformTimeStamp());
+  }
 }
 
 void AnimationFrameTimingMonitor::Will(const probe::CallFunction& probe_data) {

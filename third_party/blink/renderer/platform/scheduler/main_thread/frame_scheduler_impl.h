@@ -103,7 +103,8 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
 
   void TraceUrlChange(const String& url) override;
   void AddTaskTime(base::TimeDelta time) override;
-  void OnTaskCompleted(TaskQueue::TaskTiming*);
+  void OnTaskCompleted(TaskQueue::TaskTiming*,
+                       base::TimeTicks desired_execution_time);
   FrameScheduler::FrameType GetFrameType() const override;
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(TaskType) override;
 

@@ -54,6 +54,11 @@ DOMHighResTimeStamp PerformanceLongAnimationFrameTiming::renderStart() const {
   return ToMonotonicTime(info_->RenderStartTime());
 }
 
+DOMHighResTimeStamp PerformanceLongAnimationFrameTiming::desiredRenderStart()
+    const {
+  return ToMonotonicTime(info_->DesiredRenderStartTime());
+}
+
 DOMHighResTimeStamp PerformanceLongAnimationFrameTiming::ToMonotonicTime(
     base::TimeTicks time) const {
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
@@ -81,6 +86,7 @@ void PerformanceLongAnimationFrameTiming::BuildJSONValue(
   PerformanceEntry::BuildJSONValue(builder);
   builder.AddNumber("renderStart", renderStart());
   builder.AddNumber("styleAndLayoutStart", styleAndLayoutStart());
+  builder.AddNumber("desiredRenderStart", desiredRenderStart());
   ScriptState* script_state = builder.GetScriptState();
   builder.Add("scripts", FreezeV8Object(ToV8(scripts_, script_state),
                                         script_state->GetIsolate()));

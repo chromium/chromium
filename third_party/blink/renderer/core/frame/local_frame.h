@@ -912,7 +912,8 @@ class CORE_EXPORT LocalFrame final
       BlockingDetails details) override;
   const base::UnguessableToken& GetAgentClusterId() const override;
   void OnTaskCompleted(base::TimeTicks start_time,
-                       base::TimeTicks end_time) override;
+                       base::TimeTicks end_time,
+                       base::TimeTicks desired_execution_time) override;
 
   // Activates the user activation states of this frame and all its ancestors.
   //

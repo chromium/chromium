@@ -893,7 +893,7 @@ bool EventTarget::FireEventListeners(Event& event,
     event.SetHandlingPassive(EventPassiveMode(registered_listener));
 
     probe::UserCallback probe(context, /*class_like_name=*/nullptr, nullptr,
-                              event.type(), false, this);
+                              event.type(), false, this, &event);
     probe::AsyncTask async_task(context, listener->async_task_context(),
                                 "event",
                                 IsInstrumentedForAsyncStack(event.type()));

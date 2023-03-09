@@ -53,6 +53,7 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
   void DidBeginMainFrame();
   void OnTaskCompleted(base::TimeTicks start_time,
                        base::TimeTicks end_time,
+                       base::TimeTicks desired_execution_time,
                        LocalFrame* frame);
 
   // TaskTimeObsrver
@@ -60,7 +61,7 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
 
   void DidProcessTask(base::TimeTicks start_time,
                       base::TimeTicks end_time) override {
-    OnTaskCompleted(start_time, end_time, /*frame=*/nullptr);
+    OnTaskCompleted(start_time, end_time, base::TimeTicks(), /*frame=*/nullptr);
   }
 
   // probes
@@ -81,12 +82,17 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
   void Will(const probe::CallFunction&);
   void Did(const probe::CallFunction&);
 
+  void SetDesiredRenderStartTime(base::TimeTicks time) {
+    desired_render_start_time_ = time;
+  }
+
  private:
   Member<AnimationFrameTimingInfo> current_frame_timing_info_;
   HeapVector<Member<ScriptTimingInfo>> current_scripts_;
   struct PendingScriptInfo {
     ScriptTimingInfo::Type type;
     base::TimeTicks start_time;
+    base::TimeTicks queue_time;
     base::TimeTicks execution_start_time;
     base::TimeDelta style_duration;
     base::TimeDelta layout_duration;
@@ -126,6 +132,8 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
   State state_ = State::kIdle;
 
   int user_callback_depth_ = 0;
+
+  base::TimeTicks desired_render_start_time_;
 };
 
 }  // namespace blink

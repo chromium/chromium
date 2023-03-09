@@ -676,9 +676,12 @@ void FrameSchedulerImpl::OnRemovedAggressiveThrottlingOptOut() {
     parent_page_scheduler_->OnThrottlingStatusUpdated();
 }
 
-void FrameSchedulerImpl::OnTaskCompleted(TaskQueue::TaskTiming* timing) {
+void FrameSchedulerImpl::OnTaskCompleted(
+    TaskQueue::TaskTiming* timing,
+    base::TimeTicks desired_execution_time) {
   if (delegate_) {
-    delegate_->OnTaskCompleted(timing->start_time(), timing->end_time());
+    delegate_->OnTaskCompleted(timing->start_time(), timing->end_time(),
+                               desired_execution_time);
   }
 }
 

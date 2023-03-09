@@ -150,6 +150,9 @@ void WebTestWebFrameWidgetImpl::ScheduleAnimationInternal(bool do_raster) {
 }
 
 bool WebTestWebFrameWidgetImpl::RequestedMainFramePending() {
+  if (Thread::CompositorThread()) {
+    return WebFrameWidgetImpl::RequestedMainFramePending();
+  }
   return animation_scheduled_;
 }
 

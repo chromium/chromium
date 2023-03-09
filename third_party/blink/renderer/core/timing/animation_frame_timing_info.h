@@ -56,6 +56,12 @@ class ScriptTimingInfo : public GarbageCollected<ScriptTimingInfo> {
   base::TimeTicks StartTime() const { return start_time_; }
   base::TimeTicks ExecutionStartTime() const { return execution_start_time_; }
   base::TimeTicks EndTime() const { return end_time_; }
+  base::TimeTicks DesiredExecutionStartTime() const {
+    return desired_execution_start_time_;
+  }
+  void SetDesiredExecutionStartTime(base::TimeTicks queue_time) {
+    desired_execution_start_time_ = queue_time;
+  }
   base::TimeDelta StyleDuration() const { return style_duration_; }
   base::TimeDelta LayoutDuration() const { return layout_duration_; }
   const ScriptSourceLocation& GetSourceLocation() const {
@@ -79,6 +85,7 @@ class ScriptTimingInfo : public GarbageCollected<ScriptTimingInfo> {
   base::TimeTicks start_time_;
   base::TimeTicks execution_start_time_;
   base::TimeTicks end_time_;
+  base::TimeTicks desired_execution_start_time_;
   base::TimeDelta style_duration_;
   base::TimeDelta layout_duration_;
   ScriptSourceLocation source_location_;
@@ -97,6 +104,9 @@ class AnimationFrameTimingInfo
   }
 
   void SetRenderEndTime(base::TimeTicks time) { render_end_time = time; }
+  void SetDesiredRenderStartTime(base::TimeTicks time) {
+    desired_render_start_time = time;
+  }
 
   base::TimeTicks FrameStartTime() const { return frame_start_time; }
   base::TimeTicks RenderStartTime() const { return render_start_time; }
@@ -104,6 +114,9 @@ class AnimationFrameTimingInfo
     return style_and_layout_start_time;
   }
   base::TimeTicks RenderEndTime() const { return render_end_time; }
+  base::TimeTicks DesiredRenderStartTime() const {
+    return desired_render_start_time;
+  }
   base::TimeDelta Duration() const {
     return RenderEndTime() - FrameStartTime();
   }
@@ -132,6 +145,12 @@ class AnimationFrameTimingInfo
   // Measured after BeginMainFrame, or at the end of a task that did not trigger
   // a main frame update
   base::TimeTicks render_end_time;
+
+  // The desired time of the frame, when the compositor is ready to receive it.
+  // Should be the same as the timestamp received in requestAnimationFrame()
+  // callbacks.
+  base::TimeTicks desired_render_start_time;
+
   HeapVector<Member<ScriptTimingInfo>> scripts_;
 };
 

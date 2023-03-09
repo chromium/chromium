@@ -45,7 +45,7 @@ async function expect_long_frame(cb, t) {
 async function expect_long_frame_with_script(cb, predicate, t) {
   for (let i = 0; i < 10; ++i) {
       const entry = await expect_long_frame(cb, t);
-      if (!entry.scripts.length)
+      if (entry === "timeout" || !entry.scripts.length)
         continue;
       for (const script of entry.scripts) {
         if (predicate(script))

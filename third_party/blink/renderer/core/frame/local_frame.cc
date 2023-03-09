@@ -2409,9 +2409,11 @@ const base::UnguessableToken& LocalFrame::GetAgentClusterId() const {
 }
 
 void LocalFrame::OnTaskCompleted(base::TimeTicks start_time,
-                                 base::TimeTicks end_time) {
+                                 base::TimeTicks end_time,
+                                 base::TimeTicks desired_execution_time) {
   if (FrameWidget* widget = GetWidgetForLocalRoot()) {
-    widget->OnTaskCompletedForFrame(start_time, end_time, this);
+    widget->OnTaskCompletedForFrame(start_time, end_time,
+                                    desired_execution_time, this);
   }
 }
 mojom::blink::ReportingServiceProxy* LocalFrame::GetReportingService() {

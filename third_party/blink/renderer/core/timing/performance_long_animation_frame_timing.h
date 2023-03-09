@@ -29,6 +29,7 @@ class PerformanceLongAnimationFrameTiming final : public PerformanceEntry {
   PerformanceEntryType EntryTypeEnum() const override;
 
   DOMHighResTimeStamp renderStart() const;
+  DOMHighResTimeStamp desiredRenderStart() const;
   DOMHighResTimeStamp styleAndLayoutStart() const;
 
   const PerformanceScriptVector& scripts() const;

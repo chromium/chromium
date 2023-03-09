@@ -5,6 +5,7 @@
 // https://github.com/w3c/longtasks/blob/loaf-explainer/loaf-explainer.md
 [Exposed=Window, RuntimeEnabled=LongAnimationFrameTiming]
 interface PerformanceLongAnimationFrameTiming : PerformanceEntry {
+    readonly attribute DOMHighResTimeStamp desiredRenderStart;
     readonly attribute DOMHighResTimeStamp renderStart;
     readonly attribute DOMHighResTimeStamp styleAndLayoutStart;
     [SameObject, SaveSameObject] readonly attribute FrozenArray<PerformanceScriptTiming> scripts;

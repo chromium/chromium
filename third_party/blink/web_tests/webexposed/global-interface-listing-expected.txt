@@ -6538,6 +6538,7 @@ interface PerformanceEventTiming : PerformanceEntry
     method toJSON
 interface PerformanceLongAnimationFrameTiming : PerformanceEntry
     attribute @@toStringTag
+    getter desiredRenderStart
     getter renderStart
     getter scripts
     getter styleAndLayoutStart
@@ -6627,6 +6628,7 @@ interface PerformanceResourceTiming : PerformanceEntry
     method toJSON
 interface PerformanceScriptTiming : PerformanceEntry
     attribute @@toStringTag
+    getter desiredExecutionStart
     getter executionStart
     getter forcedStyleAndLayoutDuration
     getter sourceLocation
