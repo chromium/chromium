@@ -1614,7 +1614,7 @@ if (enable_java_templates) {
           rebase_path(outputs[0], root_build_dir),
           "--min-api=$_min_sdk_version",
           "--r8-jar-path",
-          rebase_path(_r8_path, root_build_dir),
+          rebase_path(_d8_path, root_build_dir),
           "--custom-d8-jar-path",
           rebase_path(_custom_d8_path, root_build_dir),
 
