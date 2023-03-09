@@ -113,4 +113,43 @@ TEST_F(VideoConferenceTrayControllerTest, UpdateButtonWhenMicrophoneMuted) {
   EXPECT_TRUE(audio_icon()->show_privacy_indicator());
 }
 
+TEST_F(VideoConferenceTrayControllerTest, CameraHardwareMuted) {
+  // The camera icon should only be un-toggled if it is not hardware and
+  // software muted.
+  controller()->OnCameraHWPrivacySwitchStateChanged(
+      /*device_id=*/"device_id", cros::mojom::CameraPrivacySwitchState::ON);
+  controller()->OnCameraSWPrivacySwitchStateChanged(
+      cros::mojom::CameraPrivacySwitchState::ON);
+  EXPECT_TRUE(camera_icon()->toggled());
+
+  controller()->OnCameraHWPrivacySwitchStateChanged(
+      /*device_id=*/"device_id", cros::mojom::CameraPrivacySwitchState::ON);
+  controller()->OnCameraSWPrivacySwitchStateChanged(
+      cros::mojom::CameraPrivacySwitchState::OFF);
+  EXPECT_TRUE(camera_icon()->toggled());
+
+  controller()->OnCameraHWPrivacySwitchStateChanged(
+      /*device_id=*/"device_id", cros::mojom::CameraPrivacySwitchState::OFF);
+  controller()->OnCameraSWPrivacySwitchStateChanged(
+      cros::mojom::CameraPrivacySwitchState::ON);
+  EXPECT_TRUE(camera_icon()->toggled());
+
+  controller()->OnCameraHWPrivacySwitchStateChanged(
+      /*device_id=*/"device_id", cros::mojom::CameraPrivacySwitchState::OFF);
+  controller()->OnCameraSWPrivacySwitchStateChanged(
+      cros::mojom::CameraPrivacySwitchState::OFF);
+  EXPECT_FALSE(camera_icon()->toggled());
+}
+
+TEST_F(VideoConferenceTrayControllerTest, ClickCameraWhenHardwareMuted) {
+  controller()->OnCameraHWPrivacySwitchStateChanged(
+      /*device_id=*/"device_id", cros::mojom::CameraPrivacySwitchState::ON);
+  EXPECT_TRUE(camera_icon()->toggled());
+
+  // Clicking the camera button when it is hardware-muted should not un-toggle
+  // the button.
+  LeftClickOn(camera_icon());
+  EXPECT_TRUE(camera_icon()->toggled());
+}
+
 }  // namespace ash

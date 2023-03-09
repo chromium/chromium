@@ -109,6 +109,13 @@ bool VideoConferenceTrayController::IsCapturingMicrophone() const {
 }
 
 void VideoConferenceTrayController::SetCameraMuted(bool muted) {
+  // If the camera is hardware-muted, do nothing here.
+  if (camera_muted_by_hardware_switch_) {
+    // TODO(b/272145024): Display a toast if camera button is clicked during
+    // hardware-muted.
+    return;
+  }
+
   if (!ash::features::IsCrosPrivacyHubEnabled()) {
     media::CameraHalDispatcherImpl::GetInstance()
         ->SetCameraSWPrivacySwitchState(
@@ -127,8 +134,12 @@ void VideoConferenceTrayController::SetCameraMuted(bool muted) {
 }
 
 bool VideoConferenceTrayController::GetCameraMuted() {
+  if (camera_muted_by_hardware_switch_) {
+    return true;
+  }
+
   if (!features::IsCrosPrivacyHubEnabled()) {
-    return camera_muted_by_software_switch();
+    return camera_muted_by_software_switch_;
   }
 
   auto* pref_service =
@@ -175,23 +186,21 @@ void VideoConferenceTrayController::ReturnToApp(
   video_conference_manager_->ReturnToApp(id);
 }
 
+void VideoConferenceTrayController::OnCameraHWPrivacySwitchStateChanged(
+    const std::string& device_id,
+    cros::mojom::CameraPrivacySwitchState state) {
+  camera_muted_by_hardware_switch_ =
+      state == cros::mojom::CameraPrivacySwitchState::ON;
+
+  UpdateCameraIcons();
+}
+
 void VideoConferenceTrayController::OnCameraSWPrivacySwitchStateChanged(
     cros::mojom::CameraPrivacySwitchState state) {
   camera_muted_by_software_switch_ =
       state == cros::mojom::CameraPrivacySwitchState::ON;
 
-  for (auto* root_window_controller :
-       Shell::Get()->GetAllRootWindowControllers()) {
-    DCHECK(root_window_controller);
-    DCHECK(root_window_controller->GetStatusAreaWidget());
-
-    auto* camera_icon = root_window_controller->GetStatusAreaWidget()
-                            ->video_conference_tray()
-                            ->camera_icon();
-
-    camera_icon->SetToggled(camera_muted_by_software_switch_);
-    camera_icon->UpdateCapturingState();
-  }
+  UpdateCameraIcons();
 }
 
 void VideoConferenceTrayController::OnInputMuteChanged(
@@ -283,6 +292,22 @@ void VideoConferenceTrayController::HandleDeviceUsedWhileDisabled(
     crosapi::mojom::VideoConferenceMediaDevice device,
     const std::u16string& app_name) {
   // TODO(b/249828245): Implement logic to handle this.
+}
+
+void VideoConferenceTrayController::UpdateCameraIcons() {
+  for (auto* root_window_controller :
+       Shell::Get()->GetAllRootWindowControllers()) {
+    DCHECK(root_window_controller);
+    DCHECK(root_window_controller->GetStatusAreaWidget());
+
+    auto* camera_icon = root_window_controller->GetStatusAreaWidget()
+                            ->video_conference_tray()
+                            ->camera_icon();
+
+    camera_icon->SetToggled(camera_muted_by_hardware_switch_ ||
+                            camera_muted_by_software_switch_);
+    camera_icon->UpdateCapturingState();
+  }
 }
 
 }  // namespace ash

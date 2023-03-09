@@ -52,7 +52,7 @@ void FakeVideoConferenceTrayController::SetMicrophoneMuted(bool muted) {
 }
 
 bool FakeVideoConferenceTrayController::GetCameraMuted() {
-  return camera_muted_by_software_switch();
+  return camera_muted_by_hardware_switch() || camera_muted_by_software_switch();
 }
 
 bool FakeVideoConferenceTrayController::GetMicrophoneMuted() {

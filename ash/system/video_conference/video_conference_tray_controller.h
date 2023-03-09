@@ -127,6 +127,9 @@ class ASH_EXPORT VideoConferenceTrayController
       const std::u16string& app_name);
 
   // media::CameraPrivacySwitchObserver:
+  void OnCameraHWPrivacySwitchStateChanged(
+      const std::string& device_id,
+      cros::mojom::CameraPrivacySwitchState state) override;
   void OnCameraSWPrivacySwitchStateChanged(
       cros::mojom::CameraPrivacySwitchState state) override;
 
@@ -143,6 +146,9 @@ class ASH_EXPORT VideoConferenceTrayController
     return effects_manager_;
   }
 
+  bool camera_muted_by_hardware_switch() const {
+    return camera_muted_by_hardware_switch_;
+  }
   bool camera_muted_by_software_switch() const {
     return camera_muted_by_software_switch_;
   }
@@ -150,13 +156,18 @@ class ASH_EXPORT VideoConferenceTrayController
   bool initialized() const { return initialized_; }
 
  private:
+  // Update the state of the camera icons across all `VideoConferenceTray`.
+  void UpdateCameraIcons();
+
   // This keeps track the current VC media state. The state is being updated by
   // `UpdateWithMediaState()`, calling from `VideoConferenceManagerAsh`.
   VideoConferenceMediaState state_;
 
-  // This keeps track of the current Camera Software Privacy Switch state.
-  // Updated via `OnCameraSWPrivacySwitchStateChanged()` Fetching this would
-  // otherwise take an asynchronous call to `media::CameraHalDispatcherImpl`.
+  // This keeps track of the current Camera Privacy Switch state.
+  // Updated via `OnCameraHWPrivacySwitchStateChanged()` and
+  // `OnCameraSWPrivacySwitchStateChanged()` Fetching this would otherwise take
+  // an asynchronous call to `media::CameraHalDispatcherImpl`.
+  bool camera_muted_by_hardware_switch_ = false;
   bool camera_muted_by_software_switch_ = false;
 
   // Used by the views to construct and lay out effects in the bubble.
