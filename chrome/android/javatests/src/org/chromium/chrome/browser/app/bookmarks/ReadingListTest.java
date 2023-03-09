@@ -51,7 +51,6 @@ import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkDelegate;
-import org.chromium.chrome.browser.bookmarks.BookmarkItemsAdapter;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerCoordinator;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkPage;
@@ -60,6 +59,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkRow;
 import org.chromium.chrome.browser.bookmarks.BookmarkToolbar;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
+import org.chromium.chrome.browser.bookmarks.TestingDelegate;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.tab.Tab;
@@ -190,16 +190,12 @@ public class ReadingListTest {
         return bookmarkId;
     }
 
-    private BookmarkItemsAdapter getReorderAdapter() {
-        return (BookmarkItemsAdapter) getAdapter();
-    }
-
-    private RecyclerView.Adapter getAdapter() {
-        return mItemsContainer.getAdapter();
+    private TestingDelegate getTestingDelegate() {
+        return mBookmarkManagerCoordinator.getTestingDelegate();
     }
 
     private BookmarkId getIdByPosition(int pos) {
-        return getReorderAdapter().getIdByPosition(pos);
+        return getTestingDelegate().getIdByPositionForTesting(pos);
     }
 
     private BookmarkDelegate getBookmarkDelegate() {
@@ -350,7 +346,7 @@ public class ReadingListTest {
 
         View readingListRow = mItemsContainer.findViewHolderForAdapterPosition(1).itemView;
         Assert.assertEquals("The 2nd view should be reading list.", BookmarkType.READING_LIST,
-                getReorderAdapter().getIdByPosition(1).getType());
+                getIdByPosition(1).getType());
         TestThreadUtils.runOnUiThreadBlocking(() -> TouchCommon.singleClickView(readingListRow));
 
         ChromeTabbedActivity activity = BookmarkTestUtil.waitForTabbedActivity();
@@ -418,7 +414,7 @@ public class ReadingListTest {
         Assert.assertEquals("No overflow menu for reading list folder.", View.GONE,
                 readingListRow.findViewById(R.id.more).getVisibility());
         Assert.assertEquals("The 1st view should be reading list.", BookmarkType.READING_LIST,
-                getReorderAdapter().getIdByPosition(0).getType());
+                getIdByPosition(0).getType());
         onView(withText("Reading list")).check(matches(isDisplayed()));
     }
 

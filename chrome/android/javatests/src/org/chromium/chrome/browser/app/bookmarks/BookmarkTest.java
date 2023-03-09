@@ -75,6 +75,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkToolbar;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkShoppingItemRow;
+import org.chromium.chrome.browser.bookmarks.TestingDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
@@ -694,8 +695,6 @@ public class BookmarkTest {
         BookmarkId testFolder = addFolder(TEST_FOLDER_TITLE);
         addBookmark(TEST_PAGE_TITLE_FOO, mTestPageFoo, testFolder);
         openBookmarkManager();
-
-        RecyclerView.Adapter adapter = getAdapter();
 
         // Start searching, enter a query.
         TestThreadUtils.runOnUiThreadBlocking(getBookmarkDelegate()::openSearchUi);
@@ -1342,7 +1341,7 @@ public class BookmarkTest {
                 getAdapter().getItemCount());
 
         // Verify that bookmark 1 is editable (so more button can be triggered) but not movable.
-        BookmarkId partnerBookmarkId1 = getReorderAdapter().getIdByPosition(0);
+        BookmarkId partnerBookmarkId1 = getIdByPosition(0);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             BookmarkItem partnerBookmarkItem1 = mBookmarkModel.getBookmarkById(partnerBookmarkId1);
             partnerBookmarkItem1.forceEditableForTesting();
@@ -1362,7 +1361,7 @@ public class BookmarkTest {
         onView(withText("Move down")).check(doesNotExist());
 
         // Verify that bookmark 2 is not movable.
-        BookmarkId partnerBookmarkId2 = getReorderAdapter().getIdByPosition(1);
+        BookmarkId partnerBookmarkId2 = getIdByPosition(1);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             BookmarkItem partnerBookmarkItem2 = mBookmarkModel.getBookmarkById(partnerBookmarkId2);
             partnerBookmarkItem2.forceEditableForTesting();
@@ -1397,7 +1396,7 @@ public class BookmarkTest {
                     mBookmarkModel.getOtherFolderId(), 0, TEST_TITLE_A, mTestUrlA));
         });
 
-        TestThreadUtils.runOnUiThreadBlocking(adapter::simulateSignInForTesting);
+        TestThreadUtils.runOnUiThreadBlocking(getTestingDelegate()::simulateSignInForTesting);
         Assert.assertEquals(
                 "Expected promo, \"Reading List\", \"Mobile Bookmarks\" and \"Other Bookmarks\" folder to appear!",
                 4, adapter.getItemCount());
@@ -1911,6 +1910,10 @@ public class BookmarkTest {
         return (BookmarkItemsAdapter) getAdapter();
     }
 
+    private TestingDelegate getTestingDelegate() {
+        return mBookmarkManagerCoordinator.getTestingDelegate();
+    }
+
     private void enterSearch() throws Exception {
         View searchButton = mBookmarkManagerCoordinator.getToolbarForTesting().findViewById(
                 R.id.search_menu_id);
@@ -2000,11 +2003,11 @@ public class BookmarkTest {
     }
 
     private BookmarkId getIdByPosition(int pos) {
-        return getReorderAdapter().getIdByPosition(pos);
+        return getTestingDelegate().getIdByPositionForTesting(pos);
     }
 
     private void searchBookmarks(final String query) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> getReorderAdapter().search(query));
+        TestThreadUtils.runOnUiThreadBlocking(() -> getTestingDelegate().searchForTesting(query));
     }
 
     private void openFolder(BookmarkId folder) {

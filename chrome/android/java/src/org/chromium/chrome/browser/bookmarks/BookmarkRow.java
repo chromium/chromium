@@ -316,7 +316,6 @@ public abstract class BookmarkRow
     @Override
     public void onSearchStateSet() {}
 
-    @VisibleForTesting
     public boolean isItemSelected() {
         return mDelegate.getSelectionDelegate().isItemSelected(mBookmarkId);
     }

@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.ContextUtils;
@@ -107,10 +106,9 @@ public class BookmarkManagerCoordinator implements SearchDelegate, BackPressHand
                 mMainView.findViewById(R.id.selectable_list);
         mSelectableListLayout = selectableList;
         mSelectableListLayout.initializeEmptyView(R.string.bookmarks_folder_empty);
-        BookmarkItemsAdapter bookmarkItemsAdapter =
-                new BookmarkItemsAdapter(context, profile, this::createView, this::bindView);
-        mPromoHeaderManager = bookmarkItemsAdapter.getPromoHeaderManager();
 
+        BookmarkItemsAdapter bookmarkItemsAdapter =
+                new BookmarkItemsAdapter(context, this::createView, this::bindView);
         mRecyclerView = mSelectableListLayout.initializeRecyclerView(
                 (RecyclerView.Adapter<RecyclerView.ViewHolder>) bookmarkItemsAdapter);
 
@@ -128,7 +126,8 @@ public class BookmarkManagerCoordinator implements SearchDelegate, BackPressHand
         mUndoController = new BookmarkUndoController(context, mBookmarkModel, snackbarManager);
         mMediator = new BookmarkManagerMediator(context, mBookmarkModel, mBookmarkOpener,
                 mSelectableListLayout, selectionDelegate, mRecyclerView, bookmarkItemsAdapter,
-                largeIconBridge, isDialogUi, isIncognito, mBackPressStateSupplier);
+                largeIconBridge, isDialogUi, isIncognito, mBackPressStateSupplier, profile);
+        mPromoHeaderManager = mMediator.getPromoHeaderManager();
 
         bookmarkDelegateSupplier.set(/*bookmarkDelegate=*/mMediator);
 
@@ -204,7 +203,7 @@ public class BookmarkManagerCoordinator implements SearchDelegate, BackPressHand
 
     @Override
     public void onSearchTextChanged(String query) {
-        mMediator.onSearchTextChanged(query);
+        mMediator.search(query);
     }
 
     @Override
@@ -346,17 +345,14 @@ public class BookmarkManagerCoordinator implements SearchDelegate, BackPressHand
 
     // Testing methods.
 
-    @VisibleForTesting
     public BookmarkToolbar getToolbarForTesting() {
         return mBookmarkToolbarCoordinator.getToolbarForTesting(); // IN-TEST
     }
 
-    @VisibleForTesting
     public BookmarkUndoController getUndoControllerForTesting() {
         return mUndoController;
     }
 
-    @VisibleForTesting
     public RecyclerView getRecyclerViewForTesting() {
         return mRecyclerView;
     }
@@ -370,6 +366,10 @@ public class BookmarkManagerCoordinator implements SearchDelegate, BackPressHand
     }
 
     public BookmarkDelegate getBookmarkDelegateForTesting() {
+        return mMediator;
+    }
+
+    public TestingDelegate getTestingDelegate() {
         return mMediator;
     }
 }

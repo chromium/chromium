@@ -10,15 +10,17 @@ import static org.mockito.Mockito.verify;
 
 import static org.chromium.ui.test.util.MockitoHelper.doRunnable;
 
-import android.content.Context;
-import android.view.accessibility.AccessibilityManager;
+import android.app.Activity;
 
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.core.app.ActivityScenario;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
@@ -28,11 +30,22 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.components.signin.AccountManagerFacade;
+import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.ui.base.TestActivity;
 
 import java.util.Arrays;
 
@@ -40,12 +53,16 @@ import java.util.Arrays;
 @Batch(Batch.UNIT_TESTS)
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@Features.EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH, ChromeFeatureList.SHOPPING_LIST})
 public class BookmarkManagerMediatorTest {
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule
+    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
+            new ActivityScenarioRule<>(TestActivity.class);
+    @Rule
+    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
-    @Mock
-    Context mContext;
     @Mock
     BookmarkModel mBookmarkModel;
     @Mock
@@ -57,13 +74,21 @@ public class BookmarkManagerMediatorTest {
     @Mock
     RecyclerView mRecyclerView;
     @Mock
-    BookmarkItemsAdapter mBookmarkItemsAdapter;
-    @Mock
     LargeIconBridge mLargeIconBridge;
     @Mock
-    AccessibilityManager mAccessibilityManager;
-    @Mock
     BookmarkUiObserver mBookmarkUiObserver;
+    @Mock
+    Profile mProfile;
+    @Mock
+    SyncService mSyncService;
+    @Mock
+    IdentityServicesProvider mIdentityServicesProvider;
+    @Mock
+    SigninManager mSigninManager;
+    @Mock
+    IdentityManager mIdentityManager;
+    @Mock
+    AccountManagerFacade mAccountManagerFacade;
 
     final ObservableSupplierImpl<Boolean> mBackPressStateSupplier = new ObservableSupplierImpl<>();
     final ObservableSupplierImpl<Boolean> mSelectableListLayoutHandleBackPressChangedSupplier =
@@ -71,35 +96,48 @@ public class BookmarkManagerMediatorTest {
     final BookmarkId mFolderId = new BookmarkId(/*id=*/1, BookmarkType.NORMAL);
     final BookmarkId mFolder2Id = new BookmarkId(/*id=*/2, BookmarkType.NORMAL);
 
-    BookmarkManagerMediator mMediator;
+    private ActivityScenario<TestActivity> mActivityScenario;
+    private Activity mActivity;
+    private BookmarkManagerMediator mMediator;
 
     @Before
     public void setUp() {
-        // Setup Context.
-        doReturn(mAccessibilityManager)
-                .when(mContext)
-                .getSystemService(Context.ACCESSIBILITY_SERVICE);
+        mActivityScenarioRule.getScenario().onActivity((activity) -> {
+            mActivity = activity;
 
-        // Setup BookmarkModel.
-        doReturn(true).when(mBookmarkModel).doesBookmarkExist(any());
-        doReturn(Arrays.asList(mFolder2Id)).when(mBookmarkModel).getChildIDs(mFolderId);
+            // Setup BookmarkModel.
+            doReturn(true).when(mBookmarkModel).doesBookmarkExist(any());
+            doReturn(Arrays.asList(mFolder2Id)).when(mBookmarkModel).getChildIDs(mFolderId);
+            BookmarkItem bookmarkItem =
+                    new BookmarkItem(mFolderId, "Folder", null, true, null, true, false, 0, false);
+            doReturn(bookmarkItem).when(mBookmarkModel).getBookmarkById(any());
 
-        // Setup SelectableListLayout.
-        doReturn(mContext).when(mSelectableListLayout).getContext();
-        doReturn(mSelectableListLayoutHandleBackPressChangedSupplier)
-                .when(mSelectableListLayout)
-                .getHandleBackPressChangedSupplier();
+            // Setup SelectableListLayout.
+            doReturn(mActivity).when(mSelectableListLayout).getContext();
+            doReturn(mSelectableListLayoutHandleBackPressChangedSupplier)
+                    .when(mSelectableListLayout)
+                    .getHandleBackPressChangedSupplier();
 
-        // Setup BookmarkUIObserver.
-        doRunnable(() -> mMediator.removeUiObserver(mBookmarkUiObserver))
-                .when(mBookmarkUiObserver)
-                .onDestroy();
+            // Setup BookmarkUIObserver.
+            doRunnable(() -> mMediator.removeUiObserver(mBookmarkUiObserver))
+                    .when(mBookmarkUiObserver)
+                    .onDestroy();
 
-        mMediator = new BookmarkManagerMediator(mContext, mBookmarkModel, mBookmarkOpener,
-                mSelectableListLayout, mSelectionDelegate, mRecyclerView, mBookmarkItemsAdapter,
-                mLargeIconBridge, /*isDialogUi=*/true, /*isIncognito=*/false,
-                mBackPressStateSupplier);
-        mMediator.addUiObserver(mBookmarkUiObserver);
+            // Setup sync/identify mocks.
+            SyncService.overrideForTests(mSyncService);
+            IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
+            doReturn(mSigninManager).when(mIdentityServicesProvider).getSigninManager(any());
+            doReturn(mIdentityManager).when(mSigninManager).getIdentityManager();
+            AccountManagerFacadeProvider.setInstanceForTests(mAccountManagerFacade);
+
+            BookmarkItemsAdapter bookmarkItemsAdapter =
+                    new BookmarkItemsAdapter(mActivity, (a, b) -> null, (a, b, c) -> {});
+            mMediator = new BookmarkManagerMediator(mActivity, mBookmarkModel, mBookmarkOpener,
+                    mSelectableListLayout, mSelectionDelegate, mRecyclerView, bookmarkItemsAdapter,
+                    mLargeIconBridge, /*isDialogUi=*/true, /*isIncognito=*/false,
+                    mBackPressStateSupplier, mProfile);
+            mMediator.addUiObserver(mBookmarkUiObserver);
+        });
     }
 
     void finishLoading() {

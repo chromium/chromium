@@ -1978,28 +1978,6 @@
     <issue
         id="WrongConstant"
         message="Must be one of: ViewType.INVALID, ViewType.PERSONALIZED_SIGNIN_PROMO, ViewType.PERSONALIZED_SYNC_PROMO, ViewType.SYNC_PROMO, ViewType.FOLDER, ViewType.BOOKMARK, ViewType.DIVIDER, ViewType.SECTION_HEADER, ViewType.SHOPPING_POWER_BOOKMARK, ViewType.TAG_CHIP_LIST"
-        errorLine1="            case ViewType.SHOPPING_FILTER:"
-        errorLine2="                          ~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkItemsAdapter.java"
-            line="254"
-            column="27"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ViewType.INVALID, ViewType.PERSONALIZED_SIGNIN_PROMO, ViewType.PERSONALIZED_SYNC_PROMO, ViewType.SYNC_PROMO, ViewType.FOLDER, ViewType.BOOKMARK, ViewType.DIVIDER, ViewType.SECTION_HEADER, ViewType.SHOPPING_POWER_BOOKMARK, ViewType.TAG_CHIP_LIST"
-        errorLine1="        } else if (holder.getItemViewType() == ViewType.SHOPPING_FILTER) {"
-        errorLine2="                                                        ~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkItemsAdapter.java"
-            line="296"
-            column="57"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ViewType.INVALID, ViewType.PERSONALIZED_SIGNIN_PROMO, ViewType.PERSONALIZED_SYNC_PROMO, ViewType.SYNC_PROMO, ViewType.FOLDER, ViewType.BOOKMARK, ViewType.DIVIDER, ViewType.SECTION_HEADER, ViewType.SHOPPING_POWER_BOOKMARK, ViewType.TAG_CHIP_LIST"
         errorLine1="                ViewType.SHOPPING_FILTER, /*bookmarkItem=*/null, /*sectionHeaderData=*/null);"
         errorLine2="                         ~~~~~~~~~~~~~~~">
         <location
@@ -6956,50 +6934,6 @@
             file="../../chrome/browser/language/android/java/src/org/chromium/chrome/browser/language/AppLanguagePromoDialog.java"
             line="217"
             column="13"/>
-    </issue>
-
-    <issue
-        id="NotifyDataSetChanged"
-        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort."
-        errorLine1="        notifyDataSetChanged();"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkItemsAdapter.java"
-            line="190"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="NotifyDataSetChanged"
-        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort."
-        errorLine1="        notifyDataSetChanged();"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkItemsAdapter.java"
-            line="356"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="NotifyDataSetChanged"
-        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort."
-        errorLine1="        notifyDataSetChanged();"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkItemsAdapter.java"
-            line="406"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="NotifyDataSetChanged"
-        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort."
-        errorLine1="        if (mElements != null) notifyDataSetChanged();"
-        errorLine2="                               ~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkItemsAdapter.java"
-            line="419"
-            column="32"/>
     </issue>
 
     <issue
