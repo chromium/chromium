@@ -2580,8 +2580,10 @@ void Textfield::PaintTextAndCursor(gfx::Canvas* canvas) {
 
     canvas->DrawStringRectWithFlags(
         GetPlaceholderText(), placeholder_font_list_.value_or(GetFontList()),
-        placeholder_text_color_.value_or(GetColorProvider()->GetColor(
-            style::GetColorId(style::CONTEXT_TEXTFIELD, style::STYLE_HINT))),
+        placeholder_text_color_.value_or(
+            GetColorProvider()->GetColor(style::GetColorId(
+                style::CONTEXT_TEXTFIELD_PLACEHOLDER,
+                GetInvalid() ? style::STYLE_INVALID : style::STYLE_PRIMARY))),
         render_text->display_rect(), placeholder_text_draw_flags);
   }
 

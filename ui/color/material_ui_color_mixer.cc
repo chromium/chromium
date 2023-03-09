@@ -68,11 +68,12 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
   mixer[kColorTextfieldBackgroundDisabled] = {GetResultingPaintColor(
       {kColorSysStateDisabledContainer}, {kColorTextfieldBackground})};
   mixer[kColorTextfieldForeground] = {kColorSysOnSurface};
-  mixer[kColorTextfieldForegroundInvalid] = {
+  mixer[kColorTextfieldForegroundPlaceholderInvalid] = {
       BlendForMinContrast(kColorSysError, kColorTextfieldBackground)};
   mixer[kColorTextfieldForegroundDisabled] = {kColorSysStateDisabled};
-  mixer[kColorTextfieldForegroundPlaceholder] = {kColorSysOnSurface};
-  mixer[kColorTextfieldInvalidOutline] = {kColorTextfieldForegroundInvalid};
+  mixer[kColorTextfieldForegroundPlaceholder] = {kColorSysOnSurfaceSubtle};
+  mixer[kColorTextfieldInvalidOutline] = {
+      kColorTextfieldForegroundPlaceholderInvalid};
   mixer[kColorTextfieldSelectionBackground] = {kColorSysTonalContainer};
   mixer[kColorToggleButtonHover] = {kColorSysStateHover};
   mixer[kColorToggleButtonPressed] = {kColorSysStatePressed};

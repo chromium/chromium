@@ -377,7 +377,7 @@
   E_CPONLY(kColorTextfieldBackgroundDisabled) \
   E_CPONLY(kColorTextfieldForeground) \
   E_CPONLY(kColorTextfieldForegroundDisabled) \
-  E_CPONLY(kColorTextfieldForegroundInvalid) \
+  E_CPONLY(kColorTextfieldForegroundPlaceholderInvalid) \
   E_CPONLY(kColorTextfieldForegroundPlaceholder) \
   E_CPONLY(kColorTextfieldSelectionBackground) \
   E_CPONLY(kColorTextfieldSelectionForeground) \

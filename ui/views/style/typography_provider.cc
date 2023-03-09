@@ -145,9 +145,11 @@ ui::ColorId TypographyProvider::GetColorId(int context, int style) const {
       }
       break;
     case style::CONTEXT_TEXTFIELD:
-      return style == style::STYLE_INVALID
-                 ? ui::kColorTextfieldForegroundInvalid
-                 : ui::kColorTextfieldForeground;
+      return ui::kColorTextfieldForeground;
+    case style::CONTEXT_TEXTFIELD_PLACEHOLDER:
+      return (style == style::STYLE_INVALID)
+                 ? ui::kColorTextfieldForegroundPlaceholderInvalid
+                 : ui::kColorTextfieldForegroundPlaceholder;
     case style::CONTEXT_MENU:
     case style::CONTEXT_TOUCH_MENU:
       return GetMenuColorId(style);

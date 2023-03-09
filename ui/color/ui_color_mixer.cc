@@ -258,10 +258,11 @@ void AddUiColorMixer(ColorProvider* provider,
   mixer[kColorTextfieldBackground] = {kColorEndpointBackground};
   mixer[kColorTextfieldBackgroundDisabled] = {kColorPrimaryBackground};
   mixer[kColorTextfieldForeground] = {kColorPrimaryForeground};
-  mixer[kColorTextfieldForegroundInvalid] = {kColorTextfieldForeground};
   mixer[kColorTextfieldForegroundDisabled] = {kColorDisabledForeground};
   mixer[kColorTextfieldForegroundPlaceholder] = {
       kColorTextfieldForegroundDisabled};
+  mixer[kColorTextfieldForegroundPlaceholderInvalid] = {
+      kColorTextfieldForegroundPlaceholder};
   mixer[kColorTextfieldSelectionBackground] = {kColorTextSelectionBackground};
   mixer[kColorTextfieldSelectionForeground] = {kColorTextSelectionForeground};
   mixer[kColorTextfieldInvalidOutline] = {kColorAlertHighSeverity};
