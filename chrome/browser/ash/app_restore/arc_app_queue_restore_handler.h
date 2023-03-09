@@ -228,7 +228,6 @@ class ArcAppQueueRestoreHandler
   void OnProbeServiceDisconnect();
 
   void RecordArcGhostWindowLaunch(bool is_arc_ghost_window);
-  void RecordLaunchBoundsState(bool has_root_bounds, bool has_screen_bounds);
   void RecordRestoreResult();
 
   SchedulerConfigurationManager* GetSchedulerConfigurationManager();
