@@ -19,6 +19,7 @@
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
+#include "content/browser/file_system_access/features.h"
 #include "content/browser/file_system_access/file_system_access_write_lock_manager.h"
 #include "content/browser/file_system_access/fixed_file_system_access_permission_grant.h"
 #include "content/browser/file_system_access/mock_file_system_access_permission_context.h"
@@ -259,6 +260,11 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest, GetEntries) {
 
 #if BUILDFLAG(IS_POSIX)
 TEST_F(FileSystemAccessDirectoryHandleImplTest, GetFile_Symlink) {
+  if (!base::FeatureList::IsEnabled(
+          features::kFileSystemAccessDirectoryIterationSymbolicLinkCheck)) {
+    return;
+  }
+
   base::FilePath symlink_path(dir_.GetPath().AppendASCII("symlink"));
   base::FilePath target_path(dir_.GetPath().AppendASCII("target"));
   ASSERT_TRUE(base::CreateSymbolicLink(target_path, symlink_path));
