@@ -10,6 +10,7 @@
 #include "base/android/apk_assets.h"
 #include "base/android/library_loader/anchor_functions.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 #if !defined(ARCH_CPU_ARMEL)
 #error This file should not be built for this architecture.
@@ -119,6 +120,8 @@ static_assert(
     sizeof(CFIUnwindDataRow) == 4,
     "The CFIUnwindDataRow struct must be exactly 4 bytes for searching.");
 
+ABSL_CONST_INIT thread_local CFIBacktraceAndroid::CFICache cfi_cache;
+
 }  // namespace
 
 // static
@@ -142,31 +145,27 @@ uintptr_t CFIBacktraceAndroid::executable_end_addr() {
   return base::android::kEndOfText;
 }
 
-CFIBacktraceAndroid::CFIBacktraceAndroid()
-    : thread_local_cfi_cache_(
-          [](void* ptr) { delete static_cast<CFICache*>(ptr); }) {
-  Initialize();
-}
-
-CFIBacktraceAndroid::~CFIBacktraceAndroid() {}
-
-void CFIBacktraceAndroid::Initialize() {
+CFIBacktraceAndroid::CFIBacktraceAndroid() {
   // This file name is defined by extract_unwind_tables.gni.
   static constexpr char kCfiFileName[] = "assets/unwind_cfi_32";
   static constexpr char kSplitName[] = "stack_unwinder";
 
   MemoryMappedFile::Region cfi_region;
   int fd = base::android::OpenApkAsset(kCfiFileName, kSplitName, &cfi_region);
-  if (fd < 0)
+  if (fd < 0) {
     return;
+  }
   cfi_mmap_ = std::make_unique<MemoryMappedFile>();
   // The CFI region starts at |cfi_region.offset|.
-  if (!cfi_mmap_->Initialize(base::File(fd), cfi_region))
+  if (!cfi_mmap_->Initialize(base::File(fd), cfi_region)) {
     return;
+  }
 
   ParseCFITables();
   can_unwind_stack_frames_ = true;
 }
+
+CFIBacktraceAndroid::~CFIBacktraceAndroid() = default;
 
 void CFIBacktraceAndroid::ParseCFITables() {
   // The first 4 bytes in the file is the number of entries in UNW_INDEX table.
@@ -243,19 +242,15 @@ size_t CFIBacktraceAndroid::Unwind(uintptr_t pc,
   return depth;
 }
 
-void CFIBacktraceAndroid::AllocateCacheForCurrentThread() {
-  GetThreadLocalCFICache();
-}
-
 bool CFIBacktraceAndroid::FindCFIRowForPC(uintptr_t func_addr,
                                           CFIBacktraceAndroid::CFIRow* cfi) {
   if (!can_unwind_stack_frames())
     return false;
 
-  auto* cache = GetThreadLocalCFICache();
   *cfi = {0};
-  if (cache->Find(func_addr, cfi))
+  if (cfi_cache.Find(func_addr, cfi)) {
     return true;
+  }
 
   // Consider each column of UNW_INDEX table as arrays of uintptr_t (function
   // addresses) and uint16_t (indices). Define start and end iterator on the
@@ -326,17 +321,8 @@ bool CFIBacktraceAndroid::FindCFIRowForPC(uintptr_t func_addr,
   DCHECK(cfi->ra_offset);
 
   // safe to update since the cache is thread local.
-  cache->Add(func_addr, *cfi);
+  cfi_cache.Add(func_addr, *cfi);
   return true;
-}
-
-CFIBacktraceAndroid::CFICache* CFIBacktraceAndroid::GetThreadLocalCFICache() {
-  auto* cache = static_cast<CFICache*>(thread_local_cfi_cache_.Get());
-  if (!cache) {
-    cache = new CFICache();
-    thread_local_cfi_cache_.Set(cache);
-  }
-  return cache;
 }
 
 void CFIBacktraceAndroid::CFICache::Add(uintptr_t address, CFIRow cfi) {

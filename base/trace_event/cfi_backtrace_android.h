@@ -15,7 +15,6 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/threading/thread_local_storage.h"
 
 namespace base {
 namespace trace_event {
@@ -32,49 +31,6 @@ namespace trace_event {
 // data.
 class BASE_EXPORT CFIBacktraceAndroid {
  public:
-  // Creates and initializes by memory mapping the unwind tables from apk assets
-  // on first call.
-  static CFIBacktraceAndroid* GetInitializedInstance();
-
-  // Returns true if the given program counter |pc| is mapped in chrome library.
-  static bool is_chrome_address(uintptr_t pc);
-
-  // Returns the start and end address of the current library.
-  static uintptr_t executable_start_addr();
-  static uintptr_t executable_end_addr();
-
-  // Returns true if stack unwinding is possible using CFI unwind tables in apk.
-  // There is no need to check this before each unwind call. Will always return
-  // the same value based on CFI tables being present in the binary.
-  bool can_unwind_stack_frames() const { return can_unwind_stack_frames_; }
-
-  // Returns the program counters by unwinding stack in the current thread in
-  // order of latest call frame first. Unwinding works only if
-  // can_unwind_stack_frames() returns true. This function allocates memory from
-  // heap for cache on the first call of the calling thread, unless
-  // AllocateCacheForCurrentThread() is called from the thread. For each stack
-  // frame, this method searches through the unwind table mapped in memory to
-  // find the unwind information for function and walks the stack to find all
-  // the return address. This only works until the last function call from the
-  // chrome.so. We do not have unwind information to unwind beyond any frame
-  // outside of chrome.so. Calls to Unwind() are thread safe and lock free, once
-  // Initialize() returns success.
-  size_t Unwind(const void** out_trace, size_t max_depth);
-
-  // Same as above function, but starts from a given program counter |pc|,
-  // stack pointer |sp| and link register |lr|. This can be from current thread
-  // or any other thread. But the caller must make sure that the thread's stack
-  // segment is not racy to read.
-  size_t Unwind(uintptr_t pc,
-                uintptr_t sp,
-                uintptr_t lr,
-                const void** out_trace,
-                size_t max_depth);
-
-  // Allocates memory for CFI cache for the current thread so that Unwind()
-  // calls are safe for signal handlers.
-  void AllocateCacheForCurrentThread();
-
   // The CFI information that correspond to an instruction.
   struct CFIRow {
     bool operator==(const CFIBacktraceAndroid::CFIRow& o) const {
@@ -89,15 +45,6 @@ class BASE_EXPORT CFIBacktraceAndroid {
     // address. Rule for unwinding PC: PC_prev = * (SP_prev - ra_offset).
     uint16_t ra_offset = 0;
   };
-
-  // Finds the CFI row for the given |func_addr| in terms of offset from
-  // the start of the current binary. Concurrent calls are thread safe.
-  bool FindCFIRowForPC(uintptr_t func_addr, CFIRow* out);
-
- private:
-  FRIEND_TEST_ALL_PREFIXES(CFIBacktraceAndroidTest, TestCFICache);
-  FRIEND_TEST_ALL_PREFIXES(CFIBacktraceAndroidTest, TestFindCFIRow);
-  FRIEND_TEST_ALL_PREFIXES(CFIBacktraceAndroidTest, TestUnwinding);
 
   // A simple cache that stores entries in table using prime modulo hashing.
   // This cache with 500 entries already gives us 95% hit rate, and fits in a
@@ -130,8 +77,50 @@ class BASE_EXPORT CFIBacktraceAndroid {
   static_assert(sizeof(CFIBacktraceAndroid::CFICache) < 4096,
                 "The cache does not fit in a single page.");
 
-  CFIBacktraceAndroid();
-  ~CFIBacktraceAndroid();
+  // Creates and initializes by memory mapping the unwind tables from apk assets
+  // on first call.
+  static CFIBacktraceAndroid* GetInitializedInstance();
+
+  // Returns true if the given program counter |pc| is mapped in chrome library.
+  static bool is_chrome_address(uintptr_t pc);
+
+  // Returns the start and end address of the current library.
+  static uintptr_t executable_start_addr();
+  static uintptr_t executable_end_addr();
+
+  // Returns true if stack unwinding is possible using CFI unwind tables in apk.
+  // There is no need to check this before each unwind call. Will always return
+  // the same value based on CFI tables being present in the binary.
+  bool can_unwind_stack_frames() const { return can_unwind_stack_frames_; }
+
+  // Returns the program counters by unwinding stack in the current thread in
+  // order of latest call frame first. Unwinding works only if
+  // can_unwind_stack_frames() returns true. For each stack frame, this method
+  // searches through the unwind table mapped in memory to find the unwind
+  // information for function and walks the stack to find all the return
+  // address. This only works until the last function call from the chrome.so.
+  // We do not have unwind information to unwind beyond any frame outside of
+  // chrome.so. Calls to Unwind() are thread safe and lock free.
+  size_t Unwind(const void** out_trace, size_t max_depth);
+
+  // Same as above function, but starts from a given program counter |pc|,
+  // stack pointer |sp| and link register |lr|. This can be from current thread
+  // or any other thread. But the caller must make sure that the thread's stack
+  // segment is not racy to read.
+  size_t Unwind(uintptr_t pc,
+                uintptr_t sp,
+                uintptr_t lr,
+                const void** out_trace,
+                size_t max_depth);
+
+  // Finds the CFI row for the given |func_addr| in terms of offset from
+  // the start of the current binary. Concurrent calls are thread safe.
+  bool FindCFIRowForPC(uintptr_t func_addr, CFIRow* out);
+
+ private:
+  FRIEND_TEST_ALL_PREFIXES(CFIBacktraceAndroidTest, TestCFICache);
+  FRIEND_TEST_ALL_PREFIXES(CFIBacktraceAndroidTest, TestFindCFIRow);
+  FRIEND_TEST_ALL_PREFIXES(CFIBacktraceAndroidTest, TestUnwinding);
 
   // Initializes unwind tables using the CFI asset file in the apk if present.
   // Also stores the limits of mapped region of the lib[mono]chrome.so binary,
@@ -141,12 +130,12 @@ class BASE_EXPORT CFIBacktraceAndroid {
   // heap profiling is turned off. But since we keep the memory map is clean,
   // the system can choose to evict the unused pages when needed. This would
   // still reduce the total amount of address space available in process.
-  void Initialize();
+  CFIBacktraceAndroid();
+
+  ~CFIBacktraceAndroid();
 
   // Finds the UNW_INDEX and UNW_DATA tables in from the CFI file memory map.
   void ParseCFITables();
-
-  CFICache* GetThreadLocalCFICache();
 
   // The start address of the memory mapped unwind table asset file. Unique ptr
   // because it is replaced in tests.
@@ -167,8 +156,6 @@ class BASE_EXPORT CFIBacktraceAndroid {
   raw_ptr<const uint16_t, AllowPtrArithmetic> unw_data_start_addr_ = nullptr;
 
   bool can_unwind_stack_frames_ = false;
-
-  ThreadLocalStorage::Slot thread_local_cfi_cache_;
 };
 
 }  // namespace trace_event

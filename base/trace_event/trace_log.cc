@@ -10,6 +10,7 @@
 #include <unordered_set>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -98,15 +99,19 @@ const size_t kTraceEventRingBufferChunks = kTraceEventVectorBufferChunks / 4;
 const size_t kEchoToConsoleTraceEventBufferChunks = 256;
 
 const size_t kTraceEventBufferSizeInBytes = 100 * 1024;
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-const int kThreadFlushTimeoutMs = 3000;
-#endif
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-static bool g_perfetto_initialized_by_tracelog;
+bool g_perfetto_initialized_by_tracelog = false;
+#else
+constexpr TimeDelta kThreadFlushTimeout = Seconds(3);
 #endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 TraceLog* g_trace_log_for_testing = nullptr;
+
+ABSL_CONST_INIT thread_local TraceLog::ThreadLocalEventBuffer*
+    thread_local_event_buffer = nullptr;
+ABSL_CONST_INIT thread_local bool thread_blocks_message_loop = false;
+ABSL_CONST_INIT thread_local bool thread_is_in_trace_event = false;
 
 ThreadTicks ThreadNow() {
   return ThreadTicks::IsSupported()
@@ -135,21 +140,6 @@ void InitializeMetadataEvent(TraceEvent* trace_event,
       trace_event_internal::kNoId,         // bind_id
       &args, TRACE_EVENT_FLAG_NONE);
 }
-
-class AutoThreadLocalBoolean {
- public:
-  explicit AutoThreadLocalBoolean(ThreadLocalBoolean* thread_local_boolean)
-      : thread_local_boolean_(thread_local_boolean) {
-    DCHECK(!thread_local_boolean_->Get());
-    thread_local_boolean_->Set(true);
-  }
-  AutoThreadLocalBoolean(const AutoThreadLocalBoolean&) = delete;
-  AutoThreadLocalBoolean& operator=(const AutoThreadLocalBoolean&) = delete;
-  ~AutoThreadLocalBoolean() { thread_local_boolean_->Set(false); }
-
- private:
-  raw_ptr<ThreadLocalBoolean> thread_local_boolean_;
-};
 
 // Use this function instead of TraceEventHandle constructor to keep the
 // overhead of ScopedTracer (trace_event.h) constructor minimum.
@@ -497,9 +487,11 @@ class TraceLog::ThreadLocalEventBuffer
   void FlushWhileLocked();
 
   void CheckThisIsCurrentBuffer() const {
-    DCHECK(trace_log_->thread_local_event_buffer_.Get() == this);
+    DCHECK_EQ(thread_local_event_buffer, this);
   }
 
+  const AutoReset<ThreadLocalEventBuffer*> resetter_{&thread_local_event_buffer,
+                                                     this, nullptr};
   // Since TraceLog is a leaky singleton, trace_log_ will always be valid
   // as long as the thread exists.
   raw_ptr<TraceLog> trace_log_;
@@ -532,14 +524,9 @@ TraceLog::ThreadLocalEventBuffer::~ThreadLocalEventBuffer() {
   CurrentThread::Get()->RemoveDestructionObserver(this);
   MemoryDumpManager::GetInstance()->UnregisterDumpProvider(this);
 
-  {
-    AutoLock lock(trace_log_->lock_);
-    FlushWhileLocked();
-
-    auto thread_id = PlatformThread::CurrentId();
-    trace_log_->thread_task_runners_.erase(thread_id);
-  }
-  trace_log_->thread_local_event_buffer_.Set(nullptr);
+  AutoLock lock(trace_log_->lock_);
+  FlushWhileLocked();
+  trace_log_->thread_task_runners_.erase(PlatformThread::CurrentId());
 }
 
 TraceEvent* TraceLog::ThreadLocalEventBuffer::AddTraceEvent(
@@ -696,20 +683,17 @@ void TraceLog::InitializeThreadLocalEventBufferIfSupported() {
   // - to handle the final flush.
   // For a thread without a message loop or if the message loop may be blocked,
   // the trace events will be added into the main buffer directly.
-  if (thread_blocks_message_loop_.Get() || !CurrentThread::IsSet() ||
+  if (thread_blocks_message_loop || !CurrentThread::IsSet() ||
       !SingleThreadTaskRunner::HasCurrentDefault()) {
     return;
   }
   HEAP_PROFILER_SCOPED_IGNORE;
-  auto* thread_local_event_buffer = thread_local_event_buffer_.Get();
   if (thread_local_event_buffer &&
       !CheckGeneration(thread_local_event_buffer->generation())) {
     delete thread_local_event_buffer;
-    thread_local_event_buffer = nullptr;
   }
   if (!thread_local_event_buffer) {
     thread_local_event_buffer = new ThreadLocalEventBuffer(this);
-    thread_local_event_buffer_.Set(thread_local_event_buffer);
   }
 }
 
@@ -1374,7 +1358,7 @@ void TraceLog::FlushInternal(const TraceLog::OutputCallback& cb,
         FROM_HERE,
         BindOnce(&TraceLog::OnFlushTimeout, Unretained(this), gen,
                  discard_events),
-        Milliseconds(kThreadFlushTimeoutMs));
+        kThreadFlushTimeout);
     return;
   }
 
@@ -1511,7 +1495,7 @@ void TraceLog::FlushCurrentThread(int generation, bool discard_events) {
   }
 
   // This will flush the thread local buffer.
-  delete thread_local_event_buffer_.Get();
+  delete thread_local_event_buffer;
 
   auto on_flush_override = on_flush_override_.load(std::memory_order_relaxed);
   if (on_flush_override) {
@@ -1576,8 +1560,9 @@ bool TraceLog::ShouldAddAfterUpdatingState(
   // Avoid re-entrance of AddTraceEvent. This may happen in GPU process when
   // ECHO_TO_CONSOLE is enabled: AddTraceEvent -> LOG(ERROR) ->
   // GpuProcessLogMessageHandler -> PostPendingTask -> TRACE_EVENT ...
-  if (thread_is_in_trace_event_.Get())
+  if (thread_is_in_trace_event) {
     return false;
+  }
 
   // Check and update the current thread name only if the event is for the
   // current thread to avoid locks in most cases.
@@ -1588,9 +1573,9 @@ bool TraceLog::ShouldAddAfterUpdatingState(
     // call (if any), but don't bother if the new name is empty. Note this will
     // not detect a thread name change within the same char* buffer address: we
     // favor common case performance over corner case correctness.
-    static auto* current_thread_name = new ThreadLocalPointer<const char>();
-    if (new_name != current_thread_name->Get() && new_name && *new_name) {
-      current_thread_name->Set(new_name);
+    thread_local const char* current_thread_name = nullptr;
+    if (new_name != current_thread_name && new_name && *new_name) {
+      current_thread_name = new_name;
 
       AutoLock thread_info_lock(thread_info_lock_);
 
@@ -1605,8 +1590,9 @@ bool TraceLog::ShouldAddAfterUpdatingState(
             existing_name->second, ",", base::KEEP_WHITESPACE,
             base::SPLIT_WANT_NONEMPTY);
         if (!Contains(existing_names, new_name)) {
-          if (!existing_names.empty())
+          if (!existing_names.empty()) {
             existing_name->second.push_back(',');
+          }
           existing_name->second.append(new_name);
         }
       }
@@ -1737,7 +1723,7 @@ TraceEventHandle TraceLog::AddTraceEventWithThreadIdAndTimestamps(
   }
   DCHECK(!timestamp.is_null());
 
-  AutoThreadLocalBoolean thread_is_in_trace_event(&thread_is_in_trace_event_);
+  const AutoReset<bool> resetter(&thread_is_in_trace_event, true, false);
 
   // Flow bind_ids don't have scopes, so we need to mangle in-process ones to
   // avoid collisions.
@@ -1748,12 +1734,12 @@ TraceEventHandle TraceLog::AddTraceEventWithThreadIdAndTimestamps(
 
   TimeTicks offset_event_timestamp = OffsetTimestamp(timestamp);
 
-  ThreadLocalEventBuffer* thread_local_event_buffer = nullptr;
+  ThreadLocalEventBuffer* event_buffer = nullptr;
   if (*category_group_enabled & RECORDING_MODE) {
-    // |thread_local_event_buffer_| can be null if the current thread doesn't
+    // |thread_local_event_buffer| can be null if the current thread doesn't
     // have a message loop or the message loop is blocked.
     InitializeThreadLocalEventBufferIfSupported();
-    thread_local_event_buffer = thread_local_event_buffer_.Get();
+    event_buffer = thread_local_event_buffer;
   }
 
   if (*category_group_enabled & RECORDING_MODE) {
@@ -1764,9 +1750,9 @@ TraceEventHandle TraceLog::AddTraceEventWithThreadIdAndTimestamps(
           thread_id, offset_event_timestamp, thread_timestamp, phase,
           category_group_enabled, name, scope, id, bind_id, args, flags);
 
-      trace_event_override(
-          &new_trace_event,
-          /*thread_will_flush=*/thread_local_event_buffer != nullptr, &handle);
+      trace_event_override(&new_trace_event,
+                           /*thread_will_flush=*/event_buffer != nullptr,
+                           &handle);
       return handle;
     }
   }
@@ -1779,8 +1765,8 @@ TraceEventHandle TraceLog::AddTraceEventWithThreadIdAndTimestamps(
     OptionalAutoLock lock(&lock_);
 
     TraceEvent* trace_event = nullptr;
-    if (thread_local_event_buffer) {
-      trace_event = thread_local_event_buffer->AddTraceEvent(&handle);
+    if (event_buffer) {
+      trace_event = event_buffer->AddTraceEvent(&handle);
     } else {
       lock.EnsureAcquired();
       trace_event = AddEventToThreadSharedChunkWhileLocked(&handle, true);
@@ -1907,9 +1893,10 @@ void TraceLog::UpdateTraceEventDurationExplicit(
   // Avoid re-entrance of AddTraceEvent. This may happen in GPU process when
   // ECHO_TO_CONSOLE is enabled: AddTraceEvent -> LOG(ERROR) ->
   // GpuProcessLogMessageHandler -> PostPendingTask -> TRACE_EVENT ...
-  if (thread_is_in_trace_event_.Get())
+  if (thread_is_in_trace_event) {
     return;
-  AutoThreadLocalBoolean thread_is_in_trace_event(&thread_is_in_trace_event_);
+  }
+  const AutoReset<bool> resetter(&thread_is_in_trace_event, true);
 
 #if BUILDFLAG(IS_WIN)
   // Generate an ETW event that marks the end of a complete event.
@@ -2056,9 +2043,9 @@ TraceEvent* TraceLog::GetEventByHandleInternal(TraceEventHandle handle,
   DCHECK(handle.chunk_index <= TraceBufferChunk::kMaxChunkIndex);
   DCHECK(handle.event_index <= TraceBufferChunk::kTraceBufferChunkSize - 1);
 
-  if (thread_local_event_buffer_.Get()) {
+  if (thread_local_event_buffer) {
     TraceEvent* trace_event =
-        thread_local_event_buffer_.Get()->GetEventByHandle(handle);
+        thread_local_event_buffer->GetEventByHandle(handle);
     if (trace_event)
       return trace_event;
   }
@@ -2146,9 +2133,9 @@ size_t TraceLog::GetObserverCountForTest() const {
 }
 
 void TraceLog::SetCurrentThreadBlocksMessageLoop() {
-  thread_blocks_message_loop_.Set(true);
+  thread_blocks_message_loop = true;
   // This will flush the thread local buffer.
-  delete thread_local_event_buffer_.Get();
+  delete thread_local_event_buffer;
 }
 
 TraceBuffer* TraceLog::CreateTraceBuffer() {
