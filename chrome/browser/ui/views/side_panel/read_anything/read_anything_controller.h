@@ -34,7 +34,8 @@ class Browser;
 //  This class is owned by the ReadAnythingCoordinator and has the same lifetime
 //  as the browser.
 //
-class ReadAnythingController : public ReadAnythingToolbarView::Delegate,
+class ReadAnythingController : public ui::AXActionHandlerObserver,
+                               public ReadAnythingToolbarView::Delegate,
                                public ReadAnythingFontCombobox::Delegate,
                                public ReadAnythingPageHandler::Delegate,
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -55,6 +56,9 @@ class ReadAnythingController : public ReadAnythingToolbarView::Delegate,
 
  private:
   friend class ReadAnythingControllerTest;
+
+  // ui::AXActionHandlerObserver:
+  void TreeRemoved(ui::AXTreeID ax_tree_id) override;
 
   // ReadAnythingFontCombobox::Delegate:
   void OnFontChoiceChanged(int new_index) override;
@@ -90,7 +94,6 @@ class ReadAnythingController : public ReadAnythingToolbarView::Delegate,
   // content::WebContentsObserver:
   void AccessibilityEventReceived(
       const content::AXEventNotificationDetails& details) override;
-  void WebContentsDestroyed() override;
 
   // When the active web contents changes (or the UI becomes active):
   // 1. Begins observing the web contents of the active tab and enables web
@@ -114,6 +117,11 @@ class ReadAnythingController : public ReadAnythingToolbarView::Delegate,
   // Whether the Read Anything feature's UI is ready. This is set to true when
   // the UI is constructed and false when it is destroyed.
   bool ui_ready_ = false;
+
+  // Observes the AXActionHandlerRegistry for AXTree removals.
+  base::ScopedObservation<ui::AXActionHandlerRegistry,
+                          ui::AXActionHandlerObserver>
+      ax_action_handler_observer_{this};
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   // screen_ai::ScreenAIInstallState::Observer:

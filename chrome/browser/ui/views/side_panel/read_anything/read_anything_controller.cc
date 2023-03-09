@@ -24,6 +24,8 @@ ReadAnythingController::ReadAnythingController(ReadAnythingModel* model,
     : model_(model), browser_(browser) {
   DCHECK(browser_);
   browser_->tab_strip_model()->AddObserver(this);
+  ax_action_handler_observer_.Observe(
+      ui::AXActionHandlerRegistry::GetInstance());
 }
 
 ReadAnythingController::~ReadAnythingController() {
@@ -145,16 +147,13 @@ void ReadAnythingController::OnUIDestroyed() {
 
 void ReadAnythingController::OnLinkClicked(const ui::AXTreeID& target_tree_id,
                                            const ui::AXNodeID& target_node_id) {
-  content::RenderFrameHost* render_frame_host =
-      content::RenderFrameHost::FromAXTreeID(target_tree_id);
-  if (!render_frame_host) {
-    return;
-  }
   ui::AXActionData action_data;
   action_data.target_tree_id = target_tree_id;
   action_data.action = ax::mojom::Action::kDoDefault;
   action_data.target_node_id = target_node_id;
-  render_frame_host->AccessibilityPerformAction(action_data);
+  ui::AXActionHandlerRegistry::GetInstance()
+      ->GetActionHandler(target_tree_id)
+      ->PerformAction(action_data);
 }
 
 void ReadAnythingController::OnSelectionChange(
@@ -163,11 +162,6 @@ void ReadAnythingController::OnSelectionChange(
     int anchor_offset,
     const ui::AXNodeID& focus_node_id,
     int focus_offset) {
-  content::RenderFrameHost* render_frame_host =
-      content::RenderFrameHost::FromAXTreeID(target_tree_id);
-  if (!render_frame_host) {
-    return;
-  }
   ui::AXActionData action_data;
   action_data.target_tree_id = target_tree_id;
   action_data.action = ax::mojom::Action::kSetSelection;
@@ -175,7 +169,9 @@ void ReadAnythingController::OnSelectionChange(
   action_data.anchor_offset = anchor_offset;
   action_data.focus_node_id = focus_node_id;
   action_data.focus_offset = focus_offset;
-  render_frame_host->AccessibilityPerformAction(action_data);
+  ui::AXActionHandlerRegistry::GetInstance()
+      ->GetActionHandler(target_tree_id)
+      ->PerformAction(action_data);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -210,13 +206,8 @@ void ReadAnythingController::AccessibilityEventReceived(
   model_->AccessibilityEventReceived(details);
 }
 
-void ReadAnythingController::WebContentsDestroyed() {
-  content::RenderFrameHost* render_frame_host =
-      web_contents()->GetPrimaryMainFrame();
-  if (!render_frame_host)
-    return;
-  ui::AXTreeID tree_id = render_frame_host->GetAXTreeID();
-  model_->OnAXTreeDestroyed(tree_id);
+void ReadAnythingController::TreeRemoved(ui::AXTreeID ax_tree_id) {
+  model_->OnAXTreeDestroyed(ax_tree_id);
 }
 
 void ReadAnythingController::OnActiveWebContentsChanged() {

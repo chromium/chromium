@@ -349,21 +349,17 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
 }
 
 void ReadAnythingAppController::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
+  // OnAXTreeDestroyed is called whenever the AXActionHandler in the browser
+  // learns that an AXTree was destroyed. This could be from any tab, not just
+  // the active one; therefore many tree_ids will not be found in trees_.
+  if (!model_.ContainsTree(tree_id)) {
+    return;
+  }
   if (model_.active_tree_id() == tree_id) {
     // TODO(crbug.com/1266555): If distillation is in progress, cancel the
     // distillation request.
     model_.SetActiveTreeId(ui::AXTreeIDUnknown());
     model_.SetActiveUkmSourceId(ukm::kInvalidSourceId);
-  }
-  // Under rare circumstances, an accessibility tree is not constructed in a
-  // tab. For example, after a browser restart, old tabs are only laid out after
-  // they are activated, which means that an unactivated old tab would not have
-  // an accessibility tree. This means that it would never call
-  // AccessibilityEventsReceived(), meaning its RFH's AXTreeID would not be in
-  // trees. When that tab was destroyed, this function will be called with a
-  // tree_id not in the tree list, so we return early.
-  if (!model_.ContainsTree(tree_id)) {
-    return;
   }
   std::set<ui::AXTreeID> child_tree_ids =
       model_.GetTreeFromId(tree_id)->GetAllChildTreeIds();
