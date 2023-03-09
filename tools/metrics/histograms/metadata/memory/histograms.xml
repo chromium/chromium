@@ -2486,6 +2486,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Memory.Total.HibernatedCanvas.OriginalSize" units="MB"
+    expires_after="2023-08-08">
+  <owner>lizeb@chromium.org</owner>
+  <owner>chrome-memory@chromium.org</owner>
+  <summary>
+    Total size of all hibernated canvases across all renderers, prior to
+    compression.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android.
+  </summary>
+</histogram>
+
+<histogram name="Memory.Total.HibernatedCanvas.Size" units="MB"
+    expires_after="2023-08-08">
+  <owner>lizeb@chromium.org</owner>
+  <owner>chrome-memory@chromium.org</owner>
+  <summary>
+    Total size of all hibernated canvases across all renderers.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android.
+  </summary>
+</histogram>
+
 <histogram name="Memory.Total.PrivateMemoryFootprint" units="MB"
     expires_after="never">
 <!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->

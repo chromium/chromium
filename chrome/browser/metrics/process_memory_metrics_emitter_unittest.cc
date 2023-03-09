@@ -895,10 +895,16 @@ TEST_F(ProcessMemoryMetricsEmitterTest, RendererAndTotalHistogramsAreRecorded) {
   PopulateRendererMetrics(global_dump, expected_metrics, kTestRendererPid202);
 
   constexpr uint64_t kMiB = 1024 * 1024;
+  constexpr uint64_t kKiB = 1024;
   SetAllocatorDumpMetric(global_dump->process_dumps[0], "cc/tile_memory",
                          "size", 12 * kMiB);
   SetAllocatorDumpMetric(global_dump->process_dumps[1], "cc/tile_memory",
                          "size", 22 * kMiB);
+
+  SetAllocatorDumpMetric(global_dump->process_dumps[0], "canvas/hibernated",
+                         "size", 22 * kMiB);
+  SetAllocatorDumpMetric(global_dump->process_dumps[1], "canvas/hibernated",
+                         "size", 12 * kMiB);
 
   global_dump->aggregated_metrics->native_library_resident_kb =
       kNativeLibraryResidentMemoryFootprint;
@@ -912,6 +918,7 @@ TEST_F(ProcessMemoryMetricsEmitterTest, RendererAndTotalHistogramsAreRecorded) {
   histograms.ExpectTotalCount("Memory.Renderer.SharedMemoryFootprint", 0);
   histograms.ExpectTotalCount("Memory.Renderer.ResidentSet", 0);
 
+  histograms.ExpectTotalCount("Memory.Total.HibernatedCanvas.Size", 0);
   histograms.ExpectTotalCount("Memory.Total.PrivateMemoryFootprint", 0);
   histograms.ExpectTotalCount("Memory.Total.RendererPrivateMemoryFootprint", 0);
   histograms.ExpectTotalCount("Memory.Total.RendererMalloc", 0);
@@ -942,6 +949,12 @@ TEST_F(ProcessMemoryMetricsEmitterTest, RendererAndTotalHistogramsAreRecorded) {
   emitter->ReceivedProcessInfos(GetProcessInfo(test_ukm_recorder_));
 
   // Check that the expected values have been emitted to histograms.
+  histograms.ExpectBucketCount(
+      "Memory.Experimental.Renderer2.Small.HibernatedCanvas.Size", 12 * kKiB,
+      1);
+  histograms.ExpectBucketCount(
+      "Memory.Experimental.Renderer2.Small.HibernatedCanvas.Size", 22 * kKiB,
+      1);
   histograms.ExpectUniqueSample("Memory.Renderer.PrivateMemoryFootprint",
                                 kTestRendererPrivateMemoryFootprint, 2);
   histograms.ExpectUniqueSample("Memory.Renderer.SharedMemoryFootprint",
@@ -949,6 +962,8 @@ TEST_F(ProcessMemoryMetricsEmitterTest, RendererAndTotalHistogramsAreRecorded) {
   histograms.ExpectUniqueSample("Memory.Renderer.ResidentSet",
                                 kTestRendererResidentSet, 2);
 
+  histograms.ExpectUniqueSample("Memory.Total.HibernatedCanvas.Size", 12 + 22,
+                                1);
   histograms.ExpectUniqueSample("Memory.Total.PrivateMemoryFootprint",
                                 2 * kTestRendererPrivateMemoryFootprint, 1);
   histograms.ExpectUniqueSample("Memory.Total.RendererPrivateMemoryFootprint",

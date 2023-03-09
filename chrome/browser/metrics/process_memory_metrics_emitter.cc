@@ -1202,6 +1202,8 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
   uint32_t shared_footprint_total_kb = 0;
   uint32_t resident_set_total_kb = 0;
   uint64_t tiles_total_memory = 0;
+  uint64_t hibernated_canvas_total_memory = 0;
+  uint64_t hibernated_canvas_total_original_memory = 0;
   bool emit_metrics_for_all_processes = pid_scope_ == base::kNullProcessId;
 
   TabFootprintAggregator per_tab_metrics;
@@ -1249,6 +1251,10 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
         renderer_private_footprint_visible_or_higher_total_kb +=
             is_less_than_visible_renderer ? 0 : process_pmf_kb;
 #endif  // BUILDFLAG(IS_ANDROID)
+        hibernated_canvas_total_memory +=
+            pmd.GetMetric("canvas/hibernated", kSize).value_or(0);
+        hibernated_canvas_total_original_memory +=
+            pmd.GetMetric("canvas/hibernated", "original_size").value_or(0);
         const PageInfo* single_page_info = nullptr;
         auto iter = process_infos_.find(pmd.pid());
         if (iter != process_infos_.end()) {
@@ -1401,6 +1407,12 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
         "Memory.Total.RendererPrivateMemoryFootprintVisibleOrHigherPriority",
         renderer_private_footprint_visible_or_higher_total_kb / kKiB);
 #endif
+
+    UMA_HISTOGRAM_MEMORY_MEDIUM_MB("Memory.Total.HibernatedCanvas.Size",
+                                   hibernated_canvas_total_memory / kMiB);
+    UMA_HISTOGRAM_MEMORY_MEDIUM_MB(
+        "Memory.Total.HibernatedCanvas.OriginalSize",
+        hibernated_canvas_total_original_memory / kMiB);
 
     Memory_Experimental(ukm::UkmRecorder::GetNewSourceID())
         .SetTotal2_PrivateMemoryFootprint(private_footprint_total_kb / kKiB)
