@@ -354,6 +354,9 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
     // provider has the only ref to the resource, to ensure there are no other
     // readers.
     EndWriteAccess();
+    if (!resource_) {
+      return nullptr;
+    }
     scoped_refptr<CanvasResource> resource = resource_;
     resource->SetFilterQuality(FilterQuality());
     if (ContextProviderWrapper()
