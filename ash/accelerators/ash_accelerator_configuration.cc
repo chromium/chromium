@@ -183,7 +183,17 @@ AcceleratorConfigResult AshAcceleratorConfiguration::RestoreDefault(
 }
 
 AcceleratorConfigResult AshAcceleratorConfiguration::RestoreAllDefaults() {
-  return AcceleratorConfigResult::kActionLocked;
+  accelerators_.clear();
+  id_to_accelerators_.clear();
+  accelerator_to_id_.Clear();
+
+  // TODO(jimmyxgong): Reset the prefs here too.
+  id_to_accelerators_ = default_id_to_accelerators_cache_;
+  accelerator_to_id_ = default_accelerators_to_id_cache_;
+
+  UpdateAndNotifyAccelerators();
+
+  return AcceleratorConfigResult::kSuccess;
 }
 
 void AshAcceleratorConfiguration::Initialize() {

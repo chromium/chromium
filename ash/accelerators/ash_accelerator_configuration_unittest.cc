@@ -494,4 +494,87 @@ TEST_F(AshAcceleratorConfigurationTest, RemoveDefaultAccelerator) {
   ExpectAllAcceleratorsEqual(updated_test_data, config_->GetAllAccelerators());
   EXPECT_EQ(2, observer_.num_times_accelerator_updated_called());
 }
+
+TEST_F(AshAcceleratorConfigurationTest, RemoveAndRestoreDefault) {
+  EXPECT_EQ(0, observer_.num_times_accelerator_updated_called());
+  const AcceleratorData test_data[] = {
+      {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
+       SWITCH_TO_LAST_USED_IME},
+      {/*trigger_on_press=*/true, ui::VKEY_SPACE,
+       ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN, SWITCH_TO_LAST_USED_IME},
+      {/*trigger_on_press=*/true, ui::VKEY_TAB, ui::EF_ALT_DOWN,
+       CYCLE_FORWARD_MRU},
+      {/*trigger_on_press=*/true, ui::VKEY_TAB,
+       ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, CYCLE_BACKWARD_MRU},
+  };
+
+  config_->Initialize(test_data);
+
+  ExpectAllAcceleratorsEqual(test_data, config_->GetAllAccelerators());
+  EXPECT_EQ(1, observer_.num_times_accelerator_updated_called());
+
+  // Remove `SWITCH_TO_LAST_USE_IME`.
+  const AcceleratorData updated_test_data[] = {
+      {/*trigger_on_press=*/true, ui::VKEY_SPACE,
+       ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN, SWITCH_TO_LAST_USED_IME},
+      {/*trigger_on_press=*/true, ui::VKEY_TAB, ui::EF_ALT_DOWN,
+       CYCLE_FORWARD_MRU},
+      {/*trigger_on_press=*/true, ui::VKEY_TAB,
+       ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, CYCLE_BACKWARD_MRU},
+  };
+  AcceleratorConfigResult result = config_->RemoveAccelerator(
+      SWITCH_TO_LAST_USED_IME,
+      ui::Accelerator(ui::VKEY_SPACE, ui::EF_CONTROL_DOWN));
+  EXPECT_EQ(AcceleratorConfigResult::kSuccess, result);
+
+  // Compare expected accelerators and that the observer was fired after
+  // removing an accelerator.
+  ExpectAllAcceleratorsEqual(updated_test_data, config_->GetAllAccelerators());
+  EXPECT_EQ(2, observer_.num_times_accelerator_updated_called());
+
+  // Restore all defaults.
+  result = config_->RestoreAllDefaults();
+  EXPECT_EQ(AcceleratorConfigResult::kSuccess, result);
+
+  // Expect accelerators to revert back to the default state and observer
+  // is called.
+  ExpectAllAcceleratorsEqual(test_data, config_->GetAllAccelerators());
+  EXPECT_EQ(3, observer_.num_times_accelerator_updated_called());
+}
+
+TEST_F(AshAcceleratorConfigurationTest, RestoreAllConsecutively) {
+  EXPECT_EQ(0, observer_.num_times_accelerator_updated_called());
+  const AcceleratorData test_data[] = {
+      {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
+       SWITCH_TO_LAST_USED_IME},
+      {/*trigger_on_press=*/true, ui::VKEY_SPACE,
+       ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN, SWITCH_TO_LAST_USED_IME},
+      {/*trigger_on_press=*/true, ui::VKEY_TAB, ui::EF_ALT_DOWN,
+       CYCLE_FORWARD_MRU},
+      {/*trigger_on_press=*/true, ui::VKEY_TAB,
+       ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, CYCLE_BACKWARD_MRU},
+  };
+
+  config_->Initialize(test_data);
+
+  ExpectAllAcceleratorsEqual(test_data, config_->GetAllAccelerators());
+  EXPECT_EQ(1, observer_.num_times_accelerator_updated_called());
+
+  // Restore all defaults, even though no change was made.
+  AcceleratorConfigResult reset_result = config_->RestoreAllDefaults();
+  EXPECT_EQ(AcceleratorConfigResult::kSuccess, reset_result);
+
+  // Nothing should have changed, but the observer is called.
+  ExpectAllAcceleratorsEqual(test_data, config_->GetAllAccelerators());
+  EXPECT_EQ(2, observer_.num_times_accelerator_updated_called());
+
+  // Restore all defaults again, even though no change was made.
+  reset_result = config_->RestoreAllDefaults();
+  EXPECT_EQ(AcceleratorConfigResult::kSuccess, reset_result);
+
+  // Nothing should have changed, but the observer is called.
+  ExpectAllAcceleratorsEqual(test_data, config_->GetAllAccelerators());
+  EXPECT_EQ(3, observer_.num_times_accelerator_updated_called());
+}
+
 }  // namespace ash
