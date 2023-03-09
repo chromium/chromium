@@ -188,20 +188,32 @@ TEST(FileManagerFileTasksTest, FileHandlerIsEnabled) {
   const std::string test_id = "test";
 
   crostini_features.set_export_import_ui_allowed(true);
-  EXPECT_TRUE(FileHandlerIsEnabled(&test_profile, "import-crostini-image"));
-  EXPECT_TRUE(FileHandlerIsEnabled(&test_profile, test_id));
+  EXPECT_TRUE(
+      FileHandlerIsEnabled(&test_profile, kFileManagerSwaAppId,
+                           "chrome://file-manager/?import-crostini-image"));
+  EXPECT_TRUE(
+      FileHandlerIsEnabled(&test_profile, kFileManagerSwaAppId, test_id));
 
   crostini_features.set_export_import_ui_allowed(false);
-  EXPECT_FALSE(FileHandlerIsEnabled(&test_profile, "import-crostini-image"));
-  EXPECT_TRUE(FileHandlerIsEnabled(&test_profile, test_id));
+  EXPECT_FALSE(
+      FileHandlerIsEnabled(&test_profile, kFileManagerSwaAppId,
+                           "chrome://file-manager/?import-crostini-image"));
+  EXPECT_TRUE(
+      FileHandlerIsEnabled(&test_profile, kFileManagerSwaAppId, test_id));
 
   crostini_features.set_root_access_allowed(true);
-  EXPECT_TRUE(FileHandlerIsEnabled(&test_profile, "install-linux-package"));
-  EXPECT_TRUE(FileHandlerIsEnabled(&test_profile, test_id));
+  EXPECT_TRUE(
+      FileHandlerIsEnabled(&test_profile, kFileManagerSwaAppId,
+                           "chrome://file-manager/?install-linux-package"));
+  EXPECT_TRUE(
+      FileHandlerIsEnabled(&test_profile, kFileManagerSwaAppId, test_id));
 
   crostini_features.set_root_access_allowed(false);
-  EXPECT_FALSE(FileHandlerIsEnabled(&test_profile, "install-linux-package"));
-  EXPECT_TRUE(FileHandlerIsEnabled(&test_profile, test_id));
+  EXPECT_FALSE(
+      FileHandlerIsEnabled(&test_profile, kFileManagerSwaAppId,
+                           "chrome://file-manager/?install-linux-package"));
+  EXPECT_TRUE(
+      FileHandlerIsEnabled(&test_profile, kFileManagerSwaAppId, test_id));
 }
 
 class FileManagerFileTaskWithAppServiceTest : public testing::Test {
