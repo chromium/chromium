@@ -85,7 +85,6 @@ void DeviceSwitcherModel::InitAndFetchModel(
       .name = "SyncDeviceInfo"});
   (*sync_input->mutable_additional_args())["wait_for_device_info_in_seconds"] =
       "60";
-  (*sync_input->mutable_additional_args())["active_days_limit"] = "14";
 
   writer.AddOutputConfigForMultiClassClassifier(
       kOutputLabels.begin(), kOutputLabels.size(), kOutputLabels.size(), 0.1);

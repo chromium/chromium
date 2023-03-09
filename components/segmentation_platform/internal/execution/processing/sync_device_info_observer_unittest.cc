@@ -53,6 +53,12 @@ std::unique_ptr<DeviceInfo> CreateDeviceInfo(
       /*interested_data_types=*/syncer::ModelTypeSet());
 }
 
+scoped_refptr<InputContext> CreateInputContext() {
+  auto input_context = base::MakeRefCounted<InputContext>();
+  input_context->metadata_args.emplace("active_days_limit", 14);
+  return input_context;
+}
+
 class SyncDeviceInfoObserverTest : public testing::Test {
  public:
   SyncDeviceInfoObserverTest() = default;
@@ -165,7 +171,7 @@ TEST_F(SyncDeviceInfoObserverTest, AddingDeviceBeforeProcess) {
       .name = "SyncDeviceInfo"});
   (*sync_input->mutable_additional_args())["wait_for_device_info_in_seconds"] =
       "2";
-  (*sync_input->mutable_additional_args())["active_days_limit"] = "14";
+  state.set_input_context_for_testing(CreateInputContext());
 
   std::unique_ptr<DeviceInfo> local_device_info =
       CreateDeviceInfo("local_device", kLocalDeviceType, kLocalDeviceOS);
@@ -200,7 +206,7 @@ TEST_F(SyncDeviceInfoObserverTest,
       .name = "SyncDeviceInfo"});
   (*sync_input->mutable_additional_args())["wait_for_device_info_in_seconds"] =
       "2";
-  (*sync_input->mutable_additional_args())["active_days_limit"] = "14";
+  state.set_input_context_for_testing(CreateInputContext());
 
   std::vector<float> expected_result = {0, 0, 0, 0, 0, 1, 0, 0, 0, 0};
   base::RunLoop loop;
@@ -227,7 +233,7 @@ TEST_F(SyncDeviceInfoObserverTest, ProcessWithNoTimeout) {
       .name = "SyncDeviceInfo"});
   (*sync_input->mutable_additional_args())["wait_for_device_info_in_seconds"] =
       "0";
-  (*sync_input->mutable_additional_args())["active_days_limit"] = "14";
+  state.set_input_context_for_testing(CreateInputContext());
 
   // Failure flag is set.
   std::vector<float> expected_result = {1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -255,7 +261,7 @@ TEST_F(SyncDeviceInfoObserverTest, ProcessWithNotIntegerTimeout) {
       .name = "SyncDeviceInfo"});
   (*sync_input->mutable_additional_args())["wait_for_device_info_in_seconds"] =
       "true";
-  (*sync_input->mutable_additional_args())["active_days_limit"] = "14";
+  state.set_input_context_for_testing(CreateInputContext());
 
   // Failure flag is set.
   std::vector<float> expected_result = {1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -284,7 +290,7 @@ TEST_F(SyncDeviceInfoObserverTest, ProcessWithTimeoutBeforeAddingDevice) {
       .name = "SyncDeviceInfo"});
   (*sync_input->mutable_additional_args())["wait_for_device_info_in_seconds"] =
       "2";
-  (*sync_input->mutable_additional_args())["active_days_limit"] = "14";
+  state.set_input_context_for_testing(CreateInputContext());
 
   // Failure flag is set.
   std::vector<float> expected_result = {1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
