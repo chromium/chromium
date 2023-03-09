@@ -32,6 +32,9 @@ public class OmniboxFeatures {
 
     private static final MutableFlagWithSafeDefault sOmniboxConsumesImeInsets =
             new MutableFlagWithSafeDefault(ChromeFeatureList.OMNIBOX_CONSUMERS_IME_INSETS, false);
+    private static final MutableFlagWithSafeDefault sShouldAdaptToNarrowTabletWindows =
+            new MutableFlagWithSafeDefault(
+                    ChromeFeatureList.OMNIBOX_ADAPT_NARROW_TABLET_WINDOWS, false);
 
     /**
      * @param context The activity context.
@@ -40,6 +43,14 @@ public class OmniboxFeatures {
     public static boolean shouldShowModernizeVisualUpdate(Context context) {
         return ChromeFeatureList.sOmniboxModernizeVisualUpdate.isEnabled()
                 && (!isTablet(context) || enabledModernizeVisualUpdateOnTablet());
+    }
+
+    /**
+     * Returns whether the omnibox dropdown should be switched to a phone-like appearance when the
+     * window width is <600dp.
+     */
+    public static boolean shouldAdaptToNarrowTabletWindows() {
+        return sShouldAdaptToNarrowTabletWindows.isEnabled();
     }
 
     /**

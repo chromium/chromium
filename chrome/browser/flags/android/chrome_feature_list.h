@@ -106,6 +106,7 @@ BASE_DECLARE_FEATURE(kLocationBarModelOptimizations);
 BASE_DECLARE_FEATURE(kNotificationPermissionVariant);
 BASE_DECLARE_FEATURE(kNotificationPermissionBottomSheet);
 BASE_DECLARE_FEATURE(kOmahaMinSdkVersionAndroid);
+BASE_DECLARE_FEATURE(kOmniboxAdaptNarrowTabletWindows);
 BASE_DECLARE_FEATURE(kOmniboxConsumesImeInsets);
 BASE_DECLARE_FEATURE(kOmniboxModernizeVisualUpdate);
 BASE_DECLARE_FEATURE(kOptimizeGeolocationHeaderGeneration);

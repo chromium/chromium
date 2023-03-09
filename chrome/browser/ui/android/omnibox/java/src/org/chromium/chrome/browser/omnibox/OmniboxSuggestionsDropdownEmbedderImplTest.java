@@ -153,7 +153,8 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
 
     @Test
     @Config(qualifiers = "w600dp-h820dp")
-    @EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
+    @EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE,
+            ChromeFeatureList.OMNIBOX_ADAPT_NARROW_TABLET_WINDOWS})
     @CommandLineFlags.
     Add({"enable-features=" + ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE + "<Study",
             "force-fieldtrials=Study/Group",
@@ -179,7 +180,8 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
+    @EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE,
+            ChromeFeatureList.OMNIBOX_ADAPT_NARROW_TABLET_WINDOWS})
     @CommandLineFlags.
     Add({"enable-features=" + ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE + "<Study",
             "force-fieldtrials=Study/Group",
@@ -201,6 +203,27 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
         assertTrue(mImpl.isTablet());
         OmniboxAlignment newAlignment = mImpl.getCurrentAlignment();
         assertEquals(new OmniboxAlignment(40, ANCHOR_HEIGHT + ANCHOR_TOP, ALIGNMENT_WIDTH, 0, 0, 0),
+                newAlignment);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.OMNIBOX_ADAPT_NARROW_TABLET_WINDOWS})
+    @Config(qualifiers = "w600dp-h820dp")
+    public void testRecalculateOmniboxAlignment_tabletToPhoneSwitch_revampDisabled() {
+        doReturn(mAnchorView).when(mHorizontalAlignmentView).getParent();
+        doReturn(40).when(mHorizontalAlignmentView).getLeft();
+        mImpl.recalculateOmniboxAlignment();
+        OmniboxAlignment alignment = mImpl.getCurrentAlignment();
+        assertEquals(new OmniboxAlignment(0, ANCHOR_HEIGHT + ANCHOR_TOP, ANCHOR_WIDTH, 0, 40,
+                             ANCHOR_WIDTH - ALIGNMENT_WIDTH - 40),
+                alignment);
+
+        Configuration newConfig = new Configuration();
+        newConfig.smallestScreenWidthDp = DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP - 1;
+        mImpl.onConfigurationChanged(newConfig);
+        assertFalse(mImpl.isTablet());
+        OmniboxAlignment newAlignment = mImpl.getCurrentAlignment();
+        assertEquals(new OmniboxAlignment(0, ANCHOR_HEIGHT + ANCHOR_TOP, ANCHOR_WIDTH, 0, 0, 0),
                 newAlignment);
     }
 
