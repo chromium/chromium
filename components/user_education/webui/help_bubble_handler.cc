@@ -14,12 +14,17 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/user_education/common/help_bubble.h"
 #include "components/user_education/common/help_bubble_params.h"
 #include "components/user_education/webui/help_bubble_webui.h"
 #include "components/user_education/webui/tracked_element_webui.h"
+#include "content/public/browser/render_widget_host.h"
+#include "content/public/browser/render_widget_host_observer.h"
+#include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -104,6 +109,13 @@ struct HelpBubbleHandlerBase::ElementData {
   ElementData(ElementData&& other) = default;
   ElementData& operator=(ElementData&& other) = default;
 
+  bool has_webui_help_bubble() const { return static_cast<bool>(params); }
+
+  // This shows whether the element is visible within the WebContents aside from
+  // the WebContents itself being visible.
+  bool visible = false;
+  gfx::RectF last_known_bounds;
+
   std::unique_ptr<TrackedElementWebUI> element;
   std::unique_ptr<HelpBubbleParams> params;
   base::raw_ptr<HelpBubbleWebUI> help_bubble = nullptr;
@@ -116,11 +128,20 @@ struct HelpBubbleHandlerBase::ElementData {
   bool closing = false;
 };
 
+void HelpBubbleHandlerBase::VisibilityProvider::SetLastKnownVisibility(
+    absl::optional<bool> visible) {
+  handler_->OnWebContentsVisibilityChanged(visible);
+}
+
 HelpBubbleHandlerBase::HelpBubbleHandlerBase(
     std::unique_ptr<ClientProvider> client_provider,
+    std::unique_ptr<VisibilityProvider> visibility_provider,
     const std::vector<ui::ElementIdentifier>& identifiers,
     ui::ElementContext context)
-    : client_provider_(std::move(client_provider)), context_(context) {
+    : client_provider_(std::move(client_provider)),
+      visibility_provider_(std::move(visibility_provider)),
+      context_(context) {
+  visibility_provider_->set_handler(this);
   DCHECK(context_);
   for (auto identifier : identifiers) {
     DCHECK(identifier);
@@ -142,6 +163,18 @@ content::WebContents* HelpBubbleHandlerBase::GetWebContents() {
   return GetController()->web_ui()->GetWebContents();
 }
 
+content::RenderWidgetHost* HelpBubbleHandlerBase::GetRenderWidgetHost() {
+  auto* const web_contents = GetWebContents();
+  if (!web_contents) {
+    return nullptr;
+  }
+  auto* const render_widget_host_view = web_contents->GetRenderWidgetHostView();
+  if (!render_widget_host_view) {
+    return nullptr;
+  }
+  return render_widget_host_view->GetRenderWidgetHost();
+}
+
 help_bubble::mojom::HelpBubbleClient* HelpBubbleHandlerBase::GetClient() {
   return client_provider_->GetClient();
 }
@@ -160,7 +193,7 @@ std::unique_ptr<HelpBubbleWebUI> HelpBubbleHandlerBase::CreateHelpBubble(
   }
 
   auto& data = it->second;
-  if (data.params) {
+  if (data.has_webui_help_bubble()) {
     NOTREACHED() << "A help bubble is already being shown for " << identifier;
     auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
     if (data.help_bubble) {
@@ -218,6 +251,39 @@ void HelpBubbleHandlerBase::OnHelpBubbleClosing(
     GetClient()->HideHelpBubble(anchor_id.GetName());
   it->second.help_bubble = nullptr;
   it->second.params.reset();
+  // If this anchor element was only considered visible because it still had a
+  // help bubble, hide it.
+  if (it->second.element->visible() && !is_web_contents_visible()) {
+    it->second.element->SetVisible(false);
+  }
+}
+
+void HelpBubbleHandlerBase::OnWebContentsVisibilityChanged(
+    absl::optional<bool> visibility) {
+  const bool old_visibility = is_web_contents_visible();
+  web_contents_visibility_ = visibility;
+  const bool new_visibility = is_web_contents_visible();
+  if (new_visibility == old_visibility) {
+    return;
+  }
+
+  // Callbacks during this call may cause almost anything to happen, so make
+  // sure that we bail if this object is destroyed.
+  auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
+  for (auto& [id, data] : element_data_) {
+    if (new_visibility && data.visible) {
+      data.element->SetVisible(true, data.last_known_bounds);
+    } else if (!new_visibility && data.element->visible()) {
+      // An embedded help bubble prevents the element from being hidden.
+      // This usually only happens in WebUI that are hosted in browser tabs.
+      if (!data.has_webui_help_bubble()) {
+        data.element->SetVisible(false);
+      }
+    }
+    if (!weak_ptr) {
+      return;
+    }
+  }
 }
 
 void HelpBubbleHandlerBase::HelpBubbleAnchorVisibilityChanged(
@@ -229,12 +295,33 @@ void HelpBubbleHandlerBase::HelpBubbleAnchorVisibilityChanged(
   if (!data)
     return;
 
+  // Only set the bounds if the anchor is visible in the WebContents.
+  if (visible) {
+    data->last_known_bounds = rect;
+
+    // Also maybe check for the WebContents visibility.
+    if (!web_contents_visibility_.has_value()) {
+      web_contents_visibility_ = visibility_provider_->CheckIsVisible();
+    }
+  }
+
+  // It's possible the element is visible in the WebContents but the WebContents
+  // itself isn't visible. Save this value in case the two currently do not
+  // agree with each other.
+  data->visible = visible;
+
+  // An anchor which is currently hosting a WebUI help bubble ignores its
+  // WebContents' visibility. Otherwise, a hidden WebContents hides its anchors.
+  if (!data->has_webui_help_bubble()) {
+    visible = visible && is_web_contents_visible();
+  }
+
   // Note: any of the following calls could destroy *this* via a callback.
   if (visible) {
     data->element->SetVisible(true, rect);
   } else if (data->element->visible() && !visible) {
     // Is a help bubble currently showing?
-    if (data->params) {
+    if (data->has_webui_help_bubble()) {
       // Currently, this is the only call that could trigger callbacks and which
       // has additional code which executes after it. If that changes, the weak
       // pointer can be moved closer to the top of this method.
@@ -300,7 +387,7 @@ void HelpBubbleHandlerBase::HelpBubbleButtonPressed(
   ElementData* const data = GetDataByName(identifier_name);
   if (!data)
     return;
-  if (!data->params) {
+  if (!data->has_webui_help_bubble()) {
     ReportBadMessage(
         base::StringPrintf("HelpBubbleButtonPressed message received for "
                            "anchor element \"%s\" but no help bubble was open.",
@@ -342,7 +429,7 @@ void HelpBubbleHandlerBase::HelpBubbleClosed(
   ElementData* const data = GetDataByName(identifier_name);
   if (!data)
     return;
-  if (!data->params) {
+  if (!data->has_webui_help_bubble()) {
     ReportBadMessage(base::StringPrintf(
         "HelpBubbleClosed message received for identifier_name = \"%s\" but no "
         "help bubble was open.",
@@ -442,16 +529,63 @@ HelpBubbleHandlerBase::ElementData* HelpBubbleHandlerBase::GetDataByName(
   return nullptr;
 }
 
-HelpBubbleHandler::ClientProvider::ClientProvider(
-    mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> pending_client)
-    : remote_client_(std::move(pending_client)) {}
+class HelpBubbleHandler::ClientProvider
+    : public HelpBubbleHandlerBase::ClientProvider {
+ public:
+  explicit ClientProvider(
+      mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> pending_client)
+      : remote_client_(std::move(pending_client)) {}
+  ~ClientProvider() override = default;
 
-HelpBubbleHandler::ClientProvider::~ClientProvider() = default;
+  help_bubble::mojom::HelpBubbleClient* GetClient() override {
+    return remote_client_.get();
+  }
 
-help_bubble::mojom::HelpBubbleClient*
-HelpBubbleHandler::ClientProvider::GetClient() {
-  return remote_client_.get();
-}
+ private:
+  mojo::Remote<help_bubble::mojom::HelpBubbleClient> remote_client_;
+};
+
+// Implementation of the WebContents visibility tracker. Watches the
+// RenderWidgetHost for visibility changes and signals them to its
+// HelpBubbleHandler.
+class HelpBubbleHandler::VisibilityProvider
+    : public HelpBubbleHandlerBase::VisibilityProvider,
+      public content::RenderWidgetHostObserver {
+ public:
+  VisibilityProvider() = default;
+  ~VisibilityProvider() override = default;
+
+  absl::optional<bool> CheckIsVisible() const override {
+    auto* const host = handler()->GetRenderWidgetHost();
+    if (!host) {
+      return absl::nullopt;
+    }
+    CHECK(!observation_.IsObserving());
+    observation_.Observe(host);
+
+    // Current visibility cannot be determined from the host directly, but can
+    // be read from its view.
+    auto* const view = host->GetView();
+    return view && view->IsShowing();
+  }
+
+ private:
+  // content::RenderWidgetHostObserver:
+  void RenderWidgetHostVisibilityChanged(content::RenderWidgetHost* host,
+                                         bool became_visible) override {
+    SetLastKnownVisibility(became_visible);
+  }
+  void RenderWidgetHostDestroyed(content::RenderWidgetHost*) override {
+    observation_.Reset();
+    SetLastKnownVisibility(absl::nullopt);
+  }
+
+  // This observation is created lazily from CheckIsVisible(), so must be
+  // mutable.
+  mutable base::ScopedObservation<content::RenderWidgetHost,
+                                  content::RenderWidgetHostObserver>
+      observation_{this};
+};
 
 HelpBubbleHandler::HelpBubbleHandler(
     mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler>
@@ -461,6 +595,7 @@ HelpBubbleHandler::HelpBubbleHandler(
     const std::vector<ui::ElementIdentifier>& identifiers)
     : HelpBubbleHandlerBase(
           std::make_unique<ClientProvider>(std::move(pending_client)),
+          std::make_unique<VisibilityProvider>(),
           identifiers,
           ui::ElementContext(controller)),
       receiver_(this, std::move(pending_handler)),

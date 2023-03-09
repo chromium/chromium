@@ -57,6 +57,11 @@ class HelpBubbleHandlerBase : public help_bubble::mojom::HelpBubbleHandler {
   // it is probably good to check for null.
   content::WebContents* GetWebContents();
 
+  // Returns the RenderWidgetHost associated with the controller. This is a
+  // convenience method. A host should be associated with the controller but it
+  // is probably good to check for null.
+  content::RenderWidgetHost* GetRenderWidgetHost();
+
  protected:
   // Provides reliable access to a HelpBubbleClient. Derived classes should
   // create a ClientProvider and pass it to the HelpBubbleHandlerBase
@@ -74,7 +79,37 @@ class HelpBubbleHandlerBase : public help_bubble::mojom::HelpBubbleHandler {
     virtual help_bubble::mojom::HelpBubbleClient* GetClient() = 0;
   };
 
+  // Provides runtime visibility of the WebContents via the RenderWidgetHost.
+  // Stubbed here for testing.
+  class VisibilityProvider {
+   public:
+    VisibilityProvider() = default;
+    VisibilityProvider(const VisibilityProvider& other) = delete;
+    virtual ~VisibilityProvider() = default;
+    void operator=(const VisibilityProvider& other) = delete;
+
+    void set_handler(HelpBubbleHandlerBase* handler) { handler_ = handler; }
+
+    // Does the check if visibility is currently unknown. Returns
+    // `absl::nullopt` if the visibility cannot be determined (this should be
+    // treated as "not visible" for most purposes).
+    //
+    // This method may lazily instantiate some visibility-tracking logic.
+    virtual absl::optional<bool> CheckIsVisible() const = 0;
+
+   protected:
+    HelpBubbleHandlerBase* handler() const { return handler_; }
+
+    // Sets a new visibility state when visibility changes via an external
+    // event.
+    void SetLastKnownVisibility(absl::optional<bool> visible);
+
+   private:
+    base::raw_ptr<HelpBubbleHandlerBase> handler_;
+  };
+
   HelpBubbleHandlerBase(std::unique_ptr<ClientProvider> client_provider,
+                        std::unique_ptr<VisibilityProvider> visibility_provider,
                         const std::vector<ui::ElementIdentifier>& identifiers,
                         ui::ElementContext context);
 
@@ -85,12 +120,17 @@ class HelpBubbleHandlerBase : public help_bubble::mojom::HelpBubbleHandler {
   virtual void ReportBadMessage(base::StringPiece error);
 
  private:
+  friend class VisibilityProvider;
   friend class FloatingWebUIHelpBubbleFactory;
   friend class HelpBubbleFactoryWebUI;
   friend class HelpBubbleWebUI;
   FRIEND_TEST_ALL_PREFIXES(HelpBubbleHandlerTest, ExternalHelpBubbleUpdated);
 
   struct ElementData;
+
+  bool is_web_contents_visible() const {
+    return web_contents_visibility_.value_or(false);
+  }
 
   std::unique_ptr<HelpBubbleWebUI> CreateHelpBubble(
       ui::ElementIdentifier target,
@@ -102,6 +142,7 @@ class HelpBubbleHandlerBase : public help_bubble::mojom::HelpBubbleHandler {
                                    HelpBubble* help_bubble);
   void OnFloatingHelpBubbleClosed(ui::ElementIdentifier anchor_id,
                                   HelpBubble* help_bubble);
+  void OnWebContentsVisibilityChanged(absl::optional<bool> visibility);
 
   // mojom::HelpBubbleHandler:
   void HelpBubbleAnchorVisibilityChanged(const std::string& identifier_name,
@@ -119,7 +160,16 @@ class HelpBubbleHandlerBase : public help_bubble::mojom::HelpBubbleHandler {
   ElementData* GetDataByName(const std::string& identifier_name,
                              ui::ElementIdentifier* found_identifier = nullptr);
 
+  // The visibility of the corresponding WebContents in the browser; will be:
+  //  - true if the WebContents is visible on the screen
+  //  - false if the WebContents is rendered, but currently hidden (e.g. a
+  //    background tab or hidden side panel)
+  //  - nullopt if the visibility is not yet known, or there is no render host
+  //    to query for visibility
+  absl::optional<bool> web_contents_visibility_;
+
   std::unique_ptr<ClientProvider> client_provider_;
+  std::unique_ptr<VisibilityProvider> visibility_provider_;
   const ui::ElementContext context_;
   std::map<ui::ElementIdentifier, ElementData> element_data_;
   base::WeakPtrFactory<HelpBubbleHandlerBase> weak_ptr_factory_{this};
@@ -164,18 +214,8 @@ class HelpBubbleHandler : public HelpBubbleHandlerBase {
   content::WebUIController* GetController() override;
 
  private:
-  class ClientProvider : public HelpBubbleHandlerBase::ClientProvider {
-   public:
-    explicit ClientProvider(
-        mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient>
-            pending_client);
-    ~ClientProvider() override;
-
-    help_bubble::mojom::HelpBubbleClient* GetClient() override;
-
-   private:
-    mojo::Remote<help_bubble::mojom::HelpBubbleClient> remote_client_;
-  };
+  class ClientProvider;
+  class VisibilityProvider;
 
   void ReportBadMessage(base::StringPiece error) override;
 

@@ -109,11 +109,9 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
                       true),
 
       // Expect the help bubble to display with the correct parameters.
-      CheckView(user_education::HelpBubbleView::kHelpBubbleElementIdForTesting,
-                base::BindOnce([](user_education::HelpBubbleView* bubble) {
-                  return bubble->GetDefaultButtonForTesting()->GetText() ==
-                         kBubbleButtonText;
-                })),
+      CheckViewProperty(
+          user_education::HelpBubbleView::kDefaultButtonIdForTesting,
+          &views::LabelButton::GetText, kBubbleButtonText),
 
       // Expect the bubble to overlap the side panel slightly, as the anchor
       // element is not flush with the edge of the side panel.
@@ -150,4 +148,23 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
                   CheckJsResultAt(kBrowserTabId, kPathToHelpBubbleBody,
                                   "(el) => el.innerText",
                                   base::UTF16ToUTF8(kBubbleBodyText)));
+}
+
+// Regression test for item (1) in crbug.com/1422875.
+IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
+                       FloatingHelpBubbleHiddenOnWebUiHidden) {
+  RunTestSequence(
+      PressButton(kSidePanelButtonElementId), WaitForShow(kSidePanelElementId),
+      FlushEvents(),
+      SelectDropdownItem(kSidePanelComboboxElementId,
+                         static_cast<int>(SidePanelEntry::Id::kReadingList)),
+      ShowHelpBubble(kAddCurrentTabToReadingListElementId),
+      WaitForShow(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
+      // Switch to a different side panel; this removes the Reading List WebView
+      // from its widget and effectively hides the WebContents.
+      SelectDropdownItem(kSidePanelComboboxElementId,
+                         static_cast<int>(SidePanelEntry::Id::kBookmarks)),
+      WaitForHide(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
 }
