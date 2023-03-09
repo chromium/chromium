@@ -153,11 +153,11 @@ IN_PROC_BROWSER_TEST_F(ChromeAppAPITest, IsInstalled) {
           kGetAppDetails,
           &result));
   absl::optional<base::Value> result_value = base::JSONReader::Read(result);
-  ASSERT_TRUE(result_value);
-  base::Value app_details(std::move(*result_value));
+  ASSERT_TRUE(result_value && result_value->is_dict());
+  base::Value::Dict& app_details = result_value.value().GetDict();
 
   // extension->manifest() does not contain the id.
-  app_details.RemoveKey("id");
+  app_details.Remove("id");
   EXPECT_EQ(app_details, *extension->manifest()->value());
 
   // Try to change app.isInstalled.  Should silently fail, so

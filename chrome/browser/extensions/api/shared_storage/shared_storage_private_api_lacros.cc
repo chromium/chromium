@@ -114,12 +114,12 @@ ExtensionFunction::ResponseAction SharedStoragePrivateRemoveFunction::Run() {
 void SharedStoragePrivateRemoveFunction::OnGet(
     std::vector<std::string> keys,
     absl::optional<base::Value> items) {
-  if (!items) {
+  if (!items || !items->is_dict()) {
     LOG(ERROR) << kErrorFetching;
     return Respond(Error(kErrorFetching));
   }
   for (const auto& key : keys) {
-    items->RemoveKey(key);
+    items->GetDict().Remove(key);
   }
   auto* lacros_service = chromeos::LacrosService::Get();
   if (!lacros_service ||
