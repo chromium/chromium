@@ -54,9 +54,12 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
+#include "chromeos/ash/components/standalone_browser/browser_support.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache.h"
 #include "components/services/app_service/public/cpp/capability_access_update.h"
 #include "components/user_manager/scoped_user_manager.h"
+
+using ash::standalone_browser::BrowserSupport;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
@@ -685,7 +688,7 @@ class LegacyPackagedAppLacorsNotPrimaryPublisherTest : public PublisherTest {
 
  private:
   const base::AutoReset<bool> resettter_ =
-      crosapi::browser_util::SetLacrosEnabledForTest(true);
+      BrowserSupport::SetLacrosEnabledForTest(true);
 };
 
 TEST_F(LegacyPackagedAppLacorsNotPrimaryPublisherTest,
@@ -733,7 +736,7 @@ class LegacyPackagedAppLacorsPrimaryPublisherTest : public PublisherTest {
 
  private:
   base::AutoReset<bool> set_lacros_enabled_ =
-      crosapi::browser_util::SetLacrosEnabledForTest(true);
+      BrowserSupport::SetLacrosEnabledForTest(true);
 };
 
 TEST_F(LegacyPackagedAppLacorsPrimaryPublisherTest, LegacyPackagedAppsOnApps) {
@@ -843,7 +846,7 @@ class StandaloneBrowserPublisherTest : public PublisherTest {
 
  private:
   base::AutoReset<bool> set_lacros_enabled_ =
-      crosapi::browser_util::SetLacrosEnabledForTest(true);
+      BrowserSupport::SetLacrosEnabledForTest(true);
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 };
 

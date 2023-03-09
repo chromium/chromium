@@ -35,8 +35,10 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chromeos/ash/components/standalone_browser/browser_support.h"
 #include "components/user_manager/fake_user_manager.h"
+
+using ash::standalone_browser::BrowserSupport;
 #endif
 
 namespace {
@@ -160,8 +162,7 @@ TEST_F(AppMenuModelTest, Basics) {
   EXPECT_TRUE(detector->notify_upgrade());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  auto set_lacros_enabled =
-      crosapi::browser_util::SetLacrosEnabledForTest(true);
+  auto set_lacros_enabled = BrowserSupport::SetLacrosEnabledForTest(true);
 #endif
 
   FakeIconDelegate fake_delegate;

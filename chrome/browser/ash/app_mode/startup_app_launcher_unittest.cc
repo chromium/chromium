@@ -53,6 +53,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/components/standalone_browser/browser_support.h"
 #include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom-forward.h"
 #include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom-shared.h"
 #include "components/account_id/account_id.h"
@@ -73,10 +74,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+using ash::standalone_browser::BrowserSupport;
+
 namespace ash {
 
 namespace {
-
 using ::extensions::ExternalInstallInfoFile;
 using ::extensions::ExternalInstallInfoUpdateUrl;
 using ::extensions::Manifest;
@@ -1736,7 +1738,7 @@ class StartupAppLauncherUsingLacrosTest : public testing::Test {
   std::unique_ptr<KioskAppLauncher> startup_app_launcher_;
 
   base::AutoReset<bool> set_lacros_enabled_ =
-      crosapi::browser_util::SetLacrosEnabledForTest(true);
+      BrowserSupport::SetLacrosEnabledForTest(true);
   base::AutoReset<absl::optional<bool>> set_lacros_primary_ =
       crosapi::browser_util::SetLacrosPrimaryBrowserForTest(true);
   base::test::ScopedFeatureList scoped_feature_list_;

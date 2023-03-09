@@ -502,10 +502,6 @@ bool WasGotoFilesClicked(PrefService* local_state,
 // Returns true if ash 1st party extension keep list should be enforced.
 bool ShouldEnforceAshExtensionKeepList();
 
-// Forces IsLacrosEnabled() to return true or false for testing. Reset upon
-// destruction of returned |base::AutoReset| object.
-base::AutoReset<bool> SetLacrosEnabledForTest(bool force_enabled);
-
 // Forces IsLacrosPrimaryBrowser() to return true or false for testing.
 // Reset upon destruction of returned |base::AutoReset| object.
 base::AutoReset<absl::optional<bool>> SetLacrosPrimaryBrowserForTest(

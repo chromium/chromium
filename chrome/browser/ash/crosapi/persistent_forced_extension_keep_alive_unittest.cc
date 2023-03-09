@@ -10,11 +10,14 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/standalone_browser/browser_support.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/extension_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using ash::standalone_browser::BrowserSupport;
 
 namespace {
 
@@ -76,7 +79,7 @@ class PersistentForcedExtensionKeepAliveTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
   base::AutoReset<bool> set_lacros_enabled_ =
-      browser_util::SetLacrosEnabledForTest(true);
+      BrowserSupport::SetLacrosEnabledForTest(true);
 
   std::unique_ptr<FakeBrowserManager> browser_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;

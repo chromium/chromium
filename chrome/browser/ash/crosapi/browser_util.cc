@@ -24,6 +24,7 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
+#include "chromeos/ash/components/standalone_browser/browser_support.h"
 #include "chromeos/ash/components/standalone_browser/lacros_availability.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
@@ -40,6 +41,7 @@
 #include "components/version_info/version_info.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
+using ash::standalone_browser::BrowserSupport;
 using ash::standalone_browser::IsGoogleInternal;
 using ash::standalone_browser::LacrosAvailability;
 using user_manager::User;
@@ -49,8 +51,6 @@ using version_info::Channel;
 namespace crosapi {
 namespace browser_util {
 namespace {
-
-bool g_lacros_enabled_for_test = false;
 
 bool g_profile_migration_completed_for_test = false;
 
@@ -143,8 +143,9 @@ LacrosAvailability GetCachedLacrosAvailability() {
 bool IsLacrosAllowedToBeEnabledWithUser(
     const User* user,
     LacrosAvailability launch_availability) {
-  if (g_lacros_enabled_for_test)
+  if (BrowserSupport::GetLacrosEnabledForTest()) {
     return true;
+  }
 
   if (!IsUserTypeAllowed(user)) {
     return false;
@@ -323,8 +324,9 @@ base::FilePath GetUserDataDir() {
 bool IsLacrosAllowedToBeEnabled() {
   // Allows tests to avoid enabling the flag, constructing a fake user manager,
   // creating g_browser_process->local_state(), etc.
-  if (g_lacros_enabled_for_test)
+  if (BrowserSupport::GetLacrosEnabledForTest()) {
     return true;
+  }
 
   // TODO(crbug.com/1185813): TaskManagerImplTest is not ready to run with
   // Lacros enabled.
@@ -347,8 +349,9 @@ bool IsLacrosAllowedToBeEnabled() {
 bool IsLacrosEnabled() {
   // Allows tests to avoid enabling the flag, constructing a fake user manager,
   // creating g_browser_process->local_state(), etc.
-  if (g_lacros_enabled_for_test)
+  if (BrowserSupport::GetLacrosEnabledForTest()) {
     return true;
+  }
 
   if (!IsLacrosAllowedToBeEnabled())
     return false;
@@ -384,8 +387,9 @@ bool IsLacrosEnabled() {
 
 bool IsLacrosEnabledForMigration(const User* user,
                                  PolicyInitState policy_init_state) {
-  if (g_lacros_enabled_for_test)
+  if (BrowserSupport::GetLacrosEnabledForTest()) {
     return true;
+  }
 
   LacrosAvailability lacros_availability;
   if (policy_init_state == PolicyInitState::kBeforeInit) {
@@ -1187,10 +1191,6 @@ bool ShouldEnforceAshExtensionKeepList() {
   return IsLacrosPrimaryBrowser() &&
          base::FeatureList::IsEnabled(
              ash::features::kEnforceAshExtensionKeeplist);
-}
-
-base::AutoReset<bool> SetLacrosEnabledForTest(bool force_enabled) {
-  return base::AutoReset<bool>(&g_lacros_enabled_for_test, force_enabled);
 }
 
 base::AutoReset<absl::optional<bool>>
