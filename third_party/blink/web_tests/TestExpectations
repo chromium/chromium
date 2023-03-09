@@ -6857,7 +6857,7 @@ crbug.com/1239281 virtual/prerender/external/wpt/speculation-rules/prerender/mai
 # suppresses the warning that is expected in this test causing it to timeout.
 # The virtual test suite "webrtc-legacy-stats-trial-disabled" disables this
 # Deprecation Trial flag.
-crbug.com/822696 http/tests/inspector-protocol/issues/webrtc-stats-deprecation.js [ Timeout ]
+crbug.com/822696 http/tests/inspector-protocol/issues/webrtc-stats-deprecation.js [ Skip Timeout ]
 crbug.com/822696 virtual/webrtc-legacy-stats-trial-disabled/http/tests/inspector-protocol/issues/webrtc-stats-deprecation.js [ Pass ]
 
 #Sheriff 2023-02-21
