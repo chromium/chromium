@@ -5,16 +5,12 @@
 #ifndef UI_GL_GL_IMAGE_EGL_PIXMAP_H_
 #define UI_GL_GL_IMAGE_EGL_PIXMAP_H_
 
-#include <stdint.h>
-
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/x/glx.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_image.h"
-
-typedef void* EGLSurface;
-typedef void* EGLDisplay;
+#include "ui/gl/native_pixmap_egl_x11_binding_helper.h"
 
 namespace media {
 class VaapiPictureNativePixmapAngle;
@@ -52,12 +48,7 @@ class GL_EXPORT GLImageEGLPixmap : public GLImage {
 
   ~GLImageEGLPixmap() override;
 
-  gfx::BufferFormat format() const { return format_; }
-
-  EGLSurface surface_;
-  const gfx::Size size_;
-  gfx::BufferFormat format_;
-  EGLDisplay display_;
+  NativePixmapEGLX11BindingHelper binding_helper_;
 };
 
 }  // namespace gl
