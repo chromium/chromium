@@ -21,6 +21,7 @@
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
+#include "components/permissions/permission_recovery_success_rate_tracker.h"
 #include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/test/web_contents_tester.h"
@@ -66,6 +67,9 @@ class ContentSettingMediaImageModelTest
         std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
             web_contents()));
     infobars::ContentInfoBarManager::CreateForWebContents(web_contents());
+
+    permissions::PermissionRecoverySuccessRateTracker::CreateForWebContents(
+        web_contents());
   }
 
   std::string GetDefaultAudioDevice() {

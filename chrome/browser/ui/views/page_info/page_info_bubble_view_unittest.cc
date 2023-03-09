@@ -39,6 +39,7 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/page_info/core/features.h"
+#include "components/permissions/permission_recovery_success_rate_tracker.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -430,6 +431,9 @@ class PageInfoBubbleViewTest : public testing::Test {
             web_contents));
     api_ = std::make_unique<test::PageInfoBubbleViewTestApi>(
         parent_window_->GetNativeWindow(), web_contents);
+
+    permissions::PermissionRecoverySuccessRateTracker::CreateForWebContents(
+        web_contents);
   }
 
   void TearDown() override {

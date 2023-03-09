@@ -654,6 +654,20 @@ chromium-metrics-reviews@google.com.
   <token key="PermissionType" variants="Top2PermissionTypes"/>
 </histogram>
 
+<histogram
+    name="Permissions.PageInfo.Changed.{PermissionType}.Reallowed.Outcome"
+    enum="PermissionChangeInfo" expires_after="2023-10-31">
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records if a user manually reallowed permission state via PageInfo. Recorded
+    when the user closes a tab, makes cross-origin navigation, or if permission
+    is used by an origin. Grouped by whether permission was used, the page was
+    reloaded and a &quot;Reload this page&quot; infobar was shown.
+  </summary>
+  <token key="PermissionType" variants="AllPermissionTypes"/>
+</histogram>
+
 <histogram name="Permissions.PageInfo.Changed.{PermissionType}.{ReloadInfoBar}"
     enum="PermissionChangeAction" expires_after="2023-10-31">
   <owner>elklm@chromium.org</owner>

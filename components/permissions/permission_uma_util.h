@@ -373,6 +373,35 @@ enum class PermissionIgnoredReason {
   NUM
 };
 
+// This enum backs up the
+// 'Permissions.PageInfo.Changed.{PermissionType}.Reallowed.Outcome' histograms
+// enum. It is used for collecting permission usage rates after permission
+// status was reallowed via PageInfo. It is applicable only if permission is
+// allowed as all other states are no-op for an origin.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PermissionChangeInfo {
+  kInfobarShownPageReloadPermissionUsed = 0,
+
+  kInfobarShownPageReloadPermissionNotUsed = 1,
+
+  kInfobarShownNoPageReloadPermissionUsed = 2,
+
+  kInfobarShownNoPageReloadPermissionNotUsed = 3,
+
+  kInfobarNotShownPageReloadPermissionUsed = 4,
+
+  kInfobarNotShownPageReloadPermissionNotUsed = 5,
+
+  kInfobarNotShownNoPageReloadPermissionUsed = 6,
+
+  kInfobarNotShownNoPageReloadPermissionNotUsed = 7,
+
+  // Always keep at the end.
+  kMaxValue = kInfobarNotShownNoPageReloadPermissionNotUsed
+};
+
 // Provides a convenient way of logging UMA for permission related operations.
 class PermissionUmaUtil {
  public:
@@ -422,6 +451,12 @@ class PermissionUmaUtil {
       PermissionStatusSource source);
 
   static void RecordEmbargoStatus(PermissionEmbargoStatus embargo_status);
+
+  static void RecordPermissionRecoverySuccessRate(
+      ContentSettingsType permission,
+      bool is_used,
+      bool show_infobar,
+      bool page_reload);
 
   // Recorded when a permission prompt creation is in progress.
   static void RecordPermissionPromptAttempt(

@@ -498,6 +498,44 @@ void RecordTopLevelPermissionsHeaderPolicy(
                                 PermissionHeaderPolicyForUMA::NUM);
 }
 
+PermissionChangeInfo GetChangeInfo(bool is_used,
+                                   bool show_infobar,
+                                   bool page_reload) {
+  if (show_infobar) {
+    if (page_reload) {
+      if (is_used) {
+        return PermissionChangeInfo::kInfobarShownPageReloadPermissionUsed;
+      } else {
+        return PermissionChangeInfo::kInfobarShownPageReloadPermissionNotUsed;
+      }
+
+    } else {
+      if (is_used) {
+        return PermissionChangeInfo::kInfobarShownNoPageReloadPermissionUsed;
+      } else {
+        return PermissionChangeInfo::kInfobarShownNoPageReloadPermissionNotUsed;
+      }
+    }
+  } else {
+    if (page_reload) {
+      if (is_used) {
+        return PermissionChangeInfo::kInfobarNotShownPageReloadPermissionUsed;
+      } else {
+        return PermissionChangeInfo::
+            kInfobarNotShownPageReloadPermissionNotUsed;
+      }
+
+    } else {
+      if (is_used) {
+        return PermissionChangeInfo::kInfobarNotShownNoPageReloadPermissionUsed;
+      } else {
+        return PermissionChangeInfo::
+            kInfobarNotShownNoPageReloadPermissionNotUsed;
+      }
+    }
+  }
+}
+
 }  // anonymous namespace
 
 // PermissionUmaUtil ----------------------------------------------------------
@@ -628,6 +666,22 @@ void PermissionUmaUtil::RecordEmbargoStatus(
     PermissionEmbargoStatus embargo_status) {
   base::UmaHistogramEnumeration("Permissions.AutoBlocker.EmbargoStatus",
                                 embargo_status, PermissionEmbargoStatus::NUM);
+}
+
+void PermissionUmaUtil::RecordPermissionRecoverySuccessRate(
+    ContentSettingsType permission,
+    bool is_used,
+    bool show_infobar,
+    bool page_reload) {
+  PermissionChangeInfo change_info =
+      GetChangeInfo(is_used, show_infobar, page_reload);
+
+  std::string permission_string = GetPermissionRequestString(
+      GetUmaValueForRequestType(ContentSettingsTypeToRequestType(permission)));
+
+  base::UmaHistogramEnumeration("Permissions.PageInfo.Changed." +
+                                    permission_string + ".Reallowed.Outcome",
+                                change_info);
 }
 
 void PermissionUmaUtil::RecordPermissionPromptAttempt(

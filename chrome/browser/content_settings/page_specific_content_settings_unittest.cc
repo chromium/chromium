@@ -9,6 +9,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/permissions/permission_recovery_success_rate_tracker.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 
@@ -26,6 +27,9 @@ class PageSpecificContentSettingsTest : public ChromeRenderViewHostTestHarness {
         web_contents(),
         std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
             web_contents()));
+
+    permissions::PermissionRecoverySuccessRateTracker::CreateForWebContents(
+        web_contents());
   }
 };
 
