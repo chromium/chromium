@@ -232,6 +232,16 @@ void MaybeRegisterChromeFeaturePromos(
                     .SetBubbleArrow(HelpBubbleArrow::kNone)
                     .SetBubbleIcon(&vector_icons::kLightbulbOutlineIcon)));
 
+  // kIPHDesktopCustomizeChromeFeature:
+  registry.RegisterFeature(
+      std::move(FeaturePromoSpecification::CreateForTutorialPromo(
+                    feature_engagement::kIPHDesktopCustomizeChromeFeature,
+                    kTabStripRegionElementId,
+                    IDS_TUTORIAL_CUSTOMIZE_CHROME_START_TUTORIAL_IPH,
+                    kSidePanelCustomizeChromeTutorialId)
+                    .SetBubbleArrow(HelpBubbleArrow::kNone)
+                    .SetBubbleIcon(&vector_icons::kLightbulbOutlineIcon)));
+
   // kIPHLiveCaptionFeature:
   registry.RegisterFeature(FeaturePromoSpecification::CreateForToastPromo(
       feature_engagement::kIPHLiveCaptionFeature, kMediaButtonElementId,

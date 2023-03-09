@@ -227,6 +227,22 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHDesktopCustomizeChromeFeature.name == feature->name) {
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    // Used to increase the usage of Customize Chrome for users who have opened
+    // it 0 times in the last 360 days.
+    config->used =
+        EventConfig("customize_chrome_opened", Comparator(EQUAL, 0), 360, 360);
+    // Triggered when IPH hasn't been shown in the past day.
+    config->trigger = EventConfig("iph_customize_chrome_triggered",
+                                  Comparator(EQUAL, 0), 1, 360);
+    config->snooze_params.max_limit = 4;
+    return config;
+  }
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
