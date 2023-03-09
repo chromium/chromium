@@ -160,14 +160,8 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
 
         boolean historyClustersPrefIsManaged =
                 mPrefService.isManagedPreference(HISTORY_CLUSTERS_VISIBLE_PREF);
-                /*
-                 * ChromeFeatureList.HISTORY_JOURNEYS这个配置项定义在
-                 * /home/xiaobin/code/chromium-android/src/components/history_clusters/core/features.cc
-                 * 中，但修改后只是关闭了功能，用户还是可以在历史记录中通过点击三个点，手动开启
-                 * 直接在android代码中隐藏UI入口吧
-                 */
         boolean historyClustersEnabled =
-                false
+                ChromeFeatureList.isEnabled(ChromeFeatureList.HISTORY_JOURNEYS)
                 && !(historyClustersPrefIsManaged
                         && !mPrefService.getBoolean(HISTORY_CLUSTERS_VISIBLE_PREF));
         if (historyClustersEnabled) {

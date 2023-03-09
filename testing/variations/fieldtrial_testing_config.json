@@ -6232,11 +6232,13 @@
                         "write_to_history_service": "true"
                     },
                     "enable_features": [
-                        "Journeys",
                         "JourneysLabel",
                         "JourneysOmniboxAction",
                         "PageContentAnnotations",
                         "PageEntitiesPageContentAnnotations"
+                    ],
+                    "disable_features": [
+                        "Journeys"
                     ]
                 }
             ]
