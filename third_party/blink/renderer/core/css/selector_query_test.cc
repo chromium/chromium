@@ -78,7 +78,8 @@ TEST(SelectorQueryTest, NotMatchingPseudoElement) {
       MakeGarbageCollected<CSSParserContext>(
           *document, NullURL(), true /* origin_clean */, Referrer(),
           WTF::TextEncoding(), CSSParserContext::kSnapshotProfile),
-      /*parent_rule_for_nesting=*/nullptr, nullptr, "span::before", arena);
+      CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr, nullptr,
+      "span::before", arena);
   CSSSelectorList* selector_list =
       CSSSelectorList::AdoptSelectorVector(selector_vector);
   std::unique_ptr<SelectorQuery> query = SelectorQuery::Adopt(selector_list);
@@ -89,7 +90,8 @@ TEST(SelectorQueryTest, NotMatchingPseudoElement) {
       MakeGarbageCollected<CSSParserContext>(
           *document, NullURL(), true /* origin_clean */, Referrer(),
           WTF::TextEncoding(), CSSParserContext::kSnapshotProfile),
-      /*parent_rule_for_nesting=*/nullptr, nullptr, "span", arena);
+      CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr, nullptr,
+      "span", arena);
   selector_list = CSSSelectorList::AdoptSelectorVector(selector_vector);
   query = SelectorQuery::Adopt(selector_list);
   elm = query->QueryFirst(*document);
@@ -112,7 +114,8 @@ TEST(SelectorQueryTest, LastOfTypeNotFinishedParsing) {
       MakeGarbageCollected<CSSParserContext>(
           *document, NullURL(), true /* origin_clean */, Referrer(),
           WTF::TextEncoding(), CSSParserContext::kSnapshotProfile),
-      /*parent_rule_for_nesting=*/nullptr, nullptr, "p:last-of-type", arena);
+      CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr, nullptr,
+      "p:last-of-type", arena);
   CSSSelectorList* selector_list =
       CSSSelectorList::AdoptSelectorVector(selector_vector);
   std::unique_ptr<SelectorQuery> query = SelectorQuery::Adopt(selector_list);

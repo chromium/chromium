@@ -205,7 +205,7 @@ StyleRuleBase* ParseRule(Document& document, String text) {
   auto* sheet = CSSStyleSheet::CreateInline(
       document, NullURL(), TextPosition::MinimumPosition(), UTF8Encoding());
   const auto* context = MakeGarbageCollected<CSSParserContext>(document);
-  return CSSParser::ParseRule(context, sheet->Contents(),
+  return CSSParser::ParseRule(context, sheet->Contents(), CSSNestingType::kNone,
                               /*parent_rule_for_nesting=*/nullptr, text);
 }
 
@@ -231,7 +231,8 @@ CSSSelectorList* ParseSelectorList(const String& string) {
   CSSParserTokenRange range(tokens);
   HeapVector<CSSSelector> arena;
   base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
-      range, context, /*parent_rule_for_nesting=*/nullptr, sheet, arena);
+      range, context, CSSNestingType::kNone,
+      /*parent_rule_for_nesting=*/nullptr, sheet, arena);
   return CSSSelectorList::AdoptSelectorVector(vector);
 }
 

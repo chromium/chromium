@@ -387,7 +387,7 @@ unsigned CSSStyleSheet::insertRule(const String& rule_string,
       MakeGarbageCollected<CSSParserContext>(contents_->ParserContext(), this);
 
   StyleRuleBase* rule =
-      CSSParser::ParseRule(context, contents_.Get(),
+      CSSParser::ParseRule(context, contents_.Get(), CSSNestingType::kNone,
                            /*parent_rule_for_nesting=*/nullptr, rule_string);
 
   if (!rule) {

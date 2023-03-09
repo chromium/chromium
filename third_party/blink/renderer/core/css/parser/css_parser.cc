@@ -45,6 +45,7 @@ void CSSParser::ParseDeclarationListForInspector(
 
 base::span<CSSSelector> CSSParser::ParseSelector(
     const CSSParserContext* context,
+    CSSNestingType nesting_type,
     StyleRule* parent_rule_for_nesting,
     StyleSheetContents* style_sheet_contents,
     const String& selector,
@@ -52,7 +53,7 @@ base::span<CSSSelector> CSSParser::ParseSelector(
   CSSTokenizer tokenizer(selector);
   const auto tokens = tokenizer.TokenizeToEOF();
   return CSSSelectorParser::ParseSelector(CSSParserTokenRange(tokens), context,
-                                          parent_rule_for_nesting,
+                                          nesting_type, parent_rule_for_nesting,
                                           style_sheet_contents, arena);
 }
 
@@ -68,10 +69,11 @@ CSSSelectorList* CSSParser::ParsePageSelector(
 
 StyleRuleBase* CSSParser::ParseRule(const CSSParserContext* context,
                                     StyleSheetContents* style_sheet,
+                                    CSSNestingType nesting_type,
                                     StyleRule* parent_rule_for_nesting,
                                     const String& rule) {
-  return CSSParserImpl::ParseRule(rule, context, parent_rule_for_nesting,
-                                  style_sheet,
+  return CSSParserImpl::ParseRule(rule, context, nesting_type,
+                                  parent_rule_for_nesting, style_sheet,
                                   CSSParserImpl::kAllowImportRules);
 }
 
@@ -267,8 +269,8 @@ std::unique_ptr<Vector<KeyframeOffset>> CSSParser::ParseKeyframeKeyList(
 StyleRuleKeyframe* CSSParser::ParseKeyframeRule(const CSSParserContext* context,
                                                 const String& rule) {
   StyleRuleBase* keyframe = CSSParserImpl::ParseRule(
-      rule, context, /*parent_rule_for_nesting=*/nullptr, nullptr,
-      CSSParserImpl::kKeyframeRules);
+      rule, context, CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr,
+      nullptr, CSSParserImpl::kKeyframeRules);
   return To<StyleRuleKeyframe>(keyframe);
 }
 

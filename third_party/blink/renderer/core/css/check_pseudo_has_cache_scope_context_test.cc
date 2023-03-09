@@ -79,6 +79,7 @@ class CheckPseudoHasCacheScopeContextTest : public PageTestBase {
         MakeGarbageCollected<CSSParserContext>(
             *document, NullURL(), true /* origin_clean */, Referrer(),
             WTF::TextEncoding(), CSSParserContext::kSnapshotProfile),
+        CSSNestingType::kNone,
         /*parent_rule_for_nesting=*/nullptr, nullptr, selector_text, arena);
     CSSSelectorList* selector_list =
         CSSSelectorList::AdoptSelectorVector(selector_vector);

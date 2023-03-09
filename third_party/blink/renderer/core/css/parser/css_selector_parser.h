@@ -9,6 +9,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
+#include "third_party/blink/renderer/core/css/parser/css_nesting_type.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 
 namespace blink {
@@ -58,12 +59,14 @@ class CORE_EXPORT CSSSelectorParser {
   static base::span<CSSSelector> ParseSelector(
       CSSParserTokenRange,
       const CSSParserContext*,
+      CSSNestingType,
       const StyleRule* parent_rule_for_nesting,
       StyleSheetContents*,
       HeapVector<CSSSelector>&);
   static base::span<CSSSelector> ConsumeSelector(
       CSSParserTokenStream&,
       const CSSParserContext*,
+      CSSNestingType,
       const StyleRule* parent_rule_for_nesting,
       StyleSheetContents*,
       CSSParserObserver*,
@@ -97,6 +100,7 @@ class CORE_EXPORT CSSSelectorParser {
 
  private:
   CSSSelectorParser(const CSSParserContext*,
+                    CSSNestingType,
                     const StyleRule* parent_rule_for_nesting,
                     StyleSheetContents*,
                     HeapVector<CSSSelector>&);
@@ -197,6 +201,7 @@ class CORE_EXPORT CSSSelectorParser {
   void SetInSupportsParsing() { in_supports_parsing_ = true; }
 
   const CSSParserContext* context_;
+  CSSNestingType nesting_type_;
   const StyleRule* parent_rule_for_nesting_;
   const StyleSheetContents* style_sheet_;
 

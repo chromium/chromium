@@ -497,6 +497,7 @@ blink_core_sources_css = [
   "parser/css_lazy_parsing_state.h",
   "parser/css_lazy_property_parser_impl.cc",
   "parser/css_lazy_property_parser_impl.h",
+  "parser/css_nesting_type.h",
   "parser/css_parser.cc",
   "parser/css_parser.h",
   "parser/css_parser_context.cc",
