@@ -386,7 +386,7 @@ TFLiteOpResolver::TFLiteOpResolver() {
   if (features::TFLiteXNNPACKDelegateEnabled()) {
     delegate_creators_.push_back([](TfLiteContext* context) {
       return tflite::MaybeCreateXNNPACKDelegate(
-          context, /*enable_xnnpack_unsigned_quantized=*/false);
+          context, tflite::XNNPackQS8Options::disabled);
     });
   }
 #endif

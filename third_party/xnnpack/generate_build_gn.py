@@ -61,6 +61,7 @@ config("xnnpack_config") {
 
   cflags=[
     "-Wno-unused-function",
+    "-Wno-deprecated-comma-subscript",
   ]
 
   defines = [
