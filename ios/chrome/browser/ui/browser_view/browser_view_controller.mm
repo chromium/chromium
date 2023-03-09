@@ -94,7 +94,6 @@
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/browser/voice/voice_search_navigations_tab_helper.h"
 #import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
-#import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web/web_navigation_util.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_usage_enabler/web_usage_enabler_browser_agent.h"
@@ -292,6 +291,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   // Used to report usage of a single Browser's tab.
   TabUsageRecorderBrowserAgent* _tabUsageRecorderBrowserAgent;
+
+  // Used for common web navigation tasks.
+  WebNavigationBrowserAgent* _webNavigationBrowserAgent;
 
   // For thumb strip, when YES, fullscreen disabler is reset only when web view
   // dragging stops, to avoid closing thumb strip and going fullscreen in
@@ -493,6 +495,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     _urlLoadingNotifierBrowserAgent =
         dependencies.urlLoadingNotifierBrowserAgent;
     _tabUsageRecorderBrowserAgent = dependencies.tabUsageRecorderBrowserAgent;
+    _webNavigationBrowserAgent = dependencies.webNavigationBrowserAgent;
 
     dependencies.lensCoordinator.delegate = self;
 
@@ -2654,7 +2657,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       // occurring will cut the animation short.
       DCHECK(self.currentWebState);
       SnapshotTabHelper::FromWebState(self.currentWebState)->IgnoreNextLoad();
-      WebNavigationBrowserAgent::FromBrowser(self.browser)->Reload();
+      _webNavigationBrowserAgent->Reload();
       break;
     case OverscrollAction::NONE:
       NOTREACHED();

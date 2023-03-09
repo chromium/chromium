@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_supporting.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
+#import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web/web_navigation_ntp_delegate.h"
 #import "ios/chrome/browser/web/web_state_container_view_provider.h"
 
@@ -62,6 +63,7 @@ class TabUsageRecorderBrowserAgent;
 @protocol LoadQueryCommands;
 class UrlLoadingBrowserAgent;
 class UrlLoadingNotifierBrowserAgent;
+class WebNavigationBrowserAgent;
 
 // TODO(crbug.com/1328039): Remove all use of the prerender service from BVC
 typedef struct {
@@ -92,6 +94,7 @@ typedef struct {
   UrlLoadingBrowserAgent* urlLoadingBrowserAgent;
   UrlLoadingNotifierBrowserAgent* urlLoadingNotifierBrowserAgent;
   TabUsageRecorderBrowserAgent* tabUsageRecorderBrowserAgent;
+  WebNavigationBrowserAgent* webNavigationBrowserAgent;
 } BrowserViewControllerDependencies;
 
 // The top-level view controller for the browser UI. Manages other controllers

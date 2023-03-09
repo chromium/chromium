@@ -858,6 +858,8 @@ enum class ToolbarKind {
       UrlLoadingNotifierBrowserAgent::FromBrowser(self.browser);
   _viewControllerDependencies.tabUsageRecorderBrowserAgent =
       TabUsageRecorderBrowserAgent::FromBrowser(self.browser);
+  _viewControllerDependencies.webNavigationBrowserAgent =
+      WebNavigationBrowserAgent::FromBrowser(self.browser);
 }
 
 - (void)updateViewControllerDependencies {

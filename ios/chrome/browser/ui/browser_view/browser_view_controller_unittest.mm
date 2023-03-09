@@ -250,6 +250,8 @@ class BrowserViewControllerTest : public BlockCleanupTest {
 
     tab_usage_recorder_browser_agent_ =
         TabUsageRecorderBrowserAgent::FromBrowser(browser_.get());
+    web_navigation_browser_agent_ =
+        WebNavigationBrowserAgent::FromBrowser(browser_.get());
 
     BrowserViewControllerDependencies dependencies;
     dependencies.prerenderService = fake_prerender_service_.get();
@@ -266,6 +268,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         url_loading_notifier_browser_agent_;
     dependencies.tabUsageRecorderBrowserAgent =
         tab_usage_recorder_browser_agent_;
+    dependencies.webNavigationBrowserAgent = web_navigation_browser_agent_;
 
     bvc_ = [[BrowserViewController alloc] initWithBrowser:browser_.get()
                            browserContainerViewController:container_
@@ -359,6 +362,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   TabEventsMediator* tab_events_mediator_;
   UrlLoadingNotifierBrowserAgent* url_loading_notifier_browser_agent_;
   TabUsageRecorderBrowserAgent* tab_usage_recorder_browser_agent_;
+  WebNavigationBrowserAgent* web_navigation_browser_agent_;
 };
 
 TEST_F(BrowserViewControllerTest, TestWebStateSelected) {
