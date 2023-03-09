@@ -492,6 +492,10 @@ extern const char kMediaPermissionsControlDescription[];
 extern const char kMetrickitNonCrashReportName[];
 extern const char kMetrickitNonCrashReportDescription[];
 
+// Title and description for the flag to enable Mixed Content auto-upgrading.
+extern const char kMixedContentAutoupgradeName[];
+extern const char kMixedContentAutoupgradeDescription[];
+
 // TODO(crbug.com/1128242): Remove this flag after the refactoring work is
 // finished.
 // Title and description for the flag used to test the newly

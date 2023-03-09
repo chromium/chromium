@@ -1421,6 +1421,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableFollowManagementInstantReloadDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kEnableFollowManagementInstantReload)},
+    {"mixed-content-autoupgrade-ios",
+     flag_descriptions::kMixedContentAutoupgradeName,
+     flag_descriptions::kMixedContentAutoupgradeDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         security_interstitials::features::kMixedContentAutoupgrade)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

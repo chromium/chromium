@@ -561,6 +561,10 @@ const char kMetrickitNonCrashReportDescription[] =
     "Enables sending Metrickit reports for non crash type (hang, "
     "cpu-exception, diskwrite-exception)";
 
+const char kMixedContentAutoupgradeName[] = "Auto-upgrade mixed content";
+const char kMixedContentAutoupgradeDescription[] =
+    "Enables auto-upgrading of mixed content images, audio and video";
+
 const char kModernTabStripName[] = "Modern TabStrip";
 const char kModernTabStripDescription[] =
     "When enabled, the newly implemented tabstrip can be tested.";
