@@ -12,6 +12,10 @@
     font: var(--cros-display-7-font);
   }
 
+  #content:focus-visible {
+    outline: none;
+  }
+
   .normal-text {
     color: var(--cros-text-color-secondary);
     font: var(--cros-body-2-font);
@@ -23,15 +27,28 @@
     display: flex;
     justify-content: flex-end;
   }
+
+  cr-button {
+    border-radius: 16px;
+  }
+
+  cr-button:focus-visible {
+    /* disable cr-button default keyboard focus style */
+    box-shadow: none;
+    outline: 2px solid var(--cros-focus-ring-color);
+    outline-offset: 2px;
+  }
 </style>
 
 <!-- TODO(b/258071752): Use localized strings -->
-<div class="title">
-  Files will move to Google Drive when opening in Docs, Sheets, or Slides
-</div>
-<div class="normal-text">
-  <!-- TODO(b/258071752): Deep link to settings -->
-  You can change this at any time in Settings > Files > Office file handling
+<div id="content" autofocus tabindex="-1">
+  <div class="title">
+    Files will move to Google Drive when opening in Docs, Sheets, or Slides
+  </div>
+  <div class="normal-text">
+    <!-- TODO(b/258071752): Deep link to settings -->
+    You can change this at any time in Settings > Files > Office file handling
+  </div>
 </div>
 <div id="button-container">
   <cr-button class="cancel-button">$i18n{cancel}</cr-button>

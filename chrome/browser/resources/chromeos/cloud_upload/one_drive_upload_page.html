@@ -1,4 +1,16 @@
 <!-- TODO: Use localized strings -->
+<style>
+  cr-button {
+    border-radius: 16px;
+  }
+
+  cr-button:focus-visible {
+    /* disable cr-button default keyboard focus style */
+    box-shadow: none;
+    outline: 2px solid var(--cros-focus-ring-color);
+    outline-offset: 2px;
+  }
+</style>
 <svg slot="header-image" viewBox="0 0 448 200">
   <use href="images/one_drive_success.svg#EXPORT_image"></use>
 </svg>

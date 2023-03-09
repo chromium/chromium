@@ -26,6 +26,17 @@
   .installed::before {
     -webkit-mask-image: url(icons/check.svg);
   }
+
+  cr-button {
+    border-radius: 16px;
+  }
+
+  cr-button:focus-visible {
+    /* disable cr-button default keyboard focus style */
+    box-shadow: none;
+    outline: 2px solid var(--cros-focus-ring-color);
+    outline-offset: 2px;
+  }
 </style>
 <picture slot="header-image">
   <source srcset="images/install_office_dark_mode.svg"
