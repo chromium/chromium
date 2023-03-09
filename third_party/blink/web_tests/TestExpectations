@@ -5477,14 +5477,8 @@ crbug.com/1339051 [ Linux ] virtual/backface-visibility-interop/external/wpt/css
 crbug.com/1339051 [ Linux ] virtual/oopr-canvas2d/fast/canvas/canvas-createImageBitmap-out-of-bounds-src.html [ Failure ]
 crbug.com/1339051 [ Linux ] virtual/prefer_compositing_to_lcd_text/compositing/overflow/nested-render-surfaces.html [ Failure ]
 
-# crbug.com/1373055 Spec change to no longer apply transform to root elements.
-crbug.com/1373055 external/wpt/css/css-transforms/transform-background-007.html [ Failure ]
-crbug.com/1373055 external/wpt/css/css-transforms/transform-background-008.html [ Failure ]
-crbug.com/1373055 external/wpt/css/css-transforms/transform-root-bg-001.html [ Failure ]
-crbug.com/1373055 external/wpt/css/css-transforms/transform-root-bg-002.html [ Failure ]
-crbug.com/1373055 external/wpt/css/css-transforms/transform-root-bg-003.html [ Failure ]
-crbug.com/1373055 external/wpt/css/css-transforms/transform-translate-background-001.html [ Failure ]
-crbug.com/1373055 external/wpt/css/css-transforms/transform-translate-background-002.html [ Failure ]
+crbug.com/1423007 external/wpt/css/css-transforms/transform-translate-background-001.html [ Failure ]
+crbug.com/1423007 external/wpt/css/css-transforms/transform-translate-background-002.html [ Failure ]
 
 # Sheriff 2021-09-27
 # Revisit once crbug.com/1123886 is addressed.

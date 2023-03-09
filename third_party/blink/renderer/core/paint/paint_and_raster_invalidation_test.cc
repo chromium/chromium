@@ -476,7 +476,7 @@ TEST_P(PaintAndRasterInvalidationTest, FullInvalidationWithHTMLTransform) {
                                  PaintInvalidationReason::kBackground},
           RasterInvalidationInfo{client->Id(), client->DebugName(),
                                  gfx::Rect(0, 0, 500, 500),
-                                 PaintInvalidationReason::kPaintProperty}));
+                                 PaintInvalidationReason::kBackground}));
 }
 
 TEST_P(PaintAndRasterInvalidationTest, NonCompositedLayoutViewGradientResize) {

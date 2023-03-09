@@ -155,7 +155,7 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
   // For HTML and XHTML documents, the root element may paint in a different
   // clip, effect or transform state than the LayoutView. For
   // example, the HTML element may have a clip-path, filter, blend-mode,
-  // opacity or transform.
+  // or opacity.  (However, we should ignore differences in transform.)
   //
   // In these cases, we should paint the background of the root element in
   // its LocalBorderBoxProperties() state, as part of the Root Element Group
@@ -167,8 +167,10 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
   // [2] https://drafts.fxtf.org/compositing/#rootgroup
   if (should_paint_background && painting_background_in_contents_space &&
       should_apply_root_background_behavior && root_object) {
-    const auto& document_element_state =
+    auto document_element_state =
         root_object->FirstFragment().LocalBorderBoxProperties();
+    document_element_state.SetTransform(
+        root_object->FirstFragment().PreTransform());
 
     // As an optimization, only paint a separate PaintChunk for the
     // root group if its property tree state differs from root element
@@ -227,8 +229,8 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
 // This function handles background painting for the LayoutView.
 // View background painting is special in the following ways:
 // 1. The view paints background for the root element, the background
-//    positioning respects the positioning and transformation of the root
-//    element. However, this method assumes that there is already an
+//    positioning respects the positioning (but not transform) of the root
+//    element. However, this method assumes that there is already a
 //    PaintChunk being recorded with the LocalBorderBoxProperties of the
 //    root element. Therefore the transform of the root element
 //    are applied via PaintChunksToCcLayer, and not via the display list of the
@@ -294,8 +296,8 @@ void ViewPainter::PaintRootElementGroup(
   // Compute the enclosing rect of the view, in root element space.
   //
   // For background colors we can simply paint the document rect in the default
-  // space. However, for background image, the root element paint offset and
-  // transforms apply. The strategy is to issue draw commands in the root
+  // space. However, for background image, the root element paint offset (but
+  // not transforms) apply. The strategy is to issue draw commands in the root
   // element's local space, which requires mapping the document background rect.
   bool background_renderable = true;
   gfx::Rect paint_rect = pixel_snapped_background_rect;
