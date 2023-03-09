@@ -221,6 +221,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAuthentication.LargeBlobKey.WriteResult"
+    enum="WebAuthenticationLargeBlobKeyWriteResult" expires_after="M114">
+  <owner>nsatragno@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the result of writing a large blob using the CTAP
+    authenticatorLargeBlobs command (0x0C) during a WebAuthentication
+    GetAssertion request.
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.MakeCredentialRequestTransport"
     enum="WebAuthenticationFidoTransport" expires_after="2023-06-18">
   <owner>kenrb@chromium.org</owner>

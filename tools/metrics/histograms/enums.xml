@@ -108218,6 +108218,14 @@ others/histograms.xml -->
   <int value="5" label="Android Accessory"/>
 </enum>
 
+<enum name="WebAuthenticationLargeBlobKeyWriteResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Not enough space"/>
+  <int value="2" label="Compression error"/>
+  <int value="3" label="Credential has no large blob key"/>
+  <int value="4" label="CTAP error"/>
+</enum>
+
 <enum name="WebAuthenticationRelyingPartySecurityCheckFailure">
   <int value="0" label="Opaque or Non-Secure Origin"/>
   <int value="1" label="Relying Party Id Invalid"/>

@@ -12,6 +12,7 @@
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
@@ -209,6 +210,7 @@ void FidoDeviceAuthenticator::OnHaveCompressedLargeBlobForGetAssertion(
     size_t original_size,
     base::expected<mojo_base::BigBuffer, std::string> result) {
   if (!result.has_value()) {
+    LogLargeBlobResult(LargeBlobKeyWriteResult::kCompressionError);
     FIDO_LOG(ERROR) << "Failed to compress large blob: " << result.error();
   } else {
     // If the authenticator supports the largeBlob extension then the blob is
@@ -355,6 +357,7 @@ void FidoDeviceAuthenticator::PerformGetAssertionLargeBlobOperation(
     DCHECK(options_.large_blob_type == LargeBlobSupportType::kKey);
     DCHECK_EQ(responses.size(), 1u);
     if (!responses.at(0).large_blob_key) {
+      LogLargeBlobResult(LargeBlobKeyWriteResult::kCredentialHasNoLargeBlobKey);
       std::move(callback).Run(CtapDeviceResponseCode::kSuccess,
                               std::move(responses));
       return;
@@ -1018,6 +1021,16 @@ void FidoDeviceAuthenticator::OnWroteLargeBlobForGetAssertion(
     std::vector<AuthenticatorGetAssertionResponse> responses,
     GetAssertionCallback callback,
     CtapDeviceResponseCode status) {
+  switch (status) {
+    case CtapDeviceResponseCode::kSuccess:
+      LogLargeBlobResult(LargeBlobKeyWriteResult::kSuccess);
+      break;
+    case CtapDeviceResponseCode::kCtap2ErrRequestTooLarge:
+      LogLargeBlobResult(LargeBlobKeyWriteResult::kNotEnoughSpace);
+      break;
+    default:
+      LogLargeBlobResult(LargeBlobKeyWriteResult::kCtapError);
+  }
   responses.at(0).large_blob_written =
       status == CtapDeviceResponseCode::kSuccess;
   std::move(callback).Run(CtapDeviceResponseCode::kSuccess,
@@ -1362,6 +1375,14 @@ void FidoDeviceAuthenticator::OnHaveLargeBlobArrayForGarbageCollect(
                 kMinLargeBlobSize));
   WriteLargeBlobArray(std::move(pin_uv_auth_token), std::move(writer),
                       std::move(callback));
+}
+
+void FidoDeviceAuthenticator::LogLargeBlobResult(
+    LargeBlobKeyWriteResult result) {
+  if (options_.large_blob_type == LargeBlobSupportType::kKey) {
+    base::UmaHistogramEnumeration("WebAuthentication.LargeBlobKey.WriteResult",
+                                  result);
+  }
 }
 
 absl::optional<base::span<const int32_t>>
