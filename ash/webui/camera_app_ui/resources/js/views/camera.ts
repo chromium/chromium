@@ -287,9 +287,9 @@ export class Camera extends View implements CameraViewUI {
           const mode = util.assertEnumVariant(Mode, el.dataset['mode']);
           this.updateModeUI(mode);
           this.updateShutterLabel(mode);
-          state.set(state.State.MODE_SWITCHING, true);
+          state.set(PerfEvent.MODE_SWITCHING, true);
           const isSuccess = await this.cameraManager.switchMode(mode);
-          state.set(state.State.MODE_SWITCHING, false, {hasError: !isSuccess});
+          state.set(PerfEvent.MODE_SWITCHING, false, {hasError: !isSuccess});
         }
       });
     }

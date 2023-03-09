@@ -9,6 +9,7 @@ import {I18nString} from './i18n_string.js';
 import * as loadTimeData from './models/load_time_data.js';
 import {speakMessage} from './spoken_msg.js';
 import * as state from './state.js';
+import {PerfEvent} from './type';
 import * as util from './util.js';
 
 /**
@@ -111,12 +112,12 @@ export enum IndicatorType {
  * modes/cameras.
  */
 export function setup(): void {
-  state.addObserver(state.State.CAMERA_SWITCHING, (val) => {
+  state.addObserver(PerfEvent.CAMERA_SWITCHING, (val) => {
     if (val) {
       hide();
     }
   });
-  state.addObserver(state.State.MODE_SWITCHING, (val) => {
+  state.addObserver(PerfEvent.MODE_SWITCHING, (val) => {
     if (val) {
       hide();
     }

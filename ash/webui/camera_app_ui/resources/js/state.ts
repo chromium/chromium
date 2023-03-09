@@ -13,7 +13,6 @@ import {
 
 export enum State {
   CAMERA_CONFIGURING = 'camera-configuring',
-  CAMERA_SWITCHING = 'camera-switching',
   DOC_MODE_REVIEWING = 'doc-mode-reviewing',
   ENABLE_GIF_RECORDING = 'enable-gif-recording',
   ENABLE_PTZ = 'enable-ptz',
@@ -36,7 +35,6 @@ export enum State {
   MAX_WND = 'max-wnd',
   MIC = 'mic',
   MIRROR = 'mirror',
-  MODE_SWITCHING = 'mode-switching',
   MULTI_CAMERA = 'multi-camera',
   PLAYING_RESULT_VIDEO = 'playing-result-video',
   RECORD_TYPE_GIF = 'record-type-gif',
