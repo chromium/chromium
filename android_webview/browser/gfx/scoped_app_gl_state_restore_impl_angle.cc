@@ -82,8 +82,9 @@ ScopedAppGLStateRestoreImplAngle::ScopedAppGLStateRestoreImplAngle(
   DCHECK_NE(egl_context_, EGL_NO_CONTEXT) << " no native context is current.";
 #endif
 
-  if (base::android::BuildInfo::GetInstance()->sdk_int() ==
-      base::android::SDK_VERSION_S) {
+  if (mode == ScopedAppGLStateRestore::MODE_DRAW &&
+      base::android::BuildInfo::GetInstance()->sdk_int() ==
+          base::android::SDK_VERSION_S) {
     GLint red_bits = 0;
     GLint green_bits = 0;
     GLint blue_bits = 0;
