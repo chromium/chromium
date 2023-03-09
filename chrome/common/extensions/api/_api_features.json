@@ -358,7 +358,8 @@
     {
       "internal": true,
       "channel": "stable",
-      "contexts": ["blessed_extension"]
+      "contexts": ["blessed_extension"],
+      "dependencies": ["permission:downloads"]
     },
     {
       "internal": true,
