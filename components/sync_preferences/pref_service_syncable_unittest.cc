@@ -420,6 +420,7 @@ class PrefServiceSyncableMergeTest : public testing::Test {
                                              pref_registry_->defaults().get(),
                                              pref_notifier_),
             user_prefs_,
+            /*user_prefs_for_sync=*/user_prefs_,
             standalone_browser_prefs_,
             pref_registry_,
             &client_,
@@ -970,7 +971,8 @@ class PrefServiceSyncableChromeOsTest : public testing::Test {
             new TestingPrefStore, new TestingPrefStore, user_prefs_.get(),
             standalone_browser_prefs_.get(), pref_registry_->defaults().get(),
             pref_notifier_),
-        user_prefs_, standalone_browser_prefs_, pref_registry_, &client_,
+        user_prefs_, /*user_prefs_for_sync=*/user_prefs_,
+        standalone_browser_prefs_, pref_registry_, &client_,
         /*read_error_callback=*/base::DoNothing(),
         /*async=*/false);
   }

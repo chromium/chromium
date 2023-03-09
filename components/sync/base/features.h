@@ -167,6 +167,11 @@ inline constexpr base::FeatureParam<base::TimeDelta>
 // syncable.
 BASE_DECLARE_FEATURE(kSyncEnforcePreferencesAllowlist);
 
+// Enables a separate account-scoped storage for preferences, for syncing users.
+// (Note that opposed to other "account storage" features, this one does not
+// have any effect for signed-in non-syncing users!)
+BASE_DECLARE_FEATURE(kEnablePreferencesAccountStorage);
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_
