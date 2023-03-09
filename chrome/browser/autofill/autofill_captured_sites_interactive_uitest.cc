@@ -260,7 +260,8 @@ class AutofillCapturedSitesInteractiveTest
   }
 
  protected:
-  AutofillCapturedSitesInteractiveTest() = default;
+  AutofillCapturedSitesInteractiveTest()
+      : AutofillUiTest({.disable_server_communication = false}) {}
 
   ~AutofillCapturedSitesInteractiveTest() override = default;
 

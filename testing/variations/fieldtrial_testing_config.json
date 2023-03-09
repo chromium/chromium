@@ -1302,32 +1302,6 @@
             ]
         }
     ],
-    "AutofillServerCommunication": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "//0": "This is to effectively disable the",
-                    "//1": "AutofillDownloadManager in browser tests",
-                    "//2": "It is not an ongoing Finch experiment.",
-                    "name": "AutofillServerCommunication",
-                    "disable_features": [
-                        "AutofillServerCommunication"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillSurveys": [
         {
             "platforms": [

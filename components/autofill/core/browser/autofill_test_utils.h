@@ -84,6 +84,10 @@ using RandomizeFrame = base::StrongAlias<struct RandomizeFrameTag, bool>;
 // be reset automatically after each test.
 class AutofillTestEnvironment {
  public:
+  struct Options {
+    bool disable_server_communication = true;
+  };
+
   static AutofillTestEnvironment& GetCurrent(const base::Location& = FROM_HERE);
 
   AutofillTestEnvironment(const AutofillTestEnvironment&) = delete;
@@ -95,10 +99,12 @@ class AutofillTestEnvironment {
   FieldRendererId NextFieldRendererId();
 
  protected:
-  AutofillTestEnvironment();
+  explicit AutofillTestEnvironment(const Options& options = {
+                                       .disable_server_communication = false});
 
  private:
   static AutofillTestEnvironment* current_instance_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   // Use some distinct 64 bit numbers to start the counters.
   uint64_t local_frame_token_counter_high_ = 0xAAAAAAAAAAAAAAAA;
@@ -113,10 +119,12 @@ class AutofillUnitTestEnvironment : public AutofillTestEnvironment {
   AutofillUnitTestEnvironment() = default;
 };
 
-// This encapsulates global browsertest state.
+// This encapsulates global browsertest state. By default this environment
+// disables `kAutofillServerCommunication` feature.
 class AutofillBrowserTestEnvironment : public AutofillTestEnvironment {
  public:
-  AutofillBrowserTestEnvironment();
+  explicit AutofillBrowserTestEnvironment(
+      const Options& options = {.disable_server_communication = false});
 };
 
 // Creates non-empty LocalFrameToken. If `randomize` is false, the

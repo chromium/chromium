@@ -82,7 +82,9 @@ class BrowserAutofillManagerTestDelegateImpl
 class AutofillUiTest : public InProcessBrowserTest,
                        public content::WebContentsObserver {
  public:
-  AutofillUiTest();
+  explicit AutofillUiTest(
+      const test::AutofillTestEnvironment::Options& options = {
+          .disable_server_communication = true});
   ~AutofillUiTest() override;
 
   AutofillUiTest(const AutofillUiTest&) = delete;

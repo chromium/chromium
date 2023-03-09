@@ -14,6 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_external_delegate.h"
@@ -93,10 +94,14 @@ AutofillTestEnvironment& AutofillTestEnvironment::GetCurrent(
   return *current_instance_;
 }
 
-AutofillTestEnvironment::AutofillTestEnvironment() {
+AutofillTestEnvironment::AutofillTestEnvironment(const Options& options) {
   CHECK(!current_instance_) << "An autofill::test::AutofillTestEnvironment has "
                                "already been registered.";
   current_instance_ = this;
+  if (options.disable_server_communication) {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::test::kAutofillServerCommunication);
+  }
 }
 
 AutofillTestEnvironment::~AutofillTestEnvironment() {
@@ -117,7 +122,9 @@ FieldRendererId AutofillTestEnvironment::NextFieldRendererId() {
   return FieldRendererId(++field_renderer_id_counter_);
 }
 
-AutofillBrowserTestEnvironment::AutofillBrowserTestEnvironment() = default;
+AutofillBrowserTestEnvironment::AutofillBrowserTestEnvironment(
+    const Options& options)
+    : AutofillTestEnvironment(options) {}
 
 LocalFrameToken MakeLocalFrameToken(RandomizeFrame randomize) {
   if (*randomize) {

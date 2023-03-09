@@ -563,7 +563,7 @@ IN_PROC_BROWSER_TEST_F(AutofillTest,
 }
 
 // Test profiles are not merged without minimum address values.
-// Mininum address values needed during aggregation are: address line 1, city,
+// Minimum address values needed during aggregation are: address line 1, city,
 // state, and zip code.
 // Profiles are merged when data for address line 1 and city match.
 IN_PROC_BROWSER_TEST_F(AutofillTest, ProfilesNotMergedWhenNoMinAddressData) {
@@ -992,7 +992,7 @@ IN_PROC_BROWSER_TEST_P(AutofillTestFormSubmission, Submission) {
   run_loop.Run();
 }
 
-// Tests that non-link-click, renderer-inititiated navigation triggers a
+// Tests that non-link-click, renderer-initiated navigation triggers a
 // submission event in BrowserAutofillManager.
 IN_PROC_BROWSER_TEST_P(AutofillTestFormSubmission, ProbableSubmission) {
   base::RunLoop run_loop;

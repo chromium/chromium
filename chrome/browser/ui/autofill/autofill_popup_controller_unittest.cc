@@ -338,7 +338,7 @@ class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
   TestAutofillDriverInjector<NiceMock<MockAutofillDriver>>
       autofill_driver_injector_;
 
-  test::AutofillUnitTestEnvironment autofill_environment_;
+  test::AutofillUnitTestEnvironment autofill_test_environment_;
   std::unique_ptr<NiceMock<MockAutofillExternalDelegate>> external_delegate_;
   std::unique_ptr<NiceMock<MockAutofillPopupView>> autofill_popup_view_;
   raw_ptr<NiceMock<TestAutofillPopupController>> autofill_popup_controller_ =
