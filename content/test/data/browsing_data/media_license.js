@@ -37,32 +37,37 @@ function handleMessageEvent(e) {
       '{"keys":[{"kty":"oct","k":"tQ0bJVWb6b0KPL6KtZIy_A","kid":"LwVHf8JLtPrv2GUXFW2v_A"}],"type":"persistent-license"}');
 
   savedSessionId = session.sessionId;
-  session.update(license).then(success_, failure_);
+  return session.update(license).then(() => true, () => false);
 }
 
-function setMediaLicense() {
+async function setMediaLicense() {
   var te = new TextEncoder();
   var initData = te.encode('{"kids":["LwVHf8JLtPrv2GUXFW2v_A"]}');
 
-  createPersistentSession()
-      .then(function(session) {
-        // generateRequest() will trigger a 'message' event, which we need to
-        // wait for in order to call update() which provides the license.
-        session.addEventListener('message', handleMessageEvent, false);
-        return session.generateRequest('keyids', initData);
-      })
-      // Success is reported from handleMessageEvent().
-      .catch(failure_);
+  try {
+    const session = await createPersistentSession();
+    // generateRequest() will trigger a 'message' event, which we need to
+    // wait for in order to call update() which provides the license.
+    const handled = new Promise((resolve, reject) => {
+      session.addEventListener('message', (e) => {
+        handleMessageEvent(e).then(resolve, reject)
+      }, false);
+    });
+    await session.generateRequest('keyids', initData);
+    await handled;
+    return true;
+  } catch {
+    return false;
+  }
 }
 
-function hasMediaLicense() {
-  createPersistentSession()
-      .then(function(session) {
-        return session.load(savedSessionId);
-      })
-      .then(function(result) {
-        // |result| is a boolean, indicating if the session was loaded or not.
-        domAutomationController.send(result);
-      })
-      .catch(failure_);
+async function hasMediaLicense() {
+  try {
+    const session = await createPersistentSession();
+    const result = await session.load(savedSessionId);
+    // |result| is a boolean, indicating if the session was loaded or not.
+    return result;
+  }catch {
+    return false;
+  }
 }

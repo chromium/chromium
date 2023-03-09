@@ -187,10 +187,7 @@ bool BrowsingDataRemoverBrowserTestBase::RunScriptAndGetBool(
     const std::string& script,
     content::WebContents* web_contents) {
   EXPECT_TRUE(web_contents);
-  bool data;
-  EXPECT_TRUE(
-      content::ExecuteScriptAndExtractBool(web_contents, script, &data));
-  return data;
+  return content::EvalJs(web_contents, script).ExtractBool();
 }
 
 void BrowsingDataRemoverBrowserTestBase::VerifyDownloadCount(size_t expected,

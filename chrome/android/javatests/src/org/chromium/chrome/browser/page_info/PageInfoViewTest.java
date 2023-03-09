@@ -242,13 +242,13 @@ public class PageInfoViewTest {
 
     private void expectHasCookies(boolean hasData) throws TimeoutException {
         for (String type : sCookieDataTypes) {
-            assertEquals(hasData ? "true" : "false", runJavascriptAsync("has" + type + "()"));
+            assertEquals(hasData ? "true" : "false", runJavascriptAsync("has" + type + "Async()"));
         }
     }
 
     private void createCookies() throws TimeoutException {
         for (String type : sCookieDataTypes) {
-            runJavascriptAsync("set" + type + "()");
+            runJavascriptAsync("set" + type + "Async()");
         }
     }
 

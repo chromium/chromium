@@ -26,6 +26,7 @@
 #include "components/page_info/core/features.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/events/base_event_utils.h"
@@ -244,10 +245,7 @@ class CollectedCookiesViewsMetricsTest : public InProcessBrowserTest {
   bool RunScriptAndGetBool(const std::string& script,
                            content::WebContents* web_contents) {
     EXPECT_TRUE(web_contents);
-    bool data;
-    EXPECT_TRUE(
-        content::ExecuteScriptAndExtractBool(web_contents, script, &data));
-    return data;
+    return content::EvalJs(web_contents, script).ExtractBool();
   }
 
   base::test::ScopedFeatureList feature_list_;

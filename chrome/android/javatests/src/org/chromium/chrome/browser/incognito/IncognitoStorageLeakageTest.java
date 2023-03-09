@@ -105,12 +105,12 @@ public class IncognitoStorageLeakageTest {
 
         // Sets the session storage in tab1
         assertEquals("true",
-                JavaScriptUtils.runJavascriptWithAsyncResult(
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(
                         tab1.getWebContents(), "setSessionStorage()"));
 
         // Checks the sessions storage is set in tab1
         assertEquals("true",
-                JavaScriptUtils.runJavascriptWithAsyncResult(
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(
                         tab1.getWebContents(), "hasSessionStorage()"));
 
         Tab tab2 = activity2.launchUrl(
@@ -121,7 +121,7 @@ public class IncognitoStorageLeakageTest {
         // Checks the session storage in tab2. Session storage set in tab1 should not be accessible.
         // The session storage is per tab basis.
         assertEquals("false",
-                JavaScriptUtils.runJavascriptWithAsyncResult(
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(
                         tab2.getWebContents(), "hasSessionStorage()"));
     }
 
@@ -160,11 +160,11 @@ public class IncognitoStorageLeakageTest {
             // Set the storage in tab1
             assertEquals("true",
                     JavaScriptUtils.runJavascriptWithAsyncResult(
-                            tab1.getWebContents(), "set" + type + "()"));
+                            tab1.getWebContents(), "set" + type + "Async()"));
             // Checks the storage is set in tab1
             assertEquals("true",
                     JavaScriptUtils.runJavascriptWithAsyncResult(
-                            tab1.getWebContents(), "has" + type + "()"));
+                            tab1.getWebContents(), "has" + type + "Async()"));
 
             TestThreadUtils.runOnUiThreadBlocking(
                     () -> tab2.loadIfNeeded(LoadIfNeededCaller.OTHER));
@@ -173,7 +173,7 @@ public class IncognitoStorageLeakageTest {
             // Access the storage from tab2
             assertEquals(expected,
                     JavaScriptUtils.runJavascriptWithAsyncResult(
-                            tab2.getWebContents(), "has" + type + "()"));
+                            tab2.getWebContents(), "has" + type + "Async()"));
         }
     }
 }

@@ -1645,8 +1645,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWithFencedFrameBrowserTest,
       "LocalStorage",     "SessionStorage", "CacheStorage", "FileSystem",
       "FileSystemAccess", "IndexedDb",      "SharedWorker", "ServiceWorker"};
   for (auto storage_type : storage_types_to_test) {
-    EXPECT_TRUE(content::EvalJs(fenced_frame, "set" + storage_type + "();",
-                                content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+    EXPECT_TRUE(content::EvalJs(fenced_frame, "set" + storage_type + "();")
                     .ExtractBool());
   }
 
