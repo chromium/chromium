@@ -36,6 +36,17 @@
     float: left;
   }
 
+  /**
+   * Members of this class are accessible text not meant to be seen by the user.
+   * Screen readers ignore elements styled with display:none or
+   * visibility:hidden so we hide it this way instead.
+   */
+  .button-aria-describedby {
+    clip: rect(0,0,0,0);
+    display: block;
+    position: fixed;
+  }
+
   customize-chrome-button-label {
     margin-bottom: 16px;
     margin-inline-start: 24px;
@@ -64,6 +75,8 @@
           name="customLinksOption"
           label="$i18n{myShortcuts}"
           hide-label-text>
+        <!-- cr-radio-button's aria description references slotted content -->
+        <span class="button-aria-describedby">$i18n{shortcutsCurated}</span>
       </cr-radio-button>
       <customize-chrome-button-label label="$i18n{myShortcuts}"
           label-description="$i18n{shortcutsCurated}">
@@ -72,6 +85,8 @@
           name="mostVisitedOption"
           label="$i18n{mostVisited}"
           hide-label-text>
+        <!-- cr-radio-button's aria description references slotted content -->
+        <span class="button-aria-describedby">$i18n{shortcutsSuggested}</span>
       </cr-radio-button>
       <customize-chrome-button-label label="$i18n{mostVisited}"
           label-description="$i18n{shortcutsSuggested}">
