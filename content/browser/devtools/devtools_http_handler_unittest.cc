@@ -188,13 +188,7 @@ class DevToolsHttpHandlerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 };
 
-// TODO(https://crbug.com/1420865): Failing on iOS port.
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_TestStartStop DISABLED_TestStartStop
-#else
-#define MAYBE_TestStartStop TestStartStop
-#endif
-TEST_F(DevToolsHttpHandlerTest, MAYBE_TestStartStop) {
+TEST_F(DevToolsHttpHandlerTest, TestStartStop) {
   base::RunLoop run_loop, run_loop_2;
   auto factory = std::make_unique<DummyServerSocketFactory>(
       run_loop.QuitClosure(), run_loop_2.QuitClosure());
@@ -208,13 +202,7 @@ TEST_F(DevToolsHttpHandlerTest, MAYBE_TestStartStop) {
   run_loop_2.Run();
 }
 
-// TODO(https://crbug.com/1420865): Failing on iOS port.
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_TestServerSocketFailed DISABLED_TestServerSocketFailed
-#else
-#define MAYBE_TestServerSocketFailed TestServerSocketFailed
-#endif
-TEST_F(DevToolsHttpHandlerTest, MAYBE_TestServerSocketFailed) {
+TEST_F(DevToolsHttpHandlerTest, TestServerSocketFailed) {
   base::RunLoop run_loop, run_loop_2;
   auto factory = std::make_unique<FailingServerSocketFactory>(
       run_loop.QuitClosure(), run_loop_2.QuitClosure());
@@ -231,13 +219,7 @@ TEST_F(DevToolsHttpHandlerTest, MAYBE_TestServerSocketFailed) {
   run_loop_2.Run();
 }
 
-// TODO(https://crbug.com/1420865): Failing on iOS port.
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_TestDevToolsActivePort DISABLED_TestDevToolsActivePort
-#else
-#define MAYBE_TestDevToolsActivePort TestDevToolsActivePort
-#endif
-TEST_F(DevToolsHttpHandlerTest, MAYBE_TestDevToolsActivePort) {
+TEST_F(DevToolsHttpHandlerTest, TestDevToolsActivePort) {
   base::RunLoop run_loop, run_loop_2;
   base::ScopedTempDir temp_dir;
   EXPECT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -267,14 +249,7 @@ TEST_F(DevToolsHttpHandlerTest, MAYBE_TestDevToolsActivePort) {
   EXPECT_EQ(static_cast<int>(kDummyPort), port);
 }
 
-// TODO(https://crbug.com/1420865): Failing on iOS port.
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_MutatingActionsiRequireSafeVerb \
-  DISABLED_MutatingActionsiRequireSafeVerb
-#else
-#define MAYBE_MutatingActionsiRequireSafeVerb MutatingActionsiRequireSafeVerb
-#endif
-TEST_F(DevToolsHttpHandlerTest, MAYBE_MutatingActionsiRequireSafeVerb) {
+TEST_F(DevToolsHttpHandlerTest, MutatingActionsiRequireSafeVerb) {
   base::RunLoop run_loop, run_loop_2;
   auto* factory = new TCPServerSocketFactory(run_loop.QuitClosure(),
                                              run_loop_2.QuitClosure());
@@ -320,13 +295,7 @@ TEST_F(DevToolsHttpHandlerTest, MAYBE_MutatingActionsiRequireSafeVerb) {
   run_loop_2.Run();
 }
 
-// TODO(https://crbug.com/1420865): Failing on iOS port.
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_TestJsonNew DISABLED_TestJsonNew
-#else
-#define MAYBE_TestJsonNew TestJsonNew
-#endif
-TEST_F(DevToolsHttpHandlerTest, MAYBE_TestJsonNew) {
+TEST_F(DevToolsHttpHandlerTest, TestJsonNew) {
   base::RunLoop run_loop, run_loop_2;
   auto* factory = new TCPServerSocketFactory(run_loop.QuitClosure(),
                                              run_loop_2.QuitClosure());
@@ -443,16 +412,8 @@ class DevToolsWebSocketHandlerTest : public DevToolsHttpHandlerTest {
   base::RunLoop run_loop_2_;
 };
 
-// TODO(https://crbug.com/1420865): Failing on iOS port.
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_TestRejectsWebSocketConnectionsWithOrigin \
-  DISABLED_TestRejectsWebSocketConnectionsWithOrigin
-#else
-#define MAYBE_TestRejectsWebSocketConnectionsWithOrigin \
-  TestRejectsWebSocketConnectionsWithOrigin
-#endif
 TEST_F(DevToolsWebSocketHandlerTest,
-       MAYBE_TestRejectsWebSocketConnectionsWithOrigin) {
+       TestRejectsWebSocketConnectionsWithOrigin) {
   int port = StartServer();
 
   std::string debugging_url = GetWebSocketDebuggingURL(port);
@@ -477,16 +438,7 @@ TEST_F(DevToolsWebSocketHandlerTest,
   StopServer();
 }
 
-// TODO(https://crbug.com/1420865): Failing on iOS port.
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_TestAllowsCLIOverrideAllowsOriginsStar \
-  DISABLED_TestAllowsCLIOverrideAllowsOriginsStar
-#else
-#define MAYBE_TestAllowsCLIOverrideAllowsOriginsStar \
-  TestAllowsCLIOverrideAllowsOriginsStar
-#endif
-TEST_F(DevToolsWebSocketHandlerTest,
-       MAYBE_TestAllowsCLIOverrideAllowsOriginsStar) {
+TEST_F(DevToolsWebSocketHandlerTest, TestAllowsCLIOverrideAllowsOriginsStar) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kRemoteAllowOrigins, "*");
   int port = StartServer();
@@ -506,15 +458,7 @@ TEST_F(DevToolsWebSocketHandlerTest,
   StopServer();
 }
 
-// TODO(https://crbug.com/1420865): Failing on iOS port.
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_TestAllowsCLIOverrideAllowsOrigins \
-  DISABLED_TestAllowsCLIOverrideAllowsOrigins
-#else
-#define MAYBE_TestAllowsCLIOverrideAllowsOrigins \
-  TestAllowsCLIOverrideAllowsOrigins
-#endif
-TEST_F(DevToolsWebSocketHandlerTest, MAYBE_TestAllowsCLIOverrideAllowsOrigins) {
+TEST_F(DevToolsWebSocketHandlerTest, TestAllowsCLIOverrideAllowsOrigins) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kRemoteAllowOrigins, "http://localhost");
   int port = StartServer();
