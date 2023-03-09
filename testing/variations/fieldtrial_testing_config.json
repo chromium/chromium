@@ -2410,6 +2410,21 @@
             ]
         }
     ],
+    "CertDualVerificationTrial": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CertDualVerificationTrial"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChangeExtensionEventPageSuspendDelay": [
         {
             "platforms": [
