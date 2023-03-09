@@ -108,9 +108,6 @@ const {
   // network
   getCurrentNetworkRequestEvent,
   getCurrentNetworkStreamData,
-
-  // Blink, DOM and more
-  // ?
 } = __RECORD_REPLAY_ARGUMENTS__;
 
 const gSourceMapData = new Map();
@@ -537,7 +534,7 @@ function isNativeFunctionDescription(functionString) {
   return functionString?.endsWith('() { [native code] }') || false;
 }
 
-function isPrototype(x) { 
+function isPrototype(x) {
   return x === x.constructor.prototype;
 }
 
@@ -983,19 +980,6 @@ function isObjectPropertyBlacklisted(cdpObj, name) {
   return false;
 }
 
-// Get the "own" property names of an object to use.
-function propertyNames(cdpObj) {
-  if (isObjectBlacklisted(cdpObj)) {
-    return [];
-  }
-  try {
-    // [live-object-property-access]
-    return [...cdpObj.getOwnPropertyNames(), ...cdpObj.getOwnPropertySymbols()];
-  } catch (e) {
-    return [];
-  }
-}
-
 // Target limit for the number of items (properties etc.) to include in object
 // previews before overflowing.
 const MaxItems = {
@@ -1049,12 +1033,11 @@ ProtocolObjectPreview.prototype = {
     this.properties.push(property);
   },
 
-  addGetterValue(propKey, plainGetter, ownerCdpObject, force = false) {
-    const propName = propKey.toString();
-    if (isObjectPropertyBlacklisted(ownerCdpObject, propName)) {
+  addGetterValue(propKey, ownerCdpObject, force = false) {
+    if (isObjectPropertyBlacklisted(ownerCdpObject, propKey)) {
       return;
     }
-    
+
     if (!this.getterValues) {
       this.getterValues = new Map();
     }
@@ -1064,11 +1047,31 @@ ProtocolObjectPreview.prototype = {
 
     const rrpValue = evalPropRrp(this.raw, propKey);
     if (rrpValue) {
-      if (!this.startAddItem(force)) {
-        return;
-      }
-      this.getterValues.set(propName, { name: propName, ...rrpValue });
+      this.setGetterValue(propKey, rrpValue, force);
     }
+  },
+
+  addEvalMethodValue(propKey) {
+    if (!this.getterValues) {
+      this.getterValues = new Map();
+    }
+    if (this.getterValues.has(propKey)) {
+      return;
+    }
+
+    const plainValue = this.raw[propKey].call(this.raw);
+    const rrpValue = createRrpValueRaw(plainValue);
+    if (rrpValue) {
+      this.setGetterValue(propKey, rrpValue, /* force */ true);
+    }
+    return plainValue;
+  },
+
+  setGetterValue(key, valueObject, force = true) {
+    if (!this.startAddItem(force)) {
+      return;
+    }
+    this.getterValues.set(key, { name: key, ...valueObject });
   },
 
 
@@ -1082,83 +1085,70 @@ ProtocolObjectPreview.prototype = {
     this.containerEntries.push(entry);
   },
 
+  get pageIndex() { return 0; },
+
+  get pageSize() {
+    return MaxItems[this.level] || 10;
+  },
+
   fill() {
-    // NOTE: we could also use "Runtime.evaluate" with `{ generatePreview: true }`
-    // WARNING: this CDP call can cause `UpdateLayout` which (as of now) can cause crashes.
+    // WARNING: `Runtime.getProperties` evaluates native getters and thus can cause
+    //          lazy calls to `Update{Style,Layout}` etc. which might still cause
+    //          some crashes - https://linear.app/replay/issue/RUN-1016#comment-90c46ba7
     const cdpProperties = sendMessage("Runtime.getProperties", {
       objectId: this.cdpObj.objectId,
-      ownProperties: true,
+      ownProperties: false,
       generatePreview: false,
+      pageIndex: this.pageIndex,
+      pageSize: this.pageSize
     });
+
+    if (!cdpProperties.result) {
+      return {
+        prototypeId: prototypeRrpId
+      };
+    }
 
     // Add data for blink objects
     this.extra = previewBlinkObject(this.cdpObj) || {};
 
     // Add class-specific data.
-    const previewer = CustomPreviewers[this.cdpObj.className];
-    const requiredProperties = [];
-    if (previewer) {
-      for (const entry of previewer) {
-        if (typeof entry == "string") {
-          // NOTE: in chromium we add these to `properties`, but in gecko we add these to `getterValues`
-          requiredProperties.push(entry);
-        } else {
+    const previewers = CustomPreviewers[this.cdpObj.className];
+    if (previewers) {
+      for (const entry of previewers) {
+        if (entry instanceof Function) {
           entry.call(this, cdpProperties);
+        }
+        else {
+          this.addGetterValue(entry, this.cdpObj, /* force */ true);
         }
       }
     }
 
 
     // add properties + getterValues (based on what we did in gecko).
-    const dontRecurse = this.level === "noProperties";
     const addedProps = new Set();
-    let proto = this.raw;
-    let i = 0;
-    do {
-      const propKeys = [...Object.getOwnPropertySymbols(proto), ...Object.getOwnPropertyNames(proto)];
-      
-      // TODO: allow all getters - https://linear.app/replay/issue/RUN-1016#comment-90c46ba7
-      const allowedGetters = new Set(['type', 'fromElement', 'target', 'isTrusted']);
 
-      for (const propKey of propKeys) {
-        if (++i > MaxItems[this.level]) {
-          break;
-        }
-        if (propKey === "__proto__" || addedProps.has(propKey)) {
-          continue;
-        }
-        addedProps.add(propKey);
-        const prop = Object.getOwnPropertyDescriptor(proto, propKey);
-        if (!prop) {
-          continue;
-        }
-
-        const isNativeGetter = prop.get && isProbablyNativeFunction(prop.get);
-        const allowedGetter = allowedGetters.has(propKey);
-
-        if (
-          !isPrototype(this.raw) && // don't try to execute getters on prototypes
-          isNativeGetter &&
-          allowedGetter
-        ) {
-          // evaluate native getter props
-          this.addGetterValue(propKey, prop.get, this.cdpObj);
-        }
-        else if (
-          proto === this.raw
-        ) {
-          // only add complete prop data for own props
-          const protocolProperty = createRrpPropertyDescriptor(this.raw, propKey, prop);
-          const force = requiredProperties.includes(prop.name);
-          this.addProperty(protocolProperty, force);
-        }
-      }
-      if (dontRecurse) {
+    /**
+     * @see https://chromedevtools.github.io/devtools-protocol/tot/Runtime/#type-PropertyDescriptor
+     */
+    for (const cdpProp of cdpProperties.result) {
+      if (this.overflow) {
+        // early out
         break;
       }
-      proto = Object.getPrototypeOf(proto);
+
+      const { name: propKey } = cdpProp;
+      if (propKey === "__proto__" || addedProps.has(propKey)) {
+        continue;
+      }
+      addedProps.add(propKey);
+
+      // only add complete prop data for own props
+      const rrpProp = createRrpPropertyDescriptor(cdpProp);
+      const force = false;
+      this.addProperty(rrpProp, force);
     }
-    while (proto && proto.constructor !== Object); // ignore Object
 
     let prototypeCdp = getInternalProp(cdpProperties, '[[Prototype]]')?.value;
     let prototypeRrpId;
@@ -1314,14 +1304,16 @@ function previewBlinkRule(rule) {
   };
 }
 
+function previewArray() {
+  // simply invoke the native getter
+  this.addGetterValue('length', this.cdpObj, /* force */ true);
+}
 
 function previewTypedArray() {
-  // The typed array size isn't available from the object's own property
-  // information, except by parsing the object description.
-  const length = getDescriptionCount(this.cdpObj.description);
-  if (length !== undefined) {
-    this.addProperty({ name: "length", value: length }, /* force */ true);
-  }
+  // simply invoke the native getter
+  this.addGetterValue('length', this.cdpObj, /* force */ true);
+  this.addGetterValue('byteLength', this.cdpObj, /* force */ true);
+  this.addGetterValue('byteOffset', this.cdpObj, /* force */ true);
 }
 
 function previewSetMap(cdpProperties) {
@@ -1329,24 +1321,23 @@ function previewSetMap(cdpProperties) {
     return;
   }
 
-  const internal = cdpProperties.internalProperties.find(prop => prop.name == "[[Entries]]");
+  const internal = getInternalProp(cdpProperties, "[[Entries]]");
   if (!internal || !internal.value || !internal.value.objectId) {
     return;
   }
 
-  // Get the container size from the length of the entries.
-  const size = getDescriptionCount(internal.value.description);
-  if (size !== undefined) {
-    this.extra.containerEntryCount = size;
-    if (["Set", "Map"].includes(this.cdpObj.className)) {
-      this.addProperty({ name: "size", value: size }, /* force */ true);
-    }
+  // get size for Set and Map (Weak{Set,Map} don't have an observable size)
+  if (["Set", "Map"].includes(this.cdpObj.className)) {
+    // simply invoke the native getter
+    this.extra.containerEntryCount = this.addEvalMethodValue('size');
   }
 
   const entries = sendMessage("Runtime.getProperties", {
     objectId: internal.value.objectId,
     ownProperties: true,
     generatePreview: false,
+    pageIndex: this.pageIndex,
+    pageSize: this.pageSize
   }).result;
 
   for (const entry of entries) {
@@ -1354,7 +1345,7 @@ function previewSetMap(cdpProperties) {
       const entryProperties = sendMessage("Runtime.getProperties", {
         objectId: entry.value.objectId,
         ownProperties: true,
-        generatePreview: false,
+        generatePreview: false
       }).result;
       const key = entryProperties.find(eprop => eprop.name == "key");
       const value = entryProperties.find(eprop => eprop.name == "value");
@@ -1383,7 +1374,7 @@ function previewDate() {
 }
 
 function previewError() {
-  this.addProperty({ name: "name", value: this.cdpObj.className }, /* force */ true);
+  this.setGetterValue("name", { value: this.cdpObj.className });
 }
 
 const ErrorProperties = [
@@ -1417,7 +1408,7 @@ function previewFunction(cdpProperties) {
 
 
 const CustomPreviewers = {
-  Array: ["length"],
+  Array: [previewArray],
   Int8Array: [previewTypedArray],
   Uint8Array: [previewTypedArray],
   Uint8ClampedArray: [previewTypedArray],
@@ -1460,11 +1451,12 @@ function evalPropRrp(owner, propKey) {
   }
 }
 
-function createRrpPropertyDescriptor(owner, propKey, desc) {
-  const { value, writable, get, set, configurable, enumerable } = desc;
+function createRrpPropertyDescriptor(cdpProp) {
+  // https://chromedevtools.github.io/devtools-protocol/tot/Runtime/#type-PropertyDescriptor
+  const { name, value: cdpValue, writable, get, set, configurable, enumerable, symbol } = cdpProp;
 
-  let rv = value && evalPropRrp(owner, propKey) || {};
-  rv.name = propKey.toString();
+  let rv = buildRrpObjectFromCdpObject(cdpValue);
+  rv.name = name;
 
   let flags = 0;
   if (writable) {
@@ -1487,7 +1479,7 @@ function createRrpPropertyDescriptor(owner, propKey, desc) {
     rv.set = registerCdpObject(set);
   }
 
-  rv.isSymbol = typeof propKey === 'symbol';
+  rv.isSymbol = !!symbol;
 
   return rv;
 }
@@ -1787,7 +1779,7 @@ function DOM_performSearch({ query }) {
   const nodeObjects = fromJsDomPerformSearch(query);
   const nodeRrpIds = nodeObjects
     ?.map(registerPlainObject)
-   || [];
+    || [];
 
   return { nodes: nodeRrpIds, data: {} };
 }
@@ -1976,7 +1968,7 @@ function registerCdpAsRrpCssRule(nodeObj, cdpRule) {
    * @see https://github.com/replayio/chromium/blob/052831f0220b79fe0c3343b49f6d2863ea6de05d/third_party/blink/renderer/core/css/css_style_rule.cc#L94
    */
   const ruleCssText = `${selectorText} {${styleCssText}}`;
-  
+
   const rulePreview = {
     className: 'CSSRule',
     preview: {
