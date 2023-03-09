@@ -15,6 +15,8 @@ class ParentPermissionDialog;
 
 namespace extensions {
 
+enum class ExtensionInstalledBlockedByParentDialogAction;
+
 class SupervisedUserExtensionsDelegateImpl
     : public extensions::SupervisedUserExtensionsDelegate {
  public:
@@ -26,12 +28,17 @@ class SupervisedUserExtensionsDelegateImpl
   bool IsExtensionAllowedByParent(
       const extensions::Extension& extension,
       content::BrowserContext* context) const override;
-  void PromptForParentPermissionOrShowError(
+  void RequestToAddExtensionOrShowError(
       const extensions::Extension& extension,
       content::BrowserContext* browser_context,
       content::WebContents* web_contents,
-      ParentPermissionDialogDoneCallback parent_permission_callback,
-      base::OnceClosure error_callback) override;
+      const gfx::ImageSkia& icon,
+      ExtensionApprovalDoneCallback extension_approval_callback) override;
+  void RequestToEnableExtensionOrShowError(
+      const extensions::Extension& extension,
+      content::BrowserContext* browser_context,
+      content::WebContents* web_contents,
+      ExtensionApprovalDoneCallback extension_approval_callback) override;
 
  private:
   // Returns true if |context| represents a supervised child account who may
@@ -45,15 +52,22 @@ class SupervisedUserExtensionsDelegateImpl
       content::BrowserContext* context,
       content::WebContents* contents,
       extensions::SupervisedUserExtensionsDelegate::
-          ParentPermissionDialogDoneCallback done_callback);
+          ExtensionApprovalDoneCallback done_callback,
+      const gfx::ImageSkia& icon);
 
   // Shows a dialog indicating that |extension| has been blocked and call
-  // |done_callback| when it completes.
-  void ShowExtensionEnableBlockedByParentDialogForExtension(
+  // |done_callback| when it completes. Depending on the blocked_action type,
+  // the UI of the dialog may differ.
+  void ShowInstallBlockedByParentDialogForExtension(
       const extensions::Extension& extension,
       content::WebContents* contents,
+      ExtensionInstalledBlockedByParentDialogAction blocked_action,
       base::OnceClosure done_callback);
 
+  // The dialog pointer is only destroyed when a new dialog is created or the
+  // SupervisedUserExtensionsDelegate is destroyed. Therefore there can only be
+  // one dialog opened at a time and the last dialog object can have a pretty
+  // long lifetime.
   std::unique_ptr<ParentPermissionDialog> parent_permission_dialog_;
 };
 
