@@ -8,7 +8,7 @@
 
 #import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/net/crurl.h"
-#import "ios/chrome/browser/ui/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/list_model/list_item+Controller.h"
 #import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_table_view_item.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_constants.h"

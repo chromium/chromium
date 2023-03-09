@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/sharing/activity_services/activities/send_tab_to_self_activity.h"
 
-#import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/ui/sharing/activity_services/data/share_to_data.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"

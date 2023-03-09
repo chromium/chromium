@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/passwords/password_breach_app_interface.h"
 
-#import "ios/chrome/browser/ui/commands/password_breach_commands.h"
+#import "ios/chrome/browser/shared/public/commands/password_breach_commands.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

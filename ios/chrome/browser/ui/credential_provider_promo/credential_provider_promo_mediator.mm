@@ -15,7 +15,7 @@
 #import "ios/chrome/browser/promos_manager/constants.h"
 #import "ios/chrome/browser/promos_manager/features.h"
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
-#import "ios/chrome/browser/ui/commands/credential_provider_promo_commands.h"
+#import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_consumer.h"
 #import "ios/chrome/grit/ios_google_chrome_strings.h"
 #import "ios/chrome/grit/ios_strings.h"

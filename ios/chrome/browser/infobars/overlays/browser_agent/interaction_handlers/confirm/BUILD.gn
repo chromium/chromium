@@ -20,7 +20,7 @@ source_set("confirm") {
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/infobar_banner",
     "//ios/chrome/browser/overlays/public/infobar_modal",
-    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/shared/public/commands",
   ]
 }
 

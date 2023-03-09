@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/sharing/activity_services/activities/print_activity.h"
 
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/ui/sharing/activity_services/data/share_image_data.h"
 #import "ios/chrome/browser/ui/sharing/activity_services/data/share_to_data.h"
 #import "testing/platform_test.h"

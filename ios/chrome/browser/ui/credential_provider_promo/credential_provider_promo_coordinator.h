@@ -7,7 +7,7 @@
 
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 
-#import "ios/chrome/browser/ui/commands/credential_provider_promo_commands.h"
+#import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 
 @interface CredentialProviderPromoCoordinator
     : ChromeCoordinator <CredentialProviderPromoCommands>

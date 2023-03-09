@@ -6,7 +6,7 @@
 
 #import "base/metrics/user_metrics.h"
 #import "base/notreached.h"
-#import "ios/chrome/browser/ui/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/whats_new/data_source/whats_new_data_source.h"
 #import "ios/chrome/browser/ui/whats_new/feature_flags.h"

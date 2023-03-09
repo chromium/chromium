@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/sharing/activity_services/activities/generate_qr_code_activity.h"
 
-#import "ios/chrome/browser/ui/commands/qr_generation_commands.h"
+#import "ios/chrome/browser/shared/public/commands/qr_generation_commands.h"
 #import "ios/chrome/browser/ui/sharing/activity_services/data/share_to_data.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"

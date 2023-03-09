@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_BUBBLE_BUBBLE_PRESENTER_H_
 
 #import <UIKit/UIKit.h>
-#import "ios/chrome/browser/ui/commands/help_commands.h"
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 
 @protocol BubblePresenterDelegate;
 @class BubbleViewControllerPresenter;

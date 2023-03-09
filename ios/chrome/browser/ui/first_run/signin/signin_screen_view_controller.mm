@@ -6,8 +6,8 @@
 
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/shared/public/commands/tos_commands.h"
 #import "ios/chrome/browser/ui/authentication/views/identity_button_control.h"
-#import "ios/chrome/browser/ui/commands/tos_commands.h"
 #import "ios/chrome/browser/ui/elements/activity_overlay_view.h"
 #import "ios/chrome/browser/ui/first_run/first_run_constants.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"

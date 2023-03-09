@@ -5,9 +5,9 @@
 #import "ios/chrome/browser/ui/toolbar/secondary_toolbar_coordinator.h"
 
 #import "ios/chrome/browser/main/browser.h"
-#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
-#import "ios/chrome/browser/ui/commands/omnibox_commands.h"
-#import "ios/chrome/browser/ui/commands/popup_menu_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
+#import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/ui/main/layout_guide_util.h"
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_coordinator+subclassing.h"
 #import "ios/chrome/browser/ui/toolbar/secondary_toolbar_view_controller.h"

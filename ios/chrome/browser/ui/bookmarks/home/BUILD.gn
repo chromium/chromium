@@ -25,6 +25,7 @@ source_set("home") {
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/metrics:metrics_internal",
     "//ios/chrome/browser/policy:policy_util",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/ui/alert_coordinator",
@@ -39,7 +40,6 @@ source_set("home") {
     "//ios/chrome/browser/ui/bookmarks/editor",
     "//ios/chrome/browser/ui/bookmarks/folder_chooser",
     "//ios/chrome/browser/ui/bookmarks/resources:bookmark_empty",
-    "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/default_promo:utils",
     "//ios/chrome/browser/ui/elements",
     "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_scene_agent",
@@ -78,8 +78,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/bookmarks:test_support",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/ui/bookmarks/home",
-    "//ios/chrome/browser/ui/commands",
     "//third_party/ocmock:ocmock",
   ]
 }

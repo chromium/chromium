@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/ui/commands/credential_provider_promo_commands.h"
+#import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_constants.h"
 
 @protocol CredentialProviderPromoConsumer;

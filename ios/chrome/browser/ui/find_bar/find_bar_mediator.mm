@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/ui/find_bar/find_bar_mediator.h"
 
 #import "ios/chrome/browser/main/browser.h"
-#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
-#import "ios/chrome/browser/ui/commands/find_in_page_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_consumer.h"
 #import "ios/chrome/browser/web_state_list/active_web_state_observation_forwarder.h"
 #import "ios/web/public/web_state.h"

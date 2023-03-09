@@ -5,8 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_UI_BROWSER_VIEW_BROWSER_COORDINATOR_PRIVATE_H_
 #define IOS_CHROME_BROWSER_UI_BROWSER_VIEW_BROWSER_COORDINATOR_PRIVATE_H_
 
+#import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/ui/browser_view/browser_coordinator.h"
-#import "ios/chrome/browser/ui/commands/activity_service_commands.h"
 
 @class NewTabPageCoordinator;
 

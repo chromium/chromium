@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/ui/commands/web_content_commands.h"
+#import "ios/chrome/browser/shared/public/commands/web_content_commands.h"
 
 // test fake for WebContentCommand callers. Records arguments passed into the
 // command methods for tests to examine.

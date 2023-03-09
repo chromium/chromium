@@ -28,8 +28,8 @@ source_set("price_notifications") {
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/push_notification:push_notification_service",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/ui/alert_coordinator",
-    "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/price_notifications/cells",
     "//ios/chrome/browser/ui/table_view",
@@ -49,7 +49,7 @@ source_set("price_notifications_iph") {
   deps = [
     "//ios/chrome/browser/commerce/price_notifications",
     "//ios/chrome/browser/main:public",
-    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
   ]
 }
@@ -69,7 +69,7 @@ source_set("price_notifications_ui") {
     "//base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/net:crurl",
-    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/ui/list_model",
     "//ios/chrome/browser/ui/price_notifications/cells",
     "//ios/chrome/browser/ui/table_view",
@@ -103,7 +103,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/ui/price_notifications/cells",
     "//ios/chrome/browser/ui/table_view:test_support",
     "//ios/chrome/browser/ui/table_view/cells",

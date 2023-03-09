@@ -36,9 +36,9 @@ source_set("url_loading") {
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/prerender",
     "//ios/chrome/browser/sessions",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/snapshots",
     "//ios/chrome/browser/ui:feature_flags",
-    "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_scene_agent",
     "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/ntp:util",
@@ -57,7 +57,7 @@ source_set("url_loading_params_header") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "url_loading_params.h" ]
   deps = [
-    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/web/public",
     "//ui/base",
   ]

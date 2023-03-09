@@ -10,7 +10,7 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/browser_launcher.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
-#import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 
 @class AppState;
 @class MetricsMediator;

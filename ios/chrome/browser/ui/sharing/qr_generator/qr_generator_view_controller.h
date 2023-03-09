@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_SHARING_QR_GENERATOR_QR_GENERATOR_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_UI_SHARING_QR_GENERATOR_QR_GENERATOR_VIEW_CONTROLLER_H_
 
-#import "ios/chrome/browser/ui/commands/qr_generation_commands.h"
+#import "ios/chrome/browser/shared/public/commands/qr_generation_commands.h"
 
 #import <UIKit/UIKit.h>
 

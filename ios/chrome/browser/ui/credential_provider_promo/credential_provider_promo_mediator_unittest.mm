@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/credential_provider_promo/features.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/promos_manager/mock_promos_manager.h"
-#import "ios/chrome/browser/ui/commands/credential_provider_promo_commands.h"
+#import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_constants.h"
 #import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_consumer.h"
 #import "ios/chrome/grit/ios_google_chrome_strings.h"

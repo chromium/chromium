@@ -21,7 +21,7 @@ source_set("feature_engagement") {
     "//components/keyed_service/ios",
     "//components/leveldb_proto",
     "//ios/chrome/browser/browser_state",
-    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/web/public",
   ]
 }

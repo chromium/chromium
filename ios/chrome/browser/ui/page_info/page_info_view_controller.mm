@@ -10,7 +10,7 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/net/crurl.h"
-#import "ios/chrome/browser/ui/commands/page_info_commands.h"
+#import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
 #import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ui/page_info/page_info_constants.h"

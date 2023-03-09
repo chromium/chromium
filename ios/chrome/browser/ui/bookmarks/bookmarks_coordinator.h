@@ -6,7 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
+#import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 
 class Browser;

@@ -16,7 +16,7 @@ source_set("thumb_strip") {
     "//base",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/overlays",
-    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/gestures",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",

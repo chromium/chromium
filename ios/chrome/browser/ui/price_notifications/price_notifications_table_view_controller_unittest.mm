@@ -7,7 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/mac/foundation_util.h"
-#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_table_view_item.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_consumer.h"
 #import "ios/chrome/browser/ui/price_notifications/test_price_notifications_mutator.h"
