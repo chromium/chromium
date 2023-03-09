@@ -202,8 +202,6 @@ SearchPrefetchRequest::NetworkAnnotationForPrefetch() {
 
 bool SearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
   TRACE_EVENT0("loading", "SearchPrefetchRequest::StartPrefetchRequest");
-  net::NetworkTrafficAnnotationTag network_traffic_annotation =
-      NetworkAnnotationForPrefetch();
 
   url::Origin prefetch_origin = url::Origin::Create(prefetch_url_);
 
@@ -314,7 +312,6 @@ bool SearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
   SetSearchPrefetchStatus(SearchPrefetchStatus::kInFlight);
 
   StartPrefetchRequestInternal(profile, std::move(resource_request),
-                               network_traffic_annotation,
                                std::move(report_error_callback_));
   return true;
 }
@@ -474,18 +471,14 @@ SearchPrefetchRequest::TakeSearchPrefetchURLLoader() {
 void SearchPrefetchRequest::StartPrefetchRequestInternal(
     Profile* profile,
     std::unique_ptr<network::ResourceRequest> resource_request,
-    const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
     base::OnceCallback<void(bool)> report_error_callback) {
   TRACE_EVENT0("loading",
                "SearchPrefetchRequest::StartPrefetchRequestInternal");
   profile_ = profile;
-  network_traffic_annotation_ =
-      std::make_unique<net::NetworkTrafficAnnotationTag>(
-          network_traffic_annotation);
   prefetch_url_ = resource_request->url;
   streaming_url_loader_ = std::make_unique<StreamingSearchPrefetchURLLoader>(
       this, profile, navigation_prefetch_, std::move(resource_request),
-      network_traffic_annotation, std::move(report_error_callback));
+      NetworkAnnotationForPrefetch(), std::move(report_error_callback));
 }
 
 void SearchPrefetchRequest::StopPrefetch() {
