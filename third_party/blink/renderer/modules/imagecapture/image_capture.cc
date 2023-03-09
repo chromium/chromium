@@ -17,6 +17,10 @@
 #include "third_party/blink/renderer/bindings/core/v8/callback_promise_adapter.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_string_stringsequence.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_constrain_boolean_parameters.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_constrain_dom_string_parameters.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_constrain_double_range.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_fill_light_mode.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_settings_range.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_capabilities.h"
@@ -47,12 +51,22 @@
 
 namespace blink {
 
+enum class ImageCapture::MediaTrackConstraintSetType {
+  kBasic,
+  // TODO(crbug.com/1408091): Remove this. The first advanced constraint set
+  //                          should not be special.
+  kFirstAdvanced,
+  kAdvanced
+};
+
+namespace {
+
 using BackgroundBlurMode = media::mojom::blink::BackgroundBlurMode;
 using FillLightMode = media::mojom::blink::FillLightMode;
 using MeteringMode = media::mojom::blink::MeteringMode;
 using RedEyeReduction = media::mojom::blink::RedEyeReduction;
 
-namespace {
+using MediaTrackConstraintSetType = ImageCapture::MediaTrackConstraintSetType;
 
 const char kNoServiceError[] = "ImageCapture service unavailable.";
 
@@ -238,6 +252,143 @@ void CopySettings(const MediaTrackSettings* source,
   }
 }
 
+// TODO(crbug.com/708723): Integrate image capture constraints processing with
+// the main implementation and remove this support enum.
+enum class ConstraintType {
+  // An empty sequence.
+  kEmptySequence,
+  // A boolean |false| constraint for a non-boolean constrainable property.
+  kBooleanFalse,
+  // A boolean |false| constraint for a non-boolean constrainable property.
+  kBooleanTrue,
+  // A bare value.
+  kBareValue,
+  kBareValueDOMStringSequence,
+  // An empty dictionary constraint.
+  kEmptyDictionary,
+  // An effectively empty dictionary constraint
+  // (members which are empty sequences are ignored).
+  kEffectivelyEmptyDictionary,
+  // A dictionary constraint with only one effective member: 'ideal'
+  // (members which are empty sequences are ignored).
+  kIdealDictionary,
+  // A dictionary constraint with one to four effective members: at least
+  // 'exact', 'max' and/or 'min' and additionally maybe also 'ideal'
+  // (members which are empty sequences are ignored).
+  kMandatoryDictionary
+};
+
+bool IsEmptySequence(bool /*constraint*/) {
+  // A boolean is not a sequence so it cannot be an empty sequence.
+  return false;
+}
+
+bool IsEmptySequence(const V8UnionStringOrStringSequence* constraint) {
+  return constraint->IsStringSequence() &&
+         constraint->GetAsStringSequence().empty();
+}
+
+template <typename Constraint>
+ConstraintType GetConstraintType(const Constraint* constraint) {
+  DCHECK(constraint);
+  if (!constraint->hasExact() && !constraint->hasIdeal()) {
+    return ConstraintType::kEmptyDictionary;
+  }
+  // If an empty list has been given as the value for a constraint, it MUST be
+  // interpreted as if the constraint were not specified (in other words,
+  // an empty constraint == no constraint).
+  // https://w3c.github.io/mediacapture-main/#dfn-selectsettings
+  if (constraint->hasExact() && !IsEmptySequence(constraint->exact())) {
+    return ConstraintType::kMandatoryDictionary;
+  }
+  // Ditto.
+  if (constraint->hasIdeal() && !IsEmptySequence(constraint->ideal())) {
+    return ConstraintType::kIdealDictionary;
+  }
+  return ConstraintType::kEffectivelyEmptyDictionary;
+}
+
+ConstraintType GetConstraintType(const ConstrainDoubleRange* constraint) {
+  DCHECK(constraint);
+  if (constraint->hasExact() || constraint->hasMax() || constraint->hasMin()) {
+    return ConstraintType::kMandatoryDictionary;
+  }
+  if (constraint->hasIdeal()) {
+    return ConstraintType::kIdealDictionary;
+  }
+  return ConstraintType::kEmptyDictionary;
+}
+
+ConstraintType GetConstraintType(
+    const V8UnionBooleanOrConstrainBooleanParameters* constraint) {
+  DCHECK(constraint);
+  if (constraint->IsConstrainBooleanParameters()) {
+    return GetConstraintType(constraint->GetAsConstrainBooleanParameters());
+  }
+  return ConstraintType::kBareValue;
+}
+
+ConstraintType GetConstraintType(
+    const V8UnionBooleanOrConstrainDoubleRangeOrDouble* constraint) {
+  DCHECK(constraint);
+  if (constraint->IsBoolean()) {
+    return constraint->GetAsBoolean() ? ConstraintType::kBooleanTrue
+                                      : ConstraintType::kBooleanFalse;
+  }
+  if (constraint->IsConstrainDoubleRange()) {
+    return GetConstraintType(constraint->GetAsConstrainDoubleRange());
+  }
+  return ConstraintType::kBareValue;
+}
+
+ConstraintType GetConstraintType(
+    const V8UnionConstrainDOMStringParametersOrStringOrStringSequence*
+        constraint) {
+  DCHECK(constraint);
+  if (constraint->IsConstrainDOMStringParameters()) {
+    return GetConstraintType(constraint->GetAsConstrainDOMStringParameters());
+  }
+  if (constraint->IsStringSequence()) {
+    if (constraint->GetAsStringSequence().empty()) {
+      return ConstraintType::kEmptySequence;
+    }
+    return ConstraintType::kBareValueDOMStringSequence;
+  }
+  return ConstraintType::kBareValue;
+}
+
+ConstraintType GetConstraintType(
+    const V8UnionConstrainDoubleRangeOrDouble* constraint) {
+  DCHECK(constraint);
+  if (constraint->IsConstrainDoubleRange()) {
+    return GetConstraintType(constraint->GetAsConstrainDoubleRange());
+  }
+  return ConstraintType::kBareValue;
+}
+
+MediaTrackConstraintSetType GetMediaTrackConstraintSetType(
+    const MediaTrackConstraintSet* constraint_set,
+    const MediaTrackConstraints* constraints) {
+  DCHECK(constraint_set);
+  DCHECK(constraints);
+
+  if (constraint_set == constraints) {
+    return MediaTrackConstraintSetType::kBasic;
+  }
+
+  DCHECK(constraints->hasAdvanced());
+  DCHECK(!constraints->advanced().empty());
+  if (constraint_set == constraints->advanced()[0]) {
+    return MediaTrackConstraintSetType::kFirstAdvanced;
+  }
+  return MediaTrackConstraintSetType::kAdvanced;
+}
+
+bool IsBareValueToBeTreatedAsExact(
+    MediaTrackConstraintSetType constraint_set_type) {
+  return constraint_set_type != MediaTrackConstraintSetType::kBasic;
+}
+
 bool IsBooleanFalseConstraint(
     V8UnionBooleanOrConstrainDoubleRangeOrDouble* constraint) {
   DCHECK(constraint);
@@ -325,6 +476,72 @@ MediaSettingsRange* ToMediaSettingsRange(
   result->setMin(range.min);
   result->setStep(range.step);
   return result;
+}
+
+using CapabilityExists = base::StrongAlias<class HasCapabilityTag, bool>;
+
+// Check if the existence of a capability satisfies a constraint.
+// The check can fail only if the constraint is mandatory ('exact', 'max' or
+// 'min' or a bare value to be treated as exact) and is not an empty sequence
+// (which MUST be interpreted as if the constraint were not specified).
+// Usually the check fails only if the capability does not exists but in
+// the case of pan/tilt/zoom: false constraints in advanced constraint sets (to
+// be treated as exact) the check fails only if the capability exists.
+//
+// TODO(crbug.com/708723): Integrate image capture constraints processing with
+// the main implementation and remove these support functions.
+bool CheckIfCapabilityExistenceSatisfiesConstraintType(
+    ConstraintType constraint_type,
+    CapabilityExists capability_exists,
+    MediaTrackConstraintSetType constraint_set_type) {
+  switch (constraint_type) {
+    case ConstraintType::kEmptySequence:
+      // If an empty list has been given as the value for a constraint, it MUST
+      // be interpreted as if the constraint were not specified (in other
+      // words, an empty constraint == no constraint).
+      // https://w3c.github.io/mediacapture-main/#dfn-selectsettings
+      // Thus, it does not matter whether the capability exists.
+      return true;
+    case ConstraintType::kBooleanFalse:
+      if (IsBareValueToBeTreatedAsExact(constraint_set_type)) {
+        // The capability must not exist.
+        return !capability_exists;
+      }
+      // It does not matter whether the capability exists.
+      return true;
+    case ConstraintType::kBooleanTrue:
+      if (IsBareValueToBeTreatedAsExact(constraint_set_type)) {
+        // The capability must exist.
+        return !!capability_exists;
+      }
+      // It does not matter whether the capability exists.
+      return true;
+    case ConstraintType::kBareValue:
+    case ConstraintType::kBareValueDOMStringSequence:
+      if (IsBareValueToBeTreatedAsExact(constraint_set_type)) {
+        // The capability must exist.
+        return !!capability_exists;
+      }
+      // It does not matter whether the capability exists.
+      return true;
+    case ConstraintType::kEmptyDictionary:
+    case ConstraintType::kEffectivelyEmptyDictionary:
+    case ConstraintType::kIdealDictionary:
+      // It does not matter whether the capability exists.
+      return true;
+    case ConstraintType::kMandatoryDictionary:
+      // The capability must exist.
+      return !!capability_exists;
+  }
+}
+
+template <typename Constraint>
+bool CheckIfCapabilityExistenceSatisfiesConstraint(
+    const Constraint* constraint,
+    CapabilityExists capability_exists,
+    MediaTrackConstraintSetType constraint_set_type) {
+  return CheckIfCapabilityExistenceSatisfiesConstraintType(
+      GetConstraintType(constraint), capability_exists, constraint_set_type);
 }
 
 }  // anonymous namespace
@@ -548,12 +765,16 @@ bool ImageCapture::CheckAndApplyMediaTrackConstraintsToSettings(
 
   for (const MediaTrackConstraintSet* constraint_set :
        AllSupportedConstraintSets(constraints)) {
+    const MediaTrackConstraintSetType constraint_set_type =
+        GetMediaTrackConstraintSetType(constraint_set, constraints);
+
     // TODO(crbug.com/1408091): Add support for the basic constraint set and for
     // advanced constraint sets beyond the first one and remove check.
     DCHECK_EQ(constraint_set, constraints->advanced()[0]);
 
-    if (absl::optional<String> name =
-            GetConstraintWithNonExistingCapability(constraint_set)) {
+    if (absl::optional<const char*> name =
+            GetConstraintWithCapabilityExistenceMismatch(constraint_set,
+                                                         constraint_set_type)) {
       resolver->Reject(MakeGarbageCollected<OverconstrainedError>(
           name.value(), "Unsupported constraint"));
       return false;
@@ -1380,66 +1601,128 @@ const String& ImageCapture::SourceId() const {
   return stream_track_->Component()->Source()->Id();
 }
 
-const absl::optional<String>
-ImageCapture::GetConstraintWithNonExistingCapability(
-    const MediaTrackConstraintSet* constraint_set) {
+const absl::optional<const char*>
+ImageCapture::GetConstraintWithCapabilityExistenceMismatch(
+    const MediaTrackConstraintSet* constraint_set,
+    MediaTrackConstraintSetType constraint_set_type) const {
   if (constraint_set->hasWhiteBalanceMode() &&
-      !capabilities_->hasWhiteBalanceMode()) {
+      !CheckIfCapabilityExistenceSatisfiesConstraint(
+          constraint_set->whiteBalanceMode(),
+          CapabilityExists(capabilities_->hasWhiteBalanceMode()),
+          constraint_set_type)) {
     return "whiteBalanceMode";
   }
-  if (constraint_set->hasExposureMode() && !capabilities_->hasExposureMode()) {
+  if (constraint_set->hasExposureMode() &&
+      !CheckIfCapabilityExistenceSatisfiesConstraint(
+          constraint_set->exposureMode(),
+          CapabilityExists(capabilities_->hasExposureMode()),
+          constraint_set_type)) {
     return "exposureMode";
   }
-  if (constraint_set->hasFocusMode() && !capabilities_->hasFocusMode()) {
+  if (constraint_set->hasFocusMode() &&
+      !CheckIfCapabilityExistenceSatisfiesConstraint(
+          constraint_set->focusMode(),
+          CapabilityExists(capabilities_->hasFocusMode()),
+          constraint_set_type)) {
     return "focusMode";
   }
   if (constraint_set->hasExposureCompensation() &&
-      !capabilities_->hasExposureCompensation()) {
+      !CheckIfCapabilityExistenceSatisfiesConstraint(
+          constraint_set->exposureCompensation(),
+          CapabilityExists(capabilities_->hasExposureCompensation()),
+          constraint_set_type)) {
     return "exposureCompensation";
   }
-  if (constraint_set->hasExposureTime() && !capabilities_->hasExposureTime()) {
+  if (constraint_set->hasExposureTime() &&
+      !CheckIfCapabilityExistenceSatisfiesConstraint(
+          constraint_set->exposureTime(),
+          CapabilityExists(capabilities_->hasExposureTime()),
+          constraint_set_type)) {
     return "exposureTime";
   }
   if (constraint_set->hasColorTemperature() &&
-      !capabilities_->hasColorTemperature()) {
+      !CheckIfCapabilityExistenceSatisfiesConstraint(
+          constraint_set->colorTemperature(),
+          CapabilityExists(capabilities_->hasColorTemperature()),
+          constraint_set_type)) {
     return "colorTemperature";
   }
-  if (constraint_set->hasIso() && !capabilities_->hasIso()) {
+  if (constraint_set->hasIso() &&
+      !CheckIfCapabilityExistenceSatisfiesConstraint(
+          constraint_set->iso(), CapabilityExists(capabilities_->hasIso()),
+          constraint_set_type)) {
     return "iso";
   }
-  if (constraint_set->hasBrightness() && !capabilities_->hasBrightness()) {
+  if (constraint_set->hasBrightness() &&
+      !CheckIfCapabilityExistenceSatisfiesConstraint(
+          constraint_set->brightness(),
+          CapabilityExists(capabilities_->hasBrightness()),
+          constraint_set_type)) {
     return "brightness";
   }
-  if (constraint_set->hasContrast() && !capabilities_->hasContrast()) {
+  if (constraint_set->hasContrast() &&
+      !CheckIfCapabilityExistenceSatisfiesConstraint(
+          constraint_set->contrast(),
+          CapabilityExists(capabilities_->hasContrast()),
+          constraint_set_type)) {
     return "contrast";
   }
-  if (constraint_set->hasSaturation() && !capabilities_->hasSaturation()) {
+  if (constraint_set->hasSaturation() &&
+      !CheckIfCapabilityExistenceSatisfiesConstraint(
+          constraint_set->saturation(),
+          CapabilityExists(capabilities_->hasSaturation()),
+          constraint_set_type)) {
     return "saturation";
   }
-  if (constraint_set->hasSharpness() && !capabilities_->hasSharpness()) {
+  if (constraint_set->hasSharpness() &&
+      !CheckIfCapabilityExistenceSatisfiesConstraint(
+          constraint_set->sharpness(),
+          CapabilityExists(capabilities_->hasSharpness()),
+          constraint_set_type)) {
     return "sharpness";
   }
   if (constraint_set->hasFocusDistance() &&
-      !capabilities_->hasFocusDistance()) {
+      !CheckIfCapabilityExistenceSatisfiesConstraint(
+          constraint_set->focusDistance(),
+          CapabilityExists(capabilities_->hasFocusDistance()),
+          constraint_set_type)) {
     return "focusDistance";
   }
   if (constraint_set->hasPan() &&
-      !(capabilities_->hasPan() && HasPanTiltZoomPermissionGranted())) {
+      !CheckIfCapabilityExistenceSatisfiesConstraint(
+          constraint_set->pan(),
+          CapabilityExists(capabilities_->hasPan() &&
+                           HasPanTiltZoomPermissionGranted()),
+          constraint_set_type)) {
     return "pan";
   }
   if (constraint_set->hasTilt() &&
-      !(capabilities_->hasTilt() && HasPanTiltZoomPermissionGranted())) {
+      !CheckIfCapabilityExistenceSatisfiesConstraint(
+          constraint_set->tilt(),
+          CapabilityExists(capabilities_->hasTilt() &&
+                           HasPanTiltZoomPermissionGranted()),
+          constraint_set_type)) {
     return "tilt";
   }
   if (constraint_set->hasZoom() &&
-      !(capabilities_->hasZoom() && HasPanTiltZoomPermissionGranted())) {
+      !CheckIfCapabilityExistenceSatisfiesConstraint(
+          constraint_set->zoom(),
+          CapabilityExists(capabilities_->hasZoom() &&
+                           HasPanTiltZoomPermissionGranted()),
+          constraint_set_type)) {
     return "zoom";
   }
-  if (constraint_set->hasTorch() && !capabilities_->hasTorch()) {
+  if (constraint_set->hasTorch() &&
+      !CheckIfCapabilityExistenceSatisfiesConstraint(
+          constraint_set->torch(), CapabilityExists(capabilities_->hasTorch()),
+          constraint_set_type)) {
     return "torch";
   }
   if (constraint_set->hasBackgroundBlur() &&
-      !capabilities_->hasBackgroundBlur()) {
+      !CheckIfCapabilityExistenceSatisfiesConstraint(
+          constraint_set->backgroundBlur(),
+          CapabilityExists(capabilities_->hasBackgroundBlur()),
+          constraint_set_type)) {
     return "backgroundBlur";
   }
   return absl::nullopt;

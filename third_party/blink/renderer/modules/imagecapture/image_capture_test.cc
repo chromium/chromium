@@ -594,6 +594,8 @@ TEST_F(ImageCaptureConstraintTest,
        ApplyFirstAdvancedOverconstrainedConstraints) {
   V8TestingScope scope;
   image_capture_->SetExecutionContext(scope.GetExecutionContext());
+  const HeapVector<Member<Point2D>> points_of_interest = {
+      CreatePoint2D(0.25, 0.75)};
   auto settings = media::mojom::blink::PhotoSettings::New();
 
   // Create constraints: {advanced: [{whiteBalanceMode: "..."}]}
@@ -617,6 +619,56 @@ TEST_F(ImageCaptureConstraintTest,
   EXPECT_TRUE(capture_error->WasCalled());
   EXPECT_EQ(capture_error->Name(), "OverconstrainedError");
   EXPECT_EQ(capture_error->Constraint(), "whiteBalanceMode");
+
+  // Create constraints: {advanced: [{pointsOfInterest: [...], pan: false}]}
+  constraint_set = MediaTrackConstraintSet::Create();
+  constraint_set->setPointsOfInterest(
+      MakeGarbageCollected<V8UnionConstrainPoint2DParametersOrPoint2DSequence>(
+          points_of_interest));
+  constraint_set->setPan(
+      MakeGarbageCollected<V8UnionBooleanOrConstrainDoubleRangeOrDouble>(
+          false));
+  constraints = MediaTrackConstraints::Create();
+  constraints->setAdvanced({constraint_set});
+  capture_error = MakeGarbageCollected<CaptureErrorFunction>();
+  resolver =
+      MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
+  resolver->Promise().Then(nullptr, MakeGarbageCollected<ScriptFunction>(
+                                        scope.GetScriptState(), capture_error));
+  // TODO(crbug.com/1408091): This is not spec compliant. This should not fail.
+  // Instead, should discard the first advanced constraint set and succeed.
+  EXPECT_FALSE(image_capture_->CheckAndApplyMediaTrackConstraintsToSettings(
+      &*settings, constraints, resolver));
+  scope.PerformMicrotaskCheckpoint();  // Resolve/reject promises.
+  EXPECT_TRUE(capture_error->WasCalled());
+  EXPECT_EQ(capture_error->Name(), "OverconstrainedError");
+  EXPECT_EQ(capture_error->Constraint(), "pan");
+
+  // Remove capabilities (does not affect pointsOfInterest).
+  image_capture_->SetCapabilitiesForTesting(
+      MakeGarbageCollected<MediaTrackCapabilities>());
+  // Create constraints: {advanced: [{pointsOfInterest: [...], pan: true}]}
+  constraint_set = MediaTrackConstraintSet::Create();
+  constraint_set->setPointsOfInterest(
+      MakeGarbageCollected<V8UnionConstrainPoint2DParametersOrPoint2DSequence>(
+          points_of_interest));
+  constraint_set->setPan(
+      MakeGarbageCollected<V8UnionBooleanOrConstrainDoubleRangeOrDouble>(true));
+  constraints = MediaTrackConstraints::Create();
+  constraints->setAdvanced({constraint_set});
+  capture_error = MakeGarbageCollected<CaptureErrorFunction>();
+  resolver =
+      MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
+  resolver->Promise().Then(nullptr, MakeGarbageCollected<ScriptFunction>(
+                                        scope.GetScriptState(), capture_error));
+  // TODO(crbug.com/1408091): This is not spec compliant. This should not fail.
+  // Instead, should discard the first advanced constraint set and succeed.
+  EXPECT_FALSE(image_capture_->CheckAndApplyMediaTrackConstraintsToSettings(
+      &*settings, constraints, resolver));
+  scope.PerformMicrotaskCheckpoint();  // Resolve/reject promises.
+  EXPECT_TRUE(capture_error->WasCalled());
+  EXPECT_EQ(capture_error->Name(), "OverconstrainedError");
+  EXPECT_EQ(capture_error->Constraint(), "pan");
 }
 
 TEST_F(ImageCaptureConstraintTest, ApplyAdvancedIdealConstraints) {
@@ -666,9 +718,57 @@ TEST_F(ImageCaptureConstraintTest, ApplyAdvancedIdealConstraints) {
   CheckNoValues(settings);
 }
 
+// If an empty list has been given as the value for a constraint, it MUST be
+// interpreted as if the constraint were not specified (in other words,
+// an empty constraint == no constraint).
+// https://w3c.github.io/mediacapture-main/#dfn-selectsettings
+TEST_F(ImageCaptureConstraintTest, ApplyAdvancedNoConstraints) {
+  V8TestingScope scope;
+  image_capture_->SetExecutionContext(scope.GetExecutionContext());
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
+
+  // Create constraints:
+  //   {advanced: [
+  //     {},
+  //     {
+  //       whiteBalanceMode: [],
+  //       exposureMode: {exact: []},
+  //       focusMode: {ideal: []},
+  //       pointsOfInterest: {exact: []}
+  //     }
+  //   ]}
+  auto* constraint_set = MediaTrackConstraintSet::Create();
+  constraint_set->setWhiteBalanceMode(
+      MakeGarbageCollected<
+          V8UnionConstrainDOMStringParametersOrStringOrStringSequence>(
+          Vector<String>()));
+  constraint_set->setExposureMode(
+      MakeGarbageCollected<
+          V8UnionConstrainDOMStringParametersOrStringOrStringSequence>(
+          ConstrainWithExactDictionaryCreator::Create(Vector<String>())));
+  constraint_set->setFocusMode(
+      MakeGarbageCollected<
+          V8UnionConstrainDOMStringParametersOrStringOrStringSequence>(
+          ConstrainWithIdealDictionaryCreator::Create(Vector<String>())));
+  constraint_set->setPointsOfInterest(
+      MakeGarbageCollected<V8UnionConstrainPoint2DParametersOrPoint2DSequence>(
+          ConstrainWithExactDictionaryCreator::Create(
+              HeapVector<Member<Point2D>>())));
+  auto* constraints = MediaTrackConstraints::Create();
+  constraints->setAdvanced({MediaTrackConstraintSet::Create(), constraint_set});
+  auto settings = media::mojom::blink::PhotoSettings::New();
+  // Should ignore empty sequences and succeed.
+  EXPECT_TRUE(image_capture_->CheckAndApplyMediaTrackConstraintsToSettings(
+      &*settings, constraints, resolver));
+  CheckNoValues(settings);
+}
+
 TEST_F(ImageCaptureConstraintTest, ApplyAdvancedOverconstrainedConstraints) {
   V8TestingScope scope;
   image_capture_->SetExecutionContext(scope.GetExecutionContext());
+  const HeapVector<Member<Point2D>> points_of_interest = {
+      CreatePoint2D(0.25, 0.75)};
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
   auto settings = media::mojom::blink::PhotoSettings::New();
@@ -680,6 +780,38 @@ TEST_F(ImageCaptureConstraintTest, ApplyAdvancedOverconstrainedConstraints) {
           V8UnionConstrainDOMStringParametersOrStringOrStringSequence>(
           all_non_capabilities_->whiteBalanceMode()[0]));
   auto* constraints = MediaTrackConstraints::Create();
+  constraints->setAdvanced({MediaTrackConstraintSet::Create(), constraint_set});
+  // Should discard the last advanced constraint set and succeed.
+  EXPECT_TRUE(image_capture_->CheckAndApplyMediaTrackConstraintsToSettings(
+      &*settings, constraints, resolver));
+  CheckNoValues(settings);
+
+  // Create constraints: {advanced: [{}, {pointsOfInterest: [...], pan: false}]}
+  constraint_set = MediaTrackConstraintSet::Create();
+  constraint_set->setPointsOfInterest(
+      MakeGarbageCollected<V8UnionConstrainPoint2DParametersOrPoint2DSequence>(
+          points_of_interest));
+  constraint_set->setPan(
+      MakeGarbageCollected<V8UnionBooleanOrConstrainDoubleRangeOrDouble>(
+          false));
+  constraints = MediaTrackConstraints::Create();
+  constraints->setAdvanced({MediaTrackConstraintSet::Create(), constraint_set});
+  // Should discard the last advanced constraint set and succeed.
+  EXPECT_TRUE(image_capture_->CheckAndApplyMediaTrackConstraintsToSettings(
+      &*settings, constraints, resolver));
+  CheckNoValues(settings);
+
+  // Remove capabilities (does not affect pointsOfInterest).
+  image_capture_->SetCapabilitiesForTesting(
+      MakeGarbageCollected<MediaTrackCapabilities>());
+  // Create constraints: {advanced: [{}, {pointsOfInterest: [...], pan: true}]}
+  constraint_set = MediaTrackConstraintSet::Create();
+  constraint_set->setPointsOfInterest(
+      MakeGarbageCollected<V8UnionConstrainPoint2DParametersOrPoint2DSequence>(
+          points_of_interest));
+  constraint_set->setPan(
+      MakeGarbageCollected<V8UnionBooleanOrConstrainDoubleRangeOrDouble>(true));
+  constraints = MediaTrackConstraints::Create();
   constraints->setAdvanced({MediaTrackConstraintSet::Create(), constraint_set});
   // Should discard the last advanced constraint set and succeed.
   EXPECT_TRUE(image_capture_->CheckAndApplyMediaTrackConstraintsToSettings(

@@ -38,6 +38,8 @@ class MODULES_EXPORT ImageCapture final
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  enum class MediaTrackConstraintSetType;
+
   static ImageCapture* Create(ExecutionContext*,
                               MediaStreamTrack*,
                               ExceptionState&);
@@ -143,10 +145,12 @@ class MODULES_EXPORT ImageCapture final
 
   const String& SourceId() const;
 
-  // Get the name a constraint for which there are no corresponding
-  // capabilities or permission to access them.
-  const absl::optional<String> GetConstraintWithNonExistingCapability(
-      const MediaTrackConstraintSet* constraint_set);
+  // Get the name a constraint for which the existence of the capability or
+  // the permission to access the capability does not match the constraint.
+  const absl::optional<const char*>
+  GetConstraintWithCapabilityExistenceMismatch(
+      const MediaTrackConstraintSet* constraint_set,
+      MediaTrackConstraintSetType) const;
 
   Member<MediaStreamTrack> stream_track_;
   std::unique_ptr<ImageCaptureFrameGrabber> frame_grabber_;
