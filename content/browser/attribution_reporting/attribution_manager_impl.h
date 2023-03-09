@@ -27,7 +27,6 @@
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_report_sender.h"
-#include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/storage_partition.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -60,12 +59,14 @@ class AggregatableReportRequest;
 class AttributionCookieChecker;
 class AttributionDataHostManager;
 class AttributionDebugReport;
+class AttributionStorage;
 class AttributionStorageDelegate;
 class CreateReportResult;
 class StoragePartitionImpl;
 
 struct GlobalRenderFrameHostId;
 struct SendResult;
+struct StoreSourceResult;
 
 #if BUILDFLAG(IS_ANDROID)
 class AttributionOsLevelManager;
@@ -235,7 +236,7 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   void OnSourceStored(const StorableSource& source,
                       absl::optional<uint64_t> cleared_debug_key,
                       bool is_debug_cookie_set,
-                      AttributionStorage::StoreSourceResult result);
+                      StoreSourceResult result);
   void OnReportStored(const AttributionTrigger& trigger,
                       absl::optional<uint64_t> cleared_debug_key,
                       bool is_debug_cookie_set,
@@ -252,10 +253,9 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
 
   bool IsReportAllowed(const AttributionReport&) const;
 
-  void MaybeSendVerboseDebugReport(
-      const StorableSource& source,
-      bool is_debug_cookie_set,
-      const AttributionStorage::StoreSourceResult& result);
+  void MaybeSendVerboseDebugReport(const StorableSource& source,
+                                   bool is_debug_cookie_set,
+                                   const StoreSourceResult& result);
 
   void MaybeSendVerboseDebugReport(const AttributionTrigger& trigger,
                                    bool is_debug_cookie_set,

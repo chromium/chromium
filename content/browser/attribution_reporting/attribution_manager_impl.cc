@@ -60,6 +60,7 @@
 #include "content/browser/attribution_reporting/create_report_result.h"
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
+#include "content/browser/attribution_reporting/store_source_result.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/browser/browsing_data/browsing_data_filter_builder_impl.h"
 #include "content/browser/storage_partition_impl.h"
@@ -170,7 +171,7 @@ bool IsStorageKeySessionOnly(
   return false;
 }
 
-void RecordStoreSourceStatus(AttributionStorage::StoreSourceResult result) {
+void RecordStoreSourceStatus(StoreSourceResult result) {
   static_assert(StorableSource::Result::kMaxValue ==
                     StorableSource::Result::kSuccessNoised,
                 "Bump version of Conversions.SourceStoredStatus2 histogram.");
@@ -525,11 +526,11 @@ void AttributionManagerImpl::HandleSource(
       &*source.common_info().reporting_origin());
   RecordRegisterImpressionAllowed(allowed);
   if (!allowed) {
-    OnSourceStored(source,
-                   /*cleared_debug_key=*/absl::nullopt,
-                   /*is_debug_cookie_set=*/false,
-                   AttributionStorage::StoreSourceResult(
-                       StorableSource::Result::kProhibitedByBrowserPolicy));
+    OnSourceStored(
+        source,
+        /*cleared_debug_key=*/absl::nullopt,
+        /*is_debug_cookie_set=*/false,
+        StoreSourceResult(StorableSource::Result::kProhibitedByBrowserPolicy));
     return;
   }
 
@@ -551,7 +552,7 @@ void AttributionManagerImpl::OnSourceStored(
     const StorableSource& source,
     absl::optional<uint64_t> cleared_debug_key,
     bool is_debug_cookie_set,
-    AttributionStorage::StoreSourceResult result) {
+    StoreSourceResult result) {
   RecordStoreSourceStatus(result);
 
   for (auto& observer : observers_) {
@@ -1102,7 +1103,7 @@ void AttributionManagerImpl::NotifyFailedSourceRegistration(
 void AttributionManagerImpl::MaybeSendVerboseDebugReport(
     const StorableSource& source,
     bool is_debug_cookie_set,
-    const AttributionStorage::StoreSourceResult& result) {
+    const StoreSourceResult& result) {
   if (!base::FeatureList::IsEnabled(kAttributionVerboseDebugReporting)) {
     return;
   }

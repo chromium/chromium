@@ -21,6 +21,7 @@
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/create_report_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
+#include "content/browser/attribution_reporting/store_source_result.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -250,10 +251,9 @@ void SetLimit(base::Value::Dict& data_body, absl::optional<T> limit) {
   data_body.Set("limit", base::NumberToString(*limit));
 }
 
-base::Value::Dict GetReportDataBody(
-    DebugDataType data_type,
-    const StorableSource& source,
-    const AttributionStorage::StoreSourceResult& result) {
+base::Value::Dict GetReportDataBody(DebugDataType data_type,
+                                    const StorableSource& source,
+                                    const StoreSourceResult& result) {
   DCHECK(!source.is_within_fenced_frame());
 
   const attribution_reporting::SourceRegistration& registration =
@@ -391,7 +391,7 @@ GURL ReportURL(const attribution_reporting::SuitableOrigin& reporting_origin) {
 absl::optional<AttributionDebugReport> AttributionDebugReport::Create(
     const StorableSource& source,
     bool is_debug_cookie_set,
-    const AttributionStorage::StoreSourceResult& result) {
+    const StoreSourceResult& result) {
   if (!source.registration().debug_reporting ||
       source.is_within_fenced_frame()) {
     return absl::nullopt;

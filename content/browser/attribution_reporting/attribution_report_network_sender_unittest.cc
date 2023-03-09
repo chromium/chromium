@@ -17,6 +17,7 @@
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/send_result.h"
+#include "content/browser/attribution_reporting/store_source_result.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_task_environment.h"
@@ -764,7 +765,7 @@ TEST_F(AttributionReportNetworkSenderTest,
       AttributionDebugReport::Create(
           SourceBuilder().SetDebugReporting(true).Build(),
           /*is_debug_cookie_set=*/false,
-          AttributionStorage::StoreSourceResult(
+          StoreSourceResult(
               StorableSource::Result::kInsufficientUniqueDestinationCapacity,
               /*min_fake_report_time=*/absl::nullopt,
               /*max_destinations_per_source_site_reporting_origin=*/3));
@@ -797,7 +798,7 @@ TEST_F(AttributionReportNetworkSenderTest,
       AttributionDebugReport::Create(
           SourceBuilder().SetDebugReporting(true).Build(),
           /*is_debug_cookie_set=*/false,
-          AttributionStorage::StoreSourceResult(
+          StoreSourceResult(
               StorableSource::Result::kInsufficientUniqueDestinationCapacity,
               /*min_fake_report_time=*/absl::nullopt,
               /*max_destinations_per_source_site_reporting_origin=*/3));

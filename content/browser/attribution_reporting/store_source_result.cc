@@ -2,19 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/attribution_reporting/attribution_storage.h"
+#include "content/browser/attribution_reporting/store_source_result.h"
 
 #include "base/check.h"
-#include "content/browser/attribution_reporting/storable_source.h"
+#include "base/time/time.h"
+#include "content/browser/attribution_reporting/store_source_result.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
-namespace {
-using StoreSourceResult = ::content::AttributionStorage::StoreSourceResult;
-}  // namespace
-
 StoreSourceResult::StoreSourceResult(
-    StorableSource::Result status,
+    attribution_reporting::mojom::StoreSourceResult status,
     absl::optional<base::Time> min_fake_report_time,
     absl::optional<int> max_destinations_per_source_site_reporting_origin,
     absl::optional<int> max_sources_per_origin)
@@ -24,10 +22,11 @@ StoreSourceResult::StoreSourceResult(
           max_destinations_per_source_site_reporting_origin),
       max_sources_per_origin(max_sources_per_origin) {
   DCHECK(!max_destinations_per_source_site_reporting_origin.has_value() ||
-         status ==
-             StorableSource::Result::kInsufficientUniqueDestinationCapacity);
+         status == attribution_reporting::mojom::StoreSourceResult::
+                       kInsufficientUniqueDestinationCapacity);
   DCHECK(!max_sources_per_origin.has_value() ||
-         status == StorableSource::Result::kInsufficientSourceCapacity);
+         status == attribution_reporting::mojom::StoreSourceResult::
+                       kInsufficientSourceCapacity);
 }
 
 StoreSourceResult::~StoreSourceResult() = default;

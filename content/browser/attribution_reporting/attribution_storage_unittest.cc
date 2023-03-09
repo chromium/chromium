@@ -45,6 +45,7 @@
 #include "content/browser/attribution_reporting/create_report_result.h"
 #include "content/browser/attribution_reporting/rate_limit_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
+#include "content/browser/attribution_reporting/store_source_result.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/browser/attribution_reporting/test/configurable_storage_delegate.h"
 #include "content/public/browser/attribution_data_model.h"
@@ -1180,7 +1181,7 @@ TEST_F(AttributionStorageTest,
 
   delegate()->set_randomized_response(
       std::vector<AttributionStorageDelegate::FakeReport>{});
-  AttributionStorage::StoreSourceResult result = storage()->StoreSource(
+  StoreSourceResult result = storage()->StoreSource(
       TestAggregatableSourceProvider().GetBuilder().Build());
   EXPECT_EQ(result.status, StorableSource::Result::kSuccessNoised);
   delegate()->set_randomized_response(absl::nullopt);
@@ -1431,7 +1432,7 @@ TEST_F(AttributionStorageTest,
               {net::SchemefulSite::Deserialize("https://a.example/")})
           .SetSourceType(SourceType::kNavigation)
           .Build());
-  AttributionStorage::StoreSourceResult result = storage()->StoreSource(
+  StoreSourceResult result = storage()->StoreSource(
       SourceBuilder()
           .SetDestinationSites(
               {net::SchemefulSite::Deserialize("https://b.example")})
@@ -1583,8 +1584,7 @@ TEST_F(AttributionStorageTest, FalselyAttributeImpression_ReportStored) {
           {.trigger_data = 7,
            .trigger_time = fake_trigger_time,
            .report_time = fake_report_time}});
-  AttributionStorage::StoreSourceResult result =
-      storage()->StoreSource(builder.Build());
+  StoreSourceResult result = storage()->StoreSource(builder.Build());
   EXPECT_EQ(result.status, StorableSource::Result::kSuccessNoised);
   delegate()->set_randomized_response(absl::nullopt);
 

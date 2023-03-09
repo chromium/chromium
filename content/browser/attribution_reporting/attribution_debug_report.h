@@ -7,7 +7,6 @@
 
 #include "base/time/time.h"
 #include "base/values.h"
-#include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -22,6 +21,8 @@ class AttributionTrigger;
 class CreateReportResult;
 class StorableSource;
 
+struct StoreSourceResult;
+
 // Class that contains all the data needed to serialize and send an attribution
 // debug report.
 class CONTENT_EXPORT AttributionDebugReport {
@@ -29,7 +30,7 @@ class CONTENT_EXPORT AttributionDebugReport {
   static absl::optional<AttributionDebugReport> Create(
       const StorableSource& source,
       bool is_debug_cookie_set,
-      const AttributionStorage::StoreSourceResult& result);
+      const StoreSourceResult& result);
 
   static absl::optional<AttributionDebugReport> Create(
       const AttributionTrigger& trigger,
