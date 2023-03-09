@@ -27,14 +27,13 @@ namespace unexportable_keys {
 
 namespace {
 ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>
-MakeSigningKeyRefCounted(const UnexportableKeyId& key_id,
-                         std::unique_ptr<crypto::UnexportableSigningKey> key) {
+MakeSigningKeyRefCounted(std::unique_ptr<crypto::UnexportableSigningKey> key) {
   if (!key) {
     return base::unexpected(ServiceError::kCryptoApiFailed);
   }
 
-  return base::MakeRefCounted<RefCountedUnexportableSigningKey>(std::move(key),
-                                                                key_id);
+  return base::MakeRefCounted<RefCountedUnexportableSigningKey>(
+      std::move(key), UnexportableKeyId());
 }
 
 ServiceErrorOr<std::vector<uint8_t>> OptionalToServiceErrorOr(
@@ -82,15 +81,12 @@ void UnexportableKeyTaskManager::GenerateSigningKeySlowlyAsync(
 
   auto task = std::make_unique<GenerateKeyTask>(
       std::move(key_provider), acceptable_algorithms,
-      base::BindOnce(&MakeSigningKeyRefCounted,
-                     UnexportableKeyId(base::Token::CreateRandom()))
-          .Then(std::move(callback)));
+      base::BindOnce(&MakeSigningKeyRefCounted).Then(std::move(callback)));
   task_scheduler_.PostTask(std::move(task), priority);
 }
 
 void UnexportableKeyTaskManager::FromWrappedSigningKeySlowlyAsync(
     base::span<const uint8_t> wrapped_key,
-    const UnexportableKeyId& key_id,
     BackgroundTaskPriority priority,
     base::OnceCallback<
         void(ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>)>
@@ -105,8 +101,7 @@ void UnexportableKeyTaskManager::FromWrappedSigningKeySlowlyAsync(
 
   auto task = std::make_unique<FromWrappedKeyTask>(
       std::move(key_provider), wrapped_key,
-      base::BindOnce(&MakeSigningKeyRefCounted, key_id)
-          .Then(std::move(callback)));
+      base::BindOnce(&MakeSigningKeyRefCounted).Then(std::move(callback)));
   task_scheduler_.PostTask(std::move(task), priority);
 }
 

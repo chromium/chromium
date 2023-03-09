@@ -232,7 +232,7 @@ TEST_F(UnexportableKeyServiceTest, Sign) {
 }
 
 TEST_F(UnexportableKeyServiceTest, NonExistingKeyId) {
-  UnexportableKeyId fake_key_id = UnexportableKeyId(base::Token(1234, 5678));
+  UnexportableKeyId fake_key_id;
 
   // `service()` does not return any info about non-existing key ID.
   EXPECT_EQ(service().GetSubjectPublicKeyInfo(fake_key_id),

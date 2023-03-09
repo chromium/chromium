@@ -20,10 +20,6 @@
 
 namespace unexportable_keys {
 
-namespace {
-constexpr UnexportableKeyId kTestToken{base::Token(1234, 5678)};
-}  // namespace
-
 class UnexportableKeyTaskManagerTest : public testing::Test {
  public:
   UnexportableKeyTaskManagerTest() = default;
@@ -115,7 +111,7 @@ TEST_F(UnexportableKeyTaskManagerTest, FromWrappedKeyAsync) {
       ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>>
       unwrap_key_future;
   task_manager().FromWrappedSigningKeySlowlyAsync(
-      wrapped_key, kTestToken, BackgroundTaskPriority::kBestEffort,
+      wrapped_key, BackgroundTaskPriority::kBestEffort,
       unwrap_key_future.GetCallback());
   EXPECT_FALSE(unwrap_key_future.IsReady());
   RunBackgroundTasks();
@@ -123,7 +119,8 @@ TEST_F(UnexportableKeyTaskManagerTest, FromWrappedKeyAsync) {
   ASSERT_TRUE(unwrap_key_future.Get().has_value());
   auto unwrapped_key = unwrap_key_future.Get().value();
   EXPECT_NE(unwrapped_key, nullptr);
-  EXPECT_EQ(unwrapped_key->id(), kTestToken);
+  // New key should have a unique ID.
+  EXPECT_NE(unwrapped_key->id(), key->id());
   // Public key should be the same for both keys.
   EXPECT_EQ(key->key().GetSubjectPublicKeyInfo(),
             unwrapped_key->key().GetSubjectPublicKeyInfo());
@@ -135,7 +132,7 @@ TEST_F(UnexportableKeyTaskManagerTest, FromWrappedKeyAsyncFailureEmptyKey) {
       future;
   std::vector<uint8_t> empty_wrapped_key;
   task_manager().FromWrappedSigningKeySlowlyAsync(
-      empty_wrapped_key, kTestToken, BackgroundTaskPriority::kBestEffort,
+      empty_wrapped_key, BackgroundTaskPriority::kBestEffort,
       future.GetCallback());
   RunBackgroundTasks();
   EXPECT_EQ(future.Get(), base::unexpected(ServiceError::kCryptoApiFailed));
@@ -164,8 +161,7 @@ TEST_F(UnexportableKeyTaskManagerTest,
       ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>>
       future;
   task_manager().FromWrappedSigningKeySlowlyAsync(
-      wrapped_key, kTestToken, BackgroundTaskPriority::kBestEffort,
-      future.GetCallback());
+      wrapped_key, BackgroundTaskPriority::kBestEffort, future.GetCallback());
   RunBackgroundTasks();
   EXPECT_EQ(future.Get(), base::unexpected(ServiceError::kNoKeyProvider));
 }

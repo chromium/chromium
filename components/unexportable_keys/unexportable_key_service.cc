@@ -147,7 +147,7 @@ void UnexportableKeyService::FromWrappedSigningKeySlowlyAsync(
     // As long as `this` is alive, `it` should only be invalidated by the call
     // below.
     task_manager_->FromWrappedSigningKeySlowlyAsync(
-        wrapped_key, UnexportableKeyId(base::Token::CreateRandom()), priority,
+        wrapped_key, priority,
         base::BindOnce(&UnexportableKeyService::OnKeyCreatedFromWrappedKey,
                        weak_ptr_factory_.GetWeakPtr(), it));
   }

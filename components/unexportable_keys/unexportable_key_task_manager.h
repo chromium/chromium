@@ -65,15 +65,11 @@ class UnexportableKeyTaskManager {
   // Creates a new signing key from a `wrapped_key` asynchronously.
   // `wrapped_key` must have resulted from calling `GetWrappedKey()` on a
   // previous instance of `crypto::UnexportableSigningKey`.
-  // `key_id` is a unique identifier that will be attached to the signing key.
-  // The caller is responsible for avoiding collisions and not requesting
-  // several keys under the same id.
   // Invokes `callback` with either:
   // - non-null unexportable signing key if it was imported successfully, or
   // - `ServiceError` if `wrapped_key` import failed.
   void FromWrappedSigningKeySlowlyAsync(
       base::span<const uint8_t> wrapped_key,
-      const UnexportableKeyId& key_id,
       BackgroundTaskPriority priority,
       base::OnceCallback<
           void(ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>)>
