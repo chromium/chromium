@@ -6869,9 +6869,12 @@ crbug.com/1414607 http/tests/devtools/tracing/timeline-js/timeline-js-line-level
 crbug.com/1409713 virtual/view-transition/external/wpt/css/css-view-transitions/content-with-clip-max-texture-size.html [ Failure ]
 crbug.com/1409713 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/content-with-clip-max-texture-size.html [ Failure ]
 
-# Sheriff 2023-02-08
+# Sheriff 2023-03-08
 crbug.com/1422630 external/wpt/long-animation-frame/tentative/loaf-promise.html [ Failure ]
 crbug.com/1422630 external/wpt/long-animation-frame/tentative/loaf-script-block.html [ Failure ]
 
 # Temporarily disable COLRv1 test to land Skia change, will rebaseline afterwards.
 crbug.com/1422959 virtual/text-antialias/colrv1-variable.html [ Pass Failure ]
+
+# Sheriff 2023-03-09
+crbug.com/1422653 external/wpt/long-animation-frame/tentative/* [ Pass Failure ]
