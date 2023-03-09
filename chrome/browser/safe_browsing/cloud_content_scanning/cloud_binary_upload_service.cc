@@ -319,7 +319,8 @@ void CloudBinaryUploadService::OnGetInstanceID(Request* request,
 
   request->set_fcm_token(instance_id);
 
-  if (CanUseAccessToken(*request, profile_)) {
+  if (base::FeatureList::IsEnabled(kConnectorsScanningAccessToken) &&
+      CanUseAccessToken(*request, profile_)) {
     if (!token_fetcher_) {
       token_fetcher_ = std::make_unique<SafeBrowsingPrimaryAccountTokenFetcher>(
           IdentityManagerFactory::GetForProfile(profile_));

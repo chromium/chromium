@@ -53,6 +53,14 @@ BASE_FEATURE(kComponentUpdaterAndroidProtegoAllowlist,
              "SafeBrowsingComponentUpdaterAndroidProtegoAllowlist",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kConnectorsScanningAccessToken,
+             "ConnectorsScanningAccessToken",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kConnectorsScanningReportOnlyUI,
+             "ConnectorsScanningReportOnlyUI",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kDelayedWarnings,
              "SafeBrowsingDelayedWarnings",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -191,6 +199,14 @@ BASE_FEATURE(kSafeBrowsingCsbrrNewDownloadTrigger,
              "SafeBrowsingCsbrrNewDownloadTrigger",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSafeBrowsingDisableConsumerCsdForEnterprise,
+             "SafeBrowsingDisableConsumerCsdForEnterprise",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSafeBrowsingEnterpriseCsd,
+             "SafeBrowsingEnterpriseCsd",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSafeBrowsingLookupMechanismExperiment,
              "SafeBrowsingLookupMechanismExperiment",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -287,6 +303,8 @@ constexpr struct {
     {&kClientSideDetectionReferrerChain, true},
     {&kClientSideDetectionTypeForceRequest, true},
     {&kComponentUpdaterAndroidProtegoAllowlist, true},
+    {&kConnectorsScanningAccessToken, true},
+    {&kConnectorsScanningReportOnlyUI, true},
     {&kDelayedWarnings, true},
     {&kDownloadBubble, true},
     {&kDownloadBubbleV2, true},
@@ -307,6 +325,8 @@ constexpr struct {
     {&kRealTimeUrlFilteringForEnterprise, true},
     {&kRealTimeUrlLookupForEnterpriseAllowlistBypass, true},
     {&kSafeBrowsingCsbrrNewDownloadTrigger, true},
+    {&kSafeBrowsingDisableConsumerCsdForEnterprise, true},
+    {&kSafeBrowsingEnterpriseCsd, true},
     {&kSafeBrowsingLookupMechanismExperiment, true},
     {&kSafeBrowsingRemoveCookiesInAuthRequests, true},
     {&kSevenZipEvaluationEnabled, true},
