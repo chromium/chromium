@@ -1239,6 +1239,12 @@
                   'content/renderer/input|'\
                   'ui/events/blink/'
     },
+    'input_device_settings': {
+      'filepath': 'ash/system/input_device_settings/|'\
+                  'chrome/browser/resources/settings/chromeos/device_page/|'\
+                  'chrome/browser/ui/webui/settings/ash/device_section.*'\
+                  'chrome/browser/ui/webui/settings/ash/input_device_settings/|',
+    },
     'input_devices': {
       'filepath': 'ui/events/devices/',
     },
@@ -2744,6 +2750,10 @@
                    'enne+idb@chromium.org'],
     'infobars_for_weblayer': ['blundell+infobars-watch@chromium.org'],
     'input': ['dtapuska+chromiumwatch@chromium.org'],
+    'input_device_settings': ['dpad+watch-input-device-settings@google.com',
+                              'michaelcheco+watch-input-device-settings@google.com',
+                              'wangdanny+watch-input-device-settings@google.com',
+                              'yyhyyh+watch-input-device-settings@google.com'],
     'input_devices': ['spang+watch@chromium.org'],
     'installable': ['dominickn+watch-installable@chromium.org',
                     'dmurph+watching-installable@chromium.org',
