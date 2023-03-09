@@ -19,6 +19,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
+import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabBottomSheetStrategy.BOTTOM_SHEET_MAX_WIDTH_DP_LANDSCAPE;
 import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.DEVICE_HEIGHT;
 import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.DEVICE_WIDTH;
 import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.FULL_HEIGHT;
@@ -1002,7 +1003,7 @@ public class PartialCustomTabBottomSheetStrategyTest {
 
     @Test
     @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
-    public void sideShadowsWithMaxWidthBottomSheet() {
+    public void sideShadowsWith900dpBottomSheet() {
         doReturn(8)
                 .when(mPCCTTestRule.mResources)
                 .getDimensionPixelSize(eq(R.dimen.custom_tabs_shadow_offset));
@@ -1044,6 +1045,42 @@ public class PartialCustomTabBottomSheetStrategyTest {
         handleStrategy = strategy.createHandleStrategyForTesting();
         assertEquals("Top margin should be zero because there is no shadow", 0,
                 mPCCTTestRule.mLayoutParams.topMargin);
+    }
+
+    @Test
+    @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
+    public void largeDeviceInPortrait_screenWidth() {
+        doReturn(8)
+                .when(mPCCTTestRule.mResources)
+                .getDimensionPixelSize(eq(R.dimen.custom_tabs_shadow_offset));
+        mPCCTTestRule.configPortraitMode();
+        mPCCTTestRule.mRealMetrics.widthPixels = 6000;
+        mPCCTTestRule.mRealMetrics.heightPixels = 9500;
+        createPcctAtHeight(5000);
+        assertEquals("Left margin should be zero because there is no shadow", 0,
+                mPCCTTestRule.mLayoutParams.leftMargin);
+        assertEquals("Right margin should be zero because there is no shadow", 0,
+                mPCCTTestRule.mLayoutParams.rightMargin);
+        assertEquals(
+                "Bottom sheet width should be the screen width", 6000, getWindowAttributes().width);
+    }
+
+    @Test
+    @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
+    public void largeDeviceInLandscape_900dpWidth() {
+        doReturn(8)
+                .when(mPCCTTestRule.mResources)
+                .getDimensionPixelSize(eq(R.dimen.custom_tabs_shadow_offset));
+        mPCCTTestRule.configLandscapeMode();
+        mPCCTTestRule.mRealMetrics.widthPixels = 9500;
+        mPCCTTestRule.mRealMetrics.heightPixels = 6000;
+        createPcctAtHeight(5000);
+        assertNotEquals("Left margin should not be zero because there is a shadow", 0,
+                mPCCTTestRule.mLayoutParams.leftMargin);
+        assertNotEquals("Right margin should not be zero because there is a shadow", 0,
+                mPCCTTestRule.mLayoutParams.rightMargin);
+        assertEquals("Bottom sheet width should be 900dp", BOTTOM_SHEET_MAX_WIDTH_DP_LANDSCAPE,
+                getWindowAttributes().width);
     }
 
     @Test
