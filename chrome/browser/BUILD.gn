@@ -1215,6 +1215,8 @@ static_library("browser") {
     "policy/messaging_layer/util/user_dm_token_retriever.h",
     "policy/policy_ui_utils.cc",
     "policy/policy_ui_utils.h",
+    "policy/policy_util.cc",
+    "policy/policy_util.h",
     "policy/policy_value_and_status_aggregator.cc",
     "policy/policy_value_and_status_aggregator.h",
     "policy/profile_policy_connector.cc",
