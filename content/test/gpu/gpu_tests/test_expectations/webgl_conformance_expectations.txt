@@ -450,6 +450,7 @@ crbug.com/1276186 [ mac amd-0x67ef angle-opengl ] conformance/rendering/clear-de
 crbug.com/1421053 [ mac amd-0x67ef angle-metal ] conformance/ogles/GL/lessThan/lessThan_001_to_008.html [ Failure ]
 crbug.com/1421053 [ mac amd-0x67ef angle-metal ] conformance/ogles/GL/vec/vec_017_to_018.html [ Failure ]
 crbug.com/1421053 [ mac amd-0x67ef angle-metal ] conformance/textures/misc/texture-size-cube-maps.html [ Failure ]
+crbug.com/1421053 [ mac amd-0x67ef angle-metal ] conformance/textures/misc/tex-video-using-tex-unit-non-zero.html [ RetryOnFailure ]
 crbug.com/1421053 [ mac amd-0x67ef angle-metal ] conformance/textures/webgl_canvas/* [ Failure ]
 crbug.com/1421053 [ mac amd-0x67ef angle-metal ] deqp/data/gles2/shaders/swizzles_bvec4.html [ Failure ]
 crbug.com/1421053 [ mac amd-0x67ef angle-metal ] deqp/data/gles2/shaders/swizzles_vec2.html [ Failure ]

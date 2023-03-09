@@ -341,6 +341,7 @@ crbug.com/angleproject/6430 [ mac passthrough angle-metal amd ] deqp/functional/
 crbug.com/angleproject/6430 [ mac passthrough angle-metal amd ] deqp/functional/gles3/texturespecification/texstorage2d_format_depth_stencil.html [ Failure ]
 crbug.com/angleproject/7425 [ mac passthrough angle-metal amd ] deqp/functional/gles3/texturespecification/texstorage3d_format_depth_stencil.html [ Failure ]
 
+crbug.com/1421053 [ mac amd-0x67ef angle-metal ] conformance/canvas/rapid-resizing.html [ RetryOnFailure ]
 crbug.com/1421053 [ mac amd-0x67ef angle-metal ] conformance/ogles/GL/lessThan/lessThan_001_to_008.html [ Failure ]
 crbug.com/1421053 [ mac amd-0x67ef angle-metal ] conformance/ogles/GL/vec/vec_017_to_018.html [ Failure ]
 crbug.com/1421053 [ mac amd-0x67ef angle-metal ] conformance/textures/misc/texture-size-cube-maps.html [ Failure ]
@@ -357,7 +358,10 @@ crbug.com/1421053 [ mac amd-0x67ef angle-metal ] deqp/data/gles3/shaders/convers
 crbug.com/1421053 [ mac amd-0x67ef angle-metal ] deqp/data/gles3/shaders/conversions_vector_to_scalar.html [ Failure ]
 crbug.com/1421053 [ mac amd-0x67ef angle-metal ] deqp/data/gles3/shaders/swizzles_vec4.html [ Failure ]
 crbug.com/1421053 [ mac amd-0x67ef angle-metal ] deqp/functional/gles3/draw/draw_elements_instanced.html [ Failure ]
+crbug.com/1421053 [ mac amd-0x67ef angle-metal ] deqp/functional/gles3/fbocolorbuffer/tex3d_04.html [ RetryOnFailure ]
 crbug.com/1421053 [ mac amd-0x67ef angle-metal ] deqp/functional/gles3/fborender/recreate_color_02.html [ Failure ]
+crbug.com/1421053 [ mac amd-0x67ef angle-metal ] deqp/functional/gles3/texturefiltering/3d_formats_03.html [ RetryOnFailure ]
+crbug.com/1421053 [ mac amd-0x67ef angle-metal ] deqp/functional/gles3/texturefiltering/cube_combinations_05.html [ RetryOnFailure ]
 crbug.com/1421053 [ mac amd-0x67ef angle-metal ] deqp/functional/gles3/texturespecification/basic_teximage3d_2d_array_02.html [ Failure ]
 
 ## Metal Intel ##
