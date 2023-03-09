@@ -11,16 +11,15 @@
 #include <string>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/lazy_instance.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/mock_entropy_provider.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
-#include "base/threading/thread_local.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/prefs/browser_prefs.h"
@@ -41,110 +40,117 @@
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/quota_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/test/test_reg_util_win.h"
 #endif
+
+namespace {
+
+class TestIncidentReportingService;
+ABSL_CONST_INIT thread_local TestIncidentReportingService* test_instance =
+    nullptr;
+
+constexpr char kFakeOsName[] = "fakedows";
+constexpr char kFakeDownloadToken[] = "fakedlt";
+constexpr char kFakeDownloadHost[] = "chromium.org";
+constexpr char kTestTrackedPrefPath[] = "some_pref";
+constexpr char kFakeExtensionId[] = "fakeExtensionId";
+
+// An IRS class that allows a test harness to provide a fake environment
+// collector, extension collector and report uploader via callbacks.
+class TestIncidentReportingService
+    : public safe_browsing::IncidentReportingService {
+ public:
+  using PreProfileAddCallback = base::RepeatingCallback<void(Profile*)>;
+
+  using CollectEnvironmentCallback = base::RepeatingCallback<void(
+      safe_browsing::ClientIncidentReport_EnvironmentData*)>;
+
+  using CreateDownloadFinderCallback = base::RepeatingCallback<
+      std::unique_ptr<safe_browsing::LastDownloadFinder>(
+          safe_browsing::LastDownloadFinder::LastDownloadCallback callback)>;
+
+  using StartUploadCallback = base::RepeatingCallback<
+      std::unique_ptr<safe_browsing::IncidentReportUploader>(
+          safe_browsing::IncidentReportUploader::OnResultCallback,
+          const safe_browsing::ClientIncidentReport& report)>;
+
+  TestIncidentReportingService(
+      const scoped_refptr<base::TaskRunner>& task_runner,
+      const PreProfileAddCallback& pre_profile_add_callback,
+      const CollectEnvironmentCallback& collect_environment_callback,
+      const CreateDownloadFinderCallback& create_download_finder_callback,
+      const StartUploadCallback& start_upload_callback)
+      : IncidentReportingService(nullptr, base::Milliseconds(5), task_runner),
+        resetter_(&test_instance, this),
+        pre_profile_add_callback_(pre_profile_add_callback),
+        collect_environment_callback_(collect_environment_callback),
+        create_download_finder_callback_(create_download_finder_callback),
+        start_upload_callback_(start_upload_callback),
+        extension_collected_(false) {
+    SetCollectEnvironmentHook(&CollectEnvironmentData, task_runner);
+  }
+
+  ~TestIncidentReportingService() override = default;
+
+  bool IsProcessingReport() const {
+    return IncidentReportingService::IsProcessingReport();
+  }
+
+  bool HasCollectedExtension() const { return extension_collected_; }
+
+ protected:
+  void OnProfileAdded(Profile* profile) override {
+    pre_profile_add_callback_.Run(profile);
+    safe_browsing::IncidentReportingService::OnProfileAdded(profile);
+  }
+
+  // A fake extension collection implementation invoked by the service during
+  // operation.
+  void DoExtensionCollection(
+      safe_browsing::ClientIncidentReport_ExtensionData* data) override {
+    ASSERT_NE(static_cast<safe_browsing::ClientIncidentReport_ExtensionData*>(
+                  nullptr),
+              data);
+    data->mutable_last_installed_extension()->set_id(kFakeExtensionId);
+    extension_collected_ = true;
+  }
+
+  std::unique_ptr<safe_browsing::LastDownloadFinder> CreateDownloadFinder(
+      safe_browsing::LastDownloadFinder::LastDownloadCallback callback)
+      override {
+    return create_download_finder_callback_.Run(std::move(callback));
+  }
+
+  std::unique_ptr<safe_browsing::IncidentReportUploader> StartReportUpload(
+      safe_browsing::IncidentReportUploader::OnResultCallback callback,
+      const safe_browsing::ClientIncidentReport& report) override {
+    return start_upload_callback_.Run(std::move(callback), report);
+  }
+
+ private:
+  static TestIncidentReportingService& current() { return *test_instance; }
+
+  static void CollectEnvironmentData(
+      safe_browsing::ClientIncidentReport_EnvironmentData* data) {
+    current().collect_environment_callback_.Run(data);
+  }
+
+  const base::AutoReset<TestIncidentReportingService*> resetter_;
+  PreProfileAddCallback pre_profile_add_callback_;
+  CollectEnvironmentCallback collect_environment_callback_;
+  CreateDownloadFinderCallback create_download_finder_callback_;
+  StartUploadCallback start_upload_callback_;
+  bool extension_collected_;
+};
 
 // A test fixture that sets up a test task runner and makes it the thread's
 // runner. The fixture implements a fake environment data collector, extension
 // data collector and a fake report uploader.
 class IncidentReportingServiceTest : public testing::Test {
  protected:
-  // An IRS class that allows a test harness to provide a fake environment
-  // collector, extension collector and report uploader via callbacks.
-  class TestIncidentReportingService
-      : public safe_browsing::IncidentReportingService {
-   public:
-    using PreProfileAddCallback = base::RepeatingCallback<void(Profile*)>;
-
-    using CollectEnvironmentCallback = base::RepeatingCallback<void(
-        safe_browsing::ClientIncidentReport_EnvironmentData*)>;
-
-    using CreateDownloadFinderCallback = base::RepeatingCallback<
-        std::unique_ptr<safe_browsing::LastDownloadFinder>(
-            safe_browsing::LastDownloadFinder::LastDownloadCallback callback)>;
-
-    using StartUploadCallback = base::RepeatingCallback<
-        std::unique_ptr<safe_browsing::IncidentReportUploader>(
-            safe_browsing::IncidentReportUploader::OnResultCallback,
-            const safe_browsing::ClientIncidentReport& report)>;
-
-    TestIncidentReportingService(
-        const scoped_refptr<base::TaskRunner>& task_runner,
-        const PreProfileAddCallback& pre_profile_add_callback,
-        const CollectEnvironmentCallback& collect_environment_callback,
-        const CreateDownloadFinderCallback& create_download_finder_callback,
-        const StartUploadCallback& start_upload_callback)
-        : IncidentReportingService(nullptr, base::Milliseconds(5), task_runner),
-          pre_profile_add_callback_(pre_profile_add_callback),
-          collect_environment_callback_(collect_environment_callback),
-          create_download_finder_callback_(create_download_finder_callback),
-          start_upload_callback_(start_upload_callback),
-          extension_collected_(false) {
-      SetCollectEnvironmentHook(&CollectEnvironmentData, task_runner);
-      test_instance_.Get().Set(this);
-    }
-
-    ~TestIncidentReportingService() override {
-      test_instance_.Get().Set(nullptr);
-    }
-
-    bool IsProcessingReport() const {
-      return IncidentReportingService::IsProcessingReport();
-    }
-
-    bool HasCollectedExtension() const { return extension_collected_; }
-
-   protected:
-    void OnProfileAdded(Profile* profile) override {
-      pre_profile_add_callback_.Run(profile);
-      safe_browsing::IncidentReportingService::OnProfileAdded(profile);
-    }
-
-    // A fake extension collection implementation invoked by the service during
-    // operation.
-    void DoExtensionCollection(
-        safe_browsing::ClientIncidentReport_ExtensionData* data) override {
-      ASSERT_NE(static_cast<safe_browsing::ClientIncidentReport_ExtensionData*>(
-                    nullptr),
-                data);
-      data->mutable_last_installed_extension()->set_id(kFakeExtensionId);
-      extension_collected_ = true;
-    }
-
-    std::unique_ptr<safe_browsing::LastDownloadFinder> CreateDownloadFinder(
-        safe_browsing::LastDownloadFinder::LastDownloadCallback callback)
-        override {
-      return create_download_finder_callback_.Run(std::move(callback));
-    }
-
-    std::unique_ptr<safe_browsing::IncidentReportUploader> StartReportUpload(
-        safe_browsing::IncidentReportUploader::OnResultCallback callback,
-        const safe_browsing::ClientIncidentReport& report) override {
-      return start_upload_callback_.Run(std::move(callback), report);
-    }
-
-   private:
-    static TestIncidentReportingService& current() {
-      return *test_instance_.Get().Get();
-    }
-
-    static void CollectEnvironmentData(
-        safe_browsing::ClientIncidentReport_EnvironmentData* data) {
-      current().collect_environment_callback_.Run(data);
-    }
-
-    static base::LazyInstance<base::ThreadLocalPointer<
-        TestIncidentReportingService> >::Leaky test_instance_;
-
-    PreProfileAddCallback pre_profile_add_callback_;
-    CollectEnvironmentCallback collect_environment_callback_;
-    CreateDownloadFinderCallback create_download_finder_callback_;
-    StartUploadCallback start_upload_callback_;
-    bool extension_collected_;
-  };
-
   // A type for specifying whether a profile created by CreateProfile
   // participates in safe browsing and safe browsing extended reporting.
   enum SafeBrowsingDisposition {
@@ -183,12 +189,6 @@ class IncidentReportingServiceTest : public testing::Test {
     ON_DELAYED_ANALYSIS_NO_ACTION,
     ON_DELAYED_ANALYSIS_ADD_INCIDENT,  // Add an incident to the service.
   };
-
-  static const char kFakeOsName[];
-  static const char kFakeDownloadToken[];
-  static const char kFakeDownloadHost[];
-  static const char kTestTrackedPrefPath[];
-  static const char kFakeExtensionId[];
 
   IncidentReportingServiceTest()
       : profile_manager_(TestingBrowserProcess::GetGlobal()),
@@ -595,12 +595,6 @@ class IncidentReportingServiceTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// static
-base::LazyInstance<base::ThreadLocalPointer<
-    IncidentReportingServiceTest::TestIncidentReportingService> >::Leaky
-    IncidentReportingServiceTest::TestIncidentReportingService::test_instance_ =
-        LAZY_INSTANCE_INITIALIZER;
-
 void IncidentReportingServiceTest::ExpectTestIncidentUploadWithBinaryDownload(
     int incident_count) {
   ExpectTestIncidentUploadedImpl(incident_count, true, false);
@@ -615,12 +609,6 @@ void IncidentReportingServiceTest::ExpectTestIncidentUploadWithBothDownloads(
     int incident_count) {
   ExpectTestIncidentUploadedImpl(incident_count, true, false);
 }
-
-const char IncidentReportingServiceTest::kFakeOsName[] = "fakedows";
-const char IncidentReportingServiceTest::kFakeDownloadToken[] = "fakedlt";
-const char IncidentReportingServiceTest::kFakeDownloadHost[] = "chromium.org";
-const char IncidentReportingServiceTest::kTestTrackedPrefPath[] = "some_pref";
-const char IncidentReportingServiceTest::kFakeExtensionId[] = "fakeExtensionId";
 
 // Tests that an incident added during profile initialization when safe browsing
 // extended reporting is on is uploaded.
@@ -1417,3 +1405,5 @@ TEST_F(IncidentReportingServiceTest, ClearProcessIncidentOnCleanState) {
 // environment colection taking longer than incident delay timer
 // environment colection taking longer than incident delay timer, and then
 // another incident arriving
+
+}  // namespace

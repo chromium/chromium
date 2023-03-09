@@ -32,6 +32,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
+class Profile;
+
 namespace network {
 class NetworkConnectionTracker;
 }  // namespace network
