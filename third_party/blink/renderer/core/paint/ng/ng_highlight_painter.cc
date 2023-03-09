@@ -493,7 +493,6 @@ NGHighlightPainter::NGHighlightPainter(
     const NGInlineCursor& cursor,
     const NGFragmentItem& fragment_item,
     const absl::optional<AffineTransform> writing_mode_rotation,
-    const PhysicalRect& decoration_rect,
     const PhysicalOffset& box_origin,
     const ComputedStyle& style,
     const TextPaintStyle& text_style,
@@ -505,8 +504,6 @@ NGHighlightPainter::NGHighlightPainter(
       paint_info_(paint_info),
       cursor_(cursor),
       fragment_item_(fragment_item),
-      writing_mode_rotation_(writing_mode_rotation),
-      decoration_rect_(decoration_rect),
       box_origin_(box_origin),
       originating_style_(style),
       originating_text_style_(text_style),
@@ -907,8 +904,8 @@ void NGHighlightPainter::PaintOneSpellingGrammarDecoration(
   const PhysicalRect rect = RectInWritingModeSpace(range);
 
   absl::optional<TextDecorationInfo> decoration_info{};
-  decoration_painter_.UpdateDecorationInfo(decoration_info, style, text_style,
-                                           rect, decoration_override);
+  decoration_painter_.UpdateDecorationInfo(decoration_info, style, rect,
+                                           decoration_override);
 
   GraphicsContextStateSaver saver{paint_info_.context};
   ClipToPartDecorations(rect);
@@ -916,7 +913,7 @@ void NGHighlightPainter::PaintOneSpellingGrammarDecoration(
   text_painter_.PaintDecorationsExceptLineThrough(
       fragment_paint_info_.Slice(paint_start_offset, paint_end_offset),
       fragment_item_, paint_info_, style, text_style, *decoration_info,
-      LineFor(marker_type), decoration_rect_);
+      LineFor(marker_type));
 }
 
 void NGHighlightPainter::PaintOriginatingText(const TextPaintStyle& text_style,
@@ -1142,8 +1139,7 @@ void NGHighlightPainter::PaintDecorationsExceptLineThrough(
 
     absl::optional<TextDecorationInfo> decoration_info{};
     decoration_painter_.UpdateDecorationInfo(
-        decoration_info, *decoration_layer.style, decoration_layer.text_style,
-        decoration_rect);
+        decoration_info, *decoration_layer.style, decoration_rect);
 
     if (!state_saver.Saved()) {
       state_saver.Save();
@@ -1168,8 +1164,7 @@ void NGHighlightPainter::PaintDecorationsExceptLineThrough(
     text_painter_.PaintDecorationsExceptLineThrough(
         fragment_paint_info_.Slice(part.range.from, part.range.to),
         fragment_item_, paint_info_, *decoration_layer.style,
-        decoration_layer.text_style, *decoration_info, lines_to_paint,
-        decoration_rect_);
+        decoration_layer.text_style, *decoration_info, lines_to_paint);
   }
 }
 
@@ -1209,8 +1204,7 @@ void NGHighlightPainter::PaintDecorationsOnlyLineThrough(
 
     absl::optional<TextDecorationInfo> decoration_info{};
     decoration_painter_.UpdateDecorationInfo(
-        decoration_info, *decoration_layer.style, decoration_layer.text_style,
-        decoration_rect);
+        decoration_info, *decoration_layer.style, decoration_rect);
 
     if (!state_saver.Saved()) {
       state_saver.Save();
@@ -1234,7 +1228,7 @@ void NGHighlightPainter::PaintDecorationsOnlyLineThrough(
 
     text_painter_.PaintDecorationsOnlyLineThrough(
         fragment_item_, paint_info_, *decoration_layer.style,
-        decoration_layer.text_style, *decoration_info, decoration_rect_);
+        decoration_layer.text_style, *decoration_info);
   }
 }
 

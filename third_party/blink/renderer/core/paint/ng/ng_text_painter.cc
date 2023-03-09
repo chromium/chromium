@@ -268,8 +268,7 @@ void NGTextPainter::PaintDecorationsExceptLineThrough(
     const ComputedStyle& style,
     const TextPaintStyle& text_style,
     TextDecorationInfo& decoration_info,
-    TextDecorationLine lines_to_paint,
-    const PhysicalRect& decoration_rect) {
+    TextDecorationLine lines_to_paint) {
   if (!decoration_info.HasAnyLine(lines_to_paint &
                                   ~TextDecorationLine::kLineThrough))
     return;
@@ -300,8 +299,7 @@ void NGTextPainter::PaintDecorationsOnlyLineThrough(
     const PaintInfo& paint_info,
     const ComputedStyle& style,
     const TextPaintStyle& text_style,
-    TextDecorationInfo& decoration_info,
-    const PhysicalRect& decoration_rect) {
+    TextDecorationInfo& decoration_info) {
   if (!decoration_info.HasAnyLine(TextDecorationLine::kLineThrough))
     return;
 

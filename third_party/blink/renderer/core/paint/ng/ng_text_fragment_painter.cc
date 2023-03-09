@@ -340,8 +340,8 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
                                              rotated_box, selection);
   NGHighlightPainter highlight_painter(
       fragment_paint_info, text_painter, decoration_painter, paint_info,
-      cursor_, *cursor_.CurrentItem(), rotation, rotated_box,
-      physical_box.offset, style, text_style, selection, is_printing);
+      cursor_, *cursor_.CurrentItem(), rotation, physical_box.offset, style,
+      text_style, selection, is_printing);
   if (paint_info.phase == PaintPhase::kForeground) {
     if (auto* mf_checker = MobileFriendlinessChecker::From(document)) {
       if (auto* text = DynamicTo<LayoutText>(*layout_object)) {

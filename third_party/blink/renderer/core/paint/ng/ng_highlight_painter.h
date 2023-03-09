@@ -130,7 +130,6 @@ class CORE_EXPORT NGHighlightPainter {
       const NGInlineCursor& cursor,
       const NGFragmentItem& fragment_item,
       const absl::optional<AffineTransform> writing_mode_rotation,
-      const PhysicalRect& decoration_rect,
       const PhysicalOffset& box_origin,
       const ComputedStyle& style,
       const TextPaintStyle& text_style,
@@ -253,8 +252,6 @@ class CORE_EXPORT NGHighlightPainter {
   const PaintInfo& paint_info_;
   const NGInlineCursor& cursor_;
   const NGFragmentItem& fragment_item_;
-  const absl::optional<AffineTransform> writing_mode_rotation_;
-  const PhysicalRect& decoration_rect_;
   const PhysicalOffset& box_origin_;
   const ComputedStyle& originating_style_;
   const TextPaintStyle& originating_text_style_;

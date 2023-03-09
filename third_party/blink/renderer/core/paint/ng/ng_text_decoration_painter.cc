@@ -38,7 +38,6 @@ NGTextDecorationPainter::~NGTextDecorationPainter() {
 void NGTextDecorationPainter::UpdateDecorationInfo(
     absl::optional<TextDecorationInfo>& result,
     const ComputedStyle& style,
-    const TextPaintStyle& text_style,
     absl::optional<PhysicalRect> decoration_rect_override,
     const AppliedTextDecoration* decoration_override) {
   result.reset();
@@ -95,7 +94,7 @@ void NGTextDecorationPainter::Begin(Phase phase) {
   DCHECK(step_ == kBegin);
 
   phase_ = phase;
-  UpdateDecorationInfo(decoration_info_, style_, text_style_);
+  UpdateDecorationInfo(decoration_info_, style_);
   clip_rect_.reset();
 
   if (decoration_info_ && UNLIKELY(selection_)) {
@@ -132,7 +131,7 @@ void NGTextDecorationPainter::PaintExceptLineThrough(
 
     text_painter_.PaintDecorationsExceptLineThrough(
         fragment_paint_info, text_item_, paint_info_, style_, text_style_,
-        *decoration_info_, ~TextDecorationLine::kNone, decoration_rect_);
+        *decoration_info_, ~TextDecorationLine::kNone);
   }
 
   step_ = kOnly;
@@ -149,8 +148,7 @@ void NGTextDecorationPainter::PaintOnlyLineThrough() {
     ClipIfNeeded(state_saver);
 
     text_painter_.PaintDecorationsOnlyLineThrough(
-        text_item_, paint_info_, style_, text_style_, *decoration_info_,
-        decoration_rect_);
+        text_item_, paint_info_, style_, text_style_, *decoration_info_);
   }
 
   step_ = kBegin;
