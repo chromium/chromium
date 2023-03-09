@@ -8,6 +8,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/html/forms/form_controller.h"
+#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
@@ -213,6 +215,30 @@ TEST(HTMLDocumentParserFastpathTest, LogUnsupportedContextTagBody) {
       "Blink.HTMLFastPathParser.UnsupportedContextTag.Mask1V2", 0);
   histogram_tester.ExpectTotalCount(
       "Blink.HTMLFastPathParser.UnsupportedContextTag.Mask2V2", 1);
+}
+
+TEST(HTMLDocumentParserFastpathTest, HTMLInputElementCheckedState) {
+  ScopedNullExecutionContext execution_context;
+  auto* document =
+      HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
+  document->write("<body></body>");
+  auto* div1 = MakeGarbageCollected<HTMLDivElement>(*document);
+  auto* div2 = MakeGarbageCollected<HTMLDivElement>(*document);
+  document->body()->AppendChild(div1);
+  document->body()->AppendChild(div2);
+
+  // Set the state for new controls, which triggers a different code path in
+  // HTMLInputElement::ParseAttribute.
+  div1->setInnerHTML("<select form='ff'></select>");
+  DocumentState* document_state = document->GetFormController().ControlStates();
+  Vector<String> state1 = document_state->ToStateVector();
+  document->GetFormController().SetStateForNewControls(state1);
+  EXPECT_TRUE(document->GetFormController().HasControlStates());
+
+  div2->setInnerHTML("<input checked='true'>");
+  HTMLInputElement* input_element = To<HTMLInputElement>(div2->firstChild());
+  ASSERT_TRUE(input_element);
+  EXPECT_TRUE(input_element->Checked());
 }
 
 TEST(HTMLDocumentParserFastpathTest, CharacterReferenceCases) {

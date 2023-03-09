@@ -696,6 +696,7 @@ DocumentFragment* CreateFragmentForInnerOuterHTML(
         fragment2->ParseHTML(markup, context_element, parser_content_policy);
         DCHECK_EQ(CreateMarkup(fragment), CreateMarkup(fragment2))
             << " supplied value " << markup;
+        DCHECK(fragment->isEqualNode(fragment2));
 #endif
         return fragment;
       } else {
