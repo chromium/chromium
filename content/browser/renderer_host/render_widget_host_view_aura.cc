@@ -2627,12 +2627,8 @@ void RenderWidgetHostViewAura::CreateSelectionController() {
       ui::GestureConfiguration::GetInstance()->long_press_time_in_ms());
   tsc_config.tap_slop = ui::GestureConfiguration::GetInstance()
                             ->max_touch_move_in_pixels_for_click();
-#if BUILDFLAG(IS_CHROMEOS)
   tsc_config.enable_longpress_drag_selection =
       features::IsTouchTextEditingRedesignEnabled();
-#else
-  tsc_config.enable_longpress_drag_selection = false;
-#endif
   selection_controller_ = std::make_unique<ui::TouchSelectionController>(
       selection_controller_client_.get(), tsc_config);
 }
