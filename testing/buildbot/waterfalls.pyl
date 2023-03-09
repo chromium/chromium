@@ -3567,6 +3567,14 @@
           'gtest_tests': 'linux_lacros_version_skew_tests',
         },
       },
+      'linux-network-sandbox-rel': {
+        'mixins': [
+          'linux-bionic',
+        ],
+        'test_suites': {
+          'gtest_tests': 'network_sandbox_browser_tests',
+        },
+      },
       'linux-perfetto-rel': {
         'additional_compile_targets': [ 'all' ],
         'mixins': [

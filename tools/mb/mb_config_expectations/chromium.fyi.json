@@ -932,6 +932,15 @@
       "use_remoteexec": true
     }
   },
+  "linux-network-sandbox-rel": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 1,
+      "use_remoteexec": true
+    }
+  },
   "linux-perfetto-rel": {
     "gn_args": {
       "dcheck_always_on": false,
