@@ -68,6 +68,11 @@ class PasswordStoreInterface : public RefcountedKeyedService {
   virtual void AddLogin(const PasswordForm& form,
                         base::OnceClosure completion = base::DoNothing()) = 0;
 
+  // Adds all forms in the given vector of PasswordForm to the secure password
+  // store asynchronously. `completion` will be run after the forms are added.
+  virtual void AddLogins(const std::vector<PasswordForm>& forms,
+                         base::OnceClosure completion = base::DoNothing()) = 0;
+
   // Updates the matching PasswordForm in the secure password store (async).
   // If any of the primary key fields (signon_realm, url, username_element,
   // username_value, password_element) are updated, then the second version of

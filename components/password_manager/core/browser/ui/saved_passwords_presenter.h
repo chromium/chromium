@@ -125,7 +125,8 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
                          password_manager::PasswordForm::Type::kManuallyAdded);
 
   // Adds |credentials| to the specified store.
-  // Credentials are expected to be valid according to `GetExpectedAddResult`.
+  // Credentials are expected to be valid according to `GetExpectedAddResult`
+  // and they should all belong to the same Password Store.
   //
   // NOTE: Informing observers of credentials belonging to mixed types of stores
   // is not supported.

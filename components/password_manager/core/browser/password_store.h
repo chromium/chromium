@@ -83,6 +83,8 @@ class PasswordStore : public PasswordStoreInterface {
   bool IsAbleToSavePasswords() const override;
   void AddLogin(const PasswordForm& form,
                 base::OnceClosure completion = base::DoNothing()) override;
+  void AddLogins(const std::vector<PasswordForm>& forms,
+                 base::OnceClosure completion = base::DoNothing()) override;
   void UpdateLogin(const PasswordForm& form,
                    base::OnceClosure completion = base::DoNothing()) override;
   void UpdateLoginWithPrimaryKey(

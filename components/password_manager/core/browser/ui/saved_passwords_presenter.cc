@@ -262,24 +262,18 @@ void SavedPasswordsPresenter::AddCredentials(
     return;
   }
 
-  if (credentials.size() == 1) {
-    AddCredentialAsync(std::move(credentials[0]), type, std::move(completion));
-    return;
+  std::vector<PasswordForm> password_forms;
+  base::ranges::transform(credentials, std::back_inserter(password_forms),
+                          [&](const CredentialUIEntry& credential) {
+                            return GenerateFormFromCredential(credential, type);
+                          });
+
+  for (const PasswordForm& form : password_forms) {
+    CHECK(form.in_store == password_forms[0].in_store);
   }
 
-  // To avoid multiple updates for the observers we remove them at the
-  // beginning.
-  RemoveObservers();
-
-  // Reinitialize presenter after all add operations are complete.
-  base::RepeatingClosure completion_barrier_closure = base::BarrierClosure(
-      credentials.size(), base::BindOnce(&SavedPasswordsPresenter::Init,
-                                         weak_ptr_factory_.GetWeakPtr())
-                              .Then(std::move(completion)));
-
-  for (const CredentialUIEntry& credential : credentials) {
-    AddCredentialAsync(credential, type, completion_barrier_closure);
-  }
+  GetStoreFor(password_forms[0])
+      .AddLogins(password_forms, std::move(completion));
 }
 
 SavedPasswordsPresenter::EditResult
