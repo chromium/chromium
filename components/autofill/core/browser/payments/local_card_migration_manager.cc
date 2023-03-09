@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/form_data_importer.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/local_card_migration_metrics.h"
+#include "components/autofill/core/browser/payments/client_behavior_constants.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -139,7 +140,8 @@ void LocalCardMigrationManager::AttemptToOfferLocalCardMigration(
 
   payments_client_->GetUploadDetails(
       std::vector<AutofillProfile>(), GetDetectedValues(),
-      /*active_experiments=*/std::vector<const char*>(), app_locale_,
+      /*client_behavior_signals=*/std::vector<ClientBehaviorConstants>(),
+      app_locale_,
       base::BindOnce(&LocalCardMigrationManager::OnDidGetUploadDetails,
                      weak_ptr_factory_.GetWeakPtr(), is_from_settings_page),
       payments::kMigrateCardsBillableServiceNumber,

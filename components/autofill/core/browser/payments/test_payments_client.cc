@@ -56,7 +56,7 @@ void TestPaymentsClient::UnmaskCard(
 void TestPaymentsClient::GetUploadDetails(
     const std::vector<AutofillProfile>& addresses,
     const int detected_values,
-    const std::vector<const char*>& active_experiments,
+    const std::vector<ClientBehaviorConstants>& client_behavior_signals,
     const std::string& app_locale,
     base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
                             const std::u16string&,
@@ -67,7 +67,7 @@ void TestPaymentsClient::GetUploadDetails(
     PaymentsClient::UploadCardSource upload_card_source) {
   upload_details_addresses_ = addresses;
   detected_values_ = detected_values;
-  active_experiments_ = active_experiments;
+  client_behavior_signals_ = client_behavior_signals;
   billable_service_number_ = billable_service_number;
   billing_customer_number_ = billing_customer_number;
   upload_card_source_ = upload_card_source;
@@ -85,7 +85,7 @@ void TestPaymentsClient::UploadCard(
                             const PaymentsClient::UploadCardResponseDetails&)>
         callback) {
   upload_card_addresses_ = request_details.profiles;
-  active_experiments_ = request_details.active_experiments;
+  client_behavior_signals_ = request_details.client_behavior_signals;
   std::move(callback).Run(AutofillClient::PaymentsRpcResult::kSuccess,
                           upload_card_response_details_);
 }

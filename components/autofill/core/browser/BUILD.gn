@@ -314,6 +314,7 @@ static_library("browser") {
     "payments/card_unmask_challenge_option.h",
     "payments/card_unmask_delegate.cc",
     "payments/card_unmask_delegate.h",
+    "payments/client_behavior_constants.h",
     "payments/credit_card_access_manager.cc",
     "payments/credit_card_access_manager.h",
     "payments/credit_card_cvc_authenticator.cc",

@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/data_model/autofill_data_model.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/account_info_getter.h"
+#include "components/autofill/core/browser/payments/client_behavior_constants.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/browser/payments/payments_requests/get_details_for_enrollment_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/get_unmask_details_request.h"
@@ -278,7 +279,7 @@ void PaymentsClient::OptChange(
 void PaymentsClient::GetUploadDetails(
     const std::vector<AutofillProfile>& addresses,
     const int detected_values,
-    const std::vector<const char*>& active_experiments,
+    const std::vector<ClientBehaviorConstants>& client_behavior_signals,
     const std::string& app_locale,
     base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
                             const std::u16string&,
@@ -288,7 +289,7 @@ void PaymentsClient::GetUploadDetails(
     const int64_t billing_customer_number,
     UploadCardSource upload_card_source) {
   IssueRequest(std::make_unique<GetUploadDetailsRequest>(
-                   addresses, detected_values, active_experiments,
+                   addresses, detected_values, client_behavior_signals,
                    account_info_getter_->IsSyncFeatureEnabled(), app_locale,
                    std::move(callback), billable_service_number,
                    billing_customer_number, upload_card_source),

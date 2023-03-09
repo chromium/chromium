@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
+#include "components/autofill/core/browser/payments/client_behavior_constants.h"
 #include "components/autofill/core/browser/payments/credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
@@ -38,7 +39,10 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using ::testing::HasSubstr;
 
 namespace autofill::payments {
 namespace {
@@ -138,9 +142,16 @@ struct GetUploadDetailsOptions {
     return *this;
   }
 
+  GetUploadDetailsOptions& with_client_behavior_signals(
+      std::vector<ClientBehaviorConstants> v) {
+    client_behavior_signals = std::move(v);
+    return *this;
+  }
+
   PaymentsClient::UploadCardSource upload_card_source =
       PaymentsClient::UploadCardSource::UNKNOWN_UPLOAD_CARD_SOURCE;
   int64_t billing_customer_number = 111222333444L;
+  std::vector<ClientBehaviorConstants> client_behavior_signals;
 };
 
 struct UploadCardOptions {
@@ -159,9 +170,16 @@ struct UploadCardOptions {
     return *this;
   }
 
+  UploadCardOptions& with_client_behavior_signals(
+      std::vector<ClientBehaviorConstants> v) {
+    client_behavior_signals = std::move(v);
+    return *this;
+  }
+
   bool include_cvc = false;
   bool include_nickname = false;
   int64_t billing_customer_number = 111222333444L;
+  std::vector<ClientBehaviorConstants> client_behavior_signals;
 };
 
 }  // namespace
@@ -351,8 +369,8 @@ class PaymentsClientTest : public testing::Test {
   void StartGettingUploadDetails(
       GetUploadDetailsOptions get_upload_details_options) {
     client_->GetUploadDetails(
-        BuildTestProfiles(), kAllDetectableValues, std::vector<const char*>(),
-        "language-LOCALE",
+        BuildTestProfiles(), kAllDetectableValues,
+        get_upload_details_options.client_behavior_signals, "language-LOCALE",
         base::BindOnce(&PaymentsClientTest::OnDidGetUploadDetails,
                        weak_ptr_factory_.GetWeakPtr()),
         /*billable_service_number=*/12345,
@@ -374,6 +392,9 @@ class PaymentsClientTest : public testing::Test {
       upstream_nickname_ = u"grocery";
       request_details.card.SetNickname(upstream_nickname_);
     }
+    request_details.client_behavior_signals =
+        upload_card_options.client_behavior_signals;
+
     request_details.context_token = u"context token";
     request_details.risk_data = "some risk data";
     request_details.app_locale = "language-LOCALE";
@@ -1176,6 +1197,27 @@ TEST_F(PaymentsClientTest, GetDetailsIncludesChromeUserContext) {
 }
 
 TEST_F(PaymentsClientTest,
+       GetDetailsIncludesIncludesClientBehaviorSignalsInChromeUserContext) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillEnableNewSaveCardBubbleUi);
+
+  StartGettingUploadDetails(
+      GetUploadDetailsOptions().with_client_behavior_signals(
+          std::vector<ClientBehaviorConstants>{
+              ClientBehaviorConstants::kUsingFasterAndProtectedUi}));
+
+  // Verify ChromeUserContext was set.
+  EXPECT_THAT(GetUploadData(), HasSubstr("chrome_user_context"));
+  // Verify Client_behavior_signals was set.
+  EXPECT_THAT(GetUploadData(), HasSubstr("client_behavior_signals"));
+  // Verify fake_client_behavior_signal was set.
+  // ClientBehaviorConstants::kUsingFasterAndProtectedUi has the numeric value
+  // set to 1.
+  EXPECT_THAT(GetUploadData(), HasSubstr("\"client_behavior_signals\":[1]"));
+}
+
+TEST_F(PaymentsClientTest,
        GetDetailsIncludesChromeUserContextIfWalletStorageFlagEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
@@ -1548,6 +1590,27 @@ TEST_F(PaymentsClientTest, UploadRequestIncludesEncryptedPan) {
   EXPECT_TRUE(GetUploadData().find("__param:s7e_1_pan") != std::string::npos);
   EXPECT_TRUE(GetUploadData().find("&s7e_1_pan=4111111111111111") !=
               std::string::npos);
+}
+
+TEST_F(PaymentsClientTest, UploadRequestIncludesClientBehaviorSignals) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillEnableNewSaveCardBubbleUi);
+
+  StartUploading(UploadCardOptions().with_client_behavior_signals(
+      std::vector<ClientBehaviorConstants>{
+          ClientBehaviorConstants::kUsingFasterAndProtectedUi}));
+  IssueOAuthToken();
+
+  // Verify ChromeUserContext was set.
+  EXPECT_THAT(GetUploadData(), HasSubstr("chrome_user_context"));
+  // Verify Client_behavior_signals was set.
+  EXPECT_THAT(GetUploadData(), HasSubstr("client_behavior_signals"));
+  // Verify fake_client_behavior_signal was set.
+  // ClientBehaviorConstants::kUsingFasterAndProtectedUi has the numeric value
+  // set to 1.
+  EXPECT_THAT(GetUploadData(),
+              HasSubstr("%22client_behavior_signals%22:%5B1%5D"));
 }
 
 TEST_F(PaymentsClientTest,

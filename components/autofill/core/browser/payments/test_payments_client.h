@@ -47,7 +47,7 @@ class TestPaymentsClient : public payments::PaymentsClient {
   void GetUploadDetails(
       const std::vector<AutofillProfile>& addresses,
       const int detected_values,
-      const std::vector<const char*>& active_experiments,
+      const std::vector<ClientBehaviorConstants>& client_behavior_signals,
       const std::string& app_locale,
       base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
                               const std::u16string&,
@@ -139,8 +139,9 @@ class TestPaymentsClient : public payments::PaymentsClient {
   const std::vector<AutofillProfile>& addresses_in_upload_card() const {
     return upload_card_addresses_;
   }
-  const std::vector<const char*>& active_experiments_in_request() const {
-    return active_experiments_;
+  const std::vector<ClientBehaviorConstants>&
+  client_behavior_signals_in_request() const {
+    return client_behavior_signals_;
   }
   int billable_service_number_in_request() const {
     return billable_service_number_;
@@ -177,7 +178,7 @@ class TestPaymentsClient : public payments::PaymentsClient {
   std::vector<AutofillProfile> upload_card_addresses_;
   int detected_values_;
   std::string pan_first_six_;
-  std::vector<const char*> active_experiments_;
+  std::vector<ClientBehaviorConstants> client_behavior_signals_;
   int billable_service_number_;
   int64_t billing_customer_number_;
   PaymentsClient::UploadCardSource upload_card_source_;

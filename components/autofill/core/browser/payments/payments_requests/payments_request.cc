@@ -7,8 +7,10 @@
 #include <utility>
 
 #include "base/strings/string_number_conversions.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/payments/client_behavior_constants.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
 
 namespace autofill::payments {
@@ -53,18 +55,20 @@ base::Value::Dict PaymentsRequest::BuildCustomerContextDictionary(
   return customer_context;
 }
 
-void PaymentsRequest::SetActiveExperiments(
-    const std::vector<const char*>& active_experiments,
-    base::Value::Dict& request_dict) {
-  if (active_experiments.empty())
-    return;
-
-  base::Value::List active_chrome_experiments;
-  for (const char* experiment : active_experiments)
-    active_chrome_experiments.Append(experiment);
-
-  request_dict.Set("active_chrome_experiments",
-                   std::move(active_chrome_experiments));
+base::Value::Dict PaymentsRequest::BuildChromeUserContext(
+    const std::vector<ClientBehaviorConstants>& client_behavior_signals,
+    bool full_sync_enabled) {
+  base::Value::Dict chrome_user_context;
+  chrome_user_context.Set("full_sync_enabled", full_sync_enabled);
+  if (!client_behavior_signals.empty()) {
+    base::Value::List active_client_signals;
+    for (ClientBehaviorConstants signal : client_behavior_signals) {
+      active_client_signals.Append(base::to_underlying(signal));
+    }
+    chrome_user_context.Set("client_behavior_signals",
+                            std::move(active_client_signals));
+  }
+  return chrome_user_context;
 }
 
 base::Value::Dict PaymentsRequest::BuildAddressDictionary(
