@@ -149,7 +149,7 @@ void ExtensionsMenuTestUtil::InspectPopup(const extensions::ExtensionId& id) {
 }
 
 bool ExtensionsMenuTestUtil::HasIcon(const extensions::ExtensionId& id) {
-  InstalledExtensionMenuItemView* view = GetMenuItemViewForId(id);
+  ExtensionMenuItemView* view = GetMenuItemViewForId(id);
   DCHECK(view);
   return !view->primary_action_button_for_testing()
               ->GetImage(views::Button::STATE_NORMAL)
@@ -157,14 +157,14 @@ bool ExtensionsMenuTestUtil::HasIcon(const extensions::ExtensionId& id) {
 }
 
 gfx::Image ExtensionsMenuTestUtil::GetIcon(const extensions::ExtensionId& id) {
-  InstalledExtensionMenuItemView* view = GetMenuItemViewForId(id);
+  ExtensionMenuItemView* view = GetMenuItemViewForId(id);
   DCHECK(view);
   return gfx::Image(view->primary_action_button_for_testing()->GetImage(
       views::Button::STATE_NORMAL));
 }
 
 void ExtensionsMenuTestUtil::Press(const extensions::ExtensionId& id) {
-  InstalledExtensionMenuItemView* view = GetMenuItemViewForId(id);
+  ExtensionMenuItemView* view = GetMenuItemViewForId(id);
   DCHECK(view);
   ExtensionsMenuButton* primary_button =
       view->primary_action_button_for_testing();
@@ -176,7 +176,7 @@ void ExtensionsMenuTestUtil::Press(const extensions::ExtensionId& id) {
 
 std::string ExtensionsMenuTestUtil::GetTooltip(
     const extensions::ExtensionId& id) {
-  InstalledExtensionMenuItemView* view = GetMenuItemViewForId(id);
+  ExtensionMenuItemView* view = GetMenuItemViewForId(id);
   DCHECK(view);
   ExtensionsMenuButton* primary_button =
       view->primary_action_button_for_testing();
@@ -234,9 +234,9 @@ gfx::Size ExtensionsMenuTestUtil::GetMaxAvailableSizeToFitBubbleOnScreen(
       views::BubbleFrameView::PreferredArrowAdjustment::kMirror);
 }
 
-InstalledExtensionMenuItemView* ExtensionsMenuTestUtil::GetMenuItemViewForId(
+ExtensionMenuItemView* ExtensionsMenuTestUtil::GetMenuItemViewForId(
     const extensions::ExtensionId& id) {
-  base::flat_set<InstalledExtensionMenuItemView*> menu_items;
+  base::flat_set<ExtensionMenuItemView*> menu_items;
   if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControl)) {
     ExtensionsMenuMainPageView* main_page =
@@ -250,10 +250,10 @@ InstalledExtensionMenuItemView* ExtensionsMenuTestUtil::GetMenuItemViewForId(
     menu_items = menu_view_->extensions_menu_items_for_testing();
   }
 
-  auto iter = base::ranges::find(menu_items, id,
-                                 [](InstalledExtensionMenuItemView* view) {
-                                   return view->view_controller()->GetId();
-                                 });
+  auto iter =
+      base::ranges::find(menu_items, id, [](ExtensionMenuItemView* view) {
+        return view->view_controller()->GetId();
+      });
   return (iter == menu_items.end()) ? nullptr : *iter;
 }
 

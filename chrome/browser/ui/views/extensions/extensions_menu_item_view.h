@@ -21,25 +21,22 @@ class HoverButton;
 class ToolbarActionViewController;
 class ToolbarActionsModel;
 
-// InstalledExtensionMenuItemView is a single row inside the extensions menu for
-// a every installed extension. Includes information about the extension, a
-// button to pin the extension to the toolbar and a button for accessing the
-// associated context menu.
-class InstalledExtensionMenuItemView : public views::FlexLayoutView {
+// Single row inside the extensions menu for every installed extension. Includes
+// information about the extension, a button to pin the extension to the toolbar
+// and a button for accessing the associated context menu.
+class ExtensionMenuItemView : public views::FlexLayoutView {
  public:
-  METADATA_HEADER(InstalledExtensionMenuItemView);
+  METADATA_HEADER(ExtensionMenuItemView);
 
-  InstalledExtensionMenuItemView(
+  ExtensionMenuItemView(
       Browser* browser,
       std::unique_ptr<ToolbarActionViewController> controller,
       bool allow_pinning,
       views::Button::PressedCallback site_permissions_button_callback =
           base::RepeatingClosure(base::NullCallback()));
-  InstalledExtensionMenuItemView(const InstalledExtensionMenuItemView&) =
-      delete;
-  InstalledExtensionMenuItemView& operator=(
-      const InstalledExtensionMenuItemView&) = delete;
-  ~InstalledExtensionMenuItemView() override;
+  ExtensionMenuItemView(const ExtensionMenuItemView&) = delete;
+  ExtensionMenuItemView& operator=(const ExtensionMenuItemView&) = delete;
+  ~ExtensionMenuItemView() override;
 
   // views::View:
   void OnThemeChanged() override;
@@ -101,10 +98,10 @@ class InstalledExtensionMenuItemView : public views::FlexLayoutView {
 };
 
 BEGIN_VIEW_BUILDER(/* no export */,
-                   InstalledExtensionMenuItemView,
+                   ExtensionMenuItemView,
                    views::FlexLayoutView)
 END_VIEW_BUILDER
 
-DEFINE_VIEW_BUILDER(/* no export */, InstalledExtensionMenuItemView)
+DEFINE_VIEW_BUILDER(/* no export */, ExtensionMenuItemView)
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_ITEM_VIEW_H_

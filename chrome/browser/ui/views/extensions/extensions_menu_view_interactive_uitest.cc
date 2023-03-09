@@ -53,8 +53,7 @@ using ::testing::ElementsAre;
 
 class ExtensionsMenuViewInteractiveUITest : public ExtensionsToolbarUITest {
  public:
-  static base::flat_set<InstalledExtensionMenuItemView*>
-  GetInstalledExtensionMenuItemViews() {
+  static base::flat_set<ExtensionMenuItemView*> GetExtensionMenuItemViews() {
     return ExtensionsMenuView::GetExtensionsMenuViewForTesting()
         ->extensions_menu_items_for_testing();
   }
@@ -201,17 +200,17 @@ class ExtensionsMenuViewInteractiveUITest : public ExtensionsToolbarUITest {
   }
 
   void TriggerSingleExtensionButton() {
-    auto menu_items = GetInstalledExtensionMenuItemViews();
+    auto menu_items = GetExtensionMenuItemViews();
     ASSERT_EQ(1u, menu_items.size());
     TriggerExtensionButton((*menu_items.begin())->view_controller()->GetId());
   }
 
   void TriggerExtensionButton(const std::string& id) {
-    auto menu_items = GetInstalledExtensionMenuItemViews();
-    auto iter = base::ranges::find(menu_items, id,
-                                   [](InstalledExtensionMenuItemView* view) {
-                                     return view->view_controller()->GetId();
-                                   });
+    auto menu_items = GetExtensionMenuItemViews();
+    auto iter =
+        base::ranges::find(menu_items, id, [](ExtensionMenuItemView* view) {
+          return view->view_controller()->GetId();
+        });
     ASSERT_TRUE(iter != menu_items.end());
 
     ClickButton((*iter)->primary_action_button_for_testing());
@@ -468,7 +467,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
   ShowUi("");
   VerifyUi();
   EXPECT_EQ(2u, extensions().size());
-  EXPECT_EQ(extensions().size(), GetInstalledExtensionMenuItemViews().size());
+  EXPECT_EQ(extensions().size(), GetExtensionMenuItemViews().size());
   DismissUi();
 }
 
@@ -498,9 +497,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
   ClickExtensionsMenuButton(incognito_browser());
 
   ASSERT_TRUE(VerifyUi());
-  ASSERT_EQ(1u, GetInstalledExtensionMenuItemViews().size());
+  ASSERT_EQ(1u, GetExtensionMenuItemViews().size());
   EXPECT_EQ(views::Button::STATE_DISABLED,
-            (*GetInstalledExtensionMenuItemViews().begin())
+            (*GetExtensionMenuItemViews().begin())
                 ->pin_button_for_testing()
                 ->GetState());
 
@@ -517,15 +516,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
 
   // Pin extension from menu.
   ASSERT_TRUE(VerifyUi());
-  ASSERT_EQ(1u, GetInstalledExtensionMenuItemViews().size());
+  ASSERT_EQ(1u, GetExtensionMenuItemViews().size());
   ui::MouseEvent click_pressed_event(ui::ET_MOUSE_PRESSED, gfx::Point(),
                                      gfx::Point(), base::TimeTicks(),
                                      ui::EF_LEFT_MOUSE_BUTTON, 0);
   ui::MouseEvent click_released_event(ui::ET_MOUSE_RELEASED, gfx::Point(),
                                       gfx::Point(), base::TimeTicks(),
                                       ui::EF_LEFT_MOUSE_BUTTON, 0);
-  InstalledExtensionMenuItemView* const menu_item_view =
-      *GetInstalledExtensionMenuItemViews().begin();
+  ExtensionMenuItemView* const menu_item_view =
+      *GetExtensionMenuItemViews().begin();
   menu_item_view->pin_button_for_testing()->OnMousePressed(click_pressed_event);
   menu_item_view->pin_button_for_testing()->OnMouseReleased(
       click_released_event);
@@ -635,9 +634,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
   LoadTestExtension("extensions/uitest/window_open");
   ClickExtensionsMenuButton();
 
-  auto menu_items = GetInstalledExtensionMenuItemViews();
+  auto menu_items = GetExtensionMenuItemViews();
   ASSERT_EQ(1u, menu_items.size());
-  InstalledExtensionMenuItemView* const item_view = *menu_items.begin();
+  ExtensionMenuItemView* const item_view = *menu_items.begin();
   EXPECT_FALSE(item_view->IsContextMenuRunningForTesting());
 
   HoverButton* context_menu_button =
@@ -714,7 +713,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
   // Open the extension menu so we can test the UI when permissions
   // change.
   ClickExtensionsMenuButton();
-  auto menu_items = GetInstalledExtensionMenuItemViews();
+  auto menu_items = GetExtensionMenuItemViews();
   ASSERT_EQ(1u, menu_items.size());
   auto* item_button =
       (*menu_items.begin())->primary_action_button_for_testing();
@@ -731,7 +730,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
                 u"\n"),
             item_button->GetTooltipText());
 
-  std::vector<InstalledExtensionMenuItemView*> active_menu_items =
+  std::vector<ExtensionMenuItemView*> active_menu_items =
       ExtensionsMenuView::GetSortedItemsForSectionForTesting(
           extensions::SitePermissionsHelper::SiteInteraction::kGranted);
   ASSERT_EQ(1u, active_menu_items.size());
@@ -768,7 +767,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
            l10n_util::GetStringUTF16(IDS_EXTENSIONS_WANTS_ACCESS_TO_SITE)},
           u"\n"),
       item_button->GetTooltipText());
-  std::vector<InstalledExtensionMenuItemView*> pending_menu_items =
+  std::vector<ExtensionMenuItemView*> pending_menu_items =
       ExtensionsMenuView::GetSortedItemsForSectionForTesting(
           extensions::SitePermissionsHelper::SiteInteraction::kWithheld);
   ASSERT_EQ(1u, pending_menu_items.size());

@@ -73,18 +73,18 @@ bool IsSiteSettingsToggleVisible(
 }
 
 // Converts a view to a InstalledExtensionsMenuItemView. This cannot
-// be used to *determine* if a view is an InstalledExtensionMenuItemView (it
+// be used to *determine* if a view is an ExtensionMenuItemView (it
 // should only be used when the view is known to be one). It is only used as an
 // extra measure to prevent bad static casts.
-InstalledExtensionMenuItemView* GetAsMenuItem(views::View* view) {
-  DCHECK(views::IsViewClass<InstalledExtensionMenuItemView>(view));
-  return views::AsViewClass<InstalledExtensionMenuItemView>(view);
+ExtensionMenuItemView* GetAsMenuItem(views::View* view) {
+  DCHECK(views::IsViewClass<ExtensionMenuItemView>(view));
+  return views::AsViewClass<ExtensionMenuItemView>(view);
 }
 
 // Returns the InstalledExtensionsMenuItemView corresponding to `action_id` if
 // it is a children of `parent_view`. The children of the parent view must be
 // InstalledExtensionsMenuItemView, otherwise it will DCHECK.
-InstalledExtensionMenuItemView* GetMenuItem(
+ExtensionMenuItemView* GetMenuItem(
     views::View* parent_view,
     const ToolbarActionsModel::ActionId& action_id) {
   for (auto* view : parent_view->children()) {
@@ -257,7 +257,7 @@ void ExtensionsMenuMainPageView::CreateAndInsertMenuItem(
     extensions::ExtensionId extension_id,
     bool allow_pinning,
     int index) {
-  auto item = std::make_unique<InstalledExtensionMenuItemView>(
+  auto item = std::make_unique<ExtensionMenuItemView>(
       browser_, std::move(action_controller), allow_pinning,
       base::BindRepeating(
           &ExtensionsMenuNavigationHandler::OpenSitePermissionsPage,
@@ -299,9 +299,9 @@ void ExtensionsMenuMainPageView::UpdatePinButtons() {
   }
 }
 
-std::vector<InstalledExtensionMenuItemView*>
+std::vector<ExtensionMenuItemView*>
 ExtensionsMenuMainPageView::GetMenuItemsForTesting() const {
-  std::vector<InstalledExtensionMenuItemView*> menu_item_views;
+  std::vector<ExtensionMenuItemView*> menu_item_views;
   for (views::View* view : menu_items_->children()) {
     menu_item_views.push_back(GetAsMenuItem(view));
   }

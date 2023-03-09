@@ -66,7 +66,7 @@ void SetButtonIconWithColor(HoverButton* button,
 
 }  // namespace
 
-InstalledExtensionMenuItemView::InstalledExtensionMenuItemView(
+ExtensionMenuItemView::ExtensionMenuItemView(
     Browser* browser,
     std::unique_ptr<ToolbarActionViewController> controller,
     bool allow_pinning,
@@ -80,7 +80,7 @@ InstalledExtensionMenuItemView::InstalledExtensionMenuItemView(
 
   views::View* main_row;
   auto builder =
-      views::Builder<InstalledExtensionMenuItemView>(this)
+      views::Builder<ExtensionMenuItemView>(this)
           // Set so the extension button receives enter/exit on children to
           // retain hover status when hovering child views.
           .SetNotifyEnterExitOnChild(true);
@@ -150,9 +150,8 @@ InstalledExtensionMenuItemView::InstalledExtensionMenuItemView(
     main_row->AddChildView(
         views::Builder<HoverButton>(
             std::make_unique<HoverButton>(
-                base::BindRepeating(
-                    &InstalledExtensionMenuItemView::OnPinButtonPressed,
-                    base::Unretained(this)),
+                base::BindRepeating(&ExtensionMenuItemView::OnPinButtonPressed,
+                                    base::Unretained(this)),
                 std::u16string()))
             .CopyAddressTo(&pin_button_)
             .SetID(EXTENSION_PINNING)
@@ -183,16 +182,15 @@ InstalledExtensionMenuItemView::InstalledExtensionMenuItemView(
   context_menu_button_->SetButtonController(
       std::make_unique<views::MenuButtonController>(
           context_menu_button_.get(),
-          base::BindRepeating(
-              &InstalledExtensionMenuItemView::OnContextMenuPressed,
-              base::Unretained(this)),
+          base::BindRepeating(&ExtensionMenuItemView::OnContextMenuPressed,
+                              base::Unretained(this)),
           std::make_unique<views::Button::DefaultButtonControllerDelegate>(
               context_menu_button_.get())));
 }
 
-InstalledExtensionMenuItemView::~InstalledExtensionMenuItemView() = default;
+ExtensionMenuItemView::~ExtensionMenuItemView() = default;
 
-void InstalledExtensionMenuItemView::OnThemeChanged() {
+void ExtensionMenuItemView::OnThemeChanged() {
   views::View::OnThemeChanged();
   const auto* const color_provider = GetColorProvider();
   const SkColor icon_color = color_provider->GetColor(kColorExtensionMenuIcon);
@@ -207,11 +205,11 @@ void InstalledExtensionMenuItemView::OnThemeChanged() {
   UpdatePinButton();
 }
 
-void InstalledExtensionMenuItemView::Update() {
+void ExtensionMenuItemView::Update() {
   view_controller()->UpdateState();
 }
 
-void InstalledExtensionMenuItemView::UpdatePinButton() {
+void ExtensionMenuItemView::UpdatePinButton() {
   if (!pin_button_)
     return;
 
@@ -243,12 +241,12 @@ void InstalledExtensionMenuItemView::UpdatePinButton() {
                          icon_color, disabled_icon_color);
 }
 
-bool InstalledExtensionMenuItemView::IsPinned() const {
+bool ExtensionMenuItemView::IsPinned() const {
   // |model_| can be null in unit tests.
   return model_ && model_->IsActionPinned(controller_->GetId());
 }
 
-void InstalledExtensionMenuItemView::OnContextMenuPressed() {
+void ExtensionMenuItemView::OnContextMenuPressed() {
   base::RecordAction(base::UserMetricsAction(
       "Extensions.Toolbar.MoreActionsButtonPressedFromMenu"));
   // TODO(crbug.com/998298): Cleanup the menu source type.
@@ -257,7 +255,7 @@ void InstalledExtensionMenuItemView::OnContextMenuPressed() {
       ui::MenuSourceType::MENU_SOURCE_MOUSE);
 }
 
-void InstalledExtensionMenuItemView::OnPinButtonPressed() {
+void ExtensionMenuItemView::OnPinButtonPressed() {
   base::RecordAction(
       base::UserMetricsAction("Extensions.Toolbar.PinButtonPressed"));
   model_->SetActionVisibility(controller_->GetId(), !IsPinned());
@@ -265,9 +263,9 @@ void InstalledExtensionMenuItemView::OnPinButtonPressed() {
       IsPinned() ? IDS_EXTENSION_PINNED : IDS_EXTENSION_UNPINNED));
 }
 
-bool InstalledExtensionMenuItemView::IsContextMenuRunningForTesting() const {
+bool ExtensionMenuItemView::IsContextMenuRunningForTesting() const {
   return context_menu_controller_->IsMenuRunning();
 }
 
-BEGIN_METADATA(InstalledExtensionMenuItemView, views::View)
+BEGIN_METADATA(ExtensionMenuItemView, views::View)
 END_METADATA

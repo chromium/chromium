@@ -50,11 +50,11 @@ class AdditionalBrowser {
 
 // Returns the extension names from the given `menu_items`.
 std::vector<std::string> GetNamesFromMenuItems(
-    std::vector<InstalledExtensionMenuItemView*> menu_items) {
+    std::vector<ExtensionMenuItemView*> menu_items) {
   std::vector<std::string> names;
   names.resize(menu_items.size());
   base::ranges::transform(
-      menu_items, names.begin(), [](InstalledExtensionMenuItemView* item) {
+      menu_items, names.begin(), [](ExtensionMenuItemView* item) {
         return base::UTF16ToUTF8(item->primary_action_button_for_testing()
                                      ->label_text_for_testing());
       });
@@ -76,18 +76,18 @@ class ExtensionsMenuMainPageViewUnitTest : public ExtensionsToolbarUnitTest {
   void ShowMenu();
 
   // Asserts there is exactly one menu item and then returns it.
-  InstalledExtensionMenuItemView* GetOnlyMenuItem();
+  ExtensionMenuItemView* GetOnlyMenuItem();
 
   // Since this is a unittest, the extensions menu widget sometimes needs a
   // nudge to re-layout the views.
   void LayoutMenuIfNecessary();
 
-  void ClickPinButton(InstalledExtensionMenuItemView* menu_item);
-  void ClickSitePermissionsButton(InstalledExtensionMenuItemView* menu_item);
+  void ClickPinButton(ExtensionMenuItemView* menu_item);
+  void ClickSitePermissionsButton(ExtensionMenuItemView* menu_item);
 
   ExtensionsMenuMainPageView* main_page();
   ExtensionsMenuSitePermissionsPageView* site_permissions_page();
-  std::vector<InstalledExtensionMenuItemView*> menu_items();
+  std::vector<ExtensionMenuItemView*> menu_items();
 
   // ExtensionsToolbarUnitTest:
   void SetUp() override;
@@ -106,9 +106,8 @@ void ExtensionsMenuMainPageViewUnitTest::ShowMenu() {
   menu_coordinator()->Show(extensions_button(), extensions_container());
 }
 
-InstalledExtensionMenuItemView*
-ExtensionsMenuMainPageViewUnitTest::GetOnlyMenuItem() {
-  std::vector<InstalledExtensionMenuItemView*> items = menu_items();
+ExtensionMenuItemView* ExtensionsMenuMainPageViewUnitTest::GetOnlyMenuItem() {
+  std::vector<ExtensionMenuItemView*> items = menu_items();
   if (items.size() != 1u) {
     ADD_FAILURE() << "Not exactly one item; size is: " << items.size();
     return nullptr;
@@ -121,13 +120,13 @@ void ExtensionsMenuMainPageViewUnitTest::LayoutMenuIfNecessary() {
 }
 
 void ExtensionsMenuMainPageViewUnitTest::ClickPinButton(
-    InstalledExtensionMenuItemView* menu_item) {
+    ExtensionMenuItemView* menu_item) {
   ClickButton(menu_item->pin_button_for_testing());
   WaitForAnimation();
 }
 
 void ExtensionsMenuMainPageViewUnitTest::ClickSitePermissionsButton(
-    InstalledExtensionMenuItemView* menu_item) {
+    ExtensionMenuItemView* menu_item) {
   ClickButton(menu_item->site_permissions_button_for_testing());
   WaitForAnimation();
 }
@@ -147,11 +146,11 @@ ExtensionsMenuMainPageViewUnitTest::site_permissions_page() {
                          : nullptr;
 }
 
-std::vector<InstalledExtensionMenuItemView*>
+std::vector<ExtensionMenuItemView*>
 ExtensionsMenuMainPageViewUnitTest::menu_items() {
   ExtensionsMenuMainPageView* page = main_page();
   return page ? page->GetMenuItemsForTesting()
-              : std::vector<InstalledExtensionMenuItemView*>();
+              : std::vector<ExtensionMenuItemView*>();
 }
 
 void ExtensionsMenuMainPageViewUnitTest::SetUp() {
@@ -173,7 +172,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, ExtensionsAreSorted) {
 
   ShowMenu();
 
-  std::vector<InstalledExtensionMenuItemView*> items = menu_items();
+  std::vector<ExtensionMenuItemView*> items = menu_items();
   ASSERT_EQ(items.size(), 4u);
 
   // Basic std::sort would do A,C,Z,b however we want A,b,C,Z
@@ -188,7 +187,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, PinnedExtensionAppearsInToolbar) {
 
   ShowMenu();
 
-  InstalledExtensionMenuItemView* menu_item = GetOnlyMenuItem();
+  ExtensionMenuItemView* menu_item = GetOnlyMenuItem();
   ASSERT_TRUE(menu_item);
   EXPECT_FALSE(extensions_container()->IsActionVisibleOnToolbar(extension_id));
   EXPECT_THAT(GetPinnedExtensionNames(), testing::IsEmpty());
@@ -215,7 +214,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
 
   ShowMenu();
 
-  std::vector<InstalledExtensionMenuItemView*> items = menu_items();
+  std::vector<ExtensionMenuItemView*> items = menu_items();
 
   // Verify the order of the extensions is A,B,C.
   {
@@ -277,7 +276,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
       CreateBrowser(browser()->profile(), browser()->type(),
                     /* hosted_app */ false, /* browser_window */ nullptr));
 
-  InstalledExtensionMenuItemView* menu_item = GetOnlyMenuItem();
+  ExtensionMenuItemView* menu_item = GetOnlyMenuItem();
   ASSERT_TRUE(menu_item);
   ClickPinButton(menu_item);
 
@@ -304,7 +303,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
 
   ShowMenu();
 
-  std::vector<InstalledExtensionMenuItemView*> items = menu_items();
+  std::vector<ExtensionMenuItemView*> items = menu_items();
   ASSERT_EQ(items.size(), 2u);
   EXPECT_EQ(items[0]->view_controller()->GetId(), extensionA->id());
 
@@ -326,7 +325,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
 
   // Verify the order of the extensions is A,C.
   {
-    std::vector<InstalledExtensionMenuItemView*> items = menu_items();
+    std::vector<ExtensionMenuItemView*> items = menu_items();
     ASSERT_EQ(items.size(), 2u);
     std::vector<std::string> expected_names{kExtensionA, kExtensionC};
     EXPECT_EQ(GetNamesFromMenuItems(items), expected_names);
@@ -340,7 +339,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   // Extension should be added in the correct place.
   // Verify the new order is A,B,C.
   {
-    std::vector<InstalledExtensionMenuItemView*> items = menu_items();
+    std::vector<ExtensionMenuItemView*> items = menu_items();
     ASSERT_EQ(items.size(), 3u);
     std::vector<std::string> expected_names{kExtensionA, kExtensionB,
                                             kExtensionC};
@@ -353,7 +352,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
 
   // Verify the new order is A,C.
   {
-    std::vector<InstalledExtensionMenuItemView*> items = menu_items();
+    std::vector<ExtensionMenuItemView*> items = menu_items();
     ASSERT_EQ(items.size(), 2u);
     std::vector<std::string> expected_names{kExtensionA, kExtensionC};
     EXPECT_EQ(GetNamesFromMenuItems(items), expected_names);
@@ -366,7 +365,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, DisableAndEnableExtension) {
 
   ShowMenu();
 
-  InstalledExtensionMenuItemView* menu_item = GetOnlyMenuItem();
+  ExtensionMenuItemView* menu_item = GetOnlyMenuItem();
   EXPECT_EQ(menu_items().size(), 1u);
   ClickPinButton(menu_item);
 
@@ -402,7 +401,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, ReloadExtension) {
 
   ShowMenu();
 
-  InstalledExtensionMenuItemView* menu_item = GetOnlyMenuItem();
+  ExtensionMenuItemView* menu_item = GetOnlyMenuItem();
   EXPECT_EQ(menu_items().size(), 1u);
 
   ClickPinButton(menu_item);
@@ -440,7 +439,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, ReloadExtensionFailed) {
 
   ShowMenu();
 
-  InstalledExtensionMenuItemView* menu_item = GetOnlyMenuItem();
+  ExtensionMenuItemView* menu_item = GetOnlyMenuItem();
   EXPECT_EQ(menu_items().size(), 1u);
 
   ClickPinButton(menu_item);

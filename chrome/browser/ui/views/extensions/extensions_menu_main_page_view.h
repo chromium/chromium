@@ -23,7 +23,7 @@ class ToggleButton;
 class Browser;
 class ExtensionsMenuNavigationHandler;
 class ToolbarActionsModel;
-class InstalledExtensionMenuItemView;
+class ExtensionMenuItemView;
 class ExtensionActionViewController;
 
 // The main view of the extensions menu.
@@ -60,7 +60,7 @@ class ExtensionsMenuMainPageView : public views::View {
 
   // Accessors used by tests:
   // Returns the currently-showing menu items.
-  std::vector<InstalledExtensionMenuItemView*> GetMenuItemsForTesting() const;
+  std::vector<ExtensionMenuItemView*> GetMenuItemsForTesting() const;
 
  private:
   content::WebContents* GetActiveWebContents() const;
@@ -76,7 +76,7 @@ class ExtensionsMenuMainPageView : public views::View {
   // Menu items section.
   // The view containing the menu items. This is separated for easy insertion
   // and iteration of menu items. The children are guaranteed to only be
-  // InstalledExtensionMenuItemViews.
+  // ExtensionMenuItemViews.
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:
   // #addr-of
   RAW_PTR_EXCLUSION views::View* menu_items_ = nullptr;

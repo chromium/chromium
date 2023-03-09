@@ -52,19 +52,19 @@ ExtensionsMenuView* g_extensions_dialog = nullptr;
 
 constexpr int EXTENSIONS_SETTINGS_ID = 42;
 
-bool CompareExtensionMenuItemViews(const InstalledExtensionMenuItemView* a,
-                                   const InstalledExtensionMenuItemView* b) {
+bool CompareExtensionMenuItemViews(const ExtensionMenuItemView* a,
+                                   const ExtensionMenuItemView* b) {
   return base::i18n::ToLower(a->view_controller()->GetActionName()) <
          base::i18n::ToLower(b->view_controller()->GetActionName());
 }
 
-// A helper method to convert to an InstalledExtensionMenuItemView. This cannot
-// be used to *determine* if a view is an InstalledExtensionMenuItemView (it
+// A helper method to convert to an ExtensionMenuItemView. This cannot
+// be used to *determine* if a view is an ExtensionMenuItemView (it
 // should only be used when the view is known to be one). It is only used as an
 // extra measure to prevent bad static casts.
-InstalledExtensionMenuItemView* GetAsMenuItemView(views::View* view) {
-  DCHECK(views::IsViewClass<InstalledExtensionMenuItemView>(view));
-  return static_cast<InstalledExtensionMenuItemView*>(view);
+ExtensionMenuItemView* GetAsMenuItemView(views::View* view) {
+  DCHECK(views::IsViewClass<ExtensionMenuItemView>(view));
+  return static_cast<ExtensionMenuItemView*>(view);
 }
 
 }  // namespace
@@ -281,7 +281,7 @@ void ExtensionsMenuView::SortMenuItemsByName() {
     if (section->menu_items->children().empty())
       return;
 
-    std::vector<InstalledExtensionMenuItemView*> menu_item_views;
+    std::vector<ExtensionMenuItemView*> menu_item_views;
     for (views::View* view : section->menu_items->children())
       menu_item_views.push_back(GetAsMenuItemView(view));
 
@@ -304,7 +304,7 @@ void ExtensionsMenuView::CreateAndInsertNewItem(
 
   // The bare `new` is safe here, because InsertMenuItem is guaranteed to
   // be added to the view hierarchy, which takes ownership.
-  auto* item = new InstalledExtensionMenuItemView(
+  auto* item = new ExtensionMenuItemView(
       browser_, std::move(controller),
       extensions_container_->CanShowActionsInToolbar());
   extensions_menu_items_.insert(item);
@@ -313,8 +313,7 @@ void ExtensionsMenuView::CreateAndInsertNewItem(
   DCHECK(Contains(item));
 }
 
-void ExtensionsMenuView::InsertMenuItem(
-    InstalledExtensionMenuItemView* menu_item) {
+void ExtensionsMenuView::InsertMenuItem(ExtensionMenuItemView* menu_item) {
   DCHECK(!Contains(menu_item))
       << "Trying to insert a menu item that is already added in a section!";
   auto site_interaction = menu_item->view_controller()->GetSiteInteraction(
@@ -339,8 +338,9 @@ void ExtensionsMenuView::UpdateSectionVisibility() {
 }
 
 void ExtensionsMenuView::Update() {
-  for (InstalledExtensionMenuItemView* view : extensions_menu_items_)
+  for (ExtensionMenuItemView* view : extensions_menu_items_) {
     view->view_controller()->UpdateState();
+  }
 
   content::WebContents* const web_contents =
       browser_->tab_strip_model()->GetActiveWebContents();
@@ -348,7 +348,7 @@ void ExtensionsMenuView::Update() {
                                                          Section* section) {
     // Note: Collect the views to move separately, so that we don't change the
     // children of the view during iteration.
-    std::vector<InstalledExtensionMenuItemView*> views_to_move;
+    std::vector<ExtensionMenuItemView*> views_to_move;
     for (views::View* view : section->menu_items->children()) {
       auto* menu_item = GetAsMenuItemView(view);
       auto site_interaction =
@@ -358,7 +358,7 @@ void ExtensionsMenuView::Update() {
       views_to_move.push_back(menu_item);
     }
 
-    for (InstalledExtensionMenuItemView* menu_item : views_to_move) {
+    for (ExtensionMenuItemView* menu_item : views_to_move) {
       section->menu_items->RemoveChildView(menu_item);
       InsertMenuItem(menu_item);
     }
@@ -382,7 +382,7 @@ void ExtensionsMenuView::SanityCheck() {
   // Sanity checks: verify that all extensions are properly sorted and in the
   // correct section.
   auto check_section = [this, web_contents](Section* section) {
-    std::vector<InstalledExtensionMenuItemView*> menu_items;
+    std::vector<ExtensionMenuItemView*> menu_items;
     for (views::View* view : section->menu_items->children()) {
       auto* menu_item = GetAsMenuItemView(view);
       auto site_interaction =
@@ -405,7 +405,7 @@ void ExtensionsMenuView::SanityCheck() {
   // corresponds to an item in the model (since we already checked that the size
   // is equal for |action_ids| and |extensions_menu_items_|, this implicitly
   // guarantees that we have a view per item in |action_ids| as well).
-  for (InstalledExtensionMenuItemView* item : extensions_menu_items_) {
+  for (ExtensionMenuItemView* item : extensions_menu_items_) {
     DCHECK(Contains(item));
     DCHECK(base::Contains(action_ids, item->view_controller()->GetId()));
   }
@@ -441,13 +441,12 @@ void ExtensionsMenuView::OnToolbarActionAdded(
 
 void ExtensionsMenuView::OnToolbarActionRemoved(
     const ToolbarActionsModel::ActionId& action_id) {
-  auto iter =
-      base::ranges::find(extensions_menu_items_, action_id,
-                         [](const InstalledExtensionMenuItemView* item) {
-                           return item->view_controller()->GetId();
-                         });
+  auto iter = base::ranges::find(extensions_menu_items_, action_id,
+                                 [](const ExtensionMenuItemView* item) {
+                                   return item->view_controller()->GetId();
+                                 });
   DCHECK(iter != extensions_menu_items_.end());
-  InstalledExtensionMenuItemView* const view = *iter;
+  ExtensionMenuItemView* const view = *iter;
   DCHECK(Contains(view));
   view->parent()->RemoveChildView(view);
   DCHECK(!Contains(view));
@@ -517,13 +516,13 @@ ExtensionsMenuView* ExtensionsMenuView::GetExtensionsMenuViewForTesting() {
 }
 
 // static
-std::vector<InstalledExtensionMenuItemView*>
+std::vector<ExtensionMenuItemView*>
 ExtensionsMenuView::GetSortedItemsForSectionForTesting(
     extensions::SitePermissionsHelper::SiteInteraction site_interaction) {
   const ExtensionsMenuView::Section* section =
       GetExtensionsMenuViewForTesting()->GetSectionForSiteInteraction(
           site_interaction);
-  std::vector<InstalledExtensionMenuItemView*> menu_item_views;
+  std::vector<ExtensionMenuItemView*> menu_item_views;
   for (views::View* view : section->menu_items->children())
     menu_item_views.push_back(GetAsMenuItemView(view));
   return menu_item_views;
