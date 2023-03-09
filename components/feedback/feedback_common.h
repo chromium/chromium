@@ -67,7 +67,7 @@ class FeedbackCommon : public base::RefCountedThreadSafe<FeedbackCommon> {
   int32_t product_id() const { return product_id_; }
   std::string user_agent() const { return user_agent_; }
   std::string locale() const { return locale_; }
-  const std::string& autofill_metadata() const { return autofill_metadata_; }
+  std::string& autofill_metadata() { return autofill_metadata_; }
 
   const AttachedFile* attachment(size_t i) const { return &attachments_[i]; }
   size_t attachments() const { return attachments_.size(); }
