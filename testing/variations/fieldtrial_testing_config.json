@@ -296,6 +296,21 @@
             ]
         }
     ],
+    "AndroidMetricsAsyncMetricLogging": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "AndroidMetricsAsyncMetricLogging",
+                    "enable_features": [
+                        "AndroidMetricsAsyncMetricLogging"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidOmniboxUxRevampPhase2": [
         {
             "platforms": [
