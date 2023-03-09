@@ -244,7 +244,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
     histograms()->ExpectBucketCount(kNavigationRequestSecurityLevelHistogram,
                                     NavigationRequestSecurityLevel::kSecure, 1);
     histograms()->ExpectBucketCount(kNavigationRequestSecurityLevelHistogram,
-                                    NavigationRequestSecurityLevel::kInsecure,
+                                    NavigationRequestSecurityLevel::kUpgraded,
                                     1);
   } else {
     EXPECT_EQ(http_url, contents->GetLastCommittedURL());
