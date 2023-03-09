@@ -331,11 +331,18 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
 
 - (UIButton*)primaryActionButton {
   if (!_primaryActionButton) {
-    _primaryActionButton = [[HighlightButton alloc] initWithFrame:CGRectZero];
+    // TODO(crbug.com/1418068): Simplify after minimum version required is >=
+    // iOS 15.
     if (@available(iOS 15, *)) {
-      _primaryActionButton.configuration =
+      UIButtonConfiguration* buttonConfiguration =
           [UIButtonConfiguration plainButtonConfiguration];
+      _primaryActionButton =
+          [HighlightButton buttonWithConfiguration:buttonConfiguration
+                                     primaryAction:nil];
+    } else {
+      _primaryActionButton = [[HighlightButton alloc] initWithFrame:CGRectZero];
     }
+
     [_primaryActionButton setTitle:self.primaryActionString
                           forState:UIControlStateNormal];
     _primaryActionButton.accessibilityIdentifier =
@@ -386,13 +393,38 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
   if (!_learnMoreActionButton) {
     NSString* learnMoreText =
         l10n_util::GetNSString(IDS_IOS_WHATS_NEW_LEARN_MORE_ACTION_TITLE);
-    _learnMoreActionButton = [UIButton buttonWithType:UIButtonTypeSystem];
+
+    // TODO(crbug.com/1418068): Simplify after minimum version required is >=
+    // iOS 15.
+    if (@available(iOS 15, *)) {
+      UIButtonConfiguration* buttonConfiguration =
+          [UIButtonConfiguration plainButtonConfiguration];
+      _learnMoreActionButton =
+          [UIButton buttonWithConfiguration:buttonConfiguration
+                              primaryAction:nil];
+    } else {
+      _learnMoreActionButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    }
     [_learnMoreActionButton setTitle:learnMoreText
                             forState:UIControlStateNormal];
     _learnMoreActionButton.accessibilityIdentifier =
         kWhatsNewLearnMoreActionAccessibilityIdentifier;
-    _learnMoreActionButton.contentEdgeInsets =
-        UIEdgeInsetsMake(kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
+
+    // TODO(crbug.com/1418068): Simplify after minimum version required is >=
+    // iOS 15.
+    if (@available(iOS 15, *)) {
+      DCHECK(_learnMoreActionButton.configuration);
+      _learnMoreActionButton.configuration.contentInsets =
+          NSDirectionalEdgeInsetsMake(0, kButtonHorizontalMargin, 0,
+                                      kButtonHorizontalMargin);
+    }
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+    else {
+      _learnMoreActionButton.titleEdgeInsets = UIEdgeInsetsMake(
+          0, kButtonHorizontalMargin, 0, kButtonHorizontalMargin);
+    }
+#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+
     [_learnMoreActionButton setBackgroundColor:[UIColor clearColor]];
     [_learnMoreActionButton setTitleColor:[UIColor colorNamed:kBlueColor]
                                  forState:UIControlStateNormal];
