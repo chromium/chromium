@@ -39,7 +39,7 @@ class TutorialService {
   using AbortedCallback = base::OnceClosure;
 
   // Returns true if there is a currently running tutorial.
-  bool IsRunningTutorial() const;
+  virtual bool IsRunningTutorial() const;
 
   // Sets the current help bubble stored by the service.
   void SetCurrentBubble(std::unique_ptr<HelpBubble> bubble, bool is_last_step);
@@ -48,7 +48,8 @@ class TutorialService {
   void HideCurrentBubbleIfShowing();
 
   // Starts the tutorial by looking for the id in the Tutorial Registry.
-  virtual bool StartTutorial(
+  // Any existing tutorial is canceled.
+  virtual void StartTutorial(
       TutorialIdentifier id,
       ui::ElementContext context,
       CompletedCallback completed_callback = base::DoNothing(),

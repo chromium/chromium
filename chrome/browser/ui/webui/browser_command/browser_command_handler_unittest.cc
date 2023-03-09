@@ -130,13 +130,18 @@ class TestTutorialService : public user_education::TutorialService {
     return std::u16string();
   }
 
-  bool StartTutorial(
+  void StartTutorial(
       user_education::TutorialIdentifier id,
       ui::ElementContext context,
       base::OnceClosure completed_callback = base::DoNothing(),
       base::OnceClosure aborted_callback = base::DoNothing()) override {
-    return true;
+    running_ = true;
   }
+
+  bool IsRunningTutorial() const override { return running_; }
+
+ private:
+  bool running_ = false;
 };
 
 class MockTutorialService : public TestTutorialService {
@@ -148,12 +153,13 @@ class MockTutorialService : public TestTutorialService {
   ~MockTutorialService() override = default;
 
   MOCK_METHOD4(StartTutorial,
-               bool(user_education::TutorialIdentifier,
+               void(user_education::TutorialIdentifier,
                     ui::ElementContext,
                     base::OnceClosure,
                     base::OnceClosure));
   MOCK_METHOD2(LogStartedFromWhatsNewPage,
                void(user_education::TutorialIdentifier, bool));
+  MOCK_CONST_METHOD0(IsRunningTutorial, bool());
 };
 
 class MockCommandHandler : public TestCommandHandler {
@@ -465,7 +471,8 @@ TEST_F(BrowserCommandHandlerTest, StartTabGroupTutorialCommand) {
     ClickInfoPtr info = ClickInfo::New();
     EXPECT_CALL(service, StartTutorial(kTabGroupTutorialId, kTestContext1,
                                        testing::_, testing::_))
-        .WillOnce(testing::Return(true));
+        .Times(1);
+    EXPECT_CALL(service, IsRunningTutorial).WillOnce(testing::Return(true));
     EXPECT_CALL(service, LogStartedFromWhatsNewPage(kTabGroupTutorialId, true));
     EXPECT_TRUE(
         ExecuteCommand(Command::kStartTabGroupTutorial, std::move(info)));
@@ -478,7 +485,8 @@ TEST_F(BrowserCommandHandlerTest, StartTabGroupTutorialCommand) {
     ClickInfoPtr info = ClickInfo::New();
     EXPECT_CALL(service, StartTutorial(kTabGroupWithExistingGroupTutorialId,
                                        kTestContext1, testing::_, testing::_))
-        .WillOnce(testing::Return(true));
+        .Times(1);
+    EXPECT_CALL(service, IsRunningTutorial).WillOnce(testing::Return(true));
     EXPECT_CALL(service, LogStartedFromWhatsNewPage(
                              kTabGroupWithExistingGroupTutorialId, true));
     EXPECT_TRUE(

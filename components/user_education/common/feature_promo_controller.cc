@@ -508,15 +508,17 @@ void FeaturePromoControllerCommon::OnTutorialStarted(
     DCHECK_EQ(current_iph_feature_, iph_feature);
     tutorial_promo_handle_ = CloseBubbleAndContinuePromo(*iph_feature);
     DCHECK(tutorial_promo_handle_.is_valid());
-    if (tutorial_service_->StartTutorial(
-            tutorial_id, GetAnchorContext(),
-            base::BindOnce(&FeaturePromoControllerCommon::OnTutorialComplete,
-                           weak_ptr_factory_.GetWeakPtr(),
-                           base::Unretained(iph_feature)),
-            base::BindOnce(&FeaturePromoControllerCommon::OnTutorialAborted,
-                           weak_ptr_factory_.GetWeakPtr(),
-                           base::Unretained(iph_feature))))
+    tutorial_service_->StartTutorial(
+        tutorial_id, GetAnchorContext(),
+        base::BindOnce(&FeaturePromoControllerCommon::OnTutorialComplete,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       base::Unretained(iph_feature)),
+        base::BindOnce(&FeaturePromoControllerCommon::OnTutorialAborted,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       base::Unretained(iph_feature)));
+    if (tutorial_service_->IsRunningTutorial()) {
       tutorial_service_->LogIPHLinkClicked(tutorial_id, true);
+    }
   }
 }
 

@@ -35,21 +35,27 @@ TutorialService::TutorialService(
 
 TutorialService::~TutorialService() = default;
 
-bool TutorialService::StartTutorial(TutorialIdentifier id,
+void TutorialService::StartTutorial(TutorialIdentifier id,
                                     ui::ElementContext context,
                                     CompletedCallback completed_callback,
                                     AbortedCallback aborted_callback) {
-  // Overriding an existing running tutorial is not supported. In this case
-  // return false to the caller.
-  if (running_tutorial_)
-    return false;
+  // End the current tutorial, if any.
+  if (running_tutorial_) {
+    if (final_bubble_closed_subscription_) {
+      // The current tutorial is showing the final congratulatory bubble, so it
+      // is effectively complete.
+      CompleteTutorial();
+    } else {
+      running_tutorial_->Abort();
+    }
+  }
 
   // Get the description from the tutorial registry.
   TutorialDescription* description =
       tutorial_registry_->GetTutorialDescription(id);
   CHECK(description);
 
-  // Construct the tutorial from the dsecription.
+  // Construct the tutorial from the description.
   running_tutorial_ =
       Tutorial::Builder::BuildFromDescription(*description, this, context);
 
@@ -64,8 +70,6 @@ bool TutorialService::StartTutorial(TutorialIdentifier id,
   // Start the tutorial and mark the params used to created it for restarting.
   running_tutorial_->Start();
   toggle_focus_count_ = 0;
-
-  return true;
 }
 
 void TutorialService::LogIPHLinkClicked(TutorialIdentifier id,
@@ -126,17 +130,20 @@ void TutorialService::AbortTutorial(absl::optional<int> abort_step) {
 
   // If the tutorial had been restarted and then aborted, The tutorial should be
   // considered completed.
-  if (running_tutorial_was_restarted_)
-    return CompleteTutorial();
+  if (running_tutorial_was_restarted_) {
+    CompleteTutorial();
+    return;
+  }
 
-  if (abort_step.has_value())
-    running_tutorial_creation_params_->description_->histograms
-        ->RecordAbortStep(abort_step.value());
-
-  // Log the failure of completion for the tutorial.
-  if (running_tutorial_creation_params_->description_->histograms)
+  if (running_tutorial_creation_params_->description_->histograms) {
+    if (abort_step.has_value()) {
+      running_tutorial_creation_params_->description_->histograms
+          ->RecordAbortStep(abort_step.value());
+    }
     running_tutorial_creation_params_->description_->histograms->RecordComplete(
         false);
+  }
+
   UMA_HISTOGRAM_BOOLEAN("Tutorial.Completion", false);
 
   // Reset the tutorial and call the external abort callback.

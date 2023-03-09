@@ -219,8 +219,9 @@ void BrowserCommandHandler::StartTabGroupTutorial() {
       BrowserHasTabGroups() ? kTabGroupWithExistingGroupTutorialId
                             : kTabGroupTutorialId;
 
-  bool started_tutorial = tutorial_service->StartTutorial(tutorial_id, context);
-  tutorial_service->LogStartedFromWhatsNewPage(tutorial_id, started_tutorial);
+  tutorial_service->StartTutorial(tutorial_id, context);
+  tutorial_service->LogStartedFromWhatsNewPage(
+      tutorial_id, tutorial_service->IsRunningTutorial());
 }
 
 void BrowserCommandHandler::OpenFeedbackForm() {

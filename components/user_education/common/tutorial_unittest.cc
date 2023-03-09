@@ -306,6 +306,66 @@ TEST_F(TutorialTest, SingleInteractionTutorialRuns) {
       ClickCloseButton(service.currently_displayed_bubble_for_testing()));
 }
 
+TEST_F(TutorialTest, StartTutorialAbortsExistingTutorial) {
+  UNCALLED_MOCK_CALLBACK(TutorialService::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(TutorialService::CompletedCallback, aborted);
+
+  const auto bubble_factory_registry =
+      CreateTestTutorialBubbleFactoryRegistry();
+  TutorialRegistry registry;
+  TestTutorialService service(&registry, bubble_factory_registry.get());
+
+  // build elements and keep them for triggering show/hide
+  ui::test::TestElement element_1(kTestIdentifier1, kTestContext1);
+  element_1.Show();
+
+  // Build the tutorial Description. This has two steps, the second of which
+  // will not
+  TutorialDescription description;
+  description.steps.emplace_back(IDS_OK, IDS_OK,
+                                 ui::InteractionSequence::StepType::kShown,
+                                 kTestIdentifier1, "", HelpBubbleArrow::kNone);
+  description.steps.emplace_back(IDS_OK, IDS_OK,
+                                 ui::InteractionSequence::StepType::kShown,
+                                 kTestIdentifier2, "", HelpBubbleArrow::kNone);
+  registry.AddTutorial(kTestTutorial1, std::move(description));
+
+  service.StartTutorial(kTestTutorial1, element_1.context(), completed.Get(),
+                        aborted.Get());
+  EXPECT_CALL_IN_SCOPE(
+      aborted, Run, service.StartTutorial(kTestTutorial1, element_1.context()));
+  EXPECT_TRUE(service.IsRunningTutorial());
+}
+
+TEST_F(TutorialTest, StartTutorialCompletesExistingTutorial) {
+  UNCALLED_MOCK_CALLBACK(TutorialService::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(TutorialService::CompletedCallback, aborted);
+
+  const auto bubble_factory_registry =
+      CreateTestTutorialBubbleFactoryRegistry();
+  TutorialRegistry registry;
+  TestTutorialService service(&registry, bubble_factory_registry.get());
+
+  // build elements and keep them for triggering show/hide
+  ui::test::TestElement element_1(kTestIdentifier1, kTestContext1);
+  element_1.Show();
+
+  // Build the tutorial Description. This has two steps, the second of which
+  // will not
+  TutorialDescription description;
+  description.steps.emplace_back(IDS_OK, IDS_OK,
+                                 ui::InteractionSequence::StepType::kShown,
+                                 kTestIdentifier1, "", HelpBubbleArrow::kNone);
+  registry.AddTutorial(kTestTutorial1, std::move(description));
+
+  service.StartTutorial(kTestTutorial1, element_1.context(), completed.Get(),
+                        aborted.Get());
+  EXPECT_CALL_IN_SCOPE(
+      completed, Run,
+      service.StartTutorial(kTestTutorial1, element_1.context()));
+  EXPECT_TRUE(service.IsRunningTutorial());
+}
+
 TEST_F(TutorialTest, TutorialWithCustomEvent) {
   UNCALLED_MOCK_CALLBACK(TutorialService::CompletedCallback, completed);
 
