@@ -5,8 +5,11 @@
 // History api test for Chrome.
 // browser_tests.exe --gtest_filter=HistoryExtensionApiTest.TimedSearch
 
-// runHistoryTestFns is defined in ./common.js .
-runHistoryTestFns([
+const scriptUrl = '_test_resources/api_test/history/regular/common.js';
+let loadScript = chrome.test.loadScript(scriptUrl);
+
+loadScript.then(async function() {
+chrome.test.runTests([
   // Give time epochs x,y,z and history events A,B which occur in the sequence
   // x A y B z, test that searching in [x,y] finds only A.
   function timeScopedSearchStartRange() {
@@ -78,4 +81,4 @@ runHistoryTestFns([
       });
     });
   }
-]);
+])});

@@ -10,12 +10,6 @@ var assertTrue = chrome.test.assertTrue;
 var GOOGLE_URL = 'http://www.google.com/';
 var PICASA_URL = 'http://www.picasa.com/';
 
-// PORT will be changed to the port of the test server.
-var A_RELATIVE_URL =
-    'http://www.a.com:PORT/extensions/api_test/history/a.html';
-var B_RELATIVE_URL =
-    'http://www.b.com:PORT/extensions/api_test/history/b.html';
-
 /**
  * Object used for listening to the chrome.history.onVisited events.  The
  * global object 'itemVisitedCallback' stores the last item received.
@@ -108,15 +102,7 @@ function populateHistory(urls, callback) {
  * @param {Array<function>} testFns The tests to run.
  */
 function runHistoryTestFns(testFns) {
-  chrome.test.getConfig(function(config) {
-    var fixPort = function(url) {
-      return url.replace(/PORT/, config.testServer.port);
-    };
-    A_RELATIVE_URL = fixPort(A_RELATIVE_URL);
-    B_RELATIVE_URL = fixPort(B_RELATIVE_URL);
-
-    chrome.test.runTests(testFns);
-  });
+  chrome.test.runTests(testFns);
 }
 
 /**

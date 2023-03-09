@@ -5,8 +5,11 @@
 // History api test for Chrome.
 // browser_tests.exe --gtest_filter=HistoryExtensionApiTest.GetVisits
 
-// runHistoryTestFns is defined in ./common.js .
-runHistoryTestFns([
+const scriptUrl = '_test_resources/api_test/history/regular/common.js';
+let loadScript = chrome.test.loadScript(scriptUrl);
+
+loadScript.then(async function() {
+chrome.test.runTests([
   function getVisits() {
     // getVisits callback.
     function getVisitsTestVerification() {
@@ -34,4 +37,4 @@ runHistoryTestFns([
       populateHistory([GOOGLE_URL], function() { });
     });
   }
-]);
+])});

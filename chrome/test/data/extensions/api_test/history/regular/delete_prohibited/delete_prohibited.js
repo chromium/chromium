@@ -61,8 +61,11 @@ function verifyNoDeletion(testFunction) {
   }));
 }
 
-// runHistoryTestFns is defined in ./common.js .
-runHistoryTestFns([
+const scriptUrl = '_test_resources/api_test/history/regular/common.js';
+let loadScript = chrome.test.loadScript(scriptUrl);
+
+loadScript.then(async function() {
+chrome.test.runTests([
   function deleteUrl() {
     verifyNoDeletion(function(callback) {
       chrome.history.deleteUrl({ 'url': GOOGLE_URL }, callback);
@@ -80,4 +83,4 @@ runHistoryTestFns([
   function deleteAll() {
     verifyNoDeletion(chrome.history.deleteAll);
   }
-]);
+])});

@@ -4,9 +4,8 @@
   "manifest_version": 2,
   "description": "end-to-end browser test for chrome.history API",
   "permissions": ["history"],
-  "incognito": "split",
   "background": {
-    "scripts": ["incognito.js"],
+    "scripts": ["timed_search.js"],
     "persistent": true
   }
 }

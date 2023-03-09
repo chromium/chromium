@@ -5,8 +5,11 @@
 // History api test for Chrome.
 // browser_tests.exe --gtest_filter=HistoryApiTest.Delete
 
-// runHistoryTestFns is defined in ./common.js .
-runHistoryTestFns([
+const scriptUrl = '_test_resources/api_test/history/regular/common.js';
+let loadScript = chrome.test.loadScript(scriptUrl);
+
+loadScript.then(async function() {
+chrome.test.runTests([
   // All the tests require a blank state to start from.  If this fails,
   // expect all other history tests (HistoryExtensionApiTest.*) to fail.
   function clearHistory() {
@@ -172,4 +175,4 @@ runHistoryTestFns([
       });
     });
   }
-]);
+])});

@@ -5,8 +5,11 @@
 // History api test for Chrome.
 // browser_tests.exe --gtest_filter=HistoryExtensionApiTest.SearchAfterAdd
 
-// runHistoryTestFns is defined in ./common.js .
-runHistoryTestFns([
+const scriptUrl = '_test_resources/api_test/history/regular/common.js';
+let loadScript = chrome.test.loadScript(scriptUrl);
+
+loadScript.then(async function() {
+chrome.test.runTests([
   function searchAfterAdd() {
     chrome.history.deleteAll(function() {
       var VALID_URL = 'http://www.google.com/';
@@ -19,4 +22,4 @@ runHistoryTestFns([
       });
     });
   }
-]);
+])});

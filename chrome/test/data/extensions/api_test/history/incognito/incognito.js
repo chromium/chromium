@@ -7,14 +7,14 @@
 
 function addItem() {
   chrome.history.addUrl({url: 'http://www.a.com/'}, function() {
-    window.domAutomationController.send('success');
+    chrome.test.sendScriptResult('success');
   });
 }
 
 function countItemsInHistory() {
   var query = {'text': ''};
   chrome.history.search(query, function(results) {
-    window.domAutomationController.send(results.length.toString());
+    chrome.test.sendScriptResult(results.length.toString());
   });
 }
 
