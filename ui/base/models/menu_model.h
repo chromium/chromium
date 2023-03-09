@@ -10,9 +10,11 @@
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/menu_model_delegate.h"
 #include "ui/base/models/menu_separator_types.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace gfx {
@@ -170,6 +172,9 @@ class COMPONENT_EXPORT(UI_BASE) MenuModel
   static bool GetModelAndIndexForCommandId(int command_id,
                                            MenuModel** model,
                                            size_t* index);
+
+  virtual absl::optional<ui::ColorId> GetForegroundColor(size_t index);
+  virtual absl::optional<ui::ColorId> GetSubmenuBackgroundColor(size_t index);
 
  private:
   // MenuModelDelegate. Weak. Could be null.

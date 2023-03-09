@@ -181,6 +181,8 @@ class VIEWS_EXPORT SubmenuView : public View,
   }
   MenuHost* host() { return host_; }
 
+  void SetBorderColor(absl::optional<ui::ColorId> color_id);
+
  protected:
   // View method. Overridden to schedule a paint. We do this so that when
   // scrolling occurs, everything is repainted correctly.
@@ -237,6 +239,8 @@ class VIEWS_EXPORT SubmenuView : public View,
   float roundoff_error_ = 0;
 
   PrefixSelector prefix_selector_;
+
+  absl::optional<ui::ColorId> border_color_id_;
 };
 
 }  // namespace views

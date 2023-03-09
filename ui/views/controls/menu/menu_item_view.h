@@ -157,15 +157,18 @@ class VIEWS_EXPORT MenuItemView : public View {
 
   // Add an item to the menu at a specified index.  ChildrenChanged() should
   // called after adding menu items if the menu may be active.
-  MenuItemView* AddMenuItemAt(size_t index,
-                              int item_id,
-                              const std::u16string& label,
-                              const std::u16string& secondary_label,
-                              const std::u16string& minor_text,
-                              const ui::ImageModel& minor_icon,
-                              const ui::ImageModel& icon,
-                              Type type,
-                              ui::MenuSeparatorType separator_style);
+  MenuItemView* AddMenuItemAt(
+      size_t index,
+      int item_id,
+      const std::u16string& label,
+      const std::u16string& secondary_label,
+      const std::u16string& minor_text,
+      const ui::ImageModel& minor_icon,
+      const ui::ImageModel& icon,
+      Type type,
+      ui::MenuSeparatorType separator_style,
+      absl::optional<ui::ColorId> submenu_background_color = absl::nullopt,
+      absl::optional<ui::ColorId> foreground_color = absl::nullopt);
 
   // Remove the specified item from the menu. |item| will be deleted when
   // ChildrenChanged() is invoked.
@@ -551,6 +554,10 @@ class VIEWS_EXPORT MenuItemView : public View {
   // could interact with model state.
   bool IsScheduledForDeletion() const;
 
+  void SetForegroundColorId(absl::optional<ui::ColorId> foreground_color_id) {
+    foreground_color_id_ = foreground_color_id;
+  }
+
   // The delegate. This is only valid for the root menu item. You shouldn't
   // use this directly, instead use GetDelegate() which walks the tree as
   // as necessary.
@@ -679,6 +686,8 @@ class VIEWS_EXPORT MenuItemView : public View {
   const std::u16string new_badge_text_ = l10n_util::GetStringUTF16(
       features::IsChromeRefresh2023() ? IDS_NEW_BADGE_UPPERCASE
                                       : IDS_NEW_BADGE);
+
+  absl::optional<ui::ColorId> foreground_color_id_;
 };
 
 }  // namespace views

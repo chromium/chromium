@@ -516,6 +516,7 @@ MenuScrollViewContainer* SubmenuView::GetScrollViewContainer() {
     scroll_view_container_ = new MenuScrollViewContainer(this);
     // Otherwise MenuHost would delete us.
     scroll_view_container_->set_owned_by_client();
+    scroll_view_container_->SetBorderColorId(border_color_id_);
   }
   return scroll_view_container_;
 }
@@ -605,6 +606,14 @@ bool SubmenuView::OnScroll(float dx, float dy) {
     return true;
   }
   return false;
+}
+
+void SubmenuView::SetBorderColor(absl::optional<ui::ColorId> color_id) {
+  if (scroll_view_container_) {
+    scroll_view_container_->SetBorderColorId(color_id);
+  }
+
+  border_color_id_ = color_id;
 }
 
 BEGIN_METADATA(SubmenuView, View)

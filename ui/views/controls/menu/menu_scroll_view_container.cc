@@ -421,13 +421,22 @@ void MenuScrollViewContainer::CreateDefaultBorder() {
             content_view_->GetMenuItem()->GetMenuController())) {
       CreateBubbleBorder();
     } else {
+      gfx::Insets insets = gfx::Insets::TLBR(vertical_inset, horizontal_inset,
+                                             bottom_inset, horizontal_inset);
+      // When a custom background color is used, ensure that the border uses
+      // the custom background color for its insets.
+      if (border_color_id_.has_value()) {
+        SetBorder(views::CreateThemedSolidSidedBorder(
+            insets, border_color_id_.value()));
+        return;
+      }
+
       SkColor color = GetWidget()
                           ? GetColorProvider()->GetColor(ui::kColorMenuBorder)
                           : gfx::kPlaceholderColor;
       SetBorder(views::CreateBorderPainter(
           std::make_unique<views::RoundRectPainter>(color, corner_radius_),
-          gfx::Insets::TLBR(vertical_inset, horizontal_inset, bottom_inset,
-                            horizontal_inset)));
+          insets));
     }
   } else {
     SetBorder(CreateEmptyBorder(gfx::Insets::TLBR(

@@ -44,6 +44,10 @@ class MenuScrollViewContainer : public View {
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnThemeChanged() override;
 
+  void SetBorderColorId(absl::optional<ui::ColorId> border_color_id) {
+    border_color_id_ = border_color_id;
+  }
+
  protected:
   // View override.
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
@@ -99,6 +103,8 @@ class MenuScrollViewContainer : public View {
 
   // Whether the menu uses ash system UI layout.
   const bool use_ash_system_ui_layout_;
+
+  absl::optional<ui::ColorId> border_color_id_;
 };
 
 }  // namespace views
