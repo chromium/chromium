@@ -420,6 +420,7 @@ BOOL canProcessCrossOriginIframes() {
                  completionHandler:(SuggestionsReadyCompletion)completion {
   DCHECK_EQ(_webState, webState);
   if (!GetPageURLAndCheckTrustLevel(webState, nullptr)) {
+    completion({}, self);
     return;
   }
   web::WebFrame* frame =

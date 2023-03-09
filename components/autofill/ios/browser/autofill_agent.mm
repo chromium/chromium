@@ -312,8 +312,10 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
       GetWebFrameWithId(webState, SysNSStringToUTF8(frameID));
   autofill::BrowserAutofillManager* autofillManager =
       [self autofillManagerFromWebState:webState webFrame:frame];
-  if (!autofillManager)
+  if (!autofillManager) {
+    completion(NO);
     return;
+  }
 
   // Find the right field.
   autofill::FormFieldData field;
