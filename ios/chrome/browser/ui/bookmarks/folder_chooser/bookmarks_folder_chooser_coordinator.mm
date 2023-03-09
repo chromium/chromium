@@ -90,7 +90,7 @@
       initWithBookmarkModel:model
            allowsNewFolders:_allowsNewFolders
                 editedNodes:_hiddenNodes
-               allowsCancel:_navigationController != nil
+               allowsCancel:!_baseNavigationController
              selectedFolder:_selectedFolder
                     browser:self.browser];
   _viewController.delegate = self;
