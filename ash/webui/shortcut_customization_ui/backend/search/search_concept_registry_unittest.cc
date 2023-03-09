@@ -219,28 +219,11 @@ TEST_F(SearchConceptRegistryTest, SearchConceptToDataStandardAccelerator) {
 
   // The overall data ID should be source + action.
   EXPECT_EQ(data.id, "0-1");
-  // There should be three entries: one for the description, and two more total
-  // (one for each of the AcceleratorInfos).
-  EXPECT_EQ(data.contents.size(), 3u);
+  // There should be only one contents entry for the description.
+  EXPECT_EQ(data.contents.size(), 1u);
   // The first entry will always be the description of the SearchConcept.
   EXPECT_EQ(data.contents[0].id, "0-1-description");
   EXPECT_EQ(data.contents[0].content, u"Open the Foobar");
-  // The second entry in this case will be the first accelerator info's
-  // accelerator. The "0-1" in the id is the SearchConcept's id, the "6" is the
-  // modifier, and the "65" is the key_code.
-  EXPECT_EQ(data.contents[1].id, "0-1-6-65");
-  // TODO(cambickel): When we update the Content string here to be delimited by
-  // spaces instead of pluses, update this test.
-  EXPECT_EQ(data.contents[1].content, u"Ctrl+Shift+A");
-  // The third entry in this case will be the second accelerator info's
-  // accelerator. The "0-1" in the id is the SearchConcept's id, the "8" is the
-  // modifier, and the "216" is the key_code.
-  EXPECT_EQ(data.contents[2].id, "0-1-8-216");
-  // TODO(cambickel): When we update the Content string here to be delimited by
-  // spaces instead of pluses, update this test. Also, "BrightnessDown" and
-  // other top-row keys are not currently handled correctly, so when we fix
-  // that, update this test accordingly.
-  EXPECT_EQ(data.contents[2].content, u"Alt+");
 }
 
 TEST_F(SearchConceptRegistryTest, SearchConceptToDataTextAccelerator) {

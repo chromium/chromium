@@ -26,54 +26,6 @@
 
 namespace ash::shortcut_ui {
 
-namespace {
-
-// Given text accelerator properties, return a string that will be searchable
-// by the Local Search Service.
-std::u16string TextAcceleratorToContentString(
-    const mojom::TextAcceleratorPropertiesPtr& text_accelerator_properties) {
-  // To get the searchable part of a Text Accelerator, combine all of the
-  // TextAcceleratorParts into one string.
-  std::u16string output;
-  for (const auto& part : text_accelerator_properties->parts) {
-    base::StrAppend(&output, {part->text});
-  }
-  return output;
-}
-
-// Given text accelerator properties, return an ID that will be used for the
-// Local Search Service Content object, which represents a searchable piece of
-// data.
-std::string StandardAcceleratorToContentId(
-    const mojom::StandardAcceleratorPropertiesPtr&
-        standard_accelerator_properties) {
-  // ID strings only need to be unique within a given SearchConcept,
-  // so it's sufficient to create an ID from the accelerator modifiers and
-  // key_code.
-  return base::StrCat(
-      {base::NumberToString(
-           standard_accelerator_properties->accelerator.modifiers()),
-       "-",
-       base::NumberToString(
-           standard_accelerator_properties->accelerator.key_code())});
-}
-
-// Given standard accelerator properties, return a string that will be
-// searchable by the Local Search Service.
-std::u16string StandardAcceleratorToContentString(
-    const mojom::StandardAcceleratorPropertiesPtr&
-        standard_accelerator_properties) {
-  // TODO(cambickel) GetShortcutText outputs a shortcut with "+" as the
-  // delimiter, e.g. "Ctrl+Shift+Q". We want to delimit with spaces, e.g. "Ctrl
-  // Shift Q". This has a fair amount of edge cases so we'll handle this later.
-  // TODO(cambickel) GetShortcutText also doesn't properly handle certain
-  // "special" keys, e.g. BrightnessDown. For now, we'll use it, but we should
-  // eventually switch to a more robust solution.
-  return standard_accelerator_properties->accelerator.GetShortcutText();
-}
-
-}  // namespace
-
 SearchConceptRegistry::SearchConceptRegistry(
     local_search_service::LocalSearchServiceProxy& local_search_service_proxy) {
   local_search_service_proxy.GetIndex(
@@ -149,9 +101,8 @@ local_search_service::Data SearchConceptRegistry::SearchConceptToData(
   // queries.
   std::vector<local_search_service::Content> local_search_service_contents;
   // Reserve the size for the vector since we insert once for the description
-  // and once for each AcceleratorInfo.
-  local_search_service_contents.reserve(
-      search_concept.accelerator_infos.size() + 1);
+  // and at most once more in the case of text accelerators.
+  local_search_service_contents.reserve(2);
 
   // First, add this SearchConcept's description as searchable Content.
   // Note that the Content ID is prefixed with the SearchConcept ID, since
@@ -162,30 +113,25 @@ local_search_service::Data SearchConceptRegistry::SearchConceptToData(
       /*id=*/base::StrCat({search_concept.id, "-description"}),
       /*content=*/search_concept.accelerator_layout_info->description);
 
-  // Next, for each accelerator_info, register it (and its accelerators in the
-  // case of standard accelerators) as searchable Content.
-  for (const auto& accelerator_info : search_concept.accelerator_infos) {
+  // Only text accelerators should become searchable LSS Content.
+  DCHECK(search_concept.accelerator_infos.size() > 0);
+  // Text accelerators should only have one entry in accelerator_infos.
+  const mojom::AcceleratorInfoPtr& first_accelerator_info =
+      search_concept.accelerator_infos.at(0);
+
+  if (first_accelerator_info->layout_properties->is_text_accelerator()) {
     // Content->id needs to be unique across the entire index,
     // so we prefix it with the SearchConcept's id.
-    // The part of the id besides the SearchConcept's id only
-    // needs to be unique within that SearchConcept's accelerators.
-    std::string content_id;
-    std::u16string content_string;
+    std::string content_id =
+        base::StrCat({search_concept.id, "-text-accelerator"});
 
-    if (accelerator_info->layout_properties->is_text_accelerator()) {
-      // The content_id for a text accelerator doesn't need to be based on the
-      // content of the text accelerator because text accelerators have only
-      // one entry in SearchConcept.accelerator_infos.
-      content_id = base::StrCat({search_concept.id, "-text-accelerator"});
-      content_string = TextAcceleratorToContentString(
-          accelerator_info->layout_properties->get_text_accelerator());
-    } else {
-      content_id = base::StrCat(
-          {search_concept.id, "-",
-           StandardAcceleratorToContentId(accelerator_info->layout_properties
-                                              ->get_standard_accelerator())});
-      content_string = StandardAcceleratorToContentString(
-          accelerator_info->layout_properties->get_standard_accelerator());
+    // To get the searchable part of a Text Accelerator, combine all of the
+    // TextAcceleratorParts into one string.
+    std::u16string content_string;
+    for (const auto& part :
+         first_accelerator_info->layout_properties->get_text_accelerator()
+             ->parts) {
+      base::StrAppend(&content_string, {part->text});
     }
 
     local_search_service_contents.emplace_back(
