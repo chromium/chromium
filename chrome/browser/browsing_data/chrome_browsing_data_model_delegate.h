@@ -7,6 +7,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "components/browsing_data/content/browsing_data_model.h"
+#include "content/public/browser/render_frame_host.h"
 
 class ChromeBrowsingDataModelDelegate : public BrowsingDataModel::Delegate {
  public:
@@ -20,7 +21,10 @@ class ChromeBrowsingDataModelDelegate : public BrowsingDataModel::Delegate {
 
   static std::unique_ptr<ChromeBrowsingDataModelDelegate> CreateForProfile(
       Profile* profile);
-
+  static void BrowsingDataAccessed(content::RenderFrameHost* rfh,
+                                   BrowsingDataModel::DataKey data_key,
+                                   StorageType storage_type,
+                                   bool blocked);
   explicit ChromeBrowsingDataModelDelegate(Profile* profile);
   ~ChromeBrowsingDataModelDelegate() override;
 

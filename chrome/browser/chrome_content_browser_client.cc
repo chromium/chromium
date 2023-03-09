@@ -44,6 +44,7 @@
 #include "chrome/browser/browser_about_handler.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browsing_data/chrome_browsing_data_model_delegate.h"
 #include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "chrome/browser/captive_portal/captive_portal_service_factory.h"
 #include "chrome/browser/child_process_host_flags.h"
@@ -6856,8 +6857,16 @@ bool ChromeContentBrowserClient::HandleTopicsWebApi(
   if (!browsing_topics_service)
     return {};
 
-  return browsing_topics_service->HandleTopicsWebApi(
+  bool allowed = browsing_topics_service->HandleTopicsWebApi(
       context_origin, main_frame, caller_source, get_topics, observe, topics);
+
+  if (main_frame) {
+    ChromeBrowsingDataModelDelegate::BrowsingDataAccessed(
+        main_frame, context_origin,
+        ChromeBrowsingDataModelDelegate::StorageType::kTopics, !allowed);
+  }
+
+  return allowed;
 }
 
 bool ChromeContentBrowserClient::IsBluetoothScanningBlocked(

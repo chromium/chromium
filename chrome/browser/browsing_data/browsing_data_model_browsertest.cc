@@ -93,6 +93,29 @@ void JoinInterestGroup(const content::ToRenderFrameHost& adapter,
       GURL("https://example.com/render"));
   EXPECT_EQ("Success", EvalJs(adapter, command));
 }
+
+void AccessTopics(const content::ToRenderFrameHost& adapter) {
+  std::string command =
+      R"(
+    (async () => {
+      try {
+        document.browsingTopics();
+      } catch (e) {
+        return e.toString();
+      }
+      return "Success";
+    })())";
+  EXPECT_EQ("Success", EvalJs(adapter, command));
+}
+
+void WaitForModelUpdate(BrowsingDataModel* model, size_t expected_size) {
+  while (model->size() != expected_size) {
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
+    run_loop.Run();
+  }
+}
 }  // namespace
 
 using browsing_data_model_test_util::ValidateBrowsingDataEntries;
@@ -115,7 +138,8 @@ class BrowsingDataModelBrowserTest : public InProcessBrowserTest {
          {blink::features::kInterestGroupStorage, {}},
          {blink::features::kAdInterestGroupAPI, {}},
          {blink::features::kFledge, {}},
-         {blink::features::kFencedFrames, {}}},
+         {blink::features::kFencedFrames, {}},
+         {blink::features::kBrowsingTopics, {}}},
         /*disabled_features=*/
         {});
   }
@@ -360,12 +384,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
 
   // Join an interest group.
   JoinInterestGroup(web_contents(), https_test_server());
-  while (allowed_browsing_data_model->size() != 1) {
-    base::RunLoop run_loop;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
-    run_loop.Run();
-  }
+  WaitForModelUpdate(allowed_browsing_data_model, 1);
 
   // Validate that an interest group is reported to the browsing data model.
   url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
@@ -406,12 +425,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
                                                           register_url))
     );
 
-    while (allowed_browsing_data_model->size() != 1) {
-      base::RunLoop run_loop;
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-          FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
-      run_loop.Run();
-    }
+    WaitForModelUpdate(allowed_browsing_data_model, 1);
 
     // Validate that an attribution reporting datakey is reported to the
     // browsing data model.
@@ -424,4 +438,48 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
           {BrowsingDataModel::StorageType::kAttributionReporting,
            /*storage_size=*/0, /*cookie_count=*/0}}});
   }
+}
+
+IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
+                       TopicsAccessReportedCorrectly) {
+  // Navigate to test page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
+
+  auto* content_settings =
+      content_settings::PageSpecificContentSettings::GetForFrame(
+          web_contents()->GetPrimaryMainFrame());
+
+  // Validate that the allowed browsing data model is empty.
+  auto* allowed_browsing_data_model =
+      content_settings->allowed_browsing_data_model();
+  ValidateBrowsingDataEntries(allowed_browsing_data_model, {});
+  ASSERT_EQ(allowed_browsing_data_model->size(), 0u);
+
+  // Get Topics
+  AccessTopics(web_contents());
+
+  WaitForModelUpdate(allowed_browsing_data_model, 1);
+
+  // Validate Topics are reported correctly
+  url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
+  ValidateBrowsingDataEntries(
+      allowed_browsing_data_model,
+      {{kTestHost,
+        testOrigin,
+        {static_cast<BrowsingDataModel::StorageType>(
+             ChromeBrowsingDataModelDelegate::StorageType::kTopics),
+         /*storage_size=*/0, /*cookie_count=*/0}}});
+  ASSERT_EQ(allowed_browsing_data_model->size(), 1u);
+
+  // Clear Topic via BDM
+  {
+    base::RunLoop run_loop;
+    allowed_browsing_data_model->RemoveBrowsingData(kTestHost,
+                                                    run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  // Validate that the allowed browsing data model is cleared.
+  ValidateBrowsingDataEntries(allowed_browsing_data_model, {});
+  ASSERT_EQ(allowed_browsing_data_model->size(), 0u);
 }

@@ -6,11 +6,23 @@
 
 #include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "components/browsing_topics/browsing_topics_service.h"
+#include "components/content_settings/browser/page_specific_content_settings.h"
 
 // static
 std::unique_ptr<ChromeBrowsingDataModelDelegate>
 ChromeBrowsingDataModelDelegate::CreateForProfile(Profile* profile) {
   return std::make_unique<ChromeBrowsingDataModelDelegate>(profile);
+}
+
+// static
+void ChromeBrowsingDataModelDelegate::BrowsingDataAccessed(
+    content::RenderFrameHost* rfh,
+    BrowsingDataModel::DataKey data_key,
+    StorageType storage_type,
+    bool blocked) {
+  content_settings::PageSpecificContentSettings::BrowsingDataAccessed(
+      rfh, data_key, static_cast<BrowsingDataModel::StorageType>(storage_type),
+      blocked);
 }
 
 ChromeBrowsingDataModelDelegate::ChromeBrowsingDataModelDelegate(
