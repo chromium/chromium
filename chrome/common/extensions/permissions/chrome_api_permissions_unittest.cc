@@ -26,13 +26,8 @@ TEST(ChromeAPIPermissionsUnitTest, AllApiPermissionsHaveACorrespondingFeature) {
   ASSERT_EQ(1u, all_api_permissions.count(mojom::APIPermissionID::kStorage));
 
   std::string kKnownBad[] = {
-      "bookmarkManagerPrivate",
-      "fileBrowserHandlerInternal",
-      "homepage",
-      "searchProvider",
-      "startupPages",
-      "tabCaptureForTab",
-      "newTabPageOverride",
+      "homepage",         "searchProvider",     "startupPages",
+      "tabCaptureForTab", "newTabPageOverride",
   };
 
   const FeatureProvider* permission_features =

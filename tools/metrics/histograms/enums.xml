@@ -36629,7 +36629,7 @@ Called by update_extension_permission.py.-->
   <int value="63" label="kDeprecated_ExternallyConnectableAllUrls"/>
   <int value="64" label="kFeedbackPrivate"/>
   <int value="65" label="kFileBrowserHandler"/>
-  <int value="66" label="kFileBrowserHandlerInternal"/>
+  <int value="66" label="kDeleted_FileBrowserHandlerInternal"/>
   <int value="67" label="kFileManagerPrivate"/>
   <int value="68" label="kFileSystem"/>
   <int value="69" label="kFileSystemDirectory"/>

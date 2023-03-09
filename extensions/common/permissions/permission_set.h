@@ -138,9 +138,6 @@ class PermissionSet {
   // "/*", and we implicitly make this change.
   void CleanExplicitHostPaths();
 
-  // Adds permissions implied independently of other context.
-  void InitImplicitPermissions();
-
   // Initializes the effective host permission based on the data in this set.
   void InitEffectiveHosts();
 

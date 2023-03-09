@@ -151,8 +151,6 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
      APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kEnterpriseReportingPrivate,
      "enterprise.reportingPrivate", APIPermissionInfo::kFlagCannotBeOptional},
-    {APIPermissionID::kFileBrowserHandlerInternal, "fileBrowserHandlerInternal",
-     APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kFileManagerPrivate, "fileManagerPrivate",
      APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kIdentityPrivate, "identityPrivate",

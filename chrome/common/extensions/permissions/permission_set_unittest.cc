@@ -835,7 +835,6 @@ TEST(PermissionsTest, PermissionMessages) {
   skip.insert(APIPermissionID::kEchoPrivate);
   skip.insert(APIPermissionID::kEnterprisePlatformKeysPrivate);
   skip.insert(APIPermissionID::kFeedbackPrivate);
-  skip.insert(APIPermissionID::kFileBrowserHandlerInternal);
   skip.insert(APIPermissionID::kFileManagerPrivate);
   skip.insert(APIPermissionID::kFirstRunPrivate);
   skip.insert(APIPermissionID::kSharedStoragePrivate);
@@ -1755,16 +1754,6 @@ TEST(PermissionsTest, IsEmpty) {
       APIPermissionSet(), ManifestPermissionSet(), URLPatternSet(),
       non_empty_extent.Clone());
   EXPECT_FALSE(perm_set->IsEmpty());
-}
-
-TEST(PermissionsTest, ImpliedPermissions) {
-  APIPermissionSet apis;
-  apis.insert(APIPermissionID::kFileBrowserHandler);
-  EXPECT_EQ(1U, apis.size());
-
-  PermissionSet perm_set(std::move(apis), ManifestPermissionSet(),
-                         URLPatternSet(), URLPatternSet());
-  EXPECT_EQ(2U, perm_set.apis().size());
 }
 
 TEST(PermissionsTest, SyncFileSystemPermission) {
