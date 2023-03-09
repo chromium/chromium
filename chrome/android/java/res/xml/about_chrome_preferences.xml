@@ -13,6 +13,7 @@ found in the LICENSE file.
         android:title="@string/application_version_title" />
     <org.chromium.chrome.browser.about_settings.AboutChromePreferenceOSVersion
         android:key="os_version"
+        app:isPreferenceVisible="false"
         android:title="@string/os_version_title" />
     <!-- <Preference
         android:fragment="org.chromium.chrome.browser.about_settings.LegalInformationSettings"

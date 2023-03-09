@@ -2380,7 +2380,7 @@
 <translation id="7112327784801341716">看到的不是您的最新信息？请让银行更新您的信息。</translation>
 <translation id="7118618213916969306">搜索剪贴板上的网址：<ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">关闭其他标签页或程序</translation>
-<translation id="7129355289156517987">当您关闭 Chromium 中的所有无痕式标签页后，系统会从此设备上清除您在这些标签页中的活动记录：
+<translation id="7129355289156517987">当您关闭浏览器中的所有无痕式标签页后，系统会从此设备上清除您在这些标签页中的活动记录：
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />浏览活动<ph name="END_LIST_ITEM" />
             <ph name="LIST_ITEM" />搜索记录<ph name="END_LIST_ITEM" />
