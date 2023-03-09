@@ -2525,6 +2525,14 @@ fuzzer_test("math_transform_fuzzer") {
   dict = "//testing/libfuzzer/fuzzers/dicts/math_transform.dict"
 }
 
+fuzzer_test("layout_locale_fuzzer") {
+  sources = [ "text/layout_locale_fuzzer.cc" ]
+  deps = [
+    ":blink_fuzzer_test_support",
+    ":platform",
+  ]
+}
+
 # Fuzzer for blink::FindCategory.
 fuzzer_test("mathml_operator_dictionary_fuzzer") {
   sources = [ "text/mathml_operator_dictionary_fuzzer.cc" ]
