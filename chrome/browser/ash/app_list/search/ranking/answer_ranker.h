@@ -36,6 +36,10 @@ class AnswerRanker : public Ranker {
   // The currently selected answer. A nullptr value indicates that no answer
   // card has been chosen.
   base::WeakPtr<ChromeSearchResult> chosen_answer_;
+
+  // All current Omnibox answer candidates.
+  std::vector<ChromeSearchResult*> omnibox_candidates_;
+
   bool burn_in_elapsed_ = false;
 };
 

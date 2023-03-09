@@ -24,6 +24,9 @@ class Scoring {
   // Score used to determine if a result should be considered a best match.
   double BestMatchScore() const;
 
+  // There are many components that filter out results. Be careful with
+  // set_filtered(false) as it may override a filter from a different location.
+  // TODO(b/268281615): Consider removing the ability to set_filtered(false).
   void set_filtered(bool filtered);
   bool filtered() const { return filtered_; }
 
