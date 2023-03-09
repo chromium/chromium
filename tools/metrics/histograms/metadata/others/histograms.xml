@@ -477,7 +477,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     True if the browser can reuse an existing context when calling generateBid()
     whose corresponding interest group has the executionMode set to
-    groupByOrigin.
+    group-by-origin.
 
     See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
     version of the FLEDGE explainer.
@@ -770,6 +770,32 @@ chromium-metrics-reviews@google.com.
     See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
     version of the FLEDGE explainer.
   </summary>
+</histogram>
+
+<histogram name="Ads.InterestGroup.EnumNaming.{When}.{Type}"
+    enum="BooleanDeprecatedJSEnumName" expires_after="2023-07-31">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    For each time a JavaScript enum of {Type} is provided during {When}, records
+    whether or not the enum was in the deprecated &quot;camelCase&quot; form.
+    (The correct form is the &quot;words-separated-by-dashes&quot; form).
+    Unknown enum values are ignored and not reported.
+
+    Reported at each enum usage during {When}.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+  <token key="When">
+    <variant name="Renderer" summary="a FLEDGE API call in the renderer"/>
+    <variant name="Update" summary="an interest group update"/>
+  </token>
+  <token key="Type">
+    <variant name="SellerCapabilities" summary="SellerCapabilities"/>
+    <variant name="WorkletExecutionMode" summary="WorkletExecutionMode"/>
+  </token>
 </histogram>
 
 <histogram name="Ads.InterestGroup.Net.DownloadTime.{Type}" units="ms"

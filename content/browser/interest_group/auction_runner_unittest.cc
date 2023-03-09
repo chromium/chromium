@@ -8424,7 +8424,7 @@ TEST_F(AuctionRunnerTest, SizeLimitHighestPriorityGroupHasNoBidScript) {
 }
 
 TEST_F(AuctionRunnerTest, ExecutionModeGroupByOrigin) {
-  // Test of GroupByOrigin execution mode at AuctionRunner level;
+  // Test of group-by-origin execution mode at AuctionRunner level;
   // this primarily shows that the sorting actually groups things, and that
   // distinct groups are kept separate.
   const char kScript[] = R"(
@@ -8455,7 +8455,7 @@ TEST_F(AuctionRunnerTest, ExecutionModeGroupByOrigin) {
                                          kSellerScript);
 
   std::vector<StorageInterestGroup> bidders;
-  // Add 5 groupByOrigin, 2 regular execution mode IGs.
+  // Add 5 group-by-origin, 2 regular execution mode IGs.
   for (int i = 0; i < 7; ++i) {
     StorageInterestGroup ig = MakeInterestGroup(
         kBidder1, kBidder1Name + base::NumberToString(i), kBidder1Url,

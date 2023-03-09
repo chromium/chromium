@@ -4601,6 +4601,85 @@ TEST_F(AdAuctionServiceImplTest, UpdatesInterestGroupsAfterAuctionNoAds) {
   EXPECT_FALSE(a_group.ads.has_value());
 }
 
+TEST_F(AdAuctionServiceImplTest, UpdateSupportsDeprecatedNames) {
+  network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
+    "ads": [{
+        "renderUrl": "https://example.com/new_render"
+    }],
+    "sellerCapabilities": {
+        "*": ["interestGroupCounts", "latencyStats"]
+    },
+    "executionMode": "groupByOrigin"
+})");
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.expiry = base::Time::Now() + base::Days(30);
+  interest_group.update_url = kUpdateUrlA;
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  std::vector<StorageInterestGroup> groups =
+      GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups.size(), 1u);
+
+  const auto& group = groups[0].interest_group;
+  ASSERT_TRUE(group.ads.has_value());
+  ASSERT_EQ(group.ads->size(), 1u);
+  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
+            "https://example.com/new_render");
+  EXPECT_EQ(group.all_sellers_capabilities,
+            blink::SellerCapabilitiesType(
+                blink::SellerCapabilities::kInterestGroupCounts,
+                blink::SellerCapabilities::kLatencyStats));
+  EXPECT_EQ(group.execution_mode,
+            blink::InterestGroup::ExecutionMode::kGroupedByOriginMode);
+}
+
+TEST_F(AdAuctionServiceImplTest, UpdateIgnoresUnknownEnumFields) {
+  network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
+    "ads": [{
+        "renderUrl": "https://example.com/new_render"
+    }],
+    "sellerCapabilities": {
+        "https://example.test": ["non-valid-capability"]
+    },
+    "executionMode": "non-valid-execution-mode"
+})");
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.expiry = base::Time::Now() + base::Days(30);
+  interest_group.update_url = kUpdateUrlA;
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  std::vector<StorageInterestGroup> groups =
+      GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups.size(), 1u);
+
+  // The unknown enum values are ignored, and renderUrl is updated.
+  const auto& group = groups[0].interest_group;
+  ASSERT_TRUE(group.ads.has_value());
+  ASSERT_EQ(group.ads->size(), 1u);
+  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
+            "https://example.com/new_render");
+}
+
 // When sending reports, the next report request is feteched after the previous
 // report request completed (`max_active_report_requests_` is set to 1 in this
 // test). Reporting should continue even after the page navigated away. Timeout
