@@ -38,7 +38,7 @@ gclient_gn_args = [
   'checkout_android',
   'checkout_android_prebuilts_build_tools',
   'checkout_android_native_support',
-  'checkout_google_benchmark',
+  'checkout_google_benchmark', # TODO(https://crbug.com/1404759): Remove.
   'checkout_ios_webkit',
   'checkout_nacl',
   'checkout_openxr',
@@ -111,10 +111,9 @@ vars = {
   # Checkout fuzz archive. Should not need in builders.
   'checkout_clusterfuzz_data': False,
 
-  # By default, do not check out Google Benchmark. The library is only used by a
-  # few specialized benchmarks that most developers do not interact with. Will
-  # be overridden by gclient variables.
-  'checkout_google_benchmark': False,
+  # Always check out Google Benchmark.
+  # TODO(https://crbug.com/1404759): Remove.
+  'checkout_google_benchmark': True,
 
   # By default, checkout JavaScript coverage node modules. These packages
   # are used to post-process raw v8 coverage reports into IstanbulJS compliant
@@ -1146,10 +1145,8 @@ deps = {
       'condition': 'checkout_src_internal and checkout_chromeos',
   },
 
-  'src/third_party/google_benchmark/src': {
-    'url': Var('chromium_git') + '/external/github.com/google/benchmark.git' + '@' + 'f730846b0a3c0dc0699978846fb14ffb2fad0bdc',
-    'condition': 'checkout_google_benchmark',
-  },
+  'src/third_party/google_benchmark/src':
+    Var('chromium_git') + '/external/github.com/google/benchmark.git' + '@' + 'f730846b0a3c0dc0699978846fb14ffb2fad0bdc',
 
   'src/third_party/boringssl/src':
     Var('boringssl_git') + '/boringssl.git' + '@' +  Var('boringssl_revision'),
@@ -4408,6 +4405,7 @@ include_rules = [
   '+library_loaders',
 
   '+testing',
+  '+third_party/google_benchmark/src/include/benchmark/benchmark.h',
   '+third_party/icu/source/common/unicode',
   '+third_party/icu/source/i18n/unicode',
   '+url',
