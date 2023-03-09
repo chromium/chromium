@@ -186,27 +186,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Settings.LoadCompletedTime.MD" units="ms"
-    expires_after="2020-08-01">
-  <owner>dpapad@chromium.org</owner>
-  <owner>dbeam@chromium.org</owner>
-  <summary>
-    The amount of time between the RenderFrameHost StartProvisionalLoad event
-    and the RenderFrameHost DocumentOnLoadCompleted event for the MD Settings
-    page.
-  </summary>
-</histogram>
-
-<histogram name="Settings.LoadDocumentTime.MD" units="ms"
-    expires_after="2020-08-01">
-  <owner>dpapad@chromium.org</owner>
-  <owner>dbeam@chromium.org</owner>
-  <summary>
-    The amount of time between the RenderFrameHost StartProvisionalLoad and
-    DidFinishDocumentLoad events for the MD Settings page.
-  </summary>
-</histogram>
-
 <histogram name="Settings.OpenSettingsFromMenu.PerProfileType"
     enum="BrowserProfileType" expires_after="2023-08-06">
   <owner>roagarwal@chromium.org</owner>

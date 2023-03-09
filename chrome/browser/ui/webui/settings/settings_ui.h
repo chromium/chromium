@@ -8,7 +8,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/webui_load_timer.h"
 #include "components/user_education/webui/help_bubble_handler.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -105,8 +104,6 @@ class SettingsUI : public ui::MojoWebUIController,
   std::unique_ptr<user_education::HelpBubbleHandler> help_bubble_handler_;
   mojo::Receiver<help_bubble::mojom::HelpBubbleHandlerFactory>
       help_bubble_handler_factory_receiver_{this};
-
-  WebuiLoadTimer webui_load_timer_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

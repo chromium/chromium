@@ -177,10 +177,7 @@ void SettingsUI::RegisterProfilePrefs(
 }
 
 SettingsUI::SettingsUI(content::WebUI* web_ui)
-    : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true),
-      webui_load_timer_(web_ui->GetWebContents(),
-                        "Settings.LoadDocumentTime.MD",
-                        "Settings.LoadCompletedTime.MD") {
+    : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::CreateAndAdd(
