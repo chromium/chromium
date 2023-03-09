@@ -214,6 +214,7 @@ bool ChromeSyncablePrefsDatabase::IsPreferenceSyncable(
         prefs::kDefaultTasksBySuffix,
         prefs::kDevToolsSyncPreferences,
         prefs::kDevToolsSyncedPreferencesSyncEnabled,
+        prefs::kDownloadBubbleIphSuppression,
         prefs::kEnableDoNotTrack,
         prefs::kExtensionCommands,
         prefs::kExtensionsUIDeveloperMode,

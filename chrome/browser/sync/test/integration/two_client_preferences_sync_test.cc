@@ -16,6 +16,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/engine/cycle/entity_change_metric_recording.h"
+#include "components/sync_preferences/common_syncable_prefs_database.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -174,29 +175,34 @@ IN_PROC_BROWSER_TEST_F(TwoClientPreferencesSyncTestWithSelfNotifications,
   ResetSyncForPrimaryAccount();
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
 
-  constexpr char pref_name[] = "testing.my-test-preference";
   constexpr char string_value[] = "some-string";
 
   // Client 0 registers a boolean preference, client 1 registers a string.
   GetRegistry(GetProfile(0))
-      ->RegisterBooleanPref(pref_name, false,
+      ->RegisterBooleanPref(sync_preferences::kSyncablePrefForTesting, false,
                             user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   GetRegistry(GetProfile(1))
-      ->RegisterStringPref(pref_name, "",
+      ->RegisterStringPref(sync_preferences::kSyncablePrefForTesting, "",
                            user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 
   // Set non-default values on both clients.
-  ChangeBooleanPref(0, pref_name);
-  ChangeStringPref(1, pref_name, string_value);
-  ASSERT_THAT(GetPrefs(0)->GetBoolean(pref_name), Eq(true));
-  ASSERT_THAT(GetPrefs(1)->GetString(pref_name), Eq(string_value));
+  ChangeBooleanPref(0, sync_preferences::kSyncablePrefForTesting);
+  ChangeStringPref(1, sync_preferences::kSyncablePrefForTesting, string_value);
+  ASSERT_THAT(
+      GetPrefs(0)->GetBoolean(sync_preferences::kSyncablePrefForTesting),
+      Eq(true));
+  ASSERT_THAT(GetPrefs(1)->GetString(sync_preferences::kSyncablePrefForTesting),
+              Eq(string_value));
 
   // Start sync and await until they sync mutually.
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   // Verify that neither of the clients got updated, because of type mismatch.
-  EXPECT_THAT(GetPrefs(0)->GetBoolean(pref_name), Eq(true));
-  EXPECT_THAT(GetPrefs(1)->GetString(pref_name), Eq(string_value));
+  EXPECT_THAT(
+      GetPrefs(0)->GetBoolean(sync_preferences::kSyncablePrefForTesting),
+      Eq(true));
+  EXPECT_THAT(GetPrefs(1)->GetString(sync_preferences::kSyncablePrefForTesting),
+              Eq(string_value));
 }
 
 // Verifies that priority synced preferences and regular sycned preferences are
@@ -205,25 +211,30 @@ IN_PROC_BROWSER_TEST_F(TwoClientPreferencesSyncTestWithSelfNotifications,
                        ShouldIsolatePriorityPreferences) {
   // Register a pref as priority with client0 and regular synced with client1.
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
-  constexpr char pref_name[] = "testing.my-test-preference";
   GetRegistry(GetProfile(0))
       ->RegisterStringPref(
-          pref_name, "",
+          sync_preferences::kSyncablePrefForTesting, "",
           user_prefs::PrefRegistrySyncable::SYNCABLE_PRIORITY_PREF);
   GetRegistry(GetProfile(1))
-      ->RegisterStringPref(pref_name, "",
+      ->RegisterStringPref(sync_preferences::kSyncablePrefForTesting, "",
                            user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
-  ChangeStringPref(0, pref_name, "priority value");
+  ChangeStringPref(0, sync_preferences::kSyncablePrefForTesting,
+                   "priority value");
   GetClient(0)->AwaitMutualSyncCycleCompletion(GetClient(1));
-  EXPECT_THAT(GetPrefs(0)->GetString(pref_name), Eq("priority value"));
-  EXPECT_THAT(GetPrefs(1)->GetString(pref_name), Eq(""));
+  EXPECT_THAT(GetPrefs(0)->GetString(sync_preferences::kSyncablePrefForTesting),
+              Eq("priority value"));
+  EXPECT_THAT(GetPrefs(1)->GetString(sync_preferences::kSyncablePrefForTesting),
+              Eq(""));
 
-  ChangeStringPref(1, pref_name, "non-priority value");
+  ChangeStringPref(1, sync_preferences::kSyncablePrefForTesting,
+                   "non-priority value");
   GetClient(1)->AwaitMutualSyncCycleCompletion(GetClient(0));
-  EXPECT_THAT(GetPrefs(0)->GetString(pref_name), Eq("priority value"));
-  EXPECT_THAT(GetPrefs(1)->GetString(pref_name), Eq("non-priority value"));
+  EXPECT_THAT(GetPrefs(0)->GetString(sync_preferences::kSyncablePrefForTesting),
+              Eq("priority value"));
+  EXPECT_THAT(GetPrefs(1)->GetString(sync_preferences::kSyncablePrefForTesting),
+              Eq("non-priority value"));
 }
 
 }  // namespace
