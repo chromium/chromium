@@ -19,17 +19,17 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_asan_bound_arg_tracker.h"
 #include "base/memory/raw_ptr_asan_hooks.h"
-#include "base/no_destructor.h"
 #include "base/process/process.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool/thread_group.h"
-#include "base/threading/thread_local.h"
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace base {
 
 RawPtrAsanService RawPtrAsanService::instance_;
 
 namespace {
+
 // https://github.com/llvm/llvm-project/blob/b84673b3f424882c4c1961fb2c49b6302b68f344/compiler-rt/lib/asan/asan_mapping.h#L154
 constexpr size_t kShadowScale = 3;
 // https://github.com/llvm/llvm-project/blob/b84673b3f424882c4c1961fb2c49b6302b68f344/compiler-rt/lib/asan/asan_allocator.cpp#L143
@@ -38,6 +38,13 @@ constexpr size_t kChunkHeaderSize = 16;
 constexpr uint8_t kAsanHeapLeftRedzoneMagic = 0xfa;
 // https://github.com/llvm/llvm-project/blob/b84673b3f424882c4c1961fb2c49b6302b68f344/compiler-rt/lib/asan/asan_internal.h#L145
 constexpr uint8_t kAsanUserPoisonedMemoryMagic = 0xf7;
+
+// Intentionally use thread-local-storage here. Making this sequence-local
+// doesn't prevent sharing of PendingReport contents between unrelated tasks, so
+// we keep this at a lower-level and avoid introducing additional assumptions
+// about Chrome's sequence model.
+ABSL_CONST_INIT thread_local RawPtrAsanService::PendingReport pending_report;
+
 }  // namespace
 
 // Mark the first eight bytes of every allocation's header as "user poisoned".
@@ -112,8 +119,8 @@ void RawPtrAsanService::SetPendingReport(ReportType type,
   __asan_locate_address(const_cast<void*>(ptr), nullptr, 0, &region_base,
                         &region_size);
 
-  GetPendingReport() = {type, reinterpret_cast<uintptr_t>(region_base),
-                        region_size};
+  pending_report = {type, reinterpret_cast<uintptr_t>(region_base),
+                    region_size};
 }
 
 namespace {
@@ -157,7 +164,6 @@ void RawPtrAsanService::ErrorReportCallback(const char* report, bool*) {
     const char* protection_details;
   } crash_info;
 
-  auto& pending_report = GetPendingReport();
   uintptr_t ptr = reinterpret_cast<uintptr_t>(__asan_get_report_address());
   uintptr_t bound_arg_ptr = RawPtrAsanBoundArgTracker::GetProtectedArgPtr(ptr);
   if (pending_report.allocation_base <= ptr &&
@@ -355,21 +361,6 @@ void RawPtrAsanService::CrashOnDanglingInstantiation(
   base::ImmediateCrash();
 }
 
-// static
-RawPtrAsanService::PendingReport& RawPtrAsanService::GetPendingReport() {
-  // Intentionally use thread-local-storage here. Making this sequence-local
-  // doesn't prevent sharing of PendingReport contents between unrelated
-  // tasks, so we keep this at a lower-level and avoid introducing additional
-  // assumptions about Chrome's sequence model.
-  static NoDestructor<ThreadLocalOwnedPointer<PendingReport>> pending_report;
-  PendingReport* raw_pending_report = pending_report->Get();
-  if (UNLIKELY(!raw_pending_report)) {
-    auto new_pending_report = std::make_unique<PendingReport>();
-    raw_pending_report = new_pending_report.get();
-    pending_report->Set(std::move(new_pending_report));
-  }
-  return *raw_pending_report;
-}
-
 }  // namespace base
+
 #endif  // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)

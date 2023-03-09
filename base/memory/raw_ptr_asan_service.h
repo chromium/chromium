@@ -32,6 +32,12 @@ class BASE_EXPORT RawPtrAsanService {
     kInstantiation,
   };
 
+  struct PendingReport {
+    ReportType type = ReportType::kDereference;
+    uintptr_t allocation_base = 0;
+    size_t allocation_size = 0;
+  };
+
   void Configure(EnableDereferenceCheck,
                  EnableExtractionCheck,
                  EnableInstantiationCheck);
@@ -70,14 +76,6 @@ class BASE_EXPORT RawPtrAsanService {
     kDisabled,
     kEnabled,
   };
-
-  struct PendingReport {
-    ReportType type;
-    uintptr_t allocation_base;
-    size_t allocation_size;
-  };
-
-  static PendingReport& GetPendingReport();
 
   uint8_t* GetShadow(void* ptr) const;
 
