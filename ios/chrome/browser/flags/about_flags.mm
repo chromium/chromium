@@ -1426,6 +1426,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMixedContentAutoupgradeDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          security_interstitials::features::kMixedContentAutoupgrade)},
+    {"enable-email-in-bookmarks-reading-list-snackbar",
+     flag_descriptions::kEnableEmailInBookmarksReadingListSnackbarName,
+     flag_descriptions::kEnableEmailInBookmarksReadingListSnackbarDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kEnableEmailInBookmarksReadingListSnackbar)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

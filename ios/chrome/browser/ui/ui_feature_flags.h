@@ -180,4 +180,8 @@ extern const char kBringYourOwnTabsIOSParam[];
 // and experiment "BringYourOwnTabsIOS".
 BringYourOwnTabsPromptType GetBringYourOwnTabsPromptType();
 
+// Whether the email is shown in the snackbar indicating that a new bookmark
+// or reading list item is added.
+BASE_DECLARE_FEATURE(kEnableEmailInBookmarksReadingListSnackbar);
+
 #endif  // IOS_CHROME_BROWSER_UI_UI_FEATURE_FLAGS_H_
