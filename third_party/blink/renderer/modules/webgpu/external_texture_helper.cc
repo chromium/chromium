@@ -242,10 +242,12 @@ ExternalTexture CreateExternalTexture(
 
   WGPUExternalTextureDescriptor external_texture_desc = {};
 
-  // Set ExternalTexture visibleSize and visibleOrigin
+  // Set ExternalTexture visibleSize and visibleOrigin. 0-copy path
+  // uses this metadata.
   gfx::Rect visible_rect = media_video_frame->visible_rect();
   DCHECK(visible_rect.x() >= 0 && visible_rect.y() >= 0 &&
          visible_rect.width() >= 0 && visible_rect.height() >= 0);
+
   external_texture_desc.visibleOrigin = {
       static_cast<uint32_t>(visible_rect.x()),
       static_cast<uint32_t>(visible_rect.y())};
@@ -335,7 +337,19 @@ ExternalTexture CreateExternalTexture(
       context_provider_wrapper->ContextProvider()->IsContextLost())
     return external_texture;
 
-  const auto intrinsic_size = media_video_frame->natural_size();
+  // In 0-copy path, uploading shares the whole frame into dawn and apply
+  // visible rect and sample from it. For 1-copy path, we should obey the
+  // same behaviour by:
+  // - Get recycle cache with video frame visible size.
+  // - Draw video frame visible rect into recycle cache, uses visible size.
+  // - Reset origin of visible rect in ExternalTextureDesc and use internal
+  // shader to
+  //   handle visible rect.
+  const auto intrinsic_size =
+      gfx::Size(media_video_frame->visible_rect().width(),
+                media_video_frame->visible_rect().height());
+
+  external_texture_desc.visibleOrigin = {};
 
   // Try to workaround crbug.com/1407112 by keeping no color space conversion
   // DrawVideoFrameIntoResourceProvider by setting the canvas resource's
@@ -375,7 +389,7 @@ ExternalTexture CreateExternalTexture(
   // DrawVideoFrameIntoResourceProvider() creates local_video_renderer always.
   // This might affect performance, maybe a cache local_video_renderer could
   // help.
-  const auto dest_rect = gfx::Rect(media_video_frame->natural_size());
+  const auto dest_rect = gfx::Rect(intrinsic_size);
   if (!DrawVideoFrameIntoResourceProvider(
           std::move(media_video_frame), resource_provider,
           raster_context_provider, dest_rect, video_renderer)) {
