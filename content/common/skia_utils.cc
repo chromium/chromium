@@ -39,6 +39,10 @@ void InitializeSkia() {
     SkGraphics::Init();
   }
 
+  if (cmd.HasSwitch(switches::kForceSkiaAnalyticAntialiasing)) {
+    SkGraphics::SetPathAnalyticAADecider([](const SkPath&) { return true; });
+  }
+
   const int kMB = 1024 * 1024;
   size_t font_cache_limit;
 #if BUILDFLAG(IS_ANDROID)
