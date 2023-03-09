@@ -33,6 +33,8 @@ class KioskTroubleshootingControllerAsh
  private:
   enum class TroubleshootingAcceleratorAction {
     NEW_WINDOW,
+    SWITCH_WINDOWS_FORWARD,
+    SWITCH_WINDOWS_BACKWARD,
   };
 
   // ui::AcceleratorTarget:

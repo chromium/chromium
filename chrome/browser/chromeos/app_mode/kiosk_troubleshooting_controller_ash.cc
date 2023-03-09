@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/accelerators/accelerator_commands.h"
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/shell.h"
@@ -42,6 +43,12 @@ bool KioskTroubleshootingControllerAsh::AcceleratorPressed(
           /*incognito=*/false,
           /*should_trigger_session_restore=*/false);
       return true;
+    case TroubleshootingAcceleratorAction::SWITCH_WINDOWS_FORWARD:
+      accelerators::CycleForwardMru(/*same_app_only=*/false);
+      return true;
+    case TroubleshootingAcceleratorAction::SWITCH_WINDOWS_BACKWARD:
+      accelerators::CycleBackwardMru(/*same_app_only=*/false);
+      return true;
   }
 
   return false;
@@ -56,6 +63,16 @@ void KioskTroubleshootingControllerAsh::RegisterTroubleshootingAccelerators() {
   accelerators_with_actions_.insert(
       {ui::Accelerator(ui::VKEY_N, ui::EF_CONTROL_DOWN),
        TroubleshootingAcceleratorAction::NEW_WINDOW});
+
+  // Alt+Tab
+  accelerators_with_actions_.insert(
+      {ui::Accelerator(ui::VKEY_TAB, ui::EF_ALT_DOWN),
+       TroubleshootingAcceleratorAction::SWITCH_WINDOWS_FORWARD});
+
+  // Shift+Alt+Tab
+  accelerators_with_actions_.insert(
+      {ui::Accelerator(ui::VKEY_TAB, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN),
+       TroubleshootingAcceleratorAction::SWITCH_WINDOWS_BACKWARD});
 
   Shell::Get()->accelerator_controller()->Register(GetAllAccelerators(), this);
 }

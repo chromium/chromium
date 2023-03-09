@@ -7,6 +7,7 @@ specific_include_rules = {
     "+chrome/browser/ash/app_mode/test_kiosk_extension_builder.h",
   ],
   "kiosk_troubleshooting_controller_ash.cc": [
+    "+ash/accelerators/accelerator_commands.h",
     "+ash/accelerators/accelerator_controller_impl.h",
     "+ash/public/cpp/new_window_delegate.h",
     "+ash/shell.h"
