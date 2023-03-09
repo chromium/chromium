@@ -566,7 +566,7 @@ crbug.com/1357064 [ android android-pixel-6 no-passthrough ] conformance/renderi
 crbug.com/1383180 [ android android-pixel-6 ] conformance/extensions/oes-texture-float-with-video.html [ RetryOnFailure ]
 crbug.com/1383180 [ android android-pixel-6 target-cpu-64 ] conformance/textures/misc/texture-video-transparent.html [ RetryOnFailure ]
 crbug.com/1383180 [ android android-pixel-6 ] conformance/textures/image_bitmap_from_video/* [ RetryOnFailure ]
-crbug.com/1383180 [ android android-pixel-6 ] conformance/textures/video/* [ RetryOnFailure ]
+crbug.com/1383180 [ android android-pixel-6 angle-opengles passthrough ] conformance/textures/video/* [ RetryOnFailure ]
 # finder:group-end
 
 ## Misc failures ##
