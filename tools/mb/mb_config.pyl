@@ -90,6 +90,7 @@
     },
 
     'chromium.accessibility': {
+      'fuchsia-x64-accessibility-rel': 'release_bot_fuchsia_reclient',
       'linux-blink-web-tests-force-accessibility-rel': 'release_bot_blink_accessibility_reclient',
     },
 
@@ -1015,6 +1016,7 @@
     },
 
     'tryserver.chromium.accessibility': {
+      'fuchsia-x64-accessibility-rel': 'release_bot_fuchsia_reclient',
       'linux-blink-web-tests-force-accessibility-rel': 'release_bot_blink_accessibility_reclient',
     },
 

@@ -1,4 +1,13 @@
 {
+  "fuchsia-x64-accessibility-rel": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_component_build": false,
+      "is_debug": false,
+      "target_os": "fuchsia",
+      "use_remoteexec": true
+    }
+  },
   "linux-blink-web-tests-force-accessibility-rel": {
     "gn_args": {
       "dcheck_always_on": true,
