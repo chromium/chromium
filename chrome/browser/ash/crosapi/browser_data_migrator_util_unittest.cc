@@ -537,24 +537,24 @@ TEST(BrowserDataMigratorUtilTest, CopyDirectory) {
   //         |- data
   //         |- Subdirectory/data
   //     |- symlink  /* symlink to original */
-
+  ASSERT_TRUE(
+      base::CreateDirectory(scoped_temp_dir.GetPath().Append(sensitive)));
   ASSERT_TRUE(base::WriteFile(
       scoped_temp_dir.GetPath().Append(sensitive).Append(original),
-      kTextFileContent, kTextFileSize));
+      kTextFileContent));
   ASSERT_TRUE(base::CreateDirectory(copy_from));
   ASSERT_TRUE(base::CreateDirectory(copy_from.Append(subdirectory)));
   ASSERT_TRUE(base::CreateDirectory(
       copy_from.Append(subdirectory).Append(subdirectory)));
-  ASSERT_TRUE(base::WriteFile(copy_from.Append(data_file), kTextFileContent,
-                              kTextFileSize));
+  ASSERT_TRUE(base::WriteFile(copy_from.Append(data_file), kTextFileContent));
   ASSERT_TRUE(base::WriteFile(copy_from.Append(subdirectory).Append(data_file),
-                              kTextFileContent, kTextFileSize));
+                              kTextFileContent));
   ASSERT_TRUE(base::WriteFile(
       copy_from.Append(subdirectory).Append(subdirectory).Append(data_file),
-      kTextFileContent, kTextFileSize));
-  base::CreateSymbolicLink(
+      kTextFileContent));
+  ASSERT_TRUE(base::CreateSymbolicLink(
       scoped_temp_dir.GetPath().Append(sensitive).Append(original),
-      copy_from.Append(symlink));
+      copy_from.Append(symlink)));
 
   // Test `CopyDirectory()`.
   scoped_refptr<CancelFlag> cancelled = base::MakeRefCounted<CancelFlag>();
