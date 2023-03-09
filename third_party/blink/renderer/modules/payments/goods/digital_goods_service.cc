@@ -89,9 +89,12 @@ void OnConsumeResponse(ScriptPromiseResolver* resolver,
 }  // namespace
 
 DigitalGoodsService::DigitalGoodsService(
-    mojo::PendingRemote<payments::mojom::blink::DigitalGoods> pending_remote) {
+    ExecutionContext* context,
+    mojo::PendingRemote<payments::mojom::blink::DigitalGoods> pending_remote)
+    : mojo_service_(context) {
   DCHECK(pending_remote.is_valid());
-  mojo_service_.Bind(std::move(pending_remote));
+  mojo_service_.Bind(std::move(pending_remote),
+                     context->GetTaskRunner(TaskType::kMiscPlatformAPI));
   DCHECK(mojo_service_);
 }
 
@@ -150,6 +153,7 @@ ScriptPromise DigitalGoodsService::consume(ScriptState* script_state,
 }
 
 void DigitalGoodsService::Trace(Visitor* visitor) const {
+  visitor->Trace(mojo_service_);
   ScriptWrappable::Trace(visitor);
 }
 
