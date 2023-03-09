@@ -618,7 +618,7 @@
     Preparing to sync <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> items...
   </message>
   <message name="IDS_FILE_BROWSER_READY_TO_SYNC_MY_DRIVE" desc="Files app message displayed to users after they copy files into My Drive to help them understand that files pasted into My Drive are not immediately synced.">
-    Ready
+    Ready to sync
   </message>
   <message name="IDS_FILE_BROWSER_EXTRACT_FILESYSTEM_ERROR" desc="File Manager error message.">
     Extract operation failed. <ph name="ERROR_MESSAGE">$1<ex>An error occurred (code: ABORT)</ex></ph>
