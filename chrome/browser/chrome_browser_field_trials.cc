@@ -98,6 +98,10 @@ void ChromeBrowserFieldTrials::SetUpClientSideFieldTrials(
     ash::multidevice_setup::CreateFirstRunFieldTrial(feature_list);
 #endif
   }
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  FirstRunService::SetUpClientSideFieldTrialIfNeeded(
+      entropy_providers.default_entropy(), feature_list);
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
   // RegisterSyntheticTrials doesn't have access to entropy providers which are

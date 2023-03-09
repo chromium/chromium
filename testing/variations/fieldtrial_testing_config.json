@@ -5238,7 +5238,7 @@
             ]
         }
     ],
-    "ForYouFre": [
+    "ForYouFreStudy": [
         {
             "platforms": [
                 "linux",
@@ -5247,12 +5247,15 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnabledA-1",
                     "params": {
-                        "close_should_proceed": "false"
+                        "close_should_proceed": "false",
+                        "group_name": "EnabledA-1",
+                        "signin_promo_variant": "sign-in"
                     },
                     "enable_features": [
-                        "ForYouFre"
+                        "ForYouFre",
+                        "ForYouFreSyntheticTrialRegistration"
                     ]
                 }
             ]

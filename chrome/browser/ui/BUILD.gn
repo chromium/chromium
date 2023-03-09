@@ -3740,6 +3740,7 @@ static_library("ui") {
         "signin_intercept_first_run_experience_dialog.h",
         "signin_reauth_view_controller.cc",
         "signin_reauth_view_controller.h",
+        "startup/first_run_service_dice_statics.cc",
         "views/profiles/dice_web_signin_interception_bubble_view.cc",
         "views/profiles/dice_web_signin_interception_bubble_view.h",
         "views/profiles/first_run_flow_controller_dice.cc",
