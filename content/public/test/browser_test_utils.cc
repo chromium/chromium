@@ -1470,26 +1470,6 @@ void ExecuteScriptAsyncWithoutUserGesture(const ToRenderFrameHost& adapter,
       base::UTF8ToUTF16(script), base::NullCallback());
 }
 
-bool ExecuteScriptAndExtractDouble(const ToRenderFrameHost& adapter,
-                                   const std::string& script, double* result) {
-  DCHECK(result);
-  std::unique_ptr<base::Value> value;
-  // Prerendering pages will never have user gesture.
-  bool user_gesture = adapter.render_frame_host()->GetLifecycleState() !=
-                      RenderFrameHost::LifecycleState::kPrerendering;
-  if (!ExecuteScriptHelper(adapter.render_frame_host(), script, user_gesture,
-                           ISOLATED_WORLD_ID_GLOBAL, &value))
-    return false;
-  if (!value)
-    return false;
-  absl::optional<double> maybe_value = value->GetIfDouble();
-  if (!maybe_value.has_value())
-    return false;
-
-  *result = maybe_value.value();
-  return true;
-}
-
 bool ExecuteScriptAndExtractInt(const ToRenderFrameHost& adapter,
                                 const std::string& script, int* result) {
   DCHECK(result);

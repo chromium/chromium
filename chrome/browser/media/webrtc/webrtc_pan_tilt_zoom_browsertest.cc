@@ -247,20 +247,20 @@ IN_PROC_BROWSER_TEST_P(WebRtcPanTiltZoomTrackBrowserTest,
       &pan_tilt_zoom));
   EXPECT_EQ(pan_tilt_zoom, "granted");
 
-  double pan;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractDouble(
-      tab->GetPrimaryMainFrame(), "getTrackSetting('pan');", &pan));
-  EXPECT_EQ(pan, GetParam().expected_pan);
+  EXPECT_EQ(
+      content::EvalJs(tab->GetPrimaryMainFrame(), "getTrackSetting('pan');")
+          .ExtractDouble(),
+      GetParam().expected_pan);
 
-  double tilt;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractDouble(
-      tab->GetPrimaryMainFrame(), "getTrackSetting('tilt');", &tilt));
-  EXPECT_EQ(tilt, GetParam().expected_tilt);
+  EXPECT_EQ(
+      content::EvalJs(tab->GetPrimaryMainFrame(), "getTrackSetting('tilt');")
+          .ExtractDouble(),
+      GetParam().expected_tilt);
 
-  double zoom;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractDouble(
-      tab->GetPrimaryMainFrame(), "getTrackSetting('zoom');", &zoom));
-  EXPECT_EQ(zoom, GetParam().expected_zoom);
+  EXPECT_EQ(
+      content::EvalJs(tab->GetPrimaryMainFrame(), "getTrackSetting('zoom');")
+          .ExtractDouble(),
+      GetParam().expected_zoom);
 
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
       tab->GetPrimaryMainFrame(),

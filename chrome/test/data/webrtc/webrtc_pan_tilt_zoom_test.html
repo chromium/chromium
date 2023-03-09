@@ -48,7 +48,7 @@
   function getTrackSetting(settingName) {
     const videoTrack = stream.getVideoTracks()[0];
     const settings = videoTrack.getSettings();
-    returnToTest(settings[settingName]);
+    return settings[settingName];
   }
 
   function checkConstraints(expectedConstraints) {
