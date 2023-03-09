@@ -16,10 +16,6 @@ namespace media {
 class VaapiPictureNativePixmapAngle;
 }
 
-namespace ui {
-class NativePixmapEGLX11Binding;
-}
-
 namespace gl {
 
 class GL_EXPORT GLImageEGLPixmap : public GLImage {
@@ -27,7 +23,6 @@ class GL_EXPORT GLImageEGLPixmap : public GLImage {
   // of it should be introduced.
  private:
   friend class media::VaapiPictureNativePixmapAngle;
-  friend class ui::NativePixmapEGLX11Binding;
 
   GLImageEGLPixmap(const gfx::Size& size, gfx::BufferFormat format);
 

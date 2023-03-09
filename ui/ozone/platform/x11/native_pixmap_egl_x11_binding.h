@@ -11,17 +11,17 @@
 #include "ui/ozone/public/native_pixmap_gl_binding.h"
 
 namespace gl {
-class GLImageEGLPixmap;
+class NativePixmapEGLX11BindingHelper;
 }
 
 namespace ui {
 
-// A binding maintained between GLImageEGLPixmap and GL Textures in Ozone. This
-// is used on X11.
+// A binding maintained between NativePixmap and GL Textures in Ozone that works
+// within the context of X11.
 class NativePixmapEGLX11Binding : public NativePixmapGLBinding {
  public:
   explicit NativePixmapEGLX11Binding(
-      scoped_refptr<gl::GLImageEGLPixmap> gl_image,
+      std::unique_ptr<gl::NativePixmapEGLX11BindingHelper> binding_helper,
       gfx::BufferFormat format);
   ~NativePixmapEGLX11Binding() override;
 
@@ -39,13 +39,11 @@ class NativePixmapEGLX11Binding : public NativePixmapGLBinding {
   GLenum GetDataType() override;
 
  private:
-  // Invokes NativePixmapGLBinding::BindTexture, passing |gl_image_|.
   bool BindTexture(GLenum target, GLuint texture_id);
 
-  // TODO(hitawala): Merge BindTexImage, Initialize from GLImage and its
-  // subclass EGLPixmap to NativePixmapEGLX11Binding once we stop using them
-  // elsewhere eg. VDA decoders in media.
-  scoped_refptr<gl::GLImageEGLPixmap> gl_image_;
+  // TODO(crbug.com/1412693): Fold the helper class into this class once
+  // GLImageEGLPixmap no longer exists.
+  std::unique_ptr<gl::NativePixmapEGLX11BindingHelper> binding_helper_;
   gfx::BufferFormat format_;
 };
 
