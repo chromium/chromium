@@ -28,7 +28,7 @@ const dom = {
   /**
    * Creates a document fragment from the given nodes.
    * @param {Iterable<Node>} nodes
-   * @return {DocumentFragment}
+   * @return {!DocumentFragment}
    */
   createFragment(nodes) {
     const fragment = document.createDocumentFragment();

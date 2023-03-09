@@ -60,16 +60,16 @@ class SymbolTreeUi extends TreeUi {
   /**
    * Replaces the contents of the size element for a tree node.
    * @param {!TreeNode} nodeData Data about this size element's tree node.
-   * @param {HTMLElement} sizeElement Element that should display the size
+   * @param {HTMLElement} sizeElt Element to display size.
    * @private
    */
-  setSize(nodeData, sizeElement) {
+  setSize(nodeData, sizeElt) {
     const {description, element, value} = getSizeContents(nodeData);
 
     // Replace the contents of '.size' and change its title
-    dom.replace(sizeElement, element);
-    sizeElement.title = description;
-    setSizeClasses(sizeElement, value);
+    dom.replace(sizeElt, element);
+    sizeElt.title = description;
+    setSizeClasses(sizeElt, value, state.stMethodCount.get());
   }
 
   /** @override @protected */
@@ -228,8 +228,8 @@ class SymbolTreeUi extends TreeUi {
     state.stByteUnit.addObserver(() => {
       for (const link of this.liveNodeList) {
         /** @type {HTMLElement} */
-        const element = link.querySelector('.size');
-        this.setSize(this.uiNodeToData.get(link), element);
+        const sizeElt = link.querySelector('.size');
+        this.setSize(this.uiNodeToData.get(link), sizeElt);
       }
     });
 

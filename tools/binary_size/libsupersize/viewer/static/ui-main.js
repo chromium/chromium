@@ -92,7 +92,7 @@
       rootElement = _symbolTreeUi.makeNodeElement(root);
       /** @type {!HTMLAnchorElement} */
       const link = rootElement.querySelector('.node');
-      // Expand the root UI node
+      // Expand the root UI node.
       link.click();
       link.tabIndex = 0;
     }
@@ -134,9 +134,8 @@
    *     cached data. Otherwise new data is saved to cache.
    */
   function renderAndShowMetricsTree(metadata) {
-    if (metadata)
-      _metricsTreeModel.extractAndStoreRoot(metadata);
-    _metricsTreeUi.updateFilter();
+    _metricsTreeModel.updateFilter();
+    _metricsTreeModel.extractAndStoreRoot(metadata);
 
     /** @type {?DocumentFragment} */
     let rootElement = null;
@@ -144,7 +143,8 @@
       rootElement = _metricsTreeUi.makeNodeElement(_metricsTreeModel.rootNode);
       /** @type {!HTMLAnchorElement} */
       const link = rootElement.querySelector('.node');
-      // Leave root UI node collapsed, but reachable by tab.
+      // Expand the root UI node.
+      link.click();
       link.tabIndex = 0;
     }
 

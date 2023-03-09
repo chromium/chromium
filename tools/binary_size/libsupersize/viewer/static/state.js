@@ -519,7 +519,8 @@ function _makeIconTemplateGetter() {
   };
   const metricsIcons = {
     group: getSymbolIcon('.groupicon'),  // Reuse.
-    file: getSymbolIcon('.fileicon'),    // Reuse.
+    elf: getSymbolIcon('.fileicon'),     // Reuse.
+    dex: getSymbolIcon('.dexicon'),      // Reuse.
     metrics: getMetricsIcon('.metricsicon'),
   };
 
@@ -615,6 +616,22 @@ function _makeIconTemplateGetter() {
 
 function _makeSizeTextGetter() {
   /**
+   * @param {number} bytes
+   * @return {!DocumentFragment}
+   */
+  function makeBytesElement(bytes) {
+    const unit = /** @type {string} */ (state.stByteUnit.get());
+    const suffix = _BYTE_UNITS[unit];
+    // Format |bytes| as a number with 2 digits after the decimal point
+    const text = formatNumber(bytes / suffix, 2, 2);
+    const textNode = document.createTextNode(`${text} `);
+    // Display the suffix with a smaller font
+    const suffixElement = dom.textElement('small', unit);
+
+    return dom.createFragment([textNode, suffixElement]);
+  }
+
+  /**
    * Create the contents for the size element of a tree node.
    * The unit to use is selected from the current state.
    *
@@ -653,17 +670,9 @@ function _makeSizeTextGetter() {
         descriptionToks.push(`for 1 of ${node.numAliases} aliases`);
       }
 
-      const unit = /** @type {string} */ (state.stByteUnit.get());
-      const suffix = _BYTE_UNITS[unit];
-      // Format |bytes| as a number with 2 digits after the decimal point
-      const text = formatNumber(bytes / suffix, 2, 2);
-      const textNode = document.createTextNode(`${text} `);
-      // Display the suffix with a smaller font
-      const suffixElement = dom.textElement('small', unit);
-
       return {
         description: descriptionToks.join(' '),
-        element: dom.createFragment([textNode, suffixElement]),
+        element: makeBytesElement(bytes),
         value: bytes,
       };
     }
@@ -673,9 +682,10 @@ function _makeSizeTextGetter() {
    * Set classes on an element based on the size it represents.
    * @param {HTMLElement} sizeElement
    * @param {number} value
+   * @param {boolean} isCount Whether |value| is count (true) or byte (false).
    */
-  function setSizeClasses(sizeElement, value) {
-    const cutOff = state.stMethodCount.get() ? 10 : 50000;
+  function setSizeClasses(sizeElement, value, isCount) {
+    const cutOff = isCount ? 10 : 50000;
     const shouldHaveStyle = state.getDiffMode() && Math.abs(value) > cutOff;
 
     if (shouldHaveStyle) {
@@ -691,7 +701,7 @@ function _makeSizeTextGetter() {
     }
   }
 
-  return {getSizeContents, setSizeClasses};
+  return {makeBytesElement, getSizeContents, setSizeClasses};
 }
 
 /** Global UI State. */
@@ -706,5 +716,6 @@ const {
   getDiffStatusTemplate,
   getMetricsIconTemplate,
 } = _makeIconTemplateGetter();
-const {getSizeContents, setSizeClasses} = _makeSizeTextGetter();
+const {makeBytesElement, getSizeContents, setSizeClasses} =
+    _makeSizeTextGetter();
 _startListeners();

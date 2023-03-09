@@ -153,6 +153,41 @@ function uniquifyIterToString(it) {
 }
 
 /**
+ * Map wrapper with forcedGet() to assigns a value when key not found.
+ * @template KEY_DATA_TYPE The data type of a key in the Map.
+ * @template VALUE_DATA_TYPE The data type of a value in the Map.
+ * @extends {Map<KEY_DATA_TYPE, VALUE_DATA_TYPE>}
+ */
+class DefaultMap extends Map {
+  /**
+   * @param {!function(KEY_DATA_TYPE): ?VALUE_DATA_TYPE} makeValue A function
+   *     to make a new value (as function of key) if forceGet() is passed a key
+   *     that's not in the Map.
+   * @param {*} entries
+   */
+  constructor(makeValue, entries) {
+    super(entries);
+
+    /** @private @const {!function(KEY_DATA_TYPE): ?VALUE_DATA_TYPE} */
+    this.makeValue = makeValue;
+  }
+
+  /**
+   * @param {KEY_DATA_TYPE} key
+   * @return {VALUE_DATA_TYPE}
+   * @public
+   */
+  forcedGet(key) {
+    let value = this.get(key);
+    if (value === undefined) {
+      value = this.makeValue(key);
+      this.set(key, value);
+    }
+    return value;
+  }
+}
+
+/**
  * Manager for progress bar animation.
  */
 class ProgressBar {

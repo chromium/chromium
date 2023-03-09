@@ -17,21 +17,27 @@
  */
 
 /**
+ * @typedef {Object} SizeWithUnit
+ * @property {string} unit - Size unit, e.g., 'byte', or 'count'.
+ * @property {number} value - Size or size delta.
+ */
+
+/**
  * @typedef {Object} MetricsTreeNode
  * @property {string|undefined} name - The full name of the node, and is shown
  *     in the UI.
  * @property {!Array<!MetricsTreeNode>|undefined} children - Child nodes.
  *     Non-existent or null indicates this is a leaf node.
- * @property {!Array<!MetricsTreeNode>|undefined} totals - An optional list of
- *     special nodes (not in the tree via |children|). These nodes' |children|
- *     stores a list of existing source leaves (in the tree), whose |items| are
- *     to be summed to compute the desired total, subject to filtering.
  * @property {!Array<!MetricsItem>|undefined} items - For leaf nodes only, a
  *     list of named values for a metric.
- * @property {boolean|undefined} isFiltered - For group nodes only, whether
- *     filtering is applied to the node.
  * @property {string|undefined} iconKey - For group nodes only, input for
  *     getMetricsIconTemplate() to retrieve icon.
+ * @property {!SizeWithUnit|undefined} size - For group nodes only, size to
+ *     be shown in span.size, and used for sorting. Typically this is the total
+ *     of item sizes across leaves.
+ * @property {boolean|undefined} sorted - For group nodes only, whether to sort
+ *     children nodes in descending order in UI. This requires each child to be
+ *     a group node with |size| defined, using a common |size.unit|.
  */
 
 /**
@@ -39,8 +45,77 @@
  */
 class MetricsTreeModel {
   constructor() {
-    /** @public {?MetricsTreeNode} */
+    /**
+     * Filter for containers and files returning whether "container/file" should
+     * be displayed, with null = always show.
+     * @public {?function(string): boolean}
+     */
+    this.containerFileFilter = null;
+
+    /**
+     * Cached metadata used to create |rootNode|.
+     * @public {?Object}
+     */
+    this.metadata = null;
+
+    /**
+     * Root node of the metrics tree, can be regenerated on UI change.
+     * @public {?MetricsTreeNode}
+     */
     this.rootNode = null;
+  }
+
+  /** @public */
+  updateFilter() {
+    this.containerFileFilter = state.getFilter();
+  }
+
+  /**
+   * Returns a metadata |*size_file|'s |containers| list if it exists, or a list
+   * with a synthesized container for old format with out explicit containers.
+   * @param {?Object} sizeFile
+   * @return {!Array<!Object>}
+   * @private
+   */
+  getOrMakeContainers(sizeFile) {
+    if (sizeFile) {
+      if (sizeFile.containers)
+        return sizeFile.containers;
+      // Synthesize for old format without explicit containers.
+      const container = {name: '(Default container)'};
+      if (sizeFile.metrics_by_file)
+        container.metrics_by_file = sizeFile.metrics_by_file;
+      return [container];
+    }
+    return [];
+  }
+
+  /**
+   * Visits multiple containers and files therein, applies
+   * |containerFileFilter|, visits each metric ([name] -> value), and returns a
+   * nested map [metric name] -> ([path = container/file] ->  metric value).
+   * @param {!Array<!Object>} containers
+   * @return {!DefaultMap<string, !Map<string, number>>}
+   * @private
+   */
+  transposeMetrics(containers) {
+    const metricNameToData =
+        /** @type {!DefaultMap<string, !Map<string, number>>} */ (
+            new DefaultMap(
+                (unused) => /** @type {!Map<string, number>}*/ (new Map())));
+    for (const c of containers) {
+      if (!c.metrics_by_file ||
+          (this.containerFileFilter && !this.containerFileFilter(c.name))) {
+        continue;
+      }
+      for (const [file, metrics] of Object.entries(c.metrics_by_file)) {
+        for (const [metricName, metricValue] of Object.entries(metrics)) {
+          const data = metricNameToData.forcedGet(metricName);
+          data.set(c.name + '/' + file, metricValue);
+        }
+      }
+    }
+    return metricNameToData;
   }
 
   /**
@@ -49,7 +124,7 @@ class MetricsTreeModel {
    * @param {?Array<!MetricsTreeNode>} children
    * @param {string} iconKey
    * @return {!MetricsTreeNode}
-   * @public
+   * @private
    */
   makeDataNode(name, children, iconKey) {
     const node = /** @type {!MetricsTreeNode} */ ({name});
@@ -61,129 +136,97 @@ class MetricsTreeModel {
   };
 
   /**
-   * Creates a MetricItems list summed from |items| from a list of leaf nodes.
-   * @param {!Array<!MetricsTreeNode>} srcNodes
-   * @return {!Array<!MetricsItem>}
-   * @public
+   * Specialized makeDataNode() for metrics.
+   * @param {string} metricSuffix
+   * @return {!MetricsTreeNode}
+   * @private
    */
-  makeTotalItemList(srcNodes) {
-    const diffMode = state.getDiffMode();
-    const dstItems = /** @type {!Map<string, !MetricsItem>}*/ (new Map());
-    const ret = /** @type {!Array<!MetricsItem>} */ ([]);
-
-    for (const srcNode of srcNodes) {
-      for (const srcItem of srcNode.items) {
-        const metricName = srcItem.name;
-        let dstItem = dstItems.get(metricName);
-        if (!dstItem) {
-          dstItem = /** @type {!MetricsItem} */ ({name: metricName, value: 0});
-          if (diffMode) {
-            dstItem.beforeValue = 0;
-          }
-          dstItems.set(metricName, dstItem);
-        }
-        dstItem.value += srcItem.value;
-        if (diffMode)
-          dstItem.beforeValue += srcItem.beforeValue;
-      }
-    }
-    return Array.from(dstItems.values())
-        .sort((a, b) => a.name.localeCompare(b.name));
+  makeMetricNode(metricSuffix) {
+    // Heuristically classify as ELF vs. DEX based on metrics name suffix.
+    if (metricSuffix.startsWith('.'))
+      return this.makeDataNode(`ELF: ${metricSuffix}`, [], 'elf');
+    return this.makeDataNode(`DEX: ${metricSuffix}`, [], 'dex');
   }
 
   /**
    * Extracts Metrics Tree data, and stores the result into |rootNode|.
-   * @param {Object} metadata
+   * @param {?Object} metadata Source metadata, must be non-null on first call.
+   *     Subsequently, null means to use cached copy from previous call.
    * @public
    */
   extractAndStoreRoot(metadata) {
     const EMPTY_OBJ = {};
+    const EMPTY_MAP = new Map();
     const diffMode = state.getDiffMode();
+    if (metadata)
+      this.metadata = metadata;
 
-    const getOrMakeContainers = (size_file) => {
-      if (size_file) {
-        if (size_file.containers)
-          return size_file.containers;
-        // For old format without explicit containers, synthesize one.
-        const container = {name: '(Default container)'};
-        if (size_file.metrics_by_file)
-          container.metrics_by_file = size_file.metrics_by_file;
-        return [container];
-      }
-      return [];
-    };
-    const containers = getOrMakeContainers(metadata?.size_file);
-    const beforeContainers = getOrMakeContainers(metadata?.before_size_file);
+    const containers = this.getOrMakeContainers(this.metadata?.size_file);
+    const beforeContainers =
+        this.getOrMakeContainers(this.metadata?.before_size_file);
 
-    const makeContainerMap = (curContainers) => {
-      const ret = new Map();
-      for (const c of curContainers) {
-        ret.set(c.name, c);
-      }
-      return ret;
-    };
-    const containerMap = makeContainerMap(containers);
-    const beforeContainerMap = makeContainerMap(beforeContainers);
-
-    const containerNames = uniquifyIterToString(
-        joinIter(containerMap.keys(), beforeContainerMap.keys()));
-    const elfNodes = [];
-    const dexNodes = [];
+    /** @type {!Map<string, !Map<string, number>>} */
+    const metricNameToData = this.transposeMetrics(containers);
+    /** @type {!Map<string, !Map<string, number>>} */
+    const beforeMetricNameToData = this.transposeMetrics(beforeContainers);
+    const metricNames = uniquifyIterToString(
+        joinIter(metricNameToData.keys(), beforeMetricNameToData.keys()));
 
     const rootNode = this.makeDataNode('Metrics', [], 'metrics');
 
-    // Populate with containers -> files -> table.
-    for (const containerName of containerNames) {
-      const metricsByFile =
-          containerMap.get(containerName)?.metrics_by_file ?? EMPTY_OBJ;
-      const beforeMetricsByFile =
-          beforeContainerMap.get(containerName)?.metrics_by_file ?? EMPTY_OBJ;
-      const filenames = uniquifyIterToString(joinIter(
-          Object.keys(metricsByFile), Object.keys(beforeMetricsByFile)));
-      if (filenames.length === 0)
-        continue;
+    const lazyPrefixNodeMap =
+        /** @type {!DefaultMap<string, !MetricsTreeNode>} */ (
+            new DefaultMap((prefix) => {
+              const prefixNode =
+                  this.makeDataNode(prefix + ' metrics', [], 'metrics');
+              prefixNode.sorted = true;
+              rootNode.children.push(prefixNode);
+              return prefixNode;
+            }));
 
-      const containerNode = this.makeDataNode(containerName, [], 'group');
-      containerNode.isFiltered = true;
+    for (const metricName of metricNames) {
+      // E.g., |metricName| = 'SIZE/.text',
+      const data = metricNameToData.get(metricName) ?? EMPTY_MAP;
+      const beforeData = beforeMetricNameToData.get(metricName) ?? EMPTY_MAP;
+      const paths =
+          uniquifyIterToString(joinIter(data.keys(), beforeData.keys()));
 
-      for (const filename of filenames) {
-        const isDex = filename.endsWith('.dex');
-        const isElf = !isDex;  // Heuristic assumption.
-        const metrics = metricsByFile[filename] ?? EMPTY_OBJ;
-        const beforeMetrics = beforeMetricsByFile[filename] ?? EMPTY_OBJ;
-        const metricNames = uniquifyIterToString(
-            joinIter(Object.keys(metrics), Object.keys(beforeMetrics)));
-        // |fileNode| has single |tableNode| child to enable UI show / hide.
-        const fileNode = this.makeDataNode(filename, [], 'file');
-        const tableNode = this.makeDataNode('', null, null);  // Leaf.
-        tableNode.items = [];
-        if (isElf) {
-          elfNodes.push(tableNode);
-        } else if (isDex) {
-          dexNodes.push(tableNode);
+      const tableNode = this.makeDataNode('', null, null);  // Leaf.
+      tableNode.items = [];
+
+      const totalItem = /** @type {!MetricsItem} */ ({});
+      totalItem.name = '(TOTAL)';
+      totalItem.value = 0;
+      if (diffMode)
+        totalItem.beforeValue = 0;
+      for (const path of paths) {
+        const item = /** @type {!MetricsItem} */ ({});
+        item.name = path;
+        item.value = data.get(path) ?? 0;
+        totalItem.value += item.value;
+        if (diffMode) {
+          item.beforeValue = beforeData.get(path) ?? 0;
+          totalItem.beforeValue += item.beforeValue;
         }
-        for (const metricName of metricNames) {
-          const item = /** @type {!MetricsItem} */ ({});
-          item.name = metricName;
-          item.value = metrics[metricName] ?? 0;
-          if (diffMode)
-            item.beforeValue = beforeMetrics[metricName] ?? 0;
-          tableNode.items.push(item);
-        }
-        fileNode.children.push(tableNode);
-        containerNode.children.push(fileNode);
+        tableNode.items.push(item);
       }
-      rootNode.children.push(containerNode);
+      tableNode.items.push(totalItem);
+
+      // E.g., |prefix| = 'SIZE', |suffix| = '.text'.
+      const prefix = metricName.split('/', 1)[0];
+      const suffix = metricName.slice(prefix.length + 1);
+      const metricNode = this.makeMetricNode(suffix);
+      metricNode.children.push(tableNode);
+      metricNode.size = /** @type{!SizeWithUnit} */ ({});
+      // Heuristically get unit from |prefix|..
+      metricNode.size.unit = (prefix === 'COUNT') ? 'count' : 'byte';
+      metricNode.size.value = totalItem.value;
+      if (diffMode)
+        metricNode.size.value -= totalItem.beforeValue;
+      const prefixNode = lazyPrefixNodeMap.forcedGet(prefix);
+      prefixNode.children.push(metricNode);
     }
 
-    // Add special nodes to compute totals.
-    if (elfNodes.length > 0 || dexNodes.length > 0) {
-      rootNode.totals = [];
-      if (elfNodes.length > 0)
-        rootNode.totals.push(this.makeDataNode('(ELF)', elfNodes, 'file'));
-      if (dexNodes.length > 0)
-        rootNode.totals.push(this.makeDataNode('(DEX)', dexNodes, 'file'));
-    }
     this.rootNode = rootNode;
   }
 
@@ -195,33 +238,6 @@ class MetricsTreeModel {
    */
   isLeaf(dataNode) {
     return Boolean(dataNode.items);
-  }
-
-  /**
-   * Visits all descendant leaf nodes from a list of nodes.
-   * @param {!Array<!MetricsTreeNode>} srcNodes
-   * @public @generator
-   */
-  * visitAllLeaves(srcNodes) {
-    function* makeIter(nodes) {
-      for (const node of nodes) {
-        yield node;
-      }
-    }
-    const st = [makeIter(srcNodes)];
-    while (st.length > 0) {
-      const v = st[st.length - 1].next();
-      if (v.done) {
-        st.pop();
-      } else {
-        const curNode = v.value;
-        if (this.isLeaf(curNode)) {
-          yield curNode;
-        } else {  // Is group.
-          st.push(makeIter(curNode.children));
-        }
-      }
-    }
   }
 }
 
@@ -238,16 +254,27 @@ class MetricsTreeUi extends TreeUi {
     /** @private @const {!MetricsTreeModel} */
     this.model = model;
 
-    /** @private {?function(string): boolean} */
-    this.nameFilter = null;
-
     /** @private @const {function(!KeyboardEvent): *} */
     this.boundHandleKeyDown = this.handleKeyDown.bind(this);
   }
 
-  /** @public */
-  updateFilter() {
-    this.nameFilter = state.getFilter();
+  /**
+   * Replaces the contents of the size element for a group node.
+   * @param {!SizeWithUnit} size Data to be shown.
+   * @param {HTMLElement} sizeElt Element to display size.
+   * @private
+   */
+  setSize(size, sizeElt) {
+    let newSizeElt = null;
+    if (size.unit === 'byte') {
+      newSizeElt = makeBytesElement(size.value);
+      setSizeClasses(sizeElt, size.value, false);
+    } else {
+      // newSizeElt = makeBytesElement(size.value);
+      newSizeElt = document.createTextNode(formatNumber(size.value));
+      setSizeClasses(sizeElt, size.value, true);
+    }
+    dom.replace(sizeElt, newSizeElt);
   }
 
   /**
@@ -303,6 +330,9 @@ class MetricsTreeUi extends TreeUi {
       spanSymbolName.title = nodeData.name;
     }
 
+    if (!isLeaf && nodeData.size)
+      this.setSize(nodeData.size, nodeElt.querySelector('.size'));
+
     if (isLeaf)
       this.populateMetricsTable(nodeData, fragment.querySelector('table'));
     if (nodeData.iconKey) {
@@ -316,29 +346,13 @@ class MetricsTreeUi extends TreeUi {
   /** @override @protected */
   async getGroupChildrenData(link) {
     const data = this.uiNodeToData.get(link);
-    const ret = data.children.filter(
-        ch => !ch.isFiltered || !this.nameFilter || this.nameFilter(ch.name));
-
-    // Dynamiclaly synthesize "(TOTAL)" node data.
-    if (data.totals) {
-      // Create set of table leaf nodes, for filtering.
-      const leafSet = new Set(this.model.visitAllLeaves(ret));
-      // Create "(TOTAL)" node data lazily, i.e., skip if empty.
-      let totalNode = null;
-      for (const totalData of data.totals) {
-        const srcNodes = totalData.children.filter(ch => leafSet.has(ch));
-        if (srcNodes.length === 0)
-          continue;
-        const title = totalData.name + `: ${srcNodes.length}`;
-        const tableNode = this.model.makeDataNode('', null, null);  // Leaf.
-        tableNode.items = this.model.makeTotalItemList(srcNodes);
-        const fileNode = this.model.makeDataNode(title, [tableNode], 'file');
-        if (!totalNode) {
-          totalNode = this.model.makeDataNode('(TOTAL)', [], 'metrics');
-          ret.push(totalNode);
-        }
-        totalNode.children.push(fileNode);
-      }
+    const ret = Array.from(data.children);
+    if (data.sorted) {
+      // If specified, sort by descending absolute value, then by name.
+      ret.sort((a, b) => {
+        const d = Math.abs(b.size.value) - Math.abs(a.size.value);
+        return d !== 0 ? d : a.name.localeCompare(b.name);
+      });
     }
     return ret;
   }
@@ -362,6 +376,15 @@ class MetricsTreeUi extends TreeUi {
   /** @override @public */
   init() {
     super.init();
+
+    // When the "byteunit" state changes, update all .size elements.
+    state.stByteUnit.addObserver(() => {
+      for (const link of this.liveNodeList) {
+        const size = this.uiNodeToData.get(link).size;
+        if (size)
+          this.setSize(size, link.querySelector('.size'));
+      }
+    });
 
     g_el.ulMetricsTree.addEventListener('keydown', this.boundHandleKeyDown);
   }
