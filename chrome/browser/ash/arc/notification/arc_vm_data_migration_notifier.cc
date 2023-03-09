@@ -13,6 +13,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/arc/policy/arc_policy_util.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/ui/ash/arc_vm_data_migration_confirmation_dialog.h"
@@ -32,6 +33,13 @@ constexpr char kNotifierId[] = "arc_vm_data_migration_notifier";
 constexpr char kNotificationId[] = "arc_vm_data_migration_notification";
 
 bool ShouldShowNotification(Profile* profile) {
+  // Do not show a notification for managed users.
+  if (policy_util::IsAccountManaged(profile)) {
+    // TODO(b/272151802): Report to UMA that the migration is skipped for a
+    // managed user.
+    return false;
+  }
+
   switch (GetArcVmDataMigrationStatus(profile->GetPrefs())) {
     case ArcVmDataMigrationStatus::kUnnotified:
     case ArcVmDataMigrationStatus::kNotified:
@@ -63,12 +71,12 @@ void ArcVmDataMigrationNotifier::OnArcStarted() {
   if (base::FeatureList::IsEnabled(kEnableVirtioBlkForData))
     return;
 
-  // TODO(b/258278176): Check policies and eligibility (e.g. whether LVM
-  // application containers are enabled) before showing a notification.
   if (!ShouldShowNotification(profile_)) {
     return;
   }
 
+  // TODO(b/272151802): Report to UMA that a notification is shown (with the
+  // info about whether it is the first time or not).
   if (GetArcVmDataMigrationStatus(profile_->GetPrefs()) ==
       ArcVmDataMigrationStatus::kUnnotified) {
     profile_->GetPrefs()->SetTime(
@@ -85,6 +93,7 @@ void ArcVmDataMigrationNotifier::OnArcSessionStopped(ArcStopReason reason) {
 }
 
 void ArcVmDataMigrationNotifier::ShowNotification() {
+  // TODO(b/272151802): Report the number of days until the deadline to UMA.
   const int days_until_deadline =
       GetDaysUntilArcVmDataMigrationDeadline(profile_->GetPrefs());
 
@@ -143,6 +152,7 @@ void ArcVmDataMigrationNotifier::OnNotificationClicked(
 
   CloseNotification();
 
+  // TODO(b/272151802): Report to UMA that the dialog is shown.
   ShowArcVmDataMigrationConfirmationDialog(
       profile_->GetPrefs(),
       base::BindOnce(&ArcVmDataMigrationNotifier::OnRestartAccepted,
@@ -150,12 +160,13 @@ void ArcVmDataMigrationNotifier::OnNotificationClicked(
 }
 
 void ArcVmDataMigrationNotifier::OnRestartAccepted(bool accepted) {
+  // TODO(b/272151802): Report to UMA whether the dialog is accepted or
+  // canceled.
   if (accepted) {
     SetArcVmDataMigrationStatus(profile_->GetPrefs(),
                                 ArcVmDataMigrationStatus::kConfirmed);
     chrome::AttemptRestart();
   }
-  // TODO(b/258278176): Report when the confirmation dialog is canceled.
 }
 
 }  // namespace arc

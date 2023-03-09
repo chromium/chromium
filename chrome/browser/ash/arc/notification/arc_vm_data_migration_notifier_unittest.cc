@@ -6,6 +6,7 @@
 
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/session/arc_session_runner.h"
 #include "ash/components/arc/session/arc_vm_data_migration_status.h"
 #include "ash/components/arc/test/fake_arc_session.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -115,10 +117,25 @@ TEST_F(ArcVmDataMigrationNotifierTest, MigrationDisabled) {
 
   arc_session_manager()->StartArcForTesting();
   EXPECT_FALSE(notification_tester()->GetNotification(kNotificationId));
+  // TODO(b/258278176): Use GetArcVmDataMigrationStatus() and stop using
+  // Yoda-style comparisons. The same goes for other test cases.
   EXPECT_EQ(
       ArcVmDataMigrationStatus::kUnnotified,
       static_cast<ArcVmDataMigrationStatus>(
           profile()->GetPrefs()->GetInteger(prefs::kArcVmDataMigrationStatus)));
+}
+
+// Tests that no notification is shown for managed users even when the migration
+// is enabled via the feature.
+TEST_F(ArcVmDataMigrationNotifierTest, AccountManaged) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kEnableArcVmDataMigration);
+  profile()->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
+
+  arc_session_manager()->StartArcForTesting();
+  EXPECT_FALSE(notification_tester()->GetNotification(kNotificationId));
+  EXPECT_EQ(GetArcVmDataMigrationStatus(profile()->GetPrefs()),
+            ArcVmDataMigrationStatus::kUnnotified);
 }
 
 // Tests that a notification is shown when the migration is enabled but not
