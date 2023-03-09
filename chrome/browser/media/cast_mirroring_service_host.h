@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/media/mirroring_service_host.h"
 #include "chrome/browser/media/offscreen_tab.h"
@@ -169,6 +170,8 @@ class CastMirroringServiceHost final : public MirroringServiceHost,
   absl::optional<int> tab_switching_count_;
 
   std::u16string sink_name_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // Used for calls supplied to `media_stream_ui_`, mainly to handle callbacks
   // for TabSharingUIViews. Invalidated every time a new UI is created.

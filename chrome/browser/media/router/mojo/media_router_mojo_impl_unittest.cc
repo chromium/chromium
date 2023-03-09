@@ -1089,4 +1089,17 @@ TEST_F(MediaRouterMojoImplTest, TestGetCurrentRoutes) {
   EXPECT_TRUE(router()->GetCurrentRoutes().empty());
 }
 
+TEST_F(MediaRouterMojoImplTest, TestGetMirroringStatsNoProviderId) {
+  router()->GetMirroringStats(kRouteId, base::BindOnce([](base::Value dict) {
+                                EXPECT_EQ(base::Value(), dict);
+                              }));
+}
+
+TEST_F(MediaRouterMojoImplTest, TestGetMirroringStats) {
+  ProvideTestRoute(mojom::MediaRouteProviderId::CAST, kRouteId);
+  router()->GetMirroringStats(kRouteId, base::BindOnce([](base::Value dict) {
+                                EXPECT_EQ(base::Value(), dict);
+                              }));
+}
+
 }  // namespace media_router

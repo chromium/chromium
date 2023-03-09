@@ -356,6 +356,7 @@ TEST_F(CastMediaRouteProviderTest, GetMirroringStats) {
   provider_->GetCastActivityManagerForTest()->AddMirroringActivityForTest(
       kRouteId, std::move(activity));
   provider_->GetMirroringStats(kRouteId, base::DoNothing());
+  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(CastMediaRouteProviderTest, GetRemotePlaybackCompatibleSinks) {

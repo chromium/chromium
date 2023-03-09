@@ -17,6 +17,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/cast_mirroring_service_host.h"
 #include "chrome/browser/media/cast_remoting_connector.h"
+#include "chrome/browser/media/router/mojo/media_router_debugger_impl.h"
 #include "chrome/browser/media/router/mojo/media_router_mojo_metrics.h"
 #include "chrome/browser/media/router/mojo/media_sink_service_status.h"
 #include "chrome/grit/chromium_strings.h"
@@ -109,6 +110,7 @@ void MediaRouterMojoImpl::Initialize() {
   // outside of the constructor.
   internal_routes_observer_ =
       std::make_unique<InternalMediaRoutesObserver>(this);
+  media_router_debugger_ = std::make_unique<MediaRouterDebuggerImpl>(*this);
 }
 
 void MediaRouterMojoImpl::RegisterMediaRouteProvider(
@@ -744,7 +746,7 @@ LoggerImpl* MediaRouterMojoImpl::GetLogger() {
 }
 
 MediaRouterDebugger& MediaRouterMojoImpl::GetDebugger() {
-  return media_router_debugger_;
+  return *media_router_debugger_.get();
 }
 
 void MediaRouterMojoImpl::GetLogsAsString(GetLogsAsStringCallback callback) {
@@ -868,6 +870,7 @@ const MediaRoute* MediaRouterMojoImpl::GetRoute(
 void MediaRouterMojoImpl::Shutdown() {
   // The observer calls virtual methods on MediaRouter; it must be destroyed
   // outside of the dtor
+  media_router_debugger_.reset();
   internal_routes_observer_.reset();
 }
 
@@ -910,6 +913,21 @@ void MediaRouterMojoImpl::CreateRouteWithSelectedDesktop(
                 .Run(route, std::move(connection), error_text, result_code);
           },
           std::move(mr_callback)));
+}
+
+void MediaRouterMojoImpl::GetMirroringStats(
+    const MediaRoute::Id& route_id,
+    base::OnceCallback<void(const base::Value)> json_stats_cb) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  absl::optional<mojom::MediaRouteProviderId> provider_id =
+      GetProviderIdForRoute(route_id);
+  if (!provider_id) {
+    std::move(json_stats_cb).Run(base::Value());
+    return;
+  }
+
+  media_route_providers_[*provider_id]->GetMirroringStats(
+      route_id, std::move(json_stats_cb));
 }
 
 }  // namespace media_router

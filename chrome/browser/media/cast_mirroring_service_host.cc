@@ -148,6 +148,8 @@ CastMirroringServiceHost::CastMirroringServiceHost(
       gpu_client_(nullptr, base::OnTaskRunnerDeleter(nullptr)),
       tab_switching_ui_enabled_(IsAccessCodeCastTabSwitchingUIEnabled(
           source_media_id.web_contents_id)) {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+
   // Observe the target WebContents for Tab mirroring.
   if (source_media_id_.type == content::DesktopMediaID::TYPE_WEB_CONTENTS)
     Observe(GetContents(source_media_id_.web_contents_id));
@@ -163,6 +165,7 @@ void CastMirroringServiceHost::Start(
     mojo::PendingRemote<mojom::CastMessageChannel> outbound_channel,
     mojo::PendingReceiver<mojom::CastMessageChannel> inbound_channel,
     const std::string& sink_name) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Start() should not be called in the middle of a mirroring session.
   if (mirroring_service_) {
     LOG(WARNING) << "Unexpected Start() call during an active"
@@ -569,10 +572,12 @@ void CastMirroringServiceHost::OpenOffscreenTab(
 
 void CastMirroringServiceHost::GetMirroringStats(
     base::OnceCallback<void(const base::Value)> json_stats_cb) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!mirroring_service_.is_bound()) {
     std::move(json_stats_cb).Run(base::Value());
     return;
   }
+
   mirroring_service_->GetMirroringStats(std::move(json_stats_cb));
 }
 

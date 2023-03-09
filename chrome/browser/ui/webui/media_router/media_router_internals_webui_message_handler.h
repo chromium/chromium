@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+#include "components/media_router/browser/media_router_debugger.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
@@ -18,9 +19,12 @@ class MediaRouter;
 // The handler for Javascript messages related to the media router internals
 // page.
 class MediaRouterInternalsWebUIMessageHandler
-    : public content::WebUIMessageHandler {
+    : public content::WebUIMessageHandler,
+      public MediaRouterDebugger::MirroringStatsObserver {
  public:
-  explicit MediaRouterInternalsWebUIMessageHandler(const MediaRouter* router);
+  explicit MediaRouterInternalsWebUIMessageHandler(
+      const MediaRouter* router,
+      MediaRouterDebugger& debugger);
   ~MediaRouterInternalsWebUIMessageHandler() override;
 
  private:
@@ -32,10 +36,17 @@ class MediaRouterInternalsWebUIMessageHandler
   void HandleGetProviderState(const base::Value::List& args);
   void HandleGetLogs(const base::Value::List& args);
 
+  void HandleSetMirroringStatsEnabled(const base::Value::List& args);
+  void HandleIsMirroringStatsEnabled(const base::Value::List& args);
+
+  // MirroringStatsObserver implementation.
+  void OnMirroringStatsUpdated(const base::Value::Dict& json_logs) override;
+
   void OnProviderState(base::Value callback_id, mojom::ProviderStatePtr state);
 
   // Pointer to the MediaRouter.
   const raw_ptr<const MediaRouter> router_;
+  MediaRouterDebugger& debugger_;
 
   base::WeakPtrFactory<MediaRouterInternalsWebUIMessageHandler> weak_factory_{
       this};

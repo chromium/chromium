@@ -136,6 +136,8 @@ class CastMediaRouteProvider : public mojom::MediaRouteProvider {
 
   std::unique_ptr<CastActivityManager> activity_manager_;
 
+  const scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
   SEQUENCE_CHECKER(sequence_checker_);
 };
 

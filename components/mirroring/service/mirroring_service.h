@@ -6,6 +6,7 @@
 #define COMPONENTS_MIRRORING_SERVICE_MIRRORING_SERVICE_H_
 
 #include "base/component_export.h"
+#include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "components/mirroring/mojom/mirroring_service.mojom.h"
@@ -55,6 +56,8 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MirroringService final
 
   // The current Open Screen session host, if any.
   std::unique_ptr<OpenscreenSessionHost> session_host_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace mirroring

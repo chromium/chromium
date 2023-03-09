@@ -44,4 +44,12 @@ bool MediaRouterDebugger::IsRtcpReportsEnabled() const {
          base::FeatureList::IsEnabled(media::kEnableRtcpReporting);
 }
 
+void MediaRouterDebugger::AddObserver(MirroringStatsObserver& obs) {
+  observers_.AddObserver(&obs);
+}
+
+void MediaRouterDebugger::RemoveObserver(MirroringStatsObserver& obs) {
+  observers_.RemoveObserver(&obs);
+}
+
 }  // namespace media_router
