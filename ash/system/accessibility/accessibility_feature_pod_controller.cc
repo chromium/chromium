@@ -56,6 +56,7 @@ std::unique_ptr<FeatureTile> AccessibilityFeaturePodController::CreateTile(
       base::BindRepeating(&FeaturePodControllerBase::OnIconPressed,
                           weak_ptr_factory_.GetWeakPtr()),
       /*is_togglable=*/false);
+  feature_tile->SetID(VIEW_ID_ACCESSIBILITY_FEATURE_TILE);
   feature_tile->SetVectorIcon(kUnifiedMenuAccessibilityIcon);
   feature_tile->SetLabel(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY));

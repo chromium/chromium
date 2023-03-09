@@ -12,9 +12,15 @@
 
 namespace message_center {
 class MessagePopupView;
-}
+}  // namespace message_center
+
+namespace views {
+class ScrollView;
+}  // namespace views
 
 namespace ash {
+
+class AccessibilityDetailedView;
 
 // Public test API for the system tray. Methods only apply to the system tray
 // on the primary display.
@@ -47,12 +53,23 @@ class ASH_EXPORT SystemTrayTestApi {
   void ShowAccessibilityDetailedView();
   void ShowNetworkDetailedView();
 
+  // Returns the current `ash::AccessibilityDetailedView`. This assumes that the
+  // accessibility detailed view is currently showing.
+  AccessibilityDetailedView* GetAccessibilityDetailedView();
+
   // Returns true if the view exists in the bubble and is visible.
   // If |open_tray| is true, it also opens system tray bubble.
   bool IsBubbleViewVisible(int view_id, bool open_tray);
 
-  // If the view is in a scroll contents, scrolls the bubble to shown the view.
-  void ScrollToShowView(int view_id);
+  // Returns true if the `TrayToggleButton` with ID `view_id` is toggled on,
+  // false otherwise.
+  bool IsToggleOn(int view_id);
+
+  // Searches for a `views::View` having ID `view_id`, and then scrolls it onto
+  // the screen to make it visible (if it is already visible then no scrolling
+  // is performed). The view should be a descendant of `scroll_view` (this is
+  // `DCHECK`ed).
+  void ScrollToShowView(views::ScrollView* scroll_view, int view_id);
 
   // Clicks the view |view_id|.
   void ClickBubbleView(int view_id);

@@ -7,6 +7,8 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/system_tray_test_api.h"
+#include "ash/system/accessibility/accessibility_detailed_view.h"
+#include "ash/system/tray/tray_detailed_view.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -194,7 +196,10 @@ class TrayAccessibilityTest : public InProcessBrowserTest,
 
   bool IsMenuButtonVisible() {
     bool visible = tray_test_api_->IsBubbleViewVisible(
-        ash::VIEW_ID_ACCESSIBILITY_TRAY_ITEM, true /* open_tray */);
+        base::FeatureList::IsEnabled(ash::features::kQsRevamp)
+            ? ash::VIEW_ID_ACCESSIBILITY_FEATURE_TILE
+            : ash::VIEW_ID_ACCESSIBILITY_TRAY_ITEM,
+        true /* open_tray */);
     tray_test_api_->CloseBubble();
     return visible;
   }
@@ -206,12 +211,18 @@ class TrayAccessibilityTest : public InProcessBrowserTest,
   void ClickVirtualKeyboardOnDetailMenu() {
     // Scroll the detailed view to show the virtual keyboard option.
     tray_test_api_->ScrollToShowView(
+        tray_test_api_->GetAccessibilityDetailedView()
+            ->scroll_view_for_testing(),
         ash::VIEW_ID_ACCESSIBILITY_VIRTUAL_KEYBOARD);
     tray_test_api_->ClickBubbleView(
         ash::VIEW_ID_ACCESSIBILITY_VIRTUAL_KEYBOARD);
   }
 
   bool IsVirtualKeyboardEnabledOnDetailMenu() const {
+    if (features::IsQsRevampEnabled()) {
+      return tray_test_api_->IsToggleOn(
+          ash::VIEW_ID_ACCESSIBILITY_VIRTUAL_KEYBOARD_ENABLED);
+    }
     return tray_test_api_->IsBubbleViewVisible(
         ash::VIEW_ID_ACCESSIBILITY_VIRTUAL_KEYBOARD_ENABLED,
         false /* open_tray */);
@@ -571,10 +582,6 @@ IN_PROC_BROWSER_TEST_P(TrayAccessibilityTest,
 }
 
 IN_PROC_BROWSER_TEST_P(TrayAccessibilityTest, KeepMenuVisibilityOnLockScreen) {
-  // TODO: (b/270609503) test the revapmped view.
-  if (base::FeatureList::IsEnabled(ash::features::kQsRevamp)) {
-    return;
-  }
   // Enables high contrast mode.
   EnableHighContrast(true);
   EXPECT_TRUE(IsMenuButtonVisible());
@@ -598,10 +605,6 @@ IN_PROC_BROWSER_TEST_P(TrayAccessibilityTest, KeepMenuVisibilityOnLockScreen) {
 // Do not use a feature which requires an enable/disable confirmation dialog
 // here, as the dialogs change focus and close the detail menu.
 IN_PROC_BROWSER_TEST_P(TrayAccessibilityTest, DetailMenuRemainsOpen) {
-  // TODO: (b/270609503) test the revapmped view.
-  if (base::FeatureList::IsEnabled(ash::features::kQsRevamp)) {
-    return;
-  }
   CreateDetailedMenu();
 
   ClickVirtualKeyboardOnDetailMenu();
@@ -640,10 +643,6 @@ class TrayAccessibilityLoginTest : public TrayAccessibilityTest {
 
 IN_PROC_BROWSER_TEST_P(TrayAccessibilityLoginTest,
                        ShowMenuWithShowOnLoginScreen) {
-  // TODO: (b/270609503) test the revapmped view.
-  if (base::FeatureList::IsEnabled(ash::features::kQsRevamp)) {
-    return;
-  }
   EXPECT_FALSE(user_manager::UserManager::Get()->IsUserLoggedIn());
 
   // Confirms that the menu is visible.
