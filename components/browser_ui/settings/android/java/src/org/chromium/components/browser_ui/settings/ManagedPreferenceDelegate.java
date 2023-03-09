@@ -63,13 +63,12 @@ public interface ManagedPreferenceDelegate {
     int defaultPreferenceLayoutResource();
 
     /**
-     * Returns whether clicking on the given Preference is disabled due to a policy. The default
+     * Returns whether clicking on the given Preference is disabled. The default
      * implementation just returns whether the preference is not modifiable by the user.
      * However, some preferences that are controlled by policy may still be clicked to show an
      * informational subscreen, in which case this method needs a custom implementation.
      */
-    // TODO(bauerb): Rename to isPreferenceClickDisabled.
-    default boolean isPreferenceClickDisabledByPolicy(Preference preference) {
+    default boolean isPreferenceClickDisabled(Preference preference) {
         return isPreferenceControlledByPolicy(preference)
                 || isPreferenceControlledByCustodian(preference);
     }

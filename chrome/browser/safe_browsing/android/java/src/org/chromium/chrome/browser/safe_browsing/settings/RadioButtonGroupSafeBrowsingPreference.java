@@ -111,7 +111,7 @@ public class RadioButtonGroupSafeBrowsingPreference extends Preference
 
         // If Safe Browsing is managed, disable the radio button group, but keep the aux buttons
         // enabled to disclose information.
-        if (mManagedPrefDelegate.isPreferenceClickDisabledByPolicy(this)) {
+        if (mManagedPrefDelegate.isPreferenceClickDisabled(this)) {
             groupLayout.setEnabled(false);
             mEnhancedProtection.setAuxButtonEnabled(true);
             mStandardProtection.setAuxButtonEnabled(true);

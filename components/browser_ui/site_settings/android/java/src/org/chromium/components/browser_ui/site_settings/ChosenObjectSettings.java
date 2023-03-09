@@ -300,7 +300,7 @@ public class ChosenObjectSettings
                 }
 
                 @Override
-                public boolean isPreferenceClickDisabledByPolicy(Preference preference) {
+                public boolean isPreferenceClickDisabled(Preference preference) {
                     return false;
                 }
             });

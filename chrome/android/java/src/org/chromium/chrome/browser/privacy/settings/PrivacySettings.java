@@ -145,7 +145,7 @@ public class PrivacySettings
             }
 
             @Override
-            public boolean isPreferenceClickDisabledByPolicy(Preference preference) {
+            public boolean isPreferenceClickDisabled(Preference preference) {
                 // Advanced Protection automatically enables HTTPS-Only Mode so
                 // lock the setting.
                 return isPreferenceControlledByPolicy(preference)

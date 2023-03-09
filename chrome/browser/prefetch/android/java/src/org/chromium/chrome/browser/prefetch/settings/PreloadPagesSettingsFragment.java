@@ -66,8 +66,8 @@ public class PreloadPagesSettingsFragment extends PreloadPagesSettingsFragmentBa
 
         Preference managedDisclaimerText = findPreference(PREF_MANAGED_DISCLAIMER_TEXT);
         TextMessagePreference textManagedLegacy = findPreference(PREF_TEXT_MANAGED_LEGACY);
-        boolean managedTextVisible = managedPreferenceDelegate.isPreferenceClickDisabledByPolicy(
-                mPreloadPagesPreference);
+        boolean managedTextVisible =
+                managedPreferenceDelegate.isPreferenceClickDisabled(mPreloadPagesPreference);
 
         if (SettingsFeatureList.isEnabled(
                     SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)) {

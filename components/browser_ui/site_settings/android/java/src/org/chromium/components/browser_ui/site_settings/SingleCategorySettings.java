@@ -1557,7 +1557,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
              * Click is always enabled as a toast will be shown if a managed preference is clicked.
              */
             @Override
-            public boolean isPreferenceClickDisabledByPolicy(Preference preference) {
+            public boolean isPreferenceClickDisabled(Preference preference) {
                 return false;
             }
         };

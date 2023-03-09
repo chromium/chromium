@@ -87,7 +87,7 @@ public class RadioButtonGroupPreloadPagesSettings extends Preference
 
         // If Preload Pages is managed, disable the radio button group, but keep the aux buttons
         // enabled to disclose information.
-        if (mManagedPrefDelegate.isPreferenceClickDisabledByPolicy(this)) {
+        if (mManagedPrefDelegate.isPreferenceClickDisabled(this)) {
             groupLayout.setEnabled(false);
             mExtendedPreloading.setAuxButtonEnabled(true);
             mStandardPreloading.setAuxButtonEnabled(true);
