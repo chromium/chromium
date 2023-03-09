@@ -4,7 +4,9 @@
 
 #include "components/user_education/test/test_help_bubble.h"
 
+#include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_test_util.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
@@ -17,9 +19,15 @@ DEFINE_FRAMEWORK_SPECIFIC_METADATA(TestHelpBubbleFactory)
 // static
 constexpr int TestHelpBubble::kNoButtonWithTextIndex;
 
-TestHelpBubble::TestHelpBubble(ui::ElementContext context,
+TestHelpBubble::TestHelpBubble(ui::TrackedElement* element,
                                HelpBubbleParams params)
-    : context_(context), params_(std::move(params)) {}
+    : element_(element), params_(std::move(params)) {
+  element_hidden_subscription_ =
+      ui::ElementTracker::GetElementTracker()->AddElementHiddenCallback(
+          element->identifier(), element->context(),
+          base::BindRepeating(&TestHelpBubble::OnElementHidden,
+                              base::Unretained(this)));
+}
 
 TestHelpBubble::~TestHelpBubble() {
   // Needs to be called here while we still have access to derived class
@@ -69,18 +77,29 @@ int TestHelpBubble::GetIndexOfButtonWithText(std::u16string text) {
 }
 
 void TestHelpBubble::CloseBubbleImpl() {
-  context_ = ui::ElementContext();
+  element_ = nullptr;
+  element_hidden_subscription_ = base::CallbackListSubscription();
 }
 
 ui::ElementContext TestHelpBubble::GetContext() const {
-  return context_;
+  return element_ ? element_->context() : ui::ElementContext();
+}
+
+void TestHelpBubble::OnElementHidden(ui::TrackedElement* element) {
+  if (element == element_) {
+    if (is_open()) {
+      Close();
+    } else {
+      element_ = nullptr;
+      element_hidden_subscription_ = base::CallbackListSubscription();
+    }
+  }
 }
 
 std::unique_ptr<HelpBubble> TestHelpBubbleFactory::CreateBubble(
     ui::TrackedElement* element,
     HelpBubbleParams params) {
-  return std::make_unique<TestHelpBubble>(element->context(),
-                                          std::move(params));
+  return std::make_unique<TestHelpBubble>(element, std::move(params));
 }
 
 bool TestHelpBubbleFactory::CanBuildBubbleForTrackedElement(

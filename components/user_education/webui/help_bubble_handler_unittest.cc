@@ -431,8 +431,7 @@ TEST_F(HelpBubbleHandlerTest, ExternalHelpBubbleUpdated) {
   params.buttons.emplace_back(std::move(button_params));
 
   std::unique_ptr<HelpBubble> help_bubble =
-      std::make_unique<test::TestHelpBubble>(element->context(),
-                                             std::move(params));
+      std::make_unique<test::TestHelpBubble>(element, std::move(params));
 
   // Call the floating help bubble created method and ensure that the correct
   // message is sent over to the client.
