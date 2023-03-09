@@ -32,9 +32,10 @@ class HighEfficiencyHelpPromoTest : public InProcessBrowserTest {
   ~HighEfficiencyHelpPromoTest() override = default;
 
   void SetUp() override {
-    iph_features_.InitAndEnableFeatures(
-        {feature_engagement::kIPHHighEfficiencyModeFeature,
-         performance_manager::features::kHighEfficiencyModeAvailable});
+    iph_features_.InitAndEnableFeaturesWithParameters(
+        {{feature_engagement::kIPHHighEfficiencyModeFeature, {}},
+         {performance_manager::features::kHighEfficiencyModeAvailable,
+          {{"default_state", "false"}}}});
 
     InProcessBrowserTest::SetUp();
   }

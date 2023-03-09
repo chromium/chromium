@@ -127,6 +127,9 @@ class UserPerformanceTuningManager
     ::mojom::LifecycleUnitDiscardReason discard_reason_;
   };
 
+  // Returns whether a UserPerformanceTuningManager was created and installed.
+  // Should only return false in unit tests.
+  static bool HasInstance();
   static UserPerformanceTuningManager* GetInstance();
 
   ~UserPerformanceTuningManager() override;

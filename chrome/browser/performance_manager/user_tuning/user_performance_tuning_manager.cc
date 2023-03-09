@@ -101,6 +101,11 @@ UserPerformanceTuningManager::PreDiscardResourceUsage::
     ~PreDiscardResourceUsage() = default;
 
 // static
+bool UserPerformanceTuningManager::HasInstance() {
+  return g_user_performance_tuning_manager;
+}
+
+// static
 UserPerformanceTuningManager* UserPerformanceTuningManager::GetInstance() {
   DCHECK(g_user_performance_tuning_manager);
   return g_user_performance_tuning_manager;

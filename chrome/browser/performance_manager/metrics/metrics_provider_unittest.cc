@@ -98,6 +98,8 @@ class PerformanceManagerMetricsProviderTest : public testing::Test {
 };
 
 TEST_F(PerformanceManagerMetricsProviderTest, TestNormalMode) {
+  SetHighEfficiencyEnabled(false);
+
   InitProvider();
   base::HistogramTester tester;
 
@@ -108,10 +110,12 @@ TEST_F(PerformanceManagerMetricsProviderTest, TestNormalMode) {
 }
 
 TEST_F(PerformanceManagerMetricsProviderTest, TestMixedMode) {
+  // Start in normal mode
+  SetHighEfficiencyEnabled(false);
+
   InitProvider();
   {
     base::HistogramTester tester;
-    // Start in normal mode
     provider()->ProvideCurrentSessionData(nullptr);
     ExpectSingleUniqueSample(
         tester, performance_manager::MetricsProvider::EfficiencyMode::kNormal);
@@ -193,6 +197,7 @@ TEST_F(PerformanceManagerMetricsProviderTest, TestBothModes) {
 
 TEST_F(PerformanceManagerMetricsProviderTest,
        TestCorrectlyLoggedDuringShutdown) {
+  SetHighEfficiencyEnabled(false);
   SetBatterySaverEnabled(true);
 
   InitProvider();

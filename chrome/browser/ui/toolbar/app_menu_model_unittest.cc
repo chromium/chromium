@@ -271,6 +271,11 @@ TEST_F(AppMenuModelTest, EnabledPerformanceItem) {
 }
 
 TEST_F(AppMenuModelTest, DisabledPerformanceItem) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{}, /*disabled_features=*/{
+          performance_manager::features::kHighEfficiencyModeAvailable,
+          performance_manager::features::kBatterySaverModeAvailable});
   AppMenuModel model(this, browser());
   model.Init();
   ToolsMenuModel toolModel(&model, browser());
