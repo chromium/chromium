@@ -5,6 +5,7 @@
 import {FakeInputDeviceSettingsProvider, fakeKeyboards, getInputDeviceSettingsProvider, KeyboardRemapModifierKeyRowElement, MetaKey, ModifierKey, Router, routes, SettingsPerDeviceKeyboardRemapKeysElement} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 suite('PerDeviceKeyboardRemapKeys', function() {
   /**
@@ -103,6 +104,10 @@ suite('PerDeviceKeyboardRemapKeys', function() {
     const metaKeyRow = page.shadowRoot.querySelector('#metaKey');
     assertTrue(!!metaKeyRow);
     assertEquals(metaKeyRow.keyLabel, 'Command');
+
+    // Verify that the icon is hidden.
+    const commandKeyIcon = metaKeyRow.shadowRoot.querySelector('iron-icon');
+    assertFalse(!!commandKeyIcon);
   });
 
   /**
@@ -154,6 +159,10 @@ suite('PerDeviceKeyboardRemapKeys', function() {
     const metaKeyRow = page.shadowRoot.querySelector('#metaKey');
     assertTrue(!!metaKeyRow);
     assertEquals(metaKeyRow.keyLabel, 'Launcher');
+
+    const launcherKeyIcon = metaKeyRow.shadowRoot.querySelector('iron-icon');
+    assertTrue(!!launcherKeyIcon);
+    assertEquals('os-settings:launcher', launcherKeyIcon.icon);
   });
 
   /**

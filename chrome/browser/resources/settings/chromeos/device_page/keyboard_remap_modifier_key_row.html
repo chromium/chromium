@@ -32,12 +32,26 @@
   .settings-box {
     justify-content: space-between;
   }
+
+  iron-icon {
+    --iron-icon-fill-color: var(--cros-icon-color-secondary);
+    --iron-icon-height: 20px;
+    --iron-icon-width: 20px;
+    align-self: center;
+    justify-self: center;
+  }
 </style>
 <div class="settings-box">
   <div>
-    <div id="keyLabel"
-        class="start key-container"
-        aria-hidden="true">[[keyLabel]]</div>
+    <div id="keyLabelContainer" class="start key-container">
+      <template is="dom-if" if="[[!metaKeyIcon]]">
+        <div id="keyLabel"
+            aria-hidden="true">[[keyLabel]]</div>
+      </template>
+      <template is="dom-if" if="[[metaKeyIcon]]">
+        <iron-icon icon="[[metaKeyIcon]]"></iron-icon>
+      </template>
+    </div>
   </div>
   <settings-dropdown-menu id="keyDropdown"
       label="[[keyLabel]]"

@@ -8,9 +8,12 @@
  * allow users to customize the remapped key.
  */
 
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../../settings_shared.css.js';
 import '../../controls/settings_dropdown_menu.js';
 import '../../prefs/prefs.js';
+import '../../settings_shared.css.js';
+import '../os_settings_icons.html.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
@@ -30,6 +33,7 @@ enum KeyState {
   MODIFIER_REMAPPED = 'modifier-remapped',
 }
 
+type MetaKeyIcon = 'cr:search'|'os-settings:launcher'|'';
 const KeyboardRemapModifierKeyRowElementBase = I18nMixin(PolymerElement);
 
 export class KeyboardRemapModifierKeyRowElement extends
@@ -79,12 +83,18 @@ export class KeyboardRemapModifierKeyRowElement extends
       keyMapTargets: {
         type: Object,
       },
+
+      metaKeyIcon: {
+        type: String,
+        value: '',
+      },
     };
   }
 
   protected keyLabel: string;
   private metaKeyLabel: string;
   private keyMapTargets: DropdownMenuOptionList;
+  private metaKeyIcon: MetaKeyIcon;
   keyState: KeyState;
   pref: chrome.settingsPrivate.PrefObject;
   metaKey: MetaKey;
@@ -106,6 +116,9 @@ export class KeyboardRemapModifierKeyRowElement extends
   }
 
   private onMetaKeyChanged(): void {
+    if (this.key === ModifierKey.META) {
+      this.metaKeyIcon = this.getMetaKeyIcon();
+    }
     this.setUpKeyMapTargets();
   }
 
@@ -153,8 +166,6 @@ export class KeyboardRemapModifierKeyRowElement extends
         return this.i18n('keyboardKeyEscape');
       }
       case ModifierKey.META: {
-        // TODO(yyhyyh@): Replace the i18n string for launcher and search label
-        // with icon.
         return this.getMetaKeyLabel();
       }
       default:
@@ -198,6 +209,16 @@ export class KeyboardRemapModifierKeyRowElement extends
         name: this.i18n('keyboardKeyDisabled'),
       },
     ];
+  }
+
+  private getMetaKeyIcon(): MetaKeyIcon {
+    if (this.metaKey === MetaKey.SEARCH) {
+      return 'cr:search';
+    }
+    if (this.metaKey === MetaKey.LAUNCHER) {
+      return 'os-settings:launcher';
+    }
+    return '';
   }
 }
 
