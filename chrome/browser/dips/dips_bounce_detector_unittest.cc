@@ -460,15 +460,15 @@ TEST_F(DIPSBounceDetectorTest, InteractionRecording_Throttled) {
   NavigateTo("http://a.test", kNoUserGesture);
   ActivatePage();
 
-  AdvanceDIPSTime(DIPSBounceDetector::kInteractionUpdateInterval / 2);
+  AdvanceDIPSTime(DIPSBounceDetector::kTimestampUpdateInterval / 2);
   ActivatePage();
 
-  AdvanceDIPSTime(DIPSBounceDetector::kInteractionUpdateInterval / 2);
+  AdvanceDIPSTime(DIPSBounceDetector::kTimestampUpdateInterval / 2);
   base::Time last_time = GetCurrentTime();
   ActivatePage();
 
   // Verify only the first and last interactions were recorded. The second
-  // interaction happened less than |kInteractionUpdateInterval| after the
+  // interaction happened less than |kTimestampUpdateInterval| after the
   // first, so it should be ignored.
   EXPECT_THAT(GetRecordedEvents(), testing::SizeIs(2));
   EXPECT_THAT(GetRecordedEvents(),
@@ -484,15 +484,15 @@ TEST_F(DIPSBounceDetectorTest, InteractionRecording_NotThrottled_AfterRefresh) {
   NavigateTo("http://a.test", kNoUserGesture);
   ActivatePage();
 
-  AdvanceDIPSTime(DIPSBounceDetector::kInteractionUpdateInterval / 4);
+  AdvanceDIPSTime(DIPSBounceDetector::kTimestampUpdateInterval / 4);
   NavigateTo("http://a.test", kWithUserGesture);
 
-  AdvanceDIPSTime(DIPSBounceDetector::kInteractionUpdateInterval / 4);
+  AdvanceDIPSTime(DIPSBounceDetector::kTimestampUpdateInterval / 4);
   base::Time last_time = GetCurrentTime();
   ActivatePage();
 
   // Verify the first and last interactions were both recorded. Despite the last
-  // interaction happening less than |kInteractionUpdateInterval| after the
+  // interaction happening less than |kTimestampUpdateInterval| after the
   // first, it happened after the page was refreshed, so it should be recorded.
   EXPECT_THAT(GetRecordedEvents(), testing::SizeIs(2));
   EXPECT_THAT(GetRecordedEvents(),
@@ -501,6 +501,65 @@ TEST_F(DIPSBounceDetectorTest, InteractionRecording_NotThrottled_AfterRefresh) {
                                  /*event=*/DIPSRecordedEvent::kInteraction),
                   MakeEventTuple("http://a.test", last_time,
                                  /*event=*/DIPSRecordedEvent::kInteraction)));
+}
+
+TEST_F(DIPSBounceDetectorTest, StorageRecording_Throttled) {
+  base::Time first_time = GetCurrentTime();
+
+  // Navigate to a.test, then simulate a late cookie access for a previous site,
+  // before a.test's cookie access.
+  NavigateTo("http://a.test", kNoUserGesture);
+  LateAccessClientCookie("http://b.test", CookieOperation::kChange);
+  AccessClientCookie(CookieOperation::kChange);
+
+  // Cause a second cookie access by a.test, less than
+  // |kTimestampUpdateInterval| after its first one.
+  AdvanceDIPSTime(DIPSBounceDetector::kTimestampUpdateInterval / 2);
+  AccessClientCookie(CookieOperation::kChange);
+
+  AdvanceDIPSTime(DIPSBounceDetector::kTimestampUpdateInterval / 2);
+  base::Time last_time = GetCurrentTime();
+  AccessClientCookie(CookieOperation::kChange);
+
+  // Verify only the first and last cookie accesses were recorded for a.test and
+  // that the cookie access for b.test was recorded. The cookie access for
+  // b.test happened immediately before a.test's first cookie access, but it
+  // is for a different site, so it shouldn't affect a.test's first cookie
+  // access. The second cookie access for a.test happened less than
+  // |kTimestampUpdateInterval| after its first, so it should be ignored.
+  EXPECT_THAT(GetRecordedEvents(), testing::SizeIs(3));
+  EXPECT_THAT(GetRecordedEvents(),
+              testing::UnorderedElementsAre(
+                  MakeEventTuple("http://b.test", first_time,
+                                 /*event=*/DIPSRecordedEvent::kStorage),
+                  MakeEventTuple("http://a.test", first_time,
+                                 /*event=*/DIPSRecordedEvent::kStorage),
+                  MakeEventTuple("http://a.test", last_time,
+                                 /*event=*/DIPSRecordedEvent::kStorage)));
+}
+
+TEST_F(DIPSBounceDetectorTest, StorageRecording_NotThrottled_AfterRefresh) {
+  base::Time first_time = GetCurrentTime();
+  NavigateTo("http://a.test", kNoUserGesture);
+  AccessClientCookie(CookieOperation::kChange);
+
+  AdvanceDIPSTime(DIPSBounceDetector::kTimestampUpdateInterval / 4);
+  NavigateTo("http://a.test", kWithUserGesture);
+
+  AdvanceDIPSTime(DIPSBounceDetector::kTimestampUpdateInterval / 4);
+  base::Time last_time = GetCurrentTime();
+  AccessClientCookie(CookieOperation::kChange);
+
+  // Verify both cookie accesses were  recorded. Despite the last cookie access
+  // happening less than |kTimestampUpdateInterval| after the first, it happened
+  // after the page was refreshed, so it should be recorded.
+  EXPECT_THAT(GetRecordedEvents(), testing::SizeIs(2));
+  EXPECT_THAT(GetRecordedEvents(),
+              testing::UnorderedElementsAre(
+                  MakeEventTuple("http://a.test", first_time,
+                                 /*event=*/DIPSRecordedEvent::kStorage),
+                  MakeEventTuple("http://a.test", last_time,
+                                 /*event=*/DIPSRecordedEvent::kStorage)));
 }
 
 const std::vector<std::string>& GetAllRedirectMetrics() {

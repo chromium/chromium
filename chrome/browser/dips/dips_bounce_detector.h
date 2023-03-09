@@ -11,6 +11,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/types/optional_ref.h"
 #include "chrome/browser/dips/cookie_access_filter.h"
 #include "chrome/browser/dips/dips_redirect_info.h"
 #include "chrome/browser/dips/dips_service.h"
@@ -44,6 +45,7 @@ class ClientBounceDetectionState {
   std::string current_site;
   base::TimeTicks page_load_time;
   absl::optional<base::Time> last_activation_time;
+  absl::optional<base::Time> last_storage_time;
   CookieAccessType cookie_access_type = CookieAccessType::kUnknown;
 };
 
@@ -160,7 +162,7 @@ class DIPSBounceDetector {
   // The amount of time since a page last received user interaction before a
   // subsequent user interaction event may be recorded to DIPS Storage for the
   // same page.
-  static const base::TimeDelta kInteractionUpdateInterval;
+  static const base::TimeDelta kTimestampUpdateInterval;
 
   explicit DIPSBounceDetector(DIPSBounceDetectorDelegate* delegate,
                               const base::TickClock* tick_clock,
@@ -178,7 +180,7 @@ class DIPSBounceDetector {
                                CookieOperation op);
   void DidFinishNavigation(DIPSNavigationHandle* navigation_handle);
   // Only records a new user activation event once per
-  // |kInteractionUpdateInterval| for a given page.
+  // |kTimestampUpdateInterval| for a given page.
   void OnUserActivation();
   void BeforeDestruction();
 
@@ -189,6 +191,12 @@ class DIPSBounceDetector {
   }
 
  private:
+  // Whether or not the `last_time` timestamp should be updated yet. This is
+  // used to enforce throttling of timestamp updates, reducing the number of
+  // writes to the DIPS db.
+  bool ShouldUpdateTimestamp(base::optional_ref<const base::Time> last_time,
+                             base::Time now);
+
   raw_ptr<const base::TickClock> tick_clock_;
   raw_ptr<const base::Clock> clock_;
   raw_ptr<DIPSBounceDetectorDelegate> delegate_;

@@ -238,7 +238,7 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
 
   // Click on the b.test iframe.
   base::Time frame_interaction_time =
-      time + DIPSBounceDetector::kInteractionUpdateInterval;
+      time + DIPSBounceDetector::kTimestampUpdateInterval;
   SetDIPSTime(frame_interaction_time);
   UserActivationObserver observer_b(web_contents, iframe);
 
@@ -290,7 +290,7 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
   EXPECT_EQ(state_1->user_interaction_times->first,
             state_1->user_interaction_times->second);
 
-  SetDIPSTime(time + DIPSBounceDetector::kInteractionUpdateInterval +
+  SetDIPSTime(time + DIPSBounceDetector::kTimestampUpdateInterval +
               base::Seconds(10));
   UserActivationObserver observer_2(web_contents, frame);
   SimulateMouseClick(web_contents, 0, blink::WebMouseEvent::Button::kLeft);
@@ -304,10 +304,10 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
   EXPECT_NE(state_2->user_interaction_times->second,
             state_2->user_interaction_times->first);
   EXPECT_EQ(absl::make_optional(time), state_2->user_interaction_times->first);
-  EXPECT_EQ(absl::make_optional(time +
-                                DIPSBounceDetector::kInteractionUpdateInterval +
-                                base::Seconds(10)),
-            state_2->user_interaction_times->second);
+  EXPECT_EQ(
+      absl::make_optional(time + DIPSBounceDetector::kTimestampUpdateInterval +
+                          base::Seconds(10)),
+      state_2->user_interaction_times->second);
 }
 
 IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, StorageRecordedInSingleFrame) {
@@ -604,7 +604,7 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
   BlockUntilHelperProcessesPendingRequests();
 
   // Click a second time.
-  SetDIPSTime(time + DIPSBounceDetector::kInteractionUpdateInterval +
+  SetDIPSTime(time + DIPSBounceDetector::kTimestampUpdateInterval +
               base::Seconds(3));
   UserActivationObserver click_observer_2(web_contents, frame);
   SimulateMouseClick(web_contents, 0, blink::WebMouseEvent::Button::kLeft);
@@ -617,17 +617,17 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
   EXPECT_NE(state->user_interaction_times->first,
             state->user_interaction_times->second);
   EXPECT_EQ(absl::make_optional(time), state->user_interaction_times->first);
-  EXPECT_EQ(absl::make_optional(time +
-                                DIPSBounceDetector::kInteractionUpdateInterval +
-                                base::Seconds(3)),
-            state->user_interaction_times->second);
+  EXPECT_EQ(
+      absl::make_optional(time + DIPSBounceDetector::kTimestampUpdateInterval +
+                          base::Seconds(3)),
+      state->user_interaction_times->second);
   EXPECT_FALSE(state->site_storage_times.has_value());
 
   histograms.ExpectTotalCount(kTimeToInteraction, 0);
   histograms.ExpectTotalCount(kTimeToStorage, 0);
 
   // Write a cookie now that both clicks have been handled.
-  SetDIPSTime(time + DIPSBounceDetector::kInteractionUpdateInterval +
+  SetDIPSTime(time + DIPSBounceDetector::kTimestampUpdateInterval +
               base::Seconds(10));
   FrameCookieAccessObserver cookie_observer(web_contents, frame);
   ASSERT_TRUE(content::ExecJs(frame, "document.cookie = 'foo=bar';",
