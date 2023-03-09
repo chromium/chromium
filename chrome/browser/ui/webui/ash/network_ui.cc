@@ -881,6 +881,13 @@ base::Value::Dict NetworkUI::GetLocalizedStrings() {
   localized_strings.Set(
       "NetworkDiagnosticsSendFeedback",
       l10n_util::GetStringUTF16(IDS_NETWORK_DIAGNOSTICS_SEND_FEEDBACK));
+  localized_strings.Set("renderNetworkSelectButtonText",
+                        l10n_util::GetStringUTF16(
+                            IDS_NETWORK_UI_RENDER_NETWORK_SELECT_BUTTON_TEXT));
+  localized_strings.Set(
+      "renderNetworkSelectButtonDescription",
+      l10n_util::GetStringUTF16(
+          IDS_NETWORK_UI_RENDER_NETWORK_SELECT_BUTTON_DESCRIPTION));
 
   // Network Metrics
   localized_strings.Set(
