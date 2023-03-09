@@ -9,6 +9,7 @@
 
 #include <psapi.h>
 
+#include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"

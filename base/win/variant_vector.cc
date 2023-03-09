@@ -39,8 +39,8 @@ int CompareAgainstSafearray(const std::vector<ScopedVariant>& vector,
   auto scope_iter = lock_scope->begin();
   for (; vector_iter != vector.end() && scope_iter != lock_scope->end();
        ++vector_iter, ++scope_iter) {
-    internal::VariantUtil<ElementVartype>::RawSet(&non_owning_temp,
-                                                  *scope_iter);
+    internal::VariantConverter<ElementVartype>::RawSet(&non_owning_temp,
+                                                       *scope_iter);
     int compare_result = vector_iter->Compare(non_owning_temp, ignore_case);
     // If there is a difference in values, return the difference.
     if (compare_result)
@@ -153,9 +153,9 @@ VARIANT VariantVector::ReleaseAsSafearrayVariant() {
       scoped_variant.Set(CreateAndPopulateSafearray<VT_UNKNOWN>());
       break;
     // The default case shouldn't be reachable, but if we added support for more
-    // VARTYPEs to base::win::internal::VariantUtil<> and they were inserted
-    // into a VariantVector then it would be possible to reach the default case
-    // for those new types until implemented.
+    // VARTYPEs to base::win::internal::VariantConverter<> and they were
+    // inserted into a VariantVector then it would be possible to reach the
+    // default case for those new types until implemented.
     //
     // Because the switch is against VARTYPE (unsigned short) and not VARENUM,
     // removing the default case will not result in build warnings/errors if
@@ -296,9 +296,9 @@ int VariantVector::Compare(SAFEARRAY* safearray, bool ignore_case) const {
           vector_, scoped_safearray, ignore_case);
       break;
     // The default case shouldn't be reachable, but if we added support for more
-    // VARTYPEs to base::win::internal::VariantUtil<> and they were inserted
-    // into a VariantVector then it would be possible to reach the default case
-    // for those new types until implemented.
+    // VARTYPEs to base::win::internal::VariantConverter<> and they were
+    // inserted into a VariantVector then it would be possible to reach the
+    // default case for those new types until implemented.
     //
     // Because the switch is against VARTYPE (unsigned short) and not VARENUM,
     // removing the default case will not result in build warnings/errors if
@@ -324,7 +324,7 @@ SAFEARRAY* VariantVector::CreateAndPopulateSafearray() {
       SafeArrayCreateVector(ElementVartype, 0, checked_cast<ULONG>(Size())));
   if (!scoped_safearray.Get()) {
     constexpr size_t kElementSize =
-        sizeof(typename internal::VariantUtil<ElementVartype>::Type);
+        sizeof(typename internal::VariantConverter<ElementVartype>::Type);
     base::TerminateBecauseOutOfMemory(sizeof(SAFEARRAY) +
                                       (Size() * kElementSize));
   }
@@ -335,7 +335,8 @@ SAFEARRAY* VariantVector::CreateAndPopulateSafearray() {
 
   for (size_t i = 0; i < Size(); ++i) {
     VARIANT element = vector_[i].Release();
-    (*lock_scope)[i] = internal::VariantUtil<ElementVartype>::RawGet(element);
+    (*lock_scope)[i] =
+        internal::VariantConverter<ElementVartype>::RawGet(element);
   }
   Reset();
 

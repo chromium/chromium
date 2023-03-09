@@ -2,10 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_WIN_VARIANT_UTIL_H_
-#define BASE_WIN_VARIANT_UTIL_H_
+#ifndef BASE_WIN_VARIANT_CONVERSIONS_H_
+#define BASE_WIN_VARIANT_CONVERSIONS_H_
 
-#include "base/logging.h"
+#include <oaidl.h>
+#include <stdint.h>
+#include <wtypes.h>
+
+#include "base/check.h"
 
 namespace base {
 namespace win {
@@ -116,10 +120,10 @@ struct VartypeToNativeType<VT_DISPATCH> final {
   static constexpr IDispatch* VARIANT::*kMemberOffset = &VARIANT::pdispVal;
 };
 
-// VariantUtil contains the underlying |Type| and helper methods
+// VariantConverter contains the underlying |Type| and helper methods
 // related to the |ElementVartype| for simple types.
 template <VARTYPE ElementVartype>
-struct VariantUtil final {
+struct VariantConverter final {
   using Type = typename VartypeToNativeType<ElementVartype>::Type;
   static constexpr bool IsConvertibleTo(VARTYPE vartype) {
     return VarTypeIsConvertibleTo(ElementVartype, vartype);
@@ -148,4 +152,4 @@ struct VariantUtil final {
 }  // namespace win
 }  // namespace base
 
-#endif  // BASE_WIN_VARIANT_UTIL_H_
+#endif  // BASE_WIN_VARIANT_CONVERSIONS_H_

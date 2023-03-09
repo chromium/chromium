@@ -12,7 +12,7 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/win/propvarutil.h"
-#include "base/win/variant_util.h"
+#include "base/win/variant_conversions.h"
 
 namespace base {
 namespace win {
