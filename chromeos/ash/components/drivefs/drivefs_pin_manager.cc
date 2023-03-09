@@ -13,6 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
@@ -29,7 +30,23 @@ using std::ostream;
 using Path = PinManager::Path;
 
 bool InProgress(const Stage stage) {
-  return stage > Stage::kNotStarted && stage < Stage::kSuccess;
+  switch (stage) {
+    case Stage::kGettingFreeSpace:
+    case Stage::kListingFiles:
+    case Stage::kSyncing:
+      return true;
+
+    case Stage::kNotStarted:
+    case Stage::kPaused:
+    case Stage::kSuccess:
+    case Stage::kStopped:
+    case Stage::kCannotGetFreeSpace:
+    case Stage::kCannotListFiles:
+    case Stage::kNotEnoughSpace:
+      return false;
+  }
+
+  NOTREACHED_NORETURN() << "Unexpected Stage " << stage;
 }
 
 int Percentage(const int64_t a, const int64_t b) {
@@ -234,6 +251,18 @@ ostream& operator<<(ostream& out, Quoter<mojom::DriveError> q) {
              << " " << Quote(e.path) << "}";
 }
 
+ostream& operator<<(ostream& out, Quoter<ash::NetworkState> q) {
+  const auto& ip = q.value.GetIpAddress();
+  return out << "{type: " << q.value.type()
+             << ", device: " << q.value.device_path()
+             << ", guid: " << q.value.guid()
+             << ", ip: " << (ip.empty() ? "(none)" : ip)
+             << ", connection_state: " << q.value.connection_state()
+             << ", portal_state: " << q.value.GetPortalState()
+             << ", connected: " << q.value.IsConnectedState()
+             << ", online: " << q.value.IsOnline() << "}";
+}
+
 // Rounds the given size to the next multiple of 4-KB.
 int64_t RoundToBlockSize(int64_t size) {
   const int64_t block_size = 4 << 10;  // 4 KB
@@ -294,6 +323,7 @@ ostream& operator<<(ostream& out, const Stage stage) {
   case Stage::k##s: \
     return out << #s;
     PRINT(NotStarted)
+    PRINT(Paused)
     PRINT(GettingFreeSpace)
     PRINT(ListingFiles)
     PRINT(Syncing)
@@ -569,12 +599,21 @@ PinManager::~PinManager() {
 
 void PinManager::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!InProgress(progress_.stage)) << "Pin manager is " << progress_.stage;
+
+  if (InProgress(progress_.stage)) {
+    LOG(ERROR) << "Pin manager is already started: " << progress_.stage;
+    return;
+  }
 
   progress_ = {};
   files_to_pin_.clear();
   files_to_track_.clear();
   DCHECK_EQ(progress_.syncing_files, 0);
+
+  if (!is_online_) {
+    LOG(WARNING) << "Device is currently offline";
+    return Complete(Stage::kPaused);
+  }
 
   VLOG(2) << "Getting free space...";
   timer_ = base::ElapsedTimer();
@@ -598,15 +637,8 @@ void PinManager::Stop() {
 void PinManager::Enable(bool enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (enabled == InProgress(progress_.stage)) {
-    VLOG(1) << "Pin manager is already " << (enabled ? "enabled" : "disabled");
-    return;
-  }
-
   if (enabled) {
-    VLOG(1) << "Starting";
     Start();
-    VLOG(1) << "Started";
   } else {
     Stop();
   }
@@ -614,6 +646,7 @@ void PinManager::Enable(bool enabled) {
 
 void PinManager::OnFreeSpaceRetrieved1(const int64_t free_space) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(progress_.stage, Stage::kGettingFreeSpace);
 
   if (free_space < 0) {
     LOG(ERROR) << "Cannot get free space: " << free_space;
@@ -668,6 +701,7 @@ void PinManager::OnSearchResultForSizeCalculation(
     const drive::FileError error,
     const absl::optional<std::vector<mojom::QueryItemPtr>> items) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(progress_.stage, Stage::kListingFiles);
 
   if (error != drive::FILE_ERROR_OK || !items) {
     LOG(ERROR) << "Cannot list files: " << error;
@@ -705,6 +739,10 @@ void PinManager::Complete(const Stage stage) {
   switch (stage) {
     case Stage::kSuccess:
       VLOG(1) << "Finished with success";
+      break;
+
+    case Stage::kPaused:
+      VLOG(1) << "Paused";
       break;
 
     case Stage::kStopped:
@@ -1162,9 +1200,7 @@ void PinManager::RegisterNetworkObserver() {
   DCHECK(network_state_handler_);
   network_state_handler_->AddObserver(this, FROM_HERE);
 
-  const NetworkState* const network = network_state_handler_->DefaultNetwork();
-  portal_state_ = network ? network->GetPortalState() : PortalState::kUnknown;
-  VLOG(1) << "Network is " << portal_state_;
+  DefaultNetworkChanged(network_state_handler_->DefaultNetwork());
 }
 
 void PinManager::OnShuttingDown() {
@@ -1174,12 +1210,62 @@ void PinManager::OnShuttingDown() {
   network_state_handler_ = nullptr;
 }
 
-void PinManager::PortalStateChanged(
-    [[maybe_unused]] const NetworkState* const network,
-    const PortalState state) {
+void PinManager::DefaultNetworkChanged(const NetworkState* const network) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  VLOG(1) << "Network changed from " << portal_state_ << " to " << state;
-  portal_state_ = state;
+
+  if (network) {
+    VLOG(1) << "Default network changed to " << Quote(*network);
+    is_online_ = network->IsOnline();
+  } else {
+    VLOG(1) << "Default network changed to no network";
+    is_online_ = false;
+  }
+
+  if (!is_online_ && InProgress(progress_.stage)) {
+    VLOG(1) << "Going offline...";
+    return Complete(Stage::kPaused);
+  }
+
+  if (is_online_ && progress_.stage == Stage::kPaused) {
+    VLOG(1) << "Coming back online...";
+    return Start();
+  }
+}
+
+void PinManager::PortalStateChanged(const NetworkState* const network,
+                                    const PortalState portal_state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (network) {
+    DCHECK_EQ(portal_state, network->GetPortalState());
+    VLOG(2) << "Network portal state changed to " << Quote(*network);
+  } else {
+    DCHECK_EQ(portal_state, PortalState::kUnknown);
+    VLOG(2) << "Network portal state changed to no network";
+  }
+}
+
+void PinManager::ActiveNetworksChanged(
+    const std::vector<const NetworkState*>& networks) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  switch (networks.size()) {
+    case 0:
+      VLOG(2) << "There are no active networks";
+      break;
+
+    case 1:
+      VLOG(2) << "There is 1 active network";
+      break;
+
+    default:
+      VLOG(2) << "There are " << networks.size() << " active networks";
+  }
+
+  int i = 0;
+  for (const NetworkState* const network : networks) {
+    DCHECK(network);
+    VLOG(2) << "Network #" << i++ << ": " << Quote(*network);
+  }
 }
 
 }  // namespace drivefs::pinning

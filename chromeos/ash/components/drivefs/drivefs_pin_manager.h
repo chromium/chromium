@@ -46,6 +46,9 @@ enum class Stage {
   // Initial stage.
   kNotStarted,
 
+  // Paused because of unfavorable network conditions.
+  kPaused,
+
   // In-progress stages.
   kGettingFreeSpace,
   kListingFiles,
@@ -370,8 +373,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
 
   // Called by the NetworkStateHandler to signal that the network conditions
   // have changed.
+  void DefaultNetworkChanged(const NetworkState* network) override;
+
   void PortalStateChanged(const NetworkState* default_network,
                           PortalState portal_state) override;
+
+  void ActiveNetworksChanged(
+      const std::vector<const NetworkState*>& active_networks) override;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -383,8 +391,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   raw_ptr<NetworkStateHandler> network_state_handler_
       GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
 
-  // Network condition. By default, and for tests, assume it is online.
-  PortalState portal_state_ = PortalState::kOnline;
+  // Is the device connected to a suitable network? Assume it is online for
+  // tests.
+  bool is_online_ GUARDED_BY_CONTEXT(sequence_checker_) = true;
 
   // Should the feature actually pin files, or should it stop after checking the
   // space requirements?
