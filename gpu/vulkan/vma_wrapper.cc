@@ -4,6 +4,8 @@
 
 #include "gpu/vulkan/vma_wrapper.h"
 
+#include <algorithm>
+
 #include <vk_mem_alloc.h>
 
 #include "base/metrics/histogram_functions.h"
@@ -180,18 +182,23 @@ void GetBudget(VmaAllocator allocator, VmaBudget* budget) {
   vmaGetBudget(allocator, budget);
 }
 
-uint64_t GetTotalAllocatedMemory(VmaAllocator allocator) {
+std::pair<uint64_t, uint64_t> GetTotalAllocatedAndUsedMemory(
+    VmaAllocator allocator) {
+  // See GrVkMemoryAllocatorImpl::totalAllocatedAndUsedMemory() in skia for
+  // reference.
   VmaBudget budget[VK_MAX_MEMORY_HEAPS];
   vmaGetBudget(allocator, budget);
   const VkPhysicalDeviceMemoryProperties* pPhysicalDeviceMemoryProperties;
   vmaGetMemoryProperties(allocator, &pPhysicalDeviceMemoryProperties);
-  uint64_t total_allocated_memory = 0;
+  uint64_t total_allocated_memory = 0, total_used_memory = 0;
   for (uint32_t i = 0; i < pPhysicalDeviceMemoryProperties->memoryHeapCount;
        ++i) {
-    total_allocated_memory +=
-        std::max(budget[i].blockBytes, budget[i].allocationBytes);
+    total_allocated_memory += budget[i].blockBytes;
+    total_used_memory += budget[i].allocationBytes;
   }
-  return total_allocated_memory;
+  DCHECK_LE(total_used_memory, total_allocated_memory);
+
+  return {total_allocated_memory, total_used_memory};
 }
 
 }  // namespace vma
