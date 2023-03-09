@@ -51,7 +51,7 @@ sync_pb::SyncEntity SingleTypeMockServer::UpdateFromServer(
   entity.set_id_string(GenerateId(tag_hash));
   entity.set_parent_id_string(type_root_id_);
   entity.set_version(version);
-  entity.set_client_defined_unique_tag(tag_hash.value());
+  entity.set_client_tag_hash(tag_hash.value());
   entity.set_deleted(false);
   entity.mutable_specifics()->CopyFrom(specifics);
 
@@ -79,7 +79,7 @@ sync_pb::SyncEntity SingleTypeMockServer::TombstoneFromServer(
   entity.set_id_string(GenerateId(tag_hash));
   entity.set_parent_id_string(type_root_id_);
   entity.set_version(version);
-  entity.set_client_defined_unique_tag(tag_hash.value());
+  entity.set_client_tag_hash(tag_hash.value());
   entity.set_deleted(true);
   AddDefaultFieldValue(type_, entity.mutable_specifics());
 
@@ -104,7 +104,7 @@ sync_pb::ClientToServerResponse SingleTypeMockServer::DoSuccessfulCommit(
       message.commit().entries();
   for (const sync_pb::SyncEntity& entry : entries) {
     const ClientTagHash tag_hash =
-        ClientTagHash::FromHashed(entry.client_defined_unique_tag());
+        ClientTagHash::FromHashed(entry.client_tag_hash());
 
     committed_items_[tag_hash] = entry;
 

@@ -258,7 +258,7 @@ void DeleteAutofillProfileFromFakeSyncServer(std::string guid) {
   for (const sync_pb::SyncEntity& autofill_profile : autofill_profiles) {
     if (autofill_profile.specifics().autofill_profile().guid() == guid) {
       entity_id = autofill_profile.id_string();
-      client_tag_hash = autofill_profile.client_defined_unique_tag();
+      client_tag_hash = autofill_profile.client_tag_hash();
       break;
     }
   }

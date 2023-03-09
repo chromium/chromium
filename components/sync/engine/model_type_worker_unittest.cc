@@ -553,7 +553,7 @@ TEST_F(ModelTypeWorkerTest, SimpleCommit) {
   EXPECT_NE(0, entity.mtime());
   EXPECT_NE(0, entity.ctime());
   EXPECT_FALSE(entity.name().empty());
-  EXPECT_EQ(client_tag_hash.value(), entity.client_defined_unique_tag());
+  EXPECT_EQ(client_tag_hash.value(), entity.client_tag_hash());
   EXPECT_EQ(kTag1, entity.specifics().preference().name());
   EXPECT_FALSE(entity.deleted());
   EXPECT_EQ(kValue1, entity.specifics().preference().value());
@@ -627,8 +627,7 @@ TEST_F(ModelTypeWorkerTest, SimpleDelete) {
   ASSERT_TRUE(server()->HasCommitEntity(kHash1));
   const SyncEntity& entity = server()->GetLastCommittedEntity(kHash1);
   EXPECT_FALSE(entity.id_string().empty());
-  EXPECT_EQ(GeneratePreferenceTagHash(kTag1).value(),
-            entity.client_defined_unique_tag());
+  EXPECT_EQ(GeneratePreferenceTagHash(kTag1).value(), entity.client_tag_hash());
   EXPECT_EQ(base_version, entity.version());
   EXPECT_TRUE(entity.deleted());
 
@@ -644,8 +643,7 @@ TEST_F(ModelTypeWorkerTest, SimpleDelete) {
       processor()->GetCommitResponse(kHash1);
 
   EXPECT_EQ(entity.id_string(), commit_response.id);
-  EXPECT_EQ(entity.client_defined_unique_tag(),
-            commit_response.client_tag_hash.value());
+  EXPECT_EQ(entity.client_tag_hash(), commit_response.client_tag_hash.value());
   EXPECT_EQ(entity.version(), commit_response.response_version);
 }
 
@@ -829,8 +827,8 @@ TEST_F(ModelTypeWorkerTest,
       GenerateSpecifics("key2", "value2"));
 
   // Modify both entities to have empty tags.
-  entity1.set_client_defined_unique_tag("");
-  entity2.set_client_defined_unique_tag("");
+  entity1.set_client_tag_hash("");
+  entity2.set_client_tag_hash("");
 
   worker()->ProcessGetUpdatesResponse(
       server()->GetProgress(), server()->GetContext(), {&entity1, &entity2},
@@ -901,10 +899,8 @@ TEST_F(ModelTypeWorkerTest,
       GenerateSpecifics("key3", "value3"));
 
   // Mimic a bug on the server by modifying all entities to have the same tag.
-  second_newest_entity.set_client_defined_unique_tag(
-      oldest_entity.client_defined_unique_tag());
-  newest_entity.set_client_defined_unique_tag(
-      oldest_entity.client_defined_unique_tag());
+  second_newest_entity.set_client_tag_hash(oldest_entity.client_tag_hash());
+  newest_entity.set_client_tag_hash(oldest_entity.client_tag_hash());
 
   // Send |newest_entity| in the middle position, to rule out the worker is
   // keeping the first or last received update.
@@ -1366,8 +1362,7 @@ TEST_F(ModelTypeWorkerTest, ReceiveCorruptEncryption) {
 
   // Manually create an update.
   SyncEntity entity;
-  entity.set_client_defined_unique_tag(
-      GeneratePreferenceTagHash(kTag1).value());
+  entity.set_client_tag_hash(GeneratePreferenceTagHash(kTag1).value());
   entity.set_id_string("SomeID");
   entity.set_version(1);
   entity.set_ctime(1000);
@@ -1661,7 +1656,7 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
   entity.set_parent_id_string("ParentID");
   entity.set_folder(false);
   entity.set_version(1);
-  entity.set_client_defined_unique_tag("CLIENT_TAG");
+  entity.set_client_tag_hash("CLIENT_TAG");
   entity.set_server_defined_unique_tag("SERVER_TAG");
   entity.set_deleted(false);
   *entity.mutable_specifics() = GenerateSpecifics(kTag1, kValue1);
@@ -1714,7 +1709,7 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
       UniquePosition::InitialPosition(UniquePosition::RandomSuffix());
   sync_pb::SyncEntity entity;
   *entity.mutable_unique_position() = kUniquePosition.ToProto();
-  entity.set_client_defined_unique_tag("CLIENT_TAG");
+  entity.set_client_tag_hash("CLIENT_TAG");
   entity.set_server_defined_unique_tag("SERVER_TAG");
   entity.mutable_specifics()->mutable_bookmark();
 
@@ -1733,7 +1728,7 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
      BookmarkWithPositionInParent) {
   sync_pb::SyncEntity entity;
   entity.set_position_in_parent(5);
-  entity.set_client_defined_unique_tag("CLIENT_TAG");
+  entity.set_client_tag_hash("CLIENT_TAG");
   entity.set_server_defined_unique_tag("SERVER_TAG");
   entity.mutable_specifics()->mutable_bookmark();
 
@@ -1752,7 +1747,7 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
      BookmarkWithInsertAfterItemId) {
   sync_pb::SyncEntity entity;
   entity.set_insert_after_item_id("ITEM_ID");
-  entity.set_client_defined_unique_tag("CLIENT_TAG");
+  entity.set_client_tag_hash("CLIENT_TAG");
   entity.set_server_defined_unique_tag("SERVER_TAG");
   entity.mutable_specifics()->mutable_bookmark();
 
@@ -1770,7 +1765,7 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
 TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
      BookmarkWithMissingPositionFallsBackToRandom) {
   sync_pb::SyncEntity entity;
-  entity.set_client_defined_unique_tag("CLIENT_TAG");
+  entity.set_client_tag_hash("CLIENT_TAG");
   entity.set_server_defined_unique_tag("SERVER_TAG");
   entity.mutable_specifics()->mutable_bookmark();
 

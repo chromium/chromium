@@ -554,7 +554,7 @@ ModelTypeWorker::DecryptionStatus ModelTypeWorker::PopulateUpdateResponseData(
   // Prepare the message for the model thread.
   data.id = update_entity.id_string();
   data.client_tag_hash =
-      ClientTagHash::FromHashed(update_entity.client_defined_unique_tag());
+      ClientTagHash::FromHashed(update_entity.client_tag_hash());
   data.creation_time = ProtoTimeToTime(update_entity.ctime());
   data.modification_time = ProtoTimeToTime(update_entity.mtime());
   data.name = update_entity.name();

@@ -432,7 +432,7 @@ base::Time FakeServer::SetWalletData(
   const int64_t version = (now - base::Time::UnixEpoch()).InMilliseconds();
 
   for (sync_pb::SyncEntity& entity : wallet_entities_) {
-    DCHECK(!entity.has_client_defined_unique_tag())
+    DCHECK(!entity.has_client_tag_hash())
         << "The sync server doesn not provide a client tag for wallet entries.";
     DCHECK(!entity.id_string().empty()) << "server id required!";
 
@@ -461,7 +461,7 @@ base::Time FakeServer::SetOfferData(
   const int64_t version = (now - base::Time::UnixEpoch()).InMilliseconds();
 
   for (sync_pb::SyncEntity& entity : offer_entities_) {
-    DCHECK(!entity.has_client_defined_unique_tag())
+    DCHECK(!entity.has_client_tag_hash())
         << "The sync server doesn not provide a client tag for offer entries.";
     DCHECK(!entity.id_string().empty()) << "server id required!";
 

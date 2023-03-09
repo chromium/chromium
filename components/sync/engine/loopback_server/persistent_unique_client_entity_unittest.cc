@@ -17,18 +17,18 @@ namespace {
 TEST(PersistentUniqueClientEntityTest, CreateFromEntity) {
   sync_pb::SyncEntity entity;
   entity.mutable_specifics()->mutable_preference();
-  // Normal types need a client_defined_unique_tag.
+  // Normal types need a client_tag_hash.
   ASSERT_FALSE(PersistentUniqueClientEntity::CreateFromEntity(entity));
 
-  *entity.mutable_client_defined_unique_tag() = "tag";
+  *entity.mutable_client_tag_hash() = "tag";
   ASSERT_TRUE(PersistentUniqueClientEntity::CreateFromEntity(entity));
 
   entity.clear_specifics();
   entity.mutable_specifics()->mutable_user_event();
-  // CommitOnly type should never have a client_defined_unique_tag.
+  // CommitOnly type should never have a client_tag_hash.
   ASSERT_FALSE(PersistentUniqueClientEntity::CreateFromEntity(entity));
 
-  entity.clear_client_defined_unique_tag();
+  entity.clear_client_tag_hash();
   ASSERT_TRUE(PersistentUniqueClientEntity::CreateFromEntity(entity));
 }
 

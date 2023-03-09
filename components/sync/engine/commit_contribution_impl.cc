@@ -219,9 +219,9 @@ void CommitContributionImpl::PopulateCommitProto(
   } else if (type != BOOKMARKS ||
              !entity_data.client_tag_hash.value().empty()) {
     // The client tag is mandatory for all datatypes except bookmarks, and
-    // experimental for bookmarks (behind feature toggle).
-    commit_proto->set_client_defined_unique_tag(
-        entity_data.client_tag_hash.value());
+    // for bookmarks it depends on the version of the browser that was used
+    // to originally create the bookmark.
+    commit_proto->set_client_tag_hash(entity_data.client_tag_hash.value());
   }
 
   commit_proto->set_version(commit_entity.base_version);
