@@ -55,10 +55,6 @@ class OneDriveUploadHandler
   void OnEndUpload(const storage::FileSystemURL& uploaded_file_url,
                    std::string error_message = "");
 
-  void OnDestinationDirectoryCreated(
-      storage::FileSystemURL destination_folder_url,
-      base::File::Error error);
-
   // IOTaskController::Observer:
   void OnIOTaskStatus(
       const ::file_manager::io_task::ProgressStatus& status) override;

@@ -1386,8 +1386,7 @@ class OneDriveTest : public TestAccountBrowserTest {
     feature_list_.InitAndEnableFeature(ash::features::kUploadOfficeToCloud);
     test_file_name_ = "text.docx";
     // Relative path for a file on ODFS and Android OneDrive.
-    relative_test_path_ = base::FilePath(ash::cloud_upload::kDestinationFolder)
-                              .Append(test_file_name_);
+    relative_test_path_ = base::FilePath(test_file_name_);
     // The path in ODFS is the relative path with "/" prefixed.
     test_path_within_odfs_ = base::FilePath("/").Append(relative_test_path_);
     file_system_id_ = "odfs";

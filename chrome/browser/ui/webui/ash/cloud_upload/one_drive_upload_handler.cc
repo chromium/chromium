@@ -106,8 +106,7 @@ void OneDriveUploadHandler::Run(UploadCallback callback) {
     OnEndUpload(FileSystemURL(), error_message);
     return;
   }
-  base::FilePath destination_folder_path =
-      file_systems[0].mount_path().Append(kDestinationFolder);
+  base::FilePath destination_folder_path = file_systems[0].mount_path();
   FileSystemURL destination_folder_url = FilePathToFileSystemURL(
       profile_, file_system_context_, destination_folder_path);
   // TODO (b/243095484) Define error behavior.
@@ -116,13 +115,14 @@ void OneDriveUploadHandler::Run(UploadCallback callback) {
     return;
   }
 
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&CreateDirectoryOnIOThread, file_system_context_,
-                     destination_folder_url,
-                     google_apis::CreateRelayCallback(base::BindOnce(
-                         &OneDriveUploadHandler::OnDestinationDirectoryCreated,
-                         this, destination_folder_url))));
+  std::vector<FileSystemURL> source_urls{source_url_};
+  std::unique_ptr<file_manager::io_task::IOTask> task =
+      std::make_unique<file_manager::io_task::CopyOrMoveIOTask>(
+          file_manager::io_task::OperationType::kMove, std::move(source_urls),
+          std::move(destination_folder_url), profile_, file_system_context_,
+          /*show_notification=*/false);
+
+  observed_task_id_ = io_task_controller_->Add(std::move(task));
 }
 
 void OneDriveUploadHandler::OnEndUpload(const FileSystemURL& uploaded_file_url,
@@ -139,28 +139,6 @@ void OneDriveUploadHandler::OnEndUpload(const FileSystemURL& uploaded_file_url,
   if (callback_) {
     std::move(callback_).Run(uploaded_file_url);
   }
-}
-
-void OneDriveUploadHandler::OnDestinationDirectoryCreated(
-    FileSystemURL destination_folder_url,
-    base::File::Error error) {
-  if (error != base::File::FILE_OK) {
-    OnEndUpload(FileSystemURL(), "Unable to create destination folder");
-    return;
-  }
-  if (!destination_folder_url.is_valid()) {
-    OnEndUpload(FileSystemURL(), "Received destination URL is invalid");
-    return;
-  }
-
-  std::vector<FileSystemURL> source_urls{source_url_};
-  std::unique_ptr<file_manager::io_task::IOTask> task =
-      std::make_unique<file_manager::io_task::CopyOrMoveIOTask>(
-          file_manager::io_task::OperationType::kMove, std::move(source_urls),
-          std::move(destination_folder_url), profile_, file_system_context_,
-          /*show_notification=*/false);
-
-  observed_task_id_ = io_task_controller_->Add(std::move(task));
 }
 
 void OneDriveUploadHandler::OnIOTaskStatus(
