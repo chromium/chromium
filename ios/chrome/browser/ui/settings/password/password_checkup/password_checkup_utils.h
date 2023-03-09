@@ -59,7 +59,13 @@ InsecurePasswordCounts CountInsecurePasswordsPerInsecureType(
 // Returns the number of saved passwords associated with the warning type passed
 // in parameters.
 int GetPasswordCountForWarningType(
-    WarningType warningType,
+    WarningType warning_type,
+    const std::vector<password_manager::CredentialUIEntry>&
+        insecure_credentials);
+
+// Returns saved passwords associated with a warning type.
+std::vector<password_manager::CredentialUIEntry> GetPasswordsForWarningType(
+    WarningType warning_type,
     const std::vector<password_manager::CredentialUIEntry>&
         insecure_credentials);
 

@@ -12,7 +12,6 @@
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 
 namespace password_manager {
-struct CredentialUIEntry;
 enum class WarningType;
 }  // namespace password_manager
 

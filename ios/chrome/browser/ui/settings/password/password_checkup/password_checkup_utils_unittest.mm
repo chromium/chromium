@@ -25,7 +25,14 @@
 #error "This file requires ARC support."
 #endif
 
+using password_manager::CredentialUIEntry;
+using password_manager::InsecureType;
+using password_manager::PasswordForm;
+using password_manager::TestPasswordStore;
+using ::testing::UnorderedElementsAre;
+
 namespace {
+
 constexpr char kExampleCom1[] = "https://example1.com";
 constexpr char kExampleCom2[] = "https://example2.com";
 constexpr char kExampleCom3[] = "https://example3.com";
@@ -267,4 +274,64 @@ TEST_F(PasswordCheckupUtilsTest, ElapsedTimeSinceLastCheck) {
   EXPECT_NSEQ(
       @"Last checked 5 minutes ago.",
       FormatElapsedTimeSinceLastCheck(manager().GetLastPasswordCheckTime()));
+}
+
+// Tests that the correct passwords are returned for each warning type.
+TEST_F(PasswordCheckupUtilsTest, CheckPasswordsForWarningType) {
+  // Add a muted password.
+  PasswordForm muted_form = MakeSavedPassword(kExampleCom1, kUsername116);
+  AddIssueToForm(&muted_form, InsecureType::kLeaked, base::Minutes(1),
+                 /*is_muted=*/true);
+  store().AddLogin(muted_form);
+
+  // Add a weak password.
+  PasswordForm weak_form = MakeSavedPassword(kExampleCom2, kUsername116);
+  AddIssueToForm(&weak_form, InsecureType::kWeak, base::Minutes(1));
+  store().AddLogin(weak_form);
+
+  // Add a reused password.
+  PasswordForm reused_form = MakeSavedPassword(kExampleCom3, kUsername116);
+  AddIssueToForm(&reused_form, InsecureType::kReused, base::Minutes(1));
+  store().AddLogin(reused_form);
+
+  // Add two unmuted compromised passwords, a leaked one and a phished one.
+  PasswordForm leaked_form = MakeSavedPassword(kExampleCom4, kUsername116);
+  AddIssueToForm(&leaked_form, InsecureType::kLeaked, base::Minutes(1));
+  store().AddLogin(leaked_form);
+
+  PasswordForm phished_form = MakeSavedPassword(kExampleCom5, kUsername116);
+  AddIssueToForm(&phished_form, InsecureType::kPhished, base::Minutes(1));
+  store().AddLogin(phished_form);
+
+  RunUntilIdle();
+
+  std::vector<CredentialUIEntry> insecure_credentials =
+      manager().GetInsecureCredentials();
+
+  std::vector<CredentialUIEntry> filtered_credentials;
+
+  // Verify Dismissed Passwords.
+  filtered_credentials = GetPasswordsForWarningType(
+      WarningType::kDismissedWarningsWarning, insecure_credentials);
+  EXPECT_THAT(filtered_credentials,
+              UnorderedElementsAre(CredentialUIEntry(muted_form)));
+
+  // Verify Compromised Passwords.
+  filtered_credentials = GetPasswordsForWarningType(
+      WarningType::kCompromisedPasswordsWarning, insecure_credentials);
+  EXPECT_THAT(filtered_credentials,
+              UnorderedElementsAre(CredentialUIEntry(leaked_form),
+                                   CredentialUIEntry(phished_form)));
+
+  // Verify Weak Passwords.
+  filtered_credentials = GetPasswordsForWarningType(
+      WarningType::kWeakPasswordsWarning, insecure_credentials);
+  EXPECT_THAT(filtered_credentials,
+              UnorderedElementsAre(CredentialUIEntry(weak_form)));
+
+  // Verify Reused Passwords.
+  filtered_credentials = GetPasswordsForWarningType(
+      WarningType::kReusedPasswordsWarning, insecure_credentials);
+  EXPECT_THAT(filtered_credentials,
+              UnorderedElementsAre(CredentialUIEntry(reused_form)));
 }

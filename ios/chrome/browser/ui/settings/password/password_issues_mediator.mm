@@ -33,6 +33,8 @@
 #error "This file requires ARC support."
 #endif
 
+using password_manager::CredentialUIEntry;
+
 namespace {
 
 using password_manager::WarningType;
@@ -56,7 +58,13 @@ bool IsPasswordCheckupEnabled() {
   std::unique_ptr<SavedPasswordsPresenterObserverBridge>
       _passwordsPresenterObserver;
 
-  std::vector<password_manager::CredentialUIEntry> _insecureCredentials;
+  // Last set of insecure credentials provided to the consumer. Used to avoid
+  // updating the UI when changes in the insecure credentials happen but the
+  // credentials provided to the consumer don't (e.g a new compromised
+  // credential was detected but the consumer is displaying weak credentials).
+  // A value of nullopt means the consumer hasn't been provided with credentials
+  // yet.
+  absl::optional<std::vector<CredentialUIEntry>> _insecureCredentials;
 
   // Object storing the time of the previous successful re-authentication.
   // This is meant to be used by the `ReauthenticationModule` for keeping
@@ -138,12 +146,25 @@ bool IsPasswordCheckupEnabled() {
 
 - (void)providePasswordsToConsumer {
   DCHECK(self.consumer);
-  _insecureCredentials = _manager->GetInsecureCredentials();
 
-  // TODO:(crbug.com/1406540) - Filter credentials for the current context;
+  std::vector<CredentialUIEntry> insecureCredentials;
+  if (IsPasswordCheckupEnabled()) {
+    insecureCredentials = GetPasswordsForWarningType(
+        _warningType, _manager->GetInsecureCredentials());
+
+    if (_insecureCredentials.has_value() &&
+        _insecureCredentials.value() == insecureCredentials) {
+      // Avoid updating the UI when no changes occurred in the insecure
+      // credentials for the warning type being displayed.
+      return;
+    }
+    _insecureCredentials = insecureCredentials;
+  } else {
+    insecureCredentials = _manager->GetInsecureCredentials();
+  }
 
   NSMutableArray* passwords = [[NSMutableArray alloc] init];
-  for (auto credential : _insecureCredentials) {
+  for (auto credential : insecureCredentials) {
     [passwords addObject:[[PasswordIssue alloc] initWithCredential:credential]];
   }
 

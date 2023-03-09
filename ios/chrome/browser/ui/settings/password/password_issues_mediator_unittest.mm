@@ -4,9 +4,6 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_issues_mediator.h"
 
-#import "base/strings/string_piece.h"
-#import "base/strings/string_util.h"
-#import "base/strings/utf_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/google/core/common/google_util.h"
 #import "components/keyed_service/core/service_access_type.h"
@@ -41,7 +38,14 @@
 #error "This file requires ARC support."
 #endif
 
+using password_manager::InsecureCredential;
+using password_manager::InsecureType;
+using password_manager::PasswordForm;
+using password_manager::TestPasswordStore;
+using password_manager::WarningType;
+
 namespace {
+
 constexpr char kExampleCom[] = "https://example.com";
 constexpr char kExampleCom2[] = "https://example2.com";
 constexpr char kExampleCom3[] = "https://example3.com";
@@ -56,11 +60,6 @@ GURL GetLocalizedURL(const GURL& original) {
   return google_util::AppendGoogleLocaleParam(
       original, GetApplicationContext()->GetApplicationLocale());
 }
-
-using password_manager::InsecureCredential;
-using password_manager::PasswordForm;
-using password_manager::TestPasswordStore;
-using password_manager::WarningType;
 
 }  // namespace
 
@@ -141,10 +140,12 @@ class PasswordIssuesMediatorTest : public BlockCleanupTest {
     mediator_.consumer = consumer_;
   }
 
-  // Adds password form and compromised password to the store.
+  // Adds password form and insecure password to the store.
   void MakeTestPasswordIssue(std::string website = kExampleCom,
                              std::string username = kUsername,
-                             std::string password = kPassword) {
+                             std::string password = kPassword,
+                             InsecureType insecure_type = InsecureType::kLeaked,
+                             bool muted = false) {
     PasswordForm form;
     form.signon_realm = website;
     form.username_value = base::ASCIIToUTF16(username);
@@ -153,9 +154,9 @@ class PasswordIssuesMediatorTest : public BlockCleanupTest {
     form.action = GURL(website + "/action");
     form.username_element = u"email";
     form.password_issues = {
-        {password_manager::InsecureType::kLeaked,
+        {insecure_type,
          password_manager::InsecurityMetadata(
-             base::Time::Now(), password_manager::IsMuted(false))}};
+             base::Time::Now(), password_manager::IsMuted(muted))}};
     form.in_store = PasswordForm::Store::kProfileStore;
     store()->AddLogin(form);
   }
@@ -193,6 +194,92 @@ TEST_F(PasswordIssuesMediatorTest, TestPasswordIssuesChanged) {
 
   EXPECT_NSEQ(@"alice", password.username);
   EXPECT_NSEQ(@"example.com", password.website);
+}
+
+// Tests that changes to password store are not sent to the consumer if the
+// credentials with the current warning type did not change.
+TEST_F(PasswordIssuesMediatorTest, TestPasswordIssuesChangedNotCalled) {
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kIOSPasswordCheckup);
+
+  CreateMediator(WarningType::kCompromisedPasswordsWarning);
+
+  EXPECT_EQ(0u, [[consumer() passwords] count]);
+  consumer().passwordIssuesListChangedWasCalled = NO;
+
+  // Add other types of insecure passwords that shouldn't be sent to the
+  // consumer.
+  MakeTestPasswordIssue(kExampleCom, kUsername, kPassword, InsecureType::kWeak);
+  MakeTestPasswordIssue(kExampleCom2, kUsername, kPassword,
+                        InsecureType::kReused);
+  MakeTestPasswordIssue(kExampleCom3, kUsername, kPassword,
+                        InsecureType::kLeaked, /*muted=*/true);
+  RunUntilIdle();
+
+  EXPECT_FALSE([consumer() passwordIssuesListChangedWasCalled]);
+
+  // Add compromised password that should be sent to consumer.
+  MakeTestPasswordIssue(kExampleCom, kUsername2, kPassword,
+                        InsecureType::kLeaked);
+  RunUntilIdle();
+
+  EXPECT_TRUE([consumer() passwordIssuesListChangedWasCalled]);
+
+  EXPECT_EQ(1u, [[consumer() passwords] count]);
+
+  PasswordIssue* password = [consumer() passwords].firstObject;
+
+  EXPECT_NSEQ(@"bob", password.username);
+  EXPECT_NSEQ(@"example.com", password.website);
+}
+
+// Tests that only passwords issues of the current warning type are sent to the
+// consumer.
+TEST_F(PasswordIssuesMediatorTest, TestPasswordIssuesFilteredByWarningType) {
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kIOSPasswordCheckup);
+
+  // Create all types of insecure passwords.
+  // Weak.
+  MakeTestPasswordIssue(kExampleCom, kUsername, kPassword, InsecureType::kWeak);
+  // Reused.
+  MakeTestPasswordIssue(kExampleCom2, kUsername, kPassword,
+                        InsecureType::kReused);
+  // Dismissed Compromised
+  MakeTestPasswordIssue(kExampleCom3, kUsername, kPassword,
+                        InsecureType::kLeaked, /*muted=*/true);
+  // Compromised.
+  MakeTestPasswordIssue(kExampleCom, kUsername2, kPassword,
+                        InsecureType::kPhished);
+  RunUntilIdle();
+
+  // Send only compromised passwords to consumer.
+  CreateMediator(WarningType::kCompromisedPasswordsWarning);
+
+  PasswordIssue* password = [consumer() passwords].firstObject;
+  EXPECT_NSEQ(@"bob", password.username);
+  EXPECT_NSEQ(@"example.com", password.website);
+
+  // Send only weak passwords to consumer.
+  CreateMediator(WarningType::kWeakPasswordsWarning);
+
+  password = [consumer() passwords].firstObject;
+  EXPECT_NSEQ(@"alice", password.username);
+  EXPECT_NSEQ(@"example.com", password.website);
+
+  // Send only reused passwords to consumer.
+  CreateMediator(WarningType::kReusedPasswordsWarning);
+
+  password = [consumer() passwords].firstObject;
+  EXPECT_NSEQ(@"alice", password.username);
+  EXPECT_NSEQ(@"example2.com", password.website);
+
+  // Send only dismissed passwords to consumer.
+  CreateMediator(WarningType::kDismissedWarningsWarning);
+
+  password = [consumer() passwords].firstObject;
+  EXPECT_NSEQ(@"alice", password.username);
+  EXPECT_NSEQ(@"example3.com", password.website);
 }
 
 /// Tests the mediator sets the consumer title for compromised passwords.
@@ -233,12 +320,13 @@ TEST_F(PasswordIssuesMediatorTest, TestSetConsumerWeakTitle) {
 
   CreateMediator(WarningType::kWeakPasswordsWarning);
 
-  MakeTestPasswordIssue();
+  MakeTestPasswordIssue(kExampleCom, kUsername, kPassword, InsecureType::kWeak);
   RunUntilIdle();
 
   EXPECT_NSEQ(@"1 Weak Password", consumer().title);
 
-  MakeTestPasswordIssue(kExampleCom2);
+  MakeTestPasswordIssue(kExampleCom2, kUsername, kPassword,
+                        InsecureType::kWeak);
   RunUntilIdle();
 
   EXPECT_NSEQ(@"2 Weak Passwords", consumer().title);
@@ -264,8 +352,10 @@ TEST_F(PasswordIssuesMediatorTest, TestSetConsumerReusedTitle) {
 
   CreateMediator(WarningType::kReusedPasswordsWarning);
 
-  MakeTestPasswordIssue();
-  MakeTestPasswordIssue(kExampleCom2);
+  MakeTestPasswordIssue(kExampleCom, kUsername, kPassword,
+                        InsecureType::kReused);
+  MakeTestPasswordIssue(kExampleCom2, kUsername, kPassword,
+                        InsecureType::kReused);
   RunUntilIdle();
 
   EXPECT_NSEQ(@"2 Reused Passwords", consumer().title);
