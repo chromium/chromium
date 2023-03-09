@@ -5122,6 +5122,117 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderSelect) {
   }
 }
 
+TEST_F(AXPlatformNodeTextRangeProviderTest,
+       TestSettingSelectionAcrossShadowDOM) {
+  // This tests the scenario where a selection is set across shadow DOM
+  // boundaries. An AT might for example set a selection across shadow DOM
+  // boundaries for a input text field. See
+  // AXPlatformNodeTextRangeProviderWin::Select for more details.
+
+  TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kTextField name="hello"
+    ++++++3 kStaticText name="hello"
+    ++++++++4 kInlineTextBox name="hello"
+  )HTML"));
+
+  AXTree* tree = Init(update);
+
+  AXNode* text_field = GetNodeFromTree(tree->GetAXTreeID(), 2);
+  AXNode* static_text = GetNodeFromTree(tree->GetAXTreeID(), 3);
+  AXNode* inline_text_box = GetNodeFromTree(tree->GetAXTreeID(), 4);
+
+  ComPtr<ITextRangeProvider> text_range_provider;
+  GetTextRangeProviderFromTextNode(text_range_provider, text_field);
+
+  int start_offset = 2;
+  int end_offset = 4;
+
+  AXPlatformNodeWin* owner =
+      static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(text_field));
+  ComPtr<AXPlatformNodeTextRangeProviderWin> range;
+  CreateTextRangeProviderWin(
+      range, owner,
+      /*start_anchor=*/text_field, /*start_offset=*/start_offset,
+      /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
+      /*end_anchor=*/inline_text_box, /*end_offset=*/end_offset,
+      /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
+
+  AXPlatformNodeDelegate* delegate = GetOwner(range.Get())->GetDelegate();
+
+  range->Select();
+
+  // Now testing where start anchor is outside shadow DOM and end anchor is
+  // inside. Selection should bubble up to the text field in this case.
+
+  AXSelection selection = delegate->GetUnignoredSelection();
+  EXPECT_EQ(text_field->id(), selection.anchor_object_id);
+  EXPECT_EQ(text_field->id(), selection.focus_object_id);
+  EXPECT_EQ(start_offset, selection.anchor_offset);
+  EXPECT_EQ(end_offset, selection.focus_offset);
+
+  range->Release();
+
+  // Now testing where start anchor is in shadow DOM and end anchor is outside.
+  // Selection should bubble up to the text field in this case.
+
+  CreateTextRangeProviderWin(
+      range, owner,
+      /*start_anchor=*/inline_text_box, /*start_offset=*/start_offset,
+      /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
+      /*end_anchor=*/text_field, /*end_offset=*/end_offset,
+      /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
+
+  range->Select();
+
+  selection = delegate->GetUnignoredSelection();
+  EXPECT_EQ(text_field->id(), selection.anchor_object_id);
+  EXPECT_EQ(text_field->id(), selection.focus_object_id);
+  EXPECT_EQ(start_offset, selection.anchor_offset);
+  EXPECT_EQ(end_offset, selection.focus_offset);
+
+  range->Release();
+
+  // Now testing where both start and end anchors are in shadow DOM but
+  // different elements. Selection should NOT bubble up to the text field in
+  // this case.
+
+  CreateTextRangeProviderWin(
+      range, owner,
+      /*start_anchor=*/inline_text_box, /*start_offset=*/start_offset,
+      /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
+      /*end_anchor=*/static_text, /*end_offset=*/end_offset,
+      /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
+
+  range->Select();
+
+  selection = delegate->GetUnignoredSelection();
+  EXPECT_EQ(inline_text_box->id(), selection.anchor_object_id);
+  EXPECT_EQ(static_text->id(), selection.focus_object_id);
+  EXPECT_EQ(start_offset, selection.anchor_offset);
+  EXPECT_EQ(end_offset, selection.focus_offset);
+
+  range->Release();
+
+  // Now testing where both start and end anchors are in shadow DOM but same
+  // elements. Selection should NOT bubble up to the text field in this case.
+
+  CreateTextRangeProviderWin(
+      range, owner,
+      /*start_anchor=*/inline_text_box, /*start_offset=*/start_offset,
+      /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
+      /*end_anchor=*/inline_text_box, /*end_offset=*/end_offset,
+      /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
+
+  range->Select();
+
+  selection = delegate->GetUnignoredSelection();
+  EXPECT_EQ(inline_text_box->id(), selection.anchor_object_id);
+  EXPECT_EQ(inline_text_box->id(), selection.focus_object_id);
+  EXPECT_EQ(start_offset, selection.anchor_offset);
+  EXPECT_EQ(end_offset, selection.focus_offset);
+}
+
 // TODO(crbug.com/1124051): Remove this test once this crbug is fixed.
 TEST_F(AXPlatformNodeTextRangeProviderTest,
        TestITextRangeProviderSelectListMarker) {
