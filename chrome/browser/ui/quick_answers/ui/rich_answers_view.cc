@@ -37,6 +37,9 @@ constexpr int kButtonsSpacingDip = 4;
 constexpr int kSettingsButtonSizeDip = 14;
 constexpr int kSettingsButtonBorderDip = 3;
 
+// Border corner radius.
+constexpr int kBorderCornerRadius = 12;
+
 }  // namespace
 
 // RichAnswersView -----------------------------------------------------------
@@ -80,8 +83,12 @@ void RichAnswersView::OnFocus() {
 
 void RichAnswersView::OnThemeChanged() {
   views::View::OnThemeChanged();
-  SetBackground(views::CreateSolidBackground(
+  SetBorder(views::CreateRoundedRectBorder(
+      /*thickness=*/2, kBorderCornerRadius,
       GetColorProvider()->GetColor(ui::kColorPrimaryBackground)));
+  SetBackground(views::CreateRoundedRectBackground(
+      GetColorProvider()->GetColor(ui::kColorPrimaryBackground),
+      kBorderCornerRadius, /*for_border_thickness=*/2));
   if (settings_button_) {
     settings_button_->SetImage(
         views::Button::ButtonState::STATE_NORMAL,
@@ -125,6 +132,7 @@ void RichAnswersView::InitWidget() {
   params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
   params.type = views::Widget::InitParams::TYPE_POPUP;
   params.z_order = ui::ZOrderLevel::kFloatingUIElement;
+  params.corner_radius = kBorderCornerRadius;
 
   views::Widget* widget = new views::Widget();
   widget->Init(std::move(params));
