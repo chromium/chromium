@@ -1,5 +1,6 @@
 include_rules = [
   "+components/bookmarks/browser",
+  "+components/bookmarks/common",
   "+components/bookmarks/test",
   "+components/country_codes",
   "+components/endpoint_fetcher",

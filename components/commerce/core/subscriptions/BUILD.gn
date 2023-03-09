@@ -32,6 +32,21 @@ source_set("subscriptions") {
   public_deps = [ "//components/session_proto_db:core" ]
 }
 
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "mock_subscriptions_manager.cc",
+    "mock_subscriptions_manager.h",
+  ]
+
+  deps = [
+    ":subscriptions",
+    "//services/data_decoder/public/cpp",
+    "//testing/gmock",
+  ]
+}
+
 source_set("subscriptions_unit_tests") {
   testonly = true
 
