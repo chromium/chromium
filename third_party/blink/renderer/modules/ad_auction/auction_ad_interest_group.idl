@@ -7,9 +7,13 @@
 // sellerCapabilities:
 // https://github.com/WICG/turtledove/blob/main/FLEDGE_extended_PA_reporting.md
 
-// USVString is used instead of the enum type, since enums don't allow unknown
-// values, making forward compatibility difficult.
-// See https://github.com/whatwg/webidl/issues/893
+// TODO(caraitto): Consider switching to a string type for better forward
+// compatibility. Also, support proper naming ("group-by-origin").
+enum WorkletExecutionMode {
+  "compatibility",
+  "groupByOrigin",
+  // "frozenContext",
+};
 
 dictionary AuctionAdInterestGroupSize {
   required USVString width;
@@ -29,7 +33,7 @@ dictionary AuctionAdInterestGroup {
   // unsupported enum values, making forward compatibility more difficult for
   // API users.
   record<USVString, sequence<USVString>> sellerCapabilities;
-  USVString executionMode;
+  WorkletExecutionMode executionMode;
   USVString biddingLogicUrl;
   USVString biddingWasmHelperUrl;
   USVString updateUrl;

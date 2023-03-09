@@ -5,10 +5,6 @@
 // Configuration that is passed to navigator.runAdAuction().
 // https://github.com/WICG/turtledove/blob/main/FLEDGE.md#21-initiating-an-on-device-auction
 
-// USVString is used instead of the enum type, since enums don't allow unknown
-// values, making forward compatibility difficult.
-// See https://github.com/whatwg/webidl/issues/893
-
 dictionary AuctionReportBuyersConfig {
   // TODO(crbug.com/1402467): Use `bigint` instead of `any` when supported by
   // WebIDL parser.

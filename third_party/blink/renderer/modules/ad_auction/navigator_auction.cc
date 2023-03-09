@@ -10,7 +10,6 @@
 
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
@@ -408,10 +407,6 @@ mojom::blink::SellerCapabilitiesPtr ConvertSellerCapabilitiesTypeFromIdlToMojo(
     const Vector<String>& capabilities_vector) {
   auto seller_capabilities = mojom::blink::SellerCapabilities::New();
   for (const String& capability_str : capabilities_vector) {
-    base::UmaHistogramBoolean(
-        "Ads.InterestGroup.EnumNaming.Renderer.SellerCapabilities",
-        capability_str == "interestGroupCounts" ||
-            capability_str == "latencyStats");
     if (capability_str == "interest-group-counts" ||
         capability_str == "interestGroupCounts") {
       seller_capabilities->allows_interest_group_counts = true;
@@ -419,7 +414,7 @@ mojom::blink::SellerCapabilitiesPtr ConvertSellerCapabilitiesTypeFromIdlToMojo(
                capability_str == "latencyStats") {
       seller_capabilities->allows_latency_stats = true;
     } else {
-      // For forward compatibility with new values, don't throw.
+      // For forward compatibility with new fields, don't throw.
       continue;
     }
   }
@@ -457,21 +452,22 @@ bool CopyExecutionModeFromIdlToMojo(const ExecutionContext& execution_context,
                                     mojom::blink::InterestGroup& output) {
   if (!input.hasExecutionMode())
     return true;
-  base::UmaHistogramBoolean(
-      "Ads.InterestGroup.EnumNaming.Renderer.WorkletExecutionMode",
-      input.executionMode() == "groupByOrigin");
 
-  // TODO(crbug.com/1330341): Support "frozen-context".
-  if (input.executionMode() == "compatibility") {
-    output.execution_mode =
-        mojom::blink::InterestGroup::ExecutionMode::kCompatibilityMode;
-  } else if (input.executionMode() == "group-by-origin" ||
-             input.executionMode() == "groupByOrigin") {
-    output.execution_mode =
-        mojom::blink::InterestGroup::ExecutionMode::kGroupedByOriginMode;
+  switch (input.executionMode().AsEnum()) {
+    case V8WorkletExecutionMode::Enum::kCompatibility:
+      output.execution_mode =
+          mojom::blink::InterestGroup::ExecutionMode::kCompatibilityMode;
+      break;
+    case V8WorkletExecutionMode::Enum::kGroupByOrigin:
+      output.execution_mode =
+          mojom::blink::InterestGroup::ExecutionMode::kGroupedByOriginMode;
+      break;
+    default:
+      exception_state.ThrowTypeError(ErrorInvalidInterestGroup(
+          input, "executionMode", input.executionMode().AsString(),
+          "is not a supported execution mode."));
+      return false;
   }
-  // For forward compatibility with new values, don't throw if unrecognized enum
-  // values encountered.
   return true;
 }
 
