@@ -745,9 +745,6 @@ bool IsInternalServerSideSpeechRecognitionEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsInternalServerSideSpeechRecognitionControlEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsIppClientInfoEnabled();
-// TODO(b/270741618): Callers are being migrated to
-// chromeos::features::IsJellyEnabled(). Do not use.
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsJellyEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsKeyboardBacklightToggleEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLanguagePacksEnabled();

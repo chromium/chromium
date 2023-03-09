@@ -2729,12 +2729,6 @@ bool IsIppClientInfoEnabled() {
   return base::FeatureList::IsEnabled(kIppClientInfo);
 }
 
-bool IsJellyEnabled() {
-  // TODO(b/270741618): Callers are being migrated to
-  // chromeos::features::IsJellyEnabled(). Do not use.
-  return chromeos::features::IsJellyEnabled();
-}
-
 bool IsKeyboardBacklightToggleEnabled() {
   return base::FeatureList::IsEnabled(kEnableKeyboardBacklightToggle);
 }
@@ -2888,7 +2882,8 @@ bool IsKioskLoginScreenEnabled() {
 }
 
 bool IsOobeJellyEnabled() {
-  return IsJellyEnabled() && base::FeatureList::IsEnabled(kOobeJelly);
+  return chromeos::features::IsJellyEnabled() &&
+         base::FeatureList::IsEnabled(kOobeJelly);
 }
 
 bool IsOobeNetworkScreenSkipEnabled() {
@@ -2941,7 +2936,7 @@ bool IsPerDeskShelfEnabled() {
 
 bool IsPersonalizationJellyEnabled() {
   return base::FeatureList::IsEnabled(kPersonalizationJelly) &&
-         IsJellyEnabled();
+         chromeos::features::IsJellyEnabled();
 }
 
 bool IsPhoneHubCameraRollEnabled() {

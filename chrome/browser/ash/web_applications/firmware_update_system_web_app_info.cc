@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/color_util.h"
@@ -16,6 +15,7 @@
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -59,7 +59,7 @@ CreateWebAppInfoForFirmwareUpdateSystemWebApp() {
   info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
   info->theme_color =
       web_app::GetDefaultBackgroundColor(/*use_dark_mode=*/false);
-  if (!ash::features::IsJellyEnabled()) {
+  if (!chromeos::features::IsJellyEnabled()) {
     // Once Jelly is launched, the theme and background colors for SWA are
     // ignored and this can be deleted.
     info->dark_mode_theme_color = GetDarkModeBackgroundColor();
