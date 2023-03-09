@@ -168,7 +168,7 @@ class MediaStreamAudioProcessorTest : public ::testing::Test {
     EXPECT_EQ(config.noise_suppression.level,
               webrtc::AudioProcessing::Config::NoiseSuppression::kHigh);
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     // Android uses echo cancellation optimized for mobiles, and does not
     // support keytap suppression.
     EXPECT_TRUE(config.echo_canceller.mobile_mode);
