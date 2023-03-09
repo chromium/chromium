@@ -15,6 +15,11 @@ namespace send_tab_to_self {
 // they will see a promo to sign-in.
 BASE_DECLARE_FEATURE(kSendTabToSelfSigninPromo);
 
+// If this feature is enabled, the notification shown to users will disapear
+// after a fixed timeout. When disabled, instead it will remain until the
+// user interacts with it either by dismissing or openning it.
+BASE_DECLARE_FEATURE(kSendTabToSelfEnableNotificationTimeOut);
+
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 // If this feature is enabled, show received tabs in a new UI next to the
 // profile icon rather than in a system notification.
