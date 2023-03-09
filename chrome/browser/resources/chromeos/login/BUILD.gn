@@ -211,6 +211,8 @@ preprocess_if_expr("preprocess_unconditional_existing") {
     "oobe.js",
     "oobe_popup_overlay.css",
     "oobe_screen.css",
+    "oobe_trace.js",
+    "oobe_trace_start.js",
     "screens.js",
   ]
 }

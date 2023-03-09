@@ -12,6 +12,8 @@ import './oobe_icons.html.js';
 
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {traceOobeLottieExecution} from '../../oobe_trace.js';
+
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from './behaviors/oobe_i18n_behavior.js';
 
 /**
@@ -56,10 +58,16 @@ export class OobeCrLottie extends OobeCrLottieBase {
   ready() {
     super.ready();
     this.addEventListener('click', this.onClick_);
+    this.addEventListener('cr-lottie-initialized', this.onInitialized_);
   }
 
   onClick_() {
     this.playing = !this.playing;
+  }
+
+  onInitialized_(e) {
+    e.stopPropagation();
+    traceOobeLottieExecution();
   }
 
   onPlayingChanged_() {

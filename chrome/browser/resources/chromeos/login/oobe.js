@@ -15,8 +15,11 @@ import * as OobeDebugger from './debug/debug.js';
 import {invokePolymerMethod} from './display_manager.js';
 import {loadTimeData} from './i18n_setup.js';
 import {MultiTapDetector} from './multi_tap_detector.js';
+import {TraceEvent, traceExecution} from './oobe_trace.js';
 import {commonScreensList, loginScreensList, oobeScreensList} from './screens.js';
 
+// Everything has been imported at this point.
+traceExecution(TraceEvent.FIRST_LINE_AFTER_IMPORTS);
 
 /**
  * Add screens from the given list into the main screen container.
@@ -84,6 +87,7 @@ function initializeOobe() {
     return;
   }
   document.removeEventListener('DOMContentLoaded', initializeOobe);
+  traceExecution(TraceEvent.DOM_CONTENT_LOADED);
 
   const isOobeJellyEnabled = loadTimeData.getBoolean('isOobeJellyEnabled');
   if (isOobeJellyEnabled) {
@@ -113,6 +117,7 @@ function initializeOobe() {
     // readyForTesting even on failures, just to make test bots happy.
     Oobe.readyForTesting = true;
   }
+  traceExecution(TraceEvent.OOBE_INITIALIZED);
 
   // Mark initialization complete and wake any callers that might be waiting
   // for OOBE to load.
@@ -123,34 +128,43 @@ function initializeOobe() {
 /**
  * ----------- OOBE Execution Begins -----------
  */
-(function () {
-    // Ensure that there is a global error listener when OOBE starts.
-    // This error listener is added in the main HTML document.
-    assert(window.OobeErrorStore, 'OobeErrorStore not present on global object!');
+(function() {
+// Ensure that there is a global error listener when OOBE starts.
+// This error listener is added in the main HTML document.
+assert(window.OobeErrorStore, 'OobeErrorStore not present on global object!');
 
-    // Update localized strings at the document level.
-    Oobe.updateDocumentLocalizedStrings();
+// Update localized strings at the document level.
+Oobe.updateDocumentLocalizedStrings();
 
-    prepareGlobalValues(window);
+prepareGlobalValues(window);
 
-    // Add screens to the document.
-    addScreensToMainContainer(commonScreensList);
-    const isOobeFlow = loadTimeData.getBoolean('isOobeFlow');
-    addScreensToMainContainer(isOobeFlow ? oobeScreensList : loginScreensList);
+// Add common screens to the document.
+addScreensToMainContainer(commonScreensList);
+traceExecution(TraceEvent.COMMON_SCREENS_ADDED);
 
-    // The default is to have the class 'oobe-display' in <body> for the OOBE
-    // flow. For the 'Add Person' flow, we remove it.
-    if (!isOobeFlow) {
-      document.body.classList.remove('oobe-display');
-    } else {
-      assert(
-          document.body.classList.contains('oobe-display'),
-          'The body of the document must contain oobe-display as a class for the OOBE flow!');
-    }
+// Add OOBE or LOGIN screens to the document.
+const isOobeFlow = loadTimeData.getBoolean('isOobeFlow');
+if (isOobeFlow) {
+  addScreensToMainContainer(oobeScreensList);
+  traceExecution(TraceEvent.OOBE_SCREENS_ADDED);
+} else {
+  addScreensToMainContainer(loginScreensList);
+  traceExecution(TraceEvent.LOGIN_SCREENS_ADDED);
+}
 
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initializeOobe);
-    } else {
-      initializeOobe();
-    }
+// The default is to have the class 'oobe-display' in <body> for the OOBE
+// flow. For the 'Add Person' flow, we remove it.
+if (!isOobeFlow) {
+  document.body.classList.remove('oobe-display');
+} else {
+  assert(
+      document.body.classList.contains('oobe-display'),
+      'The body of the document must contain oobe-display as a class for the OOBE flow!');
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeOobe);
+} else {
+  initializeOobe();
+}
 })();

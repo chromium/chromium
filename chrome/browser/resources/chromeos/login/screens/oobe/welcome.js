@@ -25,6 +25,7 @@ import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
 import {getSelectedTitle, SelectListType} from '../../components/oobe_select.js';
 import {OobeTypes} from '../../components/oobe_types.js';
 import {Oobe} from '../../cr_ui.js';
+import {traceWelcomeAnimationPlay} from '../../oobe_trace.js';
 
 import {OobeWelcomeDialog} from './welcome_dialog.js';
 
@@ -234,6 +235,7 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
   /** @override */
   ready() {
     super.ready();
+    this.addEventListener('cr-lottie-playing', this.measureAnimationPlayDelay_);
     this.initializeLoginScreen('WelcomeScreen');
     this.updateLocalizedContent();
   }
@@ -248,6 +250,11 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
         data && 'isDeveloperMode' in data && data['isDeveloperMode'];
 
     window.setTimeout(() => void this.applyOobeConfiguration_(), 0);
+  }
+
+  measureAnimationPlayDelay_(e) {
+    e.stopPropagation();
+    traceWelcomeAnimationPlay();
   }
 
   /**
