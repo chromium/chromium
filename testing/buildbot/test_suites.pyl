@@ -483,6 +483,25 @@
 
     # TODO(crbug/1239300): Remove when persistent_shell experiment is over.
     'chrome_persistent_shell_tests': {
+      'components_browsertests_persistent_shell': {
+        'args': [
+          '--use-persistent-shell',
+        ],
+        'ci_only': True,
+        'test': 'components_browsertests',
+        'experiment_percentage': 100,
+      },
+      'content_unittests_persistent_shell': {
+        'args': [
+          '--use-persistent-shell',
+        ],
+        'ci_only': True,
+        'test': 'content_unittests',
+        'experiment_percentage': 100,
+        'swarming': {
+          'shards': 3,
+        },
+      },
       'webview_instrumentation_test_apk_persistent_shell': {
         'args': [
           '--use-persistent-shell',
