@@ -108,8 +108,6 @@ enum StreamStatus {
     kStreamStatusInitializing, // Eche browser is setting up video streaming
     kStreamStatusStarted,      // Video streaming is set up and started
     kStreamStatusStopped,      // Video streaming is stopped
-    kStreamStatusConnected,    // Connected to phone, but not streaming video
-    kStreamStatusFailed,       // Failed bootstrap connection
 };
 
 // Interface to notify the video streaming status from Eche browser to Eche

@@ -152,25 +152,6 @@ TEST_F(EcheTrayStreamStatusObserverTest, OnStreamStatusChanged) {
   EXPECT_FALSE(eche_tray()->is_active());
 }
 
-TEST_F(EcheTrayStreamStatusObserverTest, OnStreamStatusChangedFailed) {
-  LaunchBubble(GURL("http://google.com"), gfx::Image(), u"app 1", u"your phone",
-               base::BindOnce(&GracefulCloseFunction),
-               base::BindRepeating(&GracefulGoBackFunction));
-  OnStreamStatusChanged(mojom::StreamStatus::kStreamStatusStarted);
-
-  // Wait for Eche Tray to load Eche Web to complete.
-  base::RunLoop().RunUntilIdle();
-  // Eche tray should be visible when streaming is active
-  EXPECT_TRUE(eche_tray()->get_bubble_wrapper_for_test());
-
-  OnStreamStatusChanged(mojom::StreamStatus::kStreamStatusFailed);
-
-  // Wait for Eche Web to close.
-  base::RunLoop().RunUntilIdle();
-  // Eche tray should not be visible when streaming is finished
-  EXPECT_FALSE(eche_tray()->is_active());
-}
-
 TEST_F(EcheTrayStreamStatusObserverTest,
        StartGracefulCloseWhenFeatureStatusToIneligible) {
   ResetUnloadWebContent();
