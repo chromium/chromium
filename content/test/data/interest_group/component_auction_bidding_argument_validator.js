@@ -17,6 +17,7 @@ function generateBid(
   return {
       'ad': ad,
       'bid': 2,
+      'adCost': 3,
       'render': ad.renderUrl,
       'adComponents': [interestGroup.adComponents[0].renderUrl],
       'allowComponentAuction': true,
@@ -164,7 +165,7 @@ function validateBrowserSignals(browserSignals, isGenerateBid) {
     if (browserSignals.prevWins.length !== 0)
       throw 'Wrong prevWins ' + JSON.stringify(browserSignals.prevWins);
   } else {
-    if (Object.keys(browserSignals).length !== 9) {
+    if (Object.keys(browserSignals).length !== 10) {
       throw 'Wrong number of browser signals fields ' +
           JSON.stringify(browserSignals);
     }
@@ -180,6 +181,8 @@ function validateBrowserSignals(browserSignals, isGenerateBid) {
       throw 'Wrong highestScoringOtherBid ' +
           browserSignals.highestScoringOtherBid;
     }
+    if (browserSignals.adCost !== 3)
+      throw 'Wrong adCost ' + browserSignals.adCost;
   }
 }
 

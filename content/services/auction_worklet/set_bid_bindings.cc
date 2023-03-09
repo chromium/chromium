@@ -234,6 +234,12 @@ bool SetBidBindings::SetBid(v8::Local<v8::Value> generate_bid_result,
     return true;
   }
 
+  absl::optional<double> ad_cost;
+  double tmp_ad_cost;
+  if (result_dict.Get("adCost", &tmp_ad_cost)) {
+    ad_cost = tmp_ad_cost;
+  }
+
   v8::Local<v8::Value> ad_object;
   v8::Local<v8::Value> ad_render;
   // Parse and validate values.
@@ -399,10 +405,11 @@ bool SetBidBindings::SetBid(v8::Local<v8::Value> generate_bid_result,
   // including the time from the last setBid() call to when the bidder worklet
   // timed out, if the worklet did time out. So `bid_duration` is calculated
   // when ownership of the bid is taken by the caller, instead of here.
-  bid_ = mojom::BidderWorkletBid::New(
-      std::move(ad_json), bid, blink::AdDescriptor(render_url, render_size),
-      std::move(ad_component_descriptors),
-      /*bid_duration=*/base::TimeDelta());
+  bid_ =
+      mojom::BidderWorkletBid::New(std::move(ad_json), bid, std::move(ad_cost),
+                                   blink::AdDescriptor(render_url, render_size),
+                                   std::move(ad_component_descriptors),
+                                   /*bid_duration=*/base::TimeDelta());
   return true;
 }
 

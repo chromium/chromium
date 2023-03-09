@@ -139,6 +139,9 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
     // Bid returned by the bidder.
     double bid;
 
+    // Ad cost returned by the bidder.
+    absl::optional<double> ad_cost;
+
     // How long it took to generate the bid.
     base::TimeDelta bid_duration;
 
@@ -255,6 +258,12 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
           url::Origin,
           std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>>
           private_aggregation_requests);
+
+  // Returns the result of performing stochastic rounding on `value`. We limit
+  // the value to `k` bits of precision in the mantissa (not including sign) and
+  // 8 bits in the exponent. So k=8 would correspond to a 16 bit floating point
+  // number (more specifically, bfloat16). Public to enable testing.
+  static double RoundStochasticallyToKBits(double value, unsigned k);
 
  private:
   // Starts request for a seller worklet. Invokes OnSellerWorkletReceived() on

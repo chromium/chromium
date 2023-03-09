@@ -8,6 +8,12 @@ mojom("mojom") {
   cpp_only = true
   disable_variants = true
 
+  # bider_worklet.mojom uses optional primitives, which are currently only
+  # supported for C++. We need to explicitly disable fuzzing to prevent
+  # generation of mojolpm and JS.
+  enable_mojolpm_fuzzing = false
+  enable_js_fuzzing = false
+
   sources = [
     "auction_shared_storage_host.mojom",
     "auction_worklet_service.mojom",

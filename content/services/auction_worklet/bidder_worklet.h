@@ -151,6 +151,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
       double browser_signal_bid,
       double browser_signal_highest_scoring_other_bid,
       bool browser_signal_made_highest_scoring_other_bid,
+      absl::optional<double> browser_signal_ad_cost,
       const url::Origin& browser_signal_seller_origin,
       const absl::optional<url::Origin>& browser_signal_top_level_seller_origin,
       uint32_t bidding_signals_data_version,
@@ -249,6 +250,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
     double browser_signal_bid;
     double browser_signal_highest_scoring_other_bid;
     bool browser_signal_made_highest_scoring_other_bid;
+    absl::optional<double> browser_signal_ad_cost;
     url::Origin browser_signal_seller_origin;
     absl::optional<url::Origin> browser_signal_top_level_seller_origin;
     absl::optional<uint32_t> bidding_signals_data_version;
@@ -369,6 +371,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
                    double browser_signal_bid,
                    double browser_signal_highest_scoring_other_bid,
                    bool browser_signal_made_highest_scoring_other_bid,
+                   const absl::optional<double>& browser_signal_ad_cost,
                    const url::Origin& browser_signal_seller_origin,
                    const absl::optional<url::Origin>&
                        browser_signal_top_level_seller_origin,

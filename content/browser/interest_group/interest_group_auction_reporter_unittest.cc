@@ -1888,5 +1888,82 @@ TEST_F(
   WaitForCompletion();
 }
 
+TEST(InterestGroupAuctionReporterStochasticRounding, MatchesTable) {
+  struct {
+    double input;
+    unsigned k;
+    double expected_output;
+  } test_cases[] = {
+      {0, 8, 0},
+      {1, 8, 1},
+      {-1, 8, -1},
+      // infinity passes through
+      {std::numeric_limits<double>::infinity(), 7,
+       std::numeric_limits<double>::infinity()},
+      {-std::numeric_limits<double>::infinity(), 7,
+       -std::numeric_limits<double>::infinity()},
+      // not clipped
+      {255, 8, 255},
+      // positive overflow
+      {2e38, 8, std::numeric_limits<double>::infinity()},
+      // positive underflow
+      {1e-39, 8, 0},
+      // negative overflow
+      {-2e38, 8, -std::numeric_limits<double>::infinity()},
+      // negative underflow
+      {-1e-39, 8, -0},
+  };
+
+  for (const auto& test_case : test_cases) {
+    EXPECT_EQ(test_case.expected_output,
+              InterestGroupAuctionReporter::RoundStochasticallyToKBits(
+                  test_case.input, test_case.k))
+        << "with " << test_case.input << " and " << test_case.k;
+  }
+}
+
+TEST(InterestGroupAuctionReporterStochasticRounding, PassesNaN) {
+  EXPECT_TRUE(
+      std::isnan(InterestGroupAuctionReporter::RoundStochasticallyToKBits(
+          std::numeric_limits<double>::quiet_NaN(), 8)));
+  EXPECT_TRUE(
+      std::isnan(InterestGroupAuctionReporter::RoundStochasticallyToKBits(
+          std::numeric_limits<double>::signaling_NaN(), 8)));
+}
+
+TEST(InterestGroupAuctionReporterStochasticRounding, IsNonDeterministic) {
+  // Since 0.3 can't be represented with 8 bits of precision, this value will be
+  // clipped to either the nearest lower number or nearest higher number.
+  const double kInput = 0.3;
+  base::flat_set<double> seen;
+  while (seen.size() < 2) {
+    double result =
+        InterestGroupAuctionReporter::RoundStochasticallyToKBits(kInput, 8);
+    EXPECT_THAT(result, testing::AnyOf(0.298828125, 0.30078125));
+    seen.insert(result);
+  }
+}
+
+// Test that random rounding allows mean to approximate the true value.
+TEST(InterestGroupAuctionReporterStochasticRounding, ApproximatesTrueSum) {
+  // Since 0.3 can't be represented with 8 bits of precision, this value will be
+  // clipped randomly. Because 0.3 is 60% of the way from the nearest
+  // representable number smaller than it and 40% of the way to the nearest
+  // representable number larger than it, the value should be rounded down to
+  // 0.2988... 60% of the time and rounded up to 0.30078... 40% of the time.
+  // This ensures that if you add the result N times you roughly get 0.3 * N.
+  const size_t kIterations = 10000;
+  const double kInput = 0.3;
+  double total = 0;
+
+  for (size_t idx = 0; idx < kIterations; idx++) {
+    total +=
+        InterestGroupAuctionReporter::RoundStochasticallyToKBits(kInput, 8);
+  }
+
+  EXPECT_GT(total, 0.9 * kInput * kIterations);
+  EXPECT_LT(total, 1.1 * kInput * kIterations);
+}
+
 }  // namespace
 }  // namespace content

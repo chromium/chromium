@@ -95,6 +95,9 @@ struct BidderWorkletBid {
   // Offered bid value. Always greater than 0.
   double bid;
 
+  // 'adCost' returned by generateBid, if any.
+  double? ad_cost;
+
   // Render URL of the bid.
   blink.mojom.AdDescriptor ad_descriptor;
 
@@ -425,6 +428,9 @@ interface BidderWorklet {
   //  the interest group that ReportWin() is being invoked on behalf of made
   //  all the second-highest scoring bids in the auction.
   //
+  // `browser_signal_ad_cost` The numeric value of the adCost associated with
+  //  the winning bid, if specified by `generateBid()`.
+  //
   // `browser_signal_seller_origin` The origin of the seller script running
   //  the auction. Typically a valid, non-opaque HTTPS origin.
   //
@@ -468,6 +474,7 @@ interface BidderWorklet {
       double browser_signal_bid,
       double browser_signal_highest_scoring_other_bid,
       bool browser_signal_made_highest_scoring_other_bid,
+      double? browser_signal_ad_cost,
       url.mojom.Origin browser_signal_seller_origin,
       url.mojom.Origin? browser_signal_top_level_seller_origin,
       uint32 bidding_signals_data_version,

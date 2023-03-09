@@ -287,6 +287,7 @@ void BidderWorklet::ReportWin(
     double browser_signal_bid,
     double browser_signal_highest_scoring_other_bid,
     bool browser_signal_made_highest_scoring_other_bid,
+    absl::optional<double> browser_signal_ad_cost,
     const url::Origin& browser_signal_seller_origin,
     const absl::optional<url::Origin>& browser_signal_top_level_seller_origin,
     uint32_t bidding_signals_data_version,
@@ -307,6 +308,7 @@ void BidderWorklet::ReportWin(
       browser_signal_highest_scoring_other_bid;
   report_win_task->browser_signal_made_highest_scoring_other_bid =
       browser_signal_made_highest_scoring_other_bid;
+  report_win_task->browser_signal_ad_cost = browser_signal_ad_cost;
   report_win_task->browser_signal_seller_origin = browser_signal_seller_origin;
   report_win_task->browser_signal_top_level_seller_origin =
       browser_signal_top_level_seller_origin;
@@ -475,6 +477,7 @@ void BidderWorklet::V8State::ReportWin(
     double browser_signal_bid,
     double browser_signal_highest_scoring_other_bid,
     bool browser_signal_made_highest_scoring_other_bid,
+    const absl::optional<double>& browser_signal_ad_cost,
     const url::Origin& browser_signal_seller_origin,
     const absl::optional<url::Origin>& browser_signal_top_level_seller_origin,
     const absl::optional<uint32_t>& bidding_signals_data_version,
@@ -531,6 +534,8 @@ void BidderWorklet::V8State::ReportWin(
       !browser_signals_dict.Set("renderUrl",
                                 browser_signal_render_url.spec()) ||
       !browser_signals_dict.Set("bid", browser_signal_bid) ||
+      (browser_signal_ad_cost.has_value() &&
+       !browser_signals_dict.Set("adCost", *browser_signal_ad_cost)) ||
       !browser_signals_dict.Set("highestScoringOtherBid",
                                 browser_signal_highest_scoring_other_bid) ||
       !browser_signals_dict.Set(
@@ -1526,6 +1531,7 @@ void BidderWorklet::RunReportWinIfReady(ReportWinTaskList::iterator task) {
           std::move(task->browser_signal_bid),
           std::move(task->browser_signal_highest_scoring_other_bid),
           std::move(task->browser_signal_made_highest_scoring_other_bid),
+          std::move(task->browser_signal_ad_cost),
           std::move(task->browser_signal_seller_origin),
           std::move(task->browser_signal_top_level_seller_origin),
           std::move(task->bidding_signals_data_version), task->trace_id,

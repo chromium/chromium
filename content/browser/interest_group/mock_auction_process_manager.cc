@@ -124,6 +124,7 @@ void MockBidderWorklet::ReportWin(
     double browser_signal_bid,
     double browser_signal_highest_scoring_other_bid,
     bool browser_signal_made_highest_scoring_other_bid,
+    absl::optional<double> browser_signal_ad_cost,
     const url::Origin& browser_signal_seller_origin,
     const absl::optional<url::Origin>& browser_signal_top_level_seller_origin,
     uint32_t bidding_signals_data_version,
@@ -224,8 +225,8 @@ void MockBidderWorklet::InvokeGenerateBidCallback(
 
   generate_bid_client_->OnGenerateBidComplete(
       auction_worklet::mojom::BidderWorkletBid::New(
-          "ad", *bid, std::move(ad_descriptor), ad_component_descriptors,
-          duration),
+          "ad", *bid, /*ad_cost=*/absl::nullopt, std::move(ad_descriptor),
+          ad_component_descriptors, duration),
       /*kanon_bid=*/std::move(mojo_kanon_bid),
       bidding_signals_data_version.value_or(0),
       bidding_signals_data_version.has_value(), debug_loss_report_url,

@@ -11075,6 +11075,140 @@ TEST_F(AuctionRunnerTest, PrivateAggregationBuyersReportInterestGroupCount) {
                                           /*value=*/1 * kScale)))));
 }
 
+TEST_F(AuctionRunnerTest, AdCostPassed) {
+  const char kBidScript[] = R"(
+    const bid = %d;
+    function generateBid(
+        interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+        browserSignals) {
+      return {bid: bid,
+              render: interestGroup.ads[0].renderUrl,
+              adCost: bid + 1};
+    }
+
+    function reportWin(
+        auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
+      sendReportTo("https://buyer-reporting.example.com/?adCost=" +
+                   browserSignals.adCost);
+    }
+  )";
+
+  const std::string kSellerScript = R"(
+    function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
+      return bid;
+    }
+
+    function reportResult(auctionConfig, browserSignals) {
+    }
+  )";
+
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         base::StringPrintf(kBidScript, 1));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         kSellerScript);
+
+  // Only one bidder, to keep things simple.
+  RunStandardAuction(/*request_trusted_bidding_signals=*/false);
+  EXPECT_FALSE(result_.manually_aborted);
+  EXPECT_EQ(kBidder1Key, result_.winning_group_id);
+  EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
+
+  // adCost should be 2.
+  EXPECT_THAT(result_.report_urls,
+              testing::ElementsAre(
+                  GURL("https://buyer-reporting.example.com/?adCost=2")));
+}
+
+TEST_F(AuctionRunnerTest, AdCostRounded) {
+  const char kBidScript[] = R"(
+    const bid = %d;
+    function generateBid(
+        interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+        browserSignals) {
+      // Return an adCost that requires more bits of precision than allowed.
+      return {bid: bid,
+              render: interestGroup.ads[0].renderUrl,
+              adCost: 1.99609375};
+    }
+
+    function reportWin(
+        auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
+      sendReportTo("https://buyer-reporting.example.com/?adCost=" +
+                   browserSignals.adCost);
+    }
+  )";
+
+  const std::string kSellerScript = R"(
+    function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
+      return bid;
+    }
+
+    function reportResult(auctionConfig, browserSignals) {
+    }
+  )";
+
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         base::StringPrintf(kBidScript, 1));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         kSellerScript);
+
+  // Only one bidder, to keep things simple.
+  RunStandardAuction(/*request_trusted_bidding_signals=*/false);
+  EXPECT_FALSE(result_.manually_aborted);
+  EXPECT_EQ(kBidder1Key, result_.winning_group_id);
+  EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
+
+  // adCost should be either 2 or 1.9921875 (randomly)
+  EXPECT_THAT(
+      result_.report_urls,
+      testing::ElementsAre(testing::AnyOf(
+          GURL("https://buyer-reporting.example.com/?adCost=2"),
+          GURL("https://buyer-reporting.example.com/?adCost=1.9921875"))));
+}
+
+TEST_F(AuctionRunnerTest, AdCostExponentTruncated) {
+  const char kBidScript[] = R"(
+    const bid = %d;
+    function generateBid(
+        interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+        browserSignals) {
+      // Return an adCost that requires more bits of exponent than allowed.
+      return {bid: bid, render: interestGroup.ads[0].renderUrl, adCost: 2**256};
+    }
+
+    function reportWin(
+        auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
+      sendReportTo("https://buyer-reporting.example.com/?adCost=" +
+                   browserSignals.adCost);
+    }
+  )";
+
+  const std::string kSellerScript = R"(
+    function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
+      return bid;
+    }
+
+    function reportResult(auctionConfig, browserSignals) {
+    }
+  )";
+
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         base::StringPrintf(kBidScript, 1));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         kSellerScript);
+
+  // Only one bidder, to keep things simple.
+  RunStandardAuction(/*request_trusted_bidding_signals=*/false);
+  EXPECT_FALSE(result_.manually_aborted);
+  EXPECT_EQ(kBidder1Key, result_.winning_group_id);
+  EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
+
+  // adCost should be (Infinity).
+  EXPECT_THAT(result_.report_urls,
+              testing::ElementsAre(GURL(
+                  "https://buyer-reporting.example.com/?adCost=Infinity")));
+}
+
 // Enable and test forDebuggingOnly.reportAdAuctionLoss() and
 // forDebuggingOnly.reportAdAuctionWin() APIs.
 class AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest
@@ -13488,7 +13622,8 @@ TEST_P(AuctionRunnerKAnonTest, MojoValidation) {
        GURL("https://ad1.com"),
        auction_worklet::mojom::BidderWorkletKAnonEnforcedBid::NewBid(
            auction_worklet::mojom::BidderWorkletBid::New(
-               "ad", 5.0, blink::AdDescriptor(GURL("https://ad2.com")),
+               "ad", 5.0, /*ad_cost=*/absl::nullopt,
+               blink::AdDescriptor(GURL("https://ad2.com")),
                /*ad_component_urls=*/absl::nullopt, base::TimeDelta())),
        /*expect_winner=*/true},
       // A non-k-anon bid as k-anon one. Enforced, so auction fails.
@@ -13498,7 +13633,8 @@ TEST_P(AuctionRunnerKAnonTest, MojoValidation) {
           GURL("https://ad2.com"),
           auction_worklet::mojom::BidderWorkletKAnonEnforcedBid::NewBid(
               auction_worklet::mojom::BidderWorkletBid::New(
-                  "ad", 5.0, blink::AdDescriptor(GURL("https://ad2.com")),
+                  "ad", 5.0, /*ad_cost=*/absl::nullopt,
+                  blink::AdDescriptor(GURL("https://ad2.com")),
                   /*ad_component_urls=*/absl::nullopt, base::TimeDelta())),
           /*expect_winner=*/false,
       },
@@ -13509,7 +13645,8 @@ TEST_P(AuctionRunnerKAnonTest, MojoValidation) {
           GURL("https://ad2.com"),
           auction_worklet::mojom::BidderWorkletKAnonEnforcedBid::NewBid(
               auction_worklet::mojom::BidderWorkletBid::New(
-                  "ad", 5.0, blink::AdDescriptor(GURL("https://ad2.com")),
+                  "ad", 5.0, /*ad_cost=*/absl::nullopt,
+                  blink::AdDescriptor(GURL("https://ad2.com")),
                   /*ad_component_urls=*/absl::nullopt, base::TimeDelta())),
           /*expect_winner=*/true,
       },

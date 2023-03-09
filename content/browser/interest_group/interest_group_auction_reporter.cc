@@ -6,6 +6,9 @@
 
 #include <stdint.h>
 
+#include <cmath>
+#include <cstddef>
+#include <limits>
 #include <map>
 #include <memory>
 #include <string>
@@ -20,6 +23,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/trace_event/common/trace_event_common.h"
@@ -54,6 +58,9 @@
 namespace content {
 
 namespace {
+
+// For ad cost truncation and stochastic rounding
+constexpr unsigned kAdCostBits = 8;
 
 // All event-level reporting URLs received from worklets must be valid HTTPS
 // URLs. It's up to callers to call ReportBadMessage() on invalid URLs.
@@ -214,6 +221,30 @@ void InterestGroupAuctionReporter::OnFledgePrivateAggregationRequests(
                                   std::move(request->debug_mode_details));
     }
   }
+}
+
+/* static */
+double InterestGroupAuctionReporter::RoundStochasticallyToKBits(double value,
+                                                                unsigned k) {
+  int value_exp;
+  if (!std::isfinite(value)) {
+    return value;
+  }
+
+  double norm_value = std::frexp(value, &value_exp);
+
+  if (value_exp < std::numeric_limits<int8_t>::min()) {
+    return std::copysign(0, value);
+  }
+  if (value_exp > std::numeric_limits<int8_t>::max()) {
+    return std::copysign(std::numeric_limits<double>::infinity(), value);
+  }
+
+  double precision_scaled_value = std::ldexp(norm_value, k);
+  double noisy_scaled_value = precision_scaled_value + base::RandDouble();
+  double truncated_scaled_value = std::floor(noisy_scaled_value);
+
+  return std::ldexp(truncated_scaled_value, value_exp - k);
 }
 
 void InterestGroupAuctionReporter::RequestSellerWorklet(
@@ -490,6 +521,12 @@ void InterestGroupAuctionReporter::OnBidderWorkletReceived(
 
   bidder_worklet_handle_->AuthorizeSubresourceUrls(
       *seller_info.subresource_url_builder);
+
+  absl::optional<double> rounded_ad_cost;
+  if (winning_bid_info_.ad_cost.has_value()) {
+    rounded_ad_cost = RoundStochasticallyToKBits(
+        winning_bid_info_.ad_cost.value(), kAdCostBits);
+  }
   bidder_worklet_handle_->GetBidderWorklet()->ReportWin(
       group_name, auction_config->non_shared_params.auction_signals.value(),
       per_buyer_signals,
@@ -504,7 +541,7 @@ void InterestGroupAuctionReporter::OnBidderWorkletReceived(
       seller_info.highest_scoring_other_bid_owner.has_value() &&
           winning_bid_info_.storage_interest_group->interest_group.owner ==
               seller_info.highest_scoring_other_bid_owner.value(),
-      auction_config->seller,
+      rounded_ad_cost, auction_config->seller,
       /*browser_signal_top_level_seller_origin=*/
       component_seller_winning_bid_info_
           ? top_level_seller_winning_bid_info_.auction_config->seller
