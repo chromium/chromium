@@ -414,6 +414,7 @@
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #include "chrome/browser/accessibility/ax_screen_ai_annotator_factory.h"
 #include "chrome/browser/accessibility/pdf_ocr_controller_factory.h"
+#include "components/services/screen_ai/public/cpp/screen_ai_service_router_factory.h"
 #endif
 
 namespace chrome {
@@ -880,6 +881,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   screen_ai::AXScreenAIAnnotatorFactory::EnsureFactoryBuilt();
   screen_ai::PdfOcrControllerFactory::GetInstance();
+  screen_ai::ScreenAIServiceRouterFactory::EnsureFactoryBuilt();
 #endif
 #if BUILDFLAG(IS_MAC)
   if (screentime::IsScreenTimeEnabled()) {
