@@ -205,7 +205,9 @@ class FakeInputDeviceSettingsController : public InputDeviceSettingsController {
   }
   void SetKeyboardSettings(
       DeviceId id,
-      ::ash::mojom::KeyboardSettingsPtr settings) override {}
+      ::ash::mojom::KeyboardSettingsPtr settings) override {
+    ++num_times_set_keyboard_settings_called_;
+  }
   void AddObserver(Observer* observer) override { observer_ = observer; }
   void RemoveObserver(Observer* observer) override { observer_ = nullptr; }
   void SetTouchpadSettings(
@@ -280,6 +282,9 @@ class FakeInputDeviceSettingsController : public InputDeviceSettingsController {
     pointing_sticks_.erase(iter);
     observer_->OnPointingStickDisconnected(*temp_pointing_stick);
   }
+  int num_times_set_keyboard_settings_called() {
+    return num_times_set_keyboard_settings_called_;
+  }
 
  private:
   std::vector<::ash::mojom::KeyboardPtr> keyboards_;
@@ -287,6 +292,7 @@ class FakeInputDeviceSettingsController : public InputDeviceSettingsController {
   std::vector<::ash::mojom::MousePtr> mice_;
   std::vector<::ash::mojom::PointingStickPtr> pointing_sticks_;
   raw_ptr<InputDeviceSettingsController::Observer> observer_ = nullptr;
+  int num_times_set_keyboard_settings_called_ = 0;
 };
 
 }  // namespace
@@ -330,6 +336,20 @@ TEST_F(InputDeviceSettingsProviderTest, TestGetConnectedKeyboards) {
   provider_->GetConnectedKeyboards(
       base::BindOnce(ExpectListsEqualByValue<::ash::mojom::KeyboardPtr>,
                      CloneMojomVector(expected_keyboards)));
+}
+
+TEST_F(InputDeviceSettingsProviderTest, TestSetKeyboardSettings) {
+  controller_->AddKeyboard(kKeyboard1.Clone());
+  provider_->SetKeyboardSettings(kKeyboard1.id, kKeyboard1.settings->Clone());
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1, controller_->num_times_set_keyboard_settings_called());
+
+  controller_->AddKeyboard(kKeyboard2.Clone());
+  provider_->SetKeyboardSettings(kKeyboard2.id, kKeyboard1.settings->Clone());
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(2, controller_->num_times_set_keyboard_settings_called());
 }
 
 TEST_F(InputDeviceSettingsProviderTest, TestKeyboardSettingsObeserver) {

@@ -32,6 +32,15 @@ void InputDeviceSettingsProvider::BindInterface(
   receiver_.Bind(std::move(receiver));
 }
 
+void InputDeviceSettingsProvider::SetKeyboardSettings(
+    uint32_t device_id,
+    ::ash::mojom::KeyboardSettingsPtr settings) {
+  DCHECK(features::IsInputDeviceSettingsSplitEnabled());
+  DCHECK(InputDeviceSettingsController::Get());
+  InputDeviceSettingsController::Get()->SetKeyboardSettings(
+      device_id, std::move(settings));
+}
+
 void InputDeviceSettingsProvider::GetConnectedKeyboards(
     GetConnectedKeyboardsCallback callback) {
   DCHECK(features::IsInputDeviceSettingsSplitEnabled());

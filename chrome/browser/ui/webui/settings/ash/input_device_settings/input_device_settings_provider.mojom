@@ -59,4 +59,6 @@ interface InputDeviceSettingsProvider {
   // The observer which is registered is immediately informed
   // of the current state via its ObserveMouseSettings function.
   ObserveMouseSettings(pending_remote<MouseSettingsObserver> observer);
+  // Sets the keyboard settings based on its id.
+  SetKeyboardSettings(uint32 device_id, ash.mojom.KeyboardSettings settings);
 };
