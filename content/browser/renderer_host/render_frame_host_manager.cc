@@ -1401,11 +1401,28 @@ RenderFrameHostManager::GetFrameHostForNavigation(
         return base::unexpected(
             GetFrameHostForNavigationFailed::kBlockedByPendingCommit);
       }
+
+      // Determine if the old speculative RFH and new speculative RFH will use
+      // the same process.  If so, add a reference to that process so that
+      // it won't get cleaned up when the old speculative RFH is discarded and
+      // then immediately recreated for the new speculative RFH.
+      bool should_keep_target_process_alive =
+          speculative_render_frame_host_ && dest_site_instance->HasProcess() &&
+          speculative_render_frame_host_->GetProcess() ==
+              dest_site_instance->GetProcess();
+      if (should_keep_target_process_alive) {
+        dest_site_instance->GetProcess()->IncrementPendingReuseRefCount();
+      }
+
       DiscardSpeculativeRFH(NavigationDiscardReason::kNewNavigation);
       bool success = CreateSpeculativeRenderFrameHost(
           current_site_instance, dest_site_instance.get(),
           recovering_without_early_commit);
       DCHECK(success);
+
+      if (should_keep_target_process_alive) {
+        dest_site_instance->GetProcess()->DecrementPendingReuseRefCount();
+      }
     }
     DCHECK(speculative_render_frame_host_);
 
@@ -2325,13 +2342,18 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
   bool is_same_site_proactive_swap =
       (should_swap_result->reason() ==
        ShouldSwapBrowsingInstance::kYes_SameSiteProactiveSwap);
-  bool reuse_current_process_if_possible = false;
-  // With proactive BrowsingInstance swap, we should try to reuse the current
-  // SiteInstance's process. This avoids swapping processes too many times,
-  // which might cause performance regressions.
+
+  // Decide whether `new_instance` could reuse an existing process from either
+  // the current or the candidate SiteInstance. These heuristics help avoid
+  // swapping processes unnecessarily, which might cause extra latency. Note
+  // that this needs to be balanced carefully with creating a clean slate, as
+  // certain scenarios like opening noopener popups do expect a process swap.
+  //
   // Note: process reuse might not be possible in some cases, e.g. for
   // cross-site navigations when the current SiteInstance needs a dedicated
-  // process.
+  // process.  This will be enforced by the checks inside
+  // ReuseCurrentProcessIfPossible().
+  RenderProcessHost* process_to_reuse = nullptr;
 
   // Process-reuse cases include:
   // 1) When ProactivelySwapBrowsingInstance with process-reuse is explicitly
@@ -2341,7 +2363,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
       is_proactive_swap &&
       (!current_instance->RequiresDedicatedProcess() ||
        is_same_site_proactive_swap)) {
-    reuse_current_process_if_possible = true;
+    process_to_reuse = current_instance->GetProcess();
   }
 
   // 2) When BackForwardCache is enabled.
@@ -2351,7 +2373,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
   // is being experimented independently and is covered in path #1 above.
   // See crbug.com/1122974 for further details.
   if (IsBackForwardCacheEnabled() && is_same_site_proactive_swap) {
-    reuse_current_process_if_possible = true;
+    process_to_reuse = current_instance->GetProcess();
   }
 
   // 3) When we're doing a same-site history navigation with different
@@ -2368,12 +2390,49 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
   if (is_same_site_proactive_swap_enabled && is_history_navigation &&
       swapped_browsing_instance &&
       is_same_site.Get(*render_frame_host_, dest_url_info)) {
-    reuse_current_process_if_possible = true;
+    process_to_reuse = current_instance->GetProcess();
   }
 
-  if (reuse_current_process_if_possible) {
+  // 4) When we're swapping BrowsingInstances due to a COOP mismatch, and we
+  // have an existing process that's suitable for the new SiteInstance. This
+  // has two cases:
+  //
+  //   - If there's a candidate SiteInstance that differs from the target
+  //     SiteInstance, try to reuse the candidate SiteInstance's
+  //     process. This typically happens on cross-site navigations when we've
+  //     created a speculative RenderFrameHost and learned about the COOP
+  //     mismatch at response time. While we will have to recreate a
+  //     speculative RenderFrameHost in a new SiteInstance and
+  //     BrowsingInstance, we can try to reuse the (already warmed up) process
+  //     from the old speculative RenderFrameHost if its SiteInstance is
+  //     compatible with the new one.
+  //
+  //   - Otherwise, if the navigation is same-site, we can try to reuse the
+  //     current SiteInstance's process, but only if there is just one
+  //     WebContents in the current BrowsingInstance.  In this case, we can be
+  //     reasonably sure that the old page will be replaced by the new page in
+  //     the current process, and there's less of a need for clean slate.
+  //     Having more than one WebContents indicates that a page may be opening
+  //     a COOP popup, which should use a fresh process to get a clean slate
+  //     similarly to noopener popups.
+  //
+  // TODO(alexmos): Study if this kind of reuse might be useful in other cases
+  // beyond COOP.
+  if (should_swap_result->type() == BrowsingContextGroupSwapType::kCoopSwap ||
+      should_swap_result->type() ==
+          BrowsingContextGroupSwapType::kRelatedCoopSwap) {
+    if (candidate_instance && candidate_instance != new_instance &&
+        candidate_instance->GetSiteInfo() == new_instance->GetSiteInfo()) {
+      process_to_reuse = candidate_instance->GetProcess();
+    } else if (is_same_site.Get(*render_frame_host_, dest_url_info) &&
+               current_instance->GetRelatedActiveContentsCount() == 1) {
+      process_to_reuse = current_instance->GetProcess();
+    }
+  }
+
+  if (process_to_reuse) {
     DCHECK(frame_tree_node_->IsMainFrame());
-    new_instance->ReuseCurrentProcessIfPossible(current_instance->GetProcess());
+    new_instance->ReuseCurrentProcessIfPossible(process_to_reuse);
   }
 
   // We want fenced frame BrowsingInstances to share the same default

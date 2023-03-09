@@ -497,6 +497,15 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   virtual void IncrementWorkerRefCount() = 0;
   virtual void DecrementWorkerRefCount() = 0;
 
+  // "Pending reuse" ref count may be used to keep a process alive because we
+  // know that it will be reused soon.  Unlike the keep alive ref count, it is
+  // not time-based, and unlike the worker ref count above, it is not used for
+  // workers.  It is intentionally kept separate from the other ref counts to
+  // ease debugging, so that it's easier to tell what kept a particular process
+  // alive.
+  virtual void IncrementPendingReuseRefCount() = 0;
+  virtual void DecrementPendingReuseRefCount() = 0;
+
   // Sets all the various process lifetime ref counts to zero (e.g., keep alive,
   // worker, etc). Called when the browser context will be destroyed so this
   // RenderProcessHost can immediately die.

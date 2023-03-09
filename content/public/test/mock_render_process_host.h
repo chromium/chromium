@@ -186,6 +186,8 @@ class MockRenderProcessHost : public RenderProcessHost {
       const GlobalRenderFrameHostId& render_frame_host_id) override;
   void IncrementWorkerRefCount() override;
   void DecrementWorkerRefCount() override;
+  void IncrementPendingReuseRefCount() override;
+  void DecrementPendingReuseRefCount() override;
   bool AreRefCountsDisabled() override;
   mojom::Renderer* GetRendererInterface() override;
   void CreateURLLoaderFactory(
@@ -347,6 +349,7 @@ class MockRenderProcessHost : public RenderProcessHost {
   base::Process process;
   int keep_alive_ref_count_;
   int worker_ref_count_;
+  int pending_reuse_ref_count_;
   int foreground_service_worker_count_;
   std::unique_ptr<mojo::AssociatedRemote<mojom::Renderer>> renderer_interface_;
   std::map<std::string, InterfaceBinder> binder_overrides_;

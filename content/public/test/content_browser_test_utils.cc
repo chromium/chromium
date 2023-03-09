@@ -211,6 +211,14 @@ void IsolateOriginsForTesting(
         url::Origin::Create(GURL(std::string("http://") + hostname + "/")));
   }
 
+  IsolateOriginsForTesting(embedded_test_server, web_contents,
+                           origins_to_isolate);
+}
+
+void IsolateOriginsForTesting(
+    net::test_server::EmbeddedTestServer* embedded_test_server,
+    WebContents* web_contents,
+    std::vector<url::Origin> origins_to_isolate) {
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   policy->AddFutureIsolatedOrigins(
       origins_to_isolate,

@@ -283,6 +283,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
                                   on_render_frame_host) override;
   void IncrementWorkerRefCount() override;
   void DecrementWorkerRefCount() override;
+  void IncrementPendingReuseRefCount() override;
+  void DecrementPendingReuseRefCount() override;
   void DisableRefCounts() override;
   bool AreRefCountsDisabled() override;
   mojom::Renderer* GetRendererInterface() override;
@@ -1018,24 +1020,27 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // swapping. See blink::DiskDataAllocator for uses.
   void ProvideSwapFileForRenderer();
 
-  // True when |keep_alive_ref_count_|, |worker_ref_count_| and
-  // |shutdown_delay_ref_count_| are all zero.
+  // True when |keep_alive_ref_count_|, |worker_ref_count_|,
+  // |shutdown_delay_ref_count_|, and |pending_reuse_ref_count_| are all zero.
   bool AreAllRefCountsZero();
 
   mojo::OutgoingInvitation mojo_invitation_;
 
   // These cover mutually-exclusive cases. While keep-alive is time-based,
   // workers are not. Shutdown-delay is also time-based, but uses a different
-  // delay time. Attached documents are tracked via |listeners_| below.
+  // delay time. |pending_reuse_ref_count_| is not time-based and is used when
+  // the process needs to be kept alive because it will be reused soon.
+  // Attached documents are tracked via |listeners_| below.
   int keep_alive_ref_count_ = 0;
   int worker_ref_count_ = 0;
   int shutdown_delay_ref_count_ = 0;
+  int pending_reuse_ref_count_ = 0;
   // We track the start-time for each |handle_id|, for crashkey reporting.
   base::flat_map<uint64_t, base::Time> keep_alive_start_times_;
 
   // Set in DisableRefCounts(). When true, |keep_alive_ref_count_| and
-  // |worker_ref_count_|, and |shutdown_delay_ref_count_| must no longer be
-  // modified.
+  // |worker_ref_count_|, |shutdown_delay_ref_count_|, and
+  // |pending_reuse_ref_count_| must no longer be modified.
   bool are_ref_counts_disabled_ = false;
 
   // The registered IPC listener objects. When this list is empty, we should

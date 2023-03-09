@@ -8,6 +8,7 @@
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
@@ -3782,8 +3783,9 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   EXPECT_EQ(rph_id_3, rph_id_1);
 }
 
-// Check whether COOP causes a RenderProcessHost change during same-origin
-// navigations.
+// Check that a COOP mismatch does not cause a RenderProcessHost change during
+// same-origin navigations, unless COOP triggers the site isolation heuristic
+// of requiring a dedicated process, which would force a process swap.
 IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
                        Process_CoopAlternate_SameOrigin) {
   GURL url_1(https_server()->GetURL("a.test", "/empty.html"));
@@ -3798,15 +3800,20 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), url_3));
   int rph_id_3 = current_frame_host()->GetProcess()->GetID();
 
-  if (!SiteIsolationPolicy::IsSiteIsolationForCOOPEnabled() &&
-      IsBackForwardCacheEnabled()) {
+  // If we're using the COOP site isolation heuristic (e.g., on Android), we
+  // have to swap processes since we're going from an unlocked process to a
+  // locked process.
+  if (SiteIsolationPolicy::IsSiteIsolationForCOOPEnabled()) {
+    EXPECT_NE(rph_id_1, rph_id_2);
+    // COOP isolation only applies to the current BrowsingInstance if there was
+    // no user gesture.  Since NavigateToURL forced a BrowsingInstance swap,
+    // and since there was no user gesture on url_2, we'll be going from a
+    // locked process back to an unlocked process, and hence require a process
+    // swap.
+    EXPECT_NE(rph_id_2, rph_id_3);
+  } else {
     EXPECT_EQ(rph_id_1, rph_id_2);
     EXPECT_EQ(rph_id_2, rph_id_3);
-    EXPECT_EQ(rph_id_3, rph_id_1);
-  } else {
-    EXPECT_NE(rph_id_1, rph_id_2);
-    EXPECT_NE(rph_id_2, rph_id_3);
-    EXPECT_NE(rph_id_3, rph_id_1);
   }
 }
 
@@ -3826,15 +3833,20 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), url_3));
   int rph_id_3 = current_frame_host()->GetProcess()->GetID();
 
-  if (!SiteIsolationPolicy::IsSiteIsolationForCOOPEnabled() &&
-      IsBackForwardCacheEnabled()) {
+  // If we're using the COOP site isolation heuristic (e.g., on Android), we
+  // have to swap processes since we're going from an unlocked process to a
+  // locked process.
+  if (SiteIsolationPolicy::IsSiteIsolationForCOOPEnabled()) {
+    EXPECT_NE(rph_id_1, rph_id_2);
+    // COOP isolation only applies to the current BrowsingInstance if there was
+    // no user gesture.  Since NavigateToURL forced a BrowsingInstance swap,
+    // and since there was no user gesture on url_2, we'll be going from a
+    // locked process back to an unlocked process, and hence require a process
+    // swap.
+    EXPECT_NE(rph_id_2, rph_id_3);
+  } else {
     EXPECT_EQ(rph_id_1, rph_id_2);
     EXPECT_EQ(rph_id_2, rph_id_3);
-    EXPECT_EQ(rph_id_3, rph_id_1);
-  } else {
-    EXPECT_NE(rph_id_1, rph_id_2);
-    EXPECT_NE(rph_id_2, rph_id_3);
-    EXPECT_NE(rph_id_3, rph_id_1);
   }
 }
 
@@ -3895,6 +3907,224 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
 
   // We should commit and gracefully finish loading.
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
+}
+
+// Ensure that when navigating from a non-COOP site to a site with COOP that
+// also requires a dedicated process, there's only one new process created, and
+// the BrowsingInstance swap required by COOP doesn't trigger an unneeded
+// second process swap at response time.  In other words, the process created
+// for the speculative RenderFrameHost at navigation start time ought to be
+// reused by the speculative RenderFrameHost that's recomputed at
+// OnResponseStarted response time (where it's recomputed due to the
+// BrowsingInstance swap required by COOP).
+IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
+                       NoExtraProcessSwapFromDiscardedSpeculativeRFH) {
+  if (IsIsolatedOriginRequiredToGuaranteeDedicatedProcess()) {
+    IsolateOriginsForTesting(embedded_test_server(), shell()->web_contents(),
+                             {url::Origin::Create(GURL("https://b.test/"))});
+  }
+
+  GURL url_1(https_server()->GetURL("a.test", "/empty.html"));
+  GURL url_2(https_server()->GetURL(
+      "b.test", "/set-header?Cross-Origin-Opener-Policy: same-origin"));
+
+  // Navigate to a non-COOP URL.  Note that on Android this will be in a
+  // default SiteInstance and in a process that's not locked to a specific
+  // site, and on desktop it'll be in a process that's locked to a.test.  We're
+  // interested in covering both cases.
+  EXPECT_TRUE(NavigateToURL(shell(), url_1));
+  int rph_id_1 = current_frame_host()->GetProcess()->GetID();
+
+  // Start a navigation to b.test, which will have COOP headers, but this isn't
+  // known until response time.  This creates a speculative RFH and process
+  // that's locked to b.test.
+  TestNavigationManager navigation(web_contents(), url_2);
+  EXPECT_TRUE(BeginNavigateToURLFromRenderer(web_contents(), url_2));
+  EXPECT_TRUE(navigation.WaitForRequestStart());
+  RenderFrameHostWrapper speculative_rfh(web_contents()
+                                             ->GetPrimaryFrameTree()
+                                             .root()
+                                             ->render_manager()
+                                             ->speculative_frame_host());
+  ASSERT_TRUE(speculative_rfh.get());
+  int rph_id_2 = speculative_rfh->GetProcess()->GetID();
+  EXPECT_NE(rph_id_1, rph_id_2);
+
+  // Allow the navigation to receive the response and commit.
+  navigation.ResumeNavigation();
+  EXPECT_TRUE(navigation.WaitForNavigationFinished());
+  EXPECT_TRUE(navigation.was_successful());
+
+  // When the response for `url_2` was received, we should have learned about
+  // the COOP headers and swapped BrowsingInstances. This should've recreated
+  // the speculative RFH in a new SiteInstance/BrowsingInstance, but note that
+  // since `url_2` only has COOP but no COEP (and hence no process isolation
+  // requirement due to cross-origin isolation), it still just needs a regular
+  // process locked to b.test, which is exactly the process that we created for
+  // the original speculative RFH. Ensure that this process gets reused and not
+  // wasted.
+  int rph_id_3 = current_frame_host()->GetProcess()->GetID();
+  EXPECT_EQ(rph_id_2, rph_id_3);
+
+  // This test is parameterized on whether the bfcache is enabled.  With
+  // bfcache, we force a BrowsingInstance swap at the very beginning when the
+  // navigation to `url_2` starts, so there's no need to create a new
+  // SiteInstance when we learn about COOP at response time, since the
+  // candidate (speculative RFH's) SiteInstance is already in a fresh
+  // BrowsingInstance.  Therefore, with bfcache, the original speculative RFH
+  // will be the RFH that eventually commits.  Otherwise, the original
+  // speculative RFH should be destroyed and replaced by another RFH.
+  EXPECT_NE(IsBackForwardCacheEnabled(), speculative_rfh.IsDestroyed());
+}
+
+// Ensure that same-site navigations that result in a COOP mismatch avoid an
+// unnecessary process swap when those navigations happen in a
+// BrowsingContextGroup of size 1 (in this case, in the same WebContents).
+IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
+                       NoExtraProcessSwapFromSameSiteCOOPMismatch) {
+  GURL url_1(https_server()->GetURL("a.test", "/empty.html"));
+  GURL url_2(https_server()->GetURL(
+      "a.test", "/set-header?Cross-Origin-Opener-Policy: same-origin"));
+
+  // Navigate to a non-COOP URL.
+  EXPECT_TRUE(NavigateToURL(shell(), url_1));
+  int rph_id_1 = current_frame_host()->GetProcess()->GetID();
+  bool rph_1_is_locked =
+      current_frame_host()->GetProcess()->GetProcessLock().is_locked_to_site();
+
+  // Start a navigation to a page on a.test that will have COOP headers.
+  TestNavigationManager navigation(web_contents(), url_2);
+  EXPECT_TRUE(BeginNavigateToURLFromRenderer(web_contents(), url_2));
+  EXPECT_TRUE(navigation.WaitForRequestStart());
+  RenderFrameHostImpl* speculative_rfh = web_contents()
+                                             ->GetPrimaryFrameTree()
+                                             .root()
+                                             ->render_manager()
+                                             ->speculative_frame_host();
+
+  // When the back-forward cache is enabled, or when RenderDocument is used, we
+  // will get a speculative RenderFrameHost, which should reuse the existing
+  // process because the navigation is same-site.  Otherwise, the navigation
+  // should stay in the current RenderFrameHost.
+  int rph_id_2;
+  if (IsBackForwardCacheEnabled() || ShouldCreateNewHostForAllFrames()) {
+    ASSERT_TRUE(speculative_rfh);
+    rph_id_2 = speculative_rfh->GetProcess()->GetID();
+    EXPECT_EQ(rph_id_1, rph_id_2);
+  } else {
+    ASSERT_FALSE(speculative_rfh);
+    rph_id_2 = rph_id_1;
+  }
+
+  // Allow the navigation to receive the response and commit.
+  navigation.ResumeNavigation();
+  EXPECT_TRUE(navigation.WaitForNavigationFinished());
+  EXPECT_TRUE(navigation.was_successful());
+
+  // When the response for `url_2` was received, we should have learned about
+  // the COOP headers and swapped BrowsingInstances. This should've created a
+  // new speculative RFH in a new SiteInstance/BrowsingInstance, but it should
+  // reuse the old a.com process since `url_2` only has COOP but no COEP (and
+  // hence no process isolation requirement due to cross-origin isolation).  An
+  // exception to this is if COOP triggers site isolation (e.g., on Android),
+  // and the old process wasn't already locked to a.test.  In that case, a
+  // process swap is required, since we are going from an unlocked process to a
+  // locked process.
+  int rph_id_3 = current_frame_host()->GetProcess()->GetID();
+  if (SiteIsolationPolicy::IsSiteIsolationForCOOPEnabled()) {
+    EXPECT_NE(rph_id_2, rph_id_3);
+    EXPECT_FALSE(rph_1_is_locked);
+    EXPECT_TRUE(current_frame_host()
+                    ->GetProcess()
+                    ->GetProcessLock()
+                    .is_locked_to_site());
+  } else {
+    EXPECT_EQ(rph_id_2, rph_id_3);
+  }
+}
+
+// Verify that there's no extra process swap during a same-site navigation from
+// one COOP page to another COOP page.
+IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
+                       NavigatingFromCOOPToCOOPHasNoExtraProcessCreation) {
+  GURL url_1(https_server()->GetURL(
+      "a.test", "/set-header?Cross-Origin-Opener-Policy: same-origin"));
+  GURL url_2(https_server()->GetURL(
+      "a.test", "/set-header?Cross-Origin-Opener-Policy: same-origin&2"));
+
+  // Navigate to a COOP URL.
+  EXPECT_TRUE(NavigateToURL(shell(), url_1));
+  int rph_id_1 = current_frame_host()->GetProcess()->GetID();
+
+  // Start a navigation to another same-site COOP URL.
+  TestNavigationManager navigation(web_contents(), url_2);
+  EXPECT_TRUE(BeginNavigateToURLFromRenderer(web_contents(), url_2));
+  EXPECT_TRUE(navigation.WaitForRequestStart());
+  RenderFrameHostImpl* speculative_rfh = web_contents()
+                                             ->GetPrimaryFrameTree()
+                                             .root()
+                                             ->render_manager()
+                                             ->speculative_frame_host();
+
+  // When the back-forward cache is enabled, or when RenderDocument is used, we
+  // will get a speculative RenderFrameHost, which should reuse the existing
+  // process because the navigation is same-site.  Otherwise, the navigation
+  // should stay in the current RenderFrameHost.  The else path verifies that
+  // we don't assume no COOP when initially making the request to `url_2` and
+  // place the candidate SiteInstance in a new BrowsingInstance, and later come
+  // back to the original BrowsingInstance after realizing at response time
+  // that COOP hasn't changed.
+  int rph_id_2;
+  if (IsBackForwardCacheEnabled() || ShouldCreateNewHostForAllFrames()) {
+    ASSERT_TRUE(speculative_rfh);
+    rph_id_2 = speculative_rfh->GetProcess()->GetID();
+    EXPECT_EQ(rph_id_1, rph_id_2);
+  } else {
+    ASSERT_FALSE(speculative_rfh);
+    rph_id_2 = rph_id_1;
+  }
+
+  // Allow the navigation to receive the response and commit.
+  navigation.ResumeNavigation();
+  EXPECT_TRUE(navigation.WaitForNavigationFinished());
+  EXPECT_TRUE(navigation.was_successful());
+
+  // When the response for `url_2` was received, we should verify that COOP
+  // status hasn't changed, so no BrowsingInstance swap is needed, and we
+  // should stay in the same process.
+  int rph_id_3 = current_frame_host()->GetProcess()->GetID();
+  EXPECT_EQ(rph_id_2, rph_id_3);
+}
+
+// Ensure that a same-site COOP mismatch that happens in a popup does *not*
+// reuse the existing process, unlike in the
+// NoExtraProcessSwapFromSameSiteCOOPMismatch test above.  This ensures that
+// same-site COOP mismatch reuses the old process only in single-window
+// BrowsingInstances, and noopener-like popups with a COOP mismatch still get a
+// fresh process.
+IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
+                       NoProcessReuseForSameSiteCOOPMismatchInPopup) {
+  GURL url_1(https_server()->GetURL("a.test", "/empty.html"));
+  GURL url_2(https_server()->GetURL(
+      "a.test", "/set-header?Cross-Origin-Opener-Policy: same-origin"));
+
+  // Navigate to a non-COOP URL.
+  EXPECT_TRUE(NavigateToURL(shell(), url_1));
+  int rph_id_1 = current_frame_host()->GetProcess()->GetID();
+
+  // Open a same-site popup with COOP.
+  Shell* new_shell = OpenPopup(web_contents(), url_2, "");
+  EXPECT_TRUE(new_shell);
+  WebContentsImpl* popup_contents =
+      static_cast<WebContentsImpl*>(new_shell->web_contents());
+
+  // When the response for `url_2` was received, we should have learned about
+  // the COOP headers and swapped BrowsingInstances. This should've created a
+  // new speculative RFH in a new SiteInstance/BrowsingInstance, and it should
+  // create a fresh process rather than reuse the old a.com process, since
+  // there was more than one active window in the old BrowsingInstance.
+  int rph_id_2 = popup_contents->GetPrimaryMainFrame()->GetProcess()->GetID();
+  EXPECT_NE(rph_id_1, rph_id_2);
 }
 
 // TODO(https://crbug.com/1101339). Test inheritance of the virtual browsing
