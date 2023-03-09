@@ -184,6 +184,7 @@ class ProfileProviderRealCollectionTest : public testing::Test {
     StopSpinningCPU();
 
     profile_provider_.reset();
+    aura_env_.reset();
     TestingBrowserProcess::DeleteInstance();
     ash::LoginState::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
