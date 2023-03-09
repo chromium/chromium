@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include <memory>
 
+#include "base/auto_reset.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -117,6 +118,9 @@ class CONTENT_EXPORT RenderThread : virtual public ChildThread {
   // https://github.com/WICG/attribution-reporting-api/blob/main/app_to_web.md.
   virtual attribution_reporting::mojom::OsSupport
   GetOsSupportForAttributionReporting() = 0;
+
+ private:
+  const base::AutoReset<RenderThread*> resetter_;
 };
 
 }  // namespace content

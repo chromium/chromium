@@ -6,7 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "base/threading/thread_checker_impl.h"
-#include "base/threading/thread_local.h"
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace content {
 
@@ -14,10 +14,7 @@ namespace {
 
 // Keep the global RenderThread in a TLS slot so it is impossible to access
 // incorrectly from the wrong thread.
-base::ThreadLocalPointer<RenderThread>& GetRenderThreadLocalPointer() {
-  static base::NoDestructor<base::ThreadLocalPointer<RenderThread>> tls;
-  return *tls;
-}
+ABSL_CONST_INIT thread_local RenderThread* render_thread = nullptr;
 
 static const base::ThreadCheckerImpl& GetThreadChecker() {
   static base::NoDestructor<base::ThreadCheckerImpl> checker;
@@ -27,7 +24,7 @@ static const base::ThreadCheckerImpl& GetThreadChecker() {
 }  // namespace
 
 RenderThread* RenderThread::Get() {
-  return GetRenderThreadLocalPointer().Get();
+  return render_thread;
 }
 
 bool RenderThread::IsMainThread() {
@@ -35,12 +32,8 @@ bool RenderThread::IsMainThread() {
   return GetThreadChecker().CalledOnValidThread();
 }
 
-RenderThread::RenderThread() {
-  GetRenderThreadLocalPointer().Set(this);
-}
+RenderThread::RenderThread() : resetter_(&render_thread, this) {}
 
-RenderThread::~RenderThread() {
-  GetRenderThreadLocalPointer().Set(nullptr);
-}
+RenderThread::~RenderThread() = default;
 
 }  // namespace content
