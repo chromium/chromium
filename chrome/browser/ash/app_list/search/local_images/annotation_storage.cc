@@ -88,65 +88,37 @@ FileSearchResult::~FileSearchResult() = default;
 FileSearchResult::FileSearchResult(const FileSearchResult&) = default;
 
 AnnotationStorage::AnnotationStorage(
-    const base::FilePath& path,
+    const base::FilePath& path_to_db,
     const std::string& histogram_tag,
     int current_version_number,
     std::unique_ptr<ImageAnnotationWorker> annotation_worker)
     : annotation_worker_(std::move(annotation_worker)),
       sql_database_(
-          std::make_unique<SqlDatabase>(path,
+          std::make_unique<SqlDatabase>(path_to_db,
                                         histogram_tag,
                                         current_version_number,
                                         base::BindRepeating(CreateNewSchema),
-                                        base::BindRepeating(MigrateSchema))),
-      background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
-           base::TaskShutdownBehavior::BLOCK_SHUTDOWN})) {
-  DETACH_FROM_SEQUENCE(sequence_checker_);
+                                        base::BindRepeating(MigrateSchema))) {
   DVLOG(1) << "Construct AnnotationStorage";
 }
 
-AnnotationStorage::~AnnotationStorage() {
-  // Closes the worker in the same sequence it was initialized.
-  background_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](std::unique_ptr<ImageAnnotationWorker> annotation_worker,
-             std::unique_ptr<SqlDatabase> sql_database) {
-            annotation_worker.reset();
-            sql_database->Close();
-          },
-          std::move(annotation_worker_), std::move(sql_database_)));
-}
+AnnotationStorage::~AnnotationStorage() = default;
 
-void AnnotationStorage::InitializeAsync() {
-  background_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&AnnotationStorage::InitializeOnBackgroundSequence, this));
-}
-
-void AnnotationStorage::InitializeOnBackgroundSequence() {
+void AnnotationStorage::Initialize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!sql_database_->Initialize()) {
     LOG(ERROR) << "Failed to initialize the db.";
     return;
   }
   if (annotation_worker_ != nullptr) {
+    // Owns `annotation_worker_`.
     annotation_worker_->Run(this);
   }
 }
 
-void AnnotationStorage::InsertOrReplaceAsync(ImageInfo image_info) {
-  DVLOG(1) << "InsertOrReplaceAsync";
-  background_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          base::IgnoreResult(&AnnotationStorage::InsertOnBackgroundSequence),
-          this, std::move(image_info)));
-}
-
-void AnnotationStorage::InsertOnBackgroundSequence(ImageInfo image_info) {
+void AnnotationStorage::Insert(const ImageInfo& image_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DVLOG(1) << "Insert";
 
   static constexpr char kQuery[] =
       // clang-format off
@@ -170,17 +142,9 @@ void AnnotationStorage::InsertOnBackgroundSequence(ImageInfo image_info) {
   return;
 }
 
-void AnnotationStorage::RemoveAsync(base::FilePath image_path) {
-  DVLOG(1) << "RemoveAsync";
-  background_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          base::IgnoreResult(&AnnotationStorage::RemoveOnBackgroundSequence),
-          this, std::move(image_path)));
-}
-
-void AnnotationStorage::RemoveOnBackgroundSequence(base::FilePath image_path) {
+void AnnotationStorage::Remove(const base::FilePath& image_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DVLOG(1) << "Remove";
 
   static constexpr char kQuery[] = "DELETE FROM annotations WHERE image_path=?";
 
@@ -191,19 +155,9 @@ void AnnotationStorage::RemoveOnBackgroundSequence(base::FilePath image_path) {
   statement.Run();
 }
 
-void AnnotationStorage::GetAllAnnotationsAsync(
-    base::OnceCallback<void(std::vector<ImageInfo>)> callback) {
-  DVLOG(1) << "GetAllAnnotationsAsync";
-  background_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&AnnotationStorage::GetAllAnnotationsOnBackgroundSequence,
-                     this),
-      std::move(callback));
-}
-
-std::vector<ImageInfo>
-AnnotationStorage::GetAllAnnotationsOnBackgroundSequence() {
+std::vector<ImageInfo> AnnotationStorage::GetAllAnnotations() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DVLOG(1) << "GetAllAnnotations";
 
   static constexpr char kQuery[] =
       // clang-format off
@@ -224,24 +178,15 @@ AnnotationStorage::GetAllAnnotationsOnBackgroundSequence() {
     matched_paths.push_back(
         {{statement.ColumnString(0)}, std::move(path), std::move(time)});
   }
+
   return matched_paths;
 }
 
-void AnnotationStorage::FindImagePathAsync(
-    base::FilePath image_path,
-    base::OnceCallback<void(std::vector<ImageInfo>)> callback) {
-  DVLOG(1) << "FindImagePathAsync " << image_path;
-  background_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&AnnotationStorage::FindImagePathOnBackgroundSequence,
-                     this, image_path),
-      std::move(callback));
-}
-
-std::vector<ImageInfo> AnnotationStorage::FindImagePathOnBackgroundSequence(
-    base::FilePath image_path) {
+std::vector<ImageInfo> AnnotationStorage::FindImagePath(
+    const base::FilePath& image_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!image_path.empty());
+  DVLOG(1) << "FindImagePath " << image_path;
 
   static constexpr char kQuery[] =
       // clang-format off
@@ -264,25 +209,14 @@ std::vector<ImageInfo> AnnotationStorage::FindImagePathOnBackgroundSequence(
     matched_paths.push_back(
         {{statement.ColumnString(0)}, std::move(path), std::move(time)});
   }
+
   return matched_paths;
 }
 
-void AnnotationStorage::LinearSearchAnnotationsAsync(
-    std::u16string query,
-    base::OnceCallback<void(std::vector<FileSearchResult>)> callback) {
-  DVLOG(1) << "LinearSearchAnnotationsAsync";
-  background_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(
-          &AnnotationStorage::LinearSearchAnnotationsOnBackgroundSequence, this,
-          std::move(query)),
-      std::move(callback));
-}
-
-std::vector<FileSearchResult>
-AnnotationStorage::LinearSearchAnnotationsOnBackgroundSequence(
-    std::u16string query) {
+std::vector<FileSearchResult> AnnotationStorage::LinearSearchAnnotations(
+    const std::u16string& query) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DVLOG(1) << "LinearSearchAnnotationsAsync";
   using TokenizedString = ash::string_matching::TokenizedString;
 
   static constexpr char kQuery[] =

@@ -32,20 +32,21 @@ LocalImageSearchProvider::LocalImageSearchProvider(Profile* profile)
     : profile_(profile),
       thumbnail_loader_(profile),
       root_path_(file_manager::util::GetMyFilesFolderForProfile(profile)),
-      annotation_storage_(base::MakeRefCounted<AnnotationStorage>(
+      annotation_storage_(
+          base::ThreadPool::CreateSequencedTaskRunner(
+              {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+               base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
           ConstructPathToAnnotationDb(profile_),
           /* histogram_tag = */ kHistogramTag,
           /* current_version_number= */ 2,
-          std::make_unique<ImageAnnotationWorker>(root_path_))) {
+          std::make_unique<ImageAnnotationWorker>(root_path_)) {
   DCHECK(profile_);
   DCHECK(!root_path_.empty());
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  annotation_storage_->InitializeAsync();
+  annotation_storage_.AsyncCall(&AnnotationStorage::Initialize);
 }
 
-LocalImageSearchProvider::~LocalImageSearchProvider() {
-  annotation_storage_.reset();
-}
+LocalImageSearchProvider::~LocalImageSearchProvider() = default;
 
 ash::AppListSearchResultType LocalImageSearchProvider::ResultType() const {
   return ash::AppListSearchResultType::kImageSearch;
@@ -56,9 +57,10 @@ void LocalImageSearchProvider::Start(const std::u16string& query) {
   query_start_time_ = base::TimeTicks::Now();
   last_query_ = query;
 
-  annotation_storage_->LinearSearchAnnotationsAsync(
-      query, base::BindOnce(&LocalImageSearchProvider::OnSearchComplete,
-                            weak_factory_.GetWeakPtr()));
+  annotation_storage_.AsyncCall(&AnnotationStorage::LinearSearchAnnotations)
+      .WithArgs(query)
+      .Then(base::BindOnce(&LocalImageSearchProvider::OnSearchComplete,
+                           weak_factory_.GetWeakPtr()));
 }
 
 void LocalImageSearchProvider::StopQuery() {
