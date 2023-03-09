@@ -203,12 +203,6 @@ class FrameSchedulerDelegateForTesting : public FrameScheduler::Delegate {
 };
 
 MATCHER(BlockingDetailsHasCCNS, "Blocking details has CCNS.") {
-  bool mask_has_ccns =
-      (arg.feature_mask == (1 << static_cast<uint64_t>(
-                                SchedulingPolicy::Feature::
-                                    kMainResourceHasCacheControlNoStore)) |
-       (1 << static_cast<uint64_t>(
-            SchedulingPolicy::Feature::kMainResourceHasCacheControlNoCache)));
   bool vector_empty = arg.non_sticky_features_and_js_locations.empty();
   bool vector_has_ccns =
       arg.sticky_features_and_js_locations.Contains(
@@ -219,21 +213,18 @@ MATCHER(BlockingDetailsHasCCNS, "Blocking details has CCNS.") {
           FeatureAndJSLocationBlockingBFCache(
               SchedulingPolicy::Feature::kMainResourceHasCacheControlNoCache,
               nullptr));
-  return mask_has_ccns && vector_empty && vector_has_ccns;
+  return vector_empty && vector_has_ccns;
 }
 
 MATCHER_P(BlockingDetailsHasWebSocket,
           handle,
           "BlockingDetails has WebSocket.") {
-  bool mask_has_web_socket =
-      (arg.feature_mask ==
-       (1 << static_cast<size_t>(SchedulingPolicy::Feature::kWebSocket)));
   bool handle_has_web_socket =
       (handle->GetFeatureAndJSLocationBlockingBFCache() ==
        FeatureAndJSLocationBlockingBFCache(
            SchedulingPolicy::Feature::kWebSocket, nullptr));
   bool vector_empty = arg.sticky_features_and_js_locations.empty();
-  return mask_has_web_socket && handle_has_web_socket && vector_empty;
+  return handle_has_web_socket && vector_empty;
 }
 
 MATCHER(BlockingDetailsIsEmpty, "BlockingDetails is empty.") {

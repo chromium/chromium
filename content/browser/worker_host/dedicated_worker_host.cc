@@ -952,16 +952,19 @@ void DedicatedWorkerHost::EvictFromBackForwardCache(
 }
 
 void DedicatedWorkerHost::DidChangeBackForwardCacheDisablingFeatures(
-    uint64_t features_mask) {
+    BackForwardCacheBlockingDetails details) {
   RenderFrameHostImpl* ancestor_render_frame_host =
       RenderFrameHostImpl::FromID(ancestor_render_frame_host_id_);
   if (!ancestor_render_frame_host) {
     // The frame may have already been closed.
     return;
   }
-  bfcache_disabling_features_ =
-      blink::scheduler::WebSchedulerTrackedFeatures::FromEnumBitmask(
-          features_mask);
+  bfcache_disabling_features_.Clear();
+  for (auto& feature_details : details) {
+    bfcache_disabling_features_.Put(
+        static_cast<blink::scheduler::WebSchedulerTrackedFeature>(
+            feature_details->feature));
+  }
   ancestor_render_frame_host->MaybeEvictFromBackForwardCache();
 }
 

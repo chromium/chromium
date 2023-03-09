@@ -2394,8 +2394,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // blink::mojom::BackForwardCacheControllerHost:
   void EvictFromBackForwardCache(blink::mojom::RendererEvictionReason) override;
+  using BackForwardCacheBlockingDetails =
+      std::vector<blink::mojom::BlockingDetailsPtr>;
   void DidChangeBackForwardCacheDisablingFeatures(
-      uint64_t features_mask) override;
+      BackForwardCacheBlockingDetails details) override;
 
   // blink::LocalMainFrameHost overrides:
   void ScaleFactorChanged(float scale) override;

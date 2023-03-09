@@ -6,6 +6,22 @@ module blink.mojom;
 
 import "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom";
 
+// This struct contains information about a blocking feature's usage, i.e. what feature
+// is used, in what JavaScript file, in what function, at what line and column number.
+struct BlockingDetails {
+  // The index of the blocking feature.
+  // See blink::SchedulingPolicy::Feature for the meaning of the individual bits.
+  uint32 feature;
+  // The URL of the JavaScript file where the feature is used.
+  string url;
+  // The function in the JavaScript file where the feature is used.
+  string function_name;
+  // The line number in JavaScript file where the feature is used.
+  uint64 line_number;
+  // The column number in JavaScript file where the feature is used.
+  uint64 column_number;
+};
+
 // This interface defines back-forward cache related methods that will be
 // invoked from the renderer process.
 //
@@ -20,7 +36,8 @@ interface BackForwardCacheControllerHost {
 
   // Sent by the blink's FrameScheduler when a list of active features
   // the scheduler tracks changes.
-  // See blink::scheduler::SchedulingPolicy::Feature for the meaning
-  // of the individual bits.
-  DidChangeBackForwardCacheDisablingFeatures(uint64 features_mask);
+  // `details` is the list of blocking features currently being used and their
+  // information about where they were used in JavaScript.
+  DidChangeBackForwardCacheDisablingFeatures(
+    array<BlockingDetails> details);
 };

@@ -12,6 +12,7 @@
 #include "content/browser/generic_sensor/sensor_provider_proxy_impl.h"
 #include "content/browser/presentation/presentation_test_utils.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/worker_host/dedicated_worker_hosts_for_document.h"
 #include "content/public/browser/disallow_activation_reason.h"
@@ -1148,7 +1149,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // 3) No-op feature update on a subframe while in cache, should be no-op.
   ASSERT_FALSE(delete_observer_rfh_b.deleted());
-  rfh_b->DidChangeBackForwardCacheDisablingFeatures(0);
+  RenderFrameHostImpl::BackForwardCacheBlockingDetails empty_vector;
+  rfh_b->DidChangeBackForwardCacheDisablingFeatures(std::move(empty_vector));
 
   // 4) Go back.
   ASSERT_TRUE(HistoryGoBack(web_contents()));

@@ -4425,9 +4425,13 @@ void RenderFrameHostImpl::CancelInitialHistoryLoad() {
 }
 
 void RenderFrameHostImpl::DidChangeBackForwardCacheDisablingFeatures(
-    uint64_t features_mask) {
-  renderer_reported_bfcache_disabling_features_ =
-      BackForwardCacheDisablingFeatures::FromEnumBitmask(features_mask);
+    BackForwardCacheBlockingDetails details) {
+  renderer_reported_bfcache_disabling_features_.Clear();
+  for (auto& feature_details : details) {
+    renderer_reported_bfcache_disabling_features_.Put(
+        static_cast<blink::scheduler::WebSchedulerTrackedFeature>(
+            feature_details->feature));
+  }
 
   MaybeEvictFromBackForwardCache();
 

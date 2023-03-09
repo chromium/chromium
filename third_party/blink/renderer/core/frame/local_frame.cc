@@ -293,6 +293,18 @@ void SetViewportSegmentVariablesForRect(StyleEnvironmentVariables& vars,
                    StyleEnvironmentVariables::FormatPx(segment_rect.height()));
 }
 
+mojom::blink::BlockingDetailsPtr CreateBlockingDetailsMojom(
+    const FeatureAndJSLocationBlockingBFCache& blocking_details) {
+  auto feature_location_to_report = mojom::blink::BlockingDetails::New();
+  feature_location_to_report->feature =
+      static_cast<uint32_t>(blocking_details.Feature());
+  feature_location_to_report->line_number = blocking_details.LineNumber();
+  feature_location_to_report->column_number = blocking_details.ColumnNumber();
+  feature_location_to_report->url = blocking_details.Url();
+  feature_location_to_report->function_name = blocking_details.Function();
+  return feature_location_to_report;
+}
+
 }  // namespace
 
 template class CORE_TEMPLATE_EXPORT Supplement<LocalFrame>;
@@ -2366,10 +2378,27 @@ void LocalFrame::UpdateTaskTime(base::TimeDelta time) {
 
 void LocalFrame::UpdateBackForwardCacheDisablingFeatures(
     BlockingDetails details) {
-  // TODO(crbug.com/1366675): Add two Vectors to argument of
-  // DidChangeBackForwardCacheDisablingFeatures
+  auto mojom_details = ConvertFeatureAndLocationToMojomStruct(
+      details.non_sticky_features_and_js_locations,
+      details.sticky_features_and_js_locations);
   GetBackForwardCacheControllerHostRemote()
-      .DidChangeBackForwardCacheDisablingFeatures(details.feature_mask);
+      .DidChangeBackForwardCacheDisablingFeatures(std::move(mojom_details));
+}
+
+using BlockingDetailsList = Vector<mojom::blink::BlockingDetailsPtr>;
+BlockingDetailsList LocalFrame::ConvertFeatureAndLocationToMojomStruct(
+    const BFCacheBlockingFeatureAndLocations& non_sticky,
+    const BFCacheBlockingFeatureAndLocations& sticky) {
+  BlockingDetailsList blocking_details_list;
+  for (auto feature : non_sticky) {
+    auto blocking_details = CreateBlockingDetailsMojom(feature);
+    blocking_details_list.push_back(std::move(blocking_details));
+  }
+  for (auto feature : sticky) {
+    auto blocking_details = CreateBlockingDetailsMojom(feature);
+    blocking_details_list.push_back(std::move(blocking_details));
+  }
+  return blocking_details_list;
 }
 
 const base::UnguessableToken& LocalFrame::GetAgentClusterId() const {

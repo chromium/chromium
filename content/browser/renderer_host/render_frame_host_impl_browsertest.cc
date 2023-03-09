@@ -308,6 +308,24 @@ bool NavigateToURLAndDoNotWaitForLoadStop(Shell* window, const GURL& url) {
          window->web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL();
 }
 
+using blink::mojom::BlockingDetails;
+using BackForwardCacheBlockingDetails =
+    RenderFrameHostImpl::BackForwardCacheBlockingDetails;
+using BlocklistedFeature = blink::scheduler::WebSchedulerTrackedFeature;
+using BlocklistedFeatures = blink::scheduler::WebSchedulerTrackedFeatures;
+// Helper function to create a vector which contains the mojom feature
+// information.
+BackForwardCacheBlockingDetails CreateBlockingDetails(
+    BlocklistedFeatures features) {
+  BackForwardCacheBlockingDetails feature_vector;
+  for (auto feature : features) {
+    auto feature_info = BlockingDetails::New();
+    feature_info->feature = static_cast<uint32_t>(feature);
+    feature_vector.push_back(std::move(feature_info));
+  }
+  return feature_vector;
+}
+
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                        ExecuteJavaScriptMethodWorksWithArguments) {
   EXPECT_TRUE(NavigateToURL(
@@ -3569,20 +3587,30 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
   RenderFrameHostImpl* main_frame = web_contents()->GetPrimaryMainFrame();
-  // Simulate getting 0b1 as a feature vector from the renderer.
-  main_frame->DidChangeBackForwardCacheDisablingFeatures(0b1u);
-  DCHECK_EQ(main_frame->GetBackForwardCacheDisablingFeatures().ToEnumBitmask(),
-            0b1u);
-  // Simulate the browser side reporting a feature usage.
+  // Simulate getting WebSocket in a feature vector from the renderer.
+  main_frame->DidChangeBackForwardCacheDisablingFeatures(
+      CreateBlockingDetails(BlocklistedFeature::kWebSocket));
+  ASSERT_EQ(main_frame->GetBackForwardCacheDisablingFeatures(),
+            BlocklistedFeatures(BlocklistedFeature::kWebSocket));
+
+  // Simulate the browser side reporting WebRTC usage.
   main_frame->OnBackForwardCacheDisablingStickyFeatureUsed(
-      static_cast<blink::scheduler::WebSchedulerTrackedFeature>(1));
-  DCHECK_EQ(main_frame->GetBackForwardCacheDisablingFeatures().ToEnumBitmask(),
-            0b11u);
+      static_cast<BlocklistedFeature>(BlocklistedFeature::kWebRTC));
+  ASSERT_EQ(main_frame->GetBackForwardCacheDisablingFeatures(),
+            BlocklistedFeatures(BlocklistedFeature::kWebSocket,
+                                BlocklistedFeature::kWebRTC));
+
   // Simulate a feature vector being updated from the renderer with some
   // features being activated and some being deactivated.
-  main_frame->DidChangeBackForwardCacheDisablingFeatures(0b100u);
-  DCHECK_EQ(main_frame->GetBackForwardCacheDisablingFeatures().ToEnumBitmask(),
-            0b110u);
+  // [kWebSocket(0), kWebRTC(1)] -> [kWebRTC(1),
+  // kMainResourceHasCacheControlNoCache(2)]
+  main_frame->DidChangeBackForwardCacheDisablingFeatures(CreateBlockingDetails(
+      {BlocklistedFeature::kWebRTC,
+       BlocklistedFeature::kMainResourceHasCacheControlNoCache}));
+  ASSERT_EQ(main_frame->GetBackForwardCacheDisablingFeatures(),
+            BlocklistedFeatures(
+                BlocklistedFeature::kWebRTC,
+                BlocklistedFeature::kMainResourceHasCacheControlNoCache));
 
   // Navigate away and expect that no values persist the navigation.
   // Note that we are still simulating the renderer call, otherwise features
@@ -3590,7 +3618,9 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
   main_frame = web_contents()->GetPrimaryMainFrame();
-  main_frame->DidChangeBackForwardCacheDisablingFeatures(0b0u);
+  BackForwardCacheBlockingDetails empty_vector;
+  main_frame->DidChangeBackForwardCacheDisablingFeatures(
+      CreateBlockingDetails({}));
 }
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,

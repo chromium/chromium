@@ -366,12 +366,6 @@ class WorkerSchedulerDelegateForTesting : public WorkerScheduler::Delegate {
 };
 
 MATCHER(BlockingDetailsHasCCNS, "Compares two blocking details.") {
-  bool mask_has_ccns =
-      (arg.feature_mask == (1 << static_cast<uint64_t>(
-                                SchedulingPolicy::Feature::
-                                    kMainResourceHasCacheControlNoStore)) |
-       (1 << static_cast<uint64_t>(
-            SchedulingPolicy::Feature::kMainResourceHasCacheControlNoCache)));
   bool vector_empty = arg.non_sticky_features_and_js_locations.empty();
   bool vector_has_ccns =
       arg.sticky_features_and_js_locations.Contains(
@@ -382,7 +376,7 @@ MATCHER(BlockingDetailsHasCCNS, "Compares two blocking details.") {
           FeatureAndJSLocationBlockingBFCache(
               SchedulingPolicy::Feature::kMainResourceHasCacheControlNoCache,
               nullptr));
-  return mask_has_ccns && vector_empty && vector_has_ccns;
+  return vector_empty && vector_has_ccns;
 }
 
 // Confirms that the feature usage in a dedicated worker is uploaded to

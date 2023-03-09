@@ -855,6 +855,11 @@ class CORE_EXPORT LocalFrame final
 
   void ScheduleNextServiceForScrollSnapshotClients();
 
+  using BlockingDetailsList = Vector<mojom::blink::BlockingDetailsPtr>;
+  static BlockingDetailsList ConvertFeatureAndLocationToMojomStruct(
+      const BFCacheBlockingFeatureAndLocations&,
+      const BFCacheBlockingFeatureAndLocations&);
+
  private:
   friend class FrameNavigationDisabler;
   // LocalFrameMojoHandler is a part of LocalFrame.
