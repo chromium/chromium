@@ -9,7 +9,7 @@ group("fuzzers") {
 
 # Build Skia fuzzers from OSS-Fuzz on Windows since Windows is not supported by
 # OSS-Fuzz.
-if (is_win && use_libfuzzer) {
+if (is_win && use_fuzzing_engine) {
   source_set("skia_fuzzer_sources") {
     testonly = true
     sources = [
