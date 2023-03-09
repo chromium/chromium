@@ -257,12 +257,7 @@ TEST_F(HelpAppSearchHandlerTest, SearchResultOrdering) {
   EXPECT_GT(search_results[1]->relevance_score, 0.01);
 }
 
-// TODO(b/270091661): These two unit tests below are currently broken as the
-// search logic has been changed a bit. We will modify the UMA metric and
-// re-enable them when the UMA metric changes are merged.
-
-// Re-enable the UMA metric checks when the changes are made.
-TEST_F(HelpAppSearchHandlerTest, DISABLED_SearchStatusNotReadyAndEmptyIndex) {
+TEST_F(HelpAppSearchHandlerTest, SearchStatusNotReadyAndEmptyIndex) {
   base::HistogramTester histogram_tester;
   std::vector<mojom::SearchResultPtr> search_results;
 
@@ -274,22 +269,6 @@ TEST_F(HelpAppSearchHandlerTest, DISABLED_SearchStatusNotReadyAndEmptyIndex) {
   // 0 is kNotReadyAndEmptyIndex.
   histogram_tester.ExpectUniqueSample(
       "Discover.SearchHandler.SearchResultStatus", 0, 1);
-}
-
-// Re-enable the UMA metric checks when the changes are made.
-TEST_F(HelpAppSearchHandlerTest, DISABLED_SearchStatusNotReadyAndOtherStatus) {
-  base::HistogramTester histogram_tester;
-  std::vector<mojom::SearchResultPtr> search_results;
-
-  // The empty search query makes the LSS respond with kEmptyQuery rather than
-  // kEmptyIndex.
-  mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
-      .Search(u"", /*max_num_results=*/3u, &search_results);
-
-  EXPECT_TRUE(search_results.empty());
-  // 1 is kNotReadyAndOtherStatus.
-  histogram_tester.ExpectUniqueSample(
-      "Discover.SearchHandler.SearchResultStatus", 1, 1);
 }
 
 TEST_F(HelpAppSearchHandlerTest, SearchStatusReadyAndSuccess) {

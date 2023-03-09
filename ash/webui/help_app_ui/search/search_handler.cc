@@ -27,12 +27,12 @@ constexpr char kHelpAppDir[] = "help_app/";
 // persist to logs. Entries should not be renumbered and numeric values should
 // never be reused.
 enum class SearchResultStatus {
-  // The first Update hasn't finished yet, and the index is still empty, so the
-  // Search Handler is not ready to handle searches.
+  // There is no cache update, and the index is still empty, so the Search
+  // Handler is not ready to handle searches.
   kNotReadyAndEmptyIndex = 0,
-  // Not ready and the status is something other than EmptyIndex. This should be
-  // far less common than kNotReadyAndEmptyIndex.
-  kNotReadyAndOtherStatus = 1,
+  // Not ready and the cache status is updating. This should be far less common
+  // than kNotReadyAndEmptyIndex.
+  kNotReadyAndUpdating = 1,
   // Ready and the LSS response status is Success.
   kReadyAndSuccess = 2,
   // Ready and the LSS response status is EmptyIndex. This can happen for
@@ -74,7 +74,8 @@ SearchHandler::SearchHandler(
     SearchTagRegistry* search_tag_registry,
     local_search_service::LocalSearchServiceProxy* local_search_service_proxy)
     : search_tag_registry_(search_tag_registry),
-      cache_status_(CacheStatus::kEmpty) {
+      cache_status_(CacheStatus::kEmpty),
+      construction_time_(base::TimeTicks::Now()) {
   local_search_service_proxy->GetIndex(
       local_search_service::IndexId::kHelpAppLauncher,
       local_search_service::Backend::kInvertedIndex,
@@ -115,6 +116,9 @@ void SearchHandler::Search(const std::u16string& query,
 
   // Reject the search request if the cache is not ready yet.
   if (cache_status_ != CacheStatus::kReady) {
+    LogSearchResultStatus(cache_status_ == CacheStatus::kEmpty
+                              ? SearchResultStatus::kNotReadyAndEmptyIndex
+                              : SearchResultStatus::kNotReadyAndUpdating);
     std::move(callback).Run({});
     return;
   }
@@ -162,6 +166,12 @@ void SearchHandler::OnProfileDirAvailable(const base::FilePath& profile_dir) {
 
 void SearchHandler::OnRegistryUpdated() {
   cache_status_ = CacheStatus::kReady;
+  if (!construction_time_.is_null()) {
+    base::UmaHistogramTimes("Discover.SearchHandler.SearchAvailableTime",
+                            base::TimeTicks::Now() - construction_time_);
+    // Reset as we only care about the first time the search is available.
+    construction_time_ = base::TimeTicks();
+  }
   for (auto& observer : observers_)
     observer->OnSearchResultAvailabilityChanged();
 }
@@ -191,19 +201,10 @@ void SearchHandler::OnFindComplete(
     const absl::optional<std::vector<local_search_service::Result>>&
         local_search_service_results) {
   if (response_status != local_search_service::ResponseStatus::kSuccess) {
-    if (response_status == local_search_service::ResponseStatus::kEmptyIndex) {
-      if (cache_status_ == CacheStatus::kReady) {
-        LogSearchResultStatus(SearchResultStatus::kReadyAndEmptyIndex);
-      } else {
-        LogSearchResultStatus(SearchResultStatus::kNotReadyAndEmptyIndex);
-      }
-    } else {
-      if (cache_status_ == CacheStatus::kReady) {
-        LogSearchResultStatus(SearchResultStatus::kReadyAndOtherStatus);
-      } else {
-        LogSearchResultStatus(SearchResultStatus::kNotReadyAndOtherStatus);
-      }
-    }
+    LogSearchResultStatus(
+        response_status == local_search_service::ResponseStatus::kEmptyIndex
+            ? SearchResultStatus::kReadyAndEmptyIndex
+            : SearchResultStatus::kReadyAndOtherStatus);
     std::move(callback).Run({});
     return;
   }

@@ -12,6 +12,7 @@
 #include "ash/webui/help_app_ui/search/search_concept.h"
 #include "ash/webui/help_app_ui/search/search_tag_registry.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy.h"
 #include "chromeos/ash/components/local_search_service/public/mojom/index.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -87,6 +88,11 @@ class SearchHandler : public mojom::SearchHandler,
   mojo::Remote<local_search_service::mojom::Index> index_remote_;
 
   CacheStatus cache_status_;
+
+  // The time this class is constructed. This is also used as a flag to indicate
+  // if the availability latency has been logged. After logging, the
+  // `construction_time_` will be reset to null.
+  base::TimeTicks construction_time_;
 
   // Note: Expected to have multiple clients, so ReceiverSet/RemoteSet are used.
   mojo::ReceiverSet<mojom::SearchHandler> receivers_;

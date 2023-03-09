@@ -49378,9 +49378,23 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
       label="Search canceled because the search backend isn't available"/>
 </enum>
 
+<enum name="HelpAppSearchConceptReadStatus">
+  <int value="0" label="Ok"/>
+  <int value="1" label="File not exist"/>
+  <int value="2" label="Read error"/>
+  <int value="3" label="Parse error"/>
+</enum>
+
+<enum name="HelpAppSearchConceptWriteStatus">
+  <int value="0" label="Ok"/>
+  <int value="1" label="Write error"/>
+  <int value="2" label="Serialization error"/>
+  <int value="3" label="Replace error"/>
+</enum>
+
 <enum name="HelpAppSearchHandlerSearchResultStatus">
   <int value="0" label="Not ready, empty index"/>
-  <int value="1" label="Not ready, other status (not empty index)"/>
+  <int value="1" label="Not ready, updating"/>
   <int value="2" label="Ready and success"/>
   <int value="3" label="Ready, empty index (not success)"/>
   <int value="4" label="Ready, other status (not success, not empty index)"/>

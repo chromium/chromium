@@ -12,6 +12,7 @@
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
@@ -23,6 +24,31 @@ namespace {
 
 using Concept = SearchConceptProto::Concept;
 
+constexpr char kReadHistogram[] =
+    "Discover.SearchConcept.PersistenceReadStatus";
+constexpr char kWriteHistogram[] =
+    "Discover.SearchConcept.PersistenceWriteStatus";
+
+// The result of reading a backing file from disk. These values persist to logs.
+// Entries should not be renumbered and numeric values should never be reused.
+enum class ReadStatus {
+  kOk = 0,
+  kMissing = 1,
+  kReadError = 2,
+  kParseError = 3,
+  kMaxValue = kParseError,
+};
+
+// The result of writing a backing file to disk. These values persist to logs.
+// Entries should not be renumbered and numeric values should never be reused.
+enum class WriteStatus {
+  kOk = 0,
+  kWriteError = 1,
+  kSerializationError = 2,
+  kReplaceError = 3,
+  kMaxValue = kReplaceError,
+};
+
 // This should be incremented whenever a change to the search concept is made
 // that is incompatible with on-disk state. On reading, any state is wiped if
 // its version doesn't match.
@@ -33,18 +59,22 @@ std::unique_ptr<SearchConceptProto> ProtoRead(const base::FilePath& file_path) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   if (!base::PathExists(file_path)) {
+    base::UmaHistogramEnumeration(kReadHistogram, ReadStatus::kMissing);
     return nullptr;
   }
 
   std::string proto_str;
   if (!base::ReadFileToString(file_path, &proto_str)) {
+    base::UmaHistogramEnumeration(kReadHistogram, ReadStatus::kReadError);
     return nullptr;
   }
 
   auto proto = std::make_unique<SearchConceptProto>();
   if (!proto->ParseFromString(proto_str)) {
+    base::UmaHistogramEnumeration(kReadHistogram, ReadStatus::kParseError);
     return nullptr;
   }
+  base::UmaHistogramEnumeration(kReadHistogram, ReadStatus::kOk);
 
   // Discard the proto if the version does not match.
   if (!proto->has_version() || proto->version() != kVersion) {
@@ -61,6 +91,8 @@ void ProtoWrite(std::unique_ptr<SearchConceptProto> proto,
                 const base::FilePath& temp_file_path) {
   std::string proto_str;
   if (!proto->SerializeToString(&proto_str)) {
+    base::UmaHistogramEnumeration(kWriteHistogram,
+                                  WriteStatus::kSerializationError);
     return;
   }
 
@@ -78,11 +110,18 @@ void ProtoWrite(std::unique_ptr<SearchConceptProto> proto,
         temp_file_path, proto_str, "HelpAppPersistentProto");
   }
 
+  if (!write_succeed) {
+    base::UmaHistogramEnumeration(kWriteHistogram, WriteStatus::kWriteError);
+    return;
+  }
+
   // Replace the proto in `file_path_` by the temporary proto if the write is
   // succeed.
-  if (write_succeed) {
-    base::ReplaceFile(temp_file_path, file_path, nullptr);
-  }
+  const bool replace_succeed =
+      base::ReplaceFile(temp_file_path, file_path, nullptr);
+  base::UmaHistogramEnumeration(
+      kWriteHistogram,
+      replace_succeed ? WriteStatus::kOk : WriteStatus::kReplaceError);
 }
 
 }  // namespace

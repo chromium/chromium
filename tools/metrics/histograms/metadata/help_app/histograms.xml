@@ -34,16 +34,57 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Discover.SearchConcept.ReadStatus"
+    enum="HelpAppSearchConceptReadStatus" expires_after="2023-08-08">
+  <owner>chenjih@google.com</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>showoff-eng@google.com</owner>
+  <summary>
+    Various status codes on reading persistence file from disk, in the search
+    handler used by the ChromeOS launcher. Emitted once when a read happens to
+    the persistence file, and this happens once per login. Some number of file
+    not exist values is expected, because the persistence file does not exist
+    before it is written for the first time.
+  </summary>
+</histogram>
+
+<histogram name="Discover.SearchConcept.WriteStatus"
+    enum="HelpAppSearchConceptWriteStatus" expires_after="2023-08-08">
+  <owner>chenjih@google.com</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>showoff-eng@google.com</owner>
+  <summary>
+    Various status codes on writing persistence file back to disk, in the search
+    handler used by the ChromeOS launcher. Emitted once when a write happens to
+    the persistence file, and this happens once per new web contents arrives,
+    which is expected to be approx. once per login.
+  </summary>
+</histogram>
+
+<histogram name="Discover.SearchHandler.SearchAvailableTime" units="ms"
+    expires_after="2023-08-08">
+  <owner>chenjih@google.com</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>showoff-eng@google.com</owner>
+  <summary>
+    The latency of the help search availability after the help app search
+    handler constructed. Recorded each time a help app search handler is
+    constructed.
+  </summary>
+</histogram>
+
 <histogram name="Discover.SearchHandler.SearchResultStatus"
     enum="HelpAppSearchHandlerSearchResultStatus" expires_after="2023-08-08">
+  <owner>chenjih@google.com</owner>
+  <owner>tby@chromium.org</owner>
   <owner>zufeng@google.com</owner>
   <owner>showoff-eng@google.com</owner>
   <summary>
     The end result of a search using the help app search handler. Logged once
     per time a search finishes. Not logged if the search is canceled by a new
     search starting. Use this to calculate the proportion of searches where the
-    search handler is ready vs not ready. &quot;Ready&quot; means the first
-    update finished and the search handler is ready to handle searches.
+    search handler is ready vs not ready. &quot;Ready&quot; means the update
+    finished and the search handler is ready to handle searches.
   </summary>
 </histogram>
 
