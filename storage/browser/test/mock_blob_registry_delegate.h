@@ -19,6 +19,8 @@ class MockBlobRegistryDelegate
 
   bool CanReadFile(const base::FilePath& file) override;
   bool CanAccessDataForOrigin(const url::Origin& origin) override;
+  file_access::ScopedFileAccessDelegate::RequestFilesAccessIOCallback
+  GetAccessCallback() override;
 
   bool can_read_file_result = true;
   bool can_access_data_for_origin = true;

@@ -12,10 +12,12 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "base/time/time.h"
+#include "components/file_access/scoped_file_access_delegate.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -77,6 +79,23 @@ class CONTENT_EXPORT ChromeBlobStorageContext
   std::unique_ptr<BlobHandle> CreateMemoryBackedBlob(
       base::span<const uint8_t> data,
       const std::string& content_type);
+
+  // Creates a FileSystem File blob accessible by the renderer via the blob
+  // remote corresponding to `blob_receiver`. The callback can grant or deny the
+  // read access to the file. The callback `file_access` is used to grant or
+  // deny access to files under dlp restrictions. Leaving it at NullCallback
+  // will lead to default behaviour, which currently is granting it (until
+  // b/265908846 is done).
+  void CreateFileSystemBlobWithFileAccess(
+      scoped_refptr<storage::FileSystemContext> file_system_context,
+      mojo::PendingReceiver<blink::mojom::Blob> blob_receiver,
+      const storage::FileSystemURL& url,
+      const std::string& blob_uuid,
+      const std::string& content_type,
+      const uint64_t file_size,
+      const base::Time& file_modification_time,
+      file_access::ScopedFileAccessDelegate::RequestFilesAccessIOCallback
+          file_access);
 
   // Creates a FileSystem File blob accessible by the renderer via the blob
   // remote corresponding to `blob_receiver`.

@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -30,6 +31,10 @@ class ScopedFileAccessDelegateTestInstance : public ScopedFileAccessDelegate {
   void RequestFilesAccessForSystem(
       const std::vector<base::FilePath>& files,
       base::OnceCallback<void(ScopedFileAccess)> callback) override {}
+  RequestFilesAccessIOCallback CreateFileAccessCallback(
+      const GURL& destination) const override {
+    return base::DoNothing();
+  }
 };
 int ScopedFileAccessDelegateTestInstance::instance_counter = 0;
 

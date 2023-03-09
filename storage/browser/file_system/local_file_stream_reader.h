@@ -12,10 +12,13 @@
 #include "base/component_export.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "components/file_access/scoped_file_access.h"
+#include "components/file_access/scoped_file_access_delegate.h"
 #include "net/base/completion_once_callback.h"
 #include "storage/browser/file_system/file_stream_reader.h"
 
@@ -34,11 +37,14 @@ namespace storage {
 class COMPONENT_EXPORT(STORAGE_BROWSER) LocalFileStreamReader
     : public FileStreamReader {
  public:
-  LocalFileStreamReader(scoped_refptr<base::TaskRunner> task_runner,
-                        const base::FilePath& file_path,
-                        int64_t initial_offset,
-                        const base::Time& expected_modification_time,
-                        base::PassKey<FileStreamReader> pass_key);
+  LocalFileStreamReader(
+      scoped_refptr<base::TaskRunner> task_runner,
+      const base::FilePath& file_path,
+      int64_t initial_offset,
+      const base::Time& expected_modification_time,
+      base::PassKey<FileStreamReader> pass_key,
+      file_access::ScopedFileAccessDelegate::RequestFilesAccessIOCallback
+          file_access);
   ~LocalFileStreamReader() override;
 
   // FileStreamReader overrides.
@@ -76,6 +82,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) LocalFileStreamReader
   const int64_t initial_offset_;
   const base::Time expected_modification_time_;
   bool has_pending_open_ = false;
+  file_access::ScopedFileAccessDelegate::RequestFilesAccessIOCallback
+      file_access_;
   base::WeakPtrFactory<LocalFileStreamReader> weak_factory_{this};
 };
 

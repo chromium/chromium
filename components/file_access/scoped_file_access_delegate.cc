@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/file_access/scoped_file_access_delegate.h"
+#include "base/files/file_path.h"
+#include "base/functional/bind.h"
+#include "components/file_access/scoped_file_access.h"
 
 namespace file_access {
 // static
@@ -35,6 +38,21 @@ void ScopedFileAccessDelegate::RequestFilesAccessForSystemIO(
   }
 }
 
+// static
+ScopedFileAccessDelegate::RequestFilesAccessIOCallback
+ScopedFileAccessDelegate::GetCallbackForSystem() {
+  return base::BindRepeating(
+      [](const std::vector<base::FilePath>& file_paths,
+         base::OnceCallback<void(ScopedFileAccess)> callback) {
+        if (request_files_access_for_system_io_callback_) {
+          request_files_access_for_system_io_callback_->Run(
+              file_paths, std::move(callback));
+        } else {
+          std::move(callback).Run(ScopedFileAccess::Allowed());
+        }
+      });
+}
+
 ScopedFileAccessDelegate::ScopedFileAccessDelegate() {
   if (scoped_file_access_delegate_) {
     delete scoped_file_access_delegate_;
@@ -53,18 +71,18 @@ ScopedFileAccessDelegate*
     ScopedFileAccessDelegate::scoped_file_access_delegate_ = nullptr;
 
 // static
-ScopedFileAccessDelegate::RequestFilesAccessForSystemIOCallback*
+ScopedFileAccessDelegate::RequestFilesAccessIOCallback*
     ScopedFileAccessDelegate::request_files_access_for_system_io_callback_ =
         nullptr;
 
 ScopedFileAccessDelegate::ScopedRequestFilesAccessCallbackForTesting::
     ScopedRequestFilesAccessCallbackForTesting(
-        RequestFilesAccessForSystemIOCallback callback,
+        RequestFilesAccessIOCallback callback,
         bool restore_original_callback)
     : restore_original_callback_(restore_original_callback) {
   original_callback_ = request_files_access_for_system_io_callback_;
   request_files_access_for_system_io_callback_ =
-      new RequestFilesAccessForSystemIOCallback(std::move(callback));
+      new RequestFilesAccessIOCallback(std::move(callback));
 }
 
 ScopedFileAccessDelegate::ScopedRequestFilesAccessCallbackForTesting::

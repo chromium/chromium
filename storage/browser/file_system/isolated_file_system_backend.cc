@@ -129,10 +129,12 @@ IsolatedFileSystemBackend::CreateFileStreamReader(
     int64_t offset,
     int64_t max_bytes_to_read,
     const base::Time& expected_modification_time,
-    FileSystemContext* context) const {
+    FileSystemContext* context,
+    file_access::ScopedFileAccessDelegate::RequestFilesAccessIOCallback
+        file_access) const {
   return FileStreamReader::CreateForLocalFile(
       context->default_file_task_runner(), url.path(), offset,
-      expected_modification_time);
+      expected_modification_time, std::move(file_access));
 }
 
 std::unique_ptr<FileStreamWriter>

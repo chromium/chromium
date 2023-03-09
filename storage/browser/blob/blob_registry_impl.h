@@ -9,6 +9,9 @@
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/functional/callback_forward.h"
+#include "components/file_access/scoped_file_access.h"
+#include "components/file_access/scoped_file_access_delegate.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "storage/browser/blob/blob_url_registry.h"
@@ -35,6 +38,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobRegistryImpl
     virtual ~Delegate() {}
     virtual bool CanReadFile(const base::FilePath& file) = 0;
     virtual bool CanAccessDataForOrigin(const url::Origin& origin) = 0;
+    virtual file_access::ScopedFileAccessDelegate::RequestFilesAccessIOCallback
+    GetAccessCallback() = 0;
   };
 
   BlobRegistryImpl(base::WeakPtr<BlobStorageContext> context,

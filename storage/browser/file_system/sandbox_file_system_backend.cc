@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram.h"
+#include "components/file_access/scoped_file_access_delegate.h"
 #include "storage/browser/file_system/async_file_util_adapter.h"
 #include "storage/browser/file_system/copy_or_move_file_validator.h"
 #include "storage/browser/file_system/file_stream_reader.h"
@@ -137,7 +138,9 @@ SandboxFileSystemBackend::CreateFileStreamReader(
     int64_t offset,
     int64_t max_bytes_to_read,
     const base::Time& expected_modification_time,
-    FileSystemContext* context) const {
+    FileSystemContext* context,
+    file_access::ScopedFileAccessDelegate::
+        RequestFilesAccessIOCallback /*file_access*/) const {
   DCHECK(CanHandleType(url.type()));
   DCHECK(delegate_);
   return delegate_->CreateFileStreamReader(url, offset,

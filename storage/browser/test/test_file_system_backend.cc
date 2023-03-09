@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/file_access/scoped_file_access_delegate.h"
 #include "storage/browser/file_system/copy_or_move_file_validator.h"
 #include "storage/browser/file_system/file_observers.h"
 #include "storage/browser/file_system/file_system_operation.h"
@@ -216,7 +217,9 @@ std::unique_ptr<FileStreamReader> TestFileSystemBackend::CreateFileStreamReader(
     int64_t offset,
     int64_t max_bytes_to_read,
     const base::Time& expected_modification_time,
-    FileSystemContext* context) const {
+    FileSystemContext* context,
+    file_access::ScopedFileAccessDelegate::
+        RequestFilesAccessIOCallback /*file_access*/) const {
   return std::make_unique<SandboxFileStreamReader>(context, url, offset,
                                                    expected_modification_time);
 }

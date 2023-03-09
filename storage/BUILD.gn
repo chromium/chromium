@@ -5,6 +5,7 @@ import("//testing/test.gni")
 
 test("storage_unittests") {
   deps = [
+    "//components/file_access:test_support",
     "//storage/browser:unittests",
     "//storage/common:unittests",
   ]

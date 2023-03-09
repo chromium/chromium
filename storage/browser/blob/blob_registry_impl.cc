@@ -8,9 +8,12 @@
 
 #include "base/barrier_closure.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/file_access/scoped_file_access.h"
+#include "components/file_access/scoped_file_access_delegate.h"
 #include "net/base/features.h"
 #include "storage/browser/blob/blob_builder_from_stream.h"
 #include "storage/browser/blob/blob_data_builder.h"
@@ -57,17 +60,21 @@ class BlobRegistryImpl::BlobUnderConstruction {
     mojo::Remote<blink::mojom::Blob> blob;
   };
 
-  BlobUnderConstruction(BlobRegistryImpl* blob_registry,
-                        const std::string& uuid,
-                        const std::string& content_type,
-                        const std::string& content_disposition,
-                        std::vector<ElementEntry> elements,
-                        mojo::ReportBadMessageCallback bad_message_callback)
+  BlobUnderConstruction(
+      BlobRegistryImpl* blob_registry,
+      const std::string& uuid,
+      const std::string& content_type,
+      const std::string& content_disposition,
+      std::vector<ElementEntry> elements,
+      mojo::ReportBadMessageCallback bad_message_callback,
+      file_access::ScopedFileAccessDelegate::RequestFilesAccessIOCallback
+          file_access)
       : blob_registry_(blob_registry),
         uuid_(uuid),
         builder_(std::make_unique<BlobDataBuilder>(uuid)),
         elements_(std::move(elements)),
-        bad_message_callback_(std::move(bad_message_callback)) {
+        bad_message_callback_(std::move(bad_message_callback)),
+        file_access_(std::move(file_access)) {
     builder_->set_content_type(content_type);
     builder_->set_content_disposition(content_disposition);
   }
@@ -212,6 +219,10 @@ class BlobRegistryImpl::BlobUnderConstruction {
 
   // Number of dependent blobs that have started constructing.
   size_t ready_dependent_blob_count_ = 0;
+
+  // Callback to gain dlp file access.
+  file_access::ScopedFileAccessDelegate::RequestFilesAccessIOCallback
+      file_access_;
 
   base::WeakPtrFactory<BlobUnderConstruction> weak_ptr_factory_{this};
 };
@@ -383,9 +394,9 @@ void BlobRegistryImpl::BlobUnderConstruction::ResolvedAllBlobDependencies() {
       }
     } else if (element->is_file()) {
       const auto& f = element->get_file();
-      builder_->AppendFile(
-          f->path, f->offset, f->length,
-          f->expected_modification_time.value_or(base::Time()));
+      builder_->AppendFile(f->path, f->offset, f->length,
+                           f->expected_modification_time.value_or(base::Time()),
+                           file_access_);
     } else if (element->is_blob()) {
       DCHECK(blob_uuid_it != referenced_blob_uuids_.end());
       const std::string& blob_uuid = *blob_uuid_it++;
@@ -565,7 +576,7 @@ void BlobRegistryImpl::Register(
 
   blobs_under_construction_[uuid] = std::make_unique<BlobUnderConstruction>(
       this, uuid, content_type, content_disposition, std::move(element_entries),
-      receivers_.GetBadMessageCallback());
+      receivers_.GetBadMessageCallback(), delegate->GetAccessCallback());
 
   std::unique_ptr<BlobDataHandle> handle = context_->AddFutureBlob(
       uuid, content_type, content_disposition,

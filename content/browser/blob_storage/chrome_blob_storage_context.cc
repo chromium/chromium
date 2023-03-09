@@ -12,11 +12,13 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/guid.h"
 #include "base/supports_user_data.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
+#include "components/file_access/scoped_file_access_delegate.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/blob_handle.h"
 #include "content/public/browser/browser_context.h"
@@ -214,14 +216,16 @@ std::unique_ptr<BlobHandle> ChromeBlobStorageContext::CreateMemoryBackedBlob(
   return blob_handle;
 }
 
-void ChromeBlobStorageContext::CreateFileSystemBlob(
+void ChromeBlobStorageContext::CreateFileSystemBlobWithFileAccess(
     scoped_refptr<storage::FileSystemContext> file_system_context,
     mojo::PendingReceiver<blink::mojom::Blob> blob_receiver,
     const storage::FileSystemURL& url,
     const std::string& blob_uuid,
     const std::string& content_type,
     const uint64_t file_size,
-    const base::Time& file_modification_time) {
+    const base::Time& file_modification_time,
+    file_access::ScopedFileAccessDelegate::RequestFilesAccessIOCallback
+        file_access) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   auto blob_builder = std::make_unique<storage::BlobDataBuilder>(blob_uuid);
@@ -229,9 +233,9 @@ void ChromeBlobStorageContext::CreateFileSystemBlob(
     // Use AppendFileSystemFile here, since we're streaming the file directly
     // from the file system backend, and the file thus might not actually be
     // backed by a file on disk.
-    blob_builder->AppendFileSystemFile(url, 0, file_size,
-                                       file_modification_time,
-                                       std::move(file_system_context));
+    blob_builder->AppendFileSystemFile(
+        url, 0, file_size, file_modification_time,
+        std::move(file_system_context), std::move(file_access));
   }
   blob_builder->set_content_type(content_type);
 
@@ -243,6 +247,19 @@ void ChromeBlobStorageContext::CreateFileSystemBlob(
   DCHECK(!blob_handle->IsBroken());
 
   storage::BlobImpl::Create(std::move(blob_handle), std::move(blob_receiver));
+}
+
+void ChromeBlobStorageContext::CreateFileSystemBlob(
+    scoped_refptr<storage::FileSystemContext> file_system_context,
+    mojo::PendingReceiver<blink::mojom::Blob> blob_receiver,
+    const storage::FileSystemURL& url,
+    const std::string& blob_uuid,
+    const std::string& content_type,
+    const uint64_t file_size,
+    const base::Time& file_modification_time) {
+  CreateFileSystemBlobWithFileAccess(
+      file_system_context, std::move(blob_receiver), url, blob_uuid,
+      content_type, file_size, file_modification_time, base::NullCallback());
 }
 
 // static

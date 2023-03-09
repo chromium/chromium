@@ -530,8 +530,8 @@ void BlobStorageContext::FinishBuilding(BlobEntry* entry) {
           scoped_refptr<BlobDataItem> new_item = BlobDataItem::CreateFile(
               source_item->path(),
               source_item->offset() + copy.source_item_offset, dest_size,
-              source_item->expected_modification_time(),
-              source_item->file_ref_);
+              source_item->expected_modification_time(), source_item->file_ref_,
+              source_item->file_access_);
           copy.dest_item->set_item(std::move(new_item));
           break;
         }

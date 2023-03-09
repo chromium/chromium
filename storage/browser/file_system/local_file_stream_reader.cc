@@ -12,11 +12,14 @@
 #include "base/check_op.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/types/pass_key.h"
+#include "components/file_access/scoped_file_access.h"
 #include "components/file_access/scoped_file_access_delegate.h"
 #include "net/base/file_stream.h"
 #include "net/base/io_buffer.h"
@@ -46,10 +49,13 @@ std::unique_ptr<FileStreamReader> FileStreamReader::CreateForLocalFile(
     scoped_refptr<base::TaskRunner> task_runner,
     const base::FilePath& file_path,
     int64_t initial_offset,
-    const base::Time& expected_modification_time) {
+    const base::Time& expected_modification_time,
+    file_access::ScopedFileAccessDelegate::RequestFilesAccessIOCallback
+        file_access) {
   return std::make_unique<LocalFileStreamReader>(
       std::move(task_runner), file_path, initial_offset,
-      expected_modification_time, base::PassKey<FileStreamReader>());
+      expected_modification_time, base::PassKey<FileStreamReader>(),
+      std::move(file_access));
 }
 
 LocalFileStreamReader::~LocalFileStreamReader() = default;
@@ -84,11 +90,14 @@ LocalFileStreamReader::LocalFileStreamReader(
     const base::FilePath& file_path,
     int64_t initial_offset,
     const base::Time& expected_modification_time,
-    base::PassKey<FileStreamReader> /*pass_key*/)
+    base::PassKey<FileStreamReader> /*pass_key*/,
+    file_access::ScopedFileAccessDelegate::RequestFilesAccessIOCallback
+        file_access)
     : task_runner_(std::move(task_runner)),
       file_path_(file_path),
       initial_offset_(initial_offset),
-      expected_modification_time_(expected_modification_time) {}
+      expected_modification_time_(expected_modification_time),
+      file_access_(std::move(file_access)) {}
 
 void LocalFileStreamReader::Open(net::CompletionOnceCallback callback) {
   DCHECK(!has_pending_open_);
@@ -98,8 +107,12 @@ void LocalFileStreamReader::Open(net::CompletionOnceCallback callback) {
   base::OnceCallback<void(file_access::ScopedFileAccess)> open_cb =
       base::BindOnce(&LocalFileStreamReader::OnScopedFileAccessRequested,
                      weak_factory_.GetWeakPtr(), std::move(callback));
+  if (file_access_) {
+    file_access_.Run({file_path_}, std::move(open_cb));
+    return;
+  }
 
-  // TODO(b/262199707 b/265908846): Replace with getting access through a
+  // TODO(b/265908846): Replace with getting access through a
   // callback.
   file_access::ScopedFileAccessDelegate::RequestFilesAccessForSystemIO(
       {file_path_}, std::move(open_cb));

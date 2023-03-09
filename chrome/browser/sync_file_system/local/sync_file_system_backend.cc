@@ -163,7 +163,9 @@ SyncFileSystemBackend::CreateFileStreamReader(
     int64_t offset,
     int64_t max_bytes_to_read,
     const base::Time& expected_modification_time,
-    storage::FileSystemContext* context) const {
+    storage::FileSystemContext* context,
+    file_access::ScopedFileAccessDelegate::
+        RequestFilesAccessIOCallback /*file_access*/) const {
   DCHECK(CanHandleType(url.type()));
   return GetDelegate()->CreateFileStreamReader(
       url, offset, expected_modification_time, context);
