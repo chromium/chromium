@@ -3098,8 +3098,9 @@ void MenuController::SetDropMenuItem(MenuItemView* new_target,
 }
 
 void MenuController::UpdateScrolling(const MenuPart& part) {
-  if ((!part.is_scroll() && !scroll_task_.get()) || !scroll_buttons_enabled)
+  if (!part.is_scroll() && !scroll_task_.get()) {
     return;
+  }
 
   if (!scroll_task_.get())
     scroll_task_ = std::make_unique<MenuScrollTask>();
@@ -3469,15 +3470,6 @@ bool MenuController::CanProcessInputEvents() const {
 #else
   return true;
 #endif
-}
-
-void MenuController::OnMenuEdgeReached() {
-  StopScrolling();
-  SetEnabledScrollButtons(false);
-}
-
-void MenuController::SetEnabledScrollButtons(bool enabled) {
-  scroll_buttons_enabled = enabled;
 }
 
 void MenuController::SetMenuRoundedCorners(

@@ -259,12 +259,6 @@ class VIEWS_EXPORT MenuController
   // gfx::AnimationDelegate:
   void AnimationProgressed(const gfx::Animation* animation) override;
 
-  // Called from MenuScrollViewContainer when either end of the menu is reached
-  void OnMenuEdgeReached();
-
-  // Enables/disables scrolling via scroll buttons
-  void SetEnabledScrollButtons(bool enabled);
-
   // Sets the customized rounded corners of the context menu.
   void SetMenuRoundedCorners(absl::optional<gfx::RoundedCornersF> corners);
 
@@ -822,10 +816,6 @@ class VIEWS_EXPORT MenuController
 
   // Currently showing alerted menu items. Updated when submenus open and close.
   base::flat_set<MenuItemView*> alerted_items_;
-
-  // Whether scroll buttons are currently enabled (as they are temporarily
-  // disabled when either end of the menu is reached)
-  bool scroll_buttons_enabled = true;
 
   // The rounded corners of the context menu.
   absl::optional<gfx::RoundedCornersF> rounded_corners_ = absl::nullopt;
