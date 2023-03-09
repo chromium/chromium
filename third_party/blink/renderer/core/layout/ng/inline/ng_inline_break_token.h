@@ -50,6 +50,13 @@ class CORE_EXPORT NGInlineBreakToken final : public NGBreakToken {
     return text_offset_;
   }
 
+  // True if the offset of `this` is equal to or after `other`.
+  bool IsAtEqualOrAfter(const NGInlineBreakToken& other) const {
+    return text_offset_ > other.text_offset_ ||
+           (text_offset_ == other.text_offset_ &&
+            item_index_ >= other.item_index_);
+  }
+
   bool UseFirstLineStyle() const {
     return flags_ & kUseFirstLineStyle;
   }
