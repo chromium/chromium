@@ -13,6 +13,8 @@ blink_core_sources_speculation_rules = [
   "speculation_rule.h",
   "speculation_rule_set.cc",
   "speculation_rule_set.h",
+  "speculation_rules_features.cc",
+  "speculation_rules_features.h",
   "speculation_rules_header.cc",
   "speculation_rules_header.h",
   "speculation_rules_metrics.cc",

@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_rule_predicate.h"
+#include "third_party/blink/renderer/core/speculation_rules/speculation_rules_features.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
@@ -76,7 +77,7 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
       "referrer_policy", "relative_to"};
   const auto kConditionalKnownKeys = [context]() {
     Vector<const char*, 4> conditional_known_keys;
-    if (RuntimeEnabledFeatures::SpeculationRulesEagernessEnabled(context)) {
+    if (speculation_rules::EagernessEnabled(context)) {
       conditional_known_keys.push_back("eagerness");
     }
     if (RuntimeEnabledFeatures::SpeculationRulesNoVarySearchHintEnabled(
@@ -303,7 +304,7 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
   absl::optional<mojom::blink::SpeculationEagerness> eagerness;
   if (JSONValue* eagerness_value = input->Get("eagerness")) {
     // Feature gated due to known keys check above.
-    DCHECK(RuntimeEnabledFeatures::SpeculationRulesEagernessEnabled(context));
+    DCHECK(speculation_rules::EagernessEnabled(context));
 
     String eagerness_str;
     if (!eagerness_value->AsString(&eagerness_str)) {

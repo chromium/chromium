@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
+#include "third_party/blink/renderer/core/speculation_rules/speculation_rules_features.h"
 #include "third_party/blink/renderer/core/url_pattern/url_pattern.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -569,8 +570,8 @@ DocumentRulePredicate* DocumentRulePredicate::Parse(
 
   // If predicateType is "selector_matches"
   if (predicate_type == "selector_matches" && input->size() == 1) {
-    const bool selector_matches_enabled = RuntimeEnabledFeatures::
-        SpeculationRulesDocumentRulesSelectorMatchesEnabled(execution_context);
+    const bool selector_matches_enabled =
+        speculation_rules::SelectorMatchesEnabled(execution_context);
     if (!selector_matches_enabled) {
       SetParseErrorMessage(out_error,
                            "\"selector_matches\" is currently unsupported.");

@@ -1,6 +1,8 @@
 // Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include "base/metrics/field_trial_params.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -41,13 +43,16 @@ class AnchorElementPreloaderBrowserTest
   static constexpr char kOrigin1[] = "https://www.origin1.com/";
   static constexpr char kOrigin2[] = "https://www.origin2.com/";
 
-  virtual void SetFeatures() {
-    feature_list_.InitAndEnableFeature(
-        blink::features::kAnchorElementInteraction);
+  virtual base::FieldTrialParams GetAnchorElementInteractionFieldTrialParams() {
+    return {};
   }
 
   void SetUp() override {
-    SetFeatures();
+    feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kAnchorElementInteraction,
+          GetAnchorElementInteractionFieldTrialParams()},
+         {blink::features::kSpeculationRulesPointerDownHeuristics, {}}},
+        {blink::features::kSpeculationRulesPointerHoverHeuristics});
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
     https_server_->ServeFilesFromSourceDirectory("chrome/test/data/preload");
@@ -370,10 +375,9 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest,
 class AnchorElementPreloaderHoldbackBrowserTest
     : public AnchorElementPreloaderBrowserTest {
  public:
-  void SetFeatures() override {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        blink::features::kAnchorElementInteraction,
-        {{"preconnect_holdback", "true"}});
+  base::FieldTrialParams GetAnchorElementInteractionFieldTrialParams()
+      override {
+    return {{"preconnect_holdback", "true"}};
   }
 };
 
@@ -422,10 +426,9 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderHoldbackBrowserTest,
 class AnchorElementPreloaderLimitedBrowserTest
     : public AnchorElementPreloaderBrowserTest {
  public:
-  void SetFeatures() override {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        blink::features::kAnchorElementInteraction,
-        {{"max_preloading_attempts", "1"}});
+  base::FieldTrialParams GetAnchorElementInteractionFieldTrialParams()
+      override {
+    return {{"max_preloading_attempts", "1"}};
   }
 };
 

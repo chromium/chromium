@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_rule_predicate.h"
 #include "third_party/blink/renderer/core/speculation_rules/speculation_candidate.h"
+#include "third_party/blink/renderer/core/speculation_rules/speculation_rules_features.h"
 #include "third_party/blink/renderer/core/speculation_rules/speculation_rules_metrics.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
@@ -762,9 +763,8 @@ bool DocumentSpeculationRules::SelectorMatchesEnabled() {
   if (was_selector_matches_enabled_) {
     return true;
   }
-  was_selector_matches_enabled_ = RuntimeEnabledFeatures::
-      SpeculationRulesDocumentRulesSelectorMatchesEnabled(
-          GetSupplementable()->GetExecutionContext());
+  was_selector_matches_enabled_ = speculation_rules::SelectorMatchesEnabled(
+      GetSupplementable()->GetExecutionContext());
   return was_selector_matches_enabled_;
 }
 
