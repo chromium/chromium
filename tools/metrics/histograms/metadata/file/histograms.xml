@@ -819,6 +819,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FileBrowser.Search.ResultCount" units="count"
+    expires_after="M120">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    ChromeOS File Browser: The number of results returned by a search query.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.Search.{Source}.Latency" units="ms"
+    expires_after="M120">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    ChromeOS File Browser: The time it took to complete user search request.
+  </summary>
+  <token key="Source">
+    <variant name="Drive"/>
+    <variant name="Local"/>
+    <variant name="Removable"/>
+  </token>
+</histogram>
+
 <histogram name="FileBrowser.SWA.Create" enum="FileDialogType"
     expires_after="2023-08-08">
   <owner>simmonsjosh@google.com</owner>

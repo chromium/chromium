@@ -321,6 +321,7 @@ export class SearchV2ContentScanner extends ContentScanner {
     const now = new Date();
     if (this.isSearchingLocal_()) {
       searchPromises.push(new Promise((resolve, reject) => {
+        metrics.startInterval('Search.Local.Latency');
         const rootDir = this.isSearchingRoot_() ?
             this.entry_.filesystem.root :
             /** @type {DirectoryEntry} */ (util.unwrapEntry(this.entry_));
@@ -345,6 +346,7 @@ export class SearchV2ContentScanner extends ContentScanner {
                     util.FileError.NOT_READABLE_ERR,
                     chrome.runtime.lastError.message));
               } else {
+                metrics.recordInterval('Search.Local.Latency');
                 resolve(entries);
               }
             });
@@ -352,6 +354,7 @@ export class SearchV2ContentScanner extends ContentScanner {
     }
     if (this.isSearchingDrive_()) {
       searchPromises.push(new Promise((resolve, reject) => {
+        metrics.startInterval('Search.Drive.Latency');
         chrome.fileManagerPrivate.searchDrive(
             {
               query: this.query_,
@@ -368,6 +371,7 @@ export class SearchV2ContentScanner extends ContentScanner {
               } else if (!entries) {
                 reject(createDOMError(util.FileError.INVALID_MODIFICATION_ERR));
               } else {
+                metrics.recordInterval('Search.Drive.Latency');
                 resolve(entries);
               }
             });
@@ -379,14 +383,17 @@ export class SearchV2ContentScanner extends ContentScanner {
       successCallback();
     }
     Promise.allSettled(searchPromises).then((results) => {
+      let resultCount = 0;
       for (const result of results) {
         if (result.status === 'rejected') {
           errorCallback(/** @type {DOMError} */ (result.reason));
         } else if (result.status === 'fulfilled') {
           entriesCallback(result.value);
+          resultCount += result.value.length;
         }
       }
       successCallback();
+      metrics.recordMediumCount('Search.ResultCount', resultCount);
     });
   }
 }
