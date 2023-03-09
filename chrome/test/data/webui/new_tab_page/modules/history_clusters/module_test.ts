@@ -26,6 +26,13 @@ function assertLayoutSet(
   assertEquals(layoutElements[0]!.id, `layout${layoutType}`);
 }
 
+function assertModuleHeaderTitle(headerElement: HTMLElement, title: string) {
+  const moduleHeaderTextContent = headerElement.textContent!.trim();
+  const headerText = moduleHeaderTextContent.split(/\r?\n/);
+  assertTrue(headerText.length > 0);
+  assertEquals(title, headerText[0]!.trim());
+}
+
 function createVisit(
     visitId: bigint, normalizedUrl: string, urlForDisplay: string,
     pageTitle: string, hasUrlKeyedImage: boolean): URLVisit {
@@ -316,8 +323,10 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
   });
 
   test('Header element populated with correct data', async () => {
-    handler.setResultFor(
-        'getCluster', Promise.resolve({cluster: createSampleCluster()}));
+    const sampleClusterLabel = '"Sample Journey"';
+    handler.setResultFor('getCluster', Promise.resolve({
+      cluster: createSampleCluster({label: sampleClusterLabel}),
+    }));
 
     const moduleElement = await historyClustersDescriptor.initialize(0) as
         HistoryClustersModuleElement;
@@ -331,7 +340,26 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
     assertTrue(!!headerElement);
 
     assertEquals(
-        headerElement.querySelector('#showAllButton')!.innerHTML.trim(),
-        'Show all');
+        'Show all',
+        headerElement.querySelector('#showAllButton')!.innerHTML.trim());
+    assertModuleHeaderTitle(
+        headerElement, `Resume your journey for ${sampleClusterLabel}`);
+  });
+
+  test('Header title falls back to Visit title', async () => {
+    handler.setResultFor(
+        'getCluster', Promise.resolve({cluster: createSampleCluster()}));
+
+    const moduleElement = await historyClustersDescriptor.initialize(0) as
+        HistoryClustersModuleElement;
+
+    document.body.append(moduleElement);
+    assertTrue(!!moduleElement);
+    await handler.whenCalled('getCluster');
+    await waitAfterNextRender(moduleElement);
+
+    const headerElement = $$(moduleElement, 'ntp-module-header');
+    assertTrue(!!headerElement);
+    assertModuleHeaderTitle(headerElement, 'Resume your journey for SRP');
   });
 });

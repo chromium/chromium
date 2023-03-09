@@ -53,12 +53,22 @@ export class HistoryClustersModuleElement extends I18nMixin
       /** The cluster displayed by this element. */
       cluster: Object,
       searchResultPage: Object,
+      title_: {
+        type: String,
+        computed: 'computeClusterTitle_(cluster)',
+      },
     };
   }
 
+  private title_: string;
   cluster: Cluster;
   layoutType: HistoryClusterLayoutType;
   searchResultPage: URLVisit;
+
+  private computeClusterTitle_() {
+    return this.cluster.label ? this.cluster.label :
+                                this.searchResultPage.pageTitle;
+  }
 
   private isLayout_(type: HistoryClusterLayoutType): boolean {
     return type === this.layoutType;
