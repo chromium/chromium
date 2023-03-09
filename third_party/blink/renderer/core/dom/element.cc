@@ -2836,7 +2836,6 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
     if (UNLIKELY(HasUndoStack())) {
       frame->GetEditor().GetUndoStack().ElementRemoved(this);
     }
-    frame->GetEditor().ElementRemoved(this);
     frame->GetEventHandler().ElementRemoved(this);
   }
 }

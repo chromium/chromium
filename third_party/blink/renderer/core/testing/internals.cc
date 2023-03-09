@@ -2133,18 +2133,6 @@ void Internals::runIdleTimeSpellChecker(Document* document,
       .ForceInvocationForTesting();
 }
 
-bool Internals::hasLastEditCommand(Document* document,
-                                   ExceptionState& exception_state) {
-  if (!document || !document->GetFrame()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidAccessError,
-        "No frame can be obtained from the provided document.");
-    return false;
-  }
-
-  return document->GetFrame()->GetEditor().LastEditCommand();
-}
-
 Vector<AtomicString> Internals::userPreferredLanguages() const {
   return blink::UserPreferredLanguages();
 }

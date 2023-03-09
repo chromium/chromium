@@ -1362,12 +1362,6 @@
       base_feature: "none",
     },
     {
-      // Kill-switch for fixes to a bug that detached input elements are retained.
-      // See crbug.com/1413100
-      name: "DontLeakDetachedInput",
-      status: "stable",
-    },
-    {
       name: "EarlyHintsPreloadForNavigationOptIn",
       origin_trial_feature_name: "EarlyHintsPreloadForNavigation",
       status: "stable",

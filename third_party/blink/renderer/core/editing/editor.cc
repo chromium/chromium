@@ -948,16 +948,6 @@ void Editor::ReplaceSelection(const String& text) {
                            InputEvent::InputType::kInsertReplacementText);
 }
 
-void Editor::ElementRemoved(Element* element) {
-  if (!RuntimeEnabledFeatures::DontLeakDetachedInputEnabled()) {
-    return;
-  }
-  if (last_edit_command_ &&
-      last_edit_command_->EndingSelection().RootEditableElement() == element) {
-    last_edit_command_ = nullptr;
-  }
-}
-
 void Editor::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
   visitor->Trace(last_edit_command_);

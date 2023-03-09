@@ -292,8 +292,6 @@ class Internals final : public ScriptWrappable {
   String idleTimeSpellCheckerState(Document*, ExceptionState&);
   void runIdleTimeSpellChecker(Document*, ExceptionState&);
 
-  bool hasLastEditCommand(Document*, ExceptionState&);
-
   Vector<AtomicString> userPreferredLanguages() const;
   void setUserPreferredLanguages(const Vector<String>&);
   void setSystemTimeZone(const String&);
