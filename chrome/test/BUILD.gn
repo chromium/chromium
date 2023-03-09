@@ -2134,7 +2134,6 @@ if (!is_android) {
       "../browser/sessions/session_restore_observer_browsertest.cc",
       "../browser/sessions/session_service_log_browsertest.cc",
       "../browser/sessions/tab_restore_browsertest.cc",
-      "../browser/shared_highlighting/shared_highlighting_browsertest.cc",
       "../browser/signin/e2e_tests/account_capabilities_observer.cc",
       "../browser/signin/e2e_tests/account_capabilities_observer.h",
       "../browser/signin/e2e_tests/accounts_removed_waiter.cc",
