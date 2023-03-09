@@ -244,14 +244,16 @@ export class GalleryButton implements ResultSaver {
   }
 
   async startSaveVideo(videoRotation: number): Promise<VideoSaver> {
-    const file = await filesystem.createVideoFile(VideoType.MP4);
-    return VideoSaver.createForFile(file, videoRotation);
+    return VideoSaver.create(videoRotation);
   }
 
   async finishSaveVideo(video: VideoSaver): Promise<void> {
     const file = await video.endWrite();
     assert(file !== null);
 
+    const videoName = (new Filenamer()).newVideoName(VideoType.MP4);
+    assert(this.directory !== null);
+    await file.moveTo(this.directory, videoName);
     ChromeHelper.getInstance().sendNewCaptureBroadcast(
         {isVideo: true, name: file.name});
     await this.updateCover(file);

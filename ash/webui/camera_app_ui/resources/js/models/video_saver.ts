@@ -97,10 +97,13 @@ export class VideoSaver {
   }
 
   /**
-   * Creates video saver for the given file.
+   * Creates video saver which saves video into a temporary file.
+   * TODO(b/184583382): Saves to the target file directly once the File System
+   * Access API supports cleaning temporary file when leaving the page without
+   * closing the file stream.
    */
-  static async createForFile(file: FileAccessEntry, videoRotation: number):
-      Promise<VideoSaver> {
+  static async create(videoRotation: number): Promise<VideoSaver> {
+    const file = await createPrivateTempVideoFile();
     const writer = await file.getWriter();
     const processor = await createVideoProcessor(writer, videoRotation);
     return new VideoSaver(file, processor);

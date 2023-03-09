@@ -41,6 +41,11 @@ class LazyDirectoryEntry implements DirectoryAccessEntry {
   constructor(
       private readonly parent: DirectoryAccessEntry, readonly name: string) {}
 
+  async getHandle(): Promise<FileSystemDirectoryHandle> {
+    const dir = await this.getRealDirectory();
+    return dir.getHandle();
+  }
+
   async getFiles(): Promise<FileAccessEntry[]> {
     if (this.directory === null) {
       return [];

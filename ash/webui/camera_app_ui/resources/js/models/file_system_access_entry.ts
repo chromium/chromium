@@ -71,6 +71,14 @@ export class FileAccessEntry {
     return this.parent.removeEntry(this.name);
   }
 
+  /**
+   * Moves the file to given directory and given name.
+   */
+  async moveTo(dir: DirectoryAccessEntry, name: string): Promise<void> {
+    const dirHandle = await dir.getHandle();
+    await this.handle.move(dirHandle, name);
+  }
+
   get name(): string {
     return this.handle.name;
   }
@@ -89,6 +97,11 @@ export interface DirectoryAccessEntry {
    * Gets the name of the directory.
    */
   readonly name: string;
+
+  /**
+   * Gets the handle of the directory.
+   */
+  getHandle(): Promise<FileSystemDirectoryHandle>;
 
   /**
    * Gets files in this directory.
@@ -151,6 +164,10 @@ export class DirectoryAccessEntryImpl implements DirectoryAccessEntry {
 
   get name(): string {
     return this.handle.name;
+  }
+
+  async getHandle(): Promise<FileSystemDirectoryHandle> {
+    return this.handle;
   }
 
   async getFiles(): Promise<FileAccessEntry[]> {
@@ -226,6 +243,8 @@ export class DirectoryAccessEntryImpl implements DirectoryAccessEntry {
   }
 
   async removeEntry(name: string): Promise<void> {
-    return this.handle.removeEntry(name);
+    if (await this.isExist(name)) {
+      await this.handle.removeEntry(name);
+    }
   }
 }

@@ -27,6 +27,11 @@ interface FileSystemCreateWritableOptions {
 interface FileSystemFileHandle {
   createWritable(options?: FileSystemCreateWritableOptions):
       Promise<FileSystemWritableFileStream>;
+
+  // move() is only implemented in Chrome so it's not in upstream type
+  // definitions. Ref:
+  // https://chromestatus.com/feature/5640802622504960
+  move(dir: FileSystemDirectoryHandle, name: string): Promise<void>;
 }
 
 interface FileSystemDirectoryHandle {
