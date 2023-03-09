@@ -23,9 +23,11 @@ using testing::UnorderedElementsAre;
 
 namespace autofill {
 
-constexpr char16_t kIbanValue_0[] = u"IE12 BOFI 9000 0112 3456 78";
+// Valid Ireland IBAN number.
+constexpr char16_t kIbanValue_0[] = u"IE64 IRCE 9205 0112 3456 78";
+// Two valid Switzerland IBAN numbers.
 constexpr char16_t kIbanValue_1[] = u"CH56 0483 5012 3456 7800 9";
-constexpr char16_t kIbanValue_2[] = u"CH56 9483 5012 3456 7800 9";
+constexpr char16_t kIbanValue_2[] = u"CH93 0076 2011 6238 5295 7";
 
 constexpr char16_t kNickname_0[] = u"Nickname 0";
 constexpr char16_t kNickname_1[] = u"Nickname 1";
@@ -176,7 +178,7 @@ TEST_F(IBANManagerTest, ShowsIBANSuggestions_OnlyPrefixMatch) {
       SetUpIBANAndSuggestion(kIbanValue_2, kNickname_1);
 
   AutofillField test_field;
-  test_field.value = u"CH56";
+  test_field.value = u"CH";
   SuggestionsContext context = GetIbanFocusedSuggestionsContext(test_field);
 
   // Setting up mock to verify that the handler is returned a list of

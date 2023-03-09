@@ -978,7 +978,8 @@ IBAN FormDataImporter::ExtractIBANFromForm(const FormStructure& form) {
     }
 
     AutofillType field_type = field->Type();
-    if (field_type.GetStorableType() == IBAN_VALUE) {
+    if (field_type.GetStorableType() == IBAN_VALUE &&
+        IBAN::IsValid(field->value)) {
       candidate_iban.SetInfo(field_type, field->value, app_locale_);
       break;
     }

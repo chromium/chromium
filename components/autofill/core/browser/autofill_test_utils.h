@@ -29,7 +29,7 @@
 class PrefService;
 
 namespace {
-constexpr char kIbanValue[] = "IE12 BOFI 9000 0112 3456 78";
+constexpr char kIbanValue[] = "IE64 IRCE 9205 0112 3456 78";
 }  // namespace
 
 namespace user_prefs {

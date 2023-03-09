@@ -117,8 +117,8 @@ constexpr char kDefaultCreditCardExpYear[] = "2999";
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Define default value for Iban.
-constexpr char kIbanValue[] = "IE12 BOFI 9000 0112 3456 78";
-constexpr char kIbanValueWithoutWhitespaces[] = "IE12BOFI90000112345678";
+constexpr char kIbanValue[] = "IE64 IRCE 9205 0112 3456 78";
+constexpr char kIbanValueWithoutWhitespaces[] = "IE64IRCE92050112345678";
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // For a given ServerFieldType |type| returns a pair of field name and label
@@ -3190,6 +3190,26 @@ TEST_P(FormDataImporterTest,
 }
 
 TEST_P(FormDataImporterTest,
+       ExtractFormData_ImportIbanRecordType_IbanAutofill_NewInvalidIban) {
+  // Simulate a form submission with a new IBAN.
+  FormData form;
+  form.url = GURL("https://www.foo.com");
+
+  // Invalid Kuwait IBAN with incorrect IBAN length.
+  // KW16 will be converted into 203216, and the remainder on 97 is 1.
+  test::CreateTestIbanFormData(&form, "KW1600000000000000000");
+
+  FormStructure form_structure(form);
+  form_structure.DetermineHeuristicTypes(nullptr, nullptr);
+  auto extracted_data = ExtractFormDataAndProcessAddressCandidates(
+      form_structure, /*profile_autofill_enabled=*/true,
+      /*payment_methods_autofill_enabled=*/true);
+
+  // IBAN candidate is empty as the value is invalid.
+  ASSERT_FALSE(extracted_data.iban_import_candidate);
+}
+
+TEST_P(FormDataImporterTest,
        ExtractFormData_ImportIbanRecordType_IbanAutofill_NewIban) {
   // Simulate a form submission with a new IBAN.
   FormData form;
@@ -3211,7 +3231,7 @@ TEST_P(FormDataImporterTest,
 
 TEST_P(FormDataImporterTest, ExtractFormData_ImportIbanRecordType_LocalIban) {
   IBAN iban;
-  iban.set_value(u"IE12 BOFI 9000 0112 3456 78");
+  iban.set_value(base::UTF8ToUTF16(std::string(kIbanValue)));
   personal_data_manager_->AddIBAN(iban);
 
   WaitForOnPersonalDataChanged();

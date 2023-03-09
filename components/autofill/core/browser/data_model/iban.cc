@@ -112,6 +112,62 @@ int GetIbanCountryToLength(base::StringPiece country_code) {
   return it->second;
 }
 
+// This method does the following steps:
+// 1. Move the four initial characters to the end of the string.
+// 2. Replace each letter in with two digits, thereby expanding the string,
+//    where 'A' = 10, 'B' = 11, ..., 'Z' = 35.
+// 3. Treat the converted string as decimal and get the remainder of it on
+//    division by 97.
+//
+// The algorithm is from:
+// https://en.wikipedia.org/wiki/International_Bank_Account_Number#Modulo_operation_on_IBAN
+int GetRemainderOfIbanValue(const std::u16string& stripped_value) {
+  // Move the four initial characters to the end of the string.
+  // E.g., GB82WEST12345698765432 -> WEST12345698765432GB82
+  std::string rearranged_value =
+      base::UTF16ToUTF8(stripped_value.substr(4) + stripped_value.substr(0, 4));
+
+  // Replace each letter in with two digits where 'A' = 10, 'B' = 11, ...,
+  // 'Z' = 35.
+  std::string iban_decimal_string;
+  for (char iban_character : rearranged_value) {
+    if (iban_character - 'A' >= 0 && iban_character - 'A' < 26) {
+      iban_decimal_string.append(
+          base::NumberToString(iban_character - 'A' + 10));
+    } else {
+      iban_decimal_string.push_back(iban_character);
+    }
+  }
+
+  // Returns the remainder of `iban_decimal_string` on division by 97.
+  // This function returns remainder of `iban_decimal_string` because of the
+  // followings:
+  // 1) 10^9 <= 2^32. Max int value is 2147483647 which has 10 digits, so 10^9
+  //    <= 2^32.
+  // 2) a % 97 < 10^2. The remainder of a given number divided by 97 must be
+  // less than 10^2, otherwise, it can be divided further.
+  // 3) If a, b and c are integers, then (a + b) % c = ((a % c) + b) % c.
+  auto mod97 = [](base::StringPiece s) {
+    DCHECK_LE(s.length(), 9u);
+    uint32_t i = 0;
+    bool success = base::StringToUint(s, &i);
+    DCHECK(success);
+    return i % 97;
+  };
+  int remainder = mod97(iban_decimal_string.substr(0, 9));
+  std::string fragment = iban_decimal_string.substr(9);
+  for (size_t i = 0; i < fragment.length(); i += 7) {
+    remainder = mod97(base::NumberToString(remainder) + fragment.substr(i, 7));
+  }
+  return remainder;
+}
+
+std::u16string RemoveIbanSeparators(base::StringPiece16 value) {
+  std::u16string stripped_value;
+  base::RemoveChars(value, base::kWhitespaceUTF16, &stripped_value);
+  return stripped_value;
+}
+
 }  // namespace
 
 constexpr char16_t kCapitalizedIbanPattern[] =
@@ -139,6 +195,32 @@ AutofillMetadata IBAN::GetMetadata() const {
   AutofillMetadata metadata = AutofillDataModel::GetMetadata();
   metadata.id = guid();
   return metadata;
+}
+
+// static
+bool IBAN::IsValid(const std::u16string& value) {
+  std::u16string iban_value = RemoveIbanSeparators(value);
+  iban_value = base::i18n::ToUpper(iban_value);
+  // IBANs must be at least 16 digits and at most 33 digits long.
+  if (iban_value.length() < 16 || iban_value.length() > 33) {
+    return false;
+  }
+
+  // IBAN must match the regex pattern. Note that we made the IBAN uppercased,
+  // so we only need to check against an uppercased pattern.
+  if (!MatchesRegex<kCapitalizedIbanPattern>(iban_value)) {
+    return false;
+  }
+
+  // IBAN length must match the length of IBANs in the country the IBAN is from.
+  size_t iban_value_length =
+      GetIbanCountryToLength(base::UTF16ToUTF8(iban_value.substr(0, 2)));
+  if (iban_value_length == 0 || iban_value_length != iban_value.length()) {
+    return false;
+  }
+
+  // IBAN decimal value must have a remainder of 1 when divided by 97.
+  return GetRemainderOfIbanValue(iban_value) == 1;
 }
 
 bool IBAN::SetMetadata(const AutofillMetadata& metadata) {
@@ -202,8 +284,11 @@ bool IBAN::operator!=(const IBAN& iban) const {
 }
 
 void IBAN::set_value(const std::u16string& value) {
-  // Get rid of all whitespace in the value before storing.
-  base::ReplaceChars(value, u" ", u"", &value_);
+  if (!IsValid(value)) {
+    return;
+  }
+  // Get rid of all separators in the value before storing.
+  value_ = RemoveIbanSeparators(value);
 }
 
 void IBAN::set_nickname(const std::u16string& nickname) {
@@ -220,12 +305,9 @@ void IBAN::set_nickname(const std::u16string& nickname) {
 
 std::u16string IBAN::GetIdentifierStringForAutofillDisplay(
     bool is_value_masked) const {
+  DCHECK(!value_.empty());
   const std::u16string stripped_value = GetStrippedValue();
   size_t value_length = stripped_value.size();
-  // Directly return an empty string if the length of IBAN value is invalid.
-  if (value_length < 9 || value_length > 34)
-    return std::u16string();
-
   auto ShouldMask = [&](size_t i) {
     // The first 2-letter country code and 2 IBAN check digits will stay
     // unmasked, the last four digits will be shown as-is too. The rest of the
@@ -243,75 +325,8 @@ std::u16string IBAN::GetIdentifierStringForAutofillDisplay(
   return output;
 }
 
-bool IBAN::IsValid() const {
-  const std::u16string stripped_value = base::i18n::ToUpper(GetStrippedValue());
-  // IBANs must be at least 16 digits and at most 33 digits long.
-  if (stripped_value.length() < 16 || stripped_value.length() > 33) {
-    return false;
-  }
-
-  // IBAN must match the regex pattern. Note that we made the IBAN uppercased,
-  // so we only need to check against an uppercased pattern.
-  if (!MatchesRegex<kCapitalizedIbanPattern>(stripped_value)) {
-    return false;
-  }
-
-  // IBAN length must match the length of IBANs in the country the IBAN is from.
-  size_t iban_value_length =
-      GetIbanCountryToLength(base::UTF16ToUTF8(stripped_value.substr(0, 2)));
-  if (iban_value_length == 0 || iban_value_length != stripped_value.length()) {
-    return false;
-  }
-
-  // IBAN decimal value must have a remainder of 1 when divided by 97.
-  return GetRemainderOfIbanValue(stripped_value) == 1;
-}
-
 std::u16string IBAN::GetStrippedValue() const {
-  std::u16string stripped_value;
-  base::RemoveChars(value_, u"- ", &stripped_value);
-  return stripped_value;
-}
-
-int IBAN::GetRemainderOfIbanValue(const std::u16string& stripped_value) const {
-  // Move the four initial characters to the end of the string.
-  // E.g., GB82WEST12345698765432 -> WEST12345698765432GB82
-  std::string rearranged_value =
-      base::UTF16ToUTF8(stripped_value.substr(4) + stripped_value.substr(0, 4));
-
-  // Replace each letter in with two digits where 'A' = 10, 'B' = 11, ...,
-  // 'Z' = 35.
-  std::string iban_decimal_string;
-  for (char iban_character : rearranged_value) {
-    if (iban_character - 'A' >= 0 && iban_character - 'A' < 26) {
-      iban_decimal_string.append(
-          base::NumberToString(iban_character - 'A' + 10));
-    } else {
-      iban_decimal_string.push_back(iban_character);
-    }
-  }
-
-  // Returns the remainder of `iban_decimal_string` on division by 97.
-  // This function returns remainder of `iban_decimal_string` because of the
-  // followings:
-  // 1) 10^9 <= 2^32. Max int value is 2147483647 which has 10 digits, so 10^9
-  //    <= 2^32.
-  // 2) a % 97 < 10^2. The remainder of a given number divided by 97 must be
-  // less than 10^2, otherwise, it can be divided further.
-  // 3) If a, b and c are integers, then (a + b) % c = ((a % c) + b) % c.
-  auto mod97 = [](base::StringPiece s) {
-    DCHECK_LE(s.length(), 9u);
-    uint32_t i = 0;
-    bool success = base::StringToUint(s, &i);
-    DCHECK(success);
-    return i % 97;
-  };
-  int remainder = mod97(iban_decimal_string.substr(0, 9));
-  std::string fragment = iban_decimal_string.substr(9);
-  for (size_t i = 0; i < fragment.length(); i += 7) {
-    remainder = mod97(base::NumberToString(remainder) + fragment.substr(i, 7));
-  }
-  return remainder;
+  return value_;
 }
 
 }  // namespace autofill
