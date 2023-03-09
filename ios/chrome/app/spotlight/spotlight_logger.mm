@@ -4,11 +4,21 @@
 
 #import "ios/chrome/app/spotlight/spotlight_logger.h"
 
+#import <UIKit/UIKit.h>
+
+#import "base/debug/dump_without_crashing.h"
+#import "base/metrics/histogram_macros.h"
 #import "ios/chrome/browser/flags/system_flags.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+
+NSString* kSpotlightDebuggerErrorLogKey = @"SpotlightDebuggerErrorLogKey";
+
+}  // namespace
 
 @interface SpotlightLogger ()
 
@@ -81,6 +91,50 @@
     }
   }
   return items;
+}
+
+- (void)logSpotlightError:(NSError*)error {
+  NSArray* errorLog = [[NSUserDefaults standardUserDefaults]
+      objectForKey:kSpotlightDebuggerErrorLogKey];
+
+  NSMutableArray* mutableErrorLog = [[NSMutableArray alloc] init];
+  if (errorLog) {
+    [mutableErrorLog addObjectsFromArray:errorLog];
+  }
+
+  [[NSUserDefaults standardUserDefaults]
+      setObject:mutableErrorLog
+         forKey:kSpotlightDebuggerErrorLogKey];
+
+  [self showAlertImmediately:error.localizedDescription];
+}
+
++ (void)logSpotlightError:(NSError*)error {
+  if ([self sharedLogger]) {
+    [[self sharedLogger] logSpotlightError:error];
+  } else {
+    // Dump as much info from the wild as we can about the error.
+    base::debug::DumpWithoutCrashing();
+    UMA_HISTOGRAM_SPARSE("IOSSpotlightErrorCode", error.code);
+  }
+}
+
+#pragma mark - internal
+
+- (void)showAlertImmediately:(NSString*)errorMessage {
+  UIAlertController* alert =
+      [UIAlertController alertControllerWithTitle:@"Spotlight Error"
+                                          message:errorMessage
+                                   preferredStyle:UIAlertControllerStyleAlert];
+  [alert addAction:[UIAlertAction actionWithTitle:@"OK"
+                                            style:UIAlertActionStyleDefault
+                                          handler:nil]];
+  UIWindowScene* scene = (UIWindowScene*)
+      [UIApplication.sharedApplication.connectedScenes anyObject];
+
+  [scene.windows[0].rootViewController presentViewController:alert
+                                                    animated:YES
+                                                  completion:nil];
 }
 
 @end
