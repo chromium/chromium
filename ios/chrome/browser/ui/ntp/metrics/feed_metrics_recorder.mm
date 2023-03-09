@@ -78,6 +78,9 @@ using feed::FeedUserActionType;
 // Timer to signal end of session.
 @property(nonatomic, strong) NSTimer* sessionEndTimer;
 
+// YES if the NTP is visible.
+@property(nonatomic, assign) BOOL isNTPVisible;
+
 @end
 
 @implementation FeedMetricsRecorder
@@ -150,6 +153,7 @@ using feed::FeedUserActionType;
 }
 
 - (void)recordNTPDidChangeVisibility:(BOOL)visible {
+  self.isNTPVisible = visible;
   // Invalidate the timer when the user returns to the feed since the feed
   // should not be refreshed when the user is viewing it.
   if (visible) {
@@ -626,6 +630,10 @@ using feed::FeedUserActionType;
                                 FeedSortType::kUnspecifiedSortType);
       return;
   }
+}
+
+- (BOOL)hasMetFeedRefreshUserEngagementCriteria {
+  return (self.engagedSimpleReportedDiscover && !self.isNTPVisible);
 }
 
 #pragma mark - Follow
@@ -1268,10 +1276,9 @@ using feed::FeedUserActionType;
 - (void)refreshFeedIfSessionConditionsAreMet {
   [self.sessionEndTimer invalidate];
   self.sessionEndTimer = nil;
-  if (self.engagedSimpleReportedDiscover) {
-    self.feedRefresher->RefreshFeed(
-        FeedRefreshTrigger::kForegroundFeedNotVisible);
-  }
+  // The feed refresher checks feed engagement criteria.
+  self.feedRefresher->RefreshFeed(
+      FeedRefreshTrigger::kForegroundFeedNotVisible);
 }
 
 #pragma mark - Converters

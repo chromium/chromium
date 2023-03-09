@@ -220,6 +220,9 @@ class Time;
 // Records a user action for the Following feed sort type being selected.
 - (void)recordFollowingFeedSortTypeSelected:(FollowingFeedSortType)sortType;
 
+// Returns YES if user engagement criteria have been met to warrant a refresh.
+- (BOOL)hasMetFeedRefreshUserEngagementCriteria;
+
 #pragma mark - Follow
 
 // Record metrics for when the user request to follow/unfollow a website,
