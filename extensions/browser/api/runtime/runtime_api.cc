@@ -480,10 +480,10 @@ void RuntimeEventRouter::DispatchOnInstalledEvent(
       for (ExtensionSet::const_iterator i = dependents->begin();
            i != dependents->end(); i++) {
         base::Value::List sm_event_args;
-        base::Value sm_info(base::Value::Type::DICT);
-        sm_info.SetStringKey(kInstallReason, kInstallReasonSharedModuleUpdate);
-        sm_info.SetStringKey(kInstallPreviousVersion, old_version.GetString());
-        sm_info.SetStringKey(kInstallId, extension_id);
+        base::Value::Dict sm_info;
+        sm_info.Set(kInstallReason, kInstallReasonSharedModuleUpdate);
+        sm_info.Set(kInstallPreviousVersion, old_version.GetString());
+        sm_info.Set(kInstallId, extension_id);
         sm_event_args.Append(std::move(sm_info));
         auto sm_event = std::make_unique<Event>(
             events::RUNTIME_ON_INSTALLED, runtime::OnInstalled::kEventName,

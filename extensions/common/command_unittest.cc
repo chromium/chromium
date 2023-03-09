@@ -72,12 +72,12 @@ void CheckParse(const ConstCommandsTestData& data,
       return;
     }
 
+    base::Value::Dict key_dict;
+    for (const auto& platform : platforms) {
+      key_dict.Set(platform, data.key);
+    }
+
     input.clear();
-    base::Value key_dict(base::Value::Type::DICT);
-
-    for (size_t j = 0; j < platforms.size(); ++j)
-      key_dict.SetStringKey(platforms[j], data.key);
-
     input.Set("suggested_key", std::move(key_dict));
     input.Set("description", data.description);
 
@@ -209,13 +209,14 @@ TEST(CommandTest, ExtensionCommandParsingFallback) {
   // fallback being given.
   base::Value::Dict input;
   input.Set("description", description);
-  base::Value* key_dict =
-      input.Set("suggested_key", base::Value(base::Value::Type::DICT));
-  key_dict->SetStringKey("default", "Ctrl+Shift+D");
-  key_dict->SetStringKey("windows", "Ctrl+Shift+W");
-  key_dict->SetStringKey("mac", "Ctrl+Shift+M");
-  key_dict->SetStringKey("linux", "Ctrl+Shift+L");
-  key_dict->SetStringKey("chromeos", "Ctrl+Shift+C");
+
+  base::Value::Dict& key_dict =
+      input.Set("suggested_key", base::Value::Dict())->GetDict();
+  key_dict.Set("default", "Ctrl+Shift+D");
+  key_dict.Set("windows", "Ctrl+Shift+W");
+  key_dict.Set("mac", "Ctrl+Shift+M");
+  key_dict.Set("linux", "Ctrl+Shift+L");
+  key_dict.Set("chromeos", "Ctrl+Shift+C");
 
   extensions::Command command;
   std::u16string error;
@@ -250,44 +251,44 @@ TEST(CommandTest, ExtensionCommandParsingFallback) {
       << Command::AcceleratorToString(accelerator);
 
   // Misspell a platform.
-  key_dict->SetStringKey("windosw", "Ctrl+M");
+  key_dict.Set("windosw", "Ctrl+M");
   EXPECT_FALSE(command.Parse(input, command_name, 0, &error));
-  EXPECT_TRUE(key_dict->RemoveKey("windosw"));
+  EXPECT_TRUE(key_dict.Remove("windosw"));
 
   // Now remove platform specific keys (leaving just "default") and make sure
   // every platform falls back to the default.
-  EXPECT_TRUE(key_dict->RemoveKey("windows"));
-  EXPECT_TRUE(key_dict->RemoveKey("mac"));
-  EXPECT_TRUE(key_dict->RemoveKey("linux"));
-  EXPECT_TRUE(key_dict->RemoveKey("chromeos"));
+  EXPECT_TRUE(key_dict.Remove("windows"));
+  EXPECT_TRUE(key_dict.Remove("mac"));
+  EXPECT_TRUE(key_dict.Remove("linux"));
+  EXPECT_TRUE(key_dict.Remove("chromeos"));
   EXPECT_TRUE(command.Parse(input, command_name, 0, &error));
   EXPECT_EQ(ui::VKEY_D, command.accelerator().key_code());
 
   // Now remove "default", leaving no option but failure. Or, in the words of
   // the immortal Adam Savage: "Failure is always an option".
-  EXPECT_TRUE(key_dict->RemoveKey("default"));
+  EXPECT_TRUE(key_dict.Remove("default"));
   EXPECT_FALSE(command.Parse(input, command_name, 0, &error));
 
   // Make sure Command is not supported for non-Mac platforms.
-  key_dict->SetStringKey("default", "Command+M");
+  key_dict.Set("default", "Command+M");
   EXPECT_FALSE(command.Parse(input, command_name, 0, &error));
-  EXPECT_TRUE(key_dict->RemoveKey("default"));
-  key_dict->SetStringKey("windows", "Command+M");
+  EXPECT_TRUE(key_dict.Remove("default"));
+  key_dict.Set("windows", "Command+M");
   EXPECT_FALSE(command.Parse(input, command_name, 0, &error));
-  EXPECT_TRUE(key_dict->RemoveKey("windows"));
+  EXPECT_TRUE(key_dict.Remove("windows"));
 
   // Now add only a valid platform that we are not running on to make sure devs
   // are notified of errors on other platforms.
 #if BUILDFLAG(IS_WIN)
-  key_dict->SetStringKey("mac", "Ctrl+Shift+M");
+  key_dict.Set("mac", "Ctrl+Shift+M");
 #else
-  key_dict->SetStringKey("windows", "Ctrl+Shift+W");
+  key_dict.Set("windows", "Ctrl+Shift+W");
 #endif
   EXPECT_FALSE(command.Parse(input, command_name, 0, &error));
 
   // Make sure Mac specific keys are not processed on other platforms.
 #if !BUILDFLAG(IS_MAC)
-  key_dict->SetStringKey("windows", "Command+Shift+M");
+  key_dict.Set("windows", "Command+Shift+M");
   EXPECT_FALSE(command.Parse(input, command_name, 0, &error));
 #endif
 }
