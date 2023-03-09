@@ -588,7 +588,7 @@ BOOL IsMultilineSearchSuggestionEnabled() {
       int trailingButtonResourceID = 0;
       trailingButtonResourceID = IDR_IOS_OMNIBOX_KEYBOARD_VIEW_APPEND;
       trailingButtonImage =
-          NativeReversableImage(trailingButtonResourceID, YES);
+          NativeReversibleImage(trailingButtonResourceID, YES);
     }
   }
 

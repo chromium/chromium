@@ -39,12 +39,12 @@ void MaybeSetUITextFieldScaledFont(BOOL maybe,
 // Creates a dynamically scablable custom font based on the given parameters.
 UIFont* CreateDynamicFont(UIFontTextStyle style, UIFontWeight weight);
 
-typedef enum CaptureViewOption {
+enum CaptureViewOption {
   kNoCaptureOption,      // Equivalent to calling CaptureView without options.
   kAfterScreenUpdate,    // Require a synchronization with CA process which can
                          // have side effects.
   kClientSideRendering,  // Triggers a client side compositing, very slow.
-} CaptureViewOption;
+};
 
 // Captures and returns an autoreleased rendering of the `view`.
 // The `view` is assumed to be opaque and the returned image does
@@ -64,8 +64,6 @@ typedef enum CaptureViewOption {
 // The kClientSideRendering option can be used to directly re-render the view
 // client side instead of reusing the core animation layer's backing store, this
 // is slow.
-// On iOS < 9 this function is slow and always behave as if the option was set
-// to kClientSideRendering.
 UIImage* CaptureViewWithOption(UIView* view,
                                CGFloat scale,
                                CaptureViewOption option);
@@ -74,8 +72,6 @@ UIImage* CaptureView(UIView* view, CGFloat scale);
 // Converts input image and returns a grey scaled version.
 UIImage* GreyImage(UIImage* image);
 
-// C does not support default arguments.
-#ifdef __cplusplus
 // Returns an UIColor with `rgb` and `alpha`. The caller should pass the RGB
 // value in hexadecimal as this is the typical way they are provided by UX.
 // For example a call to `UIColorFromRGB(0xFF7D40, 1.0)` returns an orange
@@ -86,22 +82,14 @@ inline UIColor* UIColorFromRGB(int rgb, CGFloat alpha = 1.0) {
                           blue:((CGFloat)(rgb & 0x0000FF)) / 255.0
                          alpha:alpha];
 }
-#endif  // __cplusplus
-
-#ifdef __cplusplus
-extern "C" {
-#endif  // __cplusplus
 // Returns the image from the shared resource bundle with the image id
-// `imageID`. If `reversable` is YES and RTL layout is in use, the image
+// `imageID`. If `reversible` is YES and RTL layout is in use, the image
 // will be flipped for RTL.
-UIImage* NativeReversableImage(int imageID, BOOL reversable);
+UIImage* NativeReversibleImage(int imageID, BOOL reversible);
 
-// Convenience version of NativeReversableImage for images that are never
-// reversable; equivalent to NativeReversableImage(imageID, NO).
+// Convenience version of NativeReversibleImage for images that are never
+// reversible; equivalent to NativeReversibleImage(imageID, NO).
 UIImage* NativeImage(int imageID);
-#ifdef __cplusplus
-}
-#endif  // __cplusplus
 
 // Returns an output image where each pixel has RGB values equal to a color and
 // the alpha value sampled from the given image. The RGB values of the image are

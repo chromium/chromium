@@ -108,17 +108,17 @@ UIImage* GreyImage(UIImage* image) {
   return greyImage;
 }
 
-UIImage* NativeReversableImage(int imageID, BOOL reversable) {
+UIImage* NativeReversibleImage(int imageID, BOOL reversible) {
   DCHECK(imageID);
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   UIImage* image = rb.GetNativeImageNamed(imageID).ToUIImage();
-  return (reversable && UseRTLLayout())
+  return (reversible && UseRTLLayout())
              ? [image imageFlippedForRightToLeftLayoutDirection]
              : image;
 }
 
 UIImage* NativeImage(int imageID) {
-  return NativeReversableImage(imageID, NO);
+  return NativeReversibleImage(imageID, NO);
 }
 
 UIImage* TintImage(UIImage* image, UIColor* color) {
