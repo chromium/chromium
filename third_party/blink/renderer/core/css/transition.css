@@ -10,9 +10,8 @@
 @namespace "http://www.w3.org/1999/xhtml";
 
 html::view-transition {
-  top: 0;
-  left: 0;
   position: fixed;
+  inset: 0;
 }
 
 html::view-transition-group(*) {

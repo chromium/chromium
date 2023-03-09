@@ -93,19 +93,31 @@ The test verifies functionality of querying style information for view-transitio
                             style : {
                                 cssProperties : [
                                     [0] : {
-                                        name : top
-                                        value : 0px
-                                    }
-                                    [1] : {
-                                        name : left
-                                        value : 0px
-                                    }
-                                    [2] : {
                                         name : position
                                         value : fixed
                                     }
+                                    [1] : {
+                                        name : top
+                                        value : 0px
+                                    }
+                                    [2] : {
+                                        name : right
+                                        value : 0px
+                                    }
+                                    [3] : {
+                                        name : bottom
+                                        value : 0px
+                                    }
+                                    [4] : {
+                                        name : left
+                                        value : 0px
+                                    }
                                 ]
                                 shorthandEntries : [
+                                    [0] : {
+                                        name : inset
+                                        value : 0px
+                                    }
                                 ]
                             }
                             supports : [
@@ -226,12 +238,12 @@ The test verifies functionality of querying style information for view-transitio
                             style : {
                                 cssProperties : [
                                     [0] : {
-                                        name : width
-                                        value : 800px
+                                        name : right
+                                        value : 0px
                                     }
                                     [1] : {
-                                        name : height
-                                        value : 600px
+                                        name : bottom
+                                        value : 0px
                                     }
                                 ]
                                 shorthandEntries : [
@@ -1658,19 +1670,31 @@ Dumping styles for : ::view-transition with id undefined{
                     style : {
                         cssProperties : [
                             [0] : {
-                                name : top
-                                value : 0px
-                            }
-                            [1] : {
-                                name : left
-                                value : 0px
-                            }
-                            [2] : {
                                 name : position
                                 value : fixed
                             }
+                            [1] : {
+                                name : top
+                                value : 0px
+                            }
+                            [2] : {
+                                name : right
+                                value : 0px
+                            }
+                            [3] : {
+                                name : bottom
+                                value : 0px
+                            }
+                            [4] : {
+                                name : left
+                                value : 0px
+                            }
                         ]
                         shorthandEntries : [
+                            [0] : {
+                                name : inset
+                                value : 0px
+                            }
                         ]
                     }
                     supports : [
@@ -1796,12 +1820,12 @@ Dumping styles for : ::view-transition-group with id root{
                     style : {
                         cssProperties : [
                             [0] : {
-                                name : width
-                                value : 800px
+                                name : right
+                                value : 0px
                             }
                             [1] : {
-                                name : height
-                                value : 600px
+                                name : bottom
+                                value : 0px
                             }
                         ]
                         shorthandEntries : [

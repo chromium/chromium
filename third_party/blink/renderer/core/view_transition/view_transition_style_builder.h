@@ -32,7 +32,6 @@ class ViewTransitionStyleBuilder {
   void AddOutgoingObjectViewBox(const String& tag, const String& value);
 
   void AddContainerStyles(const String& tag, const String& rules);
-  void AddContainerStyles(const String& tag, const LayoutSize& size);
   void AddContainerStyles(const String& tag,
                           const ContainerProperties& properties,
                           WritingMode writing_mode);

@@ -882,7 +882,6 @@ TEST_P(ViewTransitionTest, VirtualKeyboardDoesntAffectSnapshotSize) {
         height: 100px;
         view-transition-name: target;
       }
-      ::view-transition { width: 100%; height: 100%; }
     </style>
     <div class="target">
     </div>
@@ -926,25 +925,8 @@ TEST_P(ViewTransitionTest, VirtualKeyboardDoesntAffectSnapshotSize) {
   // though it shrinks the WebView.
   EXPECT_EQ(transition->GetSnapshotRootSize(), original_size);
 
-  // The height of the ::view-transition should be 0, since user style sheets
-  // should not apply at this point.
-  {
-    auto* transition_pseudo = GetDocument().documentElement()->GetPseudoElement(
-        kPseudoIdViewTransition);
-    int height = To<LayoutBox>(transition_pseudo->GetLayoutObject())
-                     ->GetPhysicalFragment(0)
-                     ->Size()
-                     .height.ToInt();
-    EXPECT_EQ(height, 0);
-  }
-
-  // Finish the prepare phase, mutate the DOM and start the animation.
-  UpdateAllLifecyclePhasesAndFinishDirectives();
-  test::RunPendingTasks();
-  EXPECT_EQ(GetState(transition), State::kAnimating);
-
-  UpdateAllLifecyclePhasesAndFinishDirectives();
-  // The height of the ::view-transition should now be original_size.
+  // The height of the ::view-transition should come from the snapshot root
+  // rect.
   {
     auto* transition_pseudo = GetDocument().documentElement()->GetPseudoElement(
         kPseudoIdViewTransition);
@@ -955,13 +937,16 @@ TEST_P(ViewTransitionTest, VirtualKeyboardDoesntAffectSnapshotSize) {
     EXPECT_EQ(height, original_size.height());
   }
 
+  // Finish the prepare phase, mutate the DOM and start the animation.
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+  test::RunPendingTasks();
+  EXPECT_EQ(GetState(transition), State::kAnimating);
+
   // Simulate hiding the virtual keyboard.
   web_view_helper_->Resize(original_size);
   web_view_helper_->LocalMainFrame()
       ->FrameWidgetImpl()
       ->SetVirtualKeyboardResizeHeightForTesting(0);
-
-  UpdateAllLifecyclePhasesAndFinishDirectives();
 
   // The snapshot rect should remain the same size.
   EXPECT_EQ(transition->GetSnapshotRootSize(), original_size);
