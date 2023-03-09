@@ -45,6 +45,8 @@
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 using security_interstitials::https_only_mode::RecordHttpsFirstModeNavigation;
+using security_interstitials::https_only_mode::
+    RecordNavigationRequestSecurityLevel;
 
 namespace {
 
@@ -80,22 +82,6 @@ GURL UpgradeUrlToHttps(const GURL& url) {
   return url.ReplaceComponents(upgrade_url);
 }
 
-// Only serve upgrade redirects for main frame, GET requests to HTTP URLs. This
-// excludes "localhost" (and loopback addresses) as they do not expose traffic
-// over the network.
-// TODO(crbug.com/1394910): Extend the exemption list for HTTPS-Upgrades
-// beyond just localhost.
-bool ShouldCreateLoader(const network::ResourceRequest& resource_request,
-                        HttpsOnlyModeTabHelper* tab_helper) {
-  if (resource_request.is_outermost_main_frame &&
-      resource_request.method == "GET" &&
-      !net::IsLocalhost(resource_request.url) &&
-      resource_request.url.SchemeIs(url::kHttpScheme)) {
-    return true;
-  }
-  return false;
-}
-
 // Helper to configure an artificial redirect to `new_url`. This configures
 // `response_head` and returns a computed RedirectInfo so both can be passed to
 // URLLoaderClient::OnReceiveRedirect() to trigger the redirect.
@@ -128,6 +114,7 @@ net::RedirectInfo SetupRedirect(
 
 using RequestHandler = HttpsUpgradesInterceptor::RequestHandler;
 using security_interstitials::https_only_mode::Event;
+using security_interstitials::https_only_mode::NavigationRequestSecurityLevel;
 
 // static
 std::unique_ptr<HttpsUpgradesInterceptor>
@@ -201,6 +188,75 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
     tab_helper = HttpsOnlyModeTabHelper::FromWebContents(web_contents);
   }
 
+  // Exclude HTTPS URLs.
+  if (tentative_resource_request.url.SchemeIs(url::kHttpsScheme)) {
+    RecordNavigationRequestSecurityLevel(
+        NavigationRequestSecurityLevel::kSecure);
+    std::move(callback).Run({});
+    return;
+  }
+
+  // Exclude "localhost" (and loopback addresses) as they do not expose traffic
+  // over the network.
+  // TODO(crbug.com/1394910): Extend the exemption list for HTTPS-Upgrades
+  // beyond just localhost.
+  if (net::IsLocalhost(tentative_resource_request.url)) {
+    RecordNavigationRequestSecurityLevel(
+        NavigationRequestSecurityLevel::kLocalhost);
+    std::move(callback).Run({});
+    return;
+  }
+
+  // Check whether this host would be upgraded to HTTPS by HSTS. This requires a
+  // Mojo call to the network service, so set up a callback to continue the rest
+  // of the MaybeCreateLoader() logic (passing along the necessary state). The
+  // HSTS status will be passed as a boolean to
+  // MaybeCreateLoaderOnHstsQueryCompleted(). If the Mojo call fails, this will
+  // default to passing `false` and continuing as though the host does not have
+  // HSTS (i.e., it will proceed with the HTTPS-First Mode logic).
+  // TODO(crbug.com/1394910): Consider caching this result, at least within the
+  // same navigation.
+  auto query_complete_callback = base::BindOnce(
+      &HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted,
+      weak_factory_.GetWeakPtr(), tentative_resource_request,
+      std::move(callback), profile, web_contents, tab_helper);
+  network::mojom::NetworkContext* network_context =
+      profile->GetDefaultStoragePartition()->GetNetworkContext();
+  network_context->IsHSTSActiveForHost(
+      tentative_resource_request.url.host(),
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          std::move(query_complete_callback),
+          /*is_hsts_active_for_host=*/false));
+}
+
+void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
+    const network::ResourceRequest& tentative_resource_request,
+    content::URLLoaderRequestInterceptor::LoaderCallback callback,
+    Profile* profile,
+    content::WebContents* web_contents,
+    HttpsOnlyModeTabHelper* tab_helper,
+    bool is_hsts_active_for_host) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Don't upgrade this request if HSTS is active for this host.
+  if (is_hsts_active_for_host) {
+    RecordNavigationRequestSecurityLevel(
+        NavigationRequestSecurityLevel::kHstsUpgraded);
+    std::move(callback).Run({});
+    return;
+  }
+
+  RecordNavigationRequestSecurityLevel(
+      NavigationRequestSecurityLevel::kInsecure);
+
+  // Only serve upgrade redirects for main frame, GET requests to HTTP URLs.
+  if (!tentative_resource_request.is_outermost_main_frame ||
+      tentative_resource_request.method != "GET" ||
+      !tentative_resource_request.url.SchemeIs(url::kHttpScheme)) {
+    std::move(callback).Run({});
+    return;
+  }
+
   // Don't upgrade navigation if it is allowlisted.
   // First, check the enterprise policy HTTP allowlist.
   PrefService* prefs = profile->GetPrefs();
@@ -256,47 +312,6 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
   auto* entry = web_contents->GetController().GetPendingEntry();
   if (entry && entry->GetTransitionType() & ui::PAGE_TRANSITION_FORWARD_BACK &&
       tab_helper->has_failed_upgrade(tentative_resource_request.url)) {
-    std::move(callback).Run({});
-    return;
-  }
-
-  if (!ShouldCreateLoader(tentative_resource_request, tab_helper)) {
-    std::move(callback).Run({});
-    return;
-  }
-
-  // Check whether this host would be upgraded to HTTPS by HSTS. This requires a
-  // Mojo call to the network service, so set up a callback to continue the rest
-  // of the MaybeCreateLoader() logic (passing along the necessary state). The
-  // HSTS status will be passed as a boolean to
-  // MaybeCreateLoaderOnHstsQueryCompleted(). If the Mojo call fails, this will
-  // default to passing `false` and continuing as though the host does not have
-  // HSTS (i.e., it will proceed with the HTTPS-First Mode logic).
-  // TODO(crbug.com/1394910): Consider caching this result, at least within the
-  // same navigation.
-  auto query_complete_callback = base::BindOnce(
-      &HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted,
-      weak_factory_.GetWeakPtr(), tentative_resource_request,
-      std::move(callback), prefs, tab_helper);
-  network::mojom::NetworkContext* network_context =
-      profile->GetDefaultStoragePartition()->GetNetworkContext();
-  network_context->IsHSTSActiveForHost(
-      tentative_resource_request.url.host(),
-      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          std::move(query_complete_callback),
-          /*is_hsts_active_for_host=*/false));
-}
-
-void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
-    const network::ResourceRequest& tentative_resource_request,
-    content::URLLoaderRequestInterceptor::LoaderCallback callback,
-    PrefService* prefs,
-    HttpsOnlyModeTabHelper* tab_helper,
-    bool is_hsts_active_for_host) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // Don't upgrade this request if HSTS is active for this host.
-  if (is_hsts_active_for_host) {
     std::move(callback).Run({});
     return;
   }

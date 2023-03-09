@@ -9,6 +9,8 @@ namespace security_interstitials::https_only_mode {
 
 extern const char kEventHistogram[];
 
+extern const char kNavigationRequestSecurityLevelHistogram[];
+
 // Recorded by HTTPS-First Mode and HTTPS-Upgrade logic when a navigation is
 // upgraded, or is eligible to be upgraded but wasn't.
 //
@@ -45,8 +47,41 @@ enum class Event {
   kMaxValue = kUpgradeNotAttempted,
 };
 
+// Recorded by HTTPS-Upgrade logic when each step in a navigation request is
+// observed, recording information about the protocol used. For a request with
+// two redirects, this will be recorded three times (once for each redirect,
+// then for the final URL).
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Values may be added to offer greater
+// specificity in the future. Keep in sync with NavigationRequestSecurityLevel
+// in enums.xml.
+enum class NavigationRequestSecurityLevel {
+  // Request was ignored because not all prerequisites were met.
+  kUnknown = 0,
+
+  // Request was for a secure (HTTPS) resource.
+  kSecure = 1,
+
+  // Request was for an insecure (HTTP) resource.
+  kInsecure = 2,
+
+  // Request was for an insecure (HTTP) resource, but was internally redirected
+  // due to HSTS.
+  kHstsUpgraded = 3,
+
+  // Request was for localhost, and thus no network
+  // due to HSTS.
+  kLocalhost = 4,
+
+  kMaxValue = kLocalhost,
+};
+
 // Helper to record an HTTPS-First Mode navigation event.
 void RecordHttpsFirstModeNavigation(Event event);
+
+// Helper to record a navigation request security level.
+void RecordNavigationRequestSecurityLevel(NavigationRequestSecurityLevel level);
 
 }  // namespace security_interstitials::https_only_mode
 
