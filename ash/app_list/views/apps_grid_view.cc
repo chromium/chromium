@@ -44,7 +44,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "base/pickle.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "ui/aura/window.h"
@@ -746,14 +745,16 @@ void AppsGridView::EndDrag(bool cancel) {
       // An EndDrag can be received during a reparent via a model change. This
       // is always a cancel and needs to be forwarded to the folder.
       if (cancel) {
+        DCHECK_EQ(!reparent_drag_cancellation_, is_drag_drop_refactor_enabled);
         if (reparent_drag_cancellation_) {
           std::move(reparent_drag_cancellation_).Run();
+          return;
         }
       } else {
         UpdateDropTargetRegion();
         EndDragFromReparentItemInRootLevel(nullptr, false, false, nullptr);
+        return;
       }
-      return;
     }
 
     if (!cancel && was_dragging) {
@@ -1097,6 +1098,11 @@ bool AppsGridView::CanDrop(const OSExchangeData& data) {
     return false;
   }
 
+  auto app_id = GetAppIdFromDropData(data);
+  if (app_id->empty()) {
+    return false;
+  }
+
   return data.HasCustomFormat(GetAppItemFormatType());
 }
 
@@ -1127,7 +1133,7 @@ void AppsGridView::OnDragExited() {
     dragging_for_reparent_item_ = true;
     folder_delegate_->Close();
   }
-  drag_item_ = nullptr;
+  CancelDragWithNoDropAnimation();
 }
 
 void AppsGridView::OnDragEntered(const ui::DropTargetEvent& event) {
@@ -1141,19 +1147,12 @@ void AppsGridView::OnDragEntered(const ui::DropTargetEvent& event) {
     return;
   }
 
-  std::string drag_item_id;
-
-  base::Pickle data_pickle;
-  if (!event.data().GetPickledData(GetAppItemFormatType(), &data_pickle)) {
+  auto app_id = GetAppIdFromDropData(event.data());
+  if (app_id->empty()) {
     return;
   }
 
-  base::PickleIterator iter(data_pickle);
-  if (!iter.ReadString(&drag_item_id)) {
-    return;
-  }
-
-  drag_item_ = AppListModelProvider::Get()->model()->FindItem(drag_item_id);
+  drag_item_ = AppListModelProvider::Get()->model()->FindItem(app_id.value());
   if (!drag_item_) {
     return;
   }
