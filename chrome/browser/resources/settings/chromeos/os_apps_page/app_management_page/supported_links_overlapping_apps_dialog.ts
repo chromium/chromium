@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import '../../../settings_shared.css.js';
 
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
