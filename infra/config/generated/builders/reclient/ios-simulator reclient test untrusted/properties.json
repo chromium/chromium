@@ -26,7 +26,7 @@
               "legacy_gclient_config": {
                 "apply_configs": [
                   "use_clang_coverage",
-                  "reclient_test"
+                  "reclient_experimental"
                 ],
                 "config": "ios"
               }

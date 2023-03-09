@@ -200,7 +200,7 @@ fyi_reclient_test_builder(
             gclient_config = structs.extend(
                 spec.gclient_config,
                 apply_configs = [
-                    "reclient_test",
+                    "reclient_experimental",
                 ],
             ),
             build_gs_bucket = "chromium-fyi-archive",
@@ -341,7 +341,7 @@ fyi_reclient_test_builder(
             gclient_config = structs.extend(
                 spec.gclient_config,
                 apply_configs = [
-                    "reclient_test",
+                    "reclient_experimental",
                 ],
             ),
             build_gs_bucket = "chromium-fyi-archive",

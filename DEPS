@@ -300,6 +300,8 @@ vars = {
   # RBE project to download rewrapper config files for. Only needed if
   # different from the project used in 'rbe_instance'
   'rewrapper_cfg_project': Str(''),
+  # reclient CIPD package
+  'reclient_package': 'infra/rbe/client/',
   # reclient CIPD package version
   'reclient_version': 're_client_version:0.96.2.d36a87c-gomaip',
 
@@ -592,7 +594,7 @@ deps = {
   'src/buildtools/reclient': {
     'packages': [
       {
-        'package': 'infra/rbe/client/${{platform}}',
+        'package': Var('reclient_package') + '${{platform}}',
         'version': Var('reclient_version'),
       }
     ],
