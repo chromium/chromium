@@ -315,6 +315,18 @@ tast_disabled_tests_from_chrome_all = [
   "crostini.ResizeRestart.bullseye_stable",
   "crostini.ResizeRestart.buster_stable",
 
+  # https://b/272357159
+  "crostini.AppAudacity.bullseye_clamshell_stable",
+  "crostini.AppAudacity.buster_clamshell_stable",
+  "crostini.AppEmacs.bullseye_clamshell_stable",
+  "crostini.AppEmacs.clamshell_stable",
+  "crostini.AppGedit.bullseye_clamshell_stable",
+  "crostini.AppGedit.clamshell_stable",
+  "crostini.AppGeditUnshareFolder.bullseye_clamshell_stable",
+  "crostini.AppGeditUnshareFolder.clamshell_stable",
+  "crostini.AppVscode.bullseye_clamshell_stable",
+  "crostini.AppVscode.clamshell_stable",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
