@@ -3428,6 +3428,7 @@ test("base_unittests") {
     "//base/test:run_all_unittests",
     "//base/test:test_support",
     "//base/third_party/dynamic_annotations",
+    "//build:blink_buildflags",
     "//build:chromecast_buildflags",
     "//build:chromeos_buildflags",
     "//testing/gmock",
