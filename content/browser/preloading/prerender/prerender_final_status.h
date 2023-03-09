@@ -73,7 +73,9 @@ enum class PrerenderFinalStatus {
   kCrossSiteRedirect = 44,
   kCrossSiteNavigation = 45,
   kSameSiteCrossOriginRedirect = 46,
-  kSameSiteCrossOriginNavigation = 47,
+  // Deprecated. Same-site cross-origin navigation in a prerendered page is
+  // allowed in crbug.com/1239281.
+  // kSameSiteCrossOriginNavigation = 47,
   kSameSiteCrossOriginRedirectNotOptIn = 48,
   kSameSiteCrossOriginNavigationNotOptIn = 49,
   // The prediction is correct, and we are almost ready to activate this

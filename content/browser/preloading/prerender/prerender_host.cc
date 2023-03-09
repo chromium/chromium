@@ -978,7 +978,6 @@ void PrerenderHost::SetFailureReason(PrerenderFinalStatus status) {
     case PrerenderFinalStatus::kCrossSiteNavigation:
     case PrerenderFinalStatus::kCrossSiteRedirect:
     case PrerenderFinalStatus::kSameSiteCrossOriginRedirect:
-    case PrerenderFinalStatus::kSameSiteCrossOriginNavigation:
     case PrerenderFinalStatus::kSameSiteCrossOriginRedirectNotOptIn:
     case PrerenderFinalStatus::kSameSiteCrossOriginNavigationNotOptIn:
     case PrerenderFinalStatus::kActivationNavigationParameterMismatch:

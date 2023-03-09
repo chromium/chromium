@@ -101,8 +101,6 @@ Preload::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
       return Preload::PrerenderFinalStatusEnum::CrossSiteNavigation;
     case PrerenderFinalStatus::kSameSiteCrossOriginRedirect:
       return Preload::PrerenderFinalStatusEnum::SameSiteCrossOriginRedirect;
-    case PrerenderFinalStatus::kSameSiteCrossOriginNavigation:
-      return Preload::PrerenderFinalStatusEnum::SameSiteCrossOriginNavigation;
     case PrerenderFinalStatus::kSameSiteCrossOriginRedirectNotOptIn:
       return Preload::PrerenderFinalStatusEnum::
           SameSiteCrossOriginRedirectNotOptIn;

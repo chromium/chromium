@@ -158,7 +158,7 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
 
   GURL navigation_url = navigation_handle()->GetURL();
   url::Origin navigation_origin = url::Origin::Create(navigation_url);
-  url::Origin prerendering_origin =
+  url::Origin initial_prerendering_origin =
       url::Origin::Create(prerender_host->GetInitialUrl());
 
   // Check if the main frame navigation happens after the initial prerendering
@@ -175,17 +175,13 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
       return CANCEL;
     }
 
-    // Cross-origin navigations after the initial prerendering navigation are
+    // Cross-site navigations after the initial prerendering navigation are
     // disallowed.
-    // TODO(crbug.com/1239281): Support same-site cross-origin main frame
-    // navigations.
-    if (navigation_origin != prerendering_origin) {
+    if (!prerender_navigation_utils::IsSameSite(navigation_url,
+                                                initial_prerendering_origin)) {
       prerender_host_registry->CancelHost(
           frame_tree_node->frame_tree_node_id(),
-          prerender_navigation_utils::IsSameSite(navigation_url,
-                                                 prerendering_origin)
-              ? PrerenderFinalStatus::kSameSiteCrossOriginNavigation
-              : PrerenderFinalStatus::kCrossSiteNavigation);
+          PrerenderFinalStatus::kCrossSiteNavigation);
       return CANCEL;
     }
   }
@@ -217,19 +213,16 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
   if (prerender_host->IsBrowserInitiated()) {
     // Cancel an embedder triggered prerendering if it is redirected to a URL
     // cross-site to the initial prerendering URL.
-    if (is_redirection) {
-      bool is_same_site = prerender_navigation_utils::IsSameSite(
-          navigation_url, prerendering_origin);
-      if (!is_same_site) {
-        AnalyzeCrossOriginRedirection(
-            navigation_origin, prerendering_origin,
-            prerender_host->trigger_type(),
-            prerender_host->embedder_histogram_suffix());
-        prerender_host_registry->CancelHost(
-            frame_tree_node->frame_tree_node_id(),
-            PrerenderFinalStatus::kCrossSiteRedirect);
-        return CANCEL;
-      }
+    if (is_redirection && !prerender_navigation_utils::IsSameSite(
+                              navigation_url, initial_prerendering_origin)) {
+      AnalyzeCrossOriginRedirection(
+          navigation_origin, initial_prerendering_origin,
+          prerender_host->trigger_type(),
+          prerender_host->embedder_histogram_suffix());
+      prerender_host_registry->CancelHost(
+          frame_tree_node->frame_tree_node_id(),
+          PrerenderFinalStatus::kCrossSiteRedirect);
+      return CANCEL;
     }
 
     // Skip the same-site check for non-redirected cases as the initiator

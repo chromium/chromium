@@ -2186,15 +2186,46 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SameOriginMainFrameNavigation) {
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), kNavigatedUrl);
 }
 
-// TODO(crbug.com/1239281): Support the same-site cross-origin navigation.
 // Tests that the same-site cross-origin main frame navigation in a prerendering
-// page cancels the prerendering.
-IN_PROC_BROWSER_TEST_F(
-    PrerenderBrowserTest,
-    SameSiteCrossOriginMainFrameNavigationCancelsPrerendering) {
+// page succeeds.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       SameSiteCrossOriginMainFrameNavigation) {
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
-  const GURL kNavigatedUrl = GetSameSiteCrossOriginUrl("/empty.html?navigated");
+  const GURL kNavigatedUrl =
+      GetSameSiteCrossOriginUrl("/prerender/prerender_with_opt_in_header.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Start a prerender.
+  int host_id = AddPrerender(kPrerenderingUrl);
+
+  // Start a same-site cross-origin navigation in the prerender frame tree that
+  // will not cancel the initiator's prerendering.
+  test::PrerenderHostObserver observer(*web_contents_impl(), host_id);
+
+  NavigatePrerenderedPage(host_id, kNavigatedUrl);
+
+  // Activate a prerender and it should succeed.
+  NavigatePrimaryPage(kPrerenderingUrl);
+
+  observer.WaitForActivation();
+  EXPECT_TRUE(observer.was_activated());
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), kNavigatedUrl);
+}
+
+// Tests that the same-site cross-origin main frame navigation in a prerendering
+// page cancels the prerendering without opt-in.
+IN_PROC_BROWSER_TEST_F(
+    PrerenderBrowserTest,
+    SameSiteCrossOriginMainFrameNavigationCancelsPrerenderingWithoutOptInHeader) {
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
+  // The cross-origin navigation should fail prerendering without an opt-in
+  // header.
+  const GURL kNavigatedUrl =
+      GetSameSiteCrossOriginUrl("/prerender/empty.html?navigated");
 
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
@@ -2211,7 +2242,7 @@ IN_PROC_BROWSER_TEST_F(
   observer.WaitForDestroyed();
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
   ExpectFinalStatusForSpeculationRule(
-      PrerenderFinalStatus::kSameSiteCrossOriginNavigation);
+      PrerenderFinalStatus::kSameSiteCrossOriginNavigationNotOptIn);
 }
 
 // Tests that the cross-site main frame navigation in a prerendering page
@@ -2220,7 +2251,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                        CrossSiteMainFrameNavigationCancelsPrerendering) {
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
-  const GURL kNavigatedUrl = GetCrossSiteUrl("/empty.html?navigated");
+  const GURL kNavigatedUrl =
+      GetCrossSiteUrl("/prerender/prerender_with_opt_in_header.html");
 
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));

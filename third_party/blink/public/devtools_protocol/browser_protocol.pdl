@@ -10838,7 +10838,6 @@ experimental domain Preload
       CrossSiteRedirect
       CrossSiteNavigation
       SameSiteCrossOriginRedirect
-      SameSiteCrossOriginNavigation
       SameSiteCrossOriginRedirectNotOptIn
       SameSiteCrossOriginNavigationNotOptIn
       ActivationNavigationParameterMismatch

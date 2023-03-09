@@ -84544,7 +84544,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="44" label="kCrossSiteRedirect"/>
   <int value="45" label="kCrossSiteNavigation"/>
   <int value="46" label="kSameSiteCrossOriginRedirect"/>
-  <int value="47" label="kSameSiteCrossOriginNavigation"/>
+  <int value="47" label="kSameSiteCrossOriginNavigation (obsoleted)"/>
   <int value="48" label="kSameSiteCrossOriginRedirectNotOptIn"/>
   <int value="49" label="kSameSiteCrossOriginNavigationNotOptIn"/>
   <int value="50" label="kActivationNavigationParameterMismatch"/>
