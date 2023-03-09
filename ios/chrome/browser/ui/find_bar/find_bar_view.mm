@@ -69,6 +69,11 @@ const CGFloat kButtonLength = 44;
   [self setupConstraints];
 }
 
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  [self updateFonts];
+}
+
 #pragma mark - Private
 
 // Creates, adds and configures the subviews.
@@ -80,6 +85,7 @@ const CGFloat kButtonLength = 44;
   [self addSubview:self.closeButton];
 
   [self setupColors];
+  [self updateFonts];
 }
 
 // Sets the constraints for the subviews up.
@@ -176,6 +182,19 @@ const CGFloat kButtonLength = 44;
 
 #pragma mark - Configuration
 
+// Update fonts to account for new preferred content size category.
+- (void)updateFonts {
+  _inputField.font = PreferredFontForTextStyleWithMaxCategory(
+      UIFontTextStyleBody, self.traitCollection.preferredContentSizeCategory,
+      UIContentSizeCategoryAccessibilityLarge);
+  _resultsCountLabel.font = PreferredFontForTextStyleWithMaxCategory(
+      UIFontTextStyleBody, self.traitCollection.preferredContentSizeCategory,
+      UIContentSizeCategoryAccessibilityMedium);
+  _closeButton.titleLabel.font = PreferredFontForTextStyleWithMaxCategory(
+      UIFontTextStyleBody, self.traitCollection.preferredContentSizeCategory,
+      UIContentSizeCategoryAccessibilityMedium);
+}
+
 // Adds `rightLabel` as right view of the `textField`.
 - (void)addLabel:(UILabel*)rightLabel
     asRightViewOfTextField:(UITextField*)textField {
@@ -208,12 +227,7 @@ const CGFloat kButtonLength = 44;
     _inputField.translatesAutoresizingMaskIntoConstraints = NO;
     _inputField.placeholder =
         l10n_util::GetNSString(IDS_IOS_PLACEHOLDER_FIND_IN_PAGE);
-    if (ios::provider::IsNativeFindInPageEnabled()) {
-      _inputField.font = PreferredFontForTextStyleWithMaxCategory(
-          UIFontTextStyleBody,
-          self.traitCollection.preferredContentSizeCategory,
-          UIContentSizeCategoryAccessibilityLarge);
-    } else {
+    if (!ios::provider::IsNativeFindInPageEnabled()) {
       _inputField.font = [UIFont systemFontOfSize:kFontSize];
     }
     _inputField.accessibilityIdentifier = kFindInPageInputFieldId;
@@ -229,12 +243,7 @@ const CGFloat kButtonLength = 44;
   if (!_resultsCountLabel) {
     _resultsCountLabel = [[UILabel alloc] init];
     _resultsCountLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    if (ios::provider::IsNativeFindInPageEnabled()) {
-      _resultsCountLabel.font = PreferredFontForTextStyleWithMaxCategory(
-          UIFontTextStyleBody,
-          self.traitCollection.preferredContentSizeCategory,
-          UIContentSizeCategoryAccessibilityMedium);
-    } else {
+    if (!ios::provider::IsNativeFindInPageEnabled()) {
       _resultsCountLabel.font = [UIFont systemFontOfSize:kFontSize];
     }
     _resultsCountLabel.accessibilityElementsHidden = YES;
@@ -287,12 +296,7 @@ const CGFloat kButtonLength = 44;
                   forState:UIControlStateNormal];
     _closeButton.translatesAutoresizingMaskIntoConstraints = NO;
     _closeButton.accessibilityIdentifier = kFindInPageCloseButtonId;
-    if (ios::provider::IsNativeFindInPageEnabled()) {
-      _closeButton.titleLabel.font = PreferredFontForTextStyleWithMaxCategory(
-          UIFontTextStyleBody,
-          self.traitCollection.preferredContentSizeCategory,
-          UIContentSizeCategoryAccessibilityMedium);
-    } else {
+    if (!ios::provider::IsNativeFindInPageEnabled()) {
       _closeButton.titleLabel.font = [UIFont systemFontOfSize:kButtonFontSize];
     }
     _closeButton.pointerInteractionEnabled = YES;
