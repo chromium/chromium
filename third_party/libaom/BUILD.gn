@@ -228,7 +228,7 @@ static_library("libaom") {
   sources += aom_util_sources
   sources += aom_av1_encoder_sources
   sources += aom_dsp_encoder_sources
-  if (use_libfuzzer) {
+  if (use_fuzzing_engine) {
     # Note this is inherited from OSS-Fuzz where the fuzzers were being run
     # with a 2 GB total allocation limit.
     if (is_msan) {
