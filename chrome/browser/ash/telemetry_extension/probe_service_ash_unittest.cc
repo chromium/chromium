@@ -18,7 +18,7 @@
 
 namespace ash {
 
-class ProbeServieAshTest : public testing::Test {
+class ProbeServiceAshTest : public testing::Test {
  public:
   void SetUp() override {
     DebugDaemonClient::InitializeFake();
@@ -46,7 +46,7 @@ class ProbeServieAshTest : public testing::Test {
 
 // Tests that ProbeTelemetryInfo requests telemetry info in cros_healthd and
 // forwards response via callback.
-TEST_F(ProbeServieAshTest, ProbeTelemetryInfoSuccess) {
+TEST_F(ProbeServiceAshTest, ProbeTelemetryInfoSuccess) {
   constexpr int64_t kCycleCount = 512;
 
   {
@@ -82,7 +82,7 @@ TEST_F(ProbeServieAshTest, ProbeTelemetryInfoSuccess) {
 
 // Tests that GetOemData requests OEM data in debugd and
 // forwards response via callback.
-TEST_F(ProbeServieAshTest, GetOemDataSuccess) {
+TEST_F(ProbeServiceAshTest, GetOemDataSuccess) {
   base::RunLoop run_loop;
   probe_service()->GetOemData(
       base::BindLambdaForTesting([&](crosapi::mojom::ProbeOemDataPtr ptr) {
