@@ -15,6 +15,11 @@
     text-decoration: none;
   }
 
+  :host-context(.focus-outline-visible) :focus {
+    box-shadow: var(--ntp-focus-shadow);
+    outline: none;
+  }
+
   :host([medium-format]) #content {
     display: flex;
     flex-direction: row;

@@ -13,6 +13,11 @@
     text-decoration: none;
   }
 
+  :host-context(.focus-outline-visible) :focus {
+    box-shadow: var(--ntp-focus-shadow);
+    outline: none;
+  }
+
   .related-search {
     background:
         var(--color-new-tab-page-history-clusters-module-item-background);
