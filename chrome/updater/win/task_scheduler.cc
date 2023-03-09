@@ -703,7 +703,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
 
     DCHECK(IsTaskRegistered(task_name));
 
-    VLOG(1) << "Successfully registered: "
+    VLOG(1) << __func__ << ":" << task_name << ": "
             << run_command.GetCommandLineString();
     return true;
   }
