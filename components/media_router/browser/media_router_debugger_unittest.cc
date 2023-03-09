@@ -31,11 +31,6 @@ TEST_F(MediaRouterDebuggerTest, TestIsRtcpReportsEnabled) {
   // Reports should still be disabled since we the feature flag has not been
   // set.
   debugger_->EnableRtcpReports();
-  EXPECT_FALSE(debugger_->IsRtcpReportsEnabled());
-
-  // All conditions should be met and the function should return true now.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({media::kEnableRtcpReporting}, {});
 
   EXPECT_TRUE(debugger_->IsRtcpReportsEnabled());
 }

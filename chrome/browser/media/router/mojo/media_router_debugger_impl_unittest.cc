@@ -7,7 +7,6 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/media/router/mojo/media_router_mojo_impl.h"
 #include "chrome/browser/media/router/test/provider_test_helpers.h"
 #include "chrome/test/base/testing_profile.h"
@@ -114,8 +113,6 @@ TEST_F(MediaRouterDebuggerImplTest, ReportsNotEnabled) {
 
 TEST_F(MediaRouterDebuggerImplTest, NonMirroringRoutes) {
   debugger()->EnableRtcpReports();
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({media::kEnableRtcpReporting}, {});
 
   const std::vector<MediaRoute> routes{CreateMediaRoute()};
   EXPECT_CALL(observer_, OnMirroringStatsUpdated(_)).Times(0);
@@ -124,8 +121,6 @@ TEST_F(MediaRouterDebuggerImplTest, NonMirroringRoutes) {
 
 TEST_F(MediaRouterDebuggerImplTest, FetchMirroringStats) {
   debugger()->EnableRtcpReports();
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({media::kEnableRtcpReporting}, {});
 
   const std::vector<MediaRoute> routes{CreateTabMirroringMediaRoute()};
   EXPECT_CALL(observer_, OnMirroringStatsUpdated(_)).Times(1);
