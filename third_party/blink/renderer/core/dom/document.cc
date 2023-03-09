@@ -2543,6 +2543,12 @@ void Document::UpdateStyleAndLayout(DocumentUpdateReason reason) {
   DCHECK(IsMainThread());
   LocalFrameView* frame_view = View();
 
+  // Refuse to update style and layout state if side effects are not allowed.
+  // We are doing something while replaying that didn't happen while recording and
+  // isn't supposed to interact with the recording, like getting object previews.
+  if (!recordreplay::AllowSideEffects())
+    return;
+
   if (reason != DocumentUpdateReason::kBeginMainFrame && frame_view)
     frame_view->WillStartForcedLayout();
 

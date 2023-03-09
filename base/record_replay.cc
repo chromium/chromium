@@ -28,6 +28,7 @@ namespace recordreplay {
   Macro(V8RecordReplayAreEventsDisallowed, (), (), bool, false)         \
   Macro(V8RecordReplayAreEventsPassedThrough, (), (), bool, false)      \
   Macro(V8RecordReplayHasDivergedFromRecording, (), (), bool, false)    \
+  Macro(V8RecordReplayAllowSideEffects, (), (), bool, true)             \
   Macro(V8RecordReplayPointerId, (const void* ptr), (ptr), int, 0)      \
   Macro(V8RecordReplayIdPointer, (int id), (id), void*, nullptr)        \
   Macro(V8RecordReplayFeatureEnabled,                                   \
@@ -293,6 +294,10 @@ void BrowserEvent(const char* name, const base::DictionaryValue& info) {
 
 bool HasDivergedFromRecording() {
   return V8RecordReplayHasDivergedFromRecording();
+}
+
+bool AllowSideEffects() {
+  return V8RecordReplayAllowSideEffects();
 }
 
 void RegisterPointer(const char* name, const void* ptr) {

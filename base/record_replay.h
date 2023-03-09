@@ -79,6 +79,7 @@ struct AutoDisallowEvents {
 };
 
 bool HasDivergedFromRecording();
+bool AllowSideEffects();
 
 void RegisterPointer(const char* name, const void* ptr);
 void UnregisterPointer(const void* ptr);
