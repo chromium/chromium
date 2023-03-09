@@ -316,6 +316,38 @@ const CGFloat kBubblePresentationDelay = 1;
   self.priceNotificationsWhileBrowsingBubbleTipPresenter = presenter;
 }
 
+- (void)presentTabPinnedBubble {
+  if (!IsSplitToolbarMode(self.rootViewController)) {
+    // Don't show the tip if the user sees the tap strip.
+    return;
+  }
+  if (![self canPresentBubble]) {
+    return;
+  }
+
+  BubbleArrowDirection arrowDirection = BubbleArrowDirectionDown;
+  NSString* text =
+      l10n_util::GetNSString(IDS_IOS_PINNED_TAB_OVERFLOW_ACTION_IPH_TEXT);
+  CGPoint tabGridAnchor = [self anchorPointToGuide:kTabSwitcherGuide
+                                         direction:arrowDirection];
+
+  // If the feature engagement tracker does not consider it valid to display
+  // the tip, then end early to prevent the potential reassignment of the
+  // existing `whatsNewBubblePresenter` to nil.
+  BubbleViewControllerPresenter* presenter =
+      [self presentBubbleForFeature:feature_engagement::kIPHTabPinnedFeature
+                          direction:arrowDirection
+                          alignment:BubbleAlignmentTrailing
+                               text:text
+              voiceOverAnnouncement:text
+                        anchorPoint:tabGridAnchor];
+  if (!presenter) {
+    return;
+  }
+
+  self.priceNotificationsWhileBrowsingBubbleTipPresenter = presenter;
+}
+
 #pragma mark - Private
 
 - (void)presentBubbles {

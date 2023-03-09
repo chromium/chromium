@@ -249,6 +249,7 @@ enum class IOSOverflowMenuActionType {
   }
 
   if (self.overflowMenuMediator) {
+    [self.bubblePresenter presentTabPinnedBubble];
     [self.baseViewController dismissViewControllerAnimated:animated
                                                 completion:nil];
     [self.overflowMenuMediator disconnect];

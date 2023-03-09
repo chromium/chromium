@@ -7,6 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/feature_engagement/feature_engagement_app_interface.h"
+#import "ios/chrome/browser/tabs/features.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
@@ -96,6 +97,12 @@ id<GREYMatcher> DefaultSiteViewTip() {
       l10n_util::GetNSStringWithFixup(IDS_IOS_DEFAULT_PAGE_MODE_TIP));
 }
 
+// Matcher for the TabPinned tip.
+id<GREYMatcher> TabPinnedTip() {
+  return grey_accessibilityLabel(
+      l10n_util::GetNSString(IDS_IOS_PINNED_TAB_OVERFLOW_ACTION_IPH_TEXT));
+}
+
 // Opens the TabGrid and then opens a new tab.
 void OpenTabGridAndOpenTab() {
   [ChromeEarlGreyUI openTabGrid];
@@ -147,6 +154,17 @@ std::unique_ptr<net::test_server::HttpResponse> LoadFrenchPage(
 @end
 
 @implementation FeatureEngagementTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  if ([self isRunningTest:@selector(testPinTabFromOverflowMenu)]) {
+    AppLaunchConfiguration config;
+    config.additional_args.push_back(
+        "--enable-features=" + std::string(kEnablePinnedTabs.name) + ":" +
+        kEnablePinnedTabsOverflowParam + "/true," + kEnablePinnedTabsIpad.name);
+    return config;
+  }
+  return [super appConfigurationForTestCase];
+}
 
 - (void)tearDown {
   [FeatureEngagementAppInterface reset];
@@ -544,6 +562,71 @@ std::unique_ptr<net::test_server::HttpResponse> LoadFrenchPage(
 
   [[EarlGrey selectElementWithMatcher:DefaultSiteViewTip()]
       assertWithMatcher:grey_nil()];
+}
+
+// Verifies that the IPH for Pinned tab is displayed after pinning a tab from
+// the overflow menu.
+- (void)testPinTabFromOverflowMenu {
+  if (@available(iOS 15, *)) {
+  } else {
+    // Only available for iOS 15+.
+    return;
+  }
+  GREYAssert([FeatureEngagementAppInterface enableTabPinnedTipTriggering],
+             @"Feature Engagement tracker did not load");
+
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGreyUI
+      tapToolsMenuAction:grey_accessibilityID(kToolsMenuPinTabId)];
+
+  NSString* pinTabSnackbarMessage =
+      l10n_util::GetNSString(IDS_IOS_SNACKBAR_MESSAGE_PINNED_TAB);
+  NSString* unpinTabSnackbarMessage =
+      l10n_util::GetNSString(IDS_IOS_SNACKBAR_MESSAGE_UNPINNED_TAB);
+
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    [[EarlGrey selectElementWithMatcher:TabPinnedTip()]
+        assertWithMatcher:grey_nil()];
+    [[EarlGrey
+        selectElementWithMatcher:grey_accessibilityLabel(pinTabSnackbarMessage)]
+        assertWithMatcher:grey_sufficientlyVisible()];
+    // Tap the snackbar to make it disappear.
+    [[EarlGrey
+        selectElementWithMatcher:grey_accessibilityLabel(pinTabSnackbarMessage)]
+        performAction:grey_tap()];
+  } else {
+    [[EarlGrey selectElementWithMatcher:TabPinnedTip()]
+        assertWithMatcher:grey_sufficientlyVisible()];
+    [[EarlGrey
+        selectElementWithMatcher:grey_accessibilityLabel(pinTabSnackbarMessage)]
+        assertWithMatcher:grey_nil()];
+  }
+
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGreyUI
+      tapToolsMenuAction:grey_accessibilityID(kToolsMenuUnpinTabId)];
+  [[EarlGrey selectElementWithMatcher:TabPinnedTip()]
+      assertWithMatcher:grey_nil()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(unpinTabSnackbarMessage)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  // Tap the snackbar to make it disappear.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(unpinTabSnackbarMessage)]
+      performAction:grey_tap()];
+
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGreyUI
+      tapToolsMenuAction:grey_accessibilityID(kToolsMenuPinTabId)];
+  [[EarlGrey selectElementWithMatcher:TabPinnedTip()]
+      assertWithMatcher:grey_nil()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(pinTabSnackbarMessage)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  // Tap the snackbar to make it disappear.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(pinTabSnackbarMessage)]
+      performAction:grey_tap()];
 }
 
 #pragma mark - Helpers

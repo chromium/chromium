@@ -1726,8 +1726,15 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   [[self class] setTabPinned:YES
                     webState:self.webState
                 webStateList:self.webStateList];
-  [self.popupMenuCommandsHandler showSnackbarForPinnedState:YES
-                                                   webState:self.webState];
+  if (!IsSplitToolbarMode(self.webState->GetView()) ||
+      !_engagementTracker->WouldTriggerHelpUI(
+          feature_engagement::kIPHTabPinnedFeature)) {
+    // Only show the snackbar if the tab strip is visible or if the IPH is
+    // presented.
+    [self.popupMenuCommandsHandler showSnackbarForPinnedState:YES
+                                                     webState:self.webState];
+  }
+
   [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
 }
 

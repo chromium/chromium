@@ -178,6 +178,7 @@ BASE_DECLARE_FEATURE(kIPHiOSDefaultBrowserBadgeEligibilityFeature);
 BASE_DECLARE_FEATURE(kIPHiOSDefaultBrowserOverflowMenuBadgeFeature);
 BASE_DECLARE_FEATURE(kIPHiOSDefaultBrowserSettingsBadgeFeature);
 BASE_DECLARE_FEATURE(kIPHiOSAppStorePromoFeature);
+BASE_DECLARE_FEATURE(kIPHTabPinnedFeature);
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
