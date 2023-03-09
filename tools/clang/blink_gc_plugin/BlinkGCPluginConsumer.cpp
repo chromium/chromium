@@ -90,7 +90,9 @@ BlinkGCPluginConsumer::BlinkGCPluginConsumer(
   options_.checked_namespaces.insert("cppgc");
 
   if (options_.enable_checks_for_pdfium_directory) {
-    options_.checked_directories.push_back("pdfium/");
+    options_.checked_directories.push_back("fpdfsdk/");
+    options_.checked_directories.push_back("fxjs/");
+    options_.checked_directories.push_back("xfa/");
   }
 
   // Ignore GC implementation files.
