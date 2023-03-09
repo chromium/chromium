@@ -103,7 +103,7 @@ int32_t AwMetricsServiceClient::GetProduct() {
 }
 
 int AwMetricsServiceClient::GetSampleRatePerMille() const {
-  if (!base::FeatureList::IsEnabled(features::kWebViewClientSideSampling)) {
+  if (base::FeatureList::IsEnabled(features::kWebViewServerSideSampling)) {
     return 1000;
   }
   // Down-sample unknown channel as a precaution in case it ends up being

@@ -14504,21 +14504,6 @@
             ]
         }
     ],
-    "WebViewClientSideSampling": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "WebViewClientSideSampling",
-                    "enable_features": [
-                        "WebViewClientSideSampling"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebViewRecordAppDataDirectorySize": [
         {
             "platforms": [
@@ -14529,6 +14514,21 @@
                     "name": "Enabled",
                     "enable_features": [
                         "WebViewRecordAppDataDirectorySize"
+                    ]
+                }
+            ]
+        }
+    ],
+    "WebViewServerSideSampling": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "WebViewServerSideSampling",
+                    "enable_features": [
+                        "WebViewServerSideSampling"
                     ]
                 }
             ]

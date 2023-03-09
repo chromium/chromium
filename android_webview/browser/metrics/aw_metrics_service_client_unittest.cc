@@ -420,8 +420,8 @@ TEST_F(AwMetricsServiceClientTest,
 
 TEST_F(AwMetricsServiceClientTest, TestClientSideSamplingOn) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      android_webview::features::kWebViewClientSideSampling);
+  feature_list.InitAndDisableFeature(
+      android_webview::features::kWebViewServerSideSampling);
 
   // Both metrics consent and app consent true;
   GetClient()->SetHaveMetricsConsent(true, true);
@@ -431,8 +431,8 @@ TEST_F(AwMetricsServiceClientTest, TestClientSideSamplingOn) {
 
 TEST_F(AwMetricsServiceClientTest, TestClientSideSamplingOff) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      android_webview::features::kWebViewClientSideSampling);
+  feature_list.InitAndEnableFeature(
+      android_webview::features::kWebViewServerSideSampling);
 
   // Both metrics consent and app consent true;
   GetClient()->SetHaveMetricsConsent(true, true);

@@ -384,9 +384,9 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(BlinkFeatures.RENDER_BLOCKING_FONTS,
                     "When enabled, blocks rendering on font preloads to reduce CLS. "
                             + "See go/critical-font-analysis"),
-            Flag.baseFeature(AwFeatures.WEBVIEW_CLIENT_SIDE_SAMPLING,
-                    "If disabled, the client side sampling for user metrics will be turned off."
-                            + " This have no effect if metrics reporting is disabled"),
+            Flag.baseFeature(AwFeatures.WEBVIEW_SERVER_SIDE_SAMPLING,
+                    "If enabled, the client side sampling for user metrics will be turned off."
+                            + " This has no effect if metrics reporting is disabled"),
             Flag.baseFeature("SafeBrowsingOnUIThread"),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
