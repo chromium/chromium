@@ -18,10 +18,11 @@
 class PrefService;
 
 namespace content {
-class WolvicContentMainDelegate;
 class WebContents;
-class WolvicContentBrowserClient;
 class WolvicBrowserContext;
+class WolvicContentBrowserClient;
+class WolvicContentClient;
+class WolvicContentMainDelegate;
 
 __attribute__((visibility("default"))) WolvicContentMainDelegate*
 GetWolvicContentMainDelegate();
@@ -63,6 +64,8 @@ class WolvicContentMainDelegate : public ContentMainDelegate {
 
   WolvicBrowserContext* browser_context();
 
+  PrefService* GetPrefs() { return local_state_.get(); }
+
  protected:
   void CreateFeatureListAndFieldTrials();
   std::unique_ptr<PrefService> CreateLocalState();
@@ -73,7 +76,7 @@ class WolvicContentMainDelegate : public ContentMainDelegate {
   std::unique_ptr<ContentGpuClient> gpu_client_;
   std::unique_ptr<ContentRendererClient> renderer_client_;
   std::unique_ptr<ContentUtilityClient> utility_client_;
-  std::unique_ptr<ContentClient> content_client_;
+  std::unique_ptr<WolvicContentClient> content_client_;
 
   std::vector<std::unique_ptr<WebContents>> web_contents_list_;
 };

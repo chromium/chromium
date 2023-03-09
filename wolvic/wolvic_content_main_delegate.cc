@@ -60,6 +60,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "wolvic/wolvic_browser_context.h"
 #include "wolvic/wolvic_content_browser_client.h"
+#include "wolvic/wolvic_content_client.h"
 
 #if BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)
 #define IPC_MESSAGE_MACROS_LOG_ENABLED
@@ -303,7 +304,7 @@ absl::optional<int> WolvicContentMainDelegate::PostEarlyInitialization(
 }
 
 ContentClient* WolvicContentMainDelegate::CreateContentClient() {
-  content_client_ = std::make_unique<ContentClient>();
+  content_client_ = std::make_unique<WolvicContentClient>();
   return content_client_.get();
 }
 

@@ -20,6 +20,12 @@ class WolvicContentBrowserClient : public ContentBrowserClient {
   WolvicContentBrowserClient& operator=(const WolvicContentBrowserClient&) =
       delete;
 
+  std::string GetUserAgent() override;
+  std::string GetUserAgentBasedOnPolicy(
+      content::BrowserContext* context) override;
+  std::string GetFullUserAgent() override;
+  std::string GetReducedUserAgent() override;
+
   ~WolvicContentBrowserClient() override;
 
   // ContentBrowserClient overrides.
