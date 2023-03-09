@@ -97,6 +97,10 @@ class MODULES_EXPORT ImageCapture final
   using PromiseResolverFunction =
       base::OnceCallback<void(ScriptPromiseResolver*)>;
 
+  bool CheckMediaTrackConstraintSet(const MediaTrackConstraintSet*,
+                                    MediaTrackConstraintSetType,
+                                    ScriptPromiseResolver*) const;
+
   // mojom::blink::PermissionObserver implementation.
   // Called when we get an updated PTZ permission value from the browser.
   void OnPermissionStatusChange(mojom::blink::PermissionStatus) override;
@@ -130,6 +134,9 @@ class MODULES_EXPORT ImageCapture final
 
   void OnServiceConnectionError();
 
+  void MaybeRejectWithOverconstrainedError(ScriptPromiseResolver*,
+                                           const char* constraint,
+                                           const char* message) const;
   void ResolveWithNothing(ScriptPromiseResolver*);
   void ResolveWithPhotoSettings(ScriptPromiseResolver*);
   void ResolveWithPhotoCapabilities(ScriptPromiseResolver*);

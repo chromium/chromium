@@ -395,6 +395,21 @@ bool IsBooleanFalseConstraint(
   return constraint->IsBoolean() && !constraint->GetAsBoolean();
 }
 
+bool MayRejectWithOverconstrainedError(
+    MediaTrackConstraintSetType constraint_set_type) {
+  // TODO(crbug.com/1408091): This is not spec compliant. Remove this.
+  if (constraint_set_type == MediaTrackConstraintSetType::kFirstAdvanced) {
+    return true;
+  }
+
+  // Only required constraints (in the basic constraint set) may cause
+  // the applyConstraints returned promise to reject with
+  // an OverconstrainedError.
+  // Advanced constraints (in the advanced constraint sets) may only cause
+  // those constraint sets to be discarded.
+  return constraint_set_type == MediaTrackConstraintSetType::kBasic;
+}
+
 bool TrackIsInactive(const MediaStreamTrack& track) {
   // Spec instructs to return an exception if the Track's readyState() is not
   // "live". Also reject if the track is disabled or muted.
@@ -767,18 +782,19 @@ bool ImageCapture::CheckAndApplyMediaTrackConstraintsToSettings(
        AllSupportedConstraintSets(constraints)) {
     const MediaTrackConstraintSetType constraint_set_type =
         GetMediaTrackConstraintSetType(constraint_set, constraints);
+    const bool may_reject =
+        MayRejectWithOverconstrainedError(constraint_set_type);
+    if (!CheckMediaTrackConstraintSet(constraint_set, constraint_set_type,
+                                      may_reject ? resolver : nullptr)) {
+      if (!may_reject) {
+        continue;
+      }
+      return false;
+    }
 
     // TODO(crbug.com/1408091): Add support for the basic constraint set and for
     // advanced constraint sets beyond the first one and remove check.
     DCHECK_EQ(constraint_set, constraints->advanced()[0]);
-
-    if (absl::optional<const char*> name =
-            GetConstraintWithCapabilityExistenceMismatch(constraint_set,
-                                                         constraint_set_type)) {
-      resolver->Reject(MakeGarbageCollected<OverconstrainedError>(
-          name.value(), "Unsupported constraint"));
-      return false;
-    }
 
     // TODO(mcasas): support other Mode types beyond simple string i.e. the
     // equivalents of "sequence<DOMString>"" or "ConstrainDOMStringParameters".
@@ -1293,6 +1309,25 @@ ImageCapture::ImageCapture(ExecutionContext* context,
       pan_tilt_zoom_permission_, std::move(observer));
 }
 
+// TODO(crbug.com/708723): Integrate image capture constraints processing with
+// the main implementation and remove this support function.
+bool ImageCapture::CheckMediaTrackConstraintSet(
+    const MediaTrackConstraintSet* constraint_set,
+    MediaTrackConstraintSetType constraint_set_type,
+    ScriptPromiseResolver* resolver) const {
+  if (absl::optional<const char*> name =
+          GetConstraintWithCapabilityExistenceMismatch(constraint_set,
+                                                       constraint_set_type)) {
+    MaybeRejectWithOverconstrainedError(resolver, name.value(),
+                                        "Unsupported constraint");
+    return false;
+  }
+
+  // TODO(crbug.com/1408091): Check value constraints.
+
+  return true;
+}
+
 void ImageCapture::OnPermissionStatusChange(
     mojom::blink::PermissionStatus status) {
   pan_tilt_zoom_permission_ = status;
@@ -1575,6 +1610,17 @@ void ImageCapture::OnServiceConnectionError() {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotFoundError, kNoServiceError));
   }
+}
+
+void ImageCapture::MaybeRejectWithOverconstrainedError(
+    ScriptPromiseResolver* resolver,
+    const char* constraint,
+    const char* message) const {
+  if (!resolver) {
+    return;
+  }
+  resolver->Reject(
+      MakeGarbageCollected<OverconstrainedError>(constraint, message));
 }
 
 void ImageCapture::ResolveWithNothing(ScriptPromiseResolver* resolver) {
