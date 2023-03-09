@@ -86,6 +86,23 @@ chromium-metrics-reviews@google.com.
   <token key="PreloadingPredictor" variants="PreloadingPredictor"/>
 </histogram>
 
+<histogram name="Preloading.Predictor.{PreloadingPredictor}.Recall"
+    enum="PredictorConfusionMatrix" expires_after="2023-06-04">
+  <owner>isaboori@google.com</owner>
+  <owner>spelchat@chromium.org</owner>
+  <owner>sreejakshetty@chromium.org</owner>
+  <owner>jbroman@chromium.org</owner>
+  <owner>chrome-brapp-loading@chromium.org</owner>
+  <summary>
+    After the user starts a new navigation, the outcome of any eligible
+    {PreloadingPredictor} preloading predictor is recorded as a true positive or
+    a false negative. These statistics are used to compute recall of the
+    preloading predictor. The statistics about false positive and true negative
+    cases are not required to compute the recall and are not recorded here.
+  </summary>
+  <token key="PreloadingPredictor" variants="PreloadingPredictor"/>
+</histogram>
+
 <histogram
     name="Preloading.{PreloadingType}.Attempt.{PreloadingPredictor}.Precision"
     enum="PredictorConfusionMatrix" expires_after="2023-06-04">
@@ -101,6 +118,26 @@ chromium-metrics-reviews@google.com.
     used to compute precision of the preloading attempt. The statistics about
     negative cases are not required to compute the precision and are not
     recorded here.
+  </summary>
+  <token key="PreloadingType" variants="PreloadingType"/>
+  <token key="PreloadingPredictor" variants="PreloadingPredictor"/>
+</histogram>
+
+<histogram
+    name="Preloading.{PreloadingType}.Attempt.{PreloadingPredictor}.Recall"
+    enum="PredictorConfusionMatrix" expires_after="2023-06-04">
+  <owner>isaboori@google.com</owner>
+  <owner>spelchat@chromium.org</owner>
+  <owner>sreejakshetty@chromium.org</owner>
+  <owner>jbroman@chromium.org</owner>
+  <owner>chrome-brapp-loading@chromium.org</owner>
+  <summary>
+    After the user starts a new navigation, the outcome of any eligible
+    preloading attempt of type {PreloadingType} that is triggered by
+    {PreloadingPredictor} is recorded as a true positive or a false negative.
+    These statistics are used to compute recall of the preloading attempt. The
+    statistics about false positive and true negative cases are not required to
+    compute the recall and are not recorded here.
   </summary>
   <token key="PreloadingType" variants="PreloadingType"/>
   <token key="PreloadingPredictor" variants="PreloadingPredictor"/>

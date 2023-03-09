@@ -44,10 +44,23 @@ class PreloadingDataImplTest : public RenderViewHostTestHarness {
   std::unique_ptr<TestWebContents> web_contents_;
 };
 
-TEST_F(PreloadingDataImplTest, PredictorPrecision) {
+TEST_F(PreloadingDataImplTest, PredictorPrecisionAndRecall) {
   base::HistogramTester histogram_tester;
   auto* preloading_data =
       PreloadingDataImpl::GetOrCreateForWebContents(GetWebContents());
+
+  preloading_data->SetIsNavigationInDomainCallback(
+      preloading_predictor::kUrlPointerDownOnAnchor,
+      base::BindRepeating(
+          [](NavigationHandle* /*navigation_handle*/) { return true; }));
+  preloading_data->SetIsNavigationInDomainCallback(
+      preloading_predictor::kUrlPointerHoverOnAnchor,
+      base::BindRepeating(
+          [](NavigationHandle* /*navigation_handle*/) { return true; }));
+  preloading_data->SetIsNavigationInDomainCallback(
+      preloading_predictor::kLinkRel,
+      base::BindRepeating(
+          [](NavigationHandle* /*navigation_handle*/) { return true; }));
 
   // Add preloading predictions.
   GURL url_1{"https:www.example.com/page1.html"};
@@ -58,7 +71,7 @@ TEST_F(PreloadingDataImplTest, PredictorPrecision) {
       preloading_predictor::kUrlPointerDownOnAnchor};
   PreloadingPredictor predictor_2{
       preloading_predictor::kUrlPointerHoverOnAnchor};
-
+  PreloadingPredictor predictor_3{preloading_predictor::kLinkRel};
   preloading_data->AddPreloadingPrediction(
       predictor_1,
       /*confidence=*/100, PreloadingData::GetSameURLMatcher(url_1));
@@ -104,11 +117,51 @@ TEST_F(PreloadingDataImplTest, PredictorPrecision) {
   histogram_tester.ExpectBucketCount(uma_predictor_precision(predictor_2),
                                      PredictorConfusionMatrix::kFalsePositive,
                                      2);
+
+  // Check recall UKM records.
+  auto uma_predictor_recall = [](const PreloadingPredictor& predictor) {
+    return base::StrCat({"Preloading.Predictor.", predictor.name(), ".Recall"});
+  };
+  // It should only record 1 TP and not 2, and also no FN.
+  histogram_tester.ExpectBucketCount(uma_predictor_recall(predictor_1),
+                                     PredictorConfusionMatrix::kTruePositive,
+                                     1);
+  histogram_tester.ExpectBucketCount(uma_predictor_recall(predictor_1),
+                                     PredictorConfusionMatrix::kFalseNegative,
+                                     0);
+  // It should only record 1 FN.
+  histogram_tester.ExpectBucketCount(uma_predictor_recall(predictor_2),
+                                     PredictorConfusionMatrix::kTruePositive,
+                                     0);
+  histogram_tester.ExpectBucketCount(uma_predictor_recall(predictor_2),
+                                     PredictorConfusionMatrix::kFalseNegative,
+                                     1);
+  // For the missing predictor we should record 1 FN.
+  histogram_tester.ExpectBucketCount(uma_predictor_recall(predictor_3),
+                                     PredictorConfusionMatrix::kTruePositive,
+                                     0);
+  histogram_tester.ExpectBucketCount(uma_predictor_recall(predictor_3),
+                                     PredictorConfusionMatrix::kFalseNegative,
+                                     1);
 }
-TEST_F(PreloadingDataImplTest, PreloadingAttemptPrecision) {
+
+TEST_F(PreloadingDataImplTest, PreloadingAttemptPrecisionAndRecall) {
   base::HistogramTester histogram_tester;
   auto* preloading_data =
       PreloadingDataImpl::GetOrCreateForWebContents(GetWebContents());
+
+  preloading_data->SetIsNavigationInDomainCallback(
+      preloading_predictor::kUrlPointerDownOnAnchor,
+      base::BindRepeating(
+          [](NavigationHandle* /*navigation_handle*/) { return true; }));
+  preloading_data->SetIsNavigationInDomainCallback(
+      preloading_predictor::kUrlPointerHoverOnAnchor,
+      base::BindRepeating(
+          [](NavigationHandle* /*navigation_handle*/) { return true; }));
+  preloading_data->SetIsNavigationInDomainCallback(
+      preloading_predictor::kLinkRel,
+      base::BindRepeating(
+          [](NavigationHandle* /*navigation_handle*/) { return false; }));
 
   // Add preloading predictions.
   GURL url_1{"https:www.example.com/page1.html"};
@@ -119,6 +172,8 @@ TEST_F(PreloadingDataImplTest, PreloadingAttemptPrecision) {
       preloading_predictor::kUrlPointerDownOnAnchor};
   PreloadingPredictor predictor_2{
       preloading_predictor::kUrlPointerHoverOnAnchor};
+  PreloadingPredictor predictor_3{preloading_predictor::kLinkRel};
+
   std::vector<std::tuple<PreloadingPredictor, PreloadingType, GURL>> attempts{
       {predictor_1, PreloadingType::kPrerender, url_1},
       {predictor_2, PreloadingType::kPrefetch, url_2},
@@ -174,6 +229,55 @@ TEST_F(PreloadingDataImplTest, PreloadingAttemptPrecision) {
   histogram_tester.ExpectBucketCount(
       uma_attempt_precision(predictor_2, PreloadingType::kPrerender),
       PredictorConfusionMatrix::kFalsePositive, 2);
+
+  // Check recall UKM records.
+  auto uma_attempt_recall = [](const PreloadingPredictor& predictor,
+                               PreloadingType preloading_type) {
+    return base::StrCat({"Preloading.", PreloadingTypeToString(preloading_type),
+                         ".Attempt.", predictor.name(), ".Recall"});
+  };
+
+  // predictor_1, prerender should be TP
+  histogram_tester.ExpectBucketCount(
+      uma_attempt_recall(predictor_1, PreloadingType::kPrerender),
+      PredictorConfusionMatrix::kTruePositive, 1);
+  histogram_tester.ExpectBucketCount(
+      uma_attempt_recall(predictor_1, PreloadingType::kPrerender),
+      PredictorConfusionMatrix::kFalseNegative, 0);
+  // predictor_1, prefetch should be FN
+  histogram_tester.ExpectBucketCount(
+      uma_attempt_recall(predictor_1, PreloadingType::kPrefetch),
+      PredictorConfusionMatrix::kTruePositive, 0);
+  histogram_tester.ExpectBucketCount(
+      uma_attempt_recall(predictor_1, PreloadingType::kPrefetch),
+      PredictorConfusionMatrix::kFalseNegative, 1);
+  // predictor_2, prerender should be TP
+  histogram_tester.ExpectBucketCount(
+      uma_attempt_recall(predictor_2, PreloadingType::kPrerender),
+      PredictorConfusionMatrix::kTruePositive, 1);
+  histogram_tester.ExpectBucketCount(
+      uma_attempt_recall(predictor_2, PreloadingType::kPrerender),
+      PredictorConfusionMatrix::kFalseNegative, 0);
+  // predictor_2, prefetch should be FN
+  histogram_tester.ExpectBucketCount(
+      uma_attempt_recall(predictor_2, PreloadingType::kPrefetch),
+      PredictorConfusionMatrix::kTruePositive, 0);
+  histogram_tester.ExpectBucketCount(
+      uma_attempt_recall(predictor_2, PreloadingType::kPrefetch),
+      PredictorConfusionMatrix::kFalseNegative, 1);
+  // 'page_in_domain_check' returns false for predictor_3: TP=0, FN=0.
+  histogram_tester.ExpectBucketCount(
+      uma_attempt_recall(predictor_3, PreloadingType::kPrerender),
+      PredictorConfusionMatrix::kTruePositive, 0);
+  histogram_tester.ExpectBucketCount(
+      uma_attempt_recall(predictor_3, PreloadingType::kPrerender),
+      PredictorConfusionMatrix::kFalseNegative, 0);
+  histogram_tester.ExpectBucketCount(
+      uma_attempt_recall(predictor_3, PreloadingType::kPrefetch),
+      PredictorConfusionMatrix::kTruePositive, 0);
+  histogram_tester.ExpectBucketCount(
+      uma_attempt_recall(predictor_3, PreloadingType::kPrefetch),
+      PredictorConfusionMatrix::kFalseNegative, 0);
 }
 
 }  // namespace content
