@@ -58,6 +58,18 @@ public class HistogramWatcherWithoutNativeTest extends HistogramWatcherTestBase 
 
     @Test
     @MediumTest
+    public void testExtraRecordAllowedAny_success() {
+        doTestExtraRecordAllowedAny_success(TestScenario.WITHOUT_NATIVE);
+    }
+
+    @Test
+    @MediumTest
+    public void testExtraRecordAllowedAny_failure() {
+        doTestExtraRecordAllowedAny_failure(TestScenario.WITHOUT_NATIVE);
+    }
+
+    @Test
+    @MediumTest
     public void testMissingRecord_failure() {
         doTestMissingLastRecord_failure(TestScenario.WITHOUT_NATIVE);
     }

@@ -164,6 +164,50 @@ public class HistogramWatcherTestBase {
         Assert.fail("Expected AssertionError");
     }
 
+    protected void doTestExtraRecordAllowedAny_success(@TestScenario int scenario) {
+        // Arrange
+        maybeLoadNativeFirst(scenario);
+        mWatcher = HistogramWatcher.newBuilder()
+                           .expectAnyRecords(BOOLEAN_HISTOGRAM, 3)
+                           .allowExtraRecordsForHistogramsAbove()
+                           .build();
+
+        // Act
+        RecordHistogram.recordBooleanHistogram(BOOLEAN_HISTOGRAM, false);
+        RecordHistogram.recordBooleanHistogram(BOOLEAN_HISTOGRAM, false);
+        RecordHistogram.recordBooleanHistogram(BOOLEAN_HISTOGRAM, true);
+        RecordHistogram.recordBooleanHistogram(BOOLEAN_HISTOGRAM, true);
+        maybeLoadNativeAfterRecord(scenario);
+
+        // Assert
+        mWatcher.assertExpected();
+    }
+
+    protected void doTestExtraRecordAllowedAny_failure(@TestScenario int scenario) {
+        // Arrange
+        maybeLoadNativeFirst(scenario);
+        mWatcher = HistogramWatcher.newBuilder()
+                           .expectAnyRecords(BOOLEAN_HISTOGRAM, 3)
+                           .allowExtraRecordsForHistogramsAbove()
+                           .build();
+
+        // Act
+        RecordHistogram.recordBooleanHistogram(BOOLEAN_HISTOGRAM, false);
+        RecordHistogram.recordBooleanHistogram(BOOLEAN_HISTOGRAM, false);
+        maybeLoadNativeAfterRecord(scenario);
+
+        // Assert
+        try {
+            mWatcher.assertExpected();
+        } catch (AssertionError e) {
+            assertContains(BOOLEAN_HISTOGRAM, e.getMessage());
+            assertContains("3 record(s) expected: [Any (3 times)]", e.getMessage());
+            assertContains("2 record(s) seen: [0 (2 times)]", e.getMessage());
+            return;
+        }
+        Assert.fail("Expected AssertionError");
+    }
+
     protected void doTestMissingLastRecord_failure(@TestScenario int scenario) {
         // Arrange
         maybeLoadNativeFirst(scenario);
