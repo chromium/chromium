@@ -829,6 +829,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 - (NSArray<UIDragItem*>*)collectionView:(UICollectionView*)collectionView
            itemsForBeginningDragSession:(id<UIDragSession>)session
                             atIndexPath:(NSIndexPath*)indexPath {
+  if (self.dragDropHandler == nil) {
+    // Don't support dragging items if the drag&drop handler is not set.
+    return @[];
+  }
   if (self.thumbStripEnabled && self.items.count <= 1) {
     // If only one item, don't drag it or this will leave the BVC or the grid
     // empty.
@@ -898,8 +902,15 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 - (BOOL)collectionView:(UICollectionView*)collectionView
     canHandleDropSession:(id<UIDropSession>)session {
-  // Prevent dropping tabs into grid while displaying search results.
-  return (_mode != TabGridModeSearch);
+  if (self.dragDropHandler == nil) {
+    // Don't support dropping items if the drag&drop handler is not set.
+    return NO;
+  }
+  if (_mode != TabGridModeSearch) {
+    // Prevent dropping tabs into grid while displaying search results.
+    return NO;
+  }
+  return YES;
 }
 
 - (UICollectionViewDropProposal*)
