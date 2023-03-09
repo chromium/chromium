@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.res.Resources;
 import android.text.TextUtils;
+import android.view.Choreographer;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,7 +20,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider.UpdateState;
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider.UpdateStatus;
@@ -158,8 +158,8 @@ public class UpdateMenuItemHelper {
         mMenuDismissedRunnableExecuted = false;
         // Post a task to record the item clicked histogram. Post task is used so that the runnable
         // executes after #onMenuItemClicked is called (if it's going to be called).
-        PostTask.postTask(
-                TaskTraits.CHOREOGRAPHER_FRAME, () -> { mMenuDismissedRunnableExecuted = true; });
+        Choreographer.getInstance().postFrameCallback(
+                (long frameTimeNanos) -> { mMenuDismissedRunnableExecuted = true; });
     }
 
     /**

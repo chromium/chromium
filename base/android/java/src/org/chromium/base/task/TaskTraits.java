@@ -58,13 +58,6 @@ public class TaskTraits {
     // USER_BLOCKING + may block.
     public static final TaskTraits USER_BLOCKING_MAY_BLOCK = USER_BLOCKING.mayBlock();
 
-    // A bit like requestAnimationFrame, this task will be posted onto the Choreographer
-    // and will be run on the android main thread after the next vsync.
-    public static final TaskTraits CHOREOGRAPHER_FRAME = new TaskTraits();
-    static {
-        CHOREOGRAPHER_FRAME.mIsChoreographerFrame = true;
-    }
-
     // For tasks that should run on the thread pool instead of the main thread.
     // Note that currently also tasks which lack this trait will execute on the
     // thread pool unless a trait for a named thread is given.
@@ -84,7 +77,6 @@ public class TaskTraits {
     boolean mUseThreadPool;
     byte mExtensionId;
     byte mExtensionData[];
-    boolean mIsChoreographerFrame;
 
     // Derive custom traits from existing trait constants.
     private TaskTraits() {
@@ -181,8 +173,7 @@ public class TaskTraits {
             TaskTraits other = (TaskTraits) object;
             return mPriority == other.mPriority && mMayBlock == other.mMayBlock
                     && mUseThreadPool == other.mUseThreadPool && mExtensionId == other.mExtensionId
-                    && Arrays.equals(mExtensionData, other.mExtensionData)
-                    && mIsChoreographerFrame == other.mIsChoreographerFrame;
+                    && Arrays.equals(mExtensionData, other.mExtensionData);
         } else {
             return false;
         }
@@ -196,7 +187,6 @@ public class TaskTraits {
         hash = 37 * hash + (mUseThreadPool ? 0 : 1);
         hash = 37 * hash + (int) mExtensionId;
         hash = 37 * hash + Arrays.hashCode(mExtensionData);
-        hash = 37 * hash + (mIsChoreographerFrame ? 0 : 1);
         return hash;
     }
 }

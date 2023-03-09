@@ -94,7 +94,7 @@ public class PostTask {
      * @param delay The delay in milliseconds before the task can be run.
      */
     public static void postDelayedTask(TaskTraits taskTraits, Runnable task, long delay) {
-        if (!sNativeInitialized || taskTraits.mIsChoreographerFrame) {
+        if (!sNativeInitialized) {
             getTaskExecutorForTraits(taskTraits).postDelayedTask(taskTraits, task, delay);
         } else {
             TaskTraits postedTraits = taskTraits.withExplicitDestination();
