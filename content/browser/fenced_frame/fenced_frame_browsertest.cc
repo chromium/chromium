@@ -6004,7 +6004,8 @@ IN_PROC_BROWSER_TEST_P(UUIDFrameTreeBrowserTest,
 }
 
 class FencedFrameAutomaticBeaconBrowserTest
-    : public FencedFrameParameterizedBrowserTest {
+    : public FencedFrameParameterizedBrowserTest,
+      public testing::WithParamInterface<const char*> {
  public:
   FencedFrameAutomaticBeaconBrowserTest() {
     scoped_feature_list_.InitAndEnableFeature(
@@ -6033,9 +6034,18 @@ class FencedFrameAutomaticBeaconBrowserTest
     // Whether the initiating frame should have user activation when navigating.
     bool initiator_has_user_activation = true;
 
+    // Whether the top-level navigation should target "_blank" instead of
+    // "_unfencedTop"/"_top".
+    bool target_blank_navigation = false;
+
     // Whether we expect the beacon to send properly or not.
     bool expected_success = true;
   };
+
+  static std::string DescribeParams(
+      const ::testing::TestParamInfo<ParamType>& info) {
+    return info.param;
+  }
 
   std::unique_ptr<net::test_server::BasicHttpResponse>
   GetResponseWithAccessAllowHeaders(
@@ -6168,47 +6178,61 @@ class FencedFrameAutomaticBeaconBrowserTest
         &url_mapping, starting_url, fenced_frame_reporter);
 
     EXPECT_TRUE(
-        ExecJs(root,
-               "var fenced_frame = document.createElement('fencedframe');"
-               "fenced_frame.mode = 'opaque-ads';"
-               "document.body.appendChild(fenced_frame);"));
-    EXPECT_EQ(1U, root->child_count());
-    FrameTreeNode* fenced_frame_root_node =
-        GetFencedFrameRootNode(root->child_at(0));
-    TestFrameNavigationObserver fenced_frame_observer(
-        fenced_frame_root_node->current_frame_host());
-    EXPECT_TRUE(fenced_frame_root_node->IsFencedFrameRoot());
-    EXPECT_TRUE(fenced_frame_root_node->IsInFencedFrameTree());
+        ExecJs(root, JsReplace("var ad_frame = document.createElement($1);"
+                               "ad_frame.mode = 'opaque-ads';"
+                               "document.body.appendChild(ad_frame);",
+                               GetParam())));
 
-    EXPECT_TRUE(
-        ExecJs(root, JsReplace("fenced_frame.src = $1;", starting_urn)));
-    fenced_frame_observer.WaitForCommit();
+    EXPECT_EQ(1U, root->child_count());
+    FrameTreeNode* ad_frame_root_node;
+
+    if (GetParam() == std::string("fencedframe")) {
+      ad_frame_root_node = GetFencedFrameRootNode(root->child_at(0));
+      EXPECT_TRUE(ad_frame_root_node->IsFencedFrameRoot());
+      EXPECT_TRUE(ad_frame_root_node->IsInFencedFrameTree());
+    } else {
+      ad_frame_root_node = root->child_at(0);
+    }
+
+    TestFrameNavigationObserver ad_frame_observer(
+        ad_frame_root_node->current_frame_host());
+
+    EXPECT_TRUE(ExecJs(root, JsReplace("ad_frame.src = $1;", starting_urn)));
+    ad_frame_observer.WaitForCommit();
 
     // ExecJs() by default gives its execution target transient user activation.
     // If the test requires a frame to not have user activation, that must be
     // specified in the function call's `options` parameter for every ExecJs()
     // call made on the frame.
-    EvalJsOptions fenced_frame_execjs_options =
+    EvalJsOptions ad_frame_execjs_options =
         config.initiator_has_user_activation ? EXECUTE_SCRIPT_DEFAULT_OPTIONS
                                              : EXECUTE_SCRIPT_NO_USER_GESTURE;
 
     if (config.register_beacon_data) {
       EXPECT_TRUE(ExecJs(
-          fenced_frame_root_node,
+          ad_frame_root_node,
           JsReplace("window.fence.setReportEventDataForAutomaticBeacons({"
                     "eventType: $2,"
                     "eventData: $1,"
                     "destination: ['seller', 'buyer']"
                     "});",
                     config.message, blink::kFencedFrameTopNavigationBeaconType),
-          fenced_frame_execjs_options));
+          ad_frame_execjs_options));
     }
 
-    content::WebContentsAddedObserver popup_observer;
-    EXPECT_TRUE(ExecJs(fenced_frame_root_node,
-                       JsReplace("window.open($1, '_blank');", navigation_url),
-                       fenced_frame_execjs_options));
-    WaitForLoadStop(popup_observer.GetWebContents());
+    std::string target;
+    if (config.target_blank_navigation) {
+      target = "_blank";
+    } else if (GetParam() == std::string("fencedframe")) {
+      target = "_unfencedTop";
+    } else {
+      target = "_top";
+    }
+
+    EXPECT_TRUE(
+        ExecJs(ad_frame_root_node,
+               JsReplace("window.open($1, $2);", navigation_url, target),
+               ad_frame_execjs_options));
 
     if (!config.expected_success) {
       // Send a message indicating that the top-level navigation happened.
@@ -6261,7 +6285,7 @@ class FencedFrameAutomaticBeaconBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(FencedFrameAutomaticBeaconBrowserTest, SameOriginBasic) {
+IN_PROC_BROWSER_TEST_P(FencedFrameAutomaticBeaconBrowserTest, SameOriginBasic) {
   Config config = {
       .starting_url = {"a.test", "/fenced_frames/title1.html"},
       .navigation_url = {"a.test", "/fenced_frames/title1.html"},
@@ -6269,7 +6293,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameAutomaticBeaconBrowserTest, SameOriginBasic) {
   RunTest(config);
 }
 
-IN_PROC_BROWSER_TEST_F(FencedFrameAutomaticBeaconBrowserTest,
+IN_PROC_BROWSER_TEST_P(FencedFrameAutomaticBeaconBrowserTest,
                        CrossOriginBasic) {
   Config config = {
       .starting_url = {"a.test", "/fenced_frames/title1.html"},
@@ -6278,7 +6302,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameAutomaticBeaconBrowserTest,
   RunTest(config);
 }
 
-IN_PROC_BROWSER_TEST_F(FencedFrameAutomaticBeaconBrowserTest, BFCacheDisabled) {
+IN_PROC_BROWSER_TEST_P(FencedFrameAutomaticBeaconBrowserTest, BFCacheDisabled) {
   DisableBackForwardCacheForTesting(shell()->web_contents(),
                                     BackForwardCache::TEST_REQUIRES_NO_CACHING);
   Config config = {
@@ -6288,7 +6312,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameAutomaticBeaconBrowserTest, BFCacheDisabled) {
   RunTest(config);
 }
 
-IN_PROC_BROWSER_TEST_F(FencedFrameAutomaticBeaconBrowserTest, EmptyMessage) {
+IN_PROC_BROWSER_TEST_P(FencedFrameAutomaticBeaconBrowserTest, EmptyMessage) {
   Config config = {
       .starting_url = {"a.test", "/fenced_frames/title1.html"},
       .navigation_url = {"b.test", "/fenced_frames/title1.html"},
@@ -6298,7 +6322,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameAutomaticBeaconBrowserTest, EmptyMessage) {
   RunTest(config);
 }
 
-IN_PROC_BROWSER_TEST_F(FencedFrameAutomaticBeaconBrowserTest,
+IN_PROC_BROWSER_TEST_P(FencedFrameAutomaticBeaconBrowserTest,
                        NoBeaconDataRegistered) {
   Config config = {
       .starting_url = {"a.test", "/fenced_frames/title1.html"},
@@ -6309,7 +6333,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameAutomaticBeaconBrowserTest,
   RunTest(config);
 }
 
-IN_PROC_BROWSER_TEST_F(FencedFrameAutomaticBeaconBrowserTest,
+IN_PROC_BROWSER_TEST_P(FencedFrameAutomaticBeaconBrowserTest,
                        NoUserActivation) {
   Config config = {
       .starting_url = {"a.test", "/fenced_frames/title1.html"},
@@ -6319,6 +6343,22 @@ IN_PROC_BROWSER_TEST_F(FencedFrameAutomaticBeaconBrowserTest,
   };
   RunTest(config);
 }
+
+IN_PROC_BROWSER_TEST_P(FencedFrameAutomaticBeaconBrowserTest,
+                       TargetBlankNavigation) {
+  Config config = {
+      .starting_url = {"a.test", "/fenced_frames/title1.html"},
+      .navigation_url = {"b.test", "/fenced_frames/title1.html"},
+      .target_blank_navigation = true,
+  };
+  RunTest(config);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    FencedFrameAutomaticBeaconBrowserTest,
+    ::testing::Values("fencedframe", "iframe"),
+    &FencedFrameAutomaticBeaconBrowserTest::DescribeParams);
 
 INSTANTIATE_TEST_SUITE_P(All,
                          UUIDFrameTreeBrowserTest,
