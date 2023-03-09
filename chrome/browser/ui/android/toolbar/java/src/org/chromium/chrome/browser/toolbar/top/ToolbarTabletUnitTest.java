@@ -17,7 +17,6 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -31,7 +30,6 @@ import org.robolectric.Shadows;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowToast;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
@@ -102,11 +100,6 @@ public final class ToolbarTabletUnitTest {
         mForwardButton = mToolbarTablet.findViewById(R.id.forward_button);
         mReloadingButton = mToolbarTablet.findViewById(R.id.refresh_button);
         mJniMocker.mock(ToastManagerJni.TEST_HOOKS, mToastManagerJni);
-    }
-
-    @After
-    public void tearDown() {
-        disableGridTabSwitcher();
     }
 
     @Test
@@ -201,10 +194,8 @@ public final class ToolbarTabletUnitTest {
         }
     }
 
-    @EnableFeatures(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS)
     @Test
-    public void testSetTabSwitcherPolishModeOff_toolbarStillVisible() {
-        enableGridTabSwitcher(true);
+    public void testSetTabSwitcherModeOff_toolbarStillVisible() {
         assertEquals("Initial Toolbar visibility is not as expected", View.VISIBLE,
                 mToolbarTablet.getVisibility());
         // Call
@@ -214,10 +205,8 @@ public final class ToolbarTabletUnitTest {
         verify(mLocationBar).setUrlBarFocusable(true);
     }
 
-    @EnableFeatures(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS)
     @Test
-    public void testSetTabSwitcherPolishModeOn_toolbarStillVisible() {
-        enableGridTabSwitcher(true);
+    public void testSetTabSwitcherModeOn_toolbarStillVisible() {
         assertEquals("Initial Toolbar visibility is not as expected", View.VISIBLE,
                 mToolbarTablet.getVisibility());
         // Call
@@ -349,19 +338,5 @@ public final class ToolbarTabletUnitTest {
         assertTrue("Toast is not as expected",
                 ShadowToast.showedCustomToast(
                         mActivity.getResources().getString(stringId), R.id.toast_text));
-    }
-
-    private void enableGridTabSwitcher(boolean enablePolish) {
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFeatureFlagOverride(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS, true);
-        testValues.addFieldTrialParamOverride(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS,
-                "enable_launch_polish", String.valueOf(enablePolish));
-        FeatureList.setTestValues(testValues);
-    }
-
-    private void disableGridTabSwitcher() {
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFeatureFlagOverride(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS, false);
-        FeatureList.setTestValues(testValues);
     }
 }

@@ -178,7 +178,6 @@ public class TabGridDialogTest {
     @BeforeClass
     public static void setUpBeforeActivityLaunched() {
         ChromeNightModeTestUtils.setUpNightModeBeforeChromeActivityLaunched();
-        TabUiFeatureUtilities.setTabletGridTabSwitcherPolishEnabledForTesting(true);
         TabUiFeatureUtilities.setGtsDelayCreationEnabledForTesting(false);
     }
 
@@ -209,7 +208,6 @@ public class TabGridDialogTest {
 
     @AfterClass
     public static void tearDownAfterActivityDestroyed() {
-        TabUiFeatureUtilities.setTabletGridTabSwitcherPolishEnabledForTesting(null);
         TabUiFeatureUtilities.setGtsDelayCreationEnabledForTesting(null);
     }
 

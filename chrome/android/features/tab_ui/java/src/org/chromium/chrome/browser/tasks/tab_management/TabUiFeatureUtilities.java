@@ -73,12 +73,6 @@ public class TabUiFeatureUtilities {
             new BooleanCachedFieldTrialParameter(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
                     TAB_GROUP_SHARING_PARAM, false);
 
-    // Field trial parameter for enabling launch polish for the grid tab switcher for tablets.
-    private static final String GRID_TAB_SWITCHER_FOR_TABLETS_POLISH_PARAM = "enable_launch_polish";
-    public static final BooleanCachedFieldTrialParameter GRID_TAB_SWITCHER_FOR_TABLETS_POLISH =
-            new BooleanCachedFieldTrialParameter(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS,
-                    GRID_TAB_SWITCHER_FOR_TABLETS_POLISH_PARAM, true);
-
     // Field trial parameter for controlling delay grid tab switcher creation for tablets.
     private static final String DELAY_GTS_CREATION_PARAM = "delay_creation";
     public static final BooleanCachedFieldTrialParameter DELAY_GTS_CREATION =
@@ -118,7 +112,6 @@ public class TabUiFeatureUtilities {
                     ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID, DEFERRED_FAVICON, false);
 
     private static Boolean sTabManagementModuleSupportedForTesting;
-    private static Boolean sGridTabSwitcherPolishEnabledForTesting;
     private static Boolean sGridTabSwitcherDelayCreationEnabledForTesting;
 
     /**
@@ -186,28 +179,8 @@ public class TabUiFeatureUtilities {
     /**
      * Set whether the tablet grid tab switcher polish is enabled for testing.
      */
-    public static void setTabletGridTabSwitcherPolishEnabledForTesting(@Nullable Boolean enabled) {
-        sGridTabSwitcherPolishEnabledForTesting = enabled;
-    }
-
-    /**
-     * Set whether the tablet grid tab switcher polish is enabled for testing.
-     */
     public static void setGtsDelayCreationEnabledForTesting(@Nullable Boolean enabled) {
         sGridTabSwitcherDelayCreationEnabledForTesting = enabled;
-    }
-
-    /**
-     * @return Whether the tablet Grid Tab Switcher Polish is enabled.
-     * @param context The activity context.
-     */
-    public static boolean isTabletGridTabSwitcherPolishEnabled(Context context) {
-        if (sGridTabSwitcherPolishEnabledForTesting != null) {
-            return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
-                    && sGridTabSwitcherPolishEnabledForTesting;
-        }
-        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
-                && GRID_TAB_SWITCHER_FOR_TABLETS_POLISH.getValue();
     }
 
     /**

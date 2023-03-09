@@ -147,7 +147,7 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
             @Override
             public void finishedShowing() {
                 mAndroidViewFinishedShowing = true;
-                if (!TabUiFeatureUtilities.isTabletGridTabSwitcherPolishEnabled(context)) {
+                if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
                     doneShowing();
                 }
                 // When Tab-to-GTS animation is done, it's time to renew the thumbnail without
@@ -283,7 +283,7 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
         final boolean shouldAnimate =
                 animate && !isCurrentTabModelEmpty && !isShowingStartSurfaceHomepage;
 
-        if (TabUiFeatureUtilities.isTabletGridTabSwitcherPolishEnabled(getContext())) {
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
             showOverviewWithTranslateUp(shouldAnimate);
         } else {
             if (isShowingStartSurfaceHomepage) {
@@ -402,7 +402,7 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
         updateCacheVisibleIds(new LinkedList<>(Arrays.asList(sourceTabId)));
 
         mIsAnimatingHide = true;
-        if (TabUiFeatureUtilities.isTabletGridTabSwitcherPolishEnabled(getContext())) {
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
             translateDown();
         } else {
             mStartSurface.hideTabSwitcherView(!isTabGtsAnimationEnabled());
@@ -883,7 +883,7 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
      * @return Whether shrink/expand animation is enabled.
      */
     private boolean isTabGtsAnimationEnabled() {
-        if (TabUiFeatureUtilities.isTabletGridTabSwitcherPolishEnabled(getContext())) return false;
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) return false;
         return TabUiFeatureUtilities.isTabToGtsAnimationEnabled();
     }
 }

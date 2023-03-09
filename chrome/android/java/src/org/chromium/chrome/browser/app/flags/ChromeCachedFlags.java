@@ -176,7 +176,6 @@ public class ChromeCachedFlags {
                 TabUiFeatureUtilities.ZOOMING_MIN_MEMORY,
                 TabUiFeatureUtilities.SKIP_SLOW_ZOOMING,
                 TabUiFeatureUtilities.THUMBNAIL_ASPECT_RATIO,
-                TabUiFeatureUtilities.GRID_TAB_SWITCHER_FOR_TABLETS_POLISH,
                 TabUiFeatureUtilities.TAB_STRIP_TAB_WIDTH,
                 TabUiFeatureUtilities.ENABLE_TAB_SELECTION_EDITOR_V2_LONGPRESS_ENTRY,
                 TabUiFeatureUtilities.ENABLE_TAB_SELECTION_EDITOR_V2_SHARE,

@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -53,7 +52,6 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
-import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.PageTransition;
@@ -67,7 +65,6 @@ import java.util.List;
  * all input and model events to the proper destination.
  */
 public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNativeObserver {
-    private static final long FADE_SCRIM_DURATION_MS = 200;
     // Caching Variables
     private final RectF mStripFilterArea = new RectF();
 
@@ -104,9 +101,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
     private CompositorButton mModelSelectorButton;
 
     private Context mContext;
-    private final StripScrim mStripScrim;
     private boolean mBrowserScrimShowing;
-    private ValueAnimator mScrimFadeAnimation;
     private int mTabStripFadeShort;
     private int mTabStripFadeLong;
 
@@ -136,7 +131,6 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         @Override
         public void onDown(float x, float y, boolean fromMouse, int buttons) {
             if (mModelSelectorButton.onDown(x, y)) return;
-            if (mStripScrim.isVisible()) return;
             getActiveStripLayoutHelper().onDown(time(), x, y, fromMouse, buttons);
         }
 
@@ -148,14 +142,12 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
                 mTabModelSelector.selectModel(!mTabModelSelector.isIncognitoSelected());
                 return;
             }
-            if (mStripScrim.isVisible()) return;
             getActiveStripLayoutHelper().onUpOrCancel(time());
         }
 
         @Override
         public void drag(float x, float y, float dx, float dy, float tx, float ty) {
             mModelSelectorButton.drag(x, y);
-            if (mStripScrim.isVisible()) return;
             getActiveStripLayoutHelper().drag(time(), x, y, dx, dy, tx, ty);
         }
 
@@ -166,19 +158,16 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
                 mModelSelectorButton.handleClick(time);
                 return;
             }
-            if (mStripScrim.isVisible()) return;
             getActiveStripLayoutHelper().click(time(), x, y, fromMouse, buttons);
         }
 
         @Override
         public void fling(float x, float y, float velocityX, float velocityY) {
-            if (mStripScrim.isVisible()) return;
             getActiveStripLayoutHelper().fling(time(), x, y, velocityX, velocityY);
         }
 
         @Override
         public void onLongPress(float x, float y) {
-            if (mStripScrim.isVisible()) return;
             getActiveStripLayoutHelper().onLongPress(time(), x, y);
         }
 
@@ -215,32 +204,10 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         }
 
         private void updateScrimVisibility(boolean visibility) {
-            // Handled by separate scrim over entire browser in the polished version.
-            if (isGridTabSwitcherPolishEnabled()) {
-                // Scrim doesn't actually show if the a11y list switcher is showing.
-                mBrowserScrimShowing =
-                        visibility && !DeviceClassManager.enableAccessibilityLayout(mContext);
-                return;
-            }
-
-            if (!isGridTabSwitcherNonPolishEnabled()) return;
-
-            if (mScrimFadeAnimation != null && mScrimFadeAnimation.isRunning()) {
-                mScrimFadeAnimation.cancel();
-            }
-
-            float startAlpha = visibility ? 0.f : 1.f;
-            float endAlpha = visibility ? 1.f : 0.f;
-            mScrimFadeAnimation = ValueAnimator.ofFloat(startAlpha, endAlpha);
-            mScrimFadeAnimation.setInterpolator(Interpolators.LINEAR_INTERPOLATOR);
-            mScrimFadeAnimation.setDuration(FADE_SCRIM_DURATION_MS);
-            mScrimFadeAnimation.addUpdateListener((anim -> {
-                final float currentAlpha = (float) anim.getAnimatedValue();
-                mStripScrim.setAlpha(currentAlpha);
-                mTabStripTreeProvider.updateStripScrim(mStripScrim);
-            }));
-            mScrimFadeAnimation.start();
-            mStripScrim.setVisible(visibility);
+            // Handled by separate scrim over entire browser.
+            // Scrim doesn't actually show if the a11y list switcher is showing.
+            mBrowserScrimShowing =
+                    visibility && !DeviceClassManager.enableAccessibilityLayout(mContext);
         }
     }
 
@@ -340,8 +307,6 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
                 res.getString(R.string.accessibility_tabstrip_btn_incognito_toggle_standard),
                 res.getString(R.string.accessibility_tabstrip_btn_incognito_toggle_incognito));
 
-        mStripScrim = new StripScrim(context, mWidth, mHeight);
-        mStripScrim.setVisible(false);
         mBrowserScrimShowing = false;
 
         mNormalHelper =
@@ -379,19 +344,9 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
     }
 
     /**
-     * @return Return scrim to be applied on tab strip.
-     */
-    public StripScrim getStripScrim() {
-        return mStripScrim;
-    }
-
-    /**
      * Cleans up internal state.
      */
     public void destroy() {
-        if (mScrimFadeAnimation != null) {
-            mScrimFadeAnimation.cancel();
-        }
         mTabStripTreeProvider.destroy();
         mTabStripTreeProvider = null;
         mIncognitoHelper.destroy();
@@ -476,7 +431,6 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         } else {
             mModelSelectorButton.setX(getModelSelectorButtonWithTabStripEndPadding());
         }
-        updateStripScrim();
 
         mNormalHelper.onSizeChanged(mWidth, mHeight, orientationChanged, LayoutManagerImpl.time());
         mIncognitoHelper.onSizeChanged(
@@ -484,22 +438,6 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
 
         mStripFilterArea.set(0, 0, mWidth, Math.min(getHeight(), visibleViewportOffsetY));
         mEventFilter.setEventArea(mStripFilterArea);
-    }
-
-    private void updateStripScrim() {
-        if (!isGridTabSwitcherNonPolishEnabled()) return;
-        // Update width
-        float scrimWidth = mModelSelectorButton.isVisible()
-                ? mWidth - getModelSelectorButtonWidthWithPadding()
-                : mWidth;
-        mStripScrim.setWidth(scrimWidth);
-
-        // Update drawX
-        float drawX = 0;
-        if (LocalizationUtils.isLayoutRtl() && mModelSelectorButton.isVisible()) {
-            drawX = getModelSelectorButtonWidthWithPadding();
-        }
-        mStripScrim.setX(drawX);
     }
 
     private float getModelSelectorButtonWithTabStripEndPadding() {
@@ -537,7 +475,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
     public void getVirtualViews(List<VirtualView> views) {
         if (mBrowserScrimShowing) return;
 
-        if (!mStripScrim.isVisible()) getActiveStripLayoutHelper().getVirtualViews(views);
+        getActiveStripLayoutHelper().getVirtualViews(views);
         if (mModelSelectorButton.isVisible()) views.add(mModelSelectorButton);
     }
 
@@ -861,18 +799,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
 
             mNormalHelper.setEndMargin(endMargin);
             mIncognitoHelper.setEndMargin(endMargin);
-            updateStripScrim();
         }
-    }
-
-    private boolean isGridTabSwitcherPolishEnabled() {
-        return ChromeFeatureList.sGridTabSwitcherForTablets.isEnabled()
-                && TabUiFeatureUtilities.GRID_TAB_SWITCHER_FOR_TABLETS_POLISH.getValue();
-    }
-
-    private boolean isGridTabSwitcherNonPolishEnabled() {
-        return ChromeFeatureList.sGridTabSwitcherForTablets.isEnabled()
-                && !TabUiFeatureUtilities.GRID_TAB_SWITCHER_FOR_TABLETS_POLISH.getValue();
     }
 
     /**

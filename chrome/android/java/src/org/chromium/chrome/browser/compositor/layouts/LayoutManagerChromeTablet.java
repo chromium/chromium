@@ -161,13 +161,10 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
                     final ViewGroup containerView = mCreateStartSurfaceCallable.call();
                     createOverviewLayout(mStartSurfaceSupplier.get(), mTabSwitcherSupplier.get(),
                             mJankTracker, mScrimCoordinator, containerView);
-                    if (TabUiFeatureUtilities.isTabletGridTabSwitcherPolishEnabled(
-                                mHost.getContext())) {
-                        mThemeColorObserver =
-                                (color, shouldAnimate) -> containerView.setBackgroundColor(color);
-                        mTopUiThemeColorProvider = getTopUiThemeColorProvider().get();
-                        mTopUiThemeColorProvider.addThemeColorObserver(mThemeColorObserver);
-                    }
+                    mThemeColorObserver =
+                            (color, shouldAnimate) -> containerView.setBackgroundColor(color);
+                    mTopUiThemeColorProvider = getTopUiThemeColorProvider().get();
+                    mTopUiThemeColorProvider.addThemeColorObserver(mThemeColorObserver);
                 }
             } catch (Exception e) {
                 throw new RuntimeException("Failed to initialize start surface.", e);

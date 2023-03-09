@@ -36,7 +36,6 @@ import org.chromium.chrome.browser.compositor.layouts.components.TintedComposito
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab.StripLayoutTabDelegate;
-import org.chromium.chrome.browser.compositor.overlays.strip.StripScrim;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabLoadTracker.TabLoadTrackerCallback;
 import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayer;
 import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayerJni;
@@ -62,8 +61,6 @@ public class TabStripSceneLayerTest {
     private ResourceManager mResourceManager;
     @Mock
     private LayerTitleCache mLayerTitleCache;
-    @Mock
-    private StripScrim mStripScrim;
     @Mock
     private SceneLayer mSceneLayer;
     @Mock
@@ -112,12 +109,10 @@ public class TabStripSceneLayerTest {
                 mContext, 36.f, 36.f, mCompositorOnClickHandler, R.drawable.ic_new_tab_button);
         mNewTabButton = new TintedCompositorButton(
                 mContext, 36.f, 36.f, mCompositorOnClickHandler, R.drawable.ic_new_tab_button);
-        mStripScrim = new StripScrim(mContext, 50.f, 10.f);
         mStripLayoutTab = new StripLayoutTab(mContext, 1, mStripLayoutTabDelegate,
                 mTabLoadTrackerCallback, mLayoutRenderHost, mLayoutUpdateHost, false);
         mTabStripSceneLayer.initializeNativeForTesting();
         mStripLayoutTabs = new StripLayoutTab[] {mStripLayoutTab};
-        when(mStripLayoutHelperManager.getStripScrim()).thenReturn(mStripScrim);
         when(mStripLayoutHelperManager.getNewTabButton()).thenReturn(mNewTabButton);
         when(mStripLayoutHelperManager.getModelSelectorButton()).thenReturn(mModelSelectorButton);
     }
@@ -213,17 +208,5 @@ public class TabStripSceneLayerTest {
                         mModelSelectorButton.getOpacity(), mResourceManager);
         verify(mTabStripSceneMock)
                 .updateTabStripLeftFade(1L, mTabStripSceneLayer, 0, 0.f, mResourceManager, 0);
-    }
-
-    @Test
-    public void testUpdateStripScrim() {
-        // Call the method being tested.
-        mTabStripSceneLayer.updateStripScrim(mStripScrim);
-
-        // Verify JNI calls.
-        verify(mTabStripSceneMock)
-                .updateStripScrim(1L, mTabStripSceneLayer, mStripScrim.getX(), mStripScrim.getY(),
-                        (int) mStripScrim.getWidth(), (int) mStripScrim.getHeight(),
-                        mStripScrim.getColor(), mStripScrim.getAlpha());
     }
 }

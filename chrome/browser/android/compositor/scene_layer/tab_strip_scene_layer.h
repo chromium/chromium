@@ -58,15 +58,6 @@ class TabStripSceneLayer : public SceneLayer {
                            jboolean should_readd_background,
                            jint background_color);
 
-  void UpdateStripScrim(JNIEnv* env,
-                        const base::android::JavaParamRef<jobject>& jobj,
-                        jfloat x,
-                        jfloat y,
-                        jint width,
-                        jint height,
-                        jint color,
-                        jfloat alpha);
-
   void UpdateNewTabButton(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jobj,
@@ -171,7 +162,6 @@ class TabStripSceneLayer : public SceneLayer {
 
   scoped_refptr<cc::slim::SolidColorLayer> tab_strip_layer_;
   scoped_refptr<cc::slim::Layer> scrollable_strip_layer_;
-  scoped_refptr<cc::slim::SolidColorLayer> scrim_layer_;
   scoped_refptr<cc::slim::UIResourceLayer> new_tab_button_;
   scoped_refptr<cc::slim::UIResourceLayer> new_tab_button_background_;
   scoped_refptr<cc::slim::UIResourceLayer> left_fade_;

@@ -87,7 +87,7 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "force-fieldtrials=Study/Group",
-        "force-fieldtrial-params=Study.Group:enable_launch_polish/false/delay_creation/false"})
+        "force-fieldtrial-params=Study.Group:delay_creation/false"})
 @EnableFeatures({ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS + "<Study",
         ChromeFeatureList.TAB_STRIP_REDESIGN})
 @DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
@@ -176,46 +176,6 @@ public class TabSwitcherTabletTest {
         TabUiTestHelper.enterTabSwitcher(sActivityTestRule.getActivity());
 
         // Assert hidden views.
-        onView(allOf(withId(R.id.toolbar), withClassName(is(ToolbarTablet.class.getName()))))
-                .check(matches(withEffectiveVisibility(GONE)));
-        onView(allOf(withId(R.id.incognito_switch),
-                       withParent(withId(R.id.tab_switcher_switches_and_menu))))
-                .check(matches(withEffectiveVisibility(GONE)));
-        onView(allOf(withId(R.id.new_tab_button), withParent(withId(R.id.tab_switcher_toolbar))))
-                .check(matches(withEffectiveVisibility(GONE)));
-        onView(allOf(withId(R.id.incognito_tabs_stub),
-                       withParent(withId(R.id.tab_switcher_toolbar))))
-                .check(matches(withEffectiveVisibility(GONE)));
-        onView(allOf(withId(R.id.tab_switcher_mode_tab_switcher_button),
-                       withParent(withId(R.id.tab_switcher_switches_and_menu))))
-                .check(matches(withEffectiveVisibility(GONE)));
-
-        // Assert visible views.
-        onView(allOf(withId(R.id.new_tab_view), withParent(withId(R.id.tab_switcher_toolbar))))
-                .check(matches(isDisplayed()));
-        onView(allOf(withId(R.id.menu_button_wrapper),
-                       withParent(withId(R.id.tab_switcher_switches_and_menu))))
-                .check(matches(isDisplayed()));
-
-        // Exit switcher.
-        exitSwitcherWithTabClick(0);
-
-        // Assert tablet toolbar shows and switcher toolbar is gone.
-        onView(allOf(withId(R.id.tab_switcher_toolbar),
-                       withClassName(is(TabSwitcherModeTopToolbar.class.getName()))))
-                .check(matches(withEffectiveVisibility(GONE)));
-        onView(allOf(withId(R.id.toolbar), withClassName(is(ToolbarTablet.class.getName()))))
-                .check(matches(isDisplayed()));
-    }
-
-    @Test
-    @MediumTest
-    @CommandLineFlags.Add({"force-fieldtrial-params=Study.Group:enable_launch_polish/true"})
-    public void testTabSwitcherToolbar_withPolishFlag_incognitoTabsOpen() throws Exception {
-        prepareTabs(1, 1);
-        TabUiTestHelper.enterTabSwitcher(sActivityTestRule.getActivity());
-
-        // Assert hidden views.
         onView(allOf(withId(R.id.incognito_switch),
                        withParent(withId(R.id.tab_switcher_switches_and_menu))))
                 .check(matches(withEffectiveVisibility(GONE)));
@@ -234,7 +194,7 @@ public class TabSwitcherTabletTest {
         onView(allOf(withId(R.id.incognito_toggle_tabs),
                        withParent(withId(R.id.tab_switcher_toolbar))))
                 .check(matches(isDisplayed()));
-        // Tablet toolbar is not hidden for polish
+        // Tablet toolbar is not hidden.
         onView(allOf(withId(R.id.toolbar), withClassName(is(ToolbarTablet.class.getName()))))
                 .check(matches(isDisplayed()));
 
@@ -251,8 +211,7 @@ public class TabSwitcherTabletTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({"force-fieldtrial-params=Study.Group:enable_launch_polish/true"})
-    public void testTabSwitcherV1Scrim() throws TimeoutException {
+    public void testTabSwitcherScrim() throws TimeoutException {
         prepareTabs(1, 1);
         TabUiTestHelper.enterTabSwitcher(sActivityTestRule.getActivity());
 
@@ -272,7 +231,6 @@ public class TabSwitcherTabletTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({"force-fieldtrial-params=Study.Group:enable_launch_polish/true"})
     public void testGridTabSwitcherOnNoNextTab() throws ExecutionException {
         // Assert the grid tab switcher is not yet showing.
         onView(withId(R.id.grid_tab_switcher_view_holder))
@@ -293,9 +251,8 @@ public class TabSwitcherTabletTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.
-    Add({"force-fieldtrial-params=Study.Group:enable_launch_polish/true/delay_creation/true"})
-    public void testGridTabSwitcherV1DelayCreate() {
+    @CommandLineFlags.Add({"force-fieldtrial-params=Study.Group:delay_creation/true"})
+    public void testGridTabSwitcherDelayCreate() {
         Layout layout = sActivityTestRule.getActivity().getLayoutManager().getOverviewLayout();
         assertNull("StartSurface layout should not be initialized", layout);
         ViewStub tabSwitcherStub = (ViewStub) sActivityTestRule.getActivity().findViewById(
@@ -316,10 +273,9 @@ public class TabSwitcherTabletTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.
-    Add({"force-fieldtrial-params=Study.Group:enable_launch_polish/true/delay_creation/true"})
+    @CommandLineFlags.Add({"force-fieldtrial-params=Study.Group:delay_creation/true"})
     @EnableFeatures({ChromeFeatureList.START_SURFACE_REFACTOR})
-    public void testGridTabSwitcherV1DelayCreate_RefactorEnabled() throws ExecutionException {
+    public void testGridTabSwitcherDelayCreate_RefactorEnabled() throws ExecutionException {
         prepareTabs(2, 0);
         // Verifies that the dialog visibility supplier doesn't crash when closing a Tab without the
         // grid tab switcher is inflated.

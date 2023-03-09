@@ -29,6 +29,7 @@ import org.chromium.base.Callback;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ButtonCompat;
@@ -317,11 +318,6 @@ class TabGridViewBinder {
         // TODO(crbug/1395467): Consider unsetting the bitmap early to allow memory reuse if needed.
 
         final Size cardSize = model.get(TabProperties.GRID_CARD_SIZE);
-        final Size thumbnailSize =
-                TabUiFeatureUtilities.isTabletGridTabSwitcherPolishEnabled(view.getContext())
-                        && cardSize != null
-                ? TabUtils.deriveThumbnailSize(cardSize, view.getContext())
-                : null;
         Callback<Bitmap> callback = result -> {
             if (result != null) {
                 // TODO(crbug/1395467): look into cancelling if there are multiple in-flight
@@ -330,7 +326,7 @@ class TabGridViewBinder {
                     result.recycle();
                     return;
                 }
-                if (TabUiFeatureUtilities.isTabletGridTabSwitcherPolishEnabled(view.getContext())
+                if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(view.getContext())
                         && model.get(TabProperties.GRID_CARD_SIZE) != null) {
                     // Adjust bitmap to thumbnail.
                     Size destSize = TabUtils.deriveThumbnailSize(
@@ -343,6 +339,11 @@ class TabGridViewBinder {
                 thumbnail.setImageBitmap(result);
             }
         };
+        final Size thumbnailSize =
+                DeviceFormFactor.isNonMultiDisplayContextOnTablet(view.getContext())
+                        && cardSize != null
+                ? TabUtils.deriveThumbnailSize(cardSize, view.getContext())
+                : null;
         if (TabUiFeatureUtilities.isLaunchPolishEnabled() && sThumbnailFetcherForTesting != null) {
             sThumbnailFetcherForTesting.fetch(callback, thumbnailSize, isSelected);
         } else {

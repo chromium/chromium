@@ -36,6 +36,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -57,8 +58,6 @@ public final class TabGridViewBinderUnitTest {
     @Mock
     private ViewLookupCachingFrameLayout mViewGroup;
     @Mock
-    private Context mContext;
-    @Mock
     private Resources mResources;
     @Mock
     private TabListMediator.ThumbnailFetcher mFetcher;
@@ -76,15 +75,16 @@ public final class TabGridViewBinderUnitTest {
     @Mock
     private Drawable mDrawable;
 
+    private Context mContext;
     private PropertyModel mModel;
     private LayoutParams mLayoutParams;
     private Bitmap mBitmap;
     private static final int RESOURCE_ID = 123;
-    private static final float RESOURCE_DIMEN = 10;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        mContext = RuntimeEnvironment.getApplication();
         mModel = new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
                          .with(TabProperties.THUMBNAIL_FETCHER, mFetcher)
                          .with(TabProperties.IS_INCOGNITO, false)
@@ -95,11 +95,7 @@ public final class TabGridViewBinderUnitTest {
         when(mViewGroup.fastFindViewById(R.id.tab_favicon)).thenReturn(mFaviconView);
         when(mFaviconView.getContext()).thenReturn(mContext);
         when(mViewGroup.getContext()).thenReturn(mContext);
-        when(mContext.getResources()).thenReturn(mResources);
         when(mTypedArray.getResourceId(anyInt(), anyInt())).thenReturn(RESOURCE_ID);
-        when(mResources.getDimension(anyInt())).thenReturn(RESOURCE_DIMEN);
-        // Mock tablet.
-        when(mResources.getInteger(org.chromium.ui.R.integer.min_screen_width_bucket)).thenReturn(3);
 
         // mModel, view and bitmap all use the same initial values.
         mLayoutParams = new LayoutParams(INIT_WIDTH, INIT_HEIGHT);
@@ -112,13 +108,12 @@ public final class TabGridViewBinderUnitTest {
 
     @After
     public void tearDown() {
-        TabUiFeatureUtilities.setTabletGridTabSwitcherPolishEnabledForTesting(null);
         CachedFeatureFlags.resetFlagsForTesting();
     }
 
     @Test
+    @org.robolectric.annotation.Config(qualifiers = "sw348dp")
     public void bindClosableTabWithCardWidth_updateCardAndThumbnail() {
-        TabUiFeatureUtilities.setTabletGridTabSwitcherPolishEnabledForTesting(false);
         // Update width.
         // updatedBitmapWidth = updatedCardWidth - margins = 200 - 40 = 160.
         // updatedBitmapHeight = INIT_HEIGHT - margins = 200 - 40 - 160.
@@ -142,8 +137,8 @@ public final class TabGridViewBinderUnitTest {
     }
 
     @Test
+    @org.robolectric.annotation.Config(qualifiers = "sw348dp")
     public void bindClosableTabWithCardWidth_updateCardAndThumbnail_notSelected() {
-        TabUiFeatureUtilities.setTabletGridTabSwitcherPolishEnabledForTesting(false);
         // Update width.
         // updatedBitmapWidth = updatedCardWidth - margins = 200 - 40 = 160.
         // updatedBitmapHeight = INIT_HEIGHT - margins = 200 - 40 - 160.
@@ -168,11 +163,11 @@ public final class TabGridViewBinderUnitTest {
     }
 
     @Test
-    public void bindClosableTabWithCardWidthWithPolishEnabled_updateCardAndThumbnail() {
-        TabUiFeatureUtilities.setTabletGridTabSwitcherPolishEnabledForTesting(true);
+    @org.robolectric.annotation.Config(qualifiers = "sw600dp")
+    public void bindClosableTabWithCardWidthOnTablet_updateCardAndThumbnail() {
         // Update card width.
-        // updatedBitmapWidth = updatedCardWidth - margins = 200 - 40 = 160.
-        // updatedBitmapHeight = INIT_HEIGHT - margins = 200 - 40 - 160.
+        // updatedBitmapWidth = updatedCardWidth - margins = 200 - 24 = 176.
+        // updatedBitmapHeight = INIT_HEIGHT - margins = 200 - 24 - 176.
         final int updatedCardWidth = 200;
         mModel.set(TabProperties.GRID_CARD_SIZE, new Size(updatedCardWidth, INIT_HEIGHT));
 
@@ -197,23 +192,21 @@ public final class TabGridViewBinderUnitTest {
         verifyNoMoreInteractions(mThumbnailView);
 
         // Verify metrics scale + translate.
-        // Scale = updatedBitmapWidth / INIT_WIDTH = 160 / 100 = 1.6f.
-        float expectedScale = 1.6f;
-        // xTranslate = (updatedBitmapWidth - scaledWidth) /2 = (160 - (100*1.6))/2 = 0.
+        // Scale = updatedBitmapWidth / INIT_WIDTH = 176 / 100 = 1.76f.
+        float expectedScale = 1.76f;
+        // xTranslate = (updatedBitmapWidth - scaledWidth) /2 = (176 - (100*1.76))/2 = 0.
         float expectedXTrans = 0.f;
         assertImageMatrix(matrixCaptor, expectedScale, expectedXTrans);
     }
 
     @Test
-    public void bindClosableTabWithCardHeightWithPolishEnabled_updateCardAndThumbnail() {
-        TabUiFeatureUtilities.setTabletGridTabSwitcherPolishEnabledForTesting(true);
-
+    @org.robolectric.annotation.Config(qualifiers = "sw600dp")
+    public void bindClosableTabWithCardHeightOnTablet_updateCardAndThumbnail() {
         // Update card height = 400.
-        // updatedBitmapWidth = INIT_WIDTH - margins = 100 - 40 = 60.
-        // updatedBitmapHeight = updatedCardHeight - margins = 400 - 40 - 360.
+        // updatedBitmapWidth = INIT_WIDTH - margins = 100 - 24 = 76.
+        // updatedBitmapHeight = updatedCardHeight - margins = 400 - 60 = 340.
         final int updatedCardHeight = 400;
         mModel.set(TabProperties.GRID_CARD_SIZE, new Size(INIT_WIDTH, updatedCardHeight));
-
         // Call.
         TabGridViewBinder.bindClosableTab(mModel, mViewGroup, TabProperties.GRID_CARD_SIZE);
 
@@ -235,10 +228,10 @@ public final class TabGridViewBinderUnitTest {
         verifyNoMoreInteractions(mThumbnailView);
 
         // Verify metrics scale + translate.
-        // Scale = updatedBitmapHeight / INIT_HEIGHT = 360 / 200 = 1.8f.
-        float expectedScale = 1.8f;
-        // xTranslate = (updatedBitmapWidth - scaledWidth) /2 = (60 - (100*1.8))/2 = -60.
-        float expectedXTrans = -60f;
+        // Scale = updatedBitmapHeight / INIT_HEIGHT = 340 / 200 = 1.7f.
+        float expectedScale = 1.7f;
+        // xTranslate = (updatedBitmapWidth - scaledWidth) /2 = (76 - (100*1.7))/2 = -47.
+        float expectedXTrans = -47f;
         assertImageMatrix(matrixCaptor, expectedScale, expectedXTrans);
     }
 

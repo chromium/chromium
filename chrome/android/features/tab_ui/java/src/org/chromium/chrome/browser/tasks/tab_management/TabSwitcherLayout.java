@@ -141,7 +141,7 @@ public class TabSwitcherLayout extends Layout {
             @Override
             public void finishedShowing() {
                 mAndroidViewFinishedShowing = true;
-                if (!TabUiFeatureUtilities.isTabletGridTabSwitcherPolishEnabled(context)) {
+                if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
                     doneShowing();
                 }
                 // When Tab-to-GTS animation is done, it's time to renew the thumbnail without
@@ -238,7 +238,7 @@ public class TabSwitcherLayout extends Layout {
             boolean isCurrentTabModelEmpty = mTabModelSelector.getCurrentModel().getCount() == 0;
             final boolean shouldAnimate = animate && !isCurrentTabModelEmpty;
 
-            if (TabUiFeatureUtilities.isTabletGridTabSwitcherPolishEnabled(getContext())) {
+            if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
                 showOverviewWithTranslateUp(shouldAnimate);
             } else {
                 mDeferredAnimationRunnable = () -> {
@@ -322,7 +322,7 @@ public class TabSwitcherLayout extends Layout {
             updateCacheVisibleIds(new LinkedList<>(Arrays.asList(sourceTabId)));
 
             mIsAnimatingHide = true;
-            if (TabUiFeatureUtilities.isTabletGridTabSwitcherPolishEnabled(getContext())) {
+            if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
                 translateDown();
             } else {
                 mController.hideTabSwitcherView(!isTabGtsAnimationEnabled());
@@ -718,7 +718,7 @@ public class TabSwitcherLayout extends Layout {
      * @return Whether shrink/expand animation is enabled.
      */
     private boolean isTabGtsAnimationEnabled() {
-        if (TabUiFeatureUtilities.isTabletGridTabSwitcherPolishEnabled(getContext())) return false;
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) return false;
         return TabUiFeatureUtilities.isTabToGtsAnimationEnabled();
     }
 }
