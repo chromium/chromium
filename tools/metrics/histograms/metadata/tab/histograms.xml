@@ -1288,18 +1288,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tabs.IndependentTabCountInSwitcher" units="tabs"
-    expires_after="2020-07-31">
-  <owner>mattsimmons@chromium.org</owner>
-  <owner>memex-team@google.com</owner>
-  <summary>
-    The number of entries/cards shown in the grid tab switcher.
-
-    When the user is shown the grid tab switcher, logs the number of entries
-    (tabs or tab groups) open in the grid tab switcher.
-  </summary>
-</histogram>
-
 <histogram name="Tabs.LiveNTPCountAtResume" units="tabs"
     expires_after="2024-02-26">
   <owner>thegreenfrog@chromium.org</owner>
@@ -1908,18 +1896,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The number of tabs in the current active group when a load completes.
     Records 0 if the active tab is not in a group.
-  </summary>
-</histogram>
-
-<histogram name="Tabs.TabCountInSwitcher" units="tabs"
-    expires_after="2020-07-31">
-  <owner>mattsimmons@chromium.org</owner>
-  <owner>memex-team@google.com</owner>
-  <summary>
-    The number of tabs open when the grid tab switcher is shown.
-
-    When the user is shown the tab switcher, logs the total number of individual
-    open tabs. Android only.
   </summary>
 </histogram>
 

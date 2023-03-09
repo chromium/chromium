@@ -44,7 +44,6 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.UserDataHost;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -283,13 +282,6 @@ public class TabSwitcherMediatorUnitTest {
                 mModel.get(TabListContainerProperties.ANIMATE_VISIBILITY_CHANGES), equalTo(true));
         assertThat(mModel.get(TabListContainerProperties.IS_VISIBLE), equalTo(true));
         assertThat(mMediator.overviewVisible(), equalTo(true));
-
-        assertThat(RecordHistogram.getHistogramValueCountForTesting(
-                           TabSwitcherMediator.TAB_COUNT_HISTOGRAM, 3),
-                equalTo(1));
-        assertThat(RecordHistogram.getHistogramValueCountForTesting(
-                           TabSwitcherMediator.TAB_ENTRIES_HISTOGRAM, 3),
-                equalTo(1));
     }
 
     @Test
@@ -312,13 +304,6 @@ public class TabSwitcherMediatorUnitTest {
                 mModel.get(TabListContainerProperties.ANIMATE_VISIBILITY_CHANGES), equalTo(true));
         assertThat(mModel.get(TabListContainerProperties.IS_VISIBLE), equalTo(true));
         assertThat(mMediator.overviewVisible(), equalTo(true));
-
-        assertThat(RecordHistogram.getHistogramValueCountForTesting(
-                           TabSwitcherMediator.TAB_COUNT_HISTOGRAM, 3),
-                equalTo(1));
-        assertThat(RecordHistogram.getHistogramValueCountForTesting(
-                           TabSwitcherMediator.TAB_ENTRIES_HISTOGRAM, 2),
-                equalTo(1));
     }
 
     @Test

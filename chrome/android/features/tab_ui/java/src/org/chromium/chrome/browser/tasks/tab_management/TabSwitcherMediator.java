@@ -84,10 +84,6 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
 
     private static final int DEFAULT_TOP_PADDING = 0;
 
-    // Count histograms for tab counts when showing switcher.
-    static final String TAB_COUNT_HISTOGRAM = "Tabs.TabCountInSwitcher";
-    static final String TAB_ENTRIES_HISTOGRAM = "Tabs.IndependentTabCountInSwitcher";
-
     /** Field trial parameter for the {@link TabListRecyclerView} cleanup delay. */
     private static final String SOFT_CLEANUP_DELAY_PARAM = "soft-cleanup-delay";
     private static final int DEFAULT_SOFT_CLEANUP_DELAY_MS = 3_000;
@@ -384,7 +380,6 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
                 mResetHandler.resetWithTabList(
                         mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter(),
                         false, mShowTabsInMruOrder);
-                recordTabCounts();
                 setInitialScrollIndexOffset();
             }
 
@@ -787,7 +782,6 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
                 mResetHandler.resetWithTabList(
                         mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter(),
                         TabUiFeatureUtilities.isTabToGtsAnimationEnabled(), mShowTabsInMruOrder);
-                recordTabCounts();
                 // When |mTabModelSelector.isTabStateInitialized| is false and INSTANT_START is
                 // enabled, the scrolling request is already processed in
                 // TabModelObserver#restoreCompleted. Therefore, we only need to handle the case
@@ -1099,17 +1093,6 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         return mTabModelSelector.getTabModelFilterProvider()
                 .getCurrentTabModelFilter()
                 .getRelatedTabList(tabId);
-    }
-
-    private void recordTabCounts() {
-        final TabModel model = mTabModelSelector.getCurrentModel();
-        if (model == null) return;
-        RecordHistogram.recordCount1MHistogram(TAB_COUNT_HISTOGRAM, model.getCount());
-
-        final TabModelFilter filter =
-                mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter();
-        if (filter == null) return;
-        RecordHistogram.recordCount1MHistogram(TAB_ENTRIES_HISTOGRAM, filter.getCount());
     }
 
     private void notifyBackPressStateChanged(boolean noop) {
