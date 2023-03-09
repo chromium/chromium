@@ -78,6 +78,7 @@ build_cr_component("build") {
       "cr_scrollable_mixin.ts",
       "cr_search_field/cr_search_field_mixin.ts",
       "find_shortcut_mixin.ts",
+      "focus_row_mixin.ts",
       "i18n_mixin.ts",
       "list_property_update_mixin.ts",
       "mouse_hoverable_mixin.ts",

@@ -4,16 +4,15 @@
 
 // clang-format off
 import {afterNextRender, dedupingMixin, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {assert} from './assert_ts.js';
-import {focusWithoutInk} from './focus_without_ink.js';
-import {FocusRow, FocusRowDelegate} from './focus_row.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
+import {FocusRow, FocusRowDelegate} from 'chrome://resources/js/focus_row.js';
 // clang-format on
 
 interface ListItem {
   lastFocused: object;
   overrideCustomEquivalent?: boolean;
-  getCustomEquivalent?: (el: HTMLElement) => HTMLElement|null;
+  getCustomEquivalent?: (el: HTMLElement) => HTMLElement | null;
 }
 
 class FocusRowMixinDelegate implements FocusRowDelegate {
@@ -68,20 +67,20 @@ class VirtualFocusRow extends FocusRow {
   }
 }
 
-  /**
-   * Any element that is being used as an iron-list row item can extend this
-   * behavior, which encapsulates focus controls of mouse and keyboards.
-   * To use this behavior:
-   *    - The parent element should pass a "last-focused" attribute double-bound
-   *      to the row items, to track the last-focused element across rows, and
-   *      a "list-blurred" attribute double-bound to the row items, to track
-   *      whether the list of row items has been blurred.
-   *    - There must be a container in the extending element with the
-   *      [focus-row-container] attribute that contains all focusable controls.
-   *    - On each of the focusable controls, there must be a [focus-row-control]
-   *      attribute, and a [focus-type=] attribute unique for each control.
-   *
-   */
+/**
+ * Any element that is being used as an iron-list row item can extend this
+ * behavior, which encapsulates focus controls of mouse and keyboards.
+ * To use this behavior:
+ *    - The parent element should pass a "last-focused" attribute double-bound
+ *      to the row items, to track the last-focused element across rows, and
+ *      a "list-blurred" attribute double-bound to the row items, to track
+ *      whether the list of row items has been blurred.
+ *    - There must be a container in the extending element with the
+ *      [focus-row-container] attribute that contains all focusable controls.
+ *    - On each of the focusable controls, there must be a [focus-row-control]
+ *      attribute, and a [focus-type=] attribute unique for each control.
+ *
+ */
 type Constructor<T> = new (...args: any[]) => T;
 
 export const FocusRowMixin = dedupingMixin(
@@ -144,8 +143,7 @@ export const FocusRowMixin = dedupingMixin(
 
         private firstControl_: HTMLElement|null = null;
         private controlObservers_: MutationObserver[] = [];
-        private boundOnFirstControlKeydown_:
-            ((e: Event) => void)|null = null;
+        private boundOnFirstControlKeydown_: ((e: Event) => void)|null = null;
 
         override connectedCallback() {
           super.connectedCallback();
@@ -245,8 +243,8 @@ export const FocusRowMixin = dedupingMixin(
             this.removeObservers_();
             this.row_.destroy();
 
-            const controls = this.root!.querySelectorAll<HTMLElement>(
-                '[focus-row-control]');
+            const controls =
+                this.root!.querySelectorAll<HTMLElement>('[focus-row-control]');
 
             controls.forEach(control => {
               assert(control);
@@ -263,8 +261,8 @@ export const FocusRowMixin = dedupingMixin(
           return new MutationObserver(mutations => {
             const mutation = mutations[0]!;
             if (mutation.attributeName === 'style' && mutation.oldValue) {
-              const newStyle = window.getComputedStyle(
-                  mutation.target as Element);
+              const newStyle =
+                  window.getComputedStyle(mutation.target as Element);
               const oldDisplayValue =
                   mutation.oldValue.match(/^display:(.*)(?=;)/);
               const oldVisibilityValue =
@@ -353,7 +351,8 @@ export const FocusRowMixin = dedupingMixin(
         }
 
         private onMouseDown_() {
-          this.mouseFocused_ = true; // Set flag to not do any control-focusing.
+          this.mouseFocused_ =
+              true;  // Set flag to not do any control-focusing.
         }
 
         private onBlur_(e: FocusEvent) {
@@ -361,8 +360,7 @@ export const FocusRowMixin = dedupingMixin(
           this.mouseFocused_ = false;
           this.isFocused = false;
 
-          const node =
-              e.relatedTarget ? e.relatedTarget as Node : null;
+          const node = e.relatedTarget ? e.relatedTarget as Node : null;
           if (!this.parentNode!.contains(node)) {
             this.listBlurred = true;
           }

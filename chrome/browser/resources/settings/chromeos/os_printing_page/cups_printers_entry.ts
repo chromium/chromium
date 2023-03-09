@@ -11,7 +11,7 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../../settings_shared.css.js';
 import './cups_printer_types.js';
 
-import {FocusRowMixin} from 'chrome://resources/js/focus_row_mixin.js';
+import {FocusRowMixin} from 'chrome://resources/cr_elements/focus_row_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
