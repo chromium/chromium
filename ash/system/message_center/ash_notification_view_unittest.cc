@@ -1514,8 +1514,13 @@ TEST_P(AshNotificationViewDragTest, Basics) {
       EXPECT_CALL(drag_drop_delegate(), HandleHtmlData);
     }
   }
+  base::HistogramTester tester;
   DragAndDropNotification(*GetViewForNotificationId(notification->id()),
                           DroppedToWidget());
+
+  // Check the notification catalog name.
+  tester.ExpectBucketCount("Ash.NotificationView.ImageDrag.Start",
+                           ash::NotificationCatalogName::kNone, 1);
 
   // The the message center bubble is closed and the popup notification is
   // dismissed when drag ends.
@@ -1859,9 +1864,14 @@ TEST_P(ScreenCaptureNotificationViewDragTest, Basics) {
   // Drag to the center of `widget` then release. Verify that the screenshot
   // image carried by the drag data is handled.
   EXPECT_CALL(drag_drop_delegate(), HandleFilePathData(image_file_path));
+  base::HistogramTester tester;
   DragAndDropNotification(
       *GetViewForNotificationId(kScreenCaptureNotificationId),
       /*drag_to_widget=*/true);
+
+  // Check the notification catalog name.
+  tester.ExpectBucketCount("Ash.NotificationView.ImageDrag.Start",
+                           ash::NotificationCatalogName::kScreenCapture, 1);
 }
 
 }  // namespace ash

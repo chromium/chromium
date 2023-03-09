@@ -3691,6 +3691,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.NotificationView.ImageDrag.Start"
+    enum="NotificationCatalogName" expires_after="M121">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Records the notification catalog name when the notification image drag
+    starts.
+  </summary>
+</histogram>
+
 <histogram name="Ash.NotificationView.NotificationAdded.Type"
     enum="NotificationViewType" expires_after="2023-06-18">
   <owner>leandre@chromium.org</owner>
