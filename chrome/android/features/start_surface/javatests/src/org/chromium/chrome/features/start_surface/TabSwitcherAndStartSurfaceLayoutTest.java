@@ -885,6 +885,9 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @CommandLineFlags.Add({BASE_PARAMS + "/baseline_tab_suggestions/true" +
             "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0/"
         + "thumbnail_aspect_ratio/1.0"})
+    // TODO(crbug/1422295): TabSelectionEditorV2 is currently not compatible with TabSuggestions.
+    // TabSuggestions are not launched and need to be reworked to use TabSelectionEditorV2.
+    @DisableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     public void testTabSuggestionMessageCard_dismiss() throws InterruptedException {
         // clang-format on
         prepareTabs(3, 0, null);
@@ -917,6 +920,9 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @CommandLineFlags.Add({BASE_PARAMS + "/baseline_tab_suggestions/true" +
             "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0"
         + "/thumbnail_aspect_ratio/1.0"})
+    // TODO(crbug/1422295): TabSelectionEditorV2 is currently not compatible with TabSuggestions.
+    // TabSuggestions are not launched and need to be reworked to use TabSelectionEditorV2.
+    @DisableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     public void testTabSuggestionMessageCard_review() throws InterruptedException {
         // clang-format on
         prepareTabs(3, 0, null);
@@ -950,6 +956,9 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @CommandLineFlags.Add({BASE_PARAMS + "/baseline_tab_suggestions/true" +
             "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0/"
         + "thumbnail_aspect_ratio/1.0"})
+    // TODO(crbug/1422295): TabSelectionEditorV2 is currently not compatible with TabSuggestions.
+    // TabSuggestions are not launched and need to be reworked to use TabSelectionEditorV2.
+    @DisableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     public void testShowOnlyOneTabSuggestionMessageCard_withSoftCleanup()
             throws InterruptedException {
         // clang-format on
@@ -965,6 +974,9 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @CommandLineFlags.Add({BASE_PARAMS + "/baseline_tab_suggestions/true" +
             "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0/"
         + "thumbnail_aspect_ratio/1.0"})
+    // TODO(crbug/1422295): TabSelectionEditorV2 is currently not compatible with TabSuggestions.
+    // TabSuggestions are not launched and need to be reworked to use TabSelectionEditorV2.
+    @DisableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     @DisabledTest(message = "https://crbug.com/1198484, crbug.com/1130621")
     public void testShowOnlyOneTabSuggestionMessageCard_withHardCleanup()
             throws InterruptedException {
@@ -981,6 +993,9 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @CommandLineFlags.Add({BASE_PARAMS + "/baseline_tab_suggestions/true" +
             "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0/"
         + "thumbnail_aspect_ratio/1.0"})
+    // TODO(crbug/1422295): TabSelectionEditorV2 is currently not compatible with TabSuggestions.
+    // TabSuggestions are not launched and need to be reworked to use TabSelectionEditorV2.
+    @DisableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     @DisabledTest(message = "https://crbug.com/1311825")
     public void testTabSuggestionMessageCardDismissAfterTabClosing() throws InterruptedException {
         // clang-format on
@@ -1015,6 +1030,9 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @CommandLineFlags.Add({BASE_PARAMS + "/baseline_tab_suggestions/true" +
             "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0/"
         + "thumbnail_aspect_ratio/1.0"})
+    // TODO(crbug/1422295): TabSelectionEditorV2 is currently not compatible with TabSuggestions.
+    // TabSuggestions are not launched and need to be reworked to use TabSelectionEditorV2.
+    @DisableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     @DisabledTest(message = "https://crbug.com/1326533")
     public void testTabSuggestionMessageCard_orientation() throws InterruptedException {
         // clang-format on
@@ -1445,9 +1463,13 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
-    @DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
+    // TODO(crbug/1422295): Manual selection for V2 is tested elsewhere in TabSelectionEditorTest.
+    // This can be removed once the feature flag is cleaned up.
+    @DisableFeatures(
+            {ChromeFeatureList.TAB_TO_GTS_ANIMATION, ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     @DisabledTest(message = "crbug.com/1096997")
-    public void testTabGroupManualSelection() throws InterruptedException {
+    public void
+    testTabGroupManualSelection() throws InterruptedException {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         TabSelectionEditorTestingRobot robot = new TabSelectionEditorTestingRobot();
         createTabs(cta, false, 3);
@@ -1471,6 +1493,9 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
+    // TODO(crbug/1422295): Manual selection for V2 is tested elsewhere in TabSelectionEditorTest.
+    // This can be removed once the feature flag is cleaned up.
+    @DisableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     public void testTabGroupManualSelection_DisabledForSingleTab() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         TabSelectionEditorTestingRobot robot = new TabSelectionEditorTestingRobot();
@@ -1513,6 +1538,10 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
             ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
+    // TODO(crbug/1422295): System back is partly tested in TabSelectionEditorTest. This test should
+    // stay, but the test fixtures for TabSelectionEditor assume V1 here and need to be updated
+    // during flag cleanup.
+    @DisableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     public void testTabGroupManualSelection_SystemBackDismiss() {
         // clang-format on
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -1554,7 +1583,10 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
             ChromeFeatureList.CLOSE_TAB_SUGGESTIONS + "<Study"})
-    @DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
+    // TODO(crbug/1422295): TabSelectionEditorV2 is currently not compatible with TabSuggestions.
+    // TabSuggestions are not launched and need to be reworked to use TabSelectionEditorV2.
+    @DisableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2,
+                      ChromeFeatureList.TAB_TO_GTS_ANIMATION})
     @CommandLineFlags.Add({BASE_PARAMS + "/baseline_tab_suggestions/true" +
             "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0" +
             "/thumbnail_aspect_ratio/1.0"})

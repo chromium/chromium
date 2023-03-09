@@ -435,6 +435,9 @@ public class TabGridDialogTest {
     @MediumTest
     // clang-format off
     @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study"})
+    // TODO(crbug/1422295): TabSelectionEditorV2 replaces this behavior. This test can be deleted
+    // during flag cleanup.
+    @Features.DisableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
             "force-fieldtrial-params=Study.Group:enable_tab_group_sharing/true"})
     public void testDialogToolbarMenuShareGroup() {
@@ -462,6 +465,9 @@ public class TabGridDialogTest {
     @MediumTest
     // clang-format off
     @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study"})
+    // TODO(crbug/1422295): TabSelectionEditorV2 replaces this behavior. This test can be deleted
+    // during flag cleanup.
+    @Features.DisableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
         "force-fieldtrial-params=Study.Group:enable_tab_group_sharing/true"})
     public void testDialogToolbarMenuShareGroup_WithSharingHub() {
@@ -500,7 +506,7 @@ public class TabGridDialogTest {
 
         // Open dialog and open selection editor.
         openDialogFromTabSwitcherAndVerify(cta, 2, null);
-        openSelectionEditorAndVerify(cta, 2);
+        openSelectionEditorV2AndVerify(cta, 2);
 
         // Click navigation button should close selection editor but not tab grid dialog.
         mSelectionEditorRobot.actionRobot.clickToolbarNavigationButton();
@@ -508,7 +514,7 @@ public class TabGridDialogTest {
         assertTrue(isDialogShowing(cta));
 
         // Back press should close both the dialog and selection editor.
-        openSelectionEditorAndVerify(cta, 2);
+        openSelectionEditorV2AndVerify(cta, 2);
         Espresso.pressBack();
         mSelectionEditorRobot.resultRobot.verifyTabSelectionEditorIsHidden();
         waitForDialogHidingAnimationInTabSwitcher(cta);
@@ -516,7 +522,7 @@ public class TabGridDialogTest {
 
         // Clicking ScrimView should close both the dialog and selection editor.
         openDialogFromTabSwitcherAndVerify(cta, 2, null);
-        openSelectionEditorAndVerify(cta, 2);
+        openSelectionEditorV2AndVerify(cta, 2);
         clickScrimToExitDialog(cta);
         mSelectionEditorRobot.resultRobot.verifyTabSelectionEditorIsHidden();
         waitForDialogHidingAnimationInTabSwitcher(cta);
@@ -1011,7 +1017,7 @@ public class TabGridDialogTest {
         checkPosition(cta, true, true);
 
         // Verify the size and position of TabSelectionEditor in portrait mode.
-        openSelectionEditorAndVerify(cta, 3);
+        openSelectionEditorV2AndVerify(cta, 3);
         checkPosition(cta, false, true);
 
         // Verify the size and position of TabSelectionEditor in landscape mode.
@@ -1037,7 +1043,7 @@ public class TabGridDialogTest {
             rootView.setLayoutParams(params);
         });
         checkPosition(cta, true, true);
-        openSelectionEditorAndVerify(cta, 3);
+        openSelectionEditorV2AndVerify(cta, 3);
         checkPosition(cta, false, true);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {

@@ -289,7 +289,7 @@ public class TabSelectionEditorTest {
 
         mRobot.actionRobot.clickItemAtAdapterPosition(0);
         mRobot.resultRobot.verifyItemSelectedAtAdapterPosition(0).verifyToolbarSelectionText(
-                "1 selected");
+                "1 tab");
 
         mRobot.actionRobot.clickItemAtAdapterPosition(0);
         mRobot.resultRobot.verifyItemNotSelectedAtAdapterPosition(0)
@@ -303,6 +303,9 @@ public class TabSelectionEditorTest {
     @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study"})
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
         "force-fieldtrial-params=Study.Group:enable_launch_polish/true"})
+    // TODO(crbug/1422295): Replaced by testToolbarNavigationButtonHideTabSelectionEditorV2. Delete
+    // this test.
+    @DisableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     public void testToolbarNavigationButtonHideTabSelectionEditor() {
         // clang-format on
         prepareBlankTab(2, false);
@@ -363,6 +366,9 @@ public class TabSelectionEditorTest {
 
     @Test
     @MediumTest
+    // TODO(crbug/1422295): This test is no longer relevant once TabSelectionEditorV2 is enabled.
+    // Remove it during flag cleanup.
+    @DisableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     public void testToolbarGroupButton() {
         prepareBlankTab(2, false);
         List<Tab> tabs = getTabsInCurrentTabModel();
@@ -1076,7 +1082,7 @@ public class TabSelectionEditorTest {
         mRobot.resultRobot.verifyTabSelectionEditorIsVisible()
                 .verifyToolbarActionButtonDisabled()
                 .verifyToolbarActionButtonWithResourceId(R.string.tab_selection_editor_group)
-                .verifyToolbarSelectionText("1 selected")
+                .verifyToolbarSelectionText("1 tab")
                 .verifyHasAtLeastNItemVisible(tabs.size() + 1)
                 .verifyItemSelectedAtAdapterPosition(0)
                 .verifyHasItemViewTypeAtAdapterPosition(1, TabProperties.UiType.DIVIDER)
@@ -1096,7 +1102,7 @@ public class TabSelectionEditorTest {
                         -> mTabSelectionEditorController.show(
                                 tabs, preSelectedTabCount, /*recyclerViewPosition=*/null));
 
-        mRobot.resultRobot.verifyToolbarSelectionText("6 selected")
+        mRobot.resultRobot.verifyToolbarSelectionText("6 tabs")
                 .verifyHasItemViewTypeAtAdapterPosition(
                         preSelectedTabCount, TabProperties.UiType.DIVIDER)
                 .verifyDividerAlwaysStartsAtTheEdgeOfScreenAtPosition(preSelectedTabCount);
@@ -1155,7 +1161,7 @@ public class TabSelectionEditorTest {
         mRobot.resultRobot.verifyTabSelectionEditorIsVisible();
 
         ChromeRenderTestRule.sanitize(mTabSelectionEditorLayout);
-        mRenderTestRule.render(mTabSelectionEditorLayout, "grid_view_one_selected_tab_0.85");
+        mRenderTestRule.render(mTabSelectionEditorLayout, "grid_view_v2_one_selected_tab_0.85");
     }
 
     @Test
@@ -1179,7 +1185,7 @@ public class TabSelectionEditorTest {
         mRobot.resultRobot.verifyTabSelectionEditorIsVisible();
 
         ChromeRenderTestRule.sanitize(mTabSelectionEditorLayout);
-        mRenderTestRule.render(mTabSelectionEditorLayout, "grid_view_one_pre_selected_tab_0.85");
+        mRenderTestRule.render(mTabSelectionEditorLayout, "grid_view_v2_one_pre_selected_tab_0.85");
     }
 
     @Test
@@ -1203,7 +1209,7 @@ public class TabSelectionEditorTest {
         mRobot.resultRobot.verifyTabSelectionEditorIsVisible();
 
         ChromeRenderTestRule.sanitize(mTabSelectionEditorLayout);
-        mRenderTestRule.render(mTabSelectionEditorLayout, "grid_view_two_pre_selected_tab_0.85");
+        mRenderTestRule.render(mTabSelectionEditorLayout, "grid_view_v2_pre_selected_tab_0.85");
     }
 
     @Test
@@ -1227,7 +1233,7 @@ public class TabSelectionEditorTest {
         mRobot.resultRobot.verifyTabSelectionEditorIsVisible();
 
         ChromeRenderTestRule.sanitize(mTabSelectionEditorLayout);
-        mRenderTestRule.render(mTabSelectionEditorLayout, "grid_view_all_pre_selected_tab_0.85");
+        mRenderTestRule.render(mTabSelectionEditorLayout, "grid_view_v2_all_pre_selected_tab_0.85");
     }
 
     @Test
