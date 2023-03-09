@@ -75,7 +75,6 @@ void ContentAnalysisSdkManager::ResetClient(
   if (config.name == "brcm_chrm_cas" && !config.user_specific) {
     clients_.erase({"path_system", config.user_specific});
   }
-  // TODO(b/2398416680): recreate now?
 }
 
 std::unique_ptr<content_analysis::sdk::Client>

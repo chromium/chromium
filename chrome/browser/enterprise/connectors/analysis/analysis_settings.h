@@ -65,7 +65,7 @@ struct LocalAnalysisSettings {
   ~LocalAnalysisSettings();
 
   std::string local_path;
-  bool user_specific;
+  bool user_specific = false;
   base::span<const char* const> subject_names;
 
   // Arrays of base64 encoded signing key signatures.
