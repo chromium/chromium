@@ -31,6 +31,7 @@
 #include "content/public/common/webplugininfo.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/gfx/geometry/rect.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -942,12 +943,16 @@ class FakeNewWindowDelegate : public ash::TestNewWindowDelegate {
 
   void NewTab() override { new_tab_called_ = true; }
 
+  void ShowTaskManager() override { task_manager_called_ = true; }
+
   bool is_new_window_called() const { return new_window_called_; }
   bool is_new_tab_called() const { return new_tab_called_; }
+  bool is_task_manager_called() const { return task_manager_called_; }
 
  private:
   bool new_window_called_ = false;
   bool new_tab_called_ = false;
+  bool task_manager_called_ = false;
 };
 
 // Tests actions after pressing troubleshooting shortcuts. Runs all tests for
@@ -982,9 +987,15 @@ class AppSessionTroubleshootingShortcutsTest
     return fake_new_window_delegate_->is_new_tab_called();
   }
 
+  bool is_task_manager_called() const {
+    return fake_new_window_delegate_->is_task_manager_called();
+  }
+
  protected:
   ui::Accelerator new_window_accelerator =
       ui::Accelerator(ui::VKEY_N, ui::EF_CONTROL_DOWN);
+  ui::Accelerator task_manager_accelerator =
+      ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_COMMAND_DOWN);
 
  private:
   raw_ptr<FakeNewWindowDelegate> fake_new_window_delegate_;
@@ -1025,6 +1036,31 @@ TEST_P(AppSessionTroubleshootingShortcutsTest,
 
   ProcessInController(new_window_accelerator);
   EXPECT_FALSE(is_new_window_called());
+}
+
+TEST_P(AppSessionTroubleshootingShortcutsTest, TaskManagerShortcutEnabled) {
+  SetUpKioskSession();
+  UpdateTroubleshootingToolsPolicy(/*enable=*/true);
+
+  ProcessInController(task_manager_accelerator);
+  EXPECT_TRUE(is_task_manager_called());
+}
+
+TEST_P(AppSessionTroubleshootingShortcutsTest,
+       TaskManagerShortcutNoActionByDefault) {
+  SetUpKioskSession();
+
+  ProcessInController(task_manager_accelerator);
+  EXPECT_FALSE(is_task_manager_called());
+}
+
+TEST_P(AppSessionTroubleshootingShortcutsTest,
+       TaskManagerShortcutNoActionIfPolicyDisabled) {
+  SetUpKioskSession();
+  UpdateTroubleshootingToolsPolicy(/*enable=*/false);
+
+  ProcessInController(task_manager_accelerator);
+  EXPECT_FALSE(is_task_manager_called());
 }
 
 INSTANTIATE_TEST_SUITE_P(AppSessionTroubleshootingShortcuts,

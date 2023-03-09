@@ -35,6 +35,7 @@ class KioskTroubleshootingControllerAsh
     NEW_WINDOW,
     SWITCH_WINDOWS_FORWARD,
     SWITCH_WINDOWS_BACKWARD,
+    SHOW_TASK_MANAGER,
   };
 
   // ui::AcceleratorTarget:
