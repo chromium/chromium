@@ -433,6 +433,10 @@ base::Value::Dict PageLiveStateDecorator::DescribePageNodeData(
   ret.Set("IsAutoDiscardable", data->IsAutoDiscardable());
   ret.Set("WasDiscarded", data->WasDiscarded());
   ret.Set("IsActiveTab", data->IsActiveTab());
+  ret.Set("IsPinnedTab", data->IsPinnedTab());
+  ret.Set("IsDevToolsOpen", data->IsDevToolsOpen());
+  ret.Set("IsNotificationsAllowed", data->IsContentSettingTypeAllowed(
+                                        ContentSettingsType::NOTIFICATIONS));
 
   return ret;
 }
