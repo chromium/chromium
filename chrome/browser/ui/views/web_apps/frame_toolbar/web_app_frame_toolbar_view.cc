@@ -245,7 +245,7 @@ SidePanelToolbarButton* WebAppFrameToolbarView::GetSidePanelButton() {
 }
 
 AvatarToolbarButton* WebAppFrameToolbarView::GetAvatarToolbarButton() {
-  return nullptr;
+  return right_container_ ? right_container_->avatar_button() : nullptr;
 }
 
 ToolbarButton* WebAppFrameToolbarView::GetBackButton() {

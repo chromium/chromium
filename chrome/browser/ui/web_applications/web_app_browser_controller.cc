@@ -31,11 +31,13 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -222,6 +224,14 @@ bool WebAppBrowserController::HasReloadButton() const {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   return true;
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+bool WebAppBrowserController::HasProfileMenuButton() const {
+  return (app_id() == web_app::kPasswordManagerAppId) &&
+         base::FeatureList::IsEnabled(
+             password_manager::features::kPasswordManagerRedesign);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const ash::SystemWebAppDelegate* WebAppBrowserController::system_app() const {

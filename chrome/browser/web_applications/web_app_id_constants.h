@@ -182,6 +182,11 @@ inline constexpr char kSampleSystemWebAppId[] =
     "jalmdcokfklmaoadompgacjlcomfckcf";
 #endif  // !defined(OFFICIAL_BUILD)
 
+// Generated as: web_app::GenerateAppId(/*manifest_id=*/"", GURL(
+//     "chrome://password-manager/?source=pwa"))
+inline constexpr char kPasswordManagerAppId[] =
+    "kajebgjangihfbkjfejcanhanjmmbcfd";
+
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_ID_CONSTANTS_H_

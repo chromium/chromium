@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_container.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -85,6 +86,8 @@ class WebAppToolbarButtonContainer : public views::View,
     return window_controls_overlay_toggle_button_;
   }
 
+  AvatarToolbarButton* avatar_button() { return avatar_button_; }
+
   static void DisableAnimationForTesting();
 
  private:
@@ -155,6 +158,7 @@ class WebAppToolbarButtonContainer : public views::View,
   raw_ptr<WebAppMenuButton> web_app_menu_button_ = nullptr;
   raw_ptr<SystemAppAccessibleName> system_app_accessible_name_ = nullptr;
   raw_ptr<DownloadToolbarButtonView> download_button_ = nullptr;
+  raw_ptr<AvatarToolbarButton> avatar_button_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WEB_APP_TOOLBAR_BUTTON_CONTAINER_H_

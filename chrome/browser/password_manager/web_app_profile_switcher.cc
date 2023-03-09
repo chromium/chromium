@@ -25,6 +25,7 @@ WebAppInstallInfo MakeInstallInfoFromApp(const web_app::WebApp* web_app) {
   install_info.description =
       base::UTF8ToUTF16(web_app->untranslated_description());
   install_info.start_url = web_app->start_url();
+  install_info.manifest_id = web_app->manifest_id();
   install_info.manifest_url = web_app->manifest_url();
   install_info.scope = web_app->scope();
   install_info.manifest_icons = web_app->manifest_icons();

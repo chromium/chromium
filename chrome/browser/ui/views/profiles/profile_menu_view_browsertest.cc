@@ -48,7 +48,14 @@
 #include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_test_helper.h"
+#include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
+#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/ui/webui/signin/login_ui_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -60,6 +67,7 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "components/feature_engagement/test/test_tracker.h"
 #include "components/google/core/common/google_util.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -139,6 +147,20 @@ std::unique_ptr<KeyedService> CreateTestTracker(content::BrowserContext*) {
   return feature_engagement::CreateTestTracker();
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
+
+const char kPasswordManagerPWAUrl[] = "chrome://password-manager/?source=pwa";
+
+std::unique_ptr<WebAppInstallInfo> CreatePasswordManagerWebAppInfo() {
+  auto web_app_info = std::make_unique<WebAppInstallInfo>();
+  web_app_info->start_url = GURL(kPasswordManagerPWAUrl);
+  web_app_info->title = u"Password Manager";
+  web_app_info->manifest_id = "";
+  return web_app_info;
+}
+
+#endif
+
 }  // namespace
 
 class ProfileMenuViewTestBase {
@@ -147,10 +169,12 @@ class ProfileMenuViewTestBase {
   void OpenProfileMenu() {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(target_browser_);
+    OpenProfileMenuFromToolbar(browser_view->toolbar_button_provider());
+  }
 
+  void OpenProfileMenuFromToolbar(ToolbarButtonProvider* toolbar) {
     // Click the avatar button to open the menu.
-    views::View* avatar_button =
-        browser_view->toolbar_button_provider()->GetAvatarToolbarButton();
+    views::View* avatar_button = toolbar->GetAvatarToolbarButton();
     ASSERT_TRUE(avatar_button);
     Click(avatar_button);
 
@@ -765,6 +789,10 @@ class ProfileMenuClickTest : public SyncTest,
   void SetUpInProcessBrowserTestFixture() override {
     test_signin_client_subscription_ =
         secondary_account_helper::SetUpSigninClient(&test_url_loader_factory_);
+
+    // Needed by ProfileMenuClickTest_PasswordManagerWebApp test.
+    feature_list_.InitAndEnableFeature(
+        password_manager::features::kPasswordManagerRedesign);
   }
 
   // SyncTest:
@@ -849,6 +877,7 @@ class ProfileMenuClickTest : public SyncTest,
   base::HistogramTester histogram_tester_;
   std::unique_ptr<SyncServiceImplHarness> sync_harness_;
   raw_ptr<Profile, DanglingUntriaged> profile_ = nullptr;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 #define PROFILE_MENU_CLICK_TEST(actionable_item_list, test_case_name)     \
@@ -1224,3 +1253,81 @@ PROFILE_MENU_CLICK_TEST(kActionableItems_GuestProfile,
 
   RunTest();
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+// List of actionable items in the correct order as they appear in the menu.
+// If a new button is added to the menu, it should also be added to this list.
+constexpr ProfileMenuViewBase::ActionableItem
+    kActionableItems_PasswordManagerWebApp[] = {
+        ProfileMenuViewBase::ActionableItem::kOtherProfileButton};
+
+PROFILE_MENU_CLICK_TEST(kActionableItems_PasswordManagerWebApp,
+                        ProfileMenuClickTest_PasswordManagerWebApp) {
+  // Add an additional profile.
+  CreateAdditionalProfile();
+
+  // Install and launch an application for the first profile.
+  WebAppFrameToolbarTestHelper toolbar_helper;
+  web_app::AppId app_id = toolbar_helper.InstallAndLaunchCustomWebApp(
+      browser(), CreatePasswordManagerWebAppInfo(),
+      GURL(kPasswordManagerPWAUrl));
+  SetTargetBrowser(toolbar_helper.app_browser());
+  RunTest();
+}
+
+class ProfileMenuViewWebAppTest : public ProfileMenuViewTestBase,
+                                  public web_app::WebAppControllerBrowserTest {
+ protected:
+  void SetUp() override {
+    // Enable the installable PasswordManager WebUI.
+    feature_list_.InitAndEnableFeature(
+        password_manager::features::kPasswordManagerRedesign);
+    web_app::WebAppControllerBrowserTest::SetUp();
+  }
+
+  WebAppFrameToolbarTestHelper* toolbar_helper() {
+    return &web_app_frame_toolbar_helper_;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  WebAppFrameToolbarTestHelper web_app_frame_toolbar_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(ProfileMenuViewWebAppTest, SelectingOtherProfile) {
+  // Create a second profile.
+  Profile* second_profile = CreateAdditionalProfile();
+  web_app::test::WaitUntilWebAppProviderAndSubsystemsReady(
+      web_app::WebAppProvider::GetForTest(second_profile));
+  ASSERT_FALSE(chrome::FindBrowserWithProfile(second_profile));
+
+  // Install and launch an application for the first profile.
+  web_app::AppId app_id = toolbar_helper()->InstallAndLaunchCustomWebApp(
+      browser(), CreatePasswordManagerWebAppInfo(),
+      GURL(kPasswordManagerPWAUrl));
+  SetTargetBrowser(toolbar_helper()->app_browser());
+
+  // Open profile menu.
+  auto* toolbar =
+      toolbar_helper()->browser_view()->web_app_frame_toolbar_for_testing();
+  ASSERT_TRUE(toolbar);
+  OpenProfileMenuFromToolbar(toolbar);
+
+  // Select other profile by advancing the focus one step forward
+  profile_menu_view()->GetFocusManager()->AdvanceFocus(/*reverse=*/false);
+  auto* focused_item = profile_menu_view()->GetFocusManager()->GetFocusedView();
+  ASSERT_TRUE(focused_item);
+
+  // Wait for the new app window to be open for the second profile.
+  ui_test_utils::AllBrowserTabAddedWaiter waiter;
+  Click(focused_item);
+  content::WebContents* new_web_contents = waiter.Wait();
+  ASSERT_TRUE(new_web_contents);
+  Browser* new_browser = chrome::FindBrowserWithProfile(second_profile);
+  ASSERT_TRUE(new_browser);
+  EXPECT_TRUE(new_browser->is_type_app());
+  EXPECT_EQ(new_browser->tab_strip_model()->GetActiveWebContents(),
+            new_web_contents);
+  EXPECT_EQ(new_web_contents->GetVisibleURL(), GURL(kPasswordManagerPWAUrl));
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)

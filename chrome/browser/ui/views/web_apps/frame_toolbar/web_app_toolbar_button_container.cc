@@ -165,6 +165,16 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
     views::SetHitTestComponent(download_button_, static_cast<int>(HTCLIENT));
   }
 
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (app_controller->HasProfileMenuButton()) {
+    avatar_button_ =
+        AddChildView(std::make_unique<AvatarToolbarButton>(browser_view_));
+    avatar_button_->SetID(VIEW_ID_AVATAR_BUTTON);
+    ConfigureWebAppToolbarButton(avatar_button_, toolbar_button_provider_);
+    views::SetHitTestComponent(avatar_button_, static_cast<int>(HTCLIENT));
+  }
+#endif
+
   if (app_controller->HasTitlebarMenuButton()) {
     web_app_menu_button_ =
         AddChildView(std::make_unique<WebAppMenuButton>(browser_view_));

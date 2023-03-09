@@ -31,6 +31,7 @@ std::unique_ptr<WebAppInstallInfo> CreateTestWebAppInstallInfo() {
   auto web_app_info = std::make_unique<WebAppInstallInfo>();
   web_app_info->start_url = GURL(kTestWebUIAppURL);
   web_app_info->title = u"Test app";
+  web_app_info->manifest_id = "";
   return web_app_info;
 }
 
