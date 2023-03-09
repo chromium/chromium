@@ -25,7 +25,7 @@ import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {ShowEditDialogEvent} from './accelerator_row.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
 import {getTemplate} from './shortcut_customization_app.html.js';
-import {AcceleratorInfo, AcceleratorSource, AcceleratorState, AcceleratorType, MojoAcceleratorConfig, MojoLayoutInfo, ShortcutProviderInterface, StandardAcceleratorInfo} from './shortcut_types.js';
+import {AcceleratorInfo, AcceleratorSource, MojoAcceleratorConfig, MojoLayoutInfo, ShortcutProviderInterface} from './shortcut_types.js';
 import {getCategoryNameStringId, isCustomizationDisabled} from './shortcut_utils.js';
 
 export interface ShortcutCustomizationAppElement {
@@ -184,14 +184,8 @@ export class ShortcutCustomizationAppElement extends
   private onRequestUpdateAccelerators(e: RequestUpdateAcceleratorEvent): void {
     this.$.navigationPanel.notifyEvent('updateSubsections');
     const updatedAccels =
-        this.acceleratorlookupManager
-            .getStandardAcceleratorInfos(e.detail.source, e.detail.action)
-            ?.filter((accel: StandardAcceleratorInfo) => {
-              // Hide accelerators that are default and disabled.
-              return !(
-                  accel.type === AcceleratorType.kDefault &&
-                  accel.state === AcceleratorState.kDisabledByUser);
-            });
+        this.acceleratorlookupManager.getStandardAcceleratorInfos(
+            e.detail.source, e.detail.action);
 
     this.shadowRoot!.querySelector<AcceleratorEditDialogElement>('#editDialog')!
         .updateDialogAccelerators(updatedAccels as AcceleratorInfo[]);

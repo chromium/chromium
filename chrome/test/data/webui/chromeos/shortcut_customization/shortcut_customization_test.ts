@@ -16,11 +16,11 @@ import {AcceleratorSubsectionElement} from 'chrome://shortcut-customization/js/a
 import {AcceleratorViewElement} from 'chrome://shortcut-customization/js/accelerator_view.js';
 import {fakeAcceleratorConfig, fakeLayoutInfo, fakeSearchResults} from 'chrome://shortcut-customization/js/fake_data.js';
 import {FakeShortcutProvider} from 'chrome://shortcut-customization/js/fake_shortcut_provider.js';
-import {setShortcutProviderForTesting} from 'chrome://shortcut-customization/js/mojo_interface_provider.js';
+import {setShortcutProviderForTesting, setUseFakeProviderForTesting} from 'chrome://shortcut-customization/js/mojo_interface_provider.js';
 import {FakeShortcutSearchHandler} from 'chrome://shortcut-customization/js/search/fake_shortcut_search_handler.js';
 import {setShortcutSearchHandlerForTesting} from 'chrome://shortcut-customization/js/search/shortcut_search_handler.js';
 import {ShortcutCustomizationAppElement} from 'chrome://shortcut-customization/js/shortcut_customization_app.js';
-import {AcceleratorCategory, AcceleratorSubcategory, LayoutInfo, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {AcceleratorCategory, AcceleratorState, AcceleratorSubcategory, LayoutInfo, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {getCategoryNameStringId, getSubcategoryNameStringId} from 'chrome://shortcut-customization/js/shortcut_utils.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -49,6 +49,7 @@ suite('shortcutCustomizationAppTest', function() {
     manager = AcceleratorLookupManager.getInstance();
 
     // Set up provider.
+    setUseFakeProviderForTesting(true);
     provider = new FakeShortcutProvider();
     provider.setFakeAcceleratorConfig(fakeAcceleratorConfig);
     provider.setFakeAcceleratorLayoutInfos(fakeLayoutInfo);
@@ -252,7 +253,7 @@ suite('shortcutCustomizationAppTest', function() {
     assertTrue(!!editDialog);
 
     // Grab the first accelerator from the second subsection.
-    let editView =
+    const editView =
         editDialog!.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
             'accelerator-edit-view')[0] as AcceleratorEditViewElement;
 
@@ -262,7 +263,7 @@ suite('shortcutCustomizationAppTest', function() {
 
     await flushTasks();
 
-    let accelViewElement =
+    const accelViewElement =
         editView.shadowRoot!.querySelector('#acceleratorItem');
 
     // Assert no error has occurred prior to pressing a shortcut.
@@ -298,20 +299,38 @@ suite('shortcutCustomizationAppTest', function() {
     await flushTasks();
 
     // Requery the view element.
-    editView =
+    const editViews =
         editDialog!.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
-            'accelerator-edit-view')[0] as AcceleratorEditViewElement;
-    accelViewElement = editView.shadowRoot!.querySelector('#acceleratorItem');
+            'accelerator-edit-view');
+    // Replacing a default accelerator will disable the default and add a new
+    // accelerator.
+    assertEquals(2, editViews!.length);
+
+    const accelViewElement1 =
+        editViews[0]!.shadowRoot!.querySelector('#acceleratorItem');
+    const acceleratorInfo1 =
+        (accelViewElement1 as AcceleratorViewElement).acceleratorInfo;
+    const actualAccelerator1 =
+        acceleratorInfo1.layoutProperties.standardAccelerator.accelerator;
+    assertEquals(
+        Modifier.COMMAND | Modifier.SHIFT, actualAccelerator1!.modifiers);
+    assertEquals(187, actualAccelerator1.keyCode);
+    assertEquals(
+        '+', acceleratorInfo1.layoutProperties.standardAccelerator.keyDisplay);
+    assertEquals(AcceleratorState.kDisabledByUser, acceleratorInfo1.state);
 
     // Assert that the accelerator was updated with the new shortcut (Alt + ']')
-    const acceleratorInfo =
-        (accelViewElement as AcceleratorViewElement).acceleratorInfo;
-    const actualAccelerator =
-        acceleratorInfo.layoutProperties.standardAccelerator.accelerator;
-    assertEquals(Modifier.ALT, actualAccelerator!.modifiers);
-    assertEquals(221, actualAccelerator.keyCode);
+    const accelViewElement2 =
+        editViews[1]!.shadowRoot!.querySelector('#acceleratorItem');
+    const acceleratorInfo2 =
+        (accelViewElement2 as AcceleratorViewElement).acceleratorInfo;
+    const actualAccelerator2 =
+        acceleratorInfo2.layoutProperties.standardAccelerator.accelerator;
+    assertEquals(Modifier.ALT, actualAccelerator2!.modifiers);
+    assertEquals(221, actualAccelerator2.keyCode);
     assertEquals(
-        ']', acceleratorInfo.layoutProperties.standardAccelerator.keyDisplay);
+        ']', acceleratorInfo2.layoutProperties.standardAccelerator.keyDisplay);
+    assertEquals(AcceleratorState.kEnabled, acceleratorInfo2.state);
   });
 
   test('AddAccelerator', async () => {
@@ -395,7 +414,7 @@ suite('shortcutCustomizationAppTest', function() {
         ']', acceleratorInfo.layoutProperties.standardAccelerator.keyDisplay);
   });
 
-  test('RemoveAccelerator', async () => {
+  test('DisableDefaultAccelerator', async () => {
     page = initShortcutCustomizationAppElement();
     await flushTasks();
 
@@ -423,8 +442,16 @@ suite('shortcutCustomizationAppTest', function() {
         editDialog!.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
             'accelerator-edit-view');
 
-    // Expect that the accelerator has now been removed.
-    assertEquals(0, acceleratorList!.length);
+    // Expect that the accelerator has now been disabled but not removed.
+    acceleratorList =
+        editDialog!.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
+            'accelerator-edit-view');
+    assertEquals(1, acceleratorList!.length);
+    const accelViewElement =
+        acceleratorList[0]!.shadowRoot!.querySelector('#acceleratorItem');
+    const acceleratorInfo =
+        (accelViewElement as AcceleratorViewElement).acceleratorInfo;
+    assertEquals(AcceleratorState.kDisabledByUser, acceleratorInfo.state);
   });
 
   test('RestoreAllButton', async () => {

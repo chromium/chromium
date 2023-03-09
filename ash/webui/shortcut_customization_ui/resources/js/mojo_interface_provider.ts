@@ -25,11 +25,15 @@ let shortcutProvider: ShortcutProviderInterface|null = null;
  * This variable is intended to be manually set by developers for the
  * purposes of debugging.
  */
-const useFakeProvider: boolean = false;
+export let useFakeProvider: boolean = false;
 
 export function setShortcutProviderForTesting(
     testProvider: ShortcutProviderInterface): void {
   shortcutProvider = testProvider;
+}
+
+export function setUseFakeProviderForTesting(useFake: boolean): void {
+  useFakeProvider = useFake;
 }
 
 /**
@@ -81,8 +85,7 @@ export class ShortcutProviderWrapper implements ShortcutProviderInterface {
   removeAccelerator(
       source: AcceleratorSource, action: number,
       accelerator: Accelerator): Promise<{result: AcceleratorResultData}> {
-    // TODO(cambickel) Replace with real mojo method.
-    return this.fakeProvider.removeAccelerator(source, action, accelerator);
+    return this.remote.removeAccelerator(source, action, accelerator);
   }
 
   replaceAccelerator(
