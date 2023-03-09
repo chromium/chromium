@@ -5,10 +5,8 @@
 #ifndef COMPONENTS_BREADCRUMBS_CORE_BREADCRUMB_MANAGER_KEYED_SERVICE_H_
 #define COMPONENTS_BREADCRUMBS_CORE_BREADCRUMB_MANAGER_KEYED_SERVICE_H_
 
-#include <list>
 #include <string>
 
-#include "components/breadcrumbs/core/breadcrumb_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace breadcrumbs {
@@ -27,10 +25,6 @@ class BreadcrumbManagerKeyedService : public KeyedService {
   // |browsing_mode_| identifier to the event before passing it to the
   // |breadcrumb_manager_|.
   void AddEvent(const std::string& event);
-
-  // Adds and removes observers to the underlying |breadcrumb_manager_|.
-  void AddObserver(BreadcrumbManagerObserver* observer);
-  void RemoveObserver(BreadcrumbManagerObserver* observer);
 
  private:
   // A short string identifying the browser used to initialize the receiver. For
