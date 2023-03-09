@@ -914,6 +914,16 @@ void HistorySyncBridge::MaybeCommit(const VisitRow& visit_row) {
   std::vector<std::unique_ptr<syncer::EntityData>> entity_data_list =
       QueryRedirectChainAndMakeEntityData(visit_row, &included_visit_ids);
 
+  // Special case: If there are more than 2 entities (i.e. sub-chains), there's
+  // no need to commit more than the last 2. In that case, the last entity is
+  // the only new one, and the one before that was likely updated (e.g. by
+  // removing the chain-end marker, and setting a visit duration). All previous
+  // entities must have been previously committed and must be unchanged.
+  if (entity_data_list.size() > 2) {
+    entity_data_list.erase(entity_data_list.begin(),
+                           entity_data_list.end() - 2);
+  }
+
   std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
       CreateMetadataChangeList();
 
@@ -1011,6 +1021,7 @@ HistorySyncBridge::QueryRedirectChainAndMakeEntityData(
         GetLocalCacheGuid(), annotated_visits, chain_middle_trimmed,
         referrer_url, favicon_urls, local_cluster_id, included_visit_ids));
   }
+
   return entities;
 }
 

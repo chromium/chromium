@@ -1201,6 +1201,124 @@ TEST_F(HistorySyncBridgeTest, SplitsRedirectChainWithDifferentTimestamps) {
   EXPECT_FALSE(history2.redirect_chain_end_incomplete());
 }
 
+TEST_F(HistorySyncBridgeTest, DoesNotRepeatedlyUploadClientRedirects) {
+  // Start syncing (with no data yet).
+  ApplyInitialSyncChanges({});
+
+  // Visit a URL.
+  URLRow url_row1(GURL("https://url1.com"));
+  URLID url_id1 = backend()->AddURL(url_row1);
+  url_row1.set_id(url_id1);
+
+  const base::Time visit_time1 = base::Time::Now();
+
+  VisitRow visit_row1;
+  visit_row1.url_id = url_id1;
+  visit_row1.visit_time = visit_time1;
+  visit_row1.transition = ui::PageTransitionFromInt(
+      ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_CHAIN_START |
+      ui::PAGE_TRANSITION_CHAIN_END);
+  visit_row1.visit_id = backend()->AddVisit(visit_row1);
+
+  // Notify the bridge about the visit.
+  bridge()->OnURLVisited(
+      /*history_backend=*/nullptr, url_row1, visit_row1);
+
+  // The visit should've been Put() towards the processor.
+  const std::string storage_key1 =
+      HistorySyncMetadataDatabase::StorageKeyFromVisitTime(visit_time1);
+  ASSERT_EQ(processor()->GetEntities().size(), 1u);
+  ASSERT_TRUE(processor()->IsEntityUnsynced(storage_key1));
+
+  // The entity gets uploaded to the server, and thus isn't unsynced anymore.
+  processor()->MarkEntitySynced(storage_key1);
+
+  // Now, the chain gets extended: The page issues a client redirect. First, the
+  // PAGE_TRANSITION_CHAIN_END bit gets removed from the existing visit.
+  visit_row1.transition = ui::PageTransitionFromInt(
+      visit_row1.transition & ~ui::PAGE_TRANSITION_CHAIN_END);
+  ASSERT_TRUE(backend()->UpdateVisit(visit_row1));
+  // The bridge gets notified about the updated visit, but this should have no
+  // effect since it's not a chain end anymore.
+  bridge()->OnVisitUpdated(visit_row1);
+
+  // A visit gets appended to the chain.
+  AdvanceClock();
+  URLRow url_row2(GURL("https://url2.com"));
+  URLID url_id2 = backend()->AddURL(url_row2);
+  url_row2.set_id(url_id2);
+
+  AdvanceClock();
+  const base::Time visit_time2 = base::Time::Now();
+
+  VisitRow visit_row2;
+  // Link to the previous visit!
+  visit_row2.referring_visit = visit_row1.visit_id;
+  visit_row2.url_id = url_id2;
+  visit_row2.visit_time = visit_time2;
+  visit_row2.transition = ui::PageTransitionFromInt(
+      ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_CLIENT_REDIRECT |
+      ui::PAGE_TRANSITION_CHAIN_END);
+  visit_row2.visit_id = backend()->AddVisit(visit_row2);
+
+  // Notify the bridge about the new visit.
+  bridge()->OnURLVisited(
+      /*history_backend=*/nullptr, url_row2, visit_row2);
+
+  // Both of the visits should've been Put() towards the processor: The first
+  // one was updated, and the second one is new.
+  const std::string storage_key2 =
+      HistorySyncMetadataDatabase::StorageKeyFromVisitTime(visit_time2);
+  ASSERT_EQ(processor()->GetEntities().size(), 2u);
+  // The first entity should be unsynced again since it was updated.
+  EXPECT_TRUE(processor()->IsEntityUnsynced(storage_key1));
+  EXPECT_TRUE(processor()->IsEntityUnsynced(storage_key2));
+
+  // They get uploaded to the server, and thus aren't unsynced anymore.
+  processor()->MarkEntitySynced(storage_key1);
+  processor()->MarkEntitySynced(storage_key2);
+
+  // The chain gets extended again! First remove theCHAIN_END bit.
+  visit_row2.transition = ui::PageTransitionFromInt(
+      visit_row2.transition & ~ui::PAGE_TRANSITION_CHAIN_END);
+  ASSERT_TRUE(backend()->UpdateVisit(visit_row2));
+  bridge()->OnVisitUpdated(visit_row2);
+
+  // A visit gets appended to the chain.
+  AdvanceClock();
+  URLRow url_row3(GURL("https://url3.com"));
+  URLID url_id3 = backend()->AddURL(url_row3);
+  url_row3.set_id(url_id3);
+
+  AdvanceClock();
+  const base::Time visit_time3 = base::Time::Now();
+
+  VisitRow visit_row3;
+  // Link to the previous visit!
+  visit_row3.referring_visit = visit_row2.visit_id;
+  visit_row3.url_id = url_id3;
+  visit_row3.visit_time = visit_time3;
+  visit_row3.transition = ui::PageTransitionFromInt(
+      ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_CLIENT_REDIRECT |
+      ui::PAGE_TRANSITION_CHAIN_END);
+  visit_row3.visit_id = backend()->AddVisit(visit_row3);
+
+  // Notify the bridge about the new visit.
+  bridge()->OnURLVisited(
+      /*history_backend=*/nullptr, url_row3, visit_row3);
+
+  // The last *two* visits should've been Put() to the processor: The second was
+  // updated, and the third is new.
+  const std::string storage_key3 =
+      HistorySyncMetadataDatabase::StorageKeyFromVisitTime(visit_time3);
+  ASSERT_EQ(processor()->GetEntities().size(), 3u);
+  // This is the main expectation of the test: The first visit was not changed,
+  // so it should *not* be unsynced again.
+  EXPECT_FALSE(processor()->IsEntityUnsynced(storage_key1));
+  EXPECT_TRUE(processor()->IsEntityUnsynced(storage_key2));
+  EXPECT_TRUE(processor()->IsEntityUnsynced(storage_key3));
+}
+
 TEST_F(HistorySyncBridgeTest, TrimsExcessivelyLongRedirectChain) {
   // Start syncing (with no data yet).
   ApplyInitialSyncChanges({});
