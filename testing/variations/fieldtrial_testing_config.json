@@ -13671,7 +13671,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnabledWithNewTab",
+                    "params": {
+                        "browser_tab_mode": "new_tab"
+                    },
                     "enable_features": [
                         "WebAuthFlowInBrowserTab"
                     ]
