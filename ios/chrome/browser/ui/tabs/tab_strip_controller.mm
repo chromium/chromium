@@ -546,8 +546,6 @@ const CGFloat kSymbolSize = 18;
       buttonNewTabImage = [buttonNewTabImage
           imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     }
-    [_buttonNewTab setImage:buttonNewTabImage forState:UIControlStateNormal];
-    [_buttonNewTab.imageView setTintColor:[UIColor colorNamed:kGrey500Color]];
 
     // TODO(crbug.com/1418068): Simplify after minimum version required is >=
     // iOS 15.
@@ -556,6 +554,8 @@ const CGFloat kSymbolSize = 18;
           [UIButtonConfiguration plainButtonConfiguration];
       buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
           0, kNewTabButtonLeadingImageInset, kNewTabButtonBottomImageInset, 0);
+      buttonConfiguration.image = buttonNewTabImage;
+      _buttonNewTab.tintColor = [UIColor colorNamed:kGrey500Color];
       _buttonNewTab.configuration = buttonConfiguration;
     }
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
@@ -563,6 +563,8 @@ const CGFloat kSymbolSize = 18;
       UIEdgeInsets imageInsets = UIEdgeInsetsMake(
           0, kNewTabButtonLeadingImageInset, kNewTabButtonBottomImageInset, 0);
       _buttonNewTab.imageEdgeInsets = imageInsets;
+      [_buttonNewTab setImage:buttonNewTabImage forState:UIControlStateNormal];
+      [_buttonNewTab.imageView setTintColor:[UIColor colorNamed:kGrey500Color]];
     }
 #endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
 
