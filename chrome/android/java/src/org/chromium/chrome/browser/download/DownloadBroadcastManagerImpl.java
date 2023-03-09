@@ -271,8 +271,6 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
                 DownloadNotificationUmaHelper.recordStateAtCancelHistogram(
                         LegacyHelpers.isLegacyDownload(id),
                         intent.getIntExtra(EXTRA_DOWNLOAD_STATE_AT_CANCEL, -1));
-                DownloadMetrics.recordDownloadCancel(
-                        DownloadMetrics.CancelFrom.CANCEL_NOTIFICATION);
                 downloadServiceDelegate.cancelDownload(id, otrProfileID);
                 break;
 

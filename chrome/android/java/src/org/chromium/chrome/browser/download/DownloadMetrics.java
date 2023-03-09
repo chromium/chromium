@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.download;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.metrics.RecordHistogram;
@@ -12,8 +11,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.profile_metrics.BrowserProfileType;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 
 /**
@@ -22,18 +19,6 @@ import java.util.ArrayList;
 public class DownloadMetrics {
     private static final String TAG = "DownloadMetrics";
     private static final int MAX_VIEW_RETENTION_MINUTES = 30 * 24 * 60;
-
-    // Please treat this list as append only and keep it in sync with
-    // Android.DownloadManager.Cancel.CancelFrom in enums.xml.
-    @IntDef({CancelFrom.CANCEL_SHUTDOWN, CancelFrom.CANCEL_NOTIFICATION,
-            CancelFrom.CANCEL_DOWNLOAD_HOME, CancelFrom.NUM_ENTRIES})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface CancelFrom {
-        int CANCEL_SHUTDOWN = 0;
-        int CANCEL_NOTIFICATION = 1;
-        int CANCEL_DOWNLOAD_HOME = 2;
-        int NUM_ENTRIES = 3;
-    }
 
     /**
      * Records download open source.
@@ -79,15 +64,6 @@ public class DownloadMetrics {
                     "Download.OpenDownloadsFromMenu.PerProfileType", type,
                     BrowserProfileType.MAX_VALUE + 1);
         }
-    }
-
-    /**
-     * Records various call sites from where the download cancellation has been called.
-     * @param cancelFrom Various cancel reasons.
-     */
-    public static void recordDownloadCancel(@CancelFrom int cancelFrom) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "Android.DownloadManager.Cancel", cancelFrom, CancelFrom.NUM_ENTRIES);
     }
 
     /**

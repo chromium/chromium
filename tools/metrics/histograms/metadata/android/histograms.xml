@@ -998,23 +998,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.DownloadManager.Cancel"
-    enum="Android.DownloadManager.Cancel.CancelFrom" expires_after="M85">
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>clank-downloads@google.com</owner>
-  <summary>Recorded when a download is cancelled from Java.</summary>
-</histogram>
-
-<histogram name="Android.DownloadManager.Filter"
-    enum="AndroidDownloadFilterType" expires_after="2020-01-26">
-  <owner>dtrainor@chromium.org</owner>
-  <owner>clank-downloads@google.com</owner>
-  <summary>
-    Recorded when the user selects a filter from the Chrome download manager
-    navigation drawer.
-  </summary>
-</histogram>
-
 <histogram name="Android.DownloadManager.ForegroundServiceLifecycle"
     enum="DownloadNotificationForegroundLifecycle" expires_after="never">
 <!-- expires-never: Download foreground notification stability metric. -->

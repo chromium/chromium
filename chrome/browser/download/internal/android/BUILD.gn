@@ -81,7 +81,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/download/home/list/view/AspectRatioFrameLayout.java",
     "java/src/org/chromium/chrome/browser/download/home/list/view/CircularProgressView.java",
     "java/src/org/chromium/chrome/browser/download/home/metrics/FileExtensions.java",
-    "java/src/org/chromium/chrome/browser/download/home/metrics/FilterChangeLogger.java",
     "java/src/org/chromium/chrome/browser/download/home/metrics/OfflineItemStartupLogger.java",
     "java/src/org/chromium/chrome/browser/download/home/metrics/UmaUtils.java",
     "java/src/org/chromium/chrome/browser/download/home/rename/RenameDialogCoordinator.java",
