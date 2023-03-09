@@ -842,10 +842,19 @@ group("gn_all") {
     "//third_party/pffft:pffft_unittest",
   ]
 
-  # Minimal binaries to exercise Rust toolchain.
-  deps += [ ":rust_build_tests" ]
+  # Rust build targets.
+  deps += [ ":all_rust" ]
+}
 
-  # More Rust targets.
+# All Rust targets. This is provided for convenience while developing Rust to
+# e.g. test build config or toolchain changes.
+group("all_rust") {
+  testonly = true
+
+  # Unconditional because this includes things that should work whether or not
+  # Rust is enabled.
+  deps = [ ":rust_build_tests" ]
+
   if (toolchain_has_rust) {
     deps += [
       "//mojo/public/rust",

@@ -866,8 +866,9 @@ impl MojomInterface for InterfaceAClient {
 
 impl CastHandle for InterfaceAClient {
     unsafe fn from_untyped(handle: system::UntypedHandle) -> InterfaceAClient {
+        let pipe = unsafe { message_pipe::MessageEndpoint::from_untyped(handle) };
         InterfaceAClient {
-            pipe: message_pipe::MessageEndpoint::from_untyped(handle),
+            pipe,
             version: 0, // Since we have no other information, assume its the base
         }
     }
@@ -916,8 +917,9 @@ impl MojomInterface for InterfaceAServer {
 
 impl CastHandle for InterfaceAServer {
     unsafe fn from_untyped(handle: system::UntypedHandle) -> InterfaceAServer {
+        let pipe = unsafe { message_pipe::MessageEndpoint::from_untyped(handle) };
         InterfaceAServer {
-            pipe: message_pipe::MessageEndpoint::from_untyped(handle),
+            pipe,
             version: 0, // Since we have no other information, assume its the base
         }
     }
@@ -1014,8 +1016,9 @@ impl MojomInterface for BoundsCheckTestInterfaceClient {
 
 impl CastHandle for BoundsCheckTestInterfaceClient {
     unsafe fn from_untyped(handle: system::UntypedHandle) -> BoundsCheckTestInterfaceClient {
+        let pipe = unsafe { message_pipe::MessageEndpoint::from_untyped(handle) };
         BoundsCheckTestInterfaceClient {
-            pipe: message_pipe::MessageEndpoint::from_untyped(handle),
+            pipe,
             version: 0, // Since we have no other information, assume its the base
         }
     }
@@ -1067,8 +1070,9 @@ impl MojomInterface for BoundsCheckTestInterfaceServer {
 
 impl CastHandle for BoundsCheckTestInterfaceServer {
     unsafe fn from_untyped(handle: system::UntypedHandle) -> BoundsCheckTestInterfaceServer {
+        let pipe = unsafe { message_pipe::MessageEndpoint::from_untyped(handle) };
         BoundsCheckTestInterfaceServer {
-            pipe: message_pipe::MessageEndpoint::from_untyped(handle),
+            pipe,
             version: 0, // Since we have no other information, assume its the base
         }
     }
@@ -1399,8 +1403,9 @@ impl MojomInterface for ConformanceTestInterfaceClient {
 
 impl CastHandle for ConformanceTestInterfaceClient {
     unsafe fn from_untyped(handle: system::UntypedHandle) -> ConformanceTestInterfaceClient {
+        let pipe = unsafe { message_pipe::MessageEndpoint::from_untyped(handle) };
         ConformanceTestInterfaceClient {
-            pipe: message_pipe::MessageEndpoint::from_untyped(handle),
+            pipe,
             version: 0, // Since we have no other information, assume its the base
         }
     }
@@ -1452,8 +1457,9 @@ impl MojomInterface for ConformanceTestInterfaceServer {
 
 impl CastHandle for ConformanceTestInterfaceServer {
     unsafe fn from_untyped(handle: system::UntypedHandle) -> ConformanceTestInterfaceServer {
+        let pipe = unsafe { message_pipe::MessageEndpoint::from_untyped(handle) };
         ConformanceTestInterfaceServer {
-            pipe: message_pipe::MessageEndpoint::from_untyped(handle),
+            pipe,
             version: 0, // Since we have no other information, assume its the base
         }
     }
@@ -2953,8 +2959,9 @@ impl MojomInterface for IntegrationTestInterfaceClient {
 
 impl CastHandle for IntegrationTestInterfaceClient {
     unsafe fn from_untyped(handle: system::UntypedHandle) -> IntegrationTestInterfaceClient {
+        let pipe = unsafe { message_pipe::MessageEndpoint::from_untyped(handle) };
         IntegrationTestInterfaceClient {
-            pipe: message_pipe::MessageEndpoint::from_untyped(handle),
+            pipe,
             version: 0, // Since we have no other information, assume its the base
         }
     }
@@ -3006,8 +3013,9 @@ impl MojomInterface for IntegrationTestInterfaceServer {
 
 impl CastHandle for IntegrationTestInterfaceServer {
     unsafe fn from_untyped(handle: system::UntypedHandle) -> IntegrationTestInterfaceServer {
+        let pipe = unsafe { message_pipe::MessageEndpoint::from_untyped(handle) };
         IntegrationTestInterfaceServer {
-            pipe: message_pipe::MessageEndpoint::from_untyped(handle),
+            pipe,
             version: 0, // Since we have no other information, assume its the base
         }
     }

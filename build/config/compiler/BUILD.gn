@@ -880,6 +880,11 @@ config("compiler") {
     # to compile dylibs on Android, such as for constructing unit test APKs.
     "-Cdefault-linker-libraries",
 
+    # Require `unsafe` blocks even in `unsafe` fns. This is intended to become
+    # an error by default eventually; see
+    # https://github.com/rust-lang/rust/issues/71668
+    "-Dunsafe_op_in_unsafe_fn",
+
     # Turn warnings into the "deny" lint level, which produce compiler errors.
     # The equivalent of -Werror for clang/gcc.
     "-Dwarnings",

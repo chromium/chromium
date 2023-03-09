@@ -61,11 +61,16 @@ pub type GtestFactoryFunction = unsafe extern "C" fn(
 /// GtestFactoryFunction signature, which is a function pointer that passed to
 /// C++, and never run from within Rust.
 ///
+/// See https://doc.rust-lang.org/nomicon/ffi.html#representing-opaque-structs
+///
 /// TODO(danakj): If there was a way, without making references to it into wide
 /// pointers, we should make this type be !Sized.
 #[repr(C)]
 #[doc(hidden)]
-pub struct OpaqueTestingTest(u8);
+pub struct OpaqueTestingTest {
+    data: [u8; 0],
+    marker: std::marker::PhantomData<(*mut u8, std::marker::PhantomPinned)>,
+}
 
 #[doc(hidden)]
 pub trait TestResult {
@@ -186,7 +191,7 @@ pub mod __private {
             ) -> Pin<&'static mut OpaqueTestingTest>;
 
         }
-        _ZN18rust_gtest_interop26rust_gtest_default_factoryEPFvPN7testing4TestEE(f)
+        unsafe { _ZN18rust_gtest_interop26rust_gtest_default_factoryEPFvPN7testing4TestEE(f) }
     }
 
     /// Wrapper that calls C++ rust_gtest_add_test().
@@ -218,14 +223,16 @@ pub mod __private {
             );
         }
 
-        _ZN18rust_gtest_interop19rust_gtest_add_testEPFPN7testing4TestEPFvS2_EES4_PKcS8_S8_i(
-            factory,
-            run_test_fn,
-            test_suite_name,
-            test_name,
-            file,
-            line,
-        )
+        unsafe {
+            _ZN18rust_gtest_interop19rust_gtest_add_testEPFPN7testing4TestEPFvS2_EES4_PKcS8_S8_i(
+                factory,
+                run_test_fn,
+                test_suite_name,
+                test_name,
+                file,
+                line,
+            )
+        }
     }
 
     /// Information used to register a function pointer as a test with the C++
