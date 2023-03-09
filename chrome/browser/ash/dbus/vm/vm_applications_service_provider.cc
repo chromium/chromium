@@ -113,6 +113,12 @@ void VmApplicationsServiceProvider::UpdateApplicationList(
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
   auto* registry_service =
       guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile);
+  if (!registry_service) {
+    std::move(response_sender)
+        .Run(dbus::ErrorResponse::FromMethodCall(method_call, DBUS_ERROR_FAILED,
+                                                 "Shutting down"));
+    return;
+  }
   registry_service->UpdateApplicationList(request);
 
   std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
@@ -168,8 +174,15 @@ void VmApplicationsServiceProvider::UpdateMimeTypes(
   }
 
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  guest_os::GuestOsMimeTypesServiceFactory::GetForProfile(profile)
-      ->UpdateMimeTypes(request);
+  auto* mime_types_service =
+      guest_os::GuestOsMimeTypesServiceFactory::GetForProfile(profile);
+  if (!mime_types_service) {
+    std::move(response_sender)
+        .Run(dbus::ErrorResponse::FromMethodCall(method_call, DBUS_ERROR_FAILED,
+                                                 "Shutting down"));
+    return;
+  }
+  mime_types_service->UpdateMimeTypes(request);
 
   std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
 }
