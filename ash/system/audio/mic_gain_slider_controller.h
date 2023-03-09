@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/system/unified/unified_slider_view.h"
 #include "base/functional/callback_forward.h"
+#include "base/timer/timer.h"
 
 namespace ash {
 
@@ -38,6 +39,14 @@ class ASH_EXPORT MicGainSliderController : public UnifiedSliderListener {
                           views::SliderChangeReason reason) override;
 
   void SliderButtonPressed();
+
+ private:
+  // Records when the user changes the gain via slider to metrics.
+  void RecordGainChanged();
+
+  // Timer used to prevent the input gain from recording each time the user
+  // moves the slider while setting the desired volume.
+  base::DelayTimer input_gain_metric_delay_timer_;
 };
 
 }  // namespace ash

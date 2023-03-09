@@ -5865,6 +5865,11 @@ others/histograms.xml -->
   <int value="2" label="Start failed"/>
 </enum>
 
+<enum name="AudioSettingsChangeSource">
+  <int value="0" label="System Tray"/>
+  <int value="1" label="OS Settings"/>
+</enum>
+
 <enum name="AudioStreamFormatRelatedInitError">
   <int value="0" label="Unsupported format"/>
   <int value="1" label="Unsupported format when conversion was used"/>

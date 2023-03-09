@@ -348,6 +348,9 @@ void CrosAudioConfigImpl::RecordInputGain() {
   base::UmaHistogramExactLinear(kInputGainChangeHistogramName,
                                 last_set_input_gain_,
                                 /*exclusive_max=*/101);
+  base::UmaHistogramEnumeration(
+      CrasAudioHandler::kInputGainChangedSourceHistogramName,
+      CrasAudioHandler::AudioSettingsChangeSource::kOsSettings);
 }
 
 void CrosAudioConfigImpl::OnOutputNodeVolumeChanged(uint64_t node_id,

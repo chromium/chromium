@@ -83,6 +83,20 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
     kOther,
   };
 
+  // This enum is used to record UMA histogram values and should not be
+  // reordered. Please keep in sync with `AudioSettingsChangeSource` in
+  // src/tools/metrics/histograms/enums.xml.
+  enum class AudioSettingsChangeSource {
+    kSystemTray = 0,
+    kOsSettings,
+    kMaxValue = kOsSettings,
+  };
+
+  static constexpr base::TimeDelta kMetricsDelayTimerInterval =
+      base::Seconds(2);
+  static constexpr char kInputGainChangedSourceHistogramName[] =
+      "Cras.InputGainChangedSource";
+
   class AudioObserver {
    public:
     AudioObserver(const AudioObserver&) = delete;

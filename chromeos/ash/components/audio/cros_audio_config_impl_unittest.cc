@@ -1093,6 +1093,9 @@ TEST_F(CrosAudioConfigImplTest, SetInputGainHistogram) {
   histogram_tester_.ExpectBucketCount(kInputGainChangeHistogramName, 10, 0);
   histogram_tester_.ExpectBucketCount(kInputGainChangeHistogramName, 20, 0);
   histogram_tester_.ExpectBucketCount(kInputGainChangeHistogramName, 30, 1);
+  histogram_tester_.ExpectBucketCount(
+      CrasAudioHandler::kInputGainChangedSourceHistogramName,
+      CrasAudioHandler::AudioSettingsChangeSource::kOsSettings, 1);
 
   // Move the input gain up slider 2 times. Move the slider at half of the
   // delay interval time so each change shouldn't be recorded.
@@ -1103,6 +1106,9 @@ TEST_F(CrosAudioConfigImplTest, SetInputGainHistogram) {
   task_environment()->FastForwardBy(kMetricsDelayTimerInterval);
   histogram_tester_.ExpectBucketCount(kInputGainChangeHistogramName, 50, 0);
   histogram_tester_.ExpectBucketCount(kInputGainChangeHistogramName, 100, 1);
+  histogram_tester_.ExpectBucketCount(
+      CrasAudioHandler::kInputGainChangedSourceHistogramName,
+      CrasAudioHandler::AudioSettingsChangeSource::kOsSettings, 2);
 }
 
 }  // namespace ash::audio_config
