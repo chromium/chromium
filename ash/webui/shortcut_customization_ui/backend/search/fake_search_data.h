@@ -14,7 +14,7 @@
 
 namespace ash::shortcut_ui::fake_search_data {
 
-enum FakeActionIds { kAction1 = 1, kAction2 = 2 };
+enum FakeActionIds { kAction1 = 1, kAction2 = 2, kAction3 = 3 };
 
 ash::mojom::AcceleratorInfoPtr CreateFakeStandardAcceleratorInfo();
 

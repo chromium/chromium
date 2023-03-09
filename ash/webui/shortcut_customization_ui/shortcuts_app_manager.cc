@@ -7,7 +7,10 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/mojom/accelerator_info.mojom-forward.h"
+#include "ash/public/mojom/accelerator_info.mojom.h"
 #include "ash/webui/shortcut_customization_ui/backend/accelerator_configuration_provider.h"
+#include "ash/webui/shortcut_customization_ui/backend/search/search_concept.h"
 #include "ash/webui/shortcut_customization_ui/backend/search/search_concept_registry.h"
 #include "ash/webui/shortcut_customization_ui/backend/search/search_handler.h"
 #include "base/feature_list.h"
@@ -16,9 +19,6 @@
 
 namespace ash::shortcut_ui {
 
-// TODO(cambickel): Update this constructor to fetch the list of accelerators
-// and use them to call SearchConceptRegistry.AddSearchConcepts, to populate
-// the LSS index.
 ShortcutsAppManager::ShortcutsAppManager(
     local_search_service::LocalSearchServiceProxy* local_search_service_proxy) {
   if (features::IsSearchInShortcutsAppEnabled()) {
@@ -66,8 +66,25 @@ void ShortcutsAppManager::SetSearchConcepts(
     shortcut_ui::AcceleratorConfigurationProvider::AcceleratorConfigurationMap
         config,
     std::vector<mojom::AcceleratorLayoutInfoPtr> layout_infos) {
-  // TODO(cambickel): Use accelerators to create search concepts and add them to
-  // the search concept registry.
+  if (!features::IsSearchInShortcutsAppEnabled()) {
+    return;
+  }
+
+  std::vector<SearchConcept> search_concepts;
+
+  for (auto& layout_info : layout_infos) {
+    if (const auto& config_iterator = config.find(layout_info->source);
+        config_iterator != config.end()) {
+      if (const auto& map_iterator =
+              config_iterator->second.find(layout_info->action);
+          map_iterator != config_iterator->second.end()) {
+        search_concepts.emplace_back(std::move(layout_info),
+                                     std::move(map_iterator->second));
+      }
+    }
+  }
+
+  search_concept_registry_->SetSearchConcepts(std::move(search_concepts));
 }
 
 }  // namespace ash::shortcut_ui

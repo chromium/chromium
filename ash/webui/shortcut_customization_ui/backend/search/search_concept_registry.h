@@ -66,6 +66,7 @@ class SearchConceptRegistry {
                            SearchConceptToDataStandardAccelerator);
   FRIEND_TEST_ALL_PREFIXES(SearchConceptRegistryTest,
                            SearchConceptToDataTextAccelerator);
+  FRIEND_TEST_ALL_PREFIXES(ShortcutsAppManagerTest, SetSearchConcepts);
 
   void NotifyRegistryUpdated();
 

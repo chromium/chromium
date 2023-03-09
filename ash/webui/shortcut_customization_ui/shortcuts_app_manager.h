@@ -5,11 +5,13 @@
 #ifndef ASH_WEBUI_SHORTCUT_CUSTOMIZATION_UI_SHORTCUTS_APP_MANAGER_H_
 #define ASH_WEBUI_SHORTCUT_CUSTOMIZATION_UI_SHORTCUTS_APP_MANAGER_H_
 
+#include <memory>
+
+#include "ash/public/mojom/accelerator_info.mojom-forward.h"
 #include "ash/webui/shortcut_customization_ui/backend/accelerator_configuration_provider.h"
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
+#include "base/gtest_prod_util.h"
 #include "components/keyed_service/core/keyed_service.h"
-
-#include <memory>
 
 namespace ash {
 
@@ -53,6 +55,7 @@ class ShortcutsAppManager
           configs) override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(ShortcutsAppManagerTest, SetSearchConcepts);
   // KeyedService:
   void Shutdown() override;
 
