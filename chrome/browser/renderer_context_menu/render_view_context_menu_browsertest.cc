@@ -128,6 +128,7 @@
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #endif
 
@@ -553,8 +554,61 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
 }
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
-                       SaveLinkAsEntryIsDisabledForUrlsNotAccessibleForChild) {
+class ContextMenuWithoutFilteringForSupervisedUsersOn3pBrowserTest
+    : public ContextMenuBrowserTest {
+ public:
+  ContextMenuWithoutFilteringForSupervisedUsersOn3pBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        supervised_user::kFilterWebsitesForSupervisedUsersOnThirdParty);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ContextMenuWithoutFilteringForSupervisedUsersOn3pBrowserTest,
+    SaveLinkAsEntryIsDisabledForUrlsNotAccessibleForChildNo3P) {
+  // Set up child user profile.
+  Profile* profile = browser()->profile();
+  browser()->profile()->GetPrefs()->SetString(
+      prefs::kSupervisedUserId, supervised_user::kChildAccountSUID);
+
+  // Block access to http://www.google.com/ in the URL filter.
+  SupervisedUserService* supervised_user_service =
+      SupervisedUserServiceFactory::GetForProfile(profile);
+  supervised_user::SupervisedUserURLFilter* url_filter =
+      supervised_user_service->GetURLFilter();
+  std::map<std::string, bool> hosts;
+  hosts["www.google.com"] = false;
+  url_filter->SetManualHosts(std::move(hosts));
+
+  base::RunLoop().RunUntilIdle();
+
+  std::unique_ptr<TestRenderViewContextMenu> menu =
+      CreateContextMenuMediaTypeNone(GURL("http://www.google.com/"),
+                                     GURL("http://www.google.com/"));
+
+  ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SAVELINKAS));
+
+  // The entry is only disabled for platforms on which URL filtering is enabled.
+  if (supervised_user_service->IsURLFilteringEnabled()) {
+    EXPECT_FALSE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SAVELINKAS));
+  } else {
+    EXPECT_TRUE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SAVELINKAS));
+  }
+}
+
+class ContextMenuWithFilteringForSupervisedUsersOn3pBrowserTest
+    : public ContextMenuBrowserTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      supervised_user::kFilterWebsitesForSupervisedUsersOnThirdParty};
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ContextMenuWithFilteringForSupervisedUsersOn3pBrowserTest,
+    SaveLinkAsEntryIsDisabledForUrlsNotAccessibleForChildWith3P) {
   // Set up child user profile.
   Profile* profile = browser()->profile();
   browser()->profile()->GetPrefs()->SetString(
@@ -578,8 +632,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
   ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SAVELINKAS));
   EXPECT_FALSE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SAVELINKAS));
 }
-
-#endif
+#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
