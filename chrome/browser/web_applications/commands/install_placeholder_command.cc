@@ -78,7 +78,7 @@ void InstallPlaceholderCommand::Abort(webapps::InstallResultCode code) {
   if (!callback_) {
     return;
   }
-  debug_value_.Set("result_code", base::StreamableToString(code));
+  debug_value_.Set("result_code", base::ToString(code));
   webapps::InstallableMetrics::TrackInstallResult(false);
   SignalCompletionAndSelfDestruct(
       CommandResult::kFailure,
@@ -173,7 +173,7 @@ void InstallPlaceholderCommand::OnInstallFinalized(
     const AppId& app_id,
     webapps::InstallResultCode code,
     OsHooksErrors os_hooks_errors) {
-  debug_value_.Set("result_code", base::StreamableToString(code));
+  debug_value_.Set("result_code", base::ToString(code));
 
   if (!web_contents_ || web_contents_->IsBeingDestroyed()) {
     Abort(webapps::InstallResultCode::kWebContentsDestroyed);

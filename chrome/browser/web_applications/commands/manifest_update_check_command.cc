@@ -46,7 +46,7 @@ base::Value ManifestUpdateCheckCommand::ToDebugValue() const {
   base::Value::Dict data = debug_log_.Clone();
   data.Set("app_id", app_id_);
   data.Set("url", url_.spec());
-  data.Set("stage", base::StreamableToString(stage_));
+  data.Set("stage", base::ToString(stage_));
   return base::Value(std::move(data));
 }
 
@@ -473,7 +473,7 @@ bool ManifestUpdateCheckCommand::IsWebContentsDestroyed() const {
 
 void ManifestUpdateCheckCommand::CompleteCommandAndSelfDestruct(
     ManifestUpdateCheckResult check_result) {
-  debug_log_.Set("result", base::StreamableToString(check_result));
+  debug_log_.Set("result", base::ToString(check_result));
 
   CommandResult command_result = [&] {
     switch (check_result) {

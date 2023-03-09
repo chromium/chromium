@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
@@ -38,13 +39,6 @@
 namespace web_app {
 
 namespace {
-
-template <typename Streamable>
-std::string StreamableToString(const Streamable& value) {
-  std::ostringstream ss;
-  ss << value;
-  return ss.str();
-}
 
 blink::mojom::SubAppsServiceResultCode InstallResultCodeToMojo(
     webapps::InstallResultCode install_result_code) {
@@ -479,8 +473,8 @@ void SubAppInstallCommand::AddResultToDebugData(
   base::Value::Dict install_info;
   install_info.Set("unhashed_app_id", unhashed_app_id);
   install_info.Set("install_url", install_url.spec());
-  install_info.Set("detailed_result_code", StreamableToString(detailed_code));
-  install_info.Set("result_code", StreamableToString(result_code));
+  install_info.Set("detailed_result_code", base::ToString(detailed_code));
+  install_info.Set("result_code", base::ToString(result_code));
   debug_install_results_.Set(installed_app_id,
                              base::Value(std::move(install_info)));
 }

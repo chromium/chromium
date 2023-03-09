@@ -104,7 +104,7 @@ base::Value ExternallyManagedInstallCommand::ToDebugValue() const {
 void ExternallyManagedInstallCommand::Abort(webapps::InstallResultCode code) {
   if (!install_callback_)
     return;
-  debug_value_.Set("result_code", base::StreamableToString(code));
+  debug_value_.Set("result_code", base::ToString(code));
   webapps::InstallableMetrics::TrackInstallResult(false);
   SignalCompletionAndSelfDestruct(
       CommandResult::kFailure,
@@ -302,7 +302,7 @@ void ExternallyManagedInstallCommand::OnInstallFinalized(
     Abort(code);
     return;
   }
-  debug_value_.Set("result_code", base::StreamableToString(code));
+  debug_value_.Set("result_code", base::ToString(code));
 
   RecordWebAppInstallationTimestamp(
       Profile::FromBrowserContext(web_contents_->GetBrowserContext())

@@ -38,8 +38,7 @@ UpdateProtocolHandlerApprovalCommand::UpdateProtocolHandlerApprovalCommand(
       callback_(std::move(callback)) {
   debug_info_.Set("name", "UpdateProtocolHandlerApprovalCommand");
   debug_info_.Set("app_id", app_id_);
-  debug_info_.Set("api_approval_state",
-                  base::StreamableToString(approval_state_));
+  debug_info_.Set("api_approval_state", base::ToString(approval_state_));
   debug_info_.Set("protocol_scheme", protocol_scheme);
   DCHECK(!protocol_scheme.empty());
 }

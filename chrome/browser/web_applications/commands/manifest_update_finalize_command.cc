@@ -97,8 +97,8 @@ void ManifestUpdateFinalizeCommand::OnInstallationComplete(
 void ManifestUpdateFinalizeCommand::CompleteCommand(
     webapps::InstallResultCode code,
     ManifestUpdateResult result) {
-  debug_log_.Set("installation_code", base::StreamableToString(code));
-  debug_log_.Set("result", base::StreamableToString(result));
+  debug_log_.Set("installation_code", base::ToString(code));
+  debug_log_.Set("result", base::ToString(result));
   SignalCompletionAndSelfDestruct(
       IsSuccess(code) ? CommandResult::kSuccess : CommandResult::kFailure,
       base::BindOnce(std::move(write_callback_), url_, app_id_, result));
