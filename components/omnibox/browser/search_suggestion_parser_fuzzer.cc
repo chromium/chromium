@@ -11,6 +11,7 @@
 #include "base/values.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
 // From crbug.com/774858
@@ -29,10 +30,10 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     return 0;
   std::unique_ptr<std::string> response_body =
       std::make_unique<std::string>(reinterpret_cast<const char*>(data), size);
-  std::unique_ptr<base::Value> value(
+  absl::optional<base::Value> value =
       SearchSuggestionParser::DeserializeJsonData(
           SearchSuggestionParser::ExtractJsonData(nullptr,
-                                                  std::move(response_body))));
+                                                  std::move(response_body)));
   if (value) {
     AutocompleteInput input;
     {
