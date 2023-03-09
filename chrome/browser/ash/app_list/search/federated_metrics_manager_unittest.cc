@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/system/federated/federated_service_controller.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -92,10 +93,11 @@ class FederatedMetricsManagerTest : public testing::Test {
   TestFederatedServiceController federated_service_controller_;
 };
 
-TEST_F(FederatedMetricsManagerTest, OnAbandon) {
-  Location location = Location::kList;
-  std::vector<Result> shown_results;
-  metrics_manager_->OnAbandon(location, shown_results, u"fake_query");
+TEST_F(FederatedMetricsManagerTest, Quit) {
+  metrics_manager_->OnSearchSessionStarted();
+  // Search session ends without user taking other action (e.g. without
+  // launching a result).
+  metrics_manager_->OnSearchSessionEnded(u"fake_query");
   base::RunLoop().RunUntilIdle();
 
   histogram_tester()->ExpectUniqueSample(
@@ -103,8 +105,8 @@ TEST_F(FederatedMetricsManagerTest, OnAbandon) {
       app_list::federated::FederatedMetricsManager::InitStatus::kOk, 1);
 
   histogram_tester()->ExpectUniqueSample(
-      app_list::federated::kHistogramAction,
-      app_list::federated::FederatedMetricsManager::Action::kAbandon, 1);
+      app_list::federated::kHistogramSearchSessionConclusion,
+      ash::SearchSessionConclusion::kQuit, 1);
 
   histogram_tester()->ExpectUniqueSample(
       app_list::federated::kHistogramReportStatus,
@@ -114,12 +116,72 @@ TEST_F(FederatedMetricsManagerTest, OnAbandon) {
   // functionality is available.
 }
 
-TEST_F(FederatedMetricsManagerTest, OnLaunch) {
-  Location location = Location::kList;
+TEST_F(FederatedMetricsManagerTest, Launch) {
+  metrics_manager_->OnSearchSessionStarted();
   std::vector<Result> shown_results;
   Result launched_result = CreateFakeResult(Type::EXTENSION_APP, "fake_id");
-  metrics_manager_->OnLaunch(location, launched_result, shown_results,
-                             u"fake_query");
+  std::u16string query = u"fake_query";
+
+  metrics_manager_->OnLaunch(Location::kList, launched_result, shown_results,
+                             query);
+  metrics_manager_->OnSearchSessionEnded(query);
+  base::RunLoop().RunUntilIdle();
+
+  histogram_tester()->ExpectUniqueSample(
+      app_list::federated::kHistogramInitStatus,
+      app_list::federated::FederatedMetricsManager::InitStatus::kOk, 1);
+
+  // TODO
+  histogram_tester()->ExpectUniqueSample(
+      app_list::federated::kHistogramSearchSessionConclusion,
+      ash::SearchSessionConclusion::kLaunch, 1);
+
+  histogram_tester()->ExpectUniqueSample(
+      app_list::federated::kHistogramReportStatus,
+      app_list::federated::FederatedMetricsManager::ReportStatus::kOk, 1);
+  // TODO(b/262611120): Check contents of logged example, once this
+  // functionality is available.
+}
+
+TEST_F(FederatedMetricsManagerTest, AnswerCardSeen) {
+  metrics_manager_->OnSearchSessionStarted();
+  std::vector<Result> shown_results;
+  std::u16string query = u"fake_query";
+
+  metrics_manager_->OnSeen(Location::kAnswerCard, shown_results, query);
+  metrics_manager_->OnSearchSessionEnded(query);
+  base::RunLoop().RunUntilIdle();
+
+  histogram_tester()->ExpectUniqueSample(
+      app_list::federated::kHistogramInitStatus,
+      app_list::federated::FederatedMetricsManager::InitStatus::kOk, 1);
+
+  // TODO
+  histogram_tester()->ExpectUniqueSample(
+      app_list::federated::kHistogramSearchSessionConclusion,
+      ash::SearchSessionConclusion::kAnswerCardSeen, 1);
+
+  histogram_tester()->ExpectUniqueSample(
+      app_list::federated::kHistogramReportStatus,
+      app_list::federated::FederatedMetricsManager::ReportStatus::kOk, 1);
+  // TODO(b/262611120): Check contents of logged example, once this
+  // functionality is available.
+}
+
+TEST_F(FederatedMetricsManagerTest, AnswerCardSeenThenListResultLaunched) {
+  // Tests that a Launch event takes precedence over an AnswerCardSeen event,
+  // within the same search session.
+  metrics_manager_->OnSearchSessionStarted();
+  std::vector<Result> shown_results;
+  std::u16string query = u"fake_query";
+
+  metrics_manager_->OnSeen(Location::kAnswerCard, shown_results, query);
+
+  Result launched_result = CreateFakeResult(Type::EXTENSION_APP, "fake_id");
+  metrics_manager_->OnLaunch(Location::kList, launched_result, shown_results,
+                             query);
+
+  metrics_manager_->OnSearchSessionEnded(query);
   base::RunLoop().RunUntilIdle();
 
   histogram_tester()->ExpectUniqueSample(
@@ -127,8 +189,8 @@ TEST_F(FederatedMetricsManagerTest, OnLaunch) {
       app_list::federated::FederatedMetricsManager::InitStatus::kOk, 1);
 
   histogram_tester()->ExpectUniqueSample(
-      app_list::federated::kHistogramAction,
-      app_list::federated::FederatedMetricsManager::Action::kLaunch, 1);
+      app_list::federated::kHistogramSearchSessionConclusion,
+      ash::SearchSessionConclusion::kLaunch, 1);
 
   histogram_tester()->ExpectUniqueSample(
       app_list::federated::kHistogramReportStatus,
@@ -138,16 +200,20 @@ TEST_F(FederatedMetricsManagerTest, OnLaunch) {
 }
 
 TEST_F(FederatedMetricsManagerTest, ZeroState) {
-  Location location = Location::kList;
-  std::vector<Result> shown_results;
-  Result launched_result = CreateFakeResult(Type::EXTENSION_APP, "fake_id");
+  // Note: metrics_manager_->OnSearchSession{Started,Ended}() are not expected
+  // to be called during zero state search.
 
   // Simulate a series of user actions in zero state search. An empty query
   // indicates zero state search.
+  std::vector<Result> shown_results;
   std::u16string empty_query = u"";
-  metrics_manager_->OnAbandon(location, shown_results, empty_query);
-  metrics_manager_->OnLaunch(location, launched_result, shown_results,
-                             empty_query);
+
+  metrics_manager_->OnSeen(Location::kContinue, shown_results, empty_query);
+  metrics_manager_->OnSeen(Location::kRecentApps, shown_results, empty_query);
+
+  Result launched_result = CreateFakeResult(Type::EXTENSION_APP, "fake_id");
+  metrics_manager_->OnLaunch(Location::kRecentApps, launched_result,
+                             shown_results, empty_query);
   base::RunLoop().RunUntilIdle();
 
   histogram_tester()->ExpectUniqueSample(
@@ -155,8 +221,8 @@ TEST_F(FederatedMetricsManagerTest, ZeroState) {
       app_list::federated::FederatedMetricsManager::InitStatus::kOk, 1);
 
   // Zero state search should not trigger any logging on user action.
-  histogram_tester()->ExpectTotalCount(app_list::federated::kHistogramAction,
-                                       0);
+  histogram_tester()->ExpectTotalCount(
+      app_list::federated::kHistogramSearchSessionConclusion, 0);
   histogram_tester()->ExpectTotalCount(
       app_list::federated::kHistogramReportStatus, 0);
 

@@ -989,6 +989,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Apps.AppList.Search.Federated.SearchSessionConclusion"
+    enum="AppListFederatedSearchSessionConclusion" expires_after="2023-09-01">
+  <owner>amandadeacon@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <summary>
+    Tracks the conclusion of each search session starting from the search box.
+    Records launcher dismissals (&quot;quit&quot;), launches, and viewings of
+    answer card results, for the query list view when federated analytics is
+    enabled.
+
+    Quit. Emitted if the user dismisses search without launching a result or
+    seeing an answer card.
+
+    Launch. Emitted if the user launches a search result.
+
+    AnswerCardSeen. Emitted if an answer card is displayed for some threshold
+    period of time, and the user then dismisses the launcher without launching a
+    result.
+  </summary>
+</histogram>
+
 <histogram name="Apps.AppList.Search.Session2.Error"
     enum="AppListUserEventError" expires_after="2024-01-31">
   <owner>yulunwu@chromium.org</owner>

@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_list/app_list_notifier.h"
 #include "ash/system/federated/federated_service_controller.h"
 #include "base/memory/raw_ptr.h"
@@ -17,7 +18,8 @@
 
 namespace app_list::federated {
 
-constexpr char kHistogramAction[] = "Apps.AppList.Search.Federated.Action";
+constexpr char kHistogramSearchSessionConclusion[] =
+    "Apps.AppList.Search.Federated.SearchSessionConclusion";
 constexpr char kHistogramInitStatus[] =
     "Apps.AppList.Search.Federated.InitStatus";
 constexpr char kHistogramReportStatus[] =
@@ -32,6 +34,7 @@ class FederatedMetricsManager : ash::AppListNotifier::Observer {
   // Represents the actions a user can take in the launcher. These values
   // persist to logs. Entries should not be renumbered and numeric values should
   // never be reused.
+  // TODO(b/262611120): Currently unused. Deprecate if remains unused.
   enum class Action {
     kImpression = 0,
     kLaunch = 1,
@@ -70,15 +73,30 @@ class FederatedMetricsManager : ash::AppListNotifier::Observer {
   FederatedMetricsManager& operator=(const FederatedMetricsManager&) = delete;
 
   // ash::AppListNotifier::Observer:
-  void OnAbandon(Location location,
-                 const std::vector<Result>& results,
-                 const std::u16string& query) override;
+  // TODO(b/262611120): `FederatedMetricsManager` tracks session-level actions
+  // by monitoring finer-grained events. Certain orderings of events are assumed
+  // by `FederatedMetricsManager`, but are not strictly guaranteed by the
+  // `AppListNotifier`. For example, that `OnLaunch` is followed by
+  // `OnSearchSessionEnded`. Consider adding new methods to the
+  // `AppListNotifier` which more directly signal session-level events of
+  // interest.
+  void OnSearchSessionStarted() override;
+  void OnSearchSessionEnded(const std::u16string& query) override;
+  void OnSeen(Location location,
+              const std::vector<Result>& results,
+              const std::u16string& query) override;
   void OnLaunch(Location location,
                 const Result& launched,
                 const std::vector<Result>& shown,
                 const std::u16string& query) override;
 
  private:
+  // Whether the metrics manager is tracking an active search session.
+  bool session_active_ = false;
+  // Tracks the metric recorded when EndSearchSession() is called.
+  ash::SearchSessionConclusion session_result_ =
+      ash::SearchSessionConclusion::kQuit;
+
   // Note: There's no guarantee that the federated service will stay
   // available, so call `IsFederatedServiceAvailable()` before each attempt at
   // interacting with the service.

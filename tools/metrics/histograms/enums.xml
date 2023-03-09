@@ -3496,6 +3496,12 @@ Unknown properties are collapsed to zero. -->
   <int value="2" label="Federated service not connected"/>
 </enum>
 
+<enum name="AppListFederatedSearchSessionConclusion">
+  <int value="0" label="Quit"/>
+  <int value="1" label="Launch"/>
+  <int value="2" label="AnswerCardSeen"/>
+</enum>
+
 <enum name="AppListFolderOpened">
   <int value="0" label="Original Folder Design"/>
   <int value="1" label="Peeking App List Folder Design"/>
