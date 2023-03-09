@@ -160,6 +160,9 @@ auto& GetViewCommandMap() {
   return kViewCommandMap;
 }
 
+constexpr int kToolbarDividerWidth = 2;
+constexpr int kToolbarDividerHeight = 16;
+constexpr int kToolbarDividerCornerRadius = 1;
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -241,12 +244,17 @@ void ToolbarView::Init() {
       base::BindRepeating(callback, browser_, IDC_HOME), prefs);
 
   std::unique_ptr<ExtensionsToolbarContainer> extensions_container;
+  std::unique_ptr<views::View> toolbar_divider;
 
   // Do not create the extensions or browser actions container if it is a guest
   // profile (only regular and incognito profiles host extensions).
   if (!browser_->profile()->IsGuestSession()) {
     extensions_container =
         std::make_unique<ExtensionsToolbarContainer>(browser_);
+
+    if (features::IsChromeRefresh2023()) {
+      toolbar_divider = std::make_unique<views::View>();
+    }
   }
   std::unique_ptr<media_router::CastToolbarButton> cast;
   if (media_router::MediaRouterEnabled(browser_->profile()))
@@ -287,6 +295,12 @@ void ToolbarView::Init() {
 
   if (extensions_container)
     extensions_container_ = AddChildView(std::move(extensions_container));
+
+  if (toolbar_divider) {
+    toolbar_divider_ = AddChildView(std::move(toolbar_divider));
+    toolbar_divider_->SetPreferredSize(
+        gfx::Size(kToolbarDividerWidth, kToolbarDividerHeight));
+  }
 
   if (base::FeatureList::IsEnabled(features::kChromeLabs)) {
     chrome_labs_model_ = std::make_unique<ChromeLabsBubbleViewModel>();
@@ -726,6 +740,12 @@ void ToolbarView::InitLayout() {
 
     extensions_container_->SetProperty(views::kFlexBehaviorKey,
                                        extensions_flex_rule);
+  }
+
+  if (toolbar_divider_) {
+    SkColor color = GetColorProvider()->GetColor(ui::kColorSysOutline);
+    toolbar_divider_->SetBackground(
+        views::CreateRoundedRectBackground(color, kToolbarDividerCornerRadius));
   }
 
   LayoutCommon();

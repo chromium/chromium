@@ -266,6 +266,7 @@ class ToolbarView : public views::AccessiblePaneView,
   raw_ptr<CustomTabBarView> custom_tab_bar_ = nullptr;
   raw_ptr<LocationBarView> location_bar_ = nullptr;
   raw_ptr<ExtensionsToolbarContainer> extensions_container_ = nullptr;
+  raw_ptr<views::View> toolbar_divider_ = nullptr;
   raw_ptr<ChromeLabsButton> chrome_labs_button_ = nullptr;
   raw_ptr<BatterySaverButton> battery_saver_button_ = nullptr;
   raw_ptr<media_router::CastToolbarButton> cast_ = nullptr;
