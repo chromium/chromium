@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/barrier_callback.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -376,7 +377,27 @@ void WebTestPermissionManager::OnPermissionChanged(
                                  status),
               base::BindOnce(std::move(permission_callback), /*success=*/true));
       break;
-    case blink::PermissionType::TOP_LEVEL_STORAGE_ACCESS:
+    case blink::PermissionType::TOP_LEVEL_STORAGE_ACCESS: {
+      // We dual-write `TOP_LEVEL_STORAGE_ACCESS` and `STORAGE_ACCESS_GRANT` due
+      // to the former granting a superset of the latter. Accordingly, we wait
+      // until both permissions have been written, including the notification to
+      // the network service, to run the permission callback. This could happen
+      // in either order without issue, so a barrier callback is used to ensure
+      // whichever finishes last then runs the callback. The asynchronicity
+      // comes in the form of the updates to the network service.
+      auto barrier_callback = base::BarrierCallback<bool>(
+          /*num_callbacks=*/2,
+          base::BindOnce(
+              [](blink::test::mojom::PermissionAutomation::SetPermissionCallback
+                     permission_callback,
+                 const std::vector<bool>& successes) {
+                std::move(permission_callback)
+                    .Run(base::ranges::all_of(successes, base::identity()));
+              },
+              std::move(permission_callback)));
+      SetPermission(blink::PermissionType::STORAGE_ACCESS_GRANT,
+                    blink::mojom::PermissionStatus::GRANTED, permission.origin,
+                    permission.embedding_origin, barrier_callback);
       browser_context_->GetDefaultStoragePartition()
           ->GetCookieManagerForBrowserProcess()
           ->SetAllStorageAccessSettings(
@@ -384,8 +405,9 @@ void WebTestPermissionManager::OnPermissionChanged(
                                  status),
               GetContentSettings(permission.origin, permission.embedding_origin,
                                  status),
-              base::BindOnce(std::move(permission_callback), /*success=*/true));
+              base::BindOnce(barrier_callback, true));
       break;
+    }
     default:
       std::move(permission_callback).Run(true);
       break;
