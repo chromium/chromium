@@ -30,6 +30,7 @@
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
+#include "base/test/memory/dangling_ptr_instrumentation.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -2511,6 +2512,65 @@ TEST_F(HookableRawPtrImplTest, Duplicate) {
 }
 
 #endif  // BUILDFLAG(USE_HOOKABLE_RAW_PTR)
+
+TEST(DanglingPtrTest, DetectAndReset) {
+  auto instrumentation = test::DanglingPtrInstrumentation::Create();
+  if (!instrumentation.has_value()) {
+    GTEST_SKIP() << instrumentation.error();
+  }
+
+  auto owned_ptr = std::make_unique<int>(42);
+  raw_ptr<int> dangling_ptr = owned_ptr.get();
+  EXPECT_EQ(instrumentation->dangling_ptr_detected(), 0u);
+  EXPECT_EQ(instrumentation->dangling_ptr_released(), 0u);
+  owned_ptr.reset();
+  EXPECT_EQ(instrumentation->dangling_ptr_detected(), 1u);
+  EXPECT_EQ(instrumentation->dangling_ptr_released(), 0u);
+  dangling_ptr = nullptr;
+  EXPECT_EQ(instrumentation->dangling_ptr_detected(), 1u);
+  EXPECT_EQ(instrumentation->dangling_ptr_released(), 1u);
+}
+
+TEST(DanglingPtrTest, DetectAndDestructor) {
+  auto instrumentation = test::DanglingPtrInstrumentation::Create();
+  if (!instrumentation.has_value()) {
+    GTEST_SKIP() << instrumentation.error();
+  }
+
+  auto owned_ptr = std::make_unique<int>(42);
+  {
+    [[maybe_unused]] raw_ptr<int> dangling_ptr = owned_ptr.get();
+    EXPECT_EQ(instrumentation->dangling_ptr_detected(), 0u);
+    EXPECT_EQ(instrumentation->dangling_ptr_released(), 0u);
+    owned_ptr.reset();
+    EXPECT_EQ(instrumentation->dangling_ptr_detected(), 1u);
+    EXPECT_EQ(instrumentation->dangling_ptr_released(), 0u);
+  }
+  EXPECT_EQ(instrumentation->dangling_ptr_detected(), 1u);
+  EXPECT_EQ(instrumentation->dangling_ptr_released(), 1u);
+}
+
+TEST(DanglingPtrTest, DetectResetAndDestructor) {
+  auto instrumentation = test::DanglingPtrInstrumentation::Create();
+  if (!instrumentation.has_value()) {
+    GTEST_SKIP() << instrumentation.error();
+  }
+
+  auto owned_ptr = std::make_unique<int>(42);
+  {
+    raw_ptr<int> dangling_ptr = owned_ptr.get();
+    EXPECT_EQ(instrumentation->dangling_ptr_detected(), 0u);
+    EXPECT_EQ(instrumentation->dangling_ptr_released(), 0u);
+    owned_ptr.reset();
+    EXPECT_EQ(instrumentation->dangling_ptr_detected(), 1u);
+    EXPECT_EQ(instrumentation->dangling_ptr_released(), 0u);
+    dangling_ptr = nullptr;
+    EXPECT_EQ(instrumentation->dangling_ptr_detected(), 1u);
+    EXPECT_EQ(instrumentation->dangling_ptr_released(), 1u);
+  }
+  EXPECT_EQ(instrumentation->dangling_ptr_detected(), 1u);
+  EXPECT_EQ(instrumentation->dangling_ptr_released(), 1u);
+}
 
 }  // namespace internal
 }  // namespace base
