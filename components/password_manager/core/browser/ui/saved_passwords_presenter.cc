@@ -215,18 +215,6 @@ SavedPasswordsPresenter::GetExpectedAddResult(
   return AddResult::kConflictInProfileAndAccountStore;
 }
 
-void SavedPasswordsPresenter::AddCredentialAsync(
-    const CredentialUIEntry& credential,
-    password_manager::PasswordForm::Type type,
-    base::OnceClosure completion) {
-  DCHECK_EQ(GetExpectedAddResult(credential), AddResult::kSuccess);
-
-  UnblocklistBothStores(credential);
-  PasswordForm form = GenerateFormFromCredential(credential, type);
-
-  GetStoreFor(form).AddLogin(form, base::BindOnce(std::move(completion)));
-}
-
 bool SavedPasswordsPresenter::AddCredential(
     const CredentialUIEntry& credential,
     password_manager::PasswordForm::Type type) {
