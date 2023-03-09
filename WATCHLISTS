@@ -1242,8 +1242,8 @@
     'input_device_settings': {
       'filepath': 'ash/system/input_device_settings/|'\
                   'chrome/browser/resources/settings/chromeos/device_page/|'\
-                  'chrome/browser/ui/webui/settings/ash/device_section.*'\
-                  'chrome/browser/ui/webui/settings/ash/input_device_settings/|',
+                  'chrome/browser/ui/webui/settings/ash/device_section.*|'\
+                  'chrome/browser/ui/webui/settings/ash/input_device_settings/',
     },
     'input_devices': {
       'filepath': 'ui/events/devices/',
