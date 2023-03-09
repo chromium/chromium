@@ -111,7 +111,9 @@ void AnnotationsJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  const std::string* command = response->FindStringKey("command");
+  const base::Value::Dict& dict = response->GetDict();
+
+  const std::string* command = dict.FindString("command");
   if (!command) {
     return;
   }
@@ -124,8 +126,8 @@ void AnnotationsJavaScriptFeature::ScriptMessageReceived(
   }
 
   if (*command == "annotations.extractedText") {
-    const std::string* text = response->FindStringKey("text");
-    absl::optional<double> seq_id = response->FindDoubleKey("seqId");
+    const std::string* text = dict.FindString("text");
+    absl::optional<double> seq_id = dict.FindDouble("seqId");
     if (!text || !seq_id) {
       return;
     }
@@ -133,9 +135,8 @@ void AnnotationsJavaScriptFeature::ScriptMessageReceived(
                              static_cast<int>(seq_id.value()));
   } else if (*command == "annotations.decoratingComplete") {
     absl::optional<double> optional_annotations =
-        response->FindDoubleKey("annotations");
-    absl::optional<double> optional_successes =
-        response->FindDoubleKey("successes");
+        dict.FindDouble("annotations");
+    absl::optional<double> optional_successes = dict.FindDouble("successes");
     if (!optional_annotations || !optional_successes) {
       return;
     }
@@ -143,10 +144,10 @@ void AnnotationsJavaScriptFeature::ScriptMessageReceived(
     int successes = static_cast<int>(optional_successes.value());
     manager->OnDecorated(web_state, successes, annotations);
   } else if (*command == "annotations.onClick") {
-    const std::string* data = response->FindStringKey("data");
+    const std::string* data = dict.FindString("data");
     absl::optional<CGRect> rect =
-        shared_highlighting::ParseRect(response->GetDict().FindDict("rect"));
-    const std::string* text = response->FindStringKey("text");
+        shared_highlighting::ParseRect(dict.FindDict("rect"));
+    const std::string* text = dict.FindString("text");
     if (!data || !rect || !text) {
       return;
     }
