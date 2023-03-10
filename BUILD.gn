@@ -632,7 +632,6 @@ group("gn_all") {
 
   if (is_mac) {
     deps += [
-      "//third_party/breakpad:crash_inspector",
       "//third_party/breakpad:dump_syms",
 
       # The following are accessibility API tools.

@@ -530,10 +530,7 @@ static_library("test_support") {
       "//chrome/app_shim",
       "//components/upload_list",
     ]
-    public_deps += [
-      "//components/crash/core/app",
-      "//third_party/breakpad",
-    ]
+    public_deps += [ "//components/crash/core/app" ]
   }
 
   if (is_win) {
@@ -10215,7 +10212,7 @@ test("chrome_app_unittests") {
     "//components/heap_profiling/in_process",
     "//components/safe_browsing:buildflags",
   ]
-  if (!is_fuchsia) {
+  if (!is_fuchsia && !is_mac) {
     deps += [ "//third_party/breakpad:client" ]
   }
   if (is_android) {
