@@ -64,7 +64,7 @@ class ReferrerChainData : public base::SupportsUserData::Data {
 };
 
 // Struct that manages insertion, cleanup, and lookup of NavigationEvent
-// objects. Its maximum size is kNavigationRecordMaxSize.
+// objects. Its maximum size is `GetNavigationRecordMaxSize()`.
 struct NavigationEventList {
  public:
   explicit NavigationEventList(std::size_t size_limit);
@@ -175,7 +175,7 @@ class SafeBrowsingNavigationObserverManager : public ReferrerChainProvider,
                                               public KeyedService {
  public:
   // Helper function to check if user gesture is older than
-  // kUserGestureTTLInSecond.
+  // kUserGestureTTL.
   static bool IsUserGestureExpired(const base::Time& timestamp);
 
   // Helper function to strip ref fragment from a URL. Many pages end up with a
@@ -223,7 +223,7 @@ class SafeBrowsingNavigationObserverManager : public ReferrerChainProvider,
   void OnWebContentDestroyed(content::WebContents* web_contents);
 
   // Removes all the observed NavigationEvents, user gestures, and resolved IP
-  // addresses that are older than kNavigationFootprintTTLInSecond.
+  // addresses that are older than `GetNavigationFootprintTTL()`.
   void CleanUpStaleNavigationFootprints();
 
   // Based on the |event_url| and |event_tab_id|, traces back the observed
@@ -328,25 +328,27 @@ class SafeBrowsingNavigationObserverManager : public ReferrerChainProvider,
   HostToIpMap* host_to_ip_map() { return &host_to_ip_map_; }
 
   // Remove stale entries from navigation_event_list_ if they are older than
-  // kNavigationFootprintTTLInSecond (2 minutes).
+  // `GetNavigationFootprintTTL()`.
   void CleanUpNavigationEvents();
 
   // Remove stale entries from user_gesture_map_ if they are older than
-  // kNavigationFootprintTTLInSecond (2 minutes).
+  // `GetNavigationFootprintTTL()`.
   void CleanUpUserGestures();
 
   // Remove stale entries from host_to_ip_map_ if they are older than
-  // kNavigationFootprintTTLInSecond (2 minutes).
+  // `GetNavigationFootprintTTL()`.
   void CleanUpIpAddresses();
 
   bool IsCleanUpScheduled() const;
 
   void ScheduleNextCleanUpAfterInterval(base::TimeDelta interval);
 
-  void AddToReferrerChain(ReferrerChain* referrer_chain,
-                          NavigationEvent* nav_event,
-                          const GURL& destination_main_frame_url,
-                          ReferrerChainEntry::URLType type);
+  // Adds the event to the referrer chain, unless it is older than
+  // `GetNavigationFootprintTTL()`.
+  void MaybeAddToReferrerChain(ReferrerChain* referrer_chain,
+                               NavigationEvent* nav_event,
+                               const GURL& destination_main_frame_url,
+                               ReferrerChainEntry::URLType type);
 
   // Helper function to get the remaining referrer chain when we've already
   // traced back |current_user_gesture_count| number of user gestures.
@@ -381,7 +383,7 @@ class SafeBrowsingNavigationObserverManager : public ReferrerChainProvider,
   // frames, this list of NavigationEvents are ordered by navigation finish
   // time. Entries in navigation_event_list_ will be removed if they are older
   // than 2 minutes since their corresponding navigations finish or there are
-  // more than kNavigationRecordMaxSize entries.
+  // more than `GetNavigationRecordMaxSize()` entries.
   NavigationEventList navigation_event_list_;
 
   // user_gesture_map_ keeps track of the timestamp of last user gesture in

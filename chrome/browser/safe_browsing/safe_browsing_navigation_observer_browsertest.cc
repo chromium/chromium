@@ -549,8 +549,8 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
       auto* nav_event =
           observer_manager_->navigation_event_list()->GetNavigationEvent(
               *nav_event_index);
-      observer_manager_->AddToReferrerChain(referrer_chain, nav_event, GURL(),
-                                            ReferrerChainEntry::EVENT_URL);
+      observer_manager_->MaybeAddToReferrerChain(
+          referrer_chain, nav_event, GURL(), ReferrerChainEntry::EVENT_URL);
     }
   }
 

@@ -191,6 +191,18 @@ BASE_DECLARE_FEATURE(kRealTimeUrlFilteringForEnterprise);
 // Bypass RealTime URL Lookup allowlist for enterprise users.
 BASE_DECLARE_FEATURE(kRealTimeUrlLookupForEnterpriseAllowlistBypass);
 
+// Enables modifying key parameters on the navigation event collection used to
+// populate referrer chains.
+BASE_DECLARE_FEATURE(kReferrerChainParameters);
+
+// The maximum age entry we keep in memory. Older entries are cleaned up. This
+// is independent of the maximum age entry we send to Safe Browsing, which is
+// fixed for privacy reasons.
+extern const base::FeatureParam<int> kReferrerChainEventMaximumAgeSeconds;
+
+// The maximum number of navigation events we keep in memory.
+extern const base::FeatureParam<int> kReferrerChainEventMaximumCount;
+
 // Controls whether download Client Safe Browsing Reports are sent under the
 // new triggers
 BASE_DECLARE_FEATURE(kSafeBrowsingCsbrrNewDownloadTrigger);

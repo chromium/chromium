@@ -115,19 +115,16 @@ class SBNavigationObserverTest : public content::RenderViewHostTestHarness {
   void CreateNonUserGestureReferrerChain() {
     user_gesture_map()->clear();
     base::Time now = base::Time::Now();
-    base::Time half_hour_ago =
-        base::Time::FromDoubleT(now.ToDoubleT() - 30.0 * 60.0);
-    base::Time one_hour_ago =
-        base::Time::FromDoubleT(now.ToDoubleT() - 60.0 * 60.0);
-    base::Time two_hours_ago =
-        base::Time::FromDoubleT(now.ToDoubleT() - 2 * 60.0 * 60.0);
+    base::Time half_second_ago = base::Time::FromDoubleT(now.ToDoubleT() - 0.5);
+    base::Time one_second_ago = base::Time::FromDoubleT(now.ToDoubleT() - 1.0);
+    base::Time two_seconds_ago = base::Time::FromDoubleT(now.ToDoubleT() - 2.0);
 
     // Add 13 navigations and one starting page. The first is BROWSER_INITIATED
     // to A. Then from A to B, then 10 redirects to C, then back to A.
     std::unique_ptr<NavigationEvent> first_navigation =
         std::make_unique<NavigationEvent>();
     first_navigation->original_request_url = GURL("http://A.com");
-    first_navigation->last_updated = two_hours_ago;
+    first_navigation->last_updated = two_seconds_ago;
     first_navigation->navigation_initiation =
         ReferrerChainEntry::BROWSER_INITIATED;
     navigation_event_list()->RecordNavigationEvent(std::move(first_navigation));
@@ -136,7 +133,7 @@ class SBNavigationObserverTest : public content::RenderViewHostTestHarness {
         std::make_unique<NavigationEvent>();
     second_navigation->source_url = GURL("http://A.com");
     second_navigation->original_request_url = GURL("http://B.com");
-    second_navigation->last_updated = one_hour_ago;
+    second_navigation->last_updated = one_second_ago;
     second_navigation->navigation_initiation =
         ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE;
     navigation_event_list()->RecordNavigationEvent(
@@ -149,7 +146,7 @@ class SBNavigationObserverTest : public content::RenderViewHostTestHarness {
           std::make_unique<NavigationEvent>();
       navigation->source_url = prev_url;
       navigation->original_request_url = current_url;
-      navigation->last_updated = one_hour_ago;
+      navigation->last_updated = one_second_ago;
       navigation->navigation_initiation =
           ReferrerChainEntry::RENDERER_INITIATED_WITHOUT_USER_GESTURE;
       navigation_event_list()->RecordNavigationEvent(std::move(navigation));
@@ -161,7 +158,7 @@ class SBNavigationObserverTest : public content::RenderViewHostTestHarness {
         std::make_unique<NavigationEvent>();
     last_navigation->source_url = prev_url;
     last_navigation->original_request_url = GURL("http://A.com");
-    last_navigation->last_updated = half_hour_ago;
+    last_navigation->last_updated = half_second_ago;
     last_navigation->navigation_initiation =
         ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE;
     navigation_event_list()->RecordNavigationEvent(std::move(last_navigation));
@@ -243,12 +240,9 @@ TEST_F(SBNavigationObserverTest, TestNavigationEventList) {
 TEST_F(SBNavigationObserverTest, TestInfiniteLoop) {
   user_gesture_map()->clear();
   base::Time now = base::Time::Now();
-  base::Time half_hour_ago =
-      base::Time::FromDoubleT(now.ToDoubleT() - 30.0 * 60.0);
-  base::Time one_hour_ago =
-      base::Time::FromDoubleT(now.ToDoubleT() - 60.0 * 60.0);
-  base::Time two_hours_ago =
-      base::Time::FromDoubleT(now.ToDoubleT() - 2 * 60.0 * 60.0);
+  base::Time half_second_ago = base::Time::FromDoubleT(now.ToDoubleT() - 0.5);
+  base::Time one_second_ago = base::Time::FromDoubleT(now.ToDoubleT() - 1.0);
+  base::Time two_seconds_ago = base::Time::FromDoubleT(now.ToDoubleT() - 2.0);
 
   // Add 5 navigations and one starting page. The first is BROWSER_INITIATED
   // to A. Then from A to B, then 2 redirects back and forth between B and C,
@@ -256,7 +250,7 @@ TEST_F(SBNavigationObserverTest, TestInfiniteLoop) {
   std::unique_ptr<NavigationEvent> first_navigation =
       std::make_unique<NavigationEvent>();
   first_navigation->original_request_url = GURL("http://A.com");
-  first_navigation->last_updated = two_hours_ago;
+  first_navigation->last_updated = two_seconds_ago;
   first_navigation->navigation_initiation =
       ReferrerChainEntry::BROWSER_INITIATED;
   navigation_event_list()->RecordNavigationEvent(std::move(first_navigation));
@@ -265,7 +259,7 @@ TEST_F(SBNavigationObserverTest, TestInfiniteLoop) {
       std::make_unique<NavigationEvent>();
   second_navigation->source_url = GURL("http://A.com");
   second_navigation->original_request_url = GURL("http://B.com");
-  second_navigation->last_updated = one_hour_ago;
+  second_navigation->last_updated = one_second_ago;
   second_navigation->navigation_initiation =
       ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE;
   navigation_event_list()->RecordNavigationEvent(std::move(second_navigation));
@@ -276,7 +270,7 @@ TEST_F(SBNavigationObserverTest, TestInfiniteLoop) {
         std::make_unique<NavigationEvent>();
     navigation->source_url = prev_url;
     navigation->original_request_url = current_url;
-    navigation->last_updated = one_hour_ago;
+    navigation->last_updated = one_second_ago;
     navigation->navigation_initiation =
         ReferrerChainEntry::RENDERER_INITIATED_WITHOUT_USER_GESTURE;
     navigation_event_list()->RecordNavigationEvent(std::move(navigation));
@@ -289,7 +283,7 @@ TEST_F(SBNavigationObserverTest, TestInfiniteLoop) {
       std::make_unique<NavigationEvent>();
   last_navigation->source_url = prev_url;
   last_navigation->original_request_url = GURL("http://A.com");
-  last_navigation->last_updated = half_hour_ago;
+  last_navigation->last_updated = half_second_ago;
   last_navigation->navigation_initiation =
       ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE;
   navigation_event_list()->RecordNavigationEvent(std::move(last_navigation));
@@ -610,17 +604,15 @@ TEST_F(SBNavigationObserverTest, TestContentSettingChange) {
 
 TEST_F(SBNavigationObserverTest, TimestampIsDecreasing) {
   base::Time now = base::Time::Now();
-  base::Time one_hour_ago =
-      base::Time::FromDoubleT(now.ToDoubleT() - 60.0 * 60.0);
-  base::Time two_hours_ago =
-      base::Time::FromDoubleT(now.ToDoubleT() - 2 * 60.0 * 60.0);
+  base::Time one_second_ago = base::Time::FromDoubleT(now.ToDoubleT() - 1.0);
+  base::Time two_seconds_ago = base::Time::FromDoubleT(now.ToDoubleT() - 2.0);
 
   // Add three navigations. The first is BROWSER_INITIATED to A. Then from A to
   // B, and then from B back to A.
   std::unique_ptr<NavigationEvent> first_navigation =
       std::make_unique<NavigationEvent>();
   first_navigation->original_request_url = GURL("http://A.com");
-  first_navigation->last_updated = two_hours_ago;
+  first_navigation->last_updated = two_seconds_ago;
   first_navigation->navigation_initiation =
       ReferrerChainEntry::BROWSER_INITIATED;
   navigation_event_list()->RecordNavigationEvent(std::move(first_navigation));
@@ -629,7 +621,7 @@ TEST_F(SBNavigationObserverTest, TimestampIsDecreasing) {
       std::make_unique<NavigationEvent>();
   second_navigation->source_url = GURL("http://A.com");
   second_navigation->original_request_url = GURL("http://B.com");
-  second_navigation->last_updated = one_hour_ago;
+  second_navigation->last_updated = one_second_ago;
   second_navigation->navigation_initiation =
       ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE;
   navigation_event_list()->RecordNavigationEvent(std::move(second_navigation));
@@ -698,14 +690,14 @@ TEST_F(SBNavigationObserverTest,
 TEST_F(SBNavigationObserverTest,
        RemoveNonUserGestureEntriesWithExcessiveUserGestureEvents) {
   GURL url = GURL("http://A.com");
-  base::Time half_hour_ago =
-      base::Time::FromDoubleT(base::Time::Now().ToDoubleT() - 30.0 * 60.0);
+  base::Time half_second_ago =
+      base::Time::FromDoubleT(base::Time::Now().ToDoubleT() - 0.5);
   // Append 10 navigation events with user gesture.
   for (int i = 0; i < 10; i++) {
     std::unique_ptr<NavigationEvent> navigation_event =
         std::make_unique<NavigationEvent>();
     navigation_event->source_url = url;
-    navigation_event->last_updated = half_hour_ago;
+    navigation_event->last_updated = half_second_ago;
     navigation_event->navigation_initiation =
         ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE;
     navigation_event_list()->RecordNavigationEvent(std::move(navigation_event));
@@ -756,8 +748,7 @@ TEST_F(SBNavigationObserverTest, RemoveMiddleReferrerChains) {
 
 TEST_F(SBNavigationObserverTest, ChainWorksThroughNewTab) {
   base::Time now = base::Time::Now();
-  base::Time one_hour_ago =
-      base::Time::FromDoubleT(now.ToDoubleT() - 60.0 * 60.0);
+  base::Time one_second_ago = base::Time::FromDoubleT(now.ToDoubleT() - 1.0);
 
   SessionID source_tab = SessionID::NewUnique();
   SessionID target_tab = SessionID::NewUnique();
@@ -768,7 +759,7 @@ TEST_F(SBNavigationObserverTest, ChainWorksThroughNewTab) {
       std::make_unique<NavigationEvent>();
   first_navigation->source_url = GURL("http://a.com/");
   first_navigation->original_request_url = GURL("http://b.com/");
-  first_navigation->last_updated = one_hour_ago;
+  first_navigation->last_updated = one_second_ago;
   first_navigation->navigation_initiation =
       ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE;
   first_navigation->source_tab_id = source_tab;
@@ -799,13 +790,12 @@ TEST_F(SBNavigationObserverTest, ChainWorksThroughNewTab) {
 
 TEST_F(SBNavigationObserverTest, ChainContinuesThroughBrowserInitiated) {
   base::Time now = base::Time::Now();
-  base::Time one_hour_ago =
-      base::Time::FromDoubleT(now.ToDoubleT() - 60.0 * 60.0);
+  base::Time one_second_ago = base::Time::FromDoubleT(now.ToDoubleT() - 1.0);
 
   std::unique_ptr<NavigationEvent> first_navigation =
       std::make_unique<NavigationEvent>();
   first_navigation->original_request_url = GURL("http://a.com/");
-  first_navigation->last_updated = one_hour_ago;
+  first_navigation->last_updated = one_second_ago;
   first_navigation->navigation_initiation =
       ReferrerChainEntry::BROWSER_INITIATED;
   navigation_event_list()->RecordNavigationEvent(std::move(first_navigation));
@@ -830,8 +820,7 @@ TEST_F(SBNavigationObserverTest, ChainContinuesThroughBrowserInitiated) {
 TEST_F(SBNavigationObserverTest,
        CanceledRetargetingNavigationHasCorrectEventUrl) {
   base::Time now = base::Time::Now();
-  base::Time one_hour_ago =
-      base::Time::FromDoubleT(now.ToDoubleT() - 60.0 * 60.0);
+  base::Time one_second_ago = base::Time::FromDoubleT(now.ToDoubleT() - 1.0);
 
   SessionID source_tab = SessionID::NewUnique();
   SessionID target_tab = SessionID::NewUnique();
@@ -843,7 +832,7 @@ TEST_F(SBNavigationObserverTest,
       std::make_unique<NavigationEvent>();
   first_navigation->source_url = GURL("http://example.com/a");
   first_navigation->original_request_url = GURL("http://example.com/b");
-  first_navigation->last_updated = one_hour_ago;
+  first_navigation->last_updated = one_second_ago;
   first_navigation->navigation_initiation =
       ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE;
   first_navigation->source_tab_id = source_tab;
@@ -902,8 +891,7 @@ TEST_F(SBNavigationObserverTest, TestGetLatestPendingNavigationEvent) {
 
 TEST_F(SBNavigationObserverTest, SanitizesDataUrls) {
   base::Time now = base::Time::Now();
-  base::Time one_hour_ago =
-      base::Time::FromDoubleT(now.ToDoubleT() - 60.0 * 60.0);
+  base::Time one_second_ago = base::Time::FromDoubleT(now.ToDoubleT() - 1.0);
 
   SessionID tab_id = SessionID::NewUnique();
 
@@ -913,7 +901,7 @@ TEST_F(SBNavigationObserverTest, SanitizesDataUrls) {
       std::make_unique<NavigationEvent>();
   first_navigation->source_url = GURL("http://a.com/");
   first_navigation->original_request_url = GURL("data://private_data");
-  first_navigation->last_updated = one_hour_ago;
+  first_navigation->last_updated = one_second_ago;
   first_navigation->navigation_initiation =
       ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE;
   first_navigation->source_tab_id = tab_id;

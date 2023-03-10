@@ -191,6 +191,17 @@ BASE_FEATURE(kRealTimeUrlLookupForEnterpriseAllowlistBypass,
              "SafeBrowsingRealTimeUrlLookupForEnterpriseAllowlistBypass",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kReferrerChainParameters,
+             "SafeBrowsingReferrerChainParameters",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<int> kReferrerChainEventMaximumAgeSeconds{
+    &kReferrerChainParameters, "MaximumEventAgeSeconds", /*default_value=*/120};
+
+constexpr base::FeatureParam<int> kReferrerChainEventMaximumCount{
+    &kReferrerChainParameters, "MaximumEventCount",
+    /*default_value=*/100};
+
 BASE_FEATURE(kSafeBrowsingCsbrrNewDownloadTrigger,
              "SafeBrowsingCsbrrNewDownloadTrigger",
              base::FEATURE_DISABLED_BY_DEFAULT);
