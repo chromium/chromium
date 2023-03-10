@@ -448,10 +448,12 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertYUVAMailboxesToRGB(
 
   FlushSurface(dest_scoped_access.get());
   for (int i = 0; i < num_src_planes; ++i) {
-    if (auto end_state = source_scoped_access[i]->TakeEndState()) {
-      shared_context_state_->gr_context()->setBackendTextureState(
-          source_scoped_access[i]->promise_image_texture()->backendTexture(),
-          *end_state);
+    if (source_scoped_access[i]) {
+      if (auto end_state = source_scoped_access[i]->TakeEndState()) {
+        shared_context_state_->gr_context()->setBackendTextureState(
+            source_scoped_access[i]->promise_image_texture()->backendTexture(),
+            *end_state);
+      }
     }
   }
   SubmitIfNecessary(std::move(end_semaphores), shared_context_state_,
