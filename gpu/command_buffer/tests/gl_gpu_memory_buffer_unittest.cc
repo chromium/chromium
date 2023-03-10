@@ -25,7 +25,6 @@
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gfx/half_float.h"
-#include "ui/gl/gl_image.h"
 #include "ui/gl/test/gl_test_support.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

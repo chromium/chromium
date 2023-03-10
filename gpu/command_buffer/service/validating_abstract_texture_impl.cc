@@ -9,7 +9,6 @@
 #include "gpu/command_buffer/service/error_state.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "ui/gl/gl_context.h"
-#include "ui/gl/gl_image.h"
 #include "ui/gl/scoped_binders.h"
 #include "ui/gl/scoped_make_current.h"
 

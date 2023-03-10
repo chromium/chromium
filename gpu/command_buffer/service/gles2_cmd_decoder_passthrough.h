@@ -35,7 +35,6 @@
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_fence.h"
-#include "ui/gl/gl_image.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gpu_switching_observer.h"
 
@@ -45,6 +44,7 @@
 
 namespace gl {
 class GLFence;
+class GLImage;
 class ProgressReporter;
 }
 

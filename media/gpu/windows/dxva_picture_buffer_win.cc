@@ -14,7 +14,6 @@
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_fence.h"
-#include "ui/gl/gl_image.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/scoped_binders.h"
 
