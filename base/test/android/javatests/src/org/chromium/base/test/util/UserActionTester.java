@@ -55,6 +55,17 @@ public class UserActionTester implements Callback<String> {
         }
     }
 
+    /**
+     * @return How many times the |actionToCount| was recorded.
+     */
+    public int getActionCount(String actionToCount) {
+        int count = 0;
+        for (String action : getActions()) {
+            if (action.equals(actionToCount)) count++;
+        }
+        return count;
+    }
+
     @Override
     public String toString() {
         return "Actions: " + getActions();
