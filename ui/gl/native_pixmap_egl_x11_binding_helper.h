@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/x/glx.h"
 #include "ui/gl/gl_export.h"
@@ -19,8 +18,7 @@ namespace gl {
 
 class GL_EXPORT NativePixmapEGLX11BindingHelper {
  public:
-  NativePixmapEGLX11BindingHelper(const gfx::Size& size,
-                                  gfx::BufferFormat format);
+  explicit NativePixmapEGLX11BindingHelper(const gfx::Size& size);
 
   NativePixmapEGLX11BindingHelper(const NativePixmapEGLX11BindingHelper&) =
       delete;
@@ -41,11 +39,8 @@ class GL_EXPORT NativePixmapEGLX11BindingHelper {
   ~NativePixmapEGLX11BindingHelper();
 
  private:
-  gfx::BufferFormat format() const { return format_; }
-
   EGLSurface surface_ = nullptr;
   const gfx::Size size_;
-  gfx::BufferFormat format_;
   EGLDisplay display_;
 };
 

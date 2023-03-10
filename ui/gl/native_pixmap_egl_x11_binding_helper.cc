@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "ui/gfx/x/connection.h"
-#include "ui/gl/buffer_format_utils.h"
 #include "ui/gl/gl_bindings.h"
 
 namespace gl {
@@ -18,9 +17,8 @@ inline EGLDisplay FromXDisplay() {
 }
 
 NativePixmapEGLX11BindingHelper::NativePixmapEGLX11BindingHelper(
-    const gfx::Size& size,
-    gfx::BufferFormat format)
-    : size_(size), format_(format), display_(FromXDisplay()) {}
+    const gfx::Size& size)
+    : size_(size), display_(FromXDisplay()) {}
 
 NativePixmapEGLX11BindingHelper::~NativePixmapEGLX11BindingHelper() {
   if (surface_) {

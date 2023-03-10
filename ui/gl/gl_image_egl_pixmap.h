@@ -5,7 +5,6 @@
 #ifndef UI_GL_GL_IMAGE_EGL_PIXMAP_H_
 #define UI_GL_GL_IMAGE_EGL_PIXMAP_H_
 
-#include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/x/glx.h"
 #include "ui/gl/gl_export.h"
@@ -24,7 +23,7 @@ class GL_EXPORT GLImageEGLPixmap : public GLImage {
  private:
   friend class media::VaapiPictureNativePixmapAngle;
 
-  GLImageEGLPixmap(const gfx::Size& size, gfx::BufferFormat format);
+  explicit GLImageEGLPixmap(const gfx::Size& size);
 
   GLImageEGLPixmap(const GLImageEGLPixmap&) = delete;
   GLImageEGLPixmap& operator=(const GLImageEGLPixmap&) = delete;

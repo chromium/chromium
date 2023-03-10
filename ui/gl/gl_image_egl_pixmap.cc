@@ -6,9 +6,8 @@
 
 namespace gl {
 
-GLImageEGLPixmap::GLImageEGLPixmap(const gfx::Size& size,
-                                   gfx::BufferFormat format)
-    : binding_helper_(size, format) {}
+GLImageEGLPixmap::GLImageEGLPixmap(const gfx::Size& size)
+    : binding_helper_(size) {}
 
 GLImageEGLPixmap::~GLImageEGLPixmap() = default;
 
