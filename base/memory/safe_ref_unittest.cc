@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/gtest_util.h"
+#include "base/test/memory/dangling_ptr_instrumentation.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -288,15 +289,24 @@ TEST(SafeRefTest, Bind) {
   BindOnce(&WithWeak::Method, with.factory.GetSafeRef()).Run();
 }
 
-#if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
-// TODO(crbug.com/1416264): Test this when we are able to.
-TEST(SafeRefDeathTest, DISABLED_DanglingPointerDetector) {
-  auto with = std::make_unique<WithWeak>();
-  SafeRef<WithWeak> safe(with->factory.GetSafeRef());
-  BASE_EXPECT_DEATH({ with.reset(); },
-                    testing::HasSubstr("Detected dangling raw_ptr"));
+TEST(SafeRefTest, DanglingPointerDetector) {
+  auto instrumentation = test::DanglingPtrInstrumentation::Create();
+  if (!instrumentation.has_value()) {
+    GTEST_SKIP() << instrumentation.error();
+  }
+  {
+    auto with = std::make_unique<WithWeak>();
+    SafeRef<WithWeak> safe(with->factory.GetSafeRef());
+    EXPECT_EQ(instrumentation->dangling_ptr_detected(), 0u);
+    EXPECT_EQ(instrumentation->dangling_ptr_released(), 0u);
+
+    with.reset();
+    EXPECT_EQ(instrumentation->dangling_ptr_detected(), 1u);
+    EXPECT_EQ(instrumentation->dangling_ptr_released(), 0u);
+  }
+  EXPECT_EQ(instrumentation->dangling_ptr_detected(), 1u);
+  EXPECT_EQ(instrumentation->dangling_ptr_released(), 1u);
 }
-#endif
 
 }  // namespace
 }  // namespace base
