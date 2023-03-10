@@ -70,9 +70,9 @@ bool UpdateSpellcheckEnabled::Visit(content::RenderFrame* render_frame) {
 WebVector<WebString> ConvertToWebStringFromUtf8(
     const std::set<std::string>& words) {
   WebVector<WebString> result(words.size());
-  base::ranges::transform(
-      words, result.begin(),
-      static_cast<WebString (*)(const std::string&)>(&WebString::FromUTF8));
+  base::ranges::transform(words, result.begin(), [](const auto& word) {
+    return WebString::FromUTF8(word);
+  });
   return result;
 }
 

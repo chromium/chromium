@@ -234,7 +234,7 @@ bool ConvertToPrinter(const std::string& service_type,
   if (!metadata.pdl.empty()) {
     // Per Bonjour Printer Spec v1.2 section 9.2.8, it is invalid for the pdl to
     // end with a comma.
-    auto media_types = base::SplitString(
+    auto media_types = base::SplitStringPiece(
         metadata.pdl, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     if (!media_types.empty() && !media_types.back().empty()) {
       // Prune any empty splits.
@@ -244,7 +244,7 @@ bool ConvertToPrinter(const std::string& service_type,
           media_types,
           std::back_inserter(
               detected_printer->ppd_search_data.supported_document_formats),
-          static_cast<std::string (*)(base::StringPiece)>(&base::ToLowerASCII));
+          [](base::StringPiece s) { return base::ToLowerASCII(s); });
     }
   }
 

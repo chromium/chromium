@@ -164,7 +164,7 @@ float ScoredHistoryMatchTest::GetTopicalityScoreOfTermAgainstURLAndTitle(
   String16Vector term_vector;
   base::ranges::transform(
       terms, std::back_inserter(term_vector),
-      static_cast<std::u16string (*)(base::StringPiece)>(&base::UTF8ToUTF16));
+      [](const auto& term) { return base::UTF8ToUTF16(term); });
   std::string terms_joint =
       std::accumulate(std::next(terms.begin()), terms.end(), terms[0],
                       [](std::string accumulator, std::string term) {

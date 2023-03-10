@@ -112,7 +112,7 @@ std::string IntArrayToString(const std::vector<int32_t>& values) {
   std::vector<std::string> value_strings;
   base::ranges::transform(
       values, std::back_inserter(value_strings),
-      static_cast<std::string (*)(int)>(&base::NumberToString));
+      [](int32_t value) { return base::NumberToString(value); });
   return base::JoinString(value_strings, ", ");
 #else   // DCHECK_IS_ON()
   return std::string();

@@ -127,10 +127,9 @@ DedicatedWorkerHostFactoryClient::CreateWorkerFetchContext(
       RenderThreadImpl::current()->cors_exempt_header_list();
   blink::WebVector<blink::WebString> web_cors_exempt_header_list(
       cors_exempt_header_list.size());
-  base::ranges::transform(cors_exempt_header_list,
-                          web_cors_exempt_header_list.begin(),
-                          static_cast<blink::WebString (*)(const std::string&)>(
-                              &blink::WebString::FromLatin1));
+  base::ranges::transform(
+      cors_exempt_header_list, web_cors_exempt_header_list.begin(),
+      [](const auto& header) { return blink::WebString::FromLatin1(header); });
   scoped_refptr<blink::WebDedicatedOrSharedWorkerFetchContext>
       web_dedicated_or_shared_worker_fetch_context =
           blink::WebDedicatedOrSharedWorkerFetchContext::Create(

@@ -99,12 +99,10 @@ void ProfileDiscardOptOutListHelper::ProfileDiscardOptOutTracker::
   // list of patterns to exclude from discarding.
   base::ranges::transform(
       user_value_list, std::back_inserter(patterns),
-      static_cast<const std::string& (base::Value::*)() const>(
-          &base::Value::GetString));
+      [](const auto& user_value) { return user_value.GetString(); });
   base::ranges::transform(
       managed_value_list, std::back_inserter(patterns),
-      static_cast<const std::string& (base::Value::*)() const>(
-          &base::Value::GetString));
+      [](const auto& managed_value) { return managed_value.GetString(); });
 
   delegate_->SetPatterns(browser_context_id_, patterns);
 }

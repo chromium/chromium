@@ -172,7 +172,7 @@ struct TypeConverter<mojom::AutocompleteMatchPtr, AutocompleteMatch> {
     subtypes_str.push_back(base::NumberToString(type));
     base::ranges::transform(
         subtypes, std::back_inserter(subtypes_str),
-        static_cast<std::string (*)(int)>(base::NumberToString));
+        [](int subtype) { return base::NumberToString(subtype); });
     result->aqs_type_subtypes = base::JoinString(subtypes_str, ",");
     result->has_tab_match = input.has_tab_match.value_or(false);
     if (input.associated_keyword.get()) {

@@ -50,7 +50,7 @@ std::string GetNormalizedLocale(const std::string& raw_locale) {
     locale.erase(std::remove(locale.begin(), locale.end(), c), locale.end());
 
   base::ranges::transform(locale, locale.begin(),
-                          static_cast<char (*)(char)>(&base::ToUpperASCII));
+                          [](char c) { return base::ToUpperASCII(c); });
 
   if (!locale_constraint.empty())
     locale += locale_constraint;

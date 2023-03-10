@@ -1186,8 +1186,9 @@ void AddFieldPredictionsToForm(
   std::vector<FieldPrediction> field_predictions;
   field_predictions.reserve(field_types.size());
   base::ranges::transform(field_types, std::back_inserter(field_predictions),
-                          static_cast<FieldPrediction (*)(ServerFieldType)>(
-                              &CreateFieldPrediction));
+                          [](ServerFieldType field_type) {
+                            return CreateFieldPrediction(field_type);
+                          });
   return AddFieldPredictionsToForm(field_data, field_predictions,
                                    form_suggestion);
 }

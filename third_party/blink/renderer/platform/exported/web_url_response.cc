@@ -168,9 +168,11 @@ WebURLResponse WebURLResponse::Create(
 
   WebVector<WebString> cors_exposed_header_names(
       head.cors_exposed_header_names.size());
-  base::ranges::transform(
-      head.cors_exposed_header_names, cors_exposed_header_names.begin(),
-      static_cast<WebString (*)(const std::string&)>(&WebString::FromLatin1));
+  base::ranges::transform(head.cors_exposed_header_names,
+                          cors_exposed_header_names.begin(),
+                          [](const auto& header_name) {
+                            return WebString::FromLatin1(header_name);
+                          });
   response.SetCorsExposedHeaderNames(cors_exposed_header_names);
   response.SetDidServiceWorkerNavigationPreload(
       head.did_service_worker_navigation_preload);

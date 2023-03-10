@@ -288,8 +288,9 @@ void SpellCheckProvider::CheckSpelling(
     spellcheck::FillSuggestions(per_language_suggestions, &suggestions);
     WebVector<WebString> web_suggestions(suggestions.size());
     base::ranges::transform(suggestions, web_suggestions.begin(),
-                            static_cast<WebString (*)(const std::u16string&)>(
-                                &WebString::FromUTF16));
+                            [](const auto& suggestion) {
+                              return WebString::FromUTF16(suggestion);
+                            });
     *optional_suggestions = web_suggestions;
     spellcheck_renderer_metrics::RecordCheckedTextLengthWithSuggestions(
         base::saturated_cast<int>(word.size()));

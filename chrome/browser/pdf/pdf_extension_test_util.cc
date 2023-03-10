@@ -89,8 +89,9 @@ testing::AssertionResult EnsurePDFHasLoaded(
 
   if (wait_for_hit_test_data) {
     frame.render_frame_host()->ForEachRenderFrameHost(
-        static_cast<void (*)(content::RenderFrameHost*)>(
-            &content::WaitForHitTestData));
+        [](content::RenderFrameHost* render_frame_host) {
+          return content::WaitForHitTestData(render_frame_host);
+        });
   }
 
   return load_success ? testing::AssertionSuccess()

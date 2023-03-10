@@ -260,10 +260,10 @@ class CorbAndCorsExtensionBrowserTest : public CorbAndCorsExtensionTestBase {
         console_observer.messages();
 
     std::vector<std::string> messages;
-    base::ranges::transform(
-        console_messages, std::back_inserter(messages),
-        static_cast<std::string (*)(base::StringPiece16)>(&base::UTF16ToUTF8),
-        &ConsoleMessage::message);
+    base::ranges::transform(console_messages, std::back_inserter(messages),
+                            [](const auto& console_message) {
+                              return base::UTF16ToUTF8(console_message.message);
+                            });
 
     // We allow more than 1 console message, because the test might flakily see
     // extra console messages - see https://crbug.com/1085629.
