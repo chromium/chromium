@@ -33,6 +33,24 @@ const CGFloat kTrackButtonTopPadding = 4;
     [self setTitle:l10n_util::GetNSString(
                        IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TRACK_BUTTON)
           forState:UIControlStateNormal];
+
+    // TODO(crbug.com/1418068): Simplify after minimum version required is >=
+    // iOS 15.
+    size_t horizontalPadding = [self horizontalPadding];
+    if (@available(iOS 15, *)) {
+      UIButtonConfiguration* buttonConfiguration = self.configuration;
+      buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+          kTrackButtonTopPadding, horizontalPadding, kTrackButtonTopPadding,
+          horizontalPadding);
+      self.configuration = buttonConfiguration;
+    }
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+    else {
+      self.contentEdgeInsets =
+          UIEdgeInsetsMake(kTrackButtonTopPadding, horizontalPadding,
+                           kTrackButtonTopPadding, horizontalPadding);
+    }
+#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
   }
   return self;
 }
@@ -42,13 +60,7 @@ const CGFloat kTrackButtonTopPadding = 4;
 - (void)layoutSubviews {
   [super layoutSubviews];
   self.layer.cornerRadius = self.frame.size.height / 2;
-  size_t horizontalPadding =
-      price_notifications::CalculateTrackButtonHorizontalPadding(
-          self.superview.superview.frame.size.width,
-          self.titleLabel.intrinsicContentSize.width);
-  self.contentEdgeInsets =
-      UIEdgeInsetsMake(kTrackButtonTopPadding, horizontalPadding,
-                       kTrackButtonTopPadding, horizontalPadding);
+  size_t horizontalPadding = [self horizontalPadding];
 
   price_notifications::WidthConstraintValues constraintValues =
       price_notifications::CalculateTrackButtonWidthConstraints(
@@ -60,6 +72,15 @@ const CGFloat kTrackButtonTopPadding = 4;
     [self.widthAnchor
         constraintGreaterThanOrEqualToConstant:constraintValues.target_width]
   ]];
+}
+
+#pragma mark - Private
+
+// Returns the horizontal padding for contentInsets/contentEdgeInsets.
+- (size_t)horizontalPadding {
+  return price_notifications::CalculateTrackButtonHorizontalPadding(
+      self.superview.superview.frame.size.width,
+      self.titleLabel.intrinsicContentSize.width);
 }
 
 @end
