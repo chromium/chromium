@@ -253,12 +253,14 @@ public class BookmarkTest {
     }
 
     void openRootFolder() {
+        BookmarkTestUtil.waitForBookmarkModelLoaded();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> getBookmarkDelegate().openFolder(mBookmarkModel.getRootFolderId()));
         RecyclerViewTestUtils.waitForStableRecyclerView(mItemsContainer);
     }
 
     void openMobileBookmarks() {
+        BookmarkTestUtil.waitForBookmarkModelLoaded();
         openRootFolder();
 
         onView(withText("Mobile bookmarks")).perform(click());
@@ -418,15 +420,13 @@ public class BookmarkTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1413781")
-    public void testopenBookmarkManagerFolder() throws InterruptedException {
+    public void testOpenBookmarkManagerFolder() throws InterruptedException {
         openBookmarkManager();
         openMobileBookmarks();
 
         BookmarkTestUtil.waitForBookmarkModelLoaded();
-        BookmarkDelegate delegate = getBookmarkDelegate();
 
-        Assert.assertEquals(BookmarkUiMode.FOLDER, delegate.getCurrentUiMode());
+        Assert.assertEquals(BookmarkUiMode.FOLDER, getBookmarkDelegate().getCurrentUiMode());
         Assert.assertEquals("chrome-native://bookmarks/folder/3",
                 BookmarkUtils.getLastUsedUrl(mActivityTestRule.getActivity()));
     }
