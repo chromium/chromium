@@ -29,8 +29,9 @@ uintptr_t GetMask() {
 #elif defined(ARCH_CPU_32_BITS)
 #if BUILDFLAG(IS_WIN)
   BOOL is_wow64 = FALSE;
-  if (!IsWow64Process(GetCurrentProcess(), &is_wow64))
+  if (!IsWow64Process(GetCurrentProcess(), &is_wow64)) {
     is_wow64 = FALSE;
+  }
   if (!is_wow64) {
     mask = 0;
   }
@@ -67,8 +68,9 @@ TEST(PartitionAllocAddressSpaceRandomizationTest, DisabledASLR) {
 
 TEST(PartitionAllocAddressSpaceRandomizationTest, Alignment) {
   uintptr_t mask = GetMask();
-  if (!mask)
+  if (!mask) {
     return;
+  }
 
   for (size_t i = 0; i < kSamples; ++i) {
     uintptr_t address = GetAddressBits();
@@ -79,8 +81,9 @@ TEST(PartitionAllocAddressSpaceRandomizationTest, Alignment) {
 
 TEST(PartitionAllocAddressSpaceRandomizationTest, Range) {
   uintptr_t mask = GetMask();
-  if (!mask)
+  if (!mask) {
     return;
+  }
 
   uintptr_t min = internal::ASLROffset();
   uintptr_t max = internal::ASLROffset() + internal::ASLRMask();
@@ -93,8 +96,9 @@ TEST(PartitionAllocAddressSpaceRandomizationTest, Range) {
 
 TEST(PartitionAllocAddressSpaceRandomizationTest, Predictable) {
   uintptr_t mask = GetMask();
-  if (!mask)
+  if (!mask) {
     return;
+  }
 
   const uint64_t kInitialSeed = 0xfeed5eedULL;
   SetMmapSeedForTesting(kInitialSeed);
@@ -126,8 +130,9 @@ double ChiSquared(int m, int n) {
 // biased.
 void RandomBitCorrelation(int random_bit) {
   uintptr_t mask = GetMask();
-  if ((mask & (1ULL << random_bit)) == 0)
+  if ((mask & (1ULL << random_bit)) == 0) {
     return;  // bit is always 0.
+  }
 
 #if BUILDFLAG(PA_DCHECK_IS_ON)
   // Do fewer checks when BUILDFLAG(PA_DCHECK_IS_ON). Exercized code only
@@ -149,8 +154,9 @@ void RandomBitCorrelation(int random_bit) {
     // The predicted bit is one of the bits from the PRNG.
     for (int ago = 0; ago < kHistory; ago++) {
       // We don't want to check whether each bit predicts itself.
-      if (ago == 0 && predictor_bit == random_bit)
+      if (ago == 0 && predictor_bit == random_bit) {
         continue;
+      }
 
       // Enter the new random value into the history.
       for (int i = ago; i >= 0; i--) {
@@ -161,8 +167,9 @@ void RandomBitCorrelation(int random_bit) {
       int m = 0;
       for (int i = 0; i < kRepeats; i++) {
         uintptr_t random = GetRandomBits();
-        for (int j = ago - 1; j >= 0; j--)
+        for (int j = ago - 1; j >= 0; j--) {
           history[j + 1] = history[j];
+        }
         history[0] = random;
 
         int predicted;
@@ -172,8 +179,9 @@ void RandomBitCorrelation(int random_bit) {
           predicted = predictor_bit == -2 ? 0 : 1;
         }
         int bit = (random >> random_bit) & 1;
-        if (bit == predicted)
+        if (bit == predicted) {
           m++;
+        }
       }
 
       // Chi squared analysis for k = 2 (2, states: same/not-same) and one
@@ -185,8 +193,9 @@ void RandomBitCorrelation(int random_bit) {
       PA_CHECK(chi_squared <= 35.0);
       // If the predictor bit is a fixed 0 or 1 then it makes no sense to
       // repeat the test with a different age.
-      if (predictor_bit < 0)
+      if (predictor_bit < 0) {
         break;
+      }
     }
   }
 }
@@ -262,8 +271,9 @@ TEST(PartitionAllocAddressSpaceRandomizationTest, CanMapInAslrRange) {
     ASSERT_NE(address, 0u);
     FreePages(address, size);
 
-    if (address == requested_address)
+    if (address == requested_address) {
       break;
+    }
   }
 
   EXPECT_LT(tries, kMaxTries);

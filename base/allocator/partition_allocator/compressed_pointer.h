@@ -252,8 +252,9 @@ class PA_TRIVIAL_ABI CompressedPointer final {
     // frequent operation, we let more work here in favor of faster
     // decompression.
     // TODO(1376980): Avoid this by overreserving the heap.
-    if (compressed)
+    if (compressed) {
       compressed |= (1u << (sizeof(uint32_t) * CHAR_BIT - 1));
+    }
 
     return compressed;
   }

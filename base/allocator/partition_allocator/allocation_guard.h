@@ -32,8 +32,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ScopedAllowAllocations {
 
 #else
 
-struct [[maybe_unused]] ScopedDisallowAllocations{};
-struct [[maybe_unused]] ScopedAllowAllocations{};
+struct [[maybe_unused]] ScopedDisallowAllocations {};
+struct [[maybe_unused]] ScopedAllowAllocations {};
 
 #endif  // PA_CONFIG(HAS_ALLOCATION_GUARD)
 

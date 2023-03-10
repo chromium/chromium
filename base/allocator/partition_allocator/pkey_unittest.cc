@@ -36,24 +36,30 @@ struct IsolatedGlobals {
 
 int ProtFromSegmentFlags(ElfW(Word) flags) {
   int prot = 0;
-  if (flags & PF_R)
+  if (flags & PF_R) {
     prot |= PROT_READ;
-  if (flags & PF_W)
+  }
+  if (flags & PF_W) {
     prot |= PROT_WRITE;
-  if (flags & PF_X)
+  }
+  if (flags & PF_X) {
     prot |= PROT_EXEC;
+  }
   return prot;
 }
 
 int ProtectROSegments(struct dl_phdr_info* info, size_t info_size, void* data) {
-  if (!strcmp(info->dlpi_name, "linux-vdso.so.1"))
+  if (!strcmp(info->dlpi_name, "linux-vdso.so.1")) {
     return 0;
+  }
   for (int i = 0; i < info->dlpi_phnum; i++) {
     const ElfW(Phdr)* phdr = &info->dlpi_phdr[i];
-    if (phdr->p_type != PT_LOAD && phdr->p_type != PT_GNU_RELRO)
+    if (phdr->p_type != PT_LOAD && phdr->p_type != PT_GNU_RELRO) {
       continue;
-    if (phdr->p_flags & PF_W)
+    }
+    if (phdr->p_flags & PF_W) {
       continue;
+    }
     uintptr_t start = info->dlpi_addr + phdr->p_vaddr;
     uintptr_t end = start + phdr->p_memsz;
     uintptr_t startPage = RoundDownToSystemPage(start);
@@ -90,8 +96,9 @@ class PkeyTest : public testing::Test {
 
   void SetUp() override {
     int pkey = PkeyAlloc(0);
-    if (pkey == -1)
+    if (pkey == -1) {
       return;
+    }
     isolatedGlobals.pkey = pkey;
 
     isolatedGlobals.allocator->init({
@@ -111,8 +118,9 @@ class PkeyTest : public testing::Test {
   }
 
   void TearDown() override {
-    if (isolatedGlobals.pkey == kInvalidPkey)
+    if (isolatedGlobals.pkey == kInvalidPkey) {
       return;
+    }
     PA_PCHECK(PkeyMprotect(&isolatedGlobals, sizeof(isolatedGlobals),
                            PROT_READ | PROT_WRITE, kDefaultPkey) == 0);
     isolatedGlobals.pkey = kDefaultPkey;
@@ -144,8 +152,9 @@ ISOLATED_FUNCTION uint64_t IsolatedAllocFree(void* arg) {
 // order to do this, we need to tag all global read-only memory with our pkey as
 // well as switch to a pkey-tagged stack.
 TEST_F(PkeyTest, AllocWithoutDefaultPkey) {
-  if (isolatedGlobals.pkey == kInvalidPkey)
+  if (isolatedGlobals.pkey == kInvalidPkey) {
     return;
+  }
 
   uint64_t ret;
   uint32_t pkru_value = 0;

@@ -65,8 +65,9 @@ void* GwpAsanSupport::MapRegion(size_t slot_count,
     super_page_span_start = bucket->AllocNewSuperPageSpanForGwpAsan(
         root.get(), super_page_count, 0);
 
-    if (!super_page_span_start)
+    if (!super_page_span_start) {
       return nullptr;
+    }
 
 #if defined(ARCH_CPU_64_BITS)
     // Mapping the GWP-ASan region in to the lower 32-bits of address space

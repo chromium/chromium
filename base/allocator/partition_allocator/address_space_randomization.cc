@@ -33,10 +33,12 @@ uintptr_t GetRandomPageBase() {
   // randomization isn't buying anything. In that case we just skip it.
   // TODO(palmer): Just dump the randomization when HE-ASLR is present.
   static BOOL is_wow64 = -1;
-  if (is_wow64 == -1 && !IsWow64Process(GetCurrentProcess(), &is_wow64))
+  if (is_wow64 == -1 && !IsWow64Process(GetCurrentProcess(), &is_wow64)) {
     is_wow64 = FALSE;
-  if (!is_wow64)
+  }
+  if (!is_wow64) {
     return 0;
+  }
 #endif  // BUILDFLAG(IS_WIN)
   random &= internal::ASLRMask();
   random += internal::ASLROffset();

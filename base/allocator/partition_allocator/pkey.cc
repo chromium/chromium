@@ -98,8 +98,9 @@ void Wrpkru(uint32_t pkru) {
 
 LiftPkeyRestrictionsScope::LiftPkeyRestrictionsScope()
     : saved_pkey_value_(kDefaultPkeyValue) {
-  if (!PkeySettings::settings.enabled)
+  if (!PkeySettings::settings.enabled) {
     return;
+  }
   saved_pkey_value_ = Rdpkru();
   if (saved_pkey_value_ != kDefaultPkeyValue) {
     Wrpkru(kAllowAllPkeyValue);
@@ -107,8 +108,9 @@ LiftPkeyRestrictionsScope::LiftPkeyRestrictionsScope()
 }
 
 LiftPkeyRestrictionsScope::~LiftPkeyRestrictionsScope() {
-  if (!PkeySettings::settings.enabled)
+  if (!PkeySettings::settings.enabled) {
     return;
+  }
   if (Rdpkru() != saved_pkey_value_) {
     Wrpkru(saved_pkey_value_);
   }

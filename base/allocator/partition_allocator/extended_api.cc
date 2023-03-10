@@ -18,8 +18,9 @@ namespace {
 void DisableThreadCacheForRootIfEnabled(ThreadSafePartitionRoot* root) {
   // Some platforms don't have a thread cache, or it could already have been
   // disabled.
-  if (!root || !root->flags.with_thread_cache)
+  if (!root || !root->flags.with_thread_cache) {
     return;
+  }
 
   ThreadCacheRegistry::Instance().PurgeAll();
   root->flags.with_thread_cache = false;
@@ -30,8 +31,9 @@ void DisableThreadCacheForRootIfEnabled(ThreadSafePartitionRoot* root) {
 
 void EnablePartitionAllocThreadCacheForRootIfDisabled(
     ThreadSafePartitionRoot* root) {
-  if (!root)
+  if (!root) {
     return;
+  }
   root->flags.with_thread_cache = true;
 }
 
@@ -42,8 +44,9 @@ void DisablePartitionAllocThreadCacheForProcess() {
   auto* aligned_allocator =
       allocator_shim::internal::PartitionAllocMalloc::AlignedAllocator();
   DisableThreadCacheForRootIfEnabled(regular_allocator);
-  if (aligned_allocator != regular_allocator)
+  if (aligned_allocator != regular_allocator) {
     DisableThreadCacheForRootIfEnabled(aligned_allocator);
+  }
   DisableThreadCacheForRootIfEnabled(
       allocator_shim::internal::PartitionAllocMalloc::OriginalAllocator());
 }

@@ -130,8 +130,9 @@ void* TagRegionRandomlyForMTE(void* ptr, size_t sz, uint64_t mask) {
   // Randomly tag a region (MTE-enabled systems only). The first 16-byte
   // granule is randomly tagged, all other granules in the region are
   // then assigned that initial tag via __arm_mte_set_tag.
-  if (!CheckTagRegionParameters(ptr, sz))
+  if (!CheckTagRegionParameters(ptr, sz)) {
     return nullptr;
+  }
   // __arm_mte_create_random_tag generates a randomly tagged pointer via the
   // hardware's random number generator, but does not apply it to the memory.
   char* nptr = reinterpret_cast<char*>(__arm_mte_create_random_tag(ptr, mask));
@@ -146,8 +147,9 @@ void* TagRegionRandomlyForMTE(void* ptr, size_t sz, uint64_t mask) {
 void* TagRegionIncrementForMTE(void* ptr, size_t sz) {
   // Increment a region's tag (MTE-enabled systems only), using the tag of the
   // first granule.
-  if (!CheckTagRegionParameters(ptr, sz))
+  if (!CheckTagRegionParameters(ptr, sz)) {
     return nullptr;
+  }
   // Increment ptr's tag.
   char* nptr = reinterpret_cast<char*>(__arm_mte_increment_tag(ptr, 1u));
   for (size_t i = 0; i < sz; i += kMemTagGranuleSize) {

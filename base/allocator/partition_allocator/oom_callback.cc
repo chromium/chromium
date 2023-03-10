@@ -19,8 +19,9 @@ void SetPartitionAllocOomCallback(PartitionAllocOomCallback callback) {
 
 namespace internal {
 void RunPartitionAllocOomCallback() {
-  if (g_oom_callback)
+  if (g_oom_callback) {
     g_oom_callback();
+  }
 }
 }  // namespace internal
 

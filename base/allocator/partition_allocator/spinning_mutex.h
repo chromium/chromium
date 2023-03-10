@@ -119,8 +119,9 @@ PA_ALWAYS_INLINE void SpinningMutex::Acquire() {
   // 1. We don't know how much contention the lock would experience
   // 2. This may lead to weird-looking code layout when inlined into a caller
   // with PA_(UN)LIKELY() annotations.
-  if (Try())
+  if (Try()) {
     return;
+  }
 
   return AcquireSpinThenBlock();
 }

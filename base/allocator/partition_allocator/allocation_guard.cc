@@ -15,8 +15,9 @@ thread_local bool g_disallow_allocations;
 }  // namespace
 
 ScopedDisallowAllocations::ScopedDisallowAllocations() {
-  if (g_disallow_allocations)
+  if (g_disallow_allocations) {
     PA_IMMEDIATE_CRASH();
+  }
 
   g_disallow_allocations = true;
 }
