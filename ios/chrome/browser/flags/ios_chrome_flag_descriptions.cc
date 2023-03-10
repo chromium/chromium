@@ -247,7 +247,7 @@ const char kDetectMainThreadFreezeDescription[] =
     "the time specified by this flag.";
 
 const char kEnableDiscoverFeedTopSyncPromoName[] =
-    "Enable the sync promo on top of the feed.";
+    "Enables the top of feed sync promo.";
 const char kEnableDiscoverFeedTopSyncPromoDescription[] =
     "When enabled, a sync promotion will be presented to eligible users on top "
     "of the feed cards.";

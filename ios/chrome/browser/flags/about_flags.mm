@@ -243,18 +243,25 @@ const FeatureEntry::FeatureVariation
          std::size(kDefaultBrowserFullscreenPromoExperimentRemindMeLater),
          nullptr}};
 
-const FeatureEntry::FeatureParam kDiscoverFeedTopSyncPromoFullWithTitle[] = {
-    {kDiscoverFeedTopSyncPromoStyleFullWithTitle, "true"},
-    {kDiscoverFeedTopSyncPromoStyleCompact, "false"}};
-const FeatureEntry::FeatureParam kDiscoverFeedTopSyncPromoCompact[] = {
-    {kDiscoverFeedTopSyncPromoStyleFullWithTitle, "false"},
-    {kDiscoverFeedTopSyncPromoStyleCompact, "true"}};
+// Uses int values from SigninPromoViewStyle enum.
+const FeatureEntry::FeatureParam kDiscoverFeedTopSyncPromoStandard[] = {
+    {kDiscoverFeedTopSyncPromoStyle, "0"}};
+const FeatureEntry::FeatureParam kDiscoverFeedTopSyncPromoCompactTitled[] = {
+    {kDiscoverFeedTopSyncPromoStyle, "1"}};
+const FeatureEntry::FeatureParam kDiscoverFeedTopSyncPromoCompactHorizontal[] =
+    {{kDiscoverFeedTopSyncPromoStyle, "2"}};
+const FeatureEntry::FeatureParam kDiscoverFeedTopSyncPromoCompactVertical[] = {
+    {kDiscoverFeedTopSyncPromoStyle, "3"}};
 
 const FeatureEntry::FeatureVariation kDiscoverFeedTopSyncPromoVariations[] = {
-    {"Full with title", kDiscoverFeedTopSyncPromoFullWithTitle,
-     std::size(kDiscoverFeedTopSyncPromoFullWithTitle), nullptr},
-    {"Compact", kDiscoverFeedTopSyncPromoCompact,
-     std::size(kDiscoverFeedTopSyncPromoCompact), nullptr}};
+    {"Standard", kDiscoverFeedTopSyncPromoStandard,
+     std::size(kDiscoverFeedTopSyncPromoStandard), nullptr},
+    {"Compact Titled (Unpersonalized)", kDiscoverFeedTopSyncPromoCompactTitled,
+     std::size(kDiscoverFeedTopSyncPromoCompactTitled), nullptr},
+    {"Compact Horizontal", kDiscoverFeedTopSyncPromoCompactHorizontal,
+     std::size(kDiscoverFeedTopSyncPromoCompactHorizontal), nullptr},
+    {"Compact Vertical", kDiscoverFeedTopSyncPromoCompactVertical,
+     std::size(kDiscoverFeedTopSyncPromoCompactVertical), nullptr}};
 
 const FeatureEntry::FeatureParam kFeedHeaderSettingDisabledStickyHeader[] = {
     {kDisableStickyHeaderForFollowingFeed, "true"}};

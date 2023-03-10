@@ -21,14 +21,14 @@ typedef NS_ENUM(NSInteger, SigninPromoViewStyle) {
   // Standard style used for most surfaces. It contains user avatar/ chromium
   // logo, text body, rounded corners colored button and an optional secondary
   // plain button, all stacked vertically.
-  SigninPromoViewStyleStandard,
-  // Full card style, content stacked vertically. Contains same content as the
-  // standard style in addition to a text title and allows for non-chromium logo
-  // image.
-  SigninPromoViewStyleTitled,
-  // Compact style, same content as titled style but the image is on the
-  // leading side of the promo instead of the top of the promo.
-  SigninPromoViewStyleTitledCompact,
+  SigninPromoViewStyleStandard = 0,
+  // Compact style that does not support personalization. Horizontal layout with
+  // generic icon and title.
+  SigninPromoViewStyleCompactTitled = 1,
+  // Compact style with horizontal layout and avatar/logo.
+  SigninPromoViewStyleCompactHorizontal = 2,
+  // Compact style with vertical layout and avatar/logo.
+  SigninPromoViewStyleCompactVertical = 3,
 };
 
 extern NSString* const kSigninPromoViewId;

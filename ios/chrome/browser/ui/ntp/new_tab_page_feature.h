@@ -7,6 +7,7 @@
 
 #include "base/feature_list.h"
 #include "components/prefs/pref_service.h"
+#import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
 
 #pragma mark - Feature declarations
 
@@ -72,11 +73,8 @@ extern const char kDiscoverFeedSRSReconstructedTemplatesEnabled[];
 // TODO(crbug.com/1385512): Remove this.
 extern const char kDiscoverFeedSRSPreloadTemplatesEnabled[];
 
-// A parameter value used for displaying the full with title promo style.
-extern const char kDiscoverFeedTopSyncPromoStyleFullWithTitle[];
-
-// A parameter value used for displaying the compact promo style.
-extern const char kDiscoverFeedTopSyncPromoStyleCompact[];
+// Parameter for the feed top sync promo's style.
+extern const char kDiscoverFeedTopSyncPromoStyle[];
 
 // Feature parameters for the feed header settings.
 extern const char kDisableStickyHeaderForFollowingFeed[];
@@ -117,8 +115,7 @@ bool IsNTPViewHierarchyRepairEnabled();
 // Whether the Discover feed top sync promotion is enabled.
 bool IsDiscoverFeedTopSyncPromoEnabled();
 
-// Whether the feed top sync promotion is compact or not.
-bool IsDiscoverFeedTopSyncPromoCompact();
+SigninPromoViewStyle GetTopOfFeedPromoStyle();
 
 // Returns the number of impressions before autodismissing the feed sync promo.
 int FeedSyncPromoAutodismissCount();
