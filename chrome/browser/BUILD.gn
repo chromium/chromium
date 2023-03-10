@@ -2928,8 +2928,6 @@ static_library("browser") {
       "commerce/merchant_viewer/web_contents_helper.cc",
       "commerce/price_tracking/android/price_tracking_notification_bridge.cc",
       "commerce/price_tracking/android/price_tracking_notification_bridge.h",
-      "component_updater/crow_domain_list_component_installer.cc",
-      "component_updater/crow_domain_list_component_installer.h",
       "content_creation/notes/internal/android/note_service_bridge_factory.cc",
       "content_creation/notes/internal/note_service_factory.cc",
       "content_creation/notes/internal/note_service_factory.h",
