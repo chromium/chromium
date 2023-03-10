@@ -322,6 +322,7 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
     private final Profile mProfile;
     private final SyncService mSyncService;
     private final BookmarkPromoHeader mPromoHeaderManager;
+    private final BookmarkUndoController mBookmarkUndoController;
 
     // Whether this instance has been destroyed.
     private boolean mIsDestroyed;
@@ -341,7 +342,8 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
             SelectionDelegate<BookmarkId> selectionDelegate, RecyclerView recyclerView,
             BookmarkItemsAdapter bookmarkItemsAdapter, LargeIconBridge largeIconBridge,
             boolean isDialogUi, boolean isIncognito,
-            ObservableSupplierImpl<Boolean> backPressStateSupplier, Profile profile) {
+            ObservableSupplierImpl<Boolean> backPressStateSupplier, Profile profile,
+            BookmarkUndoController bookmarkUndoController) {
         mContext = context;
         mBookmarkModel = bookmarkModel;
         mBookmarkModel.addObserver(mBookmarkModelObserver);
@@ -363,6 +365,7 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
         // Notify the view of changes to the elements list as the promo might be showing.
         Runnable promoHeaderChangeAction = () -> updateHeader(true);
         mPromoHeaderManager = new BookmarkPromoHeader(mContext, mProfile, promoHeaderChangeAction);
+        mBookmarkUndoController = bookmarkUndoController;
 
         // Previously we were waiting for BookmarkModel to be loaded, but it's not necessary.
         PartnerBookmarksReader.addFaviconUpdateObserver(this);
@@ -398,6 +401,8 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
 
         mLargeIconBridge.destroy();
         PartnerBookmarksReader.removeFaviconUpdateObserver(this);
+
+        mBookmarkUndoController.destroy();
 
         for (BookmarkUiObserver observer : mUiObservers) {
             observer.onDestroy();
@@ -1010,5 +1015,9 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
 
     void clearStateStackForTesting() {
         mStateStack.clear();
+    }
+
+    BookmarkUndoController getUndoControllerForTesting() {
+        return mBookmarkUndoController;
     }
 }

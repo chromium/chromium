@@ -90,6 +90,8 @@ public class BookmarkManagerMediatorTest {
     IdentityManager mIdentityManager;
     @Mock
     AccountManagerFacade mAccountManagerFacade;
+    @Mock
+    BookmarkUndoController mBookmarkUndoController;
 
     final ObservableSupplierImpl<Boolean> mBackPressStateSupplier = new ObservableSupplierImpl<>();
     final ObservableSupplierImpl<Boolean> mSelectableListLayoutHandleBackPressChangedSupplier =
@@ -136,7 +138,7 @@ public class BookmarkManagerMediatorTest {
             mMediator = new BookmarkManagerMediator(mActivity, mBookmarkModel, mBookmarkOpener,
                     mSelectableListLayout, mSelectionDelegate, mRecyclerView, bookmarkItemsAdapter,
                     mLargeIconBridge, /*isDialogUi=*/true, /*isIncognito=*/false,
-                    mBackPressStateSupplier, mProfile);
+                    mBackPressStateSupplier, mProfile, mBookmarkUndoController);
             mMediator.addUiObserver(mBookmarkUiObserver);
         });
     }
@@ -161,11 +163,12 @@ public class BookmarkManagerMediatorTest {
     }
 
     @Test
-    public void destroyUnregistersObservers() {
+    public void testDestroy() {
         finishLoading();
 
         mMediator.onDestroy();
         verify(mBookmarkUiObserver).onDestroy();
+        verify(mBookmarkUndoController).destroy();
     }
 
     @Test

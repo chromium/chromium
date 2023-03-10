@@ -57,7 +57,6 @@ public class BookmarkManagerCoordinator implements SearchDelegate, BackPressHand
     private final BookmarkOpener mBookmarkOpener;
     private final BookmarkToolbarCoordinator mBookmarkToolbarCoordinator;
     private final BookmarkManagerMediator mMediator;
-    private final BookmarkUndoController mUndoController;
     private final ImageFetcher mImageFetcher;
     private final SnackbarManager mSnackbarManager;
     private final BookmarkPromoHeader mPromoHeaderManager;
@@ -120,13 +119,15 @@ public class BookmarkManagerCoordinator implements SearchDelegate, BackPressHand
                 bookmarkDelegateSupplier, mBookmarkModel, mBookmarkOpener);
         mSelectableListLayout.configureWideDisplayStyle();
 
-        LargeIconBridge largeIconBridge = new LargeIconBridge(profile);
+        LargeIconBridge largeIconBridge = new LargeIconBridge(mProfile);
         largeIconBridge.createCache(computeCacheMaxSize());
 
-        mUndoController = new BookmarkUndoController(context, mBookmarkModel, snackbarManager);
+        BookmarkUndoController bookmarkUndoController =
+                new BookmarkUndoController(context, mBookmarkModel, snackbarManager);
         mMediator = new BookmarkManagerMediator(context, mBookmarkModel, mBookmarkOpener,
                 mSelectableListLayout, selectionDelegate, mRecyclerView, bookmarkItemsAdapter,
-                largeIconBridge, isDialogUi, isIncognito, mBackPressStateSupplier, profile);
+                largeIconBridge, isDialogUi, isIncognito, mBackPressStateSupplier, mProfile,
+                bookmarkUndoController);
         mPromoHeaderManager = mMediator.getPromoHeaderManager();
 
         bookmarkDelegateSupplier.set(/*bookmarkDelegate=*/mMediator);
@@ -350,7 +351,7 @@ public class BookmarkManagerCoordinator implements SearchDelegate, BackPressHand
     }
 
     public BookmarkUndoController getUndoControllerForTesting() {
-        return mUndoController;
+        return mMediator.getUndoControllerForTesting();
     }
 
     public RecyclerView getRecyclerViewForTesting() {

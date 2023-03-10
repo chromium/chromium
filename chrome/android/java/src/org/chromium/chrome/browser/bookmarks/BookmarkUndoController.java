@@ -124,7 +124,7 @@ public class BookmarkUndoController extends BookmarkModelObserver implements
         // Adding a new bookmark should not affect undo.
     }
 
-    // BookmarkDeleteObserver implementation
+    // BookmarkDeleteObserver implementation.
 
     @Override
     public void onDeleteBookmarks(String[] titles, boolean isUndoable) {
