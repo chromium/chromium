@@ -3319,17 +3319,6 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: MediaType.AUDIO, MediaType.IMAGE, MediaType.VIDEO"
-        errorLine1="        if (mediaType == MediaType.UNKNOWN) {"
-        errorLine2="                                   ~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/media/MediaLauncherActivity.java"
-            line="56"
-            column="36"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
         message="Must be one of: Source.INVALID, Source.MEDIA, Source.PRESENTATION, Source.MEDIA_FLING"
         errorLine1="        if (source == Source.INVALID || source >= Source.NUM_ENTRIES) return;"
         errorLine2="                                                         ~~~~~~~~~~~">
@@ -3381,39 +3370,6 @@
             file="../../components/browser_ui/media/android/java/src/org/chromium/components/browser_ui/media/MediaSessionUma.java"
             line="46"
             column="76"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: MediaType.AUDIO, MediaType.IMAGE, MediaType.VIDEO"
-        errorLine1="        if (TextUtils.isEmpty(mimeType)) return MediaLauncherActivity.MediaType.UNKNOWN;"
-        errorLine2="                                                                                ~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/media/MediaViewerUtils.java"
-            line="168"
-            column="81"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: MediaType.AUDIO, MediaType.IMAGE, MediaType.VIDEO"
-        errorLine1="        if (pieces.length != 2) return MediaLauncherActivity.MediaType.UNKNOWN;"
-        errorLine2="                                                                       ~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/media/MediaViewerUtils.java"
-            line="171"
-            column="72"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: MediaType.AUDIO, MediaType.IMAGE, MediaType.VIDEO"
-        errorLine1="                return MediaLauncherActivity.MediaType.UNKNOWN;"
-        errorLine2="                                                       ~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/media/MediaViewerUtils.java"
-            line="181"
-            column="56"/>
     </issue>
 
     <issue
