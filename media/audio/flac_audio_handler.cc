@@ -225,6 +225,12 @@ void FlacAudioHandler::MetaCallbackInternal(
     return;
   }
 
+  int max_blocksize =
+      static_cast<int>(metadata->data.stream_info.max_blocksize);
+  if (max_blocksize <= 0) {
+    return;
+  }
+
   // There will be at most `max_blocksize` of frames for each call to the
   // `WriteCallback()`. For the client bus in `CopyTo()`, it will always
   // have `kDefaultFrameCount` frames. We want to make sure the `fifo_`
@@ -236,8 +242,6 @@ void FlacAudioHandler::MetaCallbackInternal(
   // can be `kDefaultFrameCount + kDefaultFrameCount - 1` and
   // `max_blocksize + kDefaultFrameCount - 1`. 2 is just used for
   // simplicity.
-  int max_blocksize =
-      static_cast<int>(metadata->data.stream_info.max_blocksize);
   fifo_ = std::make_unique<AudioFifo>(
       num_channels_, std::max(kDefaultFrameCount * 2, max_blocksize * 2));
 
