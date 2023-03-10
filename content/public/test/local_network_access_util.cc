@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/public/test/private_network_access_util.h"
+#include "content/public/test/local_network_access_util.h"
 
 #include "base/functional/bind.h"
 
@@ -39,7 +39,7 @@ void DeprecationTrialURLLoaderInterceptor::HandleEnabledUrlRequest(
       "Content-Type: text/html\n"  //
       // Use CSP to make the page `public`, even though it is served with no
       // IP address information. Without this it is treated as `unknown`, and
-      // that interferes with its private network request policy.
+      // that interferes with its local network request policy.
       "Content-Security-Policy: treat-as-public-address\n"  //
       // This token was generated using:
       //
