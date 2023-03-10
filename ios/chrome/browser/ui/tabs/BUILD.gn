@@ -97,9 +97,9 @@ source_set("coordinator") {
     ":tabs",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/ui/bubble",
-    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/gestures",
     "//ios/chrome/browser/ui/tabs/requirements",
   ]

@@ -16,7 +16,7 @@ source_set("password_checkup") {
     "//base",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/passwords",
-    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/ui/table_view:utils",
   ]
 }

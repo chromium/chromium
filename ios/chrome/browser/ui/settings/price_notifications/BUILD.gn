@@ -16,7 +16,7 @@ source_set("price_notifications") {
     "resources:line_downtrend",
     "//base",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/list_model",
     "//ios/chrome/browser/ui/settings/price_notifications/tracking_price",

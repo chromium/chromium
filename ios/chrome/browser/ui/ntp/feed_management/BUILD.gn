@@ -16,7 +16,7 @@ source_set("feed_management") {
     "//ios/chrome/browser/follow:browser_agent",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/net:crurl",
-    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/ui/follow",
     "//ios/chrome/browser/ui/ntp/metrics",
     "//ios/chrome/browser/ui/table_view",

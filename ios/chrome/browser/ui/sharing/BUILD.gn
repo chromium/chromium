@@ -12,8 +12,8 @@ source_set("sharing") {
     "sharing_scenario.h",
   ]
   deps = [
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/ui/util:url_with_title",
-    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//url",
   ]
 }
@@ -35,11 +35,11 @@ source_set("sharing_internal") {
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/open_in",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util:url_with_title",
     "//ios/chrome/browser/ui/bookmarks:core",
-    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/open_in:features",
     "//ios/chrome/browser/ui/open_in:open_in_histograms",
     "//ios/chrome/browser/ui/sharing/activity_services",

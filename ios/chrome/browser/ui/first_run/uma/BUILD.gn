@@ -13,7 +13,7 @@ source_set("uma") {
   deps = [
     ":uma_ui",
     "//base",
-    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/ui/table_view:utils",
     "//ios/chrome/common",
     "//ui/base",

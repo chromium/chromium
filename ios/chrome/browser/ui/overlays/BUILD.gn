@@ -37,7 +37,7 @@ source_set("overlays") {
     "//base",
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/overlays",
-    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/ui/fullscreen",
     "//ios/chrome/browser/ui/overlays/infobar_banner",
     "//ios/chrome/browser/ui/overlays/infobar_modal",
@@ -87,7 +87,7 @@ source_set("coordinators") {
   deps = [
     "//base",
     "//ios/chrome/browser/overlays",
-    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
   ]
 }
 

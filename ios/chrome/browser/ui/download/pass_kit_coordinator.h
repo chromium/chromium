@@ -7,7 +7,7 @@
 
 #import <PassKit/PassKit.h>
 
-#import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 // Key of the UMA Download.IOSPresentAddPassesDialogResult histogram. Exposed
 // only for testing.

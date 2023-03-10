@@ -8,8 +8,8 @@
 #import <UIKit/UIKit.h>
 #import <set>
 
+#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_coordinator_delegate.h"
-#import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 
 namespace bookmarks {
 class BookmarkNode;

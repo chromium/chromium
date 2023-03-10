@@ -22,7 +22,7 @@ source_set("coordinator_headers") {
     "bookmarks_folder_chooser_coordinator.h",
     "bookmarks_folder_chooser_coordinator_delegate.h",
   ]
-  public_deps = [ "//ios/chrome/browser/ui/coordinators:chrome_coordinators" ]
+  public_deps = [ "//ios/chrome/browser/shared/coordinator/chrome_coordinator" ]
 }
 
 # Do not include this target. Prefer :folder_chooser instead.

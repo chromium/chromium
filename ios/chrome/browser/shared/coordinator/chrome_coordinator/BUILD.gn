@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("chrome_coordinators") {
+source_set("chrome_coordinator") {
   sources = [
     "chrome_coordinator.h",
     "chrome_coordinator.mm",

@@ -47,7 +47,7 @@ source_set("activity_overlay") {
   deps = [
     ":elements_internal",
     "//base",
-    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/common/ui/util",
   ]
 }
@@ -101,8 +101,8 @@ source_set("elements_internal") {
   deps = [
     ":constants",
     "//base",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/scoped_ui_blocker:scoped_ui_blocker",
     "//ios/chrome/common/ui/colors",

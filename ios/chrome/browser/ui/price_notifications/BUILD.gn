@@ -28,9 +28,9 @@ source_set("price_notifications") {
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/push_notification:push_notification_service",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/ui/alert_coordinator",
-    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/price_notifications/cells",
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/table_view:utils",
@@ -49,8 +49,8 @@ source_set("price_notifications_iph") {
   deps = [
     "//ios/chrome/browser/commerce/price_notifications",
     "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
   ]
 }
 

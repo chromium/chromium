@@ -166,8 +166,8 @@ source_set("interruptible_chrome_coordinator") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/ui/authentication/signin:constants",
-    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
   ]
   frameworks = [ "UIKit.framework" ]
 }

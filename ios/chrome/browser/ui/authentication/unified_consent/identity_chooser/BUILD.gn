@@ -19,10 +19,10 @@ source_set("identity_chooser") {
     "//components/prefs",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:system_identity",
     "//ios/chrome/browser/ui/authentication/cells",
-    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
   ]
 }
 

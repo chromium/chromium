@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_POLICY_USER_POLICY_USER_POLICY_PROMPT_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_UI_POLICY_USER_POLICY_USER_POLICY_PROMPT_COORDINATOR_H_
 
-#import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @protocol UserPolicyPromptCoordinatorDelegate;
 

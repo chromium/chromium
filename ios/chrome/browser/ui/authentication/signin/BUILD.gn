@@ -23,7 +23,7 @@ source_set("signin_headers") {
     "//base",
     "//components/signin/public/base",
     "//ios/chrome/browser/browser_state",
-    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
   ]
 }
 
