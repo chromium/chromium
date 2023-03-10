@@ -16,6 +16,8 @@ constexpr char kAutocompleteCreditCardPrefix[] = "cc-";
 constexpr char kAutocompleteOneTimePassword[] = "one-time-code";
 constexpr char kAutocompleteWebAuthn[] = "webauthn";
 
+constexpr int kMaxPasswordNoteLength = 1000;
+
 }  // namespace password_manager::constants
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_COMMON_PASSWORD_MANAGER_CONSTANTS_H_

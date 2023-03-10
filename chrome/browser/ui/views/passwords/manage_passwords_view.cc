@@ -22,6 +22,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/common/password_manager_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/sync/base/features.h"
 #include "ui/gfx/favicon_size.h"
@@ -166,7 +167,13 @@ ManagePasswordsView::CreatePasswordDetailsView() {
           },
           base::Unretained(this)),
       base::BindRepeating(&ManagePasswordsView::ExtendAuthValidity,
-                          base::Unretained(this)));
+                          base::Unretained(this)),
+      base::BindRepeating(
+          [](ManagePasswordsView* view, bool is_invalid) {
+            view->SetButtonEnabled(ui::DialogButton::DIALOG_BUTTON_OK,
+                                   !is_invalid);
+          },
+          base::Unretained(this)));
 }
 
 std::unique_ptr<views::View> ManagePasswordsView::CreateFooterView() {

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
@@ -16,6 +17,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
+#include "components/password_manager/core/common/password_manager_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
@@ -294,10 +296,12 @@ std::unique_ptr<views::View> ManagePasswordsDetailsView::CreateTitleView(
 ManagePasswordsDetailsView::ManagePasswordsDetailsView(
     password_manager::PasswordForm password_form,
     base::RepeatingClosure switched_to_edit_mode_callback,
-    base::RepeatingClosure on_activity_callback)
+    base::RepeatingClosure on_activity_callback,
+    base::RepeatingCallback<void(bool)> on_input_validation_callback)
     : switched_to_edit_mode_callback_(
           std::move(switched_to_edit_mode_callback)),
-      on_activity_callback_(std::move(on_activity_callback)) {
+      on_activity_callback_(std::move(on_activity_callback)),
+      on_input_validation_callback_(std::move(on_input_validation_callback)) {
   SetOrientation(views::BoxLayout::Orientation::kVertical);
   std::unique_ptr<views::Label> username_label =
       CreateUsernameLabel(password_form);
@@ -334,7 +338,9 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
     edit_username_row_ = AddChildView(
         CreateEditUsernameRow(password_form, &username_textfield_));
     text_changed_subscriptions_.push_back(
-        username_textfield_->AddTextChangedCallback(on_activity_callback_));
+        username_textfield_->AddTextChangedCallback(
+            base::BindRepeating(&ManagePasswordsDetailsView::OnUserInputChanged,
+                                base::Unretained(this))));
     edit_username_row_->SetID(
         static_cast<int>(ManagePasswordsViewIDs::kEditUsernameRow));
     edit_username_row_->SetVisible(false);
@@ -376,8 +382,9 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
       ManagePasswordsViewIDs::kEditNoteButton));
   edit_note_row_ =
       AddChildView(CreateEditNoteRow(password_form, &note_textarea_));
-  text_changed_subscriptions_.push_back(
-      note_textarea_->AddTextChangedCallback(on_activity_callback_));
+  text_changed_subscriptions_.push_back(note_textarea_->AddTextChangedCallback(
+      base::BindRepeating(&ManagePasswordsDetailsView::OnUserInputChanged,
+                          base::Unretained(this))));
   edit_note_row_->SetVisible(false);
 }
 
@@ -416,6 +423,10 @@ void ManagePasswordsDetailsView::SwitchToEditUsernameMode() {
   on_activity_callback_.Run();
   LogUserInteractionsInPasswordManagementBubble(
       PasswordManagementBubbleInteractions::kUsernameEditButtonClicked);
+  // Invoke OnUserInputChanged() to validate the current input. Relevant only
+  // for empty username to make sure the bubble is opened showing the username
+  // as invalid.
+  OnUserInputChanged();
 }
 
 void ManagePasswordsDetailsView::SwitchToEditNoteMode() {
@@ -425,4 +436,26 @@ void ManagePasswordsDetailsView::SwitchToEditNoteMode() {
   DCHECK(note_textarea_);
   on_activity_callback_.Run();
   note_textarea_->RequestFocus();
+}
+
+void ManagePasswordsDetailsView::OnUserInputChanged() {
+  CHECK(note_textarea_);
+  on_activity_callback_.Run();
+  bool is_username_invalid = false;
+  if (username_textfield_ && username_textfield_->IsDrawn()) {
+    is_username_invalid = username_textfield_->GetText().empty();
+  }
+  bool is_note_invalid =
+      note_textarea_->IsDrawn() &&
+      note_textarea_->GetText().length() >
+          password_manager::constants::kMaxPasswordNoteLength;
+
+  if (username_textfield_ && username_textfield_->IsDrawn()) {
+    username_textfield_->SetInvalid(is_username_invalid);
+  }
+  if (note_textarea_->IsDrawn()) {
+    note_textarea_->SetInvalid(is_note_invalid);
+  }
+
+  on_input_validation_callback_.Run(is_username_invalid || is_note_invalid);
 }
