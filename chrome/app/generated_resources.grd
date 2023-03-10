@@ -7596,6 +7596,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READING_MODE_BLUE_COLOR_LABEL" desc="Combobox option for setting the color theme for the reading mode feature.">
         Blue
       </message>
+      <message name="IDS_READ_ANYTHING_LOADING" desc="Message to show while Read Anything is figuring out what text to display.">
+        Getting ready
+      </message>
 
       <!-- User note strings -->
       <message name="IDS_USER_NOTE_TITLE" desc="Title of the User note feature, which gives users access to private user notes.">

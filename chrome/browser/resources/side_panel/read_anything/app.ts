@@ -9,6 +9,7 @@ import '../strings.m.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {rgbToSkColor, skColorToRgba} from 'chrome://resources/js/color_utils.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -75,6 +76,12 @@ if (chrome.readAnything) {
     assert(readAnythingApp);
     readAnythingApp.updateTheme();
   };
+
+  chrome.readAnything.showLoading = () => {
+    const readAnythingApp = document.querySelector('read-anything-app');
+    assert(readAnythingApp);
+    readAnythingApp.showLoading();
+  };
 }
 
 export class ReadAnythingElement extends ReadAnythingElementBase {
@@ -107,12 +114,18 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   private domNodeToAxNodeIdMap_: TwoWayMap = new TwoWayMap();
 
   private hasContent_: boolean;
+  private emptyStateImagePath_: string;
+  private emptyStateDarkImagePath_: string;
+  private emptyStateHeading_: string;
+  private emptyStateSubheading_: string;
 
   override connectedCallback() {
     super.connectedCallback();
     if (chrome.readAnything) {
       chrome.readAnything.onConnected();
     }
+
+    this.showLoading();
 
     document.onselectionchange = () => {
       const shadowRoot = this.shadowRoot;
@@ -194,6 +207,16 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     return parentElement;
   }
 
+  showLoading() {
+    this.emptyStateImagePath_ = 'chrome://resources/images/throbber_small.svg';
+    this.emptyStateDarkImagePath_ =
+        'chrome://resources/images/throbber_small_dark.svg';
+    this.emptyStateHeading_ =
+        loadTimeData.getString('readAnythingLoadingMessage');
+    this.emptyStateSubheading_ = '';
+    this.hasContent_ = false;
+  }
+
   updateContent() {
     const shadowRoot = this.shadowRoot;
     assert(shadowRoot);
@@ -220,6 +243,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // If there is no content to show, the empty state container will be shown.
     const node = this.buildSubtree_(rootId);
     if (!node.textContent) {
+      this.emptyStateImagePath_ = './images/empty_state.svg';
+      this.emptyStateDarkImagePath_ = './images/empty_state.svg';
+      this.emptyStateHeading_ = loadTimeData.getString('emptyStateHeader');
+      this.emptyStateSubheading_ =
+          loadTimeData.getString('emptyStateSubheader');
       this.hasContent_ = false;
       return;
     }

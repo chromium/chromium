@@ -33,6 +33,7 @@ ReadAnythingUI::ReadAnythingUI(content::WebUI* web_ui)
       {"readAnythingTabTitle", IDS_READING_MODE_TITLE},
       {"emptyStateHeader", IDS_READING_MODE_EMPTY_STATE_HEADER},
       {"emptyStateSubheader", IDS_READING_MODE_EMPTY_STATE_SUBHEADER},
+      {"readAnythingLoadingMessage", IDS_READ_ANYTHING_LOADING},
   };
   for (const auto& str : kLocalizedStrings)
     webui::AddLocalizedString(source, str.name, str.id);

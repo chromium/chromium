@@ -105,6 +105,9 @@ declare namespace chrome {
     // Implemented in read_anything/app.ts and called by native c++.
     ////////////////////////////////////////////////////////////////
 
+    // Display a loading screen to tell the user we are distilling the page.
+    function showLoading(): void;
+
     // Ping that an AXTree has been distilled for the active tab's render frame
     // and is available to consume.
     function updateContent(): void;

@@ -25,9 +25,9 @@
 <div id="container" hidden="[[!hasContent_]]"></div>
 <div id="empty-state-container" hidden="[[hasContent_]]">
   <sp-empty-state
-      image-path="./images/empty_state.svg"
-      dark-image-path="./images/empty_state.svg"
-      heading="$i18n{emptyStateHeader}"
-      body="$i18n{emptyStateSubheader}">
+      image-path="[[emptyStateImagePath_]]"
+      dark-image-path="[[emptyStateDarkImagePath_]]"
+      heading="[[emptyStateHeading_]]"
+      body="[[emptyStateSubheading_]]">
   </sp-empty-state>
 </div>

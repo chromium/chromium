@@ -135,3 +135,7 @@ export function assertThrows(
 export function assertArrayEquals(expected: any[], actual: any[]) {
   assertDeepEquals(expected, actual);
 }
+
+export function assertStringContains(expected: string, contains: string) {
+  chai.expect(expected).to.have.string(contains);
+}
