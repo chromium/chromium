@@ -5,6 +5,6 @@
 # See build/ios/update_bundle_filelist.py for details on how .globlist
 # files are used to update their .filelist counterparts.
 
-**
--*.globlist
--*.filelist
+paint/test_data/**
+-paint/test_data/*.globlist
+-paint/test_data/*.filelist

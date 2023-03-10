@@ -77,6 +77,10 @@ import("//third_party/blink/renderer/core/xmlhttprequest/build.gni")
 import("//third_party/blink/renderer/platform/platform_generated.gni")
 import("//third_party/protobuf/proto_library.gni")
 
+if (is_ios) {
+  import("//build/config/ios/bundle_data_from_filelist.gni")
+}
+
 visibility = [
   "//third_party/blink/public/*",
   "//third_party/blink/renderer/*",
@@ -551,6 +555,21 @@ source_set("testing") {
   ]
 
   public_deps = [ "//testing/gmock:gmock" ]
+}
+
+if (is_ios) {
+  bundle_data_from_filelist("core_test_bundle_data") {
+    testonly = true
+    filelist_name = "testing/data/core_test_bundle_data.filelist"
+  }
+  bundle_data_from_filelist("animation_test_bundle_data") {
+    testonly = true
+    filelist_name = "animation/test_data/animation_test_bundle_data.filelist"
+  }
+  bundle_data_from_filelist("paint_test_bundle_data") {
+    testonly = true
+    filelist_name = "paint/test_data/paint_test_bundle_data.filelist"
+  }
 }
 
 # generate_event_interfaces ----------------------------------------------------
