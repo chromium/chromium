@@ -1860,7 +1860,8 @@ void EventRewriterChromeOS::RewriteFunctionKeys(const KeyEvent& key_event,
     //  No      System   No                 Fn -> System
     //  Yes     Fn       No                 Unchanged
     //  Yes     System   No                 Unchanged
-    if (ForceTopRowAsFunctionKeys() == flip_remapping) {
+    if (ForceTopRowAsFunctionKeys(key_event.source_device_id()) ==
+        flip_remapping) {
       // Rewrite the F1-F12 keys on a Chromebook keyboard to system keys.
       // This is the original Chrome OS layout.
       static const KeyboardRemapping kFkeysToSystemKeys1[] = {
@@ -2256,7 +2257,8 @@ bool EventRewriterChromeOS::RewriteTopRowKeysForCustomLayout(
   // If the scan code appears in the top row mapping it is an action key.
   const bool is_action_key = (key_iter != scan_code_map.end());
   if (is_action_key) {
-    if (flip_remapping != ForceTopRowAsFunctionKeys()) {
+    if (flip_remapping !=
+        ForceTopRowAsFunctionKeys(key_event.source_device_id())) {
       ApplyRemapping(key_iter->second, state);
     }
 
@@ -2405,7 +2407,8 @@ bool EventRewriterChromeOS::RewriteTopRowKeysForLayoutWilco(
                                  std::size(kActionToFnKeys))) {
     // Incoming key code is an action key. Check if it needs to be mapped back
     // to its corresponding function key.
-    if (flip_remapping != ForceTopRowAsFunctionKeys()) {
+    if (flip_remapping !=
+        ForceTopRowAsFunctionKeys(key_event.source_device_id())) {
       // On Drallion, mirror mode toggle is on its own key so don't remap it.
       if (layout == KeyboardCapability::KeyboardTopRowLayout::
                         kKbdTopRowLayoutDrallion &&
@@ -2431,20 +2434,19 @@ bool EventRewriterChromeOS::RewriteTopRowKeysForLayoutWilco(
       state->code = DomCode::F12;
       state->key = DomKey::F12;
     }
-    // At this point, the search modifier flag should be cleared if the
-    // remapping was supposed to be flipped.
+    // If the mapping should be flipped when command is down, the flag needs to
+    // be cleared.
     if (flip_remapping) {
       state->flags &= ~EF_COMMAND_DOWN;
     }
-
     return true;
   }
 
   return false;
 }
 
-bool EventRewriterChromeOS::ForceTopRowAsFunctionKeys() const {
-  return delegate_ && delegate_->TopRowKeysAreFunctionKeys();
+bool EventRewriterChromeOS::ForceTopRowAsFunctionKeys(int device_id) const {
+  return delegate_ && delegate_->TopRowKeysAreFunctionKeys(device_id);
 }
 
 KeyboardCapability::DeviceType EventRewriterChromeOS::KeyboardDeviceAdded(

@@ -188,7 +188,7 @@ class ChromeVoxAccessibilityEventRewriterTest
     return true;
   }
 
-  bool TopRowKeysAreFunctionKeys() const override { return false; }
+  bool TopRowKeysAreFunctionKeys(int device_id) const override { return false; }
 
   bool IsExtensionCommandRegistered(ui::KeyboardCode key_code,
                                     int flags) const override {
@@ -583,7 +583,7 @@ class SwitchAccessAccessibilityEventRewriterTest
     return true;
   }
 
-  bool TopRowKeysAreFunctionKeys() const override { return false; }
+  bool TopRowKeysAreFunctionKeys(int device_id) const override { return false; }
 
   bool IsExtensionCommandRegistered(ui::KeyboardCode key_code,
                                     int flags) const override {

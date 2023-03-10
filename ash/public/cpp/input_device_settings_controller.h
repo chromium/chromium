@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "ash/public/cpp/scoped_singleton_resetter_for_test.h"
 #include "ash/public/mojom/input_device_settings.mojom-forward.h"
 #include "base/observer_list_types.h"
 
@@ -18,6 +19,8 @@ namespace ash {
 class ASH_PUBLIC_EXPORT InputDeviceSettingsController {
  public:
   using DeviceId = uint32_t;
+  using ScopedResetterForTest =
+      ScopedSingletonResetterForTest<InputDeviceSettingsController>;
 
   class Observer : public base::CheckedObserver {
    public:

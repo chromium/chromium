@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <vector>
 
 #include "ash/accelerators/accelerator_controller_impl.h"
@@ -9,6 +10,9 @@
 #include "ash/accessibility/sticky_keys/sticky_keys_overlay.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/input_device_settings_controller.h"
+#include "ash/public/cpp/test/mock_input_device_settings_controller.h"
+#include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -52,6 +56,7 @@
 #include "ui/events/test/events_test_utils.h"
 #include "ui/events/test/test_event_processor.h"
 #include "ui/events/test/test_event_rewriter_continuation.h"
+#include "ui/events/types/event_type.h"
 #include "ui/message_center/fake_message_center.h"
 #include "ui/wm/core/window_util.h"
 
@@ -204,7 +209,7 @@ class EventRewriterTest : public ChromeAshTestBase {
         std::make_unique<DeprecationNotificationController>(&message_center_);
     deprecation_controller_ = deprecation_controller.get();
     delegate_ = std::make_unique<EventRewriterDelegateImpl>(
-        nullptr, std::move(deprecation_controller));
+        nullptr, std::move(deprecation_controller), nullptr);
     delegate_->set_pref_service_for_testing(prefs());
     device_data_manager_test_api_.SetKeyboardDevices({});
     rewriter_ = std::make_unique<ui::EventRewriterChromeOS>(
@@ -5337,7 +5342,7 @@ class ExtensionRewriterInputTest : public EventRewriterAshTest,
     return true;
   }
 
-  bool TopRowKeysAreFunctionKeys() const override { return false; }
+  bool TopRowKeysAreFunctionKeys(int device_id) const override { return false; }
 
   bool IsExtensionCommandRegistered(ui::KeyboardCode key_code,
                                     int flags) const override {
@@ -5727,6 +5732,55 @@ TEST_P(ModifierPressedMetricsTest, KeyReleasedTest) {
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.Inputs.Keyboard.RemappedModifierPressed.External",
       modifier_key_usage_mapping_, 0);
+}
+
+class EventRewriterSettingsSplitTest : public EventRewriterTest {
+ public:
+  void SetUp() override {
+    EventRewriterTest::SetUp();
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kInputDeviceSettingsSplit);
+    controller_resetter_ = std::make_unique<
+        InputDeviceSettingsController::ScopedResetterForTest>();
+    mock_controller_ = std::make_unique<MockInputDeviceSettingsController>();
+    auto deprecation_controller =
+        std::make_unique<DeprecationNotificationController>(&message_center_);
+    deprecation_controller_ = deprecation_controller.get();
+    delegate_ = std::make_unique<EventRewriterDelegateImpl>(
+        nullptr, std::move(deprecation_controller), mock_controller_.get());
+    rewriter_ = std::make_unique<ui::EventRewriterChromeOS>(
+        delegate_.get(), nullptr, false, &fake_ime_keyboard_);
+  }
+
+  void TearDown() override {
+    mock_controller_.reset();
+    controller_resetter_.reset();
+    EventRewriterTest::TearDown();
+  }
+
+ protected:
+  std::unique_ptr<InputDeviceSettingsController::ScopedResetterForTest>
+      controller_resetter_;
+  std::unique_ptr<MockInputDeviceSettingsController> mock_controller_;
+};
+
+TEST_F(EventRewriterSettingsSplitTest, TopRowAreFKeys) {
+  mojom::KeyboardSettings settings;
+  EXPECT_CALL(*mock_controller_, GetKeyboardSettings(kKeyboardDeviceId))
+      .WillRepeatedly(testing::Return(&settings));
+
+  settings.top_row_are_fkeys = false;
+  TestExternalGenericKeyboard(
+      {{ui::ET_KEY_PRESSED,
+        {ui::VKEY_F1, ui::DomCode::F1, ui::EF_NONE, ui::DomKey::F1},
+        {ui::VKEY_BROWSER_BACK, ui::DomCode::BROWSER_BACK, ui::EF_NONE,
+         ui::DomKey::BROWSER_BACK}}});
+
+  settings.top_row_are_fkeys = true;
+  TestExternalGenericKeyboard(
+      {{ui::ET_KEY_PRESSED,
+        {ui::VKEY_F1, ui::DomCode::F1, ui::EF_NONE, ui::DomKey::F1},
+        {ui::VKEY_F1, ui::DomCode::F1, ui::EF_NONE, ui::DomKey::F1}}});
 }
 
 }  // namespace ash

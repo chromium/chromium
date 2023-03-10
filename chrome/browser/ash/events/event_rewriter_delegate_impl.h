@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_EVENTS_EVENT_REWRITER_DELEGATE_IMPL_H_
 #define CHROME_BROWSER_ASH_EVENTS_EVENT_REWRITER_DELEGATE_IMPL_H_
 
+#include "ash/public/cpp/input_device_settings_controller.h"
 #include "ui/chromeos/events/event_rewriter_chromeos.h"
 #include "ui/wm/public/activation_client.h"
 
@@ -17,9 +18,10 @@ class DeprecationNotificationController;
 class EventRewriterDelegateImpl : public ui::EventRewriterChromeOS::Delegate {
  public:
   explicit EventRewriterDelegateImpl(wm::ActivationClient* activation_client);
-  EventRewriterDelegateImpl(wm::ActivationClient* activation_client,
-                            std::unique_ptr<DeprecationNotificationController>
-                                deprecation_controller);
+  EventRewriterDelegateImpl(
+      wm::ActivationClient* activation_client,
+      std::unique_ptr<DeprecationNotificationController> deprecation_controller,
+      InputDeviceSettingsController* input_device_settings_controller);
 
   EventRewriterDelegateImpl(const EventRewriterDelegateImpl&) = delete;
   EventRewriterDelegateImpl& operator=(const EventRewriterDelegateImpl&) =
@@ -36,7 +38,7 @@ class EventRewriterDelegateImpl : public ui::EventRewriterChromeOS::Delegate {
   bool RewriteMetaTopRowKeyComboEvents() const override;
   bool GetKeyboardRemappedPrefValue(const std::string& pref_name,
                                     int* result) const override;
-  bool TopRowKeysAreFunctionKeys() const override;
+  bool TopRowKeysAreFunctionKeys(int device_id) const override;
   bool IsExtensionCommandRegistered(ui::KeyboardCode key_code,
                                     int flags) const override;
   bool IsSearchKeyAcceleratorReserved() const override;
@@ -60,6 +62,8 @@ class EventRewriterDelegateImpl : public ui::EventRewriterChromeOS::Delegate {
 
   // Tracks whether meta + top row key rewrites should be suppressed or not.
   bool suppress_meta_top_row_key_rewrites_ = false;
+
+  raw_ptr<InputDeviceSettingsController> input_device_settings_controller_;
 };
 
 }  // namespace ash
