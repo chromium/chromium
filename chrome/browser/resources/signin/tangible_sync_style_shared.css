@@ -82,3 +82,15 @@
   font-size: 1.25rem;
   line-height: 24px;
 }
+
+@media screen and ((max-width: 780px) or (max-height: 600px)) {
+  .tangible-sync-style #title {
+    font-size: 1.5rem;
+    line-height: 32px;
+  }
+
+  .tangible-sync-style #subtitle {
+    font-size: 0.94rem;
+    line-height: 22px;
+  }
+}

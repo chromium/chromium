@@ -217,8 +217,7 @@
   }
 
   .tangible-sync-style#main-container {
-    height: calc(100vh - (2*var(--action-container-padding) +
-             var(--cr-button-height)));
+    height: calc(100vh - (2*var(--action-container-padding) + var(--cr-button-height)));
     width: 100vw;
   }
 
@@ -247,24 +246,37 @@
       color: var(--google-grey-100);
     }
 
+    .tangible-sync-style .info-box {
+      border-color: var(--google-grey-600);
+    }
+
     .icon-container {
       background-color: var(--google-grey-700);
+    }
+
+    #tangible-sync-style-right-banner {
+      content: url(images/right-banner-dark.svg);
+    }
+
+    #tangible-sync-style-left-banner {
+      content: url(images/left-banner-dark.svg);
     }
   }
 </style>
 
-<div id="main-container" class$="[[getTangibleSyncStyleClass_(isTangibleSyncStyleEnabled_,
-   isModalDialog_)]]">
+<div id="main-container"
+    class$="[[getTangibleSyncStyleClass_(isTangibleSyncStyleEnabled_,
+        isModalDialog_)]]">
   <img id="tangible-sync-style-left-banner"
-     hidden="[[!getTangibleSyncStyleClass_(isTangibleSyncStyleEnabled_,
-      isModalDialog_)]]">
+      hidden="[[!getTangibleSyncStyleClass_(isTangibleSyncStyleEnabled_,
+          isModalDialog_)]]">
   <img id="tangible-sync-style-right-banner"
-     hidden="[[!getTangibleSyncStyleClass_(isTangibleSyncStyleEnabled_,
-      isModalDialog_)]]">
+      hidden="[[!getTangibleSyncStyleClass_(isTangibleSyncStyleEnabled_,
+          isModalDialog_)]]">
   <div id="content-container">
     <div id="header-container">
       <div id="banner" hidden="[[getTangibleSyncStyleClass_(
-                isTangibleSyncStyleEnabled_, isModalDialog_)]]"></div>
+          isTangibleSyncStyleEnabled_, isModalDialog_)]]"></div>
       <div id="avatar-container">
         <img id="avatar" alt="" src="[[pictureUrl_]]">
         <div class="work-badge" hidden="[[!showEnterpriseBadge_]]">
@@ -301,14 +313,15 @@
     </template>
   </div>
 </div>
-<div id="buttons-container" class$="action-container [[getTangibleSyncStyleClass_(
-    isTangibleSyncStyleEnabled_, isModalDialog_)]]">
+<div id="buttons-container"
+    class$="action-container [[getTangibleSyncStyleClass_(
+        isTangibleSyncStyleEnabled_, isModalDialog_)]]">
     <cr-button id="proceedButton" class="action-button" on-click="onProceed_"
-      autofocus$="[[isModalDialog_]]" disabled="[[disableProceedButton_]]">
+        autofocus$="[[isModalDialog_]]" disabled="[[disableProceedButton_]]">
       [[proceedLabel_]]
     </cr-button>
     <cr-button id="cancelButton" on-click="onCancel_"
-      hidden="[[!showCancelButton_]]">
+        hidden="[[!showCancelButton_]]">
       $i18n{cancelLabel}
     </cr-button>
 </div>
