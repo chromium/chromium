@@ -256,7 +256,7 @@ const char* CreditCard::GetCardNetwork(const std::u16string& number) {
   // American Express       34,37                                      15
   // Diners Club            300-305,309,36,38-39                       14
   // Discover Card          6011,644-649,65                            16
-  // Elo                    431274,451416,5067,5090,627780,636297      16
+  // Elo                    See Elo regex pattern below                16
   // JCB                    3528-3589                                  16
   // Mastercard             2221-2720, 51-55                           16
   // MIR                    2200-2204                                  16
@@ -267,15 +267,85 @@ const char* CreditCard::GetCardNetwork(const std::u16string& number) {
   // (most specific) prefix to the shortest (most general) prefix.
   std::u16string stripped_number = CreditCard::StripSeparators(number);
 
+  // Original Elo parsing included only 6 BIN prefixes. This regex pattern,
+  // sourced from the official Elo documentation, attempts to cover missing gaps
+  // via a more comprehensive solution.
+  static constexpr char16_t kEloRegexPattern[] =
+      // clang-format off
+    u"^("
+      u"50("
+        u"67("
+          u"0[78]|"
+          u"1[5789]|"
+          u"2[012456789]|"
+          u"3[01234569]|"
+          u"4[0-7]|"
+          u"53|"
+          u"7[4-8]"
+        u")|"
+        u"9("
+          u"0(0[0-9]|1[34]|2[013457]|3[0359]|4[0123568]|5[01456789]|6[012356789]|7[013]|8[123789]|9[1379])|"
+          u"1(0[34568]|4[6-9]|5[1245678]|8[36789])|"
+          u"2(2[02]|57|6[0-9]|7[1245689]|8[023456789]|9[1-6])|"
+          u"3(0[78]|5[78])|"
+          u"4(0[7-9]|1[012456789]|2[02]|5[7-9]|6[0-5]|8[45])|"
+          u"55[01]|"
+          u"636|"
+          u"7(2[3-8]|32|6[5-9])"
+        u")"
+      u")|"
+      u"4("
+        u"0117[89]|3(1274|8935)|5(1416|7(393|63[12]))"
+      u")|"
+      u"6("
+        u"27780|"
+        u"36368|"
+        u"5("
+          u"0("
+            u"0(3[1258]|4[026]|69|7[0178])|"
+            u"4(0[67]|1[0-3]|2[2345689]|3[0568]|8[5-9]|9[0-9])|"
+            u"5(0[01346789]|1[01246789]|2[0-9]|3[0178]|5[2-9]|6[012356789]|7[01789]|8[0134679]|9[0-8])|"
+            u"72[0-7]|"
+            u"9(0[1-9]|1[0-9]|2[0128]|3[89]|4[6-9]|5[01578]|6[2-9]|7[01])"
+          u")|"
+          u"16("
+            u"5[236789]|"
+            u"6[025678]|"
+            u"7[013456789]|"
+            u"88"
+          u")|"
+          u"50("
+            u"0[01356789]|"
+            u"1[2568]|"
+            u"26|"
+            u"3[6-8]|"
+            u"5[1267]"
+          u")"
+        u")"
+      u")"
+    u")$";
+  // clang-format on
+
   // Check for prefixes of length 6.
   if (stripped_number.size() >= 6) {
     int first_six_digits = 0;
     if (!base::StringToInt(stripped_number.substr(0, 6), &first_six_digits))
       return kGenericCard;
 
-    if (first_six_digits == 431274 || first_six_digits == 451416 ||
-        first_six_digits == 627780 || first_six_digits == 636297)
+    // This is a flag controlled rollout to update the way we recognize Elo BIN.
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillUseEloRegexForBinMatching) &&
+        MatchesRegex<kEloRegexPattern>(
+            base::NumberToString16(first_six_digits))) {
       return kEloCard;
+    }
+
+    if (!base::FeatureList::IsEnabled(
+            features::kAutofillUseEloRegexForBinMatching) &&
+        (first_six_digits == 431274 || first_six_digits == 451416 ||
+         first_six_digits == 627780 || first_six_digits == 636297)) {
+      return kEloCard;
+    }
   }
 
   // Check for prefixes of length 5.
@@ -308,8 +378,11 @@ const char* CreditCard::GetCardNetwork(const std::u16string& number) {
     if (first_four_digits >= 3528 && first_four_digits <= 3589)
       return kJCBCard;
 
-    if (first_four_digits == 5067 || first_four_digits == 5090)
+    if (!base::FeatureList::IsEnabled(
+            features::kAutofillUseEloRegexForBinMatching) &&
+        (first_four_digits == 5067 || first_four_digits == 5090)) {
       return kEloCard;
+    }
 
     if (first_four_digits == 6011)
       return kDiscoverCard;

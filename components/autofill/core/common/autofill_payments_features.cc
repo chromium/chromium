@@ -255,6 +255,11 @@ BASE_FEATURE(kAutofillUpstreamUseAlternateSecureDataType,
              "AutofillUpstreamUseAlternateSecureDataType",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, we use the Elo regex to match the BIN ranges.
+BASE_FEATURE(kAutofillUseEloRegexForBinMatching,
+             "AutofillUseEloRegexForBinMatching",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // The delay required since the last strike before offering another virtual card
 // enrollment attempt.
 const base::FeatureParam<int>

@@ -47,6 +47,7 @@ BASE_DECLARE_FEATURE(kAutofillUpstream);
 BASE_DECLARE_FEATURE(kAutofillUpstreamAllowAdditionalEmailDomains);
 BASE_DECLARE_FEATURE(kAutofillUpstreamAllowAllEmailDomains);
 BASE_DECLARE_FEATURE(kAutofillUpstreamUseAlternateSecureDataType);
+BASE_DECLARE_FEATURE(kAutofillUseEloRegexForBinMatching);
 extern const base::FeatureParam<int>
     kAutofillVirtualCardEnrollDelayInStrikeDatabaseInDays;
 
