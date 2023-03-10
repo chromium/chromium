@@ -21,6 +21,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/strings/string_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/task/updateable_sequenced_task_runner.h"
@@ -110,6 +111,8 @@ using ReportSentCallback =
     ::content::AttributionReportSender::ReportSentCallback;
 
 constexpr size_t kMaxPendingEvents = 5;
+constexpr size_t kMaxPendingReportsTimings = 50;
+
 const GlobalRenderFrameHostId kFrameId = {0, 1};
 
 constexpr AttributionStorageDelegate::OfflineReportDelayConfig
@@ -329,6 +332,24 @@ class AttributionManagerImplTest : public testing::Test {
         browser_context_->GetDefaultStoragePartition());
     aggregation_service_ = nullptr;
     partition->OverrideAggregationServiceForTesting(nullptr);
+  }
+
+  void RegisterAggregatableSourceAndMatchingTrigger(
+      const std::string& origin_prefix) {
+    const auto origin = *SuitableOrigin::Create(GURL(base::JoinString(
+        {"https://", origin_prefix,
+         ".example/.well-known/attribution-reporting/report-event-attribution"},
+        "")));
+
+    attribution_manager_->HandleSource(TestAggregatableSourceProvider()
+                                           .GetBuilder()
+                                           .SetExpiry(kImpressionExpiry)
+                                           .SetReportingOrigin(origin)
+                                           .Build(),
+                                       kFrameId);
+    attribution_manager_->HandleTrigger(
+        DefaultAggregatableTriggerBuilder().SetReportingOrigin(origin).Build(),
+        kFrameId);
   }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -2677,6 +2698,126 @@ TEST_F(AttributionManagerImplTest,
                                           .Build(),
                                       kFrameId);
   task_environment_.RunUntilIdle();
+}
+
+TEST_F(AttributionManagerImplTest, PendingReportsMetrics) {
+  base::HistogramTester histograms;
+
+  RegisterAggregatableSourceAndMatchingTrigger("a");
+  task_environment_.FastForwardBy(base::Seconds(10));
+
+  RegisterAggregatableSourceAndMatchingTrigger("b");
+  task_environment_.FastForwardBy(base::Seconds(20));
+
+  RegisterAggregatableSourceAndMatchingTrigger("c");
+  task_environment_.FastForwardBy(base::Seconds(40));
+
+  ShutdownManager();
+
+  histograms.ExpectTotalCount(
+      "Conversions.AggregatableReport.PendingAndBrowserWentOffline."
+      "TimeSinceCreation",
+      3);
+  EXPECT_EQ(
+      histograms.GetTotalSum("Conversions.AggregatableReport."
+                             "PendingAndBrowserWentOffline.TimeSinceCreation"),
+      base::Seconds(70 + 60 + 40).InMilliseconds());
+
+  histograms.ExpectTotalCount(
+      "Conversions.AggregatableReport.PendingAndBrowserWentOffline."
+      "TimeUntilReportTime",
+      3);
+  EXPECT_EQ(histograms.GetTotalSum(
+                "Conversions.AggregatableReport.PendingAndBrowserWentOffline."
+                "TimeUntilReportTime"),
+            ((kFirstReportingWindow - base::Seconds(70)) +
+             (kFirstReportingWindow - base::Seconds(60)) +
+             (kFirstReportingWindow - base::Seconds(40)))
+                .InMilliseconds());
+}
+
+TEST_F(AttributionManagerImplTest,
+       PendingReportsMetrics_WithoutPendingReports) {
+  base::HistogramTester histograms;
+
+  RegisterAggregatableSourceAndMatchingTrigger("a");
+  task_environment_.FastForwardBy(base::Seconds(10));
+
+  // Advancing time enough for reports to send
+  task_environment_.FastForwardBy(kFirstReportingWindow);
+
+  ShutdownManager();
+
+  // Expect no histograms on shutdown as the report have already been sent.
+  histograms.ExpectTotalCount(
+      "Conversions.AggregatableReport.PendingAndBrowserWentOffline."
+      "TimeSinceCreation",
+      0);
+  histograms.ExpectTotalCount(
+      "Conversions.AggregatableReport.PendingAndBrowserWentOffline."
+      "TimeUntilReportTime",
+      0);
+}
+
+TEST_F(AttributionManagerImplTest, PendingReportsMetrics_Offline) {
+  base::HistogramTester histograms;
+
+  RegisterAggregatableSourceAndMatchingTrigger("a");
+  task_environment_.FastForwardBy(base::Seconds(10));
+
+  SetConnectionTypeAndWaitForObserversToBeNotified(
+      network::mojom::ConnectionType::CONNECTION_NONE);
+  SetConnectionTypeAndWaitForObserversToBeNotified(
+      network::mojom::ConnectionType::CONNECTION_WIFI);
+
+  RegisterAggregatableSourceAndMatchingTrigger("b");
+  task_environment_.FastForwardBy(base::Seconds(20));
+
+  RegisterAggregatableSourceAndMatchingTrigger("c");
+  task_environment_.FastForwardBy(base::Seconds(40));
+
+  task_environment_.FastForwardBy(kFirstReportingWindow);
+
+  ShutdownManager();
+
+  // Expect only one histogram as there was only one pending report when it
+  // first went offline.
+  histograms.ExpectTotalCount(
+      "Conversions.AggregatableReport.PendingAndBrowserWentOffline."
+      "TimeSinceCreation",
+      1);
+  histograms.ExpectTotalCount(
+      "Conversions.AggregatableReport.PendingAndBrowserWentOffline."
+      "TimeUntilReportTime",
+      1);
+}
+
+TEST_F(AttributionManagerImplTest, PendingReportsMetrics_OverLimits) {
+  base::HistogramTester histograms;
+
+  for (size_t i = 0; i < (kMaxPendingReportsTimings + 5); i++) {
+    RegisterAggregatableSourceAndMatchingTrigger(base::NumberToString(i));
+  }
+
+  task_environment_.FastForwardBy(base::Seconds(10));
+  RegisterAggregatableSourceAndMatchingTrigger("a");
+
+  ShutdownManager();
+
+  // Expect that events registered past the limit should be dropped.
+  histograms.ExpectTotalCount(
+      "Conversions.AggregatableReport.PendingAndBrowserWentOffline."
+      "TimeSinceCreation",
+      kMaxPendingReportsTimings);
+  histograms.ExpectTotalCount(
+      "Conversions.AggregatableReport.PendingAndBrowserWentOffline."
+      "TimeUntilReportTime",
+      kMaxPendingReportsTimings);
+
+  EXPECT_EQ(
+      histograms.GetTotalSum("Conversions.AggregatableReport."
+                             "PendingAndBrowserWentOffline.TimeSinceCreation"),
+      (base::Seconds(10) * kMaxPendingReportsTimings).InMilliseconds());
 }
 
 class AttributionManagerImplDebugReportTest

@@ -44,6 +44,8 @@ class MockReportSchedulerTimerDelegate : public ReportSchedulerTimer::Delegate {
               AdjustOfflineReportTimes,
               (base::OnceCallback<void(absl::optional<base::Time>)>),
               (override));
+
+  MOCK_METHOD(void, OnReportingPaused, (base::Time), (override));
 };
 
 class ReportSchedulerTimerTest : public testing::Test {
@@ -144,6 +146,7 @@ TEST_F(ReportSchedulerTimerTest, NetworkChange) {
     InSequence seq;
 
     EXPECT_CALL(*timer_delegate_, OnReportingTimeReached).Times(0);
+    EXPECT_CALL(*timer_delegate_, OnReportingPaused).Times(1);
     EXPECT_CALL(checkpoint, Call(1));
     EXPECT_CALL(*timer_delegate_, AdjustOfflineReportTimes);
   }

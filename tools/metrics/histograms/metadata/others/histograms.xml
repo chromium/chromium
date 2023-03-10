@@ -3465,6 +3465,38 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Conversions.AggregatableReport.PendingAndBrowserWentOffline.{TimeSpan}"
+    units="ms" expires_after="M117">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Upon storing an Aggregatable Report at `creation_time`, it is scheduled with
+    a `reporting_delay` to send at time `report_time` and is pending until then.
+
+    If the browser closes or the device goes offline, and until it re-opens or
+    re-connects, we are unable to send reports. On such events, for each pending
+    reports, we record two {TimeSpan}s: [1] TimeSinceCreation: The time elapsed
+    since the report was created (creation_time - now). [2] TimeUntilReportTime:
+    The time remaining for the report to be sent (report_time - now).
+
+    The metrics will enable us to quantify the extent to which reducing
+    `reporting_delay` would increase the number of reports sent before an
+    unavailability event.
+
+    [Limitation] To limit memory usage, a maximum of 50 pending reports timings
+    are handled. Past this number, reports are dropped (until reports get sent
+    or an unavailability event occurs). Given that the most recent reports can
+    be dropped, we can expect the `TimeSinceCreation` to be biased down slightly
+    and `TimeUntilReportTime` to be biased up slightly. We expect this situation
+    to be infrequent given the 10-60 minutes reporting window.
+  </summary>
+  <token key="TimeSpan">
+    <variant name="TimeSinceCreation"/>
+    <variant name="TimeUntilReportTime"/>
+  </token>
+</histogram>
+
 <histogram name="Conversions.AggregatableReport.ReportSendOutcome2"
     enum="ConversionReportSendOutcome" expires_after="M117">
   <owner>linnan@chromium.org</owner>

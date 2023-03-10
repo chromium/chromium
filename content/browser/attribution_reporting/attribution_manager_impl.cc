@@ -52,6 +52,7 @@
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_report_network_sender.h"
 #include "content/browser/attribution_reporting/attribution_report_sender.h"
+#include "content/browser/attribution_reporting/attribution_reporting.mojom-shared.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate_impl.h"
@@ -93,6 +94,8 @@ namespace {
 using ScopedUseInMemoryStorageForTesting =
     ::content::AttributionManagerImpl::ScopedUseInMemoryStorageForTesting;
 
+using ReportType = attribution_reporting::mojom::ReportType;
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class ConversionReportSendOutcome {
@@ -117,8 +120,10 @@ class AttributionReportScheduler : public ReportSchedulerTimer::Delegate {
  public:
   AttributionReportScheduler(
       base::RepeatingClosure send_reports,
+      base::RepeatingClosure on_reporting_paused_cb,
       base::SequenceBound<AttributionStorage>& attribution_storage)
       : send_reports_(std::move(send_reports)),
+        on_reporting_paused_cb_(std::move(on_reporting_paused_cb)),
         attribution_storage_(attribution_storage) {}
   ~AttributionReportScheduler() override = default;
 
@@ -150,7 +155,12 @@ class AttributionReportScheduler : public ReportSchedulerTimer::Delegate {
         .Then(std::move(maybe_set_timer_cb));
   }
 
+  void OnReportingPaused(base::Time now) override {
+    on_reporting_paused_cb_.Run();
+  }
+
   base::RepeatingClosure send_reports_;
+  base::RepeatingClosure on_reporting_paused_cb_;
   const raw_ref<base::SequenceBound<AttributionStorage>> attribution_storage_;
 };
 
@@ -343,6 +353,11 @@ bool g_run_in_memory = false;
 
 }  // namespace
 
+struct AttributionManagerImpl::PendingReportTimings {
+  base::Time creation_time;
+  base::Time report_time;
+};
+
 BASE_FEATURE(kAttributionVerboseDebugReporting,
              "AttributionVerboseDebugReporting",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -464,6 +479,9 @@ AttributionManagerImpl::AttributionManagerImpl(
       scheduler_timer_(std::make_unique<AttributionReportScheduler>(
           base::BindRepeating(&AttributionManagerImpl::GetReportsToSend,
                               base::Unretained(this)),
+          base::BindRepeating(
+              &AttributionManagerImpl::RecordPendingAggregatableReportsTimings,
+              base::Unretained(this)),
           attribution_storage_)),
       data_host_manager_(std::move(data_host_manager)),
       special_storage_policy_(std::move(special_storage_policy)),
@@ -485,6 +503,8 @@ AttributionManagerImpl::AttributionManagerImpl(
 }
 
 AttributionManagerImpl::~AttributionManagerImpl() {
+  RecordPendingAggregatableReportsTimings();
+
   // Browser contexts are not required to have a special storage policy.
   if (!special_storage_policy_ ||
       !special_storage_policy_->HasSessionOnlyOrigins()) {
@@ -546,6 +566,22 @@ void AttributionManagerImpl::StoreSource(
       .Then(base::BindOnce(&AttributionManagerImpl::OnSourceStored,
                            weak_factory_.GetWeakPtr(), std::move(source),
                            cleared_debug_key, is_debug_cookie_set));
+}
+
+void AttributionManagerImpl::RecordPendingAggregatableReportsTimings() {
+  const base::Time now = base::Time::Now();
+
+  for (const auto& [key, timing] : pending_aggregatable_reports_) {
+    UMA_HISTOGRAM_LONG_TIMES(
+        "Conversions.AggregatableReport.PendingAndBrowserWentOffline."
+        "TimeSinceCreation",
+        now - timing.creation_time);
+    UMA_HISTOGRAM_LONG_TIMES(
+        "Conversions.AggregatableReport.PendingAndBrowserWentOffline."
+        "TimeUntilReportTime",
+        timing.report_time - now);
+  }
+  pending_aggregatable_reports_.clear();
 }
 
 void AttributionManagerImpl::OnSourceStored(
@@ -695,6 +731,20 @@ void AttributionManagerImpl::ProcessNextEvent(bool is_debug_cookie_set) {
       std::move(event));
 }
 
+void AttributionManagerImpl::AddPendingAggregatableReportTiming(
+    const AttributionReport::Id& id,
+    const base::Time& report_time) {
+  // The maximum number of pending reports that should be considered. Past this
+  // value, events will be ignored.
+  constexpr size_t kMaxPendingReportsTimings = 50;
+  if (pending_aggregatable_reports_.size() >= kMaxPendingReportsTimings) {
+    return;
+  }
+
+  pending_aggregatable_reports_[id] = {.creation_time = base::Time::Now(),
+                                       .report_time = report_time};
+}
+
 void AttributionManagerImpl::OnReportStored(
     const AttributionTrigger& trigger,
     absl::optional<uint64_t> cleared_debug_key,
@@ -712,6 +762,10 @@ void AttributionManagerImpl::OnReportStored(
   if (auto& report = result.new_aggregatable_report()) {
     min_new_report_time = AttributionReport::MinReportTime(
         min_new_report_time, report->report_time());
+
+    AddPendingAggregatableReportTiming(report->ReportId(),
+                                       report->report_time());
+
     MaybeSendDebugReport(std::move(*report));
   }
 
@@ -912,6 +966,7 @@ void AttributionManagerImpl::SendReports(
     }
 
     if (!web_ui_callback) {
+      pending_aggregatable_reports_.erase(report.ReportId());
       LogMetricsOnReportSend(report, now);
     }
 
