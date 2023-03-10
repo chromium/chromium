@@ -3669,7 +3669,7 @@
     },
     {
       name: "WebAuthenticationLargeBlobExtension",
-      status: "experimental",
+      status: "stable",
       base_feature: "none",
     },
     // https://w3c.github.io/webauthn/#prf-extension
