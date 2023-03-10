@@ -1500,16 +1500,26 @@ const FeatureEntry::FeatureParam kOmniboxSquareSuggestionIconAll[] = {
     {"OmniboxSquareSuggestIconAnswers", "true"},
     {"OmniboxSquareSuggestIconEntities", "true"},
 };
+const FeatureEntry::FeatureParam kOmniboxSquareSuggestionIconAllFullEntity[] = {
+    {"OmniboxSquareSuggestIconIcons", "true"},
+    {"OmniboxSquareSuggestIconAnswers", "true"},
+    {"OmniboxSquareSuggestIconEntities", "true"},
+    {"OmniboxSquareSuggestIconEntitiesScale", "1"},
+};
 
 const FeatureEntry::FeatureVariation kOmniboxSquareSuggestionIconVariations[] =
-    {{"Favicons", kOmniboxSquareSuggestionIconFavicons,
-      std::size(kOmniboxSquareSuggestionIconFavicons), nullptr},
-     {"Answers", kOmniboxSquareSuggestionIconAnswers,
-      std::size(kOmniboxSquareSuggestionIconAnswers), nullptr},
-     {"Entities", kOmniboxSquareSuggestionIconEntities,
-      std::size(kOmniboxSquareSuggestionIconEntities), nullptr},
-     {"All", kOmniboxSquareSuggestionIconAll,
-      std::size(kOmniboxSquareSuggestionIconAll), nullptr}};
+    {
+        {"Favicons", kOmniboxSquareSuggestionIconFavicons,
+         std::size(kOmniboxSquareSuggestionIconFavicons), nullptr},
+        {"Answers", kOmniboxSquareSuggestionIconAnswers,
+         std::size(kOmniboxSquareSuggestionIconAnswers), nullptr},
+        {"Entities", kOmniboxSquareSuggestionIconEntities,
+         std::size(kOmniboxSquareSuggestionIconEntities), nullptr},
+        {"All", kOmniboxSquareSuggestionIconAll,
+         std::size(kOmniboxSquareSuggestionIconAll), nullptr},
+        {"All with full entities", kOmniboxSquareSuggestionIconAllFullEntity,
+         std::size(kOmniboxSquareSuggestionIconAllFullEntity), nullptr},
+};
 
 const FeatureEntry::FeatureParam kMaxZeroSuggestMatches5[] = {
     {"MaxZeroSuggestMatches", "5"}};
