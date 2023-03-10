@@ -206,6 +206,11 @@
     {
       name: "AbortSignalAny",
       status: "experimental",
+      depends_on: ["AbortSignalComposition"]
+    },
+    {
+      name: "AbortSignalComposition",
+      status: "stable"
     },
     {
       name: "AbortSignalThrowIfAborted",

@@ -23,7 +23,7 @@ AbortController::AbortController(AbortSignal* signal) : signal_(signal) {}
 AbortController::~AbortController() = default;
 
 void AbortController::Dispose() {
-  if (RuntimeEnabledFeatures::AbortSignalAnyEnabled()) {
+  if (RuntimeEnabledFeatures::AbortSignalCompositionEnabled()) {
     signal_->DetachFromController();
   }
 }
