@@ -3828,6 +3828,12 @@ enum WebFeature {
   kPrivateAggregationApiFledgeExtensions = 4487,
   kDeprecatedInterestGroupDailyUpdateUrl = 4488,
   kCSSColorGradientColorSpace = 4489,
+  kDanglingMarkupInWindowName = 4490,
+  kDanglingMarkupInWindowNameNotEndsWithNewLineOrGT = 4491,
+  kDanglingMarkupInWindowNameNotEndsWithGT = 4492,
+  kDanglingMarkupInTarget = 4493,
+  kDanglingMarkupInTargetNotEndsWithGT = 4494,
+  kDanglingMarkupInTargetNotEndsWithNewLineOrGT = 4495,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

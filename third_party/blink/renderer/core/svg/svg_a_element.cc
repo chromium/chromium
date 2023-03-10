@@ -140,6 +140,8 @@ void SVGAElement::DefaultEventHandler(Event& event) {
           GetDocument().domWindow(),
           ResourceRequest(GetDocument().CompleteURL(url)));
       frame_request.SetNavigationPolicy(NavigationPolicyFromEvent(&event));
+      frame_request.SetClientRedirectReason(
+          ClientNavigationReason::kAnchorClick);
       frame_request.SetTriggeringEventInfo(
           event.isTrusted()
               ? mojom::blink::TriggeringEventInfo::kFromTrustedEvent

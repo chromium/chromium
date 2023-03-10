@@ -42379,6 +42379,12 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4487" label="PrivateAggregationApiFledgeExtensions"/>
   <int value="4488" label="DeprecatedInterestGroupDailyUpdateUrl"/>
   <int value="4489" label="CSSColorGradientColorSpace"/>
+  <int value="4490" label="DanglingMarkupInWindowName"/>
+  <int value="4491" label="DanglingMarkupInWindowNameNotEndsWithNewLineOrGT"/>
+  <int value="4492" label="DanglingMarkupInWindowNameNotEndsWithGT"/>
+  <int value="4493" label="DanglingMarkupInTarget"/>
+  <int value="4494" label="DanglingMarkupInTargetNotEndsWithGT"/>
+  <int value="4495" label="DanglingMarkupInTargetNotEndsWithNewLineOrGT"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
