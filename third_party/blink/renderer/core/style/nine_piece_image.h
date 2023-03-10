@@ -25,9 +25,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_NINE_PIECE_IMAGE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_NINE_PIECE_IMAGE_H_
 
+#include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/style/border_image_length_box.h"
-#include "third_party/blink/renderer/core/style/data_ref.h"
 #include "third_party/blink/renderer/core/style/style_image.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/geometry/length_box.h"
@@ -85,73 +85,73 @@ class CORE_EXPORT NinePieceImage {
 
   static NinePieceImage MaskDefaults() {
     NinePieceImage image;
-    image.data_.Access()->image_slices = LengthBox(0);
-    image.data_.Access()->fill = true;
-    image.data_.Access()->border_slices = BorderImageLengthBox(Length::Auto());
+    image.Access()->image_slices = LengthBox(0);
+    image.Access()->fill = true;
+    image.Access()->border_slices = BorderImageLengthBox(Length::Auto());
     return image;
   }
 
   bool operator==(const NinePieceImage& other) const {
-    return data_ == other.data_;
+    return base::ValuesEquivalent(data_, other.data_);
   }
   bool operator!=(const NinePieceImage& other) const {
-    return data_ != other.data_;
+    return !(*this == other);
   }
 
   bool HasImage() const { return data_->image; }
   StyleImage* GetImage() const { return data_->image.Get(); }
-  void SetImage(StyleImage* image) { data_.Access()->image = image; }
+  void SetImage(StyleImage* image) { Access()->image = image; }
 
   const LengthBox& ImageSlices() const { return data_->image_slices; }
   void SetImageSlices(const LengthBox& slices) {
-    data_.Access()->image_slices = slices;
+    Access()->image_slices = slices;
   }
 
   bool Fill() const { return data_->fill; }
-  void SetFill(bool fill) { data_.Access()->fill = fill; }
+  void SetFill(bool fill) { Access()->fill = fill; }
 
   const BorderImageLengthBox& BorderSlices() const {
     return data_->border_slices;
   }
   void SetBorderSlices(const BorderImageLengthBox& slices) {
-    data_.Access()->border_slices = slices;
+    Access()->border_slices = slices;
   }
 
   const BorderImageLengthBox& Outset() const { return data_->outset; }
   void SetOutset(const BorderImageLengthBox& outset) {
-    data_.Access()->outset = outset;
+    Access()->outset = outset;
   }
 
   ENinePieceImageRule HorizontalRule() const {
     return static_cast<ENinePieceImageRule>(data_->horizontal_rule);
   }
   void SetHorizontalRule(ENinePieceImageRule rule) {
-    data_.Access()->horizontal_rule = rule;
+    Access()->horizontal_rule = rule;
   }
 
   ENinePieceImageRule VerticalRule() const {
     return static_cast<ENinePieceImageRule>(data_->vertical_rule);
   }
   void SetVerticalRule(ENinePieceImageRule rule) {
-    data_.Access()->vertical_rule = rule;
+    Access()->vertical_rule = rule;
   }
 
   void CopyImageSlicesFrom(const NinePieceImage& other) {
-    data_.Access()->image_slices = other.data_->image_slices;
-    data_.Access()->fill = other.data_->fill;
+    Access()->image_slices = other.data_->image_slices;
+    Access()->fill = other.data_->fill;
   }
 
   void CopyBorderSlicesFrom(const NinePieceImage& other) {
-    data_.Access()->border_slices = other.data_->border_slices;
+    Access()->border_slices = other.data_->border_slices;
   }
 
   void CopyOutsetFrom(const NinePieceImage& other) {
-    data_.Access()->outset = other.data_->outset;
+    Access()->outset = other.data_->outset;
   }
 
   void CopyRepeatFrom(const NinePieceImage& other) {
-    data_.Access()->horizontal_rule = other.data_->horizontal_rule;
-    data_.Access()->vertical_rule = other.data_->vertical_rule;
+    Access()->horizontal_rule = other.data_->horizontal_rule;
+    Access()->vertical_rule = other.data_->vertical_rule;
   }
 
   static LayoutUnit ComputeOutset(const BorderImageLength& outset_side,
@@ -163,7 +163,14 @@ class CORE_EXPORT NinePieceImage {
   }
 
  private:
-  DataRef<NinePieceImageData> data_;
+  NinePieceImageData* Access() {
+    if (!data_->HasOneRef()) {
+      data_ = data_->Copy();
+    }
+    return data_.get();
+  }
+
+  scoped_refptr<NinePieceImageData> data_;
 };
 
 }  // namespace blink
