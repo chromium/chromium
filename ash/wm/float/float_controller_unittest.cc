@@ -454,7 +454,7 @@ TEST_F(WindowFloatTest, FloatWindowWithDeskRemovalUndo) {
   // shown.
   views::LabelButton* dismiss_button =
       DesksTestApi::GetCloseAllUndoToastDismissButton();
-  AshTestBase::LeftClickOn(dismiss_button);
+  LeftClickOn(dismiss_button);
   // Canceling close-all will bring the floated window back to shown.
   EXPECT_TRUE(WindowState::Get(window.get())->IsFloated());
   // Check if `window` still belongs to `desk_2`.
@@ -1191,9 +1191,7 @@ TEST_F(TabletWindowFloatTest, Rotation) {
               shelf_size);
 }
 
-// TODO(sammiequon): Update dragging to use touch instead of mouse.
-
-// Tests that dragged float window follows the mouse/touch. Regression test for
+// Tests that dragged float window follows the touch. Regression test for
 // https://crbug.com/1362727.
 TEST_F(TabletWindowFloatTest, Dragging) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
@@ -1259,17 +1257,17 @@ TEST_F(TabletWindowFloatTest, DraggingMagnetism) {
   MagnetizeWindow(window.get(), FloatController::MagnetismCorner::kBottomRight);
   CheckMagnetized(window.get(), FloatController::MagnetismCorner::kBottomRight);
 
-  // Move the mouse somewhere in the top right, but not too right that it falls
+  // Move finger somewhere in the top right, but not too right that it falls
   // into the snap region. Test that on release, it magnetizes to the top right
   MagnetizeWindow(window.get(), FloatController::MagnetismCorner::kTopRight);
   CheckMagnetized(window.get(), FloatController::MagnetismCorner::kTopRight);
 
-  // Move the mouse to somewhere in the top left, but not too left that it falls
+  // Move finger to somewhere in the top left, but not too left that it falls
   // into the snap region. Test that on release, it magnetizes to the top left.
   MagnetizeWindow(window.get(), FloatController::MagnetismCorner::kTopLeft);
   CheckMagnetized(window.get(), FloatController::MagnetismCorner::kTopLeft);
 
-  // Switch to portrait orientation and move the mouse somewhere in the bottom
+  // Switch to portrait orientation and move finger somewhere in the bottom
   // left, but not too bottom that it falls into the snap region. Test that on
   // release, it magentizes to the bottom left.
   UpdateDisplay("1000x1600");
@@ -1291,13 +1289,13 @@ TEST_F(TabletWindowFloatTest, DraggingSnapping) {
   ASSERT_FALSE(split_view_controller->primary_window());
   ASSERT_FALSE(split_view_controller->secondary_window());
 
-  // Move the mouse to towards the right edge. Test that on release, it snaps
-  // right.
+  // Move finger towards the right edge. Test that on release, it snaps right.
+  // Don't scroll too fast or we will tuck the window.
   chromeos::HeaderView* header_view = GetHeaderView(window.get());
   auto* event_generator = GetEventGenerator();
-  event_generator->set_current_screen_location(
-      header_view->GetBoundsInScreen().CenterPoint());
-  event_generator->DragMouseTo(1580, 500);
+  event_generator->GestureScrollSequence(
+      header_view->GetBoundsInScreen().CenterPoint(), gfx::Point(1580, 500),
+      base::Milliseconds(500), /*steps=*/50);
   EXPECT_EQ(split_view_controller->secondary_window(), window.get());
   ASSERT_TRUE(WindowState::Get(window.get())->IsSnapped());
 
@@ -1305,11 +1303,10 @@ TEST_F(TabletWindowFloatTest, DraggingSnapping) {
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   ASSERT_TRUE(WindowState::Get(window.get())->IsFloated());
 
-  // Move the mouse to towards the left edge. Test that on release, it snaps
-  // left.
-  event_generator->set_current_screen_location(
-      header_view->GetBoundsInScreen().CenterPoint());
-  event_generator->DragMouseTo(20, 500);
+  // Move finger towards the left edge. Test that on release, it snaps left.
+  event_generator->GestureScrollSequence(
+      header_view->GetBoundsInScreen().CenterPoint(), gfx::Point(20, 500),
+      base::Milliseconds(500), /*steps=*/50);
   EXPECT_EQ(split_view_controller->primary_window(), window.get());
 }
 
@@ -1569,7 +1566,7 @@ TEST_F(TabletWindowFloatTest, TuckToMagnetismCorner) {
 
 // Tests that tapping on a point on the edge but far from the tuck handle does
 // not untuck a tucked window. Regression test for b/262573071.
-TEST_F(TabletWindowFloatTest, ClickOnEdgeDoesNotUntuck) {
+TEST_F(TabletWindowFloatTest, TapOnEdgeDoesNotUntuck) {
   UpdateDisplay("800x600");
 
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);

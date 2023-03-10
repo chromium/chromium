@@ -111,7 +111,6 @@ void TabletModeFloatWindowResizer::CompleteDrag() {
     DCHECK(split_view_controller->CanSnapWindow(float_window));
     gfx::PointF location_in_screen = last_location_in_parent_;
     wm::ConvertPointToScreen(float_window->parent(), &location_in_screen);
-    // TODO(crbug.com/1351562): Ensure that this works for all orientations.
     split_view_controller->OnWindowDragEnded(
         float_window, snap_position_, gfx::ToRoundedPoint(location_in_screen));
     window_state_->OnCompleteDrag(last_location_in_parent_);
