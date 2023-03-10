@@ -579,9 +579,8 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
       // is no valid origin trial token, then check the eligibility based on the
       // feature flag and the url.
       if (ShouldBypassFetchHandlerForMainResourceByOriginTrial(
-              *registration->active_version()) ||
-          ShouldBypassFetchHandlerForMainResource(
-              *registration->active_version())) {
+              *active_version) ||
+          ShouldBypassFetchHandlerForMainResource(*active_version)) {
         // If true, the main resource request bypasses ServiceWorker and starts
         // the worker in parallel for subsequent subresources.
         CompleteWithoutLoader();
