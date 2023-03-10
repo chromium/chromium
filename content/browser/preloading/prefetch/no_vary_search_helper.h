@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
 #include "net/http/http_no_vary_search_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -24,10 +25,10 @@ class RenderFrameHost;
 
 // Helper class to keep track of prefetched URLs that have No-Vary-Search
 // header present in their responses.
-class CONTENT_EXPORT NoVarySearchHelper {
+class CONTENT_EXPORT NoVarySearchHelper
+    : public base::RefCounted<NoVarySearchHelper> {
  public:
   NoVarySearchHelper();
-  ~NoVarySearchHelper();
 
   // Track `url` with No-Vary-Search header information if applicable.
   // If `url` doesn't have a No-Vary-Search header this method will not
@@ -53,6 +54,9 @@ class CONTENT_EXPORT NoVarySearchHelper {
   GetAllForUrlWithoutRefAndQueryForTesting(const GURL& url) const;
 
  private:
+  friend class base::RefCounted<NoVarySearchHelper>;
+  ~NoVarySearchHelper();
+
   // The set of urls that have No-Vary-Search header in their prefetched
   // response keyed by their path without the ref and query parts.
   std::map<GURL, std::vector<std::pair<GURL, net::HttpNoVarySearchData>>>

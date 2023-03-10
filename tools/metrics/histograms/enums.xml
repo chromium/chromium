@@ -83035,7 +83035,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   </int>
   <int value="35" label="Prefetch failed, redirects disabled">
     The url was prefetched and was redirected; however, redirects were disabled,
-    so the prefetch failed.
+    so the prefetch failed. (Deprecated M113)
   </int>
   <int value="36" label="Prefetch Not Eligible: Host Is Non Unique">
     The url was not eligible to be prefetched because its host was not unique
@@ -83063,6 +83063,13 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="42" label="Prefetch Response Used">
     The URL is prefetched successfully and the repsonse is used for the next
     navigation.
+  </int>
+  <int value="43" label="Prefetch Failed: Invalid Redirect">
+    The prefetch was redirected and failed, because the redirect was invalid.
+  </int>
+  <int value="44" label="Prefetch Failed: Ineligible Redirect">
+    The prefetch was redirect and failed, because the redirect URL was not
+    eligible to be prefetched.
   </int>
 </enum>
 

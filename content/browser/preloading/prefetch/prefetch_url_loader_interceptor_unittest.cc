@@ -734,7 +734,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
 
   // Since the cookies associated with |kTestUrl| have changed, the prefetch can
   // no longer be served.
-  prefetch_container->RegisterCookieListener(cookie_manager());
+  prefetch_container->RegisterCookieListener(kTestUrl, cookie_manager());
   ASSERT_TRUE(SetCookie(kTestUrl, "test-cookie"));
 
   interceptor()->AddPrefetch(prefetch_container->GetWeakPtr());

@@ -48,8 +48,10 @@ MakeServableStreamingURLLoaderForTest(network::mojom::URLResponseHeadPtr head,
               &on_response_complete_loop),
           base::BindRepeating(
               [](const net::RedirectInfo& redirect_info,
-                 const network::mojom::URLResponseHead& response_head,
-                 std::vector<std::string>* removed_headers) { NOTREACHED(); }));
+                 const network::mojom::URLResponseHead& response_head) {
+                NOTREACHED();
+                return PrefetchStreamingURLLoaderStatus::kFailedInvalidRedirect;
+              }));
 
   network::URLLoaderCompletionStatus status(net::OK);
 
