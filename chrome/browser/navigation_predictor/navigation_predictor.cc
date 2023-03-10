@@ -216,6 +216,9 @@ void NavigationPredictor::ReportAnchorElementClick(
     auto& user_interactions_data = GetUserInteractionsData();
     auto& user_interactions = user_interactions_data.user_interactions_;
     auto& user_interaction = user_interactions[index_it->second];
+    // navigation_start_to_click_ is set to click->navigation_start_to_click and
+    // should always has a value.
+    CHECK(navigation_start_to_click_.has_value());
     if (user_interaction.last_navigation_start_to_pointer_over.has_value() ||
         user_interaction.last_navigation_start_to_last_pointer_down
             .has_value()) {
@@ -256,6 +259,9 @@ void NavigationPredictor::ReportAnchorElementClick(
   GetUserInteractionsData().navigation_start_to_click_ =
       navigation_start_to_click_;
 
+  // navigation_start_to_click_ is set to click->navigation_start_to_click and
+  // should always has a value.
+  CHECK(navigation_start_to_click_.has_value());
   builder.SetNavigationStartToLinkClickedMs(ukm::GetExponentialBucketMin(
       navigation_start_to_click_.value().InMilliseconds(), 1.3));
   builder.Record(ukm_recorder_);
@@ -319,7 +325,8 @@ void NavigationPredictor::ReportAnchorElementPointerOut(
         hover_event->hover_dwell_time.InMilliseconds(), 1.3));
 
     if (user_interaction.last_navigation_start_to_last_pointer_down
-            .has_value()) {
+            .has_value() &&
+        user_interaction.last_navigation_start_to_pointer_over.has_value()) {
       base::TimeDelta pointer_down_duration =
           user_interaction.last_navigation_start_to_pointer_over.value() +
           hover_event->hover_dwell_time -

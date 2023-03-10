@@ -942,6 +942,12 @@ TEST_F(NavigationPredictorTest, RecordPreloadingOnHover) {
             get_metric(entries, 1, "MouseDownTakenMs"));
   EXPECT_FALSE(has_metric(entries, 1, "HoverNotTakenMs"));
   EXPECT_FALSE(has_metric(entries, 1, "MouseDownNotTakenMs"));
+
+  // Pointer down event followed by a pointer out event without any pointer over
+  // event should not cause a crash (crbug/1423336).
+  report_pointer_down(
+      anchor_id_0, /*navigation_start_to_pointer_down=*/base::Milliseconds(10));
+  report_pointer_out(anchor_id_0, /*hover_dwell_time=*/base::Milliseconds(20));
 }
 
 TEST_F(NavigationPredictorTest,
