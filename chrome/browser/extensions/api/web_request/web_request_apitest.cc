@@ -1268,8 +1268,14 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
 // Check that reloading an extension that runs in incognito split mode and
 // has two active background pages with registered events does not crash the
 // browser. Regression test for http://crbug.com/224094
+// Flaky on linux-lacros. See http://crbug.com/1423252
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_IncognitoSplitModeReload DISABLED_IncognitoSplitModeReload
+#else
+#define MAYBE_IncognitoSplitModeReload IncognitoSplitModeReload
+#endif
 IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
-                       IncognitoSplitModeReload) {
+                       MAYBE_IncognitoSplitModeReload) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   // Wait for rules to be set up.
   ExtensionTestMessageListener listener("done");
