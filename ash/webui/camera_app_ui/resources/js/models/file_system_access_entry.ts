@@ -124,7 +124,7 @@ export interface DirectoryAccessEntry {
   /**
    * Checks if file or directory with the target name exists.
    */
-  isExist(name: string): Promise<boolean>;
+  exists(name: string): Promise<boolean>;
 
   /**
    * Create the file given by its |name|. If there is already a file with same
@@ -196,7 +196,7 @@ export class DirectoryAccessEntryImpl implements DirectoryAccessEntry {
     return new FileAccessEntry(handle, this);
   }
 
-  async isExist(name: string): Promise<boolean> {
+  async exists(name: string): Promise<boolean> {
     try {
       await this.getFile(name);
       return true;
@@ -216,7 +216,7 @@ export class DirectoryAccessEntryImpl implements DirectoryAccessEntry {
   async createFile(name: string): Promise<FileAccessEntry> {
     return createFileJobs.push(async () => {
       let uniqueName = name;
-      for (let i = 0; await this.isExist(uniqueName);) {
+      for (let i = 0; await this.exists(uniqueName);) {
         uniqueName = name.replace(/^(.*?)(?=\.)/, `$& (${++i})`);
       }
       const handle =
@@ -243,7 +243,7 @@ export class DirectoryAccessEntryImpl implements DirectoryAccessEntry {
   }
 
   async removeEntry(name: string): Promise<void> {
-    if (await this.isExist(name)) {
+    if (await this.exists(name)) {
       await this.handle.removeEntry(name);
     }
   }

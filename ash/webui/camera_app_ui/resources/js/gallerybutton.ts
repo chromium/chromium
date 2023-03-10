@@ -165,7 +165,7 @@ export class GalleryButton implements ResultSaver {
 
     // Checks existence of cached cover photo.
     if (this.cover !== null) {
-      if (await dir.isExist(this.cover.name)) {
+      if (await dir.exists(this.cover.name)) {
         return;
       }
     }
