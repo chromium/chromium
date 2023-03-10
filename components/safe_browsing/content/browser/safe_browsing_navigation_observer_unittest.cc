@@ -8,11 +8,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/global_routing_id.h"
@@ -30,11 +28,7 @@ namespace safe_browsing {
 
 class SBNavigationObserverTest : public content::RenderViewHostTestHarness {
  public:
-  SBNavigationObserverTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        kOmitNonUserGesturesFromReferrerChain);
-  }
-
+  SBNavigationObserverTest() = default;
   SBNavigationObserverTest(const SBNavigationObserverTest&) = delete;
   SBNavigationObserverTest& operator=(const SBNavigationObserverTest&) = delete;
 
@@ -183,9 +177,6 @@ class SBNavigationObserverTest : public content::RenderViewHostTestHarness {
   std::unique_ptr<SafeBrowsingNavigationObserverManager>
       navigation_observer_manager_;
   std::unique_ptr<SafeBrowsingNavigationObserver> navigation_observer_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(SBNavigationObserverTest, TestNavigationEventList) {

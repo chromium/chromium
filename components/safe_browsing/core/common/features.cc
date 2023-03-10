@@ -179,10 +179,6 @@ BASE_FEATURE(kNestedArchives,
              "SafeBrowsingArchiveImprovements",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kOmitNonUserGesturesFromReferrerChain,
-             "SafeBrowsingOmitNonUserGesturesFromReferrerChain",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kRealTimeUrlFilteringForEnterprise,
              "RealTimeUrlFilteringForEnterprise",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -323,7 +319,6 @@ constexpr struct {
     {&kLogAccountEnhancedProtectionStateInProtegoPings, true},
     {&kMmapSafeBrowsingDatabase, true},
     {&kNestedArchives, true},
-    {&kOmitNonUserGesturesFromReferrerChain, true},
     {&kRealTimeUrlFilteringForEnterprise, true},
     {&kRealTimeUrlLookupForEnterpriseAllowlistBypass, true},
     {&kSafeBrowsingCsbrrNewDownloadTrigger, true},
