@@ -2462,6 +2462,19 @@ TEST_P(CrasAudioHandlerTest, AdjustOutputVolumeToAudibleLevelOther) {
   }
 }
 
+TEST_P(CrasAudioHandlerTest, RejectInvalidForOutputNodeVolumeChanged) {
+  AudioNodeList audio_nodes = GenerateAudioNodeList({kInternalSpeaker});
+  SetUpCrasAudioHandler(audio_nodes);
+  EXPECT_EQ(0, test_observer_->output_volume_changed_count());
+  const std::vector<int> invalid_volumes = {-1, 101};
+
+  for (const int kVolume : invalid_volumes) {
+    fake_cras_audio_client()->NotifyOutputNodeVolumeChangedForTesting(
+        kInternalSpeaker->id, kVolume);
+    EXPECT_EQ(0, test_observer_->output_volume_changed_count());
+  }
+}
+
 TEST_P(CrasAudioHandlerTest, RestartAudioClientWithCrasReady) {
   AudioNodeList audio_nodes = GenerateAudioNodeList({kInternalSpeaker});
   SetUpCrasAudioHandler(audio_nodes);
