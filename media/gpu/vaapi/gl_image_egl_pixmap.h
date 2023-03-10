@@ -2,26 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_GL_GL_IMAGE_EGL_PIXMAP_H_
-#define UI_GL_GL_IMAGE_EGL_PIXMAP_H_
+#ifndef MEDIA_GPU_VAAPI_GL_IMAGE_EGL_PIXMAP_H_
+#define MEDIA_GPU_VAAPI_GL_IMAGE_EGL_PIXMAP_H_
 
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/x/glx.h"
-#include "ui/gl/gl_export.h"
 #include "ui/gl/gl_image.h"
 #include "ui/gl/native_pixmap_egl_x11_binding_helper.h"
 
 namespace media {
+
 class VaapiPictureNativePixmapAngle;
-}
 
-namespace gl {
-
-class GL_EXPORT GLImageEGLPixmap : public GLImage {
+class GLImageEGLPixmap : public gl::GLImage {
   // NOTE: We are in the process of eliminating this class, so no new usages
   // of it should be introduced.
  private:
-  friend class media::VaapiPictureNativePixmapAngle;
+  friend class VaapiPictureNativePixmapAngle;
 
   explicit GLImageEGLPixmap(const gfx::Size& size);
 
@@ -42,9 +39,9 @@ class GL_EXPORT GLImageEGLPixmap : public GLImage {
 
   ~GLImageEGLPixmap() override;
 
-  NativePixmapEGLX11BindingHelper binding_helper_;
+  gl::NativePixmapEGLX11BindingHelper binding_helper_;
 };
 
-}  // namespace gl
+}  // namespace media
 
-#endif  // UI_GL_GL_IMAGE_EGL_PIXMAP_H_
+#endif  // MEDIA_GPU_VAAPI_GL_IMAGE_EGL_PIXMAP_H_

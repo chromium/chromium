@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/gl/gl_image_egl_pixmap.h"
+#include "media/gpu/vaapi/gl_image_egl_pixmap.h"
 
-namespace gl {
+namespace media {
 
 GLImageEGLPixmap::GLImageEGLPixmap(const gfx::Size& size)
     : binding_helper_(size) {}
@@ -27,4 +27,4 @@ void GLImageEGLPixmap::ReleaseEGLImage() {
   return binding_helper_.ReleaseEGLImage();
 }
 
-}  // namespace gl
+}  // namespace media

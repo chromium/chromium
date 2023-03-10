@@ -142,6 +142,8 @@ source_set("vaapi") {
   if (use_vaapi_x11) {
     deps += [ "//ui/gfx/x" ]
     sources += [
+      "gl_image_egl_pixmap.cc",
+      "gl_image_egl_pixmap.h",
       "vaapi_picture_native_pixmap_angle.cc",
       "vaapi_picture_native_pixmap_angle.h",
     ]

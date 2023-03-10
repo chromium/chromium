@@ -4,6 +4,7 @@
 
 #include "media/gpu/vaapi/vaapi_picture_native_pixmap_angle.h"
 
+#include "media/gpu/vaapi/gl_image_egl_pixmap.h"
 #include "media/gpu/vaapi/va_surface.h"
 #include "media/gpu/vaapi/vaapi_status.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
@@ -11,7 +12,6 @@
 #include "ui/gfx/x/future.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gl/gl_bindings.h"
-#include "ui/gl/gl_image_egl_pixmap.h"
 #include "ui/gl/scoped_binders.h"
 
 namespace media {
@@ -100,8 +100,8 @@ VaapiStatus VaapiPictureNativePixmapAngle::Allocate(gfx::BufferFormat format) {
   if (!make_context_current_cb_ || !make_context_current_cb_.Run())
     return VaapiStatus::Codes::kBadContext;
 
-  auto image = base::WrapRefCounted<gl::GLImageEGLPixmap>(
-      new gl::GLImageEGLPixmap(visible_size_));
+  auto image = base::WrapRefCounted<GLImageEGLPixmap>(
+      new GLImageEGLPixmap(visible_size_));
   if (!image)
     return VaapiStatus::Codes::kNoImage;
 
