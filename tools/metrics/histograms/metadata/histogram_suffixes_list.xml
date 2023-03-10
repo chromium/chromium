@@ -5058,20 +5058,20 @@ chromium-metrics-reviews@google.com.
 </histogram_suffixes>
 
 <histogram_suffixes name="ResourceType" separator=".">
-  <suffix name="CSSStyleSheet" label=""/>
-  <suffix name="Font" label=""/>
   <suffix name="Image" label=""/>
-  <suffix name="ImportResource" label=""/>
-  <suffix name="LinkPrefetch" label=""/>
-  <suffix name="LinkSubresource" label=""/>
-  <suffix name="MainResource" label=""/>
-  <suffix name="Manifest" label=""/>
-  <suffix name="Media" label=""/>
-  <suffix name="Raw" label=""/>
+  <suffix name="CSSStyleSheet" label=""/>
   <suffix name="Script" label=""/>
+  <suffix name="Font" label=""/>
+  <suffix name="Raw" label=""/>
   <suffix name="SVGDocument" label=""/>
-  <suffix name="TextTrack" label=""/>
   <suffix name="XSLStyleSheet" label=""/>
+  <suffix name="LinkPrefetch" label=""/>
+  <suffix name="TextTrack" label=""/>
+  <suffix name="Audio" label=""/>
+  <suffix name="Video" label=""/>
+  <suffix name="Manifest" label=""/>
+  <suffix name="SpeculationRules" label=""/>
+  <suffix name="Mock" label=""/>
   <affected-histogram name="Blink.MemoryCache.RevalidationPolicy"/>
   <affected-histogram name="Blink.MemoryCache.RevalidationPolicy.Dead"/>
   <affected-histogram
