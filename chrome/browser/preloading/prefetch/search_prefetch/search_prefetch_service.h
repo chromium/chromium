@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_request.h"
+#include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_url_loader.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox.mojom-shared.h"
@@ -30,7 +31,6 @@ struct AutocompleteMatch;
 struct OmniboxLog;
 class PrefRegistrySimple;
 class Profile;
-class SearchPrefetchURLLoader;
 class AutocompleteResult;
 
 namespace content {
@@ -138,12 +138,12 @@ class SearchPrefetchService : public KeyedService,
   void UpdateServeTime(const GURL& navigation_url);
 
   // Takes the response from this object if |url| matches a prefetched URL.
-  std::unique_ptr<SearchPrefetchURLLoader> TakePrefetchResponseFromMemoryCache(
+  SearchPrefetchURLLoader::RequestHandler TakePrefetchResponseFromMemoryCache(
       const network::ResourceRequest& tentative_resource_request);
 
   // Creates a cache loader to serve a cache only response with fallback to
   // network fetch.
-  std::unique_ptr<SearchPrefetchURLLoader> TakePrefetchResponseFromDiskCache(
+  SearchPrefetchURLLoader::RequestHandler TakePrefetchResponseFromDiskCache(
       const GURL& navigation_url);
 
   // Allows search prerender to use a CacheAliasSearchPrefetchURLLoader for
@@ -169,7 +169,7 @@ class SearchPrefetchService : public KeyedService,
   // the prefetched response without removing the response from MemoryCache, to
   // stop this from starting another prefetch attempt after prerender takes the
   // response away.
-  std::unique_ptr<SearchPrefetchURLLoader> TakePrerenderFromMemoryCache(
+  SearchPrefetchURLLoader::RequestHandler TakePrerenderFromMemoryCache(
       const network::ResourceRequest& tentative_resource_request);
 
   // Reports the status of a prefetch for a given search suggestion URL.

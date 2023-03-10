@@ -8,11 +8,22 @@
 
 #include "base/metrics/histogram_macros.h"
 
+// static
 SearchPrefetchURLLoader::RequestHandler
-SearchPrefetchURLLoader::ServingResponseHandler(
+SearchPrefetchURLLoader::GetServingResponseHandlerFromLoader(
     std::unique_ptr<SearchPrefetchURLLoader> loader) {
+  DCHECK(loader);
+  loader->RecordInterceptionTime();
+  auto* raw_pointer = loader.get();
+
+  // Hand ownership of the loader to the callback, when the callback runs,
+  // mojo connection termination will manage it. If the callback is deleted,
+  // the loader will be deleted.
+  return raw_pointer->ServingResponseHandlerImpl(std::move(loader));
+}
+
+void SearchPrefetchURLLoader::RecordInterceptionTime() {
   interception_time_ = base::TimeTicks::Now();
-  return ServingResponseHandlerImpl(std::move(loader));
 }
 
 void SearchPrefetchURLLoader::OnForwardingComplete() {

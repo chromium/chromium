@@ -26,7 +26,7 @@ SearchPrefetchURLLoaderInterceptor::~SearchPrefetchURLLoaderInterceptor() =
     default;
 
 // static
-std::unique_ptr<SearchPrefetchURLLoader>
+SearchPrefetchURLLoader::RequestHandler
 SearchPrefetchURLLoaderInterceptor::MaybeCreateLoaderForRequest(
     const network::ResourceRequest& tentative_resource_request,
     int frame_tree_node_id) {
@@ -34,7 +34,7 @@ SearchPrefetchURLLoaderInterceptor::MaybeCreateLoaderForRequest(
       content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
   // Make sure this is for a navigation.
   if (!web_contents) {
-    return nullptr;
+    return {};
   }
 
   // Only intercept primary main frame and prerender main frame requests.
@@ -56,32 +56,35 @@ SearchPrefetchURLLoaderInterceptor::MaybeCreateLoaderForRequest(
   // This is not a primary navigation, nor can prerender use the prefetched
   // response.
   if (!is_primary_main_frame_navigation && !can_activate_for_prerender) {
-    return nullptr;
+    return {};
   }
 
   auto* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  if (!profile)
-    return nullptr;
+  if (!profile) {
+    return {};
+  }
 
   SearchPrefetchService* service =
       SearchPrefetchServiceFactory::GetForProfile(profile);
-  if (!service)
-    return nullptr;
+  if (!service) {
+    return {};
+  }
 
   if (can_activate_for_prerender) {
     return service->TakePrerenderFromMemoryCache(tentative_resource_request);
   }
 
-  auto loader =
+  SearchPrefetchURLLoader::RequestHandler handler =
       service->TakePrefetchResponseFromMemoryCache(tentative_resource_request);
-  if (loader)
-    return loader;
+  if (handler) {
+    return handler;
+  }
   if (tentative_resource_request.load_flags & net::LOAD_SKIP_CACHE_VALIDATION) {
     return service->TakePrefetchResponseFromDiskCache(
         tentative_resource_request.url);
   }
-  return nullptr;
+  return {};
 }
 
 void SearchPrefetchURLLoaderInterceptor::MaybeCreateLoader(
@@ -90,19 +93,9 @@ void SearchPrefetchURLLoaderInterceptor::MaybeCreateLoader(
     content::URLLoaderRequestInterceptor::LoaderCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::unique_ptr<SearchPrefetchURLLoader> prefetch =
+  SearchPrefetchURLLoader::RequestHandler prefetched_loader_handler =
       MaybeCreateLoaderForRequest(tentative_resource_request,
                                   frame_tree_node_id_);
-  if (!prefetch) {
-    std::move(callback).Run({});
-    return;
-  }
 
-  auto* raw_prefetch = prefetch.get();
-
-  // Hand ownership of the loader to the callback, when the callback runs,
-  // mojo connection termination will manage it. If the callback is deleted,
-  // the loader will be deleted.
-  std::move(callback).Run(
-      raw_prefetch->ServingResponseHandler(std::move(prefetch)));
+  std::move(callback).Run(std::move(prefetched_loader_handler));
 }

@@ -29,7 +29,7 @@ class SearchPrefetchURLLoader {
   // returned |RequestHandler| to allow |this| to be owned by the callback.
   // This allows ownership until the callback is run, which then should have
   // ownership owned via a mojo connection.
-  RequestHandler ServingResponseHandler(
+  static RequestHandler GetServingResponseHandlerFromLoader(
       std::unique_ptr<SearchPrefetchURLLoader> loader);
 
  protected:
@@ -39,6 +39,8 @@ class SearchPrefetchURLLoader {
   void OnForwardingComplete();
 
  private:
+  void RecordInterceptionTime();
+
   base::TimeTicks interception_time_;
 };
 

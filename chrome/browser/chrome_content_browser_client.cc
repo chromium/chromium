@@ -5976,21 +5976,10 @@ ChromeContentBrowserClient::
     CreateURLLoaderHandlerForServiceWorkerNavigationPreload(
         int frame_tree_node_id,
         const network::ResourceRequest& resource_request) {
-  content::ContentBrowserClient::URLLoaderRequestHandler callback;
-
-  std::unique_ptr<SearchPrefetchURLLoader> loader =
+  SearchPrefetchURLLoader::RequestHandler prefetch_handler =
       SearchPrefetchURLLoaderInterceptor::MaybeCreateLoaderForRequest(
           resource_request, frame_tree_node_id);
-  if (!loader) {
-    return callback;
-  }
-
-  auto* raw_loader = loader.get();
-
-  // Hand ownership of the loader to the callback, when it runs, mojo will
-  // manage it. If the callback is deleted, the loader will be deleted.
-  callback = raw_loader->ServingResponseHandler(std::move(loader));
-  return callback;
+  return prefetch_handler;
 }
 
 bool ChromeContentBrowserClient::WillInterceptWebSocket(
