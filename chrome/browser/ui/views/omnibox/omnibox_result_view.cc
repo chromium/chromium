@@ -304,7 +304,11 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
   //       SetMatch() once (rather than repeatedly, as happens here). There may
   //       be an optimization opportunity here.
   // TODO(dschuyler): determine whether to optimize the color changes.
-  suggestion_view_->SetIcon(*GetIcon().ToImageSkia());
+  auto icon = GetIcon();
+  if (icon.IsEmpty())
+    suggestion_view_->ClearIcon();
+  else
+    suggestion_view_->SetIcon(*icon.ToImageSkia());
 
   keyword_view_->icon()->SetImage(ui::ImageModel::FromVectorIcon(
       omnibox::kKeywordSearchIcon, icon_color_id,

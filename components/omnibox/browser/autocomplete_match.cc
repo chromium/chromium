@@ -43,6 +43,12 @@
 
 namespace {
 
+#if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !BUILDFLAG(IS_IOS)
+// Used for `SEARCH_SUGGEST_TAIL` and `NULL_RESULT_MESSAGE` (e.g. starter pack)
+// type suggestion icons.
+static gfx::VectorIcon empty_icon;
+#endif
+
 bool IsTrivialClassification(const ACMatchClassifications& classifications) {
   return classifications.empty() ||
          ((classifications.size() == 1) &&
@@ -513,7 +519,7 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
 
     case Type::SEARCH_SUGGEST_TAIL:
     case Type::NULL_RESULT_MESSAGE:
-      return omnibox::kBlankIcon;
+      return empty_icon;
 
     case Type::DOCUMENT_SUGGESTION:
       switch (document_type) {

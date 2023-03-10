@@ -33,7 +33,6 @@ aggregate_vector_icons("omnibox_vector_icons") {
     "answer_sunrise.icon",
     "answer_translation.icon",
     "answer_when_is.icon",
-    "blank.icon",
     "bookmark.icon",
     "calculator.icon",
     "chevron.icon",

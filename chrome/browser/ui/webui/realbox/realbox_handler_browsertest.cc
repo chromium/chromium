@@ -63,7 +63,7 @@ IN_PROC_BROWSER_TEST_P(BrowserTestWithParam, MatchVectorIcons) {
     const gfx::VectorIcon& vector_icon = match.GetVectorIcon(is_bookmark);
     const std::string& svg_name =
         RealboxHandler::AutocompleteMatchVectorIconToResourceName(vector_icon);
-    if (vector_icon.name == omnibox::kBlankIcon.name) {
+    if (vector_icon.is_empty()) {
       // An empty resource name is effectively a blank icon.
       EXPECT_TRUE(svg_name.empty());
     } else if (vector_icon.name == omnibox::kPedalIcon.name) {

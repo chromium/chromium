@@ -354,6 +354,10 @@ void OmniboxMatchCellView::SetIcon(const gfx::ImageSkia& image) {
   }
 }
 
+void OmniboxMatchCellView::ClearIcon() {
+  icon_view_->SetImage({});
+}
+
 void OmniboxMatchCellView::SetImage(const gfx::ImageSkia& image,
                                     const AutocompleteMatch& match) {
   // Weather icons are also sourced remotely and therefore fall into this flow.

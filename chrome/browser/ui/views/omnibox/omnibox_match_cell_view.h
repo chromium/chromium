@@ -72,6 +72,11 @@ class OmniboxMatchCellView : public views::View {
   // Set's the `icon_view_` image, possibly with a rounded square background.
   void SetIcon(const gfx::ImageSkia& image);
 
+  // Clears the `icon_view_` image. Useful for suggestions that don't need icons
+  // e.g., tail suggestions. Can't simply set the icon to an empty icon,
+  // because doing so would still draw a background behind the icon.
+  void ClearIcon();
+
   // Sets the answer image and, if the image is not square, sets the answer size
   // proportional to the image size to preserve its aspect ratio. `match`
   // correspond to the match for this view and is used to detect if this is a
