@@ -20,6 +20,7 @@ build_webui("build") {
     "images/cookies_banner_dark.svg",
     "images/cookies_banner.svg",
     "images/googleg_standard_clr_32px.svg",
+    "images/iban.svg",
     "images/password_check_neutral_dark.svg",
     "images/password_check_neutral.svg",
     "images/password_check_positive_dark.svg",
