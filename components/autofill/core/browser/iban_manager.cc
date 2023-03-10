@@ -35,12 +35,17 @@ bool IBANManager::OnGetSingleFieldSuggestions(
     return false;
   }
 
-  bool iban_suggestions_blocked_on_url_origin =
-      client.GetAutofillOptimizationGuide()->ShouldBlockSingleFieldSuggestions(
-          client.GetLastCommittedPrimaryMainFrameOrigin().GetURL(),
-          focused_field);
-  if (!is_off_the_record_ && personal_data_manager_ &&
-      !iban_suggestions_blocked_on_url_origin) {
+  // AutofillOptimizationGuide will not be present on unsupported platforms.
+  if (auto* autofill_optimization_guide =
+          client.GetAutofillOptimizationGuide()) {
+    if (autofill_optimization_guide->ShouldBlockSingleFieldSuggestions(
+            client.GetLastCommittedPrimaryMainFrameOrigin().GetURL(),
+            focused_field)) {
+      return false;
+    }
+  }
+
+  if (!is_off_the_record_ && personal_data_manager_) {
     std::vector<IBAN*> ibans = personal_data_manager_->GetLocalIBANs();
     if (!ibans.empty()) {
       // Rank the IBANs by ranking score (see AutoFillDataModel for details).

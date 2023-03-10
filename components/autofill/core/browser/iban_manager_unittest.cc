@@ -279,6 +279,36 @@ TEST_F(IBANManagerTest, DoesNotShowIBANsForBlockedWebsite) {
       /*context=*/context));
 }
 
+// Test that suggestions are returned on platforms that don't have an
+// AutofillOptimizationGuide. Having no AutofillOptimizationGuide means that
+// suggestions cannot and will not be blocked.
+TEST_F(IBANManagerTest, ShowsIBANSuggestions_OptimizationGuideNotPresent) {
+  Suggestion iban_suggestion_0 =
+      SetUpIBANAndSuggestion(kIbanValue_0, kNickname_0);
+  AutofillField test_field;
+  SuggestionsContext context = GetIbanFocusedSuggestionsContext(test_field);
+
+  // Delete the AutofillOptimizationGuide.
+  autofill_client_.ResetAutofillOptimizationGuide();
+
+  // Setting up mock to verify that the handler is returned a list of
+  // iban-based suggestions and the iban details line.
+  EXPECT_CALL(suggestions_handler_,
+              OnSuggestionsReturned(
+                  test_field.global_id(), AutoselectFirstSuggestion(false),
+                  UnorderedElementsAre(Field(&Suggestion::main_text,
+                                             iban_suggestion_0.main_text))))
+      .Times(1);
+
+  // Simulate request for suggestions.
+  // Because all criteria are met to trigger returning to the handler,
+  // the handler should be triggered and this should return true.
+  EXPECT_TRUE(iban_manager_.OnGetSingleFieldSuggestions(
+      AutoselectFirstSuggestion(false), test_field, autofill_client_,
+      suggestions_handler_.GetWeakPtr(),
+      /*context=*/context));
+}
+
 TEST_F(IBANManagerTest, NotIbanFieldFocused_NoSuggestionsShown) {
   SetUpIBAN(kIbanValue_0, kNickname_0);
 
