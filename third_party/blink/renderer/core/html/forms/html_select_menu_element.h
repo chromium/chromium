@@ -126,6 +126,7 @@ class CORE_EXPORT HTMLSelectMenuElement final
   bool IsRequiredFormControl() const override;
   bool IsOptionalFormControl() const override;
 
+  bool IsEnumeratable() const override { return true; }
   bool IsLabelable() const override;
 
   // HTMLFormControlElementWithState overrides:
