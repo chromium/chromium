@@ -959,11 +959,11 @@ TEST_P(PredictionManagerTest, UpdatePredictionModelsWithInvalidModel) {
   prediction_manager()->OnModelReady(temp_dir().AppendASCII("foo"), model);
   RunUntilIdle();
 
-  histogram_tester.ExpectBucketCount("OptimizationGuide.IsPredictionModelValid",
-                                     false, 1);
+  histogram_tester.ExpectBucketCount(
+      "OptimizationGuide.IsPredictionModelValid.PainfulPageLoad", false, 1);
 
   histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.PredictionModelValidationLatency", 0);
+      "OptimizationGuide.PredictionModelValidationLatency.PainfulPageLoad", 0);
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PredictionModelUpdateVersion.PainfulPageLoad", 1);
   histogram_tester.ExpectTotalCount(
