@@ -59,6 +59,7 @@
 #import "ios/chrome/common/channel_info.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -94,7 +95,9 @@ IOSChromeSyncClient::IOSChromeSyncClient(ChromeBrowserState* browser_state)
 
   trusted_vault_client_ = std::make_unique<IOSTrustedVaultClient>(
       ChromeAccountManagerServiceFactory::GetForBrowserState(browser_state_),
-      TrustedVaultClientBackendFactory::GetForBrowserState(browser_state_));
+      GetIdentityManager(),
+      TrustedVaultClientBackendFactory::GetForBrowserState(browser_state_),
+      browser_state_->GetSharedURLLoaderFactory());
 }
 
 IOSChromeSyncClient::~IOSChromeSyncClient() {}

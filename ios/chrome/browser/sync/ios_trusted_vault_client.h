@@ -5,8 +5,19 @@
 #ifndef IOS_CHROME_BROWSER_SYNC_IOS_TRUSTED_VAULT_CLIENT_H_
 #define IOS_CHROME_BROWSER_SYNC_IOS_TRUSTED_VAULT_CLIENT_H_
 
+#include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/sync/driver/trusted_vault_client.h"
+#include "components/sync/trusted_vault/trusted_vault_registration_verifier.h"
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
+
+namespace signin {
+class IdentityManager;
+}  // namespace signin
 
 class ChromeAccountManagerService;
 class TrustedVaultClientBackend;
@@ -16,8 +27,11 @@ class TrustedVaultClientBackend;
 // service to store the shared keys.
 class IOSTrustedVaultClient : public syncer::TrustedVaultClient {
  public:
-  IOSTrustedVaultClient(ChromeAccountManagerService* account_manager_service,
-                        TrustedVaultClientBackend* trusted_vault_service);
+  IOSTrustedVaultClient(
+      ChromeAccountManagerService* account_manager_service,
+      signin::IdentityManager* identity_manager,
+      TrustedVaultClientBackend* trusted_vault_service,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
   ~IOSTrustedVaultClient() override;
 
   // TrustedVaultClient implementation.
@@ -52,9 +66,13 @@ class IOSTrustedVaultClient : public syncer::TrustedVaultClient {
   void VerifyDeviceRegistrationWithPublicKey(
       const std::string& gaia_id,
       const std::vector<uint8_t>& public_key);
+  void VerifyDeviceRegistrationWithPublicKeyDelayed(
+      const std::string& gaia_id,
+      const std::vector<uint8_t>& public_key);
 
-  ChromeAccountManagerService* const account_manager_service_ = nullptr;
-  TrustedVaultClientBackend* const backend_ = nullptr;
+  const base::raw_ptr<ChromeAccountManagerService> account_manager_service_;
+  const base::raw_ptr<TrustedVaultClientBackend> backend_;
+  syncer::TrustedVaultRegistrationVerifier registration_verifier_;
   base::WeakPtrFactory<IOSTrustedVaultClient> weak_ptr_factory_{this};
 };
 
