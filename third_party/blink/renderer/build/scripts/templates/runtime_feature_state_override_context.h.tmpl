@@ -55,6 +55,10 @@ class PLATFORM_EXPORT RuntimeFeatureStateOverrideContext
 
   {% endfor %}
 
+  void EnablePersistentTrial(
+    const WTF::String& raw_token,
+    const WTF::Vector<scoped_refptr<const blink::SecurityOrigin>>& script_origins);
+
   const base::flat_map<mojom::RuntimeFeatureState, bool>& GetOverrideValuesForTesting() const {
     return override_values_;
   }

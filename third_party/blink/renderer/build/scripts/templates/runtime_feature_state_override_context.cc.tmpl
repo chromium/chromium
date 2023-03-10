@@ -131,6 +131,13 @@ void RuntimeFeatureStateOverrideContext::ApplyOriginTrialOverride(
   }
 }
 
+void RuntimeFeatureStateOverrideContext::EnablePersistentTrial(
+    const WTF::String& raw_token,
+    const WTF::Vector<scoped_refptr<const blink::SecurityOrigin>>& script_origins) {
+  GetOrBindRuntimeFeatureStateController()->
+      EnablePersistentTrial(raw_token, script_origins);
+}
+
 mojom::blink::RuntimeFeatureStateController*
   RuntimeFeatureStateOverrideContext::GetOrBindRuntimeFeatureStateController(){
   // TODO(https://crbug.com/1410817): add support for workers/non-frames that

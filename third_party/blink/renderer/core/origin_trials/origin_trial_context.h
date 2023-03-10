@@ -268,8 +268,6 @@ class CORE_EXPORT OriginTrialContext final
   WTF::HashMap<OriginTrialFeature, base::Time> feature_expiry_times_;
   std::unique_ptr<TrialTokenValidator> trial_token_validator_;
   Member<ExecutionContext> context_;
-  HeapMojoRemote<mojom::blink::RuntimeFeatureStateController>
-      runtime_feature_state_controller_remote_;
   // Stores raw origin trial token along with the parse result.
   // This field is mainly used for devtools support, but
   // `OriginTrialContext::GetTokens` also depends on the structure.
