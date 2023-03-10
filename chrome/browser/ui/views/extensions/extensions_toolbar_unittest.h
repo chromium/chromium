@@ -20,8 +20,7 @@ class ExtensionService;
 
 // Base class for unit tests that use the toolbar area. This is used for unit
 // tests that are generally related to the ExtensionsToolbarContainer in the
-// ToolbarView area (such as ExtensionsToolbarControls and
-// ExtensionsTabbedMenuView).
+// ToolbarView area (e.g ExtensionsToolbarControls).
 // When possible, prefer creating a unit test with browser view instead of a
 // interactive ui or browser test since they are faster and less flaky.
 class ExtensionsToolbarUnitTest : public TestWithBrowserView {
