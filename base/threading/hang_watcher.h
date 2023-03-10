@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/atomicops.h"
+#include "base/auto_reset.h"
 #include "base/base_export.h"
 #include "base/bits.h"
 #include "base/compiler_specific.h"
@@ -31,7 +32,6 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/simple_thread.h"
 #include "base/threading/thread_checker.h"
-#include "base/threading/thread_local.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -64,7 +64,7 @@ namespace base {
 // member but special care is required when doing so as a WatchHangsInScope
 // that stays alive longer than intended will generate non-actionable hang
 // reports.
-class BASE_EXPORT WatchHangsInScope {
+class BASE_EXPORT [[maybe_unused, nodiscard]] WatchHangsInScope {
  public:
   // A good default value needs to be large enough to represent a significant
   // hang and avoid noise while being small enough to not exclude too many
@@ -581,8 +581,7 @@ class BASE_EXPORT HangWatchState {
   // Retrieves the hang watch state associated with the calling thread.
   // Returns nullptr if no HangWatchState exists for the current thread (see
   // CreateHangWatchStateForCurrentThread()).
-  static ThreadLocalPointer<HangWatchState>*
-  GetHangWatchStateForCurrentThread();
+  static HangWatchState* GetHangWatchStateForCurrentThread();
 
   // Returns the current deadline. Use this function if you need to
   // store the value. To test if the deadline has expired use IsOverDeadline().
@@ -649,6 +648,8 @@ class BASE_EXPORT HangWatchState {
   // The thread that creates the instance should be the class that updates
   // the deadline.
   THREAD_CHECKER(thread_checker_);
+
+  const AutoReset<HangWatchState*> resetter_;
 
   // If the deadline fails to be updated before TimeTicks::Now() ever
   // reaches the value contained in it this constistutes a hang.
