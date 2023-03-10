@@ -59,7 +59,6 @@ class KeyboardEvent;
 class LayoutObject;
 enum class LegacyLayout;
 class MouseEvent;
-class TextControlInnerEditorElement;
 
 class ClickHandlingState final : public EventDispatchHandlingState {
  public:
@@ -120,9 +119,6 @@ class CORE_EXPORT InputTypeView : public GarbageCollectedMixin {
 
   // Functions for shadow trees
 
-  TextControlInnerEditorElement* EnsureInnerEditorElement();
-  bool HasCreatedShadowSubtree() const { return has_created_shadow_subtree_; }
-  void CreateShadowSubtreeIfNeeded();
   virtual bool NeedsShadowSubtree() const;
   virtual void CreateShadowSubtree();
   virtual void DestroyShadowSubtree();
@@ -165,7 +161,6 @@ class CORE_EXPORT InputTypeView : public GarbageCollectedMixin {
   bool will_be_destroyed_ = false;
 
  private:
-  bool has_created_shadow_subtree_ = false;
   Member<HTMLInputElement> element_;
 };
 

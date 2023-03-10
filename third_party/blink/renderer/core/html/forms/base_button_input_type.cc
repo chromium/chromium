@@ -65,7 +65,7 @@ BaseButtonInputType::SupportsPopoverTriggering() const {
 }
 
 void BaseButtonInputType::ValueAttributeChanged() {
-  To<Text>(GetElement().EnsureShadowSubtree()->firstChild())
+  To<Text>(GetElement().UserAgentShadowRoot()->firstChild())
       ->setData(GetElement().ValueOrDefaultLabel());
 }
 

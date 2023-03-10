@@ -243,7 +243,7 @@ TEST(FileInputTypeTest, ChangeTypeDuringOpeningFileChooser) {
   // Receiving a FileChooser response should not alter a shadow tree
   // for another type.
   EXPECT_TRUE(IsA<HTMLElement>(
-      input.EnsureShadowSubtree()->firstChild()->firstChild()));
+      input.UserAgentShadowRoot()->firstChild()->firstChild()));
 }
 
 // Tests selecting same file twice should fire cancel event second time.

@@ -152,7 +152,7 @@ bool PasswordInputType::ShouldDrawCapsLockIndicator() const {
 }
 
 void PasswordInputType::UpdatePasswordRevealButton() {
-  Element* button = GetElement().EnsureShadowSubtree()->getElementById(
+  Element* button = GetElement().UserAgentShadowRoot()->getElementById(
       shadow_element_names::kIdPasswordRevealButton);
 
   // Update the glyph.

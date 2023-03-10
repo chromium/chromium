@@ -363,14 +363,14 @@ void FileInputType::CreateShadowSubtree() {
 }
 
 HTMLInputElement* FileInputType::UploadButton() const {
-  Element* element = GetElement().EnsureShadowSubtree()->getElementById(
+  Element* element = GetElement().UserAgentShadowRoot()->getElementById(
       shadow_element_names::kIdFileUploadButton);
   CHECK(!element || IsA<HTMLInputElement>(element));
   return To<HTMLInputElement>(element);
 }
 
 Node* FileInputType::FileStatusElement() const {
-  return GetElement().EnsureShadowSubtree()->lastChild();
+  return GetElement().UserAgentShadowRoot()->lastChild();
 }
 
 void FileInputType::DisabledAttributeChanged() {

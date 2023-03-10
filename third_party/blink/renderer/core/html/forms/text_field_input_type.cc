@@ -127,9 +127,6 @@ InputType::ValueMode TextFieldInputType::GetValueMode() const {
 }
 
 SpinButtonElement* TextFieldInputType::GetSpinButtonElement() const {
-  if (!HasCreatedShadowSubtree()) {
-    return nullptr;
-  }
   auto* element = GetElement().UserAgentShadowRoot()->getElementById(
       shadow_element_names::kIdSpinButton);
   CHECK(!element || IsA<SpinButtonElement>(element));
@@ -356,7 +353,7 @@ void TextFieldInputType::CreateShadowSubtree() {
 }
 
 Element* TextFieldInputType::ContainerElement() const {
-  return GetElement().EnsureShadowSubtree()->getElementById(
+  return GetElement().UserAgentShadowRoot()->getElementById(
       shadow_element_names::kIdTextFieldContainer);
 }
 
@@ -367,9 +364,6 @@ void TextFieldInputType::DestroyShadowSubtree() {
 }
 
 void TextFieldInputType::ListAttributeTargetChanged() {
-  if (!HasCreatedShadowSubtree()) {
-    return;
-  }
   if (ChromeClient* chrome_client = GetChromeClient())
     chrome_client->TextFieldDataListChanged(GetElement());
   Element* picker = GetElement().UserAgentShadowRoot()->getElementById(
@@ -423,16 +417,10 @@ void TextFieldInputType::DisabledOrReadonlyAttributeChanged() {
 }
 
 void TextFieldInputType::DisabledAttributeChanged() {
-  if (!HasCreatedShadowSubtree()) {
-    return;
-  }
   DisabledOrReadonlyAttributeChanged();
 }
 
 void TextFieldInputType::ReadonlyAttributeChanged() {
-  if (!HasCreatedShadowSubtree()) {
-    return;
-  }
   DisabledOrReadonlyAttributeChanged();
 }
 
@@ -531,9 +519,6 @@ bool TextFieldInputType::ShouldRespectListAttribute() {
 }
 
 void TextFieldInputType::UpdatePlaceholderText(bool is_suggested_value) {
-  if (!HasCreatedShadowSubtree()) {
-    return;
-  }
   if (!SupportsPlaceholder())
     return;
   HTMLElement* placeholder = GetElement().PlaceholderElement();
