@@ -93,7 +93,11 @@ class AggregatableReportAssemblerTest : public testing::Test {
         std::move(fetcher), std::move(report_provider));
   }
 
-  void ResetAssembler() { assembler_.reset(); }
+  void ResetAssembler() {
+    fetcher_ = nullptr;
+    report_provider_ = nullptr;
+    assembler_.reset();
+  }
 
   AggregatableReportAssembler* assembler() { return assembler_.get(); }
   MockAggregationServiceKeyFetcher* fetcher() { return fetcher_; }
