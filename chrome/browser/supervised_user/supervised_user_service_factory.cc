@@ -13,7 +13,9 @@
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
+#include "components/sync/driver/sync_service.h"
 #include "components/variations/service/variations_service.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/buildflags/buildflags.h"
@@ -71,6 +73,7 @@ KeyedService* SupervisedUserServiceFactory::BuildInstanceFor(Profile* profile) {
       *profile->GetPrefs(),
       *SupervisedUserSettingsServiceFactory::GetInstance()->GetForKey(
           profile->GetProfileKey()),
+      *SyncServiceFactory::GetInstance()->GetForProfile(profile),
       base::BindRepeating(supervised_user::IsSupportedChromeExtensionURL),
       std::make_unique<FilterDelegateImpl>());
 }
@@ -85,6 +88,8 @@ SupervisedUserServiceFactory::SupervisedUserServiceFactory()
 #endif
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(KidsChromeManagementClientFactory::GetInstance());
+  DependsOn(SyncServiceFactory::GetInstance());
+  DependsOn(SupervisedUserSettingsServiceFactory::GetInstance());
 }
 
 SupervisedUserServiceFactory::~SupervisedUserServiceFactory() {}

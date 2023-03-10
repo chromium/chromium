@@ -300,7 +300,6 @@ KidsManagementServiceFactory::KidsManagementServiceFactory()
               .WithGuest(ProfileSelection::kOriginalOnly)
               .Build()) {
   DependsOn(IdentityManagerFactory::GetInstance());
-  DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(SupervisedUserServiceFactory::GetInstance());
 }
 KidsManagementServiceFactory::~KidsManagementServiceFactory() = default;

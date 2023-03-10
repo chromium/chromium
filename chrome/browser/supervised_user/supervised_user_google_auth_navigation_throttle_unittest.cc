@@ -17,6 +17,7 @@
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/test/mock_sync_service.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
@@ -37,6 +38,12 @@ std::unique_ptr<KeyedService> BuildTestSigninClient(
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<TestSigninClient>(profile->GetPrefs());
 }
+
+std::unique_ptr<KeyedService> CreateMockSyncService(
+    content::BrowserContext* context) {
+  return std::make_unique<syncer::MockSyncService>();
+}
+
 }  // namespace
 
 class SupervisedUserGoogleAuthNavigationThrottleTest
@@ -55,7 +62,7 @@ class SupervisedUserGoogleAuthNavigationThrottleTest
 
   TestingProfile::TestingFactories GetTestingFactories() const override {
     return {{SyncServiceFactory::GetInstance(),
-             SyncServiceFactory::GetDefaultFactory()},
+             base::BindRepeating(&CreateMockSyncService)},
             {ChromeSigninClientFactory::GetInstance(),
              base::BindRepeating(&BuildTestSigninClient)}};
   }

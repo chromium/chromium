@@ -8,6 +8,7 @@
 #include <set>
 #include <utility>
 
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -25,7 +26,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/supervised_user/kids_chrome_management/kids_chrome_management_client_factory.h"
-#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -257,11 +257,13 @@ SupervisedUserService::SupervisedUserService(
     signin::IdentityManager* identity_manager,
     PrefService& user_prefs,
     supervised_user::SupervisedUserSettingsService& settings_service,
+    syncer::SyncService& sync_service,
     ValidateURLSupportCallback check_webstore_url_callback,
     std::unique_ptr<supervised_user::SupervisedUserURLFilter::Delegate>
         url_filter_delegate)
     : user_prefs_(user_prefs),
       settings_service_(settings_service),
+      sync_service_(sync_service),
       profile_(profile),
       identity_manager_(identity_manager),
       active_(false),
@@ -387,12 +389,10 @@ void SupervisedUserService::SetActive(bool active) {
   // The logic to do this lives in the SupervisedUserSyncModelTypeController.
   // TODO(crbug.com/946473): Get rid of this hack and instead call
   // DataTypePreconditionChanged from the controller.
-  syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(profile_);
-  if (sync_service->GetUserSettings()->IsFirstSetupComplete()) {
+  if (sync_service_->GetUserSettings()->IsFirstSetupComplete()) {
     // Trigger a reconfig by grabbing a SyncSetupInProgressHandle and
     // immediately releasing it again (via the temporary unique_ptr going away).
-    sync_service->GetSetupInProgressHandle();
+    sync_service_->GetSetupInProgressHandle();
   }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

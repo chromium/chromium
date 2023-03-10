@@ -25,7 +25,6 @@
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/supervised_user_denylist.h"
 #include "components/supervised_user/core/common/supervised_users.h"
-#include "components/sync/driver/sync_type_preference_provider.h"
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -72,6 +71,10 @@ class SupervisedUserSettingsService;
 namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
+
+namespace syncer {
+class SyncService;
+}  // namespace syncer
 
 // This class handles all the information related to a given supervised profile
 // (e.g. the default URL filtering behavior, or manual allowlist/denylist
@@ -258,6 +261,7 @@ class SupervisedUserService
       signin::IdentityManager* identity_manager,
       PrefService& user_prefs,
       supervised_user::SupervisedUserSettingsService& settings_service,
+      syncer::SyncService& sync_service,
       ValidateURLSupportCallback check_webstore_url_callback,
       std::unique_ptr<supervised_user::SupervisedUserURLFilter::Delegate>
           url_filter_delegate);
@@ -380,6 +384,8 @@ class SupervisedUserService
 
   const raw_ref<supervised_user::SupervisedUserSettingsService>
       settings_service_;
+
+  const raw_ref<syncer::SyncService> sync_service_;
 
   // Owns us via the KeyedService mechanism.
   raw_ptr<Profile> profile_;
