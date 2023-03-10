@@ -532,6 +532,20 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // the navigation: no error page will commit.
   virtual void SetSilentlyIgnoreErrors() = 0;
 
+  // The sandbox flags inherited at the beginning of the navigation.
+  //
+  // This is the sandbox flags intersection of:
+  // - The parent document.
+  // - The iframe.sandbox attribute.
+  //
+  // Contrary to `SandboxFlagsToCommit()`, this can be called at the beginning
+  // of the navigation. However, this doesn't include the sandbox flags a
+  // document applies on itself, via the "Content-Security-Policy: sandbox"
+  // response header.
+  //
+  // See also: content/browser/renderer_host/sandbox_flags.md
+  virtual network::mojom::WebSandboxFlags SandboxFlagsInherited() = 0;
+
   // The sandbox flags of the new document created by this navigation. This
   // function can only be called for cross-document navigations after receiving
   // the final response.

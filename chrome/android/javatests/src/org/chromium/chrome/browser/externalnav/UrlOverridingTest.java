@@ -185,6 +185,8 @@ public class UrlOverridingTest {
             BASE_PATH + "navigation_from_page_show.html";
     private static final String SUBFRAME_NAVIGATION_PARENT =
             BASE_PATH + "subframe_navigation_parent.html";
+    private static final String SUBFRAME_NAVIGATION_PARENT_SANDBOX =
+            BASE_PATH + "subframe_navigation_parent_sandbox.html";
     private static final String SUBFRAME_NAVIGATION_CHILD =
             BASE_PATH + "subframe_navigation_child.html";
     private static final String NAVIGATION_FROM_RENAVIGATE_FRAME =
@@ -494,29 +496,20 @@ public class UrlOverridingTest {
             }
         }
 
-        if (shouldFailNavigation) {
-            try {
-                failCallback.waitForCallback(0, 1, 20, TimeUnit.SECONDS);
-            } catch (TimeoutException ex) {
-                Assert.fail("Haven't received navigation failure of intents.");
-                return OverrideUrlLoadingResult.forNoOverride();
-            }
-        }
-
         if (createsNewTab) {
             try {
                 newTabCallback.waitForCallback(0, 1, 20, TimeUnit.SECONDS);
             } catch (TimeoutException ex) {
                 Assert.fail("New Tab was not created.");
             }
+        }
 
-            if (shouldLaunchExternalIntent) {
-                try {
-                    destroyedCallback.waitForCallback(0, 1, 20, TimeUnit.SECONDS);
-                } catch (TimeoutException ex) {
-                    Assert.fail("Intercepted new tab wasn't destroyed.");
-                    return OverrideUrlLoadingResult.forNoOverride();
-                }
+        if (shouldFailNavigation) {
+            try {
+                failCallback.waitForCallback(0, 1, 20, TimeUnit.SECONDS);
+            } catch (TimeoutException ex) {
+                Assert.fail("Haven't received navigation failure of intents.");
+                return OverrideUrlLoadingResult.forNoOverride();
             }
         }
 
@@ -555,6 +548,15 @@ public class UrlOverridingTest {
             if (expectedFinalUrl == null) return;
             Criteria.checkThat(latestTab.getUrl().getSpec(), Matchers.is(expectedFinalUrl));
         });
+
+        if (createsNewTab && shouldLaunchExternalIntent) {
+            try {
+                destroyedCallback.waitForCallback(0, 1, 20, TimeUnit.SECONDS);
+            } catch (TimeoutException ex) {
+                Assert.fail("Intercepted new tab wasn't destroyed.");
+                return OverrideUrlLoadingResult.forNoOverride();
+            }
+        }
 
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(
@@ -598,7 +600,8 @@ public class UrlOverridingTest {
         Assert.assertNotNull(message.get(MessageBannerProperties.ICON));
     }
 
-    private String getSubframeNavigationUrl(String subframeTargetUrl) {
+    private String getSubframeNavigationUrl(
+            String subframeTargetUrl, boolean openInNewTab, boolean sandbox) {
         // The replace_text parameters for SUBFRAME_NAVIGATION_CHILD, which is loaded in
         // the iframe in SUBFRAME_NAVIGATION_PARENT, have to go through the
         // embedded test server twice and, as such, have to be base64-encoded twice.
@@ -609,11 +612,18 @@ public class UrlOverridingTest {
         byte[] base64SubframeUrl = Base64.encode(
                 ApiCompatibilityUtils.getBytesUtf8(subframeTargetUrl), Base64.URL_SAFE);
 
-        return mTestServer.getURL(SUBFRAME_NAVIGATION_PARENT
+        byte[] paramBlank = ApiCompatibilityUtils.getBytesUtf8("PARAM_BLANK");
+        byte[] valBlank = ApiCompatibilityUtils.getBytesUtf8("_blank");
+
+        String url = sandbox ? SUBFRAME_NAVIGATION_PARENT_SANDBOX : SUBFRAME_NAVIGATION_PARENT;
+
+        return mTestServer.getURL(url
                 + "?replace_text=" + Base64.encodeToString(paramBase64Name, Base64.URL_SAFE) + ":"
                 + Base64.encodeToString(base64ParamSubframeUrl, Base64.URL_SAFE)
                 + "&replace_text=" + Base64.encodeToString(paramBase64Value, Base64.URL_SAFE) + ":"
-                + Base64.encodeToString(base64SubframeUrl, Base64.URL_SAFE));
+                + Base64.encodeToString(base64SubframeUrl, Base64.URL_SAFE)
+                + "&replace_text=" + Base64.encodeToString(paramBlank, Base64.URL_SAFE) + ":"
+                + (openInNewTab ? Base64.encodeToString(valBlank, Base64.URL_SAFE) : ""));
     }
 
     @Test
@@ -722,7 +732,7 @@ public class UrlOverridingTest {
         String fallbackUrl = mTestServer.getURL(FALLBACK_LANDING_PATH);
         String subframeUrl = "intent://test/#Intent;scheme=badscheme;S.browser_fallback_url="
                 + fallbackUrl + ";end";
-        String originalUrl = getSubframeNavigationUrl(subframeUrl);
+        String originalUrl = getSubframeNavigationUrl(subframeUrl, false, false);
 
         OverrideUrlLoadingResult result = loadUrlAndWaitForIntentUrl(originalUrl, true, false);
 
@@ -739,7 +749,7 @@ public class UrlOverridingTest {
         String fallbackUrl = mTestServer.getURL(FALLBACK_LANDING_PATH);
         String subframeUrl = "intent://test/#Intent;scheme=badscheme;S.browser_fallback_url="
                 + fallbackUrl + ";end";
-        String originalUrl = getSubframeNavigationUrl(subframeUrl);
+        String originalUrl = getSubframeNavigationUrl(subframeUrl, false, false);
 
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
 
@@ -1408,7 +1418,7 @@ public class UrlOverridingTest {
                 + "https%3A%2F%2Fplay.google.com%2Fstore%2Fapps%2Fdetails%3Fid%3Dcom.android.chrome"
                 + ";end";
 
-        String originalUrl = getSubframeNavigationUrl(subframeTarget);
+        String originalUrl = getSubframeNavigationUrl(subframeTarget, false, false);
 
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
 
@@ -1449,7 +1459,7 @@ public class UrlOverridingTest {
         String subframeUrl =
                 "intent://test/#Intent;scheme=externalappscheme;S.browser_fallback_url="
                 + fallbackUrl + ";end";
-        String originalUrl = getSubframeNavigationUrl(subframeUrl);
+        String originalUrl = getSubframeNavigationUrl(subframeUrl, false, false);
 
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
 
@@ -1523,7 +1533,7 @@ public class UrlOverridingTest {
     }
 
     @Test
-    @SmallTest
+    @LargeTest
     @Features.EnableFeatures({ExternalIntentsFeatures.BLOCK_FRAME_RENAVIGATIONS_NAME})
     public void testWindowRenavigation() throws Exception {
         String finalUrl = mTestServer.getURL(HELLO_PAGE);
@@ -1533,5 +1543,129 @@ public class UrlOverridingTest {
                         true, true, false, finalUrl, true, null, PageTransition.LINK, true);
         Assert.assertEquals(OverrideUrlLoadingResultType.NO_OVERRIDE, result.getResultType());
         Assert.assertNull(getCurrentExternalNavigationMessage());
+    }
+
+    @Test
+    @LargeTest
+    @Features.EnableFeatures({ExternalIntentsFeatures.BLOCK_SUBFRAME_INTENT_TO_SELF_NAME,
+            ExternalIntentsFeatures.BLOCK_INTENTS_TO_SELF_NAME})
+    public void
+    testIntentToSelf() {
+        String targetUrl = mTestServer.getURL(HELLO_PAGE);
+        // Strip off the https: from the URL.
+        String strippedTargetUrl = targetUrl.substring(6);
+        String link = "intent:" + strippedTargetUrl + "#Intent;scheme=https;package="
+                + ContextUtils.getApplicationContext().getPackageName() + ";end";
+
+        byte[] paramName = ApiCompatibilityUtils.getBytesUtf8("PARAM_SUBFRAME_URL");
+        byte[] paramValue = ApiCompatibilityUtils.getBytesUtf8(link);
+
+        String url = mTestServer.getURL(SUBFRAME_NAVIGATION_CHILD
+                + "?replace_text=" + Base64.encodeToString(paramName, Base64.URL_SAFE) + ":"
+                + Base64.encodeToString(paramValue, Base64.URL_SAFE));
+
+        mActivityTestRule.startMainActivityOnBlankPage();
+        loadUrlAndWaitForIntentUrl(url, true, false, false, targetUrl, true);
+    }
+
+    @Test
+    @LargeTest
+    @Features.EnableFeatures({ExternalIntentsFeatures.BLOCK_SUBFRAME_INTENT_TO_SELF_NAME,
+            ExternalIntentsFeatures.BLOCK_INTENTS_TO_SELF_NAME})
+    public void
+    testIntentToSelfWithFallback() throws Exception {
+        mActivityTestRule.startMainActivityOnBlankPage();
+
+        String targetUrl = mTestServer.getURL(HELLO_PAGE);
+        // Strip off the https: from the URL.
+        String strippedTargetUrl = targetUrl.substring(6);
+        String subframeTarget = "intent:" + strippedTargetUrl + "#Intent;scheme=https;package="
+                + ContextUtils.getApplicationContext().getPackageName() + ";S.browser_fallback_url="
+                + "https%3A%2F%2Fplay.google.com%2Fstore%2Fapps%2Fdetails%3Fid%3Dcom.android.chrome"
+                + ";end";
+
+        String originalUrl = getSubframeNavigationUrl(subframeTarget, true, false);
+
+        final Tab tab = mActivityTestRule.getActivity().getActivityTab();
+
+        final CallbackHelper subframeRedirect = new CallbackHelper();
+        final AtomicInteger navCount = new AtomicInteger(0);
+        EmptyTabObserver observer = new EmptyTabObserver() {
+            @Override
+            public void onDidStartNavigationInPrimaryMainFrame(
+                    Tab tab, NavigationHandle navigation) {
+                int count = navCount.getAndIncrement();
+                if (count == 0) {
+                    Assert.assertEquals(originalUrl, navigation.getUrl().getSpec());
+                } else if (count == 1) {
+                    Assert.assertEquals(subframeTarget, navigation.getUrl().getSpec());
+                } else if (count == 2) {
+                    Assert.assertEquals(targetUrl, navigation.getUrl().getSpec());
+                } else {
+                    Assert.fail();
+                }
+            }
+        };
+        TestThreadUtils.runOnUiThreadBlocking(() -> { tab.addObserver(observer); });
+
+        OverrideUrlLoadingResult result =
+                loadUrlAndWaitForIntentUrl(originalUrl, true, true, false, targetUrl, true);
+        Assert.assertEquals(
+                OverrideUrlLoadingResultType.OVERRIDE_WITH_NAVIGATE_TAB, result.getResultType());
+    }
+
+    // Ensures that for a sandboxed main frame, we block both intents to ourself, and fallback URLs
+    // that would escape the sandbox by clobbering the main frame.
+    @Test
+    @LargeTest
+    @Features.EnableFeatures({ExternalIntentsFeatures.BLOCK_SUBFRAME_INTENT_TO_SELF_NAME,
+            ExternalIntentsFeatures.BLOCK_INTENTS_TO_SELF_NAME})
+    public void
+    testIntentToSelfWithFallback_Sandboxed() throws Exception {
+        mActivityTestRule.startMainActivityOnBlankPage();
+
+        String targetUrl = mTestServer.getURL(HELLO_PAGE);
+        // Strip off the https: from the URL.
+        String strippedTargetUrl = targetUrl.substring(6);
+        String subframeTarget = "intent:" + strippedTargetUrl + "#Intent;scheme=https;package="
+                + ContextUtils.getApplicationContext().getPackageName() + ";S.browser_fallback_url="
+                + "https%3A%2F%2Fplay.google.com%2Fstore%2Fapps%2Fdetails%3Fid%3Dcom.android.chrome"
+                + ";end";
+
+        String originalUrl = getSubframeNavigationUrl(subframeTarget, true, true);
+
+        final Tab tab = mActivityTestRule.getActivity().getActivityTab();
+
+        final CallbackHelper subframeRedirect = new CallbackHelper();
+        final AtomicInteger navCount = new AtomicInteger(0);
+        EmptyTabObserver observer = new EmptyTabObserver() {
+            @Override
+            public void onDidStartNavigationInPrimaryMainFrame(
+                    Tab tab, NavigationHandle navigation) {
+                int count = navCount.getAndIncrement();
+                if (count == 0) {
+                    Assert.assertEquals(originalUrl, navigation.getUrl().getSpec());
+                } else if (count == 1) {
+                    Assert.assertEquals(subframeTarget, navigation.getUrl().getSpec());
+                } else {
+                    Assert.fail();
+                }
+            }
+        };
+        TestThreadUtils.runOnUiThreadBlocking(() -> { tab.addObserver(observer); });
+
+        OverrideUrlLoadingResult result =
+                loadUrlAndWaitForIntentUrl(originalUrl, true, true, false, null, true);
+        // Navigation to self is blocked, ExternalNavigationHandler asks to navigate to the
+        // fallback URL.
+        Assert.assertEquals(
+                OverrideUrlLoadingResultType.OVERRIDE_WITH_NAVIGATE_TAB, result.getResultType());
+        // Fallback URL is blocked by InterceptNavigationDelegateImpl, no URL is loading and the
+        // final URL is the subframe's target.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Tab newTab = mActivityTestRule.getActivity().getActivityTab();
+            Assert.assertEquals(subframeTarget, newTab.getUrl().getSpec());
+            Assert.assertFalse(newTab.getWebContents().isLoading());
+        });
     }
 }

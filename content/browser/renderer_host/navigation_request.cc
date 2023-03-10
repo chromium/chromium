@@ -4764,6 +4764,10 @@ void NavigationRequest::OnServiceWorkerAccessed(
   GetDelegate()->OnServiceWorkerAccessed(this, scope, allowed);
 }
 
+network::mojom::WebSandboxFlags NavigationRequest::SandboxFlagsInherited() {
+  return commit_params_->frame_policy.sandbox_flags;
+}
+
 network::mojom::WebSandboxFlags NavigationRequest::SandboxFlagsToCommit() {
   DCHECK_GE(state_, WILL_PROCESS_RESPONSE);
   DCHECK(!IsSameDocument());

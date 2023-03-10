@@ -408,6 +408,7 @@ class CONTENT_EXPORT NavigationRequest
   bool IsServedFromBackForwardCache() override;
   void SetIsOverridingUserAgent(bool override_ua) override;
   void SetSilentlyIgnoreErrors() override;
+  network::mojom::WebSandboxFlags SandboxFlagsInherited() override;
   network::mojom::WebSandboxFlags SandboxFlagsToCommit() override;
   bool IsWaitingToCommit() override;
   bool WasResourceHintsReceived() override;
