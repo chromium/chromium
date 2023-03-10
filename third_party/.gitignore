@@ -295,6 +295,7 @@
 /win_toolchain/.timestamps
 /win_toolchain/files
 /wix
+/wlcs/src
 /wuffs/src
 /xdg-utils
 /xnnpack/src
