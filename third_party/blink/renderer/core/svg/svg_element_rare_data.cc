@@ -41,6 +41,7 @@ const ComputedStyle* SVGElementRareData::OverrideComputedStyle(
     style_request.parent_override = parent_style;
     style_request.layout_parent_override = parent_style;
     style_request.matching_behavior = kMatchAllRulesExcludingSMIL;
+    style_request.can_trigger_animations = false;
 
     // The style computed here contains no CSS Animations/Transitions or SMIL
     // induced rules - this is needed to compute the "base value" for the SMIL

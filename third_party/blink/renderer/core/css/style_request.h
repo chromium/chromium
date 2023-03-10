@@ -62,6 +62,7 @@ class StyleRequest {
   CustomScrollbar* scrollbar{nullptr};
   AtomicString pseudo_argument{g_null_atom};
   RulesToInclude rules_to_include{kAll};
+  bool can_trigger_animations{true};
 
   explicit StyleRequest(const ComputedStyle* parent_override)
       : parent_override(parent_override),

@@ -1068,12 +1068,14 @@ void CSSAnimations::CalculateAnimationUpdate(
     Element& element,
     const ComputedStyleBuilder& style_builder,
     const ComputedStyle* parent_style,
-    StyleResolver* resolver) {
+    StyleResolver* resolver,
+    bool can_trigger_animations) {
   ElementAnimations* element_animations =
       animating_element.GetElementAnimations();
 
   bool is_animation_style_change =
-      element_animations && element_animations->IsAnimationStyleChange();
+      !can_trigger_animations ||
+      (element_animations && element_animations->IsAnimationStyleChange());
 
 #if !DCHECK_IS_ON()
   // If we're in an animation style change, no animations can have started, been
@@ -2064,7 +2066,8 @@ void CSSAnimations::CalculateTransitionUpdate(
     CSSAnimationUpdate& update,
     Element& animating_element,
     const ComputedStyleBuilder& style_builder,
-    const ComputedStyle* old_style) {
+    const ComputedStyle* old_style,
+    bool can_trigger_animations) {
   if (animating_element.GetDocument().FinishingOrIsPrinting())
     return;
 
@@ -2078,7 +2081,8 @@ void CSSAnimations::CalculateTransitionUpdate(
       style_builder.GetWritingDirection();
 
   const bool animation_style_recalc =
-      element_animations && element_animations->IsAnimationStyleChange();
+      !can_trigger_animations ||
+      (element_animations && element_animations->IsAnimationStyleChange());
 
   HashSet<PropertyHandle> listed_properties;
   bool any_transition_had_transition_all = false;

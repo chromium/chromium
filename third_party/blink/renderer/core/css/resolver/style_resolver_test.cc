@@ -132,6 +132,7 @@ TEST_F(StyleResolverTest, AnimationBaseComputedStyle) {
   StyleRequest style_request;
   style_request.parent_override = parent_style;
   style_request.layout_parent_override = parent_style;
+  style_request.can_trigger_animations = false;
   EXPECT_EQ(
       10,
       resolver.ResolveStyle(div, recalc_context, style_request)->FontSize());

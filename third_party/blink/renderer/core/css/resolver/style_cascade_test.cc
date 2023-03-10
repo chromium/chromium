@@ -272,11 +272,11 @@ class TestCascade {
   void CalculateInterpolationUpdate() {
     CSSAnimations::CalculateTransitionUpdate(
         state_.AnimationUpdate(), state_.GetElement(), state_.StyleBuilder(),
-        state_.OldStyle());
+        state_.OldStyle(), true /* can_trigger_animations */);
     CSSAnimations::CalculateAnimationUpdate(
         state_.AnimationUpdate(), state_.GetElement(), state_.GetElement(),
         state_.StyleBuilder(), state_.ParentStyle(),
-        &GetDocument().GetStyleResolver());
+        &GetDocument().GetStyleResolver(), true /* can_trigger_animations */);
   }
 
   CascadeOrigin current_origin_ = CascadeOrigin::kUserAgent;

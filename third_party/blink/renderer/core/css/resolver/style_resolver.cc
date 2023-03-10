@@ -1492,7 +1492,7 @@ void StyleResolver::ApplyBaseStyle(
     StyleCascade& cascade) {
   DCHECK(style_request.pseudo_id != kPseudoIdFirstLineInherited);
 
-  if (state.CanCacheBaseStyle() && CanReuseBaseComputedStyle(state)) {
+  if (state.CanTriggerAnimations() && CanReuseBaseComputedStyle(state)) {
     const ComputedStyle* animation_base_computed_style =
         CachedAnimationBaseComputedStyle(state);
     DCHECK(animation_base_computed_style);
@@ -1880,10 +1880,11 @@ bool StyleResolver::ApplyAnimatedStyle(StyleResolverState& state,
 
   CSSAnimations::CalculateAnimationUpdate(
       state.AnimationUpdate(), *animating_element, state.GetElement(),
-      state.StyleBuilder(), state.ParentStyle(), this);
+      state.StyleBuilder(), state.ParentStyle(), this,
+      state.CanTriggerAnimations());
   CSSAnimations::CalculateTransitionUpdate(
       state.AnimationUpdate(), *animating_element, state.StyleBuilder(),
-      state.OldStyle());
+      state.OldStyle(), state.CanTriggerAnimations());
 
   bool apply = !state.AnimationUpdate().IsEmpty();
   if (apply) {

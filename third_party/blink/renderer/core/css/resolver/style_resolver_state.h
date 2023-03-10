@@ -187,7 +187,7 @@ class CORE_EXPORT StyleResolverState {
     return uses_highlight_pseudo_inheritance_;
   }
 
-  bool CanCacheBaseStyle() const { return can_cache_base_style_; }
+  bool CanTriggerAnimations() const { return can_trigger_animations_; }
 
   bool HadNoMatchedProperties() const { return had_no_matched_properties_; }
   void SetHadNoMatchedProperties() { had_no_matched_properties_ = true; }
@@ -265,9 +265,13 @@ class CORE_EXPORT StyleResolverState {
   // should be used for this highlight pseudo.
   const bool uses_highlight_pseudo_inheritance_;
 
-  // True if the base style can be cached to optimize style recalculations for
-  // animation updates or transition retargeting.
-  bool can_cache_base_style_ = false;
+  // True if this style resolution can start or stop animations and transitions.
+  // One case where animations and transitions can not be triggered is when we
+  // resolve FirstLineInherited style for an element on the first line. Styles
+  // inherited from the ::first-line styles should not cause transitions to
+  // start on such elements. Still, animations and transitions in progress still
+  // need to apply the effect for theses styles as well.
+  bool can_trigger_animations_ = false;
 
   // Set to true if a given style resolve produced an empty MatchResult.
   // This is used to return a nullptr style for pseudo-element style resolves.
