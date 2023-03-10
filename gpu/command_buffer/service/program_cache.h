@@ -15,6 +15,7 @@
 #include "base/hash/sha1.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/synchronization/lock.h"
 #include "gpu/command_buffer/common/gl2_types.h"
 #include "gpu/gpu_gles2_export.h"
 
@@ -144,9 +145,12 @@ class GPU_GLES2_EXPORT ProgramCache {
              const std::string& shader_0_hash,
              const std::string& shader_1_hash);
 
+  // Will also be used by derived class to guard some members.
+  mutable base::Lock lock_;
+
   // Used by the passthrough program cache to notify when a new blob is
   // inserted.
-  CacheProgramCallback cache_program_callback_;
+  CacheProgramCallback cache_program_callback_ GUARDED_BY(lock_);
 
  private:
   typedef std::unordered_map<std::string, LinkedProgramStatus> LinkStatusMap;
