@@ -1641,12 +1641,6 @@ deps = {
       'condition': 'checkout_linux',
   },
 
-  # Minizip library. Used on Chrome OS.
-  'src/third_party/minizip/src': {
-      'url': Var('chromium_git') + '/external/github.com/nmoinvaz/minizip' + '@' + '1ff40343b55e738d941abb51c70eddb803db16e2',
-      'condition': 'checkout_linux',
-  },
-
   'src/third_party/mockito/src': {
       'url': Var('chromium_git') + '/external/mockito/mockito.git' + '@' + '04a2a289a4222f80ad20717c25144981210d2eac',
       'condition': 'checkout_android',
