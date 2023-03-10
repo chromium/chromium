@@ -150,6 +150,10 @@ SupervisedUserSettingsService::SubscribeForShutdown(
   return shutdown_callback_list_.Add(callback);
 }
 
+bool SupervisedUserSettingsService::IsCustomPassphraseAllowed() const {
+  return !active_;
+}
+
 void SupervisedUserSettingsService::SetActive(bool active) {
   active_ = active;
 

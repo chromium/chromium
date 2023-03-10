@@ -373,7 +373,9 @@ void SupervisedUserService::SetActive(bool active) {
   if (delegate_)
     delegate_->SetActive(active_);
 
-    // Now activate/deactivate anything not handled by the delegate yet.
+  settings_service_->SetActive(active_);
+
+  // Now activate/deactivate anything not handled by the delegate yet.
 #if BUILDFLAG(IS_CHROMEOS)
   // Re-set the default theme to turn the SU theme on/off.
   ThemeService* theme_service = ThemeServiceFactory::GetForProfile(profile_);
@@ -392,8 +394,6 @@ void SupervisedUserService::SetActive(bool active) {
     // immediately releasing it again (via the temporary unique_ptr going away).
     sync_service->GetSetupInProgressHandle();
   }
-
-  settings_service_->SetActive(active_);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   SetExtensionsActive();
@@ -941,10 +941,6 @@ void SupervisedUserService::SetExtensionsActive() {
   }
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
-bool SupervisedUserService::IsCustomPassphraseAllowed() const {
-  return !active_;
-}
 
 #if BUILDFLAG(IS_CHROMEOS)
 void SupervisedUserService::OnBrowserSetLastActive(Browser* browser) {

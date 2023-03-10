@@ -723,7 +723,8 @@ ChromeSyncClient::GetSyncApiComponentFactory() {
 
 syncer::SyncTypePreferenceProvider* ChromeSyncClient::GetPreferenceProvider() {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  return SupervisedUserServiceFactory::GetForProfile(profile_);
+  return SupervisedUserSettingsServiceFactory::GetForKey(
+      profile_->GetProfileKey());
 #else
   return nullptr;
 #endif

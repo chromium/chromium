@@ -82,7 +82,6 @@ class SupervisedUserService
       public extensions::ExtensionRegistryObserver,
       public extensions::ManagementPolicy::Provider,
 #endif
-      public syncer::SyncTypePreferenceProvider,
 #if BUILDFLAG(IS_CHROMEOS)
       public BrowserListObserver,
 #endif
@@ -194,9 +193,6 @@ class SupervisedUserService
 
   // ProfileKeyedService override:
   void Shutdown() override;
-
-  // SyncTypePreferenceProvider implementation:
-  bool IsCustomPassphraseAllowed() const override;
 
 #if BUILDFLAG(IS_CHROMEOS)
   // BrowserListObserver implementation:

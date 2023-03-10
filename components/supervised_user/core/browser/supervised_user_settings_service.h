@@ -17,6 +17,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_store.h"
 #include "components/supervised_user/core/common/supervised_users.h"
+#include "components/sync/driver/sync_type_preference_provider.h"
 #include "components/sync/model/syncable_service.h"
 #include "url/gurl.h"
 
@@ -55,6 +56,7 @@ namespace supervised_user {
 // and one with key "Moose:baz" and value "blurp".
 class SupervisedUserSettingsService : public KeyedService,
                                       public syncer::SyncableService,
+                                      public syncer::SyncTypePreferenceProvider,
                                       public PrefStore::Observer {
  public:
   // A callback whose first parameter is a dictionary containing all supervised
@@ -174,6 +176,9 @@ class SupervisedUserSettingsService : public KeyedService,
   // PrefStore::Observer implementation:
   void OnPrefValueChanged(const std::string& key) override;
   void OnInitializationCompleted(bool success) override;
+
+  // SyncTypePreferenceProvider implementation:
+  bool IsCustomPassphraseAllowed() const override;
 
   const base::Value::Dict& LocalSettingsForTest() const;
 

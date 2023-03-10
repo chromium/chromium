@@ -249,7 +249,6 @@ SyncServiceFactory::SyncServiceFactory()
   DependsOn(SpellcheckServiceFactory::GetInstance());
   DependsOn(SyncInvalidationsServiceFactory::GetInstance());
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  DependsOn(SupervisedUserServiceFactory::GetInstance());
   DependsOn(SupervisedUserSettingsServiceFactory::GetInstance());
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
   DependsOn(SessionSyncServiceFactory::GetInstance());
