@@ -77,13 +77,6 @@ int GetContentsVerticalPadding() {
       DISTANCE_CONTENT_LIST_VERTICAL_SINGLE);
 }
 
-int GetContentsHorizontalPadding() {
-  return base::FeatureList::IsEnabled(
-             features::kAutofillShowAutocompleteDeleteButton)
-             ? GetContentsVerticalPadding()
-             : 0;
-}
-
 // Returns true if the item at `line_number` is a footer item.
 bool IsFooterItem(const std::vector<Suggestion>& suggestions,
                   size_t line_number) {
@@ -395,13 +388,12 @@ void PopupViewViews::CreateChildViews() {
   // `content_view` wraps the full content of the popup and provides vertical
   // padding. This is similar to `padding_wrapper` used in the scroll area, but
   // it allows to add a padding below the footer.
-  raw_ptr<views::BoxLayoutView> content_view = AddChildView(
-      views::Builder<views::BoxLayoutView>()
-          .SetOrientation(views::BoxLayout::Orientation::kVertical)
-          .SetInsideBorderInsets(gfx::Insets::VH(
-              GetContentsVerticalPadding(), GetContentsHorizontalPadding()))
-          .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kStart)
-          .Build());
+  raw_ptr<views::BoxLayoutView> content_view =
+      AddChildView(views::Builder<views::BoxLayoutView>()
+                       .SetOrientation(views::BoxLayout::Orientation::kVertical)
+                       .SetInsideBorderInsets(
+                           gfx::Insets::VH(GetContentsVerticalPadding(), 0))
+                       .Build());
 
   rows_.reserve(kSuggestions.size());
   size_t current_line_number = 0u;
@@ -411,7 +403,6 @@ void PopupViewViews::CreateChildViews() {
     std::unique_ptr<views::BoxLayoutView> body_container =
         views::Builder<views::BoxLayoutView>()
             .SetOrientation(views::BoxLayout::Orientation::kVertical)
-            .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kStart)
             .Build();
 
     for (; current_line_number < kSuggestions.size() &&
@@ -463,9 +454,8 @@ void PopupViewViews::CreateChildViews() {
   std::unique_ptr<views::BoxLayoutView> footer_container =
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
-          .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kStart)
-          .SetBackground(views::CreateThemedSolidBackground(
-              ui::kColorBubbleFooterBackground))
+          .SetBackground(
+              views::CreateThemedSolidBackground(ui::kColorDropdownBackground))
           .Build();
 
   for (; current_line_number < kSuggestions.size(); ++current_line_number) {
