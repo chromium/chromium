@@ -133,14 +133,7 @@ class MidiManagerMacTest : public ::testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
-// TODO(crbug.com/1413900): The created device isn't notified to
-// MidiManagerMac on iOS.
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_MidiNotification DISABLED_MidiNotification
-#else
-#define MAYBE_MidiNotification MidiNotification
-#endif
-TEST_F(MidiManagerMacTest, MAYBE_MidiNotification) {
+TEST_F(MidiManagerMacTest, MidiNotification) {
   std::unique_ptr<FakeMidiManagerClient> client(new FakeMidiManagerClient);
   StartSession(client.get());
 
