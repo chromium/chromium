@@ -16,7 +16,6 @@
 #include "components/services/app_service/public/cpp/macros.h"
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/run_on_os_login_types.h"
-#include "components/services/app_service/public/cpp/shortcut.h"
 #include "components/services/app_service/public/protos/app_types.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

@@ -11,19 +11,22 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/types/strong_alias.h"
 #include "components/services/app_service/public/cpp/macros.h"
 
 namespace apps {
 
+using ShortcutId = base::StrongAlias<class ShortcutIdTag, std::string>;
+
 struct COMPONENT_EXPORT(APP_TYPES) Shortcut {
-  Shortcut(const std::string& shortcut_id,
+  Shortcut(const ShortcutId& shortcut_id,
            const std::string& name,
            uint8_t position = 0);
 
   Shortcut(const Shortcut&) = delete;
   Shortcut& operator=(const Shortcut&) = delete;
-  Shortcut(Shortcut&&) = default;
-  Shortcut& operator=(Shortcut&&) = default;
+  Shortcut(Shortcut&&);
+  Shortcut& operator=(Shortcut&&);
 
   ~Shortcut();
 
@@ -39,9 +42,9 @@ struct COMPONENT_EXPORT(APP_TYPES) Shortcut {
   // - position: 0
   std::string ToString() const;
 
-  // Represents a particular shortcut in an app. Needs to be unique within an
-  // app as calls will be made using both app_id and shortcut_id.
-  std::string shortcut_id;
+  // Represents the unique identifier for a shortcut. This identifier should be
+  // unique within a profile, and stable across different user sessions.
+  ShortcutId shortcut_id;
   // Name of the shortcut.
   std::string name;
   // "Position" of a shortcut, which is a non-negative, sequential
