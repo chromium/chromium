@@ -148,7 +148,7 @@ public class ChromeProvidedSharingOptionsProvider extends ChromeProvidedSharingO
 
     private boolean hideBottomSheetContentOnTap(FirstPartyOption firstPartyOption) {
         if (USER_ACTION_SCREENSHOT_SELECTED.equals(firstPartyOption.featureNameForMetrics)
-                || USER_ACTION_WEB_STYLE_NOTES_SELECTED.equals(
+                || USER_ACTION_LONG_SCREENSHOT_SELECTED.equals(
                         firstPartyOption.featureNameForMetrics)) {
             return false;
         }
