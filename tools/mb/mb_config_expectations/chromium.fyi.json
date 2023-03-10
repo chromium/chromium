@@ -243,12 +243,16 @@
   },
   "Linux Builder (reclient compare)": {
     "gn_args": {
+      "concurrent_links": 50,
       "dcheck_always_on": false,
+      "enable_nacl": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
-      "use_remoteexec": true
+      "rbe_link_cfg_file": "../../buildtools/reclient_cfgs/chromium-browser-clang/rewrapper_linux_link_small.cfg",
+      "use_remoteexec": true,
+      "use_remoteexec_links": true
     }
   },
   "Linux Viz": {
