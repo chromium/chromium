@@ -91,6 +91,7 @@ cast_source_set("named_message_port_connector_cast") {
   deps = [
     "//base",
     "//chromecast/browser:public",
+    "//components/cast/message_port:blink_message_port_adapter",
     "//components/cast/message_port:message_port_cast",
     "//components/cast/named_message_port_connector",
     "//components/on_load_script_injector/browser",
@@ -252,6 +253,7 @@ cast_source_set("browser") {
     "//chromecast/service",
     "//chromecast/ui:display_settings_manager",
     "//chromecast/ui:display_settings_public",
+    "//components/cast/message_port:blink_message_port_adapter",
     "//components/cast/message_port:message_port_cast",
     "//components/cast_receiver/browser:permissions_manager",
     "//components/download/public/common:public",

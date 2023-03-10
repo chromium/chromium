@@ -728,6 +728,8 @@ if (is_android) {
 
     command_line_flags_file = "castshell-command-line"
     enable_multidex = true
+
+    product_config_java_packages = [ "org.chromium.chromecast.shell" ]
   }
 
   if (chromecast_branding != "public") {
