@@ -5,18 +5,14 @@
 #ifndef BASE_THREADING_THREAD_RESTRICTIONS_H_
 #define BASE_THREADING_THREAD_RESTRICTIONS_H_
 
-#include "base/auto_reset.h"
+#include <memory>
+
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
 #include "base/location.h"
 #include "build/build_config.h"
-
-#if DCHECK_IS_ON()
-#include "base/debug/stack_trace.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#endif
 
 // -----------------------------------------------------------------------------
 // Usage documentation
@@ -484,6 +480,8 @@ class StackSamplingProfiler;
 class TestCustomDisallow;
 class Thread;
 
+class BooleanWithStack;
+
 void GetNSExecutablePath(base::FilePath* path);
 
 #if DCHECK_IS_ON()
@@ -492,36 +490,16 @@ void GetNSExecutablePath(base::FilePath* path);
 // assertion) or who made a failing Assert*() call.
 #define INLINE_OR_NOT_TAIL_CALLED BASE_EXPORT NOT_TAIL_CALLED
 #define EMPTY_BODY_IF_DCHECK_IS_OFF
-#define DEFAULT_IF_DCHECK_IS_OFF
-
-class BooleanWithStack {
- public:
-  // Default value.
-  BooleanWithStack() = default;
-
-  // Value when explicitly set.
-  explicit BooleanWithStack(bool value);
-
-  explicit operator bool() const { return value_; }
-
-  friend std::ostream& operator<<(std::ostream& out,
-                                  const BooleanWithStack& bws);
-
- private:
-  bool value_ = false;
-  absl::optional<debug::StackTrace> stack_;
-};
-
 #else
 // inline if dcheck-is-off so it's no overhead
 #define INLINE_OR_NOT_TAIL_CALLED inline
 
-// The static_assert() eats follow-on semicolons.
+// The static_assert() eats follow-on semicolons. `= default` would work
+// too, but it makes clang realize that all the Scoped classes are no-ops in
+// non-dcheck builds and it starts emitting many -Wunused-variable warnings.
 #define EMPTY_BODY_IF_DCHECK_IS_OFF \
   {}                                \
-  static_assert(true)
-
-#define DEFAULT_IF_DCHECK_IS_OFF = default
+  static_assert(true, "")
 #endif  // DCHECK_IS_ON()
 
 namespace internal {
@@ -540,22 +518,22 @@ INLINE_OR_NOT_TAIL_CALLED void AssertBlockingDisallowedForTesting()
 INLINE_OR_NOT_TAIL_CALLED void DisallowBlocking() EMPTY_BODY_IF_DCHECK_IS_OFF;
 
 // Disallows blocking calls within its scope.
-class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedDisallowBlocking {
+class BASE_EXPORT [[nodiscard]] ScopedDisallowBlocking {
  public:
-  ScopedDisallowBlocking() DEFAULT_IF_DCHECK_IS_OFF;
+  ScopedDisallowBlocking() EMPTY_BODY_IF_DCHECK_IS_OFF;
 
   ScopedDisallowBlocking(const ScopedDisallowBlocking&) = delete;
   ScopedDisallowBlocking& operator=(const ScopedDisallowBlocking&) = delete;
 
-  ~ScopedDisallowBlocking() DEFAULT_IF_DCHECK_IS_OFF;
+  ~ScopedDisallowBlocking() EMPTY_BODY_IF_DCHECK_IS_OFF;
 
  private:
 #if DCHECK_IS_ON()
-  const AutoReset<BooleanWithStack> resetter_;
+  std::unique_ptr<BooleanWithStack> was_disallowed_;
 #endif
 };
 
-class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedAllowBlocking {
+class BASE_EXPORT [[nodiscard]] ScopedAllowBlocking {
  public:
   ScopedAllowBlocking(const ScopedAllowBlocking&) = delete;
   ScopedAllowBlocking& operator=(const ScopedAllowBlocking&) = delete;
@@ -674,11 +652,11 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedAllowBlocking {
   ~ScopedAllowBlocking();
 
 #if DCHECK_IS_ON()
-  const AutoReset<BooleanWithStack> resetter_;
+  std::unique_ptr<BooleanWithStack> was_disallowed_;
 #endif
 };
 
-class [[maybe_unused, nodiscard]] ScopedAllowBlockingForTesting {
+class [[nodiscard]] ScopedAllowBlockingForTesting {
  public:
   ScopedAllowBlockingForTesting() = default;
 
@@ -686,7 +664,7 @@ class [[maybe_unused, nodiscard]] ScopedAllowBlockingForTesting {
   ScopedAllowBlockingForTesting& operator=(
       const ScopedAllowBlockingForTesting&) = delete;
 
-  ~ScopedAllowBlockingForTesting() = default;
+  ~ScopedAllowBlockingForTesting() {}
 
  private:
 #if DCHECK_IS_ON()
@@ -698,24 +676,24 @@ INLINE_OR_NOT_TAIL_CALLED void DisallowBaseSyncPrimitives()
     EMPTY_BODY_IF_DCHECK_IS_OFF;
 
 // Disallows singletons within its scope.
-class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedDisallowBaseSyncPrimitives {
+class BASE_EXPORT [[nodiscard]] ScopedDisallowBaseSyncPrimitives {
  public:
-  ScopedDisallowBaseSyncPrimitives() DEFAULT_IF_DCHECK_IS_OFF;
+  ScopedDisallowBaseSyncPrimitives() EMPTY_BODY_IF_DCHECK_IS_OFF;
 
   ScopedDisallowBaseSyncPrimitives(const ScopedDisallowBaseSyncPrimitives&) =
       delete;
   ScopedDisallowBaseSyncPrimitives& operator=(
       const ScopedDisallowBaseSyncPrimitives&) = delete;
 
-  ~ScopedDisallowBaseSyncPrimitives() DEFAULT_IF_DCHECK_IS_OFF;
+  ~ScopedDisallowBaseSyncPrimitives() EMPTY_BODY_IF_DCHECK_IS_OFF;
 
  private:
 #if DCHECK_IS_ON()
-  const AutoReset<BooleanWithStack> resetter_;
+  std::unique_ptr<BooleanWithStack> was_disallowed_;
 #endif
 };
 
-class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedAllowBaseSyncPrimitives {
+class BASE_EXPORT [[nodiscard]] ScopedAllowBaseSyncPrimitives {
  public:
   ScopedAllowBaseSyncPrimitives(const ScopedAllowBaseSyncPrimitives&) = delete;
   ScopedAllowBaseSyncPrimitives& operator=(
@@ -783,17 +761,16 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedAllowBaseSyncPrimitives {
       StatisticsProviderImpl;                      // http://crbug.com/125385
   friend class blink::VideoFrameResourceProvider;  // http://crbug.com/878070
 
-  ScopedAllowBaseSyncPrimitives() DEFAULT_IF_DCHECK_IS_OFF;
-  ~ScopedAllowBaseSyncPrimitives() DEFAULT_IF_DCHECK_IS_OFF;
+  ScopedAllowBaseSyncPrimitives() EMPTY_BODY_IF_DCHECK_IS_OFF;
+  ~ScopedAllowBaseSyncPrimitives() EMPTY_BODY_IF_DCHECK_IS_OFF;
 
 #if DCHECK_IS_ON()
-  const AutoReset<BooleanWithStack> resetter_;
+  std::unique_ptr<BooleanWithStack> was_disallowed_;
 #endif
 };
 
 class BASE_EXPORT
-    [[maybe_unused,
-      nodiscard]] ScopedAllowBaseSyncPrimitivesOutsideBlockingScope {
+    [[nodiscard]] ScopedAllowBaseSyncPrimitivesOutsideBlockingScope {
  public:
   ScopedAllowBaseSyncPrimitivesOutsideBlockingScope(
       const ScopedAllowBaseSyncPrimitivesOutsideBlockingScope&) = delete;
@@ -888,7 +865,7 @@ class BASE_EXPORT
   ~ScopedAllowBaseSyncPrimitivesOutsideBlockingScope();
 
 #if DCHECK_IS_ON()
-  const AutoReset<BooleanWithStack> resetter_;
+  std::unique_ptr<BooleanWithStack> was_disallowed_;
 #endif
 };
 
@@ -897,43 +874,41 @@ class BASE_EXPORT
 // Note: For WaitableEvents in the test logic, base::TestWaitableEvent is
 // exposed as a convenience to avoid the need for
 // ScopedAllowBaseSyncPrimitivesForTesting.
-class BASE_EXPORT
-    [[maybe_unused, nodiscard]] ScopedAllowBaseSyncPrimitivesForTesting {
+class BASE_EXPORT [[nodiscard]] ScopedAllowBaseSyncPrimitivesForTesting {
  public:
-  ScopedAllowBaseSyncPrimitivesForTesting() DEFAULT_IF_DCHECK_IS_OFF;
+  ScopedAllowBaseSyncPrimitivesForTesting() EMPTY_BODY_IF_DCHECK_IS_OFF;
 
   ScopedAllowBaseSyncPrimitivesForTesting(
       const ScopedAllowBaseSyncPrimitivesForTesting&) = delete;
   ScopedAllowBaseSyncPrimitivesForTesting& operator=(
       const ScopedAllowBaseSyncPrimitivesForTesting&) = delete;
 
-  ~ScopedAllowBaseSyncPrimitivesForTesting() DEFAULT_IF_DCHECK_IS_OFF;
+  ~ScopedAllowBaseSyncPrimitivesForTesting() EMPTY_BODY_IF_DCHECK_IS_OFF;
 
  private:
 #if DCHECK_IS_ON()
-  const AutoReset<BooleanWithStack> resetter_;
+  std::unique_ptr<BooleanWithStack> was_disallowed_;
 #endif
 };
 
 // Counterpart to base::DisallowUnresponsiveTasks() for tests to allow them to
 // block their thread after it was banned.
-class BASE_EXPORT
-    [[maybe_unused, nodiscard]] ScopedAllowUnresponsiveTasksForTesting {
+class BASE_EXPORT [[nodiscard]] ScopedAllowUnresponsiveTasksForTesting {
  public:
-  ScopedAllowUnresponsiveTasksForTesting() DEFAULT_IF_DCHECK_IS_OFF;
+  ScopedAllowUnresponsiveTasksForTesting() EMPTY_BODY_IF_DCHECK_IS_OFF;
 
   ScopedAllowUnresponsiveTasksForTesting(
       const ScopedAllowUnresponsiveTasksForTesting&) = delete;
   ScopedAllowUnresponsiveTasksForTesting& operator=(
       const ScopedAllowUnresponsiveTasksForTesting&) = delete;
 
-  ~ScopedAllowUnresponsiveTasksForTesting() DEFAULT_IF_DCHECK_IS_OFF;
+  ~ScopedAllowUnresponsiveTasksForTesting() EMPTY_BODY_IF_DCHECK_IS_OFF;
 
  private:
 #if DCHECK_IS_ON()
-  const AutoReset<BooleanWithStack> base_sync_resetter_;
-  const AutoReset<BooleanWithStack> blocking_resetter_;
-  const AutoReset<BooleanWithStack> cpu_resetter_;
+  std::unique_ptr<BooleanWithStack> was_disallowed_base_sync_;
+  std::unique_ptr<BooleanWithStack> was_disallowed_blocking_;
+  std::unique_ptr<BooleanWithStack> was_disallowed_cpu_;
 #endif
 };
 
@@ -959,18 +934,18 @@ INLINE_OR_NOT_TAIL_CALLED void AssertSingletonAllowed()
 INLINE_OR_NOT_TAIL_CALLED void DisallowSingleton() EMPTY_BODY_IF_DCHECK_IS_OFF;
 
 // Disallows singletons within its scope.
-class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedDisallowSingleton {
+class BASE_EXPORT [[nodiscard]] ScopedDisallowSingleton {
  public:
-  ScopedDisallowSingleton() DEFAULT_IF_DCHECK_IS_OFF;
+  ScopedDisallowSingleton() EMPTY_BODY_IF_DCHECK_IS_OFF;
 
   ScopedDisallowSingleton(const ScopedDisallowSingleton&) = delete;
   ScopedDisallowSingleton& operator=(const ScopedDisallowSingleton&) = delete;
 
-  ~ScopedDisallowSingleton() DEFAULT_IF_DCHECK_IS_OFF;
+  ~ScopedDisallowSingleton() EMPTY_BODY_IF_DCHECK_IS_OFF;
 
  private:
 #if DCHECK_IS_ON()
-  const AutoReset<BooleanWithStack> resetter_;
+  std::unique_ptr<BooleanWithStack> was_disallowed_;
 #endif
 };
 
@@ -1021,7 +996,6 @@ class BASE_EXPORT PermanentSingletonAllowance {
 
 #undef INLINE_OR_NOT_TAIL_CALLED
 #undef EMPTY_BODY_IF_DCHECK_IS_OFF
-#undef DEFAULT_IF_DCHECK_IS_OFF
 
 }  // namespace base
 
