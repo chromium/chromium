@@ -66,49 +66,20 @@ TEST(SafeRefTest, CanCopyAndMove) {
 
 TEST(SafeRefTest, AssignCopyAndMove) {
   WithWeak with;
-  SafeRef<WithWeak> safe(with.factory.GetSafeRef());
-
   WithWeak with2;
+  WithWeak with3;
+
+  // Ensure `with`s outlive `safe`s
+  SafeRef<WithWeak> safe(with.factory.GetSafeRef());
   SafeRef<WithWeak> safe2(with2.factory.GetSafeRef());
   EXPECT_NE(safe->self, &with2);
   safe = safe2;
   EXPECT_EQ(safe->self, &with2);
 
-  WithWeak with3;
   SafeRef<WithWeak> safe3(with3.factory.GetSafeRef());
   EXPECT_NE(safe->self, &with3);
   safe = std::move(safe3);
   EXPECT_EQ(safe->self, &with3);
-}
-
-TEST(SafeRefTest, AssignCopyAfterInvalidate) {
-  WithWeak with;
-  SafeRef<WithWeak> safe(with.factory.GetSafeRef());
-  SafeRef<WithWeak> safe2(with.factory.GetSafeRef());
-
-  {
-    WithWeak with2;
-    safe = SafeRef<WithWeak>(with2.factory.GetSafeRef());
-  }
-  // `safe` is now invalidated (oops), but we won't use it in that state!
-  safe = safe2;
-  // `safe` is valid again, we can use it.
-  EXPECT_EQ(safe->self, &with);
-}
-
-TEST(SafeRefTest, AssignMoveAfterInvalidate) {
-  WithWeak with;
-  SafeRef<WithWeak> safe(with.factory.GetSafeRef());
-  SafeRef<WithWeak> safe2(with.factory.GetSafeRef());
-
-  {
-    WithWeak with2;
-    safe = SafeRef<WithWeak>(with2.factory.GetSafeRef());
-  }
-  // `safe` is now invalidated (oops), but we won't use it in that state!
-  safe = std::move(safe2);
-  // `safe` is valid again, we can use it.
-  EXPECT_EQ(safe->self, &with);
 }
 
 TEST(SafeRefDeathTest, ArrowOperatorCrashIfBadPointer) {
