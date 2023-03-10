@@ -683,6 +683,13 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    public void test_popoverExpandedChanged() {
+        performTest(
+                "popover-expanded-changed.html", "popover-expanded-changed-expected-android.txt");
+    }
+
+    @Test
+    @SmallTest
     @DisabledTest(message = "https://crbug.com/1190218")
     public void test_focusListbox() {
         performTest("focus-listbox.html", EMPTY_EXPECTATIONS_FILE);

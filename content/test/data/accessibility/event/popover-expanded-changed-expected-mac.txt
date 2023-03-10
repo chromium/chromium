@@ -1,0 +1,23 @@
+AXExpandedChanged on AXButton AXTitle='Hide button'
+AXExpandedChanged on AXButton AXTitle='Show button'
+AXExpandedChanged on AXButton AXTitle='Toggle button'
+=== Start Continuation ===
+AXExpandedChanged on AXButton AXTitle='Hide button'
+AXExpandedChanged on AXButton AXTitle='Show button'
+AXExpandedChanged on AXButton AXTitle='Toggle button'
+=== Start Continuation ===
+AXExpandedChanged on AXButton AXTitle='Hide button'
+AXExpandedChanged on AXButton AXTitle='Show button'
+AXExpandedChanged on AXButton AXTitle='Toggle button'
+=== Start Continuation ===
+AXExpandedChanged on AXButton AXTitle='Hide button'
+AXExpandedChanged on AXButton AXTitle='Show button'
+AXExpandedChanged on AXButton AXTitle='Toggle button'
+=== Start Continuation ===
+AXExpandedChanged on AXButton AXTitle='Hide button'
+AXExpandedChanged on AXButton AXTitle='Show button'
+AXExpandedChanged on AXButton AXTitle='Toggle button'
+=== Start Continuation ===
+AXExpandedChanged on AXButton AXTitle='Hide button'
+AXExpandedChanged on AXButton AXTitle='Show button'
+AXExpandedChanged on AXButton AXTitle='Toggle button'

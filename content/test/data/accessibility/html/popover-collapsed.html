@@ -1,0 +1,20 @@
+<!--
+@WAIT-FOR:done
+-->
+
+<!DOCTYPE html>
+
+<button id=toggle popovertarget="will-collapse">Will collapse</button>
+<div popover id="will-collapse">Popover</div>
+
+<script>
+  document.getElementById('toggle').click();  // Start expanded.
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      document.getElementById('toggle').click();
+      setTimeout(() => {
+        document.title = 'done';
+      }, 20);
+    }, 250);
+  });
+</script>

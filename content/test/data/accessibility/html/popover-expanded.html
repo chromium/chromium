@@ -1,0 +1,20 @@
+<!--
+@BLINK-ALLOW:expanded*
+@WAIT-FOR:done
+-->
+
+<!DOCTYPE html>
+
+<button id=toggle popovertarget="will-expand">Will expand</button>
+<div popover id="will-expand">Popover</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      document.getElementById('toggle').click();
+      setTimeout(() => {
+        document.title = 'done';
+      }, 20);
+    }, 250);
+  });
+</script>

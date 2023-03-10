@@ -2063,6 +2063,18 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_popoverExpanded() {
+        performHtmlTest("popover-expanded.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_popoverCollapsed() {
+        performHtmlTest("popover-collapsed.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_portalWithWidgetInside() {
         performHtmlTest("portal-with-widget-inside.html");
     }
