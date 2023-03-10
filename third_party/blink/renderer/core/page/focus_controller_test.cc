@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 
 namespace blink {
@@ -287,6 +288,46 @@ TEST_F(FocusControllerTest,
   // The end of the recovery form is detected just because it the end of <form>.
   EXPECT_EQ(nullptr, GetFocusController().NextFocusableElementForImeAndAutofill(
                          recover_username, mojom::blink::FocusType::kForward));
+}
+
+class FocusControllerTestWithIframes : public RenderingTest {
+ public:
+  FocusControllerTestWithIframes()
+      : RenderingTest(MakeGarbageCollected<SingleChildLocalFrameClient>()) {}
+};
+
+// A captcha should block a form submission.
+TEST_F(FocusControllerTestWithIframes,
+       NextFocusableElementForImeAndAutofill_Captcha) {
+  SetBodyInnerHTML(
+      "<!DOCTYPE html>"
+      "<form>"
+      "  <input type='text' id='username'>"
+      "  <input type='password' id='password'>"
+      "  <iframe id='captcha' src='https://captcha.com'></iframe>"
+      "  <button type='submit' value='Login'>"
+      "</form>");
+  SetChildFrameHTML(
+      "<!DOCTYPE html>"
+      "<div id='checkbox' tabindex='0'>");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* password = GetElementById("password");
+  ASSERT_TRUE(password);
+
+  LocalFrame* child_frame = To<LocalFrame>(GetFrame().Tree().FirstChild());
+  ASSERT_TRUE(child_frame);
+  Document* child_document = child_frame->GetDocument();
+  ASSERT_TRUE(child_document);
+  Element* checkbox = child_document->getElementById("checkbox");
+  ASSERT_TRUE(checkbox);
+
+  // |NextFocusableElementForImeAndAutofill| finds another element that needs
+  // user input - don't auto-submit after filling in the username and password
+  // fields.
+  EXPECT_EQ(checkbox,
+            GetFocusController().NextFocusableElementForImeAndAutofill(
+                password, mojom::blink::FocusType::kForward));
 }
 
 }  // namespace blink
