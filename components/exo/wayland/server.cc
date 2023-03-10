@@ -76,6 +76,7 @@
 #include "components/exo/wayland/wp_presentation.h"
 #include "components/exo/wayland/wp_viewporter.h"
 #include "components/exo/wayland/xdg_shell.h"
+#include "components/exo/wayland/zaura_output_manager.h"
 #include "components/exo/wayland/zaura_shell.h"
 #include "components/exo/wayland/zcr_alpha_compositing.h"
 #include "components/exo/wayland/zcr_color_manager.h"
@@ -282,6 +283,14 @@ void Server::Initialize() {
                      wayland_feedback_manager_->GetVersionSupportedByPlatform(),
                      wayland_feedback_manager_.get(), bind_linux_dmabuf);
   }
+
+  // aura_output_manager needs to be registered before the wl_output globals to
+  // ensure clients can bind to the aura_output_manager before any wl_outputs.
+  // This is necessary to ensure aura_output_manager can send relevant output
+  // events immediately after an output is bound to the client and before the
+  // data in these events might be needed by the client.
+  wl_global_create(wl_display_.get(), &zaura_output_manager_interface, 1, this,
+                   bind_aura_output_manager);
   wl_global_create(wl_display_.get(), &wl_subcompositor_interface, 1, display_,
                    bind_subcompositor);
   for (const auto& display : display::Screen::GetScreen()->GetAllDisplays())

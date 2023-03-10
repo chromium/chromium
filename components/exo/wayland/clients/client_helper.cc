@@ -54,6 +54,7 @@ DEFAULT_DELETER(wl_output, wl_output_destroy)
 DEFAULT_DELETER(wp_presentation, wp_presentation_destroy)
 DEFAULT_DELETER(struct wp_presentation_feedback,
                 wp_presentation_feedback_destroy)
+DEFAULT_DELETER(zaura_output_manager, zaura_output_manager_destroy)
 DEFAULT_DELETER(zaura_shell, zaura_shell_destroy)
 DEFAULT_DELETER(zaura_surface, zaura_surface_destroy)
 DEFAULT_DELETER(zaura_output, zaura_output_destroy)

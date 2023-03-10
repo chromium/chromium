@@ -73,6 +73,8 @@ source_set("wayland") {
     "wp_viewporter.h",
     "xdg_shell.cc",
     "xdg_shell.h",
+    "zaura_output_manager.cc",
+    "zaura_output_manager.h",
     "zaura_shell.cc",
     "zaura_shell.h",
     "zcr_alpha_compositing.cc",

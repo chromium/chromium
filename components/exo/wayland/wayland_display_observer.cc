@@ -14,6 +14,7 @@
 #include "components/exo/wayland/output_metrics.h"
 #include "components/exo/wayland/server_util.h"
 #include "components/exo/wayland/wayland_display_output.h"
+#include "components/exo/wayland/zaura_output_manager.h"
 #include "components/exo/wayland/zcr_color_manager.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/screen.h"
@@ -63,13 +64,7 @@ void WaylandDisplayHandler::AddObserver(WaylandDisplayObserver* observer) {
 
   // Send the first round of changes to the observer.
   constexpr uint32_t all_changes = 0xFFFFFFFF;
-  if (observer->SendDisplayMetrics(display, all_changes)) {
-    if (wl_resource_get_version(output_resource_) >=
-        WL_OUTPUT_DONE_SINCE_VERSION) {
-      wl_output_send_done(output_resource_);
-    }
-    wl_client_flush(wl_resource_get_client(output_resource_));
-  }
+  OnDisplayMetricsChanged(display, all_changes);
 }
 
 void WaylandDisplayHandler::RemoveObserver(WaylandDisplayObserver* observer) {
@@ -91,6 +86,18 @@ void WaylandDisplayHandler::OnDisplayMetricsChanged(
   }
 
   bool needs_done = false;
+
+  // If supported, the aura_output_manager must have been bound by clients
+  // before the wl_output associated with this WaylandDisplayHandler is bound.
+  wl_client* client = wl_resource_get_client(output_resource_);
+  if (auto* output_manager = AuraOutputManager::Get(client)) {
+    // This sends all relevant output metrics to clients. These events are sent
+    // immediately after the client binds an output and again every time display
+    // metrics have changed.
+    needs_done |= output_manager->SendOutputMetrics(output_resource_, display,
+                                                    changed_metrics);
+  }
+
   for (auto& observer : observers_) {
     needs_done |= observer.SendDisplayMetrics(display, changed_metrics);
   }
