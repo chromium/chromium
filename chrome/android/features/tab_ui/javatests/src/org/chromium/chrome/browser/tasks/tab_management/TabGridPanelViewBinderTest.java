@@ -37,7 +37,9 @@ import com.google.android.material.color.MaterialColors;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Spy;
 
@@ -45,10 +47,12 @@ import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogView.VisibilityListener;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -66,6 +70,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
     private static final String TAG = "TGPVBT";
     private static final int CONTENT_TOP_MARGIN = 56;
+
+    @Rule
+    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
     private PropertyModel mModel;
     private PropertyModelChangeProcessor mMCP;
@@ -458,15 +465,12 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
     @Test
     @SmallTest
     @UiThreadTest
+    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void testSetIsTitleTextFocused() {
         Assert.assertFalse(mTitleTextView.isFocused());
 
         mModel.set(TabGridPanelProperties.IS_TITLE_TEXT_FOCUSED, true);
 
-        // Binder should ignore set focus signal to avoid duplicate setting.
-        Assert.assertFalse(mTitleTextView.isFocused());
-
-        mTitleTextView.requestFocus();
         Assert.assertTrue(mTitleTextView.isFocused());
 
         mModel.set(TabGridPanelProperties.IS_TITLE_TEXT_FOCUSED, false);

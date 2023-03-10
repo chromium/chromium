@@ -41,7 +41,6 @@ import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFa
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabList;
@@ -160,7 +159,6 @@ public class TabSwitcherCoordinator
             .MenuOrKeyboardActionHandler mTabSwitcherMenuActionHandler;
     private TabGridIphDialogCoordinator mTabGridIphDialogCoordinator;
     private TabSwitcherCustomViewManager mTabSwitcherCustomViewManager;
-    private Supplier<ShareDelegate> mShareDelegateSupplier;
     private SnackbarManager mTabSelectionEditorSnackbarManager;
 
     /** {@see TabManagementDelegate#createCarouselTabSwitcher} */
@@ -171,7 +169,7 @@ public class TabSwitcherCoordinator
             @NonNull BrowserControlsStateProvider browserControls,
             @NonNull TabCreatorManager tabCreatorManager,
             @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
-            @NonNull ViewGroup container, @NonNull Supplier<ShareDelegate> shareDelegateSupplier,
+            @NonNull ViewGroup container,
             @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             @NonNull ScrimCoordinator scrimCoordinator, @TabListMode int mode,
             @NonNull ViewGroup rootView,
@@ -193,7 +191,6 @@ public class TabSwitcherCoordinator
             mDynamicResourceLoaderSupplier = dynamicResourceLoaderSupplier;
             mSnackbarManager = snackbarManager;
             mModalDialogManager = modalDialogManager;
-            mShareDelegateSupplier = shareDelegateSupplier;
 
             // The snackbarManager for the TabSelectionEditor from the tab switcher side, with the
             // rootView as the default parentView. The parentView will be re-parented on show,
@@ -283,8 +280,7 @@ public class TabSwitcherCoordinator
             RecordHistogram.recordTimesHistogram("Android.TabSwitcher.SetupRecyclerView.Time",
                     SystemClock.uptimeMillis() - startTimeMs);
 
-            if (TabUiFeatureUtilities.isLaunchPolishEnabled()
-                    && TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(activity)) {
+            if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(activity)) {
                 mMediator.addTabSwitcherViewObserver(new TabSwitcherViewObserver() {
                     @Override
                     public void startedShowing() {}
@@ -421,8 +417,8 @@ public class TabSwitcherCoordinator
                 new TabGridDialogCoordinator(mActivity, mTabModelSelector, mTabContentManager,
                         mTabCreatorManager, mCoordinatorView, TabSwitcherCoordinator.this,
                         mMediator, TabSwitcherCoordinator.this::getTabGridDialogAnimationSourceView,
-                        mShareDelegateSupplier, mGridDialogScrimCoordinator,
-                        mTabListCoordinator.getTabGroupTitleEditor(), mRootView);
+                        mGridDialogScrimCoordinator, mTabListCoordinator.getTabGroupTitleEditor(),
+                        mRootView);
         return true;
     }
 

@@ -2134,9 +2134,7 @@ const FeatureEntry::FeatureParam kTabGridLayoutAndroid_NewTabVariation[] = {
 const FeatureEntry::FeatureParam kTabGridLayoutAndroid_TallNTV[] = {
     {"thumbnail_aspect_ratio", "0.85"},
     {"allow_to_refetch", "true"},
-    {"tab_grid_layout_android_new_tab", "NewTabVariation"},
-    {"enable_launch_polish", "true"},
-    {"enable_launch_bug_fix", "true"}};
+    {"tab_grid_layout_android_new_tab", "NewTabVariation"}};
 
 const FeatureEntry::FeatureParam
     kTabGridLayoutAndroid_TabGroupAutoCreation_TabGroupFirst[] = {
@@ -3117,16 +3115,6 @@ const FeatureEntry::FeatureVariation kTabSelectionEditorV2Variations[] = {
      std::size(kTabSelectionEditorV2_share_bookmarks_and_longpress_enabled),
      nullptr},
 };
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam
-    kTabGroupsContinuationAndroid_deferred_favicon[] = {
-        {"deferred_favicon", "false"}};
-
-const FeatureEntry::FeatureVariation kTabGroupsContinuationAndroidVariations[] =
-    {{"- defer favicons", kTabGroupsContinuationAndroid_deferred_favicon,
-      std::size(kTabGroupsContinuationAndroid_deferred_favicon), nullptr}};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::FeatureParam kPasswordNotesAuthValidity1m[] = {
@@ -6215,10 +6203,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-tab-groups-continuation",
      flag_descriptions::kTabGroupsContinuationAndroidName,
      flag_descriptions::kTabGroupsContinuationAndroidDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         chrome::android::kTabGroupsContinuationAndroid,
-         kTabGroupsContinuationAndroidVariations,
-         "TabGroupsContinuation")},
+     FEATURE_VALUE_TYPE(chrome::android::kTabGroupsContinuationAndroid)},
 
     {"enable-start-surface-return-time",
      flag_descriptions::kStartSurfaceReturnTimeName,

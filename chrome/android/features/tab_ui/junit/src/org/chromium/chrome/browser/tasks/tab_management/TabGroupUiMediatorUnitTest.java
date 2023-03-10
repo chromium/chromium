@@ -997,8 +997,8 @@ public class TabGroupUiMediatorUnitTest {
     }
 
     @Test
+    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void testOmniboxFocusChange() {
-        TabUiFeatureUtilities.ENABLE_LAUNCH_BUG_FIX.setForTesting(true);
         initAndAssertProperties(mTab2);
 
         mOmniboxFocusObserverCaptor.getValue().onResult(true);

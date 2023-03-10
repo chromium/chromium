@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.app.Activity;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.text.Editable;
@@ -19,9 +18,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.share.ChromeShareExtras;
-import org.chromium.chrome.browser.share.ShareDelegate;
-import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -44,7 +40,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabSe
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
-import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -128,7 +123,6 @@ public class TabGridDialogMediator
     private final Supplier<RecyclerViewPosition> mRecyclerViewPositionSupplier;
     private final AnimationSourceViewProvider mAnimationSourceViewProvider;
     private final DialogHandler mTabGridDialogHandler;
-    private final Supplier<ShareDelegate> mShareDelegateSupplier;
     private final Runnable mScrimClickRunnable;
     private final String mComponentName;
 
@@ -147,8 +141,7 @@ public class TabGridDialogMediator
             TabSwitcherMediator.ResetHandler tabSwitcherResetHandler,
             Supplier<RecyclerViewPosition> recyclerViewPositionSupplier,
             AnimationSourceViewProvider animationSourceViewProvider,
-            Supplier<ShareDelegate> shareDelegateSupplier, SnackbarManager snackbarManager,
-            String componentName) {
+            SnackbarManager snackbarManager, String componentName) {
         mContext = activity;
         mModel = model;
         mTabModelSelector = tabModelSelector;
@@ -158,7 +151,6 @@ public class TabGridDialogMediator
         mRecyclerViewPositionSupplier = recyclerViewPositionSupplier;
         mAnimationSourceViewProvider = animationSourceViewProvider;
         mTabGridDialogHandler = new DialogHandler();
-        mShareDelegateSupplier = shareDelegateSupplier;
         mComponentName = componentName;
         mActivity = activity;
 
@@ -275,10 +267,6 @@ public class TabGridDialogMediator
 
         // Setup ScrimView click Runnable.
         mScrimClickRunnable = () -> {
-            if (!TabUiFeatureUtilities.isLaunchPolishEnabled()) {
-                mModel.set(TabGridPanelProperties.IS_KEYBOARD_VISIBLE, false);
-                mModel.set(TabGridPanelProperties.IS_TITLE_TEXT_FOCUSED, false);
-            }
             hideDialog(true);
             RecordUserAction.record("TabGridDialog.Exit");
         };
@@ -300,43 +288,14 @@ public class TabGridDialogMediator
 
         mToolbarMenuCallback = result -> {
             if (result == R.id.ungroup_tab || result == R.id.select_tabs) {
-                if (!TabUiFeatureUtilities.isLaunchPolishEnabled()) {
-                    mModel.set(TabGridPanelProperties.IS_KEYBOARD_VISIBLE, false);
-                }
                 mModel.set(TabGridPanelProperties.IS_TITLE_TEXT_FOCUSED, false);
                 if (setupAndShowTabSelectionEditorV2(mCurrentTabId)) {
                     TabUiMetricsHelper.recordSelectionEditorOpenMetrics(
                             TabSelectionEditorOpenMetricGroups.OPEN_FROM_DIALOG, mContext);
                 }
-            } else if (result == R.id.share_tab_group) {
-                Tab tab = mTabModelSelector.getTabById(mCurrentTabId);
-                ShareParams shareParams =
-                        new ShareParams
-                                .Builder(tab.getWindowAndroid(),
-                                        mModel.get(TabGridPanelProperties.HEADER_TITLE), "")
-                                .setText(getTabGroupStringForSharing())
-                                .setCallback(new ShareParams.TargetChosenCallback() {
-                                    @Override
-                                    public void onTargetChosen(ComponentName chosenComponent) {
-                                        RecordUserAction.record(
-                                                "TabGridDialog.SharedGroupAsTextList");
-                                    }
-
-                                    @Override
-                                    public void onCancel() {}
-                                })
-                                .build();
-                // TODO(crbug.com/1085078): Sharing hub is suppressed for tab group sharing.
-                // Re-enable it when tab group sharing is supported by sharing hub.
-                ChromeShareExtras chromeShareExtras = new ChromeShareExtras.Builder()
-                                                              .setSharingTabGroup(true)
-                                                              .setSaveLastUsed(true)
-                                                              .build();
-                mShareDelegateSupplier.get().share(
-                        shareParams, chromeShareExtras, ShareOrigin.TAB_GROUP);
             }
 
-            if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
+            if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mContext)) {
                 if (result == R.id.edit_group_name) {
                     mModel.set(TabGridPanelProperties.IS_TITLE_TEXT_FOCUSED, true);
                 }
@@ -375,7 +334,7 @@ public class TabGridDialogMediator
             mTabSelectionEditorControllerSupplier.get().hide();
         }
         saveCurrentGroupModifiedTitle();
-        if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
+        if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mContext)) {
             mModel.set(TabGridPanelProperties.IS_TITLE_TEXT_FOCUSED, false);
         }
         if (mModel.get(TabGridPanelProperties.VISIBILITY_LISTENER) != null) {
@@ -460,7 +419,7 @@ public class TabGridDialogMediator
             Tab currentTab = mTabModelSelector.getTabById(mCurrentTabId);
             String storedTitle = mTabGroupTitleEditor.getTabGroupTitle(getRootId(currentTab));
             if (storedTitle != null && relatedTabs.size() > 1) {
-                if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
+                if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mContext)) {
                     mModel.set(TabGridPanelProperties.COLLAPSE_BUTTON_CONTENT_DESCRIPTION,
                             mContext.getResources().getQuantityString(
                                     R.plurals.accessibility_dialog_back_button_with_group_name,
@@ -470,7 +429,7 @@ public class TabGridDialogMediator
                 return;
             }
         }
-        if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
+        if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mContext)) {
             mModel.set(TabGridPanelProperties.COLLAPSE_BUTTON_CONTENT_DESCRIPTION,
                     mContext.getResources().getQuantityString(
                             R.plurals.accessibility_dialog_back_button, relatedTabs.size(),
@@ -575,13 +534,8 @@ public class TabGridDialogMediator
     private void setupToolbarEditText() {
         mKeyboardVisibilityListener = isShowing -> {
             mModel.set(TabGridPanelProperties.TITLE_CURSOR_VISIBILITY, isShowing);
-            if (!TabUiFeatureUtilities.isLaunchPolishEnabled()) {
-                mModel.set(TabGridPanelProperties.IS_TITLE_TEXT_FOCUSED, isShowing);
-                mModel.set(TabGridPanelProperties.IS_KEYBOARD_VISIBLE, isShowing);
-            } else if (TabUiFeatureUtilities.isLaunchPolishEnabled() && !isShowing) {
-                mModel.set(TabGridPanelProperties.IS_TITLE_TEXT_FOCUSED, false);
-            }
             if (!isShowing) {
+                mModel.set(TabGridPanelProperties.IS_TITLE_TEXT_FOCUSED, false);
                 saveCurrentGroupModifiedTitle();
             }
         };
@@ -605,7 +559,7 @@ public class TabGridDialogMediator
 
         View.OnFocusChangeListener onFocusChangeListener = (v, hasFocus) -> {
             mIsUpdatingTitle = hasFocus;
-            if (!TabUiFeatureUtilities.isLaunchPolishEnabled()) return;
+            if (!TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mContext)) return;
             mModel.set(TabGridPanelProperties.IS_KEYBOARD_VISIBLE, hasFocus);
             mModel.set(TabGridPanelProperties.IS_TITLE_TEXT_FOCUSED, hasFocus);
         };
@@ -614,9 +568,6 @@ public class TabGridDialogMediator
 
     private View.OnClickListener getCollapseButtonClickListener() {
         return view -> {
-            if (!TabUiFeatureUtilities.isLaunchPolishEnabled()) {
-                mModel.set(TabGridPanelProperties.IS_KEYBOARD_VISIBLE, false);
-            }
             hideDialog(true);
             RecordUserAction.record("TabGridDialog.Exit");
         };
@@ -680,7 +631,7 @@ public class TabGridDialogMediator
 
             String originalTitle = mContext.getResources().getQuantityString(
                     R.plurals.bottom_tab_grid_title_placeholder, tabsCount, tabsCount);
-            if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
+            if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mContext)) {
                 mModel.set(TabGridPanelProperties.COLLAPSE_BUTTON_CONTENT_DESCRIPTION,
                         mContext.getResources().getQuantityString(
                                 R.plurals.accessibility_dialog_back_button, tabsCount, tabsCount));
@@ -691,7 +642,7 @@ public class TabGridDialogMediator
         }
         mTabGroupTitleEditor.storeTabGroupTitle(getRootId(currentTab), mCurrentGroupModifiedTitle);
         mTabGroupTitleEditor.updateTabGroupTitle(currentTab, mCurrentGroupModifiedTitle);
-        if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
+        if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mContext)) {
             int relatedTabsCount = getRelatedTabs(mCurrentTabId).size();
             mModel.set(TabGridPanelProperties.COLLAPSE_BUTTON_CONTENT_DESCRIPTION,
                     mContext.getResources().getQuantityString(

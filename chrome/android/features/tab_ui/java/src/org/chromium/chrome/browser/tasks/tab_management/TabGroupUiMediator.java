@@ -286,16 +286,14 @@ public class TabGroupUiMediator implements BackPressHandler {
                     .addTabGroupObserver(mTabGroupModelFilterObserver);
         }
 
-        if (TabUiFeatureUtilities.isLaunchBugFixEnabled()) {
-            mOmniboxFocusObserver = isFocus -> {
-                // Hide tab strip when omnibox gains focus and try to re-show it when omnibox loses
-                // focus.
-                int tabId = (isFocus == null || !isFocus) ? mTabModelSelector.getCurrentTabId()
-                                                          : Tab.INVALID_TAB_ID;
-                resetTabStripWithRelatedTabsForId(tabId);
-            };
-            mOmniboxFocusStateSupplier.addObserver(mOmniboxFocusObserver);
-        }
+        mOmniboxFocusObserver = isFocus -> {
+            // Hide tab strip when omnibox gains focus and try to re-show it when omnibox loses
+            // focus.
+            int tabId = (isFocus == null || !isFocus) ? mTabModelSelector.getCurrentTabId()
+                                                      : Tab.INVALID_TAB_ID;
+            resetTabStripWithRelatedTabsForId(tabId);
+        };
+        mOmniboxFocusStateSupplier.addObserver(mOmniboxFocusObserver);
 
         mIncognitoStateObserver = (isIncognito) -> {
             mModel.set(TabGroupUiProperties.IS_INCOGNITO, isIncognito);

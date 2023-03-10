@@ -82,7 +82,7 @@ public class TabGroupUtils {
         TextBubble textBubble = new TextBubble(view.getContext(), view, textId, accessibilityTextId,
                 true, rectProvider, ChromeAccessibilityUtil.get().isAccessibilityEnabled());
         textBubble.setDismissOnTouchInteraction(true);
-        if (!TabUiFeatureUtilities.isLaunchBugFixEnabled()) {
+        if (!TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(view.getContext())) {
             textBubble.addOnDismissListener(() -> tracker.dismissed(featureName));
             textBubble.show();
             return;

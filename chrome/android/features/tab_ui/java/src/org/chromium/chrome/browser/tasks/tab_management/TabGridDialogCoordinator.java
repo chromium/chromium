@@ -17,9 +17,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
-import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -59,8 +57,8 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             ViewGroup containerView, TabSwitcherMediator.ResetHandler resetHandler,
             TabListMediator.GridCardOnClickListenerProvider gridCardOnClickListenerProvider,
             TabGridDialogMediator.AnimationSourceViewProvider animationSourceViewProvider,
-            Supplier<ShareDelegate> shareDelegateSupplier, ScrimCoordinator scrimCoordinator,
-            TabGroupTitleEditor tabGroupTitleEditor, ViewGroup rootView) {
+            ScrimCoordinator scrimCoordinator, TabGroupTitleEditor tabGroupTitleEditor,
+            ViewGroup rootView) {
         try (TraceEvent e = TraceEvent.scoped("TabGridDialogCoordinator.constructor")) {
             mActivity = activity;
             mComponentName = animationSourceViewProvider == null ? "TabGridDialogFromStrip"
@@ -83,8 +81,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
 
             mMediator = new TabGridDialogMediator(activity, this, mModel, tabModelSelector,
                     tabCreatorManager, resetHandler, this::getRecyclerViewPosition,
-                    animationSourceViewProvider, shareDelegateSupplier, mSnackbarManager,
-                    mComponentName);
+                    animationSourceViewProvider, mSnackbarManager, mComponentName);
 
             // TODO(crbug.com/1031349) : Remove the inline mode logic here, make the constructor to
             // take in a mode parameter instead.

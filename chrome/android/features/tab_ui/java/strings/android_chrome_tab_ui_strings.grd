@@ -340,9 +340,6 @@
       <message name="IDS_TAB_GRID_DIALOG_SELECTION_MODE_REMOVE" desc="This texts shows on the action button of tab group selection mode. When user clicks this action button, all the tabs that are currently selected will be moved out of tab group. One thing worth mentioning here is that the remove here does not mean delete, it means move tab out of tab group and becomes a single tab.">
         Remove
       </message>
-      <message name="IDS_TAB_GRID_DIALOG_TOOLBAR_SHARE_GROUP" desc="This text shows in the TabGridDialog toolbar menu as one menu item. When user selects this item, the share sheet will show which allows user to share current tab group via Gmail, Messages or copy to clipboard etc, in the format of a list of URLs representing the current tab group.">
-        Share group
-      </message>
       <message name="IDS_TAB_GRID_DIALOG_TOOLBAR_EDIT_GROUP_NAME" desc="This text shows in the TabGridDialog toolbar menu as one menu item. When user selects this item, the group name field will be focused and the keyboard will show for users to edit the group name.">
         Edit group name
       </message>

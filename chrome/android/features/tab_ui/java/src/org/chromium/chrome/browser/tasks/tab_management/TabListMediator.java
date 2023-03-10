@@ -465,7 +465,7 @@ class TabListMediator {
                 return;
             }
             if (mModel.indexFromId(tab.getId()) == TabModel.INVALID_TAB_INDEX) return;
-            if (TabUiFeatureUtilities.ENABLE_DEFERRED_FAVICON.getValue()) {
+            if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mContext)) {
                 mModel.get(mModel.indexFromId(tab.getId()))
                         .model.set(TabProperties.FAVICON_FETCHER,
                                 mTabListFaviconProvider.getDefaultFaviconFetcher(
@@ -1068,7 +1068,7 @@ class TabListMediator {
                     if (index == TabModel.INVALID_TAB_INDEX) return;
                     mModel.get(index).model.set(TabProperties.TITLE, title);
                     updateDescriptionString(PseudoTab.fromTab(tab), mModel.get(index).model);
-                    if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
+                    if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mContext)) {
                         updateCloseButtonDescriptionString(
                                 PseudoTab.fromTab(tab), mModel.get(index).model);
                     }
@@ -1364,7 +1364,7 @@ class TabListMediator {
         mModel.get(index).model.set(
                 TabProperties.TAB_CLOSED_LISTENER, isRealTab ? mTabClosedListener : null);
         updateDescriptionString(pseudoTab, mModel.get(index).model);
-        if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
+        if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mContext)) {
             updateCloseButtonDescriptionString(pseudoTab, mModel.get(index).model);
         }
         if (isRealTab) {
@@ -1655,7 +1655,7 @@ class TabListMediator {
                         .with(CARD_TYPE, TAB)
                         .build();
 
-        if (TabUiFeatureUtilities.ENABLE_DEFERRED_FAVICON.getValue()) {
+        if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mContext)) {
             tabInfo.set(TabProperties.FAVICON_FETCHER,
                     mTabListFaviconProvider.getDefaultFaviconFetcher(pseudoTab.isIncognito()));
         } else {
@@ -1692,7 +1692,7 @@ class TabListMediator {
             tabInfo.set(TabProperties.TAB_SELECTED_LISTENER, tabSelectedListener);
             tabInfo.set(TabProperties.TAB_CLOSED_LISTENER, isRealTab ? mTabClosedListener : null);
             updateDescriptionString(pseudoTab, tabInfo);
-            if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
+            if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mContext)) {
                 updateCloseButtonDescriptionString(pseudoTab, tabInfo);
             }
         }
@@ -1753,7 +1753,7 @@ class TabListMediator {
     }
 
     private void updateCloseButtonDescriptionString(PseudoTab pseudoTab, PropertyModel model) {
-        if (!TabUiFeatureUtilities.isLaunchPolishEnabled()) return;
+        if (!TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mContext)) return;
         if (mActionsOnAllRelatedTabs) {
             int numOfRelatedTabs = getRelatedTabsForId(pseudoTab.getId()).size();
             if (numOfRelatedTabs > 1) {
@@ -1889,16 +1889,10 @@ class TabListMediator {
             }
 
             // For tab group card in grid tab switcher, the favicon is the composed favicon.
-            if (TabUiFeatureUtilities.ENABLE_DEFERRED_FAVICON.getValue()) {
-                mModel.get(modelIndex)
-                        .model.set(TabProperties.FAVICON_FETCHER,
-                                mTabListFaviconProvider.getComposedFaviconImageFetcher(
-                                        urls, pseudoTab.isIncognito()));
-            } else {
-                mTabListFaviconProvider.getComposedFaviconImageAsync(
-                        urls, pseudoTab.isIncognito(), faviconCallback);
-            }
-
+            mModel.get(modelIndex)
+                    .model.set(TabProperties.FAVICON_FETCHER,
+                            mTabListFaviconProvider.getComposedFaviconImageFetcher(
+                                    urls, pseudoTab.isIncognito()));
             return;
         }
         if (!mTabListFaviconProvider.isInitialized()) {
@@ -1907,7 +1901,7 @@ class TabListMediator {
 
         // If there is an available icon, we fetch favicon synchronously; otherwise asynchronously.
         if (icon != null && iconUrl != null) {
-            if (TabUiFeatureUtilities.ENABLE_DEFERRED_FAVICON.getValue()) {
+            if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mContext)) {
                 mModel.get(modelIndex)
                         .model.set(TabProperties.FAVICON_FETCHER,
                                 mTabListFaviconProvider.getFaviconFromBitmapFetcher(icon, iconUrl));
@@ -1918,7 +1912,7 @@ class TabListMediator {
             return;
         }
 
-        if (TabUiFeatureUtilities.ENABLE_DEFERRED_FAVICON.getValue()) {
+        if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mContext)) {
             TabFaviconFetcher fetcher = mTabListFaviconProvider.getFaviconForUrlFetcher(
                     pseudoTab.getUrl(), pseudoTab.isIncognito());
             mModel.get(modelIndex).model.set(TabProperties.FAVICON_FETCHER, fetcher);

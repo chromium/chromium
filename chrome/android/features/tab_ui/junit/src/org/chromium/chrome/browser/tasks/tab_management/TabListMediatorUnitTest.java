@@ -676,9 +676,7 @@ public class TabListMediatorUnitTest {
     @Test
     @Features.EnableFeatures(TAB_GROUPS_CONTINUATION_ANDROID)
     public void updatesFaviconFetcher_SingleTab_GTS() {
-        TabUiFeatureUtilities.ENABLE_DEFERRED_FAVICON.setForTesting(true);
-        initAndAssertAllProperties();
-        mMediator.setActionOnAllRelatedTabsForTesting(true);
+        setUpForTabGroupOperation(TabListMediatorType.TAB_SWITCHER, TabListMode.GRID);
 
         mModel.get(0).model.set(TabProperties.FAVICON_FETCHER, null);
         assertNull(mModel.get(0).model.get(TabProperties.FAVICON_FETCHER));
@@ -697,8 +695,7 @@ public class TabListMediatorUnitTest {
     @Test
     @Features.EnableFeatures(TAB_GROUPS_CONTINUATION_ANDROID)
     public void updatesFaviconFetcher_SingleTab_NonGTS() {
-        TabUiFeatureUtilities.ENABLE_DEFERRED_FAVICON.setForTesting(true);
-        initAndAssertAllProperties();
+        setUpForTabGroupOperation(TabListMediatorType.TAB_SWITCHER, TabListMode.GRID);
 
         mModel.get(0).model.set(TabProperties.FAVICON_FETCHER, null);
         assertNull(mModel.get(0).model.get(TabProperties.FAVICON_FETCHER));
@@ -717,26 +714,27 @@ public class TabListMediatorUnitTest {
     @Test
     @Features.EnableFeatures(TAB_GROUPS_CONTINUATION_ANDROID)
     public void updatesFaviconFetcher_TabGroup_GTS() {
-        TabUiFeatureUtilities.ENABLE_DEFERRED_FAVICON.setForTesting(true);
-        initAndAssertAllProperties();
-        mMediator.setActionOnAllRelatedTabsForTesting(true);
+        setUpForTabGroupOperation(TabListMediatorType.TAB_SWITCHER, TabListMode.GRID);
 
         assertNotNull(mModel.get(0).model.get(TabProperties.FAVICON_FETCHER));
+        mModel.get(0).model.set(TabProperties.FAVICON_FETCHER, null);
         // Assert that tab1 is in a group.
         TabImpl newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
-        doReturn(Arrays.asList(mTab1, newTab)).when(mTabModelFilter).getRelatedTabList(eq(TAB1_ID));
+        List<GURL> urls = Arrays.asList(mTab1.getUrl(), newTab.getUrl());
+        doReturn(Arrays.asList(mTab1, newTab))
+                .when(mTabGroupModelFilter)
+                .getRelatedTabList(eq(TAB1_ID));
 
         mTabObserverCaptor.getValue().onFaviconUpdated(mTab1, mFaviconBitmap, mFaviconUrl);
 
-        assertNull(mModel.get(0).model.get(TabProperties.FAVICON_FETCHER));
+        verify(mTabListFaviconProvider).getComposedFaviconImageFetcher(eq(urls), anyBoolean());
+        assertNotNull(mModel.get(0).model.get(TabProperties.FAVICON_FETCHER));
     }
 
     @Test
     @Features.EnableFeatures(TAB_GROUPS_CONTINUATION_ANDROID)
     public void updatesFaviconFetcher_Navigation_NoOpSameDocument() {
-        TabUiFeatureUtilities.ENABLE_DEFERRED_FAVICON.setForTesting(true);
-        initAndAssertAllProperties();
-        mMediator.setActionOnAllRelatedTabsForTesting(true);
+        setUpForTabGroupOperation(TabListMediatorType.TAB_SWITCHER, TabListMode.GRID);
         doReturn(true).when(mTabModelSelector).isTabStateInitialized();
         doReturn(mFavicon).when(mTabListFaviconProvider).getDefaultFavicon(anyBoolean());
 
@@ -755,9 +753,7 @@ public class TabListMediatorUnitTest {
     @Test
     @Features.EnableFeatures(TAB_GROUPS_CONTINUATION_ANDROID)
     public void updatesFaviconFetcher_Navigation_NoOpSameUrl() {
-        TabUiFeatureUtilities.ENABLE_DEFERRED_FAVICON.setForTesting(true);
-        initAndAssertAllProperties();
-        mMediator.setActionOnAllRelatedTabsForTesting(true);
+        setUpForTabGroupOperation(TabListMediatorType.TAB_SWITCHER, TabListMode.GRID);
         doReturn(true).when(mTabModelSelector).isTabStateInitialized();
         doReturn(mFavicon).when(mTabListFaviconProvider).getDefaultFavicon(anyBoolean());
 
@@ -776,26 +772,28 @@ public class TabListMediatorUnitTest {
     @Test
     @Features.EnableFeatures(TAB_GROUPS_CONTINUATION_ANDROID)
     public void updatesFaviconFetcher_Navigation_NoOpNtpUrl() {
-        TabUiFeatureUtilities.ENABLE_DEFERRED_FAVICON.setForTesting(true);
-        initAndAssertAllProperties();
-        mMediator.setActionOnAllRelatedTabsForTesting(true);
+        setUpForTabGroupOperation(TabListMediatorType.TAB_SWITCHER, TabListMode.GRID);
         doReturn(true).when(mTabModelSelector).isTabStateInitialized();
         doReturn(mFavicon).when(mTabListFaviconProvider).getDefaultFavicon(anyBoolean());
+
+        GURL ntpUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL);
+        doReturn("")
+                .when(mUrlUtilitiesJniMock)
+                .getDomainAndRegistry(eq(ntpUrl.getSpec()), anyBoolean());
 
         NavigationHandle navigationHandle = mock(NavigationHandle.class);
         when(navigationHandle.getUrl()).thenReturn(TAB2_URL);
         when(navigationHandle.isSameDocument()).thenReturn(false);
 
-        TabImpl newTab =
-                prepareTab(TAB3_ID, TAB3_TITLE, JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL));
-        doReturn(mTab1).when(mTabModelFilter).getTabAt(0);
-        doReturn(mTab2).when(mTabModelFilter).getTabAt(1);
-        doReturn(newTab).when(mTabModelFilter).getTabAt(2);
-        doReturn(3).when(mTabModelFilter).getCount();
-        doReturn(Arrays.asList(newTab)).when(mTabModelFilter).getRelatedTabList(eq(TAB3_ID));
+        TabImpl newTab = prepareTab(TAB3_ID, TAB3_TITLE, ntpUrl);
+        doReturn(mTab1).when(mTabGroupModelFilter).getTabAt(0);
+        doReturn(mTab2).when(mTabGroupModelFilter).getTabAt(1);
+        doReturn(newTab).when(mTabGroupModelFilter).getTabAt(2);
+        doReturn(3).when(mTabGroupModelFilter).getCount();
+        doReturn(Arrays.asList(newTab)).when(mTabGroupModelFilter).getRelatedTabList(eq(TAB3_ID));
         assertThat(mModel.size(), equalTo(2));
 
-        mTabModelObserverCaptor.getValue().didAddTab(
+        mMediatorTabModelObserver.didAddTab(
                 newTab, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND, false);
 
         assertThat(mModel.size(), equalTo(3));
@@ -813,9 +811,7 @@ public class TabListMediatorUnitTest {
     @Test
     @Features.EnableFeatures(TAB_GROUPS_CONTINUATION_ANDROID)
     public void updatesFaviconFetcher_Navigation() {
-        TabUiFeatureUtilities.ENABLE_DEFERRED_FAVICON.setForTesting(true);
-        initAndAssertAllProperties();
-        mMediator.setActionOnAllRelatedTabsForTesting(true);
+        setUpForTabGroupOperation(TabListMediatorType.TAB_SWITCHER, TabListMode.GRID);
 
         mModel.get(0).model.set(TabProperties.FAVICON_FETCHER, null);
         assertNull(mModel.get(0).model.get(TabProperties.FAVICON_FETCHER));
@@ -3313,48 +3309,10 @@ public class TabListMediatorUnitTest {
 
     @Test
     @Features.EnableFeatures({TAB_GROUPS_CONTINUATION_ANDROID})
-    public void testUpdateFaviconForGroup() {
-        setUpForTabGroupOperation(TabListMediatorType.TAB_SWITCHER, TabListMode.GRID);
-        mMediator.setActionOnAllRelatedTabsForTesting(true);
-        mModel.get(0).model.set(TabProperties.FAVICON, null);
-        doNothing()
-                .when(mTabListFaviconProvider)
-                .getComposedFaviconImageAsync(any(), anyBoolean(), mCallbackCaptor.capture());
-
-        // Test a group of three.
-        TabImpl tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
-        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2, tab3));
-        createTabGroup(tabs, TAB1_ID);
-        mTabObserverCaptor.getValue().onFaviconUpdated(mTab1, mFaviconBitmap, mFaviconUrl);
-        List<GURL> urls = new ArrayList<>(Arrays.asList(TAB1_URL, TAB2_URL, TAB3_URL));
-        verify(mTabListFaviconProvider).getComposedFaviconImageAsync(eq(urls), anyBoolean(), any());
-        mCallbackCaptor.getValue().onResult(mFavicon);
-        assertThat(mModel.get(0).model.get(TabProperties.FAVICON), equalTo(mFavicon));
-
-        // Test a group of five.
-        mModel.get(1).model.set(TabProperties.FAVICON, null);
-        TabImpl tab4 = prepareTab(0, "tab 4", TAB2_URL);
-        TabImpl tab5 = prepareTab(1, "tab 5", JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL));
-        tabs.addAll(Arrays.asList(tab4, tab5));
-        createTabGroup(tabs, TAB2_ID);
-        mTabObserverCaptor.getValue().onFaviconUpdated(mTab2, mFaviconBitmap, mFaviconUrl);
-        urls = new ArrayList<>(Arrays.asList(TAB2_URL, TAB1_URL, TAB3_URL, TAB2_URL));
-
-        verify(mTabListFaviconProvider).getComposedFaviconImageAsync(eq(urls), anyBoolean(), any());
-        mCallbackCaptor.getValue().onResult(mFavicon);
-        assertThat(mModel.get(1).model.get(TabProperties.FAVICON), equalTo(mFavicon));
-    }
-
-    @Test
-    @Features.EnableFeatures({TAB_GROUPS_CONTINUATION_ANDROID})
     public void testUpdateFaviconFetcherForGroup() {
-        TabUiFeatureUtilities.ENABLE_DEFERRED_FAVICON.setForTesting(true);
         setUpForTabGroupOperation(TabListMediatorType.TAB_SWITCHER, TabListMode.GRID);
-        mMediator.setActionOnAllRelatedTabsForTesting(true);
         mModel.get(0).model.set(TabProperties.FAVICON, null);
-        doNothing()
-                .when(mTabListFaviconProvider)
-                .getComposedFaviconImageAsync(any(), anyBoolean(), mCallbackCaptor.capture());
+        mModel.get(0).model.set(TabProperties.FAVICON_FETCHER, null);
 
         // Test a group of three.
         TabImpl tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
@@ -3363,9 +3321,12 @@ public class TabListMediatorUnitTest {
         mTabObserverCaptor.getValue().onFaviconUpdated(mTab1, mFaviconBitmap, mFaviconUrl);
         List<GURL> urls = new ArrayList<>(Arrays.asList(TAB1_URL, TAB2_URL, TAB3_URL));
         verify(mTabListFaviconProvider).getComposedFaviconImageFetcher(eq(urls), anyBoolean());
+        assertNull(mModel.get(0).model.get(TabProperties.FAVICON));
+        assertNotNull(mModel.get(0).model.get(TabProperties.FAVICON_FETCHER));
 
         // Test a group of five.
         mModel.get(1).model.set(TabProperties.FAVICON, null);
+        mModel.get(1).model.set(TabProperties.FAVICON_FETCHER, null);
         TabImpl tab4 = prepareTab(0, "tab 4", TAB2_URL);
         TabImpl tab5 = prepareTab(1, "tab 5", JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL));
         tabs.addAll(Arrays.asList(tab4, tab5));
@@ -3373,84 +3334,86 @@ public class TabListMediatorUnitTest {
         mTabObserverCaptor.getValue().onFaviconUpdated(mTab2, mFaviconBitmap, mFaviconUrl);
         urls = new ArrayList<>(Arrays.asList(TAB2_URL, TAB1_URL, TAB3_URL, TAB2_URL));
         verify(mTabListFaviconProvider).getComposedFaviconImageFetcher(eq(urls), anyBoolean());
+        assertNull(mModel.get(0).model.get(TabProperties.FAVICON));
+        assertNotNull(mModel.get(0).model.get(TabProperties.FAVICON_FETCHER));
     }
 
     @Test
     @Features.EnableFeatures({TAB_GROUPS_CONTINUATION_ANDROID})
-    public void testUpdateFaviconForGroup_StaleIndex_SelectAnotherTabWithinGroup() {
+    public void testUpdateFaviconFetcherForGroup_StaleIndex_SelectAnotherTabWithinGroup() {
         setUpForTabGroupOperation(TabListMediatorType.TAB_SWITCHER, TabListMode.GRID);
         mMediator.setActionOnAllRelatedTabsForTesting(true);
-        mModel.get(0).model.set(TabProperties.FAVICON, null);
-        mModel.get(1).model.set(TabProperties.FAVICON, null);
-        doNothing()
-                .when(mTabListFaviconProvider)
-                .getComposedFaviconImageAsync(any(), anyBoolean(), mCallbackCaptor.capture());
+        assertNull(mModel.get(0).model.get(TabProperties.FAVICON));
+        assertNull(mModel.get(1).model.get(TabProperties.FAVICON));
+        mModel.get(0).model.set(TabProperties.FAVICON_FETCHER, null);
+        mModel.get(1).model.set(TabProperties.FAVICON_FETCHER, null);
 
         TabImpl tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
         List<Tab> group1 = new ArrayList<>(Arrays.asList(mTab2, tab3));
+        List<GURL> group1Urls = new ArrayList<>(Arrays.asList(mTab2.getUrl(), tab3.getUrl()));
         createTabGroup(group1, TAB2_ID);
         assertEquals(1, mModel.indexFromId(TAB2_ID));
 
         mTabObserverCaptor.getValue().onFaviconUpdated(mTab2, mFaviconBitmap, mFaviconUrl);
+        verify(mTabListFaviconProvider)
+                .getComposedFaviconImageFetcher(eq(group1Urls), anyBoolean());
 
-        // Simulate selecting another Tab within TabGroup before callback in
-        // getComposedFaviconImageAsync triggers
+        // Simulate selecting another Tab within TabGroup.
         mModel.get(1).model.set(TabProperties.TAB_ID, TAB3_ID);
-        mCallbackCaptor.getValue().onResult(mFavicon);
 
         assertNotEquals(1, mModel.indexFromId(TAB2_ID));
         assertNull(mModel.get(1).model.get(TabProperties.FAVICON));
+        assertNotNull(mModel.get(1).model.get(TabProperties.FAVICON_FETCHER));
     }
 
     @Test
     @Features.EnableFeatures({TAB_GROUPS_CONTINUATION_ANDROID})
-    public void testUpdateFaviconForGroup_StaleIndex_CloseTab() {
+    public void testUpdateFaviconFetcherForGroup_StaleIndex_CloseTab() {
         setUpForTabGroupOperation(TabListMediatorType.TAB_SWITCHER, TabListMode.GRID);
         mMediator.setActionOnAllRelatedTabsForTesting(true);
-        mModel.get(0).model.set(TabProperties.FAVICON, null);
-        mModel.get(1).model.set(TabProperties.FAVICON, null);
-        doNothing()
-                .when(mTabListFaviconProvider)
-                .getComposedFaviconImageAsync(any(), anyBoolean(), mCallbackCaptor.capture());
+        assertNull(mModel.get(0).model.get(TabProperties.FAVICON));
+        assertNull(mModel.get(1).model.get(TabProperties.FAVICON));
+        mModel.get(0).model.set(TabProperties.FAVICON_FETCHER, null);
+        mModel.get(1).model.set(TabProperties.FAVICON_FETCHER, null);
 
         TabImpl tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
         List<Tab> group1 = new ArrayList<>(Arrays.asList(mTab2, tab3));
+        List<GURL> group1Urls = new ArrayList<>(Arrays.asList(mTab2.getUrl(), tab3.getUrl()));
         createTabGroup(group1, TAB2_ID);
         assertEquals(1, mModel.indexFromId(TAB2_ID));
 
         mTabObserverCaptor.getValue().onFaviconUpdated(mTab2, mFaviconBitmap, mFaviconUrl);
+        verify(mTabListFaviconProvider)
+                .getComposedFaviconImageFetcher(eq(group1Urls), anyBoolean());
 
-        // Simulate closing mTab1 at index 0 before callback in getComposedFaviconImageAsync
-        // triggers.
+        // Simulate closing mTab1 at index 0.
         mModel.removeAt(0);
-        mCallbackCaptor.getValue().onResult(mFavicon);
 
         assertEquals(0, mModel.indexFromId(TAB2_ID));
-        assertEquals(mFavicon, mModel.get(0).model.get(TabProperties.FAVICON));
+        assertNotNull(mModel.get(0).model.get(TabProperties.FAVICON_FETCHER));
     }
 
     @Test
     @Features.EnableFeatures({TAB_GROUPS_CONTINUATION_ANDROID})
-    public void testUpdateFaviconForGroup_StaleIndex_Reset() {
+    public void testUpdateFaviconFetcherForGroup_StaleIndex_Reset() {
         setUpForTabGroupOperation(TabListMediatorType.TAB_SWITCHER, TabListMode.GRID);
-        mMediator.setActionOnAllRelatedTabsForTesting(true);
-        mModel.get(0).model.set(TabProperties.FAVICON, null);
-        mModel.get(1).model.set(TabProperties.FAVICON, null);
-        doNothing()
-                .when(mTabListFaviconProvider)
-                .getComposedFaviconImageAsync(any(), anyBoolean(), mCallbackCaptor.capture());
+        assertNull(mModel.get(0).model.get(TabProperties.FAVICON));
+        assertNull(mModel.get(1).model.get(TabProperties.FAVICON));
+        mModel.get(0).model.set(TabProperties.FAVICON_FETCHER, null);
+        mModel.get(1).model.set(TabProperties.FAVICON_FETCHER, null);
 
         TabImpl tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
         List<Tab> group1 = new ArrayList<>(Arrays.asList(mTab2, tab3));
+        List<GURL> group1Urls = new ArrayList<>(Arrays.asList(mTab2.getUrl(), tab3.getUrl()));
         createTabGroup(group1, TAB2_ID);
         assertEquals(1, mModel.indexFromId(TAB2_ID));
 
         mTabObserverCaptor.getValue().onFaviconUpdated(mTab2, mFaviconBitmap, mFaviconUrl);
+        verify(mTabListFaviconProvider)
+                .getComposedFaviconImageFetcher(eq(group1Urls), anyBoolean());
 
-        // Simulate TabListMediator reset with null before callback in getComposedFaviconImageAsync
-        // triggers.
+        // Simulate TabListMediator reset with null.
         mModel.set(new ArrayList<>());
-        mCallbackCaptor.getValue().onResult(mFavicon);
     }
 
     @Test(expected = AssertionError.class)
@@ -3501,7 +3464,6 @@ public class TabListMediatorUnitTest {
     @Test
     @Features.EnableFeatures({TAB_GROUPS_CONTINUATION_ANDROID})
     public void testCloseButtonDescriptionStringSetup_TabSwitcher() {
-        TabUiFeatureUtilities.ENABLE_LAUNCH_POLISH.setForTesting(true);
         setUpForTabGroupOperation(TabListMediatorType.TAB_SWITCHER, TabListMode.GRID);
         setUpCloseButtonDescriptionString(false);
         String targetString = "Close Tab1 tab";
@@ -3532,7 +3494,6 @@ public class TabListMediatorUnitTest {
         mMediator.getTabGroupTitleEditor().updateTabGroupTitle(mTab1, CUSTOMIZED_DIALOG_TITLE1);
         assertThat(mModel.get(POSITION1).model.get(TabProperties.CLOSE_BUTTON_DESCRIPTION_STRING),
                 equalTo(targetString));
-        TabUiFeatureUtilities.ENABLE_LAUNCH_POLISH.setForTesting(false);
     }
 
     @Test
@@ -3787,7 +3748,7 @@ public class TabListMediatorUnitTest {
         assertThat(mModel.get(0).model.get(TabProperties.TITLE), equalTo(TAB1_TITLE));
         assertThat(mModel.get(1).model.get(TabProperties.TITLE), equalTo(TAB2_TITLE));
 
-        if (TabUiFeatureUtilities.ENABLE_DEFERRED_FAVICON.getValue()) {
+        if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mActivity)) {
             assertNull(mModel.get(0).model.get(TabProperties.FAVICON));
             assertNull(mModel.get(1).model.get(TabProperties.FAVICON));
             assertNotNull(mModel.get(0).model.get(TabProperties.FAVICON_FETCHER));

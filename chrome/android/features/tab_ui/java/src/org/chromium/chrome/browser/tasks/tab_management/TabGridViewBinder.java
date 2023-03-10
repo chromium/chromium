@@ -113,11 +113,15 @@ class TabGridViewBinder {
                     model.get(TabProperties.IS_SELECTED));
             updateFavicon(view, model);
         } else if (TabProperties.FAVICON == propertyKey) {
-            if (TabUiFeatureUtilities.ENABLE_DEFERRED_FAVICON.getValue()) return;
+            if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(view.getContext())) {
+                return;
+            }
 
             updateFavicon(view, model);
         } else if (TabProperties.FAVICON_FETCHER == propertyKey) {
-            if (!TabUiFeatureUtilities.ENABLE_DEFERRED_FAVICON.getValue()) return;
+            if (!TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(view.getContext())) {
+                return;
+            }
 
             updateFavicon(view, model);
         } else if (TabProperties.THUMBNAIL_FETCHER == propertyKey) {
@@ -176,7 +180,9 @@ class TabGridViewBinder {
         } else if (CARD_ALPHA == propertyKey) {
             view.setAlpha(model.get(CARD_ALPHA));
         } else if (TabProperties.TITLE == propertyKey) {
-            if (TabUiFeatureUtilities.isLaunchPolishEnabled()) return;
+            if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(view.getContext())) {
+                return;
+            }
             String title = model.get(TabProperties.TITLE);
             view.fastFindViewById(R.id.action_button)
                     .setContentDescription(view.getResources().getString(
@@ -246,7 +252,7 @@ class TabGridViewBinder {
             view.setSelected(model.get(TabProperties.IS_SELECTED));
             updateColorForActionButton(view, model.get(TabProperties.IS_INCOGNITO),
                     model.get(TabProperties.IS_SELECTED));
-        } else if (TabUiFeatureUtilities.isLaunchPolishEnabled()
+        } else if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(view.getContext())
                 && TabProperties.CLOSE_BUTTON_DESCRIPTION_STRING == propertyKey) {
             view.fastFindViewById(R.id.action_button)
                     .setContentDescription(
@@ -307,7 +313,6 @@ class TabGridViewBinder {
         final TabListMediator.ThumbnailFetcher fetcher = model.get(TabProperties.THUMBNAIL_FETCHER);
         TabGridThumbnailView thumbnail =
                 (TabGridThumbnailView) view.fastFindViewById(R.id.tab_thumbnail);
-        thumbnail.maybeAdjustThumbnailHeight();
         if (fetcher == null) {
             thumbnail.setImageDrawable(null);
             return;
@@ -344,7 +349,8 @@ class TabGridViewBinder {
                         && cardSize != null
                 ? TabUtils.deriveThumbnailSize(cardSize, view.getContext())
                 : null;
-        if (TabUiFeatureUtilities.isLaunchPolishEnabled() && sThumbnailFetcherForTesting != null) {
+        if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(view.getContext())
+                && sThumbnailFetcherForTesting != null) {
             sThumbnailFetcherForTesting.fetch(callback, thumbnailSize, isSelected);
         } else {
             fetcher.fetch(callback, thumbnailSize, isSelected);
@@ -393,7 +399,7 @@ class TabGridViewBinder {
      * #bindCommonProperties}.
      */
     private static void updateFavicon(ViewLookupCachingFrameLayout rootView, PropertyModel model) {
-        if (TabUiFeatureUtilities.ENABLE_DEFERRED_FAVICON.getValue()) {
+        if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(rootView.getContext())) {
             final TabListFaviconProvider.TabFaviconFetcher fetcher =
                     model.get(TabProperties.FAVICON_FETCHER);
             if (fetcher == null) {

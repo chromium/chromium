@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
@@ -15,7 +14,6 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -41,6 +39,7 @@ import org.robolectric.RuntimeEnvironment;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider.TabFavicon;
 import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider.TabFaviconFetcher;
 import org.chromium.chrome.tab_ui.R;
@@ -57,8 +56,6 @@ public final class TabGridViewBinderUnitTest {
     public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
     @Mock
     private ViewLookupCachingFrameLayout mViewGroup;
-    @Mock
-    private Resources mResources;
     @Mock
     private TabListMediator.ThumbnailFetcher mFetcher;
     @Mock
@@ -79,12 +76,13 @@ public final class TabGridViewBinderUnitTest {
     private PropertyModel mModel;
     private LayoutParams mLayoutParams;
     private Bitmap mBitmap;
-    private static final int RESOURCE_ID = 123;
+    private static final float RESOURCE_DIMEN = 10;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mContext = RuntimeEnvironment.getApplication();
+        mContext = RuntimeEnvironment.application;
+
         mModel = new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
                          .with(TabProperties.THUMBNAIL_FETCHER, mFetcher)
                          .with(TabProperties.IS_INCOGNITO, false)
@@ -95,7 +93,6 @@ public final class TabGridViewBinderUnitTest {
         when(mViewGroup.fastFindViewById(R.id.tab_favicon)).thenReturn(mFaviconView);
         when(mFaviconView.getContext()).thenReturn(mContext);
         when(mViewGroup.getContext()).thenReturn(mContext);
-        when(mTypedArray.getResourceId(anyInt(), anyInt())).thenReturn(RESOURCE_ID);
 
         // mModel, view and bitmap all use the same initial values.
         mLayoutParams = new LayoutParams(INIT_WIDTH, INIT_HEIGHT);
@@ -131,7 +128,6 @@ public final class TabGridViewBinderUnitTest {
         verify(mThumbnailView).setScaleType(ScaleType.FIT_CENTER);
         verify(mThumbnailView).setAdjustViewBounds(true);
         verify(mThumbnailView).setImageBitmap(mBitmap);
-        verify(mThumbnailView).maybeAdjustThumbnailHeight();
         verify(mThumbnailView).getLayoutParams();
         verifyNoMoreInteractions(mThumbnailView);
     }
@@ -157,7 +153,6 @@ public final class TabGridViewBinderUnitTest {
         verify(mThumbnailView).setScaleType(ScaleType.FIT_CENTER);
         verify(mThumbnailView).setAdjustViewBounds(true);
         verify(mThumbnailView).setImageBitmap(mBitmap);
-        verify(mThumbnailView).maybeAdjustThumbnailHeight();
         verify(mThumbnailView).getLayoutParams();
         verifyNoMoreInteractions(mThumbnailView);
     }
@@ -185,7 +180,6 @@ public final class TabGridViewBinderUnitTest {
 
         verify(mThumbnailView).setScaleType(ScaleType.MATRIX);
         verify(mThumbnailView).setImageBitmap(mBitmap);
-        verify(mThumbnailView).maybeAdjustThumbnailHeight();
         ArgumentCaptor<Matrix> matrixCaptor = ArgumentCaptor.forClass(Matrix.class);
         verify(mThumbnailView).setImageMatrix(matrixCaptor.capture());
         verify(mThumbnailView).getLayoutParams();
@@ -221,7 +215,6 @@ public final class TabGridViewBinderUnitTest {
 
         verify(mThumbnailView).setScaleType(ScaleType.MATRIX);
         verify(mThumbnailView).setImageBitmap(mBitmap);
-        verify(mThumbnailView).maybeAdjustThumbnailHeight();
         ArgumentCaptor<Matrix> matrixCaptor = ArgumentCaptor.forClass(Matrix.class);
         verify(mThumbnailView).setImageMatrix(matrixCaptor.capture());
         verify(mThumbnailView).getLayoutParams();
@@ -236,9 +229,8 @@ public final class TabGridViewBinderUnitTest {
     }
 
     @Test
+    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void testBindFaviconFetcher() {
-        TabUiFeatureUtilities.ENABLE_DEFERRED_FAVICON.setForTesting(true);
-
         doReturn(mDrawable).when(mTabFavicon).getSelectedDrawable();
 
         TabFaviconFetcher fetcher = new TabFaviconFetcher() {
@@ -254,9 +246,8 @@ public final class TabGridViewBinderUnitTest {
     }
 
     @Test
+    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void testBindNullFaviconFetcher() {
-        TabUiFeatureUtilities.ENABLE_DEFERRED_FAVICON.setForTesting(true);
-
         mModel.set(TabProperties.FAVICON_FETCHER, null);
         TabGridViewBinder.bindClosableTab(mModel, mViewGroup, TabProperties.FAVICON_FETCHER);
 

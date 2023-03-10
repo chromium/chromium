@@ -88,9 +88,6 @@ import java.util.concurrent.atomic.AtomicReference;
 public class TabGroupUiTest {
     // clang-format on
 
-    private static final String TAB_GROUP_LAUNCH_BUG_FIX_PARAMS =
-            "force-fieldtrial-params=Study.Group:enable_launch_bug_fix/true";
-
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
@@ -208,8 +205,7 @@ public class TabGroupUiTest {
     @Test
     @MediumTest
     // clang-format off
-    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study"})
-    @CommandLineFlags.Add({"force-fieldtrials=Study/Group", TAB_GROUP_LAUNCH_BUG_FIX_PARAMS})
+    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
     public void testVisibilityChangeWithOmnibox() throws Exception {
         // clang-format on
 
@@ -248,6 +244,7 @@ public class TabGroupUiTest {
                     "event_used/" +
                     "name%3Aiph_tabgroups_strip;comparator%3A==0;window%3A365;storage%3A365/" +
                     "session_rate/<1"})
+    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     @DisabledTest(message = "https://crbug.com/1145060")
     public void testIphSuppressedByBottomSheet() throws Exception {
         // clang-format on
@@ -259,7 +256,6 @@ public class TabGroupUiTest {
         TabAttributeCache.setRootIdForTesting(0, 0);
         TabAttributeCache.setRootIdForTesting(1, 0);
         createTabStateFile(new int[] {0, 1});
-        TabUiFeatureUtilities.ENABLE_LAUNCH_BUG_FIX.setForTesting(true);
 
         // Restart Chrome and make sure both tab strip and IPH text bubble are showing.
         mActivityTestRule.startMainActivityFromLauncher();

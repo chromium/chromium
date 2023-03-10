@@ -36,7 +36,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.query_tiles.QueryTileSection;
 import org.chromium.chrome.browser.query_tiles.QueryTileUtils;
-import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesCoordinator;
 import org.chromium.chrome.browser.suggestions.tile.TileGroupDelegateImpl;
 import org.chromium.chrome.browser.tab.Tab;
@@ -104,7 +103,6 @@ public class TasksSurfaceCoordinator implements TasksSurface {
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
             @NonNull TabCreatorManager tabCreatorManager,
             @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
-            @NonNull Supplier<ShareDelegate> shareDelegateSupplier,
             @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             @NonNull ViewGroup rootView,
             @Nullable OneshotSupplier<IncognitoReauthController>
@@ -127,18 +125,17 @@ public class TasksSurfaceCoordinator implements TasksSurface {
             mTabSwitcher = TabManagementModuleProvider.getDelegate().createCarouselTabSwitcher(
                     activity, activityLifecycleDispatcher, tabModelSelector, tabContentManager,
                     browserControlsStateProvider, tabCreatorManager, menuOrKeyboardActionController,
-                    mView.getCarouselTabSwitcherContainer(), shareDelegateSupplier,
-                    multiWindowModeStateDispatcher, scrimCoordinator, rootView,
-                    dynamicResourceLoaderSupplier, snackbarManager, modalDialogManager);
+                    mView.getCarouselTabSwitcherContainer(), multiWindowModeStateDispatcher,
+                    scrimCoordinator, rootView, dynamicResourceLoaderSupplier, snackbarManager,
+                    modalDialogManager);
         } else if (tabSwitcherType == TabSwitcherType.GRID) {
             assert incognitoReauthControllerSupplier
                     != null : "Valid Incognito re-auth controller supplier needed to create GTS.";
             mTabSwitcher = TabManagementModuleProvider.getDelegate().createGridTabSwitcher(activity,
                     activityLifecycleDispatcher, tabModelSelector, tabContentManager,
                     browserControlsStateProvider, tabCreatorManager, menuOrKeyboardActionController,
-                    mView.getBodyViewContainer(), shareDelegateSupplier,
-                    multiWindowModeStateDispatcher, scrimCoordinator, rootView,
-                    dynamicResourceLoaderSupplier, snackbarManager, modalDialogManager,
+                    mView.getBodyViewContainer(), multiWindowModeStateDispatcher, scrimCoordinator,
+                    rootView, dynamicResourceLoaderSupplier, snackbarManager, modalDialogManager,
                     incognitoReauthControllerSupplier, null /*BackPressManager*/);
         } else if (tabSwitcherType == TabSwitcherType.SINGLE) {
             mTabSwitcher = new SingleTabSwitcherCoordinator(

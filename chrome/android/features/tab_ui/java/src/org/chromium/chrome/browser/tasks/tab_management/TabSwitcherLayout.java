@@ -408,7 +408,7 @@ public class TabSwitcherLayout extends Layout {
         if (skipSlowZooming) {
             showShrinkingAnimation &= quick;
         }
-        if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
+        if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(getContext())) {
             // Intentionally disable the shrinking animation when accessibility is enabled.
             // During the shrinking animation, since the ComponsitorViewHolder is not focusable,
             // I think we are in a temporary no "valid" focus target state, so the focus shifts
@@ -699,7 +699,7 @@ public class TabSwitcherLayout extends Layout {
 
     @Override
     public boolean canHostBeFocusable() {
-        if (TabUiFeatureUtilities.isLaunchPolishEnabled()
+        if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(getContext())
                 && ChromeAccessibilityUtil.get().isAccessibilityEnabled()
                 && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
             // We don't allow this layout to gain focus when accessibility is enabled so that the

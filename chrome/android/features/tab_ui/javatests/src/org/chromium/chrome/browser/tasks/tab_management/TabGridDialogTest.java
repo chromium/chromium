@@ -432,62 +432,6 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     // clang-format off
-    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study"})
-    // TODO(crbug/1422295): TabSelectionEditorV2 replaces this behavior. This test can be deleted
-    // during flag cleanup.
-    @Features.DisableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
-    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
-            "force-fieldtrial-params=Study.Group:enable_tab_group_sharing/true"})
-    public void testDialogToolbarMenuShareGroup() {
-        // clang-format on
-        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        createTabs(cta, false, 2);
-        enterTabSwitcher(cta);
-        verifyTabSwitcherCardCount(cta, 2);
-
-        // Create a tab group.
-        mergeAllNormalTabsToAGroup(cta);
-        verifyTabSwitcherCardCount(cta, 1);
-
-        // Open dialog and verify dialog is showing correct content.
-        openDialogFromTabSwitcherAndVerify(cta, 2, null);
-
-        // Click to show the menu and verify it.
-        openDialogToolbarMenuAndVerify(cta);
-
-        // Trigger the share sheet by clicking the share button and verify it.
-        triggerShareGroupAndVerify(cta);
-    }
-
-    @Test
-    @MediumTest
-    // clang-format off
-    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study"})
-    // TODO(crbug/1422295): TabSelectionEditorV2 replaces this behavior. This test can be deleted
-    // during flag cleanup.
-    @Features.DisableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
-    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
-        "force-fieldtrial-params=Study.Group:enable_tab_group_sharing/true"})
-    public void testDialogToolbarMenuShareGroup_WithSharingHub() {
-        // clang-format on
-        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        createTabs(cta, false, 2);
-        enterTabSwitcher(cta);
-        verifyTabSwitcherCardCount(cta, 2);
-
-        // Create a tab group.
-        mergeAllNormalTabsToAGroup(cta);
-        verifyTabSwitcherCardCount(cta, 1);
-        openDialogFromTabSwitcherAndVerify(cta, 2, null);
-        openDialogToolbarMenuAndVerify(cta);
-
-        // We should still show Android share sheet even with sharing hub enabled.
-        triggerShareGroupAndVerify(cta);
-    }
-
-    @Test
-    @MediumTest
-    // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study"})
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
         "force-fieldtrial-params=Study.Group:enable_launch_polish/true"})
@@ -1759,13 +1703,8 @@ public class TabGridDialogTest {
                     } else {
                         verifyTabGridDialogToolbarMenuItem(listView, 0,
                                 cta.getString(R.string.tab_grid_dialog_toolbar_remove_from_group));
-                        if (TabUiFeatureUtilities.ENABLE_TAB_GROUP_SHARING.getValue()) {
-                            menuItemCount += 1;
-                            verifyTabGridDialogToolbarMenuItem(listView, menuItemCount - 1,
-                                    cta.getString(R.string.tab_grid_dialog_toolbar_share_group));
-                        }
                     }
-                    if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
+                    if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(cta)) {
                         menuItemCount += 1;
                         verifyTabGridDialogToolbarMenuItem(listView, menuItemCount - 1,
                                 cta.getString(R.string.tab_grid_dialog_toolbar_edit_group_name));

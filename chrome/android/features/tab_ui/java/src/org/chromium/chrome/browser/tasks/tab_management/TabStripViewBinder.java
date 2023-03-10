@@ -69,12 +69,16 @@ class TabStripViewBinder {
                 button.getBackground().setAlpha(FAVICON_BACKGROUND_DEFAULT_ALPHA);
             }
         } else if (TabProperties.FAVICON == propertyKey) {
-            if (TabUiFeatureUtilities.ENABLE_DEFERRED_FAVICON.getValue()) return;
+            if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(view.getContext())) {
+                return;
+            }
 
             Drawable favicon = model.get(TabProperties.FAVICON).getDefaultDrawable();
             setFavicon(view, model, favicon);
         } else if (TabProperties.FAVICON_FETCHER == propertyKey) {
-            if (!TabUiFeatureUtilities.ENABLE_DEFERRED_FAVICON.getValue()) return;
+            if (!TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(view.getContext())) {
+                return;
+            }
 
             model.set(TabProperties.FAVICON_FETCHED, false);
             TabListFaviconProvider.TabFaviconFetcher fetcher =
