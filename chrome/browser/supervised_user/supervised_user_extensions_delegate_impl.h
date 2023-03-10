@@ -5,16 +5,24 @@
 #ifndef CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_EXTENSIONS_DELEGATE_IMPL_H_
 #define CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_EXTENSIONS_DELEGATE_IMPL_H_
 
+#include <memory>
+
 #include "extensions/browser/supervised_user_extensions_delegate.h"
 
 namespace content {
 class BrowserContext;
-}
+class WebContents;
+}  // namespace content
+
+namespace gfx {
+class ImageSkia;
+}  // namespace gfx
 
 class ParentPermissionDialog;
 
 namespace extensions {
 
+class ExtensionIconLoader;
 enum class ExtensionInstalledBlockedByParentDialogAction;
 
 class SupervisedUserExtensionsDelegateImpl
@@ -51,24 +59,30 @@ class SupervisedUserExtensionsDelegateImpl
       const extensions::Extension& extension,
       content::BrowserContext* context,
       content::WebContents* contents,
-      extensions::SupervisedUserExtensionsDelegate::
-          ExtensionApprovalDoneCallback done_callback,
       const gfx::ImageSkia& icon);
-
   // Shows a dialog indicating that |extension| has been blocked and call
   // |done_callback| when it completes. Depending on the blocked_action type,
   // the UI of the dialog may differ.
   void ShowInstallBlockedByParentDialogForExtension(
       const extensions::Extension& extension,
       content::WebContents* contents,
-      ExtensionInstalledBlockedByParentDialogAction blocked_action,
-      base::OnceClosure done_callback);
+      ExtensionInstalledBlockedByParentDialogAction blocked_action);
+
+  void OnExtensionDataLoaded(const extensions::Extension& extension,
+                             content::BrowserContext* context,
+                             content::WebContents* contents,
+                             const gfx::ImageSkia& icon);
 
   // The dialog pointer is only destroyed when a new dialog is created or the
   // SupervisedUserExtensionsDelegate is destroyed. Therefore there can only be
   // one dialog opened at a time and the last dialog object can have a pretty
   // long lifetime.
   std::unique_ptr<ParentPermissionDialog> parent_permission_dialog_;
+
+  extensions::SupervisedUserExtensionsDelegate::ExtensionApprovalDoneCallback
+      done_callback_;
+
+  std::unique_ptr<ExtensionIconLoader> icon_loader_;
 };
 
 }  // namespace extensions

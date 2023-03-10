@@ -14,7 +14,6 @@
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/gfx/image/image.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/view.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -107,8 +106,6 @@ class ParentPermissionDialogView : public views::DialogDelegateView,
 
   void AddInvalidCredentialLabel();
   void LoadParentEmailAddresses();
-  void OnExtensionIconLoaded(const gfx::Image& image);
-  void LoadExtensionIcon();
   void CloseWithReason(views::Widget::ClosedReason reason);
   void OnDialogClose();
 
@@ -145,7 +142,7 @@ class ParentPermissionDialogView : public views::DialogDelegateView,
 
   // Sets the |extension| to be optionally displayed in the dialog.  This
   // causes the view to show several extension properties including the
-  // permissions, the icon and the extension name.
+  // permissions and the extension name.
   void InitializeExtensionData(
       scoped_refptr<const extensions::Extension> extension);
 
