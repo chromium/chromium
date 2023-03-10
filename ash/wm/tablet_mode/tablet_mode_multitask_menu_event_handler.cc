@@ -59,7 +59,7 @@ void TabletModeMultitaskMenuEventHandler::OnTouchEvent(ui::TouchEvent* event) {
       // Only process events on the active window, since the target might not
       // be the active window yet and we don't want to handle before window
       // activation.
-      if (!CanProcessEvent(active_window) || !active_window->Contains(target)) {
+      if (!CanProcessEvent(active_window)) {
         initial_drag_data_.reset();
         return;
       }
@@ -89,12 +89,7 @@ void TabletModeMultitaskMenuEventHandler::OnTouchEvent(ui::TouchEvent* event) {
       }
       const gfx::Vector2dF scroll =
           screen_location - initial_drag_data_->initial_location;
-      if (std::fabs(scroll.y()) < std::fabs(scroll.x())) {
-        // If the touch didn't move vertically, do not handle here.
-        initial_drag_data_.reset();
-        return;
-      }
-      const bool down = scroll.y() > 0;
+      const bool down = scroll.y() >= 0;
       // Save the window coordinates to pass to the menu. For us to arrive here
       // the event target must be the active window now.
       gfx::PointF window_location = event->location_f();
