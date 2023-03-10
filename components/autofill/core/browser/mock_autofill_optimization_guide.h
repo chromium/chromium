@@ -19,7 +19,10 @@ class MockAutofillOptimizationGuide : public AutofillOptimizationGuide {
   MockAutofillOptimizationGuide();
   ~MockAutofillOptimizationGuide() override;
 
-  MOCK_METHOD(void, OnDidParseForm, (const FormStructure&), (override));
+  MOCK_METHOD(void,
+              OnDidParseForm,
+              (const FormStructure&, const PersonalDataManager*),
+              (override));
   MOCK_METHOD(bool,
               ShouldBlockSingleFieldSuggestions,
               (const GURL&, AutofillField*),

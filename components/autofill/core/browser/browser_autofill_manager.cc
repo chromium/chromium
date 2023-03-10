@@ -2698,8 +2698,9 @@ void BrowserAutofillManager::OnFormProcessed(
   if (auto* autofill_optimization_guide =
           client()->GetAutofillOptimizationGuide()) {
     // Initiate necessary pre-processing based on the forms and fields that are
-    // parsed.
-    autofill_optimization_guide->OnDidParseForm(form_structure);
+    // parsed, as well as the information that the user has saved in the web
+    // database based on `personal_data_`.
+    autofill_optimization_guide->OnDidParseForm(form_structure, personal_data_);
   }
 
   // If a form with the same name was previously filled, and there has not

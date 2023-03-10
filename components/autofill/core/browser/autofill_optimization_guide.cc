@@ -5,14 +5,46 @@
 #include "components/autofill/core/browser/autofill_optimization_guide.h"
 
 #include "base/containers/flat_set.h"
+#include "base/ranges/algorithm.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/optimization_guide/core/new_optimization_guide_decider.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 
 namespace autofill {
+
+namespace {
+
+optimization_guide::proto::OptimizationType
+GetVcnMerchantOptOutOptimizationTypeForCard(const CreditCard* card) {
+  // If `card` is not enrolled into VCN, do not return an optimization type.
+  if (card->virtual_card_enrollment_state() != CreditCard::ENROLLED) {
+    return optimization_guide::proto::TYPE_UNSPECIFIED;
+  }
+
+  // If `card` is not a network-level enrollment, do not return an optimization
+  // type.
+  if (card->virtual_card_enrollment_type() != CreditCard::NETWORK) {
+    return optimization_guide::proto::TYPE_UNSPECIFIED;
+  }
+
+  // Now that we know this card is enrolled into VCN and is a network-level
+  // enrollment, if it is a network that we have an optimization type for then
+  // return that optimization type.
+  if (card->network() == kVisaCard) {
+    return optimization_guide::proto::VCN_MERCHANT_OPT_OUT_VISA;
+  }
+
+  // No conditions to return an optimization type were found, so return that we
+  // could not find an optimization type.
+  return optimization_guide::proto::TYPE_UNSPECIFIED;
+}
+
+}  // namespace
 
 AutofillOptimizationGuide::AutofillOptimizationGuide(
     optimization_guide::NewOptimizationGuideDecider* decider)
@@ -21,18 +53,43 @@ AutofillOptimizationGuide::AutofillOptimizationGuide(
 AutofillOptimizationGuide::~AutofillOptimizationGuide() = default;
 
 void AutofillOptimizationGuide::OnDidParseForm(
-    const FormStructure& form_structure) {
+    const FormStructure& form_structure,
+    const PersonalDataManager* personal_data_manager) {
   // This flat set represents all of the optimization types that we need to
   // register based on `form_structure`.
   base::flat_set<optimization_guide::proto::OptimizationType>
       optimization_types;
 
-  for (const auto& field : form_structure) {
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillEnableIbanClientSideUrlFiltering) &&
-        field->Type().GetStorableType() == IBAN_VALUE) {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableIbanClientSideUrlFiltering)) {
+    auto has_iban_field =
+        base::ranges::any_of(form_structure, [](const auto& field) {
+          return field->Type().GetStorableType() == IBAN_VALUE;
+        });
+    if (has_iban_field) {
       optimization_types.insert(
           optimization_guide::proto::IBAN_AUTOFILL_BLOCKED);
+    }
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableMerchantOptOutClientSideUrlFiltering) &&
+      personal_data_manager) {
+    auto has_credit_card_field =
+        base::ranges::any_of(form_structure, [](const auto& field) {
+          return field->Type().group() == FieldTypeGroup::kCreditCard;
+        });
+    if (has_credit_card_field) {
+      // For each server card, check whether we need to register an optimization
+      // type, and if so then add it to `optimization_types`.
+      for (const auto* card : personal_data_manager->GetServerCreditCards()) {
+        if (auto optimization_type =
+                GetVcnMerchantOptOutOptimizationTypeForCard(card);
+            optimization_type != optimization_guide::proto::TYPE_UNSPECIFIED) {
+          optimization_types.insert(optimization_type);
+          break;
+        }
+      }
     }
   }
 
