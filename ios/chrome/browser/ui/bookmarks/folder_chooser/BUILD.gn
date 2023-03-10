@@ -51,6 +51,10 @@ source_set("ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
   visibility = [ ":coordinator_impl" ]
   sources = [
+    "bookmarks_folder_chooser_consumer.h",
+    "bookmarks_folder_chooser_mediator.h",
+    "bookmarks_folder_chooser_mediator.mm",
+    "bookmarks_folder_chooser_mutator.h",
     "bookmarks_folder_chooser_view_controller.h",
     "bookmarks_folder_chooser_view_controller.mm",
     "bookmarks_folder_chooser_view_controller_presentation_delegate.h",

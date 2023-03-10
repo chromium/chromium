@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/table_view_bookmarks_folder_item.h"
+#import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_mutator.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/ui/icons/chrome_icon.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
@@ -50,7 +51,8 @@ using bookmarks::BookmarkNode;
 @interface BookmarksFolderChooserViewController () <BookmarkModelBridgeObserver,
                                                     UITableViewDataSource,
                                                     UITableViewDelegate> {
-  std::set<const BookmarkNode*> _editedNodes;
+  // A linear list of folders. This will be populated in `reloadModel` when the
+  // UI is updated.
   std::vector<const BookmarkNode*> _folders;
   std::unique_ptr<BookmarkModelBridge> _modelBridge;
 }
@@ -64,13 +66,6 @@ using bookmarks::BookmarkNode;
 // Reference to the main bookmark model.
 @property(nonatomic, assign) bookmarks::BookmarkModel* bookmarkModel;
 
-// The currently selected folder.
-@property(nonatomic, readonly) const BookmarkNode* selectedFolder;
-
-// A linear list of folders.
-@property(nonatomic, assign, readonly)
-    const std::vector<const BookmarkNode*>& folders;
-
 // The browser for this ViewController.
 @property(nonatomic, readonly) Browser* browser;
 
@@ -81,22 +76,15 @@ using bookmarks::BookmarkNode;
 @synthesize allowsCancel = _allowsCancel;
 @synthesize allowsNewFolders = _allowsNewFolders;
 @synthesize bookmarkModel = _bookmarkModel;
-@synthesize editedNodes = _editedNodes;
 @synthesize delegate = _delegate;
-@synthesize folders = _folders;
-@synthesize selectedFolder = _selectedFolder;
 
 - (instancetype)initWithBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
                      allowsNewFolders:(BOOL)allowsNewFolders
-                          editedNodes:
-                              (const std::set<const BookmarkNode*>&)nodes
                          allowsCancel:(BOOL)allowsCancel
-                       selectedFolder:(const BookmarkNode*)selectedFolder
                               browser:(Browser*)browser {
   DCHECK(bookmarkModel);
   DCHECK(bookmarkModel->loaded());
   DCHECK(browser);
-  DCHECK(selectedFolder == NULL || selectedFolder->is_folder());
 
   UITableViewStyle style = ChromeTableViewStyle();
   self = [super initWithStyle:style];
@@ -105,20 +93,11 @@ using bookmarks::BookmarkNode;
     _allowsCancel = allowsCancel;
     _allowsNewFolders = allowsNewFolders;
     _bookmarkModel = bookmarkModel;
-    _editedNodes = nodes;
-    _selectedFolder = selectedFolder;
 
     // Set up the bookmark model oberver.
     _modelBridge.reset(new BookmarkModelBridge(self, _bookmarkModel));
   }
   return self;
-}
-
-- (void)changeSelectedFolder:(const BookmarkNode*)selectedFolder {
-  DCHECK(selectedFolder);
-  DCHECK(selectedFolder->is_folder());
-  _selectedFolder = selectedFolder;
-  [self reloadModel];
 }
 
 #pragma mark - UIViewController
@@ -181,23 +160,31 @@ using bookmarks::BookmarkNode;
       int folderIndex = indexPath.row;
       // If new folders are allowed, the first cell on this section
       // should call `showBookmarksFolderEditor`.
-      if (self.allowsNewFolders) {
+      if (_allowsNewFolders) {
         NSInteger itemType =
             [self.tableViewModel itemTypeForIndexPath:indexPath];
         if (itemType == ItemTypeCreateNewFolder) {
-          [self.delegate showBookmarksFolderEditor];
+          [self.delegate
+              showBookmarksFolderEditorWithParentFolder:[_dataSource
+                                                            selectedFolder]];
           return;
         }
         // If new folders are allowed, we need to offset by 1 to get
-        // the right BookmarkNode from `self.folders`.
+        // the right BookmarkNode from folders.
         folderIndex--;
       }
-      const BookmarkNode* folder = self.folders[folderIndex];
-      [self changeSelectedFolder:folder];
+      const BookmarkNode* folder = _folders[folderIndex];
+      [_mutator setSelectedFolder:folder];
       [self delayedNotifyDelegateOfSelection];
       break;
     }
   }
+}
+
+#pragma mark - BookmarksFolderChooserConsumer
+
+- (void)notifyModelUpdated {
+  [self reloadModel];
 }
 
 #pragma mark - BookmarkModelBridgeObserver
@@ -228,12 +215,13 @@ using bookmarks::BookmarkNode;
 
 - (void)bookmarkNodeDeleted:(const BookmarkNode*)bookmarkNode
                  fromFolder:(const BookmarkNode*)folder {
+  const std::set<const BookmarkNode*>& editedNodes = [_dataSource editedNodes];
   // Remove node from editedNodes if it is already deleted (possibly remotely by
   // another sync device).
-  if (base::Contains(_editedNodes, bookmarkNode)) {
-    _editedNodes.erase(bookmarkNode);
+  if (base::Contains(editedNodes, bookmarkNode)) {
+    [_mutator removeFromEditedNodes:bookmarkNode];
     // if editedNodes becomes empty, nothing to move.  Exit the folder picker.
-    if (_editedNodes.empty()) {
+    if (editedNodes.empty()) {
       [self.delegate bookmarksFolderChooserViewControllerDidCancel:self];
     }
     // Exit here because nodes in editedNodes cannot be any visible folders in
@@ -245,10 +233,10 @@ using bookmarks::BookmarkNode;
     return;
   }
 
-  if (bookmarkNode == self.selectedFolder) {
+  if (bookmarkNode == [_dataSource selectedFolder]) {
     // The selected folder has been deleted. Fallback on the Mobile Bookmarks
     // node.
-    [self changeSelectedFolder:self.bookmarkModel->mobile_node()];
+    [_mutator setSelectedFolder:self.bookmarkModel->mobile_node()];
   }
   [self reloadModel];
 }
@@ -256,7 +244,7 @@ using bookmarks::BookmarkNode;
 - (void)bookmarkModelRemovedAllNodes {
   // The selected folder is no longer valid. Fallback on the Mobile Bookmarks
   // node.
-  [self changeSelectedFolder:self.bookmarkModel->mobile_node()];
+  [_mutator setSelectedFolder:self.bookmarkModel->mobile_node()];
   [self reloadModel];
 }
 
@@ -265,8 +253,9 @@ using bookmarks::BookmarkNode;
 - (void)done:(id)sender {
   base::RecordAction(
       base::UserMetricsAction("MobileBookmarksFolderChooserDone"));
-  [self.delegate bookmarksFolderChooserViewController:self
-                                  didFinishWithFolder:self.selectedFolder];
+  [self.delegate
+      bookmarksFolderChooserViewController:self
+                       didFinishWithFolder:[_dataSource selectedFolder]];
 }
 
 - (void)cancel:(id)sender {
@@ -278,8 +267,7 @@ using bookmarks::BookmarkNode;
 #pragma mark - Private
 
 - (void)reloadModel {
-  _folders = bookmark_utils_ios::VisibleNonDescendantNodes(self.editedNodes,
-                                                           self.bookmarkModel);
+  _folders = [_dataSource visibleFolders];
 
   // Delete any existing section.
   if ([self.tableViewModel
@@ -293,7 +281,7 @@ using bookmarks::BookmarkNode;
       addSectionWithIdentifier:SectionIdentifierBookmarkFolders];
 
   // Adds default "New Folder" item if needed.
-  if (self.allowsNewFolders) {
+  if (_allowsNewFolders) {
     TableViewBookmarksFolderItem* createFolderItem =
         [[TableViewBookmarksFolderItem alloc]
             initWithType:ItemTypeCreateNewFolder
@@ -305,21 +293,21 @@ using bookmarks::BookmarkNode;
   }
 
   // Add Folders entries.
+  const BookmarkNode* rootFolder = [_dataSource rootFolder];
   for (NSUInteger row = 0; row < _folders.size(); row++) {
-    const BookmarkNode* folderNode = self.folders[row];
+    const BookmarkNode* folderNode = _folders[row];
     TableViewBookmarksFolderItem* folderItem =
         [[TableViewBookmarksFolderItem alloc]
             initWithType:ItemTypeBookmarkFolder
                    style:BookmarksFolderStyleFolderEntry];
     folderItem.title = bookmark_utils_ios::TitleForBookmarkNode(folderNode);
-    folderItem.currentFolder = (self.selectedFolder == folderNode);
+    folderItem.currentFolder = ([_dataSource selectedFolder] == folderNode);
 
     // Indentation level.
     NSInteger level = 0;
-    const BookmarkNode* node = folderNode;
-    while (node && !(self.bookmarkModel->is_root_node(node))) {
+    while (folderNode && folderNode != rootFolder) {
       ++level;
-      node = node->parent();
+      folderNode = folderNode->parent();
     }
     // The root node is not shown as a folder, so top level folders have a
     // level strictly positive.
@@ -347,12 +335,6 @@ using bookmarks::BookmarkNode;
         strongSelf.view.userInteractionEnabled = YES;
         [strongSelf done:nil];
       });
-}
-
-#pragma mark - Properties
-
-- (const std::set<const bookmarks::BookmarkNode*>&)editedNodes {
-  return _editedNodes;
 }
 
 @end
