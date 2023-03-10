@@ -1099,7 +1099,7 @@ fuzzer_test("form_structure_fuzzer") {
   dict = "form_structure_fuzzer.dict"
 }
 
-if (use_libfuzzer) {
+if (use_fuzzing_engine_with_lpm) {
   fuzzer_test("form_structure_process_query_response_fuzzer") {
     sources = [ "form_structure_process_query_response_fuzzer.cc" ]
     deps = [
