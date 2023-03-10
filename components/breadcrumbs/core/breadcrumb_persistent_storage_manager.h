@@ -10,6 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -39,7 +40,8 @@ class BreadcrumbPersistentStorageManager : public BreadcrumbManagerObserver {
   // prepended to the event log.
   explicit BreadcrumbPersistentStorageManager(
       const base::FilePath& directory,
-      base::RepeatingCallback<bool()> is_metrics_enabled_callback);
+      base::RepeatingCallback<bool()> is_metrics_enabled_callback,
+      base::OnceClosure initialization_done_callback = base::DoNothing());
   ~BreadcrumbPersistentStorageManager() override;
   BreadcrumbPersistentStorageManager(
       const BreadcrumbPersistentStorageManager&) = delete;
@@ -50,7 +52,8 @@ class BreadcrumbPersistentStorageManager : public BreadcrumbManagerObserver {
   // Sets `file_position_` based on the given `previous_session_events`, and
   // passes them to the BreadcrumbManager. If any events have already been
   // logged it then writes them to the file.
-  void Initialize(const std::string& previous_session_events);
+  void Initialize(base::OnceClosure initialization_done_callback,
+                  const std::string& previous_session_events);
 
   // Returns whether metrics consent has been provided and the persistent
   // storage manager can therefore create its breadcrumbs files. Deletes any
@@ -60,7 +63,7 @@ class BreadcrumbPersistentStorageManager : public BreadcrumbManagerObserver {
   // Writes |pending_breadcrumbs_| to |breadcrumbs_file_| if it fits, otherwise
   // rewrites the file. NOTE: Writing may be delayed if the file has recently
   // been written into.
-  void WriteEvents();
+  void WriteEvents(base::OnceClosure done_callback = base::DoNothing());
 
   // Writes the given `events` to `breadcrumbs_file_`. If `append` is false,
   // overwrites the file.

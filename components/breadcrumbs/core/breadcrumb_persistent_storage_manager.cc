@@ -115,7 +115,8 @@ std::string GetEvents() {
 
 BreadcrumbPersistentStorageManager::BreadcrumbPersistentStorageManager(
     const base::FilePath& directory,
-    base::RepeatingCallback<bool()> is_metrics_enabled_callback)
+    base::RepeatingCallback<bool()> is_metrics_enabled_callback,
+    base::OnceClosure initialization_done_callback)
     :  // Ensure first event will not be delayed by initializing with a time in
        // the past.
       last_written_time_(base::TimeTicks::Now() - kMinDelayBetweenWrites),
@@ -128,13 +129,15 @@ BreadcrumbPersistentStorageManager::BreadcrumbPersistentStorageManager(
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&DoGetStoredEvents, breadcrumbs_file_path_),
       base::BindOnce(&BreadcrumbPersistentStorageManager::Initialize,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(initialization_done_callback)));
 }
 
 BreadcrumbPersistentStorageManager::~BreadcrumbPersistentStorageManager() =
     default;
 
 void BreadcrumbPersistentStorageManager::Initialize(
+    base::OnceClosure initialization_done_callback,
     const std::string& previous_session_events) {
   breadcrumbs::BreadcrumbManager::GetInstance().SetPreviousSessionEvents(
       base::SplitString(previous_session_events, kEventSeparator,
@@ -143,7 +146,7 @@ void BreadcrumbPersistentStorageManager::Initialize(
 
   // Write any startup events that have accumulated while waiting for the file
   // position to be set.
-  WriteEvents();
+  WriteEvents(std::move(initialization_done_callback));
 }
 
 void BreadcrumbPersistentStorageManager::Write(const std::string& events,
@@ -184,7 +187,8 @@ bool BreadcrumbPersistentStorageManager::CheckForFileConsent() {
   return should_create_files;
 }
 
-void BreadcrumbPersistentStorageManager::WriteEvents() {
+void BreadcrumbPersistentStorageManager::WriteEvents(
+    base::OnceClosure done_callback) {
   // No events can be written to the file until the size of existing breadcrumbs
   // is known.
   if (!file_position_) {
@@ -201,7 +205,8 @@ void BreadcrumbPersistentStorageManager::WriteEvents() {
     write_timer_.Start(
         FROM_HERE, kMinDelayBetweenWrites - time_delta_since_last_write,
         base::BindOnce(&BreadcrumbPersistentStorageManager::WriteEvents,
-                       weak_ptr_factory_.GetWeakPtr()));
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(done_callback)));
     return;
   }
 
@@ -211,13 +216,14 @@ void BreadcrumbPersistentStorageManager::WriteEvents() {
       // Use >= here instead of > to allow space for \0 to terminate file.
       >= kPersistedFilesizeInBytes) {
     Write(GetEvents(), /*append=*/false);
-    return;
-  }
-
-  // Otherwise, simply append the pending breadcrumbs.
-  if (!pending_breadcrumbs_.empty()) {
+  } else if (!pending_breadcrumbs_.empty()) {
+    // Otherwise, simply append the pending breadcrumbs.
     Write(pending_breadcrumbs_, /*append=*/true);
   }
+
+  // Add `done_callback` to the task runner's task queue, so it runs after any
+  // posted `DoWriteEventsToFile()` task has been run.
+  task_runner_->PostTask(FROM_HERE, std::move(done_callback));
 }
 
 }  // namespace breadcrumbs

@@ -97,12 +97,18 @@ class BreadcrumbPersistentStorageManagerTest : public PlatformTest {
                              base::SPLIT_WANT_NONEMPTY);
   }
 
+  // Creates the persistent storage manager. Waits for it to read any existing
+  // events from the breadcrumbs file and rewrite it if it's oversized.
   void CreateBreadcrumbPersistentStorageManager() {
+    base::RunLoop run_loop;
     persistent_storage_ = std::make_unique<BreadcrumbPersistentStorageManager>(
         scoped_temp_dir_.GetPath(),
-        /*is_metrics_enabled_callback=*/base::BindRepeating(
+        /*is_metrics_enabled_callback=*/
+        base::BindRepeating(
             &BreadcrumbPersistentStorageManagerTest::is_metrics_enabled,
-            base::Unretained(this)));
+            base::Unretained(this)),
+        /*initialization_done_callback=*/run_loop.QuitClosure());
+    run_loop.Run();
   }
 
   bool is_metrics_enabled() { return is_metrics_enabled_; }
@@ -185,9 +191,8 @@ TEST_F(BreadcrumbPersistentStorageManagerTest, PersistManyEventsOverTime) {
 
 // Ensures that events are read correctly if the persisted file becomes
 // corrupted by losing the EOF token or if kPersistedFilesizeInBytes is reduced.
-// TODO(crbug.com/1404642): This test is flaky.
 TEST_F(BreadcrumbPersistentStorageManagerTest,
-       DISABLED_GetStoredEventsAfterFilesizeReduction) {
+       GetStoredEventsAfterFilesizeReduction) {
   const base::FilePath breadcrumbs_file_path =
       GetBreadcrumbPersistentStorageFilePath(scoped_temp_dir_.GetPath());
   base::File file(breadcrumbs_file_path,
@@ -207,7 +212,10 @@ TEST_F(BreadcrumbPersistentStorageManagerTest,
       /*offset=*/0, base::as_bytes(base::make_span(past_breadcrumbs))));
   ASSERT_TRUE(file.Flush());
   file.Close();
+  ASSERT_EQ(written_events, GetPersistedEvents().size());
 
+  // Create the persistent storage manager. It should resize the breadcrumbs
+  // file to the appropriate length.
   CreateBreadcrumbPersistentStorageManager();
 
   const auto events = GetPersistedEvents();
