@@ -233,6 +233,29 @@ void AddSpacerWithSize(views::View& view,
                         /*use_min_size=*/true);
 }
 
+// TODO(crbug.com/1417187): Add ASCII art to explain the reason for the
+// arithmetic below.
+gfx::Insets GetMarginsForContentCell(bool has_control_element) {
+  int left_margin = PopupBaseView::GetHorizontalMargin();
+  int right_margin = left_margin;
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillShowAutocompleteDeleteButton)) {
+    // If the feature is enabled, then the row already adds some extra
+    // horizontal margin on the left - deduct that.
+    left_margin = std::max(
+        0, left_margin - ChromeLayoutProvider::Get()->GetDistanceMetric(
+                             DISTANCE_CONTENT_LIST_VERTICAL_SINGLE));
+
+    // If there is no control element, then this is the only cell and the same
+    // correction needs to be made on the right side, too.
+    if (!has_control_element) {
+      right_margin = left_margin;
+    }
+  }
+  return gfx::Insets::TLBR(0, left_margin, 0, right_margin);
+}
+
 // Creates the table in which all the Autofill suggestion content apart from
 // leading and trailing icons is contained and adds it to `content_view`.
 // It registers `main_text_label`, `minor_text_label`, and `description_label`
@@ -317,10 +340,14 @@ void AddSuggestionContentToView(
     std::unique_ptr<views::Label> description_label,
     std::vector<std::unique_ptr<views::View>> subtext_views,
     PopupCellView& content_view) {
+  bool has_control_element =
+      suggestion.frontend_id == POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillShowAutocompleteDeleteButton);
   views::BoxLayout& layout =
       *content_view.SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal,
-          gfx::Insets::VH(0, PopupBaseView::GetHorizontalMargin())));
+          GetMarginsForContentCell(has_control_element)));
 
   layout.set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
@@ -801,7 +828,7 @@ std::unique_ptr<PopupCellView> PopupFooterStrategy::CreateContent() {
   views::BoxLayout* layout_manager =
       view->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal,
-          gfx::Insets::VH(0, PopupBaseView::GetHorizontalMargin())));
+          GetMarginsForContentCell(/*has_control_element=*/false)));
 
   layout_manager->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);

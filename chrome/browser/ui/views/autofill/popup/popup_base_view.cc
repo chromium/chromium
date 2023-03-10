@@ -72,12 +72,14 @@ int PopupBaseView::GetCornerRadius() {
 
 // static
 int PopupBaseView::GetHorizontalMargin() {
-  return views::MenuConfig::instance().item_horizontal_padding +
-         GetCornerRadius();
+  // The horizontal margin should match the offset of the bubble arrow (if
+  // that arrow happens to be shown on the top).
+  return views::BubbleBorder::kVisibleArrowBuffer;
 }
 
 // static
 int PopupBaseView::GetHorizontalPadding() {
+  // TODO(crbug.com/1411172): Combine with `GetHorizontalMargin`.
   return GetHorizontalMargin();
 }
 
