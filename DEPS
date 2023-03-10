@@ -634,7 +634,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/aosp_dalvik/linux-amd64',
-              'version': 'version:2@13.0.0_r24.cr0',
+              'version': 'version:2@13.0.0_r24.cr1',
           },
       ],
       'condition': 'checkout_android',
