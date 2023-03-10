@@ -147,6 +147,8 @@ class CORE_EXPORT Editor final : public GarbageCollected<Editor> {
 
   void SetStartNewKillRingSequence(bool);
 
+  void ElementRemoved(Element* element);
+
   void Clear();
 
   SelectionInDOMTree SelectionForCommand(Event*);
