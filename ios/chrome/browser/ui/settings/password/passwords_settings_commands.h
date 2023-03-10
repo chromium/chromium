@@ -38,6 +38,10 @@ struct CredentialUIEntry;
 - (void)showPasswordDeleteDialogWithOrigins:(NSArray<NSString*>*)origins
                                  completion:(void (^)(void))completion;
 
+// Shows a dialog offering the user to set a passcode in order to see the
+// password details.
+- (void)showSetupPasscodeDialog;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORDS_SETTINGS_COMMANDS_H_

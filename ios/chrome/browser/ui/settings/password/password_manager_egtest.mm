@@ -1355,6 +1355,10 @@ id<GREYMatcher> EditDoneButton() {
   SaveExamplePasswordFormWithNote();
 
   OpenPasswordManager();
+  [PasswordSettingsAppInterface
+      setUpMockReauthenticationModuleForPasswordManager];
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
 
   [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
                                             username:@"concrete username"]
@@ -1395,6 +1399,10 @@ id<GREYMatcher> EditDoneButton() {
   SaveExamplePasswordFormWithNote();
 
   OpenPasswordManager();
+  [PasswordSettingsAppInterface
+      setUpMockReauthenticationModuleForPasswordManager];
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
 
   [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
                                             username:@"concrete username"]
@@ -2523,7 +2531,8 @@ id<GREYMatcher> EditDoneButton() {
   SaveExamplePasswordForm();
 
   OpenPasswordManager();
-  [PasswordSettingsAppInterface setUpMockReauthenticationModuleForExport];
+  [PasswordSettingsAppInterface
+      setUpMockReauthenticationModuleForPasswordManager];
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
 
@@ -2708,7 +2717,8 @@ id<GREYMatcher> EditDoneButton() {
 // when adding a new credential.
 - (void)testTLDMissingMessage {
   OpenPasswordManager();
-  [PasswordSettingsAppInterface setUpMockReauthenticationModuleForExport];
+  [PasswordSettingsAppInterface
+      setUpMockReauthenticationModuleForPasswordManager];
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
 

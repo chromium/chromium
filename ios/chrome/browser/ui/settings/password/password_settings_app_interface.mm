@@ -31,9 +31,10 @@
 #endif
 
 using chrome_test_util::SetUpAndReturnMockReauthenticationModule;
-using chrome_test_util::SetUpAndReturnMockReauthenticationModuleForExport;
 using chrome_test_util::
     SetUpAndReturnMockReauthenticationModuleForExportFromSettings;
+using chrome_test_util::
+    SetUpAndReturnMockReauthenticationModuleForPasswordManager;
 using password_manager::PasswordForm;
 
 namespace {
@@ -164,9 +165,9 @@ static std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
   _mockReauthenticationModule = SetUpAndReturnMockReauthenticationModule(true);
 }
 
-+ (void)setUpMockReauthenticationModuleForExport {
++ (void)setUpMockReauthenticationModuleForPasswordManager {
   _mockReauthenticationModule =
-      SetUpAndReturnMockReauthenticationModuleForExport();
+      SetUpAndReturnMockReauthenticationModuleForPasswordManager();
 }
 
 + (void)mockReauthenticationModuleExpectedResult:

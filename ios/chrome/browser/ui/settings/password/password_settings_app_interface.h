@@ -18,7 +18,7 @@
 // view password) and its options for next test.
 + (void)setUpMockReauthenticationModule;
 + (void)setUpMockReauthenticationModuleForAddPassword;
-+ (void)setUpMockReauthenticationModuleForExport;
++ (void)setUpMockReauthenticationModuleForPasswordManager;
 + (void)mockReauthenticationModuleExpectedResult:
     (ReauthenticationResult)expectedResult;
 + (void)mockReauthenticationModuleCanAttempt:(BOOL)canAttempt;

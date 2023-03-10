@@ -70,11 +70,11 @@ MockReauthenticationModule* SetUpAndReturnMockReauthenticationModule(
   return mock_reauthentication_module;
 }
 
-// Replace the reauthentication module in Password Manager's
-// PasswordExporter with a fake one to avoid being
-// blocked with a reauth prompt, and return the fake reauthentication module.
+// Replaces the reauthentication module in Password Manager's passwords list
+// with a fake one to avoid being blocked with a reauth prompt and returns the
+// fake reauthentication module.
 MockReauthenticationModule*
-SetUpAndReturnMockReauthenticationModuleForExport() {
+SetUpAndReturnMockReauthenticationModuleForPasswordManager() {
   MockReauthenticationModule* mock_reauthentication_module =
       [[MockReauthenticationModule alloc] init];
   // TODO(crbug.com/754642): Stop using TopPresentedViewController();

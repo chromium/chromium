@@ -28,6 +28,7 @@
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/sync/base/features.h"
 #import "components/sync/driver/sync_service.h"
 #import "components/sync/driver/sync_service_utils.h"
 #import "components/sync/driver/sync_user_settings.h"
@@ -144,6 +145,10 @@ bool ShouldShowSettingsUI() {
 bool IsPasswordCheckupEnabled() {
   return base::FeatureList::IsEnabled(
       password_manager::features::kIOSPasswordCheckup);
+}
+
+bool IsPasswordNotesWithBackupEnabled() {
+  return base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup);
 }
 
 // Helper method to determine whether the Password Check cell is tappable or
@@ -2421,6 +2426,21 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
                               sectionIdentifier:SectionIdentifierPasswordCheck];
 }
 
+- (void)showDetailedViewPageForItem:(TableViewItem*)item {
+  if (IsPasswordGroupingEnabled()) {
+    [self.handler
+        showDetailedViewForAffiliatedGroup:base::mac::ObjCCastStrict<
+                                               AffiliatedGroupTableViewItem>(
+                                               item)
+                                               .affiliatedGroup];
+  } else {
+    [self.handler
+        showDetailedViewForCredential:base::mac::ObjCCastStrict<
+                                          CredentialTableViewItem>(item)
+                                          .credential];
+  }
+}
+
 #pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView*)tableView
@@ -2448,17 +2468,30 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
       DCHECK_EQ(SectionIdentifierSavedPasswords,
                 [model sectionIdentifierForSectionIndex:indexPath.section]);
       TableViewItem* item = [model itemAtIndexPath:indexPath];
-      if (IsPasswordGroupingEnabled()) {
-        [self.handler
-            showDetailedViewForAffiliatedGroup:
-                base::mac::ObjCCastStrict<AffiliatedGroupTableViewItem>(item)
-                    .affiliatedGroup];
+
+      if (!IsPasswordNotesWithBackupEnabled()) {
+        [self showDetailedViewPageForItem:item];
+      } else if ([self.reauthenticationModule canAttemptReauth]) {
+        void (^showPasswordDetailsHandler)(ReauthenticationResult) =
+            ^(ReauthenticationResult result) {
+              if (result == ReauthenticationResult::kFailure) {
+                return;
+              }
+
+              [self showDetailedViewPageForItem:item];
+            };
+
+        [self.reauthenticationModule
+            attemptReauthWithLocalizedReason:
+                l10n_util::GetNSString(
+                    IDS_IOS_SETTINGS_PASSWORD_REAUTH_REASON_SHOW)
+                        canReusePreviousAuth:YES
+                                     handler:showPasswordDetailsHandler];
       } else {
-        [self.handler
-            showDetailedViewForCredential:base::mac::ObjCCastStrict<
-                                              CredentialTableViewItem>(item)
-                                              .credential];
+        DCHECK(self.handler);
+        [self.handler showSetupPasscodeDialog];
       }
+
       break;
     }
     case ItemTypeBlocked: {

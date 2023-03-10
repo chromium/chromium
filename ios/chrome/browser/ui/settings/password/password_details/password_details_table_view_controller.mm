@@ -762,6 +762,8 @@ const int kMaxNoteCharAmount = 1000;
 
 // Shows reauthentication dialog if needed. If the reauthentication is
 // successful reveals the password.
+// TODO(crbug.com/1414897): Add 5 min timeout and remove reauth in password
+// details page with notes enabled.
 - (void)attemptToShowPasswordFor:(ReauthenticationReason)reason {
   // If password was already shown (before editing or copying) or the flag to
   // override auth is YES, we don't need to request reauth again.

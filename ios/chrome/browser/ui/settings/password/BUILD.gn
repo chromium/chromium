@@ -22,6 +22,7 @@ source_set("password") {
     "//components/google/core/common",
     "//components/password_manager/core/common:features",
     "//components/signin/public/identity_manager/objc",
+    "//components/strings",
     "//components/sync",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/application_context",
