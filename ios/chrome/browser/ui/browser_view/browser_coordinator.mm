@@ -871,6 +871,8 @@ enum class ToolbarKind {
       TabUsageRecorderBrowserAgent::FromBrowser(self.browser);
   _viewControllerDependencies.webNavigationBrowserAgent =
       WebNavigationBrowserAgent::FromBrowser(self.browser);
+  _viewControllerDependencies.layoutGuideCenter =
+      LayoutGuideCenterForBrowser(self.browser);
 }
 
 - (void)updateViewControllerDependencies {

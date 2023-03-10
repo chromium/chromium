@@ -269,6 +269,8 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     dependencies.tabUsageRecorderBrowserAgent =
         tab_usage_recorder_browser_agent_;
     dependencies.webNavigationBrowserAgent = web_navigation_browser_agent_;
+    dependencies.layoutGuideCenter =
+        LayoutGuideCenterForBrowser(browser_.get());
 
     bvc_ = [[BrowserViewController alloc] initWithBrowser:browser_.get()
                            browserContainerViewController:container_

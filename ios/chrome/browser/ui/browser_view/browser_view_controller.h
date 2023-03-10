@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/ui/browser_view/tab_consumer.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_coordinator.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_consumer.h"
+#import "ios/chrome/browser/ui/main/layout_guide_util.h"
 #import "ios/chrome/browser/ui/ntp/logo_animation_controller.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_focus_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_presenter.h"
@@ -60,6 +61,7 @@ class TabUsageRecorderBrowserAgent;
 @class ToolbarAccessoryPresenter;
 @protocol ToolbarCommands;
 @protocol IncognitoReauthCommands;
+@class LayoutGuideCenter;
 @protocol LoadQueryCommands;
 class UrlLoadingBrowserAgent;
 class UrlLoadingNotifierBrowserAgent;
@@ -95,6 +97,7 @@ typedef struct {
   UrlLoadingNotifierBrowserAgent* urlLoadingNotifierBrowserAgent;
   TabUsageRecorderBrowserAgent* tabUsageRecorderBrowserAgent;
   WebNavigationBrowserAgent* webNavigationBrowserAgent;
+  LayoutGuideCenter* layoutGuideCenter;
 } BrowserViewControllerDependencies;
 
 // The top-level view controller for the browser UI. Manages other controllers
