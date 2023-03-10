@@ -186,7 +186,7 @@ bool CanvasResource::PrepareAcceleratedTransferableResource(
 
   *out_resource = viz::TransferableResource::MakeGpu(
       mailbox, GLFilter(), TextureTarget(), GetSyncToken(), Size(),
-      GetResourceFormat(), IsOverlayCandidate());
+      GetSharedImageFormat(), IsOverlayCandidate());
 
   out_resource->color_space = GetColorSpace();
   if (NeedsReadLockFences()) {
@@ -233,12 +233,13 @@ GLenum CanvasResource::GLFilter() const {
                                                                  : GL_LINEAR;
 }
 
-viz::ResourceFormat CanvasResource::GetResourceFormat() const {
-  return viz::SkColorTypeToResourceFormat(info_.colorType());
+viz::SharedImageFormat CanvasResource::GetSharedImageFormat() const {
+  return viz::SharedImageFormat::SinglePlane(
+      viz::SkColorTypeToResourceFormat(info_.colorType()));
 }
 
 gfx::BufferFormat CanvasResource::GetBufferFormat() const {
-  return viz::BufferFormat(GetResourceFormat());
+  return viz::BufferFormat(GetSharedImageFormat().resource_format());
 }
 
 gfx::ColorSpace CanvasResource::GetColorSpace() const {
@@ -453,9 +454,8 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
         surface_origin, surface_alpha_type, shared_image_usage_flags);
   } else {
     shared_image_mailbox = shared_image_interface->CreateSharedImage(
-        viz::SharedImageFormat::SinglePlane(GetResourceFormat()), Size(),
-        GetColorSpace(), surface_origin, surface_alpha_type,
-        shared_image_usage_flags, gpu::kNullSurfaceHandle);
+        GetSharedImageFormat(), Size(), GetColorSpace(), surface_origin,
+        surface_alpha_type, shared_image_usage_flags, gpu::kNullSurfaceHandle);
   }
 
   // Wait for the mailbox to be ready to be used.
@@ -535,8 +535,9 @@ GrBackendTexture CanvasResourceRasterSharedImage::CreateGrTexture() const {
   GrGLTextureInfo texture_info = {};
   texture_info.fID = GetTextureIdForWriteAccess();
   texture_info.fTarget = TextureTarget();
-  texture_info.fFormat = viz::TextureStorageFormat(
-      GetResourceFormat(), capabilities.angle_rgbx_internal_format);
+  texture_info.fFormat =
+      viz::TextureStorageFormat(GetSharedImageFormat().resource_format(),
+                                capabilities.angle_rgbx_internal_format);
   return GrBackendTexture(Size().width(), Size().height(), GrMipMapped::kNo,
                           texture_info);
 }
@@ -1091,10 +1092,9 @@ CanvasResourceSwapChain::CanvasResourceSwapChain(
       context_provider_wrapper_->ContextProvider()->SharedImageInterface();
   DCHECK(sii);
   gpu::SharedImageInterface::SwapChainMailboxes mailboxes =
-      sii->CreateSwapChain(
-          viz::SharedImageFormat::SinglePlane(GetResourceFormat()), Size(),
-          GetColorSpace(), kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-          usage);
+      sii->CreateSwapChain(GetSharedImageFormat(), Size(), GetColorSpace(),
+                           kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+                           usage);
   back_buffer_mailbox_ = mailboxes.back_buffer;
   front_buffer_mailbox_ = mailboxes.front_buffer;
   sync_token_ = sii->GenVerifiedSyncToken();

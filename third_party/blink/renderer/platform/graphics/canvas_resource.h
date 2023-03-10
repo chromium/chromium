@@ -10,6 +10,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/shared_bitmap.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
@@ -219,7 +220,7 @@ class PLATFORM_EXPORT CanvasResource
   gpu::raster::RasterInterface* RasterInterface() const;
   gpu::webgpu::WebGPUInterface* WebGPUInterface() const;
   GLenum GLFilter() const;
-  viz::ResourceFormat GetResourceFormat() const;
+  viz::SharedImageFormat GetSharedImageFormat() const;
   gfx::BufferFormat GetBufferFormat() const;
   gfx::ColorSpace GetColorSpace() const;
   GrDirectContext* GetGrContext() const;
