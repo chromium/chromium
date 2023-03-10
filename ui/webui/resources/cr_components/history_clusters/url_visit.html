@@ -23,8 +23,8 @@
     position: static;
   }
 
-  .thumb-down-filled-gm-grey {
-    --cr-icon-image: url(chrome://resources/cr_components/history_clusters/thumb_down_filled_gm_grey.svg);
+  .hide-visit-icon {
+    --cr-icon-image: url(chrome://resources/cr_components/history_clusters/hide_source_gm_grey_24dp.svg);
   }
 
   #header {
@@ -133,7 +133,7 @@
     </div>
   </a>
   <div class="suffix-icons">
-    <cr-icon-button class="thumb-down-filled-gm-grey"
+    <cr-icon-button class="hide-visit-icon"
         title$="[[i18n('hideFromCluster')]]"
         on-click="onHideSelfButtonClick_"
         hidden="[[!showHideVisitIcon_]]"></cr-icon-button>

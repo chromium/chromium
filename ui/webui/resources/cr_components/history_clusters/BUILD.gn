@@ -44,7 +44,7 @@ build_cr_component("build") {
     "shared_vars.css",
   ]
 
-  static_files = [ "thumb_down_filled_gm_grey.svg" ]
+  static_files = [ "hide_source_gm_grey_24dp.svg" ]
 
   mojo_files_deps = [
     ":mojo_bindings_ts__generator",
