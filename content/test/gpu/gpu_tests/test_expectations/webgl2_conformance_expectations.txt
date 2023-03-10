@@ -690,11 +690,14 @@ crbug.com/angleproject/3686 [ android angle-opengles ] deqp/functional/gles3/mul
 # finder:group-start crbug.com/1382796 failures happen in many tests, so can be classified as stale for one specific test
 # finder:disable-narrowing
 crbug.com/1382796 [ android android-pixel-4 ] conformance/canvas/rapid-resizing.html [ RetryOnFailure ]
+crbug.com/1382796 [ android android-pixel-4 ] conformance/canvas/to-data-url-test.html [ RetryOnFailure ]
 crbug.com/1382796 [ android android-pixel-4 ] conformance/context/context-release-with-workers.html [ RetryOnFailure ]
+crbug.com/1382796 [ android android-pixel-4 ] conformance/ogles/GL/biConstants/biConstants_001_to_008.html [ RetryOnFailure ]
 crbug.com/1382796 [ android android-pixel-4 ] conformance/textures/misc/texture-corner-case-videos.html [ RetryOnFailure ]
 crbug.com/1382796 [ android android-pixel-4 ] conformance2/sync/sync-webgl-specific.html [ RetryOnFailure ]
 crbug.com/1382796 [ android android-pixel-4 ] deqp/data/gles3/shaders/declarations.html [ RetryOnFailure ]
 crbug.com/1382796 [ android android-pixel-4 ] deqp/functional/gles3/primitiverestart/00.html [ RetryOnFailure ]
+crbug.com/1382796 [ android android-pixel-4 ] deqp/functional/gles3/shadermatrix/mul_uniform_lowp.html [ RetryOnFailure ]
 crbug.com/1382796 [ android android-pixel-4 ] deqp/functional/gles3/shadermatrix/transpose.html [ RetryOnFailure ]
 crbug.com/1382796 [ android android-pixel-4 ] deqp/functional/gles3/textureshadow/* [ RetryOnFailure ]
 crbug.com/1382796 [ android android-pixel-4 ] conformance/textures/image_bitmap_from_video/* [ RetryOnFailure ]

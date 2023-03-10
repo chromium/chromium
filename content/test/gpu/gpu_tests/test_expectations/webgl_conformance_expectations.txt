@@ -553,6 +553,18 @@ crbug.com/1357064 [ android android-shield-android-tv no-passthrough ] conforman
 crbug.com/1175223 [ android android-pixel-4 angle-opengles passthrough ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
 crbug.com/1175226 [ android android-pixel-4 no-passthrough ] conformance/rendering/blending.html [ Failure ]
 
+# finder:group-start crbug.com/1382796 failures happen in many tests, so can be classified as stale for one specific test
+# finder:disable-narrowing
+crbug.com/1382796 [ android android-pixel-4 ] conformance/canvas/rapid-resizing.html [ RetryOnFailure ]
+crbug.com/1382796 [ android android-pixel-4 ] conformance/canvas/to-data-url-test.html [ RetryOnFailure ]
+crbug.com/1382796 [ android android-pixel-4 ] conformance/context/context-release-with-workers.html [ RetryOnFailure ]
+crbug.com/1382796 [ android android-pixel-4 ] conformance/ogles/GL/biConstants/biConstants_001_to_008.html [ RetryOnFailure ]
+crbug.com/1382796 [ android android-pixel-4 ] conformance/textures/misc/texture-corner-case-videos.html [ RetryOnFailure ]
+crbug.com/1382796 [ android android-pixel-4 ] conformance/textures/image_bitmap_from_video/* [ RetryOnFailure ]
+crbug.com/1382796 [ android android-pixel-4 ] conformance/textures/video/* [ RetryOnFailure ]
+# finder:enable-narrowing
+# finder:group-end
+
 ## Pixel 6 ##
 
 crbug.com/1286830 [ android android-pixel-6 arm ] WebglExtension_EXT_shader_texture_lod [ Failure ]
