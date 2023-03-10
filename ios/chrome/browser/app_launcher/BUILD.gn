@@ -14,8 +14,6 @@ source_set("app_launcher") {
     "app_launcher_tab_helper.h",
     "app_launcher_tab_helper.mm",
     "app_launcher_tab_helper_delegate.h",
-    "app_launcher_util.h",
-    "app_launcher_util.mm",
     "app_launching_state.h",
     "app_launching_state.mm",
   ]
