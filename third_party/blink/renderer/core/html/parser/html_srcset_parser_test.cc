@@ -179,7 +179,7 @@ TEST(HTMLSrcsetParserTest, Basic) {
   }
 }
 
-#if BUILDFLAG(IS_ANDROID) && defined(ADDRESS_SANITIZER)
+#if (BUILDFLAG(IS_ANDROID) && defined(ADDRESS_SANITIZER)) || BUILDFLAG(IS_IOS)
 // https://crbug.com/1189511
 #define MAYBE_SaveDataEnabledBasic DISABLED_SaveDataEnabledBasic
 #else

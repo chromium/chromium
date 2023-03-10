@@ -64,7 +64,13 @@ class HTMLPreloadScannerDocumentTest : public SimTest {
   std::unique_ptr<SimRequest> main_resource_;
 };
 
-TEST_F(HTMLPreloadScannerDocumentTest, DOMParser) {
+#if BUILDFLAG(IS_IOS)
+// TODO(crbug.com/1141478)
+#define MAYBE_DOMParser DISABLED_DOMParser
+#else
+#define MAYBE_DOMParser DOMParser
+#endif  // BUILDFLAG(IS_IOS)
+TEST_F(HTMLPreloadScannerDocumentTest, MAYBE_DOMParser) {
   main_resource_->Complete(R"(<script>
     var p = new DOMParser();
     p.parseFromString(

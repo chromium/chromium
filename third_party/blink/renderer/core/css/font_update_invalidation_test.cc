@@ -236,8 +236,17 @@ TEST_F(FontUpdateInvalidationTest, LayoutInvalidationOnModalDialog) {
   main_resource.Finish();
 }
 
+#if BUILDFLAG(IS_IOS)
+// TODO(crbug.com/1141478)
+#define MAYBE_FallbackBetweenPendingAndLoadedCustomFonts \
+  DISABLED_FallbackBetweenPendingAndLoadedCustomFonts
+#else
+#define MAYBE_FallbackBetweenPendingAndLoadedCustomFonts \
+  FallbackBetweenPendingAndLoadedCustomFonts
+#endif  // BUILDFLAG(IS_IOS)
 // https://crbug.com/1101483
-TEST_F(FontUpdateInvalidationTest, FallbackBetweenPendingAndLoadedCustomFonts) {
+TEST_F(FontUpdateInvalidationTest,
+       MAYBE_FallbackBetweenPendingAndLoadedCustomFonts) {
   SimRequest main_resource("https://example.com", "text/html");
   SimSubresourceRequest slow_font_resource("https://example.com/nonexist.woff2",
                                            "font/woff2");
