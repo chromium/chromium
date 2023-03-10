@@ -41,6 +41,15 @@ void InputDeviceSettingsProvider::SetKeyboardSettings(
       device_id, std::move(settings));
 }
 
+void InputDeviceSettingsProvider::SetPointingStickSettings(
+    uint32_t device_id,
+    ::ash::mojom::PointingStickSettingsPtr settings) {
+  DCHECK(features::IsInputDeviceSettingsSplitEnabled());
+  DCHECK(InputDeviceSettingsController::Get());
+  InputDeviceSettingsController::Get()->SetPointingStickSettings(
+      device_id, std::move(settings));
+}
+
 void InputDeviceSettingsProvider::GetConnectedKeyboards(
     GetConnectedKeyboardsCallback callback) {
   DCHECK(features::IsInputDeviceSettingsSplitEnabled());

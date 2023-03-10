@@ -61,4 +61,7 @@ interface InputDeviceSettingsProvider {
   ObserveMouseSettings(pending_remote<MouseSettingsObserver> observer);
   // Sets the keyboard settings based on its id.
   SetKeyboardSettings(uint32 device_id, ash.mojom.KeyboardSettings settings);
+  // Sets the point stick settings based on its id.
+  SetPointingStickSettings(
+      uint32 device_id, ash.mojom.PointingStickSettings settings);
 };

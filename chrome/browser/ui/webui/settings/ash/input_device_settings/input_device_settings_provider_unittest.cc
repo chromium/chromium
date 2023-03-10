@@ -217,7 +217,9 @@ class FakeInputDeviceSettingsController : public InputDeviceSettingsController {
                         ::ash::mojom::MouseSettingsPtr settings) override {}
   void SetPointingStickSettings(
       DeviceId id,
-      ::ash::mojom::PointingStickSettingsPtr settings) override {}
+      ::ash::mojom::PointingStickSettingsPtr settings) override {
+    ++num_times_set_pointing_stick_settings_called_;
+  }
 
   void AddKeyboard(::ash::mojom::KeyboardPtr keyboard) {
     keyboards_.push_back(std::move(keyboard));
@@ -285,6 +287,9 @@ class FakeInputDeviceSettingsController : public InputDeviceSettingsController {
   int num_times_set_keyboard_settings_called() {
     return num_times_set_keyboard_settings_called_;
   }
+  int num_times_set_pointing_stick_settings_called() {
+    return num_times_set_pointing_stick_settings_called_;
+  }
 
  private:
   std::vector<::ash::mojom::KeyboardPtr> keyboards_;
@@ -293,6 +298,7 @@ class FakeInputDeviceSettingsController : public InputDeviceSettingsController {
   std::vector<::ash::mojom::PointingStickPtr> pointing_sticks_;
   raw_ptr<InputDeviceSettingsController::Observer> observer_ = nullptr;
   int num_times_set_keyboard_settings_called_ = 0;
+  int num_times_set_pointing_stick_settings_called_ = 0;
 };
 
 }  // namespace
@@ -350,6 +356,22 @@ TEST_F(InputDeviceSettingsProviderTest, TestSetKeyboardSettings) {
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(2, controller_->num_times_set_keyboard_settings_called());
+}
+
+TEST_F(InputDeviceSettingsProviderTest, TestSetPointingStickSettings) {
+  controller_->AddPointingStick(kPointingStick1.Clone());
+  provider_->SetPointingStickSettings(kPointingStick1.id,
+                                      kPointingStick1.settings->Clone());
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1, controller_->num_times_set_pointing_stick_settings_called());
+
+  controller_->AddPointingStick(kPointingStick2.Clone());
+  provider_->SetPointingStickSettings(kPointingStick2.id,
+                                      kPointingStick1.settings->Clone());
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(2, controller_->num_times_set_pointing_stick_settings_called());
 }
 
 TEST_F(InputDeviceSettingsProviderTest, TestKeyboardSettingsObeserver) {

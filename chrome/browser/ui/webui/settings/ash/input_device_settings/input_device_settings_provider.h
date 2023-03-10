@@ -41,6 +41,9 @@ class InputDeviceSettingsProvider
       mojo::PendingRemote<mojom::MouseSettingsObserver> observer) override;
   void SetKeyboardSettings(uint32_t device_id,
                            ::ash::mojom::KeyboardSettingsPtr settings) override;
+  void SetPointingStickSettings(
+      uint32_t device_id,
+      ::ash::mojom::PointingStickSettingsPtr settings) override;
 
   // InputDeviceSettingsController::Observer:
   void OnKeyboardConnected(const ::ash::mojom::Keyboard& keyboard) override;
