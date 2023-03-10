@@ -29,47 +29,42 @@ public class BookmarkUiState {
         int FOLDER = 2;
         int SEARCHING = 3;
     }
+
     private static final String SHOPPING_FILTER_URL =
             UrlConstants.BOOKMARKS_FOLDER_URL + "/shopping";
 
-    @BookmarkUiMode
-    int mUiMode;
-    String mUrl;
-    BookmarkId mFolder;
+    final @BookmarkUiMode int mUiMode;
+    final String mUrl;
+    final BookmarkId mFolder;
 
     static BookmarkUiState createLoadingState() {
-        BookmarkUiState state = new BookmarkUiState();
-        state.mUiMode = BookmarkUiMode.LOADING;
-        state.mUrl = "";
-        return state;
+        return new BookmarkUiState(BookmarkUiMode.LOADING, "", null);
     }
 
     static BookmarkUiState createSearchState() {
-        BookmarkUiState state = new BookmarkUiState();
-        state.mUiMode = BookmarkUiMode.SEARCHING;
-        state.mUrl = "";
-        return state;
+        return new BookmarkUiState(BookmarkUiMode.SEARCHING, "", null);
     }
 
     static BookmarkUiState createShoppingFilterState() {
-        BookmarkUiState state = new BookmarkUiState();
-        state.mUiMode = BookmarkUiMode.FOLDER;
-        state.mUrl = SHOPPING_FILTER_URL;
-        state.mFolder = BookmarkId.SHOPPING_FOLDER;
-        return state;
+        return new BookmarkUiState(
+                BookmarkUiMode.FOLDER, SHOPPING_FILTER_URL, BookmarkId.SHOPPING_FOLDER);
     }
 
     static BookmarkUiState createFolderState(BookmarkId folder, BookmarkModel bookmarkModel) {
-        if (BookmarkId.SHOPPING_FOLDER.equals(folder)) return createShoppingFilterState();
-        return createStateFromUrl(createFolderUrl(folder), bookmarkModel);
+        if (BookmarkId.SHOPPING_FOLDER.equals(folder)) {
+            return createShoppingFilterState();
+        } else {
+            return createStateFromUrl(createFolderUrl(folder), bookmarkModel);
+        }
     }
 
-    /**
-     * @see #createStateFromUrl(Uri, BookmarkModel)
-     */
+    /** @see #createStateFromUrl(Uri, BookmarkModel). */
     static BookmarkUiState createStateFromUrl(String url, BookmarkModel bookmarkModel) {
-        if (SHOPPING_FILTER_URL.equals(url)) return createShoppingFilterState();
-        return createStateFromUrl(Uri.parse(url), bookmarkModel);
+        if (SHOPPING_FILTER_URL.equals(url)) {
+            return createShoppingFilterState();
+        } else {
+            return createStateFromUrl(Uri.parse(url), bookmarkModel);
+        }
     }
 
     /**
@@ -77,25 +72,24 @@ public class BookmarkUiState {
      *         return all_bookmarks.
      */
     static BookmarkUiState createStateFromUrl(Uri uri, BookmarkModel bookmarkModel) {
-        BookmarkUiState state = new BookmarkUiState();
-        state.mUiMode = BookmarkUiMode.INVALID;
-        state.mUrl = uri.toString();
+        String url = uri.toString();
 
-        if (state.mUrl.equals(UrlConstants.BOOKMARKS_URL)) {
+        BookmarkUiState tempState = null;
+        if (url.equals(UrlConstants.BOOKMARKS_URL)) {
             return createFolderState(bookmarkModel.getDefaultFolderViewLocation(), bookmarkModel);
-        } else if (state.mUrl.startsWith(UrlConstants.BOOKMARKS_FOLDER_URL)) {
+        } else if (url.startsWith(UrlConstants.BOOKMARKS_FOLDER_URL)) {
             String path = uri.getLastPathSegment();
             if (!path.isEmpty()) {
-                state.mFolder = BookmarkId.getBookmarkIdFromString(path);
-                state.mUiMode = BookmarkUiMode.FOLDER;
+                tempState = new BookmarkUiState(
+                        BookmarkUiMode.FOLDER, url, BookmarkId.getBookmarkIdFromString(path));
             }
         }
 
-        if (!state.isValid(bookmarkModel)) {
-            state = createFolderState(bookmarkModel.getDefaultFolderViewLocation(), bookmarkModel);
+        if (tempState != null && tempState.isValid(bookmarkModel)) {
+            return tempState;
+        } else {
+            return createFolderState(bookmarkModel.getDefaultFolderViewLocation(), bookmarkModel);
         }
-
-        return state;
     }
 
     public static Uri createFolderUrl(BookmarkId folderId) {
@@ -106,7 +100,11 @@ public class BookmarkUiState {
         return builder.build();
     }
 
-    private BookmarkUiState() {}
+    private BookmarkUiState(@BookmarkUiMode int uiMode, String url, BookmarkId folder) {
+        mUiMode = uiMode;
+        mUrl = url;
+        mFolder = folder;
+    }
 
     @Override
     public int hashCode() {
