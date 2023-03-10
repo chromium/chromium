@@ -23,9 +23,9 @@
 </body>
 
 <script type="text/javascript">
-var gestureX = 30;
-var gestureY = 30;
 var box = document.getElementById("box");
+var gestureX = box.getBoundingClientRect().left + (box.clientWidth / 2);
+var gestureY = box.getBoundingClientRect().top + (box.clientHeight / 2);
 var container = document.getElementById("container");
 var itemHeight = box.clientHeight / box.size;
 var fullyScrolled = box.scrollHeight - box.clientHeight;
@@ -42,24 +42,28 @@ promise_test (async () => {
   assert_equals(box.scrollTop, 0);
   assert_equals(container.scrollTop, 0);
 
+  let scrollEndPromise = waitForScrollendEvent(box);
   await swipe(2 * itemHeight + 10, gestureX, gestureY, "up", SPEED_INSTANT);
-  await waitForAnimationEnd(() => { return box.scrollTop; }, 700, 20);
+  await scrollEndPromise;
   assert_greater_than(box.scrollTop, 2 * itemHeight + 10);
   assert_equals(container.scrollTop, 0);
 
   resetScroll();
   assert_equals(box.scrollTop, 0);
 
+  scrollEndPromise = waitForScrollendEvent(box);
   await swipe(fullyScrolled + 500, gestureX, gestureY, "up", SPEED_INSTANT);
-  await waitFor(() => { return box.scrollTop == fullyScrolled; });
+  await scrollEndPromise;
+  assert_equals(box.scrollTop, fullyScrolled, "box should fully scroll");
   // Wait for 100 RAFs to make sure the scroll does not propagate to the
   // container.
   await conditionHolds(() => { return container.scrollTop == 0; });
 
   // Flinging list past the end should scroll container div when starting at
   // scroll extent.
+  scrollEndPromise = waitForScrollendEvent(container);
   await swipe(60, gestureX, gestureY, "up", SPEED_INSTANT);
-  await waitForAnimationEnd(() => { return container.scrollTop; }, 700, 20);
+  await scrollEndPromise;
   assert_greater_than(container.scrollTop, 60);
   assert_equals(box.scrollTop, fullyScrolled);
 }, "fling gestures on a list box");
@@ -69,30 +73,31 @@ promise_test (async () => {
   assert_equals(box.scrollTop, 0);
   assert_equals(container.scrollTop, 0);
 
+  let scrollEndPromise = waitForScrollendEvent(box);
   await smoothScroll(3 * itemHeight + 6, gestureX, gestureY,
       GestureSourceType.TOUCH_INPUT, "down");
-  await waitFor(() => {
-      return approx_equals(3 * itemHeight + 6, box.scrollTop, 2);
-  });
+  await scrollEndPromise;
   assert_equals(container.scrollTop, 0);
 
   resetScroll();
   assert_equals(box.scrollTop, 0);
 
+  scrollEndPromise = waitForScrollendEvent(box);
   await smoothScroll(fullyScrolled + 50, gestureX, gestureY,
       GestureSourceType.TOUCH_INPUT, "down");
-  await waitFor(() => { return box.scrollTop == fullyScrolled; });
-  // Wait for 100 RAFs to make sure the scroll does not propagate to the main
-  // frame.
+  await scrollEndPromise;
+  assert_equals(box.scrollTop, fullyScrolled, "box should fully scroll");
+
   await conditionHolds(() => { return container.scrollTop == 0; });
 
   // Gesture scrolling list past the end should scroll container div when
   // starting at scroll extent.
+  scrollEndPromise = waitForScrollendEvent(container);
   await smoothScroll(fullyScrolled + 50, gestureX, gestureY,
       GestureSourceType.TOUCH_INPUT, "down");
-  await waitFor(() => {
-      return approx_equals(fullyScrolled + 50, container.scrollTop, 2);
-  });
+  await scrollEndPromise;
+  assert_approx_equals(fullyScrolled + 50, container.scrollTop, 2,
+    "container should scroll to approx. " + (fullyScrolled + 50));
 }, "gesture scroll on a list box");
 
 promise_test (async () => {
@@ -100,9 +105,10 @@ promise_test (async () => {
   assert_equals(box.scrollTop, 0);
   assert_equals(container.scrollTop, 0);
 
+  let scrollEndPromise = waitForScrollendEvent(container);
   await smoothScroll(60, gestureX, gestureY,
       GestureSourceType.TOUCH_INPUT, "right");
-  await waitFor(() => { return approx_equals(60, container.scrollLeft, 2); });
+  await scrollEndPromise;
   assert_equals(box.scrollLeft, 0,
       "Horizontal scrolls should not affect listbox");
 }, "Horizontal scroll on a list box");
