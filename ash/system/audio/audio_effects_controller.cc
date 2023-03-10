@@ -126,7 +126,7 @@ void AudioEffectsController::AddNoiseCancellationEffect() {
                           static_cast<int>(AudioEffectId::kNoiseCancellation)));
   effect->set_id(static_cast<int>(AudioEffectId::kNoiseCancellation));
   effect->AddState(std::make_unique<VcEffectState>(
-      /*icon=*/&kPrivacyIndicatorsMicrophoneIcon,
+      /*icon=*/&kVideoConferenceNoiseCancellationOnIcon,
       /*label_text=*/
       l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_AUDIO_INPUT_NOISE_CANCELLATION),
@@ -150,7 +150,7 @@ void AudioEffectsController::AddLiveCaptionEffect() {
                           static_cast<int>(AudioEffectId::kLiveCaption)));
   effect->set_id(static_cast<int>(AudioEffectId::kLiveCaption));
   effect->AddState(std::make_unique<VcEffectState>(
-      /*icon=*/&kPrivacyIndicatorsMicrophoneIcon,
+      /*icon=*/&kVideoConferenceLiveCaptionOnIcon,
       /*label_text=*/
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_LIVE_CAPTION),
       /*accessible_name_id=*/

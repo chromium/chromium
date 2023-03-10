@@ -391,7 +391,7 @@ void CameraEffectsController::InitializeEffectControls() {
     effect->set_id(
         static_cast<int>(cros::mojom::CameraEffect::kPortraitRelight));
     effect->AddState(std::make_unique<VcEffectState>(
-        /*icon=*/&kPrivacyIndicatorsCameraIcon,
+        /*icon=*/&kVideoConferencePortraitRelightOnIcon,
         /*label_text=*/
         l10n_util::GetStringUTF16(
             IDS_ASH_VIDEO_CONFERENCE_BUBBLE_PORTRAIT_RELIGHT_NAME),
