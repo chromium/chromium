@@ -59071,6 +59071,7 @@ from previous Chrome versions.
   <int value="-1603026968"
       label="AlignFontDisplayAutoTimeoutWithLCPGoal:disabled"/>
   <int value="-1601374850" label="DialMediaRouteProvider:disabled"/>
+  <int value="-1600277666" label="SidePanelCompanion:disabled"/>
   <int value="-1600187674" label="ClipboardUnsanitizedContent:enabled"/>
   <int value="-1599538279" label="enable-md-policy-page"/>
   <int value="-1598785167" label="RequestDesktopSiteAdditions:disabled"/>
@@ -59385,6 +59386,7 @@ from previous Chrome versions.
   <int value="-1431851314" label="BorealisDiskManagement:disabled"/>
   <int value="-1431722713" label="TabFreeze:disabled"/>
   <int value="-1431563697" label="WebPaymentsMethodSectionOrderV2:enabled"/>
+  <int value="-1430411329" label="SidePanelCompanion:enabled"/>
   <int value="-1430090822" label="EnableSharedImageForWebview:disabled"/>
   <int value="-1428822216" label="TabSelectionEditorV2:disabled"/>
   <int value="-1428589407" label="WebRTCPipeWireCapturer:disabled"/>

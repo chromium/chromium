@@ -2937,6 +2937,15 @@ constexpr FeatureEntry::FeatureVariation kLensImageFormatVariations[] = {
      std::size(kLensFormatOptimizationJPEG), nullptr},
 };
 
+#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
+constexpr FeatureEntry::FeatureParam kCscVariation[] = {
+    {"companion-homepage-url",
+     "https://lens-staging.corp.google.com/companion"}};
+
+constexpr FeatureEntry::FeatureVariation kCscVariations[] = {
+    {"with staging URL", kCscVariation, std::size(kCscVariation), nullptr}};
+#endif  // BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const FeatureEntry::Choice kAlwaysEnableHdcpChoices[] = {
     {flag_descriptions::kAlwaysEnableHdcpDefault, "", ""},
@@ -8080,6 +8089,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(lens::features::kLensStandalone)},
 
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
+    {"csc", flag_descriptions::kCscName, flag_descriptions::kCscDescription,
+     kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kSidePanelCompanion,
+                                    kCscVariations,
+                                    "CSC")},
+
     {"enable-lens-region-search-static-page",
      flag_descriptions::kLensRegionSearchStaticPageName,
      flag_descriptions::kLensRegionSearchStaticPageDescription, kOsDesktop,

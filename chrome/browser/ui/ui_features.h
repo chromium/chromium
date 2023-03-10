@@ -79,6 +79,7 @@ BASE_DECLARE_FEATURE(kSidePanelWebView);
 BASE_DECLARE_FEATURE(kSidePanelCompanion);
 extern const base::FeatureParam<std::string> kHomepageURLForCompanion;
 #endif
+
 BASE_DECLARE_FEATURE(kSidePanelJourneysQueryless);
 BASE_DECLARE_FEATURE(kSidePanelSearchCompanion);
 

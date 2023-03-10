@@ -1929,6 +1929,9 @@ const char kLensImageTranslateDescription[] =
     "Lens. The context menu item appears when the current page is being "
     "translated.";
 
+const char kCscName[] = "CSC";
+const char kCscDescription[] = "";
+
 const char kLogJsConsoleMessagesName[] =
     "Log JS console messages in system logs";
 const char kLogJsConsoleMessagesDescription[] =
