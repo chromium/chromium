@@ -142,11 +142,21 @@ class COMPONENT_EXPORT(CC_SLIM) LayerTreeImpl : public LayerTree,
       base::flat_set<viz::ResourceId>& out_resource_ids,
       viz::HitTestRegionList& out_hit_test_region_list);
   void Draw(Layer& layer,
+            viz::CompositorFrame& frame,
             viz::CompositorRenderPass& render_pass,
             FrameData& data,
+            const gfx::Transform& parent_transform_to_root,
             const gfx::Transform& parent_transform_to_target,
             const gfx::RectF* parent_clip_in_target,
             const gfx::RectF& clip_in_parent);
+  void DrawChildrenAndAppendQuads(Layer& layer,
+                                  viz::CompositorFrame& frame,
+                                  viz::CompositorRenderPass& render_pass,
+                                  FrameData& data,
+                                  const gfx::Transform& transform_to_root,
+                                  const gfx::Transform& transform_to_target,
+                                  const gfx::RectF* clip_in_target,
+                                  const gfx::RectF& clip_in_layer);
 
   const raw_ptr<LayerTreeClient> client_;
   const uint32_t num_unneeded_begin_frame_before_stop_;

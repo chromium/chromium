@@ -403,6 +403,10 @@ absl::optional<gfx::Transform> Layer::ComputeTransformFromParent() const {
   return from_parent;
 }
 
+bool Layer::HasFilters() {
+  return !filters_.empty();
+}
+
 void Layer::AppendQuads(viz::CompositorRenderPass& render_pass,
                         FrameData& data,
                         const gfx::Transform& transform,
@@ -430,6 +434,8 @@ viz::SharedQuadState* Layer::CreateAndAppendSharedQuadState(
     const gfx::Transform& transform,
     const gfx::Rect* clip_in_target,
     const gfx::Rect& visible_rect) {
+  DCHECK(!HasFilters() || render_pass.filters.IsEmpty());
+  render_pass.filters = ToCcFilters(filters_);
   viz::SharedQuadState* quad_state =
       render_pass.CreateAndAppendSharedQuadState();
   const gfx::Rect layer_rect{bounds()};

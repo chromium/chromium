@@ -21,12 +21,17 @@
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
+#include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/draw_quad.h"
+#include "components/viz/common/quads/frame_deadline.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/transform_util.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace cc::slim {
 
@@ -385,7 +390,6 @@ void LayerTreeImpl::GenerateCompositorFrame(
     viz::HitTestRegionList& out_hit_test_region_list) {
   // TODO(crbug.com/1408128): Only has a very simple and basic compositor frame
   // generation. Some missing features include:
-  // * Support multiple render passes (non-axis aligned clip, filters)
   // * Damage tracking
   // * Occlusion culling
   // * Ensure entire viewport is covered by quads.
@@ -427,7 +431,8 @@ void LayerTreeImpl::GenerateCompositorFrame(
   out_frame.metadata.display_transform_hint = display_transform_hint_;
 
   FrameData frame_data(out_hit_test_region_list.regions);
-  Draw(*root_, *render_pass, frame_data,
+  Draw(*root_, out_frame, *render_pass, frame_data,
+       /*parent_transform_to_root=*/gfx::Transform(),
        /*parent_transform_to_target=*/gfx::Transform(),
        /*parent_clip_in_target=*/nullptr, gfx::RectF(device_viewport_rect_));
 
@@ -459,8 +464,10 @@ void LayerTreeImpl::GenerateCompositorFrame(
 }
 
 void LayerTreeImpl::Draw(Layer& layer,
+                         viz::CompositorFrame& frame,
                          viz::CompositorRenderPass& parent_pass,
                          FrameData& data,
+                         const gfx::Transform& parent_transform_to_root,
                          const gfx::Transform& parent_transform_to_target,
                          const gfx::RectF* parent_clip_in_target,
                          const gfx::RectF& clip_in_parent) {
@@ -488,31 +495,168 @@ void LayerTreeImpl::Draw(Layer& layer,
     return;
   }
 
-  // New to target transform is: parent_to_target x layer_to_parent.
   gfx::Transform transform_to_target = parent_transform_to_target;
-  transform_to_target.PreConcat(layer.ComputeTransformToParent());
+  gfx::Transform transform_to_root = parent_transform_to_root;
+  {
+    // new_transform = parent_transform x layer_to_parent.
+    const gfx::Transform transform_to_parent = layer.ComputeTransformToParent();
+    transform_to_target.PreConcat(transform_to_parent);
+    transform_to_root.PreConcat(transform_to_parent);
+  }
 
-  // Compute new clip in target space.
-  gfx::RectF new_clip_in_target;
-  const gfx::RectF* clip_in_target = parent_clip_in_target;
-  // Dropping non-axis aligned clip instead of using new render pass until
-  // non-root render pass is implemented.
-  if (layer.masks_to_bounds() &&
-      transform_to_target.Preserves2dAxisAlignment()) {
-    new_clip_in_target.set_width(layer.bounds().width());
-    new_clip_in_target.set_height(layer.bounds().height());
-    new_clip_in_target = transform_to_target.MapRect(new_clip_in_target);
-    if (parent_clip_in_target) {
-      new_clip_in_target.Intersect(*parent_clip_in_target);
-    }
-    if (!new_clip_in_target.Contains(gfx::RectF(parent_pass.output_rect))) {
-      clip_in_target = &new_clip_in_target;
+  {
+    const bool has_filters = layer.HasFilters();
+    const bool axis_aligned_clip =
+        !layer.masks_to_bounds() ||
+        transform_to_target.Preserves2dAxisAlignment();
+    if ((!has_filters && axis_aligned_clip) || root_.get() == &layer) {
+      // Does not need new render pass.
+      // Compute new clip in target space.
+      gfx::RectF new_clip_in_target(gfx::SizeF(layer.bounds()));
+      const gfx::RectF* clip_in_target = parent_clip_in_target;
+      if (layer.masks_to_bounds()) {
+        new_clip_in_target = transform_to_target.MapRect(new_clip_in_target);
+        if (parent_clip_in_target) {
+          new_clip_in_target.Intersect(*parent_clip_in_target);
+        }
+        if (!new_clip_in_target.Contains(gfx::RectF(parent_pass.output_rect))) {
+          clip_in_target = &new_clip_in_target;
+        }
+      }
+
+      DrawChildrenAndAppendQuads(layer, frame, parent_pass, data,
+                                 transform_to_root, transform_to_target,
+                                 clip_in_target, clip_in_layer);
+      return;
     }
   }
 
+  std::unique_ptr<viz::CompositorRenderPass> new_pass;
+  gfx::Rect new_pass_content_bounds;
+  // Scale can be applied when drawing layers into the new pass, or when
+  // drawing the new pass into its target pass. Generally prefer the former to
+  // avoid visual artifacts when scaling the output of the new pass. Therefore
+  // the space of the new pass is the space of the layer with
+  // `scale_to_new_pass` applied.
+  // Another way to think about this: to_parent is split into scale_to_new_pass
+  // and new_pass_to_parent such that:
+  // to_parent = new_pass_to_parent x scale_to_new_pass
+  gfx::Vector2dF scale_to_new_pass;
+  gfx::Transform transform_new_pass_to_parent_target;
+  {
+    // Compute `scale_to_new_pass` first.
+    scale_to_new_pass = gfx::ComputeTransform2dScaleComponents(
+        transform_to_root, /*fallback_value=*/1.0f);
+    // Only allow content scale to scale down (to save memory). Slim
+    // compositor does support any vector content that is then rastered, so
+    // there is no need to scale up a render pass to avoid visual artifacts.
+    scale_to_new_pass.SetToMin({1.0f, 1.0f});
+    DCHECK_NE(scale_to_new_pass.x(), 0.0f);
+    DCHECK_NE(scale_to_new_pass.y(), 0.0f);
+
+    // Compute "from new pass" transforms from "from layer" transforms by
+    // applying inverse scale.
+    float inverse_scale_x = 1.0f / scale_to_new_pass.x();
+    float inverse_scale_y = 1.0f / scale_to_new_pass.y();
+    transform_new_pass_to_parent_target = transform_to_target;
+    transform_new_pass_to_parent_target.Scale(inverse_scale_x, inverse_scale_y);
+    gfx::Transform new_pass_transform_to_root = transform_to_root;
+    new_pass_transform_to_root.Scale(inverse_scale_x, inverse_scale_y);
+
+    // Target is the new pass, so transform is just a scale.
+    transform_to_target =
+        gfx::Transform::MakeScale(scale_to_new_pass.x(), scale_to_new_pass.y());
+
+    // First clip in layer space, then transform to parent target space.
+    new_pass_content_bounds.set_size(layer.bounds());
+    new_pass_content_bounds.Intersect(gfx::ToEnclosedRect(clip_in_layer));
+    new_pass_content_bounds =
+        transform_to_target.MapRect(new_pass_content_bounds);
+    // Clip to max texture size.
+    int max_texture_size = frame_sink_->GetMaxTextureSize();
+    new_pass_content_bounds.set_width(
+        std::min(new_pass_content_bounds.width(), max_texture_size));
+    new_pass_content_bounds.set_height(
+        std::min(new_pass_content_bounds.height(), max_texture_size));
+
+    new_pass = viz::CompositorRenderPass::Create();
+    // Note output_rect and damage_rect are updated below.
+    viz::CompositorRenderPassId new_pass_id(layer.id());
+    new_pass->SetNew(new_pass_id, /*output_rect=*/new_pass_content_bounds,
+                     /*damage_rect=*/new_pass_content_bounds,
+                     new_pass_transform_to_root);
+  }
+
+  // If a new pass is created, then there is no target clip when drawing into
+  // the new pass since the bounds of the new pass already has any necessary
+  // clip applied.
+  const gfx::RectF* clip_in_target = nullptr;
+  DrawChildrenAndAppendQuads(layer, frame, *new_pass, data, transform_to_root,
+                             transform_to_target, clip_in_target,
+                             clip_in_layer);
+
+  if (new_pass->quad_list.empty()) {
+    // Throw away new pass if it has no quads.
+    return;
+  }
+  viz::SharedQuadState* shared_quad_state =
+      parent_pass.CreateAndAppendSharedQuadState();
+  // Any clip introduced by this layer is already applied by the bounds of the
+  // new pass, so only need to apply any clips in parents target that came
+  // from parent.
+  absl::optional<gfx::Rect> clip_opt;
+  if (parent_clip_in_target) {
+    clip_opt = gfx::ToEnclosingRect(*parent_clip_in_target);
+  }
+  // TODO(crbug.com/1408128): Revisit contents_opaque when implementing
+  // occlusion culling.
+  shared_quad_state->SetAll(
+      transform_new_pass_to_parent_target, new_pass_content_bounds,
+      new_pass_content_bounds, gfx::MaskFilterInfo(), clip_opt,
+      /*contents_opaque=*/false, /*opacity_f=*/1.0f, SkBlendMode::kSrcOver, 0);
+  auto* quad =
+      parent_pass.CreateAndAppendDrawQuad<viz::CompositorRenderPassDrawQuad>();
+
+  // Union through quad list in new pass to compute content rect.
+  gfx::Rect content_rect;
+  for (const auto* new_pass_quad : new_pass->quad_list) {
+    content_rect.Union(
+        new_pass_quad->shared_quad_state->quad_to_target_transform.MapRect(
+            new_pass_quad->rect));
+  }
+  content_rect.Intersect(new_pass_content_bounds);
+
+  gfx::RectF tex_coord_rect(gfx::Rect(content_rect.size()));
+  quad->SetAll(shared_quad_state, content_rect, content_rect,
+               /*needs_blending=*/true, new_pass->id,
+               /*mask_resource_id=*/viz::kInvalidResourceId,
+               /*mask_uv_rect=*/gfx::RectF(),
+               /*mask_texture_size=*/gfx::Size(),
+               /*filters_scale=*/scale_to_new_pass,
+               /*filters_origin=*/gfx::PointF(), tex_coord_rect,
+               /*force_anti_aliasing_off=*/false,
+               /*backdrop_filter_quality=*/1.f,
+               /*intersects_damage_under=*/true);
+
+  // TODO(crbug.com/1408128): Properly implement damage, including setting
+  // `has_damage_from_contributing_content`.
+  new_pass->output_rect = content_rect;
+  new_pass->damage_rect = content_rect;
+  frame.render_pass_list.push_back(std::move(new_pass));
+}
+
+void LayerTreeImpl::DrawChildrenAndAppendQuads(
+    Layer& layer,
+    viz::CompositorFrame& frame,
+    viz::CompositorRenderPass& render_pass,
+    FrameData& data,
+    const gfx::Transform& transform_to_root,
+    const gfx::Transform& transform_to_target,
+    const gfx::RectF* clip_in_target,
+    const gfx::RectF& clip_in_layer) {
   for (auto& child : base::Reversed(layer.children())) {
-    Draw(*child, parent_pass, data, transform_to_target, clip_in_target,
-         clip_in_layer);
+    Draw(*child, frame, render_pass, data, transform_to_root,
+         transform_to_target, clip_in_target, clip_in_layer);
   }
 
   gfx::Rect integer_clip_in_target;
@@ -522,12 +666,12 @@ void LayerTreeImpl::Draw(Layer& layer,
   // Viz expects the visible rect to be a subrect of layer_rect (ie `bounds()`).
   // So intersect here unconditionally in case this layer is not
   // `masks_to_bounds()`.
-  clip_in_layer.Intersect(
-      gfx::RectF(layer.bounds().width(), layer.bounds().height()));
+  gfx::RectF clip(layer.bounds().width(), layer.bounds().height());
+  clip.Intersect(clip_in_layer);
   if (!clip_in_layer.IsEmpty() && layer.HasDrawableContent()) {
-    layer.AppendQuads(parent_pass, data, transform_to_target,
+    layer.AppendQuads(render_pass, data, transform_to_target,
                       clip_in_target ? &integer_clip_in_target : nullptr,
-                      /*visible_rect=*/gfx::ToEnclosingRect(clip_in_layer));
+                      /*visible_rect=*/gfx::ToEnclosingRect(clip));
   }
 }
 

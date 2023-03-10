@@ -68,6 +68,7 @@ class COMPONENT_EXPORT(CC_SLIM) FrameSinkImpl
   viz::ClientResourceProvider* client_resource_provider() {
     return &resource_provider_;
   }
+  int GetMaxTextureSize() const;
 
   // viz::ContextLostObserver
   void OnContextLost() override;

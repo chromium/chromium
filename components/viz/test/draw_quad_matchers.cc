@@ -4,6 +4,7 @@
 
 #include "components/viz/test/draw_quad_matchers.h"
 
+#include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 
@@ -80,6 +81,16 @@ testing::Matcher<const DrawQuad*> IsYuvVideoQuad() {
 
 testing::Matcher<const DrawQuad*> IsSurfaceQuad() {
   return IsQuadType(DrawQuad::Material::kSurfaceContent);
+}
+
+testing::Matcher<const DrawQuad*> IsCompositorRenderPassQuad(
+    CompositorRenderPassId id) {
+  return testing::AllOf(
+      IsQuadType(DrawQuad::Material::kCompositorRenderPass),
+      testing::Truly([id](const DrawQuad* quad) {
+        return CompositorRenderPassDrawQuad::MaterialCast(quad)
+                   ->render_pass_id == id;
+      }));
 }
 
 testing::Matcher<const DrawQuad*> IsAggregatedRenderPassQuad() {

@@ -16,6 +16,10 @@ namespace cc::slim {
 // togging begin frame request every frame.
 inline constexpr uint32_t kNumUnneededBeginFrameBeforeStop = 4u;
 
+// Max texture size using software mode. This is an arbitrary limit but is meant
+// to be similar to the limits on max GPU texture size.
+inline constexpr int kSoftwareMaxTextureSize = 16 * 1024;
+
 }  // namespace cc::slim
 
 #endif  // CC_SLIM_CONSTANTS_H_

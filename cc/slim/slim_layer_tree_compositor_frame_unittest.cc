@@ -11,6 +11,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "cc/paint/filter_operation.h"
+#include "cc/paint/filter_operations.h"
 #include "cc/slim/features.h"
 #include "cc/slim/layer.h"
 #include "cc/slim/nine_patch_layer.h"
@@ -23,6 +25,7 @@
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/quads/compositor_frame.h"
+#include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/resources/transferable_resource.h"
@@ -979,6 +982,194 @@ TEST_F(SlimLayerTreeCompositorFrameTest, VisibleRect) {
   ASSERT_TRUE(child_quad->shared_quad_state->clip_rect);
   // `clip_rect` in target pass space should be rounded up.
   EXPECT_EQ(child_quad->shared_quad_state->clip_rect, gfx::Rect(25, 25));
+}
+
+TEST_F(SlimLayerTreeCompositorFrameTest, NonAxisAlignedClip) {
+  auto root_layer = CreateSolidColorLayer(viewport_.size(), SkColors::kGray);
+  layer_tree_->SetRoot(root_layer);
+
+  // Clip is 50x50 rotated by 45 degrees about the center.
+  auto clip_layer = cc::slim::Layer::Create();
+  clip_layer->SetMasksToBounds(true);
+  clip_layer->SetBounds(gfx::Size(50, 50));
+  clip_layer->SetTransformOrigin(gfx::Point3F(25.0f, 25.0f, 0.0f));
+  gfx::Transform transform;
+  transform.Rotate(45);
+  clip_layer->SetTransform(transform);
+  root_layer->AddChild(clip_layer);
+
+  // Drawing layer is 80x80 larger than the clip.
+  auto solid_color_layer =
+      CreateSolidColorLayer(gfx::Size(80, 80), SkColors::kRed);
+  clip_layer->AddChild(std::move(solid_color_layer));
+
+  viz::CompositorFrame frame = ProduceFrame();
+  ASSERT_EQ(frame.render_pass_list.size(), 2u);
+  auto& child_pass = frame.render_pass_list.front();
+  EXPECT_EQ(child_pass->output_rect, gfx::Rect(50, 50));
+  EXPECT_EQ(child_pass->damage_rect, gfx::Rect(50, 50));
+  gfx::Transform child_pass_transform =
+      gfx::Transform::MakeTranslation(25.0f, 25.0f);
+  child_pass_transform.PreConcat(transform);
+  child_pass_transform.PreConcat(
+      gfx::Transform::MakeTranslation(-25.0f, -25.0f));
+  EXPECT_EQ(child_pass->transform_to_root_target, child_pass_transform);
+  EXPECT_THAT(child_pass->quad_list,
+              ElementsAre(AllOf(viz::IsSolidColorQuad(SkColors::kRed),
+                                viz::HasRect(gfx::Rect(80, 80)),
+                                viz::HasVisibleRect(gfx::Rect(50, 50)),
+                                viz::HasTransform(gfx::Transform()))));
+
+  auto& root_pass = frame.render_pass_list.back();
+  ASSERT_THAT(
+      root_pass->quad_list,
+      ElementsAre(AllOf(viz::IsCompositorRenderPassQuad(child_pass->id),
+                        viz::HasRect(gfx::Rect(50, 50)),
+                        viz::HasVisibleRect(gfx::Rect(50, 50)),
+                        viz::HasTransform(child_pass_transform)),
+                  AllOf(viz::IsSolidColorQuad(SkColors::kGray),
+                        viz::HasRect(viewport_), viz::HasVisibleRect(viewport_),
+                        viz::HasTransform(gfx::Transform()))));
+  auto* render_pass_quad = viz::CompositorRenderPassDrawQuad::MaterialCast(
+      root_pass->quad_list.ElementAt(0));
+  auto* shared_quad_state = render_pass_quad->shared_quad_state;
+  EXPECT_EQ(shared_quad_state->quad_layer_rect, gfx::Rect(50, 50));
+  EXPECT_EQ(shared_quad_state->visible_quad_layer_rect, gfx::Rect(50, 50));
+  EXPECT_EQ(shared_quad_state->clip_rect, absl::nullopt);
+}
+
+TEST_F(SlimLayerTreeCompositorFrameTest, ChildPassOutputRect) {
+  // Tests that child render pass is only sized to areas with content.
+  auto root_layer = CreateSolidColorLayer(viewport_.size(), SkColors::kGray);
+  layer_tree_->SetRoot(root_layer);
+
+  // Clip is 50x50 rotated by 45 degrees about the center.
+  auto clip_layer = cc::slim::Layer::Create();
+  clip_layer->SetMasksToBounds(true);
+  clip_layer->SetBounds(gfx::Size(50, 50));
+  clip_layer->SetTransformOrigin(gfx::Point3F(25.0f, 25.0f, 0.0f));
+  gfx::Transform transform;
+  transform.Rotate(45);
+  clip_layer->SetTransform(transform);
+  root_layer->AddChild(clip_layer);
+
+  // Drawing layer is 80x80 offset by 20,20.
+  auto solid_color_layer =
+      CreateSolidColorLayer(gfx::Size(80, 80), SkColors::kRed);
+  solid_color_layer->SetPosition(gfx::PointF(20.0f, 20.0f));
+  clip_layer->AddChild(std::move(solid_color_layer));
+
+  viz::CompositorFrame frame = ProduceFrame();
+  ASSERT_EQ(frame.render_pass_list.size(), 2u);
+  auto& child_pass = frame.render_pass_list.front();
+  // Child pass should only have size 30x30.
+  EXPECT_EQ(child_pass->output_rect, gfx::Rect(20, 20, 30, 30));
+  EXPECT_EQ(child_pass->damage_rect, gfx::Rect(20, 20, 30, 30));
+  gfx::Transform child_pass_transform =
+      gfx::Transform::MakeTranslation(25.0f, 25.0f);
+  child_pass_transform.PreConcat(transform);
+  child_pass_transform.PreConcat(
+      gfx::Transform::MakeTranslation(-25.0f, -25.0f));
+  EXPECT_EQ(child_pass->transform_to_root_target, child_pass_transform);
+  ASSERT_THAT(
+      child_pass->quad_list,
+      ElementsAre(AllOf(
+          viz::IsSolidColorQuad(SkColors::kRed),
+          viz::HasRect(gfx::Rect(80, 80)),
+          // Visible rect is clipped.
+          viz::HasVisibleRect(gfx::Rect(30, 30)),
+          viz::HasTransform(gfx::Transform::MakeTranslation(20.0f, 20.0f)))));
+  {
+    // SharedQuadState should match the quad.
+    auto* shared_quad_state =
+        child_pass->quad_list.ElementAt(0)->shared_quad_state;
+    EXPECT_EQ(shared_quad_state->quad_layer_rect, gfx::Rect(80, 80));
+    EXPECT_EQ(shared_quad_state->visible_quad_layer_rect, gfx::Rect(30, 30));
+  }
+
+  auto& root_pass = frame.render_pass_list.back();
+  ASSERT_THAT(
+      root_pass->quad_list,
+      ElementsAre(AllOf(viz::IsCompositorRenderPassQuad(child_pass->id),
+                        viz::HasRect(gfx::Rect(20, 20, 30, 30)),
+                        viz::HasVisibleRect(gfx::Rect(20, 20, 30, 30)),
+                        viz::HasTransform(child_pass_transform)),
+                  AllOf(viz::IsSolidColorQuad(SkColors::kGray),
+                        viz::HasRect(viewport_), viz::HasVisibleRect(viewport_),
+                        viz::HasTransform(gfx::Transform()))));
+  {
+    auto* render_pass_quad = viz::CompositorRenderPassDrawQuad::MaterialCast(
+        root_pass->quad_list.ElementAt(0));
+    auto* shared_quad_state = render_pass_quad->shared_quad_state;
+    EXPECT_EQ(shared_quad_state->quad_layer_rect, gfx::Rect(50, 50));
+    EXPECT_EQ(shared_quad_state->visible_quad_layer_rect, gfx::Rect(50, 50));
+    EXPECT_EQ(shared_quad_state->clip_rect, absl::nullopt);
+  }
+}
+
+TEST_F(SlimLayerTreeCompositorFrameTest, Filters) {
+  // Also tests that scale down applies to child pass.
+  auto root_layer = CreateSolidColorLayer(viewport_.size(), SkColors::kGray);
+  layer_tree_->SetRoot(root_layer);
+
+  // Child layer has filters so require a child render pass.
+  // Child is scaled down and translated.
+  auto solid_color_layer =
+      CreateSolidColorLayer(gfx::Size(80, 80), SkColors::kRed);
+  solid_color_layer->SetTransform(gfx::Transform::MakeScale(0.5f));
+  solid_color_layer->SetFilters({cc::slim::Filter::CreateBrightness(0.5f)});
+  solid_color_layer->SetPosition(gfx::PointF(10.0f, 10.0f));
+  root_layer->AddChild(std::move(solid_color_layer));
+
+  viz::CompositorFrame frame = ProduceFrame();
+  ASSERT_EQ(frame.render_pass_list.size(), 2u);
+  auto& child_pass = frame.render_pass_list.front();
+  // Child pass should be scaled down.
+  EXPECT_EQ(child_pass->output_rect, gfx::Rect(40, 40));
+  EXPECT_EQ(child_pass->damage_rect, gfx::Rect(40, 40));
+  // Pass is translated.
+  gfx::Transform child_pass_transform =
+      gfx::Transform::MakeTranslation(10.0f, 10.0f);
+  EXPECT_EQ(child_pass->transform_to_root_target, child_pass_transform);
+  ASSERT_THAT(child_pass->quad_list,
+              ElementsAre(AllOf(
+                  viz::IsSolidColorQuad(SkColors::kRed),
+                  viz::HasRect(gfx::Rect(80, 80)),
+                  // Visible rect is clipped.
+                  viz::HasVisibleRect(gfx::Rect(80, 80)),
+                  // Scaled down to fit the child pass.
+                  viz::HasTransform(gfx::Transform::MakeScale(0.5f, 0.5f)))));
+  {
+    // SharedQuadState should match the quad.
+    auto* shared_quad_state =
+        child_pass->quad_list.ElementAt(0)->shared_quad_state;
+    EXPECT_EQ(shared_quad_state->quad_layer_rect, gfx::Rect(80, 80));
+    EXPECT_EQ(shared_quad_state->visible_quad_layer_rect, gfx::Rect(80, 80));
+  }
+  EXPECT_THAT(child_pass->filters.operations(),
+              ElementsAre(cc::FilterOperation::CreateBrightnessFilter(0.5f)));
+
+  auto& root_pass = frame.render_pass_list.back();
+  ASSERT_THAT(
+      root_pass->quad_list,
+      ElementsAre(AllOf(viz::IsCompositorRenderPassQuad(child_pass->id),
+                        // Render pass quad matches pass size.
+                        viz::HasRect(gfx::Rect(40, 40)),
+                        viz::HasVisibleRect(gfx::Rect(40, 40)),
+                        // Quad is only translated.
+                        viz::HasTransform(
+                            gfx::Transform::MakeTranslation(10.0f, 10.0f))),
+                  AllOf(viz::IsSolidColorQuad(SkColors::kGray),
+                        viz::HasRect(viewport_), viz::HasVisibleRect(viewport_),
+                        viz::HasTransform(gfx::Transform()))));
+  {
+    auto* render_pass_quad = viz::CompositorRenderPassDrawQuad::MaterialCast(
+        root_pass->quad_list.ElementAt(0));
+    auto* shared_quad_state = render_pass_quad->shared_quad_state;
+    EXPECT_EQ(shared_quad_state->quad_layer_rect, gfx::Rect(40, 40));
+    EXPECT_EQ(shared_quad_state->visible_quad_layer_rect, gfx::Rect(40, 40));
+    EXPECT_EQ(shared_quad_state->clip_rect, absl::nullopt);
+  }
 }
 
 }  // namespace

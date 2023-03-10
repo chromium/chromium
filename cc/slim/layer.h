@@ -197,6 +197,7 @@ class COMPONENT_EXPORT(CC_SLIM) Layer : public base::RefCounted<Layer> {
   // Called by LayerTree.
   gfx::Transform ComputeTransformToParent() const;
   absl::optional<gfx::Transform> ComputeTransformFromParent() const;
+  bool HasFilters();
 
   void UpdateDrawsContent();
   virtual bool HasDrawableContent() const;
