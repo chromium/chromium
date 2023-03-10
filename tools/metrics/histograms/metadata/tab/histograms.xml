@@ -506,21 +506,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tab.RestoreResult" enum="TabRestoreResult" expires_after="M88">
-  <owner>dtrainor@chromium.org</owner>
-  <owner>marq@chromium.org</owner>
-  <summary>
-    [Android and iOS] When the browser restores a tab, whether the load was
-    successful. Loads can fail for instance when there is no connectivity.
-  </summary>
-</histogram>
-
-<histogram name="Tab.RestoreTime" units="ms" expires_after="M88">
-  <owner>dtrainor@chromium.org</owner>
-  <owner>marq@chromium.org</owner>
-  <summary>[Android and iOS] Load time for a successful tab restore.</summary>
-</histogram>
-
 <histogram name="Tab.RestoreUserPersistence" enum="TabRestoreUserAction"
     expires_after="M85">
   <owner>dtrainor@chromium.org</owner>

@@ -19,12 +19,6 @@ const char kSelectedTabHistogramName[] =
 const char kPageLoadsBeforeEvictedTabSelected[] =
     "Tab.PageLoadsSinceLastSwitchToEvictedTab";
 
-// Records the time it takes for an evicted tab to reload.
-const char kEvictedTabReloadTime[] = "Tab.RestoreTime";
-
-// Records success vs failure of an evicted tab's reload.
-const char kEvictedTabReloadSuccessRate[] = "Tab.RestoreResult";
-
 // Records whether or not the user switched tabs before an evicted tab finished
 // reloading.
 const char kDidUserWaitForEvictedTabReload[] = "Tab.RestoreUserPersistence";

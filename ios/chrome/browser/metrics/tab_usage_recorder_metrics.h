@@ -16,14 +16,6 @@ extern const char kSelectedTabHistogramName[];
 // evicted tab is selected.
 extern const char kPageLoadsBeforeEvictedTabSelected[];
 
-// The name of the histogram tracking the reload time for a previously-evicted
-// tab.
-extern const char kEvictedTabReloadTime[];
-
-// The name of the histogram for whether or not the reload of a
-// previously-evicted tab completed successfully.
-extern const char kEvictedTabReloadSuccessRate[];
-
 // The name of the histogram for whether or not the user switched tabs before an
 // evicted tab completed reloading.
 extern const char kDidUserWaitForEvictedTabReload[];

@@ -66,7 +66,7 @@ class TabUsageRecorderBrowserAgent
   void RecordPageLoadStart(web::WebState* web_state);
 
   // Called when a page load finishes, to track the load time for evicted tabs.
-  void RecordPageLoadDone(web::WebState* web_state, bool success);
+  void RecordPageLoadDone(web::WebState* web_state);
 
   // Called when there is a user-initiated reload.
   void RecordReload(web::WebState* web_state);
