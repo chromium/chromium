@@ -68,7 +68,7 @@
                   referrer:web::Referrer()
                inIncognito:inIncognito
               inBackground:NO
-                  appendTo:kLastTab];
+                  appendTo:OpenPosition::kLastTab];
   if (self) {
     _fromChrome = YES;
   }

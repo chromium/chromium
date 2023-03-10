@@ -345,7 +345,7 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
   UrlLoadParams loadParams = UrlLoadParams::InNewTab(params);
   loadParams.SetInBackground(NO);
   loadParams.in_incognito = self.browser->GetBrowserState()->IsOffTheRecord();
-  loadParams.append_to = kCurrentTab;
+  loadParams.append_to = OpenPosition::kCurrentTab;
   UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(loadParams);
 }
 

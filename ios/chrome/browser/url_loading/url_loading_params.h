@@ -57,11 +57,12 @@ struct UrlLoadParams {
   // Whether this requests opening in incognito or not. Defaults to `false`.
   bool in_incognito;
 
-  // Location where the new tab should be opened. Defaults to `kLastTab`.
+  // Location where the new tab should be opened. Defaults to
+  // `OpenPosition::kLastTab`.
   OpenPosition append_to;
 
   // Specific index where tab should be opened if `append_to` is
-  // `kSpecifiedIndex`
+  // `OpenPosition::kSpecifiedIndex`
   int insertion_index;
 
   // Origin point of the action triggering this command, in main window

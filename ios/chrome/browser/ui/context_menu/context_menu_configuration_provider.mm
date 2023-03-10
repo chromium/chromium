@@ -147,7 +147,7 @@ const NSUInteger kContextMenuMaxTitleLength = 30;
       UrlLoadParams loadParams = UrlLoadParams::InNewTab(linkURL);
       loadParams.SetInBackground(YES);
       loadParams.in_incognito = isOffTheRecord;
-      loadParams.append_to = kCurrentTab;
+      loadParams.append_to = OpenPosition::kCurrentTab;
       loadParams.web_params.referrer = referrer;
       loadParams.origin_point = [params.view convertPoint:params.location
                                                    toView:nil];
@@ -244,7 +244,7 @@ const NSUInteger kContextMenuMaxTitleLength = 30;
     loadParams.SetInBackground(YES);
     loadParams.web_params.referrer = referrer;
     loadParams.in_incognito = isOffTheRecord;
-    loadParams.append_to = kCurrentTab;
+    loadParams.append_to = OpenPosition::kCurrentTab;
     loadParams.origin_point = [params.view convertPoint:params.location
                                                  toView:nil];
     UIAction* openImageInNewTab =

@@ -550,7 +550,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
   UrlLoadParams params = UrlLoadParams::InNewTab(URL);
   params.SetInBackground(!incognito);
   params.in_incognito = incognito;
-  params.append_to = kCurrentTab;
+  params.append_to = OpenPosition::kCurrentTab;
   params.origin_point = originPoint;
   UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
 }

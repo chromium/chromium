@@ -1471,7 +1471,7 @@ enum class ToolbarKind {
 - (void)showHelpPage {
   GURL helpUrl(l10n_util::GetStringUTF16(IDS_IOS_TOOLS_MENU_HELP_URL));
   UrlLoadParams params = UrlLoadParams::InNewTab(helpUrl);
-  params.append_to = kCurrentTab;
+  params.append_to = OpenPosition::kCurrentTab;
   params.user_initiated = NO;
   params.in_incognito = self.browser->GetBrowserState()->IsOffTheRecord();
   UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);

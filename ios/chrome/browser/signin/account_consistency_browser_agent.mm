@@ -112,7 +112,7 @@ void AccountConsistencyBrowserAgent::OnGoIncognito(const GURL& url) {
           referrer:web::Referrer()  // Strip referrer when switching modes.
        inIncognito:YES
       inBackground:NO
-          appendTo:kLastTab];
+          appendTo:OpenPosition::kLastTab];
   [handler_ openURLInNewTab:command];
 }
 

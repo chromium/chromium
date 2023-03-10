@@ -14,7 +14,7 @@ struct Referrer;
 }
 
 // Describes the intended position for a new tab.
-enum OpenPosition {
+enum class OpenPosition {
   kCurrentTab,     // Relative to currently selected tab.
   kLastTab,        // Always at end of tab model.
   kSpecifiedIndex  // Index is specified elsewhere.
