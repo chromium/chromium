@@ -50,6 +50,17 @@ export class LibLouis {
     this.loadOrReload_(opt_loadCallback);
   }
 
+  /**
+   * Convenience method to wait for the constructor to resolve its callback.
+   * @param {string} wasmPath Path to .wasm file for the module.
+   * @param {string=} opt_tablesDir Path to tables directory.
+   * @return {!Promise<LibLouis>}
+   */
+  static async create(wasmPath, opt_tablesDir) {
+    return new Promise(
+        resolve => new LibLouis(wasmPath, opt_tablesDir, resolve));
+  }
+
   isLoaded() {
     return this.isLoaded_;
   }

@@ -21,13 +21,6 @@ ChromeVoxLibLouisTest = class extends ChromeVoxE2ETest {
         'BrailleKeyEvent', '/chromevox/common/braille/braille_key_types.js');
   }
 
-  createLiblouis() {
-    return new LibLouis(
-        chrome.extension.getURL(
-            'chromevox/background/braille/liblouis_wrapper.js'),
-        '', () => {});
-  }
-
   withTranslator(liblouis, tableNames, callback) {
     liblouis.getTranslator(tableNames, this.newCallback(callback));
   }
@@ -45,13 +38,14 @@ function assertEqualsUint8Array(expected, actual) {
 function LIBLOUIS_TEST_F(testName, testFunc, opt_preamble) {
   // This needs to stay a function - don't convert to arrow function.
   const wrappedTestFunc = function() {
-    const liblouis = new LibLouis(
-        chrome.extension.getURL(
-            'chromevox/background/braille/liblouis_wrapper.js'),
-        // This needs to stay bound - don't convert to arrow function.
-        '', testFunc.bind(this));
+    LibLouis
+        .create(
+            chrome.extension.getURL(
+                'chromevox/background/braille/liblouis_wrapper.js'),
+            '')
+        .then(liblouis => testFunc(liblouis));
   };
-  TEST_F('ChromeVoxLibLouisTest', testName, wrappedTestFunc, opt_preamble);
+  AX_TEST_F('ChromeVoxLibLouisTest', testName, wrappedTestFunc, opt_preamble);
 }
 
 function LIBLOUIS_TEST_F_WITH_PREAMBLE(preamble, testName, testFunc) {
