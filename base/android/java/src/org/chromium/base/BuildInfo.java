@@ -13,6 +13,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.text.TextUtils;
 
 import androidx.annotation.OptIn;
@@ -233,35 +234,52 @@ public class BuildInfo {
     }
 
     /**
-     * Wrap BuildCompat.isAtLeastT. This enables it to be shadowed in Robolectric tests.
+     * @deprecated For most callers, just replace with an inline check:
+     * if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+     * For Robolectric just set the SDK level to VERSION_CODES.TIRAMISU
      */
+    @Deprecated
     @OptIn(markerClass = androidx.core.os.BuildCompat.PrereleaseSdkCheck.class)
     public static boolean isAtLeastT() {
         return BuildCompat.isAtLeastT();
     }
 
     /**
-     * Checks if the application targets pre-release SDK T.
+     * Checks if the application targets the T SDK or later.
+     * @deprecated Chrome callers should just remove this test - Chrome targets T or later now.
+     * WebView callers should just inline the logic below to check the target level of the embedding
+     * App when necessary.
+     */
+    @Deprecated
+    public static boolean targetsAtLeastT() {
+        int target = ContextUtils.getApplicationContext().getApplicationInfo().targetSdkVersion;
+
+        // Now that the public SDK is upstreamed we can use the defined constant.
+        return target >= VERSION_CODES.TIRAMISU;
+    }
+
+    /**
+     * Checks if the application targets pre-release SDK U.
      * This must be manually maintained as the SDK goes through finalization!
      * Avoid depending on this if possible; this is only intended for WebView.
      */
     @OptIn(markerClass = androidx.core.os.BuildCompat.PrereleaseSdkCheck.class)
-    public static boolean targetsAtLeastT() {
+    public static boolean targetsAtLeastU() {
         int target = ContextUtils.getApplicationContext().getApplicationInfo().targetSdkVersion;
 
         // Logic for pre-API-finalization:
-        // return BuildCompat.isAtLeastT() && target == Build.VERSION_CODES.CUR_DEVELOPMENT;
+        return BuildCompat.isAtLeastU() && target == Build.VERSION_CODES.CUR_DEVELOPMENT;
 
         // Logic for after API finalization but before public SDK release has to
         // just hardcode the appropriate SDK integer. This will include Android
         // builds with the finalized SDK, and also pre-API-finalization builds
         // (because CUR_DEVELOPMENT == 10000).
-        // return target >= 33;
+        // return target >= <integer placeholder for U>;
 
         // Once the public SDK is upstreamed we can use the defined constant,
         // deprecate this, then eventually inline this at all callsites and
         // remove it.
-        return target >= Build.VERSION_CODES.TIRAMISU;
+        // return target >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
     }
 
     public static void setFirebaseAppId(String id) {
