@@ -3522,7 +3522,10 @@ static_library("ui") {
   } else {
     allow_circular_includes_from +=
         [ "//chrome/browser/ui/webui/bluetooth_internals" ]
-    deps += [ "//chrome/browser/ui/webui/bluetooth_internals" ]
+    deps += [
+      "//chrome/browser/crash_upload_list",
+      "//chrome/browser/ui/webui/bluetooth_internals",
+    ]
     sources += [
       "webui/crashes_ui.cc",
       "webui/crashes_ui.h",

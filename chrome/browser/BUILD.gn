@@ -359,8 +359,6 @@ static_library("browser") {
     "content_settings/page_specific_content_settings_delegate.h",
     "content_settings/sound_content_setting_observer.cc",
     "content_settings/sound_content_setting_observer.h",
-    "crash_upload_list/crash_upload_list.cc",
-    "crash_upload_list/crash_upload_list.h",
     "custom_handlers/chrome_protocol_handler_registry_delegate.cc",
     "custom_handlers/chrome_protocol_handler_registry_delegate.h",
     "custom_handlers/protocol_handler_registry_factory.cc",
@@ -1996,6 +1994,7 @@ static_library("browser") {
     "//chrome/browser/breadcrumbs",
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/chrome_for_testing:buildflags",
+    "//chrome/browser/crash_upload_list",
     "//chrome/browser/devtools",
     "//chrome/browser/enterprise/identifiers",
     "//chrome/browser/enterprise/platform_auth:features",
@@ -2936,8 +2935,6 @@ static_library("browser") {
       "content_creation/notes/internal/note_service_factory.h",
       "content_settings/request_desktop_site_web_contents_observer_android.cc",
       "content_settings/request_desktop_site_web_contents_observer_android.h",
-      "crash_upload_list/crash_upload_list_android.cc",
-      "crash_upload_list/crash_upload_list_android.h",
       "creator/android/creator_api_bridge.cc",
       "device_reauth/android/device_authenticator_android.cc",
       "device_reauth/android/device_authenticator_android.h",
@@ -5526,8 +5523,6 @@ static_library("browser") {
       "certificate_provider/sign_requests.h",
       "certificate_provider/thread_safe_certificate_map.cc",
       "certificate_provider/thread_safe_certificate_map.h",
-      "crash_upload_list/crash_upload_list_chromeos.cc",
-      "crash_upload_list/crash_upload_list_chromeos.h",
       "download/notification/download_item_notification.cc",
       "download/notification/download_item_notification.h",
       "download/notification/download_notification_manager.cc",
@@ -6264,8 +6259,6 @@ static_library("browser") {
 
   if (is_fuchsia) {
     sources += [
-      "crash_upload_list/crash_upload_list_fuchsia.cc",
-      "crash_upload_list/crash_upload_list_fuchsia.h",
       "download/download_status_updater_fuchsia.cc",
       "first_run/first_run_internal_fuchsia.cc",
       "first_run/upgrade_util_fuchsia.cc",

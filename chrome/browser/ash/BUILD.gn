@@ -3761,6 +3761,7 @@ source_set("ash") {
     "//chrome/browser/autofill",
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/chromeos/drivefs",
+    "//chrome/browser/crash_upload_list",
     "//chrome/browser/devtools",
     "//chrome/browser/favicon",
     "//chrome/browser/google",
