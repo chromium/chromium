@@ -87,7 +87,9 @@ class TabletModeWindowState : public WindowState::State {
 
   // Updates the bounds to the maximum possible bounds according to the current
   // window state. If `animate` is set we animate the change.
-  void UpdateBounds(WindowState* window_state, bool animate);
+  void UpdateBounds(WindowState* window_state,
+                    chromeos::WindowStateType previous_state,
+                    bool animate);
 
   // Handles Alt+[ if `snap_position` is
   // `SplitViewController::SnapPosition::kPrimary`; handles // Alt+] if

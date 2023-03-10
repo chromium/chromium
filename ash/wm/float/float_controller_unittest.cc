@@ -63,6 +63,8 @@
 
 namespace ash {
 
+namespace {
+
 // Gets the header view for `window` so it can be dragged.
 chromeos::HeaderView* GetHeaderView(aura::Window* window) {
   // Exiting immersive mode because of float does not seem to trigger a layout
@@ -83,6 +85,37 @@ bool IsVisiblyAnimating(aura::Window* window) {
   ui::LayerAnimator* animator = window->layer()->GetAnimator();
   return animator->is_animating() && animator->tween_type() != gfx::Tween::ZERO;
 }
+
+// Counts the amount of times a window's layer has be recreated. Used to ensure
+// we are not using the cross-fade animation while dragging.
+class WindowLayerRecreatedCounter : public aura::WindowObserver {
+ public:
+  explicit WindowLayerRecreatedCounter(aura::Window* window) {
+    window_observation_.Observe(window);
+  }
+  WindowLayerRecreatedCounter(const WindowLayerRecreatedCounter&) = delete;
+  WindowLayerRecreatedCounter& operator=(const WindowLayerRecreatedCounter&) =
+      delete;
+  ~WindowLayerRecreatedCounter() override = default;
+
+  int recreated_count() const { return recreated_count_; }
+
+  // aura::WindowObserver:
+  void OnWindowDestroying(aura::Window* window) override {
+    window_observation_.Reset();
+  }
+  void OnWindowLayerRecreated(aura::Window* window) override {
+    ++recreated_count_;
+  }
+
+ private:
+  int recreated_count_ = 0;
+
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      window_observation_{this};
+};
+
+}  // namespace
 
 class WindowFloatTest : public AshTestBase {
  public:
@@ -1175,12 +1208,16 @@ TEST_F(TabletWindowFloatTest, Dragging) {
   event_generator->PressTouch(header_view->GetBoundsInScreen().CenterPoint());
 
   // Drag to several points. Verify the header is aligned with the new touch
-  // point.
+  // point. Also verify that we do not recreate the window while dragging - this
+  // would mean we are using a cross-fade animation. See b/272529481 for more
+  // details.
+  WindowLayerRecreatedCounter recreated_counter(window.get());
   for (const gfx::Point& point :
        {gfx::Point(10, 10), gfx::Point(100, 10), gfx::Point(400, 400)}) {
     event_generator->MoveTouch(point);
     EXPECT_EQ(point, header_view->GetBoundsInScreen().CenterPoint());
   }
+  EXPECT_EQ(0, recreated_counter.recreated_count());
 }
 
 // Tests that there is no crash when maximizing a dragged floated window.
