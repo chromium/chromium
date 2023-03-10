@@ -946,9 +946,11 @@ class ScopedSyscallTimer {
   ~ScopedSyscallTimer() {
     root_->syscall_count.fetch_add(1, std::memory_order_relaxed);
 
-    uint64_t elapsed_nanos = (base::TimeTicks::Now() - tick_).InNanoseconds();
-    root_->syscall_total_time_ns.fetch_add(elapsed_nanos,
-                                           std::memory_order_relaxed);
+    int64_t elapsed_nanos = (base::TimeTicks::Now() - tick_).InNanoseconds();
+    if (elapsed_nanos > 0) {
+      root_->syscall_total_time_ns.fetch_add(
+          static_cast<uint64_t>(elapsed_nanos), std::memory_order_relaxed);
+    }
   }
 
  private:
