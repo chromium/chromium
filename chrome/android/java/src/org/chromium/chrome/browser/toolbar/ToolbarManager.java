@@ -952,15 +952,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                     if (mToolbar.setForceTextureCapture(true)) {
                         mControlContainer.invalidateBitmap();
                     }
-                    if (mIsStartSurfaceRefactorEnabled) {
-                        @LayoutType
-                        int nextLayoutType = mLayoutManager.getNextLayoutType();
-                        mToolbar.updateStartSurfaceToolbarState(null,
-                                nextLayoutType == LayoutType.TAB_SWITCHER
-                                        || (nextLayoutType == LayoutType.START_SURFACE
-                                                && !isUrlBarFocused()),
-                                nextLayoutType);
-                    }
                 }
             }
 
@@ -1672,8 +1663,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     public void onUrlFocusChange(boolean hasFocus) {
         mToolbar.onUrlFocusChange(hasFocus);
 
-        if (mIsStartSurfaceRefactorEnabled && mLayoutManager != null
-                && mLayoutManager.isLayoutVisible(LayoutType.START_SURFACE)) {
+        if (mIsStartSurfaceRefactorEnabled && mLayoutStateProvider != null
+                && mLayoutStateProvider.isLayoutVisible(LayoutType.START_SURFACE)) {
             mToolbar.updateStartSurfaceToolbarState(null, !hasFocus, LayoutType.START_SURFACE);
         }
 
