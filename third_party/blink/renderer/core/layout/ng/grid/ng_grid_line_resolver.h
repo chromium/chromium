@@ -76,6 +76,9 @@ class NGGridLineResolver {
   const NamedGridLinesMap& ExplicitNamedLinesMap(
       GridTrackSizingDirection track_direction) const;
 
+  const NamedGridLinesMap& AutoRepeatLineNamesMap(
+      GridTrackSizingDirection track_direction) const;
+
   const blink::ComputedGridTrackList& ComputedGridTrackList(
       GridTrackSizingDirection track_direction) const;
 
