@@ -22,7 +22,6 @@ class InputDeviceSettingsProvider
       delete;
   InputDeviceSettingsProvider& operator=(
       const InputDeviceSettingsProvider& other) = delete;
-
   ~InputDeviceSettingsProvider() override;
 
   void BindInterface(
