@@ -34,12 +34,12 @@ struct PageAccessibilityConfiguration {
   };
 
 #if BUILDFLAG(ENABLE_PKEYS)
-  explicit constexpr PageAccessibilityConfiguration(Permissions permissions)
+  constexpr explicit PageAccessibilityConfiguration(Permissions permissions)
       : permissions(permissions), pkey(0) {}
   constexpr PageAccessibilityConfiguration(Permissions permissions, int pkey)
       : permissions(permissions), pkey(pkey) {}
 #else
-  explicit constexpr PageAccessibilityConfiguration(Permissions permissions)
+  constexpr explicit PageAccessibilityConfiguration(Permissions permissions)
       : permissions(permissions) {}
 #endif  // BUILDFLAG(ENABLE_PKEYS)
 

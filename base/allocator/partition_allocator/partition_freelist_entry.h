@@ -41,10 +41,10 @@ class PartitionFreelistEntry;
 
 class EncodedPartitionFreelistEntryPtr {
  private:
-  explicit constexpr PA_ALWAYS_INLINE EncodedPartitionFreelistEntryPtr(
+  constexpr PA_ALWAYS_INLINE explicit EncodedPartitionFreelistEntryPtr(
       std::nullptr_t)
       : encoded_(Transform(0)) {}
-  explicit PA_ALWAYS_INLINE EncodedPartitionFreelistEntryPtr(void* ptr)
+  PA_ALWAYS_INLINE explicit EncodedPartitionFreelistEntryPtr(void* ptr)
       // The encoded pointer stays MTE-tagged.
       : encoded_(Transform(reinterpret_cast<uintptr_t>(ptr))) {}
 
@@ -58,7 +58,7 @@ class EncodedPartitionFreelistEntryPtr {
     encoded_ = encoded;
   }
 
-  explicit constexpr PA_ALWAYS_INLINE operator bool() const { return encoded_; }
+  constexpr PA_ALWAYS_INLINE explicit operator bool() const { return encoded_; }
 
   // Transform() works the same in both directions, so can be used for
   // encoding and decoding.
@@ -90,7 +90,7 @@ class EncodedPartitionFreelistEntryPtr {
 // the rationale and mechanism, respectively.
 class PartitionFreelistEntry {
  private:
-  explicit constexpr PartitionFreelistEntry(std::nullptr_t)
+  constexpr explicit PartitionFreelistEntry(std::nullptr_t)
       : encoded_next_(EncodedPartitionFreelistEntryPtr(nullptr))
 #if PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
         ,

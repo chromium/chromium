@@ -1032,7 +1032,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   // possible, so use it only if absolutely necessary (e.g. for const_cast).
   constexpr PA_ALWAYS_INLINE T* get() const { return GetForExtraction(); }
 
-  constexpr explicit PA_ALWAYS_INLINE operator bool() const {
+  constexpr PA_ALWAYS_INLINE explicit operator bool() const {
     return !!wrapped_ptr_;
   }
 
@@ -1056,7 +1056,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   // NOLINTNEXTLINE(google-explicit-constructor)
   constexpr PA_ALWAYS_INLINE operator T*() const { return GetForExtraction(); }
   template <typename U>
-  constexpr explicit PA_ALWAYS_INLINE operator U*() const {
+  constexpr PA_ALWAYS_INLINE explicit operator U*() const {
     // This operator may be invoked from static_cast, meaning the types may not
     // be implicitly convertible, hence the need for static_cast here.
     return static_cast<U*>(GetForExtraction());
