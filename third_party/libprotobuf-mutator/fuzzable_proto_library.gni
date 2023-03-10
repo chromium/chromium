@@ -18,7 +18,8 @@ import("//third_party/protobuf/proto_library.gni")
 template("fuzzable_proto_library") {
   # Only make the proto library fuzzable if we are doing a build that we can
   # use LPM on (i.e. libFuzzer not on Chrome OS).
-  if (use_libfuzzer && current_toolchain != "//build/toolchain/cros:target") {
+  if (use_fuzzing_engine_with_lpm &&
+      current_toolchain != "//build/toolchain/cros:target") {
     proto_library("proto_library_" + target_name) {
       forward_variables_from(invoker, "*")
       assert(current_toolchain == host_toolchain ||

@@ -408,7 +408,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling centipede
   # and whatever else without interference from each other.
-  'centipede_revision': '63ed43d2bfa2c04e291e81d643a5581c9be90c53',
+  'centipede_revision': '9cffb0f9e3b05bd642513951bc1681ce7701fdbb',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.

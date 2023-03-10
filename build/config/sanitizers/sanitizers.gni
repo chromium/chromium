@@ -68,6 +68,10 @@ declare_args() {
   # See http://www.chromium.org/developers/testing/libfuzzer
   use_libfuzzer = false
 
+  # Compile for fuzzing with centipede.
+  # See https://github.com/google/centipede
+  use_centipede = false
+
   # Compile for fuzzing with AFL.
   use_afl = false
 
@@ -150,13 +154,14 @@ use_prebuilt_instrumented_libraries = is_msan
 
 # Whether we are doing a fuzzer build. Normally this should be checked instead
 # of checking "use_libfuzzer || use_afl" because often developers forget to
-# check for "use_afl".
-use_fuzzing_engine = use_libfuzzer || use_afl || use_external_fuzzing_engine
+# check for "use_afl", and "use_centipede" is new.
+use_fuzzing_engine =
+    use_libfuzzer || use_afl || use_centipede || use_external_fuzzing_engine
 
 # Whether the current fuzzing engine supports libprotobuf_mutator. Right now
 # this is just libfuzzer, but others are likely to support this in future,
 # so it's preferable to check this.
-use_fuzzing_engine_with_lpm = use_libfuzzer
+use_fuzzing_engine_with_lpm = use_libfuzzer || use_centipede
 
 # Args that are in turn dependent on other args must be in a separate
 # declare_args block. User overrides are only applied at the end of a
@@ -183,6 +188,16 @@ declare_args() {
 
 if (use_fuzzing_engine && sanitizer_coverage_flags == "") {
   sanitizer_coverage_flags = "trace-pc-guard"
+  if (use_centipede) {
+    # Centipede's minimal flags are listed in //third_party/centipede/src/clang-flags.txt.
+    # But, for users like Chromium using an up-to-date clang, we can also
+    # enable extra optional types of coverage which may make Centipede more
+    # effective. This list is not currently documented and has been derived
+    # from discussion with centipede creators (though one is warned about at
+    # https://github.com/google/centipede/blob/main/centipede_callbacks.cc#L68)
+    sanitizer_coverage_flags = sanitizer_coverage_flags +
+                               ",pc-table,trace-cmp,control-flow,trace-loads"
+  }
 } else if (use_sanitizer_coverage && sanitizer_coverage_flags == "") {
   sanitizer_coverage_flags = "trace-pc-guard,indirect-calls"
 }
@@ -289,3 +304,22 @@ if (use_fuzzing_engine) {
     }
   }
 }
+
+# Options common to different fuzzer engines.
+# Engine should be compiled without coverage (infinite loop in trace_cmp).
+fuzzing_engine_remove_configs = [
+  "//build/config/coverage:default_coverage",
+  "//build/config/sanitizers:default_sanitizer_flags",
+]
+
+# Add any sanitizer flags back. In MSAN builds, instrumenting libfuzzer with
+# MSAN is necessary since all parts of the binary need to be instrumented for it
+# to work. ASAN builds are more subtle: libfuzzer depends on features from the
+# C++ STL. If it were not instrumented, templates would be insantiated without
+# ASAN from libfuzzer and with ASAN in other TUs. The linker might merge
+# instrumented template instantiations with non-instrumented ones (which could
+# have a different ABI) in the final binary, which is problematic for TUs
+# expecting one particular ABI (https://crbug.com/915422). The other sanitizers
+# are added back for the same reason.
+fuzzing_engine_add_configs =
+    [ "//build/config/sanitizers:default_sanitizer_flags_but_coverage" ]
