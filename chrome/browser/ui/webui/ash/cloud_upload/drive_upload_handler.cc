@@ -39,13 +39,13 @@ void OnUploadDone(scoped_refptr<DriveUploadHandler> drive_upload_handler,
 
 std::string GetTargetAppName(base::FilePath file_path) {
   const std::string extension = file_path.FinalExtension();
-  if (extension == "doc" || extension == "docx") {
+  if (extension == ".doc" || extension == ".docx") {
     return "Google Docs";
   }
-  if (extension == "xls" || extension == "xlsx") {
+  if (extension == ".xls" || extension == ".xlsx") {
     return "Google Sheets";
   }
-  if (extension == "ppt" || extension == "pptx") {
+  if (extension == ".ppt" || extension == ".pptx") {
     return "Google Slides";
   }
   return "Google Docs";
