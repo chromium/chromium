@@ -1227,6 +1227,7 @@ _vpaes_preheat:
 
 
 
+section	.rdata rdata align=8
 ALIGN	64
 _vpaes_consts:
 $L$k_inv:
@@ -1339,6 +1340,8 @@ $L$ctr_add_two:
 	DB	109,98,117,114,103,32,40,83,116,97,110,102,111,114,100,32
 	DB	85,110,105,118,101,114,115,105,116,121,41,0
 ALIGN	64
+
+section	.text
 
 EXTERN	__imp_RtlVirtualUnwind
 

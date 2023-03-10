@@ -163,6 +163,8 @@ crypto_sources = [
   "src/crypto/hrss/hrss.c",
   "src/crypto/hrss/internal.h",
   "src/crypto/internal.h",
+  "src/crypto/kyber/internal.h",
+  "src/crypto/kyber/keccak.c",
   "src/crypto/lhash/internal.h",
   "src/crypto/lhash/lhash.c",
   "src/crypto/mem.c",

@@ -415,6 +415,7 @@ L$oop_row_6:
 
 
 
+.section	__DATA,__const
 .p2align	4
 
 
@@ -423,6 +424,7 @@ L$reverse_bytes:
 
 L$low4_mask:
 .quad	0x0f0f0f0f0f0f0f0f, 0x0f0f0f0f0f0f0f0f
+.text	
 #endif
 #if defined(__ELF__)
 // See https://www.airs.com/blog/archives/518.

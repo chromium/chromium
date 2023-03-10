@@ -10,8 +10,7 @@ default	rel
 %ifdef BORINGSSL_PREFIX
 %include "boringssl_prefix_symbols_nasm.inc"
 %endif
-section	.data data align=8
-
+section	.rdata rdata align=8
 
 ALIGN	16
 one:

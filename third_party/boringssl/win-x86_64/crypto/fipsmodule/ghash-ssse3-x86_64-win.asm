@@ -434,6 +434,7 @@ DB	102,65,15,56,0,194
 $L$SEH_end_gcm_ghash_ssse3_6:
 
 
+section	.rdata rdata align=8
 ALIGN	16
 
 
@@ -442,6 +443,8 @@ $L$reverse_bytes:
 
 $L$low4_mask:
 	DQ	0x0f0f0f0f0f0f0f0f,0x0f0f0f0f0f0f0f0f
+section	.text
+
 section	.pdata rdata align=4
 ALIGN	4
 	DD	$L$SEH_begin_gcm_gmult_ssse3_1 wrt ..imagebase

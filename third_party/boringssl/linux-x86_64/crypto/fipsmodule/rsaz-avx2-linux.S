@@ -1733,6 +1733,7 @@ rsaz_1024_gather5_avx2:
 .cfi_endproc	
 .LSEH_end_rsaz_1024_gather5:
 .size	rsaz_1024_gather5_avx2,.-rsaz_1024_gather5_avx2
+.section	.rodata
 .align	64
 .Land_mask:
 .quad	0x1fffffff,0x1fffffff,0x1fffffff,0x1fffffff
@@ -1745,6 +1746,7 @@ rsaz_1024_gather5_avx2:
 .long	2,2,2,2, 3,3,3,3
 .long	4,4,4,4, 4,4,4,4
 .align	64
+.text	
 #endif
 #if defined(__ELF__)
 // See https://www.airs.com/blog/archives/518.

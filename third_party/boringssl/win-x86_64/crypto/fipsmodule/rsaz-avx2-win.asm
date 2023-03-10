@@ -1824,6 +1824,7 @@ $L$oop_gather_1024:
 
 $L$SEH_end_rsaz_1024_gather5:
 
+section	.rdata rdata align=8
 ALIGN	64
 $L$and_mask:
 	DQ	0x1fffffff,0x1fffffff,0x1fffffff,0x1fffffff
@@ -1836,6 +1837,8 @@ $L$inc:
 	DD	2,2,2,2,3,3,3,3
 	DD	4,4,4,4,4,4,4,4
 ALIGN	64
+section	.text
+
 EXTERN	__imp_RtlVirtualUnwind
 
 ALIGN	16

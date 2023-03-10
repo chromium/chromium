@@ -11,7 +11,7 @@
 #if defined(BORINGSSL_PREFIX)
 #include <boringssl_prefix_symbols_asm.h>
 #endif
-.data	
+.section	__DATA,__const
 
 .p2align	4
 one:
