@@ -167,6 +167,9 @@ LayoutVideo::DisplayMode LayoutVideo::GetDisplayMode() const {
 void LayoutVideo::PaintReplaced(const PaintInfo& paint_info,
                                 const PhysicalOffset& paint_offset) const {
   NOT_DESTROYED();
+  if (ChildPaintBlockedByDisplayLock()) {
+    return;
+  }
   VideoPainter(*this).PaintReplaced(paint_info, paint_offset);
 }
 
