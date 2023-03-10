@@ -4642,6 +4642,8 @@ if (!is_android) {
         "../browser/printing/pwg_raster_converter_browsertest.cc",
         "../browser/printing/test_print_preview_dialog_cloned_observer.cc",
         "../browser/printing/test_print_preview_dialog_cloned_observer.h",
+        "../browser/printing/test_print_view_manager.cc",
+        "../browser/printing/test_print_view_manager.h",
         "../browser/printing/test_print_view_manager_for_request_preview.cc",
         "../browser/printing/test_print_view_manager_for_request_preview.h",
         "../browser/ui/webui/print_preview/print_preview_ui_browsertest.cc",

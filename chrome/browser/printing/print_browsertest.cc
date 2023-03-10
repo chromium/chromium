@@ -33,6 +33,7 @@
 #include "chrome/browser/printing/print_view_manager.h"
 #include "chrome/browser/printing/print_view_manager_common.h"
 #include "chrome/browser/printing/printer_query.h"
+#include "chrome/browser/printing/test_print_view_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -194,32 +195,6 @@ std::unique_ptr<PrintSettings> MakeUserModifiedPrintSettings(
       MakeDefaultPrintSettings(printer_name);
   settings->set_copies(kTestPrintSettingsCopies + 1);
   return settings;
-}
-
-void OnDidUpdatePrintSettings(
-    std::unique_ptr<PrintSettings>& snooped_settings,
-    scoped_refptr<PrintQueriesQueue> queue,
-    std::unique_ptr<PrinterQuery> printer_query,
-    mojom::PrintManagerHost::UpdatePrintSettingsCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(printer_query);
-  auto params = mojom::PrintPagesParams::New();
-  params->params = mojom::PrintParams::New();
-  if (printer_query->last_status() == mojom::ResultCode::kSuccess) {
-    RenderParamsFromPrintSettings(printer_query->settings(),
-                                  params->params.get());
-    params->params->document_cookie = printer_query->cookie();
-    params->pages = printer_query->settings().ranges();
-    snooped_settings =
-        std::make_unique<PrintSettings>(printer_query->settings());
-  }
-  bool canceled = printer_query->last_status() == mojom::ResultCode::kCanceled;
-
-  std::move(callback).Run(std::move(params), canceled);
-
-  if (printer_query->cookie() && printer_query->settings().dpi()) {
-    queue->QueuePrinterQuery(std::move(printer_query));
-  }
 }
 
 class BrowserPrintingContextFactoryForTest
@@ -622,94 +597,6 @@ class PrintPreviewDoneObserver
 };
 
 }  // namespace
-
-class TestPrintViewManager : public PrintViewManager {
- public:
-  explicit TestPrintViewManager(content::WebContents* web_contents)
-      : PrintViewManager(web_contents) {}
-  TestPrintViewManager(content::WebContents* web_contents,
-                       OnDidCreatePrintJobCallback callback)
-      : PrintViewManager(web_contents),
-        on_did_create_print_job_(std::move(callback)) {}
-  TestPrintViewManager(const TestPrintViewManager&) = delete;
-  TestPrintViewManager& operator=(const TestPrintViewManager&) = delete;
-  ~TestPrintViewManager() override = default;
-
-  bool StartPrinting(content::WebContents* contents) {
-    auto* print_view_manager = TestPrintViewManager::FromWebContents(contents);
-    if (!print_view_manager)
-      return false;
-
-    content::RenderFrameHost* rfh_to_use = GetFrameToPrint(contents);
-    if (!rfh_to_use)
-      return false;
-
-    return print_view_manager->PrintNow(rfh_to_use);
-  }
-
-  void WaitUntilPreviewIsShownOrCancelled() {
-    base::RunLoop run_loop;
-    base::AutoReset<base::RunLoop*> auto_reset(&run_loop_, &run_loop);
-    run_loop.Run();
-  }
-
-  PrintSettings* snooped_settings() { return snooped_settings_.get(); }
-
-  const absl::optional<bool>& print_now_result() const {
-    return print_now_result_;
-  }
-
-  static TestPrintViewManager* CreateForWebContents(
-      content::WebContents* web_contents) {
-    auto manager = std::make_unique<TestPrintViewManager>(web_contents);
-    auto* manager_ptr = manager.get();
-    web_contents->SetUserData(PrintViewManager::UserDataKey(),
-                              std::move(manager));
-    return manager_ptr;
-  }
-
-  // `PrintViewManagerBase` overrides.
-  bool PrintNow(content::RenderFrameHost* rfh) override {
-    print_now_result_ = PrintViewManager::PrintNow(rfh);
-    return *print_now_result_;
-  }
-  bool CreateNewPrintJob(std::unique_ptr<PrinterQuery> query) override {
-    if (!PrintViewManager::CreateNewPrintJob(std::move(query)))
-      return false;
-    if (on_did_create_print_job_)
-      on_did_create_print_job_.Run(print_job_.get());
-    return true;
-  }
-
- protected:
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION base::RunLoop* run_loop_ = nullptr;
-
- private:
-  void PrintPreviewAllowedForTesting() override {
-    if (run_loop_) {
-      run_loop_->Quit();
-    }
-  }
-
-  // printing::mojom::PrintManagerHost:
-  void UpdatePrintSettings(base::Value::Dict job_settings,
-                           UpdatePrintSettingsCallback callback) override {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    std::unique_ptr<PrinterQuery> printer_query =
-        queue_->CreatePrinterQuery(content::GlobalRenderFrameHostId());
-    auto* printer_query_ptr = printer_query.get();
-    printer_query_ptr->SetSettings(
-        std::move(job_settings),
-        base::BindOnce(&OnDidUpdatePrintSettings, std::ref(snooped_settings_),
-                       queue_, std::move(printer_query), std::move(callback)));
-  }
-
-  std::unique_ptr<PrintSettings> snooped_settings_;
-  absl::optional<bool> print_now_result_;
-  OnDidCreatePrintJobCallback on_did_create_print_job_;
-};
 
 class TestPrintViewManagerForDLP : public TestPrintViewManager {
  public:
