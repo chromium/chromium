@@ -322,7 +322,8 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
 }
 
 // TODO(crbug.com/1395715): The test is flaky. Re-enable it.
-#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_SubresourceCountUKM DISABLED_SubresourceCountUKM
 #else
 #define MAYBE_SubresourceCountUKM SubresourceCountUKM
