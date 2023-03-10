@@ -63,8 +63,7 @@ void CSSParserTokenRange::ConsumeComponentValue() {
 }
 
 // https://www.w3.org/TR/css-syntax-3/#serialization
-static bool NeedsInsertedComment(const CSSParserToken& a,
-                                 const CSSParserToken& b) {
+bool NeedsInsertedComment(const CSSParserToken& a, const CSSParserToken& b) {
   CSSParserTokenType at = a.GetType();
   CSSParserTokenType bt = b.GetType();
 
