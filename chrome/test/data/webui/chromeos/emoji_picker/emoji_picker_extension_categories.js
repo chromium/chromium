@@ -72,6 +72,7 @@ export function categoryTestSuite(category) {
         return null;
       };
 
+
       categoryIndex = categoryList.indexOf(category);
 
       // Wait until emoji data is loaded before executing tests.

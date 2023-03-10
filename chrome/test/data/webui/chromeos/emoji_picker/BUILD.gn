@@ -13,6 +13,7 @@ build_webui_tests("build") {
                            target_gen_dir) ]
   ts_deps = [
     "//chrome/browser/resources/chromeos/emoji_picker:build_ts",
+    "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
   files = [
@@ -20,10 +21,10 @@ build_webui_tests("build") {
     "emoji_picker_extension_categories.js",
     "emoji_picker_extension_emoji_test.js",
     "emoji_picker_extension_emoticon_test.js",
-    "emoji_picker_extension_gif.js",
+    "emoji_picker_extension_gif.ts",
     "emoji_picker_extension_symbol_test.js",
     "emoji_picker_extension_test.js",
-    "emoji_picker_gif_test.js",
+    "emoji_picker_gif_test.ts",
     "emoji_picker_http_error_gif_test.ts",
     "emoji_picker_offline_gif_test.ts",
     "emoji_picker_prefix_search_test.ts",
