@@ -197,8 +197,25 @@ void BookmarkBubbleView::ShowBubble(
       std::move(delegate), browser, url);
   BookmarkBubbleDelegate* bubble_delegate = bubble_delegate_unique.get();
 
+  commerce::ShoppingService* shopping_service =
+      commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
+  absl::optional<commerce::ProductInfo> product_info = absl::nullopt;
+  gfx::Image product_image;
+  if (shopping_service->IsShoppingListEligible()) {
+    product_info = shopping_service->GetAvailableProductInfoForUrl(url);
+    auto* tab_helper =
+        commerce::ShoppingListUiTabHelper::FromWebContents(web_contents);
+    CHECK(tab_helper);
+
+    product_image = tab_helper->GetProductImage();
+  }
+
   auto dialog_model_builder =
       ui::DialogModel::Builder(std::move(bubble_delegate_unique));
+  if (base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel) &&
+      !product_image.IsEmpty()) {
+    dialog_model_builder.SetMainImage(ui::ImageModel::FromImage(product_image));
+  }
   dialog_model_builder
       .SetTitle(l10n_util::GetStringUTF16(
           already_bookmarked ? IDS_BOOKMARK_BUBBLE_PAGE_BOOKMARK
@@ -240,27 +257,19 @@ void BookmarkBubbleView::ShowBubble(
                                   base::Unretained(bubble_delegate))))
       .SetInitiallyFocusedField(kBookmarkName);
 
-  commerce::ShoppingService* shopping_service =
-      commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
-  if (shopping_service->IsShoppingListEligible()) {
-    absl::optional<commerce::ProductInfo> product_info =
-        shopping_service->GetAvailableProductInfoForUrl(url);
-    auto* tab_helper =
-        commerce::ShoppingListUiTabHelper::FromWebContents(web_contents);
-    CHECK(tab_helper);
-
-    const gfx::Image& product_image = tab_helper->GetProductImage();
-    if (product_info.has_value() && !product_image.IsEmpty()) {
-      bool is_price_tracked = shopping_service->IsSubscribedFromCache(
-          commerce::BuildUserSubscriptionForClusterId(
-              product_info->product_cluster_id));
-      dialog_model_builder.AddSeparator().AddCustomField(
-          std::make_unique<views::BubbleDialogModelHost::CustomView>(
-              std::make_unique<PriceTrackingView>(
-                  profile, url, *product_image.ToImageSkia(), is_price_tracked),
-              views::BubbleDialogModelHost::FieldType::kControl),
-          kPriceTrackingBookmarkViewElementId);
+  if (product_info.has_value() && !product_image.IsEmpty()) {
+    bool is_price_tracked = shopping_service->IsSubscribedFromCache(
+        commerce::BuildUserSubscriptionForClusterId(
+            product_info->product_cluster_id));
+    if (!base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel)) {
+      dialog_model_builder.AddSeparator();
     }
+    dialog_model_builder.AddCustomField(
+        std::make_unique<views::BubbleDialogModelHost::CustomView>(
+            std::make_unique<PriceTrackingView>(
+                profile, url, *product_image.ToImageSkia(), is_price_tracked),
+            views::BubbleDialogModelHost::FieldType::kControl),
+        kPriceTrackingBookmarkViewElementId);
   }
 
   // views:: land below, there's no agnostic reference to arrow / anchors /
