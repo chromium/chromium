@@ -26,7 +26,7 @@ BASE_FEATURE(kOptimizeImmHideCalls,
 #endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kQueueNavigationsWhileWaitingForCommit,
-             "QueueNavigationsWhileWaitingForPendingCommit",
+             "QueueNavigationsWhileWaitingForCommit",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 static constexpr base::FeatureParam<NavigationQueueingFeatureLevel>::Option
