@@ -74,7 +74,7 @@ suite('PerDeviceKeyboardSubsection', function() {
     await flushTasks();
     let updatedKeyboards = await provider.getConnectedKeyboardSettings();
     assertEquals(
-        updatedKeyboards[0].settings.topRowAreFKeys,
+        updatedKeyboards[0].settings.topRowAreFkeys,
         externalTopRowAreFunctionKeysButton.pref.value);
 
     const blockMetaFunctionKeyRewritesButton =
@@ -84,7 +84,7 @@ suite('PerDeviceKeyboardSubsection', function() {
     await flushTasks();
     updatedKeyboards = await provider.getConnectedKeyboardSettings();
     assertEquals(
-        updatedKeyboards[0].settings.suppressMetaFKeyRewrites,
+        updatedKeyboards[0].settings.suppressMetaFkeyRewrites,
         blockMetaFunctionKeyRewritesButton.pref.value);
 
     const enableAutoRepeatButton =
@@ -104,7 +104,9 @@ suite('PerDeviceKeyboardSubsection', function() {
     await flushTasks();
     updatedKeyboards = await provider.getConnectedKeyboardSettings();
     assertEquals(
-        updatedKeyboards[0].settings.autoRepeatDelay, delaySlider.pref.value);
+        Number(updatedKeyboards[0].settings.autoRepeatDelay.microseconds) /
+            1000,
+        delaySlider.pref.value);
 
     const repeatRateSlider =
         assert(subsection.shadowRoot.querySelector('#repeatRateSlider'));
@@ -114,7 +116,8 @@ suite('PerDeviceKeyboardSubsection', function() {
     await flushTasks();
     updatedKeyboards = await provider.getConnectedKeyboardSettings();
     assertEquals(
-        updatedKeyboards[0].settings.autoRepeatInterval,
+        Number(updatedKeyboards[0].settings.autoRepeatInterval.microseconds) /
+            1000,
         repeatRateSlider.pref.value);
   });
 
@@ -126,14 +129,14 @@ suite('PerDeviceKeyboardSubsection', function() {
             '#externalTopRowAreFunctionKeysButton');
     assertTrue(isVisible(externalTopRowAreFunctionKeysButton));
     assertEquals(
-        fakeKeyboards[0].settings.topRowAreFKeys,
+        fakeKeyboards[0].settings.topRowAreFkeys,
         externalTopRowAreFunctionKeysButton.pref.value);
     let blockMetaFunctionKeyRewritesButton =
         subsection.shadowRoot.querySelector(
             '#blockMetaFunctionKeyRewritesButton');
     assertTrue(isVisible(blockMetaFunctionKeyRewritesButton));
     assertEquals(
-        fakeKeyboards[0].settings.suppressMetaFKeyRewrites,
+        fakeKeyboards[0].settings.suppressMetaFkeyRewrites,
         blockMetaFunctionKeyRewritesButton.pref.value);
     let internalTopRowAreFunctionKeysButton =
         subsection.shadowRoot.querySelector(
@@ -147,11 +150,13 @@ suite('PerDeviceKeyboardSubsection', function() {
     let delaySlider =
         assert(subsection.shadowRoot.querySelector('#delaySlider'));
     assertEquals(
-        fakeKeyboards[0].settings.autoRepeatDelay, delaySlider.pref.value);
+        Number(fakeKeyboards[0].settings.autoRepeatDelay.microseconds) / 1000,
+        delaySlider.pref.value);
     let repeatRateSlider =
         assert(subsection.shadowRoot.querySelector('#repeatRateSlider'));
     assertEquals(
-        fakeKeyboards[0].settings.autoRepeatInterval,
+        Number(fakeKeyboards[0].settings.autoRepeatInterval.microseconds) /
+            1000,
         repeatRateSlider.pref.value);
 
     changeKeyboardState(fakeKeyboards[1]);
@@ -165,7 +170,7 @@ suite('PerDeviceKeyboardSubsection', function() {
         '#internalTopRowAreFunctionKeysButton');
     assertTrue(isVisible(internalTopRowAreFunctionKeysButton));
     assertEquals(
-        fakeKeyboards[1].settings.topRowAreFKeys,
+        fakeKeyboards[1].settings.topRowAreFkeys,
         internalTopRowAreFunctionKeysButton.pref.value);
     enableAutoRepeatButton =
         subsection.shadowRoot.querySelector('#enableAutoRepeatButton');
@@ -174,11 +179,13 @@ suite('PerDeviceKeyboardSubsection', function() {
         enableAutoRepeatButton.pref.value);
     delaySlider = assert(subsection.shadowRoot.querySelector('#delaySlider'));
     assertEquals(
-        fakeKeyboards[1].settings.autoRepeatDelay, delaySlider.pref.value);
+        Number(fakeKeyboards[1].settings.autoRepeatDelay.microseconds) / 1000,
+        delaySlider.pref.value);
     repeatRateSlider =
         assert(subsection.shadowRoot.querySelector('#repeatRateSlider'));
     assertEquals(
-        fakeKeyboards[1].settings.autoRepeatInterval,
+        Number(fakeKeyboards[1].settings.autoRepeatInterval.microseconds) /
+            1000,
         repeatRateSlider.pref.value);
   });
 
@@ -281,15 +288,18 @@ suite('PerDeviceKeyboardSubsection', function() {
     const remapKeysSubLabel =
         remapKeysRow.shadowRoot.querySelector('#subLabel');
     assertTrue(!!remapKeysSubLabel);
-    assertEquals(2, subsection.keyboard.settings.modifierRemappings.size);
+    assertEquals(
+        2, Object.keys(subsection.keyboard.settings.modifierRemappings).length);
     assertEquals('2 remapped keys', remapKeysSubLabel.textContent.trim());
 
     await changeKeyboardState(fakeKeyboards[2]);
-    assertEquals(1, subsection.keyboard.settings.modifierRemappings.size);
+    assertEquals(
+        1, Object.keys(subsection.keyboard.settings.modifierRemappings).length);
     assertEquals('1 remapped key', remapKeysSubLabel.textContent.trim());
 
     await changeKeyboardState(fakeKeyboards[1]);
-    assertEquals(0, subsection.keyboard.settings.modifierRemappings.size);
+    assertEquals(
+        0, Object.keys(subsection.keyboard.settings.modifierRemappings).length);
     assertEquals('', remapKeysSubLabel.textContent.trim());
   });
 

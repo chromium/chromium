@@ -50,7 +50,7 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
           return {
             key: 'fakeMetaKeyRemapPref',
             type: chrome.settingsPrivate.PrefType.NUMBER,
-            value: ModifierKey.META,
+            value: ModifierKey.kMeta,
           };
         },
       },
@@ -61,7 +61,7 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
           return {
             key: 'fakeCtrlKeyRemapPref',
             type: chrome.settingsPrivate.PrefType.NUMBER,
-            value: ModifierKey.CONTROL,
+            value: ModifierKey.kControl,
           };
         },
       },
@@ -72,7 +72,7 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
           return {
             key: 'fakeAltKeyRemapPref',
             type: chrome.settingsPrivate.PrefType.NUMBER,
-            value: ModifierKey.ALT,
+            value: ModifierKey.kAlt,
           };
         },
       },
@@ -83,7 +83,7 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
           return {
             key: 'fakeEscKeyRemapPref',
             type: chrome.settingsPrivate.PrefType.NUMBER,
-            value: ModifierKey.ESC,
+            value: ModifierKey.kEscape,
           };
         },
       },
@@ -94,7 +94,7 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
           return {
             key: 'fakeBackspaceKeyRemapPref',
             type: chrome.settingsPrivate.PrefType.NUMBER,
-            value: ModifierKey.BACKSPACE,
+            value: ModifierKey.kBackspace,
           };
         },
       },
@@ -105,7 +105,7 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
           return {
             key: 'fakeAssistantKeyRemapPref',
             type: chrome.settingsPrivate.PrefType.NUMBER,
-            value: ModifierKey.ASSISTANT,
+            value: ModifierKey.kAssistant,
           };
         },
       },
@@ -116,7 +116,7 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
           return {
             key: 'fakeCapsLockKeyRemapPref',
             type: chrome.settingsPrivate.PrefType.NUMBER,
-            value: ModifierKey.CAPS_LOCK,
+            value: ModifierKey.kCapsLock,
           };
         },
       },
@@ -174,13 +174,13 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
 
   protected keyboard: Keyboard;
   protected defaultRemappings: {[key: number]: ModifierKey} = {
-    [ModifierKey.META]: ModifierKey.META,
-    [ModifierKey.CONTROL]: ModifierKey.CONTROL,
-    [ModifierKey.ALT]: ModifierKey.ALT,
-    [ModifierKey.ESC]: ModifierKey.ESC,
-    [ModifierKey.BACKSPACE]: ModifierKey.BACKSPACE,
-    [ModifierKey.ASSISTANT]: ModifierKey.ASSISTANT,
-    [ModifierKey.CAPS_LOCK]: ModifierKey.CAPS_LOCK,
+    [ModifierKey.kMeta]: ModifierKey.kMeta,
+    [ModifierKey.kControl]: ModifierKey.kControl,
+    [ModifierKey.kAlt]: ModifierKey.kAlt,
+    [ModifierKey.kEscape]: ModifierKey.kEscape,
+    [ModifierKey.kBackspace]: ModifierKey.kBackspace,
+    [ModifierKey.kAssistant]: ModifierKey.kAssistant,
+    [ModifierKey.kCapsLock]: ModifierKey.kCapsLock,
   };
   private inputDeviceSettingsProvider: InputDeviceSettingsProviderInterface =
       getInputDeviceSettingsProvider();
@@ -202,6 +202,21 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
       return;
     }
     this.getKeyboard();
+  }
+
+  private computeModifierRemappings(): Map<ModifierKey, ModifierKey> {
+    const modifierRemappings: Map<ModifierKey, ModifierKey> = new Map();
+    for (const modifier of Object.keys(
+             this.keyboard.settings.modifierRemappings)) {
+      const from: ModifierKey = Number(modifier);
+      const to: ModifierKey|undefined =
+          this.keyboard.settings.modifierRemappings[from];
+      if (!to) {
+        continue;
+      }
+      modifierRemappings.set(from, to);
+    }
+    return modifierRemappings;
   }
 
   /**
@@ -231,13 +246,13 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
     // Assistant key and caps lock key are optional. Their values depend on
     // keyboard modifierKeys.
     this.hasAssistantKey =
-        searchedKeyboard.modifierKeys.includes(ModifierKey.ASSISTANT);
+        searchedKeyboard.modifierKeys.includes(ModifierKey.kAssistant);
     this.hasCapsLockKey =
-        searchedKeyboard.modifierKeys.includes(ModifierKey.CAPS_LOCK);
+        searchedKeyboard.modifierKeys.includes(ModifierKey.kCapsLock);
 
     // Update Prefs according to keyboard modifierRemappings.
-    Array.from(this.keyboard.settings.modifierRemappings.keys())
-        .forEach(originalKey => {
+    Array.from(this.computeModifierRemappings().keys())
+        .forEach((originalKey: ModifierKey) => {
           this.setRemappedKey(originalKey);
         });
     this.isInitialized = true;
@@ -260,50 +275,50 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
   }
 
   private defaultInitializePrefs(): void {
-    this.set('fakeAltPref.value', this.defaultRemappings[ModifierKey.ALT]);
+    this.set('fakeAltPref.value', this.defaultRemappings[ModifierKey.kAlt]);
     this.set(
         'fakeAssitantPref.value',
-        this.defaultRemappings[ModifierKey.ASSISTANT]);
+        this.defaultRemappings[ModifierKey.kAssistant]);
     this.set(
         'fakeBackspacePref.value',
-        this.defaultRemappings[ModifierKey.BACKSPACE]);
-    this.set('fakeCtrlPref.value', this.defaultRemappings[ModifierKey.CONTROL]);
+        this.defaultRemappings[ModifierKey.kBackspace]);
+    this.set(
+        'fakeCtrlPref.value', this.defaultRemappings[ModifierKey.kControl]);
     this.set(
         'fakeCapsLockPref.value',
-        this.defaultRemappings[ModifierKey.CAPS_LOCK]);
-    this.set('fakeEscPref.value', this.defaultRemappings[ModifierKey.ESC]);
-    this.set('fakeMetaPref.value', this.defaultRemappings[ModifierKey.META]);
+        this.defaultRemappings[ModifierKey.kCapsLock]);
+    this.set('fakeEscPref.value', this.defaultRemappings[ModifierKey.kEscape]);
+    this.set('fakeMetaPref.value', this.defaultRemappings[ModifierKey.kMeta]);
   }
 
   private setRemappedKey(originalKey: ModifierKey): void {
-    const targetKey =
-        this.keyboard.settings.modifierRemappings.get(originalKey);
+    const targetKey = this.computeModifierRemappings().get(originalKey);
     switch (originalKey) {
-      case ModifierKey.ALT: {
+      case ModifierKey.kAlt: {
         this.set('fakeAltPref.value', targetKey);
         break;
       }
-      case ModifierKey.ASSISTANT: {
+      case ModifierKey.kAssistant: {
         this.set('fakeAssistantPref.value', targetKey);
         break;
       }
-      case ModifierKey.BACKSPACE: {
+      case ModifierKey.kBackspace: {
         this.set('fakeBackspacePref.value', targetKey);
         break;
       }
-      case ModifierKey.CAPS_LOCK: {
+      case ModifierKey.kCapsLock: {
         this.set('fakeCapsLockPref.value', targetKey);
         break;
       }
-      case ModifierKey.CONTROL: {
+      case ModifierKey.kControl: {
         this.set('fakeCtrlPref.value', targetKey);
         break;
       }
-      case ModifierKey.ESC: {
+      case ModifierKey.kEscape: {
         this.set('fakeEscPref.value', targetKey);
         break;
       }
-      case ModifierKey.META: {
+      case ModifierKey.kMeta: {
         this.set('fakeMetaPref.value', targetKey);
         break;
       }
@@ -329,35 +344,34 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
   /**
    * Get the modifier remappings with updated pref values.
    */
-  private getUpdatedRemappings(): Map<ModifierKey, ModifierKey> {
-    const updatedRemappings = new Map<ModifierKey, ModifierKey>();
+  private getUpdatedRemappings(): {[key: number]: ModifierKey} {
+    const updatedRemappings: {[key: number]: ModifierKey} = {};
 
-    if (this.defaultRemappings[ModifierKey.ALT] !== this.fakeAltPref.value) {
-      updatedRemappings.set(ModifierKey.ALT, this.fakeAltPref.value);
+    if (this.defaultRemappings[ModifierKey.kAlt] !== this.fakeAltPref.value) {
+      updatedRemappings[ModifierKey.kAlt] = this.fakeAltPref.value;
     }
-    if (this.defaultRemappings[ModifierKey.ASSISTANT] !==
+    if (this.defaultRemappings[ModifierKey.kAssistant] !==
         this.fakeAssistantPref.value) {
-      updatedRemappings.set(
-          ModifierKey.ASSISTANT, this.fakeAssistantPref.value);
+      updatedRemappings[ModifierKey.kAssistant] = this.fakeAssistantPref.value;
     }
-    if (this.defaultRemappings[ModifierKey.BACKSPACE] !==
+    if (this.defaultRemappings[ModifierKey.kBackspace] !==
         this.fakeBackspacePref.value) {
-      updatedRemappings.set(
-          ModifierKey.BACKSPACE, this.fakeBackspacePref.value);
+      updatedRemappings[ModifierKey.kBackspace] = this.fakeBackspacePref.value;
     }
-    if (this.defaultRemappings[ModifierKey.CAPS_LOCK] !==
+    if (this.defaultRemappings[ModifierKey.kCapsLock] !==
         this.fakeCapsLockPref.value) {
-      updatedRemappings.set(ModifierKey.CAPS_LOCK, this.fakeCapsLockPref.value);
+      updatedRemappings[ModifierKey.kCapsLock] = this.fakeCapsLockPref.value;
     }
-    if (this.defaultRemappings[ModifierKey.CONTROL] !==
+    if (this.defaultRemappings[ModifierKey.kControl] !==
         this.fakeCtrlPref.value) {
-      updatedRemappings.set(ModifierKey.CONTROL, this.fakeCtrlPref.value);
+      updatedRemappings[ModifierKey.kControl] = this.fakeCtrlPref.value;
     }
-    if (this.defaultRemappings[ModifierKey.ESC] !== this.fakeEscPref.value) {
-      updatedRemappings.set(ModifierKey.ESC, this.fakeEscPref.value);
+    if (this.defaultRemappings[ModifierKey.kEscape] !==
+        this.fakeEscPref.value) {
+      updatedRemappings[ModifierKey.kEscape] = this.fakeEscPref.value;
     }
-    if (this.defaultRemappings[ModifierKey.META] !== this.fakeMetaPref.value) {
-      updatedRemappings.set(ModifierKey.META, this.fakeMetaPref.value);
+    if (this.defaultRemappings[ModifierKey.kMeta] !== this.fakeMetaPref.value) {
+      updatedRemappings[ModifierKey.kMeta] = this.fakeMetaPref.value;
     }
 
     return updatedRemappings;
@@ -366,12 +380,12 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
   private updateDefaultRemapping(): void {
     this.defaultRemappings = {
       ...this.defaultRemappings,
-      [ModifierKey.META]:
-          this.keyboard.metaKey === MetaKey.COMMAND ? ModifierKey.CONTROL :
-                                                      ModifierKey.META,
-      [ModifierKey.CONTROL]:
-          this.keyboard.metaKey === MetaKey.COMMAND ? ModifierKey.META :
-                                                      ModifierKey.CONTROL,
+      [ModifierKey.kMeta]:
+          this.keyboard.metaKey === MetaKey.kCommand ? ModifierKey.kControl :
+                                                       ModifierKey.kMeta,
+      [ModifierKey.kControl]:
+          this.keyboard.metaKey === MetaKey.kCommand ? ModifierKey.kMeta :
+                                                       ModifierKey.kControl,
     };
   }
 }

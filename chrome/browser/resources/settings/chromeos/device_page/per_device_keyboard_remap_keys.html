@@ -18,40 +18,40 @@
 <div id="container">
   <keyboard-remap-modifier-key-row
       default-remappings="[[defaultRemappings]]"
-      key="[[modifierKey.META]]" id="metaKey"
+      key="[[modifierKey.kMeta]]" id="metaKey"
       meta-key="[[keyboard.metaKey]]"
       pref="{{fakeMetaPref}}"></keyboard-remap-modifier-key-row>
   <keyboard-remap-modifier-key-row
       default-remappings="[[defaultRemappings]]"
-      key="[[modifierKey.CONTROL]]" id="ctrlKey"
+      key="[[modifierKey.kControl]]" id="ctrlKey"
       meta-key="[[keyboard.metaKey]]"
       pref="{{fakeCtrlPref}}"></keyboard-remap-modifier-key-row>
   <keyboard-remap-modifier-key-row
       default-remappings="[[defaultRemappings]]"
-      key="[[modifierKey.ALT]]" id="altKey"
+      key="[[modifierKey.kAlt]]" id="altKey"
       meta-key="[[keyboard.metaKey]]"
       pref="{{fakeAltPref}}"></keyboard-remap-modifier-key-row>
   <keyboard-remap-modifier-key-row
       default-remappings="[[defaultRemappings]]"
-      key="[[modifierKey.ESC]]" id="escapeKey"
+      key="[[modifierKey.kEscape]]" id="escapeKey"
       meta-key="[[keyboard.metaKey]]"
       pref="{{fakeEscPref}}"></keyboard-remap-modifier-key-row>
   <keyboard-remap-modifier-key-row
       default-remappings="[[defaultRemappings]]"
-      key="[[modifierKey.BACKSPACE]]" id="backspaceKey"
+      key="[[modifierKey.kBackspace]]" id="backspaceKey"
       meta-key="[[keyboard.metaKey]]"
       pref="{{fakeBackspacePref}}"></keyboard-remap-modifier-key-row>
   <template is="dom-if" if="[[hasAssistantKey_]]">
     <keyboard-remap-modifier-key-row
       default-remappings="[[defaultRemappings]]"
-      key="[[modifierKey.ASSISTANT]]" id="assistantKey"
+      key="[[modifierKey.kAssistant]]" id="assistantKey"
       meta-key="[[keyboard.metaKey]]"
       pref="{{fakeAssistantPref}}"></keyboard-remap-modifier-key-row>
   </template>
   <template is="dom-if" if="[[hasCapsLockKey]]">
     <keyboard-remap-modifier-key-row
       default-remappings="[[defaultRemappings]]"
-      key="[[modifierKey.CAPS_LOCK]]" id="capsLockKey"
+      key="[[modifierKey.kCapsLock]]" id="capsLockKey"
       meta-key="[[keyboard.metaKey]]"
       pref="{{fakeCapsLockPref}}"></keyboard-remap-modifier-key-row>
   </template>

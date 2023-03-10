@@ -116,7 +116,7 @@ export class KeyboardRemapModifierKeyRowElement extends
   }
 
   private onMetaKeyChanged(): void {
-    if (this.key === ModifierKey.META) {
+    if (this.key === ModifierKey.kMeta) {
       this.metaKeyIcon = this.getMetaKeyIcon();
     }
     this.setUpKeyMapTargets();
@@ -127,16 +127,16 @@ export class KeyboardRemapModifierKeyRowElement extends
    */
   private getMetaKeyLabel(): string {
     switch (this.metaKey) {
-      case MetaKey.COMMAND: {
+      case MetaKey.kCommand: {
         return this.i18n('keyboardKeyCommand');
       }
-      case MetaKey.EXTERNAL_META: {
+      case MetaKey.kExternalMeta: {
         return this.i18n('keyboardKeyExternalMeta');
       }
-      case MetaKey.LAUNCHER: {
+      case MetaKey.kLauncher: {
         return this.i18n('keyboardKeyLauncher');
       }
-      case MetaKey.SEARCH: {
+      case MetaKey.kSearch: {
         return this.i18n('keyboardKeySearch');
       }
     }
@@ -147,25 +147,25 @@ export class KeyboardRemapModifierKeyRowElement extends
    */
   private getKeyLabel(): string {
     switch (this.key) {
-      case ModifierKey.ALT: {
+      case ModifierKey.kAlt: {
         return this.i18n('keyboardKeyAlt');
       }
-      case ModifierKey.ASSISTANT: {
+      case ModifierKey.kAssistant: {
         return this.i18n('keyboardKeyAssistant');
       }
-      case ModifierKey.BACKSPACE: {
+      case ModifierKey.kBackspace: {
         return this.i18n('keyboardKeyBackspace');
       }
-      case ModifierKey.CAPS_LOCK: {
+      case ModifierKey.kCapsLock: {
         return this.i18n('keyboardKeyCapsLock');
       }
-      case ModifierKey.CONTROL: {
+      case ModifierKey.kControl: {
         return this.i18n('keyboardKeyCtrl');
       }
-      case ModifierKey.ESC: {
+      case ModifierKey.kEscape: {
         return this.i18n('keyboardKeyEscape');
       }
-      case ModifierKey.META: {
+      case ModifierKey.kMeta: {
         return this.getMetaKeyLabel();
       }
       default:
@@ -177,45 +177,45 @@ export class KeyboardRemapModifierKeyRowElement extends
     // Ordering is according to UX, but values match ModifierKey.
     this.keyMapTargets = [
       {
-        value: ModifierKey.META,
+        value: ModifierKey.kMeta,
         name: this.metaKeyLabel,
       },
       {
-        value: ModifierKey.CONTROL,
+        value: ModifierKey.kControl,
         name: this.i18n('keyboardKeyCtrl'),
       },
       {
-        value: ModifierKey.ALT,
+        value: ModifierKey.kAlt,
         name: this.i18n('keyboardKeyAlt'),
       },
       {
-        value: ModifierKey.CAPS_LOCK,
+        value: ModifierKey.kCapsLock,
         name: this.i18n('keyboardKeyCapsLock'),
       },
       {
-        value: ModifierKey.ESC,
+        value: ModifierKey.kEscape,
         name: this.i18n('keyboardKeyEscape'),
       },
       {
-        value: ModifierKey.BACKSPACE,
+        value: ModifierKey.kBackspace,
         name: this.i18n('keyboardKeyBackspace'),
       },
       {
-        value: ModifierKey.ASSISTANT,
+        value: ModifierKey.kAssistant,
         name: this.i18n('keyboardKeyAssistant'),
       },
       {
-        value: ModifierKey.VOID,
+        value: ModifierKey.kVoid,
         name: this.i18n('keyboardKeyDisabled'),
       },
     ];
   }
 
   private getMetaKeyIcon(): MetaKeyIcon {
-    if (this.metaKey === MetaKey.SEARCH) {
+    if (this.metaKey === MetaKey.kSearch) {
       return 'cr:search';
     }
-    if (this.metaKey === MetaKey.LAUNCHER) {
+    if (this.metaKey === MetaKey.kLauncher) {
       return 'os-settings:launcher';
     }
     return '';
