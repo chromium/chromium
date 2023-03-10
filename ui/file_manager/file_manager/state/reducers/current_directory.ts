@@ -17,14 +17,12 @@ import {ChangeDirectoryAction, ChangeFileTasksAction, ChangeSelectionAction, Upd
  */
 export function changeDirectory(
     currentState: State, action: ChangeDirectoryAction): State {
-  const {key, status} = action.payload;
-
-  const fileData = currentState.allEntries[key];
+  const fileData = currentState.allEntries[action.payload.key];
 
   let selection = currentState.currentDirectory?.selection;
   // Use an empty selection when a selection isn't defined or it's navigating to
   // a new directory.
-  if (!selection || currentState.currentDirectory?.key !== key) {
+  if (!selection || currentState.currentDirectory?.key !== action.payload.key) {
     selection = {
       keys: [],
       dirCount: 0,
@@ -45,7 +43,7 @@ export function changeDirectory(
       currentState.currentDirectory?.hasDlpDisabledFiles || false;
   // Use empty content when it isn't defined or it's navigating to a new
   // directory. The content will be updated again after a successful scan.
-  if (!content || currentState.currentDirectory?.key !== key) {
+  if (!content || currentState.currentDirectory?.key !== action.payload.key) {
     content = {
       keys: [],
     };
@@ -53,8 +51,8 @@ export function changeDirectory(
   }
 
   let currentDirectory: CurrentDirectory = {
-    key,
-    status,
+    key: action.payload.key,
+    status: action.payload.status,
     pathComponents: [],
     content: content,
     rootType: undefined,

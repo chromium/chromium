@@ -17,7 +17,6 @@ interface FileManager {
   selectionHandler: FileSelectionHandler;
   taskController: TaskController;
   dialogType: DialogType;
-  directoryModel: DirectoryModel;
 }
 
 /**
