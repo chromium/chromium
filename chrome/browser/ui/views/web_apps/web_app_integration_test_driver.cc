@@ -90,7 +90,6 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
-#include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -580,26 +579,6 @@ std::vector<std::wstring> GetFileExtensionsForProgId(
             ERROR_SUCCESS);
   return base::SplitString(handled_file_extensions, std::wstring(L";"),
                            base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-}
-#endif
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-bool IconManagerCheckIconTopLeftColor(WebAppIconManager& icon_manager,
-                                      const AppId& app_id,
-                                      std::vector<int> sizes_px,
-                                      SkColor expected_icon_pixel_color) {
-  bool icons_exist = icon_manager.HasIcons(app_id, IconPurpose::ANY, sizes_px);
-  if (icons_exist) {
-    for (int size_px : sizes_px) {
-      SkColor icon_pixel_color =
-          IconManagerReadAppIconPixel(icon_manager, app_id, size_px, 0, 0);
-      if (icon_pixel_color != expected_icon_pixel_color) {
-        return false;
-      }
-    }
-    return true;
-  }
-  return false;
 }
 #endif
 
@@ -3585,9 +3564,19 @@ bool WebAppIntegrationTestDriver::DoIconColorsMatch(Profile* profile,
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   SkColor expected_icon_pixel_color =
       GetSiteConfigurationFromAppName(name).icon_color;
-  do_icon_colors_match = IconManagerCheckIconTopLeftColor(
-      provider()->icon_manager(), id, {kLauncherIconSize, kInstallIconSize},
-      expected_icon_pixel_color);
+  absl::optional<SkColor> actual_color_install_icon_size =
+      override_registration_->test_override->GetShortcutIconTopLeftColor(
+          profile, base::FilePath(), id, name, kInstallIconSize);
+
+  absl::optional<SkColor> actual_color_launcher_icon_size =
+      override_registration_->test_override->GetShortcutIconTopLeftColor(
+          profile, base::FilePath(), id, name, kLauncherIconSize);
+  if (actual_color_install_icon_size.has_value() &&
+      actual_color_launcher_icon_size.has_value()) {
+    do_icon_colors_match =
+        (expected_icon_pixel_color == actual_color_install_icon_size.value() &&
+         expected_icon_pixel_color == actual_color_launcher_icon_size.value());
+  }
 #endif
   return do_icon_colors_match;
 }

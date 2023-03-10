@@ -865,8 +865,20 @@ WebAppShortcutCreator::~WebAppShortcutCreator() = default;
 
 base::FilePath WebAppShortcutCreator::GetApplicationsShortcutPath(
     bool avoid_conflicts) const {
-  if (g_app_shims_allow_update_and_launch_in_tests)
+  // If app shims updates are allowed in tests and the OS integration
+  // test override exists, apps should be updated inside the
+  // test override location instead of the web_applications profile
+  // directory.
+  if (g_app_shims_allow_update_and_launch_in_tests) {
+    if (GetOsIntegrationTestOverride()) {
+      base::FilePath applications_dir = GetChromeAppsFolder();
+      if (applications_dir.empty()) {
+        return base::FilePath();
+      }
+      return applications_dir.Append(GetShortcutBasename());
+    }
     return app_data_dir_.Append(GetShortcutBasename());
+  }
 
   base::FilePath applications_dir = GetChromeAppsFolder();
   if (applications_dir.empty())

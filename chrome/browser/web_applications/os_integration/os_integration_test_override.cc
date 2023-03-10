@@ -29,8 +29,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_registration.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_icon_generator.h"
+#include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -126,6 +129,31 @@ std::vector<std::wstring> GetFileExtensionsForProgId(
 
   return base::SplitString(handled_file_extensions, std::wstring(L";"),
                            base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+}
+#endif
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+// Performs a blocking read of app icons from the disk.
+SkColor IconManagerReadIconTopLeftColorForSize(WebAppIconManager& icon_manager,
+                                               const AppId& app_id,
+                                               SquareSizePx size_px) {
+  SkColor result = SK_ColorTRANSPARENT;
+  if (!icon_manager.HasIcons(app_id, IconPurpose::ANY, {size_px})) {
+    return result;
+  }
+  base::RunLoop run_loop;
+  icon_manager.ReadIcons(
+      app_id, IconPurpose::ANY, {size_px},
+      base::BindOnce(
+          [](base::RunLoop* run_loop, SkColor* result, SquareSizePx size_px,
+             std::map<SquareSizePx, SkBitmap> icon_bitmaps) {
+            DCHECK(base::Contains(icon_bitmaps, size_px));
+            *result = icon_bitmaps.at(size_px).getColor(0, 0);
+            run_loop->Quit();
+          },
+          &run_loop, &result, size_px));
+  run_loop.Run();
+  return result;
 }
 #endif
 
@@ -256,20 +284,31 @@ bool OsIntegrationTestOverride::IsFileExtensionHandled(
   return is_file_handled;
 }
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 absl::optional<SkColor> OsIntegrationTestOverride::GetShortcutIconTopLeftColor(
     Profile* profile,
     base::FilePath shortcut_dir,
     const AppId& app_id,
-    const std::string& app_name) {
+    const std::string& app_name,
+    SquareSizePx size_px) {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   base::FilePath shortcut_path =
       GetShortcutPath(profile, shortcut_dir, app_id, app_name);
   if (!base::PathExists(shortcut_path)) {
     return absl::nullopt;
   }
   return GetIconTopLeftColorFromShortcutFile(shortcut_path);
-}
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  WebAppProvider* provider = WebAppProvider::GetForLocalAppsUnchecked(profile);
+  if (!provider) {
+    return absl::nullopt;
+  }
+  return IconManagerReadIconTopLeftColorForSize(provider->icon_manager(),
+                                                app_id, size_px);
+#else
+  NOTREACHED() << "Not implemented on Fuchsia";
+  return absl::nullopt;
 #endif
+}
 
 #if BUILDFLAG(IS_WIN)
 void OsIntegrationTestOverride::AddShortcutsMenuJumpListEntryForApp(
