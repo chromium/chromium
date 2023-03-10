@@ -47,6 +47,16 @@ void NetworkEventsObserver::OnConnectionStateChanged(
     chromeos::network_health::mojom::NetworkState state) {
   using NetworkStateMojom = chromeos::network_health::mojom::NetworkState;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  const auto* network_state = ::ash::NetworkHandler::Get()
+                                  ->network_state_handler()
+                                  ->GetNetworkStateFromGuid(guid);
+  const auto network_type =
+      ::ash::NetworkTypePattern::Primitive(network_state->type());
+  if (!network_type.MatchesPattern(ash::NetworkTypePattern::Physical())) {
+    return;
+  }
+
   if (base::Contains(connection_state_map_, guid) &&
       connection_state_map_.at(guid) == state) {
     DVLOG(1) << "Connection state already reported";
