@@ -3037,12 +3037,6 @@ const char kTabHoverCardImagesName[] = "Tab Hover Card Images";
 const char kTabHoverCardImagesDescription[] =
     "Shows a preview image in tab hover cards, if tab hover cards are enabled.";
 
-const char kTabOutlinesInLowContrastThemesName[] =
-    "Tab Outlines in Low Contrast Themes";
-const char kTabOutlinesInLowContrastThemesDescription[] =
-    "Expands the range of situations in which tab outline strokes are "
-    "displayed, improving accessiblity in dark and incognito mode.";
-
 const char kTabSearchFuzzySearchName[] = "Fuzzy search for Tab Search";
 const char kTabSearchFuzzySearchDescription[] =
     "Enable fuzzy search for Tab Search.";

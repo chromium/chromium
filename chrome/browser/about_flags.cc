@@ -5796,11 +5796,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSidePanelWebViewDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kSidePanelWebView)},
 
-    {"tab-outlines-in-low-contrast-themes",
-     flag_descriptions::kTabOutlinesInLowContrastThemesName,
-     flag_descriptions::kTabOutlinesInLowContrastThemesDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kTabOutlinesInLowContrastThemes)},
-
     {"prominent-dark-mode-active-tab-title",
      flag_descriptions::kProminentDarkModeActiveTabTitleName,
      flag_descriptions::kProminentDarkModeActiveTabTitleDescription, kOsDesktop,

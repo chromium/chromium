@@ -125,8 +125,6 @@ extern const char kTabHoverCardAdditionalMaxWidthDelay[];
 // on top. 0 is the default layout.
 extern const char kTabHoverCardAlternateFormat[];
 
-BASE_DECLARE_FEATURE(kTabOutlinesInLowContrastThemes);
-
 BASE_DECLARE_FEATURE(kTabSearchChevronIcon);
 
 BASE_DECLARE_FEATURE(kTabSearchFeedback);

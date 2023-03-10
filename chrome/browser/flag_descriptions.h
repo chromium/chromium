@@ -1724,9 +1724,6 @@ extern const char kTabGroupsSaveDescription[];
 extern const char kTabHoverCardImagesName[];
 extern const char kTabHoverCardImagesDescription[];
 
-extern const char kTabOutlinesInLowContrastThemesName[];
-extern const char kTabOutlinesInLowContrastThemesDescription[];
-
 extern const char kTabSearchFuzzySearchName[];
 extern const char kTabSearchFuzzySearchDescription[];
 
