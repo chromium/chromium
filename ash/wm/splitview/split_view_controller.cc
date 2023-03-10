@@ -1781,19 +1781,16 @@ void SplitViewController::OnPostWindowStateTypeChange(
     if (do_divider_spawn_animation)
       DoSplitDividerSpawnAnimation(window);
   } else if (window_state->IsNormalStateType() || window_state->IsMaximized() ||
-             window_state->IsFullscreen()) {
+             window_state->IsFullscreen() || window_state->IsFloated()) {
     // End split view, and also overview if overview is active, in these cases:
     // 1. A left clamshell split view window gets unsnapped by Alt+[.
     // 2. A right clamshell split view window gets unsnapped by Alt+].
     // 3. A (clamshell or tablet) split view window gets maximized.
     // 4. A (clamshell or tablet) split view window becomes full screen.
+    // 5. A split view window becomes floated.
     EndSplitView();
     Shell::Get()->overview_controller()->EndOverview(
         OverviewEndAction::kSplitView);
-  } else if (window_state->IsFloated()) {
-    OnSnappedWindowDetached(window, WindowDetachedReason::kWindowFloated);
-
-    // TODO(crbug.com/1351562): Consider ending overview here.
   } else if (window_state->IsMinimized()) {
     OnSnappedWindowDetached(window, WindowDetachedReason::kWindowMinimized);
 

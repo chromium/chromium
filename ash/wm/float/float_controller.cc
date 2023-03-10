@@ -42,8 +42,6 @@
 #include "ui/display/screen.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
-using MagnetismCorner = ash::FloatController::MagnetismCorner;
-
 namespace ash {
 
 namespace {

@@ -1686,11 +1686,11 @@ TEST_F(TabletWindowFloatSplitviewTest, FloatToSnapped) {
   ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   ASSERT_TRUE(split_view_controller->InSplitViewMode());
 
-  // Float the window so we can snap it again. Assert that we are still in
-  // overview, but no longer in splitview.
+  // Float the window so we can snap it again. Assert that we are no longer in
+  // overview or splitview.
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   ASSERT_TRUE(WindowState::Get(window.get())->IsFloated());
-  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  ASSERT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
   ASSERT_FALSE(split_view_controller->InSplitViewMode());
 
   // Create a second window.
@@ -1704,6 +1704,14 @@ TEST_F(TabletWindowFloatSplitviewTest, FloatToSnapped) {
   EXPECT_TRUE(split_view_controller->BothSnapped());
   EXPECT_EQ(split_view_controller->primary_window(), window.get());
   EXPECT_EQ(split_view_controller->secondary_window(), other_window.get());
+
+  // Tests that in overview mode, with at least one app window in overview, that
+  // we also exit splitview and overview when floating the snapped window.
+  ToggleOverview();
+  wm::ActivateWindow(window.get());
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_FALSE(split_view_controller->InSplitViewMode());
 }
 
 // When reset a floated window that's previously snapped, maximize instead of
