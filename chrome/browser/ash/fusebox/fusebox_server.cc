@@ -40,11 +40,21 @@ namespace {
 
 Server* g_server_instance = nullptr;
 
-bool UseTempFile(const std::string fs_url_as_string) {
+bool UseTempFile(const base::StringPiece fs_url_as_string) {
   // MTP (the protocol) does not support incremental writes. When creating an
   // MTP file (via FuseBox), we need to supply its contents as a whole. Up
   // until that transfer, spool incremental writes to a temporary file.
   return base::StartsWith(fs_url_as_string,
+                          file_manager::util::kFuseBoxSubdirPrefixMTP);
+}
+
+bool UseEmptyTruncateWorkaround(const base::StringPiece fs_url_as_string,
+                                int64_t length) {
+  // Not all storage::AsyncFileUtil back-ends implement the CreateFile or
+  // Truncate methods. When they don't, and truncating to a zero length, work
+  // around it as a RemoveFile followed by copying in an empty file.
+  return (length == 0) &&
+         base::StartsWith(fs_url_as_string,
                           file_manager::util::kFuseBoxSubdirPrefixMTP);
 }
 
@@ -420,6 +430,60 @@ std::string SubdirForTempDir(base::ScopedTempDir& scoped_temp_dir) {
     basename = basename.substr(1);
   }
   return base::StrCat({file_manager::util::kFuseBoxSubdirPrefixTMP, basename});
+}
+
+void EmptyTruncateWorkaroundCallback2(Server::TruncateCallback callback,
+                                      base::File::Error error_code) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+  TruncateResponseProto response_proto;
+  if (error_code != base::File::Error::FILE_OK) {
+    response_proto.set_posix_error_code(FileErrorToErrno(error_code));
+  } else {
+    DirEntryProto* dir_entry_proto = response_proto.mutable_stat();
+    constexpr bool is_directory = false;
+    constexpr bool read_only = false;
+    dir_entry_proto->set_mode_bits(
+        Server::MakeModeBits(is_directory, read_only));
+    dir_entry_proto->set_size(0);
+    dir_entry_proto->set_mtime(
+        base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+  }
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), std::move(response_proto)));
+}
+
+void EmptyTruncateWorkaroundCallback1(
+    scoped_refptr<storage::FileSystemContext> fs_context,
+    const storage::FileSystemURL fs_url,
+    Server::TruncateCallback callback,
+    base::File::Error error_code) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+  if (error_code != base::File::Error::FILE_OK) {
+    EmptyTruncateWorkaroundCallback2(std::move(callback), error_code);
+    return;
+  }
+  fs_context->operation_runner()->CopyInForeignFile(
+      base::FilePath("/dev/null"), fs_url,
+      base::BindOnce(&EmptyTruncateWorkaroundCallback2, std::move(callback)));
+}
+
+void DoEmptyTruncateWorkaround(
+    scoped_refptr<storage::FileSystemContext> fs_context,
+    const storage::FileSystemURL fs_url,
+    Server::TruncateCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          base::IgnoreResult(&storage::FileSystemOperationRunner::RemoveFile),
+          // Unretained is safe: fs_context owns its operation runner.
+          base::Unretained(fs_context->operation_runner()), fs_url,
+          base::BindOnce(&EmptyTruncateWorkaroundCallback1, fs_context, fs_url,
+                         std::move(callback))));
 }
 
 }  // namespace
@@ -991,6 +1055,13 @@ void Server::Truncate(const TruncateRequestProto& request_proto,
     return;
   }
 
+  int64_t length = request_proto.has_length() ? request_proto.length() : 0;
+  if (UseEmptyTruncateWorkaround(fs_url_as_string, length)) {
+    DoEmptyTruncateWorkaround(std::move(parsed->fs_context),
+                              std::move(parsed->fs_url), std::move(callback));
+    return;
+  }
+
   auto outer_callback = base::BindPostTaskToCurrentDefault(
       base::BindOnce(&RunTruncateCallback, std::move(callback),
                      parsed->fs_context, parsed->fs_url, parsed->read_only));
@@ -1001,9 +1072,7 @@ void Server::Truncate(const TruncateRequestProto& request_proto,
           base::IgnoreResult(&storage::FileSystemOperationRunner::Truncate),
           // Unretained is safe: fs_context owns its operation runner.
           base::Unretained(parsed->fs_context->operation_runner()),
-          parsed->fs_url,
-          request_proto.has_length() ? request_proto.length() : 0,
-          std::move(outer_callback)));
+          parsed->fs_url, length, std::move(outer_callback)));
 }
 
 void Server::Unlink(const UnlinkRequestProto& request_proto,
