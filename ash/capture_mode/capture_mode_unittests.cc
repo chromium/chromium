@@ -6986,7 +6986,7 @@ class CaptureModeHistogramTest : public CaptureModeSettingsTest,
   }
 };
 
-TEST_P(CaptureModeHistogramTest, VideoRecordingAudioMetric) {
+TEST_P(CaptureModeHistogramTest, VideoRecordingAudioVideoMetrics) {
   constexpr char kHistogramNameBase[] =
       "Ash.CaptureModeController.CaptureAudioOnMetric";
   base::HistogramTester histogram_tester;
@@ -7002,8 +7002,18 @@ TEST_P(CaptureModeHistogramTest, VideoRecordingAudioMetric) {
       GetCaptureModeHistogramName(kHistogramNameBase), false, 1);
   histogram_tester.ExpectBucketCount(
       GetCaptureModeHistogramName(kHistogramNameBase), true, 0);
+  WaitForSeconds(1);
   StopRecording();
   WaitForCaptureFileToBeSaved();
+
+  // Since getting the file size is an async operation, we have to run a loop
+  // until the task that records the file size is done.
+  base::RunLoop().RunUntilIdle();
+  histogram_tester.ExpectTotalCount(
+      GetCaptureModeHistogramName(
+          "Ash.CaptureModeController.ScreenRecordingFileSize"),
+      /*expected_count=*/1);
+
   // Perform a video recording with audio on. A true should be recorded.
   StartSessionForVideo();
   CaptureModeTestApi().SetAudioRecordingEnabled(true);

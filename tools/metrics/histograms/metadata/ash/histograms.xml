@@ -1361,6 +1361,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Ash.CaptureModeController.GIFRecordingFileSize.{TabletOrClamshell}"
+    units="KB" expires_after="2024-03-01">
+  <owner>afakhry@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records the size of the successfully recorded GIF file by capture mode in
+    {TabletOrClamshell}. This metric will not be recorded if a file was not
+    successfully saved.
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
+<histogram
     name="Ash.CaptureModeController.GIFRecordingLength.{TabletOrClamshell}"
     units="seconds" expires_after="2024-03-01">
   <owner>afakhry@chromium.org</owner>
@@ -1516,6 +1529,19 @@ chromium-metrics-reviews@google.com.
   <summary>
     Recorded whenever screen capture is saved in {TabletOrClamshell}. The
     recorded enum value indicates the location that the screen capture is saved.
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
+<histogram
+    name="Ash.CaptureModeController.ScreenRecordingFileSize.{TabletOrClamshell}"
+    units="KB" expires_after="2024-03-01">
+  <owner>afakhry@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records the size of the successfully recorded WebM file by capture mode in
+    {TabletOrClamshell}. This metric will not be recorded if a file was not
+    successfully saved, or if it was recorded for Projector.
   </summary>
   <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>

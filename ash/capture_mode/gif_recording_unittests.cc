@@ -399,6 +399,13 @@ TEST_F(GifRecordingTest, RecordingTypeIsRespected) {
       "Ash.CaptureModeController.GIFRecordingLength.ClamshellMode",
       /*sample=*/1,  // 1 second.
       /*expected_bucket_count=*/1);
+
+  // Since getting the file size is an async operation, we have to run a loop
+  // until that task the records the file size is done.
+  base::RunLoop().RunUntilIdle();
+  histogram_tester_.ExpectTotalCount(
+      "Ash.CaptureModeController.GIFRecordingFileSize.ClamshellMode",
+      /*expected_count=*/1);
 }
 
 class ProjectorGifRecordingTest : public GifRecordingTest {

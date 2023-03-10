@@ -54,6 +54,10 @@ constexpr char kRecordingCameraSizeOnStartPrefix[] =
     "Ash.CaptureModeController.RecordingCameraSizeOnStart";
 constexpr char kRecordingCameraPositionOnStartPrefix[] =
     "Ash.CaptureModeController.RecordingCameraPositionOnStart";
+constexpr char kGifRecordingFileSizePrefix[] =
+    "Ash.CaptureModeController.GIFRecordingFileSize";
+constexpr char kScreenRecordingFileSizePrefix[] =
+    "Ash.CaptureModeController.ScreenRecordingFileSize";
 constexpr char kNumberOfConnectedCameras[] =
     "Ash.CaptureModeController.NumberOfConnectedCameras";
 constexpr char kConsecutiveScreenshotHistogramName[] =
@@ -126,6 +130,18 @@ void RecordCaptureModeRecordTime(base::TimeDelta recording_duration,
   RecordCaptureModeRecordTimeInternal(
       is_gif ? kGifRecordingTimeHistogramPrefix : kRecordTimeHistogramPrefix,
       recording_duration);
+}
+
+void RecordVideoFileSizeKB(bool is_gif, int size_in_kb) {
+  if (size_in_kb < 0) {
+    LOG(ERROR) << "Failed to calculate the video file size. Is GIF: " << is_gif;
+    return;
+  }
+
+  base::UmaHistogramMemoryKB(
+      GetCaptureModeHistogramName(is_gif ? kGifRecordingFileSizePrefix
+                                         : kScreenRecordingFileSizePrefix),
+      size_in_kb);
 }
 
 void RecordCaptureModeSwitchesFromInitialMode(bool switched) {

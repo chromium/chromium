@@ -145,6 +145,10 @@ void RecordCaptureModeRecordTime(base::TimeDelta recording_duration,
                                  bool is_in_projector_mode,
                                  bool is_gif);
 
+// Records the given video file `size_in_kb`. The used histogram will depend on
+// whether this video file was GIF or WebM.
+void RecordVideoFileSizeKB(bool is_gif, int size_in_kb);
+
 // Records if the user has switched modes during a capture session.
 void RecordCaptureModeSwitchesFromInitialMode(bool switched);
 

@@ -411,6 +411,17 @@ int GetNotificationTitleIdForFile(const base::FilePath& file_path) {
   return IDS_ASH_SCREEN_CAPTURE_SCREENSHOT_TITLE;
 }
 
+// Returns the size of the file at the given `file_path` in KBs. Returns -1 when
+// a failure occurs.
+int GetFileSizeInKB(const base::FilePath& file_path) {
+  int64_t size_in_bytes = 0;
+  if (!base::GetFileSize(file_path, &size_in_bytes)) {
+    return -1;
+  }
+  // Convert the value to KBs.
+  return size_in_bytes / 1024;
+}
+
 }  // namespace
 
 CaptureModeController::CaptureModeController(
@@ -1321,6 +1332,12 @@ void CaptureModeController::OnVideoFileSaved(
                    : HoldingSpaceItem::Type::kScreenRecording,
             saved_video_file_path);
       }
+
+      // We only record the file size histogram if it's not a projector-
+      // initiated recording.
+      blocking_task_runner_->PostTaskAndReplyWithResult(
+          FROM_HERE, base::BindOnce(&GetFileSizeInKB, saved_video_file_path),
+          base::BindOnce(&RecordVideoFileSizeKB, is_gif));
     }
     DCHECK(!recording_start_time_.is_null());
     RecordCaptureModeRecordTime(
