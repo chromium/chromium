@@ -37,14 +37,15 @@ uint32_t CdmPromiseAdapter::SavePromise(std::unique_ptr<CdmPromise> promise,
   DCHECK_NE(kInvalidPromiseId, next_promise_id_);
 
   uint32_t promise_id = next_promise_id_++;
-  if (next_promise_id_ == kInvalidPromiseId)
+  if (next_promise_id_ == kInvalidPromiseId) {
     next_promise_id_++;
+  }
 
   promises_[promise_id] = std::move(promise);
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("media", "CdmPromise",
-                                    TRACE_ID_LOCAL(promise_id), "operation",
-                                    operation);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
+      "media", "CdmPromise", TRACE_ID_WITH_SCOPE("CdmPromise", promise_id),
+      "operation", operation);
 
   return promise_id;
 }
@@ -58,8 +59,9 @@ void CdmPromiseAdapter::ResolvePromise(uint32_t promise_id,
     return;
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_END1(
-      "media", "CdmPromise", TRACE_ID_LOCAL(promise_id), "status", "resolved");
+  TRACE_EVENT_NESTABLE_ASYNC_END1("media", "CdmPromise",
+                                  TRACE_ID_WITH_SCOPE("CdmPromise", promise_id),
+                                  "status", "resolved");
 
   // Sanity check the type before we do static_cast.
   CdmPromise::ResolveParameterType type = promise->GetResolveParameterType();
@@ -82,9 +84,9 @@ void CdmPromiseAdapter::RejectPromise(uint32_t promise_id,
     return;
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_END2("media", "CdmPromise",
-                                  TRACE_ID_LOCAL(promise_id), "status",
-                                  "rejected", "system_code", system_code);
+  TRACE_EVENT_NESTABLE_ASYNC_END2(
+      "media", "CdmPromise", TRACE_ID_WITH_SCOPE("CdmPromise", promise_id),
+      "status", "rejected", "system_code", system_code);
 
   promise->reject(exception_code, system_code, error_message);
 }
@@ -94,7 +96,8 @@ void CdmPromiseAdapter::Clear(ClearReason reason) {
   DCHECK(thread_checker_.CalledOnValidThread());
   for (auto& [promise_id, promise] : promises_) {
     TRACE_EVENT_NESTABLE_ASYNC_END1(
-        "media", "CdmPromise", TRACE_ID_LOCAL(promise_id), "status", "cleared");
+        "media", "CdmPromise", TRACE_ID_WITH_SCOPE("CdmPromise", promise_id),
+        "status", "cleared");
     promise->reject(CdmPromise::Exception::INVALID_STATE_ERROR,
                     ToSystemCode(reason), "Operation aborted.");
   }
@@ -105,8 +108,9 @@ std::unique_ptr<CdmPromise> CdmPromiseAdapter::TakePromise(
     uint32_t promise_id) {
   DCHECK(thread_checker_.CalledOnValidThread());
   auto it = promises_.find(promise_id);
-  if (it == promises_.end())
+  if (it == promises_.end()) {
     return nullptr;
+  }
 
   std::unique_ptr<CdmPromise> result = std::move(it->second);
   promises_.erase(it);
