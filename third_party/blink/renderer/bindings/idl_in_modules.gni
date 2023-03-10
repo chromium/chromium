@@ -651,6 +651,7 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/sanitizer_api/sanitizer.idl",
           "//third_party/blink/renderer/modules/sanitizer_api/sanitizer_config.idl",
           "//third_party/blink/renderer/modules/scheduler/scheduler.idl",
+          "//third_party/blink/renderer/modules/scheduler/window_idle_tasks.idl",
           "//third_party/blink/renderer/modules/scheduler/scheduler_post_task_callback.idl",
           "//third_party/blink/renderer/modules/scheduler/scheduler_post_task_options.idl",
           "//third_party/blink/renderer/modules/scheduler/script_wrappable_task_state.idl",

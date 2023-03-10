@@ -75,17 +75,6 @@ class IdleRequestCallbackWrapper
 
 }  // namespace internal
 
-V8IdleTask::V8IdleTask(V8IdleRequestCallback* callback) : callback_(callback) {}
-
-void V8IdleTask::Trace(Visitor* visitor) const {
-  visitor->Trace(callback_);
-  IdleTask::Trace(visitor);
-}
-
-void V8IdleTask::invoke(IdleDeadline* deadline) {
-  callback_->InvokeAndReportException(nullptr, deadline);
-}
-
 ScriptedIdleTaskController::ScriptedIdleTaskController(
     ExecutionContext* context)
     : ExecutionContextLifecycleStateObserver(context),

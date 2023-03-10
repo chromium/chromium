@@ -108,11 +108,6 @@
 
     [Replaceable, SameObject] readonly attribute External external;
 
-    // Cooperative Scheduling of Background Tasks
-    // https://www.w3.org/TR/requestidlecallback/#window_extensions
-    [Measure] long requestIdleCallback(IdleRequestCallback callback, optional IdleRequestOptions options = {});
-    void cancelIdleCallback(long handle);
-
     // CSS Object Model (CSSOM)
     // https://drafts.csswg.org/cssom/#extensions-to-the-window-interface
     [Affects=Nothing, NewObject] CSSStyleDeclaration getComputedStyle(Element elt, optional DOMString? pseudoElt);

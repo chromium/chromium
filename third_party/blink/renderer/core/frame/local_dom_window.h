@@ -74,7 +74,6 @@ class External;
 class Fence;
 class FrameConsole;
 class History;
-class IdleRequestOptions;
 class InputMethodController;
 class LocalFrame;
 class MediaQueryList;
@@ -93,7 +92,6 @@ class SourceLocation;
 class StyleMedia;
 class TrustedTypePolicyFactory;
 class V8FrameRequestCallback;
-class V8IdleRequestCallback;
 class V8VoidFunction;
 struct WebPictureInPictureWindowOptions;
 class WindowAgent;
@@ -344,10 +342,6 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   // https://html.spec.whatwg.org/C/#dom-originagentcluster
   bool originAgentCluster() const;
-
-  // Idle callback extensions
-  int requestIdleCallback(V8IdleRequestCallback*, const IdleRequestOptions*);
-  void cancelIdleCallback(int id);
 
   // Custom elements
   CustomElementRegistry* customElements(ScriptState*) const;
