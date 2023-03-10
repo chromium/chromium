@@ -898,6 +898,21 @@ TEST(LocalNetworkAccessCheckerTest,
       "Security.PrivateNetworkAccess.PrivateIpResolveMatch", 0);
 }
 
+TEST(LocalNetworkAccessCheckerTest,
+     DoesNotRecordLocalIpResolveMatchHistogramProxy) {
+  base::HistogramTester histogram_tester;
+
+  ResourceRequest request;
+  request.url = LocalEndpointUrl();
+  LocalNetworkAccessChecker checker(request, kNullClientSecurityState,
+                                    mojom::kURLLoadOptionNone);
+
+  checker.Check(ProxiedTransport(LocalEndpoint()));
+
+  histogram_tester.ExpectTotalCount(
+      "Security.PrivateNetworkAccess.PrivateIpResolveMatch", 0);
+}
+
 TEST(LocalNetworkAccessCheckerTest, RecordsLocalIpResolveMatchHistogramFalse) {
   base::HistogramTester histogram_tester;
 

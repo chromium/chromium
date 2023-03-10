@@ -98,8 +98,10 @@ LocalNetworkAccessChecker::~LocalNetworkAccessChecker() = default;
 Result LocalNetworkAccessChecker::Check(
     const net::TransportInfo& transport_info) {
   // If the request URL host was a local IP, record whether we ended up
-  // connecting to that IP address. See https://crbug.com/1381471#c2.
-  if (request_url_local_ip_.has_value()) {
+  // connecting to that IP address, unless connecting through a proxy.
+  // See https://crbug.com/1381471#c2.
+  if (request_url_local_ip_.has_value() &&
+      transport_info.type != net::TransportType::kProxied) {
     base::UmaHistogramBoolean(
         "Security.PrivateNetworkAccess.PrivateIpResolveMatch",
         *request_url_local_ip_ == transport_info.endpoint.address());
