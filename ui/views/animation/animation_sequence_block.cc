@@ -19,6 +19,7 @@
 #include "ui/compositor/layer_owner.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/interpolated_transform.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/animation/animation_key.h"
 
@@ -201,6 +202,22 @@ AnimationSequenceBlock& AnimationSequenceBlock::SetVisibility(
   return SetVisibility(target->layer(), visible, tween_type);
 }
 
+AnimationSequenceBlock& AnimationSequenceBlock::SetInterpolatedTransform(
+    ui::Layer* target,
+    std::unique_ptr<ui::InterpolatedTransform> interpolated_transform,
+    gfx::Tween::Type tween_type) {
+  return AddAnimation({target, ui::LayerAnimationElement::TRANSFORM},
+                      Element(std::move(interpolated_transform), tween_type));
+}
+
+AnimationSequenceBlock& AnimationSequenceBlock::SetInterpolatedTransform(
+    ui::LayerOwner* target,
+    std::unique_ptr<ui::InterpolatedTransform> interpolated_transform,
+    gfx::Tween::Type tween_type) {
+  return SetInterpolatedTransform(
+      target->layer(), std::move(interpolated_transform), tween_type);
+}
+
 AnimationSequenceBlock& AnimationSequenceBlock::At(
     base::TimeDelta since_sequence_start) {
   // NOTE: at the end of this function, this object is destroyed.
@@ -251,9 +268,21 @@ void AnimationSequenceBlock::TerminateBlock() {
     std::unique_ptr<ui::LayerAnimationElement> element;
     switch (pair.first.property) {
       case ui::LayerAnimationElement::TRANSFORM:
-        element = ui::LayerAnimationElement::CreateTransformElement(
-            absl::get<gfx::Transform>(std::move(pair.second.animation_value_)),
-            duration);
+        if (absl::holds_alternative<std::unique_ptr<ui::InterpolatedTransform>>(
+                pair.second.animation_value_)) {
+          element =
+              ui::LayerAnimationElement::CreateInterpolatedTransformElement(
+                  absl::get<std::unique_ptr<ui::InterpolatedTransform>>(
+                      std::move(pair.second.animation_value_)),
+                  duration);
+        } else {
+          DCHECK(absl::holds_alternative<gfx::Transform>(
+              pair.second.animation_value_));
+          element = ui::LayerAnimationElement::CreateTransformElement(
+              absl::get<gfx::Transform>(
+                  std::move(pair.second.animation_value_)),
+              duration);
+        }
         break;
       case ui::LayerAnimationElement::BOUNDS:
         element = ui::LayerAnimationElement::CreateBoundsElement(

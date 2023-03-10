@@ -4,6 +4,9 @@
 
 #include "ui/views/animation/animation_builder.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/functional/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/time/time.h"
@@ -17,6 +20,8 @@
 #include "ui/compositor/test/layer_animator_test_controller.h"
 #include "ui/compositor/test/test_layer_animation_delegate.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/interpolated_transform.h"
 #include "ui/views/animation/animation_abort_handle.h"
 
 namespace views {
@@ -1177,6 +1182,66 @@ TEST_F(AnimationBuilderTest, BuildAnimationWithBuilderFromScope) {
   EXPECT_FALSE(second_animating_view->layer()->GetAnimator()->is_animating());
   EXPECT_EQ(0.f, first_animating_view->delegate()->GetOpacityForAnimation());
   EXPECT_EQ(0.f, second_animating_view->delegate()->GetOpacityForAnimation());
+}
+
+// Verifies that it is disallowed to animate transform using both
+// `SetInterpolatedTransform()` and `SetTransform()` in the same block on the
+// same target.
+TEST_F(AnimationBuilderTest,
+       DisallowMultipleSameBlockSameTargetTransformPropertyAnimations) {
+  TestAnimatibleLayerOwner* target = CreateTestLayerOwner();
+  EXPECT_DCHECK_DEATH_WITH(
+      AnimationBuilder()
+          .Once()
+          .SetInterpolatedTransform(
+              target, std::make_unique<ui::InterpolatedMatrixTransform>(
+                          /*start_transform=*/gfx::Transform(),
+                          /*end_transform=*/gfx::Transform()))
+          .SetTransform(target, gfx::Transform()),
+      "Animate \\(target, property\\) at most once per block.");
+}
+
+// Verifies that transform can be animated using `SetInterpolatedTransform()`.
+TEST_F(AnimationBuilderTest, SetInterpolatedTransform) {
+  // Create a nested transform. Note the use of irregular `start_time` and
+  // `end_time` to verify that out of bounds values are handled.
+  auto transform = std::make_unique<ui::InterpolatedScale>(
+      /*start_scale=*/0.f, /*end_scale=*/1.f, /*start_time=*/-1.f,
+      /*end_time=*/2.f);
+  transform->SetChild(std::make_unique<ui::InterpolatedRotation>(
+      /*start_degrees=*/0.f, /*end_degrees=*/360.f, /*start_time=*/0.5f,
+      /*end_time=*/0.75f));
+
+  // Cache expected transforms at key animation points.
+  const gfx::Transform expected_start_transform = transform->Interpolate(0.f);
+  const gfx::Transform expected_mid_transform = transform->Interpolate(0.5f);
+  const gfx::Transform expected_end_transform = transform->Interpolate(1.f);
+
+  // Verify initial state.
+  TestAnimatibleLayerOwner* target = CreateTestLayerOwner();
+  EXPECT_EQ(target->delegate()->GetTransformForAnimation(), gfx::Transform());
+
+  // Start animation.
+  constexpr auto kDuration = base::Seconds(2);
+  AnimationBuilder().Once().SetDuration(kDuration).SetInterpolatedTransform(
+      target, std::move(transform));
+
+  // Verify state at animation start.
+  EXPECT_TRUE(target->layer()->GetAnimator()->is_animating());
+  EXPECT_EQ(target->delegate()->GetTransformForAnimation(),
+            expected_start_transform);
+
+  // Verify state at animation midpoint.
+  Step(kDuration / 2);
+  EXPECT_TRUE(target->layer()->GetAnimator()->is_animating());
+  EXPECT_EQ(target->delegate()->GetTransformForAnimation(),
+            expected_mid_transform);
+
+  // Verify state at animation end.
+  Step(kDuration / 2);
+  EXPECT_FALSE(target->layer()->GetAnimator()->is_animating());
+  EXPECT_EQ(target->delegate()->GetTransformForAnimation(),
+            expected_end_transform);
 }
 
 }  // namespace views
