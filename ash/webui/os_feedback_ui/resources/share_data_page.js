@@ -55,6 +55,8 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
           {type: Boolean, readOnly: false, notify: true},
       shouldShowAssistantCheckbox:
           {type: Boolean, readOnly: false, notify: true},
+      shouldShowAutofillCheckbox:
+          {type: Boolean, readOnly: false, notify: true},
     };
   }
 
@@ -82,6 +84,11 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
     this.shouldShowAssistantCheckbox;
 
     /**
+     * @type {boolean}
+     */
+    this.shouldShowAutofillCheckbox;
+
+    /**
      * @type {string}
      * @protected
      */
@@ -98,6 +105,12 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
      * @protected
      */
     this.assistantLogsCheckboxLabel_;
+
+    /**
+     * @type {string}
+     * @protected
+     */
+    this.autofillCheckboxLabel_;
 
     /**
      * @type {string}
@@ -122,6 +135,7 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
     this.setPerformanceTraceCheckboxLabel_();
     this.setAssistantLogsCheckboxLabelAndAttributes_();
     this.setBluetoothLogsCheckboxLabelAndAttributes_();
+    this.setAutofillCheckboxLabelAndAttributes_();
     // Set the aria description works the best for screen reader.
     // It reads the description when the checkbox is focused, and when it is
     // checked and unchecked.
@@ -235,6 +249,20 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
     e.preventDefault();
 
     this.feedbackServiceProvider_.openSystemInfoDialog();
+  }
+
+  /**
+   * @param {!Event} e
+   * @protected
+   */
+  handleOpenAutofillMetadataDialog_(e) {
+    // The default behavior of clicking on an anchor tag
+    // with href="#" is a scroll to the top of the page.
+    // This link opens a dialog, so we want to prevent
+    // this default behavior.
+    e.preventDefault();
+
+    // TODO(crbug.com/1407646): Open autofill metadata dialog.
   }
 
   /**
@@ -372,6 +400,17 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
       report.sendBluetoothLogs = false;
     }
 
+    if (this.feedbackContext.fromAutofill &&
+        !this.getElement_('#autofillCheckboxContainer').hidden &&
+        this.getElement_('#autofillCheckbox').checked) {
+      report.includeAutofillMetadata = true;
+      report.feedbackContext.autofillMetadata =
+          this.feedbackContext.autofillMetadata;
+    } else {
+      report.includeAutofillMetadata = false;
+      report.feedbackContext.autofillMetadata = '';
+    }
+
     if (this.getElement_('#performanceTraceCheckbox').checked) {
       report.feedbackContext.traceId = this.feedbackContext.traceId;
     } else {
@@ -439,6 +478,18 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
       this.feedbackServiceProvider_.recordPreSubmitAction(
           FeedbackAppPreSubmitAction.kViewedMetrics);
     });
+  }
+
+  /** @private */
+  setAutofillCheckboxLabelAndAttributes_() {
+    this.autofillCheckboxLabel_ =
+        this.i18nAdvanced('includeAutofillCheckboxLabel', {attrs: ['id']});
+
+    const assistantLogsLink = this.getElement_('#autofillMetadataUrl');
+    // Setting href causes <a> tag to display as link.
+    assistantLogsLink.setAttribute('href', '#');
+    assistantLogsLink.addEventListener(
+        'click', (e) => void this.handleOpenAutofillMetadataDialog_(e));
   }
 
   /** @private */

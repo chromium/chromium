@@ -3657,6 +3657,9 @@
         <message name="IDS_FEEDBACK_TOOL_ASSISTANT_LOGS_CHECKBOX" translateable="false" desc="Checkbox for Google internal account to attach assistant logs from the current session.">
         Include recent Google Assistant history and information. <ph name="BEGIN_LINK1">&lt;a id="assistantLogsLink"&gt;</ph>View more details<ph name="END_LINK1">&lt;/a&gt;</ph>.
         </message>
+        <message name="IDS_FEEDBACK_TOOL_AUTOFILL_LOGS_CHECKBOX" translateable="false" desc="Checkbox for Google internal account to attach autofill logs from the current page.">
+        Send <ph name="BEGIN_LINK1">&lt;a href="#" id="autofillMetadataUrl"&gt;</ph>autofill metadata<ph name="END_LINK1">&lt;/a&gt;</ph>
+        </message>
         <message name="IDS_FEEDBACK_TOOL_ASSISTANT_LOGS_MESSAGE" translateable="false" desc="Message shown after user clicks on the assistant logs hyperlink">
           Google Assistance captures recent history and information such as your identity and location to help us better understand your issue.&#10;&#10;The information is stored for up to 90 days and access is restricted to the team working on this issue.
         </message>
