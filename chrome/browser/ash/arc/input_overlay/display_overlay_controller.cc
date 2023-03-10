@@ -38,6 +38,7 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/widget/widget.h"
+#include "util.h"
 
 namespace arc::input_overlay {
 
@@ -534,6 +535,9 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
       SetEventTarget(overlay_widget, /*on_overlay=*/false);
       break;
     case DisplayMode::kEdit:
+      // When using Tab to traverse views and enter into the edit mode, it needs
+      // to reset the focus before removing the menu.
+      ResetFocusTo(overlay_widget->GetContentsView());
       RemoveInputMenuView();
       RemoveMenuEntryView();
       RemoveEducationalView();
