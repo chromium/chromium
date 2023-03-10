@@ -3734,24 +3734,6 @@
             ]
         }
     ],
-    "DesktopDetailedLanguageSettings": [
-        {
-            "platforms": [
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DesktopDetailedLanguageSettings"
-                    ]
-                }
-            ]
-        }
-    ],
     "DesktopNtpMiddleSlotPromoDismissal": [
         {
             "platforms": [
