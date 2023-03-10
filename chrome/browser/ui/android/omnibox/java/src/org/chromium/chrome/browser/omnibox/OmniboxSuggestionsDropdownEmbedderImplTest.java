@@ -171,7 +171,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
                 alignment);
 
         Configuration newConfig = new Configuration();
-        newConfig.smallestScreenWidthDp = DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP - 1;
+        newConfig.screenWidthDp = DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP - 1;
         mImpl.onConfigurationChanged(newConfig);
         assertFalse(mImpl.isTablet());
         OmniboxAlignment newAlignment = mImpl.getCurrentAlignment();
@@ -198,7 +198,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
                 alignment);
 
         Configuration newConfig = new Configuration();
-        newConfig.smallestScreenWidthDp = DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP + 1;
+        newConfig.screenWidthDp = DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP + 1;
         mImpl.onConfigurationChanged(newConfig);
         assertTrue(mImpl.isTablet());
         OmniboxAlignment newAlignment = mImpl.getCurrentAlignment();
@@ -219,7 +219,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
                 alignment);
 
         Configuration newConfig = new Configuration();
-        newConfig.smallestScreenWidthDp = DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP - 1;
+        newConfig.screenWidthDp = DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP - 1;
         mImpl.onConfigurationChanged(newConfig);
         assertFalse(mImpl.isTablet());
         OmniboxAlignment newAlignment = mImpl.getCurrentAlignment();

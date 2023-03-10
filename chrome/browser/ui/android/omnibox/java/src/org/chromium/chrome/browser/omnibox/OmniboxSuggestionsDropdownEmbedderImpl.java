@@ -149,7 +149,7 @@ class OmniboxSuggestionsDropdownEmbedderImpl implements OmniboxSuggestionsDropdo
     // ComponentCallbacks
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
-        int windowWidth = newConfig.smallestScreenWidthDp;
+        int windowWidth = newConfig.screenWidthDp;
         int windowHeight = newConfig.screenHeightDp;
         if (windowWidth == mWindowWidthDp && mWindowHeightDp == windowHeight) return;
         mWindowWidthDp = windowWidth;
