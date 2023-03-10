@@ -15,6 +15,7 @@
 #include <limits>
 #include <type_traits>
 
+#include "base/types/variant_util.h"
 #include "base/unguessable_token.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/tokens/multi_token_internal.h"
@@ -166,19 +167,13 @@ class MultiToken {
   // currently held.
   template <typename T, EnableIfIsSupportedToken<T> = 0>
   static constexpr Tag IndexOf() {
-    return static_cast<Tag>(
-        absl::variant<IndexOfHelper<Tokens>...>(IndexOfHelper<T>()).index());
+    return static_cast<Tag>(base::VariantIndexOfType<Storage, T>());
   }
 
   // Equivalent to `value().ToString()`.
   std::string ToString() const;
 
  private:
-  // Helper struct for IndexOf(); a `base::TokenType` is never usable as a
-  // literal type but an IndexOfHelper<base::TokenType> is.
-  template <typename T>
-  struct IndexOfHelper {};
-
   Storage storage_;
 };
 

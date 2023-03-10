@@ -933,6 +933,7 @@ component("base") {
     "types/pass_key.h",
     "types/strong_alias.h",
     "types/token_type.h",
+    "types/variant_util.h",
     "unguessable_token.cc",
     "unguessable_token.h",
     "value_iterators.cc",
@@ -3402,6 +3403,7 @@ test("base_unittests") {
     "types/pass_key_unittest.cc",
     "types/strong_alias_unittest.cc",
     "types/token_type_unittest.cc",
+    "types/variant_util_unittest.cc",
     "unguessable_token_unittest.cc",
     "value_iterators_unittest.cc",
     "values_unittest.cc",
@@ -4037,6 +4039,7 @@ if (enable_nocompile_tests) {
       "thread_annotations_unittest.nc",
       "traits_bag_unittest.nc",
       "types/pass_key_unittest.nc",
+      "types/variant_util_unittest.nc",
       "values_unittest.nc",
     ]
 
