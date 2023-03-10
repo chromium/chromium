@@ -112,6 +112,31 @@ def get_tsc_paths(board):
     }
 
 
+def make_mojom_symlink(board):
+    cca_root = os.getcwd()
+    root_dir = get_chromium_root()
+    target_gen_dir = os.path.join(root_dir, f'out_{board}/Release/gen')
+    src_relative_dir = os.path.relpath(cca_root, root_dir)
+    generated_mojom_dir = os.path.join(target_gen_dir, src_relative_dir,
+                                       'mojom')
+    target = os.path.join(cca_root, 'mojom')
+
+    if os.path.islink(target):
+        if os.readlink(target) != generated_mojom_dir:
+            # There's a symlink here that's not pointing to the correct path.
+            # This might happen when changing board. Remove the symlink and
+            # recreate in this case.
+            os.remove(target)
+            os.symlink(generated_mojom_dir, target)
+    elif os.path.exists(target):
+        # Some other things are at the mojom path. cca.py won't work in
+        # this case.
+        raise Exception("resources/mojom exists but not a symlink."
+                        " Please remove it and try again.")
+    else:
+        os.symlink(generated_mojom_dir, target)
+
+
 def generate_tsconfig(board):
     cca_root = os.getcwd()
     # TODO(pihsun): This needs to be in sync with BUILD.gn, have some heuristic
@@ -120,17 +145,14 @@ def generate_tsconfig(board):
     root_dir = get_chromium_root()
     common_definitions = os.path.join(root_dir, 'tools/typescript/definitions')
 
-    target_gen_dir = os.path.join(root_dir, f'out_{board}/Release/gen')
-    src_relative_dir = os.path.relpath(cca_root, root_dir)
-    webui_dir = os.path.join(target_gen_dir, src_relative_dir)
-
     with open(os.path.join(cca_root, 'tsconfig_base.json')) as f:
         tsconfig = json.load(f)
 
+    make_mojom_symlink(board)
+
     tsconfig['files'] = glob.glob('js/**/*.ts', recursive=True)
     tsconfig['files'].append(os.path.join(common_definitions, 'pending.d.ts'))
-    tsconfig['compilerOptions']['rootDir'] = root_dir
-    tsconfig['compilerOptions']['rootDirs'] = [cca_root, webui_dir]
+    tsconfig['compilerOptions']['rootDir'] = cca_root
     tsconfig['compilerOptions']['noEmit'] = True
     tsconfig['compilerOptions']['paths'] = get_tsc_paths(board)
     # TODO(b:269971867): Remove this once we have type definition for ffmpeg.js
@@ -150,8 +172,7 @@ def deploy(args):
     cca_root = os.getcwd()
 
     os.makedirs(DEPLOY_OUTPUT_TEMP_DIR, exist_ok=True)
-    src_relative_dir = os.path.relpath(cca_root, root_dir)
-    js_out_dir = os.path.join(DEPLOY_OUTPUT_TEMP_DIR, src_relative_dir, 'js')
+    js_out_dir = os.path.join(DEPLOY_OUTPUT_TEMP_DIR, 'js')
 
     generate_tsconfig(args.board)
 
