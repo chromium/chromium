@@ -929,7 +929,13 @@ NSString* SerializedValue(const base::Value* value) {
            syncer::SyncService::TransportState::ACTIVE;
   });
   if (!success) {
-    NSString* errorDescription = @"Sync feature must be active";
+    ChromeBrowserState* browser_state =
+        chrome_test_util::GetOriginalBrowserState();
+    NSString* errorDescription = [NSString
+        stringWithFormat:
+            @"Sync transport must be active, but actual state was: %d",
+            (int)SyncServiceFactory::GetForBrowserState(browser_state)
+                ->GetTransportState()];
     return testing::NSErrorWithLocalizedDescription(errorDescription);
   }
   return nil;

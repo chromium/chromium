@@ -103,21 +103,23 @@ void TearDownFakeSyncServer() {
 }
 
 void StartSync() {
-  DCHECK(!IsSyncEngineInitialized());
   ChromeBrowserState* browser_state =
       chrome_test_util::GetOriginalBrowserState();
   SyncSetupService* sync_setup_service =
       SyncSetupServiceFactory::GetForBrowserState(browser_state);
+  DCHECK(!sync_setup_service->IsSyncRequested());
   sync_setup_service->SetSyncEnabled(true);
+  sync_setup_service->CommitSyncChanges();
 }
 
 void StopSync() {
-  DCHECK(IsSyncEngineInitialized());
   ChromeBrowserState* browser_state =
       chrome_test_util::GetOriginalBrowserState();
   SyncSetupService* sync_setup_service =
       SyncSetupServiceFactory::GetForBrowserState(browser_state);
+  DCHECK(sync_setup_service->IsSyncRequested());
   sync_setup_service->SetSyncEnabled(false);
+  sync_setup_service->CommitSyncChanges();
 }
 
 void TriggerSyncCycle(syncer::ModelType type) {
