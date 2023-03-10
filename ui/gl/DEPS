@@ -1,6 +1,5 @@
 include_rules = [
   "+cc/base",
-  "+components/crash/core/common/crash_key.h",
   "+components/metal_util/types.h",
   "+components/viz/common/resources/resource_format.h",
   "+mojo/public/cpp/bindings",

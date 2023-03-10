@@ -336,7 +336,6 @@ component("gl") {
       "/DELAYLOAD:dxgi.dll",
     ]
     deps += [
-      "//components/crash/core/common",
       "//media/base/win:media_foundation_util",
       "//ui/gfx/mojom:dxgi_info",
     ]
