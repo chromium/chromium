@@ -1011,6 +1011,41 @@ class TestGTestLogParserTests(unittest.TestCase):
         covered = False
     self.assertTrue(disabled_tests_covered)
 
+  def testParseCompiledFileLocationWithCustomPath(self):
+    parser = gtest_utils.GTestLogParser()
+    for line in TEST_DATA_COMPILED_FILE.splitlines():
+      parser.ProcessLine(line)
+    parser.Finalize()
+    self.assertEqual(COMPILED_FILE_PATH, parser.compiled_tests_file_path)
+
+    # Just a hack so that we can point the compiled file path to right place
+    parser.compiled_tests_file_path = os.path.join(
+        os.getcwd(), parser.compiled_tests_file_path)
+
+    host_file_path = parser.compiled_tests_file_path
+    # setting it to None to make sure overriding the path arg really works
+    parser.compiled_tests_file_path = None
+
+    parser.ParseAndPopulateTestResultLocations(TEST_REPO, False, host_file_path)
+    collection = parser.GetResultCollection()
+
+    covered = False
+    for test_result in collection.test_results:
+      if test_result.name == 'test1.test_method1':
+        covered = True
+        self.assertEqual(TestStatus.PASS, test_result.status)
+        test_loc = {'repo': TEST_REPO, 'fileName': '//random/path/test1.cc'}
+        self.assertEqual(test_loc, test_result.test_loc)
+    self.assertTrue(covered)
+
+    disabled_tests_covered = True
+    # disabled tests shouldn't be included in the result
+    # because output_disabled_tests is false
+    for test_result in collection.test_results:
+      if test_result.name == 'test2.DISABLED_test_method1':
+        covered = False
+    self.assertTrue(disabled_tests_covered)
+
   def testParseCompiledFileLocationOutputDisabledTests(self):
     parser = gtest_utils.GTestLogParser()
     for line in TEST_DATA_COMPILED_FILE.splitlines():

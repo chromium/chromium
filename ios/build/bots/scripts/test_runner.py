@@ -588,11 +588,26 @@ class TestRunner(object):
       # figure out a way to identify test repo info depending on the test suite.
       parser.ParseAndPopulateTestResultLocations(DEFAULT_TEST_REPO,
                                                  self.output_disabled_tests)
+    elif isinstance(self, DeviceTestRunner):
+      # Pull the file from device first before parsing.
+      if (parser.compiled_tests_file_path != None):
+        LOGGER.info('Pulling test location file from iOS device Documents...')
+        file_name = os.path.split(parser.compiled_tests_file_path)[1]
+        pull_cmd = [
+            'idevicefs', '--udid', self.udid, 'pull',
+            '@%s/Documents/%s' % (self.cfbundleid, file_name), self.out_dir
+        ]
+        print_process_output(self.start_proc(pull_cmd))
+        host_tests_file_path = os.path.join(self.out_dir, file_name)
+        parser.ParseAndPopulateTestResultLocations(DEFAULT_TEST_REPO,
+                                                   self.output_disabled_tests,
+                                                   host_tests_file_path)
+      else:
+        LOGGER.warning('No compiled test files found in documents dir...')
+
     else:
-      # TODO(crbug.com/1091345): Pull the file from device first before parsing.
-      LOGGER.warning(
-          'Cannot populate test locations because it is not yet supported' +
-          'on device tests yet...')
+      LOGGER.warning('Test location reporting is not yet supported on %s',
+                     type(self))
 
     return parser.GetResultCollection()
 

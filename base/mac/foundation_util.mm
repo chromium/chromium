@@ -148,6 +148,14 @@ FilePath GetUserLibraryPath() {
   return user_library_path;
 }
 
+FilePath GetUserDocumentPath() {
+  FilePath user_document_path;
+  if (!GetUserDirectory(NSDocumentDirectory, &user_document_path)) {
+    DLOG(WARNING) << "Could not get user document path";
+  }
+  return user_document_path;
+}
+
 // Takes a path to an (executable) binary and tries to provide the path to an
 // application bundle containing it. It takes the outermost bundle that it can
 // find (so for "/Foo/Bar.app/.../Baz.app/..." it produces "/Foo/Bar.app").
