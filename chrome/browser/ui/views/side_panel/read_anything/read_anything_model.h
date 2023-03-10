@@ -107,6 +107,9 @@ class ReadAnythingColorsModel : public ReadAnythingMenuModel {
     // toolbar.
     ui::ColorId separator_color_id;
 
+    // The color of the dropdown menu, used for the combobox menu model.
+    ui::ColorId dropdown_color_id;
+
     // The enum value used to log this theme.
     ReadAnythingColorsModel::ReadAnythingColor logging_value;
   };
@@ -217,6 +220,7 @@ class ReadAnythingModel {
         ui::ColorId foreground_color_id,
         ui::ColorId background_color_id,
         ui::ColorId separator_color_id,
+        ui::ColorId dropdown_color_id,
         read_anything::mojom::LineSpacing line_spacing,
         read_anything::mojom::LetterSpacing letter_spacing) = 0;
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -281,7 +285,10 @@ class ReadAnythingModel {
   std::string font_name_ = string_constants::kReadAnythingDefaultFontName;
   ui::ColorId foreground_color_id_ = kColorReadAnythingForeground;
   ui::ColorId background_color_id_ = kColorReadAnythingBackground;
+
+  // Additional theme colors.
   ui::ColorId separator_color_id_ = kColorReadAnythingSeparator;
+  ui::ColorId dropdown_color_id_ = kColorReadAnythingDropdownBackground;
 
   // A scale multiplier for font size (internal use only, not shown to user).
   float font_scale_ = kReadAnythingDefaultFontScale;

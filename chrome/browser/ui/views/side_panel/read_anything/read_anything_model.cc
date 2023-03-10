@@ -76,6 +76,7 @@ void ReadAnythingModel::Init(const std::string& font_name,
   foreground_color_id_ = initial_colors.foreground_color_id;
   background_color_id_ = initial_colors.background_color_id;
   separator_color_id_ = initial_colors.separator_color_id;
+  dropdown_color_id_ = initial_colors.dropdown_color_id;
 
   line_spacing_ = line_spacing_model_->GetLineSpacingAt(
       line_spacing_model_->GetSelectedIndex().value());
@@ -113,6 +114,7 @@ void ReadAnythingModel::SetSelectedColorsByIndex(size_t new_index) {
   foreground_color_id_ = new_colors.foreground_color_id;
   background_color_id_ = new_colors.background_color_id;
   separator_color_id_ = new_colors.separator_color_id;
+  dropdown_color_id_ = new_colors.dropdown_color_id;
 
   NotifyThemeChanged();
 }
@@ -189,9 +191,10 @@ void ReadAnythingModel::IncreaseTextSize() {
 
 void ReadAnythingModel::NotifyThemeChanged() {
   for (Observer& obs : observers_) {
-    obs.OnReadAnythingThemeChanged(
-        font_name_, font_scale_, foreground_color_id_, background_color_id_,
-        separator_color_id_, line_spacing_, letter_spacing_);
+    obs.OnReadAnythingThemeChanged(font_name_, font_scale_,
+                                   foreground_color_id_, background_color_id_,
+                                   separator_color_id_, dropdown_color_id_,
+                                   line_spacing_, letter_spacing_);
   }
 }
 
@@ -283,6 +286,7 @@ ReadAnythingColorsModel::ReadAnythingColorsModel() {
       kColorReadAnythingForeground,
       kColorReadAnythingBackground,
       kColorReadAnythingSeparator,
+      kColorReadAnythingDropdownBackground,
       ReadAnythingColor::kDefault};
 
   ColorInfo kLightColors = {
@@ -291,6 +295,7 @@ ReadAnythingColorsModel::ReadAnythingColorsModel() {
       kColorReadAnythingForegroundLight,
       kColorReadAnythingBackgroundLight,
       kColorReadAnythingSeparatorLight,
+      kColorReadAnythingDropdownBackgroundLight,
       ReadAnythingColor::kLight};
 
   ColorInfo kDarkColors = {
@@ -299,6 +304,7 @@ ReadAnythingColorsModel::ReadAnythingColorsModel() {
       kColorReadAnythingForegroundDark,
       kColorReadAnythingBackgroundDark,
       kColorReadAnythingSeparatorDark,
+      kColorReadAnythingDropdownBackgroundDark,
       ReadAnythingColor::kDark};
 
   ColorInfo kYellowColors = {
@@ -307,6 +313,7 @@ ReadAnythingColorsModel::ReadAnythingColorsModel() {
       kColorReadAnythingForegroundYellow,
       kColorReadAnythingBackgroundYellow,
       kColorReadAnythingSeparatorYellow,
+      kColorReadAnythingDropdownBackgroundYellow,
       ReadAnythingColor::kYellow};
 
   ColorInfo kBlueColors = {
@@ -315,6 +322,7 @@ ReadAnythingColorsModel::ReadAnythingColorsModel() {
       kColorReadAnythingForegroundBlue,
       kColorReadAnythingBackgroundBlue,
       kColorReadAnythingSeparatorBlue,
+      kColorReadAnythingDropdownBackgroundBlue,
       ReadAnythingColor::kBlue};
 
   colors_choices_.emplace_back(kDefaultColors);

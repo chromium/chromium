@@ -678,6 +678,13 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorReadAnythingSeparatorYellow] = ui::PickGoogleColor(
       kColorReadAnythingForegroundLight, kColorReadAnythingBackgroundYellow,
       color_utils::kMinimumVisibleContrastRatio);
+  mixer[kColorReadAnythingDropdownBackground] = {
+      dark_mode ? kColorReadAnythingDropdownBackgroundDark
+                : kColorReadAnythingDropdownBackgroundLight};
+  mixer[kColorReadAnythingDropdownBackgroundBlue] = {gfx::kGoogleBlue100};
+  mixer[kColorReadAnythingDropdownBackgroundDark] = {gfx::kGoogleGrey900};
+  mixer[kColorReadAnythingDropdownBackgroundLight] = {SK_ColorWHITE};
+  mixer[kColorReadAnythingDropdownBackgroundYellow] = {gfx::kGoogleYellow050};
 
   // Apply high contrast recipes if necessary.
   if (!ShouldApplyHighContrastColors(key)) {
