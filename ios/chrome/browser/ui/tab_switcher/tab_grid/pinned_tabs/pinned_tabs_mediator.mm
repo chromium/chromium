@@ -346,6 +346,8 @@ NSArray* CreatePinnedTabConsumerItems(WebStateList* web_state_list) {
 #pragma mark - TabCollectionCommands
 
 - (void)selectItemWithID:(NSString*)itemID {
+  base::RecordAction(base::UserMetricsAction("MobileTabGridPinnedTabSelected"));
+
   int index = GetTabIndex(self.webStateList, itemID, /*pinned=*/YES);
   WebStateList* itemWebStateList = self.webStateList;
 
@@ -366,8 +368,6 @@ NSArray* CreatePinnedTabConsumerItems(WebStateList* web_state_list) {
         base::UserMetricsAction("MobileTabGridMoveToExistingTab"));
   }
 
-  // TODO(crbug.com/1382015): Record some "pinned tabs" related metrics and
-  // check if "LogPriceDropMetrics" method needs be added.
   itemWebStateList->ActivateWebStateAt(index);
 }
 

@@ -21358,6 +21358,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileTabGridPinnedTabSelected">
+  <owner>ewannpv@chromium.org</owner>
+  <owner>pakzhygitov@google.com</owner>
+  <description>
+    User selected a tab in the iOS tab grid pinned tabs section.
+  </description>
+</action>
+
 <action name="MobileTabGridReordered">
   <owner>edchin@chromium.org</owner>
   <owner>marq@chromium.org</owner>
