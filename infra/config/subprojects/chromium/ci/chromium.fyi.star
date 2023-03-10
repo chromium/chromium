@@ -898,7 +898,7 @@ fyi_ios_builder(
         ),
     ),
     builderless = False,
-    os = os.MAC_12,
+    os = os.MAC_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "mac",
     ),
@@ -2130,6 +2130,7 @@ fyi_ios_builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
+    cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "iOS",
         short_name = "ios-blk",
@@ -2178,7 +2179,7 @@ fyi_ios_builder(
             target_platform = builder_config.target_platform.IOS,
         ),
     ),
-    os = os.MAC_12,
+    os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "cronet",

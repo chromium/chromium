@@ -194,6 +194,7 @@
     "gn_args": {
       "enable_run_ios_unittests_with_xctest": true,
       "is_debug": true,
+      "target_cpu": "arm64",
       "target_environment": "simulator",
       "target_os": "ios",
       "use_blink": true
