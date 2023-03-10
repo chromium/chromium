@@ -7,11 +7,12 @@
 namespace apps {
 
 PromiseAppPtr PromiseApp::Clone() const {
-  auto app = std::make_unique<PromiseApp>(package_id);
+  auto promise_app = std::make_unique<PromiseApp>(package_id);
   if (progress.has_value()) {
-    app->progress = progress;
+    promise_app->progress = progress;
   }
-  return app;
+  promise_app->status = status;
+  return promise_app;
 }
 
 }  // namespace apps
