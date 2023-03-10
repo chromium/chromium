@@ -765,7 +765,7 @@ group("gn_all") {
   }
 
   if ((is_linux && !is_castos) || is_chromeos ||
-      ((is_win || is_mac) && use_fuzzing_engine)) {
+      ((is_win || is_mac) && use_libfuzzer)) {
     deps += [
       "//testing/libfuzzer/fuzzers",
       "//third_party/freetype-testing:fuzzers",

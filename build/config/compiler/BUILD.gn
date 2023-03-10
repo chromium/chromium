@@ -1777,8 +1777,8 @@ config("chromium_code") {
     ]
 
     # TODO(thakis): Enable this more often, https://crbug.com/346399
-    # use_fuzzing_engine_with_lpm: https://crbug.com/1063180
-    if ((!is_nacl || is_nacl_saigo) && !use_fuzzing_engine_with_lpm) {
+    # use_libfuzzer: https://crbug.com/1063180
+    if ((!is_nacl || is_nacl_saigo) && !use_libfuzzer) {
       cflags += [ "-Wunreachable-code-aggressive" ]
     }
 

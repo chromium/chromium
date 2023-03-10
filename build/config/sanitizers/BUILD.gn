@@ -53,12 +53,6 @@ group("deps") {
       public_deps = [ ":asan_runtime_bundle_data" ]
     }
   }
-  if (use_centipede) {
-    # For executables which aren't actual fuzzers, we need stubs for
-    # the sanitizer coverage symbols, because we'll still be generating
-    # .o files which depend on them.
-    deps += [ "//third_party/centipede:centipede_weak_sancov_stubs" ]
-  }
 }
 
 assert(!(is_win && is_asan && current_cpu == "x86"),
