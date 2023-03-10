@@ -147,11 +147,7 @@
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
   if ([self.browserEditMenuHandler canPerformChromeAction:action
                                                withSender:sender]) {
-    // This should never happen on normal edit menu usage.
-    // If this returned YES, targetForAction should have redirected the
-    // action to self.browserEditMenuHandler.
-    NOTREACHED();
-    return NO;
+    return YES;
   }
   return [super canPerformAction:action withSender:sender];
 }
@@ -162,6 +158,15 @@
     return self.browserEditMenuHandler;
   }
   return [super targetForAction:action withSender:sender];
+}
+
+#pragma mark - Forwards actions if they are called directly
+
+- (id)forwardingTargetForSelector:(SEL)aSelector {
+  if ([self.browserEditMenuHandler respondsToSelector:aSelector]) {
+    return self.browserEditMenuHandler;
+  }
+  return [super forwardingTargetForSelector:aSelector];
 }
 
 #pragma mark - Private
