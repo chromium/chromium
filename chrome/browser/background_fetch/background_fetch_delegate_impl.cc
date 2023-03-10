@@ -224,6 +224,7 @@ void BackgroundFetchDelegateImpl::OnJobDetailsCreated(
   UiState& ui_state = ui_state_map_[job_id];
   offline_items_collection::OfflineItem offline_item(
       offline_items_collection::ContentId(provider_namespace_, job_id));
+  offline_item.creation_time = base::Time::Now();
   offline_item.is_off_the_record = profile_->IsOffTheRecord();
 #if BUILDFLAG(IS_ANDROID)
   if (profile_->IsOffTheRecord())
