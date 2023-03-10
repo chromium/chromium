@@ -970,19 +970,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SessionRestore.RestoredTab.TimeSinceActive" units="ms"
-    expires_after="M85">
-  <owner>chrisha@chromium.org</owner>
-  <summary>
-    The time since a restored tab was last active. This is the cumulative amount
-    of time that has passed since the tab was last visible. Time accrues while a
-    browser is active and the tab remains inactive. If the tab is restored and
-    remains inactive in a subsequent browsing session the time continues to
-    accrue. Visible tabs report a value of 0 for this. This is recorded at the
-    moment the tab is restored during a session restore.
-  </summary>
-</histogram>
-
 <histogram name="SessionRestore.UnrecoverableWriteErrorCount"
     units="operations" expires_after="2022-08-07">
   <owner>sky@chromium.org</owner>

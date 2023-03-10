@@ -154,10 +154,6 @@ class SessionRestoreStatsCollector::StatsReportingDelegate {
 
   // Called when TabLoader has completed its work.
   virtual void ReportTabLoaderStats(const TabLoaderStats& tab_loader_stats) = 0;
-
-  // Called when a tab starts being tracked. Logs the relative time since last
-  // use of the tab.
-  virtual void ReportTabTimeSinceActive(base::TimeDelta elapsed) = 0;
 };
 
 // The default reporting delegate, which reports statistics via UMA.
@@ -174,7 +170,6 @@ class SessionRestoreStatsCollector::UmaStatsReportingDelegate
 
   // StatsReportingDelegate:
   void ReportTabLoaderStats(const TabLoaderStats& tab_loader_stats) override;
-  void ReportTabTimeSinceActive(base::TimeDelta elapsed) override;
 };
 
 #endif  // CHROME_BROWSER_SESSIONS_SESSION_RESTORE_STATS_COLLECTOR_H_

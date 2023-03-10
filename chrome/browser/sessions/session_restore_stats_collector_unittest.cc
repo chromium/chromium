@@ -34,8 +34,7 @@ class MockStatsReportingDelegate : public StatsReportingDelegate {
  public:
   MockStatsReportingDelegate()
       : report_tab_loader_stats_call_count_(0u),
-        report_stats_collector_death_call_count_(0u),
-        report_tab_time_since_active_call_count_(0u) {}
+        report_stats_collector_death_call_count_(0u) {}
 
   MockStatsReportingDelegate(const MockStatsReportingDelegate&) = delete;
   MockStatsReportingDelegate& operator=(const MockStatsReportingDelegate&) =
@@ -46,10 +45,6 @@ class MockStatsReportingDelegate : public StatsReportingDelegate {
   void ReportTabLoaderStats(const TabLoaderStats& stats) override {
     report_tab_loader_stats_call_count_++;
     tab_loader_stats_ = stats;
-  }
-
-  void ReportTabTimeSinceActive(base::TimeDelta elapsed) override {
-    report_tab_time_since_active_call_count_++;
   }
 
   // This is not part of the StatsReportingDelegate, but an added function that
@@ -71,19 +66,12 @@ class MockStatsReportingDelegate : public StatsReportingDelegate {
     EXPECT_EQ(tab_loader_stats_.tab_first_paint_reason, finish_reason);
   }
 
-  void ExpectReportTabTimeSinceActiveCalled(size_t count) {
-    EXPECT_LE(count, report_tab_time_since_active_call_count_);
-    report_tab_time_since_active_call_count_ -= count;
-  }
-
   void EnsureNoUnexpectedCalls() {
     EXPECT_EQ(0u, report_tab_loader_stats_call_count_);
     EXPECT_EQ(0u, report_stats_collector_death_call_count_);
-    EXPECT_EQ(0u, report_tab_time_since_active_call_count_);
 
     report_tab_loader_stats_call_count_ = 0u;
     report_stats_collector_death_call_count_ = 0u;
-    report_tab_time_since_active_call_count_ = 0u;
     tab_loader_stats_ = TabLoaderStats();
   }
 
@@ -95,7 +83,6 @@ class MockStatsReportingDelegate : public StatsReportingDelegate {
  private:
   size_t report_tab_loader_stats_call_count_;
   size_t report_stats_collector_death_call_count_;
-  size_t report_tab_time_since_active_call_count_;
   TabLoaderStats tab_loader_stats_;
 };
 
@@ -122,10 +109,6 @@ class PassthroughStatsReportingDelegate : public StatsReportingDelegate {
 
   void ReportTabLoaderStats(const TabLoaderStats& tab_loader_stats) override {
     reporting_delegate_->ReportTabLoaderStats(tab_loader_stats);
-  }
-
-  void ReportTabTimeSinceActive(base::TimeDelta elapsed) override {
-    reporting_delegate_->ReportTabTimeSinceActive(elapsed);
   }
 
  private:
@@ -249,7 +232,6 @@ TEST_F(SessionRestoreStatsCollectorTest, MultipleTabsLoadSerially) {
   CreateRestoredTab(false);
   CreateRestoredTab(false);
   stats_collector_->TrackTabs(restored_tabs_);
-  mock_reporting_delegate.ExpectReportTabTimeSinceActiveCalled(3);
   mock_reporting_delegate.EnsureNoUnexpectedCalls();
   // Foreground tab paints then finishes loading.
   Tick();  // 1ms.
@@ -269,7 +251,6 @@ TEST_F(SessionRestoreStatsCollectorTest, ForegroundTabOccluded) {
 
   CreateRestoredTab(/*is_active=*/true);
   stats_collector_->TrackTabs(restored_tabs_);
-  mock_reporting_delegate.ExpectReportTabTimeSinceActiveCalled(1);
   mock_reporting_delegate.EnsureNoUnexpectedCalls();
   Tick();  // 1ms.
 
@@ -302,7 +283,6 @@ TEST_F(SessionRestoreStatsCollectorTest, FirstOfTwoTabsOccluded) {
   CreateRestoredTab(/*is_active=*/true);
   CreateRestoredTab(/*is_active=*/true);
   stats_collector_->TrackTabs(restored_tabs_);
-  mock_reporting_delegate.ExpectReportTabTimeSinceActiveCalled(2);
   mock_reporting_delegate.EnsureNoUnexpectedCalls();
   Tick();  // 1ms.
 
@@ -337,7 +317,6 @@ TEST_F(SessionRestoreStatsCollectorTest, LoadingTabDestroyedBeforePaint) {
 
   CreateRestoredTab(true);
   stats_collector_->TrackTabs(restored_tabs_);
-  mock_reporting_delegate.ExpectReportTabTimeSinceActiveCalled(1);
   mock_reporting_delegate.EnsureNoUnexpectedCalls();
 
   // Destroy the tab. Expect all timings to be zero.
@@ -354,7 +333,6 @@ TEST_F(SessionRestoreStatsCollectorTest, FocusSwitchNoForegroundPaintOrLoad) {
 
   CreateRestoredTab(true);
   stats_collector_->TrackTabs(restored_tabs_);
-  mock_reporting_delegate.ExpectReportTabTimeSinceActiveCalled(1);
   mock_reporting_delegate.EnsureNoUnexpectedCalls();
 
   // Create another tab and make it the foreground tab. This tab is not actually
