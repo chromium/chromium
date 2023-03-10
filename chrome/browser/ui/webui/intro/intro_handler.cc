@@ -138,11 +138,7 @@ class PolicyStoreObserver : public policy::CloudPolicyStore::Observer {
     std::string managed_device_disclaimer;
     if (state == PolicyStoreState::kSuccess ||
         state == PolicyStoreState::kSuccessAlreadyLoaded) {
-      // TODO(crbug.com/1409028): Remove `.value_or` when we modify
-      // `GetDeviceManagerIdentity()` to return an empty string instead of a
-      // nullopt when we know that the device is managed.
-      absl::optional<std::string> manager =
-          chrome::GetDeviceManagerIdentity().value_or(std::string());
+      absl::optional<std::string> manager = chrome::GetDeviceManagerIdentity();
       managed_device_disclaimer =
           manager->empty()
               ? l10n_util::GetStringUTF8(IDS_FRE_MANAGED_DESCRIPTION)

@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/signin/signin_features.h"
@@ -78,9 +79,8 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
   };
   source->AddLocalizedStrings(localized_strings);
 
-  // TODO(crbug.com/1409028): Replace this function by a call to
-  // chrome::GetDeviceManagerIdentity()
-  const bool is_device_managed = chrome::ShouldDisplayManagedUi(profile);
+  const bool is_device_managed =
+      policy::ManagementServiceFactory::GetForPlatform()->IsManaged();
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   source->AddBoolean("isDeviceManaged", is_device_managed);
 
