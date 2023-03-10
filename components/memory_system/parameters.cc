@@ -15,4 +15,9 @@ ProfilingClientParameters::ProfilingClientParameters(
     metrics::CallStackProfileParams::Process process_type)
     : channel(channel), process_type(process_type) {}
 
+DispatcherParameters::DispatcherParameters(
+    PoissonAllocationSamplerInclusion poisson_allocation_sampler_inclusion)
+    : poisson_allocation_sampler_inclusion(
+          poisson_allocation_sampler_inclusion) {}
+
 }  // namespace memory_system

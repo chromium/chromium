@@ -432,17 +432,7 @@ absl::optional<int> AwMainDelegate::PostEarlyInitialization(
     content::InitializeMojoCore();
   }
 
-  version_info::Channel channel = version_info::android::GetChannel();
-  const bool is_canary_dev = (channel == version_info::Channel::CANARY ||
-                              channel == version_info::Channel::DEV);
-  const std::string process_type =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kProcessType);
-  const bool gwp_asan_boost_sampling = is_canary_dev || is_browser_process;
-
-  memory_system::Initializer()
-      .SetGwpAsanParameters(gwp_asan_boost_sampling, process_type)
-      .Initialize(memory_system_);
+  InitializeMemorySystem(is_browser_process);
 
   return absl::nullopt;
 }
@@ -495,4 +485,26 @@ content::ContentRendererClient* AwMainDelegate::CreateContentRendererClient() {
   return content_renderer_client_.get();
 }
 
+void AwMainDelegate::InitializeMemorySystem(const bool is_browser_process) {
+  const version_info::Channel channel = version_info::android::GetChannel();
+  const bool is_canary_dev = (channel == version_info::Channel::CANARY ||
+                              channel == version_info::Channel::DEV);
+  const std::string process_type =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kProcessType);
+  const bool gwp_asan_boost_sampling = is_canary_dev || is_browser_process;
+
+  // Add PoissonAllocationSampler. On Android WebView we do not have obvious
+  // observers of PoissonAllocationSampler. Unfortunately, some potential
+  // candidates are still linked and may sneak in through hidden paths.
+  // Therefore, we include PoissonAllocationSampler unconditionally.
+  // TODO(crbug.com/1411454): Which observers of PoissonAllocationSampler are
+  // really in use on Android WebView? Can we add the sampler conditionally or
+  // remove it completely?
+  memory_system::Initializer()
+      .SetGwpAsanParameters(gwp_asan_boost_sampling, process_type)
+      .SetDispatcherParameters(memory_system::DispatcherParameters::
+                                   PoissonAllocationSamplerInclusion::kEnforce)
+      .Initialize(memory_system_);
+}
 }  // namespace android_webview

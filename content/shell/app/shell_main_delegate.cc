@@ -364,9 +364,20 @@ absl::optional<int> ShellMainDelegate::PostEarlyInitialization(
     InitializeMojoCore();
   }
 
-  // Shell Delegate has GWP ASan as well as Profiling Client disabled.
-  // Consequently we provide no parameters but empty ones.
-  memory_system::Initializer().Initialize(memory_system_);
+  // ShellMainDelegate has GWP-ASan as well as Profiling Client disabled.
+  // Consequently, we provide no parameters for these two. The memory_system
+  // includes the PoissonAllocationSampler dynamically only if the Profiling
+  // Client is enabled. However, we are not sure if this is the only user of
+  // PoissonAllocationSampler in the ContentShell. Therefore, enforce inclusion
+  // at the moment.
+  //
+  // TODO(https://crbug.com/1411454): Clarify which users of
+  // PoissonAllocationSampler we have in the ContentShell. Do we really need to
+  // enforce it?
+  memory_system::Initializer()
+      .SetDispatcherParameters(memory_system::DispatcherParameters::
+                                   PoissonAllocationSamplerInclusion::kEnforce)
+      .Initialize(memory_system_);
 
   return absl::nullopt;
 }

@@ -36,6 +36,12 @@
 #include "components/services/heap_profiling/public/cpp/profiling_client.h"  // nogncheck
 #endif
 
+#if BUILDFLAG(USE_ALLOCATION_EVENT_DISPATCHER)
+#include "base/allocator/dispatcher/dispatcher.h"
+#include "base/allocator/dispatcher/initializer.h"
+#include "base/sampling_heap_profiler/poisson_allocation_sampler.h"
+#endif
+
 namespace memory_system {
 namespace {
 
@@ -55,25 +61,47 @@ struct MemorySystem::Impl {
   Impl();
   ~Impl();
 
-  void Initialize(const absl::optional<GwpAsanParameters>& gwp_asan_parameters,
-                  const absl::optional<ProfilingClientParameters>&
-                      profiling_client_parameters);
+  void Initialize(
+      const absl::optional<GwpAsanParameters>& gwp_asan_parameters,
+      const absl::optional<ProfilingClientParameters>&
+          profiling_client_parameters,
+      const absl::optional<DispatcherParameters>& dispatcher_parameters);
 
  private:
   // Initialization functions for the various subsystems.
+
+  // Structure of information passed from one step to another.
+  struct InitializationData {
+#if HEAP_PROFILING_SUPPORTED
+    bool has_profiling_client_started = false;
+#endif
+  };
 
   // Initialize GWP-ASan with the given set of parameters.
   //
   // Initialization will be performed if support for GWP-ASan is compiled in. On
   // ChromeOs Crashpad must be enabled in addition.
-  void InitializeGwpASan(const GwpAsanParameters& gwp_asan_parameters);
+  void InitializeGwpASan(const GwpAsanParameters& gwp_asan_parameters,
+                         InitializationData& initialization_data);
 
   // Initialize HeapProfiler with the given set of parameters.
   void InitializeHeapProfiler(
-      const ProfilingClientParameters& profiling_client_parameters);
+      const ProfilingClientParameters& profiling_client_parameters,
+      InitializationData& initialization_data);
+
+  void InitializeDispatcher(const DispatcherParameters& dispatcher_parameters,
+                            InitializationData& initialization_data);
 
   // Has the allocator shim been initialized successfully?
   bool IsAllocatorShimInitialized();
+
+#if BUILDFLAG(USE_ALLOCATION_EVENT_DISPATCHER)
+  // Check if the the dispatcher should include the PoissonAllocationSampler as
+  // observer.
+  bool DispatcherIncludesPoissonAllocationSampler(
+      const DispatcherParameters& dispatcher_parameters,
+      const InitializationData& initialization_data);
+#endif
 
 #if HEAP_PROFILING_SUPPORTED
   std::unique_ptr<heap_profiling::HeapProfilerController>
@@ -108,17 +136,24 @@ MemorySystem::Impl::~Impl() = default;
 void MemorySystem::Impl::Initialize(
     const absl::optional<GwpAsanParameters>& gwp_asan_parameters,
     const absl::optional<ProfilingClientParameters>&
-        profiling_client_parameters) {
+        profiling_client_parameters,
+    const absl::optional<DispatcherParameters>& dispatcher_parameters) {
   if (!IsAllocatorShimInitialized()) {
     return;
   }
 
+  InitializationData initialization_data;
+
   if (gwp_asan_parameters) {
-    InitializeGwpASan(*gwp_asan_parameters);
+    InitializeGwpASan(*gwp_asan_parameters, initialization_data);
   }
 
   if (profiling_client_parameters) {
-    InitializeHeapProfiler(*profiling_client_parameters);
+    InitializeHeapProfiler(*profiling_client_parameters, initialization_data);
+  }
+
+  if (dispatcher_parameters) {
+    InitializeDispatcher(*dispatcher_parameters, initialization_data);
   }
 }
 
@@ -138,7 +173,8 @@ bool MemorySystem::Impl::IsAllocatorShimInitialized() {
 }
 
 void MemorySystem::Impl::InitializeGwpASan(
-    const GwpAsanParameters& gwp_asan_parameters) {
+    const GwpAsanParameters& gwp_asan_parameters,
+    InitializationData& initialization_data) {
 #if BUILDFLAG(ENABLE_GWP_ASAN)
   // GWP-ASAN requires crashpad to gather alloc/dealloc stack traces, which is
   // not always enabled on ChromeOS.
@@ -160,16 +196,65 @@ void MemorySystem::Impl::InitializeGwpASan(
 }
 
 void MemorySystem::Impl::InitializeHeapProfiler(
-    const ProfilingClientParameters& profiling_client_parameters) {
+    const ProfilingClientParameters& profiling_client_parameters,
+    InitializationData& initialization_data) {
 #if HEAP_PROFILING_SUPPORTED
   heap_profiler_controller_ =
       std::make_unique<heap_profiling::HeapProfilerController>(
           profiling_client_parameters.channel,
           profiling_client_parameters.process_type);
 
-  heap_profiler_controller_->StartIfEnabled();
+  initialization_data.has_profiling_client_started =
+      heap_profiler_controller_->StartIfEnabled();
 #endif
 }
+
+#if BUILDFLAG(USE_ALLOCATION_EVENT_DISPATCHER)
+
+bool MemorySystem::Impl::DispatcherIncludesPoissonAllocationSampler(
+    const DispatcherParameters& dispatcher_parameters,
+    const InitializationData& initialization_data) {
+  switch (dispatcher_parameters.poisson_allocation_sampler_inclusion) {
+    case DispatcherParameters::PoissonAllocationSamplerInclusion::kEnforce:
+      return true;
+    case DispatcherParameters::PoissonAllocationSamplerInclusion::kDynamic:
+#if HEAP_PROFILING_SUPPORTED
+      return initialization_data.has_profiling_client_started;
+#else
+      return false;
+#endif
+    case DispatcherParameters::PoissonAllocationSamplerInclusion::kIgnore:
+      return false;
+  }
+}
+
+void MemorySystem::Impl::InitializeDispatcher(
+    const DispatcherParameters& dispatcher_parameters,
+    InitializationData& initialization_data) {
+  // Include the PoissonAllocationSampler as an optional observer always, even
+  // if the inclusion parameter is |kEnforce|. If we distinguish between
+  // mandatory and optional, the nesting becomes a real mess once we add yet
+  // another observer. Adding the value this way should be fine.
+  const bool include_poisson_allocation_sampler =
+      DispatcherIncludesPoissonAllocationSampler(dispatcher_parameters,
+                                                 initialization_data);
+
+  auto* const poisson_allocation_sampler =
+      include_poisson_allocation_sampler ? base::PoissonAllocationSampler::Get()
+                                         : nullptr;
+
+  base::allocator::dispatcher::CreateInitializer()
+      .SetOptionalObservers(poisson_allocation_sampler)
+      .DoInitialize(base::allocator::dispatcher::Dispatcher::GetInstance());
+}
+
+#else  // BUILDFLAG(USE_ALLOCATION_EVENT_DISPATCHER)
+
+void MemorySystem::Impl::InitializeDispatcher(
+    const DispatcherParameters& dispatcher_parameters,
+    InitializationData& initialization_data) {}
+
+#endif  // BUILDFLAG(USE_ALLOCATION_EVENT_DISPATCHER)
 
 MemorySystem::MemorySystem() : impl_(std::make_unique<Impl>()) {}
 
@@ -178,8 +263,10 @@ MemorySystem::~MemorySystem() = default;
 void MemorySystem::Initialize(
     const absl::optional<GwpAsanParameters>& gwp_asan_parameters,
     const absl::optional<ProfilingClientParameters>&
-        profiling_client_parameters) {
-  impl_->Initialize(gwp_asan_parameters, profiling_client_parameters);
+        profiling_client_parameters,
+    const absl::optional<DispatcherParameters>& dispatcher_parameters) {
+  impl_->Initialize(gwp_asan_parameters, profiling_client_parameters,
+                    dispatcher_parameters);
 }
 
 }  // namespace memory_system

@@ -28,12 +28,16 @@ class Initializer {
   Initializer& SetProfilingClientParameters(
       version_info::Channel channel,
       metrics::CallStackProfileParams::Process process_type);
+  Initializer& SetDispatcherParameters(
+      DispatcherParameters::PoissonAllocationSamplerInclusion
+          poisson_allocation_sampler_inclusion);
 
   void Initialize(MemorySystem& memory_system) const;
 
  private:
   absl::optional<GwpAsanParameters> gwp_asan_parameters_;
   absl::optional<ProfilingClientParameters> profiling_client_parameters_;
+  absl::optional<DispatcherParameters> dispatcher_parameters_;
 };
 
 }  // namespace memory_system

@@ -24,8 +24,16 @@ Initializer& Initializer::SetProfilingClientParameters(
   return *this;
 }
 
+Initializer& Initializer::SetDispatcherParameters(
+    DispatcherParameters::PoissonAllocationSamplerInclusion
+        poisson_allocation_sampler_inclusion) {
+  dispatcher_parameters_.emplace(poisson_allocation_sampler_inclusion);
+  return *this;
+}
+
 void Initializer::Initialize(MemorySystem& memory_system) const {
-  memory_system.Initialize(gwp_asan_parameters_, profiling_client_parameters_);
+  memory_system.Initialize(gwp_asan_parameters_, profiling_client_parameters_,
+                           dispatcher_parameters_);
 }
 
 }  // namespace memory_system

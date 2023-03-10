@@ -52,6 +52,8 @@ class AwMainDelegate : public content::ContentMainDelegate {
   content::ContentGpuClient* CreateContentGpuClient() override;
   content::ContentRendererClient* CreateContentRendererClient() override;
 
+  void InitializeMemorySystem(const bool is_browser_process);
+
   // Responsible for creating a feature list from the seed. This object must
   // exist for the lifetime of the process as it contains the FieldTrialList
   // that can be queried for the state of experiments.

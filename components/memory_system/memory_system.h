@@ -11,6 +11,7 @@
 
 namespace memory_system {
 
+struct DispatcherParameters;
 struct GwpAsanParameters;
 struct ProfilingClientParameters;
 
@@ -23,9 +24,11 @@ class MemorySystem {
 
   // Initialize the memory system with the given parameters. If an empty
   // optional is given for a component, it will not be initialized.
-  void Initialize(const absl::optional<GwpAsanParameters>& gwp_asan_parameters,
-                  const absl::optional<ProfilingClientParameters>&
-                      profiling_client_parameters);
+  void Initialize(
+      const absl::optional<GwpAsanParameters>& gwp_asan_parameters,
+      const absl::optional<ProfilingClientParameters>&
+          profiling_client_parameters,
+      const absl::optional<DispatcherParameters>& dispatcher_parameters);
 
  private:
   struct Impl;

@@ -18,6 +18,8 @@ buildflag_header("buildflags") {
     "USE_ALLOCATOR_SHIM=$use_allocator_shim",
 
     "USE_PARTITION_ALLOC_AS_GWP_ASAN_STORE=$enable_backup_ref_ptr_support",
+
+    "USE_ALLOCATION_EVENT_DISPATCHER=$use_allocation_event_dispatcher",
   ]
 }
 

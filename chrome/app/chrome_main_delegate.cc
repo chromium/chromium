@@ -905,17 +905,9 @@ void ChromeMainDelegate::CommonEarlyInitialization() {
   base::PlatformThread::InitFeaturesPostFieldTrial();
 #endif
 
-  const version_info::Channel channel = chrome::GetChannel();
-  const bool is_canary_dev = (channel == version_info::Channel::CANARY ||
-                              channel == version_info::Channel::DEV);
-
-  const bool gwp_asan_boost_sampling = is_canary_dev || is_browser_process;
-
-  memory_system::Initializer()
-      .SetGwpAsanParameters(gwp_asan_boost_sampling, process_type)
-      .SetProfilingClientParameters(channel,
-                                    GetProfileParamsProcess(*command_line))
-      .Initialize(memory_system_);
+  // Start memory observation as early as possible so it can start recording
+  // memory allocations. This includes heap profiling.
+  InitializeMemorySystem();
 
   if (is_browser_process) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1751,4 +1743,24 @@ absl::optional<int> ChromeMainDelegate::PreBrowserMain() {
 
   // Do not interrupt startup.
   return absl::nullopt;
+}
+
+void ChromeMainDelegate::InitializeMemorySystem() {
+  const base::CommandLine* const command_line =
+      base::CommandLine::ForCurrentProcess();
+  const std::string process_type =
+      command_line->GetSwitchValueASCII(switches::kProcessType);
+  const bool is_browser_process = process_type.empty();
+  const version_info::Channel channel = chrome::GetChannel();
+  const bool is_canary_dev = (channel == version_info::Channel::CANARY ||
+                              channel == version_info::Channel::DEV);
+  const bool gwp_asan_boost_sampling = is_canary_dev || is_browser_process;
+
+  memory_system::Initializer()
+      .SetGwpAsanParameters(gwp_asan_boost_sampling, process_type)
+      .SetProfilingClientParameters(channel,
+                                    GetProfileParamsProcess(*command_line))
+      .SetDispatcherParameters(memory_system::DispatcherParameters::
+                                   PoissonAllocationSamplerInclusion::kEnforce)
+      .Initialize(memory_system_);
 }

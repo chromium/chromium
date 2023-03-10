@@ -46,7 +46,9 @@ class HeapProfilerController {
 
   // Starts periodic heap snapshot collection. Does nothing except record a
   // metric if heap profiling is disabled.
-  void StartIfEnabled();
+  // Returns true if heap profiling is enabled and was successfully started,
+  // false otherwise.
+  bool StartIfEnabled();
 
   // Uses the exact parameter values for the sampling interval and time between
   // samples, instead of a distribution around those values. This must be called
