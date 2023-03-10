@@ -126,8 +126,11 @@ class FormStructureRationalizerTest : public testing::Test {
 };
 
 FormStructureRationalizerTest::FormStructureRationalizerTest() {
-  scoped_features_.InitAndEnableFeature(
-      features::kAutofillRationalizeStreetAddressAndHouseNumber);
+  scoped_features_.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAutofillRationalizeStreetAddressAndHouseNumber,
+       features::kAutofillEnableSupportForPhoneNumberTrunkTypes},
+      /*disabled_features=*/{});
 }
 
 TEST_F(FormStructureRationalizerTest, ParseQueryResponse_RationalizeLoneField) {
@@ -276,6 +279,62 @@ TEST_F(FormStructureRationalizerTest, RationalizeStreetAddressAndHouseNumber) {
   EXPECT_THAT(GetTypes(form_structure),
               ElementsAre(NAME_FULL, ADDRESS_HOME_STREET_NAME,
                           ADDRESS_HOME_HOUSE_NUMBER));
+}
+
+// Tests that phone number trunk types are rationalized correctly.
+TEST_F(FormStructureRationalizerTest, RationalizePhoneNumberTrunkTypes) {
+  // Different phone number representations spanned over one or more fields,
+  // with incorrect and correct trunk-types.
+  const std::vector<ServerFieldType> kIncorrectTypes = {
+      PHONE_HOME_COUNTRY_CODE,
+      PHONE_HOME_CITY_AND_NUMBER,
+
+      PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX,
+
+      PHONE_HOME_COUNTRY_CODE,
+      PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX,
+      PHONE_HOME_NUMBER,
+
+      PHONE_HOME_CITY_CODE,
+      PHONE_HOME_NUMBER};
+  const std::vector<ServerFieldType> kCorrectTypes = {
+      PHONE_HOME_COUNTRY_CODE,
+      PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX,
+
+      PHONE_HOME_CITY_AND_NUMBER,
+
+      PHONE_HOME_COUNTRY_CODE,
+      PHONE_HOME_CITY_CODE,
+      PHONE_HOME_NUMBER,
+
+      PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX,
+      PHONE_HOME_NUMBER};
+
+  // Create a form contain fields corresponding to all the `kIncorrectTypes` and
+  // the `kCorrectTypes`. Expect that the `kIncorrectTypes` are changed to
+  // `kCorrectTypes` and that the `kCorrectTypes` remain as-is.
+  // Labels and field names are irrelevant.
+  std::vector<FieldTemplate> fields;
+  for (ServerFieldType type : kIncorrectTypes) {
+    fields.push_back({"", "", type});
+  }
+  for (ServerFieldType type : kCorrectTypes) {
+    fields.push_back({"", "", type});
+  }
+  auto [form, response_string] = CreateFormAndServerClassification(fields);
+  FormStructure form_structure(form);
+  std::vector<FormStructure*> forms = {&form_structure};
+  // Will call RationalizeFieldTypePredictions
+  FormStructure::ParseApiQueryResponse(response_string, forms,
+                                       test::GetEncodedSignatures(forms),
+                                       nullptr, nullptr);
+
+  // Expect `kCorrectTypes` twice.
+  std::vector<ServerFieldType> expected_types = kCorrectTypes;
+  expected_types.insert(expected_types.end(), kCorrectTypes.begin(),
+                        kCorrectTypes.end());
+  EXPECT_THAT(GetTypes(form_structure),
+              testing::ElementsAreArray(expected_types));
 }
 
 // Ensure that a tuple of (address-line1, house number) is rewritten to (street

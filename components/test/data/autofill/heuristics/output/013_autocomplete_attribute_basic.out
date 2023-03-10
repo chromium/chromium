@@ -45,8 +45,8 @@ HTML_TYPE_EMAIL | em |  |  | na_1
 UNKNOWN_TYPE | im |  |  | na_1
 HTML_TYPE_TEL | tt |  |  | na_1
 HTML_TYPE_TEL_COUNTRY_CODE | tc |  |  | na_1
-HTML_TYPE_TEL_NATIONAL | tn |  |  | na_1
-HTML_TYPE_TEL_AREA_CODE | ta |  |  | na_1
+PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX | tn |  |  | na_1
+PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX | ta |  |  | na_1
 HTML_TYPE_TEL_LOCAL | tl |  |  | na_1
 HTML_TYPE_TEL_LOCAL_PREFIX | tp |  |  | na_1
 HTML_TYPE_TEL_LOCAL_SUFFIX | ts |  |  | na_1
