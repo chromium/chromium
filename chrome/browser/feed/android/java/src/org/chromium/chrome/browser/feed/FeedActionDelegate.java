@@ -53,12 +53,6 @@ public interface FeedActionDelegate {
     default void addToReadingList(String title, String url) {}
 
     /**
-     * Opens the Crow page for the url.
-     * @param url url of the page.
-     */
-    default void openCrow(String url) {}
-
-    /**
      * Opens a specific WebFeed by name.
      * @param webFeedName the relevant web feed name.
      */

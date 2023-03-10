@@ -120,12 +120,6 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
     }
 
     @Override
-    public void openCrow(String url) {
-        // No-op; deprecated.
-        // TODO(crbug/1406011): Remove from the interface.
-    }
-
-    @Override
     public void openWebFeed(String webFeedName) {
         if (!FeatureList.isInitialized()
                 || !ChromeFeatureList.isEnabled(ChromeFeatureList.CORMORANT)) {
