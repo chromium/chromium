@@ -55,24 +55,26 @@ void WindowErrorJavaScriptFeature::ScriptMessageReceived(
     const ScriptMessage& script_message) {
   ErrorDetails details;
 
-  if (!script_message.body() || !script_message.body()->is_dict()) {
+  const base::Value::Dict* script_dict =
+      script_message.body() ? script_message.body()->GetIfDict() : nullptr;
+  if (!script_dict) {
     return;
   }
 
-  std::string* filename =
-      script_message.body()->FindStringKey(kScriptMessageResponseFilenameKey);
+  const std::string* filename =
+      script_dict->FindString(kScriptMessageResponseFilenameKey);
   if (filename) {
     details.filename = base::SysUTF8ToNSString(*filename);
   }
 
   auto line_number =
-      script_message.body()->FindDoubleKey(kScriptMessageResponseLineNumberKey);
+      script_dict->FindDouble(kScriptMessageResponseLineNumberKey);
   if (line_number) {
     details.line_number = static_cast<int>(line_number.value());
   }
 
-  std::string* log_message =
-      script_message.body()->FindStringKey(kScriptMessageResponseMessageKey);
+  const std::string* log_message =
+      script_dict->FindString(kScriptMessageResponseMessageKey);
   if (log_message) {
     details.message = base::SysUTF8ToNSString(*log_message);
   }

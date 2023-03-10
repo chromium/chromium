@@ -74,12 +74,12 @@ void WebPerformanceMetricsJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  std::string* metric = message.body()->FindStringKey("metric");
+  std::string* metric = message.body()->GetDict().FindString("metric");
   if (!metric || metric->empty()) {
     return;
   }
 
-  absl::optional<double> value = message.body()->FindDoubleKey("value");
+  absl::optional<double> value = message.body()->GetDict().FindDouble("value");
   if (!value) {
     return;
   }
