@@ -447,13 +447,22 @@ crbug.com/1276186 [ mac amd-0x67ef angle-opengl ] conformance/rendering/clear-de
 # been made more robust.
 # crbug.com/735483 [ mac amd release ] conformance/rendering/texture-switch-performance.html [ Failure ]
 
-crbug.com/1421053 [ mac amd-0x67ef angle-metal ] conformance/ogles/GL/lessThan/lessThan_001_to_008.html [ Failure ]
-crbug.com/1421053 [ mac amd-0x67ef angle-metal ] conformance/ogles/GL/vec/vec_017_to_018.html [ Failure ]
+crbug.com/1421053 [ mac amd-0x67ef angle-metal ] conformance/canvas/draw-webgl-to-canvas-test.html [ RetryOnFailure ]
+crbug.com/1421053 [ mac amd-0x67ef angle-metal ] conformance/canvas/rapid-resizing.html [ RetryOnFailure ]
+crbug.com/1421053 [ mac amd-0x67ef angle-metal ] conformance/context/context-eviction-with-garbage-collection.html [ RetryOnFailure ]
+crbug.com/1421053 [ mac amd-0x67ef angle-metal ] conformance/ogles/GL/control_flow/control_flow_009_to_010.html [ RetryOnFailure ]
+crbug.com/1421053 [ mac amd-0x67ef angle-metal ] conformance/ogles/GL/lessThan/lessThan_001_to_008.html [ RetryOnFailure ]
+crbug.com/1421053 [ mac amd-0x67ef angle-metal ] conformance/ogles/GL/not/not_001_to_004.html [ RetryOnFailure ]
+crbug.com/1421053 [ mac amd-0x67ef angle-metal ] conformance/ogles/GL/swizzlers/swizzlers_049_to_056.html [ RetryOnFailure ]
+crbug.com/1421053 [ mac amd-0x67ef angle-metal ] conformance/ogles/GL/swizzlers/swizzlers_097_to_104.html [ RetryOnFailure ]
+crbug.com/1421053 [ mac amd-0x67ef angle-metal ] conformance/ogles/GL/vec/vec_017_to_018.html [ RetryOnFailure ]
+crbug.com/1421053 [ mac amd-0x67ef angle-metal ] conformance/ogles/GL/vec3/vec3_001_to_008.html [ RetryOnFailure ]
+crbug.com/1421053 [ mac amd-0x67ef angle-metal ] conformance/textures/image/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ RetryOnFailure ]
 crbug.com/1421053 [ mac amd-0x67ef angle-metal ] conformance/textures/misc/texture-size-cube-maps.html [ Failure ]
 crbug.com/1421053 [ mac amd-0x67ef angle-metal ] conformance/textures/misc/tex-video-using-tex-unit-non-zero.html [ RetryOnFailure ]
-crbug.com/1421053 [ mac amd-0x67ef angle-metal ] conformance/textures/webgl_canvas/* [ Failure ]
-crbug.com/1421053 [ mac amd-0x67ef angle-metal ] deqp/data/gles2/shaders/swizzles_bvec4.html [ Failure ]
-crbug.com/1421053 [ mac amd-0x67ef angle-metal ] deqp/data/gles2/shaders/swizzles_vec2.html [ Failure ]
+crbug.com/1421053 [ mac amd-0x67ef angle-metal ] conformance/textures/webgl_canvas/* [ RetryOnFailure ]
+crbug.com/1421053 [ mac amd-0x67ef angle-metal ] deqp/data/gles2/shaders/swizzles_bvec4.html [ RetryOnFailure ]
+crbug.com/1421053 [ mac amd-0x67ef angle-metal ] deqp/data/gles2/shaders/swizzles_vec2.html [ RetryOnFailure ]
 
 crbug.com/1422032 [ mac amd-0x67ef angle-opengl ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
 
