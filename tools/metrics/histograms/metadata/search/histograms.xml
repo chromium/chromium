@@ -1557,24 +1557,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Search.QueryTiles.TilesFitPerRow" units="tiles"
-    expires_after="M94">
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>chrome-upboarding-eng@google.com</owner>
-  <summary>
-    Records the number of tiles per row that can be fit into the screen in the
-    default scroll position.
-  </summary>
-</histogram>
-
-<histogram name="Search.QueryTiles.TileWidth" units="dp" expires_after="M94">
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>chrome-upboarding-eng@google.com</owner>
-  <summary>
-    Records the width of a single query tile when shown in the carousel.
-  </summary>
-</histogram>
-
 <histogram name="Search.QueryTiles.TrendingTileEvent" enum="TrendingTileEvent"
     expires_after="2023-08-31">
   <owner>qinmin@chromium.org</owner>
