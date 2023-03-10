@@ -212,7 +212,9 @@ class FakeInputDeviceSettingsController : public InputDeviceSettingsController {
   void RemoveObserver(Observer* observer) override { observer_ = nullptr; }
   void SetTouchpadSettings(
       DeviceId id,
-      ::ash::mojom::TouchpadSettingsPtr settings) override {}
+      ::ash::mojom::TouchpadSettingsPtr settings) override {
+    ++num_times_set_touchpad_settings_called_;
+  }
   void SetMouseSettings(DeviceId id,
                         ::ash::mojom::MouseSettingsPtr settings) override {
     ++num_times_set_mouse_settings_called_;
@@ -295,6 +297,9 @@ class FakeInputDeviceSettingsController : public InputDeviceSettingsController {
   int num_times_set_mouse_settings_called() {
     return num_times_set_mouse_settings_called_;
   }
+  int num_times_set_touchpad_settings_called() {
+    return num_times_set_touchpad_settings_called_;
+  }
 
  private:
   std::vector<::ash::mojom::KeyboardPtr> keyboards_;
@@ -305,6 +310,7 @@ class FakeInputDeviceSettingsController : public InputDeviceSettingsController {
   int num_times_set_keyboard_settings_called_ = 0;
   int num_times_set_pointing_stick_settings_called_ = 0;
   int num_times_set_mouse_settings_called_ = 0;
+  int num_times_set_touchpad_settings_called_ = 0;
 };
 
 }  // namespace
@@ -392,6 +398,20 @@ TEST_F(InputDeviceSettingsProviderTest, TestSetMouseSettings) {
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(2, controller_->num_times_set_mouse_settings_called());
+}
+
+TEST_F(InputDeviceSettingsProviderTest, TestSetTouchpadSettings) {
+  controller_->AddTouchpad(kTouchpad1.Clone());
+  provider_->SetTouchpadSettings(kTouchpad1.id, kTouchpad1.settings->Clone());
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1, controller_->num_times_set_touchpad_settings_called());
+
+  controller_->AddTouchpad(kTouchpad2.Clone());
+  provider_->SetTouchpadSettings(kTouchpad2.id, kTouchpad1.settings->Clone());
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(2, controller_->num_times_set_touchpad_settings_called());
 }
 
 TEST_F(InputDeviceSettingsProviderTest, TestKeyboardSettingsObeserver) {

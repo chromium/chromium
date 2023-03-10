@@ -59,6 +59,15 @@ void InputDeviceSettingsProvider::SetMouseSettings(
                                                          std::move(settings));
 }
 
+void InputDeviceSettingsProvider::SetTouchpadSettings(
+    uint32_t device_id,
+    ::ash::mojom::TouchpadSettingsPtr settings) {
+  DCHECK(features::IsInputDeviceSettingsSplitEnabled());
+  DCHECK(InputDeviceSettingsController::Get());
+  InputDeviceSettingsController::Get()->SetTouchpadSettings(
+      device_id, std::move(settings));
+}
+
 void InputDeviceSettingsProvider::GetConnectedKeyboards(
     GetConnectedKeyboardsCallback callback) {
   DCHECK(features::IsInputDeviceSettingsSplitEnabled());

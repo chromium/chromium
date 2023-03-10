@@ -66,4 +66,6 @@ interface InputDeviceSettingsProvider {
       uint32 device_id, ash.mojom.PointingStickSettings settings);
   // Sets the mouse settings based on its id.
   SetMouseSettings(uint32 device_id, ash.mojom.MouseSettings settings);
+  // Sets the touchpad settings based on its id.
+  SetTouchpadSettings(uint32 device_id, ash.mojom.TouchpadSettings settings);
 };
