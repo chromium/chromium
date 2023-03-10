@@ -2861,22 +2861,6 @@
             ]
         }
     ],
-    "ClankAppLanguagePromptGlobal": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AppLanguagePrompt",
-                        "AppLanguagePromptULP"
-                    ]
-                }
-            ]
-        }
-    ],
     "ClearOmniboxFocusAsync": [
         {
             "platforms": [
