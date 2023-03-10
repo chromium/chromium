@@ -33,8 +33,12 @@ test("services_unittests") {
 
   data_deps = [ "//testing/buildbot/filters:services_unittests_filters" ]
 
-  if (use_blink || !is_ios) {
-    deps += [ "//services/audio:tests" ]
+  if (use_blink) {
+    deps += [
+      "//services/audio:tests",
+      "//services/media_session:tests",
+      "//services/media_session/public/cpp:tests",
+    ]
   }
 
   if (!is_ios) {
@@ -43,8 +47,6 @@ test("services_unittests") {
       "//services/device:tests",
       "//services/image_annotation:tests",
       "//services/image_annotation/public/cpp:tests",
-      "//services/media_session:tests",
-      "//services/media_session/public/cpp:tests",
       "//services/preferences/tracked:unit_tests",
       "//services/proxy_resolver:tests",
       "//services/resource_coordinator:tests",
