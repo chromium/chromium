@@ -318,6 +318,15 @@ void AcceleratorConfigurationProvider::RemoveAccelerator(
   std::move(callback).Run(std::move(result_data));
 }
 
+void AcceleratorConfigurationProvider::RestoreAllDefaults(
+    RestoreAllDefaultsCallback callback) {
+  AcceleratorResultDataPtr result_data = AcceleratorResultData::New();
+  AcceleratorConfigResult result =
+      ash_accelerator_configuration_->RestoreAllDefaults();
+  result_data->result = result;
+  std::move(callback).Run(std::move(result_data));
+}
+
 void AcceleratorConfigurationProvider::BindInterface(
     mojo::PendingReceiver<
         shortcut_customization::mojom::AcceleratorConfigurationProvider>

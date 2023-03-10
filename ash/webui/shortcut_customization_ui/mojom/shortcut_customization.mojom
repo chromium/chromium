@@ -79,4 +79,8 @@ interface AcceleratorConfigurationProvider {
   RemoveAccelerator(ash.mojom.AcceleratorSource source, uint32 action_id,
                     SimpleAccelerator accelerator)
         => (AcceleratorResultData result);
+
+  // Restore all accelerators to their system-provided default state, overriding
+  // user customization.
+  RestoreAllDefaults() => (AcceleratorResultData result);
 };

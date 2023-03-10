@@ -22,6 +22,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/webui/shortcut_customization_ui/backend/accelerator_layout_table.h"
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-forward.h"
+#include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-test-utils.h"
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -1028,6 +1029,75 @@ TEST_F(AcceleratorConfigurationProviderTest, RemoveAcceleratorNonAsh) {
         EXPECT_FALSE(result->shortcut_name.has_value());
       }));
   base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(AcceleratorConfigurationProviderTest, RemoveAndResoreAllDefaults) {
+  FakeAcceleratorsUpdatedMojoObserver observer;
+  SetUpObserver(&observer);
+
+  // Initialize with all custom accelerators.
+  const AcceleratorData test_data[] = {
+      {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
+       TOGGLE_MIRROR_MODE},
+  };
+  AshAcceleratorConfiguration* config =
+      Shell::Get()->ash_accelerator_configuration();
+  config->Initialize(test_data);
+  base::RunLoop().RunUntilIdle();
+
+  // Verify accelerators are populated.
+  EXPECT_EQ(sizeof(test_data) / sizeof(AcceleratorData),
+            config->GetAllAccelerators().size());
+
+  AcceleratorResultDataPtr result;
+  // Remove the accelerator.
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .RemoveAccelerator(
+              mojom::AcceleratorSource::kAsh, TOGGLE_MIRROR_MODE,
+              ui::Accelerator(ui::VKEY_SPACE, ui::EF_CONTROL_DOWN), &result);
+  EXPECT_EQ(AcceleratorConfigResult::kSuccess, result->result);
+  EXPECT_FALSE(result->shortcut_name.has_value());
+  // Verify the accelerator was removed.
+  std::vector<ui::Accelerator> updated_accelerators =
+      config->GetAllAccelerators();
+  EXPECT_EQ(0u, updated_accelerators.size());
+
+  // Now verify that removing the default for `TOGGLE_MIRROR_MODE` will
+  // only disable it from the config.
+  base::RunLoop().RunUntilIdle();
+  AcceleratorConfigurationProvider::AcceleratorConfigurationMap actual_config =
+      observer.config();
+  ExpectMojomAcceleratorsEqual(mojom::AcceleratorSource::kAsh, test_data,
+                               mojo::Clone(actual_config));
+  std::vector<mojom::AcceleratorInfoPtr> actual_infos(mojo::Clone(
+      actual_config[mojom::AcceleratorSource::kAsh][TOGGLE_MIRROR_MODE]));
+  EXPECT_EQ(1u, actual_infos.size());
+  // A disabled default accelerator should be marked as `kDisabledByUser`.
+  EXPECT_EQ(mojom::AcceleratorState::kDisabledByUser, actual_infos[0]->state);
+  EXPECT_EQ(mojom::AcceleratorType::kDefault, actual_infos[0]->type);
+
+  // Restore all defaults.
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .RestoreAllDefaults(&result);
+
+  base::RunLoop().RunUntilIdle();
+
+  // Verify accelerators were restored.
+  updated_accelerators = config->GetAllAccelerators();
+  EXPECT_EQ(1u, updated_accelerators.size());
+
+  // Verify that the accelerator is back to their default states.
+  actual_config = observer.config();
+  ExpectMojomAcceleratorsEqual(mojom::AcceleratorSource::kAsh, test_data,
+                               mojo::Clone(actual_config));
+  actual_infos = mojo::Clone(
+      actual_config[mojom::AcceleratorSource::kAsh][TOGGLE_MIRROR_MODE]);
+  EXPECT_EQ(1u, actual_infos.size());
+  // Resetting to default will reset it back to `kEnabled`.
+  EXPECT_EQ(mojom::AcceleratorState::kEnabled, actual_infos[0]->state);
+  EXPECT_EQ(mojom::AcceleratorType::kDefault, actual_infos[0]->type);
 }
 
 using FlagsKeyboardCodesVariant =

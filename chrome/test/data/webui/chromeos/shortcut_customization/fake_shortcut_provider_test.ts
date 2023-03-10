@@ -114,8 +114,8 @@ suite('fakeShortcutProviderTest', function() {
   });
 
   test('RestoreAllDefaultsFake', () => {
-    return getProvider().restoreAllDefaults().then((result) => {
-      assertEquals(AcceleratorConfigResult.kSuccess, result);
+    return getProvider().restoreAllDefaults().then(({result}) => {
+      assertEquals(AcceleratorConfigResult.kSuccess, result.result);
     });
   });
 

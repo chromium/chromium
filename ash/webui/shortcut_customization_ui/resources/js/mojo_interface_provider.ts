@@ -106,6 +106,11 @@ export class ShortcutProviderWrapper implements ShortcutProviderInterface {
   addObserver(observer: AcceleratorsUpdatedObserverRemote): void {
     return this.remote.addObserver(observer);
   }
+
+  restoreAllDefaults(): Promise<{result: AcceleratorResultData}> {
+    // TODO(jimmyxgong): Replace with real mojo method.
+    return this.fakeProvider.restoreAllDefaults();
+  }
 }
 
 export function getShortcutProvider(): ShortcutProviderInterface {

@@ -74,6 +74,7 @@ class AcceleratorConfigurationProvider
                          uint32_t action_id,
                          const ui::Accelerator& accelerator,
                          RemoveAcceleratorCallback callback) override;
+  void RestoreAllDefaults(RestoreAllDefaultsCallback callback) override;
 
   // ui::InputDeviceEventObserver:
   void OnInputDeviceConfigurationChanged(uint8_t input_device_types) override;

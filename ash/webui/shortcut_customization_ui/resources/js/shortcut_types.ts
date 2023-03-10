@@ -206,4 +206,5 @@ export interface ShortcutProviderInterface extends
       source: AcceleratorSource, action: number,
       accelerator: Accelerator): Promise<AcceleratorConfigResult>;
   addObserver(observer: AcceleratorsUpdatedObserverRemote): void;
+  restoreAllDefaults(): Promise<{result: AcceleratorResultData}>;
 }
