@@ -15,16 +15,18 @@
  * limitations under the License.
  */
 
+import {Protocol} from 'devtools-protocol';
+
 import {BrowsingContext, Message} from '../../../protocol/protocol.js';
 import {LogType, LoggerFn} from '../../../utils/log.js';
-import {BrowsingContextStorage} from './browsingContextStorage.js';
 import {CdpClient} from '../../CdpConnection.js';
 import {Deferred} from '../../../utils/deferred.js';
 import {IEventManager} from '../events/EventManager.js';
 import {LogManager} from '../log/logManager.js';
-import {Protocol} from 'devtools-protocol';
 import {Realm} from '../script/realm.js';
 import {RealmStorage} from '../script/realmStorage.js';
+
+import {BrowsingContextStorage} from './browsingContextStorage.js';
 
 export class BrowsingContextImpl {
   readonly #targetDefers = {

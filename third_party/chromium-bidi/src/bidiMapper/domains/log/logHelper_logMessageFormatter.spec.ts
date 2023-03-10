@@ -16,7 +16,9 @@
  */
 
 import * as chai from 'chai';
+
 import type {CommonDataTypes} from '../../../protocol/protocol.js';
+
 import {logMessageFormatter} from './logHelper.js';
 
 const expect = chai.expect;

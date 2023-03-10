@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-import {ITransport} from '../utils/transport.js';
 import WebSocket from 'ws';
+
+import {ITransport} from '../utils/transport.js';
 
 export class WebSocketTransport implements ITransport {
   #onMessage: ((message: string) => void) | null = null;

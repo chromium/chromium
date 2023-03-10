@@ -14,12 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import {Protocol} from 'devtools-protocol';
+
 import {CommonDataTypes, Log, Script} from '../../../protocol/protocol.js';
 import {CdpClient} from '../../CdpConnection.js';
 import {IEventManager} from '../events/EventManager.js';
-import {Protocol} from 'devtools-protocol';
 import {Realm} from '../script/realm.js';
 import {RealmStorage} from '../script/realmStorage.js';
+
 import {getRemoteValuesText} from './logHelper.js';
 
 /** Converts CDP StackTrace object to Bidi StackTrace object. */

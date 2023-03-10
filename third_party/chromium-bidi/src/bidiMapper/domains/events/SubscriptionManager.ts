@@ -24,6 +24,7 @@ import {
   Session,
 } from '../../../protocol/protocol.js';
 import {BrowsingContextStorage} from '../context/browsingContextStorage.js';
+
 import InvalidArgumentException = Message.InvalidArgumentException;
 
 /**

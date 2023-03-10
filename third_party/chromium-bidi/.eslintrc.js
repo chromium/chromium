@@ -44,6 +44,10 @@ module.exports = {
     '@typescript-eslint/no-non-null-assertion': 'off',
     '@typescript-eslint/no-this-alias': 'off',
     'func-names': 'error',
+    'import/first': 'error',
+    'import/newline-after-import': 'error',
+    'import/no-duplicates': 'error',
+    'import/order': ['error', {'newlines-between': 'always'}],
     'no-duplicate-imports': 'error',
     'no-else-return': 'error',
     'no-empty': ['error', {allowEmptyCatch: true}],
@@ -54,7 +58,6 @@ module.exports = {
     'no-underscore-dangle': 'error',
     'prefer-promise-reject-errors': 'error',
     'prefer-template': 'error',
-    'sort-imports': 'error',
     eqeqeq: 'error',
   },
 };

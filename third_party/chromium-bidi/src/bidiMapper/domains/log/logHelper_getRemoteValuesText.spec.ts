@@ -16,7 +16,9 @@
  */
 
 import * as chai from 'chai';
+
 import type {CommonDataTypes} from '../../../protocol/protocol.js';
+
 import {getRemoteValuesText} from './logHelper.js';
 
 const expect = chai.expect;

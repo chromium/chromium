@@ -16,6 +16,7 @@
  */
 
 import {SinonSpy, assert, spy} from 'sinon';
+
 import {ITransport} from '../utils/transport.js';
 
 type TypedSpy<T extends (...args: any[]) => unknown> = SinonSpy<

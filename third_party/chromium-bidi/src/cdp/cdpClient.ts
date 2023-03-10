@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-import {CdpConnection} from './cdpConnection.js';
+import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
+
 import {EventEmitter} from '../utils/EventEmitter.js';
 
-import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
+import {CdpConnection} from './cdpConnection.js';
 
 type Mapping = {
   [Property in keyof ProtocolMapping.Events]: ProtocolMapping.Events[Property][0];

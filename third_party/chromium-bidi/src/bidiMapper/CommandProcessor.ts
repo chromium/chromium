@@ -23,10 +23,11 @@ import {
   Session,
 } from '../protocol/protocol.js';
 import {LogType, LoggerFn} from '../utils/log.js';
+import {EventEmitter} from '../utils/EventEmitter.js';
+
 import {BrowsingContextProcessor} from './domains/context/browsingContextProcessor.js';
 import {BrowsingContextStorage} from './domains/context/browsingContextStorage.js';
 import {CdpConnection} from './CdpConnection.js';
-import {EventEmitter} from '../utils/EventEmitter.js';
 import {IEventManager} from './domains/events/EventManager.js';
 import {OutgoingBidiMessage} from './OutgoingBidiMessage.js';
 import {RealmStorage} from './domains/script/realmStorage.js';

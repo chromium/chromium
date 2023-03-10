@@ -17,10 +17,11 @@
 
 import * as chai from 'chai';
 import * as sinon from 'sinon';
-import {CdpConnection} from './cdpConnection.js';
 import {Protocol} from 'devtools-protocol';
-import {StubTransport} from './stubTransport.spec.js';
 import chaiAsPromised from 'chai-as-promised';
+
+import {CdpConnection} from './cdpConnection.js';
+import {StubTransport} from './stubTransport.spec.js';
 
 chai.use(chaiAsPromised);
 

@@ -14,9 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {Realm, RealmType} from './realm.js';
-import {Message} from '../../../protocol/protocol.js';
 import {Protocol} from 'devtools-protocol';
+
+import {Message} from '../../../protocol/protocol.js';
+
+import {Realm, RealmType} from './realm.js';
 
 type RealmFilter = {
   realmId?: string;

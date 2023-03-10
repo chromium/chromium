@@ -16,8 +16,8 @@
  */
 
 import * as chai from 'chai';
-
 import * as sinon from 'sinon';
+
 import {Deferred} from './deferred.js';
 import {ProcessingQueue} from './processingQueue.js';
 

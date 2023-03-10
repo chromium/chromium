@@ -20,10 +20,11 @@
  * Parser types should match the `../protocol` types.
  */
 
-const MAX_INT = 9007199254740991 as const;
+import {ZodType, z as zod} from 'zod';
 
 import {EventResponse, Message} from '../protocol/protocol.js';
-import {ZodType, z as zod} from 'zod';
+
+const MAX_INT = 9007199254740991 as const;
 
 export function parseObject<T extends ZodType>(
   obj: unknown,

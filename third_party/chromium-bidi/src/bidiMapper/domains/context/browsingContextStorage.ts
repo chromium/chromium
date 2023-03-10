@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-import {BrowsingContextImpl} from './browsingContextImpl.js';
 import {Message} from '../../../protocol/protocol.js';
+
+import {BrowsingContextImpl} from './browsingContextImpl.js';
 
 export class BrowsingContextStorage {
   readonly #contexts = new Map<string, BrowsingContextImpl>();

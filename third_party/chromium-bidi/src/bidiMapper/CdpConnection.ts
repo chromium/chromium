@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-import {EventEmitter} from '../utils/EventEmitter.js';
 import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
+
+import {EventEmitter} from '../utils/EventEmitter.js';
 
 type CdpEvents = {
   [Property in keyof ProtocolMapping.Events]: ProtocolMapping.Events[Property][0];

@@ -16,14 +16,16 @@
  */
 
 import * as chai from 'chai';
+import sinon from 'sinon';
+
 import {BrowsingContext, CDP, Log} from '../../../protocol/protocol.js';
+import {BrowsingContextStorage} from '../context/browsingContextStorage.js';
+
 import {
   SubscriptionManager,
   cartesianProduct,
   unrollEvents,
 } from './SubscriptionManager.js';
-import {BrowsingContextStorage} from '../context/browsingContextStorage.js';
-import sinon from 'sinon';
 
 const expect = chai.expect;
 

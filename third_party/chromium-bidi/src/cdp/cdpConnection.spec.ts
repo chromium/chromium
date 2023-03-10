@@ -17,10 +17,11 @@
 
 import * as chai from 'chai';
 import * as sinon from 'sinon';
+import chaiAsPromised from 'chai-as-promised';
+
 import {CdpConnection} from './cdpConnection.js';
 import {StubTransport} from './stubTransport.spec.js';
 
-import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
 
 const SOME_SESSION_ID = 'ABCD';

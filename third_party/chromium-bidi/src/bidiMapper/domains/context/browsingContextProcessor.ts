@@ -14,6 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import Protocol from 'devtools-protocol';
+
 import {
   BrowsingContext,
   CDP,
@@ -22,12 +24,12 @@ import {
 } from '../../../protocol/protocol.js';
 import {CdpClient, CdpConnection} from '../../CdpConnection.js';
 import {LogType, LoggerFn} from '../../../utils/log.js';
-import {BrowsingContextImpl} from './browsingContextImpl.js';
-import {BrowsingContextStorage} from './browsingContextStorage.js';
 import {IEventManager} from '../events/EventManager.js';
-import Protocol from 'devtools-protocol';
 import {Realm} from '../script/realm.js';
 import {RealmStorage} from '../script/realmStorage.js';
+
+import {BrowsingContextStorage} from './browsingContextStorage.js';
+import {BrowsingContextImpl} from './browsingContextImpl.js';
 
 export class BrowsingContextProcessor {
   readonly #browsingContextStorage: BrowsingContextStorage;

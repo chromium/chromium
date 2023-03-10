@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-import {CdpClient, CdpConnection, WebSocketTransport} from '../cdp/index.js';
 import Protocol from 'devtools-protocol';
 import WebSocket from 'ws';
 import debug from 'debug';
+
+import {CdpClient, CdpConnection, WebSocketTransport} from '../cdp/index.js';
 
 const debugInternal = debug('bidiMapper:internal');
 const debugLog = debug('bidiMapper:log');

@@ -15,13 +15,15 @@
  * limitations under the License.
  */
 
-import {BidiServerRunner} from './bidiServerRunner.js';
-import {ITransport} from '../utils/transport.js';
-import {MapperServer} from './mapperServer.js';
 import argparse from 'argparse';
 import debug from 'debug';
-import mapperReader from './mapperReader.js';
 import puppeteer from 'puppeteer';
+
+import {ITransport} from '../utils/transport.js';
+
+import {BidiServerRunner} from './bidiServerRunner.js';
+import {MapperServer} from './mapperServer.js';
+import mapperReader from './mapperReader.js';
 
 const log = debug('bidiServer:log');
 

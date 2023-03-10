@@ -16,6 +16,7 @@
  */
 
 import * as chai from 'chai';
+
 import {IdWrapper} from './idWrapper.js';
 
 const expect = chai.expect;

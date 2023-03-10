@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-import {EventEmitter} from './EventEmitter.js';
 import {expect} from 'chai';
 import sinon from 'sinon';
+
+import {EventEmitter} from './EventEmitter.js';
 
 describe('EventEmitter', () => {
   type Events = {
