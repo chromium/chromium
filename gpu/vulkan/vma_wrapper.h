@@ -5,8 +5,6 @@
 #ifndef GPU_VULKAN_VMA_WRAPPER_H_
 #define GPU_VULKAN_VMA_WRAPPER_H_
 
-#include <algorithm>
-
 #include <vulkan/vulkan_core.h>
 
 #include "base/component_export.h"
@@ -101,10 +99,8 @@ void GetPhysicalDeviceProperties(
 COMPONENT_EXPORT(VULKAN)
 void GetBudget(VmaAllocator allocator, VmaBudget* budget);
 
-// Allocated and used, respectively.
 COMPONENT_EXPORT(VULKAN)
-std::pair<uint64_t, uint64_t> GetTotalAllocatedAndUsedMemory(
-    VmaAllocator allocator);
+uint64_t GetTotalAllocatedMemory(VmaAllocator allocator);
 
 }  // namespace vma
 }  // namespace gpu
