@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/editing/finder/find_buffer.h"
 
-#include "base/debug/dump_without_crashing.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -477,7 +476,6 @@ void FindBuffer::AddTextToBuffer(const Text& text_node,
       // TODO(crbug.com/955678): There are certain cases where we fail to
       // compute the |NGOffsetMapping| due to failures in layout. As the root
       // cause is hard to fix at the moment, we just work around it here.
-      base::debug::DumpWithoutCrashing();
       return;
     }
   }
