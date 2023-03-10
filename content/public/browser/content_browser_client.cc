@@ -1441,4 +1441,9 @@ bool ContentBrowserClient::AreIsolatedWebAppsEnabled(
   return false;
 }
 
+bool ContentBrowserClient::IsThirdPartyStoragePartitioningAllowed(
+    content::BrowserContext* browser_context) {
+  return true;
+}
+
 }  // namespace content

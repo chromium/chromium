@@ -4038,9 +4038,13 @@ bool RenderFrameHostImpl::IsMainFrameThirdPartyStoragePartitioningEnabled() {
           .IsDisableThirdPartyStoragePartitioningEnabled()) {
     return false;
   }
-  // Otherwise, return whatever the browser-side feature flag value is:
-  return base::FeatureList::IsEnabled(
-      net::features::kThirdPartyStoragePartitioning);
+  // If the enterprise policy blocks, we have directive to override the
+  // current value of net::features::ThirdPartyStoragePartitioning.
+  if (!GetContentClient()->browser()->IsThirdPartyStoragePartitioningAllowed(
+          GetBrowserContext())) {
+    return false;
+  }
+  return blink::StorageKey::IsThirdPartyStoragePartitioningEnabled();
 }
 
 blink::StorageKey RenderFrameHostImpl::CalculateStorageKey(

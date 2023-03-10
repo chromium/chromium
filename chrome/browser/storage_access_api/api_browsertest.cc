@@ -14,6 +14,7 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/net/storage_test_utils.h"
+#include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/storage_access_api/storage_access_grant_permission_context.h"
 #include "chrome/browser/ui/browser.h"
@@ -27,6 +28,7 @@
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
+#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -128,7 +130,7 @@ HandleEchoCookiesWithCorsRequest(const net::test_server::HttpRequest& request) {
   return http_response;
 }
 
-class StorageAccessAPIBaseBrowserTest : public InProcessBrowserTest {
+class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
  protected:
   explicit StorageAccessAPIBaseBrowserTest(bool is_storage_partitioned)
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS),
@@ -229,6 +231,11 @@ class StorageAccessAPIBaseBrowserTest : public InProcessBrowserTest {
         static_cast<int>(
             value ? content_settings::CookieControlsMode::kBlockThirdParty
                   : content_settings::CookieControlsMode::kOff));
+  }
+
+  void NavigateToPage(const std::string& host, const std::string& path) {
+    GURL main_url(https_server_.GetURL(host, path));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
   }
 
   void NavigateToPageWithFrame(const std::string& host) {
@@ -1252,6 +1259,59 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithCHIPSBrowserTest,
   EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
   EXPECT_EQ(ReadCookies(GetFrame(), kHostB),
             CookieBundle("cross-site=b.test; cross-site=b.test(partitioned)"));
+}
+
+class StorageAccessAPIEnterprisePolicyBrowserTest
+    : public StorageAccessAPIBaseBrowserTest,
+      public testing::WithParamInterface<std::tuple<ContentSetting, bool>> {
+ public:
+  StorageAccessAPIEnterprisePolicyBrowserTest()
+      : StorageAccessAPIBaseBrowserTest(std::get<1>(GetParam())) {}
+
+  void SetUpInProcessBrowserTestFixture() override {
+    policy::PolicyTest::SetUpInProcessBrowserTestFixture();
+    policy::PolicyMap policies;
+    SetPolicy(&policies,
+              policy::key::kDefaultThirdPartyStoragePartitioningSetting,
+              base::Value(GetContentSetting()));
+    UpdateProviderPolicy(policies);
+  }
+
+  bool ExpectPartitionedStorage() const {
+    return IsStoragePartitioned() &&
+           GetContentSetting() != CONTENT_SETTING_BLOCK;
+  }
+
+ private:
+  ContentSetting GetContentSetting() const { return std::get<0>(GetParam()); }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    /*no prefix*/,
+    StorageAccessAPIEnterprisePolicyBrowserTest,
+    testing::Combine(testing::Values(CONTENT_SETTING_DEFAULT,
+                                     CONTENT_SETTING_ALLOW,
+                                     CONTENT_SETTING_BLOCK),
+                     testing::Bool()));
+
+IN_PROC_BROWSER_TEST_P(StorageAccessAPIEnterprisePolicyBrowserTest,
+                       PartitionedStorage) {
+  // Navigate to Origin B, setup storage, and expect storage.
+  NavigateToPage(kHostB, "/browsing_data/site_data.html");
+  storage::test::ExpectStorageForFrame(GetPrimaryMainFrame(),
+                                       /*include_cookies=*/false,
+                                       /*expected=*/false);
+  storage::test::SetStorageForFrame(GetPrimaryMainFrame(),
+                                    /*include_cookies=*/false);
+  storage::test::ExpectStorageForFrame(GetPrimaryMainFrame(),
+                                       /*include_cookies=*/false,
+                                       /*expected=*/true);
+
+  // Navigate to Origin A w/ Frame B and expect storage if not partitioned.
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(kHostB, "/browsing_data/site_data.html");
+  storage::test::ExpectStorageForFrame(GetFrame(), /*include_cookies=*/false,
+                                       !ExpectPartitionedStorage());
 }
 
 }  // namespace

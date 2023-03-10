@@ -187,7 +187,6 @@
 namespace blink {
 class AssociatedInterfaceRegistry;
 class DocumentPolicy;
-class RuntimeFeatureStateReadContext;
 struct FramePolicy;
 struct TransferableMessage;
 struct UntrustworthyContextMenuParams;
@@ -2674,9 +2673,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // opaque origin instead).
   void SetOriginDependentStateOfNewFrame(RenderFrameHostImpl* creator_frame);
 
-  // Returns the value of `this`'s main frame's
-  // RuntimeFeatureStateReadContext::
-  // IsDisableThirdPartyStoragePartitioningEnabled()
+  // Indicates whether `this` main frame has third-party storage partitioning
+  // enabled. This depends on the deprecation trial (which can block), content
+  // browser client (which can block), and base feature (which can allow).
   bool IsMainFrameThirdPartyStoragePartitioningEnabled();
 
   // Calculates the storage key for this RenderFrameHostImpl using the passed

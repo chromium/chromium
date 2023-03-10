@@ -1088,7 +1088,7 @@ policies:
   1087: RemoteAccessHostAllowEnterpriseRemoteSupportConnections
   1088: ClientSidePhishingProtectionAllowed
   1089: UserAvatarCustomizationSelectorsEnabled
-
+  1090: DefaultThirdPartyStoragePartitioningSetting
 atomic_groups:
   1: Homepage
   2: RemoteAccess

@@ -862,6 +862,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool AreIsolatedWebAppsEnabled(
       content::BrowserContext* browser_context) override;
 
+  bool IsThirdPartyStoragePartitioningAllowed(
+      content::BrowserContext* browser_context) override;
+
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);
   static bool HandleWebUIReverse(GURL* url,

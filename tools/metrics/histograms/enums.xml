@@ -18825,6 +18825,7 @@ Called by update_net_error_codes.py.-->
   <int value="94" label="Federated identity auto re-authn"/>
   <int value="95" label="Federated identity IdP Registration API"/>
   <int value="96" label="Anti-abuse"/>
+  <int value="97" label="Third-Party Storage Partitioning"/>
 </enum>
 
 <enum name="ContentTypeParseableResult">
@@ -32925,7 +32926,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1080" label="ShowTouchpadScrollScreenEnabled"/>
   <int value="1081" label="DeviceSystemAecEnabled"/>
   <int value="1082" label="HttpAllowlist"/>
-  <int value="1083" label="HttpsUpgradeEnabled"/>
+  <int value="1083" label="HttpsUpgradesEnabled"/>
   <int value="1084" label="RealTimeDownloadProtectionRequestAllowed"/>
   <int value="1085" label="MandatoryExtensionsForIncognitoNavigation"/>
   <int value="1086" label="CredentialProviderPromoEnabled"/>
@@ -32933,6 +32934,7 @@ Called by update_document_policy_enum.py.-->
       label="RemoteAccessHostAllowEnterpriseRemoteSupportConnections"/>
   <int value="1088" label="ClientSidePhishingProtectionAllowed"/>
   <int value="1089" label="UserAvatarCustomizationSelectorsEnabled"/>
+  <int value="1090" label="DefaultThirdPartyStoragePartitioningSetting"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

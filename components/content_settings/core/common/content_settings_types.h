@@ -323,6 +323,10 @@ enum class ContentSettingsType : int32_t {
   // should be enabled.
   ANTI_ABUSE,
 
+  // Content setting used to indicate whether third-party storage partitioning
+  // should be enabled.
+  THIRD_PARTY_STORAGE_PARTITIONING,
+
   NUM_TYPES,
 };
 

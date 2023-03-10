@@ -117,6 +117,7 @@ constexpr HistogramValue kHistogramValue[] = {
     {ContentSettingsType::FEDERATED_IDENTITY_IDENTITY_PROVIDER_REGISTRATION,
      95},
     {ContentSettingsType::ANTI_ABUSE, 96},
+    {ContentSettingsType::THIRD_PARTY_STORAGE_PARTITIONING, 97},
 };
 
 void FilterRulesForType(ContentSettingsForOneType& settings,

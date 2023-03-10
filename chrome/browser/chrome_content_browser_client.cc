@@ -7510,6 +7510,21 @@ bool ChromeContentBrowserClient::AreIsolatedWebAppsEnabled(
   return base::FeatureList::IsEnabled(features::kIsolatedWebApps);
 }
 
+bool ChromeContentBrowserClient::IsThirdPartyStoragePartitioningAllowed(
+    content::BrowserContext* browser_context) {
+  const HostContentSettingsMap* const content_settings =
+      HostContentSettingsMapFactory::GetForProfile(
+          Profile::FromBrowserContext(browser_context));
+  if (!content_settings) {
+    // We fail permissive as this function is used to check whether partitioning
+    // should be blocked, but isn't the final word on if it's allowed.
+    return true;
+  }
+  return content_settings->GetDefaultContentSetting(
+             ContentSettingsType::THIRD_PARTY_STORAGE_PARTITIONING, nullptr) ==
+         CONTENT_SETTING_ALLOW;
+}
+
 #if BUILDFLAG(IS_MAC)
 base::FilePath ChromeContentBrowserClient::GetChildProcessPath(
     int child_flags,

@@ -184,6 +184,7 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION, nullptr},
     {ContentSettingsType::FEDERATED_IDENTITY_IDENTITY_PROVIDER_REGISTRATION,
      nullptr},
+    {ContentSettingsType::THIRD_PARTY_STORAGE_PARTITIONING, nullptr},
 };
 
 static_assert(std::size(kContentSettingsTypeGroupNames) ==

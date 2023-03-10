@@ -302,6 +302,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kHttpsUpgradesEnabled,
     prefs::kHttpsUpgradesEnabled,
     base::Value::Type::BOOLEAN },
+  { key::kDefaultThirdPartyStoragePartitioningSetting,
+    prefs::kManagedDefaultThirdPartyStoragePartitioningSetting,
+    base::Value::Type::INTEGER },
 // Policies for all platforms - End
 #if BUILDFLAG(IS_ANDROID)
   { key::kAuthAndroidNegotiateAccountType,

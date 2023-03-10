@@ -39,6 +39,7 @@ extern const char kManagedDefaultJavaScriptJitSetting[];
 extern const char kManagedDefaultWebHidGuardSetting[];
 extern const char kManagedDefaultWindowManagementSetting[];
 extern const char kManagedDefaultLocalFontsSetting[];
+extern const char kManagedDefaultThirdPartyStoragePartitioningSetting[];
 
 extern const char kManagedClipboardAllowedForUrls[];
 extern const char kManagedClipboardBlockedForUrls[];
