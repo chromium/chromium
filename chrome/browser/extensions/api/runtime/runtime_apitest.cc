@@ -568,9 +568,8 @@ IN_PROC_BROWSER_TEST_P(BackgroundPageOnlyRuntimeApiTest,
   {
     content::TestNavigationObserver nav_observer(new_tab_url);
     nav_observer.StartWatchingNewWebContents();
-    ASSERT_TRUE(browsertest_util::ExecuteScriptInBackgroundPageNoWait(
-        browser()->profile(), extension->id(),
-        R"(  window.open('/index.htm', '');  )"));
+    ASSERT_TRUE(ExecuteScriptInBackgroundPageNoWait(
+        extension->id(), R"(window.open('/index.htm', '');)"));
     nav_observer.Wait();
   }
 
@@ -585,8 +584,7 @@ IN_PROC_BROWSER_TEST_P(BackgroundPageOnlyRuntimeApiTest,
         domAutomationController.send(foundWindows.length);
         domAutomationController.send(foundWindows[0].location.href);
     )";
-    ASSERT_TRUE(browsertest_util::ExecuteScriptInBackgroundPageNoWait(
-        browser()->profile(), extension->id(), kScript));
+    ASSERT_TRUE(ExecuteScriptInBackgroundPageNoWait(extension->id(), kScript));
 
     std::string json;
     ASSERT_TRUE(message_queue.WaitForMessage(&json));

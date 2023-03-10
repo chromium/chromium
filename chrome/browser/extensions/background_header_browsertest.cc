@@ -72,9 +72,8 @@ class BackgroundHeaderTest : public ExtensionBrowserTest {
     }
     content::DOMMessageQueue message_queue(host->host_contents());
 
-    browsertest_util::ExecuteScriptInBackgroundPageNoWait(
-        profile(), extension->id(),
-        content::JsReplace("executeFetch($1);", url));
+    ExecuteScriptInBackgroundPageNoWait(
+        extension->id(), content::JsReplace("executeFetch($1);", url));
     std::string json;
     EXPECT_TRUE(message_queue.WaitForMessage(&json));
     absl::optional<base::Value> value =

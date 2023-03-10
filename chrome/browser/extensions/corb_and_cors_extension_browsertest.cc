@@ -56,7 +56,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
-#include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/url_loader_factory_manager.h"
 #include "extensions/common/extension_features.h"
@@ -396,8 +395,8 @@ class CorbAndCorsExtensionBrowserTest : public CorbAndCorsExtensionTestBase {
     std::string registration_script =
         content::JsReplace(kRegistrationScript, kServiceWorkerPath);
 
-    std::string result = browsertest_util::ExecuteScriptInBackgroundPage(
-        browser()->profile(), extension_->id(), registration_script);
+    std::string result =
+        ExecuteScriptInBackgroundPage(extension_->id(), registration_script);
     if (result != "SUCCESS") {
       ADD_FAILURE() << "Failed to register the service worker: " << result;
       return false;
@@ -483,8 +482,8 @@ class CorbAndCorsExtensionBrowserTest : public CorbAndCorsExtensionTestBase {
     int tab_id = ExtensionTabUtil::GetTabId(web_contents);
     std::string background_script = content::JsReplace(
         "chrome.tabs.executeScript($1, { code: $2 });", tab_id, content_script);
-    return browsertest_util::ExecuteScriptInBackgroundPageNoWait(
-        browser()->profile(), extension_->id(), background_script);
+    return ExecuteScriptInBackgroundPageNoWait(extension_->id(),
+                                               background_script);
   }
 
  protected:
@@ -540,15 +539,14 @@ class CorbAndCorsExtensionBrowserTest : public CorbAndCorsExtensionTestBase {
   // |fetch_script| will include calls to |domAutomationController.send| and
   // therefore instances of FetchCallback should not inject their own calls to
   // |domAutomationController.send| (e.g. this constraint rules out
-  // browsertest_util::ExecuteScriptInBackgroundPage and/or
-  // content::ExecuteScript).
+  // ExecuteScriptInBackgroundPage and/or content::ExecuteScript).
   //
   // The function should return true if script execution started successfully.
   //
   // Currently used "implementations":
   // - CorbAndCorsExtensionBrowserTest::ExecuteContentScript(web_contents)
   // - CorbAndCorsExtensionBrowserTest::ExecuteRegularScript(web_contents)
-  // - browsertest_util::ExecuteScriptInBackgroundPageNoWait(profile, ext_id)
+  // - ExecuteScriptInBackgroundPageNoWait(profile, ext_id)
   using FetchCallback =
       base::OnceCallback<bool(const std::string& fetch_script)>;
 

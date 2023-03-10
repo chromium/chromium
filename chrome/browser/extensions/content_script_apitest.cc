@@ -42,7 +42,6 @@
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
-#include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/content_script_tracker.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/api/content_scripts.h"
@@ -979,9 +978,8 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, ContentScriptSameSiteCookies) {
              message = chrome.runtime.lastError.message;
            domAutomationController.send(message);
          });)";
-  std::string result = browsertest_util::ExecuteScriptInBackgroundPage(
-      profile(), extension->id(),
-      base::StringPrintf(kScript, url.spec().c_str()));
+  std::string result = ExecuteScriptInBackgroundPage(
+      extension->id(), base::StringPrintf(kScript, url.spec().c_str()));
 
   EXPECT_EQ("success", result);
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
@@ -1007,9 +1005,8 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, ExecuteScriptFileSameSiteCookies) {
              domAutomationController.send(message);
            });
          });)";
-  std::string result = browsertest_util::ExecuteScriptInBackgroundPage(
-      profile(), extension->id(),
-      base::StringPrintf(kScript, url.spec().c_str()));
+  std::string result = ExecuteScriptInBackgroundPage(
+      extension->id(), base::StringPrintf(kScript, url.spec().c_str()));
 
   EXPECT_EQ("success", result);
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
@@ -1041,9 +1038,8 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, ExecuteScriptCodeSameSiteCookies) {
              domAutomationController.send(e);
            });
          });)";
-  std::string result = browsertest_util::ExecuteScriptInBackgroundPage(
-      profile(), extension->id(),
-      base::StringPrintf(kScript, url.spec().c_str()));
+  std::string result = ExecuteScriptInBackgroundPage(
+      extension->id(), base::StringPrintf(kScript, url.spec().c_str()));
 
   EXPECT_EQ("success", result);
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();

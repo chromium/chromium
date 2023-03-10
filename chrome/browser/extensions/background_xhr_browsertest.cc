@@ -24,7 +24,6 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "extensions/browser/browsertest_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -60,14 +59,14 @@ class BackgroundXhrTest : public ExtensionBrowserTest {
                                               "url", url.spec());
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
     profile()->GetDefaultStoragePartition()->FlushNetworkInterfaceForTesting();
-    constexpr char kSendXHRScript[] = R"(
+    static constexpr char kSendXHRScript[] = R"(
       var xhr = new XMLHttpRequest();
       xhr.open('GET', '%s');
       xhr.send();
       domAutomationController.send('');
     )";
-    browsertest_util::ExecuteScriptInBackgroundPage(
-        profile(), extension->id(),
+    ExecuteScriptInBackgroundPage(
+        extension->id(),
         base::StringPrintf(kSendXHRScript, url.spec().c_str()));
     ASSERT_TRUE(catcher.GetNextResult());
   }
@@ -127,9 +126,8 @@ class BackgroundXhrPolicyTest : public ExtensionApiTestWithManagementPolicy {
     }
     content::DOMMessageQueue message_queue(host->host_contents());
 
-    browsertest_util::ExecuteScriptInBackgroundPageNoWait(
-        profile(), extension->id(),
-        content::JsReplace("executeFetch($1);", url));
+    ExecuteScriptInBackgroundPageNoWait(
+        extension->id(), content::JsReplace("executeFetch($1);", url));
 
     std::string json;
     EXPECT_TRUE(message_queue.WaitForMessage(&json));

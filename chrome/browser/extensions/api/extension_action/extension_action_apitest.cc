@@ -29,7 +29,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/background_script_executor.h"
-#include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_icon_image.h"
@@ -319,8 +318,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionAPITest, TestNoUnnecessaryIO) {
     // First, update a specific tab.
     std::string update_options =
         base::StringPrintf("{text: 'New Text', tabId: %d}", tab_id.id());
-    EXPECT_EQ("pass", browsertest_util::ExecuteScriptInBackgroundPage(
-                          profile(), extension->id(),
+    EXPECT_EQ("pass", ExecuteScriptInBackgroundPage(
+                          extension->id(),
                           base::StringPrintf(kUpdate, update_options.c_str())));
     test_api_observer.Wait();
 
@@ -337,8 +336,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionAPITest, TestNoUnnecessaryIO) {
                                                      extension->id());
     // Next, update the default badge text.
     EXPECT_EQ("pass",
-              browsertest_util::ExecuteScriptInBackgroundPage(
-                  profile(), extension->id(),
+              ExecuteScriptInBackgroundPage(
+                  extension->id(),
                   base::StringPrintf(kUpdate, "{text: 'Default Text'}")));
     test_api_observer.Wait();
     // The action update should not be associated with a specific tab.

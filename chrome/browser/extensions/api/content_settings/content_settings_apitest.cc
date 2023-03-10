@@ -381,8 +381,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionContentSettingsApiTest, ConsoleErrorTest) {
                            ->host_contents();
   content::WebContentsConsoleObserver console_observer(web_contents);
   console_observer.SetPattern("*contentSettings.plugins is deprecated.*");
-  browsertest_util::ExecuteScriptInBackgroundPageNoWait(
-      profile(), extension->id(), "setPluginsSetting()");
+  ExecuteScriptInBackgroundPageNoWait(extension->id(), "setPluginsSetting()");
   ASSERT_TRUE(console_observer.Wait());
   EXPECT_EQ(1u, console_observer.messages().size());
 }
