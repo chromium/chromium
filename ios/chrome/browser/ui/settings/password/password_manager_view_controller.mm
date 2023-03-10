@@ -1781,11 +1781,13 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
       [self.tableViewModel setFooter:nil
             forSectionWithIdentifier:SectionIdentifierPasswordCheck];
       break;
-    // TODO(crbug.com/1406540): Handle weak/reused/dismissed states
+    // These states only occur when the kIOSPasswordCheckup feature is enabled
+    // and the last check timestamp footer item is only shown when
+    // kIOSPasswordCheckup feature is disabled. These should never be reached.
     case PasswordCheckStateReusedPasswords:
     case PasswordCheckStateWeakPasswords:
     case PasswordCheckStateDismissedWarnings:
-      break;
+      NOTREACHED_NORETURN();
   }
   if (update) {
     [self.tableView

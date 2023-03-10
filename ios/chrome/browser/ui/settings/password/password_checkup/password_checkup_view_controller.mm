@@ -6,9 +6,14 @@
 
 #import "base/metrics/user_metrics.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/settings/cells/settings_check_cell.h"
+#import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_commands.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_utils.h"
+#import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_view_controller_delegate.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -22,6 +27,18 @@ namespace {
 
 // Height of the image used as a header for the table view.
 CGFloat const kHeaderImageHeight = 99;
+
+// Sections of the Password Checkup Homepage UI.
+typedef NS_ENUM(NSInteger, SectionIdentifier) {
+  SectionIdentifierLastPasswordCheckup = kSectionIdentifierEnumZero,
+};
+
+// Items within the Password Checkup Homepage UI.
+typedef NS_ENUM(NSInteger, ItemType) {
+  // Section: SectionIdentifierLastPasswordCheckup
+  ItemTypePasswordCheckupTimestamp = kItemTypeEnumZero,
+  ItemTypeCheckPasswordsButton,
+};
 
 // Helper method to get the right trailing image for the Password Check cell
 // depending on the check state.
@@ -50,6 +67,12 @@ UIImage* GetHeaderImage(PasswordCheckupHomepageState password_checkup_state,
 }  // namespace
 
 @interface PasswordCheckupViewController () {
+  // The item related to the timestamp of the last password check.
+  SettingsCheckItem* _passwordCheckupTimestampItem;
+
+  // The button to start password check.
+  TableViewTextItem* _checkPasswordsButtonItem;
+
   // Whether Settings have been dismissed.
   BOOL _settingsAreDismissed;
 
@@ -78,6 +101,8 @@ UIImage* GetHeaderImage(PasswordCheckupHomepageState password_checkup_state,
   _headerImageView = [self createHeaderImageView];
   self.tableView.tableHeaderView = _headerImageView;
   [self updateHeaderImage];
+
+  [self loadModel];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -110,6 +135,54 @@ UIImage* GetHeaderImage(PasswordCheckupHomepageState password_checkup_state,
     [self updateNavigationBarBackgroundColorForDismissal:NO];
     [self updateTableViewHeaderView];
   }
+}
+
+#pragma mark - SettingsRootTableViewController
+
+- (void)loadModel {
+  [super loadModel];
+
+  TableViewModel* model = self.tableViewModel;
+
+  // Last password checkup section.
+  [model addSectionWithIdentifier:SectionIdentifierLastPasswordCheckup];
+
+  if (!_passwordCheckupTimestampItem) {
+    _passwordCheckupTimestampItem = [self passwordCheckupTimestampItem];
+  }
+  [model addItem:_passwordCheckupTimestampItem
+      toSectionWithIdentifier:SectionIdentifierLastPasswordCheckup];
+
+  if (!_checkPasswordsButtonItem) {
+    _checkPasswordsButtonItem = [self checkPasswordsButtonItem];
+  }
+  [model addItem:_checkPasswordsButtonItem
+      toSectionWithIdentifier:SectionIdentifierLastPasswordCheckup];
+}
+
+#pragma mark - Items
+
+- (SettingsCheckItem*)passwordCheckupTimestampItem {
+  SettingsCheckItem* passwordCheckupTimestampItem =
+      [[SettingsCheckItem alloc] initWithType:ItemTypePasswordCheckupTimestamp];
+  passwordCheckupTimestampItem.enabled = YES;
+  passwordCheckupTimestampItem.text =
+      [self.delegate formattedElapsedTimeSinceLastCheck];
+  passwordCheckupTimestampItem.detailText =
+      l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECKUP_DESCRIPTION);
+  passwordCheckupTimestampItem.indicatorHidden = YES;
+  passwordCheckupTimestampItem.infoButtonHidden = YES;
+  return passwordCheckupTimestampItem;
+}
+
+- (TableViewTextItem*)checkPasswordsButtonItem {
+  TableViewTextItem* checkPasswordsButtonItem =
+      [[TableViewTextItem alloc] initWithType:ItemTypeCheckPasswordsButton];
+  checkPasswordsButtonItem.text = l10n_util::GetNSString(
+      IDS_IOS_PASSWORD_CHECKUP_HOMEPAGE_CHECK_AGAIN_BUTTON);
+  checkPasswordsButtonItem.textColor = [UIColor colorNamed:kBlueColor];
+  checkPasswordsButtonItem.accessibilityTraits = UIAccessibilityTraitButton;
+  return checkPasswordsButtonItem;
 }
 
 #pragma mark - SettingsControllerProtocol
@@ -151,10 +224,46 @@ UIImage* GetHeaderImage(PasswordCheckupHomepageState password_checkup_state,
   _passwordCheckupState = state;
   _insecurePasswordCounts = insecurePasswordCounts;
   [self updateHeaderImage];
+  [self updatePasswordCheckupTimestampText];
+  [self updateCheckPasswordsButtonItem];
 }
 
 - (void)setAffiliatedGroupCount:(NSInteger)affiliatedGroupCount {
-  // TODO(crbug.com/1406540): Add method's body.
+  [self updatePasswordCheckupTimestampDetailTextWithAffiliatedGroupCount:
+            affiliatedGroupCount];
+}
+
+#pragma mark - UITableViewDelegate
+
+- (void)tableView:(UITableView*)tableView
+    didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  [super tableView:tableView didSelectRowAtIndexPath:indexPath];
+
+  TableViewModel* model = self.tableViewModel;
+  ItemType itemType =
+      static_cast<ItemType>([model itemTypeForIndexPath:indexPath]);
+  switch (itemType) {
+    case ItemTypePasswordCheckupTimestamp:
+      break;
+    case ItemTypeCheckPasswordsButton:
+      if (_checkPasswordsButtonItem.enabled) {
+        [self.delegate startPasswordCheck];
+      }
+      break;
+  }
+  [tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+- (BOOL)tableView:(UITableView*)tableView
+    shouldHighlightRowAtIndexPath:(NSIndexPath*)indexPath {
+  NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
+  switch (itemType) {
+    case ItemTypePasswordCheckupTimestamp:
+      return NO;
+    case ItemTypeCheckPasswordsButton:
+      return _checkPasswordsButtonItem.enabled;
+  }
+  return YES;
 }
 
 #pragma mark - Private
@@ -209,6 +318,53 @@ UIImage* GetHeaderImage(PasswordCheckupHomepageState password_checkup_state,
       break;
   }
   [self.tableView layoutIfNeeded];
+}
+
+// Updates the `_passwordCheckupTimestampItem` text.
+- (void)updatePasswordCheckupTimestampText {
+  _passwordCheckupTimestampItem.text =
+      [self.delegate formattedElapsedTimeSinceLastCheck];
+  _passwordCheckupTimestampItem.indicatorHidden = YES;
+
+  switch (_passwordCheckupState) {
+    case PasswordCheckupHomepageStateDone:
+      break;
+    case PasswordCheckupHomepageStateRunning: {
+      _passwordCheckupTimestampItem.text =
+          l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECKUP_ONGOING);
+      _passwordCheckupTimestampItem.indicatorHidden = NO;
+      break;
+    }
+    case PasswordCheckupHomepageStateError:
+    case PasswordCheckupHomepageStateDisabled:
+      break;
+  }
+  [self reconfigureCellsForItems:@[ _passwordCheckupTimestampItem ]];
+}
+
+// Updates the `_passwordCheckupTimestampItem` detail text.
+- (void)updatePasswordCheckupTimestampDetailTextWithAffiliatedGroupCount:
+    (NSInteger)affiliatedGroupCount {
+  _passwordCheckupTimestampItem.detailText = l10n_util::GetPluralNSStringF(
+      IDS_IOS_PASSWORD_CHECKUP_SITES_AND_APPS_COUNT, affiliatedGroupCount);
+  [self reconfigureCellsForItems:@[ _passwordCheckupTimestampItem ]];
+}
+
+// Updates the `_checkPasswordsButtonItem`.
+- (void)updateCheckPasswordsButtonItem {
+  if (_passwordCheckupState == PasswordCheckupHomepageStateRunning) {
+    _checkPasswordsButtonItem.enabled = NO;
+    _checkPasswordsButtonItem.textColor =
+        [UIColor colorNamed:kTextSecondaryColor];
+    _checkPasswordsButtonItem.accessibilityTraits |=
+        UIAccessibilityTraitNotEnabled;
+  } else {
+    _checkPasswordsButtonItem.enabled = YES;
+    _checkPasswordsButtonItem.textColor = [UIColor colorNamed:kBlueColor];
+    _checkPasswordsButtonItem.accessibilityTraits &=
+        ~UIAccessibilityTraitNotEnabled;
+  }
+  [self reconfigureCellsForItems:@[ _checkPasswordsButtonItem ]];
 }
 
 @end

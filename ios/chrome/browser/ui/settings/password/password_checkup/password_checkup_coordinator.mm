@@ -50,8 +50,8 @@
       initWithPasswordCheckManager:IOSChromePasswordCheckManagerFactory::
                                        GetForBrowserState(
                                            self.browser->GetBrowserState())];
-  self.mediator.consumer = self.viewController;
   self.viewController.delegate = self.mediator;
+  self.mediator.consumer = self.viewController;
   [self.baseNavigationController pushViewController:self.viewController
                                            animated:YES];
 }
