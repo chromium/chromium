@@ -1463,6 +1463,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Accessibility.LiveCaption.{SodaLanguageCode}.SessionContainsRecognizedSpeech"
+    enum="BooleanEnabled" expires_after="2023-06-01">
+  <owner>evliu@google.com</owner>
+  <owner>chrome-media-ux@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether the speech recognition session contains any recognized speech. This
+    is logged once per media stream upon the destruction of the
+    SpeechRecognitionRecognizerImpl.
+  </summary>
+  <token key="SodaLanguageCode" variants="SodaLanguageCode"/>
+</histogram>
+
 <histogram name="Accessibility.LiveCaption2" enum="BooleanEnabled"
     expires_after="2023-11-30">
   <owner>katie@chromium.org</owner>
