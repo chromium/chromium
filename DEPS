@@ -73,13 +73,6 @@ vars = {
   # TODO(ehmaldonado): Remove this once the bug in gclient is fixed.
   'checkout_fuchsia': False,
 
-  # For code related to internal Fuchsia images.
-  'checkout_fuchsia_internal': False,
-
-  # Fetches the internal Fuchsia SDK boot images, with the images in a
-  # comma-separated list.
-  'checkout_fuchsia_internal_images': '',
-
   # Used for downloading the Fuchsia SDK without running hooks.
   'checkout_fuchsia_no_hooks': False,
 
@@ -92,9 +85,6 @@ vars = {
 
   # By default, do not check out Cast3P.
   'checkout_cast3p': False,
-
-  # Check out all Chrome Cleaner deps. Set on the Chrome Cleaner builders.
-  'checkout_chrome_cleaner_internal': False,
 
   # By default, do not check out Chromium autofill captured sites test
   # dependencies. These dependencies include very large numbers of very
@@ -128,9 +118,6 @@ vars = {
   # custom_vars.
   'checkout_src_internal': False,
 
-  # Checkout SODA (Speech On-Device API)
-  'checkout_soda': False,
-
   # Fetch the additional packages and files needed to run all of the
   # telemetry tests. This is false by default as some stuff is only
   # privately accessible.
@@ -144,9 +131,6 @@ vars = {
   # process the raw profiles produced by instrumented targets (built with
   # the gn arg 'use_clang_coverage').
   'checkout_clang_coverage_tools': False,
-
-  # For super-internal deps. Set by the official builders.
-  'checkout_google_internal': False,
 
   # Fetch the pgo profiles to optimize official builds.
   'checkout_pgo_profiles': False,
@@ -3928,469 +3912,6 @@ deps = {
     'dep_type': 'cipd',
     'condition': 'checkout_win and checkout_bazel',
   },
-
-  # Repositories from src_internal
-  'src/build/fuchsia/internal': {
-      'url': Var('chrome_git') + '/fuchsia/build.git' + '@' +
-        '16da074bda38d989dbcbee0c7c75e2aa83783bb2',
-      'condition': 'checkout_src_internal and checkout_fuchsia_internal',
-    },
-
-  'src/chrome/app/theme/default_100_percent/google_chrome': {
-      'url':
-        Var('chrome_git') + '/chrome/theme/default_100_percent/google_chrome.git' + '@' +
-        '5e12619276fa0fd41dae5ebd40b807a6c32930c1',
-      'condition': 'checkout_src_internal',
-  },
-
-  'src/chrome/app/theme/default_200_percent/google_chrome': {
-      'url':
-        Var('chrome_git') + '/chrome/theme/default_200_percent/google_chrome.git' + '@' +
-        'db0cce3e7bfc7489c7213295d56e1c7611f9c43f',
-      'condition': 'checkout_src_internal',
-  },
-
-  'src/chrome/app/theme/google_chrome': {
-      'url':
-        Var('chrome_git') + '/chrome/theme/google_chrome.git' + '@' +
-        '4155da06db34b5066085eb846e8a10a81528089b',
-      'condition': 'checkout_src_internal',
-  },
-
-  'src/chrome/browser/enterprise/connectors/internal': {
-      'url':
-        Var('chrome_git') + '/chrome/browser/enterprise/connectors/internal.git' + '@' +
-        '7fd7c8dd496740724d0024408ae7a96298e34aa2',
-      'condition': 'checkout_src_internal',
-  },
-
-  'src/chrome/browser/google/linkdoctor_internal': {
-      'url':
-        Var('chrome_git') + '/chrome/linkdoctor.git' + '@' +
-        'fe28a8f90c5471f20f8fee9ff7f6c6f8b8d02bed', # from svn revision 32577
-      'condition': 'checkout_src_internal',
-  },
-
-  'src/chrome/browser/internal': {
-      'url':
-        Var('chrome_git') + '/chrome/browser_internal.git' + '@' +
-        'd3a55d714679c55a73ff96a7ea77493b326dae91',
-      'condition': 'checkout_src_internal',
-  },
-
-  'src/chrome/browser/media/engagement_internal': {
-      'url':
-        Var('chrome_git') + '/chrome/browser/media/engagement_internal.git' + '@' +
-        '14b00ddbb904612ec8805f00718ae3f95c02a076',
-      'condition': 'checkout_src_internal',
-  },
-
-  'src/chrome/browser/resources/chromeos/quickoffice': {
-      'url': Var('chrome_git') + '/quickoffice/crx.git' + '@' +
-      'b469688ba88433c572ff6ebcc215a67889fadb36',
-      'condition': 'checkout_src_internal and (checkout_chromeos or checkout_linux)',
-    },
-
-  'src/chrome/browser/resources/media_router_internal': {
-      'url':
-        Var('chrome_git') + '/cloudview-team/media-router.git' + '@' +
-        'a4cb277506253e29d683eb7e6873021347191646',
-      'condition': 'checkout_src_internal',
-  },
-
-  'src/chrome/browser/resources/settings_internal': {
-      'url':
-        Var('chrome_git') + '/chrome/browser/resources/settings_internal.git' + '@' +
-        '5d6316b2434986e6b073e1d24585578bb27da451', # from svn revision 41419
-      'condition': 'checkout_src_internal',
-  },
-
-  'src/chrome/browser/spellchecker/internal': {
-      'url':
-        Var('chrome_git') + '/chrome/spellchecker/internal.git' + '@' +
-        'a22002a5b3cf7c6b872b25712af97a5664a350e2', # from svn revision 24388
-      'condition': 'checkout_src_internal',
-  },
-
-  'src/chrome/browser/ui/media_router/internal': {
-      'url':
-        Var('chrome_git') + '/cloudview-team/media-router/internal.git' + '@' +
-        '03f38788131e24700362c671f7639b2188b14923',
-      'condition': 'checkout_src_internal',
-  },
-
-  'src/chrome/chrome_cleaner/internal': {
-      'url': Var('chrome_git') + '/protector/foil.git' + '@' +
-        'f7839edf1403546f1ebc5bff62319d32e21529ab',
-      'condition': 'checkout_src_internal and checkout_chrome_cleaner_internal',
-    },
-
-  # Installer bits used only by Mac, but mapped for all OSes to ease source
-  # grepping.
-  'src/chrome/installer/mac/internal': {
-      'url':
-        Var('chrome_git') + '/chrome/installer/mac/internal.git' + '@' +
-        'e8988b6dc1381cd1b5a033b6c4be771a05dc4f4a',
-      'condition': 'checkout_src_internal',
-  },
-
-  'src/chrome/test/data/firefox3_profile/searchplugins': {
-      'url':
-        Var('chrome_git') + '/chrome/data/osdd/firefox3_profile_searchplugins.git' + '@' +
-        '6cf09b86fb9d058453e7d05978ff8e91b5e8e749',
-      'condition': 'checkout_src_internal',
-  },
-
-  'src/chrome/test/data/firefox3_searchplugins': {
-      'url':
-        Var('chrome_git') + '/chrome/data/osdd/firefox3_searchplugins.git' + '@' +
-        '490580801915834d72dd8a1e943924c35df45673',
-      'condition': 'checkout_src_internal',
-  },
-
-  'src/chrome/test/data/gpu/vt': {
-      'url':
-        Var('chrome_git') + '/chrome/data/vectortown_endurance/vectortownstatic-20121022.git' + '@' +
-        'c34f30f909a414d378a1678eba921e58940708c4',
-      'condition': 'checkout_src_internal',
-  },
-
-  'src/chrome/test/data/perf/frame_rate/private': {
-      'url':
-        Var('chrome_git') + '/chrome/data/frame_rate_tests.git' + '@' +
-        '6394c925a272b92a4e9e16d929af049b7aa6e4f8',
-      'condition': 'checkout_src_internal',
-  },
-
-  'src/chrome/test/data/perf/private': {
-      'url':
-        Var('chrome_git') + '/chrome/data/perf_tests.git' + '@' +
-        '6f3e320b1fa10910eb1dcbad36afdd1ad00b2c5a',
-      'condition': 'checkout_src_internal',
-  },
-
-  'src/chrome/test/data/pdf_private': {
-      'url':
-        Var('chrome_git') + '/chrome/data/pdf_private.git' + '@' +
-        '23b64c03647779d193ee8ccb3f2a1a5560da9c94',
-      'condition': 'checkout_src_internal',
-  },
-
-  'src/chrome/test/media_router/internal': {
-      'url':
-        Var('chrome_git') + '/chrome/test/media_router/internal.git' + '@' +
-        '3fd9af874c74874043521709c4f2ee968a0fe94a',
-      'condition': 'checkout_src_internal',
-  },
-
-  'src/chrome/test/python_tests': {
-      'url':
-        Var('chrome_git') + '/chrome/test/python_tests.git' + '@' +
-        '644bd7703b85f148564cc4038aada81f3a616d8a',
-      'condition': 'checkout_src_internal',
-  },
-
-  'src/chrome/tools/memory': {
-      'url': Var('chrome_git') + '/chrome/tools/memory.git' + '@' +
-        '3c9359382236f6d57c91505234a2bc7fd635ba6c',
-      'condition': 'checkout_src_internal and checkout_win',
-    },
-
-  'src/chromeos/assistant/internal': {
-      'url': Var('chrome_git') + '/chrome/assistant.git' + '@' +
-        '7fd2cf66416f39e40d3846bf3a00b527e7738507',
-      'condition': 'checkout_src_internal and checkout_chromeos',
-    },
-
-  'src/chrome/services/speech/internal': {
-      'url': Var('chrome_git') + '/chromeos/speech.git' + '@' + '8d46b1cb1312a0933799e37bde27e6747db8fcc2',
-      'condition': 'checkout_src_internal and checkout_chromeos',
-   },
-
-  'src/components/autofill/core/browser/form_parsing/internal_resources': {
-      'url':
-        Var('chrome_git') + '/chrome/components/autofill_regex_patterns.git' + '@' +
-        '245b93551651baa7fb12a64c6f0a9f8a9dc00657',
-      'condition': 'checkout_src_internal',
-  },
-
-  'src/components/ntp_tiles/resources/internal': {
-      'url':
-        Var('chrome_git') + '/chrome/components/ntp_tiles/resources.git' + '@' +
-        '82bb45cb66582350f17bf9ef55c33acbccfeab9c',
-      'condition': 'checkout_src_internal',
-  },
-
-  'src/components/optimization_guide/internal': {
-      'url':
-        Var('chrome_git') + '/chrome/components/optimization_guide.git' + '@' +
-        '8de202c36f052c93df968f81c614c3638af80684',
-      'condition': 'checkout_src_internal',
-  },
-
-  'src/components/resources/default_100_percent/google_chrome': {
-      'url':
-        Var('chrome_git') + '/chrome/components/default_100_percent/google_chrome.git' + '@' +
-        '0e25f1d054b3bab0444e0f04c5f9b07c5f5c858b',
-      'condition': 'checkout_src_internal',
-  },
-
-  'src/components/resources/default_200_percent/google_chrome': {
-      'url':
-        Var('chrome_git') + '/chrome/components/default_200_percent/google_chrome.git' + '@' +
-        '66e7e3c423b0a795a3706ab63d3e9adfd8c5a646',
-      'condition': 'checkout_src_internal',
-  },
-
-  'src/components/resources/default_300_percent/google_chrome': {
-      'url':
-        Var('chrome_git') + '/chrome/components/default_300_percent/google_chrome.git' + '@' +
-        '91bb3da51c938685b899b3bd8a5ba0dda86bb861',
-      'condition': 'checkout_src_internal',
-  },
-
-  'src/components/site_isolation/internal': {
-      'url':
-        Var('chrome_git') + '/chrome/components/site_isolation.git' + '@' +
-        'e0d8a7769c1daabb974bf0d229970534a0aede77',
-      'condition': 'checkout_src_internal',
-  },
-
-  'src/components/vector_icons/google_chrome': {
-      'url':
-        Var('chrome_git') + '/chrome/vector_icons/google_chrome.git' + '@' +
-        '7652f62446ba634c84d8e04f55ef82d1ed50b692',
-      'condition': 'checkout_src_internal',
-  },
-
-  'src/content/test/data/plugin': {
-      'url':
-        Var('chrome_git') + '/chrome/data/chrome_plugin_tests.git' + '@' +
-        '3e80d4d08f5421d6bc9340964834ebc903a318aa',
-      'condition': 'checkout_src_internal',
-  },
-
-  'src/google_apis/internal': {
-      'url':
-        Var('chrome_git') + '/chrome/google_apis/internal.git' + '@' +
-        '9161026654df3107269a6d1e4cd9bae8b5589a87',
-      'condition': 'checkout_src_internal',
-  },
-
-  'src/ios_internal':  {
-      'url': '{chrome_git}/chrome/ios_internal.git' + '@' +
-        '22fd554430648c7e00271a2e7023b37d7d39202d',
-      'condition': 'checkout_src_internal and checkout_ios',
-    },
-
-  'src/remoting/android/internal': {
-      'url': Var('chrome_git') + '/chrome/remoting/android/internal.git' + '@' +
-        '6b9f36fb32ddb796f16cc5b5830f58ec1944966a',
-      'condition': 'checkout_src_internal and checkout_android',
-    },
-
-  'src/remoting/host/installer/linux/internal': {
-      'url': Var('chrome_git') + '/chrome/remoting/host/installer/linux/internal.git' + '@' +
-        'e190816de75b14897f1af785eb37d237750460e2',
-      'condition': 'checkout_src_internal and checkout_linux',
-    },
-
-  'src/remoting/internal': {
-      'url': Var('chrome_git') + '/chrome/app-streaming.git' + '@' +
-        'd4e99ab2c43b3301e1d3ba88a7cfccd93511c8b0',
-      'condition': 'checkout_src_internal',
-  },
-
-  'src/remoting/test/internal': {
-      'url': Var('chrome_git') + '/chrome/remoting/test/internal.git' + '@' +
-        '34ff3657e2176fc48a57fad555b076a50a409de6',
-      'condition': 'checkout_src_internal',
-  },
-
-  'src/remoting/tools/internal': {
-      'url': Var('chrome_git') + '/chrome/remoting/tools/internal.git' + '@' +
-        'acfed9c3a363694f37aadfb5cda4c31109661eb8',
-      'condition': 'checkout_src_internal',
-  },
-
-  'src/remoting/webapp/app_remoting/internal': {
-      'url': Var('chrome_git') + '/chrome/remoting/webapp/app_remoting/internal.git' + '@' +
-        '5ad5339af97c3bd193d595de03f34282491ce495',
-      'condition': 'checkout_src_internal',
-  },
-
-  'src/signing_keys': {
-      'url': Var('chrome_git') + '/clank/apptestkey.git' + '@' +
-        '5138e684915721cbccbb487ec0764ed05650fcd0',
-      'condition': 'checkout_src_internal and checkout_android and checkout_google_internal',
-    },
-
-  'src/skia/tools/clusterfuzz-data':{
-      'url': Var('chrome_git') + '/chrome/tools/clusterfuzz-data.git' + '@' +
-        'fa1fc4acacddd8d655cfca0bcadef5f7e2259bed',
-      'condition': 'checkout_src_internal and checkout_clusterfuzz_data',
-    },
-
-  'src/third_party/amd': {
-      'url': Var('chrome_git') + '/chrome/deps/amd.git' + '@' +
-        'cbd9811acb6d09f19b880fdbc6f0fc62901c9a5c',
-      'condition': 'checkout_src_internal and checkout_win',
-    },
-
-  'src/third_party/android_tools_internal': {
-      'url': Var('chrome_git') + '/clank/third_party/android_tools.git' + '@' +
-        'ab59dfd133386420a319a194c9ac6f5cae802471',
-      'condition': 'checkout_src_internal and checkout_android',
-  },
-
-  # OpenGL ES 2.0 Conformance tests.
-  'src/third_party/gles2_conform': {
-      'url':
-        Var('chrome_git') + '/chrome/deps/gles2_conform.git' + '@' +
-        '57738bb2cc672cb81ed2ee287fcd0defde968811',
-      'condition': 'checkout_src_internal',
-  },
-
-  'src/third_party/googlemac': {
-      'url': Var('chrome_git') + '/chrome/deps/googlemac.git' + '@' +
-        '6ae4175fcf9e37655c5d7c3a7482dfc7436281d2',
-      'condition': 'checkout_src_internal and checkout_mac',
-    },
-
-  # OpenGL ES 3.X Conformance tests.
-  "src/third_party/khronos_glcts": {
-      'url':
-        Var('chrome_git') + '/chrome/deps/khronos_glcts.git' + '@' +
-        'eedb0baca9e88c53596874901ff5f6136102d20d',
-      'condition': 'checkout_src_internal',
-  },
-
-  'src/third_party/soda': {
-      'packages': [
-          {
-              'package': 'chrome_internal/third_party/soda',
-              'version': 'StdK8khsivYZXVo2wZuVMnDN_xrVO2a8HV8kvfJ3emwC',
-          },
-      ],
-      'condition': 'checkout_src_internal and checkout_linux and checkout_soda',
-      'dep_type': 'cipd',
-    },
-
-  'src/third_party/soda-mac64': {
-      'packages': [
-          {
-              'package': 'chrome_internal/third_party/soda-mac64',
-              'version': 'bJ-qwdYVguWT0V24YjNZ7Nw_toipv0YnVuadeX5xozEC',
-          },
-      ],
-      'condition': 'checkout_src_internal and checkout_mac and checkout_soda',
-      'dep_type': 'cipd',
-    },
-
-  'src/third_party/soda-win32': {
-      'packages': [
-          {
-              'package': 'chrome_internal/third_party/soda-win32',
-              'version': '977qxBGTKbe2kY9aQch9OkNJ3YE8Nt2mVjetdpWeM0IC',
-          },
-      ],
-      'condition': 'checkout_src_internal and checkout_win and checkout_soda',
-      'dep_type': 'cipd',
-    },
-
-  'src/third_party/soda-win64': {
-      'packages': [
-          {
-              'package': 'chrome_internal/third_party/soda-win64',
-              'version': '1elz1jfCAzy5tZUNBr8FsovjgFxmtu8jdyA8ay9Ta8UC',
-          },
-      ],
-      'condition': 'checkout_src_internal and checkout_win and checkout_soda',
-      'dep_type': 'cipd',
-    },
-
-  'src/third_party/widevine/cdm/chromeos': {
-      'url': Var('chrome_git') + '/chrome/deps/widevine/cdm/chromeos.git' + '@' +
-        'edc81c9e25b47b11d0606a717d7f8cd37378302f',
-      'condition': 'checkout_src_internal and (checkout_chromeos or checkout_linux)',
-    },
-
-  'src/third_party/widevine/cdm/linux': {
-      'url': Var('chrome_git') + '/chrome/deps/widevine/cdm/linux.git' + '@' +
-        'a4fb4719bd4e220c3d2a20dda35d9874373fda4b',
-      'condition': 'checkout_src_internal and checkout_linux',
-    },
-
-  'src/third_party/widevine/cdm/mac': {
-      'url': Var('chrome_git') + '/chrome/deps/widevine/cdm/mac.git' + '@' +
- '957b3265d2e49662b00b4f90b40cbb0cad7d6058',
-      'condition': 'checkout_src_internal and checkout_mac',
-    },
-
-  'src/third_party/widevine/cdm/win': {
-      'url': Var('chrome_git') + '/chrome/deps/widevine/cdm/win.git' + '@' +
-        '13c9314a405e38298dbb1834780c3fad233bc71e',
-      'condition': 'checkout_src_internal and checkout_win',
-    },
-
-  "src/third_party/widevine/scripts": {
-      'url':
-        Var('chrome_git') + '/chrome/deps/widevine/scripts.git' + '@' +
-        '6ae793a606aeed0d0f1c6f688117653710137744',
-      'condition': 'checkout_src_internal',
-  },
-
-  # Only Linux test license server is available.
-  'src/third_party/widevine/test/license_server': {
-      'url': Var('chrome_git') + '/chrome/deps/widevine/test/license_server.git' + '@' +
-        '8b195ed15e73e2ecc9861afb05e6af0b4bdf7413',
-      'condition': 'checkout_src_internal and checkout_linux',
-    },
-
-  'src/third_party/wix': {
-      'url': Var('chrome_git') + '/chrome/deps/wix/v3_5_2519.git' + '@' +
-        '1cda03778b09bee24389da73daef3de862da37fc',
-      'condition': 'checkout_src_internal and checkout_win',
-    },
-
-  'src/tools/perf/data': {
-      'url': Var('chrome_git') + '/chrome/tools/perf/data.git' + '@' +
-        'c7eaf497f690ee69e832b1530e19877602e65b18',
-      'condition': 'checkout_src_internal',
-  },
-  'src/ui/file_manager/internal': {
-      'url': Var('chrome_git') + '/chrome/file_manager.git' + '@' +
-        'a84801be1d5ef906cc03db7eeadd25ce0245ce44',
-      'condition': 'checkout_src_internal and (checkout_chromeos or checkout_linux)',
-    },
-
-  'src/ui/webui/internal': {
-      'url': Var('chrome_git') + '/chrome/ui-webui-internal.git' + '@' +
-        '4afc450a9363ab44f45c3639d0661daa7dbe5bda',
-      'condition': 'checkout_src_internal and checkout_chromeos',
-    },
-
-  'src/webkit/data/bmp_decoder': {
-      'url':
-        Var('chrome_git') + '/chrome/data/bmp_decoder.git' + '@' +
-        '5a3232a478b8afd0e8403fb8c668baf8c9e25ea3',
-      'condition': 'checkout_src_internal',
-  },
-
-  'src/webkit/data/ico_decoder': {
-      'url':
-        Var('chrome_git') + '/chrome/data/ico_decoder.git' + '@' +
-        'aba38604e037bdbeedca9c2780c94502a8a6034d',
-      'condition': 'checkout_src_internal',
-  },
-
-  'src/webkit/data/test_shell/plugins': {
-      'url':
-        Var('chrome_git') + '/chrome/data/webkit_plugin_tests.git' + '@' +
-        'e4bd19f95afa6483a54906c2a3e5d329d2d81690',
-      'condition': 'checkout_src_internal',
-  },
-  # end of src_internal
 }
 
 
@@ -5140,18 +4661,6 @@ hooks = [
                 '-s', 'src/third_party/gvr-android-sdk/test-libraries/controller_test_api.aar.sha1',
     ],
   },
-  {
-    'name': 'vr_assets',
-    'pattern': '.',
-    'condition': 'checkout_src_internal and checkout_android',
-    'action': ['python3',
-               'src/third_party/depot_tools/download_from_google_storage.py',
-               '--bucket', 'chrome-vr-assets',
-               '--recursive',
-               '--directory',
-               'src/chrome/browser/resources/vr/assets/google_chrome',
-    ],
-  },
   # Download and unpack MediaPipe Integration tests.
   {
     'name': 'mediapipe_integration_testdata',
@@ -5280,19 +4789,6 @@ hooks = [
       'python3',
       'src/build/fuchsia/update_product_bundles.py',
       '{checkout_fuchsia_boot_images}',
-    ],
-  },
-
-  {
-    'name': 'Download Fuchsia internal system images',
-    'pattern': '.',
-    'condition': 'checkout_src_internal and checkout_fuchsia_internal',
-    'action': ['python3',
-               'src/build/fuchsia/update_images.py',
-               '--default-bucket', 'fuchsia-sdk',
-               '--image-root-dir',
-               'src/third_party/fuchsia-sdk/images-internal',
-               '--boot-images', '{checkout_fuchsia_internal_images}',
     ],
   },
 
@@ -5581,11 +5077,9 @@ recursedeps = [
   'src/third_party/devtools-frontend-internal',
   'src/third_party/openscreen/src',
   'src/third_party/vulkan-deps',
+  # src-internal has its own DEPS file to pull additional internal repos
+  'src-internal',
   # clank has its own DEPS file, does not need to be in trybot_analyze_config
   # since the roller does not run tests.
   'src/clank',
-  'src/chrome/chrome_cleaner/internal',
-  'src/chromeos/assistant/internal',
-  'src/components/optimization_guide/internal',
-  'src/ios_internal',
 ]
