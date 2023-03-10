@@ -166,6 +166,10 @@ extern const char kEnableExpKitTextClassifierDescription[];
 extern const char kEnablePopoutOmniboxIpadName[];
 extern const char kEnablePopoutOmniboxIpadDescription[];
 
+// Title and description for UIButtonConfiguration.
+extern const char kEnableUIButtonConfigurationName[];
+extern const char kEnableUIButtonConfigurationDescription[];
+
 // Title and description for the flag to enable long press surrounding text.
 extern const char kLongPressSurroundingTextName[];
 extern const char kLongPressSurroundingTextDescription[];

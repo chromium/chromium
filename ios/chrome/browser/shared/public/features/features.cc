@@ -104,6 +104,14 @@ BASE_FEATURE(kEnableLensInOmniboxCopiedImage,
              "EnableLensInOmniboxCopiedImage",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableUIButtonConfiguration,
+             "EnableUIButtonConfiguration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsUIButtonConfigurationEnabled() {
+  return base::FeatureList::IsEnabled(kEnableUIButtonConfiguration);
+}
+
 BASE_FEATURE(kRemoveExcessNTPs,
              "RemoveExcessNTPs",
              base::FEATURE_ENABLED_BY_DEFAULT);
