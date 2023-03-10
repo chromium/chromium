@@ -266,4 +266,9 @@ void StyleResolverState::UpdateLineHeight() {
           GetDocument().documentElement()->GetComputedStyle()));
 }
 
+bool StyleResolverState::CanAffectAnimations() const {
+  return conditionally_affects_animations_ ||
+         StyleBuilder().CanAffectAnimations();
+}
+
 }  // namespace blink

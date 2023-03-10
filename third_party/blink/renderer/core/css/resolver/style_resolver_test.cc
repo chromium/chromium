@@ -3243,4 +3243,32 @@ TEST_F(StyleResolverTest, ScopedAnchorSizeFunction) {
                                 max_height->ComputedStyleRef().MaxHeight()));
 }
 
+TEST_F(StyleResolverTestCQ, CanAffectAnimationsMPC) {
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
+    <style>
+      #a { transition: color 1s; }
+      @container (width > 100000px) {
+        #b { animation-name: anim; }
+      }
+    </style>
+    <div id=a></div>
+    <div id=b></div>
+    <div id=c></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* a = GetDocument().getElementById("a");
+  auto* b = GetDocument().getElementById("b");
+  auto* c = GetDocument().getElementById("c");
+
+  ASSERT_TRUE(a);
+  ASSERT_TRUE(b);
+  ASSERT_TRUE(c);
+
+  EXPECT_TRUE(a->ComputedStyleRef().CanAffectAnimations());
+  EXPECT_FALSE(b->ComputedStyleRef().CanAffectAnimations());
+  EXPECT_FALSE(c->ComputedStyleRef().CanAffectAnimations());
+}
+
 }  // namespace blink

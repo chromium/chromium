@@ -239,7 +239,7 @@ void StyleCascade::Apply(CascadeFilter filter) {
   }
 
   if (resolver.Flags() & CSSProperty::kAnimation) {
-    state_.SetCanAffectAnimations();
+    state_.StyleBuilder().SetCanAffectAnimations();
   }
   if (resolver.RejectedFlags() & CSSProperty::kLegacyOverlapping) {
     state_.SetRejectedLegacyOverlapping();
