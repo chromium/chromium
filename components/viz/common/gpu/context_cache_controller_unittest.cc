@@ -161,9 +161,12 @@ TEST(ContextCacheControllerTest, ScopedBusyMulitpleWhileVisible) {
 TEST(ContextCacheControllerTest, CheckSkiaResourcePurgeAPI) {
   StrictMock<MockContextSupport> context_support;
   auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
-  ContextCacheController cache_controller(&context_support, task_runner);
+
+  // Must outlive `cache_controller`.
   auto context_provider = TestContextProvider::Create();
   context_provider->BindToCurrentSequence();
+
+  ContextCacheController cache_controller(&context_support, task_runner);
   auto* gr_context = context_provider->GrContext();
   cache_controller.SetGrContext(gr_context);
 
