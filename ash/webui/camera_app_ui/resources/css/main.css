@@ -1049,29 +1049,6 @@ body:not(.recording-ui-paused) #record-time [i18n-text=record_video_paused_msg] 
   margin-inline-start: 8px;
 }
 
-@media print {
-  html {
-    height: 100%;  /* Required for printing. */
-  }
-
-  body {
-    height: auto;
-    overflow: visible;
-    position: static;
-    width: 100%;
-  }
-
-  /* Reset background colors. */
-  body {
-    background: transparent;
-  }
-
-  /* Hide the buttons. */
-  .buttons {
-    display: none;
-  }
-}
-
 #spoken_msg {
   opacity: 0;
 }
