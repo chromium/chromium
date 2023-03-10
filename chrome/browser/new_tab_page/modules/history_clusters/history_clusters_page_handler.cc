@@ -117,11 +117,11 @@ history::ClusterVisit GenerateSampleVisit(history::VisitID visit_id,
 
 history::Cluster GenerateSampleCluster(int num_visits, int num_images) {
   const std::vector<std::tuple<std::string, GURL>> kSampleUrlVisitData = {
-      {"Pixel 7", GURL("https://store.google.com/product/pixel_7")},
+      {"Pixel 7", GURL("https://store.google.com/product/pixel_7?hl=en-US")},
       {"Pixel Buds Pro",
-       GURL("https://store.google.com/product/pixel_buds_pro")},
+       GURL("https://store.google.com/product/pixel_buds_pro?hl=en-US")},
       {"Pixel Watch",
-       GURL("https://store.google.com/product/google_pixel_watch")}};
+       GURL("https://store.google.com/product/google_pixel_watch?hl=en-US")}};
 
   std::vector<history::ClusterVisit> sample_visits;
   for (int i = 0; i < num_visits; i++) {
