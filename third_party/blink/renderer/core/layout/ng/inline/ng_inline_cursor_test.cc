@@ -1227,12 +1227,12 @@ TEST_P(NGInlineCursorTest, MoveToVisualFirstOrLast) {
   NGInlineCursor cursor1;
   cursor1.MoveToIncludingCulledInline(*GetLayoutObjectByElementId("span1"));
   cursor1.MoveToVisualFirstForSameLayoutObject();
-  EXPECT_EQ("NGPhysicalTextFragment 'MIXED'", cursor1.Current()->ToString());
+  EXPECT_EQ("NGFragmentItem Text \"MIXED\"", cursor1.Current()->ToString());
 
   NGInlineCursor cursor2;
   cursor2.MoveToIncludingCulledInline(*GetLayoutObjectByElementId("span1"));
   cursor2.MoveToVisualLastForSameLayoutObject();
-  EXPECT_EQ("NGPhysicalTextFragment 'some'", cursor2.Current()->ToString());
+  EXPECT_EQ("NGFragmentItem Text \"some\"", cursor2.Current()->ToString());
 }
 
 class NGInlineCursorBlockFragmentationTest : public RenderingTest {};
