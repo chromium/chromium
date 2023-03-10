@@ -127,7 +127,7 @@ class PermissionsManager : public KeyedService {
   //  Updates the user site settings for the given `origin` to be
   //  `site_settings`.
   void UpdateUserSiteSetting(const url::Origin& origin,
-                             PermissionsManager::UserSiteSetting site_setting);
+                             UserSiteSetting site_setting);
 
   // Adds `origin` to the list of sites the user has blocked all
   // extensions from running on. If `origin` is in permitted_sites, it will

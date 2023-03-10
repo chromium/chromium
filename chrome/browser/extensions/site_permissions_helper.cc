@@ -102,10 +102,9 @@ SitePermissionsHelper::GetSiteInteraction(
   return SiteInteraction::kNone;
 }
 
-void SitePermissionsHelper::UpdateSiteAccess(
-    const Extension& extension,
-    content::WebContents* web_contents,
-    SitePermissionsHelper::SiteAccess new_access) {
+void SitePermissionsHelper::UpdateSiteAccess(const Extension& extension,
+                                             content::WebContents* web_contents,
+                                             SiteAccess new_access) {
   ExtensionActionRunner* runner =
       ExtensionActionRunner::GetForWebContents(web_contents);
   if (!runner) {
@@ -149,7 +148,7 @@ bool SitePermissionsHelper::CanSelectSiteAccess(const Extension& extension,
 
   // The "on click" option is enabled if the extension has active tab,
   // regardless of its granted host permissions.
-  if (site_access == SitePermissionsHelper::SiteAccess::kOnClick &&
+  if (site_access == SiteAccess::kOnClick &&
       HasActiveTabAndCanAccess(extension, url)) {
     return true;
   }
@@ -162,18 +161,18 @@ bool SitePermissionsHelper::CanSelectSiteAccess(const Extension& extension,
   PermissionsManager::ExtensionSiteAccess extension_access =
       permissions_manager->GetSiteAccess(extension, url);
   switch (site_access) {
-    case SitePermissionsHelper::SiteAccess::kOnClick:
+    case SiteAccess::kOnClick:
       // The "on click" option is only enabled if the extension has active tab,
       // previously handled, or wants to always run on the site without user
       // interaction.
       return extension_access.has_site_access ||
              extension_access.withheld_site_access;
-    case SitePermissionsHelper::SiteAccess::kOnSite:
+    case SiteAccess::kOnSite:
       // The "on site" option is only enabled if the extension wants to
       // always run on the site without user interaction.
       return extension_access.has_site_access ||
              extension_access.withheld_site_access;
-    case SitePermissionsHelper::SiteAccess::kOnAllSites:
+    case SiteAccess::kOnAllSites:
       // The "on all sites" option is only enabled if the extension wants to be
       // able to run everywhere.
       return extension_access.has_all_sites_access ||

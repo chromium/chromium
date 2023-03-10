@@ -233,9 +233,8 @@ void PermissionsManager::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(kUserPermissions.name);
 }
 
-void PermissionsManager::UpdateUserSiteSetting(
-    const url::Origin& origin,
-    PermissionsManager::UserSiteSetting site_setting) {
+void PermissionsManager::UpdateUserSiteSetting(const url::Origin& origin,
+                                               UserSiteSetting site_setting) {
   switch (site_setting) {
     case UserSiteSetting::kGrantAllExtensions:
       // Granting access to all extensions is allowed iff feature is
