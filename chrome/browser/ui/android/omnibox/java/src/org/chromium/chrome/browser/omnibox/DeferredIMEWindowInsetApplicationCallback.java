@@ -5,15 +5,17 @@
 package org.chromium.chrome.browser.omnibox;
 
 import android.view.View;
-import android.view.WindowInsets;
 
 import androidx.annotation.NonNull;
 import androidx.core.graphics.Insets;
-import androidx.core.view.OnApplyWindowInsetsListener;
-import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsAnimationCompat;
+import androidx.core.view.WindowInsetsAnimationCompat.BoundsCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import org.chromium.components.browser_ui.widget.InsetObserverView;
+import org.chromium.components.browser_ui.widget.InsetObserverView.WindowInsetsAnimationListener;
+import org.chromium.components.browser_ui.widget.InsetObserverView.WindowInsetsConsumer;
+import org.chromium.components.browser_ui.widget.InsetObserverViewSupplier;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.util.List;
@@ -26,13 +28,13 @@ import java.util.List;
  * an animation is known to be running.
  */
 class DeferredIMEWindowInsetApplicationCallback
-        extends WindowInsetsAnimationCompat.Callback implements OnApplyWindowInsetsListener {
+        implements WindowInsetsConsumer, WindowInsetsAnimationListener {
     private static final int NO_DEFERRED_KEYBOARD_HEIGHT = -1;
     private int mDeferredKeyboardHeight = NO_DEFERRED_KEYBOARD_HEIGHT;
     private int mKeyboardHeight;
     private boolean mAnimationInProgress;
     private WindowInsetsAnimationCompat mCurrentAnimation;
-    private View mView;
+    private InsetObserverView mInsetObserverView;
     private final Runnable mOnUpdateCallback;
 
     /**
@@ -40,7 +42,6 @@ class DeferredIMEWindowInsetApplicationCallback
      * @param onUpdateCallback Callback to be invoked when the keyboard height changes.
      */
     public DeferredIMEWindowInsetApplicationCallback(@NonNull Runnable onUpdateCallback) {
-        super(WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_CONTINUE_ON_SUBTREE);
         mOnUpdateCallback = onUpdateCallback;
     }
 
@@ -49,19 +50,25 @@ class DeferredIMEWindowInsetApplicationCallback
      * IME window insets and listening for IME animation updates.
      */
     public void attach(WindowAndroid windowAndroid) {
-        mView = windowAndroid.getActivity().get().getWindow().getDecorView();
-        ViewCompat.setWindowInsetsAnimationCallback(mView, this);
-        ViewCompat.setOnApplyWindowInsetsListener(mView, this);
+        InsetObserverView insetObserverView =
+                InsetObserverViewSupplier.getValueOrNullFrom(windowAndroid);
+        assert insetObserverView
+                != null
+            : "DeferredIMEWindowInsetApplicationCallback can only be used in activities with an"
+              + " InsetObserverView";
+        mInsetObserverView = insetObserverView;
+        insetObserverView.addInsetsConsumer(this);
+        insetObserverView.addWindowInsetsAnimationListener(this);
     }
 
     /** Detaches this callback from the root of the given window. */
     public void detach() {
-        ViewCompat.setWindowInsetsAnimationCallback(mView, null);
-        ViewCompat.setOnApplyWindowInsetsListener(mView, null);
-        mView = null;
+        mInsetObserverView.removeInsetsConsumer(this);
+        mInsetObserverView.removeWindowInsetsAnimationListener(this);
         mAnimationInProgress = false;
         mDeferredKeyboardHeight = NO_DEFERRED_KEYBOARD_HEIGHT;
         mKeyboardHeight = 0;
+        mInsetObserverView = null;
     }
 
     public int getCurrentKeyboardHeight() {
@@ -78,10 +85,13 @@ class DeferredIMEWindowInsetApplicationCallback
 
     @NonNull
     @Override
-    public WindowInsetsCompat onProgress(@NonNull WindowInsetsCompat windowInsetsCompat,
-            @NonNull List<WindowInsetsAnimationCompat> list) {
-        return windowInsetsCompat;
-    }
+    public void onStart(
+            @NonNull WindowInsetsAnimationCompat animation, @NonNull BoundsCompat bounds) {}
+
+    @NonNull
+    @Override
+    public void onProgress(@NonNull WindowInsetsCompat windowInsetsCompat,
+            @NonNull List<WindowInsetsAnimationCompat> list) {}
 
     @Override
     public void onEnd(@NonNull WindowInsetsAnimationCompat animation) {
@@ -117,11 +127,9 @@ class DeferredIMEWindowInsetApplicationCallback
 
         // Zero out (consume) the ime insets; we're applying them ourselves so no one else needs
         // to consume them.
-        WindowInsets windowInsets = new WindowInsetsCompat.Builder(windowInsetsCompat)
-                                            .setInsets(WindowInsetsCompat.Type.ime(), Insets.NONE)
-                                            .build()
-                                            .toWindowInsets();
-        return WindowInsetsCompat.toWindowInsetsCompat(view.onApplyWindowInsets(windowInsets));
+        return new WindowInsetsCompat.Builder(windowInsetsCompat)
+                .setInsets(WindowInsetsCompat.Type.ime(), Insets.NONE)
+                .build();
     }
 
     private void commitKeyboardHeight(int newKeyboardHeight) {

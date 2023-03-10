@@ -18,6 +18,10 @@ import android.view.WindowInsets;
 import android.widget.LinearLayout;
 
 import androidx.annotation.RequiresApi;
+import androidx.core.graphics.Insets;
+import androidx.core.view.WindowInsetsAnimationCompat;
+import androidx.core.view.WindowInsetsAnimationCompat.BoundsCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
@@ -29,6 +33,10 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.components.browser_ui.widget.InsetObserverView.WindowInsetsAnimationListener;
+import org.chromium.components.browser_ui.widget.InsetObserverView.WindowInsetsConsumer;
+
+import java.util.Collections;
 
 /**
  * Tests for {@link InsetObserverView} class.
@@ -47,6 +55,10 @@ public class InsetObserverViewTest {
 
     @Mock
     private WindowInsets mInsets;
+    @Mock
+    private WindowInsetsConsumer mInsetsConsumer;
+    @Mock
+    private WindowInsetsAnimationListener mInsetsAnimationListener;
 
     private Activity mActivity;
 
@@ -90,6 +102,64 @@ public class InsetObserverViewTest {
         doReturn(2).when(mInsets).getSystemWindowInsetBottom();
         mView.onApplyWindowInsets(mInsets);
         verify(mObserver).onInsetChanged(1, 1, 1, 2);
+    }
+
+    @Test
+    @SmallTest
+    public void applyInsets_withInsetConsumer() {
+        mView.addInsetsConsumer(mInsetsConsumer);
+
+        WindowInsets windowInsets =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(WindowInsetsCompat.Type.navigationBars(), Insets.of(0, 0, 0, 84))
+                        .setInsets(WindowInsetsCompat.Type.statusBars(), Insets.of(42, 0, 0, 0))
+                        .setInsets(WindowInsetsCompat.Type.ime(), Insets.of(0, 0, 0, 300))
+                        .build()
+                        .toWindowInsets();
+
+        WindowInsetsCompat modifiedInsets =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(WindowInsetsCompat.Type.navigationBars(), Insets.of(0, 0, 0, 84))
+                        .setInsets(WindowInsetsCompat.Type.statusBars(), Insets.of(42, 0, 0, 0))
+                        .build();
+        doReturn(modifiedInsets)
+                .when(mInsetsConsumer)
+                .onApplyWindowInsets(
+                        mView, WindowInsetsCompat.toWindowInsetsCompat(windowInsets, mView));
+
+        mView.onApplyWindowInsets(windowInsets);
+        verify(mInsetsConsumer)
+                .onApplyWindowInsets(
+                        mView, WindowInsetsCompat.toWindowInsetsCompat(windowInsets, mView));
+        verify(mObserver, times(1))
+                .onInsetChanged(modifiedInsets.getSystemWindowInsetLeft(),
+                        modifiedInsets.getSystemWindowInsetTop(),
+                        modifiedInsets.getSystemWindowInsetRight(),
+                        modifiedInsets.getSystemWindowInsetBottom());
+    }
+
+    @Test
+    @SmallTest
+    public void insetAnimation() {
+        mView.addWindowInsetsAnimationListener(mInsetsAnimationListener);
+        WindowInsetsAnimationCompat.Callback callback =
+                mView.getInsetAnimationProxyCallbackForTesting();
+        WindowInsetsAnimationCompat animationCompat = new WindowInsetsAnimationCompat(8, null, 50);
+        callback.onPrepare(animationCompat);
+        verify(mInsetsAnimationListener).onPrepare(animationCompat);
+
+        BoundsCompat bounds = new BoundsCompat(Insets.NONE, Insets.of(0, 0, 40, 40));
+        callback.onStart(animationCompat, bounds);
+        verify(mInsetsAnimationListener).onStart(animationCompat, bounds);
+
+        WindowInsetsCompat insetsCompat = WindowInsetsCompat.CONSUMED;
+        callback.onProgress(insetsCompat, Collections.emptyList());
+        callback.onProgress(insetsCompat, Collections.emptyList());
+        verify(mInsetsAnimationListener, times(2))
+                .onProgress(insetsCompat, Collections.emptyList());
+
+        callback.onEnd(animationCompat);
+        verify(mInsetsAnimationListener).onEnd(animationCompat);
     }
 
     /** Test that applying new insets does not notify the observer. */
