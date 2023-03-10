@@ -900,7 +900,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.ModelTypeMemoryKB{SyncModelType}" units="KB"
-    expires_after="2023-04-17">
+    expires_after="2024-03-09">
   <owner>mastiz@chromium.org</owner>
   <owner>rushans@google.com</owner>
   <component>Services&gt;Sync</component>
