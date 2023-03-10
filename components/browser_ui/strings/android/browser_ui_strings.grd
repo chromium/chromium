@@ -987,7 +987,7 @@
         Show zoom option in main menu
       </message>
       <message name="IDS_PAGE_ZOOM_ALWAYS_SHOW_PREFERENCE_SUMMARY" desc="Summary of the preference that allows the user to always show the menu item for zoom.">
-        Make it easier to zoom in on text and images for a site you visit
+        Make it easier to customize zoom for different sites
       </message>
       <message name="IDS_PAGE_ZOOM_PREVIEW_TITLE" desc="Label of the section of sample text shown to the user to preview zoom level.">
         Preview
