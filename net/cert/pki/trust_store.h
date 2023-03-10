@@ -110,8 +110,11 @@ struct NET_EXPORT CertificateTrust {
   // name and SPKI.
   bool enforce_anchor_expiry = false;
   bool enforce_anchor_constraints = false;
-  // Require that trust anchors have a basicConstraints extension. (This only
-  // has effect if `enforce_anchor_constraints` is also true.)
+  // Require that X.509v3 trust anchors have a basicConstraints extension.
+  // X.509v1 and X.509v2 trust anchors do not support basicConstraints and are
+  // not affected.
+  // Additionally, this setting only has effect if `enforce_anchor_constraints`
+  // is true, which also requires that the extension assert CA=true.
   bool require_anchor_basic_constraints = false;
 
   // Optionally, require trusted leafs to be self-signed to be trusted.

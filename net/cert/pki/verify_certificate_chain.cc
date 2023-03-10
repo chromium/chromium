@@ -1358,7 +1358,14 @@ void PathVerifier::ProcessRootCertificate(const ParsedCertificate& cert,
   if (trust.enforce_anchor_constraints) {
     if (trust.require_anchor_basic_constraints &&
         !cert.has_basic_constraints()) {
-      errors->AddError(cert_errors::kMissingBasicConstraints);
+      switch (cert.tbs().version) {
+        case CertificateVersion::V1:
+        case CertificateVersion::V2:
+          break;
+        case CertificateVersion::V3:
+          errors->AddError(cert_errors::kMissingBasicConstraints);
+          break;
+      }
     }
     ApplyTrustAnchorConstraints(cert, required_key_purpose, errors);
   }
