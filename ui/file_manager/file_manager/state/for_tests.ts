@@ -6,11 +6,13 @@ import {assertDeepEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {MockVolumeManager} from '../background/js/mock_volume_manager.js';
 import {DialogType} from '../common/js/dialog_type.js';
+import {VolumeManagerCommon} from '../common/js/volume_manager_types.js';
 import {Crostini} from '../externs/background/crostini.js';
 import {FilesAppDirEntry} from '../externs/files_app_entry_interfaces.js';
-import {FileKey, PropStatus, State} from '../externs/ts/state.js';
-import {VolumeInfo} from '../externs/volume_info.js';
+import {FileData, FileKey, PropStatus, State, Volume} from '../externs/ts/state.js';
+import {constants} from '../foreground/js/constants.js';
 import {FileSelectionHandler} from '../foreground/js/file_selection.js';
+import {MetadataItem} from '../foreground/js/metadata/metadata_item.js';
 import {MetadataModel} from '../foreground/js/metadata/metadata_model.js';
 import {MockMetadataModel} from '../foreground/js/metadata/mock_metadata.js';
 import {createFakeDirectoryModel} from '../foreground/js/mock_directory_model.js';
@@ -75,21 +77,6 @@ export function updateContent(store: Store, entries: Entry[]) {
 }
 
 /**
- * Store state might include objects (e.g. Entry type) which can not stringified
- * by JSON, here we implement a custom "replacer" to handle that.
- */
-function jsonStringifyStoreState(state: any): string {
-  return JSON.stringify(state, (key, value) => {
-    // Currently only the key with "entry" (inside `FileData`) can't be
-    // stringified, we just return its URL.
-    if (key === 'entry') {
-      return value.toURL();
-    }
-    return value;
-  }, 2);
-}
-
-/**
  * Waits for a part of the Store to be in the expected state.
  *
  * Waits a maximum of 10 seconds, since in the unittest the Store manipulation
@@ -105,9 +92,7 @@ export async function waitDeepEquals(
   let got: any;
   const timeout = new Promise((_, reject) => {
     setTimeout(() => {
-      reject(new Error(`waitDeepEquals timed out.\nWANT:\n${
-          jsonStringifyStoreState(
-              want)}\nGOT:\n${jsonStringifyStoreState(got)}`));
+      reject(new Error(`waitDeepEquals timed out waiting for \n${want}`));
     }, 10000);
   });
 
@@ -120,6 +105,8 @@ export async function waitDeepEquals(
       if (error.constructor?.name === 'AssertionError') {
         return false;
       }
+      console.log(error.stack);
+      console.error(error);
       throw error;
     }
   });
@@ -128,9 +115,9 @@ export async function waitDeepEquals(
 }
 
 /** Setup store and initialize it with empty state. */
-export function setupStore(initialState: State = getEmptyState()): Store {
+export function setupStore(): Store {
   const store = getStore();
-  store.init(initialState);
+  store.init(getEmptyState());
   return store;
 }
 
@@ -152,39 +139,98 @@ export function setUpFileManagerOnWindow() {
 }
 
 /**
- * Create a fake VolumeMetadata with VolumeInfo, VolumeInfo can be created by
- * MockVolumeManager.createMockVolumeInfo.
+ * Create a fake FileData with partial information. Only the fields listed are
+ * required, other fields are optional.
  */
-export function createFakeVolumeMetadata(
-    volumeInfo: VolumeInfo,
-    ): chrome.fileManagerPrivate.VolumeMetadata {
+export function createFakeFileData(
+    partialFileData: Pick<FileData, 'entry'|'label'|'type'>&
+    Partial<Omit<FileData, 'entry'|'label'|'type'>>,
+    ): FileData {
+  const defaultFileData = {
+    icon: constants.ICON_TYPES.FOLDER,
+    volumeType: null,
+    isDirectory: true,
+    metadata: {} as MetadataItem,
+    isRootEntry: false,
+    isEjectable: false,
+    shouldDelayLoadingChildren: false,
+    children: [],
+    expanded: false,
+  };
   return {
-    volumeId: volumeInfo.volumeId,
-    volumeType: volumeInfo.volumeType,
+    ...defaultFileData,
+    ...partialFileData,
+  };
+}
+
+/** Create a fake VolumeMetadata. */
+export function createFakeVolumeMetadata(
+    partialMetadata:
+        Pick<chrome.fileManagerPrivate.VolumeMetadata, 'volumeId'|'volumeType'>&
+    Partial<Omit<
+        chrome.fileManagerPrivate.VolumeMetadata, 'volumeId'|'volumeType'>>,
+    ): chrome.fileManagerPrivate.VolumeMetadata {
+  const defaultMetadata = {
     profile: {
-      ...volumeInfo.profile,
+      displayName: 'foobar@chromium.org',
+      isCurrentProfile: true,
       profileId: '',
     },
-    configurable: volumeInfo.configurable,
-    watchable: volumeInfo.watchable,
-    source: volumeInfo.source,
-    volumeLabel: volumeInfo.label,
+    configurable: false,
+    watchable: true,
+    source: VolumeManagerCommon.Source.SYSTEM,
+    volumeLabel: undefined,
     fileSystemId: undefined,
-    providerId: volumeInfo.providerId,
+    providerId: undefined,
     sourcePath: undefined,
-    deviceType: volumeInfo.deviceType,
-    devicePath: volumeInfo.devicePath,
+    deviceType: undefined,
+    devicePath: undefined,
     isParentDevice: undefined,
-    isReadOnly: volumeInfo.isReadOnly,
-    isReadOnlyRemovableDevice: volumeInfo.isReadOnlyRemovableDevice,
-    hasMedia: volumeInfo.hasMedia,
+    isReadOnly: false,
+    isReadOnlyRemovableDevice: false,
+    hasMedia: false,
     mountCondition: undefined,
     mountContext: undefined,
-    diskFileSystemType: volumeInfo.diskFileSystemType,
-    iconSet: volumeInfo.iconSet,
-    driveLabel: volumeInfo.driveLabel,
-    remoteMountPath: volumeInfo.remoteMountPath,
+    diskFileSystemType: undefined,
+    iconSet: {icon16x16Url: '', icon32x32Url: ''},
+    driveLabel: '',
+    remoteMountPath: undefined,
     hidden: false,
-    vmType: volumeInfo.vmType,
+    vmType: undefined,
+  };
+  return {
+    ...defaultMetadata,
+    ...partialMetadata,
+  };
+}
+
+/**
+ * Create a fake Volume. Only the fields listed are required, other fields are
+ * optional.
+ */
+export function createFakeVolume(
+    partialVolume: Pick<Volume, 'volumeId'|'volumeType'|'rootKey'|'label'>&
+    Partial<Omit<Volume, 'volumeId'|'volumeType'|'rootKey'|'label'>>): Volume {
+  const defaultVolume = {
+    status: PropStatus.SUCCESS,
+    source: VolumeManagerCommon.Source.SYSTEM,
+    error: undefined,
+    deviceType: undefined,
+    devicePath: undefined,
+    isReadOnly: false,
+    isReadOnlyRemovableDevice: false,
+    providerId: undefined,
+    configurable: false,
+    watchable: true,
+    diskFileSystemType: '',
+    iconSet: {icon16x16Url: '', icon32x32Url: ''},
+    driveLabel: '',
+    vmType: undefined,
+    isDisabled: false,
+    prefixKey: undefined,
+  };
+  return {
+    ...defaultVolume,
+    ...partialVolume,
   };
 }

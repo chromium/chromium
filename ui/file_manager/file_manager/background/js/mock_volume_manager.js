@@ -120,7 +120,7 @@ export class MockVolumeManager {
    * Current implementation can handle only fake entries.
    *
    * @param {!Entry|!FilesAppEntry} entry A fake entry.
-   * @return {!EntryLocation|null} Location information.
+   * @return {!EntryLocation} Location information.
    */
   getLocationInfo(entry) {
     if (util.isFakeEntry(entry)) {
@@ -160,11 +160,6 @@ export class MockVolumeManager {
     }
 
     const volumeInfo = this.getVolumeInfo(entry);
-    // For filtered out volumes, its volume info won't exist in the volume info
-    // list.
-    if (!volumeInfo) {
-      return null;
-    }
     const rootType = VolumeManagerCommon.getRootTypeFromVolumeType(
         assert(volumeInfo.volumeType));
     const isRootEntry = util.isSameEntry(entry, volumeInfo.fileSystem.root);

@@ -2,13 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+
 import {MockFileSystem} from '../../common/js/mock_entry.js';
-import {State} from '../../externs/ts/state.js';
-import {addFolderShortcut, refreshFolderShortcut, removeFolderShortcut} from '../actions/folder_shortcuts.js';
-import {setupStore, waitDeepEquals} from '../for_tests.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {EntryType} from '../../externs/ts/state.js';
+import {addFolderShortcut as addFolderShortcutAction, refreshFolderShortcut as refreshFolderShortcutAction, removeFolderShortcut as removeFolderShortcutAction} from '../actions/folder_shortcuts.js';
+import {createFakeFileData} from '../for_tests.js';
 import {getEmptyState} from '../store.js';
 
-import {convertEntryToFileData} from './all_entries.js';
+import {addFolderShortcut, refreshFolderShortcut, removeFolderShortcut} from './folder_shortcuts.js';
 
 /** Generate a fake file system with fake file entries. */
 function setupFileSystem(): MockFileSystem {
@@ -22,137 +25,92 @@ function setupFileSystem(): MockFileSystem {
   return fileSystem;
 }
 
+
 /** Tests folder shortcuts can be refreshed correctly. */
-export async function testRefreshFolderShortcuts(done: () => void) {
-  const initialState = getEmptyState();
+export function testRefreshFolderShortcuts() {
+  const currentState = getEmptyState();
   // Add shortcut-1 to the store.
   const fileSystem = setupFileSystem();
   const shortcutEntry1: DirectoryEntry = fileSystem.entries['/shortcut-1'];
-  initialState.allEntries[shortcutEntry1.toURL()] =
-      convertEntryToFileData(shortcutEntry1);
-  initialState.folderShortcuts.push(shortcutEntry1.toURL());
-
-  const store = setupStore(initialState);
-
-  // Dispatch a refresh action with shortcut 2 and 3.
   const shortcutEntry2: DirectoryEntry = fileSystem.entries['/shortcut-2'];
   const shortcutEntry3: DirectoryEntry = fileSystem.entries['/shortcut-3'];
-  store.dispatch(
-      refreshFolderShortcut({entries: [shortcutEntry2, shortcutEntry3]}));
+  currentState.allEntries[shortcutEntry1.toURL()] = createFakeFileData({
+    entry: shortcutEntry1,
+    volumeType: VolumeManagerCommon.VolumeType.DRIVE,
+    label: 'shortcut 1',
+    type: EntryType.FS_API,
+  });
+  currentState.folderShortcuts.push(shortcutEntry1.toURL());
 
-  // Expect all shortcut entries are in allEntries, and only shortcut 2 and 3
-  // are in the folderShortcuts.
-  const want: Partial<State> = {
-    allEntries: {
-      [shortcutEntry2.toURL()]: convertEntryToFileData(shortcutEntry2),
-      [shortcutEntry3.toURL()]: convertEntryToFileData(shortcutEntry3),
-    },
-    folderShortcuts: [shortcutEntry2.toURL(), shortcutEntry3.toURL()],
-  };
-  await waitDeepEquals(store, want, (state) => ({
-                                      allEntries: state.allEntries,
-                                      folderShortcuts: state.folderShortcuts,
-                                    }));
-
-  done();
+  const newState = refreshFolderShortcut(
+      currentState,
+      refreshFolderShortcutAction({entries: [shortcutEntry2, shortcutEntry3]}));
+  assertEquals(2, newState.folderShortcuts.length);
+  assertEquals(shortcutEntry2.toURL(), newState.folderShortcuts[0]);
+  assertEquals(shortcutEntry3.toURL(), newState.folderShortcuts[1]);
 }
 
 /** Tests folder shortcut can be added correctly. */
-export async function testAddFolderShortcut(done: () => void) {
-  const initialState = getEmptyState();
+export function testAddFolderShortcut() {
+  const currentState = getEmptyState();
   // Add shortcut-1 and shortcut-3 to the store.
   const fileSystem = setupFileSystem();
   const shortcutEntry1: DirectoryEntry = fileSystem.entries['/shortcut-1'];
-  const shortcutEntry3: DirectoryEntry = fileSystem.entries['/shortcut-3'];
-  initialState.allEntries[shortcutEntry1.toURL()] =
-      convertEntryToFileData(shortcutEntry1);
-  initialState.allEntries[shortcutEntry3.toURL()] =
-      convertEntryToFileData(shortcutEntry3);
-  initialState.folderShortcuts.push(shortcutEntry1.toURL());
-  initialState.folderShortcuts.push(shortcutEntry3.toURL());
-
-  const store = setupStore(initialState);
-
-  // Dispatch an action to add shortcut 4.
-  const shortcutEntry4: DirectoryEntry = fileSystem.entries['/shortcut-4'];
-  store.dispatch(addFolderShortcut({entry: shortcutEntry4}));
-
-  // Expect the newly added shortcut 4 is in the store.
-  const want1: Partial<State> = {
-    allEntries: {
-      [shortcutEntry1.toURL()]: convertEntryToFileData(shortcutEntry1),
-      [shortcutEntry3.toURL()]: convertEntryToFileData(shortcutEntry3),
-      [shortcutEntry4.toURL()]: convertEntryToFileData(shortcutEntry4),
-    },
-    folderShortcuts: [
-      shortcutEntry1.toURL(),
-      shortcutEntry3.toURL(),
-      shortcutEntry4.toURL(),
-    ],
-  };
-  await waitDeepEquals(store, want1, (state) => ({
-                                       allEntries: state.allEntries,
-                                       folderShortcuts: state.folderShortcuts,
-                                     }));
-
-  // Dispatch another action to add already existed shortcut 1.
-  store.dispatch(addFolderShortcut({entry: shortcutEntry1}));
-
-  // Expect no changes in the store.
-  await waitDeepEquals(store, want1, (state) => ({
-                                       allEntries: state.allEntries,
-                                       folderShortcuts: state.folderShortcuts,
-                                     }));
-
-  // Dispatch another action to add shortcut 2 to check sorting.
   const shortcutEntry2: DirectoryEntry = fileSystem.entries['/shortcut-2'];
-  store.dispatch(addFolderShortcut({entry: shortcutEntry2}));
+  const shortcutEntry3: DirectoryEntry = fileSystem.entries['/shortcut-3'];
+  const shortcutEntry4: DirectoryEntry = fileSystem.entries['/shortcut-4'];
+  currentState.allEntries[shortcutEntry1.toURL()] = createFakeFileData({
+    entry: shortcutEntry1,
+    volumeType: VolumeManagerCommon.VolumeType.DRIVE,
+    label: 'shortcut 1',
+    type: EntryType.FS_API,
+  });
+  currentState.allEntries[shortcutEntry3.toURL()] = createFakeFileData({
+    entry: shortcutEntry3,
+    volumeType: VolumeManagerCommon.VolumeType.DRIVE,
+    label: 'shortcut 3',
+    type: EntryType.FS_API,
+  });
+  currentState.folderShortcuts.push(shortcutEntry1.toURL());
+  currentState.folderShortcuts.push(shortcutEntry3.toURL());
 
-  // Expect shortcut 2 will be inserted in the middle.
-  const want2: Partial<State> = {
-    allEntries: {
-      ...want1.allEntries,
-      [shortcutEntry2.toURL()]: convertEntryToFileData(shortcutEntry2),
-    },
-    folderShortcuts: [
-      shortcutEntry1.toURL(),
-      shortcutEntry2.toURL(),
-      shortcutEntry3.toURL(),
-      shortcutEntry4.toURL(),
-    ],
-  };
-  await waitDeepEquals(store, want2, (state) => ({
-                                       allEntries: state.allEntries,
-                                       folderShortcuts: state.folderShortcuts,
-                                     }));
-
-  done();
+  // Add a new shortcut.
+  const newState1 = addFolderShortcut(
+      currentState, addFolderShortcutAction({entry: shortcutEntry2}));
+  assertEquals(3, newState1.folderShortcuts.length);
+  assertEquals(shortcutEntry2.toURL(), newState1.folderShortcuts[1]);
+  // Add an already existed shortcut.
+  const newState2 = addFolderShortcut(
+      currentState, addFolderShortcutAction({entry: shortcutEntry1}));
+  assertEquals(newState2.folderShortcuts, currentState.folderShortcuts);
+  // Add another entry to check sorting.
+  const newState3 = addFolderShortcut(
+      currentState, addFolderShortcutAction({entry: shortcutEntry4}));
+  assertEquals(3, newState3.folderShortcuts.length);
+  assertEquals(shortcutEntry4.toURL(), newState3.folderShortcuts[2]);
 }
 
 /** Tests folder shortcut can be removed correctly. */
-export async function testRemoveFolderShortcut(done: () => void) {
-  const initialState = getEmptyState();
+export function testRemoveFolderShortcut() {
+  const currentState = getEmptyState();
   // Add shortcut-1 to the store.
   const fileSystem = setupFileSystem();
   const shortcutEntry1: DirectoryEntry = fileSystem.entries['/shortcut-1'];
-  initialState.allEntries[shortcutEntry1.toURL()] =
-      convertEntryToFileData(shortcutEntry1);
-  initialState.folderShortcuts.push(shortcutEntry1.toURL());
-
-  const store = setupStore(initialState);
-
-  // Dispatch an action to remove shortcut 1.
-  store.dispatch(removeFolderShortcut({key: shortcutEntry1.toURL()}));
-
-  // Expect shortcut 1 is removed from the store.
-  await waitDeepEquals(store, [], (state) => state.folderShortcuts);
-
-  // Dispatch another action to remove non-existed shortcut 2.
   const shortcutEntry2: DirectoryEntry = fileSystem.entries['/shortcut-2'];
-  store.dispatch(removeFolderShortcut({key: shortcutEntry2.toURL()}));
+  currentState.allEntries[shortcutEntry1.toURL()] = createFakeFileData({
+    entry: shortcutEntry1,
+    volumeType: VolumeManagerCommon.VolumeType.DRIVE,
+    label: 'shortcut 1',
+    type: EntryType.FS_API,
+  });
+  currentState.folderShortcuts.push(shortcutEntry1.toURL());
 
-  // Expect no changes in the store.
-  await waitDeepEquals(store, [], (state) => state.folderShortcuts);
-
-  done();
+  // Remove a shortcut.
+  const newState1 = removeFolderShortcut(
+      currentState, removeFolderShortcutAction({key: shortcutEntry1.toURL()}));
+  assertEquals(0, newState1.folderShortcuts.length);
+  // Remove a non-exist shortcut.
+  const newState2 = removeFolderShortcut(
+      currentState, removeFolderShortcutAction({key: shortcutEntry2.toURL()}));
+  assertEquals(newState2.folderShortcuts, currentState.folderShortcuts);
 }

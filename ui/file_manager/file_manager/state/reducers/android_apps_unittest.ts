@@ -2,12 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {State} from '../../externs/ts/state.js';
-import {addAndroidApps} from '../actions/android_apps.js';
-import {setupStore, waitDeepEquals} from '../for_tests.js';
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+
+import {addAndroidApps as addAndroidAppsAction} from '../actions/android_apps.js';
+import {getEmptyState} from '../store.js';
+
+import {addAndroidApps} from './android_apps.js';
 
 /** Tests that android apps can be added correctly to the store. */
-export async function testAddAndroidApps(done: () => void) {
+export function testAddAndroidApps() {
+  const currentState = getEmptyState();
   const androidApps: chrome.fileManagerPrivate.AndroidApp[] = [
     {
       name: 'App 1',
@@ -22,17 +26,15 @@ export async function testAddAndroidApps(done: () => void) {
       iconSet: {icon16x16Url: 'url3', icon32x32Url: 'url4'},
     },
   ];
-
-  // Dispatch an action to add android apps.
-  const store = setupStore();
-  store.dispatch(addAndroidApps({apps: androidApps}));
-
-  // Expect both android apps are existed in the store.
-  const want: State['androidApps'] = {
-    'com.test.app1': androidApps[0],
-    'com.test.app2': androidApps[1],
-  };
-  await waitDeepEquals(store, want, (state) => state.androidApps);
-
-  done();
+  const newState =
+      addAndroidApps(currentState, addAndroidAppsAction({apps: androidApps}));
+  const keys = Object.keys(newState.androidApps);
+  assertEquals(2, keys.length);
+  assertEquals('com.test.app1', keys[0]);
+  assertEquals('com.test.app2', keys[1]);
+  assertEquals('App 1', newState.androidApps[keys[0]!].name);
+  assertEquals('App 2', newState.androidApps[keys[1]!].name);
+  assertEquals('Activity1', newState.androidApps[keys[0]!].activityName);
+  assertEquals('url1', newState.androidApps[keys[0]!].iconSet.icon16x16Url);
+  assertEquals('url4', newState.androidApps[keys[1]!].iconSet.icon32x32Url);
 }
