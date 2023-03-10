@@ -2560,8 +2560,16 @@ StyleBuilderConverter::ConvertRegisteredPropertyVariableData(
     const CSSValue& value,
     bool is_animation_tainted) {
   // TODO(andruud): Produce tokens directly from CSSValue.
-  return CSSVariableData::Create(value.CssText(), is_animation_tainted,
-                                 /*needs_variable_resolution=*/false);
+  String text = value.CssText();
+
+  CSSTokenizer tokenizer(text);
+  Vector<CSSParserToken> tokens;
+  tokens.AppendVector(tokenizer.TokenizeToEOF());
+
+  return CSSVariableData::Create(
+      CSSTokenizedValue{CSSParserTokenRange{tokens}, StringView{text}},
+      is_animation_tainted,
+      /*needs_variable_resolution=*/false);
 }
 
 namespace {

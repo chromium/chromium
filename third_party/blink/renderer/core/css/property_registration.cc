@@ -149,12 +149,10 @@ PropertyRegistration* PropertyRegistration::MaybeCreateForDeclaredProperty(
     const CSSParserContext* parser_context =
         document.ElementSheet().Contents()->ParserContext();
     const bool is_animation_tainted = false;
-    CSSTokenizer tokenizer(initial_variable_data->OriginalText());
-    Vector<CSSParserToken, 32> tokens = tokenizer.TokenizeToEOF();
-    CSSParserTokenRange range(tokens);
-    initial = syntax->Parse(
-        CSSTokenizedValue{range, initial_variable_data->OriginalText()},
-        *parser_context, is_animation_tainted);
+    initial =
+        syntax->Parse(CSSTokenizedValue{initial_variable_data->TokenRange(),
+                                        initial_variable_data->OriginalText()},
+                      *parser_context, is_animation_tainted);
     if (!initial) {
       return nullptr;
     }

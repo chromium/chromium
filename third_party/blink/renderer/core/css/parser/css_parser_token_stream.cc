@@ -23,12 +23,6 @@ CSSParserToken CSSParserTokenStream::ConsumeIncludingWhitespace() {
   return result;
 }
 
-CSSParserToken CSSParserTokenStream::ConsumeIncludingWhitespaceRaw() {
-  CSSParserToken result = ConsumeRaw();
-  ConsumeWhitespace();
-  return result;
-}
-
 bool CSSParserTokenStream::ConsumeCommentOrNothing() {
   DCHECK(!HasLookAhead());
   const auto token = tokenizer_.TokenizeSingleWithComments();

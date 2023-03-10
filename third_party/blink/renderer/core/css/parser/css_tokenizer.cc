@@ -70,12 +70,6 @@ CSSParserToken CSSTokenizer::TokenizeSingleWithComments() {
   return NextToken</*SkipComments=*/false, /*StoreOffset=*/true>();
 }
 
-void CSSTokenizer::PersistStrings(CSSTokenizer& destination) {
-  for (String& s : string_pool_) {
-    destination.string_pool_.push_back(std::move(s));
-  }
-}
-
 wtf_size_t CSSTokenizer::TokenCount() {
   return token_count_;
 }

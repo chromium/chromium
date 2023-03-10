@@ -26,53 +26,27 @@ class CORE_EXPORT CSSVariableData : public RefCounted<CSSVariableData> {
   static scoped_refptr<CSSVariableData> Create() {
     return base::AdoptRef(new CSSVariableData());
   }
-
-  // This is the fastest (non-trivial) constructor if you've got the has_* data
-  // already, e.g. because you extracted them while tokenizing (see
-  // ExtractFeatures()) or got them from another CSSVariableData instance during
-  // substitution.
-  static scoped_refptr<CSSVariableData> Create(StringView original_text,
-                                               bool is_animation_tainted,
-                                               bool needs_variable_resolution,
-                                               bool has_font_units,
-                                               bool has_root_font_units,
-                                               bool has_line_height_units) {
-    if (original_text.length() > kMaxVariableBytes) {
-      // This should have been blocked off during variable substitution.
-      NOTREACHED();
-      return nullptr;
-    }
-
-    wtf_size_t bytes_needed =
-        sizeof(CSSVariableData) + (original_text.Is8Bit()
-                                       ? original_text.length()
-                                       : 2 * original_text.length());
-    void* buf = WTF::Partitions::FastMalloc(
-        bytes_needed, WTF::GetStringWithTypeName<CSSVariableData>());
+  static scoped_refptr<CSSVariableData> Create(
+      const CSSTokenizedValue& tokenized_value,
+      bool is_animation_tainted,
+      bool needs_variable_resolution) {
+    void* buf =
+        AllocateSpaceIncludingCSSParserTokens(tokenized_value.range.size());
     return base::AdoptRef(new (buf) CSSVariableData(
-        original_text, is_animation_tainted, needs_variable_resolution,
-        has_font_units, has_root_font_units, has_line_height_units));
+        tokenized_value, is_animation_tainted, needs_variable_resolution));
   }
 
-  // Second-fastest; scans through all the tokens to determine the has_* data.
-  // (The tokens are not used apart from that; only the original string is
-  // stored.) The tokens must correspond to the given string.
-  static scoped_refptr<CSSVariableData> Create(CSSTokenizedValue value,
-                                               bool is_animation_tainted,
-                                               bool needs_variable_resolution);
-
-  // Like the previous, but also needs to tokenize the string.
-  static scoped_refptr<CSSVariableData> Create(const String& original_text,
-                                               bool is_animation_tainted,
-                                               bool needs_variable_resolution);
-
-  StringView OriginalText() const {
-    if (is_8bit_) {
-      return StringView(reinterpret_cast<const LChar*>(this + 1), length_);
-    } else {
-      return StringView(reinterpret_cast<const UChar*>(this + 1), length_);
-    }
+  CSSParserTokenRange TokenRange() const {
+    return CSSParserTokenRange{
+        base::span<CSSParserToken>(TokenInternalPtr(), num_tokens_)};
   }
+
+  base::span<CSSParserToken> Tokens() const {
+    return {TokenInternalPtr(), num_tokens_};
+  }
+
+  const AtomicString& BackingString() const { return backing_string_; }
+  const String& OriginalText() const { return original_text_; }
 
   String Serialize() const;
 
@@ -102,58 +76,44 @@ class CORE_EXPORT CSSVariableData : public RefCounted<CSSVariableData> {
   CSSVariableData(CSSVariableData&&) = delete;
   CSSVariableData& operator=(const CSSVariableData&&) = delete;
 
-  // ORs the given flags with those of the given token.
-  static void ExtractFeatures(const CSSParserToken& token,
-                              bool& has_font_units,
-                              bool& has_root_font_units,
-                              bool& has_line_height_units);
-
-  // The maximum number of bytes for a CSS variable (including text
-  // that comes from var() substitution).
-  //
-  // If you change this, length_ below may need updates.
-  //
-  // https://drafts.csswg.org/css-variables/#long-variables
-  static const size_t kMaxVariableBytes = 1048576;
-
  private:
-  CSSVariableData()
-      : length_(0),
-        is_animation_tainted_(false),
-        needs_variable_resolution_(false),
-        is_8bit_(true),
-        has_font_units_(false),
-        has_root_font_units_(false),
-        has_line_height_units_(false),
-        unused_(0) {}
+  CSSVariableData() {}
 
-  CSSVariableData(StringView,
+  CSSVariableData(const CSSTokenizedValue&,
                   bool is_animation_tainted,
-                  bool needs_variable_resolution,
-                  bool has_font_units,
-                  bool has_root_font_units,
-                  bool has_line_height_units);
+                  bool needs_variable_resolution);
 
-  // 32 bits refcount before this.
+  void ConsumeAndUpdateTokens(const CSSParserTokenRange&);
+#if EXPENSIVE_DCHECKS_ARE_ON()
+  void VerifyStringBacking() const;
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
 
-  // Enough for storing up to 1MB (and then some), cf. kMaxSubstitutionBytes.
-  // The remaining 5 bits are kept in reserve for future use.
-  const wtf_size_t length_ : 21;
-  const bool is_animation_tainted_ : 1;
-  const bool needs_variable_resolution_ : 1;
-  const bool is_8bit_ : 1;
-  bool has_font_units_ : 1;
-  bool has_root_font_units_ : 1;
-  bool has_line_height_units_ : 1;
-  const wtf_size_t unused_ : 5;
+  static void* AllocateSpaceIncludingCSSParserTokens(size_t num_tokens) {
+    const size_t bytes_needed =
+        sizeof(CSSVariableData) + num_tokens * sizeof(CSSParserToken);
+    return WTF::Partitions::FastMalloc(
+        bytes_needed, WTF::GetStringWithTypeName<CSSVariableData>());
+  }
 
-  // The actual character data is stored after this.
+  CSSParserToken* TokenInternalPtr() const {
+    return const_cast<CSSParserToken*>(
+        reinterpret_cast<const CSSParserToken*>(this + 1));
+  }
+
+  // tokens_ may have raw pointers to string data, we store the String object
+  // owning that data in backing_string_ to keep it alive alongside the
+  // tokens_. (AtomicString makes sure it is deduplicated.)
+  AtomicString backing_string_;
+  String original_text_;
+  wtf_size_t num_tokens_ = 0;
+  const bool is_animation_tainted_ = false;
+  const bool needs_variable_resolution_ = false;
+  bool has_font_units_ = false;
+  bool has_root_font_units_ = false;
+  bool has_line_height_units_ = false;
+
+  // The CSSParserTokens are stored after this.
 };
-
-#if !DCHECK_IS_ON()
-static_assert(sizeof(CSSVariableData) <= 8,
-              "CSSVariableData must not grow without thinking");
-#endif
 
 }  // namespace blink
 

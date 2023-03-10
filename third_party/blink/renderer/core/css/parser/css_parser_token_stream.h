@@ -143,22 +143,6 @@ class CORE_EXPORT CSSParserTokenStream {
     return next_;
   }
 
-  // Allows you to read past the end of blocks without recursing,
-  // which is normally not what you want to do when parsing
-  // (it is really only useful during variable substitution).
-  inline const CSSParserToken& ConsumeRaw() {
-    EnsureLookAhead();
-    return UncheckedConsumeRaw();
-  }
-
-  // See ConsumeRaw().
-  const CSSParserToken& UncheckedConsumeRaw() {
-    DCHECK(HasLookAhead());
-    has_look_ahead_ = false;
-    offset_ = tokenizer_.Offset();
-    return next_;
-  }
-
   inline bool AtEnd() {
     EnsureLookAhead();
     return UncheckedAtEnd();
@@ -184,7 +168,6 @@ class CORE_EXPORT CSSParserTokenStream {
 
   void ConsumeWhitespace();
   CSSParserToken ConsumeIncludingWhitespace();
-  CSSParserToken ConsumeIncludingWhitespaceRaw();  // See ConsumeRaw().
   void UncheckedConsumeComponentValue();
 
   // Either consumes a comment token and returns true, or peeks at the next

@@ -182,9 +182,7 @@ suite('TabList', () => {
 
     const tabListStyle = window.getComputedStyle(tabList);
     assertEquals(
-        tabListStyle.getPropertyValue('--tabstrip-tab-height')
-            .trim()
-            .replace(/\n */, ' '),
+        tabListStyle.getPropertyValue('--tabstrip-tab-height').trim(),
         'calc(15px + 132px)');
     assertEquals(
         tabListStyle.getPropertyValue('--tabstrip-tab-width').trim(), '200px');

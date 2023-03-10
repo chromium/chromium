@@ -48,7 +48,6 @@
 #include "third_party/blink/renderer/core/css/media_query.h"
 #include "third_party/blink/renderer/core/css/media_values.h"
 #include "third_party/blink/renderer/core/css/media_values_dynamic.h"
-#include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
 #include "third_party/blink/renderer/core/css/properties/longhands/custom_property.h"
 #include "third_party/blink/renderer/core/css/resolver/media_query_result.h"
@@ -1559,13 +1558,8 @@ bool TokensEqualIgnoringLeadingAndTrailingSpaces(
     return false;
   }
 
-  CSSTokenizer tokenizer1(value1->OriginalText());
-  CSSTokenizer tokenizer2(value2->OriginalText());
-  auto tokens1vec = tokenizer1.TokenizeToEOF();
-  auto tokens2vec = tokenizer2.TokenizeToEOF();
-
-  const base::span<CSSParserToken> tokens1 = tokens1vec;
-  const base::span<CSSParserToken> tokens2 = tokens2vec;
+  const base::span<CSSParserToken> tokens1 = value1->Tokens();
+  const base::span<CSSParserToken> tokens2 = value2->Tokens();
 
   base::span<CSSParserToken>::const_iterator tokens1_start = tokens1.begin();
   base::span<CSSParserToken>::const_iterator tokens1_end = tokens1.end();

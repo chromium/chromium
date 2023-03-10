@@ -164,9 +164,12 @@ void DeclareProperty(Document& document,
 }
 
 scoped_refptr<CSSVariableData> CreateVariableData(String s) {
+  CSSTokenizer tokenizer(s);
+  auto tokens = tokenizer.TokenizeToEOF();
+  CSSParserTokenRange range(tokens);
   bool is_animation_tainted = false;
   bool needs_variable_resolution = false;
-  return CSSVariableData::Create(s, is_animation_tainted,
+  return CSSVariableData::Create({range, StringView(s)}, is_animation_tainted,
                                  needs_variable_resolution);
 }
 

@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/core/css/css_variable_reference_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
-#include "third_party/blink/renderer/core/css/resolver/style_cascade.h"
 
 namespace blink {
 
@@ -186,9 +185,6 @@ CSSCustomPropertyDeclaration* CSSVariableParser::ParseDeclarationValue(
     const CSSParserContext& context) {
   bool has_references;
   if (!IsValidVariable(tokenized_value.range, has_references)) {
-    return nullptr;
-  }
-  if (tokenized_value.text.length() > CSSVariableData::kMaxVariableBytes) {
     return nullptr;
   }
   return MakeGarbageCollected<CSSCustomPropertyDeclaration>(

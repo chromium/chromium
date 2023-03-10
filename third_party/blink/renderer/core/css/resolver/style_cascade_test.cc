@@ -3508,9 +3508,9 @@ TEST_F(StyleCascadeTest, InitialColor) {
   EXPECT_EQ(Color::kWhite, style->VisitedDependentColor(GetCSSPropertyColor()));
 }
 
-TEST_F(StyleCascadeTest, MaxVariableBytes) {
+TEST_F(StyleCascadeTest, MaxSubstitutionTokens) {
   StringBuilder builder;
-  for (size_t i = 0; i < CSSVariableData::kMaxVariableBytes; ++i) {
+  for (size_t i = 0; i < StyleCascade::kMaxSubstitutionTokens; ++i) {
     builder.Append(':');  // <colon-token>
   }
 
@@ -3529,21 +3529,12 @@ TEST_F(StyleCascadeTest, MaxVariableBytes) {
   cascade.Apply();
 
   EXPECT_EQ(at_limit, cascade.ComputedValue("--at-limit"));
-  EXPECT_EQ(g_null_atom, cascade.ComputedValue("--above-limit"));
+  EXPECT_EQ(above_limit, cascade.ComputedValue("--above-limit"));
   EXPECT_EQ(at_limit, cascade.ComputedValue("--at-limit-reference"));
   EXPECT_EQ(g_null_atom, cascade.ComputedValue("--above-limit-reference"));
   EXPECT_EQ(at_limit, cascade.ComputedValue("--at-limit-reference-fallback"));
   EXPECT_EQ(g_null_atom,
             cascade.ComputedValue("--above-limit-reference-fallback"));
-}
-
-TEST_F(StyleCascadeTest, UnicodeEscapeInCustomProperty) {
-  TestCascade cascade(GetDocument());
-  cascade.Add("--a", "\"\\65e5\\672c\"");
-  cascade.Add("content", "var(--a)");
-  cascade.Apply();
-
-  EXPECT_EQ(String::FromUTF8("\"日本\""), cascade.ComputedValue("content"));
 }
 
 TEST_F(StyleCascadeTest, GetCascadedValues) {
