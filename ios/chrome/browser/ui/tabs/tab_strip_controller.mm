@@ -710,13 +710,15 @@ const CGFloat kSymbolSize = 18;
     // Configure an action that should be executed on each tap.
     __weak UIButton* weakButton = view;
     __weak __typeof(self) weakSelf = self;
-    UIAction* displayMenu = [UIAction
-        actionWithTitle:@""
-                  image:nil
-             identifier:kMenuActionIdentifier
-                handler:^(UIAction* uiAction) {
-                  weakButton.menu = [weakSelf menuForWebstate:webState];
-                }];
+    base::WeakPtr<web::WebState> weakWebState = webState->GetWeakPtr();
+    UIAction* displayMenu =
+        [UIAction actionWithTitle:@""
+                            image:nil
+                       identifier:kMenuActionIdentifier
+                          handler:^(UIAction* uiAction) {
+                            weakButton.menu =
+                                [weakSelf menuForWebstate:weakWebState.get()];
+                          }];
     [view addAction:displayMenu
         forControlEvents:UIControlEventMenuActionTriggered];
 
@@ -742,6 +744,10 @@ const CGFloat kSymbolSize = 18;
 
 // Returns an UIMenu for the given `webState`.
 - (UIMenu*)menuForWebstate:(web::WebState*)webState {
+  DCHECK(IsPinnedTabsEnabled());
+  if (!webState) {
+    return [UIMenu menuWithTitle:@"" children:@[]];
+  }
   int webStateIndex = _webStateList->GetIndexOfWebState(webState);
   NSString* identifier = webState->GetStableIdentifier();
   BOOL pinnedState = _webStateList->IsWebStatePinnedAt(webStateIndex);
