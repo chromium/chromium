@@ -86,6 +86,7 @@ void AddNativeCoreColorMixer(ColorProvider* provider,
     [AppearanceForKey(key) performAsCurrentDrawingAppearance:load_colors];
   } else if (@available(macOS 10.14, *)) {
     NSAppearance* saved_appearance = NSAppearance.currentAppearance;
+    NSAppearance.currentAppearance = AppearanceForKey(key);
     load_colors();
     NSAppearance.currentAppearance = saved_appearance;
   } else {
@@ -143,6 +144,7 @@ void AddNativeUiColorMixer(ColorProvider* provider,
     [AppearanceForKey(key) performAsCurrentDrawingAppearance:load_colors];
   } else if (@available(macOS 10.14, *)) {
     NSAppearance* saved_appearance = NSAppearance.currentAppearance;
+    NSAppearance.currentAppearance = AppearanceForKey(key);
     load_colors();
     NSAppearance.currentAppearance = saved_appearance;
   } else {
