@@ -1526,6 +1526,13 @@ chromium-metrics-reviews@google.com.
   <summary>The outcome of the partial translate feature.</summary>
 </histogram>
 
+<histogram name="IOS.PartialTranslate.SelectionLength" units="characters"
+    expires_after="2024-02-23">
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <summary>The length of the selection received from javascript.</summary>
+</histogram>
+
 <histogram name="IOS.PasswordManager.Favicons.Count" units="count"
     expires_after="2023-09-03">
   <owner>veronguyen@google.com</owner>

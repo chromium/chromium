@@ -73,6 +73,10 @@ void ReportErrorOutcome(PartialTranslateError error, bool went_full) {
   }
 }
 
+// Character limit for the partial translate feature.
+// A string longer than that will trigger a full page translate.
+const NSUInteger kPartialTranslateCharactersLimit = 500;
+
 }  // anonymous namespace
 
 @interface PartialTranslateMediator ()
@@ -207,7 +211,11 @@ void ReportErrorOutcome(PartialTranslateError error, bool went_full) {
 
 - (void)receivedWebSelectionResponse:(WebSelectionResponse*)response {
   DCHECK(response);
-  if (response.selectedText.length > PartialTranslateLimitMaxCharacters()) {
+  base::UmaHistogramCounts10000("IOS.PartialTranslate.SelectionLength",
+                                response.selectedText.length);
+  if (response.selectedText.length >
+      std::min(PartialTranslateLimitMaxCharacters(),
+               kPartialTranslateCharactersLimit)) {
     return [self switchToFullTranslateWithError:PartialTranslateError::
                                                     kSelectionTooLong];
   }
