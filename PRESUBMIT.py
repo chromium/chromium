@@ -285,6 +285,18 @@ _BANNED_JAVA_FUNCTIONS : Sequence[BanRule] = (
         r'.*Test[A-Z]?.*\.java',
       ),
     ),
+    BanRule(
+      r'/RecordHistogram\.getHistogram(ValueCount|TotalCount|Samples)ForTesting\(',
+      (
+       'Raw histogram counts are easy to misuse; for example they don\'t reset '
+       'between batched tests. Use HistogramWatcher to check histogram records instead.',
+      ),
+      False,
+      excluded_paths=(
+        'base/android/javatests/src/org/chromium/base/metrics/RecordHistogramTest.java',
+        'base/test/android/javatests/src/org/chromium/base/test/util/HistogramWatcher.java',
+      ),
+    ),
 )
 
 _BANNED_JAVASCRIPT_FUNCTIONS : Sequence [BanRule] = (
