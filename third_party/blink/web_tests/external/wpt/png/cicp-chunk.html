@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <title>PNG test: cICP chunk</title>
+<link rel="help" href="https://w3c.github.io/PNG-spec/#cICP-chunk">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/html/canvas/resources/canvas-tests.js"></script>
@@ -35,5 +36,5 @@ img.onload = () => {
     assert_approx_equals(pixel[3], pixel_expected[3], epsilon);
   }, {colorSpace: "display-p3"});
 };
-img.src = "/images/cicp.png";
+img.src = "./images/cicp.png";
 </script>
