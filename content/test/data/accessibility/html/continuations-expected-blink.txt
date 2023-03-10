@@ -4,50 +4,50 @@ rootWebArea isLineBreakingObject=true
 ++++++group display='block' name='Group 1' isLineBreakingObject=true
 ++++++++genericContainer display='block' isLineBreakingObject=true
 ++++++++++button display='inline-block' name='Before'
-++++++++++++staticText display='inline-block' name='Before'
-++++++++++++++inlineTextBox display='inline-block' name='Before'
+++++++++++++staticText name='Before'
+++++++++++++++inlineTextBox name='Before'
 ++++++++genericContainer display='block' isLineBreakingObject=true
-++++++++++staticText display='block' name='After'
-++++++++++++inlineTextBox display='block' name='After'
+++++++++++staticText name='After'
+++++++++++++inlineTextBox name='After'
 ++++++group display='block' name='Group 2' isLineBreakingObject=true
 ++++++++genericContainer display='block' isLineBreakingObject=true
-++++++++++staticText display='block' name='Before'
-++++++++++++inlineTextBox display='block' name='Before'
+++++++++++staticText name='Before'
+++++++++++++inlineTextBox name='Before'
 ++++++++genericContainer display='block' isLineBreakingObject=true
-++++++++++staticText display='block' name='After'
-++++++++++++inlineTextBox display='block' name='After'
+++++++++++staticText name='After'
+++++++++++++inlineTextBox name='After'
 ++++++group display='block' name='Group 3' isLineBreakingObject=true
 ++++++++genericContainer display='inline'
 ++++++++++genericContainer display='block' isLineBreakingObject=true
-++++++++++++staticText display='block' name='Before'
-++++++++++++++inlineTextBox display='block' name='Before'
+++++++++++++staticText name='Before'
+++++++++++++++inlineTextBox name='Before'
 ++++++++genericContainer display='block' isLineBreakingObject=true
 ++++++++++genericContainer display='inline'
-++++++++++++staticText display='inline' name='Ever '
-++++++++++++++inlineTextBox display='inline' name='Ever '
+++++++++++++staticText name='Ever '
+++++++++++++++inlineTextBox name='Ever '
 ++++++++++link display='inline' name='After'
-++++++++++++staticText display='inline' name='After'
-++++++++++++++inlineTextBox display='inline' name='After'
+++++++++++++staticText name='After'
+++++++++++++++inlineTextBox name='After'
 ++++++group display='block' name='Group 4' isLineBreakingObject=true
 ++++++++genericContainer display='block' isLineBreakingObject=true
-++++++++++staticText display='block' name='Before'
-++++++++++++inlineTextBox display='block' name='Before'
+++++++++++staticText name='Before'
+++++++++++++inlineTextBox name='Before'
 ++++++++genericContainer display='block' isLineBreakingObject=true
 ++++++++++paragraph display='block' isLineBreakingObject=true
-++++++++++++staticText display='block' name='After'
-++++++++++++++inlineTextBox display='block' name='After'
+++++++++++++staticText name='After'
+++++++++++++++inlineTextBox name='After'
 ++++++group display='block' name='Group 5' isLineBreakingObject=true
-++++++++staticText display='inline' name='Italic only '
-++++++++++inlineTextBox display='inline' name='Italic only '
-++++++++staticText display='inline' name='italic and bold'
-++++++++++inlineTextBox display='inline' name='italic and bold'
+++++++++staticText name='Italic only '
+++++++++++inlineTextBox name='Italic only '
+++++++++staticText name='italic and bold'
+++++++++++inlineTextBox name='italic and bold'
 ++++++++genericContainer display='block' isLineBreakingObject=true
-++++++++++staticText display='block' name='Wow, a block!'
-++++++++++++inlineTextBox display='block' name='Wow, a block!'
+++++++++++staticText name='Wow, a block!'
+++++++++++++inlineTextBox name='Wow, a block!'
 ++++++++genericContainer display='block' isLineBreakingObject=true
-++++++++++staticText display='block' name='Wow, another block!'
-++++++++++++inlineTextBox display='block' name='Wow, another block!'
-++++++++staticText display='inline' name='More italic and bold text'
-++++++++++inlineTextBox display='inline' name='More italic and bold text'
-++++++++staticText display='inline' name=' More italic text'
-++++++++++inlineTextBox display='inline' name=' More italic text'
+++++++++++staticText name='Wow, another block!'
+++++++++++++inlineTextBox name='Wow, another block!'
+++++++++staticText name='More italic and bold text'
+++++++++++inlineTextBox name='More italic and bold text'
+++++++++staticText name=' More italic text'
+++++++++++inlineTextBox name=' More italic text'

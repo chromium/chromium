@@ -5,15 +5,15 @@ rootWebArea
 ++++++++listItem display='list-item' name='Custom name' hierarchicalLevel=1 setSize=3 posInSet=1
 ++++++++++listMarker display='inline-block' name='%E2%80%A2 '
 ++++++++++++staticText ignored name='%E2%80%A2 '
-++++++++++staticText display='list-item' name='Item 1'
-++++++++++++inlineTextBox display='list-item' name='Item 1'
+++++++++++staticText name='Item 1'
+++++++++++++inlineTextBox name='Item 1'
 ++++++++listItem display='list-item' hierarchicalLevel=1 setSize=3 posInSet=2
 ++++++++++listMarker display='inline-block' name='%E2%80%A2 '
 ++++++++++++staticText ignored name='%E2%80%A2 '
-++++++++++staticText display='list-item' name='Item 2'
-++++++++++++inlineTextBox display='list-item' name='Item 2'
+++++++++++staticText name='Item 2'
+++++++++++++inlineTextBox name='Item 2'
 ++++++++listItem display='list-item' hierarchicalLevel=1 setSize=3 posInSet=3
 ++++++++++listMarker display='inline-block' name='%E2%80%A2 '
 ++++++++++++staticText ignored name='%E2%80%A2 '
-++++++++++staticText display='list-item' name='Item 3'
-++++++++++++inlineTextBox display='list-item' name='Item 3'
+++++++++++staticText name='Item 3'
+++++++++++++inlineTextBox name='Item 3'

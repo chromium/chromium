@@ -1259,9 +1259,11 @@ std::string AXNodeData::ToString(bool verbose) const {
   }
 
   if (HasStringAttribute(ax::mojom::StringAttribute::kDisplay)) {
-    result += " display=";
-    result +=
-        GetStringAttribute(ax::mojom::StringAttribute::kDisplay).substr(0, 30);
+    std::string str = GetStringAttribute(ax::mojom::StringAttribute::kDisplay);
+    // Show CSS display type if it is interesting.
+    if (str != "block") {
+      result += " display=" + str;
+    }
   }
 
   if (!child_ids.empty()) {

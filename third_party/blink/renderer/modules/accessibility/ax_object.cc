@@ -1691,6 +1691,10 @@ void AXObject::SerializeNameAndDescriptionAttributes(
 }
 
 void AXObject::SerializeScreenReaderAttributes(ui::AXNodeData* node_data) {
+  if (ui::IsText(RoleValue())) {
+    // Don't serialize these attributes on text, where it is uninteresting.
+    return;
+  }
   String display_style;
   if (Node* node = GetNode(); node && !node->IsDocumentNode()) {
     if (const ComputedStyle* computed_style = node->GetComputedStyle()) {
