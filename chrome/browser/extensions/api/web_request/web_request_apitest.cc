@@ -6178,7 +6178,14 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest, TestOnAuthRequired) {
 // Tests the behavior of an extension that registers an event listener
 // asynchronously.
 // Regression test for https://crbug.com/1397879.
-IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest, AsyncListenerRegistration) {
+// Flaky on linux-lacros. See https://crbug.com/1423241
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_AsyncListenerRegistration DISABLED_AsyncListenerRegistration
+#else
+#define MAYBE_AsyncListenerRegistration AsyncListenerRegistration
+#endif
+IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
+                       MAYBE_AsyncListenerRegistration) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   static constexpr char kManifest[] =
       R"({
