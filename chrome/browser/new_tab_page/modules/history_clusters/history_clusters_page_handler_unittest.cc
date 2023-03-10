@@ -12,6 +12,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
+#include "chrome/browser/cart/cart_service.h"
+#include "chrome/browser/cart/cart_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/ui/side_panel/history_clusters/history_clusters_tab_helper.h"
@@ -73,6 +75,13 @@ class MockHistoryService : public history::HistoryService {
                    base::CancelableTaskTracker* tracker));
 };
 
+class MockCartService : public CartService {
+ public:
+  explicit MockCartService(Profile* profile) : CartService(profile) {}
+
+  MOCK_METHOD2(HasActiveCartForURL,
+               void(const GURL& url, base::OnceCallback<void(bool)> callback));
+};
 }  // namespace
 
 class HistoryClustersPageHandlerTest : public BrowserWithTestWindowTest {
@@ -92,6 +101,8 @@ class HistoryClustersPageHandlerTest : public BrowserWithTestWindowTest {
     mock_history_service_ =
         static_cast<MockHistoryService*>(HistoryServiceFactory::GetForProfile(
             profile(), ServiceAccessType::EXPLICIT_ACCESS));
+    mock_cart_service_ = static_cast<MockCartService*>(
+        CartServiceFactory::GetForProfile(profile()));
     handler_ = std::make_unique<HistoryClustersPageHandler>(
         mojo::PendingReceiver<ntp::history_clusters::mojom::PageHandler>(),
         web_contents_.get());
@@ -113,6 +124,8 @@ class HistoryClustersPageHandlerTest : public BrowserWithTestWindowTest {
 
   MockHistoryService& mock_history_service() { return *mock_history_service_; }
 
+  MockCartService& mock_cart_service() { return *mock_cart_service_; }
+
   HistoryClustersPageHandler& handler() { return *handler_; }
 
  private:
@@ -128,6 +141,12 @@ class HistoryClustersPageHandlerTest : public BrowserWithTestWindowTest {
              base::BindRepeating([](content::BrowserContext* context)
                                      -> std::unique_ptr<KeyedService> {
                return std::make_unique<MockHistoryService>();
+             })},
+            {CartServiceFactory::GetInstance(),
+             base::BindRepeating([](content::BrowserContext* context)
+                                     -> std::unique_ptr<KeyedService> {
+               return std::make_unique<MockCartService>(
+                   Profile::FromBrowserContext(context));
              })}};
   }
 
@@ -136,10 +155,11 @@ class HistoryClustersPageHandlerTest : public BrowserWithTestWindowTest {
   std::unique_ptr<content::WebContents> web_contents_;
   raw_ptr<MockHistoryClustersTabHelper> mock_history_clusters_tab_helper_;
   raw_ptr<MockHistoryService> mock_history_service_;
+  raw_ptr<MockCartService> mock_cart_service_;
   std::unique_ptr<HistoryClustersPageHandler> handler_;
 };
 
-history::Cluster SampleCluster() {
+history::ClusterVisit SampleVisitForURL(GURL url) {
   history::VisitRow visit_row;
   visit_row.visit_id = 1;
   visit_row.visit_time = base::Time::Now();
@@ -150,12 +170,18 @@ history::Cluster SampleCluster() {
   history::AnnotatedVisit annotated_visit;
   annotated_visit.visit_row = std::move(visit_row);
   annotated_visit.content_annotations = std::move(content_annotations);
-  std::string kSampleUrl = "www.google.com";
+  std::string kSampleUrl = url.spec();
   history::ClusterVisit sample_visit;
   sample_visit.url_for_display = base::UTF8ToUTF16(kSampleUrl);
+  sample_visit.normalized_url = url;
   sample_visit.annotated_visit = std::move(annotated_visit);
   sample_visit.score = 1.0f;
+  return sample_visit;
+}
 
+history::Cluster SampleCluster() {
+  history::ClusterVisit sample_visit =
+      SampleVisitForURL(GURL("https://www.google.com"));
   std::string kSampleLabel = "LabelOne";
   return history::Cluster(1, {3, sample_visit},
                           {{u"apples", history::ClusterKeywordData()},
@@ -357,4 +383,82 @@ TEST_F(HistoryClustersPageHandlerTest, DismissCluster) {
   handler().DismissCluster(std::move(visits_mojom));
   ASSERT_EQ(1u, visit_ids.size());
   ASSERT_EQ(1u, visit_ids.front());
+}
+
+class HistoryClustersPageHandlerCartTest
+    : public HistoryClustersPageHandlerTest {
+ public:
+  HistoryClustersPageHandlerCartTest() {
+    features_.InitAndEnableFeature(ntp_features::kNtpChromeCartModule);
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+TEST_F(HistoryClustersPageHandlerCartTest, CheckClusterHasCart) {
+  base::HistogramTester histogram_tester;
+  std::string kSampleLabel = "LabelOne";
+  const GURL url_A = GURL("https://www.foo.com");
+  const GURL url_B = GURL("https://www.bar.com");
+  const GURL url_C = GURL("https://www.baz.com");
+  MockCartService& cart_service = mock_cart_service();
+
+  const history::Cluster cluster =
+      history::Cluster(1,
+                       {SampleVisitForURL(url_A), SampleVisitForURL(url_B),
+                        SampleVisitForURL(url_C)},
+                       {{u"apples", history::ClusterKeywordData()},
+                        {u"Red Oranges", history::ClusterKeywordData()}},
+                       /*should_show_on_prominent_ui_surfaces=*/true,
+                       /*label=*/base::UTF8ToUTF16(kSampleLabel));
+  test_history_clusters_service().SetClustersToReturn({cluster});
+
+  // Vectors to capture mocked method args.
+  std::vector<GURL> urls;
+  std::vector<base::OnceCallback<void(bool)>> callbacks;
+  EXPECT_CALL(cart_service, HasActiveCartForURL(testing::_, testing::_))
+      .Times(cluster.visits.size())
+      .WillRepeatedly(testing::WithArgs<0, 1>(testing::Invoke(
+          [&urls, &callbacks](GURL url,
+                              base::OnceCallback<void(bool)> callback) -> void {
+            urls.push_back(url);
+            callbacks.push_back(std::move(callback));
+          })));
+  handler().GetCluster(base::DoNothing());
+  // Simulate one URL being identified as having a cart.
+  std::move(callbacks[0]).Run(true);
+  for (size_t i = 1; i < callbacks.size(); i++) {
+    std::move(callbacks[i]).Run(false);
+  }
+
+  for (size_t i = 0; i < urls.size(); i++) {
+    EXPECT_EQ(urls[i], cluster.visits[i].normalized_url);
+  }
+  histogram_tester.ExpectBucketCount(
+      "NewTabPage.HistoryClusters.HasCartForTopCluster", true, 1);
+
+  urls.clear();
+  callbacks.clear();
+  EXPECT_CALL(cart_service, HasActiveCartForURL(testing::_, testing::_))
+      .Times(cluster.visits.size())
+      .WillRepeatedly(testing::WithArgs<0, 1>(testing::Invoke(
+          [&urls, &callbacks](GURL url,
+                              base::OnceCallback<void(bool)> callback) -> void {
+            urls.push_back(url);
+            callbacks.push_back(std::move(callback));
+          })));
+  handler().GetCluster(base::DoNothing());
+  // Simulate none URL being identified as having a cart.
+  for (size_t i = 0; i < callbacks.size(); i++) {
+    std::move(callbacks[i]).Run(false);
+  }
+
+  for (size_t i = 0; i < urls.size(); i++) {
+    EXPECT_EQ(urls[i], cluster.visits[i].normalized_url);
+  }
+  histogram_tester.ExpectBucketCount(
+      "NewTabPage.HistoryClusters.HasCartForTopCluster", false, 1);
+  histogram_tester.ExpectTotalCount(
+      "NewTabPage.HistoryClusters.HasCartForTopCluster", 2);
 }

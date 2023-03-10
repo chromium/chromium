@@ -20,6 +20,7 @@
 
 class Profile;
 class GURL;
+class CartService;
 
 namespace content {
 class WebContents;
@@ -67,6 +68,7 @@ class HistoryClustersPageHandler
   std::unique_ptr<history_clusters::HistoryClustersServiceTask>
       fetch_clusters_task_;
   base::CancelableTaskTracker hide_visits_task_tracker_;
+  raw_ptr<CartService> cart_service_;
 
   base::WeakPtrFactory<HistoryClustersPageHandler> weak_ptr_factory_{this};
 };

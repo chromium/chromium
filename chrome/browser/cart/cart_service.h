@@ -162,8 +162,8 @@ class CartService : public history::HistoryServiceObserver,
   const GURL AppendUTM(const GURL& base_url);
   // Checks if there is an active abandoned cart for the domain of |url|, and
   // returns the result in the callback.
-  void HasActiveCartForURL(const GURL& url,
-                           base::OnceCallback<void(bool)> callback);
+  virtual void HasActiveCartForURL(const GURL& url,
+                                   base::OnceCallback<void(bool)> callback);
 
  private:
   friend class CartServiceFactory;
