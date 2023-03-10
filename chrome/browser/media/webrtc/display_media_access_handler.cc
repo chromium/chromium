@@ -20,7 +20,9 @@
 #include "chrome/browser/media/webrtc/desktop_media_picker_factory_impl.h"
 #include "chrome/browser/media/webrtc/native_desktop_media_list.h"
 #include "chrome/browser/media/webrtc/tab_desktop_media_list.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/user_interaction_observer.h"
+#include "chrome/browser/ui/url_identity.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/url_formatter/elide_url.h"
@@ -46,11 +48,23 @@
 
 namespace {
 
+constexpr UrlIdentity::TypeSet allowed_types = {
+    UrlIdentity::Type::kDefault, UrlIdentity::Type::kIsolatedWebApp,
+    UrlIdentity::Type::kFile};
+
+constexpr UrlIdentity::FormatOptions options = {
+    .default_options = {
+        UrlIdentity::DefaultFormatOptions::kOmitCryptographicScheme}};
+
 // Helper function to get the title of the calling application.
 std::u16string GetApplicationTitle(content::WebContents* web_contents) {
-  return url_formatter::FormatOriginForSecurityDisplay(
-      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
-      url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
+  DCHECK(web_contents);
+  GURL content_origin =
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin().GetURL();
+  UrlIdentity url_identity = UrlIdentity::CreateFromUrl(
+      Profile::FromBrowserContext(web_contents->GetBrowserContext()),
+      content_origin, allowed_types, options);
+  return url_identity.name;
 }
 
 }  // namespace
