@@ -246,9 +246,6 @@ class CORE_EXPORT CSSSelector {
     kPseudoOnlyOfType,
     kPseudoOptional,
     kPseudoParent,  // Written as & (in nested rules).
-    // Something that was unparsable, but contained a & and thus must be kept
-    // for serialization purposes.
-    kPseudoParentUnparsed,
     kPseudoPart,
     kPseudoPlaceholder,
     kPseudoPlaceholderShown,
@@ -272,6 +269,10 @@ class CORE_EXPORT CSSSelector {
     kPseudoState,
     kPseudoTarget,
     kPseudoUnknown,
+    // Something that was unparsable, but contained either a nesting
+    // selector (&), or a :scope pseudo-class, and must therefore be kept
+    // for serialization purposes.
+    kPseudoUnparsed,
     kPseudoValid,
     kPseudoVertical,
     kPseudoVisited,
@@ -348,10 +349,15 @@ class CORE_EXPORT CSSSelector {
                         const CSSParserContext&,
                         bool has_arguments,
                         CSSParserMode);
-  void SetUnparsedPlaceholder(const AtomicString&);
+  void SetUnparsedPlaceholder(CSSNestingType, const AtomicString&);
   // If this simple selector contains a parent selector (&), returns kNesting.
   // Otherwise, if this simple selector contains a :scope pseudo-class,
   // returns kScope. Otherwise, returns kNone.
+  //
+  // Note that this means that a selector which contains both '&' and :scope
+  // (which can happen for kPseudoUnparsed) will return kNesting. This is OK,
+  // since any selector which is nest-containing is also treated as
+  // scope-containing during parsing.
   CSSNestingType GetNestingType() const;
   void UpdatePseudoPage(const AtomicString&, const Document*);
   static PseudoType NameToPseudoType(const AtomicString&,
@@ -578,6 +584,9 @@ class CORE_EXPORT CSSSelector {
         // containing complex selector in its argument. e.g. :has(:is(.a .b))
         bool contains_complex_logical_combinations_;
       } has_;
+
+      // See GetNestingType.
+      CSSNestingType unparsed_nesting_type_;
     } bits_;
     QualifiedName attribute_;  // Used for attribute selector
     AtomicString argument_;    // Used for :contains, :lang, :dir, :toggle, etc.

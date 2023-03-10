@@ -354,7 +354,6 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoOptional:
     case kPseudoOutOfRange:
     case kPseudoParent:
-    case kPseudoParentUnparsed:
     case kPseudoPart:
     case kPseudoPastCue:
     case kPseudoPaused:
@@ -379,6 +378,7 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoTarget:
     case kPseudoToggle:
     case kPseudoUnknown:
+    case kPseudoUnparsed:
     case kPseudoValid:
     case kPseudoVertical:
     case kPseudoVideoPersistent:
@@ -820,7 +820,6 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoOptional:
     case kPseudoOutOfRange:
     case kPseudoParent:
-    case kPseudoParentUnparsed:
     case kPseudoPastCue:
     case kPseudoPaused:
     case kPseudoPictureInPicture:
@@ -839,6 +838,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoTarget:
     case kPseudoToggle:
     case kPseudoUnknown:
+    case kPseudoUnparsed:
     case kPseudoValid:
     case kPseudoVertical:
     case kPseudoVisited:
@@ -859,17 +859,21 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
   }
 }
 
-void CSSSelector::SetUnparsedPlaceholder(const AtomicString& value) {
+void CSSSelector::SetUnparsedPlaceholder(CSSNestingType unparsed_nesting_type,
+                                         const AtomicString& value) {
   DCHECK(match_ == kPseudoClass);
-  SetPseudoType(kPseudoParentUnparsed);
+  SetPseudoType(kPseudoUnparsed);
+  CreateRareData();
   SetValue(value);
+  data_.rare_data_->bits_.unparsed_nesting_type_ = unparsed_nesting_type;
 }
 
 CSSNestingType CSSSelector::GetNestingType() const {
   switch (GetPseudoType()) {
     case CSSSelector::kPseudoParent:
-    case CSSSelector::kPseudoParentUnparsed:
       return CSSNestingType::kNesting;
+    case CSSSelector::kPseudoUnparsed:
+      return data_.rare_data_->bits_.unparsed_nesting_type_;
     case CSSSelector::kPseudoScope:
       // TODO(crbug.com/1280240): Handle unparsed :scope.
       return CSSNestingType::kScope;
@@ -920,7 +924,7 @@ bool CSSSelector::SerializeSimpleSelector(StringBuilder& builder) const {
     builder.Append('.');
     SerializeIdentifier(SerializingValue(), builder);
   } else if (match_ == kPseudoClass || match_ == kPagePseudoClass) {
-    if (GetPseudoType() == kPseudoParentUnparsed) {
+    if (GetPseudoType() == kPseudoUnparsed) {
       builder.Append(Value());
     } else if (GetPseudoType() != kPseudoState &&
                GetPseudoType() != kPseudoParent) {

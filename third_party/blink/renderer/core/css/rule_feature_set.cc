@@ -180,13 +180,13 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoXrOverlay:
     case CSSSelector::kPseudoIs:
     case CSSSelector::kPseudoWhere:
-    case CSSSelector::kPseudoParent:          // Same as kPseudoIs.
-    case CSSSelector::kPseudoParentUnparsed:  // Never invalidates.
+    case CSSSelector::kPseudoParent:  // Same as kPseudoIs.
     case CSSSelector::kPseudoTargetText:
     case CSSSelector::kPseudoHighlight:
     case CSSSelector::kPseudoSpellingError:
     case CSSSelector::kPseudoGrammarError:
     case CSSSelector::kPseudoHas:
+    case CSSSelector::kPseudoUnparsed:  // Never invalidates.
     case CSSSelector::kPseudoViewTransition:
     case CSSSelector::kPseudoViewTransitionGroup:
     case CSSSelector::kPseudoViewTransitionImagePair:

@@ -1228,7 +1228,7 @@ static absl::optional<CSSSelector::PseudoType> GetImplicitlyAddedPseudo(
   return last->GetPseudoType();
 }
 
-TEST(CSSSelectorParserTest, NestingContextImpliedDescendant) {
+TEST(CSSSelectorParserTest, NestingTypeImpliedDescendant) {
   // Nesting selector (&)
   EXPECT_EQ(CSSSelector::kPseudoParent,
             GetImplicitlyAddedPseudo(".foo", CSSNestingType::kNesting));
@@ -1262,6 +1262,14 @@ TEST(CSSSelectorParserTest, NestingContextImpliedDescendant) {
   EXPECT_EQ(absl::nullopt,
             GetImplicitlyAddedPseudo(".foo > &", CSSNestingType::kScope));
   EXPECT_EQ(absl::nullopt, GetImplicitlyAddedPseudo(".foo > :is(.b, &)",
+                                                    CSSNestingType::kScope));
+  EXPECT_EQ(absl::nullopt, GetImplicitlyAddedPseudo(".foo > :is(.b, !&)",
+                                                    CSSNestingType::kScope));
+  EXPECT_EQ(absl::nullopt, GetImplicitlyAddedPseudo(".foo > :is(.b, :scope)",
+                                                    CSSNestingType::kScope));
+  EXPECT_EQ(absl::nullopt, GetImplicitlyAddedPseudo(".foo > :is(.b, :SCOPE)",
+                                                    CSSNestingType::kScope));
+  EXPECT_EQ(absl::nullopt, GetImplicitlyAddedPseudo(".foo > :is(.b, !:scope)",
                                                     CSSNestingType::kScope));
   EXPECT_EQ(absl::nullopt,
             GetImplicitlyAddedPseudo("& .foo", CSSNestingType::kScope));

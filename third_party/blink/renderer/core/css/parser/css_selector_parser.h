@@ -134,8 +134,7 @@ class CORE_EXPORT CSSSelectorParser {
   // https://drafts.csswg.org/selectors/#typedef-relative-selector-list
   CSSSelectorList* ConsumeForgivingRelativeSelectorList(CSSParserTokenRange&);
   CSSSelectorList* ConsumeRelativeSelectorList(CSSParserTokenRange&);
-  void AddPlaceholderParentSelectorIfNeeded(
-      const CSSParserTokenRange& argument);
+  void AddPlaceholderSelectorIfNeeded(const CSSParserTokenRange& argument);
 
   base::span<CSSSelector> ConsumeNestedRelativeSelector(
       CSSParserTokenRange& range);

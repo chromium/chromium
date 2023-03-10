@@ -430,7 +430,7 @@ CSSSelectorParser::ConsumeForgivingComplexSelectorList(
       }
       output_.resize(subpos);  // Drop what we parsed so far.
       valid_and_invalid_counter.CountInvalid();
-      AddPlaceholderParentSelectorIfNeeded(argument);
+      AddPlaceholderSelectorIfNeeded(argument);
     } else {
       valid_and_invalid_counter.CountValid();
     }
@@ -452,24 +452,40 @@ CSSSelectorParser::ConsumeForgivingComplexSelectorList(
   return reset_vector.CommitAddedElements();
 }
 
-// If the argument was unparsable but contained a & token,
-// we need to keep it so that we still consider the :is()
-// as nest-containing; furthermore, we need to keep it
-// on serialization so that round-tripping does not risk
-// making the :is() no longer nest-containing. We have similar
-// weaknesses here as in CSS custom properties, such as not
-// preserving comments fully.
-void CSSSelectorParser::AddPlaceholderParentSelectorIfNeeded(
+// If the argument was unparsable but contained a parent-referencing selector
+// (& or :scope), we need to keep it so that we still consider the :is()
+// as containing that selector; furthermore, we need to keep it on serialization
+// so that a round-trip doesn't lose this information.
+// We have similar weaknesses here as in CSS custom properties,
+// such as not preserving comments fully.
+void CSSSelectorParser::AddPlaceholderSelectorIfNeeded(
     const CSSParserTokenRange& argument) {
-  const bool contains_nest_token = std::any_of(
-      argument.begin(), argument.end(), [](const CSSParserToken& token) {
-        return token.GetType() == kDelimiterToken && token.Delimiter() == '&';
-      });
-  if (contains_nest_token) {
+  CSSNestingType nesting_type = CSSNestingType::kNone;
+
+  const CSSParserToken* previous_token = nullptr;
+
+  for (const CSSParserToken& token : argument) {
+    if (token.GetType() == kDelimiterToken && token.Delimiter() == '&') {
+      nesting_type = CSSNestingType::kNesting;
+      // Note that a nest-containing selector is also scope-containing, so
+      // no need to look for :scope if '&' has been found.
+      break;
+    }
+    if (previous_token && previous_token->GetType() == kColonToken &&
+        token.GetType() == kIdentToken &&
+        EqualIgnoringASCIICase(token.Value(), "scope")) {
+      DCHECK_EQ(nesting_type, CSSNestingType::kNone);
+      nesting_type = CSSNestingType::kScope;
+    }
+
+    previous_token = &token;
+  }
+
+  if (nesting_type != CSSNestingType::kNone) {
     CSSSelector placeholder_selector;
     placeholder_selector.SetMatch(CSSSelector::kPseudoClass);
     placeholder_selector.SetUnparsedPlaceholder(
-        AtomicString(argument.Serialize()));
+        nesting_type, AtomicString(argument.Serialize()));
     placeholder_selector.SetLastInTagHistory(true);
     output_.push_back(placeholder_selector);
   }
