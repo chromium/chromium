@@ -23,13 +23,15 @@ inline constexpr unsigned char kCookieValue[kCookieSize] = {
 constexpr size_t kPartitionCookieSizeAdjustment = kCookieSize;
 
 PA_ALWAYS_INLINE void PartitionCookieCheckValue(unsigned char* cookie_ptr) {
-  for (size_t i = 0; i < kCookieSize; ++i, ++cookie_ptr)
+  for (size_t i = 0; i < kCookieSize; ++i, ++cookie_ptr) {
     PA_DCHECK(*cookie_ptr == kCookieValue[i]);
+  }
 }
 
 PA_ALWAYS_INLINE void PartitionCookieWriteValue(unsigned char* cookie_ptr) {
-  for (size_t i = 0; i < kCookieSize; ++i, ++cookie_ptr)
+  for (size_t i = 0; i < kCookieSize; ++i, ++cookie_ptr) {
     *cookie_ptr = kCookieValue[i];
+  }
 }
 
 #else

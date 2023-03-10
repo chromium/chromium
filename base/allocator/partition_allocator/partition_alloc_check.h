@@ -134,8 +134,9 @@ struct PA_DEBUGKV_ALIGN DebugKv {
 
     for (int index = 0; index < 8; index++) {
       k[index] = key[index];
-      if (key[index] == '\0')
+      if (key[index] == '\0') {
         break;
+      }
     }
   }
 };

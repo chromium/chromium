@@ -87,8 +87,9 @@ struct PartitionBucket {
     // subsequent PartitionPage to store the raw size. It isn't only metadata
     // space though, slot spans that have more than one slot can't have raw size
     // stored, because we wouldn't know which slot it applies to.
-    if (PA_LIKELY(slot_size <= MaxRegularSlotSpanSize()))
+    if (PA_LIKELY(slot_size <= MaxRegularSlotSpanSize())) {
       return false;
+    }
 
     PA_DCHECK((slot_size % SystemPageSize()) == 0);
     PA_DCHECK(is_direct_mapped() || get_slots_per_span() == 1);

@@ -420,8 +420,9 @@ void RunTest(int thread_count,
     total_laps_per_second += laps_per_second;
   }
 
-  if (noisy_neighbor_thread)
+  if (noisy_neighbor_thread) {
     noisy_neighbor_thread->Run();
+  }
 
   char const* alloc_type_str;
   switch (alloc_type) {

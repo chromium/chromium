@@ -260,11 +260,12 @@ class PartitionFreelistEntry {
     bool not_in_metadata =
         (next_address & kSuperPageOffsetMask) >= PartitionPageSize();
 
-    if (for_thread_cache)
+    if (for_thread_cache) {
       return shadow_ptr_ok & not_in_metadata;
-    else
+    } else {
       return shadow_ptr_ok & same_superpage & marked_as_free_in_bitmap &
              not_in_metadata;
+    }
   }
 
   EncodedPartitionFreelistEntryPtr encoded_next_;
@@ -297,8 +298,9 @@ PartitionFreelistEntry::GetNextInternal(size_t extra,
                                         bool for_thread_cache) const {
   // GetNext() can be called on discarded memory, in which case |encoded_next_|
   // is 0, and none of the checks apply. Don't prefetch nullptr either.
-  if (IsEncodedNextPtrZero())
+  if (IsEncodedNextPtrZero()) {
     return nullptr;
+  }
 
   auto* ret = encoded_next_.Decode();
   // We rely on constant propagation to remove the branches coming from

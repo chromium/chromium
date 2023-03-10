@@ -88,8 +88,9 @@ PA_ALWAYS_INLINE void NormalBucketPartitionTagSetValue(uintptr_t slot_start,
   if (sizeof(PartitionTag) == 1) {
     memset(tag_ptr, value, tag_count);
   } else {
-    while (tag_count-- > 0)
+    while (tag_count-- > 0) {
       *tag_ptr++ = value;
+    }
   }
 }
 

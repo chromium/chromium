@@ -190,8 +190,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRefCount {
     CountType old_count =
         count_.fetch_and(~kMemoryHeldByAllocatorBit, std::memory_order_release);
 
-    if (PA_UNLIKELY(!(old_count & kMemoryHeldByAllocatorBit)))
+    if (PA_UNLIKELY(!(old_count & kMemoryHeldByAllocatorBit))) {
       DoubleFreeOrCorruptionDetected(old_count);
+    }
 
     if (PA_LIKELY((old_count & ~kNeedsMac11MallocSizeHackBit) ==
                   kMemoryHeldByAllocatorBit)) {
@@ -226,8 +227,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRefCount {
   PA_ALWAYS_INLINE bool IsAlive() {
     bool alive =
         count_.load(std::memory_order_relaxed) & kMemoryHeldByAllocatorBit;
-    if (alive)
+    if (alive) {
       CheckCookieIfSupported();
+    }
     return alive;
   }
 

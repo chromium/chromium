@@ -960,8 +960,9 @@ void IterateSlotSpans(uintptr_t super_page,
       break;
     }
     slot_span = &page->slot_span_metadata;
-    if (callback(slot_span))
+    if (callback(slot_span)) {
       return;
+    }
     page += slot_span->bucket->get_pages_per_slot_span();
   }
   // Each super page must have at least one valid slot span.
