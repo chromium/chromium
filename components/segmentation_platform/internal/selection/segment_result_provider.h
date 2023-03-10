@@ -23,12 +23,17 @@ class ExecutionService;
 class SignalStorageConfig;
 
 // Used for retrieving the result of a particular model.
-// Supports 3 use cases:
-//  1. Fetching cached and valid results from the segment database.
-//  2. Fallback to default model when cached results are missing. Executes the
-//     default model and provides the result.
-//  3. Execute the TFLite model and provide the result when `ignore_db_scores`
-//     is set.
+// The steps to get result for the model are as follows:
+// 1. Returns score from database as result if present and valid. Do this step
+//    only if `ignore_db_score = false` else jump to step 2.
+// 2. If there is no valid score present in database or `ignore_db_scores =
+//    true`, run the server model. If a valid score is computed return it as
+//    result and save it to database.
+// 3. If there is no valid score returned, execute and get score from default
+//    model and return that as result.
+// When the database will have support for storing default models, before
+// running default models score would be checked for them database. This isn't
+// implemented yet.
 class SegmentResultProvider {
  public:
   SegmentResultProvider() = default;
@@ -90,8 +95,9 @@ class SegmentResultProvider {
     // Ignores model results stored in database and executes them to fetch
     // results. When set to false, the result could be from following:
     //  * Score cached in the database
-    //  * Execution of default model when score is missing.
-    // When set to true, the result could be from following:
+    //  * When score is missing, executes Database model if exists.
+    //  * If database model fails to execute,  executes default model.
+    //    When set to true, the result could be from following:
     //  * Execution of TFLite model.
     //  * Fallback to default when model is missing.
     bool ignore_db_scores = false;

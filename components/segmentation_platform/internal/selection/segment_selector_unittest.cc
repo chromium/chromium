@@ -13,6 +13,8 @@
 #include "components/segmentation_platform/internal/database/test_segment_info_database.h"
 #include "components/segmentation_platform/internal/execution/default_model_manager.h"
 #include "components/segmentation_platform/internal/execution/mock_model_provider.h"
+#include "components/segmentation_platform/internal/execution/model_executor_impl.h"
+#include "components/segmentation_platform/internal/execution/processing/mock_feature_list_query_processor.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/selection/segmentation_result_prefs.h"
 #include "components/segmentation_platform/public/config.h"
@@ -44,6 +46,11 @@ class MockFieldTrialRegister : public FieldTrialRegister {
                void(base::StringPiece trial_name,
                     proto::SegmentId segment_id,
                     int subsegment_rank));
+};
+
+class MockModelExecutionManager : public ModelExecutionManager {
+ public:
+  MOCK_METHOD(ModelProvider*, GetProvider, (proto::SegmentId segment_id));
 };
 
 std::unique_ptr<Config> CreateTestConfig() {
@@ -121,6 +128,17 @@ class SegmentSelectorTest : public testing::Test {
     segment_selector_->set_training_data_collector_for_testing(
         &training_data_collector_);
     segment_selector_->OnPlatformInitialized(nullptr);
+    execution_service_ = std::make_unique<ExecutionService>();
+    auto query_processor =
+        std::make_unique<processing::MockFeatureListQueryProcessor>();
+    mock_query_processor_ = query_processor.get();
+    auto moved_execution_manager =
+        std::make_unique<MockModelExecutionManager>();
+    mock_execution_manager_ = moved_execution_manager.get();
+    execution_service_->InitForTesting(
+        std::move(query_processor),
+        std::make_unique<ModelExecutorImpl>(&clock_, mock_query_processor_),
+        nullptr, std::move(moved_execution_manager));
   }
 
   void GetSelectedSegment(const SegmentSelectionResult& expected) {
@@ -172,6 +190,10 @@ class SegmentSelectorTest : public testing::Test {
   raw_ptr<TestSegmentationResultPrefs> prefs_;
   std::unique_ptr<SegmentSelectorImpl> segment_selector_;
   MockTrainingDataCollector training_data_collector_;
+  raw_ptr<processing::MockFeatureListQueryProcessor> mock_query_processor_ =
+      nullptr;
+  raw_ptr<MockModelExecutionManager> mock_execution_manager_;
+  std::unique_ptr<ExecutionService> execution_service_;
 };
 
 TEST_F(SegmentSelectorTest, FindBestSegmentFlowWithTwoSegments) {
@@ -300,7 +322,7 @@ TEST_F(SegmentSelectorTest, NewSegmentResultOverridesThePreviousBest) {
   InitializeMetadataForSegment(segment_id2, mapping2, 2);
 
   EXPECT_CALL(signal_storage_config_, MeetsSignalCollectionRequirement(_, _))
-      .WillRepeatedly(Return(true));
+      .WillRepeatedly(Return(false));
 
   // Model 1 completes with a zero-ish score. We will wait for the other model
   // to finish before updating results.
@@ -419,7 +441,7 @@ TEST_F(SegmentSelectorTest,
        GetSelectedSegmentReturnsResultFromPreviousSession) {
   SetUpWithConfig(CreateTestConfig());
   EXPECT_CALL(signal_storage_config_, MeetsSignalCollectionRequirement(_, _))
-      .WillRepeatedly(Return(true));
+      .WillRepeatedly(Return(false));
   SegmentId segment_id0 = SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE;
   SegmentId segment_id1 = SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
   float mapping0[][2] = {{1.0, 0}};
@@ -440,7 +462,7 @@ TEST_F(SegmentSelectorTest,
       PlatformOptions::CreateDefault(), default_manager_.get());
   segment_selector_->set_training_data_collector_for_testing(
       &training_data_collector_);
-  segment_selector_->OnPlatformInitialized(nullptr);
+  segment_selector_->OnPlatformInitialized(execution_service_.get());
 
   SegmentSelectionResult result;
   result.segment = segment_id0;

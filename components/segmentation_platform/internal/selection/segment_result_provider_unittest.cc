@@ -4,6 +4,7 @@
 
 #include "components/segmentation_platform/internal/selection/segment_result_provider.h"
 
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/simple_test_clock.h"
@@ -193,11 +194,11 @@ TEST_F(SegmentResultProviderTest, GetScoreWithoutInfo) {
 
 TEST_F(SegmentResultProviderTest, GetScoreFromDbWithoutResult) {
   SetSegmentResult(kTestSegment, absl::nullopt);
-
+  EXPECT_CALL(signal_storage_config_, MeetsSignalCollectionRequirement(_, _))
+      .WillOnce(Return(false));
   ExpectSegmentResultOnGet(
       kTestSegment, /*ignore_db_scores=*/false,
-      SegmentResultProvider::ResultState::kDatabaseScoreNotReady,
-      absl::nullopt);
+      SegmentResultProvider::ResultState::kSignalsNotCollected, absl::nullopt);
 }
 
 TEST_F(SegmentResultProviderTest, GetScoreFromDb) {
@@ -293,6 +294,7 @@ TEST_F(SegmentResultProviderTest, DefaultModelFailedExecution) {
   default_manager_->SetDefaultProvidersForTesting(std::move(p));
 
   EXPECT_CALL(signal_storage_config_, MeetsSignalCollectionRequirement(_, _))
+      .WillOnce(Return(true))
       .WillOnce(Return(true));
 
   // Set error while computing features.
@@ -314,6 +316,7 @@ TEST_F(SegmentResultProviderTest, GetFromDefault) {
   default_manager_->SetDefaultProvidersForTesting(std::move(p));
 
   EXPECT_CALL(signal_storage_config_, MeetsSignalCollectionRequirement(_, _))
+      .WillOnce(Return(true))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_query_processor_, ProcessFeatureList(_, _, _, _, _, _, _))
       .WillOnce(RunOnceCallback<6>(/*error=*/false,
@@ -356,6 +359,7 @@ TEST_F(SegmentResultProviderTest, MultipleRequests) {
   // For the first request, the database does not have valid result, and default
   // provider fails execution.
   EXPECT_CALL(signal_storage_config_, MeetsSignalCollectionRequirement(_, _))
+      .WillOnce(Return(true))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_query_processor_, ProcessFeatureList(_, _, _, _, _, _, _))
       .WillOnce(RunOnceCallback<6>(/*error=*/false,
