@@ -54,7 +54,7 @@ class ComparingAnalyzer : public ResponseAnalyzer {
             std::make_unique<CrossOriginReadBlocking::CorbResponseAnalyzer>()),
         orb_analyzer_(std::make_unique<OpaqueResponseBlockingAnalyzer>(state)),
         is_orb_enabled_(base::FeatureList::IsEnabled(
-            features::kOpaqueResponseBlockingV01)) {}
+            features::kOpaqueResponseBlockingV01_LAUNCHED)) {}
 
   ~ComparingAnalyzer() override {
     Comparison comparison = Comparison::kInvalid;
