@@ -179,6 +179,10 @@ ServiceWorkerContextClient::ServiceWorkerContextClient(
 
 ServiceWorkerContextClient::~ServiceWorkerContextClient() {
   DCHECK(initiator_thread_task_runner_->RunsTasksInCurrentSequence());
+  // Speculative fix on the memory leak.
+  // We ensure `instance_host_` is reset before `initiator_thread_task_runner_`
+  // is shut down (crbug.com/1409993).
+  instance_host_.reset();
 }
 
 void ServiceWorkerContextClient::StartWorkerContextOnInitiatorThread(
