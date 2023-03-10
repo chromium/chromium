@@ -44,7 +44,6 @@
 #include "chrome/browser/background_fetch/background_fetch_delegate_impl.h"
 #include "chrome/browser/background_sync/background_sync_controller_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
-#include "chrome/browser/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
@@ -126,7 +125,6 @@
 #include "chrome/grit/chromium_strings.h"
 #include "components/background_sync/background_sync_controller_impl.h"
 #include "components/bookmarks/browser/bookmark_model.h"
-#include "components/breadcrumbs/core/breadcrumbs_status.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -859,9 +857,6 @@ void ProfileImpl::DoFinalInit(CreateMode create_mode) {
           AnnouncementNotificationServiceFactory::GetForProfile(this)) {
     announcement_notification->MaybeShowNotification();
   }
-
-  if (breadcrumbs::IsEnabled())
-    BreadcrumbManagerKeyedServiceFactory::GetForBrowserContext(this);
 
   // Request an OriginTrialsControllerDelegate to ensure it is initialized.
   GetOriginTrialsControllerDelegate();

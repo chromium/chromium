@@ -13,7 +13,6 @@
 #import "components/breadcrumbs/core/breadcrumb_manager.h"
 #import "components/infobars/core/infobar_delegate.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/test/fake_infobar_delegate.h"
@@ -59,9 +58,6 @@ class BreadcrumbManagerTabHelperTest : public PlatformTest {
 
     first_web_state_.SetBrowserState(chrome_browser_state_.get());
     second_web_state_.SetBrowserState(chrome_browser_state_.get());
-
-    BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
-        chrome_browser_state_.get());
 
     // Navigation manager is needed for InfobarManager.
     first_web_state_.SetNavigationManager(

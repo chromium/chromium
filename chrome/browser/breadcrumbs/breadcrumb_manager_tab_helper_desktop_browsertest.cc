@@ -5,7 +5,6 @@
 #include "chrome/browser/breadcrumbs/breadcrumb_manager_tab_helper.h"
 
 #include "base/containers/circular_deque.h"
-#include "chrome/browser/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
 #include "chrome/browser/ui/browser.h"
@@ -92,8 +91,6 @@ class BreadcrumbManagerTabHelperSecurityStateBrowserTest
   void SetUpOnMainThread() override {
     BreadcrumbManagerTabHelper::CreateForWebContents(
         browser()->tab_strip_model()->GetActiveWebContents());
-    BreadcrumbManagerKeyedServiceFactory::GetForBrowserContext(
-        browser()->profile());
     ASSERT_TRUE(https_server_.Start());
   }
 

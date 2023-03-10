@@ -16,7 +16,6 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/path_service.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/breadcrumbs/core/features.h"
 #import "components/component_updater/component_updater_service.h"
 #import "components/component_updater/crl_set_remover.h"
 #import "components/component_updater/installer_policies/autofill_states_component_installer.h"
@@ -66,7 +65,6 @@
 #import "ios/chrome/browser/browsing_data/browsing_data_remover.h"
 #import "ios/chrome/browser/browsing_data/browsing_data_remover_factory.h"
 #import "ios/chrome/browser/browsing_data/sessions_storage_util.h"
-#import "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
 #import "ios/chrome/browser/crash_report/crash_helper.h"
 #import "ios/chrome/browser/crash_report/crash_keys_helper.h"
 #import "ios/chrome/browser/crash_report/crash_loop_detection_util.h"
@@ -563,12 +561,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
     self.appState.previousSingleWindowSessionID = [previousSessions anyObject];
   }
   [[PreviousSessionInfo sharedInstance] resetConnectedSceneSessionIDs];
-
-  if (base::FeatureList::IsEnabled(breadcrumbs::kLogBreadcrumbs)) {
-    // Start logging breadcrumbs.
-    BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
-        self.appState.mainBrowserState);
-  }
 
   // Send "Chrome Opened" event to the feature_engagement::Tracker on cold
   // start.
