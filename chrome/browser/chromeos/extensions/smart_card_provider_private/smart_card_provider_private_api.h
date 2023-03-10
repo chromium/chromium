@@ -62,6 +62,8 @@ class SmartCardProviderPrivateAPI
                device::mojom::SmartCardShareMode share_mode,
                device::mojom::SmartCardProtocolsPtr preferred_protocols,
                ConnectCallback callback) override;
+  void Disconnect(device::mojom::SmartCardDisposition disposition,
+                  DisconnectCallback callback) override;
 
   // Called by extension functions:
   void ReportEstablishContextResult(RequestId request_id,
@@ -80,6 +82,8 @@ class SmartCardProviderPrivateAPI
                            Handle scard_handle,
                            device::mojom::SmartCardProtocol active_protocol,
                            device::mojom::SmartCardResultPtr result);
+  void ReportDisconnectResult(RequestId request_id,
+                              device::mojom::SmartCardResultPtr result);
 
   void SetResponseTimeLimitForTesting(base::TimeDelta);
 
@@ -91,10 +95,19 @@ class SmartCardProviderPrivateAPI
   friend class BrowserContextKeyedAPIFactory<SmartCardProviderPrivateAPI>;
 
   void ProviderReleaseContext(ContextId scard_context);
+  void ProviderDisconnect(Handle scard_handle,
+                          device::mojom::SmartCardDisposition disposition,
+                          DisconnectCallback callback);
 
   // Called when a device::mojom::SmartCardContext loses its mojo connection.
   // eg: because its mojo Remote was destroyed.
   void OnMojoContextDisconnected();
+
+  // Called when a device::mojom::SmartCardConnection loses its mojo connection.
+  // eg: because its mojo Remote was destroyed.
+  void OnMojoConnectionDisconnected();
+
+  void OnScardHandleDisconnected(device::mojom::SmartCardResultPtr result);
 
   std::string GetListenerExtensionId(const extensions::Event& event);
 
@@ -108,6 +121,12 @@ class SmartCardProviderPrivateAPI
                                 RequestId request_id);
   void OnConnectTimeout(const std::string& provider_extension_id,
                         RequestId request_id);
+  void OnDisconnectTimeout(const std::string& provider_extension_id,
+                           RequestId request_id);
+
+  device::mojom::SmartCardConnectResultPtr CreateSmartCardConnection(
+      Handle handle,
+      device::mojom::SmartCardProtocol active_protocol);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -131,6 +150,9 @@ class SmartCardProviderPrivateAPI
 
   struct PendingConnect;
   std::map<RequestId, std::unique_ptr<PendingConnect>> pending_connect_;
+
+  struct PendingDisconnect;
+  std::map<RequestId, std::unique_ptr<PendingDisconnect>> pending_disconnect_;
 
   RequestId::Generator request_id_generator_;
   const raw_ref<content::BrowserContext> browser_context_;
@@ -201,6 +223,17 @@ class SmartCardProviderPrivateReportConnectResultFunction
 
   DECLARE_EXTENSION_FUNCTION("smartCardProviderPrivate.reportConnectResult",
                              SMARTCARDPROVIDERPRIVATE_REPORTCONNECTRESULT)
+};
+
+class SmartCardProviderPrivateReportDisconnectResultFunction
+    : public ExtensionFunction {
+ private:
+  // ExtensionFunction:
+  ~SmartCardProviderPrivateReportDisconnectResultFunction() override;
+  ResponseAction Run() override;
+
+  DECLARE_EXTENSION_FUNCTION("smartCardProviderPrivate.reportDisconnectResult",
+                             SMARTCARDPROVIDERPRIVATE_REPORTDISCONNECTRESULT)
 };
 
 }  // namespace extensions

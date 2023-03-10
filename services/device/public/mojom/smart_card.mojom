@@ -79,6 +79,18 @@ enum SmartCardProtocol {
   kRaw
 };
 
+// Action to take after disconnecting.
+enum SmartCardDisposition {
+  // SCARD_LEAVE_CARD - Do nothing.
+  kLeave,
+  // SCARD_RESET_CARD - Reset the card (warm reset).
+  kReset,
+  // SCARD_UNPOWER_CARD - Power down the card (cold reset).
+  kUnpower,
+  // SCARD_EJECT_CARD - Eject the card.
+  kEject
+};
+
 // Flags for describing the state of a smart card reader.
 // Maps to the corresponding SCARD_STATE_* flags in winscard.h
 struct SmartCardReaderStateFlags {
@@ -154,8 +166,11 @@ union SmartCardConnectResult {
 // An interface to a valid connection (SCARDHANDLE) within a context
 // in a PC/SC (winscard.h) provider.
 interface SmartCardConnection {
+  // Terminates the connection and leaves the card in the given `disposition`.
+  Disconnect(SmartCardDisposition disposition)
+      => (SmartCardResult result);
+
   // TODO(crbug.com/1386175): Add methods:
-  // * Disconnect()
   // * BeginTransaction()
   // * EndTransaction()
   // * Status()

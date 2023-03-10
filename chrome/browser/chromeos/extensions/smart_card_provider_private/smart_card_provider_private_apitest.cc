@@ -34,6 +34,27 @@ class SmartCardProviderPrivateApiTest : public ExtensionApiTest {
       }
     )";
 
+  static constexpr char kConnectJs[] =
+      R"(
+      let validHandle = 0;
+
+      chrome.smartCardProviderPrivate.onConnectRequested.addListener(
+          connect);
+
+      function connect(requestId, scardContext, reader,
+          shareMode, preferredProtocols) {
+        if (scardContext != 123
+            || validHandle !== 0) {
+          chrome.smartCardProviderPrivate.reportGetStatusChangeResult(requestId,
+              readerStates, "INVALID_PARAMETER");
+          return;
+        }
+        validHandle = 987;
+        chrome.smartCardProviderPrivate.reportConnectResult(requestId,
+            validHandle, "T1", "SUCCESS");
+      }
+    )";
+
   void LoadFakeProviderExtension(const std::string& background_js) {
     TestExtensionDir test_dir;
     constexpr char kManifest[] =
@@ -92,7 +113,35 @@ class SmartCardProviderPrivateApiTest : public ExtensionApiTest {
 
     return result_future.Take();
   }
+
   const Extension* extension() const { return extension_; }
+
+  mojo::Remote<device::mojom::SmartCardConnection> CreateConnection(
+      device::mojom::SmartCardContext& context) {
+    base::test::TestFuture<device::mojom::SmartCardConnectResultPtr>
+        result_future;
+
+    auto preferred_protocols = device::mojom::SmartCardProtocols::New();
+    preferred_protocols->t1 = true;
+
+    context.Connect("foo-reader", device::mojom::SmartCardShareMode::kShared,
+                    std::move(preferred_protocols),
+                    result_future.GetCallback());
+
+    device::mojom::SmartCardConnectResultPtr result = result_future.Take();
+    if (result->is_error()) {
+      ADD_FAILURE() << "Connect failed: " << result->get_error();
+      return mojo::Remote<device::mojom::SmartCardConnection>();
+    }
+
+    device::mojom::SmartCardConnectSuccessPtr success =
+        std::move(result->get_success());
+
+    mojo::Remote<device::mojom::SmartCardConnection> connection(
+        std::move(success->connection));
+    EXPECT_TRUE(connection.is_connected());
+    return connection;
+  }
 
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -562,6 +611,146 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
   device::mojom::SmartCardConnectResultPtr result = result_future.Take();
   ASSERT_TRUE(result->is_error());
   EXPECT_EQ(result->get_error(), SmartCardError::kNoService);
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, Disconnect) {
+  std::string background_js(kEstablishContextJs);
+  background_js.append(kConnectJs);
+  background_js.append(
+      R"(
+      chrome.smartCardProviderPrivate.onDisconnectRequested.addListener(
+          disconnect);
+
+      function disconnect(requestId, scardHandle, disposition) {
+        if (scardHandle !== validHandle || disposition != "UNPOWER_CARD") {
+          chrome.smartCardProviderPrivate.reportDisconnectResult(requestId,
+            "INVALID_PARAMETER");
+          return;
+        }
+        validHandle = 0;
+        chrome.smartCardProviderPrivate.reportDisconnectResult(requestId,
+          "SUCCESS");
+      }
+      )");
+  LoadFakeProviderExtension(background_js);
+
+  auto context_result = CreateContext();
+  ASSERT_TRUE(context_result->is_context());
+  mojo::Remote<device::mojom::SmartCardContext> context(
+      std::move(context_result->get_context()));
+
+  mojo::Remote<device::mojom::SmartCardConnection> connection =
+      CreateConnection(*context.get());
+  ASSERT_TRUE(connection.is_bound());
+
+  base::test::TestFuture<SmartCardResultPtr> result_future;
+
+  connection->Disconnect(device::mojom::SmartCardDisposition::kUnpower,
+                         result_future.GetCallback());
+
+  SmartCardResultPtr result = result_future.Take();
+  EXPECT_TRUE(result->is_success());
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, DisconnectNoProvider) {
+  std::string background_js(kEstablishContextJs);
+  background_js.append(kConnectJs);
+  LoadFakeProviderExtension(background_js);
+
+  auto context_result = CreateContext();
+  ASSERT_TRUE(context_result->is_context());
+  mojo::Remote<device::mojom::SmartCardContext> context(
+      std::move(context_result->get_context()));
+
+  mojo::Remote<device::mojom::SmartCardConnection> connection =
+      CreateConnection(*context.get());
+  ASSERT_TRUE(connection.is_bound());
+
+  base::test::TestFuture<SmartCardResultPtr> result_future;
+
+  connection->Disconnect(device::mojom::SmartCardDisposition::kUnpower,
+                         result_future.GetCallback());
+
+  SmartCardResultPtr result = result_future.Take();
+  ASSERT_TRUE(result->is_error());
+  EXPECT_EQ(result->get_error(), SmartCardError::kNoService);
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, DisconnectTimeout) {
+  SmartCardProviderPrivateAPI& scard_provider_api =
+      SmartCardProviderPrivateAPI::Get(*profile());
+  scard_provider_api.SetResponseTimeLimitForTesting(base::Seconds(1));
+
+  std::string background_js(kEstablishContextJs);
+  background_js.append(kConnectJs);
+  background_js.append(
+      R"(
+      chrome.smartCardProviderPrivate.onDisconnectRequested.addListener(
+          disconnect);
+
+      function disconnect(requestId, scardHandle, disposition) {
+        // Do nothing
+      }
+      )");
+  LoadFakeProviderExtension(background_js);
+
+  auto context_result = CreateContext();
+  ASSERT_TRUE(context_result->is_context());
+  mojo::Remote<device::mojom::SmartCardContext> context(
+      std::move(context_result->get_context()));
+
+  mojo::Remote<device::mojom::SmartCardConnection> connection =
+      CreateConnection(*context.get());
+  ASSERT_TRUE(connection.is_bound());
+
+  base::test::TestFuture<SmartCardResultPtr> result_future;
+
+  connection->Disconnect(device::mojom::SmartCardDisposition::kUnpower,
+                         result_future.GetCallback());
+
+  SmartCardResultPtr result = result_future.Take();
+  ASSERT_TRUE(result->is_error());
+  EXPECT_EQ(result->get_error(), SmartCardError::kNoService);
+}
+
+// Tests that smartCardProviderPrivate.onDisconnectRequested is emitted
+// when a device::mojom::SmartCardConnection is disconnected from its remote
+// endpoint.
+IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
+                       ConnectionMojoDisconnection) {
+  std::string background_js(kEstablishContextJs);
+  background_js.append(kConnectJs);
+  background_js.append(
+      R"(
+      chrome.smartCardProviderPrivate.onDisconnectRequested.addListener(
+          disconnect);
+
+      function disconnect(requestId, scardHandle, disposition) {
+        if (scardHandle !== validHandle) {
+          chrome.smartCardProviderPrivate.reportDisconnectResult(requestId,
+            "INVALID_HANDLE");
+          return;
+        }
+        validHandle = 0;
+        chrome.smartCardProviderPrivate.reportDisconnectResult(requestId,
+          "SUCCESS");
+        chrome.test.notifyPass();
+      }
+      )");
+  LoadFakeProviderExtension(background_js);
+
+  auto context_result = CreateContext();
+  ASSERT_TRUE(context_result->is_context());
+  mojo::Remote<device::mojom::SmartCardContext> context(
+      std::move(context_result->get_context()));
+
+  ResultCatcher result_catcher;
+  {
+    mojo::Remote<device::mojom::SmartCardConnection> connection =
+        CreateConnection(*context.get());
+    ASSERT_TRUE(connection.is_bound());
+  }
+  ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
 
 }  // namespace extensions
