@@ -202,6 +202,7 @@ if (!is_android && !is_mac) {
         "//chrome/browser/policy:path_parser",
         "//chrome/chrome_elf",
         "//chrome/common:constants",
+        "//chrome/common/win:delay_load_failure_support",
         "//chrome/install_static:install_static_util",
         "//chrome/install_static:secondary_module",
         "//chrome/installer/util:constants",

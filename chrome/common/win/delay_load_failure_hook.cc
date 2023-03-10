@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/debug/alias.h"
 #include "base/strings/string_util.h"
+#include "chrome/common/win/delay_load_failure_support.h"
 
 namespace chrome {
 
@@ -29,10 +30,7 @@ FARPROC WINAPI DelayLoadFailureHook(unsigned reason, DelayLoadInfo* dll_info) {
   if (base::CompareCaseInsensitiveASCII(dll_name, "bthprops.cpl") == 0)
     return 0;
 
-  base::debug::Alias(&dll_name);
-  CHECK(false);
-
-  return 0;
+  return HandleDelayLoadFailureCommon(reason, dll_info);
 }
 
 }  // namespace

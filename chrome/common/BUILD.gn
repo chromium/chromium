@@ -102,7 +102,7 @@ source_set("ini_parser") {
 group("common") {
   public_deps = [ ":common_lib" ]
   if (is_win) {
-    public_deps += [ ":delay_load_support" ]
+    public_deps += [ "//chrome/common/win:delay_load_failure_hook" ]
   }
 }
 
@@ -702,17 +702,6 @@ if (is_mac) {
     ]
 
     public_deps = [ "//base" ]
-  }
-}
-
-if (is_win) {
-  # delay load support must be a source_set to ensure that it has external
-  # linkage and will correctly emplace over the correct symbols in
-  # delayimp.lib at link time.
-  source_set("delay_load_support") {
-    sources = [ "win/delay_load_failure_hook.cc" ]
-
-    deps = [ "//base" ]
   }
 }
 
