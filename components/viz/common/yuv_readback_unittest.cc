@@ -34,7 +34,7 @@ int kYUVReadbackSizes[] = {2, 4, 14};
 
 class YUVReadbackTest : public testing::Test {
  protected:
-  void SetUp() override {
+  YUVReadbackTest() : context_(std::make_unique<gpu::GLInProcessContext>()) {
     gpu::ContextCreationAttribs attributes;
     attributes.alpha_size = 8;
     attributes.depth_size = 24;
@@ -46,21 +46,17 @@ class YUVReadbackTest : public testing::Test {
     attributes.sample_buffers = 1;
     attributes.bind_generates_resource = false;
 
-    context_ = std::make_unique<gpu::GLInProcessContext>();
     auto result = context_->Initialize(
         TestGpuServiceHolder::GetInstance()->task_executor(), attributes,
         gpu::SharedMemoryLimits());
     DCHECK_EQ(result, gpu::ContextResult::kSuccess);
     gl_ = context_->GetImplementation();
-    gpu::ContextSupport* support = context_->GetImplementation();
 
+    gpu::ContextSupport* support = context_->GetImplementation();
     helper_ = std::make_unique<gpu::GLHelper>(gl_, support);
   }
 
-  void TearDown() override {
-    helper_.reset(nullptr);
-    context_.reset(nullptr);
-  }
+  ~YUVReadbackTest() override = default;
 
   void StartTracing(const std::string& filter) {
     base::trace_event::TraceLog::GetInstance()->SetEnabled(
