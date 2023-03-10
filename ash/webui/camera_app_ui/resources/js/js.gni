@@ -78,6 +78,7 @@ compile_js_files = [
   "toast.ts",
   "tooltip.ts",
   "type.ts",
+  "type_utils.ts",
   "unload.ts",
   "untrusted_ga_helper.ts",
   "untrusted_script_loader.ts",

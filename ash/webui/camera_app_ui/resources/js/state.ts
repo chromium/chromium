@@ -10,6 +10,7 @@ import {
   PerfInformation,
   ViewName,
 } from './type.js';
+import {AssertNever, CheckEnumValuesOverlap} from './type_utils.js';
 
 export enum State {
   CAMERA_CONFIGURING = 'camera-configuring',
@@ -61,15 +62,21 @@ export enum State {
   USE_FAKE_CAMERA = 'use-fake-camera',
 }
 
-export type StateUnion = ExpertOption|Mode|PerfEvent|State|ViewName;
+// All the string enum types that can be accepted by |get| / |set|.
+const stateEnums = [ExpertOption, Mode, PerfEvent, State, ViewName] as const;
 
-const stateValues = new Set<StateUnion>([
-  State,
-  Mode,
-  ViewName,
-  PerfEvent,
-  ExpertOption,
-].flatMap((s) => Object.values(s)));
+// Note that this can't be inlined into StateTypes since this relies on
+// https://github.com/microsoft/TypeScript/pull/26063
+type MapEnumTypesToEnums<T> = {
+  -readonly[K in keyof T]: T[K][keyof T[K]]
+};
+type StateTypes = MapEnumTypesToEnums<typeof stateEnums>;
+
+// The union of all types accepted by |get| / |set|.
+export type StateUnion = StateTypes[number];
+
+const stateValues =
+    new Set<StateUnion>(stateEnums.flatMap((s) => Object.values(s)));
 
 /**
  * Asserts input string is valid state.
@@ -162,3 +169,13 @@ export function set(
     observer(val, perfInfo);
   }
 }
+
+// This checks that all the enums in stateEnums doesn't overlap, so we don't
+// accidentally have two different enum defining the same value.
+type OverlappingStates = CheckEnumValuesOverlap<StateTypes>;
+
+// This is exported here to avoid getting unused type warning from typescript.
+//
+// If you got compile error here, check type of OverlappingStates to see which
+// values are duplicated between the stateEnums, and change one of those.
+export type AssertStatesNotOverlapping = AssertNever<OverlappingStates>;
