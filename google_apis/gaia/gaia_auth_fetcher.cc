@@ -162,6 +162,9 @@ std::string GaiaSource::ToString() {
     case Type::kAccountReconcilorMirror:
       source_string = "ChromiumAccountReconcilor";
       break;
+    case Type::kOAuth2LoginVerifier:
+      source_string = "ChromiumOAuth2LoginVerifier";
+      break;
     case Type::kPrimaryAccountManager:
       // Even though this string refers to an old name from the Chromium POV, it
       // should not be changed as it is passed server-side.

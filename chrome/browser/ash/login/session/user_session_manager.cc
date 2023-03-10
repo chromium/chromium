@@ -1035,15 +1035,18 @@ void UserSessionManager::OnSessionRestoreStateChanged(
       IdentityManagerFactory::GetForProfile(user_profile);
   switch (state) {
     case OAuth2LoginManager::SESSION_RESTORE_DONE:
-      if (identity_manager) {
-        // SESSION_RESTORE_DONE state means that primary account has a valid
-        // token.
-        DCHECK(
-            !identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
-                identity_manager->GetPrimaryAccountInfo(ConsentLevel::kSignin)
-                    .account_id));
-      }
-      user_status = user_manager::User::OAUTH2_TOKEN_STATUS_VALID;
+      // Session restore done does not always mean valid token because the
+      // merge session operation could be skipped when the first account in
+      // Gaia cookies matches the primary account in TokenService. However
+      // the token could still be invalid in some edge cases. See
+      // http://crbug.com/760610
+      user_status =
+          (identity_manager &&
+           identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+               identity_manager->GetPrimaryAccountInfo(ConsentLevel::kSignin)
+                   .account_id))
+              ? user_manager::User::OAUTH2_TOKEN_STATUS_INVALID
+              : user_manager::User::OAUTH2_TOKEN_STATUS_VALID;
       break;
     case OAuth2LoginManager::SESSION_RESTORE_FAILED:
       user_status = user_manager::User::OAUTH2_TOKEN_STATUS_INVALID;

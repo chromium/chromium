@@ -1864,6 +1864,8 @@ source_set("ash") {
     "login/signin/oauth2_login_manager.h",
     "login/signin/oauth2_login_manager_factory.cc",
     "login/signin/oauth2_login_manager_factory.h",
+    "login/signin/oauth2_login_verifier.cc",
+    "login/signin/oauth2_login_verifier.h",
     "login/signin/oauth2_token_fetcher.cc",
     "login/signin/oauth2_token_fetcher.h",
     "login/signin/oauth2_token_initializer.cc",

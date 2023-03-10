@@ -51,6 +51,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaSource {
     kChromeOS,
     kAccountReconcilorDice,
     kAccountReconcilorMirror,
+    kOAuth2LoginVerifier,
     kPrimaryAccountManager
   };
 
