@@ -180,14 +180,16 @@ VideoRecordingWatcher::VideoRecordingWatcher(
     aura::Window* window_being_recorded,
     mojo::PendingRemote<viz::mojom::FrameSinkVideoCaptureOverlay>
         cursor_capture_overlay,
-    bool projector_mode)
+    bool projector_mode,
+    bool is_recording_audio)
     : controller_(controller),
       cursor_manager_(Shell::Get()->cursor_manager()),
       window_being_recorded_(window_being_recorded),
       current_root_(window_being_recorded->GetRootWindow()),
       recording_source_(controller_->source()),
       cursor_capture_overlay_remote_(std::move(cursor_capture_overlay)),
-      is_in_projector_mode_(projector_mode) {
+      is_in_projector_mode_(projector_mode),
+      is_recording_audio_(is_recording_audio) {
   DCHECK(controller_);
   DCHECK(window_being_recorded_);
   DCHECK(current_root_);

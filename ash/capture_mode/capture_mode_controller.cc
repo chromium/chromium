@@ -532,6 +532,12 @@ bool CaptureModeController::IsAudioCaptureDisabledByPolicy() const {
   return delegate_->IsAudioCaptureDisabledByPolicy();
 }
 
+bool CaptureModeController::IsAudioRecordingInProgress() const {
+  return video_recording_watcher_ &&
+         !video_recording_watcher_->is_shutting_down() &&
+         video_recording_watcher_->is_recording_audio();
+}
+
 void CaptureModeController::SetSource(CaptureModeSource source) {
   if (source == source_)
     return;
@@ -1054,7 +1060,8 @@ CaptureModeController::GetCaptureParams() const {
 void CaptureModeController::LaunchRecordingServiceAndStartRecording(
     const CaptureParams& capture_params,
     mojo::PendingReceiver<viz::mojom::FrameSinkVideoCaptureOverlay>
-        cursor_overlay) {
+        cursor_overlay,
+    bool should_record_audio) {
   DCHECK(!recording_service_remote_.is_bound())
       << "Should not launch a new recording service while one is already "
          "running.";
@@ -1087,10 +1094,10 @@ void CaptureModeController::LaunchRecordingServiceAndStartRecording(
   // is ok since the |audio_stream_factory| parameter in the recording service
   // APIs is optional, and can be not bound.
   mojo::PendingRemote<media::mojom::AudioStreamFactory> audio_stream_factory;
-  if (SupportsAudioRecording(recording_type_) && GetAudioRecordingEnabled()) {
+  if (should_record_audio) {
     delegate_->BindAudioStreamFactory(
         audio_stream_factory.InitWithNewPipeAndPassReceiver());
-    capture_mode_util::MaybeUpdateMicrophonePrivacyIndicator(/*mic_on=*/true);
+    capture_mode_util::MaybeUpdateCaptureModePrivacyIndicators();
   }
 
   // Only act as a `DriveFsQuotaDelegate` for the recording service if the video
@@ -1177,7 +1184,7 @@ void CaptureModeController::FinalizeRecording(bool success,
   const bool was_in_projector_mode =
       video_recording_watcher_->is_in_projector_mode();
   video_recording_watcher_.reset();
-  capture_mode_util::MaybeUpdateMicrophonePrivacyIndicator(/*mic_on=*/false);
+  capture_mode_util::MaybeUpdateCaptureModePrivacyIndicators();
 
   delegate_->StopObservingRestrictedContent(
       base::BindOnce(&CaptureModeController::OnDlpRestrictionCheckedAtVideoEnd,
@@ -1569,13 +1576,15 @@ void CaptureModeController::BeginVideoRecording(
   // video.
   Stop();
 
+  const bool should_record_audio =
+      SupportsAudioRecording(recording_type_) && GetAudioRecordingEnabled();
   mojo::PendingRemote<viz::mojom::FrameSinkVideoCaptureOverlay>
       cursor_capture_overlay;
   auto cursor_overlay_receiver =
       cursor_capture_overlay.InitWithNewPipeAndPassReceiver();
   video_recording_watcher_ = std::make_unique<VideoRecordingWatcher>(
       this, capture_params.window, std::move(cursor_capture_overlay),
-      for_projector);
+      for_projector, should_record_audio);
 
   // We only paint the recorded area highlight for window and region captures.
   if (source_ != CaptureModeSource::kFullscreen)
@@ -1585,8 +1594,8 @@ void CaptureModeController::BeginVideoRecording(
   recording_start_time_ = base::TimeTicks::Now();
   current_video_file_path_ = video_file_path;
 
-  LaunchRecordingServiceAndStartRecording(capture_params,
-                                          std::move(cursor_overlay_receiver));
+  LaunchRecordingServiceAndStartRecording(
+      capture_params, std::move(cursor_overlay_receiver), should_record_audio);
 
   // Intentionally record the metrics before
   // `MaybeRestoreCachedCaptureConfigurations` as `enable_demo_tools_` may be

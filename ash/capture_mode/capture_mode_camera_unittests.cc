@@ -79,11 +79,9 @@ constexpr char kDefaultCameraDeviceId[] = "/dev/videoX";
 constexpr char kDefaultCameraDisplayName[] = "Default Cam";
 constexpr char kDefaultCameraModelId[] = "0def:c000";
 
-// The app IDs used for the capture mode camera and microphone recording privacy
+// The app ID used for the capture mode camera and microphone recording privacy
 // indicators.
-constexpr char kCameraPrivacyIndicatorId[] = "system-capture-mode-camera";
-constexpr char kMicrophonePrivacyIndicatorId[] =
-    "system-capture-mode-microphone";
+constexpr char kCaptureModePrivacyIndicatorId[] = "system-capture-mode";
 
 TestCaptureModeDelegate* GetTestDelegate() {
   return static_cast<TestCaptureModeDelegate*>(
@@ -4529,10 +4527,8 @@ TEST_F(CaptureModePrivacyIndicatorsTest, CameraPrivacyIndicators) {
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   auto* message_center = message_center::MessageCenter::Get();
-  auto camera_notification_id =
-      GetPrivacyIndicatorsNotificationId(kCameraPrivacyIndicatorId);
-  auto microphone_notification_id =
-      GetPrivacyIndicatorsNotificationId(kMicrophonePrivacyIndicatorId);
+  auto capture_mode_privacy_notification_id =
+      GetPrivacyIndicatorsNotificationId(kCaptureModePrivacyIndicatorId);
 
   // Initially the session doesn't show any camera preview since the camera
   // hasn't connected yet. There should be no privacy indicators.
@@ -4542,9 +4538,8 @@ TEST_F(CaptureModePrivacyIndicatorsTest, CameraPrivacyIndicators) {
   EXPECT_FALSE(camera_controller->camera_preview_widget());
   EXPECT_FALSE(IsCameraIndicatorIconVisible());
   EXPECT_FALSE(IsMicrophoneIndicatorIconVisible());
-  EXPECT_FALSE(message_center->FindNotificationById(camera_notification_id));
-  EXPECT_FALSE(
-      message_center->FindNotificationById(microphone_notification_id));
+  EXPECT_FALSE(message_center->FindNotificationById(
+      capture_mode_privacy_notification_id));
 
   // Once the camera gets connected, the camera privacy indicator
   // icon/notification should show. No microphone yet (not until recording
@@ -4553,9 +4548,8 @@ TEST_F(CaptureModePrivacyIndicatorsTest, CameraPrivacyIndicators) {
   EXPECT_TRUE(camera_controller->camera_preview_widget());
   EXPECT_TRUE(IsCameraIndicatorIconVisible());
   EXPECT_FALSE(IsMicrophoneIndicatorIconVisible());
-  EXPECT_TRUE(message_center->FindNotificationById(camera_notification_id));
-  EXPECT_FALSE(
-      message_center->FindNotificationById(microphone_notification_id));
+  EXPECT_TRUE(message_center->FindNotificationById(
+      capture_mode_privacy_notification_id));
 
   // If the camera gets disconnected for some reason, the indicator should go
   // away, and come back once it reconnects again.
@@ -4565,17 +4559,15 @@ TEST_F(CaptureModePrivacyIndicatorsTest, CameraPrivacyIndicators) {
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(IsCameraIndicatorIconVisible());
   EXPECT_FALSE(IsMicrophoneIndicatorIconVisible());
-  EXPECT_FALSE(message_center->FindNotificationById(camera_notification_id));
-  EXPECT_FALSE(
-      message_center->FindNotificationById(microphone_notification_id));
+  EXPECT_FALSE(message_center->FindNotificationById(
+      capture_mode_privacy_notification_id));
 
   AddDefaultCamera();
   EXPECT_TRUE(camera_controller->camera_preview_widget());
   EXPECT_TRUE(IsCameraIndicatorIconVisible());
   EXPECT_FALSE(IsMicrophoneIndicatorIconVisible());
-  EXPECT_TRUE(message_center->FindNotificationById(camera_notification_id));
-  EXPECT_FALSE(
-      message_center->FindNotificationById(microphone_notification_id));
+  EXPECT_TRUE(message_center->FindNotificationById(
+      capture_mode_privacy_notification_id));
 }
 
 TEST_F(CaptureModePrivacyIndicatorsTest, DuringRecordingPrivacyIndicators) {
@@ -4583,10 +4575,8 @@ TEST_F(CaptureModePrivacyIndicatorsTest, DuringRecordingPrivacyIndicators) {
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   auto* message_center = message_center::MessageCenter::Get();
-  auto camera_notification_id =
-      GetPrivacyIndicatorsNotificationId(kCameraPrivacyIndicatorId);
-  auto microphone_notification_id =
-      GetPrivacyIndicatorsNotificationId(kMicrophonePrivacyIndicatorId);
+  auto capture_mode_privacy_notification_id =
+      GetPrivacyIndicatorsNotificationId(kCaptureModePrivacyIndicatorId);
 
   // Even with the selected camera present, no indicators will show until the
   // capture session starts.
@@ -4596,30 +4586,26 @@ TEST_F(CaptureModePrivacyIndicatorsTest, DuringRecordingPrivacyIndicators) {
   EXPECT_FALSE(camera_controller->camera_preview_widget());
   EXPECT_FALSE(IsCameraIndicatorIconVisible());
   EXPECT_FALSE(IsMicrophoneIndicatorIconVisible());
-  EXPECT_FALSE(message_center->FindNotificationById(camera_notification_id));
-  EXPECT_FALSE(
-      message_center->FindNotificationById(microphone_notification_id));
+  EXPECT_FALSE(message_center->FindNotificationById(
+      capture_mode_privacy_notification_id));
 
   auto* capture_controller = StartCaptureSession(CaptureModeSource::kFullscreen,
                                                  CaptureModeType::kVideo);
   EXPECT_TRUE(camera_controller->camera_preview_widget());
   EXPECT_TRUE(IsCameraIndicatorIconVisible());
   EXPECT_FALSE(IsMicrophoneIndicatorIconVisible());
-  EXPECT_TRUE(message_center->FindNotificationById(camera_notification_id));
-  EXPECT_FALSE(
-      message_center->FindNotificationById(microphone_notification_id));
+  EXPECT_TRUE(message_center->FindNotificationById(
+      capture_mode_privacy_notification_id));
 
   // When the user selects audio recording, the idicators won't change.
   // Recording has to start first.
   capture_controller->EnableAudioRecording(true);
   EXPECT_FALSE(IsMicrophoneIndicatorIconVisible());
-  EXPECT_FALSE(
-      message_center->FindNotificationById(microphone_notification_id));
 
   StartRecordingFromSource(CaptureModeSource::kFullscreen);
   EXPECT_TRUE(IsMicrophoneIndicatorIconVisible());
-  EXPECT_TRUE(message_center->FindNotificationById(camera_notification_id));
-  EXPECT_TRUE(message_center->FindNotificationById(microphone_notification_id));
+  EXPECT_TRUE(message_center->FindNotificationById(
+      capture_mode_privacy_notification_id));
 
   // Once recording ends, both indicators should disappear.
   capture_controller->EndVideoRecording(
@@ -4627,9 +4613,8 @@ TEST_F(CaptureModePrivacyIndicatorsTest, DuringRecordingPrivacyIndicators) {
   WaitForCaptureFileToBeSaved();
   EXPECT_FALSE(IsCameraIndicatorIconVisible());
   EXPECT_FALSE(IsMicrophoneIndicatorIconVisible());
-  EXPECT_FALSE(message_center->FindNotificationById(camera_notification_id));
-  EXPECT_FALSE(
-      message_center->FindNotificationById(microphone_notification_id));
+  EXPECT_FALSE(message_center->FindNotificationById(
+      capture_mode_privacy_notification_id));
 }
 
 }  // namespace ash

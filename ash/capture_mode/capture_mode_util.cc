@@ -47,13 +47,8 @@ constexpr int kBannerViewTopRadius = 0;
 constexpr int kBannerViewBottomRadius = 8;
 constexpr float kScaleUpFactor = 0.8f;
 
-// The app IDs used for the capture mode camera and microphone recording privacy
-// indicators.
-// TODO(b/271523308): Use one id for both camera and microphone so that both
-// icons are displayed together during the start of screen capture.
-constexpr char kCameraPrivacyIndicatorId[] = "system-capture-mode-camera";
-constexpr char kMicrophonePrivacyIndicatorId[] =
-    "system-capture-mode-microphone";
+// The app ID used for the capture mode privacy indicators.
+constexpr char kCaptureModePrivacyIndicatorsId[] = "system-capture-mode";
 
 // Returns the target visibility of the camera preview, given the
 // `confine_bounds_short_side_length`. The out parameter
@@ -498,29 +493,22 @@ views::BoxLayout* CreateAndInitBoxLayoutForView(views::View* view) {
   return box_layout;
 }
 
-void MaybeUpdateCameraPrivacyIndicator(bool camera_on) {
-  if (features::IsPrivacyIndicatorsEnabled()) {
-    UpdatePrivacyIndicators(
-        /*app_id=*/kCameraPrivacyIndicatorId,
-        /*app_name=*/
-        l10n_util::GetStringUTF16(
-            IDS_ASH_STATUS_TRAY_CAPTURE_MODE_BUTTON_LABEL),
-        camera_on,
-        /*is_microphone_used=*/false, /*delegate=*/
-        base::MakeRefCounted<PrivacyIndicatorsNotificationDelegate>());
+void MaybeUpdateCaptureModePrivacyIndicators() {
+  if (!features::IsPrivacyIndicatorsEnabled()) {
+    return;
   }
-}
 
-void MaybeUpdateMicrophonePrivacyIndicator(bool mic_on) {
-  if (features::IsPrivacyIndicatorsEnabled()) {
-    UpdatePrivacyIndicators(
-        /*app_id=*/kMicrophonePrivacyIndicatorId,
-        /*app_name=*/
-        l10n_util::GetStringUTF16(
-            IDS_ASH_STATUS_TRAY_CAPTURE_MODE_BUTTON_LABEL),
-        /*is_camera_used=*/false, mic_on, /*delegate=*/
-        base::MakeRefCounted<PrivacyIndicatorsNotificationDelegate>());
-  }
+  auto* controller = CaptureModeController::Get();
+  const bool is_camera_used =
+      !!controller->camera_controller()->camera_preview_widget();
+  const bool is_microphone_used = controller->IsAudioRecordingInProgress();
+
+  UpdatePrivacyIndicators(
+      /*app_id=*/kCaptureModePrivacyIndicatorsId,
+      /*app_name=*/
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAPTURE_MODE_BUTTON_LABEL),
+      is_camera_used, is_microphone_used, /*delegate=*/
+      base::MakeRefCounted<PrivacyIndicatorsNotificationDelegate>());
 }
 
 ui::ColorProvider* GetColorProviderForNativeTheme() {

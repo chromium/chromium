@@ -64,11 +64,13 @@ class ASH_EXPORT VideoRecordingWatcher
       aura::Window* window_being_recorded,
       mojo::PendingRemote<viz::mojom::FrameSinkVideoCaptureOverlay>
           cursor_capture_overlay,
-      bool projector_mode);
+      bool projector_mode,
+      bool is_recording_audio);
   ~VideoRecordingWatcher() override;
 
   aura::Window* window_being_recorded() const { return window_being_recorded_; }
   bool is_in_projector_mode() const { return is_in_projector_mode_; }
+  bool is_recording_audio() const { return is_recording_audio_; }
   bool should_paint_layer() const { return should_paint_layer_; }
   bool is_shutting_down() const { return is_shutting_down_; }
   CaptureModeSource recording_source() const { return recording_source_; }
@@ -273,6 +275,10 @@ class ASH_EXPORT VideoRecordingWatcher
 
   // True if the current in progress recording is for a Projector mode session.
   const bool is_in_projector_mode_;
+
+  // True if this active recording session started with audio recording turned
+  // on, and audio recording is being done by the recording service.
+  const bool is_recording_audio_;
 
   // True if we force hiding the cursor overlay. This happens when we record a
   // fullscreen, or a partial screen region, and the software-composited cursor
