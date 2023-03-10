@@ -739,7 +739,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
         dict.Set("executionMode", "compatibility");
         break;
       case blink::InterestGroup::ExecutionMode::kGroupedByOriginMode:
-        dict.Set("executionMode", "groupByOrigin");
+        dict.Set("executionMode", "group-by-origin");
         break;
       case blink::InterestGroup::ExecutionMode::kFrozenContext:
         dict.Set("executionMode", "frozenContext");
@@ -2626,7 +2626,49 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
-                       JoinInterestGroupInvalidSellerCapabilitiesIgnored) {
+                       JoinInterestGroupSupportsDeprecatedNames) {
+  GURL url = https_server_->GetURL("a.test", "/echo");
+  std::string origin_string = url::Origin::Create(url).Serialize();
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+
+  EXPECT_EQ("done", EvalJs(shell(), JsReplace(R"(
+(async function() {
+  try {
+    await navigator.joinAdInterestGroup(
+        {
+          name: 'cars',
+          owner: $1,
+          sellerCapabilities: {'*': ['interestGroupCounts', 'latencyStats']},
+          executionMode: 'groupByOrigin',
+        },
+        /*joinDurationSec=*/1000);
+  } catch (e) {
+    return e.toString();
+  }
+  return 'done';
+})())",
+                                              origin_string.c_str())));
+  WaitForAccessObserved({});
+
+  WaitForInterestGroupsSatisfying(
+      url::Origin::Create(url),
+      base::BindLambdaForTesting([](const std::vector<StorageInterestGroup>&
+                                        groups) {
+        if (groups.size() != 1) {
+          return false;
+        }
+        const auto& group = groups[0].interest_group;
+        return group.all_sellers_capabilities ==
+                   blink::SellerCapabilitiesType(
+                       blink::SellerCapabilities::kInterestGroupCounts,
+                       blink::SellerCapabilities::kLatencyStats) &&
+               group.execution_mode ==
+                   blink::InterestGroup::ExecutionMode::kGroupedByOriginMode;
+      }));
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       JoinInterestGroupInvalidEnumFieldsIgnored) {
   GURL url = https_server_->GetURL("a.test", "/echo");
   std::string origin_string = url::Origin::Create(url).Serialize();
   ASSERT_TRUE(NavigateToURL(shell(), url));
@@ -2639,6 +2681,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           name: 'cars',
           owner: $1,
           sellerCapabilities: {'https://example.test': ['non-valid-capability']},
+          executionMode: 'non-valid-execution-mode',
         },
         /*joinDurationSec=*/1);
   } catch (e) {
@@ -9296,7 +9339,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, Update) {
 "trustedBiddingSignalsUrl":
   "%s/interest_group/new_trusted_bidding_signals_url.json",
 "trustedBiddingSignalsKeys": ["new_key"],
-"executionMode": "groupByOrigin",
+"executionMode": "group-by-origin",
 "ads": [{"renderUrl": "%s/new_ad_render_url",
          "metadata": {"new_a": "b"}
         }]

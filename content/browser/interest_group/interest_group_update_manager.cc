@@ -187,6 +187,9 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
       if (!maybe_capability.is_string())
         return false;
       const std::string& capability = maybe_capability.GetString();
+      base::UmaHistogramBoolean(
+          "Ads.InterestGroup.EnumNaming.Update.SellerCapabilities",
+          capability == "interestGroupCounts" || capability == "latencyStats");
       if (capability == "interest-group-counts" ||
           capability == "interestGroupCounts") {
         capabilities.Put(blink::SellerCapabilities::kInterestGroupCounts);
@@ -217,14 +220,16 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   const std::string* maybe_execution_mode = dict.FindString("executionMode");
   if (!maybe_execution_mode)
     return true;
+  base::UmaHistogramBoolean(
+      "Ads.InterestGroup.EnumNaming.Update.WorkletExecutionMode",
+      *maybe_execution_mode == "groupByOrigin");
   if (*maybe_execution_mode == "compatibility") {
     interest_group_update.execution_mode =
         blink::InterestGroup::ExecutionMode::kCompatibilityMode;
-  } else if (*maybe_execution_mode == "groupByOrigin") {
+  } else if (*maybe_execution_mode == "group-by-origin" ||
+             *maybe_execution_mode == "groupByOrigin") {
     interest_group_update.execution_mode =
         blink::InterestGroup::ExecutionMode::kGroupedByOriginMode;
-  } else {
-    return false;
   }
   return true;
 }

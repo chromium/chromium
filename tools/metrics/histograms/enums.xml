@@ -12215,6 +12215,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Deprecated ciphers enabled"/>
 </enum>
 
+<enum name="BooleanDeprecatedJSEnumName">
+  <int value="0" label="Not deprecated enum name"/>
+  <int value="1" label="Deprecated enum name"/>
+</enum>
+
 <enum name="BooleanDetected">
   <int value="0" label="Not detected"/>
   <int value="1" label="Detected"/>
