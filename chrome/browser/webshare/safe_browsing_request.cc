@@ -109,8 +109,10 @@ SafeBrowsingRequest::SafeBrowsingRequest(
 }
 
 SafeBrowsingRequest::~SafeBrowsingRequest() {
-  content::BrowserThread::DeleteSoon(content::BrowserThread::IO, FROM_HERE,
-                                     client_.release());
+  if (!base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
+    content::BrowserThread::DeleteSoon(content::BrowserThread::IO, FROM_HERE,
+                                       client_.release());
+  }
 }
 
 void SafeBrowsingRequest::OnResultReceived(bool is_url_safe) {
