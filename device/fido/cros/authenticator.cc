@@ -169,8 +169,9 @@ void ChromeOSAuthenticator::MakeCredential(
   }
 
   req.set_user_id(std::string(request.user.id.begin(), request.user.id.end()));
-  if (request.user.display_name.has_value())
+  if (request.user.display_name.has_value()) {
     req.set_user_display_name(request.user.display_name.value());
+  }
   req.set_resident_credential(request.resident_key_required);
   DCHECK(generate_request_id_callback_);
   DCHECK(current_request_id_.empty());
@@ -386,8 +387,9 @@ void ChromeOSAuthenticator::HasLegacyU2fCredentialForGetAssertionRequest(
 }
 
 void ChromeOSAuthenticator::Cancel() {
-  if (current_request_id_.empty())
+  if (current_request_id_.empty()) {
     return;
+  }
 
   u2f::CancelWebAuthnFlowRequest req;
   req.set_request_id_str(current_request_id_);
@@ -433,11 +435,11 @@ void ChromeOSAuthenticator::IsUVPlatformAuthenticatorAvailable(
 void ChromeOSAuthenticator::IsPowerButtonModeEnabled(
     base::OnceCallback<void(bool is_enabled)> callback) {
   chromeos::U2FClient::Get()->IsU2FEnabled(
-      u2f::IsUvpaaRequest(),
+      u2f::IsU2fEnabledRequest(),
       base::BindOnce(
           [](base::OnceCallback<void(bool is_enabled)> callback,
-             absl::optional<u2f::IsUvpaaResponse> response) {
-            std::move(callback).Run(response && response->available());
+             absl::optional<u2f::IsU2fEnabledResponse> response) {
+            std::move(callback).Run(response && response->enabled());
           },
           std::move(callback)));
 }

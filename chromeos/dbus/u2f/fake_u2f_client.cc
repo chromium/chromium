@@ -26,10 +26,10 @@ void FakeU2FClient::IsUvpaa(const u2f::IsUvpaaRequest& request,
 }
 
 void FakeU2FClient::IsU2FEnabled(
-    const u2f::IsUvpaaRequest& request,
-    DBusMethodCallback<u2f::IsUvpaaResponse> callback) {
-  u2f::IsUvpaaResponse response;
-  response.set_available(false);
+    const u2f::IsU2fEnabledRequest& request,
+    DBusMethodCallback<u2f::IsU2fEnabledResponse> callback) {
+  u2f::IsU2fEnabledResponse response;
+  response.set_enabled(false);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(response)));
 }
