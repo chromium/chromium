@@ -3402,6 +3402,12 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_INTERNET_NETWORK_SECTION_NETWORK_ACCESSIBILITY_LABEL" desc="Label for the button that toggles showing the network address configuration settings. Only visible by screen reader software.">
     Show network address settings
   </message>
+  <message name="IDS_SETTINGS_INTERNET_NETWORK_SECTION_PASSPOINT_REMOVAL_TITLE" desc="Settings > Internet > Network details: Title of the Passpoint network removal dialog.">
+    Forget this subscription?
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_NETWORK_SECTION_PASSPOINT_REMOVAL_DESCRIPTION" desc="Settings > Internet > Network details: Description of the Passpoint network removal dialog.">
+    By forgetting this network you will also remove the Passpoint subscription and its associated networks. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+  </message>
   <message name="IDS_SETTINGS_INTERNET_NETWORK_SECTION_PROXY" desc="Settings > Internet > Network details: Proxy section label.">
     Proxy
   </message>

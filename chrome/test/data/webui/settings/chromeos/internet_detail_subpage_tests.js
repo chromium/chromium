@@ -8,7 +8,7 @@ import {InternetPageBrowserProxyImpl, Router, routes} from 'chrome://os-settings
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
-import {ActivationStateType, CrosNetworkConfigRemote, InhibitReason, ManagedProperties, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ActivationStateType, CrosNetworkConfigRemote, InhibitReason, ManagedProperties, MatchType, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, DeviceStateType, NetworkType, OncSource, PolicySource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
@@ -96,6 +96,12 @@ suite('InternetDetailPage', function() {
     return button;
   }
 
+  function getDialog(dialogId) {
+    const dialog = internetDetailPage.shadowRoot.querySelector(`#${dialogId}`);
+    assertTrue(!!dialog);
+    return dialog;
+  }
+
   function getManagedProperties(type, name, opt_source) {
     const result =
         OncMojo.getDefaultManagedProperties(type, name + '_guid', name);
@@ -161,6 +167,7 @@ suite('InternetDetailPage', function() {
       internetKnownNetworksPageTitle: 'internetKnownNetworksPageTitle',
       showMeteredToggle: true,
       isApnRevampEnabled: false,
+      isPasspointEnabled: true,
     });
 
     PolymerTest.clearBody();
@@ -584,6 +591,79 @@ suite('InternetDetailPage', function() {
           !!internetDetailPage.shadowRoot.querySelector('network-nameservers'));
       assertFalse(!!internetDetailPage.shadowRoot.querySelector(
           'network-proxy-section'));
+    });
+
+    test('WiFi Passpoint removal shows a dialog', async () => {
+      loadTimeData.overrideValues({isPasspointEnabled: true});
+      init();
+      mojoApi_.resetForTest();
+      mojoApi_.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
+      const wifiNetwork =
+          getManagedProperties(NetworkType.kWiFi, 'wifi_passpoint');
+      wifiNetwork.source = OncSource.kUser;
+      wifiNetwork.connectable = true;
+      wifiNetwork.typeProperties.wifi.passpointId = 'a_passpoint_id';
+      wifiNetwork.typeProperties.wifi.passpointMatchType = MatchType.kHome;
+      mojoApi_.setManagedPropertiesForTest(wifiNetwork);
+
+      internetDetailPage.init('wifi_passpoint_guid', 'WiFi', 'wifi_passpoint');
+      await flushAsync();
+
+      const forgetButton = getButton('forgetButton');
+      assertFalse(forgetButton.hidden);
+      assertFalse(forgetButton.disabled);
+
+      // Click the button and check the dialog is displayed.
+      forgetButton.click();
+      await flushAsync();
+      const dialog = getDialog('passpointRemovalDialog');
+      assertTrue(dialog.open);
+
+      // Check "Cancel" dismiss the dialog.
+      const cancelButton = getButton('passpointRemovalCancelButton');
+      assertTrue(!!cancelButton);
+      cancelButton.click();
+      await flushAsync();
+      assertFalse(dialog.open);
+
+      // Check "Confirm" triggers network removal
+      forgetButton.click();
+      await flushAsync();
+      const confirmButton = getButton('passpointRemovalConfirmButton');
+      confirmButton.click();
+      await flushAsync();
+      assertFalse(dialog.open);
+      await mojoApi_.whenCalled('forgetNetwork');
+    });
+
+    [true, false].forEach(isPasspointEnabled => {
+      test(
+          'WiFi network removal without Passpoint does not show a dialog',
+          async () => {
+            loadTimeData.overrideValues({
+              isPasspointEnabled: isPasspointEnabled,
+            });
+            init();
+            mojoApi_.resetForTest();
+            mojoApi_.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
+            const wifiNetwork = getManagedProperties(NetworkType.kWiFi, 'wifi');
+            wifiNetwork.source = OncSource.kUser;
+            wifiNetwork.connectable = true;
+            mojoApi_.setManagedPropertiesForTest(wifiNetwork);
+
+            internetDetailPage.init('wifi_guid', 'WiFi', 'wifi');
+            await flushAsync();
+
+            const forgetButton = getButton('forgetButton');
+            assertFalse(forgetButton.hidden);
+            assertFalse(forgetButton.disabled);
+
+            // Click the button and check the dialog is displayed.
+            forgetButton.click();
+            await flushAsync();
+            assertFalse(!!internetDetailPage.shadowRoot.querySelector(
+                '#passpointRemovalDialog'));
+          });
     });
   });
 

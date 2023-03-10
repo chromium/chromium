@@ -44,7 +44,7 @@ import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggl
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {ActivationStateType, ApnProperties, ConfigProperties, CrosNetworkConfigRemote, GlobalPolicy, HiddenSsidMode, IPConfigProperties, ManagedProperties, NetworkStateProperties, ProxySettings, SecurityType, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ActivationStateType, ApnProperties, ConfigProperties, CrosNetworkConfigRemote, GlobalPolicy, HiddenSsidMode, IPConfigProperties, ManagedProperties, MatchType, NetworkStateProperties, ProxySettings, SecurityType, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, DeviceStateType, IPConfigType, NetworkType, OncSource, PolicySource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {afterNextRender, flush, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -298,6 +298,14 @@ class SettingsInternetDetailPageElement extends
         },
       },
 
+      isPasspointEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.valueExists('isPasspointEnabled') &&
+              loadTimeData.getBoolean('isPasspointEnabled');
+        },
+      },
+
       advancedExpanded_: Boolean,
 
       networkExpanded_: Boolean,
@@ -371,6 +379,7 @@ class SettingsInternetDetailPageElement extends
   private hiddenPref_: chrome.settingsPrivate.PrefObject<boolean>;
   private ipAddress_: string;
   private isApnRevampEnabled_: boolean;
+  private isPasspointEnabled_: boolean;
   private isSecondaryUser_: boolean;
   private isTrafficCountersEnabled_: boolean;
   private isWifiSyncEnabled_: boolean;
@@ -1467,6 +1476,11 @@ class SettingsInternetDetailPageElement extends
             '#tetherDialog'));
   }
 
+  private getPasspointRemovalDialog_(): HTMLDialogElement {
+    return castExists(this.shadowRoot!.querySelector<HTMLDialogElement>(
+        '#passpointRemovalDialog'));
+  }
+
   private handleConnectTap_(): void {
     assertExists(this.managedProperties_);
     if (this.managedProperties_.type === NetworkType.kTether &&
@@ -1557,6 +1571,16 @@ class SettingsInternetDetailPageElement extends
   }
 
   private async onForgetTap_(): Promise<void> {
+    if (this.isPasspointWifi_(this.managedProperties_)) {
+      // Ask user confirmation before removing a Passpoint Wi-Fi and the
+      // associated subscription.
+      this.getPasspointRemovalDialog_().showModal();
+      return;
+    }
+    return this.forgetNetwork_();
+  }
+
+  private async forgetNetwork_(): Promise<void> {
     if (this.managedProperties_!.type === NetworkType.kWiFi) {
       recordSettingChange(Setting.kForgetWifiNetwork);
     } else {
@@ -2096,6 +2120,27 @@ class SettingsInternetDetailPageElement extends
       return false;
     }
     return this.isRememberedOrConnected_(managedProperties);
+  }
+
+  private isPasspointWifi_(managedProperties: ManagedProperties|
+                           undefined): boolean {
+    if (!this.isPasspointEnabled_) {
+      return false;
+    }
+    return !!managedProperties &&
+        managedProperties.type === NetworkType.kWiFi &&
+        managedProperties.typeProperties.wifi!.passpointId !== '' &&
+        managedProperties.typeProperties.wifi!.passpointMatchType !==
+        MatchType.kNoMatch;
+  }
+
+  private onPasspointRemovalDialogCancel_(): void {
+    this.getPasspointRemovalDialog_().close();
+  }
+
+  private onPasspointRemovalDialogConfirm_(): void {
+    this.getPasspointRemovalDialog_().close();
+    this.forgetNetwork_();
   }
 
   private showCellularChooseNetwork_(managedProperties: ManagedProperties):

@@ -146,8 +146,8 @@ export class FakeNetworkConfig {
      'getManagedProperties', 'setNetworkTypeEnabledState', 'requestNetworkScan',
      'getGlobalPolicy', 'getVpnProviders', 'getNetworkCertificates',
      'setProperties', 'setCellularSimState', 'startConnect', 'startDisconnect',
-     'configureNetwork', 'getAlwaysOnVpn', 'getSupportedVpnTypes',
-     'requestTrafficCounters', 'resetTrafficCounters',
+     'configureNetwork', 'forgetNetwork', 'getAlwaysOnVpn',
+     'getSupportedVpnTypes', 'requestTrafficCounters', 'resetTrafficCounters',
      'setTrafficCountersAutoReset', 'removeCustomApn', 'createCustomApn',
      'modifyCustomApn']
         .forEach((methodName) => {
@@ -337,6 +337,17 @@ export class FakeNetworkConfig {
           (Object.assign({}, properties));
       this.methodCalled('configureNetwork');
       resolve({guid: 'test_guid', errorMessage: ''});
+    });
+  }
+
+  /**
+   * @param {!string} guid
+   * @return {!Promise<{success: !boolean}>}
+   */
+  forgetNetwork(guid) {
+    return new Promise(resolve => {
+      this.methodCalled('forgetNetwork');
+      resolve({success: true});
     });
   }
 

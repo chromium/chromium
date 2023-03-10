@@ -807,6 +807,10 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"networkSectionNetwork", IDS_SETTINGS_INTERNET_NETWORK_SECTION_NETWORK},
       {"networkSectionNetworkExpandA11yLabel",
        IDS_SETTINGS_INTERNET_NETWORK_SECTION_NETWORK_ACCESSIBILITY_LABEL},
+      {"networkSectionPasspointRemovalTitle",
+       IDS_SETTINGS_INTERNET_NETWORK_SECTION_PASSPOINT_REMOVAL_TITLE},
+      {"networkSectionPasspointRemovalDescription",
+       IDS_SETTINGS_INTERNET_NETWORK_SECTION_PASSPOINT_REMOVAL_DESCRIPTION},
       {"networkSectionProxy", IDS_SETTINGS_INTERNET_NETWORK_SECTION_PROXY},
       {"networkSectionProxyExpandA11yLabel",
        IDS_SETTINGS_INTERNET_NETWORK_SECTION_PROXY_ACCESSIBILITY_LABEL},
@@ -1006,12 +1010,17 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       base::FeatureList::IsEnabled(::features::kShowHiddenNetworkToggle));
   html_source->AddBoolean("isHotspotEnabled",
                           ash::features::IsHotspotEnabled());
+  html_source->AddBoolean("isPasspointEnabled",
+                          ash::features::IsPasspointARCSupportEnabled());
 
   html_source->AddString("networkGoogleNameserversLearnMoreUrl",
                          chrome::kGoogleNameserversLearnMoreURL);
 
   html_source->AddString("wifiHiddenNetworkLearnMoreUrl",
                          chrome::kWifiHiddenNetworkURL);
+
+  html_source->AddString("wifiPasspointLearnMoreUrl",
+                         chrome::kWifiPasspointURL);
 
   html_source->AddString(
       "networkNotSynced",

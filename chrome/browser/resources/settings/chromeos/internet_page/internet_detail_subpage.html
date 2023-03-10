@@ -513,3 +513,28 @@
       out-of-range="[[outOfRange_]]">
   </tether-connection-dialog>
 </template>
+<template is="dom-if" if="[[isPasspointWifi_(managedProperties_)]]" restamp>
+  <!-- Passpoint subscription removal confirmation dialog -->
+  <cr-dialog id="passpointRemovalDialog" close-text="$i18n{close}">
+    <div slot="title">
+      $i18nPolymer{networkSectionPasspointRemovalTitle}
+    </div>
+    <div slot="body">
+      <localized-link
+          localized-string=
+              "$i18nPolymer{networkSectionPasspointRemovalDescription}"
+          link-url="$i18nRaw{wifiPasspointLearnMoreUrl}">
+      </localized-link>
+    </div>
+    <div slot="button-container">
+      <cr-button id="passpointRemovalCancelButton" class="cancel-button"
+          on-click="onPasspointRemovalDialogCancel_">
+        $i18n{cancel}
+      </cr-button>
+      <cr-button id="passpointRemovalConfirmButton" class="action-button"
+          on-click="onPasspointRemovalDialogConfirm_">
+        $i18n{confirm}
+      </cr-button>
+    </div>
+  </cr-dialog>
+</template>
