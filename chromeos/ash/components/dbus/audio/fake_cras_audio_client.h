@@ -134,12 +134,15 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   const uint64_t& active_output_node_id() const {
     return active_output_node_id_;
   }
-  void set_notify_volume_change_with_delay(bool notify_with_delay) {
-    notify_volume_change_with_delay_ = notify_with_delay;
-  }
-  void set_notify_gain_change_with_delay(bool notify_with_delay) {
-    notify_gain_change_with_delay_ = notify_with_delay;
-  }
+
+  // By default the observers are informed when `SetOutputNodeVolume` is
+  // invoked. This disables that. You can then manually invoke the observers by
+  // calling `NotifyOutputNodeVolumeChangedForTesting`.
+  void disable_volume_change_events() { enable_volume_change_events_ = false; }
+  // By default the observers are informed when `SetInputGain` is
+  // invoked. This disables that. You can then manually invoke the observers by
+  // calling `NotifyInputNodeGainChangedForTesting`.
+  void disable_gain_change_events() { enable_gain_change_events_ = false; }
 
   bool noise_cancellation_enabled() const {
     return noise_cancellation_enabled_;
@@ -153,12 +156,8 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   AudioNodeList node_list_;
   uint64_t active_input_node_id_ = 0;
   uint64_t active_output_node_id_ = 0;
-  // By default, immediately sends OutputNodeVolumeChange signal following the
-  // SetOutputNodeVolume fake dbus call.
-  bool notify_volume_change_with_delay_ = false;
-  // By default, immediately sends InputNodeVolumeChange signal following the
-  // SetInputNodeGain fake dbus call.
-  bool notify_gain_change_with_delay_ = false;
+  bool enable_volume_change_events_ = true;
+  bool enable_gain_change_events_ = true;
   bool noise_cancellation_supported_ = false;
   uint32_t battery_level_ = 0;
   uint32_t noise_cancellation_enabled_counter_ = 0;

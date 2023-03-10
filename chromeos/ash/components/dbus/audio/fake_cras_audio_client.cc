@@ -203,7 +203,7 @@ void FakeCrasAudioClient::GetSpeakOnMuteDetectionEnabled(
 
 void FakeCrasAudioClient::SetOutputNodeVolume(uint64_t node_id,
                                               int32_t volume) {
-  if (!notify_volume_change_with_delay_) {
+  if (enable_volume_change_events_) {
     NotifyOutputNodeVolumeChangedForTesting(node_id, volume);
   }
 }
@@ -217,7 +217,7 @@ void FakeCrasAudioClient::SetOutputUserMute(bool mute_on) {
 
 void FakeCrasAudioClient::SetInputNodeGain(uint64_t node_id,
                                            int32_t input_gain) {
-  if (!notify_gain_change_with_delay_) {
+  if (enable_gain_change_events_) {
     NotifyInputNodeGainChangedForTesting(node_id, input_gain);
   }
 }

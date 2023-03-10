@@ -2469,7 +2469,7 @@ TEST_P(CrasAudioHandlerTest, RestartAudioClientWithCrasReady) {
 
   const int kDefaultVolume = cras_audio_handler_->GetOutputVolumePercent();
   // Disable the auto OutputNodeVolumeChanged signal.
-  fake_cras_audio_client()->set_notify_volume_change_with_delay(true);
+  fake_cras_audio_client()->disable_volume_change_events();
 
   fake_cras_audio_client()->SetAudioNodesForTesting(audio_nodes);
   RestartAudioClient();
@@ -2499,7 +2499,7 @@ TEST_P(CrasAudioHandlerTest, RestartAudioClientWithCrasDropRequest) {
 
   const int kDefaultVolume = cras_audio_handler_->GetOutputVolumePercent();
   // Disable the auto OutputNodeVolumeChanged signal.
-  fake_cras_audio_client()->set_notify_volume_change_with_delay(true);
+  fake_cras_audio_client()->disable_volume_change_events();
 
   fake_cras_audio_client()->SetAudioNodesForTesting(audio_nodes);
   RestartAudioClient();
@@ -2533,7 +2533,7 @@ TEST_P(CrasAudioHandlerTest, SetOutputVolumeWithDelayedSignal) {
   EXPECT_EQ(kDefaultVolume, cras_audio_handler_->GetOutputVolumePercent());
 
   // Disable the auto OutputNodeVolumeChanged signal.
-  fake_cras_audio_client()->set_notify_volume_change_with_delay(true);
+  fake_cras_audio_client()->disable_volume_change_events();
 
   // Verify the volume state is not changed before OutputNodeVolumeChanged
   // signal fires.
@@ -2565,7 +2565,7 @@ TEST_P(CrasAudioHandlerTest,
   EXPECT_EQ(kDefaultVolume, cras_audio_handler_->GetOutputVolumePercent());
 
   // Disable the auto OutputNodeVolumeChanged signal.
-  fake_cras_audio_client()->set_notify_volume_change_with_delay(true);
+  fake_cras_audio_client()->disable_volume_change_events();
 
   // Verify the volume state is not changed before OutputNodeVolumeChanged
   // signal fires.
@@ -2664,7 +2664,7 @@ TEST_P(CrasAudioHandlerTest, SetInputGainWithDelayedSignal) {
   const int kDefaultGain = cras_audio_handler_->GetInputGainPercent();
 
   // Disable the auto InputNodeGainChanged signal.
-  fake_cras_audio_client()->set_notify_gain_change_with_delay(true);
+  fake_cras_audio_client()->disable_gain_change_events();
 
   // Verify the gain state is not changed before InputNodeGainChanged
   // signal fires.
@@ -2695,7 +2695,7 @@ TEST_P(CrasAudioHandlerTest,
   const int kDefaultGain = cras_audio_handler_->GetInputGainPercent();
 
   // Disable the auto InputNodeGainChanged signal.
-  fake_cras_audio_client()->set_notify_gain_change_with_delay(true);
+  fake_cras_audio_client()->disable_gain_change_events();
 
   // Verify the gain state is not changed before InputNodeGainChanged
   // signal fires.
@@ -3410,7 +3410,7 @@ TEST_P(CrasAudioHandlerTest, ChangeVolumeHotrodDualSpeakersWithDelayedSignals) {
   EXPECT_EQ(kDefaultVolume, cras_audio_handler_->GetOutputVolumePercent());
 
   // Disable the auto OutputNodeVolumeChanged signal.
-  fake_cras_audio_client()->set_notify_volume_change_with_delay(true);
+  fake_cras_audio_client()->disable_volume_change_events();
   test_observer_->reset_output_volume_changed_count();
 
   // Adjust the volume of output devices continuously.
