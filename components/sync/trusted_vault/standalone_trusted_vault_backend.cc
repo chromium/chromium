@@ -733,7 +733,7 @@ void StandaloneTrustedVaultBackend::AddTrustedRecoveryMethod(
               base::Unretained(this), std::move(cb)));
 }
 
-void StandaloneTrustedVaultBackend::ClearDataForAccount(
+void StandaloneTrustedVaultBackend::ClearLocalDataForAccount(
     const CoreAccountInfo& account_info) {
   sync_pb::LocalTrustedVaultPerUser* per_user_vault =
       FindUserVault(account_info.gaia);

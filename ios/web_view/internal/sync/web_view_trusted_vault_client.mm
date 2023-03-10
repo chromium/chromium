@@ -145,7 +145,7 @@ void WebViewTrustedVaultClient::AddTrustedRecoveryMethod(
   NOTREACHED();
 }
 
-void WebViewTrustedVaultClient::ClearDataForAccount(
+void WebViewTrustedVaultClient::ClearLocalDataForAccount(
     const CoreAccountInfo& account_info) {
   id<CWVTrustedVaultProvider> provider = CWVSyncController.trustedVaultProvider;
   if (!provider) {

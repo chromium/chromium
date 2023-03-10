@@ -952,9 +952,10 @@ TEST_F(SyncServiceImplTest, DisableSyncOnClient) {
             service()->GetTransportState());
   ASSERT_EQ(0, get_controller(BOOKMARKS)->model()->clear_metadata_call_count());
 
-  EXPECT_CALL(*trusted_vault_client(),
-              ClearDataForAccount(Eq(identity_manager()->GetPrimaryAccountInfo(
-                  signin::ConsentLevel::kSync))));
+  EXPECT_CALL(
+      *trusted_vault_client(),
+      ClearLocalDataForAccount(Eq(identity_manager()->GetPrimaryAccountInfo(
+          signin::ConsentLevel::kSync))));
 
   SyncProtocolError client_cmd;
   client_cmd.action = DISABLE_SYNC_ON_CLIENT;

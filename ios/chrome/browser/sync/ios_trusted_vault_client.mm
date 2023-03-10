@@ -82,7 +82,7 @@ void IOSTrustedVaultClient::AddTrustedRecoveryMethod(
   NOTREACHED();
 }
 
-void IOSTrustedVaultClient::ClearDataForAccount(
+void IOSTrustedVaultClient::ClearLocalDataForAccount(
     const CoreAccountInfo& account_info) {
   backend_->ClearLocalData(IdentityForAccount(account_info), base::DoNothing());
 }

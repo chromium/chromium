@@ -47,7 +47,10 @@ class MockTrustedVaultClient : public TrustedVaultClient {
       AddTrustedRecoveryMethod,
       (const std::string&, const std::vector<uint8_t>&, int, base::OnceClosure),
       (override));
-  MOCK_METHOD(void, ClearDataForAccount, (const CoreAccountInfo&), (override));
+  MOCK_METHOD(void,
+              ClearLocalDataForAccount,
+              (const CoreAccountInfo&),
+              (override));
 };
 
 }  // namespace syncer

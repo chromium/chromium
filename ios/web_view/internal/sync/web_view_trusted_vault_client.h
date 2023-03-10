@@ -35,7 +35,7 @@ class WebViewTrustedVaultClient : public syncer::TrustedVaultClient {
                                 const std::vector<uint8_t>& public_key,
                                 int method_type_hint,
                                 base::OnceClosure callback) override;
-  void ClearDataForAccount(const CoreAccountInfo& account_info) override;
+  void ClearLocalDataForAccount(const CoreAccountInfo& account_info) override;
 
   // Not copyable or movable
   WebViewTrustedVaultClient(const WebViewTrustedVaultClient&) = delete;

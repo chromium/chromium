@@ -254,7 +254,7 @@ void TrustedVaultClientAndroid::AddTrustedRecoveryMethod(
       java_public_key, method_type_hint);
 }
 
-void TrustedVaultClientAndroid::ClearDataForAccount(
+void TrustedVaultClientAndroid::ClearLocalDataForAccount(
     const CoreAccountInfo& account_info) {
   // Not relevant for Android implementation.
 }

@@ -903,7 +903,7 @@ void SyncServiceImpl::OnActionableProtocolError(
       }
 
       // Security domain state might be reset, reset local state as well.
-      sync_client_->GetTrustedVaultClient()->ClearDataForAccount(
+      sync_client_->GetTrustedVaultClient()->ClearLocalDataForAccount(
           GetAccountInfo());
 
       // Note: StopAndClear sets IsSyncRequested to false, which ensures that

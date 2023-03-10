@@ -925,7 +925,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   // Clear data for |account_info|, keys should be removed and device
   // registration attempt should be triggered.
-  backend()->ClearDataForAccount(account_info);
+  backend()->ClearLocalDataForAccount(account_info);
 
   // Callback should be called immediately.
   base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>

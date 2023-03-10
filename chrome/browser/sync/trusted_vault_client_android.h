@@ -90,7 +90,7 @@ class TrustedVaultClientAndroid : public syncer::TrustedVaultClient {
                                 const std::vector<uint8_t>& public_key,
                                 int method_type_hint,
                                 base::OnceClosure cb) override;
-  void ClearDataForAccount(const CoreAccountInfo& account_info) override;
+  void ClearLocalDataForAccount(const CoreAccountInfo& account_info) override;
 
  private:
   // Struct representing an in-flight FetchKeys() call invoked from C++.

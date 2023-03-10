@@ -130,7 +130,7 @@ class StandaloneTrustedVaultBackend
                                 int method_type_hint,
                                 base::OnceClosure cb);
 
-  void ClearDataForAccount(const CoreAccountInfo& account_info);
+  void ClearLocalDataForAccount(const CoreAccountInfo& account_info);
 
   absl::optional<CoreAccountInfo> GetPrimaryAccountForTesting() const;
 
