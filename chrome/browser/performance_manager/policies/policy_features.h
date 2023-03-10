@@ -19,11 +19,6 @@
 namespace performance_manager {
 namespace features {
 
-#if BUILDFLAG(IS_WIN)
-// The EmptyWorkingSet feature as used on Windows.
-BASE_DECLARE_FEATURE(kEmptyWorkingSet);
-#endif  // BUILDFLAG(IS_WIN)
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
 // The trim on Memory Pressure feature will trim a process nodes working set

@@ -17,13 +17,6 @@
 namespace performance_manager {
 namespace features {
 
-#if BUILDFLAG(IS_WIN)
-// Empty the working set of processes in which all frames are frozen.
-BASE_FEATURE(kEmptyWorkingSet,
-             "EmptyWorkingSet",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_WIN)
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
 BASE_FEATURE(kTrimOnMemoryPressure,
