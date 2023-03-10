@@ -34,6 +34,7 @@
 
 class ClipboardProvider;
 class DocumentProvider;
+class HistoryFuzzyProvider;
 class HistoryURLProvider;
 class HistoryQuickProvider;
 class KeywordProvider;
@@ -373,6 +374,8 @@ class AutocompleteController : public AutocompleteProviderListener,
   raw_ptr<ClipboardProvider> clipboard_provider_;
 
   raw_ptr<VoiceSuggestProvider> voice_suggest_provider_;
+
+  raw_ptr<HistoryFuzzyProvider> history_fuzzy_provider_;
 
   raw_ptr<OpenTabProvider> open_tab_provider_;
 

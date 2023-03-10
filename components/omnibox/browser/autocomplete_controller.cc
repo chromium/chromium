@@ -6,6 +6,7 @@
 
 #include <inttypes.h>
 
+#include <algorithm>
 #include <cstddef>
 #include <memory>
 #include <numeric>
@@ -332,6 +333,7 @@ AutocompleteController::AutocompleteController(
       search_provider_(nullptr),
       zero_suggest_provider_(nullptr),
       on_device_head_provider_(nullptr),
+      history_fuzzy_provider_(nullptr),
       notify_changed_debouncer_(
           OmniboxFieldTrial::
               kAutocompleteStabilityUpdateResultDebounceFromLastRun.Get(),
@@ -475,12 +477,34 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
   // distinguished in the ms-scale buckets, is large enough to move the
   // arithmetic mean.
   base::TimeTicks start_time = base::TimeTicks::Now();
+
+  // Keep a max-heap of negative relevances to quickly estimate a relevance
+  // cutoff that can be used to improve counterfactual triggering.
+  // Prevent memory churn by starting with full size heap, ready for
+  // first change to be pushed without reallocation.
+  std::vector<int> relevances(result_.GetDynamicMaxMatches() + 1, 0);
+  relevances.pop_back();
+
   for (const auto& provider : providers_) {
-    if (!ShouldRunProvider(provider.get()))
+    if (!ShouldRunProvider(provider.get())) {
       continue;
+    }
 
     base::TimeTicks provider_start_time = base::TimeTicks::Now();
+    if (history_fuzzy_provider_) {
+      history_fuzzy_provider_->SetCounterfactualRelevanceHint(
+          -relevances.front());
+    }
     provider->Start(input_, minimal_changes);
+
+    for (const AutocompleteMatch& match : provider->matches()) {
+      relevances.push_back(-match.relevance);
+      std::push_heap(relevances.begin(), relevances.end());
+      std::pop_heap(relevances.begin(), relevances.end());
+      relevances.pop_back();
+      DCHECK(std::is_heap(relevances.begin(), relevances.end()));
+    }
+
     // `UmaHistogramTimes()` uses 1ms - 10s buckets, whereas this uses 1ms - 5s
     // buckets.
     // TODO(crbug.com/1340291|manukh): This isn't handled by `metrics_` yet. It
@@ -886,7 +910,8 @@ void AutocompleteController::InitializeSyncProviders(int provider_types) {
     providers_.push_back(voice_suggest_provider_.get());
   }
   if (provider_types & AutocompleteProvider::TYPE_HISTORY_FUZZY) {
-    providers_.push_back(new HistoryFuzzyProvider(provider_client_.get()));
+    history_fuzzy_provider_ = new HistoryFuzzyProvider(provider_client_.get());
+    providers_.push_back(history_fuzzy_provider_.get());
   }
   if (provider_types & AutocompleteProvider::TYPE_OPEN_TAB) {
     open_tab_provider_ = new OpenTabProvider(provider_client_.get());

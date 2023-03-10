@@ -194,6 +194,10 @@ class HistoryFuzzyProvider : public HistoryProvider,
   HistoryFuzzyProvider(const HistoryFuzzyProvider&) = delete;
   HistoryFuzzyProvider& operator=(const HistoryFuzzyProvider&) = delete;
 
+  // Set a relevance hint to improve counterfactual in late-running providers
+  // where most match relevances are already determined.
+  void SetCounterfactualRelevanceHint(int relevance_hint);
+
   // HistoryProvider:
   // AutocompleteProvider. `minimal_changes` is ignored since there is no async
   // completion performed.
@@ -259,6 +263,13 @@ class HistoryFuzzyProvider : public HistoryProvider,
   int penalty_low_;
   int penalty_high_;
   size_t penalty_taper_length_;
+
+  // Cache counterfactual feature param.
+  bool counterfactual_;
+
+  // A relevance value below which counterfactual matches are less likely
+  // to be kept, if they were to be included in the full output match set.
+  int counterfactual_relevance_hint_{0};
 
   // Weak pointer factory for callback binding safety.
   base::WeakPtrFactory<HistoryFuzzyProvider> weak_ptr_factory_{this};
