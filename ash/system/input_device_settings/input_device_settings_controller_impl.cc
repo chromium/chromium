@@ -401,12 +401,14 @@ void InputDeviceSettingsControllerImpl::DispatchKeyboardConnected(DeviceId id) {
   }
 }
 
-void InputDeviceSettingsControllerImpl::DispatchKeyboardDisconnected(
-    DeviceId id) {
+void InputDeviceSettingsControllerImpl::
+    DispatchKeyboardDisconnectedAndEraseFromList(DeviceId id) {
   DCHECK(base::Contains(keyboards_, id));
-  const auto& keyboard = *keyboards_.at(id);
+  auto keyboard_iter = keyboards_.find(id);
+  auto keyboard = std::move(keyboard_iter->second);
+  keyboards_.erase(keyboard_iter);
   for (auto& observer : observers_) {
-    observer.OnKeyboardDisconnected(keyboard);
+    observer.OnKeyboardDisconnected(*keyboard);
   }
 }
 
@@ -427,12 +429,14 @@ void InputDeviceSettingsControllerImpl::DispatchTouchpadConnected(DeviceId id) {
   }
 }
 
-void InputDeviceSettingsControllerImpl::DispatchTouchpadDisconnected(
-    DeviceId id) {
+void InputDeviceSettingsControllerImpl::
+    DispatchTouchpadDisconnectedAndEraseFromList(DeviceId id) {
   DCHECK(base::Contains(touchpads_, id));
-  const auto& touchpad = *touchpads_.at(id);
+  auto touchpad_iter = touchpads_.find(id);
+  auto touchpad = std::move(touchpad_iter->second);
+  touchpads_.erase(touchpad_iter);
   for (auto& observer : observers_) {
-    observer.OnTouchpadDisconnected(touchpad);
+    observer.OnTouchpadDisconnected(*touchpad);
   }
 }
 
@@ -453,11 +457,14 @@ void InputDeviceSettingsControllerImpl::DispatchMouseConnected(DeviceId id) {
   }
 }
 
-void InputDeviceSettingsControllerImpl::DispatchMouseDisconnected(DeviceId id) {
+void InputDeviceSettingsControllerImpl::
+    DispatchMouseDisconnectedAndEraseFromList(DeviceId id) {
   DCHECK(base::Contains(mice_, id));
-  const auto& mouse = *mice_.at(id);
+  auto mouse_iter = mice_.find(id);
+  auto mouse = std::move(mouse_iter->second);
+  mice_.erase(mouse_iter);
   for (auto& observer : observers_) {
-    observer.OnMouseDisconnected(mouse);
+    observer.OnMouseDisconnected(*mouse);
   }
 }
 
@@ -479,12 +486,14 @@ void InputDeviceSettingsControllerImpl::DispatchPointingStickConnected(
   }
 }
 
-void InputDeviceSettingsControllerImpl::DispatchPointingStickDisconnected(
-    DeviceId id) {
+void InputDeviceSettingsControllerImpl::
+    DispatchPointingStickDisconnectedAndEraseFromList(DeviceId id) {
   DCHECK(base::Contains(pointing_sticks_, id));
-  const auto& pointing_stick = *pointing_sticks_.at(id);
+  auto pointing_stick_iter = pointing_sticks_.find(id);
+  auto pointing_stick = std::move(pointing_stick_iter->second);
+  pointing_sticks_.erase(pointing_stick_iter);
   for (auto& observer : observers_) {
-    observer.OnPointingStickDisconnected(pointing_stick);
+    observer.OnPointingStickDisconnected(*pointing_stick);
   }
 }
 
@@ -513,8 +522,7 @@ void InputDeviceSettingsControllerImpl::OnKeyboardListUpdated(
   }
 
   for (const auto id : keyboard_ids_to_remove) {
-    DispatchKeyboardDisconnected(id);
-    keyboards_.erase(id);
+    DispatchKeyboardDisconnectedAndEraseFromList(id);
   }
 }
 
@@ -532,8 +540,7 @@ void InputDeviceSettingsControllerImpl::OnTouchpadListUpdated(
   }
 
   for (const auto id : touchpad_ids_to_remove) {
-    DispatchTouchpadDisconnected(id);
-    touchpads_.erase(id);
+    DispatchTouchpadDisconnectedAndEraseFromList(id);
   }
 }
 
@@ -551,8 +558,7 @@ void InputDeviceSettingsControllerImpl::OnMouseListUpdated(
   }
 
   for (const auto id : mouse_ids_to_remove) {
-    DispatchMouseDisconnected(id);
-    mice_.erase(id);
+    DispatchMouseDisconnectedAndEraseFromList(id);
   }
 }
 
@@ -571,8 +577,7 @@ void InputDeviceSettingsControllerImpl::OnPointingStickListUpdated(
   }
 
   for (const auto id : pointing_stick_ids_to_remove) {
-    DispatchPointingStickDisconnected(id);
-    pointing_sticks_.erase(id);
+    DispatchPointingStickDisconnectedAndEraseFromList(id);
   }
 }
 
