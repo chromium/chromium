@@ -18,8 +18,6 @@ bool IsOptedInForAccountStorage(const PrefService* pref_service,
 
   // On Android and iOS, there is no explicit opt-in - this is handled through
   // Sync's selected data types instead.
-  // TODO(crbug.com/1392699): Do we need to handle the explicit-passphrase case?
-  // Plumb the IsTrackingMetadata() bit here (or into IsUserEligible)?
   return internal::IsUserEligibleForAccountStorage(sync_service) &&
          sync_service->GetUserSettings()->GetSelectedTypes().Has(
              syncer::UserSelectableType::kPasswords);
