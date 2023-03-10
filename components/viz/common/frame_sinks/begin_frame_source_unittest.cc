@@ -706,17 +706,14 @@ class MockExternalBeginFrameSourceClient
 
 class ExternalBeginFrameSourceTest : public ::testing::Test {
  public:
-  void SetUp() override {
-    client_ = std::make_unique<MockExternalBeginFrameSourceClient>();
-    source_ = std::make_unique<ExternalBeginFrameSource>(
-        client_.get(), BeginFrameSource::kNotRestartableId);
-    obs_ = std::make_unique<MockBeginFrameObserver>();
-  }
+  ExternalBeginFrameSourceTest()
+      : client_(std::make_unique<MockExternalBeginFrameSourceClient>()),
+        source_(std::make_unique<ExternalBeginFrameSource>(
+            client_.get(),
+            BeginFrameSource::kNotRestartableId)),
+        obs_(std::make_unique<MockBeginFrameObserver>()) {}
 
-  void TearDown() override {
-    client_.reset();
-    obs_.reset();
-  }
+  ~ExternalBeginFrameSourceTest() override = default;
 
   std::unique_ptr<MockExternalBeginFrameSourceClient> client_;
   std::unique_ptr<ExternalBeginFrameSource> source_;
