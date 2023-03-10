@@ -75,20 +75,20 @@ async function postMessageAndAwaitReply(target, message) {
 // Maps protocol (without the trailing colon) and address space to port.
 const SERVER_PORTS = {
   "http": {
-    "local": {{ports[http][0]}},
-    "private": {{ports[http-private][0]}},
+    "loopback": {{ports[http][0]}},
+    "local": {{ports[http-private][0]}},
     "public": {{ports[http-public][0]}},
   },
   "https": {
-    "local": {{ports[https][0]}},
-    "private": {{ports[https-private][0]}},
+    "loopback": {{ports[https][0]}},
+    "local": {{ports[https-private][0]}},
     "public": {{ports[https-public][0]}},
   },
   "ws": {
-    "local": {{ports[ws][0]}},
+    "loopback": {{ports[ws][0]}},
   },
   "wss": {
-    "local": {{ports[wss][0]}},
+    "loopback": {{ports[wss][0]}},
   },
 };
 
@@ -126,14 +126,14 @@ class Server {
     };
   }
 
-  static HTTP_LOCAL = Server.get("http", "local");
-  static HTTP_PRIVATE = Server.get("http", "private");
+  static HTTP_LOCAL = Server.get("http", "loopback");
+  static HTTP_PRIVATE = Server.get("http", "local");
   static HTTP_PUBLIC = Server.get("http", "public");
-  static HTTPS_LOCAL = Server.get("https", "local");
-  static HTTPS_PRIVATE = Server.get("https", "private");
+  static HTTPS_LOCAL = Server.get("https", "loopback");
+  static HTTPS_PRIVATE = Server.get("https", "local");
   static HTTPS_PUBLIC = Server.get("https", "public");
-  static WS_LOCAL = Server.get("ws", "local");
-  static WSS_LOCAL = Server.get("wss", "local");
+  static WS_LOCAL = Server.get("ws", "loopback");
+  static WSS_LOCAL = Server.get("wss", "loopback");
 };
 
 // Resolves a URL relative to the current location, returning an absolute URL.
