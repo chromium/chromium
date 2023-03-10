@@ -1,0 +1,39 @@
+This is a testharness.js-based test.
+FAIL CSS Transitions: property <offset> from [path("M0 200H 700") 500px 800deg] to [path("M0 300H 700 Z") 600px 900deg] at (-0.3) should be [path("M0 300H 700 Z") 470px 770deg] assert_equals: expected "path ( \" M 0 300 H 700 Z \" ) 470px 770deg " but got "path ( \" M 0 200 H 700 \" ) 470px 770deg "
+FAIL CSS Transitions: property <offset> from [path("M0 200H 700") 500px 800deg] to [path("M0 300H 700 Z") 600px 900deg] at (0) should be [path("M0 300H 700 Z") 500px 800deg] assert_equals: expected "path ( \" M 0 300 H 700 Z \" ) 500px 800deg " but got "path ( \" M 0 200 H 700 \" ) 500px 800deg "
+FAIL CSS Transitions: property <offset> from [path("M0 200H 700") 500px 800deg] to [path("M0 300H 700 Z") 600px 900deg] at (0.3) should be [path("M0 300H 700 Z") 530px 830deg] assert_equals: expected "path ( \" M 0 300 H 700 Z \" ) 530px 830deg " but got "path ( \" M 0 200 H 700 \" ) 530px 830deg "
+PASS CSS Transitions: property <offset> from [path("M0 200H 700") 500px 800deg] to [path("M0 300H 700 Z") 600px 900deg] at (0.6) should be [path("M0 300H 700 Z") 560px 860deg]
+PASS CSS Transitions: property <offset> from [path("M0 200H 700") 500px 800deg] to [path("M0 300H 700 Z") 600px 900deg] at (1) should be [path("M0 300H 700 Z") 600px 900deg]
+PASS CSS Transitions: property <offset> from [path("M0 200H 700") 500px 800deg] to [path("M0 300H 700 Z") 600px 900deg] at (1.5) should be [path("M0 300H 700 Z") 650px 950deg]
+FAIL CSS Transitions: property <offset> from [path("M0 0H 200") 500px auto] to [path("M0 0H 300") 600px 0deg] at (-0.3) should be [path("M0 0H 170") 470px 0deg] assert_equals: expected "path ( \" M 0 0 H 170 \" ) 470px 0deg " but got "path ( \" M 0 0 H 170 \" ) 470px auto 0deg "
+FAIL CSS Transitions: property <offset> from [path("M0 0H 200") 500px auto] to [path("M0 0H 300") 600px 0deg] at (0) should be [path("M0 0H 200") 500px 0deg] assert_equals: expected "path ( \" M 0 0 H 200 \" ) 500px 0deg " but got "path ( \" M 0 0 H 200 \" ) 500px auto 0deg "
+FAIL CSS Transitions: property <offset> from [path("M0 0H 200") 500px auto] to [path("M0 0H 300") 600px 0deg] at (0.3) should be [path("M0 0H 230") 530px 0deg] assert_equals: expected "path ( \" M 0 0 H 230 \" ) 530px 0deg " but got "path ( \" M 0 0 H 230 \" ) 530px auto 0deg "
+PASS CSS Transitions: property <offset> from [path("M0 0H 200") 500px auto] to [path("M0 0H 300") 600px 0deg] at (0.6) should be [path("M0 0H 260") 560px 0deg]
+PASS CSS Transitions: property <offset> from [path("M0 0H 200") 500px auto] to [path("M0 0H 300") 600px 0deg] at (1) should be [path("M0 0H 300") 600px 0deg]
+PASS CSS Transitions: property <offset> from [path("M0 0H 200") 500px auto] to [path("M0 0H 300") 600px 0deg] at (1.5) should be [path("M0 0H 350") 650px 0deg]
+PASS CSS Animations: property <offset> from [path("M0 200H 700") 500px 800deg] to [path("M0 300H 700 Z") 600px 900deg] at (-0.3) should be [path("M0 200H 700") 470px 770deg]
+PASS CSS Animations: property <offset> from [path("M0 200H 700") 500px 800deg] to [path("M0 300H 700 Z") 600px 900deg] at (0) should be [path("M0 200H 700") 500px 800deg]
+PASS CSS Animations: property <offset> from [path("M0 200H 700") 500px 800deg] to [path("M0 300H 700 Z") 600px 900deg] at (0.3) should be [path("M0 200H 700") 530px 830deg]
+PASS CSS Animations: property <offset> from [path("M0 200H 700") 500px 800deg] to [path("M0 300H 700 Z") 600px 900deg] at (0.6) should be [path("M0 300H 700 Z") 560px 860deg]
+PASS CSS Animations: property <offset> from [path("M0 200H 700") 500px 800deg] to [path("M0 300H 700 Z") 600px 900deg] at (1) should be [path("M0 300H 700 Z") 600px 900deg]
+PASS CSS Animations: property <offset> from [path("M0 200H 700") 500px 800deg] to [path("M0 300H 700 Z") 600px 900deg] at (1.5) should be [path("M0 300H 700 Z") 650px 950deg]
+PASS CSS Animations: property <offset> from [path("M0 0H 200") 500px auto] to [path("M0 0H 300") 600px 0deg] at (-0.3) should be [path("M0 0H 170") 470px]
+PASS CSS Animations: property <offset> from [path("M0 0H 200") 500px auto] to [path("M0 0H 300") 600px 0deg] at (0) should be [path("M0 0H 200") 500px]
+PASS CSS Animations: property <offset> from [path("M0 0H 200") 500px auto] to [path("M0 0H 300") 600px 0deg] at (0.3) should be [path("M0 0H 230") 530px]
+PASS CSS Animations: property <offset> from [path("M0 0H 200") 500px auto] to [path("M0 0H 300") 600px 0deg] at (0.6) should be [path("M0 0H 260") 560px 0deg]
+PASS CSS Animations: property <offset> from [path("M0 0H 200") 500px auto] to [path("M0 0H 300") 600px 0deg] at (1) should be [path("M0 0H 300") 600px 0deg]
+PASS CSS Animations: property <offset> from [path("M0 0H 200") 500px auto] to [path("M0 0H 300") 600px 0deg] at (1.5) should be [path("M0 0H 350") 650px 0deg]
+PASS Web Animations: property <offset> from [path("M0 200H 700") 500px 800deg] to [path("M0 300H 700 Z") 600px 900deg] at (-0.3) should be [path("M0 200H 700") 470px 770deg]
+PASS Web Animations: property <offset> from [path("M0 200H 700") 500px 800deg] to [path("M0 300H 700 Z") 600px 900deg] at (0) should be [path("M0 200H 700") 500px 800deg]
+PASS Web Animations: property <offset> from [path("M0 200H 700") 500px 800deg] to [path("M0 300H 700 Z") 600px 900deg] at (0.3) should be [path("M0 200H 700") 530px 830deg]
+PASS Web Animations: property <offset> from [path("M0 200H 700") 500px 800deg] to [path("M0 300H 700 Z") 600px 900deg] at (0.6) should be [path("M0 300H 700 Z") 560px 860deg]
+PASS Web Animations: property <offset> from [path("M0 200H 700") 500px 800deg] to [path("M0 300H 700 Z") 600px 900deg] at (1) should be [path("M0 300H 700 Z") 600px 900deg]
+PASS Web Animations: property <offset> from [path("M0 200H 700") 500px 800deg] to [path("M0 300H 700 Z") 600px 900deg] at (1.5) should be [path("M0 300H 700 Z") 650px 950deg]
+PASS Web Animations: property <offset> from [path("M0 0V 200") 500px auto] to [path("M0 0H 300") 600px 0deg] at (-0.3) should be [path("M0 0V 200") 470px]
+PASS Web Animations: property <offset> from [path("M0 0V 200") 500px auto] to [path("M0 0H 300") 600px 0deg] at (0) should be [path("M0 0V 200") 500px]
+PASS Web Animations: property <offset> from [path("M0 0V 200") 500px auto] to [path("M0 0H 300") 600px 0deg] at (0.3) should be [path("M0 0V 200") 530px]
+PASS Web Animations: property <offset> from [path("M0 0V 200") 500px auto] to [path("M0 0H 300") 600px 0deg] at (0.6) should be [path("M0 0H 300") 560px 0deg]
+PASS Web Animations: property <offset> from [path("M0 0V 200") 500px auto] to [path("M0 0H 300") 600px 0deg] at (1) should be [path("M0 0H 300") 600px 0deg]
+PASS Web Animations: property <offset> from [path("M0 0V 200") 500px auto] to [path("M0 0H 300") 600px 0deg] at (1.5) should be [path("M0 0H 300") 650px 0deg]
+Harness: the test ran to completion.
+

@@ -2907,9 +2907,23 @@ crbug.com/626703 [ Win ] external/wpt/speculation-rules/prerender/restriction-pr
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Linux ] external/wpt/IndexedDB/idb-explicit-commit.any.html [ Timeout ]
+crbug.com/626703 [ Mac13 ] external/wpt/IndexedDB/idb-explicit-commit.any.html [ Timeout ]
+crbug.com/626703 [ Linux ] virtual/lna-allow-potentially-trustworthy-same-origin/external/wpt/fetch/private-network-access/iframe.tentative.https.window.html [ Timeout ]
+crbug.com/626703 [ Mac10.15 ] virtual/lna-allow-potentially-trustworthy-same-origin/external/wpt/fetch/private-network-access/iframe.tentative.https.window.html [ Timeout ]
+crbug.com/626703 [ Linux ] virtual/pending-beacon/external/wpt/pending-beacon/pending_beacon-sendonhidden.tentative.https.window.html [ Timeout ]
+crbug.com/626703 [ Win10.20h2 ] virtual/pending-beacon/external/wpt/pending-beacon/pending_beacon-sendonhidden.tentative.https.window.html [ Timeout ]
+crbug.com/626703 [ Linux ] virtual/pna-permission/external/wpt/fetch/private-network-access/iframe.tentative.https.window.html [ Timeout ]
+crbug.com/626703 [ Mac10.15 ] virtual/pna-permission/external/wpt/fetch/private-network-access/iframe.tentative.https.window.html [ Timeout ]
+crbug.com/626703 [ Linux ] virtual/pna-workers-disabled/external/wpt/fetch/private-network-access/iframe.tentative.https.window.html [ Timeout ]
+crbug.com/626703 [ Mac10.15 ] virtual/pna-workers-disabled/external/wpt/fetch/private-network-access/iframe.tentative.https.window.html [ Timeout ]
+crbug.com/626703 [ Linux ] virtual/shared-storage-fenced-frame-mparch-selecturl-limit/wpt_internal/shared_storage_selecturl_limit/run-url-selection-operation-limit-multiple-origins.https.html [ Timeout ]
+crbug.com/626703 [ Mac13 ] virtual/shared-storage-fenced-frame-mparch-selecturl-limit/wpt_internal/shared_storage_selecturl_limit/run-url-selection-operation-limit-multiple-origins.https.html [ Timeout ]
+crbug.com/626703 [ Win ] virtual/shared-storage-fenced-frame-mparch-selecturl-limit/wpt_internal/shared_storage_selecturl_limit/run-url-selection-operation-limit-multiple-origins.https.html [ Timeout ]
+crbug.com/626703 [ Linux ] virtual/third-party-storage-partitioning/external/wpt/IndexedDB/idbobjectstore_getKey.any.worker.html [ Timeout ]
+crbug.com/626703 [ Mac13 ] virtual/third-party-storage-partitioning/external/wpt/IndexedDB/idbobjectstore_getKey.any.worker.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-backgrounds/background-clip-padding-box-with-border-radius.html [ Failure ]
 crbug.com/626703 virtual/threaded/external/wpt/css/css-backgrounds/background-clip-padding-box-with-border-radius.html [ Failure ]
-crbug.com/626703 [ Linux ] virtual/shared-storage-fenced-frame-mparch-selecturl-limit/wpt_internal/shared_storage_selecturl_limit/run-url-selection-operation-limit-multiple-origins.https.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/shared-storage-fenced-frame-mparch-selecturl-limit/wpt_internal/shared_storage_selecturl_limit/run-url-selection-operation-limit-multiple-origins.https.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-rhythm/block-step-size-establishes-independent-formatting-context-list-item.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-rhythm/block-step-size-establishes-independent-formatting-context.html [ Failure ]
@@ -2917,7 +2931,6 @@ crbug.com/626703 external/wpt/css/css-text/white-space/white-space-vs-joiners-00
 crbug.com/626703 [ Mac10.15 ] virtual/shared-storage-fenced-frame-mparch-selecturl-limit/wpt_internal/shared_storage_selecturl_limit/run-url-selection-operation-limit-multiple-origins.https.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/shared-storage-fenced-frame-mparch-selecturl-limit/wpt_internal/shared_storage_selecturl_limit/run-url-selection-operation-limit-multiple-origins.https.html [ Timeout ]
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/credentialless/dedicated-worker.https.window.html [ Failure Timeout ]
-crbug.com/626703 [ Linux ] external/wpt/IndexedDB/idb-explicit-commit.any.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/IndexedDB/idb-explicit-commit.any.html [ Timeout ]
 crbug.com/626703 [ Linux ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/background-fetch.https.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/background-fetch.https.html [ Timeout ]
@@ -2926,7 +2939,6 @@ crbug.com/626703 [ Mac12 ] virtual/third-party-storage-partitioning/external/wpt
 crbug.com/626703 [ Mac13 ] virtual/third-party-storage-partitioning/external/wpt/IndexedDB/idb-partitioned-coverage.tentative.sub.html [ Timeout ]
 crbug.com/626703 [ Linux ] virtual/attribution-reporting-debug-mode/wpt_internal/attribution-reporting/source-registration.sub.https.html?method=open&eligible [ Failure Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/attribution-reporting-debug-mode/wpt_internal/attribution-reporting/source-registration.sub.https.html?method=open&eligible [ Failure Timeout ]
-crbug.com/626703 [ Linux ] virtual/lna-allow-potentially-trustworthy-same-origin/external/wpt/fetch/private-network-access/iframe.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Linux ] virtual/pna-workers-enabled/external/wpt/fetch/private-network-access/iframe.tentative.https.window.html [ Timeout ]
 crbug.com/626703 external/wpt/html/semantics/interactive-elements/the-dialog-element/modal-dialog-backdrop-opacity.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-backgrounds/background-clip/clip-text-multi-line-002.html [ Failure ]
@@ -3696,7 +3708,6 @@ crbug.com/1399631 external/wpt/css/filter-effects/animation/backdrop-filter-inte
 crbug.com/1399631 external/wpt/css/filter-effects/animation/backdrop-filter-interpolation-003.html [ Crash Failure Pass Timeout ]
 crbug.com/1399631 external/wpt/css/filter-effects/animation/filter-interpolation-003.html [ Crash Failure Pass Timeout ]
 crbug.com/1399631 transitions/unanimatable-properties.html [ Crash Failure Pass Timeout ]
-crbug.com/1399631 external/wpt/css/css-transitions/all-with-discrete.tentative.html [ Crash Failure Pass Timeout ]
 
 # Tests failing when enabling new modern media controls
 crbug.com/832157 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cue-rendering-after-controls-added.html [ Crash Failure Pass Timeout ]
@@ -6173,7 +6184,6 @@ crbug.com/1371157 [ Debug Linux ] external/wpt/accessibility/crashtests/delayed-
 crbug.com/1377004 [ Mac10.14 ] external/wpt/video-rvfc/request-video-frame-callback-webrtc.https.html [ Timeout ]
 crbug.com/1194961 [ Debug Linux ] fast/events/touch/gesture/touch-gesture-fling-with-page-scale.html [ Failure Pass ]
 crbug.com/1380069 [ Mac10.15 ] virtual/pending-beacon/external/wpt/pending-beacon/pending_beacon-sendonhidden.tentative.https.window.html [ Timeout ]
-crbug.com/1380069 [ Linux ] virtual/pending-beacon/external/wpt/pending-beacon/pending_beacon-sendonhidden.tentative.https.window.html [ Timeout ]
 crbug.com/1380069 [ Mac12 Release ] virtual/pending-beacon/external/wpt/pending-beacon/pending_post_beacon-cors.tentative.https.window.html [ Timeout ]
 crbug.com/1380069 [ Mac13 Release ] virtual/pending-beacon/external/wpt/pending-beacon/pending_post_beacon-cors.tentative.https.window.html [ Timeout ]
 crbug.com/1380575 [ Linux ] virtual/scalefactor200/fast/forms/file/file-appearance-no-default-width.html [ Failure ]
@@ -6863,8 +6873,8 @@ crbug.com/1422630 external/wpt/long-animation-frame/tentative/loaf-promise.html 
 crbug.com/1422630 external/wpt/long-animation-frame/tentative/loaf-script-block.html [ Failure ]
 
 # Temporarily disable COLRv1 test to land Skia change, will rebaseline afterwards.
-crbug.com/1422959 virtual/text-antialias/colrv1-variable.html [ Pass Failure ]
+crbug.com/1422959 virtual/text-antialias/colrv1-variable.html [ Failure Pass ]
 
 # Sheriff 2023-03-09
-crbug.com/1422653 external/wpt/long-animation-frame/tentative/* [ Pass Failure ]
-crbug.com/1422653 virtual/threaded/external/wpt/long-animation-frame/tentative/* [ Pass Failure ]
+crbug.com/1422653 external/wpt/long-animation-frame/tentative/* [ Failure Pass ]
+crbug.com/1422653 virtual/threaded/external/wpt/long-animation-frame/tentative/* [ Failure Pass ]

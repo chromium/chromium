@@ -1,0 +1,43 @@
+This is a testharness.js-based test.
+PASS e.style['anchor-default'] = "implicit" should set the property value
+PASS e.style['anchor-default'] = "--foo" should set the property value
+PASS e.style['anchor-default'] = "none" should not set the property value
+PASS e.style['anchor-default'] = "foo-bar" should not set the property value
+PASS e.style['anchor-default'] = "--foo --bar" should not set the property value
+PASS e.style['anchor-default'] = "--foo, --bar" should not set the property value
+PASS e.style['anchor-default'] = "100px" should not set the property value
+PASS e.style['anchor-default'] = "100%" should not set the property value
+PASS Property anchor-default value 'implicit'
+PASS Property anchor-default value '--foo'
+PASS Property anchor-default has initial value implicit
+PASS Property anchor-default does not inherit
+FAIL CSS Transitions: property <anchor-default> from [--foo] to [implicit] at (-0.3) should be [implicit] assert_equals: expected "implicit " but got "- - foo "
+FAIL CSS Transitions: property <anchor-default> from [--foo] to [implicit] at (0) should be [implicit] assert_equals: expected "implicit " but got "- - foo "
+FAIL CSS Transitions: property <anchor-default> from [--foo] to [implicit] at (0.3) should be [implicit] assert_equals: expected "implicit " but got "- - foo "
+PASS CSS Transitions: property <anchor-default> from [--foo] to [implicit] at (0.5) should be [implicit]
+PASS CSS Transitions: property <anchor-default> from [--foo] to [implicit] at (0.6) should be [implicit]
+PASS CSS Transitions: property <anchor-default> from [--foo] to [implicit] at (1) should be [implicit]
+PASS CSS Transitions: property <anchor-default> from [--foo] to [implicit] at (1.5) should be [implicit]
+PASS CSS Transitions with transition: all: property <anchor-default> from [--foo] to [implicit] at (-0.3) should be [implicit]
+PASS CSS Transitions with transition: all: property <anchor-default> from [--foo] to [implicit] at (0) should be [implicit]
+PASS CSS Transitions with transition: all: property <anchor-default> from [--foo] to [implicit] at (0.3) should be [implicit]
+PASS CSS Transitions with transition: all: property <anchor-default> from [--foo] to [implicit] at (0.5) should be [implicit]
+PASS CSS Transitions with transition: all: property <anchor-default> from [--foo] to [implicit] at (0.6) should be [implicit]
+PASS CSS Transitions with transition: all: property <anchor-default> from [--foo] to [implicit] at (1) should be [implicit]
+PASS CSS Transitions with transition: all: property <anchor-default> from [--foo] to [implicit] at (1.5) should be [implicit]
+PASS CSS Animations: property <anchor-default> from [--foo] to [implicit] at (-0.3) should be [--foo]
+PASS CSS Animations: property <anchor-default> from [--foo] to [implicit] at (0) should be [--foo]
+PASS CSS Animations: property <anchor-default> from [--foo] to [implicit] at (0.3) should be [--foo]
+PASS CSS Animations: property <anchor-default> from [--foo] to [implicit] at (0.5) should be [implicit]
+PASS CSS Animations: property <anchor-default> from [--foo] to [implicit] at (0.6) should be [implicit]
+PASS CSS Animations: property <anchor-default> from [--foo] to [implicit] at (1) should be [implicit]
+PASS CSS Animations: property <anchor-default> from [--foo] to [implicit] at (1.5) should be [implicit]
+PASS Web Animations: property <anchor-default> from [--foo] to [implicit] at (-0.3) should be [--foo]
+PASS Web Animations: property <anchor-default> from [--foo] to [implicit] at (0) should be [--foo]
+PASS Web Animations: property <anchor-default> from [--foo] to [implicit] at (0.3) should be [--foo]
+PASS Web Animations: property <anchor-default> from [--foo] to [implicit] at (0.5) should be [implicit]
+PASS Web Animations: property <anchor-default> from [--foo] to [implicit] at (0.6) should be [implicit]
+PASS Web Animations: property <anchor-default> from [--foo] to [implicit] at (1) should be [implicit]
+PASS Web Animations: property <anchor-default> from [--foo] to [implicit] at (1.5) should be [implicit]
+Harness: the test ran to completion.
+
