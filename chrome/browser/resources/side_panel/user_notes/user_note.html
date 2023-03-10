@@ -1,4 +1,4 @@
-<style include="mwb-element-shared-style">
+<style include="mwb-element-shared-style cr-input-style">
   :host {
     --note-background-color: var(--google-grey-100);
     --note-content-vertical-padding: 6px;
@@ -96,6 +96,10 @@
     padding-bottom: 4px;
   }
 
+  #characterCounter[character-limit-exceeded] {
+    color: var(--cr-input-error-color);
+  }
+
   #cancelButton {
     margin-inline-end: var(--note-content-horizontal-padding);
   }
@@ -117,11 +121,15 @@
     on-input="onNoteContentInput_"></div>
 <template is="dom-if" if="[[editing_]]" restamp>
   <div id="editingFooter">
-    <span id="characterCounter">[[characterCounter_]]/176</span>
+    <span id="characterCounter"
+        character-limit-exceeded$="[[characterLimitExceeded_]]">
+      [[characterCounter_]]/176
+    </span>
     <cr-button id="cancelButton" class="tonal-button" on-click="onCancelClick_">
       $i18n{cancel}
     </cr-button>
-    <cr-button id="addButton" class="action-button" on-click="onAddClick_">
+    <cr-button id="addButton" class="action-button"
+        disabled="[[characterLimitExceeded_]]" on-click="onAddClick_">
       $i18n{add}
     </cr-button>
   </div>

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input_style.css.js';
 import 'chrome://resources/cr_elements/mwb_element_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
@@ -68,6 +69,12 @@ export class UserNoteElement extends PolymerElement {
         type: String,
         value: '',
       },
+
+      characterLimitExceeded_: {
+        type: Boolean,
+        reflectToAttribute: true,
+        value: false,
+      },
     };
   }
 
@@ -77,6 +84,7 @@ export class UserNoteElement extends PolymerElement {
   private editing_: boolean;
   private noteContent_: string;
   private showPlaceholder_: boolean;
+  private characterLimitExceeded_: boolean;
 
   private userNotesApi_: UserNotesApiProxy =
       UserNotesApiProxyImpl.getInstance();
@@ -101,6 +109,7 @@ export class UserNoteElement extends PolymerElement {
   }
 
   private computeCharacterCounter_(): number {
+    this.characterLimitExceeded_ = this.noteContent_.length > 176;
     return this.noteContent_.length;
   }
 
