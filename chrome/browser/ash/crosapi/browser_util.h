@@ -399,6 +399,8 @@ void ClearLacrosDataBackwardMigrationModeCacheForTest();
 // Clears the cached value for LacrosSelection policy.
 void ClearLacrosSelectionCacheForTest();
 
+bool IsProfileMigrationRequired();
+
 bool IsProfileMigrationEnabled();
 
 // Returns true if the profile migration can run, but not yet completed.

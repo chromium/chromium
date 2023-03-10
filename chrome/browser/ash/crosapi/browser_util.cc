@@ -356,10 +356,9 @@ bool IsLacrosEnabled() {
   if (!IsLacrosAllowedToBeEnabled())
     return false;
 
-  // Unless profile migration is disabled, completion of profile migration is
-  // required for Lacros to be enabled.
-  if (!base::FeatureList::IsEnabled(
-          ash::features::kLacrosProfileMigrationForceOff)) {
+  // If profile migration is required, the completion of it is necessary for
+  // Lacros to be enabled.
+  if (IsProfileMigrationRequired()) {
     PrefService* local_state = g_browser_process->local_state();
     // Note that local_state can be nullptr in tests.
     if (local_state &&
@@ -422,23 +421,34 @@ bool IsLacrosEnabledForMigration(const User* user,
   return base::FeatureList::IsEnabled(ash::features::kLacrosSupport);
 }
 
-bool IsProfileMigrationAvailable() {
+bool IsProfileMigrationRequired() {
   if (base::FeatureList::IsEnabled(
           ash::features::kLacrosProfileMigrationForceOff)) {
     return false;
   }
 
-  UserManager* user_manager = UserManager::Get();
-  const user_manager::User* user = user_manager->GetPrimaryUser();
-  // |user| may be nullptr on unittests.
-  if (!user ||
-      !IsLacrosEnabledForMigration(user, PolicyInitState::kAfterInit)) {
+  const UserManager* user_manager = UserManager::Get();
+  if (!user_manager) {
+    return false;
+  }
+
+  const User* user = user_manager->GetPrimaryUser();
+  if (!user) {
+    return false;
+  }
+
+  return IsLacrosEnabledForMigration(user, PolicyInitState::kAfterInit);
+}
+
+bool IsProfileMigrationAvailable() {
+  if (!IsProfileMigrationRequired()) {
     return false;
   }
 
   // If migration is already completed, it is not necessary to run again.
   if (IsCopyOrMoveProfileMigrationCompletedForUser(
-          user_manager->GetLocalState(), user->username_hash())) {
+          UserManager::Get()->GetLocalState(),
+          UserManager::Get()->GetPrimaryUser()->username_hash())) {
     return false;
   }
 
