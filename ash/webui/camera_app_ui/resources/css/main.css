@@ -405,7 +405,7 @@ body.taking #start-takephoto:active {
 #recordvideo,
 #pause-recordvideo {
   --dot-size: 25%;
-  --durtaion: 180ms;
+  --duration: 180ms;
   --red: #f44336;
   --square-delay: 45ms;
   --square-size: calc(100% / 3);
@@ -415,7 +415,7 @@ body.taking #start-takephoto:active {
   border-radius: 50%;
   height: var(--size);
   position: relative;
-  transition: var(--durtaion) var(--standard-easing);
+  transition: var(--duration) var(--standard-easing);
   width: var(--size);
 }
 
@@ -439,7 +439,7 @@ body.taking.video #recordvideo:hover {
   position: absolute;
   top: 50%;
   transform: translate(-50%, -50%);
-  transition: var(--durtaion) var(--standard-easing);
+  transition: var(--duration) var(--standard-easing);
   width: var(--dot-size);
 }
 
@@ -460,7 +460,7 @@ body:not(.recording-ui-paused).video #pause-recordvideo .red-dot {
   opacity: 0;
   position: absolute;
   top: 50%;
-  transition: var(--durtaion) var(--square-delay) var(--standard-easing);
+  transition: var(--duration) var(--square-delay) var(--standard-easing);
   width: 0;
 }
 

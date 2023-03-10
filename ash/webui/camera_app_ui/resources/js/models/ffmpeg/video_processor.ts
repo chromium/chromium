@@ -174,10 +174,10 @@ class InputDevice {
   getFileOps(): FileOps {
     return {
       open: () => {
-        // Do nothing.
+          // Do nothing.
       },
       close: () => {
-        // Do nothing.
+          // Do nothing.
       },
       read: (...args) => this.read(...args),
       write: () => assertNotReached('write should not be called on stdin'),
@@ -275,7 +275,7 @@ class OutputDevice {
   getFileOps(): FileOps {
     return {
       open: () => {
-        // Do nothing.
+          // Do nothing.
       },
       close: () => this.close(),
       read: () => assertNotReached('read should not be called on output'),
@@ -317,8 +317,8 @@ class FFMpegVideoProcessor {
     // clang-format off
     const args = [
       // Make the procssing pipeline start earlier by shorten the initial
-      // analyze durtaion from the default 5s to 1s. This reduce the
-      // stop-capture lantency significantly for short videos.
+      // analyze duration from the default 5s to 1s. This reduce the
+      // stop-capture latency significantly for short videos.
       '-analyzeduration', '1M',
       // input from stdin
       ...processorArgs.decoderArgs, '-i', 'pipe:0',
