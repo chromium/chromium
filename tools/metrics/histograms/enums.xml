@@ -69725,6 +69725,13 @@ Called by update_use_counter_css.py.-->
   <int value="2" label="Fallback to rootfs"/>
 </enum>
 
+<enum name="ModemfwdModemRecoveryState">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Skipped"/>
+  <int value="2" label="Success"/>
+  <int value="3" label="Failure"/>
+</enum>
+
 <enum name="ModifierKeyDomCodes">
   <int value="0" label="MetaLeft"/>
   <int value="1" label="MetaRight"/>

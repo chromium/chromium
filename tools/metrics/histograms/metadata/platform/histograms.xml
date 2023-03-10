@@ -1424,6 +1424,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.Modemfwd.ModemRecoveryState"
+    enum="ModemfwdModemRecoveryState" expires_after="2024-03-06">
+  <owner>ujjwalpande@google.com</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>Report state of modem recovery operation.</summary>
+</histogram>
+
 <histogram name="Platform.MountEncrypted.EncryptionKeyStatus"
     enum="MountEncryptedEncryptionKeyStatus" expires_after="2023-07-09">
   <owner>apronin@chromium.org</owner>
