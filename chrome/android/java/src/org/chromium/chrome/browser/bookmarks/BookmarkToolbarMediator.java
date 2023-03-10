@@ -49,8 +49,8 @@ class BookmarkToolbarMediator
     }
 
     @Override
-    public void onStateChanged(int state) {
-        mModel.set(BookmarkToolbarProperties.BOOKMARK_UI_STATE, state);
+    public void onUiModeChanged(int mode) {
+        mModel.set(BookmarkToolbarProperties.BOOKMARK_UI_STATE, mode);
     }
 
     @Override

@@ -20,6 +20,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -57,8 +58,7 @@ public class BookmarkToolbarMediatorTest {
                          .with(BookmarkToolbarProperties.BOOKMARK_MODEL, mBookmarkModel)
                          .with(BookmarkToolbarProperties.BOOKMARK_OPENER, mBookmarkOpener)
                          .with(BookmarkToolbarProperties.SELECTION_DELEGATE, mSelectionDelegate)
-                         .with(BookmarkToolbarProperties.BOOKMARK_UI_STATE,
-                                 BookmarkUiState.STATE_LOADING)
+                         .with(BookmarkToolbarProperties.BOOKMARK_UI_STATE, BookmarkUiMode.LOADING)
                          .with(BookmarkToolbarProperties.IS_DIALOG_UI, false)
                          .with(BookmarkToolbarProperties.DRAG_ENABLED, false)
                          .with(BookmarkToolbarProperties.OPEN_SEARCH_UI_RUNNABLE,
@@ -78,16 +78,16 @@ public class BookmarkToolbarMediatorTest {
 
     @Test
     public void onStateChangedUpdatesModel() {
-        mMediator.onStateChanged(BookmarkUiState.STATE_LOADING);
-        Assert.assertEquals(BookmarkUiState.STATE_LOADING,
+        mMediator.onUiModeChanged(BookmarkUiMode.LOADING);
+        Assert.assertEquals(BookmarkUiMode.LOADING,
                 mModel.get(BookmarkToolbarProperties.BOOKMARK_UI_STATE).intValue());
 
-        mMediator.onStateChanged(BookmarkUiState.STATE_SEARCHING);
-        Assert.assertEquals(BookmarkUiState.STATE_SEARCHING,
+        mMediator.onUiModeChanged(BookmarkUiMode.SEARCHING);
+        Assert.assertEquals(BookmarkUiMode.SEARCHING,
                 mModel.get(BookmarkToolbarProperties.BOOKMARK_UI_STATE).intValue());
 
-        mMediator.onStateChanged(BookmarkUiState.STATE_FOLDER);
-        Assert.assertEquals(BookmarkUiState.STATE_FOLDER,
+        mMediator.onUiModeChanged(BookmarkUiMode.FOLDER);
+        Assert.assertEquals(BookmarkUiMode.FOLDER,
                 mModel.get(BookmarkToolbarProperties.BOOKMARK_UI_STATE).intValue());
     }
 

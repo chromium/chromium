@@ -57,7 +57,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkPage;
 import org.chromium.chrome.browser.bookmarks.BookmarkPromoHeader;
 import org.chromium.chrome.browser.bookmarks.BookmarkRow;
 import org.chromium.chrome.browser.bookmarks.BookmarkToolbar;
-import org.chromium.chrome.browser.bookmarks.BookmarkUiState;
+import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.bookmarks.TestingDelegate;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -212,7 +212,7 @@ public class ReadingListTest {
         BookmarkToolbar toolbar = mBookmarkManagerCoordinator.getToolbarForTesting();
 
         // We should default to the root bookmark.
-        Assert.assertEquals(BookmarkUiState.STATE_FOLDER, delegate.getCurrentState());
+        Assert.assertEquals(BookmarkUiMode.FOLDER, delegate.getCurrentUiMode());
         Assert.assertEquals("chrome-native://bookmarks/folder/0",
                 BookmarkUtils.getLastUsedUrl(mActivityTestRule.getActivity()));
         Assert.assertEquals("Bookmarks", toolbar.getTitle());
@@ -231,7 +231,7 @@ public class ReadingListTest {
         ApplicationTestUtils.waitForActivityState(mBookmarkActivity, Stage.DESTROYED);
 
         // Reopen and make sure we're back in "Mobile bookmarks".
-        Assert.assertEquals(BookmarkUiState.STATE_FOLDER, delegate.getCurrentState());
+        Assert.assertEquals(BookmarkUiMode.FOLDER, delegate.getCurrentUiMode());
         Assert.assertEquals("chrome-native://bookmarks/folder/3",
                 BookmarkUtils.getLastUsedUrl(mActivityTestRule.getActivity()));
     }
@@ -303,8 +303,8 @@ public class ReadingListTest {
 
         // Enter search UI, but don't enter any search key word.
         TestThreadUtils.runOnUiThreadBlocking(getBookmarkDelegate()::openSearchUi);
-        Assert.assertEquals("Wrong state, should be searching", BookmarkUiState.STATE_SEARCHING,
-                getBookmarkDelegate().getCurrentState());
+        Assert.assertEquals("Wrong state, should be searching", BookmarkUiMode.SEARCHING,
+                getBookmarkDelegate().getCurrentUiMode());
         RecyclerViewTestUtils.waitForStableRecyclerView(mItemsContainer);
 
         // Delete the reading list page in search state.

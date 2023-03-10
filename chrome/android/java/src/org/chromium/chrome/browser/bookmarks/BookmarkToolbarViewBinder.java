@@ -22,7 +22,7 @@ class BookmarkToolbarViewBinder {
             bookmarkToolbar.setSelectionDelegate(
                     model.get(BookmarkToolbarProperties.SELECTION_DELEGATE));
         } else if (key == BookmarkToolbarProperties.BOOKMARK_UI_STATE) {
-            bookmarkToolbar.setBookmarkUiState(
+            bookmarkToolbar.setBookmarkUiMode(
                     model.get(BookmarkToolbarProperties.BOOKMARK_UI_STATE));
         } else if (key == BookmarkToolbarProperties.SOFT_KEYBOARD_VISIBLE) {
             bookmarkToolbar.setSoftKeyboardVisible(Boolean.TRUE.equals(

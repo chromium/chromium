@@ -18,6 +18,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkAddEditFolderActivity;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkFolderSelectActivity;
+import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
@@ -42,7 +43,7 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
     // TODO(crbug.com/1413463): Remove BookmarkId reference.
     private BookmarkId mCurrentFolderId;
     private BookmarkItem mCurrentFolder;
-    private int mBookmarkUiState;
+    private @BookmarkUiMode int mBookmarkUiMode;
 
     private Runnable mOpenSearchUiRunnable;
     private Callback<BookmarkId> mOpenFolderCallback;
@@ -82,21 +83,21 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
         getMenu().setGroupEnabled(R.id.selection_mode_menu_group, true);
     }
 
-    void setBookmarkUiState(int state) {
-        mBookmarkUiState = state;
-        if (mBookmarkUiState == BookmarkUiState.STATE_LOADING) {
+    void setBookmarkUiMode(@BookmarkUiMode int mode) {
+        mBookmarkUiMode = mode;
+        if (mBookmarkUiMode == BookmarkUiMode.LOADING) {
             showLoadingUi();
         } else {
             showNormalView();
         }
 
-        if (state == BookmarkUiState.STATE_SEARCHING) {
+        if (mBookmarkUiMode == BookmarkUiMode.SEARCHING) {
             showSearchView(/*showKeyboard=*/true);
         } else {
             hideSearchView(/*notify=*/false);
         }
 
-        if (mBookmarkUiState == BookmarkUiState.STATE_FOLDER && mCurrentFolder != null) {
+        if (mBookmarkUiMode == BookmarkUiMode.FOLDER && mCurrentFolder != null) {
             // It's possible that the folder was renamed, so refresh the folder UI just in case.
             setCurrentFolder(mCurrentFolder.getId());
         }

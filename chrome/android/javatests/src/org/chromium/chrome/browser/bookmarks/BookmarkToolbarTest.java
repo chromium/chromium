@@ -39,6 +39,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkAddEditFolderActivity;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkEditActivity;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkFolderSelectActivity;
+import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -160,7 +161,7 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
         mBookmarkToolbar.setBookmarkModel(mBookmarkModel);
         mBookmarkToolbar.setBookmarkOpener(mBookmarkOpener);
         mBookmarkToolbar.setSelectionDelegate(mSelectionDelegate);
-        mBookmarkToolbar.setBookmarkUiState(BookmarkUiState.STATE_FOLDER);
+        mBookmarkToolbar.setBookmarkUiMode(BookmarkUiMode.FOLDER);
         mBookmarkToolbar.setIsDialogUi(true);
         mBookmarkToolbar.setOpenSearchUiRunnable(mOpenSearchUiRunnable);
         mBookmarkToolbar.setOpenFolderCallback(mOpenFolderCallback);
@@ -221,7 +222,7 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
     @UiThreadTest
     public void onNavigationBack_searching() {
         initializeNormal();
-        mBookmarkToolbar.setBookmarkUiState(BookmarkUiState.STATE_SEARCHING);
+        mBookmarkToolbar.setBookmarkUiMode(BookmarkUiMode.SEARCHING);
         mBookmarkToolbar.onNavigationBack();
         Assert.assertFalse(mBookmarkToolbar.isSearching());
     }

@@ -30,6 +30,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -147,7 +148,7 @@ public class BookmarkManagerMediatorTest {
     @Test
     public void initAndLoadBookmarkModel() {
         finishLoading();
-        Assert.assertEquals(BookmarkUiState.STATE_LOADING, mMediator.getCurrentState());
+        Assert.assertEquals(BookmarkUiMode.LOADING, mMediator.getCurrentUiMode());
     }
 
     @Test
@@ -156,7 +157,7 @@ public class BookmarkManagerMediatorTest {
         mMediator.updateForUrl("chrome-native://bookmarks/folder/" + mFolderId.getId());
 
         finishLoading();
-        Assert.assertEquals(BookmarkUiState.STATE_FOLDER, mMediator.getCurrentState());
+        Assert.assertEquals(BookmarkUiMode.FOLDER, mMediator.getCurrentUiMode());
     }
 
     @Test

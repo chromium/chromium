@@ -21,6 +21,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkAddEditFolderActivity;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkFolderSelectActivity;
+import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
@@ -190,9 +191,9 @@ public abstract class BookmarkRow
             listItems.add(buildMenuListItem(R.string.bookmark_item_delete, 0, 0));
         }
 
-        if (mDelegate.getCurrentState() == BookmarkUiState.STATE_SEARCHING) {
+        if (mDelegate.getCurrentUiMode() == BookmarkUiMode.SEARCHING) {
             listItems.add(buildMenuListItem(R.string.bookmark_show_in_folder, 0, 0));
-        } else if (mDelegate.getCurrentState() == BookmarkUiState.STATE_FOLDER
+        } else if (mDelegate.getCurrentUiMode() == BookmarkUiMode.FOLDER
                 && mLocation != Location.SOLO && canReorder) {
             // Only add move up / move down buttons if there is more than 1 item
             if (mLocation != Location.TOP) {

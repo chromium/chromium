@@ -7,46 +7,53 @@ package org.chromium.chrome.browser.bookmarks;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.embedder_support.util.UrlConstants;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * A class representing the UI state of the {@link BookmarkManager}. All
  * states can be uniquely identified by a URL.
  */
 public class BookmarkUiState {
-    // TODO(crbug.com/1419494): Use an intdef here instead.
-    public static final int STATE_LOADING = 1;
-    public static final int STATE_FOLDER = 2;
-    public static final int STATE_SEARCHING = 3;
-    private static final int STATE_INVALID = 0;
+    @IntDef({BookmarkUiMode.INVALID, BookmarkUiMode.LOADING, BookmarkUiMode.FOLDER,
+            BookmarkUiMode.SEARCHING})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface BookmarkUiMode {
+        int INVALID = 0;
+        int LOADING = 1;
+        int FOLDER = 2;
+        int SEARCHING = 3;
+    }
     private static final String SHOPPING_FILTER_URL =
             UrlConstants.BOOKMARKS_FOLDER_URL + "/shopping";
 
-    /**
-     * One of the STATE_* constants.
-     */
-    int mState;
+    @BookmarkUiMode
+    int mUiMode;
     String mUrl;
     BookmarkId mFolder;
 
     static BookmarkUiState createLoadingState() {
         BookmarkUiState state = new BookmarkUiState();
-        state.mState = STATE_LOADING;
+        state.mUiMode = BookmarkUiMode.LOADING;
         state.mUrl = "";
         return state;
     }
 
     static BookmarkUiState createSearchState() {
         BookmarkUiState state = new BookmarkUiState();
-        state.mState = STATE_SEARCHING;
+        state.mUiMode = BookmarkUiMode.SEARCHING;
         state.mUrl = "";
         return state;
     }
 
     static BookmarkUiState createShoppingFilterState() {
         BookmarkUiState state = new BookmarkUiState();
-        state.mState = STATE_FOLDER;
+        state.mUiMode = BookmarkUiMode.FOLDER;
         state.mUrl = SHOPPING_FILTER_URL;
         state.mFolder = BookmarkId.SHOPPING_FOLDER;
         return state;
@@ -71,7 +78,7 @@ public class BookmarkUiState {
      */
     static BookmarkUiState createStateFromUrl(Uri uri, BookmarkModel bookmarkModel) {
         BookmarkUiState state = new BookmarkUiState();
-        state.mState = STATE_INVALID;
+        state.mUiMode = BookmarkUiMode.INVALID;
         state.mUrl = uri.toString();
 
         if (state.mUrl.equals(UrlConstants.BOOKMARKS_URL)) {
@@ -80,7 +87,7 @@ public class BookmarkUiState {
             String path = uri.getLastPathSegment();
             if (!path.isEmpty()) {
                 state.mFolder = BookmarkId.getBookmarkIdFromString(path);
-                state.mState = STATE_FOLDER;
+                state.mUiMode = BookmarkUiMode.FOLDER;
             }
         }
 
@@ -103,24 +110,24 @@ public class BookmarkUiState {
 
     @Override
     public int hashCode() {
-        return 31 * mUrl.hashCode() + mState;
+        return 31 * mUrl.hashCode() + mUiMode;
     }
 
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof BookmarkUiState)) return false;
         BookmarkUiState other = (BookmarkUiState) obj;
-        return mState == other.mState && TextUtils.equals(mUrl, other.mUrl);
+        return mUiMode == other.mUiMode && TextUtils.equals(mUrl, other.mUrl);
     }
 
     /**
      * @return Whether this state is valid.
      */
     boolean isValid(BookmarkModel bookmarkModel) {
-        if (mUrl == null || mState == STATE_INVALID) return false;
+        if (mUrl == null || mUiMode == BookmarkUiMode.INVALID) return false;
         if (mUrl.equals(SHOPPING_FILTER_URL)) return true;
 
-        if (mState == STATE_FOLDER) {
+        if (mUiMode == BookmarkUiMode.FOLDER) {
             return mFolder != null && bookmarkModel.doesBookmarkExist(mFolder);
         }
 

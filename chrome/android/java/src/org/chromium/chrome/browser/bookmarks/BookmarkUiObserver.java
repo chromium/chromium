@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.components.bookmarks.BookmarkId;
 
 /**
@@ -18,12 +19,12 @@ interface BookmarkUiObserver {
     /** @see BookmarkDelegate#openFolder(BookmarkId) */
     default void onFolderStateSet(BookmarkId folder) {}
 
-    /** Called when the UI state is set to {@link BookmarkUiState#STATE_SEARCHING}. */
+    /** Called when the UI state is set to {@link BookmarkUiMode.SEARCHING}. */
     default void onSearchStateSet() {}
 
     /** Called when a bookmark menu item is opened. */
     default void onBookmarkItemMenuOpened() {}
 
-    /** Called when the bookmark UI state changes. */
-    default void onStateChanged(int state) {}
+    /** Called when the bookmark UI mode changes. */
+    default void onUiModeChanged(@BookmarkUiMode int mode) {}
 }

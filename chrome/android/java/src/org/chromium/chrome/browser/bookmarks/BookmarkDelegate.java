@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.widget.dragreorder.DragStateDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
@@ -85,10 +86,11 @@ public interface BookmarkDelegate {
     BookmarkModel getModel();
 
     /**
-     * @return Current UiState of bookmark main UI. If no mode is stored,
-     *         {@link BookmarkUiState#STATE_LOADING} is returned.
+     * Returns current mode of bookmark main UI. If no mode is stored,
+     * {@link BookmarkUiMode.LOADING} is returned.
      */
-    int getCurrentState();
+    @BookmarkUiMode
+    int getCurrentUiMode();
 
     /**
      * @return LargeIconBridge instance. By sharing the instance, we can also share the cache.

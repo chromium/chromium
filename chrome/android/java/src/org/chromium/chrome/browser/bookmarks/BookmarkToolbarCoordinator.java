@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.bookmarks;
 
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.SearchDelegate;
@@ -34,7 +35,7 @@ class BookmarkToolbarCoordinator {
         mModel.set(BookmarkToolbarProperties.BOOKMARK_MODEL, bookmarkModel);
         mModel.set(BookmarkToolbarProperties.BOOKMARK_OPENER, bookmarkOpener);
         mModel.set(BookmarkToolbarProperties.SELECTION_DELEGATE, selectionDelegate);
-        mModel.set(BookmarkToolbarProperties.BOOKMARK_UI_STATE, BookmarkUiState.STATE_LOADING);
+        mModel.set(BookmarkToolbarProperties.BOOKMARK_UI_STATE, BookmarkUiMode.LOADING);
         mModel.set(BookmarkToolbarProperties.IS_DIALOG_UI, isDialogUi);
         mModel.set(BookmarkToolbarProperties.DRAG_ENABLED, false);
         mMediator =

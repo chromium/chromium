@@ -21,6 +21,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
 import org.chromium.chrome.browser.bookmarks.BookmarkRow.Location;
+import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksReader;
@@ -81,8 +82,7 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
         // DragStateDelegate implementation
         @Override
         public boolean getDragEnabled() {
-            return !mA11yEnabled
-                    && mBookmarkDelegate.getCurrentState() == BookmarkUiState.STATE_FOLDER;
+            return !mA11yEnabled && mBookmarkDelegate.getCurrentUiMode() == BookmarkUiMode.FOLDER;
         }
 
         @Override
@@ -114,7 +114,7 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
                 boolean isDoingExtensiveChanges) {
             // If the folder is removed in folder mode, show the parent folder or falls back to all
             // bookmarks mode.
-            if (getCurrentState() == BookmarkUiState.STATE_FOLDER
+            if (getCurrentUiMode() == BookmarkUiMode.FOLDER
                     && node.getId().equals(mStateStack.peek().mFolder)) {
                 if (mBookmarkModel.getTopLevelFolderIDs(true, true).contains(node.getId())) {
                     openFolder(mBookmarkModel.getDefaultFolderViewLocation());
@@ -132,7 +132,7 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
 
         @Override
         public void bookmarkNodeChanged(BookmarkItem node) {
-            if (getCurrentState() == BookmarkUiState.STATE_FOLDER && !mStateStack.isEmpty()
+            if (getCurrentUiMode() == BookmarkUiMode.FOLDER && !mStateStack.isEmpty()
                     && node.getId().equals(mStateStack.peek().mFolder)) {
                 notifyUi(mStateStack.peek());
                 return;
@@ -144,7 +144,7 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
         public void bookmarkModelChanged() {
             // If the folder no longer exists in folder mode, we need to fall back. Relying on the
             // default behavior by setting the folder mode again.
-            if (getCurrentState() == BookmarkUiState.STATE_FOLDER) {
+            if (getCurrentUiMode() == BookmarkUiMode.FOLDER) {
                 setState(mStateStack.peek());
             }
         }
@@ -196,7 +196,7 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
                 boolean isDoingExtensiveChanges) {
             clearHighlight();
 
-            if (getCurrentState() == BookmarkUiState.STATE_SEARCHING) {
+            if (getCurrentUiMode() == BookmarkUiMode.SEARCHING) {
                 // We cannot rely on removing the specific list item that corresponds to the
                 // removed node because the node might be a parent with children also shown
                 // in the list.
@@ -219,7 +219,7 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
             clearHighlight();
             notifyStateChange(mBookmarkUiObserver);
 
-            if (getCurrentState() == BookmarkUiState.STATE_SEARCHING) {
+            if (getCurrentUiMode() == BookmarkUiMode.SEARCHING) {
                 if (!TextUtils.equals(mSearchText, EMPTY_QUERY)) {
                     search(mSearchText);
                 } else {
@@ -442,8 +442,7 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
 
         if (mBookmarkModel.isBookmarkModelLoaded()) {
             BookmarkUiState searchState = null;
-            if (!mStateStack.isEmpty()
-                    && mStateStack.peek().mState == BookmarkUiState.STATE_SEARCHING) {
+            if (!mStateStack.isEmpty() && mStateStack.peek().mUiMode == BookmarkUiMode.SEARCHING) {
                 searchState = mStateStack.pop();
             }
 
@@ -522,8 +521,8 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
         assert !topLevelFoldersShowing() : "Cannot reorder top-level folders!";
         assert mCurrentFolder.getType()
                 != BookmarkType.PARTNER : "Cannot reorder partner bookmarks!";
-        assert getCurrentState()
-                == BookmarkUiState.STATE_FOLDER : "Can only reorder items from folder mode!";
+        assert getCurrentUiMode()
+                == BookmarkUiMode.FOLDER : "Can only reorder items from folder mode!";
 
         int startIndex = getBookmarkItemStartIndex();
         int endIndex = getBookmarkItemEndIndex();
@@ -616,15 +615,15 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
 
     @Override
     public void notifyStateChange(BookmarkUiObserver observer) {
-        int state = getCurrentState();
-        observer.onStateChanged(state);
+        int state = getCurrentUiMode();
+        observer.onUiModeChanged(state);
         switch (state) {
-            case BookmarkUiState.STATE_FOLDER:
+            case BookmarkUiMode.FOLDER:
                 observer.onFolderStateSet(mStateStack.peek().mFolder);
                 break;
-            case BookmarkUiState.STATE_LOADING:
+            case BookmarkUiMode.LOADING:
                 break;
-            case BookmarkUiState.STATE_SEARCHING:
+            case BookmarkUiMode.SEARCHING:
                 observer.onSearchStateSet();
                 break;
             default:
@@ -678,9 +677,9 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
     }
 
     @Override
-    public int getCurrentState() {
-        if (mStateStack.isEmpty()) return BookmarkUiState.STATE_LOADING;
-        return mStateStack.peek().mState;
+    public @BookmarkUiMode int getCurrentUiMode() {
+        if (mStateStack.isEmpty()) return BookmarkUiMode.LOADING;
+        return mStateStack.peek().mUiMode;
     }
 
     @Override
@@ -768,7 +767,7 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
 
         // The loading state is not persisted in history stack and once we have a valid state it
         // shall be removed.
-        if (!mStateStack.isEmpty() && mStateStack.peek().mState == BookmarkUiState.STATE_LOADING) {
+        if (!mStateStack.isEmpty() && mStateStack.peek().mUiMode == BookmarkUiMode.LOADING) {
             mStateStack.pop();
         }
         mStateStack.push(state);
@@ -776,7 +775,7 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
     }
 
     private void notifyUi(BookmarkUiState state) {
-        if (state.mState == BookmarkUiState.STATE_FOLDER) {
+        if (state.mUiMode == BookmarkUiMode.FOLDER) {
             // Loading and searching states may be pushed to the stack but should never be stored in
             // preferences.
             BookmarkUtils.setLastUsedUrl(mContext, state.mUrl);
@@ -862,7 +861,7 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
         }
 
         if (mCurrentFolder.getType() == BookmarkType.READING_LIST
-                && getCurrentState() != BookmarkUiState.STATE_SEARCHING) {
+                && getCurrentUiMode() != BookmarkUiMode.SEARCHING) {
             ReadingListSectionHeader.maybeSortAndInsertSectionHeaders(getElements(), mContext);
         }
 
@@ -899,10 +898,10 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
     private void updateHeader(boolean shouldNotify) {
         boolean wasShowingPromo = hasPromoHeader();
 
-        int currentUiState = getCurrentState();
-        if (currentUiState == BookmarkUiState.STATE_LOADING) {
+        int currentUiState = getCurrentUiMode();
+        if (currentUiState == BookmarkUiMode.LOADING) {
             return;
-        } else if (currentUiState == BookmarkUiState.STATE_SEARCHING) {
+        } else if (currentUiState == BookmarkUiMode.SEARCHING) {
             mPromoHeaderType = ViewType.INVALID;
         } else {
             switch (mPromoHeaderManager.getPromoState()) {
