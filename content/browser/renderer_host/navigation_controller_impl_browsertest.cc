@@ -21529,14 +21529,12 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_TRUE(NavigateToURL(contents(), url1));
   EXPECT_TRUE(NavigateToURL(contents(), url2));
 
-  EXPECT_TRUE(ExecJs(contents(),
-                     "navigation.onnavigateerror = e => document.title ="
-                     "e.error.name === 'InvalidStateError'"
-                     "    ? 'PASS' : 'WRONG_ERROR_TYPE';"));
-
   // Request navigation.back() in the renderer.
   ExecuteScriptAsync(contents()->GetPrimaryFrameTree().root(),
-                     "navigation.back()");
+                     "navigation.back().committed.then("
+                     "() => document.title = 'FAIL',"
+                     "e => document.title = e.name === 'InvalidStateError'"
+                     "   ? 'PASS' : 'WRONG_ERROR_TYPE');");
 
   // Before the navigation.back() is processed and sent to the browser, remove
   // the NavigationEntry that navigation.back() will request to be navigated to.

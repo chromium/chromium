@@ -89,10 +89,9 @@ class NavigateReaction final : public ScriptFunction::Callable {
     navigate_event_->Finish(resolve_type_ == ResolveType::kFulfill);
 
     if (resolve_type_ == ResolveType::kFulfill) {
-      navigation_api->ResolvePromisesAndFireNavigateSuccessEvent();
+      navigation_api->DidFinishOngoingNavigation();
     } else {
-      navigation_api->RejectPromisesAndFireNavigateErrorEvent(
-          navigation_api->ongoing_navigation_, value);
+      navigation_api->DidFailOngoingNavigation(value);
     }
 
     if (navigate_event_->HasNavigationActions()) {
@@ -733,7 +732,7 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
       // the state, but we need to detach promise resolvers for this case since
       // we will never resolve the finished/committed promises.
       ongoing_navigation_->CleanupForWillNeverSettle();
-      CleanupApiNavigation(*ongoing_navigation_);
+      ongoing_navigation_ = nullptr;
     }
     return DispatchResult::kContinue;
   }
@@ -748,7 +747,7 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
     // This same document history traversal was preempted by another navigation
     // that removed this entry from the back/forward list. Proceeding will leave
     // entries_ out of sync with the browser process.
-    FinalizeWithAbortedNavigationError(script_state, ongoing_navigation_);
+    AbortOngoingNavigation(script_state);
     return DispatchResult::kAbort;
   }
 
@@ -833,7 +832,7 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
           window_->GetFrame()) {
         window_->GetFrame()->ConsumeHistoryUserActivation();
       }
-      FinalizeWithAbortedNavigationError(script_state, ongoing_navigation_);
+      AbortOngoingNavigation(script_state);
     }
     return DispatchResult::kAbort;
   }
@@ -869,24 +868,20 @@ void NavigationApi::InformAboutCanceledNavigation(
   if (ongoing_navigate_event_) {
     auto* script_state = ToScriptStateForMainWorld(window_->GetFrame());
     ScriptState::Scope scope(script_state);
-    FinalizeWithAbortedNavigationError(script_state, ongoing_navigation_);
+    AbortOngoingNavigation(script_state);
   }
 
   // If this function is being called as part of frame detach, also cleanup any
   // upcoming_traversals_.
-  //
-  // This function may be called when a v8 context hasn't been initialized.
-  // upcoming_traversals_ being non-empty requires a v8 context, so check that
-  // so that we don't unnecessarily try to initialize one below.
   if (!upcoming_traversals_.empty() && window_->GetFrame() &&
       !window_->GetFrame()->IsAttached()) {
-    auto* script_state = ToScriptStateForMainWorld(window_->GetFrame());
-    ScriptState::Scope scope(script_state);
-
     HeapVector<Member<NavigationApiNavigation>> traversals;
     CopyValuesToVector(upcoming_traversals_, traversals);
-    for (auto& traversal : traversals)
-      FinalizeWithAbortedNavigationError(script_state, traversal);
+    for (auto& traversal : traversals) {
+      TraverseCancelled(
+          traversal->GetKey(),
+          mojom::blink::TraverseCancelledReason::kAbortedBeforeCommit);
+    }
     DCHECK(upcoming_traversals_.empty());
   }
 }
@@ -917,16 +912,21 @@ void NavigationApi::TraverseCancelled(
         DOMExceptionCode::kAbortError, "Navigation was aborted");
   }
   DCHECK(exception);
-
-  RejectPromisesAndFireNavigateErrorEvent(
-      traversal->value, ScriptValue::From(script_state, exception));
+  traversal->value->RejectFinishedPromise(
+      ScriptValue::From(script_state, exception));
+  upcoming_traversals_.erase(traversal);
 }
 
 void NavigationApi::ContextDestroyed() {
   if (ongoing_navigation_) {
     ongoing_navigation_->CleanupForWillNeverSettle();
-    CleanupApiNavigation(*ongoing_navigation_);
+    ongoing_navigation_ = nullptr;
   }
+
+  for (auto& traversal : upcoming_traversals_.Values()) {
+    traversal->CleanupForWillNeverSettle();
+  }
+  upcoming_traversals_.clear();
 }
 
 bool NavigationApi::HasNonDroppedOngoingNavigation() const {
@@ -935,9 +935,7 @@ bool NavigationApi::HasNonDroppedOngoingNavigation() const {
   return has_ongoing_intercept && !has_dropped_navigation_;
 }
 
-void NavigationApi::RejectPromisesAndFireNavigateErrorEvent(
-    NavigationApiNavigation* navigation,
-    ScriptValue value) {
+void NavigationApi::DidFailOngoingNavigation(ScriptValue value) {
   auto* isolate = window_->GetIsolate();
   v8::Local<v8::Message> message =
       v8::Exception::CreateMessage(isolate, value.V8Value());
@@ -949,9 +947,9 @@ void NavigationApi::RejectPromisesAndFireNavigateErrorEvent(
   event->SetType(event_type_names::kNavigateerror);
   DispatchEvent(*event);
 
-  if (navigation) {
-    navigation->RejectFinishedPromise(value);
-    CleanupApiNavigation(*navigation);
+  if (ongoing_navigation_) {
+    ongoing_navigation_->RejectFinishedPromise(value);
+    ongoing_navigation_ = nullptr;
   }
 
   if (transition_) {
@@ -960,12 +958,12 @@ void NavigationApi::RejectPromisesAndFireNavigateErrorEvent(
   }
 }
 
-void NavigationApi::ResolvePromisesAndFireNavigateSuccessEvent() {
+void NavigationApi::DidFinishOngoingNavigation() {
   DispatchEvent(*Event::Create(event_type_names::kNavigatesuccess));
 
   if (ongoing_navigation_) {
     ongoing_navigation_->ResolveFinishedPromise();
-    CleanupApiNavigation(*ongoing_navigation_);
+    ongoing_navigation_ = nullptr;
   }
 
   if (transition_) {
@@ -974,19 +972,7 @@ void NavigationApi::ResolvePromisesAndFireNavigateSuccessEvent() {
   }
 }
 
-void NavigationApi::CleanupApiNavigation(NavigationApiNavigation& navigation) {
-  if (&navigation == ongoing_navigation_) {
-    ongoing_navigation_ = nullptr;
-  } else {
-    DCHECK(!navigation.GetKey().IsNull());
-    DCHECK(upcoming_traversals_.Contains(navigation.GetKey()));
-    upcoming_traversals_.erase(navigation.GetKey());
-  }
-}
-
-void NavigationApi::FinalizeWithAbortedNavigationError(
-    ScriptState* script_state,
-    NavigationApiNavigation* navigation) {
+void NavigationApi::AbortOngoingNavigation(ScriptState* script_state) {
   ScriptValue error = ScriptValue::From(
       script_state,
       MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError,
@@ -999,7 +985,7 @@ void NavigationApi::FinalizeWithAbortedNavigationError(
     ongoing_navigate_event_ = nullptr;
   }
 
-  RejectPromisesAndFireNavigateErrorEvent(navigation, error);
+  DidFailOngoingNavigation(error);
 }
 
 int NavigationApi::GetIndexFor(NavigationHistoryEntry* entry) {
