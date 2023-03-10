@@ -30473,6 +30473,58 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_BottomSheet_ClosedByCancel" not_user_triggered="true">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the sign-in bottom sheet is canceled. Recorded for iOS only.
+  </description>
+</action>
+
+<action name="Signin_BottomSheet_ClosedByInterrupt" not_user_triggered="true">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the sign-in bottom sheet is interrupted by a Chrome action.
+    Recorded for iOS only.
+  </description>
+</action>
+
+<action name="Signin_BottomSheet_ClosedBySignIn" not_user_triggered="true">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the sign-in bottom sheet closes after the user is signed in.
+    Recorded for iOS only.
+  </description>
+</action>
+
+<action name="Signin_BottomSheet_IdentityChooser_Closed">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the identity chooser dialog from the bottom sheet is closed by
+    the user. Recorded for iOS only.
+  </description>
+</action>
+
+<action name="Signin_BottomSheet_IdentityChooser_Opened">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the identity chooser dialog from the bottom sheet is opened by
+    the user. Recorded for iOS only.
+  </description>
+</action>
+
+<action name="Signin_BottomSheet_Opened" not_user_triggered="true">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the bottom sheet is opened. Recorded for iOS only.
+  </description>
+</action>
+
 <action name="Signin_EnterpriseAccountPrompt_Cancel">
   <owner>gogerald@chromium.org</owner>
   <description>

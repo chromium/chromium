@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_account_chooser/consistency_account_chooser_coordinator.h"
 
+#import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
@@ -36,6 +37,8 @@
 
 - (void)startWithSelectedIdentity:(id<SystemIdentity>)selectedIdentity {
   [super start];
+  base::RecordAction(
+      base::UserMetricsAction("Signin_BottomSheet_IdentityChooser_Opened"));
   self.mediator = [[ConsistencyAccountChooserMediator alloc]
       initWithSelectedIdentity:selectedIdentity
          accountManagerService:ChromeAccountManagerServiceFactory::
@@ -54,6 +57,8 @@
 - (void)stop {
   [super stop];
   [self.mediator disconnect];
+  base::RecordAction(
+      base::UserMetricsAction("Signin_BottomSheet_IdentityChooser_Closed"));
 }
 
 #pragma mark - Properties
