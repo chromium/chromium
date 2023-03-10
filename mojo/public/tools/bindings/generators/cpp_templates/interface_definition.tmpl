@@ -333,6 +333,10 @@ class {{class_name}}_{{method.name}}_ProxyToResponder : public ::mojo::internal:
       // binding endpoint has been closed. This checks for that asynchronously.
       // We pass a bound generated callback to handle the response so that any
       // resulting DCHECK stack will have useful interface type information.
+      // Instantiate a ScopedFizzleBlockShutdownTasks to allow this request to
+      // fizzle if this happens after shutdown and the endpoint is bound to a
+      // BLOCK_SHUTDOWN sequence.
+      base::ThreadPoolInstance::ScopedFizzleBlockShutdownTasks fizzler;
       responder_->IsConnectedAsync(base::BindOnce(&OnIsConnectedComplete));
     }
 #endif
