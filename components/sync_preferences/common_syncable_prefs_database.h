@@ -20,6 +20,10 @@ class CommonSyncablePrefsDatabase : public SyncablePrefsDatabase {
   // Returns true if `pref_name` is part of the common syncable preferences
   // allowlist.
   bool IsPreferenceSyncable(const std::string& pref_name) const override;
+  // Returns the metadata associated to the pref or null if `pref_name` is not
+  // syncable.
+  absl::optional<SyncablePrefMetadata> GetSyncablePrefMetadata(
+      const std::string& pref_name) const override;
 };
 
 }  // namespace sync_preferences

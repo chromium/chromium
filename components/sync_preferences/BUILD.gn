@@ -18,6 +18,7 @@ static_library("sync_preferences") {
     "pref_service_syncable_factory.cc",
     "pref_service_syncable_factory.h",
     "pref_service_syncable_observer.h",
+    "syncable_prefs_database.cc",
     "syncable_prefs_database.h",
     "synced_pref_observer.h",
   ]
