@@ -1436,6 +1436,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableEmailInBookmarksReadingListSnackbarDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kEnableEmailInBookmarksReadingListSnackbar)},
+    {"autofill-upstream-authenticate-preflight-call",
+     flag_descriptions::kAutofillUpstreamAuthenticatePreflightCallName,
+     flag_descriptions::kAutofillUpstreamAuthenticatePreflightCallDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillUpstreamAuthenticatePreflightCall)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

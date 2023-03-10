@@ -9531,6 +9531,13 @@ const FeatureEntry kFeatureEntries[] = {
          password_manager::features::kPasswordGenerationBottomSheet)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+    {"autofill-upstream-authenticate-preflight-call",
+     flag_descriptions::kAutofillUpstreamAuthenticatePreflightCallName,
+     flag_descriptions::kAutofillUpstreamAuthenticatePreflightCallDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillUpstreamAuthenticatePreflightCall)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

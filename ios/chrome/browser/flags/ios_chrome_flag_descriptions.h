@@ -108,6 +108,11 @@ extern const char kAutofillUpstreamAllowAdditionalEmailDomainsDescription[];
 extern const char kAutofillUpstreamAllowAllEmailDomainsName[];
 extern const char kAutofillUpstreamAllowAllEmailDomainsDescription[];
 
+// Title and description for the flag to control whether the preflight credit
+// card upload call contains an authentication token or not.
+extern const char kAutofillUpstreamAuthenticatePreflightCallName[];
+extern const char kAutofillUpstreamAuthenticatePreflightCallDescription[];
+
 // Title and description for the flag that controls whether Autofill's
 // suggestions' labels are formatting with a mobile-friendly approach.
 extern const char kAutofillUseMobileLabelDisambiguationName[];
