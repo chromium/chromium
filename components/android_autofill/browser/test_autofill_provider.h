@@ -58,6 +58,7 @@ class TestAutofillProvider : public AutofillProvider {
   void OnServerQueryRequestError(AndroidAutofillManager* manager,
                                  FormSignature form_signature) override {}
   void Reset(AndroidAutofillManager* manager) override {}
+  bool GetCachedIsAutofilled(const FormFieldData& field) const override;
 };
 
 }  // namespace autofill

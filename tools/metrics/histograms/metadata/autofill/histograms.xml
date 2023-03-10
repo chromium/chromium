@@ -5091,6 +5091,142 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Autofill.WebView.Funnel.FillAfterInteraction{AutofillFormType}"
+    enum="BooleanAutofillFillAfterInteraction" expires_after="2023-12-12">
+  <owner>pkotwicz@chromium.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Counts whether users filled the form, given that they have already
+    interacted with the form.
+
+    This metric is recorded on Android WebView, only for forms that users
+    interacted with. It is recorded only once per form, meaning that it does not
+    matter if the user fills the form multiple times. If a form changes
+    dynamically, then Autofill treats the different versions of the form as
+    different forms. {AutofillFormType}
+  </summary>
+  <token key="AutofillFormType" variants="AutofillFormType"/>
+</histogram>
+
+<histogram
+    name="Autofill.WebView.Funnel.InteractionAfterParsedAsType{AutofillFormType}"
+    enum="BooleanAutofillParsedAsType" expires_after="2023-12-12">
+  <owner>pkotwicz@chromium.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Counts whether users interacted with a form of a certain type.
+
+    Focusing a field is sufficient to consider a form as being interacted with.
+    The user does not need to type anything. Note that some forms may get
+    focused on page load.
+
+    This metric is recorded once per form observed by Autofill on Android
+    WebView, but only for forms that Autofill classifies to be of the type
+    indicated by the histogram name. If a form changes dynamically, Autofill
+    interprets the forms before and after the change as two different forms and
+    records two values. If a form did not have features that classify it as a
+    form of a certain type (e.g. an address form or payment form), then nothing
+    is recorded. {AutofillFormType}
+  </summary>
+  <token key="AutofillFormType" variants="AutofillFormType"/>
+</histogram>
+
+<histogram name="Autofill.WebView.Funnel.ParsedAsType{AutofillFormType}"
+    enum="BooleanAutofillParsedAsType" expires_after="2023-12-12">
+  <owner>pkotwicz@chromium.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Counts whether a form was parsed/interpreted to be of the type indicated in
+    the histogram name.
+
+    This metric is recorded once for each form observed by Autofill on Android
+    WebView. If a form changes dynamically, then Autofill treats the different
+    versions of the form as different forms. {AutofillFormType}
+  </summary>
+  <token key="AutofillFormType" variants="AutofillFormType"/>
+</histogram>
+
+<histogram name="Autofill.WebView.Funnel.SubmissionAfterFill{AutofillFormType}"
+    enum="BooleanAutofillSubmissionAfterFill" expires_after="2023-12-12">
+  <owner>pkotwicz@chromium.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Counts whether users submitted a form that was filled via autofill.
+
+    This metric is recorded once for each form observed by Autofill on Android
+    WebView but only for forms that the user filled via Autofill.
+    {AutofillFormType}
+  </summary>
+  <token key="AutofillFormType" variants="AutofillFormType"/>
+</histogram>
+
+<histogram
+    name="Autofill.WebView.KeyMetrics.FillingAssistance{AutofillFormType}"
+    enum="BooleanAutofillFillingAssistance" expires_after="2023-12-12">
+  <owner>pkotwicz@chromium.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Counts for submitted forms whether the user filled any fields via Autofill.
+
+    If the user reverts the filling, the form is still counted as filled.
+
+    This metric is different from Autofill.WebView.KeyMetrics.FillingAcceptance
+    in the sense that the latter is only recorded if the user has actually seen
+    a prompt to fill data. {AutofillFormType}
+  </summary>
+  <token key="AutofillFormType" variants="AutofillFormType"/>
+</histogram>
+
+<histogram
+    name="Autofill.WebView.KeyMetrics.FillingCorrectness{AutofillFormType}"
+    enum="BooleanAutofillFillingCorrectness" expires_after="2023-12-12">
+  <owner>pkotwicz@chromium.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Counts for submitted and autofilled forms on Android WebView whether users
+    edited at least one filled value before submitting the form.
+    {AutofillFormType}
+  </summary>
+  <token key="AutofillFormType" variants="AutofillFormType"/>
+</histogram>
+
+<histogram
+    name="Autofill.WebView.KeyMetrics.FormSubmission.Autofilled{AutofillFormType}"
+    enum="BooleanAutofillSubmission" expires_after="2023-12-12">
+  <owner>pkotwicz@chromium.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Counts for filled (by Autofill) forms whether users submitted those forms.
+
+    This is only recorded for forms that the user filled via Autofill on Android
+    WebView. It does not matter if the user reverted the filling afterwards.
+
+    This is recorded once Autofill stops tracking the form (e.g. due to a
+    navigation or due to removal from the DOM). {AutofillFormType}
+  </summary>
+  <token key="AutofillFormType" variants="AutofillFormType"/>
+</histogram>
+
+<histogram
+    name="Autofill.WebView.KeyMetrics.FormSubmission.NotAutofilled{AutofillFormType}"
+    enum="BooleanAutofillSubmission" expires_after="2023-12-12">
+  <owner>pkotwicz@chromium.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Counts for not filled (by Autofill) forms whether users submitted those
+    forms.
+
+    This is only recorded for Android WebView. It is only recorded for forms for
+    which the user typed anything but did not fill anything. It does not matter
+    if the user reverted what they typed.
+
+    This is recorded once Autofill stops tracking the form (e.g. due to a
+    navigation or due to removal from the DOM). {AutofillFormType}
+  </summary>
+  <token key="AutofillFormType" variants="AutofillFormType"/>
+</histogram>
+
 <histogram name="Autofill.WebView.ServerPrediction.AwGSuggestionAvailability"
     enum="AutofillAwGSuggestionAvailability" expires_after="2023-06-01">
   <owner>michaelbai@chromium.org</owner>

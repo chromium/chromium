@@ -93,7 +93,10 @@ source_set("unit_tests") {
 
 source_set("test_support") {
   testonly = true
-  sources = [ "test_autofill_provider.h" ]
+  sources = [
+    "test_autofill_provider.cc",
+    "test_autofill_provider.h",
+  ]
   public_deps = [ ":browser" ]
   deps = [ "//content/public/browser" ]
 }

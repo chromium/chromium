@@ -496,6 +496,13 @@ static_library("browser") {
     ]
   }
 
+  if (is_android) {
+    sources += [
+      "metrics/form_events/form_event_logger_weblayer_android.cc",
+      "metrics/form_events/form_event_logger_weblayer_android.h",
+    ]
+  }
+
   if (is_ios || is_android) {
     sources += [
       "payments/autofill_credit_card_filling_infobar_delegate_mobile.cc",
@@ -964,6 +971,11 @@ source_set("unit_tests") {
   if (is_ios) {
     sources +=
         [ "autofill_save_update_address_profile_delegate_ios_unittest.cc" ]
+  }
+
+  if (is_android) {
+    sources +=
+        [ "metrics/form_events/form_event_logger_weblayer_android_unittest.cc" ]
   }
 
   if (is_ios || is_android) {

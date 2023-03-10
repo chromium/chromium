@@ -11894,6 +11894,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Attempted"/>
 </enum>
 
+<enum name="BooleanAutofillFillAfterInteraction">
+  <int value="0" label="Not filled"/>
+  <int value="1" label="Filled"/>
+</enum>
+
 <enum name="BooleanAutofillFillAfterSuggestion">
   <int value="0" label="User did not choose to fill"/>
   <int value="1" label="User chose to fill"/>
