@@ -143,7 +143,8 @@ class RenderViewBrowserTest : public ContentBrowserTest {
 };
 
 // https://crbug.com/788788
-#if BUILDFLAG(IS_ANDROID) && defined(ADDRESS_SANITIZER)
+#if (BUILDFLAG(IS_ANDROID) && defined(ADDRESS_SANITIZER)) || \
+    (BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER))
 #define MAYBE_ConfirmCacheInformationPlumbed \
   DISABLED_ConfirmCacheInformationPlumbed
 #else
