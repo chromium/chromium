@@ -7,8 +7,8 @@
 
 #include <stddef.h>
 
-#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_APPLE) && defined(ARCH_CPU_64_BITS)

@@ -130,8 +130,9 @@ bool UseMapJit() {
   base::ScopedCFTypeRef<CFTypeRef> jit_entitlement(
       SecTaskCopyValueForEntitlement(
           task.get(), CFSTR("com.apple.security.cs.allow-jit"), nullptr));
-  if (!jit_entitlement)
+  if (!jit_entitlement) {
     return false;
+  }
 
   return base::mac::CFCast<CFBooleanRef>(jit_entitlement.get()) ==
          kCFBooleanTrue;
@@ -248,8 +249,9 @@ void SetSystemPagesAccessInternal(
   //
   // In this case, we are almost certainly bumping into the sandbox limit, mark
   // the crash as OOM. See SandboxLinux::LimitAddressSpace() for details.
-  if (ret == -1 && errno == ENOMEM && (access_flags & PROT_WRITE))
+  if (ret == -1 && errno == ENOMEM && (access_flags & PROT_WRITE)) {
     OOM_CRASH(length);
+  }
 
   PA_PCHECK(0 == ret);
 }
@@ -365,8 +367,9 @@ bool TryRecommitSystemPagesInternal(
   if (accessibility_disposition ==
       PageAccessibilityDisposition::kRequireUpdate) {
     bool ok = TrySetSystemPagesAccess(address, length, accessibility);
-    if (!ok)
+    if (!ok) {
       return false;
+    }
   }
 
 #if BUILDFLAG(IS_APPLE)

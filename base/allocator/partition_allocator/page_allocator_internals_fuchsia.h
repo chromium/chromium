@@ -111,9 +111,8 @@ uintptr_t SystemAllocPagesInternal(
   }
 
   uint64_t address;
-  status =
-      zx::vmar::root_self()->map(options, vmar_offset, vmo,
-                                 /*vmo_offset=*/0, length, &address);
+  status = zx::vmar::root_self()->map(options, vmar_offset, vmo,
+                                      /*vmo_offset=*/0, length, &address);
   if (status != ZX_OK) {
     // map() is expected to fail if |hint| is set to an already-in-use location.
     if (!hint) {
