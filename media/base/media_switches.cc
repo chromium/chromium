@@ -511,7 +511,7 @@ BASE_FEATURE(kMemoryPressureBasedSourceBufferGC,
 // Enables binding software video NV12/P010 GMBs as separate shared images.
 BASE_FEATURE(kMultiPlaneSoftwareVideoSharedImages,
              "MultiPlaneSoftwareVideoSharedImages",
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
@@ -522,7 +522,7 @@ BASE_FEATURE(kMultiPlaneSoftwareVideoSharedImages,
 // frames created by video capture.
 BASE_FEATURE(kMultiPlaneVideoCaptureSharedImages,
              "MultiPlaneVideoCaptureSharedImages",
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
