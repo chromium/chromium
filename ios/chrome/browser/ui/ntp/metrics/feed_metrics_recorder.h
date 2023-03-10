@@ -220,7 +220,12 @@ class Time;
 // Records a user action for the Following feed sort type being selected.
 - (void)recordFollowingFeedSortTypeSelected:(FollowingFeedSortType)sortType;
 
+// Returns YES if the user has engaged with the latest refreshed content. The
+// term "engaged" is an implementation detail of this class.
+- (BOOL)hasEngagedWithLatestRefreshedContent;
+
 // Returns YES if user engagement criteria have been met to warrant a refresh.
+// Deprecated. Renamed to `hasEngagedWithLatestRefreshedContent`.
 - (BOOL)hasMetFeedRefreshUserEngagementCriteria;
 
 #pragma mark - Follow
