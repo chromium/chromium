@@ -5,9 +5,7 @@
 #include "base/sequence_token.h"
 
 #include "base/atomic_sequence_num.h"
-#include "base/check_op.h"
-#include "base/no_destructor.h"
-#include "base/threading/thread_local.h"
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace base {
 
@@ -17,15 +15,8 @@ base::AtomicSequenceNumber g_sequence_token_generator;
 
 base::AtomicSequenceNumber g_task_token_generator;
 
-ThreadLocalPointer<const SequenceToken>& GetTlsCurrentSequenceToken() {
-  static base::NoDestructor<ThreadLocalPointer<const SequenceToken>> instance;
-  return *instance;
-}
-
-ThreadLocalPointer<const TaskToken>& GetTlsCurrentTaskToken() {
-  static base::NoDestructor<ThreadLocalPointer<const TaskToken>> instance;
-  return *instance;
-}
+ABSL_CONST_INIT thread_local SequenceToken current_sequence_token;
+ABSL_CONST_INIT thread_local TaskToken current_task_token;
 
 }  // namespace
 
@@ -50,9 +41,7 @@ SequenceToken SequenceToken::Create() {
 }
 
 SequenceToken SequenceToken::GetForCurrentThread() {
-  const SequenceToken* current_sequence_token =
-      GetTlsCurrentSequenceToken().Get();
-  return current_sequence_token ? *current_sequence_token : SequenceToken();
+  return current_sequence_token;
 }
 
 bool TaskToken::operator==(const TaskToken& other) const {
@@ -72,25 +61,25 @@ TaskToken TaskToken::Create() {
 }
 
 TaskToken TaskToken::GetForCurrentThread() {
-  const TaskToken* current_task_token = GetTlsCurrentTaskToken().Get();
-  return current_task_token ? *current_task_token : TaskToken();
+  return current_task_token;
 }
 
 ScopedSetSequenceTokenForCurrentThread::ScopedSetSequenceTokenForCurrentThread(
     const SequenceToken& sequence_token)
-    : sequence_token_(sequence_token), task_token_(TaskToken::Create()) {
-  DCHECK(!GetTlsCurrentSequenceToken().Get());
-  DCHECK(!GetTlsCurrentTaskToken().Get());
-  GetTlsCurrentSequenceToken().Set(&sequence_token_);
-  GetTlsCurrentTaskToken().Set(&task_token_);
-}
+    // The lambdas here exist because invalid tokens don't compare equal, so
+    // passing invalid sequence/task tokens as the third args to AutoReset
+    // constructors doesn't work.
+    : sequence_token_resetter_(&current_sequence_token,
+                               [&sequence_token]() {
+                                 DCHECK(!current_sequence_token.IsValid());
+                                 return sequence_token;
+                               }()),
+      task_token_resetter_(&current_task_token, [] {
+        DCHECK(!current_task_token.IsValid());
+        return TaskToken::Create();
+      }()) {}
 
 ScopedSetSequenceTokenForCurrentThread::
-    ~ScopedSetSequenceTokenForCurrentThread() {
-  DCHECK_EQ(GetTlsCurrentSequenceToken().Get(), &sequence_token_);
-  DCHECK_EQ(GetTlsCurrentTaskToken().Get(), &task_token_);
-  GetTlsCurrentSequenceToken().Set(nullptr);
-  GetTlsCurrentTaskToken().Set(nullptr);
-}
+    ~ScopedSetSequenceTokenForCurrentThread() = default;
 
 }  // namespace base
