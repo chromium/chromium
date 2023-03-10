@@ -4585,18 +4585,6 @@ Unknown properties are collapsed to zero. -->
   <int value="7" label="Decorated Media Custom View Style"/>
 </enum>
 
-<enum name="ArcNoWindowReason">
-  <int value="0" label="NoHandler"/>
-  <int value="1" label="NoHandler (from crash)"/>
-  <int value="2" label="NoRootBounds"/>
-  <int value="3" label="NoRootBounds (from crash)"/>
-  <int value="4" label="NoScreenBounds"/>
-  <int value="5" label="NoScreenBounds (from crash)"/>
-  <int value="6" label="Flag disabled"/>
-  <int value="7" label="Not ARCVM"/>
-  <int value="8" label="No exo helper"/>
-</enum>
-
 <enum name="ArcOptInAction">
   <summary>Defines Arc OptIn actions</summary>
   <int value="0" label="DEPRECATED: Opted Out"/>
