@@ -186,7 +186,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTIncognitoAvailableToThirdParty,
     &kCCTIntentFeatureOverrides,
     &kCCTNewDownloadTab,
-    &kCCTPackageNameRecording,
     &kCCTPostMessageAPI,
     &kCCTPostMessageOrigin,
     &kCCTPrefetchDelayShowOnStart,
@@ -547,10 +546,6 @@ BASE_FEATURE(kCCTIncognitoAvailableToThirdParty,
 
 BASE_FEATURE(kCCTIntentFeatureOverrides,
              "CCTIntentFeatureOverrides",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCCTPackageNameRecording,
-             "CCTPackageNameRecording",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTPostMessageAPI,

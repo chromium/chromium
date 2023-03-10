@@ -108,8 +108,7 @@ void ChromeAndroidMetricsProvider::ProvideCurrentSessionData(
   os_proto->set_dark_mode_state(
       ToProtoDarkModeState(chrome::android::GetDarkModeState()));
 
-  if (base::FeatureList::IsEnabled(chrome::android::kCCTPackageNameRecording) &&
-      chrome::android::CustomTabSessionStateTracker::GetInstance()
+  if (chrome::android::CustomTabSessionStateTracker::GetInstance()
           .HasCustomTabSessionState()) {
     uma_proto->mutable_custom_tab_session()->Swap(
         chrome::android::CustomTabSessionStateTracker::GetInstance()

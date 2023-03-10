@@ -3548,21 +3548,6 @@
             ]
         }
     ],
-    "CustomTabSessionRecording": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CCTPackageNameRecording"
-                    ]
-                }
-            ]
-        }
-    ],
     "DIPSTriggeringAction": [
         {
             "platforms": [
