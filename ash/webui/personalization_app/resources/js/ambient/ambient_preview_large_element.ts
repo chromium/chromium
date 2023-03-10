@@ -46,12 +46,17 @@ export class AmbientPreviewLarge extends AmbientPreviewBase {
       collageImages_: {
         type: Array,
         computed:
-            'computeThumbnailImages_(topicSource_, previewAlbums_, previewImages_)',
+            'computeCollageImages_(topicSource_, previewAlbums_, previewImages_)',
+      },
+      thumbnailImages_: {
+        type: Array,
+        computed: 'computeThumbnailImages_(topicSource_, previewImages_)',
       },
     };
   }
 
   private collageImages_: Url[];
+  private thumbnailImages_: Url[];
 
   /** Returns the array of images that form the collage when Jelly is off. */
   private computeCollageImages_(): Url[] {
@@ -76,9 +81,6 @@ export class AmbientPreviewLarge extends AmbientPreviewBase {
 
   /** Returns the array of thumbnail images. */
   private computeThumbnailImages_(): Url[] {
-    if (!this.isPersonalizationJellyEnabled_) {
-      return this.computeCollageImages_();
-    }
     if (isNonEmptyArray(this.previewImages_)) {
       const maxLength = Math.min(
           this.previewImages_.length,
@@ -110,16 +112,16 @@ export class AmbientPreviewLarge extends AmbientPreviewBase {
 
   /**
    * Navigate directly to photo selection subpage. Should only be possible to
-   * call this function if |topic_source| is set and photo collage is visible.
+   * call this function if |topic_source| is set and thumbnail is visible.
    */
-  private onClickPhotoCollage_(event: Event) {
+  private onClickPhotoThumbnail_(event: Event) {
     assert(typeof this.topicSource_ === 'number', 'topic source required');
     event.stopPropagation();
     PersonalizationRouter.instance().selectAmbientAlbums(this.topicSource_);
   }
 
   private getThumbnailContainerClass_(): string {
-    return `thumbnail-${this.collageImages_.length} clickable`;
+    return `thumbnail-${this.thumbnailImages_.length} clickable`;
   }
 
   private getCollageContainerClass_(): string {
