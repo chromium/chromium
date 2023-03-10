@@ -355,7 +355,12 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // metrics measuring domain visit counts spanning the following date ranges
   // (all dates are inclusive):
   // {{10/30, 10/3~10/30}, {10/29, 10/2~10/29}, {10/28, 10/1~10/28}}
-  DomainDiversityResults GetDomainDiversity(
+  //
+  // The return value is a pair of results, where the first member counts only
+  // local visits, and the second counts both local and foreign (synced) visits.
+  // TODO(crbug.com/1422210): Once the "V2" domain diversity metrics are
+  // deprecated, return only a single result, the "local" one.
+  std::pair<DomainDiversityResults, DomainDiversityResults> GetDomainDiversity(
       base::Time report_time,
       int number_of_days_to_report,
       DomainMetricBitmaskType metric_type_bitmask);

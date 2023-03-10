@@ -129,15 +129,31 @@ void DomainDiversityReporter::ComputeDomainMetrics() {
 
 void DomainDiversityReporter::ReportDomainMetrics(
     base::Time time_current_report_triggered,
-    history::DomainDiversityResults result) {
+    std::pair<history::DomainDiversityResults, history::DomainDiversityResults>
+        result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // An empty DomainDiversityResults indicates that `db_` is null in
   // HistoryBackend.
-  if (result.empty())
+  if (result.first.empty() && result.second.empty()) {
     return;
+  }
 
-  for (auto& result_one_day : result) {
+  // `result.first` is the "local" result (excluding synced visits), while
+  // `result.second` is the "all" result, including both local and synced
+  // visits.
+
+  for (auto& result_one_day : result.first) {
+    base::UmaHistogramCounts1000("History.DomainCount1Day_V3",
+                                 result_one_day.one_day_metric.value().count);
+    base::UmaHistogramCounts1000("History.DomainCount7Day_V3",
+                                 result_one_day.seven_day_metric.value().count);
+    base::UmaHistogramCounts1000(
+        "History.DomainCount28Day_V3",
+        result_one_day.twenty_eight_day_metric.value().count);
+  }
+
+  for (auto& result_one_day : result.second) {
     base::UmaHistogramCounts1000("History.DomainCount1Day_V2",
                                  result_one_day.one_day_metric.value().count);
     base::UmaHistogramCounts1000("History.DomainCount7Day_V2",

@@ -1822,54 +1822,67 @@ HistoryCountResult HistoryBackend::CountUniqueHostsVisitedLastMonth() {
   return {!!db_, db_ ? db_->CountUniqueHostsVisitedLastMonth() : 0};
 }
 
-DomainDiversityResults HistoryBackend::GetDomainDiversity(
+std::pair<DomainDiversityResults, DomainDiversityResults>
+HistoryBackend::GetDomainDiversity(
     base::Time report_time,
     int number_of_days_to_report,
     DomainMetricBitmaskType metric_type_bitmask) {
   DCHECK_GE(number_of_days_to_report, 0);
-  DomainDiversityResults result;
+  DomainDiversityResults local_result;
+  DomainDiversityResults all_result;
 
   if (!db_)
-    return result;
+    return std::make_pair(local_result, all_result);
 
   number_of_days_to_report =
       std::min(number_of_days_to_report, kDomainDiversityMaxBacktrackedDays);
 
   base::Time current_midnight = report_time.LocalMidnight();
-  SCOPED_UMA_HISTOGRAM_TIMER("History.DomainCountQueryTime_V2");
+  SCOPED_UMA_HISTOGRAM_TIMER("History.DomainCountQueryTime_V3");
 
   for (int days_back = 0; days_back < number_of_days_to_report; ++days_back) {
-    DomainMetricSet single_metric_set;
-    single_metric_set.end_time = current_midnight;
+    DomainMetricSet local_metric_set;
+    local_metric_set.end_time = current_midnight;
+    DomainMetricSet all_metric_set;
+    all_metric_set.end_time = current_midnight;
 
     if (metric_type_bitmask & kEnableLast1DayMetric) {
       base::Time last_midnight = MidnightNDaysLater(current_midnight, -1);
-      single_metric_set.one_day_metric = DomainMetricCountType(
-          db_->CountUniqueDomainsVisited(last_midnight, current_midnight),
-          last_midnight);
+      auto [local_domains, all_domains] =
+          db_->CountUniqueDomainsVisited(last_midnight, current_midnight);
+      local_metric_set.one_day_metric =
+          DomainMetricCountType(local_domains, last_midnight);
+      all_metric_set.one_day_metric =
+          DomainMetricCountType(all_domains, last_midnight);
     }
 
     if (metric_type_bitmask & kEnableLast7DayMetric) {
       base::Time seven_midnights_ago = MidnightNDaysLater(current_midnight, -7);
-      single_metric_set.seven_day_metric = DomainMetricCountType(
-          db_->CountUniqueDomainsVisited(seven_midnights_ago, current_midnight),
-          seven_midnights_ago);
+      auto [local_domains, all_domains] =
+          db_->CountUniqueDomainsVisited(seven_midnights_ago, current_midnight);
+      local_metric_set.seven_day_metric =
+          DomainMetricCountType(local_domains, seven_midnights_ago);
+      all_metric_set.seven_day_metric =
+          DomainMetricCountType(all_domains, seven_midnights_ago);
     }
 
     if (metric_type_bitmask & kEnableLast28DayMetric) {
       base::Time twenty_eight_midnights_ago =
           MidnightNDaysLater(current_midnight, -28);
-      single_metric_set.twenty_eight_day_metric = DomainMetricCountType(
-          db_->CountUniqueDomainsVisited(twenty_eight_midnights_ago,
-                                         current_midnight),
-          twenty_eight_midnights_ago);
+      auto [local_domains, all_domains] = db_->CountUniqueDomainsVisited(
+          twenty_eight_midnights_ago, current_midnight);
+      local_metric_set.twenty_eight_day_metric =
+          DomainMetricCountType(local_domains, twenty_eight_midnights_ago);
+      all_metric_set.twenty_eight_day_metric =
+          DomainMetricCountType(all_domains, twenty_eight_midnights_ago);
     }
-    result.push_back(single_metric_set);
+    local_result.push_back(local_metric_set);
+    all_result.push_back(all_metric_set);
 
     current_midnight = MidnightNDaysLater(current_midnight, -1);
   }
 
-  return result;
+  return std::make_pair(local_result, all_result);
 }
 
 HistoryLastVisitResult HistoryBackend::GetLastVisitToHost(
