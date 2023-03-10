@@ -94,8 +94,7 @@ enum {
   kOfferTranslateEnabled = 58,
   kPrefAlwaysTranslateList = 59,
   kPrefNeverPromptSitesWithTime = 60,
-  kPrefTranslateRecentTarget = 61,
-  kMaxValue = kPrefTranslateRecentTarget
+  kPrefTranslateRecentTarget = 61
 };
 }  // namespace syncable_prefs_ids
 
