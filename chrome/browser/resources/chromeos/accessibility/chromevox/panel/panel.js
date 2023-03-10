@@ -917,7 +917,7 @@ export class Panel extends PanelInterface {
 
     // Prepare the watcher before close the panel so that the watcher won't miss
     // panel collapse signal.
-    await BackgroundBridge.PanelBackground.setPanelCollapseWatcher;
+    await BackgroundBridge.PanelBackground.setPanelCollapseWatcher();
 
     // Make sure all menus are cleared to avoid bogus output when we re-open.
     this.menuManager_.clearMenus();
