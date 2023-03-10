@@ -19,6 +19,7 @@
 -../../web_tests/external/wpt/fonts/noto/**
 ../../web_tests/images/resources/**
 ../../web_tests/third_party/**/*.ttf
+../../web_tests/third_party/**/*.otf
 # pop(ignore-relative)
 
 image-decoders/testing/**

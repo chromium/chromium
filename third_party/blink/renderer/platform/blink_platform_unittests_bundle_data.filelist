@@ -414,6 +414,7 @@
 ../../web_tests/images/resources/ycbcr-progressive-003.jpg
 ../../web_tests/images/resources/ycbcr-with-cmyk-color-profile.jpg
 ../../web_tests/images/resources/ycbcr-with-no-color-profile.jpg
+../../web_tests/third_party/AdobeVF/AdobeVFPrototype.otf
 ../../web_tests/third_party/Amstelvar/Amstelvar.ttf
 ../../web_tests/third_party/DroidSans/DroidSans.ttf.subset-U002E-U0041-42.ttf
 ../../web_tests/third_party/FruityGirl/FruityGirl.ttf
@@ -423,10 +424,14 @@
 ../../web_tests/third_party/NotoColorEmoji/NotoColorEmoji.ttf
 ../../web_tests/third_party/NotoMono-hintedLocalizedFamilyName/NotoMono-Regular.subset.ttf
 ../../web_tests/third_party/NotoSans/NotoSansDevanagari-Regular-uni091D.ttf
+../../web_tests/third_party/NotoSansCJK/NotoSansCJKjp-Regular-subset.otf
 ../../web_tests/third_party/NotoSansSymbol/NotoSansSymbols-Regular-u1d49e,1f1ef.ttf
 ../../web_tests/third_party/Scheherazade/Scheherazade-Bold.ttf
 ../../web_tests/third_party/Scheherazade/Scheherazade-Regular.ttf
 ../../web_tests/third_party/Tinos/tinos-bold.ttf
+../../web_tests/third_party/adobe-fonts/CSSFWOrientationTest.otf
+../../web_tests/third_party/adobe-fonts/CSSHWOrientationTest.otf
+../../web_tests/third_party/gsubtest/gsubtest-lookup3.otf
 image-decoders/testing/bad-code.gif
 image-decoders/testing/bad-initial-code.gif
 image-decoders/testing/broken.gif
