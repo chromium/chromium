@@ -6872,9 +6872,6 @@ crbug.com/1409713 virtual/view-transition-wide-gamut/external/wpt/css/css-view-t
 crbug.com/1422630 external/wpt/long-animation-frame/tentative/loaf-promise.html [ Failure ]
 crbug.com/1422630 external/wpt/long-animation-frame/tentative/loaf-script-block.html [ Failure ]
 
-# Temporarily disable COLRv1 test to land Skia change, will rebaseline afterwards.
-crbug.com/1422959 virtual/text-antialias/colrv1-variable.html [ Failure Pass ]
-
 # Sheriff 2023-03-09
 crbug.com/1422653 external/wpt/long-animation-frame/tentative/* [ Failure Pass ]
 crbug.com/1422653 virtual/threaded/external/wpt/long-animation-frame/tentative/* [ Failure Pass ]
