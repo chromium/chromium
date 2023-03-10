@@ -163,6 +163,23 @@ export class MenuManager {
   }
 
   /**
+   * Starting at |startIndex|, looks for an enabled menu.
+   * @param {number} startIndex
+   * @param {number} delta
+   * @return {number} The index of the enabled menu. -1 if not found.
+   */
+  findEnabledMenuIndex(startIndex, delta) {
+    const endIndex = (delta > 0) ? this.menus_.length : -1;
+    while (startIndex !== endIndex) {
+      if (this.menus_[startIndex].enabled) {
+        return startIndex;
+      }
+      startIndex += delta;
+    }
+    return -1;
+  }
+
+  /**
    * @param {string|undefined} opt_menuTitle
    * @return {!PanelMenu}
    */
