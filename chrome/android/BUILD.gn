@@ -504,7 +504,7 @@ if (current_toolchain == default_toolchain) {
       "//components/webapps/common/android:webapk_install_java",
       "//components/webauthn/android:java",
       "//components/webrtc/android:java",
-      "//components/webxr/android:ar_java_interfaces",
+      "//components/webxr/android:xr_java",
       "//components/zoom/android:java",
       "//content/public/android:content_java",
       "//content/public/common:common_java",
@@ -608,16 +608,8 @@ if (current_toolchain == default_toolchain) {
     # Include sources from public_tab_management_java_sources.gni.
     sources += public_tab_management_java_sources
     sources += start_surface_java_sources
-
     if (enable_arcore) {
-      deps += [
-        "//components/webxr/android:ar_java",
-        "//components/webxr/android:webxr_android_enums_java",
-      ]
-    }
-
-    if (enable_cardboard) {
-      deps += [ "//third_party/cardboard:cardboard_java" ]
+      deps += [ "//third_party/arcore-android-sdk-client:com_google_ar_core_java__ignored_manifest" ]
     }
 
     if (enable_vr) {
@@ -2894,9 +2886,12 @@ if (current_toolchain == default_toolchain) {
         "//third_party/android_sdk:android_test_mock_java",
       ]
 
-      # Include ArCore files directly instead of using bundles.
+      # Include ArCore files directly instead of using bundles. This does
+      # require us to explicitly re-declare our dependency on ARCore, which
+      # otherwise should have already been included, since the native libraries
+      # need to know that it is available. Though we'd always need to forcibly
+      # include the manifest DEP here as well
       deps += [
-        "//components/webxr/android:ar_java",
         "//third_party/arcore-android-sdk-client:com_google_ar_core_java",
         "//third_party/arcore-android-sdk-client:com_google_ar_core_java__ignored_manifest",
       ]

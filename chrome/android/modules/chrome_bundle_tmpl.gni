@@ -41,13 +41,6 @@ template("chrome_bundle") {
     android_manifest_dep =
         "${invoker.base_module_target}__android_manifest__split"
     java_deps = [ "//chrome/android:chrome_all_java" ]
-    if (enable_arcore) {
-      java_deps += [
-        "//components/webxr/android:ar_java",
-        "//third_party/arcore-android-sdk-client:com_google_ar_core_java",
-        "//third_party/arcore-android-sdk-client:com_google_ar_core_java__ignored_manifest",
-      ]
-    }
     if (defined(invoker.chrome_deps)) {
       java_deps += invoker.chrome_deps
     }

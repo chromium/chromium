@@ -316,10 +316,7 @@ android_library("java") {
       "org/chromium/weblayer_private/ArCompositorDelegateProviderImpl.java",
       "org/chromium/weblayer_private/ArCoreVersionUtils.java",
     ]
-    deps += [
-      "//components/webxr/android:ar_java",
-      "//components/webxr/android:ar_java_interfaces",
-    ]
+    deps += [ "//components/webxr/android:xr_java" ]
   }
 
   srcjar_deps = [

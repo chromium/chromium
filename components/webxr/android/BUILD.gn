@@ -56,78 +56,85 @@ source_set("android") {
   libs = [ "android" ]
 }
 
-android_resources("xr_java_resources") {
-  deps = [ "//components/browser_ui/strings/android:browser_ui_strings_grd" ]
-}
-
-java_cpp_enum("webxr_android_enums") {
-  sources = [ "arcore_install_helper.h" ]
-}
-
-android_library("webxr_android_enums_java") {
-  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
-
-  srcjar_deps = [ ":webxr_android_enums" ]
-}
-
-android_library("ar_java_interfaces") {
+# In order to be able to be included in WebView/WebLayer targets; though this
+# does link in ARCore, it does not link in the necessary ARCore manifest changes
+# and due to other restrictions does not link in the native code required by
+# arcore. Consumers will need to link the native arcore libraries themselves and
+# will likely need to include the
+# "//third_party/arcore-android-sdk-client:com_google_ar_core_java__ignored_manifest"
+# target themselves somewhere in their build.
+android_library("xr_java") {
+  # Contains interfaces that should be permanently, and publicly, available and
+  # can thus be depended on outside of this directory, regardless of whether xr
+  # is enabled or not.
   sources = [
-    "//components/webxr/android/java/src/org/chromium/components/webxr/ArCompositorDelegate.java",
-    "//components/webxr/android/java/src/org/chromium/components/webxr/ArCompositorDelegateProvider.java",
     "//components/webxr/android/java/src/org/chromium/components/webxr/XrDelegate.java",
     "//components/webxr/android/java/src/org/chromium/components/webxr/XrDelegateProvider.java",
   ]
 
   deps = [
-    "//components/browser_ui/widget/android:java",
-    "//content/public/android:content_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
-  ]
-}
-
-android_library("ar_java_base") {
-  deps = [
-    ":ar_java_base_resources",
-    ":ar_java_interfaces",
-    ":webxr_android_enums_java",
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//components/browser_ui/widget/android:java",
-    "//content/public/android:content_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
-    "//third_party/androidx:androidx_appcompat_appcompat_java",
-    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
-    "//ui/android:ui_no_recycler_view_java",
   ]
 
-  sources = [
-    "//components/webxr/android/java/src/org/chromium/components/webxr/ArCoreInstallUtils.java",
-    "//components/webxr/android/java/src/org/chromium/components/webxr/ArCoreJavaUtils.java",
-    "//components/webxr/android/java/src/org/chromium/components/webxr/ArCoreShim.java",
-    "//components/webxr/android/java/src/org/chromium/components/webxr/ArDelegate.java",
-    "//components/webxr/android/java/src/org/chromium/components/webxr/ArDelegateImpl.java",
-    "//components/webxr/android/java/src/org/chromium/components/webxr/ArImmersiveOverlay.java",
-    "//components/webxr/android/java/src/org/chromium/components/webxr/XrDelegateImpl.java",
-  ]
+  public_deps = []
+
+  # Contains the interfaces that are present if any runtimes are enabled.
+  # These are essentially the implementations of the above, interfaces those
+  # classes need to talk to, or other common classes that more than one runtime
+  # leverages.
+  if (enable_arcore || enable_cardboard) {
+    sources += [
+      "//components/webxr/android/java/src/org/chromium/components/webxr/ArDelegate.java",
+      "//components/webxr/android/java/src/org/chromium/components/webxr/XrDelegateImpl.java",
+    ]
+
+    deps += [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+  }
+
+  # Contains the ARCore-specific implementations of the above interfaces and any
+  # and all classes that they need to talk to that aren't shared with the other
+  # runtime implementations.
+  if (enable_arcore) {
+    sources += [
+      "//components/webxr/android/java/src/org/chromium/components/webxr/ArCompositorDelegate.java",
+      "//components/webxr/android/java/src/org/chromium/components/webxr/ArCompositorDelegateProvider.java",
+      "//components/webxr/android/java/src/org/chromium/components/webxr/ArCoreInstallUtils.java",
+      "//components/webxr/android/java/src/org/chromium/components/webxr/ArCoreJavaUtils.java",
+      "//components/webxr/android/java/src/org/chromium/components/webxr/ArCoreShim.java",
+      "//components/webxr/android/java/src/org/chromium/components/webxr/ArCoreShimImpl.java",
+      "//components/webxr/android/java/src/org/chromium/components/webxr/ArDelegateImpl.java",
+      "//components/webxr/android/java/src/org/chromium/components/webxr/ArImmersiveOverlay.java",
+    ]
+
+    # We have to use the bundle templates to include some of the native ARCore
+    # code, rather than just including things in our deps here; but that means
+    # that the include of the Java code needs to be a public_dep so that those
+    # targets can see and rely on this.
+    public_deps +=
+        [ "//third_party/arcore-android-sdk-client:com_google_ar_core_java" ]
+
+    deps += [
+      "//base:jni_java",  # needed by ARCoreJavaUtils
+      "//content/public/android:content_java",  # needed by ARCoreJavaUtils
+      "//ui/android:ui_no_recycler_view_java",  # needed by ARCoreJavaUtils
+    ]
+
+    srcjar_deps = [ ":webxr_ar_android_enums" ]
+  }
+
+  # Contains the cardboard specific implementations of the above interfaces and
+  # any and all classes that they need to talk to that aren't shared with the
+  # other runtime implementations.
+  # Also includes any cardboard-specific java runtime dependencies that the
+  # native files in this folder may depend upon.
+  if (enable_cardboard) {
+    deps += [ "//third_party/cardboard:cardboard_java" ]
+  }
+
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   resources_package = "org.chromium.components.webxr"
-}
-
-android_resources("ar_java_base_resources") {
-  deps = [ "//components/browser_ui/strings/android:browser_ui_strings_grd" ]
-}
-
-android_library("ar_java") {
-  deps = [
-    ":ar_java_base",
-    ":webxr_android_enums_java",
-    "//base:base_java",
-    "//build/android:build_java",
-    "//third_party/arcore-android-sdk-client:com_google_ar_core_java",
-  ]
-
-  sources = [ "//components/webxr/android/java/src/org/chromium/components/webxr/ArCoreShimImpl.java" ]
 }
 
 if (enable_arcore) {
@@ -136,5 +143,9 @@ if (enable_arcore) {
       "//components/webxr/android/java/src/org/chromium/components/webxr/ArCoreInstallUtils.java",
       "//components/webxr/android/java/src/org/chromium/components/webxr/ArCoreJavaUtils.java",
     ]
+  }
+
+  java_cpp_enum("webxr_ar_android_enums") {
+    sources = [ "arcore_install_helper.h" ]
   }
 }

@@ -13,8 +13,7 @@ _libarcore_dir = get_label_info(
 ar_module_desc = {
   name = "ar"
   java_deps = [
-    "//components/webxr/android:ar_java",
-    "//third_party/arcore-android-sdk-client:com_google_ar_core_java",
+    "//components/webxr/android:xr_java",
     "//third_party/arcore-android-sdk-client:com_google_ar_core_java__ignored_manifest",
   ]
   android_manifest = "//chrome/android/features/ar/AndroidManifest.xml"
