@@ -2639,13 +2639,11 @@ TEST_P(BluetoothBlueZTestP, ForgetUnpairedDevice) {
   ASSERT_TRUE(device->IsConnected());
   ASSERT_FALSE(device->IsConnecting());
 
-#if BUILDFLAG(IS_CHROMEOS)
   // Make sure the trusted property has been set to true.
   bluez::FakeBluetoothDeviceClient::Properties* properties =
       fake_bluetooth_device_client_->GetProperties(dbus::ObjectPath(
           bluez::FakeBluetoothDeviceClient::kConnectUnpairablePath));
   ASSERT_TRUE(properties->trusted.value());
-#endif
 
   // Install an observer; expect the DeviceRemoved method to be called
   // with the device we remove.
@@ -2686,13 +2684,9 @@ TEST_P(BluetoothBlueZTestP, ConnectPairedDevice) {
           }));
   run_loop.Run();
 
-// Two changes for connecting, one for connected.
-#if BUILDFLAG(IS_CHROMEOS)
-  // One more for trusted after connecting.
+  // Two changes for connecting, one for connected and one for for trusted
+  // after connecting.
   EXPECT_EQ(4, observer.device_changed_count());
-#else
-  EXPECT_EQ(3, observer.device_changed_count());
-#endif
   EXPECT_EQ(device, observer.last_device());
 
   EXPECT_TRUE(device->IsConnected());
@@ -2722,14 +2716,9 @@ TEST_P(BluetoothBlueZTestP, ConnectUnpairableDevice) {
           }));
   run_loop.Run();
 
-// Two changes for connecting, one for connected, and one for the reconnect mode
-// (IsConnectable).
-#if BUILDFLAG(IS_CHROMEOS)
-  // One more for trusted after connection.
+  // Two changes for connecting, one for connected, one for for trusted after
+  // connection, and one for the reconnect mode (IsConnectable).
   EXPECT_EQ(5, observer.device_changed_count());
-#else
-  EXPECT_EQ(4, observer.device_changed_count());
-#endif
   EXPECT_EQ(device, observer.last_device());
 
   EXPECT_TRUE(device->IsConnected());
@@ -2739,11 +2728,7 @@ TEST_P(BluetoothBlueZTestP, ConnectUnpairableDevice) {
   bluez::FakeBluetoothDeviceClient::Properties* properties =
       fake_bluetooth_device_client_->GetProperties(dbus::ObjectPath(
           bluez::FakeBluetoothDeviceClient::kConnectUnpairablePath));
-#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(properties->trusted.value());
-#else
-  EXPECT_FALSE(properties->trusted.value());
-#endif
 
   // Verify is a HID device and is not connectable.
   BluetoothDevice::UUIDSet uuids = device->GetUUIDs();
@@ -2792,13 +2777,9 @@ TEST_P(BluetoothBlueZTestP, ConnectConnectedDevice) {
     run_loop.Run();
   }
 
-  // The observer will be called because Connecting will toggle true and false.
-#if BUILDFLAG(IS_CHROMEOS)
-  // One more for trusted.
+  // The observer will be called because Connecting will toggle true and false,
+  // and the trusted property will be updated to true.
   EXPECT_EQ(3, observer.device_changed_count());
-#else
-  EXPECT_EQ(2, observer.device_changed_count());
-#endif
 
   EXPECT_TRUE(device->IsConnected());
   EXPECT_FALSE(device->IsConnecting());
@@ -2960,11 +2941,7 @@ TEST_F(BluetoothBlueZTest, PairTrustedDevice) {
           dbus::ObjectPath(bluez::FakeBluetoothDeviceClient::
                                kConnectedTrustedNotPairedDevicePath));
   EXPECT_FALSE(properties->paired.value());
-#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(properties->trusted.value());
-#else
-  EXPECT_FALSE(properties->trusted.value());
-#endif
   ASSERT_FALSE(device->IsPaired());
 
   // The |kConnectedTrustedNotPairedDevicePath| requests a passkey confirmation.
@@ -3010,11 +2987,7 @@ TEST_F(BluetoothBlueZTest, PairAlreadyPairedDevice) {
       fake_bluetooth_device_client_->GetProperties(dbus::ObjectPath(
           bluez::FakeBluetoothDeviceClient::kPairedDevicePath));
   EXPECT_TRUE(properties->paired.value());
-#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(properties->trusted.value());
-#else
-  EXPECT_FALSE(properties->trusted.value());
-#endif
   ASSERT_TRUE(device->IsPaired());
 
   TestBluetoothAdapterObserver observer(adapter_);
@@ -3062,13 +3035,9 @@ TEST_P(BluetoothBlueZTestP, PairLegacyAutopair) {
   run_loop.Run();
 
   // Two changes for connecting, one change for connected, one for paired,
-  // and one for the reconnect mode (IsConnectable).
-#if BUILDFLAG(IS_CHROMEOS)
-  // One more for bonded and two more for trusted (after pairing and connection)
-  EXPECT_EQ(8, observer.device_changed_count());
-#else
-  EXPECT_EQ(5, observer.device_changed_count());
-#endif
+  // two for trusted (after pairing and connection), and one for the reconnect
+  // mode (IsConnectable).
+  EXPECT_EQ(7, observer.device_changed_count());
   EXPECT_EQ(device, observer.last_device());
 
   EXPECT_TRUE(device->IsConnected());
@@ -3086,11 +3055,7 @@ TEST_P(BluetoothBlueZTestP, PairLegacyAutopair) {
   bluez::FakeBluetoothDeviceClient::Properties* properties =
       fake_bluetooth_device_client_->GetProperties(dbus::ObjectPath(
           bluez::FakeBluetoothDeviceClient::kLegacyAutopairPath));
-#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(properties->trusted.value());
-#else
-  EXPECT_FALSE(properties->trusted.value());
-#endif
 }
 
 TEST_P(BluetoothBlueZTestP, PairDisplayPinCode) {
@@ -3120,14 +3085,9 @@ TEST_P(BluetoothBlueZTestP, PairDisplayPinCode) {
   run_loop.Run();
 
   // Two changes for connecting, one change for connected, one for paired,
-  // and one for the reconnect mode (IsConnectable).
-#if BUILDFLAG(IS_CHROMEOS)
-  // One more for bonded and two more for trusted (after pairing and connection)
-  EXPECT_EQ(8, observer.device_changed_count());
-#else
-  EXPECT_EQ(5, observer.device_changed_count());
-#endif
-
+  // two for trusted (after pairing and connection), and one for the reconnect
+  // mode (IsConnectable).
+  EXPECT_EQ(7, observer.device_changed_count());
   EXPECT_EQ(device, observer.last_device());
 
   EXPECT_TRUE(device->IsConnected());
@@ -3145,11 +3105,7 @@ TEST_P(BluetoothBlueZTestP, PairDisplayPinCode) {
   bluez::FakeBluetoothDeviceClient::Properties* properties =
       fake_bluetooth_device_client_->GetProperties(dbus::ObjectPath(
           bluez::FakeBluetoothDeviceClient::kDisplayPinCodePath));
-#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(properties->trusted.value());
-#else
-  EXPECT_FALSE(properties->trusted.value());
-#endif
 }
 
 TEST_P(BluetoothBlueZTestP, PairDisplayPasskey) {
@@ -3184,13 +3140,9 @@ TEST_P(BluetoothBlueZTestP, PairDisplayPasskey) {
   run_loop.Run();
 
   // Two changes for connecting, one change for connected, one for paired,
-  // and one for the reconnect mode (IsConnectable).
-#if BUILDFLAG(IS_CHROMEOS)
-  // One more for bonded and two for trusted (after pairing and connection)
-  EXPECT_EQ(8, observer.device_changed_count());
-#else
-  EXPECT_EQ(5, observer.device_changed_count());
-#endif
+  // two for trusted (after pairing and connection), and one for the reconnect
+  // mode (IsConnectable).
+  EXPECT_EQ(7, observer.device_changed_count());
   EXPECT_EQ(device, observer.last_device());
 
   EXPECT_TRUE(device->IsConnected());
@@ -3210,11 +3162,7 @@ TEST_P(BluetoothBlueZTestP, PairDisplayPasskey) {
   bluez::FakeBluetoothDeviceClient::Properties* properties =
       fake_bluetooth_device_client_->GetProperties(dbus::ObjectPath(
           bluez::FakeBluetoothDeviceClient::kDisplayPasskeyPath));
-#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(properties->trusted.value());
-#else
-  EXPECT_FALSE(properties->trusted.value());
-#endif
 }
 
 TEST_P(BluetoothBlueZTestP, PairRequestPinCode) {
@@ -3243,14 +3191,9 @@ TEST_P(BluetoothBlueZTestP, PairRequestPinCode) {
           }));
   run_loop.Run();
 
-  // Two changes for connecting, one change for connected, one for paired
-#if BUILDFLAG(IS_CHROMEOS)
-  // One more for bonded and two for trusted (after pairing and connection).
-  EXPECT_EQ(7, observer.device_changed_count());
-#else
-  EXPECT_EQ(4, observer.device_changed_count());
-#endif
-
+  // Two changes for connecting, one change for connected, one for paired and
+  // two for trusted (after pairing and connection).
+  EXPECT_EQ(6, observer.device_changed_count());
   EXPECT_EQ(device, observer.last_device());
 
   EXPECT_TRUE(device->IsConnected());
@@ -3269,11 +3212,7 @@ TEST_P(BluetoothBlueZTestP, PairRequestPinCode) {
   bluez::FakeBluetoothDeviceClient::Properties* properties =
       fake_bluetooth_device_client_->GetProperties(dbus::ObjectPath(
           bluez::FakeBluetoothDeviceClient::kRequestPinCodePath));
-#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(properties->trusted.value());
-#else
-  EXPECT_FALSE(properties->trusted.value());
-#endif
 }
 
 TEST_P(BluetoothBlueZTestP, PairConfirmPasskey) {
@@ -3308,14 +3247,9 @@ TEST_P(BluetoothBlueZTestP, PairConfirmPasskey) {
           }));
   run_loop.Run();
 
-  // Two changes for connecting, one change for connected, one for paired
-#if BUILDFLAG(IS_CHROMEOS)
-  // One more for bonded and two for trusted (after pairing and connection).
-  EXPECT_EQ(7, observer.device_changed_count());
-#else
-  EXPECT_EQ(4, observer.device_changed_count());
-#endif
-
+  // Two changes for connecting, one change for connected, one for paired and
+  // two for trusted (after pairing and connection).
+  EXPECT_EQ(6, observer.device_changed_count());
   EXPECT_EQ(device, observer.last_device());
 
   EXPECT_TRUE(device->IsConnected());
@@ -3330,11 +3264,7 @@ TEST_P(BluetoothBlueZTestP, PairConfirmPasskey) {
   bluez::FakeBluetoothDeviceClient::Properties* properties =
       fake_bluetooth_device_client_->GetProperties(dbus::ObjectPath(
           bluez::FakeBluetoothDeviceClient::kConfirmPasskeyPath));
-#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(properties->trusted.value());
-#else
-  EXPECT_FALSE(properties->trusted.value());
-#endif
 }
 
 TEST_P(BluetoothBlueZTestP, PairRequestPasskey) {
@@ -3369,14 +3299,9 @@ TEST_P(BluetoothBlueZTestP, PairRequestPasskey) {
           }));
   run_loop.Run();
 
-  // Two changes for connecting, one change for connected, one for paired
-#if BUILDFLAG(IS_CHROMEOS)
-  // One more for bonded and two for trusted (after pairing and connection).
-  EXPECT_EQ(7, observer.device_changed_count());
-#else
-  EXPECT_EQ(4, observer.device_changed_count());
-#endif
-
+  // Two changes for connecting, one change for connected, one for paired and
+  // two for trusted (after pairing and connection).
+  EXPECT_EQ(6, observer.device_changed_count());
   EXPECT_EQ(device, observer.last_device());
 
   EXPECT_TRUE(device->IsConnected());
@@ -3391,11 +3316,7 @@ TEST_P(BluetoothBlueZTestP, PairRequestPasskey) {
   bluez::FakeBluetoothDeviceClient::Properties* properties =
       fake_bluetooth_device_client_->GetProperties(dbus::ObjectPath(
           bluez::FakeBluetoothDeviceClient::kRequestPasskeyPath));
-#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(properties->trusted.value());
-#else
-  EXPECT_FALSE(properties->trusted.value());
-#endif
 }
 
 TEST_P(BluetoothBlueZTestP, PairJustWorks) {
@@ -3424,14 +3345,9 @@ TEST_P(BluetoothBlueZTestP, PairJustWorks) {
           }));
   run_loop.Run();
 
-  // Two changes for connecting, one change for connected, one for paired
-#if BUILDFLAG(IS_CHROMEOS)
-  // One more for bonded and two for trusted (after pairing and connection).
-  EXPECT_EQ(7, observer.device_changed_count());
-#else
-  EXPECT_EQ(4, observer.device_changed_count());
-#endif
-
+  // Two changes for connecting, one change for connected, one for paired and
+  // two for trusted (after pairing and connection).
+  EXPECT_EQ(6, observer.device_changed_count());
   EXPECT_EQ(device, observer.last_device());
 
   EXPECT_TRUE(device->IsConnected());
@@ -3446,11 +3362,7 @@ TEST_P(BluetoothBlueZTestP, PairJustWorks) {
   bluez::FakeBluetoothDeviceClient::Properties* properties =
       fake_bluetooth_device_client_->GetProperties(
           dbus::ObjectPath(bluez::FakeBluetoothDeviceClient::kJustWorksPath));
-#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(properties->trusted.value());
-#else
-  EXPECT_FALSE(properties->trusted.value());
-#endif
 }
 
 TEST_P(BluetoothBlueZTestP, PairUnpairableDeviceFails) {
@@ -3538,15 +3450,9 @@ TEST_P(BluetoothBlueZTestP, PairingFailsAtConnection) {
           }));
   run_loop.Run();
 
-  // Two changes for connecting, one for paired.
-  // The device should not be connected.
-#if BUILDFLAG(IS_CHROMEOS)
-  // One more for bonded and one for trusted after pairing
-  EXPECT_EQ(5, observer.device_changed_count());
-#else
-  EXPECT_EQ(3, observer.device_changed_count());
-#endif
-
+  // Two changes for connecting, one for paired and one for trusted after
+  // pairing. The device should not be connected.
+  EXPECT_EQ(4, observer.device_changed_count());
   EXPECT_EQ(device, observer.last_device());
 
   EXPECT_FALSE(device->IsConnected());
@@ -3559,11 +3465,7 @@ TEST_P(BluetoothBlueZTestP, PairingFailsAtConnection) {
   bluez::FakeBluetoothDeviceClient::Properties* properties =
       fake_bluetooth_device_client_->GetProperties(dbus::ObjectPath(
           bluez::FakeBluetoothDeviceClient::kUnconnectableDevicePath));
-#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(properties->trusted.value());
-#else
-  EXPECT_FALSE(properties->trusted.value());
-#endif
 }
 
 TEST_P(BluetoothBlueZTestP, PairingRejectedAtPinCode) {
@@ -3867,25 +3769,17 @@ TEST_F(BluetoothBlueZTest, IncomingPairRequestPinCode) {
       }));
   run_loop.Run();
 
-  // One change for paired.
-#if BUILDFLAG(IS_CHROMEOS)
-  // One more for bonded , and one for trusted.
-  EXPECT_EQ(3, observer.device_changed_count());
-#else
-  EXPECT_EQ(1, observer.device_changed_count());
-#endif
-
+  // One change for paired, and one for trusted.
+  EXPECT_EQ(2, observer.device_changed_count());
   EXPECT_EQ(device, observer.last_device());
 
   EXPECT_TRUE(device->IsPaired());
 
-#if BUILDFLAG(IS_CHROMEOS)
   // Make sure the trusted property has been set to true.
   bluez::FakeBluetoothDeviceClient::Properties* properties =
       fake_bluetooth_device_client_->GetProperties(dbus::ObjectPath(
           bluez::FakeBluetoothDeviceClient::kRequestPinCodePath));
   ASSERT_TRUE(properties->trusted.value());
-#endif
 
   // No pairing context should remain on the device.
   BluetoothDeviceBlueZ* device_bluez =
@@ -3930,25 +3824,17 @@ TEST_F(BluetoothBlueZTest, IncomingPairConfirmPasskey) {
       }));
   run_loop.Run();
 
-  // One change for paired.
-#if BUILDFLAG(IS_CHROMEOS)
-  // One more for bonded, and one for trusted
-  EXPECT_EQ(3, observer.device_changed_count());
-#else
-  EXPECT_EQ(1, observer.device_changed_count());
-#endif
-
+  // One change for paired, and one for trusted.
+  EXPECT_EQ(2, observer.device_changed_count());
   EXPECT_EQ(device, observer.last_device());
 
   EXPECT_TRUE(device->IsPaired());
 
-#if BUILDFLAG(IS_CHROMEOS)
   // Make sure the trusted property has been set to true.
   bluez::FakeBluetoothDeviceClient::Properties* properties =
       fake_bluetooth_device_client_->GetProperties(dbus::ObjectPath(
           bluez::FakeBluetoothDeviceClient::kConfirmPasskeyPath));
   ASSERT_TRUE(properties->trusted.value());
-#endif
 
   // No pairing context should remain on the device.
   BluetoothDeviceBlueZ* device_bluez =
@@ -3993,25 +3879,17 @@ TEST_F(BluetoothBlueZTest, IncomingPairRequestPasskey) {
       }));
   run_loop.Run();
 
-  // One change for paired.
-#if BUILDFLAG(IS_CHROMEOS)
-  // One more for bonded, and one for trusted.
-  EXPECT_EQ(3, observer.device_changed_count());
-#else
-  EXPECT_EQ(1, observer.device_changed_count());
-#endif
-
+  // One change for paired, and one for trusted.
+  EXPECT_EQ(2, observer.device_changed_count());
   EXPECT_EQ(device, observer.last_device());
 
   EXPECT_TRUE(device->IsPaired());
 
-#if BUILDFLAG(IS_CHROMEOS)
   // Make sure the trusted property has been set to true.
   bluez::FakeBluetoothDeviceClient::Properties* properties =
       fake_bluetooth_device_client_->GetProperties(dbus::ObjectPath(
           bluez::FakeBluetoothDeviceClient::kRequestPasskeyPath));
   ASSERT_TRUE(properties->trusted.value());
-#endif
 
   // No pairing context should remain on the device.
   BluetoothDeviceBlueZ* device_bluez =
@@ -4057,25 +3935,17 @@ TEST_F(BluetoothBlueZTest, IncomingPairJustWorks) {
       }));
   run_loop.Run();
 
-  // One change for paired
-#if BUILDFLAG(IS_CHROMEOS)
-  // One more for bonded, and one for trusted.
-  EXPECT_EQ(3, observer.device_changed_count());
-#else
-  EXPECT_EQ(1, observer.device_changed_count());
-#endif
-
+  // One change for paired, and one for trusted.
+  EXPECT_EQ(2, observer.device_changed_count());
   EXPECT_EQ(device, observer.last_device());
 
   EXPECT_TRUE(device->IsPaired());
 
-#if BUILDFLAG(IS_CHROMEOS)
   // Make sure the trusted property has been set to true.
   bluez::FakeBluetoothDeviceClient::Properties* properties =
       fake_bluetooth_device_client_->GetProperties(
           dbus::ObjectPath(bluez::FakeBluetoothDeviceClient::kJustWorksPath));
   ASSERT_TRUE(properties->trusted.value());
-#endif
 
   // No pairing context should remain on the device.
   BluetoothDeviceBlueZ* device_bluez =

@@ -331,11 +331,7 @@ FakeBluetoothDeviceClient::FakeBluetoothDeviceClient()
   properties->alias.ReplaceValue(kPairedDeviceAlias);
   properties->paired.ReplaceValue(true);
   properties->bonded.ReplaceValue(true);
-#if BUILDFLAG(IS_CHROMEOS)
   properties->trusted.ReplaceValue(true);
-#else
-  properties->trusted.ReplaceValue(false);
-#endif
   properties->adapter.ReplaceValue(
       dbus::ObjectPath(FakeBluetoothAdapterClient::kAdapterPath));
 
@@ -360,11 +356,7 @@ FakeBluetoothDeviceClient::FakeBluetoothDeviceClient()
   properties->alias.ReplaceValue(kPairedUnconnectableDeviceAlias);
   properties->paired.ReplaceValue(true);
   properties->bonded.ReplaceValue(true);
-#if BUILDFLAG(IS_CHROMEOS)
   properties->trusted.ReplaceValue(true);
-#else
-  properties->trusted.ReplaceValue(false);
-#endif
   properties->adapter.ReplaceValue(
       dbus::ObjectPath(FakeBluetoothAdapterClient::kAdapterPath));
 
@@ -866,11 +858,7 @@ void FakeBluetoothDeviceClient::CreateDevice(
     properties->address.ReplaceValue(kConnectedTrustedNotPairedDeviceAddress);
     properties->bluetooth_class.ReplaceValue(
         kConnectedTrustedNotPairedDeviceClass);
-#if BUILDFLAG(IS_CHROMEOS)
     properties->trusted.ReplaceValue(true);
-#else
-    properties->trusted.ReplaceValue(false);
-#endif
     properties->connected.ReplaceValue(true);
     properties->connected_le.ReplaceValue(true);
     properties->paired.ReplaceValue(false);
@@ -1566,9 +1554,6 @@ void FakeBluetoothDeviceClient::CompleteSimulatedPairing(
     Properties* properties = GetProperties(object_path);
 
     properties->paired.ReplaceValue(true);
-#if BUILDFLAG(IS_CHROMEOS)
-    properties->bonded.ReplaceValue(true);
-#endif
     std::move(callback).Run();
 
     AddInputDeviceIfNeeded(object_path, properties);
