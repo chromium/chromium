@@ -495,7 +495,8 @@ Polymer({
           }
           if (this.isPsimPendingActivationWhileLoggedOut_()) {
             return this.i18n(
-                'networkListItemLabelActivateAfterSetup', index, total);
+                'networkListItemLabelActivateAfterSetup', index, total,
+                this.getItemName_());
           }
           if (this.isPSimPendingActivationNetwork_) {
             return this.i18n(

@@ -290,6 +290,7 @@ generate_grd("build_grd") {
     "network/cellular_4.svg",
     "network/cellular_locked.svg",
     "network/cellular_off.svg",
+    "network/cellular_unactivated.svg",
     "network/ethernet.svg",
     "network/roaming_badge.svg",
     "network/vpn.svg",
