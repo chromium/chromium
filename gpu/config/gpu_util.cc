@@ -412,8 +412,10 @@ uint32_t GetSystemCommitLimitMb() {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_ANDROID)
 GPUInfo* g_gpu_info_cache = nullptr;
 GpuFeatureInfo* g_gpu_feature_info_cache = nullptr;
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -714,6 +716,7 @@ void SetKeysForCrashLogging(const GPUInfo& gpu_info) {
 #endif
 }
 
+#if BUILDFLAG(IS_ANDROID)
 void CacheGPUInfo(const GPUInfo& gpu_info) {
   DCHECK(!g_gpu_info_cache);
   g_gpu_info_cache = new GPUInfo;
@@ -744,7 +747,6 @@ bool PopGpuFeatureInfoCache(GpuFeatureInfo* gpu_feature_info) {
   return true;
 }
 
-#if BUILDFLAG(IS_ANDROID)
 gl::GLDisplay* InitializeGLThreadSafe(base::CommandLine* command_line,
                                       const GpuPreferences& gpu_preferences,
                                       GPUInfo* out_gpu_info,

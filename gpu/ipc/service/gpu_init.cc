@@ -275,9 +275,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   bool needs_more_info = true;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CASTOS)
   needs_more_info = false;
-  if (!PopGPUInfoCache(&gpu_info_)) {
-    CollectBasicGraphicsInfo(command_line, &gpu_info_);
-  }
+  CollectBasicGraphicsInfo(command_line, &gpu_info_);
 
   IntelGpuSeriesType intel_gpu_series_type = GetIntelGpuSeriesType(
       gpu_info_.active_gpu().vendor_id, gpu_info_.active_gpu().device_id);
@@ -302,13 +300,10 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   if (!CanAccessDeviceFile(gpu_info_))
     return false;
 
-  // GpuFeatureInfo is cached for the GPU service thread with WebView.
-  if (!PopGpuFeatureInfoCache(&gpu_feature_info_)) {
-    // Compute blocklist and driver bug workaround decisions based on basic GPU
-    // info.
-    gpu_feature_info_ = ComputeGpuFeatureInfo(gpu_info_, gpu_preferences_,
-                                              command_line, &needs_more_info);
-  }
+  // Compute blocklist and driver bug workaround decisions based on basic GPU
+  // info.
+  gpu_feature_info_ = ComputeGpuFeatureInfo(gpu_info_, gpu_preferences_,
+                                            command_line, &needs_more_info);
 
 #if defined(USE_EGL) && (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC))
   SetupGLDisplayManagerEGL(gpu_info_, gpu_feature_info_);
@@ -316,51 +311,15 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CASTOS)
 
   gpu_info_.in_process_gpu = false;
-  gl_use_swiftshader_ = false;
 
-  // GL bindings may have already been initialized, specifically on MacOSX.
-  bool gl_initialized = gl::GetGLImplementation() != gl::kGLImplementationNone;
-  if (!gl_initialized) {
-    // If GL has already been initialized, then it's too late to select GPU.
-    if (SwitchableGPUsSupported(gpu_info_, *command_line)) {
-      InitializeSwitchableGPUs(
-          gpu_feature_info_.enabled_gpu_driver_bug_workarounds);
-    }
-  } else {
-    // If SwiftShader/SwANGLE is in use, set the flag gl_use_swiftshader_ so GPU
-    // initialization will take a software rendering path. Do not do this if
-    // SwiftShader/SwANGLE are explicitly requested via flags, because the flags
-    // are meant to specify running SwiftShader/SwANGLE on the hardware GPU
-    // path.
-    gl::GLImplementationParts impl = gl::GetGLImplementationParts();
-    bool fallback_to_software_gl = false;
-    absl::optional<gl::GLImplementationParts> requested_impl =
-        gl::GetRequestedGLImplementationFromCommandLine(
-            command_line, &fallback_to_software_gl);
-    if (gl::IsSoftwareGLImplementation(impl) &&
-        !(requested_impl && gl::IsSoftwareGLImplementation(*requested_impl))) {
-      gl_use_swiftshader_ = true;
-    }
+  DCHECK_EQ(gl::GetGLImplementation(), gl::kGLImplementationNone);
+  if (SwitchableGPUsSupported(gpu_info_, *command_line)) {
+    InitializeSwitchableGPUs(
+        gpu_feature_info_.enabled_gpu_driver_bug_workarounds);
   }
-
-  if (!gl_use_swiftshader_) {
-    gl_use_swiftshader_ = EnableSwiftShaderIfNeeded(
-        command_line, gpu_feature_info_,
-        gpu_preferences_.disable_software_rasterizer, needs_more_info);
-  }
-
-  if (gl_initialized && gl_use_swiftshader_ &&
-      !gl::IsSoftwareGLImplementation(gl::GetGLImplementationParts())) {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-    VLOG(1) << "Quit GPU process launch to fallback to SwiftShader cleanly "
-            << "on Linux";
-    return false;
-#else   // !(BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
-    SaveHardwareGpuInfoAndGpuFeatureInfo();
-    gl::init::ShutdownGL(nullptr, true);
-    gl_initialized = false;
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  }
+  gl_use_swiftshader_ = EnableSwiftShaderIfNeeded(
+      command_line, gpu_feature_info_,
+      gpu_preferences_.disable_software_rasterizer, needs_more_info);
 
   bool enable_watchdog = !gpu_preferences_.disable_gpu_watchdog &&
                          !command_line->HasSwitch(switches::kHeadless);
@@ -401,11 +360,9 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   // Start the GPU watchdog only after anything that is expected to be time
   // consuming has completed, otherwise the process is liable to be aborted.
   if (enable_watchdog && !delayed_watchdog_enable) {
-    watchdog_thread_ = GpuWatchdogThread::Create(
-        gpu_preferences_.watchdog_starts_backgrounded,
-        gl_use_swiftshader_ ||
-            gl::IsSoftwareGLImplementation(gl::GetGLImplementationParts()),
-        "GpuWatchdog");
+    watchdog_thread_ =
+        GpuWatchdogThread::Create(gpu_preferences_.watchdog_starts_backgrounded,
+                                  gl_use_swiftshader_, "GpuWatchdog");
     watchdog_init.SetGpuWatchdogPtr(watchdog_thread_.get());
   }
 
@@ -453,41 +410,37 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
 
   gl::GLDisplay* gl_display = nullptr;
 
-  if (!gl_initialized) {
-    // Pause watchdog. LoadLibrary in GLBindings may take long time.
-    if (watchdog_thread_) {
-      if (base::FeatureList::IsEnabled(
-              features::kEnableWatchdogReportOnlyModeOnGpuInit)) {
-        watchdog_thread_->EnableReportOnlyMode();
-      } else {
-        watchdog_thread_->PauseWatchdog();
-      }
+  // Pause watchdog. LoadLibrary in GLBindings may take long time.
+  if (watchdog_thread_) {
+    if (base::FeatureList::IsEnabled(
+            features::kEnableWatchdogReportOnlyModeOnGpuInit)) {
+      watchdog_thread_->EnableReportOnlyMode();
+    } else {
+      watchdog_thread_->PauseWatchdog();
     }
-    gl_initialized = gl::init::InitializeStaticGLBindingsOneOff();
-    if (!gl_initialized) {
-      VLOG(1) << "gl::init::InitializeStaticGLBindingsOneOff failed";
+  }
+  if (!gl::init::InitializeStaticGLBindingsOneOff()) {
+    VLOG(1) << "gl::init::InitializeStaticGLBindingsOneOff failed";
+    return false;
+  }
+#if BUILDFLAG(IS_WIN)
+  UMA_HISTOGRAM_BOOLEAN("GPU.AppHelpIsLoaded",
+                        static_cast<bool>(::GetModuleHandle(L"apphelp.dll")));
+#endif
+  if (gl::GetGLImplementation() != gl::kGLImplementationDisabled) {
+    gl_display = gl::init::InitializeGLNoExtensionsOneOff(
+        /*init_bindings*/ false, gl::GpuPreference::kDefault);
+    if (!gl_display) {
+      VLOG(1) << "gl::init::InitializeGLNoExtensionsOneOff failed";
       return false;
     }
-#if BUILDFLAG(IS_WIN)
-    UMA_HISTOGRAM_BOOLEAN("GPU.AppHelpIsLoaded",
-                          static_cast<bool>(::GetModuleHandle(L"apphelp.dll")));
-#endif
-    if (gl::GetGLImplementation() != gl::kGLImplementationDisabled) {
-      gl_display = gl::init::InitializeGLNoExtensionsOneOff(
-          /*init_bindings*/ false, gl::GpuPreference::kDefault);
-      gl_initialized = !!gl_display;
-      if (!gl_initialized) {
-        VLOG(1) << "gl::init::InitializeGLNoExtensionsOneOff failed";
-        return false;
-      }
-    }
-    if (watchdog_thread_) {
-      if (base::FeatureList::IsEnabled(
-              features::kEnableWatchdogReportOnlyModeOnGpuInit)) {
-        watchdog_thread_->DisableReportOnlyMode();
-      } else {
-        watchdog_thread_->ResumeWatchdog();
-      }
+  }
+  if (watchdog_thread_) {
+    if (base::FeatureList::IsEnabled(
+            features::kEnableWatchdogReportOnlyModeOnGpuInit)) {
+      watchdog_thread_->DisableReportOnlyMode();
+    } else {
+      watchdog_thread_->ResumeWatchdog();
     }
   }
 
@@ -886,18 +839,14 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
   bool needs_more_info = true;
 #if !BUILDFLAG(IS_CASTOS) && !BUILDFLAG(IS_CAST_ANDROID)
   needs_more_info = false;
-  if (!PopGPUInfoCache(&gpu_info_)) {
-    CollectBasicGraphicsInfo(command_line, &gpu_info_);
-  }
+  CollectBasicGraphicsInfo(command_line, &gpu_info_);
 #if defined(SUBPIXEL_FONT_RENDERING_DISABLED)
   gpu_info_.subpixel_font_rendering = false;
 #else
   gpu_info_.subpixel_font_rendering = true;
 #endif
-  if (!PopGpuFeatureInfoCache(&gpu_feature_info_)) {
-    gpu_feature_info_ = ComputeGpuFeatureInfo(gpu_info_, gpu_preferences_,
-                                              command_line, &needs_more_info);
-  }
+  gpu_feature_info_ = ComputeGpuFeatureInfo(gpu_info_, gpu_preferences_,
+                                            command_line, &needs_more_info);
   if (SwitchableGPUsSupported(gpu_info_, *command_line)) {
     InitializeSwitchableGPUs(
         gpu_feature_info_.enabled_gpu_driver_bug_workarounds);
