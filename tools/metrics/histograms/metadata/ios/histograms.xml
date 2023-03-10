@@ -99,7 +99,7 @@ chromium-metrics-reviews@google.com.
   <owner>ginnyhuang@chromium.org</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
-    The action taken by the user after the Bring Android Tabs Tabs List view is
+    The action taken by the user after the Bring Android Tabs prompt is
     presented.
   </summary>
 </histogram>
@@ -115,7 +115,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.BringAndroidTabs.DeselectedTabs" units="count"
+<histogram name="IOS.BringAndroidTabs.DeselectedTabCount" units="count"
     expires_after="2024-02-28">
   <owner>hiramahmood@google.com</owner>
   <owner>ginnyhuang@chromium.org</owner>
@@ -137,14 +137,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.BringAndroidTabs.TabListTabCount" units="count"
+<histogram name="IOS.BringAndroidTabs.TabCount" units="count"
     expires_after="2024-02-28">
   <owner>hiramahmood@google.com</owner>
   <owner>ginnyhuang@chromium.org</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
-    The number of tabs shown in the Bring Android Tabs Tab List prompt. Recorded
-    when the prompt is displayed.
+    The number of tabs imported from Android for Android Switchers. Recorded
+    when the Bring Android Tabs prompt is displayed.
   </summary>
 </histogram>
 
