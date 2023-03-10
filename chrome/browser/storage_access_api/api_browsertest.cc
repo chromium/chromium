@@ -740,15 +740,18 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIBrowserTest,
   SetBlockThirdPartyCookies(true);
 
   NavigateToPageWithFrame(kHostA);
-  NavigateFrameTo(kHostB, "/empty.html");
+  NavigateFrameTo(EchoCookiesURL(kHostB));
+
+  ASSERT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), NoCookiesWithContent());
 
   EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
 
-  EXPECT_TRUE(content::NavigateToURLFromRenderer(
-      GetFrame(), https_server().GetURL(kHostB, "/empty.html")));
+  EXPECT_TRUE(
+      content::NavigateToURLFromRenderer(GetFrame(), EchoCookiesURL(kHostB)));
 
   EXPECT_TRUE(storage::test::HasStorageAccessForFrame(GetFrame()));
-  EXPECT_EQ(ReadCookies(GetFrame(), kHostB), CookieBundle("cross-site=b.test"));
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB),
+            CookieBundleWithContent("cross-site=b.test"));
 }
 
 // Validate that if an iframe is navigated (by some other frame) to a
@@ -759,14 +762,19 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIBrowserTest,
   SetBlockThirdPartyCookies(true);
 
   NavigateToPageWithFrame(kHostA);
-  NavigateFrameTo(kHostB, "/empty.html");
+  NavigateFrameTo(EchoCookiesURL(kHostB));
+
+  ASSERT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), NoCookiesWithContent());
 
   EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
 
-  NavigateFrameTo(kHostB, "/empty.html");
+  NavigateFrameTo(EchoCookiesURL(kHostB));
 
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
-  EXPECT_EQ(ReadCookies(GetFrame(), kHostB), NoCookies());
+  // TODO(https://crbug.com/1423092): the navigation for this frame ought to
+  // have included cookies, since the original frame is same-site with the
+  // destination and had storage access.
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), NoCookiesWithContent());
 }
 
 // Validate that if an iframe navigates itself to a cross-origin endpoint, and
@@ -777,15 +785,20 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIBrowserTest,
   SetBlockThirdPartyCookies(true);
 
   NavigateToPageWithFrame(kHostA);
-  NavigateFrameTo(kHostB, "/empty.html");
+  NavigateFrameTo(EchoCookiesURL(kHostB));
+
+  ASSERT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), NoCookiesWithContent());
 
   EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
 
   EXPECT_TRUE(content::NavigateToURLFromRenderer(
-      GetFrame(), https_server().GetURL(kHostBSubdomain, "/empty.html")));
+      GetFrame(), EchoCookiesURL(kHostBSubdomain)));
 
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
-  EXPECT_EQ(ReadCookies(GetFrame(), kHostB), NoCookies());
+  // TODO(https://crbug.com/1423092): the navigation for this frame ought to
+  // have included cookies, since the original frame is same-site with the
+  // destination and had storage access.
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), NoCookiesWithContent());
 }
 
 // Validate that if an iframe navigates itself to a cross-site endpoint, and
@@ -796,15 +809,17 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIBrowserTest,
   SetBlockThirdPartyCookies(true);
 
   NavigateToPageWithFrame(kHostA);
-  NavigateFrameTo(kHostB, "/empty.html");
+  NavigateFrameTo(EchoCookiesURL(kHostB));
+
+  ASSERT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), NoCookiesWithContent());
 
   EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
 
-  EXPECT_TRUE(content::NavigateToURLFromRenderer(
-      GetFrame(), https_server().GetURL(kHostC, "/empty.html")));
+  EXPECT_TRUE(
+      content::NavigateToURLFromRenderer(GetFrame(), EchoCookiesURL(kHostC)));
 
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
-  EXPECT_EQ(ReadCookies(GetFrame(), kHostC), NoCookies());
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostC), NoCookiesWithContent());
 }
 
 // Validate that if an iframe navigates itself to a same-origin endpoint, but
@@ -816,11 +831,13 @@ IN_PROC_BROWSER_TEST_P(
   SetBlockThirdPartyCookies(true);
 
   NavigateToPageWithFrame(kHostA);
-  NavigateFrameTo(kHostB, "/empty.html");
+  NavigateFrameTo(EchoCookiesURL(kHostB));
+
+  ASSERT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), NoCookiesWithContent());
 
   EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
 
-  GURL dest = https_server().GetURL(kHostB, "/empty.html");
+  GURL dest = EchoCookiesURL(kHostB);
   EXPECT_TRUE(content::NavigateToURLFromRenderer(
       GetFrame(),
       /*url=*/
@@ -828,7 +845,8 @@ IN_PROC_BROWSER_TEST_P(
       /*expected_commit_url=*/dest));
 
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
-  EXPECT_EQ(ReadCookies(GetFrame(), kHostBSubdomain), NoCookies());
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostBSubdomain),
+            NoCookiesWithContent());
 }
 
 // Validate that if an iframe navigates itself to a same-origin endpoint, and
@@ -841,11 +859,13 @@ IN_PROC_BROWSER_TEST_P(
   SetBlockThirdPartyCookies(true);
 
   NavigateToPageWithFrame(kHostA);
-  NavigateFrameTo(kHostB, "/empty.html");
+  NavigateFrameTo(EchoCookiesURL(kHostB));
+
+  ASSERT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), NoCookiesWithContent());
 
   EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
 
-  GURL dest = https_server().GetURL(kHostB, "/empty.html");
+  GURL dest = EchoCookiesURL(kHostB);
   EXPECT_TRUE(content::NavigateToURLFromRenderer(
       GetFrame(),
       /*url=*/
@@ -853,7 +873,8 @@ IN_PROC_BROWSER_TEST_P(
       /*expected_commit_url=*/dest));
 
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
-  EXPECT_EQ(ReadCookies(GetFrame(), kHostBSubdomain), NoCookies());
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostBSubdomain),
+            NoCookiesWithContent());
 }
 
 // Validate that in a A(B(A)) frame tree, the inner A iframe can obtain cookie
