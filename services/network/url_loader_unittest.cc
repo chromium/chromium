@@ -6990,9 +6990,9 @@ TEST_F(URLLoaderTest,
 
   EXPECT_EQ(net::OK, LoadRequest(request));
 
-  devtools_observer.WaitUntilPrivateNetworkRequest();
-  ASSERT_TRUE(devtools_observer.private_network_request_params());
-  auto& params = *devtools_observer.private_network_request_params();
+  devtools_observer.WaitUntilLocalNetworkRequest();
+  ASSERT_TRUE(devtools_observer.local_network_request_params());
+  auto& params = *devtools_observer.local_network_request_params();
   ASSERT_TRUE(params.client_security_state);
   auto& state = params.client_security_state;
   EXPECT_EQ(state->private_network_request_policy,
@@ -7028,9 +7028,9 @@ TEST_F(URLLoaderTest,
 
   EXPECT_EQ(net::ERR_FAILED, LoadRequest(request));
 
-  devtools_observer.WaitUntilPrivateNetworkRequest();
-  ASSERT_TRUE(devtools_observer.private_network_request_params());
-  auto& params = *devtools_observer.private_network_request_params();
+  devtools_observer.WaitUntilLocalNetworkRequest();
+  ASSERT_TRUE(devtools_observer.local_network_request_params());
+  auto& params = *devtools_observer.local_network_request_params();
   ASSERT_TRUE(params.client_security_state);
   auto& state = params.client_security_state;
   EXPECT_EQ(state->private_network_request_policy,
@@ -7068,7 +7068,7 @@ TEST_F(URLLoaderTest,
 
   // Check that OnPrivateNetworkRequest wasn't triggered.
   devtools_observer.WaitUntilRawResponse(0);
-  EXPECT_FALSE(devtools_observer.private_network_request_params());
+  EXPECT_FALSE(devtools_observer.local_network_request_params());
 }
 
 // An empty ACCEPT_CH frame should skip the client call.

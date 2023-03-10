@@ -94,7 +94,7 @@ void NetworkServiceDevToolsObserver::OnTrustTokenOperationDone(
                    devtools_request_id, *result);
 }
 
-void NetworkServiceDevToolsObserver::OnPrivateNetworkRequest(
+void NetworkServiceDevToolsObserver::OnLocalNetworkRequest(
     const absl::optional<std::string>& devtools_request_id,
     const GURL& url,
     bool is_warning,

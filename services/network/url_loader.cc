@@ -1202,7 +1202,7 @@ LocalNetworkAccessCheckResult URLLoader::LocalNetworkAccessCheck(
   DCHECK(security_state);
 
   if (devtools_observer_) {
-    devtools_observer_->OnPrivateNetworkRequest(
+    devtools_observer_->OnLocalNetworkRequest(
         devtools_request_id(), url_request_->url(), is_warning,
         response_address_space, security_state->Clone());
   }
