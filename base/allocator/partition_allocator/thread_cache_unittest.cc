@@ -92,8 +92,9 @@ class PartitionAllocThreadCacheTest
     ThreadCache::SetLargestCachedSize(ThreadCache::kDefaultSizeThreshold);
 
     // Cleanup the global state so next test can recreate ThreadCache.
-    if (ThreadCache::IsTombstone(ThreadCache::Get()))
+    if (ThreadCache::IsTombstone(ThreadCache::Get())) {
       ThreadCache::RemoveTombstoneForTesting();
+    }
   }
 
  protected:
@@ -176,8 +177,9 @@ class PartitionAllocThreadCacheTest
            allocation_size++) {
         FillThreadCacheAndReturnIndex(allocation_size, batch);
 
-        if (ThreadCache::Get()->CachedMemory() >= target_cached_memory)
+        if (ThreadCache::Get()->CachedMemory() >= target_cached_memory) {
           return;
+        }
       }
     }
 
@@ -481,8 +483,9 @@ TEST_P(PartitionAllocThreadCacheTest, ThreadCacheReclaimedWhenThreadExits) {
   EXPECT_EQ(UntagPtr(this_thread_ptr), UntagPtr(other_thread_ptr));
   root()->Free(other_thread_ptr);
 
-  for (void* ptr : tmp)
+  for (void* ptr : tmp) {
     root()->Free(ptr);
+  }
 }
 
 namespace {
@@ -796,8 +799,9 @@ void FillThreadCacheWithMemory(ThreadSafePartitionRoot* root,
       FillThreadCacheAndReturnIndex(root, allocation_size, bucket_distribution,
                                     batch);
 
-      if (ThreadCache::Get()->CachedMemory() >= target_cached_memory)
+      if (ThreadCache::Get()->CachedMemory() >= target_cached_memory) {
         return;
+      }
     }
   }
 

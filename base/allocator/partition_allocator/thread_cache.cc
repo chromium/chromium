@@ -93,18 +93,22 @@ void ThreadCacheRegistry::RegisterThreadCache(ThreadCache* cache) {
   ThreadCache* previous_head = list_head_;
   list_head_ = cache;
   cache->next_ = previous_head;
-  if (previous_head)
+  if (previous_head) {
     previous_head->prev_ = cache;
+  }
 }
 
 void ThreadCacheRegistry::UnregisterThreadCache(ThreadCache* cache) {
   internal::ScopedGuard scoped_locker(GetLock());
-  if (cache->prev_)
+  if (cache->prev_) {
     cache->prev_->next_ = cache->next_;
-  if (cache->next_)
+  }
+  if (cache->next_) {
     cache->next_->prev_ = cache->prev_;
-  if (cache == list_head_)
+  }
+  if (cache == list_head_) {
     list_head_ = cache->next_;
+  }
 }
 
 void ThreadCacheRegistry::DumpStats(bool my_thread_only,
@@ -115,8 +119,9 @@ void ThreadCacheRegistry::DumpStats(bool my_thread_only,
   internal::ScopedGuard scoped_locker(GetLock());
   if (my_thread_only) {
     auto* tcache = ThreadCache::Get();
-    if (!ThreadCache::IsValid(tcache))
+    if (!ThreadCache::IsValid(tcache)) {
       return;
+    }
     tcache->AccumulateStats(stats);
   } else {
     ThreadCache* tcache = list_head_;
@@ -146,8 +151,9 @@ void ThreadCacheRegistry::PurgeAll() {
   // the main thread for the partition lock, since it is acquired/released once
   // per bucket. By purging the main thread first, we avoid these interferences
   // for this thread at least.
-  if (ThreadCache::IsValid(current_thread_tcache))
+  if (ThreadCache::IsValid(current_thread_tcache)) {
     current_thread_tcache->Purge();
+  }
 
   {
     internal::ScopedGuard scoped_locker(GetLock());
@@ -158,8 +164,9 @@ void ThreadCacheRegistry::PurgeAll() {
       // point".
       // Note that this will not work if the other thread is sleeping forever.
       // TODO(lizeb): Handle sleeping threads.
-      if (tcache != current_thread_tcache)
+      if (tcache != current_thread_tcache) {
         tcache->SetShouldPurge();
+      }
       tcache = tcache->next_;
     }
   }
@@ -217,8 +224,9 @@ void ThreadCacheRegistry::SetThreadCacheMultiplier(float multiplier) {
     // If this is called before *any* thread cache has serviced *any*
     // allocation, which can happen in tests, and in theory in non-test code as
     // well.
-    if (!tcache)
+    if (!tcache) {
       return;
+    }
 
     // Setting the global limit while locked, because we need |tcache->root_|.
     ThreadCache::SetGlobalLimits(tcache->root_, multiplier);
@@ -256,8 +264,9 @@ void ThreadCacheRegistry::RunPeriodicPurge() {
     // Can run when there is no thread cache, in which case there is nothing to
     // do, and the task should not be rescheduled. This would typically indicate
     // a case where the thread cache was never enabled, or got disabled.
-    if (!tcache)
+    if (!tcache) {
       return;
+    }
 
     while (tcache) {
       cached_memory_approx += tcache->cached_memory_;
@@ -316,8 +325,9 @@ void ThreadCache::EnsureThreadSpecificDataInitialized() {
   // adding a special-pupose lock.
   internal::ScopedGuard scoped_locker(
       ThreadCacheRegistry::Instance().GetLock());
-  if (g_thread_cache_key_created)
+  if (g_thread_cache_key_created) {
     return;
+  }
 
   bool ok = internal::PartitionTlsCreate(&internal::g_thread_cache_key, Delete);
   PA_CHECK(ok);
@@ -333,8 +343,9 @@ void ThreadCache::DeleteForTesting(ThreadCache* tcache) {
 void ThreadCache::SwapForTesting(PartitionRoot<>* root) {
   auto* old_tcache = ThreadCache::Get();
   g_thread_cache_root.store(nullptr, std::memory_order_relaxed);
-  if (old_tcache)
+  if (old_tcache) {
     ThreadCache::DeleteForTesting(old_tcache);
+  }
   if (root) {
     Init(root);
     Create(root);
@@ -421,8 +432,9 @@ void ThreadCache::SetGlobalLimits(PartitionRoot<>* root, float multiplier) {
 
 // static
 void ThreadCache::SetLargestCachedSize(size_t size) {
-  if (size > ThreadCache::kLargeSizeThreshold)
+  if (size > ThreadCache::kLargeSizeThreshold) {
     size = ThreadCache::kLargeSizeThreshold;
+  }
   largest_active_bucket_index_ =
       PartitionRoot<internal::ThreadSafe>::SizeToBucketIndex(
           size,
@@ -512,8 +524,9 @@ ThreadCache::~ThreadCache() {
 void ThreadCache::Delete(void* tcache_ptr) {
   auto* tcache = static_cast<ThreadCache*>(tcache_ptr);
 
-  if (!IsValid(tcache))
+  if (!IsValid(tcache)) {
     return;
+  }
 
 #if PA_CONFIG(THREAD_CACHE_FAST_TLS)
   internal::g_thread_cache = nullptr;
@@ -617,8 +630,9 @@ void ThreadCache::FillBucket(size_t bucket_index) {
     // some objects, then the allocation will be handled normally. Otherwise,
     // this goes to the central allocator, which will service the allocation,
     // return nullptr or crash.
-    if (!slot_start)
+    if (!slot_start) {
       break;
+    }
 
     allocated_slots++;
     PutInBucket(bucket, slot_start);
@@ -634,8 +648,9 @@ void ThreadCache::ClearBucket(Bucket& bucket, size_t limit) {
 template <bool crash_on_corruption>
 void ThreadCache::ClearBucketHelper(Bucket& bucket, size_t limit) {
   // Avoids acquiring the lock needlessly.
-  if (!bucket.count || bucket.count <= limit)
+  if (!bucket.count || bucket.count <= limit) {
     return;
+  }
 
   // This serves two purposes: error checking and avoiding stalls when grabbing
   // the lock:
@@ -717,8 +732,9 @@ void ThreadCache::ResetForTesting() {
 
 size_t ThreadCache::CachedMemory() const {
   size_t total = 0;
-  for (const Bucket& bucket : buckets_)
+  for (const Bucket& bucket : buckets_) {
     total += bucket.count * static_cast<size_t>(bucket.slot_size);
+  }
 
   return total;
 }
@@ -738,8 +754,9 @@ void ThreadCache::AccumulateStats(ThreadCacheStats* stats) const {
   stats->batch_fill_count += stats_.batch_fill_count;
 
 #if PA_CONFIG(THREAD_CACHE_ALLOC_STATS)
-  for (size_t i = 0; i < internal::kNumBuckets + 1; i++)
+  for (size_t i = 0; i < internal::kNumBuckets + 1; i++) {
     stats->allocs_per_bucket_[i] += stats_.allocs_per_bucket_[i];
+  }
 #endif  // PA_CONFIG(THREAD_CACHE_ALLOC_STATS)
 
   // cached_memory_ is not necessarily equal to |CachedMemory()| here, since
@@ -767,8 +784,9 @@ void ThreadCache::TryPurge() {
 // static
 void ThreadCache::PurgeCurrentThread() {
   auto* tcache = Get();
-  if (IsValid(tcache))
+  if (IsValid(tcache)) {
     tcache->Purge();
+  }
 }
 
 void ThreadCache::PurgeInternal() {
@@ -789,8 +807,9 @@ void ThreadCache::PurgeInternalHelper() {
   // |largest_active_bucket_index_| can be lowered at runtime, there may be
   // memory already cached in the inactive buckets. They should still be
   // purged.
-  for (auto& bucket : buckets_)
+  for (auto& bucket : buckets_) {
     ClearBucketHelper<crash_on_corruption>(bucket, 0);
+  }
 }
 
 }  // namespace partition_alloc

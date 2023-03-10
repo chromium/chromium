@@ -194,8 +194,10 @@ class ReentrancyGuard {
 
 }  // namespace internal
 
-#define PA_REENTRANCY_GUARD(x) \
-  internal::ReentrancyGuard guard { x }
+#define PA_REENTRANCY_GUARD(x)      \
+  internal::ReentrancyGuard guard { \
+    x                               \
+  }
 
 #else  // BUILDFLAG(PA_DCHECK_IS_ON)
 
@@ -493,8 +495,9 @@ PA_ALWAYS_INLINE bool ThreadCache::MaybePutInCache(uintptr_t slot_start,
     ClearBucket(bucket, limit / 2);
   }
 
-  if (PA_UNLIKELY(should_purge_.load(std::memory_order_relaxed)))
+  if (PA_UNLIKELY(should_purge_.load(std::memory_order_relaxed))) {
     PurgeInternal();
+  }
 
   *slot_size = bucket.slot_size;
   return true;
@@ -527,8 +530,9 @@ PA_ALWAYS_INLINE uintptr_t ThreadCache::GetFromCache(size_t bucket_index,
 
     // Very unlikely, means that the central allocator is out of memory. Let it
     // deal with it (may return 0, may crash).
-    if (PA_UNLIKELY(!bucket.freelist_head))
+    if (PA_UNLIKELY(!bucket.freelist_head)) {
       return 0;
+    }
   }
 
   PA_DCHECK(bucket.count != 0);
