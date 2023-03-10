@@ -22,7 +22,6 @@ include_rules = [
   "+services/device/public",
   "+services/device/wake_lock/power_save_blocker",
   "+services/network",
-  "+third_party/google_toolbox_for_mac",
   "+third_party/grpc",
   "+third_party/jsoncpp",
   "+third_party/skia",
