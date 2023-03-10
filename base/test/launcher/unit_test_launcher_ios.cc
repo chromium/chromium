@@ -11,6 +11,7 @@
 #include "base/mac/foundation_util.h"
 #include "base/test/allow_check_is_test_for_testing.h"
 #include "base/test/gtest_util.h"
+#include "base/test/test_support_ios.h"
 #include "base/test/test_switches.h"
 
 namespace {
@@ -68,7 +69,8 @@ int LaunchUnitTestsSerially(int argc,
     return 0;
   }
 
-  return std::move(run_test_suite).Run();
+  InitIOSRunHook(std::move(run_test_suite));
+  return RunTestsFromIOSApp();
 }
 
 }  // namespace base

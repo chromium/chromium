@@ -331,7 +331,7 @@ void TestSuite::InitializeFromCommandLine(int argc, char** argv) {
   testing::InitGoogleMock(&argc, argv);
 
 #if BUILDFLAG(IS_IOS)
-  InitIOSRunHook(this, argc, argv);
+  InitIOSArgs(argc, argv);
 #endif
 }
 
@@ -420,10 +420,6 @@ void TestSuite::AddTestLauncherResultPrinter() {
 // Don't add additional code to this method.  Instead add it to
 // Initialize().  See bug 6436.
 int TestSuite::Run() {
-#if BUILDFLAG(IS_IOS)
-  RunTestsFromIOSApp();
-#endif
-
 #if BUILDFLAG(IS_APPLE)
   mac::ScopedNSAutoreleasePool scoped_pool;
 #endif
