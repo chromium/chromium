@@ -1,0 +1,61 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This file is a partial translation of
+# //third_party/centipede/src/BUILD
+# into BUILD.gn format, so we can get started
+# playing with centipede. We will need to convert the
+# whole file in due course.
+
+import("//build/config/sanitizers/sanitizers.gni")
+
+source_set("centipede_runner_no_main") {
+  sources = [
+    "src/byte_array_mutator.cc",
+    "src/byte_array_mutator.h",
+    "src/defs.h",
+    "src/execution_request.cc",
+    "src/execution_request.h",
+    "src/execution_result.cc",
+    "src/execution_result.h",
+    "src/feature.cc",
+    "src/feature.h",
+    "src/knobs.cc",
+    "src/knobs.h",
+    "src/reverse_pc_table.h",
+    "src/runner.cc",
+    "src/runner.h",
+    "src/runner_cmp_trace.h",
+    "src/runner_dl_info.cc",
+    "src/runner_dl_info.h",
+    "src/runner_fork_server.cc",
+    "src/runner_interceptors.cc",
+    "src/runner_interface.h",
+    "src/runner_sancov.cc",
+    "src/runner_utils.cc",
+    "src/runner_utils.h",
+    "src/shared_memory_blob_sequence.cc",
+    "src/shared_memory_blob_sequence.h",
+  ]
+
+  deps = [ "//third_party/abseil-cpp:absl" ]
+  configs += [ ":centipede_internal_config" ]
+  configs -= fuzzing_engine_remove_configs
+  configs += fuzzing_engine_add_configs
+}
+
+config("centipede_internal_config") {
+  cflags = [
+    "-Wno-sign-compare",  # https://github.com/google/centipede/issues/487
+  ]
+}
+
+source_set("centipede_runner_main") {
+  deps = [ ":centipede_runner_no_main" ]
+  sources = [ "src/runner_main.cc" ]
+}
+
+source_set("centipede_weak_sancov_stubs") {
+  sources = [ "src/weak_sancov_stubs.cc" ]
+}

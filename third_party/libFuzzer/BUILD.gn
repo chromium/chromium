@@ -16,26 +16,6 @@ config("warnings") {
   }
 }
 
-# Engine should be compiled without coverage (infinite loop in trace_cmp).
-fuzzing_engine_remove_configs = [
-  "//build/config/coverage:default_coverage",
-  "//build/config/sanitizers:default_sanitizer_flags",
-]
-
-# Add any sanitizer flags back. In MSAN builds, instrumenting libfuzzer with
-# MSAN is necessary since all parts of the binary need to be instrumented for it
-# to work. ASAN builds are more subtle: libfuzzer depends on features from the
-# C++ STL. If it were not instrumented, templates would be insantiated without
-# ASAN from libfuzzer and with ASAN in other TUs. The linker might merge
-# instrumented template instantiations with non-instrumented ones (which could
-# have a different ABI) in the final binary, which is problematic for TUs
-# expecting one particular ABI (https://crbug.com/915422). The other sanitizers
-# are added back for the same reason.
-fuzzing_engine_add_configs = [
-  "//build/config/sanitizers:default_sanitizer_flags_but_coverage",
-  ":warnings",
-]
-
 source_set("libfuzzer") {
   sources = [
     "src/FuzzerCrossOver.cpp",
@@ -68,6 +48,7 @@ source_set("libfuzzer") {
 
   configs -= fuzzing_engine_remove_configs
   configs += fuzzing_engine_add_configs
+  configs += [ ":warnings" ]
 
   deps = []
   if (is_fuchsia) {
@@ -81,5 +62,6 @@ if (use_afl) {
 
     configs -= fuzzing_engine_remove_configs
     configs += fuzzing_engine_add_configs
+    configs += [ ":warnings " ]
   }
 }

@@ -527,7 +527,9 @@ def _IsFuzzerTarget(target):
   build_args = _GetBuildArgs()
   use_libfuzzer = ('use_libfuzzer' in build_args and
                    build_args['use_libfuzzer'] == 'true')
-  return use_libfuzzer and target.endswith('_fuzzer')
+  use_centipede = ('use_centipede' in build_args
+                   and build_args['use_centipede'] == 'true')
+  return (use_libfuzzer or use_centipede) and target.endswith('_fuzzer')
 
 
 def _ExecuteIOSCommand(command, output_file_path):

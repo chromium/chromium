@@ -6,7 +6,7 @@
 # See http://www.chromium.org/developers/testing/libfuzzer
 #
 # To enable libfuzzer, 'use_libfuzzer' GN option should be set to true.
-# Or to enable afl, 'use_afl' GN option should be set to true.
+# Or equivalent 'use_afl' or 'use_centipede' options for those engines.
 
 import("//build/config/features.gni")
 import("//build/config/sanitizers/sanitizers.gni")
@@ -27,6 +27,8 @@ source_set("libfuzzer_main") {
     }
   } else if (use_afl) {
     deps += [ "//third_party/libFuzzer:afl_driver" ]
+  } else if (use_centipede) {
+    deps += [ "//third_party/centipede:centipede_runner_main" ]
   } else {
     sources += [ "unittest_main.cc" ]
   }

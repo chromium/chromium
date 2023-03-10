@@ -77,7 +77,7 @@ fuzzable_proto_library("lpm_test_fuzzer_proto") {
 # Avoid CQ complaints on platforms we don't care about (ie: iOS).
 # Also prevent people from using this to include protobuf_full into a production
 # build of Chrome.
-if (use_libfuzzer) {
+if (use_fuzzing_engine_with_lpm) {
   # Component that can provide protobuf_full to non-testonly targets
   static_library("protobuf_full") {
     public_deps = [ "//third_party/protobuf:protobuf_full" ]
