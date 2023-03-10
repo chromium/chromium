@@ -32,52 +32,46 @@ describe('EventEmitter', () => {
   });
 
   describe('on', () => {
-    const onTests = (methodName: 'on'): void => {
-      it(`${methodName}: adds an event listener that is fired when the event is emitted`, () => {
-        const listener = sinon.spy();
-        emitter[methodName]('foo', listener);
-        emitter.emit('foo', undefined);
-        expect(listener.callCount).to.equal(1);
-      });
+    it(`adds an event listener that is fired when the event is emitted`, () => {
+      const listener = sinon.spy();
+      emitter.on('foo', listener);
+      emitter.emit('foo', undefined);
+      expect(listener.callCount).to.equal(1);
+    });
 
-      it(`${methodName} sends the event data to the handler`, () => {
-        const listener = sinon.spy();
-        const data = 'data';
-        emitter[methodName]('bar', listener);
-        emitter.emit('bar', data);
-        expect(listener.callCount).to.equal(1);
-        expect(listener.firstCall.args[0]!).to.equal(data);
-      });
+    it(`sends the event data to the handler`, () => {
+      const listener = sinon.spy();
+      const data = 'data';
+      emitter.on('bar', listener);
+      emitter.emit('bar', data);
+      expect(listener.callCount).to.equal(1);
+      expect(listener.firstCall.args[0]).to.equal(data);
+    });
 
-      it(`${methodName}: supports chaining`, () => {
-        const listener = sinon.spy();
-        const returnValue = emitter[methodName]('foo', listener);
-        expect(returnValue).to.equal(emitter);
-      });
-    };
-    onTests('on');
+    it(`supports chaining`, () => {
+      const listener = sinon.spy();
+      const returnValue = emitter.on('foo', listener);
+      expect(returnValue).to.equal(emitter);
+    });
   });
 
   describe('off', () => {
-    const offTests = (methodName: 'off'): void => {
-      it(`${methodName}: removes the listener so it is no longer called`, () => {
-        const listener = sinon.spy();
-        emitter.on('foo', listener);
-        emitter.emit('foo', undefined);
-        expect(listener.callCount).to.equal(1);
-        emitter.off('foo', listener);
-        emitter.emit('foo', undefined);
-        expect(listener.callCount).to.equal(1);
-      });
+    it(`removes the listener so it is no longer called`, () => {
+      const listener = sinon.spy();
+      emitter.on('foo', listener);
+      emitter.emit('foo', undefined);
+      expect(listener.callCount).to.equal(1);
+      emitter.off('foo', listener);
+      emitter.emit('foo', undefined);
+      expect(listener.callCount).to.equal(1);
+    });
 
-      it(`${methodName}: supports chaining`, () => {
-        const listener = sinon.spy();
-        emitter.on('foo', listener);
-        const returnValue = emitter.off('foo', listener);
-        expect(returnValue).to.equal(emitter);
-      });
-    };
-    offTests('off');
+    it(`supports chaining`, () => {
+      const listener = sinon.spy();
+      emitter.on('foo', listener);
+      const returnValue = emitter.off('foo', listener);
+      expect(returnValue).to.equal(emitter);
+    });
   });
 
   describe('once', () => {
@@ -118,7 +112,7 @@ describe('EventEmitter', () => {
 
       emitter.emit('foo', data);
       expect(listener.callCount).to.equal(1);
-      expect(listener.firstCall.args[0]!).to.equal(data);
+      expect(listener.firstCall.args[0]).to.equal(data);
     });
   });
 });

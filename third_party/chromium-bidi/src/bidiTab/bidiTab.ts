@@ -74,16 +74,16 @@ const waitSelfTargetIdPromise = waitSelfTargetId();
 })();
 
 function createCdpConnection() {
-  // A CdpTransport implementation that uses the window.cdp bindings
-  // injected by Target.exposeDevToolsProtocol.
+  /**
+   * A CdpTransport implementation that uses the window.cdp bindings
+   * injected by Target.exposeDevToolsProtocol.
+   */
   class WindowCdpTransport implements ITransport {
     #onMessage: ((message: string) => void) | null = null;
 
     constructor() {
       window.cdp.onmessage = (message: string) => {
-        if (this.#onMessage) {
-          this.#onMessage.call(null, message);
-        }
+        this.#onMessage?.call(null, message);
       };
     }
 
@@ -116,9 +116,9 @@ async function createBidiServer(selfTargetId: string) {
     constructor() {
       window.onBidiMessage = (messageStr: string) => {
         log(LogType.bidi, 'received ◂', messageStr);
-        let messageObj;
+        let messageObject: Message.RawCommandRequest;
         try {
-          messageObj = WindowBidiTransport.#parseBidiMessage(messageStr);
+          messageObject = WindowBidiTransport.#parseBidiMessage(messageStr);
         } catch (e: any) {
           // Transport-level error does not provide channel.
           this.#respondWithError(
@@ -129,9 +129,7 @@ async function createBidiServer(selfTargetId: string) {
           );
           return;
         }
-        if (this.#onMessage) {
-          this.#onMessage.call(null, messageObj);
-        }
+        this.#onMessage?.call(null, messageObject);
       };
     }
 
@@ -212,20 +210,20 @@ async function createBidiServer(selfTargetId: string) {
     }
 
     static #parseBidiMessage(messageStr: string): Message.RawCommandRequest {
-      let messageObj: any;
+      let messageObject: Message.RawCommandRequest;
       try {
-        messageObj = JSON.parse(messageStr);
+        messageObject = JSON.parse(messageStr);
       } catch {
         throw new Error('Cannot parse data as JSON');
       }
 
-      const parsedType = WindowBidiTransport.#getJsonType(messageObj);
+      const parsedType = WindowBidiTransport.#getJsonType(messageObject);
       if (parsedType !== 'object') {
         throw new Error(`Expected JSON object but got ${parsedType}`);
       }
 
-      // Extract amd validate id, method and params.
-      const {id, method, params} = messageObj;
+      // Extract and validate id, method and params.
+      const {id, method, params} = messageObject;
 
       const idType = WindowBidiTransport.#getJsonType(id);
       if (idType !== 'number' || !Number.isInteger(id) || id < 0) {
@@ -244,7 +242,7 @@ async function createBidiServer(selfTargetId: string) {
         throw new Error(`Expected object params but got ${paramsType}`);
       }
 
-      let channel = messageObj.channel;
+      let channel = messageObject.channel;
       if (channel !== undefined) {
         const channelType = WindowBidiTransport.#getJsonType(channel);
         if (channelType !== 'string') {
@@ -283,7 +281,7 @@ class BidiParserImpl implements BidiParser {
     return Parser.Script.parseDisownParams(params);
   }
   parseSendCommandParams(params: object): CDP.SendCommandParams {
-    return Parser.CDP.parseSendCommandParams(params);
+    return Parser.CDP.parseSendCommandParams(params) as CDP.SendCommandParams;
   }
   parseGetSessionParams(params: object): CDP.GetSessionParams {
     return Parser.CDP.parseGetSessionParams(params);

@@ -16,6 +16,7 @@
  */
 
 import * as chai from 'chai';
+import {expect} from 'chai';
 import * as sinon from 'sinon';
 import {Protocol} from 'devtools-protocol';
 import chaiAsPromised from 'chai-as-promised';
@@ -28,9 +29,8 @@ chai.use(chaiAsPromised);
 const TEST_TARGET_ID = 'TargetA';
 const ANOTHER_TARGET_ID = 'TargetB';
 
-describe('CdpClient tests.', () => {
-  it(`given CdpClient, when some command is called, then cdpBindings should be
-      called with proper values`, () => {
+describe('CdpClient', () => {
+  it(`when command is called cdpBindings should have proper values`, () => {
     const expectedMessageStr = JSON.stringify({
       id: 0,
       method: 'Target.activateTarget',
@@ -51,8 +51,7 @@ describe('CdpClient tests.', () => {
     );
   });
 
-  it(`given some command is called, when CDP command is done, then
-        'sendMessage' promise is resolved`, async () => {
+  it(`when command is called and it's done, sendMessage promise is resolved`, async () => {
     const mockCdpServer = new StubTransport();
     const cdpConnection = new CdpConnection(mockCdpServer);
 
@@ -70,11 +69,10 @@ describe('CdpClient tests.', () => {
     await mockCdpServer.emulateIncomingMessage({id: 0, result: {}});
 
     // Assert 'cdpClient' resolved message promise.
-    chai.assert.eventually.deepEqual(commandPromise, {});
+    expect(commandPromise).to.eventually.equal({});
   });
 
-  it(`given some command is called 2 times, when CDP commands are done, then
-        each command promise is resolved with proper results`, async () => {
+  it(`when some command is called 2 times and it's done each command promise is resolved with proper results`, async () => {
     const mockCdpServer = new StubTransport();
     const cdpConnection = new CdpConnection(mockCdpServer);
     const cdpClient = cdpConnection.browserClient();
@@ -109,8 +107,8 @@ describe('CdpClient tests.', () => {
     // Assert first message promise is resolved.
     const actualResult1 = await commandPromise1;
 
-    chai.assert.deepEqual(actualResult1, expectedResult1);
-    chai.assert.deepEqual(actualResult2, expectedResult2);
+    expect(actualResult1).to.deep.equal(expectedResult1);
+    expect(actualResult2).to.deep.equal(expectedResult2);
   });
 
   it('gets event callbacks when events are received from CDP', async () => {
@@ -158,7 +156,7 @@ describe('CdpClient tests.', () => {
   });
 
   describe('sendCommand()', () => {
-    it('sends a raw CDP messages and returns a promise that will be resolved with the result', async () => {
+    it('sends raw CDP messages and returns a promise that will be resolved with the result', async () => {
       const mockCdpServer = new StubTransport();
       const cdpConnection = new CdpConnection(mockCdpServer);
       const cdpClient = cdpConnection.browserClient();
@@ -178,12 +176,12 @@ describe('CdpClient tests.', () => {
       });
 
       // Assert sendCommand resolved message promise.
-      chai.assert.eventually.deepEqual(commandPromise, {
+      expect(commandPromise).to.eventually.equal({
         targetId: TEST_TARGET_ID,
       });
     });
 
-    it('sends a raw CDP messages and returns a promise that will reject on error', async () => {
+    it('sends raw CDP messages and returns a promise that will reject on error', async () => {
       const mockCdpServer = new StubTransport();
       const cdpConnection = new CdpConnection(mockCdpServer);
       const cdpClient = cdpConnection.browserClient();
@@ -208,7 +206,9 @@ describe('CdpClient tests.', () => {
       });
 
       // Assert sendCommand rejects with error.
-      chai.assert.isRejected(commandPromise, expectedError);
+      await expect(commandPromise).to.be.eventually.rejectedWith(
+        expectedError as any
+      );
     });
   });
 });

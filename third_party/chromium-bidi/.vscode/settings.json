@@ -1,11 +1,14 @@
 {
-  "python.formatting.provider": "yapf",
-  "python.testing.nosetestsEnabled": false,
-  "python.testing.pytestArgs": ["tests"],
-  "python.testing.pytestEnabled": true,
-  "python.testing.unittestEnabled": false,
-  "search.exclude": {
-    "wpt/": true
+  "[python]": {
+    "editor.formatOnSave": true,
+    "editor.formatOnType": true
   },
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "python.formatting.provider": "yapf",
+  "python.testing.pytestEnabled": true,
+  "python.testing.pytestArgs": ["tests"],
+  "python.testing.unittestEnabled": false,
   "typescript.tsdk": "node_modules/typescript/lib"
 }

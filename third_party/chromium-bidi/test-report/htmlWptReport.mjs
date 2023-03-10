@@ -88,9 +88,9 @@ function generateTestReport(test) {
   if (test.status !== 'OK' && test.subtests.length === 0) {
     stat.all++;
   } else {
-    for (const sub of test.subtests) {
+    for (const subtest of test.subtests) {
       stat.all++;
-      if (sub.status === 'PASS') {
+      if (subtest.status === 'PASS') {
         stat.pass++;
       }
     }

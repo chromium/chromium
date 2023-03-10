@@ -7,6 +7,8 @@ chromium-bidi.iml
 lib
 logs/
 node_modules/
+out/
 wptreport*.json
 .ackrc
 .envrc
+*MANIFEST.json

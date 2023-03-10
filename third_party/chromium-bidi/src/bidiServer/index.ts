@@ -85,7 +85,7 @@ function parseArguments() {
  * 3. Run `BiDi-CDP` mapper in launched browser.
  * 4. Bind `BiDi-CDP` mapper to the `BiDi server`.
  *
- * @returns delegate to be called when the connection is closed
+ * @return delegate to be called when the connection is closed
  */
 async function onNewBidiConnectionOpen(
   headless: boolean,

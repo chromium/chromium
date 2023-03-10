@@ -38,7 +38,7 @@ export class StubTransport implements ITransport {
     return this.setOnMessage.getCall(0).args[0];
   }
 
-  public async emulateIncomingMessage(messageObject: unknown) {
+  async emulateIncomingMessage(messageObject: unknown) {
     this.#getOnMessage()(JSON.stringify(messageObject));
     // `setTimeout` allows the message to be processed.
     await new Promise((resolve) => setTimeout(resolve, 0));

@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC.
+ * Copyright 2023 Google LLC.
  * Copyright (c) Microsoft Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,14 +17,24 @@
 
 import {expect} from 'chai';
 
-import {IdWrapper} from './idWrapper.js';
+import {Deferred} from './deferred.js';
 
-describe('IdWrapper', () => {
-  it('wraps value with unique id', () => {
-    const wrapper1 = new IdWrapper();
-    const wrapper2 = new IdWrapper();
+describe('Deferred', () => {
+  describe('isFinished', () => {
+    it('resolve', () => {
+      const deferred = new Deferred<string>();
+      expect(deferred.isFinished).to.be.false;
 
-    expect(wrapper1.id).to.equal(1);
-    expect(wrapper2.id).to.equal(2);
+      deferred.resolve('done');
+      expect(deferred.isFinished).to.be.true;
+    });
+
+    it('reject', () => {
+      const deferred = new Deferred<string>();
+      expect(deferred.isFinished).to.be.false;
+
+      deferred.reject(new Error('error'));
+      expect(deferred.isFinished).to.be.true;
+    });
   });
 });

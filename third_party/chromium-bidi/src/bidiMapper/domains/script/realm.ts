@@ -113,7 +113,7 @@ export class Realm {
       }
     }
 
-    return bidiValue as CommonDataTypes.RemoteValue;
+    return bidiValue;
   }
 
   webDriverValueToBiDi(
@@ -250,7 +250,7 @@ export class Realm {
    * @param cdpObject CDP remote object to be serialized.
    * @param resultOwnership indicates desired OwnershipModel.
    */
-  public async serializeCdpObject(
+  async serializeCdpObject(
     cdpObject: Protocol.Runtime.RemoteObject,
     resultOwnership: Script.OwnershipModel
   ): Promise<CommonDataTypes.RemoteValue> {
@@ -262,7 +262,7 @@ export class Realm {
    * calling toString() on the object value.
    * @param cdpObject CDP remote object representing an object.
    * @param realm
-   * @returns string The stringified object.
+   * @return string The stringified object.
    */
   async stringifyObject(
     cdpObject: Protocol.Runtime.RemoteObject

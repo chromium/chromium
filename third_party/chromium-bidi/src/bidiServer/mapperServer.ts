@@ -27,6 +27,9 @@ const debugLog = debug('bidiMapper:log');
 export class MapperServer {
   #handlers: ((message: string) => void)[] = [];
 
+  #cdpConnection: CdpConnection;
+  #mapperCdpClient: CdpClient;
+
   static async create(
     cdpUrl: string,
     mapperContent: string
@@ -45,11 +48,14 @@ export class MapperServer {
   }
 
   private constructor(
-    private cdpConnection: CdpConnection,
-    private mapperCdpClient: CdpClient
+    cdpConnection: CdpConnection,
+    mapperCdpClient: CdpClient
   ) {
-    this.mapperCdpClient.on('Runtime.bindingCalled', this.#onBindingCalled);
-    this.mapperCdpClient.on(
+    this.#cdpConnection = cdpConnection;
+    this.#mapperCdpClient = mapperCdpClient;
+
+    this.#mapperCdpClient.on('Runtime.bindingCalled', this.#onBindingCalled);
+    this.#mapperCdpClient.on(
       'Runtime.consoleAPICalled',
       this.#onConsoleAPICalled
     );
@@ -62,7 +68,7 @@ export class MapperServer {
     return this.#sendBidiMessage(messageJson);
   }
   close() {
-    this.cdpConnection.close();
+    this.#cdpConnection.close();
   }
 
   static #establishCdpConnection(cdpUrl: string): Promise<CdpConnection> {
@@ -84,7 +90,7 @@ export class MapperServer {
   }
 
   async #sendBidiMessage(bidiMessageJson: string): Promise<void> {
-    await this.mapperCdpClient.sendCommand('Runtime.evaluate', {
+    await this.#mapperCdpClient.sendCommand('Runtime.evaluate', {
       expression: `onBidiMessage(${JSON.stringify(bidiMessageJson)})`,
     });
   }

@@ -14,9 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
+
 import {ITransport} from '../utils/transport.js';
 
-import {CdpClient, createClient} from './cdpClient.js';
+import {CdpClient} from './cdpClient.js';
 import {CdpMessage} from './cdpMessage.js';
 
 interface CdpCallbacks {
@@ -31,6 +33,7 @@ interface CdpCallbacks {
 export class CdpConnection {
   readonly #transport: ITransport;
   readonly #browserCdpClient: CdpClient;
+  /** Map from session ID to CdpClient. */
   readonly #sessionCdpClients: Map<string, CdpClient> = new Map();
   readonly #commandCallbacks: Map<number, CdpCallbacks> = new Map();
   readonly #log: (...messages: unknown[]) => void;
@@ -44,11 +47,11 @@ export class CdpConnection {
     this.#transport = transport;
     this.#log = log;
     this.#transport.setOnMessage(this.#onMessage);
-    this.#browserCdpClient = createClient(this, null);
+    this.#browserCdpClient = CdpClient.create(this, null);
   }
 
   /**
-   * Close the connection to the browser.
+   * Closes the connection to the browser.
    */
   close() {
     this.#transport.close();
@@ -60,16 +63,16 @@ export class CdpConnection {
   }
 
   /**
-   * @returns The CdpClient object attached to the root browser session.
+   * @return The CdpClient object attached to the root browser session.
    */
   browserClient(): CdpClient {
     return this.#browserCdpClient;
   }
 
   /**
-   * Get a CdpClient instance by sessionId.
+   * Gets a CdpClient instance by sessionId.
    * @param sessionId The sessionId of the CdpClient to retrieve.
-   * @returns The CdpClient object attached to the given session, or null if the session is not attached.
+   * @return The CdpClient object attached to the given session, or null if the session is not attached.
    */
   getCdpClient(sessionId: string): CdpClient {
     const cdpClient = this.#sessionCdpClients.get(sessionId);
@@ -79,15 +82,15 @@ export class CdpConnection {
     return cdpClient;
   }
 
-  sendCommand(
-    method: string,
-    params: object | undefined,
+  sendCommand<CdpMethod extends keyof ProtocolMapping.Commands>(
+    method: CdpMethod,
+    params: ProtocolMapping.Commands[CdpMethod]['paramsType'][0] | undefined,
     sessionId: string | null
   ): Promise<object> {
     return new Promise((resolve, reject) => {
       const id = this.#nextId++;
       this.#commandCallbacks.set(id, {resolve, reject});
-      const messageObj: CdpMessage = {id, method, params};
+      const messageObj: CdpMessage<CdpMethod> = {id, method, params};
       if (sessionId) {
         messageObj.sessionId = sessionId;
       }
@@ -108,7 +111,7 @@ export class CdpConnection {
     // Listen for these events on every session.
     if (parsed.method === 'Target.attachedToTarget') {
       const {sessionId} = parsed.params;
-      this.#sessionCdpClients.set(sessionId, createClient(this, sessionId));
+      this.#sessionCdpClients.set(sessionId, CdpClient.create(this, sessionId));
     } else if (parsed.method === 'Target.detachedFromTarget') {
       const {sessionId} = parsed.params;
       const client = this.#sessionCdpClients.get(sessionId);

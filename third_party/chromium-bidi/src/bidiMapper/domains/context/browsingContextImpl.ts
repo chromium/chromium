@@ -89,7 +89,7 @@ export class BrowsingContextImpl {
     this.#browsingContextStorage.addContext(this);
   }
 
-  public static async createFrameContext(
+  static async createFrameContext(
     realmStorage: RealmStorage,
     contextId: string,
     parentId: string | null,
@@ -120,7 +120,7 @@ export class BrowsingContextImpl {
     );
   }
 
-  public static async createTargetContext(
+  static async createTargetContext(
     realmStorage: RealmStorage,
     contextId: string,
     parentId: string | null,
@@ -158,16 +158,13 @@ export class BrowsingContextImpl {
     return this.#loaderId;
   }
 
-  public convertFrameToTargetContext(
-    cdpClient: CdpClient,
-    cdpSessionId: string
-  ) {
+  convertFrameToTargetContext(cdpClient: CdpClient, cdpSessionId: string) {
     this.#updateConnection(cdpClient, cdpSessionId);
     // No need in awaiting for target to be unblocked.
     this.#unblockAttachedTarget();
   }
 
-  public async delete() {
+  async delete() {
     await this.#removeChildContexts();
 
     this.#realmStorage.deleteRealms({
@@ -254,7 +251,7 @@ export class BrowsingContextImpl {
     return this.#url;
   }
 
-  addChild(child: BrowsingContextImpl): void {
+  addChild(child: BrowsingContextImpl) {
     this.#children.set(child.contextId, child);
   }
 
@@ -266,7 +263,7 @@ export class BrowsingContextImpl {
     await this.#targetDefers.targetUnblocked;
   }
 
-  public serializeToBidiValue(
+  serializeToBidiValue(
     maxDepth = 0,
     addParentFiled = true
   ): BrowsingContext.Info {

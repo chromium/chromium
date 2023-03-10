@@ -15,15 +15,13 @@
  * limitations under the License.
  */
 
-import * as chai from 'chai';
+import {expect} from 'chai';
 import * as sinon from 'sinon';
 
 import {Deferred} from './deferred.js';
 import {ProcessingQueue} from './processingQueue.js';
 
-const expect = chai.expect;
-
-describe('test ProcessingQueue', () => {
+describe('ProcessingQueue', () => {
   it('should wait and call processor in order', async () => {
     const processor = sinon.stub().returns(Promise.resolve());
     const queue = new ProcessingQueue<number>(processor);
@@ -51,6 +49,7 @@ describe('test ProcessingQueue', () => {
     const processedValues = processor.getCalls().map((c) => c.firstArg);
     expect(processedValues).to.deep.equal([1, 2, 3]);
   });
+
   it('rejects should not stop processing', async () => {
     const error = new Error('Processor reject');
     const processor = sinon.stub().returns(Promise.reject(error));
@@ -73,6 +72,7 @@ describe('test ProcessingQueue', () => {
     const processedValues = mycatch.getCalls().map((c) => c.firstArg);
     expect(processedValues).to.deep.equal([1, error]);
   });
+
   it('processing starts over when new values are added', async () => {
     const processor = sinon.stub().returns(Promise.resolve());
     const queue = new ProcessingQueue<number>(processor);
@@ -85,6 +85,9 @@ describe('test ProcessingQueue', () => {
     queue.add(Promise.resolve(2));
     await wait(1);
     sinon.assert.calledOnceWithExactly(processor, 2);
+
+    const processedValues = processor.getCalls().map((c) => c.firstArg);
+    expect(processedValues).to.deep.equal([2]);
   });
 });
 

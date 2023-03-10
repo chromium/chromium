@@ -15,6 +15,10 @@
  * limitations under the License.
  */
 
+/**
+ * @fileoverview CDP interfaces and types that BiDi Mapper expects.
+ */
+
 import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 
 import {EventEmitter} from '../utils/EventEmitter.js';
@@ -23,18 +27,14 @@ type CdpEvents = {
   [Property in keyof ProtocolMapping.Events]: ProtocolMapping.Events[Property][0];
 };
 
-/**
- * CDP interfaces that BiDi Mapper expects.
- */
-
 export interface CdpConnection {
   browserClient(): CdpClient;
   getCdpClient(sessionId: string): CdpClient;
 }
 
 export interface CdpClient extends EventEmitter<CdpEvents> {
-  sendCommand<T extends keyof ProtocolMapping.Commands>(
-    method: T,
-    ...params: ProtocolMapping.Commands[T]['paramsType']
-  ): Promise<ProtocolMapping.Commands[T]['returnType']>;
+  sendCommand<CdpMethod extends keyof ProtocolMapping.Commands>(
+    method: CdpMethod,
+    ...params: ProtocolMapping.Commands[CdpMethod]['paramsType']
+  ): Promise<ProtocolMapping.Commands[CdpMethod]['returnType']>;
 }

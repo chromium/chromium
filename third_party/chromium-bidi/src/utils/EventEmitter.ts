@@ -21,9 +21,9 @@ export class EventEmitter<Events extends Record<EventType, unknown>> {
 
   /**
    * Binds an event listener to fire when an event occurs.
-   * @param event - the event type you'd like to listen to. Can be a string or symbol.
-   * @param handler - the function to be called when the event occurs.
-   * @returns `this` to enable you to chain method calls.
+   * @param event The event type you'd like to listen to. Can be a string or symbol.
+   * @param handler The function to be called when the event occurs.
+   * @return `this` to enable chaining method calls.
    */
   on(type: '*', handler: WildcardHandler<Events>): EventEmitter<Events>;
   on<Key extends keyof Events>(
@@ -37,24 +37,23 @@ export class EventEmitter<Events extends Record<EventType, unknown>> {
 
   /**
    * Like `on` but the listener will only be fired once and then it will be removed.
-   * @param event - the event you'd like to listen to
-   * @param handler - the handler function to run when the event occurs
-   * @returns `this` to enable you to chain method calls.
+   * @param event The event you'd like to listen to
+   * @param handler The handler function to run when the event occurs
+   * @return `this` to enable chaining method calls.
    */
   once(event: EventType, handler: Handler): EventEmitter<Events> {
     const onceHandler: Handler = (eventData) => {
       handler(eventData);
       this.off(event, onceHandler);
     };
-
     return this.on(event, onceHandler);
   }
 
   /**
    * Removes an event listener from firing.
-   * @param event - the event type you'd like to stop listening to.
-   * @param handler - the function that should be removed.
-   * @returns `this` to enable you to chain method calls.
+   * @param event The event type you'd like to stop listening to.
+   * @param handler The function that should be removed.
+   * @return `this` to enable chaining method calls.
    */
   off(type: '*', handler: WildcardHandler<Events>): EventEmitter<Events>;
   off<Key extends keyof Events>(
@@ -69,9 +68,9 @@ export class EventEmitter<Events extends Record<EventType, unknown>> {
   /**
    * Emits an event and call any associated listeners.
    *
-   * @param event - the event you'd like to emit
-   * @param eventData - any data you'd like to emit with the event
-   * @returns `true` if there are any listeners, `false` if there are not.
+   * @param event The event to emit.
+   * @param eventData Any data to emit with the event.
+   * @return `true` if there are any listeners, `false` otherwise.
    */
   emit<Key extends keyof Events>(event: Key, eventData: Events[Key]): void {
     this.#emitter.emit(event, eventData);

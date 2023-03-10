@@ -16,16 +16,20 @@
  */
 
 /**
- * @file Provides TypeScript types for WebDriver BiDi protocol.
- * This file should not have any dependencies.
+ * @fileoverview Provides TypeScript types for WebDriver BiDi protocol.
+ *
+ * Note: This file should not have any dependencies because it will be run in the browser.
+ * Exception: Type dependencies are fine because they are compiled away.
  */
+
+import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 
 export interface EventResponse<MethodType, ParamsType> {
   method: MethodType;
   params: ParamsType;
 }
 
-export type Method =
+export type BiDiMethod =
   | 'browsingContext.captureScreenshot'
   | 'browsingContext.close'
   | 'browsingContext.create'
@@ -50,7 +54,7 @@ export namespace Message {
 
   export type RawCommandRequest = {
     id: number;
-    method: Method;
+    method: BiDiMethod;
     params: object;
     channel?: string;
   };
@@ -830,12 +834,12 @@ export namespace CDP {
   };
 
   export type SendCommandParams = {
-    cdpMethod: string;
+    cdpMethod: keyof ProtocolMapping.Commands;
     cdpParams: object;
     cdpSession?: any;
   };
 
-  export type SendCommandResult = {result: any};
+  export type SendCommandResult = {result: unknown};
 
   export type GetSessionCommand = {
     method: 'cdp.getSession';

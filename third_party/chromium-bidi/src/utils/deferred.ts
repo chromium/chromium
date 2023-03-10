@@ -16,10 +16,11 @@
  */
 
 export class Deferred<T> implements Promise<T> {
-  #resolve: (value: T) => void = () => {};
-  #reject: (value: T) => void = () => {};
-  #promise: Promise<T>;
   #isFinished = false;
+  #promise: Promise<T>;
+
+  #resolve: (value: T) => void = () => {};
+  #reject: (value: unknown) => void = () => {};
 
   get isFinished(): boolean {
     return this.#isFinished;
@@ -45,12 +46,12 @@ export class Deferred<T> implements Promise<T> {
     return this.#promise.catch(onRejected);
   }
 
-  public resolve(value: T) {
+  resolve(value: T) {
     this.#isFinished = true;
     this.#resolve(value);
   }
 
-  public reject(reason: any) {
+  reject(reason: unknown) {
     this.#isFinished = true;
     this.#reject(reason);
   }

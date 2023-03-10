@@ -22,24 +22,26 @@ import {ITransport} from '../utils/transport.js';
 export class WebSocketTransport implements ITransport {
   #onMessage: ((message: string) => void) | null = null;
 
-  constructor(private ws: WebSocket) {
-    this.ws.on('message', (message: string) => {
-      if (this.#onMessage) {
-        this.#onMessage.call(null, message);
-      }
+  #websocket: WebSocket;
+
+  constructor(websocket: WebSocket) {
+    this.#websocket = websocket;
+
+    this.#websocket.on('message', (message: string) => {
+      this.#onMessage?.(message);
     });
   }
 
-  setOnMessage(onMessage: (message: string) => void): void {
+  setOnMessage(onMessage: (message: string) => void) {
     this.#onMessage = onMessage;
   }
 
   async sendMessage(message: string): Promise<void> {
-    this.ws.send(message);
+    this.#websocket.send(message);
   }
 
   close() {
     this.#onMessage = null;
-    this.ws.close();
+    this.#websocket.close();
   }
 }

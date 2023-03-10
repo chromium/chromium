@@ -16,7 +16,7 @@
  */
 
 /**
- * @file Provides parsing and validator for WebDriver BiDi protocol.
+ * @fileoverview Provides parsing and validator for WebDriver BiDi protocol.
  * Parser types should match the `../protocol` types.
  */
 

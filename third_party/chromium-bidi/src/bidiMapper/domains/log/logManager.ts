@@ -71,7 +71,7 @@ export class LogManager {
     this.#eventManager = eventManager;
   }
 
-  public static create(
+  static create(
     realmStorage: RealmStorage,
     cdpClient: CdpClient,
     cdpSessionId: string,

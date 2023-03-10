@@ -297,7 +297,7 @@ async function flattenValueList(
  * calling toString() on the object value.
  * @param cdpObject CDP remote object representing an object.
  * @param realm
- * @returns string The stringified object.
+ * @return string The stringified object.
  */
 export async function stringifyObject(
   cdpObject: Protocol.Runtime.RemoteObject,
@@ -326,7 +326,7 @@ export class ScriptEvaluator {
    * @param resultOwnership indicates desired OwnershipModel.
    * @param realm
    */
-  public async serializeCdpObject(
+  async serializeCdpObject(
     cdpRemoteObject: Protocol.Runtime.RemoteObject,
     resultOwnership: Script.OwnershipModel,
     realm: Realm
@@ -344,7 +344,7 @@ export class ScriptEvaluator {
     return realm.cdpToBidiValue(cdpWebDriverValue, resultOwnership);
   }
 
-  public async callFunction(
+  async callFunction(
     realm: Realm,
     functionDeclaration: string,
     _this: Script.ArgumentValue,
@@ -458,7 +458,7 @@ export class ScriptEvaluator {
     };
   }
 
-  public async scriptEvaluate(
+  async scriptEvaluate(
     realm: Realm,
     expression: string,
     awaitPromise: boolean,

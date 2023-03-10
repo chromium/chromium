@@ -15,14 +15,12 @@
  * limitations under the License.
  */
 
-import * as chai from 'chai';
+import {expect} from 'chai';
 import * as sinon from 'sinon';
 
 import {Buffer} from './buffer.js';
 
-const expect = chai.expect;
-
-describe('test Buffer', () => {
+describe('Buffer', () => {
   it('should keep values', () => {
     const buffer = new Buffer<number>(2);
     expect(buffer.get()).to.deep.equal([]);

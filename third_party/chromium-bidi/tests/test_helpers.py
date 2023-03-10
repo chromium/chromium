@@ -13,17 +13,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import itertools
 import json
 
 from anys import ANY_NUMBER, ANY_STR, AnyContains, AnyGT, AnyLT
 
-_command_counter = 0
+_command_counter = itertools.count(1)
 
 
 def get_next_command_id():
-    global _command_counter
-    _command_counter += 1
-    return _command_counter
+    """
+    >>> x = get_next_command_id()
+    >>> y = get_next_command_id()
+    >>> assert x + 1 == y
+    """
+    return next(_command_counter)
 
 
 async def subscribe(websocket, event_names, context_ids=None, channel=None):

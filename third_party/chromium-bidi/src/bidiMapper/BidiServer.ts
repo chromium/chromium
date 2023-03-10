@@ -40,6 +40,20 @@ export class BidiServer extends EventEmitter<BidiServerEvents> {
   #realmStorage: RealmStorage;
   #logger?: LoggerFn;
 
+  #handleIncomingMessage = async (message: Message.RawCommandRequest) => {
+    this.#commandProcessor.processCommand(message);
+  };
+
+  #processOutgoingMessage = async (messageEntry: OutgoingBidiMessage) => {
+    const message = messageEntry.message as any;
+
+    if (messageEntry.channel !== null) {
+      message['channel'] = messageEntry.channel;
+    }
+
+    await this.#transport.sendMessage(message);
+  };
+
   private constructor(
     bidiTransport: BidiTransport,
     cdpConnection: CdpConnection,
@@ -75,7 +89,7 @@ export class BidiServer extends EventEmitter<BidiServerEvents> {
     );
   }
 
-  public static async createAndStart(
+  static async createAndStart(
     bidiTransport: BidiTransport,
     cdpConnection: CdpConnection,
     selfTargetId: string,
@@ -113,16 +127,6 @@ export class BidiServer extends EventEmitter<BidiServerEvents> {
     );
   }
 
-  #processOutgoingMessage = async (messageEntry: OutgoingBidiMessage) => {
-    const message = messageEntry.message as any;
-
-    if (messageEntry.channel !== null) {
-      message['channel'] = messageEntry.channel;
-    }
-
-    await this.#transport.sendMessage(message);
-  };
-
   /**
    * Sends BiDi message.
    */
@@ -130,13 +134,9 @@ export class BidiServer extends EventEmitter<BidiServerEvents> {
     this.#messageQueue.add(messageEntry);
   }
 
-  close(): void {
+  close() {
     this.#transport.close();
   }
-
-  #handleIncomingMessage = async (message: Message.RawCommandRequest) => {
-    this.#commandProcessor.processCommand(message);
-  };
 
   getBrowsingContextStorage(): BrowsingContextStorage {
     return this.#browsingContextStorage;

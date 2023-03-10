@@ -15,15 +15,13 @@
  * limitations under the License.
  */
 
-import * as chai from 'chai';
+import {expect} from 'chai';
 
 import type {CommonDataTypes} from '../../../protocol/protocol.js';
 
 import {getRemoteValuesText} from './logHelper.js';
 
-const expect = chai.expect;
-
-describe('test getRemoteValuesText', () => {
+describe('getRemoteValuesText', () => {
   it('single line input test', () => {
     const inputArgs = [{type: 'string', value: 'line 1'}];
     const outputString = 'line 1';

@@ -15,13 +15,11 @@
  * limitations under the License.
  */
 
-import * as chai from 'chai';
+import {expect} from 'chai';
 
 import type {CommonDataTypes} from '../../../protocol/protocol.js';
 
 import {logMessageFormatter} from './logHelper.js';
-
-const expect = chai.expect;
 
 const STRING_FORMAT_TEST_CASES = [
   {
@@ -298,7 +296,7 @@ function testPattern(
   expect(result).to.equal(expectedResult);
 }
 
-describe('test logMessageFormatter', () => {
+describe('logMessageFormatter', () => {
   describe('respect %d argument', () => {
     const FORMAT_STRING = '%d';
     for (const testcase of STRING_FORMAT_TEST_CASES) {

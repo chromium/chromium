@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-import * as chai from 'chai';
-import sinon from 'sinon';
+import {expect} from 'chai';
+import * as sinon from 'sinon';
 
 import {BrowsingContext, CDP, Log} from '../../../protocol/protocol.js';
 import {BrowsingContextStorage} from '../context/browsingContextStorage.js';
@@ -26,8 +26,6 @@ import {
   cartesianProduct,
   unrollEvents,
 } from './SubscriptionManager.js';
-
-const expect = chai.expect;
 
 const ALL_EVENTS = BrowsingContext.AllEvents;
 const SOME_EVENT = BrowsingContext.EventNames.LoadEvent;
@@ -42,7 +40,7 @@ const ANOTHER_NESTED_CONTEXT = 'ANOTHER_NESTED_CONTEXT';
 const SOME_CHANNEL = 'SOME_CHANNEL';
 const ANOTHER_CHANNEL = 'ANOTHER_CHANNEL';
 
-describe('test SubscriptionManager', () => {
+describe('SubscriptionManager', () => {
   let subscriptionManager: SubscriptionManager;
 
   beforeEach(() => {
@@ -392,7 +390,7 @@ describe('test SubscriptionManager', () => {
   });
 });
 
-describe('test cartesian product', () => {
+describe('cartesian product', () => {
   it('should return empty array for empty array', () => {
     expect(cartesianProduct([], [])).to.deep.equal([]);
   });
@@ -415,7 +413,7 @@ describe('test cartesian product', () => {
   });
 });
 
-describe('test unroll events', () => {
+describe('unroll events', () => {
   it('all browser events', () => {
     expect(unrollEvents([BrowsingContext.AllEvents])).to.deep.equal([
       BrowsingContext.EventNames.LoadEvent,

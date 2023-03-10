@@ -25,7 +25,7 @@ function isFormmatSpecifier(str: string): boolean {
 
 /**
  * @param args input remote values to be format printed
- * @returns parsed text of the remote values in specific format
+ * @return parsed text of the remote values in specific format
  */
 export function logMessageFormatter(
   args: CommonDataTypes.RemoteValue[]
@@ -92,7 +92,7 @@ export function logMessageFormatter(
 
 /**
  * @param arg input remote value to be parsed
- * @returns parsed text of the remote value
+ * @return parsed text of the remote value
  *
  * input: {"type": "number", "value": 1}
  * output: 1
@@ -140,7 +140,7 @@ function toJson(arg: CommonDataTypes.RemoteValue): string {
   }
 
   if (arg.type === 'array') {
-    return `[${(arg.value as any[]).map((val) => toJson(val)).join(',')}]`;
+    return `[${arg.value?.map((val) => toJson(val)).join(',')}]`;
   }
 
   throw Error(`Invalid value type: ${arg.toString()}`);

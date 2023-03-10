@@ -222,9 +222,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
     }
   }
 
-  processCommand = async (
-    command: Message.RawCommandRequest
-  ): Promise<void> => {
+  async processCommand(command: Message.RawCommandRequest): Promise<void> {
     try {
       const result = await this.#processCommand(command);
 
@@ -261,5 +259,5 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
         );
       }
     }
-  };
+  }
 }

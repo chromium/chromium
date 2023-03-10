@@ -16,6 +16,7 @@
  */
 
 import * as chai from 'chai';
+import {expect} from 'chai';
 import * as sinon from 'sinon';
 import chaiAsPromised from 'chai-as-promised';
 
@@ -48,8 +49,7 @@ describe('CdpConnection', () => {
     const mockCdpServer = new StubTransport();
     const cdpConnection = new CdpConnection(mockCdpServer);
 
-    chai.assert.throws(
-      () => cdpConnection.getCdpClient(SOME_SESSION_ID),
+    expect(() => cdpConnection.getCdpClient(SOME_SESSION_ID)).to.throw(
       'Unknown CDP session ID'
     );
 
@@ -59,7 +59,7 @@ describe('CdpConnection', () => {
     });
 
     const cdpClient = cdpConnection.getCdpClient(SOME_SESSION_ID);
-    chai.assert.isNotNull(cdpClient);
+    expect(cdpClient).to.not.be.null;
   });
 
   it('removes the CdpClient for a session when the Target.detachedFromTarget event is received', async () => {
@@ -72,15 +72,14 @@ describe('CdpConnection', () => {
     });
 
     const cdpClient = cdpConnection.getCdpClient(SOME_SESSION_ID);
-    chai.assert.isNotNull(cdpClient);
+    expect(cdpClient).to.not.be.null;
 
     await mockCdpServer.emulateIncomingMessage({
       method: 'Target.detachedFromTarget',
       params: {sessionId: SOME_SESSION_ID},
     });
 
-    chai.assert.throws(
-      () => cdpConnection.getCdpClient(SOME_SESSION_ID),
+    expect(() => cdpConnection.getCdpClient(SOME_SESSION_ID)).to.throw(
       'Unknown CDP session ID'
     );
   });
@@ -119,7 +118,7 @@ describe('CdpConnection', () => {
     });
 
     const sessionClient = cdpConnection.getCdpClient(SOME_SESSION_ID)!;
-    chai.assert.isNotNull(sessionClient);
+    expect(sessionClient).to.not.be.null;
     sessionClient.on('Page.frameNavigated', sessionCallback);
 
     // Send another message for the browser and verify that only the browser callback receives it.
@@ -142,7 +141,7 @@ describe('CdpConnection', () => {
     });
 
     const otherSessionClient = cdpConnection.getCdpClient(ANOTHER_SESSION_ID)!;
-    chai.assert.isNotNull(otherSessionClient);
+    expect(otherSessionClient).to.not.be.null;
     otherSessionClient.on('Page.loadEventFired', otherSessionCallback);
 
     // Send a message for session B and verify that only the session B callback receives it.

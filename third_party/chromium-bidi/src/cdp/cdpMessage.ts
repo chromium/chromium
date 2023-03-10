@@ -14,17 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 
 export interface CdpError {
   code: number;
   message: string;
 }
 
-export interface CdpMessage {
+export interface CdpMessage<CdpMethod extends keyof ProtocolMapping.Commands> {
   sessionId?: string;
   id?: number;
   result?: object;
   error?: CdpError;
-  method?: string;
-  params?: object;
+  method?: CdpMethod;
+  params?: ProtocolMapping.Commands[CdpMethod]['paramsType'][0];
 }
