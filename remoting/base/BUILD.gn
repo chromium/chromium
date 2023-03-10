@@ -165,8 +165,6 @@ source_set("breakpad") {
 
   if (is_mac) {
     sources += [ "breakpad_mac.mm" ]
-    deps += [ "//third_party/breakpad" ]
-    frameworks = [ "Foundation.framework" ]
   }
 
   if (is_win) {
@@ -338,7 +336,7 @@ source_set("unit_tests") {
     "//third_party/webrtc_overrides:webrtc_component",
   ]
 
-  if (is_win || is_mac || is_chromeos_ash) {
+  if (is_win || is_chromeos_ash) {
     deps += [ "//third_party/breakpad:client" ]
   }
 
