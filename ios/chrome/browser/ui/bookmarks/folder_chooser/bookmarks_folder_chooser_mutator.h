@@ -18,9 +18,6 @@ class BookmarkNode;
 // TODO(crbug.com/1405746): Change parameter signature. View controller should
 // not know about BookmarkNode.
 - (void)setSelectedFolder:(const bookmarks::BookmarkNode*)folder;
-// TODO(crbug.com/1405746): Delete this method after the mediator is configured
-// to observe BookmarkModelBridge.
-- (void)removeFromEditedNodes:(const bookmarks::BookmarkNode*)node;
 
 @end
 

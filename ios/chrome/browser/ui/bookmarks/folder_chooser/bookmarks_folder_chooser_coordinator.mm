@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_navigation_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_mediator.h"
+#import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_mediator_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_view_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_editor/bookmarks_folder_editor_coordinator.h"
@@ -27,9 +28,13 @@
 #endif
 
 @interface BookmarksFolderChooserCoordinator () <
+    BookmarksFolderChooserMediatorDelegate,
     BookmarksFolderChooserViewControllerPresentationDelegate,
     BookmarksFolderEditorCoordinatorDelegate,
-    UIAdaptivePresentationControllerDelegate> {
+    UIAdaptivePresentationControllerDelegate>
+@end
+
+@implementation BookmarksFolderChooserCoordinator {
   BookmarksFolderChooserMediator* _mediator;
   // If folder chooser is created with a base view controller then folder
   // chooser will create and own `_navigationController` that should be deleted
@@ -49,10 +54,6 @@
   // use `bookmarksFolderChooserCoordinatorDidConfirm:withSelectedFolder:`.
   const bookmarks::BookmarkNode* _selectedFolder;
 }
-
-@end
-
-@implementation BookmarksFolderChooserCoordinator
 
 @synthesize baseNavigationController = _baseNavigationController;
 
@@ -93,7 +94,7 @@
 }
 
 - (const std::set<const bookmarks::BookmarkNode*>&)editedNodes {
-  return _hiddenNodes;
+  return [_mediator editedNodes];
 }
 
 - (void)setSelectedFolder:(const bookmarks::BookmarkNode*)folder {
@@ -112,13 +113,13 @@
           self.browser->GetBrowserState());
   _mediator = [[BookmarksFolderChooserMediator alloc]
       initWithBookmarkModel:model
-                editedNodes:&_hiddenNodes];
+                editedNodes:std::move(_hiddenNodes)];
+  _hiddenNodes.clear();
+  _mediator.delegate = self;
   _mediator.selectedFolder = _selectedFolder;
   _viewController = [[BookmarksFolderChooserViewController alloc]
-      initWithBookmarkModel:model
-           allowsNewFolders:_allowsNewFolders
-               allowsCancel:!_baseNavigationController
-                    browser:self.browser];
+      initWithAllowsCancel:!_baseNavigationController
+          allowsNewFolders:_allowsNewFolders];
   _viewController.delegate = self;
   _viewController.dataSource = _mediator;
   _viewController.mutator = _mediator;
@@ -146,7 +147,9 @@
 
   DCHECK(_mediator);
   DCHECK(_viewController);
+  [_mediator disconnect];
   _mediator.consumer = nil;
+  _mediator.delegate = nil;
   _mediator = nil;
   if (_baseNavigationController) {
     DCHECK_EQ(_baseNavigationController.topViewController, _viewController);
@@ -167,6 +170,13 @@
   _viewController.dataSource = nil;
   _viewController.mutator = nil;
   _viewController = nil;
+}
+
+#pragma mark - BookmarksFolderChooserMediatorDelegate
+
+- (void)bookmarksFolderChooserMediatorWantsDismissal:
+    (BookmarksFolderChooserMediator*)mediator {
+  [_delegate bookmarksFolderChooserCoordinatorDidCancel:self];
 }
 
 #pragma mark - BookmarksFolderChooserViewControllerPresentationDelegate

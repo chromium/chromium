@@ -6,9 +6,11 @@
 
 #import "base/containers/contains.h"
 #import "components/bookmarks/browser/bookmark_model.h"
+#import "ios/chrome/browser/bookmarks/bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_consumer.h"
+#import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_mediator_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_mutator.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -18,26 +20,43 @@
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
 
-@interface BookmarksFolderChooserMediator () <BookmarksFolderChooserMutator> {
-  BookmarkModel* _bookmarkModel;
-  std::set<const BookmarkNode*>* _editedNodes;
-}
-
+@interface BookmarksFolderChooserMediator () <BookmarksFolderChooserMutator,
+                                              BookmarkModelBridgeObserver>
 @end
 
-@implementation BookmarksFolderChooserMediator
+@implementation BookmarksFolderChooserMediator {
+  // Model object that holds all bookmarks.
+  BookmarkModel* _bookmarkModel;
+  // Observer for `_bookmarkModel` changes.
+  std::unique_ptr<BookmarkModelBridge> _modelBridge;
+  // List of nodes to hide when displaying folders. This is to avoid to move a
+  // folder inside a child folder. These are also the list of nodes that are
+  // being edited (moved to a folder).
+  std::set<const BookmarkNode*> _editedNodes;
+}
 
 - (instancetype)initWithBookmarkModel:(BookmarkModel*)model
-                          editedNodes:(std::set<const BookmarkNode*>*)nodes {
+                          editedNodes:(std::set<const BookmarkNode*>)nodes {
   DCHECK(model);
   DCHECK(model->loaded());
 
   self = [super init];
   if (self) {
     _bookmarkModel = model;
-    _editedNodes = nodes;
+    _modelBridge.reset(new BookmarkModelBridge(self, _bookmarkModel));
+    _editedNodes = std::move(nodes);
   }
   return self;
+}
+
+- (void)disconnect {
+  _bookmarkModel = nullptr;
+  _modelBridge = nil;
+  _editedNodes.clear();
+}
+
+- (const std::set<const BookmarkNode*>&)editedNodes {
+  return _editedNodes;
 }
 
 #pragma mark - BookmarksFolderChooserDataSource
@@ -46,12 +65,8 @@ using bookmarks::BookmarkNode;
   return _bookmarkModel->root_node();
 }
 
-- (const std::set<const BookmarkNode*>&)editedNodes {
-  return *_editedNodes;
-}
-
 - (std::vector<const BookmarkNode*>)visibleFolders {
-  return bookmark_utils_ios::VisibleNonDescendantNodes(*_editedNodes,
+  return bookmark_utils_ios::VisibleNonDescendantNodes(_editedNodes,
                                                        _bookmarkModel);
 }
 
@@ -62,8 +77,64 @@ using bookmarks::BookmarkNode;
   [_consumer notifyModelUpdated];
 }
 
-- (void)removeFromEditedNodes:(const BookmarkNode*)node {
-  _editedNodes->erase(node);
+#pragma mark - BookmarkModelBridgeObserver
+
+- (void)bookmarkModelLoaded {
+  // The bookmark model is assumed to be loaded when this controller is created.
+  NOTREACHED();
+}
+
+- (void)bookmarkNodeChanged:(const BookmarkNode*)bookmarkNode {
+  if (bookmarkNode->is_folder()) {
+    [_consumer notifyModelUpdated];
+  }
+}
+
+- (void)bookmarkNodeChildrenChanged:(const BookmarkNode*)bookmarkNode {
+  [_consumer notifyModelUpdated];
+}
+
+- (void)bookmarkNode:(const BookmarkNode*)bookmarkNode
+     movedFromParent:(const BookmarkNode*)oldParent
+            toParent:(const BookmarkNode*)newParent {
+  if (bookmarkNode->is_folder()) {
+    [_consumer notifyModelUpdated];
+  }
+}
+
+- (void)bookmarkNodeDeleted:(const BookmarkNode*)bookmarkNode
+                 fromFolder:(const BookmarkNode*)folder {
+  // Remove node from `_editedNodes` if it is already deleted (possibly remotely
+  // by another sync device).
+  if (base::Contains(_editedNodes, bookmarkNode)) {
+    _editedNodes.erase(bookmarkNode);
+    // if `_editedNodes` becomes empty, nothing to move.  Exit the folder
+    // chooser.
+    if (_editedNodes.empty()) {
+      [_delegate bookmarksFolderChooserMediatorWantsDismissal:self];
+    }
+    // Exit here because no visible node was deleted. Nodes in `_editedNodes`
+    // cannot be any visible folder in folder chooser.
+    return;
+  }
+
+  if (!bookmarkNode->is_folder()) {
+    return;
+  }
+
+  if (bookmarkNode == _selectedFolder) {
+    // The selected folder has been deleted. Fallback on the Mobile Bookmarks
+    // node.
+    _selectedFolder = _bookmarkModel->mobile_node();
+  }
+  [_consumer notifyModelUpdated];
+}
+
+- (void)bookmarkModelRemovedAllNodes {
+  // The selected folder is no longer valid. Fallback on the Mobile Bookmarks
+  // node.
+  _selectedFolder = _bookmarkModel->mobile_node();
+  [_consumer notifyModelUpdated];
 }
 
 @end

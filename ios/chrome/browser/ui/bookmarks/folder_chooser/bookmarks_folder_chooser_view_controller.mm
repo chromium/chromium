@@ -48,54 +48,28 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 using bookmarks::BookmarkNode;
 
-@interface BookmarksFolderChooserViewController () <BookmarkModelBridgeObserver,
-                                                    UITableViewDataSource,
-                                                    UITableViewDelegate> {
+@interface BookmarksFolderChooserViewController () <UITableViewDataSource,
+                                                    UITableViewDelegate>
+@end
+
+@implementation BookmarksFolderChooserViewController {
+  // Should the controller setup Cancel and Done buttons instead of a back
+  // button.
+  BOOL _allowsCancel;
+  // Should the controller setup a new-folder button.
+  BOOL _allowsNewFolders;
   // A linear list of folders. This will be populated in `reloadModel` when the
   // UI is updated.
   std::vector<const BookmarkNode*> _folders;
-  std::unique_ptr<BookmarkModelBridge> _modelBridge;
 }
 
-// Should the controller setup Cancel and Done buttons instead of a back button.
-@property(nonatomic, assign) BOOL allowsCancel;
-
-// Should the controller setup a new-folder button.
-@property(nonatomic, assign) BOOL allowsNewFolders;
-
-// Reference to the main bookmark model.
-@property(nonatomic, assign) bookmarks::BookmarkModel* bookmarkModel;
-
-// The browser for this ViewController.
-@property(nonatomic, readonly) Browser* browser;
-
-@end
-
-@implementation BookmarksFolderChooserViewController
-
-@synthesize allowsCancel = _allowsCancel;
-@synthesize allowsNewFolders = _allowsNewFolders;
-@synthesize bookmarkModel = _bookmarkModel;
-@synthesize delegate = _delegate;
-
-- (instancetype)initWithBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
-                     allowsNewFolders:(BOOL)allowsNewFolders
-                         allowsCancel:(BOOL)allowsCancel
-                              browser:(Browser*)browser {
-  DCHECK(bookmarkModel);
-  DCHECK(bookmarkModel->loaded());
-  DCHECK(browser);
-
+- (instancetype)initWithAllowsCancel:(BOOL)allowsCancel
+                    allowsNewFolders:(BOOL)allowsNewFolders {
   UITableViewStyle style = ChromeTableViewStyle();
   self = [super initWithStyle:style];
   if (self) {
-    _browser = browser;
     _allowsCancel = allowsCancel;
     _allowsNewFolders = allowsNewFolders;
-    _bookmarkModel = bookmarkModel;
-
-    // Set up the bookmark model oberver.
-    _modelBridge.reset(new BookmarkModelBridge(self, _bookmarkModel));
   }
   return self;
 }
@@ -110,7 +84,7 @@ using bookmarks::BookmarkNode;
       kBookmarkFolderPickerViewContainerIdentifier;
   self.title = l10n_util::GetNSString(IDS_IOS_BOOKMARK_CHOOSE_GROUP_BUTTON);
 
-  if (self.allowsCancel) {
+  if (_allowsCancel) {
     UIBarButtonItem* cancelItem = [[UIBarButtonItem alloc]
         initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
                              target:self
@@ -132,7 +106,7 @@ using bookmarks::BookmarkNode;
   self.navigationController.toolbarHidden = YES;
 
   // Load the model.
-  [self reloadModel];
+  [self reloadView];
 }
 
 - (void)didMoveToParentViewController:(UIViewController*)parent {
@@ -184,68 +158,7 @@ using bookmarks::BookmarkNode;
 #pragma mark - BookmarksFolderChooserConsumer
 
 - (void)notifyModelUpdated {
-  [self reloadModel];
-}
-
-#pragma mark - BookmarkModelBridgeObserver
-
-- (void)bookmarkModelLoaded {
-  // The bookmark model is assumed to be loaded when this controller is created.
-  NOTREACHED();
-}
-
-- (void)bookmarkNodeChanged:(const BookmarkNode*)bookmarkNode {
-  if (!bookmarkNode->is_folder()) {
-    return;
-  }
-  [self reloadModel];
-}
-
-- (void)bookmarkNodeChildrenChanged:(const BookmarkNode*)bookmarkNode {
-  [self reloadModel];
-}
-
-- (void)bookmarkNode:(const BookmarkNode*)bookmarkNode
-     movedFromParent:(const BookmarkNode*)oldParent
-            toParent:(const BookmarkNode*)newParent {
-  if (bookmarkNode->is_folder()) {
-    [self reloadModel];
-  }
-}
-
-- (void)bookmarkNodeDeleted:(const BookmarkNode*)bookmarkNode
-                 fromFolder:(const BookmarkNode*)folder {
-  const std::set<const BookmarkNode*>& editedNodes = [_dataSource editedNodes];
-  // Remove node from editedNodes if it is already deleted (possibly remotely by
-  // another sync device).
-  if (base::Contains(editedNodes, bookmarkNode)) {
-    [_mutator removeFromEditedNodes:bookmarkNode];
-    // if editedNodes becomes empty, nothing to move.  Exit the folder picker.
-    if (editedNodes.empty()) {
-      [self.delegate bookmarksFolderChooserViewControllerDidCancel:self];
-    }
-    // Exit here because nodes in editedNodes cannot be any visible folders in
-    // folder picker.
-    return;
-  }
-
-  if (!bookmarkNode->is_folder()) {
-    return;
-  }
-
-  if (bookmarkNode == [_dataSource selectedFolder]) {
-    // The selected folder has been deleted. Fallback on the Mobile Bookmarks
-    // node.
-    [_mutator setSelectedFolder:self.bookmarkModel->mobile_node()];
-  }
-  [self reloadModel];
-}
-
-- (void)bookmarkModelRemovedAllNodes {
-  // The selected folder is no longer valid. Fallback on the Mobile Bookmarks
-  // node.
-  [_mutator setSelectedFolder:self.bookmarkModel->mobile_node()];
-  [self reloadModel];
+  [self reloadView];
 }
 
 #pragma mark - Actions
@@ -266,9 +179,7 @@ using bookmarks::BookmarkNode;
 
 #pragma mark - Private
 
-- (void)reloadModel {
-  _folders = [_dataSource visibleFolders];
-
+- (void)reloadView {
   // Delete any existing section.
   if ([self.tableViewModel
           hasSectionForSectionIdentifier:SectionIdentifierBookmarkFolders]) {
@@ -293,6 +204,7 @@ using bookmarks::BookmarkNode;
   }
 
   // Add Folders entries.
+  _folders = [_dataSource visibleFolders];
   const BookmarkNode* rootFolder = [_dataSource rootFolder];
   for (NSUInteger row = 0; row < _folders.size(); row++) {
     const BookmarkNode* folderNode = _folders[row];

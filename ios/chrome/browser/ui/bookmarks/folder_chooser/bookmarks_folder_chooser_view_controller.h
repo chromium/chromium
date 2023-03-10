@@ -13,7 +13,6 @@
 @protocol BookmarksFolderChooserDataSource;
 @protocol BookmarksFolderChooserMutator;
 @protocol BookmarksFolderChooserViewControllerPresentationDelegate;
-class Browser;
 
 namespace bookmarks {
 class BookmarkModel;
@@ -34,19 +33,15 @@ class BookmarkModel;
 // Mutator to apply changes to model layer.
 @property(nonatomic, weak) id<BookmarksFolderChooserMutator> mutator;
 
-// TODO(crbug.com/1405746): Move `bookmarkModel` and `browser` to the model
-// layer.
-// Initializes the view controller with a bookmark model.
-// `bookmarkModel` must not be `nullptr` and must be loaded.
-// `allowsNewFolders` will instruct the controller to provide the necessary UI
-// to create a folder.
+// Initializes the view controller.
 // `allowsCancel` puts a cancel and done button in the navigation bar instead
 // of a back button, which is needed if this view controller is presented
 // modally.
-- (instancetype)initWithBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
-                     allowsNewFolders:(BOOL)allowsNewFolders
-                         allowsCancel:(BOOL)allowsCancel
-                              browser:(Browser*)browser;
+// `allowsNewFolders` will instruct the controller to provide the necessary UI
+// to create a folder.
+- (instancetype)initWithAllowsCancel:(BOOL)allowsCancel
+                    allowsNewFolders:(BOOL)allowsNewFolders
+    NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
 @end

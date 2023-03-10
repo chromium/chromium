@@ -6,7 +6,6 @@
 #define IOS_CHROME_BROWSER_UI_BOOKMARKS_FOLDER_CHOOSER_BOOKMARKS_FOLDER_CHOOSER_CONSUMER_H_
 
 #import <Foundation/Foundation.h>
-#import <set>
 #import <vector>
 
 namespace bookmarks {
@@ -31,9 +30,6 @@ class BookmarkNode;
 - (const bookmarks::BookmarkNode*)rootFolder;
 // The folder that should have a blue check mark beside it in the UI.
 - (const bookmarks::BookmarkNode*)selectedFolder;
-// TODO(crbug.com/1405746): Delete this method and return visible folders
-// instead after BookmarkModelBridge is configured inside the mediator.
-- (const std::set<const bookmarks::BookmarkNode*>&)editedNodes;
 // The list of visible folders to show in the folder chooser UI.
 - (std::vector<const bookmarks::BookmarkNode*>)visibleFolders;
 

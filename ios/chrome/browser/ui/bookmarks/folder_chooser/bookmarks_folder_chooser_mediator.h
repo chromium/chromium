@@ -11,6 +11,8 @@
 #import <Foundation/Foundation.h>
 #import <set>
 
+@protocol BookmarksFolderChooserMediatorDelegate;
+
 namespace bookmarks {
 class BookmarkModel;
 class BookmarkNode;
@@ -22,6 +24,7 @@ class BookmarkNode;
 
 // Consumer to reflect model changes in the UI.
 @property(nonatomic, weak) id<BookmarksFolderChooserConsumer> consumer;
+@property(nonatomic, weak) id<BookmarksFolderChooserMediatorDelegate> delegate;
 // The currently selected folder.
 @property(nonatomic, assign) const bookmarks::BookmarkNode* selectedFolder;
 
@@ -32,9 +35,12 @@ class BookmarkNode;
 // nodes that are being edited (moved to a folder).
 - (instancetype)initWithBookmarkModel:(bookmarks::BookmarkModel*)model
                           editedNodes:
-                              (std::set<const bookmarks::BookmarkNode*>*)nodes
+                              (std::set<const bookmarks::BookmarkNode*>)nodes
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
+
+- (void)disconnect;
+- (const std::set<const bookmarks::BookmarkNode*>&)editedNodes;
 
 @end
 
