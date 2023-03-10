@@ -65,7 +65,7 @@ base::flat_set<std::string> GetCategories() {
 int GetMinImagesToShow() {
   static int min_images_to_show = base::GetFieldTrialParamByFeatureAsInt(
       ntp_features::kNtpHistoryClustersModuleMinimumImagesRequired,
-      ntp_features::kNtpHistoryClustersModuleMinimumImagesRequiredParam, 2);
+      ntp_features::kNtpHistoryClustersModuleMinimumImagesRequiredParam, 1);
   return min_images_to_show;
 }
 
