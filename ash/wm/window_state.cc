@@ -747,6 +747,15 @@ void WindowState::set_bounds_changed_by_user(bool bounds_changed_by_user) {
 std::unique_ptr<PresentationTimeRecorder> WindowState::OnDragStarted(
     int window_component) {
   DCHECK(drag_details_);
+
+  SplitViewController* split_view_controller(
+      SplitViewController::Get(Shell::GetPrimaryRootWindow()));
+  DCHECK(split_view_controller);
+
+  if (split_view_controller->IsWindowInSplitView(window_)) {
+    split_view_controller->MaybeDetachWindow(window_);
+  }
+
   if (delegate_) {
     return delegate_->OnDragStarted(window_component);
   }

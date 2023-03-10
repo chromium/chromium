@@ -4443,7 +4443,7 @@ class SplitViewOverviewSessionTest : public OverviewTestBase {
       return;
     split_view_controller()->StopAndShoveAnimatedDivider();
     split_view_controller()->EndResizeWithDividerImpl();
-    split_view_controller()->EndTabletSplitViewAfterResizingIfAppropriate();
+    split_view_controller()->EndSplitViewAfterResizingAtEdgeIfAppropriate();
   }
 
   void EndSplitView() { split_view_controller()->EndSplitView(); }

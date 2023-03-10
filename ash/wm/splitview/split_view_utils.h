@@ -170,6 +170,15 @@ ASH_EXPORT SplitViewController::SnapPosition GetSnapPosition(
     int horizontal_edge_inset,
     int vertical_edge_inset);
 
+// Returns true if `SnapGroupController::IsArm1AutomaticallyLockEnabled()`
+// returns true. In this case, an overview session will be shown on the other
+// half of the screen on window snapped in clamshell mode and a snap group will
+// be created automatically on two windows snapped. The `split_view_divider_`
+// will show to indicate that the two windows are in a snap-group state.
+// TODO(b/267661569): Do not show overview when there is only one window in the
+// current root and this window gets snapped.
+bool ShouldAutomaticallyGroupOnWindowsSnappedInClamshell();
+
 }  // namespace ash
 
 #endif  // ASH_WM_SPLITVIEW_SPLIT_VIEW_UTILS_H_

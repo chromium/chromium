@@ -72,8 +72,15 @@ class ASH_EXPORT SnapGroupController {
   // group.
   aura::Window* RetrieveTheOtherWindowInSnapGroup(aura::Window* window) const;
 
-  // Contains all the `SnapGroup`, we will have one `SnapGroup` globally for the
-  // first iteration but will have multiple in the future iteration.
+  // Restores the windows bounds on snap group removed as the windows bounds are
+  // shrunk either horizontally or vertically to make room for the split view
+  // divider during `UpdateSnappedWindowsAndDividerBounds()` in
+  // `SplitViewController`.
+  void RestoreWindowsBoundsOnSnapGroupRemoved(aura::Window* window1,
+                                              aura::Window* window2);
+
+  // Contains all the `SnapGroup`(s), we will have one `SnapGroup` globally for
+  // the first iteration but will have multiple in the future iteration.
   SnapGroups snap_groups_;
 
   // Maps the `SnapGroup` by the `aura::Window*`. It will be used to get the

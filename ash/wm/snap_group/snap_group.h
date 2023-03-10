@@ -24,6 +24,8 @@ class SnapGroup : public aura::WindowObserver, wm::ActivationChangeObserver {
   ~SnapGroup() override;
 
   // aura::WindowObserver:
+  // TODO: Implement `OnWindowParentChanged` and maybe `OnWindowStackingChanged`
+  // in future.
   void OnWindowDestroying(aura::Window* window) override;
 
   // wm::ActivationChangeObserver:

@@ -8,9 +8,13 @@
 
 #include "ash/shell.h"
 #include "ash/wm/snap_group/snap_group.h"
+#include "ash/wm/splitview/split_view_constants.h"
+#include "ash/wm/window_positioning_utils.h"
+#include "ash/wm/wm_event.h"
 #include "base/check.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "chromeos/ui/base/display_util.h"
 
 namespace ash {
 
@@ -45,8 +49,8 @@ bool SnapGroupController::AddSnapGroup(aura::Window* window1,
 }
 
 bool SnapGroupController::RemoveSnapGroup(SnapGroup* snap_group) {
-  const aura::Window* window1 = snap_group->window1();
-  const aura::Window* window2 = snap_group->window2();
+  aura::Window* window1 = snap_group->window1();
+  aura::Window* window2 = snap_group->window2();
   DCHECK((window_to_snap_group_map_.find(window1) !=
           window_to_snap_group_map_.end()) &&
          window_to_snap_group_map_.find(window2) !=
@@ -56,6 +60,7 @@ bool SnapGroupController::RemoveSnapGroup(SnapGroup* snap_group) {
   window_to_snap_group_map_.erase(window2);
   snap_group->StopObservingWindows();
   base::EraseIf(snap_groups_, base::MatchesUniquePtr(snap_group));
+  RestoreWindowsBoundsOnSnapGroupRemoved(window1, window2);
   return true;
 }
 
@@ -90,6 +95,52 @@ aura::Window* SnapGroupController::RetrieveTheOtherWindowInSnapGroup(
   SnapGroup* snap_group = window_to_snap_group_map_.find(window)->second;
   return window == snap_group->window1() ? snap_group->window2()
                                          : snap_group->window1();
+}
+
+void SnapGroupController::RestoreWindowsBoundsOnSnapGroupRemoved(
+    aura::Window* window1,
+    aura::Window* window2) {
+  const display::Display& display1 =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window1);
+  const display::Display& display2 =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window2);
+
+  // TODO(michelefan@): Add multi-display support for snap group.
+  DCHECK_EQ(display1, display2);
+
+  gfx::Rect primary_window_bounds = window1->GetBoundsInScreen();
+  const int primary_x = primary_window_bounds.x();
+  const int primary_y = primary_window_bounds.y();
+  const int primary_width = primary_window_bounds.width();
+  const int primary_height = primary_window_bounds.height();
+
+  gfx::Rect secondary_window_bounds = window2->GetBoundsInScreen();
+  const int secondary_x = secondary_window_bounds.x();
+  const int secondary_y = secondary_window_bounds.y();
+  const int secondary_width = secondary_window_bounds.width();
+  const int secondary_height = secondary_window_bounds.height();
+
+  const int expand_delta = kSplitviewDividerShortSideLength / 2;
+
+  if (chromeos::IsLandscapeOrientation(GetSnapDisplayOrientation(display1))) {
+    primary_window_bounds.SetRect(primary_x, primary_y,
+                                  primary_width + expand_delta, primary_height);
+    secondary_window_bounds.SetRect(secondary_x - expand_delta, secondary_y,
+                                    secondary_width + expand_delta,
+                                    secondary_height);
+  } else {
+    primary_window_bounds.SetRect(primary_x, primary_y, primary_width,
+                                  primary_height + expand_delta);
+    secondary_window_bounds.SetRect(secondary_x, secondary_y - expand_delta,
+                                    secondary_width,
+                                    secondary_height + expand_delta);
+  }
+
+  const SetBoundsWMEvent window1_event(primary_window_bounds, /*animate=*/true);
+  WindowState::Get(window1)->OnWMEvent(&window1_event);
+  const SetBoundsWMEvent window2_event(secondary_window_bounds,
+                                       /*animate=*/true);
+  WindowState::Get(window2)->OnWMEvent(&window2_event);
 }
 
 }  // namespace ash

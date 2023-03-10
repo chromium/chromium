@@ -254,7 +254,7 @@ class SplitViewControllerTest : public AshTestBase {
     }
     split_view_controller()->StopAndShoveAnimatedDivider();
     split_view_controller()->EndResizeWithDividerImpl();
-    split_view_controller()->EndTabletSplitViewAfterResizingIfAppropriate();
+    split_view_controller()->EndSplitViewAfterResizingAtEdgeIfAppropriate();
   }
 
   void EndSplitView() { split_view_controller()->EndSplitView(); }
@@ -1509,7 +1509,7 @@ TEST_F(SplitViewControllerTest, StartDraggingDividerDuringSnapAnimation) {
   GetEventGenerator()->set_current_screen_location(divider_center);
   GetEventGenerator()->DragMouseBy(20, 0);
   GetEventGenerator()->PressLeftButton();
-  EXPECT_FALSE(split_view_controller()->is_resizing());
+  EXPECT_FALSE(split_view_controller()->is_resizing_with_divider());
   GetEventGenerator()->ReleaseLeftButton();
 }
 
@@ -2967,7 +2967,7 @@ TEST_F(SplitViewControllerTest, EndSplitViewWhileDragging) {
 
   // Verify the setup.
   ASSERT_TRUE(split_view_controller()->InSplitViewMode());
-  ASSERT_TRUE(split_view_controller()->is_resizing());
+  ASSERT_TRUE(split_view_controller()->is_resizing_with_divider());
 
   gfx::Point resize_point(divider_bounds.CenterPoint());
   resize_point.Offset(100, 0);
@@ -2981,7 +2981,7 @@ TEST_F(SplitViewControllerTest, EndSplitViewWhileDragging) {
 
   // End split view and check that resizing has ended properly.
   split_view_controller()->EndSplitView();
-  EXPECT_FALSE(split_view_controller()->is_resizing());
+  EXPECT_FALSE(split_view_controller()->is_resizing_with_divider());
   histograms().ExpectTotalCount(
       "Ash.SplitViewResize.PresentationTime.TabletMode.SingleWindow", 1);
   histograms().ExpectTotalCount(
@@ -3104,7 +3104,7 @@ TEST_F(SplitViewControllerTest, WindowDestroyedDuringResize) {
   split_view_controller()->ResizeWithDivider(gfx::Point(100, 100));
 
   window1.reset();
-  EXPECT_FALSE(split_view_controller()->is_resizing());
+  EXPECT_FALSE(split_view_controller()->is_resizing_with_divider());
 }
 
 TEST_F(SplitViewControllerTest, WMSnapEvent) {

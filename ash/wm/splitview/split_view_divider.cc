@@ -19,13 +19,12 @@
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_properties.h"
-#include "ash/wm/window_util.h"
 #include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
-#include "base/task/sequenced_task_runner.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/scoped_window_targeter.h"
 #include "ui/aura/window_targeter.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -35,7 +34,6 @@
 #include "ui/views/view_targeter_delegate.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
-#include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/transient_window_manager.h"
 #include "ui/wm/core/window_util.h"
 #include "ui/wm/public/activation_client.h"
@@ -43,6 +41,30 @@
 namespace ash {
 
 namespace {
+
+// Returns the widget init params needed to create the split view divider
+// widget.
+views::Widget::InitParams GetWidgetInitParams(aura::Window* root_window) {
+  views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+  params.opacity = views::Widget::InitParams::WindowOpacity::kOpaque;
+  params.activatable = views::Widget::InitParams::Activatable::kNo;
+  params.parent =
+      Shell::GetContainer(root_window, kShellWindowId_AlwaysOnTopContainer);
+  params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
+  params.name = "SplitViewDivider";
+  return params;
+}
+
+bool IsInTabletMode() {
+  TabletModeController* tablet_mode_controller =
+      Shell::Get()->tablet_mode_controller();
+  return tablet_mode_controller && tablet_mode_controller->InTabletMode();
+}
+
+}  // namespace
+
+// -----------------------------------------------------------------------------
+// DividerView:
 
 // The window targeter that is installed on the always on top container window
 // when the split view mode is active.
@@ -54,7 +76,6 @@ class AlwaysOnTopWindowTargeter : public aura::WindowTargeter {
   AlwaysOnTopWindowTargeter(const AlwaysOnTopWindowTargeter&) = delete;
   AlwaysOnTopWindowTargeter& operator=(const AlwaysOnTopWindowTargeter&) =
       delete;
-
   ~AlwaysOnTopWindowTargeter() override = default;
 
  private:
@@ -75,6 +96,9 @@ class AlwaysOnTopWindowTargeter : public aura::WindowTargeter {
   aura::Window* divider_window_;
 };
 
+// -----------------------------------------------------------------------------
+// DividerView:
+
 // The divider view class. Passes the mouse/gesture events to the controller.
 // Has two child views, one for the divider and one for its white handler. The
 // bounds and transforms of these two child views can be affected by the
@@ -82,6 +106,8 @@ class AlwaysOnTopWindowTargeter : public aura::WindowTargeter {
 // mouse/gesture events in the bounds of the |DividerView| object itself.
 class DividerView : public views::View, public views::ViewTargeterDelegate {
  public:
+  METADATA_HEADER(DividerView);
+
   explicit DividerView(SplitViewController* controller,
                        SplitViewDivider* divider)
       : controller_(controller), divider_(divider) {
@@ -98,12 +124,12 @@ class DividerView : public views::View, public views::ViewTargeterDelegate {
 
   DividerView(const DividerView&) = delete;
   DividerView& operator=(const DividerView&) = delete;
-
   ~DividerView() override = default;
 
   void DoSpawningAnimation(int spawn_position) {
     const gfx::Rect bounds = GetBoundsInScreen();
     int divider_signed_offset;
+
     // To animate the divider scaling up from nothing, animate its bounds rather
     // than its transform, mostly because a transform that scales by zero would
     // be singular. For that bounds animation, express |spawn_position| in local
@@ -132,18 +158,6 @@ class DividerView : public views::View, public views::ViewTargeterDelegate {
 
   void SetDividerBarVisible(bool visible) {
     divider_handler_view_->SetVisible(visible);
-  }
-
-  // views::View:
-  void Layout() override {
-    // There is no divider in clamshell split view. If we are in clamshell mode,
-    // then we must be transitioning from tablet mode, and the divider will be
-    // destroyed, meaning there is no need to update it.
-    if (!Shell::Get()->tablet_mode_controller()->InTabletMode())
-      return;
-
-    divider_view_->SetBoundsRect(GetLocalBounds());
-    divider_handler_view_->Refresh(controller_->is_resizing());
   }
 
   bool OnMousePressed(const ui::MouseEvent& event) override {
@@ -196,6 +210,22 @@ class DividerView : public views::View, public views::ViewTargeterDelegate {
     event->SetHandled();
   }
 
+  // views::View:
+  void Layout() override {
+    // There is no divider in clamshell split view unless the feature flag
+    // `kSnapGroup` is enabled and the feature param `kAutomaticallyLockGroup`
+    // is true. If we are in clamshell mode without the feature flag and params,
+    // then we must be transitioning from tablet mode, and the divider will be
+    // destroyed and there is no need to update it.
+    if (!IsInTabletMode() &&
+        !ShouldAutomaticallyGroupOnWindowsSnappedInClamshell()) {
+      return;
+    }
+
+    divider_view_->SetBoundsRect(GetLocalBounds());
+    divider_handler_view_->Refresh(controller_->is_resizing_with_divider());
+  }
+
   void OnThemeChanged() override {
     views::View::OnThemeChanged();
 
@@ -234,8 +264,8 @@ class DividerView : public views::View, public views::ViewTargeterDelegate {
     divider_view_->SetBoundsRect(GetLocalBounds());
     const gfx::Rect old_bounds =
         divider_->GetDividerBoundsInScreen(/*is_dragging=*/false);
-    const gfx::Rect new_bounds =
-        divider_->GetDividerBoundsInScreen(controller_->is_resizing());
+    const gfx::Rect new_bounds = divider_->GetDividerBoundsInScreen(
+        controller_->is_resizing_with_divider());
     gfx::Transform transform;
     transform.Translate(new_bounds.x() - old_bounds.x(),
                         new_bounds.y() - old_bounds.y());
@@ -250,7 +280,7 @@ class DividerView : public views::View, public views::ViewTargeterDelegate {
         ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
     divider_view_->SetTransform(transform);
 
-    divider_handler_view_->Refresh(controller_->is_resizing());
+    divider_handler_view_->Refresh(controller_->is_resizing_with_divider());
   }
 
   views::View* divider_view_ = nullptr;
@@ -259,7 +289,11 @@ class DividerView : public views::View, public views::ViewTargeterDelegate {
   SplitViewDivider* divider_;
 };
 
-}  // namespace
+BEGIN_METADATA(DividerView, views::View)
+END_METADATA
+
+// -----------------------------------------------------------------------------
+// SplitViewDivider:
 
 SplitViewDivider::SplitViewDivider(SplitViewController* controller)
     : controller_(controller) {
@@ -362,9 +396,30 @@ void SplitViewDivider::SetAlwaysOnTop(bool on_top) {
   }
 }
 
+void SplitViewDivider::StackOnTopOfTheObservedWindows() {
+  divider_widget_->SetZOrderLevel(ui::ZOrderLevel::kNormal);
+  aura::Window* root_window = controller_->root_window();
+  DCHECK(root_window);
+  DCHECK(root_window->IsRootWindow());
+  auto* parent_container =
+      root_window->GetChildById(kShellWindowId_MenuContainer);
+  auto* parent_container_layer = parent_container->layer();
+  for (auto* window : observed_windows_) {
+    if (window->parent() == parent_container) {
+      parent_container->StackChildAtTop(window);
+      parent_container_layer->StackAtTop(window->layer());
+    }
+  }
+
+  aura::Window* divider_native_window = divider_widget_->GetNativeWindow();
+  parent_container->StackChildAtTop(divider_native_window);
+  parent_container_layer->StackAtTop(divider_native_window->layer());
+}
+
 void SplitViewDivider::SetAdjustable(bool adjustable) {
-  if (adjustable == IsAdjustable())
+  if (adjustable == IsAdjustable()) {
     return;
+  }
 
   divider_widget_->GetNativeWindow()->SetEventTargetingPolicy(
       adjustable ? aura::EventTargetingPolicy::kTargetAndDescendants
@@ -373,6 +428,8 @@ void SplitViewDivider::SetAdjustable(bool adjustable) {
 }
 
 bool SplitViewDivider::IsAdjustable() const {
+  DCHECK(divider_widget_);
+  DCHECK(divider_widget_->GetNativeView());
   return divider_widget_->GetNativeWindow()->event_targeting_policy() !=
          aura::EventTargetingPolicy::kNone;
 }
@@ -412,7 +469,15 @@ void SplitViewDivider::OnWindowDragStarted() {
 
 void SplitViewDivider::OnWindowDragEnded() {
   is_dragging_window_ = false;
-  SetAlwaysOnTop(true);
+  if (IsInTabletMode()) {
+    SetAlwaysOnTop(true);
+  } else {
+    StackOnTopOfTheObservedWindows();
+  }
+}
+
+bool SplitViewDivider::IsWindowObserved(const aura::Window* window) const {
+  return base::Contains(observed_windows_, window);
 }
 
 void SplitViewDivider::OnWindowDestroying(aura::Window* window) {
@@ -452,12 +517,14 @@ void SplitViewDivider::OnWindowBoundsChanged(aura::Window* window,
 void SplitViewDivider::OnWindowActivated(ActivationReason reason,
                                          aura::Window* gained_active,
                                          aura::Window* lost_active) {
-  if (!is_dragging_window_ &&
+  if (IsInTabletMode() && !is_dragging_window_ &&
       (!gained_active || base::Contains(observed_windows_, gained_active))) {
     SetAlwaysOnTop(true);
+  } else if (ShouldAutomaticallyGroupOnWindowsSnappedInClamshell()) {
+    StackOnTopOfTheObservedWindows();
   } else {
-    // If |gained_active| is not one of the observed windows, or there is one
-    // window that is currently being dragged, |divider_widget_| should not
+    // If `gained_active` is not one of the observed windows, or there is one
+    // window that is currently being dragged, `divider_widget_` should not
     // be placed on top.
     SetAlwaysOnTop(false);
   }
@@ -473,28 +540,17 @@ void SplitViewDivider::OnTransientChildRemoved(aura::Window* window,
   StopObservingTransientChild(transient);
 }
 
-bool SplitViewDivider::IsWindowObserved(const aura::Window* window) const {
-  return base::Contains(observed_windows_, window);
-}
-
 void SplitViewDivider::CreateDividerWidget(SplitViewController* controller) {
   DCHECK(!divider_widget_);
   // Native widget owns this widget.
   divider_widget_ = new views::Widget;
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
-  params.opacity = views::Widget::InitParams::WindowOpacity::kOpaque;
-  params.activatable = views::Widget::InitParams::Activatable::kNo;
-  params.parent = Shell::GetContainer(controller->root_window(),
-                                      kShellWindowId_AlwaysOnTopContainer);
-  params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
-  params.name = "SplitViewDivider";
   divider_widget_->set_focus_on_creation(false);
-  divider_widget_->Init(std::move(params));
+  divider_widget_->Init(GetWidgetInitParams(controller->root_window()));
   divider_widget_->SetVisibilityAnimationTransition(
       views::Widget::ANIMATE_NONE);
   divider_view_ = divider_widget_->SetContentsView(
       std::make_unique<DividerView>(controller, this));
-  divider_widget_->SetBounds(GetDividerBoundsInScreen(false /* is_dragging */));
+  divider_widget_->SetBounds(GetDividerBoundsInScreen(/*is_dragging=*/false));
   divider_widget_->GetNativeWindow()->SetProperty(kLockedToRootKey, true);
   divider_widget_->Show();
 }
