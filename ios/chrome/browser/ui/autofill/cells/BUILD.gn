@@ -2,11 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# TODO(crbug.com/1344830): Migrate away from deprecated MDC APIs.
-config("disable_deprecated_declarations") {
-  cflags = [ "-Wno-deprecated-declarations" ]
-}
-
 source_set("cells") {
   sources = [
     "autofill_edit_item.h",
@@ -17,8 +12,6 @@ source_set("cells") {
     "expiration_date_edit_item.h",
     "expiration_date_edit_item.mm",
     "expiration_date_edit_item_delegate.h",
-    "legacy_autofill_edit_item.h",
-    "legacy_autofill_edit_item.mm",
     "target_account_item.h",
     "target_account_item.mm",
   ]
@@ -28,23 +21,17 @@ source_set("cells") {
     "//build:branding_buildflags",
     "//components/resources:components_scaled_resources_grit",
     "//components/strings",
-    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/autofill:autofill_ui",
     "//ios/chrome/browser/ui/autofill:autofill_ui_type",
-    "//ios/chrome/browser/ui/collection_view/cells",
     "//ios/chrome/browser/ui/table_view:styler",
     "//ios/chrome/browser/ui/table_view/cells",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/table_view:cells_constants",
-    "//ios/chrome/common/ui/util",
     "//ui/base",
   ]
 
-  configs += [
-    ":disable_deprecated_declarations",
-    "//build/config/compiler:enable_arc",
-  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("unit_tests") {
@@ -52,7 +39,6 @@ source_set("unit_tests") {
   sources = [
     "cvc_header_item_unittest.mm",
     "expiration_date_edit_item_unittest.mm",
-    "legacy_autofill_edit_item_unittest.mm",
   ]
 
   deps = [
@@ -60,13 +46,9 @@ source_set("unit_tests") {
     "//base",
     "//ios/chrome/browser/ui/autofill:autofill_ui",
     "//ios/chrome/browser/ui/table_view:styler",
-    "//ios/third_party/material_components_ios",
     "//testing/gtest",
     "//third_party/ocmock",
   ]
 
-  configs += [
-    ":disable_deprecated_declarations",
-    "//build/config/compiler:enable_arc",
-  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
 }
