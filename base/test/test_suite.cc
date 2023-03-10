@@ -179,8 +179,7 @@ class FeatureListScopedToEachTest : public testing::EmptyTestEventListener {
     // TODO(https://crbug.com/1400059): Enable dangling pointer detector.
     // TODO(https://crbug.com/1413674): Enable PartitionAlloc in unittests with
     // ASAN.
-#if BUILDFLAG(USE_PARTITION_ALLOC) && !BUILDFLAG(IS_ANDROID) && \
-    !defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(USE_PARTITION_ALLOC) && !defined(ADDRESS_SANITIZER)
     allocator::PartitionAllocSupport::Get()->ReconfigureAfterFeatureListInit(
         "", /*configure_dangling_pointer_detector=*/false);
 #endif
@@ -598,8 +597,7 @@ void TestSuite::Initialize() {
   // Android too. Same for ASAN.
   // TODO(https://crbug.com/1413674): Enable PartitionAlloc in unittests with
   // ASAN.
-#if BUILDFLAG(USE_PARTITION_ALLOC) && !BUILDFLAG(IS_ANDROID) && \
-    !defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(USE_PARTITION_ALLOC) && !defined(ADDRESS_SANITIZER)
   allocator::PartitionAllocSupport::Get()->ReconfigureForTests();
 #endif  // BUILDFLAG(IS_WIN)
 
