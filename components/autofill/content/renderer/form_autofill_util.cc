@@ -504,7 +504,7 @@ std::u16string InferLabelFromPlaceholder(const WebFormControlElement& element) {
 }
 
 // Detects a label declared after the `element`, which is visually positioned
-// above the element (usually using CCS). Such labels often act as a
+// above the element (usually using CSS). Such labels often act as
 // placeholders. E.g.
 // <div>
 //  <input>
