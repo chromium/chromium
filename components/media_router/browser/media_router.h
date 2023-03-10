@@ -16,6 +16,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/media_router/browser/mirroring_media_controller_host.h"
 #include "components/media_router/browser/presentation_connection_message_observer.h"
 #include "components/media_router/common/media_route.h"
 #include "components/media_router/common/media_route_provider_helper.h"
@@ -158,6 +159,11 @@ class MediaRouter : public KeyedService {
       const MediaRoute::Id& route_id) = 0;
 
 #if !BUILDFLAG(IS_ANDROID)
+  // Returns a pointer to a controller host that sends media commands related to
+  // mirroring within a route.
+  virtual MirroringMediaControllerHost* GetMirroringMediaControllerHost(
+      const MediaRoute::Id& route_id) = 0;
+
   // Returns the IssueManager owned by the MediaRouter. Guaranteed to be
   // non-null.
   virtual IssueManager* GetIssueManager() = 0;

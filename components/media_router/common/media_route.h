@@ -109,6 +109,8 @@ class MediaRoute {
   void set_is_connecting(bool is_connecting) { is_connecting_ = is_connecting; }
   bool is_connecting() const { return is_connecting_; }
 
+  bool IsLocalMirroringRoute() const;
+
   bool operator==(const MediaRoute& other) const;
 
  private:
