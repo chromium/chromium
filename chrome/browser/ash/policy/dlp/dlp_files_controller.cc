@@ -210,7 +210,7 @@ DlpRulesManager::Component MapProtoToPolicyComponent(
       return DlpRulesManager::Component::kUsb;
     case ::dlp::DlpComponent::GOOGLE_DRIVE:
       return DlpRulesManager::Component::kDrive;
-    case ::dlp::DlpComponent::UNKOWN_COMPONENT:
+    case ::dlp::DlpComponent::UNKNOWN_COMPONENT:
     case ::dlp::DlpComponent::SYSTEM:
       return DlpRulesManager::Component::kUnknownComponent;
   }
@@ -221,7 +221,7 @@ DlpRulesManager::Component MapProtoToPolicyComponent(
     DlpRulesManager::Component component) {
   switch (component) {
     case DlpRulesManager::Component::kUnknownComponent:
-      return ::dlp::DlpComponent::UNKOWN_COMPONENT;
+      return ::dlp::DlpComponent::UNKNOWN_COMPONENT;
     case DlpRulesManager::Component::kArc:
       return ::dlp::DlpComponent::ARC;
     case DlpRulesManager::Component::kCrostini:
@@ -446,7 +446,7 @@ void GotFilesSourcesOfCopy(
     DlpRulesManager::Component component) {
   switch (component) {
     case DlpRulesManager::Component::kUnknownComponent:
-      return ::dlp::DlpComponent::UNKOWN_COMPONENT;
+      return ::dlp::DlpComponent::UNKNOWN_COMPONENT;
     case DlpRulesManager::Component::kArc:
       return ::dlp::DlpComponent::ARC;
     case DlpRulesManager::Component::kCrostini:
