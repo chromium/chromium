@@ -436,8 +436,8 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
 
   bool enable_unsafe_webgpu_ = false;
   WebGPUAdapterName use_webgpu_adapter_ = WebGPUAdapterName::kDefault;
-  std::vector<std::string> force_enabled_toggles_;
-  std::vector<std::string> force_disabled_toggles_;
+  std::vector<std::string> require_enabled_toggles_;
+  std::vector<std::string> require_disabled_toggles_;
   bool allow_unsafe_apis_;
   bool tiered_adapter_limits_;
 
@@ -1097,23 +1097,23 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
       isolation_key_provider_(isolation_key_provider) {
   enable_unsafe_webgpu_ = gpu_preferences.enable_unsafe_webgpu;
   use_webgpu_adapter_ = gpu_preferences.use_webgpu_adapter;
-  force_enabled_toggles_ = gpu_preferences.enabled_dawn_features_list;
-  force_disabled_toggles_ = gpu_preferences.disabled_dawn_features_list;
+  require_enabled_toggles_ = gpu_preferences.enabled_dawn_features_list;
+  require_disabled_toggles_ = gpu_preferences.disabled_dawn_features_list;
 
   // Only allow unsafe APIs if the disallow_unsafe_apis toggle is explicitly
   // disabled.
   allow_unsafe_apis_ =
-      base::Contains(force_disabled_toggles_, "disallow_unsafe_apis");
+      base::Contains(require_disabled_toggles_, "disallow_unsafe_apis");
 
   // Force adapters to report their limits in predetermined tiers unless the
   // adapter_limit_tiers toggle is explicitly disabled.
   tiered_adapter_limits_ =
-      !base::Contains(force_disabled_toggles_, "tiered_adapter_limits");
+      !base::Contains(require_disabled_toggles_, "tiered_adapter_limits");
 
   // Enable the blocklist unless --enable-unsafe-webgpu or
   // --disable-dawn-features=adapter_blocklist
   bool disable_adapter_blocklist =
-      base::Contains(force_disabled_toggles_, "adapter_blocklist");
+      base::Contains(require_disabled_toggles_, "adapter_blocklist");
   dawn_instance_->EnableAdapterBlocklist(
       !(enable_unsafe_webgpu_ || disable_adapter_blocklist));
 
@@ -1363,10 +1363,10 @@ void WebGPUDecoderImpl::RequestDeviceImpl(
     require_device_enabled_toggles.push_back("disable_blob_cache");
   }
 
-  for (const std::string& toggles : force_enabled_toggles_) {
+  for (const std::string& toggles : require_enabled_toggles_) {
     require_device_enabled_toggles.push_back(toggles.c_str());
   }
-  for (const std::string& toggles : force_disabled_toggles_) {
+  for (const std::string& toggles : require_disabled_toggles_) {
     require_device_disabled_toggles.push_back(toggles.c_str());
   }
   dawn_device_toggles.enabledToggles = require_device_enabled_toggles.data();
