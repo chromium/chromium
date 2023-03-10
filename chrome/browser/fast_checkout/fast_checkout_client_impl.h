@@ -44,6 +44,8 @@ class FastCheckoutClientImpl
       const autofill::FormData& form,
       const autofill::FormFieldData& field,
       base::WeakPtr<autofill::AutofillManager> autofill_manager) override;
+  // The parameter `allow_further_runs` is ignored if the UI is not currently
+  // showing.
   void Stop(bool allow_further_runs) override;
   bool IsRunning() const override;
   bool IsShowing() const override;
@@ -185,6 +187,22 @@ class FastCheckoutClientImpl
   // Returns a pointer to the credit card corresponding to
   // `selected_credit_card_id_`. Stops the run if it's a `nullptr`.
   autofill::CreditCard* GetSelectedCreditCard();
+
+  // Fills credit card form via the `autofill_manager_` and handles internal
+  // state.
+  void FillCreditCardForm(const autofill::FormStructure& form,
+                          const autofill::FormFieldData& field,
+                          const autofill::CreditCard& credit_card,
+                          const std::u16string& cvc);
+
+  // Same as Stop() but does not require `IsShowing() == true` for
+  // `allow_further_runs == false` to have any effect. The `IsShowing()` guard
+  // is currently required because of uncontrolled `HideFastCheckout()` calls
+  // in `BrowserAutofillManager::OnHidePopupImpl()`.
+  // TODO(crbug.com/1334642): remove `HideFastCheckout()` call from
+  // `BrowserAutofillManger` by introducing a new `AutofillManager::Observer`
+  // methods pair, then remove this method in favor of `Stop()`.
+  void InternalStop(bool allow_further_runs);
 
   // Triggers reparse with a delay of `kSleepBetweenTriggerReparseCalls`.
   // Reparsing updates the forms cache `autofill_manager_->form_structures()`

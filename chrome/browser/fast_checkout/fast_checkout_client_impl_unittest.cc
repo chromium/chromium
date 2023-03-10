@@ -643,8 +643,8 @@ TEST_F(FastCheckoutClientImplTest,
 
 TEST_F(FastCheckoutClientImplTest,
        OnOptionsSelected_LocalCard_SavesFormsAndAutofillDataSelections) {
-  std::unique_ptr<autofill::FormStructure> credit_card_form =
-      SetUpCreditCardForm();
+  autofill::FormStructure* credit_card_form =
+      AddFormToAutofillManagerCache(SetUpCreditCardForm());
 
   EXPECT_CALL(*autofill_manager(), TriggerReparseInAllFrames);
 
@@ -659,6 +659,11 @@ TEST_F(FastCheckoutClientImplTest,
             fast_checkout_client()->selected_credit_card_id_.value());
   EXPECT_THAT(fast_checkout_client()->form_signatures_to_fill_,
               ElementsAre(credit_card_form->form_signature()));
+  EXPECT_THAT(fast_checkout_client()->form_filling_states_,
+              UnorderedElementsAre(
+                  Pair(Pair(credit_card_form->form_signature(),
+                            autofill::FormType::kCreditCardForm),
+                       FastCheckoutClientImpl::FillingState::kFilling)));
 }
 
 TEST_F(FastCheckoutClientImplTest, OnAfterLoadedServerPredictions_FillsForms) {
@@ -745,6 +750,8 @@ TEST_F(FastCheckoutClientImplTest,
       *autofill_manager(), credit_card_form->global_id());
 
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
+  EXPECT_EQ(fast_checkout_client()->fast_checkout_ui_state_,
+            FastCheckoutUIState::kWasShown);
   ExpectRunOutcomeUkm(FastCheckoutRunOutcome::kSuccess);
   auto ukm_entries = ukm_recorder_.GetEntries(
       Autofill_FastCheckoutFormStatus::kEntryName,
@@ -774,16 +781,30 @@ TEST_F(FastCheckoutClientImplTest,
               Pair(Autofill_FastCheckoutFormStatus::kFormTypesName, 5))));
 }
 
-TEST_F(FastCheckoutClientImplTest, OnAutofillManagerReset_ResetsState) {
+TEST_F(FastCheckoutClientImplTest,
+       OnAutofillManagerReset_IsShowing_ResetsState) {
   EXPECT_TRUE(fast_checkout_client()->TryToStart(
       GURL(kUrl), autofill::FormData(), autofill::FormFieldData(),
       autofill_manager()->GetWeakPtr()));
 
   EXPECT_TRUE(fast_checkout_client()->IsRunning());
+  EXPECT_TRUE(fast_checkout_client()->IsShowing());
   fast_checkout_client()->OnAutofillManagerReset(*autofill_manager());
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
   ExpectRunOutcomeUkm(
       FastCheckoutRunOutcome::kNavigationWhileBottomsheetWasShown);
+}
+
+TEST_F(FastCheckoutClientImplTest,
+       OnAutofillManagerReset_IsNotShowing_ResetsState) {
+  std::unique_ptr<autofill::FormStructure> address_form = SetUpAddressForm();
+
+  StartRunAndSelectOptions({address_form->form_signature()});
+  EXPECT_TRUE(fast_checkout_client()->IsRunning());
+  EXPECT_FALSE(fast_checkout_client()->IsShowing());
+  fast_checkout_client()->OnAutofillManagerReset(*autofill_manager());
+  EXPECT_FALSE(fast_checkout_client()->IsRunning());
+  ExpectRunOutcomeUkm(FastCheckoutRunOutcome::kPageRefreshed);
 }
 
 TEST_F(FastCheckoutClientImplTest, OnAutofillManagerDestroyed_ResetsState) {
