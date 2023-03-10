@@ -393,3 +393,28 @@ TEST_F(
   EXPECT_EQ(trackable_section_items.count, 1u);
   EXPECT_EQ(tracked_section_items.count, 4u);
 }
+
+// Simulates untracking a product that is visible on the current site but the
+// site's product is not tracked.
+TEST_F(PriceNotificationsTableViewControllerTest,
+       UntrackCrossMerchantItemWithItemOnCurrentPageNotTracked) {
+  id<PriceNotificationsConsumer> consumer =
+      base::mac::ObjCCast<PriceNotificationsTableViewController>(controller());
+  PriceNotificationsTableViewItem* trackable_item =
+      [[PriceNotificationsTableViewItem alloc] initWithType:ItemTypeListItem];
+  [consumer setTrackableItem:trackable_item currentlyTracking:NO];
+  PriceNotificationsTableViewItem* tracked_item =
+      [[PriceNotificationsTableViewItem alloc] initWithType:ItemTypeListItem];
+  [consumer addTrackedItem:tracked_item toBeginning:NO];
+
+  [consumer didStopPriceTrackingItem:tracked_item onCurrentSite:YES];
+  NSArray<PriceNotificationsTableViewItem*>* trackable_section_items =
+      GetItemsFromSection(controller().tableViewModel,
+                          SectionIdentifierTrackableItemsOnCurrentSite);
+  NSArray<PriceNotificationsTableViewItem*>* tracked_section_items =
+      GetItemsFromSection(controller().tableViewModel,
+                          SectionIdentifierTrackedItems);
+
+  EXPECT_EQ(trackable_section_items.count, 1u);
+  EXPECT_EQ(tracked_section_items.count, 0u);
+}
