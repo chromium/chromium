@@ -13,20 +13,20 @@ namespace partition_alloc::internal {
 
 OomFunction g_oom_handling_function = nullptr;
 
-PA_NOINLINE void PA_NOT_TAIL_CALLED
-PartitionExcessiveAllocationSize(size_t size) {
+PA_NOINLINE PA_NOT_TAIL_CALLED void PartitionExcessiveAllocationSize(
+    size_t size) {
   PA_NO_CODE_FOLDING();
   OOM_CRASH(size);
 }
 
 #if !defined(ARCH_CPU_64_BITS)
-PA_NOINLINE void PA_NOT_TAIL_CALLED
+PA_NOINLINE PA_NOT_TAIL_CALLED void
 PartitionOutOfMemoryWithLotsOfUncommitedPages(size_t size) {
   PA_NO_CODE_FOLDING();
   OOM_CRASH(size);
 }
 
-[[noreturn]] PA_NOINLINE void PA_NOT_TAIL_CALLED
+[[noreturn]] PA_NOT_TAIL_CALLED PA_NOINLINE void
 PartitionOutOfMemoryWithLargeVirtualSize(size_t virtual_size) {
   PA_NO_CODE_FOLDING();
   OOM_CRASH(virtual_size);

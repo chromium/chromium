@@ -19,24 +19,24 @@ namespace debug {
 #if defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_HWASAN)
 
 // Generates an heap buffer overflow.
-BASE_EXPORT NOINLINE void AsanHeapOverflow();
+NOINLINE BASE_EXPORT void AsanHeapOverflow();
 
 // Generates an heap buffer underflow.
-BASE_EXPORT NOINLINE void AsanHeapUnderflow();
+NOINLINE BASE_EXPORT void AsanHeapUnderflow();
 
 // Generates an use after free.
-BASE_EXPORT NOINLINE void AsanHeapUseAfterFree();
+NOINLINE BASE_EXPORT void AsanHeapUseAfterFree();
 
 // The "corrupt-block" and "corrupt-heap" classes of bugs is specific to
 // Windows.
 #if BUILDFLAG(IS_WIN)
 // Corrupts a memory block and makes sure that the corruption gets detected when
 // we try to free this block.
-BASE_EXPORT NOINLINE void AsanCorruptHeapBlock();
+NOINLINE BASE_EXPORT void AsanCorruptHeapBlock();
 
 // Corrupts the heap and makes sure that the corruption gets detected when a
 // crash occur.
-BASE_EXPORT NOINLINE void AsanCorruptHeap();
+NOINLINE BASE_EXPORT void AsanCorruptHeap();
 
 #endif  // BUILDFLAG(IS_WIN)
 #endif  // ADDRESS_SANITIZER

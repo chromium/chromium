@@ -2139,7 +2139,7 @@ static constexpr size_t kTagOffsetForTest = 2;
 struct MTECheckedPtrImplPartitionAllocSupportForTest {
   static bool EnabledForPtr(void* ptr) { return !!ptr; }
 
-  static ALWAYS_INLINE void* TagPointer(uintptr_t ptr) {
+  ALWAYS_INLINE static void* TagPointer(uintptr_t ptr) {
     return reinterpret_cast<void*>(ptr - kTagOffsetForTest);
   }
 };

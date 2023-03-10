@@ -8,7 +8,7 @@
 
 namespace blink {
 
-static ALWAYS_INLINE __m128i WrapIndexVector(__m128i v_write_index,
+ALWAYS_INLINE static __m128i WrapIndexVector(__m128i v_write_index,
                                              __m128i v_buffer_length) {
   // Wrap the write_index if any index is past the end of the buffer.
   // This implements
@@ -31,7 +31,7 @@ static ALWAYS_INLINE __m128i WrapIndexVector(__m128i v_write_index,
   return _mm_sub_epi32(v_write_index, _mm_andnot_si128(cmp, v_buffer_length));
 }
 
-static ALWAYS_INLINE __m128 WrapPositionVector(__m128 v_position,
+ALWAYS_INLINE static __m128 WrapPositionVector(__m128 v_position,
                                                __m128 v_buffer_length) {
   // Wrap the read position if it exceed the buffer length.
   // This implements

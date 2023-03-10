@@ -46,7 +46,7 @@ PA_COMPONENT_EXPORT(RAW_PTR) void ResetRawPtrHooks();
 struct RawPtrHookableImpl {
   // Wraps a pointer.
   template <typename T>
-  static constexpr PA_ALWAYS_INLINE T* WrapRawPtr(T* ptr) {
+  PA_ALWAYS_INLINE static constexpr T* WrapRawPtr(T* ptr) {
     if (!partition_alloc::internal::base::is_constant_evaluated()) {
       GetRawPtrHooks()->wrap_ptr(reinterpret_cast<uintptr_t>(ptr));
     }
@@ -55,7 +55,7 @@ struct RawPtrHookableImpl {
 
   // Notifies the allocator when a wrapped pointer is being removed or replaced.
   template <typename T>
-  static constexpr PA_ALWAYS_INLINE void ReleaseWrappedPtr(T* ptr) {
+  PA_ALWAYS_INLINE static constexpr void ReleaseWrappedPtr(T* ptr) {
     if (!partition_alloc::internal::base::is_constant_evaluated()) {
       GetRawPtrHooks()->release_wrapped_ptr(reinterpret_cast<uintptr_t>(ptr));
     }
@@ -64,7 +64,7 @@ struct RawPtrHookableImpl {
   // Unwraps the pointer, while asserting that memory hasn't been freed. The
   // function is allowed to crash on nullptr.
   template <typename T>
-  static constexpr PA_ALWAYS_INLINE T* SafelyUnwrapPtrForDereference(
+  PA_ALWAYS_INLINE static constexpr T* SafelyUnwrapPtrForDereference(
       T* wrapped_ptr) {
     if (!partition_alloc::internal::base::is_constant_evaluated()) {
       GetRawPtrHooks()->safely_unwrap_for_dereference(
@@ -76,7 +76,7 @@ struct RawPtrHookableImpl {
   // Unwraps the pointer, while asserting that memory hasn't been freed. The
   // function must handle nullptr gracefully.
   template <typename T>
-  static constexpr PA_ALWAYS_INLINE T* SafelyUnwrapPtrForExtraction(
+  PA_ALWAYS_INLINE static constexpr T* SafelyUnwrapPtrForExtraction(
       T* wrapped_ptr) {
     if (!partition_alloc::internal::base::is_constant_evaluated()) {
       GetRawPtrHooks()->safely_unwrap_for_extraction(
@@ -88,7 +88,7 @@ struct RawPtrHookableImpl {
   // Unwraps the pointer, without making an assertion on whether memory was
   // freed or not.
   template <typename T>
-  static constexpr PA_ALWAYS_INLINE T* UnsafelyUnwrapPtrForComparison(
+  PA_ALWAYS_INLINE static constexpr T* UnsafelyUnwrapPtrForComparison(
       T* wrapped_ptr) {
     if (!partition_alloc::internal::base::is_constant_evaluated()) {
       GetRawPtrHooks()->unsafely_unwrap_for_comparison(
@@ -99,7 +99,7 @@ struct RawPtrHookableImpl {
 
   // Upcasts the wrapped pointer.
   template <typename To, typename From>
-  static constexpr PA_ALWAYS_INLINE To* Upcast(From* wrapped_ptr) {
+  PA_ALWAYS_INLINE static constexpr To* Upcast(From* wrapped_ptr) {
     static_assert(std::is_convertible<From*, To*>::value,
                   "From must be convertible to To.");
     // Note, this cast may change the address if upcasting to base that lies in
@@ -113,7 +113,7 @@ struct RawPtrHookableImpl {
       typename Z,
       typename =
           std::enable_if_t<partition_alloc::internal::is_offset_type<Z>, void>>
-  static constexpr PA_ALWAYS_INLINE T* Advance(T* wrapped_ptr, Z delta_elems) {
+  PA_ALWAYS_INLINE static constexpr T* Advance(T* wrapped_ptr, Z delta_elems) {
     if (!partition_alloc::internal::base::is_constant_evaluated()) {
       GetRawPtrHooks()->advance(
           reinterpret_cast<uintptr_t>(wrapped_ptr),
@@ -128,7 +128,7 @@ struct RawPtrHookableImpl {
       typename Z,
       typename =
           std::enable_if_t<partition_alloc::internal::is_offset_type<Z>, void>>
-  static constexpr PA_ALWAYS_INLINE T* Retreat(T* wrapped_ptr, Z delta_elems) {
+  PA_ALWAYS_INLINE static constexpr T* Retreat(T* wrapped_ptr, Z delta_elems) {
     if (!partition_alloc::internal::base::is_constant_evaluated()) {
       GetRawPtrHooks()->advance(
           reinterpret_cast<uintptr_t>(wrapped_ptr),
@@ -138,7 +138,7 @@ struct RawPtrHookableImpl {
   }
 
   template <typename T>
-  static constexpr PA_ALWAYS_INLINE ptrdiff_t GetDeltaElems(T* wrapped_ptr1,
+  PA_ALWAYS_INLINE static constexpr ptrdiff_t GetDeltaElems(T* wrapped_ptr1,
                                                             T* wrapped_ptr2) {
     return wrapped_ptr1 - wrapped_ptr2;
   }
@@ -146,7 +146,7 @@ struct RawPtrHookableImpl {
   // Returns a copy of a wrapped pointer, without making an assertion on whether
   // memory was freed or not.
   template <typename T>
-  static constexpr PA_ALWAYS_INLINE T* Duplicate(T* wrapped_ptr) {
+  PA_ALWAYS_INLINE static constexpr T* Duplicate(T* wrapped_ptr) {
     if (!partition_alloc::internal::base::is_constant_evaluated()) {
       GetRawPtrHooks()->duplicate(reinterpret_cast<uintptr_t>(wrapped_ptr));
     }
@@ -156,20 +156,20 @@ struct RawPtrHookableImpl {
   // `WrapRawPtrForDuplication` and `UnsafelyUnwrapPtrForDuplication` are used
   // to create a new raw_ptr<T> from another raw_ptr<T> of a different flavor.
   template <typename T>
-  static constexpr PA_ALWAYS_INLINE T* WrapRawPtrForDuplication(T* ptr) {
+  PA_ALWAYS_INLINE static constexpr T* WrapRawPtrForDuplication(T* ptr) {
     return ptr;
   }
 
   template <typename T>
-  static constexpr PA_ALWAYS_INLINE T* UnsafelyUnwrapPtrForDuplication(
+  PA_ALWAYS_INLINE static constexpr T* UnsafelyUnwrapPtrForDuplication(
       T* wrapped_ptr) {
     return wrapped_ptr;
   }
 
   // This is for accounting only, used by unit tests.
-  static constexpr PA_ALWAYS_INLINE void IncrementSwapCountForTest() {}
-  static constexpr PA_ALWAYS_INLINE void IncrementLessCountForTest() {}
-  static constexpr PA_ALWAYS_INLINE void
+  PA_ALWAYS_INLINE static constexpr void IncrementSwapCountForTest() {}
+  PA_ALWAYS_INLINE static constexpr void IncrementLessCountForTest() {}
+  PA_ALWAYS_INLINE static constexpr void
   IncrementPointerToMemberOperatorCountForTest() {}
 };
 

@@ -93,7 +93,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRefCount {
   static constexpr CountType kPtrInc = 0x0000'0002;
 #endif
 
-  explicit PartitionRefCount(bool needs_mac11_malloc_size_hack);
+  PA_ALWAYS_INLINE explicit PartitionRefCount(
+      bool needs_mac11_malloc_size_hack);
 
   // Incrementing the counter doesn't imply any visibility about modified
   // memory, hence relaxed atomics. For decrement, visibility is required before
@@ -350,9 +351,10 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRefCount {
 #endif
 };
 
-PA_ALWAYS_INLINE PartitionRefCount::PartitionRefCount(bool use_mac11_hack)
+PA_ALWAYS_INLINE PartitionRefCount::PartitionRefCount(
+    bool needs_mac11_malloc_size_hack)
     : count_(kMemoryHeldByAllocatorBit |
-             (use_mac11_hack ? kNeedsMac11MallocSizeHackBit : 0))
+             (needs_mac11_malloc_size_hack ? kNeedsMac11MallocSizeHackBit : 0))
 #if PA_CONFIG(REF_COUNT_CHECK_COOKIE)
       ,
       brp_cookie_(CalculateCookie())
@@ -405,7 +407,7 @@ static_assert((1 << kPartitionRefCountSizeShift) == sizeof(PartitionRefCount));
 // SystemPageSize() isn't always a constrexpr, in which case the compiler
 // wouldn't know it's a power of two. The equivalence of these calculations is
 // checked in PartitionAllocGlobalInit().
-static PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
+PA_ALWAYS_INLINE static PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 GetPartitionRefCountIndexMultiplierShift() {
   return SystemPageShift() * 2 - kSuperPageShift - kPartitionRefCountSizeShift;
 }

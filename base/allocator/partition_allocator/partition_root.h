@@ -432,16 +432,16 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 
   void EnableThreadCacheIfSupported();
 
-  static PA_ALWAYS_INLINE bool IsValidSlotSpan(SlotSpan* slot_span);
-  static PA_ALWAYS_INLINE PartitionRoot* FromSlotSpan(SlotSpan* slot_span);
+  PA_ALWAYS_INLINE static bool IsValidSlotSpan(SlotSpan* slot_span);
+  PA_ALWAYS_INLINE static PartitionRoot* FromSlotSpan(SlotSpan* slot_span);
   // These two functions work unconditionally for normal buckets.
   // For direct map, they only work for the first super page of a reservation,
   // (see partition_alloc_constants.h for the direct map allocation layout).
   // In particular, the functions always work for a pointer to the start of a
   // reservation.
-  static PA_ALWAYS_INLINE PartitionRoot* FromFirstSuperPage(
+  PA_ALWAYS_INLINE static PartitionRoot* FromFirstSuperPage(
       uintptr_t super_page);
-  static PA_ALWAYS_INLINE PartitionRoot* FromAddrInFirstSuperpage(
+  PA_ALWAYS_INLINE static PartitionRoot* FromAddrInFirstSuperpage(
       uintptr_t address);
 
   PA_ALWAYS_INLINE void DecreaseTotalSizeOfAllocatedBytes(SlotSpan* slot_span)
@@ -536,21 +536,21 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
                                      void* ptr,
                                      size_t new_size,
                                      const char* type_name) PA_MALLOC_ALIGNED;
-  static PA_NOINLINE void Free(void* object);
-  static PA_ALWAYS_INLINE void FreeWithFlags(unsigned int flags, void* object);
+  PA_NOINLINE static void Free(void* object);
+  PA_ALWAYS_INLINE static void FreeWithFlags(unsigned int flags, void* object);
   // Same as |Free()|, bypasses the allocator hooks.
-  static PA_ALWAYS_INLINE void FreeNoHooks(void* object);
+  PA_ALWAYS_INLINE static void FreeNoHooks(void* object);
   // Immediately frees the pointer bypassing the quarantine. |slot_start| is the
   // beginning of the slot that contains |object|.
   PA_ALWAYS_INLINE void FreeNoHooksImmediate(void* object,
                                              SlotSpan* slot_span,
                                              uintptr_t slot_start);
 
-  static PA_ALWAYS_INLINE size_t GetUsableSize(void* ptr);
+  PA_ALWAYS_INLINE static size_t GetUsableSize(void* ptr);
   // Same as GetUsableSize() except it adjusts the return value for macOS 11
   // malloc_size() hack.
-  static PA_ALWAYS_INLINE size_t
-  GetUsableSizeWithMac11MallocSizeHack(void* ptr);
+  PA_ALWAYS_INLINE static size_t GetUsableSizeWithMac11MallocSizeHack(
+      void* ptr);
 
   PA_ALWAYS_INLINE PageAccessibilityConfiguration GetPageAccessibility() const;
   PA_ALWAYS_INLINE PageAccessibilityConfiguration
@@ -712,7 +712,7 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     return flags.scan_mode == ScanMode::kEnabled;
   }
 
-  static PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
+  PA_ALWAYS_INLINE static PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
   GetDirectMapMetadataAndGuardPagesSize() {
     // Because we need to fake a direct-map region to look like a super page, we
     // need to allocate more pages around the payload:
@@ -725,7 +725,7 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     return 2 * internal::PartitionPageSize();
   }
 
-  static PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
+  PA_ALWAYS_INLINE static PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
   GetDirectMapSlotSize(size_t raw_size) {
     // Caller must check that the size is not above the MaxDirectMapped()
     // limit before calling. This also guards against integer overflow in the
@@ -735,8 +735,8 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
         raw_size, internal::SystemPageSize());
   }
 
-  static PA_ALWAYS_INLINE size_t
-  GetDirectMapReservationSize(size_t padded_raw_size) {
+  PA_ALWAYS_INLINE static size_t GetDirectMapReservationSize(
+      size_t padded_raw_size) {
     // Caller must check that the size is not above the MaxDirectMapped()
     // limit before calling. This also guards against integer overflow in the
     // calculation here.

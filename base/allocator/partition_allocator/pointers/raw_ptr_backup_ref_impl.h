@@ -39,7 +39,7 @@ struct RawPtrBackupRefImpl {
   // data race will occur.
 
  private:
-  static PA_ALWAYS_INLINE bool IsSupportedAndNotNull(uintptr_t address) {
+  PA_ALWAYS_INLINE static bool IsSupportedAndNotNull(uintptr_t address) {
     // There are many situations where the compiler can prove that
     // `ReleaseWrappedPtr` is called on a value that is always nullptr, but the
     // way `IsManagedByPartitionAllocBRPPool` is written, the compiler can't
@@ -104,25 +104,25 @@ struct RawPtrBackupRefImpl {
 #endif
 
   template <typename T>
-  static PA_ALWAYS_INLINE T* UnpoisonPtr(T* ptr) {
+  PA_ALWAYS_INLINE static T* UnpoisonPtr(T* ptr) {
     return reinterpret_cast<T*>(reinterpret_cast<uintptr_t>(ptr) &
                                 ~OOB_POISON_BIT);
   }
 
   template <typename T>
-  static PA_ALWAYS_INLINE bool IsPtrOOB(T* ptr) {
+  PA_ALWAYS_INLINE static bool IsPtrOOB(T* ptr) {
     return (reinterpret_cast<uintptr_t>(ptr) & OOB_POISON_BIT) ==
            OOB_POISON_BIT;
   }
 
   template <typename T>
-  static PA_ALWAYS_INLINE T* PoisonOOBPtr(T* ptr) {
+  PA_ALWAYS_INLINE static T* PoisonOOBPtr(T* ptr) {
     return reinterpret_cast<T*>(reinterpret_cast<uintptr_t>(ptr) |
                                 OOB_POISON_BIT);
   }
 #else   // BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
   template <typename T>
-  static PA_ALWAYS_INLINE T* UnpoisonPtr(T* ptr) {
+  PA_ALWAYS_INLINE static T* UnpoisonPtr(T* ptr) {
     return ptr;
   }
 #endif  // BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
@@ -130,7 +130,7 @@ struct RawPtrBackupRefImpl {
  public:
   // Wraps a pointer.
   template <typename T>
-  static constexpr PA_ALWAYS_INLINE T* WrapRawPtr(T* ptr) {
+  PA_ALWAYS_INLINE static constexpr T* WrapRawPtr(T* ptr) {
     if (partition_alloc::internal::base::is_constant_evaluated()) {
       return ptr;
     }
@@ -164,7 +164,7 @@ struct RawPtrBackupRefImpl {
 
   // Notifies the allocator when a wrapped pointer is being removed or replaced.
   template <typename T>
-  static constexpr PA_ALWAYS_INLINE void ReleaseWrappedPtr(T* wrapped_ptr) {
+  PA_ALWAYS_INLINE static constexpr void ReleaseWrappedPtr(T* wrapped_ptr) {
     if (partition_alloc::internal::base::is_constant_evaluated()) {
       return;
     }
@@ -187,7 +187,7 @@ struct RawPtrBackupRefImpl {
   // Unwraps the pointer, while asserting that memory hasn't been freed. The
   // function is allowed to crash on nullptr.
   template <typename T>
-  static constexpr PA_ALWAYS_INLINE T* SafelyUnwrapPtrForDereference(
+  PA_ALWAYS_INLINE static constexpr T* SafelyUnwrapPtrForDereference(
       T* wrapped_ptr) {
     if (partition_alloc::internal::base::is_constant_evaluated()) {
       return wrapped_ptr;
@@ -209,7 +209,7 @@ struct RawPtrBackupRefImpl {
   // Unwraps the pointer, while asserting that memory hasn't been freed. The
   // function must handle nullptr gracefully.
   template <typename T>
-  static constexpr PA_ALWAYS_INLINE T* SafelyUnwrapPtrForExtraction(
+  PA_ALWAYS_INLINE static constexpr T* SafelyUnwrapPtrForExtraction(
       T* wrapped_ptr) {
     if (partition_alloc::internal::base::is_constant_evaluated()) {
       return wrapped_ptr;
@@ -235,7 +235,7 @@ struct RawPtrBackupRefImpl {
   // Unwraps the pointer, without making an assertion on whether memory was
   // freed or not.
   template <typename T>
-  static constexpr PA_ALWAYS_INLINE T* UnsafelyUnwrapPtrForComparison(
+  PA_ALWAYS_INLINE static constexpr T* UnsafelyUnwrapPtrForComparison(
       T* wrapped_ptr) {
     if (partition_alloc::internal::base::is_constant_evaluated()) {
       return wrapped_ptr;
@@ -248,7 +248,7 @@ struct RawPtrBackupRefImpl {
 
   // Upcasts the wrapped pointer.
   template <typename To, typename From>
-  static constexpr PA_ALWAYS_INLINE To* Upcast(From* wrapped_ptr) {
+  PA_ALWAYS_INLINE static constexpr To* Upcast(From* wrapped_ptr) {
     static_assert(std::is_convertible<From*, To*>::value,
                   "From must be convertible to To.");
     // Note, this cast may change the address if upcasting to base that lies in
@@ -259,7 +259,7 @@ struct RawPtrBackupRefImpl {
   // Verify the pointer stayed in the same slot, and return the poisoned version
   // of `new_ptr` if OOB poisoning is enabled.
   template <typename T>
-  static PA_ALWAYS_INLINE T* VerifyAndPoisonPointerAfterAdvanceOrRetreat(
+  PA_ALWAYS_INLINE static T* VerifyAndPoisonPointerAfterAdvanceOrRetreat(
       T* unpoisoned_ptr,
       T* new_ptr) {
     // In the "before allocation" mode, on 32-bit, we can run into a problem
@@ -335,7 +335,7 @@ struct RawPtrBackupRefImpl {
       typename Z,
       typename =
           std::enable_if_t<partition_alloc::internal::is_offset_type<Z>, void>>
-  static constexpr PA_ALWAYS_INLINE T* Advance(T* wrapped_ptr, Z delta_elems) {
+  PA_ALWAYS_INLINE static constexpr T* Advance(T* wrapped_ptr, Z delta_elems) {
     if (partition_alloc::internal::base::is_constant_evaluated()) {
       return wrapped_ptr + delta_elems;
     }
@@ -350,7 +350,7 @@ struct RawPtrBackupRefImpl {
       typename Z,
       typename =
           std::enable_if_t<partition_alloc::internal::is_offset_type<Z>, void>>
-  static constexpr PA_ALWAYS_INLINE T* Retreat(T* wrapped_ptr, Z delta_elems) {
+  PA_ALWAYS_INLINE static constexpr T* Retreat(T* wrapped_ptr, Z delta_elems) {
     if (partition_alloc::internal::base::is_constant_evaluated()) {
       return wrapped_ptr - delta_elems;
     }
@@ -360,7 +360,7 @@ struct RawPtrBackupRefImpl {
   }
 
   template <typename T>
-  static constexpr PA_ALWAYS_INLINE ptrdiff_t GetDeltaElems(T* wrapped_ptr1,
+  PA_ALWAYS_INLINE static constexpr ptrdiff_t GetDeltaElems(T* wrapped_ptr1,
                                                             T* wrapped_ptr2) {
     if (partition_alloc::internal::base::is_constant_evaluated()) {
       return wrapped_ptr1 - wrapped_ptr2;
@@ -392,7 +392,7 @@ struct RawPtrBackupRefImpl {
   // memory was freed or not.
   // This method increments the reference count of the allocation slot.
   template <typename T>
-  static constexpr PA_ALWAYS_INLINE T* Duplicate(T* wrapped_ptr) {
+  PA_ALWAYS_INLINE static constexpr T* Duplicate(T* wrapped_ptr) {
     if (partition_alloc::internal::base::is_constant_evaluated()) {
       return wrapped_ptr;
     }
@@ -401,14 +401,14 @@ struct RawPtrBackupRefImpl {
 
   // Report the current wrapped pointer if pointee isn't alive anymore.
   template <typename T>
-  static PA_ALWAYS_INLINE void ReportIfDangling(T* wrapped_ptr) {
+  PA_ALWAYS_INLINE static void ReportIfDangling(T* wrapped_ptr) {
     ReportIfDanglingInternal(partition_alloc::UntagPtr(wrapped_ptr));
   }
 
   // `WrapRawPtrForDuplication` and `UnsafelyUnwrapPtrForDuplication` are used
   // to create a new raw_ptr<T> from another raw_ptr<T> of a different flavor.
   template <typename T>
-  static constexpr PA_ALWAYS_INLINE T* WrapRawPtrForDuplication(T* ptr) {
+  PA_ALWAYS_INLINE static constexpr T* WrapRawPtrForDuplication(T* ptr) {
     if (partition_alloc::internal::base::is_constant_evaluated()) {
       return ptr;
     } else {
@@ -417,7 +417,7 @@ struct RawPtrBackupRefImpl {
   }
 
   template <typename T>
-  static constexpr PA_ALWAYS_INLINE T* UnsafelyUnwrapPtrForDuplication(
+  PA_ALWAYS_INLINE static constexpr T* UnsafelyUnwrapPtrForDuplication(
       T* wrapped_ptr) {
     if (partition_alloc::internal::base::is_constant_evaluated()) {
       return wrapped_ptr;
@@ -427,9 +427,9 @@ struct RawPtrBackupRefImpl {
   }
 
   // This is for accounting only, used by unit tests.
-  static constexpr PA_ALWAYS_INLINE void IncrementSwapCountForTest() {}
-  static constexpr PA_ALWAYS_INLINE void IncrementLessCountForTest() {}
-  static constexpr PA_ALWAYS_INLINE void
+  PA_ALWAYS_INLINE static constexpr void IncrementSwapCountForTest() {}
+  PA_ALWAYS_INLINE static constexpr void IncrementLessCountForTest() {}
+  PA_ALWAYS_INLINE static constexpr void
   IncrementPointerToMemberOperatorCountForTest() {}
 
  private:
@@ -439,14 +439,14 @@ struct RawPtrBackupRefImpl {
   // lightweight |IsManagedByPartitionAllocBRPPool()| check was inlined.
   // Therefore, we've extracted the rest into the functions below and marked
   // them as PA_NOINLINE to prevent unintended LTO effects.
-  static PA_COMPONENT_EXPORT(RAW_PTR) PA_NOINLINE
-      void AcquireInternal(uintptr_t address);
-  static PA_COMPONENT_EXPORT(RAW_PTR) PA_NOINLINE
-      void ReleaseInternal(uintptr_t address);
-  static PA_COMPONENT_EXPORT(RAW_PTR) PA_NOINLINE
-      bool IsPointeeAlive(uintptr_t address);
-  static PA_COMPONENT_EXPORT(RAW_PTR) PA_NOINLINE
-      void ReportIfDanglingInternal(uintptr_t address);
+  PA_NOINLINE static PA_COMPONENT_EXPORT(RAW_PTR) void AcquireInternal(
+      uintptr_t address);
+  PA_NOINLINE static PA_COMPONENT_EXPORT(RAW_PTR) void ReleaseInternal(
+      uintptr_t address);
+  PA_NOINLINE static PA_COMPONENT_EXPORT(RAW_PTR) bool IsPointeeAlive(
+      uintptr_t address);
+  PA_NOINLINE static PA_COMPONENT_EXPORT(RAW_PTR) void ReportIfDanglingInternal(
+      uintptr_t address);
 };
 
 }  // namespace base::internal

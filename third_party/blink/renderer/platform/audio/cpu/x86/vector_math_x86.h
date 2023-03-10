@@ -37,8 +37,9 @@ static uint32_t GetAVXAlignmentOffsetInNumberOfFloats(const float* source_p) {
   return static_cast<uint32_t>(offset / sizeof(*source_p));
 }
 
-static ALWAYS_INLINE FrameCounts
-SplitFramesToProcess(const float* source_p, uint32_t frames_to_process) {
+ALWAYS_INLINE static FrameCounts SplitFramesToProcess(
+    const float* source_p,
+    uint32_t frames_to_process) {
   FrameCounts counts = {0u, 0u, 0u, 0u, 0u};
 
   const uint32_t avx_alignment_offset =
@@ -92,7 +93,7 @@ SplitFramesToProcess(const float* source_p, uint32_t frames_to_process) {
   return counts;
 }
 
-static ALWAYS_INLINE void PrepareFilterForConv(
+ALWAYS_INLINE static void PrepareFilterForConv(
     const float* filter_p,
     int filter_stride,
     size_t filter_size,
@@ -106,7 +107,7 @@ static ALWAYS_INLINE void PrepareFilterForConv(
   }
 }
 
-static ALWAYS_INLINE void Conv(const float* source_p,
+ALWAYS_INLINE static void Conv(const float* source_p,
                                int source_stride,
                                const float* filter_p,
                                int filter_stride,
@@ -139,7 +140,7 @@ static ALWAYS_INLINE void Conv(const float* source_p,
                dest_stride, frames_to_process, filter_size, nullptr);
 }
 
-static ALWAYS_INLINE void Vadd(const float* source1p,
+ALWAYS_INLINE static void Vadd(const float* source1p,
                                int source_stride1,
                                const float* source2p,
                                int source_stride2,
@@ -175,7 +176,7 @@ static ALWAYS_INLINE void Vadd(const float* source1p,
   }
 }
 
-static ALWAYS_INLINE void Vsub(const float* source1p,
+ALWAYS_INLINE static void Vsub(const float* source1p,
                                int source_stride1,
                                const float* source2p,
                                int source_stride2,
@@ -211,7 +212,7 @@ static ALWAYS_INLINE void Vsub(const float* source1p,
   }
 }
 
-static ALWAYS_INLINE void Vclip(const float* source_p,
+ALWAYS_INLINE static void Vclip(const float* source_p,
                                 int source_stride,
                                 const float* low_threshold_p,
                                 const float* high_threshold_p,
@@ -249,7 +250,7 @@ static ALWAYS_INLINE void Vclip(const float* source_p,
   }
 }
 
-static ALWAYS_INLINE void Vmaxmgv(const float* source_p,
+ALWAYS_INLINE static void Vmaxmgv(const float* source_p,
                                   int source_stride,
                                   float* max_p,
                                   uint32_t frames_to_process) {
@@ -278,7 +279,7 @@ static ALWAYS_INLINE void Vmaxmgv(const float* source_p,
   }
 }
 
-static ALWAYS_INLINE void Vmul(const float* source1p,
+ALWAYS_INLINE static void Vmul(const float* source1p,
                                int source_stride1,
                                const float* source2p,
                                int source_stride2,
@@ -314,7 +315,7 @@ static ALWAYS_INLINE void Vmul(const float* source1p,
   }
 }
 
-static ALWAYS_INLINE void Vsma(const float* source_p,
+ALWAYS_INLINE static void Vsma(const float* source_p,
                                int source_stride,
                                const float* scale,
                                float* dest_p,
@@ -348,7 +349,7 @@ static ALWAYS_INLINE void Vsma(const float* source_p,
   }
 }
 
-static ALWAYS_INLINE void Vsmul(const float* source_p,
+ALWAYS_INLINE static void Vsmul(const float* source_p,
                                 int source_stride,
                                 const float* scale,
                                 float* dest_p,
@@ -382,7 +383,7 @@ static ALWAYS_INLINE void Vsmul(const float* source_p,
   }
 }
 
-static ALWAYS_INLINE void Vsadd(const float* source_p,
+ALWAYS_INLINE static void Vsadd(const float* source_p,
                                 int source_stride,
                                 const float* addend,
                                 float* dest_p,
@@ -416,7 +417,7 @@ static ALWAYS_INLINE void Vsadd(const float* source_p,
   }
 }
 
-static ALWAYS_INLINE void Vsvesq(const float* source_p,
+ALWAYS_INLINE static void Vsvesq(const float* source_p,
                                  int source_stride,
                                  float* sum_p,
                                  uint32_t frames_to_process) {
@@ -445,7 +446,7 @@ static ALWAYS_INLINE void Vsvesq(const float* source_p,
   }
 }
 
-static ALWAYS_INLINE void Zvmul(const float* real1p,
+ALWAYS_INLINE static void Zvmul(const float* real1p,
                                 const float* imag1p,
                                 const float* real2p,
                                 const float* imag2p,

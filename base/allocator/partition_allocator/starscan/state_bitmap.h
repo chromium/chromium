@@ -193,7 +193,7 @@ class StateBitmap final {
   inline void IterateImpl(size_t epoch, Callback);
 
   PA_ALWAYS_INLINE CellType LoadCell(size_t cell_index) const;
-  static constexpr PA_ALWAYS_INLINE std::pair<size_t, size_t>
+  PA_ALWAYS_INLINE static constexpr std::pair<size_t, size_t>
       AllocationIndexAndBit(uintptr_t);
 
   std::array<CellType, kBitmapSize> bitmap_;
@@ -325,7 +325,7 @@ PA_ALWAYS_INLINE
 }
 
 template <size_t PageSize, size_t PageAlignment, size_t AllocationAlignment>
-constexpr PA_ALWAYS_INLINE std::pair<size_t, size_t>
+PA_ALWAYS_INLINE constexpr std::pair<size_t, size_t>
 StateBitmap<PageSize, PageAlignment, AllocationAlignment>::
     AllocationIndexAndBit(uintptr_t address) {
   const uintptr_t offset_in_page = address & kPageOffsetMask;

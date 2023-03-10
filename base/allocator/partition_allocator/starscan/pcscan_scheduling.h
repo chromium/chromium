@@ -188,7 +188,7 @@ QuarantineData& PCScanSchedulingBackend::GetQuarantineData() {
 constexpr LimitBackend::LimitBackend(PCScanScheduler& scheduler)
     : PCScanSchedulingBackend(scheduler) {}
 
-bool PCScanScheduler::AccountFreed(size_t size) {
+PA_ALWAYS_INLINE bool PCScanScheduler::AccountFreed(size_t size) {
   const size_t size_before =
       quarantine_data_.current_size.fetch_add(size, std::memory_order_relaxed);
   return (size_before + size >

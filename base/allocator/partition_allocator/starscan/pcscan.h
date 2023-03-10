@@ -16,14 +16,15 @@
 #include "base/allocator/partition_allocator/partition_page.h"
 #include "base/allocator/partition_allocator/starscan/pcscan_scheduling.h"
 #include "base/allocator/partition_allocator/tagging.h"
+
 namespace partition_alloc {
 
 class StatsReporter;
 
 namespace internal {
 
-[[noreturn]] PA_COMPONENT_EXPORT(PARTITION_ALLOC) PA_NOINLINE PA_NOT_TAIL_CALLED
-    void DoubleFreeAttempt();
+[[noreturn]] PA_NOINLINE PA_NOT_TAIL_CALLED
+    PA_COMPONENT_EXPORT(PARTITION_ALLOC) void DoubleFreeAttempt();
 
 // PCScan (Probabilistic Conservative Scanning) is the algorithm that eliminates
 // use-after-free bugs by verifying that there are no pointers in memory which
@@ -95,7 +96,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PCScan final {
   // Registers a newly allocated super page for |root|.
   static void RegisterNewSuperPage(Root* root, uintptr_t super_page_base);
 
-  static PA_ALWAYS_INLINE void MoveToQuarantine(void* object,
+  PA_ALWAYS_INLINE static void MoveToQuarantine(void* object,
                                                 size_t usable_size,
                                                 uintptr_t slot_start,
                                                 size_t slot_size);
@@ -108,13 +109,13 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PCScan final {
   static void PerformDelayedScan(int64_t delay_in_microseconds);
 
   // Enables safepoints in mutator threads.
-  static void EnableSafepoints();
+  PA_ALWAYS_INLINE static void EnableSafepoints();
   // Join scan from safepoint in mutator thread. As soon as PCScan is scheduled,
   // mutators can join PCScan helping out with clearing and scanning.
-  static void JoinScanIfNeeded();
+  PA_ALWAYS_INLINE static void JoinScanIfNeeded();
 
   // Checks if there is a PCScan task currently in progress.
-  static PA_ALWAYS_INLINE bool IsInProgress();
+  PA_ALWAYS_INLINE static bool IsInProgress();
 
   // Sets process name (used for histograms). |name| must be a string literal.
   static void SetProcessName(const char* name);
@@ -157,7 +158,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PCScan final {
     kSweepingAndFinishing
   };
 
-  static PA_ALWAYS_INLINE PCScan& Instance();
+  PA_ALWAYS_INLINE static PCScan& Instance();
 
   PA_ALWAYS_INLINE bool IsJoinable() const;
   PA_ALWAYS_INLINE void SetJoinableIfSafepointEnabled(bool);

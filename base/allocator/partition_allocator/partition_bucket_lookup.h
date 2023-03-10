@@ -106,10 +106,10 @@ inline constexpr size_t kOrderSubIndexMask[PA_BITS_PER_SIZE_T + 1] = {
 // The class used to generate the bucket lookup table at compile-time.
 class BucketIndexLookup final {
  public:
-  static constexpr PA_ALWAYS_INLINE uint16_t
-  GetIndexForDenserBuckets(size_t size);
-  static constexpr PA_ALWAYS_INLINE uint16_t GetIndexFor8Buckets(size_t size);
-  static constexpr PA_ALWAYS_INLINE uint16_t GetIndex(size_t size);
+  PA_ALWAYS_INLINE static constexpr uint16_t GetIndexForDenserBuckets(
+      size_t size);
+  PA_ALWAYS_INLINE static constexpr uint16_t GetIndexFor8Buckets(size_t size);
+  PA_ALWAYS_INLINE static constexpr uint16_t GetIndex(size_t size);
 
   constexpr BucketIndexLookup() {
     constexpr uint16_t sentinel_bucket_index = kNumBuckets;
@@ -206,13 +206,13 @@ class BucketIndexLookup final {
       bucket_index_lookup_[((kBitsPerSizeT + 1) * kNumBucketsPerOrder) + 1]{};
 };
 
-constexpr PA_ALWAYS_INLINE size_t RoundUpToPowerOfTwo(size_t size) {
+PA_ALWAYS_INLINE constexpr size_t RoundUpToPowerOfTwo(size_t size) {
   const size_t n = 1 << base::bits::Log2Ceiling(static_cast<uint32_t>(size));
   PA_DCHECK(size <= n);
   return n;
 }
 
-constexpr PA_ALWAYS_INLINE size_t RoundUpSize(size_t size) {
+PA_ALWAYS_INLINE constexpr size_t RoundUpSize(size_t size) {
   const size_t next_power = RoundUpToPowerOfTwo(size);
   const size_t prev_power = next_power >> 1;
   PA_DCHECK(size <= next_power);
@@ -224,13 +224,13 @@ constexpr PA_ALWAYS_INLINE size_t RoundUpSize(size_t size) {
   }
 }
 
-constexpr PA_ALWAYS_INLINE uint16_t RoundUpToOdd(uint16_t size) {
+PA_ALWAYS_INLINE constexpr uint16_t RoundUpToOdd(uint16_t size) {
   return (size % 2 == 0) + size;
 }
 
 // static
-constexpr PA_ALWAYS_INLINE uint16_t
-BucketIndexLookup::GetIndexFor8Buckets(size_t size) {
+PA_ALWAYS_INLINE constexpr uint16_t BucketIndexLookup::GetIndexFor8Buckets(
+    size_t size) {
   // This forces the bucket table to be constant-initialized and immediately
   // materialized in the binary.
   constexpr BucketIndexLookup lookup{};
@@ -251,8 +251,8 @@ BucketIndexLookup::GetIndexFor8Buckets(size_t size) {
 }
 
 // static
-constexpr PA_ALWAYS_INLINE uint16_t
-BucketIndexLookup::GetIndexForDenserBuckets(size_t size) {
+PA_ALWAYS_INLINE constexpr uint16_t BucketIndexLookup::GetIndexForDenserBuckets(
+    size_t size) {
   const auto index = GetIndexFor8Buckets(size);
   // Below the minimum size, 4 and 8 bucket distributions are the same, since we
   // can't fit any more buckets per order; this is due to alignment
@@ -272,7 +272,7 @@ BucketIndexLookup::GetIndexForDenserBuckets(size_t size) {
 }
 
 // static
-constexpr PA_ALWAYS_INLINE uint16_t BucketIndexLookup::GetIndex(size_t size) {
+PA_ALWAYS_INLINE constexpr uint16_t BucketIndexLookup::GetIndex(size_t size) {
   // For any order 2^N, under the denser bucket distribution ("Distribution A"),
   // we have 4 evenly distributed buckets: 2^N, 1.25*2^N, 1.5*2^N, and 1.75*2^N.
   // These numbers represent the maximum size of an allocation that can go into

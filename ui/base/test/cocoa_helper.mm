@@ -16,7 +16,7 @@ namespace {
 // Force those leaks here, so there can be a unique calling path, allowing
 // to flag intentional leaks without having to suppress all calls to
 // potentially leaky functions.
-void NOINLINE ForceSystemLeaks() {
+NOINLINE void ForceSystemLeaks() {
   // If a test suite hasn't already initialized NSApp, register the mock one
   // now.
   if (!NSApp)

@@ -214,7 +214,7 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
   //     ThreadMain() -> RunLabeledWorker() -> RunWorker().
   // "RunLabeledWorker()" is a dummy frame based on ThreadLabel+ThreadType
   // and used to easily identify threads in stack traces.
-  void NOT_TAIL_CALLED RunWorker();
+  NOT_TAIL_CALLED void RunWorker();
 
   // Self-reference to prevent destruction of |this| while the thread is alive.
   // Set in Start() before creating the thread. Reset in ThreadMain() before the

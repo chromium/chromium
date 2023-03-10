@@ -27,7 +27,7 @@ constexpr size_t kFreeSlotBitmapOffsetMask = kFreeSlotBitmapBitsPerCell - 1;
 constexpr size_t kFreeSlotBitmapSize =
     (kSuperPageSize / kSmallestBucket) / CHAR_BIT;
 
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
+PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 ReservedFreeSlotBitmapSize() {
 #if BUILDFLAG(USE_FREESLOT_BITMAP)
   return base::bits::AlignUp(kFreeSlotBitmapSize, PartitionPageSize());
@@ -36,7 +36,7 @@ ReservedFreeSlotBitmapSize() {
 #endif
 }
 
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
+PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 CommittedFreeSlotBitmapSize() {
 #if BUILDFLAG(USE_FREESLOT_BITMAP)
   return base::bits::AlignUp(kFreeSlotBitmapSize, SystemPageSize());
@@ -45,7 +45,7 @@ CommittedFreeSlotBitmapSize() {
 #endif
 }
 
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
+PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 NumPartitionPagesPerFreeSlotBitmap() {
   return ReservedFreeSlotBitmapSize() / PartitionPageSize();
 }

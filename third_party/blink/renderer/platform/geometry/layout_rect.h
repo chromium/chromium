@@ -90,8 +90,8 @@ class PLATFORM_EXPORT LayoutRect {
   void SetLocation(const LayoutPoint& location) { location_ = location; }
   void SetSize(const LayoutSize& size) { size_ = size; }
 
-  constexpr ALWAYS_INLINE LayoutUnit X() const { return location_.X(); }
-  constexpr ALWAYS_INLINE LayoutUnit Y() const { return location_.Y(); }
+  ALWAYS_INLINE constexpr LayoutUnit X() const { return location_.X(); }
+  ALWAYS_INLINE constexpr LayoutUnit Y() const { return location_.Y(); }
   ALWAYS_INLINE LayoutUnit MaxX() const { return X() + Width(); }
   ALWAYS_INLINE LayoutUnit MaxY() const { return Y() + Height(); }
   constexpr LayoutUnit Width() const { return size_.Width(); }
@@ -105,7 +105,7 @@ class PLATFORM_EXPORT LayoutRect {
   void SetWidth(LayoutUnit width) { size_.SetWidth(width); }
   void SetHeight(LayoutUnit height) { size_.SetHeight(height); }
 
-  constexpr ALWAYS_INLINE bool IsEmpty() const { return size_.IsEmpty(); }
+  ALWAYS_INLINE constexpr bool IsEmpty() const { return size_.IsEmpty(); }
 
   // NOTE: The result is rounded to integer values, and thus may be not the
   // exact center point.
@@ -318,7 +318,7 @@ inline LayoutRect UnionRectEvenIfEmpty(const LayoutRect& a,
 
 PLATFORM_EXPORT LayoutRect UnionRectEvenIfEmpty(const Vector<LayoutRect>&);
 
-constexpr ALWAYS_INLINE bool operator==(const LayoutRect& a,
+ALWAYS_INLINE constexpr bool operator==(const LayoutRect& a,
                                         const LayoutRect& b) {
   return a.Location() == b.Location() && a.Size() == b.Size();
 }

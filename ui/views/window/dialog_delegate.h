@@ -293,7 +293,7 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   // initialized.
   // NOT_TAIL_CALLED forces the calling function to appear on the stack in
   // crash dumps. https://crbug.com/1215247
-  void NOT_TAIL_CALLED AcceptDialog();
+  NOT_TAIL_CALLED void AcceptDialog();
   void CancelDialog();
 
   // This method invokes the behavior that *would* happen if this dialog's

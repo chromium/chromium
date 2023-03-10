@@ -264,16 +264,34 @@ TEST_F(PartitionAllocStackTest, IteratePointersFindsParameterNesting8) {
 
 // Excluded from test: rbp
 #define FOR_ALL_CALLEE_SAVED_REGS(V) \
-  V("rbx")                           \
-  V("r12")                           \
-  V("r13")                           \
-  V("r14")                           \
-  V("r15")
+  V(rbx)                             \
+  V(r12)                             \
+  V(r13)                             \
+  V(r14)                             \
+  V(r15)
 
 namespace {
+
 extern "C" void IteratePointersNoMangling(Stack* stack, StackVisitor* visitor) {
   stack->IteratePointers(visitor);
 }
+
+#define DEFINE_MOVE_INTO(reg)                                         \
+  PA_NOINLINE void MoveInto##reg(Stack* local_stack,                  \
+                                 StackScanner* local_scanner) {       \
+    asm volatile("   mov %0, %%" #reg                                 \
+                 "\n mov %1, %%rdi"                                   \
+                 "\n mov %2, %%rsi"                                   \
+                 "\n call %P3"                                        \
+                 "\n mov $0, %%" #reg                                 \
+                 :                                                    \
+                 : "r"(local_scanner->needle()), "r"(local_stack),    \
+                   "r"(local_scanner), "i"(IteratePointersNoMangling) \
+                 : "memory", #reg, "rdi", "rsi", "cc");               \
+  }
+
+FOR_ALL_CALLEE_SAVED_REGS(DEFINE_MOVE_INTO)
+
 }  // namespace
 
 TEST_F(PartitionAllocStackTest, IteratePointersFindsCalleeSavedRegisters) {
@@ -283,7 +301,7 @@ TEST_F(PartitionAllocStackTest, IteratePointersFindsCalleeSavedRegisters) {
   // may be part of  temporaries after setting it up through StackScanner.
 
 // First, clear all callee-saved registers.
-#define CLEAR_REGISTER(reg) asm("mov $0, %%" reg : : : reg);
+#define CLEAR_REGISTER(reg) asm("mov $0, %%" #reg : : : #reg);
 
   FOR_ALL_CALLEE_SAVED_REGS(CLEAR_REGISTER)
 #undef CLEAR_REGISTER
@@ -295,21 +313,11 @@ TEST_F(PartitionAllocStackTest, IteratePointersFindsCalleeSavedRegisters) {
 // Moves |local_scanner->needle()| into a callee-saved register, leaving the
 // callee-saved register as the only register referencing the needle.
 // (Ignoring implementation-dependent dirty registers/stack.)
-#define KEEP_ALIVE_FROM_CALLEE_SAVED(reg)                                \
-  local_scanner->Reset();                                                \
-  [local_stack, local_scanner]() PA_NOINLINE {                           \
-    asm volatile("   mov %0, %%" reg                                     \
-                 "\n mov %1, %%rdi"                                      \
-                 "\n mov %2, %%rsi"                                      \
-                 "\n call %P3"                                           \
-                 "\n mov $0, %%" reg                                     \
-                 :                                                       \
-                 : "r"(local_scanner->needle()), "r"(local_stack),       \
-                   "r"(local_scanner), "i"(IteratePointersNoMangling)    \
-                 : "memory", reg, "rdi", "rsi", "cc");                   \
-  }();                                                                   \
-  EXPECT_TRUE(local_scanner->found())                                    \
-      << "pointer in callee-saved register not found. register: " << reg \
+#define KEEP_ALIVE_FROM_CALLEE_SAVED(reg)                                 \
+  local_scanner->Reset();                                                 \
+  MoveInto##reg(local_stack, local_scanner);                              \
+  EXPECT_TRUE(local_scanner->found())                                     \
+      << "pointer in callee-saved register not found. register: " << #reg \
       << std::endl;
 
   FOR_ALL_CALLEE_SAVED_REGS(KEEP_ALIVE_FROM_CALLEE_SAVED)

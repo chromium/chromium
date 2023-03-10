@@ -70,7 +70,7 @@ constexpr size_t CeilCountOfUnits(size_t size, size_t unit_size) {
 //   PartitionPageSize()
 // Finally,
 //   kTagBitmapSize >= (kSuperPageSize - 2 * PartitionPageSize()) / (1 + Y)
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
+PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 NumPartitionPagesPerTagBitmap() {
   return tag_bitmap::CeilCountOfUnits(
       kSuperPageSize / PartitionPageSize() - 2,
@@ -81,7 +81,7 @@ NumPartitionPagesPerTagBitmap() {
 // number of SystemPages of TagBitmap. If kNumSystemPagesPerTagBitmap *
 // SystemPageSize() < kTagBitmapSize, guard pages will be created. (c.f. no
 // guard pages if sizeof(PartitionTag) == 2.)
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
+PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 NumSystemPagesPerTagBitmap() {
   return tag_bitmap::CeilCountOfUnits(
       kSuperPageSize / SystemPageSize() -
@@ -89,13 +89,13 @@ NumSystemPagesPerTagBitmap() {
       tag_bitmap::kBytesPerPartitionTagRatio + 1);
 }
 
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
+PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 ActualTagBitmapSize() {
   return NumSystemPagesPerTagBitmap() * SystemPageSize();
 }
 
 // PartitionPageSize-aligned tag bitmap size.
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
+PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 ReservedTagBitmapSize() {
   return PartitionPageSize() * NumPartitionPagesPerTagBitmap();
 }
@@ -112,7 +112,7 @@ static_assert(ReservedTagBitmapSize() - ActualTagBitmapSize() <
 // The region available for slot spans is the reminder of the super page, after
 // taking away the first and last partition page (for metadata and guard pages)
 // and partition pages reserved for the freeslot bitmap and the tag bitmap.
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
+PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 SlotSpansSize() {
   return kSuperPageSize - 2 * PartitionPageSize() - ReservedTagBitmapSize();
 }
@@ -128,15 +128,15 @@ static_assert((ActualTagBitmapSize() - PartitionPageSize()) *
 
 #else
 
-constexpr PA_ALWAYS_INLINE size_t NumPartitionPagesPerTagBitmap() {
+PA_ALWAYS_INLINE constexpr size_t NumPartitionPagesPerTagBitmap() {
   return 0;
 }
 
-constexpr PA_ALWAYS_INLINE size_t ActualTagBitmapSize() {
+PA_ALWAYS_INLINE constexpr size_t ActualTagBitmapSize() {
   return 0;
 }
 
-constexpr PA_ALWAYS_INLINE size_t ReservedTagBitmapSize() {
+PA_ALWAYS_INLINE constexpr size_t ReservedTagBitmapSize() {
   return 0;
 }
 

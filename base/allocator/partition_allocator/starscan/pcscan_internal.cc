@@ -121,7 +121,7 @@ struct DisableMTEScope final {
 class QuarantineCardTable final {
  public:
   // Avoid the load of the base of the regular pool.
-  static PA_ALWAYS_INLINE QuarantineCardTable& GetFrom(uintptr_t address) {
+  PA_ALWAYS_INLINE static QuarantineCardTable& GetFrom(uintptr_t address) {
     PA_SCAN_DCHECK(IsManagedByPartitionAllocRegularPool(address));
     return *reinterpret_cast<QuarantineCardTable*>(
         address & PartitionAddressSpace::RegularPoolBaseMask());
@@ -150,7 +150,7 @@ class QuarantineCardTable final {
 
   QuarantineCardTable() = default;
 
-  static PA_ALWAYS_INLINE size_t Byte(uintptr_t address) {
+  PA_ALWAYS_INLINE static size_t Byte(uintptr_t address) {
     return (address & ~PartitionAddressSpace::RegularPoolBaseMask()) /
            kCardSize;
   }
@@ -779,10 +779,10 @@ class PCScanScanLoop final : public ScanLoop<PCScanScanLoop> {
 
  private:
 #if BUILDFLAG(HAS_64_BIT_POINTERS)
-  static PA_ALWAYS_INLINE uintptr_t RegularPoolBase() {
+  PA_ALWAYS_INLINE static uintptr_t RegularPoolBase() {
     return PartitionAddressSpace::RegularPoolBase();
   }
-  static PA_ALWAYS_INLINE uintptr_t RegularPoolMask() {
+  PA_ALWAYS_INLINE static uintptr_t RegularPoolMask() {
     return PartitionAddressSpace::RegularPoolBaseMask();
   }
 #endif  // BUILDFLAG(HAS_64_BIT_POINTERS)

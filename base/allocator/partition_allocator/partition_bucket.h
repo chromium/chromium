@@ -73,13 +73,13 @@ struct PartitionBucket {
   // |PartitionRoot::AllocFromBucket|.)
   //
   // Note the matching Free() functions are in SlotSpanMetadata.
-  PA_COMPONENT_EXPORT(PARTITION_ALLOC)
-  PA_NOINLINE uintptr_t SlowPathAlloc(PartitionRoot<thread_safe>* root,
-                                      unsigned int flags,
-                                      size_t raw_size,
-                                      size_t slot_span_alignment,
-                                      bool* is_already_zeroed)
-      PA_EXCLUSIVE_LOCKS_REQUIRED(root->lock_);
+  PA_NOINLINE PA_COMPONENT_EXPORT(PARTITION_ALLOC) uintptr_t
+      SlowPathAlloc(PartitionRoot<thread_safe>* root,
+                    unsigned int flags,
+                    size_t raw_size,
+                    size_t slot_span_alignment,
+                    bool* is_already_zeroed)
+          PA_EXCLUSIVE_LOCKS_REQUIRED(root->lock_);
 
   PA_ALWAYS_INLINE bool CanStoreRawSize() const {
     // For direct-map as well as single-slot slot spans (recognized by checking

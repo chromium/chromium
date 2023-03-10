@@ -23,8 +23,8 @@ namespace internal {
 // g_oom_handling_function is invoked when PartitionAlloc hits OutOfMemory.
 extern OomFunction g_oom_handling_function;
 
-[[noreturn]] PA_COMPONENT_EXPORT(PARTITION_ALLOC) PA_NOINLINE
-    void PartitionExcessiveAllocationSize(size_t size);
+[[noreturn]] PA_NOINLINE PA_COMPONENT_EXPORT(
+    PARTITION_ALLOC) void PartitionExcessiveAllocationSize(size_t size);
 
 #if !defined(ARCH_CPU_64_BITS)
 [[noreturn]] PA_NOINLINE void PartitionOutOfMemoryWithLotsOfUncommitedPages(

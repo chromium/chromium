@@ -358,7 +358,7 @@ class CORE_EXPORT EasySelectorChecker {
   //
   // If IsEasy() is true, this selector can never return any match flags,
   // or match (dynamic) pseudos.
-  static ALWAYS_INLINE bool IsEasy(const CSSSelector* selector);
+  ALWAYS_INLINE static bool IsEasy(const CSSSelector* selector);
 
   // Returns whether the given selector matches the given element.
   // The following preconditions apply:
@@ -370,18 +370,18 @@ class CORE_EXPORT EasySelectorChecker {
   //
   // Unlike SelectorChecker, does not check style_scope; the caller
   // will need to do that if desired.
-  static ALWAYS_INLINE bool Match(const CSSSelector* selector,
+  ALWAYS_INLINE static bool Match(const CSSSelector* selector,
                                   const Element* element);
 
  private:
-  static ALWAYS_INLINE bool MatchOne(const CSSSelector* selector,
+  ALWAYS_INLINE static bool MatchOne(const CSSSelector* selector,
                                      const Element* element);
-  static ALWAYS_INLINE bool AttributeIsSet(const Element& element,
+  ALWAYS_INLINE static bool AttributeIsSet(const Element& element,
                                            const QualifiedName& attr);
-  static ALWAYS_INLINE bool AttributeMatches(const Element& element,
+  ALWAYS_INLINE static bool AttributeMatches(const Element& element,
                                              const QualifiedName& attr,
                                              const AtomicString& value);
-  static ALWAYS_INLINE bool AttributeItemHasName(
+  ALWAYS_INLINE static bool AttributeItemHasName(
       const Attribute& attribute_item,
       const Element& element,
       const QualifiedName& name);

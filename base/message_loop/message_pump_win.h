@@ -154,8 +154,8 @@ class BASE_EXPORT MessagePumpForUI : public MessagePumpWin {
                        LPARAM lparam,
                        LRESULT* result);
   void DoRunLoop() override;
-  NOINLINE void NOT_TAIL_CALLED
-  WaitForWork(Delegate::NextWorkInfo next_work_info);
+  NOINLINE NOT_TAIL_CALLED void WaitForWork(
+      Delegate::NextWorkInfo next_work_info);
   void HandleWorkMessage();
   void HandleTimerMessage();
   void ScheduleNativeTimer(Delegate::NextWorkInfo next_work_info);
@@ -278,8 +278,8 @@ class BASE_EXPORT MessagePumpForIO : public MessagePumpWin {
   };
 
   void DoRunLoop() override;
-  NOINLINE void NOT_TAIL_CALLED
-  WaitForWork(Delegate::NextWorkInfo next_work_info);
+  NOINLINE NOT_TAIL_CALLED void WaitForWork(
+      Delegate::NextWorkInfo next_work_info);
   bool GetIOItem(DWORD timeout, IOItem* item);
   bool ProcessInternalIOItem(const IOItem& item);
   // Waits for the next IO completion for up to |timeout| milliseconds.

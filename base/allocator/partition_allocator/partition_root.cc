@@ -339,7 +339,7 @@ namespace {
 // more work and larger |slot_usage| array. Lower value would probably decrease
 // chances of purging. Not empirically tested.
 constexpr size_t kMaxPurgeableSlotsPerSystemPage = 64;
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
+PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 MinPurgeableSlotSize() {
   return SystemPageSize() / kMaxPurgeableSlotsPerSystemPage;
 }

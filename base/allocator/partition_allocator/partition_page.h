@@ -185,8 +185,8 @@ struct SlotSpanMetadata {
 
   // Public API
   // Note the matching Alloc() functions are in PartitionPage.
-  PA_COMPONENT_EXPORT(PARTITION_ALLOC)
-  PA_NOINLINE void FreeSlowPath(size_t number_of_freed);
+  PA_NOINLINE PA_COMPONENT_EXPORT(PARTITION_ALLOC) void FreeSlowPath(
+      size_t number_of_freed);
   PA_ALWAYS_INLINE PartitionFreelistEntry* PopForAlloc(size_t size);
   PA_ALWAYS_INLINE void Free(uintptr_t ptr);
   // Appends the passed freelist to the slot-span's freelist. Please note that
@@ -209,14 +209,14 @@ struct SlotSpanMetadata {
   // |slot_span| pointer may be the result of an offset calculation and
   // therefore cannot be trusted. The objective of these functions is to
   // sanitize this input.
-  static PA_ALWAYS_INLINE uintptr_t
-  ToSlotSpanStart(const SlotSpanMetadata* slot_span);
-  static PA_ALWAYS_INLINE SlotSpanMetadata* FromAddr(uintptr_t address);
-  static PA_ALWAYS_INLINE SlotSpanMetadata* FromSlotStart(uintptr_t slot_start);
-  static PA_ALWAYS_INLINE SlotSpanMetadata* FromObject(void* object);
-  static PA_ALWAYS_INLINE SlotSpanMetadata* FromObjectInnerAddr(
+  PA_ALWAYS_INLINE static uintptr_t ToSlotSpanStart(
+      const SlotSpanMetadata* slot_span);
+  PA_ALWAYS_INLINE static SlotSpanMetadata* FromAddr(uintptr_t address);
+  PA_ALWAYS_INLINE static SlotSpanMetadata* FromSlotStart(uintptr_t slot_start);
+  PA_ALWAYS_INLINE static SlotSpanMetadata* FromObject(void* object);
+  PA_ALWAYS_INLINE static SlotSpanMetadata* FromObjectInnerAddr(
       uintptr_t address);
-  static PA_ALWAYS_INLINE SlotSpanMetadata* FromObjectInnerPtr(void* ptr);
+  PA_ALWAYS_INLINE static SlotSpanMetadata* FromObjectInnerPtr(void* ptr);
 
   PA_ALWAYS_INLINE PartitionSuperPageExtentEntry<thread_safe>*
   ToSuperPageExtent() const;
@@ -405,7 +405,7 @@ struct PartitionPage {
   bool has_valid_span_after_this : 1;
   uint8_t unused;
 
-  static PA_ALWAYS_INLINE PartitionPage* FromAddr(uintptr_t address);
+  PA_ALWAYS_INLINE static PartitionPage* FromAddr(uintptr_t address);
 };
 #pragma pack(pop)
 static_assert(sizeof(PartitionPage<ThreadSafe>) == kPageMetadataSize,
@@ -454,14 +454,14 @@ PartitionSuperPageToExtent(uintptr_t super_page) {
 // Size that should be reserved for state bitmap (if present) inside a super
 // page. Elements of a super page are partition-page-aligned, hence the returned
 // size is a multiple of partition page size.
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
+PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 ReservedStateBitmapSize() {
   return base::bits::AlignUp(sizeof(AllocationStateMap), PartitionPageSize());
 }
 
 // Size that should be committed for state bitmap (if present) inside a super
 // page. It is a multiple of system page size.
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
+PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 CommittedStateBitmapSize() {
   return base::bits::AlignUp(sizeof(AllocationStateMap), SystemPageSize());
 }
@@ -484,7 +484,7 @@ PA_ALWAYS_INLINE AllocationStateMap* SuperPageStateBitmap(
 
 #else  // BUILDFLAG(USE_STARSCAN)
 
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
+PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 ReservedStateBitmapSize() {
   return 0ull;
 }

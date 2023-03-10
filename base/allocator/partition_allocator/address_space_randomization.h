@@ -20,11 +20,11 @@ PA_COMPONENT_EXPORT(PARTITION_ALLOC) uintptr_t GetRandomPageBase();
 
 namespace internal {
 
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE uintptr_t
+PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR uintptr_t
 AslrAddress(uintptr_t mask) {
   return mask & PageAllocationGranularityBaseMask();
 }
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE uintptr_t
+PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR uintptr_t
 AslrMask(uintptr_t bits) {
   return AslrAddress((1ULL << bits) - 1ULL);
 }
@@ -45,11 +45,11 @@ AslrMask(uintptr_t bits) {
     // hard-coded in those tools, bad things happen. This address range is
     // copied from TSAN source but works with all tools. See
     // https://crbug.com/539863.
-    PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE uintptr_t
+    PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR uintptr_t
     ASLRMask() {
       return AslrAddress(0x007fffffffffULL);
     }
-    PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE uintptr_t
+    PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR uintptr_t
     ASLROffset() {
       return AslrAddress(0x7e8000000000ULL);
     }
@@ -59,11 +59,11 @@ AslrMask(uintptr_t bits) {
     // Windows 8.10 and newer support the full 48 bit address range. Since
     // ASLROffset() is non-zero and may cause a carry, use 47 bit masks. See
     // http://www.alex-ionescu.com/?p=246
-    constexpr PA_ALWAYS_INLINE uintptr_t ASLRMask() {
+    PA_ALWAYS_INLINE constexpr uintptr_t ASLRMask() {
       return AslrMask(47);
     }
     // Try not to map pages into the range where Windows loads DLLs by default.
-    constexpr PA_ALWAYS_INLINE uintptr_t ASLROffset() {
+    PA_ALWAYS_INLINE constexpr uintptr_t ASLROffset() {
       return 0x80000000ULL;
     }
 
@@ -82,11 +82,11 @@ AslrMask(uintptr_t bits) {
     //
     // TODO(crbug.com/738925): Remove this limitation if/when the macOS behavior
     // changes.
-    PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE uintptr_t
+    PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR uintptr_t
     ASLRMask() {
       return AslrMask(38);
     }
-    PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE uintptr_t
+    PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR uintptr_t
     ASLROffset() {
       // Be careful, there is a zone where macOS will not map memory, at least
       // on ARM64. From an ARM64 machine running 12.3, the range seems to be
@@ -104,10 +104,10 @@ AslrMask(uintptr_t bits) {
 
       // Linux (and macOS) support the full 47-bit user space of x64 processors.
       // Use only 46 to allow the kernel a chance to fulfill the request.
-      constexpr PA_ALWAYS_INLINE uintptr_t ASLRMask() {
+      PA_ALWAYS_INLINE constexpr uintptr_t ASLRMask() {
         return AslrMask(46);
       }
-      constexpr PA_ALWAYS_INLINE uintptr_t ASLROffset() {
+      PA_ALWAYS_INLINE constexpr uintptr_t ASLROffset() {
         return AslrAddress(0);
       }
 
@@ -117,10 +117,10 @@ AslrMask(uintptr_t bits) {
 
       // Restrict the address range on Android to avoid a large performance
       // regression in single-process WebViews. See https://crbug.com/837640.
-      constexpr PA_ALWAYS_INLINE uintptr_t ASLRMask() {
+      PA_ALWAYS_INLINE constexpr uintptr_t ASLRMask() {
         return AslrMask(30);
       }
-      constexpr PA_ALWAYS_INLINE uintptr_t ASLROffset() {
+      PA_ALWAYS_INLINE constexpr uintptr_t ASLROffset() {
         return AslrAddress(0x20000000ULL);
       }
 
@@ -130,11 +130,11 @@ AslrMask(uintptr_t bits) {
       // page size and number of levels of translation pages used. We use
       // 39-bit as base as all setups should support this, lowered to 38-bit
       // as ASLROffset() could cause a carry.
-      PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE uintptr_t
+      PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR uintptr_t
       ASLRMask() {
         return AslrMask(38);
       }
-      PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE uintptr_t
+      PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR uintptr_t
       ASLROffset() {
         return AslrAddress(0x1000000000ULL);
       }
@@ -143,10 +143,10 @@ AslrMask(uintptr_t bits) {
 
       // ARM64 on Linux has 39-bit user space. Use 38 bits since ASLROffset()
       // could cause a carry.
-      constexpr PA_ALWAYS_INLINE uintptr_t ASLRMask() {
+      PA_ALWAYS_INLINE constexpr uintptr_t ASLRMask() {
         return AslrMask(38);
       }
-      constexpr PA_ALWAYS_INLINE uintptr_t ASLROffset() {
+      PA_ALWAYS_INLINE constexpr uintptr_t ASLROffset() {
         return AslrAddress(0x1000000000ULL);
       }
 
@@ -159,30 +159,30 @@ AslrMask(uintptr_t bits) {
         // AIX has 64 bits of virtual addressing, but we limit the address range
         // to (a) minimize segment lookaside buffer (SLB) misses; and (b) use
         // extra address space to isolate the mmap regions.
-        constexpr PA_ALWAYS_INLINE uintptr_t ASLRMask() {
+        PA_ALWAYS_INLINE constexpr uintptr_t ASLRMask() {
           return AslrMask(30);
         }
-        constexpr PA_ALWAYS_INLINE uintptr_t ASLROffset() {
+        PA_ALWAYS_INLINE constexpr uintptr_t ASLROffset() {
           return AslrAddress(0x400000000000ULL);
         }
 
       #elif defined(ARCH_CPU_BIG_ENDIAN)
 
         // Big-endian Linux PPC has 44 bits of virtual addressing. Use 42.
-        constexpr PA_ALWAYS_INLINE uintptr_t ASLRMask() {
+        PA_ALWAYS_INLINE constexpr uintptr_t ASLRMask() {
           return AslrMask(42);
         }
-        constexpr PA_ALWAYS_INLINE uintptr_t ASLROffset() {
+        PA_ALWAYS_INLINE constexpr uintptr_t ASLROffset() {
           return AslrAddress(0);
         }
 
       #else  // !BUILDFLAG(IS_AIX) && !defined(ARCH_CPU_BIG_ENDIAN)
 
         // Little-endian Linux PPC has 48 bits of virtual addressing. Use 46.
-        constexpr PA_ALWAYS_INLINE uintptr_t ASLRMask() {
+        PA_ALWAYS_INLINE constexpr uintptr_t ASLRMask() {
           return AslrMask(46);
         }
-        constexpr PA_ALWAYS_INLINE uintptr_t ASLROffset() {
+        PA_ALWAYS_INLINE constexpr uintptr_t ASLROffset() {
           return AslrAddress(0);
         }
 
@@ -193,10 +193,10 @@ AslrMask(uintptr_t bits) {
       // Linux on Z uses bits 22 - 32 for Region Indexing, which translates to
       // 42 bits of virtual addressing. Truncate to 40 bits to allow kernel a
       // chance to fulfill the request.
-      constexpr PA_ALWAYS_INLINE uintptr_t ASLRMask() {
+      PA_ALWAYS_INLINE constexpr uintptr_t ASLRMask() {
         return AslrMask(40);
       }
-      constexpr PA_ALWAYS_INLINE uintptr_t ASLROffset() {
+      PA_ALWAYS_INLINE constexpr uintptr_t ASLROffset() {
         return AslrAddress(0);
       }
 
@@ -204,10 +204,10 @@ AslrMask(uintptr_t bits) {
 
       // 31 bits of virtual addressing. Truncate to 29 bits to allow the kernel
       // a chance to fulfill the request.
-      constexpr PA_ALWAYS_INLINE uintptr_t ASLRMask() {
+      PA_ALWAYS_INLINE constexpr uintptr_t ASLRMask() {
         return AslrMask(29);
       }
-      constexpr PA_ALWAYS_INLINE uintptr_t ASLROffset() {
+      PA_ALWAYS_INLINE constexpr uintptr_t ASLROffset() {
         return AslrAddress(0);
       }
 
@@ -215,7 +215,7 @@ AslrMask(uintptr_t bits) {
            // !defined(ARCH_CPU_S390X) && !defined(ARCH_CPU_S390)
 
       // For all other POSIX variants, use 30 bits.
-      constexpr PA_ALWAYS_INLINE uintptr_t ASLRMask() {
+      PA_ALWAYS_INLINE constexpr uintptr_t ASLRMask() {
         return AslrMask(30);
       }
 
@@ -231,7 +231,7 @@ AslrMask(uintptr_t bits) {
         // fails allocate as if there were no hint at all. The high hint
         // prevents the break from getting hemmed in at low values, ceding half
         // of the address space to the system heap.
-        constexpr PA_ALWAYS_INLINE uintptr_t ASLROffset() {
+        PA_ALWAYS_INLINE constexpr uintptr_t ASLROffset() {
           return AslrAddress(0x80000000ULL);
         }
 
@@ -239,7 +239,7 @@ AslrMask(uintptr_t bits) {
 
         // The range 0x30000000 - 0xD0000000 is available on AIX; choose the
         // upper range.
-        constexpr PA_ALWAYS_INLINE uintptr_t ASLROffset() {
+        PA_ALWAYS_INLINE constexpr uintptr_t ASLROffset() {
           return AslrAddress(0x90000000ULL);
         }
 
@@ -248,7 +248,7 @@ AslrMask(uintptr_t bits) {
         // The range 0x20000000 - 0x60000000 is relatively unpopulated across a
         // variety of ASLR modes (PAE kernel, NX compat mode, etc) and on macOS
         // 10.6 and 10.7.
-        constexpr PA_ALWAYS_INLINE uintptr_t ASLROffset() {
+        PA_ALWAYS_INLINE constexpr uintptr_t ASLROffset() {
           return AslrAddress(0x20000000ULL);
         }
 
@@ -264,10 +264,10 @@ AslrMask(uintptr_t bits) {
   // This is a good range on 32-bit Windows and Android (the only platforms on
   // which we support 32-bitness). Allocates in the 0.5 - 1.5 GiB region. There
   // is no issue with carries here.
-  constexpr PA_ALWAYS_INLINE uintptr_t ASLRMask() {
+  PA_ALWAYS_INLINE constexpr uintptr_t ASLRMask() {
     return AslrMask(30);
   }
-  constexpr PA_ALWAYS_INLINE uintptr_t ASLROffset() {
+  PA_ALWAYS_INLINE constexpr uintptr_t ASLROffset() {
     return AslrAddress(0x20000000ULL);
   }
 

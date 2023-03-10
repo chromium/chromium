@@ -25,7 +25,7 @@ struct PartitionDirectMapExtent {
   // the allocation.
   size_t padding_for_alignment;
 
-  static PA_ALWAYS_INLINE PartitionDirectMapExtent<thread_safe>* FromSlotSpan(
+  PA_ALWAYS_INLINE static PartitionDirectMapExtent<thread_safe>* FromSlotSpan(
       SlotSpanMetadata<thread_safe>* slot_span);
 };
 
@@ -45,7 +45,7 @@ struct PartitionDirectMapMetadata {
   PartitionBucket<thread_safe> bucket;
   PartitionDirectMapExtent<thread_safe> direct_map_extent;
 
-  static PA_ALWAYS_INLINE PartitionDirectMapMetadata<thread_safe>* FromSlotSpan(
+  PA_ALWAYS_INLINE static PartitionDirectMapMetadata<thread_safe>* FromSlotSpan(
       SlotSpanMetadata<thread_safe>* slot_span);
 };
 

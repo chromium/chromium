@@ -82,36 +82,36 @@ constexpr size_t kPartitionCachelineSize = 64;
 // up against the end of a system page.
 
 #if defined(_MIPS_ARCH_LOONGSON) || defined(ARCH_CPU_LOONG64)
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
+PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 PartitionPageShift() {
   return 16;  // 64 KiB
 }
 #elif defined(ARCH_CPU_PPC64)
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
+PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 PartitionPageShift() {
   return 18;  // 256 KiB
 }
 #elif (BUILDFLAG(IS_APPLE) && defined(ARCH_CPU_64_BITS)) || \
     (BUILDFLAG(IS_LINUX) && defined(ARCH_CPU_ARM64))
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
+PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 PartitionPageShift() {
   return PageAllocationGranularityShift() + 2;
 }
 #else
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
+PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 PartitionPageShift() {
   return 14;  // 16 KiB
 }
 #endif
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
+PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 PartitionPageSize() {
   return 1 << PartitionPageShift();
 }
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
+PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 PartitionPageOffsetMask() {
   return PartitionPageSize() - 1;
 }
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
+PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 PartitionPageBaseMask() {
   return ~PartitionPageOffsetMask();
 }
@@ -131,18 +131,18 @@ constexpr size_t kMaxPartitionPagesPerRegularSlotSpan = 4;
 // dirty a private page, which is very wasteful if we never actually store
 // objects there.
 
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
+PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 NumSystemPagesPerPartitionPage() {
   return PartitionPageSize() >> SystemPageShift();
 }
 
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
+PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 MaxSystemPagesPerRegularSlotSpan() {
   return NumSystemPagesPerPartitionPage() *
          kMaxPartitionPagesPerRegularSlotSpan;
 }
 
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
+PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 MaxRegularSlotSpanSize() {
   return kMaxPartitionPagesPerRegularSlotSpan << PartitionPageShift();
 }
@@ -332,23 +332,23 @@ PA_ALWAYS_INLINE bool HasOverflowTag(void* object) {
 }
 #endif  // PA_CONFIG(HAS_MEMORY_TAGGING)
 
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
+PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 NumPartitionPagesPerSuperPage() {
   return kSuperPageSize >> PartitionPageShift();
 }
 
-constexpr PA_ALWAYS_INLINE size_t MaxSuperPagesInPool() {
+PA_ALWAYS_INLINE constexpr size_t MaxSuperPagesInPool() {
   return kMaxSuperPagesInPool;
 }
 
 #if BUILDFLAG(HAS_64_BIT_POINTERS)
 // In 64-bit mode, the direct map allocation granularity is super page size,
 // because this is the reservation granularity of the pools.
-constexpr PA_ALWAYS_INLINE size_t DirectMapAllocationGranularity() {
+PA_ALWAYS_INLINE constexpr size_t DirectMapAllocationGranularity() {
   return kSuperPageSize;
 }
 
-constexpr PA_ALWAYS_INLINE size_t DirectMapAllocationGranularityShift() {
+PA_ALWAYS_INLINE constexpr size_t DirectMapAllocationGranularityShift() {
   return kSuperPageShift;
 }
 #else   // BUILDFLAG(HAS_64_BIT_POINTERS)
@@ -356,18 +356,18 @@ constexpr PA_ALWAYS_INLINE size_t DirectMapAllocationGranularityShift() {
 // allocation granularity, which is the lowest possible address space allocation
 // unit. However, don't go below partition page size, so that pool bitmaps
 // don't get too large. See kBytesPer1BitOfBRPPoolBitmap.
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
+PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 DirectMapAllocationGranularity() {
   return std::max(PageAllocationGranularity(), PartitionPageSize());
 }
 
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
+PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 DirectMapAllocationGranularityShift() {
   return std::max(PageAllocationGranularityShift(), PartitionPageShift());
 }
 #endif  // BUILDFLAG(HAS_64_BIT_POINTERS)
 
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
+PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 DirectMapAllocationGranularityOffsetMask() {
   return DirectMapAllocationGranularity() - 1;
 }
@@ -415,7 +415,7 @@ constexpr size_t kMinDirectMappedDownsize = kMaxBucketed + 1;
 // The definition of MaxDirectMapped does only depend on constants that are
 // unconditionally constexpr. Therefore it is not necessary to use
 // PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR here.
-constexpr PA_ALWAYS_INLINE size_t MaxDirectMapped() {
+PA_ALWAYS_INLINE constexpr size_t MaxDirectMapped() {
   // Subtract kSuperPageSize to accommodate for granularity inside
   // PartitionRoot::GetDirectMapReservationSize.
   return (1UL << 31) - kSuperPageSize;

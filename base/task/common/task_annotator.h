@@ -92,7 +92,7 @@ class BASE_EXPORT TaskAnnotator {
   friend class TaskAnnotatorBacktraceIntegrationTest;
 
   // Run a previously queued task.
-  void NOT_TAIL_CALLED RunTaskImpl(PendingTask& pending_task);
+  NOT_TAIL_CALLED void RunTaskImpl(PendingTask& pending_task);
 
   // Registers an ObserverForTesting that will be invoked by all TaskAnnotators'
   // RunTask(). This registration and the implementation of BeforeRunTask() are

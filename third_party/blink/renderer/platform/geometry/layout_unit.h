@@ -367,16 +367,16 @@ class LayoutUnit {
     value_ = result;
   }
 #else  // end of 32-bit ARM GCC
-  constexpr ALWAYS_INLINE void SaturatedSet(int value) {
+  ALWAYS_INLINE constexpr void SaturatedSet(int value) {
     SaturatedSetNonAsm(value);
   }
 
-  constexpr ALWAYS_INLINE void SaturatedSet(unsigned value) {
+  ALWAYS_INLINE constexpr void SaturatedSet(unsigned value) {
     SaturatedSetNonAsm(value);
   }
 #endif
 
-  constexpr ALWAYS_INLINE void SaturatedSetNonAsm(int value) {
+  ALWAYS_INLINE constexpr void SaturatedSetNonAsm(int value) {
     if (value > kIntMaxForLayoutUnit)
       value_ = std::numeric_limits<int>::max();
     else if (value < kIntMinForLayoutUnit)
@@ -385,7 +385,7 @@ class LayoutUnit {
       value_ = static_cast<unsigned>(value) << kLayoutUnitFractionalBits;
   }
 
-  constexpr ALWAYS_INLINE void SaturatedSetNonAsm(unsigned value) {
+  ALWAYS_INLINE constexpr void SaturatedSetNonAsm(unsigned value) {
     if (value >= static_cast<unsigned>(kIntMaxForLayoutUnit))
       value_ = std::numeric_limits<int>::max();
     else

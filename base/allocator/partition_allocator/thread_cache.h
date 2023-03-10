@@ -631,12 +631,12 @@ PA_ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket,
   bucket.count++;
 }
 
-void ThreadCache::RecordAllocation(size_t size) {
+PA_ALWAYS_INLINE void ThreadCache::RecordAllocation(size_t size) {
   thread_alloc_stats_.alloc_count++;
   thread_alloc_stats_.alloc_total_size += size;
 }
 
-void ThreadCache::RecordDeallocation(size_t size) {
+PA_ALWAYS_INLINE void ThreadCache::RecordDeallocation(size_t size) {
   thread_alloc_stats_.dealloc_count++;
   thread_alloc_stats_.dealloc_total_size += size;
 }

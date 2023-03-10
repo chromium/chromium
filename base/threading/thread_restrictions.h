@@ -488,7 +488,7 @@ void GetNSExecutablePath(base::FilePath* path);
 // NOT_TAIL_CALLED if dcheck-is-on so it's always evident who irrevocably
 // altered the allowance (dcheck-builds will provide the setter's stack on
 // assertion) or who made a failing Assert*() call.
-#define INLINE_OR_NOT_TAIL_CALLED BASE_EXPORT NOT_TAIL_CALLED
+#define INLINE_OR_NOT_TAIL_CALLED NOT_TAIL_CALLED BASE_EXPORT
 #define EMPTY_BODY_IF_DCHECK_IS_OFF
 #else
 // inline if dcheck-is-off so it's no overhead

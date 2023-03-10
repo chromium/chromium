@@ -62,7 +62,7 @@ std::ostream& operator<<(std::ostream& os, {{enum_name}} value) {
 
 {%- macro enum_to_string(enum) %}
 {%-   set enum_name = enum|get_name_for_kind(flatten_nested_kind=True) %}
-static NOINLINE const char* {{enum_name}}ToStringHelper({{enum_name}} value) {
+NOINLINE static const char* {{enum_name}}ToStringHelper({{enum_name}} value) {
   // Defined in a helper function to ensure that Clang generates a lookup table.
 {%- if enum.fields %}
   switch(value) {

@@ -976,7 +976,7 @@ ALWAYS_INLINE bool BreakingContext::IsBreakAtSoftHyphen() const {
              : current_.PreviousInSameNode() == kSoftHyphenCharacter;
 }
 
-static ALWAYS_INLINE bool HasVisibleText(LineLayoutText layout_text,
+ALWAYS_INLINE static bool HasVisibleText(LineLayoutText layout_text,
                                          unsigned offset) {
   return !layout_text.ContainsOnlyWhitespace(offset,
                                              layout_text.TextLength() - offset);

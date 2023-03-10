@@ -41,7 +41,7 @@ class PartitionFreelistEntry;
 
 class EncodedPartitionFreelistEntryPtr {
  private:
-  constexpr PA_ALWAYS_INLINE explicit EncodedPartitionFreelistEntryPtr(
+  PA_ALWAYS_INLINE constexpr explicit EncodedPartitionFreelistEntryPtr(
       std::nullptr_t)
       : encoded_(Transform(0)) {}
   PA_ALWAYS_INLINE explicit EncodedPartitionFreelistEntryPtr(void* ptr)
@@ -52,17 +52,17 @@ class EncodedPartitionFreelistEntryPtr {
     return reinterpret_cast<PartitionFreelistEntry*>(Transform(encoded_));
   }
 
-  constexpr PA_ALWAYS_INLINE uintptr_t Inverted() const { return ~encoded_; }
+  PA_ALWAYS_INLINE constexpr uintptr_t Inverted() const { return ~encoded_; }
 
-  constexpr PA_ALWAYS_INLINE void Override(uintptr_t encoded) {
+  PA_ALWAYS_INLINE constexpr void Override(uintptr_t encoded) {
     encoded_ = encoded;
   }
 
-  constexpr PA_ALWAYS_INLINE explicit operator bool() const { return encoded_; }
+  PA_ALWAYS_INLINE constexpr explicit operator bool() const { return encoded_; }
 
   // Transform() works the same in both directions, so can be used for
   // encoding and decoding.
-  static constexpr PA_ALWAYS_INLINE uintptr_t Transform(uintptr_t address) {
+  PA_ALWAYS_INLINE static constexpr uintptr_t Transform(uintptr_t address) {
     // We use bswap on little endian as a fast transformation for two reasons:
     // 1) On 64 bit architectures, the pointer is very unlikely to be a
     //    canonical address. Therefore, if an object is freed and its vtable is
@@ -121,13 +121,13 @@ class PartitionFreelistEntry {
 
   // Emplaces the freelist entry at the beginning of the given slot span, and
   // initializes it as null-terminated.
-  static PA_ALWAYS_INLINE PartitionFreelistEntry* EmplaceAndInitNull(
+  PA_ALWAYS_INLINE static PartitionFreelistEntry* EmplaceAndInitNull(
       void* slot_start_tagged) {
     // |slot_start_tagged| is MTE-tagged.
     auto* entry = new (slot_start_tagged) PartitionFreelistEntry(nullptr);
     return entry;
   }
-  static PA_ALWAYS_INLINE PartitionFreelistEntry* EmplaceAndInitNull(
+  PA_ALWAYS_INLINE static PartitionFreelistEntry* EmplaceAndInitNull(
       uintptr_t slot_start) {
     return EmplaceAndInitNull(SlotStartAddr2Ptr(slot_start));
   }
@@ -138,7 +138,7 @@ class PartitionFreelistEntry {
   // This freelist is built for the purpose of thread-cache. This means that we
   // can't perform a check that this and the next pointer belong to the same
   // super page, as thread-cache spans may chain slots across super pages.
-  static PA_ALWAYS_INLINE PartitionFreelistEntry* EmplaceAndInitForThreadCache(
+  PA_ALWAYS_INLINE static PartitionFreelistEntry* EmplaceAndInitForThreadCache(
       uintptr_t slot_start,
       PartitionFreelistEntry* next) {
     auto* entry =
@@ -151,7 +151,7 @@ class PartitionFreelistEntry {
   //
   // This is for testing purposes only! |make_shadow_match| allows you to choose
   // if the shadow matches the next pointer properly or is trash.
-  static PA_ALWAYS_INLINE void EmplaceAndInitForTest(uintptr_t slot_start,
+  PA_ALWAYS_INLINE static void EmplaceAndInitForTest(uintptr_t slot_start,
                                                      void* next,
                                                      bool make_shadow_match) {
     new (SlotStartAddr2Ptr(slot_start))
@@ -215,7 +215,7 @@ class PartitionFreelistEntry {
     return SlotStartPtr2Addr(this);
   }
 
-  constexpr PA_ALWAYS_INLINE bool IsEncodedNextPtrZero() const {
+  PA_ALWAYS_INLINE constexpr bool IsEncodedNextPtrZero() const {
     return !encoded_next_;
   }
 
@@ -225,7 +225,7 @@ class PartitionFreelistEntry {
       size_t extra,
       bool for_thread_cache) const;
 
-  static PA_ALWAYS_INLINE bool IsSane(const PartitionFreelistEntry* here,
+  PA_ALWAYS_INLINE static bool IsSane(const PartitionFreelistEntry* here,
                                       const PartitionFreelistEntry* next,
                                       bool for_thread_cache) {
     // Don't allow the freelist to be blindly followed to any location.
