@@ -76,6 +76,7 @@ public class PageZoomMediatorUnitTest {
         mJniMocker.mock(HostZoomMapImplJni.TEST_HOOKS, mHostZoomMapMock);
 
         mModel = new PropertyModel.Builder(PageZoomProperties.ALL_KEYS).build();
+        mModel.set(PageZoomProperties.DEFAULT_ZOOM_FACTOR, 0.0);
         mMediator = new PageZoomMediator(mModel);
 
         HostZoomMap.SYSTEM_FONT_SCALE = 1.0f;

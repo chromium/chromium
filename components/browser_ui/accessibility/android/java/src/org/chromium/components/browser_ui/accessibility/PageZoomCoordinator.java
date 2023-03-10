@@ -12,6 +12,7 @@ import android.view.animation.AnimationUtils;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.LoadCommittedDetails;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
@@ -24,7 +25,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * zoom should be calling methods in this class only.
  */
 public class PageZoomCoordinator {
-    private final Delegate mDelegate;
+    private final PageZoomCoordinatorDelegate mDelegate;
     private final PropertyModel mModel;
     private final PageZoomMediator mMediator;
 
@@ -33,17 +34,11 @@ public class PageZoomCoordinator {
     private Runnable mDismissalCallback;
 
     private View mView;
+    private BrowserContextHandle mBrowserContextHandle;
 
     private static Boolean sShouldShowMenuItemForTesting;
 
-    /**
-     * Delegate interface for any class that wants a |PageZoomCoordinator| and to display the view.
-     */
-    public interface Delegate {
-        View getZoomControlView();
-    }
-
-    public PageZoomCoordinator(Delegate delegate) {
+    public PageZoomCoordinator(PageZoomCoordinatorDelegate delegate) {
         mDelegate = delegate;
         mModel = new PropertyModel.Builder(PageZoomProperties.ALL_KEYS).build();
         mModel.set(PageZoomProperties.USER_INTERACTION_CALLBACK, this::onViewInteraction);
@@ -77,6 +72,13 @@ public class PageZoomCoordinator {
             mView.setVisibility(View.VISIBLE);
             mView.startAnimation(getInAnimation());
         }
+
+        if (mBrowserContextHandle == null) {
+            mBrowserContextHandle = mDelegate.getBrowserContextHandle();
+        }
+
+        mModel.set(PageZoomProperties.DEFAULT_ZOOM_FACTOR,
+                PageZoomUtils.getDefaultZoomLevelAsZoomFactor(mBrowserContextHandle));
 
         adjustPadding();
 

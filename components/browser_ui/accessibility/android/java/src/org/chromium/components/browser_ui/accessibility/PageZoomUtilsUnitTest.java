@@ -40,6 +40,8 @@ public class PageZoomUtilsUnitTest {
             "Failure to correctly convert zoom factor to seek bar value.";
     private static final String SEEKBAR_VALUE_TO_ZOOM_LEVEL_FAILURE =
             "Failure to correctly convert seek bar value to zoom level.";
+    private static final String SHOULD_SNAP_SEEKBAR_VALUE_TO_DEFAULT_ZOOM_FAILURE =
+            "Failure to correctly return whether to snap seek bar value to default zoom.";
 
     private static final String GET_NEXT_INDEX_DECREASE_FAILURE =
             "Failure to get next index in decreasing direction.";
@@ -112,6 +114,15 @@ public class PageZoomUtilsUnitTest {
         // Non-cached zoom level
         Assert.assertEquals(SEEKBAR_VALUE_TO_ZOOM_FACTOR_FAILURE, 1.51,
                 PageZoomUtils.convertSeekBarValueToZoomLevel(101), 0.0001);
+    }
+
+    @Test
+    public void testShouldSnapSeekBarValueToDefaultZoom() {
+        Assert.assertTrue(SHOULD_SNAP_SEEKBAR_VALUE_TO_DEFAULT_ZOOM_FAILURE,
+                PageZoomUtils.shouldSnapSeekBarValueToDefaultZoom(47, 0.0));
+
+        Assert.assertFalse(SHOULD_SNAP_SEEKBAR_VALUE_TO_DEFAULT_ZOOM_FAILURE,
+                PageZoomUtils.shouldSnapSeekBarValueToDefaultZoom(45, 0.0));
     }
 
     @Test
