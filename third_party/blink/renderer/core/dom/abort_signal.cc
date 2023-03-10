@@ -440,6 +440,16 @@ bool AbortSignal::HasPendingActivity() const {
          !abort_algorithms_->Empty();
 }
 
+bool AbortSignal::CanAbort() const {
+  if (aborted()) {
+    return false;
+  }
+  if (RuntimeEnabledFeatures::AbortSignalCompositionEnabled()) {
+    return !composition_manager_->IsSettled();
+  }
+  return true;
+}
+
 AbortSignal::AlgorithmHandle::AlgorithmHandle(AbortSignal::Algorithm* algorithm)
     : algorithm_(algorithm) {}
 

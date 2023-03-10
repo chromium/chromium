@@ -161,6 +161,9 @@ class CORE_EXPORT AbortSignal : public EventTargetWithInlineData,
     return signal_type_ == AbortSignal::SignalType::kComposite;
   }
 
+  // Returns true if this signal has not aborted and still might abort.
+  bool CanAbort() const;
+
   // Returns the composition manager for this signal for the given type.
   // Subclasses are expected to override this to return the composition manager
   // associated with their type.
