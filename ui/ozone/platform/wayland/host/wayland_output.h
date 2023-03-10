@@ -74,6 +74,7 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
     float scale_factor = 0.0;
     int32_t panel_transform = 0;
     int32_t logical_transform = 0;
+    std::string name;
     std::string description;
   };
 

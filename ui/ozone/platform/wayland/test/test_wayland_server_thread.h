@@ -32,6 +32,7 @@
 #include "ui/ozone/platform/wayland/test/test_surface_augmenter.h"
 #include "ui/ozone/platform/wayland/test/test_viewporter.h"
 #include "ui/ozone/platform/wayland/test/test_wp_pointer_gestures.h"
+#include "ui/ozone/platform/wayland/test/test_zaura_output_manager.h"
 #include "ui/ozone/platform/wayland/test/test_zaura_shell.h"
 #include "ui/ozone/platform/wayland/test/test_zcr_stylus.h"
 #include "ui/ozone/platform/wayland/test/test_zcr_text_input_extension.h"
@@ -134,6 +135,9 @@ class TestWaylandServerThread : public base::Thread,
   TestDataDeviceManager* data_device_manager() { return &data_device_manager_; }
   TestSeat* seat() { return &seat_; }
   MockXdgShell* xdg_shell() { return &xdg_shell_; }
+  TestZAuraOutputManager* zaura_output_manager() {
+    return &zaura_output_manager_;
+  }
   TestZAuraShell* zaura_shell() { return &zaura_shell_; }
   TestOutput* output() { return &output_; }
   TestZcrTextInputExtensionV1* text_input_extension_v1() {
@@ -224,6 +228,7 @@ class TestWaylandServerThread : public base::Thread,
   TestSeat seat_;
   TestZXdgOutputManager zxdg_output_manager_;
   MockXdgShell xdg_shell_;
+  TestZAuraOutputManager zaura_output_manager_;
   TestZAuraShell zaura_shell_;
   MockZcrColorManagerV1 zcr_color_manager_v1_;
   TestZcrStylus zcr_stylus_;

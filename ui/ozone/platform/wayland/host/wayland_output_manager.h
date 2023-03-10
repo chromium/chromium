@@ -51,6 +51,8 @@ class WaylandOutputManager : public WaylandOutput::Delegate {
   // Feeds a new platform screen with existing outputs.
   void InitWaylandScreen(WaylandScreen* screen);
 
+  // Returns the output_id (i.e. the output's assigned global name).
+  WaylandOutput::Id GetOutputId(wl_output* output_resource) const;
   WaylandOutput* GetOutput(WaylandOutput::Id id) const;
   WaylandOutput* GetPrimaryOutput() const;
   const OutputList& GetAllOutputs() const;
