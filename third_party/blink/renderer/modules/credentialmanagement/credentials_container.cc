@@ -54,6 +54,7 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/page/frame_tree.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/authenticator_assertion_response.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/authenticator_attestation_response.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/credential.h"
@@ -351,18 +352,9 @@ bool IsArrayBufferOrViewBelowSizeLimit(
     const V8UnionArrayBufferOrArrayBufferView* buffer_or_view) {
   if (!buffer_or_view)
     return true;
-  switch (buffer_or_view->GetContentType()) {
-    case V8UnionArrayBufferOrArrayBufferView::ContentType::kArrayBuffer:
-      return base::CheckedNumeric<wtf_size_t>(
-                 buffer_or_view->GetAsArrayBuffer()->ByteLength())
-          .IsValid();
-    case V8UnionArrayBufferOrArrayBufferView::ContentType::kArrayBufferView:
-      return base::CheckedNumeric<wtf_size_t>(
-                 buffer_or_view->GetAsArrayBufferView()->byteLength())
-          .IsValid();
-  }
-  NOTREACHED();
-  return false;
+  return base::CheckedNumeric<wtf_size_t>(
+             DOMArrayPiece(buffer_or_view).ByteLength())
+      .IsValid();
 }
 
 bool IsCredentialDescriptorListBelowSizeLimit(
@@ -1035,7 +1027,21 @@ bool IsPaymentExtensionValid(const CredentialCreationOptions* options,
 }
 
 const char* validateGetPublicKeyCredentialPRFExtension(
-    const AuthenticationExtensionsPRFInputs& prf) {
+    const AuthenticationExtensionsPRFInputs& prf,
+    const HeapVector<Member<PublicKeyCredentialDescriptor>>&
+        allow_credentials) {
+  std::vector<base::span<const uint8_t>> cred_ids;
+  cred_ids.reserve(allow_credentials.size());
+  for (const auto cred : allow_credentials) {
+    DOMArrayPiece piece(cred->id());
+    cred_ids.emplace_back(piece.Bytes(), piece.ByteLength());
+  }
+  const auto compare = [](const base::span<const uint8_t>& a,
+                          const base::span<const uint8_t>& b) -> bool {
+    return std::lexicographical_compare(a.begin(), a.end(), b.begin(), b.end());
+  };
+  std::sort(cred_ids.begin(), cred_ids.end(), compare);
+
   if (prf.hasEvalByCredential()) {
     for (const auto& pair : prf.evalByCredential()) {
       Vector<char> cred_id;
@@ -1047,6 +1053,12 @@ const char* validateGetPublicKeyCredentialPRFExtension(
       if (cred_id.empty()) {
         return "'prf' extension contains an empty credential ID in "
                "'evalByCredential'";
+      }
+      if (!std::binary_search(cred_ids.begin(), cred_ids.end(),
+                              base::as_bytes(base::make_span(cred_id)),
+                              compare)) {
+        return "'prf' extension contains 'evalByCredential' key that doesn't "
+               "match any in allowedCredentials";
       }
     }
   }
@@ -1227,14 +1239,10 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
           return promise;
         }
         if (options->publicKey()->extensions()->largeBlob()->hasWrite()) {
-          V8UnionArrayBufferOrArrayBufferView* blob =
-              options->publicKey()->extensions()->largeBlob()->write();
-          size_t write_size;
-          if (blob->IsArrayBufferView()) {
-            write_size = blob->GetAsArrayBufferView()->byteLength();
-          } else {
-            write_size = blob->GetAsArrayBuffer()->ByteLength();
-          }
+          const size_t write_size =
+              DOMArrayPiece(
+                  options->publicKey()->extensions()->largeBlob()->write())
+                  .ByteLength();
           if (write_size > kMaxLargeBlobSize) {
             resolver->Reject(MakeGarbageCollected<DOMException>(
                 DOMExceptionCode::kNotSupportedError,
@@ -1245,14 +1253,6 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
         }
       }
       if (options->publicKey()->extensions()->hasPrf()) {
-        const char* error = validateGetPublicKeyCredentialPRFExtension(
-            *options->publicKey()->extensions()->prf());
-        if (error != nullptr) {
-          resolver->Reject(MakeGarbageCollected<DOMException>(
-              DOMExceptionCode::kSyntaxError, error));
-          return promise;
-        }
-
         if (options->publicKey()->extensions()->prf()->hasEvalByCredential() &&
             options->publicKey()->allowCredentials().empty()) {
           resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -1261,6 +1261,16 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
               "list"));
           return promise;
         }
+
+        const char* error = validateGetPublicKeyCredentialPRFExtension(
+            *options->publicKey()->extensions()->prf(),
+            options->publicKey()->allowCredentials());
+        if (error != nullptr) {
+          resolver->Reject(MakeGarbageCollected<DOMException>(
+              DOMExceptionCode::kSyntaxError, error));
+          return promise;
+        }
+
         // Prohibiting uv=preferred is omitted. See
         // https://github.com/w3c/webauthn/pull/1836.
       }
