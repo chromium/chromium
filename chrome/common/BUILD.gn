@@ -710,10 +710,7 @@ if (is_win) {
   # linkage and will correctly emplace over the correct symbols in
   # delayimp.lib at link time.
   source_set("delay_load_support") {
-    sources = [
-      "win/delay_load_failure_hook.cc",
-      "win/delay_load_failure_hook.h",
-    ]
+    sources = [ "win/delay_load_failure_hook.cc" ]
 
     deps = [ "//base" ]
   }

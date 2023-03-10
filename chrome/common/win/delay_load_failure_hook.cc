@@ -15,15 +15,10 @@ namespace chrome {
 
 namespace {
 
-bool g_hooks_enabled = true;
-
 // Delay load failure hook that generates a crash report. By default a failure
 // to delay load will trigger an exception handled by the delay load runtime and
 // this won't generate a crash report.
 FARPROC WINAPI DelayLoadFailureHook(unsigned reason, DelayLoadInfo* dll_info) {
-  if (!g_hooks_enabled)
-    return 0;
-
   char dll_name[MAX_PATH];
   base::strlcpy(dll_name, dll_info->szDll, std::size(dll_name));
   // It's not an error if "bthprops.cpl" fails to be loaded, there's a custom
@@ -41,10 +36,6 @@ FARPROC WINAPI DelayLoadFailureHook(unsigned reason, DelayLoadInfo* dll_info) {
 }
 
 }  // namespace
-
-void DisableDelayLoadFailureHooksForCurrentModule() {
-  g_hooks_enabled = false;
-}
 
 }  // namespace chrome
 

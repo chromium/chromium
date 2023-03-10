@@ -108,7 +108,6 @@
 #include "chrome/child/v8_crashpad_support_win.h"
 #include "chrome/chrome_elf/chrome_elf_main.h"
 #include "chrome/common/child_process_logging.h"
-#include "chrome/common/win/delay_load_failure_hook.h"
 #include "sandbox/win/src/sandbox.h"
 #include "sandbox/win/src/sandbox_factory.h"
 #include "ui/base/resource/resource_bundle_win.h"
@@ -722,11 +721,6 @@ absl::optional<int> ChromeMainDelegate::PostEarlyInitialization(
   // Initialize the cleaner of left-behind tmp files now that the main thread
   // has its SequencedTaskRunner; see https://crbug.com/1075917.
   base::ImportantFileWriterCleaner::GetInstance().Initialize();
-
-  // For now, do not enable delay load failure hooks for browser process except
-  // in tests, where failures really shouldn't happen.
-  if (invoked_in_browser->is_running_test)
-    chrome::DisableDelayLoadFailureHooksForCurrentModule();
 #endif
 
 #if !BUILDFLAG(IS_FUCHSIA)
