@@ -36,14 +36,7 @@ bool IsTokenTypeOneOf(CSSParserTokenType t) {
 // Methods prefixed with "Unchecked" can only be called after calls to Peek(),
 // EnsureLookAhead(), or AtEnd() with no subsequent modifications to the stream
 // such as a consume.
-//
-// Use the aliases CSSParserTokenStream or CSSParserRawTokenStream instead of
-// calling the Impl directly. CSSParserRawTokenStream includes comments and
-// allows you to read past the end of blocks without recursing, which is
-// normally not what you want to do when parsing (it is really only useful
-// during variable substitution).
-template <bool Raw>
-class CORE_EXPORT CSSParserTokenStreamImpl {
+class CORE_EXPORT CSSParserTokenStream {
   DISALLOW_NEW();
 
  public:
@@ -53,7 +46,7 @@ class CORE_EXPORT CSSParserTokenStreamImpl {
     STACK_ALLOCATED();
 
    public:
-    explicit BlockGuard(CSSParserTokenStreamImpl& stream) : stream_(stream) {
+    explicit BlockGuard(CSSParserTokenStream& stream) : stream_(stream) {
       const CSSParserToken next = stream.ConsumeInternal();
       DCHECK_EQ(next.GetBlockType(), CSSParserToken::kBlockStart);
     }
@@ -72,7 +65,7 @@ class CORE_EXPORT CSSParserTokenStreamImpl {
     }
 
    private:
-    CSSParserTokenStreamImpl& stream_;
+    CSSParserTokenStream& stream_;
     bool skipped_to_end_of_block_ = false;
   };
 
@@ -86,7 +79,7 @@ class CORE_EXPORT CSSParserTokenStreamImpl {
     STACK_ALLOCATED();
 
    public:
-    Boundary(CSSParserTokenStreamImpl& stream, CSSParserTokenType boundary_type)
+    Boundary(CSSParserTokenStream& stream, CSSParserTokenType boundary_type)
         : auto_reset_(&stream.boundaries_,
                       stream.boundaries_ | FlagForTokenType(boundary_type)) {}
     ~Boundary() = default;
@@ -103,24 +96,24 @@ class CORE_EXPORT CSSParserTokenStreamImpl {
   // only needed for declarations which are easier to think about?
   static constexpr int kInitialBufferSize = 128;
 
-  explicit CSSParserTokenStreamImpl(CSSTokenizer& tokenizer)
+  explicit CSSParserTokenStream(CSSTokenizer& tokenizer)
       : tokenizer_(tokenizer), next_(kEOFToken) {}
 
-  CSSParserTokenStreamImpl(CSSParserTokenStreamImpl&&) = default;
-  CSSParserTokenStreamImpl(const CSSParserTokenStreamImpl&) = delete;
-  CSSParserTokenStreamImpl& operator=(const CSSParserTokenStreamImpl&) = delete;
+  CSSParserTokenStream(CSSParserTokenStream&&) = default;
+  CSSParserTokenStream(const CSSParserTokenStream&) = delete;
+  CSSParserTokenStream& operator=(const CSSParserTokenStream&) = delete;
 
   inline void EnsureLookAhead() {
     if (!HasLookAhead()) {
       has_look_ahead_ = true;
-      next_ = TokenizeSingle();
+      next_ = tokenizer_.TokenizeSingle();
     }
   }
 
   // Forcibly read a lookahead token.
   inline void LookAhead() {
     DCHECK(!HasLookAhead());
-    next_ = TokenizeSingle();
+    next_ = tokenizer_.TokenizeSingle();
     has_look_ahead_ = true;
   }
 
@@ -143,10 +136,8 @@ class CORE_EXPORT CSSParserTokenStreamImpl {
 
   const CSSParserToken& UncheckedConsume() {
     DCHECK(HasLookAhead());
-    if constexpr (!Raw) {
-      DCHECK_NE(next_.GetBlockType(), CSSParserToken::kBlockStart);
-      DCHECK_NE(next_.GetBlockType(), CSSParserToken::kBlockEnd);
-    }
+    DCHECK_NE(next_.GetBlockType(), CSSParserToken::kBlockStart);
+    DCHECK_NE(next_.GetBlockType(), CSSParserToken::kBlockEnd);
     has_look_ahead_ = false;
     offset_ = tokenizer_.Offset();
     return next_;
@@ -223,7 +214,7 @@ class CORE_EXPORT CSSParserTokenStreamImpl {
     // Add tokens to our return vector until we see either EOF or we meet the
     // return condition. (The termination condition is within the loop.)
     while (true) {
-      buffer_.push_back(TokenizeSingle());
+      buffer_.push_back(tokenizer_.TokenizeSingle());
       if (buffer_.back().IsEOF() ||
           (nesting_level == 0 && TokenMarksEnd<Types...>(buffer_.back()))) {
         // Undo the token we just pushed; it goes into the lookahead slot
@@ -275,32 +266,12 @@ class CORE_EXPORT CSSParserTokenStreamImpl {
   // leave a lookahead token active (for unknown reasons).
   void UncheckedSkipToEndOfBlock();
 
-  ALWAYS_INLINE CSSParserToken TokenizeSingle() {
-    if constexpr (Raw) {
-      return tokenizer_.TokenizeSingleWithComments();
-    } else {
-      return tokenizer_.TokenizeSingle();
-    }
-  }
-
   Vector<CSSParserToken, kInitialBufferSize> buffer_;
   CSSTokenizer& tokenizer_;
   CSSParserToken next_;
   wtf_size_t offset_ = 0;
   bool has_look_ahead_ = false;
   uint64_t boundaries_ = FlagForTokenType(kEOFToken);
-};
-
-// This allows us to still forward-declare CSSParserTokenStream.
-class CORE_EXPORT CSSParserTokenStream
-    : public CSSParserTokenStreamImpl</*Raw=*/false> {
-  // Forward the constructors.
-  using CSSParserTokenStreamImpl<false>::CSSParserTokenStreamImpl;
-};
-class CORE_EXPORT CSSParserRawTokenStream
-    : public CSSParserTokenStreamImpl</*Raw=*/true> {
-  // Forward the constructors.
-  using CSSParserTokenStreamImpl<true>::CSSParserTokenStreamImpl;
 };
 
 }  // namespace blink
