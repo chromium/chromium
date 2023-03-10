@@ -3721,6 +3721,8 @@ static_library("test_support") {
     "ambient/test/ambient_topic_queue_test_delegate.h",
     "ambient/test/fake_ambient_animation_static_resources.cc",
     "ambient/test/fake_ambient_animation_static_resources.h",
+    "ambient/test/mock_ambient_backend_model_observer.cc",
+    "ambient/test/mock_ambient_backend_model_observer.h",
     "ambient/test/mock_ambient_view_observer.cc",
     "ambient/test/mock_ambient_view_observer.h",
     "ambient/test/test_ambient_client.cc",

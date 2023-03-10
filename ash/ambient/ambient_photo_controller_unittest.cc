@@ -20,6 +20,7 @@
 #include "ash/ambient/test/ambient_ash_test_base.h"
 #include "ash/ambient/test/ambient_test_util.h"
 #include "ash/ambient/test/ambient_topic_queue_test_delegate.h"
+#include "ash/ambient/test/mock_ambient_backend_model_observer.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
 #include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
@@ -57,15 +58,6 @@ using ::testing::Pointwise;
 using ::testing::SizeIs;
 
 namespace {
-class MockAmbientBackendModelObserver : public AmbientBackendModelObserver {
- public:
-  MockAmbientBackendModelObserver() = default;
-  ~MockAmbientBackendModelObserver() override = default;
-
-  // AmbientBackendModelObserver:
-  MOCK_METHOD(void, OnImageAdded, (), (override));
-  MOCK_METHOD(void, OnImagesReady, (), (override));
-};
 
 bool AreBackedBySameImage(const PhotoWithDetails& topic_l,
                           const PhotoWithDetails& topic_r) {
