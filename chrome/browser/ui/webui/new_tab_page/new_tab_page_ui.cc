@@ -468,7 +468,10 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       {"modulesFirstRunExperienceOptOutToast",
        IDS_NTP_MODULES_FIRST_RUN_EXPERIENCE_OPT_OUT_TOAST},
       {"modulesJourneysResumeJourney", IDS_NTP_MODULES_RESUME_YOUR_JOURNEY},
-      {"modulesJourneyShowAll", IDS_NTP_MODULES_SHOW_ALL},
+      {"modulesJourneysShowAll", IDS_NTP_MODULES_SHOW_ALL},
+      {"modulesJourneysInfo", IDS_NTP_MODULES_HISTORY_CLUSTERS_INFO},
+      {"modulesJourneysSentence2", IDS_NTP_MODULES_HISTORY_CLUSTERS_SENTENCE2},
+      {"modulesJourneyDisable", IDS_NTP_MODULES_HISTORY_CLUSTERS_DISABLE_TEXT},
 
       // Middle slot promo.
       {"undoDismissPromoButtonToast", IDS_NTP_UNDO_DISMISS_PROMO_BUTTON_TOAST},

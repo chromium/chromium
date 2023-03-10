@@ -7281,6 +7281,18 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_SHOW_ALL" desc="A label for the show all button in NTP Quests Module.">
         Show all
       </message>
+      <message name="IDS_NTP_MODULES_HISTORY_CLUSTERS_INFO" desc="Text shown in the body of the info dialog of the history clusters module.">
+        You’re seeing pages you've visited and suggested searches to help you easily get back to your most recent activity in Chrome Journeys.
+        <ph name="BREAK">&lt;br&gt;</ph>
+        <ph name="BREAK">&lt;br&gt;</ph>
+        You can manage settings from the card menu or see more options in Customize Chrome.
+      </message>
+      <message name="IDS_NTP_MODULES_HISTORY_CLUSTERS_SENTENCE2" desc="Variant of the name of the History Clusters module in sentence case shown in various UIs.">
+        Journeys
+      </message>
+      <message name="IDS_NTP_MODULES_HISTORY_CLUSTERS_DISABLE_TEXT" desc="A label to append to the disable text in the dropdown.">
+        Journeys card
+      </message>
 
       <!-- Extensions NTP Middle Slot Promo -->
       <message name="IDS_EXTENSIONS_PROMO_PERFORMANCE">

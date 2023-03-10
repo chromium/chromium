@@ -6,10 +6,12 @@ import '../module_header.js';
 import './suggest_tile.js';
 import './tile.js';
 
+import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Cluster, URLVisit} from '../../history_cluster_types.mojom-webui.js';
 import {I18nMixin, loadTimeData} from '../../i18n_setup.js';
+import {InfoDialogElement} from '../info_dialog';
 import {ModuleDescriptor} from '../module_descriptor.js';
 
 import {HistoryClustersProxyImpl} from './history_clusters_proxy.js';
@@ -33,6 +35,12 @@ export enum HistoryClusterLayoutType {
   LAYOUT_1 = 1,  // 2 image visits
   LAYOUT_2 = 2,  // 1 image visit & 2 non-image visits
   LAYOUT_3 = 3,  // 2 image visits & 2 non-image visits
+}
+
+export interface HistoryClustersModuleElement {
+  $: {
+    infoDialogRender: CrLazyRenderElement<InfoDialogElement>,
+  };
 }
 
 // TODO:(crbug.com/1410808): Add module UI logic.
@@ -74,6 +82,18 @@ export class HistoryClustersModuleElement extends I18nMixin
     return type === this.layoutType;
   }
 
+  private onDisableButtonClick_() {
+    const disableEvent = new CustomEvent('disable-module', {
+      composed: true,
+      detail: {
+        message: loadTimeData.getStringF(
+            'disableModuleToastMessage',
+            loadTimeData.getString('modulesJourneysSentence2')),
+      },
+    });
+    this.dispatchEvent(disableEvent);
+  }
+
   private onDismissButtonClick_() {
     HistoryClustersProxyImpl.getInstance().handler.dismissCluster(
         [this.searchResultPage, ...this.cluster.visits]);
@@ -85,6 +105,10 @@ export class HistoryClustersModuleElement extends I18nMixin
             loadTimeData.getStringF('dismissModuleToastMessage', this.title_),
       },
     }));
+  }
+
+  private onInfoButtonClick_() {
+    this.$.infoDialogRender.get().showModal();
   }
 
   private onShowAllClick_() {

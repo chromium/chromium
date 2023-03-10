@@ -55,15 +55,19 @@
 </style>
 <div id="content">
   <ntp-module-header
-      disable-text="[[i18n('modulesDisableButtonText', title_)]]"
-      dismiss-text="[[i18n('modulesDismissButtonText', title_)]]"
-      show-info-button show-dismiss-button
-      on-dismiss-button-click="onDismissButtonClick_"
-      icon-src="chrome://resources/images/icon_journeys.svg">
+    disable-text="[[i18nRecursive('',
+                                  'modulesDisableButtonText',
+                                  'modulesJourneyDisable')]]"
+    dismiss-text="[[i18n('modulesDismissButtonText', title_)]]"
+    show-info-button show-dismiss-button
+    on-disable-button-click="onDisableButtonClick_"
+    on-dismiss-button-click="onDismissButtonClick_"
+    on-info-button-click="onInfoButtonClick_"
+    icon-src="chrome://resources/images/icon_journeys.svg">
     [[i18n('modulesJourneysResumeJourney', title_)]]
     <button id="showAllButton" type="button" on-click="onShowAllClick_"
             slot="title-actions">
-        [[i18n('modulesJourneyShowAll')]]
+        [[i18n('modulesJourneysShowAll')]]
     </button>
   </ntp-module-header>
   <template is="dom-if" if="[[isLayout_(1, layoutType)]]" restamp>
@@ -121,3 +125,9 @@
     </div>
   </template>
 </div>
+<cr-lazy-render id="infoDialogRender">
+  <template>
+    <ntp-info-dialog inner-h-t-m-l="[[i18nAdvanced('modulesJourneysInfo')]]">
+    </ntp-info-dialog>
+  </template>
+</cr-lazy-render>
