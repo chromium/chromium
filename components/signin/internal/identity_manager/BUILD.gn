@@ -66,6 +66,7 @@ source_set("identity_manager") {
     "//components/image_fetcher/core",
     "//components/prefs",
     "//components/signin/public/webdata",
+    "//components/supervised_user/core/common:common",
     "//services/network/public/cpp",
     "//ui/gfx",
   ]
@@ -167,6 +168,7 @@ source_set("unit_tests") {
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
     "//components/signin/public/webdata",
+    "//components/supervised_user/core/common:common",
     "//components/sync_preferences:test_support",
     "//components/webdata/common",
     "//google_apis",

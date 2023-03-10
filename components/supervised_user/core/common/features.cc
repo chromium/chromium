@@ -113,6 +113,21 @@ bool IsKidsManagementServiceEnabled() {
   return base::FeatureList::IsEnabled(kEnableKidsManagementService);
 }
 
+// The following flags control whether supervision features are enabled on
+// desktop and iOS. These are structured as follows:
+//
+// * EnableSupervisionOnDesktopAndIOS controls whether *any* supervision
+// features are enabled at all.
+// * Individual granular per-feature flags that control whether individual
+// features are enabled. These should only be enabled if
+// EnableSupervisionOnDesktopAndIOS is also enabled.
+//
+// For a feature to be enabled:
+// * EnableSupervisionOnDesktopAndIOS must be enabled
+// * If that feature has a granular feature flag, it must also be enabled
+BASE_FEATURE(kEnableSupervisionOnDesktopAndIOS,
+             "EnableSupervisionOnDesktopAndIOS",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kFilterWebsitesForSupervisedUsersOnThirdParty,
              "FilterWebsitesForSupervisedUsersOnThirdParty",
              base::FEATURE_DISABLED_BY_DEFAULT);

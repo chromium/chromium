@@ -53,6 +53,10 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#include "components/supervised_user/core/common/features.h"
+#endif
+
 namespace {
 
 using TokenResponseBuilder = OAuth2AccessTokenConsumer::TokenResponse::Builder;
@@ -340,6 +344,15 @@ class AccountTrackerServiceTest : public testing::Test {
   void ReturnAccountImageFetchSuccess(AccountKey account_key);
   void ReturnAccountImageFetchFailure(AccountKey account_key);
   void ReturnAccountCapabilitiesFetchSuccess(AccountKey account_key);
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  void ReturnAccountCapabilitiesFetchIsSubjectToParentalSupervision(
+      AccountKey account_key,
+      bool is_subject_to_parental_controls);
+  void TestAccountCapabilitiesSubjectToParentalSupervision(
+      bool enable_supervision_on_desktop,
+      bool capability_value,
+      signin::Tribool expected_is_child_account);
+#endif
   void ReturnAccountCapabilitiesFetchFailure(AccountKey account_key);
 
   AccountFetcherService* account_fetcher() { return account_fetcher_.get(); }
@@ -473,6 +486,54 @@ void AccountTrackerServiceTest::ReturnAccountCapabilitiesFetchSuccess(
       AccountKeyToAccountId(account_key), capabilities);
 }
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+void AccountTrackerServiceTest::
+    ReturnAccountCapabilitiesFetchIsSubjectToParentalSupervision(
+        AccountKey account_key,
+        bool is_subject_to_parental_controls) {
+  IssueAccessToken(account_key);
+  AccountCapabilities capabilities;
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator.set_is_subject_to_parental_controls(is_subject_to_parental_controls);
+  fake_account_capabilities_fetcher_factory_->CompleteAccountCapabilitiesFetch(
+      AccountKeyToAccountId(account_key), capabilities);
+}
+
+void AccountTrackerServiceTest::
+    TestAccountCapabilitiesSubjectToParentalSupervision(
+        bool enable_supervision_on_desktop,
+        bool capability_value,
+        signin::Tribool expected_is_child_account) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  if (enable_supervision_on_desktop) {
+    scoped_feature_list.InitAndEnableFeature(
+        supervised_user::kEnableSupervisionOnDesktopAndIOS);
+  } else {
+    scoped_feature_list.InitAndDisableFeature(
+        supervised_user::kEnableSupervisionOnDesktopAndIOS);
+  }
+
+  SimulateTokenAvailable(kAccountKeyChild);
+  AccountInfo account_info = account_tracker()->GetAccountInfo(
+      AccountKeyToAccountId(kAccountKeyChild));
+  EXPECT_EQ(account_info.is_child_account, signin::Tribool::kUnknown);
+
+  // AccountUpdated notification requires account's gaia to be known.
+  // Set account's user info first to receive an UPDATED event when capabilities
+  // are fetched.
+  ReturnAccountInfoFetchSuccess(kAccountKeyChild);
+  ClearAccountTrackerEvents();
+
+  ReturnAccountCapabilitiesFetchIsSubjectToParentalSupervision(
+      kAccountKeyChild, capability_value);
+
+  account_info = account_tracker()->GetAccountInfo(
+      AccountKeyToAccountId(kAccountKeyChild));
+
+  EXPECT_EQ(account_info.is_child_account, expected_is_child_account);
+}
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
 void AccountTrackerServiceTest::ReturnAccountCapabilitiesFetchFailure(
     AccountKey account_key) {
   IssueAccessToken(account_key);
@@ -605,6 +666,36 @@ TEST_F(AccountTrackerServiceTest, TokenAvailable_AccountCapabilitiesSuccess) {
       AccountKeyToAccountId(kAccountKeyAlpha));
   CheckAccountCapabilities(kAccountKeyAlpha, account_info);
 }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+TEST_F(
+    AccountTrackerServiceTest,
+    TokenAvailable_AccountCapabilitiesSubjectToParentalSupervisionDisabledForDesktop) {
+  TestAccountCapabilitiesSubjectToParentalSupervision(
+      false, true, signin::Tribool::kUnknown);
+}
+
+TEST_F(
+    AccountTrackerServiceTest,
+    TokenAvailable_AccountCapabilitiesSubjectToParentalSupervisionEnabledForDesktop) {
+  TestAccountCapabilitiesSubjectToParentalSupervision(true, true,
+                                                      signin::Tribool::kTrue);
+}
+
+TEST_F(
+    AccountTrackerServiceTest,
+    TokenAvailable_AccountCapabilitiesNotSubjectToParentalSupervisionDisabledForDesktop) {
+  TestAccountCapabilitiesSubjectToParentalSupervision(
+      false, false, signin::Tribool::kUnknown);
+}
+
+TEST_F(
+    AccountTrackerServiceTest,
+    TokenAvailable_AccountCapabilitiesNotSubjectToParentalSupervisionEnabledForDesktop) {
+  TestAccountCapabilitiesSubjectToParentalSupervision(true, false,
+                                                      signin::Tribool::kFalse);
+}
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 TEST_F(AccountTrackerServiceTest, TokenAvailable_AccountCapabilitiesFailed) {
   SimulateTokenAvailable(kAccountKeyAlpha);
