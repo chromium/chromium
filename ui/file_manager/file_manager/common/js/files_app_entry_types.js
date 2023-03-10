@@ -355,7 +355,9 @@ export class VolumeEntry {
     }
     this.type_name = 'VolumeEntry';
 
-    // TODO(lucmult): consider deriving this from volumeInfo.
+    // TODO(b/271485133): consider deriving this from volumeInfo. Setting
+    // rootType here breaks some integration tests, e.g.
+    // saveAsDlpRestrictedAndroid.
     this.rootType = null;
 
     this.disabled_ = false;
@@ -756,6 +758,21 @@ export class FakeEntryImpl {
   createReader() {
     return new StaticReader([]);
   }
+
+  /**
+   * FakeEntry can be a placeholder for the real volume, if so this field will
+   * be the volume type of the volume it represents.
+   * @return {VolumeManagerCommon.VolumeType|null}
+   */
+  get volumeType() {
+    // Recent rootType has no corresponding volume type, and it will throw error
+    // in the below getVolumeTypeFromRootType() call, we need to return null
+    // here.
+    if (this.rootType === VolumeManagerCommon.RootType.RECENT) {
+      return null;
+    }
+    return VolumeManagerCommon.getVolumeTypeFromRootType(this.rootType);
+  }
 }
 
 /**
@@ -801,5 +818,13 @@ export class GuestOsPlaceholder extends FakeEntryImpl {
   /** @override */
   toURL() {
     return `fake-entry://guest-os/${this.guest_id}`;
+  }
+
+  /** @override */
+  get volumeType() {
+    if (this.vm_type === chrome.fileManagerPrivate.VmType.ARCVM) {
+      return VolumeManagerCommon.VolumeType.ANDROID_FILES;
+    }
+    return VolumeManagerCommon.VolumeType.GUEST_OS;
   }
 }

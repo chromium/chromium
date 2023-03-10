@@ -6,6 +6,7 @@ import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import {FakeEntryImpl, GuestOsPlaceholder, VolumeEntry} from '../../common/js/files_app_entry_types.js';
+import {waitUntil} from '../../common/js/test_error_reporting.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FileData, State} from '../../externs/ts/state.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
@@ -204,6 +205,30 @@ export async function testAddDuplicateUiEntryForMyFilesWhenVolumeExists(
   // Check the UI entry is not being added to MyFiles entry again.
   assertEquals(1, myFilesEntry.getUIChildren().length);
   assertEquals(playFilesVolumeEntry, myFilesEntry.getUIChildren()[0]);
+
+  done();
+}
+
+/**
+ * Tests that UI entry will be disabled if the corresponding volume
+ * type is disabled in the volume manager.
+ */
+export async function testAddUiEntryWithDisabledVolumeType(done: () => void) {
+  const initialState = getEmptyState();
+  const store = setupStore(initialState);
+
+  // Dispatch an action to add UI entry.
+  const {volumeManager} = window.fileManager;
+  // Disable Android files volume type.
+  volumeManager.isDisabled = (volumeType) => {
+    return volumeType === VolumeManagerCommon.VolumeType.ANDROID_FILES;
+  };
+  const uiEntry = new GuestOsPlaceholder(
+      'Play files', 0, chrome.fileManagerPrivate.VmType.ARCVM);
+  store.dispatch(addUiEntry({entry: uiEntry}));
+
+  // Expect the UI entry is being disabled.
+  await waitUntil(() => uiEntry.disabled === true);
 
   done();
 }

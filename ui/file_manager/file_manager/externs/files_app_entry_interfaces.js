@@ -207,4 +207,11 @@ export class FakeEntry extends FilesAppDirEntry {
    * @return {string}
    */
   get iconName() {}
+
+  /**
+   * FakeEntry can be a placeholder for the real volume, if so this field will
+   * be the volume type of the volume it represents.
+   * @return {VolumeManagerCommon.VolumeType|null}
+   */
+  get volumeType() {}
 }

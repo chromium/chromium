@@ -4,6 +4,7 @@
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import {EntryList, FakeEntryImpl, VolumeEntry} from '../../common/js/files_app_entry_types.js';
+import {waitUntil} from '../../common/js/test_error_reporting.js';
 import {str} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FileData, State} from '../../externs/ts/state.js';
@@ -11,7 +12,7 @@ import {VolumeInfo} from '../../externs/volume_info.js';
 import {constants} from '../../foreground/js/constants.js';
 import {addVolume, removeVolume} from '../actions/volumes.js';
 import {createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore, waitDeepEquals} from '../for_tests.js';
-import {getEmptyState} from '../store.js';
+import {getEmptyState, getEntry} from '../store.js';
 
 import {convertEntryToFileData} from './all_entries.js';
 import {convertVolumeInfoAndMetadataToVolume, driveRootEntryListKey} from './volumes.js';
@@ -323,6 +324,36 @@ export async function testAddVolumeForMultipleUsbPartitionsGrouping(
                                       allEntries: state.allEntries,
                                       volumes: state.volumes,
                                     }));
+
+  done();
+}
+
+/**
+ * Tests that volume will be disabled if it is disabled in the volume manager.
+ */
+export async function testAddDisabledVolume(done: () => void) {
+  const initialState = getEmptyState();
+  const store = setupStore(initialState);
+
+  // Dispatch an action to add crostini volume.
+  const {volumeManager} = window.fileManager;
+  const volumeInfo = MockVolumeManager.createMockVolumeInfo(
+      VolumeManagerCommon.VolumeType.CROSTINI, 'crostini', 'Linux files');
+  volumeManager.volumeInfoList.add(volumeInfo);
+  const volumeMetadata = createFakeVolumeMetadata(volumeInfo);
+  // Disable crostini volume type.
+  volumeManager.isDisabled = (volumeType) => {
+    return volumeType === VolumeManagerCommon.VolumeType.CROSTINI;
+  };
+  store.dispatch(addVolume({volumeInfo, volumeMetadata}));
+
+  // Expect the volume entry is being disabled.
+  await waitUntil(() => {
+    const volumeEntry =
+        getEntry(store.getState(), volumeInfo.displayRoot.toURL()) as
+        VolumeEntry;
+    return volumeEntry && volumeEntry.disabled === true;
+  });
 
   done();
 }
