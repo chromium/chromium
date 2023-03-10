@@ -162,8 +162,8 @@ class DlpFilesController {
   using CheckIfDlpAllowedCallback = base::OnceCallback<void(bool is_allowed)>;
   using GetDlpMetadataCallback =
       base::OnceCallback<void(std::vector<DlpFileMetadata>)>;
-  using IsFilesTransferRestrictedCallback =
-      base::OnceCallback<void(const std::vector<FileDaemonInfo>&)>;
+  using IsFilesTransferRestrictedCallback = base::OnceCallback<void(
+      const std::vector<std::pair<FileDaemonInfo, ::dlp::RestrictionLevel>>&)>;
 
   explicit DlpFilesController(const DlpRulesManager& rules_manager);
   DlpFilesController(const DlpFilesController& other) = delete;
@@ -262,9 +262,10 @@ class DlpFilesController {
  private:
   // Called back from warning dialog. Passes blocked files sources along
   // to |callback|. In case |should_proceed| is true, passes only
-  // |restricted_files_sources|, otherwise passes also |warned_files_sources|.
+  // |files_levels|, otherwise passes also |warned_files_sources|.
   void OnDlpWarnDialogReply(
-      std::vector<FileDaemonInfo> restricted_files_sources,
+      std::vector<std::pair<FileDaemonInfo, ::dlp::RestrictionLevel>>
+          files_levels,
       std::vector<FileDaemonInfo> warned_files_sources,
       std::vector<std::string> warned_src_patterns,
       std::vector<DlpRulesManager::RuleMetadata> warned_rules_metadata,

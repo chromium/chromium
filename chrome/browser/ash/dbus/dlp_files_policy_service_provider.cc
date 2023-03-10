@@ -157,8 +157,15 @@ void DlpFilesPolicyServiceProvider::IsFilesTransferRestricted(
   policy::DlpFilesController* files_controller =
       rules_manager->GetDlpFilesController();
   if (!files_controller) {
+    std::vector<std::pair<policy::DlpFilesController::FileDaemonInfo,
+                          dlp::RestrictionLevel>>
+        response_files;
+    for (const auto& file : files_info) {
+      response_files.emplace_back(file,
+                                  ::dlp::RestrictionLevel::LEVEL_UNSPECIFIED);
+    }
     RespondWithRestrictedFilesTransfer(method_call, std::move(response_sender),
-                                       std::move(files_info));
+                                       std::move(response_files));
     return;
   }
 
@@ -185,15 +192,27 @@ void DlpFilesPolicyServiceProvider::IsFilesTransferRestricted(
 void DlpFilesPolicyServiceProvider::RespondWithRestrictedFilesTransfer(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender,
-    const std::vector<policy::DlpFilesController::FileDaemonInfo>&
-        restricted_files) {
+    const std::vector<std::pair<policy::DlpFilesController::FileDaemonInfo,
+                                dlp::RestrictionLevel>>& requested_files) {
   dlp::IsFilesTransferRestrictedResponse response_proto;
 
-  for (const auto& file : restricted_files) {
-    dlp::FileMetadata* file_metadata = response_proto.add_restricted_files();
-    file_metadata->set_inode(file.inode);
-    file_metadata->set_path(file.path.value());
-    file_metadata->set_source_url(file.source_url.spec());
+  for (const auto& [file, level] : requested_files) {
+    // Daemon still uses the old logic to rely on these fields.
+    // TODO(b/259182892): Remove when it's not used.
+    if (level == ::dlp::RestrictionLevel::LEVEL_BLOCK ||
+        level == ::dlp::RestrictionLevel::LEVEL_WARN_CANCEL) {
+      dlp::FileMetadata* file_metadata = response_proto.add_restricted_files();
+      file_metadata->set_inode(file.inode);
+      file_metadata->set_path(file.path.value());
+      file_metadata->set_source_url(file.source_url.spec());
+    }
+    dlp::FileRestriction* files_restriction =
+        response_proto.add_files_restrictions();
+    files_restriction->mutable_file_metadata()->set_inode(file.inode);
+    files_restriction->mutable_file_metadata()->set_path(file.path.value());
+    files_restriction->mutable_file_metadata()->set_source_url(
+        file.source_url.spec());
+    files_restriction->set_restriction_level(level);
   }
   std::unique_ptr<dbus::Response> response =
       dbus::Response::FromMethodCall(method_call);
