@@ -627,6 +627,8 @@ void RecordTabGridCloseTabsCount(int count) {
 - (void)saveAndCloseNonPinnedItems {
   DCHECK(IsPinnedTabsEnabled());
 
+  base::RecordAction(
+      base::UserMetricsAction("MobileTabGridCloseAllNonPinnedTabs"));
   BOOL hasPinnedWebStatesOnly =
       self.webStateList->GetIndexOfFirstNonPinnedWebState() ==
       self.webStateList->count();

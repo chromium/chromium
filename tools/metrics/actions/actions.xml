@@ -21166,6 +21166,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileTabGridCloseAllNonPinnedTabs">
+  <owner>ewannpv@chromium.org</owner>
+  <owner>pakzhygitov@google.com</owner>
+  <description>
+    User in the iOS tab grid used the Close All control and chose to close all
+    non-pinned tabs.
+  </description>
+</action>
+
 <action name="MobileTabGridCloseAllRegularTabs">
   <owner>edchin@chromium.org</owner>
   <owner>marq@chromium.org</owner>
