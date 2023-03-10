@@ -3,24 +3,46 @@
 // found in the LICENSE file.
 
 import {EmojiPrefixSearch} from 'chrome://emoji-picker/prefix_search.js';
-import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+
 import {assertCloseTo} from './emoji_picker_test_util.js';
 
 const mockCollection1 = [
-  {base: {string: '😹', name: 'cat with tears of joy'}},
-  {base: {string: '🤠', name: 'cowboy hat face'}},
-  {base: {string: '🥲', name: 'smiling face with tear'}},
+  {
+    base: {string: '😹', name: 'cat with tears of joy'},
+    alternates: [],
+  },
+  {
+    base: {string: '🤠', name: 'cowboy hat face'},
+    alternates: [],
+  },
+  {
+    base: {string: '🥲', name: 'smiling face with tear'},
+    alternates: [],
+  },
 ];
 
 const mockCollection2 = [
-  {base: {string: '😺', name: 'smiling cat'}},
-  {base: {string: '😼', name: 'cat with wry smile'}},
-  {base: {string: '🐛', name: 'caterpillar'}},
-  {base: {string: '😇', name: 'smiling face with halo'}},
+  {
+    base: {string: '😺', name: 'smiling cat'},
+    alternates: [],
+  },
+  {
+    base: {string: '😼', name: 'cat with wry smile'},
+    alternates: [],
+  },
+  {
+    base: {string: '🐛', name: 'caterpillar'},
+    alternates: [],
+  },
+  {
+    base: {string: '😇', name: 'smiling face with halo'},
+    alternates: [],
+  },
 ];
 
 suite('PrefixSearchUnitTest', () => {
-  let prefixSearch;
+  let prefixSearch: EmojiPrefixSearch;
   setup(() => {
     prefixSearch = new EmojiPrefixSearch();
   });
@@ -65,10 +87,10 @@ suite('PrefixSearchUnitTest', () => {
   });
 
   test('Scoring single term against emoji using emoji name.', () => {
-    const emojiRecord1 = mockCollection2[0];
-    const emojiRecord2 = mockCollection2[1];
-    const emojiRecord3 = mockCollection2[2];
-    const emojiRecord4 = mockCollection2[3];
+    const emojiRecord1 = mockCollection2[0]!;
+    const emojiRecord2 = mockCollection2[1]!;
+    const emojiRecord3 = mockCollection2[2]!;
+    const emojiRecord4 = mockCollection2[3]!;
 
     assertCloseTo(
         prefixSearch.scoreTermAgainstEmoji(emojiRecord1, 'smil'), 4 / 7);
@@ -92,10 +114,10 @@ suite('PrefixSearchUnitTest', () => {
         const actualMatches = prefixSearch.search('smil cat');
 
         assertEquals(2, actualMatches.length);
-        assertEquals(actualMatches[0].item.base.string, '😺');
-        assertCloseTo(actualMatches[0].score, 16 / 77);
-        assertEquals(actualMatches[1].item.base.string, '😼');
-        assertCloseTo(actualMatches[1].score, 4 / 45);
+        assertEquals(actualMatches[0]!.item.base.string, '😺');
+        assertCloseTo(actualMatches[0]!.score, 16 / 77);
+        assertEquals(actualMatches[1]!.item.base.string, '😼');
+        assertCloseTo(actualMatches[1]!.score, 4 / 45);
       });
 
   test(
@@ -118,8 +140,9 @@ suite('PrefixSearchUnitTest', () => {
         const actualMatches = prefixSearch.search('smiling');
 
         assertEquals(2, actualMatches.length);
-        assertEquals(actualMatches[0].item.base.name, 'smiling cat');
-        assertEquals(actualMatches[1].item.base.name, 'smiling face with halo');
+        assertEquals(actualMatches[0]!.item.base.name, 'smiling cat');
+        assertEquals(
+            actualMatches[1]!.item.base.name, 'smiling face with halo');
       });
 
   test(
