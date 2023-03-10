@@ -102,21 +102,27 @@ class AudioOutputDeviceTest : public testing::Test {
   MOCK_METHOD1(OnDeviceInfoReceived, void(OutputDeviceInfo));
 
  protected:
+  MockAudioOutputIPC* audio_output_ipc() {
+    return static_cast<MockAudioOutputIPC*>(audio_device_->GetIpcForTesting());
+  }
+
   base::test::TaskEnvironment task_env_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   AudioParameters default_audio_parameters_;
   StrictMock<MockRenderCallback> callback_;
-  raw_ptr<MockAudioOutputIPC> audio_output_ipc_;  // owned by audio_device_
-  scoped_refptr<AudioOutputDevice> audio_device_;
   OutputDeviceStatus device_status_;
 
  private:
   int CalculateMemorySize();
 
+  // These may need to outlive `audio_device_`.
   UnsafeSharedMemoryRegion shared_memory_region_;
   WritableSharedMemoryMapping shared_memory_mapping_;
   CancelableSyncSocket browser_socket_;
   CancelableSyncSocket renderer_socket_;
+
+ protected:
+  scoped_refptr<AudioOutputDevice> audio_device_;
 };
 
 AudioOutputDeviceTest::AudioOutputDeviceTest()
@@ -126,9 +132,7 @@ AudioOutputDeviceTest::AudioOutputDeviceTest()
   SetDevice(kDefaultDeviceId);
 }
 
-AudioOutputDeviceTest::~AudioOutputDeviceTest() {
-  audio_device_ = nullptr;
-}
+AudioOutputDeviceTest::~AudioOutputDeviceTest() = default;
 
 void AudioOutputDeviceTest::CreateDevice(const std::string& device_id,
                                          base::TimeDelta timeout) {
@@ -136,16 +140,15 @@ void AudioOutputDeviceTest::CreateDevice(const std::string& device_id,
   if (audio_device_)
     StopAudioDevice();
 
-  audio_output_ipc_ = new NiceMock<MockAudioOutputIPC>();
   audio_device_ = new AudioOutputDevice(
-      base::WrapUnique(audio_output_ipc_.get()),
+      std::make_unique<NiceMock<MockAudioOutputIPC>>(),
       task_env_.GetMainThreadTaskRunner(),
       AudioSinkParameters(base::UnguessableToken(), device_id), timeout);
 }
 
 void AudioOutputDeviceTest::SetDevice(const std::string& device_id) {
   CreateDevice(device_id);
-  EXPECT_CALL(*audio_output_ipc_,
+  EXPECT_CALL(*audio_output_ipc(),
               RequestDeviceAuthorization(audio_device_.get(),
                                          base::UnguessableToken(), device_id));
   audio_device_->RequestDeviceAuthorization();
@@ -165,7 +168,7 @@ void AudioOutputDeviceTest::SetDevice(const std::string& device_id) {
 void AudioOutputDeviceTest::ReceiveAuthorization(OutputDeviceStatus status) {
   device_status_ = status;
   if (device_status_ != OUTPUT_DEVICE_STATUS_OK)
-    EXPECT_CALL(*audio_output_ipc_, CloseStream());
+    EXPECT_CALL(*audio_output_ipc(), CloseStream());
 
   audio_device_->OnDeviceAuthorized(device_status_, default_audio_parameters_,
                                     kDefaultDeviceId);
@@ -174,7 +177,7 @@ void AudioOutputDeviceTest::ReceiveAuthorization(OutputDeviceStatus status) {
 
 void AudioOutputDeviceTest::StartAudioDevice() {
   if (device_status_ == OUTPUT_DEVICE_STATUS_OK)
-    EXPECT_CALL(*audio_output_ipc_, CreateStream(audio_device_.get(), _));
+    EXPECT_CALL(*audio_output_ipc(), CreateStream(audio_device_.get(), _));
   else
     EXPECT_CALL(callback_, OnRenderError());
 
@@ -210,7 +213,7 @@ void AudioOutputDeviceTest::CallOnStreamCreated() {
 
 void AudioOutputDeviceTest::StopAudioDevice() {
   if (device_status_ == OUTPUT_DEVICE_STATUS_OK)
-    EXPECT_CALL(*audio_output_ipc_, CloseStream());
+    EXPECT_CALL(*audio_output_ipc(), CloseStream());
 
   audio_device_->Stop();
   task_env_.FastForwardBy(base::TimeDelta());
@@ -218,7 +221,7 @@ void AudioOutputDeviceTest::StopAudioDevice() {
 
 void AudioOutputDeviceTest::FlushAudioDevice() {
   if (device_status_ == OUTPUT_DEVICE_STATUS_OK)
-    EXPECT_CALL(*audio_output_ipc_, FlushStream());
+    EXPECT_CALL(*audio_output_ipc(), FlushStream());
 
   audio_device_->Flush();
   task_env_.FastForwardBy(base::TimeDelta());
@@ -255,7 +258,7 @@ TEST_F(AudioOutputDeviceTest, StopBeforeRender) {
 
   // Expect us to shutdown IPC but not to render anything despite the stream
   // getting created.
-  EXPECT_CALL(*audio_output_ipc_, CloseStream());
+  EXPECT_CALL(*audio_output_ipc(), CloseStream());
   CallOnStreamCreated();
 }
 
@@ -265,7 +268,7 @@ TEST_F(AudioOutputDeviceTest, NonDefaultStartStopStartStop) {
   StartAudioDevice();
   StopAudioDevice();
 
-  EXPECT_CALL(*audio_output_ipc_,
+  EXPECT_CALL(*audio_output_ipc(),
               RequestDeviceAuthorization(audio_device_.get(),
                                          base::UnguessableToken(), _));
   StartAudioDevice();
@@ -294,14 +297,13 @@ TEST_F(AudioOutputDeviceTest,
 TEST_F(AudioOutputDeviceTest, AuthorizationFailsBeforeInitialize_NoError) {
   // Clear audio device set by fixture.
   StopAudioDevice();
-  audio_output_ipc_ = new NiceMock<MockAudioOutputIPC>();
   audio_device_ = new AudioOutputDevice(
-      base::WrapUnique(audio_output_ipc_.get()),
+      std::make_unique<NiceMock<MockAudioOutputIPC>>(),
       task_env_.GetMainThreadTaskRunner(),
       AudioSinkParameters(base::UnguessableToken(), kDefaultDeviceId),
       kAuthTimeout);
   EXPECT_CALL(
-      *audio_output_ipc_,
+      *audio_output_ipc(),
       RequestDeviceAuthorization(audio_device_.get(), base::UnguessableToken(),
                                  kDefaultDeviceId));
 
@@ -321,10 +323,10 @@ TEST_F(AudioOutputDeviceTest, AuthorizationFailsBeforeInitialize_NoError) {
 TEST_F(AudioOutputDeviceTest, AuthorizationTimedOut) {
   CreateDevice(kNonDefaultDeviceId);
   EXPECT_CALL(
-      *audio_output_ipc_,
+      *audio_output_ipc(),
       RequestDeviceAuthorization(audio_device_.get(), base::UnguessableToken(),
                                  kNonDefaultDeviceId));
-  EXPECT_CALL(*audio_output_ipc_, CloseStream());
+  EXPECT_CALL(*audio_output_ipc(), CloseStream());
 
   // Request authorization; no reply from the browser.
   audio_device_->RequestDeviceAuthorization();
@@ -339,7 +341,7 @@ TEST_F(AudioOutputDeviceTest, AuthorizationTimedOut) {
 TEST_F(AudioOutputDeviceTest, GetOutputDeviceInfoAsync_Error) {
   CreateDevice(kUnauthorizedDeviceId, base::TimeDelta());
   EXPECT_CALL(
-      *audio_output_ipc_,
+      *audio_output_ipc(),
       RequestDeviceAuthorization(audio_device_.get(), base::UnguessableToken(),
                                  kUnauthorizedDeviceId));
   audio_device_->RequestDeviceAuthorization();
@@ -366,7 +368,7 @@ TEST_F(AudioOutputDeviceTest, GetOutputDeviceInfoAsync_Error) {
 TEST_F(AudioOutputDeviceTest, GetOutputDeviceInfoAsync_Okay) {
   CreateDevice(kDefaultDeviceId, base::TimeDelta());
   EXPECT_CALL(
-      *audio_output_ipc_,
+      *audio_output_ipc(),
       RequestDeviceAuthorization(audio_device_.get(), base::UnguessableToken(),
                                  kDefaultDeviceId));
   audio_device_->RequestDeviceAuthorization();
