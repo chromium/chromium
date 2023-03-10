@@ -13837,6 +13837,13 @@ Called by update_bad_message_reasons.py.-->
   <int value="31" label="Chooser Permissions Bubble"/>
 </enum>
 
+<enum name="BuildStateUpdateType">
+  <int value="0" label="No new version"/>
+  <int value="1" label="Update available"/>
+  <int value="2" label="Enterprise rollback required"/>
+  <int value="3" label="Channel rollback required"/>
+</enum>
+
 <enum name="CableSpeedMetric">
   <int value="0" label="Other"/>
   <int value="1" label="USB 2.0"/>

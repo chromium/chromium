@@ -22,6 +22,16 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="Chrome.BuildState.BuildStateUpdateType"
+    enum="BuildStateUpdateType" expires_after="2024-03-30">
+  <owner>ajgo@chromium.org</owner>
+  <owner>anunoy@chromium.org</owner>
+  <summary>
+    Result of polling for the installed version of Chrome. Logged once at
+    startup then approximately every two hours.
+  </summary>
+</histogram>
+
 <histogram name="Chrome.KAnonymityService.JoinSet.Action"
     enum="KAnonymityServiceJoinSetAction" expires_after="2023-07-30">
   <owner>behamilton@google.com</owner>

@@ -16,6 +16,7 @@ class BuildStateObserver;
 // all access must take place on the UI thread.
 class BuildState {
  public:
+  // Logged as BuildStateUpdateType. Do not reorder or remove entries.
   enum class UpdateType {
     // No new version ready for use.
     kNone = 0,
@@ -29,6 +30,9 @@ class BuildState {
     // Rollback to an older version via a switch to a more stable channel.
     // (Chrome OS only.)
     kChannelSwitchRollback = 3,
+
+    // Needed for UMA - can be removed if BuildStateUpdateType is removed.
+    kMaxValue = kChannelSwitchRollback,
   };
 
   BuildState();
