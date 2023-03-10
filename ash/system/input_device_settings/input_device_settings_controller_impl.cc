@@ -64,30 +64,33 @@ mojom::KeyboardPtr BuildMojomKeyboard(const ui::InputDevice& keyboard) {
 }
 
 mojom::MousePtr BuildMojomMouse(const ui::InputDevice& mouse) {
-  // TODO(dpad): Fully initialize the objects.
   mojom::MousePtr mojom_mouse = mojom::Mouse::New();
   mojom_mouse->id = mouse.id;
   mojom_mouse->name = mouse.name;
   mojom_mouse->device_key = BuildDeviceKey(mouse);
+  mojom_mouse->is_external =
+      mouse.type != ui::InputDeviceType::INPUT_DEVICE_INTERNAL;
   return mojom_mouse;
 }
 
 mojom::TouchpadPtr BuildMojomTouchpad(const ui::InputDevice& touchpad) {
-  // TODO(dpad): Fully initialize the objects.
   mojom::TouchpadPtr mojom_touchpad = mojom::Touchpad::New();
   mojom_touchpad->id = touchpad.id;
   mojom_touchpad->name = touchpad.name;
   mojom_touchpad->device_key = BuildDeviceKey(touchpad);
+  mojom_touchpad->is_external =
+      touchpad.type != ui::InputDeviceType::INPUT_DEVICE_INTERNAL;
   return mojom_touchpad;
 }
 
 mojom::PointingStickPtr BuildMojomPointingStick(
     const ui::InputDevice& touchpad) {
-  // TODO(dpad): Fully initialize the objects.
   mojom::PointingStickPtr mojom_pointing_stick = mojom::PointingStick::New();
   mojom_pointing_stick->id = touchpad.id;
   mojom_pointing_stick->name = touchpad.name;
   mojom_pointing_stick->device_key = BuildDeviceKey(touchpad);
+  mojom_pointing_stick->is_external =
+      touchpad.type != ui::InputDeviceType::INPUT_DEVICE_INTERNAL;
   return mojom_pointing_stick;
 }
 }  // namespace

@@ -41,31 +41,37 @@ const ::ash::mojom::Keyboard kKeyboard2 =
                            ::ash::mojom::KeyboardSettings::New());
 const ::ash::mojom::Touchpad kTouchpad1 =
     ::ash::mojom::Touchpad(/*name=*/"test touchpad",
+                           /*is_external=*/false,
                            /*id=*/3,
                            /*device_key=*/"fake-device-key3",
                            ::ash::mojom::TouchpadSettings::New());
 const ::ash::mojom::Touchpad kTouchpad2 =
     ::ash::mojom::Touchpad(/*name=*/"Logitech T650",
+                           /*is_external=*/true,
                            /*id=*/4,
                            /*device_key=*/"fake-device-key4",
                            ::ash::mojom::TouchpadSettings::New());
 const ::ash::mojom::PointingStick kPointingStick1 =
     ::ash::mojom::PointingStick(/*name=*/"test pointing stick",
+                                /*is_external=*/false,
                                 /*id=*/5,
                                 /*device_key=*/"fake-device-key5",
                                 ::ash::mojom::PointingStickSettings::New());
 const ::ash::mojom::PointingStick kPointingStick2 =
     ::ash::mojom::PointingStick(/*name=*/"Lexmark-Unicomp FSR",
+                                /*is_external=*/true,
                                 /*id=*/6,
                                 /*device_key=*/"fake-device-key6",
                                 ::ash::mojom::PointingStickSettings::New());
 const ::ash::mojom::Mouse kMouse1 =
     ::ash::mojom::Mouse(/*name=*/"Razer Basilisk V3",
+                        /*is_external=*/false,
                         /*id=*/7,
                         /*device_key=*/"fake-device-key7",
                         ::ash::mojom::MouseSettings::New());
 const ::ash::mojom::Mouse kMouse2 =
     ::ash::mojom::Mouse(/*name=*/"MX Anywhere 2S",
+                        /*is_external=*/true,
                         /*id=*/8,
                         /*device_key=*/"fake-device-key8",
                         ::ash::mojom::MouseSettings::New());
