@@ -2734,6 +2734,8 @@ static_library("ui") {
       "webui/ash/internet_detail_dialog.h",
       "webui/ash/kerberos/kerberos_in_browser_dialog.cc",
       "webui/ash/kerberos/kerberos_in_browser_dialog.h",
+      "webui/ash/kerberos/kerberos_in_browser_ui.cc",
+      "webui/ash/kerberos/kerberos_in_browser_ui.h",
       "webui/ash/launcher_internals/launcher_internals_handler.cc",
       "webui/ash/launcher_internals/launcher_internals_handler.h",
       "webui/ash/launcher_internals/launcher_internals_ui.cc",
