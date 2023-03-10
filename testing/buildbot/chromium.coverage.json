@@ -24874,9 +24874,7 @@
   "linux-js-code-coverage": {
     "gtest_tests": [
       {
-        "args": [
-          "--gtest_filter=*NewTabPage*"
-        ],
+        "args": [],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
