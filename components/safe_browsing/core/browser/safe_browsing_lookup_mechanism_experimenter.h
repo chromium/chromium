@@ -93,6 +93,8 @@ class SafeBrowsingLookupMechanismExperimenter
  private:
   friend class base::RefCounted<SafeBrowsingLookupMechanismExperimenter>;
   friend class SafeBrowsingLookupMechanismExperimenterTest;
+  FRIEND_TEST_ALL_PREFIXES(SafeBrowsingLookupMechanismExperimenterTest,
+                           TestGetDelayInformation);
 
   // Private destructor since the class is ref counted. We only want RefCounted
   // to be able to destruct this object.

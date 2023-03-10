@@ -1284,7 +1284,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="SafeBrowsing.HPRTExperiment{MaybeRedirects}.{Mechanism}.DelayedResponseAmount"
+    name="SafeBrowsing.HPRTExperiment{MaybeRedirects}.{Mechanism}.DelayedResponseTime"
     units="ms" expires_after="2023-07-19">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
