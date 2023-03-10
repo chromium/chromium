@@ -168,6 +168,10 @@ class AutofillSuggestionGenerator {
                      const CreditCard& credit_card,
                      bool virtual_card_option) const;
 
+  // Returns true if we should show a virtual card option for the server card
+  // `card`, false otherwise.
+  bool ShouldShowVirtualCardOptionForServerCard(const CreditCard* card) const;
+
   // Suggestion backend ID to frontend ID mapping. We keep two maps to convert
   // back and forth.
   std::map<Suggestion::BackendId, int> backend_to_frontend_map_;

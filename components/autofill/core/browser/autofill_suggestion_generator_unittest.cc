@@ -16,8 +16,8 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/iban.h"
-#include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
+#include "components/autofill/core/browser/mock_autofill_optimization_guide.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -484,21 +484,9 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
   }
 }
 
+// Test that the virtual card option is shown when all of the prerequisites are
+// met.
 TEST_F(AutofillSuggestionGeneratorTest, ShouldShowVirtualCardOption) {
-  // Create a complete form.
-  FormData credit_card_form;
-  test::CreateTestCreditCardFormData(&credit_card_form, true, false);
-  FormStructure form_structure(credit_card_form);
-  form_structure.DetermineHeuristicTypes(nullptr, nullptr);
-  // Clear the heuristic types, and instead set the appropriate server types.
-  std::vector<ServerFieldType> heuristic_types, server_types;
-  for (size_t i = 0; i < credit_card_form.fields.size(); ++i) {
-    heuristic_types.push_back(UNKNOWN_TYPE);
-    server_types.push_back(form_structure.field(i)->heuristic_type());
-  }
-  FormStructureTestApi(&form_structure)
-      .SetFieldTypes(heuristic_types, server_types);
-
   // Create a server card.
   CreditCard server_card =
       CreateServerCard(/*guid=*/"00000000-0000-0000-0000-000000000001");
@@ -514,23 +502,89 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldShowVirtualCardOption) {
   EXPECT_TRUE(
       suggestion_generator()->ShouldShowVirtualCardOption(&server_card));
   EXPECT_TRUE(suggestion_generator()->ShouldShowVirtualCardOption(&local_card));
+}
 
-  // Reset server card virtual card enrollment state.
+// Test that the virtual card option is shown when the autofill optimization
+// guide is not present.
+TEST_F(AutofillSuggestionGeneratorTest,
+       ShouldShowVirtualCardOption_AutofillOptimizationGuideNotPresent) {
+  // Create a server card.
+  CreditCard server_card =
+      CreateServerCard(/*guid=*/"00000000-0000-0000-0000-000000000001");
   server_card.set_virtual_card_enrollment_state(
-      CreditCard::VirtualCardEnrollmentState::UNSPECIFIED);
-  personal_data()->ClearCreditCards();
+      CreditCard::VirtualCardEnrollmentState::ENROLLED);
+  personal_data()->AddServerCreditCard(server_card);
+  autofill_client()->ResetAutofillOptimizationGuide();
+
+  // Create a local card with same information.
+  CreditCard local_card =
+      CreateLocalCard(/*guid=*/"00000000-0000-0000-0000-000000000002");
+
+  // If all prerequisites are met, it should return true.
+  EXPECT_TRUE(
+      suggestion_generator()->ShouldShowVirtualCardOption(&server_card));
+  EXPECT_TRUE(suggestion_generator()->ShouldShowVirtualCardOption(&local_card));
+}
+
+// Test that the virtual card option is not shown if the merchant is opted-out
+// of virtual cards.
+TEST_F(AutofillSuggestionGeneratorTest,
+       ShouldNotShowVirtualCardOption_MerchantOptedOutOfVirtualCards) {
+  // Create an enrolled server card.
+  CreditCard server_card =
+      CreateServerCard(/*guid=*/"00000000-0000-0000-0000-000000000001");
+  server_card.set_virtual_card_enrollment_state(
+      CreditCard::VirtualCardEnrollmentState::ENROLLED);
   personal_data()->AddServerCreditCard(server_card);
 
-  // For server card not enrolled, should return false.
+  // Create a local card with same information.
+  CreditCard local_card =
+      CreateLocalCard(/*guid=*/"00000000-0000-0000-0000-000000000002");
+
+  // If the URL is opted-out of virtual cards for `server_card`, do not display
+  // the virtual card suggestion.
+  auto* optimization_guide = autofill_client()->GetAutofillOptimizationGuide();
+  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(optimization_guide),
+          ShouldBlockFormFieldSuggestion)
+      .WillByDefault(testing::Return(true));
   EXPECT_FALSE(
       suggestion_generator()->ShouldShowVirtualCardOption(&server_card));
   EXPECT_FALSE(
       suggestion_generator()->ShouldShowVirtualCardOption(&local_card));
+}
 
-  // Remove the server credit card.
-  personal_data()->ClearCreditCards();
+// Test that the virtual card option is not shown if the server card we might be
+// showing a virtual card option for is not enrolled into virtual card.
+TEST_F(AutofillSuggestionGeneratorTest,
+       ShouldNotShowVirtualCardOption_ServerCardNotEnrolledInVirtualCard) {
+  // Create an unenrolled server card.
+  CreditCard server_card =
+      CreateServerCard(/*guid=*/"00000000-0000-0000-0000-000000000001");
+  server_card.set_virtual_card_enrollment_state(
+      CreditCard::VirtualCardEnrollmentState::UNSPECIFIED);
+  personal_data()->AddServerCreditCard(server_card);
 
-  // The local card no longer has a server duplicate, should return false.
+  // Create a local card with same information.
+  CreditCard local_card =
+      CreateLocalCard(/*guid=*/"00000000-0000-0000-0000-000000000002");
+
+  // For server card not enrolled, both local and server card should return
+  // false.
+  EXPECT_FALSE(
+      suggestion_generator()->ShouldShowVirtualCardOption(&server_card));
+  EXPECT_FALSE(
+      suggestion_generator()->ShouldShowVirtualCardOption(&local_card));
+}
+
+// Test that the virtual card option is not shown for a local card with no
+// server card duplicate.
+TEST_F(AutofillSuggestionGeneratorTest,
+       ShouldNotShowVirtualCardOption_LocalCardWithoutServerCardDuplicate) {
+  // Create a local card with same information.
+  CreditCard local_card =
+      CreateLocalCard(/*guid=*/"00000000-0000-0000-0000-000000000002");
+
+  // The local card does not have a server duplicate, should return false.
   EXPECT_FALSE(
       suggestion_generator()->ShouldShowVirtualCardOption(&local_card));
 }

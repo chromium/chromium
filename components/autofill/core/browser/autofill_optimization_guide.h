@@ -17,6 +17,7 @@ class NewOptimizationGuideDecider;
 namespace autofill {
 
 class AutofillField;
+class CreditCard;
 class FormStructure;
 class PersonalDataManager;
 
@@ -44,7 +45,8 @@ class AutofillOptimizationGuide : public KeyedService {
 
   // Returns whether the URL origin contained in `url` is blocked from
   // displaying suggestions for `field` by querying the optimization guide
-  // decider corresponding to `field`'s storable type.
+  // decider corresponding to `field`'s storable type. If the function returns
+  // true, no suggestions should be displayed for `field`.
   virtual bool ShouldBlockSingleFieldSuggestions(const GURL& url,
                                                  AutofillField* field) const;
 
@@ -52,6 +54,12 @@ class AutofillOptimizationGuide : public KeyedService {
   GetOptimizationGuideKeyedServiceForTesting() const {
     return decider_;
   }
+
+  // Returns whether autofill suggestions for `card` should be blocked on `url`.
+  // This function relies on the optimization guide decider that corresponds to
+  // the network of `card`.
+  virtual bool ShouldBlockFormFieldSuggestion(const GURL& url,
+                                              const CreditCard* card) const;
 
  private:
   // Raw pointer to a decider which is owned by the decider's factory.

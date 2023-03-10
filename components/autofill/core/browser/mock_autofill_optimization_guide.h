@@ -27,6 +27,10 @@ class MockAutofillOptimizationGuide : public AutofillOptimizationGuide {
               ShouldBlockSingleFieldSuggestions,
               (const GURL&, AutofillField*),
               (const override));
+  MOCK_METHOD(bool,
+              ShouldBlockFormFieldSuggestion,
+              (const GURL&, const CreditCard*),
+              (const override));
 };
 
 }  // namespace autofill

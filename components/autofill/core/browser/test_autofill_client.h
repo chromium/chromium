@@ -115,6 +115,10 @@ class TestAutofillClientTemplate : public T {
     return mock_autofill_optimization_guide_.get();
   }
 
+  void ResetAutofillOptimizationGuide() {
+    mock_autofill_optimization_guide_.reset();
+  }
+
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override {
     return &mock_autocomplete_history_manager_;
   }

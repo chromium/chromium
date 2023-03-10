@@ -11,7 +11,6 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_test_api.h"
-#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
@@ -422,6 +421,134 @@ TEST_F(
 
   EXPECT_FALSE(autofill_optimization_guide_->ShouldBlockSingleFieldSuggestions(
       url, form_structure.field(0)));
+}
+
+// Test that blocking a virtual card suggestion works correctly in the VCN
+// merchant opt-out use-case.
+TEST_F(AutofillOptimizationGuideTest,
+       ShouldBlockFormFieldSuggestion_VcnMerchantOptOut) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillEnableMerchantOptOutClientSideUrlFiltering);
+  GURL url("https://example.com/");
+  CreditCard virtual_card = test::GetVirtualCard();
+  virtual_card.set_virtual_card_enrollment_type(CreditCard::NETWORK);
+  CreditCardTestApi(&virtual_card).set_network_for_virtual_card(kVisaCard);
+
+  ON_CALL(*decider_,
+          CanApplyOptimization(
+              testing::Eq(url),
+              testing::Eq(optimization_guide::proto::VCN_MERCHANT_OPT_OUT_VISA),
+              testing::Matcher<optimization_guide::OptimizationMetadata*>(
+                  testing::Eq(nullptr))))
+      .WillByDefault(testing::Return(
+          optimization_guide::OptimizationGuideDecision::kFalse));
+
+  EXPECT_TRUE(autofill_optimization_guide_->ShouldBlockFormFieldSuggestion(
+      url, &virtual_card));
+}
+
+// Test that if the URL is not blocklisted, we do not block a virtual card
+// suggestion in the VCN merchant opt-out use-case.
+TEST_F(AutofillOptimizationGuideTest,
+       ShouldNotBlockFormFieldSuggestion_VcnMerchantOptOut_UrlNotBlocked) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillEnableMerchantOptOutClientSideUrlFiltering);
+  GURL url("https://example.com/");
+  CreditCard virtual_card = test::GetVirtualCard();
+  virtual_card.set_virtual_card_enrollment_type(CreditCard::NETWORK);
+  CreditCardTestApi(&virtual_card).set_network_for_virtual_card(kVisaCard);
+
+  ON_CALL(*decider_,
+          CanApplyOptimization(
+              testing::Eq(url),
+              testing::Eq(optimization_guide::proto::VCN_MERCHANT_OPT_OUT_VISA),
+              testing::Matcher<optimization_guide::OptimizationMetadata*>(
+                  testing::Eq(nullptr))))
+      .WillByDefault(testing::Return(
+          optimization_guide::OptimizationGuideDecision::kTrue));
+
+  EXPECT_FALSE(autofill_optimization_guide_->ShouldBlockFormFieldSuggestion(
+      url, &virtual_card));
+}
+
+// Test that if all of the prerequisites are met to block a virtual card
+// suggestion for the VCN merchant opt-out use-case, but the flag is off, that
+// we do not block the virtual card suggestion from being displayed.
+TEST_F(AutofillOptimizationGuideTest,
+       ShouldNotBlockFormFieldSuggestion_VcnMerchantOptOut_FlagOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAutofillEnableMerchantOptOutClientSideUrlFiltering);
+  GURL url("https://example.com/");
+  CreditCard virtual_card = test::GetVirtualCard();
+  virtual_card.set_virtual_card_enrollment_type(CreditCard::NETWORK);
+  CreditCardTestApi(&virtual_card).set_network_for_virtual_card(kVisaCard);
+
+  EXPECT_CALL(
+      *decider_,
+      CanApplyOptimization(
+          testing::Eq(url),
+          testing::Eq(optimization_guide::proto::VCN_MERCHANT_OPT_OUT_VISA),
+          testing::Matcher<optimization_guide::OptimizationMetadata*>(
+              testing::Eq(nullptr))))
+      .Times(0);
+
+  EXPECT_FALSE(autofill_optimization_guide_->ShouldBlockFormFieldSuggestion(
+      url, &virtual_card));
+}
+
+// Test that we do not block virtual card suggestions in the VCN merchant
+// opt-out use-case if the card is an issuer-level enrollment.
+TEST_F(AutofillOptimizationGuideTest,
+       ShouldNotBlockFormFieldSuggestion_VcnMerchantOptOut_IssuerEnrollment) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillEnableMerchantOptOutClientSideUrlFiltering);
+  GURL url("https://example.com/");
+  CreditCard virtual_card = test::GetVirtualCard();
+  virtual_card.set_virtual_card_enrollment_type(CreditCard::ISSUER);
+  CreditCardTestApi(&virtual_card).set_network_for_virtual_card(kVisaCard);
+
+  EXPECT_CALL(
+      *decider_,
+      CanApplyOptimization(
+          testing::Eq(url),
+          testing::Eq(optimization_guide::proto::VCN_MERCHANT_OPT_OUT_VISA),
+          testing::Matcher<optimization_guide::OptimizationMetadata*>(
+              testing::Eq(nullptr))))
+      .Times(0);
+
+  EXPECT_FALSE(autofill_optimization_guide_->ShouldBlockFormFieldSuggestion(
+      url, &virtual_card));
+}
+
+// Test that we do not block the virtual card suggestion from being shown in the
+// VCN merchant opt-out use-case if the network does not have a VCN merchant
+// opt-out blocklist.
+TEST_F(
+    AutofillOptimizationGuideTest,
+    ShouldNotBlockFormFieldSuggestion_VcnMerchantOptOut_NetworkDoesNotHaveBlocklist) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillEnableMerchantOptOutClientSideUrlFiltering);
+  GURL url("https://example.com/");
+  CreditCard virtual_card = test::GetVirtualCard();
+  virtual_card.set_virtual_card_enrollment_type(CreditCard::NETWORK);
+  CreditCardTestApi(&virtual_card).set_network_for_virtual_card(kMasterCard);
+
+  EXPECT_CALL(
+      *decider_,
+      CanApplyOptimization(
+          testing::Eq(url),
+          testing::Eq(optimization_guide::proto::VCN_MERCHANT_OPT_OUT_VISA),
+          testing::Matcher<optimization_guide::OptimizationMetadata*>(
+              testing::Eq(nullptr))))
+      .Times(0);
+
+  EXPECT_FALSE(autofill_optimization_guide_->ShouldBlockFormFieldSuggestion(
+      url, &virtual_card));
 }
 
 }  // namespace autofill

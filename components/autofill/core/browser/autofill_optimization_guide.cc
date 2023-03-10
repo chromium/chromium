@@ -62,7 +62,7 @@ void AutofillOptimizationGuide::OnDidParseForm(
 
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableIbanClientSideUrlFiltering)) {
-    auto has_iban_field =
+    bool has_iban_field =
         base::ranges::any_of(form_structure, [](const auto& field) {
           return field->Type().GetStorableType() == IBAN_VALUE;
         });
@@ -75,7 +75,7 @@ void AutofillOptimizationGuide::OnDidParseForm(
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableMerchantOptOutClientSideUrlFiltering) &&
       personal_data_manager) {
-    auto has_credit_card_field =
+    bool has_credit_card_field =
         base::ranges::any_of(form_structure, [](const auto& field) {
           return field->Type().group() == FieldTypeGroup::kCreditCard;
         });
@@ -115,17 +115,48 @@ bool AutofillOptimizationGuide::ShouldBlockSingleFieldSuggestions(
             url, optimization_guide::proto::IBAN_AUTOFILL_BLOCKED,
             /*optimization_metadata=*/nullptr);
     // Since the optimization guide decider integration corresponding to
-    // `optimization_guide::proto::IBAN_AUTOFILL_BLOCKED` is a blocklist,
-    // `optimization_guide::OptimizationGuideDecision::kFalse` indicates that
-    // `url` is blocked from displaying IBAN suggestions. If the optimization
-    // type was not registered in time when we queried it, it will be
-    // `kUnknown`, so the default functionality in this case will be to not
-    // block the suggestions from being shown.
+    // `IBAN_AUTOFILL_BLOCKED` lists are blocklists for the question "Can this
+    // site be optimized?" a match on the blocklist answers the question with
+    // "no". Therefore, ...::kFalse indicates that `url` is blocked from
+    // displaying IBAN suggestions. If the optimization type was not registered
+    // in time when we queried it, it will be `kUnknown`, so the default
+    // functionality in this case will be to not block the suggestions from
+    // being shown.
     return decision == optimization_guide::OptimizationGuideDecision::kFalse;
   }
 
   // No conditions indicating single field suggestions should be blocked were
   // encountered, so return that they should not be blocked.
+  return false;
+}
+
+bool AutofillOptimizationGuide::ShouldBlockFormFieldSuggestion(
+    const GURL& url,
+    const CreditCard* card) const {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillEnableMerchantOptOutClientSideUrlFiltering)) {
+    return false;
+  }
+
+  if (auto optimization_type =
+          GetVcnMerchantOptOutOptimizationTypeForCard(card);
+      optimization_type != optimization_guide::proto::TYPE_UNSPECIFIED) {
+    optimization_guide::OptimizationGuideDecision decision =
+        decider_->CanApplyOptimization(url, optimization_type,
+                                       /*optimization_metadata=*/nullptr);
+    // Since the optimization guide decider integration corresponding to VCN
+    // merchant opt-out lists are blocklists for the question "Can this site be
+    // optimized?" a match on the blocklist answers the question with "no".
+    // Therefore, ...::kFalse indicates that `url` is blocked from displaying
+    // this suggestion. If the optimization type was not registered
+    // in time when we queried it, it will be `kUnknown`, so the default
+    // functionality in this case will be to not block the suggestion from being
+    // shown.
+    return decision == optimization_guide::OptimizationGuideDecision::kFalse;
+  }
+
+  // No conditions to block displaying this virtual card suggestion were met, so
+  // return that we should not block displaying this suggestion.
   return false;
 }
 

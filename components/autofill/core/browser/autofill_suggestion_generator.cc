@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/autofill_browser_util.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/autofill_optimization_guide.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/iban.h"
@@ -397,16 +398,16 @@ Suggestion::BackendId AutofillSuggestionGenerator::GetBackendIdFromFrontendId(
 bool AutofillSuggestionGenerator::ShouldShowVirtualCardOption(
     const CreditCard* candidate_card) const {
   switch (candidate_card->record_type()) {
+    case CreditCard::LOCAL_CARD:
+      candidate_card = GetServerCardForLocalCard(candidate_card);
+
+      // If we could not find a matching server duplicate, return false.
+      if (!candidate_card) {
+        return false;
+      }
+      ABSL_FALLTHROUGH_INTENDED;
     case CreditCard::MASKED_SERVER_CARD:
-      return candidate_card->virtual_card_enrollment_state() ==
-             CreditCard::ENROLLED;
-    case CreditCard::LOCAL_CARD: {
-      const CreditCard* server_duplicate =
-          GetServerCardForLocalCard(candidate_card);
-      return server_duplicate &&
-             server_duplicate->virtual_card_enrollment_state() ==
-                 CreditCard::ENROLLED;
-    }
+      return ShouldShowVirtualCardOptionForServerCard(candidate_card);
     case CreditCard::FULL_SERVER_CARD:
       return false;
     case CreditCard::VIRTUAL_CARD:
@@ -705,6 +706,31 @@ void AutofillSuggestionGenerator::SetCardArtURL(
   if (image)
     suggestion.custom_icon = *image;
 #endif
+}
+
+bool AutofillSuggestionGenerator::ShouldShowVirtualCardOptionForServerCard(
+    const CreditCard* card) const {
+  CHECK(card);
+
+  // If the card is not enrolled into virtual cards, we should not show a
+  // virtual card suggestion for it.
+  if (card->virtual_card_enrollment_state() != CreditCard::ENROLLED) {
+    return false;
+  }
+
+  // We should not show a suggestion for this card if the autofill
+  // optimization guide returns that this suggestion should be blocked.
+  if (auto* autofill_optimization_guide =
+          autofill_client_->GetAutofillOptimizationGuide()) {
+    bool blocked = autofill_optimization_guide->ShouldBlockFormFieldSuggestion(
+        autofill_client_->GetLastCommittedPrimaryMainFrameOrigin().GetURL(),
+        card);
+    return !blocked;
+  }
+
+  // No conditions to prevent displaying a virtual card suggestion were
+  // found, so return true.
+  return true;
 }
 
 }  // namespace autofill
