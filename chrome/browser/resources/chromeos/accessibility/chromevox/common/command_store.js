@@ -29,7 +29,7 @@ export class CommandStore {
    * @return {string|undefined} The message id, if any.
    */
   static messageForCommand(command) {
-    return (CommandStore.COMMAND_DATA[command] || {}).msgId;
+    return CommandStore.COMMAND_DATA[command]?.msgId;
   }
 
   /**
@@ -38,7 +38,7 @@ export class CommandStore {
    * @return {string|undefined} The category, if any.
    */
   static categoryForCommand(command) {
-    return (CommandStore.COMMAND_DATA[command] || {}).category;
+    return CommandStore.COMMAND_DATA[command]?.category;
   }
 
   /**
@@ -292,13 +292,10 @@ export const CommandCategory = {
 
 /**
  * @typedef {{
- *     announce: boolean,
  *     category: (undefined|!CommandCategory),
  *     msgId: (undefined|string),
  *     denySignedOut: (undefined|boolean)
  * }}
- *  announce: Whether to call finishNavCommand and announce the current
- *            position after the command is done.
  *  category: The command's category.
  *  msgId: The message resource describing the command.
  *  denySignedOut: Explicitly denies this command when on chrome://oobe/* or
@@ -312,76 +309,62 @@ let DataEntry;
  */
 CommandStore.COMMAND_DATA = {
   [Command.TOGGLE_STICKY_MODE]: {
-    announce: false,
     msgId: 'toggle_sticky_mode',
     category: CommandCategory.MODIFIER_KEYS,
   },
   [Command.PASS_THROUGH_MODE]: {
-    announce: false,
     msgId: 'pass_through_key_description',
     category: CommandCategory.MODIFIER_KEYS,
   },
 
   [Command.STOP_SPEECH]: {
-    announce: false,
     msgId: 'stop_speech_key',
     category: CommandCategory.CONTROLLING_SPEECH,
   },
-  [Command.OPEN_CHROMEVOX_MENUS]: {announce: false, msgId: 'menus_title'},
+  [Command.OPEN_CHROMEVOX_MENUS]: {msgId: 'menus_title'},
   [Command.RESET_TEXT_TO_SPEECH_SETTINGS]: {
-    announce: false,
     msgId: 'reset_tts_settings',
     category: CommandCategory.CONTROLLING_SPEECH,
   },
   [Command.DECREASE_TTS_RATE]: {
-    announce: false,
     msgId: 'decrease_tts_rate',
     category: CommandCategory.CONTROLLING_SPEECH,
   },
   [Command.INCREASE_TTS_RATE]: {
-    announce: false,
     msgId: 'increase_tts_rate',
     category: CommandCategory.CONTROLLING_SPEECH,
   },
   [Command.DECREASE_TTS_PITCH]: {
-    announce: false,
     msgId: 'decrease_tts_pitch',
     category: CommandCategory.CONTROLLING_SPEECH,
   },
   [Command.INCREASE_TTS_PITCH]: {
-    announce: false,
     msgId: 'increase_tts_pitch',
     category: CommandCategory.CONTROLLING_SPEECH,
   },
   [Command.DECREASE_TTS_VOLUME]: {
-    announce: false,
     msgId: 'decrease_tts_volume',
     category: CommandCategory.CONTROLLING_SPEECH,
   },
   [Command.INCREASE_TTS_VOLUME]: {
-    announce: false,
     msgId: 'increase_tts_volume',
     category: CommandCategory.CONTROLLING_SPEECH,
   },
   [Command.CYCLE_PUNCTUATION_ECHO]: {
-    announce: false,
     msgId: 'cycle_punctuation_echo',
     category: CommandCategory.CONTROLLING_SPEECH,
   },
   [Command.CYCLE_TYPING_ECHO]: {
-    announce: false,
     msgId: 'cycle_typing_echo',
     category: CommandCategory.CONTROLLING_SPEECH,
   },
 
   [Command.TOGGLE_DICTATION]: {
-    announce: false,
     msgId: 'toggle_dictation',
     category: CommandCategory.ACTIONS,
   },
 
   [Command.TOGGLE_EARCONS]: {
-    announce: true,
     msgId: 'toggle_earcons',
     category: CommandCategory.CONTROLLING_SPEECH,
   },
@@ -400,204 +383,166 @@ CommandStore.COMMAND_DATA = {
     category: CommandCategory.NAVIGATION,
   },
   [Command.FORWARD]: {
-    announce: true,
     msgId: 'forward',
     category: CommandCategory.NAVIGATION,
   },
   [Command.BACKWARD]: {
-    announce: true,
     msgId: 'backward',
     category: CommandCategory.NAVIGATION,
   },
   [Command.RIGHT]: {
-    announce: true,
     msgId: 'right',
     category: CommandCategory.NAVIGATION,
   },
   [Command.LEFT]: {
-    announce: true,
     msgId: 'left',
     category: CommandCategory.NAVIGATION,
   },
   [Command.PREVIOUS_GRANULARITY]: {
-    announce: true,
     msgId: 'previous_granularity',
     category: CommandCategory.NAVIGATION,
   },
   [Command.NEXT_GRANULARITY]: {
-    announce: true,
     msgId: 'next_granularity',
     category: CommandCategory.NAVIGATION,
   },
   [Command.PREVIOUS_AT_GRANULARITY]: {
-    announce: true,
     msgId: 'previous_at_granularity',
     category: CommandCategory.NAVIGATION,
   },
   [Command.NEXT_AT_GRANULARITY]: {
-    announce: true,
     msgId: 'next_at_granularity',
     category: CommandCategory.NAVIGATION,
   },
 
   [Command.PREVIOUS_CHARACTER]: {
-    announce: true,
     msgId: 'previous_character',
     category: CommandCategory.NAVIGATION,
   },
   [Command.NEXT_CHARACTER]: {
-    announce: true,
     msgId: 'next_character',
     category: CommandCategory.NAVIGATION,
   },
   [Command.PREVIOUS_WORD]: {
-    announce: true,
     msgId: 'previous_word',
     category: CommandCategory.NAVIGATION,
   },
   [Command.NEXT_WORD]: {
-    announce: true,
     msgId: 'next_word',
     category: CommandCategory.NAVIGATION,
   },
   [Command.PREVIOUS_LINE]: {
-    announce: true,
     msgId: 'previous_line',
     category: CommandCategory.NAVIGATION,
   },
   [Command.NEXT_LINE]: {
-    announce: true,
     msgId: 'next_line',
     category: CommandCategory.NAVIGATION,
   },
   [Command.PREVIOUS_SENTENCE]: {
-    announce: true,
     msgId: 'previous_sentence',
     category: CommandCategory.NAVIGATION,
   },
   [Command.NEXT_SENTENCE]: {
-    announce: true,
     msgId: 'next_sentence',
     category: CommandCategory.NAVIGATION,
   },
   [Command.PREVIOUS_OBJECT]: {
-    announce: true,
     msgId: 'previous_object',
     category: CommandCategory.NAVIGATION,
   },
   [Command.NEXT_OBJECT]: {
-    announce: true,
     msgId: 'next_object',
     category: CommandCategory.NAVIGATION,
   },
   [Command.PREVIOUS_GROUP]: {
-    announce: true,
     msgId: 'previous_group',
     category: CommandCategory.NAVIGATION,
   },
   [Command.NEXT_GROUP]: {
-    announce: true,
     msgId: 'next_group',
     category: CommandCategory.NAVIGATION,
   },
   [Command.PREVIOUS_SIMILAR_ITEM]: {
-    announce: true,
     msgId: 'previous_similar_item',
     category: CommandCategory.NAVIGATION,
   },
   [Command.NEXT_SIMILAR_ITEM]: {
-    announce: true,
     msgId: 'next_similar_item',
     category: CommandCategory.NAVIGATION,
   },
   [Command.PREVIOUS_INVALID_ITEM]: {
-    announce: true,
     msgId: 'previous_invalid_item',
     category: CommandCategory.NAVIGATION,
   },
   [Command.NEXT_INVALID_ITEM]: {
-    announce: true,
     msgId: 'next_invalid_item',
     category: CommandCategory.NAVIGATION,
   },
 
   [Command.JUMP_TO_TOP]: {
-    announce: true,
     msgId: 'jump_to_top',
     category: CommandCategory.NAVIGATION,
   },
   [Command.JUMP_TO_BOTTOM]: {
-    announce: true,
     msgId: 'jump_to_bottom',
     category: CommandCategory.NAVIGATION,
   },
   // Intentionally uncategorized.
-  [Command.MOVE_TO_START_OF_LINE]: {announce: true},
-  [Command.MOVE_TO_END_OF_LINE]: {announce: true},
+  [Command.MOVE_TO_START_OF_LINE]: {},
+  [Command.MOVE_TO_END_OF_LINE]: {},
 
   [Command.JUMP_TO_DETAILS]: {
-    announce: false,
     msgId: 'jump_to_details',
     category: CommandCategory.NAVIGATION,
   },
 
   [Command.READ_FROM_HERE]: {
-    announce: false,
     msgId: 'read_from_here',
     category: CommandCategory.NAVIGATION,
   },
 
   [Command.FORCE_CLICK_ON_CURRENT_ITEM]: {
-    announce: true,
     msgId: 'force_click_on_current_item',
     category: CommandCategory.ACTIONS,
   },
   [Command.FORCE_LONG_CLICK_ON_CURRENT_ITEM]: {
-    announce: true,
     msgId: 'force_long_click_on_current_item',
   },
-  [Command.FORCE_DOUBLE_CLICK_ON_CURRENT_ITEM]: {announce: true},
+  [Command.FORCE_DOUBLE_CLICK_ON_CURRENT_ITEM]: {},
 
   [Command.READ_LINK_URL]: {
-    announce: false,
     msgId: 'read_link_url',
     category: CommandCategory.INFORMATION,
   },
   [Command.READ_CURRENT_TITLE]: {
-    announce: false,
     msgId: 'read_current_title',
     category: CommandCategory.INFORMATION,
   },
   [Command.READ_CURRENT_URL]: {
-    announce: false,
     msgId: 'read_current_url',
     category: CommandCategory.INFORMATION,
   },
 
   [Command.FULLY_DESCRIBE]: {
-    announce: false,
     msgId: 'fully_describe',
     category: CommandCategory.INFORMATION,
   },
   [Command.SPEAK_TIME_AND_DATE]: {
-    announce: false,
     msgId: 'speak_time_and_date',
     category: CommandCategory.INFORMATION,
   },
   [Command.TOGGLE_SELECTION]: {
-    announce: true,
     msgId: 'toggle_selection',
     category: CommandCategory.ACTIONS,
   },
 
   [Command.TOGGLE_SEARCH_WIDGET]: {
-    announce: false,
     msgId: 'toggle_search_widget',
     category: CommandCategory.INFORMATION,
   },
 
   [Command.TOGGLE_SCREEN]: {
-    announce: false,
     msgId: 'toggle_screen',
     category: CommandCategory.MODIFIER_KEYS,
   },
@@ -606,84 +551,69 @@ CommandStore.COMMAND_DATA = {
       {msgId: 'toggle_braille_table', category: CommandCategory.HELP_COMMANDS},
 
   [Command.TOGGLE_KEYBOARD_HELP]: {
-    announce: false,
     msgId: 'show_panel_menu',
     category: CommandCategory.HELP_COMMANDS,
   },
   [Command.SHOW_PANEL_MENU_MOST_RECENT]: {
-    announce: false,
     msgId: 'show_panel_menu',
     category: CommandCategory.HELP_COMMANDS,
   },
   [Command.HELP]: {
-    announce: false,
     msgId: 'help',
     category: CommandCategory.HELP_COMMANDS,
   },
   [Command.CONTEXT_MENU]: {
-    announce: false,
     msgId: 'show_context_menu',
     category: CommandCategory.INFORMATION,
   },
 
   [Command.SHOW_OPTIONS_PAGE]: {
-    announce: false,
     msgId: 'show_options_page',
     denySignedOut: true,
     category: CommandCategory.HELP_COMMANDS,
   },
   [Command.SHOW_LOG_PAGE]: {
-    announce: false,
     msgId: 'show_log_page',
     denySignedOut: true,
     category: CommandCategory.HELP_COMMANDS,
   },
   [Command.SHOW_LEARN_MODE_PAGE]: {
-    announce: false,
     msgId: 'show_kb_explorer_page',
     denySignedOut: true,
     category: CommandCategory.HELP_COMMANDS,
   },
   [Command.SHOW_TTS_SETTINGS]: {
-    announce: false,
     msgId: 'show_tts_settings',
     category: CommandCategory.HELP_COMMANDS,
     denySignedOut: true,
   },
   [Command.TOGGLE_BRAILLE_CAPTIONS]: {
-    announce: false,
     msgId: 'braille_captions',
     category: CommandCategory.HELP_COMMANDS,
   },
   [Command.REPORT_ISSUE]: {
-    announce: false,
     denySignedOut: true,
     msgId: 'panel_menu_item_report_issue',
     category: CommandCategory.HELP_COMMANDS,
   },
 
   [Command.SHOW_FORMS_LIST]: {
-    announce: false,
     msgId: 'show_forms_list',
     category: CommandCategory.OVERVIEW,
   },
   [Command.SHOW_HEADINGS_LIST]: {
-    announce: false,
     msgId: 'show_headings_list',
     category: CommandCategory.OVERVIEW,
   },
   [Command.SHOW_LANDMARKS_LIST]: {
-    announce: false,
     msgId: 'show_landmarks_list',
     category: CommandCategory.OVERVIEW,
   },
   [Command.SHOW_LINKS_LIST]: {
-    announce: false,
     msgId: 'show_links_list',
     category: CommandCategory.OVERVIEW,
   },
   [Command.SHOW_TABLES_LIST]: {
-    announce: false,
     msgId: 'show_tables_list',
     category: CommandCategory.OVERVIEW,
   },
@@ -881,100 +811,82 @@ CommandStore.COMMAND_DATA = {
 
   // Table Actions.
   [Command.ANNOUNCE_HEADERS]: {
-    announce: false,
     msgId: 'announce_headers',
     category: CommandCategory.TABLES,
   },
   [Command.SPEAK_TABLE_LOCATION]: {
-    announce: false,
     msgId: 'speak_table_location',
     category: CommandCategory.TABLES,
   },
   [Command.GO_TO_FIRST_CELL]: {
-    announce: true,
     msgId: 'skip_to_beginning',
     category: CommandCategory.TABLES,
   },
   [Command.GO_TO_LAST_CELL]:
-      {announce: true, msgId: 'skip_to_end', category: CommandCategory.TABLES},
+      {msgId: 'skip_to_end', category: CommandCategory.TABLES},
   [Command.GO_TO_ROW_FIRST_CELL]: {
-    announce: true,
     msgId: 'skip_to_row_beginning',
     category: CommandCategory.TABLES,
   },
   [Command.GO_TO_ROW_LAST_CELL]: {
-    announce: true,
     msgId: 'skip_to_row_end',
     category: CommandCategory.TABLES,
   },
   [Command.GO_TO_COL_FIRST_CELL]: {
-    announce: true,
     msgId: 'skip_to_col_beginning',
     category: CommandCategory.TABLES,
   },
   [Command.GO_TO_COL_LAST_CELL]: {
-    announce: true,
     msgId: 'skip_to_col_end',
     category: CommandCategory.TABLES,
   },
   [Command.PREVIOUS_ROW]: {
-    announce: true,
     msgId: 'skip_to_prev_row',
     category: CommandCategory.TABLES,
   },
   [Command.PREVIOUS_COL]: {
-    announce: true,
     msgId: 'skip_to_prev_col',
     category: CommandCategory.TABLES,
   },
   [Command.NEXT_ROW]: {
-    announce: true,
     msgId: 'skip_to_next_row',
     category: CommandCategory.TABLES,
   },
   [Command.NEXT_COL]: {
-    announce: true,
     msgId: 'skip_to_next_col',
     category: CommandCategory.TABLES,
   },
 
   // Generic Actions.
   [Command.ENTER_SHIFTER]: {
-    announce: true,
     msgId: 'enter_content',
     category: CommandCategory.NAVIGATION,
   },
   [Command.EXIT_SHIFTER]: {
-    announce: true,
     msgId: 'exit_content',
     category: CommandCategory.NAVIGATION,
   },
-  [Command.EXIT_SHIFTER_CONTENT]: {announce: true},
+  [Command.EXIT_SHIFTER_CONTENT]: {},
 
   [Command.OPEN_LONG_DESC]: {
-    announce: false,
     msgId: 'open_long_desc',
     category: CommandCategory.INFORMATION,
   },
 
   [Command.PAUSE_ALL_MEDIA]: {
-    announce: false,
     msgId: 'pause_all_media',
     category: CommandCategory.INFORMATION,
   },
 
   [Command.ANNOUNCE_BATTERY_DESCRIPTION]: {
-    announce: true,
     msgId: 'announce_battery_description',
     category: CommandCategory.INFORMATION,
   },
   [Command.ANNOUNCE_RICH_TEXT_DESCRIPTION]: {
-    announce: true,
     msgId: 'announce_rich_text_description',
     category: CommandCategory.INFORMATION,
   },
   [Command.READ_PHONETIC_PRONUNCIATION]: {
-    announce: true,
     msgId: 'read_phonetic_pronunciation',
     category: CommandCategory.INFORMATION,
   },
@@ -985,65 +897,55 @@ CommandStore.COMMAND_DATA = {
 
   // Math specific commands.
   [Command.TOGGLE_SEMANTICS]: {
-    announce: false,
     msgId: 'toggle_semantics',
     category: CommandCategory.INFORMATION,
   },
 
   // Braille specific commands.
   [Command.ROUTING]: {
-    announce: false,
     msgId: 'braille_routing',
     category: CommandCategory.BRAILLE,
   },
   [Command.PAN_LEFT]: {
-    announce: true,
     msgId: 'braille_pan_left',
     category: CommandCategory.BRAILLE,
   },
   [Command.PAN_RIGHT]: {
-    announce: true,
     msgId: 'braille_pan_right',
     category: CommandCategory.BRAILLE,
   },
   [Command.LINE_UP]: {
-    announce: true,
     msgId: 'braille_line_up',
     category: CommandCategory.BRAILLE,
   },
   [Command.LINE_DOWN]: {
-    announce: true,
     msgId: 'braille_line_down',
     category: CommandCategory.BRAILLE,
   },
   [Command.TOP]: {
-    announce: true,
     msgId: 'braille_top',
     category: CommandCategory.BRAILLE,
   },
   [Command.BOTTOM]: {
-    announce: true,
     msgId: 'braille_bottom',
     category: CommandCategory.BRAILLE,
   },
   [Command.VIEW_GRAPHIC_AS_BRAILLE]: {
-    announce: true,
     msgId: 'view_graphic_as_braille',
     category: CommandCategory.BRAILLE,
   },
 
   // Developer commands.
   [Command.ENABLE_CONSOLE_TTS]: {
-    announce: false,
     msgId: 'enable_tts_log',
     category: CommandCategory.DEVELOPER,
   },
 
-  [Command.START_HISTORY_RECORDING]: {announce: false},
-  [Command.STOP_HISTORY_RECORDING]: {announce: false},
-  [Command.AUTORUNNER]: {announce: false},
+  [Command.START_HISTORY_RECORDING]: {},
+  [Command.STOP_HISTORY_RECORDING]: {},
+  [Command.AUTORUNNER]: {},
 
-  [Command.DEBUG]: {announce: false},
+  [Command.DEBUG]: {},
 
-  [Command.NOP]: {announce: false},
+  [Command.NOP]: {},
 };
