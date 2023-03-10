@@ -375,7 +375,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.AddressesSuppressedForDisuse" units="addresses"
-    expires_after="2023-04-16">
+    expires_after="2023-08-20">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -1380,7 +1380,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.DaysSinceLastUse.CreditCard" units="days"
-    expires_after="2023-04-16">
+    expires_after="2023-08-20">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -5074,14 +5074,14 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.WebView.AutofillSession" enum="AutofillSessionStates"
     expires_after="2023-06-01">
-  <owner>michaelbai@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>Records the state of an autofill session.</summary>
 </histogram>
 
 <histogram name="Autofill.WebView.AwGIsCurrentService" enum="BooleanYesNo"
     expires_after="2023-06-01">
-  <owner>michaelbai@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Records whether Autofill with Google is the current Android autofill
@@ -5092,14 +5092,14 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.WebView.CreatedByActivityContext"
     enum="BooleanEnabled" expires_after="2023-06-01">
-  <owner>michaelbai@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>Whether the autofill is created by activity context.</summary>
 </histogram>
 
 <histogram name="Autofill.WebView.Enabled" enum="BooleanEnabled"
     expires_after="2023-06-01">
-  <owner>michaelbai@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Whether the autofill service is enabled in Android platform.
@@ -5244,7 +5244,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.WebView.ServerPrediction.AwGSuggestionAvailability"
     enum="AutofillAwGSuggestionAvailability" expires_after="2023-06-01">
-  <owner>michaelbai@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Records whether Autofill with Google has suggestions and if the user selects
@@ -5255,7 +5255,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.WebView.ServerPredicton.HasValidServerPrediction"
     enum="BooleanYesNo" expires_after="2023-06-01">
-  <owner>michaelbai@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Records whether the server prediction of any field isn't NO_SERVER_DATA.
@@ -5267,7 +5267,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.WebView.ServerPredicton.PredictionAvailability"
     enum="AutofillServerPredictionAvailability" expires_after="2023-06-01">
-  <owner>michaelbai@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Records whether and when the server prediction response of current autofill
@@ -5280,21 +5280,21 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.WebView.SubmissionSource"
     enum="AutofillSubmissionSource" expires_after="2023-06-01">
-  <owner>michaelbai@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>Records the source of form submission.</summary>
 </histogram>
 
 <histogram name="Autofill.WebView.SuggestionTime" units="ms"
     expires_after="2023-06-01">
-  <owner>michaelbai@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>The time taken to display suggestion.</summary>
 </histogram>
 
 <histogram name="Autofill.WebView.UserChangedAutofilledField"
     enum="BooleanEnabled" expires_after="2023-06-01">
-  <owner>michaelbai@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>Whether the user changed autofilled field.</summary>
 </histogram>
