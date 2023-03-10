@@ -234,7 +234,7 @@ DeserializeStringSizeMap(const std::string& serialized_sizes) {
     const base::Value* width_val = size_dict->Find("width");
     const base::Value* width_units_val = size_dict->Find("width_units");
     const base::Value* height_val = size_dict->Find("height");
-    const base::Value* height_units_val = size_dict->Find("width_units");
+    const base::Value* height_units_val = size_dict->Find("height_units");
     if (!width_val || !width_units_val || !height_val || !height_units_val) {
       return absl::nullopt;
     }
