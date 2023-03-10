@@ -1001,6 +1001,8 @@ source_set("test_support") {
     "test/menu_runner_test_api.h",
     "test/menu_test_utils.cc",
     "test/menu_test_utils.h",
+    "test/mock_drag_controller.cc",
+    "test/mock_drag_controller.h",
     "test/mock_input_event_activation_protector.cc",
     "test/mock_input_event_activation_protector.h",
     "test/native_widget_factory.cc",
