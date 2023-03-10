@@ -156,6 +156,10 @@ net::SiteForCookies WebDocument::SiteForCookies() const {
   return ConstUnwrap<Document>()->SiteForCookies();
 }
 
+bool WebDocument::HasStorageAccess() const {
+  return ConstUnwrap<Document>()->GetExecutionContext()->HasStorageAccess();
+}
+
 WebSecurityOrigin WebDocument::TopFrameOrigin() const {
   return ConstUnwrap<Document>()->TopFrameOrigin();
 }

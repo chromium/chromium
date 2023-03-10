@@ -106,6 +106,12 @@ class BLINK_EXPORT WebDocument : public WebNode {
   // cookie blocking.
   net::SiteForCookies SiteForCookies() const;
 
+  // The `HasStorageAccess` boolean is used to determine whether this document
+  // has opted into using the Storage Access API. This is relevant when
+  // attempting to access cookies in a context where third-party cookies may be
+  // blocked.
+  bool HasStorageAccess() const;
+
   WebSecurityOrigin TopFrameOrigin() const;
   WebElement DocumentElement() const;
   WebElement Body() const;

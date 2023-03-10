@@ -32,7 +32,8 @@ class MediaUrlDemuxerTest : public testing::Test {
     demuxer_ = std::make_unique<MediaUrlDemuxer>(
         base::SingleThreadTaskRunner::GetCurrentDefault(), media_url,
         net::SiteForCookies::FromUrl(first_party),
-        url::Origin::Create(first_party), allow_credentials, false);
+        url::Origin::Create(first_party), /*has_storage_access=*/false,
+        allow_credentials, false);
   }
 
   void InitializeTest() {

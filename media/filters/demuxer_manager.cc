@@ -107,6 +107,7 @@ DemuxerManager::DemuxerManager(
     MediaLog* log,
     net::SiteForCookies site_for_cookies,
     url::Origin top_frame_origin,
+    bool has_storage_access,
     bool enable_instant_source_buffer_gc,
     std::unique_ptr<Demuxer> demuxer_override)
     : client_(client),
@@ -114,6 +115,9 @@ DemuxerManager::DemuxerManager(
       media_log_(log->Clone()),
       site_for_cookies_(std::move(site_for_cookies)),
       top_frame_origin_(std::move(top_frame_origin)),
+#if BUILDFLAG(IS_ANDROID)
+      has_storage_access_(has_storage_access),
+#endif  // BUILDFLAG(IS_ANDROID)
       enable_instant_source_buffer_gc_(enable_instant_source_buffer_gc),
       demuxer_override_(std::move(demuxer_override)) {
   DCHECK(client_);
@@ -512,7 +516,8 @@ std::unique_ptr<Demuxer> DemuxerManager::CreateMediaUrlDemuxer(
     bool expect_hls_content) {
   return std::make_unique<MediaUrlDemuxer>(
       media_task_runner_, loaded_url_, site_for_cookies_, top_frame_origin_,
-      allow_media_player_renderer_credentials_, expect_hls_content);
+      has_storage_access_, allow_media_player_renderer_credentials_,
+      expect_hls_content);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

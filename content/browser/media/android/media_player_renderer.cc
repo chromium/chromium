@@ -115,7 +115,7 @@ void MediaPlayerRenderer::CreateMediaPlayer(
 
   media_player_ = std::make_unique<media::MediaPlayerBridge>(
       url_params.media_url, url_params.site_for_cookies,
-      url_params.top_frame_origin, user_agent,
+      url_params.top_frame_origin, url_params.has_storage_access, user_agent,
       false,  // hide_url_log
       this,   // MediaPlayerBridge::Client
       url_params.allow_credentials, url_params.is_hls);

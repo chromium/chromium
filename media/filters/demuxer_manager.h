@@ -101,6 +101,7 @@ class MEDIA_EXPORT DemuxerManager {
                  MediaLog* log,
                  net::SiteForCookies site_for_cookies,
                  url::Origin top_frame_origin,
+                 bool has_storage_access,
                  bool enable_instant_source_buffer_gc,
                  std::unique_ptr<Demuxer> demuxer_override);
   ~DemuxerManager();
@@ -184,6 +185,9 @@ class MEDIA_EXPORT DemuxerManager {
   // Android's MediaUrlDemuxer needs access to these.
   net::SiteForCookies site_for_cookies_;
   url::Origin top_frame_origin_;
+#if BUILDFLAG(IS_ANDROID)
+  bool has_storage_access_;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // When MSE memory pressure based garbage collection is enabled, the
   // |enable_instant_source_buffer_gc| controls whether the GC is done

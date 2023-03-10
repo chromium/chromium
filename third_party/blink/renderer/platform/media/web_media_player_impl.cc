@@ -374,6 +374,7 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
           media_log_.get(),
           frame_->GetDocument().SiteForCookies(),
           frame_->GetDocument().TopFrameOrigin(),
+          frame_->GetDocument().HasStorageAccess(),
           enable_instant_source_buffer_gc,
           std::move(demuxer_override))),
       tick_clock_(base::DefaultTickClock::GetInstance()),

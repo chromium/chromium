@@ -35,6 +35,7 @@ class MediaPlayerBridgeTest : public testing::Test {
       : bridge_(GURL(),
                 net::SiteForCookies(),
                 url::Origin(),
+                false,
                 "",
                 false,
                 &client_,
