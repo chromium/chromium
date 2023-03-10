@@ -108,11 +108,6 @@ class MockAttributionManager : public AttributionManager {
               (const DataKey&, base::OnceClosure done),
               (override));
 
-  MOCK_METHOD(attribution_reporting::mojom::OsSupport,
-              GetOsSupport,
-              (),
-              (override));
-
 #if BUILDFLAG(IS_ANDROID)
 
   MOCK_METHOD(void,

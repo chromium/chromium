@@ -119,6 +119,8 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
       const base::FilePath& user_data_directory,
       scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy);
 
+  static attribution_reporting::mojom::OsSupport GetOsSupport();
+
   AttributionManagerImpl(
       StoragePartitionImpl* storage_partition,
       const base::FilePath& user_data_directory,
@@ -163,8 +165,6 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
 
   void RemoveAttributionDataByDataKey(const DataKey& data_key,
                                       base::OnceClosure callback) override;
-
-  attribution_reporting::mojom::OsSupport GetOsSupport() override;
 
 #if BUILDFLAG(IS_ANDROID)
 

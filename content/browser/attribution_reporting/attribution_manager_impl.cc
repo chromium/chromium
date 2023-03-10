@@ -433,6 +433,15 @@ AttributionManagerImpl::CreateForTesting(
       /*data_host_manager=*/nullptr, std::move(storage_task_runner)));
 }
 
+// static
+attribution_reporting::mojom::OsSupport AttributionManagerImpl::GetOsSupport() {
+#if BUILDFLAG(IS_ANDROID)
+  return AttributionOsLevelManagerAndroid::GetOsSupport();
+#else
+  return attribution_reporting::mojom::OsSupport::kDisabled;
+#endif
+}
+
 AttributionManagerImpl::AttributionManagerImpl(
     StoragePartitionImpl* storage_partition,
     const base::FilePath& user_data_directory,
@@ -1332,15 +1341,5 @@ void AttributionManagerImpl::ProcessNextOsEvent() {
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)
-
-attribution_reporting::mojom::OsSupport AttributionManagerImpl::GetOsSupport() {
-#if BUILDFLAG(IS_ANDROID)
-  if (attribution_os_level_manager_) {
-    return attribution_os_level_manager_->GetOsSupport();
-  }
-#endif
-
-  return attribution_reporting::mojom::OsSupport::kDisabled;
-}
 
 }  // namespace content

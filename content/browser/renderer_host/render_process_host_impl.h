@@ -326,6 +326,11 @@ class CONTENT_EXPORT RenderProcessHostImpl
   void ResumeSocketManagerForRenderFrameHost(
       const GlobalRenderFrameHostId& render_frame_host_id) override;
 
+#if BUILDFLAG(IS_ANDROID)
+  void SetOsSupportForAttributionReporting(
+      attribution_reporting::mojom::OsSupport os_support) override;
+#endif
+
   // IPC::Sender via RenderProcessHost.
   bool Send(IPC::Message* msg) override;
 

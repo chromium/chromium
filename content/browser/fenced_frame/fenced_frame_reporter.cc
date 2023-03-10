@@ -372,7 +372,7 @@ bool FencedFrameReporter::SendReportInternal(
             blink::features::kAttributionReportingCrossAppWeb)) {
       request->headers.SetHeader("Attribution-Reporting-Support",
                                  attribution_reporting::GetSupportHeader(
-                                     attribution_manager_->GetOsSupport()));
+                                     AttributionManager::GetOsSupport()));
     }
   }
 

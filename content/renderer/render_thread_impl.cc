@@ -1842,6 +1842,13 @@ RenderThreadImpl::GetOsSupportForAttributionReporting() {
   return attribution_os_support_;
 }
 
+#if BUILDFLAG(IS_ANDROID)
+void RenderThreadImpl::SetOsSupportForAttributionReporting(
+    attribution_reporting::mojom::OsSupport attribution_os_support) {
+  attribution_os_support_ = attribution_os_support;
+}
+#endif
+
 std::unique_ptr<CodecFactory> RenderThreadImpl::CreateMediaCodecFactory(
     scoped_refptr<viz::ContextProviderCommandBuffer> context_provider,
     bool enable_video_decode_accelerator,

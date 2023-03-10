@@ -1600,10 +1600,8 @@ IN_PROC_BROWSER_TEST_F(
           https_server(), "/register_source_redirect2");
   ASSERT_TRUE(https_server()->Start());
 
-  static_cast<AttributionOsLevelManagerAndroid*>(
-      static_cast<AttributionManagerImpl*>(attribution_manager())
-          ->GetOsLevelManager())
-      ->SetOsSupportForTesting(
+  AttributionOsLevelManagerAndroid::ScopedOsSupportForTesting
+      scoped_os_support_setting(
           attribution_reporting::mojom::OsSupport::kEnabled);
 
   GURL impression_url = https_server()->GetURL(

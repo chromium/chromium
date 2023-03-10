@@ -62,6 +62,8 @@ class CONTENT_EXPORT AttributionManager : public AttributionDataModel {
 
   static AttributionManager* FromBrowserContext(BrowserContext*);
 
+  static attribution_reporting::mojom::OsSupport GetOsSupport();
+
   ~AttributionManager() override = default;
 
   virtual void AddObserver(AttributionObserver* observer) = 0;
@@ -138,8 +140,6 @@ class CONTENT_EXPORT AttributionManager : public AttributionDataModel {
                          BrowsingDataFilterBuilder* filter_builder,
                          bool delete_rate_limit_data,
                          base::OnceClosure done) = 0;
-
-  virtual attribution_reporting::mojom::OsSupport GetOsSupport() = 0;
 };
 
 }  // namespace content

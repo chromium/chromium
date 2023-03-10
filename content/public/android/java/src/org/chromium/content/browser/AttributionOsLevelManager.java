@@ -65,14 +65,14 @@ public class AttributionOsLevelManager {
 
     /**
      * Gets Measurement API status with native, see `getMeasurementApiStatus()`:
-     * https://developer.android.com/reference/androidx/privacysandbox/ads/adservices/measurement/MeasurementManager#getMeasurementApiStatus
+     * https://developer.android.com/design-for-safety/privacy-sandbox/reference/adservices/measurement/MeasurementManager.
      */
     @CalledByNative
-    private int getMeasurementApiStatus() {
+    private void getMeasurementApiStatus() {
         // TODO(linnan):  Get from Android API, see
         // https://developer.android.com/design-for-safety/privacy-sandbox/guides/attribution.
         // This is dependent on support for the Tiramisu Privacy Sandbox SDK.
-        return 0;
+        AttributionOsLevelManagerJni.get().onMeasurementStateReturned(0);
     }
 
     @CalledByNative
@@ -83,5 +83,6 @@ public class AttributionOsLevelManager {
     @NativeMethods
     interface Natives {
         void onDataDeletionCompleted(long nativeAttributionOsLevelManagerAndroid, int requestId);
+        void onMeasurementStateReturned(int state);
     }
 }

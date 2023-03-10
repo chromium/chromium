@@ -50,6 +50,7 @@
 #include "ui/gfx/native_widget_types.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "components/attribution_reporting/os_support.mojom-forward.h"
 #include "content/public/browser/android/child_process_importance.h"
 #endif
 
@@ -697,6 +698,14 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // directory once they log in.
   virtual void ReinitializeLogging(uint32_t logging_dest,
                                    base::ScopedFD log_file_descriptor) = 0;
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+  // Sets whether OS-level support is enabled for Attribution Reporting API.
+  // See
+  // https://github.com/WICG/attribution-reporting-api/blob/main/app_to_web.md.
+  virtual void SetOsSupportForAttributionReporting(
+      attribution_reporting::mojom::OsSupport os_support) = 0;
 #endif
 
   // Static management functions -----------------------------------------------

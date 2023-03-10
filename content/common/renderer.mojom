@@ -189,4 +189,10 @@ interface Renderer {
                      blink.mojom.UserAgentMetadata metadata,
                      array<string> cors_exempt_header_list,
                      attribution_reporting.mojom.OsSupport attribution_os_support);
+
+  // Set the OS-level support for Attribution Reporting indicating whether
+  // OS-level attribution is enabled.
+  [EnableIf=is_android]
+  SetOsSupportForAttributionReporting(
+      attribution_reporting.mojom.OsSupport os_support);
 };
