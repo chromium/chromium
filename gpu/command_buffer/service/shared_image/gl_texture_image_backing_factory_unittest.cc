@@ -619,6 +619,7 @@ TEST_P(GLTextureImageBackingFactoryWithUploadTest, UploadFromMemory) {
     std::vector<SkBitmap> bitmaps =
         AllocateRedBitmaps(format, size, alpha_type, /*added_stride=*/0);
     EXPECT_TRUE(backing->UploadFromMemory(GetSkPixmaps(bitmaps)));
+    EXPECT_EQ(glGetError(), static_cast<GLenum>(GL_NO_ERROR));
   }
 
   // Upload from bitmap with larger than expected stride.
@@ -626,6 +627,7 @@ TEST_P(GLTextureImageBackingFactoryWithUploadTest, UploadFromMemory) {
     std::vector<SkBitmap> bitmaps =
         AllocateRedBitmaps(format, size, alpha_type, /*added_stride=*/25);
     EXPECT_TRUE(backing->UploadFromMemory(GetSkPixmaps(bitmaps)));
+    EXPECT_EQ(glGetError(), static_cast<GLenum>(GL_NO_ERROR));
   }
 }
 
@@ -659,6 +661,7 @@ TEST_P(GLTextureImageBackingFactoryWithReadbackTest, ReadbackToMemory) {
 
   // Upload from bitmap with expected stride.
   ASSERT_TRUE(backing->UploadFromMemory(GetSkPixmaps(src_bitmaps)));
+  EXPECT_EQ(glGetError(), static_cast<GLenum>(GL_NO_ERROR));
 
   const int num_planes = format.NumberOfPlanes();
 
@@ -674,6 +677,7 @@ TEST_P(GLTextureImageBackingFactoryWithReadbackTest, ReadbackToMemory) {
 
     std::vector<SkPixmap> pixmaps = GetSkPixmaps(readback_bitmaps);
     ASSERT_TRUE(backing->ReadbackToMemory(pixmaps));
+    EXPECT_EQ(glGetError(), static_cast<GLenum>(GL_NO_ERROR));
 
     for (int plane = 0; plane < num_planes; ++plane) {
       EXPECT_TRUE(cc::MatchesBitmap(readback_bitmaps[plane], src_bitmaps[plane],
@@ -694,6 +698,7 @@ TEST_P(GLTextureImageBackingFactoryWithReadbackTest, ReadbackToMemory) {
 
     std::vector<SkPixmap> pixmaps = GetSkPixmaps(readback_bitmaps);
     ASSERT_TRUE(backing->ReadbackToMemory(pixmaps));
+    EXPECT_EQ(glGetError(), static_cast<GLenum>(GL_NO_ERROR));
 
     for (int plane = 0; plane < num_planes; ++plane) {
       EXPECT_TRUE(cc::MatchesBitmap(readback_bitmaps[plane], src_bitmaps[plane],

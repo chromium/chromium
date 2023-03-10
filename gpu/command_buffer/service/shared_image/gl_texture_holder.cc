@@ -272,7 +272,6 @@ bool GLTextureHolder::UploadFromMemory(const SkPixmap& pixmap) {
     api->glTexSubImage2DFn(gl_target, /*level=*/0, 0, 0, size_.width(),
                            size_.height(), gl_format, gl_type, pixels);
   }
-  DCHECK_EQ(api->glGetErrorFn(), static_cast<GLenum>(GL_NO_ERROR));
 
   return true;
 }
@@ -374,7 +373,6 @@ bool GLTextureHolder::ReadbackToMemory(const SkPixmap& pixmap) {
     api->glReadPixelsFn(0, 0, size_.width(), size_.height(), gl_format, gl_type,
                         pixels);
   }
-  DCHECK_EQ(api->glGetErrorFn(), static_cast<GLenum>(GL_NO_ERROR));
 
   api->glDeleteFramebuffersEXTFn(1, &framebuffer);
 
