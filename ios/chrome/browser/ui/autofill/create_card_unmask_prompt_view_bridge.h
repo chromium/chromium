@@ -14,8 +14,7 @@ namespace autofill {
 class CardUnmaskPromptController;
 
 // Creates the view bridge for the iOS implementation of the Card Unmask
-// Prompt. The implementation returned may vary based on
-// kAutofillEnableNewCardUnmaskPromptView feature flag.
+// Prompt.
 CardUnmaskPromptView* CreateCardUnmaskPromptViewBridge(
     CardUnmaskPromptController* unmask_controller,
     UIViewController* base_view_controller);

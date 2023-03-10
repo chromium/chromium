@@ -13,17 +13,12 @@ source_set("cells") {
     "autofill_edit_item.mm",
     "cvc_header_item.h",
     "cvc_header_item.mm",
-    "cvc_item+private.h",
-    "cvc_item.h",
-    "cvc_item.mm",
     "expiration_date_edit_item+private.h",
     "expiration_date_edit_item.h",
     "expiration_date_edit_item.mm",
     "expiration_date_edit_item_delegate.h",
     "legacy_autofill_edit_item.h",
     "legacy_autofill_edit_item.mm",
-    "status_item.h",
-    "status_item.mm",
     "target_account_item.h",
     "target_account_item.mm",
   ]
@@ -31,24 +26,18 @@ source_set("cells") {
   deps = [
     "//base",
     "//build:branding_buildflags",
-    "//components/autofill/core/common:features",
-    "//components/resources",
+    "//components/resources:components_scaled_resources_grit",
     "//components/strings",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/app/theme",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/autofill:autofill_ui",
     "//ios/chrome/browser/ui/autofill:autofill_ui_type",
     "//ios/chrome/browser/ui/collection_view/cells",
-    "//ios/chrome/browser/ui/ntp:logo",
     "//ios/chrome/browser/ui/table_view:styler",
     "//ios/chrome/browser/ui/table_view/cells",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/common/ui/util",
-    "//ios/public/provider/chrome/browser/ui_utils:ui_utils_api",
-    "//ios/third_party/material_components_ios",
     "//ui/base",
   ]
 
@@ -62,18 +51,14 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "cvc_header_item_unittest.mm",
-    "cvc_item_unittest.mm",
     "expiration_date_edit_item_unittest.mm",
     "legacy_autofill_edit_item_unittest.mm",
-    "status_item_unittest.mm",
   ]
 
   deps = [
     ":cells",
     "//base",
-    "//components/resources",
     "//ios/chrome/browser/ui/autofill:autofill_ui",
-    "//ios/chrome/browser/ui/collection_view/cells",
     "//ios/chrome/browser/ui/table_view:styler",
     "//ios/third_party/material_components_ios",
     "//testing/gtest",

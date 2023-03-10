@@ -7,9 +7,6 @@
 
 namespace autofill::features {
 
-BASE_FEATURE(kAutofillEnableNewCardUnmaskPromptView,
-             "AutofillEnableNewCardUnmaskPromptView",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAutofillBrandingIOS,
              "AutofillBrandingIOS",
              base::FEATURE_DISABLED_BY_DEFAULT);
