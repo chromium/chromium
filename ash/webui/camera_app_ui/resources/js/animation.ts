@@ -31,13 +31,11 @@ function getAnimations(el: HTMLElement): Animation[] {
  * Cancels the running animation on the element, if any.
  *
  * @param el Target element to cancel animation.
- * @return Promise resolved when the animation is cancelled.
  */
-export async function cancel(el: HTMLElement): Promise<void> {
+export function cancel(el: HTMLElement): void {
   for (const a of getAnimations(el)) {
     a.cancel();
   }
-  await getQueueFor(el).flush();
 }
 
 /**
@@ -50,7 +48,7 @@ export async function cancel(el: HTMLElement): Promise<void> {
  */
 export async function play(
     el: HTMLElement, changeElement?: () => void): Promise<void> {
-  await cancel(el);
+  cancel(el);
   const queue = getQueueFor(el);
   async function job() {
     void el.offsetWidth;  // Force repaint before applying the animation.
