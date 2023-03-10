@@ -109,6 +109,10 @@ NSArray<FollowedWebSite*>* FollowBrowserAgent::GetFollowedWebSites() {
   return GetFollowService()->GetFollowedWebSites();
 }
 
+void FollowBrowserAgent::LoadFollowedWebSites() {
+  return GetFollowService()->LoadFollowedWebSites();
+}
+
 void FollowBrowserAgent::FollowWebSite(WebPageURLs* web_page_urls,
                                        FollowSource source) {
   // Record if the source is from a menu.

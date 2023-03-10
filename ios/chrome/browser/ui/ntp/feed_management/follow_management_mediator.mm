@@ -94,6 +94,10 @@ FollowedWebChannel* FollowedWebSiteToFollowedWebChannel(
   return channels;
 }
 
+- (void)loadFollowedWebSites {
+  _followBrowserAgent->LoadFollowedWebSites();
+}
+
 #pragma mark - FollowManagementFollowDelegate
 
 - (void)unfollowFollowedWebChannel:(FollowedWebChannel*)followedWebChannel {

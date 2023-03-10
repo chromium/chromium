@@ -184,6 +184,10 @@ NSInteger kFaviconSymbolPointSize = 17;
   return channel;
 }
 
+- (void)loadFollowedWebSites {
+  return;
+}
+
 #pragma mark - TableViewFaviconDataSource
 
 - (void)faviconForPageURL:(CrURL*)URL
