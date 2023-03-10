@@ -551,7 +551,7 @@ MLOperand* MLGraphBuilder::constant(const MLOperandDescriptor* desc,
 }
 
 MLOperand* MLGraphBuilder::concat(const HeapVector<Member<MLOperand>>& inputs,
-                                  int32_t axis,
+                                  const uint32_t axis,
                                   ExceptionState& exception_state) {
   auto* concat =
       MakeGarbageCollected<MLOperator>(this, MLOperator::OperatorKind::kConcat);
@@ -565,22 +565,16 @@ MLOperand* MLGraphBuilder::concat(const HeapVector<Member<MLOperand>>& inputs,
   // According to WebNN spec:
   // https://www.w3.org/TR/webnn/#dom-mlgraphbuilder-concat-inputs-axis-axis,
   // the axis that the inputs concatenate along, with the value in the interval
-  // [0, N) where N is the rank of all the inputs. We just check the first input
-  // rank here because we will check all inputs have same rank in the following
-  // loop.
-  //
-  // TODO(crbug.com/1273291): There is a WebNN spec issue discussing whether to
-  // support signed axis with [-N, N) range or unsigned integer. Update the
-  // implementation once the WG makes the consensus.
-  // https://github.com/webmachinelearning/webnn/issues/345
-  if (axis < 0 || base::MakeStrictNum(axis) >= first_input_rank) {
+  // [0, N-1] where N is the rank of input tensors. We just check the first
+  // input rank here because we will check all inputs have same rank in the
+  // following loop.
+  if (axis >= first_input_rank) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kDataError,
-        "The value of axis should be in the interval [0, N) where N is the "
-        "rank of all the inputs.");
+        "The value of axis should be in the interval [0, N-1] where N is the "
+        "rank of input tensors.");
     return nullptr;
   }
-  const auto concat_axis = base::checked_cast<uint32_t>(axis);
   const auto output_type = inputs[0]->Type();
   // The loop skips the first input to avoid repeated checks.
   for (wtf_size_t i = 1; i < inputs.size(); ++i) {
@@ -603,7 +597,7 @@ MLOperand* MLGraphBuilder::concat(const HeapVector<Member<MLOperand>>& inputs,
     // must have the same shape, except for the size of the dimension to
     // concatenate on.
     for (wtf_size_t dim = 0; dim < first_input_rank; ++dim) {
-      if (dim == concat_axis ||
+      if (dim == axis ||
           inputs[i]->Dimensions()[dim] == first_input_shape[dim]) {
         continue;
       }
@@ -619,12 +613,12 @@ MLOperand* MLGraphBuilder::concat(const HeapVector<Member<MLOperand>>& inputs,
   // has the same shape except on the dimension that all the inputs concatenated
   // along. The size of that dimension is computed as the sum of all the input
   // sizes of the same dimension.
-  auto concat_axis_size = base::MakeCheckedNum<uint32_t>(0);
+  auto axis_size = base::MakeCheckedNum<uint32_t>(0);
   for (auto& input : inputs) {
-    concat_axis_size += input->Dimensions()[concat_axis];
+    axis_size += input->Dimensions()[axis];
   }
   auto output_shape = first_input_shape;
-  if (!concat_axis_size.AssignIfValid(&output_shape[concat_axis])) {
+  if (!axis_size.AssignIfValid(&output_shape[axis])) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kDataError,
         "The concatenated dimension size is too large.");

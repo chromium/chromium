@@ -205,7 +205,7 @@ TEST_F(MLGraphBuilderTest, ConcatTest) {
     auto* input_a =
         BuildInput(builder, "input_a", input_a_shape,
                    V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
-    int32_t axis = 2;
+    uint32_t axis = 2;
     auto* output = builder->concat({input_a}, axis, scope.GetExceptionState());
     EXPECT_NE(output, nullptr);
     EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
@@ -228,7 +228,7 @@ TEST_F(MLGraphBuilderTest, ConcatTest) {
     auto* input_b =
         BuildInput(builder, "input_b", input_b_shape,
                    V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
-    int32_t axis = 1;
+    uint32_t axis = 1;
     auto* output =
         builder->concat({input_a, input_b}, axis, scope.GetExceptionState());
     EXPECT_NE(output, nullptr);
@@ -256,7 +256,7 @@ TEST_F(MLGraphBuilderTest, ConcatTest) {
     auto* input_c =
         BuildInput(builder, "input_c", input_c_shape,
                    V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
-    int32_t axis = 2;
+    uint32_t axis = 2;
     auto* output = builder->concat({input_a, input_b, input_c}, axis,
                                    scope.GetExceptionState());
     EXPECT_NE(output, nullptr);
@@ -280,7 +280,7 @@ TEST_F(MLGraphBuilderTest, ConcatTest) {
     auto* input_b =
         BuildInput(builder, "input_b", input_b_shape,
                    V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
-    int32_t axis = 0;
+    uint32_t axis = 0;
     auto* output =
         builder->concat({input_a, input_b}, axis, scope.GetExceptionState());
     EXPECT_NE(output, nullptr);
@@ -295,7 +295,7 @@ TEST_F(MLGraphBuilderTest, ConcatTest) {
   }
   {
     // Test throwing exception when the inputs are empty.
-    int32_t axis = 0;
+    uint32_t axis = 0;
     auto* output = builder->concat({}, axis, scope.GetExceptionState());
     EXPECT_EQ(output, nullptr);
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
@@ -313,7 +313,7 @@ TEST_F(MLGraphBuilderTest, ConcatTest) {
     auto* input_b =
         BuildInput(builder, "input_b", input_b_shape,
                    V8MLOperandType::Enum::kInt32, scope.GetExceptionState());
-    int32_t axis = 0;
+    uint32_t axis = 0;
     auto* output =
         builder->concat({input_a, input_b}, axis, scope.GetExceptionState());
     EXPECT_EQ(output, nullptr);
@@ -332,7 +332,7 @@ TEST_F(MLGraphBuilderTest, ConcatTest) {
     auto* input_b =
         BuildInput(builder, "input_b", input_b_shape,
                    V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
-    int32_t axis = 0;
+    uint32_t axis = 0;
     auto* output =
         builder->concat({input_a, input_b}, axis, scope.GetExceptionState());
     EXPECT_EQ(output, nullptr);
@@ -342,7 +342,8 @@ TEST_F(MLGraphBuilderTest, ConcatTest) {
               "All input tensors must have the same dimension.");
   }
   {
-    // Test throwing exception when the axis smaller than 0.
+    // Test throwing exception when the axis is equal to or greater than the
+    // size of dimension.
     Vector<uint32_t> input_a_shape({1, 1});
     Vector<uint32_t> input_b_shape({1, 1});
     auto* input_a =
@@ -351,35 +352,15 @@ TEST_F(MLGraphBuilderTest, ConcatTest) {
     auto* input_b =
         BuildInput(builder, "input_b", input_b_shape,
                    V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
-    int32_t axis = -1;
+    uint32_t axis = 2;
     auto* output =
         builder->concat({input_a, input_b}, axis, scope.GetExceptionState());
     EXPECT_EQ(output, nullptr);
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
-              "The value of axis should be in the interval [0, N) where N is "
-              "the rank of all the inputs.");
-  }
-  {
-    // Test throwing exception when the axis greater than the size of dimension.
-    Vector<uint32_t> input_a_shape({1, 1});
-    Vector<uint32_t> input_b_shape({1, 1});
-    auto* input_a =
-        BuildInput(builder, "input_a", input_a_shape,
-                   V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
-    auto* input_b =
-        BuildInput(builder, "input_b", input_b_shape,
-                   V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
-    int32_t axis = 2;
-    auto* output =
-        builder->concat({input_a, input_b}, axis, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
-    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
-              DOMExceptionCode::kDataError);
-    EXPECT_EQ(scope.GetExceptionState().Message(),
-              "The value of axis should be in the interval [0, N) where N is "
-              "the rank of all the inputs.");
+              "The value of axis should be in the interval [0, N-1] where N is "
+              "the rank of input tensors.");
   }
   {
     // Test throwing exception when the inputs have other axes with different
@@ -392,7 +373,7 @@ TEST_F(MLGraphBuilderTest, ConcatTest) {
     auto* input_b =
         BuildInput(builder, "input_b", input_b_shape,
                    V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
-    int32_t axis = 1;
+    uint32_t axis = 1;
     auto* output =
         builder->concat({input_a, input_b}, axis, scope.GetExceptionState());
     EXPECT_EQ(output, nullptr);

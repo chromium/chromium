@@ -84,7 +84,7 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                       ExceptionState& exception_state);
 
   MLOperand* concat(const HeapVector<Member<MLOperand>>& inputs,
-                    int32_t axis,
+                    const uint32_t axis,
                     ExceptionState& exception_state);
 
   MLOperand* conv2d(const MLOperand* input,
