@@ -64,4 +64,6 @@ interface InputDeviceSettingsProvider {
   // Sets the point stick settings based on its id.
   SetPointingStickSettings(
       uint32 device_id, ash.mojom.PointingStickSettings settings);
+  // Sets the mouse settings based on its id.
+  SetMouseSettings(uint32 device_id, ash.mojom.MouseSettings settings);
 };

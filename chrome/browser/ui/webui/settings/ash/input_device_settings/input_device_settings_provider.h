@@ -44,6 +44,8 @@ class InputDeviceSettingsProvider
   void SetPointingStickSettings(
       uint32_t device_id,
       ::ash::mojom::PointingStickSettingsPtr settings) override;
+  void SetMouseSettings(uint32_t device_id,
+                        ::ash::mojom::MouseSettingsPtr settings) override;
 
   // InputDeviceSettingsController::Observer:
   void OnKeyboardConnected(const ::ash::mojom::Keyboard& keyboard) override;
