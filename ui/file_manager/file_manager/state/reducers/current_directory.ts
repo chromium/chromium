@@ -67,7 +67,7 @@ export function changeDirectory(
   // At the end of the change directory, DirectoryContents will send an Action
   // with the Entry to be cached.
   if (fileData) {
-    const {volumeManager} = window.fileManager;
+    const volumeManager = window.fileManager?.volumeManager;
     if (!volumeManager) {
       console.debug(`VolumeManager not available yet.`);
       currentDirectory = currentState.currentDirectory || currentDirectory;
