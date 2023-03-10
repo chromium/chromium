@@ -8331,12 +8331,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mouse.PointerSensitivity.Started" enum="PointerSensitivity"
-    expires_after="2022-12-04">
-  <owner>zentaro@chromium.org</owner>
+    expires_after="2023-08-08">
+  <owner>dpad@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Tracks mouse sensitivity setting on startup. This replaces the old
     Mouse.Sensitivity.Started metric. Only reported on Chrome OS.
+
+    Expired from 2022-12-04 to M113. May be missing some data.
   </summary>
 </histogram>
 
@@ -9920,52 +9922,40 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="PointingStick.Acceleration" enum="BooleanEnabled"
-    expires_after="2021-04-01">
-  <obsolete>
-    Removed in 2021-03.
-  </obsolete>
-<!-- Name completed by histogram_suffixes name="PreferenceChangeType" -->
-
-  <owner>hcutts@chromium.org</owner>
-  <owner>khorimoto@chromium.org</owner>
+    expires_after="2023-08-08">
+  <owner>dpad@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Acceleration setting for pointing sticks (typically TrackPoints, the
     miniature red joysticks found in some laptop keyboards). Only reported on
     Chrome OS.
+
+    Expired from 2021-04-01 to M113. May be missing some data.
   </summary>
 </histogram>
 
 <histogram base="true" name="PointingStick.PointerSensitivity"
-    enum="PointerSensitivity" expires_after="2021-04-01">
-  <obsolete>
-    Removed in 2021-03.
-  </obsolete>
-<!-- Name completed by histogram_suffixes name="PreferenceChangeType" -->
-
-  <owner>hcutts@chromium.org</owner>
-  <owner>khorimoto@chromium.org</owner>
+    enum="PointerSensitivity" expires_after="2023-08-08">
+  <owner>dpad@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Sensitivity value for pointing sticks (typically TrackPoints, the miniature
     red joysticks found in some laptop keyboards). Only reported on Chrome OS.
+
+    Expired from 2021-04-01 to M113. May be missing some data.
   </summary>
 </histogram>
 
 <histogram base="true" name="PointingStick.PrimaryButtonRight"
-    enum="PointerPrimaryButton" expires_after="2021-04-01">
-  <obsolete>
-    Removed in 2021-03.
-  </obsolete>
-<!-- Name completed by histogram_suffixes name="PreferenceChangeType" -->
-
-  <owner>hcutts@chromium.org</owner>
-  <owner>khorimoto@chromium.org</owner>
+    enum="PointerPrimaryButton" expires_after="2023-08-08">
+  <owner>dpad@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Setting for the primary button of pointing sticks (typically TrackPoints,
     the miniature red joysticks found in some laptop keyboards). Only reported
     on Chrome OS.
+
+    Expired from 2021-04-01 to M113. May be missing some data.
   </summary>
 </histogram>
 
