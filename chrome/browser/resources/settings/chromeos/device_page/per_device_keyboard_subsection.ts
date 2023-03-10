@@ -26,6 +26,8 @@ import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.j
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
+import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {routes} from '../os_settings_routes.js';
 import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route, Router} from '../router.js';
@@ -36,7 +38,7 @@ import {InputDeviceSettingsProviderInterface, Keyboard} from './input_device_set
 import {getTemplate} from './per_device_keyboard_subsection.html.js';
 
 const SettingsPerDeviceKeyboardSubsectionElementBase =
-    RouteOriginMixin(PolymerElement);
+    DeepLinkingMixin(RouteOriginMixin(PolymerElement));
 
 export class SettingsPerDeviceKeyboardSubsectionElement extends
     SettingsPerDeviceKeyboardSubsectionElementBase {
@@ -135,6 +137,21 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
         type: String,
         value: '',
       },
+
+      /**
+       * Used by DeepLinkingMixin to focus this page's deep links.
+       */
+      supportedSettingIds: {
+        type: Object,
+        value: () => new Set<Setting>([
+          Setting.kKeyboardFunctionKeys,
+          Setting.kKeyboardAutoRepeat,
+        ]),
+      },
+
+      keyboardIndex: {
+        type: Number,
+      },
     };
   }
 
@@ -150,6 +167,18 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
     ];
   }
 
+  override currentRouteChanged(route: Route): void {
+    // Does not apply to this page.
+    if (route !== routes.PER_DEVICE_KEYBOARD) {
+      return;
+    }
+
+    // If there is more than one keyboard, focus on the first one.
+    if (this.keyboardIndex === 0) {
+      this.attemptDeepLink();
+    }
+  }
+
   protected keyboard: Keyboard;
   private autoRepeatDelays: number[];
   private autoRepeatIntervals: number[];
@@ -163,6 +192,7 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
   private isInitialized: boolean = false;
   private inputDeviceSettingsProvider: InputDeviceSettingsProviderInterface =
       getInputDeviceSettingsProvider();
+  private keyboardIndex: number;
 
   private updateSettingsToCurrentPrefs(): void {
     this.set(

@@ -7,8 +7,10 @@ import 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {FakeInputDeviceSettingsProvider, fakeKeyboards, Router, routes, setInputDeviceSettingsProviderForTesting, SettingsPerDeviceKeyboardSubsectionElement} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
+
+const KEYBOARD_AUTO_REPEAT_SETTING_ID = 412;
 
 suite('PerDeviceKeyboardSubsection', function() {
   /**
@@ -326,5 +328,51 @@ suite('PerDeviceKeyboardSubsection', function() {
     const keyboardId = Number(urlSearchQuery);
     const expectedKeyboardId = subsection.keyboard.id;
     assertEquals(expectedKeyboardId, keyboardId);
+  });
+
+  /**
+   * Verify entering the page with search tags matched will auto focus the
+   * searched element.
+   */
+  test('deep linking mixin focus on the first searched element', async () => {
+    await initializePerDeviceKeyboardSubsection();
+    const autoRepeatToggle =
+        subsection.shadowRoot.querySelector('#enableAutoRepeatButton');
+    subsection.keyboardIndex = 0;
+    // Enter the page from auto repeat search tag.
+    const url = new URLSearchParams(
+        'search=keyboard&settingId=' +
+        encodeURIComponent(KEYBOARD_AUTO_REPEAT_SETTING_ID));
+
+    await Router.getInstance().navigateTo(
+        routes.PER_DEVICE_KEYBOARD,
+        /* dynamicParams= */ url, /* removeSearch= */ true);
+
+    await waitAfterNextRender(autoRepeatToggle);
+    assertTrue(!!autoRepeatToggle);
+    assertEquals(subsection.shadowRoot.activeElement, autoRepeatToggle);
+  });
+
+  /**
+   * Verify entering the page with search tags matched wll not auto focus the
+   * searched element if it's not the first keyboard displayed.
+   */
+  test('deep linkng mixin does not focus on second element', async () => {
+    await initializePerDeviceKeyboardSubsection();
+    const autoRepeatToggle =
+        subsection.shadowRoot.querySelector('#enableAutoRepeatButton');
+    subsection.keyboardIndex = 1;
+    // Enter the page from auto repeat search tag.
+    const url = new URLSearchParams(
+        'search=keyboard&settingId=' +
+        encodeURIComponent(KEYBOARD_AUTO_REPEAT_SETTING_ID));
+
+    await Router.getInstance().navigateTo(
+        routes.PER_DEVICE_KEYBOARD,
+        /* dynamicParams= */ url, /* removeSearch= */ true);
+    await flushTasks();
+
+    assertTrue(!!autoRepeatToggle);
+    assertFalse(!!subsection.shadowRoot.activeElement);
   });
 });

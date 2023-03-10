@@ -22,6 +22,8 @@ import 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
+import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {routes} from '../os_settings_routes.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
@@ -31,7 +33,8 @@ import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_prov
 import {InputDeviceSettingsProviderInterface, Keyboard} from './input_device_settings_types.js';
 import {getTemplate} from './per_device_keyboard.html.js';
 
-const SettingsPerDeviceKeyboardElementBase = RouteObserverMixin(PolymerElement);
+const SettingsPerDeviceKeyboardElementBase =
+    DeepLinkingMixin(RouteObserverMixin(PolymerElement));
 
 export class SettingsPerDeviceKeyboardElement extends
     SettingsPerDeviceKeyboardElementBase {
@@ -47,6 +50,16 @@ export class SettingsPerDeviceKeyboardElement extends
     return {
       keyboards: {
         type: Array,
+      },
+
+      /**
+       * Used by DeepLinkingMixin to focus this page's deep links.
+       */
+      supportedSettingIds: {
+        type: Object,
+        value: () => new Set<Setting>([
+          Setting.kKeyboardShortcuts,
+        ]),
       },
     };
   }
@@ -73,6 +86,8 @@ export class SettingsPerDeviceKeyboardElement extends
     if (route !== routes.PER_DEVICE_KEYBOARD) {
       return;
     }
+
+    this.attemptDeepLink();
   }
 
   private async fetchConnectedKeyboards(): Promise<void> {
