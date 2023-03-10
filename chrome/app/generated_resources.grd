@@ -5955,6 +5955,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_APP_HOME_APP_SETTINGS" desc="Menu entry label for navigation to App Settings page for an app from context menu on App Home">
         App settings
       </message>
+
+      <message name="IDS_ACCNAME_APP_HOME_NOT_INSTALLED" desc="Accessability label that goes after an apps title that is not locally installed">
+        not locally installed
+      </message>
       <!-- End App Home WebUI strings. -->
 
       <message name="IDS_WEB_APP_SETTINGS_TITLE" desc="Title of web app settings page">

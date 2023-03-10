@@ -491,6 +491,8 @@ suite('AppListTest', () => {
         appItem.shadowRoot!.querySelector<HTMLImageElement>('#iconImage')!.src,
         apps.appList[1]!.iconUrl.url + '?grayscale=true');
 
+    assertEquals(appItem.ariaLabel, 'Test App 2 (not locally installed)');
+
     appItem.dispatchEvent(new CustomEvent('contextmenu'));
 
     const contextMenu = appItem.shadowRoot!.querySelector('cr-action-menu');
@@ -516,6 +518,8 @@ suite('AppListTest', () => {
     assertEquals(
         appItem.shadowRoot!.querySelector<HTMLImageElement>('#iconImage')!.src,
         apps.appList[1]!.iconUrl.url);
+
+    assertEquals(appItem.ariaLabel, 'Test App 2');
 
     appItem.dispatchEvent(new CustomEvent('contextmenu'));
 

@@ -44,8 +44,9 @@
 <div id="container">
     <template is="dom-repeat" items="[[apps_]]">
       <app-item class="item" id="[[item.id]]" app-info="[[item]]"
-        role="button" aria-label="[[item.name]]"
-        tabindex="0">
+        aria-label="[[item.name]][[notLocallyInstalledString_(
+            item.isLocallyInstalled, '$i18n{notInstalled}')]]"
+        role="button" tabindex="0">
       </app-item>
     </template>
 </div>

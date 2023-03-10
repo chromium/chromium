@@ -205,6 +205,13 @@ export class AppListElement extends PolymerElement {
     this.closeCurrentAppMenu();
     this.selectedAppItem_ = event.detail.appItem;
   }
+
+  private notLocallyInstalledString_(installed: boolean, i18nString: string) {
+    if (!installed) {
+      return ' (' + i18nString + ')';
+    }
+    return '';
+  }
 }
 
 declare global {
