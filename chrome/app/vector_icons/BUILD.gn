@@ -159,6 +159,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "trailing_scroll.icon",
     "translate.icon",
     "trash_can.icon",
+    "trash_can_light.icon",
     "tv.icon",
     "ungroup.icon",
     "usb_cable.icon",

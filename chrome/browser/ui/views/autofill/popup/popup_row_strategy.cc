@@ -78,6 +78,7 @@ constexpr int kAdjacentLabelsVerticalSpacing = 2;
 
 // The default icon size used in the suggestion drop down.
 constexpr int kIconSize = 16;
+constexpr int kTrashCanLightIconSize = 12;
 
 // The icon size used in the suggestion dropdown for displaying the Google
 // Password Manager icon in the Manager Passwords entry.
@@ -672,8 +673,8 @@ std::unique_ptr<PopupCellView> PopupSuggestionStrategy::CreateControl() {
     view->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kHorizontal,
         gfx::Insets::VH(0, kAutocompleteDeleteIconHorizontalPadding)));
-    views::ImageView* delete_icon =
-        view->AddChildView(ImageViewFromVectorIcon(kTrashCanIcon));
+    views::ImageView* delete_icon = view->AddChildView(
+        ImageViewFromVectorIcon(kTrashCanLightIcon, kTrashCanLightIconSize));
     // The tooltip is set for both the cell and the image to ensure that it is
     // also shown over the padding area.
     delete_icon->SetTooltipText(l10n_util::GetStringUTF16(
