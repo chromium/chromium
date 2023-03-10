@@ -110,6 +110,9 @@ struct StartParams {
 
   // Flag to enable Privacy Hub for chrome.
   bool enable_privacy_hub_for_chrome = false;
+
+  // Flag to switch to KeyMint for T+.
+  bool arc_switch_to_keymint = false;
 };
 
 }  // namespace arc
