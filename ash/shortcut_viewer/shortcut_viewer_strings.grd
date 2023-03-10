@@ -192,6 +192,9 @@
   <message name="IDS_KSV_CLEAR_SEARCHBOX_ACCESSIBILITY_NAME" desc="Accessibility name for the button that clears all text from the search box.">
     Clear searchbox text
   </message>
+  <message name="IDS_KSV_SCROLL_VIEW_ACCESSIBILITY_NAME" desc="Accessibility name for when the shortcuts list is focused. The text is not visually rendered.">
+    Shortcuts list
+  </message>
   <message name="IDS_KSV_SEARCH_BOX_ACCESSIBILITY_VALUE_WITH_RESULTS" desc="Accessibility value for the search box with searched results.">
     Displaying <ph name="n">$1<ex>1</ex></ph> search results for <ph name="query">$2<ex>a</ex></ph>
   </message>

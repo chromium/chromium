@@ -156,6 +156,8 @@ class ShortcutsListScrollView : public views::ScrollView {
  public:
   ShortcutsListScrollView() {
     GetViewAccessibility().OverrideRole(ax::mojom::Role::kScrollView);
+    GetViewAccessibility().OverrideName(
+        l10n_util::GetStringUTF16(IDS_KSV_SCROLL_VIEW_ACCESSIBILITY_NAME));
   }
 
   ShortcutsListScrollView(const ShortcutsListScrollView&) = delete;
