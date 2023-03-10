@@ -236,6 +236,7 @@ if (include_js_tests) {
         "chromeos/firmware_update/firmware_update_browsertest.js",
         "chromeos/office_fallback/office_fallback_browsertest.js",
         "chromeos/os_feedback_ui/os_feedback_browsertest.js",
+        "chromeos/personalization_app/personalization_app_browsertest.js",
         "chromeos/scanning/scanning_app_browsertest.js",
         "chromeos/shimless_rma/shimless_rma_browsertest.js",
         "nearby_share/nearby_browsertest.js",
