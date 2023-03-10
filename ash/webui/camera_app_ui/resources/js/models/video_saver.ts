@@ -74,8 +74,8 @@ export class VideoSaver {
   /**
    * Writes video data to result video.
    */
-  write(blob: Blob): void {
-    this.processor.write(blob);
+  async write(blob: Blob): Promise<void> {
+    await this.processor.write(blob);
   }
 
   /**
@@ -131,8 +131,8 @@ export class GifSaver {
       private readonly blobs: Blob[],
       private readonly processor: Comlink.Remote<VideoProcessor>) {}
 
-  write(frame: Uint8ClampedArray): void {
-    this.processor.write(new Blob([frame]));
+  async write(frame: Uint8ClampedArray): Promise<void> {
+    await this.processor.write(new Blob([frame]));
   }
 
   /**
@@ -149,7 +149,7 @@ export class GifSaver {
   static async create(resolution: Resolution): Promise<GifSaver> {
     const blobs: Blob[] = [];
     const writer = new AsyncWriter({
-      async write(blob) {
+      write(blob) {
         blobs.push(blob);
       },
       seek: null,

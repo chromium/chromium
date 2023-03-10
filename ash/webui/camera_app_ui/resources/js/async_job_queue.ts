@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {Awaitable} from './type.js';
+
 /**
  * Asynchronous job queue.
  */
@@ -13,7 +15,7 @@ export class AsyncJobQueue {
    *
    * @return Resolved with the job return value when the job is finished.
    */
-  push<T>(job: () => Promise<T>): Promise<T> {
+  push<T>(job: () => Awaitable<T>): Promise<T> {
     const promise =
         this.promise.catch(() => {/* ignore error from previous job */})
             .then(job);
@@ -45,7 +47,7 @@ export class ClearableAsyncJobQueue {
    * @return Resolved with the job return value when the job is finished, or
    *     null if the job is cleared.
    */
-  push<T>(job: () => Promise<T>): Promise<T|null> {
+  push<T>(job: () => Awaitable<T>): Promise<T|null> {
     const promise =
         this.promise.catch(() => {/* ignore error from previous job */})
             .then(() => {

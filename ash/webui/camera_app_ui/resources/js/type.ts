@@ -500,3 +500,5 @@ export enum LowStorageDialogType {
   AUTO_STOP = 'auto-stop',
   CANNOT_START = 'cannot-start',
 }
+
+export type Awaitable<T> = PromiseLike<T>|T;

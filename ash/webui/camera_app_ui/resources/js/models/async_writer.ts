@@ -4,13 +4,14 @@
 
 import {assert} from '../assert.js';
 import {AsyncJobQueue} from '../async_job_queue.js';
+import {Awaitable} from '../type.js';
 
 /**
  * Represents a set of operations of a file-like writable stream. The seek and
  * close operations are optional.
  */
 export interface AsyncOps {
-  write(blob: Blob): Promise<void>;
+  write(blob: Blob): Awaitable<void>;
   seek: ((offset: number) => Promise<void>)|null;
   close: (() => Promise<void>)|null;
 }
