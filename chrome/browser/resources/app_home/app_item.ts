@@ -97,7 +97,14 @@ export class AppItemElement extends PolymerElement {
   // The CrActionMenuElement is a modal that does not listen to any other
   // events other than mousedown on right click when it is open. This allows
   // us to listen to changes on the dom even when the menu is showing.
-  private onMenuMousedown_(e: Event) {
+  private onMenuMousedown_(e: MouseEvent) {
+    // Actions that are not a right click on a different app are handled
+    // correctly by the cr-action-menu. Listening to them here causes
+    // errors.
+    if (e.button !== 2) {
+      return;
+    }
+
     // Do not listen to the mousedown event if not triggered from a
     // CrActionMenuElement, i.e. one without a dialog element covering the dom.
     if ((e.composedPath()[0] as HTMLElement).tagName !== 'DIALOG') {
