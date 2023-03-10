@@ -51,6 +51,11 @@ std::vector<ContentSettingPatternSource> GetContentSettings(
   return patterns;
 }
 
+bool ShouldHideDeniedState(blink::PermissionType permission_type) {
+  return permission_type == blink::PermissionType::STORAGE_ACCESS_GRANT ||
+         permission_type == blink::PermissionType::TOP_LEVEL_STORAGE_ACCESS;
+}
+
 }  // namespace
 
 struct WebTestPermissionManager::Subscription {
@@ -202,6 +207,14 @@ blink::mojom::PermissionStatus WebTestPermissionManager::GetPermissionStatus(
         it->second == blink::mojom::PermissionStatus::ASK) {
       return blink::mojom::PermissionStatus::DENIED;
     }
+  }
+
+  // Some permissions (currently storage access related) do not expose the
+  // denied state to avoid exposing potentially private user choices to
+  // developers.
+  if (ShouldHideDeniedState(permission) &&
+      it->second == blink::mojom::PermissionStatus::DENIED) {
+    return blink::mojom::PermissionStatus::ASK;
   }
 
   return it->second;
