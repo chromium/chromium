@@ -180,7 +180,6 @@ source_set("ppapi_tests_sources") {
     "tests/test_tcp_socket_private_trusted.h",
     "tests/test_url_util.cc",
     "tests/test_url_util.h",
-    "tests/test_utils.h",
     "tests/test_video_decoder_dev.cc",
     "tests/test_video_decoder_dev.h",
     "tests/test_x509_certificate_private.cc",
