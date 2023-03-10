@@ -389,7 +389,8 @@ class AppInstallControllerImpl : public AppInstallController,
 
   // These functions are called on the main updater sequence.
   void DoInstallApp();
-  void DoInstallAppOffline(const base::FilePath& installer_path,
+  void DoInstallAppOffline(const std::string& installer_version,
+                           const base::FilePath& installer_path,
                            const std::string& install_args,
                            const std::string& install_data);
   void HandleOsNotSupported();
@@ -533,6 +534,7 @@ void AppInstallControllerImpl::InstallAppOffline(
                       // Parse the offline manifest to get the install
                       // command and install data.
                       update_client::ProtocolParser::Results results;
+                      std::string installer_version;
                       base::FilePath installer_path;
                       std::string install_args;
                       std::string install_data;
@@ -541,21 +543,24 @@ void AppInstallControllerImpl::InstallAppOffline(
                           app_id,
                           GetInstallDataIndexFromAppArgsForCommandLine(cmd_line,
                                                                        app_id),
-                          results, installer_path, install_args, install_data);
+                          results, installer_version, installer_path,
+                          install_args, install_data);
 
                       const std::string client_install_data =
                           GetDecodedInstallDataFromAppArgsForCommandLine(
                               cmd_line, app_id);
-                      return std::make_tuple(
-                          results, installer_path, install_args,
-                          client_install_data.empty() ? install_data
-                                                      : client_install_data);
+                      return std::make_tuple(results, installer_version,
+                                             installer_path, install_args,
+                                             client_install_data.empty()
+                                                 ? install_data
+                                                 : client_install_data);
                     },
                     self->app_id_),
                 base::BindOnce(
                     [](scoped_refptr<AppInstallControllerImpl> self,
                        const std::tuple<
                            update_client::ProtocolParser::Results /*results*/,
+                           std::string /*installer_version*/,
                            base::FilePath /*installer_path*/,
                            std::string /*arguments*/,
                            std::string /*install_data*/>& result) {
@@ -564,9 +569,9 @@ void AppInstallControllerImpl::InstallAppOffline(
                         return;
                       }
 
-                      self->DoInstallAppOffline(std::get<1>(result),
-                                                std::get<2>(result),
-                                                std::get<3>(result));
+                      self->DoInstallAppOffline(
+                          std::get<1>(result), std::get<2>(result),
+                          std::get<3>(result), std::get<4>(result));
                     },
                     self));
           },
@@ -574,6 +579,7 @@ void AppInstallControllerImpl::InstallAppOffline(
 }
 
 void AppInstallControllerImpl::DoInstallAppOffline(
+    const std::string& installer_version,
     const base::FilePath& installer_path,
     const std::string& install_args,
     const std::string& install_data) {
@@ -589,11 +595,13 @@ void AppInstallControllerImpl::DoInstallAppOffline(
   install_progress_observer_ipc_ = std::make_unique<InstallProgressObserverIPC>(
       observer_.get(), ui_thread_id_);
 
+  base::Value::Dict install_settings_dict;
+  install_settings_dict.Set(kInstallerVersion, installer_version);
+
   // TODO(crbug.com/1286581): fine-tune installation behavior by serializing
   // other related command line options, such as "/sessionid <sid>" into
   // `install_settings`.
   base::CommandLine cmd_line = GetCommandLineLegacyCompatible();
-  base::Value::Dict install_settings_dict;
   install_settings_dict.Set(kEnterpriseSwitch,
                             cmd_line.HasSwitch(kEnterpriseSwitch));
   install_settings_dict.Set(kSessionIdSwitch,

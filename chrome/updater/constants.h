@@ -11,6 +11,9 @@
 
 namespace updater {
 
+// Key for storing the installer version in the install settings dictionary.
+extern const char kInstallerVersion[];
+
 // The updater specific app ID.
 extern const char kUpdaterAppId[];
 

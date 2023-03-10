@@ -1598,12 +1598,13 @@ void RunOfflineInstall(UpdaterScope scope,
                        bool is_legacy_install,
                        bool is_silent_install) {
   constexpr wchar_t kTestAppID[] = L"{CDABE316-39CD-43BA-8440-6D1E0547AEE6}";
+  const base::Version kTestPV("1.2.3.4");
   constexpr char kManifestFormat[] =
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
       "<response protocol=\"3.0\">\n"
       "  <app appid=\"%ls\" status=\"ok\">\n"
       "    <updatecheck status=\"ok\">\n"
-      "      <manifest version=\"1.2.3.4\">\n"
+      "      <manifest version=\"%s\">\n"
       "        <packages>\n"
       "          <package hash_sha256=\"sha256hash_foobar\"\n"
       "            name=\"cmd.exe\" required=\"true\" size=\"%lld\"/>\n"
@@ -1696,7 +1697,8 @@ void RunOfflineInstall(UpdaterScope scope,
   int64_t exe_size = 0;
   EXPECT_TRUE(base::GetFileSize(cmd_exe_path, &exe_size));
   const std::string manifest = base::StringPrintf(
-      kManifestFormat, kTestAppID, exe_size, batch_script_path.value().c_str());
+      kManifestFormat, kTestAppID, kTestPV.GetString().c_str(), exe_size,
+      batch_script_path.value().c_str());
   EXPECT_TRUE(base::WriteFile(manifest_path, manifest));
 
   // Trigger offline install.
@@ -1744,6 +1746,12 @@ void RunOfflineInstall(UpdaterScope scope,
         base::BindLambdaForTesting(
             []() { VLOG(0) << "Still waiting for the process exit."; })));
   }
+
+  // Updater should have written "pv".
+  EXPECT_EQ(base::MakeRefCounted<PersistedData>(
+                scope, CreateGlobalPrefs(scope)->GetPrefService())
+                ->GetProductVersion(base::WideToASCII(kTestAppID)),
+            kTestPV);
 
   // App installer should have created the expected reg value.
   base::win::RegKey key;

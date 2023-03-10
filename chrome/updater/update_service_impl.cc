@@ -19,6 +19,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
@@ -587,6 +588,26 @@ void UpdateServiceImpl::RunInstaller(const std::string& app_id,
                        ? persisted_data_->GetExistenceCheckerPath(app_id)
                        : base::FilePath());
 
+  const base::Version installer_version([&install_settings]() -> std::string {
+    std::unique_ptr<base::Value> install_settings_deserialized =
+        JSONStringValueDeserializer(install_settings)
+            .Deserialize(
+                /*error_code=*/nullptr, /*error_message=*/nullptr);
+    if (install_settings_deserialized) {
+      const base::Value::Dict* install_settings_dict =
+          install_settings_deserialized->GetIfDict();
+      if (install_settings_dict) {
+        const std::string* installer_version_value =
+            install_settings_dict->FindString(kInstallerVersion);
+        if (installer_version_value) {
+          return *installer_version_value;
+        }
+      }
+    }
+
+    return {};
+  }());
+
   // Create a task runner that:
   //   1) has SequencedTaskRunner::CurrentDefaultHandle set, to run
   //      `state_update` callback.
@@ -627,13 +648,22 @@ void UpdateServiceImpl::RunInstaller(const std::string& app_id,
           app_info, installer_path, install_args, install_data, state_update,
           persisted_data_->GetUsageStatsEnabled()),
       base::BindOnce(
-          [](StateChangeCallback state_update, const std::string& app_id,
+          [](scoped_refptr<Configurator> config,
+             scoped_refptr<PersistedData> persisted_data,
+             const base::Version& installer_version,
+             StateChangeCallback state_update, const std::string& app_id,
              Callback callback, const InstallerResult& result) {
             // Final state update after installation completes.
             UpdateState state;
             state.app_id = app_id;
             state.state = result.error == 0 ? UpdateState::State::kUpdated
                                             : UpdateState::State::kUpdateError;
+
+            if (result.error == 0 && installer_version.IsValid()) {
+              persisted_data->SetProductVersion(app_id, installer_version);
+              config->GetPrefService()->CommitPendingWrite();
+            }
+
             state.error_code = result.error;
             state.extra_code1 = result.extended_error;
             state.installer_text = result.installer_text;
@@ -648,7 +678,8 @@ void UpdateServiceImpl::RunInstaller(const std::string& app_id,
             std::move(callback).Run(result.error == 0 ? Result::kSuccess
                                                       : Result::kInstallFailed);
           },
-          state_update, app_info.app_id, std::move(callback)));
+          config_, persisted_data_, installer_version, state_update,
+          app_info.app_id, std::move(callback)));
 }
 
 bool UpdateServiceImpl::IsUpdateDisabledByPolicy(const std::string& app_id,

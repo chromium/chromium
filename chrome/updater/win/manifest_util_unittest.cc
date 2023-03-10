@@ -50,13 +50,15 @@ TEST(ManifestUtil, ReadInstallCommandFromManifest) {
   ASSERT_TRUE(base::WriteFile(expected_installer_path, dummy_file_contents));
 
   update_client::ProtocolParser::Results results;
+  std::string installer_version;
   base::FilePath installer_path;
   std::string install_args;
   std::string install_data;
 
   ReadInstallCommandFromManifest(offline_dir_guid, app_id, "verboselogging",
-                                 results, installer_path, install_args,
-                                 install_data);
+                                 results, installer_version, installer_path,
+                                 install_args, install_data);
+  EXPECT_EQ(installer_version, "1.2.3.4");
   EXPECT_EQ(installer_path, expected_installer_path);
   EXPECT_EQ(install_args, "-baz");
   EXPECT_EQ(install_data,
@@ -71,8 +73,9 @@ TEST(ManifestUtil, ReadInstallCommandFromManifest) {
   ASSERT_TRUE(base::Move(expected_installer_path, expected_installer_path_v2));
 
   ReadInstallCommandFromManifest(offline_dir_guid, app_id, "verboselogging",
-                                 results, installer_path, install_args,
-                                 install_data);
+                                 results, installer_version, installer_path,
+                                 install_args, install_data);
+  EXPECT_EQ(installer_version, "1.2.3.4");
   EXPECT_EQ(installer_path, expected_installer_path_v2);
   EXPECT_EQ(install_args, "-baz");
   EXPECT_EQ(install_data,
