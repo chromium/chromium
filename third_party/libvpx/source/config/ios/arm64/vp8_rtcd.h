@@ -424,7 +424,13 @@ void vp8_sixtap_predict16x16_c(unsigned char* src_ptr,
                                int yoffset,
                                unsigned char* dst_ptr,
                                int dst_pitch);
-#define vp8_sixtap_predict16x16 vp8_sixtap_predict16x16_c
+void vp8_sixtap_predict16x16_neon(unsigned char* src_ptr,
+                                  int src_pixels_per_line,
+                                  int xoffset,
+                                  int yoffset,
+                                  unsigned char* dst_ptr,
+                                  int dst_pitch);
+#define vp8_sixtap_predict16x16 vp8_sixtap_predict16x16_neon
 
 void vp8_sixtap_predict4x4_c(unsigned char* src_ptr,
                              int src_pixels_per_line,

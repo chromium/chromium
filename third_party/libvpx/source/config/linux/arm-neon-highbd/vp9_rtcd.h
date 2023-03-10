@@ -35,19 +35,12 @@ int64_t vp9_block_error_c(const tran_low_t* coeff,
                           const tran_low_t* dqcoeff,
                           intptr_t block_size,
                           int64_t* ssz);
-int64_t vp9_block_error_neon(const tran_low_t* coeff,
-                             const tran_low_t* dqcoeff,
-                             intptr_t block_size,
-                             int64_t* ssz);
-#define vp9_block_error vp9_block_error_neon
+#define vp9_block_error vp9_block_error_c
 
 int64_t vp9_block_error_fp_c(const tran_low_t* coeff,
                              const tran_low_t* dqcoeff,
                              int block_size);
-int64_t vp9_block_error_fp_neon(const tran_low_t* coeff,
-                                const tran_low_t* dqcoeff,
-                                int block_size);
-#define vp9_block_error_fp vp9_block_error_fp_neon
+#define vp9_block_error_fp vp9_block_error_fp_c
 
 int vp9_denoiser_filter_c(const uint8_t* sig,
                           int sig_stride,

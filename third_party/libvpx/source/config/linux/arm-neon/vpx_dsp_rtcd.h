@@ -238,41 +238,25 @@ void vpx_d117_predictor_16x16_c(uint8_t* dst,
                                 ptrdiff_t stride,
                                 const uint8_t* above,
                                 const uint8_t* left);
-void vpx_d117_predictor_16x16_neon(uint8_t* dst,
-                                   ptrdiff_t stride,
-                                   const uint8_t* above,
-                                   const uint8_t* left);
-#define vpx_d117_predictor_16x16 vpx_d117_predictor_16x16_neon
+#define vpx_d117_predictor_16x16 vpx_d117_predictor_16x16_c
 
 void vpx_d117_predictor_32x32_c(uint8_t* dst,
                                 ptrdiff_t stride,
                                 const uint8_t* above,
                                 const uint8_t* left);
-void vpx_d117_predictor_32x32_neon(uint8_t* dst,
-                                   ptrdiff_t stride,
-                                   const uint8_t* above,
-                                   const uint8_t* left);
-#define vpx_d117_predictor_32x32 vpx_d117_predictor_32x32_neon
+#define vpx_d117_predictor_32x32 vpx_d117_predictor_32x32_c
 
 void vpx_d117_predictor_4x4_c(uint8_t* dst,
                               ptrdiff_t stride,
                               const uint8_t* above,
                               const uint8_t* left);
-void vpx_d117_predictor_4x4_neon(uint8_t* dst,
-                                 ptrdiff_t stride,
-                                 const uint8_t* above,
-                                 const uint8_t* left);
-#define vpx_d117_predictor_4x4 vpx_d117_predictor_4x4_neon
+#define vpx_d117_predictor_4x4 vpx_d117_predictor_4x4_c
 
 void vpx_d117_predictor_8x8_c(uint8_t* dst,
                               ptrdiff_t stride,
                               const uint8_t* above,
                               const uint8_t* left);
-void vpx_d117_predictor_8x8_neon(uint8_t* dst,
-                                 ptrdiff_t stride,
-                                 const uint8_t* above,
-                                 const uint8_t* left);
-#define vpx_d117_predictor_8x8 vpx_d117_predictor_8x8_neon
+#define vpx_d117_predictor_8x8 vpx_d117_predictor_8x8_c
 
 void vpx_d135_predictor_16x16_c(uint8_t* dst,
                                 ptrdiff_t stride,
@@ -318,81 +302,49 @@ void vpx_d153_predictor_16x16_c(uint8_t* dst,
                                 ptrdiff_t stride,
                                 const uint8_t* above,
                                 const uint8_t* left);
-void vpx_d153_predictor_16x16_neon(uint8_t* dst,
-                                   ptrdiff_t stride,
-                                   const uint8_t* above,
-                                   const uint8_t* left);
-#define vpx_d153_predictor_16x16 vpx_d153_predictor_16x16_neon
+#define vpx_d153_predictor_16x16 vpx_d153_predictor_16x16_c
 
 void vpx_d153_predictor_32x32_c(uint8_t* dst,
                                 ptrdiff_t stride,
                                 const uint8_t* above,
                                 const uint8_t* left);
-void vpx_d153_predictor_32x32_neon(uint8_t* dst,
-                                   ptrdiff_t stride,
-                                   const uint8_t* above,
-                                   const uint8_t* left);
-#define vpx_d153_predictor_32x32 vpx_d153_predictor_32x32_neon
+#define vpx_d153_predictor_32x32 vpx_d153_predictor_32x32_c
 
 void vpx_d153_predictor_4x4_c(uint8_t* dst,
                               ptrdiff_t stride,
                               const uint8_t* above,
                               const uint8_t* left);
-void vpx_d153_predictor_4x4_neon(uint8_t* dst,
-                                 ptrdiff_t stride,
-                                 const uint8_t* above,
-                                 const uint8_t* left);
-#define vpx_d153_predictor_4x4 vpx_d153_predictor_4x4_neon
+#define vpx_d153_predictor_4x4 vpx_d153_predictor_4x4_c
 
 void vpx_d153_predictor_8x8_c(uint8_t* dst,
                               ptrdiff_t stride,
                               const uint8_t* above,
                               const uint8_t* left);
-void vpx_d153_predictor_8x8_neon(uint8_t* dst,
-                                 ptrdiff_t stride,
-                                 const uint8_t* above,
-                                 const uint8_t* left);
-#define vpx_d153_predictor_8x8 vpx_d153_predictor_8x8_neon
+#define vpx_d153_predictor_8x8 vpx_d153_predictor_8x8_c
 
 void vpx_d207_predictor_16x16_c(uint8_t* dst,
                                 ptrdiff_t stride,
                                 const uint8_t* above,
                                 const uint8_t* left);
-void vpx_d207_predictor_16x16_neon(uint8_t* dst,
-                                   ptrdiff_t stride,
-                                   const uint8_t* above,
-                                   const uint8_t* left);
-#define vpx_d207_predictor_16x16 vpx_d207_predictor_16x16_neon
+#define vpx_d207_predictor_16x16 vpx_d207_predictor_16x16_c
 
 void vpx_d207_predictor_32x32_c(uint8_t* dst,
                                 ptrdiff_t stride,
                                 const uint8_t* above,
                                 const uint8_t* left);
-void vpx_d207_predictor_32x32_neon(uint8_t* dst,
-                                   ptrdiff_t stride,
-                                   const uint8_t* above,
-                                   const uint8_t* left);
-#define vpx_d207_predictor_32x32 vpx_d207_predictor_32x32_neon
+#define vpx_d207_predictor_32x32 vpx_d207_predictor_32x32_c
 
 void vpx_d207_predictor_4x4_c(uint8_t* dst,
                               ptrdiff_t stride,
                               const uint8_t* above,
                               const uint8_t* left);
-void vpx_d207_predictor_4x4_neon(uint8_t* dst,
-                                 ptrdiff_t stride,
-                                 const uint8_t* above,
-                                 const uint8_t* left);
-#define vpx_d207_predictor_4x4 vpx_d207_predictor_4x4_neon
+#define vpx_d207_predictor_4x4 vpx_d207_predictor_4x4_c
 
 void vpx_d207_predictor_8x8_c(uint8_t* dst,
                               ptrdiff_t stride,
                               const uint8_t* above,
                               const uint8_t* left);
-void vpx_d207_predictor_8x8_neon(uint8_t* dst,
-                                 ptrdiff_t stride,
-                                 const uint8_t* above,
-                                 const uint8_t* left);
-#define vpx_d207_predictor_8x8 vpx_d207_predictor_8x8_neon
+#define vpx_d207_predictor_8x8 vpx_d207_predictor_8x8_c
 
 void vpx_d45_predictor_16x16_c(uint8_t* dst,
                                ptrdiff_t stride,
@@ -444,41 +396,25 @@ void vpx_d63_predictor_16x16_c(uint8_t* dst,
                                ptrdiff_t stride,
                                const uint8_t* above,
                                const uint8_t* left);
-void vpx_d63_predictor_16x16_neon(uint8_t* dst,
-                                  ptrdiff_t stride,
-                                  const uint8_t* above,
-                                  const uint8_t* left);
-#define vpx_d63_predictor_16x16 vpx_d63_predictor_16x16_neon
+#define vpx_d63_predictor_16x16 vpx_d63_predictor_16x16_c
 
 void vpx_d63_predictor_32x32_c(uint8_t* dst,
                                ptrdiff_t stride,
                                const uint8_t* above,
                                const uint8_t* left);
-void vpx_d63_predictor_32x32_neon(uint8_t* dst,
-                                  ptrdiff_t stride,
-                                  const uint8_t* above,
-                                  const uint8_t* left);
-#define vpx_d63_predictor_32x32 vpx_d63_predictor_32x32_neon
+#define vpx_d63_predictor_32x32 vpx_d63_predictor_32x32_c
 
 void vpx_d63_predictor_4x4_c(uint8_t* dst,
                              ptrdiff_t stride,
                              const uint8_t* above,
                              const uint8_t* left);
-void vpx_d63_predictor_4x4_neon(uint8_t* dst,
-                                ptrdiff_t stride,
-                                const uint8_t* above,
-                                const uint8_t* left);
-#define vpx_d63_predictor_4x4 vpx_d63_predictor_4x4_neon
+#define vpx_d63_predictor_4x4 vpx_d63_predictor_4x4_c
 
 void vpx_d63_predictor_8x8_c(uint8_t* dst,
                              ptrdiff_t stride,
                              const uint8_t* above,
                              const uint8_t* left);
-void vpx_d63_predictor_8x8_neon(uint8_t* dst,
-                                ptrdiff_t stride,
-                                const uint8_t* above,
-                                const uint8_t* left);
-#define vpx_d63_predictor_8x8 vpx_d63_predictor_8x8_neon
+#define vpx_d63_predictor_8x8 vpx_d63_predictor_8x8_c
 
 void vpx_d63e_predictor_4x4_c(uint8_t* dst,
                               ptrdiff_t stride,
@@ -1118,36 +1054,21 @@ unsigned int vpx_mse16x8_c(const uint8_t* src_ptr,
                            const uint8_t* ref_ptr,
                            int ref_stride,
                            unsigned int* sse);
-unsigned int vpx_mse16x8_neon(const uint8_t* src_ptr,
-                              int src_stride,
-                              const uint8_t* ref_ptr,
-                              int ref_stride,
-                              unsigned int* sse);
-#define vpx_mse16x8 vpx_mse16x8_neon
+#define vpx_mse16x8 vpx_mse16x8_c
 
 unsigned int vpx_mse8x16_c(const uint8_t* src_ptr,
                            int src_stride,
                            const uint8_t* ref_ptr,
                            int ref_stride,
                            unsigned int* sse);
-unsigned int vpx_mse8x16_neon(const uint8_t* src_ptr,
-                              int src_stride,
-                              const uint8_t* ref_ptr,
-                              int ref_stride,
-                              unsigned int* sse);
-#define vpx_mse8x16 vpx_mse8x16_neon
+#define vpx_mse8x16 vpx_mse8x16_c
 
 unsigned int vpx_mse8x8_c(const uint8_t* src_ptr,
                           int src_stride,
                           const uint8_t* ref_ptr,
                           int ref_stride,
                           unsigned int* sse);
-unsigned int vpx_mse8x8_neon(const uint8_t* src_ptr,
-                             int src_stride,
-                             const uint8_t* ref_ptr,
-                             int ref_stride,
-                             unsigned int* sse);
-#define vpx_mse8x8 vpx_mse8x8_neon
+#define vpx_mse8x8 vpx_mse8x8_c
 
 void vpx_plane_add_noise_c(uint8_t* start,
                            const int8_t* noise,
