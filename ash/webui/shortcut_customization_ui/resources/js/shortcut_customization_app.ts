@@ -25,7 +25,7 @@ import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {ShowEditDialogEvent} from './accelerator_row.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
 import {getTemplate} from './shortcut_customization_app.html.js';
-import {AcceleratorInfo, AcceleratorSource, MojoAcceleratorConfig, MojoLayoutInfo, ShortcutProviderInterface} from './shortcut_types.js';
+import {AcceleratorConfigResult, AcceleratorInfo, AcceleratorSource, MojoAcceleratorConfig, MojoLayoutInfo, ShortcutProviderInterface} from './shortcut_types.js';
 import {getCategoryNameStringId, isCustomizationDisabled} from './shortcut_utils.js';
 
 export interface ShortcutCustomizationAppElement {
@@ -200,7 +200,12 @@ export class ShortcutCustomizationAppElement extends
   }
 
   protected onConfirmRestoreButtonClicked(): void {
-    // TODO(jimmyxgong): Implement this function.
+    this.shortcutProvider.restoreAllDefaults().then(({result}) => {
+      // TODO(jimmyxgong): Explore error state with restore all.
+      if (result.result === AcceleratorConfigResult.kSuccess) {
+        this.closeRestoreAllDialog();
+      }
+    });
   }
 
   protected closeRestoreAllDialog(): void {

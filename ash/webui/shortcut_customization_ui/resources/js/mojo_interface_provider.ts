@@ -108,8 +108,7 @@ export class ShortcutProviderWrapper implements ShortcutProviderInterface {
   }
 
   restoreAllDefaults(): Promise<{result: AcceleratorResultData}> {
-    // TODO(jimmyxgong): Replace with real mojo method.
-    return this.fakeProvider.restoreAllDefaults();
+    return this.remote.restoreAllDefaults();
   }
 }
 

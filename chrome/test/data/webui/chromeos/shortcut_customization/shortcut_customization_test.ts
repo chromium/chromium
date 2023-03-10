@@ -455,6 +455,7 @@ suite('shortcutCustomizationAppTest', function() {
   });
 
   test('RestoreAllButton', async () => {
+    loadTimeData.overrideValues({isCustomizationEnabled: true});
     page = initShortcutCustomizationAppElement();
     await flushTasks();
 
@@ -470,6 +471,23 @@ suite('shortcutCustomizationAppTest', function() {
     await flushTasks();
 
     // Requery the dialog.
+    restoreDialog = getDialog('#restoreDialog');
+    assertTrue(restoreDialog!.open);
+
+    const confirmButton =
+        restoreDialog!.querySelector('#confirmButton') as CrButtonElement;
+    confirmButton.click();
+
+    await flushTasks();
+
+    // Confirm dialog is now closed.
+    restoreDialog = getDialog('#restoreDialog');
+    assertFalse(!!restoreDialog);
+
+    // Re-open the Restore All dialog.
+    restoreButton!.click();
+    await flushTasks();
+
     restoreDialog = getDialog('#restoreDialog');
     assertTrue(restoreDialog!.open);
 
