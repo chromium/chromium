@@ -51,12 +51,15 @@ void LocalStateUIHandler::RegisterMessages() {
 }
 
 void LocalStateUIHandler::HandleRequestJson(const base::Value::List& args) {
-  std::string json;
-  if (!GetPrefsAsJson(GetApplicationContext()->GetLocalState(), &json))
+  absl::optional<std::string> json =
+      GetPrefsAsJson(GetApplicationContext()->GetLocalState());
+  if (!json) {
     json = "Error loading Local State file.";
+  }
 
   const base::Value& callback_id = args[0];
-  web_ui()->ResolveJavascriptCallback(callback_id, base::Value(json));
+  web_ui()->ResolveJavascriptCallback(callback_id,
+                                      base::Value(std::move(*json)));
 }
 
 }  // namespace

@@ -50,12 +50,14 @@ void LocalStateUIHandler::RegisterMessages() {
 
 void LocalStateUIHandler::HandleRequestJson(const base::Value::List& args) {
   AllowJavascript();
-  std::string json;
-  if (!GetPrefsAsJson(g_browser_process->local_state(), &json))
+  absl::optional<std::string> json =
+      GetPrefsAsJson(g_browser_process->local_state());
+  if (!json) {
     json = "Error loading Local State file.";
+  }
 
   const base::Value& callback_id = args[0];
-  ResolveJavascriptCallback(callback_id, base::Value(json));
+  ResolveJavascriptCallback(callback_id, base::Value(*json));
 }
 
 }  // namespace

@@ -10,6 +10,7 @@
 
 #include "base/values.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Namespace for exposing the method for unit tests.
 namespace internal {
@@ -27,6 +28,6 @@ void FilterPrefs(const std::vector<std::string>& valid_prefixes,
 // about other user accounts which we don't want to expose to other users. In
 // that case, this will filter out the prefs to only include variations and UMA
 // related fields, which don't contain PII.
-bool GetPrefsAsJson(PrefService* pref_service, std::string* json_string);
+absl::optional<std::string> GetPrefsAsJson(PrefService* pref_service);
 
 #endif  // COMPONENTS_LOCAL_STATE_LOCAL_STATE_UTILS_H_
