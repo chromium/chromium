@@ -1,0 +1,69 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_THUMBNAIL_CC_JPEG_THUMBNAIL_HELPER_H_
+#define CHROME_BROWSER_THUMBNAIL_CC_JPEG_THUMBNAIL_HELPER_H_
+
+#include "base/files/file_path.h"
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/thumbnail/cc/thumbnail.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace thumbnail {
+
+class JpegThumbnailHelper {
+ public:
+  // Implementation of the JPEG thumbnail helper class which takes a base
+  // file path on instantiation for future file path retrieval.
+  JpegThumbnailHelper(
+      const base::FilePath& base_path,
+      scoped_refptr<base::SequencedTaskRunner> file_task_runner);
+  ~JpegThumbnailHelper();
+
+  JpegThumbnailHelper(const JpegThumbnailHelper&) = delete;
+  JpegThumbnailHelper& operator=(const JpegThumbnailHelper&) = delete;
+
+  // Callback post_processing_task will run on the thread created by this
+  // helper.
+  void Compress(
+      double jpeg_aspect_ratio,
+      const SkBitmap& bitmap,
+      base::OnceCallback<void(std::vector<uint8_t>)> post_processing_task);
+  // Closure post_write_task will run on the thread created by this helper.
+  void Write(thumbnail::TabId tab_id,
+             std::vector<uint8_t> compressed_data,
+             base::OnceClosure post_write_task);
+  // Callback post_read_task will run on the thread created by this helper.
+  void Read(thumbnail::TabId tab_id,
+            base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)>
+                post_read_task);
+  void Delete(thumbnail::TabId tab_id);
+
+  // Member function to retrieve the JPEG file path using the stored base
+  // path, and is exposed publicly primarily for unit testing purposes.
+  base::FilePath GetJpegFilePath(thumbnail::TabId tab_id);
+
+ private:
+  static void CompressTask(
+      double jpeg_aspect_ratio,
+      const SkBitmap& bitmap,
+      base::OnceCallback<void(std::vector<uint8_t>)> post_processing_task);
+  static void WriteTask(base::FilePath file_path,
+                        std::vector<uint8_t> compressed_data,
+                        base::OnceClosure post_write_task);
+  static void ReadTask(
+      base::FilePath file_path,
+      base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)>
+          post_read_task);
+  static void DeleteTask(base::FilePath file_path);
+
+  const base::FilePath base_path_;
+
+  scoped_refptr<base::SequencedTaskRunner> default_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
+};
+
+}  // namespace thumbnail
+
+#endif  // CHROME_BROWSER_THUMBNAIL_CC_JPEG_THUMBNAIL_HELPER_H_

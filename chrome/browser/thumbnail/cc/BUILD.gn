@@ -35,6 +35,8 @@ source_set("cc") {
   ]
 
   sources = [
+    "jpeg_thumbnail_helper.cc",
+    "jpeg_thumbnail_helper.h",
     "scoped_ptr_expiring_cache.h",
     "thumbnail.cc",
     "thumbnail.h",
@@ -63,13 +65,17 @@ source_set("unit_tests") {
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
     "//ui/gfx",
   ]
 
   sources = [ "scoped_ptr_expiring_cache_unittest.cc" ]
 
   if (is_android) {
-    sources += [ "thumbnail_cache_unittest.cc" ]
+    sources += [
+      "jpeg_thumbnail_helper_unittest.cc",
+      "thumbnail_cache_unittest.cc",
+    ]
 
     deps += [ "//ui/android" ]
   }
