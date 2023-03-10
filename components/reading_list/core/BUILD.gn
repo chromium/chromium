@@ -35,6 +35,7 @@ source_set("core") {
   public_deps = [
     "//base",
     "//components/reading_list/core/proto",
+    "//google_apis",
   ]
 }
 

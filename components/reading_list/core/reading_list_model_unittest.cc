@@ -86,6 +86,26 @@ class ReadingListModelTest : public FakeReadingListModelStorage::Observer,
     return storage_ptr;
   }
 
+  bool ResetStorageAndMimicSignedOut(
+      std::vector<scoped_refptr<ReadingListEntry>> initial_entries = {}) {
+    return ResetStorage()->TriggerLoadCompletion(std::move(initial_entries));
+  }
+
+  bool ResetStorageAndMimicSyncEnabled(
+      std::vector<scoped_refptr<ReadingListEntry>> initial_syncable_entries =
+          {}) {
+    base::WeakPtr<FakeReadingListModelStorage> storage = ResetStorage();
+
+    auto metadata_batch = std::make_unique<syncer::MetadataBatch>();
+    sync_pb::ModelTypeState state;
+    state.set_initial_sync_done(true);
+    state.set_authenticated_account_id(kTestAccountId);
+    metadata_batch->SetModelTypeState(state);
+
+    return storage->TriggerLoadCompletion(std::move(initial_syncable_entries),
+                                          std::move(metadata_batch));
+  }
+
   void ClearCounts() {
     testing::Mock::VerifyAndClearExpectations(&observer_);
     storage_saved_ = 0;
@@ -120,6 +140,8 @@ class ReadingListModelTest : public FakeReadingListModelStorage::Observer,
   }
 
  protected:
+  const std::string kTestAccountId = "TestAccountId";
+
   int storage_saved_ = 0;
   int storage_removed_ = 0;
 
@@ -225,6 +247,33 @@ TEST_F(ReadingListModelTest, DeleteAllEntries) {
 
   EXPECT_THAT(model_->GetEntryByURL(example1), IsNull());
   EXPECT_THAT(model_->GetEntryByURL(example2), IsNull());
+}
+
+TEST_F(ReadingListModelTest, GetAccountWhereEntryIsSavedToWhenSignedOut) {
+  const GURL example("http://example.com/");
+  ASSERT_TRUE(ResetStorageAndMimicSignedOut(
+      /*initial_entries=*/{base::MakeRefCounted<ReadingListEntry>(
+          example, "example_title", clock_.Now())}));
+
+  EXPECT_TRUE(model_->GetAccountWhereEntryIsSavedTo(example).empty());
+  EXPECT_TRUE(
+      model_
+          ->GetAccountWhereEntryIsSavedTo(GURL("http://non_existing_url.com/"))
+          .empty());
+}
+
+TEST_F(ReadingListModelTest, GetAccountWhereEntryIsSavedToWhenSyncEnabled) {
+  const GURL example("http://example.com/");
+  ASSERT_TRUE(ResetStorageAndMimicSyncEnabled(
+      /*initial_syncable_entries=*/{base::MakeRefCounted<ReadingListEntry>(
+          example, "example_title", clock_.Now())}));
+
+  EXPECT_EQ(model_->GetAccountWhereEntryIsSavedTo(example).ToString(),
+            kTestAccountId);
+  EXPECT_TRUE(
+      model_
+          ->GetAccountWhereEntryIsSavedTo(GURL("http://non_existing_url.com/"))
+          .empty());
 }
 
 // Tests adding entry.

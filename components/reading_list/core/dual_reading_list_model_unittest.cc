@@ -188,6 +188,7 @@ class DualReadingListModelTest : public testing::Test {
     auto metadata_batch = std::make_unique<syncer::MetadataBatch>();
     sync_pb::ModelTypeState state;
     state.set_initial_sync_done(true);
+    state.set_authenticated_account_id(kTestAccountId);
     metadata_batch->SetModelTypeState(state);
 
     std::vector<scoped_refptr<ReadingListEntry>> initial_local_entries;
@@ -213,6 +214,7 @@ class DualReadingListModelTest : public testing::Test {
     auto metadata_batch = std::make_unique<syncer::MetadataBatch>();
     sync_pb::ModelTypeState state;
     state.set_initial_sync_done(true);
+    state.set_authenticated_account_id(kTestAccountId);
     metadata_batch->SetModelTypeState(state);
 
     std::vector<scoped_refptr<ReadingListEntry>> initial_syncable_entries;
@@ -228,6 +230,7 @@ class DualReadingListModelTest : public testing::Test {
 
  protected:
   const GURL kUrl = GURL("http://url.com/");
+  const std::string kTestAccountId = "TestAccountId";
   base::SimpleTestClock clock_;
   testing::NiceMock<MockReadingListModelObserver> observer_;
   base::WeakPtr<FakeReadingListModelStorage>
@@ -466,6 +469,64 @@ TEST_F(DualReadingListModelTest, DeleteAllEntries) {
   EXPECT_THAT(dual_model_->GetEntryByURL(local_url), IsNull());
   EXPECT_THAT(dual_model_->GetEntryByURL(account_url), IsNull());
   EXPECT_THAT(dual_model_->GetEntryByURL(common_url), IsNull());
+}
+
+TEST_F(DualReadingListModelTest, GetAccountWhereEntryIsSavedToWhenSignedOut) {
+  ASSERT_TRUE(ResetStorageAndMimicSignedOut(/*initial_local_entries_builders=*/{
+      TestEntryBuilder(kUrl, clock_.Now())}));
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
+            StorageStateForTesting::kExistsInLocalOrSyncableModelOnly);
+
+  EXPECT_TRUE(dual_model_->GetAccountWhereEntryIsSavedTo(kUrl).empty());
+  EXPECT_TRUE(
+      dual_model_
+          ->GetAccountWhereEntryIsSavedTo(GURL("http://non_existing_url.com/"))
+          .empty());
+}
+
+TEST_F(DualReadingListModelTest,
+       GetAccountWhereEntryIsSavedToWhenSignedInSyncDisabled) {
+  const GURL kLocalUrl("http://local_url.com/");
+  const GURL kAccountUrl("http://account_url.com/");
+  const GURL kCommonUrl("http://common_url.com/");
+  ASSERT_TRUE(ResetStorageAndMimicSignedInSyncDisabled(
+      /*initial_local_entries_builders=*/
+      {TestEntryBuilder(kLocalUrl, clock_.Now()),
+       TestEntryBuilder(kCommonUrl, clock_.Now())},
+      /*initial_account_entries_builders=*/{
+          TestEntryBuilder(kAccountUrl, clock_.Now()),
+          TestEntryBuilder(kCommonUrl, clock_.Now())}));
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kLocalUrl),
+            StorageStateForTesting::kExistsInLocalOrSyncableModelOnly);
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kAccountUrl),
+            StorageStateForTesting::kExistsInAccountModelOnly);
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kCommonUrl),
+            StorageStateForTesting::kExistsInBothModels);
+
+  EXPECT_TRUE(dual_model_->GetAccountWhereEntryIsSavedTo(kLocalUrl).empty());
+  EXPECT_EQ(dual_model_->GetAccountWhereEntryIsSavedTo(kAccountUrl).ToString(),
+            kTestAccountId);
+  EXPECT_EQ(dual_model_->GetAccountWhereEntryIsSavedTo(kCommonUrl).ToString(),
+            kTestAccountId);
+  EXPECT_TRUE(
+      dual_model_
+          ->GetAccountWhereEntryIsSavedTo(GURL("http://non_existing_url.com/"))
+          .empty());
+}
+
+TEST_F(DualReadingListModelTest, GetAccountWhereEntryIsSavedToWhenSyncEnabled) {
+  ASSERT_TRUE(
+      ResetStorageAndMimicSyncEnabled(/*initial_syncable_entries_builders=*/{
+          TestEntryBuilder(kUrl, clock_.Now())}));
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
+            StorageStateForTesting::kExistsInLocalOrSyncableModelOnly);
+
+  EXPECT_EQ(dual_model_->GetAccountWhereEntryIsSavedTo(kUrl).ToString(),
+            kTestAccountId);
+  EXPECT_TRUE(
+      dual_model_
+          ->GetAccountWhereEntryIsSavedTo(GURL("http://non_existing_url.com/"))
+          .empty());
 }
 
 TEST_F(DualReadingListModelTest, NeedsExplicitUploadToSyncServerWhenSignedOut) {

@@ -18,6 +18,7 @@
 #include "components/reading_list/core/reading_list_model_storage.h"
 #include "components/reading_list/core/reading_list_sync_bridge.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "google_apis/gaia/core_account_id.h"
 #include "url/gurl.h"
 
 ReadingListModelImpl::ScopedReadingListBatchUpdateImpl::
@@ -325,6 +326,18 @@ void ReadingListModelImpl::SyncDeleteAllEntriesAndSyncMetadata() {
 
 bool ReadingListModelImpl::IsUrlSupported(const GURL& url) {
   return url.SchemeIsHTTPOrHTTPS();
+}
+
+CoreAccountId ReadingListModelImpl::GetAccountWhereEntryIsSavedTo(
+    const GURL& url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(loaded());
+
+  if (entries_.find(url) == entries_.end()) {
+    return CoreAccountId();
+  }
+  return CoreAccountId::FromString(
+      sync_bridge_.change_processor()->TrackedAccountId());
 }
 
 bool ReadingListModelImpl::NeedsExplicitUploadToSyncServer(

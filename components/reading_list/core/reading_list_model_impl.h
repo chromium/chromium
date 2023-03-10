@@ -18,6 +18,7 @@
 #include "components/reading_list/core/reading_list_model_storage.h"
 #include "components/reading_list/core/reading_list_sync_bridge.h"
 #include "components/sync/base/storage_type.h"
+#include "google_apis/gaia/core_account_id.h"
 
 namespace base {
 class Clock;
@@ -60,6 +61,7 @@ class ReadingListModelImpl : public ReadingListModel {
   scoped_refptr<const ReadingListEntry> GetEntryByURL(
       const GURL& gurl) const override;
   bool IsUrlSupported(const GURL& url) override;
+  CoreAccountId GetAccountWhereEntryIsSavedTo(const GURL& url) override;
   bool NeedsExplicitUploadToSyncServer(const GURL& url) const override;
   const ReadingListEntry& AddOrReplaceEntry(
       const GURL& url,

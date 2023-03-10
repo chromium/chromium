@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/reading_list/core/reading_list_entry.h"
+#include "google_apis/gaia/core_account_id.h"
 
 class GURL;
 class ReadingListModelObserver;
@@ -83,11 +84,21 @@ class ReadingListModel : public KeyedService {
   virtual bool DeleteAllEntries() = 0;
 
   // Returns a specific entry. Returns null if the entry does not exist.
+  // Please note that the value saved to the account may not be identical to the
+  // value returned by GetEntryByURL(). This may happen if DualReadingListModel
+  // is dealing with two entries with the same URL, one local and one from the
+  // account. In this case, GetEntryByURL() will return the merged view of the
+  // two entries.
   virtual scoped_refptr<const ReadingListEntry> GetEntryByURL(
       const GURL& gurl) const = 0;
 
   // Returns true if |url| can be added to the reading list.
   virtual bool IsUrlSupported(const GURL& url) = 0;
+
+  // If an account exists that syncs the entry which has the given `url`, that
+  // account will be returned. Otherwise, the entry may be saved locally on the
+  // device or may not exist, in that case an empty account will be returned.
+  virtual CoreAccountId GetAccountWhereEntryIsSavedTo(const GURL& url) = 0;
 
   // Returns true if the entry with `url` requires explicit user action to
   // upload to sync servers.
@@ -97,7 +108,9 @@ class ReadingListModel : public KeyedService {
   // same |url| from everywhere else if they exist. The entry title will be a
   // trimmed copy of |title|. |time_to_read_minutes| is the estimated time to
   // read the page. The addition may be asynchronous, and the data will be
-  // available only once the observers are notified.
+  // available only once the observers are notified. Callers may use
+  // GetAccountWhereEntryIsSavedTo() to determine whether the result of this
+  // operation lead to data being saved to a particular account.
   virtual const ReadingListEntry& AddOrReplaceEntry(
       const GURL& url,
       const std::string& title,

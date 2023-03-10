@@ -12,6 +12,7 @@
 #include "components/reading_list/core/reading_list_entry.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
 #include "components/reading_list/features/reading_list_switches.h"
+#include "google_apis/gaia/core_account_id.h"
 #include "url/gurl.h"
 
 namespace reading_list {
@@ -180,6 +181,20 @@ bool DualReadingListModel::IsUrlSupported(const GURL& url) {
   return local_or_syncable_model_->IsUrlSupported(url);
 }
 
+CoreAccountId DualReadingListModel::GetAccountWhereEntryIsSavedTo(
+    const GURL& url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(loaded());
+
+  CoreAccountId account_id = account_model_->GetAccountWhereEntryIsSavedTo(url);
+  if (!account_id.empty()) {
+    return account_id;
+  }
+  // `local_or_syncable_model_` may return an account for the case where it's
+  // sync-ing.
+  return local_or_syncable_model_->GetAccountWhereEntryIsSavedTo(url);
+}
+
 bool DualReadingListModel::NeedsExplicitUploadToSyncServer(
     const GURL& url) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -208,11 +223,17 @@ const ReadingListEntry& DualReadingListModel::AddOrReplaceEntry(
   }
 
   if (account_model_->IsTrackingSyncMetadata()) {
-    return account_model_->AddOrReplaceEntry(url, title, source,
-                                             estimated_read_time);
+    const ReadingListEntry& entry = account_model_->AddOrReplaceEntry(
+        url, title, source, estimated_read_time);
+    DCHECK(!GetAccountWhereEntryIsSavedTo(url).empty());
+    return entry;
   }
-  return local_or_syncable_model_->AddOrReplaceEntry(url, title, source,
-                                                     estimated_read_time);
+
+  const ReadingListEntry& entry = local_or_syncable_model_->AddOrReplaceEntry(
+      url, title, source, estimated_read_time);
+  DCHECK(!local_or_syncable_model_->IsTrackingSyncMetadata() ||
+         !GetAccountWhereEntryIsSavedTo(url).empty());
+  return entry;
 }
 
 void DualReadingListModel::RemoveEntryByURL(const GURL& url) {
