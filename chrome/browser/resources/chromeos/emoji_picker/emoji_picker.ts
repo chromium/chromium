@@ -712,7 +712,7 @@ export class EmojiPicker extends PolymerElement {
     this.scrollToGroup(nextTab?.groupId);
   }
 
-  private scrollToGroup(newGroup?: string) {
+  scrollToGroup(newGroup?: string) {
     // TODO(crbug/1152237): This should use behaviour:'smooth', but when you do
     // that it doesn't scroll.
     if (newGroup) {
