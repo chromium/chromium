@@ -666,11 +666,9 @@ void Fullscreen::ContextDestroyed() {
 
 // https://fullscreen.spec.whatwg.org/#dom-element-requestfullscreen
 void Fullscreen::RequestFullscreen(Element& pending) {
-  // TODO(foolip): Make RequestType::Unprefixed the default when the unprefixed
-  // API is enabled. https://crbug.com/383813
   FullscreenOptions* options = FullscreenOptions::Create();
   options->setNavigationUI("hide");
-  RequestFullscreen(pending, options, FullscreenRequestType::kPrefixed);
+  RequestFullscreen(pending, options, FullscreenRequestType::kUnprefixed);
 }
 
 ScriptPromise Fullscreen::RequestFullscreen(Element& pending,

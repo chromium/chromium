@@ -16,6 +16,7 @@ async_test(t => {
   video.width = 400;
   video.src='../content/60_sec_video.webm';
   document.body.appendChild(video);
+  video.addEventListener("fullscreenchange", t.unreached_func());
   video.addEventListener("webkitfullscreenchange", t.unreached_func());
 
   window.onload = t.step_func(() => {

@@ -31,7 +31,7 @@ async_test(function(t) {
     var coords = elementCoordinates(overflowList.children[OverflowMenuButtons.FULLSCREEN]);
     clickAtCoordinates(coords[0], coords[1]);
 
-    document.onwebkitfullscreenchange = t.step_func(() => {
+    document.onfullscreenchange = t.step_func(() => {
       assert_equals(document.fullscreenElement, video);
       // Hiding the overflow menu is triggered by layout.
       runAfterLayoutAndPaint(t.step_func_done(() => {

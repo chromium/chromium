@@ -41,10 +41,10 @@ async_test(function(t) {
       clickAtCoordinates(...inlineFullscreenButtonCoordinates);
     }), video);
 
-    video.onwebkitfullscreenchange = t.step_func(function() {
-      video.onwebkitfullscreenchange = null;
+    video.onfullscreenchange = t.step_func(function() {
+      video.onfullscreenchange = null;
 
-      assert_equals(document.webkitFullscreenElement, video,
+      assert_equals(document.fullscreenElement, video,
                     "Should have entered fullscreen");
 
       assert_equals(getComputedStyle(panel).opacity, "1",
@@ -67,8 +67,8 @@ async_test(function(t) {
         clickAtCoordinates(...fullscreenFullscreenButtonCoordinates);
       }), video);
 
-      video.onwebkitfullscreenchange = t.step_func(function() {
-        assert_equals(document.webkitFullscreenElement, null,
+      video.onfullscreenchange = t.step_func(function() {
+        assert_equals(document.fullscreenElement, null,
                       "Should have exited fullscreen");
 
         waitForHoverEffectUpdate(t.step_func(function() {

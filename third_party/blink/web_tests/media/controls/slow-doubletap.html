@@ -16,6 +16,7 @@ async_test(t => {
         coordinates[0], coordinates[1], 400, t.done.bind(t));
   });
 
+  video.addEventListener('fullscreenchange', t.unreached_func());
   video.addEventListener('webkitfullscreenchange', t.unreached_func());
 
   video.play();
