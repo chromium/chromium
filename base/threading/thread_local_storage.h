@@ -35,7 +35,8 @@ class ThreadLocalStorageTestInternal;
 // WARNING: You should *NOT* use this class directly.
 // PlatformThreadLocalStorage is a low-level abstraction of the OS's TLS
 // interface. Instead, you should use one of the following:
-// * ThreadLocalOwnedPointer (from thread_local.h) for unique_ptrs.
+// * ThreadLocalBoolean (from thread_local.h) for booleans.
+// * ThreadLocalPointer (from thread_local.h) for pointers.
 // * ThreadLocalStorage::StaticSlot/Slot for more direct control of the slot.
 class BASE_EXPORT PlatformThreadLocalStorage {
  public:

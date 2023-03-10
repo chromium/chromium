@@ -17,6 +17,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -30,7 +31,6 @@
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace base {
 
@@ -44,8 +44,6 @@ namespace {
 enum class LoggingLevel { kNone = 0, kUmaOnly = 1, kUmaAndCrash = 2 };
 
 HangWatcher* g_instance = nullptr;
-ABSL_CONST_INIT thread_local internal::HangWatchState* hang_watch_state =
-    nullptr;
 std::atomic<bool> g_use_hang_watcher{false};
 std::atomic<HangWatcher::ProcessType> g_hang_watcher_process_type{
     HangWatcher::ProcessType::kBrowserProcess};
@@ -222,7 +220,9 @@ constexpr auto kMonitoringPeriod = base::Seconds(10);
 
 WatchHangsInScope::WatchHangsInScope(TimeDelta timeout) {
   internal::HangWatchState* current_hang_watch_state =
-      HangWatcher::IsEnabled() ? hang_watch_state : nullptr;
+      HangWatcher::IsEnabled()
+          ? internal::HangWatchState::GetHangWatchStateForCurrentThread()->Get()
+          : nullptr;
 
   DCHECK(timeout >= base::TimeDelta()) << "Negative timeouts are invalid.";
 
@@ -267,6 +267,9 @@ WatchHangsInScope::WatchHangsInScope(TimeDelta timeout) {
 WatchHangsInScope::~WatchHangsInScope() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
+  internal::HangWatchState* current_hang_watch_state =
+      internal::HangWatchState::GetHangWatchStateForCurrentThread()->Get();
+
   // If hang watching was not enabled at construction time there is nothing to
   // validate or undo.
   if (!took_effect_) {
@@ -275,43 +278,44 @@ WatchHangsInScope::~WatchHangsInScope() {
 
   // If the thread was unregistered since construction there is also nothing to
   // do .
-  if (!hang_watch_state) {
+  if (!current_hang_watch_state) {
     return;
   }
 
   // If a hang is currently being captured we should block here so execution
   // stops and we avoid recording unrelated stack frames in the crash.
-  if (hang_watch_state->IsFlagSet(
+  if (current_hang_watch_state->IsFlagSet(
           internal::HangWatchDeadline::Flag::kShouldBlockOnHang)) {
     base::HangWatcher::GetInstance()->BlockIfCaptureInProgress();
   }
 
 #if DCHECK_IS_ON()
   // Verify that no Scope was destructed out of order.
-  DCHECK_EQ(this, hang_watch_state->GetCurrentWatchHangsInScope());
-  hang_watch_state->SetCurrentWatchHangsInScope(previous_watch_hangs_in_scope_);
+  DCHECK_EQ(this, current_hang_watch_state->GetCurrentWatchHangsInScope());
+  current_hang_watch_state->SetCurrentWatchHangsInScope(
+      previous_watch_hangs_in_scope_);
 #endif
 
-  if (hang_watch_state->nesting_level() == 1) {
+  if (current_hang_watch_state->nesting_level() == 1) {
     // If a call to InvalidateActiveExpectations() suspended hang watching
     // during the lifetime of this or any nested WatchHangsInScope it can now
     // safely be reactivated by clearing the ignore bit since this is the
     // outer-most scope.
-    hang_watch_state->UnsetIgnoreCurrentWatchHangsInScope();
+    current_hang_watch_state->UnsetIgnoreCurrentWatchHangsInScope();
   } else if (set_hangs_ignored_on_exit_) {
     // Return to ignoring hangs since this was the previous state before hang
     // watching was temporarily enabled for this WatchHangsInScope only in the
     // constructor.
-    hang_watch_state->SetIgnoreCurrentWatchHangsInScope();
+    current_hang_watch_state->SetIgnoreCurrentWatchHangsInScope();
   }
 
   // Reset the deadline to the value it had before entering this
   // WatchHangsInScope.
-  hang_watch_state->SetDeadline(previous_deadline_);
+  current_hang_watch_state->SetDeadline(previous_deadline_);
   // TODO(crbug.com/1034046): Log when a WatchHangsInScope exits after its
   // deadline and that went undetected by the HangWatcher.
 
-  hang_watch_state->DecrementNestingLevel();
+  current_hang_watch_state->DecrementNestingLevel();
 }
 
 // static
@@ -437,11 +441,13 @@ bool HangWatcher::IsCrashReportingEnabled() {
 
 // static
 void HangWatcher::InvalidateActiveExpectations() {
-  if (!hang_watch_state) {
+  internal::HangWatchState* current_hang_watch_state =
+      internal::HangWatchState::GetHangWatchStateForCurrentThread()->Get();
+  if (!current_hang_watch_state) {
     // If the current thread is not under watch there is nothing to invalidate.
     return;
   }
-  hang_watch_state->SetIgnoreCurrentWatchHangsInScope();
+  current_hang_watch_state->SetIgnoreCurrentWatchHangsInScope();
 }
 
 HangWatcher::HangWatcher()
@@ -975,8 +981,15 @@ void HangWatcher::BlockIfCaptureInProgress() {
 void HangWatcher::UnregisterThread() {
   AutoLock auto_lock(watch_state_lock_);
 
-  auto it = ranges::find(watch_states_, hang_watch_state,
-                         &std::unique_ptr<internal::HangWatchState>::get);
+  internal::HangWatchState* current_hang_watch_state =
+      internal::HangWatchState::GetHangWatchStateForCurrentThread()->Get();
+
+  auto it = ranges::find_if(
+      watch_states_,
+      [current_hang_watch_state](
+          const std::unique_ptr<internal::HangWatchState>& state) {
+        return state.get() == current_hang_watch_state;
+      });
 
   // Thread should be registered to get unregistered.
   DCHECK(it != watch_states_.end());
@@ -1152,7 +1165,10 @@ uint64_t HangWatchDeadline::SwitchBitsForTesting() {
 }
 
 HangWatchState::HangWatchState(HangWatcher::ThreadType thread_type)
-    : resetter_(&hang_watch_state, this, nullptr), thread_type_(thread_type) {
+    : thread_type_(thread_type) {
+  // There should not exist a state object for this thread already.
+  DCHECK(!GetHangWatchStateForCurrentThread()->Get());
+
 // TODO(crbug.com/1223033): Remove this once macOS uses system-wide ids.
 // On macOS the thread ids used by CrashPad are not the same as the ones
 // provided by PlatformThread. Make sure to use the same for correct
@@ -1164,12 +1180,16 @@ HangWatchState::HangWatchState(HangWatcher::ThreadType thread_type)
 #else
   thread_id_ = PlatformThread::CurrentId();
 #endif
+
+  // Bind the new instance to this thread.
+  GetHangWatchStateForCurrentThread()->Set(this);
 }
 
 HangWatchState::~HangWatchState() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  DCHECK_EQ(hang_watch_state, this);
+  DCHECK_EQ(GetHangWatchStateForCurrentThread()->Get(), this);
+  GetHangWatchStateForCurrentThread()->Set(nullptr);
 
 #if DCHECK_IS_ON()
   // Destroying the HangWatchState should not be done if there are live
@@ -1187,7 +1207,7 @@ HangWatchState::CreateHangWatchStateForCurrentThread(
       std::make_unique<HangWatchState>(thread_type);
 
   // Setting the thread local worked.
-  DCHECK_EQ(hang_watch_state, hang_state.get());
+  DCHECK_EQ(GetHangWatchStateForCurrentThread()->Get(), hang_state.get());
 
   // Transfer ownership to caller.
   return hang_state;
@@ -1253,8 +1273,10 @@ void HangWatchState::DecrementNestingLevel() {
 }
 
 // static
-HangWatchState* HangWatchState::GetHangWatchStateForCurrentThread() {
-  return hang_watch_state;
+ThreadLocalPointer<HangWatchState>*
+HangWatchState::GetHangWatchStateForCurrentThread() {
+  static NoDestructor<ThreadLocalPointer<HangWatchState>> hang_watch_state;
+  return hang_watch_state.get();
 }
 
 PlatformThreadId HangWatchState::GetThreadID() const {

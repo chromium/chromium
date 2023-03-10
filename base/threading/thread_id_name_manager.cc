@@ -11,9 +11,10 @@
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
+#include "base/threading/thread_local.h"
 #include "base/trace_event/heap_profiler_allocation_context_tracker.h"  // no-presubmit-check
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace base {
 namespace {
@@ -21,7 +22,10 @@ namespace {
 static const char kDefaultName[] = "";
 static std::string* g_default_name;
 
-ABSL_CONST_INIT thread_local const char* thread_name = kDefaultName;
+ThreadLocalStorage::Slot& GetThreadNameTLS() {
+  static base::NoDestructor<base::ThreadLocalStorage::Slot> thread_name_tls;
+  return *thread_name_tls;
+}
 }
 
 ThreadIdNameManager::Observer::~Observer() = default;
@@ -80,7 +84,7 @@ void ThreadIdNameManager::SetName(const std::string& name) {
 
     auto id_to_handle_iter = thread_id_to_handle_.find(id);
 
-    thread_name = leaked_str->c_str();
+    GetThreadNameTLS().Set(const_cast<char*>(leaked_str->c_str()));
     for (Observer* obs : observers_)
       obs->OnThreadNameChanged(leaked_str->c_str());
 
@@ -119,7 +123,8 @@ const char* ThreadIdNameManager::GetName(PlatformThreadId id) {
 }
 
 const char* ThreadIdNameManager::GetNameForCurrentThread() {
-  return thread_name;
+  const char* name = reinterpret_cast<const char*>(GetThreadNameTLS().Get());
+  return name ? name : kDefaultName;
 }
 
 void ThreadIdNameManager::RemoveName(PlatformThreadHandle::Handle handle,

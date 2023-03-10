@@ -8,9 +8,9 @@
 #include <type_traits>
 #include <utility>
 
-#include "base/dcheck_is_on.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -25,10 +25,10 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/third_party/dynamic_annotations/dynamic_annotations.h"
 #include "base/threading/thread_id_name_manager.h"
+#include "base/threading/thread_local.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 #if (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
 #include "base/files/file_descriptor_watcher_posix.h"
@@ -41,17 +41,16 @@
 
 namespace base {
 
-#if DCHECK_IS_ON()
 namespace {
 
 // We use this thread-local variable to record whether or not a thread exited
 // because its Stop method was called.  This allows us to catch cases where
 // MessageLoop::QuitWhenIdle() is called directly, which is unexpected when
 // using a Thread to setup and run a MessageLoop.
-ABSL_CONST_INIT thread_local bool was_quit_properly = false;
+LazyInstance<ThreadLocalBoolean>::Leaky lazy_tls_bool =
+    LAZY_INSTANCE_INITIALIZER;
 
 }  // namespace
-#endif
 
 namespace internal {
 
@@ -347,18 +346,16 @@ void Thread::Run(RunLoop* run_loop) {
 
 // static
 void Thread::SetThreadWasQuitProperly(bool flag) {
-#if DCHECK_IS_ON()
-  was_quit_properly = flag;
-#endif
+  lazy_tls_bool.Pointer()->Set(flag);
 }
 
 // static
 bool Thread::GetThreadWasQuitProperly() {
+  bool quit_properly = true;
 #if DCHECK_IS_ON()
-  return was_quit_properly;
-#else
-  return true;
+  quit_properly = lazy_tls_bool.Pointer()->Get();
 #endif
+  return quit_properly;
 }
 
 void Thread::ThreadMain() {
