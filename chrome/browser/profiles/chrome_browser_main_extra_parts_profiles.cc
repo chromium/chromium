@@ -56,6 +56,7 @@
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/favicon/history_ui_favicon_request_handler_factory.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/feed/feed_service_factory.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
 #include "chrome/browser/font_pref_change_notifier_factory.h"
@@ -104,6 +105,7 @@
 #include "chrome/browser/permissions/permission_actions_history_factory.h"
 #include "chrome/browser/permissions/permission_auditing_service_factory.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
+#include "chrome/browser/permissions/prediction_service_factory.h"
 #include "chrome/browser/permissions/unused_site_permissions_service_factory.h"
 #include "chrome/browser/persisted_state_db/session_proto_db_factory.h"
 #include "chrome/browser/plugins/plugin_prefs_factory.h"
@@ -126,6 +128,7 @@
 #include "chrome/browser/reduce_accept_language/reduce_accept_language_factory.h"
 #include "chrome/browser/safe_browsing/certificate_reporting_service_factory.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service_factory.h"
+#include "chrome/browser/safe_browsing/chrome_ping_manager_factory.h"
 #include "chrome/browser/safe_browsing/client_side_detection_service_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
@@ -230,7 +233,9 @@
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_sink_service_factory.h"
 #include "chrome/browser/media_galleries/gallery_watch_manager.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_profile_session_durations_service_factory.h"
+#include "chrome/browser/new_tab_page/modules/recipes/recipes_service_factory.h"
 #include "chrome/browser/performance_manager/persistence/site_data/site_data_cache_facade_factory.h"
+#include "chrome/browser/profile_resetter/reset_report_uploader_factory.h"
 #include "chrome/browser/profiles/profile_theme_update_service_factory.h"
 #include "chrome/browser/search/instant_service_factory.h"
 #include "chrome/browser/storage/storage_notification_service_factory.h"
@@ -328,6 +333,7 @@
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
+#include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service_factory.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service_factory.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service_factory.h"
 #include "chrome/browser/safe_browsing/hash_realtime_service_factory.h"
@@ -366,6 +372,7 @@
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "chrome/browser/browser_switcher/browser_switcher_service_factory.h"
+#include "chrome/browser/enterprise/connectors/analysis/local_binary_upload_service_factory.h"
 #include "chrome/browser/enterprise/signals/signals_aggregator_factory.h"
 #endif
 
@@ -600,7 +607,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   enterprise_connectors::DeviceTrustServiceFactory::GetInstance();
   enterprise_connectors::DeviceTrustConnectorServiceFactory::GetInstance();
 #endif
-
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  enterprise_connectors::LocalBinaryUploadServiceFactory::GetInstance();
+#endif
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
   ExitTypeServiceFactory::GetInstance();
 #endif
@@ -609,6 +618,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
   FaviconServiceFactory::GetInstance();
   feature_engagement::TrackerFactory::GetInstance();
+  feed::FeedServiceFactory::GetInstance();
   FederatedIdentityApiPermissionContextFactory::GetInstance();
   FederatedIdentityAutoReauthnPermissionContextFactory::GetInstance();
   FederatedIdentityPermissionContextFactory::GetInstance();
@@ -766,6 +776,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   PlatformNotificationServiceFactory::GetInstance();
   policy::ManagementServiceFactory::GetInstance();
   PolicyBlocklistFactory::GetInstance();
+  PredictionServiceFactory::GetInstance();
   PrefetchProxyServiceFactory::GetInstance();
   PrimaryAccountPolicyManagerFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
@@ -851,6 +862,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   ReadingListManagerFactory::GetInstance();
   ReadingListNotificationServiceFactory::GetInstance();
 #endif
+#if !BUILDFLAG(IS_ANDROID)
+  RecipesServiceFactory::GetInstance();
+#endif
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   RecoveryInstallGlobalErrorFactory::GetInstance();
 #endif
@@ -862,17 +876,19 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   reporting::metrics::MetricReportingManagerLacros::EnsureFactoryBuilt();
 #endif
-
 #if !BUILDFLAG(IS_ANDROID)
+  ResetReportUploaderFactory::GetInstance();
   performance_manager::SiteDataCacheFacadeFactory::GetInstance();
 #endif
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   safe_browsing::AdvancedProtectionStatusManagerFactory::GetInstance();
+  safe_browsing::ChromeEnterpriseRealTimeUrlLookupServiceFactory::GetInstance();
   safe_browsing::CloudBinaryUploadServiceFactory::GetInstance();
   safe_browsing::ExtensionTelemetryServiceFactory::GetInstance();
   safe_browsing::HashRealTimeServiceFactory::GetInstance();
 #endif
   safe_browsing::ChromePasswordProtectionServiceFactory::GetInstance();
+  safe_browsing::ChromePingManagerFactory::GetInstance();
   safe_browsing::ClientSideDetectionServiceFactory::GetInstance();
   safe_browsing::RealTimeUrlLookupServiceFactory::GetInstance();
   safe_browsing::SafeBrowsingMetricsCollectorFactory::GetInstance();
