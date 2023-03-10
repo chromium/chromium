@@ -2795,21 +2795,25 @@ IN_PROC_BROWSER_TEST_F(HotseatShelfAppBrowserTest, EnableChromeVox) {
         let module = await import('/chromevox/background/chromevox.js');
         module.ChromeVox.earcons.playEarcon = function() {};
         module = await import('/chromevox/background/chromevox_state.js');
-        await module.ChromeVoxState.ready();
+        let ChromeVoxState = module.ChromeVoxState;
+        module = await import('/chromevox/background/chromevox_range.js');
+        let ChromeVoxRange = module.ChromeVoxRange;
+
+        await ChromeVoxState.ready();
 
         // Wait for ChromeVox to have a current range before the test starts
         // traversal through shelf to ensure that the browser does not show
         // mid shelf traversal, and causes the a11y focus to unexpectedly
         // switch to the omnibox mid test.
-        if (!module.ChromeVoxState.instance.currentRange) {
+        if (!ChromeVoxRange.current) {
           await new Promise(resolve => {
               new (class {
                   constructor() {
-                    module.ChromeVoxState.addObserver(this);
+                    ChromeVoxState.addObserver(this);
                   }
                   onCurrentRangeChanged(newRange) {
                     if (newRange) {
-                        module.ChromeVoxState.removeObserver(this);
+                        ChromeVoxState.removeObserver(this);
                         resolve();
                     }
                   }

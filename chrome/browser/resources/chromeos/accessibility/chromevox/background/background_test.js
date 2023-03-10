@@ -581,7 +581,7 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'ShouldNotFocusIframe', async function() {
   iframe.addEventListener('focus', function() {
     didFocus = true;
   });
-  ChromeVoxState.instance.currentRange_ = CursorRange.fromNode(button);
+  ChromeVoxRange.instance.current_ = CursorRange.fromNode(button);
   doCmd('previousElement');
   assertFalse(didFocus);
 });
@@ -602,7 +602,7 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'ShouldFocusLink', async function() {
   link.addEventListener('focus', this.newCallback(function() {
     // Success
   }));
-  ChromeVoxState.instance.currentRange_ = CursorRange.fromNode(button);
+  ChromeVoxRange.instance.current_ = CursorRange.fromNode(button);
   doCmd('previousElement');
 });
 

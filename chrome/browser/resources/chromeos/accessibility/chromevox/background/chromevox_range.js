@@ -90,11 +90,6 @@ export class ChromeVoxRange {
     return ChromeVoxRange.instance.previous_;
   }
 
-  /** @param {?CursorRange} oldRange */
-  static set previous(oldRange) {
-    ChromeVoxRange.instance.previous_ = oldRange;
-  }
-
   /**
    * @param {?CursorRange} newRange The new range.
    * @param {boolean=} opt_fromEditing

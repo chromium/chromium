@@ -808,7 +808,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
   onAutofillAvailabilityChanged(evt) {
     const node = evt.target;
     const state = node.state;
-    const currentRange = ChromeVoxState.instance.currentRange;
+    const currentRange = ChromeVoxRange.current;
 
     // Notify the user about available autofill options on focused element.
     if (currentRange && currentRange.isValid() && state[StateType.FOCUSED] &&

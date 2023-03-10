@@ -153,11 +153,6 @@ export class Background extends ChromeVoxState {
   }
 
   /** @override */
-  getCurrentRange() {
-    return ChromeVoxRange.current;
-  }
-
-  /** @override */
   get isReadingContinuously() {
     return this.isReadingContinuously_;
   }
@@ -170,11 +165,6 @@ export class Background extends ChromeVoxState {
   /** @override */
   get talkBackEnabled() {
     return this.talkBackEnabled_;
-  }
-
-  /** @override */
-  getCurrentRangeWithoutRecovery() {
-    return ChromeVoxRange.getCurrentRangeWithoutRecovery();
   }
 
   /** @override */

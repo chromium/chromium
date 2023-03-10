@@ -17,8 +17,6 @@ ChromeVoxPanelTest = class extends ChromeVoxPanelTestBase {
     await importModule(
         'ChromeVoxRange', '/chromevox/background/chromevox_range.js');
     await importModule(
-        'ChromeVoxState', '/chromevox/background/chromevox_state.js');
-    await importModule(
         'CommandHandlerInterface',
         '/chromevox/background/command_handler_interface.js');
     await importModule('EventSource', '/chromevox/background/event_source.js');
@@ -221,7 +219,7 @@ AX_TEST_F('ChromeVoxPanelTest', 'DISABLED_Gestures', async function() {
   const desktop = root.parent.root;
   const panelNode = desktop.find(
       {role: 'rootWebArea', attributes: {name: 'ChromeVox Panel'}});
-  ChromeVoxState.instance.setCurrentRange(CursorRange.fromNode(panelNode));
+  ChromeVoxRange.set(CursorRange.fromNode(panelNode));
 
   doGestureAsync(Gesture.SWIPE_RIGHT1);
   await this.waitForMenu('panel_menu_jump');
