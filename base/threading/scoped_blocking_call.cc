@@ -16,6 +16,11 @@
 #include "third_party/perfetto/protos/perfetto/trace/track_event/source_location.pbzero.h"  // nogncheck
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
+#if DCHECK_IS_ON()
+#include "base/auto_reset.h"
+#include "third_party/abseil-cpp/absl/base/attributes.h"
+#endif
+
 namespace base {
 
 namespace {
@@ -24,8 +29,7 @@ namespace {
 // Used to verify that the trace events used in the constructor do not result in
 // instantiating a ScopedBlockingCall themselves (which would cause an infinite
 // reentrancy loop).
-LazyInstance<ThreadLocalBoolean>::Leaky tls_construction_in_progress =
-    LAZY_INSTANCE_INITIALIZER;
+ABSL_CONST_INIT thread_local bool construction_in_progress = false;
 #endif
 
 }  // namespace
@@ -36,8 +40,7 @@ ScopedBlockingCall::ScopedBlockingCall(const Location& from_here,
           blocking_type,
           UncheckedScopedBlockingCall::BlockingCallType::kRegular) {
 #if DCHECK_IS_ON()
-  DCHECK(!tls_construction_in_progress.Get().Get());
-  tls_construction_in_progress.Get().Set(true);
+  const AutoReset<bool> resetter(&construction_in_progress, true, false);
 #endif
 
   internal::AssertBlockingAllowed();
@@ -46,10 +49,6 @@ ScopedBlockingCall::ScopedBlockingCall(const Location& from_here,
         ctx.event()->set_source_location_iid(
             base::trace_event::InternedSourceLocation::Get(&ctx, from_here));
       });
-
-#if DCHECK_IS_ON()
-  tls_construction_in_progress.Get().Set(false);
-#endif
 }
 
 ScopedBlockingCall::~ScopedBlockingCall() {
@@ -65,8 +64,7 @@ ScopedBlockingCallWithBaseSyncPrimitives::
           blocking_type,
           UncheckedScopedBlockingCall::BlockingCallType::kBaseSyncPrimitives) {
 #if DCHECK_IS_ON()
-  DCHECK(!tls_construction_in_progress.Get().Get());
-  tls_construction_in_progress.Get().Set(true);
+  const AutoReset<bool> resetter(&construction_in_progress, true, false);
 #endif
 
   internal::AssertBaseSyncPrimitivesAllowed();
@@ -78,10 +76,6 @@ ScopedBlockingCallWithBaseSyncPrimitives::
         source_location_data->set_file_name(from_here.file_name());
         source_location_data->set_function_name(from_here.function_name());
       });
-
-#if DCHECK_IS_ON()
-  tls_construction_in_progress.Get().Set(false);
-#endif
 }
 
 ScopedBlockingCallWithBaseSyncPrimitives::
