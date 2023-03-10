@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-#ifndef CONTENT_BROWSER_RENDERER_HOST_PRIVATE_NETWORK_ACCESS_UTIL_H_
-#define CONTENT_BROWSER_RENDERER_HOST_PRIVATE_NETWORK_ACCESS_UTIL_H_
+#ifndef CONTENT_BROWSER_RENDERER_HOST_LOCAL_NETWORK_ACCESS_UTIL_H_
+#define CONTENT_BROWSER_RENDERER_HOST_LOCAL_NETWORK_ACCESS_UTIL_H_
 
 #include "content/common/content_export.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
@@ -63,4 +63,4 @@ network::mojom::IPAddressSpace CalculateIPAddressSpace(
     ContentBrowserClient* client);
 }  // namespace content
 
-#endif  //  CONTENT_BROWSER_RENDERER_HOST_PRIVATE_NETWORK_ACCESS_UTIL_H_
+#endif  //  CONTENT_BROWSER_RENDERER_HOST_LOCAL_NETWORK_ACCESS_UTIL_H_
