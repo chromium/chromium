@@ -156,7 +156,7 @@ class ASH_EXPORT PowerButtonController
   void OnTabletModeStarted() override;
   void OnTabletModeEnded() override;
 
-  // Used by the SecurityCurtainController to notify when power button is
+  // Used by the `ash::curtain::Session` to notify when power button is
   // enabled/disabled.
   void OnSecurityCurtainEnabled();
   void OnSecurityCurtainDisabled();

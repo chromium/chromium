@@ -14,6 +14,7 @@
 #include "ash/system/power/power_button_menu_view.h"
 #include "ash/system/power/power_button_test_base.h"
 #include "ash/test/ash_test_base.h"
+#include "base/check_deref.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -245,6 +246,14 @@ class SecurityCurtainControllerImplTest : public PowerButtonTestBase {
   views::Widget& GetOpenPowerWidget() {
     EXPECT_TRUE(power_button_test_api().IsMenuOpened());
     return *power_button_test_api().GetPowerButtonMenuView()->GetWidget();
+  }
+
+  const aura::Window& GetPowerMenuWidgetContainerParent() {
+    EXPECT_TRUE(power_button_test_api().IsMenuOpened());
+
+    return CHECK_DEREF(Shell::GetPrimaryRootWindow()
+                           ->GetChildById(kShellWindowId_PowerMenuContainer)
+                           ->parent());
   }
 
  private:
@@ -572,15 +581,17 @@ TEST_F(SecurityCurtainControllerImplTest,
 TEST_F(SecurityCurtainControllerImplTest,
        ShouldResetParentOfPowerMenuWidgetWhenDisabled) {
   PressPowerButton();
-  views::Widget* parent_before_enabled = GetOpenPowerWidget().parent();
+  const aura::Window& parent_before_enabled =
+      GetPowerMenuWidgetContainerParent();
   ReleasePowerButton();
 
   security_curtain_controller().Enable(init_params());
   security_curtain_controller().Disable();
   PressPowerButton();
-  views::Widget* parent_after_disabled = GetOpenPowerWidget().parent();
+  const aura::Window& parent_after_disabled =
+      GetPowerMenuWidgetContainerParent();
 
-  ASSERT_EQ(parent_before_enabled, parent_after_disabled);
+  ASSERT_EQ(&parent_before_enabled, &parent_after_disabled);
 }
 
 }  // namespace ash::curtain
