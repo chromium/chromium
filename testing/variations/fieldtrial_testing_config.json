@@ -7046,7 +7046,8 @@
                         "omnibox_history_cluster_provider_shortcuts": "true"
                     },
                     "enable_features": [
-                        "JourneysOmniboxHistoryClusterProvider"
+                        "JourneysOmniboxHistoryClusterProvider",
+                        "OmniboxPreferTailOverHistoryClusterSuggestions"
                     ]
                 }
             ]
