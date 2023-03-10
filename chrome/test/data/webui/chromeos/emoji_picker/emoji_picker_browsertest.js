@@ -41,20 +41,6 @@ TEST_F('EmojiPickerMainTest', 'DISABLED_All', function() {
   mocha.run();
 });
 
-// Tests functionality of recently used storage.
-var EmojiPickerStoreTest = class extends EmojiPickerBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://emoji-picker/test_loader.html?module=' +
-        'chromeos/emoji_picker/emoji_picker_store_test.js';
-  }
-};
-
-// TODO(https://crbug.com/1179762): Re-enable once flakiness is fixed.
-TEST_F('EmojiPickerStoreTest', 'DISABLED_All', function() {
-  mocha.run();
-});
-
 var EmojiPickerExtensionBrowserTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {
