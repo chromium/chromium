@@ -1285,6 +1285,7 @@
       'gpu-try-mac-amd-retina-dbg': 'gpu_tests_debug_bot_reclient',
       'gpu-try-mac-intel-dbg': 'gpu_tests_debug_bot_reclient',
       'ios-asan': 'ios_simulator_release_static_asan_bot_xctest_reclient',
+      'ios-blink-dbg-fyi': 'ios_simulator_blink_xctest',
       'ios-catalyst': 'ios_catalyst_debug_static_bot_compile_only_libfuzzer_asan_no_dsyms_no_remoting_reclient',
       'ios-device': 'ios_device_release_compile_only_reclient',
       'ios-fieldtrial-rel': 'ios_simulator_debug_static_bot_xctest_arm64_reclient',
