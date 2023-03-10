@@ -49,7 +49,6 @@ is_official_build = true
 symbol_level = 1
 use_goma = false
 enable_remoting = true
-enable_webview_bundles = true
 ffmpeg_branding = "Chrome"
 proprietary_codecs = true
 force_enable_raw_ptr_exclusion = true
