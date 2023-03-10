@@ -2290,6 +2290,56 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Arc.VmDataMigration.Duration" units="seconds"
+    expires_after="2024-01-01">
+  <owner>momohatt@google.com</owner>
+  <owner>youkichihosoi@google.com</owner>
+  <summary>
+    Duration of the ARCVM /data migration. This is reported once when a newly
+    started migration is completed.
+  </summary>
+</histogram>
+
+<histogram name="Arc.VmDataMigration.EndStatus"
+    enum="CrOSFileSystemMigrationEndStatus" expires_after="2024-01-01">
+  <owner>momohatt@google.com</owner>
+  <owner>youkichihosoi@google.com</owner>
+  <summary>
+    The status of ARCVM /data migration when it ends. This is reported when a
+    migration finishes successfully, fails, or gets cancelled halfway.
+  </summary>
+</histogram>
+
+<histogram name="Arc.VmDataMigration.StartStatus"
+    enum="CrOSFileSystemMigrationStartStatus" expires_after="2024-01-01">
+  <owner>momohatt@google.com</owner>
+  <owner>youkichihosoi@google.com</owner>
+  <summary>
+    The status of ARCVM /data migration when it starts. This is reported when a
+    new migration or a resumed migration is started.
+  </summary>
+</histogram>
+
+<histogram name="Arc.VmDataMigration.TotalFiles" units="files"
+    expires_after="2024-01-01">
+  <owner>momohatt@google.com</owner>
+  <owner>youkichihosoi@google.com</owner>
+  <summary>
+    Total number of files to be migrated in ARCVM /data migration. Reported once
+    at the beginning of a new migration.
+  </summary>
+</histogram>
+
+<histogram name="Arc.VmDataMigration.TotalSizeMB" units="MB"
+    expires_after="2024-01-01">
+  <owner>momohatt@google.com</owner>
+  <owner>youkichihosoi@google.com</owner>
+  <summary>
+    Total bytes to be migrated in ARCVM /data migration. Reported once at the
+    beginning of a new migration.
+  </summary>
+</histogram>
+
 <histogram name="Arc.VolumeMounter.MountFailureCount" units="failures"
     expires_after="2023-04-19">
   <owner>youkichihosoi@google.com</owner>

@@ -22455,6 +22455,26 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="34" label="Crostini.OomEvent"/>
 </enum>
 
+<enum name="CrOSFileSystemMigrationEndStatus">
+  <int value="1" label="New migration failed (generic failure)"/>
+  <int value="2" label="New migration succeeded"/>
+  <int value="3" label="Resumed migration failed (generic failure)"/>
+  <int value="4" label="Resumed migration succeeded"/>
+  <int value="5" label="New migration failed (low disk space)"/>
+  <int value="6" label="Resumed migration failed (low disk space)"/>
+  <int value="7" label="New migration failed (file error)"/>
+  <int value="8" label="Resumed migration failed (file error)"/>
+  <int value="9" label="New migration failed (file error EIO on open)"/>
+  <int value="10" label="Resumed migration failed (file error EIO on open)"/>
+  <int value="11" label="New migration cancelled"/>
+  <int value="12" label="Resumed migration cancelled"/>
+</enum>
+
+<enum name="CrOSFileSystemMigrationStartStatus">
+  <int value="1" label="Migration started"/>
+  <int value="2" label="Migration resumed"/>
+</enum>
+
 <enum name="CrosFirstRunTutorialCompletionType">
   <int value="0" label="Was not finished"/>
   <int value="1" label="Finished with &quot;Got It&quot; button"/>
@@ -27287,21 +27307,6 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="1" label="Server redirect"/>
 </enum>
 
-<enum name="DircryptoMigrationEndStatus">
-  <int value="1" label="New migration failed (generic failure)"/>
-  <int value="2" label="New migration succeeded"/>
-  <int value="3" label="Resumed migration failed (generic failure)"/>
-  <int value="4" label="Resumed migration succeeded"/>
-  <int value="5" label="New migration failed (low disk space)"/>
-  <int value="6" label="Resumed migration failed (low disk space)"/>
-  <int value="7" label="New migration failed (file error)"/>
-  <int value="8" label="Resumed migration failed (file error)"/>
-  <int value="9" label="New migration failed (file error EIO on open)"/>
-  <int value="10" label="Resumed migration failed (file error EIO on open)"/>
-  <int value="11" label="New migration cancelled"/>
-  <int value="12" label="Resumed migration cancelled"/>
-</enum>
-
 <enum name="DircryptoMigrationFailedOperationType">
   <int value="1" label="Other"/>
   <int value="2" label="open(src_file)"/>
@@ -27328,11 +27333,6 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="4" label="Downloads"/>
   <int value="5" label="Cache"/>
   <int value="6" label="GCache (Google Drive Cache)"/>
-</enum>
-
-<enum name="DircryptoMigrationStartStatus">
-  <int value="1" label="Migration started"/>
-  <int value="2" label="Migration resumed"/>
 </enum>
 
 <enum name="DirectActionId">

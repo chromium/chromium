@@ -101,7 +101,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.DircryptoMigrationEndStatus"
-    enum="DircryptoMigrationEndStatus" expires_after="2020-03-01">
+    enum="CrOSFileSystemMigrationEndStatus" expires_after="2020-03-01">
   <owner>dspaid@chromium.org</owner>
   <summary>
     The status of the user home directory migration from ecryptfs to
@@ -172,7 +172,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.DircryptoMigrationStartStatus"
-    enum="DircryptoMigrationStartStatus" expires_after="M81">
+    enum="CrOSFileSystemMigrationStartStatus" expires_after="M81">
   <owner>dspaid@chromium.org</owner>
   <summary>
     The status of the user home directory migration from ecryptfs to
@@ -200,7 +200,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.DircryptoMinimalMigrationEndStatus"
-    enum="DircryptoMigrationEndStatus" expires_after="M77">
+    enum="CrOSFileSystemMigrationEndStatus" expires_after="M77">
   <owner>dspaid@chromium.org</owner>
   <owner>pmarko@chromium.org</owner>
   <summary>
@@ -210,7 +210,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.DircryptoMinimalMigrationStartStatus"
-    enum="DircryptoMigrationStartStatus" expires_after="M77">
+    enum="CrOSFileSystemMigrationStartStatus" expires_after="M77">
   <owner>dspaid@chromium.org</owner>
   <owner>pmarko@chromium.org</owner>
   <summary>
