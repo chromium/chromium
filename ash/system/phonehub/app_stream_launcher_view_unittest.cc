@@ -45,12 +45,6 @@ class AppStreamLauncherViewTest : public views::ViewsTestBase {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kEcheLauncher, features::kEcheSWA},
         /*disabled_features=*/{features::kEcheLauncherListView});
-
-    app_stream_launcher_view_ =
-        std::make_unique<AppStreamLauncherView>(&fake_phone_hub_manager_);
-    widget_->SetContentsView(app_stream_launcher_view_.get());
-    widget_->Show();
-    widget_->LayoutRootViewIfNecessary();
   }
 
   // AshTestBase:
@@ -65,6 +59,14 @@ class AppStreamLauncherViewTest : public views::ViewsTestBase {
   ui::test::EventGenerator* generator() { return generator_.get(); }
   AppStreamLauncherView* app_stream_launcher_view() {
     return app_stream_launcher_view_.get();
+  }
+
+  void GenerateLauncherView() {
+    app_stream_launcher_view_ =
+        std::make_unique<AppStreamLauncherView>(&fake_phone_hub_manager_);
+    widget_->SetContentsView(app_stream_launcher_view_.get());
+    widget_->Show();
+    widget_->LayoutRootViewIfNecessary();
   }
 
   AppStreamLauncherItem* GetItemView(int index) {
@@ -112,10 +114,15 @@ class AppStreamLauncherViewTest : public views::ViewsTestBase {
 };
 
 TEST_F(AppStreamLauncherViewTest, OpenView) {
+  fake_phone_hub_manager()
+      ->fake_app_stream_launcher_data_model()
+      ->SetLauncherSize(1000, 1000);
+  GenerateLauncherView();
   EXPECT_TRUE(app_stream_launcher_view()->GetVisible());
 }
 
 TEST_F(AppStreamLauncherViewTest, AddItems) {
+  GenerateLauncherView();
   const int64_t user_id = 1;
   const char16_t app_visible_name[] = u"Fake App";
   const char package_name[] = "com.fakeapp";
@@ -145,6 +152,7 @@ TEST_F(AppStreamLauncherViewTest, AddItems) {
 }
 
 TEST_F(AppStreamLauncherViewTest, AddItemsListView) {
+  GenerateLauncherView();
   feature_list_.Reset();
   feature_list_.InitWithFeatures(
       /*enabled_features=*/{features::kEcheLauncher, features::kEcheSWA,
@@ -174,6 +182,7 @@ TEST_F(AppStreamLauncherViewTest, AddItemsListView) {
 }
 
 TEST_F(AppStreamLauncherViewTest, RemoveItem) {
+  GenerateLauncherView();
   const int64_t user_id = 1;
   const char16_t app_visible_name[] = u"Fake App";
   const char package_name[] = "com.fakeapp";
@@ -206,6 +215,7 @@ TEST_F(AppStreamLauncherViewTest, RemoveItem) {
 }
 
 TEST_F(AppStreamLauncherViewTest, RemoveItemListView) {
+  GenerateLauncherView();
   feature_list_.Reset();
   feature_list_.InitWithFeatures(
       /*enabled_features=*/{features::kEcheLauncher, features::kEcheSWA,
@@ -244,6 +254,7 @@ TEST_F(AppStreamLauncherViewTest, RemoveItemListView) {
 }
 
 TEST_F(AppStreamLauncherViewTest, ClickOnItem) {
+  GenerateLauncherView();
   const int64_t user_id = 1;
   const char16_t app_visible_name[] = u"Fake App";
   const char package_name[] = "com.fakeapp";
@@ -283,6 +294,7 @@ TEST_F(AppStreamLauncherViewTest, ClickOnItem) {
 }
 
 TEST_F(AppStreamLauncherViewTest, ClickOnItemListView) {
+  GenerateLauncherView();
   feature_list_.Reset();
   feature_list_.InitWithFeatures(
       /*enabled_features=*/{features::kEcheLauncher, features::kEcheSWA,
@@ -327,6 +339,7 @@ TEST_F(AppStreamLauncherViewTest, ClickOnItemListView) {
 }
 
 TEST_F(AppStreamLauncherViewTest, DisabledItem) {
+  GenerateLauncherView();
   const int64_t user_id = 1;
   const char16_t app_visible_name[] = u"Fake App";
   const char package_name[] = "com.fakeapp";
@@ -359,6 +372,7 @@ TEST_F(AppStreamLauncherViewTest, DisabledItem) {
 }
 
 TEST_F(AppStreamLauncherViewTest, DisabledItemListView) {
+  GenerateLauncherView();
   feature_list_.Reset();
   feature_list_.InitWithFeatures(
       /*enabled_features=*/{features::kEcheLauncher, features::kEcheSWA,

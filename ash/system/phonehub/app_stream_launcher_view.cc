@@ -57,6 +57,8 @@ constexpr auto kVerticalScrollInsets = gfx::Insets::TLBR(1, 0, 1, 1);
 
 constexpr auto kHeaderDefaultSpacing = gfx::Insets::VH(0, 0);
 
+constexpr gfx::Size kDefaultAppListScrollViewSize = gfx::Size(400, 400);
+
 // The horizontal interior margin for the apps page container - i.e. the margin
 // between the apps page bounds and the page content.
 constexpr int kHorizontalInteriorMargin = 25;
@@ -97,7 +99,17 @@ AppStreamLauncherView::AppStreamLauncherView(
   AddChildView(CreateHeaderView());
 
   auto* app_list_view = AddChildView(CreateAppListView());
-  app_list_view->SetPreferredSize(gfx::Size(400, 400));
+  gfx::Size launcher_size;
+  if (phone_hub_manager->GetAppStreamLauncherDataModel() &&
+      phone_hub_manager->GetAppStreamLauncherDataModel()->launcher_height() >
+          kDefaultAppListScrollViewSize.height()) {
+    launcher_size = gfx::Size(
+        phone_hub_manager->GetAppStreamLauncherDataModel()->launcher_width(),
+        phone_hub_manager->GetAppStreamLauncherDataModel()->launcher_height());
+  } else {
+    launcher_size = kDefaultAppListScrollViewSize;
+  }
+  app_list_view->SetPreferredSize(launcher_size);
   app_list_view->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,

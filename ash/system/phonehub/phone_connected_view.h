@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/phonehub/phone_hub_content_view.h"
+#include "chromeos/ash/components/phonehub/phone_hub_manager.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -29,6 +30,9 @@ class PhoneConnectedView : public PhoneHubContentView {
 
   // PhoneHubContentView:
   phone_hub_metrics::Screen GetScreenForMetrics() const override;
+
+ private:
+  phonehub::PhoneHubManager* phone_hub_manager_;
 };
 
 }  // namespace ash

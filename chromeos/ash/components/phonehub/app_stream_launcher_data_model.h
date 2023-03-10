@@ -39,6 +39,10 @@ class AppStreamLauncherDataModel {
   void SetShouldShowMiniLauncher(bool should_show_mini_launcher);
   bool GetShouldShowMiniLauncher();
 
+  int launcher_height() { return launcher_height_; }
+  int launcher_width() { return launcher_width_; }
+  void SetLauncherSize(int height, int width);
+
   // Resets the internal state w/o updating the UI.
   void ResetState();
 
@@ -56,6 +60,8 @@ class AppStreamLauncherDataModel {
   // Indicates if the Mini Launcher should be shown when the status is
   // "phone connected" or not.
   bool should_show_app_stream_launcher_ = false;
+  int launcher_height_ = 0;
+  int launcher_width_ = 0;
   std::vector<Notification::AppMetadata> apps_list_;
   std::vector<Notification::AppMetadata> apps_list_sorted_by_name_;
   base::ObserverList<Observer> observer_list_;

@@ -49,6 +49,11 @@ bool AppStreamLauncherDataModel::GetShouldShowMiniLauncher() {
   return should_show_app_stream_launcher_;
 }
 
+void AppStreamLauncherDataModel::SetLauncherSize(int height, int width) {
+  launcher_height_ = height;
+  launcher_width_ = width;
+}
+
 void AppStreamLauncherDataModel::ResetState() {
   should_show_app_stream_launcher_ = false;
 }
