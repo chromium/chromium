@@ -326,13 +326,13 @@ function getCSS(): CSSResultGroup {
     }
     #dropdown-toggle {
       --border-color: var(--cros-button-stroke-color-secondary);
-      --cr-button-height: 29px;
+      --cr-button-height: 32px;
       --ripple-opacity: 100%;
       border-radius: 20px;
       margin-inline: 4px;
       min-width: auto;
       outline: none;
-      padding: 8px 12px;
+      padding: 0px 8px;
       white-space: nowrap;
     }
     .xf-select-icon {
@@ -361,6 +361,7 @@ function getCSS(): CSSResultGroup {
     }
     cr-button.dropdown-item {
       --focus-shadow-color: none;
+      padding: 0 12px;
     }
     cr-button.dropdown-item-center {
       justify-content: center;
