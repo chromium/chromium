@@ -2511,6 +2511,8 @@ source_set("browser") {
       "devtools/protocol/native_input_event_builder_mac.mm",
       "font_access/font_enumeration_data_source_mac.h",
       "font_access/font_enumeration_data_source_mac.mm",
+      "gpu/browser_child_process_backgrounded_bridge.h",
+      "gpu/browser_child_process_backgrounded_bridge.mm",
       "gpu/ca_transaction_gpu_coordinator.cc",
       "gpu/ca_transaction_gpu_coordinator.h",
       "media/desktop_media_window_registry_mac.mm",

@@ -1967,6 +1967,7 @@ test("content_browsertests") {
       "../browser/accessibility/hit_testing_mac_browsertest.mm",
       "../browser/form_controls_browsertest_mac.h",
       "../browser/form_controls_browsertest_mac.mm",
+      "../browser/gpu/browser_child_process_backgrounded_bridge_browsertest.mm",
       "../browser/keyboard_lock_browsertest_mac.mm",
       "../browser/pointer_lock_browsertest_mac.mm",
       "../browser/renderer_host/render_frame_host_impl_mac_browsertest.mm",

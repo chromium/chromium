@@ -188,6 +188,12 @@ BASE_FEATURE(kNoUndamagedOverlayPromotion,
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_IOS)
 // Enable use of Metal for OOP rasterization.
 BASE_FEATURE(kMetal, "Metal", base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, the TASK_CATEGORY_POLICY value of the GPU process will be
+// adjusted to match the one from the browser process every time it changes.
+BASE_FEATURE(kAdjustGpuProcessPriority,
+             "AdjustGpuProcessPriority",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Causes us to use the SharedImageManager, removing support for the old

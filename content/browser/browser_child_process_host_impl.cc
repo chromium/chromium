@@ -369,6 +369,14 @@ void BrowserChildProcessHostImpl::HistogramBadMessageTerminated(
                             PROCESS_TYPE_MAX);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+void BrowserChildProcessHostImpl::SetProcessBackgrounded(bool is_background) {
+  DCHECK(child_process_);
+  DCHECK(!child_process_->IsStarting());
+  child_process_->SetProcessBackgrounded(is_background);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_ANDROID)
 void BrowserChildProcessHostImpl::EnableWarmUpConnection() {
   can_use_warm_up_connection_ = true;
