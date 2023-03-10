@@ -839,7 +839,7 @@
       // image-set values without the `-webkit-` prefix
       // will be parsed.
       name: "CSSImageSet",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "CSSIndependentTransformProperties",

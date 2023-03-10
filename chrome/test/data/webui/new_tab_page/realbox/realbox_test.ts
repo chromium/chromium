@@ -157,7 +157,14 @@ suite('NewTabPageRealboxTest', () => {
       iconElement: RealboxIconElement, destinationUrl: string) {
     assertStyle(
         iconElement.$.icon, 'background-image',
-        getFaviconForPageURL(destinationUrl, false, '', 32, true));
+
+        // Resolution units are converted from `x` (shorthand for `dppx`) to
+        // `dppx` (the canonical unit for the resolution type) because
+        // assertStyle is using computed values instead of specified ones, and
+        // the computed values have to return the canonical unit for the type.
+        getFaviconForPageURL(destinationUrl, false, '', 32, true)
+            .replace(' 1x', ' 1dppx')
+            .replace(' 2x', ' 2dppx'));
     assertStyle(iconElement.$.icon, '-webkit-mask-image', 'none');
   }
 

@@ -11,12 +11,12 @@ suite('IconModuleTest', function() {
     const url = 'http://foo.com';
 
     function getExpectedImageSet(size: number): string {
-      const expectedDesktop = '-webkit-image-set(' +
+      const expectedDesktop = 'image-set(' +
           `url("chrome://favicon2/?size=${size}&scaleFactor=1x&pageUrl=` +
           encodeURIComponent(url) + '&allowGoogleServerFallback=0") 1x, ' +
           `url("chrome://favicon2/?size=${size}&scaleFactor=2x&pageUrl=` +
           encodeURIComponent(url) + '&allowGoogleServerFallback=0") 2x)';
-      const expectedOther = '-webkit-image-set(' +
+      const expectedOther = 'image-set(' +
           `url("chrome://favicon2/?size=${size}&scaleFactor=1x&pageUrl=` +
           encodeURIComponent(url) + '&allowGoogleServerFallback=0") ' +
           window.devicePixelRatio + 'x)';
@@ -44,12 +44,12 @@ suite('IconModuleTest', function() {
 
   test('GetFavicon', function() {
     const url = 'http://foo.com/foo.ico';
-    const expectedDesktop = '-webkit-image-set(' +
+    const expectedDesktop = 'image-set(' +
         'url("chrome://favicon2/?size=16&scaleFactor=1x&iconUrl=' +
         encodeURIComponent('http://foo.com/foo.ico') + '") 1x, ' +
         'url("chrome://favicon2/?size=16&scaleFactor=2x&iconUrl=' +
         encodeURIComponent('http://foo.com/foo.ico') + '") 2x)';
-    const expectedOther = '-webkit-image-set(' +
+    const expectedOther = 'image-set(' +
         'url("chrome://favicon2/?size=16&scaleFactor=1x&iconUrl=' +
         encodeURIComponent('http://foo.com/foo.ico') + '") ' +
         window.devicePixelRatio + 'x)';
