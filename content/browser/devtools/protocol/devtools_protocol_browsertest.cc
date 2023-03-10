@@ -3869,6 +3869,41 @@ IN_PROC_BROWSER_TEST_F(PrerenderDevToolsProtocolTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderDevToolsProtocolTest,
+                       RenderFrameDevToolsAgentHostCacheEvictionCrash) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
+  WebContentsImpl* web_contents_impl =
+      static_cast<WebContentsImpl*>(web_contents());
+
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Attaching a session via a "tab" target is required to opt-in into
+  // FTN swapping mode during prerender activation.
+  AttachToTabTarget(web_contents_impl);
+  base::Value::Dict command_params;
+  command_params.Set("autoAttach", true);
+  command_params.Set("waitForDebuggerOnStart", false);
+  command_params.Set("flatten", true);
+  SendCommandSync("Target.setAutoAttach", std::move(command_params));
+
+  // Stash current RFDTAH for WebContents that is about to be retained
+  // by BFCache after prerender navigation and flushed later.
+  auto old_host = DevToolsAgentHost::GetOrCreateFor(web_contents_impl);
+
+  // Activating a prerender should cause FTN swapping on the RFH and put
+  // the old one into the BFCache with frame_tree_node_ == nullptr.
+  AddPrerender(kPrerenderingUrl);
+  NavigatePrimaryPage(kPrerenderingUrl);
+
+  web_contents_impl->GetController().GetBackForwardCache().Flush();
+  // Flush() above will actually purge RFHs asynchronously, so pump tasks.
+  base::RunLoop().RunUntilIdle();
+  // Assure methods on disconnected host are safe to call.
+  EXPECT_THAT(old_host->GetTitle(), testing::Eq(""));
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderDevToolsProtocolTest,
                        NewPrerenderActivationOverrideTheOldOne) {
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(embedded_test_server()->Start());

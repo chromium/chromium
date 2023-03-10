@@ -65,6 +65,11 @@ void TestDevToolsProtocolClient::AttachToWebContents(WebContents* wc) {
   agent_host_->AttachClient(this);
 }
 
+void TestDevToolsProtocolClient::AttachToTabTarget(WebContents* wc) {
+  agent_host_ = DevToolsAgentHost::GetOrCreateForTab(wc);
+  agent_host_->AttachClient(this);
+}
+
 void TestDevToolsProtocolClient::AttachToBrowserTarget() {
   // Tethering domain is not used in tests.
   agent_host_ = DevToolsAgentHost::CreateForBrowser(
