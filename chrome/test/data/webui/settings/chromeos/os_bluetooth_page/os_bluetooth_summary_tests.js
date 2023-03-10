@@ -325,5 +325,4 @@ suite('OsBluetoothSummaryTest', function() {
         1, browserProxy.getShowBluetoothRevampHatsSurveyCount(),
         'Count failed to increase');
   });
-
 });

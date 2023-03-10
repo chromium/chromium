@@ -124,7 +124,7 @@ var OSSettingsOsBluetoothDevicesSubpageV3Test =
     class extends OSSettingsV3BrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_bluetooth_devices_subpage_tests.js';
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_bluetooth_page/os_bluetooth_devices_subpage_tests.js';
   }
 
   /** @override */
@@ -410,12 +410,26 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    'os_a11y_page/audio_and_captions_page_tests.js',
  ],
  ['OsA11yPageTtsSubpage', 'os_a11y_page/tts_subpage_test.js'],
- ['OsBluetoothPage', 'os_bluetooth_page_tests.js'],
- ['OsBluetoothPairingDialog', 'os_bluetooth_pairing_dialog_tests.js'],
- ['OsBluetoothSummary', 'os_bluetooth_summary_tests.js'],
+ ['OsBluetoothPage', 'os_bluetooth_page/os_bluetooth_page_tests.js'],
  [
-   'OsBluetoothChangeDeviceNameDialog',
-   'os_bluetooth_change_device_name_dialog_tests.js',
+   'OsBluetoothPageOsBluetoothChangeDeviceNameDialog',
+   'os_bluetooth_page/os_bluetooth_change_device_name_dialog_tests.js',
+ ],
+ [
+   'OsBluetoothPageOsBluetoothDeviceDetailSubpage',
+   'os_bluetooth_page/os_bluetooth_device_detail_subpage_tests.js',
+ ],
+ [
+   'OsBluetoothPageOsBluetoothPairingDialog',
+   'os_bluetooth_page/os_bluetooth_pairing_dialog_tests.js'
+ ],
+ [
+   'OsBluetoothPageOsBluetoothSummary',
+   'os_bluetooth_page/os_bluetooth_summary_tests.js'
+ ],
+ [
+   'OsBluetoothPageOsBluetoothTrueWirelessImages',
+   'os_bluetooth_page/os_bluetooth_true_wireless_images_tests.js',
  ],
  ['OsEditDictionaryPage', 'os_edit_dictionary_page_test.js'],
  [
@@ -425,14 +439,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['OsFilesPageOfficePage', 'os_files_page/office_page_test.js'],
  ['OsLanguagesPageV2', 'os_languages_page_v2_tests.js'],
  ['OsPairedBluetoothList', 'os_paired_bluetooth_list_tests.js'],
- [
-   'OsBluetoothDeviceDetailSubpage',
-   'os_bluetooth_device_detail_subpage_tests.js',
- ],
- [
-   'OsBluetoothTrueWirelessImages',
-   'os_bluetooth_true_wireless_images_tests.js',
- ],
  ['OsPairedBluetoothListItem', 'os_paired_bluetooth_list_item_tests.js'],
  ['OsPeoplePageAddUserDialog', 'os_people_page/add_user_dialog_tests.js'],
  ['OsSettingsPage', 'os_settings_page_test.js'],

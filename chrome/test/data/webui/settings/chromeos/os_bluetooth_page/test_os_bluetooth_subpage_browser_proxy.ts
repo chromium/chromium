@@ -4,59 +4,50 @@
 
 import 'chrome://os-settings/chromeos/os_settings.js';
 
-import {FastPairSavedDevicesOptInStatus} from 'chrome://os-settings/chromeos/os_settings.js';
+import {FastPairSavedDevice, FastPairSavedDevicesOptInStatus, OsBluetoothDevicesSubpageBrowserProxy} from 'chrome://os-settings/chromeos/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
-
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 /**
  * @implements {OsBluetoothDevicesSubpageBrowserProxy}
  */
-export class TestOsBluetoothDevicesSubpageBrowserProxy extends
-    TestBrowserProxy {
+export class TestOsBluetoothDevicesSubpageBrowserProxy extends TestBrowserProxy
+    implements OsBluetoothDevicesSubpageBrowserProxy {
+  savedDevices: FastPairSavedDevice[] = [];
+  optInStatus = FastPairSavedDevicesOptInStatus.STATUS_OPTED_IN;
+  private showBluetoothRevampHatsSurveyCount_ = 0;
   constructor() {
     super([
       'requestFastPairSavedDevices',
       'deleteFastPairSavedDevice',
       'requestFastPairDeviceSupport',
     ]);
-    this.savedDevices = [];
-    this.optInStatus = FastPairSavedDevicesOptInStatus.STATUS_OPTED_IN;
-    this.showBluetoothRevampHatsSurveyCount = 0;
   }
 
-  /** @override */
-  requestFastPairDeviceSupport() {}
+  requestFastPairDeviceSupport(): void {}
 
-  /** @override */
-  requestFastPairSavedDevices() {
+  requestFastPairSavedDevices(): void {
     this.methodCalled('requestFastPairSavedDevices');
     webUIListenerCallback('fast-pair-saved-devices-list', this.savedDevices);
     webUIListenerCallback(
         'fast-pair-saved-devices-opt-in-status', this.optInStatus);
   }
 
-  /**
-   * @override
-   * @param {string} accountKey
-   */
-  deleteFastPairSavedDevice(accountKey) {
+  deleteFastPairSavedDevice(accountKey: string): void {
     // Remove the device from the proxy's device list if it exists,
     this.savedDevices =
         this.savedDevices.filter(device => device.accountKey !== accountKey);
   }
 
-  /** @override */
-  showBluetoothRevampHatsSurvey() {
-    this.showBluetoothRevampHatsSurveyCount++;
+  showBluetoothRevampHatsSurvey(): void {
+    this.showBluetoothRevampHatsSurveyCount_++;
   }
 
   /**
    * Returns the number of times showBluetoothRevampHatsSurvey()
    * was called.
-   * @return {Number}
    */
-  getShowBluetoothRevampHatsSurveyCount() {
-    return this.showBluetoothRevampHatsSurveyCount;
+  getShowBluetoothRevampHatsSurveyCount(): number {
+    return this.showBluetoothRevampHatsSurveyCount_;
   }
 }

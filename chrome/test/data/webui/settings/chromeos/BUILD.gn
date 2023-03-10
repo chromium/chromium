@@ -100,13 +100,6 @@ test_files = [
   "onc_mojo_test.ts",
   "os_a11y_page_tests.js",
   "os_about_page_tests.js",
-  "os_bluetooth_change_device_name_dialog_tests.js",
-  "os_bluetooth_device_detail_subpage_tests.js",
-  "os_bluetooth_devices_subpage_tests.js",
-  "os_bluetooth_page_tests.js",
-  "os_bluetooth_pairing_dialog_tests.js",
-  "os_bluetooth_summary_tests.js",
-  "os_bluetooth_true_wireless_images_tests.js",
   "os_clear_personalization_data_page_test.js",
   "os_edit_dictionary_page_test.js",
   "os_files_page_test.js",
@@ -162,7 +155,6 @@ test_files = [
   "test_metrics_consent_browser_proxy.js",
   "test_multidevice_browser_proxy.js",
   "test_os_a11y_page_browser_proxy.js",
-  "test_os_bluetooth_subpage_browser_proxy.js",
   "test_os_languages_browser_proxy.js",
   "test_os_languages_metrics_proxy.js",
   "test_os_lifetime_browser_proxy.js",
@@ -218,6 +210,15 @@ test_files = [
 
   "os_a11y_page/audio_and_captions_page_tests.ts",
   "os_a11y_page/tts_subpage_test.ts",
+
+  "os_bluetooth_page/os_bluetooth_change_device_name_dialog_tests.js",
+  "os_bluetooth_page/os_bluetooth_device_detail_subpage_tests.js",
+  "os_bluetooth_page/os_bluetooth_devices_subpage_tests.js",
+  "os_bluetooth_page/os_bluetooth_page_tests.js",
+  "os_bluetooth_page/os_bluetooth_pairing_dialog_tests.js",
+  "os_bluetooth_page/os_bluetooth_summary_tests.js",
+  "os_bluetooth_page/os_bluetooth_true_wireless_images_tests.js",
+  "os_bluetooth_page/test_os_bluetooth_subpage_browser_proxy.ts",
 
   "os_files_page/office_page_test.ts",
 
