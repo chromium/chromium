@@ -700,7 +700,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille synkronisering<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Navn på kort</translation>
 <translation id="481574578487123132">Tilknyttede enheder</translation>
-<translation id="4818017973810341238">Digital Asset Links kunne ikke bekræftes på <ph name="VIOLATED_URL" /></translation>
+<translation id="4818017973810341238">Digital Asset Links kunne ikke verificeres på <ph name="VIOLATED_URL" /></translation>
 <translation id="4826163340425232009">Loginfeltet i bunden.</translation>
 <translation id="4831037795716408498">Download indhold</translation>
 <translation id="4834007576107377210">Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis det er relevant</translation>

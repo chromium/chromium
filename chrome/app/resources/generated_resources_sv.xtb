@@ -8863,7 +8863,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="9055636786322918818">Tillämpa RC4-kryptering. Det här alternativet är mer riskabelt eftersom RC4-chiffer är osäkra.</translation>
 <translation id="9056810968620647706">Inga träffar hittades.</translation>
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> vill få åtkomst till följande innehåll:</translation>
-<translation id="9057354806206861646">Uppdatera schema</translation>
+<translation id="9057354806206861646">Uppdateringsschema</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Cirka 1 avisering om dagen}other{Cirka {NUM_NOTIFICATION} aviseringar om dagen}}</translation>
 <translation id="9058760336383947367">Se skrivarens PPD-fil</translation>
 <translation id="9061383912634843744">Logga automatiskt in på webbplatser och i appar med hjälp av sparade användaruppgifter. När funktionen är inaktiverad måste du bekräfta inloggningen varje gång du besöker en webbplats eller app.</translation>

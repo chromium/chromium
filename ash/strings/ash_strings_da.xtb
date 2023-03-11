@@ -935,7 +935,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" />, administreret af din administrator</translation>
 <translation id="6027518778343897451">Der er ingen begivenhed <ph name="CURRENT_MONTH_DAY" />. Tryk på Enter for at åbne Google Kalender i browseren.</translation>
 <translation id="6030495522958826102">Menuen blev flyttet til nederste venstre hjørne af skærmen.</translation>
-<translation id="6032620807120418574">Klik et vilkårligt sted for at tage et billede af hele skærmen</translation>
+<translation id="6032620807120418574">Klik et vilkårligt sted for at optage hele skærmen</translation>
 <translation id="6040071906258664830">Optag mikrofon er slået <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Luk</translation>
 <translation id="6043212731627905357">Denne skærm fungerer ikke sammen med <ph name="DEVICE_TYPE" /> (skærmen understøttes ikke).</translation>
@@ -1116,7 +1116,7 @@ Installeret for nylig</translation>
 <translation id="6981982820502123353">Hjælpefunktioner</translation>
 <translation id="698231206551913481">Alle filer og lokale data, der er knyttet til denne bruger, slettes permanent, når brugeren fjernes.</translation>
 <translation id="7005239792648594238">Åbn en app for at komme i gang</translation>
-<translation id="7007983414944123363">Din pin- eller adgangskode kunne ikke bekræftes. Prøv igen.</translation>
+<translation id="7007983414944123363">Din pin- eller adgangskode kunne ikke verificeres. Prøv igen.</translation>
 <translation id="7014684956566476813">Forbundet til en enhed ved navn <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Vend tilbage kl. <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Skrivebord 6</translation>
@@ -1448,7 +1448,7 @@ Installeret for nylig</translation>
 <translation id="8841375032071747811">Knappen Tilbage</translation>
 <translation id="8843682306134542540">Slå Lås rotation til eller fra. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Søg+Esc</translation>
-<translation id="8853703225951107899">Din pin- eller adgangskode kan stadig ikke bekræftes. Bemærk! Hvis du har ændret din adgangskode for nylig, skal du bruge din gamle adgangskode. Den nye adgangskode anvendes, når du har logget ud.</translation>
+<translation id="8853703225951107899">Din pin- eller adgangskode kan stadig ikke verificeres. Bemærk! Hvis du har ændret din adgangskode for nylig, skal du bruge din gamle adgangskode. Den nye adgangskode anvendes, når du har logget ud.</translation>
 <translation id="8855885154700222542">Tast til fuld skærm</translation>
 <translation id="8870509716567206129">Appen understøtter ikke opdelt skærm.</translation>
 <translation id="8874184842967597500">Ikke forbundet</translation>

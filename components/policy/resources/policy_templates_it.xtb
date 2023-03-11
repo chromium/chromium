@@ -7997,7 +7997,7 @@ Se lo imposti su Enabled o se non lo configuri, i tuoi utenti potranno attivare 
 Se configuri questo criterio, il criterio <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> deve essere impostato su Disabled.</translation>
 <translation id="8559221882677768248">Disattiva Seleziona per ascoltare nella schermata di accesso</translation>
 <translation id="8566842294717252664">Nascondi il Web Store nella pagina Nuova scheda e in Avvio applicazioni</translation>
-<translation id="8571314270766672278">Esegui il rollback e il ripristino del dispositivo con un downgrade del canale, prova a mantenere la registrazione</translation>
+<translation id="8571314270766672278">Esegui il rollback e il reset del dispositivo con un downgrade del canale, prova a mantenere la registrazione</translation>
 <translation id="8571871284943706125">Segnala eventi di sessioni CRD su dispositivi registrati per utenti affiliati.
 
       Se il criterio viene disattivato o se non viene configurato, le informazioni non vengono segnalate.
