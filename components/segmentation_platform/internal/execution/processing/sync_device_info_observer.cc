@@ -22,14 +22,15 @@ using FormFactor = syncer ::DeviceInfo::FormFactor;
 
 namespace {
 
-constexpr int kDefaultActiveDaysThreshold = 14;
+constexpr int kActiveDaysThresholdForMetrics = 14;
+constexpr int kActiveDayThresholdForInputDelegate = 60;
 
 #define AS_FLOAT_VAL(x) ProcessedValue(static_cast<float>(x))
 
 base::TimeDelta GetActivePeriodForMetrics() {
   return base::Days(base::GetFieldTrialParamByFeatureAsInt(
       kSegmentationDeviceCountByOsType, "active_days_threshold",
-      kDefaultActiveDaysThreshold));
+      kActiveDaysThresholdForMetrics));
 }
 
 base::TimeDelta Age(base::Time last_update, base::Time now) {
@@ -186,7 +187,7 @@ void SyncDeviceInfoObserver::ReadyToFinishProcessing(
     return;
   }
 
-  int active_threshold = kDefaultActiveDaysThreshold;
+  int active_threshold = kActiveDayThresholdForInputDelegate;
   if (input_context) {
     auto input_context_iter =
         input_context->metadata_args.find("active_days_limit");
