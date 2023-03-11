@@ -181,7 +181,8 @@ enum class NotificationCatalogName {
   kLockScreen = 166,
   kWebAppSettings = 167,
   kEOLIncentive = 168,
-  kMaxValue = kEOLIncentive
+  kHotspot = 169,
+  kMaxValue = kHotspot
 };
 
 // A living catalog that registers system nudges.

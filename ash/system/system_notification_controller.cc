@@ -12,6 +12,7 @@
 #include "ash/system/lock_screen_notification_controller.h"
 #include "ash/system/network/auto_connect_notifier.h"
 #include "ash/system/network/cellular_setup_notifier.h"
+#include "ash/system/network/hotspot_notifier.h"
 #include "ash/system/network/managed_sim_lock_notifier.h"
 #include "ash/system/network/wifi_toggle_notification_controller.h"
 #include "ash/system/power/power_notification_controller.h"
@@ -61,6 +62,9 @@ SystemNotificationController::SystemNotificationController()
   if (features::IsSimLockPolicyEnabled()) {
     managed_sim_lock_notifier_ =
         std::make_unique<ash::ManagedSimLockNotifier>();
+  }
+  if (features::IsHotspotEnabled()) {
+    hotspot_notifier_ = std::make_unique<ash::HotspotNotifier>();
   }
 }
 

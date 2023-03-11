@@ -2472,6 +2472,18 @@ Connect your device to power.
       <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_DISCOVERABLE" desc="Toast shown when a Bluetooth adapter is discoverable.">
         "<ph name="NAME">$1<ex>Chromebook</ex></ph>" visible to Bluetooth devices.
       </message>
+      <message name="IDS_ASH_HOTSPOT_ON_TITLE" desc="Title used for the system notification shown when the hotspot is turned on.">
+        Hotspot is on
+      </message>
+      <message name="IDS_ASH_HOTSPOT_OFF_TITLE" desc="Title used for the system notification shown when the hotspot is turned off.">
+        Hotspot is off
+      </message>
+      <message name="IDS_ASH_HOTSPOT_WIFI_TURNED_OFF_MESSAGE" desc="Message displayed in the system notification shown when WiFi is turned off upon enabling hotspot.">
+        We've turned off the WiFi to start using Hotspot through Mobile data. This may incur data costs.
+      </message>
+      <message name="IDS_ASH_HOTSPOT_ADMIN_RESTRICTED_MESSAGE" desc="Message displayed in the system notification shown when the hotspot is turned off by the administrator.">
+        Your administrator has turned Hotspot off.
+      </message>
       <message name="IDS_ASH_NETWORK_AUTOCONNECT" desc="Text used for the toast shown when a network has been auto-connected (e.g., when an enterprise policy is applied which initiates a connection to a corporate network like Google-A).">
         We've switched you to a better network
       </message>
