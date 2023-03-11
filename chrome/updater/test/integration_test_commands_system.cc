@@ -100,13 +100,12 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
   void ExpectUpdateCheckSequence(
       ScopedServer* test_server,
       const std::string& app_id,
-      const std::string& install_data_index,
       UpdateService::Priority priority,
       const base::Version& from_version,
       const base::Version& to_version) const override {
-    updater::test::ExpectUpdateCheckSequence(
-        updater_scope_, test_server, app_id, install_data_index, priority,
-        from_version, to_version);
+    updater::test::ExpectUpdateCheckSequence(updater_scope_, test_server,
+                                             app_id, priority, from_version,
+                                             to_version);
   }
 
   void ExpectUpdateSequence(ScopedServer* test_server,
@@ -204,13 +203,14 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
                {Param("exit_code", base::NumberToString(expected_exit_code))});
   }
 
+  void CheckForUpdate(const std::string& app_id) const override {
+    RunCommand("check_for_update", {Param("app_id", app_id)});
+  }
+
   void Update(const std::string& app_id,
-              const std::string& install_data_index,
-              bool do_update_check_only) const override {
+              const std::string& install_data_index) const override {
     RunCommand("update", {Param("app_id", app_id),
-                          Param("install_data_index", install_data_index),
-                          Param("do_update_check_only",
-                                do_update_check_only ? "true" : "false")});
+                          Param("install_data_index", install_data_index)});
   }
 
   void UpdateAll() const override { RunCommand("update_all", {}); }

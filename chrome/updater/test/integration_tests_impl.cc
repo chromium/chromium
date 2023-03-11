@@ -230,15 +230,51 @@ void RunUpdaterWithSwitch(const base::Version& version,
   ASSERT_EQ(exit_code, expected_exit_code);
 }
 
-void ExpectSequence(UpdaterScope scope,
-                    ScopedServer* test_server,
-                    const std::string& app_id,
-                    const std::string& install_data_index,
-                    UpdateService::Priority priority,
-                    int event_type,
-                    const base::Version& from_version,
-                    const base::Version& to_version,
-                    bool is_update_check_only) {
+void ExpectUpdateCheckSequence(UpdaterScope scope,
+                               ScopedServer* test_server,
+                               const std::string& app_id,
+                               UpdateService::Priority priority,
+                               int event_type,
+                               const base::Version& from_version,
+                               const base::Version& to_version) {
+  base::FilePath test_data_path;
+  ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_path));
+  base::FilePath crx_path = test_data_path.Append(FILE_PATH_LITERAL("updater"))
+                                .AppendASCII(kDoNothingCRXName);
+  ASSERT_TRUE(base::PathExists(crx_path));
+
+  // First request: update check.
+  test_server->ExpectOnce(
+      {base::BindRepeating(
+           RequestMatcherRegex,
+           base::StringPrintf(R"(.*"appid":"%s".*)", app_id.c_str())),
+       GetScopePredicate(scope), MatchAppPriority(app_id, priority)},
+      GetUpdateResponse(app_id, "", test_server->base_url().spec(), to_version,
+                        crx_path, kDoNothingCRXRun, {}));
+
+  // Second request: event ping with an error because the update check response
+  // is ignored by the client:
+  // {errorCategory::kService, ServiceError::CHECK_FOR_UPDATE_ONLY}
+  test_server->ExpectOnce(
+      {base::BindRepeating(
+           RequestMatcherRegex,
+           base::StringPrintf(R"(.*"errorcat":4,"errorcode":4,)"
+                              R"("eventresult":0,"eventtype":%d,)"
+                              R"("nextversion":"%s","previousversion":"%s".*)",
+                              event_type, to_version.GetString().c_str(),
+                              from_version.GetString().c_str())),
+       GetScopePredicate(scope)},
+      ")]}'\n");
+}
+
+void ExpectUpdateSequence(UpdaterScope scope,
+                          ScopedServer* test_server,
+                          const std::string& app_id,
+                          const std::string& install_data_index,
+                          UpdateService::Priority priority,
+                          int event_type,
+                          const base::Version& from_version,
+                          const base::Version& to_version) {
   base::FilePath test_data_path;
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_path));
   base::FilePath crx_path = test_data_path.Append(FILE_PATH_LITERAL("updater"))
@@ -265,22 +301,19 @@ void ExpectSequence(UpdaterScope scope,
                         test_server->base_url().spec(), to_version, crx_path,
                         kDoNothingCRXRun, {}));
 
-  if (!is_update_check_only) {
-    // Second request: update download.
-    std::string crx_bytes;
-    base::ReadFileToString(crx_path, &crx_bytes);
-    test_server->ExpectOnce({base::BindRepeating(RequestMatcherRegex, "")},
-                            crx_bytes);
-  }
+  // Second request: update download.
+  std::string crx_bytes;
+  base::ReadFileToString(crx_path, &crx_bytes);
+  test_server->ExpectOnce({base::BindRepeating(RequestMatcherRegex, "")},
+                          crx_bytes);
 
   // Third request: event ping.
   test_server->ExpectOnce(
       {base::BindRepeating(
            RequestMatcherRegex,
-           base::StringPrintf(R"(.*"eventresult":%d,"eventtype":%d,)"
+           base::StringPrintf(R"(.*"eventresult":1,"eventtype":%d,)"
                               R"("nextversion":"%s","previousversion":"%s".*)",
-                              !is_update_check_only, event_type,
-                              to_version.GetString().c_str(),
+                              event_type, to_version.GetString().c_str(),
                               from_version.GetString().c_str())),
        GetScopePredicate(scope)},
       ")]}'\n");
@@ -424,16 +457,25 @@ void RunWakeActive(UpdaterScope scope, int expected_exit_code) {
   RunUpdaterWithSwitch(active_version, scope, kWakeSwitch, expected_exit_code);
 }
 
+void CheckForUpdate(UpdaterScope scope, const std::string& app_id) {
+  scoped_refptr<UpdateService> update_service = CreateUpdateServiceProxy(scope);
+  base::RunLoop loop;
+  update_service->CheckForUpdate(
+      app_id, UpdateService::Priority::kForeground,
+      UpdateService::PolicySameVersionUpdate::kNotAllowed, base::DoNothing(),
+      base::BindLambdaForTesting(
+          [&loop](UpdateService::Result result_unused) { loop.Quit(); }));
+  loop.Run();
+}
+
 void Update(UpdaterScope scope,
             const std::string& app_id,
-            const std::string& install_data_index,
-            bool do_update_check_only) {
+            const std::string& install_data_index) {
   scoped_refptr<UpdateService> update_service = CreateUpdateServiceProxy(scope);
   base::RunLoop loop;
   update_service->Update(
       app_id, install_data_index, UpdateService::Priority::kForeground,
-      UpdateService::PolicySameVersionUpdate::kNotAllowed, do_update_check_only,
-      base::DoNothing(),
+      UpdateService::PolicySameVersionUpdate::kNotAllowed, base::DoNothing(),
       base::BindLambdaForTesting(
           [&loop](UpdateService::Result result_unused) { loop.Quit(); }));
   loop.Run();
@@ -631,12 +673,11 @@ void ExpectSelfUpdateSequence(UpdaterScope scope, ScopedServer* test_server) {
 void ExpectUpdateCheckSequence(UpdaterScope scope,
                                ScopedServer* test_server,
                                const std::string& app_id,
-                               const std::string& install_data_index,
                                UpdateService::Priority priority,
                                const base::Version& from_version,
                                const base::Version& to_version) {
-  ExpectSequence(scope, test_server, app_id, install_data_index, priority, 3,
-                 from_version, to_version, /*is_update_check_only*/ true);
+  ExpectUpdateCheckSequence(scope, test_server, app_id, priority,
+                            /*event_type=*/3, from_version, to_version);
 }
 
 void ExpectUpdateSequence(UpdaterScope scope,
@@ -646,8 +687,8 @@ void ExpectUpdateSequence(UpdaterScope scope,
                           UpdateService::Priority priority,
                           const base::Version& from_version,
                           const base::Version& to_version) {
-  ExpectSequence(scope, test_server, app_id, install_data_index, priority, 3,
-                 from_version, to_version, /*is_update_check_only*/ false);
+  ExpectUpdateSequence(scope, test_server, app_id, install_data_index, priority,
+                       /*event_type=*/3, from_version, to_version);
 }
 
 void ExpectInstallSequence(UpdaterScope scope,
@@ -657,8 +698,8 @@ void ExpectInstallSequence(UpdaterScope scope,
                            UpdateService::Priority priority,
                            const base::Version& from_version,
                            const base::Version& to_version) {
-  ExpectSequence(scope, test_server, app_id, install_data_index, priority, 2,
-                 from_version, to_version, /*is_update_check_only*/ false);
+  ExpectUpdateSequence(scope, test_server, app_id, install_data_index, priority,
+                       /*event_type=*/2, from_version, to_version);
 }
 
 // Runs multiple cycles of instantiating the update service, calling
@@ -749,7 +790,6 @@ void CallServiceUpdate(UpdaterScope updater_scope,
   service_proxy->Update(
       app_id, install_data_index, UpdateService::Priority::kForeground,
       policy_same_version_update,
-      /*do_update_check_only=*/false,
       base::BindLambdaForTesting([](const UpdateService::UpdateState&) {}),
       base::BindLambdaForTesting([&](UpdateService::Result result) {
         EXPECT_EQ(result, UpdateService::Result::kSuccess);

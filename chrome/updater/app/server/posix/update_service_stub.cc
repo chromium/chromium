@@ -285,6 +285,7 @@ void UpdateServiceStub::Update(
     bool do_update_check_only,
     UpdateCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!do_update_check_only);
   task_start_listener_.Run();
   auto observer = std::make_unique<mojo::Remote<mojom::StateChangeObserver>>();
   std::move(callback).Run(observer->BindNewPipeAndPassReceiver());
@@ -295,7 +296,7 @@ void UpdateServiceStub::Update(
                 static_cast<updater::UpdateService::Priority>(priority),
                 static_cast<updater::UpdateService::PolicySameVersionUpdate>(
                     policy_same_version_update),
-                do_update_check_only, state_change_callback,
+                state_change_callback,
                 std::move(on_complete_callback).Then(task_end_listener_));
 }
 

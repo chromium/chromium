@@ -1078,6 +1078,9 @@ HRESULT DoLoopUntilDone(Microsoft::WRL::ComPtr<IAppBundleWeb> bundle,
   return S_OK;
 }
 
+// TODO(crbug.com/1396103): fix after implementing `CheckForUpdate`. This
+// implementation seems wrong because it calls `CheckForUpdate` to do an
+// update.
 HRESULT DoUpdate(UpdaterScope scope,
                  const base::win::ScopedBstr& appid,
                  int expected_final_state,

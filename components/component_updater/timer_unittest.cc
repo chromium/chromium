@@ -12,8 +12,6 @@
 #include "components/component_updater/timer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using std::string;
-
 namespace component_updater {
 
 class ComponentUpdaterTimerTest : public testing::Test {

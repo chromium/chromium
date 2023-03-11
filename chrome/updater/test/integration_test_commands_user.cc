@@ -80,13 +80,12 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
   void ExpectUpdateCheckSequence(
       ScopedServer* test_server,
       const std::string& app_id,
-      const std::string& install_data_index,
       UpdateService::Priority priority,
       const base::Version& from_version,
       const base::Version& to_version) const override {
-    updater::test::ExpectUpdateCheckSequence(
-        updater_scope_, test_server, app_id, install_data_index, priority,
-        from_version, to_version);
+    updater::test::ExpectUpdateCheckSequence(updater_scope_, test_server,
+                                             app_id, priority, from_version,
+                                             to_version);
   }
 
   void ExpectUpdateSequence(ScopedServer* test_server,
@@ -183,11 +182,13 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::RunWakeActive(updater_scope_, exit_code);
   }
 
+  void CheckForUpdate(const std::string& app_id) const override {
+    updater::test::CheckForUpdate(updater_scope_, app_id);
+  }
+
   void Update(const std::string& app_id,
-              const std::string& install_data_index,
-              bool do_update_check_only) const override {
-    updater::test::Update(updater_scope_, app_id, install_data_index,
-                          do_update_check_only);
+              const std::string& install_data_index) const override {
+    updater::test::Update(updater_scope_, app_id, install_data_index);
   }
 
   void UpdateAll() const override { updater::test::UpdateAll(updater_scope_); }

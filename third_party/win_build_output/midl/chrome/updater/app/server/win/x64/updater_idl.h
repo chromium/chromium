@@ -1629,9 +1629,6 @@ EXTERN_C const IID IID_IUpdater;
         virtual HRESULT STDMETHODCALLTYPE FetchPolicies( 
             /* [in] */ IUpdaterCallback *callback) = 0;
         
-        virtual HRESULT STDMETHODCALLTYPE CheckForUpdate( 
-            /* [string][in] */ const WCHAR *app_id) = 0;
-        
         virtual HRESULT STDMETHODCALLTYPE RegisterApp( 
             /* [string][in] */ const WCHAR *app_id,
             /* [string][in] */ const WCHAR *brand_code,
@@ -1644,12 +1641,17 @@ EXTERN_C const IID IID_IUpdater;
         virtual HRESULT STDMETHODCALLTYPE RunPeriodicTasks( 
             /* [in] */ IUpdaterCallback *callback) = 0;
         
+        virtual HRESULT STDMETHODCALLTYPE CheckForUpdate( 
+            /* [string][in] */ const WCHAR *app_id,
+            /* [in] */ LONG priority,
+            /* [in] */ BOOL same_version_update_allowed,
+            /* [in] */ IUpdaterObserver *observer) = 0;
+        
         virtual HRESULT STDMETHODCALLTYPE Update( 
             /* [string][in] */ const WCHAR *app_id,
             /* [string][in] */ const WCHAR *install_data_index,
             /* [in] */ LONG priority,
             /* [in] */ BOOL same_version_update_allowed,
-            /* [in] */ BOOL do_update_check_only,
             /* [in] */ IUpdaterObserver *observer) = 0;
         
         virtual HRESULT STDMETHODCALLTYPE UpdateAll( 
@@ -1712,11 +1714,6 @@ EXTERN_C const IID IID_IUpdater;
             IUpdater * This,
             /* [in] */ IUpdaterCallback *callback);
         
-        DECLSPEC_XFGVIRT(IUpdater, CheckForUpdate)
-        HRESULT ( STDMETHODCALLTYPE *CheckForUpdate )( 
-            IUpdater * This,
-            /* [string][in] */ const WCHAR *app_id);
-        
         DECLSPEC_XFGVIRT(IUpdater, RegisterApp)
         HRESULT ( STDMETHODCALLTYPE *RegisterApp )( 
             IUpdater * This,
@@ -1733,6 +1730,14 @@ EXTERN_C const IID IID_IUpdater;
             IUpdater * This,
             /* [in] */ IUpdaterCallback *callback);
         
+        DECLSPEC_XFGVIRT(IUpdater, CheckForUpdate)
+        HRESULT ( STDMETHODCALLTYPE *CheckForUpdate )( 
+            IUpdater * This,
+            /* [string][in] */ const WCHAR *app_id,
+            /* [in] */ LONG priority,
+            /* [in] */ BOOL same_version_update_allowed,
+            /* [in] */ IUpdaterObserver *observer);
+        
         DECLSPEC_XFGVIRT(IUpdater, Update)
         HRESULT ( STDMETHODCALLTYPE *Update )( 
             IUpdater * This,
@@ -1740,7 +1745,6 @@ EXTERN_C const IID IID_IUpdater;
             /* [string][in] */ const WCHAR *install_data_index,
             /* [in] */ LONG priority,
             /* [in] */ BOOL same_version_update_allowed,
-            /* [in] */ BOOL do_update_check_only,
             /* [in] */ IUpdaterObserver *observer);
         
         DECLSPEC_XFGVIRT(IUpdater, UpdateAll)
@@ -1806,17 +1810,17 @@ EXTERN_C const IID IID_IUpdater;
 #define IUpdater_FetchPolicies(This,callback)	\
     ( (This)->lpVtbl -> FetchPolicies(This,callback) ) 
 
-#define IUpdater_CheckForUpdate(This,app_id)	\
-    ( (This)->lpVtbl -> CheckForUpdate(This,app_id) ) 
-
 #define IUpdater_RegisterApp(This,app_id,brand_code,brand_path,tag,version,existence_checker_path,callback)	\
     ( (This)->lpVtbl -> RegisterApp(This,app_id,brand_code,brand_path,tag,version,existence_checker_path,callback) ) 
 
 #define IUpdater_RunPeriodicTasks(This,callback)	\
     ( (This)->lpVtbl -> RunPeriodicTasks(This,callback) ) 
 
-#define IUpdater_Update(This,app_id,install_data_index,priority,same_version_update_allowed,do_update_check_only,observer)	\
-    ( (This)->lpVtbl -> Update(This,app_id,install_data_index,priority,same_version_update_allowed,do_update_check_only,observer) ) 
+#define IUpdater_CheckForUpdate(This,app_id,priority,same_version_update_allowed,observer)	\
+    ( (This)->lpVtbl -> CheckForUpdate(This,app_id,priority,same_version_update_allowed,observer) ) 
+
+#define IUpdater_Update(This,app_id,install_data_index,priority,same_version_update_allowed,observer)	\
+    ( (This)->lpVtbl -> Update(This,app_id,install_data_index,priority,same_version_update_allowed,observer) ) 
 
 #define IUpdater_UpdateAll(This,observer)	\
     ( (This)->lpVtbl -> UpdateAll(This,observer) ) 
@@ -1862,9 +1866,6 @@ EXTERN_C const IID IID_IUpdaterUser;
         virtual HRESULT STDMETHODCALLTYPE FetchPolicies( 
             /* [in] */ IUpdaterCallbackUser *callback) = 0;
         
-        virtual HRESULT STDMETHODCALLTYPE CheckForUpdate( 
-            /* [string][in] */ const WCHAR *app_id) = 0;
-        
         virtual HRESULT STDMETHODCALLTYPE RegisterApp( 
             /* [string][in] */ const WCHAR *app_id,
             /* [string][in] */ const WCHAR *brand_code,
@@ -1877,12 +1878,17 @@ EXTERN_C const IID IID_IUpdaterUser;
         virtual HRESULT STDMETHODCALLTYPE RunPeriodicTasks( 
             /* [in] */ IUpdaterCallbackUser *callback) = 0;
         
+        virtual HRESULT STDMETHODCALLTYPE CheckForUpdate( 
+            /* [string][in] */ const WCHAR *app_id,
+            /* [in] */ LONG priority,
+            /* [in] */ BOOL same_version_update_allowed,
+            /* [in] */ IUpdaterObserverUser *observer) = 0;
+        
         virtual HRESULT STDMETHODCALLTYPE Update( 
             /* [string][in] */ const WCHAR *app_id,
             /* [string][in] */ const WCHAR *install_data_index,
             /* [in] */ LONG priority,
             /* [in] */ BOOL same_version_update_allowed,
-            /* [in] */ BOOL do_update_check_only,
             /* [in] */ IUpdaterObserverUser *observer) = 0;
         
         virtual HRESULT STDMETHODCALLTYPE UpdateAll( 
@@ -1945,11 +1951,6 @@ EXTERN_C const IID IID_IUpdaterUser;
             IUpdaterUser * This,
             /* [in] */ IUpdaterCallbackUser *callback);
         
-        DECLSPEC_XFGVIRT(IUpdaterUser, CheckForUpdate)
-        HRESULT ( STDMETHODCALLTYPE *CheckForUpdate )( 
-            IUpdaterUser * This,
-            /* [string][in] */ const WCHAR *app_id);
-        
         DECLSPEC_XFGVIRT(IUpdaterUser, RegisterApp)
         HRESULT ( STDMETHODCALLTYPE *RegisterApp )( 
             IUpdaterUser * This,
@@ -1966,6 +1967,14 @@ EXTERN_C const IID IID_IUpdaterUser;
             IUpdaterUser * This,
             /* [in] */ IUpdaterCallbackUser *callback);
         
+        DECLSPEC_XFGVIRT(IUpdaterUser, CheckForUpdate)
+        HRESULT ( STDMETHODCALLTYPE *CheckForUpdate )( 
+            IUpdaterUser * This,
+            /* [string][in] */ const WCHAR *app_id,
+            /* [in] */ LONG priority,
+            /* [in] */ BOOL same_version_update_allowed,
+            /* [in] */ IUpdaterObserverUser *observer);
+        
         DECLSPEC_XFGVIRT(IUpdaterUser, Update)
         HRESULT ( STDMETHODCALLTYPE *Update )( 
             IUpdaterUser * This,
@@ -1973,7 +1982,6 @@ EXTERN_C const IID IID_IUpdaterUser;
             /* [string][in] */ const WCHAR *install_data_index,
             /* [in] */ LONG priority,
             /* [in] */ BOOL same_version_update_allowed,
-            /* [in] */ BOOL do_update_check_only,
             /* [in] */ IUpdaterObserverUser *observer);
         
         DECLSPEC_XFGVIRT(IUpdaterUser, UpdateAll)
@@ -2039,17 +2047,17 @@ EXTERN_C const IID IID_IUpdaterUser;
 #define IUpdaterUser_FetchPolicies(This,callback)	\
     ( (This)->lpVtbl -> FetchPolicies(This,callback) ) 
 
-#define IUpdaterUser_CheckForUpdate(This,app_id)	\
-    ( (This)->lpVtbl -> CheckForUpdate(This,app_id) ) 
-
 #define IUpdaterUser_RegisterApp(This,app_id,brand_code,brand_path,tag,version,existence_checker_path,callback)	\
     ( (This)->lpVtbl -> RegisterApp(This,app_id,brand_code,brand_path,tag,version,existence_checker_path,callback) ) 
 
 #define IUpdaterUser_RunPeriodicTasks(This,callback)	\
     ( (This)->lpVtbl -> RunPeriodicTasks(This,callback) ) 
 
-#define IUpdaterUser_Update(This,app_id,install_data_index,priority,same_version_update_allowed,do_update_check_only,observer)	\
-    ( (This)->lpVtbl -> Update(This,app_id,install_data_index,priority,same_version_update_allowed,do_update_check_only,observer) ) 
+#define IUpdaterUser_CheckForUpdate(This,app_id,priority,same_version_update_allowed,observer)	\
+    ( (This)->lpVtbl -> CheckForUpdate(This,app_id,priority,same_version_update_allowed,observer) ) 
+
+#define IUpdaterUser_Update(This,app_id,install_data_index,priority,same_version_update_allowed,observer)	\
+    ( (This)->lpVtbl -> Update(This,app_id,install_data_index,priority,same_version_update_allowed,observer) ) 
 
 #define IUpdaterUser_UpdateAll(This,observer)	\
     ( (This)->lpVtbl -> UpdateAll(This,observer) ) 
@@ -2095,9 +2103,6 @@ EXTERN_C const IID IID_IUpdaterSystem;
         virtual HRESULT STDMETHODCALLTYPE FetchPolicies( 
             /* [in] */ IUpdaterCallbackSystem *callback) = 0;
         
-        virtual HRESULT STDMETHODCALLTYPE CheckForUpdate( 
-            /* [string][in] */ const WCHAR *app_id) = 0;
-        
         virtual HRESULT STDMETHODCALLTYPE RegisterApp( 
             /* [string][in] */ const WCHAR *app_id,
             /* [string][in] */ const WCHAR *brand_code,
@@ -2110,12 +2115,17 @@ EXTERN_C const IID IID_IUpdaterSystem;
         virtual HRESULT STDMETHODCALLTYPE RunPeriodicTasks( 
             /* [in] */ IUpdaterCallbackSystem *callback) = 0;
         
+        virtual HRESULT STDMETHODCALLTYPE CheckForUpdate( 
+            /* [string][in] */ const WCHAR *app_id,
+            /* [in] */ LONG priority,
+            /* [in] */ BOOL same_version_update_allowed,
+            /* [in] */ IUpdaterObserverSystem *observer) = 0;
+        
         virtual HRESULT STDMETHODCALLTYPE Update( 
             /* [string][in] */ const WCHAR *app_id,
             /* [string][in] */ const WCHAR *install_data_index,
             /* [in] */ LONG priority,
             /* [in] */ BOOL same_version_update_allowed,
-            /* [in] */ BOOL do_update_check_only,
             /* [in] */ IUpdaterObserverSystem *observer) = 0;
         
         virtual HRESULT STDMETHODCALLTYPE UpdateAll( 
@@ -2178,11 +2188,6 @@ EXTERN_C const IID IID_IUpdaterSystem;
             IUpdaterSystem * This,
             /* [in] */ IUpdaterCallbackSystem *callback);
         
-        DECLSPEC_XFGVIRT(IUpdaterSystem, CheckForUpdate)
-        HRESULT ( STDMETHODCALLTYPE *CheckForUpdate )( 
-            IUpdaterSystem * This,
-            /* [string][in] */ const WCHAR *app_id);
-        
         DECLSPEC_XFGVIRT(IUpdaterSystem, RegisterApp)
         HRESULT ( STDMETHODCALLTYPE *RegisterApp )( 
             IUpdaterSystem * This,
@@ -2199,6 +2204,14 @@ EXTERN_C const IID IID_IUpdaterSystem;
             IUpdaterSystem * This,
             /* [in] */ IUpdaterCallbackSystem *callback);
         
+        DECLSPEC_XFGVIRT(IUpdaterSystem, CheckForUpdate)
+        HRESULT ( STDMETHODCALLTYPE *CheckForUpdate )( 
+            IUpdaterSystem * This,
+            /* [string][in] */ const WCHAR *app_id,
+            /* [in] */ LONG priority,
+            /* [in] */ BOOL same_version_update_allowed,
+            /* [in] */ IUpdaterObserverSystem *observer);
+        
         DECLSPEC_XFGVIRT(IUpdaterSystem, Update)
         HRESULT ( STDMETHODCALLTYPE *Update )( 
             IUpdaterSystem * This,
@@ -2206,7 +2219,6 @@ EXTERN_C const IID IID_IUpdaterSystem;
             /* [string][in] */ const WCHAR *install_data_index,
             /* [in] */ LONG priority,
             /* [in] */ BOOL same_version_update_allowed,
-            /* [in] */ BOOL do_update_check_only,
             /* [in] */ IUpdaterObserverSystem *observer);
         
         DECLSPEC_XFGVIRT(IUpdaterSystem, UpdateAll)
@@ -2272,17 +2284,17 @@ EXTERN_C const IID IID_IUpdaterSystem;
 #define IUpdaterSystem_FetchPolicies(This,callback)	\
     ( (This)->lpVtbl -> FetchPolicies(This,callback) ) 
 
-#define IUpdaterSystem_CheckForUpdate(This,app_id)	\
-    ( (This)->lpVtbl -> CheckForUpdate(This,app_id) ) 
-
 #define IUpdaterSystem_RegisterApp(This,app_id,brand_code,brand_path,tag,version,existence_checker_path,callback)	\
     ( (This)->lpVtbl -> RegisterApp(This,app_id,brand_code,brand_path,tag,version,existence_checker_path,callback) ) 
 
 #define IUpdaterSystem_RunPeriodicTasks(This,callback)	\
     ( (This)->lpVtbl -> RunPeriodicTasks(This,callback) ) 
 
-#define IUpdaterSystem_Update(This,app_id,install_data_index,priority,same_version_update_allowed,do_update_check_only,observer)	\
-    ( (This)->lpVtbl -> Update(This,app_id,install_data_index,priority,same_version_update_allowed,do_update_check_only,observer) ) 
+#define IUpdaterSystem_CheckForUpdate(This,app_id,priority,same_version_update_allowed,observer)	\
+    ( (This)->lpVtbl -> CheckForUpdate(This,app_id,priority,same_version_update_allowed,observer) ) 
+
+#define IUpdaterSystem_Update(This,app_id,install_data_index,priority,same_version_update_allowed,observer)	\
+    ( (This)->lpVtbl -> Update(This,app_id,install_data_index,priority,same_version_update_allowed,observer) ) 
 
 #define IUpdaterSystem_UpdateAll(This,observer)	\
     ( (This)->lpVtbl -> UpdateAll(This,observer) ) 

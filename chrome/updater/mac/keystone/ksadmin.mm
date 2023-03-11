@@ -447,7 +447,6 @@ void KSAdminApp::DoCheckForUpdates(UpdaterScope scope) {
       HasSwitch(kCommandUserInitiated) ? UpdateService::Priority::kForeground
                                        : UpdateService::Priority::kBackground,
       UpdateService::PolicySameVersionUpdate::kNotAllowed,
-      /*do_update_check_only=*/false,
       base::BindRepeating([](const UpdateService::UpdateState& update_state) {
         if (update_state.state == UpdateService::UpdateState::State::kUpdated) {
           printf("Finished updating (errors=%d reboot=%s)\n", 0, "YES");

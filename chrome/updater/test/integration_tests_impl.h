@@ -107,8 +107,11 @@ void RunWakeActive(UpdaterScope scope, int exit_code);
 // Invokes the active instance's UpdateService::Update (via RPC) for an app.
 void Update(UpdaterScope scope,
             const std::string& app_id,
-            const std::string& install_data_index,
-            bool do_update_check_only);
+            const std::string& install_data_index);
+
+// Invokes the active instance's UpdateService::CheckForUpdate (via RPC) for an
+// app.
+void CheckForUpdate(UpdaterScope scope, const std::string& app_id);
 
 // Invokes the active instance's UpdateService::UpdateAll (via RPC).
 void UpdateAll(UpdaterScope scope);
@@ -216,7 +219,6 @@ void ExpectSelfUpdateSequence(UpdaterScope scope, ScopedServer* test_server);
 void ExpectUpdateCheckSequence(UpdaterScope scope,
                                ScopedServer* test_server,
                                const std::string& app_id,
-                               const std::string& install_data_index,
                                UpdateService::Priority priority,
                                const base::Version& from_version,
                                const base::Version& to_version);

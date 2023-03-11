@@ -36,8 +36,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
 
-using std::string;
-
 namespace update_client {
 
 class PingManagerTest : public testing::Test,
@@ -136,7 +134,8 @@ scoped_refptr<UpdateContext> PingManagerTest::MakeMockUpdateContext() const {
       false, false, std::vector<std::string>(),
       UpdateClient::CrxStateChangeCallback(),
       UpdateEngine::NotifyObserversCallback(), UpdateEngine::Callback(),
-      nullptr);
+      nullptr,
+      /*is_update_check_only=*/false);
 }
 
 // This test is parameterized for using JSON or XML serialization. |true| means

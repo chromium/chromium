@@ -461,6 +461,14 @@ class UpdateClient : public base::RefCountedThreadSafe<UpdateClient> {
       CrxStateChangeCallback crx_state_change_callback,
       Callback callback) = 0;
 
+  // Does an update check with the server, gets an update response, but it does
+  // not continue further with downloading, nor installing the payload.
+  virtual void CheckForUpdate(const std::string& id,
+                              CrxDataCallback crx_data_callback,
+                              CrxStateChangeCallback crx_state_change_callback,
+                              bool is_foreground,
+                              Callback callback) = 0;
+
   // Updates the specified CRXs. Calls back on |crx_data_callback| before the
   // update is attempted to give the caller the opportunity to provide the
   // instances of CrxComponent to be used for this update. Provides state change

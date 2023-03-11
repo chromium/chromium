@@ -223,11 +223,16 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
   // applications or doing background updates for registered applications.
   virtual void RunPeriodicTasks(base::OnceClosure callback) = 0;
 
-  // Initiates an update check for all registered applications. Receives state
-  // change notifications through the repeating `state_update` callback.
-  // Calls `callback` once  the operation is complete.
-  virtual void UpdateAll(StateChangeCallback state_update,
-                         Callback callback) = 0;
+  // DEPRECATED - queries the server for updates, gets an update response, but
+  // does not download, install, or run any payload. This is intended to
+  // support the legacy on-demand Omaha interface but it should not be used
+  // by new code. The parameters are similar to the parameters of `Update`.
+  virtual void CheckForUpdate(
+      const std::string& app_id,
+      Priority priority,
+      PolicySameVersionUpdate policy_same_version_update,
+      StateChangeCallback state_update,
+      Callback callback) = 0;
 
   // Updates specified product. This update may be on-demand.
   //
@@ -236,7 +241,6 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
   //   `install_data_index`: Index of the server install data.
   //   `priority`: Priority for processing this update.
   //   `policy_same_version_update`: Whether a same-version update is allowed.
-  //   `do_update_check_only`: Only checks for updates if `true`.
   //   `state_update`: The callback will be invoked every time the update
   //     changes state when the engine starts. It will be called on the
   //     sequence used by the update service, so this callback must not block.
@@ -253,9 +257,14 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
                       const std::string& install_data_index,
                       Priority priority,
                       PolicySameVersionUpdate policy_same_version_update,
-                      bool do_update_check_only,
                       StateChangeCallback state_update,
                       Callback callback) = 0;
+
+  // Initiates an update check for all registered applications. Receives state
+  // change notifications through the repeating `state_update` callback.
+  // Calls `callback` once  the operation is complete.
+  virtual void UpdateAll(StateChangeCallback state_update,
+                         Callback callback) = 0;
 
   // Registers and installs an application from the network.
   //

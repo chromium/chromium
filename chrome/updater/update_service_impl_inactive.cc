@@ -37,7 +37,7 @@ class UpdateServiceImplInactive : public UpdateService {
     std::move(callback).Run(-1);
   }
 
-  void RegisterApp(const RegistrationRequest& request,
+  void RegisterApp(const RegistrationRequest& /*request*/,
                    base::OnceCallback<void(int)> callback) override {
     VLOG(1) << __func__ << " (Inactive)";
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -57,7 +57,11 @@ class UpdateServiceImplInactive : public UpdateService {
     std::move(callback).Run();
   }
 
-  void UpdateAll(StateChangeCallback state_update, Callback callback) override {
+  void CheckForUpdate(const std::string& /*app_id*/,
+                      Priority /*priority*/,
+                      PolicySameVersionUpdate /*policy_same_version_update*/,
+                      StateChangeCallback /*state_update*/,
+                      Callback callback) override {
     VLOG(1) << __func__ << " (Inactive)";
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
@@ -68,9 +72,16 @@ class UpdateServiceImplInactive : public UpdateService {
               const std::string& /*install_data_index*/,
               Priority /*priority*/,
               PolicySameVersionUpdate /*policy_same_version_update*/,
-              bool /*do_update_check_only*/,
               StateChangeCallback /*state_update*/,
               Callback callback) override {
+    VLOG(1) << __func__ << " (Inactive)";
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), UpdateService::Result::kInactive));
+  }
+
+  void UpdateAll(StateChangeCallback /*state_update*/,
+                 Callback callback) override {
     VLOG(1) << __func__ << " (Inactive)";
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,

@@ -856,15 +856,13 @@ The interface provides the version of the update, if an update is available.
 Regardless of the normal update check timing, the update check is attempted
 immediately.
 
+The RPC function UpdateService::CheckForUpdate discovers if updates are
+available. By calling this function, a client can check for updates, retrieve
+an update response, inspect the availability of an update but not apply the
+update.
 See
 [chrome/updater/update_service.h](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/update_service.h)
 for the `UpdateService` RPC interface definition.
-
-There are two broad modes in which `UpdateService::Update` operates:
-* `do_update_check_only` is `true`: `UpdateService::Update` only checks if there
-  is an update.
-* `do_update_check_only` is `false`: `UpdateService::Update` checks if there is
-  an update and also applies the update if there is one available.
 
 ### App Registration
 The updater exposes an RPC interface for users to register an application with

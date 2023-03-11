@@ -39,10 +39,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-using std::string;
-
 namespace update_client {
-
 namespace {
 
 base::FilePath test_file(const char* file) {
@@ -201,7 +198,8 @@ scoped_refptr<UpdateContext> UpdateCheckerTest::MakeMockUpdateContext() const {
       false, false, std::vector<std::string>(),
       UpdateClient::CrxStateChangeCallback(),
       UpdateEngine::NotifyObserversCallback(), UpdateEngine::Callback(),
-      nullptr);
+      nullptr,
+      /*is_update_check_only=*/false);
 }
 
 std::unique_ptr<Component> UpdateCheckerTest::MakeComponent() const {
@@ -575,7 +573,7 @@ TEST_P(UpdateCheckerTest, UpdateCheckDownloadPreference) {
       std::make_unique<PartialMatch>("updatecheck"),
       test_file("updatecheck_reply_1.json")));
 
-  config_->SetDownloadPreference(string("cacheable"));
+  config_->SetDownloadPreference(std::string("cacheable"));
 
   update_checker_ = UpdateChecker::Create(config_, metadata_.get());
 

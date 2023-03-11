@@ -179,8 +179,12 @@ class UpdaterIPCTestCase : public testing::Test {
                 (base::OnceClosure callback),
                 (override));
     MOCK_METHOD(void,
-                UpdateAll,
-                (StateChangeCallback state_update, Callback callback),
+                CheckForUpdate,
+                (const std::string& app_id,
+                 Priority priority,
+                 PolicySameVersionUpdate policy_same_version_update,
+                 StateChangeCallback state_update,
+                 Callback callback),
                 (override));
     MOCK_METHOD(void,
                 Update,
@@ -188,9 +192,12 @@ class UpdaterIPCTestCase : public testing::Test {
                  const std::string& install_data_index,
                  Priority priority,
                  PolicySameVersionUpdate policy_same_version_update,
-                 bool do_update_check_only,
                  StateChangeCallback state_update,
                  Callback callback),
+                (override));
+    MOCK_METHOD(void,
+                UpdateAll,
+                (StateChangeCallback state_update, Callback callback),
                 (override));
     MOCK_METHOD(void,
                 Install,
@@ -263,7 +270,6 @@ TEST_F(UpdaterIPCTestCase, AllRpcsComplete) {
           [](const std::string& app_id, const std::string& install_data_index,
              UpdateService::Priority priority,
              UpdateService::PolicySameVersionUpdate policy_same_version_update,
-             bool do_update_check_only,
              UpdateService::StateChangeCallback state_change_callback,
              UpdateService::Callback callback) {
             EXPECT_EQ(app_id, "ex1");
@@ -409,7 +415,6 @@ MULTIPROCESS_TEST_MAIN(UpdateServiceClient) {
     client_proxy->Update("ex1", "install_data_index",
                          UpdateService::Priority::kBackground,
                          UpdateService::PolicySameVersionUpdate::kAllowed,
-                         /*do_update_check_only=*/false,
                          UpdaterIPCTestCase::ExpectUpdateStatesCallback(),
                          UpdaterIPCTestCase::ExpectResultCallback(run_loop));
     run_loop.Run();
