@@ -50,7 +50,7 @@ CmdBufFuzz::CmdBufFuzz() : base::TestSuite(0, nullptr) {
 }
 
 void CmdBufFuzz::GfxInit() {
-  VLOG(3) << "Detecting platform specific features and setting prefererences "
+  VLOG(3) << "Detecting platform specific features and setting preferences "
              "accordingly";
   gpu::GpuPreferences preferences;
   preferences.enable_webgpu = true;
@@ -183,24 +183,18 @@ void CmdBufFuzz::RuntimeInit() {
 }
 
 gpu::SyncToken CmdBufFuzz::SyncTokenFromProto(fuzzing::SyncToken token_proto) {
-  // A placeholder for namespace_id lets us instantiate a gpu::SyncToken.
-  CommandBufferNamespace placeholder = static_cast<CommandBufferNamespace>(-99);
   // TODO(bookholt): Pick buffer_id from a narrower range of sensible values.
   CommandBufferId buffer_id =
       CommandBufferId::FromUnsafeValue(token_proto.command_buffer_id());
   uint64_t release_count = token_proto.release_count();
-  gpu::SyncToken sync_token(placeholder, buffer_id, release_count);
 
-  // Bogus data structure needed to appease compiler type safety checks.
-  struct SneakySyncToken {
-    bool verified_flush_;
-    int8_t namespace_id_;
-    uint64_t command_buffer_id_;
-    uint64_t release_count_;
-  };
-  SneakySyncToken* sneaky = reinterpret_cast<SneakySyncToken*>(&sync_token);
-  // Overwrite private member namespace_id_ with value from full int8_t range.
-  sneaky->namespace_id_ = static_cast<int8_t>(token_proto.namespace_id());
+  // Limit the range of CommandBufferNamespaceId values because this fuzzer
+  // bypasses Mojo trait validation, but a real renderer cannot.
+  CommandBufferNamespace ns = static_cast<CommandBufferNamespace>(
+      token_proto.namespace_id() %
+      gpu::cmdbuf::fuzzing::CommandBufferNamespaceIds::MAX_VALID);
+
+  gpu::SyncToken sync_token(ns, buffer_id, release_count);
   return sync_token;
 }
 
