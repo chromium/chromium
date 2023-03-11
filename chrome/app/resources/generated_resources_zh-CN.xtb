@@ -1882,6 +1882,9 @@
 <translation id="2642111877055905627">足球</translation>
 <translation id="2643064289437760082">您可随时通过删除浏览数据来删除广告衡量数据</translation>
 <translation id="2643698698624765890">您可以通过点击“窗口”菜单中的“扩展程序”，管理您的扩展程序。</translation>
+<translation id="2643887015830197688">将导航路径升级到 HTTPS，并在加载不支持 HTTPS 的网站前向您发出警告。
+
+    您无法更改此设置，因为您已启用“高级保护”。</translation>
 <translation id="2645047101481282803">您的设备由 <ph name="PROFILE_NAME" /> 管理</translation>
 <translation id="2645388244376970260">正在将此标签页投放到“<ph name="DEVICE_NAME" />”</translation>
 <translation id="2645435784669275700">Chrome 操作系统</translation>
