@@ -84,6 +84,7 @@
 <translation id="1722487484194605434">Zip-þjappar <ph name="NUMBER_OF_ITEMS" /> atriði...</translation>
 <translation id="1722687688096767818">Bætir prófíl við...</translation>
 <translation id="1726100011689679555">Nafnaþjónar</translation>
+<translation id="1727562178154619254">Tilbúið fyrir samstillingu</translation>
 <translation id="1729953886957086472">Þýska (Þýskaland)</translation>
 <translation id="1730235522912993863">Kínverska Cangjie</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> atriði afrituð.</translation>
@@ -704,6 +705,7 @@
 <translation id="6732801395666424405">Vottorð ekki hlaðin</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">Deila möppu með Bruschetta</translation>
+<translation id="6750737795876287924">Núverandi listi</translation>
 <translation id="6751256176799620176">Ein mappa valin</translation>
 <translation id="6755827872271341378">ChromeOS Flex tæki</translation>
 <translation id="6790428901817661496">Spila</translation>
@@ -741,7 +743,6 @@
 <translation id="6973630695168034713">Möppur</translation>
 <translation id="6976795442547527108">Ljón</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979737339423435258">Frá upphafi</translation>
 <translation id="6989942356279143254">Sænska</translation>
 <translation id="6990081529015358884">Plássið er uppurið</translation>
 <translation id="6993826899923627728">Þessi atriði eru í ruslinu</translation>
@@ -797,7 +798,6 @@
 <translation id="7458955835361612701">Engar nýlegar myndir</translation>
 <translation id="7460898608667578234">Úkraínskt</translation>
 <translation id="7469894403370665791">Tengjast þessu neti sjálfkrafa</translation>
-<translation id="7481358317100446445">Tilbúið</translation>
 <translation id="7486315294984620427">Svo hægt sé að sleppa skrám í Parallels Desktop verða þær að vera afritaðar í Windows-skrár.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malayalam hljóðritun</translation>

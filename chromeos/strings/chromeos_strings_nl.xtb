@@ -241,7 +241,6 @@
 <translation id="3226657629376379887">Actiemenu voor indeling</translation>
 <translation id="3246869037381808805">Afdruktaken ouder dan 1 dag worden verwijderd</translation>
 <translation id="3268178239013324452">Mislukt - Klep geopend</translation>
-<translation id="3275506277319227640">Vastzetten op <ph name="DIRECTION" /></translation>
 <translation id="3275729367986477355">Avatar-afbeelding</translation>
 <translation id="3283504360622356314">{0,plural, =1{Bestand bewerken}other{Bestanden bewerken}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
@@ -360,7 +359,6 @@
 <translation id="4311195029067684288">Volledig</translation>
 <translation id="4333390807948134856">Er is op de toets <ph name="KEY_NAME" /> gedrukt</translation>
 <translation id="435692326371619097">Beheer de APN-instellingen voor het netwerk. APN's maken verbinding tussen een mobiel netwerk en internet. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
-<translation id="4370033095251616914">Vastzetten op kleinere kant</translation>
 <translation id="4378373042927530923">Niet uitgevoerd</translation>
 <translation id="4378551569595875038">Verbinden...</translation>
 <translation id="4382484599443659549">Pdf</translation>
@@ -903,7 +901,6 @@
 <translation id="9137526406337347448">Google-services</translation>
 <translation id="9138630967333032450">Shift links</translation>
 <translation id="9149391708638971077">Geheugentest uitvoeren</translation>
-<translation id="9157515863513902090">Vastzetten op grotere kant</translation>
 <translation id="9161276708550942948">spatie</translation>
 <translation id="9173638680043580060">Nog minder dan een minuut</translation>
 <translation id="917720651393141712">Test</translation>

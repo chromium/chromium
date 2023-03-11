@@ -34,6 +34,7 @@
 <translation id="1173894706177603556">إعادة تسمية</translation>
 <translation id="1177863135347784049">مخصص</translation>
 <translation id="1181037720776840403">إزالة</translation>
+<translation id="1181366777303791449">في <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">هل تريد استخدام كلمة مرور قوية؟</translation>
 <translation id="1197267115302279827">نقل الإشارات المرجعية</translation>
 <translation id="1201402288615127009">التالي</translation>
@@ -165,7 +166,6 @@
 <translation id="1928696683969751773">التحديثات</translation>
 <translation id="19288952978244135">‏يُرجى إعادة فتح Chrome.</translation>
 <translation id="1933845786846280168">علامة تبويب محددة</translation>
-<translation id="193571872656840963">شُكر هذا المُنشئ</translation>
 <translation id="1943432128510653496">حفظ كلمات المرور</translation>
 <translation id="1952172573699511566">ستعرض المواقع الإلكترونية النص بلغتك المفضّلة إن أمكن.</translation>
 <translation id="1959679933317802873">جارٍ انتظار عرض المحتوى</translation>
@@ -201,7 +201,6 @@
 <translation id="2122601567107267586">تعذر فتح التطبيق</translation>
 <translation id="2132122640199389833">إزالة جميع الأجهزة المرتبطة</translation>
 <translation id="213279576345780926">تم إغلاق <ph name="TAB_TITLE" /></translation>
-<translation id="2134927169889348449">‏يعني استخدامك لمتصفّح Chrome موافقتك على <ph name="BEGIN_TOS_LINK" />بنود خدمة Google<ph name="END_TOS_LINK" /> و<ph name="BEGIN_ATOS_LINK" />بنود الخدمة الإضافية لكل من متصفّح Google Chrome ونظام التشغيل Chrome<ph name="END_ATOS_LINK" />.</translation>
 <translation id="2139186145475833000">الإضافة إلى الشاشة الرئيسية</translation>
 <translation id="2141396931810938595">حسب معدّل استخدامك</translation>
 <translation id="214888715418183969">‏اختَر ما تريد مشاركته في Chrome. وسيتم استخدام المقاييس التي تشاركها للمساعدة في تحسين ميزات Chrome وأدائه وثباته.</translation>
@@ -555,7 +554,6 @@
 <translation id="409109920254068737">يمكنك استخدام هذا الجهاز اللوحي لتسجيل الدخول على الجهاز الذي يعرض رمز الاستجابة السريعة هذا.</translation>
 <translation id="4095146165863963773">هل ترغب في حذف بيانات التطبيق؟</translation>
 <translation id="4096227151372679484">تم فتح مسار حفظ الإشارات المرجعية في نصف الشاشة.</translation>
-<translation id="4099578267706723511">‏يمكنك المساعدة في تحسين Chrome عن طريق إرسال إحصاءات الاستخدام وتقارير الأعطال إلى Google.</translation>
 <translation id="4101475238162928417">يمكنك تفعيل المزامنة للحصول على كلمات المرور والإشارات المرجعية وغيرها الكثير على أجهزتك الأخرى.</translation>
 <translation id="410351446219883937">التشغيل التلقائي</translation>
 <translation id="4106587138345390261">‏يعمل Chrome على استكشاف ميزات جديدة تتيح للمواقع الإلكترونية توفير تجربة التصفّح ذاتها باستخدام قدر أقل من المعلومات.</translation>
@@ -593,7 +591,6 @@
 <translation id="4269820728363426813">نسخ عنوان الرابط</translation>
 <translation id="4283102315569707115">هل تريد طلب عرض النسخة المتوافقة مع أجهزة الكمبيوتر المكتبي من المواقع الإلكترونية تلقائيًا؟</translation>
 <translation id="4291407919474070700">‏<ph name="BEGIN_LINK" />تفعيل قفل الشاشة في إعدادات Android<ph name="END_LINK" /></translation>
-<translation id="4293476595220860475">‏يعني استخدامك لمتصفّح Chrome موافقتك على <ph name="BEGIN_TOS_LINK" />بنود خدمة Google<ph name="END_TOS_LINK" /> و<ph name="BEGIN_ATOS_LINK" />بنود الخدمة الإضافية لكل من متصفّح Google Chrome ونظام التشغيل Chrome<ph name="END_ATOS_LINK" />، علمًا بأنّ <ph name="BEGIN_PRIVACY_LINK" />سياسة الخصوصية<ph name="END_PRIVACY_LINK" /> تسري أيضًا.</translation>
 <translation id="4296252229500326964">علامة تبويب للتصفّح المتخفي</translation>
 <translation id="4298388696830689168">المواقع المرتبطة</translation>
 <translation id="4303044213806199882">‏chrome_لقطة شاشة_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -766,7 +763,6 @@
 <translation id="5161254044473106830">العنوان مطلوب</translation>
 <translation id="5170568018924773124">العرض في المجلد</translation>
 <translation id="5171045022955879922">‏البحث أو إدخال عنوان URL</translation>
-<translation id="517734441743343109">تشير المتابعة إلى موافقتك على <ph name="BEGIN_TOS_LINK" />بنود الخدمة<ph name="END_TOS_LINK" /> و<ph name="BEGIN_PRIVACY_LINK" />سياسة الخصوصية<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="5184329579814168207">‏فتح في Chrome</translation>
 <translation id="5191251636205085390">يمكنك التعرّف على تقنيات جديدة تهدف إلى استبدال ملفات تعريف الارتباط التابعة لجهات خارجية وكيفية التحكُّم في تلك التقنيات.</translation>
 <translation id="5193988420012215838">تم النسخ إلى الحافظة</translation>
@@ -914,6 +910,7 @@
 <translation id="6002122790816966947">أجهزتك</translation>
 <translation id="6005538289190791541">كلمة المرور المُقترحَة</translation>
 <translation id="6011308810877101166">تحسين اقتراحات البحث</translation>
+<translation id="6026538407078977628">التوسيع إلى وضع ملء الشاشة</translation>
 <translation id="6039379616847168523">الانتقال السريع إلى علامة التبويب التالية</translation>
 <translation id="6040143037577758943">إغلاق</translation>
 <translation id="604124094241169006">تلقائي</translation>
@@ -1186,6 +1183,7 @@
 <translation id="7437998757836447326">‏تسجيل الخروج من Chrome</translation>
 <translation id="7443901082822119557">في وضع التصفّح المتخفي، لا يمكن للمواقع الإلكترونية استخدام ملفات تعريف الارتباط للاطّلاع على نشاط تصفّحك على المواقع الإلكترونية المختلفة، بهدف تقديم إعلانات مخصّصة لك مثلاً. وقد تتوقف الميزات على بعض المواقع الإلكترونية.</translation>
 <translation id="7453467225369441013">‏سيتم تسجيل الخروج من معظم المواقع الإلكترونية، لكن لن يتم تسجيل الخروج من حسابك على Google.</translation>
+<translation id="7453810262525006706">التصغير إلى اللوحة الجانبية</translation>
 <translation id="7454641608352164238">مساحة التخزين غير كافية</translation>
 <translation id="7455988709578031708">تستند مواضيع الإعلانات إلى سجلّ التصفُّح الخاص بك. هذا الإعداد مفعَّل.</translation>
 <translation id="7456774706094330779">التحميل المُسبق الموسّع</translation>

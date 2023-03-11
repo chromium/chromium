@@ -345,6 +345,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1733064249834771892">Schriftarten</translation>
 <translation id="1734864079702812349">American Express</translation>
 <translation id="1734878702283171397">Setze dich mit dem Systemadministrator in Verbindung.</translation>
+<translation id="1736158756193183352"><ph name="BEGIN_LINK" />Anmeldung<ph name="END_LINK" /> im Netzwerk</translation>
 <translation id="1736420071277903564">Computer</translation>
 <translation id="1740951997222943430">Gib einen gültigen Ablaufmonat ein</translation>
 <translation id="1741613555002899862">Muss angegeben werden und ein gültiger String sein, wenn "DnsOverHttpsMode" auf <ph name="SECURE_DNS_MODE_SECURE" /> gesetzt ist.</translation>
@@ -505,6 +506,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2149968176347646218">Verbindung ist nicht sicher</translation>
 <translation id="2153609454945889823">Google Play-Dienste für AR installieren?</translation>
 <translation id="2154484045852737596">Karte bearbeiten</translation>
+<translation id="2154739667870063220">Neu starten</translation>
 <translation id="2155260325161282517">5 × 7 Zoll</translation>
 <translation id="2157640075051554492">Preisbenachrichtigungen</translation>
 <translation id="2161656808144014275">Text</translation>
@@ -893,6 +895,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3215092763954878852">WebAuthn konnte nicht verwendet werden</translation>
 <translation id="3216313131063488104">Blues</translation>
 <translation id="3218181027817787318">Relativ</translation>
+<translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Update jetzt erforderlich}=2{Update bis morgen erforderlich}other{Update innerhalb von # Tagen erforderlich}}</translation>
 <translation id="3223287115535306850">Ladesymbol beim Starten der App</translation>
 <translation id="3223425961342298674">Standortermittlung nicht zulässig</translation>
 <translation id="3225919329040284222">Der Server hat ein Zertifikat übermittelt, das nicht mit den integrierten Erwartungen übereinstimmt. Diese Erwartungen sind zu deinem Schutz in bestimmten Websites mit hohen Sicherheitsstandards enthalten.</translation>
@@ -1190,6 +1193,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3949601375789751990">Hier wird dein Browserverlauf angezeigt</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Keine gespeicherten Zahlungsmethoden</translation>
+<translation id="3950574001630941635">Anleitung neu starten</translation>
 <translation id="3950820424414687140">Anmelden</translation>
 <translation id="3958057596965527988">4 × 4 Zoll</translation>
 <translation id="3961148744525529027">Das Dokument zur Zahlungsabwicklung ist zur Hälfte geöffnet</translation>
@@ -1374,6 +1378,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4350629523305688469">Multifunktionsfach</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> möchte nach Bluetooth-Geräten in der Nähe suchen. Die folgenden Geräte wurden gefunden:</translation>
 <translation id="4351175281479794167">Bestätigungscode eingeben</translation>
+<translation id="4355383636893709732">ChromeOS-Update für Android-Apps</translation>
 <translation id="4356973930735388585">Unbefugte Dritte auf dieser Website versuchen unter Umständen, gefährliche Programme auf deinem Computer zu installieren, um deine Daten zu stehlen oder zu löschen, zum Beispiel Fotos, Passwörter, Nachrichten und Kreditkartendaten.</translation>
 <translation id="4358059973562876591">Die von dir angegebenen Vorlagen können wegen eines Fehlers bei der Richtlinie "DnsOverHttpsMode" nicht angewendet werden.</translation>
 <translation id="4358461427845829800">Zahlungsmethoden verwalten…</translation>
@@ -1754,6 +1759,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5288393065350884210">Buchhaltung und Betriebsprüfung</translation>
 <translation id="5288808348893593856">Websiteverbindungen sind sicher, solange Chrome dich nicht auf eine unsichere Verbindung hinweist.</translation>
 <translation id="5289384342738547352">Handhabung mehrerer Dokumente</translation>
+<translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Update heute erforderlich}=2{Update bis morgen erforderlich}other{Update innerhalb von # Tagen erforderlich}}</translation>
 <translation id="5293919335876685914">Coupés</translation>
 <translation id="5296589789433599000">Kochen und Rezepte</translation>
 <translation id="5299298092464848405">Fehler beim Parsen der Richtlinie</translation>
@@ -1948,6 +1954,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5786044859038896871">Möchtest du deine Kreditkarteninformationen eingeben?</translation>
 <translation id="578633867165174378">Chrome hat das Passwort, das du gerade verwendet hast, in einer Datenpanne gefunden. Wie empfehlen dir, dieses Passwort jetzt zu ändern.</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="580241730938216256">Update starten</translation>
 <translation id="5803412860119678065">Möchtest du die Daten deiner <ph name="CARD_DETAIL" /> eingeben?</translation>
 <translation id="5804241973901381774">Berechtigungen</translation>
 <translation id="5808435672482059465">Chrome-Verlauf ansehen</translation>
@@ -2108,6 +2115,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6218753634732582820">Adresse aus Chromium entfernen?</translation>
 <translation id="622039917539443112">Parallele Faltung</translation>
 <translation id="6221345481584921695">Google Safe Browsing hat kürzlich <ph name="BEGIN_LINK" />Malware<ph name="END_LINK" /> auf <ph name="SITE" /> gefunden. Websites, die in der Regel sicher sind, können gelegentlich mit Malware infiziert sein. Der schädliche Inhalt stammt von <ph name="SUBRESOURCE_HOST" />, einem bekannten Verteiler von Malware.</translation>
+<translation id="6221892641068781024">Vereinfachte Ansicht</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um die Bedienungshilfen in den Chrome-Einstellungen zu personalisieren</translation>
 <translation id="6229649258872345286">Familienreisen</translation>
 <translation id="6232271601416750929">Klare Schönheit</translation>
@@ -2167,6 +2175,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6366710531182496394">Zwei Heftklammern links</translation>
 <translation id="6367196786591004737">Eintrag löschen</translation>
 <translation id="6370022303958842211">Aktionen für den Gerätezugriff wie Anmeldungen (einschließlich fehlgeschlagener Anmeldeversuche), Abmeldungen, Sperrungen und Entsperrungen</translation>
+<translation id="6374469231428023295">Erneut versuchen</translation>
 <translation id="6374865374745447009">Fensterverwaltung</translation>
 <translation id="6377268785556383139">1 Ergebnis für "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6380497234672085559">A0</translation>
@@ -2283,7 +2292,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6671697161687535275">Vorschlag für das Formular aus Chromium entfernen?</translation>
 <translation id="6683717648675961851">Stellenangebote</translation>
 <translation id="6687335167692595844">Gewünschte Schriftgröße</translation>
-<translation id="6687696737818665306">Schauspielkunst und Theater</translation>
+<translation id="6687696737818665306">Schauspiel und Theater</translation>
 <translation id="6688743156324860098">Aktualisieren…</translation>
 <translation id="6688775486821967877">Die virtuelle Karte ist zurzeit nicht verfügbar, bitte versuche es später noch einmal</translation>
 <translation id="6689249931105087298">Relativ mit Schwarzpunktkompensation</translation>
@@ -2477,6 +2486,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> und <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> weitere}other{<ph name="PAYMENT_METHOD_PREVIEW" /> und <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> weitere}}</translation>
 <translation id="7153618581592392745">Lavendel</translation>
 <translation id="7156870133441232244">Der Server sollte auf TLS 1.2 oder höher aktualisiert werden.</translation>
+<translation id="7160999678034985039">Bitte speichere deine Arbeit und starte das Update, wenn du bereit bist.</translation>
 <translation id="7163295244162773898">{0,plural, =1{Vertrauliche Datei kopieren?}other{Vertrauliche Dateien kopieren?}}</translation>
 <translation id="717330890047184534">GAIA-ID: </translation>
 <translation id="7174545416324379297">Zusammengeführt</translation>
@@ -2724,6 +2734,7 @@ Weitere Details:
 <translation id="7687305263118037187">Zeitüberschreitung bei Wiederholung</translation>
 <translation id="7690647519407127574">Oufuku Hagaki (Postkarte)</translation>
 <translation id="7693583928066320343">Empfangene Seitenreihenfolge</translation>
+<translation id="769424100851389104">Update jetzt starten</translation>
 <translation id="7696089921647603491">Classicrock und Oldies</translation>
 <translation id="769721561045429135">Derzeit können bestimmte Karten nur auf diesem Gerät verwendet werden. Klicke auf "Weiter", um dir die Karten anzusehen.</translation>
 <translation id="7698864304447945242">Google Play-Dienste für AR aktualisieren?</translation>
@@ -2748,6 +2759,7 @@ Weitere Details:
 <translation id="774634243536837715">Gefährliche Inhalte blockiert.</translation>
 <translation id="7751971323486164747">Schriftgrößen und -arten in Chrome anpassen</translation>
 <translation id="7752995774971033316">Nicht verwaltet</translation>
+<translation id="7754587126786572336">Deine Chrome-Tabs und -Apps werden zu Beginn des Updates geschlossen</translation>
 <translation id="7755287808199759310">Deine Eltern können die Blockierung aufheben</translation>
 <translation id="7755624218968747854">Erste Rolle</translation>
 <translation id="7758069387465995638">Möglicherweise wurde die Verbindung von einer Firewall oder Antivirensoftware blockiert.</translation>
@@ -2912,6 +2924,7 @@ Weitere Details:
 <translation id="8186706823560132848">Software</translation>
 <translation id="8190193880870196235">Wird über eine Erweiterung verwaltet</translation>
 <translation id="8194797478851900357">&amp;Verschieben rückgängig machen</translation>
+<translation id="8200772114523450471">Fortsetzen</translation>
 <translation id="8201077131113104583">Ungültige Update-URL für Erweiterung mit der ID "<ph name="EXTENSION_ID" />"</translation>
 <translation id="8202097416529803614">Zusammenfassung der Bestellung</translation>
 <translation id="8202370299023114387">Konflikt</translation>
@@ -3054,7 +3067,7 @@ Weitere Details:
 <translation id="8533619373899488139">Unter &lt;strong&gt;chrome://policy&lt;/strong&gt; findest du eine Liste mit blockierten URLs und andere Richtlinien, die von deinem Systemadministrator festgelegt wurden.</translation>
 <translation id="8539500321752640291">Beide Berechtigungen erteilen?</translation>
 <translation id="8541158209346794904">Bluetooth-Gerät</translation>
-<translation id="8541410041357371550">Diese Website ruft deine Werbethemen von Chrome ab, damit sie dir relevantere Werbung anzeigen kann</translation>
+<translation id="8541410041357371550">Diese Website ruft deine Werbethemen von Chrome ab, damit dir relevantere Werbung angezeigt werden kann</translation>
 <translation id="8542014550340843547">Drei Heftklammern unten</translation>
 <translation id="8542617028204211143">SRA0</translation>
 <translation id="8543181531796978784">Du kannst ein <ph name="BEGIN_ERROR_LINK" />Erkennungsproblem melden<ph name="END_ERROR_LINK" /> oder, wenn du die Sicherheitsrisiken kennst, <ph name="BEGIN_LINK" />diese unsichere Website aufrufen<ph name="END_LINK" />.</translation>
@@ -3210,6 +3223,7 @@ Weitere Details:
 <translation id="8963117664422609631">Website-Einstellungen aufrufen</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Vorschläge:<ph name="MARKUP_2" />Vergewissere dich, dass du über eine Datenverbindung verfügst.<ph name="MARKUP_3" />Lade diese Webseite später neu.<ph name="MARKUP_4" />Überprüfe die von dir eingegebene Adresse.<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">Karte speichern</translation>
+<translation id="8970887620466824814">Es gab ein Problem.</translation>
 <translation id="8971063699422889582">Das Serverzertifikat ist abgelaufen.</translation>
 <translation id="8975012916872825179">Enthält Informationen wie Telefonnummern, E-Mail-Adressen und Lieferadressen</translation>
 <translation id="8975263830901772334">Namen von Dateien, die du druckst</translation>

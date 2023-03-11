@@ -8,9 +8,6 @@
 <translation id="1175958423215084756">लिंक डिटेक्ट केली. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213"><ph name="PAGE_NUMBER" /> पेज हटवले</translation>
 <translation id="1258009455399840361">घड्याळाच्या काट्याच्या दिशेने ९० अंशात फिरवा</translation>
-<translation id="1300209025925956156">तुमचा दस्तऐवज स्कॅन करा</translation>
-<translation id="1309250603447638106">दस्तऐवज स्कॅनिंगसाठी अपडेट डाउनलोड करत आहे</translation>
-<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. अ‍ॅक्सेस करण्यासाठी Search + Left arrow दाबा.</translation>
 <translation id="1417314334557041815"><ph name="INDEX" /> पेज संपादित करा</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> अनप्लग केला आहे.</translation>
 <translation id="1473110567575736769">तीन सेकंदांचा टायमर</translation>
@@ -24,7 +21,6 @@
 <translation id="1664224225747386870">काहीही रेकॉर्ड केले गेले नाही</translation>
 <translation id="1838104802459806957">वर टिल्ट करा</translation>
 <translation id="1843105061469674856">अतिरिक्त पेज स्कॅन करा</translation>
-<translation id="1851169887664797861">अतिरिक्त कॅमेरा नियंत्रणे उपलब्ध आहेत</translation>
 <translation id="1851616744363735765">थांबवले</translation>
 <translation id="1899697626337024495">फोटो रिझोल्युशन</translation>
 <translation id="1925845977604399247">गॅलरीवर जा</translation>
@@ -49,7 +45,6 @@
 <translation id="2761536921376153655">स्कॅनचा प्रकार</translation>
 <translation id="28682968802727151">पूर्वावलोकन मिरर करा</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> प्लग इन केला आहे.</translation>
-<translation id="2904654629665923749">दस्तऐवज स्कॅन उपलब्ध आहे</translation>
 <translation id="3067436040345934772">उजवीकडे पॅन करा</translation>
 <translation id="3081586908890909590">व्हिडिओ रेकॉर्ड करण्यासाठी स्विच करा</translation>
 <translation id="313467653172006084">३० FPS</translation>
@@ -74,7 +69,6 @@
 <translation id="4269820728363426813">लिंकचा पत्ता कॉपी करा</translation>
 <translation id="4281620174117014503">मध्यम रेझोल्यूशन</translation>
 <translation id="428234092390943511">पेज थंबनेल</translation>
-<translation id="4340659173795395806">तुम्ही आता मल्टी-पेज PDF तयार करू शकता</translation>
 <translation id="4383571725254449280">परफॉर्मन्स लॉग प्रिंट करा</translation>
 <translation id="4445542136948522167">फोटो घेणे थांबवा</translation>
 <translation id="4570032796877367747">पुढील कॅमेरा</translation>
@@ -97,7 +91,6 @@
 <translation id="5317780077021120954">सेव्ह करा</translation>
 <translation id="5320594929574852403">डाव्या दिशेने हलत आहे</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5444515100983837161">दस्तऐवजाच्या सर्व कडा फ्रेमच्या आत ठेवा. दस्तऐवज आणि बॅकग्राउंड हे दोन्ही वेगळ्या रंगांचे असल्यास, आणखी चांगल्या प्रकारे स्कॅन करता येते.</translation>
 <translation id="5662366948659129155">पेज <ph name="COUNT" /> स्कॅन करत आहे</translation>
 <translation id="5671277269877808209">चौरस</translation>
 <translation id="5746169159649715125">पीडीएफ म्हणून सेव्ह करा</translation>
@@ -157,7 +150,6 @@
 <translation id="8428213095426709021">सेटिंग्ज</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">मायक्रोफोन म्यूट टॉगल करा. म्यूट सुरू आहे</translation>
-<translation id="8712637175834984815">समजले</translation>
 <translation id="8730621377337864115">पूर्ण झाले</translation>
 <translation id="8732462232047530626">मेटाडेटाचे पूर्वावलोकन करा</translation>
 <translation id="8815966864175525708">पोर्ट्रेट फोटो काढण्यासाठी स्विच करा</translation>

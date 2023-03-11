@@ -84,6 +84,7 @@
 <translation id="1722487484194605434">Archyvuojama elementų: <ph name="NUMBER_OF_ITEMS" />...</translation>
 <translation id="1722687688096767818">Pridedamas profilis...</translation>
 <translation id="1726100011689679555">Pavadinimų serveriai</translation>
+<translation id="1727562178154619254">Paruošta sinchronizuoti</translation>
 <translation id="1729953886957086472">Vokiečių k. (Vokietija)</translation>
 <translation id="1730235522912993863">Kinų k. „Cangjie“</translation>
 <translation id="1731889557567069540">Nukopijuota tiek elementų: <ph name="NUMBER_OF_ITEMS" />.</translation>
@@ -705,6 +706,7 @@
 <translation id="6732801395666424405">Sertifikatai neįkelti</translation>
 <translation id="6736329909263487977">„<ph name="ISSUED_BY" />“ [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">Bendrinti aplanką su „Bruschetta“</translation>
+<translation id="6750737795876287924">Dabartinis katalogas</translation>
 <translation id="6751256176799620176">Pasirinktas 1 aplankas</translation>
 <translation id="6755827872271341378">„ChromeOS Flex“ įrenginys</translation>
 <translation id="6790428901817661496">Žaisti</translation>
@@ -742,7 +744,6 @@
 <translation id="6973630695168034713">Aplankai</translation>
 <translation id="6976795442547527108">Liūtas</translation>
 <translation id="6979158407327259162">„Google“ diskas</translation>
-<translation id="6979737339423435258">Visas laikotarpis</translation>
 <translation id="6989942356279143254">Švedų k.</translation>
 <translation id="6990081529015358884">Nebėra laisvos vietos</translation>
 <translation id="6993826899923627728">Šie elementai yra jūsų šiukšliadėžėje</translation>
@@ -798,7 +799,6 @@
 <translation id="7458955835361612701">Nėra naujausių vaizdų</translation>
 <translation id="7460898608667578234">Ukrainiečių</translation>
 <translation id="7469894403370665791">Automatiškai prisijungti prie šio tinklo</translation>
-<translation id="7481358317100446445">Paruošta</translation>
 <translation id="7486315294984620427">Kad galėtumėte nuvilkti failus į „Parallels Desktop“, jie turi būti nukopijuoti į „Windows“ failų aplanką.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malajalių k. fonetinė</translation>

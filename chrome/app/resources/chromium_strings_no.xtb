@@ -27,6 +27,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="1774152462503052664">La Chromium kjøre i bakgrunnen</translation>
 <translation id="1779356040007214683">For å gjøre Chromium tryggere, har vi deaktivert noen utvidelser som ikke er oppført i <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />, og som kan ha blitt lagt uten at du har vært klar over det.</translation>
 <translation id="1808667845054772817">Installer Chromium på nytt</translation>
+<translation id="1820835682567584003">Chromium prøver å <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="185970820835152459">Du kan administrere de påloggede Google-kontoene dine. Google-kontoene dine brukes i Chromium-nettleseren, Play-butikken, Gmail med mer. Hvis du vil legge til en konto for noen andre, for eksempel et familiemedlem, legger du til en ny person på <ph name="DEVICE_TYPE" /> i stedet. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="1863308913976887472">Nettsteder kan lagre informasjon om interessene dine i Chromium. Hvis du for eksempel besøker et nettsted for å kjøpe maratonsko, kan det hende nettstedet definerer interessen din som maratonløp. Hvis du senere besøker et annet nettsted for å melde deg på et løp, kan dette nettstedet vise deg en annonse for løpesko basert på interessene dine.</translation>
 <translation id="1881322772814446296">Du logger deg på med en administrert konto og gir tilhørende administratorer kontroll over Chromium-profilen din. Chromium-dataene dine, slik som apper, bokmerker, loggen, passord og andre innstillinger knyttes permanent til <ph name="USER_NAME" />. Du kan slette disse dataene via oversikten for Google-kontoer, men du kan ikke knytte disse dataene til en annen konto. Du kan velge om du vil opprette en ny profil for å holde de eksisterende Chromium-dataene atskilte. <ph name="LEARN_MORE" /></translation>
@@ -304,7 +305,6 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="7561906087460245826">Fjern dataene fra Chromium også (<ph name="URL" />)</translation>
 <translation id="7582945390259497898">Chromium kan anslå interessene dine. Senere kan nettsteder du besøker, spørre Chromium om interessene dine for å kunne sette personlig preg på annonsene du ser.</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" />-installasjonsprogram</translation>
-<translation id="7597596667193879455">Du har slått på Safe Browsing med økt beskyttelse i kontoen din. Nå kan du begynne å bruke funksjonen i Chromium.</translation>
 <translation id="761356813943268536">Chromium bruker kameraet og mikrofonen din.</translation>
 <translation id="7617377681829253106">Nå er Chromium blitt enda bedre</translation>
 <translation id="7649070708921625228">Hjelp</translation>

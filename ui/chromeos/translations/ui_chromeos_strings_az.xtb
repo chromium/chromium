@@ -84,6 +84,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> element sıxılır...</translation>
 <translation id="1722687688096767818">Profil əlavə edilir...</translation>
 <translation id="1726100011689679555">Ad serverləri</translation>
+<translation id="1727562178154619254">Sinxronizasiyaya hazırdır</translation>
 <translation id="1729953886957086472">Alman (Almaniya)</translation>
 <translation id="1730235522912993863">Çin dili (Cangjie)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> element kopyalanıb.</translation>
@@ -704,6 +705,7 @@
 <translation id="6732801395666424405">Sertifikatlar yüklənilmədi</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">Bruschetta ilə qovluq paylaşın</translation>
+<translation id="6750737795876287924">Cari kataloq</translation>
 <translation id="6751256176799620176">1 qovluq seçildi</translation>
 <translation id="6755827872271341378">ChromeOS Flex cihazı</translation>
 <translation id="6790428901817661496">Oxudun</translation>
@@ -741,7 +743,6 @@
 <translation id="6973630695168034713">Qovluqlar</translation>
 <translation id="6976795442547527108">Aslan</translation>
 <translation id="6979158407327259162">Google Disk</translation>
-<translation id="6979737339423435258">Hər zaman</translation>
 <translation id="6989942356279143254">İsveç</translation>
 <translation id="6990081529015358884">Boş yer bitdi</translation>
 <translation id="6993826899923627728">Bu elementlər zibil qutunuzdadır</translation>
@@ -797,7 +798,6 @@
 <translation id="7458955835361612701">Son şəkillər yoxdur</translation>
 <translation id="7460898608667578234">Ukrayna</translation>
 <translation id="7469894403370665791">Bu şəbəkəyə avtomatik olaraq qoşulun</translation>
-<translation id="7481358317100446445">Hazırdır</translation>
 <translation id="7486315294984620427">Paralellər Masaüstünə faylları əlavə etmək üçün fayl Windows fayllarına kopyalanmalıdır.</translation>
 <translation id="749452993132003881">Hiraqana</translation>
 <translation id="7495372004724182530">Malayalam Fonetikası</translation>

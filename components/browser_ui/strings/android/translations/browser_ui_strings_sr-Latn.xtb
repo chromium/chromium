@@ -26,6 +26,7 @@
 <translation id="1448064542941920355">Smanjite zumiranje</translation>
 <translation id="1510341833810331442">Sajtovima nije dozvoljeno da čuvaju podatke na uređaju</translation>
 <translation id="1547123415014299762">Kolačići trećih strana su dozvoljeni</translation>
+<translation id="1593426485665524382">Nove radnje su dostupne u vrhu ekrana</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1633720957382884102">Srodni sajtovi</translation>
 <translation id="1644574205037202324">Istorija</translation>
@@ -146,6 +147,7 @@
 <translation id="3628308229821498208">Predložene pretrage</translation>
 <translation id="3636279694100170143">Sajtovi koje posećujete mogu da potvrde da ste stvarni korisnik, a ne robot</translation>
 <translation id="3649190289964910441">Sajt koji posetite može da čuva informacije pomoću Chrome-a koje potvrđuju da ste stvarni korisnik. Dok nastavljate da pregledate, sajtovi mogu da proveravaju sa Chrome-om i uveravaju se na prvom sajtu da ste verovatno pouzdani korisnik.</translation>
+<translation id="3721953990244350188">Odbacite i pregledajte sledeću dostupnu radnju</translation>
 <translation id="3744111561329211289">Sinhronizacija u pozadini</translation>
 <translation id="3763247130972274048">Dvaput dodirnite video levo ili desno da biste preskočili 10 sek</translation>
 <translation id="3794286421982011626">Sajt koji posećujete može da čuva informacije o tome šta radite kako bi radio na očekivani način – na primer, da biste ostali prijavljeni na sajt ili da biste sačuvali stavke u korpi za kupovinu. Sajtovi često privremeno čuvaju te informacije na uređaju.</translation>
@@ -193,7 +195,6 @@
 <translation id="4534723447064627427">Da biste dozvolili da <ph name="APP_NAME" /> pristupa mikrofonu, uključite mikrofon i u <ph name="BEGIN_LINK" />Android podešavanjima<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Isključi zvuk mikrofona</translation>
 <translation id="4570913071927164677">Detalji</translation>
-<translation id="4575264539271661854">Olakšajte uvećavanje teksta i slika za sajt koji posećujete</translation>
 <translation id="4598549027014564149">Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na svim sajtovima, čak i na srodnim sajtovima. Aktivnosti pregledanja se ne koriste za stvari kao što je personalizovanje oglasa. Funkcije na nekim sajtovima mogu da ne rade.</translation>
 <translation id="4645575059429386691">Ovim upravlja tvoj roditelj</translation>
 <translation id="4670064810192446073">Virtuelna realnost</translation>

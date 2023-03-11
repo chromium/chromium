@@ -8,9 +8,6 @@
 <translation id="1175958423215084756">Link je otkriven. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213"><ph name="PAGE_NUMBER" />. stranica je izbrisana</translation>
 <translation id="1258009455399840361">Rotiranje 90 stepeni udesno</translation>
-<translation id="1300209025925956156">Skenirajte dokument</translation>
-<translation id="1309250603447638106">Preuzimanje ažuriranja za skeniranje dokumenata</translation>
-<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Za pristup pritisnite Pretraživanje + strelicu ulijevo.</translation>
 <translation id="1417314334557041815">Uredi stranicu <ph name="INDEX" /></translation>
 <translation id="1467231725790366244">Kamera <ph name="CAMERA" /> je isključena iz uređaja.</translation>
 <translation id="1473110567575736769">Tajmer za 3 sekunde</translation>
@@ -24,7 +21,6 @@
 <translation id="1664224225747386870">Nije snimljeno ništa</translation>
 <translation id="1838104802459806957">Nagni gore</translation>
 <translation id="1843105061469674856">Skeniraj dodatnu stranicu</translation>
-<translation id="1851169887664797861">Dostupne su dodatne kontrole kamere</translation>
 <translation id="1851616744363735765">PAUZIRANO</translation>
 <translation id="1899697626337024495">Rezolucija fotografije</translation>
 <translation id="1925845977604399247">Idi u galeriju</translation>
@@ -49,7 +45,6 @@
 <translation id="2761536921376153655">Vrsta skeniranja</translation>
 <translation id="28682968802727151">Pregled preslikavanja</translation>
 <translation id="2879583609344924966">Kamera <ph name="CAMERA" /> je priključena.</translation>
-<translation id="2904654629665923749">Skeniranje dokumenata je dostupno</translation>
 <translation id="3067436040345934772">Pomičite udesno</translation>
 <translation id="3081586908890909590">Prebaci na snimanje videozapisa</translation>
 <translation id="313467653172006084">30 fps</translation>
@@ -74,7 +69,6 @@
 <translation id="4269820728363426813">Kopiraj adresu linka</translation>
 <translation id="4281620174117014503">Srednja rezolucija</translation>
 <translation id="428234092390943511">Sličica stranice</translation>
-<translation id="4340659173795395806">Sada možete kreirati PDF s više stranica</translation>
 <translation id="4383571725254449280">Zapisnici o radu štampača</translation>
 <translation id="4445542136948522167">Zaustavi fotografiranje</translation>
 <translation id="4570032796877367747">Prednja kamera</translation>
@@ -97,7 +91,6 @@
 <translation id="5317780077021120954">Sačuvaj</translation>
 <translation id="5320594929574852403">Pomjeranje ulijevo</translation>
 <translation id="5374917190292010970">4K (2160 p)</translation>
-<translation id="5444515100983837161">Postavite sve ivice dokumenta unutar okvira. Skeniranje najbolje funkcionira ako su boje dokumenta i pozadine različite.</translation>
 <translation id="5662366948659129155">Skeniranje <ph name="COUNT" />. stranice</translation>
 <translation id="5671277269877808209">Kvadrat</translation>
 <translation id="5746169159649715125">Sačuvaj kao PDF</translation>
@@ -157,7 +150,6 @@ Ako se vaše povratne informacije odnose na kvalitet slike ili videozapisa, pril
 <translation id="8428213095426709021">Postavke</translation>
 <translation id="8629662593426079630">360 p</translation>
 <translation id="8711011893539266636">Uključite/isključite mikrofon. Mikrofon je isključen</translation>
-<translation id="8712637175834984815">Razumijem</translation>
 <translation id="8730621377337864115">Gotovo</translation>
 <translation id="8732462232047530626">Prikaži metapodatke</translation>
 <translation id="8815966864175525708">Prebacite da snimite fotografiju profila</translation>

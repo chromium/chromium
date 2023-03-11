@@ -8,9 +8,6 @@
 <translation id="1175958423215084756">Link észlelve. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213"><ph name="PAGE_NUMBER" />. oldal törölve</translation>
 <translation id="1258009455399840361">Forgatás 90 fokkal az óramutató járásával megegyezően</translation>
-<translation id="1300209025925956156">Dokumentum beolvasása</translation>
-<translation id="1309250603447638106">Frissítések letöltése a dokumentumbeolvasáshoz…</translation>
-<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Megtekintésükhöz nyomja le a Keresés + Balra nyíl billentyűparancsot.</translation>
 <translation id="1417314334557041815"><ph name="INDEX" />. oldal szerkesztése</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> nincs csatlakoztatva.</translation>
 <translation id="1473110567575736769">Három másodperces időzítő</translation>
@@ -24,7 +21,6 @@
 <translation id="1664224225747386870">A kamera semmit sem rögzített</translation>
 <translation id="1838104802459806957">Billentés felfelé</translation>
 <translation id="1843105061469674856">További oldal beolvasása</translation>
-<translation id="1851169887664797861">Újabb kameravezérlők állnak rendelkezésre</translation>
 <translation id="1851616744363735765">SZÜNETEL</translation>
 <translation id="1899697626337024495">Fotó felbontása</translation>
 <translation id="1925845977604399247">Ugrás a galériába</translation>
@@ -49,7 +45,6 @@
 <translation id="2761536921376153655">Szkennelés típusa</translation>
 <translation id="28682968802727151">Tükrözés előnézete</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> csatlakoztatva.</translation>
-<translation id="2904654629665923749">A dokumentumbeolvasás készen áll a használatra</translation>
 <translation id="3067436040345934772">Pásztázás jobbra</translation>
 <translation id="3081586908890909590">Váltás videófelvételre</translation>
 <translation id="313467653172006084">30 FPS</translation>
@@ -74,7 +69,6 @@
 <translation id="4269820728363426813">Link másolása</translation>
 <translation id="4281620174117014503">Közepes felbontás</translation>
 <translation id="428234092390943511">Oldal indexképe</translation>
-<translation id="4340659173795395806">Most már többoldalas PDF-fájlt is létrehozhat</translation>
 <translation id="4383571725254449280">Teljesítménynaplók nyomtatása</translation>
 <translation id="4445542136948522167">Fotókészítés leállítása</translation>
 <translation id="4570032796877367747">Elülső kamera</translation>
@@ -97,7 +91,6 @@
 <translation id="5317780077021120954">Mentés</translation>
 <translation id="5320594929574852403">Mozgatás bal oldali irányba</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5444515100983837161">A dokumentum összes szélének a kereten belül kell lennie. A beolvasás akkor működik a legjobban, ha a dokumentum és a háttér színei különbözőek.</translation>
 <translation id="5662366948659129155"><ph name="COUNT" />. oldal beolvasása</translation>
 <translation id="5671277269877808209">Négyzet</translation>
 <translation id="5746169159649715125">Mentés PDF-ként</translation>
@@ -157,7 +150,6 @@ Ha visszajelzése a kép vagy a videó minőségével kapcsolatos, kérjük, mel
 <translation id="8428213095426709021">Beállítások</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Némítsa el a mikrofont. A némítás be van kapcsolva.</translation>
-<translation id="8712637175834984815">Értem</translation>
 <translation id="8730621377337864115">Kész</translation>
 <translation id="8732462232047530626">Metaadatok előnézete</translation>
 <translation id="8815966864175525708">Váltás portréfotó készítésére</translation>

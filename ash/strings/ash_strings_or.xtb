@@ -100,7 +100,6 @@
 <translation id="1420408895951708260">ନାଇଟ୍ ଲାଇଟ୍‍କୁ ଟୋଗଲ୍ କରନ୍ତୁ। <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">ଆପଣଙ୍କ ଫୋନରେ ଥିବା ବର୍ତ୍ତମାନର ଫଟୋ ଏବଂ ମିଡିଆଗୁଡ଼ିକୁ ଆପଣଙ୍କର <ph name="DEVICE_TYPE" />ରେ ଦେଖନ୍ତୁ</translation>
 <translation id="1426410128494586442">ହଁ</translation>
-<translation id="1447641497144572814">ସ୍କ୍ରିନ ସେଭର ଆରମ୍ଭ ହେଉଛି</translation>
 <translation id="1455242230282523554">ଭାଷାର ସେଟିଂସ୍‌ ଦେଖାନ୍ତୁ</translation>
 <translation id="1460620680449458626">ଭଲ୍ୟୁମ୍ ମ୍ୟୁଟ୍ କରାଯାଇଛି।</translation>
 <translation id="14648076227129703">ଏହା କେମେରା ଅନୁମତି ଥିବା <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> ଏବଂ ସମସ୍ତ ଆପ୍ସ ଓ ୱେବସାଇଟ ପାଇଁ କେମେରା ଆକ୍ସେସକୁ ଅନୁମତି ଦିଏ</translation>
@@ -126,6 +125,7 @@
 <translation id="1550523713251050646">ଅଧିକ ବିକଳ୍ପଗୁଡ଼ିକ ପାଇଁ କ୍ଲିକ୍ କରନ୍ତୁ</translation>
 <translation id="1555130319947370107">ନୀଳ</translation>
 <translation id="1576623706766186887">ମେଗ୍ନିଫାୟର ଚାଲୁ ଥିବା ସମୟରେ ଜୁମ ଆଉଟ କରନ୍ତୁ</translation>
+<translation id="1586324912145647027">1ରୁ 8 ପର୍ଯ୍ୟନ୍ତ ଡେସ୍କକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="1589090746204042747">ଏହି ଅବଧିରେ ଆପଣଙ୍କର ସମସ୍ତ କାର୍ଯ୍ୟକଳାପ ଆକ୍ସେସ୍‌ କରନ୍ତୁ</translation>
 <translation id="1610778689852195798">"ପୂର୍ବବତ୍ କରନ୍ତୁ"</translation>
 <translation id="1611993646327628135">ଚାଲୁ ଅଛି</translation>
@@ -514,6 +514,7 @@
 <translation id="3631369015426612114">ନିମ୍ନୋକ୍ତରୁ ବିଜ୍ଞପ୍ତିକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="3633097874324966332">ଆପଣଙ୍କ ଡିଭାଇସକୁ ପେୟାର କରିବା ପାଇଁ ବ୍ଲୁଟୁଥ ସେଟିଂସ ଖୋଲନ୍ତୁ</translation>
 <translation id="3638400994746983214">ଗୋପନୀୟତା ସ୍କ୍ରିନ ଟୋଗଲ କରନ୍ତୁ। <ph name="STATE_TEXT" />।</translation>
+<translation id="3649256019230929621">ୱିଣ୍ଡୋ ଛୋଟ କରନ୍ତୁ</translation>
 <translation id="3649505501900178324">ଅପ୍‌ଡେଟ୍ ହେବାକୁ ବାକି ଅଛି</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -588,6 +589,7 @@
 <translation id="4021716437419160885">ତଳକୁ ସ୍କ୍ରୋଲ୍ କରନ୍ତୁ</translation>
 <translation id="4022497978915111141">ଡିଭାଇସକୁ ଲକ କରନ୍ତୁ</translation>
 <translation id="4024840464866786680">ଯଦି ଆପଣ ଆପଣଙ୍କ PIN ଏବଂ ପାସୱାର୍ଡ ଭୁଲି ଯାଇଛନ୍ତି କିମ୍ବା ବର୍ତ୍ତମାନ ଆପଣଙ୍କ Google ପାସୱାର୍ଡକୁ ପରିବର୍ତ୍ତନ କରିଛନ୍ତି, ତେବେ ଏହି ୟୁଜରଙ୍କୁ ରିକଭର କରିବା ପାଇଁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
+<translation id="4026843240379844265">ସକ୍ରିୟ ୱିଣ୍ଡୋକୁ ଡିସ୍‌ପ୍ଲେଗୁଡ଼ିକ ମଧ୍ୟକୁ ନିଅନ୍ତୁ</translation>
 <translation id="4028481283645788203">ଅଧିକ ସୁରକ୍ଷା ପାଇଁ ପାସୱାର୍ଡ ଆବଶ୍ୟକ</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">ଆପଣ, ଆପଣଙ୍କର ସ୍କ୍ରିନ୍ ସେୟାର୍ କରୁଛନ୍ତି</translation>
@@ -912,6 +914,7 @@
 <translation id="5689633613396158040">ନାଇଟ୍ ଲାଇଟ୍ କମ୍ ଆଲୋକରେ ଆପଣଙ୍କର ସ୍କ୍ରିନକୁ ଦେଖିବା କିମ୍ବା ପଢ଼ିବା ସହଜ କରିଥାଏ। କେଉଁ ସମୟରେ ନାଇଟ୍ ଲାଇଟ୍ ଚାଲୁ କରାଯିବ କିମ୍ବା ଏହାକୁ ସମ୍ପୂର୍ଣ୍ଣ ରୂପେ ବନ୍ଦ କରାଯିବ ତାହା ବଦଳାଇବା ପାଇଁ ଟାପ୍ କରନ୍ତୁ।</translation>
 <translation id="5691772641933328258">ଟିପ ଚିହ୍ନ ଚିହ୍ନଟ ହେଲାନାହିଁ</translation>
 <translation id="5693255400847650006">ମାଇକ୍ରୋଫୋନକୁ ବ୍ୟବହାର କରାଯାଉଛି</translation>
+<translation id="5699366815052349604">ସମସ୍ତ ଡେସ୍କ ପାଇଁ ସକ୍ରିୟ ୱିଣ୍ଡୋ ଆସାଇନ କରନ୍ତୁ</translation>
 <translation id="570390244361237317">ସମସ୍ତ ଆପ, ସମସ୍ତ ଆପକୁ ଆକ୍ସେସ କରିବା ପାଇଁ ତୀର କୀ ସହ ନାଭିଗେଟ କରନ୍ତୁ</translation>
 <translation id="5707775774148071965">ଆପଣଙ୍କ କେବୁଲ ଅପେକ୍ଷା ଆପଣଙ୍କ ଡିଭାଇସ ଅଧିକ ଡାଟା ରେଟକୁ ସମର୍ଥନ କରେ। ଡିଭାଇସ ପରଫରମାନ୍ସକୁ ସୀମିତ କରାଯାଇପାରେ।</translation>
 <translation id="5710450975648804523">"ବିରକ୍ତ କରନ୍ତୁ ନାହିଁ" ଚାଲୁ ଅଛି</translation>
@@ -1551,6 +1554,7 @@
 <translation id="9034924485347205037">Linux ଫାଇଲ୍‍ଗୁଡ଼ିକ</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> ପାଇଁ ସେଟିଂସ୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="9059834730836941392">ବିଜ୍ଞପ୍ତି ସଙ୍କୁଚିତ କରନ୍ତୁ</translation>
+<translation id="906458777597946297">ୱିଣ୍ଡୋକୁ ବଡ଼ କରନ୍ତୁ</translation>
 <translation id="9065203028668620118">ସମ୍ପାଦନ</translation>
 <translation id="9070640332319875144">ଆସିଷ୍ଟାଣ୍ଟ ସେଟିଂସ୍‌</translation>
 <translation id="9072519059834302790">ବ୍ୟାଟେରୀ ଖାଲି ହେବା ପର୍ଯ୍ୟନ୍ତ <ph name="TIME_LEFT" /> ବାକି ଅଛି।</translation>

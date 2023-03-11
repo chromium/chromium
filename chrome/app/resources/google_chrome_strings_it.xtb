@@ -252,6 +252,7 @@
 <translation id="6010556343189461180">Per ricevere gli aggiornamenti futuri di Google Chrome, devi avere macOS 10.15 o versioni successive. Su questo computer è installato macOS 10.14.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome verrà chiuso adesso.}=1{Chrome verrà chiuso tra 1 secondo.}other{Chrome verrà chiuso tra # secondi.}}</translation>
 <translation id="6022659036123304283">Personalizza il tuo Chrome</translation>
+<translation id="6025087594896450715">Google Chrome verrà riavviato tra <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Chiudi</translation>
 <translation id="6070348360322141662">Per maggiore sicurezza, Google Chrome cripterà i tuoi dati</translation>
 <translation id="608006075545470555">Aggiungi profilo di lavoro a questo browser</translation>
@@ -269,6 +270,7 @@
 <translation id="6327105987658262776">Nessun aggiornamento disponibile.</translation>
 <translation id="6412673304250309937">Verifica gli URL con un elenco di siti non sicuri archiviati in Chrome. Se un sito cerca di rubare la tua password o se scarichi un file dannoso, Chrome potrebbe inviare anche gli URL, inclusi bit e contenuti di pagina, a Navigazione sicura.</translation>
 <translation id="6418662306461808273">Vuoi passare a un profilo Chrome esistente?</translation>
+<translation id="6493527311031785448">Google Chrome sta cercando di <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6506909944137591434">Chrome deve avere l'autorizzazione di accesso alla fotocamera per creare una mappa 3D dell'ambiente circostante</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome per gli sviluppatori</translation>
 <translation id="659498884637196217">In Gestore delle password di Google su questo dispositivo</translation>
@@ -396,7 +398,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="8862326446509486874">Non disponi dei diritti appropriati per l'installazione a livello di sistema. Prova a eseguire nuovamente il programma di installazione come Amministratore.</translation>
 <translation id="8914504000324227558">Riavvia Chrome</translation>
 <translation id="8922193594870374009">Per inviare un numero da <ph name="ORIGIN" /> al tuo telefono Android, accedi a Chrome su entrambi i dispositivi.</translation>
-<translation id="8983720963221508955">Hai attivato la Navigazione sicura avanzata nel tuo account. Ora attivala per Chrome.</translation>
 <translation id="8986207147630327271">Stai per aggiungere a questo browser un profilo di lavoro che sarà controllato dal tuo amministratore.</translation>
 <translation id="8989968390305463310">La cronologia di navigazione incide sugli annunci che ti vengono mostrati e sugli interessi stimati riportati qui sotto. Per tutelare la tua privacy, Chrome elimina automaticamente i tuoi interessi ogni mese. A meno che non li rimuovi, gli interessi possono essere aggiornati.</translation>
 <translation id="8999208279178790196">{0,plural, =0{È disponibile un aggiornamento di Chrome}=1{È disponibile un aggiornamento di Chrome}other{È disponibile un aggiornamento di Chrome da # giorni}}</translation>

@@ -84,6 +84,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> ਆਈਟਮਾਂ ਨੂੰ ਜ਼ਿਪ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="1722687688096767818">ਪ੍ਰੋਫਾਈਲ ਨੂੰ ਸ਼ਾਮਲ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="1726100011689679555">ਨਾਮ ਸਰਵਰ</translation>
+<translation id="1727562178154619254">ਸਿੰਕ ਕਰਨ ਲਈ ਤਿਆਰ ਹੈ</translation>
 <translation id="1729953886957086472">ਜਰਮਨ (ਜਰਮਨੀ)</translation>
 <translation id="1730235522912993863">ਚੀਨੀ ਕੈਂਗਜੀ</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> ਆਈਟਮਾਂ ਨੂੰ ਕਾਪੀ ਕੀਤਾ ਗਿਆ।</translation>
@@ -704,6 +705,7 @@
 <translation id="6732801395666424405">ਪ੍ਰਮਾਣ-ਪੱਤਰ ਲੋਡ ਨਹੀਂ ਕੀਤੇ ਗਏ</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">Bruschetta ਨਾਲ ਫੋਲਡਰ ਸਾਂਝਾ ਕਰੋ</translation>
+<translation id="6750737795876287924">ਮੌਜੂਦਾ ਡਾਇਰੈਕਟਰੀ</translation>
 <translation id="6751256176799620176">1 ਫੋਲਡਰ ਚੁਣਿਆ ਗਿਆ</translation>
 <translation id="6755827872271341378">ChromeOS Flex ਡੀਵਾਈਸ</translation>
 <translation id="6790428901817661496">ਪਲੇ ਕਰੋ</translation>
@@ -741,7 +743,6 @@
 <translation id="6973630695168034713">ਫੋਲਡਰ</translation>
 <translation id="6976795442547527108">ਸ਼ੇਰ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979737339423435258">ਸਾਰੇ ਸਮੇਂ</translation>
 <translation id="6989942356279143254">ਸਵੀਡਿਸ਼</translation>
 <translation id="6990081529015358884">ਤੁਹਾਡਾ ਸਪੇਸ ਖ਼ਤਮ ਹੋਣ ਵਾਲਾ ਹੈ</translation>
 <translation id="6993826899923627728">ਇਹ ਆਈਟਮਾਂ ਤੁਹਾਡੀ ਰੱਦੀ ਵਿੱਚ ਹਨ</translation>
@@ -797,7 +798,6 @@
 <translation id="7458955835361612701">ਕੋਈ ਹਾਲੀਆ ਚਿੱਤਰ ਨਹੀਂ</translation>
 <translation id="7460898608667578234">Ukrainian</translation>
 <translation id="7469894403370665791">ਇਸ ਨੈੱਟਵਰਕ ਨਾਲ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਕਨੈਕਟ ਕਰੋ</translation>
-<translation id="7481358317100446445">ਤਿਆਰ ਹੈ</translation>
 <translation id="7486315294984620427">Parallels Desktop ਵਿੱਚ ਫ਼ਾਈਲਾਂ ਨੂੰ ਪਾਉਣ ਲਈ, ਫ਼ਾਈਲ ਦਾ Windows ਫ਼ਾਈਲਾਂ 'ਤੇ ਕਾਪੀ ਕਰਨਾ ਲਾਜ਼ਮੀ ਹੈ।</translation>
 <translation id="749452993132003881">ਹਿਰਾਗਾਨਾ</translation>
 <translation id="7495372004724182530">ਮਲਿਆਲਮ ਧੁਨੀਆਤਮਿਕ</translation>

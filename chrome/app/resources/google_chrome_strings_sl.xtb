@@ -261,6 +261,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="6010556343189461180">Če želite prejemati prihodnje posodobitve Google Chroma, potrebujete macOS 10.15 ali novejšega. V tem računalniku je nameščen macOS 10.14.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome se bo zdaj zaprl.}=1{Chrome se bo zaprl čez 1 sekundo.}one{Chrome se bo zaprl čez # sekundo.}two{Chrome se bo zaprl čez # sekundi.}few{Chrome se bo zaprl čez # sekunde.}other{Chrome se bo zaprl čez # sekund.}}</translation>
 <translation id="6022659036123304283">Prilagodite si Chrome</translation>
+<translation id="6025087594896450715">Google Chrome se bo znova zagnal čez toliko časa: <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Zapri</translation>
 <translation id="6070348360322141662">Zaradi večje varnosti bo Google Chrome šifriral vaše podatke</translation>
 <translation id="608006075545470555">Dodajanje delovnega profila v ta brskalnik</translation>
@@ -278,6 +279,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="6327105987658262776">Na voljo ni nobena posodobitev.</translation>
 <translation id="6412673304250309937">Preveri URL-je, tako da jih primerja s seznamom spletnih mest, ki niso varna, shranjenim v Chromu. Če vam spletno mesto poskusi ukrasti geslo ali ko prenašate škodljivo datoteko, lahko Chrome prav tako pošlje URL-je, vključno z delčki vsebine strani, Varnemu brskanju.</translation>
 <translation id="6418662306461808273">Želite preklopiti na obstoječi profil v Chromu?</translation>
+<translation id="6493527311031785448">Google Chrome poskuša <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6506909944137591434">Chrome potrebuje dovoljenje za dostop do fotoaparata zaradi ustvarjanja tridimenzionalnega zemljevida okolice.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> različica Google Chroma za razvijalce</translation>
 <translation id="659498884637196217">V Googlovem upravitelju gesel v tej napravi</translation>
@@ -405,7 +407,6 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="8862326446509486874">Nimate ustreznih pravic za namestitev na ravni sistema. Poskusite znova zagnati namestitveni program kot skrbnik.</translation>
 <translation id="8914504000324227558">Znova zaženi Chrome</translation>
 <translation id="8922193594870374009">Če želite telefonsko številko iz <ph name="ORIGIN" /> poslati v telefon Android, se prijavite v Chrome v obeh napravah.</translation>
-<translation id="8983720963221508955">V računu ste vklopili izboljšano varno brskanje. Zdaj ga omogočite za Chrome.</translation>
 <translation id="8986207147630327271">V ta brskalnik dodajate delovni profil in skrbniku omogočate nadzor samo nad delovnim profilom.</translation>
 <translation id="8989968390305463310">Zgodovina brskanja vpliva na prikazane oglase in zanimanja, kot je ocenjeno spodaj. Chrome zaradi varovanja vaše zasebnosti vsak mesec sproti samodejno izbriše vaša zanimanja. Zanimanja se lahko osvežujejo, razen če jih odstranite.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Posodobitev za Chrome je na voljo}=1{Posodobitev za Chrome je na voljo}one{Posodobitev za Chrome je na voljo že # dan}two{Posodobitev za Chrome je na voljo že # dneva}few{Posodobitev za Chrome je na voljo že # dni}other{Posodobitev za Chrome je na voljo že # dni}}</translation>

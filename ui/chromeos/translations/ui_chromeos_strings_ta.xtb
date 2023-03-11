@@ -84,6 +84,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> உள்ளடக்கங்களை ஜிப் செய்கிறது...</translation>
 <translation id="1722687688096767818">சுயவிவரத்தைச் சேர்க்கிறது...</translation>
 <translation id="1726100011689679555">பெயர் சேவையகங்கள்</translation>
+<translation id="1727562178154619254">ஒத்திசைக்கத் தயாராக உள்ளது</translation>
 <translation id="1729953886957086472">ஜெர்மன் (ஜெர்மனி)</translation>
 <translation id="1730235522912993863">சீனம் (கான்ஜி)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> ஃபைல்கள் /கோப்பகங்கள் நகலெடுக்கப்பட்டன.</translation>
@@ -705,6 +706,7 @@
 <translation id="6732801395666424405">சான்றிதழ்கள் ஏற்றப்படவில்லை</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">Bruschetta உடன் ஃபோல்டரைப் பகிருங்கள்</translation>
+<translation id="6750737795876287924">தற்போதைய டைரக்டரி</translation>
 <translation id="6751256176799620176">1 ஃபோல்டர் தேர்ந்தெடுக்கப்பட்டது</translation>
 <translation id="6755827872271341378">ChromeOS Flex சாதனம்</translation>
 <translation id="6790428901817661496">இயக்கு</translation>
@@ -742,7 +744,6 @@
 <translation id="6973630695168034713">ஃபோல்டர்கள்</translation>
 <translation id="6976795442547527108">சிங்கம்</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979737339423435258">இதுவரை அனைத்தும்</translation>
 <translation id="6989942356279143254">ஸ்வீடிஷ்</translation>
 <translation id="6990081529015358884">இயக்குவதற்கு போதுமான இடம் இல்லை</translation>
 <translation id="6993826899923627728">இந்த ஃபைல்கள் உங்கள் 'நீக்கியவை' ஃபோல்டரில் உள்ளன</translation>
@@ -798,7 +799,6 @@
 <translation id="7458955835361612701">சமீபத்திய படங்கள் எதுவும் இல்லை</translation>
 <translation id="7460898608667578234">உக்ரைனியன்</translation>
 <translation id="7469894403370665791">இந்த நெட்வொர்க்குடன் தானாகவே இணைக்கவும்</translation>
-<translation id="7481358317100446445">தயார்</translation>
 <translation id="7486315294984620427">Parallels Desktopபிற்குள் ஃபைல்களை இழுத்து விட, அவற்றை ’Windows ஃபைல்கள் ’ ஃபோல்டருக்கு நகலெடுக்க வேண்டும்.</translation>
 <translation id="749452993132003881">ஹிரகனா</translation>
 <translation id="7495372004724182530">மலையாள ஒலிப்புமுறை</translation>

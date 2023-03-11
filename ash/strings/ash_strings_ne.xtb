@@ -100,7 +100,6 @@
 <translation id="1420408895951708260">रात्रि प्रकाश टगल गर्नुहोस्। <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666"><ph name="DEVICE_TYPE" /> मा आफ्नो फोनका हालसालैका फोटो तथा मिडिया हेर्नुहोस्</translation>
 <translation id="1426410128494586442">हो</translation>
-<translation id="1447641497144572814">स्क्रिन सेभर सुरु भयो</translation>
 <translation id="1455242230282523554">भाषासम्बन्धी सेटिङहरू देखाउनुहोस्</translation>
 <translation id="1460620680449458626">भोल्युम म्युट गरिएको छ।</translation>
 <translation id="14648076227129703">यसले <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> र क्यामेरा प्रयोग गर्ने अनुमति भएका सबै एप तथा वेबसाइटहरूलाई क्यामेरा प्रयोग गर्ने अनुमति दिन्छ</translation>
@@ -126,6 +125,7 @@
 <translation id="1550523713251050646">थप विकल्पहरूका लागि क्लिक गर्नुहोस्</translation>
 <translation id="1555130319947370107">निलो</translation>
 <translation id="1576623706766186887">म्याग्निफायर अन भएका बेला जुम आउट गर्नुहोस्</translation>
+<translation id="1586324912145647027">डेस्क १ देखि ८ मा जानुहोस्</translation>
 <translation id="1589090746204042747">यो सत्रअन्तर्गतका आफ्ना सबै क्रियाकलापमाथि पहुँच राख्नुहोस्</translation>
 <translation id="1610778689852195798">"अन्डू गर"</translation>
 <translation id="1611993646327628135">अन छ</translation>
@@ -514,6 +514,7 @@
 <translation id="3631369015426612114">निम्न स्रोतहरूबाट सूचनाहरूलाई अनुमति दिनुहोस्</translation>
 <translation id="3633097874324966332">आफ्नो डिभाइस कनेक्ट गर्न ब्लुटुथका सेटिङ खोल्नुहोस्</translation>
 <translation id="3638400994746983214">गोपनीयताको स्क्रिन टगल गर्नुहोस्। <ph name="STATE_TEXT" />।</translation>
+<translation id="3649256019230929621">सन्झ्याल सानो बनाउनुहोस्</translation>
 <translation id="3649505501900178324">अद्यावधिक हुन बाँकी</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -588,6 +589,7 @@
 <translation id="4021716437419160885">तलतिर स्क्रोल गर्नुहोस्</translation>
 <translation id="4022497978915111141">डिभाइस लक गर्नुहोस्</translation>
 <translation id="4024840464866786680">तपाईंले आफ्नो PIN बिर्सनुभयो वा आफ्नो Google खाताको पासवर्ड बदल्नुभयो भने यो प्रयोगकर्ता खाता रिकभर गरी हेर्नुहोस्।</translation>
+<translation id="4026843240379844265">सक्रिय विन्डोलाई एउटा प्रदर्शनबाट अर्कोमा सार्नुहोस्</translation>
 <translation id="4028481283645788203">थप सुरक्षाका लागि पासवर्ड चाहिन्छ</translation>
 <translation id="4032485810211612751"><ph name="HOURS" /> : <ph name="MINUTES" /> : <ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">तपाईं आफ्नो स्क्रिन आदान प्रदान गर्दै हुनुहुन्छ</translation>
@@ -912,6 +914,7 @@
 <translation id="5689633613396158040">रात्रि प्रकाशले मधुरो प्रकाशमा आफ्नो स्क्रिनमा हेर्न वा पढ्न अझ सजिलो बनाउँछ। रात्रि प्रकाश सक्रिय हुने समय परिवर्तन गर्न वा यसलाई पूर्ण रूपमा निष्क्रिय पार्न ट्याप गर्नुहोस्।</translation>
 <translation id="5691772641933328258">फिंगरप्रिन्ट पहिचान गरिएन</translation>
 <translation id="5693255400847650006">माइक्रोफोन प्रयोग भइरहेको छ</translation>
+<translation id="5699366815052349604">सबै डेस्कमा सक्रिय विन्डो असाइन गर्नुहोस्</translation>
 <translation id="570390244361237317">सबै एपहरू, एउटा एपबाट अर्को एपमा जान एरो की थिच्नुहोस्</translation>
 <translation id="5707775774148071965">तपाईंको केबलको तुलनामा तपाईंको डिभाइसमा उच्च गतिमा डेटा ट्रान्सफर हुन्छ। डिभाइस राम्ररी नचल्न सक्छ।</translation>
 <translation id="5710450975648804523">बाधा नपुर्‍याउनुहोस् नामक सेवा सक्रिय छ</translation>
@@ -1552,6 +1555,7 @@
 <translation id="9034924485347205037">Linux का फाइलहरू</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> को सेटिङ खोल्नुहोस्</translation>
 <translation id="9059834730836941392">सूचना संक्षिप्त गर्नुहोस्</translation>
+<translation id="906458777597946297">सन्झ्याल</translation>
 <translation id="9065203028668620118">सम्पादन गर्नुहोस</translation>
 <translation id="9070640332319875144">सहायकका सेटिङहरू</translation>
 <translation id="9072519059834302790">ब्याट्री पूरै सकिन <ph name="TIME_LEFT" /> बाँकी छ।</translation>

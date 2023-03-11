@@ -507,6 +507,7 @@
 <translation id="2149968176347646218">การเชื่อมต่อไม่ปลอดภัย</translation>
 <translation id="2153609454945889823">ติดตั้งบริการ Google Play สำหรับ AR ไหม</translation>
 <translation id="2154484045852737596">แก้ไขบัตร</translation>
+<translation id="2154739667870063220">รีบูต</translation>
 <translation id="2155260325161282517">5 x 7 นิ้ว</translation>
 <translation id="2157640075051554492">การแจ้งเตือนการติดตามราคา</translation>
 <translation id="2161656808144014275">ข้อความ</translation>
@@ -2117,6 +2118,7 @@
 <translation id="6218753634732582820">ต้องการนำที่อยู่ออกจาก Chromium ใช่ไหม</translation>
 <translation id="622039917539443112">พับแบบขนาน</translation>
 <translation id="6221345481584921695">เมื่อเร็วๆ นี้ Google Safe Browsing <ph name="BEGIN_LINK" />ตรวจพบมัลแวร์<ph name="END_LINK" />ใน <ph name="SITE" /> เว็บไซต์ที่โดยปกติจะปลอดภัยบางครั้งอาจติดมัลแวร์ เนื้อหาที่เป็นอันตรายมาจาก <ph name="SUBRESOURCE_HOST" /> ซึ่งเป็นผู้เผยแพร่มัลแวร์ที่เป็นที่รู้จัก</translation>
+<translation id="6221892641068781024">มุมมองอย่างง่าย</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อปรับเปลี่ยนเครื่องมือช่วยเหลือพิเศษในแบบของคุณที่การตั้งค่า Chrome</translation>
 <translation id="6229649258872345286">การท่องเที่ยวแบบครอบครัว</translation>
 <translation id="6232271601416750929">ผลิตภัณฑ์เสริมความงามจากธรรมชาติ</translation>
@@ -2176,6 +2178,7 @@
 <translation id="6366710531182496394">เย็บด้วยลวดเย็บกระดาษด้านซ้าย 2 ครั้ง</translation>
 <translation id="6367196786591004737">ลบรายการข้อมูล</translation>
 <translation id="6370022303958842211">การดำเนินการเข้าถึงอุปกรณ์ เช่น การเข้าสู่ระบบ (รวมถึงเหตุผลที่เข้าสู่ระบบไม่สำเร็จ) การออกจากระบบ การล็อก และการปลดล็อก</translation>
+<translation id="6374469231428023295">ลองอีกครั้ง</translation>
 <translation id="6374865374745447009">การจัดการหน้าต่าง</translation>
 <translation id="6377268785556383139">มีผลการค้นหา "<ph name="SEARCH_TEXT" />" 1 รายการ</translation>
 <translation id="6380497234672085559">A0</translation>
@@ -2924,6 +2927,7 @@
 <translation id="8186706823560132848">ซอฟต์แวร์</translation>
 <translation id="8190193880870196235">จัดการโดยส่วนขยาย</translation>
 <translation id="8194797478851900357">&amp;เลิกทำการย้าย</translation>
+<translation id="8200772114523450471">ทำต่อ</translation>
 <translation id="8201077131113104583">การอัปเดต URL ไม่ถูกต้องสำหรับส่วนขยายรหัส "<ph name="EXTENSION_ID" />"</translation>
 <translation id="8202097416529803614">ข้อมูลสรุปคำสั่งซื้อ</translation>
 <translation id="8202370299023114387">ความขัดแย้ง</translation>
@@ -3222,6 +3226,7 @@
 <translation id="8963117664422609631">ไปที่การตั้งค่าเว็บไซต์</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />คำแนะนำ:<ph name="MARKUP_2" />ตรวจสอบว่าคุณมีการเชื่อมต่ออินเทอร์เน็ต<ph name="MARKUP_3" />โหลดหน้าเว็บนี้อีกครั้งในภายหลัง<ph name="MARKUP_4" />ตรวจสอบที่อยู่ที่คุณป้อน<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">บันทึกบัตร</translation>
+<translation id="8970887620466824814">มีบางอย่างผิดพลาด</translation>
 <translation id="8971063699422889582">ใบรับรองของเซิร์ฟเวอร์หมดอายุแล้ว</translation>
 <translation id="8975012916872825179">รวมข้อมูล เช่น หมายเลขโทรศัพท์ อีเมล และที่อยู่สำหรับจัดส่ง</translation>
 <translation id="8975263830901772334">ชื่อของไฟล์ที่คุณพิมพ์</translation>

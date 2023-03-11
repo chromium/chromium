@@ -84,6 +84,7 @@
 <translation id="1722487484194605434">Komprimace <ph name="NUMBER_OF_ITEMS" /> položek...</translation>
 <translation id="1722687688096767818">Přidávání profilu…</translation>
 <translation id="1726100011689679555">Jmenné servery</translation>
+<translation id="1727562178154619254">Připraveno k synchronizaci</translation>
 <translation id="1729953886957086472">němčina (Německo)</translation>
 <translation id="1730235522912993863">čínština (Čchang-ťie)</translation>
 <translation id="1731889557567069540">Zkopírované položky: <ph name="NUMBER_OF_ITEMS" />.</translation>
@@ -704,6 +705,7 @@
 <translation id="6732801395666424405">Certifikáty nebyly načteny</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">Sdílení složky s Bruschettou</translation>
+<translation id="6750737795876287924">Aktuální adresář</translation>
 <translation id="6751256176799620176">Je vybrána 1 složka</translation>
 <translation id="6755827872271341378">Zařízení se systémem ChromeOS Flex</translation>
 <translation id="6790428901817661496">Přehrát</translation>
@@ -741,7 +743,6 @@
 <translation id="6973630695168034713">Složky</translation>
 <translation id="6976795442547527108">Lev</translation>
 <translation id="6979158407327259162">Disk Google</translation>
-<translation id="6979737339423435258">Od počátku věků</translation>
 <translation id="6989942356279143254">švédština</translation>
 <translation id="6990081529015358884">Došlo vám místo</translation>
 <translation id="6993826899923627728">Tyto položky jsou v koši</translation>
@@ -797,7 +798,6 @@
 <translation id="7458955835361612701">Žádné nedávné obrázky</translation>
 <translation id="7460898608667578234">ukrajinština</translation>
 <translation id="7469894403370665791">Automaticky připojit k této síti</translation>
-<translation id="7481358317100446445">Připraveno</translation>
 <translation id="7486315294984620427">Pokud chcete soubor přetáhnout do nástroje Parallels Desktop, musíte ho zkopírovat mezi soubory systému Windows.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">malajálamština (fonetická)</translation>

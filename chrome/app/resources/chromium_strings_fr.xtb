@@ -24,9 +24,11 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="1640672724030957280">Téléchargement en cours…</translation>
 <translation id="1708666629004767631">Une nouvelle version de Chromium encore plus sûre est disponible.</translation>
 <translation id="17264556997921157">Vous pouvez consulter et supprimer les centres d'intérêt que les sites utilisent pour vous proposer des annonces. Chromium se base sur votre historique de navigation récent pour prédire les sujets qui vous intéressent.</translation>
+<translation id="1745121272106313518">Chromium va redémarrer dans <ph name="REMAINING_TIME" /></translation>
 <translation id="1774152462503052664">Laisser Chromium s'exécuter en arrière-plan</translation>
 <translation id="1779356040007214683">Afin de rendre Chrome plus sûr, nous avons désactivé certaines extensions qui ne sont pas répertoriées sur le <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> et qui ont pu être ajoutées à votre insu.</translation>
 <translation id="1808667845054772817">Réinstaller Chromium</translation>
+<translation id="1820835682567584003">Chromium tente <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="185970820835152459">Vous pouvez gérer les comptes Google auxquels vous êtes connecté. Ils vous permettent d'accéder au navigateur Chromium, au Play Store, à Gmail, etc. Pour ajouter le compte d'une autre personne, comme un membre de votre famille, ajoutez un nouvel utilisateur à votre <ph name="DEVICE_TYPE" /> à la place. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="1863308913976887472">Les sites peuvent stocker des informations sur vos centres d'intérêt dans Chromium. Par exemple, si vous allez sur un site afin d'acheter des chaussures pour un marathon, le site peut définir le marathon comme l'un de vos centres d'intérêt. Ensuite, si vous consultez un autre site pour vous enregistrer pour une course, ce site peut diffuser une annonce pour des chaussures de running en se basant sur vos centres d'intérêt.</translation>
 <translation id="1881322772814446296">Vous vous connectez avec un compte géré et donnez le contrôle de votre profil Chromium à son administrateur. Vos données Chromium, telles que les applications, les favoris, l'historique, les mots de passe et les autres paramètres, vont être définitivement associées à <ph name="USER_NAME" />. Vous pouvez supprimer ces données via le tableau de bord des comptes Google, mais vous ne pouvez pas les associer à un autre compte. Vous pouvez éventuellement créer un nouveau profil pour maintenir vos données Chromium séparées. <ph name="LEARN_MORE" /></translation>
@@ -305,7 +307,6 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="7561906087460245826">Effacer également les données issues de Chromium (<ph name="URL" />)</translation>
 <translation id="7582945390259497898">Chromium peut estimer quels sont vos centres d'intérêt. Ensuite, un site que vous consultez pourra demander à Chromium de voir vos centres d'intérêt pour personnaliser les annonces qui vous sont présentées.</translation>
 <translation id="7583399374488819119">Programme d'installation de <ph name="COMPANY_NAME" /></translation>
-<translation id="7597596667193879455">Vous avez activé la navigation sécurisée avec protection renforcée dans votre compte. Activez-la maintenant dans Chromium.</translation>
 <translation id="761356813943268536">Votre webcam et votre micro sont en cours d'utilisation dans Chromium.</translation>
 <translation id="7617377681829253106">Chromium s'est amélioré</translation>
 <translation id="7649070708921625228">Aide</translation>

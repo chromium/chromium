@@ -23,9 +23,11 @@
 <translation id="1640672724030957280">正在下载...</translation>
 <translation id="1708666629004767631">Chromium 现已推出更安全的新版本。</translation>
 <translation id="17264556997921157">您可看到并移除被网站用来向您展示广告的兴趣主题。Chromium 会根据您近期的浏览记录推测出您的兴趣。</translation>
+<translation id="1745121272106313518">Chromium 将在 <ph name="REMAINING_TIME" />后重启</translation>
 <translation id="1774152462503052664">让 Chromium 在后台运行</translation>
 <translation id="1779356040007214683">为了提高 Chromium 的安全性，系统停用了一些未列在 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />中、可能是在您不知情的情况下添加的扩展程序。</translation>
 <translation id="1808667845054772817">重新安装Chromium</translation>
+<translation id="1820835682567584003">Chromium 正在尝试<ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="185970820835152459">您可以管理您已登录的 Google 帐号。您可通过登录自己的 Google 帐号使用 Chromium 浏览器、Play 商店、Gmail 等产品。如果您想添加他人（比如某个家庭成员）的帐号，请改为将这个新人添加到您的 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="1863308913976887472">网站可以将您的兴趣信息存储在 Chromium 中。例如，如果您访问某个网站购买马拉松跑鞋，系统可能会根据该网站推测您对跑马拉松感兴趣。之后，如果您访问其他网站报名参加比赛，相应网站就可以根据您的兴趣向您展示跑鞋广告。</translation>
 <translation id="1881322772814446296">您目前登录的帐号是一个受管理帐号，该帐号的管理员将能够控制您的 Chromium 个人资料。您的 Chromium 数据（例如您的应用、书签、历史记录、密码和其他设置）将永远与 <ph name="USER_NAME" /> 相关联。您可以通过 Google 帐号信息中心删除这些数据，但无法将这些数据与其他帐号相关联。您可以选择创建新的个人资料来单独存储您现有的 Chromium 数据。<ph name="LEARN_MORE" /></translation>
@@ -303,7 +305,6 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="7561906087460245826">一并清除 Chromium (<ph name="URL" />) 中的数据</translation>
 <translation id="7582945390259497898">Chromium 可以推测出您的兴趣。之后，您访问的网站可向 Chromium 请求查看您的兴趣，以便向您展示个性化广告。</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> 安装程序</translation>
-<translation id="7597596667193879455">您已在自己的帐号中开启了“增强型安全浏览”功能。现在，为 Chromium 启用该功能吧。</translation>
 <translation id="761356813943268536">Chromium 正在使用您的摄像头和麦克风。</translation>
 <translation id="7617377681829253106">Chromium现在更好用了</translation>
 <translation id="7649070708921625228">帮助</translation>

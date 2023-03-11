@@ -253,6 +253,7 @@
 <translation id="6010556343189461180">Du benötigst macOS 10.15 oder höher, um zukünftige Google Chrome-Updates zu erhalten. Auf diesem Computer wird macOS 10.14 ausgeführt.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome wird jetzt geschlossen.}=1{Chrome wird in 1 Sekunde geschlossen.}other{Chrome wird in # Sekunden geschlossen.}}</translation>
 <translation id="6022659036123304283">Chrome personalisieren</translation>
+<translation id="6025087594896450715">Google Chrome wird in <ph name="REMAINING_TIME" /> neu gestartet</translation>
 <translation id="6040143037577758943">Schließen</translation>
 <translation id="6070348360322141662">Zur Erhöhung der Sicherheit verschlüsselt Google Chrome deine Daten</translation>
 <translation id="608006075545470555">Arbeitsprofil zu diesem Browser hinzufügen</translation>
@@ -397,7 +398,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="8862326446509486874">Du verfügst nicht über die erforderlichen Rechte für eine systemweite Installation. Starte das Installationsprogramm als Administrator.</translation>
 <translation id="8914504000324227558">Chrome neu starten</translation>
 <translation id="8922193594870374009">Wenn du eine Nummer von <ph name="ORIGIN" /> an dein Android-Smartphone senden möchtest, musst du dich auf beiden Geräten in Chrome anmelden.</translation>
-<translation id="8983720963221508955">Du hast das erweiterte Safe Browsing für dein Konto aktiviert. Verwende es jetzt in Chrome.</translation>
 <translation id="8986207147630327271">Du fügst diesem Browser ein Arbeitsprofil hinzu und erteilst deinem Administrator nur Rechte für das Arbeitsprofil.</translation>
 <translation id="8989968390305463310">Dein Browserverlauf hat Einfluss auf die unten stehenden, geschätzten Interessen und darauf, welche Werbung dir gezeigt wird. Zum Schutz deiner Daten löscht Chrome automatisch jeden Monat deine Interessen. Solange du deine Interessen nicht entfernst, können sie aktualisiert werden.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Ein Chrome-Update ist verfügbar}=1{Ein Chrome-Update ist verfügbar}other{Ein Chrome-Update ist seit # Tagen verfügbar}}</translation>

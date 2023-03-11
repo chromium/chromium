@@ -84,6 +84,7 @@
 <translation id="1722487484194605434">අයිතම <ph name="NUMBER_OF_ITEMS" />ක් සිප් කෙරේ...</translation>
 <translation id="1722687688096767818">පැතිකඩ එක් කරමින්...</translation>
 <translation id="1726100011689679555">නම් සේවාදායක</translation>
+<translation id="1727562178154619254">සමමුහුර්ත කිරීමට සූදානම්</translation>
 <translation id="1729953886957086472">ජර්මානු (ජර්මනිය)</translation>
 <translation id="1730235522912993863">චීන කන්ජි</translation>
 <translation id="1731889557567069540">අයිතම <ph name="NUMBER_OF_ITEMS" />ක් පිටපත් කරන ලදී.</translation>
@@ -704,6 +705,7 @@
 <translation id="6732801395666424405">සහතිකය පටවා නොමැත</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">Bruschetta සමග ෆෝල්ඩරය බෙදා ගන්න</translation>
+<translation id="6750737795876287924">වත්මන් නාමාවලිය</translation>
 <translation id="6751256176799620176">ෆෝල්ඩර 1ක් තෝරන ලදී</translation>
 <translation id="6755827872271341378">ChromeOS Flex උපාංගය</translation>
 <translation id="6790428901817661496">වාදනය කරන්න</translation>
@@ -741,7 +743,6 @@
 <translation id="6973630695168034713">ෆෝල්ඩර</translation>
 <translation id="6976795442547527108">සිංහයා</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979737339423435258">සියලු කාලය තුළ</translation>
 <translation id="6989942356279143254">ස්වීඩන</translation>
 <translation id="6990081529015358884">ඔබගේ ඉඩ අවසන්ව තිබේ</translation>
 <translation id="6993826899923627728">මෙම අයිතම ඔබේ කුණු කූඩයේ ඇත</translation>
@@ -797,7 +798,6 @@
 <translation id="7458955835361612701">මෑත රූප නැත</translation>
 <translation id="7460898608667578234">යුක්රේන</translation>
 <translation id="7469894403370665791">මෙම ජාලය වෙත ස්වයංව සම්බන්ධ වන්න</translation>
-<translation id="7481358317100446445">සූදානම්</translation>
 <translation id="7486315294984620427">Parallels Desktop තුළට ගොනු හෙළීමට, ගොනුව Windows ගොනු වෙත පිටපත් කළ යුතුය.</translation>
 <translation id="749452993132003881">හිරගනා</translation>
 <translation id="7495372004724182530">මලයාලම් ශබ්දිම</translation>

@@ -26,6 +26,7 @@
 <translation id="1448064542941920355">Redueix el zoom</translation>
 <translation id="1510341833810331442">Els llocs web no tenen permís per desar dades al dispositiu</translation>
 <translation id="1547123415014299762">Les galetes de tercers estan permeses</translation>
+<translation id="1593426485665524382">Hi ha noves accions disponibles a prop de la part superior de la pantalla</translation>
 <translation id="1620510694547887537">Càmera</translation>
 <translation id="1633720957382884102">Llocs web relacionats</translation>
 <translation id="1644574205037202324">Historial</translation>
@@ -146,6 +147,7 @@
 <translation id="3628308229821498208">Cerques suggerides</translation>
 <translation id="3636279694100170143">Els llocs web que visites poden validar que ets un usuari real i no un bot</translation>
 <translation id="3649190289964910441">Els llocs web que visites poden desar informació a Chrome que valida que ets un usuari real. Mentre naveguis, els llocs web poden recórrer a Chrome per verificar des del primer lloc web que probablement ets un usuari de confiança.</translation>
+<translation id="3721953990244350188">Ignora i mostra la següent acció disponible</translation>
 <translation id="3744111561329211289">Sincronització en segon pla</translation>
 <translation id="3763247130972274048">Fes doble toc a l'esquerra o a la dreta del vídeo per saltar 10 s</translation>
 <translation id="3794286421982011626">A fi de funcionar de la manera prevista, un lloc web que visites pot desar informació sobre el que estàs fent: per exemple, per mantenir la teva sessió iniciada en un lloc web o desar articles al carretó. Sovint, els llocs web desen temporalment aquesta informació al teu dispositiu.</translation>
@@ -193,7 +195,6 @@
 <translation id="4534723447064627427">Perquè <ph name="APP_NAME" /> pugui accedir al micròfon, també has d'activar-lo a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Silencia el micròfon</translation>
 <translation id="4570913071927164677">Detalls</translation>
-<translation id="4575264539271661854">Facilita ampliar el text i les imatges d'un lloc web que visitis</translation>
 <translation id="4598549027014564149">En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva activitat de navegació en llocs web, ni tan sols en llocs web relacionats. La teva activitat de navegació no s'utilitza per a coses com ara personalitzar anuncis. Pot ser que les funcions d'alguns llocs web no funcionin.</translation>
 <translation id="4645575059429386691">Gestionat pels pares</translation>
 <translation id="4670064810192446073">Realitat virtual</translation>

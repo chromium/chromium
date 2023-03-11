@@ -34,6 +34,7 @@
 <translation id="1173894706177603556">పేరుమార్చు</translation>
 <translation id="1177863135347784049">అనుకూల</translation>
 <translation id="1181037720776840403">తీసివేయండి</translation>
+<translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" />‌లో</translation>
 <translation id="1193729455103054076">శక్తివంతమైన పాస్‌వర్డ్‌ను ఉపయోగించాలా?</translation>
 <translation id="1197267115302279827">బుక్‌మార్క్‌లను తరలించు</translation>
 <translation id="1201402288615127009">తరువాత</translation>
@@ -42,7 +43,6 @@
 <translation id="1204692632633423444">Chrome చర్య బటన్: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">లింక్ వచనాన్ని కాపీ చేయి</translation>
 <translation id="1209206284964581585">ప్రస్తుతానికి దాచు</translation>
-<translation id="1226851825267005295">మా Google ఖాతాతో మీరు Chromeలో సైన్ ఇన్ చేసిన తర్వాత మీ ప్రాధాన్యతలను మీరు మేనేజ్ చేసుకోగలరు.</translation>
 <translation id="1227058898775614466">నావిగేషన్ హిస్టరీ</translation>
 <translation id="1231733316453485619">సింక్‌ను ఆన్ చేయాలా?</translation>
 <translation id="123724288017357924">కాష్ కంటెంట్ విస్మరించి ప్రస్తుత పేజీ మళ్లీ లోడ్ చేయండి</translation>
@@ -166,7 +166,6 @@
 <translation id="1928696683969751773">అప్‌డేట్‌లు</translation>
 <translation id="19288952978244135">Chromeను మళ్లీ తెరవండి.</translation>
 <translation id="1933845786846280168">ఎంచుకున్న ట్యాబ్</translation>
-<translation id="193571872656840963">ఈ క్రియేటర్‌కు "థ్యాంక్స్" అనే ప్రతిస్పందనను చూపు</translation>
 <translation id="1943432128510653496">పాస్‌వర్డ్‌‌లను సేవ్ చేయండి</translation>
 <translation id="1952172573699511566">వీలైనప్పుడు వెబ్‌సైట్‌లు, మీ ప్రాధాన్య భాషలో వచనాన్ని చూపుతాయి.</translation>
 <translation id="1959679933317802873">కంటెంట్ కోసం వేచి ఉంది</translation>
@@ -202,7 +201,6 @@
 <translation id="2122601567107267586">యాప్‌ను తెరవడం సాధ్యపడలేదు</translation>
 <translation id="2132122640199389833">అన్ని లింక్ చేయబడిన పరికరాలను తీసివేయండి</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> మూసివేయబడింది</translation>
-<translation id="2134927169889348449">Chromeను ఉపయోగించడం ద్వారా, మీరు <ph name="BEGIN_TOS_LINK" />Google సర్వీస్ నియమాలు<ph name="END_TOS_LINK" />, అలాగే <ph name="BEGIN_ATOS_LINK" />Google Chrome, ChromeOS అదనపు సర్వీస్ నియమాలను<ph name="END_ATOS_LINK" /> అంగీకరిస్తున్నారు.</translation>
 <translation id="2139186145475833000">హోమ్ స్క్రీన్‌కు జోడించండి</translation>
 <translation id="2141396931810938595">మీ వినియోగం ఆధారంగా</translation>
 <translation id="214888715418183969">మీరు Chromeతో సౌకర్యవంతంగా షేర్ చేసుకోగలిగేవి ఎంచుకోండి. మీరు షేర్ చేసే కొలమానాలు, Chrome ఫీచర్‌లు, పనితీరు, ఇంకా స్థిరత్వాన్ని మెరుగుపరచడంలో సహాయపడతాయి.</translation>
@@ -555,7 +553,6 @@
 <translation id="409109920254068737">ఈ QR కోడ్‌ను చూపించే పరికరంలో సైన్ ఇన్ చేయడానికి మీరు ఈ టాబ్లెట్‌ను ఉపయోగించవచ్చు.</translation>
 <translation id="4095146165863963773">యాప్‌ డేటాను తొలగించాలా?</translation>
 <translation id="4096227151372679484">బుక్‌మార్క్‌ను సేవ్ చేయడానికి సంబంధించిన దశల ఫోల్డర్‌లు స్క్రీన్‌లో సగం వరకు తెరవబడ్డాయి</translation>
-<translation id="4099578267706723511">వినియోగ గణాంకాలు, క్రాష్ రిపోర్ట్‌లను Googleకు పంపి, తద్వారా Chromeను మెరుగుపరచడంలో సహాయపడండి.</translation>
 <translation id="4101475238162928417">మీ ఇతర పరికరాలన్నిటిలో మీ పాస్‌వర్డ్‌లు, బుక్‌మార్క్‌లు, ఇంకా మరిన్నింటిని పొందడానికి సింక్ చేయండి</translation>
 <translation id="410351446219883937">స్వీయ ప్లే</translation>
 <translation id="4106587138345390261">Chrome మీ సమాచారాన్ని తక్కువగా ఉపయోగిస్తూ అదే బ్రౌజింగ్ అనుభవాన్ని అందించడానికి సైట్‌లను అనుమతించే కొత్త ఫీచర్‌ల కోసం అన్వేషిస్తోంది</translation>
@@ -593,7 +590,6 @@
 <translation id="4269820728363426813">లింక్ అడ్రస్‌ను కాపీ చేయండి</translation>
 <translation id="4283102315569707115">ఆటోమేటిక్‌గా డెస్క్‌టాప్ సైట్‌లను రిక్వెస్ట్ చేయాలా?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android సెట్టింగ్‌లలో స్క్రీన్ లాక్‌ను ఆన్ చేయండి<ph name="END_LINK" /></translation>
-<translation id="4293476595220860475">Chromeను ఉపయోగించడం ద్వారా, మీరు <ph name="BEGIN_TOS_LINK" />Google సర్వీస్ నియమాలు<ph name="END_TOS_LINK" />, అలాగే <ph name="BEGIN_ATOS_LINK" />Google Chrome, ChromeOS అదనపు సర్వీస్ నియమాలను<ph name="END_ATOS_LINK" /> అంగీకరిస్తున్నారు. <ph name="BEGIN_PRIVACY_LINK" />గోప్యతా పాలసీ<ph name="END_PRIVACY_LINK" /> కూడా వర్తిస్తుంది.</translation>
 <translation id="4296252229500326964">కొత్త అజ్ఞాత ట్యాబ్</translation>
 <translation id="4298388696830689168">లింక్ చేసిన సైట్‌లు</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -766,7 +762,6 @@
 <translation id="5161254044473106830">శీర్షిక అవసరం</translation>
 <translation id="5170568018924773124">ఫోల్డర్‌లో చూపించు</translation>
 <translation id="5171045022955879922">URLను వెతకండి లేదా టైప్ చేయండి</translation>
-<translation id="517734441743343109">కొనసాగించడం ద్వారా, మీరు <ph name="BEGIN_TOS_LINK" />సర్వీస్ నియమాలు<ph name="END_TOS_LINK" />, అలాగే <ph name="BEGIN_PRIVACY_LINK" />గోప్యతా\u00A0పాలసీ<ph name="END_PRIVACY_LINK" />కి అంగీకరిస్తున్నారు.</translation>
 <translation id="5184329579814168207">Chromeలో తెరువు</translation>
 <translation id="5191251636205085390">థర్డ్-పార్టీ కుక్కీలను భర్తీ చేయడానికి, అలాగే వాటిని కంట్రోల్ చేయడానికి ఉద్దేశించిన కొత్త టెక్నాలిజీల గురించి తెలుసుకోండి</translation>
 <translation id="5193988420012215838">మీ క్లిప్‌బోర్డ్‌కు కోడ్ కాపీ చేయబడింది</translation>

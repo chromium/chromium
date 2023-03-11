@@ -27,6 +27,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="1774152462503052664">Jätä Chromium käyntiin taustalle</translation>
 <translation id="1779356040007214683">Paransimme Chromiumin turvallisuutta poistamalla käytöstä sovelluksia, joita ei löydy kohteesta <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ja jotka on voitu lisätä ilman lupaasi.</translation>
 <translation id="1808667845054772817">Asenna Chromium uudelleen</translation>
+<translation id="1820835682567584003">Chromium yrittää seuraavaa: <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="185970820835152459">Voit ylläpitää sisäänkirjautuneita Google-tilejäsi. Google-tilejäsi käytetään Chromium-selaimella, Play Kaupassa ja muualla. Jos haluat lisätä tilin jollekulle toiselle, esim. perheenjäsenelle, lisää tämän sijasta uusi henkilö laitteelle (<ph name="DEVICE_TYPE" />). <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="1863308913976887472">Sivustot voivat tallentaa Chromiumiin tietoja kiinnostuksen kohteistasi. Jos esimerkiksi käyt sivustolla, koska haluat ostaa kengät maratonia varten, sivusto voi määritellä maratonjuoksun sinua kiinnostavaksi aiheeksi. Jos myöhemmin käyt toisella sivustolla, jolla ilmoittaudut juoksukilpailuun, kyseinen sivusto voi näyttää sinulle mainoksen juoksukengistä kiinnostuksen kohteidesi perusteella.</translation>
 <translation id="1881322772814446296">Olet kirjautumassa sisään hallinnoidulla tilillä ja antamassa tilin järjestelmänvalvojalle oikeuden hallita Chromium-profiiliasi. Chromium-tietosi, kuten sovelluksesi, kirjanmerkkisi, historiasi, salasanasi ja muut asetuksesi, yhdistetään pysyvästi käyttäjätiliin <ph name="USER_NAME" />. Voit poistaa nämä tiedot Google-tilien Hallintapaneelissa, mutta et voi liittää tietoja toiseen tiliin. Halutessasi voit luoda uuden profiilin, jolloin aiemmat Chromium-tietosi pysyvät erillään. <ph name="LEARN_MORE" /></translation>
@@ -305,7 +306,6 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="7561906087460245826">Poista data myös Chromiumista (<ph name="URL" />)</translation>
 <translation id="7582945390259497898">Chromium voi arvioida sinua kiinnostavia aiheita. Sivut, joilla käyt, voivat myöhemmin pyytää Chromiumilta tietoja kiinnostuksen kohteistasi ja personoida näkemiäsi mainoksia.</translation>
 <translation id="7583399374488819119">Asennusohjelma: <ph name="COMPANY_NAME" /></translation>
-<translation id="7597596667193879455">Olet laittanut Parannetun selaussuojan päälle tililläsi. Käytä selaussuojaa myös Chromiumilla.</translation>
 <translation id="761356813943268536">Chromium käyttää kameraasi ja mikrofoniasi.</translation>
 <translation id="7617377681829253106">Chromium on nyt entistä parempi</translation>
 <translation id="7649070708921625228">Ohje</translation>

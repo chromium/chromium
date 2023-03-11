@@ -100,7 +100,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1420408895951708260">Tungi rejim: <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Telefoningizdagi oxirgi rasmlar va media fayllarni <ph name="DEVICE_TYPE" /> qurilmasida oching</translation>
 <translation id="1426410128494586442">Ha</translation>
-<translation id="1447641497144572814">Ekran lavhasi boshlandi</translation>
 <translation id="1455242230282523554">Til sozlamalarini ochish</translation>
 <translation id="1460620680449458626">Ovozsiz</translation>
 <translation id="14648076227129703">Bunda kameraga ruxsat beriladi. <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> va barcha ilovalar va saytlar kameradan foydalana oladi</translation>
@@ -126,6 +125,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1550523713251050646">Qo‘shimcha parametrlarni ko‘rish</translation>
 <translation id="1555130319947370107">Ko‘k</translation>
 <translation id="1576623706766186887">Lupa yoniq boʻlsa, kichiklashtirish</translation>
+<translation id="1586324912145647027">1 — 8 ish stollarini ochish</translation>
 <translation id="1589090746204042747">Bu seansdagi barcha harakatlaringizga ruxsat</translation>
 <translation id="1610778689852195798">“Qaytarish”</translation>
 <translation id="1611993646327628135">Yoniq</translation>
@@ -514,6 +514,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3631369015426612114">Quyidagilardan bildirishnomalar ko‘rsatilsin</translation>
 <translation id="3633097874324966332">Qurilmangizni ulash uchun Bluetooth sozlamalarini oching</translation>
 <translation id="3638400994746983214">Maxfiylik ekraniga kirish/chiqish. <ph name="STATE_TEXT" />.</translation>
+<translation id="3649256019230929621">Oynani yig‘ish</translation>
 <translation id="3649505501900178324">Qayta ishga tushirish zarur</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -588,6 +589,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="4021716437419160885">Pastga tushish</translation>
 <translation id="4022497978915111141">Qurilmani qulflash</translation>
 <translation id="4024840464866786680">PIN kod yoki parolni unutsangiz yoki Google hisobi parolini yaqinda almashtirgan boʻlsangiz, bu foydalanuvchini tiklang.</translation>
+<translation id="4026843240379844265">Faol oynani ekranlararo almashtirish</translation>
 <translation id="4028481283645788203">Xavfsizlikni oshirish uchun parol kiriting</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Ekraningiz namoyish qilinmoqda</translation>
@@ -912,6 +914,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="5689633613396158040">Tungi rejim xira yorugʻlikda koʻzlarni charchatmaslikka yordam beradi. Tungi rejimni rejalashtirish yoki undan butunlay chiqish uchun bu yerga bosing.</translation>
 <translation id="5691772641933328258">Barmoq izi aniqlanmadi</translation>
 <translation id="5693255400847650006">Mikrofon ishlatilmoqda</translation>
+<translation id="5699366815052349604">Faol oynani barcha ish stollariga biriktirish</translation>
 <translation id="570390244361237317">Barcha ilovalarni koʻrish uchun strelka tugmalarini bosing</translation>
 <translation id="5707775774148071965">Qurilmangizga maʼlumot uzatish tezligi yuqoriroq kabellarni ulash mumkin. Qurilma samaradorligi cheklanishi mumkin.</translation>
 <translation id="5710450975648804523">Bezovta qilinmasin rejimi yoniq</translation>
@@ -1552,6 +1555,7 @@ yangi oʻrnatilgan</translation>
 <translation id="9034924485347205037">Linux fayllari</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> sozlamalarini ochish</translation>
 <translation id="9059834730836941392">Bildirishnomani yig‘ish</translation>
+<translation id="906458777597946297">Oynani yoyish</translation>
 <translation id="9065203028668620118">O‘zgartirish</translation>
 <translation id="9070640332319875144">Google Assistent sozlamalari</translation>
 <translation id="9072519059834302790">Batareya quvvati tugashigacha qolgan vaqt: <ph name="TIME_LEFT" />.</translation>

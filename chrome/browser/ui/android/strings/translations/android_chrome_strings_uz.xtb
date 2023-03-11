@@ -34,6 +34,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="1173894706177603556">Qayta nomlash</translation>
 <translation id="1177863135347784049">Boshqa</translation>
 <translation id="1181037720776840403">Olib tashlash</translation>
+<translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">Kuchli parol ishlatilsinmi?</translation>
 <translation id="1197267115302279827">Xatcho‘plarni ko‘chirib o‘tkazish</translation>
 <translation id="1201402288615127009">Keyingisi</translation>
@@ -42,7 +43,6 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="1204692632633423444">Chrome amali tugmasi: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">Havola matnini nusxalash</translation>
 <translation id="1209206284964581585">Berkitish</translation>
-<translation id="1226851825267005295">Chrome brauzerida Google hisobingizga kirish orqali kerakli parametrlarni boshqarishingiz mumkin.</translation>
 <translation id="1227058898775614466">Sahifalar tarixi</translation>
 <translation id="1231733316453485619">Sinxronizatsiya yoqilsinmi?</translation>
 <translation id="123724288017357924">Keshga yuklangan ma’lumotlarsiz sahifani qayta yuklang.</translation>
@@ -166,7 +166,6 @@ Barcha yoki ayrim saytlar uchun — ochilgan sahifalar tarixi oʻchirilganida �
 <translation id="1928696683969751773">Yangilanishlar</translation>
 <translation id="19288952978244135">Chromeni qaytadan oching.</translation>
 <translation id="1933845786846280168">Tanlangan sahifa</translation>
-<translation id="193571872656840963">Bu ijodkorga tashakkur bildiring</translation>
 <translation id="1943432128510653496">Parollarni saqlash</translation>
 <translation id="1952172573699511566">Imkoni bo‘lishi bilan sayt matni siz tanlagan tilda ko‘rinadi.</translation>
 <translation id="1959679933317802873">Kontent kutilmoqda</translation>
@@ -202,7 +201,6 @@ Barcha yoki ayrim saytlar uchun — ochilgan sahifalar tarixi oʻchirilganida �
 <translation id="2122601567107267586">Dastur ochilmadi</translation>
 <translation id="2132122640199389833">Ulangan barcha qurilmalarni olib tashlash</translation>
 <translation id="213279576345780926">Yopildi: <ph name="TAB_TITLE" /></translation>
-<translation id="2134927169889348449">Siz Chrome brauzeridan foydalanish orqali <ph name="BEGIN_TOS_LINK" />Google Xizmat shartlari<ph name="END_TOS_LINK" /> hamda <ph name="BEGIN_ATOS_LINK" />Google Chrome va ChromeOS Qoʻshimcha xizmat shartlari<ph name="END_ATOS_LINK" /> uchun rozilik berasiz.</translation>
 <translation id="2139186145475833000">Bosh ekranga qo‘shish</translation>
 <translation id="2141396931810938595">Sarfingiz asosida</translation>
 <translation id="214888715418183969">Chromega qaysi maʼlumotlarni ulashish mumkinligini tanlang. Siz taqdim qiladigan statistik maʼlumotlar Chrome funksiyalari, unumdorligi va barqarorligini yaxshilashga yordam beradi.</translation>
@@ -555,7 +553,6 @@ Ishonch tokenlari Internetdagi maxfiylikni oshiradi va shaxsiy maʼlumotlaringiz
 <translation id="409109920254068737">Bu QR kod chiqqan qurilma hisobiga shu planshet orqali kirish mumkin.</translation>
 <translation id="4095146165863963773">Bu ilova maʼlumotlari oʻchirilsinmi?</translation>
 <translation id="4096227151372679484">Bukmarklarni saqlash jarayoni yarim balandlikda ochiq</translation>
-<translation id="4099578267706723511">Google’ga foydalanish statistikasi va ishdan chiqish hisobotlarini jo‘natish orqali Chrome’ning takomillashtirishga yordam bering</translation>
 <translation id="4101475238162928417">Boshqa qurilmalaringizdagi parol va xatchoʻp kabilarni olish uchun sinxronlang</translation>
 <translation id="410351446219883937">Avtoijro</translation>
 <translation id="4106587138345390261">Chrome saytlarga kamroq maʼlumotlaringiz bilan bir xil brauzer xizmatlarini taqdim etishiga imkon beruvchi yangi funksiyalarni oʻrganib chiqmoqda</translation>
@@ -593,7 +590,6 @@ Ishonch tokenlari Internetdagi maxfiylikni oshiradi va shaxsiy maʼlumotlaringiz
 <translation id="4269820728363426813">Havola manzilini nusxalash</translation>
 <translation id="4283102315569707115">Standart holatda saytning kompyuter versiyasini ochish soʻralsinmi?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android sozlamalari orqali ekran qulfini yoqing<ph name="END_LINK" /></translation>
-<translation id="4293476595220860475">Siz Chrome brauzeridan foydalanish orqali <ph name="BEGIN_TOS_LINK" />Google Xizmat shartlari<ph name="END_TOS_LINK" /> hamda <ph name="BEGIN_ATOS_LINK" />Google Chrome va ChromeOS Qoʻshimcha xizmat shartlari<ph name="END_ATOS_LINK" /> uchun rozilik berasiz. <ph name="BEGIN_PRIVACY_LINK" />Maxfiylik siyosati<ph name="END_PRIVACY_LINK" /> ham tatbiq etiladi.</translation>
 <translation id="4296252229500326964">Yangi inkognito varaq</translation>
 <translation id="4298388696830689168">Aloqador saytlar</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -766,7 +762,6 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5161254044473106830">Sarlavha kiriting</translation>
 <translation id="5170568018924773124">&amp;Jildda ko‘rsatish</translation>
 <translation id="5171045022955879922">Qidiring yoki URL manzili kiriting</translation>
-<translation id="517734441743343109">Davom etish orqali siz <ph name="BEGIN_TOS_LINK" />Xizmat shartlari<ph name="END_TOS_LINK" /> va <ph name="BEGIN_PRIVACY_LINK" />Maxfiylik\u00A0siyosatiga<ph name="END_PRIVACY_LINK" /> rozilik bildirasiz.</translation>
 <translation id="5184329579814168207">Chrome brauzerida ochish</translation>
 <translation id="5191251636205085390">Tashqi cookie fayllar oʻrniga ishlatiladigan yangi texnologiyalarni oʻrganing va boshqaring</translation>
 <translation id="5193988420012215838">Vaqtinchalik xotiraga nusxalandi</translation>

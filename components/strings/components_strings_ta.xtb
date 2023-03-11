@@ -376,6 +376,7 @@
 <translation id="1803351196216024260">மைக்ரோஃபோனைப் பயன்படுத்த அனுமதி கேட்க வேண்டும்</translation>
 <translation id="1807246157184219062">வெளிச்சம்</translation>
 <translation id="1807528111851433570">முதல் தாள்</translation>
+<translation id="180991881384371158">கார்டின் பின்பக்கத்தில் CVC எண் இருக்கும். அது கையொப்பப் பெட்டிக்கு மேல் வலதுபுறத்தில் உள்ள 3 இலக்க எண்ணாகும்.</translation>
 <translation id="181000283860817563">பல தளங்களில் விலைகளைக் கண்காணி</translation>
 <translation id="1810391395243432441">திரைப்பூட்டு மூலம் கடவுச்சொற்களைப் பாதுகாத்திடுங்கள்</translation>
 <translation id="1812527064848182527">லேண்ட்ஸ்கேப்</translation>
@@ -506,6 +507,7 @@
 <translation id="2149968176347646218">பாதுகாப்பற்ற இணைப்பு</translation>
 <translation id="2153609454945889823">Google Play Services for ARரை நிறுவ வேண்டுமா?</translation>
 <translation id="2154484045852737596">கார்டைத் திருத்தவும்</translation>
+<translation id="2154739667870063220">மறுபடி தொடங்கு</translation>
 <translation id="2155260325161282517">5 x 7 இன்ச்</translation>
 <translation id="2157640075051554492">விலைக் கண்காணிப்பு அறிவிப்புகள்</translation>
 <translation id="2161656808144014275">உரை</translation>
@@ -640,6 +642,7 @@
 <translation id="2521736961081452453">படிவத்தை உருவாக்கு</translation>
 <translation id="2523886232349826891">இந்தச் சாதனத்தில் மட்டும் சேமிக்கப்படும்</translation>
 <translation id="2524461107774643265">மேலும் தகவலைச் சேர்க்கவும்</translation>
+<translation id="2527451058878391043">கார்டின் முன்பக்கத்தில் CVC எண் இருக்கும். அது கார்டு எண்ணிற்கு மேல் வலதுபுறத்தில் உள்ள 4 இலக்க எண்ணாகும்.</translation>
 <translation id="2529899080962247600">இதில் <ph name="MAX_ITEMS_LIMIT" /> உள்ளீடுகளுக்கு மேல் இருக்கக்கூடாது. அதற்கு மேல் இருப்பவை நிராகரிக்கப்படும்.</translation>
 <translation id="253493526287553278">விளம்பரக் குறியீட்டு விவரங்களைப் பாருங்கள்</translation>
 <translation id="2535585790302968248">தனிப்பட்ட முறையில் உலாவ, புதிய மறைநிலைப் பக்கத்தைத் திறக்கும்</translation>
@@ -891,6 +894,7 @@
 <translation id="3215092763954878852">WebAuthnனைப் பயன்படுத்த முடியவில்லை</translation>
 <translation id="3216313131063488104">ப்ளூஸ்</translation>
 <translation id="3218181027817787318">சார்புடையது</translation>
+<translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{இப்போதே புதுப்பிக்க வேண்டும்}=2{நாளை புதுப்பிக்க வேண்டும்}other{# நாட்களுக்குள் புதுப்பிக்க வேண்டும்}}</translation>
 <translation id="3223287115535306850">ஆப்ஸ் துவக்கி லோடிங் ஐகான்</translation>
 <translation id="3223425961342298674">இருப்பிட அனுமதி வழங்கப்படவில்லை</translation>
 <translation id="3225919329040284222">உள்ளமைந்த எதிர்பார்ப்புகளுடன் பொருந்தாத சான்றிதழை சேவையகம் வழங்கியது. சில உயர்-பாதுகாப்பு வலைத்தளங்களில் உங்களைப் பாதுகாக்கவே இந்த எதிர்பார்ப்புகள் சேர்க்கப்படுகின்றன.</translation>
@@ -1374,6 +1378,7 @@
 <translation id="4350629523305688469">மல்டிபங்க்ஷன் டிரே</translation>
 <translation id="4351060348582610152">அருகிலுள்ள புளூடூத் சாதனங்களை <ph name="ORIGIN" /> ஸ்கேன் செய்ய விரும்புகிறது. இவை கண்டறியப்பட்டுள்ளன:</translation>
 <translation id="4351175281479794167">சரிபார்ப்புக் குறியீட்டை டைப் செய்யவும்</translation>
+<translation id="4355383636893709732">Android ஆப்ஸுக்கான ChromeOS புதுப்பிப்பு</translation>
 <translation id="4356973930735388585">இந்தத் தளத்தில் உள்ள தீங்கிழைப்பவர்கள், உங்கள் தகவலைத் (எடுத்துக்காட்டு: படங்கள், கடவுச்சொற்கள், செய்திகள் மற்றும் கிரெடிட் கார்டுகள்) திருடக்கூடிய அல்லது நீக்கக்கூடிய தீங்கிழைக்கும் நிரல்களை உங்கள் கம்ப்யூட்டரில் நிறுவ முயலலாம்.</translation>
 <translation id="4358059973562876591">DnsOverHttpsMode கொள்கையில் ஏற்பட்ட பிழை காரணமாக நீங்கள் குறிப்பிட்ட டெம்ப்ளேட்கள் பயன்படுத்தப்படாமல் போகக்கூடும்.</translation>
 <translation id="4358461427845829800">கட்டண முறைகளை நிர்வகி...</translation>
@@ -1754,6 +1759,7 @@
 <translation id="5288393065350884210">கணக்கிடல் &amp; தணிக்கையிடல்</translation>
 <translation id="5288808348893593856">தளத்தின் இணைப்பு பாதுகாப்பானது, அப்படி இல்லாதபட்சத்தில் Chrome உலாவி உங்களுக்குத் தெரியப்படுத்தும்.</translation>
 <translation id="5289384342738547352">பல ஆவணங்களைக் கையாளுதல்</translation>
+<translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{இன்றே புதுப்பிக்க வேண்டும்}=2{நாளை புதுப்பிக்க வேண்டும்}other{# நாட்களுக்குள் புதுப்பிக்க வேண்டும்}}</translation>
 <translation id="5293919335876685914">கூப்பேகள்</translation>
 <translation id="5296589789433599000">சமையல் &amp; ரெசிபிகள்</translation>
 <translation id="5299298092464848405">கொள்கையை அலசுவதில் பிழை</translation>
@@ -1948,6 +1954,7 @@
 <translation id="5786044859038896871">கார்டு தகவலை நிரப்ப விரும்புகிறீர்களா?</translation>
 <translation id="578633867165174378">நீங்கள் தற்போது பயன்படுத்திய கடவுச்சொல், தரவு மீறலுக்கு உட்பட்டது என Chrome கண்டறிந்துள்ளது. இந்தக் கடவுச்சொல்லை இப்போதே மாற்றவும்.</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="580241730938216256">புதுப்பிப்பைத் தொடங்கு</translation>
 <translation id="5803412860119678065"><ph name="CARD_DETAIL" />ஐ நிரப்ப விரும்புகிறீர்களா?</translation>
 <translation id="5804241973901381774">அனுமதிகள்</translation>
 <translation id="5808435672482059465">எனது Chrome செயல்பாடுகளைக் காட்டு</translation>
@@ -2107,6 +2114,7 @@
 <translation id="6218753634732582820">Chromium இலிருந்து முகவரியை அகற்றவா?</translation>
 <translation id="622039917539443112">பேரலல் ஃபோல்டு</translation>
 <translation id="6221345481584921695">Google பாதுகாப்பு உலாவலானது, சமீபத்தில் <ph name="SITE" /> இல் <ph name="BEGIN_LINK" />மால்வேர் உள்ளதைக் கண்டுபிடித்தது<ph name="END_LINK" />. இயல்பாகவே பாதுகாப்பாக இருக்கும் இணையதளங்களும் சில சமயங்களில் மால்வேரினால் பாதிக்கப்பட்டிருக்கும். தீங்குவிளைவிக்கும் உள்ளடக்கமானது மால்வேரைப் பகிர்பவர் என அழைக்கப்படும் <ph name="SUBRESOURCE_HOST" /> இலிருந்து வருகிறது.</translation>
+<translation id="6221892641068781024">எளிதாக்கப்பட்ட காட்சி</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome அமைப்புகளில் அணுகல் கருவிகளைப் பிரத்தியேகமாக்க, Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
 <translation id="6229649258872345286">குடும்பப் பயணம்</translation>
 <translation id="6232271601416750929">இயற்கை அழகுப் பொருட்கள்</translation>
@@ -2166,6 +2174,7 @@
 <translation id="6366710531182496394">டூயல் ஸ்டேப்பில் லெஃப்ட்</translation>
 <translation id="6367196786591004737">உள்ளீட்டை நீக்கும்</translation>
 <translation id="6370022303958842211">உள்நுழைதல் (உள்நுழைய முடியாமல் போனதற்கான காரணங்கள் உட்பட), வெளியேறுதல், லாக் செய்தல், அன்லாக் செய்தல் போன்ற சாதன அணுகல் செயல்கள்</translation>
+<translation id="6374469231428023295">மீண்டும் முயலவும்</translation>
 <translation id="6374865374745447009">சாளரங்களை நிர்வகித்தல்</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />'க்கு 1 முடிவு உள்ளது</translation>
 <translation id="6380497234672085559">A0</translation>
@@ -2476,6 +2485,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" />, மேலும் <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />, மேலும் <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">லாவெண்டர் நிறம்</translation>
 <translation id="7156870133441232244">சேவையகத்தை TLS 1.2 அல்லது அதற்குப் பிந்தைய பதிப்பிற்கு மேம்படுத்த வேண்டும்.</translation>
+<translation id="7160999678034985039">உங்கள் பணியைச் சேமித்து, தயாரானதும் புதுப்பிப்பைத் தொடங்குங்கள்.</translation>
 <translation id="7163295244162773898">{0,plural, =1{ரகசியமான ஃபைலை நிச்சயம் நகலெடுக்க வேண்டுமா?}other{ரகசியமான ஃபைல்களை நிச்சயம் நகலெடுக்க வேண்டுமா?}}</translation>
 <translation id="717330890047184534">Gaia ஐடி:</translation>
 <translation id="7174545416324379297">ஒன்றிணைக்கப்பட்டது</translation>
@@ -2723,6 +2733,7 @@
 <translation id="7687305263118037187">மீண்டும் முயல்வதற்கான நேர முடிவு</translation>
 <translation id="7690647519407127574">Oufuku Hagaki Postcard</translation>
 <translation id="7693583928066320343">பெறப்பட்ட பக்க வரிசை</translation>
+<translation id="769424100851389104">இப்போதே புதுப்பிப்பைத் தொடங்கு</translation>
 <translation id="7696089921647603491">கிளாசிக் ராக் &amp; பழைய பாடல்கள்</translation>
 <translation id="769721561045429135">தற்போது, இந்தச் சாதனத்தில் மட்டுமே பயன்படுத்தக்கூடிய கார்டுகள் உள்ளன கார்டுகளைப் பார்க்க, ‘தொடர்க’ என்பதைக் கிளிக் செய்யவும்.</translation>
 <translation id="7698864304447945242">Google Play Services for ARரைப் புதுப்பிக்க வேண்டுமா?</translation>
@@ -2747,6 +2758,7 @@
 <translation id="774634243536837715">ஆபத்தான உள்ளடக்கம் தடுக்கப்பட்டது.</translation>
 <translation id="7751971323486164747">Chromeமில் எழுத்து வடிவ அளவுகளையும் வகைகளையும் பிரத்தியேகமாக்கலாம்</translation>
 <translation id="7752995774971033316">நிர்வகிக்கப்படாதது</translation>
+<translation id="7754587126786572336">புதுப்பிப்புத் தொடங்கும்போது உங்கள் Chrome உலாவிப் பக்கங்களும் ஆப்ஸும் மூடப்படும்</translation>
 <translation id="7755287808199759310">உங்களுக்காக, தளத்தின் தடுப்பை உங்கள் பெற்றோர் நீக்க முடியும்</translation>
 <translation id="7755624218968747854">முதன்மை ரோல்</translation>
 <translation id="7758069387465995638">ஃபயர்வால் அல்லது வைரஸ்தடுப்பு மென்பொருள் உங்கள் இணைப்பைத் தடுத்திருக்கலாம்.</translation>
@@ -2911,6 +2923,7 @@
 <translation id="8186706823560132848">மென்பொருள்</translation>
 <translation id="8190193880870196235">நீட்டிப்பு மூலம் நிர்வகிக்கப்படுகிறது</translation>
 <translation id="8194797478851900357">&amp;நகர்த்தலைச் செயல்தவிர்</translation>
+<translation id="8200772114523450471">மீண்டும் தொடங்கு</translation>
 <translation id="8201077131113104583">"<ph name="EXTENSION_ID" />" ஐடியுடன் கூடிய நீட்டிப்பிற்கான தவறான புதுப்பிப்பு URL.</translation>
 <translation id="8202097416529803614">ஆர்டர் பற்றிய சுருக்கவிவரம்</translation>
 <translation id="8202370299023114387">முரண்பாடு</translation>
@@ -3208,6 +3221,7 @@
 <translation id="8963117664422609631">தள அமைப்புகளுக்குச் செல்லும்</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />பரிந்துரைகள்:<ph name="MARKUP_2" />உங்களுடைய டேட்டா இணைப்பைச் சரிபார்க்கவும்<ph name="MARKUP_3" />இந்த இணையப்பக்கத்தைப் பின்னர் ஏற்றவும்<ph name="MARKUP_4" />நீங்கள் உள்ளிட்ட முகவரியைச் சரிபார்க்கவும்<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">கார்டைச் சேமி</translation>
+<translation id="8970887620466824814">ஏதோ தவறாகிவிட்டது.</translation>
 <translation id="8971063699422889582">சேவையகச் சான்றிதழ் காலாவதியானது.</translation>
 <translation id="8975012916872825179">இதில் ஃபோன் எண்கள், மின்னஞ்சல் முகவரிகள், ஷிப்பிங் முகவரிகள் போன்ற தகவல்கள் உள்ளடங்கும்</translation>
 <translation id="8975263830901772334">நீங்கள் அச்சிடும் ஃபைல்களின் பெயர்கள்</translation>

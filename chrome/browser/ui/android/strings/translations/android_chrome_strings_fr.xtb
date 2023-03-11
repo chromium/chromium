@@ -34,6 +34,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="1173894706177603556">Renommer</translation>
 <translation id="1177863135347784049">Personnalisé</translation>
 <translation id="1181037720776840403">Supprimer</translation>
+<translation id="1181366777303791449">sur <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">Utiliser un mot de passe sécurisé ?</translation>
 <translation id="1197267115302279827">Déplacer les favoris</translation>
 <translation id="1201402288615127009">Suivant</translation>
@@ -42,7 +43,6 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="1204692632633423444">Bouton d'action de Chrome : <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">Copier le texte du lien</translation>
 <translation id="1209206284964581585">Masquer pour le moment</translation>
-<translation id="1226851825267005295">Vous pouvez gérer vos préférences après vous être connecté à Chrome avec votre compte Google.</translation>
 <translation id="1227058898775614466">Historique de navigation</translation>
 <translation id="1231733316453485619">Activer la synchronisation ?</translation>
 <translation id="123724288017357924">Actualiser page active et ignorer contenu en cache</translation>
@@ -166,7 +166,6 @@ Lorsque vous supprimez votre historique de navigation (entièrement ou pour un s
 <translation id="1928696683969751773">Mises à jour</translation>
 <translation id="19288952978244135">Rouvrez Chrome.</translation>
 <translation id="1933845786846280168">Onglet sélectionné</translation>
-<translation id="193571872656840963">Remercier ce créateur</translation>
 <translation id="1943432128510653496">Enregistrer les mots de passe</translation>
 <translation id="1952172573699511566">Les sites Web s'afficheront dans votre langue préférée lorsque ce sera possible.</translation>
 <translation id="1959679933317802873">En attente de contenu</translation>
@@ -202,7 +201,6 @@ Lorsque vous supprimez votre historique de navigation (entièrement ou pour un s
 <translation id="2122601567107267586">Impossible d'ouvrir l'application</translation>
 <translation id="2132122640199389833">Supprimer tous les appareils associés</translation>
 <translation id="213279576345780926">Onglet "<ph name="TAB_TITLE" />" fermé</translation>
-<translation id="2134927169889348449">En utilisant Chrome, vous acceptez les <ph name="BEGIN_TOS_LINK" />Conditions d'utilisation de Google<ph name="END_TOS_LINK" /> et les <ph name="BEGIN_ATOS_LINK" />Conditions d'utilisation supplémentaires de Google Chrome et Chrome OS<ph name="END_ATOS_LINK" />.</translation>
 <translation id="2139186145475833000">Ajouter à l'écran d'accueil</translation>
 <translation id="2141396931810938595">D'après votre utilisation</translation>
 <translation id="214888715418183969">Sélectionnez le type de données que vous acceptez de partager avec Chrome. Ces statistiques serviront à améliorer les fonctionnalités, les performances et la stabilité de Chrome.</translation>
@@ -555,7 +553,6 @@ Les jetons d'état privés améliorent la confidentialité sur le Web et ne peuv
 <translation id="409109920254068737">Vous pouvez utiliser cette tablette pour vous connecter sur l'appareil qui affiche le code QR.</translation>
 <translation id="4095146165863963773">Supprimer les données de l'application ?</translation>
 <translation id="4096227151372679484">Flux d'enregistrement en tant que favori ouvert à mi-hauteur</translation>
-<translation id="4099578267706723511">Envoyer des statistiques d'utilisation et des rapports d'erreur pour améliorer Chrome</translation>
 <translation id="4101475238162928417">Activez la synchronisation pour récupérer vos mots de passe, favoris et plus sur vos autres appareils</translation>
 <translation id="410351446219883937">Lecture automatique</translation>
 <translation id="4106587138345390261">Chrome développe de nouvelles fonctionnalités qui permettent aux sites de proposer la même expérience de navigation en utilisant moins d'infos personnelles</translation>
@@ -593,7 +590,6 @@ Les jetons d'état privés améliorent la confidentialité sur le Web et ne peuv
 <translation id="4269820728363426813">Copier l'adresse du lien</translation>
 <translation id="4283102315569707115">Demander les versions pour ordinateur par défaut ?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Activez le verrouillage de l'écran dans les paramètres Android<ph name="END_LINK" /></translation>
-<translation id="4293476595220860475">En utilisant Chrome, vous acceptez les <ph name="BEGIN_TOS_LINK" />Conditions d'utilisation de Google<ph name="END_TOS_LINK" /> et les <ph name="BEGIN_ATOS_LINK" />Conditions d'utilisation supplémentaires de Google Chrome et Chrome OS<ph name="END_ATOS_LINK" />. Les <ph name="BEGIN_PRIVACY_LINK" />Règles de confidentialité<ph name="END_PRIVACY_LINK" /> s'appliquent également.</translation>
 <translation id="4296252229500326964">Nouvel onglet nav. privée</translation>
 <translation id="4298388696830689168">Sites associés</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -766,7 +762,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5161254044473106830">Veuillez saisir un titre.</translation>
 <translation id="5170568018924773124">Afficher le dossier</translation>
 <translation id="5171045022955879922">Rechercher ou saisir une URL</translation>
-<translation id="517734441743343109">En continuant, vous acceptez les <ph name="BEGIN_TOS_LINK" />Conditions d'utilisation<ph name="END_TOS_LINK" /> et les <ph name="BEGIN_PRIVACY_LINK" />Règles de confidentialité<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="5184329579814168207">Ouvrir dans Chrome</translation>
 <translation id="5191251636205085390">Découvrez et contrôlez les nouvelles technologies qui visent à remplacer les cookies tiers</translation>
 <translation id="5193988420012215838">Copié dans le presse-papiers</translation>

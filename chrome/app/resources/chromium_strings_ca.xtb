@@ -23,9 +23,11 @@
 <translation id="1640672724030957280">S'està baixant...</translation>
 <translation id="1708666629004767631">Hi ha disponible una versió nova més segura de Chromium.</translation>
 <translation id="17264556997921157">Pots veure i suprimir els temes d'interès que els llocs web utilitzen per mostrar-te anuncis. Chromium estima els teus interessos basant-se en l'historial de navegació recent.</translation>
+<translation id="1745121272106313518">Chromium es reiniciarà d'aquí a <ph name="REMAINING_TIME" /></translation>
 <translation id="1774152462503052664">Permet que Chromium s'executi en segon pla</translation>
 <translation id="1779356040007214683">Perquè Chromium sigui més segur, hem desactivat algunes de les extensions que no apareixen a <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i que és possible que s'hagin afegit sense que ho sapigueu.</translation>
 <translation id="1808667845054772817">Torna a instal·lar Chromium</translation>
+<translation id="1820835682567584003">Chromium està intentant <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="185970820835152459">Pots gestionar els Comptes de Google en què tens la sessió iniciada. Els Comptes de Google s'utilitzen per al navegador Chromium, Play Store, Gmail i més. Si vols afegir un compte per a algú altre, com ara un membre de la família, afegeix una persona nova al teu dispositiu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="1863308913976887472">Els llocs web poden emmagatzemar informació a Chromium sobre els teus interessos. Per exemple, si visites un lloc web per comprar sabatilles per a una marató, és possible que el lloc web defineixi que t'interessa córrer maratons. Més endavant, si visites un altre lloc web per inscriure't a una cursa, aquest altre lloc web et pot mostrar un anunci de sabatilles de curses basant-se en els teus interessos.</translation>
 <translation id="1881322772814446296">Esteu a punt d'iniciar la sessió amb un compte gestionat i d'atorgar el control del vostre perfil de Chromium a l'administrador corresponent. Les dades de Chromium, com ara aplicacions, adreces d'interès, historial, contrasenyes i altres configuracions, s'enllaçaran permanentment amb <ph name="USER_NAME" />. Podreu suprimir aquestes dades mitjançant el Tauler de Comptes de Google, però no les podreu associar amb un altre compte. De manera opcional, podeu crear un perfil nou per mantenir les vostres dades de Chromium a part. <ph name="LEARN_MORE" /></translation>
@@ -304,7 +306,6 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="7561906087460245826">Esborra també les dades de Chromium (<ph name="URL" />)</translation>
 <translation id="7582945390259497898">Chromium pot estimar els teus interessos. Després, un lloc web que visitis pot demanar els teus interessos a Chromium per personalitzar els anuncis que veus.</translation>
 <translation id="7583399374488819119">Instal·lador de <ph name="COMPANY_NAME" /></translation>
-<translation id="7597596667193879455">Has activat Navegació segura millorada al teu compte. Ara, activa-la a Chromium.</translation>
 <translation id="761356813943268536">Chromium està utilitzant la càmera i el micròfon.</translation>
 <translation id="7617377681829253106">Chromium és millor que mai</translation>
 <translation id="7649070708921625228">Ajuda</translation>

@@ -8,9 +8,6 @@
 <translation id="1175958423215084756">აღმოჩენილია ბმული. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">გვერდი <ph name="PAGE_NUMBER" /> წაიშალა</translation>
 <translation id="1258009455399840361">შეტრიალება 90 გრადუსით საათის ისრის მიმართულებით</translation>
-<translation id="1300209025925956156">დაასკანირეთ თქვენი დოკუმენტი</translation>
-<translation id="1309250603447638106">მიმდინარეობს განახლებების ჩამოტვირთვა დოკუმენტების სკანირებისთვის</translation>
-<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. წვდომისთვის გამოიყენეთ კლავიშთა კომბინაცია Search + მარცხნივ მიმართული ისარი.</translation>
 <translation id="1417314334557041815">გვერდი <ph name="INDEX" />-ის რედაქტირება</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> გამოერთებულია.</translation>
 <translation id="1473110567575736769">3-წამიანი ტაიმერი</translation>
@@ -24,7 +21,6 @@
 <translation id="1664224225747386870">ჩაწერილი არაფერია</translation>
 <translation id="1838104802459806957">ზემოთკენ დახრა</translation>
 <translation id="1843105061469674856">დამატებითი გვერდის სკანირება</translation>
-<translation id="1851169887664797861">ხელმისაწვდომია კამერის მართვის დამატებითი საშუალებები</translation>
 <translation id="1851616744363735765">დაპაუზებული</translation>
 <translation id="1899697626337024495">ფოტოს გარჩევადობა</translation>
 <translation id="1925845977604399247">გალერეაზე გადასვლა</translation>
@@ -49,7 +45,6 @@
 <translation id="2761536921376153655">სკანირების ტიპი</translation>
 <translation id="28682968802727151">სარკისებური რეჟიმის გადახედვა</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> მიერთებულია.</translation>
-<translation id="2904654629665923749">ხელმისაწვდომია დოკუმენტების სკანირება</translation>
 <translation id="3067436040345934772">მარჯვნივ პანირება</translation>
 <translation id="3081586908890909590">ვიდეოს ჩაწერაზე გადართვა</translation>
 <translation id="313467653172006084">30 კადრი/წმ</translation>
@@ -74,7 +69,6 @@
 <translation id="4269820728363426813">ბმულის მისამართის კოპირება</translation>
 <translation id="4281620174117014503">საშუალო გარჩევადობა</translation>
 <translation id="428234092390943511">გვერდის ესკიზი</translation>
-<translation id="4340659173795395806">ამიერიდან შეგიძლიათ მრავალგვერდიანი PDF-ის შექმნა</translation>
 <translation id="4383571725254449280">წარმადობის ჟურნალების ბეჭდვა</translation>
 <translation id="4445542136948522167">ფოტოს გადაღების შეწყვეტა</translation>
 <translation id="4570032796877367747">წინა კამერა</translation>
@@ -97,7 +91,6 @@
 <translation id="5317780077021120954">შენახვა</translation>
 <translation id="5320594929574852403">გადატანა ხდება მარცხენა მიმართულებით</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5444515100983837161">მოათავსეთ დოკუმენტის ყველა კიდე ჩარჩოში. საუკეთესო შედეგების მისაღებად დოკუმენტისა და ფონის ფერები განსხვავებული უნდა იყოს.</translation>
 <translation id="5662366948659129155">სკანირდება გვერდი <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">კვადრატი</translation>
 <translation id="5746169159649715125">შენახვა PDF-ის სახით</translation>
@@ -157,7 +150,6 @@
 <translation id="8428213095426709021">პარამეტრები</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">მიკროფონის დადუმების გადართვა. დადუმების რეჟიმი ჩართულია</translation>
-<translation id="8712637175834984815">კარგი</translation>
 <translation id="8730621377337864115">მზადაა</translation>
 <translation id="8732462232047530626">მეტამონაცემების გადახედვა</translation>
 <translation id="8815966864175525708">ფოტოს პორტრეტის რეჟიმში გადაღებაზე გადართვა</translation>

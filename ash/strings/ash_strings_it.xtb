@@ -100,7 +100,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1420408895951708260">Attiva/disattiva luminosità notturna. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Visualizza le foto e i contenuti multimediali recenti del tuo telefono su <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">Sì</translation>
-<translation id="1447641497144572814">Avvio salvaschermo</translation>
 <translation id="1455242230282523554">Mostra impostazioni lingua</translation>
 <translation id="1460620680449458626">Il volume è disattivato.</translation>
 <translation id="14648076227129703">Consente l'accesso alla fotocamera per <ph name="APP1_NAME" />, <ph name="APP2_NAME" />, tutte le app e tutti i siti web che hanno l'autorizzazione di accesso alla fotocamera</translation>
@@ -126,6 +125,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1550523713251050646">Fai clic per visualizzare altre opzioni</translation>
 <translation id="1555130319947370107">Blu</translation>
 <translation id="1576623706766186887">Diminuisci lo zoom quando la lente d'ingrandimento è attiva</translation>
+<translation id="1586324912145647027">Vai alla scrivania 1 di 8</translation>
 <translation id="1589090746204042747">Accedere a tutte le tue attività in questa sessione.</translation>
 <translation id="1610778689852195798">"Annulla"</translation>
 <translation id="1611993646327628135">On</translation>
@@ -514,6 +514,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3631369015426612114">Consenti notifiche da:</translation>
 <translation id="3633097874324966332">Apri le impostazioni Bluetooth per accoppiare il dispositivo</translation>
 <translation id="3638400994746983214">Attiva/disattiva Schermata sulla privacy. <ph name="STATE_TEXT" />.</translation>
+<translation id="3649256019230929621">Riduce la finestra</translation>
 <translation id="3649505501900178324">Aggiornamento scaduto</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />, <ph name="EVENT_SUMMARY" />, dalle ore <ph name="START_TIME" /> alle ore <ph name="END_TIME" />, <ph name="TIME_ZONE" />. Seleziona per avere maggiori dettagli in Google Calendar.</translation>
 <translation id="3659444876902283058">(giorno <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
@@ -585,6 +586,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="4021716437419160885">Scorri verso il basso</translation>
 <translation id="4022497978915111141">Blocca il dispositivo</translation>
 <translation id="4024840464866786680">Se hai dimenticato il PIN e la password o hai modificato la password del tuo Account Google di recente, prova a recuperare questo utente.</translation>
+<translation id="4026843240379844265">Sposta la finestra attiva tra gli schermi</translation>
 <translation id="4028481283645788203">Password obbligatoria per maggiore sicurezza</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Stai condividendo lo schermo</translation>
@@ -909,6 +911,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="5689633613396158040">Con la funzione Luminosità notturna, potrai guardare lo schermo senza sforzare la vista o leggere in condizioni di luce attenuata. Tocca per cambiare l'ora di attivazione della funzione Luminosità notturna o disattiva completamente la funzione.</translation>
 <translation id="5691772641933328258">Impronta digitale non riconosciuta</translation>
 <translation id="5693255400847650006">Microfono in uso</translation>
+<translation id="5699366815052349604">Assegna la finestra attiva a tutte le scrivanie</translation>
 <translation id="570390244361237317">Tutte le app: usa i tasti freccia per accedere a tutte le app</translation>
 <translation id="5707775774148071965">Il dispositivo supporta una velocità dati superiore rispetto al cavo. Le prestazioni del dispositivo potrebbero essere limitate.</translation>
 <translation id="5710450975648804523">Funzione Non disturbare attiva</translation>
@@ -1548,6 +1551,7 @@ Nuova installazione</translation>
 <translation id="9034924485347205037">File Linux</translation>
 <translation id="9047624247355796468">Apri Impostazioni per <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Comprimi la notifica</translation>
+<translation id="906458777597946297">Ingrandisci la finestra</translation>
 <translation id="9065203028668620118">Modifica</translation>
 <translation id="9070640332319875144">Impostazioni assistente</translation>
 <translation id="9072519059834302790">Tempo rimanente all'esaurimento completo della batteria: <ph name="TIME_LEFT" />.</translation>

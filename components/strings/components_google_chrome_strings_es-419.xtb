@@ -40,4 +40,6 @@
 <translation id="8187289872471304532">Accede a
           Aplicaciones &gt; Preferencias del Sistema &gt; Red &gt; Avanzado &gt; Proxies
           y desmarca las casillas de verificación de los proxies que se hayan seleccionado.</translation>
+<translation id="8232971017369963250">Chrome funciona gracias al proyecto de código abierto de <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
+<translation id="8279509328145658601">Chrome también funciona gracias a otros <ph name="BEGIN_LINK_OSS" />software de código abierto<ph name="END_LINK_OSS" />.</translation>
 </translationbundle>

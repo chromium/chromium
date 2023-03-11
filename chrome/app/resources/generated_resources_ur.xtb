@@ -211,6 +211,7 @@
 <translation id="1178581264944972037">موقوف کریں</translation>
 <translation id="117916940443676133">‏آپ کی سیکیورٹی کلید PIN کے ذریعے محفوظ نہیں ہے۔ سائن ان ڈیٹا کا نظم کرنے کے لیے پہلے ایک PIN تخلیق کریں۔</translation>
 <translation id="1181037720776840403">ہٹائیں</translation>
+<translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /> کو</translation>
 <translation id="1183237619868651138">مقامی کیش میں <ph name="EXTERNAL_CRX_FILE" /> کو انسٹال نہیں کیا جا سکتا ہے۔</translation>
 <translation id="1184709369107246085">‏<ph name="APPLICATION_NAME" /> ایپلیکیشن کو ایک درست <ph name="APPLICATION_NAME" /> URL درکار ہے۔</translation>
 <translation id="1185924365081634987">یہ نیٹ ورک خرابی حل کرنے کیلئے آپ <ph name="GUEST_SIGNIN_LINK_START" />مہمان کے بطور براؤز<ph name="GUEST_SIGNIN_LINK_END" /> کرنے کی بھی کوشش کر سکتے ہیں۔</translation>
@@ -1691,6 +1692,7 @@
 <translation id="244641233057214044">آپ کی تلاش سے متعلق</translation>
 <translation id="2448312741937722512">قسم</translation>
 <translation id="2448810255793562605">سوئچ رسائی خودکار اسکین</translation>
+<translation id="2450021089947420533">صارف کے تجربے</translation>
 <translation id="2450223707519584812">‏Google API کلیدیں موجود نہ ہونے کی وجہ سے آپ صارفین کو شامل نہیں کر سکیں گے۔ تفصیلات کیلئے <ph name="DETAILS_URL" /> دیکھیں۔</translation>
 <translation id="2450849356604136918">کوئی فعال ملاحظات نہیں</translation>
 <translation id="2451298179137331965">2x</translation>
@@ -1906,9 +1908,6 @@
 <translation id="2642111877055905627">ساکر بال</translation>
 <translation id="2643064289437760082">‏آپ اپنے براؤزنگ ڈیٹا کو حذف کر کے کبھی بھی Ad measurement ڈیٹا کو حذف کر سکتے ہیں</translation>
 <translation id="2643698698624765890">ونڈو مینو میں ایکسٹینشنز پر کلک کر کے اپنے ایکسٹینشنز کا نظم کریں۔</translation>
-<translation id="2643887015830197688">‏نیویگیشنز کو HTTPS پر اپ گریڈ کریں اور ایسی سائٹس لوڈ کرنے سے پہلے آپ کو متنبہ کریں جو اسے سپورٹ نہیں کرتی ہیں۔
-
-    آپ اس ترتیب کو تبدیل نہیں کر سکتے ہیں کیونکہ آپ نے اعلی تحفظ فعال کیا ہوا ہے۔</translation>
 <translation id="2645047101481282803">آپ کا آلہ <ph name="PROFILE_NAME" /> کے زیر انتظام ہے</translation>
 <translation id="2645388244376970260">اس ٹیب کو <ph name="DEVICE_NAME" /> پر کاسٹ کیا جا رہا ہے</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -2576,7 +2575,6 @@
 <translation id="3254084468305910013">{COUNT,plural, =0{سیکیورٹی کا کوئی مسئلہ نہیں ملا}=1{سیکیورٹی کا {COUNT} مسئلہ ملا}other{سیکیورٹی کے {COUNT} مسائل ملے}}</translation>
 <translation id="3254451942070605467">ڈاؤن لوڈ جاری ہے <ph name="FILE_NAME" />، <ph name="PERCENT_REMAINING" /> فیصد باقی ہے</translation>
 <translation id="3254516606912442756">خودکار ٹائم زون کا پتا لگانا غیر فعال ہے</translation>
-<translation id="3254715652085014625">‏اپنے Android فون پر Chrome کو کھولیں اور "ترتیبات &gt; پاس ورڈز &gt; فون کو بطور سیکیورٹی کلید استعمال کریں" پر جائیں، اور وہاں ہدایات کی پیروی کریں۔</translation>
 <translation id="3255355328033513170"><ph name="SITE_GROUP_NAME" /> کا اسٹور کردہ تمام ڈیٹا اور اس کے ماتحت کسی بھی سائٹ کو حذف کر دیا جائے گا۔ اس میں کوکیز شامل ہیں۔ اوپن ٹیبز سمیت، آپ ان سائٹس سے سائن آؤٹ ہو جائیں گے۔</translation>
 <translation id="3257733480216378006"><ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> کو اجازت دیں؟</translation>
 <translation id="3259723213051400722">براہ کرم دوبارہ کوشش کریں۔</translation>
@@ -2712,6 +2710,7 @@
 <translation id="3378627645871606983">‏Steam کے لیے دی گئی اجازتوں کا اطلاق تمام Steam گیمز اور ایپس پر ہوتا ہے۔</translation>
 <translation id="337920581046691015"><ph name="PRODUCT_NAME" /> انسٹال کر دیا جائے گا۔</translation>
 <translation id="3380365263193509176">نامعلوم خرابی</translation>
+<translation id="3380831556454930637">‏آپ کے منتظم نے ایپ <ph name="APP_NAME" /> کو OS لاگ ان پر چلانے کے لیے کنفیگر کر دیا ہے</translation>
 <translation id="3382073616108123819">افوہ!  سسٹم اس آلہ کیلئے آلہ کے شناخت کنندگان کا تعین کرنے میں ناکام ہوگیا۔</translation>
 <translation id="3382200254148930874">نگرانی روکی جا رہی ہے...</translation>
 <translation id="338323348408199233">‏VPN کے بغیر ٹریفک مسدود کریں</translation>
@@ -3127,7 +3126,6 @@
 <translation id="3742666961763734085">اس نام کا تنظیمی یونٹ تلاش نہیں کیا جا سکا۔ براہ کرم دوبارہ کوشش کریں۔</translation>
 <translation id="3743842571276656710">‏<ph name="DEVICE_NAME" /> کے ساتھ جوڑا بنانے کے لیے PIN درج کریں</translation>
 <translation id="3747077776423672805">‏ایپس ہٹانے کے لیے، ترتیبات &gt; Google Play اسٹور &gt; Android کی ترجیحات کا نظم کریں &gt; ایپس یا ایپلیکیشن مینیجر پر جائیں۔ پھر اس ایپ پر تھپتھپائیں جسے آپ اَن انسٹال کرنا چاہتے ہیں (ممکن ہے کہ ایپ تلاش کرنے کے لیے آپ کو دائیں یا بائیں سوائپ کرنا پڑے)۔ پھر 'اَن انسٹال کریں' یا 'غیر فعال کریں' پر تھپتھپائیں۔</translation>
-<translation id="3747603683749989726">بہتر کردہ سیکیورٹی کو آن کریں؟</translation>
 <translation id="3748424433435232460">اس اکاؤنٹ کا پاس ورڈ پہلے ہی اس آلے پر محفوظ ہے</translation>
 <translation id="3748706263662799310">بگ کی اطلاع دیں</translation>
 <translation id="3749724428455457489">سائٹ کے تجویز کردہ اشتہارات کے بارے میں مزید جانیں</translation>
@@ -3728,7 +3726,6 @@
 <translation id="4280325816108262082">جب آلہ آف ہو یا استعمال نہ ہو رہا ہو تو آلہ خودکار طور پر منقطع ہو جائے گا</translation>
 <translation id="4281844954008187215">سروس کی شرائط</translation>
 <translation id="4282196459431406533">‏Smart Lock آن ہے</translation>
-<translation id="4284755288573763878">بہتر کردہ سیکیورٹی کو آف کریں؟</translation>
 <translation id="4284903252249997120">‏ChromeVox اسکرین قاری اور سننے کیلئے منتخب کریں</translation>
 <translation id="4285418559658561636">پاس ورڈ اپ ڈیٹ کریں</translation>
 <translation id="4285498937028063278">پن ہٹائیں</translation>
@@ -5455,7 +5452,6 @@
 <translation id="5877584842898320529">منتخب کردہ پرنٹر دستیاب نہیں ہے یا صحیح سے انسٹال نہیں ہوا ہے۔ <ph name="BR" /> اپنا پرنٹر چیک کریں یا دوسرا پرنٹر منتخب کر کے آزمائيں۔</translation>
 <translation id="5878945009165002849">شناختی سروسز سے سائن ان کے پرامپٹس مسدود کریں</translation>
 <translation id="5881710783061958569">اگر ایسا ہے تو براہ کرم <ph name="BRAND" /> میں اپنے محفوظ کردہ پاس ورڈ میں ترمیم کریں تاکہ یہ آپ کے نئے پاس ورڈ سے مماثل ہو جائے۔</translation>
-<translation id="5882449899683447569">کچھ غلط ہو گیا اور آپ کے پاس ورڈز درآمد نہیں ہوئے</translation>
 <translation id="5882919346125742463">معلوم نیٹ ورکس</translation>
 <translation id="5883356647197510494"><ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> کو خودکار طور پر مسدود کر دیا گیا</translation>
 <translation id="5884447826201752041">ہر ایکسٹینشن کے لیے حسب ضرورت بنائیں</translation>
@@ -6104,6 +6100,7 @@
 <translation id="6469557521904094793">سیلولر نیٹ ورک آن کریں</translation>
 <translation id="6470823736074966819">اطلاعات کو خاموش کریں</translation>
 <translation id="6472893788822429178">ہوم بٹن دکھائیں</translation>
+<translation id="6474352027343282094">{COUNT,plural, =1{‏{COUNT} پاس ورڈ صرف اس آلے پر محفوظ ہے۔ اسے اپنے دوسرے آلات پر استعمال کرنے کے لیے، ‎&lt;a target='_blank' href='chrome://password-manager/'&gt;‎اسے اپنے Google اکاؤنٹ میں محفوظ کریں&lt;a/&gt;۔}other{‏{COUNT} پاس ورڈز صرف اس آلے پر محفوظ ہیں۔ انہیں اپنے دوسرے آلات پر استعمال کرنے کے لیے، ‎&lt;a target='_blank' href='chrome://password-manager/'&gt;‎انہیں اپنے Google اکاؤنٹ میں محفوظ کریں&lt;a/&gt;۔}}</translation>
 <translation id="6474498546677193336">‏اشتراک ختم نہیں ہوسکا کیونکہ ایک ایپلیکیشن اس فولڈر کو استعمال کر رہی ہے۔ اگلی بار Linux بند ہونے پر فولڈر کا اشتراک ختم کر دیا جائے گا۔</translation>
 <translation id="6474884162850599008">‏Google Drive اکاؤنٹ منقطع کریں</translation>
 <translation id="6475294023568239942">‏ڈسک اسپیس خالی کریں یا ترتیبات میں Linux ڈسک کا سائز تبدیل کریں</translation>
@@ -7598,6 +7595,7 @@
 <translation id="7817361223956157679">‏Linux ایپس پر آن اسکرین کی بورڈ ابھی کام نہیں کرتا ہے</translation>
 <translation id="7818135753970109980">نیا تھیم شامل کر دیا گیا (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="7819605256207059717">آپ کی تنظیم نے مسدود کر دیا</translation>
+<translation id="7820400255539998692"><ph name="FILENAME" /> کو حذف کریں، تاکہ اس آلے کو استعمال کرنے والے دوسرے لوگ آپ کے پاس ورڈز نہ دیکھ سکیں</translation>
 <translation id="7820561748632634942">اضافی سوئچز تفویض کریں؟</translation>
 <translation id="782057141565633384">ویڈیو پتہ کا&amp;پی کریں</translation>
 <translation id="7824864914877854148">خرابی کی وجہ سے بیک اپ مکمل نہیں ہو سکا</translation>
@@ -7935,7 +7933,6 @@
 <translation id="8102139037507939978">‏system_logs.txt سے ذاتی طور پر قابل شناخت معلومات اسٹرپ۔</translation>
 <translation id="810362914482827094">پاس کیز تلاش کریں</translation>
 <translation id="8104088837833760645">‏eSIM پروفائل ڈاؤن لوڈ کریں</translation>
-<translation id="8105368624971345109">آف کریں</translation>
 <translation id="8107015733319732394">‏آپ کے <ph name="DEVICE_TYPE" /> پر Google Play اسٹور انسٹال کیا جا رہا ہے۔ اس میں کچھ منٹ کا وقت لگ سکتا ہے۔</translation>
 <translation id="810728361871746125">ڈسپلے کا ریزولیوشن</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{کوئی فریق ثالث کوکی نہیں ہے}=1{1 فریق ثالث کوکی مسدود ہے}other{# فریق ثالث کوکیز مسدود ہیں}}</translation>
@@ -8946,7 +8943,6 @@
 <translation id="9026852570893462412">اس کارروائی میں کچھ منٹ لگ سکتے ہيں۔ ورچوئل مشین ڈاؤن لوڈ ہو رہی ہے۔</translation>
 <translation id="9027459031423301635">لنک کو نئے &amp;ٹیب میں کھولیں</translation>
 <translation id="9027707169256972235">ہٹائیں</translation>
-<translation id="9029667986262585240">آپ نے اپنے اکاؤنٹ میں بہتر کردہ محفوظ براؤزنگ کو آف کر دیا ہے۔</translation>
 <translation id="9030515284705930323">‏آپ کی تنظیم نے آپ کے اکاؤنٹ کیلئے Google Play اسٹور کو فعال نہیں کیا ہے۔ مزید معلومات کیلئے اپنے منتظم سے رابطہ کریں۔</translation>
 <translation id="9030754204056345429">تیز تر</translation>
 <translation id="9030785788945687215">Gmail</translation>
@@ -9131,7 +9127,6 @@
 <translation id="9188732951356337132">‏استعمال اور ڈائیگناسٹک کا ڈیٹا بھیجیں۔ فی الوقت یہ آلہ خود کار طور پر ڈائیگناسٹک، آلے اور ایپ کے استعمال کا ڈیٹا Google کو بھیج رہا ہے۔ اس کا استعمال آپ کے بچے کی شناخت کیلئے نہیں کیا جائے گا اور اس سے سسٹم اور ایپ کے استحکام اور دیگر بہتریوں میں مدد ملے گی۔ کچھ مجموعی ڈیٹا Google ایپس اور پارٹنرز، جیسے Android ڈیولپرز، کی مدد بھی کرے گا۔ اگر آپ کے بچے کیلئے ویب اور ایپ کی اضافی سرگرمی کی ترتیب آن ہے تو اس ڈیٹا کو اس کے Google اکاؤنٹ میں محفوظ کیا جا سکتا ہے۔ <ph name="BEGIN_LINK2" />مزید جانیں<ph name="END_LINK2" /></translation>
 <translation id="9192019773545828776">‏صوتی تاثرات سنیں تاکہ آپ اسکرین پر دیکھے بغیر اپنا آلہ استعمال کر سکیں۔ بریل تاثرات منسلک آلہ کے ساتھ دستیاب ہے۔ ChromeVox کو آن اور آف کرنے کے لیے Ctrl + Alt + Z استعمال کریں۔ نیویگیٹ کرنے کے لیے Search + بائیں تیر کے نشان یا دائیں تیر کے نشان کا استعمال کریں۔ منتخب کرنے کے لیے Search + Space استعمال کریں (فعال کریں)۔</translation>
 <translation id="919686179725692564">اپنی ایپس کا بیک اپ لینے کے بارے میں مزید جانیں</translation>
-<translation id="9198090666959937775">‏اپنے Android فون کو سیکورٹی کلید کے طور پر استعمال کریں</translation>
 <translation id="9199503643457729322">رازداری کی گائیڈ سے دور نیویگیٹ کرنے کے لیے کلک کریں۔</translation>
 <translation id="9200339982498053969"><ph name="ORIGIN" /> <ph name="FOLDERNAME" /> میں فائلز میں ترمیم کر سکے گا</translation>
 <translation id="920045321358709304">تلاش کریں <ph name="SEARCH_ENGINE" /></translation>
@@ -9159,6 +9154,7 @@
 <translation id="922152298093051471">‏Chrome کو حسب ضرورت بنائیں</translation>
 <translation id="923467487918828349">سبھی کو دکھائیں</translation>
 <translation id="924818813611903184">‏ChromeOS ترتیبات میں زبانوں کا نظم کریں</translation>
+<translation id="925270020047573546">ڈیسک ٹاپ آڈیو کاسٹ کرنا اس آلہ پر تعاون یافتہ نہیں ہے۔</translation>
 <translation id="929117907539171075">انسٹال کردہ ایپ میں آف لائن ڈیٹا بھی صاف ہو جائے گا</translation>
 <translation id="930268624053534560">تفصیلی ٹائم اسٹامپس</translation>
 <translation id="930893132043726269">فی الحال رومنگ میں ہے</translation>

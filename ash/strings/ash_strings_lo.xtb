@@ -100,7 +100,6 @@
 <translation id="1420408895951708260">ປິດເປີດແສງກາງຄືນ. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">ເບິ່ງຮູບພາບ ແລະ ມີເດຍຫຼ້າສຸດຂອງໂທລະສັບທ່ານຢູ່ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ</translation>
 <translation id="1426410128494586442">ແມ່ນແລ້ວ</translation>
-<translation id="1447641497144572814">ເລີ່ມສະກຣີນເຊບເວີ</translation>
 <translation id="1455242230282523554">ສະແດງການຕັ້ງຄ່າພາສາ</translation>
 <translation id="1460620680449458626">ລະດັບສຽງປິດຢູ່.</translation>
 <translation id="14648076227129703">ການດຳເນີນການນີ້ອະນຸຍາດສິດເຂົ້າເຖິງກ້ອງຖ່າຍຮູບໃຫ້ແກ່ <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> ແລະ ແອັບ ແລະ ເວັບໄຊທັງໝົດທີ່ມີສິດການອະນຸຍາດກ້ອງຖ່າຍຮູບ</translation>
@@ -126,6 +125,7 @@
 <translation id="1550523713251050646">ຄລິກສຳລັບຕົວເລືອກເພີ່ມເຕີມ</translation>
 <translation id="1555130319947370107">ສີ​ຟ້າ</translation>
 <translation id="1576623706766186887">ຂະຫຍາຍອອກເມື່ອແວ່ນຂະຫຍາຍເປີດຢູ່</translation>
+<translation id="1586324912145647027">ໄປຫາໂຕະທີ 1 ຫາ 8</translation>
 <translation id="1589090746204042747">ເຂົ້າເຖິງທຸກການເຄື່ອນໄຫວຂອງທ່ານໃນເຊດຊັນນີ້</translation>
 <translation id="1610778689852195798">"ຍົກເລີກ"</translation>
 <translation id="1611993646327628135">ເປີດ</translation>
@@ -514,6 +514,7 @@
 <translation id="3631369015426612114">ອະ​ນຸ​ຍາດ​ການແຈ້ງ​ເຕືອນຈາກ​ສິ່ງຕໍ່​ໄປ​ນີ້​</translation>
 <translation id="3633097874324966332">ເປີດການຕັ້ງຄ່າ Bluetooth ເພື່ອຈັບຄູ່ອຸປະກອນຂອງທ່ານ</translation>
 <translation id="3638400994746983214">ສະຫຼັບໜ້າຈໍຄວາມເປັນສ່ວນຕົວ. <ph name="STATE_TEXT" />.</translation>
+<translation id="3649256019230929621">ຫຍໍ້ໜ້າ​ຕ່າງລົງ</translation>
 <translation id="3649505501900178324">ກາຍກຳນົດການອັບເດດແລ້ວ</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -588,6 +589,7 @@
 <translation id="4021716437419160885">ເລື່ອນລົງ</translation>
 <translation id="4022497978915111141">ລັອກອຸປະກອນ</translation>
 <translation id="4024840464866786680">ຫາກທ່ານລືມ PIN ຫຼື ລະຫັດຜ່ານຂອງທ່ານ ຫຼື ປ່ຽນລະຫັດຜ່ານບັນຊີ Google ຂອງທ່ານໄປເມື່ອບໍ່ດົນມານີ້, ໃຫ້ລອງກູ້ຜູ້ໃຊ້ນີ້ຄືນມາ.</translation>
+<translation id="4026843240379844265">ຍ້າຍໜ້າຈໍທີ່ເປີດຢູ່ໄປມາລະຫວ່າງຈໍສະແດງຜົນຕ່າງໆ</translation>
 <translation id="4028481283645788203">ຈຳເປັນຕ້ອງມີລະຫັດຜ່ານເພື່ອຄວາມປອດໄພຍິ່ງຂຶ້ນ</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">ທ່ານກຳລັງແບ່ງປັນໜ້າຈໍຂອງທ່ານ</translation>
@@ -912,6 +914,7 @@
 <translation id="5689633613396158040">ແສງກາງຄືນເຮັດໃຫ້ມັນງ່າຍກວ່າໃນການເບິ່ງໜ້າຈໍຂອງທ່ານ ຫຼື ອ່ານໃນແສງທີ່ມືດ. ແຕະເພື່ອປ່ຽນວ່າຈະເປີດແສງກາງຄືນເວລາໃດ ຫຼື ປິດມັນໄປເລີຍກໍໄດ້.</translation>
 <translation id="5691772641933328258">ບໍ່ຮູ້ຈັກລາຍນິ້ວມື</translation>
 <translation id="5693255400847650006">ມີການໃຊ້ໄມໂຄຣໂຟນຢູ່</translation>
+<translation id="5699366815052349604">ມອບໝາຍໜ້າຈໍທີ່ເຮັດວຽກໄປໃສ່ໂຕະທັງໝົດ</translation>
 <translation id="570390244361237317">ແອັບທັງໝົດ, ນຳທາງດ້ວຍປຸ່ມລູກສອນເພື່ອເຂົ້າເຖິງແອັບທັງໝົດ</translation>
 <translation id="5707775774148071965">ອຸປະກອນຂອງທ່ານຮອງຮັບອັດຕາຂໍ້ມູນທີ່ສູງກວ່າສາຍຂອງທ່ານ. ປະສິດທິພາບອຸປະກອນອາດຖືກຈຳກັດໄວ້.</translation>
 <translation id="5710450975648804523">ໂໝດຫ້າມລົບກວນເປີດຢູ່</translation>
@@ -1552,6 +1555,7 @@
 <translation id="9034924485347205037">ໄຟລ໌ Linux</translation>
 <translation id="9047624247355796468">ເປີດການຕັ້ງຄ່າສຳລັບ <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">ຫຍໍ້ການແຈ້ງເຕືອນລົງ</translation>
+<translation id="906458777597946297">ຂະຫຍາຍໜ້າ​ຕ່າງ</translation>
 <translation id="9065203028668620118">ແກ້ໄຂ</translation>
 <translation id="9070640332319875144">ການຕັ້ງຄ່າຜູ້ຊ່ວຍ</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> ຈົນກວ່າວ່າແບັດເຕີຣີຈະໝົດ.</translation>

@@ -84,6 +84,7 @@
 <translation id="1722487484194605434">Komprimiranje stavki (<ph name="NUMBER_OF_ITEMS" />)...</translation>
 <translation id="1722687688096767818">Dodaje se profil...</translation>
 <translation id="1726100011689679555">Poslužitelji naziva</translation>
+<translation id="1727562178154619254">Spremno za sinkronizaciju</translation>
 <translation id="1729953886957086472">njemački (Njemačka)</translation>
 <translation id="1730235522912993863">kineski cangjie</translation>
 <translation id="1731889557567069540">Kopirano stavki: <ph name="NUMBER_OF_ITEMS" />.</translation>
@@ -705,6 +706,7 @@
 <translation id="6732801395666424405">Certifikati se nisu učitali</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">Podijelite mapu s Bruschettom</translation>
+<translation id="6750737795876287924">Trenutačni direktorij</translation>
 <translation id="6751256176799620176">Odabrana je 1 mapa</translation>
 <translation id="6755827872271341378">Uređaj s ChromeOS Flexom</translation>
 <translation id="6790428901817661496">Reproduciraj</translation>
@@ -742,7 +744,6 @@
 <translation id="6973630695168034713">Mape</translation>
 <translation id="6976795442547527108">Lav</translation>
 <translation id="6979158407327259162">Google disk</translation>
-<translation id="6979737339423435258">Cijelo vrijeme</translation>
 <translation id="6989942356279143254">švedski</translation>
 <translation id="6990081529015358884">Ponestalo vam je prostora</translation>
 <translation id="6993826899923627728">Ove su stavke u otpadu</translation>
@@ -798,7 +799,6 @@
 <translation id="7458955835361612701">Nema nedavnih slika</translation>
 <translation id="7460898608667578234">Ukrajinski</translation>
 <translation id="7469894403370665791">Automatski se povežite s tom mrežom</translation>
-<translation id="7481358317100446445">Spremno</translation>
 <translation id="7486315294984620427">Da biste ispustili datoteke na Parallels Desktop, morate ih kopirati u Windows datoteke.</translation>
 <translation id="749452993132003881">hiragana</translation>
 <translation id="7495372004724182530">malajalamski, fonetski</translation>

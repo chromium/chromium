@@ -26,6 +26,7 @@
 <translation id="1448064542941920355">縮小</translation>
 <translation id="1510341833810331442">不允許網站在裝置上儲存資料</translation>
 <translation id="1547123415014299762">已允許第三方 Cookie</translation>
+<translation id="1593426485665524382">喺螢幕頂部附近有可以執行嘅新操作</translation>
 <translation id="1620510694547887537">相機</translation>
 <translation id="1633720957382884102">相關網站</translation>
 <translation id="1644574205037202324">記錄</translation>
@@ -146,6 +147,7 @@
 <translation id="3628308229821498208">建議搜尋</translation>
 <translation id="3636279694100170143">您瀏覽的網站可驗證您是實際使用者，而不是機器人</translation>
 <translation id="3649190289964910441">您瀏覽的網站可將資料儲存至 Chrome，以驗證您是實際使用者。在您瀏覽的過程中，其他網站可從 Chrome 取得第一個網站提供的資料，確認您應該是可信任的使用者。</translation>
+<translation id="3721953990244350188">閂同顯示下一個可以執行嘅操作</translation>
 <translation id="3744111561329211289">背景同步處理</translation>
 <translation id="3763247130972274048">輕按影片的左或右面兩下即可略過 10 秒</translation>
 <translation id="3794286421982011626">您瀏覽的網站可儲存您在網站上的活動資料，以便正常運作，例如在網站上保持登入狀態或儲存購物車內的商品。網站通常會暫時在裝置上儲存這些資料。</translation>
@@ -193,7 +195,6 @@
 <translation id="4534723447064627427">如要讓 <ph name="APP_NAME" /> 存取您的麥克風，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟麥克風。</translation>
 <translation id="4566417217121906555">將麥克風設定為靜音</translation>
 <translation id="4570913071927164677">詳細資料</translation>
-<translation id="4575264539271661854">在您瀏覽的網站上更輕鬆地放大文字和圖片</translation>
 <translation id="4598549027014564149">在無痕模式下，網站無法使用 Cookie 瞭解您的跨網站瀏覽活動 (即使是相關網站)，因此無法根據瀏覽活動提供個人化廣告等服務。部分網站的功能可能會無法正常運作。</translation>
 <translation id="4645575059429386691">由您的家長管理</translation>
 <translation id="4670064810192446073">虛擬實境</translation>

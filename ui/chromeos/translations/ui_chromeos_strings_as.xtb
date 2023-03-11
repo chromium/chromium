@@ -84,6 +84,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" />টা বস্তু জিপ কৰি থকা হৈছে...</translation>
 <translation id="1722687688096767818">প্ৰ’ফাইল যোগ দি থকা হৈছে...</translation>
 <translation id="1726100011689679555">নাম সম্পর্কীয় ছার্ভাৰ</translation>
+<translation id="1727562178154619254">ছিংক কৰিবলৈ সাজু</translation>
 <translation id="1729953886957086472">জাৰ্মান (জাৰ্মানী)</translation>
 <translation id="1730235522912993863">চীনা কেঞ্জি</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> টা বস্তুৰ প্ৰতিলিপি কৰা হ'ল।</translation>
@@ -704,6 +705,7 @@
 <translation id="6732801395666424405">প্ৰমাণপত্ৰসমূহ ল’ড হোৱা নাই</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">Bruschettaৰ সৈতে ফ’ল্ডাৰটো শ্বেয়াৰ কৰক</translation>
+<translation id="6750737795876287924">বৰ্তমানৰ ডাইৰেক্টৰী</translation>
 <translation id="6751256176799620176">১টা ফ’ল্ডাৰ বাছনি কৰা হ’ল</translation>
 <translation id="6755827872271341378">ChromeOS Flex ডিভাইচ</translation>
 <translation id="6790428901817661496">প্লে’ কৰক</translation>
@@ -741,7 +743,6 @@
 <translation id="6973630695168034713">ফ’ল্ডাৰ</translation>
 <translation id="6976795442547527108">সিংহ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979737339423435258">সকলো সময়তে</translation>
 <translation id="6989942356279143254">ছুইডিশ্ব</translation>
 <translation id="6990081529015358884">আপোনাৰ ষ্ট'ৰেজৰ খালী ঠাই কমি আহিছে</translation>
 <translation id="6993826899923627728">এই বস্তুবোৰ আপোনাৰ ট্ৰেশ্বত আছে</translation>
@@ -797,7 +798,6 @@
 <translation id="7458955835361612701">কোনো শেহতীয়া প্ৰতিচ্ছবি নাই</translation>
 <translation id="7460898608667578234">ইউক্ৰেনিয়ান</translation>
 <translation id="7469894403370665791">এই নেটৱেৰ্কটোত স্বয়ংক্ৰিয়ভাৱে সংযোগ কৰক</translation>
-<translation id="7481358317100446445">সাজু</translation>
 <translation id="7486315294984620427">Parallels Desktopত ফাইল টানি আনি এৰিবলৈ, ফাইলটো Windows ফাইললৈ প্ৰতিলিপি কৰিবই লাগিব।</translation>
 <translation id="749452993132003881">হিৰাগনা</translation>
 <translation id="7495372004724182530">মালায়ালম ফ’নেটিক</translation>

@@ -25,9 +25,11 @@
 <translation id="1640672724030957280">다운로드 중...</translation>
 <translation id="1708666629004767631">새롭고 안전한 Chromium의 새 버전을 사용할 수 있습니다.</translation>
 <translation id="17264556997921157">사이트에서 광고 표시를 위해 사용하는 관심분야의 주제를 내가 확인하고 삭제할 수 있습니다. Chromium에서는 사용자의 최근 방문 기록을 기반으로 관심분야를 추정합니다.</translation>
+<translation id="1745121272106313518"><ph name="REMAINING_TIME" /> 후에 Chromium 다시 시작</translation>
 <translation id="1774152462503052664">백그라운드에서 Chromium을 실행</translation>
 <translation id="1779356040007214683">Google에서는 Chromium의 보안을 강화하기 위해 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />에 표시되지 않고 사용자 모르게 추가되었을 수 있는 일부 확장 프로그램의 사용을 중지했습니다.</translation>
 <translation id="1808667845054772817">Chromium 재설치</translation>
+<translation id="1820835682567584003">Chromium에서 <ph name="AUTHENTICATION_PURPOSE" />을(를) 시도하는 중입니다.</translation>
 <translation id="185970820835152459">로그인된 Google 계정을 관리할 수 있습니다. Google 계정은 Chromium 브라우저, Play 스토어, Gmail 등에서 사용됩니다. 가족 구성원 등 다른 사람을 위해 계정을 추가하고 싶다면 대신 <ph name="DEVICE_TYPE" />에 새 사용자를 추가하세요. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="1863308913976887472">사이트에서는 Chromium에 내 관심분야에 관한 정보를 저장할 수 있습니다. 예를 들어 마라톤화를 구매하려고 사이트를 방문하면 사이트에서 내 관심분야를 마라톤으로 정의할 수 있습니다. 나중에 마라톤 대회에 등록하기 위해 다른 사이트에 방문하면 관심분야를 토대로 마라톤화 광고가 표시될 수 있습니다.</translation>
 <translation id="1881322772814446296">관리 계정으로 로그인하고 Chromium 프로필에 대한 관리자 제어권을 부여하려고 합니다. 앱, 북마크, 방문 기록, 비밀번호 및 기타 설정 등 Chromium 데이터가 <ph name="USER_NAME" /> 계정에 영구적으로 연결됩니다. 이후 이 데이터를 Google 계정 대시보드에서 삭제할 수는 있지만 다른 계정에 연결할 수는 없습니다. 기존 Chromium 데이터를 유지하려면 새 프로필을 만드는 방법이 있습니다. <ph name="LEARN_MORE" /></translation>
@@ -306,7 +308,6 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7561906087460245826">Chromium(<ph name="URL" />)에서도 데이터 삭제</translation>
 <translation id="7582945390259497898">Chromium에서 내 관심분야를 예측할 수 있습니다. 나중에 사이트를 방문하면 사이트에서 광고 개인 최적화를 위해 내 관심분야를 알려달라고 Chromium에 요청할 수 있습니다.</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> 설치 프로그램</translation>
-<translation id="7597596667193879455">계정에서 향상된 세이프 브라우징을 사용 설정했습니다. Chromium에서도 사용하세요.</translation>
 <translation id="761356813943268536">Chromium이 카메라와 마이크를 사용 중입니다.</translation>
 <translation id="7617377681829253106">더욱 업그레이드된 Chromium</translation>
 <translation id="7649070708921625228">도움말</translation>

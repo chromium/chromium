@@ -100,7 +100,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1420408895951708260">Gecə İşığını aktiv edin. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666"><ph name="DEVICE_TYPE" /> cihazında telefonunuzun son fotoları və mediasına baxın</translation>
 <translation id="1426410128494586442">Bəli</translation>
-<translation id="1447641497144572814">Ekran qoruyucusu başlayır</translation>
 <translation id="1455242230282523554">Dil ayarlarını göstərin</translation>
 <translation id="1460620680449458626">Səssizdədir.</translation>
 <translation id="14648076227129703">Kamera icazəsi olan <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> və bütün tətbiq və vebsaytlar üçün kameraya giriş icazəsi verir</translation>
@@ -126,6 +125,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1550523713251050646">Əlavə seçimlər üçün klikləyin</translation>
 <translation id="1555130319947370107">Mavi</translation>
 <translation id="1576623706766186887">Böyüdücü aktiv olduqda uzaqlaşdırın</translation>
+<translation id="1586324912145647027">1-8 sayl; masaya keçin</translation>
 <translation id="1589090746204042747">Sessiyadakı bütün fəaliyyətlərə daxil olun</translation>
 <translation id="1610778689852195798">"Ləğv edin"</translation>
 <translation id="1611993646327628135">Aktiv</translation>
@@ -514,6 +514,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="3631369015426612114">Aşağıdakı bildirişlərə icazə verin</translation>
 <translation id="3633097874324966332">Cihazı birləşdirmək üçün Bluetooth ayarlarını açın</translation>
 <translation id="3638400994746983214">Məxfilik ekranını dəyişdirin. <ph name="STATE_TEXT" />.</translation>
+<translation id="3649256019230929621">Pəncərə minimallaşdırın</translation>
 <translation id="3649505501900178324">Güncəlləmə vaxtı keçib</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -588,6 +589,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="4021716437419160885">Aşağı sürüşdürün</translation>
 <translation id="4022497978915111141">Cihazı kilidləyin</translation>
 <translation id="4024840464866786680">PIN və parolunuzu unutmusunuzsa və ya bu yaxınlarda Google Hesab parolunuzu dəyişmisinizsə, bu istifadəçini bərpa etməyi sınayın.</translation>
+<translation id="4026843240379844265">Aktiv pəncərəni ekranlar arasında hərəkət etdirin</translation>
 <translation id="4028481283645788203">Əlavə təhlükəsizlik üçün parol tələb olunur</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Ekranı paylaşırsınız</translation>
@@ -912,6 +914,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="5689633613396158040">Gecə İşığı zəif işıqda ekrana baxmağı və ya oxumağı asanlaşdırır. Gecə İşığının yandığı vaxtı dəyişmək və ya onu birdəfəlik söndürmək üçün toxunun.</translation>
 <translation id="5691772641933328258">Barmaq izi tanınmadı</translation>
 <translation id="5693255400847650006">Mikrofon istifadə olunur</translation>
+<translation id="5699366815052349604">Aktiv pəncərəni bütün masalara təyin edin</translation>
 <translation id="570390244361237317">Bütün Tətbiqlər, bütün tətbiqlərə giriş üçün ox düymələri ilə hərəkət edin</translation>
 <translation id="5707775774148071965">Cihazınız kabelinizdən daha yüksək məlumat sürətini dəstəkləyir. Cihazın performansı məhdud ola bilər.</translation>
 <translation id="5710450975648804523">Narahat Etməyin rejimi aktivdir</translation>
@@ -1552,6 +1555,7 @@ Yeni quraşdırma</translation>
 <translation id="9034924485347205037">Linux faylları</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> üzrə ayarları açın</translation>
 <translation id="9059834730836941392">Bildirişi yığcamlaşdırın</translation>
+<translation id="906458777597946297">Pəncərəni böyüdün</translation>
 <translation id="9065203028668620118">Düzəliş edin</translation>
 <translation id="9070640332319875144">Assistent Ayarları</translation>
 <translation id="9072519059834302790">Batareyanın boşalmasına <ph name="TIME_LEFT" /> vaxt qalır.</translation>

@@ -277,6 +277,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="6327105987658262776">K dispozícii nie je žiadna aktualizácia.</translation>
 <translation id="6412673304250309937">Kontroluje webové adresy podľa zoznamu nebezpečných webov uloženého v Chrome. Ak sa vám určitý web pokúsi ukradnúť heslo alebo stiahnete škodlivý súbor, Chrome môže tiež odoslať webové adresy vrátane častí obsahu stránky Bezpečnému prehliadaniu.</translation>
 <translation id="6418662306461808273">Chcete prepnúť na existujúci profil Chromu?</translation>
+<translation id="6493527311031785448">Google Chrome sa pokúša <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6506909944137591434">Chrome vyžaduje na vytvorenie 3D mapy vášho okolia povolený prístup ku kamere</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="659498884637196217">V správcovi hesiel Google v tomto zariadení</translation>
@@ -404,7 +405,6 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="8862326446509486874">Nemáte potrebné práva na inštaláciu na úrovni systému. Skúste inštalátor spustiť znova ako správca.</translation>
 <translation id="8914504000324227558">Znova spustiť prehliadač Chrome</translation>
 <translation id="8922193594870374009">Ak chcete zo zariadenia <ph name="ORIGIN" /> odoslať číslo do svojho telefónu s Androidom, prihláste sa v oboch zariadeniach do Chromu.</translation>
-<translation id="8983720963221508955">V účte ste zapli Zlepšené bezpečné prehliadanie. Povoľte ho aj pre Chrome.</translation>
 <translation id="8986207147630327271">Do tohto prehliadača pridávate pracovný profil a svojmu správcovi udeľujete kontrolu iba nad ním.</translation>
 <translation id="8989968390305463310">Vaša história prehliadania ovplyvňuje zobrazované reklamy a záujmy, ktoré sú odhadnuté nižšie. Chrome priebežne automaticky odstraňuje vaše záujmy každý mesiac, aby tak chránil vaše súkromie. Záujmy sa môžu obnoviť, pokiaľ ich neodstránite.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Je k dispozícii aktualizácia Chromu}=1{Je k dispozícii aktualizácia Chromu}few{Aktualizácia Chromu je k dispozícii už # dni}many{Aktualizácia Chromu je k dispozícii už # dňa}other{Aktualizácia Chromu je k dispozícii už # dní}}</translation>

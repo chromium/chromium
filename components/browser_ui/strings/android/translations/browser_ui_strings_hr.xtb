@@ -26,6 +26,7 @@
 <translation id="1448064542941920355">Smanjite zumiranje</translation>
 <translation id="1510341833810331442">Web-lokacije ne smiju spremati podatke na vaš uređaj</translation>
 <translation id="1547123415014299762">Dopušteni su kolačići trećih strana</translation>
+<translation id="1593426485665524382">Nove radnje dostupne su pri vrhu zaslona</translation>
 <translation id="1620510694547887537">Fotoaparat</translation>
 <translation id="1633720957382884102">Povezane web-lokacije</translation>
 <translation id="1644574205037202324">Povijest</translation>
@@ -146,6 +147,7 @@
 <translation id="3628308229821498208">Predložena pretraživanja</translation>
 <translation id="3636279694100170143">Web-lokacije koje posjećujete mogu potvrditi da ste stvarni korisnik, a ne bot</translation>
 <translation id="3649190289964910441">Web-lokacija koju posjećujete može u Chromeu spremiti podatke koji potvrđuju da ste stvarni korisnik. Tijekom pregledavanja web-lokacije mogu provjeriti putem Chromea i na prvoj web-lokaciji potvrditi da ste vjerojatno pouzdani korisnik.</translation>
+<translation id="3721953990244350188">Odbacivanje i prikazivanje sljedeće dostupne radnje</translation>
 <translation id="3744111561329211289">Sinkronizacija u pozadini</translation>
 <translation id="3763247130972274048">Dvaput dodirnite videozapis lijevo ili desno da biste preskočili 10 s</translation>
 <translation id="3794286421982011626">Web-lokacija koju posjećujete može spremiti podatke o tome što radite kako bi funkcionirala kao što očekujete, na primjer kako biste ostali prijavljeni na web-lokaciju ili spremili artikle u košaricu. Web-lokacije često spremaju te podatke na vaš uređaj privremeno.</translation>
@@ -193,7 +195,6 @@
 <translation id="4534723447064627427">Da bi aplikacija <ph name="APP_NAME" /> mogla pristupiti vašem mikrofonu, uključite mikrofon i u <ph name="BEGIN_LINK" />Androidovim postavkama<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Isključi mikrofon</translation>
 <translation id="4570913071927164677">Pojedinosti</translation>
-<translation id="4575264539271661854">Olakšajte povećavanje teksta i slika za web-lokaciju koju posjećujete</translation>
 <translation id="4598549027014564149">Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati vaše kolačiće za uvid u vašu aktivnost pregledavanja na web-lokacijama, čak ni na povezanim web-lokacijama. Vaša aktivnost pregledavanja ne koristi se za stvari kao što je personaliziranje oglasa. Značajke na nekim web-lokacijama možda neće funkcionirati.</translation>
 <translation id="4645575059429386691">Upravlja tvoj roditelj</translation>
 <translation id="4670064810192446073">Virtualna stvarnost</translation>

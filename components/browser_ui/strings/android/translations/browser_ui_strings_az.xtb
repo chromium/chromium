@@ -26,6 +26,7 @@
 <translation id="1448064542941920355">Zoom'u azaldın</translation>
 <translation id="1510341833810331442">Saytlara cihazınızda data saxlamaq icazəsi verilmir</translation>
 <translation id="1547123415014299762">Üçüncü tərəf kukilərinə icazə verilir</translation>
+<translation id="1593426485665524382">Ekranın yuxarısına yaxın hissədə yeni əməliyyatlar əlçatandır</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1633720957382884102">Əlaqəli saytlar</translation>
 <translation id="1644574205037202324">Tarixçə</translation>
@@ -146,6 +147,7 @@
 <translation id="3628308229821498208">Təklif edilən axtarışlar</translation>
 <translation id="3636279694100170143">Daxil olduğunuz saytlar bot yox, real istifadəçi olduğunuzu doğrulaya bilər</translation>
 <translation id="3649190289964910441">Daxil olduğunuz sayt məlumatları real istifadəçi olduğunuzu doğrulayan Chrome ilə yadda saxlaya bilər. Nəzər salmağa davam etdikcə saytlar Chrome ilə yoxlaya və birinci saytdan etibarlı istifadəçi olduğunuzu doğrulaya bilər.</translation>
+<translation id="3721953990244350188">İmtina edin və növbəti əlçatan əməliyyatı göstərin</translation>
 <translation id="3744111561329211289">Arxa fon sinx</translation>
 <translation id="3763247130972274048">10 saniyə keçmək üçün videonun sol və ya sağına iki dəfə toxunun</translation>
 <translation id="3794286421982011626">Ziyarət etdiyiniz sayt gözlədiyiniz kimi işləmək üçün (məsələn, sizi sayta daxil olmuş vəziyyətdə saxlamaq və ya alış-veriş səbətinizdəki elementləri saxlamaq üçün) gördüyünüz iş haqqında məlumatı yadda saxlaya bilər. Adətən saytlar bu məlumatı müvəqqəti olaraq cihazınızda saxlayır.</translation>
@@ -193,7 +195,6 @@
 <translation id="4534723447064627427"><ph name="APP_NAME" /> tətbiqinə mikrofonunuza giriş icazəsi vermək üçün <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> mikrofonu da aktiv edin.</translation>
 <translation id="4566417217121906555">Mikrofonu susdurun</translation>
 <translation id="4570913071927164677">Ətraflı</translation>
-<translation id="4575264539271661854">Ziyarət etdiyiniz sayt üçün mətn və şəkilləri böyütməyi asanlaşdırın</translation>
 <translation id="4598549027014564149">Anonim rejimdə olduqda, saytlar müxtəlif saytlarda, eləcə də əlaqəli saytlarda axtarış fəaliyyətinizi görmək üçün kukilərinizdən istifadə edə bilmir. Axtarış fəaliyyətiniz reklamların fərdiləşdirilməsi kimi işlər üçün istifadə edilmir. Bəzi saytlardakı funksiyalar işləməyə bilər.</translation>
 <translation id="4645575059429386691">Valideyniniz tərəfindən idarə olunur</translation>
 <translation id="4670064810192446073">Virtual reallıq</translation>

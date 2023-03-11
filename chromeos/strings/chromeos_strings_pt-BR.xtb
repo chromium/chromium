@@ -241,7 +241,6 @@
 <translation id="3226657629376379887">Menu de ações de layout</translation>
 <translation id="3246869037381808805">Trabalhos de impressão enviados há mais de 1 dia serão removidos</translation>
 <translation id="3268178239013324452">Falha - Porta aberta</translation>
-<translation id="3275506277319227640">Fixar na <ph name="DIRECTION" /></translation>
 <translation id="3275729367986477355">Imagem do avatar</translation>
 <translation id="3283504360622356314">{0,plural, =1{Editar arquivo}one{Editar arquivo}other{Editar arquivos}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
@@ -360,7 +359,6 @@
 <translation id="4311195029067684288">Inteira</translation>
 <translation id="4333390807948134856">A tecla <ph name="KEY_NAME" /> está sendo pressionada</translation>
 <translation id="435692326371619097">Gerenciar configurações do APN de rede. Os APNs estabelecem uma conexão entre a rede celular e a Internet. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
-<translation id="4370033095251616914">Fixar no lado menor</translation>
 <translation id="4378373042927530923">Não executada</translation>
 <translation id="4378551569595875038">Conectando...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -903,7 +901,6 @@
 <translation id="9137526406337347448">Serviços do Google</translation>
 <translation id="9138630967333032450">Shift da esquerda</translation>
 <translation id="9149391708638971077">Executar teste de memória</translation>
-<translation id="9157515863513902090">Fixar no lado maior</translation>
 <translation id="9161276708550942948">barra de espaço</translation>
 <translation id="9173638680043580060">Menos de um minuto restante</translation>
 <translation id="917720651393141712">Testar</translation>

@@ -26,6 +26,7 @@
 <translation id="1448064542941920355">Minnka aðdrátt</translation>
 <translation id="1510341833810331442">Vefsvæði mega ekki vista gögn í tækinu þínu</translation>
 <translation id="1547123415014299762">Fótspor þriðju aðila eru leyfð</translation>
+<translation id="1593426485665524382">Nýjar aðgerðir tiltækar nálægt efsta hluta skjásins</translation>
 <translation id="1620510694547887537">Myndavél</translation>
 <translation id="1633720957382884102">Tengd vefsvæði</translation>
 <translation id="1644574205037202324">Ferill</translation>
@@ -146,6 +147,7 @@
 <translation id="3628308229821498208">Leitartillögur</translation>
 <translation id="3636279694100170143">Vefsvæði sem þú heimsækir geta staðfest að þú sért raunverulegur notandi en ekki botti</translation>
 <translation id="3649190289964910441">Vefsvæði sem þú heimsækir getur vistað upplýsingar í Chrome sem staðfesta að þú sért raunverulegur notandi. Þegar þú heldur áfram að vafra geta vefsvæði athugað upplýsingarnar hjá Chrome og staðfest frá fyrsta vefsvæðinu að þú sért líklega traustur notandi.</translation>
+<translation id="3721953990244350188">Hunsa og sýna næstu tiltæku aðgerð</translation>
 <translation id="3744111561329211289">Samstilling í bakgrunni</translation>
 <translation id="3763247130972274048">Ýttu tvisvar vinstra eða hægra megin á myndskeið til að fara fram um 10 sekúndur</translation>
 <translation id="3794286421982011626">Vefsvæði sem þú skoðar geta vistað upplýsingar um það sem þú ert að gera svo það virki líkt og búist er við — til dæmis til að viðhalda innskráningu þinni á vefsvæði eða til að vista vörur í innkaupakörfunni þinni. Oft vista vefsvæði þessar upplýsingar í tækinu tímabundið.</translation>
@@ -193,7 +195,6 @@
 <translation id="4534723447064627427">Til að veita <ph name="APP_NAME" /> aðgang að hljóðnemanum þarftu einnig að kveikja á honum í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Slökkva á hljóðnema</translation>
 <translation id="4570913071927164677">Nánar</translation>
-<translation id="4575264539271661854">Auðveldaðu aðdrátt á texta og myndir á vefsvæðum sem þú heimsækir</translation>
 <translation id="4598549027014564149">Þegar þú ert í huliðsstillingu geta vefsvæði ekki notað fótspor til að sjá vafranotkun þína á vefsvæðum, jafnvel tengdum vefsvæðum. Vafranotkun þín er ekki notuð fyrir hluti á borð við sérsniðnar auglýsingar. Óvíst er að eiginleikar á sumum vefsvæðum virki.</translation>
 <translation id="4645575059429386691">Stjórnað af foreldri þínu</translation>
 <translation id="4670064810192446073">Sýndarveruleiki</translation>

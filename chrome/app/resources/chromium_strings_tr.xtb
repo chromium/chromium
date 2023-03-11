@@ -23,9 +23,11 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="1640672724030957280">İndiriliyor...</translation>
 <translation id="1708666629004767631">Chromium'un kullanabileceğiniz yeni, daha güvenli bir sürümü var.</translation>
 <translation id="17264556997921157">Sitelerin size reklam göstermek için kullandığı ilgi alanlarını görebilir ve kaldırabilirsiniz. Chromium, ilgi alanlarınızı tahmin ederken son tarama geçmişinizi kullanır.</translation>
+<translation id="1745121272106313518">Chromium <ph name="REMAINING_TIME" /> sonra yeniden başlatılacak</translation>
 <translation id="1774152462503052664">Chromium'un arka planda çalışmasına izin ver</translation>
 <translation id="1779356040007214683">Chromium'u daha güvenli bir hale getirmek için <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> altında listelenmeyen ve bilginiz dışında eklenmiş olabilecek bazı uzantıları devre dışı bıraktık.</translation>
 <translation id="1808667845054772817">Chromium'u yeniden yükle</translation>
+<translation id="1820835682567584003">Chromium şunu yapmaya çalışıyor: <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="185970820835152459">Oturum açılmış Google Hesaplarınızı yönetebilirsiniz. Google Hesaplarınız; Chromium tarayıcı, Play Store, Gmail ve daha başka yerlerde kullanılır. Aile üyesi gibi başka bir kullanıcı için hesap eklemek isterseniz bunun yerine <ph name="DEVICE_TYPE" /> cihazınıza yeni bir kişi ekleyin. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="1863308913976887472">Siteler, ilgi alanlarınız hakkındaki bilgileri Chromium'da saklayabilir. Örneğin, maraton ayakkabısı satın almak için ziyaret ettiğiniz bir site, maraton koşmayı ilgi alanınız olarak tanımlayabilir. Daha sonra bir yarışa kaydolmak için farklı bir siteyi ziyaret ettiğinizde o site ilgi alanlarınıza dayalı olarak size koşu ayakkabısı reklamı gösterebilir.</translation>
 <translation id="1881322772814446296">Yönetilen bir hesapla oturum açıyor ve hesabın yöneticisine Chromium profilinizi denetleme izni veriyorsunuz. Uygulamalarınız, yer işaretleriniz, geçmişiniz, şifreleriniz ve diğer ayarlarınız gibi Chromium verileriniz kalıcı olarak <ph name="USER_NAME" /> ile bağlantılandırılacaktır. Google Hesapları Hesap Özeti'ni kullanarak bu verileri silebilecek, ancak bu verileri başka bir hesapla ilişkilendiremeyeceksiniz. İsterseniz mevcut Chromium verilerinizi ayrı tutmak için yeni bir profil oluşturabilirsiniz. <ph name="LEARN_MORE" /></translation>
@@ -301,7 +303,6 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="7561906087460245826">Chromium'daki verileri de temizle (<ph name="URL" />)</translation>
 <translation id="7582945390259497898">Chromium, ilgi alanlarınızı tahmin edebilir. Daha sonra ziyaret ettiğiniz bir site, gördüğünüz reklamları kişiselleştirmek için Chromium'dan ilgi alanlarınızı göstermesini isteyebilir.</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> Yükleyici</translation>
-<translation id="7597596667193879455">Hesabınızda Gelişmiş Güvenli Tarama'yı etkinleştirdiniz. Artık Chromium'da kullanabilirsiniz.</translation>
 <translation id="761356813943268536">Chromium kameranızı ve mikrofonunuzu kullanıyor.</translation>
 <translation id="7617377681829253106">Chromium daha da iyi bir hale geldi</translation>
 <translation id="7649070708921625228">Yardım</translation>

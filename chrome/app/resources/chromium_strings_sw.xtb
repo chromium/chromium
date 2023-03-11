@@ -25,9 +25,11 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="1640672724030957280">Inapakua...</translation>
 <translation id="1708666629004767631">Kuna toleo jipya, na salama linalopatikana la Chromium.</translation>
 <translation id="17264556997921157">Unaweza kuona na kuondoa mada zinazokuvutia zinazotumiwa na tovuti kukuonyesha matangazo. Chromium hukadiria mambo yanayokuvutia kulingana na historia yako ya kuvinjari ya hivi karibuni.</translation>
+<translation id="1745121272106313518">Chromium itazima kisha iwake baada ya <ph name="REMAINING_TIME" /></translation>
 <translation id="1774152462503052664">Acha Chromium iendeshe katika mandharinyuma</translation>
 <translation id="1779356040007214683">Ili kufanya Chromium salama zaidi, tumezima baadhi ya viendelezi ambavyo havijaorodheshwa katika <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> na ambavyo huendwa viliongezwa pasipo ridhaa yako.</translation>
 <translation id="1808667845054772817">Sakinisha Chromium Upya</translation>
+<translation id="1820835682567584003">Chromium inajaribu <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="185970820835152459">Unaweza kudhibiti Akaunti zako za Google ulizotumia kuingia katika tovuti na programu. Akaunti zako za Google hutumiwa kwenye kivinjari cha Chromium, Duka la Google Play, Gmail na kwingineko. Iwapo ungependa kuweka akaunti ya mtu mwingine, kama vile mwanafamilia, ongeza mtu mpya kwenye <ph name="DEVICE_TYPE" /> yako badala yake. <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
 <translation id="1863308913976887472">Tovuti zinaweza kuhifadhi maelezo kuhusu mambo yanayokuvutia kwa kutumia Chromium. Kwa mfano, iwapo utatembelea tovuti ili kununua viatu kwa ajili ya kukimbia mbio za marathoni, tovuti hiyo huenda ikatambua kuwa moja ya mambo yanayokuvutia ni kukimbia mbio za marathoni. Baadaye, iwapo utatembelea tovuti tofauti ili kujisajili kwa ajili ya mbio, tovuti hiyo huenda ikakuonyesha tangazo la viatu vya kukimbilia kulingana na mambo yanayokuvutia.</translation>
 <translation id="1881322772814446296">Unaingia katika akaunti ukitumia akaunti inayodhibitiwa na kumpa msimamizi wa akaunti hiyo udhibiti wa wasifu wako kwenye Chromium. Data yako ya Chromium, kama vile programu zako, alamisho, historia, manenosiri, na mipangilio nyingine itahusishwa na<ph name="USER_NAME" /> kabisa. Utaweza kufuta data hii kupitia Dashibodi ya Akaunti za Google, lakini hutaweza  kuunganisha data hii na akaunti nyingine. Unaweza kwa hiari kuunda wasifu mpya ili kuweka data yako ya Chromium iliyo kando. <ph name="LEARN_MORE" /></translation>
@@ -306,7 +308,6 @@ Chromium haiwezi kufufua mipangilio yako.</translation>
 <translation id="7561906087460245826">Futa pia data kwenye Chromium (<ph name="URL" />)</translation>
 <translation id="7582945390259497898">Chromium inaweza kukadiria mambo yanayokuvutia. Baadaye, tovuti unayoitembelea inaweza kuiomba Chromium ili ione mambo yanayokuvutia na iweze kukuonyesha matangazo kulingana na mapendeleo yako.</translation>
 <translation id="7583399374488819119">Kisakinishaji cha <ph name="COMPANY_NAME" /></translation>
-<translation id="7597596667193879455">Umewasha Kipengele cha Kuvinjari Salama Kilichoboreshwa katika akaunti yako. Sasa kiwashe kwenye Chromium.</translation>
 <translation id="761356813943268536">Chromium inatumia kamera na maikrofoni yako.</translation>
 <translation id="7617377681829253106">Chromium imeboreshwa</translation>
 <translation id="7649070708921625228">Usaidizi</translation>

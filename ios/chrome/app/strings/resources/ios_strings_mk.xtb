@@ -81,6 +81,7 @@
 <translation id="149095475893949513">Веб-сајтов се обидува да преземе профил за конфигурација.</translation>
 <translation id="1491277525950327607">Допрете двапати за да ја измените поставката</translation>
 <translation id="1492417797159476138">Веќе го зачувавте ова корисничко име за сајтов</translation>
+<translation id="1497590942294823549">Мени → Password Manager</translation>
 <translation id="1498283581832036924">Сметката на <ph name="WEBSITE" /> нема да се избрише.</translation>
 <translation id="1506063256525392513">Ова ви овозможува да фотографирате и да прикачувате фотографии, како и да скенирате QR-кодови</translation>
 <translation id="1509486075633541495">Најавете се на веб-сајтот</translation>
@@ -242,6 +243,7 @@
 <translation id="271033894570825754">Ново</translation>
 <translation id="2712127207578915686">Не може да се отвори датотеката</translation>
 <translation id="2718352093833049315">Само преку Wi-Fi</translation>
+<translation id="2737716090799520623">Кога сте најавени на Chrome, лозинките што ги зачувувате ќе одат на вашата сметка на Google (<ph name="ACCOUNT" />). За да го исклучите тоа, <ph name="BEGIN_LINK" />одете во „Поставки“<ph name="END_LINK" />.</translation>
 <translation id="2747003861858887689">Претходно поле</translation>
 <translation id="2749231692441336879">Се следи <ph name="CHANNEL_NAME" /></translation>
 <translation id="2764831210418622012">пред малку</translation>
@@ -843,6 +845,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6801927553864092214">За да прелистувате приватно, отворете картичка „Инкогнито“</translation>
 <translation id="6807889908376551050">Прикажи ги сите...</translation>
 <translation id="681368974849482173">Ставката е создадена</translation>
+<translation id="6822587385560699678">Кога е вклучено, лозинките за зачувуваат на <ph name="ACCOUNT" />. Кога е исклучено, лозинките се зачувуваат само на овој уред.</translation>
 <translation id="683022620450280906">Зачуваните лозинки може да ги користите на кој било уред. Зачувани се во „Управникот со лозинки на Google“ за <ph name="EMAIL" /></translation>
 <translation id="6831043979455480757">Преведи</translation>
 <translation id="6842136130964845393">За да можете секогаш да пристапувате до зачуваните лозинки, потврдете дека сте вие</translation>

@@ -81,6 +81,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="149095475893949513">Den här webbplatsen försöker ladda ned en konfigurationsprofil.</translation>
 <translation id="1491277525950327607">Aktivera eller inaktivera inställningen genom att trycka snabbt två gånger</translation>
 <translation id="1492417797159476138">Du har redan sparat användarnamnet för den här webbplatsen</translation>
+<translation id="1497590942294823549">Meny → Lösenordshantering</translation>
 <translation id="1498283581832036924"><ph name="WEBSITE" />-kontot raderas inte.</translation>
 <translation id="1506063256525392513">Det här gör att du kan ta och ladda upp foton samt skanna QR-koder</translation>
 <translation id="1509486075633541495">Logga in på webbplats</translation>
@@ -242,6 +243,7 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="271033894570825754">Ny</translation>
 <translation id="2712127207578915686">Det gick inte att öppna filen</translation>
 <translation id="2718352093833049315">Endast på wifi</translation>
+<translation id="2737716090799520623">När du är inloggad i Chrome sparas dina sparade lösenord i ditt Google-konto (<ph name="ACCOUNT" />). <ph name="BEGIN_LINK" />Öppna inställningarna<ph name="END_LINK" /> om du vill inaktivera detta.</translation>
 <translation id="2747003861858887689">Föregående fält</translation>
 <translation id="2749231692441336879">Följer <ph name="CHANNEL_NAME" /></translation>
 <translation id="2764831210418622012">nyss</translation>
@@ -843,6 +845,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="6801927553864092214">Öppna en inkognitoflik om du vill surfa privat</translation>
 <translation id="6807889908376551050">Visa alla ...</translation>
 <translation id="681368974849482173">Bokmärket har skapats</translation>
+<translation id="6822587385560699678">När funktionen är aktiverad sparas lösenord i <ph name="ACCOUNT" />. När funktionen är inaktiverad sparas lösenorden endast på den här enheten.</translation>
 <translation id="683022620450280906">Du kan använda sparade lösenord på vilken enhet som helst. De sparas med Google Lösenordshantering för <ph name="EMAIL" /></translation>
 <translation id="6831043979455480757">Översätt</translation>
 <translation id="6842136130964845393">Verifiera din identitet så att du alltid får åtkomst till dina sparade lösenord</translation>

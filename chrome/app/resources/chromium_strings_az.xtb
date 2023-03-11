@@ -25,9 +25,11 @@ Hazırda veb saytlar və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq o
 <translation id="1640672724030957280">Endirilir...</translation>
 <translation id="1708666629004767631">Yeni, daha güvənli Chromium versiyası əlçatandır.</translation>
 <translation id="17264556997921157">Saytların sizə reklam göstərmək üçün istifadə etdiyi maraqlı mövzuları görə və silə bilərsiniz. Chromium son baxış tarixçənizə əsasən maraqlarınızı təxmin edir.</translation>
+<translation id="1745121272106313518">Chromium <ph name="REMAINING_TIME" /> sonra yenidən başladılacaq</translation>
 <translation id="1774152462503052664">Chromium'a fonda işləməyə icazə verin</translation>
 <translation id="1779356040007214683">Chromium'u güvənli etmək üçün,  <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> siyahısında olmayan və xəbəriniz olmadan əlavə edilən bəzi artırmaları deaktiv etdik.</translation>
 <translation id="1808667845054772817">Chromium'u yenidən quraşdırın</translation>
+<translation id="1820835682567584003">Chromium cəhd edir: <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="185970820835152459">Daxil olunmuş Google Hesablarını idarə edə bilərsiniz. Google Hesablarınız Chromium brauzeri, Play Market, Gmail və digər xidmətlər üçün istifadə olunur. Ailə üzvü kimi başqası üçün bir hesab əlavə etmək istəyirsinizsə, əvəzində <ph name="DEVICE_TYPE" /> cihazınıza yeni bir şəxs əlavə edin. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="1863308913976887472">Saytlar maraqlarınız haqqında Chromium ilə məlumat saxlaya bilər. Məsələn, marafona ayaqqabı almaq üçün sayta daxil olsanız, sayt marağınızı qaçış marafonu kimi müəyyən edə bilər. Sonra yarışa yazılmaq üçün başqa sayta daxil olsanız, həmin sayt maraqlarınız əsasında sizə qaçış ayaqqabısı reklamı göstərə bilər.</translation>
 <translation id="1881322772814446296">Nəzarət olunan hesabla daxil olursunuz və hesabın administratoruna Chromium profiliniz üzərində nəzarət etmək imkanı verirsiniz. Tətbiqləriniz, əlfəcinləriniz, tarixçəniz, parollarınız və digər ayarlarınız <ph name="USER_NAME" /> adına həmişəlik bağlı qalacaq. Bu datanı Google Hesab İdarə Paneli vasitəsilə silə biləcəksiniz, lakin bu datanı digər hesabla əlaqələndirə bilməyəcəksiniz. Mövcud Chromium datanızı ayrı saxlamaq üçün yeni profil yarada bilərsiniz. <ph name="LEARN_MORE" /></translation>
@@ -301,7 +303,6 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="7561906087460245826">Chromium'dan datanı silin (<ph name="URL" />)</translation>
 <translation id="7582945390259497898">Chromium maraqlarınızı təxmin edə bilər. Daha sonra ziyarət etdiyiniz sayt gördüyünüz reklamları fərdiləşdirmək üçün Chromium'dan maraqlarınızı görməyi tələb edə bilər.</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> Quraşdırıcısı</translation>
-<translation id="7597596667193879455">Hesabınızda Qabaqcıl Güvənli Baxışı aktiv etdiniz. İndi onu Chromium üçün əldə edin.</translation>
 <translation id="761356813943268536">Chromium kameranızı və mikrofonunuzu işlədir.</translation>
 <translation id="7617377681829253106">Chromium daha da keyfiyyətli oldu</translation>
 <translation id="7649070708921625228">Yardım</translation>

@@ -34,6 +34,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="1173894706177603556">Ändra namn</translation>
 <translation id="1177863135347784049">Anpassat</translation>
 <translation id="1181037720776840403">Ta bort</translation>
+<translation id="1181366777303791449">på <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">Vill du använda ett starkt lösenord?</translation>
 <translation id="1197267115302279827">Flytta bokmärken</translation>
 <translation id="1201402288615127009">Nästa</translation>
@@ -42,7 +43,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="1204692632633423444">Knapp för Chrome-åtgärd: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">Kopiera länktext</translation>
 <translation id="1209206284964581585">Dölj för tillfället</translation>
-<translation id="1226851825267005295">Du kan hantera dina inställningar när du har loggat in i Chrome med vårt Google-konto.</translation>
 <translation id="1227058898775614466">Navigeringshistorik</translation>
 <translation id="1231733316453485619">Vill du aktivera synkronisering?</translation>
 <translation id="123724288017357924">Läs in den aktuella sidan igen och ignorera cachelagrat innehåll</translation>
@@ -166,7 +166,6 @@ När du raderar webbhistoriken, oavsett om det är all historik eller bara för 
 <translation id="1928696683969751773">Uppdateringar</translation>
 <translation id="19288952978244135">Öppna Chrome igen.</translation>
 <translation id="1933845786846280168">Vald flik</translation>
-<translation id="193571872656840963">Visa uppskattning för den här skaparen</translation>
 <translation id="1943432128510653496">Spara lösenord</translation>
 <translation id="1952172573699511566">När det är möjligt visas text på webbplatser på önskat språk.</translation>
 <translation id="1959679933317802873">Väntar på innehåll</translation>
@@ -202,7 +201,6 @@ När du raderar webbhistoriken, oavsett om det är all historik eller bara för 
 <translation id="2122601567107267586">Det gick inte att öppna appen</translation>
 <translation id="2132122640199389833">Ta bort alla länkade enheter</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> har stängts</translation>
-<translation id="2134927169889348449">Genom att använda Chrome godkänner du <ph name="BEGIN_TOS_LINK" />Googles användarvillkor<ph name="END_TOS_LINK" /> och <ph name="BEGIN_ATOS_LINK" />de Ytterligare användarvillkoren för Google Chrome och Chrome OS<ph name="END_ATOS_LINK" />.</translation>
 <translation id="2139186145475833000">Lägg till på startskärmen</translation>
 <translation id="2141396931810938595">Utifrån din användning</translation>
 <translation id="214888715418183969">Välj vad du vill dela med Chrome. Den statistik du delar används för att förbättra Chromes funktioner, prestanda och stabilitet.</translation>
@@ -556,7 +554,6 @@ Med förtroendetoken förbättras integriteten på webben. De kan inte användas
 <translation id="409109920254068737">Du kan logga in med surfplattans hjälp på den enhet där den här QR-koden visas.</translation>
 <translation id="4095146165863963773">Vill du ta bort appdata?</translation>
 <translation id="4096227151372679484">Flöde för att spara bokmärken har öppnats över halva skärmen</translation>
-<translation id="4099578267706723511">Hjälp till att förbättra Chrome genom att skicka användningsstatistik och felrapporter till Google.</translation>
 <translation id="4101475238162928417">Synkronisera om du vill få tillgång till lösenord, bokmärken med mera på dina andra enheter</translation>
 <translation id="410351446219883937">Automatisk uppspelning</translation>
 <translation id="4106587138345390261">Chrome utforskar nya funktioner som gör att webbplatser kan ge samma surfupplevelse med mindre information om dig</translation>
@@ -594,7 +591,6 @@ Med förtroendetoken förbättras integriteten på webben. De kan inte användas
 <translation id="4269820728363426813">Kopiera länkadress</translation>
 <translation id="4283102315569707115">Vill du begära webbplatser för dator som standard?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Aktivera skärmlåset i Android-inställningar<ph name="END_LINK" /></translation>
-<translation id="4293476595220860475">Genom att använda Chrome godkänner du <ph name="BEGIN_TOS_LINK" />Googles användarvillkor<ph name="END_TOS_LINK" /> och <ph name="BEGIN_ATOS_LINK" />de ytterligare användarvillkoren för Google Chrome och Chrome OS<ph name="END_ATOS_LINK" />. <ph name="BEGIN_PRIVACY_LINK" />Integritetspolicyn<ph name="END_PRIVACY_LINK" /> gäller också.</translation>
 <translation id="4296252229500326964">Ny inkognitoflik</translation>
 <translation id="4298388696830689168">Länkade webbplatser</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -767,7 +763,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5161254044473106830">Titel krävs</translation>
 <translation id="5170568018924773124">Visa i mapp</translation>
 <translation id="5171045022955879922">Sök eller ange webbadress</translation>
-<translation id="517734441743343109">Genom att fortsätta godkänner du <ph name="BEGIN_TOS_LINK" />användarvillkoren<ph name="END_TOS_LINK" /> och <ph name="BEGIN_PRIVACY_LINK" />integritetspolicyn<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="5184329579814168207">Öppna i Chrome</translation>
 <translation id="5191251636205085390">Läs mer om ny teknik som med tiden kan ersätta tredjepartscookies och hur du kan styra den</translation>
 <translation id="5193988420012215838">Kopierat till urklipp</translation>

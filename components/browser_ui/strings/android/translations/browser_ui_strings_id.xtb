@@ -26,6 +26,7 @@
 <translation id="1448064542941920355">Kurangi zoom</translation>
 <translation id="1510341833810331442">Situs tidak diizinkan menyimpan data di perangkat Anda</translation>
 <translation id="1547123415014299762">Cookie pihak ketiga diizinkan</translation>
+<translation id="1593426485665524382">Tindakan baru tersedia di dekat bagian atas layar</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1633720957382884102">Situs terkait</translation>
 <translation id="1644574205037202324">Histori</translation>
@@ -146,6 +147,7 @@
 <translation id="3628308229821498208">Penelusuran yang disarankan</translation>
 <translation id="3636279694100170143">Situs yang Anda buka dapat memvalidasi bahwa Anda adalah pengguna sebenarnya dan bukan bot</translation>
 <translation id="3649190289964910441">Situs yang Anda buka dapat menyimpan info dengan Chrome yang memvalidasi bahwa Anda adalah pengguna sebenarnya. Saat Anda terus menjelajah, situs dapat mengonfirmasi ke Chrome dan memverifikasi dari situs pertama bahwa Anda kemungkinan adalah pengguna tepercaya.</translation>
+<translation id="3721953990244350188">Tutup dan tampilkan tindakan berikutnya yang tersedia</translation>
 <translation id="3744111561329211289">Sinkronisasi latar belakang</translation>
 <translation id="3763247130972274048">Ketuk video dua kali di kiri atau kanan untuk melewati 10 detik</translation>
 <translation id="3794286421982011626">Situs yang Anda buka dapat menyimpan info tentang hal-hal yang Anda lakukan agar situs tersebut berfungsi seperti yang Anda harapkan — misalnya, untuk membuat Anda tetap login ke situs atau menyimpan item di keranjang belanja. Situs sering kali menyimpan info ini untuk sementara di perangkat Anda.</translation>
@@ -193,7 +195,6 @@
 <translation id="4534723447064627427">Untuk mengizinkan <ph name="APP_NAME" /> mengakses mikrofon, aktifkan juga mikrofon di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Nonaktifkan mikrofon</translation>
 <translation id="4570913071927164677">Detail</translation>
-<translation id="4575264539271661854">Memudahkan memperbesar teks dan gambar untuk situs yang Anda buka</translation>
 <translation id="4598549027014564149">Selama dalam mode Samaran, situs tidak dapat menggunakan cookie Anda untuk melihat aktivitas penjelajahan Anda di seluruh situs, bahkan situs yang terkait. Aktivitas penjelajahan Anda tidak digunakan untuk hal-hal seperti mempersonalisasi iklan. Fitur tertentu di beberapa situs mungkin tidak berfungsi.</translation>
 <translation id="4645575059429386691">Dikelola oleh orang tua Anda</translation>
 <translation id="4670064810192446073">Virtual reality</translation>

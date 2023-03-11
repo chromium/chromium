@@ -241,7 +241,6 @@
 <translation id="3226657629376379887">ເມນູຄຳສັ່ງໂຄງຮ່າງ</translation>
 <translation id="3246869037381808805">ວຽກພິມທີ່ເກົ່າກວ່າ 1 ມື້ຈະຖືກລຶບອອກ</translation>
 <translation id="3268178239013324452">ບໍ່ສຳເລັດ, ຝາເປີດຢູ່</translation>
-<translation id="3275506277319227640">ດັອກຢູ່ <ph name="DIRECTION" /></translation>
 <translation id="3275729367986477355">ຮູບແທນຕົວ</translation>
 <translation id="3283504360622356314">{0,plural, =1{ແກ້ໄຂໄຟລ໌}other{ແກ້ໄຂໄຟລ໌}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
@@ -360,7 +359,6 @@
 <translation id="4311195029067684288">ເຕັມ</translation>
 <translation id="4333390807948134856">ກົດປຸ່ມ <ph name="KEY_NAME" /> ແລ້ວ</translation>
 <translation id="435692326371619097">ຈັດການການຕັ້ງຄ່າ APN ຂອງເຄືອຂ່າຍ. APN ສ້າງການເຊື່ອມຕໍ່ລະຫວ່າງເຄືອຂ່າຍມືຖື ແລະ ອິນເຕີເນັດ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
-<translation id="4370033095251616914">ດັອກຢູ່ຂ້າງທີ່ນ້ອຍກວ່າ</translation>
 <translation id="4378373042927530923">ບໍ່ໄດ້ເອີ້ນໃຊ້</translation>
 <translation id="4378551569595875038">ກໍາລັງ​ເຊື່ອມ​ຕໍ່ ...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -904,7 +902,6 @@
 <translation id="9137526406337347448">ການບໍລິການ Google</translation>
 <translation id="9138630967333032450">Shift ຊ້າຍ</translation>
 <translation id="9149391708638971077">ດຳເນີນການທົດສອບຄວາມຈຳ</translation>
-<translation id="9157515863513902090">ດັອກຢູ່ຂ້າງທີ່ໃຫຍ່ກວ່າ</translation>
 <translation id="9161276708550942948">ຍະຫວ່າງ</translation>
 <translation id="9173638680043580060">ເຫຼືອບໍ່ຮອດໜຶ່ງນາທີ</translation>
 <translation id="917720651393141712">ທົດສອບ</translation>

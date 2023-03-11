@@ -34,6 +34,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="1173894706177603556">Riemërto</translation>
 <translation id="1177863135347784049">E personalizuar</translation>
 <translation id="1181037720776840403">Hiq</translation>
+<translation id="1181366777303791449">në <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">Të përdoret fjalëkalim i fortë?</translation>
 <translation id="1197267115302279827">Zhvendos faqeshënuesit</translation>
 <translation id="1201402288615127009">Para</translation>
@@ -42,7 +43,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="1204692632633423444">Butoni i veprimit në Chrome: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">Kopjo tekstin e lidhjes</translation>
 <translation id="1209206284964581585">Fshih për momentin</translation>
-<translation id="1226851825267005295">Mund t'i menaxhosh preferencat e tua pasi të identifikohesh në Chrome me "Llogarinë tënde të Google".</translation>
 <translation id="1227058898775614466">Historiku i navigimit</translation>
 <translation id="1231733316453485619">Të aktivizohet sinkronizimi?</translation>
 <translation id="123724288017357924">Ringarko faqen aktuale, duke shpërfillur përmbajtjen në memorien specifike</translation>
@@ -166,7 +166,6 @@ Kur ti fshin historikun tënd të shfletimit — të gjithë ose për një sajt 
 <translation id="1928696683969751773">Përditësimet</translation>
 <translation id="19288952978244135">Rihap Chrome.</translation>
 <translation id="1933845786846280168">Skeda e zgjedhur</translation>
-<translation id="193571872656840963">Shfaq falënderimet për këtë krijues</translation>
 <translation id="1943432128510653496">Ruaj fjalëkalimet</translation>
 <translation id="1952172573699511566">Sajtet e uebit do ta shfaqin tekstin në gjuhën tënde të preferuar, kur është e mundur.</translation>
 <translation id="1959679933317802873">Në pritje të përmbajtjes</translation>
@@ -202,7 +201,6 @@ Kur ti fshin historikun tënd të shfletimit — të gjithë ose për një sajt 
 <translation id="2122601567107267586">Aplikacioni nuk mund të hapej</translation>
 <translation id="2132122640199389833">Hiq të gjitha pajisjet e lidhura</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> është mbyllur</translation>
-<translation id="2134927169889348449">Duke përdorur Chrome, ti pranon <ph name="BEGIN_TOS_LINK" />"Kushtet e shërbimit" të Google<ph name="END_TOS_LINK" /> dhe <ph name="BEGIN_ATOS_LINK" />"Kushtet shtesë të shërbimit" të Google Chrome dhe të ChromeOS<ph name="END_ATOS_LINK" />.</translation>
 <translation id="2139186145475833000">Shtoje te ekrani "Faqja kryesore"</translation>
 <translation id="2141396931810938595">Bazuar në përdorimin tënd</translation>
 <translation id="214888715418183969">Zgjidh se çfarë informacionesh ndihesh mirë të ndash me Chrome. Metrikat që ndan do të përdoren për të përmirësuar veçoritë, cilësinë e funksionimit dhe qëndrueshmërinë e Chrome.</translation>
@@ -555,7 +553,6 @@ Kodet e gjendjes private përmirësojnë privatësinë në ueb dhe nuk mund të 
 <translation id="409109920254068737">Mund ta përdorësh këtë tablet për t'u identifikuar në pajisjen që po shfaq këtë kod QR.</translation>
 <translation id="4095146165863963773">Të fshihen të dhënat e aplikacioneve?</translation>
 <translation id="4096227151372679484">Fluksi i ruajtjes së faqeshënuesve i hapur në gjysmë lartësi</translation>
-<translation id="4099578267706723511">Ndihmo në përmirësimin e Chrome duke dërguar automatikisht te Google statistika përdorimi dhe raporte të ndërprerjeve aksidentale.</translation>
 <translation id="4101475238162928417">Sinkronizoje për të marrë fjalëkalimet, faqeshënuesit etj. në pajisjet e tua të tjera</translation>
 <translation id="410351446219883937">Luajtja automatike</translation>
 <translation id="4106587138345390261">Chrome po eksploron veçori të reja që u lejojnë sajteve të ofrojnë të njëjtën përvojë shfletimi duke përdorur më pak nga informacionet e tua</translation>
@@ -593,7 +590,6 @@ Kodet e gjendjes private përmirësojnë privatësinë në ueb dhe nuk mund të 
 <translation id="4269820728363426813">Kopjo adresën e lidhjes</translation>
 <translation id="4283102315569707115">Të kërkohen si parazgjedhje sajtet për desktop?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Aktivizo kyçjen e ekranit te cilësimet e Android<ph name="END_LINK" /></translation>
-<translation id="4293476595220860475">Duke përdorur Chrome, ti pranon <ph name="BEGIN_TOS_LINK" />"Kushtet e shërbimit" të Google<ph name="END_TOS_LINK" /> dhe <ph name="BEGIN_ATOS_LINK" />"Kushtet shtesë të shërbimit" të Google Chrome dhe të ChromeOS<ph name="END_ATOS_LINK" />. Zbatohet gjithashtu <ph name="BEGIN_PRIVACY_LINK" />Politika e privatësisë<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="4296252229500326964">Skedë e re "e fshehtë"</translation>
 <translation id="4298388696830689168">Sajtet e lidhura</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -766,7 +762,6 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5161254044473106830">Kërkohet titulli</translation>
 <translation id="5170568018924773124">Shfaq në dosje</translation>
 <translation id="5171045022955879922">Kërko ose shkruaj URL-në</translation>
-<translation id="517734441743343109">Duke vazhduar, ti pranon <ph name="BEGIN_TOS_LINK" />Kushtet e shërbimit<ph name="END_TOS_LINK" /> dhe <ph name="BEGIN_PRIVACY_LINK" />Politikën e privatësisë<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="5184329579814168207">Hape në Chrome</translation>
 <translation id="5191251636205085390">Mëso dhe kontrollo teknologjitë e reja që synojnë të zëvendësojnë kukit e palëve të treta</translation>
 <translation id="5193988420012215838">Kopjuar te kujtesa e fragmenteve</translation>

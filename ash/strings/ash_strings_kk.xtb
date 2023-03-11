@@ -100,7 +100,6 @@
 <translation id="1420408895951708260">"Түнгі жарық" функциясын қосу/өшіру. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Телефондағы соңғы фотосуреттерді және медианы <ph name="DEVICE_TYPE" /> құрылғысында көру</translation>
 <translation id="1426410128494586442">Иә</translation>
-<translation id="1447641497144572814">Скринсейвер іске қосылып жатыр.</translation>
 <translation id="1455242230282523554">Тіл параметрлерін көрсету</translation>
 <translation id="1460620680449458626">Дыбысы өшірулі.</translation>
 <translation id="14648076227129703">Бұл — камера рұқсаты бар барлық қолданба мен веб-сайт және <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> қолданбалары үшін камераны пайдалануға мүмкіндік береді.</translation>
@@ -126,6 +125,7 @@
 <translation id="1550523713251050646">Қосымша опциялар үшін басыңыз</translation>
 <translation id="1555130319947370107">Көк</translation>
 <translation id="1576623706766186887">Ұлғайтқыш қосылған кезде кішірейту</translation>
+<translation id="1586324912145647027">Жұмыс үстелдеріне (1–8) өту</translation>
 <translation id="1589090746204042747">Осы сеанстағы барлық әрекеттеріңізге кіріңіз</translation>
 <translation id="1610778689852195798">"Қайтару"</translation>
 <translation id="1611993646327628135">Қосулы</translation>
@@ -514,6 +514,7 @@
 <translation id="3631369015426612114">Келесі көздерден алынатын хабарландыруларға рұқсат беру</translation>
 <translation id="3633097874324966332">Құрылғыны жұптау үшін Bluetooth параметрлерін ашыңыз.</translation>
 <translation id="3638400994746983214">Құпиялық экранын қосу немесе өшіру. <ph name="STATE_TEXT" />.</translation>
+<translation id="3649256019230929621">Терезені жию</translation>
 <translation id="3649505501900178324">Жаңарту мерзімі өтіп кетті</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -588,6 +589,7 @@
 <translation id="4021716437419160885">Төменге айналдыру</translation>
 <translation id="4022497978915111141">Құрылғыны құлыптау</translation>
 <translation id="4024840464866786680">PIN коды мен құпия сөзді ұмытып қалсаңыз немесе Google аккаунты құпия сөзін жақында өзгертсеңіз, осы пайдаланушыны қалпына келтіріп көріңіз.</translation>
+<translation id="4026843240379844265">Қосулы терезені дисплейлер арасында ауыстырып қосу</translation>
 <translation id="4028481283645788203">Қауіпсіздікті күшейту үшін құпия сөзді енгізу қажет.</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Экранды бөлісудесіз</translation>
@@ -912,6 +914,7 @@
 <translation id="5689633613396158040">Түнгі жарық режимін қосып қойсаңыз, айнала күңгірттеніп тұрғанда, экран жарығы көзіңізді ауыртпайды. Түнгі жарық қосылатын уақытты өзгерту немесе оны толықтай өшіру үшін түртіңіз.</translation>
 <translation id="5691772641933328258">Саусағыңыздың ізі танылмады</translation>
 <translation id="5693255400847650006">Микрофон қолданылып жатыр</translation>
+<translation id="5699366815052349604">Қолданыстағы терезені барлық жұмыс үстеліне тағайындау</translation>
 <translation id="570390244361237317">Барлық қолданбалар. Оларды көру үшін бағыт пернелерін пайдаланыңыз.</translation>
 <translation id="5707775774148071965">Құрылғының деректерді өткізу жылдамдығы кабельге қарағанда жоғары. Құрылғының өнімділігі шектелуі мүмкін.</translation>
 <translation id="5710450975648804523">Мазаламау режимі қосулы</translation>
@@ -1552,6 +1555,7 @@
 <translation id="9034924485347205037">Linux файлдары</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> желісіне арналған параметрлерді ашу</translation>
 <translation id="9059834730836941392">Хабарландыруды жию</translation>
+<translation id="906458777597946297">Терезені жаю</translation>
 <translation id="9065203028668620118">Өзгерту</translation>
 <translation id="9070640332319875144">Assistant параметрлері</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> өткен соң, батареяңыздың қуаты таусылады.</translation>

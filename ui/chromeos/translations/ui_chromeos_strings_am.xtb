@@ -84,6 +84,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> ንጥሎችን በማመቅ ላይ...</translation>
 <translation id="1722687688096767818">መገለጫ በማከል ላይ...</translation>
 <translation id="1726100011689679555">የስም አገልጋዩች</translation>
+<translation id="1727562178154619254">ለመስመር ዝግጁ ነው</translation>
 <translation id="1729953886957086472">ጀርመንኛ (ጀርመን)</translation>
 <translation id="1730235522912993863">ቻይንኛ ካንግጂ</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> ንጥሎች ተቀድተዋል።</translation>
@@ -705,6 +706,7 @@
 <translation id="6732801395666424405">የእውቅና ማረጋገጫዎች አልተጫኑም</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">አቃፊን ከBruschetta ጋር ያጋሩ</translation>
+<translation id="6750737795876287924">የአሁኑ ማውጫ</translation>
 <translation id="6751256176799620176">1 አቃፊ ተመርጧል</translation>
 <translation id="6755827872271341378">የChromeOS Flex መሣሪያ</translation>
 <translation id="6790428901817661496">አጫውት</translation>
@@ -742,7 +744,6 @@
 <translation id="6973630695168034713">አቃፊዎች</translation>
 <translation id="6976795442547527108">አንበሳ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979737339423435258">የምንጊዜም</translation>
 <translation id="6989942356279143254">ስዊድንኛ</translation>
 <translation id="6990081529015358884">ቦታ አልቆዎብዎታል</translation>
 <translation id="6993826899923627728">እነዚህ ንጥሎች የእርስዎ መጣያ ውስጥ ናቸው</translation>
@@ -798,7 +799,6 @@
 <translation id="7458955835361612701">ምንም የቅርብ ጊዜ ምስሎች የሉም</translation>
 <translation id="7460898608667578234">ዩክረኒኛ</translation>
 <translation id="7469894403370665791">ከዚህ አውታረ መረብ ጋር በራስ-ሰር ይገናኙ</translation>
-<translation id="7481358317100446445">ዝግጁ</translation>
 <translation id="7486315294984620427">በParallels Desktop ውስጥ ፋይሎችን ለመጣል ፋይሉ ወደ Windows ፋይሎች መቀዳት አለበት።</translation>
 <translation id="749452993132003881">ሂራጋንኛ</translation>
 <translation id="7495372004724182530">ማሊያላም ፎነቲክ</translation>

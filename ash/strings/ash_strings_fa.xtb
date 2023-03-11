@@ -100,7 +100,6 @@
 <translation id="1420408895951708260">روشن/خاموش کردن «نور شب». <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">رسانه و عکس‌های جدید تلفنتان را در <ph name="DEVICE_TYPE" /> مشاهده کنید</translation>
 <translation id="1426410128494586442">بله</translation>
-<translation id="1447641497144572814">محافظ صفحه‌نمایش شروع شد</translation>
 <translation id="1455242230282523554">نمایش تنظیمات زبان</translation>
 <translation id="1460620680449458626">دکمه میزان صدا صامت است.</translation>
 <translation id="14648076227129703">با این کار، دسترسی به دوربین برای <ph name="APP1_NAME" />، <ph name="APP2_NAME" />، و همه برنامه‌ها و وب‌سایت‌های دارای اجازه دوربین مجاز می‌شود</translation>
@@ -126,6 +125,7 @@
 <translation id="1550523713251050646">برای گزینه‌های بیشتر کلیک کنید</translation>
 <translation id="1555130319947370107">آبی</translation>
 <translation id="1576623706766186887">زوم‌پس کردن هنگام روشن بودن ذره‌بین</translation>
+<translation id="1586324912145647027">رفتن به میزکار ۱ تا ۸</translation>
 <translation id="1589090746204042747">به همه فعالیت‌هایتان در این جلسه دسترسی پیدا کنید</translation>
 <translation id="1610778689852195798">«واگرد»</translation>
 <translation id="1611993646327628135">روشن</translation>
@@ -513,6 +513,7 @@
 <translation id="3631369015426612114">مجاز کردن اعلان‌های منابع زیر</translation>
 <translation id="3633097874324966332">برای مرتبط کردن دستگاهتان، تنظیمات «بلوتوث» را باز کنید</translation>
 <translation id="3638400994746983214">روشن/خاموش کردن صفحه حریم خصوصی. <ph name="STATE_TEXT" />.</translation>
+<translation id="3649256019230929621">بازکردن پنجره در حداقل اندازه</translation>
 <translation id="3649505501900178324">به‌روزرسانی عقب‌افتاده</translation>
 <translation id="3653999174677652346">‏<ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />،
@@ -587,6 +588,7 @@
 <translation id="4021716437419160885">پیمایش به پایین</translation>
 <translation id="4022497978915111141">قفل کردن دستگاه</translation>
 <translation id="4024840464866786680">‏اگر پین و گذرواژه‌تان را فراموش کرده‌اید یا گذرواژه «حساب Google» خود را اخیراً تغییر داده‌اید، بازیابی این کاربر را امتحان کنید.</translation>
+<translation id="4026843240379844265">جابه‌جایی پنجره فعال بین نمایشگرها</translation>
 <translation id="4028481283645788203">برای ایمنی بیشتر به گذرواژه نیاز است</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">درحال اشتراک‌گذاری صفحه‌تان هستید</translation>
@@ -911,6 +913,7 @@
 <translation id="5689633613396158040">بااستفاده از «نور شب»، نگاه کردن به صفحه‌نمایش یا خواندن در نور کم آسان‌تر می‌شود. برای تغییر زمان روشن شدن «نور شب»، یا خاموش کردن آن به‌طور کامل، ضربه بزنید.</translation>
 <translation id="5691772641933328258">اثر انگشت تشخیص داده نشد</translation>
 <translation id="5693255400847650006">میکروفون درحال استفاده است</translation>
+<translation id="5699366815052349604">واگذاری پنجره فعال به همه میزکارها</translation>
 <translation id="570390244361237317">همه برنامه‌ها؛ برای دسترسی به همه برنامه‌ها با کلیدهای جهت‌نما پیمایش کنید</translation>
 <translation id="5707775774148071965">دستگاه از سرعت انتقال داده بیشتری نسبت به کابلتان پشتیبانی می‌کند. ممکن است عملکرد دستگاه محدود شود.</translation>
 <translation id="5710450975648804523">«مزاحم نشوید» روشن است</translation>
@@ -1550,6 +1553,7 @@
 <translation id="9034924485347205037">‏فایل‌های Linux</translation>
 <translation id="9047624247355796468">باز کردن تنظیمات <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">کوچک کردن اعلان</translation>
+<translation id="906458777597946297">بازکردن پنجره در حداکثر اندازه</translation>
 <translation id="9065203028668620118">ویرایش</translation>
 <translation id="9070640332319875144">تنظیمات «دستیار»</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> زمان تا تخلیه باتری باقی‌مانده است.</translation>

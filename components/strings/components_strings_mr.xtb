@@ -376,6 +376,7 @@
 <translation id="1803351196216024260">तुमचा मायक्रोफोन वापरण्याची विनंती करू शकते</translation>
 <translation id="1807246157184219062">फिकट</translation>
 <translation id="1807528111851433570">शीट सुरू करा</translation>
+<translation id="180991881384371158">तुमचा CVC हा तुमच्या कार्डच्या मागील बाजूस असतो. CVC म्हणजे स्वाक्षरीच्या बॉक्सच्या सर्वात वरती उजवीकडील शेवटचे तीन अंक.</translation>
 <translation id="181000283860817563">एकाहून अधिक साइटवरील किमती ट्रॅक करा</translation>
 <translation id="1810391395243432441">तुमचे स्क्रीन लॉक वापरून पासवर्ड संरक्षित करा</translation>
 <translation id="1812527064848182527">लॅंडस्केप</translation>
@@ -506,6 +507,7 @@
 <translation id="2149968176347646218">कनेक्शन सुरक्षित नाही</translation>
 <translation id="2153609454945889823">Google Play Services for AR इंस्टॉल करायचे आहे का?</translation>
 <translation id="2154484045852737596">कार्ड संपादित करा</translation>
+<translation id="2154739667870063220">रीबूट करा</translation>
 <translation id="2155260325161282517">५ x ७ इं</translation>
 <translation id="2157640075051554492">किमतीचा माग ठेवण्यासंबंधी सूचना</translation>
 <translation id="2161656808144014275">मजकूर</translation>
@@ -640,6 +642,7 @@
 <translation id="2521736961081452453">फॉर्म तयार करा</translation>
 <translation id="2523886232349826891">फक्त या डिव्हाइसवर सेव्ह केले जाईल</translation>
 <translation id="2524461107774643265">अधिक माहिती जोडा</translation>
+<translation id="2527451058878391043">तुमचा CVC हा तुमच्या कार्डच्या समोरील बाजूस असतो. तुमच्या कार्ड नंबरच्या सर्वात वरती हा चार अंकी कोड आहे.</translation>
 <translation id="2529899080962247600">या भागात <ph name="MAX_ITEMS_LIMIT" /> पेक्षा जास्त नोंदी असू शकत नाहीत. उरलेल्या सर्व नोंदी दुर्लक्षित केल्या जातील.</translation>
 <translation id="253493526287553278">प्रोमो कोडचे तपशील पहा</translation>
 <translation id="2535585790302968248">खाजगीरीत्या ब्राउझ करण्यासाठी नवीन गुप्त टॅब उघडा</translation>
@@ -894,6 +897,7 @@
 <translation id="3215092763954878852">WebAuthn वापरता आले नाही</translation>
 <translation id="3216313131063488104">ब्लूज</translation>
 <translation id="3218181027817787318">संबंधित</translation>
+<translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{आता अपडेट करणे आवश्यक आहे}=2{उद्यापर्यंत अपडेट करणे आवश्यक आहे}other{# दिवसांमध्ये अपडेट करणे आवश्यक आहे}}</translation>
 <translation id="3223287115535306850">ॲप लाँचिंग थ्रॉबर</translation>
 <translation id="3223425961342298674">स्थानाला अनुमती नाही</translation>
 <translation id="3225919329040284222">सर्व्हरने असे सर्टिफिकेट सादर केले आहे जे अंगभूत अपेक्षांशी जुळत नाही. या अपेक्षा तुम्हाला संरक्षित करण्यासाठी विशिष्ट, उच्च सुरक्षिततेच्या वेबसाइटसाठी समाविष्ट केल्या आहेत.</translation>
@@ -1377,6 +1381,7 @@
 <translation id="4350629523305688469">अनेक फंक्शन करणारा ट्रे</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> ला जवळपासची ब्लूटूथ डिव्हाइस स्कॅन करायची आहेत. खालील डिव्हाइस आढळली:</translation>
 <translation id="4351175281479794167">पडताळणी कोड एंटर करा</translation>
+<translation id="4355383636893709732">Android अ‍ॅप्ससाठी ChromeOS अपडेट</translation>
 <translation id="4356973930735388585">या साइट वरील आक्रमणकर्ते तुमची माहिती (उदाहरणार्थ, फोटो, पासवर्ड, मेसेज आणि क्रेडिट कार्ड) चोरणारे किंवा हटविणारे धोकादायक प्रोग्राम तुमच्या कॉंप्युटरवर इंस्टॉल करण्‍याचा प्रयत्न करू शकतात.</translation>
 <translation id="4358059973562876591">DnsOverHttpsMode धोरणामधील एररमुळे तुम्ही नमूद केलेली टेम्पलेट कदाचित लागू केली जाऊ शकत नाहीत.</translation>
 <translation id="4358461427845829800">पेमेंट पद्धती व्यवस्थापित करा</translation>
@@ -1757,6 +1762,7 @@
 <translation id="5288393065350884210">लेखांकन आणि लेखापरीक्षण</translation>
 <translation id="5288808348893593856">Chrome तुम्हाला सांगत नाही तोपर्यंत साइटचे कनेक्शन सुरक्षित असते.</translation>
 <translation id="5289384342738547352">एकापेक्षा अधिक दस्तऐवज हाताळणे</translation>
+<translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{आज अपडेट करणे आवश्यक आहे}=2{उद्यापर्यंत अपडेट करणे आवश्यक आहे}other{# दिवसांमध्ये अपडेट करणे आवश्यक आहे}}</translation>
 <translation id="5293919335876685914">कूपे</translation>
 <translation id="5296589789433599000">पाककला आणि पाककृती</translation>
 <translation id="5299298092464848405">धोरण पार्स करताना एरर</translation>
@@ -1951,6 +1957,7 @@
 <translation id="5786044859038896871">तुम्ही तुमची कार्ड माहिती भरू इच्छित आहात?</translation>
 <translation id="578633867165174378">Chrome ला तुम्ही नुकताच डेटा भंगामध्ये वापरलेला पासवर्ड आढळळा आहे. आम्ही हा पासवर्ड आताच बदलण्याची शिफारस करतो.</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="580241730938216256">अपडेट सुरू करा</translation>
 <translation id="5803412860119678065">तुम्ही तुमचे <ph name="CARD_DETAIL" /> भरू इच्छित आहात?</translation>
 <translation id="5804241973901381774">परवानग्या</translation>
 <translation id="5808435672482059465">तुमचा Chrome इतिहास पहा</translation>
@@ -2112,6 +2119,7 @@
 <translation id="6218753634732582820">Chromium वरून पत्ता काढून टाकायचा?</translation>
 <translation id="622039917539443112">समांतर फोल्ड</translation>
 <translation id="6221345481584921695">Google सुरक्षित ब्राउझिंगला अलीकडे <ph name="SITE" /> वर <ph name="BEGIN_LINK" />मालवेअर आढळले आहे<ph name="END_LINK" />. सामान्यतः सुरक्षित असलेल्या वेबसाइट काहीवेळा मालवेअरमुळे संक्रमित झालेल्या असतात. एक ज्ञात मालवेअर वितरक असलेल्या, <ph name="SUBRESOURCE_HOST" /> कडून दुर्भावनापूर्ण आशय येते.</translation>
+<translation id="6221892641068781024">सिंप्लिफाइड व्ह्यू</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome सेटिंग्जमध्ये तुमची अ‍ॅक्सेसिबिलिटी टूल पर्सनलाइझ करण्यासाठी, टॅब आणि त्यानंतर एंटर दाबा</translation>
 <translation id="6229649258872345286">कुटुंबासोबत करता येईल असा प्रवास</translation>
 <translation id="6232271601416750929">पर्यावरण आणि आरोग्याला अनुकूल असे सौंदर्य उत्पादन</translation>
@@ -2171,6 +2179,7 @@
 <translation id="6366710531182496394">ड्युअल स्टेपल लेफ्ट</translation>
 <translation id="6367196786591004737">एंट्री हटवा</translation>
 <translation id="6370022303958842211">डिव्हाइस अ‍ॅक्सेस करण्याशी संबंधित कृती, जसे की लॉग इन (लॉग इन न करता आल्याची कारणे यांच्या समावेशासह), लॉगआउट, लॉक आणि अनलॉक</translation>
+<translation id="6374469231428023295">पुन्हा प्रयत्न करा</translation>
 <translation id="6374865374745447009">विंडो व्यवस्थापन</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />' साठी एक परिणाम</translation>
 <translation id="6380497234672085559">A0</translation>
@@ -2481,6 +2490,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> आणि <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> आणखी}other{<ph name="PAYMENT_METHOD_PREVIEW" /> आणि <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> आणखी}}</translation>
 <translation id="7153618581592392745">फिकट जांभळा</translation>
 <translation id="7156870133441232244">सर्व्हर TLS 1.2 किंवा त्यापुढील आवृत्तीवर अपग्रेड करणे आवश्यक आहे.</translation>
+<translation id="7160999678034985039">कृपया तुमचे काम सेव्ह करा आणि तुम्ही तयार असाल, तेव्हा अपडेट सुरू करा.</translation>
 <translation id="7163295244162773898">{0,plural, =1{गोपनीय फाइल कॉपी करायची आहे का?}other{गोपनीय फाइल कॉपी करायच्या आहेत का?}}</translation>
 <translation id="717330890047184534">Gaia आयडी:</translation>
 <translation id="7174545416324379297">मर्ज केले</translation>
@@ -2728,6 +2738,7 @@
 <translation id="7687305263118037187">पुन्हा प्रयत्न करण्याची वेळ संपली</translation>
 <translation id="7690647519407127574">Oufuku Hagaki पोस्टकार्ड</translation>
 <translation id="7693583928066320343">पेजचा क्रम मिळाला</translation>
+<translation id="769424100851389104">आता अपडेट करणे सुरू करा</translation>
 <translation id="7696089921647603491">क्लासिक रॉक आणि जुनी गाणी</translation>
 <translation id="769721561045429135">सध्या, तुमच्याकडे अशी कार्डे आहेत जी फक्त या डिव्हाइसवर वापरली जाऊ शकतात. कार्डांचे पुनरावलोकन करण्यासाठी सुरू ठेवा क्लिक करा.</translation>
 <translation id="7698864304447945242">Google Play Services for AR अपडेट करायचे आहे का?</translation>
@@ -2752,6 +2763,7 @@
 <translation id="774634243536837715">धोकादायक आशय ब्लॉक केला.</translation>
 <translation id="7751971323486164747">Chrome मधील फॉंटचे आकार आणि टाइपफेस कस्टमाइझ करा</translation>
 <translation id="7752995774971033316">व्यवस्थापित न केलेले</translation>
+<translation id="7754587126786572336">अपडेट सुरू झाल्यावर तुमचे Chrome टॅब आणि अ‍ॅप्स बंद होतील</translation>
 <translation id="7755287808199759310">तुमचे पालक तुमच्यासाठी ती अनब्लॉक करू शकतात</translation>
 <translation id="7755624218968747854">प्राथमिक रोल</translation>
 <translation id="7758069387465995638">फायरवॉल किंवा अँटीव्हायरस सॉफ्टवेअरने कदाचित कनेक्शन ब्लॉक केले असावे.</translation>
@@ -2916,6 +2928,7 @@
 <translation id="8186706823560132848">सॉफ्टवेअर</translation>
 <translation id="8190193880870196235">एक्स्टेंशनद्वारे व्यवस्थापित</translation>
 <translation id="8194797478851900357">&amp;हलवा पूर्ववत करा</translation>
+<translation id="8200772114523450471">रेझ्युमे</translation>
 <translation id="8201077131113104583">"<ph name="EXTENSION_ID" />"असलेल्या एक्स्टेंशनसाठी अवैध अपडेट URL.</translation>
 <translation id="8202097416529803614">ऑर्डर सारांश</translation>
 <translation id="8202370299023114387">विरोध</translation>
@@ -3213,6 +3226,7 @@
 <translation id="8963117664422609631">साइट सेटिंग्जवर जा</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />सूचना:<ph name="MARKUP_2" />आपल्याकडे डेटा कनेक्शन असल्याचे निश्चित करा<ph name="MARKUP_3" />हे वेबपेज नंतर रीलोड करा<ph name="MARKUP_4" />तुम्ही एंटर केलेला ॲड्रेस तपासा<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">कार्ड सेव्ह करा</translation>
+<translation id="8970887620466824814">काहीतरी चूक झाली.</translation>
 <translation id="8971063699422889582">सर्व्हरचे सर्टिफिकेट एक्स्पायर झाले आहे.</translation>
 <translation id="8975012916872825179">फोन नंबर, ईमेल ॲड्रेस आणि शिपिंग पत्ते यांसारखी माहिती समाविष्ट आहे</translation>
 <translation id="8975263830901772334">तुम्ही प्रिंट करत असलेल्या फायलींची नावे</translation>

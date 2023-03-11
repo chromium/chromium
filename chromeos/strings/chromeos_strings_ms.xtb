@@ -241,7 +241,6 @@
 <translation id="3226657629376379887">Menu tindakan reka letak</translation>
 <translation id="3246869037381808805">Tugas cetak yang melebihi 1 hari akan dialih keluar</translation>
 <translation id="3268178239013324452">Gagal - Pintu terbuka</translation>
-<translation id="3275506277319227640">Dok pada <ph name="DIRECTION" /></translation>
 <translation id="3275729367986477355">Imej avatar</translation>
 <translation id="3283504360622356314">{0,plural, =1{Edit fail}other{Edit fail}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
@@ -360,7 +359,6 @@
 <translation id="4311195029067684288">Penuh</translation>
 <translation id="4333390807948134856">Kekunci <ph name="KEY_NAME" /> ditekan</translation>
 <translation id="435692326371619097">Urus tetapan APN rangkaian. APN mewujudkan sambungan antara rangkaian selular dan Internet. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
-<translation id="4370033095251616914">Dok pada bahagian yang lebih kecil</translation>
 <translation id="4378373042927530923">Tidak Berjalan</translation>
 <translation id="4378551569595875038">Menyambung...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -903,7 +901,6 @@
 <translation id="9137526406337347448">Perkhidmatan Google</translation>
 <translation id="9138630967333032450">Shift kiri</translation>
 <translation id="9149391708638971077">Jalankan Ujian memori</translation>
-<translation id="9157515863513902090">Dok pada bahagian yang lebih besar</translation>
 <translation id="9161276708550942948">ruang</translation>
 <translation id="9173638680043580060">Kurang seminit lagi</translation>
 <translation id="917720651393141712">Ujian</translation>

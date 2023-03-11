@@ -26,6 +26,7 @@
 <translation id="1448064542941920355">Zoom ut</translation>
 <translation id="1510341833810331442">Nettsteder har ikke lov til å lagre data på enheten din</translation>
 <translation id="1547123415014299762">Informasjonskapsler fra tredjeparter tillates</translation>
+<translation id="1593426485665524382">Nye handlinger er tilgjengelige nær toppen av skjermen</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1633720957382884102">Relaterte nettsteder</translation>
 <translation id="1644574205037202324">Logg</translation>
@@ -146,6 +147,7 @@
 <translation id="3628308229821498208">Foreslåtte søk</translation>
 <translation id="3636279694100170143">Nettsteder du besøker, kan bekrefte at du er en ekte bruker og ikke en robot</translation>
 <translation id="3649190289964910441">Nettsteder du besøker, kan lagre informasjon i Chrome for å bekrefte at du er en ekte bruker. Etter hvert som du fortsetter å surfe, kan nettsteder sjekke med Chrome og bekrefte fra det første nettstedet at du sannsynligvis er en pålitelig bruker.</translation>
+<translation id="3721953990244350188">Avvis, og vis neste tilgjengelige handling</translation>
 <translation id="3744111561329211289">Bakgrunnssynkronisering</translation>
 <translation id="3763247130972274048">Dobbelttrykk på venstre eller høyre side av videoen for å hoppe 10 sekunder</translation>
 <translation id="3794286421982011626">Et nettsted du besøker, kan lagre informasjon om hva du gjør, slik at det fungerer som forventet – for eksempel for å holde deg pålogget på et nettsted eller for å lagre varer i handlekurven din. Ofte lagrer nettsteder denne informasjonen midlertidig på enheten din.</translation>
@@ -193,7 +195,6 @@
 <translation id="4534723447064627427">For å gi <ph name="APP_NAME" /> tilgang til mikrofonen må du også slå på mikrofonen i <ph name="BEGIN_LINK" />Android-innstillingene<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Slå av mikrofonen</translation>
 <translation id="4570913071927164677">Detaljer</translation>
-<translation id="4575264539271661854">Gjør det enklere å zoome inn på tekst og bilder for nettsteder du besøker</translation>
 <translation id="4598549027014564149">Når du er i inkognitomodus, kan ikke nettsteder bruke informasjonskapsler for å se nettleseraktiviteten din på andre nettsteder – heller ikke relaterte nettsteder. Nettleseraktiviteten din brukes ikke til ting som personlig tilpasning av annonser. Det kan hende at funksjoner på noen nettsteder ikke fungerer.</translation>
 <translation id="4645575059429386691">Administreres av foreldrene dine</translation>
 <translation id="4670064810192446073">Virtuell virkelighet</translation>

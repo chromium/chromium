@@ -100,7 +100,6 @@
 <translation id="1420408895951708260">切換「夜燈模式」。<ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">在 <ph name="DEVICE_TYPE" /> 上查看手機最近的相片和媒體。</translation>
 <translation id="1426410128494586442">是</translation>
-<translation id="1447641497144572814">螢幕保護程式啟動</translation>
 <translation id="1455242230282523554">顯示語言設定</translation>
 <translation id="1460620680449458626">音量校咗靜音。</translation>
 <translation id="14648076227129703">此操作會允許 <ph name="APP1_NAME" />、<ph name="APP2_NAME" /> 以及具備相機權限的所有應用程式和網站存取相機</translation>
@@ -126,6 +125,7 @@
 <translation id="1550523713251050646">點擊即可取得更多選項</translation>
 <translation id="1555130319947370107">藍色</translation>
 <translation id="1576623706766186887">放大鏡開啟時縮小畫面</translation>
+<translation id="1586324912145647027">前往桌面 1 至 8</translation>
 <translation id="1589090746204042747">存取此工作階段的所有活動紀錄</translation>
 <translation id="1610778689852195798">「復原」</translation>
 <translation id="1611993646327628135">開啟</translation>
@@ -514,6 +514,7 @@
 <translation id="3631369015426612114">允許顯示來自以下來源的通知</translation>
 <translation id="3633097874324966332">開啟「藍牙設定」以配對裝置</translation>
 <translation id="3638400994746983214">切換私隱保護畫面。<ph name="STATE_TEXT" />。</translation>
+<translation id="3649256019230929621">將視窗縮到最小</translation>
 <translation id="3649505501900178324">更新已逾期</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />，
@@ -588,6 +589,7 @@
 <translation id="4021716437419160885">向下捲動</translation>
 <translation id="4022497978915111141">鎖定裝置</translation>
 <translation id="4024840464866786680">如果您忘記 PIN 和密碼，或最近曾變更 Google 帳戶密碼，請嘗試復原此使用者密碼。</translation>
+<translation id="4026843240379844265">在顯示屏之間移動使用中的視窗</translation>
 <translation id="4028481283645788203">為安全起見，請輸入密碼</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">您正在分享螢幕畫面</translation>
@@ -911,6 +913,7 @@
 <translation id="5689633613396158040">「夜燈模式」讓您更易在光線昏暗的環境下觀看螢幕內容或閱讀。輕按即可變更「夜燈模式」的開啟時間，或完全關閉此功能。</translation>
 <translation id="5691772641933328258">識別唔到指紋</translation>
 <translation id="5693255400847650006">麥克風正在使用中</translation>
+<translation id="5699366815052349604">將使用中的視窗指派給所有桌面</translation>
 <translation id="570390244361237317">所有應用程式，用方向鍵導覽就可以存取所有應用程式</translation>
 <translation id="5707775774148071965">您的裝置支援比連接線更高的資料傳輸速率。裝置效能可能受到限制。</translation>
 <translation id="5710450975648804523">「請勿騷擾」模式已開啟</translation>
@@ -1550,6 +1553,7 @@
 <translation id="9034924485347205037">Linux 檔案</translation>
 <translation id="9047624247355796468">打開<ph name="NETWORK_NAME" />設定</translation>
 <translation id="9059834730836941392">收合通知</translation>
+<translation id="906458777597946297">將視窗放到最大</translation>
 <translation id="9065203028668620118">編輯</translation>
 <translation id="9070640332319875144">Google 助理設定</translation>
 <translation id="9072519059834302790">電池使用時間剩番 <ph name="TIME_LEFT" /></translation>

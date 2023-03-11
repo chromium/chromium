@@ -260,6 +260,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6010556343189461180">Til að fá frekari uppfærslur á Google Chrome þarftu macOS 10.15 eða nýrri útgáfu. Þessi tölva notar macOS 10.14.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome lokast núna.}=1{Chrome lokast eftir 1 sekúndu.}one{Chrome lokast eftir # sekúndu.}other{Chrome lokast eftir # sekúndur.}}</translation>
 <translation id="6022659036123304283">Gerðu Chrome að þínu</translation>
+<translation id="6025087594896450715">Google Chrome endurræsist eftir <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Loka</translation>
 <translation id="6070348360322141662">Google Chrome dulkóðar gögnin þín til að auka öryggið</translation>
 <translation id="608006075545470555">Bæta vinnusniði við þennan vafra</translation>
@@ -277,6 +278,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6327105987658262776">Uppfærsla er ekki tiltæk.</translation>
 <translation id="6412673304250309937">Ber vefslóðir saman við lista yfir óörugg vefsvæði sem er vistaður í Chrome. Ef vefsvæði reynir að stela aðgangsorðinu þínu, eða ef þú sækir skaðlega skrá, gæti Chrome einnig sent vefslóðir í Örugga vefskoðun, þar á meðal hluta af innihaldi síðna.</translation>
 <translation id="6418662306461808273">Skipta yfir í Chrome prófíl sem er til?</translation>
+<translation id="6493527311031785448">Google Chrome er að reyna að <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6506909944137591434">Chrome verður að fá leyfi fyrir myndavél til að búa til þrívíddarkort af umhverfi þínu</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="659498884637196217">Í Aðgangsorðastjórnun Google í þessu tæki</translation>
@@ -404,7 +406,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="8862326446509486874">Þú hefur ekki tilskilin réttindi til uppsetningar fyrir kerfið allt. Prófaðu að keyra uppsetningarforritið aftur sem stjórnandi.</translation>
 <translation id="8914504000324227558">Endurræsa Chrome</translation>
 <translation id="8922193594870374009">Til að senda númer úr <ph name="ORIGIN" /> í Android símann þinn skaltu skrá þig inn á Chrome í báðum tækjunum.</translation>
-<translation id="8983720963221508955">Þú kveiktir á enn öruggari vefskoðun á reikningnum þínum. Þessi valkostur er nú í boði fyrir Chrome.</translation>
 <translation id="8986207147630327271">Þú ert að bæta vinnusniði við þennan vafra og veita stjórnanda þínum leyfi til að stjórna vinnusniðinu eingöngu.</translation>
 <translation id="8989968390305463310">Vafraferillinn þinn hefur áhrif á auglýsingarnar sem þú sérð og áhugasviðin sem eru áætluð hér fyrir neðan. Til að gæta persónuverndar þinnar eyðir Chrome áhugamálunum þínum sjálfkrafa mánaðarlega. Áhugasvið verða hugsanlega endurnýjuð nema þú fjarlægir þau.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Uppfærsla er í boði fyrir Chrome}=1{Uppfærsla er í boði fyrir Chrome}one{Uppfærsla hefur verið í boði fyrir Chrome í # dag}other{Uppfærsla hefur verið í boði fyrir Chrome í # daga}}</translation>

@@ -34,6 +34,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="1173894706177603556">Cambiar nombre</translation>
 <translation id="1177863135347784049">Personalizado</translation>
 <translation id="1181037720776840403">Quitar</translation>
+<translation id="1181366777303791449">en <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">¿Usar contraseña segura?</translation>
 <translation id="1197267115302279827">Mover marcadores</translation>
 <translation id="1201402288615127009">Siguiente</translation>
@@ -42,7 +43,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="1204692632633423444">Botón de acción de Chrome: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">Copiar texto de enlace</translation>
 <translation id="1209206284964581585">Ocultar por ahora</translation>
-<translation id="1226851825267005295">Puedes gestionar tus preferencias después de iniciar sesión en Chrome con nuestra cuenta de Google.</translation>
 <translation id="1227058898775614466">Historial de navegación</translation>
 <translation id="1231733316453485619">¿Activar sincronización?</translation>
 <translation id="123724288017357924">Vuelve a cargar esta página sin contenido en caché</translation>
@@ -166,7 +166,6 @@ Si eliminas tu historial de navegación (entero o de un sitio en concreto), tamb
 <translation id="1928696683969751773">Actualizaciones</translation>
 <translation id="19288952978244135">Vuelve a abrir Chrome.</translation>
 <translation id="1933845786846280168">Pestaña seleccionada</translation>
-<translation id="193571872656840963">Muestra tu agradecimiento a este creador</translation>
 <translation id="1943432128510653496">Guardar contraseñas</translation>
 <translation id="1952172573699511566">Si es posible, los sitios web muestran texto en tu idioma preferido.</translation>
 <translation id="1959679933317802873">Esperando el contenido</translation>
@@ -202,7 +201,6 @@ Si eliminas tu historial de navegación (entero o de un sitio en concreto), tamb
 <translation id="2122601567107267586">No se ha podido abrir la aplicación</translation>
 <translation id="2132122640199389833">Quitar todos los dispositivos vinculados</translation>
 <translation id="213279576345780926">Se ha cerrado <ph name="TAB_TITLE" /></translation>
-<translation id="2134927169889348449">Al utilizar Chrome, aceptas los <ph name="BEGIN_TOS_LINK" />Términos del Servicio de Google<ph name="END_TOS_LINK" /> y los <ph name="BEGIN_ATOS_LINK" />Términos del Servicio Adicionales de Google Chrome y ChromeOS<ph name="END_ATOS_LINK" />.</translation>
 <translation id="2139186145475833000">Añadir a pantalla de inicio</translation>
 <translation id="2141396931810938595">Según tu uso</translation>
 <translation id="214888715418183969">Elige qué quieres compartir con Chrome. Las métricas que compartas nos ayudarán a mejorar las funciones, el rendimiento y la estabilidad de Chrome.</translation>
@@ -555,7 +553,6 @@ Los tokens de confianza mejoran la privacidad en la Web y no se pueden usar para
 <translation id="409109920254068737">Puedes usar este tablet para iniciar sesión en el dispositivo donde se muestra este código QR.</translation>
 <translation id="4095146165863963773">¿Eliminar datos de la aplicación?</translation>
 <translation id="4096227151372679484">Flujo para guardar marcador abierto a media altura</translation>
-<translation id="4099578267706723511">Ayudar a mejorar Chrome enviando estadísticas de uso e informes sobre fallos.</translation>
 <translation id="4101475238162928417">Activa la sincronización para recibir tus contraseñas, marcadores, etc., en tus otros dispositivos</translation>
 <translation id="410351446219883937">Reproducción automática</translation>
 <translation id="4106587138345390261">Chrome está explorando nuevas funciones que permitan a los sitios ofrecer la misma experiencia de navegación usando menos información tuya.</translation>
@@ -593,7 +590,6 @@ Los tokens de confianza mejoran la privacidad en la Web y no se pueden usar para
 <translation id="4269820728363426813">Copiar la dirección del enlace</translation>
 <translation id="4283102315569707115">¿Solicitar sitio para ordenadores de forma predeterminada?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Activa el bloqueo de pantalla en los ajustes de Android<ph name="END_LINK" /></translation>
-<translation id="4293476595220860475">Al utilizar Chrome, aceptas los <ph name="BEGIN_TOS_LINK" />Términos del Servicio de Google<ph name="END_TOS_LINK" /> y los <ph name="BEGIN_ATOS_LINK" />Términos del Servicio Adicionales de Google Chrome y ChromeOS<ph name="END_ATOS_LINK" />. También se aplica la <ph name="BEGIN_PRIVACY_LINK" />Política de Privacidad<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="4296252229500326964">Nueva pestaña de Incógnito</translation>
 <translation id="4298388696830689168">Sitios web enlazados</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -766,7 +762,6 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="5161254044473106830">Título obligatorio</translation>
 <translation id="5170568018924773124">Mostrar en carpeta</translation>
 <translation id="5171045022955879922">Busca o escribe una URL</translation>
-<translation id="517734441743343109">Si continúas, confirmas que aceptas los <ph name="BEGIN_TOS_LINK" />Términos del Servicio<ph name="END_TOS_LINK" /> y la <ph name="BEGIN_PRIVACY_LINK" />Política de\u00A0Privacidad<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="5184329579814168207">Abrir en Chrome</translation>
 <translation id="5191251636205085390">Más información sobre las nuevas tecnologías que aspiran a reemplazar las cookies de terceros y cómo controlarlas</translation>
 <translation id="5193988420012215838">Se ha copiado al portapapeles</translation>
@@ -1410,7 +1405,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="8526855376374973824">Flujo del permiso de notificaciones</translation>
 <translation id="8540136935098276800">Introduce una URL con el formato correcto</translation>
 <translation id="854522910157234410">Abrir esta página</translation>
-<translation id="8551513938758868521">Bloquear las pestañas de incógnito al salir de Chrome</translation>
+<translation id="8551513938758868521">Bloquear las pestañas de Incógnito al cerrar Chrome</translation>
 <translation id="8559961053328923750">Chrome limita la cantidad total de datos que los sitios pueden compartir a través del navegador para medir el rendimiento de los anuncios.</translation>
 <translation id="8559990750235505898">Ofrecer la traducción de páginas en otros idiomas</translation>
 <translation id="8560602726703398413">Consulta tu lista de lectura en Marcadores</translation>

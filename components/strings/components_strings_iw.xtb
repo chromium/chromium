@@ -375,6 +375,7 @@
 <translation id="1803351196216024260">האתר יכול לבקש הרשאה להשתמש במיקרופון</translation>
 <translation id="1807246157184219062">בהיר</translation>
 <translation id="1807528111851433570">גיליון ראשון</translation>
+<translation id="180991881384371158">‏קוד האימות (CVC) מופיע בגב הכרטיס. אלה 3 הספרות האחרונות שמופיעות בצד הימני של תיבת החתימה.</translation>
 <translation id="181000283860817563">מעקב אחר מחירים בכמה אתרים</translation>
 <translation id="1810391395243432441">הגנה על סיסמאות באמצעות נעילת המסך</translation>
 <translation id="1812527064848182527">לרוחב</translation>
@@ -505,6 +506,7 @@
 <translation id="2149968176347646218">החיבור אינו מאובטח</translation>
 <translation id="2153609454945889823">‏להתקין את Google Play Services למציאות רבודה?</translation>
 <translation id="2154484045852737596">עריכת כרטיס</translation>
+<translation id="2154739667870063220">הפעלה מחדש</translation>
 <translation id="2155260325161282517">‏5x7 אינץ'</translation>
 <translation id="2157640075051554492">התראות על מעקב אחר מחירים</translation>
 <translation id="2161656808144014275">טקסט</translation>
@@ -639,6 +641,7 @@
 <translation id="2521736961081452453">יצירת טופס</translation>
 <translation id="2523886232349826891">הכרטיס יישמר רק במכשיר הזה</translation>
 <translation id="2524461107774643265">הוספת עוד מידע</translation>
+<translation id="2527451058878391043">‏קוד האימות (CVC) מופיע בצד הקדמי של הכרטיס. זהו הקוד בן 4 הספרות שמופיע בצד ימין מעל למספר הכרטיס.</translation>
 <translation id="2529899080962247600">השדה הזה יכול לכלול עד <ph name="MAX_ITEMS_LIMIT" /> רשומות. המערכת תתעלם מרשומות נוספות.</translation>
 <translation id="253493526287553278">הצגת הפרטים של קוד ההטבה</translation>
 <translation id="2535585790302968248">כדי לגלוש באופן פרטי, יש לפתוח כרטיסייה פרטית חדשה</translation>
@@ -2115,6 +2118,7 @@ Del</translation>
 <translation id="6218753634732582820">‏האם להסיר מ-Chromium את הכתובת?</translation>
 <translation id="622039917539443112">קיפול מקביל</translation>
 <translation id="6221345481584921695">‏לאחרונה, 'גלישה בטוחה של Google' ‏<ph name="BEGIN_LINK" />זיהתה תוכנה זדונית<ph name="END_LINK" /> ב-<ph name="SITE" />. אתרים שבדרך כלל נחשבים לבטוחים נדבקים לעתים בתוכנה זדונית. התוכן הזדוני מגיע מ-<ph name="SUBRESOURCE_HOST" />, מפיץ ידוע של תוכנות זדוניות.</translation>
+<translation id="6221892641068781024">תצוגה נקייה</translation>
 <translation id="6226163402662242066">‏<ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, מקישים על Tab ואז על Enter כדי להתאים אישית את כלי הנגישות בהגדרות Chrome</translation>
 <translation id="6229649258872345286">נסיעות משפחתיות</translation>
 <translation id="6232271601416750929">קוסמטיקה ידידותית לסביבה</translation>
@@ -2174,6 +2178,7 @@ Del</translation>
 <translation id="6366710531182496394">שתי סיכות הידוק בצד שמאל</translation>
 <translation id="6367196786591004737">מחיקת הרשומה</translation>
 <translation id="6370022303958842211">פעולות של גישה למכשירים כמו התחברות (כולל סיבות לכישלון של ניסיונות התחברות), התנתקות, נעילה וביטול נעילה</translation>
+<translation id="6374469231428023295">ניסיון נוסף</translation>
 <translation id="6374865374745447009">ניהול החלונות</translation>
 <translation id="6377268785556383139">תוצאה אחת בשביל '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6380497234672085559">A0</translation>
@@ -2919,6 +2924,7 @@ Del</translation>
 <translation id="8186706823560132848">תוכנה</translation>
 <translation id="8190193880870196235">מנוהלת על-ידי תוסף</translation>
 <translation id="8194797478851900357">&amp;ביטול העברה</translation>
+<translation id="8200772114523450471">חידוש</translation>
 <translation id="8201077131113104583">כתובת אתר לא חוקית לעדכון עבור תוסף עם המזהה "<ph name="EXTENSION_ID" />".</translation>
 <translation id="8202097416529803614">סיכום הזמנה</translation>
 <translation id="8202370299023114387">התנגשות</translation>
@@ -3216,6 +3222,7 @@ Del</translation>
 <translation id="8963117664422609631">כניסה להגדרות האתר</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />הצעות:<ph name="MARKUP_2" />לוודא שקיים חיבור נתונים<ph name="MARKUP_3" />לטעון מחדש את דף האינטרנט הזה מאוחר יותר<ph name="MARKUP_4" />לבדוק את הכתובת שהזנת<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">שמירת הכרטיס</translation>
+<translation id="8970887620466824814">משהו השתבש.</translation>
 <translation id="8971063699422889582">פג תוקפו של אישור השרת.</translation>
 <translation id="8975012916872825179">כולל מידע כמו מספרי טלפון, כתובות אימייל וכתובות למשלוח</translation>
 <translation id="8975263830901772334">שמות הקבצים שמודפסים על ידך</translation>

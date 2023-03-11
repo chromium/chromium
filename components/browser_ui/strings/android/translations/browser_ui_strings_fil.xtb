@@ -26,6 +26,7 @@
 <translation id="1448064542941920355">Bawasan ang pag-zoom</translation>
 <translation id="1510341833810331442">Hindi pinapayagan ang mga site na mag-save ng data sa iyong device</translation>
 <translation id="1547123415014299762">Pinapayagan ang third-party na cookies</translation>
+<translation id="1593426485665524382">Available ang mga bagong pagkilos malapit sa itaas ng screen</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1633720957382884102">Mga kaugnay na site</translation>
 <translation id="1644574205037202324">History</translation>
@@ -146,6 +147,7 @@
 <translation id="3628308229821498208">Mga iminumungkahing paghahanap</translation>
 <translation id="3636279694100170143">Puwedeng i-validate ng mga site na binibisita mo na totoong user ka at hindi isang bot</translation>
 <translation id="3649190289964910441">Ang isang site na binibisita mo ay puwedeng mag-save ng impormasyon sa Chrome na nagva-validate na totoong user ka. Habang patuloy kang nagba-browse, puwedeng makipag-ugnayan ang mga site sa Chrome at i-verify sa unang site na malamang na pinagkakatiwalaang user ka.</translation>
+<translation id="3721953990244350188">I-dismiss at ipakita ang susunod na available na pagkilos</translation>
 <translation id="3744111561329211289">Pag-sync sa background</translation>
 <translation id="3763247130972274048">Mag-double tap sa kaliwa o kanan ng video para lumaktaw nang 10s</translation>
 <translation id="3794286421982011626">Ang site na binibisita mo ay puwedeng mag-save ng impormasyon tungkol sa kung ano ang ginagawa mo para gumana ito tulad ng inaasahan mo — halimbawa, para panatilihin kang naka-sign in sa isang site o para mag-save ng mga item sa iyong shopping cart. Kadalasang pansamantalang sine-save ng mga site ang impormasyong ito sa iyong device.</translation>
@@ -193,7 +195,6 @@
 <translation id="4534723447064627427">Para payagan ang <ph name="APP_NAME" /> na i-access ang iyong mikropono, i-on din ang mikropono sa <ph name="BEGIN_LINK" />Mga Setting ng Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">I-mute ang mikropono</translation>
 <translation id="4570913071927164677">Mga Detalye</translation>
-<translation id="4575264539271661854">Mas padaliin ang pag-zoom in sa text at mga larawan para sa site na binibisita mo</translation>
 <translation id="4598549027014564149">Habang nasa Incognito, hindi magagamit ng mga site ang cookies mo para makita ang iyong aktibidad sa pag-browse sa lahat ng site, kahit sa mga nauugnay na site. Hindi ginagamit ang iyong aktibidad sa pag-browse para sa mga bagay tulad ng pag-personalize ng mga ad. Posibleng hindi gumana ang mga feature sa ilang site.</translation>
 <translation id="4645575059429386691">Pinamamahalaan ng iyong magulang</translation>
 <translation id="4670064810192446073">Virtual reality</translation>

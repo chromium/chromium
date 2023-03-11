@@ -26,6 +26,7 @@
 <translation id="1448064542941920355">Zoomniveau verkleinen</translation>
 <translation id="1510341833810331442">Sites mogen geen gegevens opslaan op je apparaat</translation>
 <translation id="1547123415014299762">Cookies van derden zijn toegestaan</translation>
+<translation id="1593426485665524382">Er zijn nieuwe acties beschikbaar bovenaan het scherm</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1633720957382884102">Gerelateerde sites</translation>
 <translation id="1644574205037202324">Geschiedenis</translation>
@@ -146,6 +147,7 @@
 <translation id="3628308229821498208">Voorgestelde zoekopdrachten</translation>
 <translation id="3636279694100170143">Sites die je bezoekt, kunnen bevestigen dat je een echte gebruiker bent en geen bot</translation>
 <translation id="3649190289964910441">Een site die je bezoekt, kan informatie opslaan in Chrome waarmee wordt bevestigd dat je een echte gebruiker bent. Terwijl je browst, kunnen sites via Chrome checken dat je waarschijnlijk een betrouwbare gebruiker bent en dit verifiëren vanaf de eerste site die je bezoekt.</translation>
+<translation id="3721953990244350188">Sluiten en volgende beschikbare actie tonen</translation>
 <translation id="3744111561329211289">Synchronisatie op de achtergrond</translation>
 <translation id="3763247130972274048">Dubbeltik links of rechts in de video om tien seconden te verspringen</translation>
 <translation id="3794286421982011626">Een site die je bezoekt, kan informatie over je activiteiten opslaan zodat deze werkt zoals verwacht, bijvoorbeeld om je ingelogd te houden op een site of artikelen in je winkelwagentje op te slaan. Sites slaan deze informatie vaak tijdelijk op je apparaat op.</translation>
@@ -193,7 +195,6 @@
 <translation id="4534723447064627427">Als je <ph name="APP_NAME" /> toegang wilt geven tot je microfoon, moet je de microfoon ook aanzetten via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Microfoon uitzetten</translation>
 <translation id="4570913071927164677">Details</translation>
-<translation id="4575264539271661854">Makkelijker inzoomen op tekst en afbeeldingen van een site die je bezoekt</translation>
 <translation id="4598549027014564149">Als je de incognitomodus gebruikt, kunnen sites je cookies niet gebruiken om je browse-activiteit op sites te bekijken (ook niet op gerelateerde sites). Je browse-activiteit wordt bijvoorbeeld niet gebruikt om advertenties te personaliseren. Functies op bepaalde sites werken misschien niet.</translation>
 <translation id="4645575059429386691">Beheerd door je ouder</translation>
 <translation id="4670064810192446073">Virtual reality</translation>

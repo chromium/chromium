@@ -34,6 +34,7 @@
 <translation id="1173894706177603556">નામ બદલો</translation>
 <translation id="1177863135347784049">કસ્ટમ</translation>
 <translation id="1181037720776840403">કાઢી નાખો</translation>
+<translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /> પર</translation>
 <translation id="1193729455103054076">શું સશક્ત પાસવર્ડનો ઉપયોગ કરીએ?</translation>
 <translation id="1197267115302279827">બુકમાર્ક ખસેડો</translation>
 <translation id="1201402288615127009">આગલું</translation>
@@ -42,7 +43,6 @@
 <translation id="1204692632633423444">Chrome ઍક્શન બટન: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">લિંક ટેક્સ્ટ કૉપિ કરો</translation>
 <translation id="1209206284964581585">હમણાં માટે છુપાવો</translation>
-<translation id="1226851825267005295">તમે અમારા Google એકાઉન્ટ વડે Chromeમાં સાઇન ઇન કરો, તે પછી તમારી પસંદગીઓને મેનેજ કરી શકો છો.</translation>
 <translation id="1227058898775614466">નૅવિગેશન ઇતિહાસ</translation>
 <translation id="1231733316453485619">સિંક કરવાનું ચાલુ કરીએ?</translation>
 <translation id="123724288017357924">કૅશ કરેલ કન્ટેન્ટને અવગણીને વર્તમાન પેજ ફરીથી લોડ કરો</translation>
@@ -166,7 +166,6 @@
 <translation id="1928696683969751773">અપડેટ</translation>
 <translation id="19288952978244135">Chrome ફરીથી ખોલો.</translation>
 <translation id="1933845786846280168">પસંદ કરેલ ટૅબ</translation>
-<translation id="193571872656840963">આ નિર્માતાનો આભાર વ્યક્ત કરો</translation>
 <translation id="1943432128510653496">પાસવર્ડ સાચવો</translation>
 <translation id="1952172573699511566">જ્યારે શક્ય હશે, ત્યારે વેબસાઇટ તમારી પસંદગીની ભાષામાં ટેક્સ્ટ બતાવશે.</translation>
 <translation id="1959679933317802873">તમારું કન્ટેન્ટ લોડ થવાની રાહ જોઈ રહ્યાં છીએ</translation>
@@ -202,7 +201,6 @@
 <translation id="2122601567107267586">ઍપ ખોલી ન શક્યાં</translation>
 <translation id="2132122640199389833">લિંક કરેલા બધા ડિવાઇસ કાઢી નાખો</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> બંધ કર્યું છે</translation>
-<translation id="2134927169889348449">Chromeનો ઉપયોગ કરીને, તમે <ph name="BEGIN_TOS_LINK" />Google સેવાની શરતો<ph name="END_TOS_LINK" /> અને <ph name="BEGIN_ATOS_LINK" />Google Chrome તથા ChromeOSની વધારાની સેવાની શરતો<ph name="END_ATOS_LINK" /> સાથે સંમત થાઓ છો.</translation>
 <translation id="2139186145475833000">હોમસ્ક્રીન પર ઉમેરો</translation>
 <translation id="2141396931810938595">તમારા વપરાશ પર આધારિત</translation>
 <translation id="214888715418183969">Chrome સાથે શું શેર કરવાનું તમને માફક આવશે તે પસંદ કરો. તમે શેર કરેલા મેટ્રિકનો ઉપયોગ Chromeની સુવિધાઓ, કાર્યપ્રદર્શન અને સ્થિરતાને બહેતર બનાવવામાં સહાય કરવા માટે થશે.</translation>
@@ -555,7 +553,6 @@
 <translation id="409109920254068737">આ QR કોડ બતાવતા હોય એવા ડિવાઇસ પર સાઇન ઇન કરવા માટે તમે આ ટૅબ્લેટનો ઉપયોગ કરી શકો છો.</translation>
 <translation id="4095146165863963773">ઍપનો ડેટા ડિલીટ કરીએ?</translation>
 <translation id="4096227151372679484">બુકમાર્ક સાચવવાનો ફ્લો અડધી ઊંચાઈએ ખુલ્લો છે</translation>
-<translation id="4099578267706723511">ઉપયોગનાં આંકડા અને ક્રૅશ રિપોર્ટ Googleને મોકલીને Chromeને વધુ સારું બનાવવામાં મદદ કરો.</translation>
 <translation id="4101475238162928417">તમારા અન્ય ડિવાઇસ પર તમારા પાસવર્ડ અને બુકમાર્ક જેવું બીજું ઘણું મેળવવા માટે સિંક કરો</translation>
 <translation id="410351446219883937">ઑટોપ્લે</translation>
 <translation id="4106587138345390261">Chrome એવી નવી સુવિધાઓની શોધખોળ કરી રહ્યું છે કે જેના વડે સાઇટ તમારી ઓછી માહિતીનો ઉપયોગ કરીને બ્રાઉઝિંગનો એવો જ અનુભવ પ્રદાન કરી શકે</translation>
@@ -593,7 +590,6 @@
 <translation id="4269820728363426813">લિંક સરનામું કૉપિ કરો</translation>
 <translation id="4283102315569707115">ડિફૉલ્ટ તરીકે ડેસ્કટૉપ સાઇટની વિનંતી કરીએ?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android સેટિંગમાં સ્ક્રીન લૉકની સુવિધા ચાલુ કરો<ph name="END_LINK" /></translation>
-<translation id="4293476595220860475">Chromeનો ઉપયોગ કરીને, તમે <ph name="BEGIN_TOS_LINK" />Google સેવાની શરતો<ph name="END_TOS_LINK" /> અને <ph name="BEGIN_ATOS_LINK" />Google Chrome તથા ChromeOSની વધારાની સેવાની શરતો<ph name="END_ATOS_LINK" /> સાથે સંમત થાઓ છો. <ph name="BEGIN_PRIVACY_LINK" />પ્રાઇવસી પૉલિસી<ph name="END_PRIVACY_LINK" /> પણ લાગુ થાય છે.</translation>
 <translation id="4296252229500326964">નવી છૂપી ટૅબ</translation>
 <translation id="4298388696830689168">લિંક કરેલી સાઇટ</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -766,7 +762,6 @@
 <translation id="5161254044473106830">શીર્ષક જરૂરી</translation>
 <translation id="5170568018924773124">ફોલ્ડરમાં બતાવો</translation>
 <translation id="5171045022955879922">URL શોધો અથવા લખો</translation>
-<translation id="517734441743343109">આગળ વધીને, તમે <ph name="BEGIN_TOS_LINK" />સેવાની શરતો<ph name="END_TOS_LINK" /> અને <ph name="BEGIN_PRIVACY_LINK" />પ્રાઇવસી પૉલિસી<ph name="END_PRIVACY_LINK" /> સાથે સંમત થાઓ છો.</translation>
 <translation id="5184329579814168207">Chrome માં ખોલો</translation>
 <translation id="5191251636205085390">ત્રીજા પક્ષની કુકીને બદલે વાપરવાના ઉદ્દેશ્યથી બનાવવામાં આવેલી નવી ટેક્નોલોજી વિશે જાણો અને તેમને નિયંત્રિત કરો</translation>
 <translation id="5193988420012215838">તમારા ક્લિપબોર્ડ પર કૉપિ કરવામાં આવી</translation>

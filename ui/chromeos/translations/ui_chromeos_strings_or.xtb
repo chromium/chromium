@@ -84,6 +84,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମ୍ ଜିପ୍ ହେଉଛି...</translation>
 <translation id="1722687688096767818">ପ୍ରୋଫାଇଲ୍ ଯୋଗ କରାଯାଉଛି...</translation>
 <translation id="1726100011689679555">ନାମ ସର୍ଭର୍</translation>
+<translation id="1727562178154619254">ସିଙ୍କ କରିବାକୁ ପ୍ରସ୍ତୁତ</translation>
 <translation id="1729953886957086472">ଜର୍ମାନ (ଜର୍ମାନୀ)</translation>
 <translation id="1730235522912993863">ଚାଇନିଜ୍ କାଙ୍ଗଜି</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମ୍ କପି ହୋଇଛି।</translation>
@@ -699,6 +700,7 @@
 <translation id="6732801395666424405">ସାର୍ଟିଫିକେଟ୍‌ଗୁଡ଼ିକ ଲୋଡ୍ ହୋଇନାହିଁ</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">Bruschetta ସହ ଫୋଲ୍ଡର ସେୟାର କରନ୍ତୁ</translation>
+<translation id="6750737795876287924">ବର୍ତ୍ତମାନର ଡିରେକ୍ଟୋରୀ</translation>
 <translation id="6751256176799620176">1ଟି ଫୋଲ୍ଡର୍ ଚୟନ କରାଯାଇଛି</translation>
 <translation id="6755827872271341378">ChromeOS Flex ଡିଭାଇସ</translation>
 <translation id="6790428901817661496">ଚଲାନ୍ତୁ</translation>
@@ -736,7 +738,6 @@
 <translation id="6973630695168034713">ଫୋଲ୍ଡର୍‌ଗୁଡ଼ିକ</translation>
 <translation id="6976795442547527108">ସିଂହ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979737339423435258">ସବୁ ସମୟରେ</translation>
 <translation id="6989942356279143254">ସ୍ୱେଡିସ</translation>
 <translation id="6990081529015358884">ଆପଣଙ୍କ ପାଖରେ ଥିବା ଜାଗା ସରିଯାଇଛି</translation>
 <translation id="6993826899923627728">ଏହି ଆଇଟମଗୁଡ଼ିକ ଆପଣଙ୍କ ଟ୍ରାସରେ ଅଛି</translation>
@@ -792,7 +793,6 @@
 <translation id="7458955835361612701">ବର୍ତ୍ତମାନର କୌଣସି ଇମେଜ ନାହିଁ</translation>
 <translation id="7460898608667578234">ୟୁକ୍ରାନିଆନ୍</translation>
 <translation id="7469894403370665791">ସ୍ୱଚାଳିତ ଭାବେ ଏହି ନେଟ୍‍ୱର୍କ ସହ ସଂଯୋଗ କରନ୍ତୁ</translation>
-<translation id="7481358317100446445">ପ୍ରସ୍ତୁତ</translation>
 <translation id="7486315294984620427">Parallels Desktopରେ ଫାଇଲଗୁଡ଼ିକୁ ଡ୍ରପ୍ କରିବା ପାଇଁ ଫାଇଲକୁ Windows ଫାଇଲ୍ ଫୋଲ୍ଡରରେ କପି କରିବା ଆବଶ୍ୟକ।</translation>
 <translation id="749452993132003881">ହିରାଗାନା</translation>
 <translation id="7495372004724182530">ମାଲାୟଲମ୍ ଫୋନେଟିକ୍</translation>

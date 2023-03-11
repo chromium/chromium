@@ -376,6 +376,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1803351196216024260">Puede solicitar permiso para usar el micrófono</translation>
 <translation id="1807246157184219062">Claro</translation>
 <translation id="1807528111851433570">Hoja de inicio</translation>
+<translation id="180991881384371158">El CVC se encuentra en el reverso de tu tarjeta. Son los últimos 3 dígitos situados en la parte superior derecha del recuadro de la firma.</translation>
 <translation id="181000283860817563">Hace un seguimiento de los precios en varios sitios</translation>
 <translation id="1810391395243432441">Protege tus contraseñas con el bloqueo de pantalla</translation>
 <translation id="1812527064848182527">horizontal</translation>
@@ -506,6 +507,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2149968176347646218">La conexión no es segura</translation>
 <translation id="2153609454945889823">¿Instalar Servicios de Google Play para RA?</translation>
 <translation id="2154484045852737596">Editar tarjeta</translation>
+<translation id="2154739667870063220">Reiniciar</translation>
 <translation id="2155260325161282517">5x7 pulgadas</translation>
 <translation id="2157640075051554492">Notificaciones de seguimiento de precios</translation>
 <translation id="2161656808144014275">Texto</translation>
@@ -640,6 +642,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2521736961081452453">Crear formulario</translation>
 <translation id="2523886232349826891">Solo se guardará en este dispositivo</translation>
 <translation id="2524461107774643265">Añade más información</translation>
+<translation id="2527451058878391043">El CVC se encuentra en el anverso de tu tarjeta. Es el código de 4 dígitos situado encima del número de la tarjeta, en la parte superior derecha.</translation>
 <translation id="2529899080962247600">Este campo no debe tener más de <ph name="MAX_ITEMS_LIMIT" /> entradas. Se ignorarán las demás entradas.</translation>
 <translation id="253493526287553278">Ver detalles del código promocional</translation>
 <translation id="2535585790302968248">Abre una pestaña de Incógnito nueva para navegar en privado</translation>
@@ -894,6 +897,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3215092763954878852">No se ha podido usar WebAuthn</translation>
 <translation id="3216313131063488104">Blues</translation>
 <translation id="3218181027817787318">Relativo</translation>
+<translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Es necesario actualizar ahora}=2{Tienes hasta mañana para iniciar la actualización}other{Es necesario actualizar en el plazo de # días}}</translation>
 <translation id="3223287115535306850">Throbber de lanzamiento de la aplicación</translation>
 <translation id="3223425961342298674">Ubicación no permitida</translation>
 <translation id="3225919329040284222">El servidor ha mostrado un certificado que no coincide con lo que se esperaba. Algunos sitios web tienen un alto nivel de seguridad para garantizar tu protección y esperan ciertas características de los certificados.</translation>
@@ -1378,6 +1382,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4350629523305688469">Bandeja multifunción</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> quiere buscar dispositivos Bluetooth cercanos. Se han encontrado los siguientes dispositivos:</translation>
 <translation id="4351175281479794167">Introduce el código de verificación</translation>
+<translation id="4355383636893709732">Actualización de ChromeOS para aplicaciones Android</translation>
 <translation id="4356973930735388585">Es posible que los atacantes que se encuentren en este sitio web intenten instalar programas peligrosos en tu ordenador para robar o eliminar tu información (por ejemplo, fotos, contraseñas, mensajes y tarjetas de crédito).</translation>
 <translation id="4358059973562876591">Es posible que las plantillas que has especificado no se apliquen debido a un error con la política DnsOverHttpsMode.</translation>
 <translation id="4358461427845829800">Gestiona tus métodos de pago...</translation>
@@ -1758,6 +1763,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5288393065350884210">Contabilidad y auditoría</translation>
 <translation id="5288808348893593856">La conexión del sitio es segura a menos que Chrome te indique lo contrario.</translation>
 <translation id="5289384342738547352">Gestión de varios documentos</translation>
+<translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Es necesario actualizar hoy}=2{Tienes hasta mañana para iniciar la actualización}other{Es necesario actualizar en el plazo de # días}}</translation>
 <translation id="5293919335876685914">Cupés</translation>
 <translation id="5296589789433599000">Cocina y recetas</translation>
 <translation id="5299298092464848405">Error al analizar la política</translation>
@@ -1952,6 +1958,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5786044859038896871">¿Quieres rellenar la información de la tarjeta?</translation>
 <translation id="578633867165174378">Chrome ha detectado que la contraseña que acabas de usar se ha visto expuesta en una brecha de seguridad de datos. Te recomendamos que la cambies ahora.</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="580241730938216256">Iniciar actualización</translation>
 <translation id="5803412860119678065">¿Quieres rellenar la información de <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Permisos</translation>
 <translation id="5808435672482059465">Ver tu historial de Chrome</translation>
@@ -2112,6 +2119,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6218753634732582820">¿Quitar dirección de Chromium?</translation>
 <translation id="622039917539443112">Plegado en paralelo</translation>
 <translation id="6221345481584921695">Recientemente, la función de Navegación segura de Google <ph name="BEGIN_LINK" />ha detectado malware<ph name="END_LINK" /> en <ph name="SITE" />. En ocasiones, los sitios web que normalmente son seguros contienen malware. Este contenido malintencionado procede de <ph name="SUBRESOURCE_HOST" />, un conocido distribuidor de malware.</translation>
+<translation id="6221892641068781024">Vista simplificada</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />: pulsa Tabulador y, después, Intro para personalizar las herramientas de accesibilidad desde la configuración de Chrome</translation>
 <translation id="6229649258872345286">Viajes familiares</translation>
 <translation id="6232271601416750929">Belleza con productos sostenibles</translation>
@@ -2171,6 +2179,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6366710531182496394">Grapado doble en la parte izquierda</translation>
 <translation id="6367196786591004737">Eliminar entrada</translation>
 <translation id="6370022303958842211">Acciones de acceso a los dispositivos, como inicios de sesión (incluidos los motivos por los que ha fallado un inicio de sesión), cierres de sesión, bloqueos y desbloqueos</translation>
+<translation id="6374469231428023295">Reintentar</translation>
 <translation id="6374865374745447009">gestión de ventanas</translation>
 <translation id="6377268785556383139">1 resultado para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6380497234672085559">A0</translation>
@@ -2287,7 +2296,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6671697161687535275">¿Quitar sugerencia de formulario de Chromium?</translation>
 <translation id="6683717648675961851">Ofertas de empleo</translation>
 <translation id="6687335167692595844">Tamaño de fuente solicitado</translation>
-<translation id="6687696737818665306">Actuación teatral</translation>
+<translation id="6687696737818665306">Interpretación y teatro</translation>
 <translation id="6688743156324860098">Actualizar…</translation>
 <translation id="6688775486821967877">La tarjeta virtual no está disponible en estos momentos, inténtalo de nuevo más tarde</translation>
 <translation id="6689249931105087298">Relativo con compresión de puntos negros</translation>
@@ -2481,6 +2490,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> más}other{<ph name="PAYMENT_METHOD_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> más}}</translation>
 <translation id="7153618581592392745">Lavanda</translation>
 <translation id="7156870133441232244">El servidor debe actualizarse a TLS 1.2 o a una versión posterior.</translation>
+<translation id="7160999678034985039">Guarda tu trabajo e inicia la actualización cuando tengas todo listo.</translation>
 <translation id="7163295244162773898">{0,plural, =1{¿Copiar archivo confidencial?}other{¿Copiar archivos confidenciales?}}</translation>
 <translation id="717330890047184534">ID de GAIA:</translation>
 <translation id="7174545416324379297">Combinados</translation>
@@ -2728,6 +2738,7 @@ Más información:
 <translation id="7687305263118037187">Tiempo de espera de reintento agotado</translation>
 <translation id="7690647519407127574">Oufuku Hagaki Postcard</translation>
 <translation id="7693583928066320343">Orden de páginas recibido</translation>
+<translation id="769424100851389104">Iniciar actualización ahora</translation>
 <translation id="7696089921647603491">Clásicos del rock</translation>
 <translation id="769721561045429135">Tienes tarjetas que solo se pueden usar en este dispositivo. Haz clic en Continuar para revisarlas.</translation>
 <translation id="7698864304447945242">¿Actualizar Servicios de Google Play para RA?</translation>
@@ -2752,6 +2763,7 @@ Más información:
 <translation id="774634243536837715">Contenido peligroso bloqueado.</translation>
 <translation id="7751971323486164747">Personaliza los tamaños de fuente y los tipos de letra de Chrome</translation>
 <translation id="7752995774971033316">No administrado</translation>
+<translation id="7754587126786572336">Tus pestañas y aplicaciones de Chrome se cerrarán cuando se inicie la actualización</translation>
 <translation id="7755287808199759310">Uno de tus padres puede desbloquearlo</translation>
 <translation id="7755624218968747854">Rollo principal</translation>
 <translation id="7758069387465995638">Puede que el cortafuegos o el software antivirus hayan bloqueado la conexión.</translation>
@@ -2916,6 +2928,7 @@ Más información:
 <translation id="8186706823560132848">Software</translation>
 <translation id="8190193880870196235">Gestionado por una extensión</translation>
 <translation id="8194797478851900357">&amp;Deshacer movimiento</translation>
+<translation id="8200772114523450471">Reanudar</translation>
 <translation id="8201077131113104583">URL de actualización no válida para la extensión <ph name="EXTENSION_ID" />.</translation>
 <translation id="8202097416529803614">Resumen del pedido</translation>
 <translation id="8202370299023114387">Conflicto</translation>
@@ -3213,6 +3226,7 @@ Más información:
 <translation id="8963117664422609631">Ir a configuración del sitio</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Sugerencias:<ph name="MARKUP_2" />Comprueba que tienes una conexión de datos<ph name="MARKUP_3" />Vuelve a cargar esta página web más tarde<ph name="MARKUP_4" />Comprueba la dirección que has introducido<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">Guardar tarjeta</translation>
+<translation id="8970887620466824814">Ha ocurrido un error.</translation>
 <translation id="8971063699422889582">El certificado del servidor ha caducado.</translation>
 <translation id="8975012916872825179">Incluye información como números de teléfono, direcciones de correo electrónico y direcciones de envío</translation>
 <translation id="8975263830901772334">Nombres de los archivos que imprimes</translation>

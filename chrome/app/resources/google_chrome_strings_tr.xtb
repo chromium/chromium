@@ -254,6 +254,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6010556343189461180">Gelecekteki Google Chrome güncellemelerini almak için macOS 10.15 veya sonraki bir sürümün yüklü olması gerekir. Bu bilgisayar macOS 10.14 kullanıyor.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome şimdi kapanacak.}=1{Chrome 1 saniye içinde kapanacak.}other{Chrome # saniye içinde kapanacak.}}</translation>
 <translation id="6022659036123304283">Chrome'u kendinize uyarlayın</translation>
+<translation id="6025087594896450715">Google Chrome <ph name="REMAINING_TIME" /> sonra yeniden başlatılacak</translation>
 <translation id="6040143037577758943">Kapat</translation>
 <translation id="6070348360322141662">Google Chrome ek güvenlik sağlamak için verilerinizi şifreler</translation>
 <translation id="608006075545470555">Bu tarayıcıya İş Profili ekle</translation>
@@ -271,6 +272,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6327105987658262776">Kullanılabilir güncelleme yok.</translation>
 <translation id="6412673304250309937">URL'leri, Chrome'da kayıtlı güvenli olmayan siteler listesine göre kontrol eder. Chrome, bir sitenin şifrenizi çalmaya çalışması veya zararlı bir dosya indirmeniz halinde de Güvenli Tarama'ya sayfa içeriğinden parçalarla birlikte URL'ler gönderebilir.</translation>
 <translation id="6418662306461808273">Mevcut Chrome profiline geçilsin mi?</translation>
+<translation id="6493527311031785448">Google Chrome şunu yapmaya çalışıyor: <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6506909944137591434">Çevrenizin 3D haritasını oluşturmak için Chrome'un kamera iznine ihtiyacı var</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="659498884637196217">Bu cihazdaki Google Şifre Yöneticisi'nde</translation>
@@ -398,7 +400,6 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="8862326446509486874">Sistem düzeyinde yükleme için gerekli haklara sahip değilsiniz. Yükleyiciyi Yönetici olarak tekrar çalıştırmayı deneyin.</translation>
 <translation id="8914504000324227558">Chrome'u Yeniden Başlat</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" /> sitesinden Android telefonunuza numara göndermek için iki cihazdan da Chrome'da oturum açın.</translation>
-<translation id="8983720963221508955">Hesabınızda Gelişmiş Güvenli Tarama'yı etkinleştirdiniz. Artık Chrome'da kullanabilirsiniz.</translation>
 <translation id="8986207147630327271">Bu tarayıcıya bir iş profili ekliyor ve yöneticinize yalnızca iş profilini kontrol etme yetkisi veriyorsunuz.</translation>
 <translation id="8989968390305463310">Tarama geçmişiniz gördüğünüz reklamları ve aşağıdaki şekilde tahmin edilen ilgi alanlarınızı etkiler. Chrome, gizliliğinizi korumak için ilgi alanlarınızı her ay sürekli olarak siler. Silme işlemi otomatik olarak gerçekleştirilir. Kaldırmadığınız sürece ilgi alanlarınız yenilenmeye devam edebilir.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Bir Chrome güncellemesi var}=1{Bir Chrome güncellemesi var}other{# gün önce kullanıma sunulmuş bir Chrome güncellemesi var}}</translation>

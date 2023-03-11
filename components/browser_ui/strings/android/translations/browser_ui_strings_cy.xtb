@@ -26,6 +26,7 @@
 <translation id="1448064542941920355">Pellhau</translation>
 <translation id="1510341833810331442">Ni chaniateir i wefannau gadw data ar eich dyfais</translation>
 <translation id="1547123415014299762">Caniateir cwcis trydydd parti</translation>
+<translation id="1593426485665524382">Mae gweithredoedd newydd ar gael yn agos at frig y sgrîn</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1633720957382884102">Gwefannau Cysylltiedig</translation>
 <translation id="1644574205037202324">Hanes</translation>
@@ -146,6 +147,7 @@
 <translation id="3628308229821498208">Chwiliadau a awgrymir</translation>
 <translation id="3636279694100170143">Gall gwefannau rydych yn ymweld â nhw ddilysu eich bod yn ddefnyddiwr go iawn ac nid bot</translation>
 <translation id="3649190289964910441">Gall gwefan rydych yn ymweld â hi cadw gwybodaeth gyda Chrome sy'n dilysu eich bod yn ddefnyddiwr go iawn. Wrth i chi barhau i bori, gall gwefannau wirio gyda Chrome a gwirio o'r wefan gyntaf eich bod yn debygol o fod yn ddefnyddiwr dibynadwy.</translation>
+<translation id="3721953990244350188">Diystyru a dangos y cam nesaf sydd ar gael</translation>
 <translation id="3744111561329211289">Cysoni yn y cefndir</translation>
 <translation id="3763247130972274048">Tapiwch ddwywaith ar ochr chwith neu dde'r i neidio 10 eiliad</translation>
 <translation id="3794286421982011626">Gall gwefan rydych yn ymweld â hi gadw gwybodaeth am yr hyn rydych yn ei wneud fel ei bod yn gweithio fel y byddech yn ei disgwyl - er enghraifft, i'ch cadw chi wedi'ch mewngofnodi i wefan neu i gadw eitemau yn eich basged siopa. Yn aml mae gwefannau'n cadw'r wybodaeth hon dros dro ar eich dyfais.</translation>
@@ -193,7 +195,6 @@
 <translation id="4534723447064627427">I ganiatáu i <ph name="APP_NAME" /> gael mynediad at eich meicroffon, trowch y meicroffon ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" /> hefyd.</translation>
 <translation id="4566417217121906555">Distewi'r meicroffon</translation>
 <translation id="4570913071927164677">Manylion</translation>
-<translation id="4575264539271661854">Gwnewch hi'n haws i chwyddo ar destun a lluniau ar gyfer gwefan rydych yn ymweld â hi</translation>
 <translation id="4598549027014564149">Tra yn y modd Anhysbys, ni all gwefannau ddefnyddio'ch cwcis i weld eich gweithgarwch pori ar draws gwefannau, hyd yn oed gwefannau cysylltiedig. Nid yw eich gweithgarwch pori yn cael ei ddefnyddio ar gyfer pethau megis personoleiddio hysbysebion. Mae'n bosib na fydd nodweddion ar rai gwefannau yn gweithio.</translation>
 <translation id="4645575059429386691">Rheolir gan dy riant</translation>
 <translation id="4670064810192446073">Realiti rhithwir</translation>

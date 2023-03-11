@@ -100,7 +100,6 @@
 <translation id="1420408895951708260">Увімкнути або вимкнути нічний екран. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Переглядайте нещодавні фотографії та медіаконтент із телефона на пристрої <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">Так</translation>
-<translation id="1447641497144572814">Починається заставка</translation>
 <translation id="1455242230282523554">Показати налаштування мови</translation>
 <translation id="1460620680449458626">Гучність вимкнено.</translation>
 <translation id="14648076227129703">Буде надано доступ до камери для додатків <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> і всіх додатків та веб-сайтів, де потрібен відповідний дозвіл</translation>
@@ -126,6 +125,7 @@
 <translation id="1550523713251050646">Натисніть, щоб побачити більше опцій</translation>
 <translation id="1555130319947370107">Синій</translation>
 <translation id="1576623706766186887">Віддалити, коли лупу ввімкнено</translation>
+<translation id="1586324912145647027">Перейти до 1 з 8 робочих столів</translation>
 <translation id="1589090746204042747">мати доступ до всіх ваших дій у цьому сеансі</translation>
 <translation id="1610778689852195798">"Відмінити"</translation>
 <translation id="1611993646327628135">Увімкнено</translation>
@@ -514,6 +514,7 @@
 <translation id="3631369015426612114">Дозволити сповіщення з перелічених нижче джерел</translation>
 <translation id="3633097874324966332">Відкрийте налаштування Bluetooth, щоб створити пару з пристроєм</translation>
 <translation id="3638400994746983214">Перемикає екран конфіденційності. <ph name="STATE_TEXT" />.</translation>
+<translation id="3649256019230929621">Згорнути вікно</translation>
 <translation id="3649505501900178324">Оновлення прострочено</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -588,6 +589,7 @@
 <translation id="4021716437419160885">Прокрутити вниз</translation>
 <translation id="4022497978915111141">Заблокувати пристрій</translation>
 <translation id="4024840464866786680">Якщо ви забули PIN-код чи пароль облікового запису Google або нещодавно змінили пароль, спробуйте відновити його.</translation>
+<translation id="4026843240379844265">Перемістити активне вікно між дисплеями.</translation>
 <translation id="4028481283645788203">Для додаткового захисту потрібно ввести пароль</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Ви ділитеся екраном</translation>
@@ -912,6 +914,7 @@
 <translation id="5689633613396158040">Нічний екран допомагає знизити напруження очей в умовах тьмяного освітлення. Торкніться, щоб змінити час увімкнення нічного екрана або вимкнути його повністю.</translation>
 <translation id="5691772641933328258">Відбиток не розпізнано</translation>
 <translation id="5693255400847650006">Використовується мікрофон</translation>
+<translation id="5699366815052349604">Призначити активне вікно всім робочим столам</translation>
 <translation id="570390244361237317">Усі додатки: щоб перейти до всіх додатків, використовуйте клавіші зі стрілками</translation>
 <translation id="5707775774148071965">Швидкість передачі даних для пристрою вища, ніж для кабелю. Продуктивність пристрою може бути обмежено.</translation>
 <translation id="5710450975648804523">Режим "Не турбувати" ввімкнено</translation>
@@ -1552,6 +1555,7 @@
 <translation id="9034924485347205037">Файли Linux</translation>
 <translation id="9047624247355796468">Відкрити налаштування <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Згорнути сповіщення</translation>
+<translation id="906458777597946297">Розгорнути вікно</translation>
 <translation id="9065203028668620118">Редагувати</translation>
 <translation id="9070640332319875144">Налаштування Асистента</translation>
 <translation id="9072519059834302790">Акумулятор розрядиться повністю через <ph name="TIME_LEFT" />.</translation>

@@ -84,6 +84,7 @@
 <translation id="1722487484194605434">Pakataan <ph name="NUMBER_OF_ITEMS" /> kohdetta…</translation>
 <translation id="1722687688096767818">Lisätään profiilia…</translation>
 <translation id="1726100011689679555">Nimipalvelimet</translation>
+<translation id="1727562178154619254">Valmis synkronoimaan</translation>
 <translation id="1729953886957086472">saksa (Saksa)</translation>
 <translation id="1730235522912993863">kiina (cangjie)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> kohdetta kopioitu</translation>
@@ -705,6 +706,7 @@
 <translation id="6732801395666424405">Varmenteita ei ole ladattu</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">Jaa kansio Bruschettalle</translation>
+<translation id="6750737795876287924">Nykyinen hakemisto</translation>
 <translation id="6751256176799620176">1 kansio valittu</translation>
 <translation id="6755827872271341378">ChromeOS Flex ‑laite</translation>
 <translation id="6790428901817661496">Toista</translation>
@@ -742,7 +744,6 @@
 <translation id="6973630695168034713">Kansiot</translation>
 <translation id="6976795442547527108">Leijona</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979737339423435258">Kaikki</translation>
 <translation id="6989942356279143254">ruotsi</translation>
 <translation id="6990081529015358884">Tila ei riitä</translation>
 <translation id="6993826899923627728">Nämä kohteet ovat roskakorissa</translation>
@@ -798,7 +799,6 @@
 <translation id="7458955835361612701">Ei viimeaikaisia kuvia</translation>
 <translation id="7460898608667578234">ukraina</translation>
 <translation id="7469894403370665791">Yhdistä automaattisesti tähän verkkoon</translation>
-<translation id="7481358317100446445">Valmis</translation>
 <translation id="7486315294984620427">Jotta voit pudottaa tiedostoja Parallels Desktopiin, tiedosto on kopioitava Windows-tiedostoihin.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">foneettinen malajalam</translation>

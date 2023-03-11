@@ -241,7 +241,6 @@
 <translation id="3226657629376379887">Menyja e veprimeve të strukturës</translation>
 <translation id="3246869037381808805">Printimet më të vjetra se 1 ditë do të hiqen</translation>
 <translation id="3268178239013324452">Dështoi - Kapaku i hapur</translation>
-<translation id="3275506277319227640">Stacioni <ph name="DIRECTION" /></translation>
 <translation id="3275729367986477355">Imazhi i simbolit</translation>
 <translation id="3283504360622356314">{0,plural, =1{Modifiko skedarin}other{Modifiko skedarët}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
@@ -360,7 +359,6 @@
 <translation id="4311195029067684288">I plotë</translation>
 <translation id="4333390807948134856">Tasti <ph name="KEY_NAME" /> është i shtypur</translation>
 <translation id="435692326371619097">Menaxho cilësimet e APN-së së rrjetit. APN-të vendosin një lidhje mes një rrjeti celular dhe internetit. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
-<translation id="4370033095251616914">Stacioni në anën më të vogël</translation>
 <translation id="4378373042927530923">Nuk u ekzekutua</translation>
 <translation id="4378551569595875038">Po lidhet...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -903,7 +901,6 @@
 <translation id="9137526406337347448">Shërbimet e Google</translation>
 <translation id="9138630967333032450">Tasti i majtë "Shift"</translation>
 <translation id="9149391708638971077">Ekzekuto testin e memories</translation>
-<translation id="9157515863513902090">Stacioni në anën më të madhe</translation>
 <translation id="9161276708550942948">hapësirë</translation>
 <translation id="9173638680043580060">Ka mbetur më pak se një minutë</translation>
 <translation id="917720651393141712">Provë</translation>

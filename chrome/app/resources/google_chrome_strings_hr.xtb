@@ -399,7 +399,6 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="8862326446509486874">Nemate odgovarajuća prava za instaliranje na razini sustava. Pokušajte ponovno pokrenuti program za instalaciju kao administrator.</translation>
 <translation id="8914504000324227558">Ponovo pokrenite Chrome</translation>
 <translation id="8922193594870374009">Da biste poslali broj s uređaja <ph name="ORIGIN" /> na svoj Android telefon, prijavite se na Chrome na oba uređaja.</translation>
-<translation id="8983720963221508955">Uključili ste poboljšano sigurno pregledavanje na svom računu. Sada ga preuzmite za Chrome.</translation>
 <translation id="8986207147630327271">Dodat ćete poslovni profil u ovaj preglednik i dati administratoru kontrolu samo nad poslovnim profilom.</translation>
 <translation id="8989968390305463310">Vaša povijest pregledavanja utječe na oglase koji vam se prikazuju i interese procijenjene u nastavku. Da bi zaštitio vašu privatnost, Chrome automatski kontinuirano briše vaše interese svakog mjeseca. Interesi se mogu osvježiti ako ih ne uklonite.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Dostupno je ažuriranje Chromea}=1{Dostupno je ažuriranje Chromea}one{Ažuriranje Chromea dostupno je # dana}few{Ažuriranje Chromea dostupno je # dana}other{Ažuriranje Chromea dostupno je # dana}}</translation>

@@ -279,6 +279,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="6327105987658262776">Nejsou k dispozici žádné aktualizace.</translation>
 <translation id="6412673304250309937">Kontroluje adresy URL oproti seznamu nebezpečných webů uloženému v Chromu. Pokud se web pokusí odcizit vám heslo nebo když stáhnete škodlivý soubor, může Chrome Bezpečnému prohlížení odeslat také adresy URL, včetně částí obsahu stránky.</translation>
 <translation id="6418662306461808273">Přepnout na stávající profil Chrome?</translation>
+<translation id="6493527311031785448">Google Chrome se pokouší <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6506909944137591434">K vytvoření 3D mapy vašeho okolí potřebuje Chrome přístup k fotoaparátu</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="659498884637196217">Ve Správci hesel Google na tomto zařízení</translation>
@@ -406,7 +407,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="8862326446509486874">Nemáte práva nutná k provádění instalací na úrovni systému. Zkuste spustit instalační program jako správce.</translation>
 <translation id="8914504000324227558">Znovu spustit Chrome</translation>
 <translation id="8922193594870374009">Chcete-li poslat číslo z webu <ph name="ORIGIN" /> na svůj telefon Android, v obou zařízeních se přihlaste do Chromu.</translation>
-<translation id="8983720963221508955">Ve svém účtu jste zapnuli Vylepšené Bezpečné prohlížení. Teď ho můžete zapnout v prohlížeči Chrome.</translation>
 <translation id="8986207147630327271">Přidáváte do tohoto prohlížeče pracovní profil a povolujete administrátorovi ovládat pouze pracovní profil.</translation>
 <translation id="8989968390305463310">Vaše historie prohlížení ovlivňuje zobrazované reklamy a odhadované zájmy uvedené níže. Aby Chrome chránil vaše soukromí, vaše zájmy každý měsíc pravidelně maže. Zájmy se mohou obnovovat, dokud je neodstraníte.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Je k dispozici aktualizace Chromu}=1{Je k dispozici aktualizace Chromu}few{Již # dny je k dispozici aktualizace Chromu}many{Již # dne je k dispozici aktualizace Chromu}other{Již # dní je k dispozici aktualizace Chromu}}</translation>

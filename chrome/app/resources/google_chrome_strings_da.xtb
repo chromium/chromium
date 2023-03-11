@@ -253,6 +253,7 @@
 <translation id="6010556343189461180">Hvis du vil have fremtidige Google Chrome-opdateringer, skal du have macOS 10.15 eller nyere. Denne computer anvender macOS 10.14.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome lukker nu.}=1{Chrome lukker om 1 sekund.}one{Chrome lukker om # sekund.}other{Chrome lukker om # sekunder.}}</translation>
 <translation id="6022659036123304283">Gør Chrome til din egen</translation>
+<translation id="6025087594896450715">Google Chrome genstarter om <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Luk</translation>
 <translation id="6070348360322141662">Som et ekstra sikkerhedsniveau krypterer Google Chrome dine data</translation>
 <translation id="608006075545470555">Føj arbejdsprofilen til denne browser</translation>
@@ -270,6 +271,7 @@
 <translation id="6327105987658262776">Der er ingen opdatering tilgængelig.</translation>
 <translation id="6412673304250309937">Tjekker webadresser ift. en liste over usikre websites, der er gemt i Chrome. Hvis et website forsøger at stjæle din adgangskode, eller når du downloader en skadelig fil, sender Chrome muligvis også webadresser, bl.a. mindre mængder sideindhold, til Beskyttet browsing.</translation>
 <translation id="6418662306461808273">Vil du skifte til den eksisterende Chrome-profil?</translation>
+<translation id="6493527311031785448">Google Chrome forsøger at <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6506909944137591434">Chrome skal have adgangstilladelse til kamera for at oprette et 3D-kort over dine omgivelser</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome for udviklere</translation>
 <translation id="659498884637196217">I Google Adgangskodeadministrator på denne enhed</translation>
@@ -397,7 +399,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="8862326446509486874">Du har ikke de nødvendige rettigheder til en installation på systemniveau. Prøv at køre installationsprogrammet igen som administrator.</translation>
 <translation id="8914504000324227558">Genstart Chrome</translation>
 <translation id="8922193594870374009">Hvis du vil sende et nummer fra <ph name="ORIGIN" /> til din Android-telefon, skal du logge ind på Chrome på begge enheder.</translation>
-<translation id="8983720963221508955">Du har aktiveret Udvidet beskyttet browsing på din konto. Nu skal du aktivere funktionen for Chrome.</translation>
 <translation id="8986207147630327271">Du er ved at føje en arbejdsprofil til denne browser, og du giver kun din administrator kontrol over arbejdsprofilen.</translation>
 <translation id="8989968390305463310">Din browserhistorik påvirker de annoncer, som du ser, og de interesser, som er estimeret nedenfor. Af hensyn til beskyttelsen af dine personlige oplysninger sletter Chrome automatisk dine interesser en gang om måneden. Interesserne kan blive opdateret, medmindre du fjerner dem.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Der er en tilgængelig Chrome-opdatering}=1{Der er en tilgængelig Chrome-opdatering}one{En Chrome-opdatering har været tilgængelig i # dag}other{En Chrome-opdatering har været tilgængelig i # dage}}</translation>

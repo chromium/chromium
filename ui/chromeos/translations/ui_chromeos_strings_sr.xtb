@@ -84,6 +84,7 @@
 <translation id="1722487484194605434">Ставке (<ph name="NUMBER_OF_ITEMS" />) се додају у датотеку...</translation>
 <translation id="1722687688096767818">Додаје се профил…</translation>
 <translation id="1726100011689679555">Сервери имена</translation>
+<translation id="1727562178154619254">Спремно за синхронизацију</translation>
 <translation id="1729953886957086472">немачки (Немачка)</translation>
 <translation id="1730235522912993863">кинески, чангчије</translation>
 <translation id="1731889557567069540">Копираних ставки: <ph name="NUMBER_OF_ITEMS" />.</translation>
@@ -705,6 +706,7 @@
 <translation id="6732801395666424405">Сертификати нису отпремљени</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">Делите фолдер са виртуелном машином Bruschetta</translation>
+<translation id="6750737795876287924">Актуелни директоријум</translation>
 <translation id="6751256176799620176">Изабран је 1 фолдер</translation>
 <translation id="6755827872271341378">Chrome OS Flex уређај</translation>
 <translation id="6790428901817661496">Пусти</translation>
@@ -742,7 +744,6 @@
 <translation id="6973630695168034713">Директоријуми</translation>
 <translation id="6976795442547527108">Лав</translation>
 <translation id="6979158407327259162">Google диск</translation>
-<translation id="6979737339423435258">Одувек</translation>
 <translation id="6989942356279143254">шведски</translation>
 <translation id="6990081529015358884">Понестало вам је простора</translation>
 <translation id="6993826899923627728">Ове ставке су у отпаду</translation>
@@ -798,7 +799,6 @@
 <translation id="7458955835361612701">Нема недавних слика</translation>
 <translation id="7460898608667578234">украјински</translation>
 <translation id="7469894403370665791">Аутоматски се повезуј са овом мрежом</translation>
-<translation id="7481358317100446445">Спремно</translation>
 <translation id="7486315294984620427">Да бисте отпустили фајлове на Parallels Desktop, морате да их копирате у Windows фајлове.</translation>
 <translation id="749452993132003881">хирагана</translation>
 <translation id="7495372004724182530">фонетски малајалам</translation>

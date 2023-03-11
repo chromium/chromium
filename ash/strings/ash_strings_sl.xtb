@@ -100,7 +100,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1420408895951708260">Preklop Nočne svetlobe. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Oglejte si nedavne fotografije in predstavnost telefona v napravi <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1426410128494586442">Da</translation>
-<translation id="1447641497144572814">Začetek ohranjevalnika zaslona</translation>
 <translation id="1455242230282523554">Pokaži jezikovne nastavitve</translation>
 <translation id="1460620680449458626">Glasnost je utišana.</translation>
 <translation id="14648076227129703">To omogoča dostop do fotoaparata za aplikaciji <ph name="APP1_NAME" /> in <ph name="APP2_NAME" /> ter vse aplikacije in spletna mesta z dovoljenjem za kamero.</translation>
@@ -126,6 +125,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1550523713251050646">Kliknite za več možnosti</translation>
 <translation id="1555130319947370107">Modra</translation>
 <translation id="1576623706766186887">Pomanjšava, ko je lupa vklopljena</translation>
+<translation id="1586324912145647027">Odpiranje namizja od 1 do 8</translation>
 <translation id="1589090746204042747">dostop do vse dejavnosti v seji;</translation>
 <translation id="1610778689852195798">»Razveljavi«</translation>
 <translation id="1611993646327628135">Vklopljeno</translation>
@@ -514,6 +514,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="3631369015426612114">Omogočanje obvestil teh virov</translation>
 <translation id="3633097874324966332">Odprite nastavitve Bluetootha, če želite seznaniti napravo.</translation>
 <translation id="3638400994746983214">Preklop zaslona za zasebnost. <ph name="STATE_TEXT" />.</translation>
+<translation id="3649256019230929621">Pomanjšanje olna</translation>
 <translation id="3649505501900178324">Posodobitev bi že morali izvesti</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -588,6 +589,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="4021716437419160885">Pomik navzdol</translation>
 <translation id="4022497978915111141">Zaklepanje naprave</translation>
 <translation id="4024840464866786680">Če ste pozabili kodo PIN in geslo ali nedavno spremenili geslo za račun Google, poskusite obnoviti tega uporabnika.</translation>
+<translation id="4026843240379844265">Premikanje aktivnega okna med zasloni</translation>
 <translation id="4028481283645788203">Zaradi večje varnosti je obvezno geslo</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Zaslon delite z drugimi</translation>
@@ -912,6 +914,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="5689633613396158040">Nočna svetloba olajša gledanje na zaslon ali branje pri šibki svetlobi. Dotaknite se, če želite spremeniti uro, ob kateri se vklopi nočna svetloba, oziroma če želite popolnoma izklopiti to funkcijo.</translation>
 <translation id="5691772641933328258">Prstni odtis ni prepoznan</translation>
 <translation id="5693255400847650006">Mikrofon je v uporabi</translation>
+<translation id="5699366815052349604">Dodelitev aktivnega okna vsem namizjem</translation>
 <translation id="570390244361237317">Vse aplikacije, s puščičnimi tipkami se premikate in dostopate do vseh aplikacij</translation>
 <translation id="5707775774148071965">Naprava podpira višjo podatkovno hitrost od kabla. Delovanje naprave bo morda omejeno.</translation>
 <translation id="5710450975648804523">Način »ne moti« je vklopljen</translation>
@@ -1552,6 +1555,7 @@ Nova namestitev</translation>
 <translation id="9034924485347205037">Datoteke za Linux</translation>
 <translation id="9047624247355796468">Odpri nastavitve za <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Strni obvestilo</translation>
+<translation id="906458777597946297">Povečanje okna</translation>
 <translation id="9065203028668620118">Uredi</translation>
 <translation id="9070640332319875144">Nastavitve Pomočnika</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> do izpraznjenosti akumulatorja.</translation>

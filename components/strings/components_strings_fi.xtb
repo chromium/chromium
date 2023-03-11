@@ -376,6 +376,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1803351196216024260">Saa pyytää mikrofonin käyttölupaa</translation>
 <translation id="1807246157184219062">Vaalea</translation>
 <translation id="1807528111851433570">Aloitussivu</translation>
+<translation id="180991881384371158">CVC on kortin takaosassa. Koodi on allekirjoituskentän oikeassa yläkulmassa olevat kolme viimeistä numeroa.</translation>
 <translation id="181000283860817563">Seuraa hintoja useilla sivustoilla</translation>
 <translation id="1810391395243432441">Suojaa salasanoja näytön lukituksella</translation>
 <translation id="1812527064848182527">vaakasuunta</translation>
@@ -506,6 +507,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2149968176347646218">Yhteys ei ole turvallinen</translation>
 <translation id="2153609454945889823">Asennetaanko Google Play Services for AR?</translation>
 <translation id="2154484045852737596">Muokkaa korttia</translation>
+<translation id="2154739667870063220">Käynnistä uudelleen</translation>
 <translation id="2155260325161282517">5 x 7 tuumaa</translation>
 <translation id="2157640075051554492">Hintaseurannan ilmoitukset</translation>
 <translation id="2161656808144014275">Teksti</translation>
@@ -640,6 +642,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2521736961081452453">Luo lomake</translation>
 <translation id="2523886232349826891">Tallennetaan vain tälle laitteelle</translation>
 <translation id="2524461107774643265">Lisää tietoja</translation>
+<translation id="2527451058878391043">CVC on kortin etuosassa. Se on nelinumeroinen koodi kortin numeron yläpuolella.</translation>
 <translation id="2529899080962247600">Kentässä voi olla korkeintaan <ph name="MAX_ITEMS_LIMIT" /> kohtaa. Tämän määrän ylittävät merkinnät ohitetaan.</translation>
 <translation id="253493526287553278">Katso tarjouskoodin tiedot</translation>
 <translation id="2535585790302968248">Avaa uusi incognito-välilehti selataksesi yksityisesti</translation>
@@ -895,6 +898,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3215092763954878852">WebAuthn:n käyttö ei onnistunut</translation>
 <translation id="3216313131063488104">Blues</translation>
 <translation id="3218181027817787318">Suhteellinen</translation>
+<translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Päivitettävä nyt}=2{Päivitettävä huomenna}other{Päivitettävä # päivän kuluessa}}</translation>
 <translation id="3223287115535306850">Sovelluksen käynnistymiskuvake</translation>
 <translation id="3223425961342298674">Pääsyä sijaintiin ei sallittu</translation>
 <translation id="3225919329040284222">Palvelin esitti varmenteen, joka ei vastaa sisäänrakennettuja odotuksia. Tietyillä tehokkaasti suojatuilla sivustoilla on odotuksia, joilla suojataan käyttäjiä.</translation>
@@ -1379,6 +1383,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4350629523305688469">Monikäyttölokero</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> haluaa etsiä lähellä olevia Bluetooth-laitteita. Seuraavat laitteet löydettiin:</translation>
 <translation id="4351175281479794167">Lisää vahvistuskoodi</translation>
+<translation id="4355383636893709732">ChromeOS-päivitys Android-sovelluksille</translation>
 <translation id="4356973930735388585">Tälle sivustolle hyökännyt taho voi yrittää asentaa tietokoneellesi vaarallisia ohjelmia, jotka varastavat tai poistavat tietojasi, kuten kuviasi, salasanojasi, viestejäsi ja luottokorttiesi tietoja.</translation>
 <translation id="4358059973562876591">Määrittämiäsi malleja ei välttämättä käytetä DnsOverHttpsMode-käytännön virheen vuoksi.</translation>
 <translation id="4358461427845829800">Hallinnoi maksutapoja…</translation>
@@ -1759,6 +1764,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5288393065350884210">Kirjanpito ja tilintarkastukset</translation>
 <translation id="5288808348893593856">Sivuston yhteys on suojattu, ellei Chrome ilmoita toisin.</translation>
 <translation id="5289384342738547352">Useiden dokumenttien käsittely</translation>
+<translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Päivitettävä tänään}=2{Päivitettävä huomenna}other{Päivitettävä # päivän kuluessa}}</translation>
 <translation id="5293919335876685914">Coupe-autot</translation>
 <translation id="5296589789433599000">Ruoanlaitto ja reseptit</translation>
 <translation id="5299298092464848405">Virhe jäsennettäessä käytäntöä</translation>
@@ -1953,6 +1959,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5786044859038896871">Täytetäänkö kortin tiedot?</translation>
 <translation id="578633867165174378">Chrome löysi juuri käyttämäsi salasanan tietosuojaloukkauksesta. Suosittelemme vaihtamaan tämän salasanan heti.</translation>
 <translation id="5789643057113097023">,</translation>
+<translation id="580241730938216256">Aloita päivitys</translation>
 <translation id="5803412860119678065">Täytetäänkö kortin <ph name="CARD_DETAIL" /> tiedot?</translation>
 <translation id="5804241973901381774">Luvat</translation>
 <translation id="5808435672482059465">Tarkista Chrome-historiasi</translation>
@@ -2113,6 +2120,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6218753634732582820">Poistetaanko osoite Chromiumista?</translation>
 <translation id="622039917539443112">Pystytaite</translation>
 <translation id="6221345481584921695">Google-selaussuoja havaitsi sivustossa <ph name="SITE" /> äskettäin <ph name="BEGIN_LINK" />haittaohjelmia<ph name="END_LINK" />. Tavallisesti turvalliset sivustot voivat joskus saada haittaohjelmatartunnan. Haitallinen sisältö on peräisin tunnetusta haittaohjelmien jakelusivustosta nimeltä <ph name="SUBRESOURCE_HOST" />.</translation>
+<translation id="6221892641068781024">Yksinkertaistettu näkymä</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, personoi esteettömyystyökalusi Chromen asetuksista painamalla sarkainta ja sitten Enter</translation>
 <translation id="6229649258872345286">Perhematkat</translation>
 <translation id="6232271601416750929">Luonnonkosmetiikka</translation>
@@ -2172,6 +2180,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6366710531182496394">Kaksi niittiä vasemmalla</translation>
 <translation id="6367196786591004737">Poista merkintä</translation>
 <translation id="6370022303958842211">Laitteen pääsytoiminnot, kuten kirjautumiset (myös epäonnistuneiden kirjautumisten syyt), uloskirjautumiset, lukitukset ja lukituksen avaukset</translation>
+<translation id="6374469231428023295">Yritä uudelleen</translation>
 <translation id="6374865374745447009">ikkunoiden hallinnointi</translation>
 <translation id="6377268785556383139">1 tulos: <ph name="SEARCH_TEXT" /></translation>
 <translation id="6380497234672085559">A0</translation>
@@ -2482,6 +2491,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> ja <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> toinen}other{<ph name="PAYMENT_METHOD_PREVIEW" /> ja <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> muuta}}</translation>
 <translation id="7153618581592392745">Laventeli</translation>
 <translation id="7156870133441232244">Palvelin pitäisi päivittää TLS 1.2:een tai uudempaan versioon.</translation>
+<translation id="7160999678034985039">Tallenna työsi ja aloita päivitys, kun olet valmis.</translation>
 <translation id="7163295244162773898">{0,plural, =1{Kopioidaanko luottamuksellinen tiedosto?}other{Kopioidaanko luottamukselliset tiedostot?}}</translation>
 <translation id="717330890047184534">Gaia-tunnus:</translation>
 <translation id="7174545416324379297">Yhdistetty</translation>
@@ -2729,6 +2739,7 @@ Lisätietoja:
 <translation id="7687305263118037187">Yritä aikakatkaisua uudelleen</translation>
 <translation id="7690647519407127574">Oufuku Hagaki ‑postikortti</translation>
 <translation id="7693583928066320343">Sivujärjestys vastaanotettu</translation>
+<translation id="769424100851389104">Aloita päivitys nyt</translation>
 <translation id="7696089921647603491">Klassinen rock ja ikivihreät suosikit</translation>
 <translation id="769721561045429135">Joitakin korttejasi voi juuri nyt käyttää vain tällä laitteella. Katso kortit valitsemalla Jatka.</translation>
 <translation id="7698864304447945242">Päivitetäänkö Google Play Services for AR?</translation>
@@ -2753,6 +2764,7 @@ Lisätietoja:
 <translation id="774634243536837715">Vaarallinen sisältö estetty</translation>
 <translation id="7751971323486164747">Muokkaa fonttien kokoja ja kirjasimia Chromessa</translation>
 <translation id="7752995774971033316">Ei hallinnoida</translation>
+<translation id="7754587126786572336">Chrome-välilehdet ja ‐sovellukset suljetaan, kun päivitys alkaa</translation>
 <translation id="7755287808199759310">Vanhempasi voi kumota eston puolestasi.</translation>
 <translation id="7755624218968747854">Ensisijainen rulla</translation>
 <translation id="7758069387465995638">Palomuuri tai virustorjuntaohjelmisto on saattanut estää yhteyden.</translation>
@@ -2917,6 +2929,7 @@ Lisätietoja:
 <translation id="8186706823560132848">Ohjelmisto</translation>
 <translation id="8190193880870196235">Laajennuksen hallinnoima</translation>
 <translation id="8194797478851900357">K&amp;umoa siirto</translation>
+<translation id="8200772114523450471">Jatka</translation>
 <translation id="8201077131113104583">Laajennuksella, jonka tunnus on <ph name="EXTENSION_ID" />, on virheellinen päivitys-URL-osoite.</translation>
 <translation id="8202097416529803614">Tilauksen yhteenveto</translation>
 <translation id="8202370299023114387">Ristiriita</translation>
@@ -3215,6 +3228,7 @@ Lisätietoja:
 <translation id="8963117664422609631">Avaa sivustoasetukset</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Ehdotuksia:<ph name="MARKUP_2" />Varmista tiedonsiirtoyhteyden saatavuus.<ph name="MARKUP_3" />Lataa verkkosivu uudelleen.<ph name="MARKUP_4" />Tarkista syöttämäsi osoite.<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">Tallenna kortti</translation>
+<translation id="8970887620466824814">Tapahtui virhe.</translation>
 <translation id="8971063699422889582">Palvelimen varmenne on vanhentunut.</translation>
 <translation id="8975012916872825179">Sisältää puhelinnumerot, sähköpostiosoitteet ja toimitusosoitteet</translation>
 <translation id="8975263830901772334">Tulostamiesi tiedostojen nimet</translation>

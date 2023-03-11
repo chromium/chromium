@@ -26,6 +26,7 @@
 <translation id="1448064542941920355">Zmniejsz powiększenie</translation>
 <translation id="1510341833810331442">Witryny nie mogą zapisywać danych na Twoim urządzeniu</translation>
 <translation id="1547123415014299762">Pliki cookie innych firm są dozwolone</translation>
+<translation id="1593426485665524382">Nowe działania są dostępne u góry ekranu</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1633720957382884102">Powiązane witryny</translation>
 <translation id="1644574205037202324">Historia</translation>
@@ -146,6 +147,7 @@
 <translation id="3628308229821498208">Sugerowane wyszukiwania</translation>
 <translation id="3636279694100170143">Odwiedzane przez Ciebie witryny mogą potwierdzić, że jesteś rzeczywistym użytkownikiem, a nie botem</translation>
 <translation id="3649190289964910441">Strona, którą odwiedzasz, może zapisywać w Chrome informacje, że jesteś prawdziwym użytkownikiem. Podczas przeglądania witryny mogą sprawdzać je w Chrome i potwierdzać w pierwszej odwiedzonej witrynie, że prawdopodobnie jesteś zaufanym użytkownikiem.</translation>
+<translation id="3721953990244350188">Zamknij i pokaż kolejne dostępne działanie</translation>
 <translation id="3744111561329211289">Synchronizacja w tle</translation>
 <translation id="3763247130972274048">Kliknij dwukrotnie z lewej lub prawej strony filmu, by przewinąć o 10 s</translation>
 <translation id="3794286421982011626">Aby strona, na którą wchodzisz, działała zgodnie z oczekiwaniami – na przykład nie wylogowywała Cię lub pokazywała produkty w koszyku na zakupy – może ona zapisywać informacje o tym, co robisz. Często witryny zapisują te informacje tymczasowo na Twoim urządzeniu.</translation>
@@ -193,7 +195,6 @@
 <translation id="4534723447064627427">Aby zezwolić aplikacji <ph name="APP_NAME" /> na dostęp do mikrofonu, musisz go też włączyć w <ph name="BEGIN_LINK" />ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Wycisz mikrofon</translation>
 <translation id="4570913071927164677">Szczegóły</translation>
-<translation id="4575264539271661854">Ułatw powiększanie tekstu i obrazów w odwiedzanej witrynie</translation>
 <translation id="4598549027014564149">W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twojej aktywności związanej z przeglądaniem innych witryn, nawet powiązanych. Twoja aktywność związana z przeglądaniem nie służy do personalizowania reklam. W niektórych witrynach mogą nie działać funkcje.</translation>
 <translation id="4645575059429386691">Zarządzany przez Twojego rodzica</translation>
 <translation id="4670064810192446073">Rzeczywistość wirtualna</translation>

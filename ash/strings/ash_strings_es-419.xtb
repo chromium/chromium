@@ -100,7 +100,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1420408895951708260">Activar o desactivar la Luz nocturna. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Ve las fotos y el contenido multimedia recientes del teléfono en tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">Sí</translation>
-<translation id="1447641497144572814">Se inicia el protector de pantalla</translation>
 <translation id="1455242230282523554">Mostrar la configuración de idioma</translation>
 <translation id="1460620680449458626">El volumen está silenciado.</translation>
 <translation id="14648076227129703">Permite el acceso a la cámara para <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> y todas las apps y sitios web con el permiso correspondiente</translation>
@@ -126,6 +125,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1550523713251050646">Haz clic para obtener más opciones</translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="1576623706766186887">Alejar cuando la lupa esté activada</translation>
+<translation id="1586324912145647027">Ir al escritorio 1 al 8</translation>
 <translation id="1589090746204042747">Accede a toda tu actividad en esta sesión</translation>
 <translation id="1610778689852195798">"Deshacer"</translation>
 <translation id="1611993646327628135">Sí</translation>
@@ -514,6 +514,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="3631369015426612114">Permitir notificaciones de las siguientes fuentes</translation>
 <translation id="3633097874324966332">Abre la configuración de la conexión Bluetooth para vincular el dispositivo</translation>
 <translation id="3638400994746983214">Activa o desactiva la pantalla de privacidad. <ph name="STATE_TEXT" />.</translation>
+<translation id="3649256019230929621">Minimizar ventana</translation>
 <translation id="3649505501900178324">Actualización pendiente</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -589,6 +590,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4021716437419160885">Desplazar hacia abajo</translation>
 <translation id="4022497978915111141">Bloquear dispositivo</translation>
 <translation id="4024840464866786680">Si olvidaste tu PIN y contraseña, o cambiaste la de tu Cuenta de Google recientemente, intenta recuperar este usuario.</translation>
+<translation id="4026843240379844265">Mover la ventana activa de una pantalla a otra</translation>
 <translation id="4028481283645788203">Se requiere la contraseña por razones de seguridad</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Estás compartiendo tu pantalla</translation>
@@ -913,6 +915,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5689633613396158040">La Luz nocturna te permite ver la pantalla o leer mejor con luz tenue. Presiona para cambiar el horario en el que se activa la Luz nocturna o desactívala por completo.</translation>
 <translation id="5691772641933328258">No se reconoció la huella dactilar</translation>
 <translation id="5693255400847650006">Micrófono en uso</translation>
+<translation id="5699366815052349604">Asignar la ventana activa a todos los escritorios</translation>
 <translation id="570390244361237317">Todas las apps, navega con las teclas de flechas para acceder a todas las apps</translation>
 <translation id="5707775774148071965">El dispositivo admite una mayor velocidad de datos que el cable. El rendimiento del dispositivo puede verse limitado.</translation>
 <translation id="5710450975648804523">"No interrumpir" activado</translation>
@@ -1553,6 +1556,7 @@ Nueva instalación</translation>
 <translation id="9034924485347205037">Archivos de Linux</translation>
 <translation id="9047624247355796468">Abrir la configuración para <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Contraer notificación</translation>
+<translation id="906458777597946297">Maximizar ventana</translation>
 <translation id="9065203028668620118">Editar</translation>
 <translation id="9070640332319875144">Configuración de Asistente</translation>
 <translation id="9072519059834302790">Tiempo restante hasta que se agote la batería: <ph name="TIME_LEFT" />.</translation>

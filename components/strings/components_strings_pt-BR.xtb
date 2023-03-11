@@ -376,6 +376,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1803351196216024260">Pode pedir para usar o microfone</translation>
 <translation id="1807246157184219062">Claro</translation>
 <translation id="1807528111851433570">Página inicial</translation>
+<translation id="180991881384371158">O CVC é um código composto pelos últimos três dígitos que ficam no canto superior direito do verso do cartão.</translation>
 <translation id="181000283860817563">Monitorar preços em vários sites</translation>
 <translation id="1810391395243432441">Proteger senhas com o bloqueio de tela</translation>
 <translation id="1812527064848182527">paisagem</translation>
@@ -506,6 +507,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2149968176347646218">A conexão não é segura</translation>
 <translation id="2153609454945889823">Instalar o Google Play Services para RA?</translation>
 <translation id="2154484045852737596">Editar cartão</translation>
+<translation id="2154739667870063220">Reinicializar</translation>
 <translation id="2155260325161282517">5 x 7 pol.</translation>
 <translation id="2157640075051554492">Notificações de monitoramento de preço</translation>
 <translation id="2161656808144014275">Texto</translation>
@@ -640,6 +642,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2521736961081452453">Criar formulário</translation>
 <translation id="2523886232349826891">Salvo apenas neste dispositivo</translation>
 <translation id="2524461107774643265">Adicione Mais Informações</translation>
+<translation id="2527451058878391043">O CVC é um código de quatro dígitos que fica no canto superior direito da parte da frente do cartão, logo acima do número dele.</translation>
 <translation id="2529899080962247600">Esse campo não pode ter mais que <ph name="MAX_ITEMS_LIMIT" /> entradas. Todas as entradas futuras serão ignoradas.</translation>
 <translation id="253493526287553278">Consulte os detalhes do código promocional</translation>
 <translation id="2535585790302968248">Abra uma nova guia anônima para navegar com privacidade</translation>
@@ -894,6 +897,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3215092763954878852">Não foi possível usar WebAuthn</translation>
 <translation id="3216313131063488104">Blues</translation>
 <translation id="3218181027817787318">Relativo</translation>
+<translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{A atualização precisa ser feita agora}=2{A atualização precisa ser feita até amanhã}one{A atualização precisa ser feita em # dia}other{A atualização precisa ser feita em # dias}}</translation>
 <translation id="3223287115535306850">Throbber de abertura do app</translation>
 <translation id="3223425961342298674">Acesso à localização não permitido</translation>
 <translation id="3225919329040284222">O servidor apresentou um certificado que não coincide com as expectativas incorporadas. Estas expectativas são incluídas para determinados websites de alta segurança com a finalidade de oferecer proteção a você.</translation>
@@ -1378,6 +1382,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4350629523305688469">Bandeja multifunções</translation>
 <translation id="4351060348582610152">Solicitação de <ph name="ORIGIN" /> para procurar dispositivos Bluetooth próximos. Os seguintes dispositivos foram encontrados:</translation>
 <translation id="4351175281479794167">Inserir código de verificação</translation>
+<translation id="4355383636893709732">Atualização do ChromeOS para apps Android</translation>
 <translation id="4356973930735388585">Invasores nesse site podem tentar instalar programas perigosos no seu computador para roubar ou excluir informações (por exemplo, fotos, senhas, mensagens e cartões de crédito).</translation>
 <translation id="4358059973562876591">Os modelos que você especificou podem não ser aplicados devido a um erro na política DnsOverHttpsMode.</translation>
 <translation id="4358461427845829800">Gerenciar formas de pagamento…</translation>
@@ -1758,6 +1763,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5288393065350884210">Contabilidade e auditoria</translation>
 <translation id="5288808348893593856">A conexão do site é sempre segura, a menos que o Chrome informe o contrário.</translation>
 <translation id="5289384342738547352">Gerenciamento de vários documentos</translation>
+<translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{A atualização precisa ser feita hoje}=2{A atualização precisa ser feita até amanhã}one{A atualização precisa ser feita em # dia}other{A atualização precisa ser feita em # dias}}</translation>
 <translation id="5293919335876685914">Cupês</translation>
 <translation id="5296589789433599000">Culinária e receitas</translation>
 <translation id="5299298092464848405">Política de análise de erros</translation>
@@ -1952,6 +1958,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5786044859038896871">Quer preencher as informações do cartão?</translation>
 <translation id="578633867165174378">A senha que você acabou de usar foi encontrada pelo Chrome em uma violação de dados. Recomendamos mudá-la agora mesmo.</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="580241730938216256">Iniciar atualização</translation>
 <translation id="5803412860119678065">Quer preencher as informações do seu cartão <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Permissões</translation>
 <translation id="5808435672482059465">Ver seu histórico do Chrome</translation>
@@ -2112,6 +2119,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6218753634732582820">Remover endereço do Chromium?</translation>
 <translation id="622039917539443112">Dobra paralela</translation>
 <translation id="6221345481584921695">A Navegação segura do Google recentemente <ph name="BEGIN_LINK" />detectou malware<ph name="END_LINK" /> em <ph name="SITE" />. Websites que geralmente são seguros estão, algumas vezes, infectados com malware. O conteúdo malicioso vem de <ph name="SUBRESOURCE_HOST" />, um distribuidor de malware conhecido.</translation>
+<translation id="6221892641068781024">Visualização simplificada</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para personalizar as ferramentas de acessibilidade nas configurações do Chrome</translation>
 <translation id="6229649258872345286">Viagens em família</translation>
 <translation id="6232271601416750929">Beleza consciente</translation>
@@ -2171,6 +2179,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6366710531182496394">Dois grampos no lado esquerdo</translation>
 <translation id="6367196786591004737">Excluir entrada</translation>
 <translation id="6370022303958842211">Ações de acesso ao dispositivo, como logins (incluindo motivos de falhas), logouts, bloqueios e desbloqueios</translation>
+<translation id="6374469231428023295">Repetir</translation>
 <translation id="6374865374745447009">Gerenciamento de janelas</translation>
 <translation id="6377268785556383139">1 resultado para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6380497234672085559">A0</translation>
@@ -2481,6 +2490,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">Lavanda</translation>
 <translation id="7156870133441232244">É necessário fazer o upgrade do servidor para o TLS 1.2 ou mais recente.</translation>
+<translation id="7160999678034985039">Salve seu trabalho e inicie a atualização quando estiver tudo pronto.</translation>
 <translation id="7163295244162773898">{0,plural, =1{Copiar o arquivo confidencial?}one{Copiar o arquivo confidencial?}other{Copiar os arquivos confidenciais?}}</translation>
 <translation id="717330890047184534">Código Gaia:</translation>
 <translation id="7174545416324379297">Mescla</translation>
@@ -2728,6 +2738,7 @@ Mais detalhes:
 <translation id="7687305263118037187">Novas tentativas esgotadas</translation>
 <translation id="7690647519407127574">Cartão postal Oufuku Hagaki</translation>
 <translation id="7693583928066320343">Ordem de páginas recebida</translation>
+<translation id="769424100851389104">Iniciar atualização agora</translation>
 <translation id="7696089921647603491">Rock clássico e antigo</translation>
 <translation id="769721561045429135">No momento, você tem cartões que só podem ser usados neste dispositivo. Clique em "Continuar" para analisá-los.</translation>
 <translation id="7698864304447945242">Atualizar o Google Play Services para RA?</translation>
@@ -2752,6 +2763,7 @@ Mais detalhes:
 <translation id="774634243536837715">Conteúdo perigoso bloqueado.</translation>
 <translation id="7751971323486164747">Personalizar tamanhos e fontes no Chrome</translation>
 <translation id="7752995774971033316">Não gerenciado</translation>
+<translation id="7754587126786572336">As guias e os apps do Chrome serão fechados quando a atualização for iniciada</translation>
 <translation id="7755287808199759310">Seu responsável pode desbloqueá-lo para você</translation>
 <translation id="7755624218968747854">Rolo principal</translation>
 <translation id="7758069387465995638">É possível que o software antivírus ou o firewall tenha bloqueado a conexão.</translation>
@@ -2916,6 +2928,7 @@ Mais detalhes:
 <translation id="8186706823560132848">Software</translation>
 <translation id="8190193880870196235">Gerenciada por uma extensão</translation>
 <translation id="8194797478851900357">&amp;Desfazer mover</translation>
+<translation id="8200772114523450471">Retomar</translation>
 <translation id="8201077131113104583">URL de atualização inválido para extensão com ID "<ph name="EXTENSION_ID" />".</translation>
 <translation id="8202097416529803614">Resumo do pedido</translation>
 <translation id="8202370299023114387">Conflito</translation>
@@ -3214,6 +3227,7 @@ Mais detalhes:
 <translation id="8963117664422609631">Acessar configurações do site</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Sugestões:<ph name="MARKUP_2" />certifique-se de que você tenha uma conexão de dados<ph name="MARKUP_3" />atualize esta página da Web mais tarde<ph name="MARKUP_4" />verifique o endereço que digitou<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">Salvar cartão</translation>
+<translation id="8970887620466824814">Algo deu errado.</translation>
 <translation id="8971063699422889582">O certificado do servidor expirou.</translation>
 <translation id="8975012916872825179">Inclui informações como números de telefone, endereços de e-mail e endereços de entrega</translation>
 <translation id="8975263830901772334">Nomes de arquivos impressos</translation>

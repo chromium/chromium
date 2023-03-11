@@ -506,6 +506,7 @@
 <translation id="2149968176347646218">ಕನೆಕ್ಷನ್ ಸುರಕ್ಷಿತವಾಗಿಲ್ಲ</translation>
 <translation id="2153609454945889823">Google Play Services for AR ಗಾಗಿ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="2154484045852737596">ಕಾರ್ಡ್ ಎಡಿಟ್ ಮಾಡಿ</translation>
+<translation id="2154739667870063220">ರೀಬೂಟ್‌ ಮಾಡಿ</translation>
 <translation id="2155260325161282517">5 x 7 ಇಂಚು</translation>
 <translation id="2157640075051554492">ಬೆಲೆ ಟ್ರ್ಯಾಕಿಂಗ್ ಅಧಿಸೂಚನೆಗಳು</translation>
 <translation id="2161656808144014275">ಪಠ್ಯ</translation>
@@ -893,6 +894,7 @@
 <translation id="3215092763954878852">WebAuthn ಅನ್ನು ಬಳಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="3216313131063488104">ಬ್ಲೂಸ್</translation>
 <translation id="3218181027817787318">ಸಂಬಂಧಿತ</translation>
+<translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{ಇದೀಗ ಅಪ್‌ಡೇಟ್‌ ಮಾಡುವ ಅಗತ್ಯವಿದೆ}=2{ನಾಳೆ ಅಪ್‌ಡೇಟ್‌ ಮಾಡುವ ಅಗತ್ಯವಿದೆ}one{# ದಿನಗಳಲ್ಲಿ ಅಪ್‌ಡೇಟ್‌ ಮಾಡುವ ಅಗತ್ಯವಿದೆ}other{# ದಿನಗಳಲ್ಲಿ ಅಪ್‌ಡೇಟ್‌ ಮಾಡುವ ಅಗತ್ಯವಿದೆ}}</translation>
 <translation id="3223287115535306850">ಆ್ಯಪ್ ಬಿಡುಗಡೆ ಥ್ರೋಬರ್</translation>
 <translation id="3223425961342298674">ಸ್ಥಳವನ್ನು ಅನುಮತಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="3225919329040284222">ಆಂತರಿಕ ಮಾನದಂಡಗಳಿಗೆ ಹೊಂದಿಕೆಯಾಗದ ಪ್ರಮಾಣಪತ್ರವನ್ನು ಸರ್ವರ್ ಹಾಜರಿಪಡಿಸಿದೆ. ನಿಮ್ಮ ಸುರಕ್ಷತೆಯ ಸಲುವಾಗಿ ಕೆಲವು ಹೆಚ್ಚು ಸುರಕ್ಷಿತ ವೆಬ್ ಸೈಟ್‌ಗಳಲ್ಲಿ ಈ ಮಾನದಂಡಗಳನ್ನು ಸೇರ್ಪಡೆಗೊಳಿಸಲಾಗಿದೆ.</translation>
@@ -1376,6 +1378,7 @@
 <translation id="4350629523305688469">ಬಹು ಫಂಕ್ಷನ್ ಟ್ರೇ</translation>
 <translation id="4351060348582610152">ಸಮೀಪದಲ್ಲಿರುವ ಬ್ಲೂಟೂತ್ ಸಾಧನಗಳಿಗಾಗಿ ಸ್ಕ್ಯಾನ್ ಮಾಡಲು <ph name="ORIGIN" /> ಬಯಸುತ್ತದೆ. ಈ ಕೆಳಗಿನ ಸಾಧನಗಳು ಕಂಡುಬಂದಿವೆ:</translation>
 <translation id="4351175281479794167">ಪರಿಶೀಲನೆ ಕೋಡ್ ನಮೂದಿಸಿ</translation>
+<translation id="4355383636893709732">Android ಆ್ಯಪ್‌ಗಳಿಗಾಗಿ ChromeOS ಅಪ್‌ಡೇಟ್‌</translation>
 <translation id="4356973930735388585">ಈ ಸೈಟ್‌ನಲ್ಲಿರುವ ದಾಳಿಕೋರರು ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ನಲ್ಲಿರುವ ಮಾಹಿತಿ (ಉದಾಹರಣೆಗೆ, ಫೋಟೋಗಳು, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್ ಮಾಹಿತಿಗಳು) ಕದಿಯಲು ಇಲ್ಲವೇ ಅಳಿಸಲು ಅಪಾಯಕಾರಿ ಪ್ರೋಗ್ರಾಂಗಳನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸುತ್ತಿರಬಹುದು.</translation>
 <translation id="4358059973562876591">DnsOverHttpsMode ನಲ್ಲಿನ ಕಾರ್ಯನೀತಿಯ ದೋಷದಿಂದಾಗಿ ನೀವು ನಿರ್ದಿಷ್ಟಪಡಿಸಿದ ಟೆಂಪ್ಲೆಟ್‌ಗಳನ್ನು ಅನ್ವಯಿಸಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="4358461427845829800">ಪಾವತಿ ವಿಧಾನಗಳನ್ನು ನಿರ್ವಹಿಸಿ...</translation>
@@ -1756,6 +1759,7 @@
 <translation id="5288393065350884210">ಲೆಕ್ಕಪತ್ರ ನಿರ್ವಹಣೆ ಮತ್ತು ಲೆಕ್ಕ ಪರಿಶೋಧನೆ</translation>
 <translation id="5288808348893593856">Chrome ನಿಮಗೆ ಸೂಚಿಸಿದ ಹೊರತು, ನಿಮ್ಮ ಕನೆಕ್ಷನ್ ಸುರಕ್ಷಿತವಾಗಿದೆ.</translation>
 <translation id="5289384342738547352">ಹಲವಾರು ಡಾಕ್ಯುಮೆಂಟ್‌ಗಳ ನಿರ್ವಹಣೆ</translation>
+<translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{ಇಂದೇ ಅಪ್‌ಡೇಟ್‌ ಮಾಡುವ ಅಗತ್ಯವಿದೆ}=2{ನಾಳೆ ಅಪ್‌ಡೇಟ್‌ ಮಾಡುವ ಅಗತ್ಯವಿದೆ}one{# ದಿನಗಳಲ್ಲಿ ಅಪ್‌ಡೇಟ್‌ ಮಾಡುವ ಅಗತ್ಯವಿದೆ}other{# ದಿನಗಳಲ್ಲಿ ಅಪ್‌ಡೇಟ್‌ ಮಾಡುವ ಅಗತ್ಯವಿದೆ}}</translation>
 <translation id="5293919335876685914">ಕೂಪ್‌ಗಳು</translation>
 <translation id="5296589789433599000">ಅಡಿಗೆ ಮತ್ತು ರೆಸಿಪಿಗಳು</translation>
 <translation id="5299298092464848405">ನೀತಿಯ ಪಾರ್ಸಿಂಗ್‌ನಲ್ಲಿ ದೋಷ</translation>
@@ -1950,6 +1954,7 @@
 <translation id="5786044859038896871">ನಿಮ್ಮ ಕಾರ್ಡ್ ಮಾಹಿತಿ ಭರ್ತಿ ಮಾಡಲು ನೀವು ಬಯಸುವಿರಾ?</translation>
 <translation id="578633867165174378">ಡೇಟಾ ಉಲ್ಲಂಘನೆಯಲ್ಲಿ ನೀವು ಬಳಸಿದ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು Chrome ಪತ್ತೆಹಚ್ಚಿದೆ. ಈಗಲೇ ಈ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬದಲಾಯಿಸಲು ನಾವು ಶಿಫಾರಸು ಮಾಡುತ್ತೇವೆ.</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="580241730938216256">ಅಪ್‌ಡೇಟ್‌‌ ಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="5803412860119678065">ನಿಮ್ಮ <ph name="CARD_DETAIL" /> ಭರ್ತಿ ಮಾಡಲು ನೀವು ಬಯಸುವಿರಾ?</translation>
 <translation id="5804241973901381774">ಅನುಮತಿಗಳು</translation>
 <translation id="5808435672482059465">ನಿಮ್ಮ Chrome ಇತಿಹಾಸವನ್ನು ವೀಕ್ಷಿಸಿ</translation>
@@ -2109,6 +2114,7 @@
 <translation id="6218753634732582820">Chromium ನಿಂದ ವಿಳಾಸವನ್ನು ತೆಗೆದುಹಾಕುವುದೇ?</translation>
 <translation id="622039917539443112">ಸಮಾನಾಂತರವಾಗಿ ಮಡಿಸಿ</translation>
 <translation id="6221345481584921695">Google ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್ ಇತ್ತೀಚೆಗೆ <ph name="SITE" /> ನಲ್ಲಿ <ph name="BEGIN_LINK" />ಮಾಲ್‌ವೇರ್ ಪತ್ತೆಹಚ್ಚಿದೆ<ph name="END_LINK" />. ಸಾಮಾನ್ಯವಾಗಿ ಸುರಕ್ಷಿತವಾಗಿರುವ ವೆಬ್‌ಸೈಟ್‌ಗಳು ಕೆಲವೊಮ್ಮೆ ಮಾಲ್‌ವೇರ್ ಸೋಂಕಿಗೆ ತುತ್ತಾಗಿರುತ್ತವೆ. ದುರುದ್ದೇಶಪೂರಿತ ಸಂಗತಿಗಳು ಮಾಲ್‌ವೇರ್ ವಿತರಕರಾದ <ph name="SUBRESOURCE_HOST" /> ರಿಂದ ಬರುತ್ತವೆ.</translation>
+<translation id="6221892641068781024">ಸರಳೀಕೃತ ವೀಕ್ಷಣೆ</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ ಪ್ರವೇಶಿಸುವಿಕೆಯ ಪರಿಕರಗಳನ್ನು ವೈಯಕ್ತೀಕರಿಸಲು Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿರಿ</translation>
 <translation id="6229649258872345286">ಕುಟುಂಬ ಪ್ರವಾಸ</translation>
 <translation id="6232271601416750929">ಕ್ಲೀನ್ ಬ್ಯೂಟಿ</translation>
@@ -2168,6 +2174,7 @@
 <translation id="6366710531182496394">ಎಡಭಾಗದಲ್ಲಿ ಎರಡು ಸ್ಟೇಪಲ್ ಹಾಕಿ</translation>
 <translation id="6367196786591004737">ನಮೂದನ್ನು ಅಳಿಸಿ</translation>
 <translation id="6370022303958842211">ಲಾಗಿನ್‌ಗಳು (ವಿಫಲವಾದ ಲಾಗಿನ್ ಕಾರಣಗಳು ಸೇರಿದಂತೆ), ಲಾಗ್‌ಔಟ್‌ಗಳು, ಲಾಕ್‌ಗಳು ಮತ್ತು ಅನ್‌ಲಾಕ್‌ಗಳಂತಹ ಡಿವೈಸ್ ಆ್ಯಕ್ಸೆಸ್ ಕ್ರಿಯೆಗಳು</translation>
+<translation id="6374469231428023295">ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="6374865374745447009">ವಿಂಡೋ ನಿರ್ವಹಣೆ</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />' ಗಾಗಿ 1 ಫಲಿತಾಂಶ</translation>
 <translation id="6380497234672085559">A0</translation>
@@ -2478,6 +2485,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> ಮತ್ತು <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ಇನ್ನಷ್ಟು}one{<ph name="PAYMENT_METHOD_PREVIEW" /> ಮತ್ತು <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ಇನ್ನಷ್ಟು}other{<ph name="PAYMENT_METHOD_PREVIEW" /> ಮತ್ತು <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ಇನ್ನಷ್ಟು}}</translation>
 <translation id="7153618581592392745">ನಸು ಕೆನ್ನೀಲಿ</translation>
 <translation id="7156870133441232244">ಸರ್ವರ್ ಅನ್ನು TLS 1.2 ಅಥವಾ ನಂತರದ ಆವೃತ್ತಿಗೆ ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡಿ.</translation>
+<translation id="7160999678034985039">ನಿಮ್ಮ ಕೆಲಸವನ್ನು ಉಳಿಸಿ ಮತ್ತು ನೀವು ಸಿದ್ಧರಾದಾಗ ಅಪ್‌ಡೇಟ್‌ ಅನ್ನು ಪ್ರಾರಂಭಿಸಿ.</translation>
 <translation id="7163295244162773898">{0,plural, =1{ಗೌಪ್ಯ ಫೈಲ್ ಅನ್ನು ನಕಲಿಸಬೇಕೇ?}one{ಗೌಪ್ಯ ಫೈಲ್‌ಗಳನ್ನು ನಕಲಿಸಬೇಕೇ?}other{ಗೌಪ್ಯ ಫೈಲ್‌ಗಳನ್ನು ನಕಲಿಸಬೇಕೇ?}}</translation>
 <translation id="717330890047184534">Gaia ಐಡಿ:</translation>
 <translation id="7174545416324379297">ವಿಲೀನಗೊಳಿಸಲಾಗಿದೆ</translation>
@@ -2724,6 +2732,7 @@
 <translation id="7687305263118037187">ಮರುಪ್ರಯತ್ನದ ಅವಧಿ ಮೀರಿದೆ</translation>
 <translation id="7690647519407127574">Oufuku Hagaki ಪೋಸ್ಟ್‌ಕಾರ್ಡ್</translation>
 <translation id="7693583928066320343">ಸ್ವೀಕರಿಸಲಾದ ಪುಟದ ಆರ್ಡರ್</translation>
+<translation id="769424100851389104">ಈಗಲೇ ಅಪ್‌ಡೇಟ್ ಅನ್ನು ಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="7696089921647603491">ಕ್ಲಾಸಿಕ್ ರಾಕ್ ಮತ್ತು ಓಲ್ಡೀಸ್</translation>
 <translation id="769721561045429135">ಸದ್ಯಕ್ಕೆ, ಈ ಸಾಧನದಲ್ಲಿ ಬಳಸಬಹುದಾದ ಕಾರ್ಡ್‌ಗಳನ್ನು ಮಾತ್ರವೇ ನೀವು ಹೊಂದಿದ್ದೀರಿ. ಕಾರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲು ಮುಂದುವರಿಸಿ ಕ್ಲಿಕ್ ಮಾಡಿ.</translation>
 <translation id="7698864304447945242">Google Play Services for AR ಗಾಗಿ ಅಪ್‌ಡೇಟ್ ಮಾಡಬೇಕೆ?</translation>
@@ -2748,6 +2757,7 @@
 <translation id="774634243536837715">ಅಪಾಯಕಾರಿ ವಿಷಯವನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ.</translation>
 <translation id="7751971323486164747">Chrome ನಲ್ಲಿ ಫಾಂಟ್ ಗಾತ್ರಗಳು ಮತ್ತು ಟೈಪ್‌ಫೇಸ್‌ಗಳನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
 <translation id="7752995774971033316">ನಿರ್ವಹಣೆಯಲ್ಲಿಲ್ಲ</translation>
+<translation id="7754587126786572336">ಅಪ್‌ಡೇಟ್‌ ಪ್ರಾರಂಭವಾದಾಗ ನಿಮ್ಮ Chrome ಟ್ಯಾಬ್‌ಗಳು ಮತ್ತು ಆ್ಯಪ್‌ಗಳನ್ನು ಮುಚ್ಚಲಾಗುತ್ತದೆ</translation>
 <translation id="7755287808199759310">ನಿಮ್ಮ ಪೋಷಕರು ನಿಮಗಾಗಿ ಅದನ್ನು ಅನಿರ್ಬಂಧಿಸಬಹುದಾಗಿದೆ</translation>
 <translation id="7755624218968747854">ಪ್ರಾಥಮಿಕ ರೋಲ್</translation>
 <translation id="7758069387465995638">ಸಂಪರ್ಕವನ್ನು ಫೈರ್‌ವಾಲ್ ಅಥವಾ ಆಂಟಿವೈರಸ್ ಸಾಫ್ಟ್‌ವೇರ್ ನಿರ್ಬಂಧಿಸಿರಬಹುದು.</translation>
@@ -2912,6 +2922,7 @@
 <translation id="8186706823560132848">ಸಾಫ್ಟ್‌ವೇರ್</translation>
 <translation id="8190193880870196235">ವಿಸ್ತರಣೆ ಬಳಸಿಕೊಂಡು ನಿರ್ವಹಿಸಲಾಗಿದೆ</translation>
 <translation id="8194797478851900357">&amp;ಸರಿಸುವುದನ್ನು ರದ್ದುಗೊಳಿಸು</translation>
+<translation id="8200772114523450471">ಪುನರಾರಂಭಿಸು</translation>
 <translation id="8201077131113104583">"<ph name="EXTENSION_ID" />" ಜೊತೆಗಿನ ವಿಸ್ತರಣೆಗೆ ಅಮಾನ್ಯವಾದ ಅಪ್‌ಡೇಟ್‌‌ URL.</translation>
 <translation id="8202097416529803614">ಆರ್ಡರ್ ಸಾರಾಂಶ</translation>
 <translation id="8202370299023114387">ಸಂಘರ್ಷ</translation>
@@ -3210,6 +3221,7 @@
 <translation id="8963117664422609631">ಸೈಟ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />ಸಲಹೆಗಳು:<ph name="MARKUP_2" />ನೀವು ಡೇಟಾ ಸಂಪರ್ಕ ಹೊಂದಿರುವಿರಾ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ<ph name="MARKUP_3" />ಈ ವೆಬ್ ಪುಟವನ್ನು ನಂತರ ಮರುಲೋಡ್ ಮಾಡಿ<ph name="MARKUP_4" />ನೀವು ನಮೂದಿಸಿದ ವಿಳಾಸವನ್ನು ಪರಿಶೀಲಿಸಿ<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">ಕಾರ್ಡ್‌ ಉಳಿಸಿ</translation>
+<translation id="8970887620466824814">ಏನೋ ತಪ್ಪಾಗಿದೆ.</translation>
 <translation id="8971063699422889582">ಸರ್ವರ್‌ನ ಪ್ರಕಮಾಣಪತ್ರದ ಅವಧಿ ಮುಕ್ತಾಯಗೊಂಡಿದೆ.</translation>
 <translation id="8975012916872825179">ಫೋನ್ ಸಂಖ್ಯೆಗಳು, ಇಮೇಲ್ ವಿಳಾಸಗಳು ಮತ್ತು ಶಿಪ್ಪಿಂಗ್ ವಿಳಾಸಗಳಂತಹ ಮಾಹಿತಿಯನ್ನು ಒಳಗೊಂಡಿರುತ್ತದೆ</translation>
 <translation id="8975263830901772334">ನೀವು ಮುದ್ರಿಸುವ ಫೈಲ್‌ಗಳ ಹೆಸರು</translation>

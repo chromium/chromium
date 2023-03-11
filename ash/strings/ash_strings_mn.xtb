@@ -100,7 +100,6 @@
 <translation id="1420408895951708260">Шөнийн гэрлийг асаах/унтраах. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666"><ph name="DEVICE_TYPE" /> дээрээ утасныхаа саяхны зургууд болон медиаг харна уу</translation>
 <translation id="1426410128494586442">Тийм</translation>
-<translation id="1447641497144572814">Дэлгэц амраагч эхэлж байна</translation>
 <translation id="1455242230282523554">Хэлний тохиргоог харуулах</translation>
 <translation id="1460620680449458626">Дууг хаасан.</translation>
 <translation id="14648076227129703">Энэ нь <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> болон камерын зөвшөөрөлтэй бүх апп болон вебсайтад камерын хандалтыг зөвшөөрнө</translation>
@@ -126,6 +125,7 @@
 <translation id="1550523713251050646">Бусад сонголтыг харахын тулд дарах</translation>
 <translation id="1555130319947370107">Цэнхэр</translation>
 <translation id="1576623706766186887">Томруулагч асаалттай үед жижгэрүүлэх</translation>
+<translation id="1586324912145647027">1-ээс 8 дахь дэлгэц рүү очно уу</translation>
 <translation id="1589090746204042747">Энэ харилцан үйлдлийн бүх үйл ажиллагаандаа хандах</translation>
 <translation id="1610778689852195798">"Болих"</translation>
 <translation id="1611993646327628135">Асаалттай</translation>
@@ -514,6 +514,7 @@
 <translation id="3631369015426612114">Дараахаас ирүүлсэн мэдэгдлүүдийг хүлээн зөвшөөрөх</translation>
 <translation id="3633097874324966332">Төхөөрөмжөө хослуулахын тулд Bluetooth-н тохиргоог нээнэ үү</translation>
 <translation id="3638400994746983214">Нууцлалын дэлгэцийг асаах/унтраах. <ph name="STATE_TEXT" />.</translation>
+<translation id="3649256019230929621">Цонхыг хумих</translation>
 <translation id="3649505501900178324">Шинэчлэлтийн хугацаа хэтэрсэн</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -589,6 +590,7 @@
 <translation id="4021716437419160885">Доош гүйлгэх</translation>
 <translation id="4022497978915111141">Төхөөрөмжийг түгжих</translation>
 <translation id="4024840464866786680">Хэрэв та ПИН, нууц үгээ мартсан эсвэл Google Бүртгэлийн нууц үгээ саяхан өөрчилсөн бол энэ хэрэглэгчийг сэргээхээр оролдоно уу.</translation>
+<translation id="4026843240379844265">Идэвхтэй цонхыг дэлгэц хооронд зөөх</translation>
 <translation id="4028481283645788203">Нэмэлт аюулгүй байдлын үүднээс нууц үг шаардлагатай</translation>
 <translation id="4032485810211612751"><ph name="HOURS" /> : <ph name="MINUTES" /> : <ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Та дэлгэцээ хуваалцаж байна</translation>
@@ -913,6 +915,7 @@
 <translation id="5689633613396158040">Шөнийн гэрэл нь бүдэг гэрэлтэй үед дэлгэцээ харах эсвэл уншихад илүү хялбар болгодог. Аль цагт Шөнийн гэрлийг бүрмөсөн асааж эсвэл унтраахыг өөрчлөхийн тулд товшино уу.</translation>
 <translation id="5691772641933328258">Хурууны хээг таньсангүй</translation>
 <translation id="5693255400847650006">Микрофоныг ашиглаж байна</translation>
+<translation id="5699366815052349604">Бүх дэлгэцэд идэвхтэй цонх онооно</translation>
 <translation id="570390244361237317">Бүх апп, бүх аппад хандахын тулд суман товчоор шилжинэ үү</translation>
 <translation id="5707775774148071965">Таны төхөөрөмж кабелиас тань өндөр дата хурдыг дэмжинэ. Төхөөрөмжийн гүйцэтгэл хязгаарлагдмал байж магадгүй.</translation>
 <translation id="5710450975648804523">Бүү саад бол горим асаалттай байна</translation>
@@ -1554,6 +1557,7 @@
 <translation id="9034924485347205037">Linux-н файл</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" />-н тохиргоог нээх</translation>
 <translation id="9059834730836941392">Мэдэгдлийг буулгах</translation>
+<translation id="906458777597946297">Цонхыг томсгох</translation>
 <translation id="9065203028668620118">Засварлах</translation>
 <translation id="9070640332319875144">Туслагчийн тохиргоо</translation>
 <translation id="9072519059834302790">Батарей дуусахад <ph name="TIME_LEFT" /> үлдлээ.</translation>

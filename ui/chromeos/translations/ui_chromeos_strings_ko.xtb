@@ -84,6 +84,7 @@
 <translation id="1722487484194605434">항목 <ph name="NUMBER_OF_ITEMS" />개 압축 중...</translation>
 <translation id="1722687688096767818">프로필 추가 중...</translation>
 <translation id="1726100011689679555">네임서버</translation>
+<translation id="1727562178154619254">동기화 준비됨</translation>
 <translation id="1729953886957086472">독일어(독일)</translation>
 <translation id="1730235522912993863">중국어(창힐수입법)</translation>
 <translation id="1731889557567069540">항목 <ph name="NUMBER_OF_ITEMS" />개를 복사했습니다.</translation>
@@ -705,6 +706,7 @@
 <translation id="6732801395666424405">인증서를 로드하지 못했습니다.</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" />[<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">Bruschetta와 폴더 공유</translation>
+<translation id="6750737795876287924">현재 디렉터리</translation>
 <translation id="6751256176799620176">폴더 1개 선택됨</translation>
 <translation id="6755827872271341378">ChromeOS Flex 기기</translation>
 <translation id="6790428901817661496">재생</translation>
@@ -742,7 +744,6 @@
 <translation id="6973630695168034713">폴더</translation>
 <translation id="6976795442547527108">사자</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979737339423435258">전체 기간</translation>
 <translation id="6989942356279143254">스웨덴어</translation>
 <translation id="6990081529015358884">저장 공간이 부족합니다.</translation>
 <translation id="6993826899923627728">항목이 휴지통에 있습니다</translation>
@@ -798,7 +799,6 @@
 <translation id="7458955835361612701">최근 이미지 없음</translation>
 <translation id="7460898608667578234">우크라이나어</translation>
 <translation id="7469894403370665791">네트워크에 자동 연결</translation>
-<translation id="7481358317100446445">준비</translation>
 <translation id="7486315294984620427">Parallels Desktop에 파일을 드롭하려면 파일을 Windows 파일 폴더로 복사해야 합니다.</translation>
 <translation id="749452993132003881">히라가나</translation>
 <translation id="7495372004724182530">말라얄람어(표음)</translation>

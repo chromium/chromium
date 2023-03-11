@@ -252,6 +252,7 @@
 <translation id="6010556343189461180">若要接收后续 Google Chrome 更新，您需使用 macOS 10.15 或更高版本。该计算机目前使用的是 macOS 10.14。</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome 将立即关闭。}=1{Chrome 将在 1 秒后关闭。}other{Chrome 将在 # 秒后关闭。}}</translation>
 <translation id="6022659036123304283">定制您的专属 Chrome</translation>
+<translation id="6025087594896450715">Google Chrome 将在 <ph name="REMAINING_TIME" />后重启</translation>
 <translation id="6040143037577758943">关闭</translation>
 <translation id="6070348360322141662">为了提高安全性，Google Chrome 将对您的数据进行加密</translation>
 <translation id="608006075545470555">向此浏览器添加工作资料</translation>
@@ -269,6 +270,7 @@
 <translation id="6327105987658262776">没有可用的更新。</translation>
 <translation id="6412673304250309937">将网址与存储在 Chrome 中的不安全网站列表进行比对。如果某个网站企图窃取您的密码，或者您下载了有害的文件，Chrome 可能还会将相应网址连同少量网页内容发送给“安全浏览”功能。</translation>
 <translation id="6418662306461808273">切换到现有的 Chrome 个人资料？</translation>
+<translation id="6493527311031785448">Google Chrome 正在尝试<ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6506909944137591434">Chrome 需要获得摄像头权限才能为您的周边环境创建 3D 地图</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome 开发者版</translation>
 <translation id="659498884637196217">在此设备上的 Google 密码管理器中</translation>
@@ -396,7 +398,6 @@
 <translation id="8862326446509486874">您的权限不足，无法进行系统级安装。请尝试以管理员身份再次运行安装程序。</translation>
 <translation id="8914504000324227558">重启 Chrome</translation>
 <translation id="8922193594870374009">若要从 <ph name="ORIGIN" /> 向您的 Android 手机发送电话号码，请在这两部设备上分别登录 Chrome。</translation>
-<translation id="8983720963221508955">您已在自己的帐号中开启了“增强型安全浏览”功能。现在，为 Chrome 启用该功能吧。</translation>
 <translation id="8986207147630327271">您将要向此浏览器添加工作资料并允许您的管理员仅控制此工作资料。</translation>
 <translation id="8989968390305463310">您的浏览记录会影响您看到的广告以及系统推测出的兴趣（如下所示）。为了保护您的隐私，Chrome 每个月都会按保留时间先后顺序自动删除您的部分兴趣。兴趣能够刷新，除非您将其移除。</translation>
 <translation id="8999208279178790196">{0,plural, =0{有一项可用的 Chrome 更新}=1{有一项可用的 Chrome 更新}other{有一项可用的 Chrome 更新（已发布 # 天）}}</translation>

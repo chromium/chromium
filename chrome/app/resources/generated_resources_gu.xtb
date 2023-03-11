@@ -211,6 +211,7 @@
 <translation id="1178581264944972037">થોભો</translation>
 <translation id="117916940443676133">તમારી સુરક્ષા કી પિન વડે સુરક્ષિત નથી. સાઇન-ઇન ડેટા મેનેજ કરવા માટે, પહેલાં પિન બનાવો.</translation>
 <translation id="1181037720776840403">કાઢી નાખો</translation>
+<translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /> પર</translation>
 <translation id="1183237619868651138">સ્થાનિક કૅશ મેમરીમાં <ph name="EXTERNAL_CRX_FILE" />ને ઇન્સ્ટૉલ કરી શકતાં નથી.</translation>
 <translation id="1184709369107246085"><ph name="APPLICATION_NAME" /> ઍપ્લિકેશન માટે માન્ય <ph name="APPLICATION_NAME" /> URL હોવું જરૂરી છે.</translation>
 <translation id="1185924365081634987">આ નેટવર્ક ભૂલને સુધારવા માટે તમે <ph name="GUEST_SIGNIN_LINK_START" />અતિથિ તરીકે બ્રાઉઝ કરો<ph name="GUEST_SIGNIN_LINK_END" /> ને પણ અજમાવી શકો છો.</translation>
@@ -248,6 +249,7 @@
 <translation id="1213254615020057352">વપરાશ અને નિદાનનો ડેટા મોકલો. Googleને નિદાન, ડિવાઇસ અને ઍપ વપરાશનો ડેટા ઑટોમૅટિક રીતે મોકલીને તમારા બાળકના Android અનુભવને બહેતર બનાવવામાં સહાય કરો. આનો ઉપયોગ તમારા બાળકને ઓળખવા માટે થશે નહીં અને સિસ્ટમ અને ઍપની સ્થિરતા અને અન્ય સુધારણાઓમાં સહાય કરશે. એકત્ર કરેલો કેટલોક ડેટા Google ઍપ અને ભાગીદારો, જેમ કે Android ડેવલપરને પણ સહાય કરશે. આ સેટિંગ માલિક દ્વારા લાગુ કરવામાં આવ્યું છે. માલિક Googleને આ ડિવાઇસ માટે નિદાન અને વપરાશનો ડેટા મોકલવાનું પસંદ કરી શકે છે. જો તમારા બાળક માટે વધારાનું વેબ અને ઍપ પ્રવૃત્તિ સેટિંગ ચાલુ હોય, તો આ ડેટા તેમના Google એકાઉન્ટમાં સાચવવામાં આવી શકે છે.</translation>
 <translation id="1213726621272705156">તમે આ પેજ પર ફરીથી કાર્ડ જોઈ શકશો નહીં</translation>
 <translation id="121384500095351701">આ ફાઇલ સુરક્ષિતપણે ડાઉનલોડ કરી શકાતી નથી</translation>
+<translation id="1214004433265298541">તમારા ઍડમિનિસ્ટ્રેટર દ્વારા પ્રદાન કરવામાં આવેલું પ્રમાણપત્ર, જે <ph name="DOMAIN" />ની લૉગ ઇન વિગત જોઈ શકે છે</translation>
 <translation id="1215411991991485844">નવી બૅકગ્રાઉન્ડ ઍપ ઉમેરી છે</translation>
 <translation id="1216542092748365687">ફિંગરપ્રિન્ટ કાઢી નાખો</translation>
 <translation id="1216891999012841486">અપડેટ સંબંધિત બધી ભૂલો સુધારવા વિશે વધુ જાણો</translation>
@@ -877,6 +879,7 @@
 <translation id="1766575458646819543">પૂર્ણ-સ્ક્રીનથી બહાર નીકળ્યાં</translation>
 <translation id="1766957085594317166">તમારા Google એકાઉન્ટમાં પાસવર્ડને સુરક્ષિત રીતે સાચવો અને પછી તમારે તેને ક્યારેય ટાઇપ કરવા પડશે નહીં</translation>
 <translation id="1767043563165955993">Android ઍપ સાથે ઉપયોગ કરો</translation>
+<translation id="1767508543310534319">વિરામચિહ્નનો પડઘો</translation>
 <translation id="1768212860412467516"><ph name="EXPERIMENT_NAME" /> માટે પ્રતિસાદ મોકલો.</translation>
 <translation id="1768278914020124551">અરેરે! લૉગઑન સર્વરનો સંપર્ક કરવામાં સમસ્યા આવી હતી. કૃપા કરીને તમારું નેટવર્ક કનેક્શન અને ડોમેન નામ તપાસો, ત્યાર બાદ ફરીથી પ્રયાસ કરો.</translation>
 <translation id="1769104665586091481">નવી &amp;વિંડોમાં લિંક ખોલો</translation>
@@ -1685,6 +1688,7 @@
 <translation id="244641233057214044">તમારી શોધથી સંબંધિત</translation>
 <translation id="2448312741937722512">પ્રકાર</translation>
 <translation id="2448810255793562605">સ્વિચ ઍક્સેસનું ઑટોમેટિક રીતે સ્કૅન</translation>
+<translation id="2450021089947420533">પ્રવાસ</translation>
 <translation id="2450223707519584812">તમે વપરાશકર્તાઓને ઉમેરવામાં સમર્થ થશો નહીં કારણ કે Google API કીઝ ખૂટે છે. વિગતો માટે <ph name="DETAILS_URL" /> જુઓ.</translation>
 <translation id="2450849356604136918">કોઈ દૃશ્ય નથી</translation>
 <translation id="2451298179137331965">2x</translation>
@@ -1695,6 +1699,7 @@
 <translation id="2454247629720664989">કીવર્ડ</translation>
 <translation id="2454524890947537054">વેબપેજની વિનંતી મંજૂર કરીએ?</translation>
 <translation id="245650153866130664">કોઈ ટિકિટને ઑટોમૅટિક રીતે રિફ્રેશ કરવા માટે, “પાસવર્ડ યાદ રાખો”ને ચેક કરો. તમારો પાસવર્ડ માત્ર તમારા ડિવાઇસ પર સ્ટોર કરવામાં આવશે.</translation>
+<translation id="2456794251167091176">આયાત કરવું પૂર્ણ</translation>
 <translation id="2456827790665612305">સાઇટને અનફૉલો કરો</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> <ph name="VOLUME_NAME" />માંથી ફાઇલોને કૉપિ કરવા માંગે છે.</translation>
 <translation id="2457842160081795172">હાલમાં <ph name="CHANNEL_NAME" /> ચૅનલ પર</translation>
@@ -2567,7 +2572,6 @@
 <translation id="3254084468305910013">{COUNT,plural, =0{સુરક્ષા સંબંધિત કોઈ સમસ્યા મળી નથી}=1{સુરક્ષા સંબંધિત {COUNT} સમસ્યા મળી છે}one{સુરક્ષા સંબંધિત {COUNT} સમસ્યા મળી છે}other{સુરક્ષા સંબંધિત {COUNT} સમસ્યા મળી છે}}</translation>
 <translation id="3254451942070605467"><ph name="FILE_NAME" /> ડાઉનલોડ કરી રહ્યાં છીએ, <ph name="PERCENT_REMAINING" />% બાકી</translation>
 <translation id="3254516606912442756">ઑટોમૅટિક રીતે સમય ઝોન શોધવાનું બંધ છે</translation>
-<translation id="3254715652085014625">તમારા Android ફોન પર Chrome ખોલો અને "સેટિંગ &gt; પાસવર્ડ &gt; સિક્યુરિટી કી તરીકે ફોનનો ઉપયોગ કરો" પર જાઓ અને પછી ત્યાં આપેલી સૂચના અનુસરો.</translation>
 <translation id="3255355328033513170"><ph name="SITE_GROUP_NAME" /> અને તેની હેઠળ આવતી કોઈપણ સાઇટ દ્વારા સ્ટોર કરેલો બધો ડેટા ડિલીટ કરવામાં આવશે. તેમાં કુકીનો સમાવેશ થાય છે. ખુલ્લા ટૅબ સહિત, આ સાઇટમાંથી તમને સાઇન આઉટ કરવામાં આવશે.</translation>
 <translation id="3257733480216378006"><ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />ને મંજૂરી આપીએ?</translation>
 <translation id="3259723213051400722">કૃપા કરીને ફરી પ્રયાસ કરો.</translation>
@@ -2703,6 +2707,7 @@
 <translation id="3378627645871606983">Steam માટે મંજૂર કરેલી પરવાનગીઓ Steamની બધી ગેમ અને ઍપને લાગુ થાય છે.</translation>
 <translation id="337920581046691015"><ph name="PRODUCT_NAME" /> ઇન્સ્ટોલ કરવામાં આવશે.</translation>
 <translation id="3380365263193509176">અજ્ઞાત ભૂલ</translation>
+<translation id="3380831556454930637"><ph name="APP_NAME" /> ઍપને તમારા ઍડમિન દ્વારા OS લૉગ ઇન પર ચલાવવા માટે ગોઠવવામાં આવી છે</translation>
 <translation id="3382073616108123819">અરેરે!  આ ઉપકરણ માટે ઉપકરણ ઓળખકર્તા નક્કી કરવામાં સિસ્ટમ નિષ્ફળ થઇ.</translation>
 <translation id="3382200254148930874">નિરીક્ષણ બંધ કરી રહ્યાં છીએ...</translation>
 <translation id="338323348408199233">VPN વિનાના ટ્રાફિકને બ્લૉક કરો</translation>
@@ -2952,6 +2957,7 @@
 <translation id="360180734785106144">નવી સુવિધાઓ ઉપલબ્ધ થતાની સાથે જ તેને ઑફર કરો</translation>
 <translation id="3602290021589620013">પ્રીવ્યૂ કરો</translation>
 <translation id="3602870520245633055">પ્રિન્ટ અને સ્કૅન કરો</translation>
+<translation id="3602894439067790744">નંબરને આ તરીકે વાંચો:</translation>
 <translation id="3603622770190368340">નેટવર્ક પ્રમાણપત્ર મેળવો</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} એકાઉન્ટ એક જ પાસવર્ડનો ઉપયોગ કરી રહ્યું છે}one{{COUNT} એકાઉન્ટ એક જ પાસવર્ડનો ઉપયોગ કરી રહ્યું છે}other{{COUNT} એકાઉન્ટ એક જ પાસવર્ડનો ઉપયોગ કરી રહ્યાં છે}}</translation>
 <translation id="3605780360466892872">બટનડાઉન</translation>
@@ -3117,7 +3123,6 @@
 <translation id="3742666961763734085">તે નામવાળો કોઈ સંસ્થાકીય એકમ શોધી શકાયો નથી. કૃપા કરીને ફરી પ્રયત્ન કરો.</translation>
 <translation id="3743842571276656710"><ph name="DEVICE_NAME" />ની સાથે જોડાણ કરવા માટે, પિન દાખલ કરો</translation>
 <translation id="3747077776423672805">ઍપને કાઢી નાખવા માટે, સેટિંગ &gt; Google Play Store &gt; Android પસંદગીઓ મેનેજ કરો &gt; ઍપ અથવા ઍપ્લિકેશન મેનેજર પર જાઓ. પછી તમે અનઇન્સ્ટૉલ કરવા માગો છો તે ઍપ પર ટૅપ કરો (ઍપ શોધવા માટે તમારે જમણે અથવા ડાબે સ્વાઇપ કરવું જરૂરી હોય શકે છે). પછી અનઇન્સ્ટૉલ કરો અથવા બંધ કરો પર ટૅપ કરો.</translation>
-<translation id="3747603683749989726">શું વધારેલી સુરક્ષાની સુવિધા ચાલુ કરીએ?</translation>
 <translation id="3748424433435232460">આ એકાઉન્ટ માટેનો પાસવર્ડ પહેલેથી જ આ ડિવાઇસમાં સાચવવામાં આવ્યો છે</translation>
 <translation id="3748706263662799310">બગની જાણ કરો</translation>
 <translation id="3749724428455457489">સાઇટ દ્વારા સૂચવવામાં આવેલી જાહેરાતો વિશે વધુ જાણો</translation>
@@ -3718,7 +3723,6 @@
 <translation id="4280325816108262082">ડિવાઇસ જ્યારે બંધ કરવામાં આવે અથવા ઉપયોગમાં ન હોય, ત્યારે તે ઑટોમૅટિક રીતે ડિસ્કનેક્ટ થઈ જશે</translation>
 <translation id="4281844954008187215">સેવાની શરતો</translation>
 <translation id="4282196459431406533">Smart Lock ચાલુ કરેલું છે</translation>
-<translation id="4284755288573763878">શું વધારેલી સુરક્ષાની સુવિધા બંધ કરીએ?</translation>
 <translation id="4284903252249997120">ChromeVox સ્ક્રીન રીડર અને 'સાંભળવા માટે પસંદ કરો' સુવિધા</translation>
 <translation id="4285418559658561636">પાસવર્ડ અપડેટ કરો</translation>
 <translation id="4285498937028063278">અનપિન કરો</translation>
@@ -4952,6 +4956,7 @@
 <translation id="5432145523462851548"><ph name="FILE_NAME" />ને ફોલ્ડરમાં બતાવો</translation>
 <translation id="543338862236136125">પાસવર્ડમાં ફેરફાર કરો</translation>
 <translation id="5434065355175441495">PKCS #1 RSA એન્ક્રિપ્શન</translation>
+<translation id="5434294721803750644">મૉનિટર કરેલું કનેક્શન</translation>
 <translation id="5435779377906857208"><ph name="HOST" />ને હંમેશાં તમારા સ્થાનને ઍક્સેસ કરવાની મંજૂરી આપો</translation>
 <translation id="5436492226391861498">પ્રૉક્સી ટનલની પ્રતીક્ષા કરી રહ્યાં છે...</translation>
 <translation id="5436510242972373446"><ph name="SITE_NAME" /> શોધો:</translation>
@@ -5358,6 +5363,7 @@
 <translation id="5804241973901381774">પરવાનગીઓ</translation>
 <translation id="5804259315582798390">સ્થાનિક ડેટા રિકવરી ચાલુ કરવામાં નિષ્ફળ રહ્યાં</translation>
 <translation id="5805268472388605531">ઉચ્ચાર માટેના ચિહ્નો અને વિશેષ અક્ષરો જોવા માટે, કીબોર્ડની કીને દબાવી રાખો</translation>
+<translation id="5805354171420804923">બાજુની નવી પૅનલમાંથી શોધ પરિણામોની વધુ ઝડપથી સરખામણી કરો</translation>
 <translation id="5805697420284793859">વિન્ડો મેનેજર</translation>
 <translation id="5806447147478173900">પ્રદર્શિત થયેલી સાઇટ દ્વારા કરવામાં આવેલો સ્ટોરેજનો કુલ વપરાશ: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (ડિફૉલ્ટ)</translation>
@@ -5445,7 +5451,6 @@
 <translation id="5877584842898320529">પસંદ કરેલું પ્રિન્ટર ઉપલબ્ધ નથી અથવા યોગ્ય રીતે ઇન્સ્ટૉલ થયેલું નથી. <ph name="BR" /> તમારા પ્રિન્ટરને ચેક કરો અથવા બીજા પ્રિન્ટરને અજમાવી જુઓ.</translation>
 <translation id="5878945009165002849">ઓળખ સેવાઓના સાઇન ઇન કરવાના સંકેતો બ્લૉક કરો</translation>
 <translation id="5881710783061958569">જો એવું હોય, તો કૃપા કરીને <ph name="BRAND" />માં તમારા સાચવેલા પાસવર્ડમાં ફેરફાર કરો જેથી તે તમારા નવા પાસવર્ડ સાથે મેળ ખાય.</translation>
-<translation id="5882449899683447569">કંઈક ખોટું થયું અને તમારા પાસવર્ડ આયાત કરવામાં આવ્યા નથી</translation>
 <translation id="5882919346125742463">જાણીતા નેટવર્ક્સ</translation>
 <translation id="5883356647197510494"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ઑટોમૅટિક રીતે બ્લૉક કરવામાં આવી</translation>
 <translation id="5884447826201752041">દરેક એક્સ્ટેન્શન માટે કસ્ટમાઇઝ કરો</translation>
@@ -7249,6 +7254,7 @@ USB ડિવાઇસ</translation>
 <translation id="7520766081042531487">છૂપું પોર્ટલ: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">શૉર્ટકટ બતાવો</translation>
 <translation id="7522255036471229694">"Ok Google" કહો</translation>
+<translation id="7523117833414447032">કૅપિટલ વાંચતી વખતે</translation>
 <translation id="7523585675576642403">પ્રોફાઇલનું નામ બદલો</translation>
 <translation id="7525067979554623046">બનાવો</translation>
 <translation id="7526658513669652747">{NUM_DOWNLOADS,plural, =1{અન્ય 1}one{અન્ય {NUM_DOWNLOADS}}other{અન્ય {NUM_DOWNLOADS}}}</translation>
@@ -7743,6 +7749,7 @@ USB ડિવાઇસ</translation>
 <translation id="7950629216186736592">કારણ: LBS માત્ર http://, https:// અને file:// URLsને જ સપોર્ટ કરે છે.</translation>
 <translation id="7951265006188088697">Google Pay ચુકવણી પદ્ધતિઓ ઉમેરવા અથવા મેનેજ કરવા માટે, તમારા <ph name="BEGIN_LINK" />Google એકાઉન્ટ<ph name="END_LINK" />ની મુલાકાત લો</translation>
 <translation id="795130320946928025">વર્ચ્યુઅલ કાર્ડની સુવિધા બંધ કરો</translation>
+<translation id="795240231873601803">ઑફિસ અને સ્કૂલના એકાઉન્ટ માટે એન્ટરપ્રાઇઝની નોંધણીનો ઉપયોગ કરો</translation>
 <translation id="7952708427581814389">સાઇટ તમારા ક્લિપબોર્ડ પરની ટેક્સ્ટ અને છબીઓ જોવાનું પૂછી શકે છે</translation>
 <translation id="795282463722894016">પુનઃસ્થાપન પૂર્ણ</translation>
 <translation id="7952904276017482715">અપેક્ષિત ID "<ph name="EXPECTED_ID" />" છે, પણ ID "<ph name="NEW_ID" />" હતું.</translation>
@@ -7923,7 +7930,6 @@ USB ડિવાઇસ</translation>
 <translation id="8102139037507939978">system_logs.txtમાંથી વ્યક્તિગત રૂપે ઓળખી શકાય તેવી માહિતી જુદી પાડો.</translation>
 <translation id="810362914482827094">પાસકી શોધો</translation>
 <translation id="8104088837833760645">ઇ-સિમ પ્રોફાઇલ ડાઉનલોડ કરો</translation>
-<translation id="8105368624971345109">બંધ કરો</translation>
 <translation id="8107015733319732394">તમારા <ph name="DEVICE_TYPE" /> પર Google Play Store ઇન્સ્ટૉલ કરી રહ્યાં છીએ. આમાં થોડી મિનિટ લાગી શકે છે.</translation>
 <translation id="810728361871746125">ડિસ્પ્લેનું રિઝોલ્યુશન</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{ત્રીજા પક્ષની કોઈ કુકી નથી}=1{ત્રીજા પક્ષની 1 કુકી બ્લૉક કરવામાં આવી છે}one{ત્રીજા પક્ષની # કુકી બ્લૉક કરવામાં આવી છે}other{ત્રીજા પક્ષની # કુકી બ્લૉક કરવામાં આવી છે}}</translation>
@@ -7942,6 +7948,7 @@ USB ડિવાઇસ</translation>
 <translation id="81238879832906896">પીળા અને સફેદ ફૂલ</translation>
 <translation id="8123975449645947908">પાછળ સ્ક્રોલ કરો</translation>
 <translation id="8124313775439841391">મેનેજ થયેલ ONC</translation>
+<translation id="8129265306888404830">તમારી સંસ્થા (<ph name="EMAIL_DOMAIN" />)ના તમારા ઇમેઇલ ઍડ્રેસનો ઉપયોગ કરવા માટે, તમારે એન્ટરપ્રાઇઝની નોંધણી કરવી જરૂરી છે. જો આ ડિવાઇસ તમારા વ્યક્તિગત ઉપયોગ માટે હોય, તો તમારા વ્યક્તિગત Google એકાઉન્ટ વડે સાઇન ઇન કરો.</translation>
 <translation id="813082847718468539">સ્થાન માહિતી જુઓ</translation>
 <translation id="8131740175452115882">પુષ્ટિ કરો</translation>
 <translation id="8133297578569873332">સ્વીકાર્ય - FM</translation>
@@ -8934,7 +8941,6 @@ USB ડિવાઇસ</translation>
 <translation id="9026852570893462412">આ પ્રક્રિયામાં થોડો સમય લાગી શકે છે. વર્ચ્યુઅલ મશીન ડાઉનલોડ કરી રહ્યાં છીએ.</translation>
 <translation id="9027459031423301635">લિંક નવા &amp;ટૅબમાં ખોલો</translation>
 <translation id="9027707169256972235">કાઢી નાખો</translation>
-<translation id="9029667986262585240">તમે તમારા એકાઉન્ટમાં Safe Browsingમાં વધારેલી સુરક્ષાની સુવિધા બંધ કરી છે.</translation>
 <translation id="9030515284705930323">તમારા એકાઉન્ટ માટે તમારી સંસ્થાએ Google Play Store ચાલુ કરેલ નથી. વધુ માહિતી માટે તમારા એડમિનનો સંપર્ક કરો.</translation>
 <translation id="9030754204056345429">વધુ ઝડપી</translation>
 <translation id="9030785788945687215">Gmail</translation>
@@ -9119,7 +9125,6 @@ USB ડિવાઇસ</translation>
 <translation id="9188732951356337132">વપરાશ અને નિદાનનો ડેટા મોકલો. આ ડિવાઇસ હાલમાં Googleને નિદાન, ડિવાઇસ અને ઍપ વપરાશનો ડેટા ઑટોમૅટિક રીતે મોકલી રહ્યું છે. આનો ઉપયોગ તમારા બાળકને ઓળખવા માટે થશે નહીં અને સિસ્ટમ અને ઍપની સ્થિરતા અને અન્ય સુધારણાઓમાં સહાય કરશે. એકત્રીકરણ કરેલો કેટલોક ડેટા Google ઍપ અને ભાગીદારોને પણ મદદ કરશે, જેમ કે Android ડેવલપર. જો તમારા બાળક માટે વધારાની વેબ અને ઍપ પ્રવૃત્તિ સેટિંગ ચાલુ હોય, તો આ ડેટા તેમના Google એકાઉન્ટમાં સાચવવામાં આવી શકે છે. <ph name="BEGIN_LINK2" />વધુ જાણો<ph name="END_LINK2" /></translation>
 <translation id="9192019773545828776">બોલાયેલો પ્રતિસાદ સાંભળો, જેથી સ્ક્રીનની સામે જોયા વિના તમે તમારા ડિવાઇસનો ઉપયોગ કરી શકો. કનેક્ટ કરેલા ડિવાઇસ સાથે બ્રેઇલમાં પ્રતિસાદ આપવાની સુવિધા ઉપલબ્ધ છે. ChromeVox ચાલુ અને બંધ કરવા માટે Ctrl + Alt + Zનો ઉપયોગ કરો. નૅવિગેટ કરવા માટે Search + ડાબી ઍરો કી અથવા જમણી ઍરો કીનો ઉપયોગ કરો. પસંદ કરવા (સક્રિય કરવા) માટે Search + Space કીનો ઉપયોગ કરો.</translation>
 <translation id="919686179725692564">તમારી ઍપનું બૅકઅપ લેવા વિશે વધુ જાણો</translation>
-<translation id="9198090666959937775">સિક્યુરિટી કી તરીકે તમારા Android ફોનનો ઉપયોગ કરો</translation>
 <translation id="9199503643457729322">'પ્રાઇવસી સંબંધિત માર્ગદર્શિકા'થી દૂર નૅવિગેટ કરવા માટે ક્લિક કરો.</translation>
 <translation id="9200339982498053969"><ph name="ORIGIN" /> <ph name="FOLDERNAME" />માં રહેલી ફાઇલોમાં ફેરફાર કરી શકશે</translation>
 <translation id="920045321358709304"><ph name="SEARCH_ENGINE" />માં શોધો</translation>
@@ -9147,6 +9152,7 @@ USB ડિવાઇસ</translation>
 <translation id="922152298093051471">Chrome કસ્ટમાઇઝ કરો</translation>
 <translation id="923467487918828349">બધું બતાવો</translation>
 <translation id="924818813611903184">ChromeOS સેટિંગમાં ભાષાઓને મેનેજ કરો</translation>
+<translation id="925270020047573546">આ ડિવાઇસ પર ડેસ્કટૉપનો ઑડિયો કાસ્ટ કરવાની સુવિધાને સપોર્ટ કરવામાં આવતો નથી.</translation>
 <translation id="929117907539171075">ઇન્સ્ટૉલ કરેલી ઍપમાંનો ઑફલાઇન ડેટા પણ સાફ થઈ જશે</translation>
 <translation id="930268624053534560">વિગતવાર ટાઇમસ્ટેમ્પસ</translation>
 <translation id="930893132043726269">હાલમાં રોમિંગ મોડમાં છે</translation>

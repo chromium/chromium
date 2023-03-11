@@ -100,7 +100,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1420408895951708260">Beralih ke Cahaya Malam. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Lihat foto terbaru dan media dari ponsel Anda di <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">Ya</translation>
-<translation id="1447641497144572814">Screensaver dimulai</translation>
 <translation id="1455242230282523554">Tampilkan setelan bahasa</translation>
 <translation id="1460620680449458626">Volume dibisukan.</translation>
 <translation id="14648076227129703">Tindakan ini akan mengizinkan akses kamera untuk <ph name="APP1_NAME" />, <ph name="APP2_NAME" />, dan semua aplikasi serta situs yang memiliki izin kamera</translation>
@@ -126,6 +125,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1550523713251050646">Klik untuk opsi lainnya</translation>
 <translation id="1555130319947370107">Biru</translation>
 <translation id="1576623706766186887">Perkecil saat kaca pembesar diaktifkan</translation>
+<translation id="1586324912145647027">Membuka desktop 1 sampai 8</translation>
 <translation id="1589090746204042747">Akses semua aktivitas Anda di sesi ini</translation>
 <translation id="1610778689852195798">"Urungkan"</translation>
 <translation id="1611993646327628135">Aktif</translation>
@@ -514,6 +514,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3631369015426612114">Izinkan notifikasi dari sumber berikut</translation>
 <translation id="3633097874324966332">Buka setelan Bluetooth untuk menyambungkan perangkat Anda</translation>
 <translation id="3638400994746983214">Alihkan ke layar privasi. <ph name="STATE_TEXT" />.</translation>
+<translation id="3649256019230929621">Meminimalkan jendela</translation>
 <translation id="3649505501900178324">Update melewati batas waktu</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -588,6 +589,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="4021716437419160885">Scroll ke bawah</translation>
 <translation id="4022497978915111141">Kunci perangkat</translation>
 <translation id="4024840464866786680">Jika Anda lupa PIN dan sandi atau mengubah sandi Akun Google Anda baru-baru ini, coba pulihkan pengguna ini.</translation>
+<translation id="4026843240379844265">Memindahkan jendela aktif dari satu layar ke layar lainnya</translation>
 <translation id="4028481283645788203">Perlu sandi untuk keamanan tambahan</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />.<ph name="MINUTES" />.<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Anda membagikan layar Anda</translation>
@@ -912,6 +914,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="5689633613396158040">Cahaya Malam memudahkan Anda melihat layar atau membaca saat cahaya redup. Ketuk untuk mengubah waktu pengaktifan Cahaya Malam atau menonaktifkannya sepenuhnya.</translation>
 <translation id="5691772641933328258">Sidik jari tidak dikenali</translation>
 <translation id="5693255400847650006">Mikrofon sedang digunakan</translation>
+<translation id="5699366815052349604">Menetapkan jendela aktif ke semua desktop</translation>
 <translation id="570390244361237317">Semua Aplikasi, navigasikan dengan tombol panah untuk mengakses semua aplikasi</translation>
 <translation id="5707775774148071965">Perangkat mendukung kecepatan data yang lebih tinggi daripada kabel. Performa perangkat mungkin dibatasi.</translation>
 <translation id="5710450975648804523">Mode Jangan Ganggu aktif</translation>
@@ -1552,6 +1555,7 @@ Baru diinstal</translation>
 <translation id="9034924485347205037">File Linux</translation>
 <translation id="9047624247355796468">Buka setelan untuk <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Ciutkan notifikasi</translation>
+<translation id="906458777597946297">Memaksimalkan jendela</translation>
 <translation id="9065203028668620118">Edit</translation>
 <translation id="9070640332319875144">Setelan Asisten</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> hingga baterai kosong.</translation>

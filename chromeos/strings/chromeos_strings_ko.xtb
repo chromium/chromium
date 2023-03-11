@@ -241,7 +241,6 @@
 <translation id="3226657629376379887">레이아웃 작업 메뉴</translation>
 <translation id="3246869037381808805">1일 이상 경과한 인쇄 작업은 삭제됩니다.</translation>
 <translation id="3268178239013324452">실패 - 덮개 열림</translation>
-<translation id="3275506277319227640"><ph name="DIRECTION" />에 고정</translation>
 <translation id="3275729367986477355">아바타 이미지</translation>
 <translation id="3283504360622356314">{0,plural, =1{파일 수정}other{파일 수정}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
@@ -360,7 +359,6 @@
 <translation id="4311195029067684288">전체화면</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> 키를 눌렀습니다.</translation>
 <translation id="435692326371619097">네트워크 APN 설정을 관리하세요. APN은 셀룰러 네트워크와 인터넷 간의 연결을 설정합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
-<translation id="4370033095251616914">더 작은 쪽에 고정</translation>
 <translation id="4378373042927530923">실행되지 않음</translation>
 <translation id="4378551569595875038">연결 중...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -903,7 +901,6 @@
 <translation id="9137526406337347448">Google 서비스</translation>
 <translation id="9138630967333032450">왼쪽 시프트</translation>
 <translation id="9149391708638971077">메모리 테스트 실행</translation>
-<translation id="9157515863513902090">더 큰 쪽에 고정</translation>
 <translation id="9161276708550942948">스페이스</translation>
 <translation id="9173638680043580060">1분 미만 남음</translation>
 <translation id="917720651393141712">테스트</translation>

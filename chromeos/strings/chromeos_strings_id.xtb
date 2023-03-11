@@ -241,7 +241,6 @@
 <translation id="3226657629376379887">Menu tindakan tata letak</translation>
 <translation id="3246869037381808805">Tugas pencetakan yang sudah lebih dari 1 hari akan dihapus</translation>
 <translation id="3268178239013324452">Gagal - Tutup terbuka</translation>
-<translation id="3275506277319227640">Kaitkan ke <ph name="DIRECTION" /></translation>
 <translation id="3275729367986477355">Gambar avatar</translation>
 <translation id="3283504360622356314">{0,plural, =1{Edit file}other{Edit file}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
@@ -360,7 +359,6 @@
 <translation id="4311195029067684288">Penuh</translation>
 <translation id="4333390807948134856">Tombol <ph name="KEY_NAME" /> ditekan</translation>
 <translation id="435692326371619097">Kelola setelan APN jaringan. APN membuat koneksi antara jaringan seluler dan internet. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
-<translation id="4370033095251616914">Kaitkan ke sisi yang lebih kecil</translation>
 <translation id="4378373042927530923">Tidak Berjalan</translation>
 <translation id="4378551569595875038">Menghubungkan...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -903,7 +901,6 @@
 <translation id="9137526406337347448">Layanan Google</translation>
 <translation id="9138630967333032450">Shift kiri</translation>
 <translation id="9149391708638971077">Jalankan pengujian Memori</translation>
-<translation id="9157515863513902090">Kaitkan ke sisi yang lebih besar</translation>
 <translation id="9161276708550942948">spasi</translation>
 <translation id="9173638680043580060">Kurang dari satu menit lagi</translation>
 <translation id="917720651393141712">Uji</translation>

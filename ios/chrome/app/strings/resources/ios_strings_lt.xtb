@@ -81,6 +81,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="149095475893949513">Ši svetainė bando atsisiųsti konfigūracijos profilį.</translation>
 <translation id="1491277525950327607">Dukart palieskite, kad perjungtumėte nustatymą</translation>
 <translation id="1492417797159476138">Jau išsaugojote šį naudotojo vardą šioje svetainėje</translation>
+<translation id="1497590942294823549">Meniu → Slaptažodžių tvarkyklė</translation>
 <translation id="1498283581832036924"><ph name="WEBSITE" /> paskyra nebus ištrinta.</translation>
 <translation id="1506063256525392513">Galite fotografuoti ir įkelti nuotraukas bei nuskaityti QR kodus</translation>
 <translation id="1509486075633541495">Prisijungti prie svetainės</translation>
@@ -242,6 +243,7 @@ Svetainės negali naudoti slapukų, kad sužinotų apie naršymo veiklą skirtin
 <translation id="271033894570825754">Naujiena</translation>
 <translation id="2712127207578915686">Nepavyko atidaryti failo</translation>
 <translation id="2718352093833049315">Tik su „Wi–Fi“</translation>
+<translation id="2737716090799520623">Kai esate prisijungę prie „Chrome“, išsaugoti slaptažodžiai pateikiami „Google“ paskyroje (<ph name="ACCOUNT" />). Jei norite išjungti, <ph name="BEGIN_LINK" />eikite į nustatymus<ph name="END_LINK" />.</translation>
 <translation id="2747003861858887689">Ankstesnis laukas</translation>
 <translation id="2749231692441336879">Stebima: <ph name="CHANNEL_NAME" /></translation>
 <translation id="2764831210418622012">ką tik</translation>
@@ -843,6 +845,7 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="6801927553864092214">Kad galėtumėte naršyti privačiai, atidarykite inkognito skirtuką</translation>
 <translation id="6807889908376551050">Rodyti viską...</translation>
 <translation id="681368974849482173">Elementas sukurtas</translation>
+<translation id="6822587385560699678">Įjungus slaptažodžiai išsaugomi paskyroje <ph name="ACCOUNT" />. Išjungus slaptažodžiai išsaugomi tik šiame įrenginyje.</translation>
 <translation id="683022620450280906">Išsaugotus slaptažodžius galite naudoti bet kuriame įrenginyje. Jie išsaugomi „Google“ slaptažodžių tvarkytuvėje kaip priskirti el. pašto adresui <ph name="EMAIL" /></translation>
 <translation id="6831043979455480757">Vertėjas</translation>
 <translation id="6842136130964845393">Kad užtikrintumėte galimybę visada pasiekti išsaugotus slaptažodžius, patvirtinkite savo tapatybę</translation>

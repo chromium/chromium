@@ -34,6 +34,7 @@ Ang sinumang may passphrase mo lang ang makakapagbasa sa iyong naka-encrypt na d
 <translation id="1173894706177603556">Pangalanang muli</translation>
 <translation id="1177863135347784049">Custom</translation>
 <translation id="1181037720776840403">Alisin</translation>
+<translation id="1181366777303791449">sa <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">Gumamit ng malakas na password?</translation>
 <translation id="1197267115302279827">Ilipat ang mga bookmark</translation>
 <translation id="1201402288615127009">Susunod</translation>
@@ -42,7 +43,6 @@ Ang sinumang may passphrase mo lang ang makakapagbasa sa iyong naka-encrypt na d
 <translation id="1204692632633423444">Button na pagkilos sa Chrome: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">Kopyahin ang text ng link</translation>
 <translation id="1209206284964581585">Itago sa ngayon</translation>
-<translation id="1226851825267005295">Puwede mong pamahalaan ang iyong mga preference pagkatapos mong mag-sign in sa Chrome gamit ang iyong Google Account.</translation>
 <translation id="1227058898775614466">History ng pag-navigate</translation>
 <translation id="1231733316453485619">I-on ang pag-sync?</translation>
 <translation id="123724288017357924">I-reload ang page, balewalain ang cached content</translation>
@@ -166,7 +166,6 @@ Kapag na-delete mo ang iyong history ng pag-browse — lahat o para sa isang par
 <translation id="1928696683969751773">Mga Update</translation>
 <translation id="19288952978244135">Muling buksan ang Chrome.</translation>
 <translation id="1933845786846280168">Napiling Tab</translation>
-<translation id="193571872656840963">Magpakita ng pasasalamat sa creator na ito</translation>
 <translation id="1943432128510653496">I-save ang mga password</translation>
 <translation id="1952172573699511566">Magpapakita ang mga website ng text sa iyong gustong wika, kung posible.</translation>
 <translation id="1959679933317802873">Naghihintay ng content</translation>
@@ -202,7 +201,6 @@ Kapag na-delete mo ang iyong history ng pag-browse — lahat o para sa isang par
 <translation id="2122601567107267586">Hindi mabuksan ang app</translation>
 <translation id="2132122640199389833">Alisin ang lahat ng naka-link na device</translation>
 <translation id="213279576345780926">Isinarang <ph name="TAB_TITLE" /></translation>
-<translation id="2134927169889348449">Sa pamamagitan ng paggamit sa Chrome, sumasang-ayon ka sa <ph name="BEGIN_TOS_LINK" />Mga Tuntunin ng Serbisyo ng Google<ph name="END_TOS_LINK" />, at sa <ph name="BEGIN_ATOS_LINK" />Mga Karagdagang Tuntunin ng Serbisyo ng Google Chrome at ChromeOS<ph name="END_ATOS_LINK" />.</translation>
 <translation id="2139186145475833000">Idagdag sa Home screen</translation>
 <translation id="2141396931810938595">Batay sa iyong paggamit</translation>
 <translation id="214888715418183969">Piliin kung ano ang kumportable kang ibahagi sa Chrome. Gagamitin ang mga sukatang ibabahagi mo para makatulong sa pagpapahusay ng mga feature, performance, at stability ng Chrome.</translation>
@@ -555,7 +553,6 @@ Pinapahusay ng mga private state token ang privacy sa web at hindi magagamit ang
 <translation id="409109920254068737">Puwede mong gamitin ang tablet na ito para mag-sign in sa device na nagpapakita ng QR code na ito.</translation>
 <translation id="4095146165863963773">I-delete ang data ng app?</translation>
 <translation id="4096227151372679484">Nakabukas nang kalahati ang proseso ng pag-save ng bookmark</translation>
-<translation id="4099578267706723511">Tulungang mapahusay ang Chrome sa pamamagitan ng pagpapadala sa Google ng mga istatistika ng paggamit at ulat ng pag-crash.</translation>
 <translation id="4101475238162928417">Mag-sync para makuha ang iyong mga password, bookmark, at higit pa sa iba mo pang device</translation>
 <translation id="410351446219883937">I-autoplay</translation>
 <translation id="4106587138345390261">Nag-e-explore ang Chrome ng mga bagong feature na nagbibigay-daan sa mga site na ihatid ang parehong karanasan sa pag-browse nang hindi gaanong gumagamit ng iyong impormasyon</translation>
@@ -593,7 +590,6 @@ Pinapahusay ng mga private state token ang privacy sa web at hindi magagamit ang
 <translation id="4269820728363426813">Kopyahin ang address ng link</translation>
 <translation id="4283102315569707115">Humiling ng mga pang-desktop na site bilang default?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />I-on ang lock ng screen sa mga setting ng Android<ph name="END_LINK" /></translation>
-<translation id="4293476595220860475">Sa pamamagitan ng paggamit sa Chrome, sumasang-ayon ka sa <ph name="BEGIN_TOS_LINK" />Mga Tuntunin ng Serbisyo ng Google<ph name="END_TOS_LINK" />, at sa <ph name="BEGIN_ATOS_LINK" />Mga Karagdagang Tuntunin ng Serbisyo ng Google Chrome at ChromeOS<ph name="END_ATOS_LINK" />. Nalalapat din ang <ph name="BEGIN_PRIVACY_LINK" />Patakaran sa Privacy<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="4296252229500326964">Bagong tab na Incognito</translation>
 <translation id="4298388696830689168">Mga naka-link na site</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -766,7 +762,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5161254044473106830">Kailangan ng pamagat</translation>
 <translation id="5170568018924773124">Ipinakita sa folder</translation>
 <translation id="5171045022955879922">Hanapin o i-type ang URL</translation>
-<translation id="517734441743343109">Sa pamamagitan ng pagpapatuloy, sumasang-ayon ka sa <ph name="BEGIN_TOS_LINK" />Mga Tuntunin ng Serbisyo<ph name="END_TOS_LINK" /> at <ph name="BEGIN_PRIVACY_LINK" />Patakaran sa\u00A0Privacy<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="5184329579814168207">Buksan sa Chrome</translation>
 <translation id="5191251636205085390">Matuto pa tungkol sa at kontrolin ang mga bagong teknolohiyang naglalayong palitan ang third-party na cookies</translation>
 <translation id="5193988420012215838">Kinopya sa iyong clipboard</translation>

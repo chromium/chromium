@@ -84,6 +84,7 @@
 <translation id="1722487484194605434">در حال فشرده‌سازی <ph name="NUMBER_OF_ITEMS" /> مورد…</translation>
 <translation id="1722687688096767818">درحال افزودن نمایه…</translation>
 <translation id="1726100011689679555">سرورهای نام</translation>
+<translation id="1727562178154619254">آماده همگام‌سازی</translation>
 <translation id="1729953886957086472">آلمانی (آلمان)</translation>
 <translation id="1730235522912993863">چینی (کانجی)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> مورد کپی شد.</translation>
@@ -705,6 +706,7 @@
 <translation id="6732801395666424405">گواهی‌ها بارگیری نشدند</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">‏هم‌رسانی پوشه با Bruschetta</translation>
+<translation id="6750737795876287924">فهرست راهنمای کنونی</translation>
 <translation id="6751256176799620176">۱ پوشه انتخاب شد</translation>
 <translation id="6755827872271341378">‏دستگاه ChromeOS Flex</translation>
 <translation id="6790428901817661496">پخش</translation>
@@ -742,7 +744,6 @@
 <translation id="6973630695168034713">پوشه‌ها</translation>
 <translation id="6976795442547527108">شیر</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979737339423435258">از ابتدا تا الآن</translation>
 <translation id="6989942356279143254">سوئدی</translation>
 <translation id="6990081529015358884">فضای شما تمام شده است</translation>
 <translation id="6993826899923627728">این موارد در «حذف‌شده‌های» شما قرار دارند</translation>
@@ -798,7 +799,6 @@
 <translation id="7458955835361612701">هیچ تصویری در موارد اخیر وجود ندارد</translation>
 <translation id="7460898608667578234">اوکراینی</translation>
 <translation id="7469894403370665791">اتصال به این شبکه به صورت خودکار</translation>
-<translation id="7481358317100446445">آماده</translation>
 <translation id="7486315294984620427">‏برای رها کردن فایل‌ها در Parallels Desktop، فایل موردنظر باید در فایل‌های Windows کپی شود.</translation>
 <translation id="749452993132003881">هیراگانا</translation>
 <translation id="7495372004724182530">مالایالم (آوایی)</translation>

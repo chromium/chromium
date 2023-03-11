@@ -26,6 +26,7 @@
 <translation id="1448064542941920355">Reducir zoom</translation>
 <translation id="1510341833810331442">Los sitios no tienen permiso para guardar datos en tu dispositivo</translation>
 <translation id="1547123415014299762">Se permiten las cookies de terceros</translation>
+<translation id="1593426485665524382">Hay nuevas acciones disponibles en la parte superior de la pantalla</translation>
 <translation id="1620510694547887537">Cámara</translation>
 <translation id="1633720957382884102">Sitios relacionados</translation>
 <translation id="1644574205037202324">Historial</translation>
@@ -146,6 +147,7 @@
 <translation id="3628308229821498208">Sugerencias de búsqueda</translation>
 <translation id="3636279694100170143">Los sitios que visitas pueden verificar que eres un usuario real y no un bot.</translation>
 <translation id="3649190289964910441">Con Chrome, los sitios que visitas pueden guardar información que verifica que eres un usuario real. A medida que sigas navegando, los sitios podrán realizar comprobaciones con Chrome y verificar, desde el primer sitio que visites, que es probable que seas un usuario de confianza.</translation>
+<translation id="3721953990244350188">Cerrar y mostrar la siguiente acción disponible</translation>
 <translation id="3744111561329211289">Sincronización en segundo plano</translation>
 <translation id="3763247130972274048">Toca dos veces a la derecha o a la izquierda del vídeo para saltar 10 s</translation>
 <translation id="3794286421982011626">Un sitio que visites puede guardar información sobre lo que estés haciendo para funcionar como cabría esperar; por ejemplo, para mantener tu sesión iniciada en un sitio o para guardar artículos en tu carrito de la compra. Los sitios suelen guardar esta información en tu dispositivo de forma temporal.</translation>
@@ -193,7 +195,6 @@
 <translation id="4534723447064627427">Para que <ph name="APP_NAME" /> pueda acceder al micrófono, actívalo también en los <ph name="BEGIN_LINK" />ajustes de Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Silenciar micrófono</translation>
 <translation id="4570913071927164677">Detalles</translation>
-<translation id="4575264539271661854">Haz que sea más fácil ampliar el texto y las imágenes en los sitios que visites</translation>
 <translation id="4598549027014564149">Mientras estás en modo Incógnito, los sitios no pueden usar las cookies para ver tu actividad de navegación en otros sitios, ni siquiera en sitios relacionados. Tu actividad de navegación no se usa para personalizar anuncios. Es posible que las funciones de algunos sitios no funcionen.</translation>
 <translation id="4645575059429386691">Administrado por uno de tus padres</translation>
 <translation id="4670064810192446073">Realidad virtual</translation>

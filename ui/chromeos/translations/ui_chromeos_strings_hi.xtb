@@ -84,6 +84,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> आइटम ज़िप किए जा रहे हैं...</translation>
 <translation id="1722687688096767818">प्रोफ़ाइल जोड़ी जा रही है...</translation>
 <translation id="1726100011689679555">नाम सर्वर</translation>
+<translation id="1727562178154619254">सिंक किया जा सकता है</translation>
 <translation id="1729953886957086472">जर्मन (जर्मनी)</translation>
 <translation id="1730235522912993863">चाइनीज़ शांग्जी</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> आइटम कॉपी किए गए.</translation>
@@ -705,6 +706,7 @@
 <translation id="6732801395666424405">प्रमाणपत्र लोड नहीं किए गए हैं</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">Bruschetta के साथ फ़ोल्डर को शेयर करें</translation>
+<translation id="6750737795876287924">मौजूदा डायरेक्ट्री</translation>
 <translation id="6751256176799620176">1 फ़ोल्डर चयनित</translation>
 <translation id="6755827872271341378">ChromeOS Flex वाला डिवाइस</translation>
 <translation id="6790428901817661496">चलाएं</translation>
@@ -742,7 +744,6 @@
 <translation id="6973630695168034713">फ़ोल्डर</translation>
 <translation id="6976795442547527108">शेर</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979737339423435258">हमेशा</translation>
 <translation id="6989942356279143254">स्वीडिश</translation>
 <translation id="6990081529015358884">अब आपके पास और स्‍थान शेष नहीं है</translation>
 <translation id="6993826899923627728">ये आइटम आपके ट्रैश में हैं</translation>
@@ -798,7 +799,6 @@
 <translation id="7458955835361612701">हाल ही की कोई इमेज नहीं मिली</translation>
 <translation id="7460898608667578234">उक्रेनियाई</translation>
 <translation id="7469894403370665791">इस नेटवर्क से अपने आप कनेक्ट करें</translation>
-<translation id="7481358317100446445">तैयार</translation>
 <translation id="7486315294984620427">फाइलों को Parallels Desktop में डालने के लिए, Windows की फ़ाइलों में कॉपी किया जाना ज़रूरी है.</translation>
 <translation id="749452993132003881">हिरागाना</translation>
 <translation id="7495372004724182530">मलयालम फ़ोनेटिक</translation>

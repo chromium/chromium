@@ -84,6 +84,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> элемент қысылуда…</translation>
 <translation id="1722687688096767818">Профиль қосылуда…</translation>
 <translation id="1726100011689679555">Ат серверлері</translation>
+<translation id="1727562178154619254">Синхрондауға дайын</translation>
 <translation id="1729953886957086472">Неміс (Германия)</translation>
 <translation id="1730235522912993863">Қытай (цанцзе)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> элемент көшірілді.</translation>
@@ -704,6 +705,7 @@
 <translation id="6732801395666424405">Сертификаттар жүктелмеді</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">Қалтаны Bruschetta-мен бөлісу</translation>
+<translation id="6750737795876287924">Ағымдағы каталог</translation>
 <translation id="6751256176799620176">1 қалта таңдалды</translation>
 <translation id="6755827872271341378">ChromeOS Flex құрылғысы</translation>
 <translation id="6790428901817661496">Ойнату</translation>
@@ -741,7 +743,6 @@
 <translation id="6973630695168034713">Қалталар</translation>
 <translation id="6976795442547527108">Арыстан</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979737339423435258">Барлық уақыт</translation>
 <translation id="6989942356279143254">Швед</translation>
 <translation id="6990081529015358884">Бос орын жоқ</translation>
 <translation id="6993826899923627728">Бұл элементтер себетте</translation>
@@ -797,7 +798,6 @@
 <translation id="7458955835361612701">Жаңа кескіндер жоқ</translation>
 <translation id="7460898608667578234">украин</translation>
 <translation id="7469894403370665791">Бұл желіге автоматты түрде қосылу</translation>
-<translation id="7481358317100446445">Дайын</translation>
 <translation id="7486315294984620427">Файлдарды Parallels Desktop-қа апару үшін "Windows файлдары" қалтасына көшіру керек.</translation>
 <translation id="749452993132003881">Хирагана</translation>
 <translation id="7495372004724182530">Малаялам (фонетикалық)</translation>

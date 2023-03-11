@@ -8,9 +8,6 @@
 <translation id="1175958423215084756">Aptikta nuoroda. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213"><ph name="PAGE_NUMBER" /> puslapis ištrintas</translation>
 <translation id="1258009455399840361">Pasukti 90 laipsnių pagal laikrodžio rodyklę</translation>
-<translation id="1300209025925956156">Nuskaitykite dokumentą</translation>
-<translation id="1309250603447638106">Atsisiunčiami dokumentų nuskaitymo naujiniai</translation>
-<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Naudokite paieškos ir rodyklės kairėn klavišus, kad juos pasiektumėte.</translation>
 <translation id="1417314334557041815">Redaguoti <ph name="INDEX" /> psl.</translation>
 <translation id="1467231725790366244">Kamera „<ph name="CAMERA" />“ atjungta.</translation>
 <translation id="1473110567575736769">3 sek. laikmatis</translation>
@@ -24,7 +21,6 @@
 <translation id="1664224225747386870">Nieko neįrašyta</translation>
 <translation id="1838104802459806957">Nukreipti aukštyn</translation>
 <translation id="1843105061469674856">Nuskaityti papildomą puslapį</translation>
-<translation id="1851169887664797861">Pasiekiami papildomi fotoaparato valdikliai</translation>
 <translation id="1851616744363735765">PRISTABDYTA</translation>
 <translation id="1899697626337024495">Nuotraukos skyra</translation>
 <translation id="1925845977604399247">Eiti į galeriją</translation>
@@ -49,7 +45,6 @@
 <translation id="2761536921376153655">Nuskaitymo tipas</translation>
 <translation id="28682968802727151">Veidrodinio vaizdo peržiūra</translation>
 <translation id="2879583609344924966">Kamera „<ph name="CAMERA" />“ prijungta.</translation>
-<translation id="2904654629665923749">Galimas dokumentų nuskaitymas</translation>
 <translation id="3067436040345934772">Pastumti dešinėn</translation>
 <translation id="3081586908890909590">Perjungti į filmavimo režimą</translation>
 <translation id="313467653172006084">30 KPS</translation>
@@ -74,7 +69,6 @@
 <translation id="4269820728363426813">Kopijuoti nuorodos adresą</translation>
 <translation id="4281620174117014503">Vidutinė skyra</translation>
 <translation id="428234092390943511">Puslapio miniatiūra</translation>
-<translation id="4340659173795395806">Dabar galite kurti kelių puslapių PDF</translation>
 <translation id="4383571725254449280">Spausdinti našumo žurnalus</translation>
 <translation id="4445542136948522167">Sustabdyti fotografavimą</translation>
 <translation id="4570032796877367747">Priekinis fotoaparatas</translation>
@@ -97,7 +91,6 @@
 <translation id="5317780077021120954">Išsaugoti</translation>
 <translation id="5320594929574852403">Perkeliama kairėn</translation>
 <translation id="5374917190292010970">4K (2 160 tšk.)</translation>
-<translation id="5444515100983837161">Visi dokumento kraštai turi būti rėmelyje. Geriausia nuskaitymo kokybė užtikrinama, kai dokumento ir fono spalvos skiriasi.</translation>
 <translation id="5662366948659129155">Nuskaitomas <ph name="COUNT" /> psl.</translation>
 <translation id="5671277269877808209">Kvadratas</translation>
 <translation id="5746169159649715125">Išsaugoti kaip PDF</translation>
@@ -157,7 +150,6 @@ Jei atsiliepimas susijęs su vaizdo arba vaizdo įrašo kokybe, pridėkite nuotr
 <translation id="8428213095426709021">Nustatymai</translation>
 <translation id="8629662593426079630">360 taškų</translation>
 <translation id="8711011893539266636">Perjungti mikrofono nutildymą. Nutildymas įjungtas</translation>
-<translation id="8712637175834984815">Supratau</translation>
 <translation id="8730621377337864115">Atlikta</translation>
 <translation id="8732462232047530626">Peržiūrėti metaduomenis</translation>
 <translation id="8815966864175525708">Perjungti į portretą</translation>

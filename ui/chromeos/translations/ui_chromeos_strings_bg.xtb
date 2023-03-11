@@ -84,6 +84,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> елемента се компресират...</translation>
 <translation id="1722687688096767818">Потребителският профил се добавя...</translation>
 <translation id="1726100011689679555">Сървъри за имена</translation>
+<translation id="1727562178154619254">Готово за синхронизиране</translation>
 <translation id="1729953886957086472">Немски (Германия)</translation>
 <translation id="1730235522912993863">Китайски (цандзие)</translation>
 <translation id="1731889557567069540">Копирахте <ph name="NUMBER_OF_ITEMS" /> елемента.</translation>
@@ -705,6 +706,7 @@
 <translation id="6732801395666424405">Сертификатите не са заредени</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">Споделяне на папката с Bruschetta</translation>
+<translation id="6750737795876287924">Текуща директория</translation>
 <translation id="6751256176799620176">Избрахте 1 папка</translation>
 <translation id="6755827872271341378">Устройство с ChromeOS Flex</translation>
 <translation id="6790428901817661496">Пускане</translation>
@@ -742,7 +744,6 @@
 <translation id="6973630695168034713">Папки</translation>
 <translation id="6976795442547527108">Лъв</translation>
 <translation id="6979158407327259162">Google Диск</translation>
-<translation id="6979737339423435258">За цялото време</translation>
 <translation id="6989942356279143254">Шведски</translation>
 <translation id="6990081529015358884">Нямате свободно място</translation>
 <translation id="6993826899923627728">Тези елементи са в кошчето ви</translation>
@@ -798,7 +799,6 @@
 <translation id="7458955835361612701">Няма скорошни изображения</translation>
 <translation id="7460898608667578234">украински</translation>
 <translation id="7469894403370665791">Автоматично свързване с тази мрежа</translation>
-<translation id="7481358317100446445">Готова</translation>
 <translation id="7486315294984620427">За да хванете и преместите файлове в Parallels Desktop, те трябва да бъдат копирани в папката с файлове на Windows.</translation>
 <translation id="749452993132003881">хирагана</translation>
 <translation id="7495372004724182530">Малаялам (фонетична клавиатура)</translation>

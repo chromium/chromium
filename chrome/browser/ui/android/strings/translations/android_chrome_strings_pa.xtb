@@ -34,6 +34,7 @@
 <translation id="1173894706177603556">ਮੁੜ-ਨਾਮਕਰਨ ਕਰੋ</translation>
 <translation id="1177863135347784049">ਵਿਉਂਂਤੀ</translation>
 <translation id="1181037720776840403">ਹਟਾਓ</translation>
+<translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /> ਨੂੰ</translation>
 <translation id="1193729455103054076">ਕੀ ਮਜ਼ਬੂਤ ਪਾਸਵਰਡ ਦੀ ਵਰਤੋਂ ਕਰਨੀ ਹੈ?</translation>
 <translation id="1197267115302279827">ਬੁੱਕਮਾਰਕਾਂ ਨੂੰ ਮੂਵ ਕਰੋ</translation>
 <translation id="1201402288615127009">ਅੱਗੇ</translation>
@@ -42,7 +43,6 @@
 <translation id="1204692632633423444">Chrome ਕਾਰਵਾਈ ਬਟਨ: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">ਲਿੰਕ ਲਿਖਤ ਕਾਪੀ ਕਰੋ</translation>
 <translation id="1209206284964581585">ਫਿਲਹਾਲ ਲੁਕਾਓ</translation>
-<translation id="1226851825267005295">ਸਾਡੇ Google ਖਾਤੇ ਨਾਲ Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰ ਕੇ ਤੁਸੀਂ ਆਪਣੀਆਂ ਤਰਜੀਹਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="1227058898775614466">ਨੈਵੀਗੇਸ਼ਨ ਇਤਿਹਾਸ</translation>
 <translation id="1231733316453485619">ਕੀ ਸਿੰਕ ਚਾਲੂ ਕਰਨਾ ਹੈ?</translation>
 <translation id="123724288017357924">ਕੈਸ਼ੇ ਕੀਤੀ ਸਮੱਗਰੀ ਨੂੰ ਅਣਡਿੱਠ ਕਰਕੇ ਮੌਜੂਦਾ ਪੰਨਾ ਰੀਲੋਡ ਕਰੋ</translation>
@@ -166,7 +166,6 @@
 <translation id="1928696683969751773">ਅਪਡੇਟਾਂ</translation>
 <translation id="19288952978244135">Chrome ਨੂੰ ਮੁੜ-ਖੋਲ੍ਹੋ।</translation>
 <translation id="1933845786846280168">ਚੁਣੀ ਗਈ ਟੈਬ</translation>
-<translation id="193571872656840963">ਇਸ ਰਚਨਾਕਾਰ ਦਾ ਧੰਨਵਾਦ ਕਰੋ</translation>
 <translation id="1943432128510653496">ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="1952172573699511566">ਜਦੋਂ ਸੰਭਵ ਹੋਵੇ, ਵੈੱਬਸਾਈਟਾਂ ਤੁਹਾਡੀ ਤਰਜੀਹੀ ਭਾਸ਼ਾ ਵਿੱਚ ਲਿਖਤ ਦਿਖਾਉਣਗੀਆਂ।</translation>
 <translation id="1959679933317802873">ਸਮੱਗਰੀ ਲਈ ਉਡੀਕ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
@@ -202,7 +201,6 @@
 <translation id="2122601567107267586">ਐਪ ਖੋਲ੍ਹੀ ਨਹੀਂ ਜਾ ਸਕੀ</translation>
 <translation id="2132122640199389833">ਲਿੰਕ ਕੀਤੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ ਨੂੰ ਹਟਾਓ</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> ਬੰਦ ਕੀਤਾ</translation>
-<translation id="2134927169889348449">Chrome ਨੂੰ ਵਰਤ ਕੇ, ਤੁਸੀਂ <ph name="BEGIN_TOS_LINK" />Google ਦੇ ਸੇਵਾ ਦੇ ਨਿਯਮਾਂ<ph name="END_TOS_LINK" /> ਅਤੇ <ph name="BEGIN_ATOS_LINK" />Google Chrome ਅਤੇ ChromeOS ਦੇ ਵਧੀਕ ਸੇਵਾ ਦੇ ਨਿਯਮਾਂ<ph name="END_ATOS_LINK" /> ਨਾਲ ਸਹਿਮਤ ਹੁੰਦੇ ਹੋ।</translation>
 <translation id="2139186145475833000">ਹੋਮ ਸਕ੍ਰੀਨ 'ਤੇ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="2141396931810938595">ਤੁਹਾਡੀ ਵਰਤੋਂ ਦੇ ਆਧਾਰ 'ਤੇ</translation>
 <translation id="214888715418183969">ਚੁਣੋ ਕਿ ਜਿਸ ਨਾਲ ਤੁਸੀਂ Chrome ਨਾਲ ਜਾਣਕਾਰੀ ਸਾਂਝੀ ਕਰਨ ਵਿੱਚ ਸਹਿਜ ਹੋ। ਤੁਹਾਡੇ ਦੁਆਰਾ ਸਾਂਝੀ ਕੀਤੀ ਗਈ ਮੈਟਰਿਕਸ Chrome ਦੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ, ਪ੍ਰਦਰਸ਼ਨ ਅਤੇ ਸਥਿਰਤਾ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਸਹਾਇਤਾ ਲਈ ਵਰਤੀ ਜਾਵੇਗੀ।</translation>
@@ -555,7 +553,6 @@
 <translation id="409109920254068737">ਤੁਸੀਂ ਇਸ QR ਕੋਡ ਨੂੰ ਦਿਖਾਉਣ ਵਾਲੇ ਡੀਵਾਈਸ 'ਤੇ ਸਾਈਨ-ਇਨ ਕਰਨ ਲਈ ਇਸ ਟੈਬਲੈੱਟ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="4095146165863963773">ਕੀ ਐਪ ਡਾਟਾ ਮਿਟਾਉਣਾ ਹੈ?</translation>
 <translation id="4096227151372679484">ਬੁੱਕਮਾਰਕ ਰੱਖਿਅਤ ਕਰਨ ਸੰਬੰਧੀ ਪ੍ਰਵਾਹ ਵਾਲਾ ਫੋਲਡਰ ਅੱਧੀ ਉਚਾਈ ਤੱਕ ਖੋਲ੍ਹਿਆ ਗਿਆ ਹੈ</translation>
-<translation id="4099578267706723511">Google ਨੂੰ ਵਰਤੋਂ ਅੰਕੜੇ ਅਤੇ ਕ੍ਰੈਸ਼ ਰਿਪੋਰਟਾਂ ਭੇਜ ਕੇ Chrome ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰੋ।</translation>
 <translation id="4101475238162928417">ਆਪਣੇ ਹੋਰ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੇ ਪਾਸਵਰਡ, ਬੁੱਕਮਾਰਕ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਸਿੰਕ ਕਰੋ</translation>
 <translation id="410351446219883937">ਆਟੋਪਲੇ</translation>
 <translation id="4106587138345390261">Chrome ਨਵੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਦੀ ਪੜਚੋਲ ਕਰ ਰਿਹਾ ਹੈ ਜੋ ਸਾਈਟਾਂ ਨੂੰ ਤੁਹਾਡੀ ਘੱਟ ਜਾਣਕਾਰੀ ਦੀ ਵਰਤੋਂ ਦੇ ਨਾਲ ਉਹੀ ਬ੍ਰਾਊਜ਼ਿੰਗ ਅਨੁਭਵ ਪ੍ਰਦਾਨ ਕਰਨ ਦੀ ਆਗਿਆ ਦਿੰਦੀਆਂ ਹਨ</translation>
@@ -593,7 +590,6 @@
 <translation id="4269820728363426813">ਲਿੰਕ ਪਤਾ ਕਾਪੀ ਕਰੋ</translation>
 <translation id="4283102315569707115">ਕੀ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਤੌਰ 'ਤੇ ਡੈਸਕਟਾਪ ਸਾਈਟਾਂ ਦੀ ਬੇਨਤੀ ਕਰਨੀ ਹੈ?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਸਕ੍ਰੀਨ ਲਾਕ ਚਾਲੂ ਕਰੋ<ph name="END_LINK" /></translation>
-<translation id="4293476595220860475">Chrome ਨੂੰ ਵਰਤ ਕੇ, ਤੁਸੀਂ <ph name="BEGIN_TOS_LINK" />Google ਦੇ ਸੇਵਾ ਦੇ ਨਿਯਮਾਂ<ph name="END_TOS_LINK" /> ਅਤੇ <ph name="BEGIN_ATOS_LINK" />Google Chrome ਅਤੇ ChromeOS ਦੇ ਵਧੀਕ ਸੇਵਾ ਦੇ ਨਿਯਮਾਂ<ph name="END_ATOS_LINK" /> ਨਾਲ ਸਹਿਮਤ ਹੁੰਦੇ ਹੋ। <ph name="BEGIN_PRIVACY_LINK" />ਪਰਦੇਦਾਰੀ ਨੀਤੀ<ph name="END_PRIVACY_LINK" /> ਵੀ ਲਾਗੂ ਹੁੰਦੀ ਹੈ।</translation>
 <translation id="4296252229500326964">ਨਵੀਂ ਇਨਕੋਗਨਿਟੋ ਟੈਬ</translation>
 <translation id="4298388696830689168">ਲਿੰਕ ਕੀਤੀਆਂ ਸਾਈਟਾਂ</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -766,7 +762,6 @@
 <translation id="5161254044473106830">ਸਿਰਲੇਖ ਲਾਜ਼ਮੀ</translation>
 <translation id="5170568018924773124">ਫੋਲਡਰ ਵਿੱਚ ਦਿਖਾਓ</translation>
 <translation id="5171045022955879922">ਖੋਜੋ ਜਾਂ URL ਟਾਈਪ ਕਰੋ</translation>
-<translation id="517734441743343109">ਜਾਰੀ ਰੱਖ ਕੇ, ਤੁਸੀਂ <ph name="BEGIN_TOS_LINK" />ਸੇਵਾ ਦੇ ਨਿਯਮਾਂ<ph name="END_TOS_LINK" /> ਅਤੇ <ph name="BEGIN_PRIVACY_LINK" />ਪਰਦੇਦਾਰੀ\u00A0ਨੀਤੀ<ph name="END_PRIVACY_LINK" /> ਨਾਲ ਸਹਿਮਤ ਹੁੰਦੇ ਹੋ।</translation>
 <translation id="5184329579814168207">Chrome ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="5191251636205085390">ਨਵੀਆਂ ਤਕਨੀਕਾਂ ਬਾਰੇ ਜਾਣੋ ਅਤੇ ਉਹਨਾਂ ਨੂੰ ਕੰਟਰੋਲ ਕਰੋ ਜਿਨ੍ਹਾਂ ਦਾ ਉਦੇਸ਼ ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਨੂੰ ਬਦਲਣਾ ਹੈ</translation>
 <translation id="5193988420012215838">ਤੁਹਾਡੇ ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕੀਤਾ ਗਿਆ</translation>

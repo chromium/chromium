@@ -100,7 +100,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1420408895951708260">Slå Nattelys til/fra. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Se de seneste billeder og mediefiler fra din telefon på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">Ja</translation>
-<translation id="1447641497144572814">Starter pauseskærmen</translation>
 <translation id="1455242230282523554">Vis sprogindstillinger</translation>
 <translation id="1460620680449458626">Lyden er slået fra.</translation>
 <translation id="14648076227129703">Dette giver <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> og alle andre apps samt websites med kameratilladelse adgang til kameraet</translation>
@@ -126,6 +125,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1550523713251050646">Klik for at se flere muligheder</translation>
 <translation id="1555130319947370107">Blå</translation>
 <translation id="1576623706766186887">Zoom ud, når luppen er aktiveret</translation>
+<translation id="1586324912145647027">Gå til skrivebord 1 til 8</translation>
 <translation id="1589090746204042747">Få adgang til al din aktivitet i denne session</translation>
 <translation id="1610778689852195798">"Fortryd"</translation>
 <translation id="1611993646327628135">Til</translation>
@@ -514,6 +514,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3631369015426612114">Tillad notifikationer fra følgende</translation>
 <translation id="3633097874324966332">Åbn Bluetooth-indstillingerne for at parre din enhed</translation>
 <translation id="3638400994746983214">Slå privatlivsskærmen til eller fra. <ph name="STATE_TEXT" />.</translation>
+<translation id="3649256019230929621">Minimer vinduet</translation>
 <translation id="3649505501900178324">En opdatering mangler at blive udført</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -588,6 +589,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="4021716437419160885">Rul ned</translation>
 <translation id="4022497978915111141">Lås enhed</translation>
 <translation id="4024840464866786680">Hvis du har glemt din pinkode og din adgangskode eller har ændret adgangskoden til din Google-konto for nylig, kan du prøve at gendanne denne bruger.</translation>
+<translation id="4026843240379844265">Flyt det aktive vindue fra skærm til skærm</translation>
 <translation id="4028481283645788203">Der kræves en adgangskode som ekstra sikkerhed</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Du deler din skærm</translation>
@@ -912,6 +914,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="5689633613396158040">Nattelys gør det mere behageligt at kigge på din skærm eller læse på den i svag belysning. Tryk for at ændre indstillingerne for, hvornår Nattelys aktiveres, eller for at deaktivere funktionen helt.</translation>
 <translation id="5691772641933328258">Fingeraftrykket kunne ikke genkendes</translation>
 <translation id="5693255400847650006">Mikrofonen er i brug</translation>
+<translation id="5699366815052349604">Tildel aktivt vindue til alle skriveborde</translation>
 <translation id="570390244361237317">Alle apps, naviger med piletasterne for at få adgang til alle apps</translation>
 <translation id="5707775774148071965">Din enhed understøtter en højere datahastighed end dit kabel. Enhedens ydeevne kan være begrænset.</translation>
 <translation id="5710450975648804523">Forstyr ikke er aktiveret</translation>
@@ -979,7 +982,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" />, administreret af din administrator</translation>
 <translation id="6027518778343897451">Der er ingen begivenhed <ph name="CURRENT_MONTH_DAY" />. Tryk på Enter for at åbne Google Kalender i browseren.</translation>
 <translation id="6030495522958826102">Menuen blev flyttet til nederste venstre hjørne af skærmen.</translation>
-<translation id="6032620807120418574">Klik et vilkårligt sted for at tage et billede af hele skærmen</translation>
+<translation id="6032620807120418574">Klik et vilkårligt sted for at optage hele skærmen</translation>
 <translation id="6040071906258664830">Optag mikrofon er slået <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Luk</translation>
 <translation id="6043212731627905357">Denne skærm fungerer ikke sammen med <ph name="DEVICE_TYPE" /> (skærmen understøttes ikke).</translation>
@@ -1169,7 +1172,7 @@ Installeret for nylig</translation>
 <translation id="6981982820502123353">Hjælpefunktioner</translation>
 <translation id="698231206551913481">Alle filer og lokale data, der er knyttet til denne bruger, slettes permanent, når brugeren fjernes.</translation>
 <translation id="7005239792648594238">Åbn en app for at komme i gang</translation>
-<translation id="7007983414944123363">Din pin- eller adgangskode kunne ikke bekræftes. Prøv igen.</translation>
+<translation id="7007983414944123363">Din pin- eller adgangskode kunne ikke verificeres. Prøv igen.</translation>
 <translation id="7014684956566476813">Forbundet til en enhed ved navn <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Vend tilbage kl. <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Skrivebord 6</translation>
@@ -1513,7 +1516,7 @@ Installeret for nylig</translation>
 <translation id="8841375032071747811">Knappen Tilbage</translation>
 <translation id="8843682306134542540">Slå Lås rotation til eller fra. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Søg+Esc</translation>
-<translation id="8853703225951107899">Din pin- eller adgangskode kan stadig ikke bekræftes. Bemærk! Hvis du har ændret din adgangskode for nylig, skal du bruge din gamle adgangskode. Den nye adgangskode anvendes, når du har logget ud.</translation>
+<translation id="8853703225951107899">Din pin- eller adgangskode kan stadig ikke verificeres. Bemærk! Hvis du har ændret din adgangskode for nylig, skal du bruge din gamle adgangskode. Den nye adgangskode anvendes, når du har logget ud.</translation>
 <translation id="8855885154700222542">Tast til fuld skærm</translation>
 <translation id="8858369206579825206">Privatlivsindstillinger</translation>
 <translation id="8870509716567206129">Appen understøtter ikke opdelt skærm.</translation>
@@ -1552,6 +1555,7 @@ Installeret for nylig</translation>
 <translation id="9034924485347205037">Linux-filer</translation>
 <translation id="9047624247355796468">Åbn indstillingerne for <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Skjul notifikation</translation>
+<translation id="906458777597946297">Maksimér vinduet</translation>
 <translation id="9065203028668620118">Rediger</translation>
 <translation id="9070640332319875144">Indstillinger for Assistent</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> til batteriet løber tør.</translation>

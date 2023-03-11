@@ -34,6 +34,7 @@
 <translation id="1173894706177603556">Μετονομασία</translation>
 <translation id="1177863135347784049">Προσαρμοσμένη</translation>
 <translation id="1181037720776840403">Κατάργηση</translation>
+<translation id="1181366777303791449">στο <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">Χρήση ισχυρού κωδικού πρόσβασης;</translation>
 <translation id="1197267115302279827">Μετακίνηση σελιδοδεικτών</translation>
 <translation id="1201402288615127009">Επόμενο</translation>
@@ -42,7 +43,6 @@
 <translation id="1204692632633423444">Κουμπί ενεργειών Chrome: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">Αντιγραφή κειμένου συνδέσμου</translation>
 <translation id="1209206284964581585">Προσωρινή απόκρυψη</translation>
-<translation id="1226851825267005295">Μπορείτε να διαχειριστείτε τις προτιμήσεις σας αφότου συνδεθείτε στο Chrome με τον Λογαριασμό Google.</translation>
 <translation id="1227058898775614466">Ιστορικό περιήγησης</translation>
 <translation id="1231733316453485619">Ενεργοποίηση συγχρονισμού;</translation>
 <translation id="123724288017357924">Επαναφ. τρέχ.σελ. αγνοώντας το περιεχ. κρυφ.μνήμης</translation>
@@ -166,7 +166,6 @@
 <translation id="1928696683969751773">Ενημερώσεις</translation>
 <translation id="19288952978244135">Ανοίξτε ξανά το Chrome.</translation>
 <translation id="1933845786846280168">Επιλεγμένη καρτέλα</translation>
-<translation id="193571872656840963">Ευχαριστήστε αυτόν τον δημιουργό</translation>
 <translation id="1943432128510653496">Αποθήκευση κωδικών πρόσβασης</translation>
 <translation id="1952172573699511566">Οι ιστότοποι θα εμφανίζουν κείμενο στην προτιμώμενη γλώσσα σας όταν υπάρχει αυτή η δυνατότητα.</translation>
 <translation id="1959679933317802873">Αναμονή για περιεχόμενο</translation>
@@ -202,7 +201,6 @@
 <translation id="2122601567107267586">Δεν ήταν δυνατό το άνοιγμα της εφαρμογής</translation>
 <translation id="2132122640199389833">Κατάργηση όλων των συνδεδεμένων συσκευών</translation>
 <translation id="213279576345780926">Η καρτέλα <ph name="TAB_TITLE" /> έκλεισε</translation>
-<translation id="2134927169889348449">Χρησιμοποιώντας το Chrome, συμφωνείτε με τους <ph name="BEGIN_TOS_LINK" />Όρους Παροχής Υπηρεσιών της Google<ph name="END_TOS_LINK" /> και τους <ph name="BEGIN_ATOS_LINK" />Πρόσθετους Όρους Παροχής Υπηρεσιών του Google Chrome και του Chrome OS<ph name="END_ATOS_LINK" />.</translation>
 <translation id="2139186145475833000">Προσθήκη στην αρχική οθόνη</translation>
 <translation id="2141396931810938595">Βάσει της χρήσης σας</translation>
 <translation id="214888715418183969">Επιλέξτε τα δεδομένα που νιώθετε άνετα να κοινοποιείτε στο Chrome. Οι μετρήσεις που θα κοινοποιήσετε θα χρησιμοποιηθούν για τη βελτίωση των λειτουργιών, της απόδοσης και της σταθερότητας του Chrome.</translation>
@@ -555,7 +553,6 @@
 <translation id="409109920254068737">Μπορείτε να χρησιμοποιήσετε αυτό το tablet για να συνδεθείτε στη συσκευή όπου εμφανίζεται αυτός ο κωδικός QR.</translation>
 <translation id="4095146165863963773">Διαγραφή δεδομένων εφαρμογών;</translation>
 <translation id="4096227151372679484">Ροή αποθήκευσης σελιδοδείκτη ανοιγμένη στο μισό ύψος</translation>
-<translation id="4099578267706723511">Συμβάλετε στη βελτίωση του Chrome, στέλνοντας στην Google στατιστικά στοιχεία χρήσης και αναφορές σφαλμάτων.</translation>
 <translation id="4101475238162928417">Χρησιμοποιήστε τον συγχρονισμό για να έχετε τους κωδικούς πρόσβασης, τους σελιδοδείκτες κ.ά. στις άλλες συσκευές σας.</translation>
 <translation id="410351446219883937">Αυτ. αναπαραγωγή</translation>
 <translation id="4106587138345390261">Το Chrome εξερευνά νέες λειτουργίες που επιτρέπουν στους ιστοτόπους να προσφέρουν την ίδια εμπειρία περιήγησης χρησιμοποιώντας λιγότερες από τις πληροφορίες σας</translation>
@@ -593,7 +590,6 @@
 <translation id="4269820728363426813">Αντιγρ. διεύθυνσης συνδέσμου</translation>
 <translation id="4283102315569707115">Να ζητούνται ιστότοποι για υπολογιστές από προεπιλογή;</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Ενεργοποίηση κλειδώματος οθόνης στις ρυθμίσεις Android<ph name="END_LINK" /></translation>
-<translation id="4293476595220860475">Χρησιμοποιώντας το Chrome, συμφωνείτε με τους <ph name="BEGIN_TOS_LINK" />Όρους Παροχής Υπηρεσιών της Google<ph name="END_TOS_LINK" /> και τους <ph name="BEGIN_ATOS_LINK" />Πρόσθετους Όρους Παροχής Υπηρεσιών του Google Chrome και του Chrome OS<ph name="END_ATOS_LINK" />. Επίσης, ισχύει η <ph name="BEGIN_PRIVACY_LINK" />Πολιτική απορρήτου<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="4296252229500326964">Νέα καρτ. ανών. περιήγ.</translation>
 <translation id="4298388696830689168">Συνδεδεμένοι ιστότοποι</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -766,7 +762,6 @@
 <translation id="5161254044473106830">Απαιτείται τίτλος</translation>
 <translation id="5170568018924773124">Εμφάνιση στο φάκελο</translation>
 <translation id="5171045022955879922">Αναζήτηση ή πληκτρολόγηση διεύθυνσης URL</translation>
-<translation id="517734441743343109">Αν συνεχίσετε, συμφωνείτε με τους <ph name="BEGIN_TOS_LINK" />Όρους Παροχής Υπηρεσιών<ph name="END_TOS_LINK" /> και την <ph name="BEGIN_PRIVACY_LINK" />Πολιτική\u00A0απορρήτου<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="5184329579814168207">Άνοιγμα στο Chrome</translation>
 <translation id="5191251636205085390">Μάθετε περισσότερα και δείτε πώς μπορείτε να ελέγχετε τις νέες τεχνολογίες που προορίζονται για την αντικατάσταση των cookie τρίτου μέρους</translation>
 <translation id="5193988420012215838">Αντιγράφηκε στο πρόχειρό σας</translation>

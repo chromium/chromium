@@ -506,6 +506,7 @@
 <translation id="2149968176347646218">Падключэнне не з'яўляецца бяспечным</translation>
 <translation id="2153609454945889823">Усталяваць сэрвісы Google Play для AR?</translation>
 <translation id="2154484045852737596">Рэдагаваць картку</translation>
+<translation id="2154739667870063220">Перазагрузіць</translation>
 <translation id="2155260325161282517">5 x 7 цаляў</translation>
 <translation id="2157640075051554492">Апавяшчэнні пра змяненне цэн</translation>
 <translation id="2161656808144014275">Тэкст</translation>
@@ -894,6 +895,7 @@
 <translation id="3215092763954878852">Не ўдалося выкарыстаць WebAuthn</translation>
 <translation id="3216313131063488104">Блюз</translation>
 <translation id="3218181027817787318">Адносны</translation>
+<translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Неабходна абнавіцца зараз}=2{Неабходна абнавіцца да заўтра}one{Неабходна абнавіцца на працягу # дня}few{Неабходна абнавіцца на працягу # дзён}many{Неабходна абнавіцца на працягу # дзён}other{Неабходна абнавіцца на працягу # дня}}</translation>
 <translation id="3223287115535306850">Круцёлка запуску праграмы</translation>
 <translation id="3223425961342298674">Выкарыстанне геаданых забаронена</translation>
 <translation id="3225919329040284222">Сервер падаў сертыфікат, які не адпавядае ўбудаваным патрабаванням. Гэтыя патрабаванні ўключаны ў мэтах вашай бяспекі – ім адпавядаюць надзейныя вэб-сайты з высокім узроўнем бяспекі.</translation>
@@ -1377,6 +1379,7 @@
 <translation id="4350629523305688469">Шматфункцыянальны латок</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> запытвае пошук прылад Bluetooth паблізу. Знойдзены наступныя прылады:</translation>
 <translation id="4351175281479794167">Увядзіце код спраўджання</translation>
+<translation id="4355383636893709732">Абнаўленне ChromeOS для праграм Android</translation>
 <translation id="4356973930735388585">Зламыснікі на гэтым сайце могуць імкнуцца ўсталяваць небяспечныя праграмы на вашым камп'ютары, якія крадуць або выдаляюць вашу інфармацыю (напрыклад, фота, паролі, паведамленні, даныя крэдытных картак).</translation>
 <translation id="4358059973562876591">Зададзеныя вамі шаблоны могуць не прымяніцца з-за памылкі палітыкі DnsOverHttpsMode.</translation>
 <translation id="4358461427845829800">Наладзіць аўтазапаўненне для спосабаў аплаты...</translation>
@@ -1757,6 +1760,7 @@
 <translation id="5288393065350884210">Бухгалтарскі ўлік і аўдыт</translation>
 <translation id="5288808348893593856">Калі падключэнне сайта небяспечнае, Chrome паведаміць вам аб гэтым.</translation>
 <translation id="5289384342738547352">Апрацоўка некалькіх дакументаў</translation>
+<translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Неабходна абнавіцца сёння}=2{Неабходна абнавіцца да заўтра}one{Неабходна абнавіцца на працягу # дня}few{Неабходна абнавіцца на працягу # дзён}many{Неабходна абнавіцца на працягу # дзён}other{Неабходна абнавіцца на працягу # дня}}</translation>
 <translation id="5293919335876685914">Аўтамабілі з кузавам "купэ"</translation>
 <translation id="5296589789433599000">Кулінарыя і рэцэпты</translation>
 <translation id="5299298092464848405">Не ўдалося прааналізаваць правіла</translation>
@@ -1951,6 +1955,7 @@
 <translation id="5786044859038896871">Запоўніць даныя карткі?</translation>
 <translation id="578633867165174378">Браўзер Chrome выявіў, што пароль, які вы толькі што выкарысталі, быў раскрыты пры ўцечцы даных. Мы рэкамендуем змяніць яго зараз жа.</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="580241730938216256">Пачаць абнаўленне</translation>
 <translation id="5803412860119678065">Запоўніць наступныя даныя: <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Дазволы</translation>
 <translation id="5808435672482059465">Праглядзець гісторыю Chrome</translation>
@@ -2170,6 +2175,7 @@
 <translation id="6366710531182496394">Дзве скабы злева</translation>
 <translation id="6367196786591004737">Выдаліць запіс</translation>
 <translation id="6370022303958842211">Усе дзеянні, звязаныя з доступам да прылады, такія як уваход (у тым ліку прычыны, па якіх увайсці не ўдалося), выхад, блакіроўка і разблакіроўка</translation>
+<translation id="6374469231428023295">Паўтарыць спробу</translation>
 <translation id="6374865374745447009">кіраванне вокнамі</translation>
 <translation id="6377268785556383139">1 вынік па запыце "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6380497234672085559">A0</translation>
@@ -2480,6 +2486,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}many{<ph name="PAYMENT_METHOD_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">Бледна-ліловы</translation>
 <translation id="7156870133441232244">Сервер патрабуе абнаўлення пратакола TLS да версіі 1.2 або навейшай.</translation>
+<translation id="7160999678034985039">Захавайце працу і пачніце абнаўленне, калі будзеце гатовыя.</translation>
 <translation id="7163295244162773898">{0,plural, =1{Капіраваць канфідэнцыяльны файл?}one{Капіраваць канфідэнцыяльныя файлы?}few{Капіраваць канфідэнцыяльныя файлы?}many{Капіраваць канфідэнцыяльныя файлы?}other{Капіраваць канфідэнцыяльныя файлы?}}</translation>
 <translation id="717330890047184534">Ідэнтыфікатар GAIA:</translation>
 <translation id="7174545416324379297">Аб'яднана</translation>
@@ -2728,6 +2735,7 @@
 <translation id="7687305263118037187">Скончыўся час чакання паўтору</translation>
 <translation id="7690647519407127574">Паштоўка Oufuku Hagaki</translation>
 <translation id="7693583928066320343">Атрыманы парадак старонак</translation>
+<translation id="769424100851389104">Пачаць абнаўленне</translation>
 <translation id="7696089921647603491">Класічны рок і старыя хіты</translation>
 <translation id="769721561045429135">Зараз у вас ёсць карткі, якія могуць выкарыстоўвацца толькі на гэтай прыладзе. Націсніце "Працягнуць", каб праглядзець карткі.</translation>
 <translation id="7698864304447945242">Абнавіць сэрвісы Google Play для AR?</translation>
@@ -2752,6 +2760,7 @@
 <translation id="774634243536837715">Небяспечнае змесціва заблакіравана.</translation>
 <translation id="7751971323486164747">Наладзіць памеры і тыпы шрыфтоў у Chrome</translation>
 <translation id="7752995774971033316">Не пад кіраваннем</translation>
+<translation id="7754587126786572336">Калі абнаўленне пачнецца, укладкі і праграмы Chrome закрыюцца</translation>
 <translation id="7755287808199759310">Разблакіраваць сайт можа адзін з бацькоў</translation>
 <translation id="7755624218968747854">Асноўны рулон</translation>
 <translation id="7758069387465995638">Падключэнне магло быць заблакіравана брандмаўэрам або антывірусам.</translation>
@@ -2916,6 +2925,7 @@
 <translation id="8186706823560132848">Праграмнае забеспячэнне</translation>
 <translation id="8190193880870196235">Пад кіраваннем пашырэння</translation>
 <translation id="8194797478851900357">&amp;Адрабіць перамяшчэнне</translation>
+<translation id="8200772114523450471">Узнавіць</translation>
 <translation id="8201077131113104583">Недапушчальны URL-адрас абнаўлення для пашырэння з ідэнтыфікатарам "<ph name="EXTENSION_ID" />".</translation>
 <translation id="8202097416529803614">Зводка па заказе</translation>
 <translation id="8202370299023114387">Канфлікт</translation>
@@ -3213,6 +3223,7 @@
 <translation id="8963117664422609631">Перайсці ў налады сайта</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Рэкамендацыі:<ph name="MARKUP_2" />Праверце, ці ёсць у вас падключэнне для перадачы даных.<ph name="MARKUP_3" />Перазагрузіце старонку пазней.<ph name="MARKUP_4" />Праверце ўведзены адрас.<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">Захаваць картку</translation>
+<translation id="8970887620466824814">Нешта пайшло не так.</translation>
 <translation id="8971063699422889582">Тэрмін дзеяння сертыфіката сервера скончыўся.</translation>
 <translation id="8975012916872825179">Уключае ў сябе такую інфармацыю, як нумары тэлефонаў, адрасы электроннай пошты і адрасы дастаўкі</translation>
 <translation id="8975263830901772334">Назвы файлаў, якія вы друкуеце</translation>

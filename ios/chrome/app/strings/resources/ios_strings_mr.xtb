@@ -81,6 +81,7 @@
 <translation id="149095475893949513">ही वेबसाइट प्रोफाइल कॉंफिगरेशन डाउनलोड करण्याचा प्रयत्न करत आहे.</translation>
 <translation id="1491277525950327607">सेटिंग टॉगल करण्यासाठी दोनदा टॅप करा</translation>
 <translation id="1492417797159476138">तुम्ही या साइटसाठी आधीच वापरकर्ता नाव सेव्ह केले आहे</translation>
+<translation id="1497590942294823549">मेनू → Password Manager</translation>
 <translation id="1498283581832036924">तुमचे <ph name="WEBSITE" /> खाते हटवले जाणार नाही.</translation>
 <translation id="1506063256525392513">हे तुम्हाला फोटो काढू आणि अपलोड करू देते, तसेच QR कोड स्कॅन करू देते</translation>
 <translation id="1509486075633541495">वेबसाइटवर साइन इन करा</translation>
@@ -242,6 +243,7 @@
 <translation id="271033894570825754">नवीन</translation>
 <translation id="2712127207578915686">फाईल उघडण्यात अक्षम</translation>
 <translation id="2718352093833049315">केवळ वाय-फाय वर</translation>
+<translation id="2737716090799520623">तुम्ही Chrome मध्ये साइन इन केलेले असते, तेव्हा सेव्ह केलेले पासवर्ड तुमच्या Google खाते (<ph name="ACCOUNT" />) मध्ये जातात. हे बंद करण्यासाठी <ph name="BEGIN_LINK" />सेटिंग्ज वर जा<ph name="END_LINK" />.</translation>
 <translation id="2747003861858887689">मागील फील्ड</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> ला फॉलो करत आहे</translation>
 <translation id="2764831210418622012">आत्ताच</translation>
@@ -844,6 +846,7 @@
 <translation id="6801927553864092214">खाजगीरीत्या ब्राउझ करण्यासाठी, गुप्त टॅब उघडा</translation>
 <translation id="6807889908376551050">सर्व दर्शवा...</translation>
 <translation id="681368974849482173">तयार केलेला आयटम</translation>
+<translation id="6822587385560699678">सुरू असल्यास, पासवर्ड <ph name="ACCOUNT" /> मध्ये सेव्ह केले जातात. बंद असल्यास, पासवर्ड फक्त या डिव्हाइसवर सेव्ह केले जातात.</translation>
 <translation id="683022620450280906">तुम्ही सेव्ह केलेले पासवर्ड कोणत्याही डिव्हाइसवर वापरू शकता. ते <ph name="EMAIL" /> साठी Google पासवर्ड व्यवस्थापक यामध्ये सेव्ह केले आहेत</translation>
 <translation id="6831043979455480757">भाषांतर करा</translation>
 <translation id="6842136130964845393">तुम्ही तुमचे सेव्ह केलेले पासवर्ड कधीही ॲक्सेस करू शकता याची खात्री करण्यासाठी, हे तुम्हीच आहात याची पडताळणी करा</translation>

@@ -26,6 +26,7 @@
 <translation id="1448064542941920355">Yakınlaştırmayı azalt</translation>
 <translation id="1510341833810331442">Sitelerin cihazınıza veri kaydetmesine izin verilmiyor</translation>
 <translation id="1547123415014299762">Üçüncü taraf çerezlerine izin verilir</translation>
+<translation id="1593426485665524382">Ekranın üst kısmına yakın bir yerde yeni işlemler mevcut</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1633720957382884102">İlgili siteler</translation>
 <translation id="1644574205037202324">Geçmiş</translation>
@@ -146,6 +147,7 @@
 <translation id="3628308229821498208">Önerilen aramalar</translation>
 <translation id="3636279694100170143">Ziyaret ettiğiniz siteler bir bot değil gerçek kullanıcı olduğunuzu doğrulayabilir</translation>
 <translation id="3649190289964910441">Ziyaret ettiğiniz bir site gerçek bir kullanıcı olduğunuzu doğrulayan bilgileri Chrome'a kaydedebilir. Siz sitelere göz atarken siteler de Chrome'dan kontrol ederek büyük olasılıkla güvenilir bir kullanıcı olduğunuzu doğrular.</translation>
+<translation id="3721953990244350188">Kapat ve sonraki mevcut işlemi göster</translation>
 <translation id="3744111561329211289">Arka plan senkronizasyonu</translation>
 <translation id="3763247130972274048">10 sn. atlamak için videoda sola veya sağa iki kez dokunun</translation>
 <translation id="3794286421982011626">Ziyaret ettiğiniz bir site, yaptığınız işlemlerle ilgili bilgileri kaydedebilir. Bu bilgileri, beklediğiniz gibi çalışmak, örneğin bir sitede oturumunuzu açık tutmak veya alışveriş sepetinizdeki öğeleri kaydetmek için kullanabilir. Genellikle siteler bu bilgileri geçici olarak cihazınıza kaydeder.</translation>
@@ -193,7 +195,6 @@
 <translation id="4534723447064627427"><ph name="APP_NAME" /> uygulamasının mikrofonunuza erişebilmesi için <ph name="BEGIN_LINK" />Android Ayarları<ph name="END_LINK" />'nda da mikrofonu açın.</translation>
 <translation id="4566417217121906555">Mikrofonun sesini kapat</translation>
 <translation id="4570913071927164677">Ayrıntılar</translation>
-<translation id="4575264539271661854">Ziyaret ettiğiniz bir sitedeki metin ve resimleri yakınlaştırmayı kolaylaştırın</translation>
 <translation id="4598549027014564149">Gizli moddayken siteler, alakalı siteler de dahil olmak üzere farklı sitelerde tarama etkinliğinizi görmek için çerezlerinizi kullanamaz. Tarama etkinliğiniz reklam kişiselleştirme gibi işlemler için kullanılmaz. Bazı sitelerdeki özellikler çalışmayabilir.</translation>
 <translation id="4645575059429386691">Ebeveyniniz tarafından yönetiliyor</translation>
 <translation id="4670064810192446073">Sanal gerçeklik</translation>

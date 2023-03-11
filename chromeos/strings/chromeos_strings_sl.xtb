@@ -241,7 +241,6 @@
 <translation id="3226657629376379887">Meni z dejanji za postavitev</translation>
 <translation id="3246869037381808805">Izbrisana bodo tiskalna opravila, starejša od 1 dneva</translation>
 <translation id="3268178239013324452">Napaka – vrata so odprta</translation>
-<translation id="3275506277319227640">Sidranje <ph name="DIRECTION" /></translation>
 <translation id="3275729367986477355">Slika avatarja</translation>
 <translation id="3283504360622356314">{0,plural, =1{Uredi datoteko}one{Uredi datoteke}two{Uredi datoteke}few{Uredi datoteke}other{Uredi datoteke}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
@@ -360,7 +359,6 @@
 <translation id="4311195029067684288">V celoti</translation>
 <translation id="4333390807948134856">Tipka <ph name="KEY_NAME" /> je bila pritisnjena.</translation>
 <translation id="435692326371619097">Upravljanje nastavitev APN-ja. APN-ji vzpostavijo povezavo med mobilnim omrežjem in internetom. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
-<translation id="4370033095251616914">Sidranje na manjši strani</translation>
 <translation id="4378373042927530923">Ni se izvedlo</translation>
 <translation id="4378551569595875038">Povezovanje …</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -903,7 +901,6 @@
 <translation id="9137526406337347448">Googlove storitve</translation>
 <translation id="9138630967333032450">Leva tipka Shift</translation>
 <translation id="9149391708638971077">Zaženi preizkus pomnilnika</translation>
-<translation id="9157515863513902090">Sidranje na večji strani</translation>
 <translation id="9161276708550942948">preslednica</translation>
 <translation id="9173638680043580060">Še manj kot minuta</translation>
 <translation id="917720651393141712">Preizkus</translation>

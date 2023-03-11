@@ -376,6 +376,7 @@
 <translation id="1803351196216024260">ଆପଣଙ୍କ ମାଇକ୍ରୋଫୋନ୍ ବ୍ୟବହାର କରିବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
 <translation id="1807246157184219062">ଫିକା</translation>
 <translation id="1807528111851433570">ଆରମ୍ଭର ସିଟ୍</translation>
+<translation id="180991881384371158">ଆପଣଙ୍କର CVC ଆପଣଙ୍କ କାର୍ଡର ପଛପଟେ ଅଛି। ଏହା ଆପଣଙ୍କ କାର୍ଡ ନମ୍ବର ଉପରେ ଶୀର୍ଷ ଡାହାଣରେ ଥିବା ଶେଷ 3 ଅଙ୍କ ଅଟେ।</translation>
 <translation id="181000283860817563">ଏକାଧିକ ସାଇଟରେ ମୂଲ୍ୟ ଟ୍ରାକ କରନ୍ତୁ</translation>
 <translation id="1810391395243432441">ଆପଣଙ୍କ ସ୍କ୍ରିନ ଲକ ସହ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ସୁରକ୍ଷିତ କରନ୍ତୁ</translation>
 <translation id="1812527064848182527">ଲ୍ୟାଣ୍ଡସ୍କେପ୍</translation>
@@ -506,6 +507,7 @@
 <translation id="2149968176347646218">ସଂଯୋଗଟି ସୁରକ୍ଷିତ ନୁହେଁ</translation>
 <translation id="2153609454945889823">AR ପାଇଁ Google Play ସେବାଗୁଡ଼ିକ ଇନଷ୍ଟଲ କରିବେ?</translation>
 <translation id="2154484045852737596">କାର୍ଡକୁ ଏଡିଟ୍ କରନ୍ତୁ</translation>
+<translation id="2154739667870063220">ରିବୁଟ କରନ୍ତୁ</translation>
 <translation id="2155260325161282517">5 x 7 ଇଞ୍ଚ</translation>
 <translation id="2157640075051554492">ମୂଲ୍ୟ ଟ୍ରାକିଂ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ</translation>
 <translation id="2161656808144014275">ଟେକ୍ସଟ୍</translation>
@@ -640,6 +642,7 @@
 <translation id="2521736961081452453">ଫର୍ମ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="2523886232349826891">କେବଳ ଏହି ଡିଭାଇସ୍‍ରେ ସେଭ୍ କରାଯାଇଛି</translation>
 <translation id="2524461107774643265">ଅଧିକ ସୂଚନା ଯୋଗ କରନ୍ତୁ</translation>
+<translation id="2527451058878391043">ଆପଣଙ୍କର CVC ଆପଣଙ୍କ କାର୍ଡର ସାମ୍ନାପଟେ ଅଛି। ଏହା ଆପଣଙ୍କ କାର୍ଡ ନମ୍ବର ଉପରେ ଶୀର୍ଷ ଡାହାଣରେ ଥିବା 4-ଅଙ୍କ ବିଶିଷ୍ଟ କୋଡ ଅଟେ।</translation>
 <translation id="2529899080962247600">ଏହି ଫିଲ୍ଡରେ <ph name="MAX_ITEMS_LIMIT" />ରୁ ଅଧିକ ଏଣ୍ଟ୍ରି ରହିବା ଉଚିତ ନୁହେଁ। ସମସ୍ତ ପରବର୍ତ୍ତୀ ଏଣ୍ଟ୍ରିକୁ ଅଣଦେଖା କରାଯିବ।</translation>
 <translation id="253493526287553278">ପ୍ରମୋ କୋଡ ବିବରଣୀ ଦେଖନ୍ତୁ</translation>
 <translation id="2535585790302968248">ବ୍ୟକ୍ତିଗତ ଭାବେ ବ୍ରାଉଜ କରିବାକୁ ଏକ ନୂଆ ଇନକଗ୍ନିଟୋ ଟାବ ଖୋଲନ୍ତୁ</translation>
@@ -892,6 +895,7 @@
 <translation id="3215092763954878852">WebAuthn ବ୍ୟବହାର କରାଯାଇପାରିଲା ନାହିଁ</translation>
 <translation id="3216313131063488104">ବ୍ଲ୍ୟୁସ</translation>
 <translation id="3218181027817787318">ରିଲେଟିଭ୍</translation>
+<translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{ବର୍ତ୍ତମାନ ଅପଡେଟ ଆବଶ୍ୟକ}=2{ଆସନ୍ତାକାଲି ସୁଦ୍ଧା ଅପଡେଟ ଆବଶ୍ୟକ}other{# ଦିନ ମଧ୍ୟରେ ଅପଡେଟ ଆବଶ୍ୟକ}}</translation>
 <translation id="3223287115535306850">ଲଞ୍ଚ କରାଯାଉଥିବା ଆପର ଥ୍ରୋବର୍</translation>
 <translation id="3223425961342298674">ଲୋକେସନକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
 <translation id="3225919329040284222">ସର୍ଭର୍ ଏକ ସାର୍ଟିଫିକେଟ୍‌କୁ ଉପସ୍ଥାପନ କରୁଛି, ଯାହା ବିଲ୍ଟ-ଇନ୍ ପ୍ରତ୍ୟାଶା ସହ ମେଳ ଖାଉନାହିଁ। ଏହି ପ୍ରତ୍ୟାଶାଗୁଡ଼ିକ ଆପଣଙ୍କୁ ସୁରକ୍ଷିତ ରଖିବାକୁ କିଛି ଉଚ୍ଚ ସୁରକ୍ଷା ଥିବା ୱେବ୍‍ସାଇଟ୍‍ଗୁଡ଼ିକ ପାଇଁ ଅନ୍ତର୍ଭୁକ୍ତ କରାଯାଇଛି।</translation>
@@ -1375,6 +1379,7 @@
 <translation id="4350629523305688469">ମଲ୍ଟିଫଙ୍କସନ୍ ଟ୍ରେ</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> ଆଖପାଖର ବ୍ଲୁଟୁଥ୍ ଡିଭାଇସ୍‌ଗୁଡ଼ିକୁ ସ୍କାନ୍ କରିବାକୁ ଚାହୁଁଛି। ନିମ୍ନୋକ୍ତ ଡିଭାଇସ୍‌ଗୁଡ଼ିକ ମିଳିଛି:</translation>
 <translation id="4351175281479794167">ଯାଞ୍ଚକରଣ କୋଡ ଲେଖନ୍ତୁ</translation>
+<translation id="4355383636893709732">Android ଆପ୍ସ ପାଇଁ ChromeOS ଅପଡେଟ</translation>
 <translation id="4356973930735388585">ଏହି ସାଇଟ୍‍‍ରେ ଆକ୍ରମଣକାରୀ ଆପଣଙ୍କର କମ୍ପ୍ୟୁଟର୍‌ରେ କିଛି ବିପଜ୍ଜନକ ପ୍ରୋଗ୍ରାମ୍‌ ଇନ୍‌ଷ୍ଟଲ୍‌ କରିବାକୁ ଚେଷ୍ଟା କରିପାରନ୍ତି ଯାହା ଆପଣଙ୍କର ସୂଚନା (ଉଦାହରଣସ୍ୱରୂପ, ଫଟୋ, ପାସ୍‌ୱର୍ଡ, ମେସେଜ୍‍ ଏବଂ କ୍ରେଡିଟ୍ କାର୍ଡ) ଚୋରୀ କିମ୍ବା ଡିଲିଟ୍‌ କରିପାରନ୍ତି।</translation>
 <translation id="4358059973562876591">ଆପଣଙ୍କ ଦ୍ୱାରା ନିର୍ଦ୍ଦିଷ୍ଟ କରାଯାଇଥିବା ଟେମ୍ପଲେଟ୍‍ଗୁଡ଼ିକ DnsOverHttpsMode ନୀତିରେ କୌଣସି ତ୍ରୁଟି ଯୋଗୁଁ ଲାଗୁ ହୋଇନପାରେ।</translation>
 <translation id="4358461427845829800">ପେମେଣ୍ଟ ପଦ୍ଧତିକୁ ପରିଚାଳନା କରନ୍ତୁ...</translation>
@@ -1756,6 +1761,7 @@
 <translation id="5288393065350884210">ଆକାଉଣ୍ଟିଂ ଏବଂ ଅଡିଟିଂ</translation>
 <translation id="5288808348893593856">ସାଇଟର ସଂଯୋଗଟି ସୁରକ୍ଷିତ ନୁହେଁ ବୋଲି Chrome ଆପଣଙ୍କୁ କହି ନଥିବା ପର୍ଯ୍ୟନ୍ତ, ଏହା ସୁରକ୍ଷିତ ଅଟେ।</translation>
 <translation id="5289384342738547352">ଏକାଧିକ ଡକ୍ୟୁମେଣ୍ଟର ପରିଚାଳନା</translation>
+<translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{ଆଜି ଅପଡେଟ ଆବଶ୍ୟକ}=2{ଆସନ୍ତାକାଲି ସୁଦ୍ଧା ଅପଡେଟ ଆବଶ୍ୟକ}other{# ଦିନ ମଧ୍ୟରେ ଅପଡେଟ ଆବଶ୍ୟକ}}</translation>
 <translation id="5293919335876685914">କୁପେଗୁଡ଼ିକ</translation>
 <translation id="5296589789433599000">ରନ୍ଧନ ଏବଂ ରେସିପିଗୁଡ଼ିକ</translation>
 <translation id="5299298092464848405">ନୀତି ପାର୍ସ କରିବାରେ ତ୍ରୁଟି</translation>
@@ -1950,6 +1956,7 @@
 <translation id="5786044859038896871">ଆପଣଙ୍କର କାର୍ଡ ସୂଚନାକୁ ଆପଣ ପୁରଣ କରିବାକୁ ଚାହାନ୍ତି କି?</translation>
 <translation id="578633867165174378">ଆପଣ ଏକ ଡାଟା ଉଲ୍ଲଙ୍ଘନରେ ଏବେ ବ୍ୟବହାର କରିଥିବା ପାସୱାର୍ଡ Chromeକୁ ମିଳିଛି। ଏହି ପାସୱାର୍ଡକୁ ବର୍ତ୍ତମାନ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ଆମେ ସୁପାରିଶ କରୁଛୁ।</translation>
 <translation id="5789643057113097023">।</translation>
+<translation id="580241730938216256">ଅପଡେଟ ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="5803412860119678065">ଆପଣ ନିଜର <ph name="CARD_DETAIL" />କୁ ପୁରଣ କରିବାକୁ ଚାହାନ୍ତି କି?</translation>
 <translation id="5804241973901381774">ଅନୁମତିଗୁଡ଼ିକ</translation>
 <translation id="5808435672482059465">ଆପଣଙ୍କ Chrome ଇତିହାସ ଦେଖନ୍ତୁ</translation>
@@ -2168,6 +2175,7 @@
 <translation id="6366710531182496394">ବାମ ପଟରେ ଦୁଇଟି ଷ୍ଟାପଲ୍</translation>
 <translation id="6367196786591004737">ଏଣ୍ଟ୍ରିକୁ ଡିଲିଟ କରନ୍ତୁ</translation>
 <translation id="6370022303958842211">ଲଗଇନ (ବିଫଳ ଲଗଇନର କାରଣଗୁଡ଼ିକ ସମେତ), ଲଗଆଉଟ, ଲକ ଓ ଅନଲକ ପରି ଡିଭାଇସ ଆକ୍ସେସ ଆକ୍ସନଗୁଡ଼ିକ</translation>
+<translation id="6374469231428023295">ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="6374865374745447009">ୱିଣ୍ଡୋ ପରିଚାଳନା</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />' ପାଇଁ 1ଟି ଫଳାଫଳ</translation>
 <translation id="6380497234672085559">A0</translation>
@@ -2478,6 +2486,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> ଏବଂ ଅଧିକ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />ଟି}other{<ph name="PAYMENT_METHOD_PREVIEW" /> ଏବଂ ଅଧିକ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />ଟି}}</translation>
 <translation id="7153618581592392745">ଲାଭେଣ୍ଡର୍</translation>
 <translation id="7156870133441232244">ସର୍ଭରକୁ TLS 1.2 କିମ୍ବା ପରବର୍ତ୍ତୀ ସଂସ୍କରଣରେ ଅପଗ୍ରେଡ୍ କରିବା ଉଚିତ।</translation>
+<translation id="7160999678034985039">ଦୟାକରି ଆପଣଙ୍କ ୱାର୍କ ସେଭ କରନ୍ତୁ ଏବଂ ଆପଣ ପ୍ରସ୍ତୁତ ହେଲେ ଅପଡେଟ ଆରମ୍ଭ କରନ୍ତୁ।</translation>
 <translation id="7163295244162773898">{0,plural, =1{ଗୋପନୀୟ ଫାଇଲ କପି କରିବେ?}other{ଗୋପନୀୟ ଫାଇଲଗୁଡ଼ିକୁ କପି କରିବେ?}}</translation>
 <translation id="717330890047184534">Gaia ID:</translation>
 <translation id="7174545416324379297">ମିଶ୍ରଣ କରାଯାଇଛି</translation>
@@ -2725,6 +2734,7 @@
 <translation id="7687305263118037187">ପୁଣି ଚେଷ୍ଟା କରିବା ସମୟ ସରିଗଲା</translation>
 <translation id="7690647519407127574">Oufuku Hagaki ପୋଷ୍ଟକାର୍ଡ</translation>
 <translation id="7693583928066320343">ପୃଷ୍ଠା ଅର୍ଡର ପ୍ରାପ୍ତ ହୋଇଛି</translation>
+<translation id="769424100851389104">ବର୍ତ୍ତମାନ ଅପଡେଟ ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="7696089921647603491">କ୍ଲାସିକ ରକ ଏବଂ ଓଲ୍ଡିଜ</translation>
 <translation id="769721561045429135">ବର୍ତ୍ତମାନ, ଆପଣଙ୍କ ପାଖରେ ସେହି କାର୍ଡଗୁଡ଼ିକ ଅଛି ଯାହା କେବଳ ଏହି ଡିଭାଇସ୍‌ରେ ବ୍ୟବହାର କରାଯାଇପାରିବ। କାର୍ଡଗୁଡ଼ିକର ସମୀକ୍ଷା କରିବାକୁ ’ଜାରି ରଖନ୍ତୁ’ରେ କ୍ଲିକ୍‌ କରନ୍ତୁ।</translation>
 <translation id="7698864304447945242">AR ପାଇଁ Google Play ସେବାଗୁଡ଼ିକ ଅପଡେଟ କରିବେ?</translation>
@@ -2749,6 +2759,7 @@
 <translation id="774634243536837715">ବିପଜ୍ଜନକ ବିଷୟବସ୍ତୁ ବ୍ଲକ୍ କରାଯାଇଛି।</translation>
 <translation id="7751971323486164747">Chromeରେ ଫଣ୍ଟ ଆକାର ଏବଂ ଟାଇପଫେସ୍ କଷ୍ଟମାଇଜ୍ କରନ୍ତୁ</translation>
 <translation id="7752995774971033316">ଅପରିଚାଳିତ</translation>
+<translation id="7754587126786572336">ଅପଡେଟ ଆରମ୍ଭ ହେଲେ ଆପଣଙ୍କ Chrome ଟାବ ଏବଂ ଆପ୍ସ ବନ୍ଦ ହୋଇଯିବ</translation>
 <translation id="7755287808199759310">ଆପଣଙ୍କ ଅଭିଭାବକ ଆପଣଙ୍କ ପାଇଁ ଏହାର ଅବରୋଧ ହଟାଇପାରିବେ</translation>
 <translation id="7755624218968747854">ପ୍ରାଥମିକ ରୋଲ୍</translation>
 <translation id="7758069387465995638">Firewall ବା ଆଣ୍ଟିଭାଇରସ୍ ସଫ୍ଟୱେର୍ ବୋଧହୁଏ ସଂଯୋଗକୁ ବ୍ଲକ୍ କରିଦେଇଛନ୍ତି।</translation>
@@ -2913,6 +2924,7 @@
 <translation id="8186706823560132848">ସଫ୍ଟୱେର</translation>
 <translation id="8190193880870196235">ଏକ ଏକ୍ସଟେନସନ୍ ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି</translation>
 <translation id="8194797478851900357">&amp;ଘୁଞ୍ଚାନ୍ତୁକୁ ପୂର୍ବବତ୍‍ କରନ୍ତୁ</translation>
+<translation id="8200772114523450471">ସାରାଶଂ</translation>
 <translation id="8201077131113104583">ID "<ph name="EXTENSION_ID" />" ସହିତ ଏକ୍ସଟେନ୍‌ସନ୍ ପାଇଁ ଅବୈଧ ଅପ୍‌ଡେଟ୍ ହୋଇଥିବା URL</translation>
 <translation id="8202097416529803614">ଅର୍ଡର ସାରାଶଂ</translation>
 <translation id="8202370299023114387">ବିବାଦ</translation>
@@ -3210,6 +3222,7 @@
 <translation id="8963117664422609631">ସାଇଟ୍ ସେଟିଂସକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />ପ୍ରସ୍ତାବଗୁଡ଼ିକ:<ph name="MARKUP_2" />ସୁନିଶ୍ଚିତ କରନ୍ତୁ ଯେ ଆପଣଙ୍କର ଗୋଟିଏ ଇଣ୍ଟର୍ନେଟ୍ ସଂଯୋଗ ଅଛି <ph name="MARKUP_3" />ଏହି ୱେବ୍-ପୃଷ୍ଠାକୁ ପରେ ପୁଣି ଲୋଡ୍ କରନ୍ତୁ<ph name="MARKUP_4" /> ଆପଣ ଲେଖିଥିବା ଠିକଣାକୁ ଯାଞ୍ଚ କରନ୍ତୁ<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">କାର୍ଡ ସେଭ୍‌ କରନ୍ତୁ</translation>
+<translation id="8970887620466824814">କିଛି ଭୁଲ ହୋଇଗଲା।</translation>
 <translation id="8971063699422889582">ସର୍ଭରର ସାର୍ଟିଫିକେଟ୍‍ର ସମୟ ଅବଧି ସମାପ୍ତ ହୋଇଯାଇଛି।</translation>
 <translation id="8975012916872825179">ଏଥିରେ ଫୋନ୍ ନମ୍ବର୍, ଇମେଲ୍ ଠିକଣା ଏବଂ ଶିପିଂ ଠିକଣା ପରି ସୂଚନା ଅଛି</translation>
 <translation id="8975263830901772334">ଆପଣ ପ୍ରିଣ୍ଟ୍ କରୁଥିବା ଫାଇଲ୍‌ଗୁଡ଼ିକର ନାମ</translation>

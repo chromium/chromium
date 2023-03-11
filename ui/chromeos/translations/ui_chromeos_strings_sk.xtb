@@ -84,6 +84,7 @@
 <translation id="1722487484194605434">Prebieha komprimovanie <ph name="NUMBER_OF_ITEMS" /> položiek…</translation>
 <translation id="1722687688096767818">Pridáva sa profil…</translation>
 <translation id="1726100011689679555">Menné servery</translation>
+<translation id="1727562178154619254">Pripravené na synchronizáciu</translation>
 <translation id="1729953886957086472">Nemecká (Nemecko) klávesnica</translation>
 <translation id="1730235522912993863">Čínska klávesnica Cangjie</translation>
 <translation id="1731889557567069540">Počet skopírovaných položiek: <ph name="NUMBER_OF_ITEMS" />.</translation>
@@ -705,6 +706,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="6732801395666424405">Certifikáty neboli načítané</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [ <ph name="ISSUED_TO" /> ]</translation>
 <translation id="6740270213273127264">Zdieľanie priečinka s virtuálnym počítačom Bruschetta</translation>
+<translation id="6750737795876287924">Aktuálny adresár</translation>
 <translation id="6751256176799620176">1 vybratý súbor</translation>
 <translation id="6755827872271341378">Zariadenie so systémom Chrome OS Flex</translation>
 <translation id="6790428901817661496">Prehrať</translation>
@@ -742,7 +744,6 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="6973630695168034713">Priečinky</translation>
 <translation id="6976795442547527108">Lev</translation>
 <translation id="6979158407327259162">Disk Google</translation>
-<translation id="6979737339423435258">Celé obdobie</translation>
 <translation id="6989942356279143254">Švédska klávesnica</translation>
 <translation id="6990081529015358884">Nemáte dostatok miesta</translation>
 <translation id="6993826899923627728">Tieto položky sú vo vašom koši</translation>
@@ -798,7 +799,6 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="7458955835361612701">Žiadne nedávne obrázky</translation>
 <translation id="7460898608667578234">Ukrajinčina</translation>
 <translation id="7469894403370665791">Automaticky sa pripojiť k tejto sieti</translation>
-<translation id="7481358317100446445">Pripravené</translation>
 <translation id="7486315294984620427">Ak chcete vložiť súbory do aplikácie Parallels Desktop, musíte ich skopírovať do súborov pre Windows.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malajámská fonetická klávesnica</translation>

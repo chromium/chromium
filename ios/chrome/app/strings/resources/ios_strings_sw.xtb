@@ -81,6 +81,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="149095475893949513">Tovuti hii inajaribu kupakua wasifu wa mipangilio.</translation>
 <translation id="1491277525950327607">Gusa mara mbili ili ugeuze mipangilio</translation>
 <translation id="1492417797159476138">Tayari umehifadhi jina hili la mtumiaji kwa ajili ya tovuti hii</translation>
+<translation id="1497590942294823549">Menyu → Kidhibiti cha Manenosiri</translation>
 <translation id="1498283581832036924">Akaunti yako ya <ph name="WEBSITE" /> haitafutwa.</translation>
 <translation id="1506063256525392513">Hali hii hukuwezesha kupiga na kupakia picha pamoja na kuchanganua misimbo ya QR</translation>
 <translation id="1509486075633541495">Ingia katika akaunti ya tovuti</translation>
@@ -242,6 +243,7 @@ Tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="271033894570825754">Mpya</translation>
 <translation id="2712127207578915686">Imeshindwa kufungua faili</translation>
 <translation id="2718352093833049315">Kwenye Wi-Fi pekee</translation>
+<translation id="2737716090799520623">Unapokuwa umeingia katika akaunti kwenye Chrome, manenosiri unayohifadhi yatawekwa kwenye Akaunti yako ya Google (<ph name="ACCOUNT" />). Ili uzime kipengele hiki, <ph name="BEGIN_LINK" />nenda kwenye mipangilio<ph name="END_LINK" />.</translation>
 <translation id="2747003861858887689">Sehemu iliyotangulia</translation>
 <translation id="2749231692441336879">Unafuatilia <ph name="CHANNEL_NAME" /></translation>
 <translation id="2764831210418622012">sasa hivi</translation>
@@ -843,6 +845,7 @@ Katika hali fiche, tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvin
 <translation id="6801927553864092214">Ili uvinjari kwa faragha, fungua kichupo fiche</translation>
 <translation id="6807889908376551050">Onyesha Zote...</translation>
 <translation id="681368974849482173">Umeunda kipengee</translation>
+<translation id="6822587385560699678">Ukiwasha, manenosiri yanahifadhiwa kwenye <ph name="ACCOUNT" />. Ukizima, manenosiri yanahifadhiwa kwenye kifaa hiki pekee.</translation>
 <translation id="683022620450280906">Unaweza kutumia manenosiri uliyohifadhi, kwenye kifaa chochote. Manenosiri hayo huhifadhiwa kwenye Kidhibiti cha Manenosiri cha Google kwa ajili ya <ph name="EMAIL" /></translation>
 <translation id="6831043979455480757">Tafsiri</translation>
 <translation id="6842136130964845393">Ili uhakikishe kwamba unaweza kufikia manenosiri uliyoyahifadhi kila wakati, thibitisha kwamba ni wewe</translation>

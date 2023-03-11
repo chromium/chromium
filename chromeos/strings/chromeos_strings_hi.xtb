@@ -241,7 +241,6 @@
 <translation id="3226657629376379887">लेआउट ऐक्शन मेन्यू</translation>
 <translation id="3246869037381808805">एक दिन से ज़्यादा पुरानी, प्रिंट की गई फ़ाइलों को हटा दिया जाएगा</translation>
 <translation id="3268178239013324452">प्रिंट नहीं हो पाया - प्रिंटर का दरवाज़ा खुला है</translation>
-<translation id="3275506277319227640"><ph name="DIRECTION" /> ओर डॉक रखें</translation>
 <translation id="3275729367986477355">अवतार इमेज की सेटिंग पर जाएं</translation>
 <translation id="3283504360622356314">{0,plural, =1{फ़ाइल में बदलाव करें}one{फ़ाइल में बदलाव करें}other{फ़ाइलों में बदलाव करें}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />गीगाहर्ट्ज़</translation>
@@ -360,7 +359,6 @@
 <translation id="4311195029067684288">पूर्ण</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> दबाया गया</translation>
 <translation id="435692326371619097">नेटवर्क APN सेटिंग मैनेज करें. एपीएन, मोबाइल नेटवर्क और इंटरनेट के बीच कनेक्शन बनाते हैं. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
-<translation id="4370033095251616914">डॉक को छोटे हिस्से पर रखें</translation>
 <translation id="4378373042927530923">चल नहीं पाया</translation>
 <translation id="4378551569595875038">कनेक्टिंग...</translation>
 <translation id="4382484599443659549">पीडीएफ़</translation>
@@ -903,7 +901,6 @@
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9138630967333032450">बाईं ओर का Shift बटन</translation>
 <translation id="9149391708638971077">मेमोरी टेस्ट चलाएं</translation>
-<translation id="9157515863513902090">डॉक को ज़्यादा बड़े हिस्से पर रखें</translation>
 <translation id="9161276708550942948">स्पेस</translation>
 <translation id="9173638680043580060">एक मिनट से कम बचा है</translation>
 <translation id="917720651393141712">टेस्ट</translation>

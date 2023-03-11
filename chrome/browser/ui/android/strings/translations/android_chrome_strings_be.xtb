@@ -34,6 +34,7 @@
 <translation id="1173894706177603556">Перайменаваць</translation>
 <translation id="1177863135347784049">Карыстальніцкая</translation>
 <translation id="1181037720776840403">Выдаліць</translation>
+<translation id="1181366777303791449">на <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">Выкарыстаць надзейны пароль?</translation>
 <translation id="1197267115302279827">Перамясціць закладкі</translation>
 <translation id="1201402288615127009">Далей</translation>
@@ -42,7 +43,6 @@
 <translation id="1204692632633423444">Кнопка дзеяння ў Chrome: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">Капіраваць тэкст спасылкі</translation>
 <translation id="1209206284964581585">Схаваць гэты раз</translation>
-<translation id="1226851825267005295">Вы зможаце задаць налады пасля ўваходу ва Уліковы запіс Google у Chrome.</translation>
 <translation id="1227058898775614466">Гісторыя навігацыі</translation>
 <translation id="1231733316453485619">Уключыць сінхранізацыю?</translation>
 <translation id="123724288017357924">Перазагрузіць бягучую старонку, ігнаруючы змесціва кэша</translation>
@@ -166,7 +166,6 @@
 <translation id="1928696683969751773">Абнаўленні</translation>
 <translation id="19288952978244135">Адкрыйце Chrome яшчэ раз.</translation>
 <translation id="1933845786846280168">Выбраная ўкладка</translation>
-<translation id="193571872656840963">Паказаць выказванні падзякі гэтаму стваральніку</translation>
 <translation id="1943432128510653496">Захоўваць паролі</translation>
 <translation id="1952172573699511566">Тэкст на вэб-сайтах будзе паказвацца на мове, выбранай вамі ў якасці прыярытэтнай, калі гэта магчыма.</translation>
 <translation id="1959679933317802873">Чакаецца атрыманне змесціва</translation>
@@ -202,7 +201,6 @@
 <translation id="2122601567107267586">Не ўдалося адкрыць праграму</translation>
 <translation id="2132122640199389833">Выдаліць усе звязаныя прылады</translation>
 <translation id="213279576345780926">Закрыта ўкладка <ph name="TAB_TITLE" /></translation>
-<translation id="2134927169889348449">Выкарыстоўваючы Chrome, вы згаджаецеся з <ph name="BEGIN_TOS_LINK" />Умовамі выкарыстання Google<ph name="END_TOS_LINK" /> і <ph name="BEGIN_ATOS_LINK" />Дадатковымі ўмовамі выкарыстання Google Chrome і Chrome OS<ph name="END_ATOS_LINK" />.</translation>
 <translation id="2139186145475833000">Дадаць на галоўны экран</translation>
 <translation id="2141396931810938595">На падставе выкарыстання</translation>
 <translation id="214888715418183969">Выберыце, што вы хочаце абагульваць з Chrome. Паказчыкі, якія вы з намі абагуліце, будуць выкарыстаны для паляпшэння функцый браўзера Chrome, стабільнасці і эфектыўнасці яго работы.</translation>
@@ -555,7 +553,6 @@
 <translation id="409109920254068737">Вы можаце выкарыстоўваць гэты планшэт, каб уваходзіць ва ўліковы запіс на прыладзе, на якой паказваецца гэты QR-код.</translation>
 <translation id="4095146165863963773">Выдаліць даныя праграмы?</translation>
 <translation id="4096227151372679484">Укладка захоўвання закладкі разгорнута на палову экрана</translation>
-<translation id="4099578267706723511">Дапамажыце палепшыць Chrome, адпраўляючы ў Google статыстыку выкарыстання і справаздачы аб збоях.</translation>
 <translation id="4101475238162928417">Каб карыстацца паролямі, закладкамі і іншым змесцівам на іншых сваіх прыладах, уключыце сінхранізацыю</translation>
 <translation id="410351446219883937">Аўтапрайграванне</translation>
 <translation id="4106587138345390261">Chrome апрабоўвае новыя функцыі, якія дазваляюць сайтам працаваць так, як і раней, але пры гэтым выкарыстоўваць менш вашай інфармацыі</translation>
@@ -593,7 +590,6 @@
 <translation id="4269820728363426813">Капіраваць спасылку</translation>
 <translation id="4283102315569707115">Запытваць сайты для камп'ютараў стандартна?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Уключыць блакіроўку экрана ў наладах Android<ph name="END_LINK" /></translation>
-<translation id="4293476595220860475">Выкарыстоўваючы Chrome, вы згаджаецеся з <ph name="BEGIN_TOS_LINK" />Умовамі выкарыстання Google<ph name="END_TOS_LINK" /> і <ph name="BEGIN_ATOS_LINK" />Дадатковымі ўмовамі выкарыстання Google Chrome і Chrome OS<ph name="END_ATOS_LINK" />. Прымяняецца таксама <ph name="BEGIN_PRIVACY_LINK" />Палітыка прыватнасці<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="4296252229500326964">Новая ўкладка інкогніта</translation>
 <translation id="4298388696830689168">Звязаныя сайты</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -766,7 +762,6 @@
 <translation id="5161254044473106830">Патрабуецца назва</translation>
 <translation id="5170568018924773124">Паказаць у папцы</translation>
 <translation id="5171045022955879922">Знайдзіце або ўвядзіце URL-адрас</translation>
-<translation id="517734441743343109">Працягваючы, вы прымаеце <ph name="BEGIN_TOS_LINK" />Умовы выкарыстання<ph name="END_TOS_LINK" /> і <ph name="BEGIN_PRIVACY_LINK" />Палітыку прыватнасці<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="5184329579814168207">Адкрыць у Chrome</translation>
 <translation id="5191251636205085390">Даведайцеся пра новыя тэхналогіі, якія прыходзяць на змену староннім файлам cookie, а таксама пра спосабы кіравання імі</translation>
 <translation id="5193988420012215838">Скапіравана ў буфер абмену</translation>

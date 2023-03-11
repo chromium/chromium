@@ -241,7 +241,6 @@
 <translation id="3226657629376379887">レイアウトの操作メニュー</translation>
 <translation id="3246869037381808805">昨日より前の印刷ジョブは削除されます</translation>
 <translation id="3268178239013324452">失敗 - 扉が開いています</translation>
-<translation id="3275506277319227640"><ph name="DIRECTION" /> に固定</translation>
 <translation id="3275729367986477355">アバターの画像</translation>
 <translation id="3283504360622356314">{0,plural, =1{ファイルを編集}other{ファイルを編集}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
@@ -360,7 +359,6 @@
 <translation id="4311195029067684288">100%</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> キーを押しました</translation>
 <translation id="435692326371619097">ネットワークの APN 設定を管理します。APN は、モバイル ネットワークとインターネットの間の接続を確立します。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
-<translation id="4370033095251616914">小さい側に固定</translation>
 <translation id="4378373042927530923">未実行</translation>
 <translation id="4378551569595875038">接続中...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -903,7 +901,6 @@
 <translation id="9137526406337347448">Google サービス</translation>
 <translation id="9138630967333032450">左シフト</translation>
 <translation id="9149391708638971077">メモリテストを実行</translation>
-<translation id="9157515863513902090">大きい側に固定</translation>
 <translation id="9161276708550942948">スペース</translation>
 <translation id="9173638680043580060">残り 1 分未満</translation>
 <translation id="917720651393141712">テスト</translation>

@@ -241,7 +241,6 @@
 <translation id="3226657629376379887">Raspored menija radnji</translation>
 <translation id="3246869037381808805">Zadaci za štampanje stariji od 1 dana će se ukloniti</translation>
 <translation id="3268178239013324452">Nije uspjelo – poklopac je otvoren</translation>
-<translation id="3275506277319227640">Priključite <ph name="DIRECTION" /></translation>
 <translation id="3275729367986477355">Slika avatara</translation>
 <translation id="3283504360622356314">{0,plural, =1{Uredi fajl}one{Uredi fajlove}few{Uredi fajlove}other{Uredi fajlove}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
@@ -360,7 +359,6 @@
 <translation id="4311195029067684288">Puno</translation>
 <translation id="4333390807948134856">Pritisnuta je tipka <ph name="KEY_NAME" /></translation>
 <translation id="435692326371619097">Upravljajte mrežnim postavkama za APN. APN-ovi uspostavljaju vezu između mobilne mreže i interneta. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
-<translation id="4370033095251616914">Priključite na manjoj strani</translation>
 <translation id="4378373042927530923">Nije pokrenuto</translation>
 <translation id="4378551569595875038">Povezivanje…</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -903,7 +901,6 @@
 <translation id="9137526406337347448">Googleove usluge</translation>
 <translation id="9138630967333032450">Lijeva tipka Shift</translation>
 <translation id="9149391708638971077">Pokreni test memorije</translation>
-<translation id="9157515863513902090">Priključite na većoj strani</translation>
 <translation id="9161276708550942948">razmak</translation>
 <translation id="9173638680043580060">Preostalo je manje od minute</translation>
 <translation id="917720651393141712">Test</translation>

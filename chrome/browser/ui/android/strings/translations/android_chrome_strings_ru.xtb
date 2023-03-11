@@ -34,6 +34,7 @@
 <translation id="1173894706177603556">Переименовать</translation>
 <translation id="1177863135347784049">Персонализированные</translation>
 <translation id="1181037720776840403">Удалить</translation>
+<translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">Использовать надежный пароль?</translation>
 <translation id="1197267115302279827">Переместить закладки</translation>
 <translation id="1201402288615127009">Далее</translation>
@@ -42,7 +43,6 @@
 <translation id="1204692632633423444">Кнопка действий в Chrome: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">Копировать текст ссылки</translation>
 <translation id="1209206284964581585">Скрыть</translation>
-<translation id="1226851825267005295">Вы сможете задать настройки, выполнив вход в аккаунт Google в Chrome.</translation>
 <translation id="1227058898775614466">История переходов</translation>
 <translation id="1231733316453485619">Включить синхронизацию?</translation>
 <translation id="123724288017357924">Обновить страницу без учета кешированного контента</translation>
@@ -166,7 +166,6 @@
 <translation id="1928696683969751773">Обновления</translation>
 <translation id="19288952978244135">Снова запустите браузер Chrome.</translation>
 <translation id="1933845786846280168">Выбранная вкладка</translation>
-<translation id="193571872656840963">Поблагодарить автора</translation>
 <translation id="1943432128510653496">Сохранение паролей</translation>
 <translation id="1952172573699511566">Когда это возможно, текст на сайтах будет отображаться на выбранном вами языке.</translation>
 <translation id="1959679933317802873">Ожидается контент</translation>
@@ -202,7 +201,6 @@
 <translation id="2122601567107267586">Не удалось открыть приложение</translation>
 <translation id="2132122640199389833">Удалить все связанные устройства</translation>
 <translation id="213279576345780926">Вкладка "<ph name="TAB_TITLE" />" закрыта.</translation>
-<translation id="2134927169889348449">Используя Chrome, вы принимаете <ph name="BEGIN_TOS_LINK" />Условия использования Google<ph name="END_TOS_LINK" /> и <ph name="BEGIN_ATOS_LINK" />Дополнительные условия использования Chrome и Chrome OS<ph name="END_ATOS_LINK" />.</translation>
 <translation id="2139186145475833000">Добавить на гл. экран</translation>
 <translation id="2141396931810938595">На основе данных об использовании</translation>
 <translation id="214888715418183969">Укажите, какие данные вы готовы передавать Chrome. Информация, которую вы будете предоставлять, поможет нам улучшать функции браузера, а также повышать его производительность и стабильность.</translation>
@@ -555,7 +553,6 @@
 <translation id="409109920254068737">Вы сможете использовать планшет, чтобы входить в аккаунт на устройстве, где показан этот QR-код.</translation>
 <translation id="4095146165863963773">Удалить данные приложения?</translation>
 <translation id="4096227151372679484">Страница сохранения закладки, открытая на половину экрана</translation>
-<translation id="4099578267706723511">Отправлять в Google статистику использования и отчеты о сбоях</translation>
 <translation id="4101475238162928417">Чтобы на других устройствах стали доступны пароли, закладки и другие данные, выполните синхронизацию.</translation>
 <translation id="410351446219883937">Автовоспроизведение</translation>
 <translation id="4106587138345390261">Chrome представляет новый взгляд на просмотр веб-страниц: сайты функционируют в обычном режиме, собирая меньше информации о вас.</translation>
@@ -593,7 +590,6 @@
 <translation id="4269820728363426813">Копировать адрес ссылки</translation>
 <translation id="4283102315569707115">Запрашивать полные версии сайтов по умолчанию?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Включить блокировку экрана в настройках Android<ph name="END_LINK" /></translation>
-<translation id="4293476595220860475">Используя Chrome, вы принимаете <ph name="BEGIN_TOS_LINK" />Условия использования Google<ph name="END_TOS_LINK" /> и <ph name="BEGIN_ATOS_LINK" />Дополнительные условия использования Chrome и Chrome OS<ph name="END_ATOS_LINK" />. Также действует <ph name="BEGIN_PRIVACY_LINK" />Политика конфиденциальности<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="4296252229500326964">Новая вкладка инкогнито</translation>
 <translation id="4298388696830689168">Связанные сайты</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -766,7 +762,6 @@
 <translation id="5161254044473106830">Введите название</translation>
 <translation id="5170568018924773124">Показать в папке</translation>
 <translation id="5171045022955879922">Введите запрос или URL</translation>
-<translation id="517734441743343109">Продолжая, вы принимаете <ph name="BEGIN_TOS_LINK" />Условия использования<ph name="END_TOS_LINK" /> и <ph name="BEGIN_PRIVACY_LINK" />Политику конфиденциальности<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="5184329579814168207">Открыть в Chrome</translation>
 <translation id="5191251636205085390">Узнайте больше о новых технологиях, которые придут на смену сторонним файлам cookie.</translation>
 <translation id="5193988420012215838">Скопировано в буфер обмена.</translation>

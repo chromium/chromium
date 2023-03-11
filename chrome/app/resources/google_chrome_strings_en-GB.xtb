@@ -406,7 +406,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8862326446509486874">You do not have appropriate rights for system-level installation. Try running the installer again as Administrator.</translation>
 <translation id="8914504000324227558">Relaunch Chrome</translation>
 <translation id="8922193594870374009">To send a number from <ph name="ORIGIN" /> to your Android phone, sign in to Chrome on both devices.</translation>
-<translation id="8983720963221508955">You turned on Enhanced Safe Browsing in your account. Now get it for Chrome.</translation>
 <translation id="8986207147630327271">You are adding a work profile to this browser and giving your administrator control over just the work profile.</translation>
 <translation id="8989968390305463310">Your browsing history affects the ads that you see and the interests as estimated below. To protect your privacy, Chrome auto-deletes your interests on a rolling basis each month. Interests can refresh unless you remove them.</translation>
 <translation id="8999208279178790196">{0,plural, =0{A Chrome update is available}=1{A Chrome update is available}other{A Chrome update has been available for # days}}</translation>

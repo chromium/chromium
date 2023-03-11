@@ -193,7 +193,6 @@
 <translation id="4534723447064627427"><ph name="APP_NAME" /> にマイクへのアクセスを許可するには、<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でもマイクをオンにしてください。</translation>
 <translation id="4566417217121906555">マイクをミュート</translation>
 <translation id="4570913071927164677">詳細</translation>
-<translation id="4575264539271661854">アクセスしたサイトのテキストや画像をズームインしやすくします</translation>
 <translation id="4598549027014564149">シークレット モードのとき、サイトは Cookie を使用して関連サイトを含む他のサイトでの閲覧アクティビティを確認することができません。閲覧アクティビティは、広告のカスタマイズなどには使用されません。一部のサイトで機能を使用できなくなる可能性があります。</translation>
 <translation id="4645575059429386691">保護者により管理されています</translation>
 <translation id="4670064810192446073">バーチャル リアリティ（VR）</translation>
@@ -277,6 +276,7 @@
 <translation id="6040143037577758943">閉じる</translation>
 <translation id="6042308850641462728">もっと見る</translation>
 <translation id="6064125863973209585">完了したダウンロード</translation>
+<translation id="6071501408666570960">このサイトからログアウトする可能性があります</translation>
 <translation id="6165508094623778733">詳細</translation>
 <translation id="6177111841848151710">現在の検索エンジンに対してはブロック</translation>
 <translation id="6177128806592000436">このサイトへの接続は保護されていません</translation>

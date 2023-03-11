@@ -241,7 +241,6 @@
 <translation id="3226657629376379887">Бүдүүвчийн үйлдлийн цэс</translation>
 <translation id="3246869037381808805">1 хоногоос дээш хугацаагаар хадгалсан хэвлэлийн ажлуудыг хасах болно</translation>
 <translation id="3268178239013324452">Амжилтгүй болсон - Таг нээлттэй</translation>
-<translation id="3275506277319227640"><ph name="DIRECTION" /> талд нь суурилуулах</translation>
 <translation id="3275729367986477355">Аватар зураг</translation>
 <translation id="3283504360622356314">{0,plural, =1{Файлыг засах}other{Файлуудыг засах}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />Гц</translation>
@@ -360,7 +359,6 @@
 <translation id="4311195029067684288">Бүтэн</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> товчлуур дарагдаагүй</translation>
 <translation id="435692326371619097">Сүлжээний APN тохиргоог удирдана уу. APN үүрэн холбооны сүлжээ болон интернэтийн хооронд холболт тогтоодог. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
-<translation id="4370033095251616914">Жижиг талд нь суурилуулах</translation>
 <translation id="4378373042927530923">Ажилдаггүй</translation>
 <translation id="4378551569595875038">Холбож байна...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -903,7 +901,6 @@
 <translation id="9137526406337347448">Google-н үйлчилгээнүүд</translation>
 <translation id="9138630967333032450">Зүүн талын shift</translation>
 <translation id="9149391708638971077">Санах ойн туршилтыг ажиллуулах</translation>
-<translation id="9157515863513902090">Том талд нь суурилуулах</translation>
 <translation id="9161276708550942948">space</translation>
 <translation id="9173638680043580060">Минут хүрэхгүй хугацаа үлдлээ</translation>
 <translation id="917720651393141712">Шалгалт</translation>

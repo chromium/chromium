@@ -1705,6 +1705,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="244641233057214044">Related to your search</translation>
 <translation id="2448312741937722512">Types</translation>
 <translation id="2448810255793562605">Switch Access auto-scan</translation>
+<translation id="2450021089947420533">Journeys</translation>
 <translation id="2450223707519584812">You will not be able to add users because Google API keys are missing. See <ph name="DETAILS_URL" /> for details.</translation>
 <translation id="2450849356604136918">No active views</translation>
 <translation id="2451298179137331965">2x</translation>
@@ -1715,6 +1716,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2454247629720664989">Keyword</translation>
 <translation id="2454524890947537054">Approve web request?</translation>
 <translation id="245650153866130664">To automatically refresh a ticket, tick 'Remember password'. Your password will be stored on your device only.</translation>
+<translation id="2456794251167091176">Import complete</translation>
 <translation id="2456827790665612305">Unfollow site</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> wants to copy files from <ph name="VOLUME_NAME" />.</translation>
 <translation id="2457842160081795172">Currently on <ph name="CHANNEL_NAME" /> channel</translation>
@@ -1920,9 +1922,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2642111877055905627">Football</translation>
 <translation id="2643064289437760082">You can always delete ad-measurement data by deleting your browsing data</translation>
 <translation id="2643698698624765890">Manage your extensions by clicking Extensions in the Window menu.</translation>
-<translation id="2643887015830197688">Upgrade navigations to HTTPS and warn you before loading sites that don't support it.
-
-    You can't change this setting because you have Advanced Protection enabled.</translation>
 <translation id="2645047101481282803">Your device is managed by <ph name="PROFILE_NAME" /></translation>
 <translation id="2645388244376970260">Casting this tab to <ph name="DEVICE_NAME" /></translation>
 <translation id="2645435784669275700">Chrome OS</translation>
@@ -2590,7 +2589,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3254084468305910013">{COUNT,plural, =0{No security issues found}=1{Found {COUNT} security issue}other{Found {COUNT} security issues}}</translation>
 <translation id="3254451942070605467">Downloading <ph name="FILE_NAME" />, <ph name="PERCENT_REMAINING" />% remaining</translation>
 <translation id="3254516606912442756">Automatic time zone detection is disabled</translation>
-<translation id="3254715652085014625">Open Chrome on your Android phone. Go to Settings &gt; Passwords &gt; Use phone as a security key, and follow the instructions there.</translation>
 <translation id="3255355328033513170">All data stored by <ph name="SITE_GROUP_NAME" /> and any sites under it will be deleted. This includes cookies. You'll be signed out of these sites, including in open tabs.</translation>
 <translation id="3257733480216378006">Allow <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />?</translation>
 <translation id="3259723213051400722">Please try again.</translation>
@@ -3142,7 +3140,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3742666961763734085">Can’t find an organisational unit with that name. Please try again.</translation>
 <translation id="3743842571276656710">Enter PIN to pair with <ph name="DEVICE_NAME" /></translation>
 <translation id="3747077776423672805">To remove apps, go to Settings &gt; Google Play Store &gt; Manage Android preferences &gt; Apps or Application manager. Then tap the app that you want to uninstall (you may need to swipe right or left to find the app). Then tap Uninstall or Disable.</translation>
-<translation id="3747603683749989726">Turn on enhanced security?</translation>
 <translation id="3748424433435232460">A password for this account is already saved on this device</translation>
 <translation id="3748706263662799310">Report a bug</translation>
 <translation id="3749724428455457489">Learn more about site-suggested ads</translation>
@@ -3743,7 +3740,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4280325816108262082">Device will disconnect automatically when it's turned off or isn't being used</translation>
 <translation id="4281844954008187215">Terms of Service</translation>
 <translation id="4282196459431406533">Smart Lock is turned on</translation>
-<translation id="4284755288573763878">Turn off enhanced security?</translation>
 <translation id="4284903252249997120">ChromeVox screen reader and select-to-speak</translation>
 <translation id="4285418559658561636">Update Password</translation>
 <translation id="4285498937028063278">Unpin</translation>
@@ -5472,7 +5468,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5877584842898320529">The selected printer is not available or not installed correctly. <ph name="BR" /> Check your printer or try selecting another printer.</translation>
 <translation id="5878945009165002849">Block sign-in prompts from identity services</translation>
 <translation id="5881710783061958569">If so, please edit your saved password in <ph name="BRAND" /> so that it matches your new password.</translation>
-<translation id="5882449899683447569">Something went wrong and your passwords weren't imported</translation>
 <translation id="5882919346125742463">Known Networks</translation>
 <translation id="5883356647197510494">Automatically blocked <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5884447826201752041">Customise for each extension</translation>
@@ -7955,7 +7950,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8102139037507939978">Strip personally identifiable information from system_logs.txt.</translation>
 <translation id="810362914482827094">Search passkeys</translation>
 <translation id="8104088837833760645">Download eSIM profile</translation>
-<translation id="8105368624971345109">Turn Off</translation>
 <translation id="8107015733319732394">Installing the Google Play Store on your <ph name="DEVICE_TYPE" />. This could take a few minutes.</translation>
 <translation id="810728361871746125">Display resolution</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{No third-party cookies}=1{1 third-party cookie is blocked}other{# third-party cookies are blocked}}</translation>
@@ -8966,7 +8960,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="9026852570893462412">This process may take a few minutes. Downloading the virtual machine.</translation>
 <translation id="9027459031423301635">Open Link in New &amp;Tab</translation>
 <translation id="9027707169256972235">Remove</translation>
-<translation id="9029667986262585240">You turned off Enhanced Safe Browsing in your account.</translation>
 <translation id="9030515284705930323">Your organisation has not enabled Google Play Store for your account. Contact your administrator for more information.</translation>
 <translation id="9030754204056345429">Faster</translation>
 <translation id="9030785788945687215">Gmail</translation>
@@ -9151,7 +9144,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="9188732951356337132">Send usage and diagnostic data. This device is currently automatically sending diagnostic, device and app usage data to Google. This won't be used to identify your child, and will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. If additional Web &amp; App Activity setting is turned on for your child, this data may be saved to their Google Account. <ph name="BEGIN_LINK2" />Find out more<ph name="END_LINK2" /></translation>
 <translation id="9192019773545828776">Hear spoken feedback so that you can use your device without looking at the screen. Braille feedback is available with a connected device. Use Ctrl + Alt + Z to turn ChromeVox on and off. Use Search + Left arrow or Right arrow to navigate. Use Search + Space to select (activate).</translation>
 <translation id="919686179725692564">Learn more about backing up your apps</translation>
-<translation id="9198090666959937775">Use your Android phone as a security key</translation>
 <translation id="9199503643457729322">Click to navigate away from Privacy Guide.</translation>
 <translation id="9200339982498053969"><ph name="ORIGIN" /> will be able to edit files in <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">Search <ph name="SEARCH_ENGINE" /></translation>

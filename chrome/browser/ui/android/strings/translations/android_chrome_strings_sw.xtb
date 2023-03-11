@@ -34,6 +34,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="1173894706177603556">Ipe jina jipya</translation>
 <translation id="1177863135347784049">Maalum</translation>
 <translation id="1181037720776840403">Ondoa</translation>
+<translation id="1181366777303791449">kwenye <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">Ungependa kutumia nenosiri thabiti?</translation>
 <translation id="1197267115302279827">Sogeza alamisho</translation>
 <translation id="1201402288615127009">Endelea</translation>
@@ -42,7 +43,6 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="1204692632633423444">Kitufe cha kitendo cha Chrome: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">Nakili maandishi ya kiungo</translation>
 <translation id="1209206284964581585">Ficha kwa sasa</translation>
-<translation id="1226851825267005295">Unaweza kudhibiti mapendeleo yako baada ya kuingia kwenye Chrome ukitumia akaunti yako ya Google.</translation>
 <translation id="1227058898775614466">Historia ya uelekezaji</translation>
 <translation id="1231733316453485619">Ungependa kuwasha usawazishaji?</translation>
 <translation id="123724288017357924">Pakia upya ukurasa wa sasa, puuza maudhui ya akiba</translation>
@@ -166,7 +166,6 @@ Unapofuta historia yako ya kuvinjari — yote au kwa tovuti mahususi — unafuta
 <translation id="1928696683969751773">Usasishaji</translation>
 <translation id="19288952978244135">Fungua Chrome Upya.</translation>
 <translation id="1933845786846280168">Kichupo Kilichochaguliwa</translation>
-<translation id="193571872656840963">Mshukuru mtayarishi huyu</translation>
 <translation id="1943432128510653496">Hifadhi manenosiri</translation>
 <translation id="1952172573699511566">Tovuti zitaonyesha maandishi katika lugha unayopendelea, panapowezekana.</translation>
 <translation id="1959679933317802873">Inasubiri maudhui</translation>
@@ -202,7 +201,6 @@ Unapofuta historia yako ya kuvinjari — yote au kwa tovuti mahususi — unafuta
 <translation id="2122601567107267586">Imeshindwa kufungua programu</translation>
 <translation id="2132122640199389833">Ondoa vifaa vyote vilivyounganishwa</translation>
 <translation id="213279576345780926">Umefunga <ph name="TAB_TITLE" /></translation>
-<translation id="2134927169889348449">Kwa kutumia Chrome, unakubali <ph name="BEGIN_TOS_LINK" />Sheria na Masharti ya Google<ph name="END_TOS_LINK" /> na <ph name="BEGIN_ATOS_LINK" />Sheria na Masharti ya Ziada ya Google Chrome na Mfumo wa Uendeshaji wa Chrome<ph name="END_ATOS_LINK" />.</translation>
 <translation id="2139186145475833000">Ongeza kwenye skrini ya kwanza</translation>
 <translation id="2141396931810938595">Kulingana na matumizi yako</translation>
 <translation id="214888715418183969">Chagua data ambayo ungependa kushiriki na Chrome. Data utakayoshiriki itatumiwa kuboresha vipengele, utendaji na uthabiti wa Chrome.</translation>
@@ -555,7 +553,6 @@ Tokeni za hali ya faragha zinaboresha faragha kwenye wavuti na haziwezi kutumiwa
 <translation id="409109920254068737">Unaweza kutumia kompyuta kibao hii kuingia katika akaunti kwenye kifaa kinachoonyesha msimbo huu wa QR.</translation>
 <translation id="4095146165863963773">Ungependa kufuta data ya programu?</translation>
 <translation id="4096227151372679484">Utaratibu wa kuhifadhi alamisho umefunguliwa kwenye nusu ya skrini</translation>
-<translation id="4099578267706723511">Saidia kuboresha Chrome kwa kutumia Google takwimu za matumizi na ripoti wakati wowote kivinjari hiki kinapoacha kufanya kazi.</translation>
 <translation id="4101475238162928417">Sawazisha ili upate manenosiri, alamisho zako na mengine zaidi kwenye vifaa vyako vingine</translation>
 <translation id="410351446219883937">Kucheza kiotomatiki</translation>
 <translation id="4106587138345390261">Chrome inachunguza vipengele vipya vinavyoruhusu tovuti zikupatie hali ileile ya kuvinjari kwa kutumia taarifa zako chache</translation>
@@ -593,7 +590,6 @@ Tokeni za hali ya faragha zinaboresha faragha kwenye wavuti na haziwezi kutumiwa
 <translation id="4269820728363426813">Nakili anwani ya kiungo</translation>
 <translation id="4283102315569707115">Je, ungependa kuomba tovuti za kompyuta ya mezani kwa chaguomsingi?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Washa kipengele cha kufunga skrini katika mipangilio ya Android<ph name="END_LINK" /></translation>
-<translation id="4293476595220860475">Kwa kutumia Chrome, unakubali <ph name="BEGIN_TOS_LINK" />Sheria na Masharti ya Google<ph name="END_TOS_LINK" /> na <ph name="BEGIN_ATOS_LINK" />Sheria na Masharti ya Ziada ya Google Chrome na Mfumo wa Uendeshaji wa Chrome<ph name="END_ATOS_LINK" />. <ph name="BEGIN_PRIVACY_LINK" />Sera ya Faragha<ph name="END_PRIVACY_LINK" /> pia inatumika.</translation>
 <translation id="4296252229500326964">Kichupo fiche kipya</translation>
 <translation id="4298388696830689168">Tovuti ambazo zimeunganishwa</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -766,7 +762,6 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<p
 <translation id="5161254044473106830">Kichwa kinahitajika</translation>
 <translation id="5170568018924773124">Onyesha katika folda</translation>
 <translation id="5171045022955879922">Tafuta au charaza URL</translation>
-<translation id="517734441743343109">Kwa kuendelea, unakubali <ph name="BEGIN_TOS_LINK" />Sheria na Masharti<ph name="END_TOS_LINK" /> na <ph name="BEGIN_PRIVACY_LINK" />Sera ya\u00A0Faragha<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="5184329579814168207">Fungulia katika Chrome</translation>
 <translation id="5191251636205085390">Pata maelezo na udhibiti teknolojia mpya zinazokusudia kuchukua nafasi ya vidakuzi vya wengine</translation>
 <translation id="5193988420012215838">Imenakiliwa kwenye ubao wa kunakili</translation>

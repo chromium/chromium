@@ -8,9 +8,6 @@
 <translation id="1175958423215084756">U zbulua një lidhje. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Faqja <ph name="PAGE_NUMBER" /> u fshi</translation>
 <translation id="1258009455399840361">Rrotulloje 90 gradë në drejtim të akrepave të orës</translation>
-<translation id="1300209025925956156">Skano dokumentin tënd</translation>
-<translation id="1309250603447638106">Po shkarkohen përditësimet për skanimin e dokumenteve</translation>
-<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Kërko + Shigjeta majtas për t'u qasur.</translation>
 <translation id="1417314334557041815">Modifiko faqen <ph name="INDEX" /></translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> është shkëputur.</translation>
 <translation id="1473110567575736769">Kohëmatësi me 3 sekonda</translation>
@@ -24,7 +21,6 @@
 <translation id="1664224225747386870">Nuk u regjistrua asgjë</translation>
 <translation id="1838104802459806957">Ano për lart</translation>
 <translation id="1843105061469674856">Skano një faqe shtesë</translation>
-<translation id="1851169887664797861">Ofrohen kontrolle shtesë të kamerës</translation>
 <translation id="1851616744363735765">NË PAUZË</translation>
 <translation id="1899697626337024495">Rezolucioni i fotografisë</translation>
 <translation id="1925845977604399247">Shko te "Galeria"</translation>
@@ -49,7 +45,6 @@
 <translation id="2761536921376153655">Lloji i skanimit</translation>
 <translation id="28682968802727151">Pamja paraprake e pasqyrës</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> është lidhur.</translation>
-<translation id="2904654629665923749">Skanimi i dokumenteve është i disponueshëm</translation>
 <translation id="3067436040345934772">Zgjero djathtas</translation>
 <translation id="3081586908890909590">Kalo te regjistrimi i videos</translation>
 <translation id="313467653172006084">30 FPS</translation>
@@ -74,7 +69,6 @@
 <translation id="4269820728363426813">Kopjo adresën e lidhjes</translation>
 <translation id="4281620174117014503">Rezolucion mesatar</translation>
 <translation id="428234092390943511">Miniatura e faqes</translation>
-<translation id="4340659173795395806">Tani mund të krijosh skedarë PDF me shumë faqe</translation>
 <translation id="4383571725254449280">Evidencat për cilësinë e funksionimit të printimit</translation>
 <translation id="4445542136948522167">Ndalo nxjerrjen e fotografive</translation>
 <translation id="4570032796877367747">Kamera e përparme</translation>
@@ -97,7 +91,6 @@
 <translation id="5317780077021120954">Ruaj</translation>
 <translation id="5320594929574852403">Po zhvendoset majtas</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5444515100983837161">Vendos të gjitha anët e dokumentit brenda kuadrit Skanimi funksionon më mirë nëse dokumenti dhe sfondi kanë ngjyra të ndryshme.</translation>
 <translation id="5662366948659129155">Po skanohet faqja <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Katror</translation>
 <translation id="5746169159649715125">Ruaj si PDF</translation>
@@ -157,7 +150,6 @@ Nëse komentet e tua janë për cilësinë e imazhit ose të videos, bashkëngji
 <translation id="8428213095426709021">Cilësimet</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Aktivizo/çaktivizo audion e mikrofonit. Opsioni i çaktivizimit të zërit është aktiv</translation>
-<translation id="8712637175834984815">E kuptova</translation>
 <translation id="8730621377337864115">U krye</translation>
 <translation id="8732462232047530626">Shiko paraprakisht të dhënat meta</translation>
 <translation id="8815966864175525708">Kalo te nxjerrja e fotografisë portret</translation>

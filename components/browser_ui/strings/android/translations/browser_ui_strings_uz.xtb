@@ -26,6 +26,7 @@
 <translation id="1448064542941920355">Kichiklashtirish</translation>
 <translation id="1510341833810331442">Saytlar maʼlumotlarni qurilmangizga saqlay olmaydi</translation>
 <translation id="1547123415014299762">Tashqi cookie fayllariga ruxsat berilgan</translation>
+<translation id="1593426485665524382">Yangi amallar ekranning yuqoriroq qismida joylashgan</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1633720957382884102">Aloqador saytlar</translation>
 <translation id="1644574205037202324">Tarix</translation>
@@ -146,6 +147,7 @@
 <translation id="3628308229821498208">Tavsiya etilgan qidiruvlar</translation>
 <translation id="3636279694100170143">Ochiladigan saytlar bot emas, real foydalanuvchi ekaningizni tekshirishi mumkin</translation>
 <translation id="3649190289964910441">Siz ochadigan sayt Chrome orqali real foydalanuvchi ekaningiz axborotini saqlashi mumkin. Keyingi ochiladigan saytlar Chrome orqali birinchi sayt tasdiqlagan ishonchli foydalanuvchi ekaningizni tekshirishi mumkin.</translation>
+<translation id="3721953990244350188">Yopish va keyingi mavjud amalni koʻrsatish</translation>
 <translation id="3744111561329211289">Orqa fonda sinxronlash</translation>
 <translation id="3763247130972274048">10 soniya oʻtkazish uchun chap yoki oʻng tomoniga ikki marta bosing</translation>
 <translation id="3794286421982011626">Sizga qulay boʻlishi uchun saytlar sizning harakatlaringiz haqidagi maʼlumotlarni saqlashi mumkin, masalan, xarid savatingizga qoʻshilgan narsalar yoki hisobingizga kirganingizda. Koʻpincha, bu maʼlumot qurilmangizda vaqtincha saqlanadi.</translation>
@@ -193,7 +195,6 @@
 <translation id="4534723447064627427"><ph name="APP_NAME" /> mikrofondan foydalanishiga ruxsat berish uchun <ph name="BEGIN_LINK" />Android sozlamalari<ph name="END_LINK" /> orqali mikrofonni yoqing.</translation>
 <translation id="4566417217121906555">Mikrofonni ovozsiz qilish</translation>
 <translation id="4570913071927164677">Tafsilotlar</translation>
-<translation id="4575264539271661854">Ochilgan sayt uchun matn va rasmlarni kattalashtirishni osonlashtiring</translation>
 <translation id="4598549027014564149">Inkognito rejimida saytlar hatto aloqador saytlarda ham cookie fayllar yordamida harakatlaringizni kuzata olmaydi. Brauzer faoliyati haqidagi maʼlumotlar, masalan, moslashtirilgan reklamalarni koʻrsatish uchun ishlatilmaydi. Ayrim saytlardagi funksiyalar ishlamay qolishi mumkin.</translation>
 <translation id="4645575059429386691">Ota-onangiz tomonidan boshqariladi</translation>
 <translation id="4670064810192446073">Virtual reallik</translation>

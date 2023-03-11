@@ -81,6 +81,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="149095475893949513">Bu web sitesi bir yapılandırma profili indirmeye çalışıyor.</translation>
 <translation id="1491277525950327607">Ayarı açıp kapatmak için iki kez dokunun</translation>
 <translation id="1492417797159476138">Bu site için bu kullanıcı adını zaten kaydettiniz</translation>
+<translation id="1497590942294823549">Menü → Şifre Yöneticisi</translation>
 <translation id="1498283581832036924"><ph name="WEBSITE" /> hesabınız silinmeyecek.</translation>
 <translation id="1506063256525392513">Bu şekilde, fotoğraf çekip yükleyebilir, QR kodlarını tarayabilirsiniz</translation>
 <translation id="1509486075633541495">Web sitesinde oturum açın</translation>
@@ -242,6 +243,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="271033894570825754">Yeni</translation>
 <translation id="2712127207578915686">Dosya Açılamıyor</translation>
 <translation id="2718352093833049315">Yaln. Kablosuzda</translation>
+<translation id="2737716090799520623">Chrome'da oturum açtığınızda, kaydettiğiniz şifreler Google Hesabınızda (<ph name="ACCOUNT" />) saklanır. Bu özelliği devre dışı bırakmak için <ph name="BEGIN_LINK" />ayarlara gidin<ph name="END_LINK" />.</translation>
 <translation id="2747003861858887689">Önceki alan</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> takip ediliyor</translation>
 <translation id="2764831210418622012">az önce</translation>
@@ -843,6 +845,7 @@ Gizli moddayken siteler, örneğin reklamları kişiselleştirmek amacıyla fark
 <translation id="6801927553864092214">Gizli olarak göz atmak için Gizli sekme açın</translation>
 <translation id="6807889908376551050">Tümünü Göster...</translation>
 <translation id="681368974849482173">Öğe oluşturuldu</translation>
+<translation id="6822587385560699678">Bu ayar etkinken şifreler <ph name="ACCOUNT" /> hesabına kaydedilir. Devre dışı bırakıldığında şifreler yalnızca bu cihaza kaydedilir.</translation>
 <translation id="683022620450280906">Kayıtlı şifrelerinizi herhangi bir cihazda kullanabilirsiniz. Şifreleriniz <ph name="EMAIL" /> için Google Şifre Yöneticisi'ne kaydedilir</translation>
 <translation id="6831043979455480757">Çevir</translation>
 <translation id="6842136130964845393">Kayıtlı şifrelerinize her zaman erişebileceğinizden emin olmak için kimliğinizi doğrulayın</translation>

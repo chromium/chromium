@@ -84,6 +84,7 @@
 <translation id="1722487484194605434">Zipper <ph name="NUMBER_OF_ITEMS" /> elementer …</translation>
 <translation id="1722687688096767818">Legger til profil …</translation>
 <translation id="1726100011689679555">Navnetjenere</translation>
+<translation id="1727562178154619254">Klar for synkronisering</translation>
 <translation id="1729953886957086472">Tysk (Tyskland)</translation>
 <translation id="1730235522912993863">Kinesisk cangjie</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> elementer er kopiert.</translation>
@@ -705,6 +706,7 @@
 <translation id="6732801395666424405">Sertifikater er ikke lastet inn</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">Del mappen med Bruschetta</translation>
+<translation id="6750737795876287924">Gjeldende katalog</translation>
 <translation id="6751256176799620176">1 mappe er valgt</translation>
 <translation id="6755827872271341378">ChromeOS Flex-enhet</translation>
 <translation id="6790428901817661496">Spill av</translation>
@@ -742,7 +744,6 @@
 <translation id="6973630695168034713">Mapper</translation>
 <translation id="6976795442547527108">Løve</translation>
 <translation id="6979158407327259162">Google Disk</translation>
-<translation id="6979737339423435258">Alle datoer</translation>
 <translation id="6989942356279143254">Svensk</translation>
 <translation id="6990081529015358884">Du har ikke tilgjengelig lagringsplass</translation>
 <translation id="6993826899923627728">Disse elementene ligger i papirkurven din</translation>
@@ -798,7 +799,6 @@
 <translation id="7458955835361612701">Ingen nylige bilder</translation>
 <translation id="7460898608667578234">Ukrainsk</translation>
 <translation id="7469894403370665791">Koble til dette nettverket automatisk</translation>
-<translation id="7481358317100446445">Klar</translation>
 <translation id="7486315294984620427">For å slippe filer i Parallels Desktop må du kopiere filen til Windows-filene.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malayalam, fonetisk</translation>

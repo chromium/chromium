@@ -8,9 +8,6 @@
 <translation id="1175958423215084756">پیوند شناسایی شد. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">صفحه <ph name="PAGE_NUMBER" /> حذف شد</translation>
 <translation id="1258009455399840361">چرخش ۹۰ درجه ساعت‌گرد</translation>
-<translation id="1300209025925956156">اسکن سند</translation>
-<translation id="1309250603447638106">درحال بارگیری به‌روزرسانی‌های مربوط به اسکن سند</translation>
-<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. برای دسترسی، «جستجو + جهت‌نمای چپ» را فشار دهید.</translation>
 <translation id="1417314334557041815">ویرایش صفحه <ph name="INDEX" /></translation>
 <translation id="1467231725790366244">اتصال <ph name="CAMERA" /> قطع شد.</translation>
 <translation id="1473110567575736769">زمان‌سنج ۳ ثانیه‌ای</translation>
@@ -24,7 +21,6 @@
 <translation id="1664224225747386870">چیزی ضبط نشد</translation>
 <translation id="1838104802459806957">بالا بردن</translation>
 <translation id="1843105061469674856">اسکن صفحه دیگر</translation>
-<translation id="1851169887664797861">کنترل‌های بیشتر دوربین دردسترس است</translation>
 <translation id="1851616744363735765">موقتاً متوقف شد</translation>
 <translation id="1899697626337024495">وضوح عکس</translation>
 <translation id="1925845977604399247">رفتن به «گالری»</translation>
@@ -49,7 +45,6 @@
 <translation id="2761536921376153655">نوع اسکن</translation>
 <translation id="28682968802727151">پیش‌نمایش بازتاب</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> متصل شد.</translation>
-<translation id="2904654629665923749">اسکن سند دردسترس است</translation>
 <translation id="3067436040345934772">حرکت دادن به راست</translation>
 <translation id="3081586908890909590">رفتن به حالت فیلم‌برداری</translation>
 <translation id="313467653172006084">۳۰ FPS</translation>
@@ -74,7 +69,6 @@
 <translation id="4269820728363426813">کپی نشانی پیوند</translation>
 <translation id="4281620174117014503">وضوح متوسط</translation>
 <translation id="428234092390943511">تصویر کوچک صفحه</translation>
-<translation id="4340659173795395806">‏اکنون می‌توانید PDF چندصفحه‌ای ایجاد کنید</translation>
 <translation id="4383571725254449280">چاپ گزارش‌های عملکرد</translation>
 <translation id="4445542136948522167">توقف عکس‌برداری</translation>
 <translation id="4570032796877367747">دوربین جلو</translation>
@@ -97,7 +91,6 @@
 <translation id="5317780077021120954">ذخیره</translation>
 <translation id="5320594929574852403">درحال انتقال به‌سمت چپ</translation>
 <translation id="5374917190292010970">‏4K (۲۱۶۰ پیکسل)</translation>
-<translation id="5444515100983837161">همه لبه‌های سند را داخل قاب قرار دهید. اسکن بهترین عملکرد را زمانی دارد که رنگ سند و پس‌زمینه متفاوت باشد.</translation>
 <translation id="5662366948659129155">درحال اسکن کردن صفحه <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">مربع</translation>
 <translation id="5746169159649715125">‏ذخیره به‌عنوان PDF</translation>
@@ -157,7 +150,6 @@
 <translation id="8428213095426709021">تنظیمات</translation>
 <translation id="8629662593426079630">۳۶۰ پیکسل</translation>
 <translation id="8711011893539266636">وضعیت بی‌صدا بودن میکروفون را تغییر دهید. میکروفون بی‌صدا است</translation>
-<translation id="8712637175834984815">متوجه شدم</translation>
 <translation id="8730621377337864115">تمام</translation>
 <translation id="8732462232047530626">پیش‌نمایش فراداده</translation>
 <translation id="8815966864175525708">تغییر وضعیت به گرفتن عکس چهره</translation>

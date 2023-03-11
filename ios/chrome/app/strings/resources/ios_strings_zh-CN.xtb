@@ -81,6 +81,7 @@
 <translation id="149095475893949513">此网站正要尝试下载一个配置文件。</translation>
 <translation id="1491277525950327607">点按两次即可切换设置</translation>
 <translation id="1492417797159476138">您已为此网站保存该用户名</translation>
+<translation id="1497590942294823549">菜单 → 密码管理工具</translation>
 <translation id="1498283581832036924">您的 <ph name="WEBSITE" /> 帐号不会被删除。</translation>
 <translation id="1506063256525392513">这样您就能拍摄并上传照片，还能扫描二维码</translation>
 <translation id="1509486075633541495">登录网站</translation>
@@ -242,6 +243,7 @@
 <translation id="271033894570825754">新建</translation>
 <translation id="2712127207578915686">无法打开该文件</translation>
 <translation id="2718352093833049315">仅限使用 Wi-Fi 时</translation>
+<translation id="2737716090799520623">登录 Chrome 后，您保存的密码会保存到您的 Google 帐号 (<ph name="ACCOUNT" />) 中。如需关闭此设置，请<ph name="BEGIN_LINK" />前往“设置”<ph name="END_LINK" />。</translation>
 <translation id="2747003861858887689">上一个字段</translation>
 <translation id="2749231692441336879">已关注“<ph name="CHANNEL_NAME" />”</translation>
 <translation id="2764831210418622012">刚刚</translation>
@@ -843,6 +845,7 @@
 <translation id="6801927553864092214">若要私密地浏览网页，请打开一个无痕式标签页</translation>
 <translation id="6807889908376551050">全部显示...</translation>
 <translation id="681368974849482173">书签已创建</translation>
+<translation id="6822587385560699678">当此设置处于开启状态时，密码会保存到 <ph name="ACCOUNT" /> 中。当此设置处于关闭状态时，密码只会保存在此设备上。</translation>
 <translation id="683022620450280906">您可在任意设备上使用已存密码。系统会将密码保存到 <ph name="EMAIL" /> 的 Google 密码管理器中</translation>
 <translation id="6831043979455480757">翻译</translation>
 <translation id="6842136130964845393">若要确保您能随时访问自己的已保存密码，请验证是您本人在操作</translation>

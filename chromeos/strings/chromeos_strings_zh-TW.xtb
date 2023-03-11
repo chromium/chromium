@@ -241,7 +241,6 @@
 <translation id="3226657629376379887">版面配置動作選單</translation>
 <translation id="3246869037381808805">系統會移除 1 天前的列印工作</translation>
 <translation id="3268178239013324452">失敗 - 蓋子處於開啟狀態</translation>
-<translation id="3275506277319227640">固定在<ph name="DIRECTION" />側</translation>
 <translation id="3275729367986477355">顯示圖片</translation>
 <translation id="3283504360622356314">{0,plural, =1{編輯檔案}other{編輯檔案}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
@@ -360,7 +359,6 @@
 <translation id="4311195029067684288">完整</translation>
 <translation id="4333390807948134856">已按下 <ph name="KEY_NAME" /> 鍵</translation>
 <translation id="435692326371619097">管理網路 APN 設定。APN 會在行動網路和網際網路之間建立連線。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
-<translation id="4370033095251616914">固定在較小的一側</translation>
 <translation id="4378373042927530923">未執行</translation>
 <translation id="4378551569595875038">連線中…</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -903,7 +901,6 @@
 <translation id="9137526406337347448">Google 服務</translation>
 <translation id="9138630967333032450">左移</translation>
 <translation id="9149391708638971077">執行記憶體測試</translation>
-<translation id="9157515863513902090">固定在較大的一側</translation>
 <translation id="9161276708550942948">空格鍵</translation>
 <translation id="9173638680043580060">還剩不到 1 分鐘</translation>
 <translation id="917720651393141712">測試</translation>

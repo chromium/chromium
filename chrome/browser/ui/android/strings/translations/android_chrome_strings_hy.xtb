@@ -34,6 +34,7 @@
 <translation id="1173894706177603556">Վերանվանել</translation>
 <translation id="1177863135347784049">Անհատականացված</translation>
 <translation id="1181037720776840403">Ջնջել</translation>
+<translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /> էջում</translation>
 <translation id="1193729455103054076">Օգտագործե՞լ հուսալի գաղտնաբառ</translation>
 <translation id="1197267115302279827">Տեղափոխել էջանիշները</translation>
 <translation id="1201402288615127009">Հաջորդը</translation>
@@ -165,7 +166,6 @@
 <translation id="1928696683969751773">Թարմացումներ</translation>
 <translation id="19288952978244135">Նորից բացեք Chrome-ը:</translation>
 <translation id="1933845786846280168">Ընտրված ներդիր</translation>
-<translation id="193571872656840963">Շնորհակալություն հայտնել այս հեղինակին</translation>
 <translation id="1943432128510653496">Պահել գաղտնաբառերը</translation>
 <translation id="1952172573699511566">Կայքերի տեքստը հնարավորության դեպքում կցուցադրվի ձեր ընտրած լեզվով։</translation>
 <translation id="1959679933317802873">Բովանդակության սպասում</translation>
@@ -201,7 +201,6 @@
 <translation id="2122601567107267586">Չհաջողվեց բացել հավելվածը</translation>
 <translation id="2132122640199389833">Հեռացնել բոլոր կապված սարքերը</translation>
 <translation id="213279576345780926">Փակված <ph name="TAB_TITLE" /></translation>
-<translation id="2134927169889348449">Օգտվելով Chrome-ից՝ դուք ընդունում եք <ph name="BEGIN_TOS_LINK" />Google-ի օգտագործման պայմանները<ph name="END_TOS_LINK" /> և <ph name="BEGIN_ATOS_LINK" />Google Chrome-ի և ChromeOS-ի օգտագործման լրացուցիչ պայմանները<ph name="END_ATOS_LINK" />։</translation>
 <translation id="2139186145475833000">Ավելացնել գլխավոր էկրանին</translation>
 <translation id="2141396931810938595">Ձեր օգտագործման հիման վրա</translation>
 <translation id="214888715418183969">Ընտրեք, թե ինչ տվյալներ եք պատրաստ փոխանցել Chrome-ին։ Ձեր տրամադրած ցուցանիշները կօգնեն բարելավել Chrome-ի գործառույթները, աշխատանքի արդյունավետությունը և կայունությունը։</translation>
@@ -554,7 +553,6 @@
 <translation id="409109920254068737">Դուք կարող եք օգտագործել այս պլանշետը՝ հաշիվ մուտք գործելու սարքում, որում ցուցադրված է այս QR կոդը։</translation>
 <translation id="4095146165863963773">Ջնջե՞լ հավելվածների տվյալները:</translation>
 <translation id="4096227151372679484">Էջանիշի պահման էջը բացված է կիսով չափ</translation>
-<translation id="4099578267706723511">Աջակցեք Google Chrome-ի կատարելագործմանը՝ Google-ին ավտոմատ կերպով ուղարկելով օգտագործման վիճակագրություն և խափանումների մասին հաղորդագրություններ:</translation>
 <translation id="4101475238162928417">Կատարեք համաժամացում, որպեսզի ձեր գաղտնաբառերը, էջանիշները և այլ տվյալները մյուս սարքերում հասանելի դառնան</translation>
 <translation id="410351446219883937">Ինքնանվագարկում</translation>
 <translation id="4106587138345390261">Chrome-ն ուսումնասիրում է նոր գործառույթները, որոնք կայքերին թույլ են տալիս տրամադրել դիտարկման նույն հնարավորությունները՝ ձեր մասին ավելի քիչ տեղեկություններ օգտագործելով։</translation>
@@ -592,7 +590,6 @@
 <translation id="4269820728363426813">Պատճենել հղման հասցեն</translation>
 <translation id="4283102315569707115">Օգտագործե՞լ կայքերի համակարգչային տարբերակներն ըստ կանխադրման</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Միացնել էկրանի կողպումը Android-ի կարգավորումներում<ph name="END_LINK" /></translation>
-<translation id="4293476595220860475">Օգտվելով Chrome-ից՝ դուք ընդունում եք <ph name="BEGIN_TOS_LINK" />Google-ի օգտագործման պայմանները<ph name="END_TOS_LINK" /> և <ph name="BEGIN_ATOS_LINK" />Google Chrome-ի և ChromeOS-ի օգտագործման լրացուցիչ պայմանները<ph name="END_ATOS_LINK" />։ Կիրառվում է նաև <ph name="BEGIN_PRIVACY_LINK" />Գաղտնիության քաղաքականությունը<ph name="END_PRIVACY_LINK" />։</translation>
 <translation id="4296252229500326964">Նոր ինկոգնիտո ներդիր</translation>
 <translation id="4298388696830689168">Կապված կայքեր</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -765,7 +762,6 @@
 <translation id="5161254044473106830">Վերնագիրը պարտադիր է</translation>
 <translation id="5170568018924773124">Ցույց տալ պանակում</translation>
 <translation id="5171045022955879922">Որոնեք կամ մուտքագրեք URL-ը</translation>
-<translation id="517734441743343109">Շարունակելով՝ դուք ընդունում եք <ph name="BEGIN_TOS_LINK" />Օգտագործման պայմանները<ph name="END_TOS_LINK" /> և <ph name="BEGIN_PRIVACY_LINK" />Գաղտնիության\u00A0քաղաքականությունը<ph name="END_PRIVACY_LINK" />։</translation>
 <translation id="5184329579814168207">Բացել Chrome-ով</translation>
 <translation id="5191251636205085390">Իմացեք ավելին նոր տեխնոլոգիաների մասին, որոնք փոխարինելու են երրորդ կողմի քուքիներին։</translation>
 <translation id="5193988420012215838">Պատճենվեց սեղմատախտակին</translation>

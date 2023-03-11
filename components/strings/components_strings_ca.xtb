@@ -376,6 +376,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1803351196216024260">Pot demanar permís per utilitzar el micròfon</translation>
 <translation id="1807246157184219062">Clar</translation>
 <translation id="1807528111851433570">Full inicial</translation>
+<translation id="180991881384371158">El CVC és al revers de la targeta. Són els 3 darrers dígits que hi ha a la part superior dreta del quadre de signatura.</translation>
 <translation id="181000283860817563">Fes un seguiment dels preus en diversos llocs web</translation>
 <translation id="1810391395243432441">Protegeix les contrasenyes amb el bloqueig de pantalla</translation>
 <translation id="1812527064848182527">horitzontal</translation>
@@ -506,6 +507,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2149968176347646218">La connexió no és segura</translation>
 <translation id="2153609454945889823">Vols instal·lar Serveis de Google Play per a RA?</translation>
 <translation id="2154484045852737596">Edita la targeta</translation>
+<translation id="2154739667870063220">Reinicia</translation>
 <translation id="2155260325161282517">5 x 7 polzades</translation>
 <translation id="2157640075051554492">Notificacions de seguiment de preus</translation>
 <translation id="2161656808144014275">Text</translation>
@@ -640,6 +642,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2521736961081452453">Crea un formulari</translation>
 <translation id="2523886232349826891">Només es desarà en aquest dispositiu</translation>
 <translation id="2524461107774643265">Afegeix més informació</translation>
+<translation id="2527451058878391043">El CVC és a l'anvers de la targeta. És el codi de 4 dígits que hi ha a la part superior dreta sobre el número de la targeta.</translation>
 <translation id="2529899080962247600">Aquest camp no pot tenir més de <ph name="MAX_ITEMS_LIMIT" /> entrades. Totes les altres entrades s'ignoraran.</translation>
 <translation id="253493526287553278">Mostra els detalls del codi promocional</translation>
 <translation id="2535585790302968248">Obre una pestanya d'incògnit nova per navegar en privat</translation>
@@ -894,6 +897,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3215092763954878852">No s'ha pogut utilitzar WebAuthn</translation>
 <translation id="3216313131063488104">Blues</translation>
 <translation id="3218181027817787318">Relatiu</translation>
+<translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Cal fer una actualització ara}=2{Cal fer una actualització demà}other{Cal fer una actualització en un termini de # dies}}</translation>
 <translation id="3223287115535306850">Icona animada d'inici d'una aplicació</translation>
 <translation id="3223425961342298674">No està permès utilitzar la ubicació</translation>
 <translation id="3225919329040284222">El servidor ha presentat un certificat que no coincideix amb les expectatives integrades. Les expectatives s'inclouen perquè determinats llocs web d'alta seguretat us protegeixin.</translation>
@@ -1378,6 +1382,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4350629523305688469">Safata multifuncional</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> vol cercar dispositius Bluetooth propers. S'han trobat els dispositius següents:</translation>
 <translation id="4351175281479794167">Introdueix el codi de verificació</translation>
+<translation id="4355383636893709732">Actualització de ChromeOS per a aplicacions d'Android</translation>
 <translation id="4356973930735388585">Els atacants d'aquest lloc poden provar d'instal·lar programes perillosos a l'ordinador per robar o suprimir la teva informació (per exemple, les fotos, les contrasenyes, els missatges i les targetes de crèdit).</translation>
 <translation id="4358059973562876591">Pot ser que les plantilles que has especificat no s'apliquin a causa d'un error amb la política DnsOverHttpsMode.</translation>
 <translation id="4358461427845829800">Gestiona les formes de pagament...</translation>
@@ -1758,6 +1763,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5288393065350884210">Auditories i comptabilitat</translation>
 <translation id="5288808348893593856">La connexió del lloc web és segura tret que Chrome t'indiqui el contrari.</translation>
 <translation id="5289384342738547352">Gestió de diversos documents</translation>
+<translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Cal fer una actualització avui}=2{Cal fer una actualització demà}other{Cal fer una actualització en un termini de # dies}}</translation>
 <translation id="5293919335876685914">Cupès</translation>
 <translation id="5296589789433599000">Cuina i receptes</translation>
 <translation id="5299298092464848405">S'ha produït un error en analitzar la política</translation>
@@ -1952,6 +1958,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5786044859038896871">Vols emplenar la informació de la teva targeta?</translation>
 <translation id="578633867165174378">Chrome ha trobat la contrasenya que acabes de fer servir en una violació de les dades. Et recomanem que canviïs la contrasenya ara.</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="580241730938216256">Inicia l'actualització</translation>
 <translation id="5803412860119678065">Vols emplenar la informació de la teva targeta <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Permisos</translation>
 <translation id="5808435672482059465">Mostra l'historial de Chrome</translation>
@@ -2112,6 +2119,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6218753634732582820">Voleu suprimir l'adreça de Chromium?</translation>
 <translation id="622039917539443112">Plegat en paral·lel</translation>
 <translation id="6221345481584921695">Navegació segura de Google ha <ph name="BEGIN_LINK" />detectat programari maliciós<ph name="END_LINK" /> recentment a <ph name="SITE" />. De vegades, els llocs web que acostumen a ser segurs s'infecten amb programari maliciós. El contingut maliciós prové de l'amfitrió <ph name="SUBRESOURCE_HOST" />, un distribuïdor conegut de programari maliciós.</translation>
+<translation id="6221892641068781024">Visualització simplificada</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per personalitzar les eines d'accessibilitat a la configuració de Chrome</translation>
 <translation id="6229649258872345286">Viatges en família</translation>
 <translation id="6232271601416750929">Cosmètica ètica i sostenible</translation>
@@ -2171,6 +2179,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6366710531182496394">Grapat doble a l'esquerra</translation>
 <translation id="6367196786591004737">Suprimeix l'entrada</translation>
 <translation id="6370022303958842211">Accions d'accés al dispositiu, com ara inicis de sessió (inclosos els motius pels quals no s'ha pogut iniciar la sessió), tancaments de sessió, bloquejos i desbloquejos</translation>
+<translation id="6374469231428023295">Torna-ho a provar</translation>
 <translation id="6374865374745447009">gestió de finestres</translation>
 <translation id="6377268785556383139">1 resultat per a "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6380497234672085559">A0</translation>
@@ -2481,6 +2490,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> i <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> més}other{<ph name="PAYMENT_METHOD_PREVIEW" /> i <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> més}}</translation>
 <translation id="7153618581592392745">Lavanda</translation>
 <translation id="7156870133441232244">El servidor s'ha d'actualitzar a TLS 1.2 o una versió posterior.</translation>
+<translation id="7160999678034985039">Desa la feina i inicia l'actualització quan estiguis a punt.</translation>
 <translation id="7163295244162773898">{0,plural, =1{Vols copiar el fitxer confidencial?}other{Vols copiar els fitxers confidencials?}}</translation>
 <translation id="717330890047184534">Identificador de Gaia:</translation>
 <translation id="7174545416324379297">Combinats</translation>
@@ -2728,6 +2738,7 @@ Detalls addicionals:
 <translation id="7687305263118037187">Temps d'espera de l'intent</translation>
 <translation id="7690647519407127574">Postal Oufuku Hagaki</translation>
 <translation id="7693583928066320343">S'ha rebut l'ordre de la pàgina</translation>
+<translation id="769424100851389104">Inicia l'actualització ara</translation>
 <translation id="7696089921647603491">Rock clàssic i èxits antics</translation>
 <translation id="769721561045429135">En aquest moment tens targetes que només es poden fer servir en aquest dispositiu. Fes clic a Continua per consultar les targetes.</translation>
 <translation id="7698864304447945242">Vols actualitzar Serveis de Google Play per a RA?</translation>
@@ -2752,6 +2763,7 @@ Detalls addicionals:
 <translation id="774634243536837715">S'ha bloquejat el contingut perillós.</translation>
 <translation id="7751971323486164747">Personalitza la mida i els tipus de lletra a Chrome</translation>
 <translation id="7752995774971033316">Sense gestionar</translation>
+<translation id="7754587126786572336">Les pestanyes i les aplicacions de Chrome es tancaran quan comenci l'actualització</translation>
 <translation id="7755287808199759310">El teu pare o mare et poden desbloquejar el lloc</translation>
 <translation id="7755624218968747854">Corró principal</translation>
 <translation id="7758069387465995638">És possible que l'antivirus o el tallafoc hagi bloquejat la connexió.</translation>
@@ -2916,6 +2928,7 @@ Detalls addicionals:
 <translation id="8186706823560132848">Programari</translation>
 <translation id="8190193880870196235">Gestionat per una extensió</translation>
 <translation id="8194797478851900357">&amp;Desfés el moviment</translation>
+<translation id="8200772114523450471">Reprèn</translation>
 <translation id="8201077131113104583">L'URL d'actualització per a l'extensió amb identificador "<ph name="EXTENSION_ID" />" no és vàlid.</translation>
 <translation id="8202097416529803614">Resum de la comanda</translation>
 <translation id="8202370299023114387">Conflicte</translation>
@@ -3213,6 +3226,7 @@ Detalls addicionals:
 <translation id="8963117664422609631">Ves a la configuració del lloc web</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Suggeriments:<ph name="MARKUP_2" />Assegureu-vos que teniu connexió de dades<ph name="MARKUP_3" />Torneu a carregar aquesta pàgina web més tard<ph name="MARKUP_4" />Comproveu l'adreça que heu introduït<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">Desa la targeta</translation>
+<translation id="8970887620466824814">S'ha produït un error.</translation>
 <translation id="8971063699422889582">El certificat del servidor ha caducat.</translation>
 <translation id="8975012916872825179">Inclou informació com ara números de telèfon, adreces electròniques i adreces d'enviament</translation>
 <translation id="8975263830901772334">Noms de fitxers que imprimeixes</translation>

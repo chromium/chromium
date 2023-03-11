@@ -241,7 +241,6 @@
 <translation id="3226657629376379887">පිරිසැලසුම් ක්‍රියා මෙනුව</translation>
 <translation id="3246869037381808805">දින 1කට වඩා පැරණි මුද්‍රණ කාර්ය ඉවත් කරනු ඇත</translation>
 <translation id="3268178239013324452">අසාර්ථක විය - දොර විවෘතයි</translation>
-<translation id="3275506277319227640"><ph name="DIRECTION" /> හි ඈඳන්න</translation>
 <translation id="3275729367986477355">නියුරු රූපය</translation>
 <translation id="3283504360622356314">{0,plural, =1{ගොනුව සංස්කරණ කරන්න}one{ගොනු සංස්කරණ කරන්න}other{ගොනු සංස්කරණ කරන්න}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
@@ -360,7 +359,6 @@
 <translation id="4311195029067684288">පූර්ණ</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> යතුර ඔබන ලදි</translation>
 <translation id="435692326371619097">ජාල APN සැකසීම් කළමනාකරණය කරන්න. APN සෙලියුලර් ජාලයක් සහ අන්තර්ජාලය අතර සම්බන්ධතාවයක් ඇති කරයි. <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
-<translation id="4370033095251616914">කුඩා පැත්තක ඈඳන්න</translation>
 <translation id="4378373042927530923">ධාවනය නොවේ</translation>
 <translation id="4378551569595875038">සම්බන්ධ වෙමින්...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -903,7 +901,6 @@
 <translation id="9137526406337347448">Google සේවා</translation>
 <translation id="9138630967333032450">වම් Shift යතුර</translation>
 <translation id="9149391708638971077">මතක පරීක්ෂණය ධාවනය කරන්න</translation>
-<translation id="9157515863513902090">විශාල පැත්තක ඈඳන්න</translation>
 <translation id="9161276708550942948">අවකාශය</translation>
 <translation id="9173638680043580060">මිනිත්තුවකට වඩා අඩුවෙන් ඉතිරිව ඇත</translation>
 <translation id="917720651393141712">පරීක්ෂාව</translation>

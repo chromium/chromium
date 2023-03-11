@@ -34,6 +34,7 @@
 <translation id="1173894706177603556">이름 바꾸기</translation>
 <translation id="1177863135347784049">맞춤설정</translation>
 <translation id="1181037720776840403">삭제</translation>
+<translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">안전한 비밀번호를 사용하시겠습니까?</translation>
 <translation id="1197267115302279827">북마크 이동</translation>
 <translation id="1201402288615127009">다음</translation>
@@ -42,7 +43,6 @@
 <translation id="1204692632633423444">Chrome 작업 버튼: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">링크 텍스트 복사</translation>
 <translation id="1209206284964581585">지금 숨기기</translation>
-<translation id="1226851825267005295">Google 계정으로 Chrome에 로그인한 후 환경설정을 관리할 수 있습니다</translation>
 <translation id="1227058898775614466">탐색 기록</translation>
 <translation id="1231733316453485619">동기화를 사용하시겠습니까?</translation>
 <translation id="123724288017357924">캐시된 콘텐츠를 무시하고 현재 페이지 새로고침</translation>
@@ -166,7 +166,6 @@
 <translation id="1928696683969751773">업데이트</translation>
 <translation id="19288952978244135">Chrome을 다시 여세요.</translation>
 <translation id="1933845786846280168">선택된 탭</translation>
-<translation id="193571872656840963">제작자에게 감사 인사하기</translation>
 <translation id="1943432128510653496">비밀번호 저장</translation>
 <translation id="1952172573699511566">가능한 경우 웹사이트에서 텍스트를 선호하는 언어로 표시합니다.</translation>
 <translation id="1959679933317802873">콘텐츠 대기 중</translation>
@@ -202,7 +201,6 @@
 <translation id="2122601567107267586">앱을 열 수 없음</translation>
 <translation id="2132122640199389833">연결된 기기 모두 삭제</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> 닫음</translation>
-<translation id="2134927169889348449">Chrome을 사용하면 <ph name="BEGIN_TOS_LINK" />Google 서비스 약관<ph name="END_TOS_LINK" />과 <ph name="BEGIN_ATOS_LINK" />Chrome 및 ChromeOS 추가 서비스 약관<ph name="END_ATOS_LINK" />에 동의하는 것으로 간주됩니다.</translation>
 <translation id="2139186145475833000">홈 화면에 추가</translation>
 <translation id="2141396931810938595">사용량 기준</translation>
 <translation id="214888715418183969">Chrome과 공유할 항목을 선택합니다. 공유하는 측정항목은 Chrome의 기능, 성능, 안정성을 개선하는 데 사용됩니다.</translation>
@@ -555,7 +553,6 @@
 <translation id="409109920254068737">이 태블릿을 사용하여 이 QR 코드가 표시된 기기에 로그인할 수 있습니다.</translation>
 <translation id="4095146165863963773">앱 데이터를 삭제하시겠습니까?</translation>
 <translation id="4096227151372679484">북마크 저장 흐름이 절반 높이로 열림</translation>
-<translation id="4099578267706723511">사용 통계와 비정상 종료 보고서를 Google로 전송하여 Chrome을 개선하는 데 동참하세요.</translation>
 <translation id="4101475238162928417">동기화하여 다른 기기에서 비밀번호, 북마크 등을 가져오세요.</translation>
 <translation id="410351446219883937">자동재생</translation>
 <translation id="4106587138345390261">Chrome은 사용자의 정보를 더 적게 사용하면서도 사이트에서 동일한 탐색 환경을 제공할 수 있는 새로운 기능을 알아보고 있습니다</translation>
@@ -593,7 +590,6 @@
 <translation id="4269820728363426813">링크 주소 복사</translation>
 <translation id="4283102315569707115">기본적으로 데스크톱 사이트를 요청하시겠습니까?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android 설정에서 화면 잠금 사용 설정하기<ph name="END_LINK" /></translation>
-<translation id="4293476595220860475">Chrome을 사용하면 <ph name="BEGIN_TOS_LINK" />Google 서비스 약관<ph name="END_TOS_LINK" />과 <ph name="BEGIN_ATOS_LINK" />Chrome 및 ChromeOS 추가 서비스 약관<ph name="END_ATOS_LINK" />에 동의하는 것으로 간주됩니다. <ph name="BEGIN_PRIVACY_LINK" />개인정보처리방침<ph name="END_PRIVACY_LINK" />도 적용됩니다.</translation>
 <translation id="4296252229500326964">새 시크릿 탭</translation>
 <translation id="4298388696830689168">연결된 사이트</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -766,7 +762,6 @@
 <translation id="5161254044473106830">제목이 필요합니다.</translation>
 <translation id="5170568018924773124">폴더 열기</translation>
 <translation id="5171045022955879922">검색 또는 URL 입력</translation>
-<translation id="517734441743343109">계속하면 <ph name="BEGIN_TOS_LINK" />서비스 약관<ph name="END_TOS_LINK" /> 및 <ph name="BEGIN_PRIVACY_LINK" />개인정보처리방침<ph name="END_PRIVACY_LINK" />에 동의하는 것으로 간주됩니다.</translation>
 <translation id="5184329579814168207">Chrome에서 열기</translation>
 <translation id="5191251636205085390">타사 쿠키를 대체하는 것을 목표로 하는 새로운 기술을 알아보고 관리하세요.</translation>
 <translation id="5193988420012215838">클립보드에 복사됨</translation>

@@ -100,7 +100,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1420408895951708260">Ndrysho "Dritën e natës". <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Shiko fotografitë dhe mediat më të fundit të telefonin tënd në <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">Po</translation>
-<translation id="1447641497144572814">Mbrojtësi i ekranit po niset</translation>
 <translation id="1455242230282523554">Shfaq cilësimet e gjuhës</translation>
 <translation id="1460620680449458626">Volumi është i çaktivizuar.</translation>
 <translation id="14648076227129703">Kjo lejon qasjen te kamera për <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> dhe të gjitha aplikacionet dhe sajtet e uebit me lejen e kamerës</translation>
@@ -126,6 +125,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1550523713251050646">Kliko për opsione të tjera</translation>
 <translation id="1555130319947370107">E kaltër</translation>
 <translation id="1576623706766186887">Zvogëlo kur zmadhuesi është aktiv</translation>
+<translation id="1586324912145647027">Shko te tavolina e punës nga 1 deri në 8</translation>
 <translation id="1589090746204042747">Qasu te të gjitha aktivitetet e tua në këtë sesion</translation>
 <translation id="1610778689852195798">"Zhbëj"</translation>
 <translation id="1611993646327628135">Aktive</translation>
@@ -514,6 +514,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3631369015426612114">Lejo njoftimet nga më poshtë</translation>
 <translation id="3633097874324966332">Hap cilësimet e Bluetooth-it për të çiftuar pajisjen</translation>
 <translation id="3638400994746983214">Ndrysho ekranin e privatësisë. <ph name="STATE_TEXT" /></translation>
+<translation id="3649256019230929621">Minimizo dritaren</translation>
 <translation id="3649505501900178324">Afati i përditësimit ka kaluar</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -588,6 +589,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="4021716437419160885">Lëviz poshtë</translation>
 <translation id="4022497978915111141">Kyç pajisjen</translation>
 <translation id="4024840464866786680">Nëse e ke harruar kodin PIN dhe fjalëkalimin ose e ke ndryshuar së fundi fjalëkalimin e "Llogarisë sate të Google", provo ta rikuperosh këtë përdorues.</translation>
+<translation id="4026843240379844265">Zhvendose dritaren aktive mes ekraneve</translation>
 <translation id="4028481283645788203">Kërkohet fjalëkalimi për më shumë siguri</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Po ndan ekranin</translation>
@@ -912,6 +914,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="5689633613396158040">"Drita e natës" e bën më të lehtë shikimin e ekranit ose leximin në dritë të zbehtë. Trokit për të ndryshuar se kur aktivizohet ose çaktivizohet plotësisht "Drita e natës".</translation>
 <translation id="5691772641933328258">Gjurma e gishtit nuk njihet</translation>
 <translation id="5693255400847650006">Mikrofoni në përdorim</translation>
+<translation id="5699366815052349604">Cakto dritaren aktive për të gjitha tavolinat e punës</translation>
 <translation id="570390244361237317">Të gjitha aplikacionet; navigo me tastet e shigjetave për t'u qasur te të gjitha aplikacionet</translation>
 <translation id="5707775774148071965">Pajisja jote mbështet një shpejtësi më të lartë të të dhënave sesa kablloja. Cilësia e funksionimit të pajisjes mund të jetë e kufizuar.</translation>
 <translation id="5710450975648804523">"Mos shqetëso" është aktiv</translation>
@@ -1552,6 +1555,7 @@ Instalim i ri</translation>
 <translation id="9034924485347205037">Skedarët e Linux</translation>
 <translation id="9047624247355796468">Hap cilësimet për <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Palos njoftimin</translation>
+<translation id="906458777597946297">Zmadho dritaren</translation>
 <translation id="9065203028668620118">Redakto</translation>
 <translation id="9070640332319875144">Cilësimet e "Asistentit"</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> derisa bateria të shkarkohet.</translation>

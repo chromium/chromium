@@ -278,6 +278,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6327105987658262776">Aucune mise à jour n'est proposée.</translation>
 <translation id="6412673304250309937">Il vérifie les URL en fonction d'une liste de sites non sécuritaires stockée dans Chrome. Si un site tente de voler votre mot de passe ou si vous téléchargez un fichier dangereux, Chrome peut également envoyer les URL concernées, y compris des extraits du contenu de pages, à la navigation sécurisée.</translation>
 <translation id="6418662306461808273">Passer au profil Chrome existant?</translation>
+<translation id="6493527311031785448">Google Chrome essaie de <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6506909944137591434">Chrome requiert l'autorisation d'accéder à l'appareil photo pour créer une carte 3D de votre environnement</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome pour les développeurs</translation>
 <translation id="659498884637196217">Dans le gestionnaire de mots de passe Google sur cet appareil</translation>
@@ -405,7 +406,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="8862326446509486874">Vous ne disposez pas des droits requis pour faire une installation sur le système. Relancez l'installation une fois que vous serez connecté comme administrateur.</translation>
 <translation id="8914504000324227558">Relancer Google Chrome</translation>
 <translation id="8922193594870374009">Pour envoyer un numéro de <ph name="ORIGIN" /> vers votre téléphone Android, connectez-vous à Chrome sur les deux appareils.</translation>
-<translation id="8983720963221508955">Vous avez activé la navigation sécurisée améliorée dans votre compte. Maintenant, activez-la dans Chrome.</translation>
 <translation id="8986207147630327271">Vous ajoutez un profil professionnel à ce navigateur et vous octroyez uniquement le contrôle de ce profil à votre administrateur.</translation>
 <translation id="8989968390305463310">Votre historique de navigation a une incidence sur les annonces que vous voyez ainsi que sur les centres d'intérêt tels qu'ils sont estimés ci-dessous. Afin de protéger votre confidentialité, Chrome supprime automatiquement et de façon continue vos centres d'intérêt chaque mois. Les centres d'intérêt peuvent être actualisés à moins que vous ne les retiriez.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Une mise à jour de Chrome est proposée}=1{Une mise à jour de Chrome est proposée}one{Une mise à jour de Chrome est proposée depuis # jour}other{Une mise à jour de Chrome est proposée depuis # jours}}</translation>

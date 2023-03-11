@@ -26,6 +26,7 @@
 <translation id="1448064542941920355">Reducir zoom</translation>
 <translation id="1510341833810331442">Os sitios non teñen permiso para gardar datos no teu dispositivo</translation>
 <translation id="1547123415014299762">Permítense as cookies de terceiros</translation>
+<translation id="1593426485665524382">Novas accións dispoñibles preto da parte superior da pantalla</translation>
 <translation id="1620510694547887537">Cámara</translation>
 <translation id="1633720957382884102">Sitios relacionados</translation>
 <translation id="1644574205037202324">Historial</translation>
@@ -146,6 +147,7 @@
 <translation id="3628308229821498208">Buscas suxeridas</translation>
 <translation id="3636279694100170143">Os sitios que visites poderán verificar que es un usuario real e non un bot</translation>
 <translation id="3649190289964910441">Calquera sitio que visites poderá gardar información con Chrome que confirme que es un usuario real. A medida que navegues, os sitios poderán facer comprobacións con Chrome e verificar, desde o primeiro sitio, que é probable que sexas un usuario de confianza.</translation>
+<translation id="3721953990244350188">Pecha o cadro e mostra a seguinte acción dispoñible</translation>
 <translation id="3744111561329211289">Sincronización en segundo plano</translation>
 <translation id="3763247130972274048">Toca dúas veces cara á esquerda ou á dereita no vídeo para saltar 10 s</translation>
 <translation id="3794286421982011626">Os sitios que visitas poden gardar información sobre o que fas para poder funcionar da forma que esperas (por exemplo, para manter a sesión iniciada ou gardar artigos no carro da compra). Con frecuencia, os sitios gardan esta información no teu dispositivo temporalmente.</translation>
@@ -193,7 +195,6 @@
 <translation id="4534723447064627427">Para permitir que <ph name="APP_NAME" /> acceda ao micrófono, actívao tamén en <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Silenciar micrófono</translation>
 <translation id="4570913071927164677">Detalles</translation>
-<translation id="4575264539271661854">Fai que sexa máis fácil achegar o texto e as imaxes dos sitios que visitas</translation>
 <translation id="4598549027014564149">Co modo de incógnito activado, os sitios non poden utilizar cookies para ver a túa actividade de navegación en distintos sitios, nin sequera nos relacionados. A túa actividade de navegación non se utiliza para fins como personalizar anuncios. As funcións dalgúns sitios poden deixar de funcionar.</translation>
 <translation id="4645575059429386691">Xestionado por teus pais</translation>
 <translation id="4670064810192446073">Realidade virtual</translation>

@@ -23,6 +23,7 @@
 <translation id="1640672724030957280">Завантаження...</translation>
 <translation id="1708666629004767631">Доступна нова, надійніша версія Chromium.</translation>
 <translation id="17264556997921157">Ви можете переглядати й вилучати цікаві теми, на основі яких сайти показують вам оголошення. Chromium оцінює, які теми вас цікавлять, за вашою нещодавньою історією веб-перегляду.</translation>
+<translation id="1745121272106313518">Chromium перезапуститься через <ph name="REMAINING_TIME" /></translation>
 <translation id="1774152462503052664">Дозволити Chromium працювати у фоновому режимі</translation>
 <translation id="1779356040007214683">Щоб зробити Chromium безпечнішим, ми вимкнути деякі розширення, джерелом яких не є <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />, і які, можливо, було додано без вашого відома.</translation>
 <translation id="1808667845054772817">Перевстановити Chromium</translation>
@@ -305,7 +306,6 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="7561906087460245826">Також очистити дані Chromium (<ph name="URL" />)</translation>
 <translation id="7582945390259497898">Chromium оцінює ваші інтереси. Коли ви пізніше відвідаєте якийсь сайт, він може запитати в Chromium про ваші інтереси, щоб персоналізувати для вас оголошення.</translation>
 <translation id="7583399374488819119">Програма встановлення <ph name="COMPANY_NAME" /></translation>
-<translation id="7597596667193879455">Безпечний перегляд із розширеним захистом увімкнено для вашого облікового запису. Тепер увімкніть його для Chromium.</translation>
 <translation id="761356813943268536">Chromium використовує вашу камеру та мікрофон.</translation>
 <translation id="7617377681829253106">Chromium став ще кращим</translation>
 <translation id="7649070708921625228">Довідка</translation>

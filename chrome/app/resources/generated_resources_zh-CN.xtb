@@ -211,6 +211,7 @@
 <translation id="1178581264944972037">暂停</translation>
 <translation id="117916940443676133">您尚未设置 PIN 码来保护您的安全密钥。要管理登录数据，请先创建一个 PIN 码。</translation>
 <translation id="1181037720776840403">移除</translation>
+<translation id="1181366777303791449">位于：<ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1183237619868651138">无法将 <ph name="EXTERNAL_CRX_FILE" /> 安装在本地缓存中。</translation>
 <translation id="1184709369107246085"><ph name="APPLICATION_NAME" />应用需要一个有效的<ph name="APPLICATION_NAME" />网址。</translation>
 <translation id="1185924365081634987">您也可以尝试<ph name="GUEST_SIGNIN_LINK_START" />以访客身份浏览<ph name="GUEST_SIGNIN_LINK_END" />，以便修复该网络错误。</translation>
@@ -247,6 +248,7 @@
 <translation id="1213254615020057352">发送使用情况数据和诊断数据。自动向 Google 发送诊断数据、设备数据和应用使用情况数据，帮助改善您孩子的 Android 使用体验。我们会使用这些数据提高系统和应用的稳定性，并改进其他方面，但不会利用数据辨识您孩子的身份。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。这项设置是由此设备的所有者强制指定的。此设备的所有者可以选择向 Google 发送此设备的诊断数据和使用情况数据。如果您已为孩子开启“其他网络与应用活动记录”设置，这些数据可能会被保存到其 Google 帐号中。</translation>
 <translation id="1213726621272705156">此页面不会再显示卡片</translation>
 <translation id="121384500095351701">无法安全地下载此文件</translation>
+<translation id="1214004433265298541">证书由您的管理员提供，此人可查看 <ph name="DOMAIN" /> 的凭据</translation>
 <translation id="1215411991991485844">已添加新的后台应用</translation>
 <translation id="1216542092748365687">移除指纹</translation>
 <translation id="1216891999012841486">详细了解如何修正更新错误</translation>
@@ -1618,6 +1620,7 @@
 <translation id="2383825469508278924">更改键盘按键映射、功能键等设置</translation>
 <translation id="2387052489799050037">转到主屏幕</translation>
 <translation id="2387602571959163792">“<ph name="DESK_NAME" />”（当前）</translation>
+<translation id="2390226379317200116">为此页面添加备注或想法，以便日后再次访问。</translation>
 <translation id="2390347491606624519">无法连接到代理，请重新登录</translation>
 <translation id="2390782873446084770">Wi-Fi 同步</translation>
 <translation id="2391419135980381625">标准字体</translation>
@@ -1679,6 +1682,7 @@
 <translation id="244641233057214044">与您搜索过的内容相关</translation>
 <translation id="2448312741937722512">类型</translation>
 <translation id="2448810255793562605">开关控制自动扫描</translation>
+<translation id="2450021089947420533">历程</translation>
 <translation id="2450223707519584812">您将无法添加用户，因为缺少 Google API 密钥。详情请见 <ph name="DETAILS_URL" />。</translation>
 <translation id="2450849356604136918">没有正在运行的视图</translation>
 <translation id="2451298179137331965">2 倍</translation>
@@ -1689,6 +1693,7 @@
 <translation id="2454247629720664989">关键字</translation>
 <translation id="2454524890947537054">批准网站请求？</translation>
 <translation id="245650153866130664">若想自动刷新票据，请选中“记住密码”。系统便会将您的密码仅保存在您的设备上。</translation>
+<translation id="2456794251167091176">导入完成</translation>
 <translation id="2456827790665612305">取消关注网站</translation>
 <translation id="2457246892030921239">“<ph name="APP_NAME" />”想从 <ph name="VOLUME_NAME" />复制文件。</translation>
 <translation id="2457842160081795172">目前位于<ph name="CHANNEL_NAME" />渠道</translation>
@@ -2308,6 +2313,7 @@
 <translation id="3003967365858406397">您的 <ph name="PHONE_NAME" /> 将创建一个私享的 Wi-Fi 网络连接。</translation>
 <translation id="3005574332301273731">不显示</translation>
 <translation id="3006881078666935414">无使用情况数据</translation>
+<translation id="3007410324195400631">为此页面添加备注</translation>
 <translation id="3007771295016901659">复制标签</translation>
 <translation id="3008232374986381779">在您的 <ph name="DEVICE_TYPE" /> 上运行 Linux 工具、编辑器和 IDE。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">重置权限</translation>
@@ -2559,7 +2565,6 @@
 <translation id="3254084468305910013">{COUNT,plural, =0{未发现任何安全问题}=1{发现了 {COUNT} 个安全问题}other{发现了 {COUNT} 个安全问题}}</translation>
 <translation id="3254451942070605467">正在下载“<ph name="FILE_NAME" />”，尚有 <ph name="PERCENT_REMAINING" />% 待下载</translation>
 <translation id="3254516606912442756">已停用自动检测时区的功能</translation>
-<translation id="3254715652085014625">在 Android 手机上打开 Chrome，并依次转到“设置”&gt;“密码”&gt;“使用手机作为安全密钥”，然后按照屏幕上显示的说明操作。</translation>
 <translation id="3255355328033513170">即将删除 <ph name="SITE_GROUP_NAME" /> 存储的所有数据及其名下的所有网站。包括 Cookie。您将会退出这些网站（包括打开的标签页）。</translation>
 <translation id="3257733480216378006">允许 <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> 款扩展程序访问此网站？</translation>
 <translation id="3259723213051400722">请重试。</translation>
@@ -2695,6 +2700,7 @@
 <translation id="3378627645871606983">允许 Steam 使用的权限会应用于所有 Steam 游戏和应用。</translation>
 <translation id="337920581046691015">系统将要安装<ph name="PRODUCT_NAME" />。</translation>
 <translation id="3380365263193509176">未知错误</translation>
+<translation id="3380831556454930637">您的管理员已将“<ph name="APP_NAME" />”应用配置为在 OS 登录期间运行</translation>
 <translation id="3382073616108123819">糟糕！系统无法识别此设备的标识符。</translation>
 <translation id="3382200254148930874">正在停用监管功能…</translation>
 <translation id="338323348408199233">屏蔽未使用 VPN 的流量</translation>
@@ -3109,7 +3115,6 @@
 <translation id="3742666961763734085">找不到使用该名称的组织部门。请重试。</translation>
 <translation id="3743842571276656710">请输入 PIN 码以与“<ph name="DEVICE_NAME" />”配对</translation>
 <translation id="3747077776423672805">要想卸载应用，请依次转到“设置”&gt;“Google Play 商店”&gt;“管理 Android 偏好设置”&gt;“应用”或“应用管理器”，点按您要卸载的应用（您可能需要左右滑动才能找到相应的应用），然后点按“卸载”或“停用”。</translation>
-<translation id="3747603683749989726">开启“增强型安全浏览”功能？</translation>
 <translation id="3748424433435232460">此帐号的密码已经保存在该设备上</translation>
 <translation id="3748706263662799310">报告错误</translation>
 <translation id="3749724428455457489">详细了解网站建议的广告</translation>
@@ -3709,7 +3714,6 @@
 <translation id="4280325816108262082">已关闭或未被使用时，设备会自动断开连接</translation>
 <translation id="4281844954008187215">服务条款</translation>
 <translation id="4282196459431406533">Smart Lock 已开启</translation>
-<translation id="4284755288573763878">关闭“增强型安全浏览”功能？</translation>
 <translation id="4284903252249997120">ChromeVox 屏幕阅读器和随选朗读功能</translation>
 <translation id="4285418559658561636">更新密码</translation>
 <translation id="4285498937028063278">取消固定</translation>
@@ -4941,6 +4945,7 @@
 <translation id="5432145523462851548">在文件夹中显示 <ph name="FILE_NAME" /></translation>
 <translation id="543338862236136125">修改密码</translation>
 <translation id="5434065355175441495">PKCS #1 RSA 加密</translation>
+<translation id="5434294721803750644">连接受监控</translation>
 <translation id="5435779377906857208">始终允许 <ph name="HOST" /> 使用您的位置信息</translation>
 <translation id="5436492226391861498">正在等待代理隧道的响应...</translation>
 <translation id="5436510242972373446">用 <ph name="SITE_NAME" /> 搜索：</translation>
@@ -5431,7 +5436,6 @@
 <translation id="5877584842898320529">所选打印机不可用或未正确安装。<ph name="BR" />请检查打印机，或尝试另选一台打印机。</translation>
 <translation id="5878945009165002849">屏蔽来自身份服务的登录提示</translation>
 <translation id="5881710783061958569">如果是的话，请修改您在 <ph name="BRAND" />中保存的密码，使它与您的新密码保持一致。</translation>
-<translation id="5882449899683447569">出了点问题，您的密码未能成功导入</translation>
 <translation id="5882919346125742463">已知网络</translation>
 <translation id="5883356647197510494">已自动禁用“<ph name="PERMISSION_1" />”和“<ph name="PERMISSION_2" />”权限</translation>
 <translation id="5884447826201752041">针对每款扩展程序进行自定义</translation>
@@ -6079,6 +6083,7 @@
 <translation id="6469557521904094793">开启移动网络</translation>
 <translation id="6470823736074966819">将通知静音</translation>
 <translation id="6472893788822429178">显示“主页”按钮</translation>
+<translation id="6474352027343282094">{COUNT,plural, =1{{COUNT} 个密码仅会保存到此设备上。如果想在您的其他设备上使用它，&lt;a target='_blank' href='chrome://password-manager/'&gt;请将它保存到您的 Google 帐号中&lt;/a&gt;。}other{{COUNT} 个密码仅会保存到此设备上。如果想在您的其他设备上使用它们，&lt;a target='_blank' href='chrome://password-manager/'&gt;请将它们保存到您的 Google 帐号中&lt;/a&gt;。}}</translation>
 <translation id="6474498546677193336">无法停止共享，因为有一个应用正在使用此文件夹。系统将会在下次关闭 Linux 时停止共享此文件夹。</translation>
 <translation id="6474884162850599008">取消与 Google 云端硬盘帐号的关联</translation>
 <translation id="6475294023568239942">请在“设置”中释放磁盘空间或调整 Linux 磁盘大小</translation>
@@ -7572,6 +7577,7 @@
 <translation id="7817361223956157679">Linux 应用目前不支持屏幕键盘</translation>
 <translation id="7818135753970109980">已添加新主题背景（<ph name="EXTENSION_NAME" />）</translation>
 <translation id="7819605256207059717">已被贵组织屏蔽</translation>
+<translation id="7820400255539998692">请删除“<ph name="FILENAME" />”，以免使用此设备的他人看到您的密码</translation>
 <translation id="7820561748632634942">分配更多开关？</translation>
 <translation id="782057141565633384">复制视频地址(&amp;O)</translation>
 <translation id="7824864914877854148">发生错误，因此无法完成备份</translation>
@@ -7710,6 +7716,7 @@
 <translation id="7940265372707990269">排序依据：<ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">网络共享就绪与否：</translation>
 <translation id="7942349550061667556">红色</translation>
+<translation id="7943349879009553083">在访客模式下不可用</translation>
 <translation id="7943368935008348579">下载 PDF 文件</translation>
 <translation id="7943837619101191061">添加位置…</translation>
 <translation id="7944772052836377867">同步功能需要验证您的身份</translation>
@@ -7723,6 +7730,7 @@
 <translation id="7950629216186736592">原因：LBS 仅支持 http://、https:// 和 file:// 网址。</translation>
 <translation id="7951265006188088697">要添加或管理 Google Pay 付款方式，请访问 <ph name="BEGIN_LINK" />Google 帐号<ph name="END_LINK" /></translation>
 <translation id="795130320946928025">停用虚拟卡</translation>
+<translation id="795240231873601803">为工作帐号和学校帐号使用企业注册</translation>
 <translation id="7952708427581814389">网站可以请求查看您剪贴板中的文字和图片</translation>
 <translation id="795282463722894016">恢复完成</translation>
 <translation id="7952904276017482715">预期 ID 是“<ph name="EXPECTED_ID" />”，但实际 ID 是“<ph name="NEW_ID" />”</translation>
@@ -7908,7 +7916,6 @@
 <translation id="8102139037507939978">从 system_logs.txt 中删除个人身份信息。</translation>
 <translation id="810362914482827094">搜索密钥</translation>
 <translation id="8104088837833760645">下载 eSIM 卡配置文件</translation>
-<translation id="8105368624971345109">关闭</translation>
 <translation id="8107015733319732394">正在在您的 <ph name="DEVICE_TYPE" /> 上安装 Google Play 商店。这可能需要几分钟的时间。</translation>
 <translation id="810728361871746125">显示屏分辨率</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{无第三方 Cookie}=1{已屏蔽 1 个第三方 Cookie}other{已屏蔽 # 个第三方 Cookie}}</translation>
@@ -7927,6 +7934,7 @@
 <translation id="81238879832906896">黄色和白色花朵</translation>
 <translation id="8123975449645947908">向后滚动</translation>
 <translation id="8124313775439841391">受管理的 ONC</translation>
+<translation id="8129265306888404830">如果想通过贵组织 (<ph name="EMAIL_DOMAIN" />) 使用电子邮件地址，您需要使用企业注册。如果此设备是用于个人用途，请使用您的个人 Google 帐号登录。</translation>
 <translation id="813082847718468539">查看网站信息</translation>
 <translation id="8131740175452115882">确认</translation>
 <translation id="8133297578569873332">可接受 - FM</translation>
@@ -8878,6 +8886,7 @@
 <translation id="8993945059918628059">用手指轻触指纹传感器。您的指纹数据会安全地存储在您的 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
 <translation id="899403249577094719">Netscape 证书基本网址</translation>
 <translation id="899657321862108550">您的“专属”Chrome 浏览器，走到哪带到哪</translation>
+<translation id="899671834467367922">换个用户身份登录即可查看此页面并为其添加备注。</translation>
 <translation id="8998078711690114234">这种文件可能有安全隐患。请仅在您信任“<ph name="ORIGIN" />”的情况下保存此文件</translation>
 <translation id="8999560016882908256">区段语法错误：<ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">轻触 <ph name="DEVICE_TYPE" /> 右侧的指纹传感器。您的指纹数据会安全地存储在您的 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
@@ -8917,7 +8926,6 @@
 <translation id="9026852570893462412">此过程可能需要几分钟的时间。正在下载虚拟机。</translation>
 <translation id="9027459031423301635">在新标签页中打开链接(&amp;T)</translation>
 <translation id="9027707169256972235">移除</translation>
-<translation id="9029667986262585240">您已在自己的帐号中关闭了“增强型安全浏览”功能。</translation>
 <translation id="9030515284705930323">贵单位还没有为您的帐号启用 Google Play 商店。如需更多信息，请与管理员联系。</translation>
 <translation id="9030754204056345429">较快</translation>
 <translation id="9030785788945687215">Gmail</translation>
@@ -9102,7 +9110,6 @@
 <translation id="9188732951356337132">发送使用情况数据和诊断数据。目前，此设备会自动向 Google 发送诊断数据、设备数据和应用使用情况数据。这些数据不会被用来辨识您孩子的身份，而是会被用来帮助提高系统和应用的稳定性以及实现其他方面的改进。部分汇总数据也会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。如果您已为孩子开启“其他网络与应用活动记录”设置，这些数据可能会被保存到其 Google 帐号中。<ph name="BEGIN_LINK2" />了解详情<ph name="END_LINK2" /></translation>
 <translation id="9192019773545828776">收听语音反馈，让您无需看屏幕即可使用设备。通过已连接的设备可以获得盲文反馈。使用 Ctrl + Alt + Z 可开启和关闭 ChromeVox。使用搜索键 + 向左键或向右键可进行导航。使用搜索键 + 空格键即可选择（启用）。</translation>
 <translation id="919686179725692564">详细了解如何备份您的应用</translation>
-<translation id="9198090666959937775">使用您的 Android 手机作为安全密钥</translation>
 <translation id="9199503643457729322">点击即可退出“隐私保护指南”。</translation>
 <translation id="9200339982498053969"><ph name="ORIGIN" /> 将能够修改“<ph name="FOLDERNAME" />”中的文件</translation>
 <translation id="920045321358709304">在<ph name="SEARCH_ENGINE" />中搜索</translation>
@@ -9130,6 +9137,7 @@
 <translation id="922152298093051471">自定义 Chrome</translation>
 <translation id="923467487918828349">显示全部</translation>
 <translation id="924818813611903184">在 Chrome 操作系统设置中管理语言</translation>
+<translation id="925270020047573546">此设备不支持投放桌面设备中的音频。</translation>
 <translation id="929117907539171075">已安装应用中的离线数据也会被清除</translation>
 <translation id="930268624053534560">详细时间戳</translation>
 <translation id="930893132043726269">目前正在使用漫游服务</translation>

@@ -84,6 +84,7 @@
 <translation id="1722487484194605434">جارٍ ضغط <ph name="NUMBER_OF_ITEMS" /> من العناصر...</translation>
 <translation id="1722687688096767818">جارٍ إضافة الملف الشخصي...</translation>
 <translation id="1726100011689679555">خوادم الأسماء</translation>
+<translation id="1727562178154619254">الملف جاهز للمزامنة.</translation>
 <translation id="1729953886957086472">الألمانية (ألمانيا)</translation>
 <translation id="1730235522912993863">‏الصينية باستخدام لوحة مفاتيح Cangjie</translation>
 <translation id="1731889557567069540">تم نسخ <ph name="NUMBER_OF_ITEMS" /> عنصر.</translation>
@@ -615,6 +616,7 @@
 <translation id="5911887972742538906">‏حدث خطأ أثناء تثبيت تطبيق Linux.</translation>
 <translation id="5912396950572065471">التنسيق</translation>
 <translation id="5913638992615760742">تعذَّر إتمام عملية النسخ، خطأ غير متوقِّع: <ph name="ERROR_MESSAGE" /></translation>
+<translation id="5918480239180455431">تتوفّر ميزات بحث جديدة.</translation>
 <translation id="5926082595146149752">الهولندية (هولندا) باستخدام لوحة مفاتيح الكمبيوتر الشخصي الأمريكية الدولية</translation>
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5948255720516436063">الشبكة <ph name="NETWORK_INDEX" /> من إجمالي الشبكات البالغ عددها <ph name="NETWORK_COUNT" />، شبكة "<ph name="NETWORK_NAME" />"، يمكنك تفعيل الشبكة بعد إعداد الجهاز</translation>
@@ -704,6 +706,7 @@
 <translation id="6732801395666424405">لم يتم تحميل الشهادات</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">‏مشاركة المجلد مع الجهاز الافتراضي Bruschetta</translation>
+<translation id="6750737795876287924">الدليل الحالي</translation>
 <translation id="6751256176799620176">تم اختيار مجلد واحد</translation>
 <translation id="6755827872271341378">‏جهاز ChromeOS Flex</translation>
 <translation id="6790428901817661496">التشغيل</translation>
@@ -741,7 +744,6 @@
 <translation id="6973630695168034713">المجلدات</translation>
 <translation id="6976795442547527108">أسد</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979737339423435258">جميع الأوقات</translation>
 <translation id="6989942356279143254">السويدية</translation>
 <translation id="6990081529015358884">لقد نفدت المساحة</translation>
 <translation id="6993826899923627728">هذه العناصر موضوعة في "المهملات"</translation>
@@ -797,7 +799,6 @@
 <translation id="7458955835361612701">ما مِن صور حديثة.</translation>
 <translation id="7460898608667578234">الأوكرانية</translation>
 <translation id="7469894403370665791">الاتصال بهذه الشبكة تلقائيًا</translation>
-<translation id="7481358317100446445">جاهزة</translation>
 <translation id="7486315294984620427">‏لإفلات ملفات في Parallels Desktop، يجب نسخ الملف إلى مجلد ملفات Windows.</translation>
 <translation id="749452993132003881">هيراغانا</translation>
 <translation id="7495372004724182530">الماليالامية الصوتية</translation>

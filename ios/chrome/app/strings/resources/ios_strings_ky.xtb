@@ -81,6 +81,7 @@
 <translation id="149095475893949513">Бул вебсайт конфигурациялык профилди жүктөп алууга аракет кылып жатат.</translation>
 <translation id="1491277525950327607">Жөндөөнү которуштуруу үчүн, эки жолу таптаңыз</translation>
 <translation id="1492417797159476138">Бул сайт үчүн ушул колдонуучунун атын сактап койгонсуз</translation>
+<translation id="1497590942294823549">Меню → Сырсөздөрдү башкаргыч</translation>
 <translation id="1498283581832036924"><ph name="WEBSITE" /> аккаунтуңуз өчүрүлбөйт.</translation>
 <translation id="1506063256525392513">Бул сүрөткө тартууга жана аларды жүктөп берүүгө, ошондой эле, QR коддорун скандоого жол ачат</translation>
 <translation id="1509486075633541495">Вебсайтка кирүү</translation>
@@ -242,6 +243,7 @@
 <translation id="271033894570825754">Жаңы</translation>
 <translation id="2712127207578915686">Файлды ачуу мүмкүн эмес</translation>
 <translation id="2718352093833049315">Wi-Fi'да гана</translation>
+<translation id="2737716090799520623">Chrome'го кирип турганыңызда сырсөздөр Google аккаунтуңузга (<ph name="ACCOUNT" />) сакталат. Муну өчүрүү үчүн <ph name="BEGIN_LINK" />параметрлерге өтүңүз<ph name="END_LINK" />.</translation>
 <translation id="2747003861858887689">Мурунку талаа</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> каналына жазылдыңыз</translation>
 <translation id="2764831210418622012">жаңы эле</translation>
@@ -843,6 +845,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="6801927553864092214">Купуя серептөө үчүн жашыруун өтмөктү ачыңыз</translation>
 <translation id="6807889908376551050">Баарын көрсөтүү…</translation>
 <translation id="681368974849482173">Нерсе түзүлдү</translation>
+<translation id="6822587385560699678">Күйгүзүлсө, сырсөздөр <ph name="ACCOUNT" /> аккаунтунда сакталат. Өчүрүлсө, сырсөздөр ушул түзмөктө гана сакталат.</translation>
 <translation id="683022620450280906">Cакталган сырсөздөрдү каалаган түзмөктө колдоно аласыз. Алар <ph name="EMAIL" /> аккаунту үчүн Google'дун Сырсөздөрдү башкаргычына сакталат</translation>
 <translation id="6831043979455480757">Которуу</translation>
 <translation id="6842136130964845393">Сакталган сырсөздөрүңүздү ар дайым колдонуу үчүн бул өзүңүз экениңизди ырастаңыз</translation>

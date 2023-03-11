@@ -26,6 +26,7 @@
 <translation id="1448064542941920355">Zoom ud</translation>
 <translation id="1510341833810331442">Websites har ikke tilladelse til at gemme data på din enhed</translation>
 <translation id="1547123415014299762">Tredjepartscookies er tilladt</translation>
+<translation id="1593426485665524382">Nye handlinger er tilgængelige øverst på skærmen</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1633720957382884102">Relaterede websites</translation>
 <translation id="1644574205037202324">Historik</translation>
@@ -146,6 +147,7 @@
 <translation id="3628308229821498208">Foreslåede søgninger</translation>
 <translation id="3636279694100170143">De websites, du besøger, kan tjekke, at du er en reel bruger og ikke en bot</translation>
 <translation id="3649190289964910441">Når du besøger et website, kan det gemme oplysninger i Chrome, som tjekker, at du er en reel bruger. Når du fortsætter med din browseraktivitet, kan websites tjekke oplysningerne via Chrome og verificere (baseret på det første website), at du sandsynligvis er reel bruger.</translation>
+<translation id="3721953990244350188">Afvis, og vis næste tilgængelige handling</translation>
 <translation id="3744111561329211289">Synkronisering i baggrunden</translation>
 <translation id="3763247130972274048">Tryk to gange i videoens venstre eller højre side for at springe ti sekunder frem eller tilbage</translation>
 <translation id="3794286421982011626">Et website, du besøger, kan gemme oplysninger om, hvad du foretager dig, så det kan fungere optimalt – f.eks. så du kan forblive logget ind på et website eller gemme varer i din indkøbskurv. Websites gemmer ofte disse oplysninger midlertidigt på din enhed.</translation>
@@ -193,7 +195,6 @@
 <translation id="4534723447064627427">Aktivér også din mikrofon i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" /> for at give <ph name="APP_NAME" /> adgang til mikrofonen.</translation>
 <translation id="4566417217121906555">Slå mikrofon fra</translation>
 <translation id="4570913071927164677">Info</translation>
-<translation id="4575264539271661854">Gør det nemmere at zoome ind på tekst og billeder på et website, du besøger</translation>
 <translation id="4598549027014564149">Når du er i inkognitotilstand, kan websites ikke bruge dine cookies til at se din browseraktivitet på websites, heller ikke på relaterede websites. Din browseraktivitet bruges f.eks. ikke til at tilpasse annoncer. Funktionerne på visse websites virker muligvis ikke.</translation>
 <translation id="4645575059429386691">Administreret af en af dine forældre</translation>
 <translation id="4670064810192446073">Virtual reality</translation>

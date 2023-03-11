@@ -26,6 +26,7 @@
 <translation id="1448064542941920355">Diminuir zoom</translation>
 <translation id="1510341833810331442">Os sites não podem salvar dados no seu dispositivo</translation>
 <translation id="1547123415014299762">Cookies de terceiros são permitidos</translation>
+<translation id="1593426485665524382">Novas ações disponíveis perto da parte de cima da tela</translation>
 <translation id="1620510694547887537">Câmera</translation>
 <translation id="1633720957382884102">Sites relacionados</translation>
 <translation id="1644574205037202324">Histórico</translation>
@@ -146,6 +147,7 @@
 <translation id="3628308229821498208">Pesquisas sugeridas</translation>
 <translation id="3636279694100170143">Os sites que você visita podem validar que você é um usuário real e não um bot</translation>
 <translation id="3649190289964910441">Os sites que você visitar podem salvar informações com o Chrome que validam que você é um usuário real. Conforme você navega, os sites podem verificar com o Chrome,. desde o primeiro site, que você provavelmente é um usuário confiável.</translation>
+<translation id="3721953990244350188">Dispensar e mostrar a próxima ação disponível</translation>
 <translation id="3744111561329211289">Sincronização em segundo plano</translation>
 <translation id="3763247130972274048">Toque duas vezes no lado esquerdo ou direito do vídeo para pular 10 s</translation>
 <translation id="3794286421982011626">Um site que você visita pode salvar informações sobre o que você está fazendo para funcionar conforme o esperado. Por exemplo, para manter sua conta conectada em um site ou salvar itens no seu carrinho de compras. Geralmente, os sites salvam essas informações temporariamente no dispositivo.</translation>
@@ -193,7 +195,6 @@
 <translation id="4534723447064627427">Para permitir que o app <ph name="APP_NAME" /> acesse seu microfone, também é preciso ativá-lo nas <ph name="BEGIN_LINK" />configurações do Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Desativar microfone</translation>
 <translation id="4570913071927164677">Detalhes</translation>
-<translation id="4575264539271661854">Facilitar o zoom em textos e imagens de um site que você visita</translation>
 <translation id="4598549027014564149">Na navegação anônima, os sites não podem usar cookies para conferir sua atividade de navegação, mesmo sites relacionados. Sua atividade de navegação não é usada para ações como a personalização de anúncios. Os recursos de alguns sites podem não funcionar.</translation>
 <translation id="4645575059429386691">Gerenciado pelos seus pais</translation>
 <translation id="4670064810192446073">Realidade virtual</translation>

@@ -193,7 +193,6 @@
 <translation id="4534723447064627427">Um <ph name="APP_NAME" /> Zugriff auf dein Mikrofon zu gewähren, muss die Mikrofonberechtigung auch in den <ph name="BEGIN_LINK" />Android-Einstellungen<ph name="END_LINK" /> aktiviert werden.</translation>
 <translation id="4566417217121906555">Mikrofon stummschalten</translation>
 <translation id="4570913071927164677">Details</translation>
-<translation id="4575264539271661854">Damit wird das Heranzoomen von Text und Bildern auf Websites, die du besuchst, vereinfacht</translation>
 <translation id="4598549027014564149">Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden, um deine Browseraktivitäten auf anderen Websites zu sehen. Das gilt auch für zusammenhängende Websites. Deine Browseraktivitäten werden unter anderem auch nicht für personalisierte Werbung verwendet. Einige Websites funktionieren dann möglicherweise nicht mehr richtig.</translation>
 <translation id="4645575059429386691">Von deinen Eltern verwaltet</translation>
 <translation id="4670064810192446073">Virtual Reality</translation>
@@ -277,6 +276,7 @@
 <translation id="6040143037577758943">Schließen</translation>
 <translation id="6042308850641462728">Mehr</translation>
 <translation id="6064125863973209585">Abgeschlossene Downloads</translation>
+<translation id="6071501408666570960">Du wirst möglicherweise von dieser Website abgemeldet</translation>
 <translation id="6165508094623778733">Weitere Informationen</translation>
 <translation id="6177111841848151710">Für die aktuelle Suchmaschine blockiert</translation>
 <translation id="6177128806592000436">Die Verbindung zu dieser Website ist nicht sicher</translation>
@@ -414,7 +414,7 @@
 <translation id="851751545965956758">Verhindern, dass Websites eine Verbindung zu Geräten herstellen</translation>
 <translation id="8525306231823319788">Vollbildmodus</translation>
 <translation id="8528440122773422556">Durch diese Aktion werden alle Daten und Cookies gelöscht, die von allen Websites unter <ph name="ORIGIN" /> oder von der zugehörigen App auf dem Startbildschirm gespeichert wurden</translation>
-<translation id="8541410041357371550">Diese Website ruft deine Werbethemen von Chrome ab, damit sie dir relevantere Werbung anzeigen kann</translation>
+<translation id="8541410041357371550">Diese Website ruft deine Werbethemen von Chrome ab, damit dir relevantere Werbung angezeigt werden kann</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Cookies zugelassen für <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />-Website}other{Cookies zugelassen für <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />-Websites}}</translation>
 <translation id="857943718398505171">Zugelassen (empfohlen)</translation>
 <translation id="8609465669617005112">Nach oben</translation>

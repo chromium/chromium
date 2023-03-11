@@ -81,6 +81,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="149095475893949513">Þetta vefsvæði er að reyna að sækja stillingasnið.</translation>
 <translation id="1491277525950327607">Ýttu tvisvar til að breyta stillingum</translation>
 <translation id="1492417797159476138">Þú varst þegar búin(n) að vista þetta notandanafn fyrir vefsvæðið</translation>
+<translation id="1497590942294823549">Valmynd → Aðgangsorðastjórnun</translation>
 <translation id="1498283581832036924"><ph name="WEBSITE" />-reikningnum þínum verður ekki eytt.</translation>
 <translation id="1506063256525392513">Með þessu móti geturðu tekið myndir og hlaðið þeim upp og skannað QR-kóða.</translation>
 <translation id="1509486075633541495">Skrá inn á vefsvæði</translation>
@@ -242,6 +243,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="271033894570825754">Nýtt</translation>
 <translation id="2712127207578915686">Ekki er hægt að opna skrá</translation>
 <translation id="2718352093833049315">Aðeins um Wi-Fi</translation>
+<translation id="2737716090799520623">Þegar þú ert innskráð(ur) á Chrome eru aðgangsorð sem þú vistar geymd á Google-reikningnum þínum (<ph name="ACCOUNT" />). Til að slökkva á þessu skaltu <ph name="BEGIN_LINK" />fara í stillingarnar<ph name="END_LINK" />.</translation>
 <translation id="2747003861858887689">Fyrri reitur</translation>
 <translation id="2749231692441336879">Fylgir <ph name="CHANNEL_NAME" /></translation>
 <translation id="2764831210418622012">rétt í þessu</translation>
@@ -843,6 +845,7 @@ Reyndu að nota einkvæmt aðgangsorð á hverju vefsvæði.</translation>
 <translation id="6801927553864092214">Opnaðu huliðsflipa til að vafra í leyni</translation>
 <translation id="6807889908376551050">Sýna alla...</translation>
 <translation id="681368974849482173">Atriði búið til</translation>
+<translation id="6822587385560699678">Þegar kveikt er á þessu eru aðgangsorð vistuð á <ph name="ACCOUNT" />. Þegar slökkt er á þessu eru aðgangsorð aðeins vistuð í þessu tæki.</translation>
 <translation id="683022620450280906">Þú getur notað vistuð aðgangsorð í hvaða tæki sem er. Þau eru vistuð í aðgangsorðastjórnun Google fyrir <ph name="EMAIL" /></translation>
 <translation id="6831043979455480757">Þýða</translation>
 <translation id="6842136130964845393">Staðfestu að þetta sért þú til að tryggja aðgang þinn að vistuðum aðgangsorðum</translation>

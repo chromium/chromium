@@ -100,7 +100,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1420408895951708260">Öövalguse lülitamine. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Seadmes <ph name="DEVICE_TYPE" /> telefoni hiljutiste fotode ja meedia vaatamine</translation>
 <translation id="1426410128494586442">Jah</translation>
-<translation id="1447641497144572814">Ekraanisäästja käivitub</translation>
 <translation id="1455242230282523554">Kuva keeleseaded</translation>
 <translation id="1460620680449458626">Helitugevus on vaigistatud.</translation>
 <translation id="14648076227129703">See lubab rakendustel <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> ning kõikidel kaamerale juurdepääsemise loaga rakendustel ja veebisaitidel kaamerale juurde pääseda</translation>
@@ -126,6 +125,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1550523713251050646">Klõpsake lisavalikute nägemiseks</translation>
 <translation id="1555130319947370107">Sinine</translation>
 <translation id="1576623706766186887">Suumi välja, kui luup on sisse lülitatud</translation>
+<translation id="1586324912145647027">Töölaua 1–8 kuvamine</translation>
 <translation id="1589090746204042747">Juurdepääs kõigile teie tegevustele selle seansi ajal</translation>
 <translation id="1610778689852195798">„Võta tagasi“</translation>
 <translation id="1611993646327628135">Sees</translation>
@@ -514,6 +514,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3631369015426612114">Luba märguanded järgmistest kohtadest</translation>
 <translation id="3633097874324966332">Avage oma seadme sidumiseks Bluetoothi seaded</translation>
 <translation id="3638400994746983214">Privaatsuskuvale lülitamine. <ph name="STATE_TEXT" />.</translation>
+<translation id="3649256019230929621">Minimeeri aken</translation>
 <translation id="3649505501900178324">Värskendamise tähtaeg on möödas</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -589,6 +590,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4021716437419160885">Keri alla</translation>
 <translation id="4022497978915111141">Lukusta seade</translation>
 <translation id="4024840464866786680">Kui unustasite oma PIN-koodi ja parooli või muutsite hiljuti oma Google'i konto parooli, proovige konto taastada.</translation>
+<translation id="4026843240379844265">Aktiivse akna teisaldamine ekraanide vahel</translation>
 <translation id="4028481283645788203">Turvalisuse suurendamiseks on vaja parooli</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Jagate oma ekraanikuva</translation>
@@ -913,6 +915,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5689633613396158040">Öövalgus muudab hämaras valguses ekraani vaatamise ja lugemise lihtsamaks. Puudutage, et muuta Öövalguse sisselülitumise aega või lülitada see täielikult välja.</translation>
 <translation id="5691772641933328258">Sõrmejälge ei tuntud ära</translation>
 <translation id="5693255400847650006">Mikrofon on kasutuses</translation>
+<translation id="5699366815052349604">Aktiivse akna kõikidele töölaudadele määramine</translation>
 <translation id="570390244361237317">Kõik rakendused, kõigile rakendustele juurdepääsemiseks navigeerige nooleklahvidega</translation>
 <translation id="5707775774148071965">Teie seade toetab kiiremat andmesidet kui teie kaabel. Seadme toimivus võib olla piiratud.</translation>
 <translation id="5710450975648804523">Režiim Mitte segada on sees</translation>
@@ -1553,6 +1556,7 @@ Uus installimine</translation>
 <translation id="9034924485347205037">Linuxi failid</translation>
 <translation id="9047624247355796468">Ava võrgu <ph name="NETWORK_NAME" /> seaded</translation>
 <translation id="9059834730836941392">Ahenda märguannet</translation>
+<translation id="906458777597946297">Maksimeeri akent</translation>
 <translation id="9065203028668620118">Muuda</translation>
 <translation id="9070640332319875144">Assistendi seaded</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> aku tühjenemiseni.</translation>

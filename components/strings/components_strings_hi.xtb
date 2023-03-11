@@ -346,6 +346,7 @@
 <translation id="1733064249834771892">फ़ॉन्ट</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">सिस्टम व्यवस्थापक से संपर्क करने का प्रयास करें.</translation>
+<translation id="1736158756193183352">नेटवर्क में <ph name="BEGIN_LINK" />साइन इन किया जा रहा है<ph name="END_LINK" /></translation>
 <translation id="1736420071277903564">कंप्यूटर</translation>
 <translation id="1740951997222943430">खत्म होने का मान्य महीना डालें</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> होने पर, नीति तय हाेनी चाहिए. साथ ही, इसकी एक मान्य स्ट्रिंग भी होनी चाहिए.</translation>
@@ -506,6 +507,7 @@
 <translation id="2149968176347646218">कनेक्शन सुरक्षित नहीं है</translation>
 <translation id="2153609454945889823">Google Play Services for AR को इंस्टॉल करें?</translation>
 <translation id="2154484045852737596">कार्ड में बदलाव करें</translation>
+<translation id="2154739667870063220">फिर चालू करें</translation>
 <translation id="2155260325161282517">5 x 7 इंच</translation>
 <translation id="2157640075051554492">कीमत ट्रैक करने से जुड़ी सूचनाएं</translation>
 <translation id="2161656808144014275">लेख संदेश</translation>
@@ -893,6 +895,7 @@
 <translation id="3215092763954878852">WebAuthn का इस्तेमाल नहीं किया जा सका</translation>
 <translation id="3216313131063488104">ब्लूज़</translation>
 <translation id="3218181027817787318">मिलते-जुलते</translation>
+<translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{अभी अपडेट करना ज़रूरी है}=2{कल अपडेट करना ज़रूरी है}one{# दिन के अंदर अपडेट करना ज़रूरी है}other{# दिनों के अंदर अपडेट करना ज़रूरी है}}</translation>
 <translation id="3223287115535306850">ऐप्लिकेशन लॉन्च होने की जानकारी देने वाला लोडिंग आइकॉन</translation>
 <translation id="3223425961342298674">जगह की जानकारी ऐक्सेस करने की अनुमति नहीं है</translation>
 <translation id="3225919329040284222">सर्वर द्वारा कोई प्रमाणपत्र प्रस्‍तुत किया गया, जो बिल्‍ट-इन अपेक्षाओं से मिलान नहीं करता. इन अपेक्षाओं को आपकी सुरक्षा करने के लिए कुछ, उच्‍च-सुरक्षा वेबसाइटों के लिए शामिल किया गया है.</translation>
@@ -1192,6 +1195,7 @@
 <translation id="3949601375789751990">आपका ब्राउज़िंग इतिहास यहां दिखाई देता है</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">भुगतान का कोई तरीका सेव नहीं किया गया</translation>
+<translation id="3950574001630941635">ट्यूटोरियल को रीस्टार्ट करें</translation>
 <translation id="3950820424414687140">साइन इन करें</translation>
 <translation id="3958057596965527988">4 x 4 इंच</translation>
 <translation id="3961148744525529027">पैसे चुकाने की हैंडलर शीट आधी स्क्रीन में खुली है</translation>
@@ -1376,6 +1380,7 @@
 <translation id="4350629523305688469">कई फ़ंक्शन वाली ट्रे</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> आस-पास मौजूद ब्लूटूथ वाले डिवाइस स्कैन करना चाहती है. ये डिवाइस मिले हैं:</translation>
 <translation id="4351175281479794167">पुष्टि करने के लिए कोड डालें</translation>
+<translation id="4355383636893709732">Android ऐप्लिकेशन के लिए ChromeOS का अपडेट</translation>
 <translation id="4356973930735388585">इस साइट पर मौजूद हमलावर आपके कंप्यूटर पर ऐसे खतरनाक प्रोग्राम इंस्टॉल करने की कोशिश कर सकते हैं जो आपकी जानकारी (उदाहरण के लिए, फ़ोटो, पासवर्ड, संदेश और क्रेडिट कार्ड) चुरा लेते हैं या उसे मिटा देते हैं.</translation>
 <translation id="4358059973562876591">आपकी ओर से तय किए गए टेम्प्लेट, DnsOverHttpsMode नीति की गड़बड़ी की वजह से लागू नहीं हो सकते.</translation>
 <translation id="4358461427845829800">भुगतान विधियां प्रबंधित करें...</translation>
@@ -1756,6 +1761,7 @@
 <translation id="5288393065350884210">अकाउंटिंग और ऑडिटिंग</translation>
 <translation id="5288808348893593856">जब तक Chrome से कोई चेतावनी न मिले, तब तक साइट का कनेक्शन सुरक्षित है.</translation>
 <translation id="5289384342738547352">कई दस्तावेज़ों को हैंडल करना</translation>
+<translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{आज अपडेट करना ज़रूरी है}=2{कल अपडेट करना ज़रूरी है}one{# दिन के अंदर अपडेट करना ज़रूरी है}other{# दिनों के अंदर अपडेट करना ज़रूरी है}}</translation>
 <translation id="5293919335876685914">कूप</translation>
 <translation id="5296589789433599000">कुकिंग और रेसिपी</translation>
 <translation id="5299298092464848405">नीति पार्स करने में गड़बड़ी</translation>
@@ -1950,6 +1956,7 @@
 <translation id="5786044859038896871">क्या अपनी कार्ड जानकारी भरना चाहते हैं?</translation>
 <translation id="578633867165174378">Chrome के मुताबिक, आपने अभी जो पासवर्ड इस्तेमाल किया है वह लीक हो चुका है. हमारा सुझाव है कि आप इस पासवर्ड को अभी बदल दें.</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="580241730938216256">अपडेट करना शुरू करें</translation>
 <translation id="5803412860119678065">क्या आप अपनी <ph name="CARD_DETAIL" /> भरना चाहते हैं?</translation>
 <translation id="5804241973901381774">अनुमतियां</translation>
 <translation id="5808435672482059465">अपना 'Chrome इतिहास' देखें</translation>
@@ -2110,6 +2117,7 @@
 <translation id="6218753634732582820">क्रोमियम से पता निकालें?</translation>
 <translation id="622039917539443112">पैरलल फ़ोल्ड</translation>
 <translation id="6221345481584921695">Google सुरक्षित ब्राउज़िंग को <ph name="SITE" /> पर हाल ही में <ph name="BEGIN_LINK" />मैलवेयर का पता चला<ph name="END_LINK" /> है. आमतौर पर सुरक्षित रहने वाली वेबसाइटें कभी-कभी मैलेवयर से संक्रमित हो जाती हैं. नुकसान पहुंचाने वाली सामग्री <ph name="SUBRESOURCE_HOST" /> से आती है, जो कि एक ज्ञात मैलवेयर वितरक है.</translation>
+<translation id="6221892641068781024">सरल बनाया गया व्यू</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome की सेटिंग में सुलभता टूल को अपने हिसाब से बनाने के लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="6229649258872345286">परिवार के साथ यात्रा</translation>
 <translation id="6232271601416750929">प्राकृतिक प्रॉडक्ट</translation>
@@ -2169,6 +2177,7 @@
 <translation id="6366710531182496394">बाईं ओर ड्युएल स्टेपल</translation>
 <translation id="6367196786591004737">एंट्री मिटाएं</translation>
 <translation id="6370022303958842211">डिवाइस को ऐक्सेस करने से जुड़ी कार्रवाइयां, जैसे कि लॉगिन (इसमें लॉगिन न हो पाने की वजहें भी शामिल हैं), लॉगआउट, लॉक, और अनलॉक से जुड़ी जानकारी</translation>
+<translation id="6374469231428023295">फिर से कोशिश करें</translation>
 <translation id="6374865374745447009">विंडो मैनेजमेंट</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />' के लिए एक नतीजा मिला है</translation>
 <translation id="6380497234672085559">ए0</translation>
@@ -2479,6 +2488,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> अन्य}one{<ph name="PAYMENT_METHOD_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> अन्य}other{<ph name="PAYMENT_METHOD_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> अन्य}}</translation>
 <translation id="7153618581592392745">हल्का बैंगनी</translation>
 <translation id="7156870133441232244">इस सर्वर को TLS 1.2 या इसके बाद वाले वर्शन पर अपग्रेड करना होगा.</translation>
+<translation id="7160999678034985039">कृपया अपने काम को सेव करें और जब आप तैयार हों, तो अपडेट करना शुरू करें.</translation>
 <translation id="7163295244162773898">{0,plural, =1{गोपनीय फ़ाइल कॉपी करनी है?}one{गोपनीय फ़ाइल कॉपी करनी है?}other{गोपनीय फ़ाइलें कॉपी करनी हैं?}}</translation>
 <translation id="717330890047184534">Gaia आईडी:</translation>
 <translation id="7174545416324379297">आपस में मिला दिया गया</translation>
@@ -2726,6 +2736,7 @@
 <translation id="7687305263118037187">दोबारा कोशिश करने का समय खत्म</translation>
 <translation id="7690647519407127574">Oufuku Hagaki पोस्टकार्ड</translation>
 <translation id="7693583928066320343">पेज के लिए ऑर्डर मिला</translation>
+<translation id="769424100851389104">अभी अपडेट करना शुरू करें</translation>
 <translation id="7696089921647603491">पुराना रॉक म्यूज़िक और गाने</translation>
 <translation id="769721561045429135">फ़िलहाल आपके पास सिर्फ़ इसी डिवाइस पर इस्तेमाल किए जा सकने वाले कार्ड हैं. कार्ड देखने के लिए जारी रखें पर क्लिक करें.</translation>
 <translation id="7698864304447945242">Google Play Services for AR को अपडेट करें?</translation>
@@ -2750,6 +2761,7 @@
 <translation id="774634243536837715">खतरनाक सामग्री ब्लॉक की गई.</translation>
 <translation id="7751971323486164747">Chrome में फ़ॉन्ट साइज़ और टाइपफ़ेस को पसंद के मुताबिक बनाएं</translation>
 <translation id="7752995774971033316">अप्रबंधित</translation>
+<translation id="7754587126786572336">अपडेट शुरू होते ही, आपके Chrome टैब और ऐप्लिकेशन बंद हो जाएंगे</translation>
 <translation id="7755287808199759310">आपका अभिभावक इसे आपके लिए अनवरोधित कर सकता है</translation>
 <translation id="7755624218968747854">प्राइमरी रोल</translation>
 <translation id="7758069387465995638">हो सकता है कि फायरवॉल या एंटीवायरस ने कनेक्शन को रोक दिया हो.</translation>
@@ -2914,6 +2926,7 @@
 <translation id="8186706823560132848">सॉफ़्टवेयर</translation>
 <translation id="8190193880870196235">इसे उपयोगकर्ता के किसी एक्सटेंशन से मैनेज किया जाता है</translation>
 <translation id="8194797478851900357">&amp;ले जाना वापस लाएं</translation>
+<translation id="8200772114523450471">फिर से शुरू करें</translation>
 <translation id="8201077131113104583">"<ph name="EXTENSION_ID" />" आईडी वाले एक्‍सटेंशन का अमान्‍य अपडेट URL.</translation>
 <translation id="8202097416529803614">ऑर्डर की जानकारी</translation>
 <translation id="8202370299023114387">विरोध</translation>
@@ -3212,6 +3225,7 @@
 <translation id="8963117664422609631">साइट की सेटिंग पर जाएं</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />सुझाव:<ph name="MARKUP_2" />तय करें कि आपके पास डेटा कनेक्शन है<ph name="MARKUP_3" />इस वेबपेज को बाद में फिर लोड करें<ph name="MARKUP_4" />आपने जो पता डाला है उसकी जाँच करें<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">कार्ड सेव करें</translation>
+<translation id="8970887620466824814">कुछ गड़बड़ी हुई.</translation>
 <translation id="8971063699422889582">सर्वर के प्रमाणपत्र की समय-सीमा खत्म हो चुकी है.</translation>
 <translation id="8975012916872825179">इसमें फ़ोन नंबर, ईमेल पते और शिपिंग पते जैसी जानकारी शामिल होती है</translation>
 <translation id="8975263830901772334">उन फ़ाइलों के नाम जिन्हें आप प्रिंट करते हैं</translation>

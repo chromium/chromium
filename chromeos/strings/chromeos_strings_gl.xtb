@@ -241,7 +241,6 @@
 <translation id="3226657629376379887">Menú de accións de deseño</translation>
 <translation id="3246869037381808805">Quitaranse os traballos de impresión de máis de 1 día</translation>
 <translation id="3268178239013324452">Produciuse un erro: a tapa da impresora está aberta</translation>
-<translation id="3275506277319227640">Fixar en: <ph name="DIRECTION" /></translation>
 <translation id="3275729367986477355">Imaxe de avatar</translation>
 <translation id="3283504360622356314">{0,plural, =1{Editar ficheiro}other{Editar ficheiros}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
@@ -360,7 +359,6 @@
 <translation id="4311195029067684288">Completa</translation>
 <translation id="4333390807948134856">Tecla <ph name="KEY_NAME" /> premida</translation>
 <translation id="435692326371619097">Xestiona a configuración do APN da rede. Os APN establecen unha conexión entre unha rede de telefonía móbil e Internet. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
-<translation id="4370033095251616914">Fixar no lado máis pequeno</translation>
 <translation id="4378373042927530923">Non se executou</translation>
 <translation id="4378551569595875038">Conectando...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -903,7 +901,6 @@
 <translation id="9137526406337347448">Servizos de Google</translation>
 <translation id="9138630967333032450">Maiúsculas (esquerda)</translation>
 <translation id="9149391708638971077">Realizar proba de memoria</translation>
-<translation id="9157515863513902090">Fixar no lado máis grande</translation>
 <translation id="9161276708550942948">espazo</translation>
 <translation id="9173638680043580060">Queda menos dun minuto</translation>
 <translation id="917720651393141712">Probar</translation>

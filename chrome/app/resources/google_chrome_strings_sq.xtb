@@ -260,6 +260,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6010556343189461180">Për të marrë përditësimet e ardhshme të Google Chrome, do të të duhet macOS 10.15 ose një version i mëvonshëm. Ky kompjuter përdor macOS 10.14.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome do të mbyllet tani.}=1{Chrome do të mbyllet pas 1 sekonde.}other{Chrome do të mbyllet pas # sekondash.}}</translation>
 <translation id="6022659036123304283">Bëje Chrome shfletuesin tënd</translation>
+<translation id="6025087594896450715">Google Chrome do të riniset pas <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Mbyll</translation>
 <translation id="6070348360322141662">Për më shumë siguri, Google Chrome do t'i enkriptojë të dhënat e tua</translation>
 <translation id="608006075545470555">Shto profilin e punës në këtë shfletues</translation>
@@ -277,6 +278,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6327105987658262776">Nuk ofrohet asnjë përditësim.</translation>
 <translation id="6412673304250309937">Kontrollon URL-të kundrejt një liste sajtesh të pasigurta të ruajtur në Chrome. Nëse një sajt përpiqet të vjedhë fjalëkalimin tënd, ose kur shkarkon një skedar të dëmshëm, Chrome mund t'i dërgojë po ashtu "Shfletimit të sigurt" URL-të, duke përfshirë pjesë të përmbajtjes së faqes.</translation>
 <translation id="6418662306461808273">Të kalohet te profili ekzistues i Chrome?</translation>
+<translation id="6493527311031785448">Google Chrome po përpiqet <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6506909944137591434">Chrome ka nevojë për lejen e kamerës për të krijuar një hartë 3D të ambientit tënd rrethues</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="659498884637196217">Në "Menaxherin e fjalëkalimeve të Google" në këtë pajisje</translation>
@@ -404,7 +406,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="8862326446509486874">Nuk ke të drejtat e duhura për instalimin në nivel sistemi. Provo ta ekzekutosh përsëri instaluesin si Administrator.</translation>
 <translation id="8914504000324227558">Rinis Chrome</translation>
 <translation id="8922193594870374009">Për të dërguar një numër nga <ph name="ORIGIN" /> te telefoni yt Android, identifikohu në Chrome në të dyja pajisjet.</translation>
-<translation id="8983720963221508955">Ke aktivizuar "Shfletimin e sigurt të përmirësuar" në llogarinë tënde. Tani merre për Chrome.</translation>
 <translation id="8986207147630327271">Po shton një profil pune në këtë shfletues dhe po i jep administratorit tënd kontrollin vetëm mbi profilin e punës.</translation>
 <translation id="8989968390305463310">Historiku yt i shfletimit ndikon te reklamat që shikon dhe tek interesat sipas përllogaritjes më poshtë. Për të mbrojtur privatësinë tënde, Chrome fshin automatikisht interesat e tua në vazhdimësi çdo muaj. Interesat mund të rifreskohen, përveçse nëse ti i heq ato.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Ofrohet një përditësim i Chrome}=1{Ofrohet një përditësim i Chrome}other{Një përditësim i Chrome ofrohet prej # ditësh}}</translation>

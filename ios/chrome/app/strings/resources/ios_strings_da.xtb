@@ -81,6 +81,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="149095475893949513">Dette website forsøger at downloade en konfigurationsprofil.</translation>
 <translation id="1491277525950327607">Tryk to gange for at skifte indstilling</translation>
 <translation id="1492417797159476138">Du har allerede gemt dette brugernavn for dette website</translation>
+<translation id="1497590942294823549">Menu → Adgangskodeadministrator</translation>
 <translation id="1498283581832036924">Din <ph name="WEBSITE" />-konto slettes ikke.</translation>
 <translation id="1506063256525392513">Det giver dig mulighed for at tage og uploade billeder samt scanne QR-koder</translation>
 <translation id="1509486075633541495">Log ind på website</translation>
@@ -242,6 +243,7 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="271033894570825754">Nyt</translation>
 <translation id="2712127207578915686">Filen kan ikke åbnes</translation>
 <translation id="2718352093833049315">Kun på Wi-Fi</translation>
+<translation id="2737716090799520623">Når du er logget ind i Chrome, opbevares de adgangskoder, du gemmer, på din Google-konto (<ph name="ACCOUNT" />). <ph name="BEGIN_LINK" />Gå til indstillingerne<ph name="END_LINK" /> for at deaktivere dette.</translation>
 <translation id="2747003861858887689">Forrige felt</translation>
 <translation id="2749231692441336879">Følger <ph name="CHANNEL_NAME" /></translation>
 <translation id="2764831210418622012">lige nu</translation>
@@ -843,6 +845,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="6801927553864092214">Du kan bruge nettet privat ved at åbne en inkognitofane</translation>
 <translation id="6807889908376551050">Vis alle...</translation>
 <translation id="681368974849482173">Elementet blev oprettet</translation>
+<translation id="6822587385560699678">Når denne indstilling er aktiveret, gemmes adgangskoder på <ph name="ACCOUNT" />. Når indstillingen er deaktiveret, gemmes adgangskoder kun på denne enhed.</translation>
 <translation id="683022620450280906">Du kan bruge gemte adgangskoder på alle enheder. De er gemt i Googles Adgangskodeadministrator for <ph name="EMAIL" /></translation>
 <translation id="6831043979455480757">Oversæt</translation>
 <translation id="6842136130964845393">Bekræft din identitet for at sikre, at du altid har adgang til dine gemte adgangskoder</translation>
@@ -900,7 +903,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7223102419539744003">Luk fane</translation>
 <translation id="722454870747268814">Ny inkognitofane</translation>
 <translation id="7265758999917665941">Aldrig for dette website</translation>
-<translation id="7272437679830969316">Din identitet kunne ikke bekræftes. Adgangskoden blev ikke kopieret.</translation>
+<translation id="7272437679830969316">Din identitet kunne ikke verificeres. Adgangskoden blev ikke kopieret.</translation>
 <translation id="7291368939935408496">Forbereder adgangskoder...</translation>
 <translation id="730958329302570991">Du kan til enhver tid nemt føje adgangskoder til websites til Google Adgangskodeadministrator.</translation>
 <translation id="7313347584264171202">Her finder du dine inkognitofaner</translation>

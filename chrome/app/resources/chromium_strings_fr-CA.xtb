@@ -29,6 +29,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="1774152462503052664">Laisser Chromium fonctionner en arrière-plan</translation>
 <translation id="1779356040007214683">Afin de rendre Chromium plus sûr, nous avons désactivé certaines extensions qui ne sont pas répertoriées dans la boutique <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> et qui ont pu être ajoutées à votre insu.</translation>
 <translation id="1808667845054772817">Réinstaller Chromium</translation>
+<translation id="1820835682567584003">Chromium essaie de <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="185970820835152459">Vous pouvez gérer les comptes Google auxquels vous êtes connecté. Vos comptes Google sont utilisés par le navigateur Chronium, par Play Store, par Gmail et autres. Si vous voulez ajouter un compte pour quelqu'un d'autre, comme un membre de votre famille, ajoutez plutôt une nouvelle personne à votre <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="1863308913976887472">Les sites peuvent stocker des renseignements sur vos centres d'intérêt dans Chromium. Par exemple, si vous visitez un site pour acheter des chaussures pour un marathon, le site pourrait définir votre centre d'intérêt comme la course de marathons. Ultérieurement, si vous visitez un autre site pour vous inscrire à une course, celui-ci peut vous montrer une annonce pour des chaussures de course en fonction de vos centres d'intérêt.</translation>
 <translation id="1881322772814446296">Vous vous connectez avec un compte géré et rendez son administrateur maître de votre profil Chromium. Vos données de Chromium, comme vos applications, vos favoris, votre historique, vos mots de passe et vos autres paramètres, vont être associées de manière permanente à <ph name="USER_NAME" />. Vous pourrez supprimer ces données à l'aide du tableau de bord des comptes Google, mais vous ne pourrez pas les associer à un autre compte. Vous pouvez également créer un nouveau profil pour maintenir vos données Chromium séparées. <ph name="LEARN_MORE" /></translation>
@@ -306,7 +307,6 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="7561906087460245826">Effacer les données également dans Chromium (<ph name="URL" />)</translation>
 <translation id="7582945390259497898">Chromium peut estimer vos intérêts. Ultérieurement, un site que vous visitez peut demander à Chromium de voir vos centres d'intérêt afin de personnaliser les annonces que vous voyez.</translation>
 <translation id="7583399374488819119">Programme d'installation de <ph name="COMPANY_NAME" /></translation>
-<translation id="7597596667193879455">Vous avez activé la navigation sécurisée améliorée dans votre compte. Maintenant, activez-la dans Chromium.</translation>
 <translation id="761356813943268536">Chromium utilise votre caméra et votre microphone</translation>
 <translation id="7617377681829253106">Chrome vient de s'améliorer</translation>
 <translation id="7649070708921625228">Aide</translation>

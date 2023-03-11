@@ -241,7 +241,6 @@
 <translation id="3226657629376379887">Layout-Aktionsmenü</translation>
 <translation id="3246869037381808805">Druckaufträge, die älter als 1 Tag sind, werden entfernt</translation>
 <translation id="3268178239013324452">Fehlgeschlagen – Druckerklappe offen</translation>
-<translation id="3275506277319227640">Fixieren: <ph name="DIRECTION" /></translation>
 <translation id="3275729367986477355">Avatarbild</translation>
 <translation id="3283504360622356314">{0,plural, =1{Datei bearbeiten}other{Dateien bearbeiten}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
@@ -360,7 +359,6 @@
 <translation id="4311195029067684288">Vollständig</translation>
 <translation id="4333390807948134856">Die Taste „<ph name="KEY_NAME" />“ wird gedrückt</translation>
 <translation id="435692326371619097">Hier kannst du die APN-Netzwerkeinstellungen verwalten. APNs stellen eine Verbindung zwischen einem Mobilfunknetz und dem Internet her. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
-<translation id="4370033095251616914">An kleinerer Seite fixieren</translation>
 <translation id="4378373042927530923">Nicht ausgeführt</translation>
 <translation id="4378551569595875038">Verbindung...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -903,7 +901,6 @@
 <translation id="9137526406337347448">Google-Dienste</translation>
 <translation id="9138630967333032450">Umschalttaste links</translation>
 <translation id="9149391708638971077">Speichertest ausführen</translation>
-<translation id="9157515863513902090">An größerer Seite fixieren</translation>
 <translation id="9161276708550942948">Leerzeichen</translation>
 <translation id="9173638680043580060">Nur noch wenige Sekunden</translation>
 <translation id="917720651393141712">Testen</translation>

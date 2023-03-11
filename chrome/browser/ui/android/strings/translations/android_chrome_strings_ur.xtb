@@ -34,6 +34,7 @@
 <translation id="1173894706177603556">نام بدلیں</translation>
 <translation id="1177863135347784049">حسب ضرورت</translation>
 <translation id="1181037720776840403">ہٹائیں</translation>
+<translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /> کو</translation>
 <translation id="1193729455103054076">مضبوط پاس ورڈ استعمال کریں؟</translation>
 <translation id="1197267115302279827">بُک مارکس منتقل کریں</translation>
 <translation id="1201402288615127009">اگلا</translation>
@@ -42,7 +43,6 @@
 <translation id="1204692632633423444">‏Chrome ایکشن بٹن: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">لنک کا متن کاپی کریں</translation>
 <translation id="1209206284964581585">ابھی کیلئے چھپائیں</translation>
-<translation id="1226851825267005295">‏آپ ہمارے Google اکاؤنٹ کے ساتھ Chrome میں سائن ان کر کے اپنی ترجیحات کا نظم کر سکتے ہیں۔</translation>
 <translation id="1227058898775614466">نیویگیشن کی تاریخ</translation>
 <translation id="1231733316453485619">مطابقت پذیری آن کریں؟</translation>
 <translation id="123724288017357924">کیش کردہ مواد نظر انداز کرکے موجودہ صفحہ پھر لوڈ کریں</translation>
@@ -166,7 +166,6 @@
 <translation id="1928696683969751773">اپ ڈيٹس</translation>
 <translation id="19288952978244135">‏Chrome دوبارہ کھولیں۔</translation>
 <translation id="1933845786846280168">منتخب ٹیب</translation>
-<translation id="193571872656840963">اس تخلیق کار کا شکر ادا کریں</translation>
 <translation id="1943432128510653496">پاس ورڈز محفوظ کریں</translation>
 <translation id="1952172573699511566">جب ممکن ہوگا، تو ویب سائٹس آپ کی پسندیدہ زبان میں متن دکھائیں گی۔</translation>
 <translation id="1959679933317802873">مواد کے منتظر</translation>
@@ -202,7 +201,6 @@
 <translation id="2122601567107267586">ایپ نہیں کھولی جا سکی</translation>
 <translation id="2132122640199389833">سبھی لنک کردہ آلات کو ہٹائیں</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> کو بند کر دیا گیا</translation>
-<translation id="2134927169889348449">‏Chrome کا استعمال کر کے، آپ <ph name="BEGIN_TOS_LINK" />Google کی سروس کی شرائط<ph name="END_TOS_LINK" /> اور <ph name="BEGIN_ATOS_LINK" />Google Chrome اور ChromeOS کی اضافی سروس کی شرائط<ph name="END_ATOS_LINK" /> سے اتفاق کرتے ہیں۔</translation>
 <translation id="2139186145475833000">ہوم اسکرین میں شامل کریں</translation>
 <translation id="2141396931810938595">آپ کے استعمال کی بنیاد پر</translation>
 <translation id="214888715418183969">‏منتخب کریں کہ Chrome کے ساتھ کون سی معلومات کا اشتراک کرنے کے لیے آپ مطمئن ہیں۔ آپ کی اشتراک کی جانے والی میٹرکس کا استعمال Chrome کی خصوصیات، کارکردگی اور استحکام کو بہتر بنانے کے لئے کیا جائے گا۔</translation>
@@ -555,7 +553,6 @@
 <translation id="409109920254068737">‏آپ اس ٹیبلیٹ کو اس آلہ پر جو یہ QR کوڈ ڈسپلے کر رہا ہے سائن ان کرنے کے لیے استعمال کر سکتے ہیں۔</translation>
 <translation id="4095146165863963773">ایپ کا ڈیٹا حذف کریں؟</translation>
 <translation id="4096227151372679484">بُک مارک محفوظ کرنے کا فلو نصف اونچائی پر کھلا ہوا ہے</translation>
-<translation id="4099578267706723511">‏Google کو استعمال کے اعداد و شمار اور کریش رپورٹس بھیج کر Chrome کو بہتر بنانے میں مدد کریں۔</translation>
 <translation id="4101475238162928417">اپنے دیگر آلات پر اپنے پاس ورڈز، بُک مارکس اور بہت کچھ حاصل کرنے کے لیے مطابقت پذیری کریں</translation>
 <translation id="410351446219883937">آٹوپلے</translation>
 <translation id="4106587138345390261">‏Chrome نئی خصوصیات کو دریافت کر رہا ہے جو سائٹس کو آپ کی کم معلومات کا استعمال کر کے وہی براؤزنگ تجربہ فراہم کرنے کی اجازت دیتی ہیں</translation>
@@ -593,7 +590,6 @@
 <translation id="4269820728363426813">لنک کا پتہ کاپی کریں</translation>
 <translation id="4283102315569707115">بطور ڈیفالٹ ڈیسک ٹاپ سائٹس کی درخواست کریں؟</translation>
 <translation id="4291407919474070700">‏<ph name="BEGIN_LINK" />Android کی ترتیبات میں اسکرین لاک کو آن کریں<ph name="END_LINK" /></translation>
-<translation id="4293476595220860475">‏Chrome کا استعمال کر کے، آپ <ph name="BEGIN_TOS_LINK" />Google کی سروس کی شرائط<ph name="END_TOS_LINK" /> اور <ph name="BEGIN_ATOS_LINK" />Google Chrome اور ChromeOS کی اضافی سروس کی شرائط<ph name="END_ATOS_LINK" /> سے اتفاق کرتے ہیں۔ <ph name="BEGIN_PRIVACY_LINK" />رازداری کی پالیسی<ph name="END_PRIVACY_LINK" /> بھی لاگو ہوتی ہے۔</translation>
 <translation id="4296252229500326964">نیا پوشیدگی ٹیب</translation>
 <translation id="4298388696830689168">لنک کردہ سائٹس</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -766,7 +762,6 @@
 <translation id="5161254044473106830">عنوان درکار ہے</translation>
 <translation id="5170568018924773124">فولڈر میں دکھائیں</translation>
 <translation id="5171045022955879922">‏تلاش کریں یا URL ٹائپ کریں</translation>
-<translation id="517734441743343109">جاری رکھ کر، آپ <ph name="BEGIN_TOS_LINK" />سروس کی شرائط<ph name="END_TOS_LINK" /> اور <ph name="BEGIN_PRIVACY_LINK" />رازداری کی پالیسی<ph name="END_PRIVACY_LINK" /> سے اتفاق کرتے ہیں۔</translation>
 <translation id="5184329579814168207">‏Chrome میں کھولیں</translation>
 <translation id="5191251636205085390">ان نئی ٹیکنالوجیز کے بارے میں جانیں اور کنٹرول کریں جن کا مقصد فریق ثالث کے کوکیز کو تبدیل کرنا ہے</translation>
 <translation id="5193988420012215838">آپ کے کلپ بورڈ پر کاپی کر دیا گیا</translation>

@@ -100,7 +100,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1420408895951708260">Swichi ya Mwanga wa Usiku. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Tazama picha na maudhui ya hivi karibuni ya simu yako kwenye <ph name="DEVICE_TYPE" /> yako</translation>
 <translation id="1426410128494586442">Ndiyo</translation>
-<translation id="1447641497144572814">Taswira ya skrini inaanza</translation>
 <translation id="1455242230282523554">Onyesha mipangilio ya lugha</translation>
 <translation id="1460620680449458626">Umezima sauti.</translation>
 <translation id="14648076227129703">Hatua hii huruhusu ufikiaji wa kamera katika <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> na programu pamoja na tovuti zote zilizo na ruhusa ya kufikia kamera</translation>
@@ -126,6 +125,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1550523713251050646">Bofya ili upate chaguo zaidi</translation>
 <translation id="1555130319947370107">Samawati</translation>
 <translation id="1576623706766186887">Sogeza mbali kikuzaji kinapokuwa kimewashwa</translation>
+<translation id="1586324912145647027">Nenda kwenye eneokazi la kwanza hadi la nane</translation>
 <translation id="1589090746204042747">Fikia shughuli zako zote katika kipindi hiki</translation>
 <translation id="1610778689852195798">"Tendua"</translation>
 <translation id="1611993646327628135">Kimewashwa</translation>
@@ -514,6 +514,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="3631369015426612114">Ruhusu arifa kutoka vyanzo hivi</translation>
 <translation id="3633097874324966332">Fungua mipangilio ya Bluetooth ili uoanishe kifaa chako</translation>
 <translation id="3638400994746983214">Weka skrini ya faragha. <ph name="STATE_TEXT" />.</translation>
+<translation id="3649256019230929621">Punguza dirisha</translation>
 <translation id="3649505501900178324">Muda wa sasisho umepita</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -588,6 +589,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="4021716437419160885">Sogeza chini</translation>
 <translation id="4022497978915111141">Funga kifaa</translation>
 <translation id="4024840464866786680">Ikiwa ulisahau PIN na nenosiri lako au ulibadilisha nenosiri la Akaunti yako ya Google hivi karibuni, jaribu kumrejesha mtumiaji huyu.</translation>
+<translation id="4026843240379844265">Sogeza dirisha linalotumika kati ya skrini</translation>
 <translation id="4028481283645788203">Nenosiri linahitajika kwa usalama zaidi</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Unashiriki skrini yako</translation>
@@ -912,6 +914,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="5689633613396158040">Mwanga wa Usiku hufanya uangalie skrini yako au usome katika mwangaza hafifu kwa urahisi. Gusa ili ubadilishe saa ambapo Mwanga wa Usiku huwashwa au uuzime kabisa.</translation>
 <translation id="5691772641933328258">Haikutambua alama ya kidole</translation>
 <translation id="5693255400847650006">Maikrofoni inatumika</translation>
+<translation id="5699366815052349604">Weka dirisha linalotumika kwenye maeneokazi yote</translation>
 <translation id="570390244361237317">Programu zote, sogeza kwa kutumia vitufe vya vishale ili ufikie programu zote</translation>
 <translation id="5707775774148071965">Kifaa chako kinatumia data ya kiwango cha juu kuliko uwezo wa kebo yako. Huenda utendaji kazi wa kifaa usiwe mzuri.</translation>
 <translation id="5710450975648804523">Umewasha kipengele cha Usinisumbue</translation>
@@ -1553,6 +1556,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="9034924485347205037">Faili za Linux</translation>
 <translation id="9047624247355796468">Fungua mipangilio ya <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Kunja arifa</translation>
+<translation id="906458777597946297">Zidisha dirisha</translation>
 <translation id="9065203028668620118">Badilisha</translation>
 <translation id="9070640332319875144">Mipangilio ya Mratibu</translation>
 <translation id="9072519059834302790">Zimebaki <ph name="TIME_LEFT" /> kabla ya chaji ya betri kuisha.</translation>

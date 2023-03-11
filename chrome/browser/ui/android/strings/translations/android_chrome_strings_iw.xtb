@@ -165,7 +165,6 @@
 <translation id="1928696683969751773">עדכונים</translation>
 <translation id="19288952978244135">‏יש לפתוח מחדש את Chrome.</translation>
 <translation id="1933845786846280168">הכרטיסייה שנבחרה</translation>
-<translation id="193571872656840963">הכרת תודה ליוצר/ת</translation>
 <translation id="1943432128510653496">שמירת סיסמאות</translation>
 <translation id="1952172573699511566">אתרים יציגו טקסט בשפה המועדפת שלך, כשזה אפשרי.</translation>
 <translation id="1959679933317802873">בהמתנה לתוכן</translation>
@@ -201,7 +200,6 @@
 <translation id="2122601567107267586">לא ניתן היה לפתוח את היישום</translation>
 <translation id="2132122640199389833">הסרת כל המכשירים המקושרים</translation>
 <translation id="213279576345780926">הכרטיסייה "<ph name="TAB_TITLE" />" נסגרה</translation>
-<translation id="2134927169889348449">‏השימוש ב-Chrome מבטא הסכמה <ph name="BEGIN_TOS_LINK" />לתנאים ולהגבלות של Google<ph name="END_TOS_LINK" /> ו<ph name="BEGIN_ATOS_LINK" />לתנאים ולהגבלות הנוספים של Google Chrome ו-ChromeOS<ph name="END_ATOS_LINK" />.</translation>
 <translation id="2139186145475833000">הוספה לדף הבית</translation>
 <translation id="2141396931810938595">על סמך השימוש שלך</translation>
 <translation id="214888715418183969">‏בחירת המידע לשיתוף עם Chrome. המדדים שנקבל ממך ישמשו לשיפור התכונות, הביצועים והיציבות של Chrome.</translation>
@@ -554,7 +552,6 @@
 <translation id="409109920254068737">‏יש לך אפשרות להשתמש בטאבלט הזה כדי להיכנס לחשבון במכשיר שמוצג בו קוד ה-QR הזה.</translation>
 <translation id="4095146165863963773">למחוק נתוני יישומים?</translation>
 <translation id="4096227151372679484">תהליך שמירת הסימניות שפתוחות בחצי הגובה</translation>
-<translation id="4099578267706723511">‏אם שולחים אלינו נתוני שימוש ודוחות קריסה, עוזרים לשפר את Chrome.</translation>
 <translation id="4101475238162928417">אפשר לבצע סנכרון כדי לעדכן את הסיסמאות, הסימניות ונתונים נוספים במכשירים אחרים שלך</translation>
 <translation id="410351446219883937">הפעלה אוטומטית</translation>
 <translation id="4106587138345390261">‏אנחנו בודקים תכונות חדשות ב-Chrome שמאפשרות לאתרים לספק את אותה חוויית הגלישה תוך שימוש בפחות פרטים אישיים</translation>
@@ -592,7 +589,6 @@
 <translation id="4269820728363426813">העתקת כתובת של קישור</translation>
 <translation id="4283102315569707115">לבקש אתרים שמותאמים למחשב כברירת מחדל?</translation>
 <translation id="4291407919474070700">‏<ph name="BEGIN_LINK" />להפעלת נעילת המסך בהגדרות Android<ph name="END_LINK" /></translation>
-<translation id="4293476595220860475">‏השימוש ב-Chrome מבטא הסכמה <ph name="BEGIN_TOS_LINK" />לתנאים ולהגבלות של Google<ph name="END_TOS_LINK" /> ו<ph name="BEGIN_ATOS_LINK" />לתנאים ולהגבלות הנוספים של Google Chrome ו-ChromeOS<ph name="END_ATOS_LINK" />. גם <ph name="BEGIN_PRIVACY_LINK" />מדיניות הפרטיות<ph name="END_PRIVACY_LINK" /> חלה.</translation>
 <translation id="4296252229500326964">כרטיסייה פרטית חדשה</translation>
 <translation id="4298388696830689168">אתרים מקושרים</translation>
 <translation id="4303044213806199882">‎chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" />‎</translation>
@@ -765,7 +761,6 @@
 <translation id="5161254044473106830">יש להזין כותרת</translation>
 <translation id="5170568018924773124">הצגה בתיקייה</translation>
 <translation id="5171045022955879922">טקסט או כתובת אתר לחיפוש</translation>
-<translation id="517734441743343109">‏לחיצה על המשך תתפרש כהסכמתך <ph name="BEGIN_TOS_LINK" />לתנאים ולהגבלות<ph name="END_TOS_LINK" /> ול<ph name="BEGIN_PRIVACY_LINK" />מדיניות\u00A0הפרטיות<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="5184329579814168207">‏פתיחה ב-Chrome</translation>
 <translation id="5191251636205085390">‏מידע על טכנולוגיות חדשות שמיועדות להחליף קובצי cookie של צד שלישי והוראות לשליטה בהן.</translation>
 <translation id="5193988420012215838">הועתק אל הלוח</translation>

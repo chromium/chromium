@@ -34,6 +34,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="1173894706177603556">Mudar nome</translation>
 <translation id="1177863135347784049">Personalizado</translation>
 <translation id="1181037720776840403">Remover</translation>
+<translation id="1181366777303791449">em <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">Usar uma palavra-passe forte?</translation>
 <translation id="1197267115302279827">Mover marcadores</translation>
 <translation id="1201402288615127009">Seguinte</translation>
@@ -42,7 +43,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="1204692632633423444">Botão de ação do Chrome: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">Copiar texto do link</translation>
 <translation id="1209206284964581585">Ocultar para já</translation>
-<translation id="1226851825267005295">Pode gerir as suas preferências depois de iniciar sessão no Chrome com a nossa Conta Google.</translation>
 <translation id="1227058898775614466">Histórico de navegação</translation>
 <translation id="1231733316453485619">Ativar a sincronização?</translation>
 <translation id="123724288017357924">Atualizar página atual e ignorar conteúdo em cache</translation>
@@ -166,7 +166,6 @@ Quando elimina o seu histórico de navegação, todo ou de um site específico, 
 <translation id="1928696683969751773">Atualizações</translation>
 <translation id="19288952978244135">Reabra o Chrome.</translation>
 <translation id="1933845786846280168">Separador selecionado</translation>
-<translation id="193571872656840963">Agradeça a este criador</translation>
 <translation id="1943432128510653496">Guardar palavras-passe</translation>
 <translation id="1952172573699511566">Quando possível, os Websites apresentam o texto no seu idioma preferido.</translation>
 <translation id="1959679933317802873">A aguardar pelo conteúdo</translation>
@@ -202,7 +201,6 @@ Quando elimina o seu histórico de navegação, todo ou de um site específico, 
 <translation id="2122601567107267586">Não foi possível abrir a aplicação.</translation>
 <translation id="2132122640199389833">Remover todos os dispositivos associados</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> fechado</translation>
-<translation id="2134927169889348449">Ao usar o Chrome, aceita os <ph name="BEGIN_TOS_LINK" />Termos de Utilização da Google<ph name="END_TOS_LINK" /> e os <ph name="BEGIN_ATOS_LINK" />Termos de Utilização Adicionais do Google Chrome e ChromeOS<ph name="END_ATOS_LINK" />.</translation>
 <translation id="2139186145475833000">Adicionar ao ecrã principal</translation>
 <translation id="2141396931810938595">Com base na sua utilização</translation>
 <translation id="214888715418183969">Escolha o que não se importa de partilhar com o Chrome. As métricas que partilhar serão utilizadas para ajudar a melhorar as funcionalidades, o desempenho e a estabilidade do Chrome.</translation>
@@ -555,7 +553,6 @@ Os símbolos de estado privado melhoram a privacidade na Web e não podem ser us
 <translation id="409109920254068737">Pode usar este tablet para iniciar sessão no dispositivo que está a apresentar este código QR.</translation>
 <translation id="4095146165863963773">Eliminar os dados da aplicação?</translation>
 <translation id="4096227151372679484">Fluxo de armazenamento de marcadores aberto a meia altura</translation>
-<translation id="4099578267706723511">Ajude a melhorar o Chrome ao enviar estatísticas de utilização e relatórios de falhas para a Google.</translation>
 <translation id="4101475238162928417">Sincronize para obter os seus marcadores, palavras-passe e muito mais em todos os seus outros dispositivos</translation>
 <translation id="410351446219883937">Reprodução automática</translation>
 <translation id="4106587138345390261">O Chrome está a explorar novas funcionalidades que permitem que os sites forneçam a mesma experiência de navegação com uma menor utilização das suas informações</translation>
@@ -593,7 +590,6 @@ Os símbolos de estado privado melhoram a privacidade na Web e não podem ser us
 <translation id="4269820728363426813">Copiar endereço do link</translation>
 <translation id="4283102315569707115">Pedir sites para computador por predefinição?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Ative o bloqueio de ecrã nas definições do Android<ph name="END_LINK" /></translation>
-<translation id="4293476595220860475">Ao usar o Chrome, aceita os <ph name="BEGIN_TOS_LINK" />Termos de Utilização da Google<ph name="END_TOS_LINK" /> e os <ph name="BEGIN_ATOS_LINK" />Termos de Utilização Adicionais do Google Chrome e ChromeOS<ph name="END_ATOS_LINK" />. A <ph name="BEGIN_PRIVACY_LINK" />Política de Privacidade<ph name="END_PRIVACY_LINK" /> também se aplica.</translation>
 <translation id="4296252229500326964">Novo sep. de nav. anónima</translation>
 <translation id="4298388696830689168">Sites associados</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -766,7 +762,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5161254044473106830">Título obrigatório</translation>
 <translation id="5170568018924773124">Mostrar numa pasta</translation>
 <translation id="5171045022955879922">Pesquise ou escreva URL</translation>
-<translation id="517734441743343109">Ao continuar, aceita os <ph name="BEGIN_TOS_LINK" />Termos de Utilização<ph name="END_TOS_LINK" /> e a <ph name="BEGIN_PRIVACY_LINK" />Política\u00A0de Privacidade<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="5184329579814168207">Abrir no Chrome</translation>
 <translation id="5191251636205085390">Saiba mais e controle novas tecnologias que visam substituir cookies de terceiros.</translation>
 <translation id="5193988420012215838">Copiado para a área de transferência.</translation>
@@ -945,7 +940,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="6193448654517602979">Selecione separadores</translation>
 <translation id="6196315980958524839">As palavras-passe são guardadas no Gestor de Palavras-passe da Google neste dispositivo</translation>
 <translation id="6202812185118613467">Inicie sessão novamente para iniciar a sincronização</translation>
-<translation id="6205314730813004066">Privacidade de anúncios</translation>
+<translation id="6205314730813004066">Privacidade dos anúncios</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> não é o seu email?</translation>
 <translation id="6211386937064921208">A pré-visualizar esta página…</translation>
 <translation id="6221633008163990886">Desbloqueie para exportar as palavras-passe.</translation>

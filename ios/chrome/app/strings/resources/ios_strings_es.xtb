@@ -81,6 +81,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="149095475893949513">Este sitio web está intentando descargar un perfil de configuración.</translation>
 <translation id="1491277525950327607">Toca dos veces para activar o desactivar esta opción</translation>
 <translation id="1492417797159476138">Ya has guardado ese nombre de usuario en este sitio web</translation>
+<translation id="1497590942294823549">Menú → Gestor de contraseñas</translation>
 <translation id="1498283581832036924">Tu cuenta de <ph name="WEBSITE" /> no se eliminará.</translation>
 <translation id="1506063256525392513">Esto te permite hacer y subir fotos, así como escanear códigos QR</translation>
 <translation id="1509486075633541495">Inicia sesión en el sitio web</translation>
@@ -242,6 +243,7 @@ Los sitios no pueden usar cookies para ver tu actividad de navegación en otros 
 <translation id="271033894570825754">Nuevo</translation>
 <translation id="2712127207578915686">No se puede abrir archivo</translation>
 <translation id="2718352093833049315">Solo en Wi-Fi</translation>
+<translation id="2737716090799520623">Si has iniciado sesión en Chrome, las contraseñas que guardes se añadirán a tu cuenta de Google (<ph name="ACCOUNT" />). Para desactivar esta opción, <ph name="BEGIN_LINK" />ve a la configuración<ph name="END_LINK" />.</translation>
 <translation id="2747003861858887689">Campo anterior</translation>
 <translation id="2749231692441336879">Ahora sigues a <ph name="CHANNEL_NAME" />.</translation>
 <translation id="2764831210418622012">justo ahora</translation>
@@ -843,6 +845,7 @@ Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para v
 <translation id="6801927553864092214">Para navegar en privado, abre una pestaña de Incógnito</translation>
 <translation id="6807889908376551050">Mostrar todo...</translation>
 <translation id="681368974849482173">Elemento creado</translation>
+<translation id="6822587385560699678">Si esta opción está activada, las contraseñas se guardan en <ph name="ACCOUNT" />. Si está desactivada, las contraseñas solo se guardan en este dispositivo.</translation>
 <translation id="683022620450280906">Puedes usar las contraseñas guardadas en cualquier dispositivo. Se guardan en el Gestor de contraseñas de Google de <ph name="EMAIL" />.</translation>
 <translation id="6831043979455480757">Traducir</translation>
 <translation id="6842136130964845393">Verifica tu identidad para asegurarte de que siempre tengas acceso a tus contraseñas guardadas</translation>

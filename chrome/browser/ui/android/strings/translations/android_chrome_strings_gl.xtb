@@ -34,6 +34,7 @@ Só pode ler os datos encriptados alguén que coñeza a túa frase de acceso. A 
 <translation id="1173894706177603556">Cambiar o nome</translation>
 <translation id="1177863135347784049">Personalizada</translation>
 <translation id="1181037720776840403">Eliminar</translation>
+<translation id="1181366777303791449">en <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">Queres usar un contrasinal seguro?</translation>
 <translation id="1197267115302279827">Mover marcadores</translation>
 <translation id="1201402288615127009">Seguinte</translation>
@@ -42,7 +43,6 @@ Só pode ler os datos encriptados alguén que coñeza a túa frase de acceso. A 
 <translation id="1204692632633423444">Botón de acción de Chrome: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">Copiar texto da ligazón</translation>
 <translation id="1209206284964581585">Ocultar por agora</translation>
-<translation id="1226851825267005295">Podes xestionar as túas preferencias despois de iniciar sesión en Chrome coa túa Conta de Google.</translation>
 <translation id="1227058898775614466">Historial de navegación</translation>
 <translation id="1231733316453485619">Queres activar a sincronización?</translation>
 <translation id="123724288017357924">Cargar a páxina, ignorando o contido da caché</translation>
@@ -166,7 +166,6 @@ Cando eliminas o teu historial de navegación (completo ou dun sitio en concreto
 <translation id="1928696683969751773">Actualizacións</translation>
 <translation id="19288952978244135">Abre Chrome de novo.</translation>
 <translation id="1933845786846280168">Pestana seleccionada</translation>
-<translation id="193571872656840963">Mostra o teu agradecemento a este creador</translation>
 <translation id="1943432128510653496">Gardar contrasinais</translation>
 <translation id="1952172573699511566">Os sitios web mostrarán o texto no teu idioma preferido, sempre que sexa posible.</translation>
 <translation id="1959679933317802873">Á espera de contido</translation>
@@ -202,7 +201,6 @@ Cando eliminas o teu historial de navegación (completo ou dun sitio en concreto
 <translation id="2122601567107267586">Non se puido abrir a aplicación</translation>
 <translation id="2132122640199389833">Quitar todos os dispositivos vinculados</translation>
 <translation id="213279576345780926">Pechouse <ph name="TAB_TITLE" /></translation>
-<translation id="2134927169889348449">Ao utilizar Chrome, aceptas as <ph name="BEGIN_TOS_LINK" />Condicións de servizo de Google<ph name="END_TOS_LINK" /> e as <ph name="BEGIN_ATOS_LINK" />Condicións de servizo adicionais de Google Chrome e Chrome OS<ph name="END_ATOS_LINK" />.</translation>
 <translation id="2139186145475833000">Engadir á pantalla inicio</translation>
 <translation id="2141396931810938595">Segundo o uso que fas do navegador</translation>
 <translation id="214888715418183969">Escolle a información que queiras compartir con Chrome. As métricas que compartas usaranse para axudar a mellorar as funcións, o rendemento e a estabilidade de Chrome.</translation>
@@ -555,7 +553,6 @@ Os tokens de estado privado melloran a privacidade na Web e non se poden usar pa
 <translation id="409109920254068737">Podes utilizar esta tableta para iniciar sesión no dispositivo no que se mostra este código QR.</translation>
 <translation id="4095146165863963773">Queres eliminar os datos da aplicación?</translation>
 <translation id="4096227151372679484">Fluxo para gardar marcadores aberto a media pantalla</translation>
-<translation id="4099578267706723511">Axúdanos a mellorar Chrome enviando estatísticas de uso e informes de erros a Google.</translation>
 <translation id="4101475238162928417">Sincroniza os datos para ter todos os teus contrasinais, marcadores e máis nos teus outros dispositivos</translation>
 <translation id="410351446219883937">Reprodución automática</translation>
 <translation id="4106587138345390261">Chrome está probando novas funcións que lles permitan aos sitios ofrecer a mesma experiencia de navegación usando menos información túa</translation>
@@ -593,7 +590,6 @@ Os tokens de estado privado melloran a privacidade na Web e non se poden usar pa
 <translation id="4269820728363426813">Copiar enderezo da ligazón</translation>
 <translation id="4283102315569707115">Queres solicitar sitios para ordenadores de forma predeterminada?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Activa o bloqueo de pantalla na configuración de Android<ph name="END_LINK" /></translation>
-<translation id="4293476595220860475">Ao utilizar Chrome, aceptas as <ph name="BEGIN_TOS_LINK" />Condicións de servizo de Google<ph name="END_TOS_LINK" /> e as <ph name="BEGIN_ATOS_LINK" />Condicións de servizo adicionais de Google Chrome e Chrome OS<ph name="END_ATOS_LINK" />. Tamén é aplicable a <ph name="BEGIN_PRIVACY_LINK" />Política de privacidade<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="4296252229500326964">Nova pestana de incógnito</translation>
 <translation id="4298388696830689168">Sitios vinculados</translation>
 <translation id="4303044213806199882">capturadepantalla_chrome_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -766,7 +762,6 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5161254044473106830">Título obrigatorio</translation>
 <translation id="5170568018924773124">Mostrar no cartafol</translation>
 <translation id="5171045022955879922">Buscar ou escribir o URL</translation>
-<translation id="517734441743343109">Ao continuar, aceptas as <ph name="BEGIN_TOS_LINK" />Condicións de servizo<ph name="END_TOS_LINK" /> e a <ph name="BEGIN_PRIVACY_LINK" />Política\u00A0de\u00A0privacidade<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="5184329579814168207">Abrir en Chrome</translation>
 <translation id="5191251636205085390">Obtén información sobre novas tecnoloxías desenvolvidas co obxectivo de substituír as cookies de terceiros e aprende a manexalas</translation>
 <translation id="5193988420012215838">Copiouse no teu portapapeis</translation>

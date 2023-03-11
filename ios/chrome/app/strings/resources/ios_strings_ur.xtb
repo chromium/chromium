@@ -81,6 +81,7 @@
 <translation id="149095475893949513">یہ ویب سائٹ کنفیگریشن پروفائل کو ڈاؤن لوڈ کرنے کی کوشش کر رہی ہے۔</translation>
 <translation id="1491277525950327607">ترتیبات کو ٹوگل کرنے کیلئے دو بار تھپتھپائیں</translation>
 <translation id="1492417797159476138">آپ نے پہلے ہی اس سائٹ کے لئے یہ صارف نام محفوظ کر لیا ہے</translation>
+<translation id="1497590942294823549">مینو ← پاس ورڈ مینیجر</translation>
 <translation id="1498283581832036924">آپ کا <ph name="WEBSITE" /> اکاؤنٹ حذف نہیں ہوگا۔</translation>
 <translation id="1506063256525392513">‏یہ آپ کو تصاویر لینے اور اپ لوڈ کرنے کے ساتھ ساتھ QR کوڈز اسکین کرنے کی اجازت دیتا ہے</translation>
 <translation id="1509486075633541495">ویب سائٹ میں سائن ان کریں</translation>
@@ -242,6 +243,7 @@
 <translation id="271033894570825754">نیا</translation>
 <translation id="2712127207578915686">فائل کو کھولنے سے قاصر</translation>
 <translation id="2718352093833049315">‏صرف Wi-Fi پر</translation>
+<translation id="2737716090799520623">‏آپ کے Chrome میں سائن ان کرنے پر آپ جو پاس ورڈز محفوظ کریں گے وہ آپ کے Google اکاؤنٹ (<ph name="ACCOUNT" />) میں چلے جائیں گے۔ اسے آف کرنے کے لیے، <ph name="BEGIN_LINK" />ترتیبات پر جائیں<ph name="END_LINK" />۔</translation>
 <translation id="2747003861858887689">پچھلا فیلڈ</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> کی پیروی کی جا رہی ہے</translation>
 <translation id="2764831210418622012">ابھی ابھی</translation>
@@ -843,6 +845,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6801927553864092214">نجی طور پر براؤز کرنے کے لیے ایک پوشیدگی ٹیب کھولیں</translation>
 <translation id="6807889908376551050">سبھی دکھائیں…</translation>
 <translation id="681368974849482173">آئٹم بنایا گیا</translation>
+<translation id="6822587385560699678">آن ہونے پر پاس ورڈز <ph name="ACCOUNT" /> میں محفوظ ہوتے ہیں۔ آف ہونے پر پاس ورڈز صرف اس آلے پر محفوظ ہوتے ہیں۔</translation>
 <translation id="683022620450280906">‏آپ کسی بھی آلے پر محفوظ کردہ پاس ورڈز استعمال کر سکتے ہیں۔ وہ <ph name="EMAIL" /> کے لیے Google پاس ورڈ مینیجر میں محفوظ ہوتے ہیں</translation>
 <translation id="6831043979455480757">ترجمہ کریں</translation>
 <translation id="6842136130964845393">اس بات کو یقینی بنانے کیلئے کہ آپ ہمیشہ اپنے محفوظ کردہ پاس ورڈز تک رسائی حاصل کر سکتے ہیں، توثیق کریں کہ یہ آپ ہیں</translation>

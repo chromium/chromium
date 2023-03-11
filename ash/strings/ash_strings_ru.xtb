@@ -100,7 +100,6 @@
 <translation id="1420408895951708260">Включить или отключить ночную подсветку (<ph name="STATE_TEXT" />)</translation>
 <translation id="1420732223884894666">Позволяет просматривать на устройстве <ph name="DEVICE_TYPE" /> недавно добавленные на телефон фотографии и медиафайлы</translation>
 <translation id="1426410128494586442">Да</translation>
-<translation id="1447641497144572814">Запуск заставки</translation>
 <translation id="1455242230282523554">Показать языковые настройки</translation>
 <translation id="1460620680449458626">Сейчас звук выключен.</translation>
 <translation id="14648076227129703">Доступ к камере получат приложения "<ph name="APP1_NAME" />" и "<ph name="APP2_NAME" />", а также все приложения и сайты с разрешением "Камера".</translation>
@@ -126,6 +125,7 @@
 <translation id="1550523713251050646">Чтобы изменить источник питания, нажмите здесь.</translation>
 <translation id="1555130319947370107">Синий</translation>
 <translation id="1576623706766186887">Уменьшить, когда включена лупа</translation>
+<translation id="1586324912145647027">Перейти к рабочим столам (от 1 до 8)</translation>
 <translation id="1589090746204042747">Получать доступ к данным о ваших действиях во время этого сеанса.</translation>
 <translation id="1610778689852195798">"Отменить"</translation>
 <translation id="1611993646327628135">Включено</translation>
@@ -514,6 +514,7 @@
 <translation id="3631369015426612114">Разрешить уведомления из следующих источников</translation>
 <translation id="3633097874324966332">Чтобы подключить устройство, откройте настройки Bluetooth.</translation>
 <translation id="3638400994746983214">Включить или отключить экран конфиденциальности. <ph name="STATE_TEXT" />.</translation>
+<translation id="3649256019230929621">Свернуть окно</translation>
 <translation id="3649505501900178324">Нужно обновить ПО</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />
@@ -588,6 +589,7 @@
 <translation id="4021716437419160885">Прокрутить вниз</translation>
 <translation id="4022497978915111141">Заблокировать устройство</translation>
 <translation id="4024840464866786680">Если вы забыли PIN-код и пароль аккаунта Google или недавно сменили его, попробуйте восстановить пользователя.</translation>
+<translation id="4026843240379844265">Переместить активное окно между экранами</translation>
 <translation id="4028481283645788203">В качестве дополнительной меры безопасности введите пароль.</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Вы открыли доступ к своему экрану</translation>
@@ -912,6 +914,7 @@
 <translation id="5689633613396158040">Она помогает снизить напряжение глаз при тусклом свете. Нажмите здесь, чтобы изменить расписание или полностью отключить ночную подсветку.</translation>
 <translation id="5691772641933328258">Не удалось распознать отпечаток</translation>
 <translation id="5693255400847650006">Используется микрофон</translation>
+<translation id="5699366815052349604">Назначить в качестве активного окна всем рабочим столам</translation>
 <translation id="570390244361237317">Все приложения. Чтобы листать список, нажимайте клавиши со стрелками.</translation>
 <translation id="5707775774148071965">Поддерживаемая скорость передачи данных для устройства выше, чем для кабеля. Производительность устройства может быть ограничена.</translation>
 <translation id="5710450975648804523">Режим "Не беспокоить" включен</translation>
@@ -1552,6 +1555,7 @@
 <translation id="9034924485347205037">Файлы Linux</translation>
 <translation id="9047624247355796468">Открыть настройки сети "<ph name="NETWORK_NAME" />"</translation>
 <translation id="9059834730836941392">Свернуть уведомление</translation>
+<translation id="906458777597946297">Развернуть окно</translation>
 <translation id="9065203028668620118">Изменить</translation>
 <translation id="9070640332319875144">Настройки Ассистента</translation>
 <translation id="9072519059834302790">Оставшееся время работы от батареи: <ph name="TIME_LEFT" />.</translation>

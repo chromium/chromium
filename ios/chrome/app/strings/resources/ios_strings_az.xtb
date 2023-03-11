@@ -81,6 +81,7 @@ Yalnız parolunuzu bilən kimsə şifrələnmiş datanızı oxuya bilər. Bu par
 <translation id="149095475893949513">Bu vebsayt konfiqurasiya profilini endirməyə çalışır.</translation>
 <translation id="1491277525950327607">Ayarı dəyişmək üçün iki dəfə klikləyin</translation>
 <translation id="1492417797159476138">Hazırda bu istifadəçi adını bu sayt üçün yadda saxlamısınız</translation>
+<translation id="1497590942294823549">Menyu → Parol meneceri</translation>
 <translation id="1498283581832036924"><ph name="WEBSITE" /> hesabınız silinməyəcək.</translation>
 <translation id="1506063256525392513">Bu, foto çəkməyə və yükləməyə, həmçinin QR kodları skan etməyə imkan verir</translation>
 <translation id="1509486075633541495">Veb sayta daxil olun</translation>
@@ -242,6 +243,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukiləri
 <translation id="271033894570825754">Yeni</translation>
 <translation id="2712127207578915686">Faylı Açmaq mümkün deyil</translation>
 <translation id="2718352093833049315">Yalnız Wi-Fi üzərindən</translation>
+<translation id="2737716090799520623">Chrome-a daxil olduqda yadda saxladığınız parollar Google Hesabında (<ph name="ACCOUNT" />) qeyd olunacaq. Deaktiv etmək üçün <ph name="BEGIN_LINK" />ayarlara keçin<ph name="END_LINK" />.</translation>
 <translation id="2747003861858887689">Əvvəlki sahə</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> izlənilir</translation>
 <translation id="2764831210418622012">indicə</translation>
@@ -843,6 +845,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="6801927553864092214">Məxfi axtarış etmək üçün Anonim tab açın</translation>
 <translation id="6807889908376551050">Hamısını göstərin...</translation>
 <translation id="681368974849482173">Element yaradılmışdır</translation>
+<translation id="6822587385560699678">Aktiv olduqda parollar <ph name="ACCOUNT" /> hesabında yadda saxlanır. Deaktiv olduqda parollar yalnız bu cihazda yadda saxlanır.</translation>
 <translation id="683022620450280906">İstənilən cihazda saxlanmış parollarınızı istifadə edə bilərsiniz. Onlar <ph name="EMAIL" /> üçün Google Parol Menecerində saxlanacaq</translation>
 <translation id="6831043979455480757">Tərcümə et</translation>
 <translation id="6842136130964845393">Həmişə yadda saxlanmış parollarınıza girişinizin olduğuna əmin olmaq üçün kimliyinizi doğrulayın</translation>

@@ -34,6 +34,7 @@
 <translation id="1173894706177603556">重新命名</translation>
 <translation id="1177863135347784049">自訂</translation>
 <translation id="1181037720776840403">移除</translation>
+<translation id="1181366777303791449">位於 <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">要使用高強度密碼嗎？</translation>
 <translation id="1197267115302279827">移動書籤</translation>
 <translation id="1201402288615127009">繼續</translation>
@@ -166,7 +167,6 @@
 <translation id="1928696683969751773">更新</translation>
 <translation id="19288952978244135">重新開啟 Chrome。</translation>
 <translation id="1933845786846280168">選取的分頁</translation>
-<translation id="193571872656840963">向這位創作者表示感謝</translation>
 <translation id="1943432128510653496">儲存密碼</translation>
 <translation id="1952172573699511566">Chrome 會儘可能以你慣用的語言顯示網站文字。</translation>
 <translation id="1959679933317802873">正在等候內容</translation>
@@ -202,7 +202,6 @@
 <translation id="2122601567107267586">無法開啟應用程式</translation>
 <translation id="2132122640199389833">移除所有連結的裝置</translation>
 <translation id="213279576345780926">已關閉「<ph name="TAB_TITLE" />」</translation>
-<translation id="2134927169889348449">使用 Chrome 即表示您同意《<ph name="BEGIN_TOS_LINK" />Google 服務條款<ph name="END_TOS_LINK" />》以及 <ph name="BEGIN_ATOS_LINK" />Google Chrome 和 Chrome OS 的《附加服務條款》<ph name="END_ATOS_LINK" />。</translation>
 <translation id="2139186145475833000">加到主畫面</translation>
 <translation id="2141396931810938595">根據你的使用情形</translation>
 <translation id="214888715418183969">選擇你要與 Chrome 分享的使用資料。你分享的指標將用於協助改善 Chrome 的功能、效能和穩定性。</translation>
@@ -555,7 +554,6 @@
 <translation id="409109920254068737">你可以使用這部平板電腦登入顯示這個 QR code 的裝置。</translation>
 <translation id="4095146165863963773">要刪除應用程式資料嗎？</translation>
 <translation id="4096227151372679484">書籤儲存流程已開啟，目前顯示半個版面的內容</translation>
-<translation id="4099578267706723511">將使用統計資料及當機報告傳送給 Google，助我們一臂之力，讓 Chrome 更臻完美。</translation>
 <translation id="4101475238162928417">進行同步處理，取得你在其他裝置上的密碼、書籤和其他資料</translation>
 <translation id="410351446219883937">自動播放</translation>
 <translation id="4106587138345390261">Chrome 正在探索新功能，讓網站在存取較少個人資訊的情況下，仍能提供相同的瀏覽體驗</translation>
@@ -591,7 +589,6 @@
 <translation id="4269820728363426813">複製連結網址</translation>
 <translation id="4283102315569707115">要讓系統預設顯示電腦版網站嗎？</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />在 Android 設定中開啟螢幕鎖定功能<ph name="END_LINK" /></translation>
-<translation id="4293476595220860475">使用 Chrome 即表示您同意《<ph name="BEGIN_TOS_LINK" />Google 服務條款<ph name="END_TOS_LINK" />》以及 <ph name="BEGIN_ATOS_LINK" />Google Chrome 和 Chrome OS 的《附加服務條款》<ph name="END_ATOS_LINK" />。您也必須遵守《<ph name="BEGIN_PRIVACY_LINK" />隱私權政策<ph name="END_PRIVACY_LINK" />》。</translation>
 <translation id="4296252229500326964">新增無痕分頁</translation>
 <translation id="4298388696830689168">連結的網站</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -764,7 +761,6 @@
 <translation id="5161254044473106830">請輸入標題</translation>
 <translation id="5170568018924773124">在資料夾中顯示</translation>
 <translation id="5171045022955879922">搜尋或輸入網址</translation>
-<translation id="517734441743343109">選擇繼續即表示您同意《<ph name="BEGIN_TOS_LINK" />服務條款<ph name="END_TOS_LINK" />》和《<ph name="BEGIN_PRIVACY_LINK" />隱私權政策<ph name="END_PRIVACY_LINK" />》。</translation>
 <translation id="5184329579814168207">在 Chrome 中開啟</translation>
 <translation id="5191251636205085390">進一步瞭解用於取代第三方 Cookie 的全新技術並進行控管</translation>
 <translation id="5193988420012215838">已複製到剪貼簿</translation>

@@ -100,7 +100,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1420408895951708260">Nachtverlichting aan- of uitzetten. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Recente foto's en media van je telefoon bekijken op je <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">Ja</translation>
-<translation id="1447641497144572814">Screensaver wordt gestart</translation>
 <translation id="1455242230282523554">Taalinstellingen bekijken</translation>
 <translation id="1460620680449458626">Volume staat uit.</translation>
 <translation id="14648076227129703">Hiermee geef je <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> en alle apps en websites met camerarechten toegang tot de camera</translation>
@@ -126,6 +125,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1550523713251050646">Klik voor meer opties</translation>
 <translation id="1555130319947370107">Blauw</translation>
 <translation id="1576623706766186887">Uitzoomen als vergrootglas aanstaat</translation>
+<translation id="1586324912145647027">Naar bureau 1 tot en met 8 gaan</translation>
 <translation id="1589090746204042747">Al je activiteit in deze sessie bekijken</translation>
 <translation id="1610778689852195798">'Ongedaan maken'</translation>
 <translation id="1611993646327628135">Aan</translation>
@@ -514,6 +514,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3631369015426612114">Meldingen toestaan van het volgende</translation>
 <translation id="3633097874324966332">Open de bluetooth-instellingen om je apparaat te koppelen</translation>
 <translation id="3638400994746983214">Privacyscherm aan/uit. <ph name="STATE_TEXT" />.</translation>
+<translation id="3649256019230929621">Venster minimaliseren</translation>
 <translation id="3649505501900178324">Update vereist</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
 <ph name="EVENT_SUMMARY" />,
@@ -588,6 +589,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="4021716437419160885">Omlaag scrollen</translation>
 <translation id="4022497978915111141">Apparaat vergrendelen</translation>
 <translation id="4024840464866786680">Als je je pincode en wachtwoord bent vergeten of onlangs het wachtwoord van je Google-account hebt gewijzigd, probeer je deze gebruiker te herstellen.</translation>
+<translation id="4026843240379844265">Actief venster verplaatsen tussen schermen</translation>
 <translation id="4028481283645788203">Wachtwoord vereist voor extra beveiliging</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Je deelt je scherm</translation>
@@ -912,6 +914,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="5689633613396158040">Met Nachtverlichting kun je je scherm beter zien en lezen bij weinig licht. Tik om te wijzigen wanneer Nachtverlichting wordt aangezet of zet de functie helemaal uit.</translation>
 <translation id="5691772641933328258">Vingerafdruk niet herkend</translation>
 <translation id="5693255400847650006">Microfoon in gebruik</translation>
+<translation id="5699366815052349604">Actief venster toewijzen aan alle bureaus</translation>
 <translation id="570390244361237317">Alle apps, navigeer met de pijltoetsen voor toegang tot alle apps</translation>
 <translation id="5707775774148071965">Je apparaat ondersteunt een hogere datasnelheid dan je kabel. De prestaties van het apparaat kunnen beperkt zijn.</translation>
 <translation id="5710450975648804523">Niet storen staat aan</translation>
@@ -1549,6 +1552,7 @@ Nieuwe installatie</translation>
 <translation id="9034924485347205037">Linux-bestanden</translation>
 <translation id="9047624247355796468">Instellingen openen voor <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Melding samenvouwen</translation>
+<translation id="906458777597946297">Venster maximaliseren</translation>
 <translation id="9065203028668620118">Bewerken</translation>
 <translation id="9070640332319875144">Instellingen voor Assistent</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> tot de batterij leeg is.</translation>

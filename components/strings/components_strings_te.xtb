@@ -378,6 +378,7 @@
 <translation id="1803351196216024260">మీ మైక్రోఫోన్‌ను ఉపయోగించడానికి సైట్ అనుమతి అడగవచ్చు</translation>
 <translation id="1807246157184219062">లేత</translation>
 <translation id="1807528111851433570">మొదటి షీట్</translation>
+<translation id="180991881384371158">మీ CVC అన్నది మీ కార్డ్ వెనుక భాగాన ఉంటుంది. ఇది సంతకం పెట్టె ఎగువ కుడివైపు ఉండే చివరి 3 అంకెలు.</translation>
 <translation id="181000283860817563">పలు సైట్‌లలో ధరలను ట్రాక్ చేయండి</translation>
 <translation id="1810391395243432441">మీ స్క్రీన్ లాక్‌తో పాస్‌వర్డ్‌లను సురక్షితంగా ఉంచుకోండి</translation>
 <translation id="1812527064848182527">ల్యాండ్‌స్కేప్‌లో ఉంది</translation>
@@ -508,6 +509,7 @@
 <translation id="2149968176347646218">కనెక్షన్ సురక్షితంగా లేదు</translation>
 <translation id="2153609454945889823">Google Play Services for ARను ఇన్‌స్టాల్ చేయాలా?</translation>
 <translation id="2154484045852737596">కార్డ్‌ను ఎడిట్ చేయండి</translation>
+<translation id="2154739667870063220">రీబూట్ చేయండి</translation>
 <translation id="2155260325161282517">5 x 7 అంగుళాలు</translation>
 <translation id="2157640075051554492">ధర ట్రాకింగ్ నోటిఫికేషన్‌లు</translation>
 <translation id="2161656808144014275">వచనం</translation>
@@ -642,6 +644,7 @@
 <translation id="2521736961081452453">ఫారమ్‌ను క్రియేట్ చేయండి</translation>
 <translation id="2523886232349826891">ఈ పరికరంలో మాత్రమే సేవ్ చేయబడి ఉంటుంది</translation>
 <translation id="2524461107774643265">మరింత సమాచారాన్ని జోడించండి</translation>
+<translation id="2527451058878391043">మీ CVC అనేది మీ కార్డ్ ముందు భాగంలో ఉంది. ఇది ఎగువన కుడి వైపులో మీ కార్డ్ నంబర్ పైన కనిపించే 4 అంకెల కోడ్.</translation>
 <translation id="2529899080962247600">ఈ ఫీల్డ్‌లో <ph name="MAX_ITEMS_LIMIT" /> కంటే ఎక్కువ ఎంట్రీలు ఉండకూడదు. అన్ని తదుపరి ఎంట్రీలు విస్మరించబడతాయి.</translation>
 <translation id="253493526287553278">ప్రోమో కోడ్ వివరాలను చూడండి</translation>
 <translation id="2535585790302968248">ప్రైవేట్‌గా బ్రౌజ్ చేయడానికి కొత్త అజ్ఞాత ట్యాబ్‌ను తెరవండి</translation>
@@ -896,6 +899,7 @@
 <translation id="3215092763954878852">WebAuthn ఉపయోగించడం సాధ్యం కాలేదు</translation>
 <translation id="3216313131063488104">బ్లూస్</translation>
 <translation id="3218181027817787318">సంబంధిత</translation>
+<translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{ఇప్పుడే అప్‌డేట్ చేయాలి}=2{రేపుటి లోపు అప్‌డేట్ చేయాలి}other{# రోజులలోపు అప్‌డేట్ చేయాలి}}</translation>
 <translation id="3223287115535306850">యాప్ ప్రారంభాన్ని సూచించే చిహ్నాన్ని లోడ్ చేస్తోంది</translation>
 <translation id="3223425961342298674">లొకేషన్ అనుమతించబడలేదు</translation>
 <translation id="3225919329040284222">అంతర్గత అంచనాలకు సరిపోలని ఒక ధృవీకరణ డాక్యుమెంట్‌ను సర్వర్ సమర్పించింది. మిమ్మల్ని సంరక్షించే దిశగా నిర్దిష్ట, ఉన్నత స్ధాయి భద్రతా వెబ్‌సైట్‌ల కోసం ఈ అంచనాలు చేర్చబడ్డాయి.</translation>
@@ -1380,6 +1384,7 @@
 <translation id="4350629523305688469">మల్టీఫంక్షన్ ట్రే</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> సమీపంలోని బ్లూటూత్ పరికరాల కోసం స్కాన్ చేయాలనుకుంటోంది. కింది పరికరాలు కనుగొనబడ్డాయి:</translation>
 <translation id="4351175281479794167">వెరిఫికేషన్ కోడ్‌ను ఎంటర్ చేయండి</translation>
+<translation id="4355383636893709732">Android యాప్‌ల కోసం ChromeOS అప్‌డేట్</translation>
 <translation id="4356973930735388585">ఈ సైట్‌లోని దాడి చేసేవారు మీ సమాచారాన్ని (ఉదాహరణకు, ఫోటోలు, పాస్‌వర్డ్‌లు, మెసేజ్‌లు మరియు క్రెడిట్ కార్డ్‌లు) దొంగిలించడం కోసం లేదా తొలగించడం కోసం మీ కంప్యూటర్‌లో ప్రమాదకరమైన ప్రోగ్రామ్‌లను ఇన్‌స్టాల్ చేయడానికి ప్రయత్నించవచ్చు.</translation>
 <translation id="4358059973562876591">DnsOverHttpsMode విధానానికి సంబంధించి ఏర్పడిన ఎర్రర్ కారణంగా మీరు పేర్కొన్న టెంప్లేట్‌లను వర్తింపజేయడం వీలు కాకపోవచ్చు.</translation>
 <translation id="4358461427845829800">పేమెంట్ ఆప్షన్‌లను నిర్వహించండి...</translation>
@@ -1760,6 +1765,7 @@
 <translation id="5288393065350884210">అకౌంటింగ్ &amp; ఆడిటింగ్</translation>
 <translation id="5288808348893593856">సురక్షితం కాదు అని Chrome చెప్పనంత వరకు, సైట్ కనెక్షన్ సురక్షితంగా ఉంటుంది.</translation>
 <translation id="5289384342738547352">అనేక డాక్యుమెంట్‌లను హ్యాండిల్ చేయడం</translation>
+<translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{ఈరోజే అప్‌డేట్ చేయాలి}=2{రేపుటి లోపు అప్‌డేట్ చేయాలి}other{# రోజులలోపు అప్‌డేట్ చేయాలి}}</translation>
 <translation id="5293919335876685914">కూప్స్</translation>
 <translation id="5296589789433599000">వంట &amp; వంటకాలు</translation>
 <translation id="5299298092464848405">విధానాన్ని అన్వయించడంలో ఎర్రర్</translation>
@@ -1954,6 +1960,7 @@
 <translation id="5786044859038896871">మీరు మీ కార్డ్ సమాచారం పూరించాలనుకుంటున్నారా?</translation>
 <translation id="578633867165174378">డేటా ఉల్లంఘనలో మీరు ఇప్పుడే ఉపయోగించిన పాస్‌వర్డ్‌ను Chrome కనుగొనింది. ఇప్పుడే ఈ పాస్‌వర్డ్‌ను మార్చమని మేము సిఫార్సు చేస్తున్నాము.</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="580241730938216256">అప్‌డేట్‌ను ప్రారంభించండి</translation>
 <translation id="5803412860119678065">మీరు మీ <ph name="CARD_DETAIL" /> కార్డ్ సమాచారం పూరించాలనుకుంటున్నారా?</translation>
 <translation id="5804241973901381774">అనుమతులు</translation>
 <translation id="5808435672482059465">మీ Chrome హిస్టరీని చూడండి</translation>
@@ -2114,6 +2121,7 @@
 <translation id="6218753634732582820">Chromium నుండి అడ్రస్‌ను తీసివేయాలా?</translation>
 <translation id="622039917539443112">పారలల్ ఫోల్డ్</translation>
 <translation id="6221345481584921695">Google సురక్షిత బ్రౌజింగ్ ఇటీవల <ph name="SITE" />లో <ph name="BEGIN_LINK" />మాల్వేర్‌ను గుర్తించింది<ph name="END_LINK" />. సాధారణంగా సురక్షితమైన వెబ్‌సైట్‌‌లకు కూడా కొన్నిసార్లు మాల్వేర్ సోకుతుంది. ఈ హానికరమైన కంటెంట్, మాల్వేర్ పంపిణీదారుగా ప్రసిద్ధిగాంచిన <ph name="SUBRESOURCE_HOST" /> నుండి సంక్రమిస్తుంది.</translation>
+<translation id="6221892641068781024">సరళీకృత వీక్షణ</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome సెట్టింగ్‌లలో మీ యాక్సెసిబిలిటీ టూల్స్‌ను వ్యక్తిగతీకరించడానికి 'Tab'ను నొక్కి, ఆపై 'Enter'ను నొక్కండి</translation>
 <translation id="6229649258872345286">కుటుంబం మొత్తం కలిసి ట్రావెల్ చేయడం</translation>
 <translation id="6232271601416750929">క్లీన్ బ్యూటీ</translation>
@@ -2173,6 +2181,7 @@
 <translation id="6366710531182496394">ఎడమవైపు డ్యుయల్ స్టేపుల్</translation>
 <translation id="6367196786591004737">ఎంట్రీని తొలగించండి</translation>
 <translation id="6370022303958842211">లాగిన్‌లు (విఫలమైన లాగిన్ కారణాలతో సహా), లాగ్‌అవుట్‌లు, లాక్‌లు, ఇంకా అన్‌లాక్‌లు వంటి పరికర యాక్సెస్ చర్యలు</translation>
+<translation id="6374469231428023295">మళ్లీ ప్రయత్నించు</translation>
 <translation id="6374865374745447009">విండో మేనేజ్‌మెంట్</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />' అనే దానికి 1 ఫలితం మాత్రమే లభించింది</translation>
 <translation id="6380497234672085559">A0</translation>
@@ -2483,6 +2492,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">లావెండర్ రంగు</translation>
 <translation id="7156870133441232244">సర్వర్‌ను TLS 1.2 లేదా ఆపై వెర్షన్‌లకు అప్‌గ్రేడ్ చేయాలి.</translation>
+<translation id="7160999678034985039">దయచేసి మీరు చేసిన పనిని సేవ్ చేసుకొని, సిద్ధంగా ఉన్నప్పుడు అప్‌డేట్ చేయడాన్ని ప్రారంభించండి.</translation>
 <translation id="7163295244162773898">{0,plural, =1{గోప్యమైన ఫైల్‌ను కాపీ చేయాలా?}other{గోప్యమైన ఫైల్స్‌ను కాపీ చేయాలా?}}</translation>
 <translation id="717330890047184534">Gaia ID:</translation>
 <translation id="7174545416324379297">విలీనం చేయబడ్డాయి</translation>
@@ -2730,6 +2740,7 @@
 <translation id="7687305263118037187">పునఃప్రయత్న సమయం ముగిసింది</translation>
 <translation id="7690647519407127574">Oufuku Hagaki పోస్ట్‌కార్డ్</translation>
 <translation id="7693583928066320343">పేజీ క్రమం స్వీకరించబడింది</translation>
+<translation id="769424100851389104">ఇప్పుడే అప్‌డేట్ చేయడాన్ని ప్రారంభించండి</translation>
 <translation id="7696089921647603491">క్లాసిక్ రాక్ &amp; పాత పాటలు</translation>
 <translation id="769721561045429135">ఇప్పుడు, కేవలం ఈ పరికరంలో మాత్రమే ఉపయోగించగల కార్డ్‌లు మీ వద్ద ఉన్నాయి. కార్డ్‌లను సమీక్షించడం కోసం కొనసాగించుని క్లిక్ చేయండి.</translation>
 <translation id="7698864304447945242">Google Play Services for ARను అప్‌డేట్ చేయాలా?</translation>
@@ -2754,6 +2765,7 @@
 <translation id="774634243536837715">హానికరమైన కంటెంట్ బ్లాక్ చేయబడింది.</translation>
 <translation id="7751971323486164747">Chromeలో ఫాంట్ సైజ్‌లను, టైప్‌ఫేస్‌లను అనుకూలంగా మార్చండి</translation>
 <translation id="7752995774971033316">నిర్వహించడం లేదు</translation>
+<translation id="7754587126786572336">అప్‌డేట్ చేయడం ప్రారంభమైనప్పుడు మీ Chrome ట్యాబ్‌లు, యాప్‌లు మూసివేయబడతాయి</translation>
 <translation id="7755287808199759310">మీ తల్లి/తండ్రి దీన్ని మీ కోసం అన్‌బ్లాక్ చేయగలరు</translation>
 <translation id="7755624218968747854">ప్రైమరీ రోల్</translation>
 <translation id="7758069387465995638">ఫైర్‌వాల్ లేదా యాంటీవైరస్ సాఫ్ట్‌వేర్ కనెక్షన్‌ను బ్లాక్ చేసి ఉండవచ్చు.</translation>
@@ -2918,6 +2930,7 @@
 <translation id="8186706823560132848">సాఫ్ట్‌వేర్</translation>
 <translation id="8190193880870196235">ఎక్స్‌టెన్షన్ ద్వారా మేనేజ్ చేయబడుతుంది</translation>
 <translation id="8194797478851900357">&amp;తరలించడాన్ని రద్దు చేయండి</translation>
+<translation id="8200772114523450471">మ‌ళ్లీ ప్రారంభించండి</translation>
 <translation id="8201077131113104583">ID "<ph name="EXTENSION_ID" />" ఉన్న ఎక్స్‌టెన్ష‌న్‌ కోసం అప్‌డేట్‌ URL చెల్లదు.</translation>
 <translation id="8202097416529803614">ఆర్డర్ సారాంశం</translation>
 <translation id="8202370299023114387">వైరుధ్యం</translation>
@@ -3215,6 +3228,7 @@
 <translation id="8963117664422609631">సైట్ సెట్టింగ్‌లకు వెళ్లండి</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />సూచనలు:<ph name="MARKUP_2" />మీకు డేటా కనెక్షన్ ఉందని నిర్ధారించుకోండి<ph name="MARKUP_3" />ఈ వెబ్‌పేజీని తర్వాత మళ్లీ లోడ్ చేయండి<ph name="MARKUP_4" />మీరు నమోదు చేసిన అడ్రస్‌ చెక్ చేయండి<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">కార్డ్‌ని సేవ్ చేయండి</translation>
+<translation id="8970887620466824814">ఏదో తప్పు జరిగింది.</translation>
 <translation id="8971063699422889582">సర్వర్ ప్రమాణపత్రం గడువు ముగిసింది.</translation>
 <translation id="8975012916872825179">ఫోన్ నంబర్‌లు, ఈమెయిల్‌ అడ్రస్‌లు మరియు డెలివరీ అడ్రస్‌ల వంటి సమాచారం ఉంటుంది</translation>
 <translation id="8975263830901772334">మీరు ముద్రించే ఫైళ్ల పేర్లు</translation>

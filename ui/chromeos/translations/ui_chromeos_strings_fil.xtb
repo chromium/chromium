@@ -84,6 +84,7 @@
 <translation id="1722487484194605434">Zini-zip ang <ph name="NUMBER_OF_ITEMS" /> (na) item...</translation>
 <translation id="1722687688096767818">Idinaragdag ang Profile...</translation>
 <translation id="1726100011689679555">Mga name server</translation>
+<translation id="1727562178154619254">Handa nang mag-sync</translation>
 <translation id="1729953886957086472">German (Germany)</translation>
 <translation id="1730235522912993863">Chinese Cangjie</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> (na) item ang nakopya.</translation>
@@ -705,6 +706,7 @@
 <translation id="6732801395666424405">Hindi na-load ang mga certificate</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">I-share ang folder sa Bruschetta</translation>
+<translation id="6750737795876287924">Kasalukuyang directory</translation>
 <translation id="6751256176799620176">1 folder ang napili</translation>
 <translation id="6755827872271341378">ChromeOS Flex device</translation>
 <translation id="6790428901817661496">I-play</translation>
@@ -742,7 +744,6 @@
 <translation id="6973630695168034713">Mga Folder</translation>
 <translation id="6976795442547527108">Leon</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979737339423435258">Lahat ng oras</translation>
 <translation id="6989942356279143254">Swedish</translation>
 <translation id="6990081529015358884">Naubusan ka na ng espasyo</translation>
 <translation id="6993826899923627728">Nasa iyong trash ang mga item na ito</translation>
@@ -798,7 +799,6 @@
 <translation id="7458955835361612701">Walang kamakailang larawan</translation>
 <translation id="7460898608667578234">Ukrainian</translation>
 <translation id="7469894403370665791">Awtomatikong kumonekta sa network na ito</translation>
-<translation id="7481358317100446445">Handa</translation>
 <translation id="7486315294984620427">Para makapag-drop ng mga file sa Parallels Desktop, dapat kopyahin ang file sa mga Windows file.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malayalam Phonetic</translation>

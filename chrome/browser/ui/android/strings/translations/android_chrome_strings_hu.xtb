@@ -34,6 +34,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="1173894706177603556">Átnevezés</translation>
 <translation id="1177863135347784049">Egyéni</translation>
 <translation id="1181037720776840403">Eltávolítás</translation>
+<translation id="1181366777303791449">itt: <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">Erős jelszót kíván használni?</translation>
 <translation id="1197267115302279827">Könyvjelzők áthelyezése</translation>
 <translation id="1201402288615127009">Tovább</translation>
@@ -42,7 +43,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="1204692632633423444">Chrome-műveletgomb: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">Link szövegének másolása</translation>
 <translation id="1209206284964581585">Elrejtés ideiglenesen</translation>
-<translation id="1226851825267005295">A beállításokat akkor kezelheti, ha bejelentkezett a Chrome-ba Google-fiókjával.</translation>
 <translation id="1227058898775614466">Navigációs előzmények</translation>
 <translation id="1231733316453485619">Bekapcsolja a szinkronizálást?</translation>
 <translation id="123724288017357924">Oldal újratöltése a gyorsítótárat figyelmen kívül hagyva</translation>
@@ -166,7 +166,6 @@ Az összes böngészési előzmény vagy csak adott webhely böngészési előzm
 <translation id="1928696683969751773">Frissítések</translation>
 <translation id="19288952978244135">Nyissa meg újra a Chrome-ot.</translation>
 <translation id="1933845786846280168">Kiválasztott lap</translation>
-<translation id="193571872656840963">Köszönetnyilvánítások megjelenítése ennél az alkotónál</translation>
 <translation id="1943432128510653496">Jelszavak mentése</translation>
 <translation id="1952172573699511566">A webhelyek szövege a preferált nyelven jelenik meg, ha lehetséges.</translation>
 <translation id="1959679933317802873">Várakozás tartalomra…</translation>
@@ -202,7 +201,6 @@ Az összes böngészési előzmény vagy csak adott webhely böngészési előzm
 <translation id="2122601567107267586">Nem sikerült megnyitni az alkalmazást</translation>
 <translation id="2132122640199389833">Az összes összekapcsolt eszköz eltávolítása</translation>
 <translation id="213279576345780926">Bezárva: <ph name="TAB_TITLE" /></translation>
-<translation id="2134927169889348449">A Chrome használatával Ön elfogadja a <ph name="BEGIN_TOS_LINK" />Google Általános Szerződési Feltételeket<ph name="END_TOS_LINK" />, valamint <ph name="BEGIN_ATOS_LINK" />A Google Chrome és a ChromeOS Kiegészítő Általános Szerződési Feltételeit<ph name="END_ATOS_LINK" />.</translation>
 <translation id="2139186145475833000">Kezdőképernyőre</translation>
 <translation id="2141396931810938595">A használata alapján</translation>
 <translation id="214888715418183969">Válassza ki, hogy mit osztana meg szívesen a Chrome-mal. A megosztott mutatókat a Chrome funkcióinak, teljesítményének és stabilitásának fejlesztésére használjuk majd.</translation>
@@ -555,7 +553,6 @@ A privát állapottokenek nagyobb fokú adatvédelmet biztosítanak az internete
 <translation id="409109920254068737">Ezzel a táblagéppel bejelentkezhet a QR-kódot megjelenítő eszközön.</translation>
 <translation id="4095146165863963773">Törli az alkalmazásadatokat?</translation>
 <translation id="4096227151372679484">A könyvjelzőmentési folyamat félmagasságban van megnyitva</translation>
-<translation id="4099578267706723511">Használati statisztikák és hibajelentések küldésével segíthet a Google-nak a Chrome fejlesztésében.</translation>
 <translation id="4101475238162928417">Szinkronizáljon, hogy a többi eszközén is hozzáférjen jelszavaihoz, könyvjelzőihez stb.</translation>
 <translation id="410351446219883937">Automatikus lejátszás</translation>
 <translation id="4106587138345390261">A Chrome olyan funkciók fejlesztésén dolgozik, amelyek ugyanazt a böngészési élményt nyújtják a személyes adatok kisebb mértékű felhasználása mellett.</translation>
@@ -593,7 +590,6 @@ A privát állapottokenek nagyobb fokú adatvédelmet biztosítanak az internete
 <translation id="4269820728363426813">Link másolása</translation>
 <translation id="4283102315569707115">Alapértelmezés szerint asztali webhelyeket kérjen a böngésző?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Állítsa be a képernyőzárat az Android beállításai között<ph name="END_LINK" /></translation>
-<translation id="4293476595220860475">A Chrome használatával Ön elfogadja a <ph name="BEGIN_TOS_LINK" />Google Általános Szerződési Feltételeket<ph name="END_TOS_LINK" />, valamint <ph name="BEGIN_ATOS_LINK" />A Google Chrome és a ChromeOS Kiegészítő Általános Szerződési Feltételeit<ph name="END_ATOS_LINK" />. Az <ph name="BEGIN_PRIVACY_LINK" />adatvédelmi irányelvek<ph name="END_PRIVACY_LINK" /> is érvényben vannak.</translation>
 <translation id="4296252229500326964">Új inkognitó lap</translation>
 <translation id="4298388696830689168">Összekapcsolt webhelyek</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -766,7 +762,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5161254044473106830">Cím megadása kötelező</translation>
 <translation id="5170568018924773124">Megjelenítés mappában</translation>
 <translation id="5171045022955879922">Keressen vagy írjon be egy URL-t</translation>
-<translation id="517734441743343109">A folytatással Ön elfogadja az <ph name="BEGIN_TOS_LINK" />Általános Szerződési Feltételeket<ph name="END_TOS_LINK" /> és az <ph name="BEGIN_PRIVACY_LINK" />Adatvédelmi irányelveket<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="5184329579814168207">Megnyitás Chrome-ban</translation>
 <translation id="5191251636205085390">További információ a harmadik felektől származó cookie-k leváltását célzó új technológiákról és a kezelésükről</translation>
 <translation id="5193988420012215838">Vágólapra másolva</translation>

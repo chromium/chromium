@@ -507,6 +507,7 @@
 <translation id="2149968176347646218">Conexiunea nu este sigură</translation>
 <translation id="2153609454945889823">Instalezi Serviciile Google Play pentru realitate augmentată?</translation>
 <translation id="2154484045852737596">Editează cardul</translation>
+<translation id="2154739667870063220">Repornește</translation>
 <translation id="2155260325161282517">5 x 7 in</translation>
 <translation id="2157640075051554492">Notificări privind urmărirea prețurilor</translation>
 <translation id="2161656808144014275">Text</translation>
@@ -896,6 +897,7 @@
 <translation id="3215092763954878852">Nu s-a putut folosi WebAuthn</translation>
 <translation id="3216313131063488104">Nuanțe de albastru</translation>
 <translation id="3218181027817787318">Relativă</translation>
+<translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Actualizarea este necesară acum}=2{Actualizarea este necesară până mâine}few{Actualizarea este necesară în termen de # zile}other{Actualizarea este necesară în termen de # de zile}}</translation>
 <translation id="3223287115535306850">Pictograma de încărcare pentru lansarea aplicației</translation>
 <translation id="3223425961342298674">Folosirea locației nu este permisă</translation>
 <translation id="3225919329040284222">Serverul a prezentat un certificat care nu se potrivește cu așteptările încorporate. Aceste așteptări sunt incluse pentru anumite site-uri web, cu un grad sporit de securitate, pentru a vă proteja.</translation>
@@ -1380,6 +1382,7 @@
 <translation id="4350629523305688469">Tava multifuncțională</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> vrea să caute dispozitive Bluetooth în apropiere. Următoarele dispozitive au fost găsite:</translation>
 <translation id="4351175281479794167">Introdu codul de verificare</translation>
+<translation id="4355383636893709732">Actualizare ChromeOS pentru aplicațiile Android</translation>
 <translation id="4356973930735388585">Atacatorii de pe acest site pot încerca să instaleze programe periculoase pe computerul tău, care să îți fure sau să îți șteargă informațiile (de exemplu, fotografiile, parolele, mesajele sau informațiile despre cardurile de credit).</translation>
 <translation id="4358059973562876591">Șabloanele specificate nu pot fi aplicate din cauza unei erori legate de politica DnsOverHttpsMode.</translation>
 <translation id="4358461427845829800">Gestionează metodele de plată...</translation>
@@ -1760,6 +1763,7 @@
 <translation id="5288393065350884210">Contabilitate și audit</translation>
 <translation id="5288808348893593856">Conexiunea site-ului este sigură dacă Chrome nu anunță contrariul.</translation>
 <translation id="5289384342738547352">Gestionarea mai multor documente</translation>
+<translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Actualizarea este necesară astăzi}=2{Actualizarea este necesară până mâine}few{Actualizarea este necesară în termen de # zile}other{Actualizarea este necesară în termen de # de zile}}</translation>
 <translation id="5293919335876685914">Vehicule coupe</translation>
 <translation id="5296589789433599000">Gătit și rețete</translation>
 <translation id="5299298092464848405">Eroare la analizarea politicii</translation>
@@ -1954,6 +1958,7 @@
 <translation id="5786044859038896871">Dorești să completezi datele cardului de credit?</translation>
 <translation id="578633867165174378">Chrome a găsit parola pe care tocmai ai folosit-o într-o încălcare a securității datelor. Îți recomandăm să schimbi acum parola.</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="580241730938216256">Începe actualizarea</translation>
 <translation id="5803412860119678065">Dorești să completezi datele <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Permisiuni</translation>
 <translation id="5808435672482059465">Vezi istoricul Chrome</translation>
@@ -2114,6 +2119,7 @@
 <translation id="6218753634732582820">Elimini adresa din Chromium?</translation>
 <translation id="622039917539443112">Îndoire paralelă</translation>
 <translation id="6221345481584921695">Navigarea sigură Google <ph name="BEGIN_LINK" />a detectat recent programe malware<ph name="END_LINK" /> pe <ph name="SITE" />. Site-urile care sunt de obicei sigure sunt uneori infectate cu programe malware. Conținutul rău-intenționat provine de la <ph name="SUBRESOURCE_HOST" />, un distribuitor cunoscut de programe malware.</translation>
+<translation id="6221892641068781024">Afișare simplificată</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a personaliza instrumentele de accesibilitate în setările Chrome</translation>
 <translation id="6229649258872345286">Călătorii în familie</translation>
 <translation id="6232271601416750929">Frumusețe naturală</translation>
@@ -2173,6 +2179,7 @@
 <translation id="6366710531182496394">Capsare dublă în stânga</translation>
 <translation id="6367196786591004737">Șterge intrarea</translation>
 <translation id="6370022303958842211">Acțiuni de acces la dispozitive, cum ar fi conectări (inclusiv motive de conectare nereușite), deconectări, blocări și deblocări</translation>
+<translation id="6374469231428023295">Încearcă din nou</translation>
 <translation id="6374865374745447009">gestionarea ferestrelor</translation>
 <translation id="6377268785556383139">Un rezultat pentru „<ph name="SEARCH_TEXT" />”</translation>
 <translation id="6380497234672085559">A0</translation>
@@ -2483,6 +2490,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> și încă <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" /> și încă <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> și încă <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">Lavandă</translation>
 <translation id="7156870133441232244">Serverul ar trebui să facă upgrade la TLS 1.2 sau o versiune ulterioară.</translation>
+<translation id="7160999678034985039">Salvează lucrul și începe actualizarea când ești gata.</translation>
 <translation id="7163295244162773898">{0,plural, =1{Copiezi fișierul confidențial?}few{Copiezi fișierele confidențiale?}other{Copiezi fișierele confidențiale?}}</translation>
 <translation id="717330890047184534">Cod Gaia:</translation>
 <translation id="7174545416324379297">Îmbinată</translation>
@@ -2730,6 +2738,7 @@ Detalii suplimentare:
 <translation id="7687305263118037187">Timpul de expirare a reîncercării</translation>
 <translation id="7690647519407127574">Carte poștală Oufuku Hagaki</translation>
 <translation id="7693583928066320343">S-a recepționat ordinea paginilor</translation>
+<translation id="769424100851389104">Începe actualizarea acum</translation>
 <translation id="7696089921647603491">Rock clasic și oldies</translation>
 <translation id="769721561045429135">În acest moment ai carduri care pot fi folosite doar pe acest dispozitiv. Dă clic pe Continuă pentru a vedea cardurile.</translation>
 <translation id="7698864304447945242">Actualizezi Serviciile Google Play pentru realitate augmentată?</translation>
@@ -2754,6 +2763,7 @@ Detalii suplimentare:
 <translation id="774634243536837715">Conținutul periculos a fost blocat.</translation>
 <translation id="7751971323486164747">Personalizează dimensiunea și tipul fontului în Chrome</translation>
 <translation id="7752995774971033316">Negestionat</translation>
+<translation id="7754587126786572336">Filele și aplicațiile Chrome se vor închide când începe actualizarea</translation>
 <translation id="7755287808199759310">Părintele tău îl poate debloca pentru tine</translation>
 <translation id="7755624218968747854">Rola principală</translation>
 <translation id="7758069387465995638">Este posibil ca firewallul sau software-ul antivirus să fi blocat conexiunea.</translation>
@@ -2918,6 +2928,7 @@ Detalii suplimentare:
 <translation id="8186706823560132848">Software</translation>
 <translation id="8190193880870196235">Gestionată printr-o extensie</translation>
 <translation id="8194797478851900357">&amp;Anulați mutarea</translation>
+<translation id="8200772114523450471">Reia</translation>
 <translation id="8201077131113104583">Adresa URL pentru actualizarea extensiei cu ID-ul „<ph name="EXTENSION_ID" />” nu este validă.</translation>
 <translation id="8202097416529803614">Rezumatul comenzii</translation>
 <translation id="8202370299023114387">Conflict</translation>
@@ -3216,6 +3227,7 @@ Detalii suplimentare:
 <translation id="8963117664422609631">Accesează setările site-ului</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Sugestii:<ph name="MARKUP_2" />asigură-te că ai o conexiune de date;<ph name="MARKUP_3" />reîncarcă mai târziu această pagină web;<ph name="MARKUP_4" />verifică adresa pe care ai introdus-o.<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">Salvează cardul</translation>
+<translation id="8970887620466824814">A apărut o eroare.</translation>
 <translation id="8971063699422889582">Certificatul serverului a expirat.</translation>
 <translation id="8975012916872825179">Include informații precum numerele de telefon, adresele de e-mail și adresele de expediere</translation>
 <translation id="8975263830901772334">Numele fișierelor pe care le printezi</translation>

@@ -26,6 +26,7 @@
 <translation id="1448064542941920355">Nagyítás csökkentése</translation>
 <translation id="1510341833810331442">Webhelyek nem menthetnek adatokat az eszközére</translation>
 <translation id="1547123415014299762">A harmadik féltől származó cookie-k engedélyezve vannak</translation>
+<translation id="1593426485665524382">Új műveletek állnak rendelkezésre a képernyő tetejéhez közel</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1633720957382884102">Kapcsolódó webhelyek</translation>
 <translation id="1644574205037202324">Előzmények</translation>
@@ -146,6 +147,7 @@
 <translation id="3628308229821498208">Javasolt keresések</translation>
 <translation id="3636279694100170143">A felkeresett webhelyek igazolhatják, hogy Ön valódi felhasználó, nem pedig robot.</translation>
 <translation id="3649190289964910441">A felkeresett webhelyek menthetnek olyan adatokat a Chrome-ban, amelyek ellenőrzik, hogy Ön valódi felhasználó-e. Böngészési tevékenységei során a webhelyek ellenőrizhetik a Chrome-ot, és az első webhely segítségével igazolhatják, hogy Ön valószínűleg megbízható felhasználó.</translation>
+<translation id="3721953990244350188">Elvetés és a következő rendelkezésre álló művelet megjelenítése</translation>
 <translation id="3744111561329211289">Szinkronizálás a háttérben</translation>
 <translation id="3763247130972274048">A videó jobb vagy bal oldalán duplán koppintva ugorhat előre vagy vissza 10 másodpercet</translation>
 <translation id="3794286421982011626">A felkeresett webhelyek információkat menthetnek az Ön által végzett műveletekről annak érdekében, hogy a várt módon működjenek (például hogy bejelentkezve maradhasson az adott webhelyen, illetve a bevásárlókosárban lévő tételek mentéséhez). A webhelyek gyakran ideiglenesen mentik ezeket az adatokat az eszközére.</translation>
@@ -193,7 +195,6 @@
 <translation id="4534723447064627427">Ahhoz, hogy a(z) <ph name="APP_NAME" /> hozzáférhessen a mikrofonhoz, a mikrofont az <ph name="BEGIN_LINK" />Android-beállítások<ph name="END_LINK" /> között is be kell kapcsolni.</translation>
 <translation id="4566417217121906555">Mikrofon némítása</translation>
 <translation id="4570913071927164677">Részletek</translation>
-<translation id="4575264539271661854">Megkönnyíti a szöveg és a képek nagyítását a felkeresett webhelyen</translation>
 <translation id="4598549027014564149">Inkognitó módban a webhelyek nem használhatják fel az Ön cookie-jait arra, hogy megfigyeljék az Ön böngészési tevékenységeit a különböző webhelyek között, még kapcsolódó webhelyek esetén sem. Böngészési tevékenységeit nem használjuk fel például a hirdetések személyre szabásához. Előfordulhat, hogy bizonyos webhelyek funkciói nem működnek majd megfelelően.</translation>
 <translation id="4645575059429386691">A szülő kezeli</translation>
 <translation id="4670064810192446073">Virtuális valóság</translation>

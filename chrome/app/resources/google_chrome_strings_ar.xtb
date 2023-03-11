@@ -156,6 +156,7 @@
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">‏تعذَّر على ChromeOS Flex مزامنة البيانات بسبب حدوث خطأ أثناء تسجيل الدخول.</translation>
 <translation id="3795971588916395511">‏نظام التشغيل Chrome من Google</translation>
+<translation id="3809772425479558446">‏يتطلّب Google Chrome نظام التشغيل Windows 10 أو إصدارًا أحدث.</translation>
 <translation id="3835168907083856002">‏سيؤدي هذا الإجراء إلى إنشاء ملف شخصي جديد على Chrome لحساب <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="386202838227397562">‏يُرجى إغلاق كل نوافذ Google Chrome وإعادة المحاولة.</translation>
 <translation id="3865754807470779944">‏الإصدار المُثبّت من Chrome: <ph name="PRODUCT_VERSION" /></translation>
@@ -396,7 +397,6 @@
 <translation id="8862326446509486874">لا تملك الحقوق الكافية للتثبيت على مستوى النظام. جرّب تشغيل المثبِّت بصفة مشرف.</translation>
 <translation id="8914504000324227558">‏إعادة تشغيل Chrome</translation>
 <translation id="8922193594870374009">‏لإرسال رقم من <ph name="ORIGIN" /> إلى هاتفك الذي يعمل بنظام التشغيل Android، يُرجى تسجيل الدخول إلى متصفِّح Chrome على الجهازَين.</translation>
-<translation id="8983720963221508955">‏تم تفعيل ميزة "الحماية المُحسّنة للتصفّح الآمن" في حسابك. ويمكنك استخدامها الآن في Chrome.</translation>
 <translation id="8986207147630327271">أنت على وشك إضافة ملف شخصي للعمل إلى هذا المتصفِّح ومنح المشرف إمكانية التحكُّم في هذا الملف الشخصي للعمل فقط.</translation>
 <translation id="8989968390305463310">‏يؤثر سجلّ تصفّحك في الإعلانات التي تظهر لك وفي تقدير اهتماماتك على النحو الموضّح أدناه. لحماية خصوصيتك، يحذف Chrome تلقائيًا اهتماماتك بشكل متواصل مرة واحدة على الأقل شهريًا. ويمكنك تحديث الاهتمامات ما لم تزِلها.</translation>
 <translation id="8999208279178790196">{0,plural, =0{‏يتوفر تحديث لمتصفح Chrome}=1{‏يتوفر تحديث لمتصفح Chrome}two{‏يتوفر تحديث لمتصفح Chrome منذ يومين}few{‏يتوفر تحديث لمتصفح Chrome منذ # أيام}many{‏يتوفر تحديث لمتصفح Chrome منذ # يومًا}other{‏يتوفر تحديث لمتصفح Chrome منذ # يوم}}</translation>

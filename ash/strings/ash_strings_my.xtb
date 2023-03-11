@@ -100,7 +100,6 @@
 <translation id="1420408895951708260">'ညအလင်းရောင်' အဖွင့်အပိတ် ခလုတ်။ <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">သင့်ဖုန်း၏ မကြာသေးမီက ဓာတ်ပုံနှင့် မီဒီယာများကို သင့် <ph name="DEVICE_TYPE" /> တွင် ကြည့်နိုင်သည်</translation>
 <translation id="1426410128494586442">Yes</translation>
-<translation id="1447641497144572814">စကရင်နားချိန် စတင်ပြီ</translation>
 <translation id="1455242230282523554">ဘာသာစကားဆက်တင်များကို ပြရန်</translation>
 <translation id="1460620680449458626">အသံ တိတ်ထားသည်။</translation>
 <translation id="14648076227129703">၎င်းက <ph name="APP1_NAME" />၊ <ph name="APP2_NAME" />၊ ကင်မရာခွင့်ပြုချက်ပါသည့် အက်ပ်နှင့် ဝဘ်ဆိုက်အားလုံးကို ကင်မရာသုံးခွင့်ပြုသည်</translation>
@@ -126,6 +125,7 @@
 <translation id="1550523713251050646">ပိုမိုရွေးစရာများအတွက် နှိပ်ပါ</translation>
 <translation id="1555130319947370107">အပြာရောင်</translation>
 <translation id="1576623706766186887">မှန်ဘီလူးဖွင့်ထားပါက ဇူးမ်ဖြုတ်ရန်</translation>
+<translation id="1586324912145647027">မျက်နှာပြင်နေရာ ၁ မှ ၈ သို့သွားနိုင်သည်</translation>
 <translation id="1589090746204042747">ဤစက်ရှင်ရှိ သင့်လုပ်ဆောင်ချက်အားလုံးကို ဝင်ကြည့်နိုင်သည်</translation>
 <translation id="1610778689852195798">"နောက်ပြန်ရန်"</translation>
 <translation id="1611993646327628135">ဖွင့်ထားသည်</translation>
@@ -514,6 +514,7 @@
 <translation id="3631369015426612114">အောက်ပါတို့ထံမှ အကြောင်းကြားချက်များကို ခွင့်ပြုရန်</translation>
 <translation id="3633097874324966332">သင်၏စက်နှင့် တွဲချိတ်ရန် ဘလူးတုသ်ဆက်တင်များ ဖွင့်ပါ</translation>
 <translation id="3638400994746983214">အချက်အလက်လုံခြုံမှု ဖန်သားပြင်ကို အဖွင့်အပိတ်လုပ်ရန်။ <ph name="STATE_TEXT" />။</translation>
+<translation id="3649256019230929621">ဝင်းဒိုး ဇူးမ်ဖြုတ်ရန်</translation>
 <translation id="3649505501900178324">အပ်ဒိတ် ရက်လွန်နေသည်</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />၊
@@ -588,6 +589,7 @@
 <translation id="4021716437419160885">အောက်သို့ လှိမ့်ရန်</translation>
 <translation id="4022497978915111141">စက် လော့ခ်ချရန်</translation>
 <translation id="4024840464866786680">သင့်ပင်နံပါတ်နှင့် စကားဝှက်မေ့သွားပါက (သို့) သင့် Google Account စကားဝှက်ကို မကြာသေးမီက ပြောင်းထားပါက ဤအသုံးပြုသူကို ပြန်လည်ရယူကြည့်ပါ။</translation>
+<translation id="4026843240379844265">လက်ရှိဝင်းဒိုးကို မျက်နှာပြင်ပြသမှုများအကြား ရွှေ့ရန်</translation>
 <translation id="4028481283645788203">လုံခြုံရေးပိုမိုကောင်းမွန်စေရန် စကားဝှက်လိုအပ်သည်</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">သင့်မျက်နှာပြင်ကို မျှဝေနေသည်</translation>
@@ -912,6 +914,7 @@
 <translation id="5689633613396158040">'ညအလင်းရောင်' သည် ဖန်သားပြင်ကို ကြည့်ရှုရန် သို့မဟုတ် အလင်းအားနည်းချိန် စာဖတ်ရန် လွယ်ကူစေသည်။ 'ညအလင်းရောင်' ကို ဖွင့်ရန် သို့မဟုတ် အပြီးပိတ်ရန် အချိန်ကို ပြောင်းရန် တို့ပါ။</translation>
 <translation id="5691772641933328258">လက်ဗွေကို မသိပါ</translation>
 <translation id="5693255400847650006">မိုက်ခရိုဖုန်း သုံးနေသည်</translation>
+<translation id="5699366815052349604">ဖွင့်ထားသောဝင်းဒိုးကို မျက်နှာပြင်နေရာအားလုံးသို့ သတ်မှတ်နိုင်သည်</translation>
 <translation id="570390244361237317">အက်ပ်အားလုံးကို သုံးရန် မြားကီးများဖြင့် ရွှေ့ပါ</translation>
 <translation id="5707775774148071965">စက်က ကေဘယ်ကြိုးထက် ပိုမြင့်သည့် ဒေတာသယ်ယူနှုန်းကို ပံ့ပိုးသည်။ စက်၏စွမ်းဆောင်ရည်သည် အကန့်အသတ်ရှိနိုင်သည်။</translation>
 <translation id="5710450975648804523">'မနှောင့်ယှက်ရ' ဖွင့်ထားသည်</translation>
@@ -1552,6 +1555,7 @@
 <translation id="9034924485347205037">Linux ဖိုင်များ</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> အတွက် ဆက်တင်များကို ဖွင့်ရန်</translation>
 <translation id="9059834730836941392">အကြောင်းကြားချက်ကို လျှော့ပြရန်</translation>
+<translation id="906458777597946297">ဝင်ဒိုးကို အကြီးဆုံး လုပ်ရန်</translation>
 <translation id="9065203028668620118">ပြင်ဆင်ရန်</translation>
 <translation id="9070640332319875144">Assistant ဆက်တင်များ</translation>
 <translation id="9072519059834302790">ဘက်ထရီကုန်ရန် <ph name="TIME_LEFT" /> ကျန်သေးသည်။</translation>

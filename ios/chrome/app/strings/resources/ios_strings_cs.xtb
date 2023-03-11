@@ -81,6 +81,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="149095475893949513">Tento web se pokouší stáhnout profil konfigurace.</translation>
 <translation id="1491277525950327607">Nastavení můžete přepnout dvojitým klepnutím</translation>
 <translation id="1492417797159476138">Toto uživatelské jméno jste pro tento web už uložili</translation>
+<translation id="1497590942294823549">Nabídka → Správce hesel</translation>
 <translation id="1498283581832036924">Účet v doméně <ph name="WEBSITE" /> smazán nebude</translation>
 <translation id="1506063256525392513">Toto umožňuje pořizovat a nahrávat fotky a skenovat QR kódy</translation>
 <translation id="1509486075633541495">Přihlásit se k webu</translation>
@@ -242,6 +243,7 @@ Weby pomocí souborů cookie nemohou sledovat vaši aktivitu prohlížení mezi 
 <translation id="271033894570825754">Nové</translation>
 <translation id="2712127207578915686">Soubor nelze otevřít</translation>
 <translation id="2718352093833049315">Pouze v sítích Wi-Fi</translation>
+<translation id="2737716090799520623">Když jste v Chromu přihlášeni, uložená hesla se ukládají do vašeho účtu Google (<ph name="ACCOUNT" />). Tuto funkci můžete vypnout v <ph name="BEGIN_LINK" />nastavení<ph name="END_LINK" />.</translation>
 <translation id="2747003861858887689">Předchozí pole</translation>
 <translation id="2749231692441336879">Sledujete kanál <ph name="CHANNEL_NAME" /></translation>
 <translation id="2764831210418622012">právě teď</translation>
@@ -843,6 +845,7 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="6801927553864092214">K prohlížení v soukromí otevřete anonymní kartu</translation>
 <translation id="6807889908376551050">Zobrazit vše…</translation>
 <translation id="681368974849482173">Položka byla vytvořena</translation>
+<translation id="6822587385560699678">Když je tato funkce zapnutá, hesla se ukládají do účtu <ph name="ACCOUNT" />. Když je tato funkce vypnutá, hesla se ukládají pouze do tohoto zařízení.</translation>
 <translation id="683022620450280906">Uložená hesla můžete používat v libovolném zařízení. Ukládají se do Správce hesel Google pro účet <ph name="EMAIL" />.</translation>
 <translation id="6831043979455480757">Přeložit</translation>
 <translation id="6842136130964845393">Aby bylo zajištěno, že budete mít vždy přístup k uloženým heslům, ověřte svou totožnost</translation>

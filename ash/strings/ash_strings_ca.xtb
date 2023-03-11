@@ -100,7 +100,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1420408895951708260">Activa o desactiva la funció Llum nocturna. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Consulta els fitxers multimèdia i les fotos recents del telèfon al teu <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">Sí</translation>
-<translation id="1447641497144572814">S'inicia l'estalvi de pantalla</translation>
 <translation id="1455242230282523554">Mostra la configuració d'idioma</translation>
 <translation id="1460620680449458626">El volum està silenciat.</translation>
 <translation id="14648076227129703">Permet l'accés a la càmera a <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> i a totes les aplicacions i llocs web amb permís per accedir a la càmera</translation>
@@ -126,6 +125,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1550523713251050646">Feu clic per veure més opcions</translation>
 <translation id="1555130319947370107">Blau</translation>
 <translation id="1576623706766186887">Redueix quan la lupa estigui activada</translation>
+<translation id="1586324912145647027">Ves a l'escriptori de l'1 al 8</translation>
 <translation id="1589090746204042747">Accedir a tota la teva activitat d'aquesta sessió.</translation>
 <translation id="1610778689852195798">"Desfés"</translation>
 <translation id="1611993646327628135">Activat</translation>
@@ -514,6 +514,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3631369015426612114">Permet notificacions de les fonts següents:</translation>
 <translation id="3633097874324966332">Obre la configuració del Bluetooth per vincular el dispositiu</translation>
 <translation id="3638400994746983214">Commuta la pantalla de privadesa. <ph name="STATE_TEXT" />.</translation>
+<translation id="3649256019230929621">Minimitza la finestra</translation>
 <translation id="3649505501900178324">Actualització pendent</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -588,6 +589,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="4021716437419160885">Desplaça't cap avall</translation>
 <translation id="4022497978915111141">Bloqueja el dispositiu</translation>
 <translation id="4024840464866786680">Si has oblidat el PIN i la contrasenya o has canviat la contrasenya del Compte de Google fa poc, prova de recuperar aquest usuari.</translation>
+<translation id="4026843240379844265">Mou la finestra activa entre pantalles</translation>
 <translation id="4028481283645788203">Cal introduir la contrasenya per disposar de més seguretat</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Estàs compartint la pantalla</translation>
@@ -912,6 +914,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="5689633613396158040">Amb la funció Llum nocturna, és més fàcil mirar la pantalla i llegir-hi amb poca llum. Toca per canviar l'hora en què s'activa o per desactivar-la completament.</translation>
 <translation id="5691772641933328258">L'empremta digital no s'ha reconegut</translation>
 <translation id="5693255400847650006">Micròfon en ús</translation>
+<translation id="5699366815052349604">Assigna una finestra activa a tots els escriptoris</translation>
 <translation id="570390244361237317">Totes les aplicacions, navega amb les tecles de fletxa per accedir a totes les aplicacions</translation>
 <translation id="5707775774148071965">El dispositiu admet una velocitat de transferència de dades més alta que el cable. És possible que el rendiment del dispositiu es vegi limitat.</translation>
 <translation id="5710450975648804523">Mode No molestis activat</translation>
@@ -1549,6 +1552,7 @@ Instal·lació nova</translation>
 <translation id="9034924485347205037">Fitxers de Linux</translation>
 <translation id="9047624247355796468">Obre la configuració de la xarxa <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Replega la notificació</translation>
+<translation id="906458777597946297">Maximitza la finestra</translation>
 <translation id="9065203028668620118">Edita</translation>
 <translation id="9070640332319875144">Configuració de l'Assistent</translation>
 <translation id="9072519059834302790">Temps restant perquè s'esgoti la bateria: <ph name="TIME_LEFT" />.</translation>

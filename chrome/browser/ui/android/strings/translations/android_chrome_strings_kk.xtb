@@ -34,6 +34,7 @@
 <translation id="1173894706177603556">Атын өзгерту</translation>
 <translation id="1177863135347784049">Реттелетін</translation>
 <translation id="1181037720776840403">Өшіру</translation>
+<translation id="1181366777303791449">Күні: <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">Күрделі құпия сөз пайдаланылсын ба?</translation>
 <translation id="1197267115302279827">Бетбелгілерді жылжыту</translation>
 <translation id="1201402288615127009">Келесі</translation>
@@ -42,7 +43,6 @@
 <translation id="1204692632633423444">Chrome-дағы әрекет түймесі: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">Мәтін сілтемесін көшіру</translation>
 <translation id="1209206284964581585">Әзірге жасыру</translation>
-<translation id="1226851825267005295">Google аккаунтымен Chrome браузеріне кіргеннен кейін параметрлеріңізді басқара аласыз.</translation>
 <translation id="1227058898775614466">Навигация тарихы</translation>
 <translation id="1231733316453485619">Синхрондау қосылсын ба?</translation>
 <translation id="123724288017357924">Кэштелген контентті елемей, ағымдағы бетті жаңарту</translation>
@@ -166,7 +166,6 @@
 <translation id="1928696683969751773">Жаңартулар</translation>
 <translation id="19288952978244135">Chrome браузерін қайта ашыңыз.</translation>
 <translation id="1933845786846280168">Таңдалған қойынды</translation>
-<translation id="193571872656840963">Осы авторға алғыс айту</translation>
 <translation id="1943432128510653496">Құпия сөздерді сақтау</translation>
 <translation id="1952172573699511566">Вебсайттар мүмкін болған кезде мәтінді өзіңізге ыңғайлы тілде көрсетеді.</translation>
 <translation id="1959679933317802873">Контенті дайын емес</translation>
@@ -202,7 +201,6 @@
 <translation id="2122601567107267586">Қолданбаны ашу мүмкін емес</translation>
 <translation id="2132122640199389833">Байланыстырылған құрылғылардың барлығын өшіру</translation>
 <translation id="213279576345780926">Жабық <ph name="TAB_TITLE" /></translation>
-<translation id="2134927169889348449">Chrome браузерін пайдалану арқылы <ph name="BEGIN_TOS_LINK" />Google Қызмет көрсету шарттарына<ph name="END_TOS_LINK" />, <ph name="BEGIN_ATOS_LINK" />Google Chrome және ChromeOS Қосымша қызмет көрсету шарттарына<ph name="END_ATOS_LINK" /> келісесіз.</translation>
 <translation id="2139186145475833000">Негізгі экранға қосу</translation>
 <translation id="2141396931810938595">Пайдалануыңызға негізделген ұсыныс</translation>
 <translation id="214888715418183969">Chrome-мен қандай ақпарат бөлісетініңізді таңдаңыз. Сіз бөліскен көрсеткіштер Chrome функцияларын, оның жұмысын және тұрақтылығын жақсартуға қолданылады.</translation>
@@ -555,7 +553,6 @@
 <translation id="409109920254068737">Бұл планшетті осы QR кодын көрсетіп тұрған құрылғыға кіру үшін пайдалана аласыз.</translation>
 <translation id="4095146165863963773">Қолданба деректерін жою керек пе?</translation>
 <translation id="4096227151372679484">Бетбелгілерді сақтау ағыны жартылай ашылған.</translation>
-<translation id="4099578267706723511">Пайдалану статистикасы мен жаңылыс туралы есептерді Google компаниясына жіберу арқылы Chrome қызметін жақсартуға көмектесіңіз.</translation>
 <translation id="4101475238162928417">Құпия сөздерді, бетбелгілерді және т. б. деректерді басқа құрылғыларда алу үшін оларды синхрондаңыз.</translation>
 <translation id="410351446219883937">Автоматты ойнату</translation>
 <translation id="4106587138345390261">Chrome жаңа функцияларды зерттеп жатыр. Олардың көмегімен сайттарды аз ақпаратпен де бұрынғыдай пайдалана беруге болады.</translation>
@@ -593,7 +590,6 @@
 <translation id="4269820728363426813">Сілтеме мекенжайын көшіру</translation>
 <translation id="4283102315569707115">Әдепкісінше компьютерге арналған сайттар сұралсын ба?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android параметрлерінен экран құлпын қосыңыз.<ph name="END_LINK" /></translation>
-<translation id="4293476595220860475">Chrome браузерін пайдалану арқылы <ph name="BEGIN_TOS_LINK" />Google Қызмет көрсету шарттарына<ph name="END_TOS_LINK" />, <ph name="BEGIN_ATOS_LINK" />Google Chrome және ChromeOS Қосымша қызмет көрсету шарттарына<ph name="END_ATOS_LINK" /> келісесіз. <ph name="BEGIN_PRIVACY_LINK" />Құпиялық саясаты<ph name="END_PRIVACY_LINK" /> да қолданылады.</translation>
 <translation id="4296252229500326964">Жаңа инкогнито қойындысы</translation>
 <translation id="4298388696830689168">Байланыстырылған сайттар</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -766,7 +762,6 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="5161254044473106830">Тақырып қою қажет</translation>
 <translation id="5170568018924773124">Қалтада көрсету</translation>
 <translation id="5171045022955879922">Іздеңіз не URL теріңіз</translation>
-<translation id="517734441743343109">Жалғастыру арқылы <ph name="BEGIN_TOS_LINK" />Қызмет көрсету шарттары<ph name="END_TOS_LINK" /> мен <ph name="BEGIN_PRIVACY_LINK" />Құпиялық\u00A0саясатына<ph name="END_PRIVACY_LINK" /> келісесіз.</translation>
 <translation id="5184329579814168207">Chrome жүйесінде ашу</translation>
 <translation id="5191251636205085390">Үшінші тарап cookie файлдарын ауыстыруға арналған жаңа технологиялар туралы ақпарат алыңыз және оларды басқарыңыз.</translation>
 <translation id="5193988420012215838">Буферге көшірілді.</translation>

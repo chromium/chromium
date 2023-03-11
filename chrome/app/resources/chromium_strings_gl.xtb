@@ -25,9 +25,11 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="1640672724030957280">Descargando…</translation>
 <translation id="1708666629004767631">Hai unha versión nova e máis segura de Chromium dispoñible.</translation>
 <translation id="17264556997921157">Podes ver e eliminar temas de interese que usan os sitios para mostrarche anuncios. Chromium estima os teus intereses en función do teu historial de navegación recente.</translation>
+<translation id="1745121272106313518">Chromium reiniciarase dentro de <ph name="REMAINING_TIME" /></translation>
 <translation id="1774152462503052664">Deixar que Chromium se execute en segundo plano</translation>
 <translation id="1779356040007214683">Para conseguir que Chromium resulte máis seguro, desactivamos algunhas extensións que non aparecen en <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> e que é posible que se engadisen sen o teu coñecemento.</translation>
 <translation id="1808667845054772817">Reinstalar Chromium</translation>
+<translation id="1820835682567584003">Chromium está tentando <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="185970820835152459">Podes xestionar as Contas de Google nas que teñas a sesión iniciada. As túas Contas de Google úsanse para o navegador Chromium, Play Store, Gmail e moito máis. Se queres engadir unha conta para outra persoa, como un familiar, engade unha persoa nova ao teu dispositivo (<ph name="DEVICE_TYPE" />). <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="1863308913976887472">Os sitios poden almacenar con Chromium información sobre os teus intereses. Por exemplo, se visitas un sitio para comprar zapatillas deportivas para un maratón, ese sitio podería determinar que che interesa correr maratóns. Máis tarde, se visitas un sitio distinto que che permite rexistrarte para participar nunha carreira, pode mostrárseche nel un anuncio de zapatillas deportivas baseado nos teus intereses.</translation>
 <translation id="1881322772814446296">Estás iniciando sesión cunha conta xestionada e outorgando control ao seu administrador sobre o teu perfil de Chromium. Os teus datos de Chromium, como as túas aplicacións, marcadores, historial, contrasinais e outras configuracións ligaranse permanentemente a <ph name="USER_NAME" />. Poderás eliminar estes datos a través do Panel de control das contas de Google, pero non poderás asociar estes datos a outra conta. Tamén podes crear un perfil novo para manter separados os teus datos de Chromium existentes. <ph name="LEARN_MORE" /></translation>
@@ -305,7 +307,6 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="7561906087460245826">Borrar tamén os datos de Chromium (<ph name="URL" />)</translation>
 <translation id="7582945390259497898">Chromium pode facer unha estimación dos teus intereses. Máis tarde, un sitio que visites pode consultarlle a Chromium os teus intereses para personalizar os anuncios que se che mostren.</translation>
 <translation id="7583399374488819119">Instalador de <ph name="COMPANY_NAME" /></translation>
-<translation id="7597596667193879455">Activaches na túa conta a función Navegación segura mellorada. Agora comeza a utilizala en Chromium.</translation>
 <translation id="761356813943268536">Chromium está utilizando a túa cámara e micrófono.</translation>
 <translation id="7617377681829253106">Chromium introduciu melloras</translation>
 <translation id="7649070708921625228">Axuda</translation>

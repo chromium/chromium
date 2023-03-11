@@ -34,6 +34,7 @@
 <translation id="1173894706177603556">เปลี่ยนชื่อ</translation>
 <translation id="1177863135347784049">ที่กำหนดเอง</translation>
 <translation id="1181037720776840403">นำออก</translation>
+<translation id="1181366777303791449">ใน <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">หากต้องการใช้รหัสผ่านที่รัดกุม</translation>
 <translation id="1197267115302279827">ย้ายบุ๊กมาร์ก</translation>
 <translation id="1201402288615127009">ถัดไป</translation>
@@ -42,7 +43,6 @@
 <translation id="1204692632633423444">ปุ่มการดำเนินการกับ Chrome: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">คัดลอกข้อความลิงก์</translation>
 <translation id="1209206284964581585">ซ่อนไปก่อน</translation>
-<translation id="1226851825267005295">คุณจะจัดการค่ากำหนดได้หลังจากลงชื่อเข้าใช้ Chrome ด้วยบัญชี Google</translation>
 <translation id="1227058898775614466">ประวัติการนำทาง</translation>
 <translation id="1231733316453485619">เปิดการซิงค์ไหม</translation>
 <translation id="123724288017357924">โหลดหน้าปัจจุบันซ้ำ โดยไม่คำนึงถึงเนื้อหาที่แคชไว้</translation>
@@ -166,7 +166,6 @@
 <translation id="1928696683969751773">อัปเดต</translation>
 <translation id="19288952978244135">เปิด Chrome อีกครั้ง</translation>
 <translation id="1933845786846280168">แท็บที่เลือก</translation>
-<translation id="193571872656840963">แสดงความขอบคุณผู้สร้างรายนี้</translation>
 <translation id="1943432128510653496">บันทึกรหัสผ่าน</translation>
 <translation id="1952172573699511566">เมื่อเป็นไปได้ เว็บไซต์จะแสดงในภาษาที่คุณต้องการ</translation>
 <translation id="1959679933317802873">กำลังรอเนื้อหา</translation>
@@ -202,7 +201,6 @@
 <translation id="2122601567107267586">เปิดแอปไม่ได้</translation>
 <translation id="2132122640199389833">นำอุปกรณ์ทั้งหมดที่ลิงก์ออก</translation>
 <translation id="213279576345780926">ปิด <ph name="TAB_TITLE" /> แล้ว</translation>
-<translation id="2134927169889348449">การใช้ Chrome หมายความว่า คุณยอมรับ<ph name="BEGIN_TOS_LINK" />ข้อกำหนดในการให้บริการของ Google<ph name="END_TOS_LINK" /> และ<ph name="BEGIN_ATOS_LINK" />ข้อกำหนดในการให้บริการเพิ่มเติมของ Google Chrome และ Chrome OS<ph name="END_ATOS_LINK" /></translation>
 <translation id="2139186145475833000">เพิ่มลงในหน้าจอหลัก</translation>
 <translation id="2141396931810938595">อิงตามการใช้งานของคุณ</translation>
 <translation id="214888715418183969">เลือกสิ่งที่คุณต้องการแชร์กับ Chrome เราจะใช้เมตริกที่คุณแชร์เพื่อช่วยปรับปรุงฟีเจอร์ ประสิทธิภาพ และความเสถียรของ Chrome</translation>
@@ -555,7 +553,6 @@
 <translation id="409109920254068737">คุณสามารถใช้แท็บเล็ตเครื่องนี้เพื่อลงชื่อเข้าใช้บนอุปกรณ์ที่แสดงคิวอาร์โค้ดนี้</translation>
 <translation id="4095146165863963773">ลบข้อมูลแอปไหม</translation>
 <translation id="4096227151372679484">ขั้นตอนการบันทึกบุ๊กมาร์กเปิดอยู่ที่ระดับความสูงครึ่งหนึ่ง</translation>
-<translation id="4099578267706723511">ช่วยให้ Chrome ทำงานได้ดีขึ้นโดยส่งสถิติการใช้งานและรายงานข้อขัดข้องให้กับ Google</translation>
 <translation id="4101475238162928417">ซิงค์เพื่อรับรหัสผ่าน บุ๊กมาร์ก และอีกมากมายในอุปกรณ์อื่นๆ ของคุณ</translation>
 <translation id="410351446219883937">เล่นอัตโนมัติ</translation>
 <translation id="4106587138345390261">Chrome กำลังพัฒนาฟีเจอร์ใหม่ๆ ที่จะช่วยให้เว็บไซต์มอบประสบการณ์การท่องเว็บได้เหมือนเดิมแต่ใช้ข้อมูลของคุณน้อยลง</translation>
@@ -593,7 +590,6 @@
 <translation id="4269820728363426813">คัดลอกที่อยู่ลิงก์</translation>
 <translation id="4283102315569707115">ขอใช้เว็บไซต์เวอร์ชันเดสก์ท็อปโดยค่าเริ่มต้นไหม</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />เปิดการล็อกหน้าจอในการตั้งค่า Android<ph name="END_LINK" /></translation>
-<translation id="4293476595220860475">การใช้ Chrome หมายความว่า คุณยอมรับ<ph name="BEGIN_TOS_LINK" />ข้อกำหนดในการให้บริการของ Google<ph name="END_TOS_LINK" /> และ<ph name="BEGIN_ATOS_LINK" />ข้อกำหนดในการให้บริการเพิ่มเติมของ Google Chrome และ Chrome OS<ph name="END_ATOS_LINK" /> <ph name="BEGIN_PRIVACY_LINK" />นโยบายความเป็นส่วนตัว<ph name="END_PRIVACY_LINK" />จะมีผลด้วย</translation>
 <translation id="4296252229500326964">แท็บใหม่ที่ไม่ระบุตัวตน</translation>
 <translation id="4298388696830689168">เว็บไซต์ที่ลิงก์</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -766,7 +762,6 @@
 <translation id="5161254044473106830">ต้องระบุชื่อ</translation>
 <translation id="5170568018924773124">แสดงในโฟลเดอร์</translation>
 <translation id="5171045022955879922">ค้นหาหรือพิมพ์ URL</translation>
-<translation id="517734441743343109">การดำเนินการต่อหมายความว่าคุณยอมรับ<ph name="BEGIN_TOS_LINK" />ข้อกำหนดในการให้บริการ<ph name="END_TOS_LINK" />และ<ph name="BEGIN_PRIVACY_LINK" />นโยบายความเป็นส่วนตัว<ph name="END_PRIVACY_LINK" /></translation>
 <translation id="5184329579814168207">เปิดใน Chrome</translation>
 <translation id="5191251636205085390">ดูข้อมูลและควบคุมเทคโนโลยีใหม่ๆ ที่มีจุดประสงค์เพื่อมาแทนที่คุกกี้ของบุคคลที่สาม</translation>
 <translation id="5193988420012215838">คัดลอกไปยังคลิปบอร์ดแล้ว</translation>

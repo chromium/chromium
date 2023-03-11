@@ -261,6 +261,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="6010556343189461180">향후 Chrome 업데이트를 받으려면 macOS 10.15 이상이 필요합니다. 이 컴퓨터에서는 macOS 10.14를 사용 중입니다.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome이 지금 닫힙니다.}=1{Chrome이 1초 후에 닫힙니다.}other{Chrome이 #초 후에 닫힙니다.}}</translation>
 <translation id="6022659036123304283">나만의 Chrome 만들기</translation>
+<translation id="6025087594896450715"><ph name="REMAINING_TIME" /> 후 Chrome 다시 시작</translation>
 <translation id="6040143037577758943">닫기</translation>
 <translation id="6070348360322141662">보안 강화를 위해 Chrome에서 사용자 데이터를 암호화합니다.</translation>
 <translation id="608006075545470555">이 브라우저에 직장 프로필 추가</translation>
@@ -278,6 +279,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="6327105987658262776">사용 가능한 업데이트가 없습니다.</translation>
 <translation id="6412673304250309937">Chrome에 저장된 안전하지 않은 사이트 목록을 사용하여 URL을 검사합니다. 사이트에서 사용자의 비밀번호를 도용하려고 하거나 사용자가 유해한 파일을 다운로드하는 경우, Chrome에서 페이지 콘텐츠 일부를 비롯한 URL을 세이프 브라우징 서비스에 보낼 수 있습니다.</translation>
 <translation id="6418662306461808273">기존 Chrome 프로필로 전환하시겠습니까?</translation>
+<translation id="6493527311031785448">Chrome에서 <ph name="AUTHENTICATION_PURPOSE" />을(를) 시도하는 중입니다.</translation>
 <translation id="6506909944137591434">Chrome에서 주변의 3D 지도를 만들려면 카메라 권한이 필요합니다.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - 개발자용 Chrome</translation>
 <translation id="659498884637196217">이 기기의 Google 비밀번호 관리자에서</translation>
@@ -405,7 +407,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8862326446509486874">시스템 수준의 설치 권한이 없습니다. 관리자 권한으로 설치 프로그램을 다시 실행해 보세요.</translation>
 <translation id="8914504000324227558">Chrome 다시 시작</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" />에서 Android 휴대전화로 번호를 전송하려면 두 기기 모두에서 Chrome에 로그인하세요.</translation>
-<translation id="8983720963221508955">계정에서 향상된 세이프 브라우징을 사용 설정했습니다. Chrome에서도 사용하세요.</translation>
 <translation id="8986207147630327271">직장 프로필을 이 브라우저에 추가하고 직장 프로필 제어 권한을 관리자에게 부여합니다.</translation>
 <translation id="8989968390305463310">방문 기록에 따라 표시되는 광고 및 아래의 예측 관심분야가 달라집니다. 개인 정보를 보호하기 위해 Chrome에서는 매월 최소 한 번씩 수시로 관심분야를 자동 삭제합니다. 관심분야는 직접 삭제하지 않는 한 새로고침될 수 있습니다.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome 업데이트 출시}=1{Chrome 업데이트 출시}other{Chrome 업데이트가 출시된 지 #일 지남}}</translation>

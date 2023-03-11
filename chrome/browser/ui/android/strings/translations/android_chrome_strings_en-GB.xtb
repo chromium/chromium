@@ -34,6 +34,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1173894706177603556">Rename</translation>
 <translation id="1177863135347784049">Customised</translation>
 <translation id="1181037720776840403">Remove</translation>
+<translation id="1181366777303791449">on <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">Use strong password?</translation>
 <translation id="1197267115302279827">Move bookmarks</translation>
 <translation id="1201402288615127009">Next</translation>
@@ -42,7 +43,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1204692632633423444">Chrome action button: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">Copy link text</translation>
 <translation id="1209206284964581585">Hide for now</translation>
-<translation id="1226851825267005295">You can manage your preferences after you sign in to Chrome with our Google Account.</translation>
 <translation id="1227058898775614466">Navigation history</translation>
 <translation id="1231733316453485619">Turn on sync?</translation>
 <translation id="123724288017357924">Reload the current page, ignoring cached content</translation>
@@ -166,7 +166,6 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="1928696683969751773">Updates</translation>
 <translation id="19288952978244135">Reopen Chrome.</translation>
 <translation id="1933845786846280168">Selected Tab</translation>
-<translation id="193571872656840963">Show thanks to this creator</translation>
 <translation id="1943432128510653496">Save passwords</translation>
 <translation id="1952172573699511566">Websites will show text in your preferred language, when possible.</translation>
 <translation id="1959679933317802873">Waiting for content</translation>
@@ -202,7 +201,6 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="2122601567107267586">Could not open app</translation>
 <translation id="2132122640199389833">Remove all linked devices</translation>
 <translation id="213279576345780926">Closed <ph name="TAB_TITLE" /></translation>
-<translation id="2134927169889348449">By using Chrome, you agree to the <ph name="BEGIN_TOS_LINK" />Google Terms of Service<ph name="END_TOS_LINK" />, and the <ph name="BEGIN_ATOS_LINK" />Google Chrome and Chrome OS additional Terms of Service<ph name="END_ATOS_LINK" />.</translation>
 <translation id="2139186145475833000">Add to Home screen</translation>
 <translation id="2141396931810938595">Based on your usage</translation>
 <translation id="214888715418183969">Choose what you’re comfortable sharing with Chrome. The metrics that you share will be used to help improve Chrome’s features, performance and stability.</translation>
@@ -555,7 +553,6 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 <translation id="409109920254068737">You can use this tablet to sign in on the device that’s displaying this QR code.</translation>
 <translation id="4095146165863963773">Delete app data?</translation>
 <translation id="4096227151372679484">Bookmark save flow opened at half height</translation>
-<translation id="4099578267706723511">Help make Chrome better by sending usage statistics and crash reports to Google.</translation>
 <translation id="4101475238162928417">Sync to get your passwords, bookmarks and more on your other devices</translation>
 <translation id="410351446219883937">Auto-play</translation>
 <translation id="4106587138345390261">Chrome is exploring new features that allow sites to deliver the same browsing experience using less of your info</translation>
@@ -593,7 +590,6 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 <translation id="4269820728363426813">Copy link address</translation>
 <translation id="4283102315569707115">Request desktop sites by default?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Turn on screen lock in Android settings<ph name="END_LINK" /></translation>
-<translation id="4293476595220860475">By using Chrome, you agree to the <ph name="BEGIN_TOS_LINK" />Google Terms of Service<ph name="END_TOS_LINK" />, and the <ph name="BEGIN_ATOS_LINK" />Google Chrome and Chrome OS additional Terms of Service<ph name="END_ATOS_LINK" />. The <ph name="BEGIN_PRIVACY_LINK" />Privacy Policy<ph name="END_PRIVACY_LINK" /> also applies.</translation>
 <translation id="4296252229500326964">New incognito tab</translation>
 <translation id="4298388696830689168">Linked sites</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -766,7 +762,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5161254044473106830">Title required</translation>
 <translation id="5170568018924773124">Show in folder</translation>
 <translation id="5171045022955879922">Search or type URL</translation>
-<translation id="517734441743343109">By continuing, you agree to the <ph name="BEGIN_TOS_LINK" />Terms of Service<ph name="END_TOS_LINK" /> and <ph name="BEGIN_PRIVACY_LINK" />Privacy\u00A0Policy<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="5184329579814168207">Open in Chrome</translation>
 <translation id="5191251636205085390">Learn about and control new technologies that aim to replace third-party cookies</translation>
 <translation id="5193988420012215838">Copied to your clipboard</translation>

@@ -26,6 +26,7 @@
 <translation id="1448064542941920355">Sumažinti mastelį</translation>
 <translation id="1510341833810331442">Svetainėms neleidžiama išsaugoti duomenų įrenginyje</translation>
 <translation id="1547123415014299762">Trečiųjų šalių slapukai leidžiami</translation>
+<translation id="1593426485665524382">Nauji veiksmai pasiekiami netoli ekrano viršaus</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1633720957382884102">Susijusios svetainės</translation>
 <translation id="1644574205037202324">Istorija</translation>
@@ -146,6 +147,7 @@
 <translation id="3628308229821498208">Siūlomos paieškos</translation>
 <translation id="3636279694100170143">Svetainės, kuriose lankotės, gali patvirtinti, kad esate tikras naudotojas, o ne robotas</translation>
 <translation id="3649190289964910441">Svetainė, kurioje lankotės, gali išsaugoti informaciją sistemoje „Chrome“, pagal kurią patvirtinama, kad esate tikras naudotojas. Jums naršant toliau, svetainės gali tikrinti sistemoje „Chrome“ ir iš pirmosios svetainės patvirtinti, kad esate patikimas naudotojas.</translation>
+<translation id="3721953990244350188">Atsisakyti ir rodyti kitą galimą veiksmą</translation>
 <translation id="3744111561329211289">Fono sinchronizavimas</translation>
 <translation id="3763247130972274048">Dukart palieskite vaizdo įrašą, kad praleistumėte 10 sek.</translation>
 <translation id="3794286421982011626">Svetainė, kurioje lankotės, gali išsaugoti informaciją apie jūsų atliktus veiksmus, kad ji galėtų veikti taip, kaip tikitės, pvz., kad liktumėte prisijungę prie svetainės arba galėtumėte išsaugoti prekes pirkinių krepšelyje. Dažnai svetainės laikinai išsaugo šią informaciją įrenginyje.</translation>
@@ -193,7 +195,6 @@
 <translation id="4534723447064627427">Norėdami leisti „<ph name="APP_NAME" />“ pasiekti jūsų mikrofoną, taip pat įjunkite jį <ph name="BEGIN_LINK" />„Android“ nustatymuose<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Nutildyti mikrofoną</translation>
 <translation id="4570913071927164677">Išsami informacija</translation>
-<translation id="4575264539271661854">Lengviau priartinkite svetainės, kurioje lankotės, tekstą ir vaizdus</translation>
 <translation id="4598549027014564149">Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos sužinoti apie jūsų naršymo veiklą skirtingose ar susijusiose svetainėse. Jūsų naršymo veikla nenaudojama skelbimams suasmeninti. Funkcijos gali neveikti kai kuriose svetainėse.</translation>
 <translation id="4645575059429386691">Tvarko vienas iš jūsų tėvų</translation>
 <translation id="4670064810192446073">Virtualioji realybė</translation>

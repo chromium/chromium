@@ -241,7 +241,6 @@
 <translation id="3226657629376379887">Dewislen gweithredoedd cynllun</translation>
 <translation id="3246869037381808805">Bydd tasgau argraffu sy'n hŷn nag 1 diwrnod yn cael eu dileu</translation>
 <translation id="3268178239013324452">Wedi methu - Drws ar agor</translation>
-<translation id="3275506277319227640">Docio ar y <ph name="DIRECTION" /></translation>
 <translation id="3275729367986477355">Llun rhithffurf</translation>
 <translation id="3283504360622356314">{0,plural, =1{Golygu'r ffeil}zero{Golygu ffeiliau}two{Golygu ffeiliau}few{Golygu ffeiliau}many{Golygu ffeiliau}other{Golygu ffeiliau}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
@@ -360,7 +359,6 @@
 <translation id="4311195029067684288">Llawn</translation>
 <translation id="4333390807948134856">Mae'r fysell <ph name="KEY_NAME" /> wedi'i phwyso</translation>
 <translation id="435692326371619097">Rheoli gosodiadau APN rhwydwaith. Mae APN yn sefydlu cysylltiad rhwng rhwydwaith cellog a'r rhyngrwyd. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
-<translation id="4370033095251616914">Docio ar yr ochr lai</translation>
 <translation id="4378373042927530923">Ni Redwyd</translation>
 <translation id="4378551569595875038">Yn cysylltu...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -903,7 +901,6 @@
 <translation id="9137526406337347448">Gwasanaethau Google</translation>
 <translation id="9138630967333032450">Shift chwith</translation>
 <translation id="9149391708638971077">Rhedeg prawf Cof</translation>
-<translation id="9157515863513902090">Docio ar yr ochr fwy</translation>
 <translation id="9161276708550942948">bylchwr</translation>
 <translation id="9173638680043580060">Llai na munud ar ôl</translation>
 <translation id="917720651393141712">Prawf</translation>

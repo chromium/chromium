@@ -84,6 +84,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> ಐಟಂಗಳನ್ನು ಝಿಪ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="1722687688096767818">ಪ್ರೊಫೈಲ್ ಅನ್ನು ಸೇರಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="1726100011689679555">ಹೆಸರಿನ ಸರ್ವರ್‌ಗಳು</translation>
+<translation id="1727562178154619254">ಸಿಂಕ್ ಮಾಡಲು ಸಿದ್ಧವಾಗಿದೆ</translation>
 <translation id="1729953886957086472">ಜರ್ಮನ್ (ಜರ್ಮನಿ)</translation>
 <translation id="1730235522912993863">ಚೈನೀಸ್ ಕಾಂಗ್‌ಜೀ</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> ಐಟಂಗಳನ್ನು ನಕಲಿಸಲಾಗಿದೆ.</translation>
@@ -705,6 +706,7 @@
 <translation id="6732801395666424405">ಪ್ರಮಾಣಪತ್ರಗಳನ್ನು ಲೋಡ್‌ ಮಾಡಲಾಗಲಿಲ್ಲ</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">Bruschetta ಜೊತೆಗೆ ಫೋಲ್ಡರ್ ಹಂಚಿಕೊಳ್ಳಿ</translation>
+<translation id="6750737795876287924">ಪ್ರಸ್ತುತ ಡೈರೆಕ್ಟರಿ</translation>
 <translation id="6751256176799620176">1 ಫೋಲ್ಡರ್ ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="6755827872271341378">ChromeOS Flex ಸಾಧನ</translation>
 <translation id="6790428901817661496">ಪ್ಲೇ ಮಾಡು</translation>
@@ -742,7 +744,6 @@
 <translation id="6973630695168034713">ಫೋಲ್ಡರ್‌ಗಳು</translation>
 <translation id="6976795442547527108">ಸಿಂಹ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979737339423435258">ಎಲ್ಲ ಸಮಯ</translation>
 <translation id="6989942356279143254">ಸ್ವೀಡಿಶ್</translation>
 <translation id="6990081529015358884">ನಿಮ್ಮ ಬಳಿ ಇದ್ದ ಸ್ಥಳ ಖಾಲಿಯಾಗಿದೆ</translation>
 <translation id="6993826899923627728">ಈ ಐಟಂಗಳು ನಿಮ್ಮ ಅನುಪಯುಕ್ತದಲ್ಲಿವೆ</translation>
@@ -798,7 +799,6 @@
 <translation id="7458955835361612701">ಯಾವುದೇ ಇತ್ತೀಚಿನ ಚಿತ್ರಗಳಿಲ್ಲ</translation>
 <translation id="7460898608667578234">ಉಕ್ರೇನಿಯನ್</translation>
 <translation id="7469894403370665791">ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಈ ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಸಂಪರ್ಕಿಸಿ</translation>
-<translation id="7481358317100446445">ಸಿದ್ಧ</translation>
 <translation id="7486315294984620427">‌Parallels Desktop ನಲ್ಲಿ ಫೈಲ್‌ಗಳನ್ನು ಡ್ರಾಪ್ ಮಾಡಲು, ಫೈಲ್ ಅನ್ನು Windows ಫೈಲ್‌ಗಳಿಗೆ ನಕಲಿಸಬೇಕು.</translation>
 <translation id="749452993132003881">ಹಿರಾಗನ</translation>
 <translation id="7495372004724182530">ಮಲಯಾಳಂ ಫೋನೆಟಿಕ್</translation>

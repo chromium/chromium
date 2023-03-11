@@ -34,6 +34,7 @@
 <translation id="1173894706177603556">ಮರುಹೆಸರಿಸು</translation>
 <translation id="1177863135347784049">ಕಸ್ಟಮ್</translation>
 <translation id="1181037720776840403">ತೆಗೆದುಹಾಕು</translation>
+<translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /> ನಲ್ಲಿ</translation>
 <translation id="1193729455103054076">ಸದೃಢ ಪಾಸ್‌ವರ್ಡ್ ಬಳಸಬೇಕೇ?</translation>
 <translation id="1197267115302279827">ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಚಲಿಸಿ</translation>
 <translation id="1201402288615127009">ಮುಂದೆ</translation>
@@ -42,7 +43,6 @@
 <translation id="1204692632633423444">Chrome ಆ್ಯಕ್ಷನ್ ಬಟನ್: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">ಲಿಂಕ್ ಪಠ್ಯವನ್ನು ನಕಲಿಸಿ</translation>
 <translation id="1209206284964581585">ಸದ್ಯಕ್ಕೆ ಮರೆಮಾಡಿ</translation>
-<translation id="1226851825267005295">ನಮ್ಮ Google ಖಾತೆಯ ಮೂಲಕ ನೀವು Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿದ ನಂತರ ನಿಮ್ಮ ಆದ್ಯತೆಗಳನ್ನು ನೀವು ನಿರ್ವಹಿಸಬಹುದು.</translation>
 <translation id="1227058898775614466">ನ್ಯಾವಿಗೇಶನ್ ಇತಿಹಾಸ</translation>
 <translation id="1231733316453485619">ಸಿಂಕ್ ಆನ್ ಮಾಡುವುದೇ?</translation>
 <translation id="123724288017357924">ಸಂಗ್ರಹ ಮಾಡಿದ ವಿಷಯವನ್ನು ನಿರ್ಲಕ್ಷಿಸಿ, ಪ್ರಸ್ತುತ ಪುಟ ಮರುಲೋಡ್ ಮಾಡಿ</translation>
@@ -166,7 +166,6 @@
 <translation id="1928696683969751773">ಅಪ್‌ಡೇಟ್‌ಗಳು</translation>
 <translation id="19288952978244135">Chrome ಮರುತೆರೆಯಿರಿ.</translation>
 <translation id="1933845786846280168">ಟ್ಯಾಬ್ ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
-<translation id="193571872656840963">ಈ ರಚನೆಕಾರರಿಗೆ ಧನ್ಯವಾದಗಳನ್ನು ತಿಳಿಸಿ</translation>
 <translation id="1943432128510653496">ಉಳಿಸಲಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು</translation>
 <translation id="1952172573699511566">ಸಾಧ್ಯವಾದಾಗ, ನೀವು ಆದ್ಯತೆ ನೀಡುವ ಭಾಷೆಯಲ್ಲಿ ವೆಬ್‌ಸೈಟ್‌ಗಳು ಪಠ್ಯವನ್ನು ತೋರಿಸುತ್ತವೆ.</translation>
 <translation id="1959679933317802873">ವಿಷಯಕ್ಕಾಗಿ ಕಾಯಲಾಗುತ್ತಿದೆ</translation>
@@ -202,7 +201,6 @@
 <translation id="2122601567107267586">ಅಪ್ಲಿಕೇಶನ್ ತೆರೆಯಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="2132122640199389833">ಲಿಂಕ್ ಮಾಡಿದ ಎಲ್ಲಾ ಸಾಧನಗಳನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> ಮುಚ್ಚಲಾಗಿದೆ</translation>
-<translation id="2134927169889348449">Chrome ಅನ್ನು ಬಳಸುವ ಮೂಲಕ, ನೀವು <ph name="BEGIN_TOS_LINK" />Google ಸೇವಾ ನಿಯಮಗಳು<ph name="END_TOS_LINK" />, ಹಾಗೂ <ph name="BEGIN_ATOS_LINK" />Google Chrome ಮತ್ತು ChromeOS ಹೆಚ್ಚುವರಿ ಸೇವಾ ನಿಯಮಗಳಿಗೆ<ph name="END_ATOS_LINK" /> ಸಮ್ಮತಿಸುತ್ತೀರಿ.</translation>
 <translation id="2139186145475833000">ಹೋಮ್ ಪರದೆಗೆ ಸೇರಿಸಿ</translation>
 <translation id="2141396931810938595">ನಿಮ್ಮ ಬಳಕೆಯನ್ನು ಆಧರಿಸಿ</translation>
 <translation id="214888715418183969">ನೀವು Chrome ಜೊತೆಗೆ ಹಂಚಿಕೊಳ್ಳಲು ಬಯಸುವುದನ್ನು ಆರಿಸಿ. ನೀವು ಹಂಚಿಕೊಳ್ಳುವ ಮೆಟ್ರಿಕ್‌ಗಳನ್ನು Chrome ನ ವೈಶಿಷ್ಟ್ಯಗಳು, ಕಾರ್ಯಕ್ಷಮತೆ ಮತ್ತು ಸ್ಥಿರತೆಯನ್ನು ಸುಧಾರಿಸಲು ಸಹಾಯ ಮಾಡುತ್ತದೆ.</translation>
@@ -555,7 +553,6 @@
 <translation id="409109920254068737">ಈ QR ಕೋಡ್ ಅನ್ನು ಪ್ರದರ್ಶಿಸುವ ಸಾಧನದಲ್ಲಿ ಸೈನ್ ಇನ್ ಮಾಡಲು ನೀವು ಈ ಟ್ಯಾಬ್ಲೆಟ್ ಅನ್ನು ಬಳಸಬಹುದು.</translation>
 <translation id="4095146165863963773">ಆ್ಯಪ್ ಡೇಟಾ ಅಳಿಸಬೇಕೇ?</translation>
 <translation id="4096227151372679484">ಬುಕ್‌ಮಾರ್ಕ್ ಉಳಿಸಿ ಫ್ಲೋ ಅನ್ನು ಅರ್ಧ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ</translation>
-<translation id="4099578267706723511">Google ಗೆ ಬಳಕೆಯ ಅಂಕಿಅಂಶಗಳು ಮತ್ತು ಕ್ರ್ಯಾಶ್ ವರದಿಗಳನ್ನು ಕಳುಹಿಸುವ ಮೂಲಕ Chrome ಅನ್ನು ಉತ್ತಮಗೊಳಿಸಲು ಸಹಾಯ ಮಾಡಿ.</translation>
 <translation id="4101475238162928417">ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳಲ್ಲಿ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು, ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಹಾಗೂ ಇತ್ಯಾದಿಗಳನ್ನು ಪಡೆದುಕೊಳ್ಳುವುದಕ್ಕಾಗಿ ಸಿಂಕ್ ಮಾಡಿ</translation>
 <translation id="410351446219883937">ಆಟೋಪ್ಲೇ</translation>
 <translation id="4106587138345390261">ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಕಡಿಮೆ ಬಳಸಿಕೊಂಡು ಅದೇ ರೀತಿಯ ಬ್ರೌಸಿಂಗ್ ಅನುಭವವನ್ನು ನೀಡಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸುವ ಹೊಸ ಫೀಚರ್‌ಗಳನ್ನು Chrome ಎಕ್ಸ್‌ಪ್ಲೋರ್ ಮಾಡುತ್ತಿದೆ</translation>
@@ -593,7 +590,6 @@
 <translation id="4269820728363426813">ಲಿಂಕ್ ವಿಳಾಸವನ್ನು ನಕಲಿಸಿ</translation>
 <translation id="4283102315569707115">ಡೆಸ್ಕ್‌ಟಾಪ್ ಸೈಟ್‌ಗಳನ್ನು ಡೀಫಾಲ್ಟ್ ಆಗಿ ವಿನಂತಿಸಬೇಕೆ?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಸ್ಕ್ರೀನ್ ಲಾಕ್ ಆನ್ ಮಾಡಿ<ph name="END_LINK" /></translation>
-<translation id="4293476595220860475">Chrome ಅನ್ನು ಬಳಸುವ ಮೂಲಕ, ನೀವು <ph name="BEGIN_TOS_LINK" />Google ಸೇವಾ ನಿಯಮಗಳು<ph name="END_TOS_LINK" />, ಹಾಗೂ <ph name="BEGIN_ATOS_LINK" />Google Chrome ಮತ್ತು ChromeOS ಹೆಚ್ಚುವರಿ ಸೇವಾ ನಿಯಮಗಳಿಗೆ<ph name="END_ATOS_LINK" /> ಸಮ್ಮತಿಸುತ್ತೀರಿ. <ph name="BEGIN_PRIVACY_LINK" />ಗೌಪ್ಯತೆ ನೀತಿ<ph name="END_PRIVACY_LINK" /> ಸಹ ಅನ್ವಯಿಸುತ್ತದೆ.</translation>
 <translation id="4296252229500326964">ಹೊಸ ಅಜ್ಞಾತ ವಿಂಡೋ</translation>
 <translation id="4298388696830689168">ಲಿಂಕ್ ಮಾಡಿರುವ ಸೈಟ್‌ಗಳು</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -765,7 +761,6 @@
 <translation id="5161254044473106830">ಶೀರ್ಷಿಕೆ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="5170568018924773124">ಫೋಲ್ಡರ್‌ನಲ್ಲಿ ತೋರಿಸಿ</translation>
 <translation id="5171045022955879922">ಹುಡುಕಾಟ ನಡೆಸಿ ಅಥವಾ URL ಅನ್ನು ಟೈಪ್‌ ಮಾಡಿ</translation>
-<translation id="517734441743343109">ಮುಂದುವರಿಯುವ ಮೂಲಕ, ನೀವು <ph name="BEGIN_TOS_LINK" />ಸೇವಾ ನಿಯಮಗಳು<ph name="END_TOS_LINK" /> ಮತ್ತು <ph name="BEGIN_PRIVACY_LINK" />ಗೌಪ್ಯತೆ\u00A0ನೀತಿ<ph name="END_PRIVACY_LINK" />ಗೆ ಸಮ್ಮತಿಸುತ್ತೀರಿ.</translation>
 <translation id="5184329579814168207">Chrome ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="5191251636205085390">ಥರ್ಡ್ ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ಬದಲಿಸುವ ಉದ್ದೇಶವನ್ನು ಹೊಂದಿರುವ ಹೊಸ ತಂತ್ರಜ್ಞಾನಗಳ ಬಗ್ಗೆ ತಿಳಿದುಕೊಳ್ಳಿ ಮತ್ತು ಅವುಗಳನ್ನು ನಿಯಂತ್ರಿಸಿ</translation>
 <translation id="5193988420012215838">ನಿಮ್ಮ ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ಗೆ ನಕಲಿಸಲಾಗಿದೆ</translation>

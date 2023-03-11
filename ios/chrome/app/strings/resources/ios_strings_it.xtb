@@ -81,6 +81,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="149095475893949513">Questo sito web sta cercando di scaricare un profilo di configurazione.</translation>
 <translation id="1491277525950327607">Tocca due volte per attivare/disattivare l'impostazione</translation>
 <translation id="1492417797159476138">Hai già salvato questo nome utente per questo sito</translation>
+<translation id="1497590942294823549">Menu → Gestore delle password</translation>
 <translation id="1498283581832036924">Il tuo account <ph name="WEBSITE" /> non verrà eliminato.</translation>
 <translation id="1506063256525392513">In questo modo puoi scattare e caricare foto, nonché scansionare codici QR</translation>
 <translation id="1509486075633541495">Accedi al sito web</translation>
@@ -242,6 +243,7 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="271033894570825754">Nuovo</translation>
 <translation id="2712127207578915686">Impossibile aprire il file</translation>
 <translation id="2718352093833049315">Solo su Wi-Fi</translation>
+<translation id="2737716090799520623">Se accedi a Chrome, le password salvate verranno memorizzate nel tuo Account Google (<ph name="ACCOUNT" />). Per disattivare questa preferenza, <ph name="BEGIN_LINK" />vai alle impostazioni<ph name="END_LINK" />.</translation>
 <translation id="2747003861858887689">Campo precedente</translation>
 <translation id="2749231692441336879">Segui <ph name="CHANNEL_NAME" /></translation>
 <translation id="2764831210418622012">un attimo fa</translation>
@@ -843,6 +845,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="6801927553864092214">Per navigare in privato, apri una scheda di navigazione in incognito</translation>
 <translation id="6807889908376551050">Mostra tutte...</translation>
 <translation id="681368974849482173">Elemento creato</translation>
+<translation id="6822587385560699678">Quando l'opzione è attiva, le password vengono salvate nell'account <ph name="ACCOUNT" />. Quando l'opzione non è attiva, le password vengono salvate soltanto su questo dispositivo.</translation>
 <translation id="683022620450280906">Puoi usare le password salvate su qualsiasi dispositivo. Sono salvate in Gestore delle password di Google per <ph name="EMAIL" />.</translation>
 <translation id="6831043979455480757">Traduci</translation>
 <translation id="6842136130964845393">Per assicurarti di poter accedere alle tue password salvate in qualsiasi momento, verifica la tua identità</translation>

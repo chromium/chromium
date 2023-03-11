@@ -376,6 +376,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1803351196216024260">Kan vragen of deze site je microfoon mag gebruiken</translation>
 <translation id="1807246157184219062">Licht</translation>
 <translation id="1807528111851433570">Startblad</translation>
+<translation id="180991881384371158">De CVC-code staat achter op je kaart. Het zijn de laatste 3 cijfers rechtsboven in het handtekeningvak.</translation>
 <translation id="181000283860817563">Prijzen volgen voor meerdere sites</translation>
 <translation id="1810391395243432441">Wachtwoorden beveiligen met je schermvergrendeling</translation>
 <translation id="1812527064848182527">liggend</translation>
@@ -506,6 +507,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2149968176347646218">Verbinding is niet beveiligd</translation>
 <translation id="2153609454945889823">Google Play-services voor AR installeren?</translation>
 <translation id="2154484045852737596">Pas bewerken</translation>
+<translation id="2154739667870063220">Opnieuw opstarten</translation>
 <translation id="2155260325161282517">5 x 7 inch</translation>
 <translation id="2157640075051554492">Meldingen voor prijstracking</translation>
 <translation id="2161656808144014275">Tekst</translation>
@@ -640,6 +642,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2521736961081452453">Formulier maken</translation>
 <translation id="2523886232349826891">Alleen opgeslagen op dit apparaat</translation>
 <translation id="2524461107774643265">Meer informatie toevoegen</translation>
+<translation id="2527451058878391043">De CVC-code staat voor op je kaart. Het is de 4-cijferige code rechtsboven het kaartnummer.</translation>
 <translation id="2529899080962247600">Dit veld mag niet meer dan <ph name="MAX_ITEMS_LIMIT" /> items bevatten. Alle andere items worden genegeerd.</translation>
 <translation id="253493526287553278">Details van promotiecode bekijken</translation>
 <translation id="2535585790302968248">Een nieuw incognitotabblad openen om privé te browsen</translation>
@@ -891,6 +894,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3215092763954878852">Kan WebAuthn niet gebruiken</translation>
 <translation id="3216313131063488104">Blues</translation>
 <translation id="3218181027817787318">Relatief</translation>
+<translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Update nu vereist}=2{Update uiterlijk morgen vereist}other{Update binnen # dagen vereist}}</translation>
 <translation id="3223287115535306850">Trilling bij app-lancering</translation>
 <translation id="3223425961342298674">Locatie niet toegestaan</translation>
 <translation id="3225919329040284222">De server heeft een certificaat gepresenteerd dat niet overeenkomt met de ingebouwde verwachtingen. Deze verwachtingen zijn opgenomen voor bepaalde websites om je te beschermen.</translation>
@@ -1373,6 +1377,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4350629523305688469">Multifunctionele lade</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> wil scannen naar Bluetooth-apparaten in de buurt. De volgende apparaten zijn gevonden:</translation>
 <translation id="4351175281479794167">Verificatiecode opgeven</translation>
+<translation id="4355383636893709732">ChromeOS-update voor Android-apps</translation>
 <translation id="4356973930735388585">Cybercriminelen op deze site proberen mogelijk gevaarlijke programma's op je computer te installeren waarmee je gegevens worden gestolen of verwijderd (bijvoorbeeld foto's, wachtwoorden, berichten en creditcards).</translation>
 <translation id="4358059973562876591">De gespecificeerde templates worden misschien niet toegepast door een fout met het beleid DnsOverHttpsMode.</translation>
 <translation id="4358461427845829800">Betaalmethoden beheren...</translation>
@@ -1753,6 +1758,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5288393065350884210">Accountancy en auditing</translation>
 <translation id="5288808348893593856">De verbinding met de site is beveiligd, tenzij Chrome iets anders aangeeft.</translation>
 <translation id="5289384342738547352">Verwerking van meerdere documenten</translation>
+<translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Update vandaag vereist}=2{Update uiterlijk morgen vereist}other{Update binnen # dagen vereist}}</translation>
 <translation id="5293919335876685914">Coupés</translation>
 <translation id="5296589789433599000">Koken en recepten</translation>
 <translation id="5299298092464848405">Fout bij het parseren van het beleid</translation>
@@ -1947,6 +1953,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5786044859038896871">Wil je de gegevens van je creditcard laten invullen?</translation>
 <translation id="578633867165174378">Chrome heeft het wachtwoord dat je net hebt gebruikt, gevonden bij een gegevenslek. We raden je aan dit wachtwoord nu te wijzigen.</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="580241730938216256">Update starten</translation>
 <translation id="5803412860119678065">Wil je de gegevens van je <ph name="CARD_DETAIL" /> laten invullen?</translation>
 <translation id="5804241973901381774">Rechten</translation>
 <translation id="5808435672482059465">Je Chrome-geschiedenis bekijken</translation>
@@ -2106,6 +2113,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6218753634732582820">Adres verwijderen uit Chromium?</translation>
 <translation id="622039917539443112">Parallelvouw</translation>
 <translation id="6221345481584921695">Google Safe Browsing heeft onlangs <ph name="BEGIN_LINK" />malware gedetecteerd<ph name="END_LINK" /> op <ph name="SITE" />. Websites die normaal gesproken veilig zijn, worden soms geïnfecteerd met malware. De schadelijke content is afkomstig van <ph name="SUBRESOURCE_HOST" />, een bekende distributeur van malware.</translation>
+<translation id="6221892641068781024">Vereenvoudigde weergave</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om je toegankelijkheidstools te personaliseren in de Chrome-instellingen</translation>
 <translation id="6229649258872345286">Gezinsreizen</translation>
 <translation id="6232271601416750929">Natuurlijke cosmetica</translation>
@@ -2165,6 +2173,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6366710531182496394">Twee nietjes links</translation>
 <translation id="6367196786591004737">Item verwijderen</translation>
 <translation id="6370022303958842211">Acties voor apparaattoegang, zoals inloggen (waaronder redenen voor mislukte logins), uitloggen, vergrendelen en ontgrendelen</translation>
+<translation id="6374469231428023295">Opnieuw proberen</translation>
 <translation id="6374865374745447009">vensterbeheer</translation>
 <translation id="6377268785556383139">Eén resultaat voor '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6380497234672085559">A0</translation>
@@ -2475,6 +2484,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> en nog <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> en nog <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">Lavendel</translation>
 <translation id="7156870133441232244">De server moet worden geüpgraded naar TLS 1.2 of hoger.</translation>
+<translation id="7160999678034985039">Sla je werk op en start de update als je zover bent.</translation>
 <translation id="7163295244162773898">{0,plural, =1{Vertrouwelijk bestand kopiëren?}other{Vertrouwelijke bestanden kopiëren?}}</translation>
 <translation id="717330890047184534">Gaia-ID:</translation>
 <translation id="7174545416324379297">Samengevoegd</translation>
@@ -2722,6 +2732,7 @@ Aanvullende informatie:
 <translation id="7687305263118037187">Time-out voor nieuwe poging</translation>
 <translation id="7690647519407127574">Oufuku Hagaki (briefkaart)</translation>
 <translation id="7693583928066320343">Paginavolgorde ontvangen</translation>
+<translation id="769424100851389104">Update nu starten</translation>
 <translation id="7696089921647603491">Classic rock en gouwe ouwe</translation>
 <translation id="769721561045429135">Je hebt momenteel passen die alleen op dit apparaat kunnen worden gebruikt. Klik op Doorgaan om de passen te bekijken.</translation>
 <translation id="7698864304447945242">Google Play-services voor AR updaten?</translation>
@@ -2746,6 +2757,7 @@ Aanvullende informatie:
 <translation id="774634243536837715">Gevaarlijke content geblokkeerd.</translation>
 <translation id="7751971323486164747">Lettertypen en lettergrootten aanpassen in Chrome</translation>
 <translation id="7752995774971033316">Niet-beheerd</translation>
+<translation id="7754587126786572336">Je Chrome-tabbladen en apps worden gesloten als de update wordt gestart</translation>
 <translation id="7755287808199759310">Je ouder of voogd kan de blokkering van deze site opheffen</translation>
 <translation id="7755624218968747854">Primaire rol</translation>
 <translation id="7758069387465995638">De verbinding is mogelijk geblokkeerd door de firewall of antivirussoftware.</translation>
@@ -2910,6 +2922,7 @@ Aanvullende informatie:
 <translation id="8186706823560132848">Software</translation>
 <translation id="8190193880870196235">Beheerd door een extensie</translation>
 <translation id="8194797478851900357">&amp;Verplaatsen ongedaan maken</translation>
+<translation id="8200772114523450471">Doorgaan</translation>
 <translation id="8201077131113104583">Ongeldige update-URL voor de extensie met de ID '<ph name="EXTENSION_ID" />'.</translation>
 <translation id="8202097416529803614">Besteloverzicht</translation>
 <translation id="8202370299023114387">Conflict</translation>
@@ -3207,6 +3220,7 @@ Aanvullende informatie:
 <translation id="8963117664422609631">Naar de site-instellingen</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Suggesties:<ph name="MARKUP_2" />Controleer of er een gegevensverbinding beschikbaar is<ph name="MARKUP_3" />Laad deze pagina later opnieuw<ph name="MARKUP_4" />Controleer het adres dat je hebt opgegeven<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">Pas opslaan</translation>
+<translation id="8970887620466824814">Er is iets misgegaan.</translation>
 <translation id="8971063699422889582">Het servercertificaat is verlopen.</translation>
 <translation id="8975012916872825179">Inclusief informatie als telefoonnummers, e-mailadressen en verzendadressen</translation>
 <translation id="8975263830901772334">Namen van bestanden die je afdrukt</translation>

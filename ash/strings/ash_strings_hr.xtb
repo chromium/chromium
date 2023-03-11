@@ -100,7 +100,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1420408895951708260">Uključite ili isključite Noćno svjetlo. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Pregledajte nedavne fotografije i medije telefona na uređaju <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1426410128494586442">Da</translation>
-<translation id="1447641497144572814">Čuvar zaslona se pokreće</translation>
 <translation id="1455242230282523554">Prikaz postavki jezika</translation>
 <translation id="1460620680449458626">Isključen je zvuk.</translation>
 <translation id="14648076227129703">To omogućuje pristup kameri za aplikacije <ph name="APP1_NAME" /> i <ph name="APP2_NAME" /> te sve aplikacije i web-lokacije s dopuštenjem za kameru</translation>
@@ -126,6 +125,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1550523713251050646">Kliknite za više opcija</translation>
 <translation id="1555130319947370107">Plava</translation>
 <translation id="1576623706766186887">Smanjivanje kad je povećalo uključeno</translation>
+<translation id="1586324912145647027">Otvaranje radne površine od 1 do 8</translation>
 <translation id="1589090746204042747">Pristup svim vašim aktivnostima u ovoj sesiji</translation>
 <translation id="1610778689852195798">"Poništi"</translation>
 <translation id="1611993646327628135">Uključeno</translation>
@@ -513,6 +513,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="3631369015426612114">Omogućite obavijesti iz sljedećih izvora</translation>
 <translation id="3633097874324966332">Otvorite postavke Bluetootha da biste uparili uređaj</translation>
 <translation id="3638400994746983214">Uključite/isključite zaslon privatnosti. <ph name="STATE_TEXT" />.</translation>
+<translation id="3649256019230929621">Minimiziranje prozora</translation>
 <translation id="3649505501900178324">Zakašnjelo ažuriranje</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -587,6 +588,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="4021716437419160885">Pomakni prema dolje</translation>
 <translation id="4022497978915111141">Zaključavanje uređaja</translation>
 <translation id="4024840464866786680">Ako ste zaboravili PIN i zaporku ili ste nedavno promijenili zaporku Google računa, pokušajte oporaviti korisnika.</translation>
+<translation id="4026843240379844265">Premještanje aktivnog prozora s jednog zaslona na drugi</translation>
 <translation id="4028481283645788203">Radi dodatne sigurnosti potrebna je zaporka</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Dijelite zaslon</translation>
@@ -911,6 +913,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="5689633613396158040">Noćno svjetlo olakšava gledanje zaslona ili čitanje pri slabom svjetlu. Dodirnite da biste promijenili vrijeme uključivanja noćnog svjetla ili ga potpuno isključili.</translation>
 <translation id="5691772641933328258">Otisak prsta nije prepoznat</translation>
 <translation id="5693255400847650006">Upotrebljava se mikrofon</translation>
+<translation id="5699366815052349604">Dodjeljivanje aktivnog prozora svim radnim površinama</translation>
 <translation id="570390244361237317">Sve aplikacije, krećite se pomoću tipki sa strelicama da biste pristupili svim aplikacijama</translation>
 <translation id="5707775774148071965">Vaš uređaj podržava veću brzinu prijenosa podataka od kabela. Izvedba uređaja može biti ograničena.</translation>
 <translation id="5710450975648804523">Način Ne uznemiravaj uključen</translation>
@@ -1551,6 +1554,7 @@ Novo instaliranje</translation>
 <translation id="9034924485347205037">Linux datoteke</translation>
 <translation id="9047624247355796468">Otvorite postavke mreže <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Sažmi obavijest</translation>
+<translation id="906458777597946297">Maksimiziranje prozora</translation>
 <translation id="9065203028668620118">Uredi</translation>
 <translation id="9070640332319875144">Postavke Asistenta</translation>
 <translation id="9072519059834302790">Baterija će se isprazniti za <ph name="TIME_LEFT" />.</translation>

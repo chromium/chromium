@@ -26,6 +26,7 @@
 <translation id="1448064542941920355">Minska zoom</translation>
 <translation id="1510341833810331442">Webbplatser får inte spara data på enheten</translation>
 <translation id="1547123415014299762">Tredjepartscookies tillåts</translation>
+<translation id="1593426485665524382">Nya åtgärder visas högt upp på skärmen</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1633720957382884102">Relaterade webbplatser</translation>
 <translation id="1644574205037202324">Historik</translation>
@@ -146,6 +147,7 @@
 <translation id="3628308229821498208">Föreslagna sökningar</translation>
 <translation id="3636279694100170143">Webbplatser du besöker kan bekräfta att du är en verklig användare och inte en bot</translation>
 <translation id="3649190289964910441">En webbplats du besöker kan spara information med Chrome som bekräftar att du är en verklig användare. När du fortsätter surfa kan webbplatser kontrollera informationen med Chrome från den första webbplatsen och verifiera att du troligen är en betrodd användare.</translation>
+<translation id="3721953990244350188">Ignorera och visa nästa tillgängliga åtgärd</translation>
 <translation id="3744111561329211289">Synkronisering i bakgrunden</translation>
 <translation id="3763247130972274048">Hoppa över 10 s genom att trycka två gånger till vänster/höger på videon</translation>
 <translation id="3794286421982011626">En webbplats som du besöker kan spara information om vad du gör så att den fungerar som förväntat. Det kan till exempel vara att hålla dig inloggad på en webbplats eller spara varor i kundvagnen. Webbplatser sparar ofta den här informationen tillfälligt på enheten.</translation>
@@ -193,7 +195,6 @@
 <translation id="4534723447064627427">Om du vill ge <ph name="APP_NAME" /> åtkomst till mikrofonen måste du även aktivera mikrofonen i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Stäng av mikrofonen</translation>
 <translation id="4570913071927164677">Information</translation>
-<translation id="4575264539271661854">Gör det enklare att zooma in på text och bilder på en webbplats du besöker</translation>
 <translation id="4598549027014564149">I inkognitoläget kan webbplatser inte använda cookies för att se din webbaktivitet på olika webbplatser – inte ens relaterade webbplatser. Din webbaktivitet används inte för sådant som annonsanpassning. Vissa webbplatsers funktioner kanske inte fungerar.</translation>
 <translation id="4645575059429386691">Hanteras av din förälder</translation>
 <translation id="4670064810192446073">Virtuell verklighet</translation>

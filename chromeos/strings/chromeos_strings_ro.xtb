@@ -241,7 +241,6 @@
 <translation id="3226657629376379887">Meniu de acțiuni pentru aspect</translation>
 <translation id="3246869037381808805">Sarcinile de printare mai vechi de o zi vor fi eliminate</translation>
 <translation id="3268178239013324452">Nereușită – Ușă deschisă</translation>
-<translation id="3275506277319227640">Andochează pe <ph name="DIRECTION" /></translation>
 <translation id="3275729367986477355">Imagine avatar</translation>
 <translation id="3283504360622356314">{0,plural, =1{Editează fișierul}few{Editează fișierele}other{Editează fișierele}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
@@ -360,7 +359,6 @@
 <translation id="4311195029067684288">Maxim</translation>
 <translation id="4333390807948134856">A fost apăsată tasta <ph name="KEY_NAME" /></translation>
 <translation id="435692326371619097">Gestionează setările APN ale rețelei. APN-urile stabilesc o conexiune între o rețea de date mobile și internet. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
-<translation id="4370033095251616914">Andochează pe partea mai mică</translation>
 <translation id="4378373042927530923">Nu a rulat</translation>
 <translation id="4378551569595875038">Se conectează</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -903,7 +901,6 @@
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9138630967333032450">Shift din stânga</translation>
 <translation id="9149391708638971077">Rulează testul Memorie</translation>
-<translation id="9157515863513902090">Andochează pe latura mai mare</translation>
 <translation id="9161276708550942948">spațiu</translation>
 <translation id="9173638680043580060">A rămas mai puțin de un minut</translation>
 <translation id="917720651393141712">Testează</translation>

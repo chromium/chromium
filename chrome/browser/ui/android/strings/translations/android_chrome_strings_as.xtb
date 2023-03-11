@@ -34,6 +34,7 @@
 <translation id="1173894706177603556">নতুন নাম দিয়ক</translation>
 <translation id="1177863135347784049">কাষ্টম</translation>
 <translation id="1181037720776840403">আঁতৰাওক</translation>
+<translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" />ত</translation>
 <translation id="1193729455103054076">বিশ্বস্ত পাছৱৰ্ড ব্যৱহাৰ কৰিবনে?</translation>
 <translation id="1197267115302279827">বুকমার্কসমূহ আঁতৰাওক</translation>
 <translation id="1201402288615127009">পৰৱৰ্তী</translation>
@@ -42,7 +43,6 @@
 <translation id="1204692632633423444">Chromeৰ কাৰ্য সম্পৰ্কীয় বুটাম: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">লিংকটোৰ পাঠ প্ৰতিলিপি কৰক</translation>
 <translation id="1209206284964581585">এতিয়াৰ বাবে লুকুৱাওক</translation>
-<translation id="1226851825267005295">আপুনি আমাৰ Google একাউণ্টৰ জৰিয়তে Chromeত ছাইন ইন কৰাৰ পাছত আপুনি আপোনাৰ অগ্ৰাধিকাৰ পৰিচালনা কৰিব পাৰে।</translation>
 <translation id="1227058898775614466">নেভিগেশ্বন ইতিহাস</translation>
 <translation id="1231733316453485619">ছিংক অন কৰিবনে?</translation>
 <translation id="123724288017357924">কেশ্ব কৰা সমল অৱজ্ঞা কৰি বর্তমানৰ পৃষ্ঠাটো পুনৰ ল'ড কৰক</translation>
@@ -166,7 +166,6 @@
 <translation id="1928696683969751773">আপডে’টসমূহ</translation>
 <translation id="19288952978244135">Chrome পুনৰ খোলক।</translation>
 <translation id="1933845786846280168">বাছনি কৰা টেব</translation>
-<translation id="193571872656840963">এই সৃষ্টিকৰ্তাগৰাকীলৈ কৃতজ্ঞতা প্ৰকাশ কৰক</translation>
 <translation id="1943432128510653496">পাছৱৰ্ড ছেভ কৰক</translation>
 <translation id="1952172573699511566">ৱেবছাইটবোৰে যেতিয়া সম্ভৱ হয় তেতিয়া আপুনি অগ্ৰাধিকাৰ দিয়া ভাষাত পাঠবোৰ দেখুৱাব।</translation>
 <translation id="1959679933317802873">সমলৰ বাবে অপেক্ষা কৰি থকা হৈছে</translation>
@@ -202,7 +201,6 @@
 <translation id="2122601567107267586">এপ্ খুলিব পৰা নগ’ল</translation>
 <translation id="2132122640199389833">লিংক কৰি থোৱা আটাইবোৰ ডিভাইচ আঁতৰাওক</translation>
 <translation id="213279576345780926">বন্ধ <ph name="TAB_TITLE" /></translation>
-<translation id="2134927169889348449">Chrome ব্যৱহাৰ কৰি আপুনি <ph name="BEGIN_TOS_LINK" />Googleৰ সেৱাৰ চৰ্তাৱলী<ph name="END_TOS_LINK" /> আৰু <ph name="BEGIN_ATOS_LINK" />Google Chrome আৰু ChromeOSৰ সেৱাৰ অতিৰিক্ত চৰ্তাৱলী<ph name="END_ATOS_LINK" />ত সন্মতি দিয়ে।</translation>
 <translation id="2139186145475833000">গৃহ স্ক্ৰীনত যোগ কৰক</translation>
 <translation id="2141396931810938595">আপোনাৰ ব্যৱহাৰৰ ওপৰত আধাৰিত</translation>
 <translation id="214888715418183969">আপুনি Chromeৰ সৈতে কি সহজে শ্বেয়াৰ কৰিব পাৰে সেয়া বাছনি কৰক। Chromeৰ সুবিধা, পাৰদৰ্শিতা আৰু স্থিৰতা উন্নত কৰাত সহায় কৰিবলৈ আপুনি শ্বেয়াৰ কৰা মেট্ৰিক্স ব্যৱহাৰ কৰা হ’ব।</translation>
@@ -555,7 +553,6 @@
 <translation id="409109920254068737">আপুনি এই কিউআৰ ক’ডটো প্ৰদৰ্শন কৰি থকা ডিভাইচটোত ছাইন ইন কৰিবলৈ এই টেবলেটটো ব্যৱহাৰ কৰিব পাৰে।</translation>
 <translation id="4095146165863963773">এপ্ ডেটা মচিবনে?</translation>
 <translation id="4096227151372679484">বুকমাৰ্ক ছেভ কৰাৰ ফ্ল’ অৰ্ধ উচ্চতাত খোলা হৈছে</translation>
-<translation id="4099578267706723511">Googleলৈ ব্যৱহাৰৰ পৰিসংখ্যা আৰু ক্ৰেশ্ব ৰিপ’ৰ্ট পঠিয়াই Chrome ক অধিক উন্নত কৰাত সহায় কৰক।</translation>
 <translation id="4101475238162928417">আপোনাৰ অন্য ডিভাইচসমূহত আপোনাৰ পাছৱৰ্ড, বুকমাৰ্ক আৰু অধিক পাবলৈ ছিংক কৰক</translation>
 <translation id="410351446219883937">স্বয়ংক্রিয় প্লে’</translation>
 <translation id="4106587138345390261">Chromeএ এনে কিছুমান নতুন সুবিধা অন্বেষণ কৰি আছে, যিবোৰে ছাইটসমূহক আপোনাৰ তথ্য কমকৈ ব্যৱহাৰ কৰি একেই ব্ৰাউজিঙৰ অভিজ্ঞতা প্ৰদান কৰিবলৈ দিয়ে</translation>
@@ -593,7 +590,6 @@
 <translation id="4269820728363426813">লিংকৰ ঠিকনাটো প্ৰতিলিপি কৰক</translation>
 <translation id="4283102315569707115">ডিফ’ল্ট হিচাপে ডেস্কটপৰ ছাইটৰ বাবে অনুৰোধ কৰিবনে?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android ছেটিঙত স্ক্ৰীন লক অন কৰক<ph name="END_LINK" /></translation>
-<translation id="4293476595220860475">Chrome ব্যৱহাৰ কৰি আপুনি <ph name="BEGIN_TOS_LINK" />Googleৰ সেৱাৰ চৰ্তাৱলী<ph name="END_TOS_LINK" /> আৰু <ph name="BEGIN_ATOS_LINK" />Google Chrome আৰু ChromeOSৰ সেৱাৰ অতিৰিক্ত চৰ্তাৱলী<ph name="END_ATOS_LINK" />ত সন্মতি দিয়ে। <ph name="BEGIN_PRIVACY_LINK" />গোপনীয়তা নীতি<ph name="END_PRIVACY_LINK" />টোও প্ৰযোজ্য।</translation>
 <translation id="4296252229500326964">নতুন ইনক’গনিট’ টেব</translation>
 <translation id="4298388696830689168">লিংক হৈ থকা ছাইটবোৰ</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -766,7 +762,6 @@
 <translation id="5161254044473106830">শিৰোনাম বাধ্যতামূলক</translation>
 <translation id="5170568018924773124">ফ’ল্ডাৰত দেখুৱাওক</translation>
 <translation id="5171045022955879922">সন্ধান কৰক বা URL টাইপ কৰক</translation>
-<translation id="517734441743343109">অব্যাহত ৰাখি, আপুনি <ph name="BEGIN_TOS_LINK" />সেৱাৰ চৰ্তাৱলী<ph name="END_TOS_LINK" /> আৰু <ph name="BEGIN_PRIVACY_LINK" />গোপনীয়তাৰ নীতি<ph name="END_PRIVACY_LINK" />ত সন্মত হৈছে।</translation>
 <translation id="5184329579814168207">Chromeত খোলক</translation>
 <translation id="5191251636205085390">তৃতীয় পক্ষৰ কুকিৰ স্থান ল'বলৈ বিচৰা নতুন প্ৰযুক্তিৰ বিষয়ে জানক আৰু সেইবোৰ নিয়ন্ত্ৰণ কৰক</translation>
 <translation id="5193988420012215838">আপোনাৰ ক্লিপব'ৰ্ডলৈ প্ৰতিলিপি কৰা হৈছে</translation>

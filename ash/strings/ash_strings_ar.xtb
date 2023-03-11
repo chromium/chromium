@@ -100,7 +100,6 @@
 <translation id="1420408895951708260">يمكنك تبديل "الإضاءة الليلية". <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">يمكنك عرض الصور والوسائط الحديثة في هاتفك على <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1426410128494586442">نعم</translation>
-<translation id="1447641497144572814">تم تفعيل ميزة "شاشة الاستراحة".</translation>
 <translation id="1455242230282523554">عرض إعدادات اللغة</translation>
 <translation id="1460620680449458626">تم كتم الصوت.</translation>
 <translation id="14648076227129703">يتيح هذا الإجراء إمكانية الوصول إلى الكاميرا من "<ph name="APP1_NAME" />" و"<ph name="APP2_NAME" />" وجميع التطبيقات والمواقع الإلكترونية التي لديها هذا الإذن.</translation>
@@ -126,6 +125,7 @@
 <translation id="1550406609415860283">الأجهزة المتاحة</translation>
 <translation id="1550523713251050646">انقر للحصول على المزيد من الخيارات</translation>
 <translation id="1555130319947370107">أزرق</translation>
+<translation id="1586324912145647027">الانتقال إلى سطح المكتب من 1 إلى 8</translation>
 <translation id="1589090746204042747">الوصول إلى جميع أنشطتك في جلسة واحدة</translation>
 <translation id="1610778689852195798">"تراجع"</translation>
 <translation id="1611993646327628135">مُفعَّل</translation>
@@ -505,7 +505,13 @@
 <translation id="3631369015426612114">السماح بالإشعارات من المصادر التالية</translation>
 <translation id="3633097874324966332">يُرجى فتح إعدادات البلوتوث لإقران جهازك.</translation>
 <translation id="3638400994746983214">تبديل شاشة الخصوصية <ph name="STATE_TEXT" /></translation>
+<translation id="3649256019230929621">تصغير النافذة</translation>
 <translation id="3649505501900178324">يجب إجراء التحديث في أسرع وقت</translation>
+<translation id="3653999174677652346">‏الحدث <ph name="EVENT_POSITION" />
+        "<ph name="EVENT_SUMMARY" />"،
+        من ‎<ph name="START_TIME" /> إلى
+        ‎<ph name="END_TIME" />،
+        حسب <ph name="TIME_ZONE" />. انقر على الحدث لعرض مزيد من التفاصيل في "تقويم Google".</translation>
 <translation id="3659444876902283058">(اليوم رقم <ph name="CURRENT_DAY" /> من إجمالي <ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">يتبقّى <ph name="TIME_LEFT" /> تقريبًا (%<ph name="PERCENTAGE" />).
 يُرجى توصيل الجهاز بمصدر طاقة.</translation>
@@ -573,6 +579,7 @@
 <translation id="401993194061514265">‏أداة التحديد غير متاحة. يُرجى إعادة تشغيل تطبيق Screencast.</translation>
 <translation id="4021716437419160885">التمرير لأسفل</translation>
 <translation id="4024840464866786680">‏إذا نسيت رقم التعريف الشخصي وكلمة المرور أو غيّرت كلمة مرور حسابك على Google مؤخرًا، جرِّب استرداد حساب هذا المستخدم.</translation>
+<translation id="4026843240379844265">نقل نافذة نشطة بين شاشات العرض</translation>
 <translation id="4028481283645788203">يجب إدخال كلمة المرور لمزيد من الأمان.</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">أنت تشارك الشاشة</translation>
@@ -891,6 +898,7 @@
 <translation id="5689633613396158040">تسهّل ميزة "الإضاءة الليلية" النظر إلى الشاشة أو القراءة في الإضاءة الخافتة. انقر لتغيير وقت تفعيل "الإضاءة الليلية" أو إيقافها تمامًا.</translation>
 <translation id="5691772641933328258">لم يتمّ التعرُّف على البصمة</translation>
 <translation id="5693255400847650006">الميكروفون قيد الاستخدام</translation>
+<translation id="5699366815052349604">يمكنك تخصيص نافذة نشطة لجميع أسطح المكتب.</translation>
 <translation id="570390244361237317">جميع التطبيقات: يمكنك التنقّل باستخدام مفاتيح الأسهم للوصول إلى جميع التطبيقات</translation>
 <translation id="5707775774148071965">يتوافق جهازك مع معدّل نقل بيانات أعلى منه في الكابل. وقد يصبح أداء الجهاز محدودًا.</translation>
 <translation id="5710450975648804523">تمّ تفعيل وضع "عدم الإزعاج"</translation>
@@ -1480,6 +1488,7 @@
 <translation id="8858369206579825206">عناصر التحكّم في الخصوصية</translation>
 <translation id="8870509716567206129">التطبيق لا يتيح تقسيم الشاشة.</translation>
 <translation id="8874184842967597500">غير متصل</translation>
+<translation id="8876148469852588625">الحدث <ph name="EVENT_POSITION" /> من إجمالي <ph name="EVENT_TOTAL_COUNT" /></translation>
 <translation id="8876661425082386199">التحقُّق من الاتصال</translation>
 <translation id="8877788021141246043">ضبط تذكير</translation>
 <translation id="8878886163241303700">توسيع الشاشة</translation>
@@ -1511,6 +1520,7 @@
 <translation id="9034924485347205037">‏ملفات نظام التشغيل Linux</translation>
 <translation id="9047624247355796468">فتح الإعدادات للشبكة <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">تصغير الإشعار</translation>
+<translation id="906458777597946297">تكبير النافذة</translation>
 <translation id="9065203028668620118">تعديل</translation>
 <translation id="9070640332319875144">إعدادات المساعد</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> حتى تصبح البطارية فارغة.</translation>

@@ -100,7 +100,6 @@
 <translation id="1420408895951708260">रात्रीचा प्रकाश टॉगल करा. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">तुमच्या <ph name="DEVICE_TYPE" /> वर तुमच्या फोनमधील अलीकडील फोटो आणि मीडिया पहा</translation>
 <translation id="1426410128494586442">होय</translation>
-<translation id="1447641497144572814">स्क्रीन सेव्हर सुरू होत आहे</translation>
 <translation id="1455242230282523554">भाषा सेटिंग्ज दर्शवा</translation>
 <translation id="1460620680449458626">व्हॉल्यूम म्यूट केलेला आहे.</translation>
 <translation id="14648076227129703">हे कॅमेरा परवानगी असलेल्या <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> आणि सर्व अ‍ॅप्स व वेबसाइटना कॅमेराच्या अ‍ॅक्सेसची अनुमती देते</translation>
@@ -126,6 +125,7 @@
 <translation id="1550523713251050646">अधिक पर्यायांसाठी क्लिक करा</translation>
 <translation id="1555130319947370107">निळा</translation>
 <translation id="1576623706766186887">मॅग्निफायर सुरू असताना झूम आउट करा</translation>
+<translation id="1586324912145647027">एक ते आठ डेस्कवर जा</translation>
 <translation id="1589090746204042747">या सेशनमध्ये तुमची सर्व अ‍ॅक्टिव्हिटी अ‍ॅक्सेस करा</translation>
 <translation id="1610778689852195798">"पहिल्यासारखे करा"</translation>
 <translation id="1611993646327628135">सुरू करा</translation>
@@ -514,6 +514,7 @@
 <translation id="3631369015426612114">यांना सूचना पाठवू द्या</translation>
 <translation id="3633097874324966332">तुमचे डिव्हाइस पेअर करण्यासाठी ब्लूटूथ सेटिंग्ज उघडा</translation>
 <translation id="3638400994746983214">गोपनीयता स्क्रीन टॉगल करा. <ph name="STATE_TEXT" />.</translation>
+<translation id="3649256019230929621">विंडो लहान करा</translation>
 <translation id="3649505501900178324">अपडेटची मुदत संपली आहे</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -588,6 +589,7 @@
 <translation id="4021716437419160885">खाली स्क्रोल करा</translation>
 <translation id="4022497978915111141">डिव्हाइस लॉक करा</translation>
 <translation id="4024840464866786680">तुम्ही तुमचा पिन आणि पासवर्ड विसरला असल्यास किंवा अलीकडे तुमचा Google खाते पासवर्ड बदलला असल्यास, हा वापरकर्ता रिकव्‍हर करण्याचा प्रयत्न करा.</translation>
+<translation id="4026843240379844265">डिस्प्ले दरम्यान ॲक्टिव्ह विंडो हलवा</translation>
 <translation id="4028481283645788203">आणखी सुरक्षिततेसाठी पासवर्ड आवश्यक आहे</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">तुम्ही तुमची स्क्रीन शेअर करत आहात</translation>
@@ -912,6 +914,7 @@
 <translation id="5689633613396158040">रात्रीच्या प्रकाशामुळे तुमच्या स्क्रीनकडे पाहणे किंवा मंद प्रकाशात वाचणे आणखी सोपे होते. रात्रीचा प्रकाश कधी सुरू होईल किंवा पूर्ण बंद होईल हे बदलण्यासाठी टॅप करा.</translation>
 <translation id="5691772641933328258">फिंगरप्रिंट ओळखले नाही</translation>
 <translation id="5693255400847650006">मायक्रोफोन वापरात आहे</translation>
+<translation id="5699366815052349604">अ‍ॅक्टिव्ह विंडो सर्व डेस्कना असाइन करा</translation>
 <translation id="570390244361237317">सर्व ॲप्स, सर्व ॲप्स ॲक्सेस करण्यासाठी ॲरो की वापरून नेव्हिगेट करा</translation>
 <translation id="5707775774148071965">तुमचे डिव्हाइस हे तुमच्या केबलच्या तुलनेत जास्त डेटा दराला सपोर्ट करते. डिव्हाइसचा परफॉर्मन्स मर्यादित असू शकतो.</translation>
 <translation id="5710450975648804523">व्यत्यय आणू नका सुरू आहे</translation>
@@ -1552,6 +1555,7 @@
 <translation id="9034924485347205037">Linux फाइल</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> साठी सेटिंग्ज उघडा</translation>
 <translation id="9059834730836941392">सूचना कोलॅप्स</translation>
+<translation id="906458777597946297">विंडो वाढवा</translation>
 <translation id="9065203028668620118">संपादन</translation>
 <translation id="9070640332319875144">असिस्टंट सेटिंग्ज</translation>
 <translation id="9072519059834302790">बॅटरी रिक्त होईपर्यंत शिल्लक वेळ <ph name="TIME_LEFT" />.</translation>

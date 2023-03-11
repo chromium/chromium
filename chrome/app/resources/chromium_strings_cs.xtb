@@ -29,6 +29,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="1774152462503052664">Nechat prohlížeč Chromium spuštěný na pozadí</translation>
 <translation id="1779356040007214683">Aby bylo Chromium bezpečnější, deaktivovali jsme některá rozšíření, která nejsou uvedena na webu <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> a mohla být přidána bez vašeho vědomí.</translation>
 <translation id="1808667845054772817">Přeinstalovat Chromium</translation>
+<translation id="1820835682567584003">Chromium se pokouší <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="185970820835152459">Můžete spravovat účty Google, ke kterým jste přihlášeni. Účty Google jsou používány v prohlížeči Chromium, Obchodu Play, Gmailu a dalších službách. Pokud chcete přidat účet někoho jiného, například člena rodiny, přidejte nového uživatele do zařízení <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="1863308913976887472">Weby mohou v prohlížeči Chromium ukládat informace o vašich zájmech. Např. když navštívíte web, kde se prodávají boty na maraton, web může definovat váš zájem jako běhání maratonů. Když později navštívíte jiný web s registrací na závod, může se vám na něm na základě vašich zájmů zobrazit reklama na boty na běhání.</translation>
 <translation id="1881322772814446296">Přihlašujete se pomocí spravovaného účtu a poskytujete jeho správci kontrolu nad vaším profilem prohlížeče Chromium. Vaše údaje prohlížeče Chromium, například aplikace, záložky, historie, hesla a jiná nastavení, budou trvale přidružena k účtu <ph name="USER_NAME" />. Tyto údaje budete moci smazat pomocí stránky Dashboard služby Účty Google, ale nebudete je moci přidružit k jinému účtu. Pokud chcete uchovat existující údaje prohlížeče Chromium odděleně, můžete vytvořit nový profil. <ph name="LEARN_MORE" /></translation>
@@ -307,7 +308,6 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="7561906087460245826">Také vymazat data z prohlížeče Chromium (<ph name="URL" />)</translation>
 <translation id="7582945390259497898">Chromium dokáže odhadovat vaše zájmy. Později může navštívený web požádat Chromium o sdělení vašich zájmů, aby vám mohl přizpůsobit zobrazované reklamy.</translation>
 <translation id="7583399374488819119">instalační program prohlížeče <ph name="COMPANY_NAME" /></translation>
-<translation id="7597596667193879455">Ve svém účtu jste zapnuli Vylepšené Bezpečné prohlížení. Teď ho můžete zapnout v prohlížeči Chromium.</translation>
 <translation id="761356813943268536">Chromium používá vaši kameru a mikrofon.</translation>
 <translation id="7617377681829253106">Prohlížeč Chromium je opět o něco lepší</translation>
 <translation id="7649070708921625228">Nápověda</translation>

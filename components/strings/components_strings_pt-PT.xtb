@@ -507,6 +507,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2149968176347646218">A ligação não é segura</translation>
 <translation id="2153609454945889823">Instalar os Serviços do Google Play para realidade aumentada?</translation>
 <translation id="2154484045852737596">Editar cartão</translation>
+<translation id="2154739667870063220">Reiniciar</translation>
 <translation id="2155260325161282517">5 x 7 pol.</translation>
 <translation id="2157640075051554492">Notificações de monitorização de preços</translation>
 <translation id="2161656808144014275">Texto</translation>
@@ -1787,7 +1788,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5337569431717511221">Botão Definir o Chrome como o navegador predefinido: prima Enter para definir o Chrome como o navegador predefinido do sistema</translation>
 <translation id="5340250774223869109">A app está bloqueada</translation>
 <translation id="534295439873310000">Dispositivos NFC</translation>
-<translation id="5344522958567249764">Gerir privacidade de anúncios</translation>
+<translation id="5344522958567249764">Gerir privacidade dos anúncios</translation>
 <translation id="5344579389779391559">Esta página pode tentar cobrar-lhe dinheiro</translation>
 <translation id="5347645913823149105">Botão Personalizar tipos de letra no Chrome, prima Enter para personalizar os tipos de letra e os respetivos tamanhos no Chrome</translation>
 <translation id="5355557959165512791">Não pode visitar <ph name="SITE" /> neste momento, porque o certificado foi revogado. Os erros de rede e os ataques são geralmente temporários, pelo que esta página deverá funcionar mais tarde.</translation>
@@ -2113,11 +2114,12 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6196640612572343990">Bloquear cookies de terceiros</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6203231073485539293">Rever a ligação à Internet</translation>
-<translation id="6205314730813004066">Privacidade de anúncios</translation>
+<translation id="6205314730813004066">Privacidade dos anúncios</translation>
 <translation id="6212314149070368045">Fanfold dos EUA</translation>
 <translation id="6218753634732582820">Remover o endereço do Chromium?</translation>
 <translation id="622039917539443112">Dobra paralela</translation>
 <translation id="6221345481584921695">A Navegação Segura do Google <ph name="BEGIN_LINK" />detetou software malicioso<ph name="END_LINK" /> recentemente em <ph name="SITE" />. Os Sites que normalmente são seguros por vezes são infetados com software malicioso. O conteúdo malicioso provém de <ph name="SUBRESOURCE_HOST" />, um distribuidor de software malicioso conhecido.</translation>
+<translation id="6221892641068781024">Vista simplificada</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Prima Tab e, em seguida, Enter para personalizar as ferramentas de acessibilidade nas definições do Chrome</translation>
 <translation id="6229649258872345286">Viagens familiares</translation>
 <translation id="6232271601416750929">Beleza consciente</translation>
@@ -2177,6 +2179,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6366710531182496394">Agrafo duplo à esquerda</translation>
 <translation id="6367196786591004737">Elimine a entrada</translation>
 <translation id="6370022303958842211">Ações de acesso ao dispositivo, como inícios de sessão (incluindo motivos de início de sessão falhados), fins de sessão, bloqueios e desbloqueios</translation>
+<translation id="6374469231428023295">Tentar novamente</translation>
 <translation id="6374865374745447009">gestão de janelas</translation>
 <translation id="6377268785556383139">1 resultado para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6380497234672085559">A0</translation>
@@ -2924,6 +2927,7 @@ Detalhes adicionais:
 <translation id="8186706823560132848">Software</translation>
 <translation id="8190193880870196235">Gerida por uma extensão</translation>
 <translation id="8194797478851900357">&amp;Anular movimentação</translation>
+<translation id="8200772114523450471">Continuar</translation>
 <translation id="8201077131113104583">Atualizar URL inválido para a extensão com o ID "<ph name="EXTENSION_ID" />".</translation>
 <translation id="8202097416529803614">Resumo da encomenda</translation>
 <translation id="8202370299023114387">Conflito</translation>
@@ -3222,6 +3226,7 @@ Detalhes adicionais:
 <translation id="8963117664422609631">Aceda às definições do site</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Sugestões:<ph name="MARKUP_2" />Assegure-se de que tem uma ligação de dados<ph name="MARKUP_3" />Recarregue esta página Web mais tarde<ph name="MARKUP_4" />Verifique o endereço que introduziu<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">Guardar cartão</translation>
+<translation id="8970887620466824814">Ocorreu um erro.</translation>
 <translation id="8971063699422889582">O certificado do servidor expirou.</translation>
 <translation id="8975012916872825179">Inclui informações como números de telefone, endereços de email e moradas para envio</translation>
 <translation id="8975263830901772334">Nomes dos ficheiros impressos</translation>

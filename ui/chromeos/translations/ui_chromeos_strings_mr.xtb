@@ -84,6 +84,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> आयटम झिप करत आहे...</translation>
 <translation id="1722687688096767818">प्रोफाइल जोडत आहे…</translation>
 <translation id="1726100011689679555">नाव सर्व्हर</translation>
+<translation id="1727562178154619254">सिंक करण्यासाठी तयार आहे</translation>
 <translation id="1729953886957086472">जर्मन (जर्मनी)</translation>
 <translation id="1730235522912993863">चीनी कँगजी</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> आयटम कॉपी केले.</translation>
@@ -705,6 +706,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="6732801395666424405">लोड न झालेली प्रमाणपत्रे</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">Bruschetta सोबत फोल्डर शेअर करा</translation>
+<translation id="6750737795876287924">सध्याची डिरेक्टरी</translation>
 <translation id="6751256176799620176">1 फोल्डर निवडले</translation>
 <translation id="6755827872271341378">ChromeOS Flex डिव्हाइस</translation>
 <translation id="6790428901817661496">प्ले करा</translation>
@@ -742,7 +744,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="6973630695168034713">फोल्डर</translation>
 <translation id="6976795442547527108">सिंह</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979737339423435258">पूर्णवेळ</translation>
 <translation id="6989942356279143254">स्वीडिश</translation>
 <translation id="6990081529015358884">तुमची जागा समाप्त झाली आहे</translation>
 <translation id="6993826899923627728">हे आयटम तुमच्या ट्रॅश मध्ये आहेत</translation>
@@ -798,7 +799,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="7458955835361612701">अलीकडील कोणत्याही इमेज नाहीत</translation>
 <translation id="7460898608667578234">यूक्रेनियन</translation>
 <translation id="7469894403370665791">या नेटवर्कशी स्वयंचलितपणे कनेक्ट व्हा</translation>
-<translation id="7481358317100446445">तयार</translation>
 <translation id="7486315294984620427">Parallels Desktop मध्ये फाइल ड्रॉप करण्यासाठी, Windows च्या फाइलमध्ये फाइल कॉपी करणे आवश्यक आहे.</translation>
 <translation id="749452993132003881">हिरगाना</translation>
 <translation id="7495372004724182530">मल्याळम फोनेटिक</translation>

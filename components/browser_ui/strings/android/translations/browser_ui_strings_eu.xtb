@@ -26,6 +26,7 @@
 <translation id="1448064542941920355">Gutxitu zooma</translation>
 <translation id="1510341833810331442">Webguneek ez dute zure gailuan datuak gordetzeko baimenik</translation>
 <translation id="1547123415014299762">Hirugarrenen cookieak onartzen dira</translation>
+<translation id="1593426485665524382">Ekintza berriak erabilgarri daude pantailaren goialdean</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1633720957382884102">Erlazionatutako webguneak</translation>
 <translation id="1644574205037202324">Historia</translation>
@@ -146,6 +147,7 @@
 <translation id="3628308229821498208">Bilaketa iradokiak</translation>
 <translation id="3636279694100170143">Bisitatzen dituzun webguneek benetako erabiltzaile bat zarela egiazta dezakete, eta ez robot bat</translation>
 <translation id="3649190289964910441">Bisitatzen dituzun webguneek zu benetako erabiltzaile bat zarela berresten duen informazioa gorde dezakete Chrome-ren bidez. Arakatzen jarraitu ahala, beste webgune batzuek Chrome-ren informazioa ikus dezakete, eta lehenengo webguneak erabiltzaile fidagarritzat hartu zaituela egiaztatu.</translation>
+<translation id="3721953990244350188">Baztertu eta erakutsi erabilgarri dagoen hurrengo ekintza</translation>
 <translation id="3744111561329211289">Atzeko planoko sinkronizazioa</translation>
 <translation id="3763247130972274048">Sakatu birritan bideoaren ezkerreko edo eskuineko aldea 10 s saltatzeko</translation>
 <translation id="3794286421982011626">Bisitatzen dituzun webguneek egiten ari zarenari buruzko informazioa gordetzen dute batzuetan, espero duzun moduan funtzionatu ahal izateko; adibidez, zure saioa hasita mantentzeko edo erosketa-saskian produktuak gordetzeko. Askotan, webguneek gailuan gordetzen dute informazio hori aldi baterako.</translation>
@@ -193,7 +195,6 @@
 <translation id="4534723447064627427"><ph name="APP_NAME" /> aplikazioari mikrofonoa erabiltzeko baimena emateko, mikrofonoa erabiltzeko baimena aktibatu behar duzu <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Desaktibatu mikrofonoa</translation>
 <translation id="4570913071927164677">Xehetasunak</translation>
-<translation id="4575264539271661854">Erraztu bisitatzen duzun webgune bateko testua eta irudiak handitzea</translation>
 <translation id="4598549027014564149">Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatze-jarduerak ikusteko, erlazionatutako webguneak badira ere. Arakatze-jarduerak ez dira erabiltzen iragarkiak pertsonalizatzeko, ezta antzeko jardueretarako ere. Baliteke webgune batzuetako eginbideek ez funtzionatzea.</translation>
 <translation id="4645575059429386691">Gurasoek kudeatuta</translation>
 <translation id="4670064810192446073">Errealitate birtuala</translation>
@@ -414,7 +415,7 @@
 <translation id="8514955299594277296">Ez eman gailuan datuak gordetzeko baimena webguneei (ez da gomendatzen)</translation>
 <translation id="851751545965956758">Ez utzi webguneei gailuekin konektatzen</translation>
 <translation id="8525306231823319788">Pantaila osoa</translation>
-<translation id="8528440122773422556"><ph name="ORIGIN" /> webgunearen edo bere aplikazioaren azpiko webgune guztiek zure hasierako pantailan gorde dituzten datu eta cookie guztiak garbituko dira</translation>
+<translation id="8528440122773422556"><ph name="ORIGIN" /> webgunearen azpiko webgune guztiek edo haren aplikazioak zure hasierako pantailan gorde dituzten datu eta cookie guztiak garbituko dira</translation>
 <translation id="8541410041357371550">Webgunea Chrome-n oinarritzen da zure iragarkien gaien berri izateko, iragarki egokiagoak erakuts diezazkizun</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_OWNER" /> domeinuko <ph name="FPS_MEMBERS_COUNT" /> webgunek cookieak erabiltzeko baimena du}other{<ph name="FPS_OWNER" /> domeinuko <ph name="FPS_MEMBERS_COUNT" /> webgunek cookieak erabiltzeko baimena dute}}</translation>
 <translation id="857943718398505171">Baimenduta (gomendatua)</translation>

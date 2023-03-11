@@ -84,6 +84,7 @@
 <translation id="1722487484194605434">მიმდინარეობს <ph name="NUMBER_OF_ITEMS" /> ერთეულის დაარქივება…</translation>
 <translation id="1722687688096767818">მიმდინარეობს პროფილის დამატება...</translation>
 <translation id="1726100011689679555">სახელთა სერვერები</translation>
+<translation id="1727562178154619254">მზადაა სინქრონიზაციისთვის</translation>
 <translation id="1729953886957086472">გერმანული (გერმანია)</translation>
 <translation id="1730235522912993863">ჩინური ჩანჯი</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> ერთეული დაკოპირდა.</translation>
@@ -742,7 +743,6 @@
 <translation id="6973630695168034713">ფოლდერები</translation>
 <translation id="6976795442547527108">ლომი</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979737339423435258">ყველა დროის</translation>
 <translation id="6989942356279143254">შვედური</translation>
 <translation id="6990081529015358884">ადგილი აღარ არის</translation>
 <translation id="6993826899923627728">ეს ერთეულები თქვენს წაშლილებშია</translation>
@@ -798,7 +798,6 @@
 <translation id="7458955835361612701">ბოლოდროინდელი სურათები არ არის</translation>
 <translation id="7460898608667578234">უკრაინული</translation>
 <translation id="7469894403370665791">ამ ქსელთან ავტომატური დაკავშირება</translation>
-<translation id="7481358317100446445">მზად არის</translation>
 <translation id="7486315294984620427">Parallels Desktop-ში ფაილის ჩავლებით გადასატანად ის უნდა დააკოპიროთ Windows ფაილებში.</translation>
 <translation id="749452993132003881">ჰირაგანა</translation>
 <translation id="7495372004724182530">მალაიალამური ფონეტიკური</translation>

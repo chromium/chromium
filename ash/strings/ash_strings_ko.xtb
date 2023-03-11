@@ -100,7 +100,6 @@
 <translation id="1420408895951708260">야간 조명을 전환합니다. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666"><ph name="DEVICE_TYPE" />에서 휴대전화의 최근 사진 및 미디어를 봅니다.</translation>
 <translation id="1426410128494586442">예</translation>
-<translation id="1447641497144572814">화면 보호기 시작</translation>
 <translation id="1455242230282523554">언어 설정 표시</translation>
 <translation id="1460620680449458626">음소거되어 있습니다.</translation>
 <translation id="14648076227129703">카메라 액세스 권한이 있는 <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> 앱을 포함한 모든 앱 및 웹사이트에서 카메라에 액세스할 수 있게 됩니다.</translation>
@@ -126,6 +125,7 @@
 <translation id="1550523713251050646">더 많은 옵션을 확인하려면 클릭하세요.</translation>
 <translation id="1555130319947370107">파란색</translation>
 <translation id="1576623706766186887">돋보기 사용 설정 시 축소</translation>
+<translation id="1586324912145647027">데스크 1에서 8로 이동</translation>
 <translation id="1589090746204042747">이 세션의 모든 활동에 액세스</translation>
 <translation id="1610778689852195798">"실행취소"</translation>
 <translation id="1611993646327628135">켜짐</translation>
@@ -514,6 +514,7 @@
 <translation id="3631369015426612114">다음 항목에 알림 허용:</translation>
 <translation id="3633097874324966332">기기를 페어링하려면 블루투스 설정을 여세요.</translation>
 <translation id="3638400994746983214">개인 정보 보호 화면을 켜거나 끕니다. <ph name="STATE_TEXT" />.</translation>
+<translation id="3649256019230929621">창 최소화</translation>
 <translation id="3649505501900178324">업데이트 지연됨</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -588,6 +589,7 @@
 <translation id="4021716437419160885">아래로 스크롤</translation>
 <translation id="4022497978915111141">기기 잠그기</translation>
 <translation id="4024840464866786680">PIN과 비밀번호를 잊어버렸거나 최근에 Google 계정 비밀번호를 변경한 경우 이 사용자를 복구해 보세요.</translation>
+<translation id="4026843240379844265">디스플레이 간 활성 창 이동</translation>
 <translation id="4028481283645788203">보안 강화를 위해 비밀번호가 필요합니다.</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">화면 공유 중</translation>
@@ -912,6 +914,7 @@
 <translation id="5689633613396158040">야간 조명을 사용하면 주위가 어두울 때도 편안하게 화면을 보고 읽을 수 있습니다. 탭하여 야간 조명을 켜거나 완전히 끌 시간을 변경하세요.</translation>
 <translation id="5691772641933328258">지문을 인식할 수 없음</translation>
 <translation id="5693255400847650006">마이크 사용 중</translation>
+<translation id="5699366815052349604">활성 창을 모든 데스크에 할당</translation>
 <translation id="570390244361237317">전체 앱, 화살표 키로 이동하여 모든 앱에 액세스</translation>
 <translation id="5707775774148071965">기기에서 지원하는 데이터 속도가 케이블의 지원 속도보다 빠릅니다. 기기 성능이 제한될 수 있습니다.</translation>
 <translation id="5710450975648804523">방해 금지 모드 사용 중</translation>
@@ -1552,6 +1555,7 @@
 <translation id="9034924485347205037">Linux 파일</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> 설정 열기</translation>
 <translation id="9059834730836941392">알림 접기</translation>
+<translation id="906458777597946297">창 최대화</translation>
 <translation id="9065203028668620118">수정</translation>
 <translation id="9070640332319875144">어시스턴트 설정</translation>
 <translation id="9072519059834302790">남은 배터리 사용 시간은 <ph name="TIME_LEFT" />입니다.</translation>

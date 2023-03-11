@@ -100,7 +100,6 @@
 <translation id="1420408895951708260">ਰਾਤ ਦੀ ਰੋਸ਼ਨੀ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">ਆਪਣੇ <ph name="DEVICE_TYPE" /> 'ਤੇ ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਹਾਲੀਆ ਫ਼ੋਟੋਆਂ ਅਤੇ ਮੀਡੀਆ ਦੇਖੋ</translation>
 <translation id="1426410128494586442">ਹਾਂ</translation>
-<translation id="1447641497144572814">ਸਕ੍ਰੀਨ ਸੇਵਰ ਸ਼ੁਰੂ ਹੁੰਦਾ ਹੈ</translation>
 <translation id="1455242230282523554">ਭਾਸ਼ਾ ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ</translation>
 <translation id="1460620680449458626">ਅਵਾਜ਼ ਨੂੰ ਮਿਊਟ ਕੀਤਾ ਹੋਇਆ ਹੈ।</translation>
 <translation id="14648076227129703">ਇਸ ਨਾਲ <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> ਅਤੇ ਉਨ੍ਹਾਂ ਸਾਰੀਆਂ ਐਪਾਂ ਅਤੇ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਕੈਮਰੇ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦਿੱਤੀ ਜਾਂਦੀ ਹੈ, ਜਿਨ੍ਹਾਂ ਕੋਲ ਕੈਮਰਾ ਇਜਾਜ਼ਤ ਹੈ</translation>
@@ -126,6 +125,7 @@
 <translation id="1550523713251050646">ਹੋਰ ਵਿਕਲਪਾਂ ਲਈ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="1555130319947370107">ਨੀਲਾ</translation>
 <translation id="1576623706766186887">ਵੱਡਦਰਸ਼ੀ ਦੇ ਚਾਲੂ ਹੋਣ 'ਤੇ ਜ਼ੂਮ ਘਟਾਓ</translation>
+<translation id="1586324912145647027">1 ਤੋਂ 8 ਤੱਕ ਡੈਸਕ 'ਤੇ ਜਾਓ</translation>
 <translation id="1589090746204042747">ਇਸ ਸ਼ੈਸ਼ਨ ਦੀ ਆਪਣੀ ਸਾਰੀ ਸਰਗਰਮੀ ਤੱਕ ਪਹੁੰਚ ਕਰੋ</translation>
 <translation id="1610778689852195798">"ਅਣਕੀਤਾ ਕਰੋ"</translation>
 <translation id="1611993646327628135">ਚਾਲੂ ਹੈ</translation>
@@ -514,6 +514,7 @@
 <translation id="3631369015426612114">ਇਹਨਾਂ ਤੋਂ ਸੂਚਨਾਵਾਂ ਦਿਖਾਉਣ ਦਿਓ</translation>
 <translation id="3633097874324966332">ਆਪਣੇ ਡੀਵਾਈਸ ਨੂੰ ਜੋੜਾਬੱਧ ਕਰਨ ਲਈ ਬਲੂਟੁੱਥ ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</translation>
 <translation id="3638400994746983214">ਪਰਦੇਦਾਰੀ ਸਕ੍ਰੀਨ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" />।</translation>
+<translation id="3649256019230929621">window ਨੂੰ ਨਿਊਨਤਮ ਬਣਾਓ</translation>
 <translation id="3649505501900178324">ਅੱਪਡੇਟ ਕਰਨਾ ਬਾਕੀ ਹੈ</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -588,6 +589,7 @@
 <translation id="4021716437419160885">ਹੇਠਾਂ ਵੱਲ ਸਕ੍ਰੋਲ ਕਰੋ</translation>
 <translation id="4022497978915111141">ਡੀਵਾਈਸ ਲਾਕ ਕਰੋ</translation>
 <translation id="4024840464866786680">ਜੇ ਤੁਸੀਂ ਆਪਣਾ ਪਿੰਨ ਅਤੇ ਪਾਸਵਰਡ ਭੁੱਲ ਗਏ ਹੋ ਜਾਂ ਹਾਲ ਹੀ ਵਿੱਚ ਆਪਣਾ Google ਖਾਤਾ ਪਾਸਵਰਡ ਬਦਲਿਆ ਹੈ, ਤਾਂ ਇਸ ਵਰਤੋਂਕਾਰ ਲਈ ਇਨ੍ਹਾਂ ਨੂੰ ਮੁੜ-ਹਾਸਲ ਕਰ ਕੇ ਦੇਖੋ।</translation>
+<translation id="4026843240379844265">ਕਿਰਿਆਸ਼ੀਲ ਵਿੰਡੋ ਨੂੰ ਇੱਕ ਤੋਂ ਦੂਜੇ ਡਿਸਪਲੇ 'ਤੇ ਲਿਜਾਓ</translation>
 <translation id="4028481283645788203">ਵਧੇਰੇ ਸੁਰੱਖਿਆ ਲਈ ਪਾਸਵਰਡ ਲੋੜੀਂਦਾ ਹੈ</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">ਤੁਸੀਂ ਆਪਣੀ ਸਕ੍ਰੀਨ ਸਾਂਝੀ ਕਰ ਰਹੇ ਹੋ</translation>
@@ -913,6 +915,7 @@
 <translation id="5689633613396158040">ਰਾਤ ਦੀ ਰੋਸ਼ਨੀ ਵਿਸ਼ੇਸ਼ਤਾ ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਨੂੰ ਘੱਟ ਰੋਸ਼ਨੀ ਵਿੱਚ ਦੇਖਣਾ ਜਾਂ ਪੜ੍ਹਨਾ ਵਧੇਰੇ ਆਸਾਨ ਬਣਾਉਂਦੀ ਹੈ। ਰਾਤ ਦੀ ਰੋਸ਼ਨੀ ਵਿਸ਼ੇਸ਼ਤਾ ਦੇ ਚਾਲੂ ਜਾਂ ਬੰਦ ਹੋਣ ਦਾ ਸਮਾਂ ਬਦਲਣ ਲਈ ਟੈਪ ਕਰੋ</translation>
 <translation id="5691772641933328258">ਫਿੰਗਰਪ੍ਰਿੰਟ ਦੀ ਪਛਾਣ ਨਹੀਂ ਹੋਈ</translation>
 <translation id="5693255400847650006">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਵਰਤੋਂ ਵਿੱਚ ਹੈ</translation>
+<translation id="5699366815052349604">ਕਿਰਿਆਸ਼ੀਲ ਵਿੰਡੋ ਨੂੰ ਸਾਰੇ ਡੈਸਕਾਂ ਦੇ ਜ਼ਿੰਮੇ ਲਗਾਓ</translation>
 <translation id="570390244361237317">ਸਾਰੀਆਂ ਐਪਾਂ, ਸਾਰੀਆਂ ਐਪਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਲਈ ਤੀਰ ਕੁੰਜੀਆਂ ਨਾਲ ਨੈਵੀਗੇਟ ਕਰੋ</translation>
 <translation id="5707775774148071965">ਤੁਹਾਡਾ ਡੀਵਾਈਸ ਤੁਹਾਡੀ ਕੇਬਲ ਨਾਲੋਂ ਵੱਧ ਡਾਟਾ ਦਰ ਦਾ ਸਮਰਥਨ ਕਰਦਾ ਹੈ। ਡੀਵਾਈਸ ਦੀ ਕਾਰਗੁਜ਼ਾਰੀ ਸੀਮਤ ਹੋ ਸਕਦੀ ਹੈ।</translation>
 <translation id="5710450975648804523">'ਪਰੇਸ਼ਾਨ ਨਾ ਕਰੋ' ਚਾਲੂ ਹੈ</translation>
@@ -1553,6 +1556,7 @@
 <translation id="9034924485347205037">Linux ਫ਼ਾਈਲਾਂ</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> ਲਈ ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</translation>
 <translation id="9059834730836941392">ਸੂਚਨਾ ਸਮੇਟੋ</translation>
+<translation id="906458777597946297">window ਨੂੰ ਅਧਿਕਤਮ ਬਣਾਓ</translation>
 <translation id="9065203028668620118">ਸੰਪਾਦਿਤ ਕਰੋ</translation>
 <translation id="9070640332319875144">Assistant ਸੈਟਿੰਗਾਂ</translation>
 <translation id="9072519059834302790">ਬੈਟਰੀ ਮੁੱਕਣ ਵਿੱਚ <ph name="TIME_LEFT" /> ਬਾਕੀ।</translation>

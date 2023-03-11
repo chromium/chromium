@@ -261,6 +261,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="6010556343189461180">Para recibir futuras actualizaciones de Google Chrome, necesitarás macOS 10.15 o una versión posterior. Este ordenador utiliza macOS 10.14.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome se cerrará ahora.}=1{Chrome se cerrará dentro de 1 segundo.}other{Chrome se cerrará dentro de # segundos.}}</translation>
 <translation id="6022659036123304283">Personaliza Chrome</translation>
+<translation id="6025087594896450715">Google Chrome se reiniciará dentro de <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Cerrar</translation>
 <translation id="6070348360322141662">Para mayor seguridad, Google Chrome cifrará tus datos</translation>
 <translation id="608006075545470555">Añadir perfil de trabajo a este navegador</translation>
@@ -278,6 +279,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="6327105987658262776">No hay actualizaciones disponibles.</translation>
 <translation id="6412673304250309937">Comprueba las URL guardadas en Chrome con una lista de sitios que no son seguros. Si un sitio web intenta robarte la contraseña o te descargas un archivo dañino, puede que Chrome también envíe URL, así como fragmentos de contenido de la página, a Navegación segura.</translation>
 <translation id="6418662306461808273">¿Cambiar a un perfil de Chrome?</translation>
+<translation id="6493527311031785448">Google Chrome está intentando <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6506909944137591434">Chrome necesita el permiso de la cámara para crear un mapa 3D de tu entorno</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> ‑ Google Chrome Dev</translation>
 <translation id="659498884637196217">En el Gestor de contraseñas de Google de este dispositivo</translation>
@@ -405,7 +407,6 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="8862326446509486874">No dispones de los derechos necesarios para la instalación en el sistema. Intenta ejecutar de nuevo el programa de instalación como administrador.</translation>
 <translation id="8914504000324227558">Volver a iniciar Chrome</translation>
 <translation id="8922193594870374009">Para enviar un número desde <ph name="ORIGIN" /> a tu teléfono Android, inicia sesión en Chrome con ambos dispositivos.</translation>
-<translation id="8983720963221508955">Has activado la función Navegación segura mejorada en tu cuenta. Habilítala ahora en Chrome.</translation>
 <translation id="8986207147630327271">Vas a añadir un perfil de trabajo a este navegador y le vas a dar a tu administrador el control únicamente sobre este perfil.</translation>
 <translation id="8989968390305463310">Tu historial de navegación influye en los anuncios que ves y en los intereses que se estiman abajo. Para proteger tu privacidad, Chrome elimina automáticamente tus intereses cada mes. Los intereses se actualizan a menos que los elimines.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Hay una actualización de Chrome disponible}=1{Hay una actualización de Chrome disponible}other{Hay una actualización de Chrome disponible desde hace # días}}</translation>

@@ -26,6 +26,7 @@
 <translation id="1448064542941920355">縮小</translation>
 <translation id="1510341833810331442">禁止網站將資料儲存到裝置</translation>
 <translation id="1547123415014299762">已允許第三方 Cookie</translation>
+<translation id="1593426485665524382">畫面頂端附近有可執行的新動作</translation>
 <translation id="1620510694547887537">攝影機</translation>
 <translation id="1633720957382884102">相關網站</translation>
 <translation id="1644574205037202324">歷史記錄</translation>
@@ -146,6 +147,7 @@
 <translation id="3628308229821498208">建議搜尋</translation>
 <translation id="3636279694100170143">你造訪的網站可以確認你是真人，而不是機器人</translation>
 <translation id="3649190289964910441">你造訪的網站可將資訊儲存在 Chrome，用來證明你是真人。在你繼續瀏覽網路的過程中，其他網站可以從 Chrome 取得第一個網站提供的資訊，確認你應該是可信任的使用者。</translation>
+<translation id="3721953990244350188">關閉並顯示下一個可執行的動作</translation>
 <translation id="3744111561329211289">背景同步處理</translation>
 <translation id="3763247130972274048">輕觸兩下影片的左側或右側可跳過 10 秒</translation>
 <translation id="3794286421982011626">你造訪的網站可儲存使用者的活動資訊，協助正常運作，例如在網站上保持登入狀態或儲存購物車內的項目。網站通常會暫時在裝置上儲存這項資訊。</translation>
@@ -193,7 +195,6 @@
 <translation id="4534723447064627427">如要允許 <ph name="APP_NAME" /> 存取裝置的麥克風，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟麥克風。</translation>
 <translation id="4566417217121906555">將麥克風設為靜音</translation>
 <translation id="4570913071927164677">詳細資料</translation>
-<translation id="4575264539271661854">在你造訪的網站上更輕鬆地放大文字和圖片</translation>
 <translation id="4598549027014564149">在無痕模式下，網站無法使用 Cookie 瞭解你的跨網站瀏覽活動 (即使是相關網站)，因此無法根據瀏覽活動提供個人化廣告等服務。某些網站的功能可能無法運作。</translation>
 <translation id="4645575059429386691">你的家長已停用這項功能</translation>
 <translation id="4670064810192446073">虛擬實境</translation>
@@ -277,6 +278,7 @@
 <translation id="6040143037577758943">關閉</translation>
 <translation id="6042308850641462728">更多</translation>
 <translation id="6064125863973209585">下載完成</translation>
+<translation id="6071501408666570960">系統可能會將你登出這個網站</translation>
 <translation id="6165508094623778733">瞭解詳情</translation>
 <translation id="6177111841848151710">禁止目前的搜尋引擎存取位置資訊</translation>
 <translation id="6177128806592000436">你與這個網站的連線不安全</translation>

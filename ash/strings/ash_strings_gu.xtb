@@ -100,7 +100,6 @@
 <translation id="1420408895951708260">રાત્રિ પ્રકાશને ટૉગલ કરો. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">તમારા <ph name="DEVICE_TYPE" /> પર તમારા ફોનના તાજેતરના ફોટા અને મીડિયા જુઓ</translation>
 <translation id="1426410128494586442">હા</translation>
-<translation id="1447641497144572814">સ્ક્રીન સેવર શરૂ થાય છે</translation>
 <translation id="1455242230282523554">ભાષા સેટિંગ બતાવો</translation>
 <translation id="1460620680449458626">વૉલ્યૂમ મ્યૂટ કરેલું છે.</translation>
 <translation id="14648076227129703">આમ કરવાથી કૅમેરાની પરવાનગી ધરાવતી <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> તથા બધી ઍપ અને વેબસાઇટ માટે, કૅમેરાના ઍક્સેસની મંજૂરી આપવામાં આવે છે</translation>
@@ -126,6 +125,7 @@
 <translation id="1550523713251050646">વધુ વિકલ્પો માટે ક્લિક કરો</translation>
 <translation id="1555130319947370107">વાદળી</translation>
 <translation id="1576623706766186887">મેગ્નિફાયર ચાલુ હોય, ત્યારે નાનું કરો</translation>
+<translation id="1586324912145647027">ડેસ્ક 1 થી 8 પર જાઓ</translation>
 <translation id="1589090746204042747">આ સત્રમાં તમારી બધી પ્રવૃત્તિને ઍક્સેસ કરો</translation>
 <translation id="1610778689852195798">"છેલ્લો ફેરફાર રદ કરો"</translation>
 <translation id="1611993646327628135">ચાલુ</translation>
@@ -514,6 +514,7 @@
 <translation id="3631369015426612114">નીચેના પરથી સૂચનાઓને મંજૂરી આપો</translation>
 <translation id="3633097874324966332">ડિવાઇસનું જોડાણ કરવા માટે બ્લૂટૂથના સેટિંગ ખોલો</translation>
 <translation id="3638400994746983214">પ્રાઇવસી સ્ક્રીનને ટૉગલ કરો. <ph name="STATE_TEXT" />.</translation>
+<translation id="3649256019230929621">વિંડો નાની કરો</translation>
 <translation id="3649505501900178324">અપડેટ કરવાનું બાકી છે</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -588,6 +589,7 @@
 <translation id="4021716437419160885">નીચે સ્ક્રોલ કરો</translation>
 <translation id="4022497978915111141">ડિવાઇસ લૉક કરો</translation>
 <translation id="4024840464866786680">જો તમે તમારો પિન અને પાસવર્ડ ભૂલી ગયા હો કે Google એકાઉન્ટનો તમારો પાસવર્ડ તાજેતરમાં બદલ્યો હોય, તો આ વપરાશકર્તાને રિકવર કરવાનો પ્રયાસ કરો.</translation>
+<translation id="4026843240379844265">સક્રિય વિંડોને ડિસ્પ્લેની વચ્ચે ખસેડો</translation>
 <translation id="4028481283645788203">વધુ સુરક્ષા માટે પાસવર્ડ જરૂરી છે</translation>
 <translation id="4032485810211612751"><ph name="HOURS" /> : <ph name="MINUTES" /> : <ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">તમે તમારી સ્ક્રીન શેર કરી રહ્યા છો</translation>
@@ -912,6 +914,7 @@
 <translation id="5689633613396158040">રાત્રિ પ્રકાશથી તમે સરળતાથી તમારી સ્ક્રીનને જોઈ શકો છો અથવા ઓછા પ્રકાશમાં વાંચી શકો છો. રાત્રિ પ્રકાશ ચાલુ થવાનો સમય બદલવા અથવા તેને સંપૂર્ણપણે બંધ કરવા ટૅપ કરો.</translation>
 <translation id="5691772641933328258">ફિંગરપ્રિન્ટ ઓળખી શકાઈ નથી</translation>
 <translation id="5693255400847650006">માઇક્રોફોન ઉપયોગમાં છે</translation>
+<translation id="5699366815052349604">સક્રિય વિન્ડો તમામ ડેસ્કને સોંપો</translation>
 <translation id="570390244361237317">બધી ઍપ, બધી ઍપ ઍક્સેસ કરવા માટે ઍરો કી વડે નૅવિગેટ કરો</translation>
 <translation id="5707775774148071965">તમારા કેબલ કરતાં તમારું ડિવાઇસ ડેટાના વધુ ઊંચા દરને સપોર્ટ આપે છે. ડિવાઇસનું કાર્યપ્રદર્શન મર્યાદિત હોઈ શકે છે.</translation>
 <translation id="5710450975648804523">ખલેલ પાડશો નહીં ચાલુ છે</translation>
@@ -1552,6 +1555,7 @@
 <translation id="9034924485347205037">Linux ફાઇલો</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> માટે સેટિંગ ખોલો</translation>
 <translation id="9059834730836941392">નોટિફિકેશન સંકુચિત કરો</translation>
+<translation id="906458777597946297">વિંડો મોટી કરો</translation>
 <translation id="9065203028668620118">ફેરફાર કરો</translation>
 <translation id="9070640332319875144">Assistant સેટિંગ</translation>
 <translation id="9072519059834302790">બૅટરી ખલાસ થવામાં <ph name="TIME_LEFT" /> બાકી છે.</translation>

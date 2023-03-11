@@ -34,6 +34,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="1173894706177603556">Gi nytt navn</translation>
 <translation id="1177863135347784049">Tilpasset</translation>
 <translation id="1181037720776840403">Fjern</translation>
+<translation id="1181366777303791449">på <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">Vil du bruke det sterke passordet?</translation>
 <translation id="1197267115302279827">Flytt bokmerker</translation>
 <translation id="1201402288615127009">Neste</translation>
@@ -42,7 +43,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="1204692632633423444">Chrome-handlingsknapp: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">Kopiér linkteksten</translation>
 <translation id="1209206284964581585">Skjul for øyeblikket</translation>
-<translation id="1226851825267005295">Du kan administrere innstillingene dine etter at du har logget på Chrome med Google-kontoen din.</translation>
 <translation id="1227058898775614466">Navigeringslogg</translation>
 <translation id="1231733316453485619">Vil du slå på synkronisering?</translation>
 <translation id="123724288017357924">Last inn siden på nytt, men ignorer bufret innhold</translation>
@@ -166,7 +166,6 @@ Når du sletter nettleserloggen, enten det er hele loggen eller bare loggen for 
 <translation id="1928696683969751773">Oppdateringer</translation>
 <translation id="19288952978244135">Åpne Chrome på nytt.</translation>
 <translation id="1933845786846280168">Valgt fane</translation>
-<translation id="193571872656840963">Si takk til denne skaperen</translation>
 <translation id="1943432128510653496">Lagring av passord</translation>
 <translation id="1952172573699511566">Nettsteder viser tekst på språket du foretrekker, der dette er mulig.</translation>
 <translation id="1959679933317802873">Venter på innhold</translation>
@@ -202,7 +201,6 @@ Når du sletter nettleserloggen, enten det er hele loggen eller bare loggen for 
 <translation id="2122601567107267586">Kunne ikke åpne appen</translation>
 <translation id="2132122640199389833">Fjern alle tilknyttede enheter</translation>
 <translation id="213279576345780926">Lukket <ph name="TAB_TITLE" /></translation>
-<translation id="2134927169889348449">Ved å bruke Chrome samtykker du i <ph name="BEGIN_TOS_LINK" />Googles vilkår for bruk<ph name="END_TOS_LINK" /> og <ph name="BEGIN_ATOS_LINK" />tilleggsvilkårene for bruk av Google Chrome og ChromeOS<ph name="END_ATOS_LINK" />.</translation>
 <translation id="2139186145475833000">Legg til på startsiden</translation>
 <translation id="2141396931810938595">Basert på bruken din</translation>
 <translation id="214888715418183969">Velg hva du synes er greit å dele med Chrome. Målingene du deler, brukes til å gjøre funksjonene, ytelsen og stabiliteten til Chrome bedre.</translation>
@@ -555,7 +553,6 @@ Med private tilstandstokener får du bedre personvern på nettet, og de kan ikke
 <translation id="409109920254068737">Du kan bruke dette nettbrettet til å logge på enheten som viser denne QR-koden.</translation>
 <translation id="4095146165863963773">Slette appdataene?</translation>
 <translation id="4096227151372679484">Flyt for lagring av bokmerke er åpnet i halv høyde</translation>
-<translation id="4099578267706723511">Gjør Chrome bedre ved å sende bruksstatistikk og programstopprapporter til Google.</translation>
 <translation id="4101475238162928417">Synkroniser for å få passordene dine, bokmerkene dine med mer på andre enheter du bruker.</translation>
 <translation id="410351446219883937">Autoavspilling</translation>
 <translation id="4106587138345390261">Chrome utforsker nye funksjoner som gjør det mulig for nettsteder å bruke mindre av informasjonen din og likevel gi deg den samme nettlesingsopplevelsen</translation>
@@ -593,7 +590,6 @@ Med private tilstandstokener får du bedre personvern på nettet, og de kan ikke
 <translation id="4269820728363426813">Kopiér linkadressen</translation>
 <translation id="4283102315569707115">Vil du be om nettsteder for datamaskiner som standard?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Slå på skjermlås i Android-innstillingene<ph name="END_LINK" /></translation>
-<translation id="4293476595220860475">Ved å bruke Chrome samtykker du i <ph name="BEGIN_TOS_LINK" />Googles vilkår for bruk<ph name="END_TOS_LINK" /> og <ph name="BEGIN_ATOS_LINK" />tilleggsvilkårene for bruk av Google Chrome og ChromeOS<ph name="END_ATOS_LINK" />. <ph name="BEGIN_PRIVACY_LINK" />Personvernreglene<ph name="END_PRIVACY_LINK" /> gjelder også.</translation>
 <translation id="4296252229500326964">Ny inkognitofane</translation>
 <translation id="4298388696830689168">Tilknyttede nettsteder</translation>
 <translation id="4303044213806199882">chrome_skjermdump_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -766,7 +762,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5161254044473106830">Du må oppgi en tittel</translation>
 <translation id="5170568018924773124">Vis i mappen</translation>
 <translation id="5171045022955879922">Søk, eller skriv inn en nettadresse</translation>
-<translation id="517734441743343109">Ved å fortsette godtar du <ph name="BEGIN_TOS_LINK" />vilkårene for bruk<ph name="END_TOS_LINK" /> og <ph name="BEGIN_PRIVACY_LINK" />personvernreglene<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="5184329579814168207">Åpne i Chrome</translation>
 <translation id="5191251636205085390">Finn ut om og kontroller nye teknologier som tar sikte på å erstatte tredjeparts informasjonskapsler</translation>
 <translation id="5193988420012215838">Kopiert til utklippstavlen</translation>

@@ -84,6 +84,7 @@
 <translation id="1722487484194605434">Ustvarjanje arhiva zip s toliko elementi: <ph name="NUMBER_OF_ITEMS" /> …</translation>
 <translation id="1722687688096767818">Dodajanje profila …</translation>
 <translation id="1726100011689679555">Imenski strežniki</translation>
+<translation id="1727562178154619254">Pripravljeno za sinhronizacijo</translation>
 <translation id="1729953886957086472">nemščina (Nemčija)</translation>
 <translation id="1730235522912993863">kitajščina (cangče)</translation>
 <translation id="1731889557567069540">Št. kopiranih elementov: <ph name="NUMBER_OF_ITEMS" />.</translation>
@@ -705,6 +706,7 @@
 <translation id="6732801395666424405">Potrdila niso naložena</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">Deljenje mape z Bruschetto</translation>
+<translation id="6750737795876287924">Trenutni imenik</translation>
 <translation id="6751256176799620176">Izbrana je 1 mapa</translation>
 <translation id="6755827872271341378">Naprava ChromeOS Flex</translation>
 <translation id="6790428901817661496">Predvajanje</translation>
@@ -742,7 +744,6 @@
 <translation id="6973630695168034713">Mape</translation>
 <translation id="6976795442547527108">Lev</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979737339423435258">Od začetka</translation>
 <translation id="6989942356279143254">švedščina</translation>
 <translation id="6990081529015358884">Zmanjkalo vam je prostora</translation>
 <translation id="6993826899923627728">Ti elementi so v smetnjaku</translation>
@@ -798,7 +799,6 @@
 <translation id="7458955835361612701">Ni nedavnih slik</translation>
 <translation id="7460898608667578234">ukrajinščina</translation>
 <translation id="7469894403370665791">Samodejno vzpostavi povezavo s tem omrežjem</translation>
-<translation id="7481358317100446445">Pripravljeno</translation>
 <translation id="7486315294984620427">Če želite spustiti datoteke v program Parallels Desktop, morate datoteko kopirati med datoteke sistema Windows.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">malajalščina (fonetična)</translation>

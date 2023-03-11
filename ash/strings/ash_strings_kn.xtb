@@ -100,7 +100,6 @@
 <translation id="1420408895951708260">ನೈಟ್ ಲೈಟ್ ಟಾಗಲ್ ಮಾಡಿ. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">ನಿಮ್ಮ ಫೋನ್‌ನ ಇತ್ತೀಚಿನ ಫೋಟೋಗಳು ಮತ್ತು ಮೀಡಿಯಾವನ್ನು ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ ವೀಕ್ಷಿಸಿ</translation>
 <translation id="1426410128494586442">ಹೌದು</translation>
-<translation id="1447641497144572814">ಸ್ಕ್ರೀನ್ ಸೇವರ್ ಪ್ರಾರಂಭವಾಗುತ್ತದೆ</translation>
 <translation id="1455242230282523554">ಭಾಷೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="1460620680449458626">ವಾಲ್ಯೂಮ್ ಅನ್ನು ಮ್ಯೂಟ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="14648076227129703">ಕ್ಯಾಮರಾವನ್ನು ಬಳಸಲು ಅನುಮತಿ ಹೊಂದಿರುವ <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> ಮತ್ತು ವೆಬ್‌ಸೈಟ್‌ಗಳಿಗೆ ಇದು ಕ್ಯಾಮರಾಗೆ ಆ್ಯಕ್ಸೆಸ್ ನೀಡುತ್ತದೆ</translation>
@@ -126,6 +125,7 @@
 <translation id="1550523713251050646">ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳಿಗೆ ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="1555130319947370107">ನೀಲಿ</translation>
 <translation id="1576623706766186887">ಮ್ಯಾಗ್ನಿಫೈಯರ್ ಆನ್ ಆಗಿರುವಾಗ ಝೂಮ್ ಔಟ್ ಮಾಡಿ</translation>
+<translation id="1586324912145647027">1 ರಿಂದ 8 ನೇ ಡೆಸ್ಕ್‌ವರೆಗೆ ಹೋಗಿ</translation>
 <translation id="1589090746204042747">ಈ ಸೆಶನ್‌ನಲ್ಲಿ ನೀವು ನಡೆಸುವ ಎಲ್ಲಾ ಚಟುವಟಿಕೆಯನ್ನು ಪ್ರವೇಶಿಸುವುದು</translation>
 <translation id="1610778689852195798">"ರದ್ದುಗೊಳಿಸಿ"</translation>
 <translation id="1611993646327628135">ಆನ್ ಮಾಡಿ</translation>
@@ -514,6 +514,7 @@
 <translation id="3631369015426612114">ಕೆಳಗಿನವುಗಳಿಂದ ಅಧಿಸೂಚನೆಗಳನ್ನು ಅನುಮತಿಸಿ</translation>
 <translation id="3633097874324966332">ನಿಮ್ಮ ಸಾಧನವನ್ನು ಜೋಡಿಸಲು ಬ್ಲೂಟೂತ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="3638400994746983214">ಗೌಪ್ಯತೆ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಟಾಗಲ್ ಮಾಡಿ. <ph name="STATE_TEXT" />.</translation>
+<translation id="3649256019230929621">ವಿಂಡೋ ಕಿರಿದಾಗಿಸಿ</translation>
 <translation id="3649505501900178324">ಅಪ್‌ಡೇಟ್ ಬಾಕಿ ಉಳಿದಿದೆ</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -588,6 +589,7 @@
 <translation id="4021716437419160885">ಕೆಳಗೆ ಸ್ಕ್ರಾಲ್ ಮಾಡಿ</translation>
 <translation id="4022497978915111141">ಸಾಧನವನ್ನು ಲಾಕ್‌ಮಾಡಿ</translation>
 <translation id="4024840464866786680">ನಿಮ್ಮ ಪಿನ್ ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನೀವು ಮರೆತಿದ್ದರೆ ಅಥವಾ ಇತ್ತೀಚೆಗೆ ನಿಮ್ಮ Google ಖಾತೆಯ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬದಲಾಯಿಸಿದ್ದರೆ ಈ ಬಳಕೆದಾರರನ್ನು ಮರುಪಡೆಯಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
+<translation id="4026843240379844265">ಸಕ್ರಿಯ ವಿಂಡೋವನ್ನು ಡಿಸ್‌ಪ್ಲೇಗಳ ನಡುವೆ ಸರಿಸಿ</translation>
 <translation id="4028481283645788203">ಹೆಚ್ಚಿನ ಭದ್ರತೆಗಾಗಿ ಪಾಸ್‌ವರ್ಡ್ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">ನಿಮ್ಮ ಪರದೆಯನ್ನು ಹಂಚಿಕೊಳ್ಳುತ್ತಿದ್ದೀರಿ</translation>
@@ -912,6 +914,7 @@
 <translation id="5689633613396158040">ನಿಮ್ಮ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಮಂದ ಬೆಳಕಿನಲ್ಲಿ ನೋಡುವುದು ಅಥವಾ ಓದುವುದನ್ನು, ನೈಟ್ ಲೈಟ್ ಸುಲಭಗೊಳಿಸುತ್ತದೆ. ನೈಟ್ ಲೈಟ್ ಯಾವ ಸಮಯಕ್ಕೆ ಆನ್ ಆಗಬೇಕೆಂಬುದನ್ನು ಬದಲಾಯಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ ಅಥವಾ ಅದನ್ನು ಸಂಪೂರ್ಣವಾಗಿ ಆಫ್ ಮಾಡಿ.</translation>
 <translation id="5691772641933328258">ಫಿಂಗರ್‌ಪ್ರಿಂಟ್ ಗುರುತಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="5693255400847650006">ಮೈಕ್ರೊಫೋನ್‌ ಬಳಕೆಯಲ್ಲಿದೆ</translation>
+<translation id="5699366815052349604">ಎಲ್ಲಾ ಡೆಸ್ಕ್‌ಗಳಿಗೆ ಸಕ್ರಿಯ ವಿಂಡೋವನ್ನು ನಿಯೋಜಿಸಿ</translation>
 <translation id="570390244361237317">ಎಲ್ಲಾ ಆ್ಯಪ್‌ಗಳು, ಎಲ್ಲಾ ಆ್ಯಪ್‌ಗಳನ್ನು ಪ್ರವೇಶಿಸಲು ಆ್ಯರೋ ಕೀಗಳನ್ನು ಬಳಸಿ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಿ</translation>
 <translation id="5707775774148071965">ನಿಮ್ಮ ಸಾಧನ ನಿಮ್ಮ ಕೇಬಲ್‌ಗಿಂತ ಹೆಚ್ಚಿನ ಡೇಟಾ ದರವನ್ನು ಬೆಂಬಲಿಸುತ್ತದೆ. ಸಾಧನದ ಕಾರ್ಯಕ್ಷಮತೆ ಸೀಮಿತವಾಗಿರಬಹುದು.</translation>
 <translation id="5710450975648804523">ಅಡಚಣೆ ಮಾಡಬೇಡಿ ಆನ್ ಆಗಿದೆ</translation>
@@ -1552,6 +1555,7 @@
 <translation id="9034924485347205037">Linux ಫೈಲ್‌ಗಳು</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> ನ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="9059834730836941392">ಕುಗ್ಗಿಸುವ ಅಧಿಸೂಚನೆ</translation>
+<translation id="906458777597946297">ವಿಂಡೋ ಹಿರಿದಾಗಿಸಿ</translation>
 <translation id="9065203028668620118">ಎಡಿಟ್</translation>
 <translation id="9070640332319875144">ಅಸಿಸ್ಟೆಂಟ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="9072519059834302790">ಬ್ಯಾಟರಿ ಖಾಲಿಯಾಗಲು <ph name="TIME_LEFT" /> ಸಮಯವಿದೆ.</translation>

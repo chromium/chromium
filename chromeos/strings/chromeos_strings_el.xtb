@@ -241,7 +241,6 @@
 <translation id="3226657629376379887">Μενού ενεργειών διάταξης</translation>
 <translation id="3246869037381808805">Οι εργασίες εκτύπωσης που είναι παλαιότερες της 1 ημέρας θα καταργηθούν.</translation>
 <translation id="3268178239013324452">Σφάλμα - Η θύρα είναι ανοικτή</translation>
-<translation id="3275506277319227640">Αγκύρωση <ph name="DIRECTION" /></translation>
 <translation id="3275729367986477355">Εικόνα avatar</translation>
 <translation id="3283504360622356314">{0,plural, =1{Επεξεργασία αρχείου}other{Επεξεργασία αρχείων}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
@@ -360,7 +359,6 @@
 <translation id="4311195029067684288">Πλήρης</translation>
 <translation id="4333390807948134856">Το πλήκτρο <ph name="KEY_NAME" /> πατήθηκε</translation>
 <translation id="435692326371619097">Διαχείριση ρυθμίσεων APN δικτύου. Τα APN δημιουργούν μια σύνδεση μεταξύ ενός δικτύου κινητής τηλεφωνίας και του διαδικτύου. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
-<translation id="4370033095251616914">Αγκύρωση στη μικρότερη πλευρά</translation>
 <translation id="4378373042927530923">Δεν εκτελέστηκε</translation>
 <translation id="4378551569595875038">Σύνδεση…</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -903,7 +901,6 @@
 <translation id="9137526406337347448">Υπηρεσίες Google</translation>
 <translation id="9138630967333032450">Αριστερό shift</translation>
 <translation id="9149391708638971077">Εκτέλεση δοκιμής μνήμης</translation>
-<translation id="9157515863513902090">Αγκύρωση στη μεγαλύτερη πλευρά</translation>
 <translation id="9161276708550942948">πλήκτρο διαστήματος</translation>
 <translation id="9173638680043580060">Απομένει λιγότερο από ένα λεπτό</translation>
 <translation id="917720651393141712">Δοκιμή</translation>

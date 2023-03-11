@@ -508,6 +508,7 @@
 <translation id="2149968176347646218">کنکشن محفوظ نہیں ہے</translation>
 <translation id="2153609454945889823">‏Google Play سروسز برائے AR کو انسٹال کریں؟</translation>
 <translation id="2154484045852737596">کارڈ میں ترمیم کریں</translation>
+<translation id="2154739667870063220">ریبوٹ کریں</translation>
 <translation id="2155260325161282517">‏‎5 x 7 انچ</translation>
 <translation id="2157640075051554492">قیمت کو ٹریک کرنے کی اطلاعات</translation>
 <translation id="2161656808144014275">متن</translation>
@@ -898,6 +899,7 @@
 <translation id="3215092763954878852">‏WebAuthn کا استعمال نہیں کیا جا سکا</translation>
 <translation id="3216313131063488104">بلیوز</translation>
 <translation id="3218181027817787318">متعلقہ</translation>
+<translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{ابھی اپ ڈیٹ درکار ہے}=2{کل تک اپ ڈیٹ درکار ہے}other{# دن کے اندر اپ ڈیٹ درکار ہے}}</translation>
 <translation id="3223287115535306850">ایپ لانچنگ تھروبر</translation>
 <translation id="3223425961342298674">مقام کی اجازت نہیں ہے</translation>
 <translation id="3225919329040284222">سرور نے ایک سرٹیفکیٹ پیش کیا ہے جو پہلے سے موجود توقعات سے مماثل نہیں ہے۔ آپ کے تحفظ کیلئے یہ توقعات مخصوص، انتہائی سیکیورٹی والی ویب سائٹس کیلئے شامل کی جاتی ہیں۔</translation>
@@ -1382,6 +1384,7 @@
 <translation id="4350629523305688469">ملٹی فنکشن ٹرے</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> قریبی بلوٹوتھ آلات کے لیے اسکین کرنا چاہتی ہے، مندرجہ ذیل آلات ملے ہیں:</translation>
 <translation id="4351175281479794167">توثیقی کوڈ درج کریں</translation>
+<translation id="4355383636893709732">‏Android ایپس کے لیے ChromeOS اپ ڈیٹ</translation>
 <translation id="4356973930735388585">اس سائٹ پر موجود حملہ آور آپ کے کمپیوٹر پر ایسے خطرناک پروگرامز انسٹال کرنے کی کوشش کر سکتے ہیں جو آپ کی معلومات (مثلاً، تصاویر، پاس ورڈز، پیغامات اور کریڈٹ کارڈز) چوری کر لیتے یا حذف کر دیتے ہیں۔</translation>
 <translation id="4358059973562876591">‏ہو سکتا ہے کہ آپ کے ذریعے متعینہ تمثیلات DnsOverHttpsMode پالیسی میں ایک خرابی کی وجہ سے لاگو نہ ہو۔</translation>
 <translation id="4358461427845829800">ادائیگیوں کے طریقوں کا نظم کریں...</translation>
@@ -1762,6 +1765,7 @@
 <translation id="5288393065350884210">اکاؤنٹنگ اور آڈٹنگ</translation>
 <translation id="5288808348893593856">‏جب تک کہ Chrome آپ کو بصورت دیگر کچھ نہیں بتاتا ہے تب تک سائٹ کا کنکشن محفوظ رہتا ہے۔</translation>
 <translation id="5289384342738547352">متعدد دستاویزات کو ہینڈل کرنا</translation>
+<translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{آج اپ ڈیٹ درکار ہے}=2{کل تک اپ ڈیٹ درکار ہے}other{# دن کے اندر اپ ڈیٹ درکار ہے}}</translation>
 <translation id="5293919335876685914">کوپس</translation>
 <translation id="5296589789433599000">پکانا اور ترکیبیں</translation>
 <translation id="5299298092464848405">پالیسی کو پارس کرنے میں خرابی</translation>
@@ -1956,6 +1960,7 @@
 <translation id="5786044859038896871">کیا آپ اپنے کارڈ کی معلومات پُر کرنا چاہتے ہیں؟</translation>
 <translation id="578633867165174378">‏Chrome کو وہ پاس ورڈ مل گیا جو آپ نے ابھی ڈیٹا کی خلاف ورزی میں استعمال کیا ہے۔ ہم اس پاس ورڈ کو ابھی تبدیل کرنے کی تجویز کرتے ہیں۔</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="580241730938216256">اپ ڈیٹ شروع کریں</translation>
 <translation id="5803412860119678065">کیا آپ اپنے <ph name="CARD_DETAIL" /> کو پُر کرنا چاہتے ہیں؟</translation>
 <translation id="5804241973901381774">اجازتیں</translation>
 <translation id="5808435672482059465">‏اپنے Chrome کی سرگزشت دیکھیں</translation>
@@ -2117,6 +2122,7 @@
 <translation id="6218753634732582820">‏Chromium سے پتہ ہٹائیں؟</translation>
 <translation id="622039917539443112">متوازی فولڈ</translation>
 <translation id="6221345481584921695">‏Google محفوظ براؤزنگ کو حال ہی میں <ph name="SITE" /> پر <ph name="BEGIN_LINK" />میلویئر کا پتہ لگا<ph name="END_LINK" />۔ جو ویب سائٹس عام طور پر محفوظ ہوتی ہیں وہ کبھی کبھی میلویئر سے متاثر ہو جاتی ہیں۔ نقصان دہ مواد <ph name="SUBRESOURCE_HOST" /> سے آتا ہے جو ایک معلوم میلویئر تقسیم کار ہے۔</translation>
+<translation id="6221892641068781024">سادہ منظر</translation>
 <translation id="6226163402662242066">‏<ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />، Chrome کی ترتیبات میں اپنی ایکسیسبیلٹی کے ٹولز کو ذاتی نوعیت کا بنانے کے لیے ٹیب پھر Enter دبائیں</translation>
 <translation id="6229649258872345286">فیملی کے ساتھ سفر</translation>
 <translation id="6232271601416750929">بے داغ حسن</translation>
@@ -2176,6 +2182,7 @@
 <translation id="6366710531182496394">بائیں طرف دُہری سٹیپل</translation>
 <translation id="6367196786591004737">اندراج حذف کریں</translation>
 <translation id="6370022303958842211">آلے تک رسائی کی کاروائیاں جیسے لاگ انز (بشمول لاگ ان کی ناکام وجوہات)، لاگ آؤٹس، لاکس اور ان لاکس</translation>
+<translation id="6374469231428023295">دوبارہ کوشش کریں</translation>
 <translation id="6374865374745447009">ونڈو کا نظم و نسق</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />' کا 1 نتیجہ</translation>
 <translation id="6380497234672085559">A0</translation>
@@ -2486,6 +2493,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> اور <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> مزید}other{<ph name="PAYMENT_METHOD_PREVIEW" /> اور <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> مزید}}</translation>
 <translation id="7153618581592392745">ارغوانی</translation>
 <translation id="7156870133441232244">‏سرور TLS 1.2 یا اس نئے ورژن پر اپ گریڈ ہونا چاہیے۔</translation>
+<translation id="7160999678034985039">براہ کرم اپنا کام محفوظ کریں اور جب آپ تیار ہوں تو اپ ڈیٹ شروع کریں۔</translation>
 <translation id="7163295244162773898">{0,plural, =1{رازدارانہ فائل کو کاپی کریں؟}other{رازدارانہ فائلز کو کاپی کریں؟}}</translation>
 <translation id="717330890047184534">Gaia ID:</translation>
 <translation id="7174545416324379297">ضم کردہ</translation>
@@ -2733,6 +2741,7 @@
 <translation id="7687305263118037187">دوبارہ کوشش ٹائم آؤٹ</translation>
 <translation id="7690647519407127574">‏Oufuku Hagaki پوسٹ کارڈ</translation>
 <translation id="7693583928066320343">صفحات کی ترتیب موصول ہوئی</translation>
+<translation id="769424100851389104">ابھی اپ ڈیٹ شروع کریں</translation>
 <translation id="7696089921647603491">کلاسک راک اور پرانے گانے</translation>
 <translation id="769721561045429135">ابھی، آپ کے پاس ایسے کارڈز ہیں جنہیں صرف اس آلہ پر استعمال کیا جا سکتا ہے کارڈز کا جائزہ لینے کیلئے 'جاری رکھیں' پر کلک کریں۔</translation>
 <translation id="7698864304447945242">‏Google Play سروسز برائے AR کو اپ ڈیٹ کریں؟</translation>
@@ -2757,6 +2766,7 @@
 <translation id="774634243536837715">خطرناک مواد مسدود ہے۔</translation>
 <translation id="7751971323486164747">‏Chrome میں فونٹ کے سائز اور ٹائپ فیسز کو حسب ضرورت بنائیں</translation>
 <translation id="7752995774971033316">غیر نظم کردہ</translation>
+<translation id="7754587126786572336">‏اپ ڈیٹ شروع ہونے پر آپ کے Chrome کے ٹیبز اور ایپس بند ہو جائیں گی</translation>
 <translation id="7755287808199759310">آپ کے والدین آپ کیلئے اسے غیر مسدود کر سکتے ہیں</translation>
 <translation id="7755624218968747854">بنیادی رول</translation>
 <translation id="7758069387465995638">ممکن ہے فائروال یا اینٹی وائرس سافٹ ویئر نے کنکشن کو مسدود کر دیا ہو۔</translation>
@@ -2921,6 +2931,7 @@
 <translation id="8186706823560132848">سافٹ ویئر</translation>
 <translation id="8190193880870196235">ایکسٹینشن کے ذریعے نظم کردہ</translation>
 <translation id="8194797478851900357">منتقلی کو &amp;کالعدم کریں</translation>
+<translation id="8200772114523450471">دوبارہ شروع کریں</translation>
 <translation id="8201077131113104583">‏‎ID "<ph name="EXTENSION_ID" />"‎ کے ساتھ ایکسٹینشن کیلئے غلط اپ ڈیٹ URL۔</translation>
 <translation id="8202097416529803614">آرڈر کا خلاصہ</translation>
 <translation id="8202370299023114387">تصادم</translation>
@@ -3218,6 +3229,7 @@
 <translation id="8963117664422609631">سائٹ ترتیبات پر جائیں</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />تجاویز:<ph name="MARKUP_2" />یقینی بنائیں کہ آپ کے پاس ڈیٹا کنکشن ہے<ph name="MARKUP_3" />یہ ویب صفحہ بعد میں دوبارہ لوڈ کریں<ph name="MARKUP_4" />اپنا درج کردہ پتہ چيک کریں<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">کارڈ کو محفوظ کریں</translation>
+<translation id="8970887620466824814">کچھ غلط ہو گیا۔</translation>
 <translation id="8971063699422889582">سرور کے سرٹیفکیٹ کی میعاد ختم ہوگئی۔</translation>
 <translation id="8975012916872825179">اس میں فون نمبرز، ای میل پتے اور ترسیل کے پتے جیسی معلومات شامل ہیں</translation>
 <translation id="8975263830901772334">آپ کی پرنٹ کردہ فائلز کے نام</translation>

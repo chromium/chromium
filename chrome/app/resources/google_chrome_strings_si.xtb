@@ -260,6 +260,7 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="6010556343189461180">අනාගත Google Chrome යාවත්කාලීන ලබා ගැනීම සඳහා, ඔබට macOS 10.15 හෝ පසු අනුවාදයක් අවශ්‍ය වනු ඇත. මෙම පරිගණකය macOS 10.14 භාවිතා කරයි.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome දැන් වැසෙනු ඇත.}=1{Chrome තත්පර 1කින් වැසෙනු ඇත.}one{Chrome තත්පර #කින් වැසෙනු ඇත.}other{Chrome තත්පර #කින් වැසෙනු ඇත.}}</translation>
 <translation id="6022659036123304283">Chrome ඔබේම කර ගන්න</translation>
+<translation id="6025087594896450715">Google Chrome <ph name="REMAINING_TIME" />කින් යළි ඇරඹෙනු ඇත</translation>
 <translation id="6040143037577758943">වසන්න</translation>
 <translation id="6070348360322141662">අමතර ආරක්ෂාව සඳහා, Google Chrome ඔබේ දත්ත සංකේතනය කරනු ඇත</translation>
 <translation id="608006075545470555">මෙම බ්‍රව්සරයට කාර්යාල පැතිකඩ එක් කරන්න</translation>
@@ -277,6 +278,7 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="6327105987658262776">යාවත්කාලීනයක් නොමැත.</translation>
 <translation id="6412673304250309937">Chrome තුළ ගබඩා කර ඇති අනාරක්‍ෂිත වෙබ් අඩවි ලැයිස්තුවක් සමඟ URL පරීක්‍ෂා කරයි. වෙබ් අඩවියක් ඔබේ මුරපදය සොරා ගැනීමට උත්සාහ කරන්නේ නම්, හෝ ඔබ හානිකර ගොනුවක් බාගන්නා විට, Chrome පිටු අන්තර්ගතයේ කැබැලි ඇතුළුව ආරක්‍ෂිත බ්‍රවුස් කිරීම වෙත URL යැවීමටද හැකිය.</translation>
 <translation id="6418662306461808273">තිබෙන Chrome පැතිකඩට මාරු වන්නද?</translation>
+<translation id="6493527311031785448">Google Chrome <ph name="AUTHENTICATION_PURPOSE" /> සඳහා උත්සාහ කරයි</translation>
 <translation id="6506909944137591434">ඔබගේ වටපිටාවේ 3D සිතියමක් තැනීමට Chrome හට කැමරා අවසරය අවශ්‍යයි</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="659498884637196217">මෙම උපාංගයෙහි Google මුරපද කළමනාකරු තුළ</translation>
@@ -404,7 +406,6 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="8862326446509486874">ඔබට පද්ධති මට්ටමේ ස්ථානපයකට අයිතිය නැත. නැවත පරිපාලක වශයෙන් ස්ථාපකය ධාවනය කිරීමට උත්සාහ කරන්න.</translation>
 <translation id="8914504000324227558">Chrome නැවත දියත් කරන්න</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" /> වෙතින් ඔබගේ Android දුරකථනයට අංකයක් යැවීමට, උපාංග දෙකෙහිම Chrome වෙත පුරන්න.</translation>
-<translation id="8983720963221508955">ඔබ ඔබගේ ගිණුමේ ඉහළ නැංවූ සුරක්ෂිත පිරික්සුම ක්‍රියාත්මක කළේය. දැන් එය Chrome සඳහා ලබා ගන්න.</translation>
 <translation id="8986207147630327271">ඔබ මෙම බ්‍රව්සරයට කාර්යාල පැතිකඩක් එක් කරන අතර ඔබගේ පරිපාලකට ඔබගේ පැතිකඩෙහි පාලනය ලබා දෙයි.</translation>
 <translation id="8989968390305463310">ඔබගේ බ්‍රවුස් කිරීමේ ඉතිහාසය ඔබ දකින වෙළඳ දැන්වීම්වලට සහ ලැදිකම්වලට පහත තක්සේරු කර ඇති පරිදි බලපායි. ඔබගේ පෞද්ගලිකත්වය ආරක්ෂා කිරීමට, Chrome සෑම මසකම පෙරළෙන පදනම මත ඔබගේ ලැදිකම් ස්වයංක්‍රීයව මකයි. ඔබ ඒවා ඉවත් නොකළහොත් ලැදිකම් නැවුම් විය හැකිය.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome යාවත්කාලීනයක් තිබේ}=1{Chrome යාවත්කාලීනයක් තිබේ}one{දින # කට Chrome යාවත්කාලීනයක් ලැබී ඇත}other{දින # කට Chrome යාවත්කාලීනයක් ලැබී ඇත}}</translation>

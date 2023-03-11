@@ -509,6 +509,7 @@
 <translation id="2149968176347646218">ការតភ្ជាប់នេះ​គ្មានសុវត្ថិភាពទេ</translation>
 <translation id="2153609454945889823">ដំឡើងសេវាកម្ម Google Play សម្រាប់ AR ឬ?</translation>
 <translation id="2154484045852737596">កែសម្រួលកាត</translation>
+<translation id="2154739667870063220">ចាប់ផ្ដើម​ឡើងវិញ</translation>
 <translation id="2155260325161282517">5 x 7 in</translation>
 <translation id="2157640075051554492">ការជូនដំណឹង​អំពី​ការតាមដាន​តម្លៃ</translation>
 <translation id="2161656808144014275">អត្ថបទ</translation>
@@ -899,6 +900,7 @@
 <translation id="3215092763954878852">មិនអាចប្រើ WebAuthn បានទេ</translation>
 <translation id="3216313131063488104">ប៊្លូ</translation>
 <translation id="3218181027817787318">ពាក់ព័ន្ធ</translation>
+<translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{តម្រូវឱ្យដំឡើងកំណែឥឡូវនេះ}=2{តម្រូវឱ្យដំឡើងកំណែត្រឹមថ្ងៃស្អែក}other{តម្រូវឱ្យដំឡើងកំណែក្នុងរយៈពេល # ថ្ងៃ}}</translation>
 <translation id="3223287115535306850">រូបកំពុងដំណើរការនៃការចាប់ផ្ដើមកម្មវិធី</translation>
 <translation id="3223425961342298674">មិនបានអនុញ្ញាតឱ្យប្រើទីតាំងទេ</translation>
 <translation id="3225919329040284222">ម៉ាស៊ីនមេនេះបានបង្ហាញទិន្នន័យដែលមិនត្រូវគ្នាជាមួយការរំពឺងដែលភ្ជាប់ជាមួយ។ ការរំពឹងទុកទាំងនេះរាប់បញ្ចូលទាំងគេហទំព័រសុវត្ថិភាពខ្ពស់ជាក់លាក់ដើម្បីការពារអ្នក។</translation>
@@ -1383,6 +1385,7 @@
 <translation id="4350629523305688469">ទម្រ​ពហុមុខងារ</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> ចង់ស្កេនរក​ឧបករណ៍ប៊្លូធូស​នៅជិត។ បានរកឃើញ​ឧបករណ៍​ខាងក្រោម៖</translation>
 <translation id="4351175281479794167">បញ្ចូល​លេខ​កូដ​ផ្ទៀងផ្ទាត់</translation>
+<translation id="4355383636893709732">កំណែថ្មី ChromeOS សម្រាប់កម្មវិធី​​ Android</translation>
 <translation id="4356973930735388585">អ្នកវាយប្រហារនៅលើទំព័រនេះអាចនឹងព្យាយាមលួចដំឡើងកម្មវិធីដែលបង្កគ្រោះថ្នាក់នៅលើកុំព្យូទ័ររបស់អ្នក ដែលកម្មវិធីនេះអាចនឹងលួច ឬលុបព័ត៌មានរបស់អ្នក (ឧទាហរណ៍៖ រូបថត ពាក្យសម្ងាត់ សារ និងកាតឥណទាន)។</translation>
 <translation id="4358059973562876591">ទម្រង់គំរូ​ដែលអ្នក​បានបញ្ជាក់​ប្រហែលជា​មិន​អាច​ប្រើ​បានទេ ដោយសារ​មានបញ្ហា​ពាក់ព័ន្ធនឹង​គោលការណ៍ DnsOverHttpsMode។</translation>
 <translation id="4358461427845829800">គ្រប់គ្រង​វិធីបង់ប្រាក់...</translation>
@@ -1764,6 +1767,7 @@
 <translation id="5288393065350884210">គណនេយ្យ និង​សវនកម្ម</translation>
 <translation id="5288808348893593856">ការតភ្ជាប់របស់គេហទំព័រ​មានសុវត្ថិភាព ប្រសិនបើ Chrome មិនប្រាប់អ្នក​ផ្សេងពីនេះទេ។</translation>
 <translation id="5289384342738547352">ការគ្រប់គ្រង​ឯកសារច្រើន</translation>
+<translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{តម្រូវឱ្យដំឡើងកំណែនៅថ្ងៃនេះ}=2{តម្រូវឱ្យដំឡើងកំណែត្រឹមថ្ងៃស្អែក}other{តម្រូវឱ្យដំឡើងកំណែក្នុងរយៈពេល # ថ្ងៃ}}</translation>
 <translation id="5293919335876685914">រថយន្ត​ប្រភេទ Coupe</translation>
 <translation id="5296589789433599000">ការធ្វើម្ហូប និង​រូបមន្ត</translation>
 <translation id="5299298092464848405">កំហុសឆ្គងគោលការណ៍ការវិភាគ</translation>
@@ -1958,6 +1962,7 @@
 <translation id="5786044859038896871">តើអ្នកចង់បំពេញព័ត៌មានកាតរបស់អ្នកដែរទេ?</translation>
 <translation id="578633867165174378">Chrome បានរកឃើញ​ពាក្យសម្ងាត់​ដែលអ្នកទើបតែប្រើ នៅក្នុង​ការបែកធ្លាយ​ទិន្នន័យ។ យើង​សូមណែនាំឱ្យប្ដូរ​ពាក្យសម្ងាត់នេះ​ឥឡូវនេះ។</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="580241730938216256">ចាប់ផ្តើមដំឡើងកំណែ</translation>
 <translation id="5803412860119678065">តើអ្នកចង់បំពេញ <ph name="CARD_DETAIL" /> របស់អ្នកដែរទេ?</translation>
 <translation id="5804241973901381774">ការអនុញ្ញាត</translation>
 <translation id="5808435672482059465">មើលប្រវត្តិ Chrome របស់អ្នក</translation>
@@ -2118,6 +2123,7 @@
 <translation id="6218753634732582820">យកអាសយដ្ឋានចេញពី Chromium ឬ?</translation>
 <translation id="622039917539443112">បត់ឱ្យ​ស្របគ្នា</translation>
 <translation id="6221345481584921695">ការរុករកសុវត្ថិភាព Google <ph name="BEGIN_LINK" />បានរកឃើញមេរោគ<ph name="END_LINK" /> នៅលើ <ph name="SITE" />កន្លងទៅថ្មីៗនេះ។ គេហទំព័រដែលជាធម្មតាមានសុវត្ថិភាពអាចឆ្លងមេរោគនៅពេលខ្លះ។ មាតិកាព្យាបាទចេញមកពី <ph name="SUBRESOURCE_HOST" /> ជាអ្នកចែកចាយមេរោគដែលត្រូវបានស្គាល់។</translation>
+<translation id="6221892641068781024">​ទិដ្ឋភាព​សាមញ្ញ</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច tab រួចចុច Enter ដើម្បីកំណត់​ឧបករណ៍ភាពងាយស្រួល​ឱ្យស្របនឹងអ្នកនៅក្នុង​ការកំណត់ Chrome</translation>
 <translation id="6229649258872345286">ការធ្វើដំណើរ​ជាគ្រួសារ</translation>
 <translation id="6232271601416750929">សម្រស់​បែបធម្មជាតិ</translation>
@@ -2177,6 +2183,7 @@
 <translation id="6366710531182496394">កិបពីរ​គ្រាប់​ខាងឆ្វេង</translation>
 <translation id="6367196786591004737">លុបធាតុ</translation>
 <translation id="6370022303958842211">សកម្មភាព​ចូលប្រើប្រាស់​ឧបករណ៍ ​ដូចជា​ការចូល (រួមបញ្ចូលទាំង​មូលហេតុ​នៃការចូល​ដែលមិនបានសម្រេច) ការចេញ ការចាក់សោ និង​ការដោះសោជាដើម</translation>
+<translation id="6374469231428023295">ព្យាយាមម្តងទៀត</translation>
 <translation id="6374865374745447009">ការគ្រប់គ្រងវិនដូ</translation>
 <translation id="6377268785556383139">លទ្ធផល 1 សម្រាប់ '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6380497234672085559">A0</translation>
@@ -2487,6 +2494,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> និង <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ទៀត}other{<ph name="PAYMENT_METHOD_PREVIEW" /> និង <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ទៀត}}</translation>
 <translation id="7153618581592392745">ឡាវិនឌ័រ</translation>
 <translation id="7156870133441232244">ម៉ាស៊ីនមេគួរតែដំឡើង​កំណែទៅ TLS 1.2 ឬខ្ពស់ជាងនេះ។</translation>
+<translation id="7160999678034985039">សូមរក្សាទុកការងាររបស់អ្នក ហើយចាប់ផ្តើមដំឡើងកំណែនៅពេលអ្នករួចរាល់។</translation>
 <translation id="7163295244162773898">{0,plural, =1{ចម្លង​ឯកសារ​សម្ងាត់​ឬ?}other{ចម្លង​ឯកសារ​សម្ងាត់​ឬ?}}</translation>
 <translation id="717330890047184534">លេខ​សម្គាល់ Gaia៖</translation>
 <translation id="7174545416324379297">បានបញ្ចូលគ្នា</translation>
@@ -2735,6 +2743,7 @@
 <translation id="7687305263118037187">ការព្យាយាមម្ដងទៀត​អស់ម៉ោងហើយ</translation>
 <translation id="7690647519407127574">បណ្ណប្រៃសណីយ៍ Oufuku Hagaki</translation>
 <translation id="7693583928066320343">បានទទួលលំដាប់លំដោយទំព័រ</translation>
+<translation id="769424100851389104">ចាប់ផ្តើមដំឡើងកំណែឥឡូវនេះ</translation>
 <translation id="7696089921647603491">រ៉ុក​ស៊េរីចាស់ និង​អូលឌី</translation>
 <translation id="769721561045429135">ឥឡូវនេះ អ្នកមានបណ្ណ​ដែលអាចប្រើបានតែ​នៅលើឧបករណ៍នេះ​ប៉ុណ្ណោះ។ សូមចុច "បន្ត" ដើម្បី​ពិនិត្យមើលបណ្ណ។</translation>
 <translation id="7698864304447945242">ដំឡើងកំណែសេវាកម្ម Google Play សម្រាប់ AR ឬ?</translation>
@@ -2759,6 +2768,7 @@
 <translation id="774634243536837715">បាន​ទប់ស្កាត់​ខ្លឹមសារ​ដែល​មានគ្រោះថ្នាក់។</translation>
 <translation id="7751971323486164747">ប្ដូរទំហំ​ពុម្ពអក្សរ និងពុម្ពអក្សរ​តាមបំណង​នៅក្នុង Chrome</translation>
 <translation id="7752995774971033316">មិនបានគ្រប់គ្រង</translation>
+<translation id="7754587126786572336">ផ្ទាំង និងកម្មវិធី Chrome របស់អ្នកនឹងបិទ នៅពេលការដំឡើងកំណែចាប់ផ្តើម</translation>
 <translation id="7755287808199759310">មាតាបិតារបស់អ្នកអាចលុបការរារាំងទំព័រនេះសម្រាប់អ្នកបាន</translation>
 <translation id="7755624218968747854">ដុំចម្បង</translation>
 <translation id="7758069387465995638">កម្មវិធីកំចាត់មេរោគ ឬ Firewall ប្រហែលជាបានរារាំងការតភ្ជាប់</translation>
@@ -2924,6 +2934,7 @@
 <translation id="8186706823560132848">កម្មវិធី</translation>
 <translation id="8190193880870196235">គ្រប់គ្រងដោយកម្មវិធីបន្ថែម​</translation>
 <translation id="8194797478851900357">បកក្រោយការផ្លាស់ទី</translation>
+<translation id="8200772114523450471">បន្ត</translation>
 <translation id="8201077131113104583">URL បច្ចុប្បន្នភាពគ្មានសុពលភាពសម្រាប់កម្មវិធីបន្ថែមដែលមានលេខសម្គាល់ "<ph name="EXTENSION_ID" />"។</translation>
 <translation id="8202097416529803614">សង្ខេបនៃការបញ្ជាទិញ</translation>
 <translation id="8202370299023114387">​ជាន់​គ្នា</translation>
@@ -3221,6 +3232,7 @@
 <translation id="8963117664422609631">ចូលទៅកាន់​ការកំណត់​គេហទំព័រ</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />ការផ្តល់យោបល់៖<ph name="MARKUP_2" />សូមប្រាកដថាអ្នកមានការតភ្ជាប់ទិន្នន័យ<ph name="MARKUP_3" />ដំណើរការគេហទំព័រនេះឡើងវិញនៅពេលក្រោយ<ph name="MARKUP_4" />ពិនិត្យមើលអាសយដ្ឋានដែលអ្នកបានបញ្ជូល<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">រក្សាទុក​បណ្ណ</translation>
+<translation id="8970887620466824814">មានអ្វីមួយ​ខុសប្រក្រតី។</translation>
 <translation id="8971063699422889582">វិញ្ញាបនប័ត្រម៉ាស៊ីនមេបានផុតកំណត់។</translation>
 <translation id="8975012916872825179">រួម​បញ្ចូល​ព័ត៌មាន​ដូចជា លេខទូរសព្ទ អាសយដ្ឋាន​អ៊ីមែល និង​អាសយដ្ឋាន​ដឹកជញ្ជូន​ជាដើម</translation>
 <translation id="8975263830901772334">ឈ្មោះ​ឯកសារដែលអ្នក​បោះពុម្ព</translation>

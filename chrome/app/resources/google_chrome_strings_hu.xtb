@@ -271,6 +271,7 @@
 <translation id="6327105987658262776">Nincs rendelkezésre álló frissítés.</translation>
 <translation id="6412673304250309937">Ellenőrzi az URL-eket a Chrome-ban a nem biztonságos webhelyekről tárolt lista alapján. Ha egy webhely megpróbálja ellopni az Ön jelszavát, illetve ha Ön ártalmas fájlt tölt le, akkor a Chrome elküldheti az URL-eket is (az oldaltartalmak részleteivel együtt) a Biztonságos Böngészésnek.</translation>
 <translation id="6418662306461808273">Szeretne meglévő Chrome-profilra váltani?</translation>
+<translation id="6493527311031785448">A Google Chrome megpróbálja a következőt: <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6506909944137591434">A Chrome-nak kamerahasználati engedélyre van szüksége, hogy 3D-s térképet készíthessen az Ön környezetéről</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="659498884637196217">A Google Jelszókezelőben ezen az eszközön</translation>
@@ -398,7 +399,6 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="8862326446509486874">Nincsenek meg a megfelelő jogai a rendszerszintű telepítéshez. Indítsa újra a telepítőt rendszergazdaként.</translation>
 <translation id="8914504000324227558">A Chrome újraindítása</translation>
 <translation id="8922193594870374009">Ha innen: <ph name="ORIGIN" /> szeretne számot küldeni Android-telefonjára, jelentkezzen be a Chrome-ba mindkét eszközén.</translation>
-<translation id="8983720963221508955">Ön bekapcsolta a Biztonságos Böngészés fokozott védelemmel funkciót a fiókjában. Most töltse le Chrome-ra is.</translation>
 <translation id="8986207147630327271">Munkaprofilt ad hozzá ehhez a böngészőhöz, és csak a munkaprofil felett adja át az irányítást a rendszergazdának.</translation>
 <translation id="8989968390305463310">Böngészési előzményei határozzák meg az Ön számára megjelenő hirdetéseket és az alább látható módon felmért érdeklődési köröket. Adatai védelme érdekében a Chrome havi rendszerességgel automatikusan törli az Ön érdeklődési köreit. Az érdeklődési körök frissülhetnek, kivéve, ha eltávolítja őket.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Rendelkezésre áll egy Chrome-frissítés}=1{Rendelkezésre áll egy Chrome-frissítés}other{# napja rendelkezésre áll egy Chrome-frissítés}}</translation>

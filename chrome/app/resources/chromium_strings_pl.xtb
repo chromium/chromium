@@ -27,6 +27,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="1774152462503052664">Zezwól Chromium na działanie w tle</translation>
 <translation id="1779356040007214683">Aby poprawić bezpieczeństwo Chromium, wyłączyliśmy niektóre rozszerzenia niedostępne w <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />, które mogły zostać dodane bez Twojej wiedzy.</translation>
 <translation id="1808667845054772817">Ponownie zainstaluj Chromium</translation>
+<translation id="1820835682567584003">Chromium próbuje <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="185970820835152459">Możesz zarządzać kontami Google, na które się logujesz. Kont Google możesz używać w przeglądarce Chromium, Sklepie Play, Gmailu i innych usługach. Jeśli chcesz dodać konto innej osoby, np. kogoś z rodziny, zamiast tego dodaj nową osobę do urządzenia <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="1863308913976887472">W Chromium witryny mogą przechowywać informacje o Twoich zainteresowaniach. Na przykład jeśli odwiedzasz stronę internetową, żeby kupić buty na maraton, strona może zidentyfikować bieganie w maratonach jako Twoje zainteresowanie. Jeśli później odwiedzisz inną witrynę, żeby zapisać się na jakiś bieg, witryna ta może wyświetlić reklamę butów do biegania na podstawie Twoich zainteresowań.</translation>
 <translation id="1881322772814446296">Logujesz się na zarządzane konto i przekazujesz jego administratorowi kontrolę nad swoim profilem Chromium. Twoje dane Chromium, takie jak aplikacje, zakładki, historia, hasła i inne ustawienia, zostaną trwale powiązane z użytkownikiem <ph name="USER_NAME" />. Będzie można je usunąć w Panelu kont Google, ale nie będzie można ich powiązać z innym kontem. Możesz też utworzyć nowy profil, by przechowywać swoje dotychczasowe dane Chromium osobno. <ph name="LEARN_MORE" /></translation>
@@ -302,7 +303,6 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="7561906087460245826">Wyczyść też dane z Chromium (<ph name="URL" />)</translation>
 <translation id="7582945390259497898">Chromium może oszacować Twoje zainteresowania. Witryna, którą później odwiedzisz, może o nie zapytać i na tej podstawie spersonalizować wyświetlane reklamy.</translation>
 <translation id="7583399374488819119">Instalator <ph name="COMPANY_NAME" /></translation>
-<translation id="7597596667193879455">Na swoim koncie włączyłeś(-aś) Ulepszone Bezpieczne przeglądanie. Zacznij korzystać z tej funkcji w Chromium.</translation>
 <translation id="761356813943268536">Chromium używa Twojej kamery i mikrofonu.</translation>
 <translation id="7617377681829253106">Przeglądarka Chromium jest jeszcze lepsza</translation>
 <translation id="7649070708921625228">Pomoc</translation>

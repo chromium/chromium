@@ -260,6 +260,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6010556343189461180">Vous devez disposer de macOS 10.15 ou d'une version ultérieure pour recevoir les futures mises à jour de Google Chrome. Or, c'est la version macOS 10.14 qui est installée sur cet ordinateur.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome va se fermer.}=1{Chrome va se fermer dans 1 seconde.}one{Chrome va se fermer dans # seconde.}other{Chrome va se fermer dans # secondes.}}</translation>
 <translation id="6022659036123304283">Personnalisez Chrome</translation>
+<translation id="6025087594896450715">Google Chrome va redémarrer dans <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Fermer</translation>
 <translation id="6070348360322141662">Pour plus de sécurité, vos données seront chiffrées dans Google Chrome</translation>
 <translation id="608006075545470555">Ajouter un profil professionnel à ce navigateur</translation>
@@ -277,6 +278,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6327105987658262776">Aucune mise à jour disponible.</translation>
 <translation id="6412673304250309937">Il vérifie les URL d'après une liste de sites dangereux stockée dans Chrome. Si un site tente de voler votre mot de passe ou si vous téléchargez un fichier dangereux, Chrome peut également envoyer les URL concernées, y compris des extraits du contenu de pages, à la fonctionnalité de navigation sécurisée.</translation>
 <translation id="6418662306461808273">Passer au profil Chrome existant ?</translation>
+<translation id="6493527311031785448">Google Chrome tente <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6506909944137591434">Pour créer un plan 3D de votre environnement, Chrome a besoin de l'autorisation d'accéder à la caméra</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome pour les développeurs</translation>
 <translation id="659498884637196217">Dans le Gestionnaire de mots de passe Google sur cet appareil</translation>
@@ -404,7 +406,6 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="8862326446509486874">Vous ne disposez pas des droits requis pour installer la version système. Relancez l'installation en vous connectant comme administrateur.</translation>
 <translation id="8914504000324227558">Relancer Google Chrome</translation>
 <translation id="8922193594870374009">Pour envoyer un numéro depuis <ph name="ORIGIN" /> vers votre téléphone Android, connectez-vous à Chrome sur les deux appareils.</translation>
-<translation id="8983720963221508955">Vous avez activé la navigation sécurisée avec protection renforcée dans votre compte. Activez-la maintenant dans Chrome.</translation>
 <translation id="8986207147630327271">Vous êtes sur le point d'ajouter un profil professionnel à ce navigateur et d'en donner le contrôle à votre administrateur.</translation>
 <translation id="8989968390305463310">Votre historique de navigation influe sur les annonces que vous voyez et les centres d'intérêt estimés ci-dessous. Pour protéger votre confidentialité, Chrome supprime automatiquement vos centres d'intérêt tous les mois. Les centres d'intérêt peuvent s'actualiser, sauf si vous les supprimez.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Une mise à jour de Chrome est disponible}=1{Une mise à jour de Chrome est disponible}one{Une mise à jour de Chrome est disponible depuis # jour}other{Une mise à jour de Chrome est disponible depuis # jours}}</translation>

@@ -81,6 +81,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="149095475893949513">Ce site Web tente de télécharger un profil de configuration.</translation>
 <translation id="1491277525950327607">Touchez deux fois pour activer ou désactiver le paramètre</translation>
 <translation id="1492417797159476138">Vous avez déjà enregistré ce nom d'utilisateur pour ce site</translation>
+<translation id="1497590942294823549">Menu → Gestionnaire de mots de passe</translation>
 <translation id="1498283581832036924">Votre compte <ph name="WEBSITE" /> ne sera pas supprimé.</translation>
 <translation id="1506063256525392513">Cela vous permet de prendre des photos et de les téléverser ainsi que de numériser des codes QR</translation>
 <translation id="1509486075633541495">Connexion au site Web</translation>
@@ -242,6 +243,7 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="271033894570825754">Nouveau</translation>
 <translation id="2712127207578915686">Imposs. d'ouvrir fichier</translation>
 <translation id="2718352093833049315">Wi-Fi uniquement</translation>
+<translation id="2737716090799520623">Lorsque vous êtes connecté à Chrome, les mots de passe que vous enregistrez sont enregistrés dans votre compte Google (<ph name="ACCOUNT" />). Pour désactiver cette option, <ph name="BEGIN_LINK" />accédez aux paramètres<ph name="END_LINK" />.</translation>
 <translation id="2747003861858887689">Champ précédent</translation>
 <translation id="2749231692441336879">Vous suivez <ph name="CHANNEL_NAME" /></translation>
 <translation id="2764831210418622012">à l'instant</translation>
@@ -843,6 +845,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="6801927553864092214">Pour naviguer de manière incognito, ouvrez un onglet de navigation privée</translation>
 <translation id="6807889908376551050">Tout afficher…</translation>
 <translation id="681368974849482173">Élément créé</translation>
+<translation id="6822587385560699678">Lorsque cette option est activée, les mots de passe sont enregistrés dans <ph name="ACCOUNT" />. Si cette option est désactivée, les mots de passe sont enregistrés uniquement sur cet appareil.</translation>
 <translation id="683022620450280906">Vous pouvez utiliser des mots de passe enregistrés sur n'importe quel appareil. Ils sont enregistrés dans le gestionnaire de mots de passe Google de ce compte : <ph name="EMAIL" /></translation>
 <translation id="6831043979455480757">Traduire</translation>
 <translation id="6842136130964845393">Pour vous assurer de toujours pouvoir accéder à vos mots de passe enregistrés, vérifiez qu'il s'agit bien de vous</translation>

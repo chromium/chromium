@@ -34,6 +34,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="1173894706177603556">Aldatu izena</translation>
 <translation id="1177863135347784049">Pertsonalizatua</translation>
 <translation id="1181037720776840403">Kendu</translation>
+<translation id="1181366777303791449">hemen: <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">Pasahitz konplexu bat erabili nahi duzu?</translation>
 <translation id="1197267115302279827">Mugitu laster-markak</translation>
 <translation id="1201402288615127009">Hurrengoa</translation>
@@ -42,7 +43,6 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="1204692632633423444">Chrome-tik zuzenean abiaraz daitekeen ekintza baten botoia: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">Kopiatu estekaren testua</translation>
 <translation id="1209206284964581585">Ezkutatu</translation>
-<translation id="1226851825267005295">Google-ko kontuarekin Chrome-n saioa hasi ondoren kudeatu ahal izango dituzu hobespenak.</translation>
 <translation id="1227058898775614466">Nabigazio-historia</translation>
 <translation id="1231733316453485619">Sinkronizazioa aktibatu nahi duzu?</translation>
 <translation id="123724288017357924">Kargatu orria, cacheko edukiari ez ikusi eginda</translation>
@@ -166,7 +166,6 @@ Arakatze-historia ezabatzen duzunean (osorik nahiz webgune zehatz bat), neurketa
 <translation id="1928696683969751773">Eguneratzeak</translation>
 <translation id="19288952978244135">Ireki berriro Chrome.</translation>
 <translation id="1933845786846280168">Hautatutako fitxa</translation>
-<translation id="193571872656840963">Erakutsi esker ona sortzaileari</translation>
 <translation id="1943432128510653496">Gorde pasahitzak</translation>
 <translation id="1952172573699511566">Ahal den heinean, webguneek testua hizkuntza hobetsian erakutsiko dute.</translation>
 <translation id="1959679933317802873">Edukiaren zain</translation>
@@ -202,7 +201,6 @@ Arakatze-historia ezabatzen duzunean (osorik nahiz webgune zehatz bat), neurketa
 <translation id="2122601567107267586">Ezin izan da ireki aplikazioa</translation>
 <translation id="2132122640199389833">Kendu lotutako gailu guztiak</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> itxi da</translation>
-<translation id="2134927169889348449">Chrome erabiltzen baduzu, onartu egingo dituzu <ph name="BEGIN_TOS_LINK" />Google-ren Zerbitzu-baldintzak<ph name="END_TOS_LINK" /> eta <ph name="BEGIN_ATOS_LINK" />Google Chrome-ren eta Chrome OS-ren Zerbitzu-baldintza gehigarriak<ph name="END_ATOS_LINK" />.</translation>
 <translation id="2139186145475833000">Gehitu hasierako pantailan</translation>
 <translation id="2141396931810938595">Zure erabileran oinarrituta</translation>
 <translation id="214888715418183969">Aukeratu zer partekatu nahi duzun Chrome-rekin. Chrome-ren eginbideak, funtzionamendua eta egonkortasuna hobetzen laguntzeko erabiliko dira partekatzen dituzun neurketak.</translation>
@@ -555,7 +553,6 @@ Egoeraren token pribatuek sareko pribatutasuna hobetzen dute eta ezin dira erabi
 <translation id="409109920254068737">Tableta erabil dezakezu QR kodea erakusten ari den gailuan saioa hasteko.</translation>
 <translation id="4095146165863963773">Aplikazioko datuak ezabatu nahi dituzu?</translation>
 <translation id="4096227151372679484">Laster-marka gordetzeko fluxua altuera erdian irekita dago</translation>
-<translation id="4099578267706723511">Hobetu Chrome Google-ri erabilera-estatistikak eta hutsegite-txostenak bidalita.</translation>
 <translation id="4101475238162928417">Sinkronizatu datuak darabiltzazun beste gailuetako pasahitzak, laster-markak eta abar eskuratzeko</translation>
 <translation id="410351446219883937">Erreprodukzio automatikoa</translation>
 <translation id="4106587138345390261">Chrome eginbide berriak probatzen ari da; haiei esker, informazio gutxiago erabilita sarea modu berean arakatzeko aukera eskainiko dute webguneek</translation>
@@ -593,7 +590,6 @@ Egoeraren token pribatuek sareko pribatutasuna hobetzen dute eta ezin dira erabi
 <translation id="4269820728363426813">Kopiatu estekaren helbidea</translation>
 <translation id="4283102315569707115">Modu lehenetsian ordenagailuetarako webguneak eskatu nahi dituzu?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Aktibatu pantailaren blokeoa Android-en ezarpenetan<ph name="END_LINK" /></translation>
-<translation id="4293476595220860475">Chrome erabiltzen baduzu, onartu egingo dituzu <ph name="BEGIN_TOS_LINK" />Google-ren Zerbitzu-baldintzak<ph name="END_TOS_LINK" /> eta <ph name="BEGIN_ATOS_LINK" />Google Chrome-ren eta Chrome OS-ren Zerbitzu-baldintza gehigarriak<ph name="END_ATOS_LINK" />. <ph name="BEGIN_PRIVACY_LINK" />Pribatutasun-gidalerroak<ph name="END_PRIVACY_LINK" /> ere aplikatuko dira.</translation>
 <translation id="4296252229500326964">Sortu ezkutuko moduko fitxa bat</translation>
 <translation id="4298388696830689168">Estekatutako webguneak</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -766,7 +762,6 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5161254044473106830">Izena behar da</translation>
 <translation id="5170568018924773124">Erakutsi karpetan</translation>
 <translation id="5171045022955879922">Bilatu edo idatzi URLa</translation>
-<translation id="517734441743343109">Aurrera egiten baduzu, onartu egingo dituzu <ph name="BEGIN_TOS_LINK" />Zerbitzu-baldintzak<ph name="END_TOS_LINK" /> eta <ph name="BEGIN_PRIVACY_LINK" />Pribatutasun-gidalerroak<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="5184329579814168207">Ireki Chrome-n</translation>
 <translation id="5191251636205085390">Kontrolatu hirugarrenen cookieak ordezteko helburua duten teknologia berriak eta lortu haiei buruzko informazio gehiago</translation>
 <translation id="5193988420012215838">Arbelean kopiatuta</translation>

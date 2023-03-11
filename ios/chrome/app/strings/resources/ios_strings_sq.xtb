@@ -81,6 +81,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="149095475893949513">Ky sajt uebi po përpiqet të shkarkojë një profil konfigurimi.</translation>
 <translation id="1491277525950327607">Trokit dy herë për të ndryshuar cilësimin</translation>
 <translation id="1492417797159476138">E ke ruajtur tashmë këtë emër përdoruesi për këtë sajt</translation>
+<translation id="1497590942294823549">Menyja → Menaxheri i fjalëkalimeve</translation>
 <translation id="1498283581832036924">Llogaria jote e <ph name="WEBSITE" /> nuk do të fshihet.</translation>
 <translation id="1506063256525392513">Kjo të lejon të bësh dhe të ngarkosh fotografi, si dhe të skanosh kode QR</translation>
 <translation id="1509486075633541495">Identifikohu në sajtin e uebit</translation>
@@ -242,6 +243,7 @@ Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfleti
 <translation id="271033894570825754">E re</translation>
 <translation id="2712127207578915686">Skedari nuk mund të hapet</translation>
 <translation id="2718352093833049315">Vetëm me Wi-Fi</translation>
+<translation id="2737716090799520623">Kur je i identifikuar në Chrome, fjalëkalimet që ruan do të shkojnë te "Llogaria jote e Google" (<ph name="ACCOUNT" />). Për ta çaktivizuar këtë, <ph name="BEGIN_LINK" />shko te cilësimet<ph name="END_LINK" />.</translation>
 <translation id="2747003861858887689">Fusha e mëparshme</translation>
 <translation id="2749231692441336879">Po ndjek <ph name="CHANNEL_NAME" /></translation>
 <translation id="2764831210418622012">pikërisht tani</translation>
@@ -843,6 +845,7 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="6801927553864092214">Për të shfletuar në mënyrë private, hap një skedë "të fshehtë"</translation>
 <translation id="6807889908376551050">Shfaqi të gjitha...</translation>
 <translation id="681368974849482173">Elementi u krijua</translation>
+<translation id="6822587385560699678">Kur kjo është aktive, fjalëkalimet ruhen te <ph name="ACCOUNT" />. Kur kjo është joaktive, fjalëkalimet ruhen vetëm në këtë pajisje.</translation>
 <translation id="683022620450280906">Fjalëkalimet e ruajtura mund t'i përdorësh në çdo pajisje. Ato janë të ruajtura në "Menaxherin e fjalëkalimeve të Google" për <ph name="EMAIL" /></translation>
 <translation id="6831043979455480757">Përkthe</translation>
 <translation id="6842136130964845393">Për t'u siguruar që mund të qasesh gjithmonë në fjalëkalimet e tua të ruajtura, verifiko që je ti</translation>

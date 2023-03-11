@@ -34,6 +34,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie 
 <translation id="1173894706177603556">Zmień nazwę</translation>
 <translation id="1177863135347784049">Niestandardowe</translation>
 <translation id="1181037720776840403">Usuń</translation>
+<translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">Użyć silnego hasła?</translation>
 <translation id="1197267115302279827">Przenieś zakładki</translation>
 <translation id="1201402288615127009">Dalej</translation>
@@ -42,7 +43,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie 
 <translation id="1204692632633423444">Przycisk działania Chrome: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">Kopiuj tekst linku</translation>
 <translation id="1209206284964581585">Na razie ukryj</translation>
-<translation id="1226851825267005295">Po zalogowaniu się na konto Google w Chrome możesz zarządzać ustawieniami.</translation>
 <translation id="1227058898775614466">Historia nawigacji</translation>
 <translation id="1231733316453485619">Włączyć synchronizację?</translation>
 <translation id="123724288017357924">Ponowie załaduj stronę, bez pamięci podręcznej</translation>
@@ -166,7 +166,6 @@ Jeśli usuniesz swoją historię przeglądania – całą lub dotyczącą okre�
 <translation id="1928696683969751773">Aktualizacje</translation>
 <translation id="19288952978244135">Uruchom ponownie Chrome.</translation>
 <translation id="1933845786846280168">Wybrana karta</translation>
-<translation id="193571872656840963">Wyświetl podziękowanie dla tego twórcy</translation>
 <translation id="1943432128510653496">Zapisuj hasła</translation>
 <translation id="1952172573699511566">Gdy będzie to możliwe, tekst na stronach internetowych będzie się wyświetlać w Twoim preferowanym języku.</translation>
 <translation id="1959679933317802873">Czekam na treść</translation>
@@ -202,7 +201,6 @@ Jeśli usuniesz swoją historię przeglądania – całą lub dotyczącą okre�
 <translation id="2122601567107267586">Nie udało się otworzyć aplikacji</translation>
 <translation id="2132122640199389833">Usuń wszystkie połączone urządzenia</translation>
 <translation id="213279576345780926">Zamknięto: <ph name="TAB_TITLE" /></translation>
-<translation id="2134927169889348449">Korzystając z Chrome, wyrażasz zgodę na <ph name="BEGIN_TOS_LINK" />Warunki korzystania z usług Google<ph name="END_TOS_LINK" /> oraz <ph name="BEGIN_ATOS_LINK" />Dodatkowe warunki korzystania z Google Chrome i Chrome OS<ph name="END_ATOS_LINK" />.</translation>
 <translation id="2139186145475833000">Dodaj do ekranu głównego</translation>
 <translation id="2141396931810938595">Na podstawie wykorzystania</translation>
 <translation id="214888715418183969">Wybierz, co chcesz udostępniać w Chrome. Udostępniane dane będą używane do ulepszania funkcji przeglądarki Chrome, jej działania i stabilności.</translation>
@@ -555,7 +553,6 @@ Tokeny prywatności zwiększają prywatność w sieci i nie można za ich pomo
 <translation id="409109920254068737">Za pomocą tego tabletu możesz zalogować się na urządzeniu, na którym wyświetlany jest ten kod QR.</translation>
 <translation id="4095146165863963773">Usunąć dane aplikacji?</translation>
 <translation id="4096227151372679484">Procedura zapisywania zakładki została otwarta na połowę wysokości</translation>
-<translation id="4099578267706723511">Pomóż ulepszyć Chrome, wysyłając do Google statystyki użytkowania i raporty o awariach.</translation>
 <translation id="4101475238162928417">Aby mieć dostęp do haseł, zakładek i innych danych na swoich pozostałych urządzeniach, włącz synchronizację</translation>
 <translation id="410351446219883937">Autoodtwarzanie</translation>
 <translation id="4106587138345390261">Testujemy nowe funkcje Chrome, dzięki którym witryny będą mogły zapewniać użytkownikom taką samą wygodę przeglądania treści przy wykorzystaniu mniejszej ilości informacji</translation>
@@ -593,7 +590,6 @@ Tokeny prywatności zwiększają prywatność w sieci i nie można za ich pomo
 <translation id="4269820728363426813">Kopiuj adres linku</translation>
 <translation id="4283102315569707115">Domyślnie żądać strony w wersji na komputer?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Włącz blokadę ekranu w ustawieniach Androida<ph name="END_LINK" /></translation>
-<translation id="4293476595220860475">Korzystając z Chrome, wyrażasz zgodę na <ph name="BEGIN_TOS_LINK" />Warunki korzystania z usług Google<ph name="END_TOS_LINK" /> oraz <ph name="BEGIN_ATOS_LINK" />Dodatkowe warunki korzystania z Google Chrome i Chrome OS<ph name="END_ATOS_LINK" />. Obowiązują też postanowienia <ph name="BEGIN_PRIVACY_LINK" />polityki prywatności<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="4296252229500326964">Nowa karta incognito</translation>
 <translation id="4298388696830689168">Połączone strony</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -766,7 +762,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5161254044473106830">Tytuł jest wymagany</translation>
 <translation id="5170568018924773124">Pokaż w folderze</translation>
 <translation id="5171045022955879922">Wyszukaj lub wpisz URL</translation>
-<translation id="517734441743343109">Przechodząc dalej, akceptujesz <ph name="BEGIN_TOS_LINK" />Warunki korzystania z usługi<ph name="END_TOS_LINK" /> i <ph name="BEGIN_PRIVACY_LINK" />Politykę prywatności<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="5184329579814168207">Otwórz w Chrome</translation>
 <translation id="5191251636205085390">Poznaj nowe technologie, które będą używane zamiast plików cookie innych firm, i naucz się je kontrolować</translation>
 <translation id="5193988420012215838">Skopiowane do schowka</translation>

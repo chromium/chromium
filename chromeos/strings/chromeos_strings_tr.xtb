@@ -241,7 +241,6 @@
 <translation id="3226657629376379887">Düzen işlemleri menüsü</translation>
 <translation id="3246869037381808805">1 günden daha eski yazdırma işleri kaldırılır</translation>
 <translation id="3268178239013324452">İşlem başarısız - Kapak açık</translation>
-<translation id="3275506277319227640"><ph name="DIRECTION" /> tarafa sabitleyin</translation>
 <translation id="3275729367986477355">Avatar resmi</translation>
 <translation id="3283504360622356314">{0,plural, =1{Dosyayı düzenle}other{Dosyaları düzenle}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
@@ -360,7 +359,6 @@
 <translation id="4311195029067684288">Tam</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> tuşuna basıldı</translation>
 <translation id="435692326371619097">Ağ APN ayarlarını yönetin. APN'ler, hücresel ağ ve internet arasında bir bağlantı oluşturur. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
-<translation id="4370033095251616914">Küçük olan tarafa sabitleyin</translation>
 <translation id="4378373042927530923">Çalıştırılmadı</translation>
 <translation id="4378551569595875038">Bağlanıyor...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -903,7 +901,6 @@
 <translation id="9137526406337347448">Google Hizmetleri</translation>
 <translation id="9138630967333032450">Sol üst karakter</translation>
 <translation id="9149391708638971077">Bellek testini çalıştır</translation>
-<translation id="9157515863513902090">Büyük olan tarafa sabitleyin</translation>
 <translation id="9161276708550942948">boşluk</translation>
 <translation id="9173638680043580060">Bir dakikadan az kaldı</translation>
 <translation id="917720651393141712">Test</translation>

@@ -507,6 +507,7 @@
 <translation id="2149968176347646218">კავშირი დაუცველია</translation>
 <translation id="2153609454945889823">გსურთ, დააინსტალიროთ Google Play Services AR-ისთვის?</translation>
 <translation id="2154484045852737596">ბარათის რედაქტირება</translation>
+<translation id="2154739667870063220">გადატვირთვა</translation>
 <translation id="2155260325161282517">5 x 7 დუიმი</translation>
 <translation id="2157640075051554492">შეტყობინებები ფასებისთვის თვალის მიდევნების შესახებ</translation>
 <translation id="2161656808144014275">ტექსტი</translation>
@@ -2118,6 +2119,7 @@
 <translation id="6218753634732582820">ამოიშალოს მისამართი Chromium-იდან?</translation>
 <translation id="622039917539443112">პარალელური დაკეცვა</translation>
 <translation id="6221345481584921695">Google-ის უსაფრთხო დათვალიერების ფუნქციამ <ph name="BEGIN_LINK" />აღმოაჩინა საზიანო პროგრამა<ph name="END_LINK" /> <ph name="SITE" />-ზე. ზოგჯერ ნორმალური და უსაფრთხო ვებსაიტები ინფიცირდება საზიანო პროგრამებით. საზიანო პროგრამა ეკუთვნის <ph name="SUBRESOURCE_HOST" />-ს, საზიანო პროგრამების ცნობილ დისტრიბუტორს.</translation>
+<translation id="6221892641068781024">გამარტივებული ხედი</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome პარამეტრებიდან მარტივი წვდომის ხელსაწყოების პერსონალიზირებისთვის დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
 <translation id="6229649258872345286">ოჯახური მოგზაურობა</translation>
 <translation id="6232271601416750929">სუფთა სილამაზე</translation>
@@ -2177,6 +2179,7 @@
 <translation id="6366710531182496394">ორმაგად დასტეპლერება მარცხნივ</translation>
 <translation id="6367196786591004737">შენატანის წაშლა</translation>
 <translation id="6370022303958842211">მოწყობილობაზე წვდომასთან დაკავშირებული აქტივობა, მაგალითად, სისტემაში შესვლის (მათ შორის, წარუმატებელი შესვლის მიზეზები), სისტემიდან გასვლის, ჩაკეტვისა და განბლოკვის შემთხვევები</translation>
+<translation id="6374469231428023295">ხელახლა ცდა</translation>
 <translation id="6374865374745447009">ფანჯრების მართვა</translation>
 <translation id="6377268785556383139">მოთხოვნაზე „<ph name="SEARCH_TEXT" />“ მოიძებნა 1 შედეგი</translation>
 <translation id="6380497234672085559">A0</translation>
@@ -2925,6 +2928,7 @@
 <translation id="8186706823560132848">პროგრამული უზრუნველყოფა</translation>
 <translation id="8190193880870196235">იმართება გაფართოების მიერ</translation>
 <translation id="8194797478851900357">გადატანის &amp;მოქმედების გაუქმება</translation>
+<translation id="8200772114523450471">გაგრძელება</translation>
 <translation id="8201077131113104583">URL-ის არასწორი განახლება განხორციელდა ID ”<ph name="EXTENSION_ID" />”-ის მქონე გაფართოებისთვის.</translation>
 <translation id="8202097416529803614">შეკვეთის რეზიუმე</translation>
 <translation id="8202370299023114387">კონფლიქტი</translation>
@@ -3222,6 +3226,7 @@
 <translation id="8963117664422609631">საიტის პარამეტრებზე გადასვლა</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />მითითებები:<ph name="MARKUP_2" />დარწმუნდით, რომ მონაცემთა კავშირი გაქვთ<ph name="MARKUP_3" />ხელახლა ჩატვირთეთ გვერდი მოგვიანებით<ph name="MARKUP_4" />შეამოწმეთ თქვენ მიერ შეყვანილი მისამართი<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">ბარათის შენახვა</translation>
+<translation id="8970887620466824814">წარმოიქმნა შეფერხება.</translation>
 <translation id="8971063699422889582">სერვერის სერტიფიკატს ვადა გაუვიდა.</translation>
 <translation id="8975012916872825179">მოიცავს ისეთ ინფორმაციას, როგორიცაა ტელეფონის ნომრები, ელფოსტის მისამართები და მიწოდების მისამართები</translation>
 <translation id="8975263830901772334">თქვენ მიერ ბეჭდვაზე გაშვებული ფაილების სახელები</translation>

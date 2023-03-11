@@ -81,6 +81,7 @@ Salatun datasi voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="149095475893949513">Verkkosivusto yrittää ladata määritysprofiilia.</translation>
 <translation id="1491277525950327607">Muuta asetusta kaksoisnapauttamalla.</translation>
 <translation id="1492417797159476138">Tallensit jo tämän käyttäjänimen sivustolle</translation>
+<translation id="1497590942294823549">Valikko → Salasanat</translation>
 <translation id="1498283581832036924">Tiliäsi (<ph name="WEBSITE" />) ei poisteta.</translation>
 <translation id="1506063256525392513">Tämän avulla voit ottaa kuvia ja ladata niitä palvelimelle sekä skannata QR-koodeja</translation>
 <translation id="1509486075633541495">Kirjaudu sisään verkkosivustolle</translation>
@@ -242,6 +243,7 @@ Sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. 
 <translation id="271033894570825754">Uusi</translation>
 <translation id="2712127207578915686">Tiedostoa ei voi avata</translation>
 <translation id="2718352093833049315">Vain Wi-Fillä</translation>
+<translation id="2737716090799520623">Kun olet kirjautuneena Chromeen, tallennetut salasanat tallennetaan Google-tilillesi (<ph name="ACCOUNT" />). Voit laittaa tämän pois päältä <ph name="BEGIN_LINK" />asetuksista<ph name="END_LINK" />.</translation>
 <translation id="2747003861858887689">Edellinen kenttä</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> seurannassa</translation>
 <translation id="2764831210418622012">äsken</translation>
@@ -843,6 +845,7 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="6801927553864092214">Voit selata verkkoa yksityisesti avaamalla incognito-välilehden.</translation>
 <translation id="6807889908376551050">Näytä kaikki...</translation>
 <translation id="681368974849482173">Kohde luotiin</translation>
+<translation id="6822587385560699678">Kun asetus on päällä, salasanat tallennetaan tänne: <ph name="ACCOUNT" />. Kun asetus on pois päältä, salasanat tallennetaan vain tälle laitteelle.</translation>
 <translation id="683022620450280906">Voit käyttää tallennettuja salasanoja kaikilla laitteilla. Ne on tallennettu Googlen salasanojen ylläpitoon sähköpostiosoitteella <ph name="EMAIL" /></translation>
 <translation id="6831043979455480757">Käännä</translation>
 <translation id="6842136130964845393">Todenna henkilöllisyytesi varmistaaksesi, että sinulla on aina pääsy tallennettuihin salasanoihisi</translation>

@@ -100,7 +100,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1420408895951708260">Zapnout nebo vypnout noční režim. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Zobrazovat na zařízení <ph name="DEVICE_TYPE" /> nejnovější fotky a média z telefonu</translation>
 <translation id="1426410128494586442">Ano</translation>
-<translation id="1447641497144572814">Spořič obrazovky se spouští</translation>
 <translation id="1455242230282523554">Zobrazit jazykové nastavení</translation>
 <translation id="1460620680449458626">Zvuk je vypnutý.</translation>
 <translation id="14648076227129703">Umožňuje přístup k fotoaparátu aplikacím <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> a všem aplikacím a webům s příslušným oprávněním</translation>
@@ -126,6 +125,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1550523713251050646">Kliknutím zobrazíte další možnosti</translation>
 <translation id="1555130319947370107">Modrá</translation>
 <translation id="1576623706766186887">Oddálit, když je zapnutá lupa</translation>
+<translation id="1586324912145647027">Přejděte na plochu 1 až 8</translation>
 <translation id="1589090746204042747">Získat přístup k veškeré vaší aktivitě v této relaci</translation>
 <translation id="1610778689852195798">„Vrátit zpět“</translation>
 <translation id="1611993646327628135">Zap</translation>
@@ -514,6 +514,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3631369015426612114">Povolit oznámení z následujících zdrojů</translation>
 <translation id="3633097874324966332">Pokud zařízení chcete spárovat, otevřete nastavení rozhraní Bluetooth</translation>
 <translation id="3638400994746983214">Přepnout obrazovku ochrany soukromí. <ph name="STATE_TEXT" />.</translation>
+<translation id="3649256019230929621">Minimalizovat okno</translation>
 <translation id="3649505501900178324">Opožděná aktualizace</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -588,6 +589,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="4021716437419160885">Posunout dolů</translation>
 <translation id="4022497978915111141">Zamknout zařízení</translation>
 <translation id="4024840464866786680">Pokud jste PIN a heslo zapomněli nebo jste nedávno změnili heslo účtu Google, zkuste tohoto uživatele obnovit.</translation>
+<translation id="4026843240379844265">Přesunout aktivní okno mezi obrazovkami</translation>
 <translation id="4028481283645788203">Pro lepší zabezpečení je vyžadováno heslo</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Sdílíte svou obrazovku</translation>
@@ -912,6 +914,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="5689633613396158040">Noční režim usnadňuje sledování obrazovky nebo čtení při tlumeném osvětlení. Klepnutím můžete změnit čas zapínání nočního režimu, případně ho úplně vypnout.</translation>
 <translation id="5691772641933328258">Otisk prstu nebyl rozpoznán</translation>
 <translation id="5693255400847650006">Používá se mikrofon</translation>
+<translation id="5699366815052349604">Přidružit aktivní okno ke všem plochám</translation>
 <translation id="570390244361237317">Všechny aplikace, můžete je procházet pomocí kláves se šipkami</translation>
 <translation id="5707775774148071965">Vaše zařízení podporuje vyšší přenosovou rychlost než kabel. Výkon zařízení může být omezen.</translation>
 <translation id="5710450975648804523">Režim Nerušit je zapnutý</translation>
@@ -1551,6 +1554,7 @@ Nová instalace</translation>
 <translation id="9034924485347205037">Soubory systému Linux</translation>
 <translation id="9047624247355796468">Otevřít nastavení sítě <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Sbalit oznámení</translation>
+<translation id="906458777597946297">Maximalizovat okno</translation>
 <translation id="9065203028668620118">Upravit</translation>
 <translation id="9070640332319875144">Nastavení Asistenta</translation>
 <translation id="9072519059834302790">Do vybití baterie zbývá: <ph name="TIME_LEFT" />.</translation>

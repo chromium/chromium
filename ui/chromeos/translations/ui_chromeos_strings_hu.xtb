@@ -84,6 +84,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> elem tömörítése…</translation>
 <translation id="1722687688096767818">Profil hozzáadása…</translation>
 <translation id="1726100011689679555">Névszerverek</translation>
+<translation id="1727562178154619254">Szinkronizálásra kész</translation>
 <translation id="1729953886957086472">német (Németország)</translation>
 <translation id="1730235522912993863">kínai (kanji)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> elem a vágólapra másolva.</translation>
@@ -705,6 +706,7 @@
 <translation id="6732801395666424405">A tanúsítványok betöltése nem történt meg</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">Mappa megosztása a Bruschettával</translation>
+<translation id="6750737795876287924">Jelenlegi könyvtár</translation>
 <translation id="6751256176799620176">1 mappa kiválasztva</translation>
 <translation id="6755827872271341378">ChromeOS Flex-eszköz</translation>
 <translation id="6790428901817661496">Lejátszás</translation>
@@ -742,7 +744,6 @@
 <translation id="6973630695168034713">Mappák</translation>
 <translation id="6976795442547527108">Oroszlán</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979737339423435258">Mindenkori</translation>
 <translation id="6989942356279143254">svéd</translation>
 <translation id="6990081529015358884">Elfogyott a hely</translation>
 <translation id="6993826899923627728">Ezek az elemek a kukában vannak</translation>
@@ -798,7 +799,6 @@
 <translation id="7458955835361612701">Nincsenek új képek</translation>
 <translation id="7460898608667578234">ukrán</translation>
 <translation id="7469894403370665791">Automatikus kapcsolódás ehhez a hálózathoz</translation>
-<translation id="7481358317100446445">Kész</translation>
 <translation id="7486315294984620427">Ha fájlokat szeretne a Parallels Desktop felületére húzni, az adott fájlt előbb a Windows-fájlok közé kell másolni.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">malajálam, fonetikus</translation>

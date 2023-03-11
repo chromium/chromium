@@ -34,6 +34,7 @@ Chỉ những người có cụm mật khẩu của bạn mới đọc được 
 <translation id="1173894706177603556">Đổi tên</translation>
 <translation id="1177863135347784049">Tùy chỉnh</translation>
 <translation id="1181037720776840403">Xóa</translation>
+<translation id="1181366777303791449">trên <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">Dùng mật khẩu mạnh?</translation>
 <translation id="1197267115302279827">Di chuyển dấu trang</translation>
 <translation id="1201402288615127009">Tiếp theo</translation>
@@ -42,7 +43,6 @@ Chỉ những người có cụm mật khẩu của bạn mới đọc được 
 <translation id="1204692632633423444">Nút thao tác trên Chrome: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">Sao chép văn bản liên kết</translation>
 <translation id="1209206284964581585">Ẩn ngay bây giờ</translation>
-<translation id="1226851825267005295">Bạn có thể quản lý các lựa chọn ưu tiên sau khi đăng nhập vào Chrome bằng Tài khoản Google.</translation>
 <translation id="1227058898775614466">Lịch sử di chuyển</translation>
 <translation id="1231733316453485619">Bật tính năng đồng bộ hóa?</translation>
 <translation id="123724288017357924">Tải lại trang hiện tại, bỏ qua nội dung được lưu trong bộ nhớ đệm</translation>
@@ -166,7 +166,6 @@ Khi xoá nhật ký duyệt web (tất cả hoặc một trang cụ thể), bạ
 <translation id="1928696683969751773">Bản cập nhật</translation>
 <translation id="19288952978244135">Mở lại Chrome.</translation>
 <translation id="1933845786846280168">Thẻ được chọn</translation>
-<translation id="193571872656840963">Cảm ơn nhà sáng tạo này</translation>
 <translation id="1943432128510653496">Lưu mật khẩu</translation>
 <translation id="1952172573699511566">Các trang web sẽ hiển thị văn bản bằng ngôn ngữ ưu tiên của bạn khi có thể.</translation>
 <translation id="1959679933317802873">Đang chờ nội dung</translation>
@@ -202,7 +201,6 @@ Khi xoá nhật ký duyệt web (tất cả hoặc một trang cụ thể), bạ
 <translation id="2122601567107267586">Không thể mở ứng dụng</translation>
 <translation id="2132122640199389833">Xoá mọi thiết bị đã liên kết</translation>
 <translation id="213279576345780926">Đã đóng <ph name="TAB_TITLE" /></translation>
-<translation id="2134927169889348449">Bằng việc sử dụng Chrome, bạn đồng ý với <ph name="BEGIN_TOS_LINK" />Điều khoản dịch vụ của Google<ph name="END_TOS_LINK" /> cũng như <ph name="BEGIN_ATOS_LINK" />Điều khoản dịch vụ bổ sung của Google Chrome và ChromeOS<ph name="END_ATOS_LINK" />.</translation>
 <translation id="2139186145475833000">Thêm vào Màn hình chính</translation>
 <translation id="2141396931810938595">Dựa trên tùy chọn sử dụng của bạn</translation>
 <translation id="214888715418183969">Chọn những thông tin mà bạn muốn chia sẻ với Chrome. Những thông tin bạn chia sẻ sẽ góp phần cải thiện các tính năng, hiệu suất và độ ổn định của Chrome.</translation>
@@ -555,7 +553,6 @@ Mã thông báo trạng thái riêng tư giúp cải thiện quyền riêng tư
 <translation id="409109920254068737">Bạn có thể dùng máy tính bảng này để đăng nhập trên thiết bị đang hiển thị mã QR này.</translation>
 <translation id="4095146165863963773">Xóa dữ liệu ứng dụng?</translation>
 <translation id="4096227151372679484">Luồng lưu dấu trang đã mở ở nửa dưới của màn hình</translation>
-<translation id="4099578267706723511">Giúp cải thiện Chrome bằng cách gửi số liệu thống kê sử dụng và báo cáo sự cố cho Google.</translation>
 <translation id="4101475238162928417">Đồng bộ hoá để lấy mật khẩu, dấu trang và nội dung khác trên các thiết bị khác của bạn.</translation>
 <translation id="410351446219883937">Tự động phát</translation>
 <translation id="4106587138345390261">Chrome đang nghiên cứu các tính năng mới cho phép các trang web giữ nguyên trải nghiệm duyệt web nhưng dùng ít thông tin của bạn hơn</translation>
@@ -593,7 +590,6 @@ Mã thông báo trạng thái riêng tư giúp cải thiện quyền riêng tư
 <translation id="4269820728363426813">Sao chép địa chỉ liên kết</translation>
 <translation id="4283102315569707115">Yêu cầu trang web dành cho máy tính theo mặc định?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Bật phương thức khóa màn hình trong phần cài đặt Android<ph name="END_LINK" /></translation>
-<translation id="4293476595220860475">Bằng việc sử dụng Chrome, bạn đồng ý với <ph name="BEGIN_TOS_LINK" />Điều khoản dịch vụ của Google<ph name="END_TOS_LINK" /> cũng như <ph name="BEGIN_ATOS_LINK" />Điều khoản dịch vụ bổ sung của Google Chrome và ChromeOS<ph name="END_ATOS_LINK" />. <ph name="BEGIN_PRIVACY_LINK" />Chính sách quyền riêng tư<ph name="END_PRIVACY_LINK" /> cũng được áp dụng.</translation>
 <translation id="4296252229500326964">Thẻ ẩn danh mới</translation>
 <translation id="4298388696830689168">Các trang web liên kết</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -766,7 +762,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5161254044473106830">Cần có tiêu đề</translation>
 <translation id="5170568018924773124">Hiển thị trong thư mục</translation>
 <translation id="5171045022955879922">Tìm kiếm hoặc nhập URL</translation>
-<translation id="517734441743343109">Bằng việc tiếp tục, bạn đồng ý với <ph name="BEGIN_TOS_LINK" />Điều khoản dịch vụ<ph name="END_TOS_LINK" /> và <ph name="BEGIN_PRIVACY_LINK" />Chính sách\u00A0Quyền riêng tư<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="5184329579814168207">Mở trong Chrome</translation>
 <translation id="5191251636205085390">Tìm hiểu và kiểm soát các công nghệ mới giúp thay thế cookie của bên thứ ba</translation>
 <translation id="5193988420012215838">Đã sao chép vào bảng nhớ tạm</translation>
@@ -1443,7 +1438,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8683039184091909753">hình ảnh</translation>
 <translation id="869891660844655955">Ngày hết hạn</translation>
 <translation id="8699120352855309748">Không đề xuất dịch những ngôn ngữ này</translation>
-<translation id="8712637175834984815">Bỏ qua</translation>
+<translation id="8712637175834984815">Tôi hiểu</translation>
 <translation id="8725066075913043281">Thử lại</translation>
 <translation id="8746155870861185046">Chia sẻ nội dung được làm nổi bật</translation>
 <translation id="874726034427945498">Để xem đề xuất tốt hơn trong thanh địa chỉ, hãy đồng bộ hoá các thẻ và nhật ký</translation>

@@ -376,6 +376,7 @@
 <translation id="1803351196216024260">Таны микрофоныг ашиглахыг хүсэх боломжтой</translation>
 <translation id="1807246157184219062">Гэрэлтүүлэг</translation>
 <translation id="1807528111851433570">Эхлэлийн хүснэгт</translation>
+<translation id="180991881384371158">Таны Карт баталгаажуулалтын код нь картын тань ар талд байдаг. Энэ нь гарын үсгийн нүдний баруун дээд талд байх сүүлийн 3 орон юм.</translation>
 <translation id="181000283860817563">Олон сайт дээр үнэ хянах</translation>
 <translation id="1810391395243432441">Дэлгэцийн түгжээгээрээ нууц үгээ хамгаалах</translation>
 <translation id="1812527064848182527">газрын гадаргуу</translation>
@@ -506,6 +507,7 @@
 <translation id="2149968176347646218">Холболт аюултай байна</translation>
 <translation id="2153609454945889823">Google Play Services for AR-г суулгах уу?</translation>
 <translation id="2154484045852737596">Картыг засах</translation>
+<translation id="2154739667870063220">Дахин асаах</translation>
 <translation id="2155260325161282517">5 x 7 инч</translation>
 <translation id="2157640075051554492">Үнэ хяналтын мэдэгдэл</translation>
 <translation id="2161656808144014275">Текст</translation>
@@ -640,6 +642,7 @@
 <translation id="2521736961081452453">Маягт үүсгэх</translation>
 <translation id="2523886232349826891">Зөвхөн энэ төхөөрөмж дээр хадгалсан</translation>
 <translation id="2524461107774643265">Дэлгэрэнгүй мэдээлэл нэмэх</translation>
+<translation id="2527451058878391043">Таны Карт баталгаажуулалтын код нь картын тань урд талд байдаг. Энэ нь таны картын дугаарын баруун дээд талд байх 4 оронтой код юм.</translation>
 <translation id="2529899080962247600">Энэ талбар нь <ph name="MAX_ITEMS_LIMIT" />-с олон оролттой байж болохгүй. Цаашдын бүх оролтыг үл хэрэгсэнэ.</translation>
 <translation id="253493526287553278">Урамшууллын кодын дэлгэрэнгүйг харах</translation>
 <translation id="2535585790302968248">Нууцлалтайгаар үзэхийн тулд шинэ Нууцлалтай таб нээнэ үү</translation>
@@ -894,6 +897,7 @@
 <translation id="3215092763954878852">WebAuthn-г ашиглаж чадсангүй</translation>
 <translation id="3216313131063488104">Блюз</translation>
 <translation id="3218181027817787318">Харьцангуй</translation>
+<translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Одоо шинэчлэх шаардлагатай}=2{Маргааш гэхэд шинэчлэх шаардлагатай}other{# хоногийн дотор шинэчлэх шаардлагатай}}</translation>
 <translation id="3223287115535306850">Апп эхлүүлэх дүрс тэмдэг</translation>
 <translation id="3223425961342298674">Байршлыг зөвшөөрөөгүй</translation>
 <translation id="3225919329040284222">Серверөөс өгсөн гэрчилгээ нь өгөгдсөн хүлээлттэй таарахгүй байна. Эдгээр хүлээлтүүдийг таныг хамгаалахын тулд тодорхой, аюулгүйн өндөр зэрэглэлийн 
@@ -1379,6 +1383,7 @@
 <translation id="4350629523305688469">Олон үйлдэлт тавиур</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> ойролцоох Bluetooth төхөөрөмжүүдийг скан хийх хүсэлтэй байна. Дараах төхөөрөмжүүд олдлоо:</translation>
 <translation id="4351175281479794167">Баталгаажуулах код оруулна уу</translation>
+<translation id="4355383636893709732">Android аппуудын ChromeOS-н шинэчлэлт</translation>
 <translation id="4356973930735388585">Энэ сайтад байгаа халдагч таны мэдээллийг (жишээ нь: зураг, нууц үг, мессеж, кредит карт) хулгайлах, эсвэл устгах боломжтой аюултай программыг компьютерт суулгахаар оролдож болзошгүй.</translation>
 <translation id="4358059973562876591">Таны тодорхойлсон загваруудыг DnsOverHttpsMode удирдамжийн алдааны улмаас хэрэгжүүлэхгүй байж болзошгүй.</translation>
 <translation id="4358461427845829800">Төлбөрийн хэрэгслийг удирдах...</translation>
@@ -1759,6 +1764,7 @@
 <translation id="5288393065350884210">Нягтлан бодох, аудит</translation>
 <translation id="5288808348893593856">Chrome сайтын холболтыг аюултай байна гэж хэлээгүйгээс бусад тохиолдолд энэ нь аюулгүй байна.</translation>
 <translation id="5289384342738547352">Олон документын удирдлага</translation>
+<translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Өнөөдөр шинэчлэх шаардлагатай}=2{Маргааш гэхэд шинэчлэх шаардлагатай}other{# хоногийн дотор шинэчлэх шаардлагатай}}</translation>
 <translation id="5293919335876685914">Хоёр хаалгатай машин</translation>
 <translation id="5296589789433599000">Хоол, жор</translation>
 <translation id="5299298092464848405">Алдааны шинжлэх журам</translation>
@@ -1953,6 +1959,7 @@
 <translation id="5786044859038896871">Картын мэдээллээ бөглөх үү?</translation>
 <translation id="578633867165174378">Chrome таны дөнгөж сая ашигласан нууц үгийг өгөгдлийн зөрчлөөс оллоо. Бид энэ нууц үгийг одоо өөрчлөхийг зөвлөж байна.</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="580241730938216256">Шинэчилж эхлэх</translation>
 <translation id="5803412860119678065">Та <ph name="CARD_DETAIL" />-г бөглөх үү?</translation>
 <translation id="5804241973901381774">Зөвшөөрлүүд</translation>
 <translation id="5808435672482059465">Chrome-н түүхээ үзэх</translation>
@@ -2112,6 +2119,7 @@
 <translation id="6218753634732582820">Хаягийг Chromium-с устгах уу?</translation>
 <translation id="622039917539443112">Зэрэгцээ нугалаа</translation>
 <translation id="6221345481584921695"><ph name="SITE" />-д <ph name="BEGIN_LINK" />вирус<ph name="END_LINK" /> байгааг Google-ийн Аюулгүй Хайлт олж ирлрүүллээ. Ихэвчлэн аюулгүй байдаг веб сайтууд заримдаа вирусд өртөх тохиолдол байдаг бөгөөд энэхүү зар сурталчилгааны агуулга бүхий мэдээлэлүүд нь вирус тараагчаар танигдсан <ph name="SUBRESOURCE_HOST" />-аас ирдэг.</translation>
+<translation id="6221892641068781024">Хялбаршуулсан харагдац</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-н тохиргоонд хандалтын хэрэгслээ хувийн болгохын тулд эхлээд tab, дараа нь Enter дээр дарна уу</translation>
 <translation id="6229649258872345286">Гэр бүлийн аялал</translation>
 <translation id="6232271601416750929">Байгалийн гоо сайхны бүтээгдэхүүн</translation>
@@ -2171,6 +2179,7 @@
 <translation id="6366710531182496394">Зүүн ирмэг дагуу хоёр удаа үдэх</translation>
 <translation id="6367196786591004737">Оруулгыг устгах</translation>
 <translation id="6370022303958842211">Нэвтрэлт (амжилтгүй болсон нэвтрэлтийн шалтгааныг оруулаад), гаралт, түгжээ болон түгжээг тайлах зэрэг төхөөрөмжийн хандалтын үйлдлүүд</translation>
+<translation id="6374469231428023295">Дахин оролдоно уу</translation>
 <translation id="6374865374745447009">цонхны менежмент</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />'-н 1 илэрц</translation>
 <translation id="6380497234672085559">A0</translation>
@@ -2481,6 +2490,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> болон бусад <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> болон бусад <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">Цайвар ягаан</translation>
 <translation id="7156870133441232244">Серверийг TLS 1.2 эсвэл түүнээс дээших хувилбар луу дэвшүүлэх шаардлагатай.</translation>
+<translation id="7160999678034985039">Ажлаа хадгалаад бэлэн болсон үедээ шинэчлэлтийг эхлүүлнэ үү.</translation>
 <translation id="7163295244162773898">{0,plural, =1{Нууцлалтай файлыг хуулах уу?}other{Нууцлалтай файлуудыг хуулах уу?}}</translation>
 <translation id="717330890047184534">Gaia ID:</translation>
 <translation id="7174545416324379297">Нэгтгэсэн</translation>
@@ -2728,6 +2738,7 @@
 <translation id="7687305263118037187">Дахин оролдлого хийх хугацаа дууслаа</translation>
 <translation id="7690647519407127574">Оүфүкү Хагаки ил захидал</translation>
 <translation id="7693583928066320343">Хүлээн авсан хуудасны дараалал</translation>
+<translation id="769424100851389104">Одоо шинэчилж эхлэх</translation>
 <translation id="7696089921647603491">Сонгодог рок, хуучны хөгжим</translation>
 <translation id="769721561045429135">Одоогоор танд зөвхөн энэ төхөөрөмж дээр ашиглах боломжтой карт байна. Картыг шалгахын тулд Үргэлжлүүлэх сонголтыг дарна уу.</translation>
 <translation id="7698864304447945242">Google Play Services for AR-г шинэчлэх үү?</translation>
@@ -2752,6 +2763,7 @@
 <translation id="774634243536837715">Аюултай агуулгыг блоклосон.</translation>
 <translation id="7751971323486164747">Chrome-д фонтын хэмжээ болон үсгийн хэлбэрийг өөрчилнө үү</translation>
 <translation id="7752995774971033316">Ажиллаж дуусаагүй</translation>
+<translation id="7754587126786572336">Шинэчлэлт эхлэх үед таны Chrome табууд болон аппуудыг хаана</translation>
 <translation id="7755287808199759310">Таны эцэг эх үүнийг блокоос гаргах боломжтой</translation>
 <translation id="7755624218968747854">Үндсэн хуйлмал</translation>
 <translation id="7758069387465995638">Галт хана, эсвэл вирусын эсрэг программ холболтыг блоклосон байж болзошгүй.</translation>
@@ -2916,6 +2928,7 @@
 <translation id="8186706823560132848">Програм хангамж</translation>
 <translation id="8190193880870196235">Өргөтгөлөөр удирддаг</translation>
 <translation id="8194797478851900357">&amp; Зөөвөрлөх үйлдлийг буцаах</translation>
+<translation id="8200772114523450471">Сэргээх</translation>
 <translation id="8201077131113104583">"<ph name="EXTENSION_ID" />" ID-тай өргөтгөлийн шинэчлэх хүчингүй URL.</translation>
 <translation id="8202097416529803614">Захиалгын хураангуй</translation>
 <translation id="8202370299023114387">Зөрчил</translation>
@@ -3213,6 +3226,7 @@
 <translation id="8963117664422609631">Сайтын тохиргоо руу очих</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Зөвлөмж:<ph name="MARKUP_2" />Ta датанд холбогдсон эсэхээ шалгана уу<ph name="MARKUP_3" />Энэ вэв хуудсыг дараа дахин ачаална уу<ph name="MARKUP_4" />Оруулсан хаягаа шалгана уу<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">Картыг хадгалах</translation>
+<translation id="8970887620466824814">Алдаа гарлаа.</translation>
 <translation id="8971063699422889582">Серверийн сертификатын хугацаа дууссан байна.</translation>
 <translation id="8975012916872825179">Утасны дугаар, имэйл хаяг болон тээвэрлэх хаяг зэрэг мэдээллийг багтаадаг</translation>
 <translation id="8975263830901772334">Таны хэвлэх файлуудын нэр</translation>

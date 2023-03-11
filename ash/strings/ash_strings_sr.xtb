@@ -100,7 +100,6 @@
 <translation id="1420408895951708260">Укључите или искључите ноћно светло. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Прегледајте недавне слике и медијски садржај са телефона на уређају <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">Да</translation>
-<translation id="1447641497144572814">Чувар екрана се покреће</translation>
 <translation id="1455242230282523554">Прегледајте подешавања језика</translation>
 <translation id="1460620680449458626">Звук је искључен.</translation>
 <translation id="14648076227129703">Ово омогућава приступ камери за <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> и све апликације и веб-сајтове са дозволом за камеру</translation>
@@ -126,6 +125,7 @@
 <translation id="1550523713251050646">Кликните за више опција</translation>
 <translation id="1555130319947370107">Плава</translation>
 <translation id="1576623706766186887">Умањите приказ када је лупа укључена</translation>
+<translation id="1586324912145647027">Идите на радне површине од 1 до 8</translation>
 <translation id="1589090746204042747">Приступите свим активностима у овој сесији</translation>
 <translation id="1610778689852195798">„Опозови радњу“</translation>
 <translation id="1611993646327628135">Укључено</translation>
@@ -514,6 +514,7 @@
 <translation id="3631369015426612114">Дозволи обавештења из следећих извора</translation>
 <translation id="3633097874324966332">Отворите подешавања Bluetooth-а да бисте упарили уређај</translation>
 <translation id="3638400994746983214">Укључује/искључује екран за приватност. <ph name="STATE_TEXT" />.</translation>
+<translation id="3649256019230929621">Смањивање прозора</translation>
 <translation id="3649505501900178324">Ажурирајте истекло</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -588,6 +589,7 @@
 <translation id="4021716437419160885">Помери надоле</translation>
 <translation id="4022497978915111141">Закључај уређај</translation>
 <translation id="4024840464866786680">Ако сте недавно заборавили PIN и лозинку или сте променили лозинку за Google налог, пробајте да вратите приступ свом корисничком налогу.</translation>
+<translation id="4026843240379844265">Помера активан прозор на различите екране</translation>
 <translation id="4028481283645788203">Треба да унесете лозинку ради додатне безбедности</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Делите екран</translation>
@@ -913,6 +915,7 @@
 <translation id="5689633613396158040">Ноћно светло вам олакшава да прегледате садржај екрана или да читате при пригушеном светлу. Додирните да бисте променили време када се ноћно светло укључује или га потпуно искључите.</translation>
 <translation id="5691772641933328258">Отисак прста није препознат</translation>
 <translation id="5693255400847650006">Микрофон се користи</translation>
+<translation id="5699366815052349604">Доделите активни прозор свим радним површинама</translation>
 <translation id="570390244361237317">Све апликације, крећите се помоћу тастера са стрелицама да бисте приступали свим апликацијама</translation>
 <translation id="5707775774148071965">Уређај подржава већи проток података у односу на кабл. Учинак уређаја ће можда бити ограничен.</translation>
 <translation id="5710450975648804523">Режим Не узнемиравај је укључен</translation>
@@ -1553,6 +1556,7 @@
 <translation id="9034924485347205037">Linux датотеке</translation>
 <translation id="9047624247355796468">Отворите подешавања за <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Скупи обавештење</translation>
+<translation id="906458777597946297">Повећавање прозора</translation>
 <translation id="9065203028668620118">Измени</translation>
 <translation id="9070640332319875144">Подешавања Помоћника</translation>
 <translation id="9072519059834302790">Још <ph name="TIME_LEFT" /> и батерија ће бити празна.</translation>

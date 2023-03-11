@@ -34,6 +34,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="1173894706177603556">Pervadinti</translation>
 <translation id="1177863135347784049">Priskirtas</translation>
 <translation id="1181037720776840403">Pašalinti</translation>
+<translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">Naudoti sudėtingą slaptažodį?</translation>
 <translation id="1197267115302279827">Perkelti žymes</translation>
 <translation id="1201402288615127009">Kitas</translation>
@@ -42,7 +43,6 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="1204692632633423444">„Chrome“ veiksmo mygtukas: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">Kopijuoti nuorodos tekstą</translation>
 <translation id="1209206284964581585">Slėpti dabar</translation>
-<translation id="1226851825267005295">Nuostatas galite tvarkyti prisijungę prie „Chrome“ naudodami „Google“ paskyrą.</translation>
 <translation id="1227058898775614466">Naršymo istorija</translation>
 <translation id="1231733316453485619">Įjungti sinchronizavimą?</translation>
 <translation id="123724288017357924">Įk. šį puslapį iš naujo, nepais. talp. es. turinio</translation>
@@ -166,7 +166,6 @@ Ištrindami naršymo istoriją (visą ar konkrečios svetainės) taip pat galite
 <translation id="1928696683969751773">Atnaujinimas</translation>
 <translation id="19288952978244135">Iš naujo atidarykite „Chrome“.</translation>
 <translation id="1933845786846280168">Pasirinktas skirtukas</translation>
-<translation id="193571872656840963">Rodyti padėką šiam kūrėjui</translation>
 <translation id="1943432128510653496">Slaptažodžių išsaugojimas</translation>
 <translation id="1952172573699511566">Kai bus įmanoma, svetainėje tekstas bus rodomas pasirinkta kalba.</translation>
 <translation id="1959679933317802873">Laukiama turinio</translation>
@@ -202,7 +201,6 @@ Ištrindami naršymo istoriją (visą ar konkrečios svetainės) taip pat galite
 <translation id="2122601567107267586">Nepavyko atidaryti programos</translation>
 <translation id="2132122640199389833">Pašalinti visus susietus įrenginius</translation>
 <translation id="213279576345780926">„<ph name="TAB_TITLE" />“ uždaryta</translation>
-<translation id="2134927169889348449">Naudodami „Chrome“ sutinkate su <ph name="BEGIN_TOS_LINK" />„Google“ paslaugų teikimo sąlygomis<ph name="END_TOS_LINK" /> ir <ph name="BEGIN_ATOS_LINK" />„Google Chrome“ bei „Chrome“ OS papildomomis paslaugų teikimo sąlygomis<ph name="END_ATOS_LINK" />.</translation>
 <translation id="2139186145475833000">Pridėti prie pagr. ekrano</translation>
 <translation id="2141396931810938595">Pagal jūsų naudojimą</translation>
 <translation id="214888715418183969">Pasirinkite, ką norėtumėte bendrinti su „Chrome“. Jūsų bendrinama metrika bus naudojama „Chrome“ funkcijoms, našumui ir stabilumui tobulinti.</translation>
@@ -555,7 +553,6 @@ Privatūs prieigos raktai pagerina privatumą žiniatinklyje ir negali būti nau
 <translation id="409109920254068737">Naudodami šį planšetinį kompiuterį galite prisijungti prie įrenginio, kuriame rodomas šis QR kodas.</translation>
 <translation id="4095146165863963773">Ištrinti programos duomenis?</translation>
 <translation id="4096227151372679484">Žymių išsaugojimo srautas atidarytas iki pusės ekrano aukščio</translation>
-<translation id="4099578267706723511">Padėkite tobulinti „Chrome“ siųsdami „Google“ naudojimo statistiką ir strigčių ataskaitas.</translation>
 <translation id="4101475238162928417">Sinchronizuokite, kad gautumėte slaptažodžius, žymes ir kitą turinį visuose kituose įrenginiuose</translation>
 <translation id="410351446219883937">Automatinis paleidimas</translation>
 <translation id="4106587138345390261">„Chrome“ tyrinėja naujas funkcijas, leidžiančias svetainėms teikti tas pačias naršymo funkcijas, naudojant mažiau jūsų informacijos</translation>
@@ -593,7 +590,6 @@ Privatūs prieigos raktai pagerina privatumą žiniatinklyje ir negali būti nau
 <translation id="4269820728363426813">Kopijuoti nuorodos adresą</translation>
 <translation id="4283102315569707115">Pateikti svetainių kompiuteriams užklausą pagal numatytuosius nustatymus?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Įjungti ekrano užraktą „Android“ nustatymuose<ph name="END_LINK" /></translation>
-<translation id="4293476595220860475">Naudodami „Chrome“ sutinkate su <ph name="BEGIN_TOS_LINK" />„Google“ paslaugų teikimo sąlygomis<ph name="END_TOS_LINK" /> ir <ph name="BEGIN_ATOS_LINK" />„Google Chrome“ bei „Chrome“ OS papildomomis paslaugų teikimo sąlygomis<ph name="END_ATOS_LINK" />. Taip pat taikoma <ph name="BEGIN_PRIVACY_LINK" />privatumo politika<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="4296252229500326964">Naujas inkognito skirtukas</translation>
 <translation id="4298388696830689168">Susietos svetainės</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -766,7 +762,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="5161254044473106830">Būtina nurodyti pavadinimą</translation>
 <translation id="5170568018924773124">Rodyti aplanke</translation>
 <translation id="5171045022955879922">Ieškokite ar įveskite URL</translation>
-<translation id="517734441743343109">Tęsdami sutinkate su <ph name="BEGIN_TOS_LINK" />paslaugų teikimo sąlygomis<ph name="END_TOS_LINK" /> ir <ph name="BEGIN_PRIVACY_LINK" />privatumo\u00A0politika<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="5184329579814168207">Atidaryti naudojant „Chrome“</translation>
 <translation id="5191251636205085390">Sužinokite apie naujas technologijas, kurios pakeis trečiųjų šalių slapukus, ir valdykite jas</translation>
 <translation id="5193988420012215838">Nukopijuota į iškarpinę</translation>

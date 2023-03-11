@@ -8,9 +8,6 @@
 <translation id="1175958423215084756">লিংক চিনাক্ত কৰা হৈছে। <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">পৃষ্ঠা <ph name="PAGE_NUMBER" /> মচা হ’ল</translation>
 <translation id="1258009455399840361">ঘড়ীৰ কাঁটাৰ দিশত ৯০ ডিগ্ৰী ঘূৰাওক</translation>
-<translation id="1300209025925956156">আপোনাৰ নথি স্কেন কৰক</translation>
-<translation id="1309250603447638106">নথি স্কেন কৰাৰ সুবিধাটোৰ বাবে আপডে’ট ডাউনল’ড কৰি থকা হৈছে</translation>
-<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />। এক্সেছৰ বাবে ছাৰ্চ + লেফ্ট এৰ’ কী।</translation>
 <translation id="1417314334557041815">পৃষ্ঠা সম্পাদনা কৰক <ph name="INDEX" /></translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> আনপ্লাগ কৰা হ’ল।</translation>
 <translation id="1473110567575736769">৩ ছেকেণ্ডৰ টাইমাৰ</translation>
@@ -24,7 +21,6 @@
 <translation id="1664224225747386870">একো ৰেকৰ্ড কৰা নহ'ল</translation>
 <translation id="1838104802459806957">ওপৰলৈ হেলনীয়া কৰক</translation>
 <translation id="1843105061469674856">অতিৰিক্ত পৃষ্ঠাখন স্কেন কৰক</translation>
-<translation id="1851169887664797861">অতিৰিক্ত কেমেৰাৰ নিয়ন্ত্ৰণ উপলব্ধ</translation>
 <translation id="1851616744363735765">পজ হৈ আছে</translation>
 <translation id="1899697626337024495">ফট'ৰ ৰিজ'লিউশ্বন</translation>
 <translation id="1925845977604399247">গেলাৰীলৈ যাওক</translation>
@@ -49,7 +45,6 @@
 <translation id="2761536921376153655">স্কেনৰ প্ৰকাৰ</translation>
 <translation id="28682968802727151">মিৰ’ৰৰ পূৰ্বদৰ্শন</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> প্লাগ ইন কৰা হ’ল।</translation>
-<translation id="2904654629665923749">নথি স্কেন কৰাৰ সুবিধাটো উপলব্ধ</translation>
 <translation id="3067436040345934772">সোঁফাললৈ পেন কৰক</translation>
 <translation id="3081586908890909590">ভিডিঅ' ৰেকৰ্ড কৰিবলৈ সলনি কৰক</translation>
 <translation id="313467653172006084">৩০ FPS</translation>
@@ -74,7 +69,6 @@
 <translation id="4269820728363426813">লিংকৰ ঠিকনাটো প্ৰতিলিপি কৰক</translation>
 <translation id="4281620174117014503">মধ্যমীয়া ৰিজ’লিউশ্বন</translation>
 <translation id="428234092390943511">পৃষ্ঠাৰ থাম্বনেইল</translation>
-<translation id="4340659173795395806">আপুনি এতিয়া একাধিক পৃষ্ঠাৰ PDF সৃষ্টি কৰিব পাৰে</translation>
 <translation id="4383571725254449280">কার্যদক্ষতাৰ লগসমূহ প্ৰিণ্ট কৰক</translation>
 <translation id="4445542136948522167">ফট' উঠোৱা বন্ধ কৰক</translation>
 <translation id="4570032796877367747">সন্মুখৰ কেমেৰা</translation>
@@ -97,7 +91,6 @@
 <translation id="5317780077021120954">ছেভ কৰক</translation>
 <translation id="5320594929574852403">বাওঁফাললৈ গতি কৰি আছে</translation>
 <translation id="5374917190292010970">4K (২১৬০পিক্সেল)</translation>
-<translation id="5444515100983837161">নথিখনৰ আটাইকেইটা কাষ ফ্ৰে’মটোৰ ভিতৰত ৰাখক। নথিখনৰ সৈতে নেপথ্যৰ ৰংটো পৃথক হ’লে স্কেন কৰাৰ সুবিধাটোৱে আটাইতকৈ ভালকৈ কৰে।</translation>
 <translation id="5662366948659129155"><ph name="COUNT" /> নম্বৰ পৃষ্ঠাখন স্কেন কৰি থকা হৈছে</translation>
 <translation id="5671277269877808209">বৰ্গাকাৰ</translation>
 <translation id="5746169159649715125">PDF হিচাপে ছেভ কৰক</translation>
@@ -157,7 +150,6 @@
 <translation id="8428213095426709021">ছেটিংসমূহ</translation>
 <translation id="8629662593426079630">৩৬০পি</translation>
 <translation id="8711011893539266636">মাইক্ৰ’ফ’ন মিউট কৰাৰ বুটামটো ট’গল কৰক। মিউট অন কৰা হৈছে</translation>
-<translation id="8712637175834984815">বুজি পালোঁ</translation>
 <translation id="8730621377337864115">হ’ল</translation>
 <translation id="8732462232047530626">মেটাডেটা পূৰ্বদৰ্শন কৰক</translation>
 <translation id="8815966864175525708">প'ৰ্ট্ৰেইট ফট' ল'বলৈ সলনি কৰক</translation>

@@ -261,7 +261,7 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="6010556343189461180">Da primate buduća ažuriranja za Google Chrome, trebat će vam macOS 10.15 ili novija verzija. Ovaj računar koristi macOS 10.14.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome će se zatvoriti odmah.}=1{Chrome će se zatvoriti za 1 sekundu.}one{Chrome će se zatvoriti za # sekundu.}few{Chrome će se zatvoriti za # sekunde.}other{Chrome će se zatvoriti za # sekundi.}}</translation>
 <translation id="6022659036123304283">Prilagodite Chrome svojim potrebama</translation>
-<translation id="6025087594896450715">Google Chrome ponovo će se pokrenuti za <ph name="REMAINING_TIME" /></translation>
+<translation id="6025087594896450715">Google Chrome će se ponovo pokrenuti za <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="6070348360322141662">Za dodatnu sigurnost, Google Chrome će šifrirati vaše podatke</translation>
 <translation id="608006075545470555">Dodajte radni profil na ovaj preglednik</translation>
@@ -407,7 +407,6 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="8862326446509486874">Nemate odgovarajuća prava za instalaciju na nivou sistema. Pokušajte ponovo pokrenuti instalaciju kao administrator.</translation>
 <translation id="8914504000324227558">Ponovo pokreni Chrome</translation>
 <translation id="8922193594870374009">Da pošaljete broj s uređaja <ph name="ORIGIN" /> na svoj Android telefon, prijavite se u Chrome na oba uređaja.</translation>
-<translation id="8983720963221508955">Uključili ste poboljšano Sigurno pregledanje na svom računu. Sada ga omogućite za Chrome.</translation>
 <translation id="8986207147630327271">Dodajete radni profil na ovaj preglednik i dajte administratoru kontrolu samo nad radnim profilom.</translation>
 <translation id="8989968390305463310">Vaša historija pregledanja utiče na oglase koje vidite i interesovanja, kao što je procijenjeno u nastavku. Da zaštiti vašu privatnost, Chrome automatski briše vaša interesovanja na mjesečnoj osnovi. Interesovanja se mogu osvježiti ukoliko ih ne uklonite.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Dostupno je ažuriranje Chromea}=1{Dostupno je ažuriranje Chromea}one{Ažuriranje Chromea je dostupno # dan}few{Ažuriranje Chromea je dostupno # dana}other{Ažuriranje Chromea je dostupno # dana}}</translation>

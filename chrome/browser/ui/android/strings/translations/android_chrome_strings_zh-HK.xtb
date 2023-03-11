@@ -34,6 +34,7 @@
 <translation id="1173894706177603556">重新命名</translation>
 <translation id="1177863135347784049">自訂</translation>
 <translation id="1181037720776840403">移除</translation>
+<translation id="1181366777303791449">在 <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">要使用安全性強的密碼嗎？</translation>
 <translation id="1197267115302279827">移動書籤</translation>
 <translation id="1201402288615127009">下一個</translation>
@@ -42,7 +43,6 @@
 <translation id="1204692632633423444">Chrome 操作按鈕：<ph name="ACTION" /></translation>
 <translation id="1206892813135768548">複製連結文字</translation>
 <translation id="1209206284964581585">暫時隱藏</translation>
-<translation id="1226851825267005295">使用 Google 帳戶登入 Chrome 後，您就可以管理偏好設定。</translation>
 <translation id="1227058898775614466">導覽記錄</translation>
 <translation id="1231733316453485619">要開啟同步處理功能嗎？</translation>
 <translation id="123724288017357924">重新載入目前的網頁，忽略之前快取的內容</translation>
@@ -166,7 +166,6 @@
 <translation id="1928696683969751773">更新</translation>
 <translation id="19288952978244135">重新開啟 Chrome。</translation>
 <translation id="1933845786846280168">已選取的分頁</translation>
-<translation id="193571872656840963">向此創作者表達感謝</translation>
 <translation id="1943432128510653496">儲存密碼</translation>
 <translation id="1952172573699511566">網站將盡可能以您偏好的語言顯示文字。</translation>
 <translation id="1959679933317802873">正在等待內容</translation>
@@ -202,7 +201,6 @@
 <translation id="2122601567107267586">無法開啟應用程式</translation>
 <translation id="2132122640199389833">移除所有已連結的裝置</translation>
 <translation id="213279576345780926">已關閉「<ph name="TAB_TITLE" />」</translation>
-<translation id="2134927169889348449">使用 Chrome 即表示您同意《<ph name="BEGIN_TOS_LINK" />Google 服務條款<ph name="END_TOS_LINK" />》以及 <ph name="BEGIN_ATOS_LINK" />Google Chrome 和 Chrome OS 的《附加服務條款》<ph name="END_ATOS_LINK" />。</translation>
 <translation id="2139186145475833000">新增至主螢幕</translation>
 <translation id="2141396931810938595">根據使用情況</translation>
 <translation id="214888715418183969">選擇您想與 Chrome 分享的資料。您分享的數據將有助我們改善 Chrome 的功能、效能和穩定性。</translation>
@@ -555,7 +553,6 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="409109920254068737">您可使用此平板電腦登入顯示此 QR 碼的裝置。</translation>
 <translation id="4095146165863963773">要刪除應用程式資料嗎？</translation>
 <translation id="4096227151372679484">書籤儲存流程宜家顯示喺畫面下半部</translation>
-<translation id="4099578267706723511">將使用統計資料及當機報告傳送給 Google，助我們一臂之力，讓 Chrome 更臻完美。</translation>
 <translation id="4101475238162928417">進行同步處理，取得您在其他裝置上的密碼、書籤和其他資料</translation>
 <translation id="410351446219883937">自動播放</translation>
 <translation id="4106587138345390261">Chrome 正在探索新功能，讓網站能在使用較少資料的情況下提供相同的瀏覽體驗</translation>
@@ -593,7 +590,6 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="4269820728363426813">複製連結網址</translation>
 <translation id="4283102315569707115">要讓系統根據預設顯示電腦版網站嗎？</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />在 Android 設定中開啟螢幕鎖定<ph name="END_LINK" /></translation>
-<translation id="4293476595220860475">使用 Chrome 即表示您同意《<ph name="BEGIN_TOS_LINK" />Google 服務條款<ph name="END_TOS_LINK" />》以及 <ph name="BEGIN_ATOS_LINK" />Google Chrome 和 Chrome OS 的《附加服務條款》<ph name="END_ATOS_LINK" />。須同時受《<ph name="BEGIN_PRIVACY_LINK" />私隱權政策<ph name="END_PRIVACY_LINK" />》約束。</translation>
 <translation id="4296252229500326964">新無痕式分頁</translation>
 <translation id="4298388696830689168">已連結的網站</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -766,7 +762,6 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="5161254044473106830">必須提供標題</translation>
 <translation id="5170568018924773124">在資料夾中顯示</translation>
 <translation id="5171045022955879922">搜尋或輸入網址</translation>
-<translation id="517734441743343109">繼續即表示您同意《<ph name="BEGIN_TOS_LINK" />服務條款<ph name="END_TOS_LINK" />》和《<ph name="BEGIN_PRIVACY_LINK" />私隱權政策<ph name="END_PRIVACY_LINK" />》。</translation>
 <translation id="5184329579814168207">在 Chrome 中開啟</translation>
 <translation id="5191251636205085390">瞭解及控制用於取代第三方 Cookie 的全新技術</translation>
 <translation id="5193988420012215838">已複製至剪貼簿</translation>

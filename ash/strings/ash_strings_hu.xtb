@@ -100,7 +100,6 @@
 <translation id="1420408895951708260">Éjszakai fény be-/kikapcsolása. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Megtekintheti a telefonján szereplő friss fotókat és médiát <ph name="DEVICE_TYPE" /> eszközén</translation>
 <translation id="1426410128494586442">Igen</translation>
-<translation id="1447641497144572814">Képernyőzár indul</translation>
 <translation id="1455242230282523554">Nyelvi beállítások megjelenítése</translation>
 <translation id="1460620680449458626">Hang némítva.</translation>
 <translation id="14648076227129703">Ezzel engedélyezi a kamerához való hozzáférést a(z) <ph name="APP1_NAME" />, a(z) <ph name="APP2_NAME" />, valamint a kamerahasználati engedéllyel rendelkező összes alkalmazás és webhely számára</translation>
@@ -126,6 +125,7 @@
 <translation id="1550523713251050646">Kattintson további lehetőségekért</translation>
 <translation id="1555130319947370107">Kék</translation>
 <translation id="1576623706766186887">Kicsinyítés, ha a nagyító be van kapcsolva</translation>
+<translation id="1586324912145647027">Lépjen az 1–8. asztal valamelyikéhez.</translation>
 <translation id="1589090746204042747">Hozzáférés az Ön jelen munkamenetben végzett összes tevékenységéhez</translation>
 <translation id="1610778689852195798">„Undo” (Visszavonás)</translation>
 <translation id="1611993646327628135">Be</translation>
@@ -514,6 +514,7 @@
 <translation id="3631369015426612114">Értesítések engedélyezése a következőktől:</translation>
 <translation id="3633097874324966332">Eszköze párosításához nyissa meg a Bluetooth beállításait</translation>
 <translation id="3638400994746983214">Adatvédelmi képernyő be- és kikapcsolása. <ph name="STATE_TEXT" />.</translation>
+<translation id="3649256019230929621">Ablak kis méretre állítása</translation>
 <translation id="3649505501900178324">Esedékes a frissítés</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -589,6 +590,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="4021716437419160885">Görgetés lefelé</translation>
 <translation id="4022497978915111141">Eszköz zárolása</translation>
 <translation id="4024840464866786680">Ha elfelejtette PIN-kódját és jelszavát, vagy nemrég módosította Google-fiókja jelszavát, próbálja meg helyreállítani ezt a felhasználót.</translation>
+<translation id="4026843240379844265">Aktív ablak áthelyezése egyik kijelzőről a másikra</translation>
 <translation id="4028481283645788203">A nagyobb biztonság érdekében jelszó szükséges</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Jelenleg megosztja a képernyőt</translation>
@@ -913,6 +915,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5689633613396158040">Az Éjszakai fény funkció kellemesebbé teszi a képernyő nézését és az olvasást gyenge fény mellett. Koppintson, ha módosítani szeretné, hogy mikor kapcsoljon be az Éjszakai mód, vagy ha teljesen ki szeretné kapcsolni.</translation>
 <translation id="5691772641933328258">Ujjlenyomat felismerése sikertelen</translation>
 <translation id="5693255400847650006">A mikrofon használatban van</translation>
+<translation id="5699366815052349604">Rendeljen hozzá aktív ablakot minden asztalhoz.</translation>
 <translation id="570390244361237317">Az összes alkalmazás, a nyílbillentyűk használatával férhet hozzá az összes alkalmazáshoz</translation>
 <translation id="5707775774148071965">Az eszköz nagyobb adatátviteli sebességre képes, mint amit a kábel biztosítani tud. Ez korlátozhatja az eszköz teljesítményét.</translation>
 <translation id="5710450975648804523">Ne zavarjanak mód: bekapcsolva</translation>
@@ -1553,6 +1556,7 @@ Frissen telepítve</translation>
 <translation id="9034924485347205037">Linux-fájlok</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> beállításainak megnyitása</translation>
 <translation id="9059834730836941392">Értesítés összecsukása</translation>
+<translation id="906458777597946297">Ablak teljes méretre állítása</translation>
 <translation id="9065203028668620118">Szerkesztés</translation>
 <translation id="9070640332319875144">A Segéd beállításai</translation>
 <translation id="9072519059834302790">Akkumulátor lemerüléséig hátralévő idő: <ph name="TIME_LEFT" />.</translation>

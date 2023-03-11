@@ -126,6 +126,7 @@
 <translation id="1813414402673211292">የአሰሳ ውሂብ አስወግድ</translation>
 <translation id="1815941218935345331">የይለፍ ኮድ</translation>
 <translation id="1820259098641718022">ወደ የንባብ ዝርዝር ታክሏል</translation>
+<translation id="1829392566394960110">{COUNT,plural, =0{የተጠለፉ የይለፍ ቃላት}=1{{COUNT} የተጠለፈ የይለፍ ቃል}one{{COUNT} የተጠለፈ የይለፍ ቃል}other{{COUNT} የተጠለፉ የይለፍ ቃላት}}</translation>
 <translation id="1832848789136765277">የስምረት ውሂብዎን ሁልጊዜ መድረስ መቻልዎን ለማረጋገጥ እርስዎ መሆንዎን ያረጋግጡ</translation>
 <translation id="1870148520156231997">ይለፍ ቃልን አሳይ</translation>
 <translation id="1872096359983322073">የባትሪ ብርሃን</translation>
@@ -719,6 +720,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6152406514676263192">በእርስዎ ዝንባሌዎች ላይ የተመሠረተ በጣም አግባብነት ያለው ይዘትን ለማግኘት ያስምሩ።</translation>
 <translation id="6159839020698489198">የግድ አይደለም</translation>
 <translation id="6170450281939467187">ትርጉም አልተሳካም</translation>
+<translation id="6173499589275053515">የይለፍ ቃል የእርስዎ Google መለያ <ph name="EMAIL" /> ውስጥ ተቀምጧል</translation>
 <translation id="6177442314419606057">በChrome ውስጥ ይፈልጉ</translation>
 <translation id="6184086493125982861">ትሮችን አሳይ</translation>
 <translation id="6187302354554850004">ለመጨረሻ ጊዜ የተመሳሰለው፦ <ph name="LAST_USED_TIME" /></translation>
@@ -726,6 +728,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6193424046394092997">{count,plural, =1{{title} ላይ ዕልባት ተደርጓል}one{{title} ላይ ዕልባት ተደርጓል}other{{title} ላይ ዕልባት ተደርጓል}}</translation>
 <translation id="6196207969502475924">የድምጽ ፍለጋ</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} ትር ዝጋ}one{{COUNT} ትሮችን ዝጋ}other{{COUNT} ትሮችን ዝጋ}}</translation>
+<translation id="6213567400989743524">የተሰናበቱ ማስጠንቀቂያዎች</translation>
 <translation id="6219550825416862075">እንኳን በደህና ተመልሰው መጡ</translation>
 <translation id="6219688215832490856">በጭራሽ አትተርጉም</translation>
 <translation id="6223816392543092032">የእርስዎን ዕልባቶች፣ ታሪክ፣ የይለፍ ቃላት እና ሌሎች ቅንብሮች በሁሉም መሣሪያዎችዎ ላይ ያግኙ።</translation>
@@ -748,6 +751,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6344783595350022745">ጽሁፍ አጽዳ</translation>
 <translation id="6346549652287021269">አዲስ ውርድ ይጀመር?</translation>
 <translation id="634878792104344809">የእርስዎን የይለፍ ቃላት፣ ታሪክ እና ተጨማሪ ነገሮች በሁሉም መሣሪያዎችዎ ላይ ያስምሩ</translation>
+<translation id="6355820205320395730">ደካማ የይለፍ ቃላት ለመገመት ቀላል ናቸው። ጠንካራ የይለፍ ቃላትን እየፈጠሩ መሆንዎን ያረጋግጡ። <ph name="BEGIN_LINK" />ተጨማሪ ጠቃሚ የደህንነት ምክሮችን ይመልከቱ።<ph name="END_LINK" /></translation>
 <translation id="6361848730467328243"><ph name="DOMAIN_NAME" />ን ይከተሉ</translation>
 <translation id="6362362396625799311">ምንም ማንነት የማያሳውቁ ትሮች የሉም</translation>
 <translation id="6363526231572697780">ምንም የተጠቃሚ ስም የለም</translation>
@@ -851,6 +855,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6888009575607455378">እርግጠኛ ነዎት ለውጦችዎን ማስወገድ ይፈልጋሉ?</translation>
 <translation id="6896758677409633944">ቅዳ</translation>
 <translation id="6897187120838603299">የይለፍ ቃልዎ መሣሪያዎ ላይ ይቀመጣል።</translation>
+<translation id="6913136913033237761"><ph name="FOLDER_NAME" />። በዚህ መሣሪያ ላይ ብቻ።</translation>
 <translation id="6914583639806229067">የቀዱትን ምስል ይፈልጉ</translation>
 <translation id="6914783257214138813">የእርስዎ የይለፍ ቃላት ወደ ውጭ የተላከውን ፋይልን መመልከት ለሚችል ማንኛውም ሰው የሚታዩ ይሆናሉ።</translation>
 <translation id="6930799952781667037">ወደዚህ ቋንቋ ለመለወጥ መታ ያድርጉ።</translation>
@@ -1010,10 +1015,12 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8084285576995584326">የእርስዎን የGoogle መለያ ውሂብ ይቆጣጠሩ</translation>
 <translation id="809543534949702122">ታሪክ ፈልግ</translation>
 <translation id="8101409298456377967">በቀላሉ ወደ ጣቢያዎች እና መተግበሪያዎች መግባት እንዲችሉ የይለፍ ቃላትዎን ይፍጠሩ፣ ያስቀምጡ እና ያቀናብሩ <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
+<translation id="8102130909719902723">አ</translation>
 <translation id="8105368624971345109">አጥፋ</translation>
 <translation id="8114753159095730575">ፋይል ለመውረድ ይገኛል። አማራጮች ከማያ ገጹ ግርጌ አጠገብ ይገኛሉ።</translation>
 <translation id="81313319706244542">2. የይለፍ ቃሎችን መታ ያድርጉ</translation>
 <translation id="8132598642024322408">አሁን <ph name="PRICE" /> <ph name="PREVIOUS_PRICE" /> ነበር።</translation>
+<translation id="813370552429173916">ለእያንዳንዱ ጣቢያ ወይም መተግበሪያ ልዩ የይለፍ ቃል ይጠቀሙ። የሆነ ሰው ዳግም ጥቅም ላይ የዋለ የይለፍ ቃል ቢያገኝ ሌሎች መለያዎችዎን ለመድረስ ጥቅም ላይ ሊውል ይችላል። ድር ጣቢያውን ለመክፈት እና አሁን ለመለወጥ ጠቅ ያድርጉ።</translation>
 <translation id="8136856065410661948">ይህ ከChrome እና Google ሌንስ በእርስዎ Apple ቀን መቁጠሪያ ውስጥ ክስተቶችን ለመፍጠር ሥራ ላይ ይውላል።</translation>
 <translation id="8156478151976189188">የይለፍ ቃል ስምረት እየሠራ አይደለም</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> መለያዎች</translation>
@@ -1025,6 +1032,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8225985093977202398">የተሸጎጡ ምስሎች እና ፋይሎች</translation>
 <translation id="8237382152611443140">የይለፍ ቃላትን በራስ-ሙላ ቅንብሮችን ይክፈቱ</translation>
 <translation id="8261506727792406068">ሰርዝ</translation>
+<translation id="8264966119170358612">ከእርስዎ የተቀመጡ የይለፍ ቃላት መካከል አንዳንዶቹ የGoogle ባልሆነ የውሂብ ጥሰት ተጋልጠው ነበረ። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="8271720166617117963">ተቀበል እና በመለያ ግባ</translation>
 <translation id="8278938988428169257">ቃል ወይም ሐረግ ያስገቡ</translation>
 <translation id="8281781826761538115">ነባሪ - <ph name="DEFAULT_LOCALE" /></translation>

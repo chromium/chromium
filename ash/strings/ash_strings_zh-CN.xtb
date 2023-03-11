@@ -100,7 +100,6 @@
 <translation id="1420408895951708260">开启/关闭护眼模式。<ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">在 <ph name="DEVICE_TYPE" /> 上查看手机中近期拍摄的照片和播放的媒体</translation>
 <translation id="1426410128494586442">是</translation>
-<translation id="1447641497144572814">屏保启动了</translation>
 <translation id="1455242230282523554">显示语言设置</translation>
 <translation id="1460620680449458626">当前处于静音状态。</translation>
 <translation id="14648076227129703">如果您开启摄像头，即意味着允许“<ph name="APP1_NAME" />”“<ph name="APP2_NAME" />”以及所有具有摄像头使用权限的应用和网站使用摄像头</translation>
@@ -126,6 +125,7 @@
 <translation id="1550523713251050646">点击即可查看更多选项</translation>
 <translation id="1555130319947370107">蓝色</translation>
 <translation id="1576623706766186887">开启放大镜时缩小</translation>
+<translation id="1586324912145647027">转至桌面 1 到 8</translation>
 <translation id="1589090746204042747">访问您在此次会话中的所有活动</translation>
 <translation id="1610778689852195798">“撤消”</translation>
 <translation id="1611993646327628135">开启</translation>
@@ -514,6 +514,7 @@
 <translation id="3631369015426612114">允许显示来自以下来源的通知</translation>
 <translation id="3633097874324966332">请打开蓝牙设置为您的设备配对</translation>
 <translation id="3638400994746983214">开启/关闭隐私保护屏。<ph name="STATE_TEXT" />。</translation>
+<translation id="3649256019230929621">最小化窗口</translation>
 <translation id="3649505501900178324">更新逾期</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />，
@@ -588,6 +589,7 @@
 <translation id="4021716437419160885">向下滚动</translation>
 <translation id="4022497978915111141">锁定设备</translation>
 <translation id="4024840464866786680">如果您忘记了 PIN 码和密码，或最近更改过自己的 Google 帐号密码，请尝试让此用户恢复登录。</translation>
+<translation id="4026843240379844265">在各个显示屏之间移动活动窗口</translation>
 <translation id="4028481283645788203">需要输入密码以增强安全性</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">您正在共享屏幕</translation>
@@ -912,6 +914,7 @@
 <translation id="5689633613396158040">护眼模式可让您更舒适地在黯淡的光线下查看屏幕或阅读文字。点按即可更改护眼模式的开启时间或彻底关闭护眼模式。</translation>
 <translation id="5691772641933328258">无法识别指纹</translation>
 <translation id="5693255400847650006">麦克风正在使用中</translation>
+<translation id="5699366815052349604">将使用中的窗口分配至所有桌面</translation>
 <translation id="570390244361237317">“所有应用”：若要访问各个应用，请使用箭头键导航</translation>
 <translation id="5707775774148071965">您的设备支持的数据传输速率高于数据线的数据传输速率。设备性能可能会受到限制。</translation>
 <translation id="5710450975648804523">“请勿打扰”模式已开启</translation>
@@ -1549,6 +1552,7 @@
 <translation id="9034924485347205037">Linux 文件</translation>
 <translation id="9047624247355796468">打开“<ph name="NETWORK_NAME" />”的设置。</translation>
 <translation id="9059834730836941392">收起通知</translation>
+<translation id="906458777597946297">最大化窗口</translation>
 <translation id="9065203028668620118">编辑</translation>
 <translation id="9070640332319875144">Google 助理设置</translation>
 <translation id="9072519059834302790">电池电量将在 <ph name="TIME_LEFT" />后耗尽</translation>

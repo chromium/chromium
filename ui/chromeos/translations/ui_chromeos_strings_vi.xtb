@@ -84,6 +84,7 @@
 <translation id="1722487484194605434">Đang nén <ph name="NUMBER_OF_ITEMS" /> mục...</translation>
 <translation id="1722687688096767818">Đang thêm hồ sơ...</translation>
 <translation id="1726100011689679555">Máy chủ định danh</translation>
+<translation id="1727562178154619254">Sẵn sàng đồng bộ hoá</translation>
 <translation id="1729953886957086472">Tiếng Đức (Đức)</translation>
 <translation id="1730235522912993863">Tiếng Trung (Thương Hiệt)</translation>
 <translation id="1731889557567069540">Đã sao chép <ph name="NUMBER_OF_ITEMS" /> mục.</translation>
@@ -705,6 +706,7 @@
 <translation id="6732801395666424405">Không tải được chứng chỉ</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">Chia sẻ thư mục với Bruschetta</translation>
+<translation id="6750737795876287924">Thư mục hiện tại</translation>
 <translation id="6751256176799620176">Đã chọn 1 thư mục</translation>
 <translation id="6755827872271341378">Thiết bị ChromeOS Flex</translation>
 <translation id="6790428901817661496">Phát</translation>
@@ -742,7 +744,6 @@
 <translation id="6973630695168034713">Thư mục</translation>
 <translation id="6976795442547527108">Sư tử</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979737339423435258">Từ trước đến nay</translation>
 <translation id="6989942356279143254">Tiếng Thụy Điển</translation>
 <translation id="6990081529015358884">Bạn đã hết dung lượng lưu trữ</translation>
 <translation id="6993826899923627728">Các mục này đang nằm trong thùng rác</translation>
@@ -798,7 +799,6 @@
 <translation id="7458955835361612701">Không có hình ảnh nào gần đây</translation>
 <translation id="7460898608667578234">Tiếng Ukraina</translation>
 <translation id="7469894403370665791">Tự động kết nối vào mạng này</translation>
-<translation id="7481358317100446445">Sẵn sàng</translation>
 <translation id="7486315294984620427">Để thả tệp vào Parallels Desktop, bạn phải sao chép tệp đó vào thư mục tệp Windows.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Tiếng Malayalam (phiên âm)</translation>
@@ -966,7 +966,7 @@
 <translation id="8688591111840995413">Mật khẩu không chính xác</translation>
 <translation id="8698464937041809063">Bản vẽ Google</translation>
 <translation id="8698877009525468705">Tệp này được bảo mật và phải tuân thủ các hạn chế theo chính sách dành cho quản trị viên.</translation>
-<translation id="8712637175834984815">Bỏ qua</translation>
+<translation id="8712637175834984815">Tôi hiểu</translation>
 <translation id="8713112442029511308">Tiếng Malta</translation>
 <translation id="8714406895390098252">Xe đạp</translation>
 <translation id="8719721339511222681">Đã chọn <ph name="ENTRY_NAME" />.</translation>

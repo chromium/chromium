@@ -84,6 +84,7 @@
 <translation id="1722487484194605434">Wrthi'n rhoi <ph name="NUMBER_OF_ITEMS" /> eitem mewn ffeil sip…</translation>
 <translation id="1722687688096767818">Wrthi'n ychwanegu proffil...</translation>
 <translation id="1726100011689679555">Gweinyddwyr enwau</translation>
+<translation id="1727562178154619254">Yn barod i gysoni</translation>
 <translation id="1729953886957086472">Almaeneg (Yr Almaen)</translation>
 <translation id="1730235522912993863">Cangjie Tsieinëeg</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> o eitemau wedi'u copïo.</translation>
@@ -704,6 +705,7 @@
 <translation id="6732801395666424405">Tystysgrifau heb eu llwytho</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">Rhannu ffolder â Bruschetta</translation>
+<translation id="6750737795876287924">Cyfeiriadur presennol</translation>
 <translation id="6751256176799620176">Mae 1 ffolder wedi'i dewis</translation>
 <translation id="6755827872271341378">Dyfais ChromeOS Flex</translation>
 <translation id="6790428901817661496">Chwarae</translation>
@@ -741,7 +743,6 @@
 <translation id="6973630695168034713">Ffolderi</translation>
 <translation id="6976795442547527108">Llew</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979737339423435258">Pob un</translation>
 <translation id="6989942356279143254">Swedeg</translation>
 <translation id="6990081529015358884">Rydych wedi rhedeg allan o le storio</translation>
 <translation id="6993826899923627728">Mae'r eitemau hyn yn eich bin sbwriel</translation>
@@ -797,7 +798,6 @@
 <translation id="7458955835361612701">Dim lluniau diweddar</translation>
 <translation id="7460898608667578234">Iwcranaidd</translation>
 <translation id="7469894403370665791">Cysylltu'n awtomatig â'r rhwydwaith hwn</translation>
-<translation id="7481358317100446445">Yn barod</translation>
 <translation id="7486315294984620427">I ollwng ffeiliau yn Parallels Desktop, rhaid copïo'r ffeil i ffeiliau Windows.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Seinegol Malayalam</translation>

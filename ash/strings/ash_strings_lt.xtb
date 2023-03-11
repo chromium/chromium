@@ -100,7 +100,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1420408895951708260">Perjungti Nakties šviesą. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Peržiūrėkite telefono naujausias nuotraukas ir mediją „<ph name="DEVICE_TYPE" />“ įrenginyje</translation>
 <translation id="1426410128494586442">Taip</translation>
-<translation id="1447641497144572814">Ekrano užsklanda paleidžiama</translation>
 <translation id="1455242230282523554">Rodyti kalbos nustatymus</translation>
 <translation id="1460620680449458626">Garsumas nutildytas.</translation>
 <translation id="14648076227129703">Tai leis pasiekti vaizdo kamerą programoms „<ph name="APP1_NAME" />“, „<ph name="APP2_NAME" />“ ir visoms programoms bei svetainėms, turinčioms vaizdo kameros leidimą</translation>
@@ -126,6 +125,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1550523713251050646">Spustelėkite, jei reikia daugiau parinkčių</translation>
 <translation id="1555130319947370107">Mėlyna</translation>
 <translation id="1576623706766186887">Tolinti, kai įjungtas didintuvas</translation>
+<translation id="1586324912145647027">Eiti į 1–8 darbalaukį</translation>
 <translation id="1589090746204042747">Pasiekti visą šios sesijos veiklą</translation>
 <translation id="1610778689852195798">„Anuliuoti“</translation>
 <translation id="1611993646327628135">Įjungta</translation>
@@ -514,6 +514,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="3631369015426612114">Leisti pranešimus iš toliau nurodytų šaltinių.</translation>
 <translation id="3633097874324966332">Atidarykite „Bluetooth“ nustatymus ir susiekite įrenginį</translation>
 <translation id="3638400994746983214">Perjunkite privatumo ekraną. <ph name="STATE_TEXT" />.</translation>
+<translation id="3649256019230929621">Sumažinti langą</translation>
 <translation id="3649505501900178324">Vėluojama atnaujinti</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -588,6 +589,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="4021716437419160885">Slinkti į apačią</translation>
 <translation id="4022497978915111141">Užrakinti įrenginį</translation>
 <translation id="4024840464866786680">Jei pamiršote PIN kodą ir slaptažodį arba neseniai pakeitėte „Google“ paskyros slaptažodį, pabandykite atkurti šį naudotoją.</translation>
+<translation id="4026843240379844265">Aktyvaus lango perkėlimas iš vieno ekrano į kitą</translation>
 <translation id="4028481283645788203">Norint užtikrinti patikimesnę apsaugą reikalingas slaptažodis</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Bendrinate ekraną</translation>
@@ -912,6 +914,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="5689633613396158040">Naudojant „Nakties šviesos“ funkciją bus patogiau žiūrėti į ekraną ar skaityti prietemoje. Palieskite, kad pakeistumėte, kokiu metu įjungiama funkcija „Nakties šviesa“, arba ją visiškai išjungtumėte.</translation>
 <translation id="5691772641933328258">Kontrolinis kodas neatpažintas</translation>
 <translation id="5693255400847650006">Naudojamas mikrofonas</translation>
+<translation id="5699366815052349604">Priskirti aktyvų langą visiems darbalaukiams</translation>
 <translation id="570390244361237317">„Visos programos“; naudokite rodyklių klavišus, kad pasiektumėte visas programas</translation>
 <translation id="5707775774148071965">Įrenginys palaiko didesnį duomenų dažnį nei laidas. Įrenginio našumas gali būti apribotas.</translation>
 <translation id="5710450975648804523">Netrukdymo režimas įjungtas</translation>
@@ -1552,6 +1555,7 @@ Naujas įdiegimas</translation>
 <translation id="9034924485347205037">„Linux“ failai</translation>
 <translation id="9047624247355796468">Atidaryti „<ph name="NETWORK_NAME" />“ nustatymus</translation>
 <translation id="9059834730836941392">Sutraukti pranešimą</translation>
+<translation id="906458777597946297">Padidinti langą</translation>
 <translation id="9065203028668620118">Redaguoti</translation>
 <translation id="9070640332319875144">Padėjėjo nustatymai</translation>
 <translation id="9072519059834302790">Iki akumuliatoriaus išsikrovimo liko <ph name="TIME_LEFT" />.</translation>

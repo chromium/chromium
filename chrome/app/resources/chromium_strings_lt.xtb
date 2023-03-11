@@ -29,6 +29,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="1774152462503052664">Paleisti „Chromium“ fone</translation>
 <translation id="1779356040007214683">Kad „Chromium“ padarytume saugesnę, išjungėme kai kuriuos plėtinius, kurių nėra „<ph name="IDS_EXTENSION_WEB_STORE_TITLE" />“ sąraše ir kurie galėjo būti pridėti be jūsų žinios.</translation>
 <translation id="1808667845054772817">Iš naujo įdiegti „Chromium“</translation>
+<translation id="1820835682567584003">„Chromium“ bando <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="185970820835152459">Galite tvarkyti „Google“ paskyras, prie kurių prisijungiate. Jūsų „Google“ paskyros naudojamos naršyklei „Chromium“, „Play“ parduotuvei, „Gmail“ ir kt. Jei norite kam nors pridėti paskyrą, pvz., šeimos grupės nariui, pridėkite naują asmenį prie „<ph name="DEVICE_TYPE" />“ įrenginio. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="1863308913976887472">Svetainėse gali būti saugoma su „Chromium“ susijusi informacija apie jūsų pomėgius. Pavyzdžiui, jei apsilankote svetainėje norėdami įsigyti batelius maratonui, svetainė gali prie jūsų pomėgių prisikirti maratonų bėgimą. Vėliau, apsilankius kitoje svetainėje norint užsiregistruoti į lenktynes, atsižvelgiant į jūsų pomėgius joje galės būti rodomas bėgimo batelių skelbimas.</translation>
 <translation id="1881322772814446296">Prisijungiate su valdoma paskyra ir leidžiate jos administratoriui valdyti jūsų „Chromium“ profilį. „Chromium“ duomenys, pvz., programos, žymės, istorija, slaptažodžiai ir kiti nustatymai, bus visam laikui susieti su <ph name="USER_NAME" />. Galėsite ištrinti šiuos duomenis naudodami „Google“ paskyrų informacijos suvestinę, bet negalėsite susieti šių duomenų su kita paskyra. Galite pasirinktinai sukurti naują profilį, kad esami „Chromium“ duomenys būtų saugomi atskirai. <ph name="LEARN_MORE" /></translation>
@@ -307,7 +308,6 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="7561906087460245826">Taip pat išvalyti duomenis iš „Chromium“ (<ph name="URL" />)</translation>
 <translation id="7582945390259497898">„Chromium“ gali numatyti jūsų pomėgius. Vėliau svetainė, kurioje lankotės, gali paprašyti „Chromium“ peržiūrėti jūsų pomėgius, kad galėtų suasmeninti jūsų matomus skelbimus.</translation>
 <translation id="7583399374488819119">„<ph name="COMPANY_NAME" />“ diegimo programa</translation>
-<translation id="7597596667193879455">Įjungėte Sustiprinto saugaus naršymo funkciją paskyroje. Dabar įjunkite ją sistemoje „Chromium“.</translation>
 <translation id="761356813943268536">„Chromium“ naudoja jūsų fotoaparatą ir mikrofoną.</translation>
 <translation id="7617377681829253106">„Chromium“ dabar dar tobulesnė</translation>
 <translation id="7649070708921625228">Pagalba</translation>

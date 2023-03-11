@@ -100,7 +100,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1420408895951708260">I-toggle ang Night Light. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Tingnan ang mga kamakailang larawan at media ng iyong telepono sa <ph name="DEVICE_TYPE" /> mo</translation>
 <translation id="1426410128494586442">Oo</translation>
-<translation id="1447641497144572814">Magsisimula ang screen saver</translation>
 <translation id="1455242230282523554">Ipakita ang mga setting ng wika</translation>
 <translation id="1460620680449458626">Naka-mute ang volume.</translation>
 <translation id="14648076227129703">Pinapayagan nito ang access sa camera para sa <ph name="APP1_NAME" />, <ph name="APP2_NAME" />, at lahat ng app at website na may pahintulot sa camera</translation>
@@ -126,6 +125,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1550523713251050646">Mag-click para sa higit pang mga opsyon</translation>
 <translation id="1555130319947370107">Asul</translation>
 <translation id="1576623706766186887">Mag-zoom out kapag naka-on ang magnifier</translation>
+<translation id="1586324912145647027">Pumunta sa desk 1 hanggang 8</translation>
 <translation id="1589090746204042747">I-access ang lahat ng iyong aktibidad sa session na ito</translation>
 <translation id="1610778689852195798">"I-undo"</translation>
 <translation id="1611993646327628135">Naka-on</translation>
@@ -514,6 +514,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3631369015426612114">Payagan ang mga notification mula sa mga sumusunod</translation>
 <translation id="3633097874324966332">Buksan ang mga setting ng Bluetooth para ipares ang iyong device</translation>
 <translation id="3638400994746983214">I-toggle ang privacy screen. <ph name="STATE_TEXT" />.</translation>
+<translation id="3649256019230929621">I-minimize ang window</translation>
 <translation id="3649505501900178324">Overdue na ang update</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -588,6 +589,7 @@ Isaksak ang iyong device.</translation>
 <translation id="4021716437419160885">Mag-scroll pababa</translation>
 <translation id="4022497978915111141">I-lock ang device</translation>
 <translation id="4024840464866786680">Kung nakalimutan mo ang iyong PIN at password o pinalitan mo ang iyong password ng Google Account kamakailan, subukang i-recover ang user na ito.</translation>
+<translation id="4026843240379844265">Ilipat ang aktibong window sa pagitan ng mga display</translation>
 <translation id="4028481283645788203">Kinakailangan ang password para sa higit pang seguridad</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Ibinabahagi mo ang iyong screen</translation>
@@ -912,6 +914,7 @@ Isaksak ang iyong device.</translation>
 <translation id="5689633613396158040">Mas pinapadali ng Night Light na tumingin sa iyong screen o magbasa sa dilim. I-tap para baguhin kung anong oras mao-on ang Night Light o tuluyan itong i-off.</translation>
 <translation id="5691772641933328258">Hindi nakilala ang fingerprint</translation>
 <translation id="5693255400847650006">Ginagamit ang mikropono</translation>
+<translation id="5699366815052349604">Magtalaga ng aktibong window sa lahat ng desk</translation>
 <translation id="570390244361237317">Lahat ng App, mag-navigate gamit ang mga arrow key para ma-access ang lahat ng app</translation>
 <translation id="5707775774148071965">Sinusuportahan ng iyong device ang mas mataas na rate ng data kaysa sa iyong cable. Posibleng maging limitado ang performance ng device.</translation>
 <translation id="5710450975648804523">Naka-on ang Huwag Istorbohin</translation>
@@ -1551,6 +1554,7 @@ Kaka-install lang</translation>
 <translation id="9034924485347205037">Mga Linux file</translation>
 <translation id="9047624247355796468">Buksan ang mga setting para sa <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">I-collapse ang notification</translation>
+<translation id="906458777597946297">I-maximize ang window</translation>
 <translation id="9065203028668620118">I-edit</translation>
 <translation id="9070640332319875144">Mga Setting ng Assistant</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> bago maubos ang baterya.</translation>

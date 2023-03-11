@@ -26,6 +26,7 @@
 <translation id="1448064542941920355">Zmanjšanje povečave/pomanjšave</translation>
 <translation id="1510341833810331442">Spletna mesta ne smejo shranjevati podatkov v napravi.</translation>
 <translation id="1547123415014299762">Piškotki drugih spletnih mest so dovoljeni.</translation>
+<translation id="1593426485665524382">Nova dejanja so na voljo pri vrhu zaslona.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1633720957382884102">Povezana spletna mesta</translation>
 <translation id="1644574205037202324">Zgodovina</translation>
@@ -146,6 +147,7 @@
 <translation id="3628308229821498208">Predlagane iskalne poizvedbe</translation>
 <translation id="3636279694100170143">Spletna mesta, ki jih obiščete, lahko preverijo, ali ste resničen uporabnik, ne pa bot.</translation>
 <translation id="3649190289964910441">Spletno mesto, ki ga obiščete, lahko v Chromu shrani podatke, ki potrjujejo, da ste resničen uporabnik. Med brskanjem se lahko spletna mesta obrnejo na Chrome in na prvem spletnem mestu potrdijo, da ste verjetno zaupanja vreden uporabnik.</translation>
+<translation id="3721953990244350188">Opustitev in prikaz naslednjega razpoložljivega dejanja.</translation>
 <translation id="3744111561329211289">Sinhroniziranje v ozadju</translation>
 <translation id="3763247130972274048">Dvakrat se dotaknite videoposnetka levo ali desno, da preskočite 10 s</translation>
 <translation id="3794286421982011626">Spletno mesto, ki ga obiščete, lahko shranjuje podatke o tem, kaj počnete, da lahko deluje po pričakovanjih – poskrbi na primer, da ostanete prijavljeni na spletnem mestu, ali shranjuje izdelke v nakupovalni košarici. Spletna mesta te podatke pogosto začasno shranijo v vaši napravi.</translation>
@@ -193,7 +195,6 @@
 <translation id="4534723447064627427">Če želite aplikaciji <ph name="APP_NAME" /> omogočiti dostop do mikrofona, mikrofon vklopite tudi v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Izklopi mikrofon</translation>
 <translation id="4570913071927164677">Podrobnosti</translation>
-<translation id="4575264539271661854">Poskrbite za lažjo povečavo besedila in slik na spletnem mestu, ki ga obiskujete.</translation>
 <translation id="4598549027014564149">Ko uporabljate anonimni način, spletna mesta ne morejo uporabljati piškotkov za ogled dejavnosti brskanja na spletnih mestih, tudi na sorodnih spletnih mestih. Dejavnost brskanja se ne uporablja za stvari, kot je osebno prilagajanje oglasov. Funkcije na nekaterih spletnih mestih morda ne bodo delovale.</translation>
 <translation id="4645575059429386691">Upravlja starš</translation>
 <translation id="4670064810192446073">Navidezna resničnost</translation>

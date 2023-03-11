@@ -84,6 +84,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> зүйлийг zip хийж байна...</translation>
 <translation id="1722687688096767818">Профайл нэмж байна...</translation>
 <translation id="1726100011689679555">Нэрийн сервер</translation>
+<translation id="1727562178154619254">Синк хийхэд бэлэн</translation>
 <translation id="1729953886957086472">Герман (Герман)</translation>
 <translation id="1730235522912993863">Хятад Цанцзе</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> зүйлийг хуулсан.</translation>
@@ -702,6 +703,7 @@
 <translation id="6732801395666424405">Гэрчилгээнүүдийг ачаалласангүй</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [ <ph name="ISSUED_TO" /> ]</translation>
 <translation id="6740270213273127264">Bruschetta-тай фолдер хуваалцах</translation>
+<translation id="6750737795876287924">Одоогийн лавлах</translation>
 <translation id="6751256176799620176">1 фолдер сонгосон</translation>
 <translation id="6755827872271341378">ChromeOS Flex төхөөрөмж</translation>
 <translation id="6790428901817661496">Тоглуулах</translation>
@@ -739,7 +741,6 @@
 <translation id="6973630695168034713">Хавтас</translation>
 <translation id="6976795442547527108">Арслан</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979737339423435258">Бүх цаг</translation>
 <translation id="6989942356279143254">Швед</translation>
 <translation id="6990081529015358884">Таны хангалттай зай алга байна.</translation>
 <translation id="6993826899923627728">Эдгээр зүйл таны хогийн саванд байна</translation>
@@ -795,7 +796,6 @@
 <translation id="7458955835361612701">Саяхны зураг байхгүй байна</translation>
 <translation id="7460898608667578234">Украйн</translation>
 <translation id="7469894403370665791">Автоматаар энэ сүлжээ рүү холбогдох</translation>
-<translation id="7481358317100446445">Бэлэн</translation>
 <translation id="7486315294984620427">Parallels Desktop-д файлууд буулгахын тулд файлыг Windows-н файлуудад хуулсан байх ёстой.</translation>
 <translation id="749452993132003881">Хирагана</translation>
 <translation id="7495372004724182530">Малайлам авиа зүй</translation>

@@ -376,6 +376,7 @@
 <translation id="1803351196216024260">মাইক্রোফোন ব্যবহার করতে অনুমতি চাইতে পারে</translation>
 <translation id="1807246157184219062">আলো</translation>
 <translation id="1807528111851433570">শুরুর শিট</translation>
+<translation id="180991881384371158">আপনার CVC কার্ডের পিছনে আছে। আপনার সিগনেচার বক্সের উপরের ডানদিকে শেষ ৩টি সংখ্যা হল CVC নম্বর।</translation>
 <translation id="181000283860817563">একাধিক সাইটে দাম ট্র্যাক করুন</translation>
 <translation id="1810391395243432441">স্ক্রিন লক দিয়ে পাসওয়ার্ড সুরক্ষিত করুন</translation>
 <translation id="1812527064848182527">ল্যান্ডস্কেপ</translation>
@@ -507,6 +508,7 @@
 <translation id="2149968176347646218">কানেকশন সুরক্ষিত নয়</translation>
 <translation id="2153609454945889823">Google Play Services for AR ইনস্টল করবেন?</translation>
 <translation id="2154484045852737596">কার্ড সম্পাদনা করুন</translation>
+<translation id="2154739667870063220">রিবুট করুন</translation>
 <translation id="2155260325161282517">৫ x ৭ ইঞ্চি</translation>
 <translation id="2157640075051554492">দাম ট্র্যাক করার বিজ্ঞপ্তি</translation>
 <translation id="2161656808144014275">পাঠ্য</translation>
@@ -641,6 +643,7 @@
 <translation id="2521736961081452453">ফর্ম তৈরি করুন</translation>
 <translation id="2523886232349826891">শুধুমাত্র এই ডিভাইসে সেভ করা যাবে</translation>
 <translation id="2524461107774643265">আরও তথ্য যোগ করুন</translation>
+<translation id="2527451058878391043">আপনার CVC কার্ডের সামনে আছে। এটি ৪ সংখ্যার একটি কোড যা ডানদিকে আপনার কার্ড নম্বরের উপরের রয়েছে।</translation>
 <translation id="2529899080962247600">এই ফিল্ডে <ph name="MAX_ITEMS_LIMIT" />টির বেশি এন্ট্রি লেখা যাবে না। অন্য সব এন্ট্রি বাতিল করা হবে।</translation>
 <translation id="253493526287553278">প্রোমো কোড সংক্রান্ত বিবরণ দেখুন</translation>
 <translation id="2535585790302968248">গোপনে ব্রাউজ করতে ছদ্মবেশী ট্যাব খুলুন</translation>
@@ -895,6 +898,7 @@
 <translation id="3215092763954878852">WebAuthn ব্যবহার করা যায়নি</translation>
 <translation id="3216313131063488104">ব্লুজ</translation>
 <translation id="3218181027817787318">রিলেটিভ</translation>
+<translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{এখনই আপডেট করতে হবে}=2{আগামীকালের মধ্যে আপডেট করতে হবে}one{# দিনের মধ্যে আপডেট করতে হবে}other{# দিনের মধ্যে আপডেট করতে হবে}}</translation>
 <translation id="3223287115535306850">অ্যাপ লঞ্চ হচ্ছে</translation>
 <translation id="3223425961342298674">লোকেশন ব্যবহারের অনুমতি নেই</translation>
 <translation id="3225919329040284222">সার্ভারটি এমন একটি সার্টিফিকেট উপস্থাপনা করেছে যা বিল্ট-ইন প্রত্যাশাগুলির সাথে মেলে না৷ এই প্রত্যাশাগুলি আপনাকে সুরক্ষিত করতে কিছু নিশ্চিত, উচ্চ সুরক্ষার ওয়েবসাইটের জন্য অন্তর্ভুক্ত৷</translation>
@@ -1379,6 +1383,7 @@
 <translation id="4350629523305688469">মাল্টিফাংশন ট্রে</translation>
 <translation id="4351060348582610152">কাছাকাছি থাকা ব্লুটুথ ডিভাইসগুলিকে <ph name="ORIGIN" /> স্ক্যান করতে চায়, এই ডিভাইসগুলি পাওয়া গেছে:</translation>
 <translation id="4351175281479794167">যাচাইকরণ কোড লিখুন</translation>
+<translation id="4355383636893709732">Android অ্যাপের জন্য ChromeOS আপডেট</translation>
 <translation id="4356973930735388585">এই সাইটে আক্রমণকারীরা আপনার কম্পিউটারে ক্ষতিকারক প্রোগ্রাম ইনস্টল করতে পারে যা আপনার তথ্য (যেমন, ফটো, পাসওয়ার্ড, মেসেজ এবং ক্রেডিট কার্ড) চুরি করতে বা মুছে দিতে পারে।</translation>
 <translation id="4358059973562876591">DnsOverHttpsMode নীতিতে সমস্যা থাকার কারণে আপনার নির্দিষ্ট করা টেমপ্লেট হয়তো ব্যবহার করা যাবে না।</translation>
 <translation id="4358461427845829800">পেমেন্ট পদ্ধতিগুলি পরিচালনা করুন...</translation>
@@ -1759,6 +1764,7 @@
 <translation id="5288393065350884210">অ্যাকাউন্টিং ও অডিটিং</translation>
 <translation id="5288808348893593856">Chrome থেকে কোনও সতর্কতা না পাওয়া পর্যন্ত সাইটের কানেকশনটি সুরক্ষিত।</translation>
 <translation id="5289384342738547352">মাল্টিপল ডকুমেন্ট ম্যানেজ করা</translation>
+<translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{আজ আপডেট করতে হবে}=2{আগামীকালের মধ্যে আপডেট করতে হবে}one{# দিনের মধ্যে আপডেট করতে হবে}other{# দিনের মধ্যে আপডেট করতে হবে}}</translation>
 <translation id="5293919335876685914">কুপে</translation>
 <translation id="5296589789433599000">রান্না ও রেসিপি</translation>
 <translation id="5299298092464848405">নীতি বিশ্লেষণ করার সময় ত্রুটি</translation>
@@ -1953,6 +1959,7 @@
 <translation id="5786044859038896871">আপনি কি আপনার কার্ডের তথ্য পূরণ করতে চান?</translation>
 <translation id="578633867165174378">Chrome-এর হিসেবে আপনার এখনই ব্যবহার করা পাসওয়ার্ডের তথ্য চুরি হয়ে গেছে। আমরা সাজেস্ট করছি এখনই এই পাসওয়ার্ড পরিবর্তন করুন।</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="580241730938216256">আপডেট শুরু করুন</translation>
 <translation id="5803412860119678065">আপনি কি আপনার <ph name="CARD_DETAIL" /> এর তথ্য পূরণ করতে চান?</translation>
 <translation id="5804241973901381774">অনুমতিগুলি</translation>
 <translation id="5808435672482059465">আপনার Chrome ইতিহাস দেখুন</translation>
@@ -2112,6 +2119,7 @@
 <translation id="6218753634732582820">Chromium থেকে ঠিকানা সরাবেন?</translation>
 <translation id="622039917539443112">প্যারালাল ফোল্ড</translation>
 <translation id="6221345481584921695">Google নিরাপদ ব্রাউজিং সাম্প্রতিক <ph name="SITE" />-এ <ph name="BEGIN_LINK" />ম্যালওয়্যার শনাক্ত করেছে<ph name="END_LINK" />। যেসব ওয়েবসাইট সাধারণত নিরাপদ থাকে সেগুলি কখনও কখনও ম্যালওয়্যার দ্বারা আক্রান্ত হয়। <ph name="SUBRESOURCE_HOST" />, একটি পরিচিত ম্যালওয়্যার ডিস্ট্রিবিউটরের, থেকে ক্ষতিকারক কন্টেন্ট আসে। কয়েক ঘণ্টা পরে আপনার ফিরে আসা উচিত।</translation>
+<translation id="6221892641068781024">সরলীকৃত ভিউ</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome সেটিংস থেকে আপনার অ্যাক্সেসিবিলিটি টুল পছন্দমতো সাজিয়ে নিতে Tab বোতাম প্রেস করে Enter প্রেস করুন</translation>
 <translation id="6229649258872345286">পারিবারিক ভ্রমণ</translation>
 <translation id="6232271601416750929">ক্লিন বিউটি</translation>
@@ -2171,6 +2179,7 @@
 <translation id="6366710531182496394">বাঁদিকে ডুয়াল স্টেপল</translation>
 <translation id="6367196786591004737">এন্ট্রি মুছুন</translation>
 <translation id="6370022303958842211">ডিভাইস অ্যাক্সেস অ্যাকশন যেমন লগ-ইন (লগ-ইন করা যায়নি এমন কারণ সহ), লগ-আউট, লক এবং আনলক</translation>
+<translation id="6374469231428023295">আবার চেষ্টা করুন</translation>
 <translation id="6374865374745447009">উইন্ডো ম্যানেজমেন্ট</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />'-এর জন্য ১টি ফলাফল</translation>
 <translation id="6380497234672085559">A0</translation>
@@ -2481,6 +2490,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> এবং আরও <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />টি}one{<ph name="PAYMENT_METHOD_PREVIEW" /> এবং আরও <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />টি}other{<ph name="PAYMENT_METHOD_PREVIEW" /> এবং আরও <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />টি}}</translation>
 <translation id="7153618581592392745">ল্যাভেণ্ডার</translation>
 <translation id="7156870133441232244">সার্ভারটিকে TLS 1.2 বা এর পরবর্তী যেকোনও ভার্সনে আপগ্রেড করতে হবে।</translation>
+<translation id="7160999678034985039">আপনার কাজ সেভ করুন এবং সেভ করা হয়ে গেলে আপডেট শুরু করুন।</translation>
 <translation id="7163295244162773898">{0,plural, =1{গোপনীয় ফাইল কপি করবেন?}one{গোপনীয় ফাইল কপি করবেন?}other{গোপনীয় ফাইল কপি করবেন?}}</translation>
 <translation id="717330890047184534">Gaia আইডি:</translation>
 <translation id="7174545416324379297">মার্জ করা হয়েছে</translation>
@@ -2728,6 +2738,7 @@
 <translation id="7687305263118037187">আর চেষ্টা করতে পারবেন না</translation>
 <translation id="7690647519407127574">Oufuku Hagaki পোস্টকার্ড</translation>
 <translation id="7693583928066320343">পৃষ্ঠার অর্ডার রিসিভ করা হয়েছে</translation>
+<translation id="769424100851389104">এখনই আপডেট শুরু করুন</translation>
 <translation id="7696089921647603491">ক্লাসিক রক ও পুরানো দিনের</translation>
 <translation id="769721561045429135">এই মুহূর্তে, আপনার কাছে থাকা কার্ডগুলি শুধুমাত্র এই ডিভাইসে ব্যবহার করা যেতে পারে। কার্ডগুলির পর্যালোচনা চালিয়ে যেতে ক্লিক করুন।</translation>
 <translation id="7698864304447945242">Google Play Services for AR আপডেট করবেন?</translation>
@@ -2752,6 +2763,7 @@
 <translation id="774634243536837715">বিপজ্জনক কন্টেন্ট ব্লক করা হয়েছে।</translation>
 <translation id="7751971323486164747">Chrome-এ ফন্ট সাইজ এবং টাইপফেস কাস্টমাইজ করুন</translation>
 <translation id="7752995774971033316">অপরিচালিত</translation>
+<translation id="7754587126786572336">আপডেট শুরু হলে আপনার Chrome ট্যাব এবং অ্যাপ বন্ধ হয়ে যাবে</translation>
 <translation id="7755287808199759310">আপনার পিতামাতা এটি আপনার জন্য অবরোধ মুক্ত করতে পারবেন</translation>
 <translation id="7755624218968747854">প্রাইমারি রোল</translation>
 <translation id="7758069387465995638">ফায়ারওয়াল বা অ্যান্টিভাইরাস সফটওয়্যার সংযোগকে অবরুদ্ধ করে থাকতে পারে।</translation>
@@ -2916,6 +2928,7 @@
 <translation id="8186706823560132848">সফটওয়ার</translation>
 <translation id="8190193880870196235">এক্সটেনশনের মাধ্যমে ম্যানেজ করা হয়েছে</translation>
 <translation id="8194797478851900357">&amp;সরানোকে পূর্বাবস্থায় ফেরান</translation>
+<translation id="8200772114523450471">আবার চালু করা</translation>
 <translation id="8201077131113104583">"<ph name="EXTENSION_ID" />" ID যুক্ত এক্সটেনশনের ভুল আপডেট ইউআরএল।</translation>
 <translation id="8202097416529803614">অর্ডারের সারসংক্ষেপ</translation>
 <translation id="8202370299023114387">দ্বন্দ্ব</translation>
@@ -3213,6 +3226,7 @@
 <translation id="8963117664422609631">সাইট সেটিংসে যান</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />পরামর্শগুলি:<ph name="MARKUP_2" />নিশ্চিত হোন যে আপনার একটি ডেটা কানেকশন আছে<ph name="MARKUP_3" />পরবর্তীতে এই ওয়েব পৃষ্ঠাটি পুনরায় লোড করুন<ph name="MARKUP_4" />আপনার লেখা ঠিকানাটি পরীক্ষা করুন<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">কার্ড সেভ করুন</translation>
+<translation id="8970887620466824814">কিছু সমস্যা হয়েছে।</translation>
 <translation id="8971063699422889582">সার্ভারের সার্টিফিকেটের মেয়াদ ফুরিয়েছে৷</translation>
 <translation id="8975012916872825179">ফোন নম্বর, ইমেল আইডি এবং শিপিং ঠিকানার মতো তথ্য এতে আছে</translation>
 <translation id="8975263830901772334">আপনার প্রিন্ট করা ফাইলগুলির নাম</translation>

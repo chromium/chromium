@@ -27,6 +27,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="1774152462503052664">A Chromium fusson a háttérben</translation>
 <translation id="1779356040007214683">A Chromium biztonságosabbá tétele érdekében kikapcsoltunk néhány bővítményt, amelyek nem a(z) <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> szolgáltatásból származnak, és előfordulhat, hogy az Ön tudta nélkül lettek telepítve.</translation>
 <translation id="1808667845054772817">A Chromium újratelepítése</translation>
+<translation id="1820835682567584003">A Chromium megpróbálja a következőt: <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="185970820835152459">Kezelheti a bejelentkezett Google-fiókjait. Google-fiókjait használhatja a Chromium böngészőben, a Play Áruházban, a Gmailben és még sok más helyen. Ha más számára szeretne hozzáadni fiókot (például családtagjának), inkább új személyt adjon hozzá <ph name="DEVICE_TYPE" /> eszközéhez. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" /></translation>
 <translation id="1863308913976887472">A webhelyek tárolhatnak az Ön érdeklődési köreivel kapcsolatos információkat a Chromiumban. Ha például felkeres egy webhelyet, ahol maratonfutáshoz való cipőt vásárol, akkor a webhely meghatározhatja a maratonfutást az Ön egyik érdeklődési köreként. Ha később felkeres egy másik webhelyet, hogy jelentkezzen egy versenyre, ezen a webhelyen megjelenhet egy futócipőket reklámozó hirdetés az Ön érdeklődési köre alapján.</translation>
 <translation id="1881322772814446296">Kezelt fiókkal jelentkezik be, és annak adminisztrátora számára hozzáférést biztosít Chromium-profiljához. Chromium-adatait – például alkalmazásait, könyvjelzőit, előzményeit, jelszavait és más beállításait – a rendszer véglegesen társítja a(z) <ph name="USER_NAME" /> fiókhoz. Ezen adatokat a Google-fiók Irányítópultján törölheti, de más fiókhoz nem társíthatja őket. Létrehozhat egy új profilt is meglévő Chromium-adatainak elkülönített tárolásához. <ph name="LEARN_MORE" /></translation>
@@ -303,7 +304,6 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="7561906087460245826">Az adatokat is törölje a Chromiumból (<ph name="URL" />)</translation>
 <translation id="7582945390259497898">A Chromium meg tudja becsülni az Ön érdeklődési köreit. Később az Ön által felkeresett webhelyek a megjelenő hirdetések személyre szabása érdekében kérhetik a Chromiumtól az Ön érdeklődési köreinek megismerését.</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" />-telepítő</translation>
-<translation id="7597596667193879455">Ön bekapcsolta a Biztonságos Böngészés fokozott védelemmel funkciót a fiókjában. Most töltse le Chromiumra is.</translation>
 <translation id="761356813943268536">A Chromium használja a kamerát és a mikrofont.</translation>
 <translation id="7617377681829253106">A Chromium még jobb lett</translation>
 <translation id="7649070708921625228">Súgó</translation>

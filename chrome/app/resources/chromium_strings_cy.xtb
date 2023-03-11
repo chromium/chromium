@@ -25,6 +25,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="1640672724030957280">Wrthi'n lawrlwytho...</translation>
 <translation id="1708666629004767631">Mae fersiwn newydd, fwy diogel o Chromium ar gael.</translation>
 <translation id="17264556997921157">Gallwch weld a dileu pynciau o ddiddordeb y mae gwefannau'n eu defnyddio i ddangos hysbysebion i chi. Mae Chromium yn amcangyfrif eich diddordebau yn seiliedig ar eich hanes pori diweddar.</translation>
+<translation id="1745121272106313518">Bydd Chromium yn ailddechrau mewn <ph name="REMAINING_TIME" /></translation>
 <translation id="1774152462503052664">Caniatáu i Chromium rhedeg yn y cefndir</translation>
 <translation id="1779356040007214683">I wneud Chromium yn fwy diogel, gwnaethom analluogi rhai estyniadau nad ydynt wedi'u rhestru yn y <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ac mae'n bosib eu bod wedi'u hychwanegu heb i chi wybod.</translation>
 <translation id="1808667845054772817">Ailosod Chromium</translation>
@@ -307,7 +308,6 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="7561906087460245826">Clirio data o Chromium hefyd (<ph name="URL" />)</translation>
 <translation id="7582945390259497898">Gall Chromium amcangyfrif eich diddordebau. Yn nes ymlaen, gall gwefan rydych yn ymweld â hi ofyn i Chromium weld eich diddordebau er mwyn personoleiddio'r hysbysebion rydych yn eu gweld.</translation>
 <translation id="7583399374488819119">Gosodwr <ph name="COMPANY_NAME" /></translation>
-<translation id="7597596667193879455">Gwnaethoch droi Gwell Pori'n Ddiogel ymlaen yn eich cyfrif. Cewch ef am Chromium nawr.</translation>
 <translation id="761356813943268536">Mae Chromium yn defnyddio'ch camera a'ch meicroffon.</translation>
 <translation id="7617377681829253106">Mae Chromium newydd fynd hyd yn oed yn well</translation>
 <translation id="7649070708921625228">Cymorth</translation>

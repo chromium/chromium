@@ -241,7 +241,6 @@
 <translation id="3226657629376379887">Asettelun toimintovalikko</translation>
 <translation id="3246869037381808805">Yli päivän vanhat tulostustyöt poistetaan</translation>
 <translation id="3268178239013324452">Epäonnistui – Luukku auki</translation>
-<translation id="3275506277319227640">Kiinnitä (<ph name="DIRECTION" />)</translation>
 <translation id="3275729367986477355">Avatar-kuva</translation>
 <translation id="3283504360622356314">{0,plural, =1{Muokkaa tiedostoa}other{Muokkaa tiedostoja}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
@@ -360,7 +359,6 @@
 <translation id="4311195029067684288">Täynnä</translation>
 <translation id="4333390807948134856">Näppäintä painetaan: <ph name="KEY_NAME" /></translation>
 <translation id="435692326371619097">Muuta verkon APN-asetuksia. APN:t luovat yhteyden mobiiliverkkon ja internetin välille. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
-<translation id="4370033095251616914">Kiinnitä pienempään puoleen</translation>
 <translation id="4378373042927530923">Ei suoritettu</translation>
 <translation id="4378551569595875038">Yhdistetään…</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -903,7 +901,6 @@
 <translation id="9137526406337347448">Googlen palvelut</translation>
 <translation id="9138630967333032450">Vasen vaihtonäppäin</translation>
 <translation id="9149391708638971077">Suorita muistitesti</translation>
-<translation id="9157515863513902090">Kiinnitä suurempaan puoleen</translation>
 <translation id="9161276708550942948">välilyönti</translation>
 <translation id="9173638680043580060">Alle minuutti jäljellä</translation>
 <translation id="917720651393141712">Testi</translation>

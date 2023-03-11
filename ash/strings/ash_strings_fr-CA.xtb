@@ -100,7 +100,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1420408895951708260">Activer ou désactiver le mode Éclairage nocturne. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Affichez les photos et les fichiers multimédias récents de votre téléphone sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">Oui</translation>
-<translation id="1447641497144572814">L'écran de veille démarre</translation>
 <translation id="1455242230282523554">Afficher les paramètres de langue</translation>
 <translation id="1460620680449458626">Le volume est désactivé.</translation>
 <translation id="14648076227129703">Cela donne à l'appareil photo l'accès à <ph name="APP1_NAME" />, à <ph name="APP2_NAME" /> et à toutes les applications et tous les sites Web disposant de l'autorisation pour l'appareil photo</translation>
@@ -126,6 +125,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1550523713251050646">Cliquez pour afficher plus d'options</translation>
 <translation id="1555130319947370107">Bleu</translation>
 <translation id="1576623706766186887">Dézoomer lorsque la loupe est activée</translation>
+<translation id="1586324912145647027">Accédez aux bureaux 1 à 8</translation>
 <translation id="1589090746204042747">Accédez à toute l'activité de votre session</translation>
 <translation id="1610778689852195798">« Annuler »</translation>
 <translation id="1611993646327628135">Activé</translation>
@@ -514,6 +514,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3631369015426612114">Autoriser les notifications de :</translation>
 <translation id="3633097874324966332">Ouvrez les paramètres Bluetooth pour associer votre appareil</translation>
 <translation id="3638400994746983214">Basculer l'écran de confidentialité. <ph name="STATE_TEXT" />.</translation>
+<translation id="3649256019230929621">Réduire la fenêtre</translation>
 <translation id="3649505501900178324">Mise à jour à effectuer</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -588,6 +589,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4021716437419160885">Faire défiler vers le bas</translation>
 <translation id="4022497978915111141">Verrouiller l'appareil</translation>
 <translation id="4024840464866786680">Si vous avez oublié votre code NIP et votre mot de passe ou si vous avez récemment modifié le mot de passe de votre compte Google, essayez de récupérer cet utilisateur.</translation>
+<translation id="4026843240379844265">Déplacez la fenêtre active d'un écran à l'autre</translation>
 <translation id="4028481283645788203">Le mot de passe est exigé pour plus de sécurité</translation>
 <translation id="4032485810211612751"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4042660782729322247">Vous partagez votre écran</translation>
@@ -912,6 +914,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5689633613396158040">Le mode Éclairage nocturne permet de regarder l'écran plus facilement lorsque l'éclairage est faible. Touchez l'écran pour modifier l'heure à laquelle le mode Éclairage nocturne s'active ou se désactive complètement.</translation>
 <translation id="5691772641933328258">Empreinte digitale non reconnue</translation>
 <translation id="5693255400847650006">Le microphone est en cours d'utilisation</translation>
+<translation id="5699366815052349604">Attribuez la fenêtre active à tous les bureaux</translation>
 <translation id="570390244361237317">Toutes les applications, naviguer avec les touches fléchées pour accéder à toutes les applications</translation>
 <translation id="5707775774148071965">Votre appareil prend en charge un débit de données supérieur à celui de votre câble. La performance de l'appareil peut être limitée.</translation>
 <translation id="5710450975648804523">Mode Ne pas déranger activé</translation>
@@ -1551,6 +1554,7 @@ Nouvelle installation</translation>
 <translation id="9034924485347205037">Fichiers Linux</translation>
 <translation id="9047624247355796468">Ouvrir les paramètres pour <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Réduire la notification</translation>
+<translation id="906458777597946297">Agrandir la fenêtre</translation>
 <translation id="9065203028668620118">Modifier</translation>
 <translation id="9070640332319875144">Paramètres de l'Assistant</translation>
 <translation id="9072519059834302790">Il reste <ph name="TIME_LEFT" /> avant que la pile soit complètement épuisée.</translation>

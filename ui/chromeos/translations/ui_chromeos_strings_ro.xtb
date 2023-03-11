@@ -84,6 +84,7 @@
 <translation id="1722487484194605434">Se arhivează <ph name="NUMBER_OF_ITEMS" /> elemente...</translation>
 <translation id="1722687688096767818">Se adaugă profilul...</translation>
 <translation id="1726100011689679555">Servere de nume</translation>
+<translation id="1727562178154619254">Gata de sincronizare</translation>
 <translation id="1729953886957086472">Germană (Germania)</translation>
 <translation id="1730235522912993863">Chineză Cangjie</translation>
 <translation id="1731889557567069540">Elemente copiate: <ph name="NUMBER_OF_ITEMS" />.</translation>
@@ -705,6 +706,7 @@
 <translation id="6732801395666424405">Certificatele nu s-au încărcat</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">Permite accesul Bruschetta la dosar</translation>
+<translation id="6750737795876287924">Directorul curent</translation>
 <translation id="6751256176799620176">Un dosar selectat</translation>
 <translation id="6755827872271341378">Dispozitiv cu sistemul de operare Chrome Flex</translation>
 <translation id="6790428901817661496">Redă</translation>
@@ -742,7 +744,6 @@
 <translation id="6973630695168034713">Dosare</translation>
 <translation id="6976795442547527108">Leu</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979737339423435258">Dintotdeauna</translation>
 <translation id="6989942356279143254">Suedeză</translation>
 <translation id="6990081529015358884">Nu aveți spațiu suficient</translation>
 <translation id="6993826899923627728">Articolele sunt în coșul de gunoi</translation>
@@ -798,7 +799,6 @@
 <translation id="7458955835361612701">Nicio imagine recentă</translation>
 <translation id="7460898608667578234">Ucraineană</translation>
 <translation id="7469894403370665791">Conectează-te automat la această rețea</translation>
-<translation id="7481358317100446445">Gata</translation>
 <translation id="7486315294984620427">Pentru a plasa fișiere în Parallels Desktop, trebuie să le copiezi în dosarul cu fișiere Windows.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malayalam fonetică</translation>

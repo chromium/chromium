@@ -8,9 +8,6 @@
 <translation id="1175958423215084756">Link registreret. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Side <ph name="PAGE_NUMBER" /> blev slettet</translation>
 <translation id="1258009455399840361">Roter 90 grader med uret</translation>
-<translation id="1300209025925956156">Scan dit dokument</translation>
-<translation id="1309250603447638106">Downloader opdateringer til dokumentscanning</translation>
-<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Tryk på søgetasten+venstrepil for at få adgang til dem.</translation>
 <translation id="1417314334557041815">Rediger side <ph name="INDEX" /></translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> er frakoblet.</translation>
 <translation id="1473110567575736769">Timer på 3 sekunder</translation>
@@ -24,7 +21,6 @@
 <translation id="1664224225747386870">Der er ingen optagelser</translation>
 <translation id="1838104802459806957">Drej opad</translation>
 <translation id="1843105061469674856">Scan ekstra side</translation>
-<translation id="1851169887664797861">Yderligere styringselementer til kameraet er tilgængelige</translation>
 <translation id="1851616744363735765">SAT PÅ PAUSE</translation>
 <translation id="1899697626337024495">Billedopløsning</translation>
 <translation id="1925845977604399247">Gå til Galleri</translation>
@@ -49,7 +45,6 @@
 <translation id="2761536921376153655">Scanningstype</translation>
 <translation id="28682968802727151">Spejl forhåndsvisning</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> er tilsluttet.</translation>
-<translation id="2904654629665923749">Dokumentscanning er tilgængelig</translation>
 <translation id="3067436040345934772">Panorer mod højre</translation>
 <translation id="3081586908890909590">Skift til videooptagelse</translation>
 <translation id="313467653172006084">30 FPS</translation>
@@ -74,7 +69,6 @@
 <translation id="4269820728363426813">Kopiér linkadresse</translation>
 <translation id="4281620174117014503">Medium opløsning</translation>
 <translation id="428234092390943511">Miniature for side</translation>
-<translation id="4340659173795395806">Du kan nu oprette PDF-filer med flere sider</translation>
 <translation id="4383571725254449280">Effektivitetslogfiler for udskrivning</translation>
 <translation id="4445542136948522167">Stop med at tage billedet</translation>
 <translation id="4570032796877367747">Frontkamera</translation>
@@ -97,7 +91,6 @@
 <translation id="5317780077021120954">Gem</translation>
 <translation id="5320594929574852403">Flyttes mod venstre</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5444515100983837161">Sørg for, at alle dokumentets kanter er inden for rammen. Scanning fungerer bedst, når dokumentet har en anden farve end baggrunden.</translation>
 <translation id="5662366948659129155">Scanner side <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Kvadrat</translation>
 <translation id="5746169159649715125">Gem som PDF</translation>
@@ -158,7 +151,6 @@ Hvis din feedback omhandler billed- eller videokvalitet, bedes du vedhæfte et b
 <translation id="8428213095426709021">Indstillinger</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Slå mikrofonen til eller fra. Lyden er slået fra</translation>
-<translation id="8712637175834984815">Forstået</translation>
 <translation id="8730621377337864115">Udfør</translation>
 <translation id="8732462232047530626">Se forhåndsvisning af metadata</translation>
 <translation id="8815966864175525708">Skift for at tage et billede i stående format</translation>

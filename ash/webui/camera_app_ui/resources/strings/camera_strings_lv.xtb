@@ -8,9 +8,6 @@
 <translation id="1175958423215084756">Konstatēta saite. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213"><ph name="PAGE_NUMBER" />. lapa ir izdzēsta</translation>
 <translation id="1258009455399840361">Pagriezt par 90 grādiem pulksteņrādītāja kustības virzienā</translation>
-<translation id="1300209025925956156">Dokumenta skenēšana</translation>
-<translation id="1309250603447638106">Notiek atjauninājumu lejupielāde dokumentu skenēšanai.</translation>
-<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Lai piekļūtu tām, vienlaikus nospiediet meklēšanas taustiņu un kreiso bulttaustiņu.</translation>
 <translation id="1417314334557041815">Rediģēt <ph name="INDEX" />. lapu</translation>
 <translation id="1467231725790366244">Kamera <ph name="CAMERA" /> ir atvienota.</translation>
 <translation id="1473110567575736769">3 sekunžu taimeris</translation>
@@ -24,7 +21,6 @@
 <translation id="1664224225747386870">Nekas nav ierakstīts</translation>
 <translation id="1838104802459806957">Pavirzīt augšup</translation>
 <translation id="1843105061469674856">Skenēt papildu lapu</translation>
-<translation id="1851169887664797861">Ir pieejamas papildu kameras vadīklas</translation>
 <translation id="1851616744363735765">APTURĒTA</translation>
 <translation id="1899697626337024495">Fotoattēlu izšķirtspēja</translation>
 <translation id="1925845977604399247">Pāriet uz galeriju</translation>
@@ -49,7 +45,6 @@
 <translation id="2761536921376153655">Meklēšanas veids</translation>
 <translation id="28682968802727151">Spoguļot priekšskatījumu</translation>
 <translation id="2879583609344924966">Kamera <ph name="CAMERA" /> ir pievienota.</translation>
-<translation id="2904654629665923749">Ir pieejama dokumentu skenēšana.</translation>
 <translation id="3067436040345934772">Bīdīt pa labi</translation>
 <translation id="3081586908890909590">Ieslēdziet, lai ierakstītu videoklipu</translation>
 <translation id="313467653172006084">30 kadri/s</translation>
@@ -74,7 +69,6 @@
 <translation id="4269820728363426813">Kopēt saites adresi</translation>
 <translation id="4281620174117014503">Vidēja izšķirtspēja</translation>
 <translation id="428234092390943511">Lapas sīktēls</translation>
-<translation id="4340659173795395806">Tagad varat izveidot PDF failu ar vairākām lapām.</translation>
 <translation id="4383571725254449280">Drukāt veiktspējas žurnālus</translation>
 <translation id="4445542136948522167">Pārtraukt fotoattēla uzņemšanu</translation>
 <translation id="4570032796877367747">Priekšējā kamera</translation>
@@ -97,7 +91,6 @@
 <translation id="5317780077021120954">Saglabāt</translation>
 <translation id="5320594929574852403">Pārvietojas pa kreisi</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5444515100983837161">Novietojiet visas dokumenta malas kadrā. Skenēšana darbojas vislabāk, ja dokuments un fons ir atšķirīgā krāsā.</translation>
 <translation id="5662366948659129155">Notiek <ph name="COUNT" />. lapas skenēšana</translation>
 <translation id="5671277269877808209">Kvadrāts</translation>
 <translation id="5746169159649715125">Saglabāt kā PDF failu</translation>
@@ -157,7 +150,6 @@ Ja atsauksme ir par attēlu vai videoklipu kvalitāti, lūdzu, pievienojiet foto
 <translation id="8428213095426709021">Iestatījumi</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Mikrofona izslēgšanas slēdzis. Mikrofons ir izslēgts.</translation>
-<translation id="8712637175834984815">Sapratu!</translation>
 <translation id="8730621377337864115">Gatavs</translation>
 <translation id="8732462232047530626">Priekšskatīt metadatus</translation>
 <translation id="8815966864175525708">Pārslēgt uz portretu uzņemšanu</translation>

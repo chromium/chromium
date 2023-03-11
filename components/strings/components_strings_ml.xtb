@@ -507,6 +507,7 @@
 <translation id="2149968176347646218">കണക്ഷൻ സുരക്ഷിതമല്ല</translation>
 <translation id="2153609454945889823">Google Play Services for AR ഇൻസ്റ്റാൾ ചെയ്യണോ?</translation>
 <translation id="2154484045852737596">കാർഡ് എഡിറ്റ് ചെയ്യുക</translation>
+<translation id="2154739667870063220">റീബൂട്ട് ചെയ്യുക</translation>
 <translation id="2155260325161282517">5 x 7 ഇഞ്ച്</translation>
 <translation id="2157640075051554492">നിരക്ക് ട്രാക്ക് ചെയ്യലുമായി ബന്ധപ്പെട്ട അറിയിപ്പുകൾ</translation>
 <translation id="2161656808144014275">വാചകം</translation>
@@ -895,6 +896,7 @@
 <translation id="3215092763954878852">WebAuthn ഉപയോഗിക്കാനായില്ല</translation>
 <translation id="3216313131063488104">ബ്ലൂസ്</translation>
 <translation id="3218181027817787318">റിലേറ്റീവ്</translation>
+<translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{ഇപ്പോൾ അപ്ഡേറ്റ് ചെയ്യേണ്ടതുണ്ട്}=2{നാളെ അപ്‌ഡേറ്റ് ചെയ്യേണ്ടതുണ്ട്}other{# ദിവസത്തിനുള്ളിൽ അപ്‌ഡേറ്റ് ചെയ്യേണ്ടതുണ്ട്}}</translation>
 <translation id="3223287115535306850">ആപ്പ് ലോഞ്ച് ചെയ്യൽ ത്രോബർ</translation>
 <translation id="3223425961342298674">ലൊക്കേഷൻ ആക്സസ് അനുവദിച്ചില്ല</translation>
 <translation id="3225919329040284222">ബിൽട്ട്-ഇൻ പ്രതീക്ഷകള്‍ക്ക് പൊരുത്തപ്പെടാത്ത സര്‍ട്ടിഫിക്കറ്റാണ് സെര്‍വര്‍ അവതരിപ്പിച്ചത്. നിങ്ങളെ സംരക്ഷിക്കുന്നതിലേക്കായുള്ള നിശ്ചിത, ഉന്നത-സുരക്ഷാ വെബ്‌സൈറ്റുകൾക്കായാണ് ഈ പ്രതീക്ഷകൾ ഉൾപ്പെടുത്തിയിരിക്കുന്നത്.</translation>
@@ -1379,6 +1381,7 @@
 <translation id="4350629523305688469">മൾട്ടിഫംഗ്ഷൻ ട്രേ</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> എന്നതിന് സമീപമുള്ള Bluetooth ഉപകരണങ്ങൾ സ്‌കാൻ ചെയ്യണമെന്നുണ്ട്. ഇനിപ്പറയുന്ന ഉപകരണങ്ങൾ കണ്ടെത്തി:</translation>
 <translation id="4351175281479794167">പരിശോധിച്ചുറപ്പിക്കൽ കോഡ് നൽകുക</translation>
+<translation id="4355383636893709732">Android ആപ്പുകൾക്കുള്ള ChromeOS അപ്ഡേറ്റ്</translation>
 <translation id="4356973930735388585">ഈ സൈറ്റിലെ ആക്രമണകാരികൾ നിങ്ങളുടെ വിവരങ്ങൾ മോഷ്‌ടിക്കാനോ ഇല്ലാതാക്കാനോ ഇടയുള്ള (ഉദാഹരണത്തിന്, ഫോട്ടോകൾ, പാസ്‌വേഡുകൾ, സന്ദേശങ്ങൾ, ക്രെഡിറ്റ് കാർഡുകൾ എന്നിവ) അപകടകരമായ പ്രോഗ്രാമുകൾ കമ്പ്യൂട്ടറിൽ ഇൻസ്‌റ്റാൾ ചെയ്യാൻ ശ്രമിച്ചേക്കാം.</translation>
 <translation id="4358059973562876591">നിങ്ങൾ വ്യക്തമാക്കിയ ടെംപ്ലേറ്റുകൾ DnsOverHttpsMode നയത്തിലെ പിശക് കാരണം ബാധകമാക്കാനായേക്കില്ല.</translation>
 <translation id="4358461427845829800">പേയ്മെന്റ് രീതികൾ മാനേജ് ചെയ്യുക...</translation>
@@ -1759,6 +1762,7 @@
 <translation id="5288393065350884210">അക്കൗണ്ടിംഗും ഓഡിറ്റിംഗും</translation>
 <translation id="5288808348893593856">സൈറ്റിന്റെ കണക്ഷൻ സുരക്ഷിതമല്ലെന്ന് Chrome പറഞ്ഞിട്ടില്ലെങ്കിൽ, അത് സുരക്ഷിതമാണ്.</translation>
 <translation id="5289384342738547352">ഒന്നിലധികം ഡോക്യുമെന്റുകൾ കൈകാര്യം ചെയ്യൽ</translation>
+<translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{ഇന്ന് അപ്ഡേറ്റ് ചെയ്യേണ്ടതുണ്ട്}=2{നാളെ അപ്‌ഡേറ്റ് ചെയ്യേണ്ടതുണ്ട്}other{# ദിവസത്തിനുള്ളിൽ അപ്‌ഡേറ്റ് ചെയ്യേണ്ടതുണ്ട്}}</translation>
 <translation id="5293919335876685914">കൂപ്പെകൾ</translation>
 <translation id="5296589789433599000">പാചകവും റെസിപ്പികളും</translation>
 <translation id="5299298092464848405">നയം വിശകലനം ചെയ്യുന്നതിൽ പിശക്</translation>
@@ -1953,6 +1957,7 @@
 <translation id="5786044859038896871">നിങ്ങളുടെ കാർഡ് വിവരം പൂരിപ്പിക്കണോ?</translation>
 <translation id="578633867165174378">Chrome, നിങ്ങൾ ഇപ്പോൾ ഉപയോഗിച്ച പാസ്‌വേഡ് ഡാറ്റാ ലംഘനത്തിൽ കണ്ടെത്തിയിരിക്കുന്നു. ഈ പാസ്‌വേഡ് ഇപ്പോൾ തന്നെ മാറ്റാൻ ഞങ്ങൾ നിർദ്ദേശിക്കുന്നു.</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="580241730938216256">അപ്‌ഡേറ്റ് ചെയ്യാൻ ആരംഭിക്കുക</translation>
 <translation id="5803412860119678065">നിങ്ങളുടെ <ph name="CARD_DETAIL" /> പൂരിപ്പിക്കണോ?</translation>
 <translation id="5804241973901381774">അനുമതികൾ</translation>
 <translation id="5808435672482059465">നിങ്ങളുടെ Chrome ചരിത്രം കാണുക</translation>
@@ -2113,6 +2118,7 @@
 <translation id="6218753634732582820">Chromium-ത്തിൽ നിന്ന് വിലാസം നീക്കംചെയ്യണോ?</translation>
 <translation id="622039917539443112">സമാന്തര മടക്ക്</translation>
 <translation id="6221345481584921695"><ph name="BEGIN_LINK" /> എന്നതിൽ Google സുരക്ഷിത ബ്രൗസിംഗ് ഈയിടെ <ph name="END_LINK" />മാൽവെയർ കണ്ടെത്തി<ph name="SITE" /> . സാധാരണ നിലയിൽ സുരക്ഷിതമായ വെബ്സൈറ്റുകളിൽ ചിലപ്പോൾ മാൽവെയർ ഉണ്ടായിരിക്കാം. ഒരു അറിയപ്പെടുന്ന മാൽ‌വെയർ വിതരണക്കാരായ <ph name="SUBRESOURCE_HOST" /> എന്നതിൽ നിന്നാണ് ദോഷകരമായ ഉള്ളടക്കം വരുന്നത്.</translation>
+<translation id="6221892641068781024">ലളിതവൽക്കരിച്ച കാഴ്ച്ച</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ ഉപയോഗസഹായി ടൂളുകൾ വ്യക്തിപരമാക്കാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
 <translation id="6229649258872345286">കുടുംബ യാത്ര</translation>
 <translation id="6232271601416750929">പ്രകൃതിദത്ത സൗന്ദര്യം</translation>
@@ -2172,6 +2178,7 @@
 <translation id="6366710531182496394">ഇടതുവശത്ത് ഇരട്ട സ്‌റ്റേപ്പിൾ ചെയ്യുക</translation>
 <translation id="6367196786591004737">എൻട്രി ഇല്ലാതാക്കുക</translation>
 <translation id="6370022303958842211">ലോഗിനുകൾ, (പരാജയപ്പെട്ട ലോഗിനുകളുടെ കാരണങ്ങൾ ഉൾപ്പെടെ) ലോഗൗട്ടുകൾ, ലോക്കുകൾ, അൺലോക്കുകൾ പോലുള്ള ഉപകരണ ആക്‌സസ് പ്രവർത്തനങ്ങൾ</translation>
+<translation id="6374469231428023295">വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="6374865374745447009">വിൻഡോ മാനേജ് ചെയ്യൽ</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />' എന്നതിനായി ഒരു ഫലം</translation>
 <translation id="6380497234672085559">A0</translation>
@@ -2482,6 +2489,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> എന്നതും മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> എണ്ണവും}other{<ph name="PAYMENT_METHOD_PREVIEW" /> എന്നതും മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> എണ്ണവും}}</translation>
 <translation id="7153618581592392745">ലാവെൻഡർ</translation>
 <translation id="7156870133441232244">സെർവർ TLS 1.2 അല്ലെങ്കിൽ അതിന് ശേഷമുള്ള പതിപ്പിലേക്ക് അപ്‌ഗ്രേഡ് ചെയ്യേണ്ടതുണ്ട്.</translation>
+<translation id="7160999678034985039">ജോലി സംരക്ഷിക്കുക, നിങ്ങൾ തയ്യാറാകുമ്പോൾ അപ്ഡേറ്റ് ചെയ്യാൻ ആരംഭിക്കുക.</translation>
 <translation id="7163295244162773898">{0,plural, =1{രഹസ്യാത്മക ഫയൽ പകർത്തണോ?}other{രഹസ്യാത്മക ഫയലുകൾ പകർത്തണോ?}}</translation>
 <translation id="717330890047184534">Gaia ഐഡി:</translation>
 <translation id="7174545416324379297">ലയിപ്പിച്ചു</translation>
@@ -2727,6 +2735,7 @@
 <translation id="7687305263118037187">വീണ്ടും ശ്രമിക്കൽ ടൈം ഔട്ടായി</translation>
 <translation id="7690647519407127574">Oufuku Hagaki പോസ്റ്റ്കാർഡ്</translation>
 <translation id="7693583928066320343">പേജ് ഓർഡർ ലഭിച്ചു</translation>
+<translation id="769424100851389104">ഇപ്പോൾ അപ്ഡേറ്റ് ചെയ്യാൻ തുടങ്ങുക</translation>
 <translation id="7696089921647603491">ക്ലാസിക് റോക്കുകളും പഴയവയും</translation>
 <translation id="769721561045429135">ഇപ്പോൾ, ഈ ഉപകരണത്തിൽ മാത്രം ഉപയോഗിക്കാനാവുന്ന കാർഡുകൾ നിങ്ങൾക്കുണ്ട്. കാർഡുകൾ അവലോകനം ചെയ്യാൻ, 'തുടരുക' ക്ലിക്ക് ചെയ്യുക.</translation>
 <translation id="7698864304447945242">Google Play Services for AR അപ്ഡേറ്റ് ചെയ്യണോ?</translation>
@@ -2751,6 +2760,7 @@
 <translation id="774634243536837715">അപകടകരമായ ഉള്ളടക്കം ബ്ലോക്ക് ചെയ്‌തു.</translation>
 <translation id="7751971323486164747">Chrome-ൽ ഫോണ്ട് വലുപ്പങ്ങളും ടൈപ്പ്ഫേസുകളും ഇഷ്ടാനുസൃതമാക്കുക</translation>
 <translation id="7752995774971033316">നിയന്ത്രിക്കാനാകാത്തത്</translation>
+<translation id="7754587126786572336">അപ്‌ഡേറ്റ് ചെയ്യാൻ തുടങ്ങുമ്പോൾ, നിങ്ങളുടെ Chrome ടാബുകളും ആപ്പുകളും അടയ്‌ക്കും</translation>
 <translation id="7755287808199759310">നിങ്ങൾക്ക് വേണ്ടി ഇത് അൺബ്ലോക്ക് ചെയ്യാൻ രക്ഷിതാവിന് കഴിയും</translation>
 <translation id="7755624218968747854">പ്രാഥമിക റോൾ</translation>
 <translation id="7758069387465995638">ഫയർവാളോ ആന്റി വൈറസ് സോഫ്‌റ്റ്‌വെയറോ കണക്ഷൻ ബ്ലോക്ക് ചെയ്‌തിട്ടുണ്ടാകാം.</translation>
@@ -2915,6 +2925,7 @@
 <translation id="8186706823560132848">സോഫ്റ്റ്‍വെയര്‍</translation>
 <translation id="8190193880870196235">ഒരു വിപുലീകരണം വഴി മാനേജ് ചെയ്യുന്നത്</translation>
 <translation id="8194797478851900357">&amp;നീക്കുന്നത് പഴയപടിയാക്കുക</translation>
+<translation id="8200772114523450471">പുനരാരംഭിക്കുക</translation>
 <translation id="8201077131113104583">"<ph name="EXTENSION_ID" />" എന്ന ഐഡിയുള്ള വിപുലീകരണത്തിന്റെ അപ്‌ഡേറ്റ് URL അസാധുവാണ്.</translation>
 <translation id="8202097416529803614">ഓർഡർ സംഗ്രഹം</translation>
 <translation id="8202370299023114387">പൊരുത്തക്കേട്</translation>
@@ -3212,6 +3223,7 @@
 <translation id="8963117664422609631">സൈറ്റിന്റെ ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />നിർദ്ദേശങ്ങൾ:<ph name="MARKUP_2" />നിങ്ങൾക്കൊരു ഡാറ്റ കണക്ഷൻ ഉണ്ടെന്ന് ഉറപ്പാക്കുക<ph name="MARKUP_3" />ഈ വെബ്‌പേജ് പിന്നീട് വീണ്ടും ലോഡ് ചെയ്യുക<ph name="MARKUP_4" />നിങ്ങൾ നൽകിയ വിലാസം പരിശോധിക്കുക<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">കാർഡ് സംരക്ഷിക്കുക</translation>
+<translation id="8970887620466824814">എന്തോ കുഴപ്പമുണ്ടായി.</translation>
 <translation id="8971063699422889582">സെർവറിന്റെ സർട്ടിഫിക്കറ്റ് കാലഹരണപ്പെട്ടു.</translation>
 <translation id="8975012916872825179">ഫോൺ നമ്പറുകൾ, ഇമെയിൽ വിലാസങ്ങൾ, ഷിപ്പിംഗ് വിലാസങ്ങൾ എന്നിവ പോലുള്ള വിവരങ്ങൾ ഉൾപ്പെടുന്നു</translation>
 <translation id="8975263830901772334">നിങ്ങൾ പ്രിൻ്റ് ചെയ്യുന്ന ഫയലുകളുടെ പേരുകൾ</translation>

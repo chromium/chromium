@@ -270,6 +270,7 @@
 <translation id="6327105987658262776">Ingen oppdatering er tilgjengelig.</translation>
 <translation id="6412673304250309937">Kontrollerer nettadresser opp mot en liste i Chrome over utrygge nettsteder. Hvis nettsteder prøver å stjele passordet ditt, eller når du laster ned skadelige filer, kan Chrome også sende nettadresser, inkludert deler av sideinnholdet, til Safe Browsing.</translation>
 <translation id="6418662306461808273">Vil du bytte til den eksisterende Chrome-profilen?</translation>
+<translation id="6493527311031785448">Google Chrome prøver å <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6506909944137591434">Chrome trenger kameratillatelse for å lage et 3D-kart av omgivelsene dine</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome for utviklere</translation>
 <translation id="659498884637196217">I Google Passordlagring på denne enheten</translation>
@@ -397,7 +398,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="8862326446509486874">Du har ikke de nødvendige rettighetene for å installere på systemnivå. Prøv å kjøre installasjonsprogrammet som administrator.</translation>
 <translation id="8914504000324227558">Start Chrome på nytt</translation>
 <translation id="8922193594870374009">For å sende numre fra <ph name="ORIGIN" /> til Android-telefonen din, logg på Chrome på begge enhetene.</translation>
-<translation id="8983720963221508955">Du har slått på Safe Browsing med økt beskyttelse i kontoen din. Nå kan du begynne å bruke funksjonen i Chrome.</translation>
 <translation id="8986207147630327271">Du er i ferd med å legge til en jobbprofil i denne nettleseren og gi administratoren din kontroll over kun jobbprofilen.</translation>
 <translation id="8989968390305463310">Nettleserloggen din påvirker hvilke annonser du ser, og interessene som er anslått nedenfor. For å beskytte personvernet ditt sletter Chrome interessene dine automatisk på rullerende basis hver måned. Interessene kan fornyes med mindre du fjerner dem.</translation>
 <translation id="8999208279178790196">{0,plural, =0{En Chrome-oppdatering er tilgjengelig}=1{En Chrome-oppdatering er tilgjengelig}other{En Chrome-oppdatering har vært tilgjengelig i # dager}}</translation>

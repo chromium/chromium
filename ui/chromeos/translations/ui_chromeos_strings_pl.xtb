@@ -84,6 +84,7 @@
 <translation id="1722487484194605434">Pakuję elementy (<ph name="NUMBER_OF_ITEMS" />)...</translation>
 <translation id="1722687688096767818">Dodawanie profilu…</translation>
 <translation id="1726100011689679555">Serwery nazw</translation>
+<translation id="1727562178154619254">Gotowe do synchronizacji</translation>
 <translation id="1729953886957086472">Niemiecki (Niemcy)</translation>
 <translation id="1730235522912993863">Chiński cangjie</translation>
 <translation id="1731889557567069540">Liczba skopiowanych elementów: <ph name="NUMBER_OF_ITEMS" />.</translation>
@@ -705,6 +706,7 @@
 <translation id="6732801395666424405">Certyfikaty nie zostały wczytane</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">Udostępnij folder maszynie wirtualnej Bruschetta</translation>
+<translation id="6750737795876287924">Bieżący katalog</translation>
 <translation id="6751256176799620176">Wybrano jeden folder</translation>
 <translation id="6755827872271341378">Urządzenie z ChromeOS Flex</translation>
 <translation id="6790428901817661496">Odtwórz</translation>
@@ -742,7 +744,6 @@
 <translation id="6973630695168034713">Foldery</translation>
 <translation id="6976795442547527108">Lew</translation>
 <translation id="6979158407327259162">Dysk Google</translation>
-<translation id="6979737339423435258">Od początku</translation>
 <translation id="6989942356279143254">Szwedzki</translation>
 <translation id="6990081529015358884">Nie masz już miejsca</translation>
 <translation id="6993826899923627728">Te elementy są w koszu</translation>
@@ -798,7 +799,6 @@
 <translation id="7458955835361612701">Brak nowych obrazów</translation>
 <translation id="7460898608667578234">Ukraiński</translation>
 <translation id="7469894403370665791">Automatycznie łącz się z tą siecią</translation>
-<translation id="7481358317100446445">Gotowa</translation>
 <translation id="7486315294984620427">Aby można było przeciągnąć plik do Parallels Desktop, należy go skopiować do folderu Pliki systemu Windows.</translation>
 <translation id="749452993132003881">hiragana</translation>
 <translation id="7495372004724182530">Malajalam (znaki fonetyczne)</translation>

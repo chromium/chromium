@@ -84,6 +84,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> वस्तुहरू जिप गर्दै...</translation>
 <translation id="1722687688096767818">प्रोफाइल थपिँदै छ…</translation>
 <translation id="1726100011689679555">नामका सर्भरहरू</translation>
+<translation id="1727562178154619254">सिंक गर्न सकिन्छ</translation>
 <translation id="1729953886957086472">जर्मन (जर्मनी)</translation>
 <translation id="1730235522912993863">चिनियाँ क्यान्जी</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> वटा वस्तु कपी गरिए।</translation>
@@ -704,6 +705,7 @@
 <translation id="6732801395666424405">प्रमाणपत्रहरू लोड भएन</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">Bruschetta सँग फोल्डर सेयर गर्नुहोस्</translation>
+<translation id="6750737795876287924">हालको डिरेक्टरी</translation>
 <translation id="6751256176799620176">१ फोल्डरलाई चयन गरियो</translation>
 <translation id="6755827872271341378">ChromeOS Flex चल्ने डिभाइस</translation>
 <translation id="6790428901817661496">प्ले गर्नुहोस्</translation>
@@ -741,7 +743,6 @@
 <translation id="6973630695168034713">फोल्डरहरू</translation>
 <translation id="6976795442547527108">सिंह</translation>
 <translation id="6979158407327259162">Google ड्राइभ</translation>
-<translation id="6979737339423435258">सुरूबाट नै</translation>
 <translation id="6989942356279143254">स्विडिस</translation>
 <translation id="6990081529015358884">तपाईंको खाली स्थान समाप्त भएको छ</translation>
 <translation id="6993826899923627728">यी फाइलहरू ट्र्यासमा छन्</translation>
@@ -797,7 +798,6 @@
 <translation id="7458955835361612701">हालसालै कुनै पनि फोटो हेरिएको छैन</translation>
 <translation id="7460898608667578234">युक्रेनियन</translation>
 <translation id="7469894403370665791">यो नेटवर्कमा स्वचालित रूपमा कनेक्ट गर्नुहोस्</translation>
-<translation id="7481358317100446445">तयार छ</translation>
 <translation id="7486315294984620427">फाइल ड्र्याग गरेर Parallels Desktop मा ड्रप गर्न सो फाइल कपी गरेर 'Windows फाइलहरू' फोल्डरमा पेस्ट गर्नु पर्ने हुन्छ।</translation>
 <translation id="749452993132003881">हिरागाना</translation>
 <translation id="7495372004724182530">मलयालम फोनेटिक</translation>

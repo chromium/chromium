@@ -100,7 +100,6 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1420408895951708260">Aktibatu/Desaktibatu Gaueko argia. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Ikusi telefonoko azken argazkiak eta multimedia-elementuak <ph name="DEVICE_TYPE" /> bidez</translation>
 <translation id="1426410128494586442">Bai</translation>
-<translation id="1447641497144572814">Pantaila-babeslea ezartzear dago</translation>
 <translation id="1455242230282523554">Erakutsi hizkuntza-ezarpenak</translation>
 <translation id="1460620680449458626">Bolumena desaktibatuta dago.</translation>
 <translation id="14648076227129703"><ph name="APP1_NAME" /> eta <ph name="APP2_NAME" /> aplikazioek eta kamera erabiltzeko baimena daukaten beste aplikazio eta webgune guztiek kamera atzitu ahal izango dute</translation>
@@ -126,6 +125,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1550523713251050646">Aukera gehiago ikusteko, egin klik hemen</translation>
 <translation id="1555130319947370107">Urdina</translation>
 <translation id="1576623706766186887">Txikitu lupa aktibatuta dagoenean</translation>
+<translation id="1586324912145647027">Zortzi leihoetatik, joan lehenengora</translation>
 <translation id="1589090746204042747">Atzitu saio honetan egin dituzun jarduera guztiak</translation>
 <translation id="1610778689852195798">"Desegin"</translation>
 <translation id="1611993646327628135">Aktibatuta</translation>
@@ -514,6 +514,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="3631369015426612114">Onartu hauen jakinarazpenak</translation>
 <translation id="3633097874324966332">Ireki Bluetootharen ezarpenak gailua parekatzeko</translation>
 <translation id="3638400994746983214">Aktibatu/Desaktibatu pribatutasun-pantaila. <ph name="STATE_TEXT" />.</translation>
+<translation id="3649256019230929621">Minimizatu leihoa</translation>
 <translation id="3649505501900178324">Eguneratze bat dago egiteke</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -589,6 +590,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="4021716437419160885">Egin behera</translation>
 <translation id="4022497978915111141">Blokeatu gailua</translation>
 <translation id="4024840464866786680">PINa eta pasahitza ahaztu bazaizkizu edo duela gutxi Google-ko kontuko pasahitza aldatu baduzu, berreskuratu erabiltzaile hau.</translation>
+<translation id="4026843240379844265">Eraman leiho aktiboa pantaila batetik bestera</translation>
 <translation id="4028481283645788203">Pasahitza behar da gailua babestuago edukitzeko</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Pantaila partekatzen ari zara</translation>
@@ -913,6 +915,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="5689633613396158040">Gaueko argia eginbideari esker, ez zaizu egingo horren nekagarria argi gutxiko inguruetan pantailari begira egotea. Sakatu hau Gaueko argia aktibatzeko ordua aldatzeko, edo aukera hori erabat desaktibatzeko.</translation>
 <translation id="5691772641933328258">Ez da ezagutu hatz-marka</translation>
 <translation id="5693255400847650006">Mikrofonoa abian da</translation>
+<translation id="5699366815052349604">Esleitu leiho aktiboa lan-eremu guztiei</translation>
 <translation id="570390244361237317">Aplikazio guztiak, erabili gezi-teklak aplikazio guztiak atzitzeko</translation>
 <translation id="5707775774148071965">Gailuak kableak baino bizkorrago transferi ditzake datuak. Baliteke gailuaren errendimendua mugatuta egotea.</translation>
 <translation id="5710450975648804523">Aktibatuta dago ez molestatzeko modua</translation>
@@ -1552,6 +1555,7 @@ Berriki instalatu da</translation>
 <translation id="9034924485347205037">Linux fitxategiak</translation>
 <translation id="9047624247355796468">Ireki <ph name="NETWORK_NAME" /> sarearen ezarpenak</translation>
 <translation id="9059834730836941392">Tolestu jakinarazpena</translation>
+<translation id="906458777597946297">Maximizatu leihoa</translation>
 <translation id="9065203028668620118">Editatu</translation>
 <translation id="9070640332319875144">Laguntzailea zerbitzuaren ezarpenak</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> agortu arte.</translation>

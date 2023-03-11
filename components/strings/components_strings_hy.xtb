@@ -345,6 +345,7 @@
 <translation id="1733064249834771892">տառատեսակներ</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Փորձեք կապվել համակարգի ադմինիստրատորի հետ:</translation>
+<translation id="1736158756193183352">Ինչպես <ph name="BEGIN_LINK" />մուտք գործել<ph name="END_LINK" /> ցանց</translation>
 <translation id="1736420071277903564">Համակարգիչ</translation>
 <translation id="1740951997222943430">Մուտքագրեք ժամկետի սպառման վավեր ամիս</translation>
 <translation id="1741613555002899862">Պետք է լինի նշված և վավեր տող, եթե DnsOverHttpsMode կանոնի համար կարգավորված է <ph name="SECURE_DNS_MODE_SECURE" /> արժեքը:</translation>
@@ -375,6 +376,7 @@
 <translation id="1803351196216024260">Կարող է հայցել խոսափողն օգտագործելու թույլտվություն</translation>
 <translation id="1807246157184219062">Բաց</translation>
 <translation id="1807528111851433570">Առաջին թերթ</translation>
+<translation id="180991881384371158">CVC կոդը նշված է քարտի դարձերեսին։ Այն եռանիշ թիվ է և գտնվում է ստորագրության դաշտի վերևի աջ կողմում (վերջին երեք թվանշանները)։</translation>
 <translation id="181000283860817563">Հետագծել գները մի քանի կայքերում</translation>
 <translation id="1810391395243432441">Պաշտպանեք գաղտնաբառերը էկրանի կողպման միջոցով</translation>
 <translation id="1812527064848182527">հորիզոնական</translation>
@@ -505,6 +507,7 @@
 <translation id="2149968176347646218">Կապը պաշտպանված չէ</translation>
 <translation id="2153609454945889823">Տեղադրե՞լ Google Play ծառայություններն AR-ի համար</translation>
 <translation id="2154484045852737596">Քարտի փոփոխություն</translation>
+<translation id="2154739667870063220">Վերաբեռնել</translation>
 <translation id="2155260325161282517">5 x 7 դյույմ</translation>
 <translation id="2157640075051554492">Գների հետագծման մասին ծանուցումներ</translation>
 <translation id="2161656808144014275">Տեքստ</translation>
@@ -639,6 +642,7 @@
 <translation id="2521736961081452453">Ստեղծել ձև</translation>
 <translation id="2523886232349826891">Կպահվի միայն այս սարքում</translation>
 <translation id="2524461107774643265">Ավելացրեք լրացուցիչ տեղեկություններ</translation>
+<translation id="2527451058878391043">CVC կոդը նշված է քարտի դիմերեսին։ Այն քառանիշ կոդ է, որը գտնվում է քարտի համարի վերևի աջ կողմում։</translation>
 <translation id="2529899080962247600">Այս դաշտում գրառումների առավելագույն քանակը՝ <ph name="MAX_ITEMS_LIMIT" />: Ավել գրառումները կանտեսվեն:</translation>
 <translation id="253493526287553278">Տեսնել պրոմոկոդի մանրամասները</translation>
 <translation id="2535585790302968248">Բացեք նոր ինկոգնիտո ներդիր, որպեսզի այցելությունների պատմությունը չպահվի</translation>
@@ -893,6 +897,7 @@
 <translation id="3215092763954878852">Չհաջողվեց օգտագործել WebAuthn-ը</translation>
 <translation id="3216313131063488104">Բլյուզ</translation>
 <translation id="3218181027817787318">Հարաբերական</translation>
+<translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Պահանջվում է թարմացում հենց հիմա}=2{Պահանջվում է թարմացում մինչև վաղը}one{Պահանջվում է թարմացում # օրվա ընթացքում}other{Պահանջվում է թարմացում # օրվա ընթացքում}}</translation>
 <translation id="3223287115535306850">Հավելվածի գործարկման ընթացքի պատկերակ</translation>
 <translation id="3223425961342298674">Տեղադրության տվյալների օգտագործումն արգելված է</translation>
 <translation id="3225919329040284222">Սերվերի կողմից ներկայացված վկայագիրը չի համապատասխանում ներկառուցված հարաչափերին: Այս հարաչափերը ձեզ պաշտպանելու նպատակով ներառված են բարձր անվտանգության որոշակի վեբկայքերի համար:</translation>
@@ -1192,6 +1197,7 @@
 <translation id="3949601375789751990">Ձեր այցելությունների պատմությունը կցուցադրվի այստեղ</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Դուք չունեք պահված վճարման եղանակ</translation>
+<translation id="3950574001630941635">Վերագործարկել ուղեցույցը</translation>
 <translation id="3950820424414687140">Մուտք գործել</translation>
 <translation id="3958057596965527988">4 x 4 դյույմ</translation>
 <translation id="3961148744525529027">Վճարման մշակման թերթը կիսով չափ բացված է</translation>
@@ -1376,6 +1382,7 @@
 <translation id="4350629523305688469">Բազմաֆունկցիոնալ դարակ</translation>
 <translation id="4351060348582610152">Թույլ տվեք <ph name="ORIGIN" /> կայքին որոնել մոտակա Bluetooth սարքեր: Գտնվել են հետևյալ սարքերը՝</translation>
 <translation id="4351175281479794167">Մուտքագրեք հաստատման կոդը</translation>
+<translation id="4355383636893709732">ChromeOS-ի թարմացում Android հավելվածների համար</translation>
 <translation id="4356973930735388585">Այս կայքում գտնվող հարձակվողները կարող են վտանգավոր ծրագրեր տեղադրել ձեր համակարգչում, որոնք կարող են հափշտակել կամ ջնջել ձեր տեղեկությունները (օրինակ՝ լուսանկարները, գաղտնաբառերը, նամակները և վարկային քարտերը):</translation>
 <translation id="4358059973562876591">Ձեր նշած ձևանմուշները չեն կարող կիրառվել DnsOverHttpsMode կանոնի հետ կապված սխալի պատճառով:</translation>
 <translation id="4358461427845829800">Վճարման եղանակների կառավարում...</translation>
@@ -1757,6 +1764,7 @@
 <translation id="5288393065350884210">Հաշվապահություն և աուդիտ</translation>
 <translation id="5288808348893593856">Եթե միացումը կայքին անվտանգ չէ, Chrome-ը կզգուշացնի ձեզ այդ մասին։</translation>
 <translation id="5289384342738547352">Մի քանի փաստաթղթերի մշակում</translation>
+<translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Պահանջվում է թարմացում հենց այսօր}=2{Պահանջվում է թարմացում մինչև վաղը}one{Պահանջվում է թարմացում # օրվա ընթացքում}other{Պահանջվում է թարմացում # օրվա ընթացքում}}</translation>
 <translation id="5293919335876685914">Կուպե ավտոմեքենաներ</translation>
 <translation id="5296589789433599000">Խոհարարություն և բաղադրատոմսեր</translation>
 <translation id="5299298092464848405">Կանոնը վերլուծելիս սխալ տեղի ունեցավ</translation>
@@ -1951,6 +1959,7 @@
 <translation id="5786044859038896871">Ուզո՞ւմ եք լրացնել ձեր քարտի տվյալները:</translation>
 <translation id="578633867165174378">Chrome-ը հայտնաբերել է, որ գաղտնաբառը, որ հենց նոր օգտագործեցիք, կոտրվել է տվյալների արտահոսքի պատճառով։ Խորհուրդ ենք տալիս անհապաղ փոխել այս գաղտնաբառը։</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="580241730938216256">Թարմացնել</translation>
 <translation id="5803412860119678065">Ուզո՞ւմ եք լրացնել ձեր <ph name="CARD_DETAIL" /> քարտի տվյալները:</translation>
 <translation id="5804241973901381774">Թույլտվություններ</translation>
 <translation id="5808435672482059465">Դիտել Chrome-ի պատմությունը</translation>
@@ -2111,6 +2120,7 @@
 <translation id="6218753634732582820">Հեռացնե՞լ հասցեն Chromium-ից:</translation>
 <translation id="622039917539443112">Զուգահեռ ծալում</translation>
 <translation id="6221345481584921695">Վերջերս Google Safe Browsing-ը <ph name="BEGIN_LINK" />վնասագիր է հայտնաբերել<ph name="END_LINK" /> <ph name="SITE" /> կայքում: Նույնիսկ ապահով վեբկայքերը երբեմն վնասվում են վնասագրերով: Այս վնասարար բովանդակությունը գալիս է <ph name="SUBRESOURCE_HOST" /> կայքից, որը վնասագրերի հայտնի տարածող է:</translation>
+<translation id="6221892641068781024">Պարզեցված դիտակերպ</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Սեղմեք Tab, ապա սեղմեք Enter՝ Chrome-ի կարգավորումներում հատուկ գործառույթների գործիքներն անհատականացնելու համար։</translation>
 <translation id="6229649258872345286">Ընտանեկան ճամփորդություն</translation>
 <translation id="6232271601416750929">Բնական գեղեցկություն</translation>
@@ -2170,6 +2180,7 @@
 <translation id="6366710531182496394">Երկու ամրակ ձախ կողմում</translation>
 <translation id="6367196786591004737">Ջնջել գրառումը</translation>
 <translation id="6370022303958842211">Սարք մուտք գործելու գործողությունները, օր․՝ մուտքերը (ներառյալ չհաջողված մուտքերի ձախողման պատճառները), ելքերը, կողպումներն ու ապակողպումները</translation>
+<translation id="6374469231428023295">Փորձել կրկին</translation>
 <translation id="6374865374745447009">պատուհանների կառավարում</translation>
 <translation id="6377268785556383139">«<ph name="SEARCH_TEXT" />»-ի որոնման 1 արդյունք</translation>
 <translation id="6380497234672085559">A0</translation>
@@ -2480,6 +2491,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> ու վճարման ևս <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> տարբերակ}one{<ph name="PAYMENT_METHOD_PREVIEW" /> ու վճարման ևս <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> տարբերակ}other{<ph name="PAYMENT_METHOD_PREVIEW" /> ու վճարման ևս <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> տարբերակ}}</translation>
 <translation id="7153618581592392745">Նարդոս</translation>
 <translation id="7156870133441232244">Սերվերը պետք է թարմացվի TLS 1.2 կամ ավելի բարձր տարբերակով։</translation>
+<translation id="7160999678034985039">Պահեք ձեր աշխատանքը և գործարկեք թարմացումը։</translation>
 <translation id="7163295244162773898">{0,plural, =1{Պատճենե՞լ կոնֆիդենցիալ ֆայլը}one{Պատճենե՞լ կոնֆիդենցիալ ֆայլը}other{Պատճենե՞լ կոնֆիդենցիալ ֆայլերը}}</translation>
 <translation id="717330890047184534">Gaia ID՝</translation>
 <translation id="7174545416324379297">Միավորված</translation>
@@ -2727,6 +2739,7 @@
 <translation id="7687305263118037187">Կրկնության սպասման ժամանակ</translation>
 <translation id="7690647519407127574">Oufuku Hagaki բացիկ</translation>
 <translation id="7693583928066320343">Էջերի հերթականությունը ստացված է</translation>
+<translation id="769424100851389104">Թարմացնել հիմա</translation>
 <translation id="7696089921647603491">Դասական ռոք և ռետրո</translation>
 <translation id="769721561045429135">Տվյալ պահին դուք ունեք քարտեր, որոնք կարող են օգտագործվել միայն այս սարքում: Սեղմեք «Շարունակել»՝ դրանց տվյալները տեսնելու համար:</translation>
 <translation id="7698864304447945242">Թարմացնե՞լ Google Play ծառայություններն AR-ի համար</translation>
@@ -2751,6 +2764,7 @@
 <translation id="774634243536837715">Վտանգավոր բովանդակությունն արգելափակված է</translation>
 <translation id="7751971323486164747">Անհատականացնել տառատեսակները և դրանց չափերը Chrome-ում</translation>
 <translation id="7752995774971033316">Չի կառավարվում</translation>
+<translation id="7754587126786572336">Երբ թարմացումը սկսվի, Chrome-ի ներդիրներն ու հավելվածները կփակվեն</translation>
 <translation id="7755287808199759310">Այն կարող է արգելահանել ձեր ծնողը</translation>
 <translation id="7755624218968747854">Հիմնական գլանափաթեթ</translation>
 <translation id="7758069387465995638">Հնարավոր է՝ հրապատը կամ հակավիրուսային ծրագիրը արգելափակել են կապակցումը:</translation>
@@ -2915,6 +2929,7 @@
 <translation id="8186706823560132848">Ծրագրակազմ</translation>
 <translation id="8190193880870196235">Կառավարվում է ընդլայնման կողմից</translation>
 <translation id="8194797478851900357">&amp;Հետարկել տեղափոխումը</translation>
+<translation id="8200772114523450471">Շարունակել</translation>
 <translation id="8201077131113104583">Թարմացման սխալ URL` «<ph name="EXTENSION_ID" />» ID-ով ընդլայնման համար:</translation>
 <translation id="8202097416529803614">Պատվերի ամփոփագիրը</translation>
 <translation id="8202370299023114387">Հակասություն</translation>
@@ -3212,6 +3227,7 @@
 <translation id="8963117664422609631">Անցնել կայքի կարգավորումներ</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Առաջարկներ.<ph name="MARKUP_2" />Համոզվեք, որ ունեք ինտերնետ կապ<ph name="MARKUP_3" />Մի փոքր ուշ վերաբեռնեք այս կայքէջը<ph name="MARKUP_4" />Ստուգեք ձեր մուտքագրած հասցեն<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">Պահել քարտը</translation>
+<translation id="8970887620466824814">Սխալ առաջացավ:</translation>
 <translation id="8971063699422889582">Սերվերի վկայագրի ժամկետն սպառվել է:</translation>
 <translation id="8975012916872825179">Այդ թվում՝ հեռախոսահամարները, էլփոստի և առաքման հասցեները</translation>
 <translation id="8975263830901772334">Ձեր տպած ֆայլերի անունները</translation>

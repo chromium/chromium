@@ -34,6 +34,7 @@
 <translation id="1173894706177603556">पुन: नामाकरण गर्नुहोस्</translation>
 <translation id="1177863135347784049">अनुकूल</translation>
 <translation id="1181037720776840403">हटाउनुहोस्</translation>
+<translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /> मा</translation>
 <translation id="1193729455103054076">भरपर्दो पासवर्ड प्रयोग गर्ने हो?</translation>
 <translation id="1197267115302279827">बुकमार्कहरू सार्नुहोस्</translation>
 <translation id="1201402288615127009">अर्को</translation>
@@ -42,7 +43,6 @@
 <translation id="1204692632633423444">Chrome एक्सन बटन: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">लिङ्क पाठ कपी गर्नुहोस्</translation>
 <translation id="1209206284964581585">अहिलेका लागि लुकाउनुहोस्</translation>
-<translation id="1226851825267005295">तपाईंले Google खाता प्रयोग गरी साइन इन गरेपछि तपाईं आफ्ना प्राथमिकताहरू व्यवस्थापन गर्न सक्नुहुन्छ।</translation>
 <translation id="1227058898775614466">नेभिगेसनको इतिहास</translation>
 <translation id="1231733316453485619">सिंक गर्ने सुविधा सक्रिय गर्ने हो?</translation>
 <translation id="123724288017357924">क्यास गरिएको सामग्रीको बेवास्ता गर्दै हालको पृष्ठलाई पुनःलोड गर्नुहोस्</translation>
@@ -166,7 +166,6 @@
 <translation id="1928696683969751773">अपडेटहरू</translation>
 <translation id="19288952978244135">Chrome पुनः खोल्नुहोस्।</translation>
 <translation id="1933845786846280168">चयन गरिएको ट्याब</translation>
-<translation id="193571872656840963">यी निर्मातालाई धन्यवाद व्यक्त गर्नुहोस्</translation>
 <translation id="1943432128510653496">पासवर्डहरू संग्रह गर्नुहोस्</translation>
 <translation id="1952172573699511566">सम्भव भए सम्म वेबसाइटहरूले तपाईंको रुचाइएको भाषामा पाठ देखाउनेछ।</translation>
 <translation id="1959679933317802873">सामग्री लोड गरिँदै छ</translation>
@@ -202,7 +201,6 @@
 <translation id="2122601567107267586">एप खोल्न सकिएन</translation>
 <translation id="2132122640199389833">लिंक गरिएका सबै डिभाइस हटाउनुहोस्</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> बन्द भयो</translation>
-<translation id="2134927169889348449">तपाईंले Chrome चलाउनुभयो भने तपाईं <ph name="BEGIN_TOS_LINK" />Google का सेवाका सर्त<ph name="END_TOS_LINK" /> र <ph name="BEGIN_ATOS_LINK" />Google Chrome तथा ChromeOS का सेवाका अतिरिक्त सर्तहरू<ph name="END_ATOS_LINK" />मा सहमति जनाउनुहुन्छ भन्ने अर्थ लाग्छ।</translation>
 <translation id="2139186145475833000">होम स्क्रिनमा हाल्नुहोस्</translation>
 <translation id="2141396931810938595">तपाईंको प्रयोगका आधारमा</translation>
 <translation id="214888715418183969">तपाईं Chrome सँग कुन कुन जानकारी सेयर गर्न चाहनुहुन्छ भन्ने कुरा छनौट गर्नुहोस्। तपाईंले सेयर गर्ने मेट्रिकहरू Chrome का सुविधा, कार्यसम्पादन र स्थिरता सुधार गर्न प्रयोग गरिने छ।</translation>
@@ -555,7 +553,6 @@
 <translation id="409109920254068737">तपाईं यो QR कोड देखिइरहेको डिभाइसमा साइन इन गर्न यो ट्याब्लेट प्रयोग गर्न सक्नुहुन्छ।</translation>
 <translation id="4095146165863963773">एपको डेटा मेट्ने हो?</translation>
 <translation id="4096227151372679484">बुकमार्क सेभ गर्ने फ्लो स्क्रिनको आधा भाग ओगट्ने गरी खोलिएको छ</translation>
-<translation id="4099578267706723511">Google मा प्रयोग तथ्याङ्क र क्रयास रिपोर्टहरू पठाएर Chrome लाई राम्रो बनाउन सहयोग गर्नुहोस्!</translation>
 <translation id="4101475238162928417">तपाईं आफूले चलाउने अन्य डिभाइसहरूमा आफ्ना पासवर्ड र बुकमार्कलगायतका कुरा प्राप्त गर्न चाहनुहुन्छ भने सिंक गर्नुहोस्</translation>
 <translation id="410351446219883937">स्वतःप्ले</translation>
 <translation id="4106587138345390261">Chrome ले साइटहरूलाई कम जानकारी प्रयोग गरेर उही स्तरको ब्राउजिङ अनुभव प्रदान गर्न सघाउने नयाँ सुविधाहरूको परीक्षण गरिरहेको छ</translation>
@@ -593,7 +590,6 @@
 <translation id="4269820728363426813">लिङ्क ठेगाना कपी गर्नुहोस्</translation>
 <translation id="4283102315569707115">स्वतः डेस्कटप साइट खोलिदिन अनुरोध गर्ने हो?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android का सेटिङमा गई स्क्रिन लक अन गर्नुहोस्<ph name="END_LINK" /></translation>
-<translation id="4293476595220860475">तपाईंले Chrome चलाउनुभयो भने तपाईं <ph name="BEGIN_TOS_LINK" />Google का सेवाका सर्त<ph name="END_TOS_LINK" /> र <ph name="BEGIN_ATOS_LINK" />Google Chrome तथा ChromeOS का सेवाका अतिरिक्त सर्तहरू<ph name="END_ATOS_LINK" />मा सहमति जनाउनुहुन्छ भन्ने अर्थ लाग्छ। यसका साथै, <ph name="BEGIN_PRIVACY_LINK" />गोपनीयता नीति<ph name="END_PRIVACY_LINK" /> पनि लागू हुन्छ।</translation>
 <translation id="4296252229500326964">नयाँ इन्कोग्निटो ट्याब</translation>
 <translation id="4298388696830689168">लिंक गरिएका साइटहरू</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -765,7 +761,6 @@
 <translation id="5161254044473106830">शीर्षक आवश्यक छ</translation>
 <translation id="5170568018924773124">फोल्डरमा देखाउनुहोस्</translation>
 <translation id="5171045022955879922">युआरएल खोल्नुहोस् वा टाइप गर्नुहोस्</translation>
-<translation id="517734441743343109">तपाईंले जारी राख्नुभयो भने तपाईं <ph name="BEGIN_TOS_LINK" />सेवाका सर्तहरू<ph name="END_TOS_LINK" /> र <ph name="BEGIN_PRIVACY_LINK" />गोपनीयता नीति<ph name="END_PRIVACY_LINK" />मा सहमति जनाउनुहुन्छ भन्ने अर्थ लाग्छ।</translation>
 <translation id="5184329579814168207">Chrome मा खोल्नुहोस्</translation>
 <translation id="5191251636205085390">तेस्रो पक्षीय कुकीहरूलाई प्रतिस्थापन गर्ने प्रविधिका बारेमा जानकारी प्राप्त गर्नुहोस् र तिनलाई नियन्त्रण गर्ने तरिका सिक्नुहोस्</translation>
 <translation id="5193988420012215838">तपाईंको क्लिपबोर्डमा प्रतिलिपि गरियो</translation>

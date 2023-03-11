@@ -100,7 +100,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1420408895951708260">Gece Işığı'nı aç/kapat. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Telefonunuzdaki son fotoğrafları ve medya içeriklerini <ph name="DEVICE_TYPE" /> cihazınızda görün</translation>
 <translation id="1426410128494586442">Evet</translation>
-<translation id="1447641497144572814">Ekran koruyucu başlatılıyor</translation>
 <translation id="1455242230282523554">Dil ayarlarını gösterin</translation>
 <translation id="1460620680449458626">Ses kapalı.</translation>
 <translation id="14648076227129703">Bu işlem, <ph name="APP1_NAME" /> ve <ph name="APP2_NAME" /> uygulamalarının yanı sıra kamera izni olan tüm uygulamaların ve web sitelerinin kameraya erişmesine izin verir</translation>
@@ -126,6 +125,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1550523713251050646">Daha fazla seçenek için tıklayın</translation>
 <translation id="1555130319947370107">Mavi</translation>
 <translation id="1576623706766186887">Büyüteç açıkken uzaklaştırın</translation>
+<translation id="1586324912145647027">1 ile 8 arasındaki masalara git</translation>
 <translation id="1589090746204042747">Bu oturumdaki tüm etkinliğinize erişme</translation>
 <translation id="1610778689852195798">"Geri al"</translation>
 <translation id="1611993646327628135">Açık</translation>
@@ -514,6 +514,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3631369015426612114">Şunlardan gelen bildirimlere izin ver:</translation>
 <translation id="3633097874324966332">Cihazınızı eşlemek için Bluetooth ayarlarını açın</translation>
 <translation id="3638400994746983214">Gizlilik ekranını aç/kapat. <ph name="STATE_TEXT" />.</translation>
+<translation id="3649256019230929621">Pencereyi simge durumuna küçült</translation>
 <translation id="3649505501900178324">Güncelleme zamanı geçti</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -588,6 +589,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="4021716437419160885">Aşağı kaydır</translation>
 <translation id="4022497978915111141">Cihazı kilitleyin</translation>
 <translation id="4024840464866786680">PIN'inizi ve şifrenizi unuttuysanız ya da Google Hesabınızın şifresini yakın zamanda değiştirdiyseniz bu kullanıcıyı kurtarmayı deneyin.</translation>
+<translation id="4026843240379844265">Etkin pencereyi ekranlar arasında taşıma</translation>
 <translation id="4028481283645788203">Daha fazla güvenlik için şifre gerekiyor</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Ekranınızı paylaşıyorsunuz</translation>
@@ -912,6 +914,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="5689633613396158040">Gece Işığı, loş ışıkta ekranınızı daha iyi görmenizi ve daha kolay okumanızı sağlar. Gece Işığı'nın ne zaman açılacağını değiştirmek veya tamamen kapatmak için dokunun.</translation>
 <translation id="5691772641933328258">Parmak izi tanınmadı</translation>
 <translation id="5693255400847650006">Mikrofon kullanılıyor</translation>
+<translation id="5699366815052349604">Etkin pencereyi tüm masalara ata</translation>
 <translation id="570390244361237317">Tüm Uygulamalar: Tüm uygulamalara erişmek için ok tuşlarıyla gezinin</translation>
 <translation id="5707775774148071965">Cihazınız, kablonuzdan daha yüksek bir veri hızını destekliyor. Cihaz performansı sınırlı olabilir.</translation>
 <translation id="5710450975648804523">Rahatsız Etmeyin modu açık</translation>
@@ -1552,6 +1555,7 @@ Yeni yüklenmiş</translation>
 <translation id="9034924485347205037">Linux dosyaları</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> ayarlarını aç</translation>
 <translation id="9059834730836941392">Bildirimi daralt</translation>
+<translation id="906458777597946297">Pencereyi ekranı kaplayacak şekilde büyüt</translation>
 <translation id="9065203028668620118">Düzenle</translation>
 <translation id="9070640332319875144">Asistan Ayarları</translation>
 <translation id="9072519059834302790">Şarjın bitmesine <ph name="TIME_LEFT" /> kaldı.</translation>

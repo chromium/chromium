@@ -81,6 +81,7 @@ Só pode ler os datos encriptados alguén que coñeza a túa frase de acceso. A 
 <translation id="149095475893949513">Este sitio web está tentando descargar un perfil de configuración.</translation>
 <translation id="1491277525950327607">Toca dúas veces para activar ou desactivar a configuración</translation>
 <translation id="1492417797159476138">Xa gardaches este nome de usuario para este sitio</translation>
+<translation id="1497590942294823549">Menú → Xestor de contrasinais</translation>
 <translation id="1498283581832036924">Non se eliminará a túa conta de <ph name="WEBSITE" />.</translation>
 <translation id="1506063256525392513">Permíteche tirar e cargar fotos, así como escanear códigos QR</translation>
 <translation id="1509486075633541495">Iniciar sesión no sitio web</translation>
@@ -242,6 +243,7 @@ Tampouco poden utilizalas para ver a túa actividade de navegación en distintos
 <translation id="271033894570825754">Novo</translation>
 <translation id="2712127207578915686">Non se pode abrir o ficheiro</translation>
 <translation id="2718352093833049315">Só con wifi</translation>
+<translation id="2737716090799520623">Cando teñas a sesión iniciada en Chrome, os contrasinais que gardes irán á túa Conta de Google (<ph name="ACCOUNT" />). Para desactivar esta opción, <ph name="BEGIN_LINK" />vai á configuración<ph name="END_LINK" />.</translation>
 <translation id="2747003861858887689">Campo anterior</translation>
 <translation id="2749231692441336879">Comezaches a seguir a canle <ph name="CHANNEL_NAME" /></translation>
 <translation id="2764831210418622012">agora mesmo</translation>
@@ -843,6 +845,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="6801927553864092214">Para navegar de forma privada, abre unha pestana do modo de incógnito</translation>
 <translation id="6807889908376551050">Mostrar todas...</translation>
 <translation id="681368974849482173">Creouse o elemento</translation>
+<translation id="6822587385560699678">Cando a opción estea activada, os contrasinais gardaranse en <ph name="ACCOUNT" />. Se está desactivada, gardaranse só neste dispositivo.</translation>
 <translation id="683022620450280906">Podes usar os contrasinais gardados en calquera dispositivo. Estes gárdanse no xestor de contrasinais de Google para <ph name="EMAIL" /></translation>
 <translation id="6831043979455480757">Traducir</translation>
 <translation id="6842136130964845393">Para asegurarte de poder acceder sempre aos contrasinais que teñas gardados, verifica a túa identidade</translation>

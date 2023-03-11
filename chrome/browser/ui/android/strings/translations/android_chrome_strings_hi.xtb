@@ -34,6 +34,7 @@
 <translation id="1173894706177603556">नाम बदलें</translation>
 <translation id="1177863135347784049">कस्टम</translation>
 <translation id="1181037720776840403">हटाएं</translation>
+<translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /> पर</translation>
 <translation id="1193729455103054076">क्या आपको मज़बूत पासवर्ड बनाना है?</translation>
 <translation id="1197267115302279827">बुकमार्क ले जाएं</translation>
 <translation id="1201402288615127009">अगला</translation>
@@ -165,7 +166,6 @@
 <translation id="1928696683969751773">अपडेट</translation>
 <translation id="19288952978244135">Chrome को फिर से खोलें.</translation>
 <translation id="1933845786846280168">चयनित टैब</translation>
-<translation id="193571872656840963">इस क्रिएटर को धन्यवाद दें</translation>
 <translation id="1943432128510653496">पासवर्ड सेव करें</translation>
 <translation id="1952172573699511566">जब संभव होगा, वेबसाइटें आपकी पसंदीदा भाषा में टेक्स्ट दिखाएंगी.</translation>
 <translation id="1959679933317802873">कॉन्टेंट का इंतज़ार किया जा रहा है</translation>
@@ -201,7 +201,6 @@
 <translation id="2122601567107267586">ऐप्लिकेशन नहीं खोला जा सका</translation>
 <translation id="2132122640199389833">लिंक किए गए सभी डिवाइस हटाएं</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> बंद है</translation>
-<translation id="2134927169889348449">Chrome इस्तेमाल करने का मतलब है कि आप <ph name="BEGIN_TOS_LINK" />Google की सेवा की शर्तों<ph name="END_TOS_LINK" /> के साथ-साथ <ph name="BEGIN_ATOS_LINK" />Google Chrome और ChromeOS की सेवा की अन्य शर्तों<ph name="END_ATOS_LINK" /> से सहमत हैं.</translation>
 <translation id="2139186145475833000">होम स्क्रीन में जोड़ें</translation>
 <translation id="2141396931810938595">आपके इस्तेमाल करने के हिसाब से</translation>
 <translation id="214888715418183969">चुनें कि Chrome के साथ आपकी क्या जानकारी शेयर की जाए. आप जो मेट्रिक शेयर करते हैं उसका इस्तेमाल, Chrome की सुविधाओं और परफ़ॉर्मेंस को बेहतर बनाने में किया जाएगा. साथ ही, इसका इस्तेमाल क्रैश होने जैसी दिक्कतों को ठीक करने में भी होगा.</translation>
@@ -554,7 +553,6 @@
 <translation id="409109920254068737">इस टैबलेट का इस्तेमाल, उस डिवाइस पर साइन इन करने के लिए किया जा सकता है जिस पर यह क्यूआर कोड दिख रहा है.</translation>
 <translation id="4095146165863963773">ऐप्लिकेशन डेटा मिटाएं?</translation>
 <translation id="4096227151372679484">बुकमार्क सेव फ़्लो के फ़ोल्डर, आधी स्क्रीन पर खुले हैं</translation>
-<translation id="4099578267706723511">Google को इस्तेमाल के आंकड़े और क्रैश रिपोर्ट भेजकर, Chrome को बेहतर बनाने में मदद करें.</translation>
 <translation id="4101475238162928417">दूसरे डिवाइसों पर, अपने पासवर्ड, बुकमार्क वगैरह पाने के लिए, सिंक करें</translation>
 <translation id="410351446219883937">अपने आप चलाएं</translation>
 <translation id="4106587138345390261">Chrome नई सुविधाओं पर काम कर रहा है. इनकी मदद से साइटें, आपकी निजी जानकारी का कम से कम इस्तेमाल करने के बावजूद, आपको ब्राउज़िंग का पहले जैसा अनुभव दे पाएंगी</translation>
@@ -592,7 +590,6 @@
 <translation id="4269820728363426813">लिंक पते को कॉपी करें</translation>
 <translation id="4283102315569707115">डिफ़ॉल्ट रूप से, डेस्कटॉप साइटें लोड करने का विकल्प चुनना है?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android सेटिंग में, स्क्रीन लॉक चालू करें<ph name="END_LINK" /></translation>
-<translation id="4293476595220860475">Chrome इस्तेमाल करने का मतलब है कि आप <ph name="BEGIN_TOS_LINK" />Google की सेवा की शर्तों<ph name="END_TOS_LINK" /> के साथ-साथ <ph name="BEGIN_ATOS_LINK" />Google Chrome और ChromeOS की सेवा की अन्य शर्तों<ph name="END_ATOS_LINK" /> से सहमत हैं. साथ ही, <ph name="BEGIN_PRIVACY_LINK" />निजता नीति<ph name="END_PRIVACY_LINK" /> भी लागू होगी.</translation>
 <translation id="4296252229500326964">नया गुप्त टैब</translation>
 <translation id="4298388696830689168">लिंक की हुई साइटें</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -765,7 +762,6 @@
 <translation id="5161254044473106830">शीर्षक आवश्‍यक</translation>
 <translation id="5170568018924773124">फ़ोल्डर में दिखाएं</translation>
 <translation id="5171045022955879922">यूआरएल खोजें या टाइप करें</translation>
-<translation id="517734441743343109">जारी रखने का मतलब है कि आप Chrome की <ph name="BEGIN_TOS_LINK" />सेवा की शर्तों<ph name="END_TOS_LINK" /> और <ph name="BEGIN_PRIVACY_LINK" />निजता नीति<ph name="END_PRIVACY_LINK" /> से सहमत हैं.</translation>
 <translation id="5184329579814168207">Chrome में खोलें</translation>
 <translation id="5191251636205085390">तीसरे पक्ष की कुकी की जगह इस्तेमाल करने के मकसद से बनाई गई नई टेक्नोलॉजी के बारे में जानें और उन्हें कंट्रोल करें</translation>
 <translation id="5193988420012215838">आपके क्लिपबोर्ड पर कॉपी की गई</translation>

@@ -26,6 +26,7 @@
 <translation id="1448064542941920355">Suumi vähendamine</translation>
 <translation id="1510341833810331442">Saitidel ei ole lubatud teie seadmesse andmeid salvestada</translation>
 <translation id="1547123415014299762">Kolmanda osapoole küpsisefailid on lubatud</translation>
+<translation id="1593426485665524382">Uued toimingud on saadaval ekraanikuva ülaosas</translation>
 <translation id="1620510694547887537">Kaamera</translation>
 <translation id="1633720957382884102">Seotud saidid</translation>
 <translation id="1644574205037202324">Ajalugu</translation>
@@ -146,6 +147,7 @@
 <translation id="3628308229821498208">Soovitatud otsingud</translation>
 <translation id="3636279694100170143">Teie külastatavad saidid saavad kontrollida, kas olete päris kasutaja, mitte robot.</translation>
 <translation id="3649190289964910441">Teie külastatav sait saab Chrome’i abil salvestada teabe, mis kinnitab, et olete päris kasutaja. Kui jätkate sirvimist, saavad saidid Chrome’i kaudu kontrollida esimese saidi salvestatud teavet, mis kinnitab, et olete usaldusväärne kasutaja.</translation>
+<translation id="3721953990244350188">Loobu ja kuva järgmine saadaolev toiming</translation>
 <translation id="3744111561329211289">Taustal sünkroonimine</translation>
 <translation id="3763247130972274048">10 sekundi võrra kerimiseks topeltpuudutage videos vasakul või paremal</translation>
 <translation id="3794286421982011626">Külastatav sait saab salvestada teavet teie tegevuste kohta, et sait toimiks ootuspäraselt – näiteks selleks, et hoida teid saidile sisselogituna või salvestada teie ostukorvis olevad üksused. Saidid salvestavad selle teabe teie seadmesse sageli ajutiselt.</translation>
@@ -193,7 +195,6 @@
 <translation id="4534723447064627427">Selleks et anda rakendusele <ph name="APP_NAME" /> juurdepääs teie mikrofonile, lülitage mikrofon sisse ka <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Vaigista mikrofon</translation>
 <translation id="4570913071927164677">Üksikasjad</translation>
-<translation id="4575264539271661854">Muutke teksti ja piltide suumimine külastatavatel saitidel lihtsamaks</translation>
 <translation id="4598549027014564149">Inkognito režiimis ei saa saidid küpsisefailide kaudu teie sirvimistegevusi saitidel (isegi seotud saitidel) jälgida. Teie sirvimistegevusi ei kasutata näiteks reklaamide isikupärastamiseks. Funktsioonid ei pruugi mõnel saidil toimida.</translation>
 <translation id="4645575059429386691">Vanema hallatud</translation>
 <translation id="4670064810192446073">Virtuaalreaalsus</translation>

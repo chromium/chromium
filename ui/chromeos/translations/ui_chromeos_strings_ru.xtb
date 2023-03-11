@@ -84,6 +84,7 @@
 <translation id="1722487484194605434">Архивирование объектов (<ph name="NUMBER_OF_ITEMS" />)…</translation>
 <translation id="1722687688096767818">Добавление профиля…</translation>
 <translation id="1726100011689679555">Серверы имен</translation>
+<translation id="1727562178154619254">Готово к синхронизации</translation>
 <translation id="1729953886957086472">Немецкий (Германия)</translation>
 <translation id="1730235522912993863">Китайский, цанцзе</translation>
 <translation id="1731889557567069540">Скопировано объектов: <ph name="NUMBER_OF_ITEMS" />.</translation>
@@ -705,6 +706,7 @@
 <translation id="6732801395666424405">Сертификаты не загружены</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">Предоставление Bruschetta доступа к папке</translation>
+<translation id="6750737795876287924">Текущий каталог</translation>
 <translation id="6751256176799620176">1 папка выбрана</translation>
 <translation id="6755827872271341378">Устройство с Chrome OS Flex</translation>
 <translation id="6790428901817661496">Воспроизвести</translation>
@@ -742,7 +744,6 @@
 <translation id="6973630695168034713">Папки</translation>
 <translation id="6976795442547527108">Лев</translation>
 <translation id="6979158407327259162">Google Диск</translation>
-<translation id="6979737339423435258">Все время</translation>
 <translation id="6989942356279143254">Шведский</translation>
 <translation id="6990081529015358884">Недостаточно свободного места</translation>
 <translation id="6993826899923627728">Эти объекты находятся в корзине</translation>
@@ -798,7 +799,6 @@
 <translation id="7458955835361612701">Нет недавних изображений.</translation>
 <translation id="7460898608667578234">Украинский</translation>
 <translation id="7469894403370665791">Автоматически подключаться к этой сети</translation>
-<translation id="7481358317100446445">Готово</translation>
 <translation id="7486315294984620427">Чтобы загрузить файлы в Parallels Desktop, скопируйте их в папку "Файлы Windows".</translation>
 <translation id="749452993132003881">Хирагана</translation>
 <translation id="7495372004724182530">Малаялам, фонетический</translation>

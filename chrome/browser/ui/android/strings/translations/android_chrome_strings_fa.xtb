@@ -34,6 +34,7 @@
 <translation id="1173894706177603556">تغییر نام</translation>
 <translation id="1177863135347784049">سفارشی</translation>
 <translation id="1181037720776840403">حذف</translation>
+<translation id="1181366777303791449">در <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">از گذرواژه قوی استفاده شود؟</translation>
 <translation id="1197267115302279827">انتقال نشانک‌ها</translation>
 <translation id="1201402288615127009">بعدی</translation>
@@ -42,7 +43,6 @@
 <translation id="1204692632633423444">‏دکمه کنش Chrome: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">کپی نوشتار پیوند</translation>
 <translation id="1209206284964581585">فعلاً پنهان شود</translation>
-<translation id="1226851825267005295">‏می‌توانید بعداز ورود به سیستم Chrome با «حساب Google»، اولویت‌هایتان را مدیریت کنید.</translation>
 <translation id="1227058898775614466">سابقه پیمایش</translation>
 <translation id="1231733316453485619">همگام‌سازی روشن شود؟</translation>
 <translation id="123724288017357924">بار کردن مجدد صفحه اصلی با نادیده گرفتن محتوای حافظه پنهان</translation>
@@ -166,7 +166,6 @@
 <translation id="1928696683969751773">به‌روزرسانی‌ها</translation>
 <translation id="19288952978244135">‏Chrome را دوباره باز کنید.</translation>
 <translation id="1933845786846280168">برگه انتخاب‌شده</translation>
-<translation id="193571872656840963">قدردانی از این سازنده</translation>
 <translation id="1943432128510653496">ذخیره گذرواژه‌ها</translation>
 <translation id="1952172573699511566">درصورت امکان، وب‌سایت‌ها نوشتار را به زبان ترجیحی شما نمایش می‌دهند.</translation>
 <translation id="1959679933317802873">درانتظار محتوا</translation>
@@ -202,7 +201,6 @@
 <translation id="2122601567107267586">باز کردن برنامه امکان‌پذیر نیست</translation>
 <translation id="2132122640199389833">برداشتن همه دستگاه‌های پیوندشده</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> بسته شد</translation>
-<translation id="2134927169889348449">‏درصورت استفاده از Chrome، با <ph name="BEGIN_TOS_LINK" />شرایط خدمات Google<ph name="END_TOS_LINK" /> و <ph name="BEGIN_ATOS_LINK" />شرایط خدمات تکمیلی Google Chrome و ChromeOS<ph name="END_ATOS_LINK" /> موافقت می‌کنید.</translation>
 <translation id="2139186145475833000">افزودن به صفحه اصلی</translation>
 <translation id="2141396931810938595">براساس میزان استفاده شما</translation>
 <translation id="214888715418183969">‏انتخاب کنید می‌خواهید چه چیزهایی با Chrome هم‌رسانی شود. از سنجه‌هایی که هم‌رسانی می‌کنید برای کمک به بهبود ویژگی‌ها، عملکرد، و پایداری Chrome استفاده خواهد شد.</translation>
@@ -555,7 +553,6 @@
 <translation id="409109920254068737">بااستفاده از این رایانه لوحی می‌توانید در دستگاهی که این رمزینه پاسخ‌سریع را نمایش می‌دهد به سیستم وارد شوید.</translation>
 <translation id="4095146165863963773">داده‌های برنامه پاک شود؟</translation>
 <translation id="4096227151372679484">جریان ذخیره نشانک به‌صورت نیمه باز شده است</translation>
-<translation id="4099578267706723511">‏‫با ارسال آمار کاربرد و گزارش‌های خرابی به Google، به بهتر شدن Chrome کمک کنید.</translation>
 <translation id="4101475238162928417">برای دریافت گذرواژه‌ها، نشانک‌ها، و سایر داده‌هایتان در دستگاه‌های دیگرتان، همگام‌سازی کنید</translation>
 <translation id="410351446219883937">پخش خودکار</translation>
 <translation id="4106587138345390261">‏Chrome درحال کاوش ویژگی‌های جدیدی است که به سایت‌های امکان می‌دهد تجربه مرور یکسانی را با مصرف اطلاعات شخصی کمتر ارائه دهند</translation>
@@ -593,7 +590,6 @@
 <translation id="4269820728363426813">کپی نشانی پیوند</translation>
 <translation id="4283102315569707115">به‌طور پیش‌فرض از سایت‌های ویژه رایانه درخواست شود؟</translation>
 <translation id="4291407919474070700">‏<ph name="BEGIN_LINK" />روشن کردن قفل صفحه در تنظیمات Android<ph name="END_LINK" /></translation>
-<translation id="4293476595220860475">‏درصورت استفاده از Chrome، با <ph name="BEGIN_TOS_LINK" />شرایط خدمات Google<ph name="END_TOS_LINK" /> و <ph name="BEGIN_ATOS_LINK" />شرایط خدمات تکمیلی Google Chrome و ChromeOS<ph name="END_ATOS_LINK" /> موافقت می‌کنید. <ph name="BEGIN_PRIVACY_LINK" />خط‌مشی رازداری<ph name="END_PRIVACY_LINK" /> نیز اعمال می‌شود.</translation>
 <translation id="4296252229500326964">برگه ناشناس جدید</translation>
 <translation id="4298388696830689168">سایت‌های مرتبط</translation>
 <translation id="4303044213806199882"><ph name="CURRENT_TIMESTAMP_MS" />chrome_screenshot_‎</translation>
@@ -766,7 +762,6 @@
 <translation id="5161254044473106830">عنوان مورد نیاز است</translation>
 <translation id="5170568018924773124">نمایش در پوشه</translation>
 <translation id="5171045022955879922">‏جستجو یا تایپ URL</translation>
-<translation id="517734441743343109">درصورت ادامه دادن، موافقتتان را با <ph name="BEGIN_TOS_LINK" />شرایط خدمات<ph name="END_TOS_LINK" /> و <ph name="BEGIN_PRIVACY_LINK" />خط‌مشی رازداری<ph name="END_PRIVACY_LINK" /> اعلام می‌کنید.</translation>
 <translation id="5184329579814168207">‏باز کردن در Chrome</translation>
 <translation id="5191251636205085390">با فناوری‌های جدیدی که قرار است جایگزین کوکی‌های شخص ثالث شود آشنا شوید و آن‌ها را کنترل کنید</translation>
 <translation id="5193988420012215838">در بریده‌دان کپی شد</translation>

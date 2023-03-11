@@ -23,9 +23,11 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="1640672724030957280">Downloader...</translation>
 <translation id="1708666629004767631">Der findes en ny og mere sikker version af Chromium.</translation>
 <translation id="17264556997921157">Du kan se og fjerne interesseområder, som websites bruger til at vise annoncer. Chromium estimerer dine interesser på baggrund af din seneste browserhistorik.</translation>
+<translation id="1745121272106313518">Chromium genstarter om <ph name="REMAINING_TIME" /></translation>
 <translation id="1774152462503052664">Lad Chromium køre i baggrunden</translation>
 <translation id="1779356040007214683">For at gøre Chromium sikrere har vi slået nogle udvidelser fra, som ikke er anført i <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> og muligvis er blevet tilføjet, uden at du vidste det.</translation>
 <translation id="1808667845054772817">Geninstaller Chromium</translation>
+<translation id="1820835682567584003">Chromium forsøger at <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="185970820835152459">Du kan administrere de Google-konti, du er logget ind på. Dine Google-konti bruges i Chromium-browseren, Play Butik, Gmail m.m. Hvis du vil tilføje en konto, der tilhører en anden, f.eks. et familiemedlem, skal du føje en ny person til din <ph name="DEVICE_TYPE" /> i stedet. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="1863308913976887472">Websites kan gemme oplysninger med Chromium om dine interesser. Hvis du f.eks. besøger et website for at købe sko til et maraton, kan websitet muligvis definere, at din interesse er at løbe maraton. Hvis du derefter besøger et andet website for at tilmelde dig et løb, kan det website vise dig en annonce for løbesko baseret på dine interesser.</translation>
 <translation id="1881322772814446296">Du er ved at logge ind med en managerstyret konto og give dens administrator kontrol over din profil i Chromium. Dine Chromium-data, f.eks. dine apps, bogmærker, historikdata, adgangskoder og andre indstillinger, knyttes permanent til <ph name="USER_NAME" />. Du kan slette disse data via kontrolpanelet for Google Konti, men du kan ikke knytte disse data til en anden konto. Du kan eventuelt oprette en ny profil for at holde dine Chromium-data adskilt. <ph name="LEARN_MORE" /></translation>
@@ -304,7 +306,6 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="7561906087460245826">Ryd også data fra Chromium (<ph name="URL" />)</translation>
 <translation id="7582945390259497898">Chromium kan estimere dine interesser. Senere kan et website, du besøger, anmode Chromium om at se dine interesser med henblik på at tilpasse de annoncer, du ser.</translation>
 <translation id="7583399374488819119">Installationsprogram til <ph name="COMPANY_NAME" /></translation>
-<translation id="7597596667193879455">Du har aktiveret Udvidet beskyttet browsing på din konto. Nu skal du aktivere funktionen for Chromium.</translation>
 <translation id="761356813943268536">Chromium bruger dit kamera og din mikrofon.</translation>
 <translation id="7617377681829253106">Chromium er blevet bedre</translation>
 <translation id="7649070708921625228">Hjælp</translation>

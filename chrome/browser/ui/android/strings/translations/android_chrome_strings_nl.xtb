@@ -34,6 +34,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="1173894706177603556">Naam wijzigen</translation>
 <translation id="1177863135347784049">Aangepast</translation>
 <translation id="1181037720776840403">Verwijderen</translation>
+<translation id="1181366777303791449">op <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">Sterk wachtwoord gebruiken?</translation>
 <translation id="1197267115302279827">Bookmarks verplaatsen</translation>
 <translation id="1201402288615127009">Volgende</translation>
@@ -42,7 +43,6 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="1204692632633423444">Chrome-actieknop: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">Linktekst kopiëren</translation>
 <translation id="1209206284964581585">Voorlopig verbergen</translation>
-<translation id="1226851825267005295">Je kunt je voorkeuren beheren nadat je bent ingelogd bij Chrome met je Google-account.</translation>
 <translation id="1227058898775614466">Navigatiegeschiedenis</translation>
 <translation id="1231733316453485619">Synchronisatie aanzetten?</translation>
 <translation id="123724288017357924">De pagina opnieuw laden, gecachte content negeren</translation>
@@ -166,7 +166,6 @@ Als je je browsegeschiedenis verwijdert (alles of alleen de geschiedenis voor ee
 <translation id="1928696683969751773">Updates</translation>
 <translation id="19288952978244135">Open Chrome opnieuw.</translation>
 <translation id="1933845786846280168">Geselecteerd tabblad</translation>
-<translation id="193571872656840963">Deze maker bedanken</translation>
 <translation id="1943432128510653496">Wachtwoorden opslaan</translation>
 <translation id="1952172573699511566">Websites worden indien mogelijk getoond in je voorkeurstaal.</translation>
 <translation id="1959679933317802873">Wachten op content</translation>
@@ -202,7 +201,6 @@ Als je je browsegeschiedenis verwijdert (alles of alleen de geschiedenis voor ee
 <translation id="2122601567107267586">Kan app niet openen</translation>
 <translation id="2132122640199389833">Alle gekoppelde apparaten verwijderen</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> gesloten</translation>
-<translation id="2134927169889348449">Door Chrome te gebruiken, ga je akkoord met de <ph name="BEGIN_TOS_LINK" />Servicevoorwaarden van Google<ph name="END_TOS_LINK" /> en met de <ph name="BEGIN_ATOS_LINK" />Aanvullende servicevoorwaarden van Google Chrome en Chrome OS<ph name="END_ATOS_LINK" />.</translation>
 <translation id="2139186145475833000">Toevoegen aan startscherm</translation>
 <translation id="2141396931810938595">Gebaseerd op je gebruik</translation>
 <translation id="214888715418183969">Kies welke informatie je bereid bent te delen met Chrome. De statistieken die je deelt, worden gebruikt om de functies, prestaties en stabiliteit van Chrome te verbeteren.</translation>
@@ -555,7 +553,6 @@ Privéstatustokens verbeteren de privacy op het web en kunnen niet worden gebrui
 <translation id="409109920254068737">Je kunt deze tablet gebruiken om in te loggen op het apparaat waarop deze QR-code wordt getoond.</translation>
 <translation id="4095146165863963773">App-gegevens verwijderen?</translation>
 <translation id="4096227151372679484">Proces voor bookmark opslaan is op halve hoogte geopend</translation>
-<translation id="4099578267706723511">Verzend automatisch gebruiksstatistieken en crashmeldingen naar Google.</translation>
 <translation id="4101475238162928417">Voer een synchronisatie uit om onder meer de wachtwoorden en bookmarks van je andere apparaten op te halen</translation>
 <translation id="410351446219883937">Automatisch afspelen</translation>
 <translation id="4106587138345390261">Chrome bevat nieuwe experimentele functies waarmee sites dezelfde browsefunctionaliteit kunnen leveren terwijl er minder van je gegevens worden gebruikt</translation>
@@ -593,7 +590,6 @@ Privéstatustokens verbeteren de privacy op het web en kunnen niet worden gebrui
 <translation id="4269820728363426813">Linkadres kopiëren</translation>
 <translation id="4283102315569707115">Standaard desktopsites aanvragen?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Schermvergrendeling aanzetten via Android-instellingen<ph name="END_LINK" /></translation>
-<translation id="4293476595220860475">Door Chrome te gebruiken, ga je akkoord met de <ph name="BEGIN_TOS_LINK" />Servicevoorwaarden van Google<ph name="END_TOS_LINK" /> en met de <ph name="BEGIN_ATOS_LINK" />Aanvullende servicevoorwaarden van Google Chrome en Chrome OS<ph name="END_ATOS_LINK" />. Het <ph name="BEGIN_PRIVACY_LINK" />Privacybeleid<ph name="END_PRIVACY_LINK" /> is ook van toepassing.</translation>
 <translation id="4296252229500326964">Nieuw incognitotabblad</translation>
 <translation id="4298388696830689168">Gekoppelde sites</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -766,7 +762,6 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5161254044473106830">Titel is vereist</translation>
 <translation id="5170568018924773124">Tonen in map</translation>
 <translation id="5171045022955879922">Zoek of typ een URL</translation>
-<translation id="517734441743343109">Door verder te gaan, ga je akkoord met de <ph name="BEGIN_TOS_LINK" />Servicevoorwaarden<ph name="END_TOS_LINK" /> en het <ph name="BEGIN_PRIVACY_LINK" />Privacybeleid<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="5184329579814168207">Openen in Chrome</translation>
 <translation id="5191251636205085390">Bekijk meer informatie over en beheer nieuwe technologieën die cookies van derden willen vervangen</translation>
 <translation id="5193988420012215838">Naar klembord gekopieerd</translation>

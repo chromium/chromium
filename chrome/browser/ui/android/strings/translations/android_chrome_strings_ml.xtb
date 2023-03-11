@@ -34,6 +34,7 @@
 <translation id="1173894706177603556">പേരുമാറ്റുക</translation>
 <translation id="1177863135347784049">ഇഷ്ടാനുസൃതം</translation>
 <translation id="1181037720776840403">നീക്കംചെയ്യൂ</translation>
+<translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /> എന്നതിൽ</translation>
 <translation id="1193729455103054076">ശക്തമായ പാസ്‌വേഡ് ഉപയോഗിക്കണോ?</translation>
 <translation id="1197267115302279827">ബു‌ക്ക്‌മാർക്കുകൾ നീക്കുക</translation>
 <translation id="1201402288615127009">അടുത്തത്</translation>
@@ -42,7 +43,6 @@
 <translation id="1204692632633423444">Chrome-ലെ പ്രവർത്തന ബട്ടൺ: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">ലിങ്ക് വാചകം പകർത്തുക</translation>
 <translation id="1209206284964581585">ഇപ്പോഴത്തേയ്‌ക്ക് മറയ്‌ക്കുക</translation>
-<translation id="1226851825267005295">ഞങ്ങളുടെ Google അക്കൗണ്ട് ഉപയോഗിച്ച് Chrome-ൽ സൈൻ ഇൻ ചെയ്‌തതിന് ശേഷം നിങ്ങൾക്ക് മുൻഗണനകൾ മാനേജ് ചെയ്യാനാകും.</translation>
 <translation id="1227058898775614466">നാവിഗേഷന്‍ ചരിത്രം</translation>
 <translation id="1231733316453485619">സമന്വയിപ്പിക്കൽ ഓണാക്കണോ?</translation>
 <translation id="123724288017357924">കാഷെ ചെയ്‌ത ഉള്ളടക്കം ഒഴിവാക്കി കൊണ്ട്, നിലവിലെ പേജ് റീലോഡ് ചെയ്യുക</translation>
@@ -166,7 +166,6 @@
 <translation id="1928696683969751773">അപ്‌ഡേറ്റ് ചെയ്യുന്നു</translation>
 <translation id="19288952978244135">Chrome വീണ്ടും തുറക്കുക.</translation>
 <translation id="1933845786846280168">തിരഞ്ഞെടുത്ത ടാബ്</translation>
-<translation id="193571872656840963">ഈ സ്രഷ്ടാവിനോട് നന്ദി പറയുക</translation>
 <translation id="1943432128510653496">സംരക്ഷിച്ച പാസ്‌വേഡുകള്‍</translation>
 <translation id="1952172573699511566">വെബ്സൈറ്റുകൾ, സാധ്യമാകുന്നിടത്തെല്ലാം, നിങ്ങൾ തിരഞ്ഞെടുത്ത ഭാഷയിൽ ടെക്‌സ്‌റ്റ് കാണിക്കും.</translation>
 <translation id="1959679933317802873">ഉള്ളടക്കത്തിനായി കാത്തിരിക്കുന്നു</translation>
@@ -202,7 +201,6 @@
 <translation id="2122601567107267586">ആപ്പ് തുറക്കാനായില്ല</translation>
 <translation id="2132122640199389833">ലിങ്ക് ചെയ്ത എല്ലാ ഉപകരണങ്ങളും നീക്കം ചെയ്യുക</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> അടച്ചു</translation>
-<translation id="2134927169889348449">Chrome ഉപയോഗിക്കുന്നതിലൂടെ, നിങ്ങൾ <ph name="BEGIN_TOS_LINK" />Google സേവന നിബന്ധനകളും<ph name="END_TOS_LINK" /> <ph name="BEGIN_ATOS_LINK" />Google Chrome, ChromeOS അധിക സേവന നിബന്ധനകളും<ph name="END_ATOS_LINK" /> അംഗീകരിക്കുന്നു.</translation>
 <translation id="2139186145475833000">ഹോംസ്‌ക്രീനിൽ ചേർക്കുക</translation>
 <translation id="2141396931810938595">നിങ്ങളുടെ ഉപയോഗം അടിസ്ഥാനമാക്കിയുള്ളത്</translation>
 <translation id="214888715418183969">Chrome-മായി പങ്കിടാൻ നിങ്ങൾക്ക് താൽപ്പര്യമുള്ളത് തിരഞ്ഞെടുക്കുക. Chrome-ന്റെ ഫീച്ചറുകളും പ്രകടനവും സ്ഥിരതയും മെച്ചപ്പെടുത്താൻ നിങ്ങൾ പങ്കിടുന്ന മെട്രിക്കുകൾ ഉപയോഗിക്കും.</translation>
@@ -555,7 +553,6 @@
 <translation id="409109920254068737">ഈ QR കോഡ് ദൃശ്യമാക്കുന്ന ഉപകരണത്തിൽ സൈൻ ഇൻ ചെയ്യാൻ നിങ്ങൾക്ക് ഈ ടാബ്‌ലെറ്റ് ഉപയോഗിക്കാം.</translation>
 <translation id="4095146165863963773">ആപ്പ് ഡാറ്റ ഇല്ലാതാക്കണോ?</translation>
 <translation id="4096227151372679484">ബുക്ക്‌മാർക്ക് സംരക്ഷിക്കൽ ഫ്ലോ പകുതി ഉയരത്തിൽ തുറന്നു</translation>
-<translation id="4099578267706723511">Google-ലേക്ക് ഉപയോഗ വിവരക്കണക്കുകളും ക്രാഷ് റിപ്പോർട്ടുകളും അയയ്‌ക്കുന്നതിലൂടെ Chrome-നെ മികച്ചതാക്കാൻ സഹായിക്കുക.</translation>
 <translation id="4101475238162928417">മറ്റ് ഉപകരണങ്ങളിൽ നിങ്ങളുടെ പാസ്‌വേഡുകളും ബുക്ക്‌മാർക്കുകളും മറ്റും ലഭിക്കാൻ സമന്വയിപ്പിക്കുക</translation>
 <translation id="410351446219883937">സ്വയമേവ പ്ലേ ചെയ്യൽ</translation>
 <translation id="4106587138345390261">നിങ്ങളുടെ കുറച്ച് വിവരങ്ങൾ മാത്രം ഉപയോഗിച്ച്, സമാന ബ്രൗസിംഗ് അനുഭവം നൽകാൻ സൈറ്റുകളെ അനുവദിക്കുന്ന പുതിയ ഫീച്ചറുകൾ കണ്ടെത്താൻ Chrome ശ്രമിക്കുകയാണ്</translation>
@@ -593,7 +590,6 @@
 <translation id="4269820728363426813">ലിങ്ക് വിലാസം പകർത്തുക</translation>
 <translation id="4283102315569707115">ഡെസ്‌ക്‌ടോപ്പ് സൈറ്റുകൾ ഡിഫോൾട്ടായി അഭ്യർത്ഥിക്കണോ?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android ക്രമീകരണത്തിൽ സ്ക്രീൻ ലോക്ക് ഓണാക്കുക<ph name="END_LINK" /></translation>
-<translation id="4293476595220860475">Chrome ഉപയോഗിക്കുന്നതിലൂടെ, നിങ്ങൾ <ph name="BEGIN_TOS_LINK" />Google സേവന നിബന്ധനകളും<ph name="END_TOS_LINK" /> <ph name="BEGIN_ATOS_LINK" />Google Chrome, ChromeOS അധിക സേവന നിബന്ധനകളും<ph name="END_ATOS_LINK" /> അംഗീകരിക്കുന്നു. <ph name="BEGIN_PRIVACY_LINK" />സ്വകാര്യതാ നയവും<ph name="END_PRIVACY_LINK" /> ബാധകമാണ്.</translation>
 <translation id="4296252229500326964">പുതിയ അദൃശ്യ ടാബ്</translation>
 <translation id="4298388696830689168">ലിങ്ക് ചെയ്‌ത സൈറ്റുകൾ</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -766,7 +762,6 @@
 <translation id="5161254044473106830">പേര് ആവശ്യമാണ്</translation>
 <translation id="5170568018924773124">ഫോള്‍ഡറില്‍ കാണിക്കുക</translation>
 <translation id="5171045022955879922">തിരയുക അല്ലെങ്കിൽ URL ടൈപ്പ് ചെയ്യുക</translation>
-<translation id="517734441743343109">തുടരുന്നതിലൂടെ, നിങ്ങൾ <ph name="BEGIN_TOS_LINK" />സേവന നിബന്ധനകൾ<ph name="END_TOS_LINK" />, <ph name="BEGIN_PRIVACY_LINK" />സ്വകാര്യതാ\u00A0നയം<ph name="END_PRIVACY_LINK" /> എന്നിവ അംഗീകരിക്കുന്നു.</translation>
 <translation id="5184329579814168207">Chrome-ൽ തുറക്കുക</translation>
 <translation id="5191251636205085390">മൂന്നാം കക്ഷി കുക്കികൾക്ക് പകരം നിലവിൽ വരാൻ പോകുന്ന പുതിയ സാങ്കേതികവിദ്യകളെക്കുറിച്ച് അറിയുകയും അവയെ നിയന്ത്രിക്കുകയും ചെയ്യുക</translation>
 <translation id="5193988420012215838">നിങ്ങളുടെ ക്ലിപ്പ്ബോർഡിലേക്ക് പകർത്തി</translation>

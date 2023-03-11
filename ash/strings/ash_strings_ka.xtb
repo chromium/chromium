@@ -100,7 +100,6 @@
 <translation id="1420408895951708260">ღამის განათების გადართვა. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">ნახეთ თქვენი ტელეფონის ბოლოდროინდელი ფოტოები და მედიაფაილები თქვენს <ph name="DEVICE_TYPE" />-ზე</translation>
 <translation id="1426410128494586442">დიახ</translation>
-<translation id="1447641497144572814">ეკრანმზოგი იწყება</translation>
 <translation id="1455242230282523554">ენის პარამეტრების ჩვენება</translation>
 <translation id="1460620680449458626">ხმა დადუმებულია.</translation>
 <translation id="14648076227129703"><ph name="APP1_NAME" />-ს, <ph name="APP2_NAME" />-ს, ასევე, ყველა აპსა და ვებსაიტს, რომლებსაც აქვს კამერის გამოყენების ნებართვა, მიენიჭება კამერაზე წვდომა</translation>
@@ -126,6 +125,7 @@
 <translation id="1550523713251050646">დააწკაპუნეთ დამატებითი ვარიანტების სანახავად</translation>
 <translation id="1555130319947370107">ლურჯი</translation>
 <translation id="1576623706766186887">მასშტაბის შემცირება, როცა ლუპა ჩართულია</translation>
+<translation id="1586324912145647027">1-ლიდან მე-8 სამუშაო მაგიდებს შორის გადასვლა</translation>
 <translation id="1589090746204042747">ამ სესიის დროს თქვენს მთელ აქტივობაზე წვდომა</translation>
 <translation id="1610778689852195798">"მოქმედების გაუქმება"</translation>
 <translation id="1611993646327628135">ჩართული</translation>
@@ -514,6 +514,7 @@
 <translation id="3631369015426612114">შეტყობინებების დაშვება შემდეგიდან:</translation>
 <translation id="3633097874324966332">თქვენი მოწყობილობის დასაწყვილებლად გახსენით Bluetooth პარამეტრები</translation>
 <translation id="3638400994746983214">კონფიდენციალურობის ეკრანის გადართვა. <ph name="STATE_TEXT" />.</translation>
+<translation id="3649256019230929621">ფანჯრის ჩაკეცვა</translation>
 <translation id="3649505501900178324">განახლება დაგვიანებულია</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -588,6 +589,7 @@
 <translation id="4021716437419160885">ქვემოთ გადაადგილება</translation>
 <translation id="4022497978915111141">მოწყობილობის ჩაკეტვა</translation>
 <translation id="4024840464866786680">თუ PIN-კოდი და პაროლი დაგავიწყდათ, ან ახლახან შეცვალეთ თქვენი Google ანგარიშის პაროლი, ცადეთ ამ მომხმარებლის აღდგენა.</translation>
+<translation id="4026843240379844265">აქტიური ფანჯრის გადატანა ეკრანებს შორის</translation>
 <translation id="4028481283645788203">დამატებითი უსაფრთხოებისთვის საჭიროა პაროლის შეყვანა</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">თქვენ აზიარებთ ეკრანს</translation>
@@ -912,6 +914,7 @@
 <translation id="5689633613396158040">ღამის განათება გაგიმარტივებთ ეკრანზე კითხვას ან მის ყურებას მკრთალი განათების პირობებში. შეეხეთ ღამის განათების ჩართვის დროის შესაცვლელად ან მის მთლიანად გამოსართავად.</translation>
 <translation id="5691772641933328258">თითის ანაბეჭდის ამოცნობა ვერ მოხერხდა</translation>
 <translation id="5693255400847650006">მიკროფონი გამოიყენება</translation>
+<translation id="5699366815052349604">აქტიური ფანჯრების მიმაგრება ყველა სამუშაო მაგიდაზე</translation>
 <translation id="570390244361237317">ყველა აპი, ყველა აპზე წვდომისთვის ნავიგაცია შეგიძლიათ ისრებიანი კლავიშებით</translation>
 <translation id="5707775774148071965">თქვენს მოწყობილობას აქვს მონაცემების გადაცემის უფრო მაღალი სიჩქარის მხარდაჭერა, ვიდრე თქვენს კაბელს. მოწყობილობის ეფექტურობა შეიძლება შეიზღუდოს.</translation>
 <translation id="5710450975648804523">„არ შემაწუხოთ“ ჩართულია</translation>
@@ -1552,6 +1555,7 @@
 <translation id="9034924485347205037">Linux ფაილები</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" />-ის პარამეტრების გახსნა</translation>
 <translation id="9059834730836941392">შეტყობინების ჩაკეცვა</translation>
+<translation id="906458777597946297">ფანჯრის გაშლა</translation>
 <translation id="9065203028668620118">რედაქტირება</translation>
 <translation id="9070640332319875144">ასისტენტის პარამეტრები</translation>
 <translation id="9072519059834302790">ბატარეის დაცლამდე დარჩენილია <ph name="TIME_LEFT" />.</translation>

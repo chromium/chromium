@@ -241,7 +241,6 @@
 <translation id="3226657629376379887">লেআউট অ্যাকশন মেনু</translation>
 <translation id="3246869037381808805">১ দিনের বেশি পুরনো প্রিন্ট জব সরিয়ে দেওয়া হবে</translation>
 <translation id="3268178239013324452">প্রিন্ট করা যায়নি - প্রিন্টারের ঢাকনা ভাল করে বন্ধ করা হয়নি</translation>
-<translation id="3275506277319227640"><ph name="DIRECTION" /> দিকে ডক করুন</translation>
 <translation id="3275729367986477355">অবতারের ছবি</translation>
 <translation id="3283504360622356314">{0,plural, =1{ফাইলটি এডিট করুন}one{ফাইলগুলি এডিট করুন}other{ফাইলগুলি এডিট করুন}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
@@ -360,7 +359,6 @@
 <translation id="4311195029067684288">পূর্ণ</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> কী প্রেস করা হয়েছে</translation>
 <translation id="435692326371619097">নেটওয়ার্ক APN সেটিংস ম্যানেজ করুন। APN একটি সেলুলার নেটওয়ার্ক এবং ইন্টারনেটের মধ্যে কানেকশন তৈরি করে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
-<translation id="4370033095251616914">বোতামের ছোট দিকে ডক করুন</translation>
 <translation id="4378373042927530923">চালানো যায়নি</translation>
 <translation id="4378551569595875038">সংযুক্ত হচ্ছে...</translation>
 <translation id="4382484599443659549">পিডিএফ</translation>
@@ -903,7 +901,6 @@
 <translation id="9137526406337347448">Google পরিসেবাসমূহ</translation>
 <translation id="9138630967333032450">বাঁদিকের shift কী</translation>
 <translation id="9149391708638971077">মেমরি টেস্ট করুন</translation>
-<translation id="9157515863513902090">বোতামের বড় দিকে ডক করুন</translation>
 <translation id="9161276708550942948">space</translation>
 <translation id="9173638680043580060">এক মিনিটেরও কম সময় বাকি আছে</translation>
 <translation id="917720651393141712">পরীক্ষা করুন</translation>

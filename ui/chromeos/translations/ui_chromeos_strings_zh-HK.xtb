@@ -84,6 +84,7 @@
 <translation id="1722487484194605434">正在壓縮 <ph name="NUMBER_OF_ITEMS" /> 個項目…</translation>
 <translation id="1722687688096767818">正在新增設定檔…</translation>
 <translation id="1726100011689679555">名稱伺服器</translation>
+<translation id="1727562178154619254">準備好同步</translation>
 <translation id="1729953886957086472">德文 (德國)</translation>
 <translation id="1730235522912993863">中文 (倉頡)</translation>
 <translation id="1731889557567069540">已複製 <ph name="NUMBER_OF_ITEMS" /> 個項目。</translation>
@@ -705,6 +706,7 @@
 <translation id="6732801395666424405">未載入憑證</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">與 Bruschetta 共用資料夾</translation>
+<translation id="6750737795876287924">目前嘅目錄</translation>
 <translation id="6751256176799620176">已選取 1 個資料夾</translation>
 <translation id="6755827872271341378">ChromeOS Flex 裝置</translation>
 <translation id="6790428901817661496">播放</translation>
@@ -742,7 +744,6 @@
 <translation id="6973630695168034713">資料夾</translation>
 <translation id="6976795442547527108">獅子</translation>
 <translation id="6979158407327259162">Google 雲端硬碟</translation>
-<translation id="6979737339423435258">所有時間</translation>
 <translation id="6989942356279143254">瑞典文</translation>
 <translation id="6990081529015358884">沒有可用的空間</translation>
 <translation id="6993826899923627728">這些項目在您的垃圾桶中</translation>
@@ -798,7 +799,6 @@
 <translation id="7458955835361612701">最近沒有任何圖片</translation>
 <translation id="7460898608667578234">烏克蘭文</translation>
 <translation id="7469894403370665791">自動連線至這個網絡</translation>
-<translation id="7481358317100446445">準備就緒</translation>
 <translation id="7486315294984620427">如要將檔案拖曳至 Parallels Desktop，必須先將檔案複製到 Windows 檔案中。</translation>
 <translation id="749452993132003881">平假名</translation>
 <translation id="7495372004724182530">馬拉雅拉姆文 (拼音)</translation>

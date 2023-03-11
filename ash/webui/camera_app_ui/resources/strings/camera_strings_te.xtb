@@ -8,9 +8,6 @@
 <translation id="1175958423215084756">లింక్ గుర్తించబడింది. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213"><ph name="PAGE_NUMBER" />వ పేజీ తొలగించబడింది</translation>
 <translation id="1258009455399840361">90 డిగ్రీలు సవ్యదిశలో తిప్పండి</translation>
-<translation id="1300209025925956156">మీ డాక్యుమెంట్‌ను స్కాన్ చేయండి</translation>
-<translation id="1309250603447638106">డాక్యుమెంట్ స్కానింగ్ ఫీచర్ కోసం అప్‌డేట్‌లు డౌన్‌లోడ్ చేయబడుతున్నాయి</translation>
-<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. యాక్సెస్ చేయడానికి Search + ఎడమ వైపు బాణం గుర్తును క్లిక్ చేయండి.</translation>
 <translation id="1417314334557041815"><ph name="INDEX" />వ పేజీని ఎడిట్ చేయండి</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> అన్‌ప్లగ్ చేశారు.</translation>
 <translation id="1473110567575736769">3 సెకన్ల టైమర్</translation>
@@ -24,7 +21,6 @@
 <translation id="1664224225747386870">ఏదీ రికార్డ్ చేయలేదు</translation>
 <translation id="1838104802459806957">పైకి టిల్ట్ చేయి</translation>
 <translation id="1843105061469674856">అదనపు పేజీని స్కాన్ చేయండి</translation>
-<translation id="1851169887664797861">అదనపు కెమెరా కంట్రోల్‌లు అందుబాటులో ఉన్నాయి</translation>
 <translation id="1851616744363735765">పాజ్ చేయబడింది</translation>
 <translation id="1899697626337024495">ఫోటో రిజల్యూషన్</translation>
 <translation id="1925845977604399247">గ్యాలరీకి వెళ్లండి</translation>
@@ -49,7 +45,6 @@
 <translation id="2761536921376153655">స్కాన్ రకం</translation>
 <translation id="28682968802727151">మిర్రర్ ప్రివ్యూ</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> ప్లగ్-ఇన్ చేశారు.</translation>
-<translation id="2904654629665923749">డాక్యుమెంట్ స్కాన్ అందుబాటులో ఉంది</translation>
 <translation id="3067436040345934772">కుడి వైపునకు ప్యాన్ చేయి</translation>
 <translation id="3081586908890909590">వీడియో రికార్డింగ్ మోడ్‌కు మార్చు</translation>
 <translation id="313467653172006084">30 FPS</translation>
@@ -74,7 +69,6 @@
 <translation id="4269820728363426813">లింక్ అడ్రస్‌ను కాపీ చేయండి</translation>
 <translation id="4281620174117014503">మధ్యస్థ రిజల్యూషన్</translation>
 <translation id="428234092390943511">పేజీ థంబ్‌నెయిల్</translation>
-<translation id="4340659173795395806">మీరు ఇప్పుడు మల్టీ-పేజీ PDFను క్రియేట్ చేయవచ్చు</translation>
 <translation id="4383571725254449280">పనితీరు లాగ్‌లను ప్రింట్ చేయండి</translation>
 <translation id="4445542136948522167">ఫోటోను తీయడం ఆపివేయి</translation>
 <translation id="4570032796877367747">ముందువైపు కెమెరా</translation>
@@ -97,7 +91,6 @@
 <translation id="5317780077021120954">సేవ్ చేయండి</translation>
 <translation id="5320594929574852403">ఎడమ వైపునకు కదులుతోంది</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5444515100983837161">డాక్యుమెంట్‌లోని అన్ని అంచులు ఫ్రేమ్ లోపల వచ్చేటట్టుగా ఉంచుతుంది. డాక్యుమెంట్, బ్యాక్‌గ్రౌండ్ రెండూ వేర్వేరు రంగులలో ఉన్నప్పుడు స్కానింగ్ బాగా పని చేస్తుంది.</translation>
 <translation id="5662366948659129155"><ph name="COUNT" />వ పేజీని స్కాన్ చేస్తోంది</translation>
 <translation id="5671277269877808209">చతురస్రం</translation>
 <translation id="5746169159649715125">PDF లాగా సేవ్ చేయండి</translation>
@@ -157,7 +150,6 @@
 <translation id="8428213095426709021">సెట్టింగ్‌లు</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">మైక్రోఫోన్‌ను మ్యూట్‌కు టోగుల్ చేయండి. మ్యూట్ ఆన్‌లో ఉంది</translation>
-<translation id="8712637175834984815">అర్థమైంది</translation>
 <translation id="8730621377337864115">పూర్తయింది</translation>
 <translation id="8732462232047530626">మెటాడేటాను ప్రివ్యూ చేయి</translation>
 <translation id="8815966864175525708">పోర్ట్రెయిట్ ఫోటోను తీసే విధంగా మార్చు</translation>

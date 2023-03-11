@@ -260,6 +260,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6010556343189461180">Se queres recibir actualizacións de Google Chrome no futuro, debes instalar o sistema operativo macOS 10.15 ou unha versión posterior. Este ordenador ten macOS 10.14.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome pecharase agora.}=1{Chrome pecharase en 1 segundo.}other{Chrome pecharase en # segundos.}}</translation>
 <translation id="6022659036123304283">Personaliza Chrome</translation>
+<translation id="6025087594896450715">Google Chrome reiniciarase dentro de <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Pechar</translation>
 <translation id="6070348360322141662">Para obter unha maior seguranza, Google Chrome encriptará os teus datos</translation>
 <translation id="608006075545470555">Engadir un perfil de traballo a este navegador</translation>
@@ -277,6 +278,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6327105987658262776">Non hai ningunha actualización dispoñible.</translation>
 <translation id="6412673304250309937">Comproba enderezos URL cunha lista de sitios non seguros almacenada en Chrome. Se un sitio tenta roubarche o contrasinal ou se descargas un ficheiro daniño, Chrome tamén pode comprobar os enderezos URL, entre os que se inclúen fragmentos de contido das páxinas, a través da función Navegación segura.</translation>
 <translation id="6418662306461808273">Queres cambiar ao perfil existente de Chrome?</translation>
+<translation id="6493527311031785448">Google Chrome está tentando <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6506909944137591434">Chrome necesita permiso de acceso á cámara para crear un mapa 3D do que te rodea</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> (Google Chrome para programadores)</translation>
 <translation id="659498884637196217">No xestor de contrasinais de Google neste dispositivo</translation>
@@ -404,7 +406,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="8862326446509486874">Non tes os dereitos apropiados para efectuar a instalación a nivel do sistema. Tenta volver executar o instalador como administrador.</translation>
 <translation id="8914504000324227558">Reiniciar Chrome</translation>
 <translation id="8922193594870374009">Para enviar un número desde <ph name="ORIGIN" /> ao teu teléfono Android, inicia sesión en Chrome nos dous dispositivos.</translation>
-<translation id="8983720963221508955">Activaches na túa conta a función Navegación segura mellorada. Agora comeza a utilizala en Chrome.</translation>
 <translation id="8986207147630327271">Estás a piques de engadir un perfil de traballo a este navegador e de permitir que o teu administrador controle só o perfil de traballo.</translation>
 <translation id="8989968390305463310">O teu historial de navegación aféctalles aos anuncios que se che mostran e aos intereses estimados que se indican abaixo. Para protexer a túa privacidade, Chrome elimina automaticamente os teus intereses cada mes. A menos que os quites, os intereses poden actualizarse.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Hai unha actualización de Chrome dispoñible}=1{Hai unha actualización de Chrome dispoñible}other{Hai unha actualización de Chrome que leva dispoñible # días}}</translation>

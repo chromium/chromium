@@ -23,6 +23,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="1640672724030957280">Se descarcă…</translation>
 <translation id="1708666629004767631">Chromium este disponibil într-o versiune nouă și mai sigură.</translation>
 <translation id="17264556997921157">Poți să vezi și să elimini subiecte de interes folosite de site-uri pentru a-ți afișa anunțuri. Chromium îți estimează interesele pe baza istoricului tău de navigare recent.</translation>
+<translation id="1745121272106313518">Chromium va reporni în <ph name="REMAINING_TIME" /></translation>
 <translation id="1774152462503052664">Permiteți Chromium să ruleze în fundal</translation>
 <translation id="1779356040007214683">Pentru mai multă siguranță în Chromium, am dezactivat câteva extensii care nu sunt incluse în <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> și care este posibil să fi fost adăugate fără știrea dvs.</translation>
 <translation id="1808667845054772817">Reinstalați Chromium</translation>
@@ -304,7 +305,6 @@ Chromium nu poate recupera setările.</translation>
 <translation id="7561906087460245826">Șterge și datele din Chromium (<ph name="URL" />)</translation>
 <translation id="7582945390259497898">Chromium îți poate estima interesele. Ulterior, un site pe care-l accesezi poate solicita browserului Chromium să vadă interesele tale pentru a personaliza anunțurile pe care le vezi.</translation>
 <translation id="7583399374488819119">Program de instalare <ph name="COMPANY_NAME" /></translation>
-<translation id="7597596667193879455">Ai activat Navigarea sigură îmbunătățită în cont. Acum activeaz-o pentru Chromium.</translation>
 <translation id="761356813943268536">Chromium utilizează camera foto și microfonul.</translation>
 <translation id="7617377681829253106">Chromium a devenit și mai bun</translation>
 <translation id="7649070708921625228">Ajutor</translation>

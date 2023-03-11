@@ -26,6 +26,7 @@
 <translation id="1448064542941920355">Réduire le zoom</translation>
 <translation id="1510341833810331442">Les sites ne sont pas autorisés à enregistrer des données sur votre appareil</translation>
 <translation id="1547123415014299762">Les cookies tiers sont autorisés</translation>
+<translation id="1593426485665524382">Nouvelles actions disponibles en haut de l'écran</translation>
 <translation id="1620510694547887537">Caméra</translation>
 <translation id="1633720957382884102">Sites associés</translation>
 <translation id="1644574205037202324">Historique</translation>
@@ -146,6 +147,7 @@
 <translation id="3628308229821498208">Recherches suggérées</translation>
 <translation id="3636279694100170143">Les sites que vous consultez peuvent confirmer que vous êtes un vrai utilisateur et non un robot</translation>
 <translation id="3649190289964910441">Un site que vous auquel vous accédez peut enregistrer des informations auprès de Chrome pour confirmer que vous êtes un vrai utilisateur. À mesure que vous naviguez, les sites peuvent vérifier auprès de Chrome et à partir des données du premier site auquel vous avez accédé que vous êtes probablement un utilisateur de confiance.</translation>
+<translation id="3721953990244350188">Ignorer et afficher la prochaine action disponible</translation>
 <translation id="3744111561329211289">Synchronisation en arrière-plan</translation>
 <translation id="3763247130972274048">Appuyez deux fois à gauche/droite de la vidéo pour reculer/avancer de 10 s</translation>
 <translation id="3794286421982011626">Un site que vous consultez peut enregistrer des informations sur ce que vous êtes en train de faire afin de fonctionner comme prévu, par exemple pour vous permettre de rester connecté ou pour enregistrer des articles dans votre panier. Les sites enregistrent souvent ces informations temporairement sur votre appareil.</translation>
@@ -193,7 +195,6 @@
 <translation id="4534723447064627427">Pour autoriser <ph name="APP_NAME" /> à accéder au micro, activez également celui-ci dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Désactiver le micro</translation>
 <translation id="4570913071927164677">Détails</translation>
-<translation id="4575264539271661854">Permet de faciliter le zoom avant sur le texte et les images d'un site que vous consultez</translation>
 <translation id="4598549027014564149">En mode navigation privée, les sites ne peuvent pas utiliser vos cookies pour voir votre activité de navigation sur l'ensemble des sites, même sur les sites associés. Votre activité de navigation n'est pas utilisée pour personnaliser les annonces, par exemple. Il est possible que les fonctionnalités de certains sites ne fonctionnent pas.</translation>
 <translation id="4645575059429386691">Géré par ton papa/ta maman</translation>
 <translation id="4670064810192446073">Réalité virtuelle</translation>

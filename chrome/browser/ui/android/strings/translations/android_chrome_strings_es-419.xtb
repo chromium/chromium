@@ -34,6 +34,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="1173894706177603556">Cambiar nombre</translation>
 <translation id="1177863135347784049">Personalizado</translation>
 <translation id="1181037720776840403">Quitar</translation>
+<translation id="1181366777303791449">en <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">¿Quieres usar una contraseña segura?</translation>
 <translation id="1197267115302279827">Mover favoritos</translation>
 <translation id="1201402288615127009">Siguiente</translation>
@@ -42,7 +43,6 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="1204692632633423444">Botón de acción de Chrome: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">Copiar texto del vínculo</translation>
 <translation id="1209206284964581585">Ocultar por el momento</translation>
-<translation id="1226851825267005295">Puedes administrar tus preferencias cuando accedas a Chrome con tu Cuenta de Google.</translation>
 <translation id="1227058898775614466">Historial de navegación</translation>
 <translation id="1231733316453485619">¿Quieres activar la sincronización?</translation>
 <translation id="123724288017357924">Volver a cargar página actual; ignorar contenido en caché</translation>
@@ -166,7 +166,6 @@ Si borras el historial de navegación por completo o de un sitio específico, ta
 <translation id="1928696683969751773">Actualizaciones</translation>
 <translation id="19288952978244135">Vuelve a abrir Chrome.</translation>
 <translation id="1933845786846280168">Pestaña seleccionada</translation>
-<translation id="193571872656840963">Dale las gracias a este creador</translation>
 <translation id="1943432128510653496">Guardar contraseñas</translation>
 <translation id="1952172573699511566">Los sitios web mostrarán texto en tu idioma preferido, cuando sea posible.</translation>
 <translation id="1959679933317802873">En espera de contenido</translation>
@@ -202,7 +201,6 @@ Si borras el historial de navegación por completo o de un sitio específico, ta
 <translation id="2122601567107267586">No se pudo abrir la app</translation>
 <translation id="2132122640199389833">Quitar todos los dispositivos vinculados</translation>
 <translation id="213279576345780926">Pestaña <ph name="TAB_TITLE" /> cerrada</translation>
-<translation id="2134927169889348449">Si usas Chrome, aceptas las <ph name="BEGIN_TOS_LINK" />Condiciones del Servicio de Google<ph name="END_TOS_LINK" /> y las <ph name="BEGIN_ATOS_LINK" />Condiciones del Servicio Adicionales de Google Chrome y Chrome OS<ph name="END_ATOS_LINK" />.</translation>
 <translation id="2139186145475833000">Agregar a la pantalla principal</translation>
 <translation id="2141396931810938595">Según tu uso</translation>
 <translation id="214888715418183969">Elige lo que quieres compartir con Chrome. Las métricas que compartas se usarán para ayudar a mejorar las funciones, el rendimiento y la estabilidad de Chrome.</translation>
@@ -555,7 +553,6 @@ Los tokens de estado privado mejoran la privacidad en la Web y no pueden usarse 
 <translation id="409109920254068737">Puedes usar esta tablet para acceder en el dispositivo que muestra este código QR.</translation>
 <translation id="4095146165863963773">¿Borrar datos de app?</translation>
 <translation id="4096227151372679484">El flujo para guardar favoritos está abierto a media altura</translation>
-<translation id="4099578267706723511">Envía las estadísticas de uso y los informes de fallos a Google para ayudarnos a mejorar Chrome.</translation>
 <translation id="4101475238162928417">Utiliza la función de sincronización para acceder a tus contraseñas, favoritos y más en tus otros dispositivos</translation>
 <translation id="410351446219883937">Reproducción automática</translation>
 <translation id="4106587138345390261">Chrome está explorando funciones nuevas que les permiten a los sitios ofrecer la misma experiencia de navegación usando menos información personal.</translation>
@@ -593,7 +590,6 @@ Los tokens de estado privado mejoran la privacidad en la Web y no pueden usarse 
 <translation id="4269820728363426813">Copiar dirección del vínculo</translation>
 <translation id="4283102315569707115">¿Deseas solicitar sitios de escritorio de forma predeterminada?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Activa el bloqueo de pantalla en la configuración de Android<ph name="END_LINK" />.</translation>
-<translation id="4293476595220860475">Si usas Chrome, aceptas las <ph name="BEGIN_TOS_LINK" />Condiciones del Servicio de Google<ph name="END_TOS_LINK" /> y las <ph name="BEGIN_ATOS_LINK" />Condiciones del Servicio Adicionales de Google Chrome y Chrome OS<ph name="END_ATOS_LINK" />. También se aplica la <ph name="BEGIN_PRIVACY_LINK" />Política de Privacidad<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="4296252229500326964">Nueva pestaña de incógnito</translation>
 <translation id="4298388696830689168">Sitios vinculados</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -766,7 +762,6 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="5161254044473106830">Se requiere un título</translation>
 <translation id="5170568018924773124">Mostrar en carpeta</translation>
 <translation id="5171045022955879922">Buscar o escribir URL</translation>
-<translation id="517734441743343109">Si continúas, aceptas las <ph name="BEGIN_TOS_LINK" />Condiciones del Servicio<ph name="END_TOS_LINK" /> y la <ph name="BEGIN_PRIVACY_LINK" />Política de Privacidad<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="5184329579814168207">Abrir en Chrome</translation>
 <translation id="5191251636205085390">Conoce y domina nuevas tecnologías diseñadas para reemplazar cookies de terceros.</translation>
 <translation id="5193988420012215838">Se copió en tu portapapeles</translation>

@@ -81,6 +81,7 @@ Používate vyhľadávač <ph name="DSE_NAME" />. Prečítajte si jeho pokyny, a
 <translation id="149095475893949513">Tento web sa pokúša stiahnuť profil konfigurácie.</translation>
 <translation id="1491277525950327607">Nastavenie môžete prepnúť dvojitým klepnutím</translation>
 <translation id="1492417797159476138">Toto používateľské meno ste pre tento web už uložili</translation>
+<translation id="1497590942294823549">Ponuka → Správca hesiel</translation>
 <translation id="1498283581832036924">Účet na webe <ph name="WEBSITE" /> odstránený nebude.</translation>
 <translation id="1506063256525392513">Umožňuje vytvárať a nahrávať fotky, ako aj skenovať QR kódy</translation>
 <translation id="1509486075633541495">Prihláste sa na webe</translation>
@@ -242,6 +243,7 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 <translation id="271033894570825754">Nové</translation>
 <translation id="2712127207578915686">Súbor sa nedá otvoriť</translation>
 <translation id="2718352093833049315">Len s Wi‑Fi</translation>
+<translation id="2737716090799520623">Keď sa prihlásite do Chromu, heslá sa budú ukladať do vášho účtu Google (<ph name="ACCOUNT" />). Ak chcete túto možnosť vypnúť, <ph name="BEGIN_LINK" />prejdite do nastavení<ph name="END_LINK" />.</translation>
 <translation id="2747003861858887689">Predchádzajúce pole</translation>
 <translation id="2749231692441336879">Sledujete <ph name="CHANNEL_NAME" /></translation>
 <translation id="2764831210418622012">práve teraz</translation>
@@ -843,6 +845,7 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="6801927553864092214">Ak chcete prehliadať v súkromí, otvorte kartu inkognito</translation>
 <translation id="6807889908376551050">Zobraziť všetky...</translation>
 <translation id="681368974849482173">Položka bola vytvorená</translation>
+<translation id="6822587385560699678">Keď je táto funkcia zapnutá, heslá sa ukladajú do účtu <ph name="ACCOUNT" />. Keď je vypnutá, heslá sa ukladajú iba do tohto zariadenia.</translation>
 <translation id="683022620450280906">Uložené heslá môžete používať v ľubovoľnom zariadení. Sú uložené v správcovi hesiel Google v účte <ph name="EMAIL" />.</translation>
 <translation id="6831043979455480757">Preložiť</translation>
 <translation id="6842136130964845393">Ak chcete mať neustály prístup k svojim uloženým heslám, overte svoju totožnosť</translation>

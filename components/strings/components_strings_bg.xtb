@@ -376,6 +376,7 @@
 <translation id="1803351196216024260">Може да поиска разрешение да използва микрофона ви</translation>
 <translation id="1807246157184219062">Светло</translation>
 <translation id="1807528111851433570">Първи лист</translation>
+<translation id="180991881384371158">Кодът за проверка се намира на гърба на картата ви. Това са последните 3 цифри горе вдясно на полето за подпис.</translation>
 <translation id="181000283860817563">Проследяване на цените в няколко сайта</translation>
 <translation id="1810391395243432441">Защита на паролите с опцията ви за заключване на екрана</translation>
 <translation id="1812527064848182527">хоризонтална ориентация</translation>
@@ -506,6 +507,7 @@
 <translation id="2149968176347646218">Връзката не е защитена</translation>
 <translation id="2153609454945889823">Да се инсталират ли услугите за Google Play за AR?</translation>
 <translation id="2154484045852737596">Редактиране на картата</translation>
+<translation id="2154739667870063220">Рестартиране</translation>
 <translation id="2155260325161282517">5 x 7 инча</translation>
 <translation id="2157640075051554492">Известия за следене на цени</translation>
 <translation id="2161656808144014275">Текст</translation>
@@ -640,6 +642,7 @@
 <translation id="2521736961081452453">Създаване на формуляр</translation>
 <translation id="2523886232349826891">Запазено само на това устройство</translation>
 <translation id="2524461107774643265">Добавяне на още информация</translation>
+<translation id="2527451058878391043">Кодът за проверка се намира върху лицевата страна на картата ви. Това е 4-цифреният код горе вдясно над номера на картата.</translation>
 <translation id="2529899080962247600">Това поле не трябва да съдържа повече от <ph name="MAX_ITEMS_LIMIT" /> записа. Следващите се пренебрегват.</translation>
 <translation id="253493526287553278">Преглед на подробностите за промоционалния код</translation>
 <translation id="2535585790302968248">Отворете нов раздел в режим „инкогнито“, за да сърфирате частно</translation>
@@ -894,6 +897,7 @@
 <translation id="3215092763954878852">WebAuthn не можа да се използва</translation>
 <translation id="3216313131063488104">Блус</translation>
 <translation id="3218181027817787318">Относително</translation>
+<translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Изисква се актуализация сега}=2{Изисква се актуализация до утре}other{Изисква се актуализация в рамките на # дни}}</translation>
 <translation id="3223287115535306850">Индикатор за стартиращо се приложение</translation>
 <translation id="3223425961342298674">Достъпът до местоположението не е разрешен</translation>
 <translation id="3225919329040284222">Сървърът предостави сертификат, който не съответства на вградените очаквания. Те са включени за определени уебсайтове с голяма степен на сигурност, за да ви предпазим.</translation>
@@ -1378,6 +1382,7 @@
 <translation id="4350629523305688469">Мултифункционална тава</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> иска да сканира за устройства с Bluetooth в близост. Намерени са следните:</translation>
 <translation id="4351175281479794167">Въвеждане на код за потвърждение</translation>
+<translation id="4355383636893709732">Актуализация на ChromeOS за приложения за Android</translation>
 <translation id="4356973930735388585">Извършители на атака, използващи този сайт, може да опитат да инсталират опасни програми на компютъра ви, които крадат или изтриват информацията ви (например снимки, пароли, съобщения и номера на кредитни карти).</translation>
 <translation id="4358059973562876591">Прилагането на посочените от вас шаблони не е възможно поради грешка в правилото DnsOverHttpsMode.</translation>
 <translation id="4358461427845829800">Управление на начините на плащане...</translation>
@@ -1758,6 +1763,7 @@
 <translation id="5288393065350884210">Счетоводство и одит</translation>
 <translation id="5288808348893593856">Връзката със сайта е защитена, освен ако Chrome не ви съобщи друго.</translation>
 <translation id="5289384342738547352">Обработване на няколко документа</translation>
+<translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Изисква се актуализация днес}=2{Изисква се актуализация до утре}other{Изисква се актуализация в рамките на # дни}}</translation>
 <translation id="5293919335876685914">Купета</translation>
 <translation id="5296589789433599000">Готварство и рецепти</translation>
 <translation id="5299298092464848405">Грешка при синтактичния анализ на правилото</translation>
@@ -1952,6 +1958,7 @@
 <translation id="5786044859038896871">Искате ли да се попълнят данните за кредитната ви карта?</translation>
 <translation id="578633867165174378">Chrome разкри паролата, която току-що използвахте, при нарушение на сигурността на данните. Препоръчваме ви да я промените сега.</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="580241730938216256">Стартиране на актуализирането</translation>
 <translation id="5803412860119678065">Искате ли да се попълнят данните за <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Разрешения</translation>
 <translation id="5808435672482059465">Преглед на историята ви в Chrome</translation>
@@ -2112,6 +2119,7 @@
 <translation id="6218753634732582820">Адресът да се премахне ли от Chromium?</translation>
 <translation id="622039917539443112">Паралелно сгъване</translation>
 <translation id="6221345481584921695">Google Безопасно сърфиране наскоро <ph name="BEGIN_LINK" />откри злонамерен софтуер<ph name="END_LINK" /> на <ph name="SITE" />. Уебсайтовете, които обикновено са надеждни, понякога се заразяват с опасен софтуер. Въпросното съдържание произлиза от <ph name="SUBRESOURCE_HOST" /> – известен разпространител на злонамерени програми.</translation>
+<translation id="6221892641068781024">Опростен изглед</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да персонализирате инструментите за достъпност в настройките на Chrome</translation>
 <translation id="6229649258872345286">Семейни пътувания</translation>
 <translation id="6232271601416750929">Натурални козметични продукти</translation>
@@ -2171,6 +2179,7 @@
 <translation id="6366710531182496394">Двуточково телбодиране отляво</translation>
 <translation id="6367196786591004737">Изтриване на записа</translation>
 <translation id="6370022303958842211">Действия, свързани с достъпа до устройството, като например влизания (включително причини за неуспешни опити за вход), излизания, заключвания и отключвания.</translation>
+<translation id="6374469231428023295">Нов опит</translation>
 <translation id="6374865374745447009">управление на прозорците</translation>
 <translation id="6377268785556383139">1 резултат за „<ph name="SEARCH_TEXT" />“</translation>
 <translation id="6380497234672085559">A0</translation>
@@ -2481,6 +2490,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> и още <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> и още <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">лавандулово</translation>
 <translation id="7156870133441232244">Сървърът трябва да се надстрои до TLS 1.2 или по-нова версия.</translation>
+<translation id="7160999678034985039">Моля, запазете работата си и стартирайте актуализацията, когато сте готови.</translation>
 <translation id="7163295244162773898">{0,plural, =1{Да се копира ли поверителният файл?}other{Да се копират ли поверителните файлове?}}</translation>
 <translation id="717330890047184534">Идентификатор в GAIA:</translation>
 <translation id="7174545416324379297">Обединени стойности</translation>
@@ -2728,6 +2738,7 @@
 <translation id="7687305263118037187">Времето за изчакване за повторен опит изтече</translation>
 <translation id="7690647519407127574">Oufuku Hagaki Postcard</translation>
 <translation id="7693583928066320343">Редът на страниците е получен</translation>
+<translation id="769424100851389104">Стартиране на актуализирането сега</translation>
 <translation id="7696089921647603491">Класически рок и песни от миналото</translation>
 <translation id="769721561045429135">В момента имате карти, които могат да се използват само на това устройство. Кликнете върху „Напред“, за да ги прегледате.</translation>
 <translation id="7698864304447945242">Да се актуализират ли услугите за Google Play за AR?</translation>
@@ -2752,6 +2763,7 @@
 <translation id="774634243536837715">Блокирахме опасно съдържание.</translation>
 <translation id="7751971323486164747">Персонализиране на шрифтовете в Chrome и размера им</translation>
 <translation id="7752995774971033316">Не се управлява</translation>
+<translation id="7754587126786572336">Разделите и приложенията ви за Chrome ще се затворят, когато актуализацията започне</translation>
 <translation id="7755287808199759310">Родителят ви може да го отблокира за вас</translation>
 <translation id="7755624218968747854">Основна ролка</translation>
 <translation id="7758069387465995638">Възможно е връзката да е блокирана от защитна стена или антивирусен софтуер.</translation>
@@ -2916,6 +2928,7 @@
 <translation id="8186706823560132848">Софтуер</translation>
 <translation id="8190193880870196235">Управлява се от разширение</translation>
 <translation id="8194797478851900357">&amp;Отмяна на преместването</translation>
+<translation id="8200772114523450471">Възобновяване</translation>
 <translation id="8201077131113104583">Невалиден URL адрес за актуализиране на разширението с идентификационен номер <ph name="EXTENSION_ID" />.</translation>
 <translation id="8202097416529803614">Обобщена информация за поръчката</translation>
 <translation id="8202370299023114387">Конфликт</translation>
@@ -3213,6 +3226,7 @@
 <translation id="8963117664422609631">Към настройките за сайта</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Предложения:<ph name="MARKUP_2" />Уверете се, че имате връзка за данни.<ph name="MARKUP_3" />Презаредете тази уеб страница по-късно.<ph name="MARKUP_4" />Проверете въведения от вас адрес.<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">Запазване на картата</translation>
+<translation id="8970887620466824814">Нещо се обърка.</translation>
 <translation id="8971063699422889582">Сертификатът на сървъра е с изтекла валидност.</translation>
 <translation id="8975012916872825179">Включва информация като телефонни номера, имейл адреси и адреси за доставка</translation>
 <translation id="8975263830901772334">Имената на отпечатваните от вас файлове</translation>

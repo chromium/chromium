@@ -27,6 +27,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="1774152462503052664">Permitir que o Chromium seja executado em segundo plano</translation>
 <translation id="1779356040007214683">Para tornar o Chromium mais seguro, desativámos algumas extensões que não estão listadas na <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> e é possível que tenham sido adicionadas sem o seu conhecimento.</translation>
 <translation id="1808667845054772817">Reinstalar Chromium</translation>
+<translation id="1820835682567584003">O Chromium está a tentar <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="185970820835152459">Pode gerir as suas Contas Google com sessão iniciada. As suas Contas Google são utilizadas para o navegador Chromium, a Play Store, o Gmail e muito mais. Se pretender adicionar uma conta para outra pessoa, como um membro da família, adicione uma nova pessoa ao seu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="1863308913976887472">Os sites podem armazenar informações no Chromium sobre os seus interesses. Por exemplo, se visitar um site para comprar ténis para uma maratona, o site pode definir "correr maratonas" como o seu interesse. Posteriormente, se visitar um site diferente para se inscrever numa corrida, esse site pode mostrar-lhe um anúncio de ténis de corrida com base nos seus interesses.</translation>
 <translation id="1881322772814446296">Está a iniciar sessão com uma conta gerida e a permitir que o gestor controle o seu perfil do Chromium. Os seus dados do Chromium, como aplicações, marcadores, histórico, palavras-passe e outras definições, ficarão associados definitivamente a <ph name="USER_NAME" />. Poderá eliminar estes dados através do Painel de Controlo das Contas Google, mas não poderá associá-los a outra conta. Opcionalmente, pode criar um perfil novo para manter os seus dados atuais do Chromium em separado. <ph name="LEARN_MORE" /></translation>
@@ -305,7 +306,6 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="7561906087460245826">Limpar também os dados do Chromium (<ph name="URL" />)</translation>
 <translation id="7582945390259497898">O Chromium pode estimar os seus interesses. Posteriormente, um site que visitar pode pedir ao Chromium para ver os seus interesses para personalizar os anúncios que vê.</translation>
 <translation id="7583399374488819119">Instalador do <ph name="COMPANY_NAME" /></translation>
-<translation id="7597596667193879455">Ativou a Navegação segura melhorada na sua conta. Agora, ative-a para o Chromium.</translation>
 <translation id="761356813943268536">O Chromium está a utilizar a câmara e o microfone.</translation>
 <translation id="7617377681829253106">O Chromium está ainda melhor</translation>
 <translation id="7649070708921625228">Ajuda</translation>

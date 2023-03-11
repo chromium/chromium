@@ -8,9 +8,6 @@
 <translation id="1175958423215084756">Выяўлена спасылка. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Старонка <ph name="PAGE_NUMBER" /> выдалена</translation>
 <translation id="1258009455399840361">Павярнуць на 90 градусаў па гадзіннікавай стрэлцы</translation>
-<translation id="1300209025925956156">Сканіраванне дакумента</translation>
-<translation id="1309250603447638106">Ідзе спампоўванне абнаўленняў для функцыі сканіравання дакументаў</translation>
-<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Каб перайсці да іх, націсніце кнопку Пошук + стрэлка ўлева.</translation>
 <translation id="1417314334557041815">Рэдагаваць старонку <ph name="INDEX" /></translation>
 <translation id="1467231725790366244">Камера "<ph name="CAMERA" />" адключана.</translation>
 <translation id="1473110567575736769">Таймер на 3 секунды</translation>
@@ -24,7 +21,6 @@
 <translation id="1664224225747386870">Даныя не запісаны</translation>
 <translation id="1838104802459806957">Нахіліць уверх</translation>
 <translation id="1843105061469674856">Сканіраваць яшчэ адну старонку</translation>
-<translation id="1851169887664797861">Дадатковыя элементы кіравання камерай даступныя</translation>
 <translation id="1851616744363735765">ПРЫПЫНЕНА</translation>
 <translation id="1899697626337024495">Раздзяляльнасць фота</translation>
 <translation id="1925845977604399247">Перайсці ў галерэю</translation>
@@ -49,7 +45,6 @@
 <translation id="2761536921376153655">Тып праверкі</translation>
 <translation id="28682968802727151">Перадпрагляд у рэжыме люстэрка</translation>
 <translation id="2879583609344924966">Камера "<ph name="CAMERA" />" падключана.</translation>
-<translation id="2904654629665923749">Сканіраванне дакументаў даступнае</translation>
 <translation id="3067436040345934772">Зрушыць управа</translation>
 <translation id="3081586908890909590">Пераключыцца на здымку відэа</translation>
 <translation id="313467653172006084">30 кадр/c</translation>
@@ -74,7 +69,6 @@
 <translation id="4269820728363426813">Капіраваць спасылку</translation>
 <translation id="4281620174117014503">Сярэдняя раздзяляльнасць</translation>
 <translation id="428234092390943511">Мініяцюра старонкі</translation>
-<translation id="4340659173795395806">Цяпер вы можаце ствараць PDF-файлы з мноствам старонак</translation>
 <translation id="4383571725254449280">Журналы прадукцыйнасці друку</translation>
 <translation id="4445542136948522167">Спыніць фотаздымку</translation>
 <translation id="4570032796877367747">Пярэдняя камера</translation>
@@ -97,7 +91,6 @@
 <translation id="5317780077021120954">Захаваць</translation>
 <translation id="5320594929574852403">Перамяшчаецца ўлева</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5444515100983837161">Памясціце ўсе краі дакумента ўнутр рамкі. Якасць сканіравання будзе лепшай, калі дакумент і фон, на якім ён знаходзіцца, маюць розны колер.</translation>
 <translation id="5662366948659129155">Сканіруецца старонка <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Квадрат</translation>
 <translation id="5746169159649715125">Захаваць як PDF</translation>
@@ -157,7 +150,6 @@
 <translation id="8428213095426709021">Налады</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Уключыць або выключыць мікрафон. Мікрафон выключаны</translation>
-<translation id="8712637175834984815">Зразумела</translation>
 <translation id="8730621377337864115">Гатова</translation>
 <translation id="8732462232047530626">Выканаць перадпрагляд метаданых</translation>
 <translation id="8815966864175525708">Пераключыцца на здымку партрэтнага фота</translation>

@@ -100,7 +100,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1420408895951708260">Activar/desactivar Luz nocturna: <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Accede ao contido multimedia e ás fotos recentes do teu teléfono desde o dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">Si</translation>
-<translation id="1447641497144572814">Inicio do protector de pantalla</translation>
 <translation id="1455242230282523554">Mostrar a configuración do idioma</translation>
 <translation id="1460620680449458626">O volume está silenciado.</translation>
 <translation id="14648076227129703">Desta forma, poderán acceder á cámara <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> e todas as aplicacións e sitios web con permiso de acceso á cámara</translation>
@@ -126,6 +125,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1550523713251050646">Fai clic para ver máis opcións</translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="1576623706766186887">Afasta o zoom cando a lupa está activada</translation>
+<translation id="1586324912145647027">Vai do escritorio 1 ao 8</translation>
 <translation id="1589090746204042747">Acceder a toda a túa actividade nesta sesión</translation>
 <translation id="1610778689852195798">"Desfai"</translation>
 <translation id="1611993646327628135">Activado</translation>
@@ -514,6 +514,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3631369015426612114">Permitir notificacións das seguintes fontes:</translation>
 <translation id="3633097874324966332">Abre a configuración de Bluetooth para vincular o teu dispositivo</translation>
 <translation id="3638400994746983214">Activar/desactivar a pantalla de privacidade. <ph name="STATE_TEXT" />.</translation>
+<translation id="3649256019230929621">Minimizar ventá</translation>
 <translation id="3649505501900178324">Actualización pendente</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -589,6 +590,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4021716437419160885">Desprazarse cara abaixo</translation>
 <translation id="4022497978915111141">Bloquea o dispositivo</translation>
 <translation id="4024840464866786680">Se esqueciches o PIN e o contrasinal ou cambiaches o da Conta de Google recentemente, proba a recuperar este usuario.</translation>
+<translation id="4026843240379844265">Move a ventá activa entre as pantallas</translation>
 <translation id="4028481283645788203">É necesario escribir o contrasinal para obter seguranza adicional</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Estás compartindo a pantalla</translation>
@@ -913,6 +915,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5689633613396158040">Luz nocturna fai que sexa máis fácil mirar a pantalla ou ler con pouca luz. Toca para cambiar a hora á que se activa a función mencionada ou para desactivala completamente.</translation>
 <translation id="5691772641933328258">Non se recoñeceu a impresión dixital</translation>
 <translation id="5693255400847650006">Estase utilizando o micrófono</translation>
+<translation id="5699366815052349604">Asigna a ventá activa a todos os escritorios</translation>
 <translation id="570390244361237317">Todas as aplicacións. Desprázate coas teclas de frecha para acceder a todas as aplicacións</translation>
 <translation id="5707775774148071965">O teu dispositivo admite unha velocidade de datos maior que o cable. O rendemento do dispositivo podería verse limitado.</translation>
 <translation id="5710450975648804523">O modo Non molestar está activado</translation>
@@ -1553,6 +1556,7 @@ Nova instalación</translation>
 <translation id="9034924485347205037">Ficheiros de Linux</translation>
 <translation id="9047624247355796468">Abrir a configuración de <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Contraer notificación</translation>
+<translation id="906458777597946297">Maximizar ventá</translation>
 <translation id="9065203028668620118">Editar</translation>
 <translation id="9070640332319875144">Configuración do Asistente</translation>
 <translation id="9072519059834302790">Tempo que falta ata que a batería estea baleira: <ph name="TIME_LEFT" />.</translation>

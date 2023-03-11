@@ -34,6 +34,7 @@
 <translation id="1173894706177603556">重命名</translation>
 <translation id="1177863135347784049">自定义</translation>
 <translation id="1181037720776840403">移除</translation>
+<translation id="1181366777303791449">位于：<ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">使用安全系数高的密码？</translation>
 <translation id="1197267115302279827">移动书签</translation>
 <translation id="1201402288615127009">下一步</translation>
@@ -42,7 +43,6 @@
 <translation id="1204692632633423444">Chrome 操作按钮：<ph name="ACTION" /></translation>
 <translation id="1206892813135768548">复制链接文字</translation>
 <translation id="1209206284964581585">暂时隐藏</translation>
-<translation id="1226851825267005295">使用 Google 帐号登录 Chrome 后，您可以管理自己的偏好设置。</translation>
 <translation id="1227058898775614466">导航历史记录</translation>
 <translation id="1231733316453485619">开启同步功能？</translation>
 <translation id="123724288017357924">重新加载当前网页（忽略缓存的内容）</translation>
@@ -166,7 +166,6 @@
 <translation id="1928696683969751773">更新</translation>
 <translation id="19288952978244135">重新打开 Chrome。</translation>
 <translation id="1933845786846280168">所选的标签页</translation>
-<translation id="193571872656840963">向这位创作者致谢</translation>
 <translation id="1943432128510653496">保存密码</translation>
 <translation id="1952172573699511566">网站将尽可能以您的首选语言显示文字。</translation>
 <translation id="1959679933317802873">正在等待内容</translation>
@@ -202,7 +201,6 @@
 <translation id="2122601567107267586">无法打开此应用</translation>
 <translation id="2132122640199389833">移除所有已关联的设备</translation>
 <translation id="213279576345780926">已关闭“<ph name="TAB_TITLE" />”</translation>
-<translation id="2134927169889348449">使用 Chrome 即表示您同意接受 <ph name="BEGIN_TOS_LINK" />Google 服务条款<ph name="END_TOS_LINK" />以及 <ph name="BEGIN_ATOS_LINK" />Google Chrome 和 Chrome 操作系统附加服务条款<ph name="END_ATOS_LINK" />。</translation>
 <translation id="2139186145475833000">添加到主屏幕</translation>
 <translation id="2141396931810938595">根据您的使用情况</translation>
 <translation id="214888715418183969">选择您要与 Chrome 共享哪些数据。您共享的指标将有助于我们改进 Chrome 的功能、性能和稳定性。</translation>
@@ -555,7 +553,6 @@
 <translation id="409109920254068737">您可以使用此平板电脑在显示该二维码的设备上登录。</translation>
 <translation id="4095146165863963773">要删除应用数据吗？</translation>
 <translation id="4096227151372679484">书签保存流程已半屏打开</translation>
-<translation id="4099578267706723511">将使用情况统计信息和崩溃报告发送给 Google，帮助我们完善 Chrome。</translation>
 <translation id="4101475238162928417">同步即可获取您在其他设备上的密码、书签和其他设置</translation>
 <translation id="410351446219883937">自动播放</translation>
 <translation id="4106587138345390261">Chrome 团队正在探索各种新功能，以便让网站既能减少使用您的信息，又能提供同样出色的浏览体验</translation>
@@ -593,7 +590,6 @@
 <translation id="4269820728363426813">复制链接地址</translation>
 <translation id="4283102315569707115">默认请求访问桌面版网站？</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />在 Android 设置中开启“屏幕锁定”功能<ph name="END_LINK" /></translation>
-<translation id="4293476595220860475">使用 Chrome 即表示您同意接受 <ph name="BEGIN_TOS_LINK" />Google 服务条款<ph name="END_TOS_LINK" />以及 <ph name="BEGIN_ATOS_LINK" />Google Chrome 和 Chrome 操作系统附加服务条款<ph name="END_ATOS_LINK" />。您也必须遵守<ph name="BEGIN_PRIVACY_LINK" />隐私权政策<ph name="END_PRIVACY_LINK" />。</translation>
 <translation id="4296252229500326964">打开新的无痕式标签页</translation>
 <translation id="4298388696830689168">已关联的网站</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -766,7 +762,6 @@
 <translation id="5161254044473106830">必须提供标题</translation>
 <translation id="5170568018924773124">在文件夹中显示</translation>
 <translation id="5171045022955879922">搜索或输入网址</translation>
-<translation id="517734441743343109">继续操作即表示您同意遵守<ph name="BEGIN_TOS_LINK" />服务条款<ph name="END_TOS_LINK" />和<ph name="BEGIN_PRIVACY_LINK" />隐私权政策<ph name="END_PRIVACY_LINK" />。</translation>
 <translation id="5184329579814168207">在 Chrome 中打开</translation>
 <translation id="5191251636205085390">了解和掌控旨在取代第三方 Cookie 的新技术</translation>
 <translation id="5193988420012215838">已复制到剪贴板</translation>

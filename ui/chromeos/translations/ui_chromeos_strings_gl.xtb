@@ -84,6 +84,7 @@
 <translation id="1722487484194605434">Comprimindo <ph name="NUMBER_OF_ITEMS" /> elementos…</translation>
 <translation id="1722687688096767818">Engadindo perfil…</translation>
 <translation id="1726100011689679555">Servidores de nomes</translation>
+<translation id="1727562178154619254">Todo listo para sincronizar os ficheiros</translation>
 <translation id="1729953886957086472">Alemán (Alemaña)</translation>
 <translation id="1730235522912993863">Chinés (Cangjie)</translation>
 <translation id="1731889557567069540">Copiáronse <ph name="NUMBER_OF_ITEMS" /> elementos.</translation>
@@ -704,6 +705,7 @@
 <translation id="6732801395666424405">Non se poden cargar os certificados</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">Compartir cartafol con Bruschetta</translation>
+<translation id="6750737795876287924">Directorio actual</translation>
 <translation id="6751256176799620176">Seleccionouse 1 cartafol</translation>
 <translation id="6755827872271341378">Dispositivo Chrome OS Flex</translation>
 <translation id="6790428901817661496">Reproducir</translation>
@@ -741,7 +743,6 @@
 <translation id="6973630695168034713">Cartafoles</translation>
 <translation id="6976795442547527108">León</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979737339423435258">Desde sempre</translation>
 <translation id="6989942356279143254">Sueco</translation>
 <translation id="6990081529015358884">Quedaches sen espazo</translation>
 <translation id="6993826899923627728">Estes elementos están na papeleira</translation>
@@ -797,7 +798,6 @@
 <translation id="7458955835361612701">Non hai imaxes recentes</translation>
 <translation id="7460898608667578234">Ucraíno</translation>
 <translation id="7469894403370665791">Conectarse automaticamente a esta rede</translation>
-<translation id="7481358317100446445">Listo</translation>
 <translation id="7486315294984620427">Para soltar ficheiros en Parallels Desktop, estes deben copiarse en Ficheiros de Windows.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malabar (fonético)</translation>

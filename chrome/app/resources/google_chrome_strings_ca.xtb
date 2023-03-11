@@ -253,6 +253,7 @@
 <translation id="6010556343189461180">Per obtenir actualitzacions de Google Chrome en un futur, necessitaràs macOS 10.15 o una versió posterior. Aquest ordinador utilitza macOS 10.14.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome es tancarà ara.}=1{Chrome es tancarà d'aquí a 1 segon.}other{Chrome es tancarà d'aquí a # segons.}}</translation>
 <translation id="6022659036123304283">Personalitza Chrome</translation>
+<translation id="6025087594896450715">Google Chrome es reiniciarà d'aquí a <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Tanca</translation>
 <translation id="6070348360322141662">Per a més seguretat, Google Chrome encriptarà les teves dades</translation>
 <translation id="608006075545470555">Afegeix un perfil de treball a aquest navegador</translation>
@@ -270,6 +271,7 @@
 <translation id="6327105987658262776">No hi ha cap actualització disponible.</translation>
 <translation id="6412673304250309937">Compara els URL amb una llista de llocs web no segurs emmagatzemada a Chrome. Si un lloc web prova de robar-te la contrasenya o si baixes un fitxer maliciós, és possible que Chrome també n'enviï els URL, inclosos fragments de contingut de les pàgines, a Navegació segura.</translation>
 <translation id="6418662306461808273">Vols canviar al perfil de Chrome existent?</translation>
+<translation id="6493527311031785448">Google Chrome està intentant <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6506909944137591434">Chrome necessita permís d'accés a la càmera per poder crear un mapa en 3D del teu entorn</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="659498884637196217">Al gestor de contrasenyes de Google en aquest dispositiu</translation>
@@ -397,7 +399,6 @@
 <translation id="8862326446509486874">No disposeu dels drets necessaris per instal·lar aplicacions al sistema. Proveu de tornar a executar l'instal·lador com a administrador.</translation>
 <translation id="8914504000324227558">Torna a iniciar Chrome</translation>
 <translation id="8922193594870374009">Per enviar un número del dispositiu <ph name="ORIGIN" /> al teu telèfon Android, inicia la sessió a Chrome en tots dos dispositius.</translation>
-<translation id="8983720963221508955">Has activat Navegació segura millorada al teu compte. Ara, activa-la a Chrome.</translation>
 <translation id="8986207147630327271">Estàs afegint un perfil de treball a aquest navegador i donant control al teu administrador únicament sobre el perfil de treball.</translation>
 <translation id="8989968390305463310">El teu historial de navegació afecta els anuncis que veus i les estimacions d'interessos que es mostren més avall. Amb la finalitat de protegir la teva privadesa, Chrome suprimeix automàticament els interessos de manera contínua cada mes, i es poden actualitzar tret que els suprimeixis.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Hi ha una actualització de Chrome disponible}=1{Hi ha una actualització de Chrome disponible}other{Fa # dies que hi ha una actualització de Chrome disponible}}</translation>

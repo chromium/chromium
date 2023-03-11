@@ -261,6 +261,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="6010556343189461180">Du behöver macOS 10.15 eller senare för att få kommande uppdateringar av Google Chrome. På den här datorn används macOS 10.14.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome stängs nu.}=1{Chrome stängs om 1 sekund.}other{Chrome stängs om # sekunder.}}</translation>
 <translation id="6022659036123304283">Anpassa Chrome</translation>
+<translation id="6025087594896450715">Google Chrome startas om om <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Stäng</translation>
 <translation id="6070348360322141662">Din data krypteras i Google Chrome för att öka säkerheten</translation>
 <translation id="608006075545470555">Lägg till en jobbprofil i den här webbläsaren</translation>
@@ -278,6 +279,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="6327105987658262776">Det finns ingen tillgänglig uppdatering.</translation>
 <translation id="6412673304250309937">Kontrollera webbadresser mot en lista över osäkra webbplatser i Chrome. Om du utsätts för försök att kapa ditt lösenord på en webbplats eller om du laddar ned en skadlig fil kan webbadresserna skickas från Chrome till Säker webbsökning tillsammans med delar av sidinnehållet.</translation>
 <translation id="6418662306461808273">Vill du byta till en befintlig Chrome-profil?</translation>
+<translation id="6493527311031785448">Google Chrome försöker att <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6506909944137591434">Du behöver ge Chrome kamerabehörighet om du vill skapa en 3D-karta över dina omgivningar</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="659498884637196217">I Google Lösenordshantering på den här enheten</translation>
@@ -405,7 +407,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="8862326446509486874">Du har inte behörighet att göra en installation på systemnivå. Försök köra installationsprogrammet igen som administratör.</translation>
 <translation id="8914504000324227558">Starta om Chrome</translation>
 <translation id="8922193594870374009">Logga in på Chrome på båda enheterna om du vill skicka ett nummer från <ph name="ORIGIN" /> till Android-telefonen.</translation>
-<translation id="8983720963221508955">Du har aktiverat Förbättrad säker webbsökning i kontot. Skaffa funktionen även för Chrome.</translation>
 <translation id="8986207147630327271">Du lägger till en jobbprofil i den här webbläsaren och ger administratören kontrollen enbart över jobbprofilen.</translation>
 <translation id="8989968390305463310">Webbhistoriken påverkar vilka annonser som visas och vilka intressen som du uppskattas ha. Av integritetsskäl raderas dina intressen automatiskt och löpande varje månad. Intressen kan förnyas om du inte tar bort dem.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Det finns en uppdatering för Chrome}=1{Det finns en uppdatering för Chrome}other{Det finns en uppdatering för Chrome sedan # dagar}}</translation>

@@ -34,6 +34,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="1173894706177603556">Preimenuj</translation>
 <translation id="1177863135347784049">Prilagođeno</translation>
 <translation id="1181037720776840403">Ukloni</translation>
+<translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">Upotrijebiti snažnu zaporku?</translation>
 <translation id="1197267115302279827">Premjesti oznake</translation>
 <translation id="1201402288615127009">Dalje</translation>
@@ -42,7 +43,6 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="1204692632633423444">Gumb za radnju u Chromeu: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">Kopiraj tekst veze</translation>
 <translation id="1209206284964581585">Zasad sakrij</translation>
-<translation id="1226851825267005295">Preferencijama možete upravljati nakon što se prijavite u Chrome Google računom.</translation>
 <translation id="1227058898775614466">Povijest navigacije</translation>
 <translation id="1231733316453485619">Želite li uključiti sinkronizaciju?</translation>
 <translation id="123724288017357924">Ponovno učitavanje trenutačne stranice uz zanemarivanje sadržaja iz predmemorije</translation>
@@ -166,7 +166,6 @@ Kad izbrišete svoju povijest pregledavanja, bilo svu ili za određenu web-lokac
 <translation id="1928696683969751773">Ažuriranja</translation>
 <translation id="19288952978244135">Ponovo otvorite Chrome.</translation>
 <translation id="1933845786846280168">Odabrana kartica</translation>
-<translation id="193571872656840963">Zahvalite autoru</translation>
 <translation id="1943432128510653496">Spremanje zaporki</translation>
 <translation id="1952172573699511566">Web-lokacije prikazivat će tekst na željenom jeziku kad god je to moguće.</translation>
 <translation id="1959679933317802873">Čekanje sadržaja</translation>
@@ -202,7 +201,6 @@ Kad izbrišete svoju povijest pregledavanja, bilo svu ili za određenu web-lokac
 <translation id="2122601567107267586">Otvaranje aplikacije nije uspjelo</translation>
 <translation id="2132122640199389833">Ukloni sve povezane uređaje</translation>
 <translation id="213279576345780926">Zatvorena je kartica <ph name="TAB_TITLE" /></translation>
-<translation id="2134927169889348449">Korištenjem Chromea prihvaćate <ph name="BEGIN_TOS_LINK" />Googleove uvjete pružanja usluge<ph name="END_TOS_LINK" /> i <ph name="BEGIN_ATOS_LINK" />dodatne uvjete pružanja usluge za Google Chrome i Chrome OS<ph name="END_ATOS_LINK" />.</translation>
 <translation id="2139186145475833000">Dodaj na početni zaslon</translation>
 <translation id="2141396931810938595">Na temelju vaše upotrebe</translation>
 <translation id="214888715418183969">Odaberite ono što želite dijeliti s Chromeom. Mjerni podaci koje podijelite upotrijebit će se za poboljšanje značajki, izvedbe i stabilnosti Chromea.</translation>
@@ -555,7 +553,6 @@ Privatne oznake poboljšavaju privatnost na webu i ne mogu se upotrebljavati da 
 <translation id="409109920254068737">Pomoću ovog tableta možete se prijaviti na uređaju na kojem se prikazuje ovaj QR kôd.</translation>
 <translation id="4095146165863963773">Želite li izbrisati podatke aplikacije?</translation>
 <translation id="4096227151372679484">Tijek spremanja oznake otvoren je na pola visine</translation>
-<translation id="4099578267706723511">Poboljšajte Chrome šaljući Googleu statistike upotrebe i izvješća o rušenju.</translation>
 <translation id="4101475238162928417">Uključite sinkronizaciju za prikaz zaporki, oznaka i drugog na svojim ostalim uređajima</translation>
 <translation id="410351446219883937">Automatska reprodukcija</translation>
 <translation id="4106587138345390261">Chrome istražuje nove značajke koje web-lokacijama omogućuju pružanje istog doživljaja pregledavanja uz upotrebu manje količine vaših informacija</translation>
@@ -593,7 +590,6 @@ Privatne oznake poboljšavaju privatnost na webu i ne mogu se upotrebljavati da 
 <translation id="4269820728363426813">Kopiraj adresu veze</translation>
 <translation id="4283102315569707115">Želite li prema zadanim postavkama tražiti web-lokacije za stolna računala?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Uključite zaključavanje zaslona u postavkama Androida<ph name="END_LINK" /></translation>
-<translation id="4293476595220860475">Korištenjem Chromea prihvaćate <ph name="BEGIN_TOS_LINK" />Googleove uvjete pružanja usluge<ph name="END_TOS_LINK" /> i <ph name="BEGIN_ATOS_LINK" />dodatne uvjete pružanja usluge za Google Chrome i Chrome OS<ph name="END_ATOS_LINK" />. Primjenjuju se i <ph name="BEGIN_PRIVACY_LINK" />pravila o privatnosti<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="4296252229500326964">Nova anonimna kartica</translation>
 <translation id="4298388696830689168">Povezane web-lokacije</translation>
 <translation id="4303044213806199882">chrome_snimka_zaslona_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -766,7 +762,6 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5161254044473106830">Naslov je obavezan</translation>
 <translation id="5170568018924773124">Pokaži u mapi</translation>
 <translation id="5171045022955879922">Pretražite ili upišite URL</translation>
-<translation id="517734441743343109">Nastavkom upotrebe prihvaćate <ph name="BEGIN_TOS_LINK" />uvjete pružanja usluge<ph name="END_TOS_LINK" /> i <ph name="BEGIN_PRIVACY_LINK" />pravila o privatnosti<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="5184329579814168207">Otvori u Chromeu</translation>
 <translation id="5191251636205085390">Saznajte o novim tehnologijama čiji je cilj zamijeniti kolačiće treće strane i upravljajte njima</translation>
 <translation id="5193988420012215838">Kopirano u međuspremnik</translation>

@@ -241,7 +241,6 @@
 <translation id="3226657629376379887">ಲೇಔಟ್ ಕ್ರಿಯೆಗಳ ಮೆನು</translation>
 <translation id="3246869037381808805">1 ದಿನಕ್ಕಿಂತ ಹಳೆಯದಾದ ಮುದ್ರಣ ಕಾರ್ಯಗಳನ್ನು ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ</translation>
 <translation id="3268178239013324452">ವಿಫಲವಾಗಿದೆ - ಡೋರ್ ತೆರೆದಿದೆ</translation>
-<translation id="3275506277319227640"><ph name="DIRECTION" /> ನಲ್ಲಿ ಡಾಕ್ ಮಾಡಿ</translation>
 <translation id="3275729367986477355">ಅವತಾರ್ ಚಿತ್ರ</translation>
 <translation id="3283504360622356314">{0,plural, =1{ಫೈಲ್ ಎಡಿಟ್ ಮಾಡಿ}one{ಫೈಲ್‌ಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಿ}other{ಫೈಲ್‌ಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಿ}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
@@ -360,7 +359,6 @@
 <translation id="4311195029067684288">ಪೂರ್ಣ</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> ಕೀ ಒತ್ತಲಾಗಿದೆ</translation>
 <translation id="435692326371619097">ನೆಟ್‌ವರ್ಕ್ APN ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ. APN ಗಳು ಸೆಲ್ಯುಲಾರ್ ನೆಟ್‌ವರ್ಕ್ ಹಾಗೂ ಇಂಟರ್ನೆಟ್ ನಡುವೆ ಕನೆಕ್ಷನ್ ಅನ್ನು ಸ್ಥಾಪಿಸುತ್ತವೆ. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
-<translation id="4370033095251616914">ಸಣ್ಣ ಭಾಗದಲ್ಲಿ ಡಾಕ್ ಮಾಡಿ</translation>
 <translation id="4378373042927530923">ರನ್ ಆಗಲಿಲ್ಲ</translation>
 <translation id="4378551569595875038">ಕನೆಕ್ಟ್...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -903,7 +901,6 @@
 <translation id="9137526406337347448">Google ಸೇವೆಗಳು</translation>
 <translation id="9138630967333032450">ಎಡ Shift ಕೀ</translation>
 <translation id="9149391708638971077">ಮೆಮೊರಿ ಪರೀಕ್ಷೆ ರನ್ ಮಾಡಿ</translation>
-<translation id="9157515863513902090">ದೊಡ್ಡ ಭಾಗದಲ್ಲಿ ಡಾಕ್ ಮಾಡಿ</translation>
 <translation id="9161276708550942948">space</translation>
 <translation id="9173638680043580060">ಒಂದು ನಿಮಿಷಕ್ಕಿಂತ ಕಡಿಮೆ ಸಮಯ ಉಳಿದಿದೆ</translation>
 <translation id="917720651393141712">ಪರೀಕ್ಷೆ</translation>

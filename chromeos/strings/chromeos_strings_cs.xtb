@@ -241,7 +241,6 @@
 <translation id="3226657629376379887">Nabídka akcí s rozvržením</translation>
 <translation id="3246869037381808805">Tiskové úlohy starší než 1 den budou odstraněny</translation>
 <translation id="3268178239013324452">Tisk selhal – jsou otevřená dvířka</translation>
-<translation id="3275506277319227640">Ukotvit <ph name="DIRECTION" /></translation>
 <translation id="3275729367986477355">Obrázek avatara</translation>
 <translation id="3283504360622356314">{0,plural, =1{Upravit soubor}few{Upravit soubory}many{Upravit soubory}other{Upravit soubory}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
@@ -360,7 +359,6 @@
 <translation id="4311195029067684288">Plné</translation>
 <translation id="4333390807948134856">Klávesa <ph name="KEY_NAME" /> byla stisknuta</translation>
 <translation id="435692326371619097">Spravovat nastavení názvů přístupových bodů sítě. Názvy přístupových bodů umožňují navázat spojení mezi mobilní sítí a internetem. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
-<translation id="4370033095251616914">Ukotvit na kratší straně</translation>
 <translation id="4378373042927530923">Nespuštěno</translation>
 <translation id="4378551569595875038">Připojování...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -903,7 +901,6 @@
 <translation id="9137526406337347448">Služby Google</translation>
 <translation id="9138630967333032450">Levý Shift</translation>
 <translation id="9149391708638971077">Spustit test paměti</translation>
-<translation id="9157515863513902090">Ukotvit na delší straně</translation>
 <translation id="9161276708550942948">mezera</translation>
 <translation id="9173638680043580060">Zbývá méně než minuta</translation>
 <translation id="917720651393141712">Test</translation>

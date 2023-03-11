@@ -213,6 +213,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1178581264944972037">Pausar</translation>
 <translation id="117916940443676133">Sua chave de segurança não está protegida com um PIN. Para gerenciar dados de login, crie um PIN primeiro.</translation>
 <translation id="1181037720776840403">Remover</translation>
+<translation id="1181366777303791449">em <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1183237619868651138">Não foi possível instalar o arquivo <ph name="EXTERNAL_CRX_FILE" /> no cache local.</translation>
 <translation id="1184709369107246085">O app <ph name="APPLICATION_NAME" /> exige um URL válido do <ph name="APPLICATION_NAME" />.</translation>
 <translation id="1185924365081634987">Tente <ph name="GUEST_SIGNIN_LINK_START" />navegar como convidado<ph name="GUEST_SIGNIN_LINK_END" /> para corrigir este erro da rede.</translation>
@@ -780,7 +781,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1665328953287874063">Use uma senha ou um PIN para desbloquear o <ph name="DEVICE_TYPE" /></translation>
 <translation id="1666232093776384142">Desativar proteção de acesso a dados para periféricos</translation>
 <translation id="1667842670298352129">Ouvir um texto específico lido em voz alta. Primeiro, selecione o ícone do recurso "Selecionar para ouvir" na parte de baixo da tela e depois destaque o texto. Você também pode usar um atalho do teclado, destacando texto e depois pressionando as teclas Pesquisa + S.</translation>
-<translation id="1668435968811469751">Inscrever-se manualmente</translation>
+<translation id="1668435968811469751">Registrar manualmente</translation>
 <translation id="1668979692599483141">Saiba mais sobre sugestões</translation>
 <translation id="1670399744444387456">Básico</translation>
 <translation id="1673137583248014546"><ph name="URL" /> quer ver a marca e o modelo da sua chave de segurança</translation>
@@ -893,6 +894,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1766575458646819543">Tela cheia fechada</translation>
 <translation id="1766957085594317166">Salve suas senhas de maneira segura na sua Conta do Google, e nunca mais precisará digitá-las novamente.</translation>
 <translation id="1767043563165955993">Usar com apps Android</translation>
+<translation id="1767508543310534319">Pontuação falada</translation>
 <translation id="1768212860412467516">Envie feedback sobre o experimento <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="1768278914020124551">Ops! Ocorreu um problema ao entrar em contato com o servidor de logon. Verifique a conexão com a Internet e o nome de domínio, depois tente novamente.</translation>
 <translation id="1769104665586091481">Abrir link em uma nova &amp;janela</translation>
@@ -1704,6 +1706,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="244641233057214044">Produto relacionado à sua pesquisa</translation>
 <translation id="2448312741937722512">Tipo</translation>
 <translation id="2448810255793562605">Leitura automática do acesso com interruptor</translation>
+<translation id="2450021089947420533">Jornadas</translation>
 <translation id="2450223707519584812">Não é possível adicionar usuários, porque as chaves da API do Google estão ausentes. Consulte <ph name="DETAILS_URL" /> para ter mais detalhes.</translation>
 <translation id="2450849356604136918">Não há visualizações ativas</translation>
 <translation id="2451298179137331965">2x</translation>
@@ -1714,6 +1717,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2454247629720664989">Palavra-chave</translation>
 <translation id="2454524890947537054">Aprovar solicitação da Web?</translation>
 <translation id="245650153866130664">Para atualizar automaticamente um tíquete, selecione a opção “Lembrar senha”. Sua senha será armazenada somente no seu dispositivo.</translation>
+<translation id="2456794251167091176">Importação concluída</translation>
 <translation id="2456827790665612305">Parar de seguir o site</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> deseja copiar arquivos de <ph name="VOLUME_NAME" />.</translation>
 <translation id="2457842160081795172">No canal <ph name="CHANNEL_NAME" /></translation>
@@ -2586,7 +2590,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3254084468305910013">{COUNT,plural, =0{Nenhum problema de segurança encontrado}=1{{COUNT} problema de segurança encontrado}one{{COUNT} problema de segurança encontrado}other{{COUNT} problemas de segurança encontrados}}</translation>
 <translation id="3254451942070605467">Fazendo o download de <ph name="FILE_NAME" />, falta <ph name="PERCENT_REMAINING" />%</translation>
 <translation id="3254516606912442756">A detecção automática de fuso horário está desativada</translation>
-<translation id="3254715652085014625">Abra o Chrome no smartphone e acesse "Configurações &gt; Senhas &gt; Usar o smartphone como chave de segurança" e siga as instruções.</translation>
 <translation id="3255355328033513170">Todos os dados armazenados pelo <ph name="SITE_GROUP_NAME" /> e sites relacionados serão excluídos. Isso inclui cookies. Você será desconectado desses sites, inclusive nas guias abertas.</translation>
 <translation id="3257733480216378006">Permitir <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />?</translation>
 <translation id="3259723213051400722">Tente novamente.</translation>
@@ -2723,6 +2726,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3378627645871606983">As permissões concedidas para o app Steam são válidas para todos os jogos e apps dele.</translation>
 <translation id="337920581046691015">O <ph name="PRODUCT_NAME" /> será instalado</translation>
 <translation id="3380365263193509176">Erro desconhecido</translation>
+<translation id="3380831556454930637">O app <ph name="APP_NAME" /> foi configurado pelo administrador para ser executado no Login do SO</translation>
 <translation id="3382073616108123819">O sistema falhou ao determinar os identificadores deste dispositivo.</translation>
 <translation id="3382200254148930874">Parando a supervisão…</translation>
 <translation id="338323348408199233">Bloquear tráfego sem VPN</translation>
@@ -2972,6 +2976,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="360180734785106144">Oferecer novos recursos à medida que sejam disponibilizados</translation>
 <translation id="3602290021589620013">Visualizar</translation>
 <translation id="3602870520245633055">Imprimir e digitalizar</translation>
+<translation id="3602894439067790744">Ler números como</translation>
 <translation id="3603622770190368340">Obter certificado de rede</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} conta usando a mesma senha}one{{COUNT} conta usando a mesma senha}other{{COUNT} contas usando a mesma senha}}</translation>
 <translation id="3605780360466892872">Esporte fino</translation>
@@ -3137,7 +3142,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3742666961763734085">Não foi possível encontrar uma unidade organizacional com esse nome. Tente novamente.</translation>
 <translation id="3743842571276656710">Digite o PIN para parear com o dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="3747077776423672805">Para remover apps, acesse "Configurações" &gt; "Google Play Store" &gt; "Gerenciar preferências do Android" &gt; "Apps" ou "Gerenciador de aplicativos". Depois, toque no app que você quer desinstalar (talvez seja necessário deslizar para a direita ou esquerda para encontrar o app). Em seguida, toque em "Desinstalar" ou "Desativar".</translation>
-<translation id="3747603683749989726">Ativar a segurança aprimorada?</translation>
 <translation id="3748424433435232460">Uma senha para essa conta já está salva no dispositivo</translation>
 <translation id="3748706263662799310">Informar um bug</translation>
 <translation id="3749724428455457489">Saiba mais sobre anúncios sugeridos por sites</translation>
@@ -3738,7 +3742,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4280325816108262082">O dispositivo será desconectado automaticamente quando estiver desligado ou não estiver em uso</translation>
 <translation id="4281844954008187215">Termos de Serviço</translation>
 <translation id="4282196459431406533">O Smart Lock está ativado</translation>
-<translation id="4284755288573763878">Desativar a segurança aprimorada?</translation>
 <translation id="4284903252249997120">Leitor de tela ChromeVox e recurso Selecionar para ouvir</translation>
 <translation id="4285418559658561636">Atualizar senha</translation>
 <translation id="4285498937028063278">Soltar</translation>
@@ -5380,6 +5383,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5804241973901381774">Permissões</translation>
 <translation id="5804259315582798390">Falha ao ativar a recuperação de dados locais</translation>
 <translation id="5805268472388605531">Toque nas teclas do teclado e as mantenha pressionadas para ver acentos e caracteres especiais</translation>
+<translation id="5805354171420804923">Use o novo painel lateral para comparar resultados da pesquisa com mais rapidez</translation>
 <translation id="5805697420284793859">Gerenciador de janelas</translation>
 <translation id="5806447147478173900">Armazenamento total usado pelos sites mostrados: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (Padrão)</translation>
@@ -5467,7 +5471,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5877584842898320529">A impressora selecionada não está disponível ou não foi instalada corretamente. <ph name="BR" /> Verifique a impressora ou selecione outra.</translation>
 <translation id="5878945009165002849">Bloquear solicitações de login de serviços de identificação</translation>
 <translation id="5881710783061958569">Se tiver mudado, edite a senha salva no <ph name="BRAND" /> para que ela seja igual à nova senha.</translation>
-<translation id="5882449899683447569">Algo deu errado e suas senhas não foram importadas</translation>
 <translation id="5882919346125742463">Redes conhecidas</translation>
 <translation id="5883356647197510494">Bloqueados automaticamente: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5884447826201752041">Personalizar para cada extensão</translation>
@@ -7270,6 +7273,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7520766081042531487">Portal de navegação anônima: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Mostrar atalhos</translation>
 <translation id="7522255036471229694">Diga "Ok Google"</translation>
+<translation id="7523117833414447032">Ao ler letras maiúsculas</translation>
 <translation id="7523585675576642403">Renomear perfil</translation>
 <translation id="7525067979554623046">Criar</translation>
 <translation id="7526658513669652747">{NUM_DOWNLOADS,plural, =1{Mais 1}one{Mais {NUM_DOWNLOADS}}other{Mais {NUM_DOWNLOADS}}}</translation>
@@ -7951,7 +7955,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8102139037507939978">Remover informações de identificação pessoal de system_logs.txt.</translation>
 <translation id="810362914482827094">Pesquisar senhas de acesso</translation>
 <translation id="8104088837833760645">Fazer o download do perfil do eSIM</translation>
-<translation id="8105368624971345109">Desativar</translation>
 <translation id="8107015733319732394">Instalando a Google Play Store no seu <ph name="DEVICE_TYPE" />. Isso pode demorar alguns minutos.</translation>
 <translation id="810728361871746125">Resolução da tela</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{Sem cookies de terceiros}=1{1 cookie de terceiros foi bloqueado}one{# cookie de terceiros foi bloqueado}other{# cookies de terceiros foram bloqueados}}</translation>
@@ -8963,7 +8966,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="9026852570893462412">O processo pode levar alguns minutos. Fazendo o download da máquina virtual.</translation>
 <translation id="9027459031423301635">Abrir link em uma nova &amp;guia</translation>
 <translation id="9027707169256972235">Remover</translation>
-<translation id="9029667986262585240">Você desativou o Navegação segura com maior proteção na sua conta.</translation>
 <translation id="9030515284705930323">Sua organização não ativou a Google Play Store para sua conta. Entre em contato com seu administrador para receber mais informações.</translation>
 <translation id="9030754204056345429">Mais rápida</translation>
 <translation id="9030785788945687215">Gmail</translation>
@@ -9148,7 +9150,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="9188732951356337132">Envie dados de uso e diagnóstico. No momento, este dispositivo está enviando automaticamente ao Google dados de diagnóstico, de uso de apps e do dispositivo. Eles não serão usados para identificar seu filho e ajudarão a melhorar o sistema, a estabilidade de apps e muito mais. Alguns dados agregados também ajudarão os apps do Google e os nossos parceiros, como os desenvolvedores Android. Se a configuração "Atividade na Web e de apps adicional" estiver ativada para seu filho, esses dados poderão ser salvos na Conta do Google dele. <ph name="BEGIN_LINK2" />Saiba mais<ph name="END_LINK2" /></translation>
 <translation id="9192019773545828776">Ouça uma resposta falada para que você possa usar o dispositivo sem olhar para a tela. O feedback em braille está disponível quando há um dispositivo conectado. Use Ctrl + Alt + Z para ativar e desativar o ChromeVox. Use Pesquisa + seta para a esquerda ou direita para navegar. Use as teclas Pesquisa + espaço para selecionar (ativar).</translation>
 <translation id="919686179725692564">Saiba mais sobre como fazer backup dos seus apps.</translation>
-<translation id="9198090666959937775">Usar seu smartphone Android como uma chave de segurança</translation>
 <translation id="9199503643457729322">Clique para sair do Guia de privacidade.</translation>
 <translation id="9200339982498053969"><ph name="ORIGIN" /> poderá editar arquivos na pasta <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">Pesquisar <ph name="SEARCH_ENGINE" /></translation>
@@ -9176,6 +9177,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="922152298093051471">Personalizar o Chrome</translation>
 <translation id="923467487918828349">Mostrar tudo</translation>
 <translation id="924818813611903184">Gerenciar idiomas nas configurações do ChromeOS</translation>
+<translation id="925270020047573546">Este dispositivo não tem suporte à transmissão do áudio do computador.</translation>
 <translation id="929117907539171075">Os dados off-line em apps instalados também serão removidos</translation>
 <translation id="930268624053534560">Timestamps detalhados</translation>
 <translation id="930893132043726269">Está em roaming no momento</translation>

@@ -84,6 +84,7 @@
 <translation id="1722487484194605434">Compression de <ph name="NUMBER_OF_ITEMS" /> éléments…</translation>
 <translation id="1722687688096767818">Ajout du profil…</translation>
 <translation id="1726100011689679555">Serveurs de noms</translation>
+<translation id="1727562178154619254">Prêt pour la synchronisation</translation>
 <translation id="1729953886957086472">Allemand (Allemagne)</translation>
 <translation id="1730235522912993863">Chinois (Cangjie)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> éléments copiés.</translation>
@@ -705,6 +706,7 @@
 <translation id="6732801395666424405">Certificats non importés.</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">Partager le dossier avec Bruschetta</translation>
+<translation id="6750737795876287924">Répertoire actuel</translation>
 <translation id="6751256176799620176">1 dossier sélectionné</translation>
 <translation id="6755827872271341378">Appareil ChromeOS Flex</translation>
 <translation id="6790428901817661496">Lire</translation>
@@ -742,7 +744,6 @@
 <translation id="6973630695168034713">Dossiers</translation>
 <translation id="6976795442547527108">Lion</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979737339423435258">Toutes les données</translation>
 <translation id="6989942356279143254">Suédois</translation>
 <translation id="6990081529015358884">Vous avez utilisé tout l'espace de stockage.</translation>
 <translation id="6993826899923627728">Ces éléments se trouvent dans la corbeille</translation>
@@ -798,7 +799,6 @@
 <translation id="7458955835361612701">Aucune image récente</translation>
 <translation id="7460898608667578234">Ukrainien</translation>
 <translation id="7469894403370665791">Se connecter automatiquement à ce réseau</translation>
-<translation id="7481358317100446445">Prêt</translation>
 <translation id="7486315294984620427">Pour déposer des fichiers dans Parallels Desktop, vous devez copier le fichier dans le dossier "Fichiers Windows".</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malayalam (phonétique)</translation>

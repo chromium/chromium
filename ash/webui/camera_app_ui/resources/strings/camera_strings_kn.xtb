@@ -8,9 +8,6 @@
 <translation id="1175958423215084756">ಲಿಂಕ್ ಪತ್ತೆಯಾಗಿದೆ. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213"><ph name="PAGE_NUMBER" />ನೇ ಪುಟವನ್ನು ಅಳಿಸಲಾಗಿದೆ</translation>
 <translation id="1258009455399840361">ಪ್ರದಕ್ಷಿಣಾಕಾರವಾಗಿ 90 ಡಿಗ್ರಿಗಳಷ್ಟು ತಿರುಗಿಸಿ</translation>
-<translation id="1300209025925956156">ನಿಮ್ಮ ಡಾಕ್ಯುಮೆಂಟ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
-<translation id="1309250603447638106">ಡಾಕ್ಯುಮೆಂಟ್ ಸ್ಕ್ಯಾನಿಂಗ್‌ಗಾಗಿ ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
-<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. ಪ್ರವೇಶಿಸಲು Search +ಲೆಫ್ಟ್ ಆ್ಯರೋ.</translation>
 <translation id="1417314334557041815">ಪುಟ <ph name="INDEX" /> ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> ಅನ್‌ಪ್ಲಗ್ ಆಗಿದೆ.</translation>
 <translation id="1473110567575736769">3 ಸೆಕೆಂಡುಗಳ ಟೈಮರ್</translation>
@@ -24,7 +21,6 @@
 <translation id="1664224225747386870">ಏನನ್ನೂ ರೆಕಾರ್ಡ್ ಮಾಡಲಾಗಿಲ್ಲ</translation>
 <translation id="1838104802459806957">ಮೇಲಕ್ಕೆ ಟಿಲ್ಟ್ ಮಾಡಿ</translation>
 <translation id="1843105061469674856">ಹೆಚ್ಚುವರಿ ಪುಟವನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
-<translation id="1851169887664797861">ಹೆಚ್ಚುವರಿ ಕ್ಯಾಮರಾ ನಿಯಂತ್ರಣಗಳು ಲಭ್ಯ</translation>
 <translation id="1851616744363735765">ವಿರಾಮಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="1899697626337024495">ಫೋಟೋ ರೆಸಲ್ಯೂಷನ್</translation>
 <translation id="1925845977604399247">ಗ್ಯಾಲರಿಗೆ ಹೋಗಿ</translation>
@@ -49,7 +45,6 @@
 <translation id="2761536921376153655">ಸ್ಕ್ಯಾನ್ ಪ್ರಕಾರ</translation>
 <translation id="28682968802727151">ಮಿರರ್ ಪೂರ್ವವೀಕ್ಷಣೆ</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> ಪ್ಲಗ್-ಇನ್ ಆಗಿದೆ.</translation>
-<translation id="2904654629665923749">ಡಾಕ್ಯುಮೆಂಟ್ ಸ್ಕ್ಯಾನ್ ಲಭ್ಯವಿದೆ</translation>
 <translation id="3067436040345934772">ಬಲಕ್ಕೆ ಪ್ಯಾನ್ ಮಾಡಿ</translation>
 <translation id="3081586908890909590">ವೀಡಿಯೊ ರೆಕಾರ್ಡ್ ಮೋಡ್‌ಗೆ ಬದಲಿಸಿ</translation>
 <translation id="313467653172006084">30 FPS</translation>
@@ -74,7 +69,6 @@
 <translation id="4269820728363426813">ಲಿಂಕ್ ವಿಳಾಸವನ್ನು ನಕಲಿಸಿ</translation>
 <translation id="4281620174117014503">ಮೀಡಿಯಮ್ ರೆಸಲ್ಯೂಷನ್</translation>
 <translation id="428234092390943511">ಪುಟದ ಥಂಬ್‌ನೇಲ್</translation>
-<translation id="4340659173795395806">ನೀವು ಈಗ ಬಹು ಪುಟ PDF ಅನ್ನು ರಚಿಸಬಹುದು</translation>
 <translation id="4383571725254449280">ಕಾರ್ಯಕ್ಷಮತೆ ಲಾಗ್‌ಗಳನ್ನು ಪ್ರಿಂಟ್ ಮಾಡಿ</translation>
 <translation id="4445542136948522167">ಫೋಟೋ ತೆಗೆಯುವುದನ್ನು ನಿಲ್ಲಿಸಿ</translation>
 <translation id="4570032796877367747">ಮುಂಬದಿ ಕ್ಯಾಮರಾ</translation>
@@ -97,7 +91,6 @@
 <translation id="5317780077021120954">ಉಳಿಸು</translation>
 <translation id="5320594929574852403">ಎಡ ದಿಕ್ಕಿನಲ್ಲಿ ಚಲಿಸುತ್ತಿದೆ</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5444515100983837161">ಡಾಕ್ಯುಮೆಂಟ್‌ನ ಎಲ್ಲಾ ಅಂಚುಗಳನ್ನು ಫ್ರೇಮ್‌ನೊಳಗೆ ಇರಿಸಿ. ಡಾಕ್ಯುಮೆಂಟ್ ಮತ್ತು ಹಿನ್ನೆಲೆ ವಿಭಿನ್ನ ಬಣ್ಣಗಳಾಗಿದ್ದರೆ ಸ್ಕ್ಯಾನಿಂಗ್ ಉತ್ತಮವಾಗಿ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತದೆ.</translation>
 <translation id="5662366948659129155">ಪುಟ <ph name="COUNT" /> ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="5671277269877808209">ಚೌಕ</translation>
 <translation id="5746169159649715125">PDF ನಂತೆ ಉಳಿಸಿ</translation>
@@ -157,7 +150,6 @@
 <translation id="8428213095426709021">ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">ಮೈಕ್ರೊಫೋನ್ ಅನ್ನು ಮ್ಯೂಟ್ ಮಾಡುವ ಬಟನ್ ಟಾಗಲ್ ಮಾಡಿ. ಮ್ಯೂಟ್ ಆನ್ ಆಗಿದೆ</translation>
-<translation id="8712637175834984815">ಅರ್ಥವಾಯಿತು</translation>
 <translation id="8730621377337864115">ಮುಗಿದಿದೆ</translation>
 <translation id="8732462232047530626">ಮೆಟಾಡೇಟಾವನ್ನು ಪೂರ್ವವೀಕ್ಷಿಸಿ</translation>
 <translation id="8815966864175525708">ಪೋರ್ಟ್ರೇಟ್ ಫೋಟೋ ತೆಗೆಯಲು ಬದಲಾಯಿಸಿ</translation>

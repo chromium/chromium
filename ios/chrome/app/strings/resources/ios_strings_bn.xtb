@@ -81,6 +81,7 @@
 <translation id="149095475893949513">এই ওয়েবসাইটটি একটি কনফিগারেশন প্রোফাইল ডাউনলোড করার চেষ্টা করছে।</translation>
 <translation id="1491277525950327607">সেটিং টগল করতে দুবার আলতো চাপুন</translation>
 <translation id="1492417797159476138">আপনি আগেই এই সাইটের জন্য ইউজারনেমটি সেভ করেছেন</translation>
+<translation id="1497590942294823549">মেনু → Password Manager</translation>
 <translation id="1498283581832036924">আপনার <ph name="WEBSITE" /> অ্যাকাউন্ট মুছে ফেলা হবে না</translation>
 <translation id="1506063256525392513">এর সাহায্যে আপনি ফটো তুলতে ও আপলোড করতে, এমনকি QR কোড স্ক্যানও করতে পারবেন</translation>
 <translation id="1509486075633541495">ওয়েবসাইটে সাইন-ইন করুন</translation>
@@ -242,6 +243,7 @@
 <translation id="271033894570825754">নতুন</translation>
 <translation id="2712127207578915686">ফাইল খুলতে অক্ষম</translation>
 <translation id="2718352093833049315">শুধুমাত্র ওয়াই-ফাই এ</translation>
+<translation id="2737716090799520623">আপনি যখন Chrome-এ সাইন-ইন করবেন, তখন আপনার সেভ করা পাসওয়ার্ডগুলি আপনার Google অ্যাকাউন্টে (<ph name="ACCOUNT" />) চলে যাবে। এটি বন্ধ করার জন্য, <ph name="BEGIN_LINK" />সেটিংসে যান<ph name="END_LINK" />।</translation>
 <translation id="2747003861858887689">পূর্ববর্তী ফিল্ড</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> ফলো করা হচ্ছে</translation>
 <translation id="2764831210418622012">এইমাত্র</translation>
@@ -844,6 +846,7 @@
 <translation id="6801927553864092214">গোপনে ব্রাউজ করতে ছদ্মবেশী ট্যাব খুলুন</translation>
 <translation id="6807889908376551050">সমস্ত দেখান...</translation>
 <translation id="681368974849482173">আইটেম তৈরি করা হয়েছে</translation>
+<translation id="6822587385560699678">চালু থাকলে, <ph name="ACCOUNT" />-এ পাসওয়ার্ড সেভ করা থাকে। বন্ধ থাকলে, পাসওয়ার্ড শুধুমাত্র এই ডিভাইসে সেভ করা থাকে।</translation>
 <translation id="683022620450280906">যেকোনও ডিভাইসে আপনি সেভ করা পাসওয়ার্ড ব্যবহার করতে পারবেন। এটি <ph name="EMAIL" />-এর Google পাসওয়ার্ড ম্যানেজার বিকল্পে সেভ করা আছে</translation>
 <translation id="6831043979455480757">অনুবাদ</translation>
 <translation id="6842136130964845393">আপনার সেভ করা পাসওয়ার্ড সবসময় যাতে অ্যাক্সেস করতে পারেন তা নিশ্চিত করতে, নিজের পরিচয় যাচাই করুন</translation>

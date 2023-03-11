@@ -38,4 +38,6 @@
           وألغ اختيار "استخدام خادم وكيل لشبكة الاتصال المحلية".</translation>
 <translation id="7230956101631259640">‏أنت تعرض صفحة Chrome آمنة.</translation>
 <translation id="8187289872471304532">‏انتقل إلى Applications (التطبيقات) &gt; System Preferences (الإعدادات المفضّلة للنظام) &gt; Network (الشبكة) &gt; Advanced (الخيارات المتقدمة) &gt; Proxies (الخوادم الوكيلة) وألغ اختيار أي خوادم وكيلة تم تحديدها.</translation>
+<translation id="8232971017369963250">‏أصبح Chrome متاحًا من خلال مشروع <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> المفتوح المصدر.</translation>
+<translation id="8279509328145658601">‏أصبح Chrome متاحًا أيضًا من خلال <ph name="BEGIN_LINK_OSS" />برنامج آخر مفتوح المصدر<ph name="END_LINK_OSS" />.</translation>
 </translationbundle>

@@ -100,7 +100,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1420408895951708260">Wissel Aandbeligting. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Bekyk jou foon se onlangse foto's en media op jou <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">Ja</translation>
-<translation id="1447641497144572814">Sluimerskerm begin</translation>
 <translation id="1455242230282523554">Wys taalinstellings</translation>
 <translation id="1460620680449458626">Volume is gedemp.</translation>
 <translation id="14648076227129703">Dit gee kameratoegang vir <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> en alle apps en webwerwe met die kameratoestemming</translation>
@@ -126,6 +125,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1550523713251050646">Klik vir meer opsies</translation>
 <translation id="1555130319947370107">Blou</translation>
 <translation id="1576623706766186887">Zoem uit wanneer vergrootglas aan is</translation>
+<translation id="1586324912145647027">Gaan na lessenaar 1 tot 8</translation>
 <translation id="1589090746204042747">Kry toegang tot al jou aktiwiteit in hierdie sessie</translation>
 <translation id="1610778689852195798">"Ontdoen"</translation>
 <translation id="1611993646327628135">Aan</translation>
@@ -514,6 +514,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3631369015426612114">Laat kennisgewings van die volgende af toe</translation>
 <translation id="3633097874324966332">Maak Bluetooth-instellings oop om jou toestel saam te bind</translation>
 <translation id="3638400994746983214">Wissel privaatheidskerm. <ph name="STATE_TEXT" />.</translation>
+<translation id="3649256019230929621">Maak venster klein</translation>
 <translation id="3649505501900178324">Tyd vir 'n opdatering</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -589,6 +590,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4021716437419160885">Rollees af</translation>
 <translation id="4022497978915111141">Sluit toestel</translation>
 <translation id="4024840464866786680">As jy jou PIN vergeet het of jou Google-rekeningwagwoord onlangs verander het, kan jy probeer om hierdie gebruiker terug te stel.</translation>
+<translation id="4026843240379844265">Skuif aktiewe venster tussen vertoonskerms</translation>
 <translation id="4028481283645788203">Wagwoord word vereis vir meer sekuriteit</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Jy deel tans jou skerm</translation>
@@ -913,6 +915,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5689633613396158040">Aandbeligting maak dit makliker om in dowwe lig na jou skerm te kyk en te lees. Tik om te verander hoe laat Aandbeligting aanskakel, of skakel dit heeltemal af.</translation>
 <translation id="5691772641933328258">Vingerafdruk nie herken nie</translation>
 <translation id="5693255400847650006">Mikrofoon in gebruik</translation>
+<translation id="5699366815052349604">Wys aktiewe venster aan alle lessenaars toe</translation>
 <translation id="570390244361237317">Alle programme; navigeer met pylsleutels om toegang tot alle programme te kry</translation>
 <translation id="5707775774148071965">Jou toestel steun ’n hoër datakoers as jou kabel. Toestelwerkverrigting kan beperk wees.</translation>
 <translation id="5710450975648804523">Moenie Steur Nie is aan</translation>
@@ -1553,6 +1556,7 @@ Nuwe installasie</translation>
 <translation id="9034924485347205037">Linux-lêers</translation>
 <translation id="9047624247355796468">Maak instellings oop vir <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Vou kennisgewing in</translation>
+<translation id="906458777597946297">Maak venster groot</translation>
 <translation id="9065203028668620118">Wysig</translation>
 <translation id="9070640332319875144">Assistent-instellings</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> totdat battery leeg is.</translation>

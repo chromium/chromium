@@ -26,6 +26,7 @@
 <translation id="1448064542941920355">Giảm mức thu phóng</translation>
 <translation id="1510341833810331442">Các trang web không được phép lưu dữ liệu trên thiết bị của bạn</translation>
 <translation id="1547123415014299762">Cho phép sử dụng cookie của bên thứ ba</translation>
+<translation id="1593426485665524382">Có các thao tác mới ở gần đầu màn hình</translation>
 <translation id="1620510694547887537">Máy ảnh</translation>
 <translation id="1633720957382884102">Các trang web liên quan</translation>
 <translation id="1644574205037202324">Nhật ký</translation>
@@ -146,6 +147,7 @@
 <translation id="3628308229821498208">Cụm từ tìm kiếm đề xuất</translation>
 <translation id="3636279694100170143">Các trang web bạn truy cập có thể xác thực bạn là người dùng thực sự chứ không phải là bot</translation>
 <translation id="3649190289964910441">Trang web bạn truy cập có thể lưu thông tin qua Chrome để xác thực rằng bạn là người dùng thực sự. Khi bạn tiếp tục duyệt web, các trang web có thể kiểm tra qua Chrome và xác minh, dựa trên thông tin từ trang web đầu tiên, rằng bạn có thể là người dùng đáng tin cậy.</translation>
+<translation id="3721953990244350188">Đóng và hiện thao tác có sẵn tiếp theo</translation>
 <translation id="3744111561329211289">Đồng bộ hóa dưới nền</translation>
 <translation id="3763247130972274048">Nhấn đúp vào bên trái hoặc bên phải của video để tua lại/tua đi 10 giây</translation>
 <translation id="3794286421982011626">Trang web bạn truy cập có thể lưu thông tin về những việc bạn đang làm để hoạt động như bạn mong muốn – ví dụ: để duy trì trạng thái đăng nhập vào một trang web hoặc lưu các mặt hàng vào giỏ hàng. Thông thường, các trang web lưu thông tin này tạm thời trên thiết bị của bạn.</translation>
@@ -193,7 +195,6 @@
 <translation id="4534723447064627427">Để cho phép <ph name="APP_NAME" /> truy cập vào micrô của bạn, hãy bật cả micrô trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Tắt micrô</translation>
 <translation id="4570913071927164677">Chi tiết</translation>
-<translation id="4575264539271661854">Giúp phóng to văn bản và hình ảnh dễ dàng hơn trên một trang web bạn truy cập</translation>
 <translation id="4598549027014564149">Ở chế độ Ẩn danh, các trang web không thể dùng cookie để xem hoạt động duyệt web của bạn trên nhiều trang web, ngay cả các trang web có liên quan. Hoạt động duyệt web của bạn không được dùng cho các mục đích như cá nhân hoá quảng cáo. Các tính năng của một số trang web có thể không hoạt động.</translation>
 <translation id="4645575059429386691">Do cha mẹ của bạn quản lý</translation>
 <translation id="4670064810192446073">Thực tế ảo</translation>
@@ -422,7 +423,7 @@
 <translation id="8676374126336081632">Xóa văn bản nhập</translation>
 <translation id="8681886425883659911">Quảng cáo sẽ bị chặn trên các trang web được xác định là hiện quảng cáo xâm nhập hoặc gây hiểu lầm</translation>
 <translation id="868929229000858085">Tìm kiếm trong danh bạ</translation>
-<translation id="8712637175834984815">Bỏ qua</translation>
+<translation id="8712637175834984815">Tôi hiểu</translation>
 <translation id="8719283222052720129">Bật quyền cho <ph name="APP_NAME" /> trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Thử lại</translation>
 <translation id="8730621377337864115">Xong</translation>

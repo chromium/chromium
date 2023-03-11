@@ -26,6 +26,7 @@
 <translation id="1448064542941920355">Tuvināt</translation>
 <translation id="1510341833810331442">Vietnēm nav atļauts saglabāt datus jūsu ierīcē</translation>
 <translation id="1547123415014299762">Trešo pušu sīkfaili ir atļauti</translation>
+<translation id="1593426485665524382">Ekrāna augšdaļā ir pieejamas jaunas darbības</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1633720957382884102">Saistītās vietnes</translation>
 <translation id="1644574205037202324">Vēsture</translation>
@@ -146,6 +147,7 @@
 <translation id="3628308229821498208">Ieteiktie meklēšanas vaicājumi</translation>
 <translation id="3636279694100170143">Jūsu apmeklētās vietnes var apstiprināt, ka esat īsts lietotājs, nevis robots.</translation>
 <translation id="3649190289964910441">Jūsu apmeklētā vietne var saglabāt pārlūkā Chrome informāciju, kas apstiprina, ka esat īsts lietotājs. Kad jūs turpināt pārlūkošanu, vietnes var pārbaudīt šo informāciju pārlūkā Chrome un pirmajā jūsu pārlūkotajā vietnē un apstiprināt, ka esat uzticams lietotājs.</translation>
+<translation id="3721953990244350188">Noraidīt un rādīt nākamo pieejamo darbību</translation>
 <translation id="3744111561329211289">Sinhronizācija fonā</translation>
 <translation id="3763247130972274048">Divreiz pieskarieties videoklipam pa labi vai pa kreisi, lai izlaistu 10 s.</translation>
 <translation id="3794286421982011626">Apmeklētā vietne var saglabāt informāciju par jūsu veiktajām darbībām, lai nodrošinātu pienācīgu tās darbību, piemēram, pierakstīšanos vietnē vai iepirkumu grozā ievietoto preču saglabāšanu. Bieži vien vietnes šo informāciju jūsu ierīcē saglabā īslaicīgi.</translation>
@@ -193,7 +195,6 @@
 <translation id="4534723447064627427">Lai atļautu lietotnei <ph name="APP_NAME" /> piekļūt jūsu mikrofonam, ieslēdziet mikrofonu arī <ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Izslēgt mikrofonu</translation>
 <translation id="4570913071927164677">Detalizēta informācija</translation>
-<translation id="4575264539271661854">Atvieglojiet teksta un attēlu tuvināšanu apmeklētajās vietnēs</translation>
 <translation id="4598549027014564149">Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbības vietnēs, pat saistītajās vietnēs. Jūsu pārlūkošanas darbības netiek izmantotas, piemēram, reklāmu personalizēšanai. Noteiktās vietnēs funkcijas var nedarboties.</translation>
 <translation id="4645575059429386691">Pārvalda viens no jūsu vecākiem</translation>
 <translation id="4670064810192446073">Virtuālā realitāte</translation>

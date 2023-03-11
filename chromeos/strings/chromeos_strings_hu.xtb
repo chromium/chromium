@@ -241,7 +241,6 @@
 <translation id="3226657629376379887">Elrendezésműveletek menüje</translation>
 <translation id="3246869037381808805">Az 1 napnál régebbi nyomtatási feladatokat eltávolítja a rendszer</translation>
 <translation id="3268178239013324452">Sikertelen – Nyitva van a nyomtató fedele</translation>
-<translation id="3275506277319227640">Dokkolás itt: <ph name="DIRECTION" /> oldal</translation>
 <translation id="3275729367986477355">Avatarkép</translation>
 <translation id="3283504360622356314">{0,plural, =1{Fájl szerkesztése}other{Fájlok szerkesztése}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
@@ -360,7 +359,6 @@
 <translation id="4311195029067684288">Teljes</translation>
 <translation id="4333390807948134856">A következő gomb van megnyomva: <ph name="KEY_NAME" /></translation>
 <translation id="435692326371619097">Kezelheti a hálózati APN-beállításokat. Az APN-ek kapcsolatot létesítenek a mobilhálózat és az internet között. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
-<translation id="4370033095251616914">Dokkolás a kisebb részen</translation>
 <translation id="4378373042927530923">Nem fut</translation>
 <translation id="4378551569595875038">Kapcsolódás…</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -903,7 +901,6 @@
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9138630967333032450">Bal oldali Shift</translation>
 <translation id="9149391708638971077">Memóriateszt futtatása</translation>
-<translation id="9157515863513902090">Dokkolás a nagyobb részen</translation>
 <translation id="9161276708550942948">szóköz</translation>
 <translation id="9173638680043580060">Kevesebb mint 1 perc van hátra</translation>
 <translation id="917720651393141712">Tesztelés</translation>

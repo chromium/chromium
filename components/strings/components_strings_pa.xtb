@@ -376,6 +376,7 @@
 <translation id="1803351196216024260">ਸਾਈਟ ਤੁਹਾਡਾ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਵਰਤਣ ਲਈ ਪੁੱਛ ਸਕਦੀ ਹੈ</translation>
 <translation id="1807246157184219062">ਹਲਕਾ</translation>
 <translation id="1807528111851433570">ਸ਼ੁਰੂਆਤੀ ਸ਼ੀਟ</translation>
+<translation id="180991881384371158">ਤੁਹਾਡਾ CVC ਤੁਹਾਡੇ ਕਾਰਡ ਦੇ ਪਿਛਲੇ ਪਾਸੇ ਹੈ। ਇਹ ਹਸਤਾਖਰ ਬਾਕਸ ਦੇ ਉੱਪਰ ਸੱਜੇ ਪਾਸੇ ਅਖੀਰਲੇ 3 ਅੰਕਾਂ ਦਾ ਹੁੰਦਾ ਹੈ।</translation>
 <translation id="181000283860817563">ਇੱਕ ਤੋਂ ਵੱਧ ਸਾਈਟਾਂ 'ਤੇ ਕੀਮਤਾਂ ਨੂੰ ਟਰੈਕ ਕਰੋ</translation>
 <translation id="1810391395243432441">ਆਪਣੇ ਸਕ੍ਰੀਨ ਲਾਕ ਨਾਲ ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="1812527064848182527">ਲੈਂਡਸਕੇਪ</translation>
@@ -506,6 +507,7 @@
 <translation id="2149968176347646218">ਕਨੈਕਸ਼ਨ ਸੁਰੱਖਿਅਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="2153609454945889823">ਕੀ Google Play Services for AR ਨੂੰ ਸਥਾਪਤ ਕਰਨਾ ਹੈ?</translation>
 <translation id="2154484045852737596">ਕਾਰਡ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
+<translation id="2154739667870063220">ਰੀਬੂਟ ਕਰੋ</translation>
 <translation id="2155260325161282517">5 x 7 ਇੰਚ</translation>
 <translation id="2157640075051554492">ਕੀਮਤਾਂ ਟਰੈਕ ਕਰਨ ਵਾਲੀਆਂ ਸੂਚਨਾਵਾਂ</translation>
 <translation id="2161656808144014275">ਲਿਖਤ</translation>
@@ -640,6 +642,7 @@
 <translation id="2521736961081452453">ਫ਼ਾਰਮ ਬਣਾਓ</translation>
 <translation id="2523886232349826891">ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="2524461107774643265">ਹੋਰ ਜਾਣਕਾਰੀ ਸ਼ਾਮਲ ਕਰੋ</translation>
+<translation id="2527451058878391043">ਤੁਹਾਡਾ CVC ਤੁਹਾਡੇ ਕਾਰਡ ਦੇ ਅਗਲੇ ਪਾਸੇ ਹੈ। ਇਹ ਇੱਕ 4 ਅੰਕਾਂ ਦਾ ਕੋਡ ਹੈ, ਜੋ ਤੁਹਾਡੇ ਕਾਰਡ ਨੰਬਰ ਦੇ ਉੱਪਰ ਸੱਜੇ ਪਾਸੇ ਮੌਜੂਦ ਹੈ।</translation>
 <translation id="2529899080962247600">ਇਸ ਖੇਤਰ ਵਿੱਚ <ph name="MAX_ITEMS_LIMIT" /> ਤੋਂ ਵੱਧ ਇੰਦਰਾਜ ਨਹੀਂ ਹੋਣੇ ਚਾਹੀਦੇ ਹਨ। ਅਗਲੇ ਸਾਰੇ ਇੰਦਰਾਜ ਅਣਡਿੱਠ ਕੀਤੇ ਜਾਣਗੇ।</translation>
 <translation id="253493526287553278">ਪ੍ਰੋਮੋ ਕੋਡ ਦੇ ਵੇਰਵੇ ਦੇਖੋ</translation>
 <translation id="2535585790302968248">ਨਿੱਜੀ ਤੌਰ 'ਤੇ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਲਈ ਨਵੀਂ ਇਨਕੋਗਨਿਟੋ ਟੈਬ ਖੋਲ੍ਹੋ</translation>
@@ -892,6 +895,7 @@
 <translation id="3215092763954878852">WebAuthn ਨੂੰ ਨਹੀਂ ਵਰਤ ਸਕਦੇ</translation>
 <translation id="3216313131063488104">ਬਲੂਜ਼</translation>
 <translation id="3218181027817787318">ਸੰਬੰਧਿਤ</translation>
+<translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{ਹੁਣੇ ਅੱਪਡੇਟ ਕਰਨ ਦੀ ਲੋੜ ਹੈ}=2{ਕੱਲ੍ਹ ਤੱਕ ਅੱਪਡੇਟ ਕਰਨ ਦੀ ਲੋੜ ਹੈ}one{# ਦਿਨ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰਨ ਦੀ ਲੋੜ ਹੈ}other{# ਦਿਨਾਂ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰਨ ਦੀ ਲੋੜ ਹੈ}}</translation>
 <translation id="3223287115535306850">ਐਪ ਲਾਂਚਿੰਗ ਥਰੋਬਰ</translation>
 <translation id="3223425961342298674">ਟਿਕਾਣੇ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="3225919329040284222">ਸਰਵਰ ਨੇ ਇੱਕ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਪੇਸ਼ ਕੀਤਾ ਸੀ ਜੋ ਪਹਿਲਾਂ ਤੋਂ ਮੌਜੂਦ ਅਨੁਮਾਨਾਂ ਨਾਲ ਮੇਲ ਨਹੀਂ ਖਾਂਦਾ। ਇਹ ਅਨੁਮਾਨਾਂ ਨੂੰ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ ਹੈ ਤਾਂ ਕਿ ਉੱਚ-ਸੁਰੱਖਿਆ ਵਾਲੀਆਂ ਵੈੱਬਸਾਈਟਾਂ ਦੀ ਰੱਖਿਆ ਕੀਤੀ ਜਾਵੇ।</translation>
@@ -1375,6 +1379,7 @@
 <translation id="4350629523305688469">ਮਲਟੀ-ਫੰਕਸ਼ਨ ਟ੍ਰੇਅ</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> ਦੀ ਨਜ਼ਦੀਕੀ ਬਲੂਟੁੱਥ ਡੀਵਾਈਸਾਂ ਲਈ ਸਕੈਨ ਕਰਨ ਦੀ ਇੱਛਾ ਹੈ, ਅੱਗੇ ਦਿੱਤੇ ਡੀਵਾਈਸ ਮਿਲੇ ਹਨ:</translation>
 <translation id="4351175281479794167">ਪੁਸ਼ਟੀਕਰਨ ਕੋਡ ਦਾਖਲ ਕਰੋ</translation>
+<translation id="4355383636893709732">Android ਐਪਾਂ ਲਈ ChromeOS ਅੱਪਡੇਟ</translation>
 <translation id="4356973930735388585">ਇਸ ਸਾਈਟ 'ਤੇ ਹਮਲਾਵਰ ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ 'ਤੇ ਖਤਰਨਾਕ ਪ੍ਰੋਗਰਾਮ ਸਥਾਪਤ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਸਕਦੇ ਹਨ ਜੋ ਕਿ ਤੁਹਾਡੀ ਜਾਣਕਾਰੀ (ਉਦਾਹਰਨ ਲਈ ਫ਼ੋਟੋਆਂ, ਪਾਸਵਰਡ, ਸੁਨੇਹੇ, ਅਤੇ ਕ੍ਰੈਡਿਟ ਕਾਰਡ) ਨੂੰ ਚੋਰੀ ਕਰ ਸਕਦੇ ਹਨ ਜਾਂ ਮਿਟਾ ਸਕਦੇ ਹਨ।</translation>
 <translation id="4358059973562876591">ਤੁਹਾਡੇ ਵੱਲੋਂ ਨਿਰਧਾਰਤ ਕੀਤੇ ਟੈਮਪਲੇਟ DnsOverHttpsMode ਨੀਤੀ ਵਿੱਚ ਕਿਸੇ ਗੜਬੜ ਕਾਰਨ ਸ਼ਾਇਦ ਲਾਗੂ ਨਹੀਂ ਕੀਤੇ ਜਾ ਸਕਦੇ।</translation>
 <translation id="4358461427845829800">ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ...</translation>
@@ -1755,6 +1760,7 @@
 <translation id="5288393065350884210">ਲੇਖਾਕਾਰੀ ਅਤੇ ਲੇਖਾ-ਪੜਤਾਲ</translation>
 <translation id="5288808348893593856">ਸਾਈਟ ਦਾ ਕਨੈਕਸ਼ਨ ਉਦੋਂ ਤੱਕ ਸੁਰੱਖਿਅਤ ਹੈ ਜਦੋਂ ਤੱਕ Chrome ਤੁਹਾਨੂੰ ਅਸੁਰੱਖਿਅਤ ਹੋਣ ਦੀ ਸੂਚਨਾ ਨਹੀਂ ਦਿੰਦਾ।</translation>
 <translation id="5289384342738547352">ਬਹੁ-ਗਿਣਤੀ ਦਸਤਾਵੇਜ਼ ਸਾਂਭ-ਸੰਭਾਲ</translation>
+<translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{ਅੱਜ ਅੱਪਡੇਟ ਕਰਨ ਦੀ ਲੋੜ ਹੈ}=2{ਕੱਲ੍ਹ ਤੱਕ ਅੱਪਡੇਟ ਕਰਨ ਦੀ ਲੋੜ ਹੈ}one{# ਦਿਨ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰਨ ਦੀ ਲੋੜ ਹੈ}other{# ਦਿਨਾਂ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰਨ ਦੀ ਲੋੜ ਹੈ}}</translation>
 <translation id="5293919335876685914">ਕੂਪ</translation>
 <translation id="5296589789433599000">ਖਾਣਾ ਪਕਾਉਣਾ ਅਤੇ ਪਕਵਾਨ-ਵਿਧੀਆਂ</translation>
 <translation id="5299298092464848405">ਨੀਤੀ ਪਾਰਸ ਕਰਨ ਵਿੱਚ ਗੜਬੜ</translation>
@@ -1949,6 +1955,7 @@
 <translation id="5786044859038896871">ਕੀ ਤੁਸੀਂ ਆਪਣੀ ਕਾਰਡ ਜਾਣਕਾਰੀ ਭਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="578633867165174378">Chrome ਨੂੰ ਉਹ ਪਾਸਵਰਡ ਮਿਲਿਆ ਹੈ ਜਿਸਦੀ ਵਰਤੋਂ ਤੁਸੀਂ ਹੁਣੇ-ਹੁਣੇ ਡਾਟਾ ਉਲੰਘਣਾ ਵਿੱਚ ਕੀਤੀ ਹੈ। ਅਸੀਂ ਇਸ ਪਾਸਵਰਡ ਨੂੰ ਹੁਣੇ ਬਦਲਣ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕਰਦੇ ਹਾਂ।</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="580241730938216256">ਅੱਪਡੇਟ ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="5803412860119678065">ਕੀ ਤੁਸੀਂ ਆਪਣਾ <ph name="CARD_DETAIL" /> ਭਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="5804241973901381774">ਅਨੁਮਤੀਆਂ</translation>
 <translation id="5808435672482059465">ਆਪਣਾ Chrome ਇਤਿਹਾਸ ਦੇਖੋ</translation>
@@ -2108,6 +2115,7 @@
 <translation id="6218753634732582820">ਕੀ Chromium ਤੋਂ ਪਤਾ ਮਿਟਾਉਣਾ ਹੈ?</translation>
 <translation id="622039917539443112">ਬਰਾਬਰ ਤਹਿ</translation>
 <translation id="6221345481584921695">'Google ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ' ਨੂੰ ਹਾਲ ਹੀ ਵਿੱਚ <ph name="SITE" /> 'ਤੇ <ph name="BEGIN_LINK" />ਮਾਲਵੇਅਰ ਦਾ ਪਤਾ<ph name="END_LINK" /> ਲੱਗਿਆ। ਜੋ ਵੈੱਬਸਾਈਟਾਂ ਆਮ ਤੌਰ 'ਤੇ ਸੁਰੱਖਿਅਤ ਹੁੰਦੀਆਂ ਹਨ, ਉਹ ਵੀ ਕਦੇ-ਕਦੇ ਮਾਲਵੇਅਰ ਨਾਲ ਪ੍ਰਭਾਵਿਤ ਹੋ ਜਾਂਦੀਆਂ ਹਨ। ਖਰਾਬ ਸਮੱਗਰੀ <ph name="SUBRESOURCE_HOST" /> ਤੋਂ ਆਉਂਦੀ ਹੈ, ਜੋ ਇੱਕ ਪ੍ਰਸਿੱਧ ਮਾਲਵੇਅਰ ਵਿਤਰਕ ਹੈ।</translation>
+<translation id="6221892641068781024">ਸਰਲੀਕਿਰਤ ਦ੍ਰਿਸ਼</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab ਦਬਾ ਕੇ, ਫਿਰ Chrome ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਆਪਣੇ ਪਹੁੰਚਯੋਗਤਾ ਟੂਲ ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾਉਣ ਲਈ Enter ਦਬਾਓ</translation>
 <translation id="6229649258872345286">ਪਰਿਵਾਰਕ ਯਾਤਰਾ</translation>
 <translation id="6232271601416750929">ਨਿਰਮਲ ਸੁੰਦਰਤਾ</translation>
@@ -2167,6 +2175,7 @@
 <translation id="6366710531182496394">ਖੱਬੇ ਦੋ ਪਿੰਨਾਂ</translation>
 <translation id="6367196786591004737">ਇੰਦਰਾਜ ਮਿਟਾਓ</translation>
 <translation id="6370022303958842211">ਡੀਵਾਈਸ ਪਹੁੰਚ ਸੰਬੰਧੀ ਕਾਰਵਾਈਆਂ ਜਿਵੇਂ ਕਿ ਲੌਗ-ਇਨ (ਅਸਫਲ ਲੌਗ-ਇਨ ਕਾਰਨਾਂ ਸਮੇਤ), ਲੌਗ-ਆਊਟ, ਲਾਕ ਅਤੇ ਅਣਲਾਕ</translation>
+<translation id="6374469231428023295">ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="6374865374745447009">ਵਿੰਡੋ ਪ੍ਰਬੰਧਨ</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />' ਲਈ 1 ਨਤੀਜਾ</translation>
 <translation id="6380497234672085559">A0</translation>
@@ -2477,6 +2486,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> ਅਤੇ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ਹੋਰ}other{<ph name="PAYMENT_METHOD_PREVIEW" /> ਅਤੇ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ਹੋਰ}}</translation>
 <translation id="7153618581592392745">ਲਵਿੰਡਰ</translation>
 <translation id="7156870133441232244">ਸਰਵਰ, TLS 1.2 ਜਾਂ ਬਾਅਦ ਵਾਲੇ ਵਰਜਨ 'ਤੇ ਅੱਪਗ੍ਰੇਡ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ।</translation>
+<translation id="7160999678034985039">ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਕੰਮ ਨੂੰ ਰੱਖਿਅਤ ਕਰੋ ਅਤੇ ਤਿਆਰ ਹੋਣ 'ਤੇ ਅੱਪਡੇਟ ਸ਼ੁਰੂ ਕਰੋ।</translation>
 <translation id="7163295244162773898">{0,plural, =1{ਕੀ ਗੁਪਤ ਫ਼ਾਈਲ ਨੂੰ ਕਾਪੀ ਕਰਨਾ ਹੈ?}one{ਕੀ ਗੁਪਤ ਫ਼ਾਈਲ ਨੂੰ ਕਾਪੀ ਕਰਨਾ ਹੈ?}other{ਕੀ ਗੁਪਤ ਫ਼ਾਈਲਾਂ ਨੂੰ ਕਾਪੀ ਕਰਨਾ ਹੈ?}}</translation>
 <translation id="717330890047184534">GAIA ਆਈ.ਡੀ.:</translation>
 <translation id="7174545416324379297">ਵਿਲੀਨ ਕੀਤਾ ਗਿਆ</translation>
@@ -2724,6 +2734,7 @@
 <translation id="7687305263118037187">ਮੁੜ-ਕੋਸ਼ਿਸ਼ ਲਈ ਟਾਈਮ-ਆਊਟ</translation>
 <translation id="7690647519407127574">Oufuku Hagaki ਪੋਸਟਕਾਰਡ</translation>
 <translation id="7693583928066320343">ਪੰਨਾ ਕ੍ਰਮ ਪ੍ਰਾਪਤ ਹੋਇਆ</translation>
+<translation id="769424100851389104">ਹੁਣੇ ਅੱਪਡੇਟ ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="7696089921647603491">ਕਲਾਸਿਕ ਰੌਕ ਅਤੇ ਪੁਰਾਣੇ ਗੀਤ</translation>
 <translation id="769721561045429135">ਫਿਲਹਾਲ, ਤੁਹਾਡੇ ਕੋਲ ਉਹ ਕਾਰਡ ਹਨ ਜੋ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਹੀ ਵਰਤੇ ਜਾ ਸਕਦੇ ਹਨ। ਕਾਰਡਾਂ ਦੀ ਸਮੀਖਿਆ ਲਈ ਜਾਰੀ ਰੱਖੋ 'ਤੇ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="7698864304447945242">ਕੀ Google Play Services for AR ਨੂੰ ਅੱਪਡੇਟ ਕਰਨਾ ਹੈ?</translation>
@@ -2748,6 +2759,7 @@
 <translation id="774634243536837715">ਖਤਰਨਾਕ ਸਮੱਗਰੀ ਬਲਾਕ ਕੀਤੀ ਗਈ।</translation>
 <translation id="7751971323486164747">Chrome ਵਿੱਚ ਫ਼ੌਂਟ ਦੇ ਆਕਾਰਾਂ ਅਤੇ ਟਾਈਪਫੇਸਾਂ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
 <translation id="7752995774971033316">ਬਿਨਾਂ ਵਿਵਸਥਿਤ ਕੀਤਾ</translation>
+<translation id="7754587126786572336">ਅੱਪਡੇਟ ਸ਼ੁਰੂ ਹੋਣ 'ਤੇ ਤੁਹਾਡੀਆਂ Chrome ਟੈਬਾਂ ਅਤੇ ਐਪਾਂ ਬੰਦ ਹੋ ਜਾਣਗੀਆਂ</translation>
 <translation id="7755287808199759310">ਤੁਹਾਡਾ ਮਾਤਾ-ਪਿਤਾ ਇਸ ਨੂੰ ਤੁਹਾਡੇ ਲਈ ਅਣਬਲੌਕ ਕਰ ਸਕਦਾ ਹੈ</translation>
 <translation id="7755624218968747854">ਪ੍ਰਾਇਮਰੀ ਰੋਲ</translation>
 <translation id="7758069387465995638">ਫਾਇਰਵਾਲ ਜਾਂ ਐਂਟੀਵਾਇਰਸ ਸਾਫਟਵੇਅਰ ਵੱਲੋਂ ਕਨੈਕਸ਼ਨ ਬਲਾਕ ਕੀਤਾ ਹੋ ਸਕਦਾ ਹੈ।</translation>
@@ -2912,6 +2924,7 @@
 <translation id="8186706823560132848">ਸਾਫਟਵੇਅਰ</translation>
 <translation id="8190193880870196235">ਕਿਸੇ ਐਕਸਟੈਂਸ਼ਨ ਵੱਲੋਂ ਪ੍ਰਬੰਧਨ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="8194797478851900357">&amp;ਮੂਵ ਨੂੰ ਅਨਡੂ ਕਰੋ</translation>
+<translation id="8200772114523450471">ਦੁਬਾਰਾ ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="8201077131113104583">"<ph name="EXTENSION_ID" />" ਨਾਲ ਐਕਸਟੈਂਸ਼ਨ ਲਈ ਅਵੈਧ ਅੱਪਡੇਟ URL</translation>
 <translation id="8202097416529803614">ਆਰਡਰ ਸਾਰਾਂਸ਼</translation>
 <translation id="8202370299023114387">ਵਿਵਾਦ</translation>
@@ -3209,6 +3222,7 @@
 <translation id="8963117664422609631">ਸਾਈਟ ਦੀਆਂ ਸੈਟਿੰਗਾਂ 'ਤ ਜਾਓ</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />ਸੁਝਾਅ:<ph name="MARKUP_2" />ਯਕੀਨੀ ਬਣਾਓ ਕਿ ਤੁਹਾਡੇ ਕੋਲ ਇੱਕ ਡਾਟਾ ਕਨੈਕਸ਼ਨ ਹੈ<ph name="MARKUP_3" />ਬਾਅਦ ਵਿੱਚ ਇਹ ਵੈਬਸਫ਼ਾ ਰੀਲੋਡ ਕਰੋ<ph name="MARKUP_4" />ਉਸ ਪਤੇ ਦੀ ਜਾਂਚ ਕਰੋ, ਜੋ ਤੁਸੀਂ ਦਰਜ ਕੀਤਾ ਸੀ<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">ਕਾਰਡ ਰੱਖਿਅਤ ਕਰੋ</translation>
+<translation id="8970887620466824814">ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ।</translation>
 <translation id="8971063699422889582">ਸਰਵਰ ਦੇ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਦੀ ਮਿਆਦ ਪੁੱਗ ਗਈ ਹੈ।</translation>
 <translation id="8975012916872825179">ਫ਼ੋਨ ਨੰਬਰ, ਈਮੇਲ ਪਤੇ, ਅਤੇ ਸ਼ਿਪਿੰਗ ਪਤੇ ਜਿਹੀ ਜਾਣਕਾਰੀ ਸ਼ਾਮਲ ਕਰਦਾ ਹੈ</translation>
 <translation id="8975263830901772334">ਤੁਹਾਡੇ ਵੱਲੋਂ ਪ੍ਰਿੰਟ ਕੀਤੀਆਂ ਫ਼ਾਈਲਾਂ ਦੇ ਨਾਮ</translation>

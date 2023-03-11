@@ -34,6 +34,7 @@ Salatun datasi voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="1173894706177603556">Muuta nimeä</translation>
 <translation id="1177863135347784049">Muokattu</translation>
 <translation id="1181037720776840403">Poista</translation>
+<translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">Käytetäänkö vahvaa salasanaa?</translation>
 <translation id="1197267115302279827">Siirrä kirjanmerkkejä</translation>
 <translation id="1201402288615127009">Seuraava</translation>
@@ -42,7 +43,6 @@ Salatun datasi voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="1204692632633423444">Chrome-toimintopainike: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">Kopioi linkin teksti</translation>
 <translation id="1209206284964581585">Piilota toistaiseksi</translation>
-<translation id="1226851825267005295">Voit muuttaa asetuksia, kun olet kirjautunut Chromeen Google-tilillä.</translation>
 <translation id="1227058898775614466">Navigointihistoria</translation>
 <translation id="1231733316453485619">Otetaanko synkronointi käyttöön?</translation>
 <translation id="123724288017357924">Päivitä nykyinen sivu, ohita välimuistin sisältö</translation>
@@ -166,7 +166,6 @@ Kun poistat selaushistorian (kokonaan tai vain tietyn sivuston osalta), poistat 
 <translation id="1928696683969751773">Päivitykset</translation>
 <translation id="19288952978244135">Avaa Chrome uudelleen.</translation>
 <translation id="1933845786846280168">Valittu välilehti</translation>
-<translation id="193571872656840963">Kiitä sisällöntuottajaa</translation>
 <translation id="1943432128510653496">Salasanojen tallentaminen</translation>
 <translation id="1952172573699511566">Verkkosivustot näyttävät tekstin valitsemallasi kielellä, kun se on mahdollista.</translation>
 <translation id="1959679933317802873">Odotetaan sisältöä</translation>
@@ -202,7 +201,6 @@ Kun poistat selaushistorian (kokonaan tai vain tietyn sivuston osalta), poistat 
 <translation id="2122601567107267586">Sovelluksen avaaminen epäonnistui</translation>
 <translation id="2132122640199389833">Poista kaikki linkitetyt laitteet</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> suljettiin</translation>
-<translation id="2134927169889348449">Käyttämällä Chromea hyväksyt <ph name="BEGIN_TOS_LINK" />Googlen käyttöehdot<ph name="END_TOS_LINK" /> sekä <ph name="BEGIN_ATOS_LINK" />Google Chromen ja Chrome-käyttöjärjestelmän lisäkäyttöehdot<ph name="END_ATOS_LINK" />.</translation>
 <translation id="2139186145475833000">Lisää aloitusnäyttöön</translation>
 <translation id="2141396931810938595">Perustuu käyttöösi</translation>
 <translation id="214888715418183969">Valitse, mitä olet valmis jakamaan Chromelle. Jakamasi mittarit auttavat parantamaan Chromen ominaisuuksia, toimintaa ja vakautta.</translation>
@@ -555,7 +553,6 @@ Yksityiset tilamerkit parantavat yksityisyyttä verkossa, eikä sinua voi tunnis
 <translation id="409109920254068737">Voit kirjautua sisään QR-koodin näyttävälle laitteelle tämän tabletin avulla.</translation>
 <translation id="4095146165863963773">Poistetaanko sovellustiedot?</translation>
 <translation id="4096227151372679484">Kirjanmerkin tallennusvaiheet avattu puolen näytön kokoisena</translation>
-<translation id="4099578267706723511">Auta parantamaan Chromea lähettämällä käyttötilastoja ja virheraportteja Googlelle.</translation>
 <translation id="4101475238162928417">Synkronoi salasanat, kirjanmerkit ja muuta muilta laitteiltasi</translation>
 <translation id="410351446219883937">Automaattinen toisto</translation>
 <translation id="4106587138345390261">Chrome kokeilee uusia ominaisuuksia, joiden avulla sivustot voivat tarjota saman selauskokemuksen vähemmillä tiedoilla.</translation>
@@ -593,7 +590,6 @@ Yksityiset tilamerkit parantavat yksityisyyttä verkossa, eikä sinua voi tunnis
 <translation id="4269820728363426813">Kopioi linkin osoite</translation>
 <translation id="4283102315569707115">Haluatko oletuksena pyytää tietokonesivustoja?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Laita näytön lukitus päälle Android-asetuksista<ph name="END_LINK" /></translation>
-<translation id="4293476595220860475">Käyttämällä Chromea hyväksyt <ph name="BEGIN_TOS_LINK" />Googlen käyttöehdot<ph name="END_TOS_LINK" /> sekä <ph name="BEGIN_ATOS_LINK" />Google Chromen ja Chrome-käyttöjärjestelmän lisäkäyttöehdot<ph name="END_ATOS_LINK" />. Myös <ph name="BEGIN_PRIVACY_LINK" />tietosuojakäytäntöä<ph name="END_PRIVACY_LINK" /> sovelletaan.</translation>
 <translation id="4296252229500326964">Uusi incognito-välilehti</translation>
 <translation id="4298388696830689168">Linkitetyt sivustot</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -766,7 +762,6 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5161254044473106830">Nimike vaaditaan</translation>
 <translation id="5170568018924773124">Näytä kansiossa</translation>
 <translation id="5171045022955879922">Kirjoita hakusanoja tai URL-osoite</translation>
-<translation id="517734441743343109">Jatkamalla hyväksyt <ph name="BEGIN_TOS_LINK" />käyttöehdot<ph name="END_TOS_LINK" /> ja <ph name="BEGIN_PRIVACY_LINK" />tietosuojakäytännön<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="5184329579814168207">Avaa Chromessa</translation>
 <translation id="5191251636205085390">Lue lisää uusista teknologioista, joilla on tarkoitus korvata kolmannen osapuolen evästeet, ja tee haluamasi valinnat</translation>
 <translation id="5193988420012215838">Kopioitu leikepöydälle</translation>

@@ -8,9 +8,6 @@
 <translation id="1175958423215084756">लिंक भेट्टियो। <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">पेज <ph name="PAGE_NUMBER" /> मेटाइयो</translation>
 <translation id="1258009455399840361">घडी घुम्ने दिशामा ९० डिग्री घुमाउनुहोस्</translation>
-<translation id="1300209025925956156">डकुमेन्ट स्क्यान गर्नुहोस्</translation>
-<translation id="1309250603447638106">डकुमेन्ट स्क्यान गर्ने सुविधासम्बम्धी अपडेटहरू डाउनलोड गरिँदै छ</translation>
-<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />। प्रयोग गर्न खोज बटन + लेफ्ट एरो थिच्नुहोस्।</translation>
 <translation id="1417314334557041815">पेज <ph name="INDEX" /> सम्पादन गर्नुहोस्</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> निकालिएको छ।</translation>
 <translation id="1473110567575736769">३ सेकेन्डको टाइमर</translation>
@@ -24,7 +21,6 @@
 <translation id="1664224225747386870">केही पनि रेकर्ड गरिएन</translation>
 <translation id="1838104802459806957">माथितिर ढल्काइयोस्</translation>
 <translation id="1843105061469674856">अतिरिक्त पेज स्क्यान गर्नुहोस्</translation>
-<translation id="1851169887664797861">क्यामेरासम्बन्धी थप कन्ट्रोलहरू उपलब्ध छन्</translation>
 <translation id="1851616744363735765">रोकियो</translation>
 <translation id="1899697626337024495">तस्बिरको रिजोल्युसन</translation>
 <translation id="1925845977604399247">ग्यालेरीमा जानुहोस्</translation>
@@ -49,7 +45,6 @@
 <translation id="2761536921376153655">स्क्यानको प्रकार</translation>
 <translation id="28682968802727151">प्रिभ्यू मिरर गर्नुहोस्</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> जोडिएको छ।</translation>
-<translation id="2904654629665923749">डकुमेन्ट स्क्यान गर्ने सुविधा उपलब्ध छ</translation>
 <translation id="3067436040345934772">दायाँतिर प्यान गर्नुहोस्</translation>
 <translation id="3081586908890909590">भिडियो रेकर्ड गर्ने मोड प्रयोग गर्नुहोस्</translation>
 <translation id="313467653172006084">३० FPS</translation>
@@ -74,7 +69,6 @@
 <translation id="4269820728363426813">लिङ्क ठेगाना कपी गर्नुहोस्</translation>
 <translation id="4281620174117014503">मध्यम रिजोल्युसन</translation>
 <translation id="428234092390943511">पेजको थम्बनेल</translation>
-<translation id="4340659173795395806">तपाईं अब एकभन्दा बढी पेज भएको PDF बनाउन सक्नुहुन्छ</translation>
 <translation id="4383571725254449280">प्रिन्ट सम्पादनका लगहरू</translation>
 <translation id="4445542136948522167">तस्बिर खिच्न छाड्नुहोस्‌</translation>
 <translation id="4570032796877367747">अगाडिको क्यामेरा</translation>
@@ -97,7 +91,6 @@
 <translation id="5317780077021120954">बचत गर्नुहोस्</translation>
 <translation id="5320594929574852403">बायाँतिर सारिँदै छ</translation>
 <translation id="5374917190292010970">४K (२१६० पिक्सेल)</translation>
-<translation id="5444515100983837161">डकुमेन्टका सबै किनारा फ्रेमभित्र पार्नुहोस्। डकुमेन्ट र पृष्ठभूमि बेग्लाबेग्लै रङका भएका खण्डमा स्क्यान गर्ने सुविधाले सबैभन्दा राम्ररी काम गर्छ।</translation>
 <translation id="5662366948659129155">पेज <ph name="COUNT" /> स्क्यान गरिँदै छ</translation>
 <translation id="5671277269877808209">वर्गाकार</translation>
 <translation id="5746169159649715125">पीडीएपको रूपमा बचत गर्नुहोस्</translation>
@@ -157,7 +150,6 @@
 <translation id="8428213095426709021">सेटिङहरू</translation>
 <translation id="8629662593426079630">३६० पिक्सेल</translation>
 <translation id="8711011893539266636">माइक्रोफोनका हकमा म्युट गर्ने सुविधासम्बन्धी सेटिङ टगल गर्नुहोस्। म्युट गर्ने सुविधा अन छ</translation>
-<translation id="8712637175834984815">भयो</translation>
 <translation id="8730621377337864115">गरियो</translation>
 <translation id="8732462232047530626">मेटाडेटाको पूर्वावलोकन</translation>
 <translation id="8815966864175525708">पोर्ट्रेट तस्बिर खिच्न थाल्नुहोस्</translation>

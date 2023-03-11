@@ -487,6 +487,7 @@
 <translation id="2108755909498034140">إعادة تشغيل جهاز الكمبيوتر</translation>
 <translation id="2111166930115883695">اضغط على مفتاح المسافة لبدء اللعب.</translation>
 <translation id="2112529237938317174">إظهار تفاصيل الأذونات</translation>
+<translation id="2113232594265919362">‏يظهر هذا التحذير لأنّ هذا الموقع الإلكتروني لا يتوافق مع بروتوكول HTTPS، ولأنّك مشترك في "برنامج الحماية المتقدّمة" من Google. <ph name="BEGIN_LEARN_MORE_LINK" />مزيد من المعلومات<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2113977810652731515">البطاقة</translation>
 <translation id="2114841414352855701">تم تجاهلها نظرًا لتجاوزها بواسطة <ph name="POLICY_NAME" />.</translation>
 <translation id="2118132148597630479">‏ظرف C5</translation>
@@ -504,6 +505,7 @@
 <translation id="2149968176347646218">الاتصال بهذا الموقع الإلكتروني غير آمن</translation>
 <translation id="2153609454945889823">‏هل تريد تثبيت "خدمات Google Play للواقع المعزّز"؟</translation>
 <translation id="2154484045852737596">تعديل البطاقة</translation>
+<translation id="2154739667870063220">إعادة التشغيل</translation>
 <translation id="2155260325161282517">5 × 7 بوصة</translation>
 <translation id="2157640075051554492">إشعارات تتبُّع الأسعار</translation>
 <translation id="2161656808144014275">نص</translation>
@@ -893,6 +895,7 @@
 <translation id="3215092763954878852">‏تعذّر استخدام WebAuthn</translation>
 <translation id="3216313131063488104">موسيقى "بلوز"</translation>
 <translation id="3218181027817787318">نسبي</translation>
+<translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{يجب إجراء التحديث الآن.}=2{يجب إجراء التحديث بحلول الغد.}zero{يجب إجراء التحديث في غضون # يوم.}few{يجب إجراء التحديث في غضون # أيام.}many{يجب إجراء التحديث في غضون # يومًا.}other{يجب إجراء التحديث في غضون # يوم.}}</translation>
 <translation id="3223287115535306850">رمز التحميل الخاص ببدء تشغيل التطبيق</translation>
 <translation id="3223425961342298674">تم رفض طلب الوصول إلى الموقع الجغرافي.</translation>
 <translation id="3225919329040284222">قدم الخادم شهادة لا تتطابق مع التوقعات المضمّنة. تم تضمين هذه التوقعات للحصول على مواقع إلكترونية موثوقة وآمنة جدًا لتوفير الحماية لك.</translation>
@@ -1211,6 +1214,7 @@
 <translation id="3990250421422698716">ترتيب النسخ مع الفصل بينها</translation>
 <translation id="3992684624889376114">لمحة حول هذه الصفحة</translation>
 <translation id="399952081411886534">ميزات أخرى تُحسّن الخصوصية في عرض الإعلانات</translation>
+<translation id="4000598935132966791">مزيد من المعلومات حول قيود المواقع الإلكترونية في المتصفِّحات المُدارة</translation>
 <translation id="4006465311664329701">‏طرق الدفع والعروض الترويجية والعناوين التي تستخدم Google Pay</translation>
 <translation id="4009243425692662128">‏يتم إرسال محتوى الصفحات التي تطبعها إلى Google Cloud أو أطراف خارجية لتحليله. على سبيل المثال، قد يتم فحص هذا المحتوى بحثًا عن بيانات حسّاسة.</translation>
 <translation id="4010758435855888356">هل تريد السماح بالوصول إلى مساحة التخزين؟</translation>
@@ -1376,6 +1380,7 @@
 <translation id="4350629523305688469">دُرج متعدد الوظائف</translation>
 <translation id="4351060348582610152">يريد <ph name="ORIGIN" /> البحث عن أجهزة البلوتوث المجاورة. وتم العثور على الأجهزة التالية:</translation>
 <translation id="4351175281479794167">إدخال رمز التحقق</translation>
+<translation id="4355383636893709732">‏تحديث ChromeOS لتحسين أداء تطبيقات Android</translation>
 <translation id="4356973930735388585">قد يحاول المهاجمون الموجودون على هذا الموقع تثبيت برامج خطيرة على الكمبيوتر التابع لك تسرق معلوماتك أو تحذفها (على سبيل المثال، الصور وكلمات المرور والرسائل وبطاقات الائتمان).</translation>
 <translation id="4358059973562876591">‏قد لا يتم تطبيق النماذج التي حدّدتها بسبب حدوث خطأ في سياسة DnsOverHttpsMode.</translation>
 <translation id="4358461427845829800">إدارة طرق الدفع...</translation>
@@ -1758,6 +1763,7 @@
 <translation id="5288393065350884210">محاسبة ومراجعة مالية</translation>
 <translation id="5288808348893593856">‏الاتصال بهذا الموقع الإلكتروني آمن، ما لم يخبرك Chrome بغير ذلك.</translation>
 <translation id="5289384342738547352">معالجة المستندات المتعددة</translation>
+<translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{يجب إجراء التحديث اليوم.}=2{يجب إجراء التحديث بحلول الغد.}zero{يجب إجراء التحديث في غضون # يوم.}few{يجب إجراء التحديث في غضون # أيام.}many{يجب إجراء التحديث في غضون # يومًا.}other{يجب إجراء التحديث في غضون # يوم.}}</translation>
 <translation id="5293919335876685914">سيارات كوبيه</translation>
 <translation id="5296589789433599000">طهي ووصفات طعام</translation>
 <translation id="5299298092464848405">خطأ في تحليل السياسة</translation>
@@ -1952,6 +1958,7 @@
 <translation id="5786044859038896871">هل تريد ملء معلومات بطاقتك؟</translation>
 <translation id="578633867165174378">‏لقد عثر Chrome في عمليّة اختراق للبيانات على كلمة المرور التي استخدمتها للتو. ننصحك بتغيير كلمة المرور هذه الآن.</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="580241730938216256">بدء التحديث</translation>
 <translation id="5803412860119678065">هل تريد ملء <ph name="CARD_DETAIL" />؟</translation>
 <translation id="5804241973901381774">الأذونات</translation>
 <translation id="5808435672482059465">‏عرض سجلّ Chrome</translation>
@@ -2112,6 +2119,7 @@
 <translation id="6218753634732582820">‏هل تريد إزالة العنوان من Chromium؟</translation>
 <translation id="622039917539443112">الطي بشكلٍ متوازٍ</translation>
 <translation id="6221345481584921695">‏اكتشف التصفح الآمن من Google‬ مؤخرًا <ph name="BEGIN_LINK" />برامج ضارة<ph name="END_LINK" /> على <ph name="SITE" />. أحيانًا تصاب المواقع الإلكترونية الآمنة في الوضع العادي ببرامج ضارة. مصدر محتوى البرامج الضارة <ph name="SUBRESOURCE_HOST" />، وهو ناشر معروف للبرامج الضارة.</translation>
+<translation id="6221892641068781024">العرض المبسَّط</translation>
 <translation id="6226163402662242066">‏<ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح Tab ثم مفتاح Enter لتخصيص أدوات تسهيل الاستخدام في إعدادات Chrome</translation>
 <translation id="6229649258872345286">سياحة عائلية</translation>
 <translation id="6232271601416750929">مستحضرات تجميل صديقة للبيئة</translation>
@@ -2171,6 +2179,7 @@
 <translation id="6366710531182496394">وضع دبوسَين يسارًا</translation>
 <translation id="6367196786591004737">حذف الإدخال</translation>
 <translation id="6370022303958842211">إجراءات الوصول إلى الأجهزة، مثل عمليات تسجيل الدخول (بما في ذلك أسباب تعذّر تسجيل الدخول) وعمليات تسجيل الخروج وقفل الأجهزة وفتحها</translation>
+<translation id="6374469231428023295">إعادة المحاولة</translation>
 <translation id="6374865374745447009">إدارة النوافذ</translation>
 <translation id="6377268785556383139">نتيجة بحث واحدة عن "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6380497234672085559">A0</translation>
@@ -2481,6 +2490,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> وطريقة دفع <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> أخرى}two{<ph name="PAYMENT_METHOD_PREVIEW" /> وطريقتا دفع <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> أخريان}few{<ph name="PAYMENT_METHOD_PREVIEW" /> و<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> طرق دفع أخرى}many{<ph name="PAYMENT_METHOD_PREVIEW" /> و<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> طريقة دفع أخرى}other{<ph name="PAYMENT_METHOD_PREVIEW" /> و<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> طريقة دفع أخرى}}</translation>
 <translation id="7153618581592392745">بنفسجي فاتح</translation>
 <translation id="7156870133441232244">‏يجب ترقية الخادم إلى الإصدار 1.2 من طبقة النقل الآمنة (TLS) أو إصدار أحدث.</translation>
+<translation id="7160999678034985039">يُرجى حفظ عملك وبدء التحديث عند الاستعداد لذلك.</translation>
 <translation id="7163295244162773898">{0,plural, =1{هل تريد نسخ الملف السرّي؟}zero{هل تريد نسخ الملفات السرّية؟}two{هل تريد نسخ الملفَّين السرّيَّين؟}few{هل تريد نسخ الملفات السرّية؟}many{هل تريد نسخ الملفات السرّية؟}other{هل تريد نسخ الملفات السرّية؟}}</translation>
 <translation id="717330890047184534">‏معرّف GAIA:</translation>
 <translation id="7174545416324379297">تم الدمج</translation>
@@ -2728,6 +2738,7 @@
 <translation id="7687305263118037187">انتهاء مهلة إعادة المحاولة</translation>
 <translation id="7690647519407127574">‏بطاقة بريدية Oufuku Hagaki</translation>
 <translation id="7693583928066320343">تم استلام ترتيب الصفحة</translation>
+<translation id="769424100851389104">بدء التحديث الآن</translation>
 <translation id="7696089921647603491">موسيقى "روك" كلاسيكية وقديمة</translation>
 <translation id="769721561045429135">تمتلك حتى الآن بطاقات يمكنك استخدامها فقط على هذا الجهاز. انقر على "متابعة" لمراجعة البطاقات</translation>
 <translation id="7698864304447945242">‏هل تريد تحديث "خدمات Google Play للواقع المعزّز"؟</translation>
@@ -2752,6 +2763,7 @@
 <translation id="774634243536837715">تم حظر المحتوى الخطير.</translation>
 <translation id="7751971323486164747">‏تخصيص أحجام الخطوط وأنماطها في Chrome</translation>
 <translation id="7752995774971033316">غير مُدار</translation>
+<translation id="7754587126786572336">‏سيتم إغلاق علامات تبويب Chrome وتطبيقاته عند بدء التحديث</translation>
 <translation id="7755287808199759310">قد يلغي والداك الحظر لك</translation>
 <translation id="7755624218968747854">اللفافة الأساسية</translation>
 <translation id="7758069387465995638">ربما حظر الجدار الناري أو برامج مكافحة الفيروسات الاتصال.</translation>
@@ -2916,6 +2928,7 @@
 <translation id="8186706823560132848">البرامج</translation>
 <translation id="8190193880870196235">إذن تديره إحدى الإضافات</translation>
 <translation id="8194797478851900357">تراجع عن ال&amp;نقل</translation>
+<translation id="8200772114523450471">استئناف</translation>
 <translation id="8201077131113104583">‏عنوان URL لتحديث الإضافة التي تحتوي على رقم التعريف "<ph name="EXTENSION_ID" />" غير صالح.</translation>
 <translation id="8202097416529803614">ملخص الطلب</translation>
 <translation id="8202370299023114387">تعارض</translation>
@@ -3216,6 +3229,7 @@
 <translation id="8963117664422609631">الانتقال إلى إعدادات الموقع الإلكتروني</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />اقتراحات:<ph name="MARKUP_2" />التأكد من أن لديك اتصال بيانات<ph name="MARKUP_3" />إعادة تحميل صفحة الويب هذه لاحقًا<ph name="MARKUP_4" />التحقق من العنوان الذي أدخلته<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">حفظ البطاقة</translation>
+<translation id="8970887620466824814">حدث خطأ.</translation>
 <translation id="8971063699422889582">انتهت صلاحية شهادة الخادم.</translation>
 <translation id="8975012916872825179">تتضمّن معلومات مثل أرقام الهواتف وعناوين البريد الإلكتروني وعناوين الشحن.</translation>
 <translation id="8975263830901772334">أسماء الملفات التي طبعتها</translation>

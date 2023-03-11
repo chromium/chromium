@@ -241,7 +241,6 @@
 <translation id="3226657629376379887">தளவமைப்புகளுக்கான செயல்பாட்டு மெனு</translation>
 <translation id="3246869037381808805">1 நாளுக்கும் முன்னதாக உள்ள பிரிண்ட்டிங் பணிகள் அகற்றப்படும்</translation>
 <translation id="3268178239013324452">பிரிண்டரின் மூடி திறந்துள்ளதால் அச்சிட முடியவில்லை</translation>
-<translation id="3275506277319227640"><ph name="DIRECTION" /> பக்கம் டாக் செய்யும்</translation>
 <translation id="3275729367986477355">தோற்றப் படம்</translation>
 <translation id="3283504360622356314">{0,plural, =1{ஃபைலைத் திருத்துக}other{ஃபைல்களைத் திருத்துக}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
@@ -360,7 +359,6 @@
 <translation id="4311195029067684288">முழு</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> பட்டன் அழுத்தப்பட்டது</translation>
 <translation id="435692326371619097">நெட்வொர்க் APN அமைப்புகளை நிர்வகிக்கவும். APNகள் மொபைல் நெட்வொர்க் மற்றும் இணையத்திற்கு இடையில் இணைப்பை உருவாக்கும். <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
-<translation id="4370033095251616914">சிறிய பகுதியில் டாக் செய்யும்</translation>
 <translation id="4378373042927530923">இயங்கவில்லை</translation>
 <translation id="4378551569595875038">இணைக்கிறது...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -903,7 +901,6 @@
 <translation id="9137526406337347448">Google சேவைகள்</translation>
 <translation id="9138630967333032450">இடதுபக்க shift</translation>
 <translation id="9149391708638971077">நினைவகச் சோதனையை இயக்கு</translation>
-<translation id="9157515863513902090">அகலமான பகுதியில் டாக் செய்யும்</translation>
 <translation id="9161276708550942948">space</translation>
 <translation id="9173638680043580060">ஒரு நிமிடத்திற்கும் குறைவான நேரமே மீதமுள்ளது</translation>
 <translation id="917720651393141712">சோதனை செய்</translation>

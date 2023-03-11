@@ -81,6 +81,7 @@
 <translation id="149095475893949513">האתר הזה מנסה להוריד פרופיל של הגדרות אישיות.</translation>
 <translation id="1491277525950327607">יש ללחוץ פעמיים כדי להחליף את מצב ההגדרה</translation>
 <translation id="1492417797159476138">שם המשתמש הזה כבר נשמר לאתר זה</translation>
+<translation id="1497590942294823549">תפריט ← מנהל הסיסמאות</translation>
 <translation id="1498283581832036924">החשבון שלך ב-<ph name="WEBSITE" /> לא יימחק.</translation>
 <translation id="1506063256525392513">‏כך תהיה לך אפשרות לצלם ולהעלות תמונות, וגם לסרוק קודי QR</translation>
 <translation id="1509486075633541495">כניסה לאתר</translation>
@@ -242,6 +243,7 @@
 <translation id="271033894570825754">חדש</translation>
 <translation id="2712127207578915686">לא ניתן לפתוח את הקובץ</translation>
 <translation id="2718352093833049315">‏רק ב-Wi-Fi</translation>
+<translation id="2737716090799520623">‏לאחר כניסה לחשבון ב-Chrome, סיסמאות שנשמרות מאוחסנות בחשבון Google (<ph name="ACCOUNT" />). כדי להשבית זאת, <ph name="BEGIN_LINK" />יש לעבור להגדרות<ph name="END_LINK" />.</translation>
 <translation id="2747003861858887689">השדה הקודם</translation>
 <translation id="2749231692441336879">האתר <ph name="CHANNEL_NAME" /> נמצא במעקב</translation>
 <translation id="2764831210418622012">ממש עכשיו</translation>
@@ -843,6 +845,7 @@
 <translation id="6801927553864092214">כדי לגלוש באופן פרטי יש לפתוח כרטיסיית מצב אנונימי</translation>
 <translation id="6807889908376551050">הצגת הכול...</translation>
 <translation id="681368974849482173">הפריט נוצר</translation>
+<translation id="6822587385560699678">כשההגדרה מופעלת, הסיסמאות נשמרות בחשבון <ph name="ACCOUNT" />. כשההגדרה מושבתת, הסיסמאות נשמרות רק במכשיר הזה.</translation>
 <translation id="683022620450280906">‏אפשר להשתמש בסיסמאות השמורות שלך בכל מכשיר. הן נשמרות במנהל הסיסמאות של Google בחשבון <ph name="EMAIL" /></translation>
 <translation id="6831043979455480757">תרגום</translation>
 <translation id="6842136130964845393">כדי לוודא שתמיד תהיה לך גישה לסיסמאות השמורות, עליך לאמת את זהותך</translation>

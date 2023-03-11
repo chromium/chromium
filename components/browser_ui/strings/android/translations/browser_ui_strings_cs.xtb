@@ -26,6 +26,7 @@
 <translation id="1448064542941920355">Snížit přiblížení</translation>
 <translation id="1510341833810331442">Weby nemohou ukládat data do vašeho zařízení</translation>
 <translation id="1547123415014299762">Soubory cookie třetích stran jsou povoleny</translation>
+<translation id="1593426485665524382">V horní části obrazovky jsou k dispozici nové akce</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1633720957382884102">Související weby</translation>
 <translation id="1644574205037202324">Historie</translation>
@@ -146,6 +147,7 @@
 <translation id="3628308229821498208">Navrhovaná vyhledávání</translation>
 <translation id="3636279694100170143">Navštívené weby mohou ověřit, že jste skutečný uživatel, a ne robot</translation>
 <translation id="3649190289964910441">Web, který navštívíte, může do Chromu uložit informace, které potvrzují, že jste skutečný uživatel. Při dalším procházení může Chrome na požádání jinému webu sdělit, že vás předchozí web ověřil jako pravděpodobně důvěryhodného uživatele.</translation>
+<translation id="3721953990244350188">Zavřít a zobrazit další dostupnou akci</translation>
 <translation id="3744111561329211289">Synchronizace na pozadí</translation>
 <translation id="3763247130972274048">Dvojitým klepnutím na šipku vlevo nebo vpravo přeskočíte video o 10 s</translation>
 <translation id="3794286421982011626">Web, který navštívíte, může ukládat informace o tom, co děláte, aby fungoval podle očekávání – například abyste zůstali přihlášeni nebo v košíku zůstaly přidané položky. Weby tato data často ukládají dočasně na vašem zařízení.</translation>
@@ -193,7 +195,6 @@
 <translation id="4534723447064627427">Pokud aplikaci <ph name="APP_NAME" /> chcete umožnit přístup k mikrofonu, zapněte mikrofon také v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Vypnout mikrofon</translation>
 <translation id="4570913071927164677">Podrobnosti</translation>
-<translation id="4575264539271661854">Usnadnit přiblížení textu a obrázků na navštíveném webu</translation>
 <translation id="4598549027014564149">V anonymním režimu weby nemohou používat soubory cookie ke sledování vaší aktivity prohlížení na webech, a to ani na souvisejících webech. Vaše aktivita prohlížení se nepoužívá například k personalizaci reklam. Některé weby mohou přestat fungovat.</translation>
 <translation id="4645575059429386691">Spravováno vaším rodičem</translation>
 <translation id="4670064810192446073">Virtuální realita</translation>

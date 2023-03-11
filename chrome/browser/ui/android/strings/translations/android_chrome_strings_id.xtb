@@ -34,6 +34,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="1173894706177603556">Ganti nama</translation>
 <translation id="1177863135347784049">Sesuaikan</translation>
 <translation id="1181037720776840403">Hapus</translation>
+<translation id="1181366777303791449">pada <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">Gunakan sandi kuat?</translation>
 <translation id="1197267115302279827">Pindahkan bookmark</translation>
 <translation id="1201402288615127009">Berikutnya</translation>
@@ -42,7 +43,6 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="1204692632633423444">Tombol tindakan Chrome: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">Salin teks link</translation>
 <translation id="1209206284964581585">Sembunyikan untuk saat ini</translation>
-<translation id="1226851825267005295">Anda dapat mengelola preferensi setelah login ke Chrome dengan Akun Google Anda.</translation>
 <translation id="1227058898775614466">Histori navigasi</translation>
 <translation id="1231733316453485619">Aktifkan sinkronisasi?</translation>
 <translation id="123724288017357924">Memuat ulang halaman, mengabaikan konten dalam cache</translation>
@@ -166,7 +166,6 @@ Jika Anda menghapus histori penjelajahan, baik semua histori maupun histori untu
 <translation id="1928696683969751773">Update</translation>
 <translation id="19288952978244135">Buka Chrome lagi.</translation>
 <translation id="1933845786846280168">Tab yang Dipilih</translation>
-<translation id="193571872656840963">Ucapkan terima kasih kepada pembuat ini</translation>
 <translation id="1943432128510653496">Simpan sandi</translation>
 <translation id="1952172573699511566">Situs akan menampilkan teks dalam bahasa pilihan Anda, jika memungkinkan.</translation>
 <translation id="1959679933317802873">Menunggu konten</translation>
@@ -202,7 +201,6 @@ Jika Anda menghapus histori penjelajahan, baik semua histori maupun histori untu
 <translation id="2122601567107267586">Tidak dapat membuka aplikasi</translation>
 <translation id="2132122640199389833">Hapus semua perangkat tertaut</translation>
 <translation id="213279576345780926">Menutup <ph name="TAB_TITLE" /></translation>
-<translation id="2134927169889348449">Dengan menggunakan Chrome, Anda menyetujui <ph name="BEGIN_TOS_LINK" />Persyaratan Layanan Google<ph name="END_TOS_LINK" /> serta <ph name="BEGIN_ATOS_LINK" />Persyaratan Layanan Tambahan Google Chrome dan ChromeOS<ph name="END_ATOS_LINK" />.</translation>
 <translation id="2139186145475833000">Tambahkan ke Layar Utama</translation>
 <translation id="2141396931810938595">Berdasarkan penggunaan Anda</translation>
 <translation id="214888715418183969">Pilih metrik yang ingin dibagikan ke Chrome. Metrik yang Anda bagikan akan digunakan untuk membantu menyempurnakan fitur, performa, dan stabilitas Chrome.</translation>
@@ -555,7 +553,6 @@ Private state token meningkatkan privasi di web dan tidak dapat digunakan untuk 
 <translation id="409109920254068737">Anda dapat menggunakan tablet ini untuk login di perangkat yang menampilkan kode QR ini.</translation>
 <translation id="4095146165863963773">Hapus data aplikasi?</translation>
 <translation id="4096227151372679484">Alur penyimpanan bookmark terbuka setengah</translation>
-<translation id="4099578267706723511">Bantu penyempurnaan Chrome dengan mengirimkan statistik penggunaan dan laporan error ke Google.</translation>
 <translation id="4101475238162928417">Sinkronkan untuk mendapatkan sandi dan bookmark Anda serta data lain di perangkat lainnya</translation>
 <translation id="410351446219883937">Putar otomatis</translation>
 <translation id="4106587138345390261">Chrome sedang mengembangkan fitur baru yang memungkinkan situs memberikan pengalaman penjelajahan yang sama, tetapi menggunakan lebih sedikit info pribadi Anda</translation>
@@ -593,7 +590,6 @@ Private state token meningkatkan privasi di web dan tidak dapat digunakan untuk 
 <translation id="4269820728363426813">Salin URL</translation>
 <translation id="4283102315569707115">Minta situs desktop secara default?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Aktifkan kunci layar di setelan Android<ph name="END_LINK" /></translation>
-<translation id="4293476595220860475">Dengan menggunakan Chrome, Anda menyetujui <ph name="BEGIN_TOS_LINK" />Persyaratan Layanan Google<ph name="END_TOS_LINK" /> serta <ph name="BEGIN_ATOS_LINK" />Persyaratan Layanan Tambahan Google Chrome dan ChromeOS<ph name="END_ATOS_LINK" />. <ph name="BEGIN_PRIVACY_LINK" />Kebijakan Privasi<ph name="END_PRIVACY_LINK" /> juga akan berlaku.</translation>
 <translation id="4296252229500326964">Tab Samaran baru</translation>
 <translation id="4298388696830689168">Situs tertaut</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -766,7 +762,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5161254044473106830">Perlu judul</translation>
 <translation id="5170568018924773124">Tampilkan dalam folder</translation>
 <translation id="5171045022955879922">Telusuri atau ketik URL</translation>
-<translation id="517734441743343109">Dengan melanjutkan, Anda menyetujui <ph name="BEGIN_TOS_LINK" />Persyaratan Layanan<ph name="END_TOS_LINK" /> dan <ph name="BEGIN_PRIVACY_LINK" />Kebijakan\u00A0Privasi<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="5184329579814168207">Buka di Chrome</translation>
 <translation id="5191251636205085390">Pelajari dan kontrol teknologi baru yang ditujukan untuk menggantikan cookie pihak ketiga</translation>
 <translation id="5193988420012215838">Disalin ke papan klip Anda</translation>

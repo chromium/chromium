@@ -84,6 +84,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> అంశాలను జిప్ చేస్తోంది...</translation>
 <translation id="1722687688096767818">ప్రొఫైల్‌ను జోడిస్తోంది...</translation>
 <translation id="1726100011689679555">పేరు సర్వర్‌లు</translation>
+<translation id="1727562178154619254">సింక్ చేయడానికి సిద్ధంగా ఉంది</translation>
 <translation id="1729953886957086472">జర్మన్ (జర్మనీ)</translation>
 <translation id="1730235522912993863">చైనీస్ కాంగ్జీ</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> ఐటమ్‌లు కాపీ చేయబడ్డాయి.</translation>
@@ -705,6 +706,7 @@
 <translation id="6732801395666424405">ప్రమాణపత్రాలు లోడ్ కాలేదు</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">Bruschettaతో ఫోల్డర్‌ను షేర్ చేయండి</translation>
+<translation id="6750737795876287924">ప్రస్తుత డైరెక్టరీ</translation>
 <translation id="6751256176799620176">1 ఫోల్డర్ ఎంచుకోబడింది</translation>
 <translation id="6755827872271341378">ChromeOS Flex పరికరం</translation>
 <translation id="6790428901817661496">ప్లే చేయి</translation>
@@ -742,7 +744,6 @@
 <translation id="6973630695168034713">ఫోల్డర్‌లు</translation>
 <translation id="6976795442547527108">సింహం</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979737339423435258">మొత్తం సమయం</translation>
 <translation id="6989942356279143254">స్వీడిష్</translation>
 <translation id="6990081529015358884">మీకు ఖాళీ స్థలం లేదు</translation>
 <translation id="6993826899923627728">ఈ ఐటెమ్‌లు మీ ట్రాష్‌లో ఉన్నాయి</translation>
@@ -798,7 +799,6 @@
 <translation id="7458955835361612701">ఇటీవలి ఇమేజ్‌లు ఏవీ లేవు</translation>
 <translation id="7460898608667578234">ఉక్రెయినియన్</translation>
 <translation id="7469894403370665791">ఆటోమేటిక్‌గా ఈ నెట్‌వర్క్‌కు కనెక్ట్ చేయి</translation>
-<translation id="7481358317100446445">సిద్ధం</translation>
 <translation id="7486315294984620427">Parallels Desktopలో ఫైళ్లను డ్రాప్ చేయడానికి, ఫైల్ తప్పనిసరిగా Windows ఫైళ్లకు కాపీ చేయబడి ఉండాలి.</translation>
 <translation id="749452993132003881">హిరగానా</translation>
 <translation id="7495372004724182530">మలయాళం ఫొనెటిక్</translation>

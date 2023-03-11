@@ -241,7 +241,6 @@
 <translation id="3226657629376379887">အပြင်အဆင် လုပ်ဆောင်ချက် မီနူး</translation>
 <translation id="3246869037381808805">1 ရက်အထက် ပရင့်ထုတ်ရန်ဖိုင်များကို ဖယ်ရှားပါမည်</translation>
 <translation id="3268178239013324452">မအောင်မြင်ပါ - တံခါးပွင့်နေသည်</translation>
-<translation id="3275506277319227640"><ph name="DIRECTION" /> တွင် နေရာချရန်</translation>
 <translation id="3275729367986477355">ချန်နယ်ပုံ</translation>
 <translation id="3283504360622356314">{0,plural, =1{ဖိုင် တည်းဖြတ်ရန်}other{ဖိုင်များ တည်းဖြတ်ရန်}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
@@ -360,7 +359,6 @@
 <translation id="4311195029067684288">အပြည့်</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> ခလုတ် နှိပ်လိုက်သည်</translation>
 <translation id="435692326371619097">ကွန်ရက် APN ဆက်တင်များကို စီမံနိုင်သည်။ APN များက ဆယ်လူလာ ကွန်ရက်နှင့် အင်တာနက်အကြား ချိတ်ဆက်ပေးသည်။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
-<translation id="4370033095251616914">ပိုသေးသောအခြမ်းတွင် နေရာချရန်</translation>
 <translation id="4378373042927530923">မလုပ်ဆောင်ပါ</translation>
 <translation id="4378551569595875038">ချိတ်ဆက်ရန်...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -903,7 +901,6 @@
 <translation id="9137526406337347448">Google ဝန်ဆောင်မှုများ</translation>
 <translation id="9138630967333032450">ဘယ်ဘက် shift</translation>
 <translation id="9149391708638971077">မှတ်ဉာဏ်စစ်ဆေးရန်</translation>
-<translation id="9157515863513902090">ပိုကြီးသောအခြမ်းတွင် နေရာချရန်</translation>
 <translation id="9161276708550942948">space ကီး</translation>
 <translation id="9173638680043580060">တစ်မိနစ်ပင် မကျန်တော့ပါ</translation>
 <translation id="917720651393141712">စမ်းသပ်မှု</translation>

@@ -376,6 +376,7 @@
 <translation id="1803351196216024260">Може да тражи да користи микрофон</translation>
 <translation id="1807246157184219062">Светлa</translation>
 <translation id="1807528111851433570">Први лист</translation>
+<translation id="180991881384371158">CVC је на полеђини картице. То су последње 3 цифре у горњем десном углу оквира за потпис.</translation>
 <translation id="181000283860817563">Пратите цене на више сајтова</translation>
 <translation id="1810391395243432441">Заштитите лозинке помоћу закључавања екрана</translation>
 <translation id="1812527064848182527">водоравно</translation>
@@ -506,6 +507,7 @@
 <translation id="2149968176347646218">Веза није безбедна</translation>
 <translation id="2153609454945889823">Желите да инсталирате Google Play услуге за ПР?</translation>
 <translation id="2154484045852737596">Измените картицу</translation>
+<translation id="2154739667870063220">Рестартуј</translation>
 <translation id="2155260325161282517">5×7 in</translation>
 <translation id="2157640075051554492">Обавештења о праћењу цена</translation>
 <translation id="2161656808144014275">Текст</translation>
@@ -640,6 +642,7 @@
 <translation id="2521736961081452453">Направите упитник</translation>
 <translation id="2523886232349826891">Сачувано је само на овом уређају</translation>
 <translation id="2524461107774643265">Додајте још информација</translation>
+<translation id="2527451058878391043">CVC је на предњој страни картице. То је 4-цифрени кôд у горњем десном углу изнад броја картице.</translation>
 <translation id="2529899080962247600">Ово поље не сме да има више од <ph name="MAX_ITEMS_LIMIT" /> уноса. Сви будући уноси ће се занемарити.</translation>
 <translation id="253493526287553278">Прикажи детаље о промотивном коду</translation>
 <translation id="2535585790302968248">Отворите нову картицу без архивирања да бисте прегледали приватно</translation>
@@ -894,6 +897,7 @@
 <translation id="3215092763954878852">Коришћење веб-стандарда WebAuthn није успело</translation>
 <translation id="3216313131063488104">Блуз</translation>
 <translation id="3218181027817787318">Релативно</translation>
+<translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Ажурирање мора да се обави одмах}=2{Ажурирање мора да се обави до сутра}one{Ажурирање мора да се обави у року од # дана}few{Ажурирање мора да се обави у року од # дана}other{Ажурирање мора да се обави у року од # дана}}</translation>
 <translation id="3223287115535306850">Икона за учитавање при покретању апликације</translation>
 <translation id="3223425961342298674">Локација није дозвољена</translation>
 <translation id="3225919329040284222">Сервер је приказао сертификат који се не подудара са уграђеним очекивањима. Та очекивања су обухваћена за одређене веб-сајтове са јаким безбедносним мерама како би вас заштитила.</translation>
@@ -1378,6 +1382,7 @@
 <translation id="4350629523305688469">Вишенаменска фиока</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> жели да тражи Bluetooth уређаје у близини. Пронађени су следећи уређаји:</translation>
 <translation id="4351175281479794167">Унесите верификациони кôд</translation>
+<translation id="4355383636893709732">Ажурирање ChromeOS-а за Android апликације</translation>
 <translation id="4356973930735388585">Нападачи на овом сајту ће можда покушати да инсталирају опасне програме на рачунару који краду или бришу информације (на пример, слике, лозинке, поруке и бројеве кредитних картица).</translation>
 <translation id="4358059973562876591">Није могуће применити шаблоне које сте навели због грешке у DnsOverHttpsMode смерницама.</translation>
 <translation id="4358461427845829800">Управљајте начинима плаћања...</translation>
@@ -1758,6 +1763,7 @@
 <translation id="5288393065350884210">Рачуноводство и ревизија</translation>
 <translation id="5288808348893593856">Веза сајта је безбедна ако вам Chrome не каже другачије.</translation>
 <translation id="5289384342738547352">Обрада више докумената</translation>
+<translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Ажурирање мора да се обави данас}=2{Ажурирање мора да се обави до сутра}one{Ажурирање мора да се обави у року од # дана}few{Ажурирање мора да се обави у року од # дана}other{Ажурирање мора да се обави у року од # дана}}</translation>
 <translation id="5293919335876685914">Купеи</translation>
 <translation id="5296589789433599000">Кување и рецепти</translation>
 <translation id="5299298092464848405">Грешка при рашчлањивању смерница</translation>
@@ -1952,6 +1958,7 @@
 <translation id="5786044859038896871">Желите ли да попуните информације о картици?</translation>
 <translation id="578633867165174378">Chrome је пронашао лозинку коју сте управо користили при повреди података. Препоручујемо вам да одмах промените ту лозинку.</translation>
 <translation id="5789643057113097023">,</translation>
+<translation id="580241730938216256">Покрени ажурирање</translation>
 <translation id="5803412860119678065">Желите ли да попуните подацима <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Дозволе</translation>
 <translation id="5808435672482059465">Прегледајте историју Chrome-а</translation>
@@ -2111,6 +2118,7 @@
 <translation id="6218753634732582820">Желите ли да уклоните адресу из Chromium-а?</translation>
 <translation id="622039917539443112">Паралелно пресавијање</translation>
 <translation id="6221345481584921695">Google безбедно прегледање је недавно <ph name="BEGIN_LINK" />открило малвер<ph name="END_LINK" /> на <ph name="SITE" />. Веб-сајтови који су обично безбедни се понекад заразе малвером. Злонамеран садржај потиче са <ph name="SUBRESOURCE_HOST" />, који је познати дистрибутер малвера.</translation>
+<translation id="6221892641068781024">Поједностављени приказ</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте персонализовали алатке за приступачност у подешавањима Chrome-а</translation>
 <translation id="6229649258872345286">Породична путовања</translation>
 <translation id="6232271601416750929">Природни козметички производи</translation>
@@ -2170,6 +2178,7 @@
 <translation id="6366710531182496394">Двоструко спајање на левој страни</translation>
 <translation id="6367196786591004737">Избриши унос</translation>
 <translation id="6370022303958842211">Радње приступа уређајима попут пријављивања (укључујући неуспеле разлоге за пријављивање), одјављивања, закључавања и откључавања</translation>
+<translation id="6374469231428023295">Пробај поново</translation>
 <translation id="6374865374745447009">управљање прозорима</translation>
 <translation id="6377268785556383139">1 резултат за „<ph name="SEARCH_TEXT" />“</translation>
 <translation id="6380497234672085559">A0</translation>
@@ -2480,6 +2489,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> и још <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" /> и још <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" /> и још <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> и још <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">Светлољубичаста</translation>
 <translation id="7156870133441232244">Сервер треба да се надогради на TLS 1.2 или новију верзију.</translation>
+<translation id="7160999678034985039">Сачувајте свој рад и покрените ажурирање када будете спремни.</translation>
 <translation id="7163295244162773898">{0,plural, =1{Желите да копирате поверљиви фајл?}one{Желите да копирате поверљиве фајлове?}few{Желите да копирате поверљиве фајлове?}other{Желите да копирате поверљиве фајлове?}}</translation>
 <translation id="717330890047184534">Gaia ИД:</translation>
 <translation id="7174545416324379297">Обједињено</translation>
@@ -2727,6 +2737,7 @@
 <translation id="7687305263118037187">Истекло је време поновног покушаја</translation>
 <translation id="7690647519407127574">Oufuku Hagaki разгледница</translation>
 <translation id="7693583928066320343">Редослед страница је примљен</translation>
+<translation id="769424100851389104">Одмах покрени ажурирање</translation>
 <translation id="7696089921647603491">Класични рок и евергрин</translation>
 <translation id="769721561045429135">Тренутно имате картице које могу да се користе само на овом уређају. Кликните на Настави да бисте прегледали картице.</translation>
 <translation id="7698864304447945242">Желите да ажурирате Google Play услуге за ПР?</translation>
@@ -2751,6 +2762,7 @@
 <translation id="774634243536837715">Опасан садржај је блокиран.</translation>
 <translation id="7751971323486164747">Прилагодите величине и изглед фонтова у Chrome-у</translation>
 <translation id="7752995774971033316">Не управља</translation>
+<translation id="7754587126786572336">Chrome картице и апликације ће се затворити када ажурирање почне</translation>
 <translation id="7755287808199759310">Родитељ може да га одблокира за тебе</translation>
 <translation id="7755624218968747854">Примарни котур</translation>
 <translation id="7758069387465995638">Можда је заштитни зид или антивирусни софтвер блокирао везу.</translation>
@@ -2915,6 +2927,7 @@
 <translation id="8186706823560132848">Софтвер</translation>
 <translation id="8190193880870196235">Управља додатак</translation>
 <translation id="8194797478851900357">&amp;Опозови премештање</translation>
+<translation id="8200772114523450471">Настави</translation>
 <translation id="8201077131113104583">Неважећи URL за ажурирање за додатак са ИД-ом „<ph name="EXTENSION_ID" />“.</translation>
 <translation id="8202097416529803614">Резиме поруџбине</translation>
 <translation id="8202370299023114387">Неусаглашеност</translation>
@@ -3213,6 +3226,7 @@
 <translation id="8963117664422609631">Идите на подешавања сајта</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Предлози:<ph name="MARKUP_2" />Проверите да ли је успостављена веза за пренос података<ph name="MARKUP_3" />Поново учитајте ову веб-страницу касније<ph name="MARKUP_4" />Проверите адресу коју сте унели<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">Сачувај картицу</translation>
+<translation id="8970887620466824814">Дошло је до грешке.</translation>
 <translation id="8971063699422889582">Сертификат сервера је истекао.</translation>
 <translation id="8975012916872825179">Обухвата информације попут бројева телефона, имејл адреса и адреса за испоруку</translation>
 <translation id="8975263830901772334">Називи датотека које штампате</translation>

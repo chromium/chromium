@@ -406,7 +406,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8862326446509486874">您沒有在系統層級進行安裝的權限，請以管理員的身分執行安裝程式。</translation>
 <translation id="8914504000324227558">重新啟動 Chrome</translation>
 <translation id="8922193594870374009">如要將號碼從 <ph name="ORIGIN" /> 傳送至 Android 手機，請在這兩部裝置上登入 Chrome。</translation>
-<translation id="8983720963221508955">您已開啟帳戶的「強化安全瀏覽」功能。現在請為 Chrome 開啟此功能。</translation>
 <translation id="8986207147630327271">您即將在此瀏覽器中新增工作設定檔，並只將工作設定檔的控制權授予管理員。</translation>
 <translation id="8989968390305463310">您的瀏覽記錄會影響系統顯示的廣告，以及下列由系統推測的興趣。為保障您的私隱，Chrome 每個月都會自動刪除您的興趣。除非您移除興趣，否則系統會重新整理興趣。</translation>
 <translation id="8999208279178790196">{0,plural, =0{有可用的 Chrome 更新}=1{有可用的 Chrome 更新}other{Chrome 更新已發佈 # 天}}</translation>

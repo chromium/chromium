@@ -8,9 +8,6 @@
 <translation id="1175958423215084756">ກວດພົບລິ້ງ. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">ລຶບໜ້າທີ <ph name="PAGE_NUMBER" /> ແລ້ວ</translation>
 <translation id="1258009455399840361">ໝຸນ 90 ອົງສາຕາມເຂັມໂມງ</translation>
-<translation id="1300209025925956156">ສະແກນເອກະສານຂອງທ່ານ</translation>
-<translation id="1309250603447638106">ກຳລັງດາວໂຫຼດການອັບເດດສຳລັບການສະແກນເອກະສານ</translation>
-<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. ຊອກຫາ + ລູກສອນຊ້າຍເພື່ອເຂົ້າເຖິງ.</translation>
 <translation id="1417314334557041815">ແກ້ໄຂໜ້າ <ph name="INDEX" /></translation>
 <translation id="1467231725790366244">ຖອດສາຍ <ph name="CAMERA" /> ແລ້ວ.</translation>
 <translation id="1473110567575736769">ໂມງນັບຖອຍຫຼັງ 3 ວິນາທີ</translation>
@@ -24,7 +21,6 @@
 <translation id="1664224225747386870">ບໍ່ໄດ້ບັນທຶກຫຍັງໄວ້</translation>
 <translation id="1838104802459806957">ອຽງຂຶ້ນ</translation>
 <translation id="1843105061469674856">ສະແກນໜ້າເພີ່ມເຕີມ</translation>
-<translation id="1851169887664797861">ສາມາດໃຊ້ການຄວບຄຸມກ້ອງຖ່າຍຮູບເພີ່ມເຕີມໄດ້</translation>
 <translation id="1851616744363735765">ຢຸດໄວ້ຊົ່ວຄາວແລ້ວ</translation>
 <translation id="1899697626337024495">ຄວາມລະອຽດຮູບພາບ</translation>
 <translation id="1925845977604399247">ໄປຫາຄັງຮູບ</translation>
@@ -49,7 +45,6 @@
 <translation id="2761536921376153655">ປະເພດການສະແກນ</translation>
 <translation id="28682968802727151">ຕົວຢ່າງການສະທ້ອນ</translation>
 <translation id="2879583609344924966">ສຽບສາຍ <ph name="CAMERA" /> ແລ້ວ.</translation>
-<translation id="2904654629665923749">ສະແກນເອກະສານໄດ້</translation>
 <translation id="3067436040345934772">ເລື່ອນໄປຂວາ</translation>
 <translation id="3081586908890909590">ປ່ຽນເປັນບັນທຶກວິດີໂອ</translation>
 <translation id="313467653172006084">30 FPS</translation>
@@ -74,7 +69,6 @@
 <translation id="4269820728363426813">ກັອບປີ້ທີ່ຢູ່ລິ້ງ</translation>
 <translation id="4281620174117014503">ຄວາມລະອຽດປານກາງ</translation>
 <translation id="428234092390943511">ຮູບຕົວຢ່າງໜ້າ</translation>
-<translation id="4340659173795395806">ຕອນນີ້ທ່ານສາມາດສ້າງ PDF ແບບຫຼາຍໜ້າໄດ້ແລ້ວ</translation>
 <translation id="4383571725254449280">ພິມບັນທຶກປະສິດທິພາບ</translation>
 <translation id="4445542136948522167">ຢຸດການຖ່າຍຮູບ</translation>
 <translation id="4570032796877367747">ກ້ອງຫນ້າ</translation>
@@ -97,7 +91,6 @@
 <translation id="5317780077021120954">ບັນທຶກ</translation>
 <translation id="5320594929574852403">ກຳລັງຍ້າຍໄປທາງຊ້າຍ</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5444515100983837161">ວາງຂອບທັງໝົດຂອງເອກະສານໄວ້ພາຍໃນເຟຣມ. ການສະແກນເຮັດວຽກໄດ້ດີທີ່ສຸດຫາກເອກະສານ ແລະ ພື້ນຫຼັງເປັນຄົນລະສີກັນ.</translation>
 <translation id="5662366948659129155">ກຳລັງສະແກນໜ້າ <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">ສີ່ຫຼ່ຽມ</translation>
 <translation id="5746169159649715125">ບັນທຶກເປັນ PDF</translation>
@@ -157,7 +150,6 @@
 <translation id="8428213095426709021">ການ​ຕັ້ງຄ່າ</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">ສະຫຼັບການປິດສຽງໄມໂຄຣໂຟນ. ກຳລັງປິດສຽງຢູ່</translation>
-<translation id="8712637175834984815">ເຂົ້າໃຈແລ້ວ</translation>
 <translation id="8730621377337864115">ສໍາເລັດ</translation>
 <translation id="8732462232047530626">ສະແດງຕົວຢ່າງເມຕາເດຕາ</translation>
 <translation id="8815966864175525708">ປ່ຽນເປັນຖ່າຍຮູບບຸກຄົນ</translation>

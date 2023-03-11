@@ -25,9 +25,11 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="1640672724030957280">Prenos ...</translation>
 <translation id="1708666629004767631">Na voljo je nova, varnejša različica Chromiuma.</translation>
 <translation id="17264556997921157">Vidite ali odstranite lahko teme zanimanja, ki jih spletna mesta uporabljajo, da vam prikazujejo oglase. Chromium oceni vaša zanimanja glede na nedavno zgodovino brskanja.</translation>
+<translation id="1745121272106313518">Chromium se bo znova zagnal čez toliko časa: <ph name="REMAINING_TIME" /></translation>
 <translation id="1774152462503052664">Naj se Chromium izvaja v ozadju</translation>
 <translation id="1779356040007214683">Zaradi večje varnosti smo v Chromiumu onemogočili nekatere razširitve, ki niso navedene v storitvi <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> in so bile morda dodane brez vaše vednosti.</translation>
 <translation id="1808667845054772817">Vnovična namestitev Chromiuma</translation>
+<translation id="1820835682567584003">Chromium poskuša <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="185970820835152459">Upravljate lahko račune Google, v katere ste prijavljeni. Računi Google se uporabljajo za brskalnik Chromium, Trgovino Play, Gmail in drugo. Če želite dodati račun za nekoga drugega, na primer družinskega člana, v napravo <ph name="DEVICE_TYPE" /> dodajte novo osebo. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="1863308913976887472">Spletna mesta lahko v Chromiumu shranjujejo podatke o vaših zanimanjih. Če na primer obiščete spletno mesto zaradi nakupa športnih copatov za maraton, bo spletno mesto morda določilo vaše zanimanje kot udeleževanje maratonov. Če pozneje obiščete drugo spletno mesto za registriranje za tek, vam lahko to spletno mesto glede na vaša zanimanja prikaže oglas za tekaško obutev.</translation>
 <translation id="1881322772814446296">Prijavljate se z upravljanim računom in s tem njegovemu skrbniku omogočate nadzor vašega profila v Chromiumu. Vaši podatki v Chromiumu, kot so aplikacije, zaznamki, zgodovina, gesla in druge nastavitve, bodo postali trajno povezani z uporabnikom <ph name="USER_NAME" />. Te podatke boste lahko izbrisali na nadzorni plošči za Google Račune, vendar jih ne boste mogli povezati z drugim računom. Če želite, lahko ustvarite nov profil, da bodo obstoječi podatki v Chromiumu ostali ločeni. <ph name="LEARN_MORE" /></translation>
@@ -306,7 +308,6 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="7561906087460245826">Počisti tudi podatke iz Chromiuma (<ph name="URL" />)</translation>
 <translation id="7582945390259497898">Chromium lahko oceni vaša zanimanja. Pozneje lahko stran, ki jo obiščete, od Chromiuma zahteva ogled vaših zanimanj zaradi osebnega prilagajanja oglasov, ki so vam prikazani.</translation>
 <translation id="7583399374488819119">Namestitveni program za <ph name="COMPANY_NAME" /></translation>
-<translation id="7597596667193879455">V računu ste vklopili izboljšano varno brskanje. Zdaj ga omogočite za Chromium.</translation>
 <translation id="761356813943268536">Chromium uporablja vašo kamero in mikrofon.</translation>
 <translation id="7617377681829253106">Chromium je pravkar postal še boljši</translation>
 <translation id="7649070708921625228">Pomoč</translation>

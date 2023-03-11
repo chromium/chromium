@@ -100,7 +100,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1420408895951708260">Włącz lub wyłącz Podświetlenie nocne. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Wyświetlaj najnowsze zdjęcia i pliki multimedialne z telefonu na urządzeniu <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">Tak</translation>
-<translation id="1447641497144572814">Wygaszacz ekranu uruchamia się</translation>
 <translation id="1455242230282523554">Pokaż ustawienia języka</translation>
 <translation id="1460620680449458626">Dźwięk jest wyciszony.</translation>
 <translation id="14648076227129703">Spowoduje to przyznanie dostępu do aparatu aplikacjom <ph name="APP1_NAME" /> i <ph name="APP2_NAME" /> oraz wszystkim aplikacjom i stronom internetowym, które mają uprawnienia do korzystania z niego</translation>
@@ -126,6 +125,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1550523713251050646">Kliknij, by wyświetlić więcej opcji</translation>
 <translation id="1555130319947370107">Niebieski</translation>
 <translation id="1576623706766186887">Pomniejsz, gdy lupa jest włączona</translation>
+<translation id="1586324912145647027">Przejdź do biurka z zakresu od 1 do 8</translation>
 <translation id="1589090746204042747">uzyskiwać dostęp do całej Twojej aktywności w tej sesji;</translation>
 <translation id="1610778689852195798">„Cofnij”</translation>
 <translation id="1611993646327628135">Włączono</translation>
@@ -514,6 +514,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3631369015426612114">Zezwalaj na powiadomienia z tych źródeł</translation>
 <translation id="3633097874324966332">Otwórz ustawienia Bluetooth, aby sparować urządzenie</translation>
 <translation id="3638400994746983214">Przełącz ekran chroniący prywatność. <ph name="STATE_TEXT" />.</translation>
+<translation id="3649256019230929621">Minimalizuj okno</translation>
 <translation id="3649505501900178324">Zaległa aktualizacja</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -588,6 +589,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="4021716437419160885">Przewiń w dół</translation>
 <translation id="4022497978915111141">Zablokuj urządzenie</translation>
 <translation id="4024840464866786680">Jeśli nie pamiętasz kodu PIN i hasła lub od niedawna masz nowe hasło do konta Google, spróbuj przywrócić konto tego użytkownika.</translation>
+<translation id="4026843240379844265">Przenieś aktywne okno na inny ekran</translation>
 <translation id="4028481283645788203">Dla większego bezpieczeństwa musisz podać hasło</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Udostępniasz ekran</translation>
@@ -912,6 +914,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="5689633613396158040">Dzięki Podświetleniu nocnemu oczy mniej się męczą podczas patrzenia na ekran lub czytania przy słabym oświetleniu. Kliknij, by zmienić godzinę włączania Podświetlenia nocnego lub całkowicie je wyłączyć.</translation>
 <translation id="5691772641933328258">Nie rozpoznano odcisku palca</translation>
 <translation id="5693255400847650006">Mikrofon w użyciu</translation>
+<translation id="5699366815052349604">Przypisz aktywne okno do wszystkich biurek</translation>
 <translation id="570390244361237317">Wszystkie aplikacje; aby uzyskać dostęp do wszystkich aplikacji, poruszaj się za pomocą klawiszy strzałek</translation>
 <translation id="5707775774148071965">Twoje urządzenie obsługuje większą szybkość transmisji danych niż kabel. Wydajność urządzenia może być ograniczona.</translation>
 <translation id="5710450975648804523">Tryb Nie przeszkadzać włączony</translation>
@@ -1551,6 +1554,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="9034924485347205037">Pliki Linuksa</translation>
 <translation id="9047624247355796468">Otwórz ustawienia sieci <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Zwiń powiadomienie</translation>
+<translation id="906458777597946297">Maksymalizuj okno</translation>
 <translation id="9065203028668620118">Edytuj</translation>
 <translation id="9070640332319875144">Ustawienia Asystenta</translation>
 <translation id="9072519059834302790">Czas pozostały do całkowitego rozładowania baterii: <ph name="TIME_LEFT" />.</translation>

@@ -34,6 +34,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="1173894706177603556">Rinomina</translation>
 <translation id="1177863135347784049">Personalizzati</translation>
 <translation id="1181037720776840403">Rimuovi</translation>
+<translation id="1181366777303791449">su <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">Vuoi usare una password efficace?</translation>
 <translation id="1197267115302279827">Sposta i Preferiti</translation>
 <translation id="1201402288615127009">Avanti</translation>
@@ -42,7 +43,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="1204692632633423444">Pulsante di azione di Chrome: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">Copia testo link</translation>
 <translation id="1209206284964581585">Nascondi per ora</translation>
-<translation id="1226851825267005295">Puoi gestire le tue preferenze dopo aver eseguito l'accesso a Chrome con il nostro Account Google.</translation>
 <translation id="1227058898775614466">Cronologia di navigazione</translation>
 <translation id="1231733316453485619">Attivare la sincronizzazione?</translation>
 <translation id="123724288017357924">Ricarica pag. corr. Ignora i contenuti nella cache</translation>
@@ -166,7 +166,6 @@ Quando elimini la cronologia di navigazione (l'intera cronologia o soltanto quel
 <translation id="1928696683969751773">Aggiornamenti</translation>
 <translation id="19288952978244135">Riapri Chrome.</translation>
 <translation id="1933845786846280168">Scheda selezionata</translation>
-<translation id="193571872656840963">Ringrazia questo creator</translation>
 <translation id="1943432128510653496">Salva password</translation>
 <translation id="1952172573699511566">Se possibile, il testo dei siti web verrà mostrato nella tua lingua preferita.</translation>
 <translation id="1959679933317802873">In attesa di contenuti</translation>
@@ -202,7 +201,6 @@ Quando elimini la cronologia di navigazione (l'intera cronologia o soltanto quel
 <translation id="2122601567107267586">Impossibile aprire l'app</translation>
 <translation id="2132122640199389833">Rimuovi tutti i dispositivi collegati</translation>
 <translation id="213279576345780926">La scheda <ph name="TAB_TITLE" /> è stata chiusa</translation>
-<translation id="2134927169889348449">Se utilizzi Chrome, accetti i <ph name="BEGIN_TOS_LINK" />Termini di servizio di Google<ph name="END_TOS_LINK" /> e i <ph name="BEGIN_ATOS_LINK" />Termini di servizio aggiuntivi di Google Chrome e ChromeOS<ph name="END_ATOS_LINK" />.</translation>
 <translation id="2139186145475833000">Aggiungi a schermata Home</translation>
 <translation id="2141396931810938595">In base al tuo utilizzo</translation>
 <translation id="214888715418183969">Scegli quali dati condividere con Chrome. Le metriche che condividi verranno utilizzate per contribuire a migliorare le funzionalità, le prestazioni e la stabilità di Chrome.</translation>
@@ -555,7 +553,6 @@ I token di stato privati migliorano la privacy sul Web e non possono essere usat
 <translation id="409109920254068737">Puoi utilizzare questo tablet per accedere sul dispositivo che mostra questo codice QR.</translation>
 <translation id="4095146165863963773">Eliminare i dati delle app?</translation>
 <translation id="4096227151372679484">Flusso di salvataggio dei preferiti aperto nella parte inferiore dello schermo</translation>
-<translation id="4099578267706723511">Aiutaci a migliorare Chrome inviando a Google statistiche sull'utilizzo e report sugli arresti anomali.</translation>
 <translation id="4101475238162928417">Attiva la sincronizzazione per recuperare password, preferiti e altri contenuti salvati sugli altri tuoi dispositivi</translation>
 <translation id="410351446219883937">Riproduzione automatica</translation>
 <translation id="4106587138345390261">Chrome sta esaminando nuove funzionalità che consentono ai siti di offrire la stessa esperienza di navigazione utilizzando meno informazioni personali</translation>
@@ -593,7 +590,6 @@ I token di stato privati migliorano la privacy sul Web e non possono essere usat
 <translation id="4269820728363426813">Copia indirizzo link</translation>
 <translation id="4283102315569707115">Richiedere siti desktop per impostazione predefinita?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Attiva il blocco schermo nelle impostazioni di Android<ph name="END_LINK" /></translation>
-<translation id="4293476595220860475">Se utilizzi Chrome, accetti i <ph name="BEGIN_TOS_LINK" />Termini di servizio di Google<ph name="END_TOS_LINK" /> e i <ph name="BEGIN_ATOS_LINK" />Termini di servizio aggiuntivi di Google Chrome e ChromeOS<ph name="END_ATOS_LINK" />. Si applicano anche le <ph name="BEGIN_PRIVACY_LINK" />Norme sulla privacy<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="4296252229500326964">Nuova scheda in incognito</translation>
 <translation id="4298388696830689168">Siti collegati</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -766,7 +762,6 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5161254044473106830">Titolo obbligatorio</translation>
 <translation id="5170568018924773124">Mostra nella cartella</translation>
 <translation id="5171045022955879922">Cerca o digita un URL</translation>
-<translation id="517734441743343109">Se continui, accetti i <ph name="BEGIN_TOS_LINK" />Termini di servizio<ph name="END_TOS_LINK" /> e le <ph name="BEGIN_PRIVACY_LINK" />Norme\u00A0sulla privacy<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="5184329579814168207">Apri in Chrome</translation>
 <translation id="5191251636205085390">Scopri e gestisci le nuove tecnologie che mirano a sostituire i cookie di terze parti</translation>
 <translation id="5193988420012215838">Copiata nei tuoi appunti</translation>

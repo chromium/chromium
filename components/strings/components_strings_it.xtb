@@ -376,6 +376,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1803351196216024260">Può richiedere l'autorizzazione per utilizzare il microfono</translation>
 <translation id="1807246157184219062">Chiaro</translation>
 <translation id="1807528111851433570">Primo foglio</translation>
+<translation id="180991881384371158">Il CVC si trova sul retro della tua carta. Sono le ultime 3 cifre in alto a destra della casella della firma.</translation>
 <translation id="181000283860817563">Monitora i prezzi su più siti</translation>
 <translation id="1810391395243432441">Proteggi le password con il blocco schermo</translation>
 <translation id="1812527064848182527">orizzontale</translation>
@@ -506,6 +507,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2149968176347646218">La connessione non è sicura</translation>
 <translation id="2153609454945889823">Installare Google Play Services per AR?</translation>
 <translation id="2154484045852737596">Modifica la carta</translation>
+<translation id="2154739667870063220">Riavvia</translation>
 <translation id="2155260325161282517">5 x 7 in</translation>
 <translation id="2157640075051554492">Notifiche per il monitoraggio dei prezzi</translation>
 <translation id="2161656808144014275">Testo</translation>
@@ -640,6 +642,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2521736961081452453">Crea modulo</translation>
 <translation id="2523886232349826891">Salvataggio effettuato solo su questo dispositivo</translation>
 <translation id="2524461107774643265">Aggiungi altre informazioni</translation>
+<translation id="2527451058878391043">Il CVC si trova sul lato anteriore della tua carta. È il codice di 4 cifre in alto a destra, sopra il numero della carta.</translation>
 <translation id="2529899080962247600">Questo campo non deve avere più di <ph name="MAX_ITEMS_LIMIT" /> voci. Tutte le voci in più verranno ignorate.</translation>
 <translation id="253493526287553278">Visualizza i dettagli del codice promozionale</translation>
 <translation id="2535585790302968248">Apri una nuova scheda di navigazione in incognito per navigare in privato</translation>
@@ -891,6 +894,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3215092763954878852">Impossibile usare WebAuthn</translation>
 <translation id="3216313131063488104">Blues</translation>
 <translation id="3218181027817787318">Relativo</translation>
+<translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Aggiornamento richiesto ora}=2{Aggiornamento richiesto entro domani}other{Aggiornamento richiesto entro # giorni}}</translation>
 <translation id="3223287115535306850">Icona di caricamento dell'app</translation>
 <translation id="3223425961342298674">Posizione non consentita</translation>
 <translation id="3225919329040284222">Il server ha presentato un certificato che non corrisponde alle previsioni integrate. Queste previsioni sono incluse per determinati siti web con protezione elevata allo scopo di proteggerti.</translation>
@@ -1375,6 +1379,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4350629523305688469">Vassoio malfunzionante</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> richiede di eseguire la scansione per rilevare dispositivi Bluetooth nelle vicinanze. Sono stati rilevati i seguenti dispositivi:</translation>
 <translation id="4351175281479794167">Inserisci codice di verifica</translation>
+<translation id="4355383636893709732">Aggiornamento di ChromeOS per le app per Android</translation>
 <translation id="4356973930735388585">I malintenzionati su questo sito potrebbero tentare di installare sul tuo computer programmi pericolosi che scoprono o eliminano i tuoi dati (ad esempio foto, password, messaggi e carte di credito).</translation>
 <translation id="4358059973562876591">I modelli che hai specificato potrebbero non essere applicati a causa di un errore con il criterio DnsOverHttpsMode.</translation>
 <translation id="4358461427845829800">Gestisci metodi di pagamento…</translation>
@@ -1755,6 +1760,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5288393065350884210">Contabilità e revisione contabile</translation>
 <translation id="5288808348893593856">La connessione del sito è sicura, a meno che non ti venga data una comunicazione diversa in Chrome.</translation>
 <translation id="5289384342738547352">Gestione di più documenti</translation>
+<translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Aggiornamento richiesto oggi}=2{Aggiornamento richiesto entro domani}other{Aggiornamento richiesto entro # giorni}}</translation>
 <translation id="5293919335876685914">Coupé</translation>
 <translation id="5296589789433599000">Cucina e ricette</translation>
 <translation id="5299298092464848405">Errore durante l'analisi del criterio</translation>
@@ -1949,6 +1955,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5786044859038896871">Vuoi inserire automaticamente i dati della carta?</translation>
 <translation id="578633867165174378">Chrome ha rilevato che la password appena usata è stata esposta a una violazione dei dati. Ti consigliamo di cambiare subito questa password.</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="580241730938216256">Avvia aggiornamento</translation>
 <translation id="5803412860119678065">Vuoi inserire automaticamente <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Autorizzazioni</translation>
 <translation id="5808435672482059465">Visualizza la tua cronologia di Chrome</translation>
@@ -2108,6 +2115,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6218753634732582820">Rimuovere l'indirizzo da Chromium?</translation>
 <translation id="622039917539443112">Piegatura parallela</translation>
 <translation id="6221345481584921695">La funzione Navigazione sicura di Google ha <ph name="BEGIN_LINK" />rilevato malware<ph name="END_LINK" /> di recente sul sito <ph name="SITE" />. I siti web che in genere sono sicuri a volte vengono infettati da malware. I contenuti dannosi provengono da <ph name="SUBRESOURCE_HOST" />, un noto distributore di malware.</translation>
+<translation id="6221892641068781024">Visualizzazione semplificata</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per personalizzare i tuoi strumenti di accessibilità nelle impostazioni di Chrome</translation>
 <translation id="6229649258872345286">Viaggi per famiglie</translation>
 <translation id="6232271601416750929">Prodotti di bellezza ecosostenibili</translation>
@@ -2167,6 +2175,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6366710531182496394">Doppia pinzatura a sinistra</translation>
 <translation id="6367196786591004737">Elimina voce</translation>
 <translation id="6370022303958842211">Azioni di accesso ai dispositivi, ad esempio accessi (inclusi i motivi di accesso non riuscito), uscite, blocchi e sblocchi</translation>
+<translation id="6374469231428023295">Riprova</translation>
 <translation id="6374865374745447009">gestione delle finestre</translation>
 <translation id="6377268785556383139">1 risultato per "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6380497234672085559">A0</translation>
@@ -2477,6 +2486,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> e <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> altro}other{<ph name="PAYMENT_METHOD_PREVIEW" /> e altri <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">Lavanda</translation>
 <translation id="7156870133441232244">È richiesto l'aggiornamento del server a TLS 1.2 o versione successiva.</translation>
+<translation id="7160999678034985039">Salva il tuo lavoro e avvia l'aggiornamento quando è tutto pronto.</translation>
 <translation id="7163295244162773898">{0,plural, =1{Vuoi copiare il file riservato?}other{Vuoi copiare i file riservati?}}</translation>
 <translation id="717330890047184534">ID GAIA:</translation>
 <translation id="7174545416324379297">Uniti</translation>
@@ -2724,6 +2734,7 @@ Ulteriori dettagli:
 <translation id="7687305263118037187">Timeout tentativo</translation>
 <translation id="7690647519407127574">Oufuku Hagaki (cartolina)</translation>
 <translation id="7693583928066320343">Ordine pagine ricevuto</translation>
+<translation id="769424100851389104">Avvia subito l'aggiornamento</translation>
 <translation id="7696089921647603491">Rock classico e oldies</translation>
 <translation id="769721561045429135">Al momento hai carte che possono essere utilizzate solo su questo dispositivo. Fai clic su Continua per controllare le carte.</translation>
 <translation id="7698864304447945242">Vuoi aggiornare Google Play Services per AR?</translation>
@@ -2748,6 +2759,7 @@ Ulteriori dettagli:
 <translation id="774634243536837715">Contenuti pericolosi bloccati.</translation>
 <translation id="7751971323486164747">Personalizza le dimensioni dei caratteri e i caratteri tipografici in Chrome</translation>
 <translation id="7752995774971033316">Non gestito</translation>
+<translation id="7754587126786572336">All'avvio dell'aggiornamento, le schede e le app di Chrome verranno chiuse</translation>
 <translation id="7755287808199759310">Il tuo genitore può sbloccarlo per te</translation>
 <translation id="7755624218968747854">Rullo principale</translation>
 <translation id="7758069387465995638">Il software antivirus o il firewall potrebbe avere bloccato la connessione.</translation>
@@ -2912,6 +2924,7 @@ Ulteriori dettagli:
 <translation id="8186706823560132848">Software</translation>
 <translation id="8190193880870196235">Gestita tramite un'estensione</translation>
 <translation id="8194797478851900357">&amp;Annulla spostamento</translation>
+<translation id="8200772114523450471">Riprendi</translation>
 <translation id="8201077131113104583">URL di aggiornamento non valido per l'estensione con ID "<ph name="EXTENSION_ID" />".</translation>
 <translation id="8202097416529803614">Riepilogo dell’ordine</translation>
 <translation id="8202370299023114387">Conflitto</translation>
@@ -3210,6 +3223,7 @@ Ulteriori dettagli:
 <translation id="8963117664422609631">Vai alle Impostazioni sito</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Suggerimenti.<ph name="MARKUP_2" />Assicurati di avere una connessione dati<ph name="MARKUP_3" />Ricarica la pagina web in un secondo momento<ph name="MARKUP_4" />Controlla l'indirizzo inserito<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">Salva carta</translation>
+<translation id="8970887620466824814">C'è stato un problema.</translation>
 <translation id="8971063699422889582">Il certificato del server è scaduto.</translation>
 <translation id="8975012916872825179">Include informazioni come numeri di telefono, indirizzi email e indirizzi di spedizione</translation>
 <translation id="8975263830901772334">Nomi dei file che stampi</translation>

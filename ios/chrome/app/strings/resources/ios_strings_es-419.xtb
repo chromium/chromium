@@ -81,6 +81,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="149095475893949513">Este sitio web intenta descargar un perfil de configuración.</translation>
 <translation id="1491277525950327607">Presiona dos veces para activar o desactivar la configuración</translation>
 <translation id="1492417797159476138">Ya guardaste este nombre de usuario en este sitio</translation>
+<translation id="1497590942294823549">Menú → Administrador de contraseñas</translation>
 <translation id="1498283581832036924">No se borrará tu cuenta de <ph name="WEBSITE" />.</translation>
 <translation id="1506063256525392513">Te permite tomar fotos, subirlas y escanear códigos QR</translation>
 <translation id="1509486075633541495">Acceder al sitio web</translation>
@@ -126,6 +127,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="1813414402673211292">Borrar datos de navegación</translation>
 <translation id="1815941218935345331">Contraseña</translation>
 <translation id="1820259098641718022">Se agregó a la lista de lectura</translation>
+<translation id="1829392566394960110">{COUNT,plural, =0{Contraseñas hackeadas}=1{{COUNT} contraseña hackeada}other{{COUNT} contraseñas hackeadas}}</translation>
 <translation id="1832848789136765277">Para asegurarte de que siempre puedas acceder a tus datos sincronizados, verifica tu identidad.</translation>
 <translation id="1870148520156231997">Mostrar contraseña</translation>
 <translation id="1872096359983322073">Linterna</translation>
@@ -241,6 +243,7 @@ Tampoco pueden usar cookies para ver la actividad de navegación en diferentes s
 <translation id="271033894570825754">Nuevo</translation>
 <translation id="2712127207578915686">Error al abrir el archivo</translation>
 <translation id="2718352093833049315">Solo en Wi-Fi</translation>
+<translation id="2737716090799520623">Cuando accedas a Chrome, las contraseñas que guardes aparecerán en tu Cuenta de Google (<ph name="ACCOUNT" />). Para desactivar esta opción, <ph name="BEGIN_LINK" />ve a Configuración<ph name="END_LINK" />.</translation>
 <translation id="2747003861858887689">Campo anterior</translation>
 <translation id="2749231692441336879">Siguiendo <ph name="CHANNEL_NAME" /></translation>
 <translation id="2764831210418622012">recién</translation>
@@ -720,6 +723,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6152406514676263192">Activa la sincronización para acceder al contenido más relevante según tus intereses.</translation>
 <translation id="6159839020698489198">opcional</translation>
 <translation id="6170450281939467187">Se produjo un error al traducir</translation>
+<translation id="6173499589275053515">Se guardó la contraseña en tu Cuenta de Google, <ph name="EMAIL" /></translation>
 <translation id="6177442314419606057">Buscar en Chrome</translation>
 <translation id="6184086493125982861">Mostrar las pestañas</translation>
 <translation id="6187302354554850004">Última sincronización: <ph name="LAST_USED_TIME" /></translation>
@@ -727,6 +731,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6193424046394092997">{count,plural, =1{Se agregó a favoritos en {title}}other{Se agregaron a favoritos en {title}}}</translation>
 <translation id="6196207969502475924">Búsqueda por voz</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Cerrar {COUNT} pestaña}other{Cerrar {COUNT} pestañas}}</translation>
+<translation id="6213567400989743524">Advertencias descartadas</translation>
 <translation id="6219550825416862075">Te damos la bienvenida</translation>
 <translation id="6219688215832490856">Nunca traducir</translation>
 <translation id="6223816392543092032">Accede a tus favoritos, historial, contraseñas y otras opciones de configuración en todos los dispositivos.</translation>
@@ -750,6 +755,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6346549652287021269">¿Comenzar una descarga nueva?</translation>
 <translation id="6347953390226388422">{count,plural, =1{Esta dirección se borrará de tu Cuenta de Google (<ph name="USER_EMAIL" />) y de este dispositivo.}other{Estas direcciones se borrarán de tu Cuenta de Google (<ph name="USER_EMAIL" />) y de este dispositivo.}}</translation>
 <translation id="634878792104344809">Sincroniza tus contraseñas, historial y mucho más en todos tus dispositivos</translation>
+<translation id="6355820205320395730">Las contraseñas poco seguras son fáciles de adivinar. Asegúrate de crear contraseñas seguras. <ph name="BEGIN_LINK" />Obtén más sugerencias de seguridad.<ph name="END_LINK" /></translation>
 <translation id="6361848730467328243">Seguir a <ph name="DOMAIN_NAME" /></translation>
 <translation id="6362362396625799311">No hay pestañas de incógnito</translation>
 <translation id="6363526231572697780">Sin nombre de usuario</translation>
@@ -839,6 +845,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="6801927553864092214">Para navegar de forma privada, abre una pestaña de incógnito</translation>
 <translation id="6807889908376551050">Mostrar todos...</translation>
 <translation id="681368974849482173">Elemento creado</translation>
+<translation id="6822587385560699678">Si la activas, se guardarán las contraseñas en <ph name="ACCOUNT" />. Cuando está desactivada, las contraseñas se guardan solo en este dispositivo.</translation>
 <translation id="683022620450280906">Puedes usar las contraseñas guardadas en cualquier dispositivo. Se guardan en el Administrador de contraseñas de Google de <ph name="EMAIL" />.</translation>
 <translation id="6831043979455480757">Traducir</translation>
 <translation id="6842136130964845393">Para asegurarte de que siempre puedas acceder a tus contraseñas guardadas, verifica tu identidad.</translation>
@@ -853,6 +860,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="6888009575607455378">¿Confirmas que quieres descartar los cambios?</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6897187120838603299">La contraseña se guardará en tu dispositivo.</translation>
+<translation id="6913136913033237761"><ph name="FOLDER_NAME" />. Solo en este dispositivo.</translation>
 <translation id="6914583639806229067">Buscar la imagen que copiaste</translation>
 <translation id="6914783257214138813">Las personas que tengan acceso al archivo exportado podrán ver tus contraseñas.</translation>
 <translation id="6930799952781667037">Presiona aquí para cambiar a este idioma.</translation>
@@ -1012,10 +1020,12 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8084285576995584326">Controla los datos de tu Cuenta de Google.</translation>
 <translation id="809543534949702122">Historial de búsqueda</translation>
 <translation id="8101409298456377967">Crea, guarda y administra tus contraseñas para acceder fácilmente a sitios y apps. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
+<translation id="8102130909719902723">N</translation>
 <translation id="8105368624971345109">Desactivar</translation>
 <translation id="8114753159095730575">El archivo ya se puede descargar. Las opciones disponibles se muestran junto a la parte inferior de la pantalla.</translation>
 <translation id="81313319706244542">2. Presiona Contraseñas</translation>
 <translation id="8132598642024322408">El precio actual es <ph name="PRICE" />; antes costaba <ph name="PREVIOUS_PRICE" />.</translation>
+<translation id="813370552429173916">Usa una contraseña única para cada sitio o app. Si otra persona descubre una contraseña reutilizada, podrá usarla para acceder a otras cuentas. Haz clic para abrir el sitio web y cambiarlas ahora.</translation>
 <translation id="8136856065410661948">Se usará para crear eventos en el Calendario de Apple desde Chrome y Google Lens.</translation>
 <translation id="8156478151976189188">No funciona la Sincronización de contraseñas.</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> cuentas</translation>
@@ -1027,6 +1037,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8225985093977202398">Imágenes y archivos almacenados en caché</translation>
 <translation id="8237382152611443140">Ve a Autorrelleno de contraseñas en Configuración.</translation>
 <translation id="8261506727792406068">Borrar</translation>
+<translation id="8264966119170358612">Se expusieron algunas de tus contraseñas guardadas en una violación de la seguridad de los datos de terceros. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="8271720166617117963">Aceptar y acceder</translation>
 <translation id="8278938988428169257">Ingresa una palabra o frase.</translation>
 <translation id="8281781826761538115">Predeterminado: <ph name="DEFAULT_LOCALE" /></translation>

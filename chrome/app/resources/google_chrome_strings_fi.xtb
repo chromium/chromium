@@ -271,6 +271,7 @@
 <translation id="6327105987658262776">Päivityksiä ei ole saatavilla.</translation>
 <translation id="6412673304250309937">Tarkistaa URL-osoitteet Chromeen tallennetun vaarallisten sivustojen luettelon avulla. Jos sivusto yrittää varastaa salasanaasi tai jos lataat haitallisen tiedoston, Chrome voi myös lähettää Selaussuojan tarkistettavaksi URL-osoitteita, mukaan lukien osia sivujen sisällöstä.</translation>
 <translation id="6418662306461808273">Vaihdetaanko nykyiseen Chrome-profiiliin?</translation>
+<translation id="6493527311031785448">Google Chrome yrittää seuraavaa: <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6506909944137591434">Chrome tarvitsee kameran luvan, jotta se voi luoda 3D-kartan ympäristöstäsi</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="659498884637196217">Googlen Salasanojen ylläpidossa tällä laitteella</translation>
@@ -398,7 +399,6 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="8862326446509486874">Sinulla ei ole käyttöoikeuksia järjestelmätason asennukseen. Kokeile asennusohjelman suorittamista uudelleen järjestelmänvalvojana.</translation>
 <translation id="8914504000324227558">Käynnistä Chrome uudelleen</translation>
 <translation id="8922193594870374009">Jos haluat lähettää numeron osoitteesta <ph name="ORIGIN" /> Android-puhelimeesi, kirjaudu Chromeen molemmilla laitteilla.</translation>
-<translation id="8983720963221508955">Olet laittanut Parannetun selaussuojan päälle tililläsi. Käytä selaussuojaa myös Chromiumilla.</translation>
 <translation id="8986207147630327271">Olet lisäämässä työprofiilia tähän selaimeen ja antamassa järjestelmänvalvojalle oikeuden hallita pelkkää työprofiilia.</translation>
 <translation id="8989968390305463310">Selaushistoria vaikuttaa näkemiisi mainoksiin ja alla kuvatulla tavalla arvioituihin kiinnostuksen kohteisiisi. Yksityisyyden suojaamiseksi Chrome poistaa kiinnostuksen kohteesi automaattisesti kuukausittain. Kiinnostuksen kohteet voivat päivittyä, ellet poista niitä.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome-päivitys on saatavilla}=1{Chrome-päivitys on saatavilla}other{Chrome-päivitys on ollut saatavilla # vuorokauden ajan}}</translation>

@@ -241,7 +241,6 @@
 <translation id="3226657629376379887">Paigutuse toimingute menüü</translation>
 <translation id="3246869037381808805">Prinditööd, mis on vanemad kui 1 päev, eemaldatakse</translation>
 <translation id="3268178239013324452">Ebaõnnestus – luuk on avatud</translation>
-<translation id="3275506277319227640">Doki <ph name="DIRECTION" /> poolele</translation>
 <translation id="3275729367986477355">Avatari pilt</translation>
 <translation id="3283504360622356314">{0,plural, =1{Muuda faili}other{Muuda faile}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
@@ -360,7 +359,6 @@
 <translation id="4311195029067684288">Täielik</translation>
 <translation id="4333390807948134856">Klahv <ph name="KEY_NAME" /> on alla vajutatud</translation>
 <translation id="435692326371619097">Hallake võrgu APN-ide seadeid. APN-id loovad ühenduse mobiilsidevõrgu ja interneti vahel. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
-<translation id="4370033095251616914">Doki väiksemale poolele</translation>
 <translation id="4378373042927530923">Ei käitatud</translation>
 <translation id="4378551569595875038">Ühendamine ...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -903,7 +901,6 @@
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9138630967333032450">Vasakpoolne tõstuklahv</translation>
 <translation id="9149391708638971077">Käita mälutest</translation>
-<translation id="9157515863513902090">Doki suuremale poolele</translation>
 <translation id="9161276708550942948">tühikuklahv</translation>
 <translation id="9173638680043580060">Jäänud on alla minuti</translation>
 <translation id="917720651393141712">Testi</translation>

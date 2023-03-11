@@ -8,9 +8,6 @@
 <translation id="1175958423215084756">አገናኝ ተገኝቷል። <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">ገጽ <ph name="PAGE_NUMBER" /> ተሰርዟል</translation>
 <translation id="1258009455399840361">90 ዲግሪ በሰዓት አቅጣጫ አሽከርክር</translation>
-<translation id="1300209025925956156">ሰነድዎን ይቃኙ</translation>
-<translation id="1309250603447638106">ለሰነድ ቅኝት ዝማኔዎችን በማውረድ ላይ</translation>
-<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />። ለመድረስ ፍለጋ + የግራ ቀስት።</translation>
 <translation id="1417314334557041815">ገጽ <ph name="INDEX" />ን አርትዕ</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> ተነቅሏል።</translation>
 <translation id="1473110567575736769">3 ሰከንዶች መቁጠሪያ</translation>
@@ -24,7 +21,6 @@
 <translation id="1664224225747386870">ምንም አልተቀረጸም</translation>
 <translation id="1838104802459806957">ወደ ላይ አጋድል</translation>
 <translation id="1843105061469674856">ተጨማሪ ገጽ ቃኝ</translation>
-<translation id="1851169887664797861">ተጨማሪ የካሜራ መቆጣጠሪያዎች ይገኛሉ</translation>
 <translation id="1851616744363735765">ላፍታ ቆሟል</translation>
 <translation id="1899697626337024495">የፎቶ ምስል ጥራት</translation>
 <translation id="1925845977604399247">ወደ ማዕከለ-ሥዕላት ሂድ</translation>
@@ -49,7 +45,6 @@
 <translation id="2761536921376153655">የቅኝት ዓይነት</translation>
 <translation id="28682968802727151">የመስታወት ቅድመ-እይታ</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> ተሰክቷል።</translation>
-<translation id="2904654629665923749">የሰነድ ቅኝት ይገኛል</translation>
 <translation id="3067436040345934772">ወደ ቀኝ ያንፏቅቁ</translation>
 <translation id="3081586908890909590">ቪዲዮ ለመቅረጽ ቀይር</translation>
 <translation id="313467653172006084">60 ክ/ሴ</translation>
@@ -74,7 +69,6 @@
 <translation id="4269820728363426813">የአገናኝ አድራሻ ቅዳ</translation>
 <translation id="4281620174117014503">መካከለኛ ጥራት</translation>
 <translation id="428234092390943511">የገጽ ጥፍር አከል</translation>
-<translation id="4340659173795395806">አሁን ላይ ባለብዙ ገጽ PDFን መፍጠር ይችላሉ</translation>
 <translation id="4383571725254449280">የህትመት አፈጻጸም መዝገቦች</translation>
 <translation id="4445542136948522167">ፎቶን ማንሳት አቁም</translation>
 <translation id="4570032796877367747">የፊት ካሜራ</translation>
@@ -97,7 +91,6 @@
 <translation id="5317780077021120954">አስቀምጥ</translation>
 <translation id="5320594929574852403">ወደ ግራ አቅጣጫ በመንቀሳቀስ ላይ</translation>
 <translation id="5374917190292010970">4ኪ (2160p)</translation>
-<translation id="5444515100983837161">የሰነዱን ሁሉንም ጠርዞች በክፈፉ ውስጥ ያስቀምጡ። ሰነዱ እና ዳራ የተለያዩ ቀለሞች ከሆኑ ቅኝት በተሻለ ሁኔታ ይሠራል።</translation>
 <translation id="5662366948659129155">ገጽ <ph name="COUNT" />ን በመቃኘት ላይ</translation>
 <translation id="5671277269877808209">ካሬ</translation>
 <translation id="5746169159649715125">እንደ PDF አስቀምጥ</translation>
@@ -157,7 +150,6 @@
 <translation id="8428213095426709021">ቅንብሮች</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">የማይክሮፎን ድምጸ-ከል መቀያየሪያ ድምጸ-ከል በርቷል</translation>
-<translation id="8712637175834984815">ገባኝ</translation>
 <translation id="8730621377337864115">ተከናውኗል</translation>
 <translation id="8732462232047530626">የቅድመ እይታ ዲበ ውሂብ</translation>
 <translation id="8815966864175525708">የቁም ፎቶ ለማንሳት ይቀይሩ</translation>

@@ -26,6 +26,7 @@
 <translation id="1448064542941920355">Diminuer le zoom</translation>
 <translation id="1510341833810331442">Les sites ne sont pas autorisés à enregistrer des données sur votre appareil</translation>
 <translation id="1547123415014299762">Les témoins tiers sont autorisés</translation>
+<translation id="1593426485665524382">Nouvelles actions accessibles près du haut de l'écran</translation>
 <translation id="1620510694547887537">Caméra</translation>
 <translation id="1633720957382884102">Sites connexes</translation>
 <translation id="1644574205037202324">Historique</translation>
@@ -146,6 +147,7 @@
 <translation id="3628308229821498208">Recherches suggérées</translation>
 <translation id="3636279694100170143">Les sites que vous visitez peuvent valider que vous êtes un véritable utilisateur et non un robot</translation>
 <translation id="3649190289964910441">Un site que vous visitez peut enregistrer des renseignements avec Chrome permettant de valider que vous êtes un véritable utilisateur. Au fur et à mesure de votre navigation, les sites peuvent vérifier auprès de Chrome ainsi qu'à partir du premier site visité que vous êtes bien un utilisateur de confiance.</translation>
+<translation id="3721953990244350188">Ignorer et afficher la prochaine action proposée</translation>
 <translation id="3744111561329211289">Synchronisation en arrière-plan</translation>
 <translation id="3763247130972274048">Touchez deux fois à gauche ou à droite de la vidéo pour sauter 10 secondes</translation>
 <translation id="3794286421982011626">Un site que vous visitez peut enregistrer des renseignements en fonction de vos interactions pour qu’il fonctionne comme vous vous y attendez; par exemple, il peut vous permettre de rester connecté à un site ou d'enregistrer des articles dans votre panier. Les sites enregistrent souvent ces renseignements sur votre appareil de façon temporaire.</translation>
@@ -193,7 +195,6 @@
 <translation id="4534723447064627427">Pour autoriser <ph name="APP_NAME" /> à accéder à votre microphone, vous devez aussi activer le microphone dans les <ph name="BEGIN_LINK" />paramètres d'Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Désactiver le microphone</translation>
 <translation id="4570913071927164677">Détails</translation>
-<translation id="4575264539271661854">Faciliter le zoom avant sur le texte et les images d'un site que vous visitez</translation>
 <translation id="4598549027014564149">En mode navigation privée, les sites ne peuvent pas utiliser de témoins pour suivre votre activité de navigation sur les sites ni même sur les sites connexes. Votre activité de navigation n'utilise pas les options telles que la personnalisation des publicités. Les fonctionnalités de certains sites pourraient ne pas fonctionner.</translation>
 <translation id="4645575059429386691">Géré par l’un de tes parents</translation>
 <translation id="4670064810192446073">Réalité virtuelle</translation>

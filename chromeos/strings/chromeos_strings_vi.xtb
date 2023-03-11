@@ -241,7 +241,6 @@
 <translation id="3226657629376379887">Trình đơn thao tác của bố cục</translation>
 <translation id="3246869037381808805">Các lệnh in quá 1 ngày sẽ bị xóa</translation>
 <translation id="3268178239013324452">Không thành công – Cửa máy in đang mở</translation>
-<translation id="3275506277319227640">Gắn vào <ph name="DIRECTION" /></translation>
 <translation id="3275729367986477355">Hình đại diện</translation>
 <translation id="3283504360622356314">{0,plural, =1{Chỉnh sửa tệp}other{Chỉnh sửa các tệp}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
@@ -360,7 +359,6 @@
 <translation id="4311195029067684288">Toàn màn hình</translation>
 <translation id="4333390807948134856">Đã nhấn phím <ph name="KEY_NAME" /></translation>
 <translation id="435692326371619097">Quản lý chế độ cài đặt APN của mạng. APN thiết lập kết nối giữa mạng di động và Internet. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
-<translation id="4370033095251616914">Gắn vào bên nhỏ hơn</translation>
 <translation id="4378373042927530923">Không chạy</translation>
 <translation id="4378551569595875038">Đang kết nối…</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -840,7 +838,7 @@
 <translation id="8675354002693747642">Khóa được chia sẻ trước</translation>
 <translation id="8677859815076891398">Không có album nào. Hãy tạo một album trong <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Dùng phím mũi tên Trái hoặc Phải để quản lý tính năng này.</translation>
-<translation id="8712637175834984815">Bỏ qua</translation>
+<translation id="8712637175834984815">Tôi hiểu</translation>
 <translation id="871560550817059752">Không thành công – Hết mực</translation>
 <translation id="8723108084122415655">Mạng không phải mạng mặc định vượt ngưỡng độ trễ</translation>
 <translation id="8725066075913043281">Thử lại</translation>
@@ -903,7 +901,6 @@
 <translation id="9137526406337347448">Dịch vụ của Google</translation>
 <translation id="9138630967333032450">Nút Shift trái</translation>
 <translation id="9149391708638971077">Chạy quá trình Kiểm tra bộ nhớ</translation>
-<translation id="9157515863513902090">Gắn vào bên lớn hơn</translation>
 <translation id="9161276708550942948">dấu cách</translation>
 <translation id="9173638680043580060">Còn chưa đầy 1 phút</translation>
 <translation id="917720651393141712">Kiểm tra</translation>

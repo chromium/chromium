@@ -26,6 +26,7 @@
 <translation id="1448064542941920355">Znížiť úroveň lupy</translation>
 <translation id="1510341833810331442">Weby nemôžu ukladať údaje vo vašom zariadení</translation>
 <translation id="1547123415014299762">Súbory cookie tretích strán sú povolené</translation>
+<translation id="1593426485665524382">Nové akcie sú k dispozícii hore na obrazovke</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1633720957382884102">Súvisiace weby</translation>
 <translation id="1644574205037202324">História</translation>
@@ -146,6 +147,7 @@
 <translation id="3628308229821498208">Navrhované vyhľadávania</translation>
 <translation id="3636279694100170143">Weby, ktoré navštevujete, môžu overiť, že ste skutočný používateľ a nie robot</translation>
 <translation id="3649190289964910441">Web, ktorý navštívite, môže pomocou Chromu uložiť informácie potvrdzujúce, že ste skutočný používateľ. Pri ďalšom prehliadaní môžu weby pomocou Chromu overovať informácie z prvého webu, že ste zrejme dôveryhodný používateľ.</translation>
+<translation id="3721953990244350188">Zavrieť a zobraziť ďalšiu dostupnú akciu</translation>
 <translation id="3744111561329211289">Synchronizácia na pozadí</translation>
 <translation id="3763247130972274048">Dvojitým klepnutím doľava alebo doprava preskočíte vo videu o 10 s</translation>
 <translation id="3794286421982011626">Web, ktorý navštívite, môže uchovávať informácie o tom, čo robíte, aby fungoval podľa očakávaní. Vďaka tomu na ňom napríklad môže zostať prihlásený váš účet alebo môžete ukladať položky do nákupného košíka. Weby tieto informácie často ukladajú dočasne vo vašom zariadení.</translation>
@@ -193,7 +195,6 @@
 <translation id="4534723447064627427">Ak chcete povoliť aplikácii <ph name="APP_NAME" /> používať mikrofón, zapnite ho aj v <ph name="BEGIN_LINK" />nastaveniach Androidu<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Vypnúť mikrofón</translation>
 <translation id="4570913071927164677">Podrobnosti</translation>
-<translation id="4575264539271661854">Uľahčite si priblíženie textu a obrázkov na webe, ktorý navštívite</translation>
 <translation id="4598549027014564149">Keď ste v režime inkognito, weby nemôžu pomocou súborov cookie zobraziť vašu aktivitu prehliadania na nich (ani súvisiace weby). Aktivita prehliadania sa nepoužíva ani na prispôsobenie reklám. Funkcie na niektorých weboch nemusia fungovať.</translation>
 <translation id="4645575059429386691">Spravované vaším rodičom</translation>
 <translation id="4670064810192446073">Virtuálna realita</translation>

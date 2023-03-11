@@ -279,6 +279,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="6327105987658262776">Naujini nėra.</translation>
 <translation id="6412673304250309937">Tikrinami URL pagal nesaugių svetainių sąrašą, saugomą naršyklėje „Chrome“. Jei svetainė bando pavogti slaptažodį ar atsisiuntėte žalingą failą, „Chrome“ taip pat gali siųsti URL, įskaitant puslapio turinio dalis, Saugaus naršymo funkcijai.</translation>
 <translation id="6418662306461808273">Perjungti į esamą „Chrome“ profilį?</translation>
+<translation id="6493527311031785448">„Google Chrome“ bando <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6506909944137591434">„Chrome“ reikalingas fotoaparato leidimas, kad būtų galima sukurti trimatį aplinkos žemėlapį</translation>
 <translation id="6515495397637126556">„<ph name="PAGE_TITLE" />“ – „Google Chrome Dev“</translation>
 <translation id="659498884637196217">„Google“ slaptažodžių tvarkytuvė šiame įrenginyje</translation>
@@ -406,7 +407,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="8862326446509486874">Neturite reikiamų teisių sistemai įdiegti. Pamėginkite įdiegimo priemonę dar kartą paleisti kaip administratorius.</translation>
 <translation id="8914504000324227558">Iš naujo paleisti „Chrome“</translation>
 <translation id="8922193594870374009">Jei norite iš <ph name="ORIGIN" /> į „Android“ telefoną išsiųsti numerį, prisijunkite prie „Chrome“ abiejuose įrenginiuose.</translation>
-<translation id="8983720963221508955">Įjungėte Sustiprinto saugaus naršymo funkciją paskyroje. Dabar įjunkite ją sistemoje „Chrome“.</translation>
 <translation id="8986207147630327271">Pridedate darbo profilį prie šios naršyklės ir suteikiate administratoriui teisę valdyti tik darbo profilį.</translation>
 <translation id="8989968390305463310">Naršymo istorija lemia, kokius skelbimus matysite ir kokie jūsų pomėgiai bus numatomi toliau. Siekiant apsaugoti privatumą, „Chrome“ reguliariai kiekvieną mėnesį automatiškai ištrina jūsų pomėgius. Pomėgiai gali būti atnaujinami, kol jų nepašalinate.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Pasiekiamas „Chrome“ naujinys}=1{Pasiekiamas „Chrome“ naujinys}one{„Chrome“ naujinys pasiekiamas # dieną}few{„Chrome“ naujinys pasiekiamas # dienas}many{„Chrome“ naujinys pasiekiamas # dienos}other{„Chrome“ naujinys pasiekiamas # dienų}}</translation>

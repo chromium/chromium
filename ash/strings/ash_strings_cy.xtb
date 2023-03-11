@@ -100,7 +100,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1420408895951708260">Toglo Golau Nos. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Gweld lluniau a chyfryngau diweddar eich ffôn ar <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">Iawn</translation>
-<translation id="1447641497144572814">Arbedwr sgrîn yn dechrau</translation>
 <translation id="1455242230282523554">Dangos y gosodiadau iaith</translation>
 <translation id="1460620680449458626">Mae'r sain wedi'i ddistewi.</translation>
 <translation id="14648076227129703">Mae hyn yn caniatáu mynediad camera ar gyfer <ph name="APP1_NAME" />, <ph name="APP2_NAME" />, a phob ap a gwefan gyda chaniatâd y camera</translation>
@@ -126,6 +125,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1550523713251050646">Cliciwch am ragor o ddewisiadau</translation>
 <translation id="1555130319947370107">Glas</translation>
 <translation id="1576623706766186887">Pellhau pan fydd chwyddwydr ymlaen</translation>
+<translation id="1586324912145647027">Ewch i ddesg 1 i 8</translation>
 <translation id="1589090746204042747">Gael mynediad at eich holl weithgarwch yn y sesiwn hon</translation>
 <translation id="1610778689852195798">"Dadwneud"</translation>
 <translation id="1611993646327628135">Ymlaen</translation>
@@ -514,6 +514,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="3631369015426612114">Caniatáu hysbysiadau o'r ffynonellau canlynol</translation>
 <translation id="3633097874324966332">Agorwch y gosodiadau Bluetooth i baru'ch dyfais</translation>
 <translation id="3638400994746983214">Toglo'r sgrîn preifatrwydd. <ph name="STATE_TEXT" />.</translation>
+<translation id="3649256019230929621">Lleihau'r ffenestr</translation>
 <translation id="3649505501900178324">Mae Diweddariad yn hwyr</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -588,6 +589,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="4021716437419160885">Sgrolio i lawr</translation>
 <translation id="4022497978915111141">Cloi dyfais</translation>
 <translation id="4024840464866786680">Os wnaethoch anghofio'ch PIN a'ch cyfrinair neu newid cyfrinair eich Cyfrif Google yn ddiweddar, rhowch gynnig ar adfer y defnyddiwr hwn.</translation>
+<translation id="4026843240379844265">Symud y ffenestr weithredol rhwng sgriniau</translation>
 <translation id="4028481283645788203">Mae angen cyfrinair ar gyfer diogelwch pellach</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Rydych yn rhannu eich sgrîn</translation>
@@ -912,6 +914,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="5689633613396158040">Mae Golau Nos yn ei gwneud yn haws edrych ar eich sgrîn neu ddarllen mewn golau gwan. Tapiwch i newid faint o'r gloch mae Golau Nos yn cael ei droi ymlaen neu ei ddiffodd yn llwyr.</translation>
 <translation id="5691772641933328258">Nid ydym yn adnabod yr ôl bys</translation>
 <translation id="5693255400847650006">Mae'r meicroffon yn cael ei ddefnyddio</translation>
+<translation id="5699366815052349604">Aseinio'r ffenestr weithredol i bob desg</translation>
 <translation id="570390244361237317">Pob Ap, llywiwch gyda bysellau saeth i gyrchu pob ap</translation>
 <translation id="5707775774148071965">Mae eich dyfais yn cefnogi cyfradd data uwch na'ch cebl. Mae'n bosib y bydd perfformiad y ddyfais yn gyfyngedig.</translation>
 <translation id="5710450975648804523">Mae Peidiwch ag Aflonyddu wedi'i droi ymlaen</translation>
@@ -1552,6 +1555,7 @@ Gosodiad newydd</translation>
 <translation id="9034924485347205037">Ffeiliau Linux</translation>
 <translation id="9047624247355796468">Agor gosodiadau ar gyfer <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Crebachu'r hysbysiad</translation>
+<translation id="906458777597946297">Mwyhau'r ffenestr</translation>
 <translation id="9065203028668620118">Golygu</translation>
 <translation id="9070640332319875144">Gosodiadau Assistant</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> tan fod y batri'n wag.</translation>

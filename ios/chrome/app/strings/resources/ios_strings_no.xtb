@@ -81,6 +81,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="149095475893949513">Dette nettstedet prøver å laste ned en konfigurasjonsprofil.</translation>
 <translation id="1491277525950327607">Dobbelttrykk for å slå innstillingen av/på</translation>
 <translation id="1492417797159476138">Du har allerede lagret dette brukernavnet for dette nettstedet</translation>
+<translation id="1497590942294823549">Meny → Passordlagring</translation>
 <translation id="1498283581832036924"><ph name="WEBSITE" />-kontoen din slettes ikke</translation>
 <translation id="1506063256525392513">Dette gjør at du kan ta og laste opp bilder samt skanne QR-koder</translation>
 <translation id="1509486075633541495">Logg på nettstedet</translation>
@@ -242,6 +243,7 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="271033894570825754">Ny</translation>
 <translation id="2712127207578915686">Kan ikke åpne filen</translation>
 <translation id="2718352093833049315">Bare når Wifi er på</translation>
+<translation id="2737716090799520623">Passord som du lagrer når du er logget på Chrome, lagres i Google-kontoen din (<ph name="ACCOUNT" />). <ph name="BEGIN_LINK" />Gå til innstillingene<ph name="END_LINK" /> for å slå dette av.</translation>
 <translation id="2747003861858887689">Forrige felt</translation>
 <translation id="2749231692441336879">Følger <ph name="CHANNEL_NAME" /></translation>
 <translation id="2764831210418622012">nå nettopp</translation>
@@ -843,6 +845,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="6801927553864092214">For å surfe privat på nettet, åpne en inkognitofane</translation>
 <translation id="6807889908376551050">Vis alle</translation>
 <translation id="681368974849482173">Elementet er opprettet</translation>
+<translation id="6822587385560699678">Når på, lagres passord i <ph name="ACCOUNT" />. Når av, lagres passord bare på denne enheten.</translation>
 <translation id="683022620450280906">Du kan bruke lagrede passord på alle enheter. De blir lagret i Google Passordlagring for <ph name="EMAIL" /></translation>
 <translation id="6831043979455480757">Oversett</translation>
 <translation id="6842136130964845393">For å sikre at du alltid har tilgang til de lagrede passordene dine, må du bekrefte at det er deg</translation>

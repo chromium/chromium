@@ -376,6 +376,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1803351196216024260">Hozzáférést kérhet a mikrofonhoz</translation>
 <translation id="1807246157184219062">Világos</translation>
 <translation id="1807528111851433570">Indítási lap</translation>
+<translation id="180991881384371158">A CVC-kód a kártyája hátulján található. Ez az aláírásmező jobb felső sarkában található utolsó 3 számjegy.</translation>
 <translation id="181000283860817563">Árak nyomon követése több webhelyen</translation>
 <translation id="1810391395243432441">Megvédheti jelszavait a képernyőzár segítségével</translation>
 <translation id="1812527064848182527">fekvő</translation>
@@ -506,6 +507,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2149968176347646218">A kapcsolat nem biztonságos</translation>
 <translation id="2153609454945889823">Telepíti a Google Play Services for AR szolgáltatást?</translation>
 <translation id="2154484045852737596">Kártya szerkesztése</translation>
+<translation id="2154739667870063220">Újraindítás</translation>
 <translation id="2155260325161282517">5 × 7 hüvelyk</translation>
 <translation id="2157640075051554492">Árkövetési értesítések</translation>
 <translation id="2161656808144014275">Szöveg</translation>
@@ -640,6 +642,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2521736961081452453">Űrlap létrehozása</translation>
 <translation id="2523886232349826891">Csak erre az eszközre mentve</translation>
 <translation id="2524461107774643265">További adatok hozzáadása</translation>
+<translation id="2527451058878391043">A CVC-kód a kártyája elején található. Ez egy négyjegyű kód a kártyaszám jobb felső sarkában.</translation>
 <translation id="2529899080962247600">Ebben a mezőben legfeljebb <ph name="MAX_ITEMS_LIMIT" /> bejegyzés szerepelhet. A további bejegyzéseket figyelmen kívül hagyja a rendszer.</translation>
 <translation id="253493526287553278">A promóciós kód részleteinek megtekintése</translation>
 <translation id="2535585790302968248">Privát böngészéshez nyisson új inkognitó lapot</translation>
@@ -892,6 +895,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3215092763954878852">Hiba történt a WebAuthn használata során</translation>
 <translation id="3216313131063488104">Blues</translation>
 <translation id="3218181027817787318">Relatív</translation>
+<translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Frissítés szükséges most}=2{Holnapig frissítés szükséges}other{# napon belül frissítés szükséges}}</translation>
 <translation id="3223287115535306850">Alkalmazásindító ikon</translation>
 <translation id="3223425961342298674">Helyadatok nem engedélyezettek</translation>
 <translation id="3225919329040284222">A szerver tanúsítványa nem felel meg a beépített elvárásoknak. Ezek a beépített elvárások bizonyos nagy biztonságú webhelyekre vonatkoznak az Ön védelme érdekében.</translation>
@@ -1376,6 +1380,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4350629523305688469">Többfunkciós tálca</translation>
 <translation id="4351060348582610152">A(z) <ph name="ORIGIN" /> szeretné megkeresni a közeli Bluetooth-eszközöket. A következő eszközöket találta:</translation>
 <translation id="4351175281479794167">Ellenőrző kód megadása</translation>
+<translation id="4355383636893709732">ChromeOS-frissítés Android-alkalmazásokhoz</translation>
 <translation id="4356973930735388585">Előfordulhat, hogy a támadók ezen a webhelyen olyan veszélyes programokat próbálnak telepíteni számítógépére, amelyek ellopják vagy törlik adatait (például fotóit, jelszavait, üzeneteit vagy bankkártyájának adatait).</translation>
 <translation id="4358059973562876591">A DnsOverHttpsMode házirenddel kapcsolatos hiba miatt előfordulhat, hogy a megadott sablonok nem alkalmazhatók.</translation>
 <translation id="4358461427845829800">Fizetési módok kezelése…</translation>
@@ -1756,6 +1761,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5288393065350884210">Számvitel és auditálás</translation>
 <translation id="5288808348893593856">A webhely kapcsolata biztonságos, hacsak a Chrome nem értesíti Önt ennek ellenkezőjéről.</translation>
 <translation id="5289384342738547352">Több dokumentum kezelése</translation>
+<translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{A mai napon frissítés szükséges}=2{Holnapig frissítés szükséges}other{# napon belül frissítés szükséges}}</translation>
 <translation id="5293919335876685914">Kupék</translation>
 <translation id="5296589789433599000">Főzés és receptek</translation>
 <translation id="5299298092464848405">Irányelv-előfeldolgozási hiba</translation>
@@ -1950,6 +1956,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5786044859038896871">Ki szeretné tölteni a kártyaadatait?</translation>
 <translation id="578633867165174378">A Chrome észlelte, hogy a most használt jelszava adatvédelmi incidensben volt érintett. Javasoljuk a jelszó azonnali módosítását.</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="580241730938216256">Frissítés indítása</translation>
 <translation id="5803412860119678065">Ki szeretné tölteni <ph name="CARD_DETAIL" /> kártyájának adataival?</translation>
 <translation id="5804241973901381774">Engedélyek</translation>
 <translation id="5808435672482059465">Chrome-előzmények megtekintése</translation>
@@ -2110,6 +2117,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6218753634732582820">Eltávolítja a címet a Chromiumból?</translation>
 <translation id="622039917539443112">Paralel hajtás</translation>
 <translation id="6221345481584921695">A Google – Biztonságos böngészés nemrég <ph name="BEGIN_LINK" />rosszindulatú programokat<ph name="END_LINK" /> észlelt a következő webhelyen: <ph name="SITE" />. A rendes esetben biztonságos webhelyek néha rosszindulatú programokkal fertőződnek. A rosszindulatú tartalom az ilyen programok következő ismert terjesztőjétől származik: <ph name="SUBRESOURCE_HOST" />.</translation>
+<translation id="6221892641068781024">Egyszerűsített nézet</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Nyomja le a Tab, majd az Enter billentyűt a kisegítő eszközöknek a Chrome beállításaiban való személyre szabásához.</translation>
 <translation id="6229649258872345286">Családi utazás</translation>
 <translation id="6232271601416750929">Etikus szépségápolás</translation>
@@ -2169,6 +2177,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6366710531182496394">Kettő kapocs a bal oldalon</translation>
 <translation id="6367196786591004737">Bejegyzés törlése</translation>
 <translation id="6370022303958842211">Eszközhozzáférési műveletek, például bejelentkezések (sikertelen bejelentkezési okok stb.), kijelentkezések, zárolások és feloldások</translation>
+<translation id="6374469231428023295">Próbálja újra</translation>
 <translation id="6374865374745447009">ablakkezelés</translation>
 <translation id="6377268785556383139">1 találat a következőre: <ph name="SEARCH_TEXT" /></translation>
 <translation id="6380497234672085559">A0</translation>
@@ -2479,6 +2488,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> és további <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> és további <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">Levendula</translation>
 <translation id="7156870133441232244">A szervert a TLS 1.2-es vagy újabb verziójára kell frissíteni.</translation>
+<translation id="7160999678034985039">Mentse a munkáját, és ha készen áll, indítsa el a frissítést.</translation>
 <translation id="7163295244162773898">{0,plural, =1{Biztosan átmásolja a bizalmas fájlt?}other{Biztosan átmásolja a bizalmas fájlokat?}}</translation>
 <translation id="717330890047184534">Gaia-azonosító:</translation>
 <translation id="7174545416324379297">Egyesítve</translation>
@@ -2726,6 +2736,7 @@ További részletek:
 <translation id="7687305263118037187">Újrapróbálkozás időtúllépése</translation>
 <translation id="7690647519407127574">Oufuku Hagaki (levelezőlap)</translation>
 <translation id="7693583928066320343">Fogadott oldalsorrend</translation>
+<translation id="769424100851389104">Frissítés indítása most</translation>
 <translation id="7696089921647603491">Klasszikus rock és régi zenék</translation>
 <translation id="769721561045429135">Jelenleg vannak olyan kártyái, amelyek csak ezen az eszközön használhatók Kattintson a Folytatás lehetőségre a kártyák áttekintéséhez.</translation>
 <translation id="7698864304447945242">Frissíti a Google Play Services for AR szolgáltatást?</translation>
@@ -2750,6 +2761,7 @@ További részletek:
 <translation id="774634243536837715">Veszélyes tartalom letiltva.</translation>
 <translation id="7751971323486164747">Személyre szabhatja a Chrome-ban megjelenő betűméreteket és betűképeket.</translation>
 <translation id="7752995774971033316">Nem kezelt</translation>
+<translation id="7754587126786572336">A Chrome-lapok és -alkalmazások bezárulnak a frissítés elindításakor</translation>
 <translation id="7755287808199759310">A letiltást a szülő oldhatja fel</translation>
 <translation id="7755624218968747854">Elsődleges tekercs</translation>
 <translation id="7758069387465995638">Előfordulhat, hogy a tűzfal vagy a vírusirtó szoftver tiltotta le a kapcsolatot.</translation>
@@ -2914,6 +2926,7 @@ További részletek:
 <translation id="8186706823560132848">Szoftver</translation>
 <translation id="8190193880870196235">Bővítmény kezeli</translation>
 <translation id="8194797478851900357">&amp;Áthelyezés visszavonása</translation>
+<translation id="8200772114523450471">Folytatás</translation>
 <translation id="8201077131113104583">A(z) „<ph name="EXTENSION_ID" />” azonosítójú bővítmény frissítési URL-je érvénytelen.</translation>
 <translation id="8202097416529803614">Rendelés összegzése</translation>
 <translation id="8202370299023114387">Ütközés</translation>
@@ -3212,6 +3225,7 @@ További részletek:
 <translation id="8963117664422609631">A webhely beállításainak megnyitása</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Javaslatok:<ph name="MARKUP_2" />Ellenőrizze, hogy van-e adatkapcsolata<ph name="MARKUP_3" />Töltse be újra a weboldalt később<ph name="MARKUP_4" />Ellenőrizze a beírt internetcímet<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">Kártya mentése</translation>
+<translation id="8970887620466824814">Hiba történt.</translation>
 <translation id="8971063699422889582">A szerver tanúsítványa lejárt.</translation>
 <translation id="8975012916872825179">Olyan adatokat tartalmaz, mint a telefonszámok, az e-mail-címek és a szállítási címek</translation>
 <translation id="8975263830901772334">A kinyomtatott fájlok nevei</translation>

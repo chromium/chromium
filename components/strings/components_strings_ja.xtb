@@ -345,6 +345,7 @@
 <translation id="1733064249834771892">フォント</translation>
 <translation id="1734864079702812349">AMEX</translation>
 <translation id="1734878702283171397">システム管理者にお問い合わせください。</translation>
+<translation id="1736158756193183352">ネットワークに<ph name="BEGIN_LINK" />ログイン<ph name="END_LINK" />してください</translation>
 <translation id="1736420071277903564">パソコン</translation>
 <translation id="1740951997222943430">有効期限（月）を正しい形式で入力してください</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode が「<ph name="SECURE_DNS_MODE_SECURE" />」の場合は、有効な文字列を指定する必要があります。</translation>
@@ -505,6 +506,7 @@
 <translation id="2149968176347646218">接続は安全ではありません</translation>
 <translation id="2153609454945889823">Google Play 開発者サービス（AR）をインストールしますか？</translation>
 <translation id="2154484045852737596">カードを編集</translation>
+<translation id="2154739667870063220">再起動</translation>
 <translation id="2155260325161282517">5x7 インチ（2L 判）</translation>
 <translation id="2157640075051554492">価格トラッキングの通知</translation>
 <translation id="2161656808144014275">テキスト</translation>
@@ -893,6 +895,7 @@
 <translation id="3215092763954878852">WebAuthn を使用できませんでした</translation>
 <translation id="3216313131063488104">ブルース</translation>
 <translation id="3218181027817787318">相対的</translation>
+<translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{今すぐ更新が必要です}=2{明日までに更新が必要です}other{# 日以内に更新が必要です}}</translation>
 <translation id="3223287115535306850">アプリ起動スロバー</translation>
 <translation id="3223425961342298674">位置情報は許可されていません</translation>
 <translation id="3225919329040284222">サーバーの提示した証明書が、組み込まれている想定の証明書と一致しません。これらの想定の証明書は、ユーザー保護のため、特定の安全性の高いウェブサイトについて用意されています。</translation>
@@ -1192,6 +1195,7 @@
 <translation id="3949601375789751990">閲覧履歴がここに表示されます</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" />（<ph name="DEVICE_ID" />）</translation>
 <translation id="3949870428812919180">保存済みのお支払い方法がありません</translation>
+<translation id="3950574001630941635">チュートリアルをもう一度開始</translation>
 <translation id="3950820424414687140">ログイン</translation>
 <translation id="3958057596965527988">4x4 インチ</translation>
 <translation id="3961148744525529027">支払いハンドラのシートが半分開いています</translation>
@@ -1376,6 +1380,7 @@
 <translation id="4350629523305688469">多機能トレイ</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> が近くの Bluetooth デバイスのスキャンを求めています。検出済みのデバイスは次のとおりです。</translation>
 <translation id="4351175281479794167">確認コードの入力</translation>
+<translation id="4355383636893709732">Android アプリ向け ChromeOS の更新</translation>
 <translation id="4356973930735388585">このサイトを利用すると、悪意のあるユーザーによって、危険なプログラム（写真、パスワード、メッセージ、クレジット カード番号などの情報を盗み取るか削除するプログラム）がお使いのパソコンにインストールされる可能性があります。</translation>
 <translation id="4358059973562876591">DnsOverHttpsMode ポリシーに問題があるため、指定したテンプレートを適用できない可能性があります。</translation>
 <translation id="4358461427845829800">お支払い方法を管理...</translation>
@@ -1756,6 +1761,7 @@
 <translation id="5288393065350884210">会計、監査</translation>
 <translation id="5288808348893593856">サイトの接続は保護されます（保護されない場合は通知されます）</translation>
 <translation id="5289384342738547352">複数ドキュメントの処理</translation>
+<translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{今日中に更新が必要です}=2{明日までに更新が必要です}other{# 日以内に更新が必要です}}</translation>
 <translation id="5293919335876685914">クーペ</translation>
 <translation id="5296589789433599000">料理、レシピ</translation>
 <translation id="5299298092464848405">ポリシーの解析中にエラーが発生しました</translation>
@@ -1950,6 +1956,7 @@
 <translation id="5786044859038896871">カード情報を入力しますか？</translation>
 <translation id="578633867165174378">たった今使用したパスワードがデータ侵害で検出されました。このパスワードを今すぐ変更することをおすすめします。</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="580241730938216256">更新を開始</translation>
 <translation id="5803412860119678065"><ph name="CARD_DETAIL" /> を入力しますか？</translation>
 <translation id="5804241973901381774">権限</translation>
 <translation id="5808435672482059465">Chrome 履歴を表示</translation>
@@ -2110,6 +2117,7 @@
 <translation id="6218753634732582820">Chromium からアドレスを削除してもよろしいですか？</translation>
 <translation id="622039917539443112">巻き折り</translation>
 <translation id="6221345481584921695"><ph name="BEGIN_LINK" /> では最近、Google セーフ ブラウジングにより、<ph name="END_LINK" />不正なソフトウェアが検出されました<ph name="SITE" />。通常は安全なウェブサイトであっても、不正なソフトウェアに感染している場合があります。今回の悪意のあるコンテンツは、不正なソフトウェアの既知の配布元である「<ph name="SUBRESOURCE_HOST" />」からもたらされました。</translation>
+<translation id="6221892641068781024">簡易表示</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、Chrome の設定でユーザー補助ツールをカスタマイズできます</translation>
 <translation id="6229649258872345286">ファミリー向け旅行</translation>
 <translation id="6232271601416750929">クリーン ビューティー</translation>
@@ -2169,6 +2177,7 @@
 <translation id="6366710531182496394">2 か所のステープル（左）</translation>
 <translation id="6367196786591004737">エントリを削除</translation>
 <translation id="6370022303958842211">ログイン（失敗したログインの理由を含む）、ログアウト、ロック、ロック解除などのデバイス アクセス アクション</translation>
+<translation id="6374469231428023295">再試行</translation>
 <translation id="6374865374745447009">ウィンドウ管理</translation>
 <translation id="6377268785556383139">「<ph name="SEARCH_TEXT" />」に対する 1 件の検索結果</translation>
 <translation id="6380497234672085559">A0</translation>
@@ -2479,6 +2488,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" />（他 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 件）}other{<ph name="PAYMENT_METHOD_PREVIEW" />（他 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 件）}}</translation>
 <translation id="7153618581592392745">ラベンダー</translation>
 <translation id="7156870133441232244">サーバーを TLS 1.2 以降にアップグレードする必要があります。</translation>
+<translation id="7160999678034985039">作業内容を保存し、準備ができたら更新を開始してください。</translation>
 <translation id="7163295244162773898">{0,plural, =1{機密ファイルをコピーしますか？}other{機密ファイルをコピーしますか？}}</translation>
 <translation id="717330890047184534">GAIA ID:</translation>
 <translation id="7174545416324379297">統合された値</translation>
@@ -2726,6 +2736,7 @@
 <translation id="7687305263118037187">再試行のタイムアウト</translation>
 <translation id="7690647519407127574">往復はがき</translation>
 <translation id="7693583928066320343">受信したページ順序</translation>
+<translation id="769424100851389104">今すぐ更新を開始</translation>
 <translation id="7696089921647603491">クラシック ロック、オールディーズ</translation>
 <translation id="769721561045429135">現在、このデバイスでのみ使用できるカードがあります。カードを確認するには [続行] をクリックしてください。</translation>
 <translation id="7698864304447945242">Google Play 開発者サービス（AR）を更新しますか？</translation>
@@ -2750,6 +2761,7 @@
 <translation id="774634243536837715">危険なコンテンツがブロックされました。</translation>
 <translation id="7751971323486164747">Chrome のフォントサイズと書体をカスタマイズします</translation>
 <translation id="7752995774971033316">管理されていません</translation>
+<translation id="7754587126786572336">更新が始まると Chrome のタブとアプリは閉じられます</translation>
 <translation id="7755287808199759310">ブロックの解除は保護者が行うことができます</translation>
 <translation id="7755624218968747854">メインロール</translation>
 <translation id="7758069387465995638">ファイアウォールまたはウイルス対策ソフトウェアによって接続がブロックされた可能性があります。</translation>
@@ -2914,6 +2926,7 @@
 <translation id="8186706823560132848">ソフトウェア</translation>
 <translation id="8190193880870196235">拡張機能によって管理されています</translation>
 <translation id="8194797478851900357">移動の取り消し（&amp;U）</translation>
+<translation id="8200772114523450471">再開</translation>
 <translation id="8201077131113104583">ID「<ph name="EXTENSION_ID" />」の拡張機能に対する無効な更新 URL です。</translation>
 <translation id="8202097416529803614">ご注文概要</translation>
 <translation id="8202370299023114387">競合</translation>
@@ -3212,6 +3225,7 @@
 <translation id="8963117664422609631">サイトの設定に移動します</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />アドバイス:<ph name="MARKUP_2" />データ接続があることを確認します<ph name="MARKUP_3" />このウェブページを後で再読み込みします<ph name="MARKUP_4" />入力したアドレスを確認します<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">カードを保存</translation>
+<translation id="8970887620466824814">エラーが発生しました。</translation>
 <translation id="8971063699422889582">サーバーの証明書の有効期限が切れています。</translation>
 <translation id="8975012916872825179">電話番号、メールアドレス、配送先住所などの情報が含まれます</translation>
 <translation id="8975263830901772334">印刷するファイルの名前</translation>

@@ -100,7 +100,6 @@
 <translation id="1420408895951708260">రాత్రి కాంతిని టోగుల్ చేయి. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">మీ ఫోన్‌లోని తాజా ఫోటోలు, మీడియాను మీ <ph name="DEVICE_TYPE" />లో చూడండి</translation>
 <translation id="1426410128494586442">అవును</translation>
-<translation id="1447641497144572814">స్క్రీన్ సేవర్ ప్రారంభమవుతోంది</translation>
 <translation id="1455242230282523554">భాష సెట్టింగ్‌లను చూపుతుంది</translation>
 <translation id="1460620680449458626">వాల్యూమ్ మ్యూట్ చేయబడింది.</translation>
 <translation id="14648076227129703">ఇది కెమెరా అనుమతితో <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> అన్ని యాప్‌లు, వెబ్‌సైట్‌ల కోసం కెమెరా యాక్సెస్‌ను అనుమతిస్తుంది</translation>
@@ -126,6 +125,7 @@
 <translation id="1550523713251050646">మరిన్ని ఎంపికల కోసం క్లిక్ చేయండి</translation>
 <translation id="1555130319947370107">నీలం</translation>
 <translation id="1576623706766186887">మ్యాగ్నిఫైయర్ ఆన్‌లో ఉన్నప్పుడు జూమ్ - అవుట్ చేయండి</translation>
+<translation id="1586324912145647027">1 నుండి 8 డెస్క్‌లకు వెళ్లండి</translation>
 <translation id="1589090746204042747">ఈ సెషన్‌లో మీ మొత్తం యాక్టివిటీని యాక్సెస్ చేయండి</translation>
 <translation id="1610778689852195798">"చర్య రద్దు చేయండి"</translation>
 <translation id="1611993646327628135">ఆన్</translation>
@@ -514,6 +514,7 @@
 <translation id="3631369015426612114">కింది వాటి నుండి నోటిఫికేషన్‌లను అనుమతించండి</translation>
 <translation id="3633097874324966332">మీ పరికరాన్ని పెయిర్ చేయడానికి బ్లూటూత్ సెట్టింగ్‌లను తెరవండి</translation>
 <translation id="3638400994746983214">గోప్యతా స్క్రీన్‌ను టోగుల్ చేస్తుంది. <ph name="STATE_TEXT" />.</translation>
+<translation id="3649256019230929621">విండోను కుదించు</translation>
 <translation id="3649505501900178324">అప్‌డేట్ పెండింగ్‌లో ఉంది</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -589,6 +590,7 @@
 <translation id="4021716437419160885">కిందికి స్క్రోల్ చేయి</translation>
 <translation id="4022497978915111141">పరికరాన్ని లాక్ చేయండి</translation>
 <translation id="4024840464866786680">మీరు మీ PIN, పాస్‌వర్డ్‌ను మరిచిపోతే లేదా ఇటీవల మీ Google ఖాతా పాస్‌వర్డ్‌ను మార్చినట్లయితే, ఈ యూజర్‌ను రికవర్ చేయడానికి ట్రై చేయండి.</translation>
+<translation id="4026843240379844265">యాక్టివ్ విండోను డిస్‌ప్లేల మధ్య తరల్చండి</translation>
 <translation id="4028481283645788203">మరింత సెక్యూరిటీ కోసం పాస్‌వర్డ్‌ కావాలి</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">మీరు మీ స్క్రీన్‌ను షేర్ చేస్తున్నారు</translation>
@@ -913,6 +915,7 @@
 <translation id="5689633613396158040">రాత్రి కాంతి ఫీచర్ అనేది తక్కువ కాంతి ఉన్న సందర్భాలలో మీ స్క్రీన్‌ను స్పష్టంగా చూడటాన్ని లేదా చదవడాన్ని మరింత సులభతరం చేస్తుంది. నైట్ లైట్ ఆన్ చేసే సమయాన్ని మార్చడానికి నొక్కండి లేదా దాన్ని పూర్తిగా ఆపివేయండి.</translation>
 <translation id="5691772641933328258">వేలిముద్ర గుర్తించబడలేదు</translation>
 <translation id="5693255400847650006">మైక్రోఫోన్ ఉపయోగంలో ఉంది</translation>
+<translation id="5699366815052349604">డెస్క్‌లన్నింటికీ యాక్టివ్‌గా ఉన్న విండోను కేటాయించండి</translation>
 <translation id="570390244361237317">అన్ని యాప్‌లు, అన్ని యాప్‌లను యాక్సెస్ చేయడానికి బాణం కీలతో నావిగేట్ చేయండి</translation>
 <translation id="5707775774148071965">మీ పరికరం మీ కేబుల్ కంటే ఎక్కువ డేటా రేట్‌ను సపోర్ట్ చేస్తుంది. పరికర పనితీరు పరిమితంగా ఉండవచ్చు.</translation>
 <translation id="5710450975648804523">'అంతరాయం కలిగించవద్దు' మోడ్ ఆన్‌లో ఉంది</translation>
@@ -1553,6 +1556,7 @@
 <translation id="9034924485347205037">Linux ఫైళ్లు</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> సెట్టింగ్‌లను తెరవండి</translation>
 <translation id="9059834730836941392">నోటిఫికేషన్‌ను కుదించు</translation>
+<translation id="906458777597946297">విండోను విస్తరించు</translation>
 <translation id="9065203028668620118">ఎడిట్</translation>
 <translation id="9070640332319875144">అసిస్టెంట్ సెట్టింగ్‌లు</translation>
 <translation id="9072519059834302790">బ్యాటరీ ఛార్జ్ <ph name="TIME_LEFT" />లో ఖాళీ అవుతుంది.</translation>

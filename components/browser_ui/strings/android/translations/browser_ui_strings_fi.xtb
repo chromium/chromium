@@ -26,6 +26,7 @@
 <translation id="1448064542941920355">Vähennä zoomausta</translation>
 <translation id="1510341833810331442">Sivustot eivät saa tallentaa dataa laitteellesi</translation>
 <translation id="1547123415014299762">Kolmannen osapuolen evästeet on sallittu</translation>
+<translation id="1593426485665524382">Uusia toimintoja saatavilla näytön yläosassa</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1633720957382884102">Aiheeseen liittyvät sivustot</translation>
 <translation id="1644574205037202324">Historia</translation>
@@ -146,6 +147,7 @@
 <translation id="3628308229821498208">Ehdotetut haut</translation>
 <translation id="3636279694100170143">Avaamasi sivustot voivat vahvistaa, että olet oikea käyttäjä</translation>
 <translation id="3649190289964910441">Avaamasi sivusto voi tallentaa Chromeen tietoja, jotka vahvistavat, että olet todellinen käyttäjä. Kun jatkat selaamista, sivustot voivat tarkistaa ensimmäiseltä sivustolta Chromen avulla, oletko luotettava käyttäjä.</translation>
+<translation id="3721953990244350188">Hylkää ja näytä seuraava saatavilla oleva toiminto</translation>
 <translation id="3744111561329211289">Taustasynkronointi</translation>
 <translation id="3763247130972274048">Ohita 10 sekuntia kaksoisnapauttamalla videota vasemmalle tai oikealle</translation>
 <translation id="3794286421982011626">Avaamasi sivusto voi tallentaa tietoja toiminnastasi, jotta se toimii odotetulla tavalla – esimerkiksi pitääksesi sinut kirjautuneena sivustolle tai tallentaaksesi tuotteita ostoskoriin. Sivustot tallentavat usein nämä tiedot väliaikaisesti laitteellesi.</translation>
@@ -193,7 +195,6 @@
 <translation id="4534723447064627427">Laita mikrofoni päälle myös <ph name="BEGIN_LINK" />Androidin asetuksista<ph name="END_LINK" />, jotta <ph name="APP_NAME" /> saa pääsyn mikrofoniisi.</translation>
 <translation id="4566417217121906555">Mykistä mikrofoni</translation>
 <translation id="4570913071927164677">Tiedot</translation>
-<translation id="4575264539271661854">Tämä helpottaa sivuston tekstin ja kuvien lähentämistä</translation>
 <translation id="4598549027014564149">Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta – eivät edes aiheeseen liittyvillä sivustoilla. Selaustoimintaasi ei käytetä mainosten personointiin tai muuhun vastaavaan. Joidenkin sivustojen ominaisuudet eivät välttämättä toimi.</translation>
 <translation id="4645575059429386691">Vanhempasi hallinnoima</translation>
 <translation id="4670064810192446073">Virtuaalitodellisuus</translation>

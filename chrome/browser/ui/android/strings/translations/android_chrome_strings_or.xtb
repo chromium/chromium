@@ -34,6 +34,7 @@
 <translation id="1173894706177603556">ରିନେମ୍ କରନ୍ତୁ</translation>
 <translation id="1177863135347784049">କଷ୍ଟମ୍‌</translation>
 <translation id="1181037720776840403">କାଢ଼ି ଦିଅନ୍ତୁ</translation>
+<translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" />ରେ</translation>
 <translation id="1193729455103054076">ଜଟିଳ ପାସୱାର୍ଡ ବ୍ୟବହାର କରିବେ?</translation>
 <translation id="1197267115302279827">ବୁକ୍‍ମାର୍କଗୁଡ଼ିକ ଘୁଞ୍ଚାନ୍ତୁ</translation>
 <translation id="1201402288615127009">ପରବର୍ତ୍ତୀ</translation>
@@ -42,7 +43,6 @@
 <translation id="1204692632633423444">Chrome ଆକ୍ସନ ବଟନ: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">ଲିଙ୍କ୍‍ର ଟେକ୍ସଟ୍ କପି କରନ୍ତୁ</translation>
 <translation id="1209206284964581585">ବର୍ତ୍ତମାନ ପାଇଁ ଲୁଚାନ୍ତୁ</translation>
-<translation id="1226851825267005295">ଆମ Google ଆକାଉଣ୍ଟ ମାଧ୍ୟମରେ Chromeରେ ଆପଣ ସାଇନ ଇନ କରିବା ପରେ ଆପଣ ଆପଣଙ୍କ ପସନ୍ଦଗୁଡ଼ିକୁ ପରିଚାଳନା କରିପାରିବେ।</translation>
 <translation id="1227058898775614466">ନାଭିଗେସନ୍ ଇତିହାସ</translation>
 <translation id="1231733316453485619">ସିଙ୍କ୍ ଚାଲୁ କରିବେ?</translation>
 <translation id="123724288017357924">କ୍ୟାଶ୍ ବିଷୟବସ୍ତୁ ଏଡ଼ାଇ ବର୍ତ୍ତମାନ ପୃଷ୍ଠା ପୁନଃଲୋଡ୍ କରନ୍ତୁ</translation>
@@ -166,7 +166,6 @@
 <translation id="1928696683969751773">ଅପ୍‌ଡେଟ୍</translation>
 <translation id="19288952978244135">Chrome ପୁଣି ଖୋଲନ୍ତୁ।</translation>
 <translation id="1933845786846280168">ଚୟନ ହୋ‍ଇଥିବା ଟାବ୍‌</translation>
-<translation id="193571872656840963">ଏହି କ୍ରିଏଟରଙ୍କୁ ଧନ୍ୟବାଦ ଜଣାନ୍ତୁ</translation>
 <translation id="1943432128510653496">ପାସ୍‌ୱର୍ଡଗୁଡ଼ିକୁ ସେଭ୍ କରନ୍ତୁ</translation>
 <translation id="1952172573699511566">ଯେତେବେଳେ ସମ୍ଭବ, ୱେବ୍‌ସାଇଟ୍‌ଗୁଡ଼ିକ ଆପଣଙ୍କର ଅଗ୍ରାଧିକାର ଭାଷାରେ ଟେକ୍ସଟ ଦେଖାଇବ।</translation>
 <translation id="1959679933317802873">ବିଷୟବସ୍ତୁ ପାଇଁ ଅପେକ୍ଷାରତ</translation>
@@ -202,7 +201,6 @@
 <translation id="2122601567107267586">ଆପ୍‌କୁ ଖୋଲି ହେଲା ନାହିଁ</translation>
 <translation id="2132122640199389833">ସମସ୍ତ ଲିଙ୍କ କରାଯାଇଥିବା ଡିଭାଇସକୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" />ବନ୍ଦ ହୋଇଯାଇଛି</translation>
-<translation id="2134927169889348449">Chrome ବ୍ୟବହାର କରି, ଆପଣ <ph name="BEGIN_TOS_LINK" />Google ସେବାର ସର୍ତ୍ତାବଳୀ<ph name="END_TOS_LINK" /> ଏବଂ <ph name="BEGIN_ATOS_LINK" />Google Chrome ଏବଂ ChromeOSର ଅତିରିକ୍ତ ସେବାର ସର୍ତ୍ତାବଳୀ<ph name="END_ATOS_LINK" />ରେ ସମ୍ମତ ହୁଅନ୍ତି।</translation>
 <translation id="2139186145475833000">ହୋମ୍ ସ୍କ୍ରିନରେ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="2141396931810938595">ଆପଣଙ୍କ ବ୍ୟବହାର ଉପରେ ଆଧାର କରି</translation>
 <translation id="214888715418183969">ଆପଣ Chrome ସହିତ କଣ ସହଜରେ ସେୟାର୍ କରିପାରିବେ ତାହା ବାଛନ୍ତୁ। Chromeର ଫିଚର୍, କାର୍ଯ୍ୟଦକ୍ଷତା ଏବଂ ସ୍ଥିରତା ଉନ୍ନତ କରିବାରେ ସାହାଯ୍ୟ କରିବାକୁ ଆପଣ ସେୟାର୍ କରିଥିବା ମେଟ୍ରିକ୍ସ ବ୍ୟବହାର କରାଯିବ।</translation>
@@ -555,7 +553,6 @@
 <translation id="409109920254068737">ଏହି QR କୋଡ ଡିସପ୍ଲେ କରୁଥିବା ଡିଭାଇସରେ ସାଇନ ଇନ କରିବା ପାଇଁ ଆପଣ ଏହି ଟାବଲେଟକୁ ବ୍ୟବହାର କରିପାରିବେ।</translation>
 <translation id="4095146165863963773">ଆପ୍ ଡାଟା ଡିଲିଟ୍ କରିବେ କି?</translation>
 <translation id="4096227151372679484">ବୁକମାର୍କ ସେଭ ଫ୍ଲୋ ଅଧା ଖୋଲାଯାଇଛି</translation>
-<translation id="4099578267706723511">Googleକୁ ବ୍ୟବହାରର ପରିସଂଖ୍ୟାନ ଏବଂ କ୍ରାଶ୍ ରିପୋର୍ଟ ପଠାଇ, Chromeକୁ ଉନ୍ନତ କରିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ।</translation>
 <translation id="4101475238162928417">ଆପଣଙ୍କ ଅନ୍ୟ ସମସ୍ତ ଡିଭାଇସରେ ଆପଣଙ୍କର ପାସୱାର୍ଡ, ବୁକମାର୍କ ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇବାକୁ ସିଙ୍କ କରନ୍ତୁ</translation>
 <translation id="410351446219883937">ସ୍ୱଚାଳିତ</translation>
 <translation id="4106587138345390261">ଆପଣଙ୍କର ସୂଚନାକୁ କମ୍ ବ୍ୟବହାର କରି ସମାନ ବ୍ରାଉଜିଂ ଅନୁଭୂତି ଡେଲିଭର କରିବା ପାଇଁ ସାଇଟଗୁଡ଼ିକୁ ଅନୁମତି ଦେଉଥିବା ନୂଆ ଫିଚରଗୁଡ଼ିକୁ Chrome ଏକ୍ସପ୍ଲୋର କରୁଛି</translation>
@@ -593,7 +590,6 @@
 <translation id="4269820728363426813">ଲିଙ୍କ୍ ଠିକଣା କପି କରନ୍ତୁ</translation>
 <translation id="4283102315569707115">ଡେସ୍କଟପ ସାଇଟଗୁଡ଼ିକୁ ଡିଫଲ୍ଟ ଭାବେ ଅନୁରୋଧ କରିବେ?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android ସେଟିଂସରେ ସ୍କ୍ରିନ ଲକ ଚାଲୁ କରନ୍ତୁ<ph name="END_LINK" /></translation>
-<translation id="4293476595220860475">Chrome ବ୍ୟବହାର କରି, ଆପଣ <ph name="BEGIN_TOS_LINK" />Google ସେବାର ସର୍ତ୍ତାବଳୀ<ph name="END_TOS_LINK" /> ଏବଂ <ph name="BEGIN_ATOS_LINK" />Google Chrome ଏବଂ ChromeOSର ଅତିରିକ୍ତ ସେବାର ସର୍ତ୍ତାବଳୀ<ph name="END_ATOS_LINK" />ରେ ସମ୍ମତ ହୁଅନ୍ତି। <ph name="BEGIN_PRIVACY_LINK" />ଗୋପନୀୟତା ନୀତି<ph name="END_PRIVACY_LINK" /> ମଧ୍ୟ ଲାଗୁ ହୁଏ।</translation>
 <translation id="4296252229500326964">ନୂଆ ଇନକଗ୍ନିଟୋ ଟାବ୍</translation>
 <translation id="4298388696830689168">ଲିଙ୍କ୍‌ ହୋ‍ଇଥିବା ସାଇଟ୍‍ଗୁଡ଼ିକ</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -766,7 +762,6 @@
 <translation id="5161254044473106830">ଟାଇଟେଲ୍ ଆବଶ୍ୟକ</translation>
 <translation id="5170568018924773124">ଫୋଲ୍ଡରରେ ଦେଖାନ୍ତୁ</translation>
 <translation id="5171045022955879922">ଖୋଜନ୍ତୁ କିମ୍ବା URL ଟାଇପ୍ କରନ୍ତୁ</translation>
-<translation id="517734441743343109">ଜାରି ରଖି, ଆପଣ <ph name="BEGIN_TOS_LINK" />ସେବାର ସର୍ତ୍ତାବଳୀ<ph name="END_TOS_LINK" /> ଏବଂ <ph name="BEGIN_PRIVACY_LINK" />ଗୋପନୀୟତା\u00A0ନୀତି<ph name="END_PRIVACY_LINK" />ରେ ସମ୍ମତ ହୁଅନ୍ତି।</translation>
 <translation id="5184329579814168207">Chromeରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="5191251636205085390">ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକୁ ପରିବର୍ତ୍ତନ କରିବାକୁ ଲକ୍ଷ୍ୟ ରଖୁଥିବା ନୂଆ ଟେକ୍ନୋଲୋଜିଗୁଡ଼ିକ ବିଷୟରେ ଜାଣନ୍ତୁ ଏବଂ ସେଗୁଡ଼ିକୁ ନିୟନ୍ତ୍ରଣ କରନ୍ତୁ</translation>
 <translation id="5193988420012215838">ଆପଣଙ୍କର କ୍ଲିପ୍‌ବୋର୍ଡକୁ କପି କରାଯାଇଛି</translation>

@@ -241,7 +241,6 @@
 <translation id="3226657629376379887">განლაგებასთან დაკავშირებული მოქმედებების მენიუ</translation>
 <translation id="3246869037381808805">ბეჭდვის 1 დღეზე ძველი დავალებები ამოიშლება</translation>
 <translation id="3268178239013324452">ვერ მოხერხდა — პრინტერის კარი ღიაა</translation>
-<translation id="3275506277319227640"><ph name="DIRECTION" /> მხარეს ჩამაგრება</translation>
 <translation id="3275729367986477355">ავატარის სურათი</translation>
 <translation id="3283504360622356314">{0,plural, =1{ფაილის რედაქტირება}other{ფაილების რედაქტირება}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> გჰც</translation>
@@ -360,7 +359,6 @@
 <translation id="4311195029067684288">მთლიანი</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> კლავიში დაჭერილია</translation>
 <translation id="435692326371619097">მართეთ ქსელის APN-ის პარამეტრები. APN ამყარებს კავშირს ფიჭურ ქსელსა და ინტერნეტს შორის. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
-<translation id="4370033095251616914">შედარებით პატარა მხარეს ჩამაგრება</translation>
 <translation id="4378373042927530923">არ არის გაშვებული</translation>
 <translation id="4378551569595875038">დაკავშირება…</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -903,7 +901,6 @@
 <translation id="9137526406337347448">Google სერვისები</translation>
 <translation id="9138630967333032450">მარცხენა shift</translation>
 <translation id="9149391708638971077">მეხსიერების ტესტის გაშვება</translation>
-<translation id="9157515863513902090">შედარებით დიდ მხარეს ჩამაგრება</translation>
 <translation id="9161276708550942948">შორისი</translation>
 <translation id="9173638680043580060">დარჩენილია ერთ წუთზე ნაკლები</translation>
 <translation id="917720651393141712">შემოწმება</translation>

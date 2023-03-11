@@ -100,7 +100,6 @@
 <translation id="1420408895951708260">הפעלה או כיבוי של תאורת הלילה. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">הצגת המדיה והתמונות שבטלפון מהזמן האחרון במכשיר <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">כן</translation>
-<translation id="1447641497144572814">שומר המסך מופעל</translation>
 <translation id="1455242230282523554">הצגת הגדרות השפה</translation>
 <translation id="1460620680449458626">צלילים מושתקים.</translation>
 <translation id="14648076227129703">הפעולה הזו מאפשרת גישה למצלמה לאפליקציות <ph name="APP1_NAME" /> וגם <ph name="APP2_NAME" />, ולכל האפליקציות והאתרים שיש להם הרשאת גישה למצלמה</translation>
@@ -125,6 +124,7 @@
 <translation id="1550406609415860283">המכשירים הזמינים</translation>
 <translation id="1550523713251050646">יש ללחוץ לקבלת אפשרויות נוספות</translation>
 <translation id="1555130319947370107">כחול</translation>
+<translation id="1586324912145647027">מעבר לשולחנות העבודה הווירטואליים 1 עד 8</translation>
 <translation id="1589090746204042747">גישה לכל הפעילות שלך בסשן הזה</translation>
 <translation id="1610778689852195798">‏"Undo" (ביטול הפעולה)</translation>
 <translation id="1611993646327628135">פועל</translation>
@@ -504,6 +504,7 @@
 <translation id="3631369015426612114">המקורות הבאים יכולים להציג התראות</translation>
 <translation id="3633097874324966332">‏צריך לפתוח את הגדרות Bluetooth כדי להתאים את המכשיר</translation>
 <translation id="3638400994746983214">הפעלה וכיבוי של מסך הפרטיות. <ph name="STATE_TEXT" />.</translation>
+<translation id="3649256019230929621">מזעור החלון</translation>
 <translation id="3649505501900178324">צריך לבצע עדכון</translation>
 <translation id="3653999174677652346">‏<ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -576,6 +577,7 @@
 <translation id="401993194061514265">‏כלי הסימון לא זמין. יש לפתוח את Screencast מחדש.</translation>
 <translation id="4021716437419160885">גלילה למטה</translation>
 <translation id="4024840464866786680">‏אם שינית לאחרונה את הסיסמה וקוד האימות לחשבון Google או ששכחת אותם, אפשר לנסות לשחזר את הגישה למשתמש הזה.</translation>
+<translation id="4026843240379844265">העברת החלון הפעיל בין צגים</translation>
 <translation id="4028481283645788203">יש להזין סיסמה כדי לענות על דרישות האבטחה המוגברות</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">המסך שלך משותף</translation>
@@ -894,6 +896,7 @@
 <translation id="5689633613396158040">עם תאורת לילה, קל יותר להסתכל על המסך או לקרוא כשהתאורה מסביב עמומה. יש להקיש כדי לשנות את השעה שבה מופעלת 'תאורת לילה' או כדי לכבות אותה לגמרי.</translation>
 <translation id="5691772641933328258">טביעת האצבע לא זוהתה</translation>
 <translation id="5693255400847650006">המיקרופון נמצא בשימוש</translation>
+<translation id="5699366815052349604">הקצאת חלון פעיל לכל שולחנות העבודה הווירטואליים</translation>
 <translation id="570390244361237317">כל האפליקציות, מנווטים בעזרת מקשי החיצים כדי לגשת לכל האפליקציות</translation>
 <translation id="5707775774148071965">קצב התקשורת של הכבל נמוך מזה של המכשיר. יכול להיות שביצועי המכשיר יוגבלו.</translation>
 <translation id="5710450975648804523">מצב 'נא לא להפריע' מופעל</translation>
@@ -1517,6 +1520,7 @@
 <translation id="9034924485347205037">‏קובצי Linux</translation>
 <translation id="9047624247355796468">פתיחת ההגדרות של <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">כיווץ ההודעה</translation>
+<translation id="906458777597946297">הגדלת החלון</translation>
 <translation id="9065203028668620118">עריכה</translation>
 <translation id="9070640332319875144">‏הגדרות Assistant</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> עד להתרוקנות הסוללה.</translation>

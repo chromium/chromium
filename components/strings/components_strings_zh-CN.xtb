@@ -506,6 +506,7 @@
 <translation id="2149968176347646218">连接不安全</translation>
 <translation id="2153609454945889823">安装“面向 AR 的 Google Play 服务”？</translation>
 <translation id="2154484045852737596">修改支付卡</translation>
+<translation id="2154739667870063220">重新启动</translation>
 <translation id="2155260325161282517">5 x 7 英寸</translation>
 <translation id="2157640075051554492">价格跟踪通知</translation>
 <translation id="2161656808144014275">文字</translation>
@@ -892,6 +893,7 @@
 <translation id="3215092763954878852">无法使用 WebAuthn</translation>
 <translation id="3216313131063488104">蓝调</translation>
 <translation id="3218181027817787318">相对</translation>
+<translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{必须立即更新}=2{必须在明天更新}other{必须在 # 天内更新}}</translation>
 <translation id="3223287115535306850">“应用正在启动”图标</translation>
 <translation id="3223425961342298674">已拒绝授予位置信息使用权限</translation>
 <translation id="3225919329040284222">服务器提供的证书与内置预期证书不匹配。这些预期证书是针对某些高安全性网站提供的，以便为您提供保护。</translation>
@@ -1374,6 +1376,7 @@
 <translation id="4350629523305688469">多功能纸匣</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> 想搜索附近的蓝牙设备，并发现了以下设备：</translation>
 <translation id="4351175281479794167">输入验证码</translation>
+<translation id="4355383636893709732">有一项对 Android 应用有益的 ChromeOS 更新</translation>
 <translation id="4356973930735388585">此网站上的攻击者可能会试图在您的计算机上安装危险程序，以窃取或删除您的信息（例如：照片、密码、通讯内容和信用卡信息）。</translation>
 <translation id="4358059973562876591">您指定的模板未必会被应用，因为 DnsOverHttpsMode 政策出错了。</translation>
 <translation id="4358461427845829800">管理付款方式…</translation>
@@ -1754,6 +1757,7 @@
 <translation id="5288393065350884210">会计与审计</translation>
 <translation id="5288808348893593856">您与此类网站之间的连接是安全的，除非 Chrome 另行通知。</translation>
 <translation id="5289384342738547352">多文档处理</translation>
+<translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{必须在今天更新}=2{必须在明天更新}other{必须在 # 天内更新}}</translation>
 <translation id="5293919335876685914">轿跑车</translation>
 <translation id="5296589789433599000">烹饪与食谱</translation>
 <translation id="5299298092464848405">解析策略时出错</translation>
@@ -1948,6 +1952,7 @@
 <translation id="5786044859038896871">要填充您的信用卡信息吗？</translation>
 <translation id="578633867165174378">Chrome 发现您刚才使用的密码已遭遇数据泄露。建议您立即更改此密码。</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="580241730938216256">开始更新</translation>
 <translation id="5803412860119678065">要填充您的“<ph name="CARD_DETAIL" />”吗？</translation>
 <translation id="5804241973901381774">权限</translation>
 <translation id="5808435672482059465">查看您的 Chrome 历史记录</translation>
@@ -2107,6 +2112,7 @@
 <translation id="6218753634732582820">要从 Chromium 中移除地址吗？</translation>
 <translation id="622039917539443112">平行折</translation>
 <translation id="6221345481584921695">Google安全浏览功能最近在<ph name="SITE" />上<ph name="BEGIN_LINK" />检测到了恶意软件<ph name="END_LINK" />。平常非常安全的网站有时也会感染恶意软件。检测到的恶意内容来自于<ph name="SUBRESOURCE_HOST" />，这是个已知的恶意软件散布方。</translation>
+<translation id="6221892641068781024">简化版视图</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Chrome 设置中定制您的个性化无障碍工具</translation>
 <translation id="6229649258872345286">家庭旅游</translation>
 <translation id="6232271601416750929">洁净美容</translation>
@@ -2166,6 +2172,7 @@
 <translation id="6366710531182496394">双钉（左侧）</translation>
 <translation id="6367196786591004737">删除条目</translation>
 <translation id="6370022303958842211">设备访问操作，例如登录（包括登录失败的原因）、退出、锁定和解锁</translation>
+<translation id="6374469231428023295">重试</translation>
 <translation id="6374865374745447009">窗口管理</translation>
 <translation id="6377268785556383139">1 个与“<ph name="SEARCH_TEXT" />”相符的搜索结果</translation>
 <translation id="6380497234672085559">A0</translation>
@@ -2476,6 +2483,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" />以及另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 种付款方式}other{<ph name="PAYMENT_METHOD_PREVIEW" />以及另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 种付款方式}}</translation>
 <translation id="7153618581592392745">薰衣草色</translation>
 <translation id="7156870133441232244">服务器应该升级到 TLS 1.2 或更高版本。</translation>
+<translation id="7160999678034985039">请保存您的工作成果，并在准备就绪后开始更新。</translation>
 <translation id="7163295244162773898">{0,plural, =1{复制这个机密文件？}other{复制这些机密文件？}}</translation>
 <translation id="717330890047184534">GAIA ID：</translation>
 <translation id="7174545416324379297">已合并</translation>
@@ -2723,6 +2731,7 @@
 <translation id="7687305263118037187">重试超时</translation>
 <translation id="7690647519407127574">Oufuku Hagaki Postcard</translation>
 <translation id="7693583928066320343">收到的页面顺序</translation>
+<translation id="769424100851389104">立即开始更新</translation>
 <translation id="7696089921647603491">经典摇滚与老歌</translation>
 <translation id="769721561045429135">此刻，您有一些卡只能在这部设备上使用。点击“继续”即可查看这些卡。</translation>
 <translation id="7698864304447945242">更新“面向 AR 的 Google Play 服务”？</translation>
@@ -2747,6 +2756,7 @@
 <translation id="774634243536837715">危险内容已被拦截。</translation>
 <translation id="7751971323486164747">自定义 Chrome 中的字号和字型</translation>
 <translation id="7752995774971033316">非托管</translation>
+<translation id="7754587126786572336">开始更新时，您的 Chrome 标签页和应用会关闭</translation>
 <translation id="7755287808199759310">您的父亲/母亲可为您取消屏蔽此网站</translation>
 <translation id="7755624218968747854">主卷</translation>
 <translation id="7758069387465995638">防火墙或防病毒软件可能已阻止您连接到网络。</translation>
@@ -2911,6 +2921,7 @@
 <translation id="8186706823560132848">软件</translation>
 <translation id="8190193880870196235">由一款扩展程序管理</translation>
 <translation id="8194797478851900357">撤消移动(&amp;U)</translation>
+<translation id="8200772114523450471">继续</translation>
 <translation id="8201077131113104583">ID 为“<ph name="EXTENSION_ID" />”的扩展程序的更新网址无效。</translation>
 <translation id="8202097416529803614">订单摘要</translation>
 <translation id="8202370299023114387">冲突</translation>
@@ -3209,6 +3220,7 @@
 <translation id="8963117664422609631">转到网站设置</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />建议：<ph name="MARKUP_2" />确保有数据网络连接<ph name="MARKUP_3" />稍后重新加载此网页<ph name="MARKUP_4" />检查您输入的地址是否正确<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">保存卡片</translation>
+<translation id="8970887620466824814">出了点问题。</translation>
 <translation id="8971063699422889582">服务器的证书已过期。</translation>
 <translation id="8975012916872825179">包括电话号码、电子邮件地址和送货地址等信息</translation>
 <translation id="8975263830901772334">已打印的文件的名称</translation>

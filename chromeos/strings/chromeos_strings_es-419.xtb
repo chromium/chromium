@@ -241,7 +241,6 @@
 <translation id="3226657629376379887">Menú de acciones de diseño</translation>
 <translation id="3246869037381808805">Se quitarán los trabajos de impresión que tengan más de 1 día</translation>
 <translation id="3268178239013324452">Error: La tapa está abierta</translation>
-<translation id="3275506277319227640">Anclar en la parte <ph name="DIRECTION" /></translation>
 <translation id="3275729367986477355">Imagen de avatar</translation>
 <translation id="3283504360622356314">{0,plural, =1{Editar archivo}other{Editar archivos}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
@@ -360,7 +359,6 @@
 <translation id="4311195029067684288">Total</translation>
 <translation id="4333390807948134856">La tecla <ph name="KEY_NAME" /> está presionada</translation>
 <translation id="435692326371619097">Administra la configuración del APN de red. Los APN establecen una conexión entre Internet y una red móvil. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
-<translation id="4370033095251616914">Anclar en el lado más pequeño</translation>
 <translation id="4378373042927530923">No se ejecutó la rutina</translation>
 <translation id="4378551569595875038">Conectando…</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -619,6 +617,7 @@
 <translation id="650266656685499220">Para crear álbumes, ve a Google Fotos</translation>
 <translation id="6516990319416533844">Para probar la velocidad de carga de la batería, deja que esta se descargue un poco.</translation>
 <translation id="6517239166834772319">Explorar</translation>
+<translation id="6526200165918397681">Coincidir con el fondo de pantalla</translation>
 <translation id="6527081081771465939">el protocolo de seguridad Wi-Fi es desconocido</translation>
 <translation id="6535178685492749208">No tienes conexión. Los comentarios se enviarán más tarde.</translation>
 <translation id="65587193855025101">Cristal del escáner</translation>
@@ -902,7 +901,6 @@
 <translation id="9137526406337347448">Servicios de Google</translation>
 <translation id="9138630967333032450">Mayúsculas izquierda</translation>
 <translation id="9149391708638971077">Ejecutar prueba de memoria</translation>
-<translation id="9157515863513902090">Anclar en el lado más grande</translation>
 <translation id="9161276708550942948">espacio</translation>
 <translation id="9173638680043580060">Queda menos de un minuto</translation>
 <translation id="917720651393141712">Probar</translation>

@@ -507,6 +507,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2149968176347646218">Connection is not secure</translation>
 <translation id="2153609454945889823">Install Google Play Services for AR?</translation>
 <translation id="2154484045852737596">Edit card</translation>
+<translation id="2154739667870063220">Reboot</translation>
 <translation id="2155260325161282517">5 in x 7 in</translation>
 <translation id="2157640075051554492">Price tracking notifications</translation>
 <translation id="2161656808144014275">Text</translation>
@@ -2118,6 +2119,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6218753634732582820">Remove address from Chromium?</translation>
 <translation id="622039917539443112">Parallel fold</translation>
 <translation id="6221345481584921695">Google Safe Browsing recently <ph name="BEGIN_LINK" />detected malware<ph name="END_LINK" /> on <ph name="SITE" />. Websites that are normally safe are sometimes infected with malware. The malicious content comes from <ph name="SUBRESOURCE_HOST" />, a known malware distributor.</translation>
+<translation id="6221892641068781024">Simplified View</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />; press tab and then Enter to personalise your accessibility tools in Chrome settings</translation>
 <translation id="6229649258872345286">Family travel</translation>
 <translation id="6232271601416750929">Clean beauty</translation>
@@ -2177,6 +2179,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6366710531182496394">Dual staple left</translation>
 <translation id="6367196786591004737">Delete entry</translation>
 <translation id="6370022303958842211">Device access actions such as logins (including failed login reasons), logouts, locks and unlocks</translation>
+<translation id="6374469231428023295">Try Again</translation>
 <translation id="6374865374745447009">window management</translation>
 <translation id="6377268785556383139">1 result for '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6380497234672085559">A0</translation>
@@ -2925,6 +2928,7 @@ Additional details:
 <translation id="8186706823560132848">Software</translation>
 <translation id="8190193880870196235">Managed by an extension</translation>
 <translation id="8194797478851900357">&amp;Undo Move</translation>
+<translation id="8200772114523450471">Resume</translation>
 <translation id="8201077131113104583">Invalid update URL for extension with ID "<ph name="EXTENSION_ID" />".</translation>
 <translation id="8202097416529803614">Order summary</translation>
 <translation id="8202370299023114387">Conflict</translation>
@@ -3222,6 +3226,7 @@ Additional details:
 <translation id="8963117664422609631">Go to site settings</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Suggestions:<ph name="MARKUP_2" />Make sure that you have a data connection<ph name="MARKUP_3" />Reload this web page later<ph name="MARKUP_4" />Check the address that you entered<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">Save card</translation>
+<translation id="8970887620466824814">Something went wrong.</translation>
 <translation id="8971063699422889582">Server's certificate has expired.</translation>
 <translation id="8975012916872825179">Includes information such as phone numbers, email addresses and delivery addresses</translation>
 <translation id="8975263830901772334">Names of files that you print</translation>

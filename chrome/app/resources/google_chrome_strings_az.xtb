@@ -256,6 +256,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="6010556343189461180">Google Chrome güncəlləmələrini əldə etmək üçün macOS 10.15 və ya daha yeni versiya tələb olunur. Bu kompüter macOS 10.14 istifadə edir.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome indi bağlanacaq.}=1{Chrome 1 saniyə sonra bağlanacaq.}other{Chrome # saniyə sonra bağlanacaq.}}</translation>
 <translation id="6022659036123304283">Chrome'u özünüzküləşdirin</translation>
+<translation id="6025087594896450715">Google Chrome <ph name="REMAINING_TIME" /> sonra yenidən başladılacaq</translation>
 <translation id="6040143037577758943">Qapat</translation>
 <translation id="6070348360322141662">Əlavə təhlükəsizlik üçün Google Chrome datanı şifrələyəcək</translation>
 <translation id="608006075545470555">Bu brauzerə İş Profili əlavə edin</translation>
@@ -273,6 +274,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="6327105987658262776">Güncəlləmə əlçatan deyil.</translation>
 <translation id="6412673304250309937">URL'ləri Chrome'da saxlanılan təhlükəli saytların siyahısı ilə yoxlayır. Sayt parolunuzu oğurlamağa çalışdıqda və ya zərərli fayl endirdiyinizdə Chrome səhifə məzmunundan kiçik nümunələr də daxil olmaqla, URL'ləri Təhlükəsiz Baxışa göndərə bilər.</translation>
 <translation id="6418662306461808273">Mövcud Chrome profilinə keçirilsin?</translation>
+<translation id="6493527311031785448">Google Chrome cəhd edir: <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6506909944137591434">Chrome ətrafınızın 3D xəritəsini yaratmaq üçün kameranıza giriş icazəsi tələb edir</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="659498884637196217">Bu cihazda Google Parol Menecerində</translation>
@@ -400,7 +402,6 @@ Hazırda veb saytlar və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq o
 <translation id="8862326446509486874">Sistem səviyyəli quraşdırma üçün uyğun hüquqlarınız yoxdur. Quraşdırıcını yenidən Administrator olaraq işə salmağa cəhd edin.</translation>
 <translation id="8914504000324227558">Chrome'u yenidən başladın</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" /> cihazından Android telefonunuza nömrə göndərmək üçün hər iki cihazda Chrome'a daxil olun.</translation>
-<translation id="8983720963221508955">Hesabınızda Qabaqcıl Güvənli Baxışı aktiv etdiniz. İndi onu Chrome üçün əldə edin.</translation>
 <translation id="8986207147630327271">Bu brauzerə iş profili əlavə edirsiniz və administratorunuza yalnız iş profili üzərində nəzarət verirsiniz.</translation>
 <translation id="8989968390305463310">Baxış tarixçəniz gördüyünüz reklamlara və aşağıda təxmin edilən maraqlara təsir edir. Məxfiliyinizi qorumaq üçün Chrome hər ay maraqlarınızı növbəlilik əsasında avtomatik olaraq silir. Silmədiyiniz təqdirdə maraqlar yenilənə bilər.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome güncəlləməsi əlçatandır}=1{Chrome güncəlləməsi əlçatandır}other{Chrome güncəlləməsi # gün əlçatan olub}}</translation>

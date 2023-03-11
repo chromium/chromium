@@ -84,6 +84,7 @@
 <translation id="1722487484194605434">正在压缩 <ph name="NUMBER_OF_ITEMS" /> 项内容…</translation>
 <translation id="1722687688096767818">正在添加配置文件…</translation>
 <translation id="1726100011689679555">域名服务器</translation>
+<translation id="1727562178154619254">可以开始同步了</translation>
 <translation id="1729953886957086472">德语（德国）</translation>
 <translation id="1730235522912993863">中文仓颉</translation>
 <translation id="1731889557567069540">已复制 <ph name="NUMBER_OF_ITEMS" /> 项。</translation>
@@ -700,6 +701,7 @@
 <translation id="6732801395666424405">未加载证书</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">与 Bruschetta 共享文件夹</translation>
+<translation id="6750737795876287924">当前目录</translation>
 <translation id="6751256176799620176">已选择 1 个文件夹</translation>
 <translation id="6755827872271341378">ChromeOS Flex 设备</translation>
 <translation id="6790428901817661496">播放</translation>
@@ -737,7 +739,6 @@
 <translation id="6973630695168034713">文件夹</translation>
 <translation id="6976795442547527108">狮子</translation>
 <translation id="6979158407327259162">Google 云端硬盘</translation>
-<translation id="6979737339423435258">时间不限</translation>
 <translation id="6989942356279143254">瑞典语</translation>
 <translation id="6990081529015358884">空间不足</translation>
 <translation id="6993826899923627728">这些内容位于您的回收站中</translation>
@@ -793,7 +794,6 @@
 <translation id="7458955835361612701">没有任何近期图片</translation>
 <translation id="7460898608667578234">乌克兰语</translation>
 <translation id="7469894403370665791">自动连接到该网络</translation>
-<translation id="7481358317100446445">准备就绪</translation>
 <translation id="7486315294984620427">若要将某个文件拖放到 Parallels Desktop，必须先将此文件复制到“Windows 文件”文件夹。</translation>
 <translation id="749452993132003881">平假名</translation>
 <translation id="7495372004724182530">马拉雅拉姆语注音</translation>

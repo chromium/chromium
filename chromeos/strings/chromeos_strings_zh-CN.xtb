@@ -241,7 +241,6 @@
 <translation id="3226657629376379887">布局操作菜单</translation>
 <translation id="3246869037381808805">系统会自动移除存在时长已超过 1 天的打印任务</translation>
 <translation id="3268178239013324452">失败 - 机盖未关</translation>
-<translation id="3275506277319227640">固定在<ph name="DIRECTION" /></translation>
 <translation id="3275729367986477355">头像图片</translation>
 <translation id="3283504360622356314">{0,plural, =1{修改文件}other{修改文件}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
@@ -360,7 +359,6 @@
 <translation id="4311195029067684288">全屏</translation>
 <translation id="4333390807948134856">已按下<ph name="KEY_NAME" />键</translation>
 <translation id="435692326371619097">管理网络 APN 设置。APN 会在移动网络和互联网之间建立连接。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
-<translation id="4370033095251616914">固定在较小的一侧</translation>
 <translation id="4378373042927530923">未运行</translation>
 <translation id="4378551569595875038">正在连接…</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -903,7 +901,6 @@
 <translation id="9137526406337347448">Google 服务</translation>
 <translation id="9138630967333032450">左 Shift</translation>
 <translation id="9149391708638971077">运行内存测试</translation>
-<translation id="9157515863513902090">固定在较大的一侧</translation>
 <translation id="9161276708550942948">空格键</translation>
 <translation id="9173638680043580060">还剩不到 1 分钟</translation>
 <translation id="917720651393141712">测试</translation>

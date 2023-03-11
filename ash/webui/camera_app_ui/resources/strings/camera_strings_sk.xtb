@@ -8,9 +8,6 @@
 <translation id="1175958423215084756">Bol rozpoznaný odkaz. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213"><ph name="PAGE_NUMBER" />. strana bola odstránená</translation>
 <translation id="1258009455399840361">Otočiť o 90 stupňov v smere hodinových ručičiek</translation>
-<translation id="1300209025925956156">Skenovanie dokumentu</translation>
-<translation id="1309250603447638106">Sťahujú sa aktualizácie na skenovanie dokumentov</translation>
-<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Prístup získate stlačením klávesa vyhľadávania + šípky doľava.</translation>
 <translation id="1417314334557041815">Upraviť stránku <ph name="INDEX" /></translation>
 <translation id="1467231725790366244">Kamera <ph name="CAMERA" /> je odpojená.</translation>
 <translation id="1473110567575736769">Trojsekundový časovač</translation>
@@ -24,7 +21,6 @@
 <translation id="1664224225747386870">Nič sa nezaznamenalo</translation>
 <translation id="1838104802459806957">Naklonenie nahor</translation>
 <translation id="1843105061469674856">Skenovať ďalšiu stránku</translation>
-<translation id="1851169887664797861">K dispozícii je ďalšie ovládanie kamery</translation>
 <translation id="1851616744363735765">POZASTAVENÉ</translation>
 <translation id="1899697626337024495">Rozlíšenie fotky</translation>
 <translation id="1925845977604399247">Prejsť do galérie</translation>
@@ -49,7 +45,6 @@
 <translation id="2761536921376153655">Typ vyhľadávania</translation>
 <translation id="28682968802727151">Ukážka zrkadlenia</translation>
 <translation id="2879583609344924966">Kamera <ph name="CAMERA" /> je pripojená.</translation>
-<translation id="2904654629665923749">K dispozícii je skenovanie dokumentov</translation>
 <translation id="3067436040345934772">Posunutie doprava</translation>
 <translation id="3081586908890909590">Prepnúť na zaznamenávanie videa</translation>
 <translation id="313467653172006084">30 sním./s</translation>
@@ -74,7 +69,6 @@
 <translation id="4269820728363426813">Kopírovať adresu odkazu</translation>
 <translation id="4281620174117014503">Stredné rozlíšenie</translation>
 <translation id="428234092390943511">Miniatúra stránky</translation>
-<translation id="4340659173795395806">Teraz môžete vytvoriť viacstránkový súbor PDF</translation>
 <translation id="4383571725254449280">Tlačiť denníky výkonnosti</translation>
 <translation id="4445542136948522167">Zastaviť fotenie</translation>
 <translation id="4570032796877367747">Predný fotoaparát</translation>
@@ -97,7 +91,6 @@
 <translation id="5317780077021120954">Uložiť</translation>
 <translation id="5320594929574852403">Presúvate doľava</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5444515100983837161">Umiestnite všetky rohy dokumentu do rámu. Skenovanie funguje najlepšie vtedy, keď má dokument inú farbu ako pozadie.</translation>
 <translation id="5662366948659129155">Skenuje sa <ph name="COUNT" />. strana</translation>
 <translation id="5671277269877808209">Štvorec</translation>
 <translation id="5746169159649715125">Uložiť ako PDF</translation>
@@ -157,7 +150,6 @@ Ak sa týka kvality obrázkov či videí, priložte ukážku fotky alebo videa a
 <translation id="8428213095426709021">Nastavenia</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Prepínač vypnutia zvuku mikrofónu. Zvuk je vypnutý.</translation>
-<translation id="8712637175834984815">Dobre</translation>
 <translation id="8730621377337864115">Hotovo</translation>
 <translation id="8732462232047530626">Zobraziť ukážku metadát</translation>
 <translation id="8815966864175525708">Prepnúť na nasnímanie portrétovej fotky</translation>
