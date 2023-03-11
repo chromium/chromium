@@ -3757,16 +3757,14 @@
       base_feature: "none",
       public: true,
     },
-    // WebGPU adds a large attack surface area to the GPU process and allows
-    // running arbitrary programs on the GPU (compute shaders), which may
-    // perform arbitrary read/writes of GPU memory if not properly sandboxed.
-    // That's why it is not enabled as part of the
-    // --enable-experimental-web-platform-features flag.
     {
       name: "WebGPU",
       base_feature: "none",
-      origin_trial_feature_name: "WebGPU",
       public: true,
+      // Note that this isn't enough to enable WebGPU and that access to
+      // WebGPU is further gated on the "WebGPUService" feature exposing GPU
+      // process access to WebGPU to the renderer process.
+      status: "stable",
     },
     {
       // WebGPU developer features are deliberately not enabled by experimental

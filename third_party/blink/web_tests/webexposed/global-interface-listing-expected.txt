@@ -2826,6 +2826,324 @@ interface FragmentDirective
     getter items
     method constructor
     method createSelectorDirective
+interface GPU
+    attribute @@toStringTag
+    method constructor
+    method getPreferredCanvasFormat
+    method requestAdapter
+interface GPUAdapter
+    attribute @@toStringTag
+    getter features
+    getter isFallbackAdapter
+    getter limits
+    method constructor
+    method requestAdapterInfo
+    method requestDevice
+interface GPUAdapterInfo
+    attribute @@toStringTag
+    getter architecture
+    getter description
+    getter device
+    getter vendor
+    method constructor
+interface GPUBindGroup
+    attribute @@toStringTag
+    getter label
+    method constructor
+    setter label
+interface GPUBindGroupLayout
+    attribute @@toStringTag
+    getter label
+    method constructor
+    setter label
+interface GPUBuffer
+    attribute @@toStringTag
+    getter label
+    getter mapState
+    getter size
+    getter usage
+    method constructor
+    method destroy
+    method getMappedRange
+    method mapAsync
+    method unmap
+    setter label
+interface GPUCanvasContext
+    attribute @@toStringTag
+    getter canvas
+    method configure
+    method constructor
+    method getCurrentTexture
+    method unconfigure
+interface GPUCommandBuffer
+    attribute @@toStringTag
+    getter label
+    method constructor
+    setter label
+interface GPUCommandEncoder
+    attribute @@toStringTag
+    getter label
+    method beginComputePass
+    method beginRenderPass
+    method clearBuffer
+    method constructor
+    method copyBufferToBuffer
+    method copyBufferToTexture
+    method copyTextureToBuffer
+    method copyTextureToTexture
+    method finish
+    method insertDebugMarker
+    method popDebugGroup
+    method pushDebugGroup
+    method resolveQuerySet
+    method writeTimestamp
+    setter label
+interface GPUCompilationInfo
+    attribute @@toStringTag
+    getter messages
+    method constructor
+interface GPUCompilationMessage
+    attribute @@toStringTag
+    getter length
+    getter lineNum
+    getter linePos
+    getter message
+    getter offset
+    getter type
+    method constructor
+interface GPUComputePassEncoder
+    attribute @@toStringTag
+    getter label
+    method constructor
+    method dispatchWorkgroups
+    method dispatchWorkgroupsIndirect
+    method end
+    method insertDebugMarker
+    method popDebugGroup
+    method pushDebugGroup
+    method setBindGroup
+    method setPipeline
+    method writeTimestamp
+    setter label
+interface GPUComputePipeline
+    attribute @@toStringTag
+    getter label
+    method constructor
+    method getBindGroupLayout
+    setter label
+interface GPUDevice : EventTarget
+    attribute @@toStringTag
+    getter features
+    getter label
+    getter limits
+    getter lost
+    getter onuncapturederror
+    getter queue
+    method constructor
+    method createBindGroup
+    method createBindGroupLayout
+    method createBuffer
+    method createCommandEncoder
+    method createComputePipeline
+    method createComputePipelineAsync
+    method createPipelineLayout
+    method createQuerySet
+    method createRenderBundleEncoder
+    method createRenderPipeline
+    method createRenderPipelineAsync
+    method createSampler
+    method createShaderModule
+    method createTexture
+    method destroy
+    method experimentalImportTexture
+    method importExternalTexture
+    method popErrorScope
+    method pushErrorScope
+    setter label
+    setter onuncapturederror
+interface GPUDeviceLostInfo
+    attribute @@toStringTag
+    getter message
+    getter reason
+    method constructor
+interface GPUError
+    attribute @@toStringTag
+    getter message
+    method constructor
+interface GPUExternalTexture
+    attribute @@toStringTag
+    getter label
+    method constructor
+    setter label
+interface GPUInternalError : GPUError
+    attribute @@toStringTag
+    method constructor
+interface GPUOutOfMemoryError : GPUError
+    attribute @@toStringTag
+    method constructor
+interface GPUPipelineError : DOMException
+    attribute @@toStringTag
+    getter reason
+    method constructor
+interface GPUPipelineLayout
+    attribute @@toStringTag
+    getter label
+    method constructor
+    setter label
+interface GPUQuerySet
+    attribute @@toStringTag
+    getter count
+    getter label
+    getter type
+    method constructor
+    method destroy
+    setter label
+interface GPUQueue
+    attribute @@toStringTag
+    getter label
+    method constructor
+    method copyExternalImageToTexture
+    method onSubmittedWorkDone
+    method submit
+    method writeBuffer
+    method writeTexture
+    setter label
+interface GPURenderBundle
+    attribute @@toStringTag
+    getter label
+    method constructor
+    setter label
+interface GPURenderBundleEncoder
+    attribute @@toStringTag
+    getter label
+    method constructor
+    method draw
+    method drawIndexed
+    method drawIndexedIndirect
+    method drawIndirect
+    method finish
+    method insertDebugMarker
+    method popDebugGroup
+    method pushDebugGroup
+    method setBindGroup
+    method setIndexBuffer
+    method setPipeline
+    method setVertexBuffer
+    setter label
+interface GPURenderPassEncoder
+    attribute @@toStringTag
+    getter label
+    method beginOcclusionQuery
+    method constructor
+    method draw
+    method drawIndexed
+    method drawIndexedIndirect
+    method drawIndirect
+    method end
+    method endOcclusionQuery
+    method executeBundles
+    method insertDebugMarker
+    method popDebugGroup
+    method pushDebugGroup
+    method setBindGroup
+    method setBlendConstant
+    method setIndexBuffer
+    method setPipeline
+    method setScissorRect
+    method setStencilReference
+    method setVertexBuffer
+    method setViewport
+    method writeTimestamp
+    setter label
+interface GPURenderPipeline
+    attribute @@toStringTag
+    getter label
+    method constructor
+    method getBindGroupLayout
+    setter label
+interface GPUSampler
+    attribute @@toStringTag
+    getter label
+    method constructor
+    setter label
+interface GPUShaderModule
+    attribute @@toStringTag
+    getter label
+    method constructor
+    method getCompilationInfo
+    setter label
+interface GPUSupportedFeatures
+    attribute @@toStringTag
+    getter size
+    method @@iterator
+    method constructor
+    method entries
+    method forEach
+    method has
+    method keys
+    method values
+interface GPUSupportedLimits
+    attribute @@toStringTag
+    getter maxBindGroups
+    getter maxBindingsPerBindGroup
+    getter maxBufferSize
+    getter maxColorAttachmentBytesPerSample
+    getter maxColorAttachments
+    getter maxComputeInvocationsPerWorkgroup
+    getter maxComputeWorkgroupSizeX
+    getter maxComputeWorkgroupSizeY
+    getter maxComputeWorkgroupSizeZ
+    getter maxComputeWorkgroupStorageSize
+    getter maxComputeWorkgroupsPerDimension
+    getter maxDynamicStorageBuffersPerPipelineLayout
+    getter maxDynamicUniformBuffersPerPipelineLayout
+    getter maxFragmentCombinedOutputResources
+    getter maxInterStageShaderComponents
+    getter maxInterStageShaderVariables
+    getter maxSampledTexturesPerShaderStage
+    getter maxSamplersPerShaderStage
+    getter maxStorageBufferBindingSize
+    getter maxStorageBuffersPerShaderStage
+    getter maxStorageTexturesPerShaderStage
+    getter maxTextureArrayLayers
+    getter maxTextureDimension1D
+    getter maxTextureDimension2D
+    getter maxTextureDimension3D
+    getter maxUniformBufferBindingSize
+    getter maxUniformBuffersPerShaderStage
+    getter maxVertexAttributes
+    getter maxVertexBufferArrayStride
+    getter maxVertexBuffers
+    getter minStorageBufferOffsetAlignment
+    getter minUniformBufferOffsetAlignment
+    method constructor
+interface GPUTexture
+    attribute @@toStringTag
+    getter depthOrArrayLayers
+    getter dimension
+    getter format
+    getter height
+    getter label
+    getter mipLevelCount
+    getter sampleCount
+    getter usage
+    getter width
+    method constructor
+    method createView
+    method destroy
+    setter label
+interface GPUTextureView
+    attribute @@toStringTag
+    getter label
+    method constructor
+    setter label
+interface GPUUncapturedErrorEvent : Event
+    attribute @@toStringTag
+    getter error
+    method constructor
+interface GPUValidationError : GPUError
+    attribute @@toStringTag
+    method constructor
 interface GainNode : AudioNode
     attribute @@toStringTag
     getter gain
@@ -5982,6 +6300,7 @@ interface Navigator
     getter devicePosture
     getter doNotTrack
     getter geolocation
+    getter gpu
     getter hardwareConcurrency
     getter hid
     getter ink
@@ -11786,6 +12105,41 @@ namespace CSS
     method vmax
     method vmin
     method vw
+namespace GPUBufferUsage
+    attribute @@toStringTag
+    attribute COPY_DST
+    attribute COPY_SRC
+    attribute INDEX
+    attribute INDIRECT
+    attribute MAP_READ
+    attribute MAP_WRITE
+    attribute QUERY_RESOLVE
+    attribute STORAGE
+    attribute UNIFORM
+    attribute VERTEX
+namespace GPUColorWrite
+    attribute @@toStringTag
+    attribute ALL
+    attribute ALPHA
+    attribute BLUE
+    attribute GREEN
+    attribute RED
+namespace GPUMapMode
+    attribute @@toStringTag
+    attribute READ
+    attribute WRITE
+namespace GPUShaderStage
+    attribute @@toStringTag
+    attribute COMPUTE
+    attribute FRAGMENT
+    attribute VERTEX
+namespace GPUTextureUsage
+    attribute @@toStringTag
+    attribute COPY_DST
+    attribute COPY_SRC
+    attribute RENDER_ATTACHMENT
+    attribute STORAGE_BINDING
+    attribute TEXTURE_BINDING
 namespace console
     attribute @@toStringTag
     getter memory

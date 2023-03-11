@@ -595,16 +595,6 @@ void SetCustomizedRuntimeFeaturesFromCombinedArgs(
     }
   }
 
-  // (b/239679616) kWebGPUService can be controlled by finch. So switching off
-  // WebGPU based on it can help remotely control origin trial usage. Local
-  // command switches --enable-unsafe-webgpu can still enable WebGPU.
-  if (!base::FeatureList::IsEnabled(features::kWebGPUService)) {
-    WebRuntimeFeatures::EnableWebGPU(false);
-  }
-  if (command_line.HasSwitch(switches::kEnableUnsafeWebGPU)) {
-    WebRuntimeFeatures::EnableWebGPU(true);
-  }
-
   if (base::FeatureList::IsEnabled(blink::features::kPendingBeaconAPI)) {
     // The Chromium flag `kPendingBeaconAPI` is true, which enables the
     // parts of the API's implementation in Chromium.
