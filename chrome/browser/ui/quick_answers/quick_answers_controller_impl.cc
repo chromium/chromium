@@ -142,7 +142,7 @@ void QuickAnswersControllerImpl::DismissQuickAnswers(
   switch (visibility_) {
     case QuickAnswersVisibility::kRichAnswersVisible: {
       // For the rich-answers view, ignore dismissal by context-menu related
-      // actions as they should only affect the companion quick-answers view.
+      // actions as they should only affect the companion quick-answers views.
       if (exit_point == QuickAnswersExitPoint::kContextMenuDismiss ||
           exit_point == QuickAnswersExitPoint::kContextMenuClick) {
         return;
@@ -151,10 +151,19 @@ void QuickAnswersControllerImpl::DismissQuickAnswers(
       visibility_ = QuickAnswersVisibility::kClosed;
       return;
     }
-    default: {
+    case QuickAnswersVisibility::kUserConsentVisible: {
+      if (quick_answers_ui_controller_->IsShowingUserConsentView()) {
+        QuickAnswersState::Get()->OnConsentResult(ConsentResultType::kDismiss);
+      }
+      quick_answers_ui_controller_->CloseUserConsentView();
       visibility_ = QuickAnswersVisibility::kClosed;
-      MaybeDismissQuickAnswersConsent();
+      return;
+    }
+    case QuickAnswersVisibility::kQuickAnswersVisible:
+    case QuickAnswersVisibility::kPending:
+    case QuickAnswersVisibility::kClosed: {
       bool closed = quick_answers_ui_controller_->CloseQuickAnswersView();
+      visibility_ = QuickAnswersVisibility::kClosed;
       // |quick_answer_| could be null before we receive the result from the
       // server. Do not send the signal since the quick answer is dismissed
       // before ready.
@@ -291,16 +300,11 @@ void QuickAnswersControllerImpl::OnUserConsentResult(bool consented) {
       consented ? ConsentResultType::kAllow : ConsentResultType::kNoThanks);
 
   if (consented) {
+    visibility_ = QuickAnswersVisibility::kPending;
     // Display Quick-Answer for the cached query when user consent has
     // been granted.
     MaybeShowQuickAnswers(anchor_bounds_, title_, context_);
   }
-}
-
-void QuickAnswersControllerImpl::MaybeDismissQuickAnswersConsent() {
-  if (quick_answers_ui_controller_->IsShowingUserConsentView())
-    QuickAnswersState::Get()->OnConsentResult(ConsentResultType::kDismiss);
-  quick_answers_ui_controller_->CloseUserConsentView();
 }
 
 void QuickAnswersControllerImpl::ShowUserConsent(
@@ -311,6 +315,7 @@ void QuickAnswersControllerImpl::ShowUserConsent(
     quick_answers_ui_controller_->CreateUserConsentView(
         anchor_bounds_, intent_type, intent_text);
     QuickAnswersState::Get()->StartConsent();
+    visibility_ = QuickAnswersVisibility::kUserConsentVisible;
   }
 }
 

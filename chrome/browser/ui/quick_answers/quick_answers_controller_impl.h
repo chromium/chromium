@@ -72,8 +72,6 @@ class QuickAnswersControllerImpl : public QuickAnswersController,
   }
 
  private:
-  void MaybeDismissQuickAnswersConsent();
-
   void HandleQuickAnswerRequest(
       const quick_answers::QuickAnswersRequest& request);
 

@@ -25,7 +25,7 @@ enum class QuickAnswersVisibility {
   // Quick Answers UI is visible.
   kQuickAnswersVisible = 2,
   // User Consent UI is visible.
-  // kUserConsentVisible = 3,
+  kUserConsentVisible = 3,
   // Rich Answers UI is visible.
   kRichAnswersVisible = 4,
 };
