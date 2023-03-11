@@ -380,7 +380,10 @@ crbug.com/1382332 [ chromeos ] Pixel_MediaRecorderFromVideoElementWithOoprCanvas
 crbug.com/1382332 [ android android-webview-instrumentation angle-disabled no-passthrough ] Pixel_MediaRecorderFromVideoElement [ Failure ]
 crbug.com/1382332 [ android-chromium android-nexus-5x android-nougat angle-disabled no-passthrough qualcomm renderer-skia-gl target-cpu-64 ] Pixel_MediaRecorderFromVideoElement [ Failure ]
 crbug.com/1382332 [ android-chromium android-s android-sm-a135m angle-disabled arm no-passthrough renderer-skia-gl target-cpu-32 ] Pixel_MediaRecorderFromVideoElement [ Failure ]
-crbug.com/1382332 [ android ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
+crbug.com/1382332 [ android-chromium android-s android-sm-a135m angle-disabled arm no-clang-coverage no-passthrough renderer-skia-gl target-cpu-32 ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
+crbug.com/1382332 [ android-nexus-5x android-nougat angle-disabled no-passthrough qualcomm renderer-skia-gl target-cpu-64 ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
+crbug.com/1382332 [ android-pixel-4 android-r no-clang-coverage qualcomm renderer-skia-gl target-cpu-32 ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
+crbug.com/1382332 [ android-pixel-6 android-t android-webview-instrumentation angle-disabled arm no-clang-coverage no-passthrough renderer-skia-vulkan target-cpu-64 ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 crbug.com/1382332 [ fuchsia ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 crbug.com/1382332 [ linux nvidia-0x2184 passthrough debug angle-vulkan ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 
