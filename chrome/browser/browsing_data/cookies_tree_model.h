@@ -205,7 +205,6 @@ class CookieTreeHostNode : public CookieTreeNode {
 
   // CookieTreeNode methods:
   DetailedInfo GetDetailedInfo() const override;
-  int64_t InclusiveSize() const override;
 
   // CookieTreeHostNode methods:
   CookieTreeCookiesNode* GetOrCreateCookiesNode();

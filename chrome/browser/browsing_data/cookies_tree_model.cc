@@ -295,7 +295,10 @@ CookiesTreeModel* CookieTreeNode::GetModel() const {
 }
 
 int64_t CookieTreeNode::InclusiveSize() const {
-  return 0;
+  return std::accumulate(children().cbegin(), children().cend(), int64_t{0},
+                         [](int64_t total, const auto& child) {
+                           return total + child->InclusiveSize();
+                         });
 }
 
 int CookieTreeNode::NumberOfCookies() const {
@@ -855,13 +858,6 @@ class CookieTreeCollectionNode : public CookieTreeNode {
   CookieTreeCollectionNode& operator=(const CookieTreeCollectionNode&) = delete;
 
   ~CookieTreeCollectionNode() override = default;
-
-  int64_t InclusiveSize() const final {
-    return std::accumulate(children().cbegin(), children().cend(), int64_t{0},
-                           [](int64_t total, const auto& child) {
-                             return total + child->InclusiveSize();
-                           });
-  }
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1199,13 +1195,6 @@ void CookieTreeHostNode::CreateContentException(
 
 bool CookieTreeHostNode::CanCreateContentException() const {
   return !url_.SchemeIsFile();
-}
-
-int64_t CookieTreeHostNode::InclusiveSize() const {
-  return std::accumulate(children().cbegin(), children().cend(), int64_t{0},
-                         [](int64_t total, const auto& child) {
-                           return total + child->InclusiveSize();
-                         });
 }
 
 ///////////////////////////////////////////////////////////////////////////////
