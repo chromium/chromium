@@ -12,6 +12,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceResult;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -40,7 +41,7 @@ import java.util.Set;
  * AutocompleteController is no longer valid, and removes it from the AutocompleteControllerFactory
  * cache.
  */
-public class AutocompleteController {
+public class AutocompleteController implements Destroyable {
     // Maximum number of voice suggestions to show.
     private static final int MAX_VOICE_SUGGESTION_COUNT = 3;
 
@@ -224,7 +225,8 @@ public class AutocompleteController {
         }
     }
 
-    /* package */ void destroy() {
+    @Override
+    public void destroy() {
         mListeners.clear();
         if (mNativeController == 0) return;
         AutocompleteControllerJni.get().destroy(mNativeController);

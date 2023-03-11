@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
-import android.util.ArrayMap;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -16,20 +14,20 @@ import org.chromium.base.UnownedUserData;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
  * Maintains a list of AutocompleteControllers associated with Profiles used by this Chrome
  * window. The controllers are not shared across windows, allowing windows to operate independently.
  */
-public class AutocompleteControllerProvider implements ProfileManager.Observer, UnownedUserData {
+public class AutocompleteControllerProvider implements UnownedUserData {
     private static final @NonNull UnownedUserDataKey<AutocompleteControllerProvider> KEY =
             new UnownedUserDataKey<>(AutocompleteControllerProvider.class);
     private static @Nullable AutocompleteController sControllerForTesting;
     private final @NonNull LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
-    private final @NonNull ArrayMap<Profile, AutocompleteController> mControllers =
-            new ArrayMap<>();
+    private final @NonNull ProfileKeyedMap<AutocompleteController> mControllers =
+            ProfileKeyedMap.createMapOfDestroyables();
 
     /**
      * Autocloseable wrapper around the AutocompleteController.
@@ -50,10 +48,6 @@ public class AutocompleteControllerProvider implements ProfileManager.Observer, 
         public void close() {
             mController.destroy();
         }
-    }
-
-    private AutocompleteControllerProvider() {
-        ProfileManager.addObserver(this);
     }
 
     /**
@@ -79,11 +73,7 @@ public class AutocompleteControllerProvider implements ProfileManager.Observer, 
     @Override
     public void onDetachedFromHost(@NonNull UnownedUserDataHost host) {
         ThreadUtils.assertOnUiThread();
-        for (var index = 0; index < mControllers.size(); index++) {
-            mControllers.valueAt(index).destroy();
-        }
-        ProfileManager.removeObserver(this);
-        mControllers.clear();
+        mControllers.destroy();
         LifetimeAssert.setSafeToGc(mLifetimeAssert, true);
     }
 
@@ -100,12 +90,7 @@ public class AutocompleteControllerProvider implements ProfileManager.Observer, 
 
         if (sControllerForTesting != null) return sControllerForTesting;
 
-        var controller = mControllers.get(profile);
-        if (controller == null) {
-            controller = new AutocompleteController(profile);
-            mControllers.put(profile, controller);
-        }
-        return controller;
+        return mControllers.getForProfile(profile, () -> new AutocompleteController(profile));
     }
 
     /**
@@ -118,17 +103,6 @@ public class AutocompleteControllerProvider implements ProfileManager.Observer, 
             @NonNull Profile profile) {
         ThreadUtils.assertOnUiThread();
         return new CloseableAutocompleteController(profile);
-    }
-
-    @Override
-    public void onProfileAdded(Profile profile) {}
-
-    @Override
-    public void onProfileDestroyed(Profile profile) {
-        var controller = mControllers.remove(profile);
-        if (controller != null) {
-            controller.destroy();
-        }
     }
 
     /**

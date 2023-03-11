@@ -8,9 +8,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 import org.chromium.components.dom_distiller.core.DomDistillerService;
-
-import java.util.HashMap;
 
 /**
  * DomDistillerServiceFactory maps Profiles to instances of
@@ -20,21 +19,16 @@ import java.util.HashMap;
  */
 @JNINamespace("dom_distiller::android")
 public class DomDistillerServiceFactory {
-
-    private static final HashMap<Profile, DomDistillerService> sServiceMap =
-            new HashMap<Profile, DomDistillerService>();
+    private static final ProfileKeyedMap<DomDistillerService> sServiceMap =
+            new ProfileKeyedMap<>(ProfileKeyedMap.NO_REQUIRED_CLEANUP_ACTION);
 
     /**
      * Returns Java DomDistillerService for given Profile.
      */
     public static DomDistillerService getForProfile(Profile profile) {
         ThreadUtils.assertOnUiThread();
-        DomDistillerService service = sServiceMap.get(profile);
-        if (service == null) {
-            service = DomDistillerServiceFactoryJni.get().getForProfile(profile);
-            sServiceMap.put(profile, service);
-        }
-        return service;
+        return sServiceMap.getForProfile(
+                profile, () -> DomDistillerServiceFactoryJni.get().getForProfile(profile));
     }
 
     @NativeMethods
