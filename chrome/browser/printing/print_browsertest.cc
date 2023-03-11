@@ -33,11 +33,11 @@
 #include "chrome/browser/printing/print_view_manager.h"
 #include "chrome/browser/printing/print_view_manager_common.h"
 #include "chrome/browser/printing/printer_query.h"
+#include "chrome/browser/printing/test_print_preview_observer.h"
 #include "chrome/browser/printing/test_print_view_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/webui/print_preview/print_preview_ui.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -314,104 +314,6 @@ class BrowserPrintingContextFactoryForTest
 #endif
   int new_document_called_count_ = 0;
   absl::optional<PrintSettings> document_print_settings_;
-};
-
-class PrintPreviewObserver : PrintPreviewUI::TestDelegate {
- public:
-  explicit PrintPreviewObserver(bool wait_for_loaded)
-      : PrintPreviewObserver(wait_for_loaded, /*pages_per_sheet=*/1) {}
-
-  PrintPreviewObserver(bool wait_for_loaded, int pages_per_sheet)
-      : pages_per_sheet_(pages_per_sheet), wait_for_loaded_(wait_for_loaded) {
-    PrintPreviewUI::SetDelegateForTesting(this);
-  }
-
-  PrintPreviewObserver(const PrintPreviewObserver&) = delete;
-  PrintPreviewObserver& operator=(const PrintPreviewObserver&) = delete;
-
-  ~PrintPreviewObserver() override {
-    PrintPreviewUI::SetDelegateForTesting(nullptr);
-  }
-
-  // Tests that use PrintPreviewObserver must call
-  // WaitUntilPreviewIsReady*() exactly once.
-  [[nodiscard]] content::WebContents*
-  WaitUntilPreviewIsReadyAndReturnPreviewDialog() {
-    if (rendered_page_count_ < expected_rendered_page_count_) {
-      base::RunLoop run_loop;
-      base::AutoReset<base::RunLoop*> auto_reset(&run_loop_, &run_loop);
-      run_loop.Run();
-
-      if (queue_.has_value()) {
-        std::string message;
-        EXPECT_TRUE(queue_->WaitForMessage(&message));
-        EXPECT_EQ("\"success\"", message);
-      }
-    }
-
-    // Grab and reset `preview_dialog_` to avoid potential dangling pointers.
-    content::WebContents* dialog = preview_dialog_;
-    preview_dialog_ = nullptr;
-    return dialog;
-  }
-
-  // Wrapper for WaitUntilPreviewIsReadyAndReturnPreviewDialog() provided for
-  // convenience for callers that do not need the returned result.
-  void WaitUntilPreviewIsReady() {
-    std::ignore = WaitUntilPreviewIsReadyAndReturnPreviewDialog();
-  }
-
-  uint32_t rendered_page_count() const { return rendered_page_count_; }
-
- private:
-  // PrintPreviewUI::TestDelegate:
-  void DidGetPreviewPageCount(uint32_t page_count) override {
-    // `page_count` is the number of pages to be generated but doesn't take
-    // N-up into consideration.  Since `DidRenderPreviewPage()` is called after
-    // any N-up processing is performed, determine the number of times that
-    // function is expected to be called.
-    expected_rendered_page_count_ =
-        (page_count + pages_per_sheet_ - 1) / pages_per_sheet_;
-  }
-
-  // PrintPreviewUI::TestDelegate:
-  void DidRenderPreviewPage(content::WebContents* preview_dialog) override {
-    ++rendered_page_count_;
-    DVLOG(2) << "Rendered preview page " << rendered_page_count_
-             << " of a total expected " << expected_rendered_page_count_;
-    CHECK_LE(rendered_page_count_, expected_rendered_page_count_);
-    if (rendered_page_count_ == expected_rendered_page_count_ && run_loop_) {
-      run_loop_->Quit();
-      preview_dialog_ = preview_dialog;
-
-      if (wait_for_loaded_) {
-        // Instantiate `queue_` to listen for messages in `preview_dialog_`.
-        queue_.emplace(preview_dialog_);
-        content::ExecuteScriptAsync(
-            preview_dialog_.get(),
-            "window.addEventListener('message', event => {"
-            "  if (event.data.type === 'documentLoaded') {"
-            "    domAutomationController.send(event.data.load_state);"
-            "  }"
-            "});");
-      }
-    }
-  }
-
-  absl::optional<content::DOMMessageQueue> queue_;
-
-  // Rendered pages are provided after N-up processing, which will be different
-  // from the count provided to `DidGetPreviewPageCount()` when
-  // `pages_per_sheet_` is larger than one.
-  const int pages_per_sheet_;
-  uint32_t expected_rendered_page_count_ = 1;
-  uint32_t rendered_page_count_ = 0;
-
-  const bool wait_for_loaded_;
-  raw_ptr<content::WebContents> preview_dialog_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION base::RunLoop* run_loop_ = nullptr;
 };
 
 class TestPrintRenderFrame
@@ -912,8 +814,8 @@ class PrintBrowserTest : public InProcessBrowserTest {
   }
 
   void PrintAndWaitUntilPreviewIsReady(const PrintParams& params) {
-    PrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/false,
-                                                params.pages_per_sheet);
+    TestPrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/false,
+                                                    params.pages_per_sheet);
 
     StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
                /*print_renderer=*/mojo::NullAssociatedRemote(),
@@ -930,8 +832,8 @@ class PrintBrowserTest : public InProcessBrowserTest {
   }
 
   void PrintAndWaitUntilPreviewIsReadyAndLoaded(const PrintParams& params) {
-    PrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/true,
-                                                params.pages_per_sheet);
+    TestPrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/true,
+                                                    params.pages_per_sheet);
 
     StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
                /*print_renderer=*/mojo::NullAssociatedRemote(),
@@ -1139,7 +1041,7 @@ class PrintExtensionBrowserTest : public extensions::ExtensionBrowserTest {
   ~PrintExtensionBrowserTest() override = default;
 
   void PrintAndWaitUntilPreviewIsReady() {
-    PrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/false);
+    TestPrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/false);
 
     StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
                /*print_renderer=*/mojo::NullAssociatedRemote(),
@@ -1656,7 +1558,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessPrintBrowserTest,
       subframe_rph, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
 
   // Adds the observer to get the status for the preview.
-  PrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/false);
+  TestPrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/false);
   StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
              /*print_renderer=*/mojo::NullAssociatedRemote(),
              /*print_preview_disabled=*/false, /*has_selection*/ false);
@@ -1984,7 +1886,7 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest,
   GURL url(embedded_test_server()->GetURL("/printing/multipage.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  PrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/true);
+  TestPrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/true);
   StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
              /*print_renderer=*/mojo::NullAssociatedRemote(),
              /*print_preview_disabled=*/false, /*has_selection=*/false);
@@ -2033,7 +1935,7 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, WindowDotPrint) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  PrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/false);
+  TestPrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/false);
   content::ExecuteScriptAsync(web_contents->GetPrimaryMainFrame(),
                               "window.print();");
   print_preview_observer.WaitUntilPreviewIsReady();
@@ -2056,7 +1958,7 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest,
   PrintPreviewDoneObserver done_observer(rfh, GetPrintRenderFrame(rfh).get());
 
   // Load Print Preview and make sure the beforeprint event fired.
-  PrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/false);
+  TestPrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/false);
   content::ExecuteScriptAsync(rfh, "window.print();");
   print_preview_observer.WaitUntilPreviewIsReady();
   EXPECT_EQ(true, content::EvalJs(rfh, "firedBeforePrint"));
@@ -2574,7 +2476,7 @@ class SystemAccessProcessPrintBrowserTestBase
 
   void PrintAfterPreviewIsReadyAndLoaded() {
     // First invoke the Print Preview dialog with `StartPrint()`.
-    PrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/true);
+    TestPrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/true);
     StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
                /*print_renderer=*/mojo::NullAssociatedRemote(),
                /*print_preview_disabled=*/false,
@@ -2600,7 +2502,7 @@ class SystemAccessProcessPrintBrowserTestBase
 #if BUILDFLAG(ENABLE_BASIC_PRINT_DIALOG)
   void SystemPrintFromPreviewOnceReadyAndLoaded(bool wait_for_callback) {
     // First invoke the Print Preview dialog with `StartPrint()`.
-    PrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/true);
+    TestPrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/true);
     StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
                /*print_renderer=*/mojo::NullAssociatedRemote(),
                /*print_preview_disabled=*/false,
