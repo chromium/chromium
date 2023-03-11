@@ -58,7 +58,7 @@ test_files = [
   "hotspot_config_dialog_tests.js",
   "hotspot_subpage_tests.js",
   "hotspot_summary_item_tests.js",
-  "google_assistant_page_test.js",
+  "google_assistant_subpage_test.js",
   "guest_os_shared_paths_test.js",
   "guest_os_shared_usb_devices_test.js",
   "input_device_mojo_interface_provider_test.js",

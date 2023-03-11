@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview 'settings-google-assistant-page' is the settings page
+ * @fileoverview 'settings-google-assistant-subpage' is the settings page
  * containing Google Assistant settings.
  */
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
@@ -31,7 +31,7 @@ import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route} from '../router.js';
 
 import {GoogleAssistantBrowserProxy, GoogleAssistantBrowserProxyImpl} from './google_assistant_browser_proxy.js';
-import {getTemplate} from './google_assistant_page.html.js';
+import {getTemplate} from './google_assistant_subpage.html.js';
 
 /**
  * The types of Hotword enable status without Dsp support.
@@ -63,14 +63,14 @@ export enum ConsentStatus {
   NOT_FOUND = 3,
 }
 
-const SettingsGoogleAssistantPageElementBase =
+const SettingsGoogleAssistantSubpageElementBase =
     DeepLinkingMixin(RouteObserverMixin(
         PrefsMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))));
 
-class SettingsGoogleAssistantPageElement extends
-    SettingsGoogleAssistantPageElementBase {
+class SettingsGoogleAssistantSubpageElement extends
+    SettingsGoogleAssistantSubpageElementBase {
   static get is() {
-    return 'settings-google-assistant-page';
+    return 'settings-google-assistant-subpage';
   }
 
   static get template() {
@@ -282,9 +282,10 @@ class SettingsGoogleAssistantPageElement extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    'settings-google-assistant-page': SettingsGoogleAssistantPageElement;
+    'settings-google-assistant-subpage': SettingsGoogleAssistantSubpageElement;
   }
 }
 
 customElements.define(
-    SettingsGoogleAssistantPageElement.is, SettingsGoogleAssistantPageElement);
+    SettingsGoogleAssistantSubpageElement.is,
+    SettingsGoogleAssistantSubpageElement);

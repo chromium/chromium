@@ -40,7 +40,6 @@ import './device_page/storage.js';
 import './device_page/storage_external.js';
 import './device_page/storage_external_entry.js';
 import './device_page/stylus.js';
-import './google_assistant_page/google_assistant_page.js';
 import './kerberos_page/kerberos_accounts.js';
 import './kerberos_page/kerberos_page.js';
 import './multidevice_page/multidevice_page.js';
@@ -132,8 +131,6 @@ export {SettingsPerDeviceKeyboardSubsectionElement} from './device_page/per_devi
 export {SettingsPerDeviceMouseSubsectionElement} from './device_page/per_device_mouse_subsection.js';
 export {SettingsPerDevicePointingStickSubsectionElement} from './device_page/per_device_pointing_stick_subsection.js';
 export {SettingsPerDeviceTouchpadSubsectionElement} from './device_page/per_device_touchpad_subsection.js';
-export {GoogleAssistantBrowserProxyImpl} from './google_assistant_page/google_assistant_browser_proxy.js';
-export {ConsentStatus, DspHotwordState} from './google_assistant_page/google_assistant_page.js';
 export {InternetPageBrowserProxy, InternetPageBrowserProxyImpl} from './internet_page/internet_page_browser_proxy.js';
 export {KerberosAccountsBrowserProxyImpl, KerberosConfigErrorCode, KerberosErrorType} from './kerberos_page/kerberos_accounts_browser_proxy.js';
 export {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from './metrics_recorder.js';

@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ConsentStatus, CrSettingsPrefs, DspHotwordState, GoogleAssistantBrowserProxyImpl, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import 'chrome://os-settings/chromeos/lazy_load.js';
+
+import {ConsentStatus, DspHotwordState, GoogleAssistantBrowserProxyImpl} from 'chrome://os-settings/chromeos/lazy_load.js';
+import {CrSettingsPrefs, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -10,7 +13,7 @@ import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
 suite('GoogleAssistantHandler', function() {
-  /** @type {SettingsGoogleAssistantPageElement} */
+  /** @type {SettingsGoogleAssistantSubpageElement} */
   let page = null;
 
   let browserProxy = null;
@@ -32,7 +35,7 @@ suite('GoogleAssistantHandler', function() {
     document.body.appendChild(prefElement);
 
     return CrSettingsPrefs.initialized.then(function() {
-      page = document.createElement('settings-google-assistant-page');
+      page = document.createElement('settings-google-assistant-subpage');
       page.prefs = prefElement.prefs;
       document.body.appendChild(page);
     });
@@ -260,7 +263,7 @@ suite('GoogleAssistantHandler', function() {
 });
 
 suite('GoogleAssistantHandlerWithNoDspHotword', function() {
-  /** @type {SettingsGoogleAssistantPageElement} */
+  /** @type {SettingsGoogleAssistantSubpageElement} */
   let page = null;
 
   let browserProxy = null;
@@ -282,7 +285,7 @@ suite('GoogleAssistantHandlerWithNoDspHotword', function() {
     document.body.appendChild(prefElement);
 
     return CrSettingsPrefs.initialized.then(function() {
-      page = document.createElement('settings-google-assistant-page');
+      page = document.createElement('settings-google-assistant-subpage');
       page.prefs = prefElement.prefs;
       document.body.appendChild(page);
       flush();

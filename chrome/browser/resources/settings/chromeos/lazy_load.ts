@@ -25,6 +25,8 @@ import './internet_page/internet_detail_subpage.js';
 import './internet_page/internet_known_networks_subpage.js';
 import './internet_page/internet_subpage.js';
 import './os_about_page/detailed_build_info_subpage.js';
+import './os_search_page/google_assistant_subpage.js';
+import './os_search_page/search_subpage.js';
 // TODO(b/263414034) Determine if elements below adhere to the lazy loading
 // criteria and are needed here
 import './crostini_page/bruschetta_subpage.js';
@@ -110,3 +112,5 @@ export {MetricsConsentBrowserProxy, MetricsConsentBrowserProxyImpl, MetricsConse
 export {DataAccessPolicyState, PeripheralDataAccessBrowserProxy, PeripheralDataAccessBrowserProxyImpl} from './os_privacy_page/peripheral_data_access_browser_proxy.js';
 export {PrivacyHubBrowserProxy, PrivacyHubBrowserProxyImpl} from './os_privacy_page/privacy_hub_browser_proxy.js';
 export {OsResetBrowserProxyImpl} from './os_reset_page/os_reset_browser_proxy.js';
+export {GoogleAssistantBrowserProxyImpl} from './os_search_page/google_assistant_browser_proxy.js';
+export {ConsentStatus, DspHotwordState} from './os_search_page/google_assistant_subpage.js';
