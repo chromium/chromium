@@ -22,7 +22,22 @@ void FakeSyncedSessionClientAsh::BindReceiver(
 
 void FakeSyncedSessionClientAsh::OnForeignSyncedPhoneSessionsUpdated(
     std::vector<crosapi::mojom::SyncedSessionPtr> sessions) {
-  NOTIMPLEMENTED();
+  last_foreign_synced_phone_sessions_ = std::move(sessions);
+  if (on_foreign_synced_phone_sessions_updated_complete_callback_) {
+    std::move(on_foreign_synced_phone_sessions_updated_complete_callback_)
+        .Run();
+  }
+}
+
+void FakeSyncedSessionClientAsh::SetOnForeignSyncedPhoneSessionsUpdatedCallback(
+    base::RepeatingClosure callback) {
+  on_foreign_synced_phone_sessions_updated_complete_callback_ =
+      std::move(callback);
+}
+
+const std::vector<crosapi::mojom::SyncedSessionPtr>&
+FakeSyncedSessionClientAsh::LookupForeignSyncedPhoneSessions() {
+  return last_foreign_synced_phone_sessions_;
 }
 
 void FakeSyncedSessionClientAsh::OnSessionSyncEnabledChanged(bool enabled) {

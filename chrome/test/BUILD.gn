@@ -7775,6 +7775,7 @@ test("unit_tests") {
       "../browser/lacros/net/network_settings_translation_unittest.cc",
       "../browser/lacros/prefs_ash_observer_unittest.cc",
       "../browser/lacros/remote_apps/remote_apps_proxy_lacros_unittest.cc",
+      "../browser/lacros/sync/crosapi_session_sync_notifier_unittest.cc",
       "../browser/lacros/sync/sync_explicit_passphrase_client_lacros_unittest.cc",
       "../browser/lacros/sync/sync_user_settings_client_lacros_unittest.cc",
       "../browser/media/webrtc/chrome_screen_enumerator_lacros_unittest.cc",

@@ -7,8 +7,86 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/notreached.h"
+#include "chromeos/lacros/lacros_service.h"
+#include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
+#include "components/sync_sessions/sync_sessions_client.h"
+#include "components/sync_sessions/synced_session.h"
+#include "url/gurl.h"
+
+namespace {
+// Constructs a list of type crosapi::mojom::SyncedSessionTab from type
+// std::unique_ptr<session::SessionTab>.
+std::vector<crosapi::mojom::SyncedSessionTabPtr> ConstructSyncedPhoneTabs(
+    const std::vector<std::unique_ptr<sessions::SessionTab>>& tabs) {
+  std::vector<crosapi::mojom::SyncedSessionTabPtr> crosapi_synced_phone_tabs;
+  for (const std::unique_ptr<sessions::SessionTab>& tab : tabs) {
+    if (tab->navigations.empty()) {
+      continue;
+    }
+
+    int selected_index = tab->normalized_navigation_index();
+    const sessions::SerializedNavigationEntry& navigation =
+        tab->navigations[selected_index];
+    GURL tab_url = navigation.virtual_url();
+
+    // URLs whose schemes are not http:// or https:// should be ignored
+    // because they may be platform specific (e.g., chrome:// URLs) or may
+    // refer to local media on the phone (e.g., content:// URLs).
+    if (!tab_url.SchemeIsHTTPOrHTTPS()) {
+      continue;
+    }
+
+    // If the url is incorrectly formatted, is empty, or has a
+    // scheme that should be omitted, do not proceed with storing its
+    // metadata.
+    if (!tab_url.is_valid()) {
+      continue;
+    }
+
+    crosapi_synced_phone_tabs.push_back(crosapi::mojom::SyncedSessionTab::New(
+        tab_url, navigation.title(), tab->timestamp));
+  }
+  return crosapi_synced_phone_tabs;
+}
+
+// Constructs a list of type crosapi::mojom::SyncedSessionWindow from type
+// sync_sessions::SyncedSessionWindow*.
+std::vector<crosapi::mojom::SyncedSessionWindowPtr> ConstructSyncedPhoneWindows(
+    const std::vector<sync_sessions::SyncedSessionWindow*>& windows) {
+  std::vector<crosapi::mojom::SyncedSessionWindowPtr>
+      crosapi_synced_phone_windows;
+  for (const sync_sessions::SyncedSessionWindow* window : windows) {
+    crosapi_synced_phone_windows.push_back(
+        crosapi::mojom::SyncedSessionWindow::New(
+            ConstructSyncedPhoneTabs(window->wrapped_window.tabs)));
+  }
+  return crosapi_synced_phone_windows;
+}
+
+// Constructs a list of type crosapi::mojom::SyncedSession from a list of type
+// sync_sessions::SyncedSession for sessions with FormFactor kPhone from the
+// latter list.
+std::vector<crosapi::mojom::SyncedSessionPtr> ConstructSyncedPhoneSessions(
+    const std::vector<const sync_sessions::SyncedSession*>& sessions) {
+  std::vector<crosapi::mojom::SyncedSessionPtr> crosapi_synced_phone_sessions;
+  for (const sync_sessions::SyncedSession* session : sessions) {
+    if (session->GetDeviceFormFactor() !=
+        syncer::DeviceInfo::FormFactor::kPhone) {
+      continue;
+    }
+    std::vector<sync_sessions::SyncedSessionWindow*> windows;
+    for (const auto& [window_id, window] : session->windows) {
+      windows.push_back(window.get());
+    }
+    crosapi_synced_phone_sessions.push_back(crosapi::mojom::SyncedSession::New(
+        session->GetSessionName(), session->GetModifiedTime(),
+        ConstructSyncedPhoneWindows(windows)));
+  }
+  return crosapi_synced_phone_sessions;
+}
+
+}  // namespace
 
 CrosapiSessionSyncNotifier::CrosapiSessionSyncNotifier(
     sync_sessions::SessionSyncService* session_sync_service,
@@ -25,7 +103,14 @@ CrosapiSessionSyncNotifier::CrosapiSessionSyncNotifier(
 CrosapiSessionSyncNotifier::~CrosapiSessionSyncNotifier() = default;
 
 void CrosapiSessionSyncNotifier::OnForeignSyncedSessionsUpdated() {
-  // TODO(b/260599791): In a follow-up CL we will fetch a list of sessions using
-  // OpenTabsUIDelegate() and notify ash via `synced_session_client_`.
-  NOTIMPLEMENTED();
+  // Fetch sessions
+  sync_sessions::OpenTabsUIDelegate* open_tabs =
+      session_sync_service_->GetOpenTabsUIDelegate();
+  std::vector<const sync_sessions::SyncedSession*> synced_sessions;
+  open_tabs->GetAllForeignSessions(&synced_sessions);
+  std::vector<crosapi::mojom::SyncedSessionPtr> crosapi_synced_phone_sessions =
+      ConstructSyncedPhoneSessions(synced_sessions);
+
+  synced_session_client_->OnForeignSyncedPhoneSessionsUpdated(
+      std::move(crosapi_synced_phone_sessions));
 }

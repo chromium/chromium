@@ -24,6 +24,16 @@ class FakeSyncedSessionClientAsh : public crosapi::mojom::SyncedSessionClient {
   // crosapi::mojom::SyncedSessionClient:
   void OnForeignSyncedPhoneSessionsUpdated(
       std::vector<crosapi::mojom::SyncedSessionPtr> sessions) override;
+
+  void SetOnForeignSyncedPhoneSessionsUpdatedCallback(
+      base::RepeatingClosure callback);
+
+  // Returns a reference to foreign synced phone sessions received from
+  // a remote crosapi::mojom::SyncedSessionClient call to
+  // `OnForeignSyncedPhoneSessionsUpdated()`.
+  const std::vector<crosapi::mojom::SyncedSessionPtr>&
+  LookupForeignSyncedPhoneSessions();
+
   void OnSessionSyncEnabledChanged(bool enabled) override;
 
   void BindReceiver(
@@ -31,6 +41,10 @@ class FakeSyncedSessionClientAsh : public crosapi::mojom::SyncedSessionClient {
 
  private:
   mojo::ReceiverSet<crosapi::mojom::SyncedSessionClient> receivers_;
+  std::vector<crosapi::mojom::SyncedSessionPtr>
+      last_foreign_synced_phone_sessions_;
+  base::RepeatingClosure
+      on_foreign_synced_phone_sessions_updated_complete_callback_;
 };
 
 }  // namespace syncer
