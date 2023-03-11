@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
@@ -52,7 +53,11 @@ const char kGlobalSidePanelRegistryKey[] = "global_side_panel_registry_key";
 constexpr int kSidePanelContentViewId = 42;
 constexpr int kSidePanelContentWrapperViewId = 43;
 
-constexpr SidePanelEntry::Id kDefaultEntry = SidePanelEntry::Id::kReadingList;
+SidePanelEntry::Id GetDefaultEntry() {
+  return base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel)
+             ? SidePanelEntry::Id::kBookmarks
+             : SidePanelEntry::Id::kReadingList;
+}
 
 std::unique_ptr<views::ImageButton> CreateControlButton(
     views::View* host,
@@ -196,7 +201,8 @@ void SidePanelCoordinator::Show(
   if (entry_id.has_value()) {
     Show(SidePanelEntry::Key(entry_id.value()), open_trigger);
   } else {
-    Show(GetLastActiveEntryKey().value_or(SidePanelEntry::Key(kDefaultEntry)),
+    Show(GetLastActiveEntryKey().value_or(
+             SidePanelEntry::Key(GetDefaultEntry())),
          open_trigger);
   }
 }
@@ -591,8 +597,9 @@ std::unique_ptr<views::Combobox> SidePanelCoordinator::CreateCombobox() {
   combobox->SetMenuSelectionAtCallback(
       base::BindRepeating(&SidePanelCoordinator::OnComboboxChangeTriggered,
                           base::Unretained(this)));
-  combobox->SetSelectedIndex(combobox_model_->GetIndexForKey(
-      (GetLastActiveEntryKey().value_or(SidePanelEntry::Key(kDefaultEntry)))));
+  combobox->SetSelectedIndex(
+      combobox_model_->GetIndexForKey((GetLastActiveEntryKey().value_or(
+          SidePanelEntry::Key(GetDefaultEntry())))));
   combobox->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_ACCNAME_SIDE_PANEL_SELECTOR));
   combobox->SetProperty(
@@ -697,8 +704,8 @@ void SidePanelCoordinator::OnEntryRegistered(SidePanelRegistry* registry,
                                              SidePanelEntry* entry) {
   combobox_model_->AddItem(entry);
   if (GetContentView()) {
-    SetSelectedEntryInCombobox(
-        GetLastActiveEntryKey().value_or(SidePanelEntry::Key(kDefaultEntry)));
+    SetSelectedEntryInCombobox(GetLastActiveEntryKey().value_or(
+        SidePanelEntry::Key(GetDefaultEntry())));
   }
 
   // If `entry` is a contextual entry and the global entry with the same key is
@@ -716,8 +723,8 @@ void SidePanelCoordinator::OnEntryWillDeregister(SidePanelRegistry* registry,
     combobox_model_->RemoveItem(entry->key());
 
     if (GetContentView()) {
-      SetSelectedEntryInCombobox(
-          GetLastActiveEntryKey().value_or(SidePanelEntry::Key(kDefaultEntry)));
+      SetSelectedEntryInCombobox(GetLastActiveEntryKey().value_or(
+          SidePanelEntry::Key(GetDefaultEntry())));
     }
   }
 
