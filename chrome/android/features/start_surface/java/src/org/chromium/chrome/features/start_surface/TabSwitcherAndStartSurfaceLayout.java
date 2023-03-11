@@ -528,6 +528,16 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
         }
 
         forceAnimationToFinish();
+        // TODO(crbug/1423109): mLayoutTabs shouldn't be null here, but it is possible the delayed
+        // removal via a handler in mTabSwitcherObserver#finishedShowing results in a null
+        // mLayoutTabs. This should be fixed by simplifying thumbnail capture logic.
+        if (mLayoutTabs == null) {
+            LayoutTab sourceLayoutTab = createLayoutTab(
+                    mTabModelSelector.getCurrentTabId(), mTabModelSelector.isIncognitoSelected());
+            sourceLayoutTab.setDecorationAlpha(0);
+
+            mLayoutTabs = new LayoutTab[] {sourceLayoutTab};
+        }
         LayoutTab sourceLayoutTab = mLayoutTabs[0];
         CompositorAnimationHandler handler = getAnimationHandler();
         Collection<Animator> animationList = new ArrayList<>(5);
