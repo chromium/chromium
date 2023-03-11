@@ -36,6 +36,7 @@
 #include "components/autofill/core/browser/payments/payments_requests/upload_card_request.h"
 #include "components/autofill/core/browser/payments/payments_service_url.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -293,7 +294,8 @@ void PaymentsClient::GetUploadDetails(
                    account_info_getter_->IsSyncFeatureEnabled(), app_locale,
                    std::move(callback), billable_service_number,
                    billing_customer_number, upload_card_source),
-               /*authenticate=*/false);
+               /*authenticate=*/base::FeatureList::IsEnabled(
+                   features::kAutofillUpstreamAuthenticatePreflightCall));
 }
 
 void PaymentsClient::UploadCard(
