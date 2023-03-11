@@ -250,7 +250,7 @@ crbug.com/1175371 [ win ] conformance/extensions/khr-parallel-shader-compile.htm
 crbug.com/angleproject/5499 [ no-passthrough ] conformance/glsl/misc/shaders-with-name-conflicts.html [ Failure ]
 crbug.com/angleproject/5768 [ no-passthrough ] conformance2/textures/misc/immutable-tex-render-feedback.html [ Failure ]
 
-crbug.com/953120 conformance/programs/program-handling.html [ Failure ]
+crbug.com/953120 [ angle-disabled no-asan no-passthrough ] conformance/programs/program-handling.html [ Failure ]
 
 crbug.com/949249 [ win passthrough angle-d3d11 ] conformance2/extensions/ovr_multiview2.html [ Failure ]
 crbug.com/949249 [ linux passthrough angle-opengl ] conformance2/extensions/ovr_multiview2.html [ Failure ]
@@ -313,11 +313,11 @@ crbug.com/1159539 [ win amd-0x7340 angle-d3d11 passthrough ] deqp/functional/gle
 ## Metal Common ##
 # Common to all GPU types (both AMD and Intel, at least)
 
-crbug.com/angleproject/7079 [ angle-metal mac mac-x86_64 passthrough ] deqp/functional/gles3/fboinvalidate/sub.html [ Failure ]
+crbug.com/angleproject/7079 [ angle-metal mac-x86_64 monterey passthrough ] deqp/functional/gles3/fboinvalidate/sub.html [ Failure ]
 crbug.com/angleproject/7079 [ angle-metal mac mac-x86_64 passthrough ] deqp/functional/gles3/fboinvalidate/whole.html [ Failure ]
-crbug.com/angleproject/7079 [ angle-metal mac mac-x86_64 passthrough ] deqp/functional/gles3/fbomultisample.2_samples.html [ Failure ]
-crbug.com/angleproject/7079 [ angle-metal mac mac-x86_64 passthrough ] deqp/functional/gles3/fbomultisample.4_samples.html [ Failure ]
-crbug.com/angleproject/7079 [ angle-metal mac mac-x86_64 passthrough ] deqp/functional/gles3/fbomultisample.8_samples.html [ Failure ]
+crbug.com/angleproject/7079 [ angle-metal mac-x86_64 monterey passthrough ] deqp/functional/gles3/fbomultisample.2_samples.html [ Failure ]
+crbug.com/angleproject/7079 [ angle-metal mac-x86_64 monterey passthrough ] deqp/functional/gles3/fbomultisample.4_samples.html [ Failure ]
+crbug.com/angleproject/7079 [ angle-metal mac-x86_64 monterey passthrough ] deqp/functional/gles3/fbomultisample.8_samples.html [ Failure ]
 crbug.com/angleproject/7234 [ amd-0x6821 angle-metal mac mac-x86_64 passthrough ] conformance2/textures/misc/integer-cubemap-texture-sampling.html [ Failure ]
 
 ## Metal AMD ##
@@ -387,14 +387,14 @@ crbug.com/1421053 [ mac amd-0x67ef angle-metal ] deqp/functional/gles3/vertexarr
 
 ## Metal Intel ##
 
-crbug.com/angleproject/6430 [ mac passthrough angle-metal intel ] conformance2/textures/canvas/tex-2d-rgb16f-rgb-float.html [ Failure ]
-crbug.com/angleproject/6430 [ mac passthrough angle-metal intel ] conformance2/textures/canvas/tex-2d-rgb16f-rgb-half_float.html [ Failure ]
-crbug.com/angleproject/6430 [ mac passthrough angle-metal intel ] conformance2/textures/canvas/tex-2d-rgb32f-rgb-float.html [ Failure ]
+crbug.com/angleproject/6430 [ angle-metal intel monterey passthrough ] conformance2/textures/canvas/tex-2d-rgb16f-rgb-float.html [ Failure ]
+crbug.com/angleproject/6430 [ angle-metal intel monterey passthrough ] conformance2/textures/canvas/tex-2d-rgb16f-rgb-half_float.html [ Failure ]
+crbug.com/angleproject/6430 [ angle-metal intel monterey passthrough ] conformance2/textures/canvas/tex-2d-rgb32f-rgb-float.html [ Failure ]
 crbug.com/angleproject/6430 [ mac passthrough angle-metal intel ] conformance2/textures/webgl_canvas/tex-2d-rgb16f-rgb-float.html [ Failure ]
-crbug.com/angleproject/6430 [ mac passthrough angle-metal intel ] conformance2/textures/webgl_canvas/tex-2d-rgb16f-rgb-half_float.html [ Failure ]
-crbug.com/angleproject/6430 [ mac passthrough angle-metal intel ] conformance2/textures/webgl_canvas/tex-2d-rgb32f-rgb-float.html [ Failure ]
-crbug.com/angleproject/6430 [ mac passthrough angle-metal intel ] deqp/functional/gles3/readpixel.html [ Failure ]
-crbug.com/angleproject/6430 [ mac passthrough angle-metal intel ] deqp/functional/gles3/shadertexturefunction/texturegrad.html [ Failure ]
+crbug.com/angleproject/6430 [ angle-metal intel monterey passthrough ] conformance2/textures/webgl_canvas/tex-2d-rgb16f-rgb-half_float.html [ Failure ]
+crbug.com/angleproject/6430 [ angle-metal intel monterey passthrough ] conformance2/textures/webgl_canvas/tex-2d-rgb32f-rgb-float.html [ Failure ]
+crbug.com/angleproject/6430 [ angle-metal intel monterey passthrough ] deqp/functional/gles3/readpixel.html [ Failure ]
+crbug.com/angleproject/6430 [ angle-metal intel monterey passthrough ] deqp/functional/gles3/shadertexturefunction/texturegrad.html [ Failure ]
 crbug.com/1316389 [ mac passthrough angle-metal intel ] deqp/functional/gles3/fboinvalidate/default.html [ Failure ]
 crbug.com/1316389 [ mac passthrough angle-metal intel ] deqp/functional/gles3/transformfeedback/basic_types_interleaved_points.html [ Failure ]
 crbug.com/1316389 [ mac passthrough angle-metal intel ] deqp/functional/gles3/transformfeedback/basic_types_separate_points.html [ Failure ]
@@ -549,8 +549,8 @@ crbug.com/1422032 [ mac amd-0x67ef angle-opengl ] deqp/functional/gles3/transfor
 
 ## Mac Intel ##
 
-crbug.com/679692 [ angle-metal intel mac no-asan ] conformance2/textures/misc/angle-stuck-depth-textures.html [ Failure ]
-crbug.com/641209 [ angle-metal intel mac no-asan ] deqp/functional/gles3/fbomultisample* [ Failure ]
+crbug.com/679692 [ angle-metal intel monterey no-asan ] conformance2/textures/misc/angle-stuck-depth-textures.html [ Failure ]
+crbug.com/641209 [ angle-metal intel monterey no-asan ] deqp/functional/gles3/fbomultisample* [ Failure ]
 crbug.com/606074 [ angle-opengl intel mac ] deqp/functional/gles3/texturefiltering/2d_combinations_01.html [ Failure ]
 crbug.com/606074 [ angle-opengl intel mac ] deqp/functional/gles3/texturefiltering/cube_combinations_01.html [ Failure ]
 crbug.com/606074 [ angle-opengl intel mac ] deqp/functional/gles3/texturefiltering/2d_array_combinations_01.html [ Failure ]
