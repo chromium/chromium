@@ -277,6 +277,16 @@ Value::List ParseJsonList(StringPiece json) {
   return result.has_value() ? std::move(*result).TakeList() : Value::List();
 }
 
+Value::Dict ParseJsonDictFromFile(const FilePath& json_file_path) {
+  std::string json;
+  if (!ReadFileToString(json_file_path, &json)) {
+    ADD_FAILURE() << "Failed to load json file for parsing. path="
+                  << json_file_path;
+    return {};
+  }
+  return ParseJsonDict(json);
+}
+
 expected<void, WriteJsonError> WriteJsonFile(const FilePath& json_file_path,
                                              ValueView root) {
   std::string json;

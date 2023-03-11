@@ -108,6 +108,11 @@ Value ParseJson(StringPiece json);
 Value::Dict ParseJsonDict(StringPiece json);
 Value::List ParseJsonList(StringPiece json);
 
+// Similar to `ParseJsonDict`, however it loads its contents from a file.
+// Returns the parsed `Value::Dict` when successful. Otherwise, it causes an
+// EXPECT failure, and returns an empty dict.
+Value::Dict ParseJsonDictFromFile(const FilePath& json_file_path);
+
 // An enumaration with the possible types of errors when calling
 // `WriteJsonFile`.
 enum class WriteJsonError {
