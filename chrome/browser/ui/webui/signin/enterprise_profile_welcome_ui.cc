@@ -24,6 +24,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/webui/resource_path.h"
 #include "ui/resources/grit/webui_resources.h"
 
@@ -73,6 +74,9 @@ EnterpriseProfileWelcomeUI::EnterpriseProfileWelcomeUI(content::WebUI* web_ui)
   source->AddBoolean(
       "isTangibleSyncStyleEnabled",
       base::FeatureList::IsEnabled(kEnterpriseWelcomeTangibleSyncStyle));
+  source->AddString(
+      "chromeRefresh2023Attribute",
+      features::IsChromeRefresh2023() ? "chrome-refresh-2023" : "");
 }
 
 EnterpriseProfileWelcomeUI::~EnterpriseProfileWelcomeUI() = default;
