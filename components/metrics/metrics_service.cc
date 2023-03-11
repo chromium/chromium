@@ -368,7 +368,7 @@ void MetricsService::StartUpdatingLastLiveTimestamp() {
       FROM_HERE,
       base::BindOnce(&MetricsService::UpdateLastLiveTimestampTask,
                      self_ptr_factory_.GetWeakPtr()),
-      base::Seconds(kUpdateAliveTimestampSeconds));
+      GetUpdateLastAliveTimestampDelay());
 }
 
 void MetricsService::Stop() {
@@ -669,6 +669,15 @@ MetricsService::GetSyntheticTrialRegistry() {
   return client_->GetSyntheticTrialRegistry();
 }
 
+base::TimeDelta MetricsService::GetInitializationDelay() {
+  return base::Seconds(
+      client_->ShouldStartUpFastForTesting() ? 0 : kInitializationDelaySeconds);
+}
+
+base::TimeDelta MetricsService::GetUpdateLastAliveTimestampDelay() {
+  return base::Seconds(kUpdateAliveTimestampSeconds);
+}
+
 bool MetricsService::StageCurrentLogForTest() {
   CloseCurrentLog(/*async=*/false,
                   MetricsLogsEventManager::CreateReason::kUnknown);
@@ -822,9 +831,7 @@ void MetricsService::OpenNewLog(bool call_providers) {
     // We only need to schedule that run once.
     state_ = INIT_TASK_SCHEDULED;
 
-    base::TimeDelta initialization_delay = base::Seconds(
-        client_->ShouldStartUpFastForTesting() ? 0
-                                               : kInitializationDelaySeconds);
+    base::TimeDelta initialization_delay = GetInitializationDelay();
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&MetricsService::StartInitTask,
@@ -1139,17 +1146,10 @@ void MetricsService::OnFinalLogInfoCollectionDone() {
   base::OnceClosure log_stored_callback =
       base::BindOnce(&MetricsService::OnPeriodicOngoingLogStored,
                      self_ptr_factory_.GetWeakPtr());
-  if (base::FeatureList::IsEnabled(features::kMetricsServiceAsyncCollection)) {
-    CloseCurrentLog(/*async=*/true,
-                    MetricsLogsEventManager::CreateReason::kPeriodic,
-                    std::move(log_stored_callback));
-    OpenNewLog(/*call_providers=*/false);
-  } else {
-    CloseCurrentLog(/*async=*/false,
-                    MetricsLogsEventManager::CreateReason::kPeriodic,
-                    std::move(log_stored_callback));
-    OpenNewLog();
-  }
+  CloseCurrentLog(/*async=*/true,
+                  MetricsLogsEventManager::CreateReason::kPeriodic,
+                  std::move(log_stored_callback));
+  OpenNewLog(/*call_providers=*/false);
 }
 
 void MetricsService::OnPeriodicOngoingLogStored() {

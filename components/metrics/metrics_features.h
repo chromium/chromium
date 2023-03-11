@@ -18,10 +18,6 @@ BASE_DECLARE_FEATURE(kEmitHistogramsEarlier);
 // in DisableRecording().
 extern const base::FeatureParam<bool> kEmitHistogramsForIndependentLogs;
 
-// Determines whether the metrics service should create periodic logs
-// asynchronously.
-BASE_DECLARE_FEATURE(kMetricsServiceAsyncCollection);
-
 // Determines at what point the metrics service is allowed to close a log when
 // Chrome is closed (and backgrounded/foregrounded for mobile platforms). When
 // this feature is disabled, the metrics service can only close a log if it has

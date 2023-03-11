@@ -9,13 +9,15 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
-#include "base/test/test_simple_task_runner.h"
+#include "base/test/task_environment.h"
 #include "components/metrics/log_decoder.h"
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_logs_event_manager.h"
 #include "components/metrics/metrics_pref_names.h"
+#include "components/metrics/metrics_scheduler.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics/metrics_state_manager.h"
+#include "components/metrics/metrics_upload_scheduler.h"
 #include "components/metrics/test/test_enabled_state_provider.h"
 #include "components/metrics/test/test_metrics_service_client.h"
 #include "components/metrics/unsent_log_store_metrics_impl.h"
@@ -29,16 +31,15 @@ namespace {
 class MetricsServiceObserverTest : public testing::Test {
  public:
   MetricsServiceObserverTest()
-      : task_runner_(new base::TestSimpleTaskRunner),
-        task_runner_current_default_handle_(task_runner_),
-        enabled_state_provider_(/*consent=*/true, /*enabled=*/true) {}
+      : enabled_state_provider_(/*consent=*/true, /*enabled=*/true) {}
   ~MetricsServiceObserverTest() override = default;
 
   void SetUp() override {
     // The following call is needed for calling MetricsService::Start(), which
     // sets up callbacks for user actions (which in turn verifies that a task
     // runner is provided).
-    base::SetRecordActionTaskRunner(task_runner_);
+    base::SetRecordActionTaskRunner(
+        task_environment_.GetMainThreadTaskRunner());
     // The following call is needed for instantiating an instance of
     // MetricsStateManager, which reads various prefs in its constructor.
     MetricsService::RegisterPrefs(local_state_.registry());
@@ -64,9 +65,8 @@ class MetricsServiceObserverTest : public testing::Test {
   PrefService* local_state() { return &local_state_; }
 
  protected:
-  scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
-  base::SingleThreadTaskRunner::CurrentDefaultHandle
-      task_runner_current_default_handle_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
  private:
   TestEnabledStateProvider enabled_state_provider_;
@@ -101,8 +101,9 @@ TEST_F(MetricsServiceObserverTest, SuccessfulLogUpload) {
   service.InitializeMetricsRecordingState();
   service.Start();
 
-  // Run pending tasks to finish init task and complete the first ongoing log.
-  task_runner_->RunPendingTasks();
+  // Fast forward the time until the the first ongoing log is completed.
+  task_environment_.FastForwardBy(
+      base::Seconds(MetricsScheduler::GetInitialIntervalSeconds()));
 
   // Verify that |logs_observer| is aware of the log.
   std::vector<std::unique_ptr<MetricsServiceObserver::Log>>* observed_logs =
@@ -122,8 +123,9 @@ TEST_F(MetricsServiceObserverTest, SuccessfulLogUpload) {
   EXPECT_EQ(log_info->events[1].event,
             MetricsLogsEventManager::LogEvent::kLogStaged);
 
-  // Run pending tasks to trigger the uploading of the log.
-  task_runner_->RunPendingTasks();
+  // Fast forward the time to trigger the uploading of the log.
+  task_environment_.FastForwardBy(
+      MetricsUploadScheduler::GetUnsentLogsInterval());
 
   // Verify that |logs_observer| observed the log being sent.
   ASSERT_EQ(log_info->events.size(), 3U);
@@ -160,8 +162,9 @@ TEST_F(MetricsServiceObserverTest, UnsuccessfulLogUpload) {
   service.InitializeMetricsRecordingState();
   service.Start();
 
-  // Run pending tasks to finish init task and complete the first ongoing log.
-  task_runner_->RunPendingTasks();
+  // Fast forward the time until the the first ongoing log is completed.
+  task_environment_.FastForwardBy(
+      base::Seconds(MetricsScheduler::GetInitialIntervalSeconds()));
 
   // Verify that |logs_observer| is aware of the log.
   std::vector<std::unique_ptr<MetricsServiceObserver::Log>>* observed_logs =
@@ -179,9 +182,10 @@ TEST_F(MetricsServiceObserverTest, UnsuccessfulLogUpload) {
   EXPECT_EQ(log_info->events[1].event,
             MetricsLogsEventManager::LogEvent::kLogStaged);
 
-  // Run pending tasks to trigger the uploading of the log, and verify that
+  // Fast forward the time to trigger the uploading of the log, and verify that
   // |logs_observer| observed this event.
-  task_runner_->RunPendingTasks();
+  task_environment_.FastForwardBy(
+      MetricsUploadScheduler::GetUnsentLogsInterval());
   EXPECT_EQ(log_info->events.size(), 3U);
   EXPECT_EQ(log_info->events.back().event,
             MetricsLogsEventManager::LogEvent::kLogUploading);
@@ -195,9 +199,11 @@ TEST_F(MetricsServiceObserverTest, UnsuccessfulLogUpload) {
   EXPECT_EQ(log_info->events.back().event,
             MetricsLogsEventManager::LogEvent::kLogStaged);
 
-  // Run pending tasks to trigger the uploading of the log, and verify that
-  // |logs_observer| observed this event.
-  task_runner_->RunPendingTasks();
+  // Fast forward the time to trigger the re-upload of the log, and verify that
+  // |logs_observer| observed this event. Since the last upload failed, the time
+  // before the next upload is triggered is different (longer).
+  task_environment_.FastForwardBy(
+      MetricsUploadScheduler::GetInitialBackoffInterval());
   EXPECT_EQ(log_info->events.size(), 5U);
   EXPECT_EQ(log_info->events.back().event,
             MetricsLogsEventManager::LogEvent::kLogUploading);
@@ -486,16 +492,18 @@ TEST_P(MetricsServiceObserverExportTest, ExportLogsAsJson) {
   service.InitializeMetricsRecordingState();
   service.Start();
 
-  // Run pending tasks to finish init task and complete the first ongoing log.
-  task_runner_->RunPendingTasks();
+  // Fast forward the time until the the first ongoing log is completed.
+  task_environment_.FastForwardBy(
+      base::Seconds(MetricsScheduler::GetInitialIntervalSeconds()));
 
   // Stage the log.
   MetricsLogStore* test_log_store = service.LogStoreForTest();
   test_log_store->StageNextLog();
   ASSERT_TRUE(test_log_store->has_staged_log());
 
-  // Run pending tasks to trigger the uploading of the log.
-  task_runner_->RunPendingTasks();
+  // Fast forward the time to trigger the uploading of the log.
+  task_environment_.FastForwardBy(
+      MetricsUploadScheduler::GetUnsentLogsInterval());
 
   // Export logs as a JSON string.
   std::string json;

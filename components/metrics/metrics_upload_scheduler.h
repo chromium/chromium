@@ -37,6 +37,14 @@ class MetricsUploadScheduler : public MetricsScheduler {
   // be over the allowed data usage cap.
   void UploadOverDataUsageCap();
 
+  // Time delay after a log is uploaded successfully before attempting another.
+  // On mobile, keeping the radio on is very expensive, so prefer to keep this
+  // short and send in bursts.
+  static base::TimeDelta GetUnsentLogsInterval();
+
+  // Initial time delay after a log uploaded fails before retrying it.
+  static base::TimeDelta GetInitialBackoffInterval();
+
  private:
   // Time to wait between uploads on success.
   const base::TimeDelta unsent_logs_interval_;

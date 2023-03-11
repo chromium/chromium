@@ -42,18 +42,6 @@ base::TimeDelta BackOffUploadInterval(base::TimeDelta interval) {
   return interval;
 }
 
-// Time delay after a log is uploaded successfully before attempting another.
-// On mobile, keeping the radio on is very expensive, so prefer to keep this
-// short and send in bursts.
-base::TimeDelta GetUnsentLogsInterval() {
-  return base::Seconds(3);
-}
-
-// Initial time delay after a log uploaded fails before retrying it.
-base::TimeDelta GetInitialBackoffInterval() {
-  return base::Minutes(5);
-}
-
 }  // namespace
 
 MetricsUploadScheduler::MetricsUploadScheduler(
@@ -64,7 +52,17 @@ MetricsUploadScheduler::MetricsUploadScheduler(
       initial_backoff_interval_(GetInitialBackoffInterval()),
       backoff_interval_(initial_backoff_interval_) {}
 
-MetricsUploadScheduler::~MetricsUploadScheduler() {}
+MetricsUploadScheduler::~MetricsUploadScheduler() = default;
+
+// static
+base::TimeDelta MetricsUploadScheduler::GetUnsentLogsInterval() {
+  return base::Seconds(3);
+}
+
+// static
+base::TimeDelta MetricsUploadScheduler::GetInitialBackoffInterval() {
+  return base::Minutes(5);
+}
 
 void MetricsUploadScheduler::UploadFinished(bool server_is_healthy) {
   // If the server is having issues, back off. Otherwise, reset to default

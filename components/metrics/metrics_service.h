@@ -237,6 +237,14 @@ class MetricsService {
 
   variations::SyntheticTrialRegistry* GetSyntheticTrialRegistry();
 
+  // Returns the delay before the init tasks (to asynchronously initialize
+  // metrics providers) run.
+  base::TimeDelta GetInitializationDelay();
+
+  // Returns the delay before the task to update the "last alive timestamp" is
+  // run.
+  base::TimeDelta GetUpdateLastAliveTimestampDelay();
+
   MetricsLogStore* LogStoreForTest() {
     return reporting_service_.metrics_log_store();
   }
