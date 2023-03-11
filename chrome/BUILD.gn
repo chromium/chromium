@@ -1581,13 +1581,6 @@ if (!is_android) {
   }
 }
 
-repack("unit_tests_pak") {
-  testonly = true
-  sources = [ "$root_gen_dir/chrome/chrome_test_resources.pak" ]
-  output = "$root_out_dir/unit_tests.pak"
-  deps = [ "//chrome/test/data:chrome_test_resources" ]
-}
-
 repack("browser_tests_pak") {
   testonly = true
   sources = [ "$root_gen_dir/chrome/webui_test_resources.pak" ]

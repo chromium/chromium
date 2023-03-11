@@ -5998,7 +5998,6 @@ test("unit_tests") {
     "//chrome/common/themes:unit_tests",
     "//chrome/services/file_util:unit_tests",
     "//chrome/services/qrcode_generator/public/cpp",
-    "//chrome/test/data:chrome_test_resources_grit",
     "//components/account_id",
     "//components/assist_ranker/proto",
     "//components/autofill/content/browser:test_support",
@@ -8812,7 +8811,6 @@ test("unit_tests") {
 
   if (toolkit_views) {
     deps += [
-      "//chrome:unit_tests_pak",
       "//chrome/browser/ui/tabs:tab_enums",
       "//chrome/browser/ui/views",
       "//components/app_constants",
@@ -8838,8 +8836,6 @@ test("unit_tests") {
     if (!is_mac) {
       deps += [ "//apps/ui/views" ]
     }
-
-    data_deps += [ "//chrome:unit_tests_pak" ]
 
     sources += [
       "../../ui/views/controls/webview/web_dialog_view_unittest.cc",

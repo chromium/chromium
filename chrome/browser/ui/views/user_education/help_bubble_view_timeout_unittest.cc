@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
-#include "chrome/test/data/grit/chrome_test_resources.h"
 #include "components/user_education/common/feature_promo_specification.h"
 #include "components/user_education/common/help_bubble_params.h"
 #include "components/user_education/views/help_bubble_view.h"
