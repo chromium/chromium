@@ -712,6 +712,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Download.LoadHistoryDownloadsTime" units="ms"
+    expires_after="2023-09-09">
+  <owner>chlily@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records time taken to execute DownloadHistory::LoadHistoryDownloads(),
+    logged on each execution.
+  </summary>
+</histogram>
+
 <histogram name="Download.MediaMetadata.Event" enum="MediaMetadataEvent"
     expires_after="never">
 <!-- expires-never: Download media parser stability metrics. -->
