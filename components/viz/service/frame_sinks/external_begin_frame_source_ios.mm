@@ -10,8 +10,17 @@
 #include "base/logging.h"
 #include "base/mac/mach_logging.h"
 #include "base/numerics/checked_math.h"
+#include "components/viz/common/frame_sinks/begin_frame_args.h"
 
 namespace {
+
+constexpr float kMinimumRefreshInterval =
+    (viz::BeginFrameArgs::MinInterval() == base::TimeDelta()
+         ? 1
+         : 1 / viz::BeginFrameArgs::MinInterval().InSecondsF());
+
+constexpr float kMaximumRefreshInterval =
+    (1 / viz::BeginFrameArgs::DefaultInterval().InSecondsF());
 
 // Translates CFTimeInterval to absolute time.
 uint64_t GetMachTimeFromSeconds(CFTimeInterval seconds) {
@@ -51,6 +60,12 @@ uint64_t GetMachTimeFromSeconds(CFTimeInterval seconds) {
   bool _enabled;
   // A client that receives vsync updates. Owns us.
   raw_ptr<viz::ExternalBeginFrameSourceIOS> _client;
+  // Current preferred refresh rate in frames per second. The system may ignore
+  // this and, for example, throttle the frame rate. Please note that the frame
+  // rate that the system chooses will be rounded to the nearest factor of a
+  // maximum refresh rate of display. Eg, if a display supports 60Hz, the
+  // refresh rate might be rounded to 15, 20, 30, and 60 FPS respectively.
+  float _preferredRefrehRate;
 }
 
 @end
@@ -68,6 +83,7 @@ uint64_t GetMachTimeFromSeconds(CFTimeInterval seconds) {
     _displayLink =
         [CADisplayLink displayLinkWithTarget:self
                                     selector:@selector(displayLinkDidFire:)];
+    [self setPreferredInterval:viz::BeginFrameArgs::DefaultInterval()];
     [self setEnabled:false];
     [_displayLink addToRunLoop:[NSRunLoop currentRunLoop]
                        forMode:NSRunLoopCommonModes];
@@ -100,6 +116,32 @@ uint64_t GetMachTimeFromSeconds(CFTimeInterval seconds) {
   [_displayLink invalidate];
   _displayLink = nil;
   _client = nil;
+}
+
+- (void)setPreferredInterval:(base::TimeDelta)interval {
+  if (!_displayLink) {
+    return;
+  }
+
+  DCHECK_GE(interval, base::TimeDelta());
+  const float refresh_rate =
+      interval.InSecondsF() == 0 ? 0 : (1 / interval.InSecondsF());
+
+  if (_preferredRefrehRate != refresh_rate) {
+    _preferredRefrehRate = refresh_rate;
+    if (@available(iOS 15, *)) {
+      [_displayLink
+          setPreferredFrameRateRange:CAFrameRateRange{
+                                         .minimum = kMinimumRefreshInterval,
+                                         .maximum = kMaximumRefreshInterval,
+                                         .preferred = _preferredRefrehRate}];
+    } else if (@available(iOS 10, *)) {
+      [_displayLink setPreferredFramesPerSecond:_preferredRefrehRate];
+    }
+
+    // _displayLink.frameInterval is used on iOS 3-10. However, these are pretty
+    // old iOS versions, which we are not targeting.
+  }
 }
 
 - (void)displayLinkDidFire:(CADisplayLink*)displayLink {
@@ -148,8 +190,7 @@ ExternalBeginFrameSourceIOS::~ExternalBeginFrameSourceIOS() {
 
 void ExternalBeginFrameSourceIOS::SetPreferredInterval(
     base::TimeDelta interval) {
-  // TODO(crbug.com/1413559): support setting frame rate.
-  NOTIMPLEMENTED_LOG_ONCE();
+  [display_link_impl_ setPreferredInterval:interval];
 }
 
 void ExternalBeginFrameSourceIOS::SetDynamicBeginFrameDeadlineOffsetSource(
