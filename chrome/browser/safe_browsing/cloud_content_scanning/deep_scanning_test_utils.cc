@@ -321,9 +321,6 @@ void EventReportValidator::
         event_key_ = SafeBrowsingPrivateEventRouter::kKeyDangerousDownloadEvent;
         threat_type_ = expected_threat_type;
         dlp_verdicts_.erase(expected_filename);
-        scan_ids_.erase(expected_filename);
-        source_.reset();
-        destination_.reset();
         ValidateReport(&report);
         if (!done_closure_.is_null()) {
           done_closure_.Run();
@@ -571,7 +568,8 @@ void EventReportValidator::ValidateField(
         << "Mismatch in field " << field_key;
   } else {
     ASSERT_EQ(nullptr, value->FindString(field_key))
-        << "Field " << field_key << " should not be populated";
+        << "Field " << field_key << " should not be populated. It has value "
+        << *value->FindString(field_key);
   }
 }
 
@@ -586,7 +584,8 @@ void EventReportValidator::ValidateField(
         << "Mismatch in field " << field_key;
   } else {
     ASSERT_EQ(nullptr, s) << "Field " << field_key
-                          << " should not be populated";
+                          << " should not be populated. It has value "
+                          << *value->FindString(field_key);
   }
 }
 

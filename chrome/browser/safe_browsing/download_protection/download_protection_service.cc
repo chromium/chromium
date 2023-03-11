@@ -230,7 +230,6 @@ bool DownloadProtectionService::MaybeCheckClientDownload(
       profile && IsSafeBrowsingEnabled(*profile->GetPrefs());
   auto settings = DeepScanningRequest::ShouldUploadBinary(item);
   bool report_only_scan =
-      base::FeatureList::IsEnabled(kConnectorsScanningReportOnlyUI) &&
       settings.has_value() &&
       settings.value().block_until_verdict ==
           enterprise_connectors::BlockUntilVerdict::kNoBlock;
@@ -238,10 +237,7 @@ bool DownloadProtectionService::MaybeCheckClientDownload(
       profile &&
       IsRealTimeDownloadProtectionRequestAllowed(*profile->GetPrefs());
 
-  if (base::FeatureList::IsEnabled(kSafeBrowsingEnterpriseCsd) &&
-      base::FeatureList::IsEnabled(
-          kSafeBrowsingDisableConsumerCsdForEnterprise) &&
-      settings.has_value() && !report_only_scan) {
+  if (settings.has_value() && !report_only_scan) {
     // Since this branch implies that the CSD check is done through the deep
     // scanning request and not with a consumer check, the pre-deep scanning
     // DownloadCheckResult is considered UNKNOWN. This shouldn't trigger on

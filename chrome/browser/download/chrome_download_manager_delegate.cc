@@ -394,7 +394,10 @@ void MaybeReportDangerousDownloadBlocked(
   auto* router =
       extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile);
   if (router) {
-    std::string raw_digest_sha256 = download->GetHash();
+    std::string raw_digest_sha256;
+    if (download->GetState() == DownloadItem::DownloadState::COMPLETE) {
+      raw_digest_sha256 = download->GetHash();
+    }
     router->OnDangerousDownloadEvent(
         download->GetURL(), download_path,
         base::HexEncode(raw_digest_sha256.data(), raw_digest_sha256.size()),

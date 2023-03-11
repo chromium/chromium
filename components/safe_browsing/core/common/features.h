@@ -46,16 +46,6 @@ BASE_DECLARE_FEATURE(kClientSideDetectionTypeForceRequest);
 // Enables serving the Android Protego allowlist through the component updater.
 BASE_DECLARE_FEATURE(kComponentUpdaterAndroidProtegoAllowlist);
 
-// Controls whether an access token is attached to scanning requests triggered
-// by enterprise Connectors.
-BASE_DECLARE_FEATURE(kConnectorsScanningAccessToken);
-
-// Controls the non-blocking scanning UI for Connectors scanning requests. If
-// this is enabled, the downloaded file(s) will be renamed immediately and the
-// scanning will take place without UI when the policy is set to "non-blocking"
-// instead of just showing an "Open Now" button with the blocking UI.
-BASE_DECLARE_FEATURE(kConnectorsScanningReportOnlyUI);
-
 // Controls whether the delayed warning experiment is enabled.
 BASE_DECLARE_FEATURE(kDelayedWarnings);
 // True if mouse clicks should undelay the warnings immediately when delayed
@@ -203,14 +193,6 @@ extern const base::FeatureParam<int> kReferrerChainEventMaximumCount;
 // Controls whether download Client Safe Browsing Reports are sent under the
 // new triggers
 BASE_DECLARE_FEATURE(kSafeBrowsingCsbrrNewDownloadTrigger);
-
-// Controls whether we are disabling consumer download checks for users using
-// the enterprise download checks.
-BASE_DECLARE_FEATURE(kSafeBrowsingDisableConsumerCsdForEnterprise);
-
-// Controls whether we are performing enterprise download checks for users
-// with the appropriate policies enabled.
-BASE_DECLARE_FEATURE(kSafeBrowsingEnterpriseCsd);
 
 // Controls whether the lookup mechanism experiment is enabled, which runs all
 // three lookup mechanisms instead of just real-time URL lookups for ESB users.
