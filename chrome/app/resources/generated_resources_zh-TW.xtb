@@ -355,7 +355,7 @@
 <translation id="1307559529304613120">糟糕！系統無法為這個裝置儲存長期 API 存取符記。</translation>
 <translation id="131112695174432497">系統會刪除影響廣告個人化的資料</translation>
 <translation id="1312811472299082263">使用 Ansible Playbook 或 Crostini 備份檔案建立</translation>
-<translation id="1313264149528821971">已移除 <ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、<ph name="PERMISSION_3" /></translation>
+<translation id="1313264149528821971">已移除<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、<ph name="PERMISSION_3" />的權限</translation>
 <translation id="1313405956111467313">自動 Proxy 設定</translation>
 <translation id="131364520783682672">Caps Lock 鍵</translation>
 <translation id="1313660246522271310">系統會將你登出所有網站，包含已開啟的分頁</translation>
@@ -4902,7 +4902,7 @@
 <translation id="5376169624176189338">按一下回上一頁，按住可查看記錄</translation>
 <translation id="5376931455988532197">檔案過大</translation>
 <translation id="5379140238605961210">繼續封鎖存取麥克風</translation>
-<translation id="5380424552031517043">已移除 <ph name="PERMISSION" /></translation>
+<translation id="5380424552031517043">已移除<ph name="PERMISSION" />的權限</translation>
 <translation id="5382591305415226340">管理支援的連結</translation>
 <translation id="5383377866517186886">已關閉 Mac 系統偏好設定中的攝影機</translation>
 <translation id="5383740867328871413">未命名的群組 - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
@@ -5589,7 +5589,7 @@
 <translation id="6003143259071779217">移除 eSIM 卡的行動網路</translation>
 <translation id="6003479444341796444">正在顯示標題列</translation>
 <translation id="6003582434972667631">主題採用貴機構的設定</translation>
-<translation id="6006392003290068688">已移除 <ph name="PERMISSION_1" />、<ph name="PERMISSION_2" /></translation>
+<translation id="6006392003290068688">已移除<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />的權限</translation>
 <translation id="6006484371116297560">傳統版</translation>
 <translation id="6007240208646052708">無法使用你的語言進行語音搜尋。</translation>
 <translation id="6010651352520077187">開啟之後，Google 翻譯會顯示語言選項，並根據你的偏好語言翻譯網站內容。此外，這項服務也可以自動翻譯網站內容。</translation>
@@ -6750,7 +6750,7 @@
 <translation id="7039326228527141150">存取由 <ph name="VENDOR_NAME" /> 製造的 USB 裝置</translation>
 <translation id="7039912931802252762">Microsoft 智慧卡登入</translation>
 <translation id="7039951224110875196">為孩子建立 Google 帳戶</translation>
-<translation id="7041405817194720353">已移除 <ph name="PERMISSION_1" />、<ph name="PERMISSION_2" /> 和另外 <ph name="COUNT" /> 個項目</translation>
+<translation id="7041405817194720353">已移除<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />和另外 <ph name="COUNT" /> 個項目的權限</translation>
 <translation id="7042116641003232070">可將資料儲存到你的裝置</translation>
 <translation id="7043108582968290193">完成！未找到不相容的應用程式。</translation>
 <translation id="7044124535091449260">進一步瞭解網站存取權</translation>
