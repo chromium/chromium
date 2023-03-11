@@ -28,15 +28,17 @@ EcheAppUI::EcheAppUI(
     BindUidGeneratorCallback generator_callback,
     BindNotificationGeneratorCallback notification_callback,
     BindDisplayStreamHandlerCallback stream_handler_callback,
-    BindStreamOrientationObserverCallback stream_orientation_callback)
+    BindStreamOrientationObserverCallback stream_orientation_callback,
+    BindConnectionStatusObserverCallback connection_status_changed_callback)
     : ui::MojoWebUIController(web_ui),
       bind_exchanger_callback_(std::move(exchanger_callback)),
       bind_system_info_callback_(std::move(system_info_callback)),
       bind_generator_callback_(std::move(generator_callback)),
       bind_notification_callback_(std::move(notification_callback)),
       bind_stream_handler_callback_(std::move(stream_handler_callback)),
-      bind_stream_orientation_callback_(
-          std::move(stream_orientation_callback)) {
+      bind_stream_orientation_callback_(std::move(stream_orientation_callback)),
+      bind_connection_status_changed_callback_(
+          std::move(connection_status_changed_callback)) {
   auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::CreateAndAdd(browser_context,
@@ -131,6 +133,11 @@ void EcheAppUI::BindInterface(
 void EcheAppUI::BindInterface(
     mojo::PendingReceiver<mojom::StreamOrientationObserver> receiver) {
   bind_stream_orientation_callback_.Run(std::move(receiver));
+}
+
+void EcheAppUI::BindInterface(
+    mojo::PendingReceiver<mojom::ConnectionStatusObserver> receiver) {
+  bind_connection_status_changed_callback_.Run(std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(EcheAppUI)

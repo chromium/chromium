@@ -50,6 +50,9 @@ const displayStreamHandler = ash.echeApp.mojom.DisplayStreamHandler.getRemote();
 const streamOrientationObserver =
     ash.echeApp.mojom.StreamOrientationObserver.getRemote();
 
+const connectionStatusObserver =
+    ash.echeApp.mojom.ConnectionStatusObserver.getRemote();
+
 const streamActionObserverRouter =
     new ash.echeApp.mojom.StreamActionObserverCallbackRouter();
 // Set up a message pipe to the browser process to monitor stream action.
@@ -199,6 +202,16 @@ guestMessagePipe.registerHandler(
           `echeapi browser_proxy.js ` +
           `onStreamOrientationChanged ${message.isLandscape}`);
       streamOrientationObserver.onStreamOrientationChanged(message.isLandscape);
+    });
+
+// Register CONNECTION_STATUS_CHANGED.
+guestMessagePipe.registerHandler(
+    Message.CONNECTION_STATUS_CHANGED, async (message) => {
+      console.log(
+          `echeapi browser_proxy.js ` +
+          `onConnectionStatusChanged ${message.connectionStatus}`);
+      connectionStatusObserver.onConnectionStatusChanged(
+          message.connectionStatus);
     });
 
 // We can't access hash change event inside iframe so parse the notification

@@ -147,6 +147,21 @@ interface StreamOrientationObserver {
   OnStreamOrientationChanged(bool isLandscape);
 };
 
+// Enum representing the bootstrap connection status to the phone.
+enum ConnectionStatus {
+  kConnectionStatusDisconnected, // Initial state before connection is started
+  kConnectionStatusConnecting,   // Attempting to establish connection
+  kConnectionStatusConnected,    // Connected to phone
+  kConnectionStatusFailed,       // Failed to bootstrap connection
+};
+
+// Interface to notify bootstrap connection status from Eche browser to Eche
+// SWA native code.
+interface ConnectionStatusObserver {
+  // Notifies the connection status change for Eche.
+  OnConnectionStatusChanged(ConnectionStatus status);
+};
+
 // Enum representing what EntryPoint was used to launch the eche app stream.
 // Keep in sync with AppStreamLaunchEntryPoint in
 // tools/metrics/histograms/enums.xml

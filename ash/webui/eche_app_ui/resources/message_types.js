@@ -111,4 +111,7 @@
   ANDROID_NETWORK_INFO: 'android-network-info',
   // Message for changing app stream orientation
   CHANGE_ORIENTATION: 'change_orientation',
+  // Message for notifying Chrome OS about a change in the status of the WebRTC
+  // connection.
+  CONNECTION_STATUS_CHANGED: 'connection_status_changed',
 };
