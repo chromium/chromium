@@ -429,7 +429,6 @@ void MediaRecorder::WriteData(const void* data,
 
 void MediaRecorder::OnError(DOMExceptionCode code, const String& message) {
   DLOG(ERROR) << message.Ascii();
-  StopRecording();
 
   ScriptState* script_state =
       ToScriptStateForMainWorld(DomWindow()->GetFrame());
@@ -440,6 +439,7 @@ void MediaRecorder::OnError(DOMExceptionCode code, const String& message) {
   event_init->setError(error_value);
   ScheduleDispatchEvent(
       ErrorEvent::Create(script_state, event_type_names::kError, event_init));
+  StopRecording();
 }
 
 void MediaRecorder::OnAllTracksEnded() {
