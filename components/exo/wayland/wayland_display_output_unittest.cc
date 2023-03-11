@@ -71,10 +71,15 @@ TEST_F(WaylandDisplayOutputTest, DelayedSelfDestruct) {
   UpdateDisplay("800x600");
 
   // Fast forward until at least one delete has been attempted.
-  task_environment()->FastForwardBy(WaylandDisplayOutput::kDeleteTaskDelay *
-                                    1.5);
+  // TODO(crbug.com/1420468): For flakes debugging.
+  auto ff_delta = WaylandDisplayOutput::kDeleteTaskDelay * 1.5;
+  LOG(INFO) << "Want fastforward: " << ff_delta;
+  auto start_time = task_environment()->NowTicks();
+  task_environment()->FastForwardBy(ff_delta);
+  LOG(INFO) << "Actual fastforward: "
+            << task_environment()->NowTicks() - start_time;
 
-  // Try binding and check for client error.
+  // Try releasing now and check for client error.
   PostToClientAndWait([&](test::TestClient* client) {
     auto* data = client->GetDataAs<ClientData>();
     EXPECT_EQ(data->output, client->globals().output.get());
@@ -82,9 +87,6 @@ TEST_F(WaylandDisplayOutputTest, DelayedSelfDestruct) {
     client->Roundtrip();
     EXPECT_EQ(wl_display_get_error(client->display()), 0);
   });
-
-  task_environment()->FastForwardBy(WaylandDisplayOutput::kDeleteTaskDelay *
-                                    WaylandDisplayOutput::kDeleteRetries);
 }
 
 // Verify that in the case where an output is added and removed quickly before
@@ -103,8 +105,13 @@ TEST_F(WaylandDisplayOutputTest, DelayedSelfDestructBeforeFirstBind) {
   UpdateDisplay("800x600");
 
   // Fast forward until at least one delete has been attempted.
-  task_environment()->FastForwardBy(WaylandDisplayOutput::kDeleteTaskDelay *
-                                    1.5);
+  // TODO(crbug.com/1420468): For flakes debugging.
+  auto ff_delta = WaylandDisplayOutput::kDeleteTaskDelay * 1.5;
+  LOG(INFO) << "Want fastforward: " << ff_delta;
+  auto start_time = task_environment()->NowTicks();
+  task_environment()->FastForwardBy(ff_delta);
+  LOG(INFO) << "Actual fastforward: "
+            << task_environment()->NowTicks() - start_time;
 
   // Unblock client thread so the bind request happens now.
   block_bind_event.Signal();
