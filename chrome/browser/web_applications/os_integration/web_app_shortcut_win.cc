@@ -612,6 +612,10 @@ bool CreatePlatformShortcuts(const base::FilePath& web_app_path,
         web_app_path.Append(file_name).AddExtension(installer::kLnkExt);
     if (!PinShortcutToTaskbar(shortcut_to_pin))
       return false;
+
+    // This invalidates the Windows icon cache and causes the icon changes to
+    // register with the taskbar and desktop.
+    ::SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, nullptr, nullptr);
   }
 
   return true;
