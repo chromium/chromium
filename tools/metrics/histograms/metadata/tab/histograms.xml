@@ -1712,6 +1712,17 @@ chromium-metrics-reviews@google.com.
   <token key="RecentlyClosedType" variants="RecentlyClosedType"/>
 </histogram>
 
+<histogram name="Tabs.RestoredFromInactiveCount" units="tabs"
+    expires_after="2024-02-23">
+  <owner>lpromero@google.com</owner>
+  <owner>chromeleon@google.com</owner>
+  <summary>
+    Recorded on disabling Inactive Tabs (for example in case of an unlaunch).
+    The number of tabs rescued from the orphan inactive tabs browser after the
+    Inactive Tabs experimental flag has been disabled.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.RestoreTabStateException" enum="RestoreTabStateException"
     expires_after="2023-06-25">
   <owner>ckitagawa@chromium.org</owner>
