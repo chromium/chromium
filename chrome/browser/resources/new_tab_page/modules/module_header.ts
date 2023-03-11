@@ -77,6 +77,17 @@ export class ModuleHeaderElement extends PolymerElement {
         value: () => loadTimeData.getBoolean('modulesRedesignedEnabled'),
         reflectToAttribute: true,
       },
+
+      /** True if the header should display an icon. */
+      showIcon_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('modulesHeaderIconEnabled'),
+      },
+
+      iconStyle_: {
+        type: String,
+        computed: `computeIconStyle_(iconSrc)`,
+      },
     };
   }
 
@@ -90,6 +101,10 @@ export class ModuleHeaderElement extends PolymerElement {
   dismissText: string;
   disableText: string;
   private modulesRedesignedEnabled_: boolean;
+
+  private computeIconStyle_() {
+    return `-webkit-mask-image: url(${this.iconSrc});`;
+  }
 
   private onInfoButtonClick_() {
     this.$.actionMenu.close();

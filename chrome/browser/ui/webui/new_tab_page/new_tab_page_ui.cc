@@ -486,6 +486,10 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
     source->AddInteger("modulesMaxWidthPx", modules_max_width_px.value());
   }
 
+  source->AddBoolean(
+      "modulesHeaderIconEnabled",
+      base::FeatureList::IsEnabled(ntp_features::kNtpModulesHeaderIcon));
+
   source->AddInteger(
       "modulesCartDiscountConsentVariation",
       commerce::kNtpChromeCartModuleDiscountConsentNtpVariation.Get());

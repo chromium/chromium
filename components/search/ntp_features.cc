@@ -255,6 +255,11 @@ BASE_FEATURE(kNtpHistoryClustersModuleLoad,
              "NtpHistoryClustersModuleLoad",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, module headers will display an associated icon.
+BASE_FEATURE(kNtpModulesHeaderIcon,
+             "NtpModulesHeaderIcon",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<double>
     kNtpElementLuminosityChangeForLightBackgroundParam{
         &kNtpComprehensiveTheming,

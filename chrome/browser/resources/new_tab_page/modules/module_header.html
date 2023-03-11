@@ -13,7 +13,6 @@
 
   .icon-background {
     align-items: center;
-    background-color: var(--color-new-tab-page-module-scroll-button);
     border-radius: 50%;
     display: flex;
     height: 18px;
@@ -23,8 +22,10 @@
   }
 
   .module-icon {
-    height: 10px;
-    width: 10px;
+    -webkit-mask-size: 20px 20px;
+    background-color: var(--color-new-tab-page-primary-foreground);
+    height: var(--cr-icon-size);
+    width: var(--cr-icon-size);
   }
 
   #title {
@@ -86,9 +87,10 @@
   }
 </style>
 <div id="titleContainer">
-  <template is="dom-if" if="[[iconSrc]]">
+  <template is="dom-if" if="[[showIcon_]]">
     <div class="icon-background">
-      <img class="module-icon" src="[[iconSrc]]" part="module-icon"></img>
+      <div class="module-icon" style$="[[iconStyle_]]" part="module-icon">
+      </div>
     </div>
   </template>
   <span id="title"><slot></slot></span>

@@ -43,7 +43,6 @@ export interface HistoryClustersModuleElement {
   };
 }
 
-// TODO:(crbug.com/1410808): Add module UI logic.
 export class HistoryClustersModuleElement extends I18nMixin
 (PolymerElement) {
   static get is() {
@@ -60,7 +59,9 @@ export class HistoryClustersModuleElement extends I18nMixin
 
       /** The cluster displayed by this element. */
       cluster: Object,
+
       searchResultPage: Object,
+
       title_: {
         type: String,
         computed: 'computeClusterTitle_(cluster)',

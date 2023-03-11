@@ -68,6 +68,7 @@ BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleBeginTimeDuration);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleMinimumImagesRequired);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleCategories);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleLoad);
+BASE_DECLARE_FEATURE(kNtpModulesHeaderIcon);
 
 // Parameter for controlling the luminosity difference for NTP elements on light
 // backgrounds.
