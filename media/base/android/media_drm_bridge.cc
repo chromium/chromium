@@ -381,15 +381,19 @@ void MediaDrmBridge::SetServerCertificate(
 
   DCHECK(!certificate.empty());
 
+  // using |cdm_promise_adapter_| for tracing.
+  uint32_t promise_id =
+      cdm_promise_adapter_.SavePromise(std::move(promise), __func__);
+
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jbyteArray> j_certificate = base::android::ToJavaByteArray(
       env, certificate.data(), certificate.size());
   if (Java_MediaDrmBridge_setServerCertificate(env, j_media_drm_,
                                                j_certificate)) {
-    promise->resolve();
+    ResolvePromise(promise_id);
   } else {
-    promise->reject(CdmPromise::Exception::TYPE_ERROR, 0,
-                    "Set server certificate failed.");
+    RejectPromise(promise_id, CdmPromise::Exception::TYPE_ERROR,
+                  "Set server certificate failed.");
   }
 }
 
@@ -405,6 +409,9 @@ void MediaDrmBridge::CreateSessionAndGenerateRequest(
   ScopedJavaLocalRef<jbyteArray> j_init_data;
   ScopedJavaLocalRef<jobjectArray> j_optional_parameters;
 
+  uint32_t promise_id =
+      cdm_promise_adapter_.SavePromise(std::move(promise), __func__);
+
   MediaDrmBridgeClient* client = GetMediaDrmBridgeClient();
   if (client) {
     MediaDrmBridgeDelegate* delegate =
@@ -415,8 +422,8 @@ void MediaDrmBridge::CreateSessionAndGenerateRequest(
       if (!delegate->OnCreateSession(init_data_type, init_data,
                                      &init_data_from_delegate,
                                      &optional_parameters_from_delegate)) {
-        promise->reject(CdmPromise::Exception::TYPE_ERROR, 0,
-                        "Invalid init data.");
+        RejectPromise(promise_id, CdmPromise::Exception::TYPE_ERROR,
+                      "Invalid init data.");
         return;
       }
       if (!init_data_from_delegate.empty()) {
@@ -440,7 +447,6 @@ void MediaDrmBridge::CreateSessionAndGenerateRequest(
       ConvertUTF8ToJavaString(env, ConvertInitDataType(init_data_type));
   uint32_t key_type =
       static_cast<uint32_t>(ConvertCdmSessionType(session_type));
-  uint32_t promise_id = cdm_promise_adapter_.SavePromise(std::move(promise));
   Java_MediaDrmBridge_createSessionFromNative(
       env, j_media_drm_, j_init_data, j_mime, key_type, j_optional_parameters,
       promise_id);
@@ -456,17 +462,19 @@ void MediaDrmBridge::LoadSession(
   // Key system is not used, so just pass an empty string here.
   DCHECK(IsPersistentLicenseTypeSupported(""));
 
+  // using |cdm_promise_adapter_| for tracing.
+  uint32_t promise_id =
+      cdm_promise_adapter_.SavePromise(std::move(promise), __func__);
+
   if (session_type != CdmSessionType::kPersistentLicense) {
-    promise->reject(
-        CdmPromise::Exception::NOT_SUPPORTED_ERROR, 0,
-        "LoadSession() is only supported for 'persistent-license'.");
+    RejectPromise(promise_id, CdmPromise::Exception::NOT_SUPPORTED_ERROR,
+                  "LoadSession() is only supported for 'persistent-license'.");
     return;
   }
 
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jbyteArray> j_session_id =
       ToJavaByteArray(env, session_id);
-  uint32_t promise_id = cdm_promise_adapter_.SavePromise(std::move(promise));
   Java_MediaDrmBridge_loadSession(env, j_media_drm_, j_session_id, promise_id);
 }
 
@@ -482,7 +490,8 @@ void MediaDrmBridge::UpdateSession(
       base::android::ToJavaByteArray(env, response.data(), response.size());
   ScopedJavaLocalRef<jbyteArray> j_session_id =
       ToJavaByteArray(env, session_id);
-  uint32_t promise_id = cdm_promise_adapter_.SavePromise(std::move(promise));
+  uint32_t promise_id =
+      cdm_promise_adapter_.SavePromise(std::move(promise), __func__);
   Java_MediaDrmBridge_updateSession(env, j_media_drm_, j_session_id, j_response,
                                     promise_id);
 }
@@ -496,7 +505,8 @@ void MediaDrmBridge::CloseSession(
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jbyteArray> j_session_id =
       ToJavaByteArray(env, session_id);
-  uint32_t promise_id = cdm_promise_adapter_.SavePromise(std::move(promise));
+  uint32_t promise_id =
+      cdm_promise_adapter_.SavePromise(std::move(promise), __func__);
   Java_MediaDrmBridge_closeSession(env, j_media_drm_, j_session_id, promise_id);
 }
 
@@ -509,7 +519,8 @@ void MediaDrmBridge::RemoveSession(
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jbyteArray> j_session_id =
       ToJavaByteArray(env, session_id);
-  uint32_t promise_id = cdm_promise_adapter_.SavePromise(std::move(promise));
+  uint32_t promise_id =
+      cdm_promise_adapter_.SavePromise(std::move(promise), __func__);
   Java_MediaDrmBridge_removeSession(env, j_media_drm_, j_session_id,
                                     promise_id);
 }
@@ -582,10 +593,11 @@ void MediaDrmBridge::ResolvePromiseWithSession(uint32_t promise_id,
 }
 
 void MediaDrmBridge::RejectPromise(uint32_t promise_id,
+                                   CdmPromise::Exception exception_code,
                                    const std::string& error_message) {
   DVLOG(2) << __func__;
-  cdm_promise_adapter_.RejectPromise(
-      promise_id, CdmPromise::Exception::NOT_SUPPORTED_ERROR, 0, error_message);
+  cdm_promise_adapter_.RejectPromise(promise_id, exception_code, 0,
+                                     error_message);
 }
 
 void MediaDrmBridge::SetMediaCryptoReadyCB(
@@ -689,9 +701,10 @@ void MediaDrmBridge::OnPromiseRejected(
     jint j_promise_id,
     const JavaParamRef<jstring>& j_error_message) {
   task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&MediaDrmBridge::RejectPromise,
-                                weak_factory_.GetWeakPtr(), j_promise_id,
-                                ConvertJavaStringToUTF8(env, j_error_message)));
+      FROM_HERE,
+      base::BindOnce(&MediaDrmBridge::RejectPromise, weak_factory_.GetWeakPtr(),
+                     j_promise_id, CdmPromise::Exception::NOT_SUPPORTED_ERROR,
+                     ConvertJavaStringToUTF8(env, j_error_message)));
 }
 
 void MediaDrmBridge::OnSessionMessage(

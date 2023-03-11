@@ -143,14 +143,14 @@ void MojoCdm::SetServerCertificate(const std::vector<uint8_t>& certificate,
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
+  uint32_t promise_id =
+      cdm_promise_adapter_.SavePromise(std::move(promise), __func__);
+
   if (!remote_cdm_) {
-    promise->reject(media::CdmPromise::Exception::INVALID_STATE_ERROR,
-                    CdmPromise::SystemCode::kConnectionError,
-                    "CDM connection lost.");
+    RejectPromiseConnectionLost(promise_id);
     return;
   }
 
-  uint32_t promise_id = cdm_promise_adapter_.SavePromise(std::move(promise));
   remote_cdm_->SetServerCertificate(
       certificate, base::BindOnce(&MojoCdm::OnSimpleCdmPromiseResult,
                                   base::Unretained(this), promise_id));
@@ -161,13 +161,14 @@ void MojoCdm::GetStatusForPolicy(HdcpVersion min_hdcp_version,
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
+  uint32_t promise_id =
+      cdm_promise_adapter_.SavePromise(std::move(promise), __func__);
+
   if (!remote_cdm_) {
-    promise->reject(media::CdmPromise::Exception::INVALID_STATE_ERROR, 0,
-                    "CDM connection lost.");
+    RejectPromiseConnectionLost(promise_id);
     return;
   }
 
-  uint32_t promise_id = cdm_promise_adapter_.SavePromise(std::move(promise));
   remote_cdm_->GetStatusForPolicy(
       min_hdcp_version, base::BindOnce(&MojoCdm::OnKeyStatusCdmPromiseResult,
                                        base::Unretained(this), promise_id));
@@ -181,13 +182,14 @@ void MojoCdm::CreateSessionAndGenerateRequest(
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
+  uint32_t promise_id =
+      cdm_promise_adapter_.SavePromise(std::move(promise), __func__);
+
   if (!remote_cdm_) {
-    promise->reject(media::CdmPromise::Exception::INVALID_STATE_ERROR, 0,
-                    "CDM connection lost.");
+    RejectPromiseConnectionLost(promise_id);
     return;
   }
 
-  uint32_t promise_id = cdm_promise_adapter_.SavePromise(std::move(promise));
   std::string uma_name =
       "Media.EME." +
       GetKeySystemNameForUMA(cdm_config_.key_system,
@@ -210,13 +212,14 @@ void MojoCdm::LoadSession(CdmSessionType session_type,
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
+  uint32_t promise_id =
+      cdm_promise_adapter_.SavePromise(std::move(promise), __func__);
+
   if (!remote_cdm_) {
-    promise->reject(media::CdmPromise::Exception::INVALID_STATE_ERROR, 0,
-                    "CDM connection lost.");
+    RejectPromiseConnectionLost(promise_id);
     return;
   }
 
-  uint32_t promise_id = cdm_promise_adapter_.SavePromise(std::move(promise));
   remote_cdm_->LoadSession(
       session_type, session_id,
       base::BindOnce(&MojoCdm::OnNewSessionCdmPromiseResult,
@@ -229,13 +232,14 @@ void MojoCdm::UpdateSession(const std::string& session_id,
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
+  uint32_t promise_id =
+      cdm_promise_adapter_.SavePromise(std::move(promise), __func__);
+
   if (!remote_cdm_) {
-    promise->reject(media::CdmPromise::Exception::INVALID_STATE_ERROR, 0,
-                    "CDM connection lost.");
+    RejectPromiseConnectionLost(promise_id);
     return;
   }
 
-  uint32_t promise_id = cdm_promise_adapter_.SavePromise(std::move(promise));
   remote_cdm_->UpdateSession(
       session_id, response,
       base::BindOnce(&MojoCdm::OnSimpleCdmPromiseResult, base::Unretained(this),
@@ -247,13 +251,14 @@ void MojoCdm::CloseSession(const std::string& session_id,
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
+  uint32_t promise_id =
+      cdm_promise_adapter_.SavePromise(std::move(promise), __func__);
+
   if (!remote_cdm_) {
-    promise->reject(media::CdmPromise::Exception::INVALID_STATE_ERROR, 0,
-                    "CDM connection lost.");
+    RejectPromiseConnectionLost(promise_id);
     return;
   }
 
-  uint32_t promise_id = cdm_promise_adapter_.SavePromise(std::move(promise));
   remote_cdm_->CloseSession(session_id,
                             base::BindOnce(&MojoCdm::OnSimpleCdmPromiseResult,
                                            base::Unretained(this), promise_id));
@@ -264,13 +269,14 @@ void MojoCdm::RemoveSession(const std::string& session_id,
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
+  uint32_t promise_id =
+      cdm_promise_adapter_.SavePromise(std::move(promise), __func__);
+
   if (!remote_cdm_) {
-    promise->reject(media::CdmPromise::Exception::INVALID_STATE_ERROR, 0,
-                    "CDM connection lost.");
+    RejectPromiseConnectionLost(promise_id);
     return;
   }
 
-  uint32_t promise_id = cdm_promise_adapter_.SavePromise(std::move(promise));
   remote_cdm_->RemoveSession(
       session_id, base::BindOnce(&MojoCdm::OnSimpleCdmPromiseResult,
                                  base::Unretained(this), promise_id));
@@ -398,6 +404,12 @@ void MojoCdm::OnNewSessionCdmPromiseResult(uint32_t promise_id,
                                        result->system_code,
                                        result->error_message);
   }
+}
+
+void MojoCdm::RejectPromiseConnectionLost(uint32_t promise_id) {
+  cdm_promise_adapter_.RejectPromise(
+      promise_id, CdmPromise::Exception::INVALID_STATE_ERROR,
+      CdmPromise::SystemCode::kConnectionError, "CDM connection lost.");
 }
 
 }  // namespace media
