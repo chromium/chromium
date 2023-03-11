@@ -491,11 +491,10 @@ float SurfaceTreeHost::GetScaleFactor() {
 }
 
 void SurfaceTreeHost::CleanUpCallbacks() {
-  // Call all frame callbacks with a null frame time to indicate that they
-  // have been cancelled.
+  const base::TimeTicks now = base::TimeTicks::Now();
   while (!frame_callbacks_.empty()) {
     for (auto& callback : frame_callbacks_.front()) {
-      callback.Run(base::TimeTicks());
+      callback.Run(now);
     }
     frame_callbacks_.pop();
   }
