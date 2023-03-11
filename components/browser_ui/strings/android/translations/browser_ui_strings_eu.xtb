@@ -414,7 +414,7 @@
 <translation id="8514955299594277296">Ez eman gailuan datuak gordetzeko baimena webguneei (ez da gomendatzen)</translation>
 <translation id="851751545965956758">Ez utzi webguneei gailuekin konektatzen</translation>
 <translation id="8525306231823319788">Pantaila osoa</translation>
-<translation id="8528440122773422556"><ph name="ORIGIN" /> webgunearen edo bere aplikazioaren azpiko webgune guztiek zure hasierako pantailan gorde dituzten datu eta cookie guztiak garbituko dira</translation>
+<translation id="8528440122773422556"><ph name="ORIGIN" /> webgunearen azpiko webgune guztiek edo haren aplikazioak zure hasierako pantailan gorde dituzten datu eta cookie guztiak garbituko dira</translation>
 <translation id="8541410041357371550">Webgunea Chrome-n oinarritzen da zure iragarkien gaien berri izateko, iragarki egokiagoak erakuts diezazkizun</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_OWNER" /> domeinuko <ph name="FPS_MEMBERS_COUNT" /> webgunek cookieak erabiltzeko baimena du}other{<ph name="FPS_OWNER" /> domeinuko <ph name="FPS_MEMBERS_COUNT" /> webgunek cookieak erabiltzeko baimena dute}}</translation>
 <translation id="857943718398505171">Baimenduta (gomendatua)</translation>

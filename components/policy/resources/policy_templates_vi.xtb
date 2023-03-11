@@ -2455,6 +2455,7 @@ Nếu bạn không đặt chính sách này, thì thao tác mới sẽ được 
 
       Theo mặc định, chính sách này luôn tắt nếu bạn không đặt và người dùng sẽ có thể đưa ra lựa chọn (bật/tắt) cho chế độ cài đặt này.</translation>
 <translation id="3236046242843493070">Mẫu URL để cho phép cài đặt tiện ích, ứng dụng và tập lệnh người dùng từ</translation>
+<translation id="323609919471603985">Cho phép hiển thị quảng cáo Tiện ích nhà cung cấp chứng chỉ</translation>
 <translation id="3239125988620218257">Báo cáo trạng thái mạng</translation>
 <translation id="3240609035816615922">Chính sách truy cập vào cấu hình máy in.</translation>
 <translation id="324062325008698789">Định cấu hình danh sách máy in</translation>
@@ -4014,6 +4015,8 @@ Chính sách này sẽ chỉ tác động đến quy trình chứng thực trên
           Nếu bạn đặt chính sách này, thì người dùng sẽ không thể thay đổi hay ghi đè chính sách.
 
           Nếu bạn không đặt chính sách này, thì ban đầu, chế độ đơn âm sẽ tắt nhưng người dùng có thể bật bất cứ lúc nào.</translation>
+<translation id="4767059955897420757">Khi bạn không đặt hoặc đặt chính sách này thành Bật, người dùng có thể thấy quảng cáo Tiện ích nhà cung cấp chứng chỉ.
+Khi bạn đặt chính sách này thành Tắt, người dùng sẽ không thấy quảng cáo Tiện ích nhà cung cấp chứng chỉ.</translation>
 <translation id="4768446404233019970">Bật bộ thuật toán mật mã 3DES trong TLS</translation>
 <translation id="4770334626033858263">Cấu hình dùng để tạo và xác minh Mã truy cập dành cho cha mẹ.</translation>
 <translation id="4773997835955617342">Thay đổi cấu hình <ph name="KRB5_CONFIG" /> đề xuất cho các phiếu yêu cầu hỗ trợ mới được tạo theo cách thủ công.
@@ -7071,6 +7074,7 @@ Chính sách này sẽ thay thế chính sách <ph name="WINDOW_PLACEMENT_BLOCKE
           Nếu bạn đặt chính sách này thành sai hoặc không đặt thì người dùng sẽ không được tự động gửi mã PIN trên màn hình đăng nhập và màn hình khoá.
 
           Nếu bạn đặt chính sách này, thì người dùng sẽ không có tuỳ chọn bật tính năng này.</translation>
+<translation id="7612059745454194563">Không cho phép hiển thị quảng cáo Tiện ích nhà cung cấp chứng chỉ</translation>
 <translation id="7612157962821894603">Cờ trên toàn hệ thống được áp dụng khi khởi động <ph name="PRODUCT_NAME" /></translation>
 <translation id="7613115815080726221">Khoảng thời gian (tính bằng mili giây) kể từ khi không có hoạt động đầu vào của người dùng cho đến thời điểm hệ thống thực hiện hành động khi chuyển sang trạng thái rảnh</translation>
 <translation id="7614663184588396421">Danh sách các lược đồ giao thức bị vô hiệu hóa</translation>
@@ -8387,6 +8391,7 @@ Chính sách này liên kết các mã cấu hình đến các cấu hình máy 
 <translation id="8827275450034266143">Chuỗi User-Agent sẽ làm phiên bản lớn dừng ở 99 và bao gồm cả phiên bản lớn của trình duyệt trong phiên bản nhỏ.</translation>
 <translation id="8827366480126575426">Giao thức của trình xử lý giao thức.</translation>
 <translation id="8827417642396462482">Cho phép các loại truy vấn DNS khác</translation>
+<translation id="8830717323204407209">Cho phép người dùng nhìn thấy quảng cáo Tiện ích nhà cung cấp chứng chỉ</translation>
 <translation id="8831911834413504983">Nếu đặt chính sách này, bạn có thể thiết lập danh sách các mẫu URL chỉ định những trang web có thể chạy JavaScript.
 
       Khi bạn không đặt chính sách này, <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> (nếu được đặt) sẽ áp dụng cho tất cả trang web. Nếu không, tùy chọn cài đặt cá nhân của người dùng sẽ được áp dụng.

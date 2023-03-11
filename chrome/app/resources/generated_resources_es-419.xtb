@@ -1887,6 +1887,9 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2642111877055905627">Pelota de fútbol</translation>
 <translation id="2643064289437760082">Para borrar los datos de medición de anuncios, borra tus datos de navegación en cualquier momento.</translation>
 <translation id="2643698698624765890">Para administrar tus extensiones, haz clic en la opción Extensiones del menú Ventana.</translation>
+<translation id="2643887015830197688">Adopta la extensión HTTPS para la navegación y muestra una advertencia antes de cargar sitios que no la admitan.
+
+    No puedes cambiar esta configuración porque tienes habilitada la Protección avanzada.</translation>
 <translation id="2645047101481282803"><ph name="PROFILE_NAME" /> administra tu dispositivo.</translation>
 <translation id="2645388244376970260">Transmitiendo esta pestaña a <ph name="DEVICE_NAME" /></translation>
 <translation id="2645435784669275700">Chrome OS</translation>
@@ -6978,7 +6981,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7310598146671372464">No pudiste acceder porque el servidor no es compatible con los tipos de encriptación de Kerberos especificados. Comunícate con el administrador.</translation>
 <translation id="7311089766378749632">Se solicita acceso para leer y modificar <ph name="SITE_NAME" /></translation>
 <translation id="7312210124139670355">El administrador está restableciendo tu eSIM. Es posible que este proceso demore unos minutos.</translation>
-<translation id="7317831949569936035">Inscripción escolar</translation>
+<translation id="7317831949569936035">Inscripción en una institución educativa</translation>
 <translation id="7320213904474460808">Elegir la red predeterminada</translation>
 <translation id="7321545336522791733">No se puede acceder al servidor</translation>
 <translation id="7323315405936922211">Tamaño del área del cursor</translation>

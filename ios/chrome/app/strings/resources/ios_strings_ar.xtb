@@ -326,6 +326,7 @@
 <translation id="3244271242291266297">الشهر</translation>
 <translation id="3245744387817103524">تعذَّر حفظ التغيير.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />، و<ph name="ADDITIONAL_INFO" />، و<ph name="INDEX" /> من <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="3264775633254836593">الملء التلقائي لكلمات المرور</translation>
 <translation id="3268451620468152448">علامات التبويب المفتوحة</translation>
 <translation id="3272527697863656322">إلغاء</translation>
 <translation id="3277021493514034324">تم نسخ عنوان الموقع</translation>
@@ -432,6 +433,7 @@
 <translation id="408404951701638773">أصبح الوصول إلى شريط البحث أسهل الآن</translation>
 <translation id="4092655288299341041">عرض معلومات المساعدة</translation>
 <translation id="4101942614374785540">‏يتم الآن حفظ كلمات المرور في حسابك على Google (<ph name="ACCOUNT" />)، ويمكنك استخدامها على أي جهاز تسجِّل الدخول عليه. لإيقاف هذا الإعداد، انتقِل إلى <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" />.</translation>
+<translation id="4105841739161771091">{count,plural, =1{حذف العنوان}zero{حذف العناوين}two{حذف العنوانَين}few{حذف العناوين}many{حذف العناوين}other{حذف العناوين}}</translation>
 <translation id="4108998448622696017">اكتشاف الأحداث الخطيرة عند حدوثها والتحذير منها</translation>
 <translation id="411254640334432676">فشلت عملية التنزيل</translation>
 <translation id="4112644173421521737">بحث</translation>
@@ -856,6 +858,7 @@
 <translation id="6914583639806229067">البحث عن الصورة التي نسختها</translation>
 <translation id="6914783257214138813">ستكون كلمات مرورك مرئية لأي شخص يمكنه الاطلاع على الملف الذي تم تصديره.</translation>
 <translation id="6930799952781667037">انقر للتغيير إلى هذه اللغة.</translation>
+<translation id="6939941780796374211">خيارات كلمة المرور</translation>
 <translation id="6944369514868857500">اختيار حساب آخر</translation>
 <translation id="6945221475159498467">تحديد</translation>
 <translation id="6965382102122355670">حسنًا</translation>
@@ -1011,6 +1014,7 @@
 <translation id="8084285576995584326">‏التحكُّم في بيانات حسابك على Google</translation>
 <translation id="809543534949702122">سجلّ البحث</translation>
 <translation id="8101409298456377967">يمكنك إنشاء كلمات المرور الخاصة بحسابك وحفظها وإدارتها لتسجيل الدخول إلى المواقع الإلكترونية والتطبيقات بسهولة. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
+<translation id="8102130909719902723">N</translation>
 <translation id="8105368624971345109">إيقاف</translation>
 <translation id="8114753159095730575">أصبح بالإمكان تنزيل الملف. يمكنك مراجعة الخيارات في أسفل الشاشة.</translation>
 <translation id="81313319706244542">‏2‏. انقر على Passwords (كلمات المرور).</translation>
