@@ -826,6 +826,8 @@ void WaylandFrameManager::ClearStates() {
         << "Can't perform OnChannelDestroyed() during a frame playback.";
   }
   pending_frames_.clear();
+
+  presentation_flush_timer_.Stop();
 }
 
 // static
