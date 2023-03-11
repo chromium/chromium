@@ -1158,7 +1158,7 @@ int AUAudioInputStream::HardwareSampleRate() {
                                                &default_input_device_address, 0,
                                                0, &info_size, &device_id);
   if (result != noErr)
-    return 0.0;
+    return 0;
 
   Float64 nominal_sample_rate;
   info_size = sizeof(nominal_sample_rate);
@@ -1169,7 +1169,7 @@ int AUAudioInputStream::HardwareSampleRate() {
   result = AudioObjectGetPropertyData(device_id, &nominal_sample_rate_address,
                                       0, 0, &info_size, &nominal_sample_rate);
   if (result != noErr)
-    return 0.0;
+    return 0;
 
   return static_cast<int>(nominal_sample_rate);
 }
