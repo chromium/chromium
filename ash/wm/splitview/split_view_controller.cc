@@ -45,6 +45,7 @@
 #include "ash/wm/window_util.h"
 #include "base/auto_reset.h"
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_set.h"
 #include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
@@ -223,6 +224,16 @@ OverviewSession* GetOverviewSession() {
   return IsInOverviewSession()
              ? Shell::Get()->overview_controller()->overview_session()
              : nullptr;
+}
+
+// We don't want to show overview session on the other half of the screen if the
+// overview is empty.
+bool ShouldShowOverviewInClamshellOnWindowSnapped() {
+  auto window_list =
+      Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
+  base::EraseIf(window_list, window_util::ShouldExcludeForOverview);
+  return ShouldAutomaticallyGroupOnWindowsSnappedInClamshell() &&
+         !window_list.empty();
 }
 
 void RemoveSnappingWindowFromOverviewIfApplicable(
@@ -2592,7 +2603,7 @@ void SplitViewController::OnWindowSnapped(
   // `kAutomaticallyLockGroup` set to true.
   if (!IsInOverviewSession() &&
       (split_view_type_ == SplitViewType::kTabletType ||
-       ShouldAutomaticallyGroupOnWindowsSnappedInClamshell()) &&
+       ShouldShowOverviewInClamshellOnWindowSnapped()) &&
       (state_ == State::kPrimarySnapped ||
        state_ == State::kSecondarySnapped)) {
     if (!DesksController::Get()->animation()) {

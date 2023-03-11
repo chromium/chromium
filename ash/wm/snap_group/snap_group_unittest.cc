@@ -441,6 +441,17 @@ TEST_F(SnapGroupEntryPointArm1Test, SplitViewDividerBoundsTest) {
   }
 }
 
+// Tests that the overview session will not show on the other half of the
+// screen on one window snapped if the overview is empty.
+TEST_F(SnapGroupEntryPointArm1Test, NotShowOverviewIfEmpty) {
+  for (const auto snap_state : {chromeos::WindowStateType::kPrimarySnapped,
+                                chromeos::WindowStateType::kSecondarySnapped}) {
+    std::unique_ptr<aura::Window> w1(CreateTestWindow());
+    SnapOneTestWindow(w1.get(), snap_state);
+    EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
+  }
+}
+
 // A test fixture that tests the user-initiated snap group entry point. This
 // entry point is guarded by the feature flag `kSnapGroup` and will only be
 // enabled when the feature param `kAutomaticallyLockGroup` is false.

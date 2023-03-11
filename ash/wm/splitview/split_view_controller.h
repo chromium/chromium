@@ -53,9 +53,10 @@ class SplitViewOverviewSessionTest;
 // split screen (see `SnapGroup` for more details), until the user explicitly
 // end split view mode (at which moment `SplitViewController` will no longer
 // observe the two windows);
-// 2. If in overview mode and on one window snapped, the overview grid(empty or
-// not) will show up on the other half of the screen for user to choose the
-// other to-be-snapped window.
+// 2. If in overview mode and on one window snapped, the overview grid will show
+// up on the other half of the screen for user to choose the other to-be-snapped
+// window. The overview session won't show on the other half of the screen
+// if there is no window can be shown in overview.
 // 3. For other cases in clamshell mode, the snapping behaviors are not managed
 // by `SplitViewController`.
 // The window snapping behaviors in tablet mode:

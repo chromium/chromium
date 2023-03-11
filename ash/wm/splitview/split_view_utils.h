@@ -175,8 +175,6 @@ ASH_EXPORT SplitViewController::SnapPosition GetSnapPosition(
 // half of the screen on window snapped in clamshell mode and a snap group will
 // be created automatically on two windows snapped. The `split_view_divider_`
 // will show to indicate that the two windows are in a snap-group state.
-// TODO(b/267661569): Do not show overview when there is only one window in the
-// current root and this window gets snapped.
 bool ShouldAutomaticallyGroupOnWindowsSnappedInClamshell();
 
 }  // namespace ash
