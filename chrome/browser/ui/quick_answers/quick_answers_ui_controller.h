@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_view.h"
+#include "chrome/browser/ui/quick_answers/ui/rich_answers_view.h"
 #include "chrome/browser/ui/quick_answers/ui/user_consent_view.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/view_tracker.h"
@@ -41,6 +42,9 @@ class QuickAnswersUiController {
 
   // Returns true if there was a QuickAnswersView to close.
   bool CloseQuickAnswersView();
+
+  // Returns true if there was a RichAnswersView to close.
+  bool CloseRichAnswersView();
 
   void OnQuickAnswersViewPressed();
 
@@ -88,12 +92,19 @@ class QuickAnswersUiController {
   // showing.
   bool IsShowingQuickAnswersView() const;
 
+  // Used by the controller to check if the RichAnswers view is currently
+  // showing.
+  bool IsShowingRichAnswersView() const;
+
   QuickAnswersView* quick_answers_view() {
     return static_cast<QuickAnswersView*>(quick_answers_view_tracker_.view());
   }
   quick_answers::UserConsentView* user_consent_view() {
     return static_cast<quick_answers::UserConsentView*>(
         user_consent_view_tracker_.view());
+  }
+  RichAnswersView* rich_answers_view() {
+    return static_cast<RichAnswersView*>(rich_answers_view_tracker_.view());
   }
 
  private:

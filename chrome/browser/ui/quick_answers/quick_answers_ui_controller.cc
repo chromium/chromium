@@ -99,18 +99,21 @@ void QuickAnswersUiController::CreateQuickAnswersView(const gfx::Rect& bounds,
 }
 
 void QuickAnswersUiController::OnQuickAnswersViewPressed() {
+  // Route dismissal through |controller_| for logging impressions.
+  controller_->DismissQuickAnswers(QuickAnswersExitPoint::kQuickAnswersClick);
+
   if (chromeos::features::IsQuickAnswersRichCardEnabled()) {
     auto* const rich_answers_view =
         new RichAnswersView(quick_answers_view_tracker_.view()->bounds(),
                             weak_factory_.GetWeakPtr());
     rich_answers_view_tracker_.SetView(rich_answers_view);
     rich_answers_view->GetWidget()->ShowInactive();
-    controller_->DismissQuickAnswers(QuickAnswersExitPoint::kQuickAnswersClick);
+
+    // Temporarily set rich-answers visibility here. Will move after
+    // setting up rich-answers request handling.
+    controller_->SetVisibility(QuickAnswersVisibility::kRichAnswersVisible);
     return;
   }
-
-  // Route dismissal through |controller_| for logging impressions.
-  controller_->DismissQuickAnswers(QuickAnswersExitPoint::kQuickAnswersClick);
 
   // TODO(b/240619915): Refactor so that we can access the request metadata
   // instead of just the query itself.
@@ -133,6 +136,14 @@ void QuickAnswersUiController::OnQuickAnswersViewPressed() {
 bool QuickAnswersUiController::CloseQuickAnswersView() {
   if (IsShowingQuickAnswersView()) {
     quick_answers_view()->GetWidget()->Close();
+    return true;
+  }
+  return false;
+}
+
+bool QuickAnswersUiController::CloseRichAnswersView() {
+  if (IsShowingRichAnswersView()) {
+    rich_answers_view()->GetWidget()->Close();
     return true;
   }
   return false;
@@ -247,4 +258,9 @@ bool QuickAnswersUiController::IsShowingUserConsentView() const {
 bool QuickAnswersUiController::IsShowingQuickAnswersView() const {
   return quick_answers_view_tracker_.view() &&
          !quick_answers_view_tracker_.view()->GetWidget()->IsClosed();
+}
+
+bool QuickAnswersUiController::IsShowingRichAnswersView() const {
+  return rich_answers_view_tracker_.view() &&
+         !rich_answers_view_tracker_.view()->GetWidget()->IsClosed();
 }

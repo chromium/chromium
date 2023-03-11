@@ -94,8 +94,9 @@ void QuickAnswersControllerImpl::MaybeShowQuickAnswers(
   if (!ShouldShowQuickAnswers())
     return;
 
-  if (visibility_ == QuickAnswersVisibility::kClosed)
+  if (visibility_ != QuickAnswersVisibility::kPending) {
     return;
+  }
 
   // Cache anchor-bounds and query.
   anchor_bounds_ = anchor_bounds;
@@ -124,7 +125,7 @@ void QuickAnswersControllerImpl::HandleQuickAnswerRequest(
         IntentTypeToString(request.preprocessed_output.intent_info.intent_type),
         base::UTF8ToUTF16(request.preprocessed_output.intent_info.intent_text));
   } else {
-    visibility_ = QuickAnswersVisibility::kVisible;
+    visibility_ = QuickAnswersVisibility::kQuickAnswersVisible;
     quick_answers_ui_controller_->CreateQuickAnswersView(
         anchor_bounds_, title_, query_,
         request.context.device_properties.is_internal);
@@ -138,25 +139,44 @@ void QuickAnswersControllerImpl::HandleQuickAnswerRequest(
 
 void QuickAnswersControllerImpl::DismissQuickAnswers(
     QuickAnswersExitPoint exit_point) {
-  visibility_ = QuickAnswersVisibility::kClosed;
-  MaybeDismissQuickAnswersConsent();
-  bool closed = quick_answers_ui_controller_->CloseQuickAnswersView();
-  // |quick_answer_| could be null before we receive the result from the server.
-  // Do not send the signal since the quick answer is dismissed before ready.
-  if (quick_answer_) {
-    // For quick-answer rendered along with browser context menu, if user didn't
-    // click on other context menu items, it is considered as active impression.
-    bool is_active = exit_point != QuickAnswersExitPoint::kContextMenuClick;
-    quick_answers_client_->OnQuickAnswersDismissed(quick_answer_->result_type,
-                                                   is_active && closed);
+  switch (visibility_) {
+    case QuickAnswersVisibility::kRichAnswersVisible: {
+      // For the rich-answers view, ignore dismissal by context-menu related
+      // actions as they should only affect the companion quick-answers view.
+      if (exit_point == QuickAnswersExitPoint::kContextMenuDismiss ||
+          exit_point == QuickAnswersExitPoint::kContextMenuClick) {
+        return;
+      }
+      quick_answers_ui_controller_->CloseRichAnswersView();
+      visibility_ = QuickAnswersVisibility::kClosed;
+      return;
+    }
+    default: {
+      visibility_ = QuickAnswersVisibility::kClosed;
+      MaybeDismissQuickAnswersConsent();
+      bool closed = quick_answers_ui_controller_->CloseQuickAnswersView();
+      // |quick_answer_| could be null before we receive the result from the
+      // server. Do not send the signal since the quick answer is dismissed
+      // before ready.
+      if (quick_answer_) {
+        // For quick-answer rendered along with browser context menu, if user
+        // didn't click on other context menu items, it is considered as active
+        // impression.
+        bool is_active = exit_point != QuickAnswersExitPoint::kContextMenuClick;
+        quick_answers_client_->OnQuickAnswersDismissed(
+            quick_answer_->result_type, is_active && closed);
 
-    // Record Quick Answers exit point.
-    // Make sure |closed| is true so that only the direct exit point is recorded
-    // when multiple dissmiss requests are received (For example, dissmiss
-    // request from context menu will also fire when the settings button is
-    // pressed).
-    if (closed)
-      base::UmaHistogramEnumeration(kQuickAnswersExitPoint, exit_point);
+        // Record Quick Answers exit point.
+        // Make sure |closed| is true so that only the direct exit point is
+        // recorded when multiple dismiss requests are received (For example,
+        // dismiss request from context menu will also fire when the settings
+        // button is pressed).
+        if (closed) {
+          base::UmaHistogramEnumeration(kQuickAnswersExitPoint, exit_point);
+        }
+      }
+      return;
+    }
   }
 }
 
@@ -170,10 +190,16 @@ QuickAnswersVisibility QuickAnswersControllerImpl::GetVisibilityForTesting()
   return visibility_;
 }
 
+void QuickAnswersControllerImpl::SetVisibility(
+    QuickAnswersVisibility visibility) {
+  visibility_ = visibility;
+}
+
 void QuickAnswersControllerImpl::OnQuickAnswerReceived(
     std::unique_ptr<QuickAnswer> quick_answer) {
-  if (visibility_ != QuickAnswersVisibility::kVisible)
+  if (visibility_ != QuickAnswersVisibility::kQuickAnswersVisible) {
     return;
+  }
 
   if (quick_answer) {
     if (quick_answer->title.empty()) {
@@ -200,8 +226,9 @@ void QuickAnswersControllerImpl::OnQuickAnswerReceived(
 }
 
 void QuickAnswersControllerImpl::OnNetworkError() {
-  if (visibility_ != QuickAnswersVisibility::kVisible)
+  if (visibility_ != QuickAnswersVisibility::kQuickAnswersVisible) {
     return;
+  }
 
   // Notify quick_answers_ui_controller_ to show retry UI.
   quick_answers_ui_controller_->ShowRetry();

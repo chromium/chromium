@@ -119,7 +119,7 @@ void QuickAnswersMenuObserver::OnMenuClosed() {
 
   QuickAnswersController::Get()->DismissQuickAnswers(
       is_other_command_executed_ ? QuickAnswersExitPoint::kContextMenuClick
-                                 : QuickAnswersExitPoint::KContextMenuDismiss);
+                                 : QuickAnswersExitPoint::kContextMenuDismiss);
 }
 
 void QuickAnswersMenuObserver::CommandWillBeExecuted(int command_id) {
