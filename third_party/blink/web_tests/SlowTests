@@ -307,7 +307,6 @@ crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-vid
 crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-video.html [ Slow ]
 crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-clipping.html [ Slow ]
 crbug.com/1081534 [ Mac10.15 Release ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-color-over-image.html [ Slow ]
-crbug.com/1081534 [ Debug Mac12 ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-global-alpha.html [ Slow ]
 crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-gradient-over-image.html [ Slow ]
 crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-gradient-over-pattern.html [ Slow ]
 crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-image-over-color.html [ Slow ]
@@ -1449,7 +1448,7 @@ crbug.com/1410608 http/tests/inspector-protocol/storage/dom-storage-set-items-by
 
 crbug.com/1372747 [ Win ] http/tests/uri/css-href.php [ Slow ]
 
-crbug.com/1376679 [ Mac12 ] virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-dynamic.tentative.html [ Slow ]
+crbug.com/1376679 [ Mac12 Release ] virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-dynamic.tentative.html [ Slow ]
 
 crbug.com/1366717 http/tests/inspector-protocol/storage/indexed-db-storage-key-track-untrack.js [ Slow ]
 crbug.com/1366717 http/tests/inspector-protocol/storage/indexed-db-set-items-by-storage-key.js [ Slow ]
