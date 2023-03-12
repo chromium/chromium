@@ -55,11 +55,13 @@ ImageAnnotationWorker::ImageAnnotationWorker(const base::FilePath& root_path)
     : root_path_(root_path),
       task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {}
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
 
 ImageAnnotationWorker::~ImageAnnotationWorker() = default;
 
-void ImageAnnotationWorker::Run(AnnotationStorage* annotation_storage) {
+void ImageAnnotationWorker::Initialize(AnnotationStorage* annotation_storage) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(annotation_storage);
   annotation_storage_ = annotation_storage;

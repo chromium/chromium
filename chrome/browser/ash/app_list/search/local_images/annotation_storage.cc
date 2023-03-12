@@ -112,7 +112,7 @@ void AnnotationStorage::Initialize() {
   }
   if (annotation_worker_ != nullptr) {
     // Owns `annotation_worker_`.
-    annotation_worker_->Run(this);
+    annotation_worker_->Initialize(this);
   }
 }
 

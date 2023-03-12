@@ -29,8 +29,9 @@ struct ImageInfo;
 
 // The worker watches `root_path_` for any image changes, runs ICA on every
 // change, and saves the annotation to the AnnotationStorage.
-// It must be initialized on the same sequence as AnnotationStorage.
-// It runs IO heavy tasks on a background task runner.
+// It can be created on any sequence but must be initialized on the same
+// sequence as AnnotationStorage. It runs IO heavy tasks on a background
+// task runner.
 // TODO(b/260646344): Revisit the use of a FilePathWatcher for My Files
 //  if needed. (It may hit the folder limit.)
 class ImageAnnotationWorker {
@@ -43,7 +44,7 @@ class ImageAnnotationWorker {
   // Initializes a file watcher, connects to ICA and performs a file system
   // scan for new images. It must be called on the same sequence as
   // AnnotationStorage is bound to.
-  void Run(AnnotationStorage* annotation_storage);
+  void Initialize(AnnotationStorage* annotation_storage);
 
   // Disables mojo bindings and file watchers.
   void UseFakeAnnotatorForTests();

@@ -64,7 +64,7 @@ TEST_F(ImageAnnotationWorkerTest, MustProcessTheFolderAtInitTest) {
     base::TouchFile(path, image_time, image_time);
   }
 
-  annotation_worker_->Run(storage_.get());
+  annotation_worker_->Initialize(storage_.get());
   task_environment_.RunUntilIdle();
 
   ImageInfo jpg_image({"bar"}, jpg_path, image_time);
@@ -81,7 +81,7 @@ TEST_F(ImageAnnotationWorkerTest, MustProcessTheFolderAtInitTest) {
 
 TEST_F(ImageAnnotationWorkerTest, MustProcessOnNewFileTest) {
   storage_->Initialize();
-  annotation_worker_->Run(storage_.get());
+  annotation_worker_->Initialize(storage_.get());
   task_environment_.RunUntilIdle();
 
   base::WriteFile(bar_image_path_, "test");
@@ -102,7 +102,7 @@ TEST_F(ImageAnnotationWorkerTest, MustProcessOnNewFileTest) {
 
 TEST_F(ImageAnnotationWorkerTest, MustUpdateOnFileUpdateTest) {
   storage_->Initialize();
-  annotation_worker_->Run(storage_.get());
+  annotation_worker_->Initialize(storage_.get());
   task_environment_.RunUntilIdle();
 
   base::WriteFile(bar_image_path_, "test");
@@ -129,7 +129,7 @@ TEST_F(ImageAnnotationWorkerTest, MustUpdateOnFileUpdateTest) {
 
 TEST_F(ImageAnnotationWorkerTest, MustRemoveOnFileDeleteTest) {
   storage_->Initialize();
-  annotation_worker_->Run(storage_.get());
+  annotation_worker_->Initialize(storage_.get());
   task_environment_.RunUntilIdle();
 
   base::WriteFile(bar_image_path_, "test");
