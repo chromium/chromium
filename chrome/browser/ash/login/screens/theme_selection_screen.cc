@@ -88,9 +88,12 @@ bool ThemeSelectionScreen::ShouldBeSkipped(const WizardContext& context) const {
   }
 
   if (features::IsOobeChoobeEnabled()) {
-    return WizardController::default_controller()
-        ->GetChoobeFlowController()
-        ->ShouldScreenBeSkipped(ThemeSelectionScreenView::kScreenId);
+    auto* choobe_controller =
+        WizardController::default_controller()->choobe_flow_controller();
+    if (choobe_controller) {
+      return choobe_controller->ShouldScreenBeSkipped(
+          ThemeSelectionScreenView::kScreenId);
+    }
   }
 
   return false;
@@ -137,10 +140,30 @@ void ThemeSelectionScreen::OnUserAction(const base::Value::List& args) {
     }
   } else if (action_id == kUserActionNext) {
     RecordSelectedTheme(profile);
+    if (features::IsOobeChoobeEnabled()) {
+      auto* choobe_controller =
+          WizardController::default_controller()->choobe_flow_controller();
+      if (choobe_controller) {
+        choobe_controller->OnScreenCompleted(
+            *ProfileManager::GetActiveUserProfile()->GetPrefs(),
+            ThemeSelectionScreenView::kScreenId);
+      }
+    }
+
     exit_callback_.Run(Result::kProceed);
   } else {
     BaseScreen::OnUserAction(args);
   }
+}
+
+ScreenSummary ThemeSelectionScreen::GetScreenSummary() {
+  ScreenSummary summary;
+  summary.screen_id = ThemeSelectionScreenView::kScreenId;
+  summary.icon_id = "oobe-32:stars";
+  summary.title_id = "choobeThemeSelectionTitle";
+  summary.is_revisitable = true;
+  summary.is_synced = false;
+  return summary;
 }
 
 }  // namespace ash

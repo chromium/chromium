@@ -148,6 +148,10 @@ class WizardContext {
   // True when user is inside the "Add Person" flow.
   bool is_add_person_flow = false;
 
+  // True if user clicked "Select more fatures" button on the last CHOOBE
+  // selected screen.
+  bool return_to_choobe_screen = false;
+
   // Information that is used during Cryptohome recovery or password changed
   // flow.
   std::unique_ptr<UserContext> user_context;

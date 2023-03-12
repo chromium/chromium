@@ -102,6 +102,13 @@ const char kSamlPasswordSyncToken[] = "saml.password_sync_token";
 const char kActivityTimeAfterOnboarding[] =
     "oobe.activity_time_after_onboarding";
 
+// List of screens selected from the CHOOBE screen. This list is used to resume
+// CHOOBE flow if it's not completed yet.
+const char kChoobeSelectedScreens[] = "oobe.choobe_selected_screens";
+
+// List of screens completed during the CHOOBE part of the onboarding flow.
+const char kChoobeCompletedScreens[] = "oobe.choobe_completed_screens";
+
 // *************** OOBE LOCAL STATE PREFS ***************
 
 // A boolean pref of the OOBE complete flag (first OOBE part before login).
@@ -133,10 +140,6 @@ const char kOobeLocaleChangedOnWelcomeScreen[] =
 // page to autofill the username field.
 const char kUrlParameterToAutofillSAMLUsername[] =
     "saml.UrlParameterToAutofillSAMLUsername";
-
-// List of screens selected from the CHOOBE screen. This list is used to resume
-// CHOOBE flow if it's not completed yet.
-const char kChoobeSelectedScreens[] = "choobe_selected_screens";
 
 }  // namespace prefs
 }  // namespace ash

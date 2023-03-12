@@ -499,13 +499,14 @@ void LoginDisplayHostCommon::StartUserOnboarding() {
   StartWizard(LocaleSwitchView::kScreenId);
 }
 
-void LoginDisplayHostCommon::ResumeUserOnboarding(OobeScreenId screen_id) {
+void LoginDisplayHostCommon::ResumeUserOnboarding(const PrefService& prefs,
+                                                  OobeScreenId screen_id) {
   SetScreenAfterManagedTos(screen_id);
 
   if (features::IsOobeChoobeEnabled()) {
-    if (ChoobeFlowController::IsOptionalScreen(screen_id)) {
-      GetWizardController()->GetChoobeFlowController()->MaybeResumeChoobe(
-          *ProfileManager::GetActiveUserProfile()->GetPrefs());
+    if (ChoobeFlowController::ShouldResumeChoobe(prefs)) {
+      GetWizardController()->CreateChoobeFlowController();
+      GetWizardController()->choobe_flow_controller()->ResumeChoobe(prefs);
     }
   }
 

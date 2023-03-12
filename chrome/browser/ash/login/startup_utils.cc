@@ -136,6 +136,7 @@ void StartupUtils::RegisterOobeProfilePrefs(PrefRegistrySimple* registry) {
 
   if (features::IsOobeChoobeEnabled()) {
     registry->RegisterListPref(prefs::kChoobeSelectedScreens);
+    registry->RegisterListPref(prefs::kChoobeCompletedScreens);
   }
   OnboardingUserActivityCounter::RegisterProfilePrefs(registry);
 }

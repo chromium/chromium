@@ -8,6 +8,8 @@
 #include <iosfwd>
 #include <string>
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
 namespace ash {
 
 // Lists the priority of the OOBE screens with the highest priority at the top
@@ -54,6 +56,20 @@ struct StaticOobeScreenId {
   const char* external_api_prefix = nullptr;
 
   OobeScreenId AsId() const;
+};
+
+struct ScreenSummary {
+  ScreenSummary();
+  ~ScreenSummary();
+  ScreenSummary(const ScreenSummary& summary);
+
+  StaticOobeScreenId screen_id;
+  std::string icon_id;
+  std::string title_id;
+  absl::optional<std::string> subtitle_resource;
+  bool is_synced;
+  bool is_revisitable;
+  absl::optional<bool> is_completed;
 };
 
 /* Keep it as `inline constexpr` (do not add `static`) so it exists as `inline

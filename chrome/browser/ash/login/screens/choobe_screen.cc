@@ -37,26 +37,31 @@ ChoobeScreen::ChoobeScreen(base::WeakPtr<ChoobeScreenView> view,
 
 ChoobeScreen::~ChoobeScreen() = default;
 
-// to check with the ChoobeFlowController whether to skip
+// to check with the ChoobeFlowController whether to skip CHOOBE screen.
 bool ChoobeScreen::MaybeSkip(WizardContext& context) {
-  auto* choobe_controller_ =
-      WizardController::default_controller()->GetChoobeFlowController();
-  if (choobe_controller_ && choobe_controller_->IsChoobeFlowActive())
+  if (context.skip_post_login_screens_for_tests) {
+    return true;
+  }
+
+  if (WizardController::default_controller()->choobe_flow_controller()) {
     return false;
+  }
+
+  if (ChoobeFlowController::ShouldStartChoobe()) {
+    return false;
+  }
 
   exit_callback_.Run(Result::NOT_APPLICABLE);
   return true;
 }
 
 void ChoobeScreen::SkipScreen() {
-  WizardController::default_controller()->GetChoobeFlowController()->Stop(
-      *ProfileManager::GetActiveUserProfile()->GetPrefs());
   exit_callback_.Run(Result::SKIPPED);
 }
 
 void ChoobeScreen::OnSelect(base::Value::List screens) {
   WizardController::default_controller()
-      ->GetChoobeFlowController()
+      ->choobe_flow_controller()
       ->OnScreensSelected(*ProfileManager::GetActiveUserProfile()->GetPrefs(),
                           std::move(screens));
   exit_callback_.Run(Result::SELECTED);
@@ -66,9 +71,13 @@ void ChoobeScreen::ShowImpl() {
   if (!view_)
     return;
 
-  auto screens = WizardController::default_controller()
-                     ->GetChoobeFlowController()
-                     ->GetEligibleCHOOBEScreens();
+  auto* controller = WizardController::default_controller();
+  if (!controller->choobe_flow_controller()) {
+    controller->CreateChoobeFlowController();
+  }
+
+  auto screens =
+      controller->choobe_flow_controller()->GetEligibleScreensSummaries();
 
   view_->Show(std::move(screens));
 }

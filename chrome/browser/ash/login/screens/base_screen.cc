@@ -69,4 +69,9 @@ void BaseScreen::OnUserAction(const base::Value::List& args) {
   NOTREACHED() << "Unhandled user action: action_id=" << args[0];
 }
 
+ScreenSummary BaseScreen::GetScreenSummary() {
+  NOTIMPLEMENTED();
+  return {};
+}
+
 }  // namespace ash

@@ -1808,7 +1808,7 @@ bool MaybeResumeUserOnboardingFlow(Profile* profile) {
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   if (!user_manager->IsCurrentUserNew() && !pending_screen.empty()) {
     LoginDisplayHost::default_host()->GetSigninUI()->ResumeUserOnboarding(
-        OobeScreenId(pending_screen));
+        *profile->GetPrefs(), OobeScreenId(pending_screen));
     return true;
   }
   return false;

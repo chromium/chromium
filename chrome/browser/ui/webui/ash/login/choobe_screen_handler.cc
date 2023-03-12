@@ -25,20 +25,14 @@ void ChoobeScreenHandler::DeclareLocalizedValues(
   builder->Add("choobeScreenTitle", IDS_OOBE_CHOOBE_TITLE);
   builder->Add("choobeScreenDescription", IDS_OOBE_CHOOBE_DESCRIPTION);
   builder->Add("choobeScreenSkip", IDS_OOBE_CHOOBE_SKIP_BUTTON);
-
-  auto resources = ChoobeFlowController::GetOptionalScreensResources();
-  for (auto value : resources) {
-    builder->Add(value.key, value.message_id);
-  }
 }
 
-void ChoobeScreenHandler::Show(
-    const std::vector<ChoobeFlowController::OptionalScreen>& screens) {
+void ChoobeScreenHandler::Show(const std::vector<ScreenSummary>& screens) {
   base::Value::List screens_list;
   for (auto screen : screens) {
     base::Value::Dict screen_dict;
     screen_dict.Set("screenID", base::Value(screen.screen_id.name));
-    screen_dict.Set("title", base::Value(screen.title_resource.key));
+    screen_dict.Set("title", base::Value(screen.title_id));
     screen_dict.Set("icon", base::Value(screen.icon_id));
     screen_dict.Set("selected", false);
     screens_list.Append(std::move(screen_dict));

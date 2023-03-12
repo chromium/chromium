@@ -171,6 +171,10 @@ class WizardController : public OobeUI::Observer {
   //    ash::DemoSetupScreenView::kScreenId
   void StartDemoModeSetup();
 
+  // Creates ChoobeFlowController. Should only be called if CHOOBE flow will be
+  // started or resumed.
+  void CreateChoobeFlowController();
+
   // Simulates demo mode setup environment. If `demo_config` has a value, it
   // is explicitly set on DemoSetupController and going through demo settings
   // screens can be skipped.
@@ -190,9 +194,11 @@ class WizardController : public OobeUI::Observer {
     return demo_setup_controller_.get();
   }
 
-  // Returns CHOOBE flow controller (lazily initialized one if it doesn't exist
-  // already).
-  ChoobeFlowController* GetChoobeFlowController();
+  // Returns ChoobeFlowController if CHOOBE flow is in progress or nullptr
+  // otherwise.
+  ChoobeFlowController* choobe_flow_controller() const {
+    return choobe_flow_controller_.get();
+  }
 
   // Returns a pointer to the current screen or nullptr if there's no such
   // screen.
