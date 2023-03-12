@@ -296,8 +296,7 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
 
 #if (BUILDFLAG(IS_CHROMEOS))
   web_app_run_on_os_login_manager_ =
-      std::make_unique<WebAppRunOnOsLoginManager>(registrar_.get(),
-                                                  command_scheduler_.get());
+      std::make_unique<WebAppRunOnOsLoginManager>(command_scheduler_.get());
 #endif
 }
 

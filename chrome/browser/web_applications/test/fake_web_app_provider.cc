@@ -269,8 +269,8 @@ void FakeWebAppProvider::SetDefaultFakeSubsystems() {
       std::make_unique<PreinstalledWebAppManager>(profile_));
 
 #if BUILDFLAG(IS_CHROMEOS)
-  SetWebAppRunOnOsLoginManager(std::make_unique<WebAppRunOnOsLoginManager>(
-      registrar_.get(), command_scheduler_.get()));
+  SetWebAppRunOnOsLoginManager(
+      std::make_unique<WebAppRunOnOsLoginManager>(command_scheduler_.get()));
 #endif
 
   ON_CALL(processor(), IsTrackingMetadata())

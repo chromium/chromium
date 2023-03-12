@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "chrome/browser/web_applications/locks/full_system_lock.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/web_contents.h"
@@ -30,10 +31,8 @@ const char kWebAppPolicyManagerNotifierId[] = "web_app_policy_notifier";
 #endif
 
 WebAppRunOnOsLoginManager::WebAppRunOnOsLoginManager(
-    WebAppRegistrar* app_registrar,
     WebAppCommandScheduler* scheduler)
-    : app_registrar_(*app_registrar), scheduler_(*scheduler) {
-  DCHECK(app_registrar);
+    : scheduler_(*scheduler) {
   DCHECK(scheduler);
 }
 WebAppRunOnOsLoginManager::~WebAppRunOnOsLoginManager() = default;
@@ -42,23 +41,23 @@ void WebAppRunOnOsLoginManager::Start() {
   if (skip_startup_for_testing_) {
     return;
   }
-  RunAppsOnOsLogin();
-}
 
-void WebAppRunOnOsLoginManager::RunAppsOnOsLogin() {
   if (!base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin)) {
     return;
   }
 
-  // It is safe to use the app ids because we are guaranteed to have all policy
-  // force installs completed AND the policy settings have been saved locally.
-  // It's not perfectly safe, and thus we filter out uninstalling apps, etc.
-  for (const AppId& app_id : app_registrar_->GetAppIds()) {
-    if (app_registrar_->IsUninstalling(app_id)) {
-      continue;
-    }
+  scheduler_->ScheduleCallbackWithLock<FullSystemLock>(
+      "WebAppRunOnOsLoginManager::RunAppsOnOsLogin",
+      std::make_unique<FullSystemLockDescription>(),
+      base::BindOnce(&WebAppRunOnOsLoginManager::RunAppsOnOsLogin,
+                     GetWeakPtr()));
+}
 
-    if (app_registrar_->GetAppRunOnOsLoginMode(app_id).value ==
+void WebAppRunOnOsLoginManager::RunAppsOnOsLogin(FullSystemLock& lock) {
+  // With a full system lock acquired, getting all apps is safe and no filtering
+  // of uninstalling apps etc. is required
+  for (const AppId& app_id : lock.registrar().GetAppIds()) {
+    if (lock.registrar().GetAppRunOnOsLoginMode(app_id).value ==
         RunOnOsLoginMode::kNotRun) {
       continue;
     }
@@ -69,13 +68,13 @@ void WebAppRunOnOsLoginManager::RunAppsOnOsLogin() {
         app_id, apps::LaunchContainer::kLaunchContainerWindow,
         WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromOsLogin);
 
-    if (app_registrar_->GetAppEffectiveDisplayMode(app_id) ==
+    if (lock.registrar().GetAppEffectiveDisplayMode(app_id) ==
         blink::mojom::DisplayMode::kBrowser) {
       params.container = apps::LaunchContainer::kLaunchContainerTab;
       params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
     }
 
-    const std::string app_name = app_registrar_->GetAppShortName(app_id);
+    const std::string app_name = lock.registrar().GetAppShortName(app_id);
 
     auto callback =
         base::BindOnce(&WebAppRunOnOsLoginManager::OnAppLaunchedOnOsLogin,
@@ -122,7 +121,11 @@ void WebAppRunOnOsLoginManager::SetSkipStartupForTesting(bool skip_startup) {
 }
 
 void WebAppRunOnOsLoginManager::RunAppsOnOsLoginForTesting() {
-  RunAppsOnOsLogin();
+  scheduler_->ScheduleCallbackWithLock<FullSystemLock>(
+      "WebAppRunOnOsLoginManager::RunAppsOnOsLogin",
+      std::make_unique<FullSystemLockDescription>(),
+      base::BindOnce(&WebAppRunOnOsLoginManager::RunAppsOnOsLogin,
+                     GetWeakPtr()));
 }
 
 }  // namespace web_app
