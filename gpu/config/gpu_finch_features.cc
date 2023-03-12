@@ -383,9 +383,8 @@ BASE_FEATURE(kCmdDecoderAlwaysGetSizeFromSourceTexture,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool UseGles2ForOopR() {
-#if BUILDFLAG(IS_ANDROID)
-  // GLS3 + passthrough decoder break many tests on Android.
-  // TODO(crbug.com/1044287): use GLES3 with passthrough decoder.
+#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86_FAMILY)
+  // GLES3 is not supported on emulators with passthrough.
   if (gl::UsePassthroughCommandDecoder(base::CommandLine::ForCurrentProcess()))
     return true;
 #endif

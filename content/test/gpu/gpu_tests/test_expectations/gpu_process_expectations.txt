@@ -129,6 +129,8 @@ crbug.com/1384930 [ android android-sm-a135m ] GpuProcess_visibility [ RetryOnFa
 crbug.com/1422012 [ mac amd-0x67ef ] GpuProcess_mac_webgl_backgrounded_high_performance [ Failure ]
 crbug.com/1422012 [ mac amd-0x67ef ] GpuProcess_mac_webgl_terminated_high_performance [ Failure ]
 
+# test failure on nexus-5x when gles3 is enabled with passthrough
+crbug.com/1423664 [ android android-nexus-5x angle-opengles passthrough ] GpuProcess_webgl_disabled_extension [ Failure ]
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################

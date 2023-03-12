@@ -43,3 +43,6 @@ MSE_ClearKey/EncryptedMediaTest.ConfigChangeVideo/0
 
 # http://crbug.com/1039450
 ProprietaryCodec/WebRtcMediaRecorderTest.*
+
+# http://crbug.com/1423665
+MSE_ExternalClearKey/EncryptedMediaTest.Playback_VideoOnly_MP4_AV1_10bit/0
