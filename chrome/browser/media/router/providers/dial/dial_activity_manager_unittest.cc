@@ -300,8 +300,11 @@ TEST_F(DialActivityManagerTest, StopAppFails) {
           CreateParsedDialAppInfoPtr("YouTube", DialAppState::kRunning),
           DialAppInfoResultCode::kOk));
 
-  EXPECT_TRUE(manager_.GetActivity(activity->route.media_route_id()));
-  EXPECT_FALSE(manager_.GetRoutes().empty());
+  // Even if we fail to terminate an app, we remove it from the list of routes
+  // tracked by DialActivityManager. This is done because manually stopping Cast
+  // session from DIAL device is not reflected on Chrome side.
+  EXPECT_FALSE(manager_.GetActivity(activity->route.media_route_id()));
+  EXPECT_TRUE(manager_.GetRoutes().empty());
 }
 
 TEST_F(DialActivityManagerTest, TryToStopAppThatIsAlreadyStopped) {

@@ -674,13 +674,14 @@ TEST_F(DialMediaRouteProviderTest, CreateRouteFailsCleansUpProperly) {
 }
 
 TEST_F(DialMediaRouteProviderTest, TerminateRouteFailsThenSucceeds) {
-  // TerminateRoute might fail due to transient network issues. A later retry
-  // should succeed.
+  // TerminateRoute might fail due to transient network issues.
   TestCreateRoute();
   TestSendClientConnectMessage();
   TestSendCustomDialLaunchMessage();
+  // Even if we fail to terminate an app, we remove it from the list of routes
+  // tracked by DialActivityManager. This is done because manually stopping Cast
+  // session from Dial device is not reflected on Chrome side.
   TestTerminateRouteFails();
-  TestTerminateRoute();
 }
 
 TEST_F(DialMediaRouteProviderTest, GetDialAppinfoExtraData) {
