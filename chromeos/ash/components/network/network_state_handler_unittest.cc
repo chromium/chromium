@@ -2815,19 +2815,34 @@ TEST_F(NetworkStateHandlerTest, RequestTrafficCounters) {
 
   service_test_->SetFakeTrafficCounters(traffic_counters.Clone());
 
-  base::RunLoop run_loop;
+  // Expect traffic counters to be returned for a WiFi network backed by shill.
+  base::RunLoop shill_backed_network_run_loop;
   network_state_handler_->RequestTrafficCounters(
-      kWifiName1, base::BindOnce(
-                      [](base::Value::List* expected_traffic_counters,
-                         base::OnceClosure quit_closure,
-                         absl::optional<base::Value> actual_traffic_counters) {
-                        ASSERT_TRUE(actual_traffic_counters);
-                        EXPECT_EQ(*expected_traffic_counters,
-                                  *actual_traffic_counters);
-                        std::move(quit_closure).Run();
-                      },
-                      &traffic_counters, run_loop.QuitClosure()));
-  run_loop.Run();
+      kShillManagerClientStubDefaultWifi,
+      base::BindOnce(
+          [](base::Value::List* expected_traffic_counters,
+             base::OnceClosure quit_closure,
+             absl::optional<base::Value> actual_traffic_counters) {
+            ASSERT_TRUE(actual_traffic_counters);
+            EXPECT_EQ(*expected_traffic_counters, *actual_traffic_counters);
+            std::move(quit_closure).Run();
+          },
+          &traffic_counters, shill_backed_network_run_loop.QuitClosure()));
+  shill_backed_network_run_loop.Run();
+
+  // No traffic counters are returned for a network not backed by shill.
+  base::RunLoop non_shill_backed_network_run_loop;
+  network_state_handler_->RequestTrafficCounters(
+      kWifiName1,
+      base::BindOnce(
+          [](base::Value::List* expected_traffic_counters,
+             base::OnceClosure quit_closure,
+             absl::optional<base::Value> actual_traffic_counters) {
+            ASSERT_FALSE(actual_traffic_counters);
+            std::move(quit_closure).Run();
+          },
+          &traffic_counters, non_shill_backed_network_run_loop.QuitClosure()));
+  non_shill_backed_network_run_loop.Run();
 }
 
 TEST_F(NetworkStateHandlerTest, RequestPortalDetection) {

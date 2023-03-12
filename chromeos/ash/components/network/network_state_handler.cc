@@ -237,12 +237,31 @@ void NetworkStateHandler::SyncStubCellularNetworks() {
 void NetworkStateHandler::RequestTrafficCounters(
     const std::string& service_path,
     chromeos::DBusMethodCallback<base::Value> callback) {
+  const NetworkState* network = GetNetworkState(service_path);
+
+  // Return early if a network is not backed by shill, this can happen if the
+  // network is a Tether network or is a non shill Cellular network.
+  // see b/266972302.
+  if (!network || network->IsNonProfileType()) {
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
   shill_property_handler_->RequestTrafficCounters(service_path,
                                                   std::move(callback));
 }
 
 void NetworkStateHandler::ResetTrafficCounters(
     const std::string& service_path) {
+  const NetworkState* network = GetNetworkState(service_path);
+
+  // Return early if a network is not backed by shill, this can happen if the
+  // network is a Tether network or is a non shill Cellular network.
+  // see b/266972302.
+  if (!network || network->IsNonProfileType()) {
+    return;
+  }
+
   shill_property_handler_->ResetTrafficCounters(service_path);
 }
 
