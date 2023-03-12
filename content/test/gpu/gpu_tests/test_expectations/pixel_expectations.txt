@@ -399,8 +399,7 @@ crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] Pixel_OffscreenCanvasAcceler
 crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] Pixel_OffscreenCanvasWebGLDefaultWorker [ RetryOnFailure ]
 
 # Flakes on Pixel 4, times out on Pixel 6
-crbug.com/1383180 [ android android-pixel-4 ] Pixel_MediaRecorderFrom2DCanvas [ RetryOnFailure ]
-crbug.com/1383180 [ android android-pixel-6 ] Pixel_MediaRecorderFrom2DCanvas [ Failure ]
+crbug.com/1383180 [ android android-pixel-6 android-webview-instrumentation angle-disabled no-passthrough ] Pixel_MediaRecorderFrom2DCanvas [ Failure ]
 crbug.com/1383180 [ android android-pixel-6 ] Pixel_Video_MP4_Rounded_Corner [ RetryOnFailure ]
 
 #######################################################################
