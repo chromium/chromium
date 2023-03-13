@@ -164,6 +164,9 @@ using feed::FeedUserActionType;
   // should not be refreshed when the user is viewing it.
   if (visible) {
     [self.sessionEndTimer invalidate];
+    [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
+                                                    kOpenedFeedSurface
+                                  asInteraction:NO];
   }
 
   if (!IsGoodVisitsMetricEnabled()) {

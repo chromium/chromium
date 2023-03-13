@@ -52,7 +52,7 @@ enum class FeedUserActionType {
   kTappedOpenInNewTab = 8,
   // User opened the back of card menu.
   kOpenedContextMenu = 9,
-  // User action not reported here. See Suggestions.SurfaceVisible.
+  // Action reported whenever the feed is visible.
   kOpenedFeedSurface = 10,
   // User opened the article in an incognito tab from the back of card menu.
   kTappedOpenInNewIncognitoTab = 11,
