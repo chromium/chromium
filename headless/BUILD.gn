@@ -435,6 +435,7 @@ component("headless_non_renderer") {
     "//build:chromeos_buildflags",
     "//components/cookie_config",
     "//components/crash/core/common:common",
+    "//components/devtools/devtools_pipe",
     "//components/embedder_support",
     "//components/embedder_support:browser_util",
     "//components/embedder_support:embedder_support",

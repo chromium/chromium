@@ -1404,6 +1404,7 @@ group("dependencies") {
     "//chrome/renderer",
     "//chrome/utility",
     "//components/about_ui",
+    "//components/devtools/devtools_pipe",
     "//components/memory_system",
     "//components/startup_metric_utils/browser",
     "//components/sync",

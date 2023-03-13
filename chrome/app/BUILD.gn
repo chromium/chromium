@@ -191,6 +191,7 @@ static_library("test_support") {
     "//chrome/renderer",
     "//chrome/utility",
     "//components/about_ui",
+    "//components/devtools/devtools_pipe",
     "//components/memory_system",
     "//components/nacl/common:buildflags",
     "//components/startup_metric_utils/browser",

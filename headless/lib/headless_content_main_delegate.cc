@@ -24,6 +24,7 @@
 #include "cc/base/switches.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/crash/core/common/crash_keys.h"
+#include "components/devtools/devtools_pipe/devtools_pipe.h"
 #include "components/viz/common/switches.h"
 #include "content/public/browser/browser_main_runner.h"
 #include "content/public/common/content_switches.h"
@@ -171,6 +172,15 @@ HeadlessContentMainDelegate::~HeadlessContentMainDelegate() {
 
 absl::optional<int> HeadlessContentMainDelegate::BasicStartupComplete() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+
+  // The DevTools remote debugging pipe file descriptors need to be checked
+  // before any other files are opened, see https://crbug.com/1423048.
+  const bool is_browser = !command_line->HasSwitch(::switches::kProcessType);
+  if (is_browser && command_line->HasSwitch(::switches::kRemoteDebuggingPipe) &&
+      !devtools_pipe::AreFileDescriptorsOpen()) {
+    LOG(ERROR) << "Remote debugging pipe file descriptors are not open.";
+    return EXIT_FAILURE;
+  }
 
   // Make sure all processes know that we're in headless mode.
   if (!command_line->HasSwitch(::switches::kHeadless))

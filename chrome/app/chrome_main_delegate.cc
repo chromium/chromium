@@ -68,6 +68,7 @@
 #include "components/crash/core/app/crash_reporter_client.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/crash/core/common/crash_keys.h"
+#include "components/devtools/devtools_pipe/devtools_pipe.h"
 #include "components/memory_system/initializer.h"
 #include "components/memory_system/parameters.h"
 #include "components/metrics/persistent_histograms.h"
@@ -1032,6 +1033,14 @@ absl::optional<int> ChromeMainDelegate::BasicStartupComplete() {
       base::CommandLine::ForCurrentProcess()->RemoveSwitch(
           switches::kDisableWebSecurity);
     }
+  }
+
+  // The DevTools remote debugging pipe file descriptors need to be checked
+  // before any other files are opened, see https://crbug.com/1423048.
+  if (command_line.HasSwitch(::switches::kRemoteDebuggingPipe) &&
+      !devtools_pipe::AreFileDescriptorsOpen()) {
+    LOG(ERROR) << "Remote debugging pipe file descriptors are not open.";
+    return chrome::RESULT_CODE_UNSUPPORTED_PARAM;
   }
 
 #if BUILDFLAG(IS_WIN)
