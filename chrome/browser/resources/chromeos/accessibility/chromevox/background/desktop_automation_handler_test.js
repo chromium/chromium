@@ -205,15 +205,15 @@ AX_TEST_F(
       mockFeedback
           .call(() => {
             DesktopAutomationHandler.MIN_ALERT_DELAY_MS = 20 * 1000;
-            this.handler_.onAlert(event);
+            this.handler_.onAlert_(event);
           })
           .expectSpeech('Hello world')
           .clearPendingOutput()
           .call(() => {
             // Repeated alerts should be ignored.
-            this.handler_.onAlert(event);
+            this.handler_.onAlert_(event);
             assertFalse(mockFeedback.utteranceInQueue('Hello world'));
-            this.handler_.onAlert(event);
+            this.handler_.onAlert_(event);
             assertFalse(mockFeedback.utteranceInQueue('Hello world'));
           });
       await mockFeedback.replay();
