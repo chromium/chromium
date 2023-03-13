@@ -24,10 +24,6 @@
 
 namespace chromeos {
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-static constexpr char kNotSupportedByAshBrowserError[] = "Not implemented.";
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 namespace diag = api::os_diagnostics;
 
 // DiagnosticsApiFunctionBase --------------------------------------------------
@@ -359,21 +355,6 @@ void OsDiagnosticsRunSmartctlCheckRoutineFunction::RunIfAllowed() {
 
   crosapi::mojom::UInt32ValuePtr percentage_used;
   if (params && params->request && params->request->percentage_used_threshold) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // TODO(b/261181600): Remove this code as soon as version skew is no issue
-    // anymore.
-
-    auto* lacros_service = LacrosService::Get();
-    // Check if ash chrome supports calling the routine with a parameter.
-    if (!lacros_service || lacros_service->GetInterfaceVersion(
-                               crosapi::mojom::DiagnosticsService::Uuid_) < 1) {
-      // TODO(b/261181443): Move this to a super class.
-      Respond(Error(base::StringPrintf("API chrome.%s failed. %s", name(),
-                                       kNotSupportedByAshBrowserError)));
-      return;
-    }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
     percentage_used = crosapi::mojom::UInt32Value::New(
         params->request->percentage_used_threshold.value());
   }

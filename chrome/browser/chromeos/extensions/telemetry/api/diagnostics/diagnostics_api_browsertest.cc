@@ -1158,38 +1158,4 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
   )");
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(b/261181600): Remove this code as soon as version skew is no issue
-// anymore. We only do version skew testing in Lacros.
-IN_PROC_BROWSER_TEST_F(
-    TelemetryExtensionDiagnosticsApiBrowserTest,
-    RunSmartctlCheckRoutineWithPercentageUsedVersionSkewSuccess) {
-  // Set the interface version to a version that does not support the parameter.
-  crosapi::mojom::BrowserInitParamsPtr init_params =
-      BrowserInitParams::GetForTests()->Clone();
-  init_params->interface_versions
-      .value()[crosapi::mojom::DiagnosticsService::Uuid_] = 0;
-  BrowserInitParams::SetInitParamsForTests(std::move(init_params));
-
-  // Expect an error message if Ash does not support the SmartctlCheck
-  // interface with a parameter.
-  CreateExtensionAndRunServiceWorker(R"(
-    chrome.test.runTests([
-      async function runSmartctlCheckRoutine() {
-        await chrome.test.assertPromiseRejects(
-            chrome.os.diagnostics.runSmartctlCheckRoutine(
-              {
-                percentage_used_threshold: 42
-              }
-            ),
-            'Error: API chrome.os.diagnostics.runSmartctlCheckRoutine ' +
-            'failed. Not implemented.'
-        );
-        chrome.test.succeed();
-      },
-    ]);
-  )");
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 }  // namespace chromeos
