@@ -139,6 +139,18 @@ class MODULES_EXPORT NavigatorAuction final
                                   const AuctionAdConfig*,
                                   ExceptionState&);
 
+  // Web-exposed API that returns whether an opaque-ads fenced frame would be
+  // allowed to be created in the current active document of this node after
+  // an ad auction is run.
+  // Checks the following criteria:
+  // - Not trying to load in a default mode fenced frame tree
+  // - All of the sandbox/allow flags required to load a fenced frame are set
+  //   in the embedder. See: blink::kFencedFrameMandatoryUnsandboxedFlags
+  // - No CSP headers are in place that will stop the fenced frame from loading
+  // - No CSPEE is applied to this or an ancestor frame
+  bool canLoadAdAuctionFencedFrame(ScriptState*);
+  static bool canLoadAdAuctionFencedFrame(ScriptState*, Navigator&);
+
   void Trace(Visitor* visitor) const override {
     visitor->Trace(ad_auction_service_);
     Supplement<Navigator>::Trace(visitor);

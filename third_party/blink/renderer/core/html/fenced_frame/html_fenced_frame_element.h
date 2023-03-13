@@ -109,12 +109,8 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   void setConfig(FencedFrameConfig* config);
   // Web-exposed API that returns whether an opaque-ads fenced frame would be
   // allowed to be created in the current active document of this node.
-  // Checks the following criteria:
-  // - Not trying to load in a default mode fenced frame tree
-  // - All of the sandbox/allow flags required to load a fenced frame are set
-  //   in the embedder. See: blink::kFencedFrameMandatoryUnsandboxedFlags
-  // - No CSP headers are in place that will stop the fenced frame from loading
-  // - No CSPEE is applied to this or an ancestor frame
+  // Note: This function is deprecated. Please use
+  // `NavigatorAuction::canLoadAdAuctionFencedFrame` instead.
   static bool canLoadOpaqueURL(ScriptState*);
 
  private:

@@ -600,10 +600,10 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // their opener.
   void ClearOpenerReferences();
 
-  // Calculates whether one of the ancestor frames or this frame has a CSPEE
-  // in place. This is eventually sent over to LocalFrame in the renderer where
-  // it will be used by HTMLFencedFrameElement::canLoadOpaqueURL for information
-  // it can't get on its own.
+  // Calculates whether one of the ancestor frames or this frame has a CSPEE in
+  // place. This is eventually sent over to LocalFrame in the renderer where it
+  // will be used by NavigatorAuction::canLoadAdAuctionFencedFrame for
+  // information it can't get on its own.
   bool AncestorOrSelfHasCSPEE() const;
 
   // Reset every navigation in this frame, and its descendants. This is called

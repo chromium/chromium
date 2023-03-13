@@ -30,7 +30,7 @@ promise_test(async () => {
 }, "csp-frame-src-blocked");
 
 promise_test(async () => {
-  assert_false(HTMLFencedFrameElement.canLoadOpaqueURL());
-}, "frame-src none is taken into account with HTMLFencedFrameElement.canLoadOpaqueURL");
+  assert_false(navigator.canLoadAdAuctionFencedFrame());
+}, "frame-src none is taken into account with navigator.canLoadAdAuctionFencedFrame");
 </script>
 </body>

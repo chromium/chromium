@@ -26,8 +26,8 @@ promise_test(async t => {
 }, 'FencedFrame is not available in an insecure context');
 
 promise_test(async t => {
-  assert_false(HTMLFencedFrameElement.canLoadOpaqueURL());
-}, 'HTMLFencedFrameElement.canLoadOpaqueURL looks at insecure contexts');
+  assert_throws_js(TypeError, () => navigator.canLoadAdAuctionFencedFrame());
+}, 'navigator.canLoadAdAuctionFencedFrame is unavailable in insecure contexts');
 </script>
 
 </body>

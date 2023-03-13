@@ -494,7 +494,7 @@ struct BLINK_EXPORT WebNavigationParams {
 
   // Whether the current context would be allowed to create an opaque-ads
   //  frame (based on the browser-side calculations). See
-  // HTMLFencedFrameElement::canLoadOpaqueURL for usage and
+  // NavigatorAuction::canLoadAdAuctionFencedFrame for usage and
   // ::blink::mojom::CommitNavigationParams::ancestor_or_self_has_cspee for
   // where the value is coming from.
   bool ancestor_or_self_has_cspee = false;

@@ -332,6 +332,15 @@ bool HTMLFencedFrameElement::canLoadOpaqueURL(ScriptState* script_state) {
   if (!script_state->ContextIsValid())
     return false;
 
+  LocalDOMWindow::From(script_state)
+      ->document()
+      ->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+          mojom::blink::ConsoleMessageSource::kJavaScript,
+          mojom::blink::ConsoleMessageLevel::kWarning,
+          "HTMLFencedFrameElement.canLoadOpaqueURL() is deprecated and will be "
+          "removed. Please use navigator.canLoadAdAuctionFencedFrame() "
+          "instead."));
+
   LocalFrame* frame_to_check = LocalDOMWindow::From(script_state)->GetFrame();
   ExecutionContext* context = ExecutionContext::From(script_state);
   DCHECK(frame_to_check && context);
