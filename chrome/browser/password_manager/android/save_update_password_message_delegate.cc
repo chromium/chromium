@@ -162,7 +162,7 @@ void SaveUpdatePasswordMessageDelegate::DisplaySaveUpdatePasswordPromptInternal(
   RecordMessageShownMetrics();
   messages::MessageDispatcherBridge::Get()->EnqueueMessage(
       message_.get(), web_contents_, messages::MessageScopeType::WEB_CONTENTS,
-      messages::MessagePriority::kNormal);
+      messages::MessagePriority::kUrgent);
 }
 
 void SaveUpdatePasswordMessageDelegate::CreateMessage(bool update_password) {
