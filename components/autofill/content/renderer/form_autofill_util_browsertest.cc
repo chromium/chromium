@@ -328,17 +328,10 @@ TEST_F(FormAutofillUtilsTest, GetButtonTitles) {
       GetFormElementById(web_frame->GetDocument(), "target");
   ButtonTitlesCache cache;
 
-  autofill::ButtonTitleList actual =
-      GetButtonTitles(form_target, web_frame->GetDocument(), &cache);
+  autofill::ButtonTitleList actual = GetButtonTitles(form_target, &cache);
 
   autofill::ButtonTitleList expected = {
-      {u"Clear field", ButtonTitleType::INPUT_ELEMENT_BUTTON_TYPE},
-      {u"Show password", ButtonTitleType::INPUT_ELEMENT_BUTTON_TYPE},
-      {u"Sign Up", ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE},
-      {u"Register", ButtonTitleType::BUTTON_ELEMENT_BUTTON_TYPE},
-      {u"Create account", ButtonTitleType::HYPERLINK},
-      {u"Join", ButtonTitleType::DIV},
-      {u"Start", ButtonTitleType::SPAN}};
+      {u"Sign Up", ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE}};
   EXPECT_EQ(expected, actual);
 
   VerifyButtonTitleCache(form_target, expected, cache);
@@ -361,8 +354,7 @@ TEST_F(FormAutofillUtilsTest, GetButtonTitles_TooLongTitle) {
       GetFormElementById(web_frame->GetDocument(), "target");
   ButtonTitlesCache cache;
 
-  autofill::ButtonTitleList actual =
-      GetButtonTitles(form_target, web_frame->GetDocument(), &cache);
+  autofill::ButtonTitleList actual = GetButtonTitles(form_target, &cache);
 
   int total_length = 0;
   for (const auto& [title, title_type] : actual) {
@@ -370,38 +362,6 @@ TEST_F(FormAutofillUtilsTest, GetButtonTitles_TooLongTitle) {
     total_length += title.length();
   }
   EXPECT_EQ(200, total_length);
-}
-
-TEST_F(FormAutofillUtilsTest, GetButtonTitles_Formless) {
-  constexpr char kNoFormHtml[] =
-      "<div class='reg-form'>"
-      "  <input type='button' value='\n Show\t password '>"
-      "  <button>Sign Up</button>"
-      "  <button type='button'>Register</button>"
-      "</div>"
-      "<form id='ignored-form'>"
-      "  <input type='button' value='Ignore this'>"
-      "  <button>Ignore this</button>"
-      "  <a id='Submit' value='Ignore this'>"
-      "  <div name='BTN'>Ignore this</div>"
-      "</form>";
-
-  LoadHTML(kNoFormHtml);
-  WebLocalFrame* web_frame = GetMainFrame();
-  ASSERT_NE(nullptr, web_frame);
-  WebFormElement form_target;
-  ASSERT_FALSE(web_frame->GetDocument().Body().IsNull());
-  ButtonTitlesCache cache;
-
-  autofill::ButtonTitleList actual =
-      GetButtonTitles(form_target, web_frame->GetDocument(), &cache);
-  autofill::ButtonTitleList expected = {
-      {u"Show password", ButtonTitleType::INPUT_ELEMENT_BUTTON_TYPE},
-      {u"Sign Up", ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE},
-      {u"Register", ButtonTitleType::BUTTON_ELEMENT_BUTTON_TYPE}};
-  EXPECT_EQ(expected, actual);
-
-  VerifyButtonTitleCache(form_target, expected, cache);
 }
 
 TEST_F(FormAutofillUtilsTest, GetButtonTitles_DisabledIfNoCache) {
@@ -427,8 +387,7 @@ TEST_F(FormAutofillUtilsTest, GetButtonTitles_DisabledIfNoCache) {
   WebFormElement form_target;
   ASSERT_FALSE(web_frame->GetDocument().Body().IsNull());
 
-  autofill::ButtonTitleList actual =
-      GetButtonTitles(form_target, web_frame->GetDocument(), nullptr);
+  autofill::ButtonTitleList actual = GetButtonTitles(form_target, nullptr);
 
   EXPECT_TRUE(actual.empty());
 }

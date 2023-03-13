@@ -142,8 +142,8 @@ std::unique_ptr<FormData> CreateFormDataFromWebForm(
   form_data->username_predictions =
       GetUsernamePredictions(control_elements.ReleaseVector(), *form_data,
                              username_detector_cache, web_form);
-  form_data->button_titles = form_util::GetButtonTitles(
-      web_form, web_form.GetDocument(), button_titles_cache);
+  form_data->button_titles =
+      form_util::GetButtonTitles(web_form, button_titles_cache);
 
   return form_data;
 }
@@ -174,8 +174,6 @@ std::unique_ptr<FormData> CreateFormDataFromUnownedInputElements(
 
   form_data->username_predictions = GetUsernamePredictions(
       control_elements, *form_data, username_detector_cache, WebFormElement());
-  form_data->button_titles = form_util::GetButtonTitles(
-      WebFormElement(), frame.GetDocument(), button_titles_cache);
 
   return form_data;
 }
