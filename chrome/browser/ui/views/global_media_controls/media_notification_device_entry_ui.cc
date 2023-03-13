@@ -116,8 +116,6 @@ AudioDeviceEntryView::AudioDeviceEntryView(PressedCallback callback,
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
   views::InkDrop::Get(this)->SetBaseColor(foreground_color);
-  // Bypass color-callback setup in HoverButton.
-  views::InkDrop::Get(this)->SetBaseColorCallback({});
   SetHasInkDropActionOnClick(true);
   SetPreferredSize(kDeviceEntryViewSize);
 }
@@ -176,8 +174,6 @@ CastDeviceEntryView::CastDeviceEntryView(
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
   views::InkDrop::Get(this)->SetBaseColor(foreground_color);
   SetHasInkDropActionOnClick(true);
-  // Bypass color-callback setup in HoverButton.
-  views::InkDrop::Get(this)->SetBaseColorCallback({});
   SetPreferredSize(kDeviceEntryViewSize);
 }
 

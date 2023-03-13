@@ -9,8 +9,11 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/mock_callback.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
@@ -28,6 +31,7 @@
 #include "ui/views/animation/test/ink_drop_impl_test_api.h"
 #include "ui/views/animation/test/test_ink_drop.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/test/views_test_base.h"
 
 namespace views::test {
 using InkDropMode = InkDropHostTestApi::InkDropMode;
@@ -43,7 +47,6 @@ class TestViewWithInkDrop : public View {
           return ink_drop;
         },
         this));
-    InkDrop::Get(this)->SetBaseColor(gfx::kPlaceholderColor);
   }
 
   TestViewWithInkDrop(const TestViewWithInkDrop&) = delete;
@@ -286,8 +289,6 @@ class BasicTestViewWithInkDrop : public View {
  public:
   BasicTestViewWithInkDrop() {
     InkDrop::Install(this, std::make_unique<InkDropHost>(this));
-    // Call SetBaseColor to avoid fetching an undefined color.
-    InkDrop::Get(this)->SetBaseColor(gfx::kPlaceholderColor);
   }
   BasicTestViewWithInkDrop(const BasicTestViewWithInkDrop&) = delete;
   BasicTestViewWithInkDrop& operator=(const BasicTestViewWithInkDrop&) = delete;
@@ -356,6 +357,61 @@ TEST_F(InkDropHostClippingTest,
   ink_drop_->SetHovered(true);
   EXPECT_FALSE(GetRootLayer()->layer_mask_layer());
   EXPECT_TRUE(GetRootLayer()->clip_rect().IsEmpty());
+}
+
+class InkDropInWidgetTest : public ViewsTestBase {
+ public:
+  InkDropInWidgetTest() = default;
+  InkDropInWidgetTest(const InkDropInWidgetTest&) = delete;
+  InkDropInWidgetTest& operator=(const InkDropInWidgetTest&) = delete;
+  ~InkDropInWidgetTest() override = default;
+
+ protected:
+  void SetUp() override {
+    ViewsTestBase::SetUp();
+    widget_ = CreateTestWidget();
+    view_ =
+        widget_->SetContentsView(std::make_unique<BasicTestViewWithInkDrop>());
+  }
+
+  void TearDown() override {
+    view_ = nullptr;
+    widget_.reset();
+    ViewsTestBase::TearDown();
+  }
+
+  InkDropHost& ink_drop() { return *InkDrop::Get(view_); }
+  const ui::ColorProvider& color_provider() {
+    return *widget_->GetColorProvider();
+  }
+
+ private:
+  std::unique_ptr<Widget> widget_;
+  raw_ptr<View> view_ = nullptr;
+};
+
+TEST_F(InkDropInWidgetTest, SetBaseColor) {
+  ink_drop().SetBaseColor(SK_ColorBLUE);
+  EXPECT_EQ(ink_drop().GetBaseColor(), SK_ColorBLUE);
+}
+
+TEST_F(InkDropInWidgetTest, SetBaseColorId) {
+  ink_drop().SetBaseColorId(ui::kColorSeparator);
+  EXPECT_EQ(ink_drop().GetBaseColor(),
+            color_provider().GetColor(ui::kColorSeparator));
+
+  ink_drop().SetBaseColor(SK_ColorBLUE);
+  EXPECT_EQ(ink_drop().GetBaseColor(), SK_ColorBLUE);
+}
+
+TEST_F(InkDropInWidgetTest, SetBaseColorCallback) {
+  base::MockRepeatingCallback<SkColor()> callback;
+  EXPECT_CALL(callback, Run).WillRepeatedly(testing::Return(SK_ColorCYAN));
+  ink_drop().SetBaseColorCallback(callback.Get());
+  EXPECT_EQ(ink_drop().GetBaseColor(), SK_ColorCYAN);
+
+  ink_drop().SetBaseColor(SK_ColorBLUE);
+  EXPECT_EQ(ink_drop().GetBaseColor(), SK_ColorBLUE);
 }
 
 }  // namespace views::test

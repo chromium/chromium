@@ -347,8 +347,8 @@ class IntentPickerLabelButton : public views::LabelButton {
         provider->GetDistanceMetric(DISTANCE_CONTENT_LIST_VERTICAL_MULTI),
         provider->GetInsetsMetric(views::INSETS_DIALOG).left())));
     views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
-    views::InkDrop::Get(this)->SetBaseColorCallback(
-        base::BindRepeating(&HoverButton::GetInkDropColor, this));
+    views::InkDrop::Get(this)->SetBaseColorId(views::style::GetColorId(
+        views::style::CONTEXT_BUTTON, views::style::STYLE_SECONDARY));
   }
   IntentPickerLabelButton(const IntentPickerLabelButton&) = delete;
   IntentPickerLabelButton& operator=(const IntentPickerLabelButton&) = delete;

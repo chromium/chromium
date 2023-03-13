@@ -7,8 +7,6 @@
 #include <memory>
 
 #include "chrome/browser/ui/views/controls/hover_button.h"
-#include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/animation/ink_drop.h"
@@ -21,33 +19,6 @@
 namespace {
 
 constexpr gfx::Insets kDefaultBorderInsets = gfx::Insets(12);
-
-class BubbleMenuItem : public HoverButton {
- public:
-  METADATA_HEADER(BubbleMenuItem);
-  BubbleMenuItem(PressedCallback callback,
-                 const std::u16string& text,
-                 int button_id)
-      : HoverButton(callback, text) {
-    ConfigureBubbleMenuItem(this, button_id);
-  }
-
-  BubbleMenuItem(PressedCallback callback,
-                 const std::u16string& text,
-                 int button_id,
-                 const ui::ImageModel& icon)
-      : HoverButton(callback, icon, text) {
-    ConfigureBubbleMenuItem(this, button_id);
-  }
-
-  void OnThemeChanged() override {
-    HoverButton::OnThemeChanged();
-    views::InkDrop::Get(this)->SetBaseColor(HoverButton::GetInkDropColor(this));
-  }
-};
-
-BEGIN_METADATA(BubbleMenuItem, HoverButton)
-END_METADATA
 
 }  // namespace
 
@@ -68,9 +39,8 @@ std::unique_ptr<HoverButton> CreateBubbleMenuItem(
     const std::u16string& name,
     views::Button::PressedCallback callback,
     const ui::ImageModel& icon) {
-  std::unique_ptr<BubbleMenuItem> button =
-      std::make_unique<BubbleMenuItem>(callback, name, button_id, icon);
-
+  auto button = std::make_unique<HoverButton>(callback, icon, name);
+  ConfigureBubbleMenuItem(button.get(), button_id);
   button->SetBorder(views::CreateEmptyBorder(kDefaultBorderInsets));
   return button;
 }

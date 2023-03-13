@@ -23,7 +23,6 @@ ReadAnythingMenuButton::ReadAnythingMenuButton(
                                      base::Unretained(this))) {
   ConfigureInkDropForToolbar(this);
   views::InstallCircleHighlightPathGenerator(this);
-  views::InkDrop::Get(this)->SetBaseColorCallback({});
   SetIcon(icon, kIconSize, gfx::kPlaceholderColor);
   SetAccessibleName(tooltip);
   SetTooltipText(tooltip);

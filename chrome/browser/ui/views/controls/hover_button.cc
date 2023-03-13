@@ -16,6 +16,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event_constants.h"
 #include "ui/views/animation/ink_drop.h"
@@ -102,8 +103,8 @@ HoverButton::HoverButton(PressedCallback callback, const std::u16string& text)
   views::InkDrop::UseInkDropForFloodFillRipple(views::InkDrop::Get(this),
                                                /*highlight_on_hover=*/false,
                                                /*highlight_on_focus=*/true);
-  views::InkDrop::Get(this)->SetBaseColorCallback(base::BindRepeating(
-      [](views::View* host) { return GetInkDropColor(host); }, this));
+  views::InkDrop::Get(this)->SetBaseColorId(views::style::GetColorId(
+      views::style::CONTEXT_BUTTON, views::style::STYLE_SECONDARY));
 
   SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
                            ui::EF_RIGHT_MOUSE_BUTTON);
@@ -212,12 +213,6 @@ HoverButton::HoverButton(PressedCallback callback,
 }
 
 HoverButton::~HoverButton() = default;
-
-// static
-SkColor HoverButton::GetInkDropColor(const views::View* view) {
-  return views::style::GetColor(*view, views::style::CONTEXT_BUTTON,
-                                views::style::STYLE_SECONDARY);
-}
 
 void HoverButton::SetBorder(std::unique_ptr<views::Border> b) {
   LabelButton::SetBorder(std::move(b));
