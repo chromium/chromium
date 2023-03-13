@@ -93,6 +93,11 @@ void FrameNodeImpl::SetHadFormInteraction() {
   document_.had_form_interaction.SetAndMaybeNotify(this, true);
 }
 
+void FrameNodeImpl::SetHadUserEdits() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  document_.had_user_edits.SetAndMaybeNotify(this, true);
+}
+
 void FrameNodeImpl::OnNonPersistentNotificationCreated() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto* observer : GetObservers())
@@ -226,6 +231,11 @@ const PriorityAndReason& FrameNodeImpl::priority_and_reason() const {
 bool FrameNodeImpl::had_form_interaction() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return document_.had_form_interaction.value();
+}
+
+bool FrameNodeImpl::had_user_edits() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return document_.had_user_edits.value();
 }
 
 bool FrameNodeImpl::is_audible() const {
@@ -573,6 +583,11 @@ bool FrameNodeImpl::HadFormInteraction() const {
   return had_form_interaction();
 }
 
+bool FrameNodeImpl::HadUserEdits() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return had_user_edits();
+}
+
 bool FrameNodeImpl::IsAudible() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return is_audible();
@@ -777,6 +792,7 @@ void FrameNodeImpl::DocumentProperties::Reset(FrameNodeImpl* frame_node,
   // Network is busy on navigation.
   network_almost_idle.SetAndMaybeNotify(frame_node, false);
   had_form_interaction.SetAndMaybeNotify(frame_node, false);
+  had_user_edits.SetAndMaybeNotify(frame_node, false);
 }
 
 void FrameNodeImpl::OnWebMemoryMeasurementRequested(

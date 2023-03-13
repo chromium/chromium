@@ -202,6 +202,11 @@ class FrameNode : public Node {
   // Returns true if at least one form of the frame has been interacted with.
   virtual bool HadFormInteraction() const = 0;
 
+  // Returns true if the user has made edits to the page. This is a superset of
+  // `HadFormInteraction()` but also includes changes to `contenteditable`
+  // elements.
+  virtual bool HadUserEdits() const = 0;
+
   // Returns true if the frame is audible, false otherwise.
   virtual bool IsAudible() const = 0;
 
@@ -285,6 +290,12 @@ class FrameNodeObserver {
   // Called when the frame receives a form interaction.
   virtual void OnHadFormInteractionChanged(const FrameNode* frame_node) = 0;
 
+  // Called the first time the user has edited the content of an element. This
+  // is a superset of `OnHadFormInteractionChanged()`: form interactions trigger
+  // both events but changes to e.g. a `<div>` with the `contenteditable`
+  // property will only trigger `OnHadUserEditsChanged()`.
+  virtual void OnHadUserEditsChanged(const FrameNode* frame_node) = 0;
+
   // Invoked when the IsAudible property changes.
   virtual void OnIsAudibleChanged(const FrameNode* frame_node) = 0;
 
@@ -340,6 +351,7 @@ class FrameNode::ObserverDefaultImpl : public FrameNodeObserver {
       const FrameNode* frame_node,
       const PriorityAndReason& previous_value) override {}
   void OnHadFormInteractionChanged(const FrameNode* frame_node) override {}
+  void OnHadUserEditsChanged(const FrameNode* frame_node) override {}
   void OnIsAudibleChanged(const FrameNode* frame_node) override {}
   void OnViewportIntersectionChanged(const FrameNode* frame_node) override {}
   void OnFrameVisibilityChanged(const FrameNode* frame_node,

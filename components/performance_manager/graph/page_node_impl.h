@@ -37,7 +37,7 @@ class PageNodeImpl
   using FrozenFrameDataStorage =
       InternalNodeAttachedDataStorage<sizeof(uintptr_t) + 8>;
   using PageAggregatorDataStorage =
-      InternalNodeAttachedDataStorage<sizeof(uintptr_t) + 12>;
+      InternalNodeAttachedDataStorage<sizeof(uintptr_t) + 16>;
 
   static constexpr NodeTypeEnum Type() { return NodeTypeEnum::kPage; }
 
@@ -106,6 +106,7 @@ class PageNodeImpl
   int64_t navigation_id() const;
   const std::string& contents_mime_type() const;
   bool had_form_interaction() const;
+  bool had_user_edits() const;
   const absl::optional<freezing::FreezingVote>& freezing_vote() const;
   PageState page_state() const;
 
@@ -139,6 +140,10 @@ class PageNodeImpl
 
   void SetHadFormInteractionForTesting(bool had_form_interaction) {
     SetHadFormInteraction(had_form_interaction);
+  }
+
+  void SetHadUserEditsForTesting(bool had_user_edits) {
+    SetHadUserEdits(had_user_edits);
   }
 
   base::WeakPtr<PageNodeImpl> GetWeakPtrOnUIThread() {
@@ -193,6 +198,11 @@ class PageNodeImpl
     SetHadFormInteraction(had_form_interaction);
   }
 
+  void SetHadUserEdits(base::PassKey<PageAggregatorAccess>,
+                       bool had_user_edits) {
+    SetHadUserEdits(had_user_edits);
+  }
+
  private:
   friend class PageNodeImplDescriber;
 
@@ -219,6 +229,7 @@ class PageNodeImpl
   const base::flat_set<const FrameNode*> GetMainFrameNodes() const override;
   const GURL& GetMainFrameUrl() const override;
   bool HadFormInteraction() const override;
+  bool HadUserEdits() const override;
   const WebContentsProxy& GetContentsProxy() const override;
   const absl::optional<freezing::FreezingVote>& GetFreezingVote()
       const override;
@@ -234,6 +245,7 @@ class PageNodeImpl
   void SetIsHoldingWebLock(bool is_holding_weblock);
   void SetIsHoldingIndexedDBLock(bool is_holding_indexeddb_lock);
   void SetHadFormInteraction(bool had_form_interaction);
+  void SetHadUserEdits(bool had_user_edits);
 
   // The WebContentsProxy associated with this page.
   const WebContentsProxy contents_proxy_;
@@ -353,6 +365,11 @@ class PageNodeImpl
       bool,
       &PageNodeObserver::OnHadFormInteractionChanged>
       had_form_interaction_ GUARDED_BY_CONTEXT(sequence_checker_){false};
+  // Indicates if at least one frame of the page has received some
+  // user-initiated edits.
+  ObservedProperty::
+      NotifiesOnlyOnChanges<bool, &PageNodeObserver::OnHadUserEditsChanged>
+          had_user_edits_ GUARDED_BY_CONTEXT(sequence_checker_){false};
   // The freezing vote associated with this page, see the comment of to
   // Page::GetFreezingVote for a description of the different values this can
   // take.
