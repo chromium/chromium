@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/search_test_utils.h"
@@ -48,6 +49,10 @@ using content::BrowserThread;
 class HistoryBrowserTest : public InProcessBrowserTest {
  protected:
   HistoryBrowserTest() {
+    // TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having to
+    // disable this feature.
+    feature_list_.InitAndDisableFeature(features::kHttpsUpgrades);
+
     test_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
   }
 
@@ -163,6 +168,7 @@ class HistoryBrowserTest : public InProcessBrowserTest {
     std::move(closure).Run();
   }
 
+  base::test::ScopedFeatureList feature_list_;
   net::EmbeddedTestServer test_server_;
 };
 
