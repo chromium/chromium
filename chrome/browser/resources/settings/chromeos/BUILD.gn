@@ -153,7 +153,7 @@ copy("copy_mojom_ts") {
     "$root_gen_dir/chromeos/ash/components/audio/public/mojom/cros_audio_config.mojom-webui.ts",
     "$root_gen_dir/ui/chromeos/events/mojom/modifier_key.mojom-webui.ts",
   ]
-  outputs = [ "$tsc_input_dir/mojom-webui/{{source_file_part}}" ]
+  outputs = [ "$tsc_input_dir/chromeos/mojom-webui/{{source_file_part}}" ]
 }
 
 copy("generate_personalization_search_mojom") {
@@ -162,9 +162,7 @@ copy("generate_personalization_search_mojom") {
   sources = [
     "$root_gen_dir/ash/webui/personalization_app/search/search.mojom-webui.ts",
   ]
-  outputs = [
-    "$tsc_input_dir/mojom-webui/search/personalization_search.mojom-webui.ts",
-  ]
+  outputs = [ "$tsc_input_dir/chromeos/mojom-webui/search/personalization_search.mojom-webui.ts" ]
 }
 
 copy("generate_search_mojom") {
@@ -176,7 +174,8 @@ copy("generate_search_mojom") {
     "$root_gen_dir/chrome/browser/ui/webui/settings/ash/search/search_result_icon.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/settings/ash/search/user_action_recorder.mojom-webui.ts",
   ]
-  outputs = [ "$tsc_input_dir/mojom-webui/search/{{source_file_part}}" ]
+  outputs =
+      [ "$tsc_input_dir/chromeos/mojom-webui/search/{{source_file_part}}" ]
 }
 
 grit("resources") {

@@ -420,18 +420,18 @@ non_web_component_files = [
 ]
 
 mojom_webui_files = [
-  "mojom-webui/app_notification_handler.mojom-webui.ts",
-  "mojom-webui/cros_audio_config.mojom-webui.ts",
-  "mojom-webui/input_device_settings_provider.mojom-webui.ts",
-  "mojom-webui/input_device_settings.mojom-webui.ts",
-  "mojom-webui/modifier_key.mojom-webui.ts",
-  "mojom-webui/routes.mojom-webui.ts",
-  "mojom-webui/setting.mojom-webui.ts",
+  "chromeos/mojom-webui/app_notification_handler.mojom-webui.ts",
+  "chromeos/mojom-webui/cros_audio_config.mojom-webui.ts",
+  "chromeos/mojom-webui/input_device_settings_provider.mojom-webui.ts",
+  "chromeos/mojom-webui/input_device_settings.mojom-webui.ts",
+  "chromeos/mojom-webui/modifier_key.mojom-webui.ts",
+  "chromeos/mojom-webui/routes.mojom-webui.ts",
+  "chromeos/mojom-webui/setting.mojom-webui.ts",
 
-  "mojom-webui/search/personalization_search.mojom-webui.ts",
-  "mojom-webui/search/search.mojom-webui.ts",
-  "mojom-webui/search/search_result_icon.mojom-webui.ts",
-  "mojom-webui/search/user_action_recorder.mojom-webui.ts",
+  "chromeos/mojom-webui/search/personalization_search.mojom-webui.ts",
+  "chromeos/mojom-webui/search/search.mojom-webui.ts",
+  "chromeos/mojom-webui/search/search_result_icon.mojom-webui.ts",
+  "chromeos/mojom-webui/search/user_action_recorder.mojom-webui.ts",
 ]
 
 # Files sourced from their checked-in version under src

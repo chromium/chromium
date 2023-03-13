@@ -8,8 +8,8 @@
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
-import {SettingChangeValue} from '../mojom-webui/search/user_action_recorder.mojom-webui.js';
-import {Setting} from '../mojom-webui/setting.mojom-webui.js';
+import {SettingChangeValue} from './mojom-webui/search/user_action_recorder.mojom-webui.js';
+import {Setting} from './mojom-webui/setting.mojom-webui.js';
 
 interface SettingMetric {
   setting: Setting;

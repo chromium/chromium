@@ -18,10 +18,10 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {afterNextRender, DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 import {assertExhaustive} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
+import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {OsSettingsSubpageElement} from '../os_settings_page/os_settings_subpage.js';
 import {routes} from '../os_settings_routes.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';

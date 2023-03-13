@@ -4,8 +4,8 @@
 
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 
-import {SearchResult as PersonalizationSearchResult} from '../../mojom-webui/search/personalization_search.mojom-webui.js';
-import {ParentResultBehavior, SearchResult as SettingsSearchResult} from '../../mojom-webui/search/search.mojom-webui.js';
+import {SearchResult as PersonalizationSearchResult} from '../mojom-webui/search/personalization_search.mojom-webui.js';
+import {ParentResultBehavior, SearchResult as SettingsSearchResult} from '../mojom-webui/search/search.mojom-webui.js';
 
 import {getPersonalizationSearchHandler} from './personalization_search_handler.js';
 import {getSettingsSearchHandler} from './settings_search_handler.js';

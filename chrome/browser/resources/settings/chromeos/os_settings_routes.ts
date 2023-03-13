@@ -5,7 +5,7 @@
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import * as routesMojom from '../mojom-webui/routes.mojom-webui.js';
+import * as routesMojom from './mojom-webui/routes.mojom-webui.js';
 
 /** Class for navigable routes. */
 export class Route {

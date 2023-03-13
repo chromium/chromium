@@ -17,9 +17,9 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SearchResult as PersonalizationSearchResult} from '../../mojom-webui/search/personalization_search.mojom-webui.js';
-import {SearchResult as SettingsSearchResult, SearchResultIdentifier, SearchResultType} from '../../mojom-webui/search/search.mojom-webui.js';
-import {SearchResultIcon} from '../../mojom-webui/search/search_result_icon.mojom-webui.js';
+import {SearchResult as PersonalizationSearchResult} from '../mojom-webui/search/personalization_search.mojom-webui.js';
+import {SearchResult as SettingsSearchResult, SearchResultIdentifier, SearchResultType} from '../mojom-webui/search/search.mojom-webui.js';
+import {SearchResultIcon} from '../mojom-webui/search/search_result_icon.mojom-webui.js';
 import {Router} from '../router.js';
 import {SearchResult} from '../search/combined_search_handler.js';
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import * as InputDeviceSettingsTypes from '../../mojom-webui/input_device_settings.mojom-webui.js';
-import * as ModifierKeyTypes from '../../mojom-webui/modifier_key.mojom-webui.js';
+import * as InputDeviceSettingsTypes from '../mojom-webui/input_device_settings.mojom-webui.js';
+import * as ModifierKeyTypes from '../mojom-webui/modifier_key.mojom-webui.js';
 
 /**
  * @fileoverview

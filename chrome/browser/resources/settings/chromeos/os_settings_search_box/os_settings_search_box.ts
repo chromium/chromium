@@ -25,10 +25,10 @@ import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SearchResultsObserverInterface as PersonalizationSearchResultsObserverInterface, SearchResultsObserverReceiver as PersonalizationSearchResultsObserverReceiver} from '../../mojom-webui/search/personalization_search.mojom-webui.js';
-import {ParentResultBehavior, SearchResultsObserverInterface, SearchResultsObserverReceiver} from '../../mojom-webui/search/search.mojom-webui.js';
 import {castExists} from '../assert_extras.js';
 import {recordSearch} from '../metrics_recorder.js';
+import {SearchResultsObserverInterface as PersonalizationSearchResultsObserverInterface, SearchResultsObserverReceiver as PersonalizationSearchResultsObserverReceiver} from '../mojom-webui/search/personalization_search.mojom-webui.js';
+import {ParentResultBehavior, SearchResultsObserverInterface, SearchResultsObserverReceiver} from '../mojom-webui/search/search.mojom-webui.js';
 import {routes} from '../os_settings_routes.js';
 import {Router} from '../router.js';
 import {combinedSearch, getPersonalizationSearchHandler, getSettingsSearchHandler, SearchResult} from '../search/combined_search_handler.js';
