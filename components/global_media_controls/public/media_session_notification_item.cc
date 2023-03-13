@@ -143,6 +143,8 @@ void MediaSessionNotificationItem::UpdateDeviceName(
   device_name_ = device_name;
   if (view_ && !frozen_) {
     view_->UpdateWithMediaMetadata(GetSessionMetadata());
+    view_->UpdateWithVectorIcon(
+        device_name_ ? &vector_icons::kMediaRouterIdleIcon : nullptr);
   }
 }
 
@@ -489,9 +491,8 @@ void MediaSessionNotificationItem::UpdateViewCommon() {
   view_->UpdateWithMediaMetadata(GetSessionMetadata());
   view_->UpdateWithMediaActions(GetMediaSessionActions());
   view_->UpdateWithMuteStatus(session_info_->muted);
-  view_->UpdateWithVectorIcon(GetRemotePlaybackStarted(session_info_)
-                                  ? &vector_icons::kMediaRouterIdleIcon
-                                  : nullptr);
+  view_->UpdateWithVectorIcon(device_name_ ? &vector_icons::kMediaRouterIdleIcon
+                                           : nullptr);
 }
 
 }  // namespace global_media_controls
