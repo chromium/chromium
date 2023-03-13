@@ -26,21 +26,23 @@ gfx::Rect TrackedElementMac::GetScreenBounds() const {
   return screen_bounds_;
 }
 
-class ElementTrackerMac::ContextData {
+class ElementTrackerMac::MenuData {
  public:
-  explicit ContextData(ElementContext context) : context_(context) {
+  explicit MenuData(ElementContext context) : context_(context) {
     DCHECK(context);
   }
 
-  ~ContextData() {
+  ~MenuData() {
     for (const auto& element : elements_) {
       ui::ElementTracker::GetFrameworkDelegate()->NotifyElementHidden(
           element.second.get());
     }
   }
 
-  ContextData(const ContextData& other) = delete;
-  void operator=(const ContextData& other) = delete;
+  MenuData(const MenuData& other) = delete;
+  void operator=(const MenuData& other) = delete;
+
+  ElementContext context() const { return context_; }
 
   void AddElement(ElementIdentifier identifier,
                   const gfx::Rect& screen_bounds) {
@@ -87,48 +89,45 @@ ElementTrackerMac* ElementTrackerMac::GetInstance() {
 
 void ElementTrackerMac::NotifyMenuWillShow(NSMenu* menu,
                                            ElementContext context) {
-  const auto result = root_menu_to_context_.emplace(menu, context);
+  const auto result = root_menu_to_data_.emplace(menu, context);
   DCHECK(result.second);
-  const auto result2 =
-      context_to_data_.emplace(context, std::make_unique<ContextData>(context));
-  DCHECK(result2.second);
 }
 
 void ElementTrackerMac::NotifyMenuDoneShowing(NSMenu* menu) {
-  const auto it = root_menu_to_context_.find(menu);
-  DCHECK(it != root_menu_to_context_.end());
-  const auto it2 = context_to_data_.find(it->second);
-  DCHECK(it2 != context_to_data_.end());
-  root_menu_to_context_.erase(it);
-  context_to_data_.erase(it2);
+  const auto result = root_menu_to_data_.erase(menu);
+  DCHECK(result);
 }
 
 void ElementTrackerMac::NotifyMenuItemShown(NSMenu* menu,
                                             ElementIdentifier identifier,
                                             const gfx::Rect& screen_bounds) {
-  const ElementContext context = GetContextForMenu(menu);
-  if (context)
-    context_to_data_[context]->AddElement(identifier, screen_bounds);
+  const auto it = root_menu_to_data_.find(GetRootMenu(menu));
+  if (it != root_menu_to_data_.end()) {
+    it->second.AddElement(identifier, screen_bounds);
+  }
 }
 
 void ElementTrackerMac::NotifyMenuItemActivated(NSMenu* menu,
                                                 ElementIdentifier identifier) {
-  const ElementContext context = GetContextForMenu(menu);
-  if (context)
-    context_to_data_[context]->ActivateElement(identifier);
+  const auto it = root_menu_to_data_.find(GetRootMenu(menu));
+  if (it != root_menu_to_data_.end()) {
+    it->second.ActivateElement(identifier);
+  }
 }
 
 void ElementTrackerMac::NotifyMenuItemHidden(NSMenu* menu,
                                              ElementIdentifier identifier) {
-  const ElementContext context = GetContextForMenu(menu);
-  if (context)
-    context_to_data_[context]->HideElement(identifier);
+  const auto it = root_menu_to_data_.find(GetRootMenu(menu));
+  if (it != root_menu_to_data_.end()) {
+    it->second.HideElement(identifier);
+  }
 }
 
 NSMenu* ElementTrackerMac::GetRootMenuForContext(ElementContext context) {
-  for (auto [menu, menu_context] : root_menu_to_context_) {
-    if (menu_context == context)
+  for (auto& [menu, data] : root_menu_to_data_) {
+    if (data.context() == context) {
       return menu;
+    }
   }
   return nullptr;
 }
@@ -137,15 +136,10 @@ ElementTrackerMac::ElementTrackerMac() = default;
 ElementTrackerMac::~ElementTrackerMac() = default;
 
 NSMenu* ElementTrackerMac::GetRootMenu(NSMenu* menu) const {
-  while ([menu supermenu])
+  while ([menu supermenu]) {
     menu = [menu supermenu];
+  }
   return menu;
-}
-
-ElementContext ElementTrackerMac::GetContextForMenu(NSMenu* menu) const {
-  menu = GetRootMenu(menu);
-  const auto it = root_menu_to_context_.find(menu);
-  return it == root_menu_to_context_.end() ? ElementContext() : it->second;
 }
 
 }  // namespace ui
