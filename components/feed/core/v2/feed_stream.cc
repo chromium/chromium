@@ -837,8 +837,7 @@ void FeedStream::OnStoreChange(StreamModel::StoreUpdate update) {
     DCHECK(!update.update_request);
     store_->WriteOperations(update.stream_type, update.sequence_number,
                             update.operations);
-  } else {
-    DCHECK(update.update_request);
+  } else if (update.update_request) {
     if (update.overwrite_stream_data) {
       DCHECK_EQ(update.sequence_number, 0);
       store_->OverwriteStream(update.stream_type,
