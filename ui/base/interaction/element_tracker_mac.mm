@@ -54,9 +54,16 @@ class ElementTrackerMac::ContextData {
 
   void ActivateElement(ElementIdentifier identifier) {
     const auto it = elements_.find(identifier);
-    CHECK(it != elements_.end());
-    ui::ElementTracker::GetFrameworkDelegate()->NotifyElementActivated(
-        it->second.get());
+    if (it != elements_.end()) {
+      ui::ElementTracker::GetFrameworkDelegate()->NotifyElementActivated(
+          it->second.get());
+    } else {
+      NOTREACHED() << "Element " << identifier
+                   << " had its activation sent after it was hidden. This may "
+                      "be due to a race condition with renderer context menus; "
+                      "see crbug.com/1418614 for the state of current efforts "
+                      "to diagnose and fix the problem.";
+    }
   }
 
   void HideElement(ElementIdentifier identifier) {
