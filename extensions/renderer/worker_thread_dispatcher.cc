@@ -516,17 +516,7 @@ void WorkerThreadDispatcher::DidStartContext(
             service_worker_data->service_worker_version_id());
   const int thread_id = content::WorkerThread::GetCurrentId();
   DCHECK_NE(thread_id, kMainThreadId);
-  PostTaskToIOThread(base::BindOnce(
-      [](const ExtensionId& extension_id,
-         const base::UnguessableToken& activation_token,
-         const GURL& service_worker_scope, int64_t service_worker_version_id,
-         int thread_id) {
-        WorkerThreadDispatcher::Get()
-            ->GetServiceWorkerHostOnIO()
-            ->DidStartServiceWorkerContext(
-                extension_id, activation_token, service_worker_scope,
-                service_worker_version_id, thread_id);
-      },
+  Send(new ExtensionHostMsg_DidStartServiceWorkerContext(
       service_worker_data->context()->GetExtensionID(),
       service_worker_data->activation_sequence(), service_worker_scope,
       service_worker_version_id, thread_id));
@@ -538,17 +528,7 @@ void WorkerThreadDispatcher::DidStopContext(const GURL& service_worker_scope,
   DCHECK_NE(thread_id, kMainThreadId);
   DCHECK_EQ(service_worker_version_id,
             service_worker_data->service_worker_version_id());
-  PostTaskToIOThread(base::BindOnce(
-      [](const ExtensionId& extension_id,
-         const base::UnguessableToken& activation_token,
-         const GURL& service_worker_scope, int64_t service_worker_version_id,
-         int thread_id) {
-        WorkerThreadDispatcher::Get()
-            ->GetServiceWorkerHostOnIO()
-            ->DidStopServiceWorkerContext(extension_id, activation_token,
-                                          service_worker_scope,
-                                          service_worker_version_id, thread_id);
-      },
+  Send(new ExtensionHostMsg_DidStopServiceWorkerContext(
       service_worker_data->context()->GetExtensionID(),
       service_worker_data->activation_sequence(), service_worker_scope,
       service_worker_version_id, thread_id));
