@@ -22405,13 +22405,99 @@
     "reason_for_missing_test": "TODO(b/175142676): Feature not yet implemented"
   },
   "DeviceScreensaverLoginScreenEnabled" : {
-    "reason_for_missing_test": "TODO(b/175142676): Feature not yet implemented"
+    "os": [
+      "chromeos_ash"
+    ],
+    "can_be_recommended": false,
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "ash.ambient.managed_screensaver.enabled": {
+            "location": "signin_profile",
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "DeviceScreensaverLoginScreenEnabled": true
+        },
+        "prefs": {
+          "ash.ambient.managed_screensaver.enabled": {
+            "location": "signin_profile",
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "DeviceScreensaverLoginScreenEnabled": false
+        },
+        "prefs": {
+          "ash.ambient.managed_screensaver.enabled": {
+            "location": "signin_profile",
+            "value": false
+          }
+        }
+      }
+    ]
   },
   "DeviceScreensaverLoginScreenIdleTimeoutSeconds" : {
-    "reason_for_missing_test": "TODO(b/175142676): Feature not yet implemented"
+    "os": [
+      "chromeos_ash"
+    ],
+    "can_be_recommended": false,
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "ash.ambient.managed_screensaver.idle_timeout_seconds": {
+            "location": "signin_profile",
+            "default_value": 7
+          }
+        }
+      },
+      {
+        "policies": {
+          "DeviceScreensaverLoginScreenIdleTimeoutSeconds": 42
+        },
+        "prefs": {
+          "ash.ambient.managed_screensaver.idle_timeout_seconds": {
+            "location": "signin_profile",
+            "value": 42
+          }
+        }
+      }
+    ]
   },
   "DeviceScreensaverLoginScreenImageDisplayIntervalSeconds" : {
-    "reason_for_missing_test": "TODO(b/175142676): Feature not yet implemented"
+    "os": [
+      "chromeos_ash"
+    ],
+    "can_be_recommended": false,
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "ash.ambient.managed_screensaver.image_display_interval_seconds": {
+            "location": "signin_profile",
+            "default_value": 60
+          }
+        }
+      },
+      {
+        "policies": {
+          "DeviceScreensaverLoginScreenImageDisplayIntervalSeconds": 128
+        },
+        "prefs": {
+          "ash.ambient.managed_screensaver.image_display_interval_seconds": {
+            "location": "signin_profile",
+            "value": 128
+          }
+        }
+      }
+    ]
   },
   "DeviceScreensaverLoginScreenImages" : {
     "reason_for_missing_test": "TODO(b/175142676): Feature not yet implemented"

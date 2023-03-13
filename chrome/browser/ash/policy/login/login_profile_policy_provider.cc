@@ -81,6 +81,12 @@ const DevicePolicyToUserPolicyMapEntry kDevicePoliciesWithPolicyOptionsMap[] = {
     // generate a corresponding Accept-Languages header
     // (https://crbug.com/1336382).
     {key::kDeviceLoginScreenLocales, key::kForcedLanguages},
+    {key::kDeviceScreensaverLoginScreenEnabled,
+     key::kScreensaverLockScreenEnabled},
+    {key::kDeviceScreensaverLoginScreenIdleTimeoutSeconds,
+     key::kScreensaverLockScreenIdleTimeoutSeconds},
+    {key::kDeviceScreensaverLoginScreenImageDisplayIntervalSeconds,
+     key::kScreensaverLockScreenImageDisplayIntervalSeconds},
 };
 
 const DevicePolicyToUserPolicyMapEntry kRecommendedDevicePoliciesMap[] = {
