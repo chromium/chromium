@@ -17,8 +17,11 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/login/ui/login_feedback.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -582,8 +585,13 @@ void ArcVmDataMigrationScreen::HandleFinish() {
 }
 
 void ArcVmDataMigrationScreen::HandleReport() {
-  // TODO(b/258278176): Implement the flow to send a feedback report.
-  NOTIMPLEMENTED();
+  const int64_t unique_identifier =
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds();
+  const std::string description_template =
+      base::StringPrintf("Report tag: #arcvm-data-migration (%s)",
+                         base::NumberToString(unique_identifier).c_str());
+  LoginFeedback login_feedback(profile_);
+  login_feedback.Request(description_template);
 }
 
 void ArcVmDataMigrationScreen::HandleFatalError() {
