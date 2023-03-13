@@ -55,6 +55,7 @@ def chrome_internal_verifier(
 chrome_internal_verifier(
     builder = "internal-cq-builder-verifier",
     tryjob = try_.job(
+        add_default_filters = False,
         location_filters = ["infra/config/generated/cq-usage/full.cfg"],
     ),
 )
