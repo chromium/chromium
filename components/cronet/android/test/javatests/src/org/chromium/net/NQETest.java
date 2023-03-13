@@ -26,7 +26,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
 import org.chromium.net.MetricsTestUtil.TestExecutor;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -192,14 +192,11 @@ public class NQETest {
 
         // Hackish workaround to crbug.com/1338919
         UmaRecorderHolder.onLibraryLoaded();
-        var writeCountHistogram = HistogramWatcher.newBuilder()
-                                          .expectIntRecord("NQE.Prefs.WriteCount", 1)
-                                          .allowExtraRecordsForHistogramsAbove()
-                                          .build();
-        var readCountHistogram = HistogramWatcher.newBuilder()
-                                         .expectIntRecord("NQE.Prefs.ReadCount", 1)
-                                         .allowExtraRecordsForHistogramsAbove()
-                                         .build();
+        HistogramDelta writeCountHistogram = new HistogramDelta("NQE.Prefs.WriteCount", 1);
+        assertEquals(0, writeCountHistogram.getDelta()); // Sanity check.
+
+        HistogramDelta readCountHistogram = new HistogramDelta("NQE.Prefs.ReadCount", 1);
+        assertEquals(0, readCountHistogram.getDelta()); // Sanity check.
 
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder builder =
@@ -219,7 +216,7 @@ public class NQETest {
         assertTrue(throughputListener.throughputObservationCount() > 0);
 
         // Prefs must be read at startup.
-        readCountHistogram.assertExpected();
+        assertTrue(readCountHistogram.getDelta() > 0);
 
         // Check RTT observation count after throughput observation has been received. This ensures
         // that executor has finished posting the RTT observation to the RTT listeners.
@@ -265,7 +262,7 @@ public class NQETest {
         assertTrue(prefsFileContainsString("network_qualities"));
 
         cronetEngine.shutdown();
-        writeCountHistogram.assertExpected();
+        assertTrue(writeCountHistogram.getDelta() > 0);
     }
 
     @Test
@@ -304,31 +301,18 @@ public class NQETest {
 
             // Hackish workaround to crbug.com/1338919
             if (i == 0) UmaRecorderHolder.onLibraryLoaded();
+            HistogramDelta writeCountHistogram = new HistogramDelta("NQE.Prefs.WriteCount", 1);
+            assertEquals(0, writeCountHistogram.getDelta()); // Sanity check.
 
-            HistogramWatcher readCountHistogram = HistogramWatcher.newBuilder()
-                                                          .expectIntRecord("NQE.Prefs.ReadCount", 1)
-                                                          .allowExtraRecordsForHistogramsAbove()
-                                                          .build();
+            HistogramDelta readCountHistogram = new HistogramDelta("NQE.Prefs.ReadCount", 1);
+            assertEquals(0, readCountHistogram.getDelta()); // Sanity check.
 
-            // Stored network quality in the pref should be read in the second iteration.
-            HistogramWatcher readPrefsSizeHistogram;
-            if (i == 0) {
-                readPrefsSizeHistogram = HistogramWatcher.newBuilder()
-                                                 .expectIntRecord("NQE.Prefs.ReadSize", 0)
-                                                 .build();
-            } else {
-                readPrefsSizeHistogram = HistogramWatcher.newBuilder()
-                                                 .expectIntRecord("NQE.Prefs.ReadSize", 1)
-                                                 .allowExtraRecordsForHistogramsAbove()
-                                                 .build();
-            }
+            HistogramDelta readPrefsSizeHistogram = new HistogramDelta("NQE.Prefs.ReadSize", 1);
+            assertEquals(0, readPrefsSizeHistogram.getDelta()); // Sanity check.
 
             // NETWORK_QUALITY_OBSERVATION_SOURCE_HTTP_CACHED_ESTIMATE: 3
-            HistogramWatcher cachedRttHistogram =
-                    HistogramWatcher.newBuilder()
-                            .expectIntRecord("NQE.RTT.ObservationSource", 3)
-                            .allowExtraRecordsForHistogramsAbove()
-                            .build();
+            HistogramDelta cachedRttHistogram = new HistogramDelta("NQE.RTT.ObservationSource", 3);
+            assertEquals(0, cachedRttHistogram.getDelta()); // Sanity check.
 
             TestUrlRequestCallback callback = new TestUrlRequestCallback();
             UrlRequest.Builder builder =
@@ -341,7 +325,7 @@ public class NQETest {
             rttListener.waitUntilFirstUrlRequestRTTReceived();
 
             // Prefs must be read at startup.
-            readCountHistogram.assertExpected();
+            assertTrue(readCountHistogram.getDelta() > 0);
 
             // Check RTT observation count after throughput observation has been received. This
             // ensures
@@ -360,9 +344,10 @@ public class NQETest {
                 assertTrue(prefsFileContainsString("network_qualities"));
             }
 
-            readPrefsSizeHistogram.assertExpected();
+            // Stored network quality in the pref should be read in the second iteration.
+            assertEquals(readPrefsSizeHistogram.getDelta() > 0, i > 0);
             if (i > 0) {
-                cachedRttHistogram.assertExpected();
+                assertTrue(cachedRttHistogram.getDelta() > 0);
             }
         }
     }
