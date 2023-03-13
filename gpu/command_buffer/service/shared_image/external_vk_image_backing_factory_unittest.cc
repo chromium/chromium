@@ -213,7 +213,7 @@ TEST_F(ExternalVkImageBackingFactoryDawnTest, DawnWrite_SkiaVulkanRead) {
 
     wgpu::CommandEncoder encoder = dawn_device_.CreateCommandEncoder();
     wgpu::RenderPassEncoder pass = encoder.BeginRenderPass(&renderPassDesc);
-    pass.EndPass();
+    pass.End();
     wgpu::CommandBuffer commands = encoder.Finish();
 
     wgpu::Queue queue = dawn_device_.GetQueue();

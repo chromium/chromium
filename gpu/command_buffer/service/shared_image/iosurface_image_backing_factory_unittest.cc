@@ -280,7 +280,7 @@ TEST_F(IOSurfaceImageBackingFactoryTest, Dawn_SkiaGL) {
 
     wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
     wgpu::RenderPassEncoder pass = encoder.BeginRenderPass(&renderPassDesc);
-    pass.EndPass();
+    pass.End();
     wgpu::CommandBuffer commands = encoder.Finish();
 
     wgpu::Queue queue = device.GetQueue();
@@ -403,7 +403,7 @@ TEST_F(IOSurfaceImageBackingFactoryTest, GL_Dawn_Skia_UnclearTexture) {
 
     wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
     wgpu::RenderPassEncoder pass = encoder.BeginRenderPass(&renderPassDesc);
-    pass.EndPass();
+    pass.End();
     wgpu::CommandBuffer commands = encoder.Finish();
 
     wgpu::Queue queue = device.GetQueue();
@@ -494,7 +494,7 @@ TEST_F(IOSurfaceImageBackingFactoryTest, UnclearDawn_SkiaFails) {
 
     wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
     wgpu::RenderPassEncoder pass = encoder.BeginRenderPass(&renderPassDesc);
-    pass.EndPass();
+    pass.End();
     wgpu::CommandBuffer commands = encoder.Finish();
 
     wgpu::Queue queue = device.GetQueue();

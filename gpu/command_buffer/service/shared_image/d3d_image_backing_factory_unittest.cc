@@ -690,7 +690,7 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_SkiaGL) {
 
     wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
     wgpu::RenderPassEncoder pass = encoder.BeginRenderPass(&renderPassDesc);
-    pass.EndPass();
+    pass.End();
     wgpu::CommandBuffer commands = encoder.Finish();
 
     wgpu::Queue queue = device.GetQueue();
@@ -906,7 +906,7 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_ConcurrentReads) {
 
     wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
     wgpu::RenderPassEncoder pass = encoder.BeginRenderPass(&renderPassDesc);
-    pass.EndPass();
+    pass.End();
     wgpu::CommandBuffer commands = encoder.Finish();
 
     wgpu::Queue queue = device.GetQueue();
@@ -1022,7 +1022,7 @@ TEST_F(D3DImageBackingFactoryTest, GL_Dawn_Skia_UnclearTexture) {
 
     wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
     wgpu::RenderPassEncoder pass = encoder.BeginRenderPass(&renderPassDesc);
-    pass.EndPass();
+    pass.End();
     wgpu::CommandBuffer commands = encoder.Finish();
 
     wgpu::Queue queue = device.GetQueue();
@@ -1113,7 +1113,7 @@ TEST_F(D3DImageBackingFactoryTest, UnclearDawn_SkiaFails) {
 
     wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
     wgpu::RenderPassEncoder pass = encoder.BeginRenderPass(&renderPassDesc);
-    pass.EndPass();
+    pass.End();
     wgpu::CommandBuffer commands = encoder.Finish();
 
     wgpu::Queue queue = device.GetQueue();
@@ -1383,7 +1383,7 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_ReuseExternalImage) {
 
     wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
     wgpu::RenderPassEncoder pass = encoder.BeginRenderPass(&renderPassDesc);
-    pass.EndPass();
+    pass.End();
     wgpu::CommandBuffer commands = encoder.Finish();
 
     wgpu::Queue queue = device.GetQueue();
@@ -1422,7 +1422,7 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_ReuseExternalImage) {
 
     wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
     wgpu::RenderPassEncoder pass = encoder.BeginRenderPass(&renderPassDesc);
-    pass.EndPass();
+    pass.End();
     wgpu::CommandBuffer commands = encoder.Finish();
 
     wgpu::Queue queue = device.GetQueue();
