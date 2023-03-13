@@ -313,6 +313,21 @@ ExternalVkImageBacking::~ExternalVkImageBacking() {
   }
 }
 
+std::vector<GLenum> ExternalVkImageBacking::GetVkImageLayoutsForGL() {
+  GrVkImageInfo info;
+  auto result = backend_texture_.getVkImageInfo(&info);
+  DCHECK(result);
+  DCHECK_EQ(info.fCurrentQueueFamily, VK_QUEUE_FAMILY_EXTERNAL);
+  DCHECK_NE(info.fImageLayout, VK_IMAGE_LAYOUT_UNDEFINED);
+  DCHECK_NE(info.fImageLayout, VK_IMAGE_LAYOUT_PREINITIALIZED);
+  return {VkImageLayoutToGLImageLayout(info.fImageLayout)};
+}
+
+std::vector<sk_sp<SkPromiseImageTexture>>
+ExternalVkImageBacking::GetPromiseTextures() {
+  return {promise_texture_};
+}
+
 bool ExternalVkImageBacking::BeginAccess(
     bool readonly,
     std::vector<ExternalSemaphore>* external_semaphores,
@@ -341,18 +356,12 @@ bool ExternalVkImageBacking::BeginAccess(
     DCHECK(readonly);
     DCHECK(gl_texture_);
 
-    GLuint texture_id = gl_texture_->GetServiceId();
+    std::vector<GLuint> texture_ids = {gl_texture_->GetServiceId()};
     MakeGLContextCurrent();
 
-    GrVkImageInfo info;
-    auto result = backend_texture_.getVkImageInfo(&info);
-    DCHECK(result);
-    DCHECK_EQ(info.fCurrentQueueFamily, VK_QUEUE_FAMILY_EXTERNAL);
-    DCHECK_NE(info.fImageLayout, VK_IMAGE_LAYOUT_UNDEFINED);
-    DCHECK_NE(info.fImageLayout, VK_IMAGE_LAYOUT_PREINITIALIZED);
     auto release_semaphore =
         ExternalVkImageGLRepresentationShared::ReleaseTexture(
-            external_semaphore_pool(), texture_id, info.fImageLayout);
+            external_semaphore_pool(), texture_ids, GetVkImageLayoutsForGL());
     if (!release_semaphore) {
       context_state_->MarkContextLost();
       return false;
@@ -432,21 +441,15 @@ void ExternalVkImageBacking::EndAccess(bool readonly,
     DCHECK(!is_gl);
     DCHECK(readonly);
     DCHECK(gl_texture_);
-    GLuint texture_id = gl_texture_->GetServiceId();
+    std::vector<GLuint> texture_ids = {gl_texture_->GetServiceId()};
     MakeGLContextCurrent();
     std::vector<ExternalSemaphore> external_semaphores;
     BeginAccessInternal(true, &external_semaphores);
     DCHECK_LE(external_semaphores.size(), 1u);
 
     for (auto& semaphore : external_semaphores) {
-      GrVkImageInfo info;
-      auto result = backend_texture_.getVkImageInfo(&info);
-      DCHECK(result);
-      DCHECK_EQ(info.fCurrentQueueFamily, VK_QUEUE_FAMILY_EXTERNAL);
-      DCHECK_NE(info.fImageLayout, VK_IMAGE_LAYOUT_UNDEFINED);
-      DCHECK_NE(info.fImageLayout, VK_IMAGE_LAYOUT_PREINITIALIZED);
       ExternalVkImageGLRepresentationShared::AcquireTexture(
-          &semaphore, texture_id, info.fImageLayout);
+          &semaphore, texture_ids, GetVkImageLayoutsForGL());
     }
     // |external_semaphores| has been waited on a GL context, so it can not be
     // reused until a vulkan GPU work depends on the following GL task is over.
@@ -700,8 +703,10 @@ ExternalVkImageBacking::ProduceGLTexture(SharedImageManager* manager,
       return nullptr;
     }
   }
+
+  std::vector<gles2::Texture*> textures = {gl_texture_->texture()};
   return std::make_unique<ExternalVkImageGLRepresentation>(
-      manager, this, tracker, gl_texture_->texture());
+      manager, this, tracker, std::move(textures));
 }
 
 std::unique_ptr<GLTexturePassthroughImageRepresentation>
@@ -719,8 +724,10 @@ ExternalVkImageBacking::ProduceGLTexturePassthrough(
     }
   }
 
+  std::vector<scoped_refptr<gles2::TexturePassthrough>> textures = {
+      gl_texture_->passthrough_texture()};
   return std::make_unique<ExternalVkImageGLPassthroughRepresentation>(
-      manager, this, tracker, gl_texture_->passthrough_texture());
+      manager, this, tracker, std::move(textures));
 }
 
 std::unique_ptr<SkiaImageRepresentation> ExternalVkImageBacking::ProduceSkia(

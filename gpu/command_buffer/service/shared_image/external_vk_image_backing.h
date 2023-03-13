@@ -77,9 +77,6 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
 
   SharedContextState* context_state() const { return context_state_.get(); }
   const GrBackendTexture& backend_texture() const { return backend_texture_; }
-  sk_sp<SkPromiseImageTexture> promise_texture() const {
-    return promise_texture_;
-  }
   VulkanImage* image() const { return image_.get(); }
   viz::VulkanContextProvider* context_provider() const {
     return context_state()->vk_context_provider();
@@ -112,6 +109,12 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
   }
   uint32_t reads_in_progress() const { return reads_in_progress_; }
   uint32_t gl_reads_in_progress() const { return gl_reads_in_progress_; }
+
+  // Returns VkImage layouts for each plane as GL layouts.
+  std::vector<GLenum> GetVkImageLayoutsForGL();
+
+  // Returns skia promise images for each plane.
+  std::vector<sk_sp<SkPromiseImageTexture>> GetPromiseTextures();
 
   // Notifies the backing that an access will start. Return false if there is
   // currently any other conflict access in progress. Otherwise, returns true
