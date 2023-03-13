@@ -5057,28 +5057,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="ResourceScheduler.RequestsCount"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ResourceType" separator=".">
-  <suffix name="Image" label=""/>
-  <suffix name="CSSStyleSheet" label=""/>
-  <suffix name="Script" label=""/>
-  <suffix name="Font" label=""/>
-  <suffix name="Raw" label=""/>
-  <suffix name="SVGDocument" label=""/>
-  <suffix name="XSLStyleSheet" label=""/>
-  <suffix name="LinkPrefetch" label=""/>
-  <suffix name="TextTrack" label=""/>
-  <suffix name="Audio" label=""/>
-  <suffix name="Video" label=""/>
-  <suffix name="Manifest" label=""/>
-  <suffix name="SpeculationRules" label=""/>
-  <suffix name="Mock" label=""/>
-  <affected-histogram name="Blink.MemoryCache.RevalidationPolicy"/>
-  <affected-histogram name="Blink.MemoryCache.RevalidationPolicy.Dead"/>
-  <affected-histogram
-      name="Blink.MemoryCache.RevalidationPolicy.PerTopFrameSite"/>
-  <affected-histogram name="Blink.MemoryCache.RevalidationPolicy.Preload"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="RoamSecurityType" separator=".">
   <suffix name="EAP"
       label="Records roams in a network using 802.1X authentication without

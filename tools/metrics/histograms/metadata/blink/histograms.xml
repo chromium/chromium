@@ -36,6 +36,23 @@ chromium-metrics-reviews@google.com.
   <variant name=".Slow2G" summary="Slow-2G effective connection type"/>
 </variants>
 
+<variants name="ResourceType">
+  <variant name="Audio" summary="Audio"/>
+  <variant name="CSSStyleSheet" summary="CSS Style Sheet"/>
+  <variant name="Font" summary="Font"/>
+  <variant name="Image" summary="Image"/>
+  <variant name="LinkPrefetch" summary="Link Prefetch"/>
+  <variant name="Manifest" summary="Manifest"/>
+  <variant name="Mock" summary="Mock"/>
+  <variant name="Raw" summary="Raw"/>
+  <variant name="Script" summary="Script"/>
+  <variant name="SpeculationRules" summary="Speculation Rules"/>
+  <variant name="SVGDocument" summary="SVG Document"/>
+  <variant name="TextTrack" summary="Text Track"/>
+  <variant name="Video" summary="Video"/>
+  <variant name="XSLStyleSheet" summary="XSL Style Sheet"/>
+</variants>
+
 <histogram name="Blink.Accessibility.NumTreeUpdatesQueuedBeforeLayout"
     units="updates" expires_after="2023-03-05">
   <owner>aleventhal@chromium.org</owner>
@@ -2315,18 +2332,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.MemoryCache.RevalidationPolicy"
-    enum="RevalidationPolicy" expires_after="2023-10-01">
-  <owner>hiroshige@chromium.org</owner>
-  <owner>gjc@chromium.org</owner>
-  <owner>loading-dev@chromium.org</owner>
-  <summary>
-    RevalidationPolicy used for non-preloading requests for each resource type.
-    https://crbug.com/579496 https://crbug.com/1376866 Warning: this histogram
-    was expired from 2021/04/21 to 2022/12/09; data may be missing.
-  </summary>
-</histogram>
-
 <histogram name="Blink.MemoryCache.RevalidationPolicy.AsyncScript"
     enum="RevalidationPolicy" expires_after="2023-08-13">
   <owner>hiroshige@chromium.org</owner>
@@ -2340,22 +2345,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.MemoryCache.RevalidationPolicy.Dead"
+<histogram name="Blink.MemoryCache.RevalidationPolicy.Dead.{ResourceType}"
     enum="RevalidationPolicy" expires_after="2023-10-01">
   <owner>hiroshige@chromium.org</owner>
   <owner>gjc@chromium.org</owner>
   <owner>loading-dev@chromium.org</owner>
   <summary>
     RevalidationPolicy used for requests that hit Resource only referenced from
-    MemoryCache for each resource type. https://crbug.com/579496 Requests
-    counted by this are also counted by Blink.MemoryCache.RevalidationPolicy or
+    MemoryCache for each resource type ({ResourceType}).
+    https://crbug.com/579496 Requests counted by this are also counted by
+    Blink.MemoryCache.RevalidationPolicy or
     Blink.MemoryCache.RevalidationPolicy.Preload. https://crbug.com/1376866
-    Warning: this histogram was expired from 2021/04/21 to 2022/12/09; data may
-    be missing.
+
+    Warning: this histogram was expired from 2021-04-21 to 2022-12-09; data may
+    be missing. This histogram's {ResourceType} was broken until 2023-03-09;
+    data before the date may not be stored.
   </summary>
+  <token key="ResourceType" variants="ResourceType"/>
 </histogram>
 
-<histogram name="Blink.MemoryCache.RevalidationPolicy.PerTopFrameSite"
+<histogram
+    name="Blink.MemoryCache.RevalidationPolicy.PerTopFrameSite.{ResourceType}"
     enum="RevalidationPolicy" expires_after="2021-12-26">
   <owner>shivanisha@chromium.org</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
@@ -2364,18 +2374,39 @@ chromium-metrics-reviews@google.com.
     the resource is found in the memory cache and if the same top-frame site had
     loaded this resource earlier.
   </summary>
+  <token key="ResourceType" variants="ResourceType"/>
 </histogram>
 
-<histogram name="Blink.MemoryCache.RevalidationPolicy.Preload"
+<histogram name="Blink.MemoryCache.RevalidationPolicy.Preload.{ResourceType}"
     enum="RevalidationPolicy" expires_after="2023-10-01">
   <owner>hiroshige@chromium.org</owner>
   <owner>gjc@chromium.org</owner>
   <owner>loading-dev@chromium.org</owner>
   <summary>
-    RevalidationPolicy used for preloading requests for each resource type.
-    https://crbug.com/579496 https://crbug.com/1376866 Warning: this histogram
-    was expired from 2021/04/21 to 2022/12/09; data may be missing.
+    RevalidationPolicy used for preloading requests for each resource type
+    ({ResourceType}). https://crbug.com/579496 https://crbug.com/1376866
+
+    Warning: this histogram was expired from 2021-04-21 to 2022-12-09; data may
+    be missing. This histogram's {ResourceType} was broken until 2023-03-09;
+    data before the date may not be stored.
   </summary>
+  <token key="ResourceType" variants="ResourceType"/>
+</histogram>
+
+<histogram name="Blink.MemoryCache.RevalidationPolicy.{ResourceType}"
+    enum="RevalidationPolicy" expires_after="2023-10-01">
+  <owner>hiroshige@chromium.org</owner>
+  <owner>gjc@chromium.org</owner>
+  <owner>loading-dev@chromium.org</owner>
+  <summary>
+    RevalidationPolicy used for non-preloading requests for each resource type.
+    https://crbug.com/579496 https://crbug.com/1376866
+
+    Warning: this histogram was expired from 2021-04-21 to 2022-12-09; data may
+    be missing. This histogram's {ResourceType} was broken until 2023-03-09;
+    data before the date may not be stored.
+  </summary>
+  <token key="ResourceType" variants="ResourceType"/>
 </histogram>
 
 <histogram name="Blink.MobileMetrics.BadTapTargetRatioExtractionSucceed"

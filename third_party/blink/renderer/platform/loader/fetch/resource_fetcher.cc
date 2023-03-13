@@ -125,8 +125,8 @@ static constexpr char kCrossDocumentCachedResource[] =
   }
 
 const std::string ResourceTypeName(ResourceType type) {
-  // `ResourceType` histogram_suffixes in
-  // tools/metrics/histograms/metadata/histogram_suffixes_list.xml
+  // `ResourceType` variants in
+  // tools/metrics/histograms/metadata/blink/histograms.xml
   // should be updated when you update the followings.
   switch (type) {
     RESOURCE_TYPE_NAME(Image)             // 1
