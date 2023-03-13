@@ -5,6 +5,7 @@
 #ifndef BASE_TASK_SINGLE_THREAD_TASK_RUNNER_H_
 #define BASE_TASK_SINGLE_THREAD_TASK_RUNNER_H_
 
+#include "base/auto_reset.h"
 #include "base/base_export.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -76,6 +77,8 @@ class BASE_EXPORT SingleThreadTaskRunner : public SequencedTaskRunner {
    private:
     friend class SingleThreadTaskRunner;
     friend class CurrentHandleOverride;
+
+    const AutoReset<CurrentDefaultHandle*> resetter_;
 
     scoped_refptr<SingleThreadTaskRunner> task_runner_;
 

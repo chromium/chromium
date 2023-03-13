@@ -47,11 +47,11 @@
 #include "base/threading/simple_thread.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker_impl.h"
-#include "base/threading/thread_local_storage.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -594,7 +594,7 @@ TEST_F(BackgroundThreadGroupImplTest, UpdatePriorityBlockingStarted) {
 
 namespace {
 
-constexpr size_t kMagicTlsValue = 42;
+ABSL_CONST_INIT thread_local bool value_set = false;
 
 class ThreadGroupImplCheckTlsReuse : public ThreadGroupImplImplTest {
  public:
@@ -603,13 +603,14 @@ class ThreadGroupImplCheckTlsReuse : public ThreadGroupImplImplTest {
       delete;
 
   void SetTlsValueAndWait() {
-    slot_.Set(reinterpret_cast<void*>(kMagicTlsValue));
+    value_set = true;
     waiter_.Wait();
   }
 
-  void CountZeroTlsValuesAndWait(TestWaitableEvent* count_waiter) {
-    if (!slot_.Get())
-      subtle::NoBarrier_AtomicIncrement(&zero_tls_values_, 1);
+  void CountUnsetTlsValuesAndWait(TestWaitableEvent* count_waiter) {
+    if (!value_set) {
+      subtle::NoBarrier_AtomicIncrement(&unset_tls_values_, 1);
+    }
 
     count_waiter->Signal();
     waiter_.Wait();
@@ -622,19 +623,15 @@ class ThreadGroupImplCheckTlsReuse : public ThreadGroupImplImplTest {
     CreateAndStartThreadGroup(kReclaimTimeForCleanupTests, kMaxTasks);
   }
 
-  subtle::Atomic32 zero_tls_values_ = 0;
-
+  subtle::Atomic32 unset_tls_values_ = 0;
   TestWaitableEvent waiter_;
-
- private:
-  ThreadLocalStorage::Slot slot_;
 };
 
 }  // namespace
 
 // Checks that at least one worker has been cleaned up by checking the TLS.
 TEST_F(ThreadGroupImplCheckTlsReuse, CheckCleanupWorkers) {
-  // Saturate the workers and mark each worker's thread with a magic TLS value.
+  // Saturate the workers and mark each worker's thread.
   std::vector<std::unique_ptr<test::TestTaskFactory>> factories;
   for (size_t i = 0; i < kMaxTasks; ++i) {
     factories.push_back(std::make_unique<test::TestTaskFactory>(
@@ -658,14 +655,14 @@ TEST_F(ThreadGroupImplCheckTlsReuse, CheckCleanupWorkers) {
   // Wait for the thread group to clean up at least one worker.
   thread_group_->WaitForWorkersCleanedUpForTesting(1U);
 
-  // Saturate and count the worker threads that do not have the magic TLS value.
-  // If the value is not there, that means we're at a new worker.
+  // Saturate and count the worker threads that do not have their TLS value set.
+  // If the value is clear, that means we're at a new worker.
   std::vector<std::unique_ptr<TestWaitableEvent>> count_waiters;
   for (auto& factory : factories) {
     count_waiters.push_back(std::make_unique<TestWaitableEvent>());
     ASSERT_TRUE(factory->PostTask(
         PostNestedTask::NO,
-        BindOnce(&ThreadGroupImplCheckTlsReuse::CountZeroTlsValuesAndWait,
+        BindOnce(&ThreadGroupImplCheckTlsReuse::CountUnsetTlsValuesAndWait,
                  Unretained(this), count_waiters.back().get())));
     factory->WaitForAllTasksToRun();
   }
@@ -674,7 +671,7 @@ TEST_F(ThreadGroupImplCheckTlsReuse, CheckCleanupWorkers) {
   for (auto& count_waiter : count_waiters)
     count_waiter->Wait();
 
-  EXPECT_GT(subtle::NoBarrier_Load(&zero_tls_values_), 0);
+  EXPECT_GT(subtle::NoBarrier_Load(&unset_tls_values_), 0);
 
   // Release tasks waiting on |waiter_|.
   waiter_.Signal();

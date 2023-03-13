@@ -5,13 +5,15 @@
 #ifndef BASE_TASK_SCOPED_SET_TASK_PRIORITY_FOR_CURRENT_THREAD_H_
 #define BASE_TASK_SCOPED_SET_TASK_PRIORITY_FOR_CURRENT_THREAD_H_
 
+#include "base/auto_reset.h"
 #include "base/base_export.h"
 #include "base/task/task_traits.h"
 
 namespace base {
 namespace internal {
 
-class BASE_EXPORT ScopedSetTaskPriorityForCurrentThread {
+class BASE_EXPORT
+    [[maybe_unused, nodiscard]] ScopedSetTaskPriorityForCurrentThread {
  public:
   // Within the scope of this object, GetTaskPriorityForCurrentThread() will
   // return |priority|.
@@ -25,7 +27,7 @@ class BASE_EXPORT ScopedSetTaskPriorityForCurrentThread {
   ~ScopedSetTaskPriorityForCurrentThread();
 
  private:
-  const TaskPriority priority_;
+  const AutoReset<TaskPriority> resetter_;
 };
 
 // Returns the priority of the task running on the current thread,

@@ -17,7 +17,6 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/sequence_token.h"
 #include "base/strings/string_util.h"
@@ -33,6 +32,7 @@
 #include "base/trace_event/base_tracing.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -121,11 +121,7 @@ auto EmitThreadPoolTraceEventMetadata(perfetto::EventContext& ctx,
 #endif  //  BUILDFLAG(ENABLE_BASE_TRACING)
 }
 
-base::ThreadLocalBoolean& GetFizzleBlockShutdownTaskFlag() {
-  static base::NoDestructor<base::ThreadLocalBoolean>
-      fizzle_block_shutdown_tasks;
-  return *fizzle_block_shutdown_tasks;
-}
+ABSL_CONST_INIT thread_local bool fizzle_block_shutdown_tasks = false;
 
 }  // namespace
 
@@ -318,8 +314,7 @@ bool TaskTracker::WillPostTask(Task* task,
     // A non BLOCK_SHUTDOWN task is allowed to be posted iff shutdown hasn't
     // started and the task is not delayed.
     if (shutdown_behavior != TaskShutdownBehavior::BLOCK_SHUTDOWN ||
-        !task->delayed_run_time.is_null() ||
-        GetFizzleBlockShutdownTaskFlag().Get()) {
+        !task->delayed_run_time.is_null() || fizzle_block_shutdown_tasks) {
       return false;
     }
 
@@ -424,11 +419,11 @@ bool TaskTracker::IsShutdownComplete() const {
 }
 
 void TaskTracker::BeginFizzlingBlockShutdownTasks() {
-  GetFizzleBlockShutdownTaskFlag().Set(true);
+  fizzle_block_shutdown_tasks = true;
 }
 
 void TaskTracker::EndFizzlingBlockShutdownTasks() {
-  GetFizzleBlockShutdownTaskFlag().Set(false);
+  fizzle_block_shutdown_tasks = false;
 }
 
 void TaskTracker::RunTask(Task task,
