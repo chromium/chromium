@@ -80,7 +80,7 @@ constexpr size_t kMaxPedalMatchIndex =
 // static
 size_t AutocompleteResult::GetMaxMatches(bool is_zero_suggest) {
   constexpr size_t kDefaultMaxAutocompleteMatches =
-      is_android ? 10 : (is_ios ? 6 : 8);
+      is_android ? 10 : (is_ios ? 10 : 8);
   constexpr size_t kDefaultMaxZeroSuggestMatches =
       is_android ? 15 : (is_ios ? 20 : 8);
 #if BUILDFLAG(IS_IOS)
