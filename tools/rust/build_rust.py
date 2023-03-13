@@ -39,7 +39,6 @@ import hashlib
 import json
 import platform
 import os
-import pipes
 import shutil
 import string
 import subprocess
@@ -66,20 +65,21 @@ from update_rust import (CHROMIUM_DIR, RUST_REVISION, RUST_SUB_REVISION,
 
 EXCLUDED_TESTS = [
     # Temporarily disabled due to https://github.com/rust-lang/rust/issues/94322
-    'tests/ui/numeric/numeric-cast.rs',
+    os.path.join('tests', 'ui', 'numeric', 'numeric-cast.rs'),
     # Temporarily disabled due to https://github.com/rust-lang/rust/issues/96497
-    'tests/codegen/issue-96497-slice-size-nowrap.rs',
+    os.path.join('tests', 'codegen', 'issue-96497-slice-size-nowrap.rs'),
     # TODO(crbug.com/1347563): Re-enable when fixed.
-    'tests/codegen/sanitizer-cfi-emit-type-checks.rs',
-    'tests/codegen/sanitizer-cfi-emit-type-metadata-itanium-cxx-abi.rs',
+    os.path.join('tests', 'codegen', 'sanitizer-cfi-emit-type-checks.rs'),
+    os.path.join('tests', 'codegen',
+                 'sanitizer-cfi-emit-type-metadata-itanium-cxx-abi.rs'),
     # Temporarily disabled due to https://github.com/rust-lang/rust/issues/45222
     # which appears to have regressed as of a recent LLVM update. This test is
     # purely performance related, not correctness.
-    'tests/codegen/issue-45222.rs'
+    os.path.join('tests', 'codegen', 'issue-45222.rs')
 ]
 EXCLUDED_TESTS_WINDOWS = [
     # https://github.com/rust-lang/rust/issues/96464
-    'tests/codegen/vec-shrink-panik.rs'
+    os.path.join('tests', 'codegen', 'vec-shrink-panik.rs'),
 ]
 
 RUST_GIT_URL = ('https://chromium.googlesource.com/external/' +
@@ -313,10 +313,12 @@ class XPy:
             self._env['AR'] = os.path.join(llvm_bins_path, 'llvm-lib.exe')
             self._env['CC'] = os.path.join(llvm_bins_path, 'clang-cl.exe')
             self._env['CXX'] = os.path.join(llvm_bins_path, 'clang-cl.exe')
+            self._env['LD'] = os.path.join(llvm_bins_path, 'lld-link.exe')
         else:
             self._env['AR'] = os.path.join(llvm_bins_path, 'llvm-ar')
             self._env['CC'] = os.path.join(llvm_bins_path, 'clang')
             self._env['CXX'] = os.path.join(llvm_bins_path, 'clang++')
+            self._env['LD'] = os.path.join(llvm_bins_path, 'clang')
 
         if sys.platform == 'darwin':
             # The system/xcode compiler would find system SDK correctly, but
@@ -324,17 +326,17 @@ class XPy:
             # https://github.com/llvm/llvm-project/issues/45225
             sdk_path = subprocess.check_output(['xcrun', '--show-sdk-path'],
                                                text=True).rstrip()
-            RUSTENV['CFLAGS'] += f' -isysroot {sdk_path}'
-            RUSTENV['CXXFLAGS'] += f' -isysroot {sdk_path}'
-            RUSTENV['LDFLAGS'] += f' -isysroot {sdk_path}'
-            RUSTENV['RUSTFLAGS_BOOTSTRAP'] += (
+            self._env['CFLAGS'] += f' -isysroot {sdk_path}'
+            self._env['CXXFLAGS'] += f' -isysroot {sdk_path}'
+            self._env['LDFLAGS'] += f' -isysroot {sdk_path}'
+            self._env['RUSTFLAGS_BOOTSTRAP'] += (
                 f' -Clink-arg=-isysroot -Clink-arg={sdk_path}')
-            RUSTENV['RUSTFLAGS_NOT_BOOTSTRAP'] += (
+            self._env['RUSTFLAGS_NOT_BOOTSTRAP'] += (
                 f' -Clink-arg=-isysroot -Clink-arg={sdk_path}')
             # Rust compiletests don't get any of the RUSTFLAGS that we set here
             # and then the clang linker can't find `-lSystem`, unless we set the
             # `SDKROOT`.
-            RUSTENV['SDKROOT'] = sdk_path
+            self._env['SDKROOT'] = sdk_path
 
         if zlib_path:
             self._env['CFLAGS'] += f' -I{zlib_path}'
@@ -361,29 +363,39 @@ class XPy:
             self._env['CXXFLAGS'] += f' {gcc_toolchain_flag}'
             self._env['LDFLAGS'] += f' {gcc_toolchain_flag}'
             # A `-Clink-arg=<foo>` arg passes `foo`` to the linker invovation.
-            self._env[
-                'RUSTFLAGS_BOOTSTRAP'] += f' -Clink-arg={gcc_toolchain_flag}'
-            self._env[
-                'RUSTFLAGS_NOT_BOOTSTRAP'] += f' -Clink-arg={gcc_toolchain_flag}'
+            self._env['RUSTFLAGS_BOOTSTRAP'] += (
+                f' -Clink-arg={gcc_toolchain_flag}')
+            self._env['RUSTFLAGS_NOT_BOOTSTRAP'] += (
+                f' -Clink-arg={gcc_toolchain_flag}')
             self._env['RUSTFLAGS_BOOTSTRAP'] += (
                 f' -L native={gcc_toolchain_path}/lib64')
             self._env['RUSTFLAGS_NOT_BOOTSTRAP'] += (
                 f' -L native={gcc_toolchain_path}/lib64')
 
-        # Direct rustc to use Chromium's lld instead of the system linker. This
-        # is critical for stage 1 onward since we need to link libs with LLVM
-        # bitcode. It is also good for a hermetic build in general.
-        #
+        # TODO(danakj): On windows we point the to lld-link in config.toml so
+        # we don't (and can't) specify -fuse-ld=lld, as lld-link doesn't know
+        # that argument, and it's already using lld. Should we do the same for
+        # other platforms and remove this link argument?
+        if sys.platform != 'win32':
+            # Direct rustc to use Chromium's lld instead of the system linker.
+            # This is critical for stage 1 onward since we need to link libs
+            # with LLVM bitcode. It is also good for a hermetic build in
+            # general.
+            self._env['RUSTFLAGS_BOOTSTRAP'] += ' -Clink-arg=-fuse-ld=lld'
+            self._env['RUSTFLAGS_NOT_BOOTSTRAP'] += ' -Clink-arg=-fuse-ld=lld'
+
         # The `--undefined-version` flag is needed due to a bug in libtest:
-        # https://github.com/rust-lang/rust/issues/105967
-        self._env[
-            'RUSTFLAGS_BOOTSTRAP'] += ' -Clink-arg=-fuse-ld=lld -Clink-arg=-Wl,--undefined-version'
-        self._env[
-            'RUSTFLAGS_NOT_BOOTSTRAP'] += ' -Clink-arg=-fuse-ld=lld -Clink-arg=-Wl,--undefined-version'
+        # https://github.com/rust-lang/rust/issues/105967. The flag does
+        # not exist on Mac or Windows.
+        if sys.platform.startswith('linux'):
+            self._env['RUSTFLAGS_BOOTSTRAP'] += (
+                ' -Clink-arg=-Wl,--undefined-version')
+            self._env['RUSTFLAGS_NOT_BOOTSTRAP'] += (
+                ' -Clink-arg=-Wl,--undefined-version')
 
         # Rustdoc should use our clang linker as well, as we pass flags that
         # the system linker may not understand.
-        self._env['RUSTDOCFLAGS'] += f' -Clinker={self._env["CC"]}'
+        self._env['RUSTDOCFLAGS'] += f' -Clinker={self._env["LD"]}'
 
         # Cargo normally stores files in $HOME. Override this.
         self._env['CARGO_HOME'] = CARGO_HOME_DIR

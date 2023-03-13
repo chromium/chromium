@@ -54,7 +54,11 @@ def _find_test_executables(args):
             if exe_name in exes:
                 raise ValueError("Duplicate entry ('{}') in {}".format(
                     exe_name, input_filepath))
-            exes.add(exe_name)
+            if sys.platform == 'win32':
+                suffix = ".exe"
+            else:
+                suffix = ""
+            exes.add(f'{exe_name}{suffix}')
     if not exes:
         raise ValueError("Unexpectedly empty file: {}".format(input_filepath))
     exes = sorted(exes)  # For stable results in unit tests.
