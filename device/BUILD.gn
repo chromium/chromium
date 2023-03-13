@@ -150,7 +150,6 @@ test("device_unittests") {
   ]
 
   if (!is_ios) {
-    # TODO(crbug.com/1414708): Enable possible features on iOS.
     deps += [
       "//device/fido",
       "//device/fido:test_support",
