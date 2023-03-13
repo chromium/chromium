@@ -38,7 +38,7 @@ constexpr char kPromptResultHistogram[] = "Permissions.Action.StorageAccess";
 constexpr char kRequestOutcomeHistogram[] = "API.StorageAccess.RequestOutcome";
 
 GURL GetTopLevelURL() {
-  return GURL("https://embedder.example.com");
+  return GURL("https://embedder.com");
 }
 
 GURL GetDummyEmbeddingUrlWithSubdomain() {
@@ -473,11 +473,14 @@ class StorageAccessGrantPermissionContextAPIWithFirstPartySetsTest
     StorageAccessGrantPermissionContextAPIEnabledTest::SetUp();
 
     // Create a FPS with https://requester.example.com as the member and
-    // https://embedder.example.com as the primary.
+    // https://embedder.com as the primary.
     first_party_sets_handler_.SetGlobalSets(net::GlobalFirstPartySets(
         base::Version("1.2.3"),
         /*entries=*/
-        {{net::SchemefulSite(GetRequesterURL()),
+        {{net::SchemefulSite(GetTopLevelURL()),
+          {net::FirstPartySetEntry(net::SchemefulSite(GetTopLevelURL()),
+                                   net::SiteType::kPrimary, absl::nullopt)}},
+         {net::SchemefulSite(GetRequesterURL()),
           {net::FirstPartySetEntry(net::SchemefulSite(GetTopLevelURL()),
                                    net::SiteType::kAssociated, 0)}}},
         /*aliases=*/{}));
