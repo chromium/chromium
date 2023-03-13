@@ -114,6 +114,8 @@ using signin_metrics::PromoAction;
 
   self.signinStateOnStart =
       signin::GetPrimaryIdentitySigninState(self.browser->GetBrowserState());
+  DCHECK_NE(IdentitySigninStateSignedInWithSyncEnabled,
+            self.signinStateOnStart);
   self.signinIdentityOnStart =
       authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
 
