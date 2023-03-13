@@ -217,6 +217,7 @@ static_library("common_lib") {
     "//components/prefs",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core/common",
+    "//components/safe_search_api",
     "//components/services/app_service/public/cpp:app_share_target",
     "//components/services/app_service/public/cpp:app_types",
     "//components/services/heap_profiling/public/cpp",

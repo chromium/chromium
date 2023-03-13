@@ -19,11 +19,11 @@
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/common/net/safe_search_util.h"
 #include "chrome/common/pref_names.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
 #include "components/prefs/pref_value_map.h"
+#include "components/safe_search_api/safe_search_util.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
@@ -129,7 +129,7 @@ void SupervisedUserPrefStore::OnNewSettingsAvailable(
                        supervised_user::SupervisedUserURLFilter::ALLOW);
     prefs_->SetBoolean(prefs::kForceGoogleSafeSearch, true);
     prefs_->SetInteger(prefs::kForceYouTubeRestrict,
-                       safe_search_util::YOUTUBE_RESTRICT_MODERATE);
+                       safe_search_api::YOUTUBE_RESTRICT_MODERATE);
     prefs_->SetBoolean(prefs::kHideWebStoreIcon, false);
     prefs_->SetBoolean(prefs::kSigninAllowed, false);
     prefs_->SetBoolean(feed::prefs::kEnableSnippets, false);
@@ -166,10 +166,10 @@ void SupervisedUserPrefStore::OnNewSettingsAvailable(
       // |prefs::kForceYouTubeRestrict| because it is an int, not a bool.
       bool force_safe_search =
           settings.FindBool(supervised_user::kForceSafeSearch).value_or(true);
-      prefs_->SetInteger(
-          prefs::kForceYouTubeRestrict,
-          force_safe_search ? safe_search_util::YOUTUBE_RESTRICT_MODERATE
-                            : safe_search_util::YOUTUBE_RESTRICT_OFF);
+      prefs_->SetInteger(prefs::kForceYouTubeRestrict,
+                         force_safe_search
+                             ? safe_search_api::YOUTUBE_RESTRICT_MODERATE
+                             : safe_search_api::YOUTUBE_RESTRICT_OFF);
     }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

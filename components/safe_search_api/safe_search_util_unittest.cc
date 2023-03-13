@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/common/net/safe_search_util.h"
+#include "components/safe_search_api/safe_search_util.h"
 
 #include "base/strings/string_piece.h"
-#include "chrome/common/url_constants.h"
 #include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,14 +20,14 @@ void CheckAddedParameters(const std::string& url_string,
   SCOPED_TRACE(url_string);
 
   GURL result(url_string);
-  safe_search_util::ForceGoogleSafeSearch(GURL(url_string), &result);
+  safe_search_api::ForceGoogleSafeSearch(GURL(url_string), &result);
 
   EXPECT_EQ(expected_query_parameters, result.query());
 }
 
 TEST(SafeSearchUtilTest, AddGoogleSafeSearchParams) {
-  const std::string kSafeParameter = safe_search_util::kSafeSearchSafeParameter;
-  const std::string kSsuiParameter = safe_search_util::kSafeSearchSsuiParameter;
+  const std::string kSafeParameter = safe_search_api::kSafeSearchSafeParameter;
+  const std::string kSsuiParameter = safe_search_api::kSafeSearchSsuiParameter;
   const std::string kBothParameters = kSafeParameter + "&" + kSsuiParameter;
 
   // Test the home page.
@@ -126,9 +125,9 @@ TEST(SafeSearchUtilTest, AddGoogleSafeSearchParams) {
 
 TEST(SafeSearchUtilTest, SetYoutubeHeader) {
   net::HttpRequestHeaders headers;
-  safe_search_util::ForceYouTubeRestrict(
+  safe_search_api::ForceYouTubeRestrict(
       GURL("http://www.youtube.com"), &headers,
-      safe_search_util::YOUTUBE_RESTRICT_MODERATE);
+      safe_search_api::YOUTUBE_RESTRICT_MODERATE);
   std::string value;
   EXPECT_TRUE(headers.GetHeader("Youtube-Restrict", &value));
   EXPECT_EQ("Moderate", value);
@@ -137,9 +136,9 @@ TEST(SafeSearchUtilTest, SetYoutubeHeader) {
 TEST(SafeSearchUtilTest, OverrideYoutubeHeader) {
   net::HttpRequestHeaders headers;
   headers.SetHeader("Youtube-Restrict", "Off");
-  safe_search_util::ForceYouTubeRestrict(
+  safe_search_api::ForceYouTubeRestrict(
       GURL("http://www.youtube.com"), &headers,
-      safe_search_util::YOUTUBE_RESTRICT_MODERATE);
+      safe_search_api::YOUTUBE_RESTRICT_MODERATE);
   std::string value;
   EXPECT_TRUE(headers.GetHeader("Youtube-Restrict", &value));
   EXPECT_EQ("Moderate", value);
@@ -148,9 +147,9 @@ TEST(SafeSearchUtilTest, OverrideYoutubeHeader) {
 TEST(SafeSearchUtilTest, DoesntTouchNonYoutubeURL) {
   net::HttpRequestHeaders headers;
   headers.SetHeader("Youtube-Restrict", "Off");
-  safe_search_util::ForceYouTubeRestrict(
+  safe_search_api::ForceYouTubeRestrict(
       GURL("http://www.notyoutube.com"), &headers,
-      safe_search_util::YOUTUBE_RESTRICT_MODERATE);
+      safe_search_api::YOUTUBE_RESTRICT_MODERATE);
   std::string value;
   EXPECT_TRUE(headers.GetHeader("Youtube-Restrict", &value));
   EXPECT_EQ("Off", value);

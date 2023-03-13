@@ -1164,7 +1164,7 @@ const char kAllowDeletingBrowserHistory[] = "history.deleting_enabled";
 const char kForceGoogleSafeSearch[] = "settings.force_google_safesearch";
 
 // Integer controlling whether Restrict Mode (moderate/strict) is mandatory on
-// YouTube. See |safe_search_util::YouTubeRestrictMode| for possible values.
+// YouTube. See |safe_search_api::YouTubeRestrictMode| for possible values.
 const char kForceYouTubeRestrict[] = "settings.force_youtube_restrict";
 
 // Comma separated list of domain names (e.g. "google.com,school.edu").

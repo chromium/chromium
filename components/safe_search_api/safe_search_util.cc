@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/common/net/safe_search_util.h"
+#include "components/safe_search_api/safe_search_util.h"
 
 #include <string>
 #include <utility>
@@ -39,8 +39,8 @@ bool HasSameParameterKey(base::StringPiece first_parameter,
 // return value is the |query| string modified such that SafeSearch is active.
 std::string AddSafeSearchParameters(const std::string& query) {
   std::vector<base::StringPiece> new_parameters;
-  std::string safe_parameter = safe_search_util::kSafeSearchSafeParameter;
-  std::string ssui_parameter = safe_search_util::kSafeSearchSsuiParameter;
+  std::string safe_parameter = safe_search_api::kSafeSearchSafeParameter;
+  std::string ssui_parameter = safe_search_api::kSafeSearchSsuiParameter;
 
   for (const base::StringPiece& param : base::SplitStringPiece(
            query, "&", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
@@ -57,7 +57,7 @@ std::string AddSafeSearchParameters(const std::string& query) {
 
 }  // namespace
 
-namespace safe_search_util {
+namespace safe_search_api {
 
 const char kSafeSearchSafeParameter[] = "safe=active";
 const char kSafeSearchSsuiParameter[] = "ssui=on";
@@ -71,13 +71,15 @@ const char kGoogleAppsAllowedDomains[] = "X-GoogApps-Allowed-Domains";
 // Sets the query part of |new_url| with the new value of the parameters.
 void ForceGoogleSafeSearch(const GURL& url, GURL* new_url) {
   if (!google_util::IsGoogleSearchUrl(url) &&
-      !google_util::IsGoogleHomePageUrl(url))
+      !google_util::IsGoogleHomePageUrl(url)) {
     return;
+  }
 
   std::string query = url.query();
   std::string new_query = AddSafeSearchParameters(query);
-  if (query == new_query)
+  if (query == new_query) {
     return;
+  }
 
   GURL::Replacements replacements;
   replacements.SetQueryStr(new_query);
@@ -89,8 +91,9 @@ void ForceYouTubeRestrict(const GURL& url,
                           YouTubeRestrictMode mode) {
   if (!google_util::IsYoutubeDomainUrl(
           url, google_util::ALLOW_SUBDOMAIN,
-          google_util::DISALLOW_NON_STANDARD_PORTS))
+          google_util::DISALLOW_NON_STANDARD_PORTS)) {
     return;
+  }
 
   switch (mode) {
     case YOUTUBE_RESTRICT_OFF:
@@ -110,4 +113,4 @@ void ForceYouTubeRestrict(const GURL& url,
   }
 }
 
-}  // namespace safe_search_util
+}  // namespace safe_search_api

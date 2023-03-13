@@ -37,7 +37,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/common/net/safe_search_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -52,6 +51,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_search_api/safe_search_util.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/web_contents.h"
@@ -1429,7 +1429,7 @@ TEST_F(ChromeDownloadManagerDelegateTest, SanitizeGoogleSearchLink) {
     delegate()->SanitizeDownloadParameters(&params);
     GURL expected_url = kGoogleSearchUrl;
     if (is_safe_search_enabled)
-      safe_search_util::ForceGoogleSafeSearch(expected_url, &expected_url);
+      safe_search_api::ForceGoogleSafeSearch(expected_url, &expected_url);
     EXPECT_EQ(params.url(), expected_url);
   }
 }

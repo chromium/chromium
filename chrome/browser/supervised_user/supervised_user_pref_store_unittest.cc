@@ -11,10 +11,10 @@
 #include "base/values.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/supervised_user/supervised_user_pref_store.h"
-#include "chrome/common/net/safe_search_util.h"
 #include "chrome/common/pref_names.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/testing_pref_store.h"
+#include "components/safe_search_api/safe_search_util.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "components/supervised_user/core/common/features.h"
@@ -160,9 +160,8 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
   int force_youtube_restrict =
       fixture.changed_prefs()
           ->FindIntByDottedPath(prefs::kForceYouTubeRestrict)
-          .value_or(safe_search_util::YOUTUBE_RESTRICT_OFF);
-  EXPECT_EQ(force_youtube_restrict,
-            safe_search_util::YOUTUBE_RESTRICT_MODERATE);
+          .value_or(safe_search_api::YOUTUBE_RESTRICT_OFF);
+  EXPECT_EQ(force_youtube_restrict, safe_search_api::YOUTUBE_RESTRICT_MODERATE);
 
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_THAT(fixture.changed_prefs()->FindBoolByDottedPath(
@@ -209,8 +208,8 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
   force_youtube_restrict =
       fixture.changed_prefs()
           ->FindIntByDottedPath(prefs::kForceYouTubeRestrict)
-          .value_or(safe_search_util::YOUTUBE_RESTRICT_MODERATE);
-  EXPECT_EQ(force_youtube_restrict, safe_search_util::YOUTUBE_RESTRICT_OFF);
+          .value_or(safe_search_api::YOUTUBE_RESTRICT_MODERATE);
+  EXPECT_EQ(force_youtube_restrict, safe_search_api::YOUTUBE_RESTRICT_OFF);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // The custodian can allow sites and apps to request permissions.

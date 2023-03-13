@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_COMMON_NET_SAFE_SEARCH_UTIL_H_
-#define CHROME_COMMON_NET_SAFE_SEARCH_UTIL_H_
+#ifndef COMPONENTS_SAFE_SEARCH_API_SAFE_SEARCH_UTIL_H_
+#define COMPONENTS_SAFE_SEARCH_API_SAFE_SEARCH_UTIL_H_
 
 class GURL;
 
@@ -11,7 +11,7 @@ namespace net {
 class HttpRequestHeaders;
 }
 
-namespace safe_search_util {
+namespace safe_search_api {
 
 // Parameters that get appended to force SafeSearch.
 extern const char kSafeSearchSafeParameter[];
@@ -50,6 +50,6 @@ void ForceYouTubeRestrict(const GURL& url,
                           net::HttpRequestHeaders* headers,
                           YouTubeRestrictMode mode);
 
-}  // namespace safe_search_util
+}  // namespace safe_search_api
 
-#endif  // CHROME_COMMON_NET_SAFE_SEARCH_UTIL_H_
+#endif  // COMPONENTS_SAFE_SEARCH_API_SAFE_SEARCH_UTIL_H_

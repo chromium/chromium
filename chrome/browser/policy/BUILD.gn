@@ -122,6 +122,7 @@ source_set("test_support") {
     "//chrome/test:test_support",
     "//components/policy/core/common",
     "//components/policy/core/common:common_constants",
+    "//components/safe_search_api",
     "//components/security_interstitials/content:security_interstitial_page",
     "//url:url",
   ]
