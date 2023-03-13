@@ -864,6 +864,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Compositing.SurfaceManager.MarkForDestructionToDestroy"
+    units="ms" expires_after="2023-12-01">
+  <owner>jonross@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    The time between when a Surface has been Marked for Destruction, to when it
+    is actually Destroyed.
+
+    This time denotes how long the Surface remains referenced by other Surfaces,
+    preventing deletion. This does not include the following time until the
+    associated resources are released, and their memory is freed. This is logged
+    once per destroyed Surface.
+  </summary>
+</histogram>
+
 <histogram
     name="CompositorLatency.CompositorOnlyFrame{InteractionType}.{StageType}"
     units="microseconds" expires_after="2023-03-01">
