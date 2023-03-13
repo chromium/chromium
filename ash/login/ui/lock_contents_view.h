@@ -134,9 +134,6 @@ class ASH_EXPORT LockContentsView
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
 
-  // NonAccessibleView:
-  void OnThemeChanged() override;
-
   // LoginDataDispatcher::Observer:
   void OnUsersChanged(const std::vector<LoginUserInfo>& users) override;
   void OnUserAvatarChanged(const AccountId& account_id,

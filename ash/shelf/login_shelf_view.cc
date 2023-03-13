@@ -205,7 +205,7 @@ class LoginShelfButton : public PillButton {
   }
 
   void UpdateButtonColors() {
-    SetEnabledTextColors(GetColorProvider()->GetColor(GetButtonTextColorId()));
+    SetEnabledTextColorIds(GetButtonTextColorId());
     SetImageModel(
         views::Button::STATE_NORMAL,
         ui::ImageModel::FromVectorIcon(icon_, GetButtonIconColorId()));
@@ -337,7 +337,7 @@ class KioskAppsButton : public views::MenuButton,
   }
 
   void UpdateButtonColors() {
-    SetEnabledTextColors(GetColorProvider()->GetColor(GetButtonTextColorId()));
+    SetEnabledTextColorIds(GetButtonTextColorId());
     SetImageModel(views::Button::STATE_NORMAL,
                   ui::ImageModel::FromVectorIcon(kShelfAppsButtonIcon,
                                                  GetButtonIconColorId()));
@@ -647,11 +647,6 @@ void LoginShelfView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 void LoginShelfView::Layout() {
   views::View::Layout();
   UpdateButtonUnionBounds();
-}
-
-void LoginShelfView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  UpdateButtonsColors();
 }
 
 void LoginShelfView::OnShelfConfigUpdated() {

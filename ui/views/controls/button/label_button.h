@@ -70,8 +70,14 @@ class VIEWS_EXPORT LabelButton : public Button, public NativeThemeDelegate {
   // Sets the text color shown for the specified button |for_state| to |color|.
   void SetTextColor(ButtonState for_state, SkColor color);
 
+  // Sets the text color as above but using ColorId.
+  void SetTextColorId(ButtonState for_state, ui::ColorId color_id);
+
   // Sets the text colors shown for the non-disabled states to |color|.
   virtual void SetEnabledTextColors(absl::optional<SkColor> color);
+
+  // Sets the text colors shown for the non-disabled states to |color_id|.
+  void SetEnabledTextColorIds(absl::optional<ui::ColorId> color_id);
 
   // Gets the current state text color.
   SkColor GetCurrentTextColor() const;
@@ -233,7 +239,7 @@ class VIEWS_EXPORT LabelButton : public Button, public NativeThemeDelegate {
 
   // The image models and colors for each button state.
   ui::ImageModel button_state_image_models_[STATE_COUNT] = {};
-  SkColor button_state_colors_[STATE_COUNT] = {};
+  absl::variant<SkColor, ui::ColorId> button_state_colors_[STATE_COUNT] = {};
 
   // Used to track whether SetTextColor() has been invoked.
   std::array<bool, STATE_COUNT> explicitly_set_colors_ = {};

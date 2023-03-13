@@ -202,6 +202,7 @@ void Label::SetEnabledColor(SkColor color) {
 
   enabled_color_set_ = true;
   requested_enabled_color_ = color;
+  enabled_color_id_.reset();
   RecalculateColors();
   OnPropertyChanged(&requested_enabled_color_, kPropertyEffectsPaint);
 }
@@ -215,9 +216,10 @@ void Label::SetEnabledColorId(absl::optional<ui::ColorId> enabled_color_id) {
     return;
 
   enabled_color_id_ = enabled_color_id;
-  if (GetWidget())
+  if (GetWidget()) {
     UpdateColorsFromTheme();
-
+    enabled_color_set_ = true;
+  }
   OnPropertyChanged(&enabled_color_id_, kPropertyEffectsPaint);
 }
 

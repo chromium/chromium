@@ -674,12 +674,6 @@ bool LockContentsView::AcceleratorPressed(const ui::Accelerator& accelerator) {
   return true;
 }
 
-void LockContentsView::OnThemeChanged() {
-  NonAccessibleView::OnThemeChanged();
-  UpdateBottomStatusIndicatorColors();
-  UpdateSystemInfoColors();
-}
-
 void LockContentsView::OnUsersChanged(const std::vector<LoginUserInfo>& users) {
   // The debug view will potentially call this method many times. Make sure to
   // invalidate any child references.
@@ -2493,8 +2487,7 @@ bool LockContentsView::GetSystemInfoVisibility() const {
 void LockContentsView::UpdateSystemInfoColors() {
   for (auto* child : system_info_->children()) {
     views::Label* label = static_cast<views::Label*>(child);
-    label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary));
+    label->SetEnabledColorId(kColorAshTextColorPrimary);
   }
 }
 
@@ -2503,21 +2496,16 @@ void LockContentsView::UpdateBottomStatusIndicatorColors() {
     case BottomIndicatorState::kNone:
       return;
     case BottomIndicatorState::kManagedDevice: {
-      bottom_status_indicator_->SetIcon(
-          chromeos::kEnterpriseIcon,
-          AshColorProvider::ContentLayerType::kIconColorPrimary);
-      bottom_status_indicator_->SetEnabledTextColors(
-          AshColorProvider::Get()->GetContentLayerColor(
-              AshColorProvider::ContentLayerType::kTextColorPrimary));
+      bottom_status_indicator_->SetIcon(chromeos::kEnterpriseIcon,
+                                        kColorAshIconColorPrimary);
+      bottom_status_indicator_->SetEnabledTextColorIds(
+          kColorAshTextColorPrimary);
       break;
     }
     case BottomIndicatorState::kAdbSideLoadingEnabled: {
-      bottom_status_indicator_->SetIcon(
-          kLockScreenAlertIcon,
-          AshColorProvider::ContentLayerType::kIconColorAlert);
-      bottom_status_indicator_->SetEnabledTextColors(
-          AshColorProvider::Get()->GetContentLayerColor(
-              AshColorProvider::ContentLayerType::kTextColorAlert));
+      bottom_status_indicator_->SetIcon(kLockScreenAlertIcon,
+                                        kColorAshIconColorAlert);
+      bottom_status_indicator_->SetEnabledTextColorIds(kColorAshTextColorAlert);
       break;
     }
   }
