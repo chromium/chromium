@@ -530,7 +530,10 @@ component("base") {
       "l10n/l10n_util_mac_bridge.mm",
     ]
     public_deps += [ "//ui/events:event_constants" ]
-    deps += [ ":l10n_util_ios" ]
+    deps += [
+      ":l10n_util_ios",
+      "//base",
+    ]
     if (!use_blink) {
       deps -= [
         "//ui/events",

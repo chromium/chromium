@@ -16,6 +16,16 @@ extension Color {
     return Color(kTextPrimaryColor)
   }
 
+  /// The secondary text color.
+  public static var textSecondary: Color {
+    return Color(kTextSecondaryColor)
+  }
+
+  /// The tertiary text color.
+  public static var textTertiary: Color {
+    return Color(kTextTertiaryColor)
+  }
+
   /// The tertiary background color
   public static var tertiaryBackground: Color {
     return Color(kTertiaryBackgroundColor)

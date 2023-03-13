@@ -38,8 +38,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller+private.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/horizontal_layout.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/plus_sign_cell.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_button.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_button_header.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_button_ui_swift.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/suggested_actions_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/suggested_actions_grid_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/suggested_actions_view_controller.h"
@@ -188,6 +187,13 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
         addObserver:self
            selector:@selector(voiceOverStatusDidChange)
                name:UIAccessibilityVoiceOverStatusDidChangeNotification
+             object:nil];
+
+    // Register for Dynamic Type notifications.
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(preferredContentSizeCategoryDidChange)
+               name:UIContentSizeCategoryDidChangeNotification
              object:nil];
   }
 
@@ -530,14 +536,21 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
                                 atIndexPath:(NSIndexPath*)indexPath {
   switch (_mode) {
     case TabGridModeNormal: {
+      DCHECK(IsInactiveTabsEnabled());
       InactiveTabsButtonHeader* header = [collectionView
           dequeueReusableSupplementaryViewOfKind:kind
                              withReuseIdentifier:kInactiveTabsHeaderIdentifier
                                     forIndexPath:indexPath];
-      header.button.count = self.inactiveTabsCount;
-      [header.button addTarget:self
-                        action:@selector(didTapInactiveTabsButton)
-              forControlEvents:UIControlEventTouchUpInside];
+      header.parent = self;
+      __weak __typeof(self) weakSelf = self;
+      header.buttonAction = ^{
+        [weakSelf didTapInactiveTabsButton];
+      };
+      header.inactivityThresholdDisplayString =
+          InactiveTabsTimeThresholdDisplayString();
+      if (IsShowInactiveTabsCountEnabled()) {
+        [header configureWithCount:self.inactiveTabsCount];
+      }
       return header;
     }
     case TabGridModeSelection:
@@ -664,7 +677,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       if (!IsInactiveTabsEnabled() || self.inactiveTabsCount == 0) {
         return CGSizeZero;
       }
-      return CGSizeMake(collectionView.bounds.size.width, 100);
+      return [self inactiveTabsButtonHeaderSize];
     case TabGridModeSelection:
       return CGSizeZero;
     case TabGridModeSearch:
@@ -1364,11 +1377,17 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 - (void)advertizeInactiveTabsWithCount:(NSUInteger)count {
   DCHECK(IsInactiveTabsEnabled());
+
+  // Update `inactiveTabsCount`.
   NSUInteger oldCount = self.inactiveTabsCount;
   if (self.inactiveTabsCount == count) {
     return;
   }
   self.inactiveTabsCount = count;
+
+  if (!IsShowInactiveTabsCountEnabled()) {
+    return;
+  }
 
   // Update the header.
   if (oldCount == 0 || count == 0) {
@@ -1386,7 +1405,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
                                 atIndexPath:indexPath]);
     // Note: At this point, `header` could be nil if not visible, or if the
     // supplementary view is not an InactiveTabsButtonHeader.
-    header.button.count = count;
+    [header configureWithCount:count];
   }
 }
 
@@ -1511,6 +1530,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 - (void)voiceOverStatusDidChange {
   self.collectionView.dragInteractionEnabled =
       [self shouldEnableDrapAndDropInteraction];
+}
+
+- (void)preferredContentSizeCategoryDidChange {
+  [self.collectionView.collectionViewLayout invalidateLayout];
 }
 
 - (BOOL)shouldEnableDrapAndDropInteraction {
@@ -1839,6 +1862,24 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   }];
 
   return [itemIdentifiers copy];
+}
+
+- (CGSize)inactiveTabsButtonHeaderSize {
+  NSString* kind = UICollectionElementKindSectionHeader;
+  NSIndexPath* indexPath = [NSIndexPath indexPathForItem:0
+                                               inSection:kOpenTabsSectionIndex];
+  InactiveTabsButtonHeader* header =
+      base::mac::ObjCCastStrict<InactiveTabsButtonHeader>([self
+                             collectionView:self.collectionView
+          viewForSupplementaryElementOfKind:kind
+                                atIndexPath:indexPath]);
+  CGFloat width = CGRectGetWidth(self.collectionView.bounds);
+  CGSize targetSize = CGSize(width, UILayoutFittingExpandedSize.height);
+  CGSize size =
+      [header systemLayoutSizeFittingSize:targetSize
+            withHorizontalFittingPriority:UILayoutPriorityRequired
+                  verticalFittingPriority:UILayoutPriorityFittingSizeLevel];
+  return CGSizeMake(width, size.height);
 }
 
 #pragma mark Suggested Actions Section

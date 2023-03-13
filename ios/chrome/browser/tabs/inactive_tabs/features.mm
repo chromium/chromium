@@ -66,9 +66,10 @@ const base::TimeDelta InactiveTabsTimeThreshold() {
   return base::Days(14);
 }
 
-std::u16string InactiveTabsTimeThresholdDisplayString() {
+NSString* InactiveTabsTimeThresholdDisplayString() {
   DCHECK(IsInactiveTabsEnabled());
-  return base::NumberToString16(InactiveTabsTimeThreshold().InDays());
+  return [NSString
+      stringWithFormat:@"%@", @(InactiveTabsTimeThreshold().InDays())];
 }
 
 BASE_FEATURE(kShowInactiveTabsCount,

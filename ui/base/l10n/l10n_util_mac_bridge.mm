@@ -4,7 +4,8 @@
 
 #import <Foundation/Foundation.h>
 
-#include "ui/base/l10n/l10n_util_mac.h"
+#import "base/strings/sys_string_conversions.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 #import "ui/base/l10n/l10n_util_mac_bridge.h"
 
 @implementation L10NUtils
@@ -15,6 +16,11 @@
 
 + (NSString*)stringWithFixupForMessageId:(int)messageId {
   return l10n_util::GetNSStringWithFixup(messageId);
+}
+
++ (NSString*)formatStringForMessageId:(int)messageId
+                             argument:(NSString*)argument {
+  return l10n_util::GetNSStringF(messageId, base::SysNSStringToUTF16(argument));
 }
 
 @end

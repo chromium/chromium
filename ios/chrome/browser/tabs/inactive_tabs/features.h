@@ -7,6 +7,8 @@
 
 #import "base/feature_list.h"
 
+#import <Foundation/Foundation.h>
+
 namespace base {
 class TimeDelta;
 }  // namespace base
@@ -30,7 +32,7 @@ const base::TimeDelta InactiveTabsTimeThreshold();
 
 // Convenience method for getting a displayable representation of the threshold.
 // This is the number of days as a string.
-std::u16string InactiveTabsTimeThresholdDisplayString();
+NSString* InactiveTabsTimeThresholdDisplayString();
 
 // Feature flag to enable the display of the count of Inactive Tabs in Tab Grid.
 BASE_DECLARE_FEATURE(kShowInactiveTabsCount);
