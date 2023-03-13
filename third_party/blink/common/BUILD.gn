@@ -490,7 +490,7 @@ static_library("test_support") {
   visibility = [ "//third_party/blink/public:test_support" ]
 }
 
-if (use_libfuzzer) {
+if (use_fuzzing_engine_with_lpm) {
   fuzzer_test("storage_key_proto_fuzzer") {
     sources = [ "storage_key/storage_key_proto_fuzzer.cc" ]
     deps = [
