@@ -1486,9 +1486,6 @@ extern const char kPrivacySandboxSettings4Description[];
 extern const char kPrivateAggregationDeveloperModeName[];
 extern const char kPrivateAggregationDeveloperModeDescription[];
 
-extern const char kProminentDarkModeActiveTabTitleName[];
-extern const char kProminentDarkModeActiveTabTitleDescription[];
-
 extern const char kPullToRefreshName[];
 extern const char kPullToRefreshDescription[];
 extern const char kPullToRefreshEnabledTouchscreen[];

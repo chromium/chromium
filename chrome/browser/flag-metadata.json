@@ -5954,11 +5954,6 @@
     "expiry_milestone": 106
   },
   {
-    "name": "prominent-dark-mode-active-tab-title",
-    "owners": [ "dfried" ],
-    "expiry_milestone": 82
-  },
-  {
     "name": "promise-icons",
     "owners": ["vpao", "chromeos-apps-foundation-team@google.com"],
     "expiry_milestone": 120
