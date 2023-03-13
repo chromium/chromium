@@ -22,6 +22,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import android.graphics.Bitmap;
 import android.support.test.InstrumentationRegistry;
 import android.view.ViewGroup;
 import android.view.ViewStub;
@@ -37,6 +38,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
+import org.chromium.base.GarbageCollectionTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -73,6 +75,9 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.UiRestriction;
 
+import java.lang.ref.WeakReference;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -104,6 +109,9 @@ public class TabSwitcherTabletTest {
     private int mCurrentlyActiveLayout;
     private Callback<LayoutManagerImpl> mLayoutManagerCallback;
 
+    private Set<WeakReference<Bitmap>> mAllBitmaps = new HashSet<>();
+    private TabSwitcher.TabListDelegate mTabListDelegate;
+
     @Before
     public void setUp() throws ExecutionException {
         CriteriaHelper.pollUiThread(sActivityTestRule.getActivity()
@@ -115,6 +123,14 @@ public class TabSwitcherTabletTest {
             public void onFinishedHiding(int layoutType) {
                 mCurrentlyActiveLayout = layoutType;
                 mLayoutChangedCallbackHelper.notifyCalled();
+            }
+
+            @Override
+            public void onStartedShowing(int layoutType, boolean showToolbar) {
+                if (layoutType != LayoutType.TAB_SWITCHER) {
+                    return;
+                }
+                setupForThumbnailCheck();
             }
         };
         mLayoutManagerCallback = (manager) -> manager.addObserver(mLayoutObserver);
@@ -143,7 +159,7 @@ public class TabSwitcherTabletTest {
         assertTrue("TabSwitcher view stub should not be inflated",
                 tabSwitcherStub.getParent() != null);
 
-        prepareTabs(1, 1);
+        TabUiTestHelper.prepareTabsWithThumbnail(sActivityTestRule, 1, 0, null);
         enterGTSWithThumbnailChecking();
         layout = sActivityTestRule.getActivity().getLayoutManager().getOverviewLayout();
         assertTrue("OverviewLayout should be TabSwitcherAndStartSurfaceLayout layout",
@@ -152,7 +168,7 @@ public class TabSwitcherTabletTest {
                 sActivityTestRule.getActivity().findViewById(R.id.grid_tab_switcher_view_holder);
         assertNotNull("TabSwitcher view should be inflated", tabSwitcherViewHolder);
 
-        exitSwitcherWithTabClick(0);
+        exitGTSAndVerifyThumbnailsAreReleased(1);
         assertFalse(sActivityTestRule.getActivity().getLayoutManager().isLayoutVisible(
                 LayoutType.TAB_SWITCHER));
     }
@@ -349,5 +365,40 @@ public class TabSwitcherTabletTest {
                             InstrumentationRegistry.getInstrumentation(),
                             sActivityTestRule.getActivity());
                 });
+    }
+
+    private void setupForThumbnailCheck() {
+        Layout layout = sActivityTestRule.getActivity().getLayoutManager().getOverviewLayout();
+        assertTrue(layout instanceof TabSwitcherAndStartSurfaceLayout);
+        TabSwitcherAndStartSurfaceLayout mTabSwitcherAndStartSurfaceLayout =
+                (TabSwitcherAndStartSurfaceLayout) layout;
+
+        mTabListDelegate = mTabSwitcherAndStartSurfaceLayout.getStartSurfaceForTesting()
+                                   .getGridTabListDelegate();
+        Callback<Bitmap> mBitmapListener = (bitmap) -> mAllBitmaps.add(new WeakReference<>(bitmap));
+        mTabListDelegate.setBitmapCallbackForTesting(mBitmapListener);
+        assertEquals(0, mTabListDelegate.getBitmapFetchCountForTesting());
+    }
+
+    private void exitGTSAndVerifyThumbnailsAreReleased(int tabsWithThumbnail)
+            throws TimeoutException {
+        assertTrue(sActivityTestRule.getActivity().getLayoutManager().isLayoutVisible(
+                LayoutType.TAB_SWITCHER));
+        assertTrue(mTabListDelegate.getBitmapFetchCountForTesting() > 0);
+        assertEquals(tabsWithThumbnail, mAllBitmaps.size());
+        final int index = sActivityTestRule.getActivity().getCurrentTabModel().index();
+        exitSwitcherWithTabClick(index);
+        assertThumbnailsAreReleased();
+    }
+
+    private void assertThumbnailsAreReleased() {
+        CriteriaHelper.pollUiThread(() -> {
+            for (WeakReference<Bitmap> bitmap : mAllBitmaps) {
+                if (!GarbageCollectionTestUtils.canBeGarbageCollected(bitmap)) {
+                    return false;
+                }
+            }
+            return true;
+        });
     }
 }
