@@ -18,9 +18,9 @@
 #include "chrome/browser/media/webrtc/capture_policy_utils.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/same_origin_observer.h"
-#include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/views/tab_sharing/tab_capture_contents_border_helper.h"
@@ -379,7 +379,8 @@ void TabSharingUIViews::CreateInfobarForWebContents(WebContents* contents) {
 
   // Don't show the info bar in a Picture in Picture window, since it doesn't
   // typically fit anyway.
-  if (PictureInPictureWindowManager::IsChildWebContents(contents)) {
+  Browser* browser = chrome::FindBrowserWithWebContents(contents);
+  if (browser && browser->is_type_picture_in_picture()) {
     return;
   }
 
