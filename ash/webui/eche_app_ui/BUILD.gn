@@ -24,6 +24,8 @@ static_library("eche_app_ui_pref") {
 
 static_library("eche_app_ui") {
   sources = [
+    "accessibility_tree_converter.cc",
+    "accessibility_tree_converter.h",
     "apps_access_manager.cc",
     "apps_access_manager.h",
     "apps_access_manager_impl.cc",
