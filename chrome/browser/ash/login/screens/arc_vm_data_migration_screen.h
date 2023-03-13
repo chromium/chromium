@@ -99,7 +99,12 @@ class ArcVmDataMigrationScreen : public BaseScreen,
   void HandleFinish();
   void HandleReport();
 
-  virtual void HandleFatalError();
+  void HandleSetupFailure();
+
+  // Handle errors that are expected to be retriable after going back to the
+  // desktop and re-entering the migration flow. Should not be called when
+  // resuming, because it prevents the user from going back to the desktop.
+  virtual void HandleRetriableFatalError();
 
   virtual device::mojom::WakeLock* GetWakeLock();
 
@@ -123,6 +128,9 @@ class ArcVmDataMigrationScreen : public BaseScreen,
   // Indicates whether the migration was previously stopped halfway and is being
   // resumed. When this is true, the free space check is skipped and the resume
   // screen (not the default welcome screen) is displayed as the initial screen.
+  // Also, when resuming, setup failures are treated in the same way as
+  // migration failures (i.e., wipe /data, mark the migration as finished, and
+  // show the failure screen) to avoid unmanageable resumes.
   bool resuming_ = false;
 
   bool update_button_pressed_ = false;

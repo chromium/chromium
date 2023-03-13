@@ -104,6 +104,22 @@ void ArcVmDataMigrationScreen::ShowImpl() {
   scoped_screen_lock_blocker_ =
       Shell::Get()->session_controller()->GetScopedScreenLockBlocker();
 
+  switch (arc::GetArcVmDataMigrationStatus(profile_->GetPrefs())) {
+    case arc::ArcVmDataMigrationStatus::kConfirmed:
+      // Set the status back to kNotified to prepare for cases where the
+      // migration is skipped or the device is shut down before the migration is
+      // started.
+      arc::SetArcVmDataMigrationStatus(
+          profile_->GetPrefs(), arc::ArcVmDataMigrationStatus::kNotified);
+      break;
+    case arc::ArcVmDataMigrationStatus::kStarted:
+      resuming_ = true;
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
+
   view_->Show();
   StopArcVmInstanceAndArcUpstartJobs();
 }
@@ -151,7 +167,7 @@ void ArcVmDataMigrationScreen::OnGetVmInfoResponse(
     absl::optional<vm_tools::concierge::GetVmInfoResponse> response) {
   if (!response.has_value()) {
     LOG(ERROR) << "GetVmInfo for ARCVM failed: No D-Bus response";
-    HandleFatalError();
+    HandleSetupFailure();
     return;
   }
 
@@ -184,7 +200,7 @@ void ArcVmDataMigrationScreen::OnStopVmResponse(
                << (response.has_value() ? response->failure_reason()
                                         : "No D-Bus response");
     concierge_observation_.Reset();
-    HandleFatalError();
+    HandleSetupFailure();
   }
 }
 
@@ -204,7 +220,7 @@ void ArcVmDataMigrationScreen::OnArcUpstartJobsStopped(bool result) {
   // |result| is true when there are no stale Upstart jobs.
   if (!result) {
     LOG(ERROR) << "Failed to stop ARC Upstart jobs";
-    HandleFatalError();
+    HandleSetupFailure();
     return;
   }
 
@@ -215,12 +231,8 @@ void ArcVmDataMigrationScreen::SetUpInitialView() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(profile_);
   switch (arc::GetArcVmDataMigrationStatus(profile_->GetPrefs())) {
-    case arc::ArcVmDataMigrationStatus::kConfirmed:
-      // Set the status back to kNotified to prepare for cases where the
-      // migration is skipped or the device is shut down before the migration is
-      // started.
-      arc::SetArcVmDataMigrationStatus(
-          profile_->GetPrefs(), arc::ArcVmDataMigrationStatus::kNotified);
+    case arc::ArcVmDataMigrationStatus::kNotified:
+      DCHECK(!resuming_);
       DCHECK(ash::SpacedClient::Get());
       ash::SpacedClient::Get()->GetFreeDiskSpace(
           kPathToCheckFreeDiskSpace,
@@ -228,7 +240,7 @@ void ArcVmDataMigrationScreen::SetUpInitialView() {
                          weak_ptr_factory_.GetWeakPtr()));
       break;
     case arc::ArcVmDataMigrationStatus::kStarted:
-      resuming_ = true;
+      DCHECK(resuming_);
       CheckBatteryState();
       break;
     default:
@@ -241,7 +253,7 @@ void ArcVmDataMigrationScreen::OnGetFreeDiskSpace(
     absl::optional<int64_t> reply) {
   if (!reply.has_value() || reply.value() < 0) {
     LOG(ERROR) << "Failed to get free disk space from spaced";
-    HandleFatalError();
+    HandleSetupFailure();
     return;
   }
 
@@ -358,7 +370,7 @@ void ArcVmDataMigrationScreen::OnCreateDiskImageResponse(
     absl::optional<vm_tools::concierge::CreateDiskImageResponse> response) {
   if (!response.has_value()) {
     LOG(ERROR) << "Failed to create a disk image for /data: No D-Bus response";
-    HandleFatalError();
+    HandleSetupFailure();
     return;
   }
 
@@ -377,7 +389,7 @@ void ArcVmDataMigrationScreen::OnCreateDiskImageResponse(
       LOG(ERROR) << "Failed to create a disk image for /data. Status: "
                  << response->status()
                  << ", reason: " << response->failure_reason();
-      HandleFatalError();
+      HandleSetupFailure();
       return;
   }
 
@@ -400,7 +412,7 @@ void ArcVmDataMigrationScreen::OnArcVmDataMigratorStarted(bool result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!result) {
     LOG(ERROR) << "Failed to start arcvm-data-migrator";
-    HandleFatalError();
+    HandleSetupFailure();
     return;
   }
 
@@ -429,7 +441,7 @@ void ArcVmDataMigrationScreen::OnStartMigrationResponse(bool result) {
   if (!result) {
     LOG(ERROR) << "Failed to start migration";
     migration_progress_observation_.Reset();
-    HandleFatalError();
+    HandleSetupFailure();
     return;
   }
 }
@@ -594,8 +606,23 @@ void ArcVmDataMigrationScreen::HandleReport() {
   login_feedback.Request(description_template);
 }
 
-void ArcVmDataMigrationScreen::HandleFatalError() {
-  // TODO(b/258278176): Show a fatal error screen and report the reason.
+void ArcVmDataMigrationScreen::HandleSetupFailure() {
+  // TODO(b/272151802): Report the reason to UMA.
+  if (resuming_) {
+    // Treat as a migration failure (i.e., wipe /data, mark the migration as
+    // finished, and show the failure screen) to avoid unmanageable resumes.
+    LOG(WARNING) << "Encountered a setup failure on resume. Wiping /data and "
+                    "showing the failure screen";
+    RemoveArcDataAndShowFailureScreen();
+    return;
+  }
+
+  HandleRetriableFatalError();
+}
+
+void ArcVmDataMigrationScreen::HandleRetriableFatalError() {
+  DCHECK(!resuming_);
+  // TODO(b/258278176): Show an appropriate UI.
   chrome::AttemptRelaunch();
 }
 
