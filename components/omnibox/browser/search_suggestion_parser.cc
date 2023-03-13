@@ -108,8 +108,8 @@ std::vector<std::vector<int>> ParseMatchSubtypes(
   return result;
 }
 
-std::string FindStringKeyOrEmpty(const base::Value& value, std::string key) {
-  auto* ptr = value.FindStringKey(key);
+std::string FindStringOrEmpty(const base::Value::Dict& value, std::string key) {
+  auto* ptr = value.FindString(key);
   return ptr ? *ptr : "";
 }
 
@@ -692,9 +692,9 @@ bool SearchSuggestionParser::ParseSuggestResults(
     std::string deletion_url;
     if (suggestion_details && index < suggestion_details->GetList().size() &&
         suggestion_details->GetList()[index].is_dict()) {
-      const base::Value& suggestion_detail =
-          suggestion_details->GetList()[index];
-      deletion_url = FindStringKeyOrEmpty(suggestion_detail, "du");
+      const base::Value::Dict& suggestion_detail =
+          suggestion_details->GetList()[index].GetDict();
+      deletion_url = FindStringOrEmpty(suggestion_detail, "du");
     }
 
     if ((match_type == AutocompleteMatchType::NAVSUGGEST) ||
@@ -751,44 +751,41 @@ bool SearchSuggestionParser::ParseSuggestResults(
 
       if (suggestion_details &&
           suggestion_details->GetList()[index].is_dict() &&
-          !suggestion_details->GetList()[index].DictEmpty()) {
-        const base::Value& suggestion_detail =
-            suggestion_details->GetList()[index];
+          !suggestion_details->GetList()[index].GetDict().empty()) {
+        const base::Value::Dict& suggestion_detail =
+            suggestion_details->GetList()[index].GetDict();
 
         const auto* entity_info_string =
-            suggestion_detail.FindStringKey("google:entityinfo");
+            suggestion_detail.FindString("google:entityinfo");
 
         // Extract data from proto field, but fall back to individual JSON
         // fields if necessary.
         if (!DecodeProtoFromBase64<omnibox::EntityInfo>(entity_info_string,
                                                         entity_info)) {
-          entity_info.set_name(FindStringKeyOrEmpty(suggestion_detail, "t"));
-          entity_info.set_annotation(
-              FindStringKeyOrEmpty(suggestion_detail, "a"));
+          entity_info.set_name(FindStringOrEmpty(suggestion_detail, "t"));
+          entity_info.set_annotation(FindStringOrEmpty(suggestion_detail, "a"));
           entity_info.set_dominant_color(
-              FindStringKeyOrEmpty(suggestion_detail, "dc"));
-          entity_info.set_image_url(
-              FindStringKeyOrEmpty(suggestion_detail, "i"));
+              FindStringOrEmpty(suggestion_detail, "dc"));
+          entity_info.set_image_url(FindStringOrEmpty(suggestion_detail, "i"));
           entity_info.set_suggest_search_parameters(
-              FindStringKeyOrEmpty(suggestion_detail, "q"));
+              FindStringOrEmpty(suggestion_detail, "q"));
           entity_info.set_entity_id(
-              FindStringKeyOrEmpty(suggestion_detail, "zae"));
+              FindStringOrEmpty(suggestion_detail, "zae"));
         }
 
         match_contents_prefix =
-            base::UTF8ToUTF16(FindStringKeyOrEmpty(suggestion_detail, "mp"));
+            base::UTF8ToUTF16(FindStringOrEmpty(suggestion_detail, "mp"));
 
         // Suggestion group Id.
-        suggestion_group_id = suggestion_detail.FindIntKey("zl");
+        suggestion_group_id = suggestion_detail.FindInt("zl");
 
         // Extract the Answer, if provided.
-        const base::Value* answer_json = suggestion_detail.FindDictKey("ansa");
-        const std::string* answer_type =
-            suggestion_detail.FindStringKey("ansb");
+        const base::Value::Dict* answer_json =
+            suggestion_detail.FindDict("ansa");
+        const std::string* answer_type = suggestion_detail.FindString("ansb");
         if (answer_json && answer_type) {
-          if (SuggestionAnswer::ParseAnswer(answer_json->GetDict(),
-                                            base::UTF8ToUTF16(*answer_type),
-                                            &answer)) {
+          if (SuggestionAnswer::ParseAnswer(
+                  *answer_json, base::UTF8ToUTF16(*answer_type), &answer)) {
             base::UmaHistogramSparse("Omnibox.AnswerParseType", answer.type());
             answer_parsed_successfully = true;
           }
