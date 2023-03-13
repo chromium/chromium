@@ -145,17 +145,6 @@ class AX_BASE_EXPORT AXMode {
   static constexpr uint32_t kExperimentalFormControls = 1 << 0;
   static constexpr uint32_t kExperimentalLastFlag = 1 << 0;
 
-  // IMPORTANT!
-  // These values are written to logs.  Do not renumber or delete
-  // existing items; add new entries to the end of the list.
-  enum class ExperimentalModeFlagHistogramValue {
-    UMA_AX_EXPERIMENTAL_MODE_FORM_CONTROLS = 0,
-
-    // This must always be the last enum. It's okay for its value to
-    // increase, but none of the other enum values may change.
-    UMA_AX_EXPERIMENTAL_MODE_MAX
-  };
-
   uint32_t flags_ = 0U;
   uint32_t experimental_flags_ = 0U;
 };
@@ -185,6 +174,15 @@ static constexpr AXMode kAXModeCompleteNoHTML(AXMode::kNativeAPIs |
                                               AXMode::kWebContents |
                                               AXMode::kInlineTextBoxes |
                                               AXMode::kScreenReader);
+
+// Used when only tools that only need autofill functionality are present.
+// Some third password managers require kHTML.
+// TODO (aldietz): investigate what is needed by password managers in kHTML and
+// see if that may be folded into kAXModeBasic.
+static constexpr AXMode kAXModeFormControls(AXMode::kNativeAPIs |
+                                                AXMode::kWebContents |
+                                                AXMode::kHTML,
+                                            AXMode::kExperimentalFormControls);
 
 // For debugging, test assertions, etc.
 AX_BASE_EXPORT std::ostream& operator<<(std::ostream& stream,

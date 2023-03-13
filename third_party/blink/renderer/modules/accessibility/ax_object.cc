@@ -3373,6 +3373,66 @@ bool AXObject::ComputeIsDescendantOfDisabledNode() const {
   return false;
 }
 
+bool AXObject::IsExcludedByFormControlsFilter() const {
+  AXObjectCacheImpl& cache = AXObjectCache();
+  const ui::AXMode& mode = cache.GetAXMode();
+
+  bool filter_to_form_controls =
+      mode.HasExperimentalFlags(ui::AXMode::kExperimentalFormControls);
+
+  if (!filter_to_form_controls) {
+    return false;
+  }
+
+  // Filter out elements hidden via style.
+  if (IsHiddenViaStyle()) {
+    return true;
+  }
+
+  // Keep control elements.
+  if (IsControl()) {
+    return false;
+  }
+
+  // Keep any relevant contextual labels on form controls.
+  // TODO (aldietz): this check could have further nuance to filter out
+  // irrelevant text. Potential future adjustments include: Trim out text nodes
+  // with length > 40 (or some threshold), as these are likely to be prose. Trim
+  // out text nodes that would end up as siblings of other text in the reduced
+  // tree.
+  if (RoleValue() == ax::mojom::blink::Role::kStaticText) {
+    return false;
+  }
+
+  // Keep generic container shadow DOM nodes inside text controls like input
+  // elements.
+  if (RoleValue() == ax::mojom::blink::Role::kGenericContainer &&
+      EnclosingTextControl(GetNode())) {
+    return false;
+  }
+
+  // Keep focusable elements to avoid breaking focus events.
+  if (CanSetFocusAttribute()) {
+    return false;
+  }
+
+  // Keep elements with rich text editing.
+  // This is an O(1) check that will return true for matching elements and
+  // avoid the O(n) IsEditable() check below.
+  // It is unlikely that password managers will need elements within
+  // the content editable, but if we do then consider adding a check
+  // for IsEditable(). IsEditable() is O(n) where n is the number of
+  // ancestors so it should only be added if necessary.
+  // We may also consider caching IsEditable value so that the
+  // HasContentEditableAttributeSet call can potentially be folded into a single
+  // IsEditable call. See crbug/1420757.
+  if (HasContentEditableAttributeSet()) {
+    return false;
+  }
+
+  return true;
+}
+
 bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
   if (RuntimeEnabledFeatures::AccessibilityExposeIgnoredNodesEnabled())
     return true;
@@ -3386,6 +3446,10 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
     // Always include an aria-owned object. It must be a child of the
     // element with aria-owns.
     return true;
+  }
+
+  if (IsExcludedByFormControlsFilter()) {
+    return false;
   }
 
   const Node* node = GetNode();

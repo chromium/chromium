@@ -287,6 +287,7 @@ def CheckModesMatch(input_api, output_api):
     'kAXModeWebContentsOnly',
     'kAXModeComplete',
     'kAXModeCompleteNoHTML',
+    'kAXModeFormControls',
     'kExperimentalFirstFlag',
     'kExperimentalFormControls',
     'kExperimentalLastFlag',

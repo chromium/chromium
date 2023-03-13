@@ -1002,6 +1002,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.ExperimentalModeFlag.FormControls"
+    enum="BooleanEnabled" expires_after="2023-11-30">
+  <owner>aldietz@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records whether the experimental form controls mode flag is set for the
+    AXMode. Tracked when the experimental form controls mode flag is flipped to
+    true. This flag is flipped automatically when software communicates with
+    Chrome via accessibility APIs.
+
+    This is currently only used on Android OS.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.FocusHighlight.ToggleEnabled"
     enum="BooleanEnabled" expires_after="never">
   <owner>aleventhal@chromium.org</owner>

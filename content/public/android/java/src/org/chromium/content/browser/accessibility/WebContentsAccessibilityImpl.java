@@ -635,9 +635,10 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         try (TraceEvent te = TraceEvent.scoped("WebContentsAccessibilityImpl.refreshNativeState")) {
             if (!isNativeInitialized()) return;
 
-            // Update the browser-level AXMode based on screen reader status.
+            // Update the browser-level AXMode based on running applications.
             WebContentsAccessibilityImplJni.get().setBrowserAXMode(
                     WebContentsAccessibilityImpl.this, AccessibilityState.isScreenReaderEnabled(),
+                    AccessibilityState.isOnlyPasswordManagersEnabled(),
                     /* isAccessibilityEnabled= */ true);
 
             // Update the state of how passwords are exposed based on user settings.
@@ -1895,7 +1896,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                 AccessibilityNodeInfoBuilder builder);
         void connectInstanceToRootManager(long nativeWebContentsAccessibilityAndroid);
         void setBrowserAXMode(WebContentsAccessibilityImpl caller, boolean screenReaderMode,
-                boolean isAccessibilityEnabled);
+                boolean formControlsMode, boolean isAccessibilityEnabled);
         void disableRendererAccessibility(long nativeWebContentsAccessibilityAndroid);
         void reEnableRendererAccessibility(
                 long nativeWebContentsAccessibilityAndroid, WebContents webContents);

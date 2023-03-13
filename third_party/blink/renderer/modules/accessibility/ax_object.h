@@ -508,6 +508,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // Some objects, such as table header containers, could be the children of
   // more than one object but have only one primary parent.
   bool HasIndirectChildren() const;
+  bool IsExcludedByFormControlsFilter() const;
 
   //
   // Accessible name calculation

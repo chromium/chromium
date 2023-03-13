@@ -500,6 +500,13 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
     return kDefaultBehavior;
   }
 
+  if (IsExcludedByFormControlsFilter()) {
+    if (ignored_reasons) {
+      ignored_reasons->push_back(IgnoredReason(kAXUninteresting));
+    }
+    return kIgnoreObject;
+  }
+
   if (IsA<SVGElement>(node)) {
     // The symbol element is used to define graphical templates which can be
     // instantiated by a use element but which are not rendered directly. We
