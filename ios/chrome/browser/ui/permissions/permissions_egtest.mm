@@ -4,11 +4,13 @@
 
 #import <XCTest/XCTest.h>
 
+#import "base/ios/ios_util.h"
 #import "base/logging.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/overlays/public/web_content_area/alert_constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/badges/badge_constants.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_modal_constants.h"
@@ -169,7 +171,8 @@ void TapDoneButtonOnInfobarModal() {
   // TODO(crbug.com/1418068): Simplify after minimum version required is >=
   // iOS 15.
   id<GREYMatcher> buttonMatcher = nil;
-  if (@available(iOS 15.0, *)) {
+  if (base::ios::IsRunningOnIOS15OrLater() &&
+      [ChromeEarlGrey isUIButtonConfigurationEnabled]) {
     buttonMatcher = grey_allOf(grey_ancestor(dialogMatcher),
                                grey_accessibilityLabel(buttonText),
                                grey_kindOfClassName(@"UILabel"), nil);

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/ios/ios_util.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -67,8 +68,11 @@ id<GREYMatcher> GetContinueButtonWithIdentityMatcher(
       IDS_IOS_FIRST_RUN_SIGNIN_CONTINUE_AS,
       base::SysNSStringToUTF16(fakeIdentity.userGivenName));
 
+  // TODO(crbug.com/1418068): Simplify after minimum version required is >=
+  // iOS 15.
   id<GREYMatcher> matcher = nil;
-  if (@available(iOS 15.0, *)) {
+  if (base::ios::IsRunningOnIOS15OrLater() &&
+      [ChromeEarlGrey isUIButtonConfigurationEnabled]) {
     matcher = grey_allOf(grey_kindOfClassName(@"UILabel"),
                          grey_accessibilityLabel(buttonTitle),
                          grey_sufficientlyVisible(), nil);

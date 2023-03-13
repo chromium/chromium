@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/ui/autofill/manual_fill/chip_button.h"
 
+#import "base/ios/ios_util.h"
 #import "base/mac/foundation_util.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -73,16 +75,21 @@ static const CGFloat kChipVerticalMargin = 4;
   self.backgroundView.hidden = !enabled;
   // TODO(crbug.com/1418068): Simplify after minimum version required is >=
   // iOS 15.
-  if (@available(iOS 15, *)) {
-    UIButtonConfiguration* buttonConfiguration =
-        [UIButtonConfiguration plainButtonConfiguration];
-    buttonConfiguration.contentInsets = enabled
-                                            ? [self chipNSDirectionalEdgeInsets]
-                                            : NSDirectionalEdgeInsetsZero;
-    self.configuration = buttonConfiguration;
+  if (base::ios::IsRunningOnIOS15OrLater() &&
+      IsUIButtonConfigurationEnabled()) {
+    if (@available(iOS 15, *)) {
+      UIButtonConfiguration* buttonConfiguration =
+          [UIButtonConfiguration plainButtonConfiguration];
+      buttonConfiguration.contentInsets =
+          enabled ? [self chipNSDirectionalEdgeInsets]
+                  : NSDirectionalEdgeInsetsZero;
+      self.configuration = buttonConfiguration;
+    }
   }
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-  self.contentEdgeInsets = enabled ? [self chipEdgeInsets] : UIEdgeInsetsZero;
+  else {
+    self.contentEdgeInsets = enabled ? [self chipEdgeInsets] : UIEdgeInsetsZero;
+  }
 #endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
 }
 
@@ -128,11 +135,14 @@ static const CGFloat kChipVerticalMargin = 4;
   [self updateTitleLabelFont];
   // TODO(crbug.com/1418068): Simplify after minimum version required is >=
   // iOS 15.
-  if (@available(iOS 15, *)) {
-    UIButtonConfiguration* buttonConfiguration =
-        [UIButtonConfiguration plainButtonConfiguration];
-    buttonConfiguration.contentInsets = [self chipNSDirectionalEdgeInsets];
-    self.configuration = buttonConfiguration;
+  if (base::ios::IsRunningOnIOS15OrLater() &&
+      IsUIButtonConfigurationEnabled()) {
+    if (@available(iOS 15, *)) {
+      UIButtonConfiguration* buttonConfiguration =
+          [UIButtonConfiguration plainButtonConfiguration];
+      buttonConfiguration.contentInsets = [self chipNSDirectionalEdgeInsets];
+      self.configuration = buttonConfiguration;
+    }
   }
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
   else {

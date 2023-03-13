@@ -8,6 +8,7 @@
 #import "base/ios/ios_util.h"
 #import "base/mac/foundation_util.h"
 #import "base/numerics/safe_conversions.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_view_layout.h"
@@ -77,12 +78,15 @@ const CGFloat kNewTabButtonBottomImageInset = -2.0;
 
   // TODO(crbug.com/1418068): Simplify after minimum version required is >=
   // iOS 15.
-  if (@available(iOS 15, *)) {
-    UIButtonConfiguration* buttonConfiguration =
-        [UIButtonConfiguration plainButtonConfiguration];
-    buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-        0, kNewTabButtonLeadingImageInset, kNewTabButtonBottomImageInset, 0);
-    self.buttonNewTab.configuration = buttonConfiguration;
+  if (base::ios::IsRunningOnIOS15OrLater() &&
+      IsUIButtonConfigurationEnabled()) {
+    if (@available(iOS 15, *)) {
+      UIButtonConfiguration* buttonConfiguration =
+          [UIButtonConfiguration plainButtonConfiguration];
+      buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+          0, kNewTabButtonLeadingImageInset, kNewTabButtonBottomImageInset, 0);
+      self.buttonNewTab.configuration = buttonConfiguration;
+    }
   }
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
   else {

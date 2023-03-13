@@ -1324,6 +1324,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return [ChromeEarlGreyAppInterface isSFSymbolEnabled];
 }
 
+- (BOOL)isUIButtonConfigurationEnabled {
+  return [ChromeEarlGreyAppInterface isUIButtonConfigurationEnabled];
+}
+
 #pragma mark - ContentSettings
 
 - (ContentSetting)popupPrefValue {

@@ -10,6 +10,7 @@
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/flags/system_flags.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/elements/fade_truncating_label.h"
@@ -303,13 +304,16 @@ UIImage* DefaultFaviconImage() {
 
   // TODO(crbug.com/1418068): Simplify after minimum version required is >=
   // iOS 15.
-  if (@available(iOS 15, *)) {
-    UIButtonConfiguration* buttonConfiguration =
-        [UIButtonConfiguration plainButtonConfiguration];
-    buttonConfiguration.contentInsets =
-        NSDirectionalEdgeInsetsMake(kTabCloseTopInset, kTabCloseLeftInset,
-                                    kTabCloseBottomInset, kTabCloseRightInset);
-    _closeButton.configuration = buttonConfiguration;
+  if (base::ios::IsRunningOnIOS15OrLater() &&
+      IsUIButtonConfigurationEnabled()) {
+    if (@available(iOS 15, *)) {
+      UIButtonConfiguration* buttonConfiguration =
+          [UIButtonConfiguration plainButtonConfiguration];
+      buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+          kTabCloseTopInset, kTabCloseLeftInset, kTabCloseBottomInset,
+          kTabCloseRightInset);
+      _closeButton.configuration = buttonConfiguration;
+    }
   }
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
   else {

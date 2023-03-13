@@ -545,6 +545,9 @@
 // Returns whether SF Symbols are used.
 + (BOOL)isSFSymbolEnabled;
 
+// Returns whether UIButtonConfiguration changes are enabled.
++ (BOOL)isUIButtonConfigurationEnabled;
+
 #pragma mark - ContentSettings
 
 // Gets the current value of the popup content setting preference for the

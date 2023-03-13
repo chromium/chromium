@@ -1180,6 +1180,9 @@ NSString* SerializedValue(const base::Value* value) {
   return UseSymbols();
 }
 
++ (BOOL)isUIButtonConfigurationEnabled {
+  return IsUIButtonConfigurationEnabled();
+}
 #pragma mark - ContentSettings
 
 + (ContentSetting)popupPrefValue {

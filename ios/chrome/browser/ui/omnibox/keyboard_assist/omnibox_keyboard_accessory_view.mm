@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_keyboard_accessory_view.h"
 
+#import "base/ios/ios_util.h"
 #import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/search_engines/search_engine_observer_bridge.h"
@@ -151,12 +152,15 @@
                forState:UIControlStateNormal];
   // TODO(crbug.com/1418068): Simplify after minimum version required is >=
   // iOS 15.
-  if (@available(iOS 15, *)) {
-    UIButtonConfiguration* buttonConfiguration =
-        [UIButtonConfiguration plainButtonConfiguration];
-    buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-        0, kHorizontalEdgeInset, 0, kHorizontalEdgeInset);
-    button.configuration = buttonConfiguration;
+  if (base::ios::IsRunningOnIOS15OrLater() &&
+      IsUIButtonConfigurationEnabled()) {
+    if (@available(iOS 15, *)) {
+      UIButtonConfiguration* buttonConfiguration =
+          [UIButtonConfiguration plainButtonConfiguration];
+      buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+          0, kHorizontalEdgeInset, 0, kHorizontalEdgeInset);
+      button.configuration = buttonConfiguration;
+    }
   }
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
   else {

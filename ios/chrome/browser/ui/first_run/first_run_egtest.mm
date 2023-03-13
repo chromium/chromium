@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "base/i18n/number_formatting.h"
+#import "base/ios/ios_util.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
@@ -91,7 +92,10 @@ id<GREYMatcher> GetSyncSettings() {
 void DismissDefaultBrowserPromo() {
   id<GREYMatcher> buttonMatcher = nil;
 
-  if (@available(iOS 15.0, *)) {
+  // TODO(crbug.com/1418068): Simplify after minimum version required is >=
+  // iOS 15.
+  if (base::ios::IsRunningOnIOS15OrLater() &&
+      [ChromeEarlGrey isUIButtonConfigurationEnabled]) {
     buttonMatcher = grey_allOf(
         grey_ancestor(grey_accessibilityID(
             first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier)),

@@ -5,10 +5,12 @@
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view.h"
 
 #import "base/check_op.h"
+#import "base/ios/ios_util.h"
 #import "base/mac/foundation_util.h"
 #import "base/notreached.h"
 #import "build/branding_buildflags.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_delegate.h"
@@ -177,11 +179,14 @@ constexpr CGFloat kSignInPromoHeadlineFontSize = 17.0;
     // Create and setup primary button.
     // TODO(crbug.com/1418068): Simplify after minimum version required is >=
     // iOS 15.
-    if (@available(iOS 15, *)) {
-      UIButtonConfiguration* buttonConfiguration =
-          [UIButtonConfiguration plainButtonConfiguration];
-      _primaryButton = [UIButton buttonWithConfiguration:buttonConfiguration
-                                           primaryAction:nil];
+    if (base::ios::IsRunningOnIOS15OrLater() &&
+        IsUIButtonConfigurationEnabled()) {
+      if (@available(iOS 15, *)) {
+        UIButtonConfiguration* buttonConfiguration =
+            [UIButtonConfiguration plainButtonConfiguration];
+        _primaryButton = [UIButton buttonWithConfiguration:buttonConfiguration
+                                             primaryAction:nil];
+      }
     }
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
     else {
@@ -518,13 +523,16 @@ constexpr CGFloat kSignInPromoHeadlineFontSize = 17.0;
 
       // TODO(crbug.com/1418068): Simplify after minimum version required is >=
       // iOS 15.
-      if (@available(iOS 15, *)) {
-        self.primaryButton.configuration.contentInsets =
-            NSDirectionalEdgeInsetsMake(
-                kStandardPromoStyle.kButtonTitleVerticalContentInset,
-                kStandardPromoStyle.kButtonTitleHorizontalContentInset,
-                kStandardPromoStyle.kButtonTitleVerticalContentInset,
-                kStandardPromoStyle.kButtonTitleHorizontalContentInset);
+      if (base::ios::IsRunningOnIOS15OrLater() &&
+          IsUIButtonConfigurationEnabled()) {
+        if (@available(iOS 15, *)) {
+          self.primaryButton.configuration.contentInsets =
+              NSDirectionalEdgeInsetsMake(
+                  kStandardPromoStyle.kButtonTitleVerticalContentInset,
+                  kStandardPromoStyle.kButtonTitleHorizontalContentInset,
+                  kStandardPromoStyle.kButtonTitleVerticalContentInset,
+                  kStandardPromoStyle.kButtonTitleHorizontalContentInset);
+        }
       }
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
       else {
@@ -574,13 +582,16 @@ constexpr CGFloat kSignInPromoHeadlineFontSize = 17.0;
 
       // TODO(crbug.com/1418068): Simplify after minimum version required is >=
       // iOS 15.
-      if (@available(iOS 15, *)) {
-        self.primaryButton.configuration.contentInsets =
-            NSDirectionalEdgeInsetsMake(
-                kTitledCompactPromoStyle.kButtonTitleVerticalContentInset,
-                kTitledCompactPromoStyle.kButtonTitleHorizontalContentInset,
-                kTitledCompactPromoStyle.kButtonTitleVerticalContentInset,
-                kTitledCompactPromoStyle.kButtonTitleHorizontalContentInset);
+      if (base::ios::IsRunningOnIOS15OrLater() &&
+          IsUIButtonConfigurationEnabled()) {
+        if (@available(iOS 15, *)) {
+          self.primaryButton.configuration.contentInsets =
+              NSDirectionalEdgeInsetsMake(
+                  kTitledCompactPromoStyle.kButtonTitleVerticalContentInset,
+                  kTitledCompactPromoStyle.kButtonTitleHorizontalContentInset,
+                  kTitledCompactPromoStyle.kButtonTitleVerticalContentInset,
+                  kTitledCompactPromoStyle.kButtonTitleHorizontalContentInset);
+        }
       }
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
       else {
@@ -638,13 +649,16 @@ constexpr CGFloat kSignInPromoHeadlineFontSize = 17.0;
 
       // TODO(crbug.com/1418068): Simplify after minimum version required is >=
       // iOS 15.
-      if (@available(iOS 15, *)) {
-        self.primaryButton.configuration.contentInsets =
-            NSDirectionalEdgeInsetsMake(
-                kTitledPromoStyle.kButtonTitleVerticalContentInset,
-                kTitledPromoStyle.kButtonTitleHorizontalContentInset,
-                kTitledPromoStyle.kButtonTitleVerticalContentInset,
-                kTitledPromoStyle.kButtonTitleHorizontalContentInset);
+      if (base::ios::IsRunningOnIOS15OrLater() &&
+          IsUIButtonConfigurationEnabled()) {
+        if (@available(iOS 15, *)) {
+          self.primaryButton.configuration.contentInsets =
+              NSDirectionalEdgeInsetsMake(
+                  kTitledPromoStyle.kButtonTitleVerticalContentInset,
+                  kTitledPromoStyle.kButtonTitleHorizontalContentInset,
+                  kTitledPromoStyle.kButtonTitleVerticalContentInset,
+                  kTitledPromoStyle.kButtonTitleHorizontalContentInset);
+        }
       }
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
       else {

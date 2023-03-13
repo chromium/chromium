@@ -587,25 +587,10 @@ constexpr CGFloat kFullAvatarImageSize = 100;
 - (UIButton*)primaryActionButton {
   if (!_primaryActionButton) {
     _primaryActionButton = [[HighlightButton alloc] initWithFrame:CGRectZero];
-
-    // TODO(crbug.com/1418068): Simplify after minimum version required is >=
-    // iOS 15.
-    if (@available(iOS 15, *)) {
-      UIButtonConfiguration* buttonConfiguration =
-          [UIButtonConfiguration plainButtonConfiguration];
-      buttonConfiguration.contentInsets =
-          NSDirectionalEdgeInsetsMake(kButtonVerticalInsets, kMoreArrowMargin,
-                                      kButtonVerticalInsets, kMoreArrowMargin);
-      _primaryActionButton.configuration = buttonConfiguration;
-    }
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-    else {
-      _primaryActionButton.contentEdgeInsets =
-          UIEdgeInsetsMake(kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
-      _primaryActionButton.titleEdgeInsets =
-          UIEdgeInsetsMake(0, kMoreArrowMargin, 0, kMoreArrowMargin);
-    }
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+    _primaryActionButton.contentEdgeInsets =
+        UIEdgeInsetsMake(kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
+    _primaryActionButton.titleEdgeInsets =
+        UIEdgeInsetsMake(0, kMoreArrowMargin, 0, kMoreArrowMargin);
 
     [_primaryActionButton setBackgroundColor:[UIColor colorNamed:kBlueColor]];
     UIColor* titleColor = [UIColor colorNamed:kSolidButtonTextColor];
@@ -931,22 +916,8 @@ constexpr CGFloat kFullAvatarImageSize = 100;
   [button setBackgroundColor:[UIColor clearColor]];
   UIColor* titleColor = [UIColor colorNamed:kBlueColor];
   [button setTitleColor:titleColor forState:UIControlStateNormal];
-
-  // TODO(crbug.com/1418068): Simplify after minimum version required is >=
-  // iOS 15.
-  if (@available(iOS 15, *)) {
-    UIButtonConfiguration* buttonConfiguration =
-        [UIButtonConfiguration plainButtonConfiguration];
-    buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-        kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
-    button.configuration = buttonConfiguration;
-  }
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-  else {
-    button.contentEdgeInsets =
-        UIEdgeInsetsMake(kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
-  }
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+  button.contentEdgeInsets =
+      UIEdgeInsetsMake(kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
 
   button.titleLabel.font =
       [UIFont preferredFontForTextStyle:UIFontTextStyleBody];

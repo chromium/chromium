@@ -7,7 +7,9 @@
 #import <ostream>
 
 #import "base/check_op.h"
+#import "base/ios/ios_util.h"
 #import "base/notreached.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/alert_view/alert_action.h"
 #import "ios/chrome/browser/ui/elements/gray_highlight_button.h"
@@ -126,14 +128,17 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
   // TODO(crbug.com/1418068): Simplify after minimum version required is >=
   // iOS 15.
   GrayHighlightButton* button = nil;
-  if (@available(iOS 15, *)) {
-    UIButtonConfiguration* buttonConfiguration =
-        [UIButtonConfiguration plainButtonConfiguration];
-    buttonConfiguration.contentInsets =
-        NSDirectionalEdgeInsetsMake(kButtonInsetTop, kButtonInsetLeading,
-                                    kButtonInsetBottom, kButtonInsetTrailing);
-    button = [GrayHighlightButton buttonWithConfiguration:buttonConfiguration
-                                            primaryAction:nil];
+  if (base::ios::IsRunningOnIOS15OrLater() &&
+      IsUIButtonConfigurationEnabled()) {
+    if (@available(iOS 15, *)) {
+      UIButtonConfiguration* buttonConfiguration =
+          [UIButtonConfiguration plainButtonConfiguration];
+      buttonConfiguration.contentInsets =
+          NSDirectionalEdgeInsetsMake(kButtonInsetTop, kButtonInsetLeading,
+                                      kButtonInsetBottom, kButtonInsetTrailing);
+      button = [GrayHighlightButton buttonWithConfiguration:buttonConfiguration
+                                              primaryAction:nil];
+    }
   }
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
   else {

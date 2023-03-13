@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/ui/table_view/cells/table_view_illustrated_item.h"
 
+#import "base/ios/ios_util.h"
 #import "base/mac/foundation_util.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
@@ -119,13 +121,18 @@ const CGFloat kButtonCornerRadius = 8.0;
 
     // TODO(crbug.com/1418068): Simplify after minimum version required is >=
     // iOS 15.
-    if (@available(iOS 15, *)) {
-      UIButtonConfiguration* buttonConfiguration =
-          [UIButtonConfiguration plainButtonConfiguration];
-      buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-          kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset,
-          kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset);
-      _button.configuration = buttonConfiguration;
+    if (base::ios::IsRunningOnIOS15OrLater() &&
+        IsUIButtonConfigurationEnabled()) {
+      if (@available(iOS 15, *)) {
+        UIButtonConfiguration* buttonConfiguration =
+            [UIButtonConfiguration plainButtonConfiguration];
+        buttonConfiguration.contentInsets =
+            NSDirectionalEdgeInsetsMake(kButtonTitleVerticalContentInset,
+                                        kButtonTitleHorizontalContentInset,
+                                        kButtonTitleVerticalContentInset,
+                                        kButtonTitleHorizontalContentInset);
+        _button.configuration = buttonConfiguration;
+      }
     }
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
     else {

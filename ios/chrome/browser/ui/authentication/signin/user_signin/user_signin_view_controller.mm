@@ -7,7 +7,9 @@
 #import <MaterialComponents/MaterialActivityIndicator.h>
 
 #import "base/check_op.h"
+#import "base/ios/ios_util.h"
 #import "base/logging.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
@@ -144,9 +146,12 @@ enum AuthenticationButtonType {
         forState:UIControlStateNormal];
     // TODO(crbug.com/1418068): Simplify after minimum version required is >=
     // iOS 15.
-    if (@available(iOS 15, *)) {
-      DCHECK(self.primaryActionButton.configuration);
-      self.primaryActionButton.configuration.image = nil;
+    if (base::ios::IsRunningOnIOS15OrLater() &&
+        IsUIButtonConfigurationEnabled()) {
+      if (@available(iOS 15, *)) {
+        DCHECK(self.primaryActionButton.configuration);
+        self.primaryActionButton.configuration.image = nil;
+      }
     } else {
       [self.primaryActionButton setImage:nil forState:UIControlStateNormal];
     }
@@ -170,9 +175,12 @@ enum AuthenticationButtonType {
 
     // TODO(crbug.com/1418068): Simplify after minimum version required is >=
     // iOS 15.
-    if (@available(iOS 15, *)) {
-      DCHECK(self.primaryActionButton.configuration);
-      self.primaryActionButton.configuration.image = buttonImage;
+    if (base::ios::IsRunningOnIOS15OrLater() &&
+        IsUIButtonConfigurationEnabled()) {
+      if (@available(iOS 15, *)) {
+        DCHECK(self.primaryActionButton.configuration);
+        self.primaryActionButton.configuration.image = buttonImage;
+      }
     } else {
       [self.primaryActionButton setImage:buttonImage
                                 forState:UIControlStateNormal];
@@ -182,9 +190,12 @@ enum AuthenticationButtonType {
         UIUserInterfaceLayoutDirectionLeftToRight) {
       // TODO(crbug.com/1418068): Simplify after minimum version required is >=
       // iOS 15.
-      if (@available(iOS 15, *)) {
-        self.primaryActionButton.configuration.contentInsets =
-            NSDirectionalEdgeInsetsMake(0, -kImageInset, 0, 0);
+      if (base::ios::IsRunningOnIOS15OrLater() &&
+          IsUIButtonConfigurationEnabled()) {
+        if (@available(iOS 15, *)) {
+          self.primaryActionButton.configuration.contentInsets =
+              NSDirectionalEdgeInsetsMake(0, -kImageInset, 0, 0);
+        }
       }
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
       else {
@@ -196,9 +207,12 @@ enum AuthenticationButtonType {
     } else {
       // TODO(crbug.com/1418068): Simplify after minimum version required is >=
       // iOS 15.
-      if (@available(iOS 15, *)) {
-        self.primaryActionButton.configuration.contentInsets =
-            NSDirectionalEdgeInsetsMake(0, 0, 0, -kImageInset);
+      if (base::ios::IsRunningOnIOS15OrLater() &&
+          IsUIButtonConfigurationEnabled()) {
+        if (@available(iOS 15, *)) {
+          self.primaryActionButton.configuration.contentInsets =
+              NSDirectionalEdgeInsetsMake(0, 0, 0, -kImageInset);
+        }
       }
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
       else {
@@ -214,9 +228,12 @@ enum AuthenticationButtonType {
         forState:UIControlStateNormal];
     // TODO(crbug.com/1418068): Simplify after minimum version required is >=
     // iOS 15.
-    if (@available(iOS 15, *)) {
-      DCHECK(self.primaryActionButton.configuration);
-      self.primaryActionButton.configuration.image = nil;
+    if (base::ios::IsRunningOnIOS15OrLater() &&
+        IsUIButtonConfigurationEnabled()) {
+      if (@available(iOS 15, *)) {
+        DCHECK(self.primaryActionButton.configuration);
+        self.primaryActionButton.configuration.image = nil;
+      }
     } else {
       [self.primaryActionButton setImage:nil forState:UIControlStateNormal];
     }
@@ -287,12 +304,15 @@ enum AuthenticationButtonType {
 
   // TODO(crbug.com/1418068): Simplify after minimum version required is >=
   // iOS 15.
-  if (@available(iOS 15, *)) {
-    UIButtonConfiguration* buttonConfiguration =
-        [UIButtonConfiguration plainButtonConfiguration];
-    self.primaryActionButton =
-        [UIButton buttonWithConfiguration:buttonConfiguration
-                            primaryAction:nil];
+  if (base::ios::IsRunningOnIOS15OrLater() &&
+      IsUIButtonConfigurationEnabled()) {
+    if (@available(iOS 15, *)) {
+      UIButtonConfiguration* buttonConfiguration =
+          [UIButtonConfiguration plainButtonConfiguration];
+      self.primaryActionButton =
+          [UIButton buttonWithConfiguration:buttonConfiguration
+                              primaryAction:nil];
+    }
   }
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
   else {
@@ -308,12 +328,15 @@ enum AuthenticationButtonType {
 
   // TODO(crbug.com/1418068): Simplify after minimum version required is >=
   // iOS 15.
-  if (@available(iOS 15, *)) {
-    UIButtonConfiguration* buttonConfiguration =
-        [UIButtonConfiguration plainButtonConfiguration];
-    self.secondaryActionButton =
-        [UIButton buttonWithConfiguration:buttonConfiguration
-                            primaryAction:nil];
+  if (base::ios::IsRunningOnIOS15OrLater() &&
+      IsUIButtonConfigurationEnabled()) {
+    if (@available(iOS 15, *)) {
+      UIButtonConfiguration* buttonConfiguration =
+          [UIButtonConfiguration plainButtonConfiguration];
+      self.secondaryActionButton =
+          [UIButton buttonWithConfiguration:buttonConfiguration
+                              primaryAction:nil];
+    }
   }
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
   else {
@@ -590,10 +613,13 @@ enum AuthenticationButtonType {
 
   // TODO(crbug.com/1418068): Simplify after minimum version required is >=
   // iOS 15.
-  if (@available(iOS 15, *)) {
-    button.configuration.contentInsets = NSDirectionalEdgeInsetsMake(
-        verticalContentInset, horizontalContentInset, verticalContentInset,
-        horizontalContentInset);
+  if (base::ios::IsRunningOnIOS15OrLater() &&
+      IsUIButtonConfigurationEnabled()) {
+    if (@available(iOS 15, *)) {
+      button.configuration.contentInsets = NSDirectionalEdgeInsetsMake(
+          verticalContentInset, horizontalContentInset, verticalContentInset,
+          horizontalContentInset);
+    }
   }
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
   else {

@@ -436,13 +436,16 @@ CGFloat const kContentOptimalWidth = 327;
 
     // TODO(crbug.com/1418068): Simplify after minimum version required is >=
     // iOS 15.
-    if (@available(iOS 15, *)) {
-      UIButtonConfiguration* buttonConfiguration =
-          [UIButtonConfiguration plainButtonConfiguration];
-      buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-          kButtonVerticalInsets, kButtonHorizontalMargin, kButtonVerticalInsets,
-          kButtonHorizontalMargin);
-      _actionButton.configuration = buttonConfiguration;
+    if (base::ios::IsRunningOnIOS15OrLater() &&
+        IsUIButtonConfigurationEnabled()) {
+      if (@available(iOS 15, *)) {
+        UIButtonConfiguration* buttonConfiguration =
+            [UIButtonConfiguration plainButtonConfiguration];
+        buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+            kButtonVerticalInsets, kButtonHorizontalMargin,
+            kButtonVerticalInsets, kButtonHorizontalMargin);
+        _actionButton.configuration = buttonConfiguration;
+      }
     }
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
     else {

@@ -6,6 +6,8 @@
 
 #import <ostream>
 
+#import "base/ios/ios_util.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/elements/instruction_view.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller.h"
@@ -333,12 +335,15 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
   if (!_primaryActionButton) {
     // TODO(crbug.com/1418068): Simplify after minimum version required is >=
     // iOS 15.
-    if (@available(iOS 15, *)) {
-      UIButtonConfiguration* buttonConfiguration =
-          [UIButtonConfiguration plainButtonConfiguration];
-      _primaryActionButton =
-          [HighlightButton buttonWithConfiguration:buttonConfiguration
-                                     primaryAction:nil];
+    if (base::ios::IsRunningOnIOS15OrLater() &&
+        IsUIButtonConfigurationEnabled()) {
+      if (@available(iOS 15, *)) {
+        UIButtonConfiguration* buttonConfiguration =
+            [UIButtonConfiguration plainButtonConfiguration];
+        _primaryActionButton =
+            [HighlightButton buttonWithConfiguration:buttonConfiguration
+                                       primaryAction:nil];
+      }
     } else {
       _primaryActionButton = [[HighlightButton alloc] initWithFrame:CGRectZero];
     }
@@ -368,11 +373,14 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
 
     // TODO(crbug.com/1418068): Simplify after minimum version required is >=
     // iOS 15.
-    if (@available(iOS 15, *)) {
-      DCHECK(_primaryActionButton.configuration);
-      _primaryActionButton.configuration.contentInsets =
-          NSDirectionalEdgeInsetsMake(0, kButtonHorizontalMargin, 0,
-                                      kButtonHorizontalMargin);
+    if (base::ios::IsRunningOnIOS15OrLater() &&
+        IsUIButtonConfigurationEnabled()) {
+      if (@available(iOS 15, *)) {
+        DCHECK(_primaryActionButton.configuration);
+        _primaryActionButton.configuration.contentInsets =
+            NSDirectionalEdgeInsetsMake(0, kButtonHorizontalMargin, 0,
+                                        kButtonHorizontalMargin);
+      }
     }
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
     else {
@@ -396,12 +404,15 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
 
     // TODO(crbug.com/1418068): Simplify after minimum version required is >=
     // iOS 15.
-    if (@available(iOS 15, *)) {
-      UIButtonConfiguration* buttonConfiguration =
-          [UIButtonConfiguration plainButtonConfiguration];
-      _learnMoreActionButton =
-          [UIButton buttonWithConfiguration:buttonConfiguration
-                              primaryAction:nil];
+    if (base::ios::IsRunningOnIOS15OrLater() &&
+        IsUIButtonConfigurationEnabled()) {
+      if (@available(iOS 15, *)) {
+        UIButtonConfiguration* buttonConfiguration =
+            [UIButtonConfiguration plainButtonConfiguration];
+        _learnMoreActionButton =
+            [UIButton buttonWithConfiguration:buttonConfiguration
+                                primaryAction:nil];
+      }
     } else {
       _learnMoreActionButton = [UIButton buttonWithType:UIButtonTypeSystem];
     }
@@ -412,11 +423,14 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
 
     // TODO(crbug.com/1418068): Simplify after minimum version required is >=
     // iOS 15.
-    if (@available(iOS 15, *)) {
-      DCHECK(_learnMoreActionButton.configuration);
-      _learnMoreActionButton.configuration.contentInsets =
-          NSDirectionalEdgeInsetsMake(0, kButtonHorizontalMargin, 0,
-                                      kButtonHorizontalMargin);
+    if (base::ios::IsRunningOnIOS15OrLater() &&
+        IsUIButtonConfigurationEnabled()) {
+      if (@available(iOS 15, *)) {
+        DCHECK(_learnMoreActionButton.configuration);
+        _learnMoreActionButton.configuration.contentInsets =
+            NSDirectionalEdgeInsetsMake(0, kButtonHorizontalMargin, 0,
+                                        kButtonHorizontalMargin);
+      }
     }
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
     else {

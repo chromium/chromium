@@ -7,7 +7,9 @@
 #import <ostream>
 
 #import "base/check.h"
+#import "base/ios/ios_util.h"
 #import "base/notreached.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/bubble/bubble_util.h"
@@ -163,17 +165,21 @@ UIButton* BubbleCloseButton() {
 
   // TODO(crbug.com/1418068): Simplify after minimum version required is >=
   // iOS 15.
-  if (@available(iOS 15, *)) {
-    UIButtonConfiguration* buttonConfiguration =
-        [UIButtonConfiguration plainButtonConfiguration];
-    [buttonConfiguration setImage:buttonImage];
-    [buttonConfiguration setContentInsets:NSDirectionalEdgeInsetsMake(
-                                              kCloseButtonTopTrailingPadding,
-                                              closeButtonLeadingPadding,
-                                              closeButtonBottomPadding,
-                                              kCloseButtonTopTrailingPadding)];
-    button = [UIButton buttonWithConfiguration:buttonConfiguration
-                                 primaryAction:nil];
+  if (base::ios::IsRunningOnIOS15OrLater() &&
+      IsUIButtonConfigurationEnabled()) {
+    if (@available(iOS 15, *)) {
+      UIButtonConfiguration* buttonConfiguration =
+          [UIButtonConfiguration plainButtonConfiguration];
+      [buttonConfiguration setImage:buttonImage];
+      [buttonConfiguration
+          setContentInsets:NSDirectionalEdgeInsetsMake(
+                               kCloseButtonTopTrailingPadding,
+                               closeButtonLeadingPadding,
+                               closeButtonBottomPadding,
+                               kCloseButtonTopTrailingPadding)];
+      button = [UIButton buttonWithConfiguration:buttonConfiguration
+                                   primaryAction:nil];
+    }
   }
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
   else {

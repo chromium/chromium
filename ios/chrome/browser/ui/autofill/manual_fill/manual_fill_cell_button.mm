@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_cell_button.h"
 
+#import "base/ios/ios_util.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_cell_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
@@ -60,13 +62,16 @@ static const CGFloat kButtonVerticalMargin = 12;
 
   // TODO(crbug.com/1418068): Simplify after minimum version required is >=
   // iOS 15.
-  if (@available(iOS 15, *)) {
-    UIButtonConfiguration* buttonConfiguration =
-        [UIButtonConfiguration plainButtonConfiguration];
-    buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-        kButtonVerticalMargin, kButtonHorizontalMargin, kButtonVerticalMargin,
-        kButtonHorizontalMargin);
-    self.configuration = buttonConfiguration;
+  if (base::ios::IsRunningOnIOS15OrLater() &&
+      IsUIButtonConfigurationEnabled()) {
+    if (@available(iOS 15, *)) {
+      UIButtonConfiguration* buttonConfiguration =
+          [UIButtonConfiguration plainButtonConfiguration];
+      buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+          kButtonVerticalMargin, kButtonHorizontalMargin, kButtonVerticalMargin,
+          kButtonHorizontalMargin);
+      self.configuration = buttonConfiguration;
+    }
   }
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
   else {

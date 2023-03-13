@@ -10,6 +10,7 @@
 
 #import "base/feature_list.h"
 #import "base/i18n/rtl.h"
+#import "base/ios/ios_util.h"
 #import "base/mac/bundle_locations.h"
 #import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
@@ -549,14 +550,18 @@ const CGFloat kSymbolSize = 18;
 
     // TODO(crbug.com/1418068): Simplify after minimum version required is >=
     // iOS 15.
-    if (@available(iOS 15, *)) {
-      UIButtonConfiguration* buttonConfiguration =
-          [UIButtonConfiguration plainButtonConfiguration];
-      buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-          0, kNewTabButtonLeadingImageInset, kNewTabButtonBottomImageInset, 0);
-      buttonConfiguration.image = buttonNewTabImage;
-      _buttonNewTab.tintColor = [UIColor colorNamed:kGrey500Color];
-      _buttonNewTab.configuration = buttonConfiguration;
+    if (base::ios::IsRunningOnIOS15OrLater() &&
+        IsUIButtonConfigurationEnabled()) {
+      if (@available(iOS 15, *)) {
+        UIButtonConfiguration* buttonConfiguration =
+            [UIButtonConfiguration plainButtonConfiguration];
+        buttonConfiguration.contentInsets =
+            NSDirectionalEdgeInsetsMake(0, kNewTabButtonLeadingImageInset,
+                                        kNewTabButtonBottomImageInset, 0);
+        buttonConfiguration.image = buttonNewTabImage;
+        _buttonNewTab.tintColor = [UIColor colorNamed:kGrey500Color];
+        _buttonNewTab.configuration = buttonConfiguration;
+      }
     }
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
     else {

@@ -5,9 +5,11 @@
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
+#import "base/ios/ios_util.h"
 #import "base/test/ios/wait_util.h"
 #import "components/strings/grit/components_chromium_strings.h"
 #import "ios/chrome/browser/overlays/public/web_content_area/alert_constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/page_info/page_info_constants.h"
 #import "ios/chrome/browser/ui/permissions/permissions_app_interface.h"
 #import "ios/chrome/browser/ui/permissions/permissions_constants.h"
@@ -91,7 +93,8 @@ id<GREYMatcher> MicrophonePermissionsSwitch(BOOL isOn) {
   // TODO(crbug.com/1418068): Simplify after minimum version required is >=
   // iOS 15.
   id<GREYMatcher> allowButtonMatcher = nil;
-  if (@available(iOS 15.0, *)) {
+  if (base::ios::IsRunningOnIOS15OrLater() &&
+      [ChromeEarlGrey isUIButtonConfigurationEnabled]) {
     allowButtonMatcher = grey_allOf(grey_ancestor(dialogMatcher),
                                     grey_accessibilityLabel(allowButtonText),
                                     grey_kindOfClassName(@"UILabel"), nil);
