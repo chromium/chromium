@@ -149,20 +149,25 @@ class UnretainedWrapper {
   template <typename U = T>
   explicit UnretainedWrapper(raw_ptr<U, PtrTraits>&& o) : ptr_(std::move(o)) {}
 
-  GetPtrType get() const {
-    // `ptr_` is either a `raw_ptr` or a regular C++ pointer.
-    if constexpr (IsRawPtrV<StorageType>) {
-      if constexpr (std::is_same_v<UnretainedTrait,
-                                   unretained_traits::MayNotDangle>) {
-        ptr_.ReportIfDangling();
-      }
-      return ptr_;
-    } else {
-      return ptr_;
-    }
-  }
+  GetPtrType get() const { return GetInternal(ptr_); }
 
  private:
+  // `ptr_` is either a `raw_ptr` or a regular C++ pointer.
+  template <typename U>
+  static GetPtrType GetInternal(U* ptr) {
+    static_assert(std::is_same_v<T, U>);
+    return ptr;
+  }
+  template <typename U, RawPtrTraits Traits>
+  static GetPtrType GetInternal(const raw_ptr<U, Traits>& ptr) {
+    static_assert(std::is_same_v<T, U>);
+    if constexpr (std::is_same_v<UnretainedTrait,
+                                 unretained_traits::MayNotDangle>) {
+      ptr.ReportIfDangling();
+    }
+    return ptr;
+  }
+
 #if PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
   // When `MTECheckedPtr` is enabled as the backing implementation of
   // `raw_ptr`, there are too many different types that immediately
@@ -231,29 +236,34 @@ class UnretainedRefWrapper {
   explicit UnretainedRefWrapper(raw_ref<U, PtrTraits>&& o)
       : ref_(std::move(o)) {}
 
-  T& get() const {
-    // `ref_` is either a `raw_ref` or a regular C++ reference.
-    if constexpr (IsRawRefV<StorageType>) {
-      // The ultimate goal is to crash when a callback is invoked with a
-      // dangling pointer. This is checked here. For now, it is configured to
-      // either crash, DumpWithoutCrashing or be ignored. This depends on the
-      // PartitionAllocUnretainedDanglingPtr feature.
-      if constexpr (std::is_same_v<UnretainedTrait,
-                                   unretained_traits::MayNotDangle>) {
-        ref_.ReportIfDangling();
-      }
-      // We can't use operator* here, we need to use raw_ptr's GetForExtraction
-      // instead of GetForDereference. If we did use GetForDereference then we'd
-      // crash in ASAN builds on calling a bound callback with a dangling
-      // reference parameter even if that parameter is not used. This could hide
-      // a later unprotected issue that would be reached in release builds.
-      return ref_.get();
-    } else {
-      return ref_;
-    }
-  }
+  T& get() const { return GetInternal(ref_); }
 
  private:
+  // `ref_` is either a `raw_ref` or a regular C++ reference.
+  template <typename U>
+  static T& GetInternal(U& ref) {
+    static_assert(std::is_same_v<T, U>);
+    return ref;
+  }
+  template <typename U, RawPtrTraits Traits>
+  static T& GetInternal(const raw_ref<U, Traits>& ref) {
+    static_assert(std::is_same_v<T, U>);
+    // The ultimate goal is to crash when a callback is invoked with a
+    // dangling pointer. This is checked here. For now, it is configured to
+    // either crash, DumpWithoutCrashing or be ignored. This depends on the
+    // PartitionAllocUnretainedDanglingPtr feature.
+    if constexpr (std::is_same_v<UnretainedTrait,
+                                 unretained_traits::MayNotDangle>) {
+      ref.ReportIfDangling();
+    }
+    // We can't use operator* here, we need to use raw_ptr's GetForExtraction
+    // instead of GetForDereference. If we did use GetForDereference then we'd
+    // crash in ASAN builds on calling a bound callback with a dangling
+    // reference parameter even if that parameter is not used. This could hide
+    // a later unprotected issue that would be reached in release builds.
+    return ref.get();
+  }
+
 #if PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
   // When `MTECheckedPtr` is enabled as the backing implementation of
   // `raw_ptr`, there are too many different types that immediately
