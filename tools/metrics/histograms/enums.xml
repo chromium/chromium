@@ -59823,6 +59823,8 @@ from previous Chrome versions.
   <int value="-1183321008" label="ImeDecoderWithSandbox:disabled"/>
   <int value="-1183009666" label="OfflinePagesLimitlessPrefetching:disabled"/>
   <int value="-1182777927" label="ShareButtonInTopToolbar:enabled"/>
+  <int value="-1182771360"
+      label="AutofillVirtualCardsOnTouchToFillAndroid:disabled"/>
   <int value="-1182087678"
       label="CrossOriginOpenerPolicyAccessReporting:disabled"/>
   <int value="-1179917414" label="DefaultChromeAppUninstallSync:disabled"/>
@@ -61454,6 +61456,8 @@ from previous Chrome versions.
   <int value="-262368430" label="PersistShareHubOnAppSwitch:enabled"/>
   <int value="-262122630" label="ArcEnableDocumentsProviderInFilesApp:enabled"/>
   <int value="-261398170" label="ChromeLabs:enabled"/>
+  <int value="-259952983"
+      label="AutofillVirtualCardsOnTouchToFillAndroid:enabled"/>
   <int value="-258081634" label="AutofillAssistantDirectActions:disabled"/>
   <int value="-257600773" label="MessagesPreinstall:disabled"/>
   <int value="-257478609" label="TextfieldFocusOnTapUp:enabled"/>

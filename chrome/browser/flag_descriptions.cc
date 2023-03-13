@@ -600,6 +600,12 @@ const char kAutofillUseImprovedLabelDisambiguationDescription[] =
     "When enabled, the Autofill dropdown's suggestions' labels are displayed "
     "using the improved disambiguation format.";
 
+const char kAutofillVirtualCardsOnTouchToFillAndroidName[] =
+    "Enable virtual cards on Touch To Fill bottomsheet for credit cards";
+const char kAutofillVirtualCardsOnTouchToFillAndroidDescription[] =
+    "When enabled, virtual credit card suggestions are shown on the Touch To "
+    "Fill bottomsheet for credit cards.";
+
 const char kBackForwardCacheName[] = "Back-forward cache";
 const char kBackForwardCacheDescription[] =
     "If enabled, caches eligible pages after cross-site navigations."

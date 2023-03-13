@@ -1852,6 +1852,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "enable-autofill-virtual-cards-on-touch-to-fill",
+    "owners": ["vishwasuppoor"],
+    "expiry_milestone": 120
+  },
+  {
     "name": "enable-automatic-key-rotation",
     "owners": [ "hmare@google.com", "cbe-device-trust-eng@google.com" ],
     "expiry_milestone": 120
