@@ -164,6 +164,17 @@ bool StorageArea::Contains(const String& key,
 
 void StorageArea::NamedPropertyEnumerator(Vector<String>& names,
                                           ExceptionState& exception_state) {
+  if (!cached_area_->memory_used() &&  // This means either empty or not loaded
+      v8::recordreplay::IsReplaying() &&
+      v8::recordreplay::AreEventsDisallowed()) {
+    // TODO: Use `IsReplayCode` instead -
+    // https://linear.app/replay/issue/RUN-1502
+
+    // This ignores crash-inducing side effects observed during interceptor key collection
+    // when handling commands.
+    // See: https://linear.app/replay/issue/RUN-1315#comment-26f96699
+    return;
+  }
   unsigned length = this->length(exception_state);
   if (exception_state.HadException())
     return;
