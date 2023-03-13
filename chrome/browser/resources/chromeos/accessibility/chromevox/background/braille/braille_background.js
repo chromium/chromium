@@ -30,7 +30,7 @@ export class BrailleBackground {
     this.lastContentId_ = null;
 
     BrailleDisplayManager.instance.setCommandListener(
-        (evt, content) => this.onBrailleKeyEvent_(evt, content));
+        (evt, content) => this.routeBrailleKeyEvent_(evt, content));
   }
 
   static init() {
@@ -127,13 +127,13 @@ export class BrailleBackground {
   }
 
   /**
-   * Handles braille key events by dispatching either to the input handler,
-   * ChromeVox next's background object or ChromeVox classic's content script.
+   * Handles braille key events by dispatching either to the event rewriter,
+   * input handler, or ChromeVox's background object.
    * @param {!BrailleKeyEvent} brailleEvt The event.
    * @param {!NavBraille} content Content of display when event fired.
    * @private
    */
-  onBrailleKeyEvent_(brailleEvt, content) {
+  routeBrailleKeyEvent_(brailleEvt, content) {
     if (BrailleKeyEventRewriter.instance.onBrailleKeyEvent(brailleEvt)) {
       return;
     }
