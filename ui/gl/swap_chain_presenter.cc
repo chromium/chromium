@@ -1629,6 +1629,9 @@ bool SwapChainPresenter::VideoProcessorBlt(
         hr = video_context->VideoProcessorBlt(
             video_processor.Get(), output_view_.Get(), 0, 1, &stream);
 
+        base::UmaHistogramSparse(
+            "GPU.VideoProcessorBlt.VpSuperResolution.RetryOffAfterError", hr);
+
         // We shouldn't use VpSuperResolution if it was the reason that caused
         // the VideoProcessorBlt failure.
         force_vp_super_resolution_off_ = SUCCEEDED(hr);

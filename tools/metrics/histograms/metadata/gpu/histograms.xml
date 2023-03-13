@@ -1379,12 +1379,14 @@ chromium-metrics-reviews@google.com.
   <owner>zmo@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
-    Records HRESULT for VideoProcessorBlt. This metric is recorded every frame
-    when processing video stream in DirectComposition.
+    Records HRESULT for VideoProcessorBlt. This metric is recorded when
+    processing a video steam in DirectComposition with Video Processor Super
+    Rsolution {State}.
   </summary>
   <token key="State">
     <variant name="Off" summary="off"/>
     <variant name="On" summary="on"/>
+    <variant name="RetryOffAfterError" summary="retry off after blt error"/>
   </token>
 </histogram>
 
