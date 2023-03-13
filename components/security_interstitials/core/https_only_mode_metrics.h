@@ -74,7 +74,14 @@ enum class NavigationRequestSecurityLevel {
   // due to HSTS.
   kLocalhost = 4,
 
-  kMaxValue = kLocalhost,
+  // Request was for an insecure (HTTP) resource, but was internally redirected
+  // by the HTTPS-First Mode/HTTP Upgrading logic.
+  kUpgraded = 5,
+
+  // Request was for a URL with a scheme other than HTTP or HTTPS.
+  kOtherScheme = 6,
+
+  kMaxValue = kOtherScheme,
 };
 
 // Helper to record an HTTPS-First Mode navigation event.

@@ -70492,6 +70492,9 @@ Called by update_use_counter_css.py.-->
   <int value="2" label="HTTP request"/>
   <int value="3" label="HTTP request internally upgraded by HSTS"/>
   <int value="4" label="Localhost request"/>
+  <int value="5"
+      label="HTTP request internally upgraded by HFM/HTTP Upgrading"/>
+  <int value="6" label="Non-HTTP/HTTPS request"/>
 </enum>
 
 <enum name="NavigationRequiresDedicatedProcess">

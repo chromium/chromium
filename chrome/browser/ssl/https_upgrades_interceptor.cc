@@ -196,6 +196,14 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
     return;
   }
 
+  // Exclude all other schemes other than HTTP.
+  if (!tentative_resource_request.url.SchemeIs(url::kHttpScheme)) {
+    RecordNavigationRequestSecurityLevel(
+        NavigationRequestSecurityLevel::kOtherScheme);
+    std::move(callback).Run({});
+    return;
+  }
+
   // Exclude "localhost" (and loopback addresses) as they do not expose traffic
   // over the network.
   // TODO(crbug.com/1394910): Extend the exemption list for HTTPS-Upgrades
@@ -246,13 +254,11 @@ void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
     return;
   }
 
-  RecordNavigationRequestSecurityLevel(
-      NavigationRequestSecurityLevel::kInsecure);
-
-  // Only serve upgrade redirects for main frame, GET requests to HTTP URLs.
+  // Only serve upgrade redirects for main frame, GET requests.
   if (!tentative_resource_request.is_outermost_main_frame ||
-      tentative_resource_request.method != "GET" ||
-      !tentative_resource_request.url.SchemeIs(url::kHttpScheme)) {
+      tentative_resource_request.method != "GET") {
+    RecordNavigationRequestSecurityLevel(
+        NavigationRequestSecurityLevel::kInsecure);
     std::move(callback).Run({});
     return;
   }
@@ -262,6 +268,8 @@ void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
   PrefService* prefs = profile->GetPrefs();
   if (IsHostnameInAllowlist(tentative_resource_request.url,
                             prefs->GetList(prefs::kHttpAllowlist))) {
+    RecordNavigationRequestSecurityLevel(
+        NavigationRequestSecurityLevel::kInsecure);
     std::move(callback).Run({});
     return;
   }
@@ -288,6 +296,8 @@ void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
     state->AllowHttpForHost(tentative_resource_request.url.host(),
                             storage_partition);
 
+    RecordNavigationRequestSecurityLevel(
+        NavigationRequestSecurityLevel::kInsecure);
     std::move(callback).Run({});
     return;
   }
@@ -312,6 +322,8 @@ void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
   auto* entry = web_contents->GetController().GetPendingEntry();
   if (entry && entry->GetTransitionType() & ui::PAGE_TRANSITION_FORWARD_BACK &&
       tab_helper->has_failed_upgrade(tentative_resource_request.url)) {
+    RecordNavigationRequestSecurityLevel(
+        NavigationRequestSecurityLevel::kInsecure);
     std::move(callback).Run({});
     return;
   }
@@ -326,9 +338,14 @@ void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
     // Don't upgrade the request and let the default loader continue, but record
     // that the request *would have* upgraded, had upgrading been enabled.
     RecordHttpsFirstModeNavigation(Event::kUpgradeNotAttempted);
+    RecordNavigationRequestSecurityLevel(
+        NavigationRequestSecurityLevel::kInsecure);
     std::move(callback).Run({});
     return;
   }
+
+  RecordNavigationRequestSecurityLevel(
+      NavigationRequestSecurityLevel::kUpgraded);
 
   // Mark navigation as upgraded.
   tab_helper->set_is_navigation_upgraded(true);
