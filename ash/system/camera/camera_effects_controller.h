@@ -79,6 +79,10 @@ class ASH_EXPORT CameraEffectsController : public media::CameraEffectObserver,
   }
 
  private:
+  // Returns the segmentation model that should be used in the effects pipeline
+  // based on the value of the feature flag.
+  cros::mojom::SegmentationModel GetSegmentationModelType();
+
   // SetCameraEffects camera effects with `config`.
   void SetCameraEffects(cros::mojom::EffectsConfigPtr config);
 

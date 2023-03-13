@@ -253,6 +253,20 @@ void CameraEffectsController::OnCameraEffectChanged(
   }
 }
 
+cros::mojom::SegmentationModel
+CameraEffectsController::GetSegmentationModelType() {
+  cros::mojom::SegmentationModel model_type =
+      cros::mojom::SegmentationModel::kHighResolution;
+  const std::string segmentation_model_param = GetFieldTrialParamValueByFeature(
+      ash::features::kVcSegmentationModel, "segmentation_model");
+
+  if (segmentation_model_param == "lower_resolution") {
+    model_type = cros::mojom::SegmentationModel::kLowerResolution;
+  }
+
+  return model_type;
+}
+
 void CameraEffectsController::SetCameraEffects(
     cros::mojom::EffectsConfigPtr config) {
   // For backwards compatibility, will be removed after mojom is updated.
@@ -265,6 +279,9 @@ void CameraEffectsController::SetCameraEffects(
   if (config->relight_enabled) {
     config->effect = cros::mojom::CameraEffect::kPortraitRelight;
   }
+
+  // Update effects config with settings from feature flags.
+  config->segmentation_model = GetSegmentationModelType();
 
   // Directly calls the callback for testing case.
   if (in_testing_mode_) {

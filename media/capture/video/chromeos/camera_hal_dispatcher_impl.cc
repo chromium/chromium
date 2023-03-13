@@ -501,7 +501,7 @@ void CameraHalDispatcherImpl::RegisterServerWithToken(
 
   // Should only be called when an effect is set.
   if (!initial_effects_.is_null() || !current_effects_.is_null()) {
-    // If current_effects_ is set, then a newer effect as applied since
+    // If current_effects_ is set, then a newer effect was applied since
     // the initial setup and we should use that, as the camera server
     // may have crashed and restarted.
     cros::mojom::EffectsConfigPtr& config =

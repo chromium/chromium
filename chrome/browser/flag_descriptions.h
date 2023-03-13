@@ -1836,6 +1836,9 @@ extern const char kVideoConferenceDescription[];
 extern const char kVcBackgroundReplaceName[];
 extern const char kVcBackgroundReplaceDescription[];
 
+extern const char kVcSegmentationModelName[];
+extern const char kVcSegmentationModelDescription[];
+
 extern const char kV8VmFutureName[];
 extern const char kV8VmFutureDescription[];
 
