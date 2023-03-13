@@ -424,7 +424,7 @@ TEST_F(DriveFsEventRouterTest, OnSyncingStatusUpdate_CompletedSync_WithQueued) {
   EXPECT_CALL(mock(),
               BroadcastEventImpl(
                   kTransferEventName,
-                  MatchFileTransferStatus("ext:b", QUEUED, 110, 200, 1, true)));
+                  MatchFileTransferStatus("ext:b", QUEUED, 100, 200, 1, true)));
   EXPECT_CALL(mock(), BroadcastEventImpl(kPinEventName,
                                          MatchFileTransferStatus(
                                              "", COMPLETED, 0, 0, 0, true)));
@@ -453,7 +453,7 @@ TEST_F(DriveFsEventRouterTest,
   EXPECT_CALL(mock(),
               BroadcastEventImpl(
                   kTransferEventName,
-                  MatchFileTransferStatus("ext:b", QUEUED, 110, 200, 1, true)));
+                  MatchFileTransferStatus("ext:b", QUEUED, 100, 200, 1, true)));
   EXPECT_CALL(mock(), BroadcastEventImpl(kPinEventName,
                                          MatchFileTransferStatus(
                                              "", COMPLETED, 0, 0, 0, true)));
@@ -483,7 +483,7 @@ TEST_F(DriveFsEventRouterTest, OnSyncingStatusUpdate_CompletedSync_ThenQueued) {
   EXPECT_CALL(mock(),
               BroadcastEventImpl(
                   kTransferEventName,
-                  MatchFileTransferStatus("ext:b", QUEUED, 10, 100, 1, true)));
+                  MatchFileTransferStatus("ext:b", QUEUED, 0, 100, 1, true)));
   EXPECT_CALL(mock(), BroadcastEventImpl(kPinEventName,
                                          MatchFileTransferStatus(
                                              "", COMPLETED, 0, 0, 0, true)));
@@ -537,7 +537,7 @@ TEST_F(DriveFsEventRouterTest, OnSyncingStatusUpdate_QueuedOnly) {
   EXPECT_CALL(mock(),
               BroadcastEventImpl(
                   kTransferEventName,
-                  MatchFileTransferStatus("ext:b", QUEUED, 10, 100, 1, true)));
+                  MatchFileTransferStatus("ext:b", QUEUED, 0, 100, 1, true)));
   EXPECT_CALL(mock(), BroadcastEventImpl(kPinEventName,
                                          MatchFileTransferStatus(
                                              "", COMPLETED, 0, 0, 0, true)));
