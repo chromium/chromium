@@ -776,6 +776,46 @@ TEST(VideoFrame, AllocationSize_OddSize) {
   }
 }
 
+TEST(VideoFrame, WrapExternalDataWithInvalidLayout) {
+  auto coded_size = gfx::Size(320, 180);
+
+  std::vector<int32_t> strides = {384, 192, 192};
+  std::vector<size_t> offsets = {0, 200, 300};
+  std::vector<size_t> sizes = {200, 100, 100};
+  std::vector<ColorPlaneLayout> planes(strides.size());
+  for (size_t i = 0; i < strides.size(); i++) {
+    planes[i].stride = strides[i];
+    planes[i].offset = offsets[i];
+    planes[i].size = sizes[i];
+  }
+
+  auto layout =
+      VideoFrameLayout::CreateWithPlanes(PIXEL_FORMAT_I420, coded_size, planes);
+  ASSERT_TRUE(layout.has_value());
+
+  // Validate single plane size exceeds data size.
+  uint8_t data = 0;
+  auto frame = VideoFrame::WrapExternalDataWithLayout(
+      *layout, gfx::Rect(coded_size), coded_size, &data, sizeof(data),
+      base::TimeDelta());
+  ASSERT_FALSE(frame);
+
+  // Validate sum of planes exceeds data size.
+  frame = VideoFrame::WrapExternalDataWithLayout(
+      *layout, gfx::Rect(coded_size), coded_size, &data, sizes[0] + sizes[1],
+      base::TimeDelta());
+  ASSERT_FALSE(frame);
+
+  // Validate offset exceeds plane size.
+  planes[0].offset = 201;
+  layout =
+      VideoFrameLayout::CreateWithPlanes(PIXEL_FORMAT_I420, coded_size, planes);
+  frame = VideoFrame::WrapExternalDataWithLayout(*layout, gfx::Rect(coded_size),
+                                                 coded_size, &data, sizes[0],
+                                                 base::TimeDelta());
+  ASSERT_FALSE(frame);
+}
+
 TEST(VideoFrameMetadata, MergeMetadata) {
   VideoFrameMetadata reference_metadata = GetFullVideoFrameMetadata();
   VideoFrameMetadata full_metadata = reference_metadata;
