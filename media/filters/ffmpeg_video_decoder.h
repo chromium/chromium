@@ -29,7 +29,6 @@ class MediaLog;
 class MEDIA_EXPORT FFmpegVideoDecoder : public VideoDecoder {
  public:
   static bool IsCodecSupported(VideoCodec codec);
-  static SupportedVideoDecoderConfigs SupportedConfigsForWebRTC();
 
   explicit FFmpegVideoDecoder(MediaLog* media_log);
 
