@@ -362,7 +362,11 @@ TEST_F(PrefServiceSyncableTest, ModelAssociationWithDataTypeMismatch) {
 class TestSyncablePrefsDatabase : public SyncablePrefsDatabase {
  public:
   bool IsPreferenceSyncable(const std::string& pref_name) const override {
-    return true;
+    return SyncablePrefsDatabase::IsPreferenceSyncable(pref_name);
+  }
+  absl::optional<SyncablePrefMetadata> GetSyncablePrefMetadata(
+      const std::string& pref_name) const override {
+    return SyncablePrefMetadata{0};
   }
 };
 

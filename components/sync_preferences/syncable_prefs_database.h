@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/notreached.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sync_preferences {
@@ -34,10 +33,8 @@ class SyncablePrefsDatabase {
 
   // Returns the metadata associated to the pref and null if `pref_name` is not
   // syncable.
-  // TODO(crbug.com/1422534): Mark method as pure virtual once
-  // overridden in all implementations.
   virtual absl::optional<SyncablePrefMetadata> GetSyncablePrefMetadata(
-      const std::string& pref_name) const;
+      const std::string& pref_name) const = 0;
 
   // Returns true if `pref_name` is part of the allowlist of syncable
   // preferences.

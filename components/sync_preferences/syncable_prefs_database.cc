@@ -5,12 +5,6 @@
 #include "components/sync_preferences/syncable_prefs_database.h"
 
 namespace sync_preferences {
-absl::optional<SyncablePrefMetadata>
-SyncablePrefsDatabase::GetSyncablePrefMetadata(
-    const std::string& pref_name) const {
-  NOTIMPLEMENTED();
-  return {};
-}
 
 bool SyncablePrefsDatabase::IsPreferenceSyncable(
     const std::string& pref_name) const {

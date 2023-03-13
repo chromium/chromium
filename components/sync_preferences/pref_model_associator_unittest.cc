@@ -34,13 +34,25 @@ const char kListPrefName[] = "pref.list";
 const char kDictionaryPrefName[] = "pref.dictionary";
 const char kCustomMergePrefName[] = "pref.custom";
 
-const std::unordered_set<std::string> kSyncablePrefsAllowlist = {
-    kStringPrefName, kListPrefName, kDictionaryPrefName, kCustomMergePrefName};
+// Assigning an id of 0 to all the test prefs.
+const std::unordered_map<std::string, SyncablePrefMetadata>
+    kSyncablePrefsDatabase = {{kStringPrefName, {0}},
+                              {kListPrefName, {0}},
+                              {kDictionaryPrefName, {0}},
+                              {kCustomMergePrefName, {0}}};
 
 class TestSyncablePrefsDatabase : public SyncablePrefsDatabase {
  public:
   bool IsPreferenceSyncable(const std::string& pref_name) const override {
-    return kSyncablePrefsAllowlist.count(pref_name);
+    return SyncablePrefsDatabase::IsPreferenceSyncable(pref_name);
+  }
+  absl::optional<SyncablePrefMetadata> GetSyncablePrefMetadata(
+      const std::string& pref_name) const override {
+    if (auto it = kSyncablePrefsDatabase.find(pref_name);
+        it != kSyncablePrefsDatabase.end()) {
+      return it->second;
+    }
+    return absl::nullopt;
   }
 };
 
