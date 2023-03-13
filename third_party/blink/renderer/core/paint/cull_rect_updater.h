@@ -84,6 +84,7 @@ class CORE_EXPORT CullRectUpdater {
   PaintLayer& starting_layer_;
   PropertyTreeState root_state_ = PropertyTreeState::Uninitialized();
   ViewTransitionSupplement* view_transition_supplement_;
+  bool disable_expansion_ = false;
 };
 
 // Used when painting with a custom top-level cull rect, e.g. when printing a
@@ -94,7 +95,7 @@ class CORE_EXPORT OverriddenCullRectScope {
   STACK_ALLOCATED();
 
  public:
-  OverriddenCullRectScope(PaintLayer&, const CullRect&);
+  OverriddenCullRectScope(PaintLayer&, const CullRect&, bool disable_expansion);
   ~OverriddenCullRectScope();
 
   struct FragmentCullRects {

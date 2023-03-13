@@ -145,7 +145,8 @@ class PrintContextTest : public PaintTestConfigurations, public RenderingTest {
     GraphicsContext& context = builder->Context();
     context.SetPrinting(true);
     GetDocument().View()->PaintOutsideOfLifecycle(
-        context, PaintFlag::kAddUrlMetadata, CullRect(page_rect));
+        context, PaintFlag::kOmitCompositingInfo | PaintFlag::kAddUrlMetadata,
+        CullRect(page_rect));
     {
       DrawingRecorder recorder(
           context, *GetDocument().GetLayoutView(),
@@ -220,6 +221,23 @@ TEST_P(PrintContextTest, LinkTarget) {
   EXPECT_SKRECT_EQ(50, 60, 70, 80, operations[0].rect);
   EXPECT_EQ(MockPageContextCanvas::kDrawRect, operations[1].type);
   EXPECT_SKRECT_EQ(150, 160, 170, 180, operations[1].rect);
+}
+
+TEST_P(PrintContextTest, LinkTargetInCompositedScroller) {
+  testing::NiceMock<MockPageContextCanvas> canvas;
+  SetBodyInnerHTML(
+      "<div style='width: 200px; height: 200px; overflow: scroll;"
+      "            position: relative; will-change: scroll-position'>" +
+      AbsoluteBlockHtmlForLink(50, 60, 70, 80, "http://www.google.com") +
+      AbsoluteBlockHtmlForLink(250, 60, 70, 80, "http://www.google.com") +
+      "</div>");
+  PrintSinglePage(canvas);
+
+  const Vector<MockPageContextCanvas::Operation>& operations =
+      canvas.RecordedOperations();
+  ASSERT_EQ(1u, operations.size());
+  EXPECT_EQ(MockPageContextCanvas::kDrawRect, operations[0].type);
+  EXPECT_SKRECT_EQ(50, 60, 70, 80, operations[0].rect);
 }
 
 TEST_P(PrintContextTest, LinkTargetUnderAnonymousBlockBeforeBlock) {
@@ -389,30 +407,25 @@ TEST_P(PrintContextTest, LinkedTarget) {
   GetDocument().SetBaseURLOverride(KURL("http://a.com/"));
   // Careful about locations, the page is 800x600 and only one page is printed.
   SetBodyInnerHTML(
-      AbsoluteBlockHtmlForLink(
-          50, 60, 10, 10,
-          "#fragment")  // Generates a Link_Named_Dest_Key annotation
-      + AbsoluteBlockHtmlForLink(50, 160, 10, 10,
-                                 "#not-found")  // Generates no annotation
-      + AbsoluteBlockHtmlForLink(
-            50, 260, 10, 10,
-            u"#\u00F6")  // Generates a Link_Named_Dest_Key annotation
-      + AbsoluteBlockHtmlForLink(
-            50, 360, 10, 10,
-            "#")  // Generates a Link_Named_Dest_Key annotation
-      + AbsoluteBlockHtmlForLink(
-            50, 460, 10, 10,
-            "#t%6Fp")  // Generates a Link_Named_Dest_Key annotation
-      +
-      HtmlForAnchor(450, 60, "fragment",
-                    "fragment")  // Generates a Define_Named_Dest_Key annotation
-      + HtmlForAnchor(450, 160, "fragment-not-used",
-                      "fragment-not-used")  // Generates no annotation
-      + HtmlForAnchor(450, 260, u"\u00F6",
-                      "O")  // Generates a Define_Named_Dest_Key annotation
+      // Generates a Link_Named_Dest_Key annotation.
+      AbsoluteBlockHtmlForLink(50, 60, 10, 10, "#fragment") +
+      // Generates no annotation.
+      AbsoluteBlockHtmlForLink(50, 160, 10, 10, "#not-found") +
+      // Generates a Link_Named_Dest_Key annotation.
+      AbsoluteBlockHtmlForLink(50, 260, 10, 10, u"#\u00F6") +
+      // Generates a Link_Named_Dest_Key annotation.
+      AbsoluteBlockHtmlForLink(50, 360, 10, 10, "#") +
+      // Generates a Link_Named_Dest_Key annotation.
+      AbsoluteBlockHtmlForLink(50, 460, 10, 10, "#t%6Fp") +
+      // Generates a Define_Named_Dest_Key annotation.
+      HtmlForAnchor(450, 60, "fragment", "fragment") +
+      // Generates no annotation.
+      HtmlForAnchor(450, 160, "fragment-not-used", "fragment-not-used")
+      // Generates a Define_Named_Dest_Key annotation.
+      + HtmlForAnchor(450, 260, u"\u00F6", "O")
       // TODO(1117212): The escaped version currently takes precedence.
-      //+ HtmlForAnchor(450, 360, "%C3%B6",
-      //                "O2")  // Generates a Define_Named_Dest_Key annotation
+      // Generates a Define_Named_Dest_Key annotation.
+      //+ HtmlForAnchor(450, 360, "%C3%B6", "O2")
   );
   PrintSinglePage(canvas);
 
