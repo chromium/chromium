@@ -107,6 +107,7 @@ class AnimationFrameTimingInfo
   void SetDesiredRenderStartTime(base::TimeTicks time) {
     desired_render_start_time = time;
   }
+  void SetFirstUIEventTime(base::TimeTicks time) { first_ui_event_time = time; }
 
   base::TimeTicks FrameStartTime() const { return frame_start_time; }
   base::TimeTicks RenderStartTime() const { return render_start_time; }
@@ -117,6 +118,7 @@ class AnimationFrameTimingInfo
   base::TimeTicks DesiredRenderStartTime() const {
     return desired_render_start_time;
   }
+  base::TimeTicks FirstUIEventTime() const { return first_ui_event_time; }
   base::TimeDelta Duration() const {
     return RenderEndTime() - FrameStartTime();
   }
@@ -150,6 +152,9 @@ class AnimationFrameTimingInfo
   // Should be the same as the timestamp received in requestAnimationFrame()
   // callbacks.
   base::TimeTicks desired_render_start_time;
+
+  // The event timestamp of the first UI event that coincided with the frame.
+  base::TimeTicks first_ui_event_time;
 
   HeapVector<Member<ScriptTimingInfo>> scripts_;
 };

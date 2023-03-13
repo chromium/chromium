@@ -6858,6 +6858,7 @@ interface PerformanceEventTiming : PerformanceEntry
 interface PerformanceLongAnimationFrameTiming : PerformanceEntry
     attribute @@toStringTag
     getter desiredRenderStart
+    getter firstUIEventTimestamp
     getter renderStart
     getter scripts
     getter styleAndLayoutStart

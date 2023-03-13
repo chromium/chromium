@@ -71,6 +71,11 @@ DOMHighResTimeStamp PerformanceLongAnimationFrameTiming::styleAndLayoutStart()
   return ToMonotonicTime(info_->StyleAndLayoutStartTime());
 }
 
+DOMHighResTimeStamp PerformanceLongAnimationFrameTiming::firstUIEventTimestamp()
+    const {
+  return ToMonotonicTime(info_->FirstUIEventTime());
+}
+
 PerformanceEntryType PerformanceLongAnimationFrameTiming::EntryTypeEnum()
     const {
   return PerformanceEntry::EntryType::kLongAnimationFrame;

@@ -74,10 +74,15 @@ void AnimationFrameTimingMonitor::DidBeginMainFrame() {
   if (current_frame_timing_info_->Duration() >= kLongAnimationFrameDuration) {
     current_frame_timing_info_->SetDesiredRenderStartTime(
         desired_render_start_time_);
+    if (!first_ui_event_timestamp_.is_null()) {
+      current_frame_timing_info_->SetFirstUIEventTime(
+          first_ui_event_timestamp_);
+    }
     client_.ReportLongAnimationFrameTiming(current_frame_timing_info_);
   }
 
   desired_render_start_time_ = base::TimeTicks();
+  first_ui_event_timestamp_ = base::TimeTicks();
   current_frame_timing_info_.Clear();
   current_scripts_.clear();
   state_ = State::kIdle;
@@ -388,6 +393,12 @@ void AnimationFrameTimingMonitor::Did(const probe::UserCallback& probe_data) {
   if (user_callback_depth_) {
     return;
   }
+
+  if (probe_data.event && probe_data.event->IsUIEvent() &&
+      first_ui_event_timestamp_.is_null()) {
+    first_ui_event_timestamp_ = probe_data.event->PlatformTimeStamp();
+  }
+
   ScriptTimingInfo* info = DidExecuteScript(probe_data);
   if (!info) {
     return;
@@ -400,6 +411,9 @@ void AnimationFrameTimingMonitor::Did(const probe::UserCallback& probe_data) {
   info->SetPropertyLikeName(probe_data.name ? probe_data.name
                                             : probe_data.atomic_name);
   if (Event* event = probe_data.event) {
+    if (event->IsUIEvent() && first_ui_event_timestamp_.is_null()) {
+      first_ui_event_timestamp_ = event->PlatformTimeStamp();
+    }
     info->SetDesiredExecutionStartTime(event->PlatformTimeStamp());
   }
 }
