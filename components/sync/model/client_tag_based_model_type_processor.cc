@@ -1227,6 +1227,10 @@ void ClientTagBasedModelTypeProcessor::MergeDataWithMetadataForDebugging(
 
 bool ClientTagBasedModelTypeProcessor::CheckForInvalidPersistedMetadata(
     const MetadataBatch& metadata) {
+  // The entity tracker must not have been created before the metadata was
+  // validated.
+  CHECK(!entity_tracker_);
+
   const EntityMetadataMap& metadata_map = metadata.GetAllMetadata();
 
   // Check that there's no entity metadata unless the initial sync is done.
@@ -1238,7 +1242,7 @@ bool ClientTagBasedModelTypeProcessor::CheckForInvalidPersistedMetadata(
 
     ClearAllProvidedMetadataAndResetState(metadata_map);
     // Not having `entity_tracker_` results in doing the initial sync again.
-    DCHECK(!entity_tracker_);
+    CHECK(!entity_tracker_);
     return false;
   }
 
@@ -1248,17 +1252,19 @@ bool ClientTagBasedModelTypeProcessor::CheckForInvalidPersistedMetadata(
   if (pending_clear_metadata_) {
     pending_clear_metadata_ = false;
     // Avoid calling bridge if there's nothing to clear.
+    // TODO(crbug.com/1423326): Also check for empty ModelTypeState (maybe via
+    // ByteSizeLong()?)
     if (!metadata_map.empty()) {
       LogClearMetadataWhileStoppedHistogram(type_, /*is_delayed_call=*/true);
-      DCHECK(metadata.GetModelTypeState().initial_sync_done() ||
-             CommitOnlyTypes().Has(type_));
       // This will incur an I/O operation by asking the bridge to clear the
       // metadata in storage.
       ClearAllProvidedMetadataAndResetState(metadata_map);
+      // Not having `entity_tracker_` results in doing the initial sync again.
+      CHECK(!entity_tracker_);
+      return false;
     }
-    // Not having `entity_tracker_` results in doing the initial sync again.
-    DCHECK(!entity_tracker_);
-    return false;
+    // Else: There was nothing to clear.
+    return true;
   }
 
   // Check that there are no duplicate client tags.
@@ -1274,7 +1280,7 @@ bool ClientTagBasedModelTypeProcessor::CheckForInvalidPersistedMetadata(
 
     ClearAllProvidedMetadataAndResetState(metadata_map);
     // Not having `entity_tracker_` results in doing the initial sync again.
-    DCHECK(!entity_tracker_);
+    CHECK(!entity_tracker_);
     return false;
   }
 
