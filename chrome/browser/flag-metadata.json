@@ -4880,6 +4880,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "mixed-content-autoupgrade-ios",
+    "owners": [ "meacer", "trusty-transport@chromium.org" ],
+    "expiry_milestone": 114
+  },
+  {
     "name": "modern-tab-strip",
     "owners": [ "bling-flags@google.com" ],
     "expiry_milestone": 92
