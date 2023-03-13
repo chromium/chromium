@@ -54,43 +54,42 @@ ImmersiveModeTabbedController::ImmersiveModeTabbedController(
   // RTL setups.
   tab_titlebar_view_controller_.get().layoutAttribute =
       NSLayoutAttributeTrailing;
-
-  // TODO(https://crbug.com/1414521): Fix window tab parent. Currently the tab
-  // window is parented to the browser window. Instead it should be parented to
-  // the AppKit fullscreen window as a sibling of the overlay window. This will
-  // involve some changes to ImmersiveModeDelegate.
 }
 
 ImmersiveModeTabbedController::~ImmersiveModeTabbedController() {
   NSWindow* browser_window = ImmersiveModeController::browser_window();
   browser_window.toolbar = nil;
-  BridgedContentView* tab_content_view =
-      base::mac::ObjCCastStrict<BridgedContentView>(
-          tab_titlebar_view_controller_.get().view.subviews.firstObject);
-  [tab_content_view retain];
-  [tab_content_view removeFromSuperview];
-  tab_window_.contentView = tab_content_view;
-  [tab_content_view release];
+  [tab_content_view_ retain];
+  [tab_content_view_ removeFromSuperview];
+  tab_window_.contentView = tab_content_view_;
+  [tab_content_view_ release];
   [tab_titlebar_view_controller_ removeFromParentViewController];
   tab_titlebar_view_controller_.reset();
 }
 
 void ImmersiveModeTabbedController::Enable() {
   ImmersiveModeController::Enable();
-  BridgedContentView* tab_content_view =
+  tab_content_view_ =
       base::mac::ObjCCastStrict<BridgedContentView>(tab_window_.contentView);
-  [tab_content_view retain];
-  [tab_content_view removeFromSuperview];
-  [tab_titlebar_view_controller_.get().view addSubview:tab_content_view];
-  [tab_content_view release];
+  [tab_content_view_ retain];
+  [tab_content_view_ removeFromSuperview];
+  [tab_titlebar_view_controller_.get().view addSubview:tab_content_view_];
+  [tab_content_view_ release];
   [tab_titlebar_view_controller_.get().view
       setFrameSize:tab_window_.frame.size];
   tab_titlebar_view_controller_.get().fullScreenMinHeight =
       tab_window_.frame.size.height;
 
   tab_window_.contentView =
-      [[[BridgedContentView alloc] initWithBridge:tab_content_view.bridge
+      [[[BridgedContentView alloc] initWithBridge:tab_content_view_.bridge
                                            bounds:gfx::Rect()] autorelease];
+
+  // This will allow the NSToolbarFullScreenWindow to become key when
+  // interacting with the tab strip.
+  // The `overlay_window_` is handled the same way in ImmersiveModeController.
+  // See the comment there for more details.
+  tab_window_.ignoresMouseEvents = YES;
+
   [browser_window()
       addTitlebarAccessoryViewController:tab_titlebar_view_controller_];
 }
@@ -166,5 +165,16 @@ void ImmersiveModeTabbedController::TitlebarHide() {
 void ImmersiveModeTabbedController::TitlebarLock() {}
 
 void ImmersiveModeTabbedController::TitlebarUnlock() {}
+
+void ImmersiveModeTabbedController::OnTitlebarFrameDidChange(NSRect frame) {
+  ImmersiveModeController::OnTitlebarFrameDidChange(frame);
+
+  // Find the tab overlay view's point on screen (bottom left).
+  NSPoint point_in_window = [tab_content_view_ convertPoint:NSZeroPoint
+                                                     toView:nil];
+  NSPoint point_on_screen =
+      [tab_content_view_.window convertPointToScreen:point_in_window];
+  [tab_window_ setFrameOrigin:point_on_screen];
+}
 
 }  // namespace remote_cocoa

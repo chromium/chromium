@@ -1048,6 +1048,10 @@ class BrowserView : public BrowserWindow,
   // The hosting view of TabStripRegionView during immersive fullscreen.
   raw_ptr<views::View, DanglingUntriaged> tab_overlay_view_ = nullptr;
 
+  // Targeter for the tab_overlay_view_. Ensures tab_overlay_view_ does not
+  // handle events, while allowing for child views to handle events.
+  std::unique_ptr<views::ViewTargeterDelegate> tab_overlay_view_targeter_;
+
 #endif
 
   // The Bookmark Bar View for this window. Lazily created. May be null for

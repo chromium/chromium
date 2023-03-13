@@ -8,6 +8,7 @@
 #include "components/remote_cocoa/app_shim/immersive_mode_controller.h"
 
 #include "base/mac/scoped_nsobject.h"
+#import "components/remote_cocoa/app_shim/bridged_content_view.h"
 
 @class TabTitlebarViewController;
 
@@ -33,12 +34,14 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeTabbedController
   void RevealUnlock() override;
   void TitlebarLock() override;
   void TitlebarUnlock() override;
+  void OnTitlebarFrameDidChange(NSRect frame) override;
 
  private:
   void TitlebarReveal();
   void TitlebarHide();
 
   NSWindow* const tab_window_;
+  BridgedContentView* tab_content_view_;
   base::scoped_nsobject<TabTitlebarViewController>
       tab_titlebar_view_controller_;
 };
