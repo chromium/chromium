@@ -1712,6 +1712,19 @@ void FederatedAuthRequestImpl::OnRejectRequest() {
   }
 }
 
+void FederatedAuthRequestImpl::AcceptAccountsDialogForDevtools(
+    const GURL& config_url,
+    const IdentityRequestAccount& account) {
+  bool is_sign_in =
+      account.login_state == IdentityRequestAccount::LoginState::kSignIn;
+  OnAccountSelected(/*auto_reauthn=*/false, config_url, account.id, is_sign_in);
+}
+
+void FederatedAuthRequestImpl::DismissAccountsDialogForDevtools() {
+  // We pick a reason here does not trigger embargo.
+  OnDialogDismissed(IdentityRequestDialogController::DismissReason::OTHER);
+}
+
 bool FederatedAuthRequestImpl::GetSingleReturningAccount(
     const IdentityProviderData** out_idp_data,
     const IdentityRequestAccount** out_account) {

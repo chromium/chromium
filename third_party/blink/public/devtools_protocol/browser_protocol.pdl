@@ -10917,7 +10917,17 @@ experimental domain FedCm
 
   event dialogShown
     parameters
+      string dialogId
       array of Account accounts
 
   command enable
   command disable
+
+  command selectAccount
+    parameters
+      string dialogId
+      integer accountIndex
+
+  command dismissDialog
+    parameters
+      string dialogId

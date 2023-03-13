@@ -15,6 +15,7 @@
 namespace content {
 class FederatedAuthRequestImpl;
 class FederatedAuthRequestPageData;
+struct IdentityProviderData;
 }  // namespace content
 
 namespace content::protocol {
@@ -44,12 +45,18 @@ class FedCmHandler : public DevToolsDomainHandler, public FedCm::Backend {
   // FedCm::Backend
   DispatchResponse Enable() override;
   DispatchResponse Disable() override;
+  DispatchResponse SelectAccount(const String& in_dialogId,
+                                 int in_accountIndex) override;
+  DispatchResponse DismissDialog(const String& in_dialogId) override;
 
   FederatedAuthRequestPageData* GetPageData();
   FederatedAuthRequestImpl* GetFederatedAuthRequest();
+  const std::vector<IdentityProviderData>* GetIdentityProviderData(
+      FederatedAuthRequestImpl* auth_request);
 
   RenderFrameHostImpl* frame_host_ = nullptr;
   std::unique_ptr<FedCm::Frontend> frontend_;
+  std::string dialog_id_;
   bool enabled_ = false;
 };
 

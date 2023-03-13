@@ -4,7 +4,7 @@
 <script>
 async function triggerDialog() {
   try {
-    navigator.credentials.get({
+    const result = await navigator.credentials.get({
       identity: {
         providers: [{
           configURL: `https://${location.host}/resources/fedcm/fedcm.json`,
@@ -13,9 +13,9 @@ async function triggerDialog() {
         }]
       }
     });
-    return "OK";
+    return result.token;
   } catch (error) {
-     return error.toString();
+    return error.toString();
   }
 }
 </script>

@@ -127,6 +127,10 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
     return idp_data_for_display_;
   }
 
+  void AcceptAccountsDialogForDevtools(const GURL& config_url,
+                                       const IdentityRequestAccount& account);
+  void DismissAccountsDialogForDevtools();
+
  private:
   friend class FederatedAuthRequestImplTest;
 
