@@ -356,7 +356,7 @@ bool DrawingBuffer::RequiresAlphaChannelToBePreserved() {
 
 bool DrawingBuffer::DefaultBufferRequiresAlphaChannelToBePreserved() {
   return requested_alpha_type_ == kOpaque_SkAlphaType &&
-         AlphaBits(color_buffer_format_);
+         color_buffer_format_.HasAlpha();
 }
 
 void DrawingBuffer::SetDrawBuffer(GLenum draw_buffer) {
@@ -382,11 +382,11 @@ DrawingBuffer::RegisteredBitmap DrawingBuffer::CreateOrRecycleBitmap(
   }
 
   const viz::SharedBitmapId id = viz::SharedBitmap::GenerateId();
-  const viz::ResourceFormat format = viz::RGBA_8888;
-  base::MappedReadOnlyRegion shm =
-      viz::bitmap_allocation::AllocateSharedBitmap(size_, format);
+  const viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
+  base::MappedReadOnlyRegion shm = viz::bitmap_allocation::AllocateSharedBitmap(
+      size_, format.resource_format());
   auto bitmap = base::MakeRefCounted<cc::CrossThreadSharedBitmap>(
-      id, std::move(shm), size_, format);
+      id, std::move(shm), size_, format.resource_format());
   RegisteredBitmap registered = {
       bitmap, bitmap_registrar->RegisterSharedBitmapId(id, bitmap)};
   return registered;
@@ -767,17 +767,14 @@ scoped_refptr<CanvasResource> DrawingBuffer::ExportLowLatencyCanvasResource(
   SkImageInfo resource_info =
       SkImageInfo::MakeN32Premul(canvas_resource_buffer->size.width(),
                                  canvas_resource_buffer->size.height());
-  switch (canvas_resource_buffer->format) {
-    case viz::RGBA_8888:
-    case viz::RGBX_8888:
-      resource_info = resource_info.makeColorType(kRGBA_8888_SkColorType);
-      break;
-    case viz::RGBA_F16:
-      resource_info = resource_info.makeColorType(kRGBA_F16_SkColorType);
-      break;
-    default:
-      NOTREACHED();
-      break;
+  auto format = canvas_resource_buffer->format;
+  if (format == viz::SinglePlaneFormat::kRGBA_8888 ||
+      format == viz::SinglePlaneFormat::kRGBX_8888) {
+    resource_info = resource_info.makeColorType(kRGBA_8888_SkColorType);
+  } else if (format == viz::SinglePlaneFormat::kRGBA_F16) {
+    resource_info = resource_info.makeColorType(kRGBA_F16_SkColorType);
+  } else {
+    NOTREACHED();
   }
 
   return ExternalCanvasResource::Create(
@@ -833,7 +830,7 @@ DrawingBuffer::ColorBuffer::ColorBuffer(
     base::WeakPtr<DrawingBuffer> drawing_buffer,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
-    viz::ResourceFormat format,
+    viz::SharedImageFormat format,
     SkAlphaType alpha_type,
     GLenum texture_target,
     GLuint texture_id,
@@ -1070,7 +1067,7 @@ bool DrawingBuffer::CopyToPlatformTexture(gpu::gles2::GLES2Interface* dst_gl,
     return false;
 
   auto copy_function = [&](const gpu::MailboxHolder& src_mailbox,
-                           viz::ResourceFormat, SkAlphaType src_alpha_type,
+                           viz::SharedImageFormat, SkAlphaType src_alpha_type,
                            const gfx::Size&, const gfx::ColorSpace&) -> bool {
     GLboolean unpack_premultiply_alpha_needed = GL_FALSE;
     GLboolean unpack_unpremultiply_alpha_needed = GL_FALSE;
@@ -1107,7 +1104,7 @@ bool DrawingBuffer::CopyToPlatformMailbox(
     const gfx::Rect& src_sub_rectangle,
     SourceDrawingBuffer src_buffer) {
   auto copy_function = [&](const gpu::MailboxHolder& src_mailbox,
-                           viz::ResourceFormat, SkAlphaType src_alpha_type,
+                           viz::SharedImageFormat, SkAlphaType src_alpha_type,
                            const gfx::Size&, const gfx::ColorSpace&) -> bool {
     GLboolean unpack_premultiply_alpha_needed = GL_FALSE;
     if (src_alpha_type == kUnpremul_SkAlphaType) {
@@ -1141,14 +1138,15 @@ bool DrawingBuffer::CopyToVideoFrame(
   const GrSurfaceOrigin src_surface_origin = src_origin_is_top_left
                                                  ? kTopLeft_GrSurfaceOrigin
                                                  : kBottomLeft_GrSurfaceOrigin;
-  auto copy_function =
-      [&](const gpu::MailboxHolder& src_mailbox, viz::ResourceFormat src_format,
-          SkAlphaType src_alpha_type, const gfx::Size& src_size,
-          const gfx::ColorSpace& src_color_space) {
-        return frame_pool->CopyRGBATextureToVideoFrame(
-            src_format, src_size, src_color_space, src_surface_origin,
-            src_mailbox, dst_color_space, std::move(callback));
-      };
+  auto copy_function = [&](const gpu::MailboxHolder& src_mailbox,
+                           viz::SharedImageFormat src_format,
+                           SkAlphaType src_alpha_type,
+                           const gfx::Size& src_size,
+                           const gfx::ColorSpace& src_color_space) {
+    return frame_pool->CopyRGBATextureToVideoFrame(
+        src_format.resource_format(), src_size, src_color_space,
+        src_surface_origin, src_mailbox, dst_color_space, std::move(callback));
+  };
   return CopyToPlatformInternal(raster_interface, /*dst_is_unpremul_gl=*/false,
                                 src_buffer, copy_function);
 }
@@ -1244,8 +1242,7 @@ bool DrawingBuffer::ReallocateDefaultFramebuffer(const gfx::Size& size,
     gl_->BindTexture(GL_TEXTURE_2D, staging_texture_);
     GLenum internal_format = requested_format_;
     if (requested_format_ == GL_RGB8) {
-      internal_format =
-          viz::AlphaBits(color_buffer_format_) ? GL_RGBA8 : GL_RGB8;
+      internal_format = color_buffer_format_.HasAlpha() ? GL_RGBA8 : GL_RGB8;
     }
     gl_->TexStorage2DEXT(GL_TEXTURE_2D, 1, internal_format, size.width(),
                          size.height());
@@ -1403,7 +1400,7 @@ bool DrawingBuffer::ResizeFramebufferInternal(GLenum requested_format,
   requested_format_ = requested_format;
   switch (requested_format_) {
     case GL_RGB8:
-      color_buffer_format_ = viz::RGBX_8888;
+      color_buffer_format_ = viz::SinglePlaneFormat::kRGBX_8888;
       // The following workarounds are used in order of importance; the
       // first is a correctness issue, the second a major performance
       // issue, and the third a minor performance issue.
@@ -1413,22 +1410,22 @@ bool DrawingBuffer::ResizeFramebufferInternal(GLenum requested_format,
         //  - allow invalid CopyTexImage to RGBA targets
         //  - fail valid FramebufferBlit from RGB targets
         // https://crbug.com/776269
-        color_buffer_format_ = viz::RGBA_8888;
+        color_buffer_format_ = viz::SinglePlaneFormat::kRGBA_8888;
       } else if (WantExplicitResolve() &&
                  ContextProvider()->GetGpuFeatureInfo().IsWorkaroundEnabled(
                      gpu::DISABLE_WEBGL_RGB_MULTISAMPLING_USAGE)) {
         // This configuration avoids the above issues because
         //  - CopyTexImage is invalid from multisample renderbuffers
         //  - FramebufferBlit is invalid to multisample renderbuffers
-        color_buffer_format_ = viz::RGBA_8888;
+        color_buffer_format_ = viz::SinglePlaneFormat::kRGBA_8888;
       }
       break;
     case GL_RGBA8:
     case GL_SRGB8_ALPHA8:
-      color_buffer_format_ = viz::RGBA_8888;
+      color_buffer_format_ = viz::SinglePlaneFormat::kRGBA_8888;
       break;
     case GL_RGBA16F:
-      color_buffer_format_ = viz::RGBA_F16;
+      color_buffer_format_ = viz::SinglePlaneFormat::kRGBA_F16;
       break;
     default:
       NOTREACHED();
@@ -1616,7 +1613,7 @@ bool DrawingBuffer::ReallocateMultisampleRenderbuffer(const gfx::Size& size) {
   // ColorBuffer.
   GLenum internal_format = requested_format_;
   if (requested_format_ == GL_RGB8) {
-    internal_format = viz::AlphaBits(color_buffer_format_) ? GL_RGBA8 : GL_RGB8;
+    internal_format = color_buffer_format_.HasAlpha() ? GL_RGBA8 : GL_RGB8;
   }
 
   if (has_eqaa_support) {
@@ -1673,7 +1670,7 @@ sk_sp<SkData> DrawingBuffer::PaintRenderingResultsToDataArray(
   SkColorType color_type = kRGBA_8888_SkColorType;
   base::CheckedNumeric<size_t> row_bytes = 4;
   if (RuntimeEnabledFeatures::WebGLDrawingBufferStorageEnabled() &&
-      back_color_buffer_->format == viz::RGBA_F16) {
+      back_color_buffer_->format == viz::SinglePlaneFormat::kRGBA_F16) {
     color_type = kRGBA_F16_SkColorType;
     row_bytes *= 2;
   }
@@ -1851,15 +1848,15 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
   SkAlphaType back_buffer_alpha_type = kPremul_SkAlphaType;
   if (using_swap_chain_) {
     gpu::SharedImageInterface::SwapChainMailboxes mailboxes =
-        sii->CreateSwapChain(
-            viz::SharedImageFormat::SinglePlane(color_buffer_format_), size,
-            color_space_, origin, back_buffer_alpha_type,
-            usage | gpu::SHARED_IMAGE_USAGE_SCANOUT);
+        sii->CreateSwapChain(color_buffer_format_, size, color_space_, origin,
+                             back_buffer_alpha_type,
+                             usage | gpu::SHARED_IMAGE_USAGE_SCANOUT);
     back_buffer_mailbox = mailboxes.back_buffer;
     front_buffer_mailbox = mailboxes.front_buffer;
   } else {
     if (ShouldUseChromiumImage()) {
-      gfx::BufferFormat buffer_format = BufferFormat(color_buffer_format_);
+      gfx::BufferFormat buffer_format =
+          BufferFormat(color_buffer_format_.resource_format());
       if (buffer_format == gfx::BufferFormat::RGBX_8888 &&
           gpu::IsImageFromGpuMemoryBufferFormatSupported(
               gfx::BufferFormat::BGRX_8888,
@@ -1908,9 +1905,8 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
       }
 
       back_buffer_mailbox = sii->CreateSharedImage(
-          viz::SharedImageFormat::SinglePlane(color_buffer_format_), size,
-          color_space_, origin, back_buffer_alpha_type, usage,
-          gpu::kNullSurfaceHandle);
+          color_buffer_format_, size, color_space_, origin,
+          back_buffer_alpha_type, usage, gpu::kNullSurfaceHandle);
     }
   }
 
