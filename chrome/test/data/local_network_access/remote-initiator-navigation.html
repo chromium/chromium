@@ -45,7 +45,7 @@
           // space, then wait until `mainChild` has finished loading.
 
           openee = await openWindow(
-              "/private_network_access/navigate-opener-child.html");
+              "/local_network_access/navigate-opener-child.html");
 
           openee.postMessage({ url, initiatorBehavior }, "*");
         });
