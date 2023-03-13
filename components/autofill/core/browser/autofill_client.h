@@ -268,6 +268,9 @@ class AutofillClient : public RiskDataLoader {
   // Used for options of save (and update) address profile prompt.
   struct SaveAddressProfilePromptOptions {
     bool show_prompt = true;
+
+    // Whether the prompt suggests migration into the user's account.
+    bool is_migration = false;
   };
 
   // Required arguments to create a dropdown showing autofill suggestions.

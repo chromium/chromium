@@ -227,9 +227,7 @@ SaveAddressProfileView::SaveAddressProfileView(
       AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined));
 
   SetTitle(controller_->GetWindowTitle());
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
-                 l10n_util::GetStringUTF16(
-                     IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL));
+  SetButtonLabel(ui::DIALOG_BUTTON_OK, controller_->GetOkButtonLabel());
   SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
                  l10n_util::GetStringUTF16(
                      IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL));

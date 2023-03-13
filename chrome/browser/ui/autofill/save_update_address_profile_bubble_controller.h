@@ -16,6 +16,7 @@ class SaveUpdateAddressProfileBubbleController {
   virtual ~SaveUpdateAddressProfileBubbleController() = default;
 
   virtual std::u16string GetWindowTitle() const = 0;
+  virtual std::u16string GetOkButtonLabel() const = 0;
   virtual const AutofillProfile& GetProfileToSave() const = 0;
   virtual const AutofillProfile* GetOriginalProfile() const = 0;
   virtual void OnUserDecision(

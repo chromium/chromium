@@ -45,6 +45,7 @@ class SaveUpdateAddressProfileBubbleControllerImpl
 
   // SaveUpdateAddressProfileBubbleController:
   std::u16string GetWindowTitle() const override;
+  std::u16string GetOkButtonLabel() const override;
   const AutofillProfile& GetProfileToSave() const override;
   const AutofillProfile* GetOriginalProfile() const override;
   void OnUserDecision(
@@ -88,6 +89,9 @@ class SaveUpdateAddressProfileBubbleControllerImpl
   // the page action icon) or automatically (e.g. upon detection of an address
   // during form submission).
   bool shown_by_user_gesture_ = false;
+
+  // Whether the bubble prompts to save (migrate) the profile into account.
+  bool is_migration_ = false;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

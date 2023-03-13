@@ -29,15 +29,17 @@ class EditAddressProfileDialogControllerImpl
       const EditAddressProfileDialogControllerImpl&) = delete;
   ~EditAddressProfileDialogControllerImpl() override;
 
-  // Sets up the controller and offers to edit the |profile| before saving it.
+  // Sets up the controller and offers to edit the `profile` before saving it.
   // If `original_profile` is not nullptr, this indicates that this dialog is
   // opened from an update prompt. The originating prompt (save or update) will
   // be re-opened once the user makes a decision with respect to the
-  // offer-to-edit prompt.
+  // offer-to-edit prompt. The `is_migration` argument is used to re-open the
+  // original prompt in a correct state.
   void OfferEdit(const AutofillProfile& profile,
                  const AutofillProfile* original_profile,
                  AutofillClient::AddressProfileSavePromptCallback
-                     address_profile_save_prompt_callback);
+                     address_profile_save_prompt_callback,
+                 bool is_migration);
 
   // EditAddressProfileDialogController:
   std::u16string GetWindowTitle() const override;
@@ -76,6 +78,10 @@ class EditAddressProfileDialogControllerImpl
   // details of the address profile that will be updated if the user accepts
   // that update prompt from which this edit dialog was opened..
   absl::optional<AutofillProfile> original_profile_;
+
+  // Whether the editor is used in the profile migration case. It is required
+  // to restore the original prompt state (save or update) if it is reopened.
+  bool is_migration_ = false;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
