@@ -8,12 +8,11 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/font_access/font_access.mojom-blink.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
-#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 
 namespace blink {
 
@@ -24,7 +23,6 @@ class ScriptPromise;
 class ScriptPromiseResolver;
 
 class FontAccess final : public GarbageCollected<FontAccess>,
-                         public ExecutionContextLifecycleObserver,
                          public Supplement<LocalDOMWindow> {
  public:
   static const char kSupplementName[];
@@ -32,9 +30,6 @@ class FontAccess final : public GarbageCollected<FontAccess>,
   explicit FontAccess(LocalDOMWindow* window);
 
   void Trace(blink::Visitor* visitor) const override;
-
-  // ExecutionContextLifecycleObserver:
-  void ContextDestroyed() override;
 
   // Web-exposed interface:
   static ScriptPromise queryLocalFonts(ScriptState* script_state,
@@ -62,8 +57,7 @@ class FontAccess final : public GarbageCollected<FontAccess>,
 
   void OnDisconnect();
 
-  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
-  mojo::Remote<mojom::blink::FontAccessManager> remote_;
+  HeapMojoRemote<mojom::blink::FontAccessManager> remote_;
 };
 
 }  // namespace blink
