@@ -37,7 +37,7 @@ import {OOBE_UI_STATE, SCREEN_GAIA_SIGNIN} from '../../components/display_manage
  * @enum {string}
  */
 const SyncUIState = {
-  LOADED: 'loaded',
+  ASHSYNC: 'ash-sync',
   LOADING: 'loading',
 };
 
@@ -146,7 +146,7 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
    * This is called when SyncScreenBehavior becomes Shown.
    */
   showLoadedStep() {
-    this.setUIStep(SyncUIState.LOADED);
+    this.setUIStep(SyncUIState.ASHSYNC);
   }
 
   /**
