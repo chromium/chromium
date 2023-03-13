@@ -1800,7 +1800,8 @@ void HTMLElement::HidePopoverInternal(
       GetPopoverData()->previouslyFocusedElement();
   if (previously_focused_element) {
     GetPopoverData()->setPreviouslyFocusedElement(nullptr);
-    if (focus_behavior == HidePopoverFocusBehavior::kFocusPreviousElement) {
+    if (focus_behavior == HidePopoverFocusBehavior::kFocusPreviousElement &&
+        contains(GetDocument().AdjustedFocusedElement())) {
       FocusOptions* focus_options = FocusOptions::Create();
       focus_options->setPreventScroll(true);
       previously_focused_element->Focus(FocusParams(
