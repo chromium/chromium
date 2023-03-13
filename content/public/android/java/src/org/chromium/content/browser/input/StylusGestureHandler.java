@@ -118,9 +118,11 @@ public class StylusGestureHandler implements InvocationHandler {
         StylusWritingGestureData gestureData = createGesture(args[0]);
         Executor executor = (Executor) args[1];
         IntConsumer consumer = (IntConsumer) args[2];
-        OngoingGesture gesture = new OngoingGesture(gestureData, executor, consumer);
         // Callback should be run on the UI thread.
-        PostTask.postTask(UiThreadTaskTraits.USER_BLOCKING, mOnGestureCallback.bind(gesture));
+        PostTask.postTask(UiThreadTaskTraits.USER_BLOCKING, () -> {
+            OngoingGesture gesture = new OngoingGesture(gestureData, executor, consumer);
+            mOnGestureCallback.onResult(gesture);
+        });
         return null;
     }
 
