@@ -984,6 +984,72 @@ xnn_status DefineXnnNodeForTranspose(
   return xnn_status_success;
 }
 
+// Helper to find the concat axis by comparing the first input shape and output
+// shape which is already calculated by `MLGraphBuilder::concat()`.
+absl::optional<uint32_t> GetConcatAxis(const MLOperator* concat) {
+  // The output tensor should has the same shape size with all the input tensors
+  const auto& output_dims = concat->Outputs()[0]->Dimensions();
+  for (const auto& input : concat->Inputs()) {
+    CHECK_EQ(input->Dimensions().size(), output_dims.size());
+  }
+  const auto& input_dims = concat->Inputs()[0]->Dimensions();
+  for (wtf_size_t i = 0; i < input_dims.size(); ++i) {
+    if (input_dims[i] != output_dims[i]) {
+      return i;
+    }
+  }
+  return absl::nullopt;
+}
+
+xnn_status DefineXnnNodeForConcat(xnn_subgraph_t subgraph,
+                                  const MLOperator* concat,
+                                  const OperandValueIdMap& operand_value_id_map,
+                                  String& error_message) {
+  const auto inputs_size = concat->Inputs().size();
+  Vector<uint32_t> input_ids(inputs_size);
+  for (uint32_t i = 0; i < inputs_size; ++i) {
+    input_ids[i] = GetOperatorInputValueId(concat, operand_value_id_map, i);
+  }
+  const uint32_t output_id =
+      GetOperatorOutputValueId(concat, operand_value_id_map);
+  const uint32_t flags = 0;
+  if (inputs_size == 1u) {
+    // Use XNNPACK copy operator to supoprt single input.
+    XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(
+        xnn_define_copy(subgraph, input_ids[0], output_id, flags));
+    return xnn_status_success;
+  }
+  absl::optional<uint32_t> axis = GetConcatAxis(concat);
+  if (!axis) {
+    error_message = "Can not find the concat axis.";
+    return xnn_status_unsupported_parameter;
+  }
+  switch (inputs_size) {
+    case 2u:
+      XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(
+          xnn_define_concatenate2(subgraph, axis.value(), input_ids[0],
+                                  input_ids[1], output_id, flags));
+      break;
+    case 3u:
+      XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(xnn_define_concatenate3(
+          subgraph, axis.value(), input_ids[0], input_ids[1], input_ids[2],
+          output_id, flags));
+      break;
+    case 4u:
+      XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(xnn_define_concatenate4(
+          subgraph, axis.value(), input_ids[0], input_ids[1], input_ids[2],
+          input_ids[3], output_id, flags));
+      break;
+    default:
+      // TODO(crbug.com/1273291): Consider decomposing the concat with inputs
+      // size > 4 into multiple XNNPACK Concat Nodes.
+      error_message = "XNNPACK backend doesn't support concat inputs size " +
+                      String::Number(inputs_size);
+      return xnn_status_unsupported_parameter;
+  }
+  return xnn_status_success;
+}
+
 // Define an XNNPACK Node given an MLOperator object and add it into the
 // Subgraph object. The operand_value_id_map is used to find the corresponding
 // input and output XNNPACK Values of this MLOperator object. This method calls
@@ -1051,6 +1117,11 @@ xnn_status DefineXnnNode(xnn_subgraph_t subgraph,
     }
     case MLOperator::OperatorKind::kTranspose: {
       XNN_CHECK_STATUS(DefineXnnNodeForTranspose(
+          subgraph, ml_operator, operand_value_id_map, error_message));
+      break;
+    }
+    case MLOperator::OperatorKind::kConcat: {
+      XNN_CHECK_STATUS(DefineXnnNodeForConcat(
           subgraph, ml_operator, operand_value_id_map, error_message));
       break;
     }
