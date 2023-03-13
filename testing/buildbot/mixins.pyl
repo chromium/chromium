@@ -416,7 +416,7 @@
   },
   'chromeos-kevin-skylab': {
     'cros_board': 'kevin',
-    'cros_img': 'kevin-public/R110-15277.0.0',
+    'cros_img': 'kevin-public/R113-15379.0.0',
     'bucket': 'chromiumos-image-archive',
     'timeout_sec': 10800,
   },
