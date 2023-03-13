@@ -283,6 +283,7 @@ class CC_EXPORT SnapContainerData {
   // Finds the snap area associated with the target snap area element id for the
   // given axis.
   absl::optional<SnapSearchResult> GetTargetSnapAreaSearchResult(
+      const SnapSelectionStrategy& strategy,
       SearchAxis axis) const;
 
   // Returns all the info needed to snap at this area on the given axis,
