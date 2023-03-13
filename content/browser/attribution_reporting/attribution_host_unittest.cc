@@ -162,6 +162,12 @@ class AttributionHostTest : public RenderViewHostTestHarness {
     contents()->GetPrimaryMainFrame()->InitializeRenderFrameIfNeeded();
   }
 
+  void TearDown() override {
+    // Avoids dangling ref to `mock_data_host_manager_`.
+    ClearAttributionManager();
+    RenderViewHostTestHarness::TearDown();
+  }
+
   TestWebContents* contents() {
     return static_cast<TestWebContents*>(web_contents());
   }
