@@ -82,7 +82,7 @@ class BrokerServicesBase final : public BrokerServices,
 
   // Provides a pool of threads that are used to wait on the IPC calls.
   // Owned by TargetEventsThread which is alive until our destructor.
-  raw_ptr<ThreadPool> thread_pool_ = nullptr;
+  raw_ptr<ThreadPool, DanglingUntriaged> thread_pool_ = nullptr;
 
   // Handles for the alternate winstation (desktop==kAlternateWinstation).
   std::unique_ptr<AlternateDesktop> alt_winstation_;

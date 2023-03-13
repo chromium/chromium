@@ -186,7 +186,8 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   std::unique_ptr<DeviceSettingsLacros> device_settings_ = nullptr;
   // Owned by |platform_provider_|.
-  raw_ptr<PolicyLoaderLacros> device_account_policy_loader_ = nullptr;
+  raw_ptr<PolicyLoaderLacros, DanglingUntriaged> device_account_policy_loader_ =
+      nullptr;
 #endif
 
   // Weak pointers needed for tasks that need to wait until it can be decided

@@ -884,7 +884,7 @@ class OmniboxViewViewsIMETest : public OmniboxViewViewsTest {
   OmniboxMockInputMethod* GetInputMethod() const { return input_method_; }
 
  private:
-  raw_ptr<OmniboxMockInputMethod> input_method_ = nullptr;
+  raw_ptr<OmniboxMockInputMethod, DanglingUntriaged> input_method_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewViewsIMETest, TextInputTypeChangedTest) {

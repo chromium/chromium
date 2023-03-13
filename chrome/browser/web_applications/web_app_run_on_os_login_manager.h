@@ -39,7 +39,7 @@ class WebAppRunOnOsLoginManager {
                               content::WebContents* web_contents,
                               apps::LaunchContainer container);
 
-  raw_ref<WebAppCommandScheduler> scheduler_;
+  raw_ref<WebAppCommandScheduler, DanglingUntriaged> scheduler_;
 
   bool skip_startup_for_testing_ = false;
 

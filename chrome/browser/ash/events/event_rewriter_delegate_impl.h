@@ -63,7 +63,8 @@ class EventRewriterDelegateImpl : public ui::EventRewriterChromeOS::Delegate {
   // Tracks whether meta + top row key rewrites should be suppressed or not.
   bool suppress_meta_top_row_key_rewrites_ = false;
 
-  raw_ptr<InputDeviceSettingsController> input_device_settings_controller_;
+  raw_ptr<InputDeviceSettingsController, DanglingUntriaged>
+      input_device_settings_controller_;
 };
 
 }  // namespace ash

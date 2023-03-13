@@ -151,7 +151,7 @@ class SmartCardProviderPrivateApiTest : public ExtensionApiTest {
   }
 
  private:
-  base::raw_ptr<const Extension> extension_;
+  base::raw_ptr<const Extension, DanglingUntriaged> extension_;
 };
 
 IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
