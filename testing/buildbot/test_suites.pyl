@@ -3972,8 +3972,19 @@
     },
 
     'ios_blink_tests': {
+      'base_unittests': {},
+      'blink_platform_unittests': {},
       'blink_unittests': {},
+      'cc_unittests': {},
       'content_unittests': {},
+      'device_unittests': {},
+      'media_unittests': {},
+      'midi_unittests': {},
+      'mojo_unittests': {},
+      'skia_unittests': {},
+      'storage_unittests': {},
+      'viz_unittests': {},
+      'wtf_unittests': {},
     },
 
     'ios_clang_tests': {
