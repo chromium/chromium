@@ -340,6 +340,45 @@ FilePath MakeAbsoluteFilePath(const FilePath& input) {
   return FilePath(full_path);
 }
 
+absl::optional<FilePath> MakeAbsoluteFilePathNoResolveSymbolicLinks(
+    const FilePath& input) {
+  if (input.empty()) {
+    return absl::nullopt;
+  }
+
+  FilePath collapsed_path;
+  std::vector<FilePath::StringType> components = input.GetComponents();
+  base::span<FilePath::StringType> components_span(components);
+  // Start with root for absolute |input| and the current working directory for
+  // a relative |input|.
+  if (input.IsAbsolute()) {
+    collapsed_path = FilePath(components_span[0]);
+    components_span = components_span.subspan(1);
+  } else {
+    if (!GetCurrentDirectory(&collapsed_path)) {
+      return absl::nullopt;
+    }
+  }
+
+  for (const auto& component : components_span) {
+    if (component == FilePath::kCurrentDirectory) {
+      continue;
+    }
+
+    if (component == FilePath::kParentDirectory) {
+      // Pop the most recent component off the FilePath. Works correctly when
+      // the FilePath is root.
+      collapsed_path = collapsed_path.DirName();
+      continue;
+    }
+
+    // This is just a regular component. Append it.
+    collapsed_path = collapsed_path.Append(component);
+  }
+
+  return collapsed_path;
+}
+
 bool DeleteFile(const FilePath& path) {
   return DoDeleteFile(path, /*recursive=*/false);
 }
@@ -513,6 +552,23 @@ bool ReadSymbolicLink(const FilePath& symlink_path, FilePath* target_path) {
   *target_path =
       FilePath(FilePath::StringType(buf, static_cast<size_t>(count)));
   return true;
+}
+
+absl::optional<FilePath> ReadSymbolicLinkAbsolute(
+    const FilePath& symlink_path) {
+  FilePath target_path;
+  if (!ReadSymbolicLink(symlink_path, &target_path)) {
+    return absl::nullopt;
+  }
+
+  // Relative symbolic links are relative to the symlink's directory.
+  if (!target_path.IsAbsolute()) {
+    target_path = symlink_path.DirName().Append(target_path);
+  }
+
+  // Remove "/./" and "/../" to make this more friendly to path-allowlist-based
+  // sandboxes.
+  return MakeAbsoluteFilePathNoResolveSymbolicLinks(target_path);
 }
 
 bool GetPosixFilePermissions(const FilePath& path, int* mode) {
@@ -1019,7 +1075,6 @@ bool GetCurrentDirectory(FilePath* dir) {
 
   char system_buffer[PATH_MAX] = "";
   if (!getcwd(system_buffer, sizeof(system_buffer))) {
-    NOTREACHED();
     return false;
   }
   *dir = FilePath(system_buffer);
