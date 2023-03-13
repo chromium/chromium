@@ -48,10 +48,13 @@ String TokenToString(const base::UnguessableToken& token) {
 // returns false to indicate the call should be allowed.
 bool ShouldBlockSerialServiceCall(LocalDOMWindow* window,
                                   ExecutionContext* context,
-                                  ExceptionState& exception_state) {
+                                  ExceptionState* exception_state) {
   if (!context) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      kContextGone);
+    if (exception_state) {
+      exception_state->ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                         kContextGone);
+    }
+
     return true;
   }
 
@@ -68,16 +71,20 @@ bool ShouldBlockSerialServiceCall(LocalDOMWindow* window,
   }
 
   if (security_origin->IsOpaque()) {
-    exception_state.ThrowSecurityError(
-        "Access to the Web Serial API is denied from contexts where the "
-        "top-level document has an opaque origin.");
+    if (exception_state) {
+      exception_state->ThrowSecurityError(
+          "Access to the Web Serial API is denied from contexts where the "
+          "top-level document has an opaque origin.");
+    }
     return true;
   }
 
   if (!context->IsFeatureEnabled(
           mojom::blink::PermissionsPolicyFeature::kSerial,
           ReportOptions::kReportOnFailure)) {
-    exception_state.ThrowSecurityError(kFeaturePolicyBlocked);
+    if (exception_state) {
+      exception_state->ThrowSecurityError(kFeaturePolicyBlocked);
+    }
     return true;
   }
 
@@ -129,7 +136,7 @@ void Serial::OnPortRemoved(mojom::blink::SerialPortInfoPtr port_info) {
 ScriptPromise Serial::getPorts(ScriptState* script_state,
                                ExceptionState& exception_state) {
   if (ShouldBlockSerialServiceCall(GetSupplementable()->DomWindow(),
-                                   GetExecutionContext(), exception_state)) {
+                                   GetExecutionContext(), &exception_state)) {
     return ScriptPromise();
   }
 
@@ -148,7 +155,7 @@ ScriptPromise Serial::requestPort(ScriptState* script_state,
                                   const SerialPortRequestOptions* options,
                                   ExceptionState& exception_state) {
   if (ShouldBlockSerialServiceCall(GetSupplementable()->DomWindow(),
-                                   GetExecutionContext(), exception_state)) {
+                                   GetExecutionContext(), &exception_state)) {
     return ScriptPromise();
   }
 
@@ -236,10 +243,8 @@ void Serial::AddedEventListener(const AtomicString& event_type,
     return;
   }
 
-  ExecutionContext* context = GetExecutionContext();
-  if (!context || !context->IsFeatureEnabled(
-                      mojom::blink::PermissionsPolicyFeature::kSerial,
-                      ReportOptions::kDoNotReport)) {
+  if (ShouldBlockSerialServiceCall(GetSupplementable()->DomWindow(),
+                                   GetExecutionContext(), nullptr)) {
     return;
   }
 
