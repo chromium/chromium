@@ -64,12 +64,6 @@ using password_manager::InsecurePasswordCounts;
   _passwordCheckManager->StartPasswordCheck();
 }
 
-- (NSString*)formattedElapsedTimeSinceLastCheck {
-  base::Time lastCompletedCheck =
-      _passwordCheckManager->GetLastPasswordCheckTime();
-  return password_manager::FormatElapsedTimeSinceLastCheck(lastCompletedCheck);
-}
-
 #pragma mark - PasswordCheckObserver
 
 - (void)passwordCheckStateDidChange:(PasswordCheckState)state {
@@ -116,7 +110,9 @@ using password_manager::InsecurePasswordCounts;
                                  .size();
 
   [self.consumer setPasswordCheckupHomepageState:passwordCheckupHomepageState
-                          insecurePasswordCounts:insecurePasswordCounts];
+                          insecurePasswordCounts:insecurePasswordCounts
+              formattedElapsedTimeSinceLastCheck:
+                  [self formattedElapsedTimeSinceLastCheck]];
   [self.consumer setAffiliatedGroupCount:affiliatedGroupCount];
 }
 
@@ -136,6 +132,12 @@ using password_manager::InsecurePasswordCounts;
     case PasswordCheckState::kIdle:
       return PasswordCheckupHomepageStateDone;
   }
+}
+
+- (NSString*)formattedElapsedTimeSinceLastCheck {
+  base::Time lastCompletedCheck =
+      _passwordCheckManager->GetLastPasswordCheckTime();
+  return password_manager::FormatElapsedTimeSinceLastCheck(lastCompletedCheck);
 }
 
 @end

@@ -26,12 +26,14 @@ typedef NS_ENUM(NSInteger, PasswordCheckupHomepageState) {
 // Consumer for the Password Checkup homepage.
 @protocol PasswordCheckupConsumer
 
-// Sets the current PasswordCheckupHomepageState and the insecure password
-// counts.
+// Sets the current PasswordCheckupHomepageState, the insecure password
+// counts and the string containing the timestamp of the last password check.
 - (void)setPasswordCheckupHomepageState:(PasswordCheckupHomepageState)state
                  insecurePasswordCounts:
                      (password_manager::InsecurePasswordCounts)
-                         insecurePasswordCounts;
+                         insecurePasswordCounts
+     formattedElapsedTimeSinceLastCheck:
+         (NSString*)formattedElapsedTimeSinceLastCheck;
 
 // Sets the number of affiliated groups for which the user has saved passwords.
 - (void)setAffiliatedGroupCount:(NSInteger)affiliatedGroupCount;

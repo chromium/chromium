@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
+#import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_mediator+private.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_mediator.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_utils.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
@@ -122,7 +123,9 @@ class PasswordCheckupViewControllerTest : public ChromeTableViewControllerTest {
     }
 
     [view_controller setPasswordCheckupHomepageState:state
-                              insecurePasswordCounts:counts];
+                              insecurePasswordCounts:counts
+                  formattedElapsedTimeSinceLastCheck:
+                      [mediator_ formattedElapsedTimeSinceLastCheck]];
   }
 
   // Adds a form to the test password store.
@@ -233,8 +236,7 @@ TEST_F(PasswordCheckupViewControllerTest, PasswordCheckupHomepageStateSafe) {
               headerImageView.image);
 
   CheckPasswordCheckupTimestampItem(
-      /*expected_text=*/[GetPasswordCheckupViewController()
-                             .delegate formattedElapsedTimeSinceLastCheck],
+      /*expected_text=*/[mediator_ formattedElapsedTimeSinceLastCheck],
       /*expected_detail_text_id=*/IDS_IOS_PASSWORD_CHECKUP_SITES_AND_APPS_COUNT,
       /*affiliated_group_count=*/1, /*indicator_hidden=*/true);
   CheckCheckPasswordsButtonItem(/*text_color_name=*/kBlueColor,
@@ -257,8 +259,7 @@ TEST_F(PasswordCheckupViewControllerTest,
               headerImageView.image);
 
   CheckPasswordCheckupTimestampItem(
-      /*expected_text=*/[GetPasswordCheckupViewController()
-                             .delegate formattedElapsedTimeSinceLastCheck],
+      /*expected_text=*/[mediator_ formattedElapsedTimeSinceLastCheck],
       /*expected_detail_text_id=*/IDS_IOS_PASSWORD_CHECKUP_SITES_AND_APPS_COUNT,
       /*affiliated_group_count=*/2, /*indicator_hidden=*/true);
   CheckCheckPasswordsButtonItem(/*text_color_name=*/kBlueColor,
@@ -281,8 +282,7 @@ TEST_F(PasswordCheckupViewControllerTest,
               headerImageView.image);
 
   CheckPasswordCheckupTimestampItem(
-      /*expected_text=*/[GetPasswordCheckupViewController()
-                             .delegate formattedElapsedTimeSinceLastCheck],
+      /*expected_text=*/[mediator_ formattedElapsedTimeSinceLastCheck],
       /*expected_detail_text_id=*/IDS_IOS_PASSWORD_CHECKUP_SITES_AND_APPS_COUNT,
       /*affiliated_group_count=*/2, /*indicator_hidden=*/true);
   CheckCheckPasswordsButtonItem(/*text_color_name=*/kBlueColor,
@@ -305,8 +305,7 @@ TEST_F(PasswordCheckupViewControllerTest,
               headerImageView.image);
 
   CheckPasswordCheckupTimestampItem(
-      /*expected_text=*/[GetPasswordCheckupViewController()
-                             .delegate formattedElapsedTimeSinceLastCheck],
+      /*expected_text=*/[mediator_ formattedElapsedTimeSinceLastCheck],
       /*expected_detail_text_id=*/IDS_IOS_PASSWORD_CHECKUP_SITES_AND_APPS_COUNT,
       /*affiliated_group_count=*/2, /*indicator_hidden=*/true);
   CheckCheckPasswordsButtonItem(/*text_color_name=*/kBlueColor,
@@ -328,8 +327,7 @@ TEST_F(PasswordCheckupViewControllerTest,
               headerImageView.image);
 
   CheckPasswordCheckupTimestampItem(
-      /*expected_text=*/[GetPasswordCheckupViewController()
-                             .delegate formattedElapsedTimeSinceLastCheck],
+      /*expected_text=*/[mediator_ formattedElapsedTimeSinceLastCheck],
       /*expected_detail_text_id=*/IDS_IOS_PASSWORD_CHECKUP_SITES_AND_APPS_COUNT,
       /*affiliated_group_count=*/2, /*indicator_hidden=*/true);
   CheckCheckPasswordsButtonItem(/*text_color_name=*/kBlueColor,

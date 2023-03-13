@@ -166,8 +166,6 @@ UIImage* GetHeaderImage(PasswordCheckupHomepageState password_checkup_state,
   SettingsCheckItem* passwordCheckupTimestampItem =
       [[SettingsCheckItem alloc] initWithType:ItemTypePasswordCheckupTimestamp];
   passwordCheckupTimestampItem.enabled = YES;
-  passwordCheckupTimestampItem.text =
-      [self.delegate formattedElapsedTimeSinceLastCheck];
   passwordCheckupTimestampItem.detailText =
       l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECKUP_DESCRIPTION);
   passwordCheckupTimestampItem.indicatorHidden = YES;
@@ -207,7 +205,9 @@ UIImage* GetHeaderImage(PasswordCheckupHomepageState password_checkup_state,
 
 - (void)setPasswordCheckupHomepageState:(PasswordCheckupHomepageState)state
                  insecurePasswordCounts:
-                     (InsecurePasswordCounts)insecurePasswordCounts {
+                     (InsecurePasswordCounts)insecurePasswordCounts
+     formattedElapsedTimeSinceLastCheck:
+         (NSString*)formattedElapsedTimeSinceLastCheck {
   // If the state and the insecure password counts both haven't changed, there
   // is no need to update anything.
   if (_passwordCheckupState == state &&
@@ -224,7 +224,8 @@ UIImage* GetHeaderImage(PasswordCheckupHomepageState password_checkup_state,
   _passwordCheckupState = state;
   _insecurePasswordCounts = insecurePasswordCounts;
   [self updateHeaderImage];
-  [self updatePasswordCheckupTimestampText];
+  [self updatePasswordCheckupTimestampTextWith:
+            formattedElapsedTimeSinceLastCheck];
   [self updateCheckPasswordsButtonItem];
 }
 
@@ -321,22 +322,20 @@ UIImage* GetHeaderImage(PasswordCheckupHomepageState password_checkup_state,
 }
 
 // Updates the `_passwordCheckupTimestampItem` text.
-- (void)updatePasswordCheckupTimestampText {
-  _passwordCheckupTimestampItem.text =
-      [self.delegate formattedElapsedTimeSinceLastCheck];
-  _passwordCheckupTimestampItem.indicatorHidden = YES;
-
+- (void)updatePasswordCheckupTimestampTextWith:
+    (NSString*)formattedElapsedTimeSinceLastCheck {
   switch (_passwordCheckupState) {
-    case PasswordCheckupHomepageStateDone:
-      break;
     case PasswordCheckupHomepageStateRunning: {
       _passwordCheckupTimestampItem.text =
           l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECKUP_ONGOING);
       _passwordCheckupTimestampItem.indicatorHidden = NO;
       break;
     }
+    case PasswordCheckupHomepageStateDone:
     case PasswordCheckupHomepageStateError:
     case PasswordCheckupHomepageStateDisabled:
+      _passwordCheckupTimestampItem.text = formattedElapsedTimeSinceLastCheck;
+      _passwordCheckupTimestampItem.indicatorHidden = YES;
       break;
   }
   [self reconfigureCellsForItems:@[ _passwordCheckupTimestampItem ]];
