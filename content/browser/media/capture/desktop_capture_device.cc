@@ -603,6 +603,16 @@ std::unique_ptr<media::VideoCaptureDevice> DesktopCaptureDevice::Create(
 
     // We prefer to allow the WGC capturer to embed the cursor when possible.
     options.set_prefer_cursor_embedded(true);
+
+    // 0Hz support is by default disabled for WGC but it can be enabled using
+    // the `kWebRtcAllowWgcZeroHz` feature flag. When enabled, the WGC capturer
+    // will compare the pixel values of the new frame and the previous frame and
+    // update the DesktopRegion part of the frame to reflect if the content has
+    // changed or not. DesktopFrame::updated_region() will be empty if nothing
+    // has changed and contain one (damage) region corresponding to the complete
+    // screen or window being captured if any change is detected.
+    options.set_allow_wgc_zero_hertz(
+        base::FeatureList::IsEnabled(features::kWebRtcAllowWgcZeroHz));
   }
 #endif
 
@@ -718,8 +728,10 @@ DesktopCaptureDevice::DesktopCaptureDevice(
   bool zero_hertz_is_supported = true;
 #if BUILDFLAG(IS_WIN)
   if (base::FeatureList::IsEnabled(features::kWebRtcAllowWgcDesktopCapturer)) {
-    // TODO(https://crbug.com/1400204): Add 0Hz support for WGC as well.
-    zero_hertz_is_supported = false;
+    // TODO(https://crbug.com/1421242): Finalize 0Hz support for WGC.
+    // This feature flag is disabled by default.
+    zero_hertz_is_supported =
+        base::FeatureList::IsEnabled(features::kWebRtcAllowWgcZeroHz);
   }
 #endif
 

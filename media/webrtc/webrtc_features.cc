@@ -17,6 +17,15 @@ BASE_FEATURE(kWebRtcAllowWgcDesktopCapturer,
              "AllowWgcDesktopCapturer",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled we will tell WebRTC that we want to use the 0Hz mode of the
+// Windows.Graphics.Capture API based DesktopCapturer, if the WGC capturer is
+// available and enabled. In this mode, only frames with new content will be
+// sent to the client leading to to 0fps for a static source.
+// This flag has no effect if AllowWgcDesktopCapturer is disabled.
+BASE_FEATURE(kWebRtcAllowWgcZeroHz,
+             "AllowWgcZeroHz",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // TODO(crbug.com/1375239): Inactivate the flag gradually before deleting it.
 // When disabled, any WebRTC Audio Processing Module input volume recommendation
 // is ignored and no adjustment takes place.
