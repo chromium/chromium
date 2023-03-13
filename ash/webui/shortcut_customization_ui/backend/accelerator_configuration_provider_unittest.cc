@@ -533,7 +533,7 @@ TEST_F(AcceleratorConfigurationProviderTest, ValidateAllAcceleratorLayouts) {
 TEST_F(AcceleratorConfigurationProviderTest, TopRowKeyAcceleratorRemapped) {
   // Add a fake layout2 keyboard.
   ui::InputDevice fake_keyboard(
-      /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+      /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH,
       /*name=*/"fake_Keyboard");
   fake_keyboard.sys_path = base::FilePath("path1");
   fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard, kKbdTopRowLayout2Tag);

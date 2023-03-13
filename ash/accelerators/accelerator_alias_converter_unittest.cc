@@ -24,12 +24,23 @@ constexpr char kKbdTopRowLayout2Tag[] = "2";
 constexpr char kKbdTopRowLayoutWilcoTag[] = "3";
 constexpr char kKbdTopRowLayoutDrallionTag[] = "4";
 
+ui::InputDeviceType INTERNAL = ui::InputDeviceType::INPUT_DEVICE_INTERNAL;
+ui::InputDeviceType EXTERNAL_USB = ui::InputDeviceType::INPUT_DEVICE_USB;
+ui::InputDeviceType EXTERNAL_BLUETOOTH =
+    ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH;
+// For INPUT_DEVICE_UNKNOWN type, we treat it as external keyboard.
+ui::InputDeviceType EXTERNAL_UNKNOWN =
+    ui::InputDeviceType::INPUT_DEVICE_UNKNOWN;
+
 struct AcceleratorAliasConverterTestData {
   ui::Accelerator accelerator_;
   absl::optional<ui::Accelerator> expected_accelerator_;
 };
 
 struct TopRowAcceleratorAliasConverterTestData {
+  // All currently connected keyboards' connection type, e.g.
+  // INPUT_DEVICE_INTERNAL.
+  std::vector<ui::InputDeviceType> keyboard_connection_type_;
   // All currently connected keyboards' layout types.
   std::vector<std::string> keyboard_layout_types_;
   ui::Accelerator accelerator_;
@@ -101,6 +112,7 @@ class TopRowAliasTest : public AcceleratorAliasConverterTest,
     Shell::Get()->keyboard_capability()->SetTopRowKeysAsFKeysEnabledForTesting(
         true);
     TopRowAcceleratorAliasConverterTestData test_data = GetParam();
+    keyboard_connection_type_ = test_data.keyboard_connection_type_;
     keyboard_layout_types_ = test_data.keyboard_layout_types_;
     accelerator_ = test_data.accelerator_;
     expected_accelerator_ = test_data.expected_accelerator_;
@@ -108,6 +120,7 @@ class TopRowAliasTest : public AcceleratorAliasConverterTest,
   }
 
  protected:
+  std::vector<ui::InputDeviceType> keyboard_connection_type_;
   std::vector<std::string> keyboard_layout_types_;
   ui::Accelerator accelerator_;
   std::vector<ui::Accelerator> expected_accelerator_;
@@ -119,13 +132,17 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     TopRowAliasTest,
     testing::ValuesIn(std::vector<TopRowAcceleratorAliasConverterTestData>{
-        // [Search] as original modifier prevents remapping.
-        {{kKbdTopRowLayout1Tag},
+        // [Search] as original modifier prevents remapping, regardless of
+        // keyboard connection type.
+        {{INTERNAL},
+         {kKbdTopRowLayout1Tag},
          ui::Accelerator{ui::VKEY_ZOOM, ui::EF_COMMAND_DOWN},
          {}},
 
-        // key_code not as a top row key prevents remapping.
-        {{kKbdTopRowLayout1Tag, kKbdTopRowLayout2Tag},
+        // key_code not as a top row key prevents remapping, regardless of
+        // keyboard connection type.
+        {{INTERNAL, EXTERNAL_USB},
+         {kKbdTopRowLayout1Tag, kKbdTopRowLayout2Tag},
          ui::Accelerator{ui::VKEY_TAB, ui::EF_ALT_DOWN},
          {}},
 
@@ -134,51 +151,67 @@ INSTANTIATE_TEST_SUITE_P(
         // For TopRowLayout1: [Alt] + [Back] -> [Alt] + [Search] + [F1].
         // TopRowKeysAreFKeys() remains true. This statement applies to all
         // tests in TopRowAliasTest class.
-        {{kKbdTopRowLayout1Tag},
+        {{EXTERNAL_USB},
+         {kKbdTopRowLayout1Tag},
          ui::Accelerator{ui::VKEY_BROWSER_BACK, ui::EF_ALT_DOWN},
          {ui::Accelerator{ui::VKEY_F1, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN}}},
 
+        // For internal keyboard only, we shows icon + meta.
+        {{INTERNAL},
+         {kKbdTopRowLayout1Tag},
+         ui::Accelerator{ui::VKEY_BROWSER_BACK, ui::EF_ALT_DOWN},
+         {ui::Accelerator{ui::VKEY_BROWSER_BACK,
+                          ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN}}},
+
         // For TopRowLayout1: [Alt] + [Forward] -> [Alt] + [Search] + [F2].
-        {{kKbdTopRowLayout1Tag},
+        {{EXTERNAL_BLUETOOTH},
+         {kKbdTopRowLayout1Tag},
          ui::Accelerator{ui::VKEY_BROWSER_FORWARD, ui::EF_ALT_DOWN},
          {ui::Accelerator{ui::VKEY_F2, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN}}},
 
         // For TopRowLayout1: [Alt] + [Zoom] -> [Alt] + [Search] + [F4].
-        {{kKbdTopRowLayout1Tag},
+        {{EXTERNAL_USB},
+         {kKbdTopRowLayout1Tag},
          ui::Accelerator{ui::VKEY_ZOOM, ui::EF_ALT_DOWN},
          {ui::Accelerator{ui::VKEY_F4, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN}}},
 
         // For TopRowLayout2: [Alt] + [Shift] + [Back] -> [Alt] + [Shift] +
         // [Search] + [F1].
-        {{kKbdTopRowLayout2Tag},
+        {{EXTERNAL_UNKNOWN},
+         {kKbdTopRowLayout2Tag},
          ui::Accelerator{ui::VKEY_BROWSER_BACK,
                          ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN},
          {ui::Accelerator{ui::VKEY_F1, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN |
                                            ui::EF_SHIFT_DOWN}}},
 
         // For TopRowLayout2: [Alt] + [Zoom] -> [Alt] + [Search] + [F3].
-        {{kKbdTopRowLayout2Tag},
+        {{EXTERNAL_BLUETOOTH},
+         {kKbdTopRowLayout2Tag},
          ui::Accelerator{ui::VKEY_ZOOM, ui::EF_ALT_DOWN},
          {ui::Accelerator{ui::VKEY_F3, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN}}},
 
         // For TopRowLayout2: [Alt] + [Pause] -> [Alt] + [Search] + [F7].
-        {{kKbdTopRowLayout2Tag},
+        {{EXTERNAL_USB},
+         {kKbdTopRowLayout2Tag},
          ui::Accelerator{ui::VKEY_MEDIA_PLAY_PAUSE, ui::EF_ALT_DOWN},
          {ui::Accelerator{ui::VKEY_F7, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN}}},
 
         // For TopRowLayoutWilco: [Alt] + [Zoom] -> [Alt] + [Search] + [F3].
-        {{kKbdTopRowLayoutWilcoTag},
+        {{EXTERNAL_UNKNOWN},
+         {kKbdTopRowLayoutWilcoTag},
          ui::Accelerator{ui::VKEY_ZOOM, ui::EF_ALT_DOWN},
          {ui::Accelerator{ui::VKEY_F3, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN}}},
 
         // For TopRowLayoutWilco: [Alt] + [VolumeUp] -> [Alt] + [Search] + [F9].
-        {{kKbdTopRowLayoutWilcoTag},
+        {{EXTERNAL_BLUETOOTH},
+         {kKbdTopRowLayoutWilcoTag},
          ui::Accelerator{ui::VKEY_VOLUME_UP, ui::EF_ALT_DOWN},
          {ui::Accelerator{ui::VKEY_F9, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN}}},
 
         // For kKbdTopRowLayoutDrallionTag: [Alt] + [Mute] -> [Alt] + [Search] +
         // [F7].
-        {{kKbdTopRowLayoutDrallionTag},
+        {{EXTERNAL_USB},
+         {kKbdTopRowLayoutDrallionTag},
          ui::Accelerator{ui::VKEY_VOLUME_MUTE, ui::EF_ALT_DOWN},
          {ui::Accelerator{ui::VKEY_F7, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN}}},
 
@@ -186,54 +219,93 @@ INSTANTIATE_TEST_SUITE_P(
 
         // Two keyboards with the same layout type: [Alt] + [Forward] -> [Alt] +
         // [Search] + [F2]. No duplicated alias exists.
-        {{kKbdTopRowLayout1Tag, kKbdTopRowLayout1Tag},
+        {{EXTERNAL_BLUETOOTH, EXTERNAL_USB},
+         {kKbdTopRowLayout1Tag, kKbdTopRowLayout1Tag},
          ui::Accelerator{ui::VKEY_BROWSER_FORWARD, ui::EF_ALT_DOWN},
          {ui::Accelerator{ui::VKEY_F2, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN}}},
 
+        // Both internal and external keyboards exists, we show both variations.
+        {{INTERNAL, EXTERNAL_USB},
+         {kKbdTopRowLayout1Tag, kKbdTopRowLayout1Tag},
+         ui::Accelerator{ui::VKEY_BROWSER_FORWARD, ui::EF_ALT_DOWN},
+         {ui::Accelerator{ui::VKEY_F2, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN},
+          ui::Accelerator{ui::VKEY_BROWSER_FORWARD,
+                          ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN}}},
+
         // For TopRowLayout1 + TopRowLayout2: [Alt] + [Forward] -> [Alt] +
         // [Search] + [F2]. Only layout1 has [Forward] key.
-        {{kKbdTopRowLayout1Tag, kKbdTopRowLayout2Tag},
+        {{EXTERNAL_BLUETOOTH, EXTERNAL_USB, INTERNAL},
+         {kKbdTopRowLayout1Tag, kKbdTopRowLayout2Tag, kKbdTopRowLayout2Tag},
          ui::Accelerator{ui::VKEY_BROWSER_FORWARD, ui::EF_ALT_DOWN},
          {ui::Accelerator{ui::VKEY_F2, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN}}},
+
+        // For internal keyboard, we show icon + meta. No duplicated alias
+        // exists.
+        {{INTERNAL, INTERNAL},
+         {kKbdTopRowLayout1Tag, kKbdTopRowLayout2Tag},
+         ui::Accelerator{ui::VKEY_BROWSER_FORWARD, ui::EF_ALT_DOWN},
+         {ui::Accelerator{ui::VKEY_BROWSER_FORWARD,
+                          ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN}}},
 
         // For TopRowLayout1 + TopRowLayout2: [Alt] + [Refresh] -> [Alt] +
         // [Search] + [F2] AND [Alt] + [Search] + [F3]. Layout1's [Refresh] key
         // maps to [F3], while layout2 maps to [F2].
-        {{kKbdTopRowLayout1Tag, kKbdTopRowLayout2Tag},
+        {{EXTERNAL_USB, EXTERNAL_UNKNOWN},
+         {kKbdTopRowLayout1Tag, kKbdTopRowLayout2Tag},
          ui::Accelerator{ui::VKEY_BROWSER_REFRESH, ui::EF_ALT_DOWN},
          {ui::Accelerator{ui::VKEY_F2, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN},
           ui::Accelerator{ui::VKEY_F3, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN}}},
 
+        // Internal keyboard shows icon + meta, external keyboard shows F-key +
+        // meta.
+        {{INTERNAL, EXTERNAL_USB},
+         {kKbdTopRowLayout1Tag, kKbdTopRowLayout2Tag},
+         ui::Accelerator{ui::VKEY_BROWSER_REFRESH, ui::EF_ALT_DOWN},
+         {ui::Accelerator{ui::VKEY_F2, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN},
+          ui::Accelerator{ui::VKEY_BROWSER_REFRESH,
+                          ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN}}},
+
         // For TopRowLayout1 + TopRowLayout2: [Alt] + [VolumeUp] -> [Alt] +
         // [Search] + [F10]. Both layout1 and layout2' [VolumeUp] key maps to
         // [F10]. No duplicated alias exists.
-        {{kKbdTopRowLayout1Tag, kKbdTopRowLayout2Tag},
+        {{INTERNAL, EXTERNAL_USB, EXTERNAL_BLUETOOTH},
+         {kKbdTopRowLayout1Tag, kKbdTopRowLayout2Tag},
          ui::Accelerator{ui::VKEY_VOLUME_UP, ui::EF_ALT_DOWN},
-         {ui::Accelerator{ui::VKEY_F10,
+         {ui::Accelerator{ui::VKEY_F10, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN},
+          ui::Accelerator{ui::VKEY_VOLUME_UP,
                           ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN}}},
 
         // For TopRowLayout1 + TopRowLayout2 + TopRowLayoutWilco: [Alt] + [Back]
         // -> [Alt] + [Search] + [F1]. All layouts' [Back] key maps to [F1]. No
         // duplicated alias exists.
-        {{kKbdTopRowLayout1Tag, kKbdTopRowLayout2Tag, kKbdTopRowLayoutWilcoTag},
+        {{EXTERNAL_USB, EXTERNAL_BLUETOOTH, EXTERNAL_UNKNOWN},
+         {kKbdTopRowLayout1Tag, kKbdTopRowLayout2Tag, kKbdTopRowLayoutWilcoTag},
          ui::Accelerator{ui::VKEY_BROWSER_BACK, ui::EF_ALT_DOWN},
          {ui::Accelerator{ui::VKEY_F1, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN}}},
 
         // For TopRowLayout1 + TopRowLayout2 + TopRowLayoutWilco: [Alt] + [Zoom]
         // -> [Alt] + [Search] + [F3] AND [Alt] + [Search] + [F4].
-        {{kKbdTopRowLayout1Tag, kKbdTopRowLayout2Tag, kKbdTopRowLayoutWilcoTag},
+        {{INTERNAL, EXTERNAL_USB, EXTERNAL_USB, EXTERNAL_USB},
+         {kKbdTopRowLayout1Tag, kKbdTopRowLayout1Tag, kKbdTopRowLayout2Tag,
+          kKbdTopRowLayoutWilcoTag},
          ui::Accelerator{ui::VKEY_ZOOM, ui::EF_ALT_DOWN},
          {ui::Accelerator{ui::VKEY_F3, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN},
-          ui::Accelerator{ui::VKEY_F4, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN}}},
+          ui::Accelerator{ui::VKEY_F4, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN},
+          ui::Accelerator{ui::VKEY_ZOOM,
+                          ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN}}},
 
         // For TopRowLayout1 + TopRowLayout2 + TopRowLayoutWilco +
         // TopRowLayoutDrallion: [Alt] + [Launch] -> [Alt] + [Search] + [F4] AND
         // [Alt] + [Search] + [F5].
-        {{kKbdTopRowLayout1Tag, kKbdTopRowLayout2Tag, kKbdTopRowLayoutWilcoTag,
-          kKbdTopRowLayoutDrallionTag},
+        {{INTERNAL, EXTERNAL_BLUETOOTH, EXTERNAL_BLUETOOTH, EXTERNAL_BLUETOOTH,
+          EXTERNAL_BLUETOOTH},
+         {kKbdTopRowLayout1Tag, kKbdTopRowLayout1Tag, kKbdTopRowLayout2Tag,
+          kKbdTopRowLayoutWilcoTag, kKbdTopRowLayoutDrallionTag},
          ui::Accelerator{ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_ALT_DOWN},
          {ui::Accelerator{ui::VKEY_F4, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN},
-          ui::Accelerator{ui::VKEY_F5, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN}}},
+          ui::Accelerator{ui::VKEY_F5, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN},
+          ui::Accelerator{ui::VKEY_MEDIA_LAUNCH_APP1,
+                          ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN}}},
     }));
 
 TEST_P(TopRowAliasTest, CheckTopRowAlias) {
@@ -241,10 +313,11 @@ TEST_P(TopRowAliasTest, CheckTopRowAlias) {
   fake_keyboard_manager_->RemoveAllDevices();
   for (int i = 0; const std::string& layout : keyboard_layout_types_) {
     ui::InputDevice fake_keyboard(
-        /*id=*/i++, /*type=*/ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+        /*id=*/i, /*type=*/keyboard_connection_type_[i],
         /*name=*/layout);
     fake_keyboard.sys_path = base::FilePath("path" + layout);
     fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard, layout);
+    i++;
   }
 
   AcceleratorAliasConverter accelerator_alias_converter_;
