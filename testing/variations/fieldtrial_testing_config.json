@@ -5316,6 +5316,22 @@
             ]
         }
     ],
+    "GifRecording": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GifRecording"
+                    ]
+                }
+            ]
+        }
+    ],
     "GoogleLensCrossPlatformContextMenuStringUpdates": [
         {
             "platforms": [
