@@ -191,6 +191,15 @@ const char kDocumentPictureInPictureApiName[] =
 const char kDocumentPictureInPictureApiDescription[] =
     "Enables API to open an always-on-top window with a full HTML document";
 
+const char kEnableBenchmarkingName[] = "Enable benchmarking";
+const char kEnableBenchmarkingDescription[] =
+    "Sets all features to their default state; that is, disables randomization "
+    "for feature states. This is used by developers and testers to "
+    "diagnose whether an observed problem is caused by a non-default "
+    "base::Feature configuration. This flag is automatically reset "
+    "after 3 restarts. On the third restart, the flag will appear to be off "
+    "but the effect is still active.";
+
 const char kPasswordNotesWithBackupName[] = "Password notes in settings";
 const char kPasswordNotesWithBackupDescription[] =
     "Enables a note section for each password in the settings page.";

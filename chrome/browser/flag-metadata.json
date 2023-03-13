@@ -1449,7 +1449,7 @@
     "owners": [ "cros-networking@google.com" ],
     "expiry_milestone": 121
   },
-   {
+  {
     "name": "disable-explicit-dma-fences",
     "owners": [ "chromeos-gfx@google.com" ],
     // This flag is used for QA & debugging on ChromeOS, which has no way to
@@ -1866,6 +1866,13 @@
     "name": "enable-baseline-gm3-surface-colors",
     "owners": ["nemco", "skavuluru"],
     "expiry_milestone": 115
+  },
+  {
+    "name": "enable-benchmarking",
+    "owners": [ "//components/variations/OWNERS" ],
+    // This is used by testers and developers to determine whether a bug is
+    // caused by a non-default feature configuration.
+    "expiry_milestone": -1
   },
   {
     "name": "enable-bluetooth-spp-in-serial-api",

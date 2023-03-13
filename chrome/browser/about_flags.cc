@@ -31,6 +31,7 @@
 #include "cc/base/features.h"
 #include "cc/base/switches.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/fast_checkout/fast_checkout_features.h"
 #include "chrome/browser/feature_guide/notifications/feature_notification_guide_service.h"
 #include "chrome/browser/flag_descriptions.h"
@@ -100,6 +101,7 @@
 #include "components/flags_ui/flags_storage.h"
 #include "components/flags_ui/flags_ui_metrics.h"
 #include "components/flags_ui/flags_ui_switches.h"
+#include "components/flags_ui/pref_service_flags_storage.h"
 #include "components/heavy_ad_intervention/heavy_ad_features.h"
 #include "components/history/core/browser/features.h"
 #include "components/history_clusters/core/config.h"
@@ -157,6 +159,7 @@
 #include "components/translate/core/browser/translate_ranker_impl.h"
 #include "components/translate/core/common/translate_util.h"
 #include "components/ui_devtools/switches.h"
+#include "components/variations/variations_switches.h"
 #include "components/version_info/version_info.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/switches.h"
@@ -256,6 +259,9 @@
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/file_suggest/item_suggest_cache.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
+#include "chrome/browser/ash/settings/about_flags.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
 #include "chrome/browser/memory/memory_ablation_study.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
@@ -3297,6 +3303,10 @@ const FeatureEntry kFeatureEntries[] = {
 // //tools/flags/generate_unexpire_flags.py.
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/unexpire_flags_gen.inc"
+    {variations::switches::kEnableBenchmarking,
+     flag_descriptions::kEnableBenchmarkingName,
+     flag_descriptions::kEnableBenchmarkingDescription, kOsAll,
+     SINGLE_VALUE_TYPE(variations::switches::kEnableBenchmarking)},
     {"ignore-gpu-blocklist", flag_descriptions::kIgnoreGpuBlocklistName,
      flag_descriptions::kIgnoreGpuBlocklistDescription, kOsAll,
      SINGLE_VALUE_TYPE(switches::kIgnoreGpuBlocklist)},
@@ -9585,6 +9595,57 @@ bool ShouldSkipNonDeprecatedFeatureEntry(const FeatureEntry& entry) {
 }
 
 }  // namespace
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// This method may be invoked both synchronously or asynchronously. Based on
+// whether the current user is the owner of the device, generates the
+// appropriate flag storage.
+void GetStorageAsync(Profile* profile,
+                     GetStorageCallback callback,
+                     bool current_user_is_owner) {
+  // On ChromeOS the owner can set system wide flags and other users can only
+  // set flags for their own session.
+  if (current_user_is_owner) {
+    ash::OwnerSettingsServiceAsh* service =
+        ash::OwnerSettingsServiceAshFactory::GetForBrowserContext(profile);
+    std::move(callback).Run(
+        std::make_unique<ash::about_flags::OwnerFlagsStorage>(
+            profile->GetPrefs(), service),
+        flags_ui::kOwnerAccessToFlags);
+  } else {
+    std::move(callback).Run(std::make_unique<flags_ui::PrefServiceFlagsStorage>(
+                                profile->GetPrefs()),
+                            flags_ui::kGeneralAccessFlagsOnly);
+  }
+}
+#endif
+
+// ash-chrome uses different storage flag storage logic from other desktop
+// platforms.
+void GetStorage(Profile* profile, GetStorageCallback callback) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Bypass possible incognito profile.
+  // On ChromeOS the owner can set system wide flags and other users can only
+  // set flags for their own session.
+  Profile* original_profile = profile->GetOriginalProfile();
+  if (base::SysInfo::IsRunningOnChromeOS() &&
+      ash::OwnerSettingsServiceAshFactory::GetForBrowserContext(
+          original_profile)) {
+    ash::OwnerSettingsServiceAsh* service =
+        ash::OwnerSettingsServiceAshFactory::GetForBrowserContext(
+            original_profile);
+    service->IsOwnerAsync(base::BindOnce(&GetStorageAsync, original_profile,
+                                         std::move(callback)));
+  } else {
+    GetStorageAsync(original_profile, std::move(callback),
+                    /*current_user_is_owner=*/false);
+  }
+#else
+  std::move(callback).Run(std::make_unique<flags_ui::PrefServiceFlagsStorage>(
+                              g_browser_process->local_state()),
+                          flags_ui::kOwnerAccessToFlags);
+#endif
+}
 
 bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
                                        const FeatureEntry& entry) {

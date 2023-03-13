@@ -125,6 +125,9 @@ extern const char kDefaultChromeAppsMigrationDescription[];
 extern const char kDocumentPictureInPictureApiName[];
 extern const char kDocumentPictureInPictureApiDescription[];
 
+extern const char kEnableBenchmarkingName[];
+extern const char kEnableBenchmarkingDescription[];
+
 extern const char kForceStartupSigninPromoName[];
 extern const char kForceStartupSigninPromoDescription[];
 

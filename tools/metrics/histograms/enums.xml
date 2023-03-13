@@ -64853,6 +64853,7 @@ from previous Chrome versions.
   <int value="1635695770" label="CSSContainerQueries:disabled"/>
   <int value="1635755615" label="ScanAppMultiPageScan:disabled"/>
   <int value="1635986352" label="ContextMenuSearchWithGoogleLens:enabled"/>
+  <int value="1636029982" label="enable-benchmarking"/>
   <int value="1636721063"
       label="AutofillLocalCardMigrationShowFeedback:enabled"/>
   <int value="1636962093" label="disable-material-design-ntp"/>

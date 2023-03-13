@@ -59,9 +59,9 @@ void FlagsUIHandler::RegisterMessages() {
 #endif
 }
 
-void FlagsUIHandler::Init(flags_ui::FlagsStorage* flags_storage,
+void FlagsUIHandler::Init(std::unique_ptr<flags_ui::FlagsStorage> flags_storage,
                           flags_ui::FlagAccess access) {
-  flags_storage_.reset(flags_storage);
+  flags_storage_ = std::move(flags_storage);
   access_ = access;
 
   if (!experimental_features_callback_id_.empty())

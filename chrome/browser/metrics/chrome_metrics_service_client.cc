@@ -43,6 +43,7 @@
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/metrics/cached_metrics_profile.h"
+#include "chrome/browser/metrics/chrome_browser_main_extra_parts_metrics.h"
 #include "chrome/browser/metrics/chrome_metrics_extensions_helper.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/chrome_metrics_services_manager_client.h"
@@ -541,6 +542,7 @@ std::unique_ptr<ChromeMetricsServiceClient> ChromeMetricsServiceClient::Create(
 
 // static
 void ChromeMetricsServiceClient::RegisterPrefs(PrefRegistrySimple* registry) {
+  ChromeBrowserMainExtraPartsMetrics::RegisterPrefs(registry);
   metrics::MetricsService::RegisterPrefs(registry);
   ukm::UkmService::RegisterPrefs(registry);
   metrics::StabilityMetricsHelper::RegisterPrefs(registry);
