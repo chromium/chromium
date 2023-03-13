@@ -57,56 +57,65 @@ export class TextEditHandler {
     this.node_ = node;
 
     if (!node.state[StateType.EDITABLE]) {
-      throw '|node| must be editable.';
+      throw new Error('|node| must be editable.');
     }
 
-    /** @private {AutomationEditableText} */
-    this.editableText_;
+    /** @private {!AutomationEditableText} */
+    this.editableText_ = this.createEditableText_();
 
     /** @private {!Array<AutomationIntent>} */
     this.inferredIntents_ = [];
+  }
 
-    chrome.automation.getDesktop(desktop => {
-      const isTextArea = node.htmlTag === 'textarea';
+  /**
+   * ChromeVox handles two general groups of text fields:
+   * A rich text field is one where selection gets placed on a DOM
+   * descendant to a root text field. This is one of:
+   * - content editables (detected via editable state and contenteditable
+   * html attribute, or just richly editable state)
+   * - text areas (<textarea>) detected via its html tag
+   *
+   * A non-rich text field is one where accessibility only provides a value,
+   * and a pair of numbers for the selection start and end. ChromeVox places
+   * single-lined text fields, including those from web content, and ARC++
+   * in this group. In addition, multiline ARC++ text fields are treated
+   * this way.
+   *
+   * Note that these definitions slightly differ from those in Blink, which
+   * only considers text fields in web content.
+   * @return {boolean}
+   */
+  useRichText_() {
+    return this.node_.state[StateType.RICHLY_EDITABLE] ||
+        // This condition is a full proof way to ensure the node is editable
+        // and has the content editable attribute set to any valid value.
+        (this.node_.state[StateType.EDITABLE] && this.node_.htmlAttributes &&
+         this.node_.htmlAttributes['contenteditable'] !== undefined &&
+         this.node_.htmlAttributes['contenteditable'] !== 'false') ||
+        false;
+  }
 
-      // ChromeVox handles two general groups of text fields:
-      // A rich text field is one where selection gets placed on a DOM
-      // descendant to a root text field. This is one of:
-      // - content editables (detected via editable state and contenteditable
-      // html attribute, or just richly editable state)
-      // - text areas (<textarea>) detected via its html tag
-      //
-      // A non-rich text field is one where accessibility only provides a value,
-      // and a pair of numbers for the selection start and end. ChromeVox places
-      // single-lined text fields, including those from web content, and ARC++
-      // in this group. In addition, multiline ARC++ text fields are treated
-      // this way.
-      //
-      // Note that these definitions slightly differ from those in Blink, which
-      // only considers text fields in web content.
-      const useRichText = node.state[StateType.RICHLY_EDITABLE] ||
+  /**
+   * @return {!AutomationEditableText}
+   * @private
+   */
+  createEditableText_() {
+    const isTextArea = this.node_.htmlTag === 'textarea';
 
-          // This condition is a full proof way to ensure the node is editable
-          // and has the content editable attribute set to any valid value.
-          (node.state[StateType.EDITABLE] && node.htmlAttributes &&
-           node.htmlAttributes['contenteditable'] !== undefined &&
-           node.htmlAttributes['contenteditable'] !== 'false') ||
-          isTextArea;
+    const useRichText = this.useRichText_() || isTextArea;
 
-      // Prior to creating the specific editable text handler, ensure that text
-      // areas exclude offscreen elements in line computations. This is because
-      // text areas from Blink expose a single large static text node which can
-      // have thousands or more inline text boxes. This is a very specific check
-      // because ignoring offscreen nodes can impact the way in which we convert
-      // from a tree position to a deep equivalent on the inline text boxes.
-      const MAX_INLINE_TEXT_BOXES = 500;
-      const firstStaticText = node.find({role: RoleType.STATIC_TEXT});
-      EditableLine.includeOffscreen = !isTextArea || !firstStaticText ||
-          firstStaticText.children.length < MAX_INLINE_TEXT_BOXES;
+    // Prior to creating the specific editable text handler, ensure that text
+    // areas exclude offscreen elements in line computations. This is because
+    // text areas from Blink expose a single large static text node which can
+    // have thousands or more inline text boxes. This is a very specific check
+    // because ignoring offscreen nodes can impact the way in which we convert
+    // from a tree position to a deep equivalent on the inline text boxes.
+    const firstStaticText = this.node_.find({role: RoleType.STATIC_TEXT});
+    EditableLine.includeOffscreen = !isTextArea || !firstStaticText ||
+        firstStaticText.children.length < MAX_INLINE_TEXT_BOXES;
 
-      this.editableText_ = useRichText ? new AutomationRichEditableText(node) :
-                                         new AutomationEditableText(node);
-    });
+    return useRichText ? new AutomationRichEditableText(this.node_) :
+                         new AutomationEditableText(this.node_);
   }
 
   /** @return {!AutomationNode} */
@@ -1021,6 +1030,10 @@ class EditingRangeObserver {
   }
 }
 
-
 /** @type {ChromeVoxRangeObserver} */
 EditingRangeObserver.instance = new EditingRangeObserver();
+
+// Local to module.
+
+/** @type {number} */
+const MAX_INLINE_TEXT_BOXES = 500;
