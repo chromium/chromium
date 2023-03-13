@@ -133,7 +133,7 @@ void TotalDiskSpaceCalculator::OnGetRootDeviceSize(
     absl::optional<int64_t> reply) {
   if (reply.has_value()) {
     if (reply.value() < 0) {
-      LOG(FATAL) << "Negative root device size (" << reply.value() << ")";
+      LOG(DFATAL) << "Negative root device size (" << reply.value() << ")";
     }
     NotifySizeCalculated(reply.value());
     return;
@@ -161,7 +161,7 @@ void TotalDiskSpaceCalculator::GetTotalDiskSpace() {
 
 void TotalDiskSpaceCalculator::OnGetTotalDiskSpace(int64_t* total_bytes) {
   if (*total_bytes < 0) {
-    LOG(FATAL) << "Negative total disk space (" << *total_bytes << ")";
+    LOG(DFATAL) << "Negative total disk space (" << *total_bytes << ")";
   }
   NotifySizeCalculated(*total_bytes);
 }
@@ -186,7 +186,7 @@ void FreeDiskSpaceCalculator::PerformCalculation() {
 
 void FreeDiskSpaceCalculator::OnGetFreeDiskSpace(int64_t* available_bytes) {
   if (*available_bytes < 0) {
-    LOG(FATAL) << "Negative free disk space (" << *available_bytes << ")";
+    LOG(DFATAL) << "Negative free disk space (" << *available_bytes << ")";
   }
   NotifySizeCalculated(*available_bytes);
 }
