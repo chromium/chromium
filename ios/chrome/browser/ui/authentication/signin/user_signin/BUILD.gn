@@ -36,7 +36,6 @@ source_set("user_signin") {
     "//ios/chrome/browser/ui/authentication/signin:signin_protected",
     "//ios/chrome/browser/ui/authentication/signin/user_signin/logging",
     "//ios/chrome/browser/ui/authentication/unified_consent",
-    "//ios/chrome/browser/ui/collection_view/cells",
     "//ios/chrome/browser/ui/settings/sync/utils",
     "//ios/chrome/browser/unified_consent",
     "//ios/chrome/browser/url:constants",
@@ -46,6 +45,7 @@ source_set("user_signin") {
     "//ios/chrome/common/ui/elements",
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/common/ui/util",
+    "//ios/third_party/material_components_ios",
     "//ui/base",
   ]
   public_deps = [

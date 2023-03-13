@@ -31,7 +31,6 @@ source_set("cells") {
     "//ios/chrome/browser/signin:constants",
     "//ios/chrome/browser/signin:signin_util",
     "//ios/chrome/browser/ui/authentication/views",
-    "//ios/chrome/browser/ui/collection_view/cells",
     "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/ntp",
     "//ios/chrome/browser/ui/settings/cells:public",

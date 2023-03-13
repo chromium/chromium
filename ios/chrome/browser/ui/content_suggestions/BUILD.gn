@@ -2,11 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# TODO(crbug.com/1344830): Migrate away from deprecated MDC APIs.
-config("disable_deprecated_declarations") {
-  cflags = [ "-Wno-deprecated-declarations" ]
-}
-
 source_set("start_suggest") {
   sources = [
     "start_suggest_service_factory.h",
@@ -91,7 +86,6 @@ source_set("content_suggestions") {
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/ui/alert_coordinator",
-    "//ios/chrome/browser/ui/collection_view/cells",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui_util",
@@ -125,10 +119,7 @@ source_set("content_suggestions") {
     "//ui/base",
     "//ui/strings",
   ]
-  configs += [
-    ":disable_deprecated_declarations",
-    "//build/config/compiler:enable_arc",
-  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
   public_deps = [ "//ios/third_party/material_components_ios" ]
 }
 
@@ -192,7 +183,6 @@ source_set("content_suggestions_ui") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/ui/collection_view",
     "//ios/chrome/browser/ui/content_suggestions:metrics",
     "//ios/chrome/browser/ui/content_suggestions/cells",
     "//ios/chrome/browser/ui/content_suggestions/cells:constants",
@@ -221,10 +211,7 @@ source_set("content_suggestions_ui") {
     "//ui/base",
   ]
   public_deps = [ ":content_suggestions_ui_util" ]
-  configs += [
-    ":disable_deprecated_declarations",
-    "//build/config/compiler:enable_arc",
-  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("content_suggestions_constant") {
@@ -298,7 +285,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:test_support",
-    "//ios/chrome/browser/ui/collection_view",
     "//ios/chrome/browser/ui/content_suggestions:constants",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui",
     "//ios/chrome/browser/ui/content_suggestions:feature_flags",
@@ -327,10 +313,7 @@ source_set("unit_tests") {
     "//third_party/ocmock",
     "//ui/base:test_support",
   ]
-  configs += [
-    ":disable_deprecated_declarations",
-    "//build/config/compiler:enable_arc",
-  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("eg2_tests") {
