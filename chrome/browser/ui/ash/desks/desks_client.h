@@ -79,14 +79,23 @@ class DesksClient : public ash::SessionObserver {
   using CaptureActiveDeskAndSaveTemplateCallback =
       base::OnceCallback<void(absl::optional<DeskActionError> result,
                               std::unique_ptr<ash::DeskTemplate>)>;
+
   // Captures the active desk and saves it as template or saved desk for later
-  // use. If such desk can be saved, `callback` will be invoked
-  // with `""` as the error string with the pointer to the captured desk
-  // template, otherwise, `callback` will be invoked with a description of the
-  // error as the `error` with a nullptr.
+  // use. If such desk can be saved, `callback` will be invoked with
+  // `absl::nullopt` as the `result` with the pointer to the captured desk
+  // template, otherwise, `callback` will be invoked with an `DeskActionError`
+  // error as the `result` and a nullptr for desk template.
   void CaptureActiveDeskAndSaveTemplate(
       CaptureActiveDeskAndSaveTemplateCallback callback,
       ash::DeskTemplateType template_type);
+
+  // Captures the active desk without saving it. If such desk can be saved,
+  // `callback` will be invoked with `absl::nullopt` as the `result` with the
+  // pointer to the captured desk template, otherwise, `callback` will be
+  // invoked with an `DeskActionError` error as the `result` and a nullptr for
+  // desk template.
+  void CaptureActiveDesk(CaptureActiveDeskAndSaveTemplateCallback callback,
+                         ash::DeskTemplateType template_type);
 
   using DeleteDeskTemplateCallback =
       base::OnceCallback<void(absl::optional<DeskActionError> result)>;
@@ -215,8 +224,10 @@ class DesksClient : public ash::SessionObserver {
   // Callback function that is called once the DesksController has captured the
   // active desk as a template. Invokes |callback| with |desk_template| as an
   // argument.
-  void OnCapturedDeskTemplate(CaptureActiveDeskAndSaveTemplateCallback callback,
-                              std::unique_ptr<ash::DeskTemplate> desk_template);
+  void OnCapturedDeskTemplate(
+      CaptureActiveDeskAndSaveTemplateCallback callback,
+      absl::optional<DesksClient::DeskActionError> error,
+      std::unique_ptr<ash::DeskTemplate> desk_template);
 
   // Callback function that handles the JSON representation of a specific
   // template.
