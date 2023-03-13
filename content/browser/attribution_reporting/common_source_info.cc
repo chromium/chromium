@@ -24,7 +24,8 @@ CommonSourceInfo::CommonSourceInfo(SuitableOrigin source_origin,
                                    SuitableOrigin reporting_origin,
                                    base::Time source_time,
                                    SourceType source_type)
-    : source_origin_(std::move(source_origin)),
+    : source_site_(net::SchemefulSite(source_origin)),
+      source_origin_(std::move(source_origin)),
       reporting_origin_(std::move(reporting_origin)),
       source_time_(source_time),
       source_type_(source_type) {}
@@ -39,9 +40,5 @@ CommonSourceInfo& CommonSourceInfo::operator=(const CommonSourceInfo&) =
     default;
 
 CommonSourceInfo& CommonSourceInfo::operator=(CommonSourceInfo&&) = default;
-
-net::SchemefulSite CommonSourceInfo::SourceSite() const {
-  return net::SchemefulSite(source_origin_);
-}
 
 }  // namespace content

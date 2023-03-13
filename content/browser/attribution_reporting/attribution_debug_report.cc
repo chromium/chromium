@@ -262,7 +262,7 @@ base::Value::Dict GetReportDataBody(DebugDataType data_type,
   base::Value::Dict data_body;
   data_body.Set(kAttributionDestination, registration.destination_set.ToJson());
   SetSourceData(data_body, registration.source_event_id,
-                source.common_info().SourceSite(), registration.debug_key);
+                source.common_info().source_site(), registration.debug_key);
 
   switch (data_type) {
     case DebugDataType::kSourceDestinationLimit:
@@ -317,7 +317,7 @@ base::Value::Dict GetReportDataBody(DebugDataType data_type,
 
   if (const absl::optional<StoredSource>& source = result.source()) {
     SetSourceData(data_body, source->source_event_id(),
-                  source->common_info().SourceSite(), source->debug_key());
+                  source->common_info().source_site(), source->debug_key());
   }
 
   switch (data_type) {

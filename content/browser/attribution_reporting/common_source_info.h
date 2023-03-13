@@ -9,10 +9,7 @@
 #include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/common/content_export.h"
-
-namespace net {
-class SchemefulSite;
-}  // namespace net
+#include "net/base/schemeful_site.h"
 
 namespace content {
 
@@ -46,13 +43,10 @@ class CONTENT_EXPORT CommonSourceInfo {
     return source_type_;
   }
 
-  // Returns the schemeful site of |source_origin|.
-  //
-  // TODO(johnidel): Consider storing the SchemefulSite as a separate member so
-  // that we avoid unnecessary copies of |source_origin_|.
-  net::SchemefulSite SourceSite() const;
+  const net::SchemefulSite& source_site() const { return source_site_; }
 
  private:
+  net::SchemefulSite source_site_;
   attribution_reporting::SuitableOrigin source_origin_;
   attribution_reporting::SuitableOrigin reporting_origin_;
   base::Time source_time_;

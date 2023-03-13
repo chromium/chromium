@@ -604,7 +604,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(
   statement.BindInt(7, SerializeSourceType(common_info.source_type()));
   statement.BindInt(8, SerializeAttributionLogic(attribution_logic));
   statement.BindInt64(9, reg.priority);
-  statement.BindString(10, common_info.SourceSite().Serialize());
+  statement.BindString(10, common_info.source_site().Serialize());
   statement.BindInt(11, num_conversions);
   statement.BindBool(12, event_level_active);
   statement.BindBool(13, aggregatable_active);

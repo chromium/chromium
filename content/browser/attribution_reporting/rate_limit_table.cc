@@ -158,7 +158,7 @@ bool RateLimitTable::AddRateLimit(
 
   statement.BindInt(0, static_cast<int>(scope));
   statement.BindInt64(1, *source.source_id());
-  statement.BindString(2, common_info.SourceSite().Serialize());
+  statement.BindString(2, common_info.source_site().Serialize());
   statement.BindString(4, context_origin.Serialize());
   statement.BindString(5, common_info.reporting_origin().Serialize());
   statement.BindTime(6, common_info.source_time());
@@ -209,7 +209,7 @@ RateLimitResult RateLimitTable::AttributionAllowedForAttributionLimit(
       SQL_FROM_HERE, attribution_queries::kRateLimitAttributionAllowedSql));
   statement.BindString(
       0, net::SchemefulSite(attribution_info.context_origin).Serialize());
-  statement.BindString(1, common_info.SourceSite().Serialize());
+  statement.BindString(1, common_info.source_site().Serialize());
   statement.BindString(2, common_info.reporting_origin().Serialize());
   statement.BindTime(3, min_timestamp);
 
@@ -248,7 +248,7 @@ RateLimitResult RateLimitTable::SourceAllowedForDestinationLimit(
       SQL_FROM_HERE, attribution_queries::kRateLimitSourceAllowedSql));
 
   const CommonSourceInfo& common_info = source.common_info();
-  statement.BindString(0, common_info.SourceSite().Serialize());
+  statement.BindString(0, common_info.source_site().Serialize());
   statement.BindString(1, common_info.reporting_origin().Serialize());
   statement.BindTime(2, common_info.source_time());
 
@@ -310,7 +310,7 @@ RateLimitResult RateLimitTable::AllowedForReportingOriginLimit(
   sql::Statement statement(db->GetCachedStatement(
       SQL_FROM_HERE, attribution_queries::kRateLimitSelectReportingOriginsSql));
   statement.BindInt(0, static_cast<int>(scope));
-  statement.BindString(1, common_info.SourceSite().Serialize());
+  statement.BindString(1, common_info.source_site().Serialize());
   statement.BindTime(3, min_timestamp);
 
   for (const auto& destination : destination_sites) {
