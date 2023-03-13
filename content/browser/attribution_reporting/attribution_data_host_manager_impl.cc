@@ -769,23 +769,6 @@ void AttributionDataHostManagerImpl::NotifyFencedFrameReportingBeaconStarted(
   });
 }
 
-void AttributionDataHostManagerImpl::NotifyFencedFrameReportingBeaconSent(
-    BeaconId beacon_id) {
-  auto it = registrations_.find(beacon_id);
-
-  // The registration may no longer be tracked in the event the navigation
-  // failed.
-  if (it == registrations_.end()) {
-    return;
-  }
-
-  it->register_time = base::TimeTicks::Now();
-
-  // Treat ongoing beacon registrations as a data host for the purpose of
-  // trigger queuing.
-  data_hosts_in_source_mode_++;
-}
-
 void AttributionDataHostManagerImpl::NotifyFencedFrameReportingBeaconData(
     BeaconId beacon_id,
     url::Origin reporting_origin,
@@ -820,6 +803,14 @@ void AttributionDataHostManagerImpl::NotifyFencedFrameReportingBeaconData(
                                     &source_header)) {
     MaybeOnRegistrationsFinished(beacon_id);
     return;
+  }
+
+  if (it->register_time.is_null()) {
+    it->register_time = base::TimeTicks::Now();
+
+    // Treat ongoing beacon registrations as a data host for the purpose of
+    // trigger queuing.
+    data_hosts_in_source_mode_++;
   }
 
   it->pending_source_data++;

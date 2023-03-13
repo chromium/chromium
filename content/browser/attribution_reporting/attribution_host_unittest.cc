@@ -134,11 +134,6 @@ class MockDataHostManager : public AttributionDataHostManager {
               (override));
 
   MOCK_METHOD(void,
-              NotifyFencedFrameReportingBeaconSent,
-              (BeaconId beacon_id),
-              (override));
-
-  MOCK_METHOD(void,
               NotifyFencedFrameReportingBeaconData,
               (BeaconId beacon_id,
                url::Origin reporting_origin,

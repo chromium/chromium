@@ -426,9 +426,6 @@ bool FencedFrameReporter::SendReportInternal(
             },
             attribution_data_host_manager->AsWeakPtr(), beacon_id,
             std::move(simple_url_loader)));
-
-    attribution_data_host_manager->NotifyFencedFrameReportingBeaconSent(
-        beacon_id);
   } else {
     // Send out the reporting beacon.
     simple_url_loader_ptr->DownloadHeadersOnly(
