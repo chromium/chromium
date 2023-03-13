@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
@@ -14,7 +15,13 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-ChromeSitePerProcessTest::ChromeSitePerProcessTest() {}
+ChromeSitePerProcessTest::ChromeSitePerProcessTest() {
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{},
+      // TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having to
+      // disable this feature.
+      /*disabled_features=*/{features::kHttpsUpgrades});
+}
 
 ChromeSitePerProcessTest::~ChromeSitePerProcessTest() {}
 

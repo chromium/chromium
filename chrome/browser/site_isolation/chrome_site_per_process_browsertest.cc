@@ -1375,12 +1375,13 @@ class ChromeSitePerProcessTestWithVerifiedUserActivation
     : public ChromeSitePerProcessTest {
  public:
   ChromeSitePerProcessTestWithVerifiedUserActivation() {
-    feature_list_.InitAndEnableFeature(
-        features::kBrowserVerifiedUserActivationMouse);
+    feature_list()->Reset();
+    feature_list()->InitWithFeatures(
+        /*enabled_features=*/{features::kBrowserVerifiedUserActivationMouse},
+        // TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having to
+        // disable this feature.
+        /*disabled_features=*/{features::kHttpsUpgrades});
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Test mouse down activation notification with browser verification.
