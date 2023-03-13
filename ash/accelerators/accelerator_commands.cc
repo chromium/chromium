@@ -903,6 +903,12 @@ void PowerPressed(bool pressed) {
       pressed, base::TimeTicks());
 }
 
+void RecordVolumeSource() {
+  base::UmaHistogramEnumeration(
+      CrasAudioHandler::kOutputVolumeChangedSourceHistogramName,
+      CrasAudioHandler::AudioSettingsChangeSource::kAccelerator);
+}
+
 void RemoveCurrentDesk() {
   if (window_util::IsAnyWindowDragged())
     return;

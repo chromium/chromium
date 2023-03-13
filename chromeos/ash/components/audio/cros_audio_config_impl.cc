@@ -342,6 +342,9 @@ void CrosAudioConfigImpl::RecordOutputVolume() {
   base::UmaHistogramExactLinear(kOutputVolumeChangeHistogramName,
                                 last_set_output_volume_,
                                 /*exclusive_max=*/101);
+  base::UmaHistogramEnumeration(
+      CrasAudioHandler::kOutputVolumeChangedSourceHistogramName,
+      CrasAudioHandler::AudioSettingsChangeSource::kOsSettings);
 }
 
 void CrosAudioConfigImpl::RecordInputGain() {

@@ -233,6 +233,9 @@ ASH_EXPORT void OpenHelp();
 // Presses power button.
 ASH_EXPORT void PowerPressed(bool pressed);
 
+// Records when the user changes the output volume via keyboard to metrics.
+ASH_EXPORT void RecordVolumeSource();
+
 // Removes the current desk.
 ASH_EXPORT void RemoveCurrentDesk();
 

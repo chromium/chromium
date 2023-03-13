@@ -496,6 +496,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cras.OutputVolumeChangedSource"
+    enum="AudioSettingsChangeSource" expires_after="2024-02-14">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>Records the source of a change to the output volume.</summary>
+</histogram>
+
 <histogram name="Cras.RtcDevicePair" enum="CrasDevicePair"
     expires_after="2023-08-08">
   <owner>yuhsuan@chromium.org</owner>

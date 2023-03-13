@@ -89,13 +89,16 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   enum class AudioSettingsChangeSource {
     kSystemTray = 0,
     kOsSettings,
-    kMaxValue = kOsSettings,
+    kAccelerator,
+    kMaxValue = kAccelerator,
   };
 
   static constexpr base::TimeDelta kMetricsDelayTimerInterval =
       base::Seconds(2);
   static constexpr char kInputGainChangedSourceHistogramName[] =
       "Cras.InputGainChangedSource";
+  static constexpr char kOutputVolumeChangedSourceHistogramName[] =
+      "Cras.OutputVolumeChangedSource";
 
   class AudioObserver {
    public:

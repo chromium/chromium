@@ -1065,6 +1065,9 @@ TEST_F(CrosAudioConfigImplTest, SetOutputVolumeHistogram) {
   histogram_tester_.ExpectBucketCount(kOutputVolumeChangeHistogramName, 10, 0);
   histogram_tester_.ExpectBucketCount(kOutputVolumeChangeHistogramName, 20, 0);
   histogram_tester_.ExpectBucketCount(kOutputVolumeChangeHistogramName, 30, 1);
+  histogram_tester_.ExpectBucketCount(
+      CrasAudioHandler::kOutputVolumeChangedSourceHistogramName,
+      CrasAudioHandler::AudioSettingsChangeSource::kOsSettings, 1);
 
   // Move the output volume up slider 2 times. Move the slider at half of the
   // delay interval time so each change shouldn't be recorded.
@@ -1075,6 +1078,9 @@ TEST_F(CrosAudioConfigImplTest, SetOutputVolumeHistogram) {
   task_environment()->FastForwardBy(kMetricsDelayTimerInterval);
   histogram_tester_.ExpectBucketCount(kOutputVolumeChangeHistogramName, 50, 0);
   histogram_tester_.ExpectBucketCount(kOutputVolumeChangeHistogramName, 100, 1);
+  histogram_tester_.ExpectBucketCount(
+      CrasAudioHandler::kOutputVolumeChangedSourceHistogramName,
+      CrasAudioHandler::AudioSettingsChangeSource::kOsSettings, 2);
 }
 
 TEST_F(CrosAudioConfigImplTest, SetInputGainHistogram) {

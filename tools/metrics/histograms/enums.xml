@@ -5856,6 +5856,7 @@ others/histograms.xml -->
 <enum name="AudioSettingsChangeSource">
   <int value="0" label="System Tray"/>
   <int value="1" label="OS Settings"/>
+  <int value="2" label="Accelerator"/>
 </enum>
 
 <enum name="AudioStreamFormatRelatedInitError">
