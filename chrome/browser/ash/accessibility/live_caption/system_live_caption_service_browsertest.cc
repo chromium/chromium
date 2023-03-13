@@ -300,6 +300,44 @@ IN_PROC_BROWSER_TEST_F(SystemLiveCaptionServiceTest, DispatchToProfile) {
   EXPECT_EQ(nullptr, GetCaptionBubbleController(secondary_profile_));
 }
 
+IN_PROC_BROWSER_TEST_F(SystemLiveCaptionServiceTest, StartStopStart) {
+  StartLiveCaptioning();
+
+  // Capture fake audio.
+  EmulateRecognizedSpeech("System audio caption");
+  EXPECT_TRUE(fake_speech_recognition_service_->is_capturing_audio());
+
+  // Transcribed speech should be displayed from the primary profile.
+  // The added captions are all added as non-finals, so they over-write not
+  // append.
+  auto* primary_bubble = GetCaptionBubbleController(primary_profile_);
+  ASSERT_NE(nullptr, primary_bubble);
+  EXPECT_TRUE(primary_bubble->IsWidgetVisibleForTesting());
+  EXPECT_FALSE(primary_bubble->IsGenericErrorMessageVisibleForTesting());
+  EXPECT_EQ("System audio caption",
+            primary_bubble->GetBubbleLabelTextForTesting());
+
+  // Stop
+  SystemLiveCaptionServiceFactory::GetInstance()
+      ->GetForProfile(primary_profile_)
+      ->OnNonChromeOutputStopped();
+  EmulateRecognizedSpeech(" more after stop ");
+  EXPECT_EQ(" more after stop ",
+            primary_bubble->GetBubbleLabelTextForTesting());
+  // Idle stop.
+  base::RunLoop().RunUntilIdle();
+
+  // Start again.
+  SystemLiveCaptionServiceFactory::GetInstance()
+      ->GetForProfile(primary_profile_)
+      ->OnNonChromeOutputStarted();
+  EmulateRecognizedSpeech(" and yet more ");
+
+  EXPECT_EQ(" and yet more ", primary_bubble->GetBubbleLabelTextForTesting());
+  // Transcribed speech should _not_ be shown for any other profiles.
+  EXPECT_EQ(nullptr, GetCaptionBubbleController(secondary_profile_));
+}
+
 // Test that we can cease transcription by closing the bubble UI.
 IN_PROC_BROWSER_TEST_F(SystemLiveCaptionServiceTest, EarlyStopping) {
   StartLiveCaptioning();
