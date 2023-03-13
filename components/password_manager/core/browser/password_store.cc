@@ -110,7 +110,7 @@ void PasswordStore::AddLogin(const PasswordForm& form,
     return;  // Once the shutdown started, ignore new requests.
   }
   backend_->AddLoginAsync(
-      form, base::BindOnce(&GetPasswordChangesOrEmptyListOnFailure)
+      form, base::BindOnce(&GetPasswordChangesOrNulloptOnFailure)
                 .Then(base::BindOnce(
                           &PasswordStore::NotifyLoginsChangedOnMainSequence,
                           this, LoginsChangedTrigger::Addition)
@@ -148,7 +148,7 @@ void PasswordStore::UpdateLogin(const PasswordForm& form,
     return;  // Once the shutdown started, ignore new requests.
   }
   backend_->UpdateLoginAsync(
-      form, base::BindOnce(&GetPasswordChangesOrEmptyListOnFailure)
+      form, base::BindOnce(&GetPasswordChangesOrNulloptOnFailure)
                 .Then(base::BindOnce(
                     &PasswordStore::NotifyLoginsChangedOnMainSequence, this,
                     LoginsChangedTrigger::Update))
@@ -198,7 +198,7 @@ void PasswordStore::RemoveLogin(const PasswordForm& form) {
     return;  // Once the shutdown started, ignore new requests.
   }
   backend_->RemoveLoginAsync(
-      form, base::BindOnce(&GetPasswordChangesOrEmptyListOnFailure)
+      form, base::BindOnce(&GetPasswordChangesOrNulloptOnFailure)
                 .Then(base::BindOnce(
                     &PasswordStore::NotifyLoginsChangedOnMainSequence, this,
                     LoginsChangedTrigger::Deletion)));
@@ -217,7 +217,7 @@ void PasswordStore::RemoveLoginsByURLAndTime(
   }
   backend_->RemoveLoginsByURLAndTimeAsync(
       url_filter, delete_begin, delete_end, std::move(sync_completion),
-      base::BindOnce(&GetPasswordChangesOrEmptyListOnFailure)
+      base::BindOnce(&GetPasswordChangesOrNulloptOnFailure)
           .Then(
               base::BindOnce(&PasswordStore::NotifyLoginsChangedOnMainSequence,
                              this, LoginsChangedTrigger::BatchDeletion))
@@ -238,7 +238,7 @@ void PasswordStore::RemoveLoginsCreatedBetween(
                      LoginsChangedTrigger::BatchDeletion);
   backend_->RemoveLoginsCreatedBetweenAsync(
       delete_begin, delete_end,
-      base::BindOnce(&GetPasswordChangesOrEmptyListOnFailure)
+      base::BindOnce(&GetPasswordChangesOrNulloptOnFailure)
           .Then(base::BindOnce(&InvokeCallbacksForSuspectedChanges,
                                std::move(callback), std::move(completion))));
 }
@@ -440,8 +440,10 @@ void PasswordStore::NotifyLoginsChangedOnMainSequence(
     return;
   }
 #else
-  DCHECK(changes.has_value())
-      << "Non-Android platforms can always compute changes!";
+  if (!changes.has_value()) {
+    // TODO(crbug/1423425): Record the silent failure.
+    return;
+  }
 #endif
 
   if (changes->empty()) {
