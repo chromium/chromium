@@ -11,6 +11,7 @@
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/mojom/api_permission_id.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -292,9 +293,13 @@ TEST_F(PermissionsParserTest, InternalPermissionsAreNotAllowedInTheManifest) {
            "version": "0.1",
            "permissions": ["searchProvider"]
          })";
-  LoadAndExpectError(
+  scoped_refptr<const Extension> extension = LoadAndExpectWarning(
       ManifestData::FromJSON(kManifest),
-      "Permission 'searchProvider' cannot be specified in the manifest.");
+      "Permission 'searchProvider' is unknown or URL pattern is malformed.");
+
+  ASSERT_TRUE(extension);
+  EXPECT_FALSE(extension->permissions_data()->HasAPIPermission(
+      mojom::APIPermissionID::kSearchProvider));
 }
 
 }  // namespace extensions

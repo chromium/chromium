@@ -40,17 +40,19 @@ bool CreateAPIPermission(const std::string& permission_str,
   const APIPermissionInfo* permission_info =
       PermissionsInfo::GetInstance()->GetByName(permission_str);
   if (permission_info) {
-    std::unique_ptr<APIPermission> permission(
-        permission_info->CreateAPIPermission());
     if (source != APIPermissionSet::kAllowInternalPermissions &&
         permission_info->is_internal()) {
-      // An internal permission specified in permissions list is an error.
-      if (error) {
-        *error = ErrorUtils::FormatErrorMessageUTF16(
-            errors::kPermissionNotAllowedInManifest, permission_str);
+      // Treat internal permissions as unhandled if we don't allow them. This
+      // prevents us from hard erroring in the case that we ever change a
+      // permission from internal to not or vice versa.
+      if (unhandled_permissions) {
+        unhandled_permissions->push_back(permission_str);
       }
-      return false;
+      return true;
     }
+
+    std::unique_ptr<APIPermission> permission(
+        permission_info->CreateAPIPermission());
 
     std::string error_details;
     if (!permission->FromValue(permission_value, &error_details,
