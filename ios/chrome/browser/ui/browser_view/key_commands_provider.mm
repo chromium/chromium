@@ -6,6 +6,7 @@
 
 #import <objc/runtime.h>
 
+#import "base/memory/weak_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/bookmarks/browser/bookmark_model.h"
@@ -50,10 +51,10 @@
 using base::RecordAction;
 using base::UserMetricsAction;
 
-@interface KeyCommandsProvider ()
-
-// The current browser object.
-@property(nonatomic, assign) Browser* browser;
+@interface KeyCommandsProvider () {
+  // The current browser object.
+  base::WeakPtr<Browser> _browser;
+}
 
 // The view controller delegating key command actions handling.
 @property(nonatomic, weak) UIViewController* viewController;
@@ -85,7 +86,7 @@ using base::UserMetricsAction;
   DCHECK(browser);
   self = [super init];
   if (self) {
-    _browser = browser;
+    _browser = browser->AsWeakPtr();
   }
   return self;
 }
@@ -169,6 +170,11 @@ using base::UserMetricsAction;
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
+  // If the browser disappeared, prevent any command handling.
+  if (!_browser) {
+    return NO;
+  }
+
   // BVC prevents KeyCommandsProvider from providing key commands when it has
   // `presentedViewController` set. But there is an interval between presenting
   // a view controller and having `presentedViewController` set. In that window,
@@ -236,7 +242,7 @@ using base::UserMetricsAction;
   if (sel_isEqual(action, @selector(keyCommand_reopenLastClosedTab))) {
     sessions::TabRestoreService* const tabRestoreService =
         IOSChromeTabRestoreServiceFactory::GetForBrowserState(
-            self.browser->GetBrowserState());
+            _browser->GetBrowserState());
     return tabRestoreService && !tabRestoreService->entries().empty();
   }
   if (sel_isEqual(action, @selector(keyCommand_reportAnIssue))) {
@@ -269,7 +275,7 @@ using base::UserMetricsAction;
 
 - (void)keyCommand_openNewTab {
   RecordAction(UserMetricsAction("MobileKeyCommandOpenNewTab"));
-  if (self.browser->GetBrowserState()->IsOffTheRecord()) {
+  if (_browser->GetBrowserState()->IsOffTheRecord()) {
     [self openNewIncognitoTab];
   } else {
     [self openNewRegularTab];
@@ -304,7 +310,7 @@ using base::UserMetricsAction;
 
 - (void)keyCommand_reopenLastClosedTab {
   RecordAction(UserMetricsAction("MobileKeyCommandReopenLastClosedTab"));
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  ChromeBrowserState* browserState = _browser->GetBrowserState();
   sessions::TabRestoreService* const tabRestoreService =
       IOSChromeTabRestoreServiceFactory::GetForBrowserState(browserState);
   if (!tabRestoreService || tabRestoreService->entries().empty())
@@ -318,7 +324,7 @@ using base::UserMetricsAction;
     return;
 
   [self.dispatcher openURLInNewTab:[OpenNewTabCommand command]];
-  RestoreTab(entry->id, WindowOpenDisposition::CURRENT_TAB, self.browser);
+  RestoreTab(entry->id, WindowOpenDisposition::CURRENT_TAB, _browser.get());
 }
 
 - (void)keyCommand_find {
@@ -348,7 +354,7 @@ using base::UserMetricsAction;
 
 - (void)keyCommand_showNextTab {
   RecordAction(UserMetricsAction("MobileKeyCommandShowNextTab"));
-  WebStateList* webStateList = self.browser->GetWebStateList();
+  WebStateList* webStateList = _browser->GetWebStateList();
   int activeIndex = webStateList->active_index();
   if (activeIndex == WebStateList::kInvalidIndex)
     return;
@@ -365,7 +371,7 @@ using base::UserMetricsAction;
 
 - (void)keyCommand_showPreviousTab {
   RecordAction(UserMetricsAction("MobileKeyCommandShowPreviousTab"));
-  WebStateList* webStateList = self.browser->GetWebStateList();
+  WebStateList* webStateList = _browser->GetWebStateList();
   int activeIndex = webStateList->active_index();
   if (activeIndex == WebStateList::kInvalidIndex)
     return;
@@ -427,8 +433,9 @@ using base::UserMetricsAction;
 
 - (void)keyCommand_voiceSearch {
   RecordAction(UserMetricsAction("MobileKeyCommandVoiceSearch"));
-  [LayoutGuideCenterForBrowser(_browser) referenceView:nil
-                                             underName:kVoiceSearchButtonGuide];
+  [LayoutGuideCenterForBrowser(_browser.get())
+      referenceView:nil
+          underName:kVoiceSearchButtonGuide];
   [_dispatcher startVoiceSearch];
 }
 
@@ -542,12 +549,12 @@ using base::UserMetricsAction;
 #pragma mark - Private
 
 - (WebNavigationBrowserAgent*)navigationAgent {
-  return WebNavigationBrowserAgent::FromBrowser(self.browser);
+  return WebNavigationBrowserAgent::FromBrowser(_browser.get());
 }
 
 - (BOOL)isFindInPageAvailable {
   web::WebState* currentWebState =
-      self.browser->GetWebStateList()->GetActiveWebState();
+      _browser->GetWebStateList()->GetActiveWebState();
   if (!currentWebState) {
     return NO;
   }
@@ -558,7 +565,7 @@ using base::UserMetricsAction;
 
 - (BOOL)isFindInPageActive {
   web::WebState* currentWebState =
-      self.browser->GetWebStateList()->GetActiveWebState();
+      _browser->GetWebStateList()->GetActiveWebState();
   if (!currentWebState) {
     return NO;
   }
@@ -568,7 +575,7 @@ using base::UserMetricsAction;
 }
 
 - (NSUInteger)tabsCount {
-  return self.browser->GetWebStateList()->count();
+  return _browser->GetWebStateList()->count();
 }
 
 - (BOOL)isEditingText {
@@ -592,7 +599,7 @@ using base::UserMetricsAction;
 }
 
 - (void)showTabAtIndex:(NSUInteger)index {
-  WebStateList* webStateList = self.browser->GetWebStateList();
+  WebStateList* webStateList = _browser->GetWebStateList();
   if (webStateList->ContainsIndex(index)) {
     webStateList->ActivateWebStateAt(static_cast<int>(index));
   }
@@ -600,7 +607,7 @@ using base::UserMetricsAction;
 
 - (BOOL)isHTTPOrHTTPSPage {
   web::WebState* currentWebState =
-      self.browser->GetWebStateList()->GetActiveWebState();
+      _browser->GetWebStateList()->GetActiveWebState();
   if (!currentWebState) {
     return NO;
   }
@@ -611,7 +618,7 @@ using base::UserMetricsAction;
 
 - (BOOL)isBookmarkedPage {
   web::WebState* currentWebState =
-      self.browser->GetWebStateList()->GetActiveWebState();
+      _browser->GetWebStateList()->GetActiveWebState();
   if (!currentWebState) {
     return NO;
   }
@@ -619,7 +626,7 @@ using base::UserMetricsAction;
   const GURL& url = currentWebState->GetLastCommittedURL();
   bookmarks::BookmarkModel* bookmarkModel =
       ios::BookmarkModelFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+          _browser->GetBrowserState());
   return bookmarkModel->IsBookmarked(url);
 }
 
