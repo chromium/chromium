@@ -400,7 +400,8 @@ void VideoFrameSubmitter::OnBeginFrame(
     }
 
     TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-        "media", "VideoFrameSubmitter", TRACE_ID_LOCAL(frame_token),
+        "media", "VideoFrameSubmitter",
+        TRACE_ID_WITH_SCOPE("VideoFrameSubmitter", frame_token),
         feedback.timestamp);
   }
   frame_trackers_.NotifyBeginImplFrame(args);
@@ -792,11 +793,14 @@ viz::CompositorFrame VideoFrameSubmitter::CreateCompositorFrame(
   if (video_frame && video_frame->metadata().decode_end_time.has_value()) {
     base::TimeTicks value = *video_frame->metadata().decode_end_time;
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-        "media", "VideoFrameSubmitter", TRACE_ID_LOCAL(frame_token), value);
+        "media", "VideoFrameSubmitter",
+        TRACE_ID_WITH_SCOPE("VideoFrameSubmitter", frame_token), value);
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-        "media", "Pre-submit buffering", TRACE_ID_LOCAL(frame_token), value);
-    TRACE_EVENT_NESTABLE_ASYNC_END0("media", "Pre-submit buffering",
-                                    TRACE_ID_LOCAL(frame_token));
+        "media", "Pre-submit buffering",
+        TRACE_ID_WITH_SCOPE("VideoFrameSubmitter", frame_token), value);
+    TRACE_EVENT_NESTABLE_ASYNC_END0(
+        "media", "Pre-submit buffering",
+        TRACE_ID_WITH_SCOPE("VideoFrameSubmitter", frame_token));
 
     if (begin_frame_ack.frame_id.source_id ==
         viz::BeginFrameArgs::kManualSourceId) {
@@ -808,9 +812,10 @@ viz::CompositorFrame VideoFrameSubmitter::CreateCompositorFrame(
     UMA_HISTOGRAM_TIMES("Media.VideoFrameSubmitter.PreSubmitBuffering",
                         base::TimeTicks::Now() - value);
   } else {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("media", "VideoFrameSubmitter",
-                                      TRACE_ID_LOCAL(frame_token),
-                                      "empty video frame?", !video_frame);
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
+        "media", "VideoFrameSubmitter",
+        TRACE_ID_WITH_SCOPE("VideoFrameSubmitter", frame_token),
+        "empty video frame?", !video_frame);
   }
 
   // We don't assume that the ack is marked as having damage.  However, we're
