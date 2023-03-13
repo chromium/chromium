@@ -27,7 +27,7 @@ bool ParseNativeMessageJson(const std::string& message,
   }
 
   const std::string* message_type_value =
-      message_value.FindStringKey(kMessageType);
+      message_value.GetDict().FindString(kMessageType);
   if (message_type_value) {
     message_type = *message_type_value;
   }

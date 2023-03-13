@@ -56,7 +56,7 @@ std::string FileHostSettings::GetString(
                "doesn't exist.";
     return default_value;
   }
-  std::string* string_value = settings_->FindStringKey(key);
+  std::string* string_value = settings_->GetDict().FindString(key);
   if (!string_value) {
     return default_value;
   }

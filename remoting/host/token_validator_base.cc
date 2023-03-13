@@ -339,7 +339,7 @@ protocol::TokenValidator::ValidationResult TokenValidatorBase::ProcessResponse(
     return RejectionReason::INVALID_CREDENTIALS;
   }
 
-  std::string* token_scope = value->FindStringKey("scope");
+  std::string* token_scope = value->GetDict().FindString("scope");
   if (!token_scope || !IsValidScope(*token_scope)) {
     LOG(ERROR) << "Invalid scope: '" << *token_scope << "', expected: '"
                << token_scope_ << "'.";
@@ -347,7 +347,7 @@ protocol::TokenValidator::ValidationResult TokenValidatorBase::ProcessResponse(
   }
 
   // Everything is valid, so return the shared secret to the caller.
-  std::string* shared_secret = value->FindStringKey("access_token");
+  std::string* shared_secret = value->GetDict().FindString("access_token");
   if (shared_secret && !shared_secret->empty()) {
     return *shared_secret;
   }
