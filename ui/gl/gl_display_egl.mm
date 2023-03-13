@@ -15,6 +15,7 @@
 #define EGL_SYNC_METAL_SHARED_EVENT_OBJECT_ANGLE 0x34D9
 #define EGL_SYNC_METAL_SHARED_EVENT_SIGNAL_VALUE_LO_ANGLE 0x34DA
 #define EGL_SYNC_METAL_SHARED_EVENT_SIGNAL_VALUE_HI_ANGLE 0x34DB
+#define EGL_SYNC_METAL_SHARED_EVENT_SIGNALED_ANGLE 0x34DC
 #endif
 
 namespace gl {
@@ -82,19 +83,28 @@ bool GLDisplayEGL::CreateMetalSharedEvent(
 void GLDisplayEGL::WaitForMetalSharedEvent(
     metal::MTLSharedEventPtr shared_event,
     uint64_t signal_value) {
-  std::vector<EGLAttrib> attribs;
-  attribs.push_back(EGL_SYNC_METAL_SHARED_EVENT_OBJECT_ANGLE);
-  attribs.push_back(
-      static_cast<EGLAttrib>(reinterpret_cast<uintptr_t>(shared_event)));
-  attribs.push_back(EGL_SYNC_METAL_SHARED_EVENT_SIGNAL_VALUE_LO_ANGLE);
-  attribs.push_back(signal_value & 0xFFFFFFFF);
-  attribs.push_back(EGL_SYNC_METAL_SHARED_EVENT_SIGNAL_VALUE_HI_ANGLE);
-  attribs.push_back((signal_value >> 32) & 0xFFFFFFFF);
-  attribs.push_back(EGL_NONE);
+  EGLAttrib attribs[] = {
+      // Pass the Metal shared event as an EGLAttrib.
+      EGL_SYNC_METAL_SHARED_EVENT_OBJECT_ANGLE,
+      static_cast<EGLAttrib>(reinterpret_cast<uintptr_t>(shared_event)),
+      // EGL_SYNC_METAL_SHARED_EVENT_SIGNALED_ANGLE is important as it requests
+      // ANGLE to create an EGL sync object from the Metal shared event, but NOT
+      // signal it to the specified value. The shared event is imported with
+      // that signal value. The next call to eglWaitSync enqueue's a GPU wait to
+      // wait for that value to be signaled by another command buffer.
+      EGL_SYNC_CONDITION,
+      EGL_SYNC_METAL_SHARED_EVENT_SIGNALED_ANGLE,
+      // Encode the signaled value in two EGLAttribs.
+      EGL_SYNC_METAL_SHARED_EVENT_SIGNAL_VALUE_LO_ANGLE,
+      EGLAttrib(signal_value & 0xFFFFFFFF),
+      EGL_SYNC_METAL_SHARED_EVENT_SIGNAL_VALUE_HI_ANGLE,
+      EGLAttrib((signal_value >> 32) & 0xFFFFFFFF),
+      EGL_NONE,
+  };
 
   DCHECK(g_driver_egl.fn.eglCreateSyncFn);
   EGLSync sync =
-      eglCreateSync(display_, EGL_SYNC_METAL_SHARED_EVENT_ANGLE, &attribs[0]);
+      eglCreateSync(display_, EGL_SYNC_METAL_SHARED_EVENT_ANGLE, attribs);
   EGLBoolean res = eglWaitSync(display_, sync, 0);
   DCHECK(res == EGL_TRUE);
   // The wait on the sync object has been enqueued already, so it's safe to
