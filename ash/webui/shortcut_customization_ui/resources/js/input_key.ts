@@ -44,6 +44,7 @@ export const keyToIconNameMap: {[key: string]: string} = {
   'KeyboardBrightnessUp': 'keyboard-brightness-up',
   'KeyboardBrightnessDown': 'keyboard-brightness-down',
   'LaunchApplication1': 'overview',
+  'LaunchApplication2': 'calculator',
   'LaunchAssistant': 'assistant',
   'MediaFastForward': 'fast-forward',
   'MediaPause': 'pause',
