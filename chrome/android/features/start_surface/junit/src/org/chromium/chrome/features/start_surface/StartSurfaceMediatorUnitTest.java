@@ -1682,7 +1682,8 @@ public class StartSurfaceMediatorUnitTest {
         doReturn(false).when(mSecondaryTasksSurfaceController).isDialogVisible();
         mediator.onBackPressed();
         verify(mCarouselOrSingleTabSwitcherModuleController, times(2)).onBackPressed();
-        verify(mSecondaryTasksSurfaceController, never()).onBackPressed();
+        // Reach the end of #onBackPressed.
+        verify(mSecondaryTasksSurfaceController).onBackPressed();
     }
 
     @Test

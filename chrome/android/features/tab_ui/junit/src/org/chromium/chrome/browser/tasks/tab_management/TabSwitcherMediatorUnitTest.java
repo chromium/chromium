@@ -1032,6 +1032,23 @@ public class TabSwitcherMediatorUnitTest {
     }
 
     @Test
+    public void testBackPressDuringTransition() {
+        initAndAssertAllProperties();
+        Assert.assertFalse(mMediator.shouldInterceptBackPress());
+
+        mMediator.prepareShowTabSwitcherView();
+        Assert.assertTrue(mMediator.shouldInterceptBackPress());
+        Assert.assertTrue(mMediator.getHandleBackPressChangedSupplier().get());
+
+        doReturn(false).when(mTabGridDialogController).isVisible();
+        mMediator.showTabSwitcherView(false);
+        doReturn(null).when(mTabModelSelector).getCurrentTab();
+        mMediator.showTabSwitcherView(true);
+        Assert.assertFalse(mMediator.shouldInterceptBackPress());
+        Assert.assertFalse(mMediator.getHandleBackPressChangedSupplier().get());
+    }
+
+    @Test
     public void testOnTabModelSelected_NewModelIncognito_ReauthPending_ClearsTabList() {
         initAndAssertAllProperties();
         mModel.set(TabListContainerProperties.IS_VISIBLE, true);

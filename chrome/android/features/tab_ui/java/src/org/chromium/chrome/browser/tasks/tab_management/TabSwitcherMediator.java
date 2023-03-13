@@ -183,6 +183,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
     private @TabListCoordinator.TabListMode int mMode;
     private Context mContext;
     private SnackbarManager mSnackbarManager;
+    private boolean mIsTransitionInProgress;
 
     /**
      * Interface to delegate resetting the tab grid.
@@ -746,6 +747,10 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
             // We need to hide the dialog immediately.
             mTabGridDialogControllerSupplier.get().hideDialog(false);
         }
+        if (mMode != TabListMode.GRID) return;
+
+        mIsTransitionInProgress = animate;
+        notifyBackPressStateChangedInternal();
     }
 
     boolean prepareTabSwitcherView() {
@@ -773,7 +778,16 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
     }
 
     @Override
+    public void prepareShowTabSwitcherView() {
+        if (mMode != TabListMode.GRID) return;
+
+        mIsTransitionInProgress = true;
+        notifyBackPressStateChangedInternal();
+    }
+
+    @Override
     public void showTabSwitcherView(boolean animate) {
+        mIsTransitionInProgress = false;
         mHandler.removeCallbacks(mSoftClearTabListRunnable);
         mHandler.removeCallbacks(mClearTabListRunnable);
 
@@ -853,6 +867,13 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
 
         if (mCustomViewBackPressRunnable != null) {
             mCustomViewBackPressRunnable.run();
+            return true;
+        }
+
+        if (mIsTransitionInProgress && mMode == TabListCoordinator.TabListMode.GRID) {
+            // crbug.com/1420410: intentionally do nothing to wait for transition to be finished.
+            // Note this has to be before following if-branch since during transition, the container
+            // is still invisible.
             return true;
         }
 
@@ -990,6 +1011,8 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         mHandler.postDelayed(mSoftClearTabListRunnable, getSoftCleanupDelay());
         Log.d(TAG, "CleanupDelay = " + getCleanupDelay());
         mHandler.postDelayed(mClearTabListRunnable, getCleanupDelay());
+        mIsTransitionInProgress = false;
+        notifyBackPressStateChangedInternal();
     }
 
     /**
@@ -1119,6 +1142,8 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
     boolean shouldInterceptBackPress() {
         if (isDialogVisible()) return true;
         if (mCustomViewBackPressRunnable != null) return true;
+
+        if (mIsTransitionInProgress && mMode == TabListCoordinator.TabListMode.GRID) return true;
 
         if (!mContainerViewModel.get(IS_VISIBLE)) return false;
 

@@ -614,6 +614,12 @@ public class StartSurfaceCoordinator implements StartSurface {
     }
 
     @Override
+    @Nullable
+    public TabSwitcher.Controller getGridTabSwitcherController() {
+        return mStartSurfaceMediator.getTabSwitcherController();
+    }
+
+    @Override
     public ViewGroup getTabSwitcherContainer() {
         return mStartSurfaceMediator.getTabSwitcherContainer();
     }

@@ -581,6 +581,14 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
         mTabToSwitcherAnimation.playTogether(animationList);
         mTabToSwitcherAnimation.addListener(new AnimatorListenerAdapter() {
             @Override
+            public void onAnimationStart(Animator animation) {
+                TabSwitcher.Controller controller = mStartSurface.getGridTabSwitcherController();
+                if (controller != null) {
+                    controller.prepareShowTabSwitcherView();
+                }
+            }
+
+            @Override
             public void onAnimationEnd(Animator animation) {
                 mTabToSwitcherAnimation = null;
                 // Step 2: fade in the real GTS RecyclerView.

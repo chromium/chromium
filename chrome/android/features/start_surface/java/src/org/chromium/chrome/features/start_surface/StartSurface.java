@@ -219,6 +219,12 @@ public interface StartSurface {
     ViewGroup getTabSwitcherContainer();
 
     /**
+     * @return The Tab switcher controller.
+     */
+    @Nullable
+    TabSwitcher.Controller getGridTabSwitcherController();
+
+    /**
      * Sets the parent view for snackbars. If <code>null</code> is given, the original parent
      * view is restored.
      *
