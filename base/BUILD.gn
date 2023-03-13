@@ -445,6 +445,7 @@ component("base") {
     "memory/shared_memory_tracker.cc",
     "memory/shared_memory_tracker.h",
     "memory/singleton.h",
+    "memory/stack_allocated.h",
     "memory/unsafe_shared_memory_pool.cc",
     "memory/unsafe_shared_memory_pool.h",
     "memory/unsafe_shared_memory_region.cc",

@@ -20,6 +20,11 @@ config("find_bad_constructs") {
       "-plugin-arg-find-bad-constructs",
       "-Xclang",
       "raw-ref-template-as-trivial-member",
+
+      "-Xclang",
+      "-plugin-arg-find-bad-constructs",
+      "-Xclang",
+      "check-stack-allocated",
     ]
 
     if (is_linux || is_chromeos || is_android || is_fuchsia) {

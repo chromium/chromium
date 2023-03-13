@@ -124,24 +124,30 @@ WTF_EXPORT char* PartitionAllocator::AllocateVectorBacking<char>(size_t);
 
 }  // namespace WTF
 
-#define USE_ALLOCATOR(ClassName, Allocator)                       \
- public:                                                          \
-  void* operator new(size_t size) {                               \
-    return Allocator::template Malloc<void*, ClassName>(          \
-        size, WTF_HEAP_PROFILER_TYPE_NAME(ClassName));            \
-  }                                                               \
-  void operator delete(void* p) { Allocator::Free(p); }           \
-  void* operator new[](size_t size) {                             \
-    return Allocator::template NewArray<ClassName>(size);         \
-  }                                                               \
-  void operator delete[](void* p) { Allocator::DeleteArray(p); }  \
-  void* operator new(size_t, NotNullTag, void* location) {        \
-    DCHECK(location);                                             \
-    return location;                                              \
-  }                                                               \
-  void* operator new(size_t, void* location) { return location; } \
-                                                                  \
- private:                                                         \
+#define USE_ALLOCATOR(ClassName, Allocator)                     \
+ public:                                                        \
+  void* operator new(size_t size) {                             \
+    return Allocator::template Malloc<void*, ClassName>(        \
+        size, WTF_HEAP_PROFILER_TYPE_NAME(ClassName));          \
+  }                                                             \
+  void operator delete(void* p) {                               \
+    Allocator::Free(p);                                         \
+  }                                                             \
+  void* operator new[](size_t size) {                           \
+    return Allocator::template NewArray<ClassName>(size);       \
+  }                                                             \
+  void operator delete[](void* p) {                             \
+    Allocator::DeleteArray(p);                                  \
+  }                                                             \
+  void* operator new(size_t, WTF::NotNullTag, void* location) { \
+    DCHECK(location);                                           \
+    return location;                                            \
+  }                                                             \
+  void* operator new(size_t, void* location) {                  \
+    return location;                                            \
+  }                                                             \
+                                                                \
+ private:                                                       \
   typedef int __thisIsHereToForceASemicolonAfterThisMacro
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_ALLOCATOR_PARTITION_ALLOCATOR_H_
