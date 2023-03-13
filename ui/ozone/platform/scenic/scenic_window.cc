@@ -107,8 +107,7 @@ ScenicWindow::ScenicWindow(ScenicWindowManager* window_manager,
         fit::bind_member(this, &ScenicWindow::OnScenicEvents));
     scenic_session_->SetDebugName("Chromium ScenicWindow");
 
-    view_.emplace(&scenic_session_.value(),
-                  std::move(std::move(properties.view_token)),
+    view_.emplace(&scenic_session_.value(), std::move(properties.view_token),
                   std::move(properties.view_ref_pair.control_ref),
                   CloneViewRef(), "chromium window");
 
