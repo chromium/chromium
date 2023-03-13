@@ -6,6 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_util.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
 #include "chrome/browser/ui/browser.h"
@@ -86,6 +87,24 @@ std::u16string SaveUpdateAddressProfileBubbleControllerImpl::GetOkButtonLabel()
   return l10n_util::GetStringUTF16(
       is_migration_ ? IDS_AUTOFILL_MIGRATE_ADDRESS_DIALOG_OK_BUTTON_LABEL_SAVE
                     : IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_OK_BUTTON_LABEL_SAVE);
+}
+
+absl::optional<std::u16string>
+SaveUpdateAddressProfileBubbleControllerImpl::GetFooterMessage() const {
+  DCHECK(web_contents());
+
+  Profile* browser_profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+
+  if (browser_profile &&
+      (address_profile_.source() == AutofillProfile::Source::kAccount ||
+       is_migration_)) {
+    return l10n_util::GetStringFUTF16(
+        IDS_AUTOFILL_EDIT_ACCOUNT_ADDRESS_SOURCE_NOTICE,
+        base::UTF8ToUTF16(browser_profile->GetProfileUserName()));
+  }
+
+  return absl::nullopt;
 }
 
 const AutofillProfile&

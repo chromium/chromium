@@ -250,6 +250,17 @@ UpdateAddressProfileView::UpdateAddressProfileView(
     AddValuesRow(main_content_view, profile_diff, /*show_row_label=*/true,
                  /*edit_button_callback=*/{});
   }
+
+  absl::optional<std::u16string> footer_message =
+      controller_->GetFooterMessage();
+  if (footer_message) {
+    SetFootnoteView(
+        views::Builder<views::Label>()
+            .SetText(footer_message.value())
+            .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+            .SetMultiLine(true)
+            .Build());
+  }
 }
 
 bool UpdateAddressProfileView::ShouldShowCloseButton() const {

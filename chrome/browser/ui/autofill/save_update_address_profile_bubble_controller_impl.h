@@ -46,6 +46,7 @@ class SaveUpdateAddressProfileBubbleControllerImpl
   // SaveUpdateAddressProfileBubbleController:
   std::u16string GetWindowTitle() const override;
   std::u16string GetOkButtonLabel() const override;
+  absl::optional<std::u16string> GetFooterMessage() const override;
   const AutofillProfile& GetProfileToSave() const override;
   const AutofillProfile* GetOriginalProfile() const override;
   void OnUserDecision(

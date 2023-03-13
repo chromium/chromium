@@ -302,6 +302,17 @@ SaveAddressProfileView::SaveAddressProfileView(
                       CreateNicknameEditableCombobox());
   }
 
+  absl::optional<std::u16string> footer_message =
+      controller_->GetFooterMessage();
+  if (footer_message) {
+    SetFootnoteView(
+        views::Builder<views::Label>()
+            .SetText(footer_message.value())
+            .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+            .SetMultiLine(true)
+            .Build());
+  }
+
   Profile* browser_profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   HatsService* hats_service = HatsServiceFactory::GetForProfile(
