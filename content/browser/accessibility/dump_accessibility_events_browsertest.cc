@@ -693,12 +693,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("expanded-changed.html"));
 }
 
-// TODO(crbug.com/1423530): disabled on UIA.
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
-                       AccessibilityEventsPopoverExpandedChanged) {
-  RunEventTest(FILE_PATH_LITERAL("popover-expanded-changed.html"));
-}
-
 // crbug.com/1047282: disabled due to flakiness.
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        DISABLED_AccessibilityEventsFormRequiredChanged) {

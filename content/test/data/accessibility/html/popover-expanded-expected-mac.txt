@@ -1,5 +1,0 @@
-AXWebArea AXTitle='done'
-++AXGroup
-++++AXButton AXTitle='Will expand'
-++++AXGroup AXSubrole=AXApplicationGroup
-++++++AXStaticText AXValue='Popover'

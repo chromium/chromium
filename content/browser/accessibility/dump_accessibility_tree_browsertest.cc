@@ -2747,16 +2747,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityPopoverApi) {
   RunHtmlTest(FILE_PATH_LITERAL("popover-api.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityPopoverExpanded) {
-  RunHtmlTest(FILE_PATH_LITERAL("popover-expanded.html"));
-}
-
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityPopoverCollapsed) {
-  RunHtmlTest(FILE_PATH_LITERAL("popover-collapsed.html"));
-}
-
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityPre) {
   RunHtmlTest(FILE_PATH_LITERAL("pre.html"));
 }
