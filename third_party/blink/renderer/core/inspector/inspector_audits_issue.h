@@ -54,6 +54,11 @@ enum class AttributionReportingIssueType {
   kSourceAndTriggerHeaders,
   kSourceIgnored,
   kTriggerIgnored,
+  kOsSourceIgnored,
+  kOsTriggerIgnored,
+  kInvalidRegisterOsSourceHeader,
+  kInvalidRegisterOsTriggerHeader,
+  kWebAndOsHeaders,
 };
 
 enum class SharedArrayBufferIssueType {

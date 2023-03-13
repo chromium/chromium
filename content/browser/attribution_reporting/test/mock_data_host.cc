@@ -21,6 +21,7 @@
 #include "services/network/public/cpp/trigger_attestation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
+#include "url/gurl.h"
 
 namespace content {
 
@@ -69,9 +70,40 @@ void MockDataHost::TriggerDataAvailable(
 }
 
 #if BUILDFLAG(IS_ANDROID)
-void MockDataHost::OsSourceDataAvailable(const GURL& registration_url) {}
-void MockDataHost::OsTriggerDataAvailable(const GURL& registration_url) {}
-#endif
+
+void MockDataHost::OsSourceDataAvailable(const GURL& registration_url) {
+  os_sources_.push_back(registration_url);
+  if (os_sources_.size() < min_os_sources_count_) {
+    return;
+  }
+  wait_loop_.Quit();
+}
+
+void MockDataHost::OsTriggerDataAvailable(const GURL& registration_url) {
+  os_triggers_.push_back(registration_url);
+  if (os_triggers_.size() < min_os_triggers_count_) {
+    return;
+  }
+  wait_loop_.Quit();
+}
+
+void MockDataHost::WaitForOsSources(size_t num_os_sources) {
+  min_os_sources_count_ = num_os_sources;
+  if (os_sources_.size() >= min_os_sources_count_) {
+    return;
+  }
+  wait_loop_.Run();
+}
+
+void MockDataHost::WaitForOsTriggers(size_t num_os_triggers) {
+  min_os_triggers_count_ = num_os_triggers;
+  if (os_triggers_.size() >= min_os_triggers_count_) {
+    return;
+  }
+  wait_loop_.Run();
+}
+
+#endif  // BUILDFLAG(IS_ANDROID)
 
 std::unique_ptr<MockDataHost> GetRegisteredDataHost(
     mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host) {

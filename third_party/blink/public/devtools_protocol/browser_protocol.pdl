@@ -712,6 +712,11 @@ experimental domain Audits
       SourceAndTriggerHeaders
       SourceIgnored
       TriggerIgnored
+      OsSourceIgnored
+      OsTriggerIgnored
+      InvalidRegisterOsSourceHeader
+      InvalidRegisterOsTriggerHeader
+      WebAndOsHeaders
 
   # Details for issues around "Attribution Reporting API" usage.
   # Explainer: https://github.com/WICG/attribution-reporting-api

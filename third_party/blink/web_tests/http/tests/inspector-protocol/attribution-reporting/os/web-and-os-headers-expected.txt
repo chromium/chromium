@@ -1,0 +1,11 @@
+Test that an attributionsrc request triggers an issue when it tries to register a web trigger and an OS trigger together.
+Issue reported: {
+    code : AttributionReportingIssue
+    details : {
+        attributionReportingIssueDetails : {
+            request : <object>
+            violationType : WebAndOsHeaders
+        }
+    }
+}
+

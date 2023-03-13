@@ -142,6 +142,14 @@
     "expires": "Jul 1, 2023"
   },
   {
+    "prefix": "attribution-reporting-cross-app-web",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["http/tests/inspector-protocol/attribution-reporting/os"],
+    "exclusive_tests": "ALL",
+    "args": ["--enable-features=AttributionReportingCrossAppWeb"],
+    "expires": "Jul 1, 2023"
+  },
+  {
     "prefix": "off-main-thread-css-paint",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/css/css-paint-api",

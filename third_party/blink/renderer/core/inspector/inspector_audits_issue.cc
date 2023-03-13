@@ -211,6 +211,21 @@ BuildAttributionReportingIssueType(AttributionReportingIssueType type) {
     case AttributionReportingIssueType::kTriggerIgnored:
       return protocol::Audits::AttributionReportingIssueTypeEnum::
           TriggerIgnored;
+    case AttributionReportingIssueType::kOsSourceIgnored:
+      return protocol::Audits::AttributionReportingIssueTypeEnum::
+          OsSourceIgnored;
+    case AttributionReportingIssueType::kOsTriggerIgnored:
+      return protocol::Audits::AttributionReportingIssueTypeEnum::
+          OsTriggerIgnored;
+    case AttributionReportingIssueType::kInvalidRegisterOsSourceHeader:
+      return protocol::Audits::AttributionReportingIssueTypeEnum::
+          InvalidRegisterOsSourceHeader;
+    case AttributionReportingIssueType::kInvalidRegisterOsTriggerHeader:
+      return protocol::Audits::AttributionReportingIssueTypeEnum::
+          InvalidRegisterOsTriggerHeader;
+    case AttributionReportingIssueType::kWebAndOsHeaders:
+      return protocol::Audits::AttributionReportingIssueTypeEnum::
+          WebAndOsHeaders;
   }
 }
 

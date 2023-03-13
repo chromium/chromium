@@ -1421,6 +1421,92 @@ IN_PROC_BROWSER_TEST_F(
             "web, os");
 }
 
+struct OsRegistrationTestCase {
+  const char* name;
+  const char* header;
+  std::vector<GURL> expected_os_sources;
+  std::vector<GURL> expected_os_triggers;
+};
+
+class AttributionSrcCrossAppWebEnabledOsRegistrationBrowserTest
+    : public AttributionSrcCrossAppWebEnabledBrowserTest,
+      public ::testing::WithParamInterface<OsRegistrationTestCase> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AttributionSrcCrossAppWebEnabledOsRegistrationBrowserTest,
+    ::testing::Values(
+        OsRegistrationTestCase{
+            .name = "source",
+            .header = "Attribution-Reporting-Register-OS-Source",
+            .expected_os_sources = {GURL("https://r.test/x")},
+        },
+        OsRegistrationTestCase{
+            .name = "trigger",
+            .header = "Attribution-Reporting-Register-OS-Trigger",
+            .expected_os_triggers = {GURL("https://r.test/x")},
+        }),
+    [](const auto& info) { return info.param.name; });  // test name generator
+
+IN_PROC_BROWSER_TEST_P(
+    AttributionSrcCrossAppWebEnabledOsRegistrationBrowserTest,
+    Register) {
+  const auto& test_case = GetParam();
+
+  // Create a separate server as we cannot register a `ControllableHttpResponse`
+  // after the server starts.
+  auto https_server = std::make_unique<net::EmbeddedTestServer>(
+      net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  net::test_server::RegisterDefaultHandlers(https_server.get());
+  https_server->ServeFilesFromSourceDirectory(
+      "content/test/data/attribution_reporting");
+  https_server->ServeFilesFromSourceDirectory("content/test/data");
+
+  std::unique_ptr<MockDataHost> data_host;
+  base::RunLoop loop;
+  EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
+      .WillOnce(
+          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host,
+              RegistrationType) {
+            data_host = GetRegisteredDataHost(std::move(host));
+            loop.Quit();
+          });
+
+  auto register_response =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          https_server.get(), "/register");
+  ASSERT_TRUE(https_server->Start());
+
+  AttributionOsLevelManagerAndroid::ScopedOsSupportForTesting
+      scoped_os_support_setting(
+          attribution_reporting::mojom::OsSupport::kEnabled);
+
+  GURL page_url =
+      https_server->GetURL("b.test", "/page_with_impression_creator.html");
+  ASSERT_TRUE(NavigateToURL(web_contents(), page_url));
+
+  GURL register_url = https_server->GetURL("d.test", "/register");
+  ASSERT_TRUE(ExecJs(web_contents(),
+                     JsReplace("createAttributionSrcImg($1);", register_url)));
+
+  register_response->WaitForRequest();
+
+  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
+  http_response->AddCustomHeader(test_case.header, R"("https://r.test/x")");
+  register_response->Send(http_response->ToResponseString());
+  register_response->Done();
+
+  if (!data_host) {
+    loop.Run();
+  }
+  data_host->WaitForOsSources(test_case.expected_os_sources.size());
+  data_host->WaitForOsTriggers(test_case.expected_os_triggers.size());
+
+  EXPECT_EQ(data_host->os_sources(), test_case.expected_os_sources);
+  EXPECT_EQ(data_host->os_triggers(), test_case.expected_os_triggers);
+}
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace content

@@ -1,0 +1,12 @@
+Test that an attributionsrc request that is ineligible for OS registrations triggers an issue when it tries to register an OS source.
+Issue reported: {
+    code : AttributionReportingIssue
+    details : {
+        attributionReportingIssueDetails : {
+            invalidParameter : "https://r.test/x"
+            request : <object>
+            violationType : OsSourceIgnored
+        }
+    }
+}
+
