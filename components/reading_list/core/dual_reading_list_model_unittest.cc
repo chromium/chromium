@@ -909,6 +909,75 @@ TEST_F(DualReadingListModelTest,
             StorageStateForTesting::kExistsInAccountModelOnly);
 }
 
+TEST_F(DualReadingListModelTest, AddLocalEntryFromSync) {
+  ASSERT_TRUE(ResetStorageAndMimicSyncEnabled());
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
+            StorageStateForTesting::kNotFound);
+  ASSERT_THAT(dual_model_->GetEntryByURL(kUrl), IsNull());
+
+  testing::InSequence seq;
+  EXPECT_CALL(observer_,
+              ReadingListWillAddEntry(dual_model_.get(), HasUrl(kUrl)));
+  EXPECT_CALL(observer_, ReadingListDidAddEntry(dual_model_.get(), kUrl,
+                                                reading_list::ADDED_VIA_SYNC));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
+
+  // DCHECKs verify that sync updates are issued as batch updates.
+  auto token = local_or_syncable_model_ptr_->BeginBatchUpdates();
+  local_or_syncable_model_ptr_->SyncAddEntry(
+      TestEntryBuilder(kUrl, clock_.Now()).Build());
+
+  EXPECT_THAT(dual_model_->GetEntryByURL(kUrl), NotNull());
+  EXPECT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
+            StorageStateForTesting::kExistsInLocalOrSyncableModelOnly);
+}
+
+TEST_F(DualReadingListModelTest, AddAccountEntryFromSync) {
+  ASSERT_TRUE(ResetStorageAndMimicSignedInSyncDisabled());
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
+            StorageStateForTesting::kNotFound);
+  ASSERT_THAT(dual_model_->GetEntryByURL(kUrl), IsNull());
+
+  testing::InSequence seq;
+  EXPECT_CALL(observer_,
+              ReadingListWillAddEntry(dual_model_.get(), HasUrl(kUrl)));
+  EXPECT_CALL(observer_, ReadingListDidAddEntry(dual_model_.get(), kUrl,
+                                                reading_list::ADDED_VIA_SYNC));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
+
+  // DCHECKs verify that sync updates are issued as batch updates.
+  auto token = account_model_ptr_->BeginBatchUpdates();
+  account_model_ptr_->SyncAddEntry(
+      TestEntryBuilder(kUrl, clock_.Now()).Build());
+
+  EXPECT_THAT(dual_model_->GetEntryByURL(kUrl), NotNull());
+  EXPECT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
+            StorageStateForTesting::kExistsInAccountModelOnly);
+}
+
+TEST_F(DualReadingListModelTest, AddLocalExistingEntryFromSync) {
+  ASSERT_TRUE(ResetStorageAndMimicSignedInSyncDisabled(
+      /*initial_local_entries_builders=*/{
+          TestEntryBuilder(kUrl, clock_.Now())}));
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
+            StorageStateForTesting::kExistsInLocalOrSyncableModelOnly);
+  ASSERT_THAT(dual_model_->GetEntryByURL(kUrl), NotNull());
+
+  testing::InSequence seq;
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
+
+  // DCHECKs verify that sync updates are issued as batch updates.
+  auto token = account_model_ptr_->BeginBatchUpdates();
+  account_model_ptr_->SyncAddEntry(
+      TestEntryBuilder(kUrl, clock_.Now()).Build());
+
+  EXPECT_THAT(dual_model_->GetEntryByURL(kUrl), NotNull());
+  EXPECT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
+            StorageStateForTesting::kExistsInBothModels);
+}
+
 TEST_F(DualReadingListModelTest, SetReadStatusIfExistsForNonExistingEntry) {
   ASSERT_TRUE(ResetStorageAndTriggerLoadCompletion());
 

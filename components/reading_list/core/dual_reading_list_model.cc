@@ -506,6 +506,14 @@ void DualReadingListModel::ReadingListWillAddEntry(
     const ReadingListEntry& entry) {
   DCHECK(!suppress_observer_notifications_);
 
+  if (local_or_syncable_model_->GetEntryByURL(entry.URL())) {
+    // The presence of the entry in `local_or_syncable_model_` indicates that
+    // this is an update, not an insertion.
+    DCHECK(account_model_->IsTrackingSyncMetadata());
+    NotifyObserversWithWillUpdateEntry(entry.URL());
+    return;
+  }
+
   for (auto& observer : observers_) {
     observer.ReadingListWillAddEntry(this, entry);
   }
@@ -516,6 +524,16 @@ void DualReadingListModel::ReadingListDidAddEntry(
     const GURL& url,
     reading_list::EntrySource source) {
   DCHECK(!suppress_observer_notifications_);
+
+  if (model == account_model_.get() &&
+      local_or_syncable_model_->GetEntryByURL(url)) {
+    // The entry was added to `account_model_`, but since it was already present
+    // in `local_or_syncable_model_`, then this is an update instead of
+    // insertion.
+    DCHECK(account_model_->IsTrackingSyncMetadata());
+    NotifyObserversWithDidUpdateEntry(url);
+    return;
+  }
 
   for (auto& observer : observers_) {
     observer.ReadingListDidAddEntry(this, url, source);
