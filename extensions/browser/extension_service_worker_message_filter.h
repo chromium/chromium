@@ -16,6 +16,12 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/frame.mojom-forward.h"
 
+class GURL;
+
+namespace base {
+class UnguessableToken;
+}
+
 namespace content {
 class BrowserContext;
 class ServiceWorkerContext;
@@ -67,6 +73,18 @@ class ExtensionServiceWorkerMessageFilter
                         int64_t service_worker_version_id,
                         int thread_id,
                         int event_id);
+  void OnDidStartServiceWorkerContext(
+      const ExtensionId& extension_id,
+      const base::UnguessableToken& activation_sequence,
+      const GURL& service_worker_scope,
+      int64_t service_worker_version_id,
+      int thread_id);
+  void OnDidStopServiceWorkerContext(
+      const ExtensionId& extension_id,
+      const base::UnguessableToken& activation_sequence,
+      const GURL& service_worker_scope,
+      int64_t service_worker_version_id,
+      int thread_id);
 
   void DidFailDecrementInflightEvent();
 
