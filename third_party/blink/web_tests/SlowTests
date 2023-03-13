@@ -1455,3 +1455,6 @@ crbug.com/1366717 http/tests/inspector-protocol/storage/indexed-db-set-items-by-
 
 crbug.com/1404951 external/wpt/credential-management/fedcm-network-requests.https.html [ Slow ]
 crbug.com/1404951 external/wpt/credential-management/fedcm-iframe.https.html [ Slow ]
+
+# Slow because it contains thousands of subtests
+crbug.com/1423483 external/wpt/css/css-color/parsing/color-computed-hsl.html [ Slow ]
