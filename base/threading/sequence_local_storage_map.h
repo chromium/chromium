@@ -5,6 +5,7 @@
 #ifndef BASE_THREADING_SEQUENCE_LOCAL_STORAGE_MAP_H_
 #define BASE_THREADING_SEQUENCE_LOCAL_STORAGE_MAP_H_
 
+#include "base/auto_reset.h"
 #include "base/base_export.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -85,7 +86,9 @@ class BASE_EXPORT SequenceLocalStorageMap {
 // SequenceLocalStorageMap::GetForCurrentThread() will return a reference to the
 // SequenceLocalStorageMap object passed to the constructor. There can be only
 // one ScopedSetSequenceLocalStorageMapForCurrentThread instance per scope.
-class BASE_EXPORT ScopedSetSequenceLocalStorageMapForCurrentThread {
+class BASE_EXPORT
+    [[maybe_unused,
+      nodiscard]] ScopedSetSequenceLocalStorageMapForCurrentThread {
  public:
   ScopedSetSequenceLocalStorageMapForCurrentThread(
       SequenceLocalStorageMap* sequence_local_storage);
@@ -96,6 +99,9 @@ class BASE_EXPORT ScopedSetSequenceLocalStorageMapForCurrentThread {
       const ScopedSetSequenceLocalStorageMapForCurrentThread&) = delete;
 
   ~ScopedSetSequenceLocalStorageMapForCurrentThread();
+
+ private:
+  const base::AutoReset<SequenceLocalStorageMap*> resetter_;
 };
 }  // namespace internal
 }  // namespace base

@@ -33,10 +33,8 @@ namespace updater {
 // Allows the utility functions below to join processes. To avoid overzealously
 // granting access to |base::ScopedAllowBaseSyncPrimitives|, this class must
 // continue to live in a `.cc`.
-class SystemctlLauncherScopedAllowBaseSyncPrimitives {
- private:
-  base::ScopedAllowBaseSyncPrimitives allow_wait;
-};
+class [[maybe_unused, nodiscard]] SystemctlLauncherScopedAllowBaseSyncPrimitives
+    : public base::ScopedAllowBaseSyncPrimitives {};
 
 namespace {
 // Location of system-scoped unit files.
