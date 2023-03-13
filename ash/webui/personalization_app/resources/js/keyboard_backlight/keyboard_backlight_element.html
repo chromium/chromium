@@ -59,23 +59,8 @@
     height: 20px;
   }
 
-  .color-container {
-    -webkit-tap-highlight-color: transparent;
-    align-items: center;
+  .selectable:focus-visible {
     border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    height: var(--color-container-size);
-    justify-content: center;
-    width: var(--color-container-size);
-  }
-
-  .color-container[aria-checked='true'] color-icon {
-    height: 36px;
-    width: 36px;
-  }
-
-  .color-container:focus-visible {
     outline: 2px solid var(--cros-focus-ring-color);
     outline-offset: -2px;
   }
@@ -145,7 +130,7 @@
   </div>
   <iron-a11y-keys id="keys" keys="left right enter" on-keys-pressed="onKeysPress_">
   </iron-a11y-keys>
-  <iron-selector id="selector" selected="0" selectable=".color-container"
+  <iron-selector id="selector" selected="0" selectable=".selectable"
       selected-item="{{ironSelectedColor_}}"
       role="radiogroup" aria-describedby="keyboardBacklightLabel">
     <template is="dom-if" if="[[!isMultiZoneRgbKeyboardSupported_]]">
@@ -159,17 +144,17 @@
           title$="[[getWallpaperColorTitle_()]]"
           role="radio">
         <color-icon color-id="[[wallpaperColorId_]]"></color-icon>
-      </div>
-    </template>
-    <template is="dom-if" if="[[shouldShowNudge_]]">
-      <div id="toast">
-        <div id="toastDot"></div>
-        <div id="toastContent">
-          <svg width="16" height="14" viewBox="0 0 16 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M8.375 4.375L6.5 0.25L4.625 4.375L0.5 6.25L4.625 8.125L6.5 12.25L8.375 8.125L12.5 6.25L8.375 4.375ZM12.5 7.75L11.5625 9.8125L9.5 10.75L11.5625 11.6875L12.5 13.75L13.4375 11.6875L15.5 10.75L13.4375 9.8125L12.5 7.75Z"/>
-          </svg>
-          <span>$i18n{wallpaperColorNudgeText}</span>
-        </div>
+        <template is="dom-if" if="[[shouldShowNudge_]]">
+          <div id="toast">
+            <div id="toastDot"></div>
+            <div id="toastContent">
+              <svg width="16" height="14" viewBox="0 0 16 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8.375 4.375L6.5 0.25L4.625 4.375L0.5 6.25L4.625 8.125L6.5 12.25L8.375 8.125L12.5 6.25L8.375 4.375ZM12.5 7.75L11.5625 9.8125L9.5 10.75L11.5625 11.6875L12.5 13.75L13.4375 11.6875L15.5 10.75L13.4375 9.8125L12.5 7.75Z"></path>
+              </svg>
+              <span>$i18n{wallpaperColorNudgeText}</span>
+            </div>
+          </div>
+        </template>
       </div>
     </template>
     <template is="dom-if" if="[[!isMultiZoneRgbKeyboardSupported_]]">
@@ -206,6 +191,17 @@
           title$="[[getWallpaperColorTitle_()]]"
           role="radio">
         <color-icon color-id="[[wallpaperColorId_]]"></color-icon>
+        <template is="dom-if" if="[[shouldShowNudge_]]">
+          <div id="toast">
+            <div id="toastDot"></div>
+            <div id="toastContent">
+              <svg width="16" height="14" viewBox="0 0 16 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8.375 4.375L6.5 0.25L4.625 4.375L0.5 6.25L4.625 8.125L6.5 12.25L8.375 8.125L12.5 6.25L8.375 4.375ZM12.5 7.75L11.5625 9.8125L9.5 10.75L11.5625 11.6875L12.5 13.75L13.4375 11.6875L15.5 10.75L13.4375 9.8125L12.5 7.75Z"></path>
+              </svg>
+              <span>$i18n{wallpaperColorNudgeText}</span>
+            </div>
+          </div>
+        </template>
       </div>
       <div id="wallpaperColorDescription">
         $i18n{wallpaperColorDescription}

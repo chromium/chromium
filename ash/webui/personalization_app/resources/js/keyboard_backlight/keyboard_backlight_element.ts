@@ -249,7 +249,7 @@ export class KeyboardBacklight extends WithPersonalizationStore {
   }
 
   private getColorContainerClass_(isSelected: string) {
-    const defaultClassName = 'color-container';
+    const defaultClassName = 'selectable';
     return isSelected === 'true' ? `${defaultClassName} tast-selected-color` :
                                    defaultClassName;
   }

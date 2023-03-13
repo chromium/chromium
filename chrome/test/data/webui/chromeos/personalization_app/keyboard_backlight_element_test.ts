@@ -47,8 +47,7 @@ suite('KeyboardBacklightTest', function() {
     const selectorContainer =
         keyboardBacklightElement.shadowRoot!.getElementById('selector');
     assertTrue(!!selectorContainer);
-    const colorContainers =
-        selectorContainer.querySelectorAll('.color-container');
+    const colorContainers = selectorContainer.querySelectorAll('.selectable');
     assertEquals(9, colorContainers!.length);
   });
 
@@ -57,8 +56,7 @@ suite('KeyboardBacklightTest', function() {
     const selectorContainer =
         keyboardBacklightElement.shadowRoot!.getElementById('selector');
     assertTrue(!!selectorContainer);
-    const colorContainers =
-        selectorContainer.querySelectorAll('.color-container');
+    const colorContainers = selectorContainer.querySelectorAll('.selectable');
     assertEquals(9, colorContainers!.length);
     personalizationStore.setReducersEnabled(true);
     personalizationStore.expectAction(
@@ -210,8 +208,7 @@ suite('KeyboardBacklightTest', function() {
     const selectorContainer =
         keyboardBacklightElement.shadowRoot!.getElementById('selector');
     assertTrue(!!selectorContainer);
-    const colorContainers =
-        selectorContainer.querySelectorAll('.color-container');
+    const colorContainers = selectorContainer.querySelectorAll('.selectable');
     assertEquals(9, colorContainers!.length);
     assertEquals(
         'Wallpaper color', (colorContainers[8] as HTMLElement).ariaLabel);
@@ -231,7 +228,7 @@ suite('KeyboardBacklightTest', function() {
             keyboardBacklightElement.shadowRoot!.getElementById('selector');
         assertTrue(!!selectorContainer);
         const colorContainers =
-            selectorContainer.querySelectorAll('.color-container');
+            selectorContainer.querySelectorAll('.selectable');
         assertEquals(9, colorContainers!.length);
         assertEquals(
             'Wallpaper color', (colorContainers[0] as HTMLElement).ariaLabel);
