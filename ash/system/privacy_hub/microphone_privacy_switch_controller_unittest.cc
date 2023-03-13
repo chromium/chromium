@@ -16,7 +16,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/system/privacy_hub/microphone_privacy_switch_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_metrics.h"
 #include "ash/system/privacy_hub/privacy_hub_notification_controller.h"
@@ -31,7 +30,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
-#include "ui/message_center/message_center_observer.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 namespace ash {
@@ -93,31 +91,6 @@ class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
 class MockFrontendAPI : public PrivacyHubDelegate {
  public:
   MOCK_METHOD(void, MicrophoneHardwareToggleChanged, (bool), (override));
-};
-
-class RemoveNotificationWaiter : public message_center::MessageCenterObserver {
- public:
-  explicit RemoveNotificationWaiter(const std::string& notification_id)
-      : notification_id_(notification_id) {
-    message_center::MessageCenter::Get()->AddObserver(this);
-  }
-  ~RemoveNotificationWaiter() override {
-    message_center::MessageCenter::Get()->RemoveObserver(this);
-  }
-
-  void Wait() { run_loop_.Run(); }
-
-  // message_center::MessageCenterObserver:
-  void OnNotificationRemoved(const std::string& notification_id,
-                             const bool by_user) override {
-    if (notification_id == notification_id_) {
-      run_loop_.Quit();
-    }
-  }
-
- private:
-  const std::string notification_id_;
-  base::RunLoop run_loop_;
 };
 
 }  // namespace
@@ -214,11 +187,6 @@ class PrivacyHubMicrophoneControllerTest : public AshTestBase {
   void UnMuteMicrophone() {
     CrasAudioHandler::Get()->SetInputMute(
         false, CrasAudioHandler::InputMuteChangeMethod::kOther);
-  }
-
-  void WaitUntilNotificationRemoved(const std::string& notification_id) {
-    RemoveNotificationWaiter notification_waiter(notification_id);
-    notification_waiter.Wait();
   }
 
   void LaunchApp(absl::optional<std::u16string> app_name) {
@@ -328,8 +296,6 @@ TEST_F(PrivacyHubMicrophoneControllerTest, LaunchAppUsingMicrophone) {
   // Unmute again, notification goes down.
   UnMuteMicrophone();
 
-  WaitUntilNotificationRemoved(
-      PrivacyHubNotificationController::kCombinedNotificationId);
   EXPECT_FALSE(IsAnyMicNotificationVisible());
 }
 
@@ -396,8 +362,6 @@ TEST_F(PrivacyHubMicrophoneControllerTest, RemovingStreamDoesNotShowPopup) {
   // The notification should be removed if all apps are closed.
   CloseApp(u"junior");
 
-  WaitUntilNotificationRemoved(
-      PrivacyHubNotificationController::kCombinedNotificationId);
   EXPECT_FALSE(GetSWSwitchNotification());
 }
 
@@ -510,8 +474,6 @@ TEST_F(PrivacyHubMicrophoneControllerTest,
   SetMicrophoneMuteSwitchState(/*muted=*/false);
   ASSERT_FALSE(CrasAudioHandler::Get()->IsInputMuted());
 
-  WaitUntilNotificationRemoved(PrivacyHubNotificationController::
-                                   kMicrophoneHardwareSwitchNotificationId);
   EXPECT_FALSE(IsAnyMicNotificationVisible());
 }
 
@@ -540,8 +502,6 @@ TEST_F(PrivacyHubMicrophoneControllerTest,
   SetMicrophoneMuteSwitchState(/*muted=*/false);
 
   ASSERT_FALSE(CrasAudioHandler::Get()->IsInputMuted());
-  WaitUntilNotificationRemoved(PrivacyHubNotificationController::
-                                   kMicrophoneHardwareSwitchNotificationId);
   EXPECT_FALSE(IsAnyMicNotificationVisible());
   EXPECT_FALSE(GetSWSwitchNotification());
   EXPECT_FALSE(GetHWSwitchNotification());
@@ -557,8 +517,6 @@ TEST_F(PrivacyHubMicrophoneControllerTest,
 
   CloseApp(u"junior");
 
-  WaitUntilNotificationRemoved(PrivacyHubNotificationController::
-                                   kMicrophoneHardwareSwitchNotificationId);
   EXPECT_FALSE(GetHWSwitchNotification());
 }
 

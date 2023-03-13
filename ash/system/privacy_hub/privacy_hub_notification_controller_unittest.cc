@@ -13,8 +13,6 @@
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/system/privacy_hub/camera_privacy_switch_controller.h"
-#include "ash/system/privacy_hub/microphone_privacy_switch_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_metrics.h"
 #include "ash/system/system_notification_controller.h"
@@ -25,7 +23,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
-#include "ui/message_center/message_center_observer.h"
 #include "ui/message_center/notification_list.h"
 #include "ui/message_center/public/cpp/notification.h"
 
@@ -38,30 +35,6 @@ class FakeSensorDisabledNotificationDelegate
   std::vector<std::u16string> GetAppsAccessingSensor(Sensor sensor) override {
     return {};
   }
-};
-
-class RemoveNotificationWaiter : public message_center::MessageCenterObserver {
- public:
-  RemoveNotificationWaiter() {
-    message_center::MessageCenter::Get()->AddObserver(this);
-  }
-  ~RemoveNotificationWaiter() override {
-    message_center::MessageCenter::Get()->RemoveObserver(this);
-  }
-
-  void Wait() { run_loop_.Run(); }
-
-  // message_center::MessageCenterObserver:
-  void OnNotificationRemoved(const std::string& notification_id,
-                             const bool by_user) override {
-    if (notification_id ==
-        PrivacyHubNotificationController::kCombinedNotificationId) {
-      run_loop_.Quit();
-    }
-  }
-
- private:
-  base::RunLoop run_loop_;
 };
 
 class MockNewWindowDelegate
@@ -166,11 +139,6 @@ class PrivacyHubNotificationControllerTest : public AshTestBase {
     return histogram_tester_;
   }
 
-  void WaitUntilNotificationRemoved() {
-    RemoveNotificationWaiter notification_waiter;
-    notification_waiter.Wait();
-  }
-
   MockNewWindowDelegate* new_window_delegate() { return new_window_delegate_; }
 
  private:
@@ -195,7 +163,6 @@ TEST_F(PrivacyHubNotificationControllerTest, CameraNotificationShowAndHide) {
 
   RemoveNotification(Sensor::kCamera);
 
-  WaitUntilNotificationRemoved();
   EXPECT_FALSE(GetNotification());
 }
 
@@ -213,7 +180,6 @@ TEST_F(PrivacyHubNotificationControllerTest,
 
   RemoveNotification(Sensor::kMicrophone);
 
-  WaitUntilNotificationRemoved();
   EXPECT_FALSE(GetNotification());
 }
 
@@ -230,7 +196,6 @@ TEST_F(PrivacyHubNotificationControllerTest, CombinedNotificationShowAndHide) {
 
   RemoveCombinedNotification();
 
-  WaitUntilNotificationRemoved();
   EXPECT_FALSE(GetNotification());
 }
 
@@ -263,7 +228,6 @@ TEST_F(PrivacyHubNotificationControllerTest, CombinedNotificationBuilding) {
 
   RemoveNotification(Sensor::kCamera);
 
-  WaitUntilNotificationRemoved();
   EXPECT_FALSE(GetNotification());
 }
 

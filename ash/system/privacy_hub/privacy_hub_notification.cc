@@ -15,11 +15,6 @@
 
 namespace {
 
-void RemoveNotification(const std::string& id) {
-  message_center::MessageCenter::Get()->RemoveNotification(id,
-                                                           /*by_user=*/false);
-}
-
 // Returns true if a notification with id `id` is in the message center.
 bool HasNotification(const std::string& id) {
   return message_center::MessageCenter::Get()->FindNotificationById(id);
@@ -140,10 +135,6 @@ PrivacyHubNotification::PrivacyHubNotification(
 PrivacyHubNotification::~PrivacyHubNotification() = default;
 
 void PrivacyHubNotification::Show() {
-  if (remove_timer_.IsRunning()) {
-    remove_timer_.Stop();
-  }
-
   SetNotificationContent();
   if (HasNotification(id_)) {
     // The notification is already in the message center. Update the content and
@@ -154,34 +145,11 @@ void PrivacyHubNotification::Show() {
   } else {
     message_center::MessageCenter::Get()->AddNotification(builder_.BuildPtr());
   }
-
-  last_time_shown_ = base::Time::Now();
 }
 
-void PrivacyHubNotification::Hide(const bool ignore_delay) {
-  if (ignore_delay) {
-    if (remove_timer_.IsRunning()) {
-      remove_timer_.Stop();
-    }
-    RemoveNotification(id_);
-    last_time_shown_.reset();
-    return;
-  }
-
-  if (!last_time_shown_) {
-    return;
-  }
-
-  if (const base::TimeDelta remaining_show_time =
-          kMinShowTime - (base::Time::Now() - last_time_shown_.value());
-      remaining_show_time.is_positive()) {
-    remove_timer_.Start(FROM_HERE, remaining_show_time,
-                        base::BindOnce(RemoveNotification, id_));
-  } else {
-    RemoveNotification(id_);
-  }
-
-  last_time_shown_.reset();
+void PrivacyHubNotification::Hide() {
+  message_center::MessageCenter::Get()->RemoveNotification(id_,
+                                                           /*by_user=*/false);
 }
 
 void PrivacyHubNotification::Update() {

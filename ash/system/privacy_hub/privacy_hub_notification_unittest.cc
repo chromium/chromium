@@ -41,29 +41,6 @@ class FakeSensorDisabledNotificationDelegate
   std::vector<std::u16string> apps_;
 };
 
-class RemoveNotificationWaiter : public message_center::MessageCenterObserver {
- public:
-  RemoveNotificationWaiter() {
-    message_center::MessageCenter::Get()->AddObserver(this);
-  }
-  ~RemoveNotificationWaiter() override {
-    message_center::MessageCenter::Get()->RemoveObserver(this);
-  }
-
-  void Wait() { run_loop_.Run(); }
-
-  // message_center::MessageCenterObserver:
-  void OnNotificationRemoved(const std::string& notification_id,
-                             const bool by_user) override {
-    if (notification_id == kNotificationId) {
-      run_loop_.Quit();
-    }
-  }
-
- private:
-  base::RunLoop run_loop_;
-};
-
 // A waiter class, once `Wait()` is invoked, waits until a pop up of the
 // notification with id `kNotificationId` is closed.
 class NotificationPopupWaiter : public message_center::MessageCenterObserver {
@@ -211,12 +188,6 @@ TEST_F(PrivacyHubNotificationTest, ShowAndHide) {
   EXPECT_TRUE(GetNotification());
 
   notification().Hide();
-
-  EXPECT_TRUE(GetNotification());
-
-  RemoveNotificationWaiter waiter;
-
-  waiter.Wait();
 
   EXPECT_FALSE(GetNotification());
 }

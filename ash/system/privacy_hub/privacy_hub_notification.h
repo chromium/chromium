@@ -12,11 +12,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/sensor_disabled_notification_delegate.h"
 #include "ash/public/cpp/system_notification_builder.h"
-#include "base/functional/callback_forward.h"
-#include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
 namespace ash {
@@ -96,9 +92,6 @@ class ASH_EXPORT PrivacyHubNotificationDescriptor {
 // and shared behavior that applies to all Privacy Hub notifications.
 class ASH_EXPORT PrivacyHubNotification {
  public:
-  constexpr static base::TimeDelta kMinShowTime =
-      base::Seconds(message_center::kAutocloseDefaultDelaySeconds);
-
   // Create a new notification.
   // When calling `Show() or `Update()`:
   // If `sensors_` is empty, the generic notification message from `descriptor`
@@ -133,18 +126,8 @@ class ASH_EXPORT PrivacyHubNotification {
   // the `Update()` function.
   void Show();
 
-  // Hide the notification from the user. Calls to `Hide()` are delayed until
-  // `kMinShowTime` time has passed since the time notification was last
-  // displayed.
-  // When `ignore_delay` is true, the notification is instantly hidden from the
-  // message center. `ignore_delay` should always be false except for some
-  // special cases.
-  // For example, microphone software switch notification and hardware switch
-  // notification are represented by different notification objects and the
-  // notifications represent the same information except the action buttons. In
-  // such cases, displaying both of the simultaneously may seem redundant. This
-  // is a perfect example to use `Hide()` with `ignore_delay = true`.
-  void Hide(bool ignore_delay = false);
+  // Hide the notification from the message center.
+  void Hide();
 
   // Silently updates the notification when needed, for example, when an
   // application stops accessing a sensor and the name of that application needs
@@ -193,9 +176,6 @@ class ASH_EXPORT PrivacyHubNotification {
   bool has_sensors_changed_ = true;
 
   SystemNotificationBuilder builder_;
-
-  absl::optional<base::Time> last_time_shown_;
-  base::OneShotTimer remove_timer_;
 
   // TODO(b/271809217): Refactor camera HW switch notification implementation
   // Notification for the camera hardware switch is currently using only a
