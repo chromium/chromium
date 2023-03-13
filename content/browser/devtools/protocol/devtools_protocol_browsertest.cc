@@ -64,6 +64,7 @@
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/slow_download_http_response.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_browser_context.h"
 #include "content/shell/browser/shell_content_browser_client.h"
@@ -3866,6 +3867,44 @@ IN_PROC_BROWSER_TEST_F(PrerenderDevToolsProtocolTest,
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
   ASSERT_FALSE(web_contents_impl
                    ->last_navigation_was_prerender_activation_for_devtools());
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderDevToolsProtocolTest,
+                       RenderFrameDevToolsAgentHostCacheEvictionCrash) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
+  WebContentsImpl* web_contents_impl =
+      static_cast<WebContentsImpl*>(web_contents());
+
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Attaching a session via a "tab" target is required to opt-in into
+  // FTN swapping mode during prerender activation.
+  AttachToTabTarget(web_contents_impl);
+  base::Value::Dict command_params;
+  command_params.Set("autoAttach", true);
+  command_params.Set("waitForDebuggerOnStart", false);
+  command_params.Set("flatten", true);
+  SendCommandSync("Target.setAutoAttach", std::move(command_params));
+
+  // Stash current RFDTAH for WebContents that is about to be retained
+  // by BFCache after prerender navigation and flushed later.
+  auto old_host = DevToolsAgentHost::GetOrCreateFor(web_contents_impl);
+  RenderFrameDeletedObserver delete_observer(
+      web_contents_impl->GetPrimaryMainFrame());
+
+  // Activating a prerender should cause FTN swapping on the RFH and put
+  // the old one into the BFCache with frame_tree_node_ == nullptr.
+  AddPrerender(kPrerenderingUrl);
+  NavigatePrimaryPage(kPrerenderingUrl);
+
+  EXPECT_FALSE(delete_observer.deleted());
+  web_contents_impl->GetController().GetBackForwardCache().Flush();
+  delete_observer.WaitUntilDeleted();
+
+  // Assure methods on disconnected host are safe to call.
+  EXPECT_THAT(old_host->GetTitle(), testing::Eq(""));
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderDevToolsProtocolTest,
