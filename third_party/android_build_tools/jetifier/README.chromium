@@ -1,0 +1,12 @@
+Name: Androidx Jetifier
+Short Name: jetifier
+URL: https://dl.google.com/dl/android/studio/jetifier-zips/1.0.0-beta10/jetifier-standalone.zip
+Version: 1.0.0-beta10
+License: Apache 2.0
+License File: NOT_SHIPPED
+Security Critical: no
+License Android Compatible: yes
+
+Description:
+The standalone Jetifier tool migrates support-library-dependent libraries to
+instead rely on the equivalent AndroidX packages.
