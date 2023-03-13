@@ -22,6 +22,7 @@
 #include "gpu/command_buffer/client/webgpu_interface.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
+#include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
@@ -794,9 +795,8 @@ void CanvasResourceRasterSharedImage::OnMemoryDump(
 
   auto guid = gpu::GetSharedImageGUIDForTracing(mailbox());
   pmd->CreateSharedGlobalAllocatorDump(guid);
-  // This memory is allocated on our behalf, claim it by setting the importance
-  // to >0.
-  pmd->AddOwnershipEdge(dump->guid(), guid, 1);
+  pmd->AddOwnershipEdge(dump->guid(), guid,
+                        static_cast<int>(gpu::TracingImportance::kClientOwner));
 }
 
 // ExternalCanvasResource

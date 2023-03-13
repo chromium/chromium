@@ -180,8 +180,9 @@ base::trace_event::MemoryAllocatorDump* SharedMemoryImageBacking::OnMemoryDump(
   // various GPU dumps.
   auto shared_memory_guid = shared_memory_wrapper_.GetMappingGuid();
   if (!shared_memory_guid.is_empty()) {
-    pmd->CreateSharedMemoryOwnershipEdge(client_guid, shared_memory_guid,
-                                         kNonOwningEdgeImportance);
+    pmd->CreateSharedMemoryOwnershipEdge(
+        client_guid, shared_memory_guid,
+        static_cast<int>(TracingImportance::kNotOwner));
   }
   return dump;
 }

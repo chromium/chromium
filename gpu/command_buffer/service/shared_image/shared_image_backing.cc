@@ -9,6 +9,7 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_format_utils.h"
+#include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
@@ -144,7 +145,8 @@ base::trace_event::MemoryAllocatorDump* SharedImageBacking::OnMemoryDump(
   // Add ownership edge to `client_guid` which expresses shared ownership with
   // the client process.
   pmd->CreateSharedGlobalAllocatorDump(client_guid);
-  pmd->AddOwnershipEdge(dump->guid(), client_guid, kNonOwningEdgeImportance);
+  pmd->AddOwnershipEdge(dump->guid(), client_guid,
+                        static_cast<int>(gpu::TracingImportance::kNotOwner));
 
   return dump;
 }

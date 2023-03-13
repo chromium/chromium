@@ -237,10 +237,6 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   friend class SharedImageManager;
   friend class CompoundImageBacking;
 
-  // Memory dump importance values for shared ownership edges.
-  static constexpr int kNonOwningEdgeImportance = 0;
-  static constexpr int kOwningEdgeImportance = 2;
-
   virtual std::unique_ptr<GLTextureImageRepresentation> ProduceGLTexture(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker);

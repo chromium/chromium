@@ -600,7 +600,8 @@ base::trace_event::MemoryAllocatorDump* CompoundImageBacking::OnMemoryDump(
   // Add ownership edge to `client_guid` which expresses shared ownership with
   // the client process for the top level dump.
   pmd->CreateSharedGlobalAllocatorDump(client_guid);
-  pmd->AddOwnershipEdge(dump->guid(), client_guid, kNonOwningEdgeImportance);
+  pmd->AddOwnershipEdge(dump->guid(), client_guid,
+                        static_cast<int>(TracingImportance::kNotOwner));
 
   // Add dumps nested under `dump_name` for child backings owned by compound
   // image. These get different shared GUIDs to add ownership edges with GPU

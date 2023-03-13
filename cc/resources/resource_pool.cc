@@ -30,6 +30,7 @@
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
+#include "gpu/command_buffer/common/mailbox.h"
 
 using base::trace_event::MemoryAllocatorDump;
 using base::trace_event::MemoryDumpLevelOfDetail;
@@ -650,9 +651,9 @@ void ResourcePool::PoolResource::OnMemoryDump(
 
   // The importance value used here needs to be greater than the importance
   // used in other places that use this GUID to inform the system that this is
-  // the root ownership. The gpu processes uses 0, so 2 is sufficient, and was
-  // chosen historically and there is no need to adjust it.
-  const int kImportance = 2;
+  // the root ownership.
+  const int kImportance =
+      static_cast<int>(gpu::TracingImportance::kClientOwner);
   auto* dump_manager = base::trace_event::MemoryDumpManager::GetInstance();
   uint64_t tracing_process_id = dump_manager->GetTracingProcessId();
   if (software_backing_) {

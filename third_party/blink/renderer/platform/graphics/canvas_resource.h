@@ -189,6 +189,8 @@ class PLATFORM_EXPORT CanvasResource
     return 0;
   }
 
+  virtual bool HasDetailedMemoryDumpProvider() const { return false; }
+
  protected:
   CanvasResource(base::WeakPtr<CanvasResourceProvider>,
                  cc::PaintFlags::FilterQuality,
@@ -364,6 +366,10 @@ class PLATFORM_EXPORT CanvasResourceRasterSharedImage final
   const gpu::Mailbox& GetOrCreateGpuMailbox(MailboxSyncMode) override;
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
                     size_t bytes_per_pixel) const override;
+  // Whether this type of CanvasResource can provide detailed memory data. If
+  // true, then the CanvasResourceProvider will not report data, to avoid
+  // double-countintg.
+  bool HasDetailedMemoryDumpProvider() const override { return true; }
 
  private:
   // These members are either only accessed on the owning thread, or are only
