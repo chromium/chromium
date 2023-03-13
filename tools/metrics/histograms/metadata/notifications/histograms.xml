@@ -27,6 +27,71 @@ chromium-metrics-reviews@google.com.
   <variant name="Banner" summary="Banner: Auto dismisses"/>
 </variants>
 
+<variants name="NotificationAction">
+  <variant name="ClickedBody.BadClick"
+      summary="User performed a 'bad click' on the body of a notification,
+               which is a click that did not do anything."/>
+  <variant name="ClickedBody.GoodClick"
+      summary="User performed a 'good click' on the body of a notification,
+               which is a click that did do some actions."/>
+  <variant name="CountOfNotificationShownInFirstMinutePerUser"
+      summary="Count of notifications displayed in the first minute since
+               login for a user"/>
+  <variant name="NotificationAdded"
+      summary="A notification was created and it was shown"/>
+  <variant name="Popup.ClickedActionButton"
+      summary="User clicks on an action button of a popup notification"/>
+  <variant name="Popup.ClickedBody"
+      summary="User clicks the body of a popup notification"/>
+  <variant name="Popup.ClosedByUser.Click"
+      summary="User closes a popup notification by clicking on the close
+               button"/>
+  <variant name="Popup.ClosedByUser.Swipe"
+      summary="User closes a popup notification by swiping it away"/>
+  <variant name="Popup.ExpireToTray"
+      summary="A popup notification times out and is hidden (but still
+               visible in the message center)"/>
+  <variant name="Popup.Hover"
+      summary="User hover on the body of a popup notification"/>
+  <variant name="Popup.InlineReplySent"
+      summary="User sends an inline reply in a popup notification"/>
+  <variant name="Popup.SettingsShown.HoverControls"
+      summary="User opens the settings of a popup notification by clicking on
+               the hover button"/>
+  <variant name="Popup.Shown" summary="A popup notification is shown"/>
+  <variant name="Popup.Snoozed.HoverControls"
+      summary="User clicks on the snooze button of a popup notification"/>
+  <variant name="Tray.ClickedActionButton"
+      summary="User clicks on the action button of a notification in the tray"/>
+  <variant name="Tray.ClickedBody"
+      summary="User clicks on the body of a notification in the tray"/>
+  <variant name="Tray.ClosedByClearAll"
+      summary="A tray notification is closed after the user clicks on the
+               Clear All button (note that this is logged for each
+               notification dismissed)"/>
+  <variant name="Tray.ClosedByUser.Click"
+      summary="User closes a tray notification by clicking on the close
+               button"/>
+  <variant name="Tray.ClosedByUser.Swipe"
+      summary="User closes a tray notification by swiping it away"/>
+  <variant name="Tray.Hover"
+      summary="User hover on the body of a notification in the tray"/>
+  <variant name="Tray.InlineReplySent"
+      summary="User sends an inline reply for a tray notification"/>
+  <variant name="Tray.SettingsShown.HoverControls"
+      summary="User opens the settings by clicking on the hover button of a
+               tray notification"/>
+  <variant name="Tray.SettingsShown.SlideControls"
+      summary="User opens the settings by clicking on the slide settings
+               button of a tray notification"/>
+  <variant name="Tray.Snoozed.HoverControls"
+      summary="User snoozes a notification by clicking on the hover button of
+               a tray notification"/>
+  <variant name="Tray.Snoozed.SlideControls"
+      summary="User snoozes a notification by clicking on the snooze button
+               of a tray notification"/>
+</variants>
+
 <histogram name="Notifications.Actions" enum="NotificationActionType"
     expires_after="2023-08-08">
   <owner>dewittj@chromium.org</owner>
@@ -265,79 +330,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Notifications.Cros.Actions.{Action}"
+<histogram name="Notifications.Cros.Actions.{NotificationAction}"
     enum="NotificationTypeDetailed" expires_after="2024-03-10">
   <owner>leandre@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Records the notification type when a notification interaction occurs:
-    {Action}. ChromeOS only.
+    {NotificationAction}. ChromeOS only.
   </summary>
-  <token key="Action">
-    <variant name="ClickedBody.BadClick"
-        summary="User performed a 'bad click' on the body of a notification,
-                 which is a click that did not do anything."/>
-    <variant name="ClickedBody.GoodClick"
-        summary="User performed a 'good click' on the body of a notification,
-                 which is a click that did do some actions."/>
-    <variant name="CountOfNotificationShownInFirstMinutePerUser"
-        summary="Count of notifications displayed in the first minute since
-                 login for a user"/>
-    <variant name="NotificationAdded"
-        summary="A notification was created and it was shown"/>
-    <variant name="Popup.ClickedActionButton"
-        summary="User clicks on an action button of a popup notification"/>
-    <variant name="Popup.ClickedBody"
-        summary="User clicks the body of a popup notification"/>
-    <variant name="Popup.ClosedByUser.Click"
-        summary="User closes a popup notification by clicking on the close
-                 button"/>
-    <variant name="Popup.ClosedByUser.Swipe"
-        summary="User closes a popup notification by swiping it away"/>
-    <variant name="Popup.ExpireToTray"
-        summary="A popup notification times out and is hidden (but still
-                 visible in the message center)"/>
-    <variant name="Popup.Hover"
-        summary="User hover on the body of a popup notification"/>
-    <variant name="Popup.InlineReplySent"
-        summary="User sends an inline reply in a popup notification"/>
-    <variant name="Popup.SettingsShown.HoverControls"
-        summary="User opens the settings of a popup notification by clicking
-                 on the hover button"/>
-    <variant name="Popup.Shown" summary="A popup notification is shown"/>
-    <variant name="Popup.Snoozed.HoverControls"
-        summary="User clicks on the snooze button of a popup notification"/>
-    <variant name="Tray.ClickedActionButton"
-        summary="User clicks on the action button of a notification in the
-                 tray"/>
-    <variant name="Tray.ClickedBody"
-        summary="User clicks on the body of a notification in the tray"/>
-    <variant name="Tray.ClosedByClearAll"
-        summary="A tray notification is closed after the user clicks on the
-                 Clear All button (note that this is logged for each
-                 notification dismissed)"/>
-    <variant name="Tray.ClosedByUser.Click"
-        summary="User closes a tray notification by clicking on the close
-                 button"/>
-    <variant name="Tray.ClosedByUser.Swipe"
-        summary="User closes a tray notification by swiping it away"/>
-    <variant name="Tray.Hover"
-        summary="User hover on the body of a notification in the tray"/>
-    <variant name="Tray.InlineReplySent"
-        summary="User sends an inline reply for a tray notification"/>
-    <variant name="Tray.SettingsShown.HoverControls"
-        summary="User opens the settings by clicking on the hover button of a
-                 tray notification"/>
-    <variant name="Tray.SettingsShown.SlideControls"
-        summary="User opens the settings by clicking on the slide settings
-                 button of a tray notification"/>
-    <variant name="Tray.Snoozed.HoverControls"
-        summary="User snoozes a notification by clicking on the hover button
-                 of a tray notification"/>
-    <variant name="Tray.Snoozed.SlideControls"
-        summary="User snoozes a notification by clicking on the snooze button
-                 of a tray notification"/>
-  </token>
+  <token key="NotificationAction" variants="NotificationAction"/>
+</histogram>
+
+<histogram
+    name="Notifications.Cros.Actions.{NotificationAction}.GroupedByCatalog"
+    enum="NotificationCatalogName" expires_after="2024-03-10">
+  <owner>leandre@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Records the notification catalog name when a notification interaction
+    occurs: {NotificationAction}. ChromeOS only.
+  </summary>
+  <token key="NotificationAction" variants="NotificationAction"/>
 </histogram>
 
 <histogram name="Notifications.Database.DeleteAllForOriginsResult"

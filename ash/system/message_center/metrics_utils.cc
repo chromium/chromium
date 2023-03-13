@@ -355,14 +355,21 @@ void LogClickedBody(const std::string& notification_id, bool is_popup) {
           notification_id);
   if (!notification)
     return;
-  auto type = GetNotificationType(*notification);
+  const auto type = GetNotificationType(*notification);
+  const auto catalog_name = notification->notifier_id().catalog_name;
 
   if (is_popup) {
-    UMA_HISTOGRAM_ENUMERATION("Notifications.Cros.Actions.Popup.ClickedBody",
-                              type);
+    base::UmaHistogramEnumeration(
+        "Notifications.Cros.Actions.Popup.ClickedBody", type);
+    base::UmaHistogramEnumeration(
+        "Notifications.Cros.Actions.Popup.ClickedBody.GroupedByCatalog",
+        catalog_name);
   } else {
-    UMA_HISTOGRAM_ENUMERATION("Notifications.Cros.Actions.Tray.ClickedBody",
-                              type);
+    base::UmaHistogramEnumeration("Notifications.Cros.Actions.Tray.ClickedBody",
+                                  type);
+    base::UmaHistogramEnumeration(
+        "Notifications.Cros.Actions.Tray.ClickedBody.GroupedByCatalog",
+        catalog_name);
   }
 
   // If notification's delegate is null, that means the notification is not
@@ -559,6 +566,9 @@ void LogNotificationAdded(const std::string& notification_id) {
 
   base::UmaHistogramEnumeration("Notifications.Cros.Actions.NotificationAdded",
                                 GetNotificationType(*notification));
+  base::UmaHistogramEnumeration(
+      "Notifications.Cros.Actions.NotificationAdded.GroupedByCatalog",
+      notification->notifier_id().catalog_name);
 
   auto notification_view_type = GetNotificationViewType(notification);
   if (!notification_view_type)
