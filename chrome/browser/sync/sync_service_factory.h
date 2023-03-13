@@ -8,14 +8,10 @@
 #include <memory>
 #include <vector>
 
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
-
-namespace base {
-template <typename T>
-struct DefaultSingletonTraits;
-}  // namespace base
 
 namespace syncer {
 class SyncServiceImpl;
@@ -53,7 +49,7 @@ class SyncServiceFactory : public ProfileKeyedServiceFactory {
   static TestingFactory GetDefaultFactory();
 
  private:
-  friend struct base::DefaultSingletonTraits<SyncServiceFactory>;
+  friend base::NoDestructor<SyncServiceFactory>;
 
   SyncServiceFactory();
   ~SyncServiceFactory() override;

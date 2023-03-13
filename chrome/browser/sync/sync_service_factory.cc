@@ -8,8 +8,8 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
@@ -195,7 +195,8 @@ std::unique_ptr<KeyedService> BuildSyncService(
 
 // static
 SyncServiceFactory* SyncServiceFactory::GetInstance() {
-  return base::Singleton<SyncServiceFactory>::get();
+  static base::NoDestructor<SyncServiceFactory> instance;
+  return instance.get();
 }
 
 // static
