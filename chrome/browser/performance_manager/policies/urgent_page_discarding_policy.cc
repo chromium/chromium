@@ -56,14 +56,15 @@ void UrgentPageDiscardingPolicy::OnTakenFromGraph(Graph* graph) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 void UrgentPageDiscardingPolicy::OnReclaimTarget(
     absl::optional<uint64_t> reclaim_target_kb) {
-  PageDiscardingHelper::GetFromGraph(graph_)->UrgentlyDiscardMultiplePages(
+  PageDiscardingHelper::GetFromGraph(graph_)->DiscardMultiplePages(
       reclaim_target_kb, true,
       base::BindOnce(
           [](UrgentPageDiscardingPolicy* policy, bool success_unused) {
             DCHECK(policy->handling_memory_pressure_notification_);
             policy->handling_memory_pressure_notification_ = false;
           },
-          base::Unretained(this)));
+          base::Unretained(this)),
+      ::mojom::LifecycleUnitDiscardReason::URGENT);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
@@ -93,7 +94,7 @@ void UrgentPageDiscardingPolicy::OnMemoryPressure(
       base::BindOnce(&UrgentPageDiscardingPolicy::OnReclaimTarget,
                      base::Unretained(this)));
 #else
-  PageDiscardingHelper::GetFromGraph(graph_)->UrgentlyDiscardAPage(
+  PageDiscardingHelper::GetFromGraph(graph_)->DiscardAPage(
       base::BindOnce(
           [](UrgentPageDiscardingPolicy* policy, bool success_unused) {
             DCHECK(policy->handling_memory_pressure_notification_);
@@ -102,10 +103,11 @@ void UrgentPageDiscardingPolicy::OnMemoryPressure(
           // |PageDiscardingHelper| and this class are both GraphOwned objects,
           // their lifetime is tied to the Graph's lifetime and both objects
           // will be released sequentially while it's being torn down. This
-          // ensures that the reply callback passed to |UrgentlyDiscardAPage|
+          // ensures that the reply callback passed to |DiscardAPage|
           // won't ever run after the destruction of this class and so it's safe
           // to use Unretained.
-          base::Unretained(this)));
+          base::Unretained(this)),
+      ::mojom::LifecycleUnitDiscardReason::URGENT);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 

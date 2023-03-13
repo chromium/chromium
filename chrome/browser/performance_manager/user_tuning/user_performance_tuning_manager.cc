@@ -477,7 +477,9 @@ void UserPerformanceTuningManager::DiscardPageForTesting(
             if (page_node) {
               performance_manager::policies::PageDiscardingHelper::GetFromGraph(
                   graph)
-                  ->ImmediatelyDiscardSpecificPage(page_node.get());
+                  ->ImmediatelyDiscardSpecificPage(
+                      page_node.get(),
+                      ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
               quit_closure.Run();
             }
           },

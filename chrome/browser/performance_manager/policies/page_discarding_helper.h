@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -29,6 +30,16 @@ class PageDiscarder;
 }  // namespace mechanism
 
 namespace policies {
+
+#if BUILDFLAG(IS_CHROMEOS)
+constexpr base::TimeDelta kNonVisiblePagesUrgentProtectionTime =
+    base::TimeDelta();
+#else
+// Time during which non visible pages are protected from urgent discarding
+// (not on ChromeOS).
+constexpr base::TimeDelta kNonVisiblePagesUrgentProtectionTime =
+    base::Minutes(10);
+#endif
 
 // Caches page node properties to facilitate sorting.
 class PageNodeSortProxy {
@@ -90,19 +101,30 @@ class PageDiscardingHelper : public GraphOwned,
   // Selects a tab to discard and posts to the UI thread to discard it. This
   // will try to discard a tab until there's been a successful discard or until
   // there's no more discard candidate.
-  void UrgentlyDiscardAPage(base::OnceCallback<void(bool)> post_discard_cb);
+  // `minimum_time_in_background` is passed to `CanUrgentlyDiscard()`, see the
+  // comment there about its usage.
+  void DiscardAPage(base::OnceCallback<void(bool)> post_discard_cb,
+                    ::mojom::LifecycleUnitDiscardReason discard_reason,
+                    base::TimeDelta minimum_time_in_background =
+                        kNonVisiblePagesUrgentProtectionTime);
 
   // Discards multiple tabs to meet the reclaim target based and posts to the UI
   // thread to discard these tabs. Retries discarding if all discardings in the
   // UI thread fail. If |reclaim_target_kb| is nullopt, only discard one tab. If
   // |discard_protected_tabs| is true, protected tab (CanUrgentlyDiscard()
   // returns kProtected) can also be discarded.
-  void UrgentlyDiscardMultiplePages(
-      absl::optional<uint64_t> reclaim_target_kb,
-      bool discard_protected_tabs,
-      base::OnceCallback<void(bool)> post_discard_cb);
+  // `minimum_time_in_background` is passed to `CanUrgentlyDiscard()`, see the
+  // comment there about its usage.
+  void DiscardMultiplePages(absl::optional<uint64_t> reclaim_target_kb,
+                            bool discard_protected_tabs,
+                            base::OnceCallback<void(bool)> post_discard_cb,
+                            ::mojom::LifecycleUnitDiscardReason discard_reason,
+                            base::TimeDelta minimum_time_in_background =
+                                kNonVisiblePagesUrgentProtectionTime);
 
-  void ImmediatelyDiscardSpecificPage(const PageNode* page_node);
+  void ImmediatelyDiscardSpecificPage(
+      const PageNode* page_node,
+      ::mojom::LifecycleUnitDiscardReason discard_reason);
 
   // PageNodeObserver:
   void OnBeforePageNodeRemoved(const PageNode* page_node) override;
@@ -116,18 +138,19 @@ class PageDiscardingHelper : public GraphOwned,
       std::unique_ptr<mechanism::PageDiscarder> discarder);
   bool CanUrgentlyDiscardForTesting(
       const PageNode* page_node,
-      bool consider_minimum_protection_time = true) const {
-    return CanUrgentlyDiscard(page_node, consider_minimum_protection_time) ==
+      base::TimeDelta minimum_time_in_background =
+          kNonVisiblePagesUrgentProtectionTime) const {
+    return CanUrgentlyDiscard(page_node, minimum_time_in_background) ==
            CanUrgentlyDiscardResult::kEligible;
   }
-  // Indicates if a PageNode can be urgently discarded. If
-  // `consider_minimum_protection_time` is false, the check that ensures the
-  // page hasn't been visible recently is ignored. This is to support cases
-  // where the time before a tab is discarded is known and shorter than the
-  // grace period.
+  // Indicates if a PageNode can be urgently discarded.
+  // If `minimum_time_in_background` is non-zero, the page will not be discarded
+  // if it has not spent at least `minimum_time_in_background` in the
+  // not-visible state.
   CanUrgentlyDiscardResult CanUrgentlyDiscard(
       const PageNode* page_node,
-      bool consider_minimum_protection_time = true) const;
+      base::TimeDelta minimum_time_in_background =
+          kNonVisiblePagesUrgentProtectionTime) const;
 
   void SetGraphForTesting(Graph* graph) { graph_ = graph; }
   static void AddDiscardAttemptMarkerForTesting(PageNode* page_node);
@@ -157,6 +180,8 @@ class PageDiscardingHelper : public GraphOwned,
       absl::optional<uint64_t> reclaim_target_kb,
       bool discard_protected_tabs,
       base::OnceCallback<void(bool)> post_discard_cb,
+      ::mojom::LifecycleUnitDiscardReason discard_reason,
+      base::TimeDelta minimum_time_in_background,
       bool success);
 
   // Map that associates a PageNode with the last time it became non audible.
