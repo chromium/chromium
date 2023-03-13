@@ -6,6 +6,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/test_future.h"
 #include "build/chromeos_buildflags.h"
@@ -307,6 +308,25 @@ TEST_P(ApiGuardDelegateTest, ManufacturerNotAllowed) {
   ASSERT_TRUE(error.has_value());
   EXPECT_EQ("This extension is not allowed to access the API on this device",
             error.value());
+}
+
+TEST_P(ApiGuardDelegateTest, SkipManufacturerCheck) {
+  OpenPwaUrlAndSetCertificateWithStatus(/*cert_status=*/net::OK);
+  // Append the switch to skip the manufacturer check.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kTelemetryExtensionSkipManufacturerCheckForTesting);
+
+  // Make sure device manufacturer is not allowed.
+  SetDeviceManufacturer("NOT_ALLOWED");
+
+  auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
+  base::test::TestFuture<absl::optional<std::string>> future;
+  api_guard_delegate->CanAccessApi(profile(), extension(),
+                                   future.GetCallback());
+
+  ASSERT_TRUE(future.Wait());
+  absl::optional<std::string> error = future.Get();
+  EXPECT_FALSE(error.has_value()) << error.value();
 }
 
 TEST_P(ApiGuardDelegateTest, NoError) {

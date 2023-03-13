@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/command_line.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -43,6 +44,15 @@ class BrowserContext;
 }
 
 namespace chromeos {
+
+namespace switches {
+
+// Skips the check for the device manufacturer.
+// Used for development/testing.
+const char kTelemetryExtensionSkipManufacturerCheckForTesting[] =
+    "telemetry-extension-skip-manufacturer-check-for-testing";
+
+}  // namespace switches
 
 namespace {
 
@@ -96,9 +106,18 @@ class ApiGuardDelegateImpl : public ApiGuardDelegate {
       return;
     }
 
-    // TODO(b/200676085): figure out a better way to async check different
-    // conditions.
-    VerifyManufacturer(extension, std::move(callback));
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    if (command_line &&
+        command_line->HasSwitch(
+            switches::kTelemetryExtensionSkipManufacturerCheckForTesting)) {
+      // In case it's specified to skip the manufacturer, we directly
+      // invoke the callback without an error and exit.
+      std::move(callback).Run(absl::nullopt);
+    } else {
+      // TODO(b/200676085): figure out a better way to async check different
+      // conditions.
+      VerifyManufacturer(extension, std::move(callback));
+    }
   }
 
  private:

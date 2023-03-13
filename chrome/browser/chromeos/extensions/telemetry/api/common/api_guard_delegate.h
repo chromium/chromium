@@ -21,6 +21,12 @@ class Extension;
 
 namespace chromeos {
 
+namespace switches {
+
+extern const char kTelemetryExtensionSkipManufacturerCheckForTesting[];
+
+}  // namespace switches
+
 // ApiGuardDelegate is a helper class to offload API guard checks and make it
 // test-friendly. E.g. check if the extension is force installed by policy.
 class ApiGuardDelegate {
