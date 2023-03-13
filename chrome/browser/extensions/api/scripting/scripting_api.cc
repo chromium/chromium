@@ -1010,6 +1010,12 @@ ScriptingRegisterContentScriptsFunction::Run() {
 void ScriptingRegisterContentScriptsFunction::OnContentScriptFilesValidated(
     std::set<std::string> persistent_script_ids,
     ValidateContentScriptsResult result) {
+  // We cannot proceed if the `browser_context` is not valid as the
+  // `ExtensionSystem` will not exist.
+  if (!browser_context()) {
+    return;
+  }
+
   auto error = std::move(result.second);
   auto scripts = std::move(result.first);
   ExtensionUserScriptLoader* loader =
@@ -1274,6 +1280,12 @@ ExtensionFunction::ResponseAction ScriptingUpdateContentScriptsFunction::Run() {
 void ScriptingUpdateContentScriptsFunction::OnContentScriptFilesValidated(
     std::set<std::string> persistent_script_ids,
     ValidateContentScriptsResult result) {
+  // We cannot proceed if the `browser_context` is not valid as the
+  // `ExtensionSystem` will not exist.
+  if (!browser_context()) {
+    return;
+  }
+
   auto error = std::move(result.second);
   auto scripts = std::move(result.first);
   ExtensionUserScriptLoader* loader =
