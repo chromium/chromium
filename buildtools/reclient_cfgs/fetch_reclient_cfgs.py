@@ -55,7 +55,8 @@ $ParanoidMode CheckPresence
       output = subprocess.check_output(
           ' '.join(['cipd', 'ensure', '-log-level=' + log_level,
                     '-root', directory, '-ensure-file', '-']),
-          shell=True, input=ensure_file, stderr=subprocess.STDOUT, text=True)
+          shell=True, input=ensure_file, stderr=subprocess.STDOUT,
+          universal_newlines=True)
       logging.info(output)
     except subprocess.CalledProcessError as e:
       raise CipdError(e.output) from e
