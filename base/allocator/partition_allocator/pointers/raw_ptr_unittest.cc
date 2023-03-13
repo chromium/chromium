@@ -2379,136 +2379,130 @@ TEST(MTECheckedPtrImpl, DanglingExtractionIsAcceptable) {
 #endif  // PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 
 #if BUILDFLAG(USE_HOOKABLE_RAW_PTR)
-class CountingHooks {
- public:
-  MOCK_METHOD(void, WrapPtr, ());
-  MOCK_METHOD(void, ReleaseWrappedPtr, ());
-  MOCK_METHOD(void, SafelyUnwrapForDereference, ());
-  MOCK_METHOD(void, SafelyUnwrapForExtraction, ());
-  MOCK_METHOD(void, UnsafelyUnwrapForComparison, ());
-  MOCK_METHOD(void, Advance, ());
-  MOCK_METHOD(void, Duplicate, ());
+
+namespace {
+#define FOR_EACH_RAW_PTR_OPERATION(F) \
+  F(wrap_ptr)                         \
+  F(release_wrapped_ptr)              \
+  F(safely_unwrap_for_dereference)    \
+  F(safely_unwrap_for_extraction)     \
+  F(unsafely_unwrap_for_comparison)   \
+  F(advance)                          \
+  F(duplicate)
+
+// Can't use gMock to count the number of invocations because
+// gMock itself triggers raw_ptr<T> operations.
+struct CountingHooks {
+  void ResetCounts() {
+#define F(name) name##_count = 0;
+    FOR_EACH_RAW_PTR_OPERATION(F)
+#undef F
+  }
+
+  static CountingHooks* Get() {
+    static thread_local CountingHooks instance;
+    return &instance;
+  }
+
+// The adapter method is templated to accept any number of arguments.
+#define F(name)                      \
+  template <typename... T>           \
+  static void name##_adapter(T...) { \
+    Get()->name##_count++;           \
+  }                                  \
+  size_t name##_count = 0;
+  FOR_EACH_RAW_PTR_OPERATION(F)
+#undef F
 };
 
-CountingHooks* g_counting_hooks = nullptr;
 constexpr RawPtrHooks raw_ptr_hooks{
-    .wrap_ptr =
-        [](uintptr_t) {
-          if (g_counting_hooks) {
-            g_counting_hooks->WrapPtr();
-          }
-        },
-    .release_wrapped_ptr =
-        [](uintptr_t) {
-          if (g_counting_hooks) {
-            g_counting_hooks->ReleaseWrappedPtr();
-          }
-        },
-    .safely_unwrap_for_dereference =
-        [](uintptr_t) {
-          if (g_counting_hooks) {
-            g_counting_hooks->SafelyUnwrapForDereference();
-          }
-        },
-    .safely_unwrap_for_extraction =
-        [](uintptr_t) {
-          if (g_counting_hooks) {
-            g_counting_hooks->SafelyUnwrapForExtraction();
-          }
-        },
-    .unsafely_unwrap_for_comparison =
-        [](uintptr_t) {
-          if (g_counting_hooks) {
-            g_counting_hooks->UnsafelyUnwrapForComparison();
-          }
-        },
-    .advance =
-        [](uintptr_t, uintptr_t) {
-          if (g_counting_hooks) {
-            g_counting_hooks->Advance();
-          }
-        },
-    .duplicate =
-        [](uintptr_t) {
-          if (g_counting_hooks) {
-            g_counting_hooks->Duplicate();
-          }
-        },
+#define F(name) .name = CountingHooks::name##_adapter,
+    FOR_EACH_RAW_PTR_OPERATION(F)
+#undef F
 };
+}  // namespace
 
 class HookableRawPtrImplTest : public testing::Test {
  protected:
-  static void SetUpTestSuite() {
-    // Force-initialize the thread local registry in gtest to avoid
-    // unexpected raw_ptr<T> operations while the tests are running.
-    SCOPED_TRACE("dummy");
-  }
-
-  void SetUp() override {
-    g_counting_hooks = &hooks_;
-    InstallRawPtrHooks(&raw_ptr_hooks);
-  }
-
-  void TearDown() override {
-    ResetRawPtrHooks();
-    g_counting_hooks = nullptr;
-  }
-
-  testing::NiceMock<CountingHooks> hooks_;
+  void SetUp() override { InstallRawPtrHooks(&raw_ptr_hooks); }
+  void TearDown() override { ResetRawPtrHooks(); }
 };
 
 TEST_F(HookableRawPtrImplTest, WrapPtr) {
-  EXPECT_CALL(hooks_, WrapPtr).Times(1);
-  int* ptr = new int;
-  [[maybe_unused]] raw_ptr<int> interesting_ptr = ptr;
-  delete ptr;
+  // Can't call `ResetCounts` in `SetUp` because gTest triggers
+  // raw_ptr<T> operations between `SetUp` and the test body.
+  CountingHooks::Get()->ResetCounts();
+  {
+    int* ptr = new int;
+    [[maybe_unused]] raw_ptr<int> interesting_ptr = ptr;
+    delete ptr;
+  }
+  EXPECT_EQ(CountingHooks::Get()->wrap_ptr_count, 1u);
 }
 
 TEST_F(HookableRawPtrImplTest, ReleaseWrappedPtr) {
-  EXPECT_CALL(hooks_, ReleaseWrappedPtr).Times(1);
-  int* ptr = new int;
-  [[maybe_unused]] raw_ptr<int> interesting_ptr = ptr;
-  delete ptr;
+  CountingHooks::Get()->ResetCounts();
+  {
+    int* ptr = new int;
+    [[maybe_unused]] raw_ptr<int> interesting_ptr = ptr;
+    delete ptr;
+  }
+  EXPECT_EQ(CountingHooks::Get()->release_wrapped_ptr_count, 1u);
 }
 
 TEST_F(HookableRawPtrImplTest, SafelyUnwrapForDereference) {
-  EXPECT_CALL(hooks_, SafelyUnwrapForDereference).Times(1);
-  int* ptr = new int;
-  raw_ptr<int> interesting_ptr = ptr;
-  *interesting_ptr = 1;
-  delete ptr;
+  CountingHooks::Get()->ResetCounts();
+  {
+    int* ptr = new int;
+    raw_ptr<int> interesting_ptr = ptr;
+    *interesting_ptr = 1;
+    delete ptr;
+  }
+  EXPECT_EQ(CountingHooks::Get()->safely_unwrap_for_dereference_count, 1u);
 }
 
 TEST_F(HookableRawPtrImplTest, SafelyUnwrapForExtraction) {
-  EXPECT_CALL(hooks_, SafelyUnwrapForExtraction).Times(1);
-  int* ptr = new int;
-  raw_ptr<int> interesting_ptr = ptr;
-  ptr = interesting_ptr;
-  delete ptr;
+  CountingHooks::Get()->ResetCounts();
+  {
+    int* ptr = new int;
+    raw_ptr<int> interesting_ptr = ptr;
+    ptr = interesting_ptr;
+    delete ptr;
+  }
+  EXPECT_EQ(CountingHooks::Get()->safely_unwrap_for_extraction_count, 1u);
 }
 
 TEST_F(HookableRawPtrImplTest, UnsafelyUnwrapForComparison) {
-  EXPECT_CALL(hooks_, UnsafelyUnwrapForComparison).Times(1);
-  int* ptr = new int;
-  raw_ptr<int> interesting_ptr = ptr;
-  EXPECT_EQ(interesting_ptr, ptr);
-  delete ptr;
+  CountingHooks::Get()->ResetCounts();
+  {
+    int* ptr = new int;
+    raw_ptr<int> interesting_ptr = ptr;
+    EXPECT_EQ(interesting_ptr, ptr);
+    delete ptr;
+  }
+  EXPECT_EQ(CountingHooks::Get()->unsafely_unwrap_for_comparison_count, 1u);
 }
 
 TEST_F(HookableRawPtrImplTest, Advance) {
-  EXPECT_CALL(hooks_, Advance).Times(1);
-  int* ptr = new int[10];
-  raw_ptr<int, AllowPtrArithmetic> interesting_ptr = ptr;
-  interesting_ptr += 1;
-  delete[] ptr;
+  CountingHooks::Get()->ResetCounts();
+  {
+    int* ptr = new int[10];
+    raw_ptr<int, AllowPtrArithmetic> interesting_ptr = ptr;
+    interesting_ptr += 1;
+    delete[] ptr;
+  }
+  EXPECT_EQ(CountingHooks::Get()->advance_count, 1u);
 }
 
 TEST_F(HookableRawPtrImplTest, Duplicate) {
-  EXPECT_CALL(hooks_, Duplicate).Times(1);
-  int* ptr = new int;
-  raw_ptr<int> interesting_ptr = ptr;
-  raw_ptr<int> interesting_ptr2 = interesting_ptr;
-  delete ptr;
+  CountingHooks::Get()->ResetCounts();
+  {
+    int* ptr = new int;
+    raw_ptr<int> interesting_ptr = ptr;
+    raw_ptr<int> interesting_ptr2 = interesting_ptr;
+    delete ptr;
+  }
+  EXPECT_EQ(CountingHooks::Get()->duplicate_count, 1u);
 }
 
 #endif  // BUILDFLAG(USE_HOOKABLE_RAW_PTR)
