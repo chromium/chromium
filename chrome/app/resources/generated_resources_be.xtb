@@ -885,6 +885,7 @@
 <translation id="1766575458646819543">Поўнаэкранны рэжым выключаны</translation>
 <translation id="1766957085594317166">Захоўвайце паролі ва Уліковым запісе Google: гэта бяспечна і вам больш ніколі не спатрэбіцца ўводзіць іх зноў</translation>
 <translation id="1767043563165955993">Выкарыстоўваць у праграмах для Android</translation>
+<translation id="1767508543310534319">Рэха пунктуацыі</translation>
 <translation id="1768212860412467516">Адпраўце водгук пра эксперымент "<ph name="EXPERIMENT_NAME" />".</translation>
 <translation id="1768278914020124551">Памылка!  Узнікла праблема пры ўстаноўцы сувязі з серверам уваходу. Праверце падключэнне да сеткі і назву дамена і паўтарыце спробу.</translation>
 <translation id="1769104665586091481">Адкрыць спасылку ў новым &amp;акне</translation>
@@ -2960,6 +2961,7 @@
 <translation id="360180734785106144">Прапаноўваць новыя функцыі, як толькі яны з'яўляюцца</translation>
 <translation id="3602290021589620013">Перадпрагляд</translation>
 <translation id="3602870520245633055">Друк і сканіраванне</translation>
+<translation id="3602894439067790744">Зачытваць лікі як</translation>
 <translation id="3603622770190368340">Атрыманне сертыфіката сеткі</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} уліковы запіс выкарыстоўвае такі самы пароль}one{{COUNT} уліковы запіс выкарыстоўвае такі самы пароль}few{{COUNT} уліковыя запісы выкарыстоўваюць такі самы пароль}many{{COUNT} уліковых запісаў выкарыстоўваюць такі самы пароль}other{{COUNT} уліковага запісу выкарыстоўваюць такі самы пароль}}</translation>
 <translation id="3605780360466892872">Бізнесмен</translation>
@@ -5362,6 +5364,7 @@
 <translation id="5804241973901381774">Дазволы</translation>
 <translation id="5804259315582798390">Не ўдалося ўключыць аднаўленне лакальных даных</translation>
 <translation id="5805268472388605531">Каб пабачыць дыякрытычныя знакі і спецыяльныя сімвалы, націскайце і ўтрымлівайце клавішы на клавіятуры</translation>
+<translation id="5805354171420804923">Параўноўвайце вынікі пошуку хутчэй, выкарыстоўваючы новую бакавую панэль</translation>
 <translation id="5805697420284793859">Менеджар вокнаў</translation>
 <translation id="5806447147478173900">Агульны аб'ём сховішча, які выкарыстоўваецца паказанымі сайтамі: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (стандартна)</translation>
@@ -7255,6 +7258,7 @@
 <translation id="7520766081042531487">Партал у рэжыме інкогніта: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Паказаць спалучэнні клавіш</translation>
 <translation id="7522255036471229694">Скажыце "Ok Google"</translation>
+<translation id="7523117833414447032">Пры агучванні загалоўных літар</translation>
 <translation id="7523585675576642403">Пераймянуйце профіль</translation>
 <translation id="7525067979554623046">Стварыць</translation>
 <translation id="7526658513669652747">{NUM_DOWNLOADS,plural, =1{Яшчэ 1}one{Яшчэ {NUM_DOWNLOADS}}few{Яшчэ {NUM_DOWNLOADS}}many{Яшчэ {NUM_DOWNLOADS}}other{Яшчэ {NUM_DOWNLOADS}}}</translation>

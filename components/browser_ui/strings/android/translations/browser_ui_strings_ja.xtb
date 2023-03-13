@@ -26,6 +26,7 @@
 <translation id="1448064542941920355">縮小</translation>
 <translation id="1510341833810331442">サイトはデバイスにデータを保存できません</translation>
 <translation id="1547123415014299762">サードパーティの Cookie が許可されます</translation>
+<translation id="1593426485665524382">画面上部付近で新しい操作が可能になりました</translation>
 <translation id="1620510694547887537">カメラ</translation>
 <translation id="1633720957382884102">関連サイト</translation>
 <translation id="1644574205037202324">履歴</translation>
@@ -146,6 +147,7 @@
 <translation id="3628308229821498208">提案された検索</translation>
 <translation id="3636279694100170143">アクセス先のサイトは、あなたがボットではなく実際のユーザーであることを確認できます</translation>
 <translation id="3649190289964910441">アクセス先のサイトは、あなたが実際のユーザーであることを確認する情報を Chrome に保存できます。それ以降にアクセスしたサイトは、あなたが信頼できるユーザーであることを Chrome を介して最初のサイトから確認できます。</translation>
+<translation id="3721953990244350188">非表示にして、次に実行可能なアクションを表示</translation>
 <translation id="3744111561329211289">バックグラウンド同期</translation>
 <translation id="3763247130972274048">動画の左または右をダブルタップすると 10 秒スキップします</translation>
 <translation id="3794286421982011626">アクセスしたサイトで、想定どおりに機能するよう（サイトへのログイン状態を保持する、ショッピング カートに商品を保存するなど）、行った操作に関する情報が保存されることがあります。多くの場合、こうした情報はデバイスに一時的に保存されます。</translation>

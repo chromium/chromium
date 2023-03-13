@@ -311,9 +311,6 @@
 <translation id="7296210096911315575">重要用途和安全信息</translation>
 <translation id="7308322188646931570">Chrome 需要获得存储空间使用权限，才能下载文件</translation>
 <translation id="7339898014177206373">打开新的窗口</translation>
-<translation id="7388770099345495132">如果只想使用此帐号一次，您可在 Chrome 浏览器中使用访客模式。如果想添加他人的帐号，请向您的 <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />添加新用户<ph name="LINK_END" />。
-
-您已向网站和应用授予的权限可能会应用于此帐号。您可在<ph name="SETTINGS_LINK_BEGIN" />设置<ph name="SETTINGS_LINK_END" />部分中管理您的 Google 帐号。</translation>
 <translation id="7398801000654795464">您之前登录 Chrome 时使用的帐号为 <ph name="USER_EMAIL_ADDRESS" />，请使用同一帐号再次登录。</translation>
 <translation id="7410958280246779049">此文件存在危险，因此 Chrome 已将其屏蔽</translation>
 <translation id="7426611252293106642">Google Chrome 可能无法正常运行，因为它不再支持此 Linux 发行版</translation>

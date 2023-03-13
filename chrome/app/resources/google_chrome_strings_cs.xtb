@@ -320,9 +320,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="7296210096911315575">Důležité informace o použití a bezpečnosti</translation>
 <translation id="7308322188646931570">Aby bylo možné stahovat soubory, potřebuje Chrome přístup k úložišti</translation>
 <translation id="7339898014177206373">Nové okno</translation>
-<translation id="7388770099345495132">Pokud tento účet chcete použít pouze jednorázově, můžete v prohlížeči Chrome použít režim hosta. Pokud chcete přidat účet někoho dalšího, přidejte do zařízení <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />novou osobu<ph name="LINK_END" />.
-
-Na tento účet se mohou vztahovat oprávnění, která jste již udělili webům a aplikacím. Své účty Google můžete spravovat v <ph name="SETTINGS_LINK_BEGIN" />Nastavení<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7398801000654795464">K prohlížeči Chrome jste byli přihlášeni pomocí účtu <ph name="USER_EMAIL_ADDRESS" />. Přihlaste se prosím znovu pomocí stejného účtu.</translation>
 <translation id="7410958280246779049">Chrome tento soubor zablokoval, protože je nebezpečný</translation>
 <translation id="7426611252293106642">Prohlížeč Chrome nemusí fungovat správně, protože v této distribuci Linuxu už není podporován</translation>

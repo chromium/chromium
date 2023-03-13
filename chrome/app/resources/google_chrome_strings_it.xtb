@@ -311,9 +311,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="7296210096911315575">Informazioni importanti sull'utilizzo e sulla sicurezza</translation>
 <translation id="7308322188646931570">Chrome deve avere accesso allo spazio di archiviazione per poter scaricare file</translation>
 <translation id="7339898014177206373">Nuova finestra</translation>
-<translation id="7388770099345495132">Se vuoi utilizzare questo account solo una volta, puoi utilizzare la modalità Ospite del browser Chrome. Se vuoi aggiungere un account per qualcun altro, <ph name="LINK_BEGIN" />aggiungi una nuova persona<ph name="LINK_END" /> a <ph name="DEVICE_TYPE" />.
-
-A questo account potrebbero essere applicate le autorizzazioni già concesse a siti web e app. Puoi gestire i tuoi Account Google nelle <ph name="SETTINGS_LINK_BEGIN" />Impostazioni<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7398801000654795464">Hai eseguito l'accesso a Chrome come <ph name="USER_EMAIL_ADDRESS" />. Utilizza lo stesso account per eseguire di nuovo l'accesso.</translation>
 <translation id="7410958280246779049">Chrome ha bloccato questo file perché è pericoloso</translation>
 <translation id="7426611252293106642">Google Chrome potrebbe non funzionare correttamente perché non è più supportato su questa distribuzione Linux</translation>

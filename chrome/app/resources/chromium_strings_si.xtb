@@ -37,9 +37,6 @@
 <translation id="1911763535808217981">මෙය අක්‍රිය කිරීමෙන්, ඔබට Chromium වෙත පුරනය නොවී Gmail වැනි Google වෙබ් අඩවිවලට පුරනය විය හැක.</translation>
 <translation id="1929939181775079593">Chromium ප්‍රතිචාර නොදක්වයි. නැවත දියත් කරන්නද?</translation>
 <translation id="193439633299369377">යාවත්කාලීනය යෙදීමට ChromiumOS යළි ඇරඹිය යුතුය.</translation>
-<translation id="1940680973325097484">ඔබට මෙම ගිණුම එක් වරක් පමණක් භාවිත කිරීමට අවශ්‍ය නම්, ඔබට Chromium බ්‍රවුසරයේ ආගන්තුක ප්‍රකාරය භාවිත කළ හැකිය. ඔබට වෙනත් යම් කෙනෙකු සඳහා ගිණුමක් එක් කිරීමට අවශ්‍ය නම්, ඔබගේ <ph name="DEVICE_TYPE" /> වෙත <ph name="LINK_BEGIN" />නව පුද්ගලයකු එක් කරන්න<ph name="LINK_END" />.
-
-ඔබ දැනටමත් වෙබ් අඩවි සහ යෙදුම් සඳහා ලබා දී ඇති අවසර මෙම ගිණුමට අදාළ විය හැකිය. ඔබට ඔබගේ Google ගිණුම් <ph name="SETTINGS_LINK_BEGIN" />සැකසීම්<ph name="SETTINGS_LINK_END" /> තුළ කළමනාකරණය කිරීමට හැකිය.</translation>
 <translation id="1953553007165777902">බාගනිමින්... මිනිත්තු <ph name="MINUTE" />ක් ඉතිරිව ඇත</translation>
 <translation id="1966382378801805537">Chromium හට පෙරනිමි බ්‍රව්සරය නිර්ණය කිරීමට හෝ සැකසීමට නොහැකිය</translation>
 <translation id="2008474315282236005">මෙය මෙම උපාංගයෙන් අයිතම 1ක් මකනු ඇත. ඔබගේ දත්ත පසුව ලබා ගැනීමට, <ph name="USER_EMAIL" /> ලෙස Chromium වෙත පුරන්න.</translation>

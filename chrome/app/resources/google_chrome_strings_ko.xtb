@@ -320,9 +320,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7296210096911315575">사용 및 안전 관련 주요 정보</translation>
 <translation id="7308322188646931570">파일을 다운로드하려면 Chrome에 저장소 액세스 권한이 있어야 합니다</translation>
 <translation id="7339898014177206373">새 창</translation>
-<translation id="7388770099345495132">이 계정을 한 번만 사용하려면 Chrome 브라우저에서 게스트 모드를 사용하세요. 다른 사용자를 위해 계정을 추가하려면 <ph name="DEVICE_TYPE" />에 <ph name="LINK_BEGIN" />새 사용자를 추가<ph name="LINK_END" />하세요.
-
-이 계정에는 웹사이트와 앱에 이미 부여한 권한이 적용될 수 있습니다. <ph name="SETTINGS_LINK_BEGIN" />설정<ph name="SETTINGS_LINK_END" />에서 Google 계정을 관리할 수 있습니다.</translation>
 <translation id="7398801000654795464"><ph name="USER_EMAIL_ADDRESS" />(으)로 Chrome에 로그인되어 있습니다. 같은 계정으로 다시 로그인해 주세요.</translation>
 <translation id="7410958280246779049">위험한 파일이므로 Chrome에서 차단했습니다.</translation>
 <translation id="7426611252293106642">이 Linux 배포판에서 더 이상 Chrome을 지원하지 않으므로 Chrome이 올바르게 작동하지 않을 수 있습니다.</translation>

@@ -312,9 +312,6 @@
 <translation id="7296210096911315575">Informació important d'ús i de seguretat</translation>
 <translation id="7308322188646931570">Chrome necessita accedir a l'emmagatzematge per baixar fitxers</translation>
 <translation id="7339898014177206373">Finestra nova</translation>
-<translation id="7388770099345495132">Si vols utilitzar aquest compte només una vegada, pots utilitzar el mode de convidat al navegador Chrome. Si vols afegir un compte per a algú altre, <ph name="LINK_BEGIN" />afegeix una persona nova<ph name="LINK_END" /> al teu <ph name="DEVICE_TYPE" />.
-
-És possible que els permisos que ja hagis donat a llocs web i aplicacions s'apliquin a aquest compte. Pots gestionar els teus Comptes de Google a <ph name="SETTINGS_LINK_BEGIN" />Configuració<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7398801000654795464">Teníeu la sessió iniciada a Chrome com a <ph name="USER_EMAIL_ADDRESS" />. Utilitzeu el mateix compte per tornar-hi a iniciar la sessió.</translation>
 <translation id="7410958280246779049">Chrome ha bloquejat aquest fitxer perquè és perillós</translation>
 <translation id="7426611252293106642">Pot ser que Google Chrome no funcioni correctament perquè ja no és compatible amb aquesta distribució de Linux</translation>

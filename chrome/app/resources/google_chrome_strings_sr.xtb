@@ -320,9 +320,6 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="7296210096911315575">Важне информације о употреби и безбедности</translation>
 <translation id="7308322188646931570">Chrome тражи приступ меморијском простору да би преузимао датотеке</translation>
 <translation id="7339898014177206373">Нови прозор</translation>
-<translation id="7388770099345495132">Ако желите да користите овај налог само једном, можете да користите режим госта у Chrome прегледачу. Ако желите да додате налог за неког другог, <ph name="LINK_BEGIN" />додајте нову особу<ph name="LINK_END" /> на уређај <ph name="DEVICE_TYPE" />.
-
-Дозволе које сте већ дали веб-сајтовима и апликацијама могу да важе за овај налог. Google налозима можете да управљате у <ph name="SETTINGS_LINK_BEGIN" />Подешавањима<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7398801000654795464">Били сте пријављени у Chrome као <ph name="USER_EMAIL_ADDRESS" />. Користите исти налог да бисте се поново пријавили.</translation>
 <translation id="7410958280246779049">Chrome је блокирао овај фајл јер је опасан</translation>
 <translation id="7426611252293106642">Google Chrome можда неће исправно радити зато што више није подржан на овој верзији Linux-а</translation>

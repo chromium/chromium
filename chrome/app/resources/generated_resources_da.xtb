@@ -1270,7 +1270,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
       <ph name="BR" />
       Du kan aktivere fejlretningsfunktionerne på din ChromeOS-enhed for at installere og teste tilpasset kode på din enhed. Dette giver dig mulighed for at:<ph name="BR" />
       <ph name="BEGIN_LIST" />
-        <ph name="LIST_ITEM" />Fjerne rootfs-bekræftelse, så du kan ændre OS-filer
+        <ph name="LIST_ITEM" />Fjerne rootfs-verificering, så du kan ændre OS-filer
         <ph name="LIST_ITEM" />Aktivere SSH-adgang til enheden ved hjælp af standardtestnøgler, så du kan få adgang til enheden ved hjælp af værktøjer som f.eks. <ph name="BEGIN_CODE" />"cros flash"<ph name="END_CODE" />
         <ph name="LIST_ITEM" />Aktivere opstart via USB, så du kan installere en afbildning af operativsystemet fra et USB-drev
         <ph name="LIST_ITEM" />Indstille adgangskoden til login for både "dev" og "system root" til en tilpasset værdi, så du manuelt kan få adgang til enheden via SSH
@@ -1526,7 +1526,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
       <ph name="BR" />
       Du kan aktivere fejlretningsfunktionerne på din ChromeOS Flex-enhed for at installere og teste tilpasset kode på din enhed. Dette giver dig mulighed for at:<ph name="BR" />
       <ph name="BEGIN_LIST" />
-        <ph name="LIST_ITEM" />Fjerne rootfs-bekræftelse, så du kan ændre OS-filer
+        <ph name="LIST_ITEM" />Fjerne rootfs-verificering, så du kan ændre OS-filer
         <ph name="LIST_ITEM" />Aktivere SSH-adgang til enheden ved hjælp af standardtestnøgler, så du kan få adgang til enheden ved hjælp af værktøjer som f.eks. <ph name="BEGIN_CODE" />'cros flash'<ph name="END_CODE" />
         <ph name="LIST_ITEM" />Aktivere opstart via USB, så du kan installere en afbildning af operativsystemet fra et USB-drev
         <ph name="LIST_ITEM" />Indstille adgangskoden til login for både "dev" og "system root" til en tilpasset værdi, så du manuelt kan få adgang til enheden via SSH
@@ -5306,7 +5306,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5736796278325406685">Angiv et gyldigt brugernavn</translation>
 <translation id="5738093759615225354">Du skal bruge denne adgangsnøgle for at logge ind på din computer</translation>
 <translation id="5739017626473506901">Log ind for at hjælpe <ph name="USER_NAME" /> med at tilføje en skolekonto</translation>
-<translation id="5739235828260127894">Venter på bekræftelse. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
+<translation id="5739235828260127894">Venter på verificering. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Meget stor</translation>
 <translation id="5740126560802162366">Websites kan gemme data på din enhed</translation>
 <translation id="5740328398383587084">Deling tæt på</translation>
@@ -5544,7 +5544,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5941711191222866238">Minimer</translation>
 <translation id="594221546068848596">Søg på siden med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5942779427914696408">Enhedens synlighed</translation>
-<translation id="5943127421590245687">Bekræftelsen er gennemført. Angiv din gamle <ph name="DEVICE_TYPE" /> adgangskode for at låse op for og gendanne dine lokale data.</translation>
+<translation id="5943127421590245687">Verificering er gennemført. Angiv din gamle <ph name="DEVICE_TYPE" /> adgangskode for at låse op for og gendanne dine lokale data.</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> kan være skadelig. Skal Google Beskyttet browsing scanne den?</translation>
 <translation id="5945363896952315544">Din sikkerhedsnøgle kan ikke gemme flere fingeraftryk. Hvis du vil tilføje et nyt, skal du først slette et eksisterende fingeraftryk.</translation>
 <translation id="5946591249682680882">Rapport-id <ph name="WEBRTC_LOG_REPORT_ID" /></translation>

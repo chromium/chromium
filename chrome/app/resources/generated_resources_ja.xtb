@@ -881,6 +881,7 @@
 <translation id="1766575458646819543">全画面表示を終了しました</translation>
 <translation id="1766957085594317166">Google アカウントではパスワードが安全に保存されるため、次回以降の入力は不要です。</translation>
 <translation id="1767043563165955993">Android アプリで使用する</translation>
+<translation id="1767508543310534319">句読点読み上げ</translation>
 <translation id="1768212860412467516"><ph name="EXPERIMENT_NAME" /> についてのご意見、ご感想をお聞かせください。</translation>
 <translation id="1768278914020124551">ログイン サーバーへの接続中に問題が発生しました。ネットワーク接続とドメイン名を確認してもう一度お試しください。</translation>
 <translation id="1769104665586091481">新しいウインドウで開く(&amp;W)</translation>
@@ -2949,6 +2950,7 @@
 <translation id="360180734785106144">新機能が利用可能になったときにメッセージを表示する</translation>
 <translation id="3602290021589620013">プレビュー</translation>
 <translation id="3602870520245633055">印刷とスキャン</translation>
+<translation id="3602894439067790744">数字の読み上げ</translation>
 <translation id="3603622770190368340">ネットワーク証明書を取得</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} 個のアカウントで同じパスワードを使用しています}other{{COUNT} 個のアカウントで同じパスワードを使用しています}}</translation>
 <translation id="3605780360466892872">ボタンダウン</translation>
@@ -5350,6 +5352,7 @@
 <translation id="5804241973901381774">権限</translation>
 <translation id="5804259315582798390">ローカルデータの復元を有効にできませんでした</translation>
 <translation id="5805268472388605531">キーボードのキーを長押しすると、アクセント記号と特殊文字が表示されます</translation>
+<translation id="5805354171420804923">新しいサイドパネルで検索結果を簡単に比較</translation>
 <translation id="5805697420284793859">ウィンドウ マネージャ</translation>
 <translation id="5806447147478173900">表示されたサイトの合計ストレージ使用状況: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0°（デフォルト）</translation>
@@ -7233,6 +7236,7 @@
 <translation id="7520766081042531487">シークレット ポータル: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">ショートカットを表示</translation>
 <translation id="7522255036471229694">「OK Google」と言ってください</translation>
+<translation id="7523117833414447032">大文字の読み上げ</translation>
 <translation id="7523585675576642403">プロファイルの名前を変更</translation>
 <translation id="7525067979554623046">作成</translation>
 <translation id="7526658513669652747">{NUM_DOWNLOADS,plural, =1{他 1 件}other{他 {NUM_DOWNLOADS} 件}}</translation>

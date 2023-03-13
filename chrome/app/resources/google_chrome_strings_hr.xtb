@@ -312,9 +312,6 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="7296210096911315575">Važne informacije o upotrebi i sigurnosti</translation>
 <translation id="7308322188646931570">Chrome treba pristup pohrani radi preuzimanja datoteka</translation>
 <translation id="7339898014177206373">Novi prozor</translation>
-<translation id="7388770099345495132">Ako ovaj račun želite upotrijebiti samo jednom, možete upotrijebiti način rada za goste u pregledniku Chrome. Ako želite dodati račun za nekog drugog, <ph name="LINK_BEGIN" />dodajte novu osobu<ph name="LINK_END" /> na svoj <ph name="DEVICE_TYPE" />.
-
-Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti na ovaj račun. Svojim Google računima možete upravljati u <ph name="SETTINGS_LINK_BEGIN" />postavkama<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7398801000654795464">Bili ste prijavljeni na Chrome kao <ph name="USER_EMAIL_ADDRESS" />. Prijavite se ponovo istim računom.</translation>
 <translation id="7410958280246779049">Chrome je blokirao tu datoteku jer je opasna</translation>
 <translation id="7426611252293106642">Google Chrome možda neće ispravno raditi jer više nije podržan na toj distribuciji Linuxa</translation>

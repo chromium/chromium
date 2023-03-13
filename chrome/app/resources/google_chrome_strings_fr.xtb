@@ -319,9 +319,6 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="7296210096911315575">Informations importantes concernant l'utilisation et la sécurité</translation>
 <translation id="7308322188646931570">Pour télécharger des fichiers, Chrome a besoin d'accéder à l'espace de stockage</translation>
 <translation id="7339898014177206373">Nouvelle fenêtre</translation>
-<translation id="7388770099345495132">Si vous souhaitez utiliser ce compte une seule fois, vous pouvez utiliser le mode Invité dans le navigateur Chrome. Pour ajouter le compte d'une autre personne, <ph name="LINK_BEGIN" />ajoutez un nouvel utilisateur<ph name="LINK_END" /> à votre <ph name="DEVICE_TYPE" />.
-
-Les autorisations que vous avez déjà accordées aux sites Web et aux applis peuvent s'appliquer à ce compte. Vous pouvez gérer vos comptes Google dans <ph name="SETTINGS_LINK_BEGIN" />Paramètres<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7398801000654795464">Vous étiez connecté à Google Chrome en tant que <ph name="USER_EMAIL_ADDRESS" />. Veuillez utiliser le même compte pour vous reconnecter.</translation>
 <translation id="7410958280246779049">Chrome a bloqué ce fichier, car il est dangereux</translation>
 <translation id="7426611252293106642">Google Chrome risque de ne pas fonctionner correctement, car la compatibilité n'est plus assurée sur cette distribution Linux</translation>

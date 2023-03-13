@@ -314,9 +314,6 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="7296210096911315575">重要的使用與安全資訊</translation>
 <translation id="7308322188646931570">Chrome 需要儲存空間存取權，才能下載檔案</translation>
 <translation id="7339898014177206373">開啟新視窗</translation>
-<translation id="7388770099345495132">如果你只想使用這個帳戶一次，可以在 Chrome 瀏覽器中使用訪客模式。如要添加他人的帳戶，請<ph name="LINK_BEGIN" />將使用者新增<ph name="LINK_END" />至你的 <ph name="DEVICE_TYPE" />。
-
-你授予網站和應用程式的權限可能會存入這個帳戶的設定。你可以前往「<ph name="SETTINGS_LINK_BEGIN" />設定<ph name="SETTINGS_LINK_END" />」管理 Google 帳戶。</translation>
 <translation id="7398801000654795464">你使用了 <ph name="USER_EMAIL_ADDRESS" /> 的身分登入 Chrome，請使用相同帳戶重新登入。</translation>
 <translation id="7410958280246779049">這個檔案有安全疑慮，因此遭到 Chrome 封鎖</translation>
 <translation id="7426611252293106642">Google Chrome 已不再支援這個 Linux 發行版本，因此可能無法正常運作</translation>

@@ -312,9 +312,6 @@
 <translation id="7296210096911315575">מידע חשוב על בטיחות ועל אופן השימוש</translation>
 <translation id="7308322188646931570">‏Chrome זקוק לגישה לאחסון כדי להוריד קבצים</translation>
 <translation id="7339898014177206373">חלון חדש</translation>
-<translation id="7388770099345495132">‏אם ברצונך להשתמש בחשבון הזה באופן חד-פעמי, אפשר להשתמש במצב אורח בדפדפן Chrome. כדי להוסיף חשבון של מישהו אחר, <ph name="LINK_BEGIN" />יש להוסיף משתמש חדש<ph name="LINK_END" /> אל <ph name="DEVICE_TYPE" />.
-
-יכול להיות שהרשאות שכבר נתת לאתרים ולאפליקציות יחולו על החשבון הזה. יש לך גם אפשרות לנהל את חשבונות Google <ph name="SETTINGS_LINK_BEGIN" />בהגדרות<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7398801000654795464">‏התחברת ל-Chrome כ-<ph name="USER_EMAIL_ADDRESS" />. יש להשתמש באותו חשבון כדי להיכנס שוב.</translation>
 <translation id="7410958280246779049">‏הקובץ הזה מסוכן ולכן הוא נחסם על ידי Chrome</translation>
 <translation id="7426611252293106642">‏יכול להיות ש-Google Chrome לא יפעל כראוי כי הוא כבר לא נתמך בגרסה הזו של Linux</translation>

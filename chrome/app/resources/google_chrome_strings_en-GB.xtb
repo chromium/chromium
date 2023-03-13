@@ -319,9 +319,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="7296210096911315575">Important use and safety information</translation>
 <translation id="7308322188646931570">Chrome needs storage access to download files</translation>
 <translation id="7339898014177206373">New window</translation>
-<translation id="7388770099345495132">If you only want to use this account once, you can use guest mode in Chrome browser. If you want to add an account for someone else, <ph name="LINK_BEGIN" />add a new person<ph name="LINK_END" /> to your <ph name="DEVICE_TYPE" />.
-
-Permissions that you've already given to websites and apps may apply to this account. You can manage your Google Accounts in <ph name="SETTINGS_LINK_BEGIN" />Settings<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7398801000654795464">You were signed in to Chrome as <ph name="USER_EMAIL_ADDRESS" />. Please use the same account to sign in again.</translation>
 <translation id="7410958280246779049">Chrome blocked this file because it is dangerous</translation>
 <translation id="7426611252293106642">Google Chrome may not function correctly because it is no longer supported on this Linux distribution</translation>
