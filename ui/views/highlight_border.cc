@@ -5,6 +5,7 @@
 #include "ui/views/highlight_border.h"
 
 #include "chromeos/constants/chromeos_features.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
@@ -83,6 +84,7 @@ SkColor HighlightBorder::GetHighlightColor(const views::View& view,
     // to use light colors when dark/light mode feature is not enabled. This
     // should be removed after dark light mode is launched.
     DCHECK(!chromeos::features::IsDarkLightModeEnabled());
+    DCHECK(!chromeos::features::IsJellyrollEnabled());
     // `kHighlightBorder3` can only be used when the dark light mode is enabled.
     DCHECK(type != HighlightBorder::Type::kHighlightBorder3);
     highlight_color_id = type == HighlightBorder::Type::kHighlightBorder1
@@ -90,6 +92,12 @@ SkColor HighlightBorder::GetHighlightColor(const views::View& view,
                              : ui::kColorAshSystemUILightHighlightColor2;
   } else {
     switch (type) {
+      case HighlightBorder::Type::kHighlightBorderNoShadow:
+        highlight_color_id = cros_tokens::kCrosSysSystemHighlight;
+        break;
+      case HighlightBorder::Type::kHighlightBorderOnShadow:
+        highlight_color_id = cros_tokens::kCrosSysSystemHighlight1;
+        break;
       case HighlightBorder::Type::kHighlightBorder1:
         highlight_color_id = ui::kColorHighlightBorderHighlight1;
         break;
@@ -117,6 +125,7 @@ SkColor HighlightBorder::GetBorderColor(const views::View& view,
     // to use light colors when dark/light mode feature is not enabled. This
     // should be removed after dark light mode is launched.
     DCHECK(!chromeos::features::IsDarkLightModeEnabled());
+    DCHECK(!chromeos::features::IsJellyrollEnabled());
     // `kHighlightBorder3` can only be used when the dark light mode is enabled.
     DCHECK(type != HighlightBorder::Type::kHighlightBorder3);
     border_color_id = type == HighlightBorder::Type::kHighlightBorder1
@@ -124,6 +133,12 @@ SkColor HighlightBorder::GetBorderColor(const views::View& view,
                           : ui::kColorAshSystemUILightBorderColor2;
   } else {
     switch (type) {
+      case HighlightBorder::Type::kHighlightBorderNoShadow:
+        border_color_id = cros_tokens::kCrosSysSystemBorder;
+        break;
+      case HighlightBorder::Type::kHighlightBorderOnShadow:
+        border_color_id = cros_tokens::kCrosSysSystemBorder1;
+        break;
       case HighlightBorder::Type::kHighlightBorder1:
         border_color_id = ui::kColorHighlightBorderBorder1;
         break;
@@ -162,6 +177,10 @@ HighlightBorder::HighlightBorder(const gfx::RoundedCornersF& rounded_corners,
 void HighlightBorder::Paint(const views::View& view, gfx::Canvas* canvas) {
   PaintBorderToCanvas(canvas, view, view.GetLocalBounds(), rounded_corners_,
                       type_, use_light_colors_);
+}
+
+void HighlightBorder::OnViewThemeChanged(views::View* view) {
+  view->SchedulePaint();
 }
 
 gfx::Insets HighlightBorder::GetInsets() const {

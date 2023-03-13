@@ -339,6 +339,19 @@
       light: 'rgba($cros.ref.primary70.rgb, 0.6)',
       dark: 'rgba($cros.ref.primary70.rgb, 0.6)',
     },
+    'system-highlight': {
+      light: 'rgba($cros.ref.neutral100.rgb, 0.16)',
+      dark: 'rgba($cros.ref.neutral100.rgb, 0.06)',
+    },
+    'system-border': 'rgba($cros.ref.neutral0.rgb, 0.08)',
+    'system-highlight1': {
+      light: 'rgba($cros.ref.neutral100.rgb, 0.16)',
+      dark: 'rgba($cros.ref.neutral100.rgb, 0.06)',
+    },
+    'system-border1': {
+      light: 'rgba($cros.ref.neutral0.rgb, 0.06)',
+      dark: 'rgba($cros.ref.neutral0.rgb, 0.08)',
+    },
     'focus-ring': {
       light: '$cros.ref.primary40',
       dark: '$cros.ref.primary80',

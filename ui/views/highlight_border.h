@@ -23,6 +23,12 @@ class VIEWS_EXPORT HighlightBorder : public views::Border {
  public:
   // TODO(crbug/1319944): Change these type names to something more descriptive.
   enum class Type {
+    // The highlight border for the UI without a shadow.
+    kHighlightBorderNoShadow,
+    // The highlight border for the UI with a shadow.
+    kHighlightBorderOnShadow,
+    // TODO(b/271009119): Clean up these old types after MaterialNext is fully
+    // launched.
     // A higher contrast highlight border than the `kHighlightBorder2` used
     // for floating components that do not have a shield below.
     kHighlightBorder1,
@@ -103,6 +109,7 @@ class VIEWS_EXPORT HighlightBorder : public views::Border {
 
   // views::Border:
   void Paint(const views::View& view, gfx::Canvas* canvas) override;
+  void OnViewThemeChanged(views::View* view) override;
   gfx::Insets GetInsets() const override;
   gfx::Size GetMinimumSize() const override;
 
