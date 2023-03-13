@@ -1470,7 +1470,9 @@
                   '|chromeos/ash/services/secure_channel/',
     },
     'multipaste': {
-     'filepath': 'ash/clipboard/',
+     'filepath': 'ash/clipboard/|'\
+                 'ash/public/cpp/.*clipboard.*|'\
+                 'chrome/browser/ui/ash/clipboard.*',
     },
     'nacl': {
       'filepath': 'chrome/nacl/|chrome/test/nacl/|'\
@@ -2095,6 +2097,10 @@
     },
     'usb': {
       'filepath': '/usb/',
+    },
+    'user_education': {
+      'filepath': 'ash/user_education/|'\
+                  'chrome/browser/ui/ash/user_education/',
     },
     'version_assembly': {
       'filepath': 'chrome/app/version_assembly',
@@ -3096,6 +3102,7 @@
     'unified_consent': ['wfh+watch@chromuium.org'],
     'usb': ['mattreynolds+watch@chromium.org',
             'odejesush+watch@chromium.org'],
+    'user_education': ['cros-system-ui-productivity-eng+reviews@google.com'],
     'version_assembly': ['caitkp+watch@chromium.org',
                          'gab+watch@chromium.org'],
     'video': ['posciak+watch@chromium.org'],
