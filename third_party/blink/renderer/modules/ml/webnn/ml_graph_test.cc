@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_test_base.h"
 
@@ -883,6 +884,78 @@ TEST_P(MLGraphTest, ReshapeTest) {
                          .new_shape = {1, absl::nullopt},
                          .expected_output_shape = {1, 4}}
         .Test(*this, scope);
+  }
+}
+
+template <typename T>
+struct TransposeTester {
+  OperandInfo<T> input;
+  Vector<T> expected;
+
+  void Test(MLGraphTest& helper,
+            V8TestingScope& scope,
+            MLGraphBuilder* builder,
+            MLTransposeOptions* options = MLTransposeOptions::Create()) {
+    auto* input_operand = BuildInput(builder, "input", input.dimensions,
+                                     input.type, scope.GetExceptionState());
+    auto* output_operand =
+        BuildTranspose(scope, builder, input_operand, options);
+    auto [graph, build_exception] =
+        helper.BuildGraph(scope, builder, {{"output", output_operand}});
+    EXPECT_NE(graph, nullptr);
+
+    MLNamedArrayBufferViews inputs(
+        {{"input",
+          CreateArrayBufferViewForOperand(input_operand, input.values)}});
+    MLNamedArrayBufferViews outputs(
+        {{"output", CreateArrayBufferViewForOperand(output_operand)}});
+    auto* compute_exception =
+        helper.ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_EQ(compute_exception, nullptr);
+    auto results = GetArrayBufferViewValues<T>(outputs[0].second);
+    EXPECT_EQ(results, expected);
+  }
+};
+
+TEST_P(MLGraphTest, TransposeTest) {
+  V8TestingScope scope;
+  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  {
+    // Test transpose operator with default options.
+    auto* options = MLTransposeOptions::Create();
+    TransposeTester<float>{
+        .input = {.type = V8MLOperandType::Enum::kFloat32,
+                  .dimensions = {2, 3, 4},
+                  .values =
+                      {
+                          0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11,
+                          12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
+                      }},
+        .expected =
+            {
+                0, 12, 4, 16, 8,  20, 1, 13, 5, 17, 9,  21,
+                2, 14, 6, 18, 10, 22, 3, 15, 7, 19, 11, 23,
+            }}
+        .Test(*this, scope, builder, options);
+  }
+  {
+    // Test transpose with permutation = {0, 2, 1}.
+    auto* options = MLTransposeOptions::Create();
+    options->setPermutation({{0, 2, 1}});
+    TransposeTester<float>{
+        .input = {.type = V8MLOperandType::Enum::kFloat32,
+                  .dimensions = {2, 3, 4},
+                  .values =
+                      {
+                          0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11,
+                          12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
+                      }},
+        .expected =
+            {
+                0,  4,  8,  1,  5,  9,  2,  6,  10, 3,  7,  11,
+                12, 16, 20, 13, 17, 21, 14, 18, 22, 15, 19, 23,
+            }}
+        .Test(*this, scope, builder, options);
   }
 }
 

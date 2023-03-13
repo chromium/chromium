@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_resample_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/ml/ml.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
@@ -938,6 +939,51 @@ xnn_status DefineXnnNodeForResample2d(
   return xnn_status_success;
 }
 
+xnn_status DefineXnnNodeForTranspose(
+    xnn_subgraph_t subgraph,
+    const MLOperator* transpose,
+    const OperandValueIdMap& operand_value_id_map,
+    String& error_message) {
+  const uint32_t input_id =
+      GetOperatorInputValueId(transpose, operand_value_id_map);
+  const uint32_t output_id =
+      GetOperatorOutputValueId(transpose, operand_value_id_map);
+  const MLTransposeOptions* options =
+      static_cast<const MLTransposeOptions*>(transpose->Options());
+
+  const auto* input = transpose->Inputs()[0].Get();
+  CHECK(input);
+  const auto input_rank = input->Dimensions().size();
+  // According to WebNN spec:
+  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-transpose,
+  // When permutation is not specified, it’s set to [N-1, ..., 0], where N is
+  // the rank of the input tensor.
+  Vector<int32_t> default_permutation(input_rank);
+  for (wtf_size_t i = 0; i < input_rank - 1; i++) {
+    default_permutation[i] = input_rank - 1 - i;
+  }
+  const Vector<int32_t> permutation =
+      options->getPermutationOr(std::move(default_permutation));
+
+  // The current WebNN spec defines the value of permutation as signed
+  // integer: https://www.w3.org/TR/webnn/#dom-mltransposeoptions-permutation
+  // And an issue has been filed to track it:
+  // https://github.com/webmachinelearning/webnn/issues/317
+  Vector<size_t> xnn_permutation(input_rank);
+  base::ranges::transform(permutation, xnn_permutation.begin(), [](int32_t p) {
+    return base::checked_cast<size_t>(p);
+  });
+  const uint32_t flags = 0;
+  // XNNPACK will memcpy the content of `xnn_permutation` vector to its internal
+  // structure, so it is safe to release `xnn_permutation` vector after this
+  // call. Please refer to the implementation at:
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/xnnpack/src/src/subgraph/static-transpose.c;l=267
+  XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(xnn_define_static_transpose(
+      subgraph, xnn_permutation.size(), xnn_permutation.data(), input_id,
+      output_id, flags));
+  return xnn_status_success;
+}
+
 // Define an XNNPACK Node given an MLOperator object and add it into the
 // Subgraph object. The operand_value_id_map is used to find the corresponding
 // input and output XNNPACK Values of this MLOperator object. This method calls
@@ -1000,6 +1046,11 @@ xnn_status DefineXnnNode(xnn_subgraph_t subgraph,
       break;
     case MLOperator::OperatorKind::kResample2d: {
       XNN_CHECK_STATUS(DefineXnnNodeForResample2d(
+          subgraph, ml_operator, operand_value_id_map, error_message));
+      break;
+    }
+    case MLOperator::OperatorKind::kTranspose: {
+      XNN_CHECK_STATUS(DefineXnnNodeForTranspose(
           subgraph, ml_operator, operand_value_id_map, error_message));
       break;
     }

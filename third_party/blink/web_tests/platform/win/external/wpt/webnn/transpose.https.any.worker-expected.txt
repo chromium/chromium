@@ -1,0 +1,43 @@
+This is a testharness.js-based test.
+PASS transpose float32 1D tensor default options / cpu / sync
+PASS transpose float32 2D tensor default options / cpu / sync
+PASS transpose float32 3D tensor default options / cpu / sync
+PASS transpose float32 4D tensor default options / cpu / sync
+PASS transpose float32 5D tensor default options / cpu / sync
+PASS transpose float32 1D tensor options.permutation / cpu / sync
+PASS transpose float32 2D tensor options.permutation / cpu / sync
+PASS transpose float32 3D tensor options.permutation / cpu / sync
+PASS transpose float32 4D tensor options.permutation / cpu / sync
+PASS transpose float32 5D tensor options.permutation / cpu / sync
+PASS transpose float32 1D tensor default options / gpu / sync
+PASS transpose float32 2D tensor default options / gpu / sync
+PASS transpose float32 3D tensor default options / gpu / sync
+PASS transpose float32 4D tensor default options / gpu / sync
+PASS transpose float32 5D tensor default options / gpu / sync
+PASS transpose float32 1D tensor options.permutation / gpu / sync
+PASS transpose float32 2D tensor options.permutation / gpu / sync
+PASS transpose float32 3D tensor options.permutation / gpu / sync
+PASS transpose float32 4D tensor options.permutation / gpu / sync
+PASS transpose float32 5D tensor options.permutation / gpu / sync
+PASS transpose float32 1D tensor default options / cpu / async
+PASS transpose float32 2D tensor default options / cpu / async
+PASS transpose float32 3D tensor default options / cpu / async
+PASS transpose float32 4D tensor default options / cpu / async
+PASS transpose float32 5D tensor default options / cpu / async
+PASS transpose float32 1D tensor options.permutation / cpu / async
+PASS transpose float32 2D tensor options.permutation / cpu / async
+PASS transpose float32 3D tensor options.permutation / cpu / async
+PASS transpose float32 4D tensor options.permutation / cpu / async
+PASS transpose float32 5D tensor options.permutation / cpu / async
+PASS transpose float32 1D tensor default options / gpu / async
+PASS transpose float32 2D tensor default options / gpu / async
+PASS transpose float32 3D tensor default options / gpu / async
+PASS transpose float32 4D tensor default options / gpu / async
+PASS transpose float32 5D tensor default options / gpu / async
+PASS transpose float32 1D tensor options.permutation / gpu / async
+PASS transpose float32 2D tensor options.permutation / gpu / async
+PASS transpose float32 3D tensor options.permutation / gpu / async
+PASS transpose float32 4D tensor options.permutation / gpu / async
+PASS transpose float32 5D tensor options.permutation / gpu / async
+Harness: the test ran to completion.
+
