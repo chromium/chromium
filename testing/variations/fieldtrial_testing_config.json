@@ -10974,6 +10974,36 @@
             ]
         }
     ],
+    "SecagentdEnableBatchEvents": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CrOSLateBootSecagentdBatchEvents"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SecagentdEnableCoalesceTerminates": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CrOSLateBootSecagentdCoalesceTerminates"
+                    ]
+                }
+            ]
+        }
+    ],
     "SegmentationCompactionFix": [
         {
             "platforms": [
