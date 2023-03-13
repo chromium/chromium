@@ -193,7 +193,7 @@ class ActivityLog : public BrowserContextKeyedAPI,
   // The database policy object takes care of recording & looking up data:
   // data summarization, compression, and logging. There should only be a
   // database_policy_ if the Watchdog app is installed or flag is set.
-  raw_ptr<ActivityLogDatabasePolicy> database_policy_;
+  raw_ptr<ActivityLogDatabasePolicy, DanglingUntriaged> database_policy_;
   ActivityLogPolicy::PolicyType database_policy_type_;
 
   raw_ptr<Profile> profile_;
