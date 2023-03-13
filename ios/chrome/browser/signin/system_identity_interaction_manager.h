@@ -29,6 +29,7 @@ using SigninCompletionBlock = void (^)(id<SystemIdentity>, NSError*);
 // it will be used for re-authentication and will be pre-entered in the screen
 // presented. The `completion` will be invoked on the calling sequence when
 // the activity completes.
+// `completion` must not be `nullptr`.
 - (void)startAuthActivityWithViewController:(UIViewController*)viewController
                                   userEmail:(NSString*)userEmail
                                  completion:(SigninCompletionBlock)completion;
