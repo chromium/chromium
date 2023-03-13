@@ -5,6 +5,9 @@
 
 import './test_api/test_api.js';
 import './components/common_styles/oobe_flex_layout_styles.css.js';
+import './components/api_keys_notice.js';
+// clang-format on
+
 
 import {assert} from '//resources/ash/common/assert.js';
 import {$} from '//resources/ash/common/util.js';
@@ -32,7 +35,7 @@ traceExecution(TraceEvent.FIRST_LINE_AFTER_IMPORTS);
  * yields true it will be added, otherwise it is skipped.
  * @param {Array<{tag: string, id: string}>}
  */
- function addScreensToMainContainer(screenList) {
+function addScreensToMainContainer(screenList) {
   const screenContainer = $('inner-container');
   for (const screen of screenList) {
     if (screen.condition) {
@@ -49,8 +52,8 @@ traceExecution(TraceEvent.FIRST_LINE_AFTER_IMPORTS);
       screenElement.classList.add(...screen.extra_classes);
     }
     screenContainer.appendChild(screenElement);
-    assert(!!$(screen.id).shadowRoot,
-           `Error! No shadow root in <${screen.tag}>`);
+    assert(
+        !!$(screen.id).shadowRoot, `Error! No shadow root in <${screen.tag}>`);
   }
 }
 

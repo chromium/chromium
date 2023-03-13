@@ -29,6 +29,7 @@ group("closure_compile") {
     "oobe_vars:closure_compile",
 
     # Local targets
+    ":api_keys_notice",
     ":display_manager_types",
     ":gaia_button",
     ":gaia_dialog",
@@ -61,6 +62,14 @@ group("closure_compile") {
 
 ###############################
 # Closure compiler libraries below
+
+js_library("api_keys_notice") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/api_keys_notice.js" ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":web_components" ]
+}
 
 js_library("display_manager_types") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/display_manager_types.js" ]
@@ -245,6 +254,7 @@ js_library("security_token_pin") {
   deps = [
     ":oobe_types",
     "./behaviors:oobe_i18n_behavior",
+    "//ash/webui/common/resources/quick_unlock:pin_keyboard",
   ]
   extra_deps = [ ":web_components" ]
 }
@@ -291,6 +301,7 @@ html_to_wrapper("html_wrapper_files") {
 
 html_to_js("web_components_local") {
   js_files = [
+    "api_keys_notice.js",
     "gaia_button.js",
     "gaia_dialog.js",
     "gaia_header.js",
