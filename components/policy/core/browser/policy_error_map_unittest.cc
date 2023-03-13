@@ -102,6 +102,19 @@ TEST(PolicyErrorMapTest, GetErrorMessagesWithTwoReplacements) {
             u"Ignored because foo is not set to Enabled.");
 }
 
+TEST(PolicyErrorMapTest, GetErrorMessagesWithThreeReplacements) {
+  PolicyErrorMap errors;
+  ASSERT_TRUE(errors.IsReady());
+  errors.AddError(
+      kPolicyWithError, IDS_POLICY_IDLE_TIMEOUT_ACTIONS_DEPENDENCY_ERROR,
+      std::vector<std::string>{"SyncDisabled", "Enabled",
+                               "clear_browsing_history, clear_bookmarks"});
+
+  EXPECT_EQ(errors.GetErrorMessages(kPolicyWithError),
+            u"These actions require the SyncDisabled policy to be set to "
+            u"Enabled: clear_browsing_history, clear_bookmarks.");
+}
+
 TEST(PolicyErrorMapTest, GetErrorMessagesWithNonAsciiReplacement) {
   PolicyErrorMap errors;
   ASSERT_TRUE(errors.IsReady());

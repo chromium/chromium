@@ -329,6 +329,9 @@
   <message name="IDS_POLICY_DEPENDENCY_ERROR_ANY_VALUE" desc="The text displayed in the status column when a policy is ignored as another policies is not set at all.">
     Ignored because <ph name="POLICY_NAME">$1<ex>CloudReportingEnabled</ex></ph> is not set.
   </message>
+  <message name="IDS_POLICY_IDLE_TIMEOUT_ACTIONS_DEPENDENCY_ERROR" desc="The text displayed in the status column when the IdleTimeoutActions policy is ignored because it requires another policy .">
+    These actions require the <ph name="POLICY_NAME">$1<ex>SyncDisabled</ex></ph> policy to be set to <ph name="POLICY_VALUE">$2<ex>Enabled</ex></ph>: <ph name="ACTION_LIST">$3<ex>clear_browsing_history, clear_autofill</ex></ph>.
+  </message>
   <message name="IDS_POLICY_USER_IS_NOT_AFFILIATED_ERROR" desc="The text displayed in the status column when a user cloud policy is ignored due to user is not affiliated to the machine management.">
     Ignored because user is not affiliated to the machine management or the machine is not managed.
   </message>

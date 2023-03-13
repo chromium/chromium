@@ -4,11 +4,14 @@
 
 #include "components/policy/core/browser/policy_error_map.h"
 
+#include <iterator>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -37,39 +40,15 @@ class PolicyErrorMap::PendingError {
  public:
   PendingError(const std::string& policy_name,
                int message_id,
-               const PolicyErrorPath& error_path,
-               const PolicyMap::MessageType level)
-      : PendingError(policy_name,
-                     message_id,
-                     std::string(),
-                     std::string(),
-                     error_path,
-                     level) {}
-  PendingError(const std::string& policy_name,
-               int message_id,
-               const std::string& replacement_a,
-               const PolicyErrorPath& error_path,
-               const PolicyMap::MessageType level)
-      : PendingError(policy_name,
-                     message_id,
-                     replacement_a,
-                     std::string(),
-                     error_path,
-                     level) {}
-
-  PendingError(const std::string& policy_name,
-               int message_id,
-               const std::string& replacement_a,
-               const std::string& replacement_b,
+               std::vector<std::string> replacements,
                const PolicyErrorPath& error_path,
                const PolicyMap::MessageType level)
       : policy_name_(policy_name),
         message_id_(message_id),
-        replacement_a_(replacement_a),
-        replacement_b_(replacement_b),
+        replacements_(std::move(replacements)),
         error_path_string_(ErrorPathToString(policy_name, error_path)),
         level_(level) {
-    DCHECK(replacement_b.empty() || !replacement_a.empty());
+    DCHECK(!base::ranges::any_of(replacements_, &std::string::empty));
   }
   PendingError(const PendingError&) = delete;
   PendingError& operator=(const PendingError&) = delete;
@@ -91,24 +70,23 @@ class PolicyErrorMap::PendingError {
     // TODO(crbug.com/1313477): remove this together with
     // AddError(policy, message, error_path) and add a DCHECK
     if (message_id_ >= 0) {
-      if (replacement_a_.empty() && replacement_b_.empty())
-        return l10n_util::GetStringUTF16(message_id_);
-      if (replacement_b_.empty()) {
-        return l10n_util::GetStringFUTF16(
-            message_id_, ConvertReplacementToUTF16(replacement_a_));
-      }
-      return l10n_util::GetStringFUTF16(
-          message_id_, ConvertReplacementToUTF16(replacement_a_),
-          ConvertReplacementToUTF16(replacement_b_));
+      std::vector<std::u16string> utf_16_replacements;
+      base::ranges::transform(replacements_,
+                              std::back_inserter(utf_16_replacements),
+                              &ConvertReplacementToUTF16);
+      return l10n_util::GetStringFUTF16(message_id_, utf_16_replacements,
+                                        nullptr);
     }
-    return ConvertReplacementToUTF16(replacement_a_);
+    if (!replacements_.empty()) {
+      return ConvertReplacementToUTF16(replacements_.front());
+    }
+    return std::u16string();
   }
 
  private:
   std::string policy_name_;
   int message_id_;
-  std::string replacement_a_;
-  std::string replacement_b_;
+  std::vector<std::string> replacements_;
   std::string error_path_string_;
   PolicyMap::MessageType level_;
 };
@@ -125,8 +103,7 @@ void PolicyErrorMap::AddError(const std::string& policy,
                               int message_id,
                               PolicyErrorPath error_path,
                               PolicyMap::MessageType level) {
-  AddError(
-      std::make_unique<PendingError>(policy, message_id, error_path, level));
+  AddError(policy, message_id, std::vector<std::string>(), error_path, level);
 }
 
 void PolicyErrorMap::AddError(const std::string& policy,
@@ -134,8 +111,8 @@ void PolicyErrorMap::AddError(const std::string& policy,
                               const std::string& replacement,
                               PolicyErrorPath error_path,
                               PolicyMap::MessageType level) {
-  AddError(std::make_unique<PendingError>(policy, message_id, replacement,
-                                          error_path, level));
+  AddError(policy, message_id, std::vector<std::string>{replacement},
+           error_path, level);
 }
 
 void PolicyErrorMap::AddError(const std::string& policy,
@@ -144,8 +121,18 @@ void PolicyErrorMap::AddError(const std::string& policy,
                               const std::string& replacement_b,
                               PolicyErrorPath error_path,
                               PolicyMap::MessageType level) {
-  AddError(std::make_unique<PendingError>(policy, message_id, replacement_a,
-                                          replacement_b, error_path, level));
+  AddError(policy, message_id,
+           std::vector<std::string>{replacement_a, replacement_b}, error_path,
+           level);
+}
+
+void PolicyErrorMap::AddError(const std::string& policy,
+                              int message_id,
+                              std::vector<std::string> replacements,
+                              PolicyErrorPath error_path,
+                              PolicyMap::MessageType level) {
+  AddError(std::make_unique<PendingError>(
+      policy, message_id, std::move(replacements), error_path, level));
 }
 
 bool PolicyErrorMap::HasError(const std::string& policy) {
