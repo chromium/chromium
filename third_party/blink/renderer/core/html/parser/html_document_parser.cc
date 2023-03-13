@@ -1299,7 +1299,8 @@ void HTMLDocumentParser::ProcessPreloadData(
         TRACE_EVENT0("blink", "HTMLDocumentParser::DispatchLinkHeaderPreloads");
         GetDocument()->Loader()->DispatchLinkHeaderPreloads(
             base::OptionalToPtr(preload_data->viewport),
-            PreloadHelper::kOnlyLoadMedia);
+            PreloadHelper::LoadLinksFromHeaderMode::
+                kDocumentAfterCommitWithViewport);
       }
       if (GetDocument()->Loader()->GetPrefetchedSignedExchangeManager()) {
         TRACE_EVENT0("blink",

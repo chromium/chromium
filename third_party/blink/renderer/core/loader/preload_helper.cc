@@ -146,6 +146,41 @@ bool IsValidButUnsupportedAsAttribute(const String& as) {
          as == "video" || as == "worker" || as == "xslt";
 }
 
+bool IsNetworkHintAllowed(PreloadHelper::LoadLinksFromHeaderMode mode) {
+  switch (mode) {
+    case PreloadHelper::LoadLinksFromHeaderMode::kDocumentBeforeCommit:
+      return true;
+    case PreloadHelper::LoadLinksFromHeaderMode::
+        kDocumentAfterCommitWithoutViewport:
+      return false;
+    case PreloadHelper::LoadLinksFromHeaderMode::
+        kDocumentAfterCommitWithViewport:
+      return false;
+    case PreloadHelper::LoadLinksFromHeaderMode::kSubresourceFromMemoryCache:
+      return true;
+    case PreloadHelper::LoadLinksFromHeaderMode::kSubresourceNotFromMemoryCache:
+      return true;
+  }
+}
+
+bool IsResourceLoadAllowed(PreloadHelper::LoadLinksFromHeaderMode mode,
+                           bool is_viewport_dependent) {
+  switch (mode) {
+    case PreloadHelper::LoadLinksFromHeaderMode::kDocumentBeforeCommit:
+      return false;
+    case PreloadHelper::LoadLinksFromHeaderMode::
+        kDocumentAfterCommitWithoutViewport:
+      return !is_viewport_dependent;
+    case PreloadHelper::LoadLinksFromHeaderMode::
+        kDocumentAfterCommitWithViewport:
+      return is_viewport_dependent;
+    case PreloadHelper::LoadLinksFromHeaderMode::kSubresourceFromMemoryCache:
+      return false;
+    case PreloadHelper::LoadLinksFromHeaderMode::kSubresourceNotFromMemoryCache:
+      return true;
+  }
+}
+
 }  // namespace
 
 void PreloadHelper::DnsPrefetchIfNeeded(
@@ -650,8 +685,7 @@ void PreloadHelper::LoadLinksFromHeader(
     const KURL& base_url,
     LocalFrame& frame,
     Document* document,
-    CanLoadResources can_load_resources,
-    MediaPreloadPolicy media_policy,
+    LoadLinksFromHeaderMode mode,
     const ViewportDescription* viewport_description,
     std::unique_ptr<AlternateSignedExchangeResourceInfo>
         alternate_resource_info,
@@ -660,13 +694,15 @@ void PreloadHelper::LoadLinksFromHeader(
     return;
   LinkHeaderSet header_set(header_value);
   for (auto& header : header_set) {
-    if (!header.Valid() || header.Url().empty() || header.Rel().empty())
+    if (!header.Valid() || header.Url().empty() || header.Rel().empty()) {
       continue;
-
-    if (media_policy == kOnlyLoadMedia && !header.IsViewportDependent())
+    }
+    bool is_network_hint_allowed = IsNetworkHintAllowed(mode);
+    bool is_resource_load_allowed =
+        IsResourceLoadAllowed(mode, header.IsViewportDependent());
+    if (!is_network_hint_allowed && !is_resource_load_allowed) {
       continue;
-    if (media_policy == kOnlyLoadNonMedia && header.IsViewportDependent())
-      continue;
+    }
 
     LinkLoadParameters params(header, base_url);
     bool change_rel_to_prefetch = false;
@@ -727,18 +763,20 @@ void PreloadHelper::LoadLinksFromHeader(
       }
     }
 
-    if (change_rel_to_prefetch)
+    if (change_rel_to_prefetch) {
       params.rel = LinkRelAttribute("prefetch");
+    }
 
     // Sanity check to avoid re-entrancy here.
-    if (params.href == base_url)
+    if (params.href == base_url) {
       continue;
-    if (can_load_resources != kOnlyLoadResources) {
+    }
+    if (is_network_hint_allowed) {
       DnsPrefetchIfNeeded(params, document, &frame, kLinkCalledFromHeader);
 
       PreconnectIfNeeded(params, document, &frame, kLinkCalledFromHeader);
     }
-    if (can_load_resources != kDoNotLoadResources) {
+    if (is_resource_load_allowed) {
       DCHECK(document);
       PendingLinkPreload* pending_preload =
           MakeGarbageCollected<PendingLinkPreload>(*document,

@@ -719,13 +719,12 @@ void DocumentLoader::SetServiceWorkerNetworkProvider(
 
 void DocumentLoader::DispatchLinkHeaderPreloads(
     const ViewportDescription* viewport,
-    PreloadHelper::MediaPreloadPolicy media_policy) {
+    PreloadHelper::LoadLinksFromHeaderMode mode) {
   DCHECK_GE(state_, kCommitted);
   PreloadHelper::LoadLinksFromHeader(
       GetResponse().HttpHeaderField(http_names::kLink),
-      GetResponse().CurrentRequestUrl(), *frame_, frame_->GetDocument(),
-      PreloadHelper::kOnlyLoadResources, media_policy, viewport,
-      nullptr /* alternate_resource_info */,
+      GetResponse().CurrentRequestUrl(), *frame_, frame_->GetDocument(), mode,
+      viewport, nullptr /* alternate_resource_info */,
       nullptr /* recursive_prefetch_token */);
 }
 
@@ -1729,7 +1728,7 @@ void DocumentLoader::StartLoadingInternal() {
   PreloadHelper::LoadLinksFromHeader(
       response_.HttpHeaderField(http_names::kLink),
       response_.CurrentRequestUrl(), *GetFrame(), nullptr,
-      PreloadHelper::kDoNotLoadResources, PreloadHelper::kLoadAll,
+      PreloadHelper::LoadLinksFromHeaderMode::kDocumentBeforeCommit,
       nullptr /* viewport_description */, nullptr /* alternate_resource_info */,
       nullptr /* recursive_prefetch_token */);
   GetFrameLoader().Progress().IncrementProgress(main_resource_identifier_,
@@ -2742,7 +2741,8 @@ void DocumentLoader::CreateParserPostCommit() {
   // Links with media values need more information (like viewport information).
   // This happens after the first chunk is parsed in HTMLDocumentParser.
   DispatchLinkHeaderPreloads(nullptr /* viewport */,
-                             PreloadHelper::kOnlyLoadNonMedia);
+                             PreloadHelper::LoadLinksFromHeaderMode::
+                                 kDocumentAfterCommitWithoutViewport);
 
   // Initializing origin trials might force window proxy initialization,
   // which later triggers CHECK when swapping in via WebFrame::Swap().

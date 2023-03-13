@@ -24,23 +24,20 @@ class PreloadHelper final {
   STATIC_ONLY(PreloadHelper);
 
  public:
-  enum CanLoadResources {
-    kOnlyLoadResources,
-    kDoNotLoadResources,
-    kLoadResourcesAndPreconnect
+  enum class LoadLinksFromHeaderMode {
+    kDocumentBeforeCommit,
+    kDocumentAfterCommitWithoutViewport,
+    kDocumentAfterCommitWithViewport,
+    kSubresourceFromMemoryCache,
+    kSubresourceNotFromMemoryCache,
   };
-
-  // Media links cannot be preloaded until the first chunk is parsed. The rest
-  // can be preloaded at commit time.
-  enum MediaPreloadPolicy { kLoadAll, kOnlyLoadNonMedia, kOnlyLoadMedia };
 
   static void LoadLinksFromHeader(
       const String& header_value,
       const KURL& base_url,
       LocalFrame&,
       Document*,  // can be nullptr
-      CanLoadResources,
-      MediaPreloadPolicy,
+      LoadLinksFromHeaderMode,
       const ViewportDescription*,  // can be nullptr
       std::unique_ptr<AlternateSignedExchangeResourceInfo>,
       const base::UnguessableToken* /* can be nullptr */);

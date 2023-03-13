@@ -304,13 +304,13 @@ void ResourceLoadObserverForFrame::DidReceiveResponse(
   if (resource->GetType() == ResourceType::kLinkPrefetch)
     LogLinkPrefetchMimeTypeHistogram(response.MimeType());
 
-  PreloadHelper::CanLoadResources resource_loading_policy =
-      response_source == ResponseSource::kFromMemoryCache
-          ? PreloadHelper::kDoNotLoadResources
-          : PreloadHelper::kLoadResourcesAndPreconnect;
   PreloadHelper::LoadLinksFromHeader(
       response.HttpHeaderField(http_names::kLink), response.CurrentRequestUrl(),
-      *frame, document_, resource_loading_policy, PreloadHelper::kLoadAll,
+      *frame, document_,
+      response_source == ResponseSource::kFromMemoryCache
+          ? PreloadHelper::LoadLinksFromHeaderMode::kSubresourceFromMemoryCache
+          : PreloadHelper::LoadLinksFromHeaderMode::
+                kSubresourceNotFromMemoryCache,
       nullptr /* viewport_description */, std::move(alternate_resource_info),
       base::OptionalToPtr(response.RecursivePrefetchToken()));
 
