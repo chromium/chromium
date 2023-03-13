@@ -1100,13 +1100,7 @@ void AppLauncherHandler::HandleCreateAppShortcut(
       chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
   chrome::ShowCreateChromeAppShortcutsDialog(
       browser->window()->GetNativeWindow(), browser->profile(), extension,
-      base::BindOnce(
-          [](base::OnceClosure done, bool success) {
-            base::UmaHistogramBoolean(
-                "Apps.AppInfoDialog.CreateExtensionShortcutSuccess", success);
-            std::move(done).Run();
-          },
-          std::move(done)));
+      base::IgnoreArgs<bool>(std::move(done)));
 }
 
 void AppLauncherHandler::HandleInstallAppLocally(

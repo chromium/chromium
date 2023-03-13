@@ -237,17 +237,6 @@ chromium-metrics-reviews@google.com.
   <token key="AppType" variants="AppType"/>
 </histogram>
 
-<histogram name="Apps.AppInfoDialog.CreateExtensionShortcutSuccess"
-    enum="Boolean" expires_after="2021-12-12">
-  <owner>dmurph@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
-  <summary>
-    Records the result of creating shortcuts for an Extension, specifically from
-    the user clicking on &quot;Create Shortcut&quot; on the chrome://apps page,
-    in the right click menu of the respective Extension icon.
-  </summary>
-</histogram>
-
 <histogram name="Apps.AppInfoDialog.CreateWebAppShortcutSuccess" enum="Boolean"
     expires_after="2023-08-08">
   <owner>dmurph@chromium.org</owner>

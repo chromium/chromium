@@ -295,13 +295,7 @@ void AppHomePageHandler::CreateExtensionAppShortcut(
   Browser* browser = GetCurrentBrowser();
   chrome::ShowCreateChromeAppShortcutsDialog(
       browser->window()->GetNativeWindow(), browser->profile(), extension,
-      base::BindOnce(
-          [](base::OnceClosure done, bool success) {
-            base::UmaHistogramBoolean(
-                "Apps.AppInfoDialog.CreateExtensionShortcutSuccess", success);
-            std::move(done).Run();
-          },
-          std::move(done)));
+      base::IgnoreArgs<bool>(std::move(done)));
 }
 
 app_home::mojom::AppInfoPtr AppHomePageHandler::CreateAppInfoPtrFromWebApp(
