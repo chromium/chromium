@@ -4,6 +4,8 @@
 
 #include "ash/system/unified/date_tray.h"
 
+#include "ash/public/cpp/test/shell_test_api.h"
+#include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/time/time_tray_item_view.h"
@@ -14,10 +16,12 @@
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/wm/public/activation_change_observer.h"
+#include "ui/wm/public/activation_client.h"
 
 namespace ash {
 
-class DateTrayTest : public AshTestBase {
+class DateTrayTest : public AshTestBase, public wm::ActivationChangeObserver {
  public:
   DateTrayTest() = default;
   DateTrayTest(const DateTrayTest&) = delete;
@@ -48,6 +52,9 @@ class DateTrayTest : public AshTestBase {
   void TearDown() override {
     widget_.reset();
     date_tray_ = nullptr;
+    if (observering_activation_changes_) {
+      Shell::Get()->activation_client()->RemoveObserver(this);
+    }
     AshTestBase::TearDown();
   }
 
@@ -63,12 +70,35 @@ class DateTrayTest : public AshTestBase {
         ->GetText();
   }
 
+  void ImmediatelyCloseBubbleOnActivation() {
+    Shell::Get()->activation_client()->AddObserver(this);
+    observering_activation_changes_ = true;
+  }
+
+  // wm::ActivationChangeObserver:
+  void OnWindowActivated(ActivationReason reason,
+                         aura::Window* gained_active,
+                         aura::Window* lost_active) override {
+    GetUnifiedSystemTray()->CloseBubble();
+  }
+
  private:
   std::unique_ptr<views::Widget> widget_;
+  bool observering_activation_changes_ = false;
 
   // Owned by `widget_`.
   DateTray* date_tray_ = nullptr;
 };
+
+// Tests that toggling the `CalendarView` via the date tray accelerator does not
+// result in a crash when the unified system tray bubble is set to immediately
+// close upon activation. See crrev/c/1419499 for details.
+TEST_F(DateTrayTest, AcceleratorOpenAndImmediateCloseDoesNotCrash) {
+  ImmediatelyCloseBubbleOnActivation();
+  ShellTestApi().PressAccelerator(
+      ui::Accelerator(ui::VKEY_C, ui::EF_COMMAND_DOWN));
+  EXPECT_FALSE(GetUnifiedSystemTray()->IsBubbleShown());
+}
 
 // Test the initial state.
 TEST_F(DateTrayTest, InitialState) {
