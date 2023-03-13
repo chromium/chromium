@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_audio_frame_metadata.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame_delegate.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/webrtc/api/frame_transformer_interface.h"
 
@@ -81,6 +82,20 @@ String RTCEncodedAudioFrame::toString() const {
   sb.AppendNumber(data() ? data()->ByteLength() : 0);
   sb.Append("}");
   return sb.ToString();
+}
+
+RTCEncodedAudioFrame* RTCEncodedAudioFrame::clone(
+    ExceptionState& exception_state) const {
+  String exception_message;
+  std::unique_ptr<webrtc::TransformableFrameInterface> new_webrtc_frame =
+      delegate_->CloneWebRtcFrame(exception_message);
+  if (!new_webrtc_frame) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
+                                      exception_message);
+    return nullptr;
+  }
+  return MakeGarbageCollected<RTCEncodedAudioFrame>(
+      std::move(new_webrtc_frame));
 }
 
 void RTCEncodedAudioFrame::SyncDelegate() const {

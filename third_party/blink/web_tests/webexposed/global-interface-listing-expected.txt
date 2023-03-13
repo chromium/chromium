@@ -7254,6 +7254,7 @@ interface RTCEncodedAudioFrame
     attribute @@toStringTag
     getter data
     getter timestamp
+    method clone
     method constructor
     method getMetadata
     method toString

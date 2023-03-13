@@ -2811,6 +2811,10 @@
       base_feature: "none",
     },
     {
+      name: "RTCEncodedAudioFrameClone",
+      status: "experimental",
+    },
+    {
       name: "RTCEncodedVideoFrameAdditionalMetadata",
       status: "experimental",
     },
