@@ -87,8 +87,10 @@ WGPURenderPassDepthStencilAttachment AsDawnType(
 
   if (webgpu_desc->hasDepthLoadOp()) {
     dawn_desc.depthLoadOp = AsDawnEnum(webgpu_desc->depthLoadOp());
-    dawn_desc.depthClearValue = webgpu_desc->depthClearValue();
   }
+  // NaN is the default value in Dawn
+  dawn_desc.depthClearValue = webgpu_desc->getDepthClearValueOr(
+      std::numeric_limits<float>::quiet_NaN());
 
   if (webgpu_desc->hasDepthStoreOp()) {
     dawn_desc.depthStoreOp = AsDawnEnum(webgpu_desc->depthStoreOp());
