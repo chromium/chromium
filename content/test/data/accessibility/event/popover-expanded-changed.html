@@ -1,0 +1,28 @@
+<!--
+  @UIA-WIN-DENY:*
+  @UIA-WIN-ALLOW:ExpandCollapse*
+  @UIA-WIN-ALLOW:AriaProperties*
+-->
+<!DOCTYPE html>
+
+<button id=toggle popovertarget=p>Toggle button</button>
+<button id=show popovertarget=p popovertargetaction=show>Show button</button>
+<button id=hide popovertarget=p popovertargetaction=hide>Hide button</button>
+<div popover id=p>Popover</div>
+
+<script>
+  var go_passes = [
+    () => toggle.click(),
+    () => toggle.click(),
+    () => show.click(),
+    () => hide.click(),
+    () => show.click(),
+    () => hide.click(),
+  ];
+
+  let current_pass = 0;
+  function go() {
+    go_passes[current_pass++].call();
+    return current_pass < go_passes.length;
+  }
+</script>

@@ -510,6 +510,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   static constexpr int kDataTableHeuristicMinRows = 20;
 
   void UpdateAXForAllDocuments() override;
+  void MarkElementDirty(const Node*) override;
 
  protected:
   void PostPlatformNotification(
@@ -662,7 +663,6 @@ class MODULES_EXPORT AXObjectCacheImpl
       ax::mojom::blink::EventFrom event_from,
       ax::mojom::blink::Action event_from_action);
   void MarkAXSubtreeDirty(AXObject*);
-  void MarkElementDirty(const Node*);
   void MarkElementDirtyWithCleanLayout(const Node*);
 
   // Given an object to mark dirty or fire an event on, return an object
