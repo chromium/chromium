@@ -212,7 +212,7 @@ Når du sletter din browserhistorik – det hele eller for et specifikt website 
 <translation id="2141396931810938595">Baseret på din brug</translation>
 <translation id="214888715418183969">Vælg, hvad der gerne må deles med Chrome. De metrics, du deler, bruges til at hjælpe med at forbedre Chromes funktioner, ydeevne og stabilitet.</translation>
 <translation id="2149973817440762519">Rediger bogmærke</translation>
-<translation id="2155214902713132423">Denne bekræftelsesmetode er ikke tilgængelig for denne enhed. Vælg en anden metode på din anden enhed.</translation>
+<translation id="2155214902713132423">Denne verificeringsmetode er ikke tilgængelig for denne enhed. Vælg en anden metode på din anden enhed.</translation>
 <translation id="2158408438301413340">Chrome kunne ikke tjekke alle adgangskoder</translation>
 <translation id="2172688499998841696">Billedbeskrivelser er slået fra</translation>
 <translation id="2172905120685242547">Vil du lukke vinduet?</translation>
@@ -648,7 +648,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="4561979708150884304">Der er ingen forbindelse</translation>
 <translation id="4565377596337484307">Skjul adgangskode</translation>
 <translation id="4572422548854449519">Log ind på managerstyret konto</translation>
-<translation id="4576892426230499203">Prøv en anden bekræftelsesmulighed</translation>
+<translation id="4576892426230499203">Prøv en anden verificeringsmulighed</translation>
 <translation id="4578289292431526768">Kom i gang</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{For # minut siden}one{For # minut siden}other{For # minutter siden}}</translation>
 <translation id="4587589328781138893">Websites</translation>
@@ -993,7 +993,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6403371459378431832">Synkroniser dine data på alle enheder</translation>
 <translation id="6404511346730675251">Rediger bogmærke</translation>
 <translation id="6406506848690869874">Synkronisering</translation>
-<translation id="6407224748847589805">Der kan ikke oprettes forbindelse til din computer. Prøv en anden bekræftelsesmetode.</translation>
+<translation id="6407224748847589805">Der kan ikke oprettes forbindelse til din computer. Prøv en anden verificeringsmetode.</translation>
 <translation id="6410404864818553978">Grundlæggende brugsdata</translation>
 <translation id="6410883413783534063">Åbn faner for at besøge forskellige sider på samme tid</translation>
 <translation id="6411219469806822692">Du kan ikke komme højere op. Prøv at starte højere oppe på siden.</translation>
