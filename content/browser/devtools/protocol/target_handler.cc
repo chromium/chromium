@@ -496,7 +496,8 @@ class TargetHandler::Session : public DevToolsAgentHostClient {
           base::JSONReader::Read(base::StringPiece(
               reinterpret_cast<const char*>(message.data()), message.size()));
       const std::string* method;
-      if (value.has_value() && (method = value->FindStringKey(kMethod)) &&
+      if (value.has_value() && value->is_dict() &&
+          (method = value->GetDict().FindString(kMethod)) &&
           *method == kResumeMethod) {
         ResumeIfThrottled();
       }

@@ -46,7 +46,7 @@ class DevToolsTrustTokenBrowsertest : public DevToolsProtocolTest,
     EXPECT_GT(tokens.size(), 0ul);
 
     for (const auto& token : tokens) {
-      const std::string* issuer = token.FindStringKey("issuerOrigin");
+      const std::string* issuer = token.GetDict().FindString("issuerOrigin");
       if (*issuer == issuerOrigin) {
         const absl::optional<int> actualCount = token.FindIntPath("count");
         EXPECT_THAT(actualCount, ::testing::Optional(expectedCount));
