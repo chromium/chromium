@@ -277,8 +277,14 @@ void DisplayLockContext::Lock() {
   // If we're not connected, then we don't have to do anything else. Otherwise,
   // we need to ensure that we update our style to check for containment later,
   // layout size based on the options, and also clear the painted output.
-  if (!ConnectedToView())
+  if (!ConnectedToView()) {
     return;
+  }
+
+  // If there are any pending updates, we cancel them, as the fast updates
+  // can't detect a locked display.
+  // See: ../paint/README.md#Transform-update-optimization for more information
+  document_->View()->RemoveAllPendingUpdates();
 
   // There are two ways we can get locked:
   // 1. A new content-visibility property needs us to be locked.
@@ -593,6 +599,14 @@ void DisplayLockContext::DispatchStateChangeEventIfNeeded() {
 }
 
 void DisplayLockContext::NotifyForcedUpdateScopeEnded(ForcedPhase phase) {
+  // Since we do perform updates in a locked display if we're in a forced
+  // update scope, when ending a forced update scope in a locked display, we
+  // remove all pending updates, to prevent them from being executed in a
+  // locked display.
+  // See: ../paint/README.md#Transform-update-optimization for more information
+  if (is_locked_) {
+    document_->View()->RemoveAllPendingUpdates();
+  }
   forced_info_.end(phase);
 }
 
