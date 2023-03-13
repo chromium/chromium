@@ -28,9 +28,11 @@ AnimationFrameTimingMonitor::AnimationFrameTimingMonitor(Client& client,
     : client_(client) {
   Thread::Current()->AddTaskTimeObserver(this);
   sink->AddAnimationFrameTimingMonitor(this);
+  enabled_ = true;
 }
 
 void AnimationFrameTimingMonitor::Shutdown() {
+  enabled_ = false;
   Thread::Current()->RemoveTaskTimeObserver(this);
 }
 
@@ -177,7 +179,7 @@ ScriptTimingInfo* AnimationFrameTimingMonitor::MaybeAddScript(
 }
 
 bool AnimationFrameTimingMonitor::ShouldAddScript(ExecutionContext* context) {
-  return pending_script_info_ && context && context->IsWindow() &&
+  return enabled_ && pending_script_info_ && context && context->IsWindow() &&
          client_.ShouldReportLongAnimationFrameTiming() &&
          state_ != State::kIdle;
 }
@@ -230,8 +232,14 @@ void AnimationFrameTimingMonitor::WillHandlePromise(
   DCHECK(context->GetAgent());
   DCHECK(context->GetAgent()->event_loop());
   context->GetAgent()->event_loop()->EnqueueEndOfMicrotaskCheckpointTask(
-      WTF::BindOnce(&AnimationFrameTimingMonitor::OnMicrotasksCompleted,
-                    WrapPersistent(this), WrapPersistent(context)));
+      WTF::BindOnce(
+          [](WeakPersistent<AnimationFrameTimingMonitor> self,
+             WeakPersistent<ExecutionContext> context) {
+            if (self && context) {
+              self->OnMicrotasksCompleted(context);
+            }
+          },
+          WrapWeakPersistent(this), WrapWeakPersistent(context)));
 
   base::TimeTicks now = base::TimeTicks::Now();
   pending_script_info_ = PendingScriptInfo{

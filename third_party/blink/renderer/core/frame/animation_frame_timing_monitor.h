@@ -134,6 +134,8 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
   int user_callback_depth_ = 0;
 
   base::TimeTicks desired_render_start_time_;
+
+  bool enabled_ = false;
 };
 
 }  // namespace blink
