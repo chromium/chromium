@@ -2743,7 +2743,7 @@
     'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck_reclient': [
       'gpu_tests', 'release_trybot_reclient', 'no_symbols', 'use_dummy_lastchange',
       'use_clang_coverage', 'partial_code_coverage_instrumentation', 'devtools_do_typecheck',
-      'enable_dangling_raw_ptr_checks', 'enable_backup_ref_ptr_feature_flag',
+      'enable_dangling_raw_ptr_feature_flag',
     ],
 
     'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_do_typecheck_chrome_for_testing_reclient': [
@@ -4101,6 +4101,13 @@
     # https://crsrc.org/c/base/allocator/partition_allocator/partition_alloc_config.h;l=208-216;drc=2d195004c75699bdd87c69cdb7e8d293249dcfdd
     'enable_dangling_raw_ptr_checks': {
       'gn_args': 'enable_dangling_raw_ptr_checks=true',
+    },
+
+    # Changes the default of the dangling raw pointer detection feature flag, enabling it on all
+    # runs.
+    'enable_dangling_raw_ptr_feature_flag': {
+      'gn_args': 'enable_dangling_raw_ptr_feature_flag=true',
+      'mixins': ["enable_dangling_raw_ptr_checks", "enable_backup_ref_ptr_feature_flag"],
     },
 
     'enable_rust': {

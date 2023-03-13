@@ -471,6 +471,7 @@
       "devtools_skip_typecheck": false,
       "enable_backup_ref_ptr_feature_flag": true,
       "enable_dangling_raw_ptr_checks": true,
+      "enable_dangling_raw_ptr_feature_flag": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
