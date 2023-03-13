@@ -10,10 +10,12 @@
 #include "base/functional/bind.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_piece_forward.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/kids_chrome_management/kids_chrome_management_client_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -53,7 +55,12 @@ constexpr base::StringPiece kRegionCode = "jp";
 class SupervisedUserRegionalURLFilterTest
     : public MixinBasedInProcessBrowserTest {
  public:
-  SupervisedUserRegionalURLFilterTest() = default;
+  SupervisedUserRegionalURLFilterTest() {
+    // TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having to
+    // disable this feature.
+    feature_list_.InitAndDisableFeature(features::kHttpsUpgrades);
+  }
+
   ~SupervisedUserRegionalURLFilterTest() override = default;
 
  protected:
@@ -134,6 +141,7 @@ class SupervisedUserRegionalURLFilterTest
       embedded_test_server(), this};
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   base::CallbackListSubscription create_services_subscription_;
 };
 

@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
@@ -65,7 +67,11 @@ class SupervisedUserURLFilterTest : public MixinBasedInProcessBrowserTest {
     INTERSTITIAL_DONTPROCEED,
   };
 
-  SupervisedUserURLFilterTest() = default;
+  SupervisedUserURLFilterTest() {
+    // TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having to
+    // disable this feature.
+    feature_list_.InitAndDisableFeature(features::kHttpsUpgrades);
+  }
   ~SupervisedUserURLFilterTest() override = default;
 
   bool ShownPageIsInterstitial(Browser* browser) {
@@ -135,6 +141,7 @@ class SupervisedUserURLFilterTest : public MixinBasedInProcessBrowserTest {
     run_loop.Run();  // Will go until ...Complete calls Quit.
   }
 
+  base::test::ScopedFeatureList feature_list_;
   SupervisedUserService* supervised_user_service_ = nullptr;
 
   ash::LoggedInUserMixin logged_in_user_mixin_{
