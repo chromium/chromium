@@ -13686,7 +13686,7 @@
             ]
         }
     ],
-    "WebGPUOriginTrial": [
+    "WebGPU": [
         {
             "platforms": [
                 "chromeos",
