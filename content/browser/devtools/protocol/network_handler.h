@@ -304,7 +304,7 @@ class NetworkHandler : public DevToolsDomainHandler,
 
   // Protocol builders.
   static String BuildPrivateNetworkRequestPolicy(
-      network::mojom::PrivateNetworkRequestPolicy policy);
+      network::mojom::LocalNetworkRequestPolicy policy);
   static protocol::Network::IPAddressSpace BuildIpAddressSpace(
       network::mojom::IPAddressSpace space);
   static Maybe<protocol::Network::ClientSecurityState>

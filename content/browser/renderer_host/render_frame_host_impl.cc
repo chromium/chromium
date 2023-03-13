@@ -1568,7 +1568,7 @@ RenderFrameHostImpl::RenderFrameHostImpl(
 
   InitializePolicyContainerHost(renderer_initiated_creation_of_main_frame);
 
-  InitializePrivateNetworkRequestPolicy();
+  InitializeLocalNetworkRequestPolicy();
 
   unload_event_monitor_timeout_ =
       std::make_unique<TimeoutMonitor>(base::BindRepeating(
@@ -3037,14 +3037,14 @@ void RenderFrameHostImpl::SetPolicyContainerHost(
   CHECK(parent_ || !IsCredentialless());
 }
 
-void RenderFrameHostImpl::InitializePrivateNetworkRequestPolicy() {
+void RenderFrameHostImpl::InitializeLocalNetworkRequestPolicy() {
   if (!policy_container_host_) {
     // Only speculative RFHs may lack a policy container.
     DCHECK_EQ(lifecycle_state_, LifecycleStateImpl::kSpeculative);
     return;
   }
 
-  private_network_request_policy_ = DerivePrivateNetworkRequestPolicy(
+  local_network_request_policy_ = DerivePrivateNetworkRequestPolicy(
       policy_container_host_->policies(),
       PrivateNetworkRequestContext::kSubresource);
 }
@@ -4164,8 +4164,8 @@ void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
   // Apply private network request policy according to our new origin.
   if (GetContentClient()->browser()->ShouldAllowInsecurePrivateNetworkRequests(
           GetBrowserContext(), new_frame_origin)) {
-    private_network_request_policy_ =
-        network::mojom::PrivateNetworkRequestPolicy::kAllow;
+    local_network_request_policy_ =
+        network::mojom::LocalNetworkRequestPolicy::kAllow;
   }
 
   // Construct the frame's permissions policy only once we know its initial
@@ -11643,7 +11643,7 @@ RenderFrameHostImpl::BuildClientSecurityState() const {
         std::move(coep),
         /*is_web_secure_context=*/false,
         network::mojom::IPAddressSpace::kUnknown,
-        network::mojom::PrivateNetworkRequestPolicy::kBlock);
+        network::mojom::LocalNetworkRequestPolicy::kBlock);
   }
 
   auto client_security_state = network::mojom::ClientSecurityState::New();
@@ -11652,8 +11652,8 @@ RenderFrameHostImpl::BuildClientSecurityState() const {
   client_security_state->is_web_secure_context = policies.is_web_secure_context;
   client_security_state->ip_address_space = policies.ip_address_space;
 
-  client_security_state->private_network_request_policy =
-      private_network_request_policy_;
+  client_security_state->local_network_request_policy =
+      local_network_request_policy_;
   client_security_state->cross_origin_embedder_policy =
       policies.cross_origin_embedder_policy;
 
@@ -11664,7 +11664,7 @@ network::mojom::ClientSecurityStatePtr
 RenderFrameHostImpl::BuildClientSecurityStateForWorkers() const {
   auto client_security_state = BuildClientSecurityState();
 
-  client_security_state->private_network_request_policy =
+  client_security_state->local_network_request_policy =
       DerivePrivateNetworkRequestPolicy(
           client_security_state->ip_address_space,
           client_security_state->is_web_secure_context,
@@ -12573,8 +12573,8 @@ void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
     return;
   }
 
-  private_network_request_policy_ =
-      navigation_request->private_network_request_policy();
+  local_network_request_policy_ =
+      navigation_request->local_network_request_policy();
 
   reporting_endpoints_.clear();
   DCHECK(navigation_request);

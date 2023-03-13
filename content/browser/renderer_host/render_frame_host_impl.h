@@ -3751,8 +3751,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void SetPolicyContainerHost(
       scoped_refptr<PolicyContainerHost> policy_container_host);
 
-  // Initializes |private_network_request_policy_|. Constructor helper.
-  void InitializePrivateNetworkRequestPolicy();
+  // Initializes |local_network_request_policy_|. Constructor helper.
+  void InitializeLocalNetworkRequestPolicy();
 
   // Returns true if this frame requires a proxy to talk to its parent.
   // Note: Using a proxy to talk to a parent does not imply that the parent
@@ -4019,7 +4019,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // RenderFrameHostImpl.
   blink::StorageKey storage_key_;
 
-  // The policy to apply to private network requests issued by the last
+  // The policy to apply to local network requests issued by the last
   // committed document. Set to a default value until a document commits for the
   // first time. The default value depends on whether the
   // |BlockInsecurePrivateNetworkRequests| feature is enabled, see constructor.
@@ -4032,8 +4032,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   //
   // TODO(https://crbug.com/888079): Simplify the above comment when the
   // behavior it explains is fixed.
-  network::mojom::PrivateNetworkRequestPolicy private_network_request_policy_ =
-      network::mojom::PrivateNetworkRequestPolicy::kBlock;
+  network::mojom::LocalNetworkRequestPolicy local_network_request_policy_ =
+      network::mojom::LocalNetworkRequestPolicy::kBlock;
 
   // Track the SiteInfo of the last site we committed successfully, as obtained
   // from SiteInfo::CreateInternal() called on the last committed UrlInfo.

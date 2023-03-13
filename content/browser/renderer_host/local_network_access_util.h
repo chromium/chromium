@@ -30,14 +30,14 @@ enum class PrivateNetworkRequestContext {
 // `private_network_request_context` specifies what this request is about. For
 // example, requests made from workers can have different policies from normal
 // subresource requests.
-network::mojom::PrivateNetworkRequestPolicy CONTENT_EXPORT
+network::mojom::LocalNetworkRequestPolicy CONTENT_EXPORT
 DerivePrivateNetworkRequestPolicy(
     network::mojom::IPAddressSpace ip_address_space,
     bool is_web_secure_context,
     PrivateNetworkRequestContext private_network_request_context);
 
 // Convenience overload to directly compute this from the client's `policies`.
-network::mojom::PrivateNetworkRequestPolicy CONTENT_EXPORT
+network::mojom::LocalNetworkRequestPolicy CONTENT_EXPORT
 DerivePrivateNetworkRequestPolicy(
     const PolicyContainerPolicies& policies,
     PrivateNetworkRequestContext private_network_request_context);

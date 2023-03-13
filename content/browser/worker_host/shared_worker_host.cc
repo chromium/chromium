@@ -233,8 +233,8 @@ void SharedWorkerHost::Start(
     } else {
       auto policy = base::FeatureList::IsEnabled(
                         features::kPrivateNetworkAccessForWorkers)
-                        ? network::mojom::PrivateNetworkRequestPolicy::kBlock
-                        : network::mojom::PrivateNetworkRequestPolicy::kAllow;
+                        ? network::mojom::LocalNetworkRequestPolicy::kBlock
+                        : network::mojom::LocalNetworkRequestPolicy::kAllow;
 
       // Create a maximally restricted client security state if the policy
       // container is missing.

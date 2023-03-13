@@ -549,10 +549,10 @@ class RequestTrustedParamsBuilder {
   }
 
   // Convenience shortcut for a default `ClientSecurityState` with a `policy`.
-  RequestTrustedParamsBuilder& WithPrivateNetworkRequestPolicy(
-      mojom::PrivateNetworkRequestPolicy policy) {
+  RequestTrustedParamsBuilder& WithLocalNetworkRequestPolicy(
+      mojom::LocalNetworkRequestPolicy policy) {
     return WithClientSecurityState(ClientSecurityStateBuilder()
-                                       .WithPrivateNetworkRequestPolicy(policy)
+                                       .WithLocalNetworkRequestPolicy(policy)
                                        .Build());
   }
 
@@ -605,8 +605,8 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnSimpleNetError) {
       RequestTrustedParamsBuilder()
           .WithClientSecurityState(
               ClientSecurityStateBuilder()
-                  .WithPrivateNetworkRequestPolicy(
-                      mojom::PrivateNetworkRequestPolicy::kPreflightWarn)
+                  .WithLocalNetworkRequestPolicy(
+                      mojom::LocalNetworkRequestPolicy::kPreflightWarn)
                   .WithIsSecureContext(true)
                   .WithIPAddressSpace(mojom::IPAddressSpace::kPublic)
                   .Build())
@@ -647,8 +647,8 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnSimpleNetError) {
   EXPECT_TRUE(error_params.is_warning);
   ASSERT_TRUE(error_params.client_security_state);
   EXPECT_TRUE(error_params.client_security_state->is_web_secure_context);
-  EXPECT_EQ(error_params.client_security_state->private_network_request_policy,
-            mojom::PrivateNetworkRequestPolicy::kPreflightWarn);
+  EXPECT_EQ(error_params.client_security_state->local_network_request_policy,
+            mojom::LocalNetworkRequestPolicy::kPreflightWarn);
   EXPECT_EQ(error_params.client_security_state->ip_address_space,
             mojom::IPAddressSpace::kPublic);
 }
@@ -677,8 +677,8 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnSimpleTimeout) {
       RequestTrustedParamsBuilder()
           .WithClientSecurityState(
               ClientSecurityStateBuilder()
-                  .WithPrivateNetworkRequestPolicy(
-                      mojom::PrivateNetworkRequestPolicy::kPreflightWarn)
+                  .WithLocalNetworkRequestPolicy(
+                      mojom::LocalNetworkRequestPolicy::kPreflightWarn)
                   .WithIsSecureContext(true)
                   .WithIPAddressSpace(mojom::IPAddressSpace::kPublic)
                   .Build())
@@ -720,8 +720,8 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnSimpleTimeout) {
   EXPECT_TRUE(error_params.is_warning);
   ASSERT_TRUE(error_params.client_security_state);
   EXPECT_TRUE(error_params.client_security_state->is_web_secure_context);
-  EXPECT_EQ(error_params.client_security_state->private_network_request_policy,
-            mojom::PrivateNetworkRequestPolicy::kPreflightWarn);
+  EXPECT_EQ(error_params.client_security_state->local_network_request_policy,
+            mojom::LocalNetworkRequestPolicy::kPreflightWarn);
   EXPECT_EQ(error_params.client_security_state->ip_address_space,
             mojom::IPAddressSpace::kPublic);
 }
@@ -750,8 +750,8 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnPreflightNoTimeout) {
       RequestTrustedParamsBuilder()
           .WithClientSecurityState(
               ClientSecurityStateBuilder()
-                  .WithPrivateNetworkRequestPolicy(
-                      mojom::PrivateNetworkRequestPolicy::kPreflightWarn)
+                  .WithLocalNetworkRequestPolicy(
+                      mojom::LocalNetworkRequestPolicy::kPreflightWarn)
                   .WithIsSecureContext(true)
                   .WithIPAddressSpace(mojom::IPAddressSpace::kPublic)
                   .Build())
@@ -819,8 +819,8 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyBlockPreflightNoTimeout) {
       RequestTrustedParamsBuilder()
           .WithClientSecurityState(
               ClientSecurityStateBuilder()
-                  .WithPrivateNetworkRequestPolicy(
-                      mojom::PrivateNetworkRequestPolicy::kPreflightBlock)
+                  .WithLocalNetworkRequestPolicy(
+                      mojom::LocalNetworkRequestPolicy::kPreflightBlock)
                   .WithIsSecureContext(true)
                   .WithIPAddressSpace(mojom::IPAddressSpace::kPublic)
                   .Build())
@@ -885,8 +885,8 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnSimpleCorsError) {
   request.request_initiator = initiator_origin;
   request.trusted_params =
       RequestTrustedParamsBuilder()
-          .WithPrivateNetworkRequestPolicy(
-              mojom::PrivateNetworkRequestPolicy::kPreflightWarn)
+          .WithLocalNetworkRequestPolicy(
+              mojom::LocalNetworkRequestPolicy::kPreflightWarn)
           .Build();
 
   base::HistogramTester histogram_tester;
@@ -936,8 +936,8 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest,
   request.request_initiator = initiator_origin;
   request.trusted_params =
       RequestTrustedParamsBuilder()
-          .WithPrivateNetworkRequestPolicy(
-              mojom::PrivateNetworkRequestPolicy::kPreflightWarn)
+          .WithLocalNetworkRequestPolicy(
+              mojom::LocalNetworkRequestPolicy::kPreflightWarn)
           .Build();
 
   base::HistogramTester histogram_tester;
@@ -991,8 +991,8 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest,
   request.request_initiator = initiator_origin;
   request.trusted_params =
       RequestTrustedParamsBuilder()
-          .WithPrivateNetworkRequestPolicy(
-              mojom::PrivateNetworkRequestPolicy::kPreflightWarn)
+          .WithLocalNetworkRequestPolicy(
+              mojom::LocalNetworkRequestPolicy::kPreflightWarn)
           .Build();
 
   base::HistogramTester histogram_tester;
@@ -1046,8 +1046,8 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnPreflightNetError) {
   request.request_initiator = initiator_origin;
   request.trusted_params =
       RequestTrustedParamsBuilder()
-          .WithPrivateNetworkRequestPolicy(
-              mojom::PrivateNetworkRequestPolicy::kPreflightWarn)
+          .WithLocalNetworkRequestPolicy(
+              mojom::LocalNetworkRequestPolicy::kPreflightWarn)
           .Build();
 
   base::HistogramTester histogram_tester;
@@ -1099,8 +1099,8 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnPreflightCorsError) {
       RequestTrustedParamsBuilder()
           .WithClientSecurityState(
               ClientSecurityStateBuilder()
-                  .WithPrivateNetworkRequestPolicy(
-                      mojom::PrivateNetworkRequestPolicy::kPreflightWarn)
+                  .WithLocalNetworkRequestPolicy(
+                      mojom::LocalNetworkRequestPolicy::kPreflightWarn)
                   .WithIsSecureContext(true)
                   .WithIPAddressSpace(mojom::IPAddressSpace::kPublic)
                   .Build())
@@ -1147,8 +1147,8 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnPreflightCorsError) {
   EXPECT_FALSE(error_params.is_warning);
   ASSERT_TRUE(error_params.client_security_state);
   EXPECT_TRUE(error_params.client_security_state->is_web_secure_context);
-  EXPECT_EQ(error_params.client_security_state->private_network_request_policy,
-            mojom::PrivateNetworkRequestPolicy::kPreflightWarn);
+  EXPECT_EQ(error_params.client_security_state->local_network_request_policy,
+            mojom::LocalNetworkRequestPolicy::kPreflightWarn);
   EXPECT_EQ(error_params.client_security_state->ip_address_space,
             mojom::IPAddressSpace::kPublic);
 }
@@ -1179,8 +1179,8 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest,
       RequestTrustedParamsBuilder()
           .WithClientSecurityState(
               ClientSecurityStateBuilder()
-                  .WithPrivateNetworkRequestPolicy(
-                      mojom::PrivateNetworkRequestPolicy::kPreflightWarn)
+                  .WithLocalNetworkRequestPolicy(
+                      mojom::LocalNetworkRequestPolicy::kPreflightWarn)
                   .WithIsSecureContext(true)
                   .WithIPAddressSpace(mojom::IPAddressSpace::kPublic)
                   .Build())
@@ -1231,8 +1231,8 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest,
   EXPECT_TRUE(error_params.is_warning);
   ASSERT_TRUE(error_params.client_security_state);
   EXPECT_TRUE(error_params.client_security_state->is_web_secure_context);
-  EXPECT_EQ(error_params.client_security_state->private_network_request_policy,
-            mojom::PrivateNetworkRequestPolicy::kPreflightWarn);
+  EXPECT_EQ(error_params.client_security_state->local_network_request_policy,
+            mojom::LocalNetworkRequestPolicy::kPreflightWarn);
   EXPECT_EQ(error_params.client_security_state->ip_address_space,
             mojom::IPAddressSpace::kPublic);
 }
@@ -1254,8 +1254,8 @@ ResourceRequest MakeSameOriginPutRequest(
       RequestTrustedParamsBuilder()
           .WithClientSecurityState(
               ClientSecurityStateBuilder()
-                  .WithPrivateNetworkRequestPolicy(
-                      mojom::PrivateNetworkRequestPolicy::kPreflightWarn)
+                  .WithLocalNetworkRequestPolicy(
+                      mojom::LocalNetworkRequestPolicy::kPreflightWarn)
                   .WithIsSecureContext(true)
                   .WithIPAddressSpace(mojom::IPAddressSpace::kPublic)
                   .Build())
@@ -1324,8 +1324,8 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnSameOriginNetError) {
   EXPECT_TRUE(error_params.is_warning);
   ASSERT_TRUE(error_params.client_security_state);
   EXPECT_TRUE(error_params.client_security_state->is_web_secure_context);
-  EXPECT_EQ(error_params.client_security_state->private_network_request_policy,
-            mojom::PrivateNetworkRequestPolicy::kPreflightWarn);
+  EXPECT_EQ(error_params.client_security_state->local_network_request_policy,
+            mojom::LocalNetworkRequestPolicy::kPreflightWarn);
   EXPECT_EQ(error_params.client_security_state->ip_address_space,
             mojom::IPAddressSpace::kPublic);
 }
@@ -1389,8 +1389,8 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnSameOriginCorsError) {
   EXPECT_TRUE(error_params.is_warning);
   ASSERT_TRUE(error_params.client_security_state);
   EXPECT_TRUE(error_params.client_security_state->is_web_secure_context);
-  EXPECT_EQ(error_params.client_security_state->private_network_request_policy,
-            mojom::PrivateNetworkRequestPolicy::kPreflightWarn);
+  EXPECT_EQ(error_params.client_security_state->local_network_request_policy,
+            mojom::LocalNetworkRequestPolicy::kPreflightWarn);
   EXPECT_EQ(error_params.client_security_state->ip_address_space,
             mojom::IPAddressSpace::kPublic);
 }
@@ -1459,8 +1459,8 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest,
   EXPECT_TRUE(error_params.is_warning);
   ASSERT_TRUE(error_params.client_security_state);
   EXPECT_TRUE(error_params.client_security_state->is_web_secure_context);
-  EXPECT_EQ(error_params.client_security_state->private_network_request_policy,
-            mojom::PrivateNetworkRequestPolicy::kPreflightWarn);
+  EXPECT_EQ(error_params.client_security_state->local_network_request_policy,
+            mojom::LocalNetworkRequestPolicy::kPreflightWarn);
   EXPECT_EQ(error_params.client_security_state->ip_address_space,
             mojom::IPAddressSpace::kPublic);
 }
@@ -1490,8 +1490,8 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyBlockNetError) {
   request.request_initiator = initiator_origin;
   request.trusted_params =
       RequestTrustedParamsBuilder()
-          .WithPrivateNetworkRequestPolicy(
-              mojom::PrivateNetworkRequestPolicy::kPreflightBlock)
+          .WithLocalNetworkRequestPolicy(
+              mojom::LocalNetworkRequestPolicy::kPreflightBlock)
           .Build();
 
   base::HistogramTester histogram_tester;
@@ -1539,8 +1539,8 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyBlockCorsError) {
       RequestTrustedParamsBuilder()
           .WithClientSecurityState(
               ClientSecurityStateBuilder()
-                  .WithPrivateNetworkRequestPolicy(
-                      mojom::PrivateNetworkRequestPolicy::kPreflightBlock)
+                  .WithLocalNetworkRequestPolicy(
+                      mojom::LocalNetworkRequestPolicy::kPreflightBlock)
                   .WithIsSecureContext(true)
                   .WithIPAddressSpace(mojom::IPAddressSpace::kPublic)
                   .Build())
@@ -1584,8 +1584,8 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyBlockCorsError) {
   EXPECT_FALSE(error_params.is_warning);
   ASSERT_TRUE(error_params.client_security_state);
   EXPECT_TRUE(error_params.client_security_state->is_web_secure_context);
-  EXPECT_EQ(error_params.client_security_state->private_network_request_policy,
-            mojom::PrivateNetworkRequestPolicy::kPreflightBlock);
+  EXPECT_EQ(error_params.client_security_state->local_network_request_policy,
+            mojom::LocalNetworkRequestPolicy::kPreflightBlock);
   EXPECT_EQ(error_params.client_security_state->ip_address_space,
             mojom::IPAddressSpace::kPublic);
 }
@@ -1616,8 +1616,8 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest,
       RequestTrustedParamsBuilder()
           .WithClientSecurityState(
               ClientSecurityStateBuilder()
-                  .WithPrivateNetworkRequestPolicy(
-                      mojom::PrivateNetworkRequestPolicy::kPreflightBlock)
+                  .WithLocalNetworkRequestPolicy(
+                      mojom::LocalNetworkRequestPolicy::kPreflightBlock)
                   .WithIsSecureContext(true)
                   .WithIPAddressSpace(mojom::IPAddressSpace::kPublic)
                   .Build())
@@ -1662,8 +1662,8 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest,
   EXPECT_FALSE(error_params.is_warning);
   ASSERT_TRUE(error_params.client_security_state);
   EXPECT_TRUE(error_params.client_security_state->is_web_secure_context);
-  EXPECT_EQ(error_params.client_security_state->private_network_request_policy,
-            mojom::PrivateNetworkRequestPolicy::kPreflightBlock);
+  EXPECT_EQ(error_params.client_security_state->local_network_request_policy,
+            mojom::LocalNetworkRequestPolicy::kPreflightBlock);
   EXPECT_EQ(error_params.client_security_state->ip_address_space,
             mojom::IPAddressSpace::kPublic);
 }
@@ -1694,8 +1694,8 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest,
       RequestTrustedParamsBuilder()
           .WithClientSecurityState(
               ClientSecurityStateBuilder()
-                  .WithPrivateNetworkRequestPolicy(
-                      mojom::PrivateNetworkRequestPolicy::kPreflightBlock)
+                  .WithLocalNetworkRequestPolicy(
+                      mojom::LocalNetworkRequestPolicy::kPreflightBlock)
                   .WithIsSecureContext(true)
                   .WithIPAddressSpace(mojom::IPAddressSpace::kPublic)
                   .Build())
@@ -1741,8 +1741,8 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest,
   EXPECT_FALSE(error_params.is_warning);
   ASSERT_TRUE(error_params.client_security_state);
   EXPECT_TRUE(error_params.client_security_state->is_web_secure_context);
-  EXPECT_EQ(error_params.client_security_state->private_network_request_policy,
-            mojom::PrivateNetworkRequestPolicy::kPreflightBlock);
+  EXPECT_EQ(error_params.client_security_state->local_network_request_policy,
+            mojom::LocalNetworkRequestPolicy::kPreflightBlock);
   EXPECT_EQ(error_params.client_security_state->ip_address_space,
             mojom::IPAddressSpace::kPublic);
 }
@@ -1771,8 +1771,8 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyOnRequestOnly) {
   request.request_initiator = initiator_origin;
   request.trusted_params =
       RequestTrustedParamsBuilder()
-          .WithPrivateNetworkRequestPolicy(
-              mojom::PrivateNetworkRequestPolicy::kPreflightBlock)
+          .WithLocalNetworkRequestPolicy(
+              mojom::LocalNetworkRequestPolicy::kPreflightBlock)
           .Build();
 
   CreateLoaderAndStart(request);
@@ -1800,8 +1800,8 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyOnFactoryOnly) {
   ResetFactoryParams factory_params;
   factory_params.client_security_state =
       ClientSecurityStateBuilder()
-          .WithPrivateNetworkRequestPolicy(
-              mojom::PrivateNetworkRequestPolicy::kPreflightBlock)
+          .WithLocalNetworkRequestPolicy(
+              mojom::LocalNetworkRequestPolicy::kPreflightBlock)
           .Build();
   ResetFactory(initiator_origin, kRendererProcessId, factory_params);
 
@@ -1838,8 +1838,8 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyOnFactoryAndRequest) {
   factory_params.is_trusted = true;
   factory_params.client_security_state =
       ClientSecurityStateBuilder()
-          .WithPrivateNetworkRequestPolicy(
-              mojom::PrivateNetworkRequestPolicy::kPreflightBlock)
+          .WithLocalNetworkRequestPolicy(
+              mojom::LocalNetworkRequestPolicy::kPreflightBlock)
           .Build();
   ResetFactory(initiator_origin, kRendererProcessId, factory_params);
 
@@ -1850,8 +1850,8 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyOnFactoryAndRequest) {
   request.request_initiator = initiator_origin;
   request.trusted_params =
       RequestTrustedParamsBuilder()
-          .WithPrivateNetworkRequestPolicy(
-              mojom::PrivateNetworkRequestPolicy::kPreflightWarn)
+          .WithLocalNetworkRequestPolicy(
+              mojom::LocalNetworkRequestPolicy::kPreflightWarn)
           .Build();
 
   CreateLoaderAndStart(request);

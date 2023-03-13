@@ -4649,10 +4649,10 @@ void NavigationRequest::OnStartChecksComplete(
     if (!base::FeatureList::IsEnabled(
             features::kBlockInsecurePrivateNetworkRequestsForNavigations)) {
       // Only show warnings for requests initiated from non-secure contexts.
-      client_security_state->private_network_request_policy =
+      client_security_state->local_network_request_policy =
           client_security_state->is_web_secure_context
-              ? network::mojom::PrivateNetworkRequestPolicy::kAllow
-              : network::mojom::PrivateNetworkRequestPolicy::kWarn;
+              ? network::mojom::LocalNetworkRequestPolicy::kAllow
+              : network::mojom::LocalNetworkRequestPolicy::kWarn;
     }
   }
 
@@ -6844,8 +6844,8 @@ void NavigationRequest::UpdatePrivateNetworkRequestPolicy() {
   url::Origin origin = GetOriginToCommit().value();
   if (client->ShouldAllowInsecurePrivateNetworkRequests(context, origin)) {
     // The content browser client decided to make an exception for this URL.
-    private_network_request_policy_ =
-        network::mojom::PrivateNetworkRequestPolicy::kAllow;
+    local_network_request_policy_ =
+        network::mojom::LocalNetworkRequestPolicy::kAllow;
     return;
   }
 
@@ -6864,12 +6864,12 @@ void NavigationRequest::UpdatePrivateNetworkRequestPolicy() {
     web_features_to_log_.push_back(
         blink::mojom::WebFeature::
             kPrivateNetworkAccessNonSecureContextsAllowedDeprecationTrial);
-    private_network_request_policy_ =
-        network::mojom::PrivateNetworkRequestPolicy::kAllow;
+    local_network_request_policy_ =
+        network::mojom::LocalNetworkRequestPolicy::kAllow;
     return;
   }
 
-  private_network_request_policy_ = DerivePrivateNetworkRequestPolicy(
+  local_network_request_policy_ = DerivePrivateNetworkRequestPolicy(
       policies, PrivateNetworkRequestContext::kSubresource);
 }
 
@@ -8194,8 +8194,8 @@ NavigationRequest::BuildClientSecurityState() {
 
   client_security_state->cross_origin_embedder_policy =
       policies.cross_origin_embedder_policy;
-  client_security_state->private_network_request_policy =
-      private_network_request_policy_;
+  client_security_state->local_network_request_policy =
+      local_network_request_policy_;
 
   return client_security_state;
 }

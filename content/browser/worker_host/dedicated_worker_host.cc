@@ -400,7 +400,7 @@ void DedicatedWorkerHost::DidStartScriptLoad(
       worker_client_security_state_->is_web_secure_context =
           network::IsUrlPotentiallyTrustworthy(final_response_url) &&
           creator_client_security_state_->is_web_secure_context;
-      worker_client_security_state_->private_network_request_policy =
+      worker_client_security_state_->local_network_request_policy =
           DerivePrivateNetworkRequestPolicy(
               worker_client_security_state_->ip_address_space,
               worker_client_security_state_->is_web_secure_context,
