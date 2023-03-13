@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/ui/ash/glanceables/glanceables_keyed_service.h"
 #include "content/public/browser/browser_context.h"
@@ -34,7 +35,8 @@ GlanceablesKeyedService* GlanceablesKeyedServiceFactory::GetService(
 std::unique_ptr<KeyedService>
 GlanceablesKeyedServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return std::make_unique<GlanceablesKeyedService>();
+  return std::make_unique<GlanceablesKeyedService>(
+      Profile::FromBrowserContext(context));
 }
 
 }  // namespace ash

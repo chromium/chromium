@@ -2,4 +2,5 @@ include_rules = [
   "+chromeos/ash/components/settings",
   "+google_apis/calendar",
   "+google_apis/common",
+  "+google_apis/tasks",
 ]

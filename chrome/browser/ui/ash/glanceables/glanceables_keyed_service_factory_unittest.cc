@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/glanceables/glanceables_keyed_service_factory.h"
 
 #include <memory>
+#include <string>
 
 #include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
@@ -13,7 +14,8 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/sync_preferences/pref_service_syncable.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -21,7 +23,27 @@ namespace ash {
 class GlanceablesKeyedServiceFactoryTest : public BrowserWithTestWindowTest {
  public:
   GlanceablesKeyedServiceFactoryTest()
-      : user_manager_(std::make_unique<FakeChromeUserManager>()) {}
+      : scoped_user_manager_(std::make_unique<FakeChromeUserManager>()) {}
+
+  TestingProfile* CreateProfile() override {
+    const std::string profile_name = "primary_profile@example.com";
+    const auto account_id = AccountId::FromUserEmail(profile_name);
+    fake_chrome_user_manager()->AddUser(account_id);
+    fake_chrome_user_manager()->LoginUser(account_id);
+    session_controller_client()->AddUserSession(profile_name);
+    session_controller_client()->SwitchActiveUser(account_id);
+    return profile_manager()->CreateTestingProfile(profile_name,
+                                                   /*is_main_profile=*/true);
+  }
+
+  FakeChromeUserManager* fake_chrome_user_manager() {
+    return static_cast<FakeChromeUserManager*>(
+        user_manager::UserManager::Get());
+  }
+
+  TestSessionControllerClient* session_controller_client() {
+    return ash_test_helper()->test_session_controller_client();
+  }
 
   TestingProfileManager* profile_manager() {
     return BrowserWithTestWindowTest::profile_manager();
@@ -29,7 +51,7 @@ class GlanceablesKeyedServiceFactoryTest : public BrowserWithTestWindowTest {
 
  protected:
   base::test::ScopedFeatureList feature_list_{features::kGlanceablesV2};
-  std::unique_ptr<FakeChromeUserManager> user_manager_;
+  user_manager::ScopedUserManager scoped_user_manager_;
 };
 
 TEST_F(GlanceablesKeyedServiceFactoryTest, NoSupportWhenFeatureIsDisabled) {
@@ -70,32 +92,6 @@ TEST_F(GlanceablesKeyedServiceFactoryTest, NoSupportForOffTheRecordProfile) {
       GlanceablesKeyedServiceFactory::GetInstance()->GetService(
           incognito_profile);
   EXPECT_FALSE(service_for_incognito_profile);
-}
-
-TEST_F(GlanceablesKeyedServiceFactoryTest, SupportsMultipleUserProfiles) {
-  auto* service_1 =
-      GlanceablesKeyedServiceFactory::GetInstance()->GetService(GetProfile());
-
-  // Returns the same instance for the same profile.
-  EXPECT_EQ(
-      service_1,
-      GlanceablesKeyedServiceFactory::GetInstance()->GetService(GetProfile()));
-
-  const std::string second_profile_name = "second_profile";
-  const AccountId account_id(AccountId::FromUserEmail(second_profile_name));
-  user_manager_->AddUser(account_id);
-  user_manager_->LoginUser(account_id);
-  TestingProfile* second_profile = profile_manager()->CreateTestingProfile(
-      second_profile_name,
-      std::unique_ptr<sync_preferences::PrefServiceSyncable>(),
-      u"Test profile 2",
-      /*avatar_id=*/1,
-      /*testing_factories=*/{});
-
-  // Returns different instances for different profiles.
-  EXPECT_NE(service_1,
-            GlanceablesKeyedServiceFactory::GetInstance()->GetService(
-                second_profile));
 }
 
 }  // namespace ash
