@@ -290,7 +290,7 @@ void RealtimeReportingClient::OnCloudPolicyClientAvailable(
     if (profile_client_ == client)
       return;
 
-    if (profile_client_ == client)
+    if (profile_client_)
       profile_client_->RemoveObserver(this);
 
     profile_client_ = client;
