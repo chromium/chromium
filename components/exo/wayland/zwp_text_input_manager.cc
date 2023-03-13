@@ -368,7 +368,8 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
                                std::end(kModifierNames))};
 
   // Pending focus reason.
-  ui::TextInputClient::FocusReason pending_focus_reason_;
+  ui::TextInputClient::FocusReason pending_focus_reason_ =
+      ui::TextInputClient::FOCUS_REASON_OTHER;
 
   base::WeakPtrFactory<WaylandTextInputDelegate> weak_factory_{this};
 };
