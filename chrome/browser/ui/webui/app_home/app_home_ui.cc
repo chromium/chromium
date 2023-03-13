@@ -30,6 +30,7 @@ void AddAppHomeLocalizedStrings(content::WebUIDataSource* ui_source) {
       {"createShortcutForAppLabel", IDS_APP_HOME_CREATE_SHORTCUT},
       {"installLocallyLabel", IDS_APP_HOME_INSTALL_LOCALLY},
       {"uninstallAppLabel", IDS_APP_HOME_UNINSTALL_APP},
+      {"removeAppLabel", IDS_APP_HOME_REMOVE_APP},
       {"appSettingsLabel", IDS_APP_HOME_APP_SETTINGS},
       {"viewInWebStore", IDS_NEW_TAB_APP_DETAILS},
       {"notInstalled", IDS_ACCNAME_APP_HOME_NOT_INSTALLED}};

@@ -134,6 +134,12 @@ export class AppItemElement extends PolymerElement {
   private isInstallLocallyHidden_() {
     return this.appInfo.isLocallyInstalled || this.appInfo.isDeprecatedApp;
   }
+  private isUninstallHidden_() {
+    return !this.appInfo.isLocallyInstalled;
+  }
+  private isRemoveFromChromeHidden_() {
+    return this.appInfo.isLocallyInstalled;
+  }
   private isAppSettingsHidden_() {
     return !this.appInfo.isLocallyInstalled;
   }

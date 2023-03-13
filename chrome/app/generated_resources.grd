@@ -5952,6 +5952,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Uninstall
       </message>
 
+      <message name="IDS_APP_HOME_REMOVE_APP" desc="Menu entry label for removing an app from context menu on App Home that isn't locally installed">
+        Remove from Chrome
+      </message>
+
       <message name="IDS_APP_HOME_APP_SETTINGS" desc="Menu entry label for navigation to App Settings page for an app from context menu on App Home">
         App settings
       </message>

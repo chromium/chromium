@@ -257,9 +257,12 @@ suite('AppListTest', () => {
     assertTrue(
         contextMenu.querySelector<HTMLElement>('#createShortcut')!.hidden);
     assertTrue(contextMenu.querySelector<HTMLElement>('#appSettings')!.hidden);
-    assertFalse(contextMenu.querySelector<HTMLElement>('#uninstall')!.hidden);
+    assertTrue(contextMenu.querySelector<HTMLElement>('#uninstall')!.hidden);
+    assertFalse(
+        contextMenu.querySelector<HTMLElement>('#removeFromChrome')!.hidden);
     assertTrue(
-        contextMenu.querySelector<HTMLButtonElement>('#uninstall')!.disabled);
+        contextMenu.querySelector<HTMLButtonElement>(
+                       '#removeFromChrome')!.disabled);
     assertFalse(
         contextMenu.querySelector<HTMLElement>('#installLocally')!.hidden);
   });
@@ -502,7 +505,9 @@ suite('AppListTest', () => {
     assertTrue(
         contextMenu.querySelector<HTMLElement>('#createShortcut')!.hidden);
     assertTrue(contextMenu.querySelector<HTMLElement>('#appSettings')!.hidden);
-    assertFalse(contextMenu.querySelector<HTMLElement>('#uninstall')!.hidden);
+    assertTrue(contextMenu.querySelector<HTMLElement>('#uninstall')!.hidden);
+    assertFalse(
+        contextMenu.querySelector<HTMLElement>('#removeFromChrome')!.hidden);
 
     const installLocally =
         appItem.shadowRoot!.querySelector<HTMLElement>('#installLocally');
