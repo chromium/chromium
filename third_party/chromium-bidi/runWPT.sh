@@ -11,7 +11,7 @@ usage() {
   log "Usage: [HEADLESS=<true | false>] [UPDATE_EXPECTATIONS=<true | false>] $0 [webdriver/tests/bidi/[...]]"
 }
 
-if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+if [[ $# -gt 0 && ("$1" == "-h" || "$1" == "--help") ]]; then
   usage
   exit 0
 fi

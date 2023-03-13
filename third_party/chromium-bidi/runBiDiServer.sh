@@ -13,7 +13,7 @@ usage() {
   log "The --headless flag takes precedence over the HEADLESS environment variable."
 }
 
-if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+if [[ $# -gt 0 && ("$1" == "-h" || "$1" == "--help") ]]; then
   usage
   exit 0
 fi
