@@ -1694,7 +1694,6 @@
         'mixins': [
           'arm64',
           'docker',
-          'lifo-test-pool',
           'linux-focal',
         ],
       },
@@ -2443,7 +2442,6 @@
         'mixins': [
           'arm64',
           'docker',
-          'lifo-test-pool',
           'linux-focal',
         ],
       },
@@ -2458,7 +2456,6 @@
         'mixins': [
           'arm64',
           'docker',
-          'lifo-test-pool',
           'linux-focal',
         ],
       },
@@ -2527,7 +2524,6 @@
         'mixins': [
           'arm64',
           'docker',
-          'lifo-test-pool',
           'linux-focal',
         ],
       },
@@ -2542,7 +2538,6 @@
         'mixins': [
           'arm64',
           'docker',
-          'lifo-test-pool',
           'linux-focal',
         ],
       },
@@ -3100,7 +3095,6 @@
         'mixins': [
           'arm64',
           'docker',
-          'lifo-test-pool',
           'linux-focal',
         ],
         'test_suites': {
