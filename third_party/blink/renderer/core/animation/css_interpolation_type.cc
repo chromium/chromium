@@ -123,8 +123,7 @@ class RevertChecker : public CSSInterpolationType::ConversionChecker {
 
   RevertChecker(const PropertyHandle& property_handle,
                 const CSSValue* resolved_value)
-      : property_handle_(property_handle), resolved_value_(resolved_value) {
-  }
+      : property_handle_(property_handle), resolved_value_(resolved_value) {}
 
  private:
   bool IsValid(const InterpolationEnvironment& environment,

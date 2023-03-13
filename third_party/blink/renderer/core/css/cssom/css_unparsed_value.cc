@@ -83,7 +83,10 @@ CSSUnparsedValue* CSSUnparsedValue::FromCSSValue(
 
 CSSUnparsedValue* CSSUnparsedValue::FromCSSVariableData(
     const CSSVariableData& value) {
-  return CSSUnparsedValue::Create(ParserTokenRangeToTokens(value.TokenRange()));
+  CSSTokenizer tokenizer(value.OriginalText());
+  Vector<CSSParserToken, 32> tokens = tokenizer.TokenizeToEOF();
+  CSSParserTokenRange range(tokens);
+  return CSSUnparsedValue::Create(ParserTokenRangeToTokens(range));
 }
 
 V8CSSUnparsedSegment* CSSUnparsedValue::AnonymousIndexedGetter(
