@@ -355,6 +355,7 @@ export class Panel extends PanelInterface {
 
         [CommandCategory.BRAILLE]: null,
         [CommandCategory.DEVELOPER]: null,
+        [CommandCategory.NO_CATEGORY]: null,
       };
 
       // TODO(accessibility): Commands should be based off of CommandStore and

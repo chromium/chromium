@@ -35,7 +35,7 @@ export class CommandStore {
   /**
    * Gets a category given a command.
    * @param {!Command} command The command to query.
-   * @return {string|undefined} The category, if any.
+   * @return {!CommandCategory|undefined} The category, if any.
    */
   static categoryForCommand(command) {
     return CommandStore.COMMAND_DATA[command]?.category;
@@ -57,7 +57,7 @@ export class CommandStore {
 
   /**
    * Gets all commands for a category.
-   * @param {string} category The category to query.
+   * @param {!CommandCategory} category The category to query.
    * @return {Array<!Command>} The commands, if any.
    */
   static commandsForCategory(category) {
@@ -278,9 +278,7 @@ export const Command = {
  */
 export const CommandCategory = {
   ACTIONS: 'actions',
-  BRAILLE: 'braille',
   CONTROLLING_SPEECH: 'controlling_speech',
-  DEVELOPER: 'developer',
   HELP_COMMANDS: 'help_commands',
   INFORMATION: 'information',
   JUMP_COMMANDS: 'jump_commands',
@@ -288,11 +286,15 @@ export const CommandCategory = {
   NAVIGATION: 'navigation',
   OVERVIEW: 'overview',
   TABLES: 'tables',
+  // The following categories are not displayed in the ChromeVox menus:
+  BRAILLE: 'braille',
+  DEVELOPER: 'developer',
+  NO_CATEGORY: 'no_category',
 };
 
 /**
  * @typedef {{
- *     category: (undefined|!CommandCategory),
+ *     category: !CommandCategory,
  *     msgId: (undefined|string),
  *     denySignedOut: (undefined|boolean)
  * }}
@@ -316,12 +318,14 @@ CommandStore.COMMAND_DATA = {
     msgId: 'pass_through_key_description',
     category: CommandCategory.MODIFIER_KEYS,
   },
-
   [Command.STOP_SPEECH]: {
     msgId: 'stop_speech_key',
     category: CommandCategory.CONTROLLING_SPEECH,
   },
-  [Command.OPEN_CHROMEVOX_MENUS]: {msgId: 'menus_title'},
+  [Command.OPEN_CHROMEVOX_MENUS]: {
+    msgId: 'menus_title',
+    category: CommandCategory.NO_CATEGORY,
+  },
   [Command.RESET_TEXT_TO_SPEECH_SETTINGS]: {
     msgId: 'reset_tts_settings',
     category: CommandCategory.CONTROLLING_SPEECH,
@@ -358,22 +362,18 @@ CommandStore.COMMAND_DATA = {
     msgId: 'cycle_typing_echo',
     category: CommandCategory.CONTROLLING_SPEECH,
   },
-
   [Command.TOGGLE_DICTATION]: {
     msgId: 'toggle_dictation',
     category: CommandCategory.ACTIONS,
   },
-
   [Command.TOGGLE_EARCONS]: {
     msgId: 'toggle_earcons',
     category: CommandCategory.CONTROLLING_SPEECH,
   },
-
   [Command.TOGGLE_SPEECH_ON_OR_OFF]: {
     msgId: 'speech_on_off_description',
     category: CommandCategory.CONTROLLING_SPEECH,
   },
-
   [Command.HANDLE_TAB]: {
     msgId: 'handle_tab_next',
     category: CommandCategory.NAVIGATION,
@@ -414,7 +414,6 @@ CommandStore.COMMAND_DATA = {
     msgId: 'next_at_granularity',
     category: CommandCategory.NAVIGATION,
   },
-
   [Command.PREVIOUS_CHARACTER]: {
     msgId: 'previous_character',
     category: CommandCategory.NAVIGATION,
@@ -479,7 +478,6 @@ CommandStore.COMMAND_DATA = {
     msgId: 'next_invalid_item',
     category: CommandCategory.NAVIGATION,
   },
-
   [Command.JUMP_TO_TOP]: {
     msgId: 'jump_to_top',
     category: CommandCategory.NAVIGATION,
@@ -488,20 +486,19 @@ CommandStore.COMMAND_DATA = {
     msgId: 'jump_to_bottom',
     category: CommandCategory.NAVIGATION,
   },
+
   // Intentionally uncategorized.
-  [Command.MOVE_TO_START_OF_LINE]: {},
-  [Command.MOVE_TO_END_OF_LINE]: {},
+  [Command.MOVE_TO_START_OF_LINE]: {category: CommandCategory.NO_CATEGORY},
+  [Command.MOVE_TO_END_OF_LINE]: {category: CommandCategory.NO_CATEGORY},
 
   [Command.JUMP_TO_DETAILS]: {
     msgId: 'jump_to_details',
     category: CommandCategory.NAVIGATION,
   },
-
   [Command.READ_FROM_HERE]: {
     msgId: 'read_from_here',
     category: CommandCategory.NAVIGATION,
   },
-
   [Command.FORCE_CLICK_ON_CURRENT_ITEM]: {
     msgId: 'force_click_on_current_item',
     category: CommandCategory.ACTIONS,
@@ -509,8 +506,8 @@ CommandStore.COMMAND_DATA = {
   [Command.FORCE_LONG_CLICK_ON_CURRENT_ITEM]: {
     msgId: 'force_long_click_on_current_item',
   },
-  [Command.FORCE_DOUBLE_CLICK_ON_CURRENT_ITEM]: {},
-
+  [Command.FORCE_DOUBLE_CLICK_ON_CURRENT_ITEM]:
+      {category: CommandCategory.NO_CATEGORY},
   [Command.READ_LINK_URL]: {
     msgId: 'read_link_url',
     category: CommandCategory.INFORMATION,
@@ -523,7 +520,6 @@ CommandStore.COMMAND_DATA = {
     msgId: 'read_current_url',
     category: CommandCategory.INFORMATION,
   },
-
   [Command.FULLY_DESCRIBE]: {
     msgId: 'fully_describe',
     category: CommandCategory.INFORMATION,
@@ -536,20 +532,16 @@ CommandStore.COMMAND_DATA = {
     msgId: 'toggle_selection',
     category: CommandCategory.ACTIONS,
   },
-
   [Command.TOGGLE_SEARCH_WIDGET]: {
     msgId: 'toggle_search_widget',
     category: CommandCategory.INFORMATION,
   },
-
   [Command.TOGGLE_SCREEN]: {
     msgId: 'toggle_screen',
     category: CommandCategory.MODIFIER_KEYS,
   },
-
   [Command.TOGGLE_BRAILLE_TABLE]:
       {msgId: 'toggle_braille_table', category: CommandCategory.HELP_COMMANDS},
-
   [Command.TOGGLE_KEYBOARD_HELP]: {
     msgId: 'show_panel_menu',
     category: CommandCategory.HELP_COMMANDS,
@@ -566,7 +558,6 @@ CommandStore.COMMAND_DATA = {
     msgId: 'show_context_menu',
     category: CommandCategory.INFORMATION,
   },
-
   [Command.SHOW_OPTIONS_PAGE]: {
     msgId: 'show_options_page',
     denySignedOut: true,
@@ -596,7 +587,6 @@ CommandStore.COMMAND_DATA = {
     msgId: 'panel_menu_item_report_issue',
     category: CommandCategory.HELP_COMMANDS,
   },
-
   [Command.SHOW_FORMS_LIST]: {
     msgId: 'show_forms_list',
     category: CommandCategory.OVERVIEW,
@@ -617,8 +607,7 @@ CommandStore.COMMAND_DATA = {
     msgId: 'show_tables_list',
     category: CommandCategory.OVERVIEW,
   },
-
-  [Command.NEXT_ARTICLE]: {},
+  [Command.NEXT_ARTICLE]: {category: CommandCategory.NO_CATEGORY},
 
   [Command.NEXT_BUTTON]: {
     msgId: 'next_button',
@@ -632,7 +621,7 @@ CommandStore.COMMAND_DATA = {
     msgId: 'next_combo_box',
     category: CommandCategory.JUMP_COMMANDS,
   },
-  [Command.NEXT_CONTROL]: {},
+  [Command.NEXT_CONTROL]: {category: CommandCategory.NO_CATEGORY},
   [Command.NEXT_EDIT_TEXT]: {
     msgId: 'next_edit_text',
     category: CommandCategory.JUMP_COMMANDS,
@@ -673,7 +662,6 @@ CommandStore.COMMAND_DATA = {
     msgId: 'next_heading6',
     category: CommandCategory.JUMP_COMMANDS,
   },
-
   [Command.NEXT_LANDMARK]: {
     msgId: 'next_landmark',
     category: CommandCategory.JUMP_COMMANDS,
@@ -702,8 +690,8 @@ CommandStore.COMMAND_DATA = {
     msgId: 'next_radio',
     category: CommandCategory.JUMP_COMMANDS,
   },
-  [Command.NEXT_SECTION]: {},
-  [Command.NEXT_SLIDER]: {},
+  [Command.NEXT_SECTION]: {category: CommandCategory.NO_CATEGORY},
+  [Command.NEXT_SLIDER]: {category: CommandCategory.NO_CATEGORY},
   [Command.NEXT_TABLE]: {
     msgId: 'next_table',
     category: CommandCategory.JUMP_COMMANDS,
@@ -712,10 +700,7 @@ CommandStore.COMMAND_DATA = {
     msgId: 'next_visited_link',
     category: CommandCategory.JUMP_COMMANDS,
   },
-
-
-  [Command.PREVIOUS_ARTICLE]: {},
-
+  [Command.PREVIOUS_ARTICLE]: {category: CommandCategory.NO_CATEGORY},
   [Command.PREVIOUS_BUTTON]: {
     msgId: 'previous_button',
     category: CommandCategory.JUMP_COMMANDS,
@@ -728,7 +713,7 @@ CommandStore.COMMAND_DATA = {
     msgId: 'previous_combo_box',
     category: CommandCategory.JUMP_COMMANDS,
   },
-  [Command.PREVIOUS_CONTROL]: {},
+  [Command.PREVIOUS_CONTROL]: {category: CommandCategory.NO_CATEGORY},
   [Command.PREVIOUS_EDIT_TEXT]: {
     msgId: 'previous_edit_text',
     category: CommandCategory.JUMP_COMMANDS,
@@ -797,8 +782,8 @@ CommandStore.COMMAND_DATA = {
     msgId: 'previous_radio',
     category: CommandCategory.JUMP_COMMANDS,
   },
-  [Command.PREVIOUS_SECTION]: {},
-  [Command.PREVIOUS_SLIDER]: {},
+  [Command.PREVIOUS_SECTION]: {category: CommandCategory.NO_CATEGORY},
+  [Command.PREVIOUS_SLIDER]: {category: CommandCategory.NO_CATEGORY},
   [Command.PREVIOUS_TABLE]: {
     msgId: 'previous_table',
     category: CommandCategory.JUMP_COMMANDS,
@@ -807,7 +792,6 @@ CommandStore.COMMAND_DATA = {
     msgId: 'previous_visited_link',
     category: CommandCategory.JUMP_COMMANDS,
   },
-
 
   // Table Actions.
   [Command.ANNOUNCE_HEADERS]: {
@@ -866,18 +850,15 @@ CommandStore.COMMAND_DATA = {
     msgId: 'exit_content',
     category: CommandCategory.NAVIGATION,
   },
-  [Command.EXIT_SHIFTER_CONTENT]: {},
-
+  [Command.EXIT_SHIFTER_CONTENT]: {category: CommandCategory.NO_CATEGORY},
   [Command.OPEN_LONG_DESC]: {
     msgId: 'open_long_desc',
     category: CommandCategory.INFORMATION,
   },
-
   [Command.PAUSE_ALL_MEDIA]: {
     msgId: 'pause_all_media',
     category: CommandCategory.INFORMATION,
   },
-
   [Command.ANNOUNCE_BATTERY_DESCRIPTION]: {
     msgId: 'announce_battery_description',
     category: CommandCategory.INFORMATION,
@@ -892,8 +873,14 @@ CommandStore.COMMAND_DATA = {
   },
 
   // Scrolling actions.
-  [Command.SCROLL_BACKWARD]: {msgId: 'action_scroll_backward_description'},
-  [Command.SCROLL_FORWARD]: {msgId: 'action_scroll_forward_description'},
+  [Command.SCROLL_BACKWARD]: {
+    category: CommandCategory.NO_CATEGORY,
+    msgId: 'action_scroll_backward_description',
+  },
+  [Command.SCROLL_FORWARD]: {
+    category: CommandCategory.NO_CATEGORY,
+    msgId: 'action_scroll_forward_description',
+  },
 
   // Math specific commands.
   [Command.TOGGLE_SEMANTICS]: {
@@ -940,12 +927,9 @@ CommandStore.COMMAND_DATA = {
     msgId: 'enable_tts_log',
     category: CommandCategory.DEVELOPER,
   },
-
-  [Command.START_HISTORY_RECORDING]: {},
-  [Command.STOP_HISTORY_RECORDING]: {},
-  [Command.AUTORUNNER]: {},
-
-  [Command.DEBUG]: {},
-
-  [Command.NOP]: {},
+  [Command.START_HISTORY_RECORDING]: {category: CommandCategory.NO_CATEGORY},
+  [Command.STOP_HISTORY_RECORDING]: {category: CommandCategory.NO_CATEGORY},
+  [Command.AUTORUNNER]: {category: CommandCategory.NO_CATEGORY},
+  [Command.DEBUG]: {category: CommandCategory.NO_CATEGORY},
+  [Command.NOP]: {category: CommandCategory.NO_CATEGORY},
 };
