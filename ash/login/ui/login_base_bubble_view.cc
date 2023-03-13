@@ -8,6 +8,7 @@
 
 #include "ash/login/ui/views_utils.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
@@ -329,9 +330,8 @@ gfx::Rect LoginBaseBubbleView::GetWorkArea() const {
     return gfx::Rect();
   }
 
-  return display::Screen::GetScreen()
-      ->GetDisplayNearestWindow(GetAnchorView()->GetWidget()->GetNativeWindow())
-      .work_area();
+  return screen_util::GetDisplayWorkAreaBoundsInParentForLockScreen(
+      GetAnchorView()->GetWidget()->GetNativeWindow());
 }
 
 void LoginBaseBubbleView::ScheduleAnimation(bool visible) {
