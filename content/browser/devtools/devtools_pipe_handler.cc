@@ -162,6 +162,7 @@ class PipeReaderBase : public PipeIOBase {
 #if BUILDFLAG(IS_WIN)
     // Cancel pending synchronous read.
     CancelIoEx(read_handle_, nullptr);
+    ScopedInvalidParameterHandlerOverride invalid_parameter_handler_override;
     _close(read_fd_);
     read_handle_ = INVALID_HANDLE_VALUE;
 #else
@@ -244,6 +245,7 @@ class PipeWriterBase : public PipeIOBase {
  protected:
   void ClosePipe() override {
 #if BUILDFLAG(IS_WIN)
+    ScopedInvalidParameterHandlerOverride invalid_parameter_handler_override;
     _close(write_fd_);
     write_handle_ = INVALID_HANDLE_VALUE;
 #else
