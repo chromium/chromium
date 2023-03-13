@@ -23,6 +23,7 @@
 namespace drivefs::pinning {
 namespace {
 
+using base::SequencedTaskRunner;
 using base::TimeDelta;
 using std::ostream;
 using Path = PinManager::Path;
@@ -644,8 +645,7 @@ void PinManager::OnFreeSpaceRetrieved1(const int64_t free_space) {
 
   drivefs_->StartSearchQuery(search_query_.BindNewPipeAndPassReceiver(),
                              CreateMyDriveQuery());
-  search_query_->GetNextPage(base::BindOnce(
-      &PinManager::OnSearchResultForSizeCalculation, GetWeakPtr()));
+  GetNextPage();
 }
 
 void PinManager::CheckFreeSpace() {
@@ -673,12 +673,21 @@ void PinManager::OnFreeSpaceRetrieved2(const int64_t free_space) {
     return Complete(Stage::kNotEnoughSpace);
   }
 
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+  SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce(&PinManager::CheckFreeSpace, GetWeakPtr()),
       space_check_interval_);
 }
 
-void PinManager::OnSearchResultForSizeCalculation(
+void PinManager::GetNextPage() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(progress_.stage, Stage::kListingFiles);
+  DCHECK(search_query_);
+  VLOG(2) << "Getting next batch of items...";
+  search_query_->GetNextPage(
+      base::BindOnce(&PinManager::OnSearchResult, GetWeakPtr()));
+}
+
+void PinManager::OnSearchResult(
     const drive::FileError error,
     const absl::optional<std::vector<mojom::QueryItemPtr>> items) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -686,9 +695,22 @@ void PinManager::OnSearchResultForSizeCalculation(
 
   if (error != drive::FILE_ERROR_OK || !items) {
     LOG(ERROR) << "Cannot list files: " << error;
-    return Complete(Stage::kCannotListFiles);
+    switch (error) {
+      default:
+        return Complete(Stage::kCannotListFiles);
+
+      case drive::FILE_ERROR_NO_CONNECTION:
+      case drive::FILE_ERROR_SERVICE_UNAVAILABLE:
+        const TimeDelta delay = base::Seconds(5);
+        VLOG(1) << "Will retry in " << Quote(delay) << "...";
+        SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+            FROM_HERE, base::BindOnce(&PinManager::GetNextPage, GetWeakPtr()),
+            delay);
+        return;
+    }
   }
 
+  DCHECK(items);
   if (items->empty()) {
     search_query_.reset();
     return StartPinning();
@@ -707,9 +729,7 @@ void PinManager::OnSearchResultForSizeCalculation(
           << Quote(timer_.Elapsed()) << ", Skipped " << progress_.skipped_items
           << " items, Tracking " << files_to_track_.size() << " files";
   NotifyProgress();
-  DCHECK(search_query_);
-  search_query_->GetNextPage(base::BindOnce(
-      &PinManager::OnSearchResultForSizeCalculation, GetWeakPtr()));
+  GetNextPage();
 }
 
 void PinManager::Complete(const Stage stage) {
@@ -767,7 +787,7 @@ void PinManager::StartPinning() {
   NotifyProgress();
 
   if (should_check_stalled_files_) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+    SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, base::BindOnce(&PinManager::CheckStalledFiles, GetWeakPtr()),
         kStalledFileInterval);
   }
@@ -1078,7 +1098,7 @@ void PinManager::CheckStalledFiles() {
                        path));
   }
 
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+  SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce(&PinManager::CheckStalledFiles, GetWeakPtr()),
       kStalledFileInterval);
 }
