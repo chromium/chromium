@@ -495,7 +495,9 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
     else
       EndWriteAccess();
 
-    resource()->WillDraw();
+    if (resource()) {
+      resource()->WillDraw();
+    }
   }
 
   void WillDraw() override { WillDrawInternal(true); }
