@@ -588,14 +588,17 @@
 
 <template is="dom-if" if="[[isTangibleSync_]]">
   <div class$="tangible-sync-style [[getMainContainerClass_()]]">
-    <img id="tangible-sync-dialog-illustration" hidden="[[!isModalDialog_]]">
-    <img id="tangible-sync-style-left-banner" hidden="[[isModalDialog_]]">
-    <img id="tangible-sync-style-right-banner" hidden="[[isModalDialog_]]">
+    <img id="tangible-sync-dialog-illustration" alt=""
+        hidden="[[!isModalDialog_]]">
+    <img id="tangible-sync-style-left-banner" alt=""
+        hidden="[[isModalDialog_]]">
+    <img id="tangible-sync-style-right-banner" alt=""
+        hidden="[[isModalDialog_]]">
     <div id="contentContainer" class$="[[getAnimationClass_()]]">
       <div id="avatarContainer">
         <img id="avatar" alt="" src="[[accountImageSrc_]]">
         <div id="badge" class="work-badge" hidden="[[!showEnterpriseBadge_]]">
-          <iron-icon icon="cr:domain"></iron-icon>
+          <iron-icon icon="cr:domain" alt=""></iron-icon>
         </div>
       </div>
       <h1 id="title" consent-description>
@@ -607,7 +610,8 @@
       <div id="syncBenefitsList">
         <template is="dom-repeat" items="[[syncBenefitsList_]]">
           <div class="sync-benefit">
-            <iron-icon class="sync-benefit-icon" icon="[[item.iconName]]">
+            <iron-icon class="sync-benefit-icon" icon="[[item.iconName]]"
+                alt="">
             </iron-icon>
             <div class="sync-benefit-text" consent-description>
               [[i18n(item.title)]]
