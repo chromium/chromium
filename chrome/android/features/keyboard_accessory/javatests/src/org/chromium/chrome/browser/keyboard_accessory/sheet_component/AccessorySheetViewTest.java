@@ -5,9 +5,9 @@
 package org.chromium.chrome.browser.keyboard_accessory.sheet_component;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -36,11 +36,8 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.test.espresso.UiController;
-import androidx.test.espresso.ViewAction;
 import androidx.test.filters.MediumTest;
 
-import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -240,26 +237,7 @@ public class AccessorySheetViewTest {
             mModel.set(VISIBLE, true);
         });
 
-        onView(isRoot()).check(waitForView(withId(R.id.show_keyboard), ViewUtils.VIEW_GONE));
-
-        // TODO(crbug/1420520): remove the anonymous ViewAction with click() once the header is
-        // enabled.
-        onView(withId(R.id.show_keyboard)).perform(new ViewAction() {
-            @Override
-            public Matcher<View> getConstraints() {
-                return isAssignableFrom(View.class);
-            }
-
-            @Override
-            public void perform(UiController uiController, View view) {
-                view.performClick();
-            }
-
-            @Override
-            public String getDescription() {
-                return "Click the hidden view";
-            }
-        });
+        onViewWaiting(withId(R.id.show_keyboard)).perform(click());
 
         verify(runnable, times(1)).run();
 

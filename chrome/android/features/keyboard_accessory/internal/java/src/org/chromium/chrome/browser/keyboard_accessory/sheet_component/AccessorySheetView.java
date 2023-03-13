@@ -51,7 +51,7 @@ class AccessorySheetView extends LinearLayout {
             mKeyboardToggle.setImageDrawable(
                     AppCompatResources.getDrawable(getContext(), R.drawable.ic_arrow_back_24dp));
             mSheetTitle = findViewById(R.id.sheet_title);
-            // TODO(crbug/1420520): make this visible when the sheet header is moved to the sheet.
+            findViewById(R.id.sheet_header).setVisibility(View.VISIBLE);
         }
 
         // Ensure that sub components of the sheet use the RTL direction:

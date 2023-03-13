@@ -291,6 +291,7 @@ class KeyboardAccessoryMediator
     public void onActiveTabChanged(Integer activeTab) {
         mModel.set(KEYBOARD_TOGGLE_VISIBLE, activeTab != null);
         if (activeTab == null) {
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)) return;
             mSheetVisibilityDelegate.onCloseAccessorySheet();
             return;
         }
@@ -309,6 +310,8 @@ class KeyboardAccessoryMediator
     }
 
     private void closeSheet() {
+        assert !ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)
+            : "The bar cannot close the sheet when AUTOFILL_KEYBOARD_ACCESSORY is enabled. It must be closed by the sheet.";
         assert mTabSwitcher.getActiveTab() != null;
         ManualFillingMetricsRecorder.recordSheetTrigger(
                 mTabSwitcher.getActiveTab().getRecordingType(), AccessorySheetTrigger.MANUAL_CLOSE);

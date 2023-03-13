@@ -67,7 +67,8 @@ public class AddressAccessorySheetViewTest {
 
             AccessorySheetCoordinator accessorySheet =
                     new AccessorySheetCoordinator(mActivityTestRule.getActivity().findViewById(
-                            R.id.keyboard_accessory_sheet_stub));
+                                                          R.id.keyboard_accessory_sheet_stub),
+                            null);
             accessorySheet.setTabs(new KeyboardAccessoryData.Tab[] {new KeyboardAccessoryData.Tab(
                     "Addresses", null, null, R.layout.address_accessory_sheet,
                     AccessoryTabType.ADDRESSES, new KeyboardAccessoryData.Tab.Listener() {

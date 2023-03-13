@@ -76,7 +76,8 @@ public class PasswordAccessorySheetModernViewTest {
 
             AccessorySheetCoordinator accessorySheet =
                     new AccessorySheetCoordinator(mActivityTestRule.getActivity().findViewById(
-                            R.id.keyboard_accessory_sheet_stub));
+                                                          R.id.keyboard_accessory_sheet_stub),
+                            null);
             accessorySheet.setTabs(new KeyboardAccessoryData.Tab[] {new KeyboardAccessoryData.Tab(
                     "Passwords", null, null, R.layout.password_accessory_sheet,
                     AccessoryTabType.ALL, new KeyboardAccessoryData.Tab.Listener() {

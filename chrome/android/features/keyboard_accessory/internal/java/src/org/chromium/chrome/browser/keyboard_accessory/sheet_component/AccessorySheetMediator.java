@@ -18,7 +18,11 @@ import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.keyboard_accessory.AccessorySheetTrigger;
+import org.chromium.chrome.browser.keyboard_accessory.ManualFillingMetricsRecorder;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
+import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetCoordinator.SheetVisibilityDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyObservable;
@@ -38,10 +42,15 @@ class AccessorySheetMediator implements PropertyObservable.PropertyObserver<Prop
                     mModel.set(TOP_SHADOW_VISIBLE, recyclerView.canScrollVertically(-1));
                 }
             };
+    private final SheetVisibilityDelegate mSheetVisibilityDelegate;
 
-    AccessorySheetMediator(PropertyModel model) {
+    AccessorySheetMediator(PropertyModel model, SheetVisibilityDelegate sheetVisibilityDelegate) {
         mModel = model;
         mModel.addObserver(this);
+        mSheetVisibilityDelegate = sheetVisibilityDelegate;
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)) {
+            mModel.set(SHOW_KEYBOARD_CALLBACK, this::onKeyboardRequested);
+        }
     }
 
     @Nullable
@@ -89,6 +98,16 @@ class AccessorySheetMediator implements PropertyObservable.PropertyObserver<Prop
         assert position < mModel.get(TABS).size()
                 || position >= 0 : position + " is not a valid tab index!";
         mModel.set(ACTIVE_TAB_INDEX, position);
+    }
+
+    private void onKeyboardRequested() {
+        // Return early if the button was clicked twice and the active tab was already reset.
+        if (mModel.get(ACTIVE_TAB_INDEX) == NO_ACTIVE_TAB) return;
+        ManualFillingMetricsRecorder.recordSheetTrigger(
+                mModel.get(TABS).get(mModel.get(ACTIVE_TAB_INDEX)).getRecordingType(),
+                AccessorySheetTrigger.MANUAL_CLOSE);
+        mModel.set(ACTIVE_TAB_INDEX, NO_ACTIVE_TAB);
+        mSheetVisibilityDelegate.onCloseAccessorySheet();
     }
 
     @Override

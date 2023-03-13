@@ -16,8 +16,7 @@ found in the LICENSE file.
         android:paddingTop="@dimen/keyboard_accessory_image_top_padding"
         android:paddingBottom="@dimen/keyboard_accessory_image_top_padding"
         android:contentDescription="@string/keyboard_accessory_sheet_hide"
-        android:background="?attr/selectableItemBackground"
-        android:visibility="gone" />
+        android:background="?attr/selectableItemBackground" />
 
     <TextView
         android:id="@+id/sheet_title"
@@ -26,7 +25,6 @@ found in the LICENSE file.
         android:textAppearance="@style/TextAppearance.TextLarge.Primary"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:background="?android:attr/selectableItemBackground"
-        android:visibility="gone" />
+        android:background="?android:attr/selectableItemBackground" />
 
 </merge>

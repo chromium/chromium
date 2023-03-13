@@ -90,7 +90,8 @@ public class CreditCardAccessorySheetViewTest {
             mModel = new AccessorySheetTabItemsModel();
             AccessorySheetCoordinator accessorySheet =
                     new AccessorySheetCoordinator(mActivityTestRule.getActivity().findViewById(
-                            R.id.keyboard_accessory_sheet_stub));
+                                                          R.id.keyboard_accessory_sheet_stub),
+                            null);
             accessorySheet.setTabs(new KeyboardAccessoryData.Tab[] {new KeyboardAccessoryData.Tab(
                     "Credit Cards", null, null, R.layout.credit_card_accessory_sheet,
                     AccessoryTabType.CREDIT_CARDS, new KeyboardAccessoryData.Tab.Listener() {

@@ -56,8 +56,10 @@ public class AccessorySheetCoordinator {
      * parts up.
      * @param sheetStub A {@link AsyncViewStub} for the accessory sheet layout.
      */
-    public AccessorySheetCoordinator(AsyncViewStub sheetStub) {
-        this(AsyncViewProvider.of(sheetStub, R.id.keyboard_accessory_sheet_container));
+    public AccessorySheetCoordinator(
+            AsyncViewStub sheetStub, SheetVisibilityDelegate sheetVisibilityDelegate) {
+        this(AsyncViewProvider.of(sheetStub, R.id.keyboard_accessory_sheet_container),
+                sheetVisibilityDelegate);
     }
 
     /**
@@ -65,14 +67,15 @@ public class AccessorySheetCoordinator {
      * @param viewProvider A provider for the accessory.
      */
     @VisibleForTesting
-    AccessorySheetCoordinator(ViewProvider<AccessorySheetView> viewProvider) {
+    AccessorySheetCoordinator(ViewProvider<AccessorySheetView> viewProvider,
+            SheetVisibilityDelegate sheetVisibilityDelegate) {
         PropertyModel model = AccessorySheetProperties.defaultPropertyModel().build();
 
         LazyConstructionPropertyMcp.create(
                 model, VISIBLE, viewProvider, AccessorySheetViewBinder::bind);
 
         AccessorySheetMetricsRecorder.registerAccessorySheetModelMetricsObserver(model);
-        mMediator = new AccessorySheetMediator(model);
+        mMediator = new AccessorySheetMediator(model, sheetVisibilityDelegate);
     }
 
     /**

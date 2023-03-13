@@ -52,8 +52,9 @@ class ManualFillingCoordinator implements ManualFillingComponent {
         barStub.setShouldInflateOnBackgroundThread(true);
         sheetStub.setShouldInflateOnBackgroundThread(true);
         initialize(windowAndroid, new KeyboardAccessoryCoordinator(mMediator, mMediator, barStub),
-                new AccessorySheetCoordinator(sheetStub), sheetController, backPressManager,
-                keyboardDelegate, new ConfirmationDialogHelper(windowAndroid.getContext()));
+                new AccessorySheetCoordinator(sheetStub, mMediator), sheetController,
+                backPressManager, keyboardDelegate,
+                new ConfirmationDialogHelper(windowAndroid.getContext()));
     }
 
     @VisibleForTesting
