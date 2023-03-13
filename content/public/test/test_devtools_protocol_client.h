@@ -53,7 +53,6 @@ class TestDevToolsProtocolClient : public DevToolsAgentHostClient {
                                               bool wait);
 
   void AttachToWebContents(WebContents* web_contents);
-  void AttachToTabTarget(WebContents* web_contents);
   void AttachToBrowserTarget();
 
   void DetachProtocolClient() {

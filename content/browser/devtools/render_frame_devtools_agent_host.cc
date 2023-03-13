@@ -255,8 +255,6 @@ RenderFrameDevToolsAgentHost::RenderFrameDevToolsAgentHost(
     : DevToolsAgentHostImpl(frame_host->devtools_frame_token().ToString()),
       auto_attacher_(std::make_unique<FrameAutoAttacher>(GetRendererChannel())),
       frame_tree_node_(nullptr) {
-  auto* wc = WebContentsImpl::FromRenderFrameHostImpl(frame_host);
-  WebContentsObserver::Observe(wc);
   SetFrameTreeNode(frame_tree_node);
   ChangeFrameHostAndObservedProcess(frame_host);
   render_frame_alive_ = frame_host_ && frame_host_->IsRenderFrameLive();
@@ -277,14 +275,16 @@ void RenderFrameDevToolsAgentHost::SetFrameTreeNode(
     g_agent_host_instances.Get().erase(frame_tree_node_);
   frame_tree_node_ = frame_tree_node;
   if (frame_tree_node_) {
-    DCHECK(web_contents() ==
-           WebContentsImpl::FromFrameTreeNode(frame_tree_node));
     // TODO(dgozman): with ConnectWebContents/DisconnectWebContents,
     // we may get two agent hosts for the same FrameTreeNode.
     // That is definitely a bug, and we should fix that, and DCHECK
     // here that there is no other agent host.
     g_agent_host_instances.Get()[frame_tree_node] = this;
   }
+  auto* wc = frame_tree_node_
+                 ? WebContentsImpl::FromFrameTreeNode(frame_tree_node_)
+                 : nullptr;
+  WebContentsObserver::Observe(wc);
 }
 
 BrowserContext* RenderFrameDevToolsAgentHost::GetBrowserContext() {
@@ -429,9 +429,6 @@ RenderFrameDevToolsAgentHost::~RenderFrameDevToolsAgentHost() {
 
 void RenderFrameDevToolsAgentHost::ReadyToCommitNavigation(
     NavigationHandle* navigation_handle) {
-  if (!frame_tree_node_) {
-    return;
-  }
   NavigationRequest* request = NavigationRequest::From(navigation_handle);
   for (auto* tracing : protocol::TracingHandler::ForAgentHost(this))
     tracing->ReadyToCommitNavigation(request);
@@ -540,8 +537,7 @@ void RenderFrameDevToolsAgentHost::RenderFrameHostChanged(
 void RenderFrameDevToolsAgentHost::FrameDeleted(int frame_tree_node_id) {
   for (auto* tracing : protocol::TracingHandler::ForAgentHost(this))
     tracing->FrameDeleted(frame_tree_node_id);
-  if (frame_tree_node_ &&
-      frame_tree_node_id == frame_tree_node_->frame_tree_node_id()) {
+  if (frame_tree_node_id == frame_tree_node_->frame_tree_node_id()) {
     DestroyOnRenderFrameGone();
     // |this| may be deleted at this point.
   }
@@ -549,14 +545,8 @@ void RenderFrameDevToolsAgentHost::FrameDeleted(int frame_tree_node_id) {
 
 void RenderFrameDevToolsAgentHost::RenderFrameDeleted(RenderFrameHost* rfh) {
   if (rfh == frame_host_) {
-    if (frame_tree_node_) {
-      render_frame_alive_ = false;
-      UpdateRendererChannel(IsAttached());
-    } else {
-      // We're already detached from FTN, so this must be a cached
-      // instance going away.
-      DestroyOnRenderFrameGone();
-    }
+    render_frame_alive_ = false;
+    UpdateRendererChannel(IsAttached());
   }
 }
 
@@ -566,7 +556,6 @@ void RenderFrameDevToolsAgentHost::DestroyOnRenderFrameGone() {
     ForceDetachAllSessions();
     UpdateRawHeadersAccess(frame_host_);
   }
-  WebContentsObserver::Observe(nullptr);
   ChangeFrameHostAndObservedProcess(nullptr);
   UpdateRendererChannel(IsAttached());
   SetFrameTreeNode(nullptr);
@@ -597,11 +586,8 @@ void RenderFrameDevToolsAgentHost::ChangeFrameHostAndObservedProcess(
   if (frame_host_)
     frame_host_->GetProcess()->RemoveObserver(this);
   frame_host_ = frame_host;
-  if (frame_host_) {
-    DCHECK(WebContentsImpl::FromRenderFrameHostImpl(frame_host_) ==
-           web_contents());
+  if (frame_host_)
     frame_host_->GetProcess()->AddObserver(this);
-  }
 }
 
 void RenderFrameDevToolsAgentHost::UpdateFrameAlive() {
@@ -681,7 +667,6 @@ void RenderFrameDevToolsAgentHost::DidCreateFencedFrame(
 }
 
 void RenderFrameDevToolsAgentHost::DisconnectWebContents() {
-  WebContentsObserver::Observe(nullptr);
   navigation_requests_.clear();
   SetFrameTreeNode(nullptr);
   // UpdateFrameHost may destruct |this|.
@@ -695,7 +680,6 @@ void RenderFrameDevToolsAgentHost::ConnectWebContents(WebContents* wc) {
   RenderFrameHostImpl* host =
       static_cast<RenderFrameHostImpl*>(wc->GetPrimaryMainFrame());
   DCHECK(host);
-  WebContentsObserver::Observe(wc);
   SetFrameTreeNode(host->frame_tree_node());
   UpdateFrameHost(host);
   // UpdateFrameHost may destruct |this|.
