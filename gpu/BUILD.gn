@@ -571,6 +571,7 @@ test("gpu_unittests") {
     "config/gpu_test_config_unittest.cc",
     "config/gpu_test_expectations_parser_unittest.cc",
     "config/gpu_util_unittest.cc",
+    "config/webgpu_blocklist_unittest.cc",
     "ipc/client/command_buffer_proxy_impl_unittest.cc",
     "ipc/client/image_decode_accelerator_proxy_unittest.cc",
     "ipc/common/gpu_memory_buffer_impl_shared_memory_unittest.cc",

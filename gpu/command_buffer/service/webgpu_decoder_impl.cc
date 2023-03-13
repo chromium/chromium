@@ -43,6 +43,7 @@
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/command_buffer/service/webgpu_decoder.h"
 #include "gpu/config/gpu_preferences.h"
+#include "gpu/config/webgpu_blocklist.h"
 #include "gpu/webgpu/callback.h"
 #include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -1110,13 +1111,6 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
   tiered_adapter_limits_ =
       !base::Contains(require_disabled_toggles_, "tiered_adapter_limits");
 
-  // Enable the blocklist unless --enable-unsafe-webgpu or
-  // --disable-dawn-features=adapter_blocklist
-  bool disable_adapter_blocklist =
-      base::Contains(require_disabled_toggles_, "adapter_blocklist");
-  dawn_instance_->EnableAdapterBlocklist(
-      !(enable_unsafe_webgpu_ || disable_adapter_blocklist));
-
   DawnProcTable wire_procs = dawn::native::GetProcs();
   wire_procs.createInstance =
       [](const WGPUInstanceDescriptor*) -> WGPUInstance {
@@ -1509,6 +1503,13 @@ WebGPUDecoderImpl::CreateQueuedRequestDeviceCallback(
 }
 
 void WebGPUDecoderImpl::DiscoverAdapters() {
+  // Enable the blocklist unless --enable-unsafe-webgpu or
+  // --disable-dawn-features=adapter_blocklist
+  const bool use_blocklist =
+      !(enable_unsafe_webgpu_ ||
+        base::Contains(require_disabled_toggles_, "adapter_blocklist"));
+  dawn_instance_->EnableAdapterBlocklist(use_blocklist);
+
 #if BUILDFLAG(IS_WIN)
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
       gl::QueryD3D11DeviceObjectFromANGLE();
@@ -1549,6 +1550,10 @@ void WebGPUDecoderImpl::DiscoverAdapters() {
 
     WGPUAdapterProperties adapterProperties = {};
     adapter.GetProperties(&adapterProperties);
+
+    if (use_blocklist && IsWebGPUAdapterBlocklisted(adapterProperties)) {
+      continue;
+    }
 
     const bool is_fallback_adapter =
         adapterProperties.adapterType == WGPUAdapterType_CPU &&

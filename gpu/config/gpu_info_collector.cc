@@ -24,6 +24,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "gpu/config/gpu_switches.h"
+#include "gpu/config/webgpu_blocklist.h"
 #include "skia/buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/angle/src/gpu_info_util/SystemInfo.h"  // nogncheck
@@ -702,6 +703,14 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
       gpu_str += " " + GetDawnBackendTypeString(backend_type);
       gpu_str += " - " + adapter_name;
       dawn_info_list->push_back(gpu_str);
+
+      dawn_info_list->push_back("[WebGPU Status]");
+      if (IsWebGPUAdapterBlocklisted(
+              *reinterpret_cast<WGPUAdapterProperties*>(&properties))) {
+        dawn_info_list->push_back("Blocklisted");
+      } else {
+        dawn_info_list->push_back("Available");
+      }
 
       // Scope the lifetime of |device| to avoid accidental use after release.
       {
