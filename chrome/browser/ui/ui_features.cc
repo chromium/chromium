@@ -51,7 +51,7 @@ BASE_FEATURE(kChromeWhatsNewUI,
 // Create new Extensions app menu option (removing "More Tools -> Extensions")
 // with submenu to manage extensions and visit chrome web store.
 BASE_FEATURE(kExtensionsMenuInAppMenu,
-             "kExtensionsMenuInAppMenu",
+             "ExtensionsMenuInAppMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if !defined(ANDROID)
