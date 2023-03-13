@@ -4,6 +4,7 @@
 
 import './strings.m.js';
 
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
@@ -73,7 +74,7 @@ export class AlertIndicatorElement extends CustomElement {
     return getTemplate();
   }
 
-  private alertState_: TabAlertState;
+  private alertState_: TabAlertState|null = null;
   private fadeDurationMs_: number = 125;
   private fadeInAnimation_: Animation|null;
   private fadeOutAnimation_: Animation|null;
@@ -100,6 +101,7 @@ export class AlertIndicatorElement extends CustomElement {
   }
 
   get alertState(): TabAlertState {
+    assert(this.alertState_ !== null);
     return this.alertState_;
   }
 

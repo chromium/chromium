@@ -77,8 +77,6 @@ type DragManagerDelegateElement = DragManagerDelegate&HTMLElement;
 class DragSession {
   private delegate_: DragManagerDelegateElement;
   private element_: TabElement|TabGroupElement;
-  private hasMoved_: boolean;
-  private lastPoint_: {x: number, y: number} = {x: 0, y: 0};
 
   srcIndex: number;
   srcGroup?: string;
@@ -90,12 +88,6 @@ class DragSession {
       srcIndex: number, srcGroup?: string) {
     this.delegate_ = delegate;
     this.element_ = element;
-
-    /**
-     * Flag indicating if during the drag session, the element has at least
-     * moved once.
-     */
-    this.hasMoved_ = false;
 
     this.srcIndex = srcIndex;
     this.srcGroup = srcGroup;
@@ -113,7 +105,7 @@ class DragSession {
     const srcIndex = delegate.getIndexOfTab(element as TabElement);
     const srcGroup =
         (element.parentElement && isTabGroupElement(element.parentElement)) ?
-        element.parentElement.dataset.groupId :
+        element.parentElement.dataset['groupId'] :
         undefined;
     return new DragSession(delegate, element, srcIndex, srcGroup);
   }
@@ -134,7 +126,7 @@ class DragSession {
     if (event.dataTransfer!.types.includes(getGroupIdDataType())) {
       const placeholderGroupElement =
           document.createElement('tabstrip-tab-group');
-      placeholderGroupElement.dataset.groupId = PLACEHOLDER_GROUP_ID;
+      placeholderGroupElement.dataset['groupId'] = PLACEHOLDER_GROUP_ID;
       placeholderGroupElement.setDragging(true);
       delegate.placeTabGroupElement(placeholderGroupElement, -1);
       return DragSession.createFromElement(delegate, placeholderGroupElement);
@@ -146,7 +138,7 @@ class DragSession {
   get dstGroup(): string|undefined {
     if (isTabElement(this.element_) && this.element_.parentElement &&
         isTabGroupElement(this.element_.parentElement)) {
-      return this.element_.parentElement.dataset.groupId;
+      return this.element_.parentElement.dataset['groupId'];
     }
 
     return undefined;
@@ -227,7 +219,7 @@ class DragSession {
 
   private isDraggingPlaceholderGroup_(): boolean {
     return isTabGroupElement(this.element_) &&
-        this.element_.dataset.groupId === PLACEHOLDER_GROUP_ID;
+        this.element_.dataset['groupId'] === PLACEHOLDER_GROUP_ID;
   }
 
   finish(event: DragEvent) {
@@ -237,7 +229,7 @@ class DragSession {
       (this.element_ as TabElement).tab =
           Object.assign({}, (this.element_ as TabElement).tab, {id});
     } else if (this.isDraggingPlaceholderGroup_()) {
-      this.element_.dataset.groupId =
+      this.element_.dataset['groupId'] =
           event.dataTransfer!.getData(getGroupIdDataType());
     }
 
@@ -245,7 +237,7 @@ class DragSession {
     if (isTabElement(this.element_)) {
       this.tabsProxy_.moveTab((this.element_ as TabElement).tab.id, dstIndex);
     } else if (isTabGroupElement(this.element_)) {
-      this.tabsProxy_.moveGroup(this.element_.dataset.groupId!, dstIndex);
+      this.tabsProxy_.moveGroup(this.element_.dataset['groupId']!, dstIndex);
     }
 
     const dstGroup = this.dstGroup;
@@ -270,7 +262,6 @@ class DragSession {
   }
 
   start(event: DragEvent) {
-    this.lastPoint_ = {x: event.clientX, y: event.clientY};
     event.dataTransfer!.effectAllowed = 'move';
     const draggedItemRect =
         (event.composedPath()[0] as HTMLElement).getBoundingClientRect();
@@ -321,16 +312,13 @@ class DragSession {
       }
     } else if (isTabGroupElement(this.element_)) {
       event.dataTransfer!.setData(
-          getGroupIdDataType(), this.element_.dataset.groupId!);
+          getGroupIdDataType(), this.element_.dataset['groupId']!);
     }
   }
 
   update(event: DragEvent) {
-    this.lastPoint_ = {x: event.clientX, y: event.clientY};
-
     if (event.type === 'dragleave') {
       this.element_.setDraggedOut(true);
-      this.hasMoved_ = true;
       return;
     }
 
@@ -359,7 +347,6 @@ class DragSession {
       dragOverIndex +=
           this.shouldOffsetIndexForGroup_(dragOverTabElement) ? 1 : 0;
       this.delegate_.placeTabGroupElement(tabGroupElement, dragOverIndex);
-      this.hasMoved_ = true;
       return;
     }
 
@@ -371,7 +358,6 @@ class DragSession {
       dragOverIndex +=
           this.shouldOffsetIndexForGroup_(dragOverGroupElement) ? 1 : 0;
       this.delegate_.placeTabGroupElement(tabGroupElement, dragOverIndex);
-      this.hasMoved_ = true;
     }
   }
 
@@ -389,24 +375,23 @@ class DragSession {
 
     const previousGroupId = (tabElement.parentElement &&
                              isTabGroupElement(tabElement.parentElement)) ?
-        tabElement.parentElement.dataset.groupId :
+        tabElement.parentElement.dataset['groupId'] :
         undefined;
 
     const dragOverTabGroup =
         composedPath.find(isTabGroupElement) as TabGroupElement | undefined;
     if (dragOverTabGroup &&
-        dragOverTabGroup.dataset.groupId !== previousGroupId &&
+        dragOverTabGroup.dataset['groupId'] !== previousGroupId &&
         dragOverTabGroup.isValidDragOverTarget) {
       this.delegate_.placeTabElement(
-          tabElement, this.dstIndex, false, dragOverTabGroup.dataset.groupId);
-      this.hasMoved_ = true;
+          tabElement, this.dstIndex, false,
+          dragOverTabGroup.dataset['groupId']);
       return;
     }
 
     if (!dragOverTabGroup && previousGroupId) {
       this.delegate_.placeTabElement(
           tabElement, this.dstIndex, false, undefined);
-      this.hasMoved_ = true;
       return;
     }
 
@@ -417,14 +402,12 @@ class DragSession {
     const dragOverIndex = this.delegate_.getIndexOfTab(dragOverTabElement);
     this.delegate_.placeTabElement(
         tabElement, dragOverIndex, tabElement.tab.pinned, previousGroupId);
-    this.hasMoved_ = true;
   }
 }
 
 export class DragManager {
   private delegate_: DragManagerDelegateElement;
   private dragSession_: DragSession|null = null;
-  private tabsProxy_: TabsApiProxy = TabsApiProxyImpl.getInstance();
 
   constructor(delegate: DragManagerDelegateElement) {
     this.delegate_ = delegate;

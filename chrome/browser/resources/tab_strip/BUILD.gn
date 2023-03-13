@@ -50,7 +50,6 @@ build_webui("build") {
     "$root_gen_dir/chrome/browser/ui/webui/tabs/tabs.mojom-webui.ts",
   ]
 
-  ts_tsconfig_base = "tsconfig_base.json"
   ts_composite = true
   ts_definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
   ts_deps = [

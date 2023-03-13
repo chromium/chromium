@@ -48,9 +48,8 @@ export class TabElement extends CustomElement {
   private dragImageEl_: HTMLElement;
   private tabEl_: HTMLElement;
   private faviconEl_: HTMLElement;
-  private thumbnailContainer_: HTMLElement;
   private thumbnail_: HTMLImageElement;
-  private tab_: Tab;
+  private tab_: Tab|null = null;
   private tabsApi_: TabsApiProxy;
   private titleTextEl_: HTMLElement;
   private isValidDragOverTarget_: boolean;
@@ -76,8 +75,6 @@ export class TabElement extends CustomElement {
     this.tabEl_ = this.$<HTMLElement>('#tab')!;
 
     this.faviconEl_ = this.$<HTMLElement>('#favicon')!;
-
-    this.thumbnailContainer_ = this.$<HTMLElement>('#thumbnail')!;
 
     this.thumbnail_ = this.$<HTMLImageElement>('#thumbnailImg')!;
 
@@ -105,7 +102,12 @@ export class TabElement extends CustomElement {
     this.onTabActivating_ = (_tabId: number) => {};
   }
 
+  hasTabModel(): boolean {
+    return this.tab_ !== null;
+  }
+
   get tab(): Tab {
+    assert(this.tab_);
     return this.tab_;
   }
 
@@ -261,6 +263,7 @@ export class TabElement extends CustomElement {
   }
 
   slideOut(): Promise<void> {
+    assert(this.tab_);
     if (!this.tabsApi_.isVisible() || this.tab_.pinned ||
         this.tabSwiper_.wasSwiping()) {
       this.remove();
