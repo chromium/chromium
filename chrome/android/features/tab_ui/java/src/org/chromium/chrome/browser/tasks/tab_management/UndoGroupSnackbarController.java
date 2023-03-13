@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
@@ -133,12 +132,10 @@ public class UndoGroupSnackbarController implements SnackbarManager.SnackbarCont
     }
 
     private void showUndoGroupSnackbar(List<TabUndoInfo> tabUndoInfo) {
-        int mergedGroupSize =
-                mTabModelSelector.getTabModelFilterProvider()
-                        .getCurrentTabModelFilter()
-                        .getRelatedTabIds(
-                                CriticalPersistedTabData.from(tabUndoInfo.get(0).tab).getRootId())
-                        .size();
+        int mergedGroupSize = mTabModelSelector.getTabModelFilterProvider()
+                                      .getCurrentTabModelFilter()
+                                      .getRelatedTabIds(tabUndoInfo.get(0).tabOriginalGroupId)
+                                      .size();
         assert mergedGroupSize > 1;
 
         String content = String.format(Locale.getDefault(), "%d", mergedGroupSize);
