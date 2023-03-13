@@ -347,6 +347,7 @@ ios_builder(
     mirrors = [
         "ci/ios-blink-dbg-fyi",
     ],
+    cpu = cpu.ARM64,
 )
 
 ios_builder(
