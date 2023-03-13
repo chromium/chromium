@@ -15,7 +15,9 @@ namespace autofill {
 
 LogRouter::LogRouter() = default;
 
-LogRouter::~LogRouter() = default;
+LogRouter::~LogRouter() {
+  receivers_.RemoveObserver(&text_log_receiver_);
+}
 
 // static
 base::Value::Dict LogRouter::CreateEntryForText(const std::string& text) {
@@ -27,6 +29,12 @@ base::Value::Dict LogRouter::CreateEntryForText(const std::string& text) {
   }
   buffer << CTag{};
   return *buffer.RetrieveResult();
+}
+
+void LogRouter::LogToTerminal() {
+  if (!receivers_.HasObserver(&text_log_receiver_)) {
+    receivers_.AddObserver(&text_log_receiver_);
+  }
 }
 
 void LogRouter::ProcessLog(const std::string& text) {

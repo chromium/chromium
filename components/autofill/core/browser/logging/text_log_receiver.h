@@ -14,7 +14,8 @@ namespace autofill {
 // but probably fancy enough to generate some useful debugging signals.
 //
 // If a test is using the TestAutofillClient, using this TextLogReceiver can
-// be enabled via a command-line flag --show-autofill-internals.
+// be enabled via the Finch feature `kAutofillLoggingToTerminal` or
+// `kPasswordManagerLoggingToTerminal`.
 class TextLogReceiver : public LogReceiver {
  public:
   TextLogReceiver() = default;

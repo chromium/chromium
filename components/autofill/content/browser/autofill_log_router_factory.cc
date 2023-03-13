@@ -5,6 +5,7 @@
 #include "components/autofill/content/browser/autofill_log_router_factory.h"
 
 #include "components/autofill/core/browser/logging/log_router.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace autofill {
@@ -12,8 +13,12 @@ namespace autofill {
 // static
 LogRouter* AutofillLogRouterFactory::GetForBrowserContext(
     content::BrowserContext* context) {
-  return static_cast<LogRouter*>(
+  LogRouter* log_router = static_cast<LogRouter*>(
       GetInstance()->GetServiceForBrowserContext(context, /* create = */ true));
+  if (base::FeatureList::IsEnabled(features::test::kAutofillLogToTerminal)) {
+    log_router->LogToTerminal();
+  }
+  return log_router;
 }
 
 // static
