@@ -10,7 +10,6 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/lazy_instance.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/scoped_clear_last_error.h"
@@ -19,20 +18,19 @@
 #include "base/task/thread_pool/environment_config.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "base/threading/thread_local.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace base {
 namespace internal {
 
 namespace {
 
-LazyInstance<ThreadLocalPointer<BlockingObserver>>::Leaky
-    tls_blocking_observer = LAZY_INSTANCE_INITIALIZER;
+ABSL_CONST_INIT thread_local BlockingObserver* blocking_observer = nullptr;
 
 // Last ScopedBlockingCall instantiated on this thread.
-LazyInstance<ThreadLocalPointer<UncheckedScopedBlockingCall>>::Leaky
-    tls_last_scoped_blocking_call = LAZY_INSTANCE_INITIALIZER;
+ABSL_CONST_INIT thread_local UncheckedScopedBlockingCall*
+    last_scoped_blocking_call = nullptr;
 
 // Set to true by scoped_blocking_call_unittest to ensure unrelated threads
 // entering ScopedBlockingCalls don't affect test outcomes.
@@ -45,13 +43,14 @@ bool IsBackgroundPriorityWorker() {
 
 }  // namespace
 
-void SetBlockingObserverForCurrentThread(BlockingObserver* blocking_observer) {
-  DCHECK(!tls_blocking_observer.Get().Get());
-  tls_blocking_observer.Get().Set(blocking_observer);
+void SetBlockingObserverForCurrentThread(
+    BlockingObserver* new_blocking_observer) {
+  DCHECK(!blocking_observer);
+  blocking_observer = new_blocking_observer;
 }
 
 void ClearBlockingObserverForCurrentThread() {
-  tls_blocking_observer.Get().Set(nullptr);
+  blocking_observer = nullptr;
 }
 
 IOJankMonitoringWindow::ScopedMonitoredCall::ScopedMonitoredCall()
@@ -298,13 +297,12 @@ IOJankReportingCallback& IOJankMonitoringWindow::reporting_callback_storage() {
 UncheckedScopedBlockingCall::UncheckedScopedBlockingCall(
     BlockingType blocking_type,
     BlockingCallType blocking_call_type)
-    : blocking_observer_(tls_blocking_observer.Get().Get()),
-      previous_scoped_blocking_call_(tls_last_scoped_blocking_call.Get().Get()),
+    : blocking_observer_(blocking_observer),
+      previous_scoped_blocking_call_(last_scoped_blocking_call),
+      resetter_(&last_scoped_blocking_call, this),
       is_will_block_(blocking_type == BlockingType::WILL_BLOCK ||
                      (previous_scoped_blocking_call_ &&
                       previous_scoped_blocking_call_->is_will_block_)) {
-  tls_last_scoped_blocking_call.Get().Set(this);
-
   // Only monitor non-nested ScopedBlockingCall(MAY_BLOCK) calls on foreground
   // threads. Cancels() any pending monitored call when a WILL_BLOCK or
   // ScopedBlockingCallWithBaseSyncPrimitives nests into a
@@ -335,8 +333,7 @@ UncheckedScopedBlockingCall::~UncheckedScopedBlockingCall() {
   // TLS affects result of GetLastError() on Windows. ScopedClearLastError
   // prevents side effect.
   ScopedClearLastError save_last_error;
-  DCHECK_EQ(this, tls_last_scoped_blocking_call.Get().Get());
-  tls_last_scoped_blocking_call.Get().Set(previous_scoped_blocking_call_.get());
+  DCHECK_EQ(this, last_scoped_blocking_call);
   if (blocking_observer_ && !previous_scoped_blocking_call_)
     blocking_observer_->BlockingEnded();
 }
