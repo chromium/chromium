@@ -7,6 +7,7 @@ import './suggest_tile.js';
 import './tile.js';
 
 import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Cluster, URLVisit} from '../../history_cluster_types.mojom-webui.js';
@@ -77,6 +78,31 @@ export class HistoryClustersModuleElement extends I18nMixin
   private computeClusterTitle_() {
     return this.cluster.label ? this.cluster.label :
                                 this.searchResultPage.pageTitle;
+  }
+
+  private onVisitTileClick_(e: Event) {
+    this.recordClick_(e.target as HTMLElement, 'Visit');
+  }
+
+  private onSuggestTileClick_(e: Event) {
+    this.recordClick_(e.target as HTMLElement, 'Suggest');
+  }
+
+  private recordClick_(tile: HTMLElement, tileType: string) {
+    assert(this.layoutType !== HistoryClusterLayoutType.NONE);
+    const index = Array.from(tile.parentNode!.children).indexOf(tile);
+    chrome.metricsPrivate.recordValue(
+        {
+          metricName: `NewTabPage.HistoryClusters.Layout${this.layoutType}.${
+              tileType!}Tile.ClickIndex`,
+          type: chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LINEAR,
+          min: 0,
+          max: 10,
+          buckets: 10,
+        },
+        index);
+
+    this.dispatchEvent(new Event('usage', {bubbles: true, composed: true}));
   }
 
   private isLayout_(type: HistoryClusterLayoutType): boolean {

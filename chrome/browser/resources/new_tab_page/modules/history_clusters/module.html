@@ -50,72 +50,78 @@
 </style>
 <div id="content">
   <ntp-module-header
-    disable-text="[[i18nRecursive('',
+      disable-text="[[i18nRecursive('',
                                   'modulesDisableButtonText',
                                   'modulesJourneyDisable')]]"
-    dismiss-text="[[i18n('modulesDismissButtonText', title_)]]"
-    show-info-button show-dismiss-button
-    on-disable-button-click="onDisableButtonClick_"
-    on-dismiss-button-click="onDismissButtonClick_"
-    on-info-button-click="onInfoButtonClick_"
-    icon-src="chrome://resources/images/icon_journeys.svg">
+      dismiss-text="[[i18n('modulesDismissButtonText', title_)]]"
+      show-info-button show-dismiss-button
+      on-disable-button-click="onDisableButtonClick_"
+      on-dismiss-button-click="onDismissButtonClick_"
+      on-info-button-click="onInfoButtonClick_"
+      icon-src="chrome://resources/images/icon_journeys.svg">
     [[i18n('modulesJourneysResumeJourney', title_)]]
     <button id="showAllButton" type="button" on-click="onShowAllClick_"
-            slot="title-actions">
-        [[i18n('modulesJourneysShowAll')]]
+        slot="title-actions">
+      [[i18n('modulesJourneysShowAll')]]
     </button>
   </ntp-module-header>
   <template is="dom-if" if="[[isLayout_(1, layoutType)]]" restamp>
     <div id="layout1" class="layout">
       <ntp-history-clusters-tile class="main-tile" large-format
-                           visit="[[cluster.visits.0]]">
+          visit="[[cluster.visits.0]]" on-click="onVisitTileClick_"
+          on-aux-click="onVisitTileClick_">
       </ntp-history-clusters-tile>
       <ntp-history-clusters-tile class="secondary-tile" medium-format
-                           visit="[[cluster.visits.1]]">
+          visit="[[cluster.visits.1]]" on-click="onVisitTileClick_"
+          on-aux-click="onVisitTileClick_">
       </ntp-history-clusters-tile>
       <ntp-history-clusters-suggest-tile class="related-searches-tile"
-                               related-searches="[[cluster.relatedSearches]]">
+          related-searches="[[cluster.relatedSearches]]"
+          on-click="onSuggestTileClick_" on-aux-click="onSuggestTileClick_">
       </ntp-history-clusters-suggest-tile>
     </div>
   </template>
   <template is="dom-if" if="[[isLayout_(2, layoutType)]]" restamp>
     <div id="layout2" class="layout">
       <ntp-history-clusters-tile class="main-tile" large-format
-                           visit="[[cluster.visits.0]]">
+          visit="[[cluster.visits.0]]" on-click="onVisitTileClick_"
+          on-aux-click="onVisitTileClick_">
       </ntp-history-clusters-tile>
       <div class="small-tiles">
-        <ntp-history-clusters-tile small-format
-                                 visit="[[cluster.visits.1]]">
+        <ntp-history-clusters-tile small-format visit="[[cluster.visits.1]]"
+            on-click="onVisitTileClick_" on-aux-click="onVisitTileClick_">
         </ntp-history-clusters-tile>
-        <ntp-history-clusters-tile small-format
-                                 visit="[[cluster.visits.2]]">
+        <ntp-history-clusters-tile small-format visit="[[cluster.visits.2]]"
+            on-click="onVisitTileClick_" on-aux-click="onVisitTileClick_">
         </ntp-history-clusters-tile>
       </div>
       <ntp-history-clusters-suggest-tile class="related-searches-tile"
-                               related-searches="[[cluster.relatedSearches]]">
+          related-searches="[[cluster.relatedSearches]]"
+          on-click="onSuggestTileClick_" on-aux-click="onSuggestTileClick_">
       </ntp-history-clusters-suggest-tile>
     </div>
   </template>
   <template is="dom-if" if="[[isLayout_(3, layoutType)]]" restamp>
     <div id="layout3" class="layout">
       <div class="main-tile">
-        <ntp-history-clusters-tile medium-format
-                           visit="[[cluster.visits.0]]">
+        <ntp-history-clusters-tile medium-format visit="[[cluster.visits.0]]"
+            on-click="onVisitTileClick_" on-aux-click="onVisitTileClick_">
         </ntp-history-clusters-tile>
-        <ntp-history-clusters-tile medium-format
-                             visit="[[cluster.visits.1]]">
+        <ntp-history-clusters-tile medium-format visit="[[cluster.visits.1]]"
+            on-click="onVisitTileClick_" on-aux-click="onVisitTileClick_">
         </ntp-history-clusters-tile>
       </div>
       <div class="small-tiles">
-        <ntp-history-clusters-tile small-format
-                                 visit="[[cluster.visits.2]]">
+        <ntp-history-clusters-tile small-format visit="[[cluster.visits.2]]"
+            on-click="onVisitTileClick_" on-aux-click="onVisitTileClick_">
         </ntp-history-clusters-tile>
-        <ntp-history-clusters-tile small-format
-                                 visit="[[cluster.visits.3]]">
+        <ntp-history-clusters-tile small-format visit="[[cluster.visits.3]]"
+            on-click="onVisitTileClick_" on-aux-click="onVisitTileClick_">
         </ntp-history-clusters-tile>
       </div>
       <ntp-history-clusters-suggest-tile class="related-searches-tile"
-                               related-searches="[[cluster.relatedSearches]]">
+          related-searches="[[cluster.relatedSearches]]"
+          on-click="onSuggestTileClick_" on-aux-click="onSuggestTileClick_">
       </ntp-history-clusters-suggest-tile>
     </div>
   </template>

@@ -92,6 +92,20 @@ function createRelatedSearches(num: number = MIN_RELATED_SEARCHES):
   return result;
 }
 
+function createLayoutSuitableSampleVisits(
+    layoutType: HistoryClusterLayoutType) {
+  switch (layoutType) {
+    case HistoryClusterLayoutType.LAYOUT_1:
+      return createSampleVisits(LAYOUT_1_MIN_VISITS, LAYOUT_1_MIN_IMAGE_VISITS);
+    case HistoryClusterLayoutType.LAYOUT_2:
+      return createSampleVisits(LAYOUT_2_MIN_VISITS, LAYOUT_2_MIN_IMAGE_VISITS);
+    case HistoryClusterLayoutType.LAYOUT_3:
+      return createSampleVisits(LAYOUT_3_MIN_VISITS, LAYOUT_3_MIN_IMAGE_VISITS);
+  }
+
+  throw Error();
+}
+
 function createSampleCluster(overrides?: Partial<Cluster>): Cluster {
   const cluster: Cluster = Object.assign(
       {
@@ -296,7 +310,6 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
 
     const tileElement = $$(moduleElement, 'ntp-history-clusters-tile');
     assertTrue(!!tileElement);
-
     assertEquals($$(tileElement, '#title')!.innerHTML, 'Test Title 1');
   });
 
@@ -391,4 +404,58 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
       assertEquals(index, Number(visit.visitId));
     });
   });
+
+  [HistoryClusterLayoutType.LAYOUT_1, HistoryClusterLayoutType.LAYOUT_2,
+   HistoryClusterLayoutType.LAYOUT_3]
+      .forEach(layoutType => {
+        test('Module produces visit tile click metrics', async () => {
+          handler.setResultFor('getCluster', Promise.resolve({
+            cluster: createSampleCluster(
+                {visits: createLayoutSuitableSampleVisits(layoutType)}),
+          }));
+
+          const moduleElement = await historyClustersDescriptor.initialize(0) as
+              HistoryClustersModuleElement;
+
+          document.body.append(moduleElement);
+          assertTrue(!!moduleElement);
+          await handler.whenCalled('getCluster');
+          await waitAfterNextRender(moduleElement);
+
+          const tileElement =
+              $$(moduleElement, 'ntp-history-clusters-tile') as HTMLElement;
+          assertTrue(!!tileElement);
+
+          ($$(tileElement, '#content') as HTMLElement).click();
+          assertEquals(
+              1,
+              metrics.count(`NewTabPage.HistoryClusters.Layout${
+                  layoutType}.VisitTile.ClickIndex`));
+        });
+
+        test('Module produces suggest tile click metrics', async () => {
+          handler.setResultFor('getCluster', Promise.resolve({
+            cluster: createSampleCluster(
+                {visits: createLayoutSuitableSampleVisits(layoutType)}),
+          }));
+
+          const moduleElement = await historyClustersDescriptor.initialize(0) as
+              HistoryClustersModuleElement;
+
+          document.body.append(moduleElement);
+          assertTrue(!!moduleElement);
+          await handler.whenCalled('getCluster');
+          await waitAfterNextRender(moduleElement);
+
+          const suggestTileElement =
+              $$(moduleElement, 'ntp-history-clusters-suggest-tile');
+          assertTrue(!!suggestTileElement);
+
+          ($$(suggestTileElement, '.related-search') as HTMLElement).click();
+          assertEquals(
+              1,
+              metrics.count(`NewTabPage.HistoryClusters.Layout${
+                  layoutType}.SuggestTile.ClickIndex`));
+        });
+      });
 });
