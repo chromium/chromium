@@ -980,7 +980,7 @@
       'mac-chrome': 'official_goma_mac',
       'mac-chrome-beta': 'official_goma_mac',
       'mac-chrome-stable': 'official_goma_mac',
-      'win-branded-rel': 'chrome_branded_goma_minimal_symbols',
+      'win-branded-compile-rel': 'chrome_branded_goma_minimal_symbols',
       'win-celab-try-rel': 'official_celab_release_bot',
       'win-chrome': 'official_goma_x86',
       'win-chrome-beta': 'official_goma_x86',

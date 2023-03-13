@@ -404,7 +404,7 @@
       "use_goma": true
     }
   },
-  "win-branded-rel": {
+  "win-branded-compile-rel": {
     "gn_args": {
       "dcheck_always_on": false,
       "is_chrome_branded": true,
