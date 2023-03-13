@@ -478,7 +478,8 @@ void WaitForAutofillProfileLocallyPresent(const std::string& guid,
 }
 
 // Tests download of two legacy bookmarks with the same item id.
-- (void)testDownloadTwoPre2015BookmarksWithSameItemId {
+// TODO(crbug.com/1423865): The test is flaky on all devices.
+- (void)FLAKY_testDownloadTwoPre2015BookmarksWithSameItemId {
   const GURL URL1 = web::test::HttpServer::MakeUrl("http://page1.com");
   const GURL URL2 = web::test::HttpServer::MakeUrl("http://page2.com");
   NSString* title1 = @"title1";
