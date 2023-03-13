@@ -119,6 +119,7 @@ const char ExternalProviderImpl::kInstallParam[] = "install_parameter";
 const char ExternalProviderImpl::kExternalCrx[] = "external_crx";
 const char ExternalProviderImpl::kExternalVersion[] = "external_version";
 const char ExternalProviderImpl::kExternalUpdateUrl[] = "external_update_url";
+const char ExternalProviderImpl::kIsBookmarkApp[] = "is_bookmark_app";
 const char ExternalProviderImpl::kIsFromWebstore[] = "is_from_webstore";
 const char ExternalProviderImpl::kKeepIfPresent[] = "keep_if_present";
 const char ExternalProviderImpl::kWasInstalledByOem[] = "was_installed_by_oem";
@@ -379,6 +380,14 @@ void ExternalProviderImpl::RetrieveExtensionsFromPrefs(
         extension_dict.FindBool(kIsFromWebstore);
     if (is_from_webstore.value_or(false)) {
       creation_flags |= Extension::FROM_WEBSTORE;
+    }
+
+    absl::optional<bool> is_bookmark_app =
+        extension_dict.FindBool(kIsBookmarkApp);
+    if (is_bookmark_app.value_or(false)) {
+      // Bookmark apps are obsolete, ignore any remaining dregs that haven't
+      // already been migrated.
+      continue;
     }
 
     // If the extension is in a web app migration treat it as "keep_if_present"
