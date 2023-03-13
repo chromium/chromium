@@ -2,43 +2,42 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {EmojiGroupComponent} from 'chrome://emoji-picker/emoji_group.js';
 import {EmojiPicker} from 'chrome://emoji-picker/emoji_picker.js';
 import {EmojiPickerApiProxyImpl} from 'chrome://emoji-picker/emoji_picker_api_proxy.js';
 import {EMOJI_PICKER_READY, EMOJI_TEXT_BUTTON_CLICK} from 'chrome://emoji-picker/events.js';
-import {assert} from 'chrome://resources/ash/common/assert.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {deepQuerySelector, waitForCondition, waitWithTimeout} from './emoji_picker_test_util.js';
 
 const ACTIVE_CATEGORY_BUTTON = 'category-button-active';
 
-function isCategoryButtonActive(element) {
+function isCategoryButtonActive(element: Element|null|undefined) {
   assert(element, 'category button element should not be null.');
-  return element.classList.contains(ACTIVE_CATEGORY_BUTTON);
+  return element!.classList.contains(ACTIVE_CATEGORY_BUTTON);
 }
 
-function categoryGroupSelector(category) {
+function categoryGroupSelector(category: string) {
   return `emoji-group[category="${category}"]:not(.history)`;
 }
 
-function historyGroupSelector(category) {
+function historyGroupSelector(category: string) {
   return `[data-group="${category}-history"] > ` +
       `emoji-group[category="${category}"]`;
 }
 
-export function categoryTestSuite(category) {
+const CATEGORY_LIST = ['emoji', 'symbol', 'emoticon'];
+
+export function categoryTestSuite(category: string) {
   suite(`emoji-picker-extension-${category}`, () => {
-    /** @type {!EmojiPicker} */
-    let emojiPicker;
-    /** @type {function(...!string): ?HTMLElement} */
-    let findInEmojiPicker;
-    /** @type {function(...!string): ?HTMLElement} */
-    let findEmojiFirstButton;
-    /** @type {Array<string>} */
-    const categoryList = ['emoji', 'symbol', 'emoticon'];
-    /** @type {number} */
-    let categoryIndex;
+    let emojiPicker: EmojiPicker;
+    let findInEmojiPicker: (...selectors: string[]) => HTMLElement | null;
+    let findEmojiFirstButton: (...selectors: string[]) =>
+        HTMLElement | null | undefined;
+    let categoryIndex: number;
 
     setup(() => {
       // Reset DOM state.
@@ -49,34 +48,32 @@ export function categoryTestSuite(category) {
       EmojiPickerApiProxyImpl.getInstance().isIncognitoTextField = () =>
           new Promise((resolve) => resolve({incognito: false}));
       EmojiPicker.configs = () => ({
-        'dataUrls': {
-          'emoji': [
+        dataUrls: {
+          emoji: [
             '/emoji_test_ordering_start.json',
             '/emoji_test_ordering_remaining.json',
           ],
-          'emoticon': ['/emoticon_test_ordering.json'],
-          'symbol': ['/symbol_test_ordering.json'],
+          emoticon: ['/emoticon_test_ordering.json'],
+          symbol: ['/symbol_test_ordering.json'],
+          gif: [],
         },
       });
 
       emojiPicker =
-          /** @type {!EmojiPicker} */ (document.createElement('emoji-picker'));
+          (document.createElement('emoji-picker')) as unknown as EmojiPicker;
 
       findInEmojiPicker = (...path) => deepQuerySelector(emojiPicker, path);
 
       findEmojiFirstButton = (...path) => {
-        const emojiElement = deepQuerySelector(emojiPicker, path);
-        if (emojiElement) {
-          return emojiElement.firstEmojiButton();
-        }
-        return null;
+        return (deepQuerySelector(emojiPicker, path) as EmojiGroupComponent |
+                null)
+            ?.firstEmojiButton();
       };
 
-
-      categoryIndex = categoryList.indexOf(category);
+      categoryIndex = CATEGORY_LIST.indexOf(category);
 
       // Wait until emoji data is loaded before executing tests.
-      return new Promise((resolve) => {
+      return new Promise<void>((resolve) => {
         emojiPicker.addEventListener(EMOJI_PICKER_READY, () => {
           flush();
           resolve();
@@ -87,10 +84,9 @@ export function categoryTestSuite(category) {
 
     test(category + ' category button is initialized correctly', () => {
       const categoryButton =
-          findInEmojiPicker('emoji-search')
-              .shadowRoot
-              .querySelectorAll('emoji-category-button')[categoryIndex]
-              .shadowRoot.querySelector('cr-icon-button');
+          findInEmojiPicker('emoji-search')!.shadowRoot!
+              .querySelectorAll('emoji-category-button')[categoryIndex]!
+              .shadowRoot!.querySelector('cr-icon-button');
       if (categoryIndex === 0) {
         assertTrue(
             isCategoryButtonActive(categoryButton),
@@ -107,13 +103,13 @@ export function categoryTestSuite(category) {
         () => {
           const allCategoryButtons =
               Array
-                  .from(
-                      findInEmojiPicker('emoji-search')
-                          .shadowRoot.querySelectorAll('emoji-category-button')
-                          .values())
-                  .map(item => item.shadowRoot.querySelector('cr-icon-button'));
+                  .from(findInEmojiPicker('emoji-search')!.shadowRoot!
+                            .querySelectorAll('emoji-category-button')
+                            .values())
+                  .map(
+                      item => item.shadowRoot!.querySelector('cr-icon-button'));
           const categoryButton = allCategoryButtons[categoryIndex];
-          categoryButton.click();
+          categoryButton!.click();
           flush();
           assertTrue(isCategoryButtonActive(categoryButton));
           allCategoryButtons.forEach((categoryButtonItem, index) => {
@@ -129,7 +125,7 @@ export function categoryTestSuite(category) {
               .filter(item => item.category === category && !item.searchOnly)
               .length;
       const numRenderedGroups =
-          emojiPicker.shadowRoot
+          emojiPicker.shadowRoot!
               .querySelectorAll(categoryGroupSelector(category))
               .length;
       assertGT(numGroups, 0);
@@ -140,7 +136,7 @@ export function categoryTestSuite(category) {
         `each ${category} group should have the correct heading and correct` +
             `number of ${category} entries.`,
         () => {
-          const allGroups = emojiPicker.shadowRoot.querySelectorAll(
+          const allGroups = emojiPicker.shadowRoot!.querySelectorAll(
               categoryGroupSelector(category));
 
           const data = emojiPicker.categoriesData.filter(
@@ -149,7 +145,7 @@ export function categoryTestSuite(category) {
               item => item.category === category);
 
           // The first group element is 'Recently used'.
-          assertEquals(groupElements[0].name, 'Recently used');
+          assertEquals(groupElements[0]!.name, 'Recently used');
 
           // Emoticon group elements are created for all data + history.
           assertEquals(groupElements.length, data.length + 1);
@@ -157,15 +153,13 @@ export function categoryTestSuite(category) {
           for (let idx = 0; idx < allGroups.length; ++idx) {
             const group = allGroups[idx];
             const actualFirstGroupName =
-                (/** @type {string} */ (
-                     group.shadowRoot.querySelector('#heading-left')
-                         .innerHTML.trim()))
-                    .replace('&amp;', '&');
-            const expectedFirstGroupName = groupElements[idx + 1].name;
+                (group!.shadowRoot!.querySelector('#heading-left')!.innerHTML
+                     .trim())!.replace('&amp;', '&');
+            const expectedFirstGroupName = groupElements[idx + 1]!.name;
             assertEquals(expectedFirstGroupName, actualFirstGroupName);
             assertEquals(
-                groupElements[idx + 1].emoji.length,
-                group.shadowRoot.querySelectorAll('.emoji-button').length);
+                groupElements[idx + 1]!.emoji.length,
+                group!.shadowRoot!.querySelectorAll('.emoji-button').length);
           }
         });
 
@@ -174,19 +168,20 @@ export function categoryTestSuite(category) {
             `correct ${category} string and name.`,
         async () => {
           const firstButton = await waitForCondition(
-              () => findEmojiFirstButton(categoryGroupSelector(category)));
+              () => findEmojiFirstButton(categoryGroupSelector(category)),
+              'Wait for first button to render');
           const groupElements = emojiPicker.categoriesGroupElements.filter(
               item => item.category === category && !item.isHistory);
-          const expectedString = groupElements[0].emoji[0].base.string;
-          const expectedName = groupElements[0].emoji[0].base.name;
-          const buttonClickPromise = new Promise(
+          const expectedString = groupElements[0]!.emoji[0]!.base.string;
+          const expectedName = groupElements[0]!.emoji[0]!.base.name;
+          const buttonClickPromise = new Promise<void>(
               (resolve) => emojiPicker.addEventListener(
                   EMOJI_TEXT_BUTTON_CLICK, (event) => {
                     assertEquals(expectedString, event.detail.text);
                     assertEquals(expectedName, event.detail.name);
                     resolve();
                   }));
-          firstButton.click();
+          firstButton!.click();
           await flush();
           await waitWithTimeout(
               buttonClickPromise, 1000,
@@ -195,7 +190,7 @@ export function categoryTestSuite(category) {
 
     test(`recently used ${category} group should be hidden when empty.`, () => {
       assertEquals(
-          findInEmojiPicker(historyGroupSelector(category)).style.display, '');
+          findInEmojiPicker(historyGroupSelector(category))!.style.display, '');
     });
 
     test(
@@ -205,16 +200,15 @@ export function categoryTestSuite(category) {
           // It is assumed that the order of categoryList is the same as
           // buttons.
           const categoryButton =
-              findInEmojiPicker('emoji-search')
-                  .shadowRoot
-                  .querySelectorAll('emoji-category-button')[categoryIndex]
-                  .shadowRoot.querySelector('cr-icon-button');
-          categoryButton.click();
+              findInEmojiPicker('emoji-search')!.shadowRoot!
+                  .querySelectorAll('emoji-category-button')[categoryIndex]!
+                  .shadowRoot!.querySelector('cr-icon-button');
+          categoryButton!.click();
           flush();
           const historyTab = findInEmojiPicker(
               `#tabs emoji-group-button[data-group="${category}-history"]`,
               'cr-icon-button');
-          assertTrue(historyTab.disabled);
+          assertTrue((historyTab as CrIconButtonElement).disabled);
         });
 
     test(
@@ -225,19 +219,20 @@ export function categoryTestSuite(category) {
 
           const emojiButton =
               findEmojiFirstButton(categoryGroupSelector(category));
-          emojiButton.click();
+          emojiButton!.click();
 
           const recentlyUsedButton = await waitForCondition(
-              () => findEmojiFirstButton(historyGroupSelector(category)));
-          const buttonClickPromise = new Promise(
+              () => findEmojiFirstButton(historyGroupSelector(category)),
+              'Wait for history element to render');
+          const buttonClickPromise = new Promise<void>(
               (resolve) => emojiPicker.addEventListener(
                   EMOJI_TEXT_BUTTON_CLICK, (event) => {
                     assertEquals(
-                        emojiButton.innerHTML.trim(), event.detail.text);
+                        emojiButton!.innerHTML.trim(), event.detail.text);
                     resolve();
                   }));
 
-          recentlyUsedButton.click();
+          recentlyUsedButton!.click();
           await waitWithTimeout(
               buttonClickPromise, 1000,
               `Clicking at recently used ${category} buttons does not ` +
@@ -252,15 +247,15 @@ export function categoryTestSuite(category) {
 
           const emojiButton =
               findEmojiFirstButton(categoryGroupSelector(category));
-          emojiButton.click();
+          emojiButton!.click();
 
           const recentEmojiButton = await waitForCondition(
-              () => findEmojiFirstButton(historyGroupSelector(category)));
+              () => findEmojiFirstButton(historyGroupSelector(category)),
+              'Wait for recent to render');
           assert(recentEmojiButton);
 
-          const recentlyUsedEmoji =
-              findInEmojiPicker(historyGroupSelector(category))
-                  .shadowRoot.querySelectorAll('.emoji-button');
+          const recentlyUsedEmoji = findInEmojiPicker(historyGroupSelector(
+              category))!.shadowRoot!.querySelectorAll('.emoji-button');
           assertEquals(1, recentlyUsedEmoji.length);
         });
   });
