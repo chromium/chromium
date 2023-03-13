@@ -272,7 +272,7 @@ void SearchController::SetResults(const SearchProvider* provider,
 void SearchController::SetSearchResults(const SearchProvider* provider) {
   Rank(provider->ResultType());
 
-  for (auto& result : provider->results()) {
+  for (const auto& result : results_[provider->ResultType()]) {
     metrics_manager_->OnSearchResultsUpdated(result->scoring());
   }
 
