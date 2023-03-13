@@ -122,7 +122,7 @@ more frames must also be
 [requested](https://source.chromium.org/chromium/chromium/src/+/main:components/cast_streaming/browser/control/remoting/rpc_demuxer_stream_handler.cc;l=275;drc=821de11ab399e78d0b8d4894ec07fe6d306cd896)
 from the remote renderer running on the streaming sender.
 
-![Cast Streaming initialization flow for browser process](https://services.google.com/fh/files/misc/cast_streaming_init_browser_v2.png "browser process")
+![Cast Streaming initialization flow for browser process](/docs/images/cast_streaming_init_browser.png "browser process")
 
 The files involved in this section are located mainly at the top-level of each
 directory (i.e. `//components/cast_streaming/browser` or
@@ -150,7 +150,7 @@ these commands by forwarding them to the underlying embedder-specific
 [forwarding back](https://source.chromium.org/chromium/chromium/src/+/main:components/cast_streaming/renderer/control/playback_command_forwarding_renderer.cc;l=257;drc=9b95f32e6c0fe938fdec7dd800358619d4103ba1)
 any `RendererClient` events.
 
-![Cast Streaming initialization flow for renderer process control channel](https://services.google.com/fh/gumdrop/preview/misc/cast_streaming_init_renderer_control_v2.png "renderer process control channel")
+![Cast Streaming initialization flow for renderer process control channel](/docs/images/cast_streaming_init_renderer_control.png "renderer process control channel")
 
 
 Creation of the Frame channel is slightly more complex. First, an override from
@@ -170,7 +170,7 @@ the `OnStreamsInitialized()` call which
 to create all remaining objects and begin pulling frames from the browser
 process.
 
-![Cast Streaming initialization flow for renderer process frame channel](https://services.google.com/fh/files/misc/cast_streaming_init_renderer_frame.png "renderer process frame channel")
+![Cast Streaming initialization flow for renderer process frame channel](/docs/images/cast_streaming_init_renderer_frame.png "renderer process frame channel")
 
 # Important Scenarios
 
@@ -206,7 +206,7 @@ back with its data and
 [provided](https://source.chromium.org/chromium/chromium/src/+/main:components/cast_streaming/public/decoder_buffer_reader.cc;l=59;drc=c65a603f7748a9f09e8740ab3f25a8ae00077a03)
 to the `FrameInjectingDemuxerStream`.
 
-![Cast Streaming frame playback scenario](https://services.google.com/fh/gumdrop/preview/misc/frame_playback_flow_v2.png "frame playback")
+![Cast Streaming frame playback scenario](/docs/images/cast_streaming_frame_playback_flow.png "frame playback")
 
 ## Changing of the `AudioDecoderConfig` / `VideoDecoderConfig`
 
@@ -247,7 +247,7 @@ to the Renderer process.
 associated with this new stream, and may then will return the config as part of
 the next (or ongoing) `Read()` call.
 
-![Cast Streaming new config scenario](https://services.google.com/fh/files/misc/new_config_flow.png "new config")
+![Cast Streaming new config scenario](/docs/images/cast_streaming_new_config_flow.png "new config")
 
 ### Reconfiguration of the mirroring session
 

@@ -181,7 +181,7 @@ functions to supply embedder-specific types or commands, such as:
 Additionally, it exposes functions by which it may be informed of state changes
 in the `RuntimeApplication` instance it owns.
 
-![cast_receiver code structure](https://services.google.com/fh/gumdrop/preview/misc/cast_receiver_code_structure.png "cast_receiver code structure")
+![cast_receiver code structure](/docs/images/cast_receiver_code_structure.png "cast_receiver code structure")
 
 
 ## Common Scenarios
@@ -222,7 +222,7 @@ and then
 the application with the `RuntimeApplicationDispatcher` after the
 `StopApplication()`’s callback returns.
 
-![Web Application code flow](https://services.google.com/fh/gumdrop/preview/misc/webruntimeapplication_flow.png "WebRuntimeApplication structure")
+![Web Application code flow](/docs/images/cast_receiver_webruntimeapplication_flow.png "WebRuntimeApplication structure")
 
 ### Streaming
 
@@ -270,10 +270,8 @@ by the remote device, a `NotifyApplicationStopped()` event will be fired to the
 [destroyed](https://source.chromium.org/chromium/chromium/src/+/main:components/cast_receiver/browser/public/runtime_application_dispatcher.h;l=48;drc=1bcc6d9e4af49c462d3b2bee9f00db757084d262)
 by the `RuntimeApplicationDispatcher`.
 
-![Streaming Application code flow](https://services.google.com/fh/gumdrop/preview/misc/streamingruntimeapplication_flow.png "StreamingRuntimeApplication structure")
+![Streaming Application code flow](/docs/images/cast_receiver_streamingruntimeapplication_flow.png "StreamingRuntimeApplication structure")
 
 # Known Issues and Limitations
 
 - TODO(crbug.com/1405480): DRM is not supported.
-- TODO(crbug.com/1403250): Remoting has a number of issues currently being
-investigated.
