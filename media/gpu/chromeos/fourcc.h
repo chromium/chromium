@@ -93,6 +93,10 @@ class MEDIA_GPU_EXPORT Fourcc {
     // with the bottom six bits ignored.
     P010 = ComposeFourcc('P', '0', '1', '0'),
 
+    // Two-plane Mediatek variant of P010. See
+    // https://tinyurl.com/mtk-10bit-video-format for details.
+    MT2T = ComposeFourcc('M', 'T', '2', 'T'),
+
     // Single plane 8-bit little-endian ARGB (bytes in reverse B-G-R-A order).
     AR24 = ComposeFourcc('A', 'R', '2', '4'),
     // V4L2 proprietary format.

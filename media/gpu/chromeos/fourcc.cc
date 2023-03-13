@@ -33,6 +33,7 @@ absl::optional<Fourcc> Fourcc::FromUint32(uint32_t fourcc) {
     case MT21:
     case MM21:
     case P010:
+    case MT2T:
     case AR24:
     case Q08C:
     case Q10C:
@@ -185,6 +186,8 @@ VideoPixelFormat Fourcc::ToVideoPixelFormat() const {
       return PIXEL_FORMAT_NV12;
     case P010:
       return PIXEL_FORMAT_P016LE;
+    case MT2T:
+      return PIXEL_FORMAT_P016LE;
     case AR24:
       return PIXEL_FORMAT_ARGB;
     // V4L2_PIX_FMT_QC08C is a proprietary Qualcomm compressed format that can
@@ -262,6 +265,7 @@ absl::optional<uint32_t> Fourcc::ToVAFourCC() const {
     case YM16:
     case MT21:
     case MM21:
+    case MT2T:
     case Q08C:
     case Q10C:
       // VAAPI does not know about these formats, so signal this by returning
@@ -284,6 +288,7 @@ absl::optional<Fourcc> Fourcc::ToSinglePlanar() const {
     case NV21:
     case P010:
     case MM21:
+    case MT2T:
     case AR24:
       return Fourcc(value_);
     case YM12:
@@ -317,6 +322,7 @@ bool Fourcc::IsMultiPlanar() const {
     case NV21:
     case YU16:
     case P010:
+    case MT2T:
     case AR24:
     case Q08C:
     case Q10C:
@@ -358,6 +364,9 @@ static_assert(Fourcc::MM21 == V4L2_PIX_FMT_MM21, "Mismatch Fourcc");
 #ifdef V4L2_PIX_FMT_P010
 static_assert(Fourcc::P010 == V4L2_PIX_FMT_P010, "Mismatch Fourcc");
 #endif  // V4L2_PIX_FMT_P010
+#ifdef V4L2_PIX_FMT_MT2T
+static_assert(Fourcc::MT2T == V4L2_PIX_FMT_MT2T, "Mismatch Fourcc");
+#endif  // V4L2_PIX_FMT_MT2T
 #ifdef V4L2_PIX_FMT_QC08C
 static_assert(Fourcc::Q08C == V4L2_PIX_FMT_QC08C, "Mismatch Fourcc");
 #endif  // V4L2_PIX_FMT_QC08C

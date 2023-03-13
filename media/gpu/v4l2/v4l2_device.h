@@ -97,6 +97,9 @@
 #define V4L2_PIX_FMT_P010 \
   v4l2_fourcc('P', '0', '1', '0') /* 24  Y/CbCr 4:2:0 10-bit per component */
 #endif
+#ifndef V4L2_PIX_FMT_MT2T
+#define V4L2_PIX_FMT_MT2T v4l2_fourcc('M', 'T', '2', 'T')
+#endif
 #ifndef V4L2_PIX_FMT_QC08C
 #define V4L2_PIX_FMT_QC08C \
   v4l2_fourcc('Q', '0', '8', 'C') /* Qualcomm 8-bit compressed */
