@@ -3612,6 +3612,7 @@ if (!is_android) {
 
     if ((!is_android || enable_vr) && !is_ios) {
       sources += [ "../browser/ui/views/payments/payment_handler_header_view_ui_browsertest.cc" ]
+      deps += [ "//components/payments/content/icon" ]
     }
 
     if ((is_linux || is_chromeos) && !is_component_build) {
