@@ -135,10 +135,6 @@ LockScreenStartReauthUI::LockScreenStartReauthUI(content::WebUI* web_ui)
       "policyProvidedCaCertsTooltipMessage",
       l10n_util::GetStringUTF16(
           IDS_CUSTOM_POLICY_PROVIDED_TRUST_ANCHORS_AT_LOCK_SCREEN_TOOLTIP));
-  source->AddString(
-      "policyProvidedCaCertsWarningMessage",
-      l10n_util::GetStringUTF16(
-          IDS_CUSTOM_POLICY_PROVIDED_TRUST_ANCHORS_AT_LOCK_SCREEN_WARNING_MESSAGE));
 
   source->AddResourcePaths(base::make_span(kLockScreenReauthResources,
                                            kLockScreenReauthResourcesSize));

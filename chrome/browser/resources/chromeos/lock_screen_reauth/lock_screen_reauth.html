@@ -147,12 +147,9 @@
   }
 
   #policyCertIcon {
+    height: 20px;
     padding-top: 8px;
-  }
-
-  #policyCertWarning {
-    padding-inline-start: 5px;
-    padding-top: 15px;
+    width: 20px;
   }
 
   .title-icon {
@@ -330,9 +327,6 @@
               'policyProvidedCaCertsTooltipMessage', authDomain_)]]"
           tooltip-position="bottom">
       </cr-tooltip-icon>
-      <span id="policyCertWarning">
-        $i18n{policyProvidedCaCertsWarningMessage}
-      </span>
     </div>
     <div id="samlHeader" saml-notice-message$="[[showSamlNoticeMessage_]]">
       <span id="samlNoticeMessage" hidden="[[!showSamlNoticeMessage_]]">
