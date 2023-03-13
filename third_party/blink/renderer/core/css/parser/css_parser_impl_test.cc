@@ -438,7 +438,7 @@ TEST(CSSParserImplTest, RemoveImportantAnnotationIfPresent) {
   static const TestCase test_cases[] = {
       {"", "", false},
       {"!important", "", true},
-      {" !important", " ", true},
+      {" !important", "", true},
       {"!", "!", false},
       {"1px", "1px", false},
       {"2px!important", "2px", true},

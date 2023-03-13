@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
+#include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
@@ -774,19 +775,34 @@ StyleCascade::TokenSequence::TokenSequence(const CSSVariableData* data)
       has_root_font_units_(data->HasRootFontUnits()),
       has_line_height_units_(data->HasLineHeightUnits()) {}
 
-bool StyleCascade::TokenSequence::Append(const TokenSequence& sequence,
-                                         wtf_size_t byte_limit) {
+bool StyleCascade::TokenSequence::AppendFallback(const TokenSequence& sequence,
+                                                 wtf_size_t byte_limit) {
   // https://drafts.csswg.org/css-variables/#long-variables
   if (original_text_.length() + sequence.original_text_.length() > byte_limit) {
     return false;
   }
-  if (!tokens_.empty() && !sequence.tokens_.empty() &&
-      NeedsInsertedComment(tokens_.back(), sequence.tokens_.front())) {
+
+  base::span<const CSSParserToken> other_tokens(sequence.tokens_.begin(),
+                                                sequence.tokens_.end());
+  StringView other_text = sequence.original_text_;
+  other_text =
+      CSSVariableParser::StripTrailingWhitespaceAndComments(other_text);
+  while (!other_tokens.empty() &&
+         other_tokens.front().GetType() == kWhitespaceToken) {
+    other_tokens = other_tokens.subspan(1);
+  }
+  while (!other_tokens.empty() &&
+         other_tokens.back().GetType() == kWhitespaceToken) {
+    other_tokens = other_tokens.first(other_tokens.size() - 1);
+  }
+
+  if (!tokens_.empty() && !other_tokens.empty() &&
+      NeedsInsertedComment(tokens_.back(), other_tokens.front())) {
     original_text_.Append("/**/");
   }
-  tokens_.Append(sequence.tokens_.data(),
-                 static_cast<wtf_size_t>(sequence.tokens_.size()));
-  original_text_.Append(sequence.original_text_);
+  tokens_.Append(other_tokens.data(),
+                 static_cast<wtf_size_t>(other_tokens.size()));
+  original_text_.Append(other_text);
 
   is_animation_tainted_ |= sequence.is_animation_tainted_;
   has_font_units_ |= sequence.has_font_units_;
@@ -1192,6 +1208,8 @@ bool StyleCascade::ResolveVarInto(ParserTokenStream& stream,
   //
   // https://drafts.csswg.org/css-variables/#cycles
   if (ConsumeComma(stream)) {
+    stream.ConsumeWhitespace();
+
     TokenSequence fallback;
     bool success =
         ResolveTokensInto(stream, resolver, parent_tokenizer, fallback);
@@ -1205,7 +1223,7 @@ bool StyleCascade::ResolveVarInto(ParserTokenStream& stream,
     }
     if (!data) {
       return success &&
-             out.Append(fallback, CSSVariableData::kMaxVariableBytes);
+             out.AppendFallback(fallback, CSSVariableData::kMaxVariableBytes);
     }
   }
 

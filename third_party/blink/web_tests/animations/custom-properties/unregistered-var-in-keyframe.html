@@ -28,10 +28,10 @@ div {
 <div id="targetB"></div>
 <script>
 test(() => {
-  assert_equals(getComputedStyle(targetA).getPropertyValue('--from'), ' blue');
-  assert_equals(getComputedStyle(targetA).getPropertyValue('--to'), ' cyan');
-  assert_equals(getComputedStyle(targetB).getPropertyValue('--from'), ' green');
-  assert_equals(getComputedStyle(targetB).getPropertyValue('--to'), ' lime');
+  assert_equals(getComputedStyle(targetA).getPropertyValue('--from'), 'blue');
+  assert_equals(getComputedStyle(targetA).getPropertyValue('--to'), 'cyan');
+  assert_equals(getComputedStyle(targetB).getPropertyValue('--from'), 'green');
+  assert_equals(getComputedStyle(targetB).getPropertyValue('--to'), 'lime');
 }, 'CSS Animations on custom properties should be applied');
 
 test(() => {

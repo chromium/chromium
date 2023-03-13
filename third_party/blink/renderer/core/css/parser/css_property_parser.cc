@@ -173,11 +173,26 @@ bool CSSPropertyParser::ParseValueStart(CSSPropertyID unresolved_property,
     }
   }
 
+#if DCHECK_IS_ON()
+  // Due to this requirement, we can use StripTrailingWhitespaceAndComments()
+  // instead of having to also strip from the beginning.
+  if (value_.range.size() > 0) {
+    DCHECK_NE(value_.range.Peek().GetType(), kCommentToken);
+    DCHECK_NE(value_.range.Peek().GetType(), kWhitespaceToken);
+  }
+  if (!value_.text.empty()) {
+    DCHECK(!IsHTMLSpace(value_.text[0]));
+    DCHECK(!value_.text.ToString().StartsWith("/*"));
+  }
+#endif
+
   if (CSSVariableParser::ContainsValidVariableReferences(original_range)) {
+    StringView text =
+        CSSVariableParser::StripTrailingWhitespaceAndComments(value_.text);
     bool is_animation_tainted = false;
     auto* variable = MakeGarbageCollected<CSSVariableReferenceValue>(
-        CSSVariableData::Create({original_range, value_.text},
-                                is_animation_tainted, true),
+        CSSVariableData::Create({original_range, text}, is_animation_tainted,
+                                true),
         *context_);
 
     if (is_shorthand) {

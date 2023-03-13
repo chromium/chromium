@@ -256,11 +256,14 @@ class CORE_EXPORT StyleCascade {
     }
     String OriginalText() { return original_text_.ToString(); }
 
-    bool Append(const TokenSequence&, wtf_size_t byte_limit);
     bool Append(CSSVariableData* data,
                 CSSTokenizer* parent_tokenizer,
                 wtf_size_t byte_limit = std::numeric_limits<wtf_size_t>::max());
     void Append(const CSSParserToken&, StringView string);
+
+    // NOTE: Strips surrounding whitespace (the other are assumed to
+    // already have done that).
+    bool AppendFallback(const TokenSequence&, wtf_size_t byte_limit);
 
     scoped_refptr<CSSVariableData> BuildVariableData();
 

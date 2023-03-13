@@ -435,7 +435,7 @@ TEST_F(StyleCascadeTest, ApplyCustomProperty) {
   cascade.Add("--y", "nope");
   cascade.Apply();
 
-  EXPECT_EQ(" 10px ", cascade.ComputedValue("--x"));
+  EXPECT_EQ("10px", cascade.ComputedValue("--x"));
   EXPECT_EQ("nope", cascade.ComputedValue("--y"));
 }
 
@@ -1904,7 +1904,7 @@ TEST_F(StyleCascadeTest, SubstituteRegisteredImplicitInitialValue) {
   cascade.Add("--y", " var(--x) ");
   cascade.Apply();
   EXPECT_EQ("13px", cascade.ComputedValue("--x"));
-  EXPECT_EQ(" 13px ", cascade.ComputedValue("--y"));
+  EXPECT_EQ("13px", cascade.ComputedValue("--y"));
 }
 
 TEST_F(StyleCascadeTest, SubstituteRegisteredUniversal) {
@@ -1935,7 +1935,7 @@ TEST_F(StyleCascadeTest, SubstituteRegisteredUniversalInitial) {
   cascade.Add("--y", " var(--x) ");
   cascade.Apply();
   EXPECT_EQ("foo", cascade.ComputedValue("--x"));
-  EXPECT_EQ(" foo ", cascade.ComputedValue("--y"));
+  EXPECT_EQ("foo", cascade.ComputedValue("--y"));
 }
 
 TEST_F(StyleCascadeTest, RegisteredExplicitInitial) {
@@ -3583,7 +3583,7 @@ TEST_F(StyleCascadeTest, GetCascadedValues) {
   EXPECT_EQ("5px", CssTextAt(map, "width"));
   EXPECT_EQ("61px", CssTextAt(map, "height"));
   EXPECT_EQ("700px", CssTextAt(map, "--x"));
-  EXPECT_EQ("80px ", CssTextAt(map, "--y"));
+  EXPECT_EQ("80px", CssTextAt(map, "--y"));
 }
 
 TEST_F(StyleCascadeTest, GetCascadedValuesCssWide) {
@@ -3636,7 +3636,7 @@ TEST_F(StyleCascadeTest, GetCascadedValuesInterpolated) {
   cascade.Apply();
 
   // Verify that effect values from the animation did apply:
-  EXPECT_EQ(" 200px", cascade.ComputedValue("--x"));
+  EXPECT_EQ("200px", cascade.ComputedValue("--x"));
   EXPECT_EQ("150px", cascade.ComputedValue("width"));
 
   // However, we don't currently support returning interpolated vales from

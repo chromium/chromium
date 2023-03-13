@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-PASS Getting a custom property not in the computed style returns null
-PASS Getting a valid property from computed style returns the correct entry
-FAIL Getting a valid custom property from computed style returns the correct entry assert_equals: expected "auto" but got " auto"
-PASS Getting a list-valued property from computed style returns only the first value
-PASS Computed StylePropertyMap.get is not case-sensitive
-PASS Computed StylePropertyMap.get reflects updates in inline style
-Harness: the test ran to completion.
-

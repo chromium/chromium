@@ -33,5 +33,5 @@ shouldThrow('computedStyle.setProperty("--error", "")',
     '"NoModificationAllowedError: Failed to execute \'setProperty\' on \'CSSStyleDeclaration\': These styles are computed, and therefore the \'--error\' property is read-only."');
 
 var cssText = document.styleSheets[0].rules[1].cssText;
-shouldBeEqualToString('cssText', '#test2 { --variable:value; }')
+shouldBeEqualToString('cssText', '#test2 { --variable: value; }')
 </script>

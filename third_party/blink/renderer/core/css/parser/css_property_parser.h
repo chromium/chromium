@@ -49,6 +49,11 @@ class CORE_EXPORT CSSPropertyParser {
   CSSPropertyParser(const CSSPropertyParser&) = delete;
   CSSPropertyParser& operator=(const CSSPropertyParser&) = delete;
 
+  // NOTE: The CSSTokenizedValue must have leading whitespace (and comments)
+  // stripped; it will strip any trailing whitespace (and comments) itself.
+  // This is done because it's easy to strip tokens from the start when
+  // tokenizing (but trailing comments is so rare that we can just as well
+  // do that in a slow path).
   static bool ParseValue(CSSPropertyID,
                          bool important,
                          const CSSTokenizedValue&,

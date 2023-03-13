@@ -21,8 +21,8 @@ div {
 <div id="targetB"></div>
 <script>
 test(() => {
-  assert_equals(getComputedStyle(targetA).getPropertyValue('--x'), ' green');
-  assert_equals(getComputedStyle(targetB).getPropertyValue('--x'), ' lime');
+  assert_equals(getComputedStyle(targetA).getPropertyValue('--x'), 'green');
+  assert_equals(getComputedStyle(targetB).getPropertyValue('--x'), 'lime');
 }, 'CSS Animations on custom properties should be applied');
 
 test(() => {

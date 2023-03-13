@@ -9,10 +9,10 @@ test(function() {
   testElem.style.setProperty('--foo', 'first');
   assert_equals(testElem.style.getPropertyValue('--foo'), 'first');
   assert_equals(getComputedStyle(testElem).getPropertyValue('--foo'), 'first');
-  assert_equals(testElem.getAttribute('style'), '--foo:first;');
+  assert_equals(testElem.getAttribute('style'), '--foo: first;');
   testElem.style.setProperty('--foo', 'second');
   assert_equals(testElem.style.getPropertyValue('--foo'), 'second');
-  assert_equals(testElem.getAttribute('style'), '--foo:second;');
+  assert_equals(testElem.getAttribute('style'), '--foo: second;');
 }, "subsequent writes to inline style overwrite older values.")
 
 test(function() {

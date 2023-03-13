@@ -2197,6 +2197,8 @@ void CSSParserImpl::ConsumeVariableValue(
   }
 }
 
+// NOTE: Leading whitespace must be stripped from tokenized_value, since
+// ParseValue() has the same requirement.
 void CSSParserImpl::ConsumeDeclarationValue(
     const CSSTokenizedValue& tokenized_value,
     CSSPropertyID unresolved_property,
@@ -2207,7 +2209,10 @@ void CSSParserImpl::ConsumeDeclarationValue(
 }
 
 CSSTokenizedValue CSSParserImpl::ConsumeValue(CSSParserTokenStream& stream) {
-  stream.EnsureLookAhead();
+  // Consume leading whitespace and comments. This is needed
+  // by ConsumeDeclarationValue() / CSSPropertyParser::ParseValue(),
+  // and also CSSVariableParser::ParseDeclarationIncludingCSSWide().
+  stream.ConsumeWhitespace();
   wtf_size_t value_start_offset = stream.LookAheadOffset();
   CSSParserTokenRange range = stream.ConsumeUntilPeekedTypeIs<>();
   wtf_size_t value_end_offset = stream.LookAheadOffset();

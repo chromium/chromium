@@ -209,10 +209,7 @@ String StylePropertySerializer::GetCustomPropertyText(
   const CSSValue* value = property.Value();
   SerializeIdentifier(property.Name().ToAtomicString(), result,
                       is_not_first_decl);
-  result.Append(':');
-  if (value->IsCSSWideKeyword()) {
-    result.Append(' ');
-  }
+  result.Append(": ");
   result.Append(value->CssText());
   if (property.IsImportant()) {
     result.Append(" !important");
