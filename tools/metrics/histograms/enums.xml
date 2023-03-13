@@ -54089,6 +54089,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="0" label="A tab is dragged."/>
   <int value="1" label="A tab is dropped at the same index position."/>
   <int value="2" label="A tab is dropped at a new index position."/>
+  <int value="3" label="A tab is dropped outside of its collection view."/>
 </enum>
 
 <enum name="IOSTabSwitcherDragOrigin">

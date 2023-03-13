@@ -22,7 +22,9 @@ enum class DragDropTabs {
   kDragEndAtSameIndex = 1,
   // A tab is dropped at a new index position.
   kDragEndAtNewIndex = 2,
-  kMaxValue = kDragEndAtNewIndex
+  // A tab is dropped outside of its collection view.
+  kDragEndInOtherCollection = 3,
+  kMaxValue = kDragEndInOtherCollection
 };
 
 // Values of UMA DragOrigin histograms. These values are persisted to logs.
