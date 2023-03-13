@@ -26,6 +26,12 @@
 
 namespace media {
 
+enum class HlsFallbackImplementation {
+  kNone,
+  kMediaPlayer,
+  kBuiltinHlsPlayer,
+};
+
 // This class manages both an implementation of media::Demuxer and of
 // media::DataSource. DataSource, in particular may be null, since both MSE
 // playback and Android's MediaPlayerRenderer do not make use of it. In the
@@ -60,7 +66,7 @@ class MEDIA_EXPORT DemuxerManager {
 
     // Used for controlling the client when a demuxer swap happens.
     virtual void StopForDemuxerReset() = 0;
-    virtual bool RestartForHls() = 0;
+    virtual void RestartForHls() = 0;
 
     virtual bool IsSecurityOriginCryptographic() const = 0;
 
@@ -109,7 +115,10 @@ class MEDIA_EXPORT DemuxerManager {
 
   void OnPipelineError(PipelineStatus error);
   void SetLoadedUrl(GURL url);
-  PipelineStatus ResetAfterHlsDetected(bool cryptographic_url);
+#if BUILDFLAG(ENABLE_HLS_DEMUXER) || BUILDFLAG(IS_ANDROID)
+  void PopulateHlsHistograms(bool cryptographic_url);
+  PipelineStatus SelectHlsFallbackMechanism(bool cryptographic_url);
+#endif  // BUILDFLAG(ENABLE_HLS_DEMUXER) || BUILDFLAG(IS_ANDROID)
   void DisallowFallback();
 
   // Methods that help manage demuxers
@@ -220,7 +229,7 @@ class MEDIA_EXPORT DemuxerManager {
   bool allow_media_player_renderer_credentials_ = false;
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  bool demuxer_found_hls_ = false;
+  HlsFallbackImplementation hls_fallback_ = HlsFallbackImplementation::kNone;
 
   // Are we allowed to switch demuxer mid-stream when fallback error codes
   // are encountered

@@ -419,7 +419,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   bool CouldPlayIfEnoughData() override;
   bool IsMediaPlayerRendererClient() override;
   void StopForDemuxerReset() override;
-  bool RestartForHls() override;
+  void RestartForHls() override;
   bool IsSecurityOriginCryptographic() const override;
   void UpdateLoadedUrl(const GURL& url) override;
 

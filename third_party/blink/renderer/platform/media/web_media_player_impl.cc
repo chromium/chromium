@@ -517,7 +517,7 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
   renderer_factory_selector_->SetRemotePlayStateChangeCB(
       base::BindPostTaskToCurrentDefault(base::BindRepeating(
           &WebMediaPlayerImpl::OnRemotePlayStateChange, weak_this_)));
-#endif  // defined (OS_ANDROID)
+#endif  // defined (IS_ANDROID)
 }
 
 WebMediaPlayerImpl::~WebMediaPlayerImpl() {
@@ -1807,20 +1807,26 @@ void WebMediaPlayerImpl::UpdateLoadedUrl(const GURL& url) {
   loaded_url_ = url;
 }
 
-bool WebMediaPlayerImpl::RestartForHls() {
+void WebMediaPlayerImpl::RestartForHls() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-
   observer_->OnHlsManifestDetected();
-#if BUILDFLAG(IS_ANDROID)
-  // TODO: DCHECK that |pipeline_| is stopped.
+
+  // Use the media player renderer if the native hls demuxer isn't compiled in
+  // or if the feature is disabled.
+#if BUILDFLAG(ENABLE_HLS_DEMUXER)
+  if (!base::FeatureList::IsEnabled(media::kBuiltInHlsPlayer)) {
+    renderer_factory_selector_->SetBaseRendererType(
+        media::RendererType::kMediaPlayer);
+  }
+#elif BUILDFLAG(IS_ANDROID)
   renderer_factory_selector_->SetBaseRendererType(
       media::RendererType::kMediaPlayer);
+#else
+  // Shouldn't be reachable from desktop where hls is not enabled.
+  NOTREACHED();
+#endif
   SetMemoryReportingState(false);
   StartPipeline();
-  return true;
-#else
-  return false;
-#endif
 }
 
 void WebMediaPlayerImpl::OnError(media::PipelineStatus status) {
@@ -3741,7 +3747,8 @@ void WebMediaPlayerImpl::WriteSplitHistogram(
 
 void WebMediaPlayerImpl::RecordUnderflowDuration(base::TimeDelta duration) {
   DCHECK(demuxer_manager_->HasDataSource() ||
-         GetDemuxerType() == media::DemuxerType::kChunkDemuxer);
+         GetDemuxerType() == media::DemuxerType::kChunkDemuxer ||
+         GetDemuxerType() == media::DemuxerType::kHlsDemuxer);
   WriteSplitHistogram<kPlaybackType | kEncrypted>(
       &base::UmaHistogramTimes, "Media.UnderflowDuration2", duration);
 }
