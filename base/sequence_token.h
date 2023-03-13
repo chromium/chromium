@@ -5,7 +5,6 @@
 #ifndef BASE_SEQUENCE_TOKEN_H_
 #define BASE_SEQUENCE_TOKEN_H_
 
-#include "base/auto_reset.h"
 #include "base/base_export.h"
 
 namespace base {
@@ -15,7 +14,7 @@ namespace base {
 class BASE_EXPORT SequenceToken {
  public:
   // Instantiates an invalid SequenceToken.
-  constexpr SequenceToken() = default;
+  SequenceToken() = default;
 
   // Explicitly allow copy.
   SequenceToken(const SequenceToken& other) = default;
@@ -58,7 +57,7 @@ class BASE_EXPORT SequenceToken {
 class BASE_EXPORT TaskToken {
  public:
   // Instantiates an invalid TaskToken.
-  constexpr TaskToken() = default;
+  TaskToken() = default;
 
   // Explicitly allow copy.
   TaskToken(const TaskToken& other) = default;
@@ -93,8 +92,7 @@ class BASE_EXPORT TaskToken {
 };
 
 // Instantiate this in the scope where a single task runs.
-class BASE_EXPORT
-    [[maybe_unused, nodiscard]] ScopedSetSequenceTokenForCurrentThread {
+class BASE_EXPORT ScopedSetSequenceTokenForCurrentThread {
  public:
   // Throughout the lifetime of the constructed object,
   // SequenceToken::GetForCurrentThread() will return |sequence_token| and
@@ -110,8 +108,8 @@ class BASE_EXPORT
   ~ScopedSetSequenceTokenForCurrentThread();
 
  private:
-  const AutoReset<SequenceToken> sequence_token_resetter_;
-  const AutoReset<TaskToken> task_token_resetter_;
+  const SequenceToken sequence_token_;
+  const TaskToken task_token_;
 };
 
 }  // namespace base
