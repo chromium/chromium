@@ -75,6 +75,7 @@ export class FakeMethodResolver {
 export class FakeInputDeviceSettingsProvider implements
     InputDeviceSettingsProviderInterface {
   private methods: FakeMethodResolver = new FakeMethodResolver();
+  private keyboardObservers: KeyboardObserverInterface[] = [];
 
   constructor() {
     // Setup method resolvers.
@@ -86,6 +87,7 @@ export class FakeInputDeviceSettingsProvider implements
 
   setFakeKeyboards(keyboards: Keyboard[]): void {
     this.methods.setResult('fakeKeyboards', keyboards);
+    this.notifyKeboardListUpdated();
   }
 
   getConnectedKeyboardSettings(): Promise<Keyboard[]> {
@@ -156,8 +158,16 @@ export class FakeInputDeviceSettingsProvider implements
     this.methods.setResult('fakePointingSticks', pointingSticks);
   }
 
-  observeKeyboardSettings(_observer: KeyboardObserverInterface): void {
-    // TODO(yyhyyh): Implement observeKeyboardSettings().
+  notifyKeboardListUpdated(): void {
+    const keyboards = this.methods.getResult('fakeKeyboards');
+    for (const observer of this.keyboardObservers) {
+      observer.onKeyboardListUpdated(keyboards);
+    }
+  }
+
+  observeKeyboardSettings(observer: KeyboardObserverInterface): void {
+    this.keyboardObservers.push(observer);
+    this.notifyKeboardListUpdated();
   }
 
   observeTouchpadSettings(_observer: TouchpadObserverInterface): void {

@@ -72,7 +72,7 @@ export class SettingsPerDeviceKeyboardElement extends
 
   constructor() {
     super();
-    this.fetchConnectedKeyboards();
+    this.observeKeyboardSettings();
   }
 
   override connectedCallback() {
@@ -90,9 +90,8 @@ export class SettingsPerDeviceKeyboardElement extends
     this.attemptDeepLink();
   }
 
-  private async fetchConnectedKeyboards(): Promise<void> {
-    this.keyboards =
-        await this.inputDeviceSettingsProvider.getConnectedKeyboardSettings();
+  private async observeKeyboardSettings(): Promise<void> {
+    this.inputDeviceSettingsProvider.observeKeyboardSettings(this);
   }
 
   private onShowKeyboardShortcutViewerTap(): void {
@@ -103,6 +102,10 @@ export class SettingsPerDeviceKeyboardElement extends
     Router.getInstance().navigateTo(
         routes.OS_LANGUAGES_INPUT,
         /*dynamicParams=*/ undefined, /*removeSearch=*/ true);
+  }
+
+  onKeyboardListUpdated(keyboards: Keyboard[]): void {
+    this.keyboards = keyboards;
   }
 }
 
