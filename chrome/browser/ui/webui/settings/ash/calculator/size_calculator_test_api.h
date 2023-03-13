@@ -26,6 +26,10 @@ class TotalDiskSpaceTestAPI {
     total_disk_space_calculator_.OnGetRootDeviceSize(reply);
   }
 
+  void SimulateOnGetTotalDiskSpace(int64_t* total_bytes) {
+    total_disk_space_calculator_.OnGetTotalDiskSpace(total_bytes);
+  }
+
  private:
   TotalDiskSpaceCalculator total_disk_space_calculator_;
 };
@@ -38,6 +42,10 @@ class FreeDiskSpaceTestAPI {
   }
 
   void StartCalculation() { free_disk_space_calculator_.StartCalculation(); }
+
+  void SimulateOnGetUserFreeDiskSpace(absl::optional<int64_t> reply) {
+    free_disk_space_calculator_.OnGetUserFreeDiskSpace(reply);
+  }
 
   void SimulateOnGetFreeDiskSpace(int64_t* available_bytes) {
     free_disk_space_calculator_.OnGetFreeDiskSpace(available_bytes);

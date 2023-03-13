@@ -153,9 +153,23 @@ class StorageHandlerTest : public testing::Test {
 
  protected:
   // From a given amount of total size and available size as input, returns the
-  // space state determined by the OnGetSizeState function.
+  // space state determined by the UpdateOverallStatistics function.
   int GetSpaceState(int64_t total_size, int64_t available_size) {
     total_disk_space_test_api_->SimulateOnGetRootDeviceSize(total_size);
+    free_disk_space_test_api_->SimulateOnGetUserFreeDiskSpace(available_size);
+    task_environment_.RunUntilIdle();
+    const base::Value* dictionary =
+        GetWebUICallbackMessage("storage-size-stat-changed");
+    EXPECT_TRUE(dictionary) << "No 'storage-size-stat-changed' callback";
+    int space_state = *dictionary->GetDict().FindInt("spaceState");
+    return space_state;
+  }
+
+  // From a given amount of total size and available size as input, returns the
+  // space state determined by the UpdateOverallStatistics function, provided
+  // that the spaced client is not available.
+  int GetSpaceStateNoSpacedClient(int64_t total_size, int64_t available_size) {
+    total_disk_space_test_api_->SimulateOnGetTotalDiskSpace(&total_size);
     free_disk_space_test_api_->SimulateOnGetFreeDiskSpace(&available_size);
     task_environment_.RunUntilIdle();
     const base::Value* dictionary =
@@ -328,6 +342,29 @@ TEST_F(StorageHandlerTest, StorageSpaceState) {
   // From 1GB, normal space state.
   available_size = 1024 * 1024 * 1024;
   space_state = GetSpaceState(total_size, available_size);
+  EXPECT_EQ(static_cast<int>(StorageSpaceState::kStorageSpaceNormal),
+            space_state);
+}
+
+TEST_F(StorageHandlerTest, StorageSpaceStateNoSpacedClient) {
+  // Less than 512 MB available, space state is critically low.
+  int64_t total_size = 1024 * 1024 * 1024;
+  int64_t available_size = 512 * 1024 * 1024 - 1;
+  int space_state = GetSpaceStateNoSpacedClient(total_size, available_size);
+  EXPECT_EQ(static_cast<int>(StorageSpaceState::kStorageSpaceCriticallyLow),
+            space_state);
+
+  // Less than 1GB available, space state is low.
+  available_size = 512 * 1024 * 1024;
+  space_state = GetSpaceStateNoSpacedClient(total_size, available_size);
+  EXPECT_EQ(static_cast<int>(StorageSpaceState::kStorageSpaceLow), space_state);
+  available_size = 1024 * 1024 * 1024 - 1;
+  space_state = GetSpaceStateNoSpacedClient(total_size, available_size);
+  EXPECT_EQ(static_cast<int>(StorageSpaceState::kStorageSpaceLow), space_state);
+
+  // From 1GB, normal space state.
+  available_size = 1024 * 1024 * 1024;
+  space_state = GetSpaceStateNoSpacedClient(total_size, available_size);
   EXPECT_EQ(static_cast<int>(StorageSpaceState::kStorageSpaceNormal),
             space_state);
 }

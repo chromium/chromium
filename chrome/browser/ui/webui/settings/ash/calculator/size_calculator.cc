@@ -142,8 +142,8 @@ void TotalDiskSpaceCalculator::OnGetRootDeviceSize(
   // FakeSpacedClient does not have a proper implementation of
   // GetRootDeviceSize. If SpacedClient::GetRootDeviceSize does not return a
   // value, use GetTotalDiskSpace as a fallback.
-  VLOG(1) << "OnGetRootDeviceSize: Empty reply. Using GetTotalDiskSpace as "
-             "fallback.";
+  VLOG(1) << "SpacedClient::OnGetRootDeviceSize: Empty reply. Using "
+             "GetTotalDiskSpace as fallback.";
   GetTotalDiskSpace();
 }
 
@@ -172,6 +172,42 @@ FreeDiskSpaceCalculator::FreeDiskSpaceCalculator(Profile* profile)
 FreeDiskSpaceCalculator::~FreeDiskSpaceCalculator() = default;
 
 void FreeDiskSpaceCalculator::PerformCalculation() {
+  if (user_manager::UserManager::Get()
+          ->IsCurrentUserCryptohomeDataEphemeral()) {
+    GetFreeDiskSpace();
+    return;
+  }
+  GetUserFreeDiskSpace();
+}
+
+void FreeDiskSpaceCalculator::GetUserFreeDiskSpace() {
+  const base::FilePath my_files_path =
+      file_manager::util::GetMyFilesFolderForProfile(profile_);
+  SpacedClient::Get()->GetFreeDiskSpace(
+      my_files_path.value(),
+      base::BindOnce(&FreeDiskSpaceCalculator::OnGetUserFreeDiskSpace,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void FreeDiskSpaceCalculator::OnGetUserFreeDiskSpace(
+    absl::optional<int64_t> reply) {
+  if (reply.has_value()) {
+    if (reply.value() < 0) {
+      LOG(DFATAL) << "Negative user free disk space (" << reply.value() << ")";
+    }
+    NotifySizeCalculated(reply.value());
+    return;
+  }
+
+  // FakeSpacedClient does not have a proper implementation of
+  // GetFreeDiskSpace. If SpacedClient::GetFreeDiskSpace does not return a
+  // value, use GetFreeDiskSpaceBlocking as a fallback.
+  VLOG(1) << "SpacedClient::GetFreeDiskSpace: Empty reply. Using "
+             "GetFreeDiskSpaceBlocking as fallback.";
+  GetFreeDiskSpace();
+}
+
+void FreeDiskSpaceCalculator::GetFreeDiskSpace() {
   const base::FilePath my_files_path =
       file_manager::util::GetMyFilesFolderForProfile(profile_);
 
