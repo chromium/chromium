@@ -129,8 +129,19 @@ void ServiceWorkerHost::BindHidService(
 void ServiceWorkerHost::BindUsbService(
     mojo::PendingReceiver<blink::mojom::WebUsbService> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  version_->embedded_worker()->BindUsbService(version_->key().origin(),
-                                              std::move(receiver));
+  DCHECK(container_host_->top_frame_origin());
+  if (container_host_->top_frame_origin()->opaque()) {
+    // Service worker should not be available to a window/worker client whose
+    // origin is opaque according to Service Worker specification. However, this
+    // can possibly be triggered by a compromised renderer, so reject it and
+    // report a bad mojo message.
+    mojo::ReportBadMessage(
+        "WebUSB is not allowed for the service worker scope when the top-level "
+        "frame has an opaque origin.");
+    return;
+  }
+  version_->embedded_worker()->BindUsbService(
+      *container_host_->top_frame_origin(), std::move(receiver));
 }
 
 net::NetworkIsolationKey ServiceWorkerHost::GetNetworkIsolationKey() const {

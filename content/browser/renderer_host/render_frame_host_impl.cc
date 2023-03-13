@@ -10764,6 +10764,12 @@ void RenderFrameHostImpl::CreateWebUsbService(
     mojo::ReportBadMessage("Permissions policy blocks access to USB.");
     return;
   }
+  if (GetOutermostMainFrame()->GetLastCommittedOrigin().opaque()) {
+    mojo::ReportBadMessage(
+        "WebUSB is not allowed when the top-level document has an opaque "
+        "origin.");
+    return;
+  }
   BackForwardCache::DisableForRenderFrameHost(
       this, BackForwardCacheDisable::DisabledReason(
                 BackForwardCacheDisable::DisabledReasonId::kWebUSB));
