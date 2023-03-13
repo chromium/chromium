@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_MANAGEMENT_FLOW_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_MANAGEMENT_FLOW_CONTROLLER_H_
 
+#include <string>
+
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/profiles/profile_management_utils.h"
@@ -86,6 +88,12 @@ class ProfileManagementFlowController {
   // Cancel the signed-in profile setup and returns back to the main picker
   // screen (if the original EntryPoint was to open the picker).
   virtual void CancelPostSignInFlow() = 0;
+
+  // Returns a string to use as title for the window, for accessibility
+  // purposes. It is used in case the host is not able to obtain a title from
+  // the content it's rendering. As a final fallback, if this value is empty
+  // (which is the default), the host will choose itself some generic title.
+  virtual std::u16string GetFallbackAccessibleWindowTitle() const;
 
  protected:
   void RegisterStep(Step step,

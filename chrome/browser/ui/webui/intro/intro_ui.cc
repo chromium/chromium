@@ -23,6 +23,7 @@
 #include "chrome/grit/signin_resources.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/base/l10n/l10n_util.h"
 
 IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
   DCHECK(base::FeatureList::IsEnabled(kForYouFre));
@@ -57,7 +58,15 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
     default:
       NOTREACHED();
   }
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  int title_id = IDS_PRIMARY_PROFILE_FIRST_RUN_NO_NAME_TITLE;
 #endif
+
+  // Setting the title here instead of relying on the one provided from the
+  // page itself makes it available much earlier, and avoids having to fallback
+  // to the one obtained from `NavigationEntry::GetTitleForDisplay()` (which
+  // ends up being the URL) when we try to get it on startup for a11y purposes.
+  web_ui->OverrideTitle(l10n_util::GetStringUTF16(title_id));
 
   webui::LocalizedString localized_strings[] = {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -74,7 +83,6 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
 #endif
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     {"proceedLabel", IDS_PRIMARY_PROFILE_FIRST_RUN_NEXT_BUTTON_LABEL},
-    {"windowTitle", IDS_PRIMARY_PROFILE_FIRST_RUN_NO_NAME_TITLE},
 #endif
   };
   source->AddLocalizedStrings(localized_strings);

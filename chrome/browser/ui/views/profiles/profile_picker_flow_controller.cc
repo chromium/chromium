@@ -27,7 +27,10 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_signed_in_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/ui/views/profiles/profile_picker_dice_sign_in_provider.h"
@@ -346,6 +349,15 @@ void ProfilePickerFlowController::CancelPostSignInFlow() {
       NOTREACHED_NORETURN()
           << "CancelPostSignInFlow() is not reachable from this entry point";
   }
+}
+
+std::u16string ProfilePickerFlowController::GetFallbackAccessibleWindowTitle()
+    const {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return l10n_util::GetStringUTF16(IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_LACROS);
+#else
+  return l10n_util::GetStringUTF16(IDS_PROFILE_PICKER_MAIN_VIEW_TITLE);
+#endif
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

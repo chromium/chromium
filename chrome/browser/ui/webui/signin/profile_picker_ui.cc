@@ -98,6 +98,15 @@ std::string GetManagedDeviceDisclaimer() {
   return l10n_util::GetStringFUTF8(managed_by_id, base::UTF8ToUTF16(*manager));
 }
 
+int GetMainViewTitleId() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_LACROS;
+#else
+  return ProfilePicker::Shown() ? IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_V2
+                                : IDS_PROFILE_PICKER_MAIN_VIEW_TITLE;
+#endif
+}
+
 void AddStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
     {"mainViewSubtitle",
@@ -197,14 +206,7 @@ void AddStrings(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  int main_view_title_id = IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_LACROS;
-#else
-  int main_view_title_id = ProfilePicker::Shown()
-                               ? IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_V2
-                               : IDS_PROFILE_PICKER_MAIN_VIEW_TITLE;
-#endif
-  html_source->AddLocalizedString("mainViewTitle", main_view_title_id);
+  html_source->AddLocalizedString("mainViewTitle", GetMainViewTitleId());
 
   html_source->AddLocalizedString(
       "signInButtonLabel",
@@ -313,6 +315,12 @@ ProfilePickerUI::ProfilePickerUI(content::WebUI* web_ui)
       chrome::kChromeUIProfilePickerStartupQuery) {
     profile_picker_handler_->EnableStartupMetrics();
   }
+
+  // Setting the title here instead of relying on the one provided from the
+  // page itself makes it available much earlier, and avoids having to fallback
+  // to the one obtained from `NavigationEntry::GetTitleForDisplay()` (which
+  // ends up being the URL) when we try to get it on startup for a11y purposes.
+  web_ui->OverrideTitle(l10n_util::GetStringUTF16(GetMainViewTitleId()));
 
   AddStrings(html_source);
   webui::SetupWebUIDataSource(

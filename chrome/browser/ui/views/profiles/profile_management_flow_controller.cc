@@ -57,6 +57,11 @@ void ProfileManagementFlowController::OnReloadRequested() {
 }
 #endif
 
+std::u16string
+ProfileManagementFlowController::GetFallbackAccessibleWindowTitle() const {
+  return std::u16string();
+}
+
 void ProfileManagementFlowController::RegisterStep(
     Step step,
     std::unique_ptr<ProfileManagementStepController> step_controller) {
