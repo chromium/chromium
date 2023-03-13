@@ -35,6 +35,7 @@ export type BiDiMethod =
   | 'browsingContext.create'
   | 'browsingContext.getTree'
   | 'browsingContext.navigate'
+  | 'browsingContext.print'
   | 'cdp.getSession'
   | 'cdp.sendCommand'
   | 'cdp.sendMessage'
@@ -636,13 +637,15 @@ export namespace BrowsingContext {
     | NavigateCommand
     | CreateCommand
     | CloseCommand
-    | CaptureScreenshotCommand;
+    | CaptureScreenshotCommand
+    | PrintCommand;
   export type CommandResult =
     | GetTreeResult
     | NavigateResult
     | CreateResult
     | CloseResult
-    | CaptureScreenshotResult;
+    | CaptureScreenshotResult
+    | PrintResult;
   export type Event =
     | LoadEvent
     | DomContentLoadedEvent
@@ -745,6 +748,42 @@ export namespace BrowsingContext {
   };
 
   export type CaptureScreenshotResult = {
+    result: {
+      data: string;
+    };
+  };
+
+  export type PrintCommand = {
+    method: 'browsingContext.print';
+    params: PrintParameters;
+  };
+
+  export type PrintParameters = {
+    context: CommonDataTypes.BrowsingContext;
+    background?: boolean;
+    margin?: PrintMarginParameters;
+    orientation?: 'portrait' | 'landscape';
+    page?: PrintPageParams;
+    pageRanges?: (string | number)[];
+    scale?: number;
+    shrinkToFit?: boolean;
+  };
+
+  // All units are in cm.
+  export type PrintMarginParameters = {
+    bottom?: number;
+    left?: number;
+    right?: number;
+    top?: number;
+  };
+
+  // All units are in cm.
+  export type PrintPageParams = {
+    height?: number;
+    width?: number;
+  };
+
+  export type PrintResult = {
     result: {
       data: string;
     };

@@ -306,6 +306,9 @@ class BidiParserImpl implements BidiParser {
   ): BrowsingContext.CaptureScreenshotParameters {
     return Parser.BrowsingContext.parseCaptureScreenshotParams(params);
   }
+  parsePrintParams(params: object): BrowsingContext.PrintParameters {
+    return Parser.BrowsingContext.parsePrintParams(params);
+  }
 }
 
 // Needed to filter out info related to BiDi target.

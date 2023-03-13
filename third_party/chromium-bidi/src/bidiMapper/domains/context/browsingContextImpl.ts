@@ -17,6 +17,7 @@
 
 import {Protocol} from 'devtools-protocol';
 
+import {inchesFromCm} from '../../../utils/unitConversions.js';
 import {BrowsingContext, Message} from '../../../protocol/protocol.js';
 import {LogType, LoggerFn} from '../../../utils/log.js';
 import {CdpClient} from '../../CdpConnection.js';
@@ -567,6 +568,48 @@ export class BrowsingContextImpl {
       this.#cdpClient.sendCommand('Page.bringToFront'),
       this.#cdpClient.sendCommand('Page.captureScreenshot', {}),
     ]);
+    return {
+      result: {
+        data: result.data,
+      },
+    };
+  }
+
+  async print(
+    params: BrowsingContext.PrintParameters
+  ): Promise<BrowsingContext.PrintResult> {
+    const printToPdfCdpParams: Protocol.Page.PrintToPDFRequest = {
+      printBackground: params.background,
+      landscape: params.orientation === 'landscape',
+      pageRanges: params.pageRanges?.join(',') ?? '',
+      scale: params.scale,
+      // TODO(#518): Use `shrinkToFit`.
+    };
+
+    if (params.margin?.bottom) {
+      printToPdfCdpParams.marginBottom = inchesFromCm(params.margin.bottom);
+    }
+    if (params.margin?.left) {
+      printToPdfCdpParams.marginLeft = inchesFromCm(params.margin.left);
+    }
+    if (params.margin?.right) {
+      printToPdfCdpParams.marginRight = inchesFromCm(params.margin.right);
+    }
+    if (params.margin?.top) {
+      printToPdfCdpParams.marginTop = inchesFromCm(params.margin.top);
+    }
+    if (params.page?.height) {
+      printToPdfCdpParams.paperHeight = inchesFromCm(params.page.height);
+    }
+    if (params.page?.width) {
+      printToPdfCdpParams.paperWidth = inchesFromCm(params.page.width);
+    }
+
+    const result = await this.#cdpClient.sendCommand(
+      'Page.printToPDF',
+      printToPdfCdpParams
+    );
+
     return {
       result: {
         data: result.data,

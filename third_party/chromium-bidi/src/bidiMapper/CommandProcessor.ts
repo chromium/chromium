@@ -51,6 +51,7 @@ export interface BidiParser {
   parseCaptureScreenshotParams(
     params: object
   ): BrowsingContext.CaptureScreenshotParameters;
+  parsePrintParams(params: object): BrowsingContext.PrintParameters;
 }
 
 class BidiNoOpParser implements BidiParser {
@@ -91,6 +92,9 @@ class BidiNoOpParser implements BidiParser {
     params: object
   ): BrowsingContext.CaptureScreenshotParameters {
     return params as BrowsingContext.CaptureScreenshotParameters;
+  }
+  parsePrintParams(params: object): BrowsingContext.PrintParameters {
+    return params as BrowsingContext.PrintParameters;
   }
 }
 
@@ -187,6 +191,10 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
       case 'browsingContext.captureScreenshot':
         return this.#contextProcessor.process_browsingContext_captureScreenshot(
           this.#parser.parseCaptureScreenshotParams(commandData.params)
+        );
+      case 'browsingContext.print':
+        return this.#contextProcessor.process_browsingContext_print(
+          this.#parser.parsePrintParams(commandData.params)
         );
 
       case 'script.getRealms':

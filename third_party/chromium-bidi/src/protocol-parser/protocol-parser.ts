@@ -601,13 +601,15 @@ export namespace BrowsingContext {
     | NavigateCommand
     | CreateCommand
     | CloseCommand
-    | CaptureScreenshotCommand;
+    | CaptureScreenshotCommand
+    | PrintCommand;
   export type CommandResult =
     | GetTreeResult
     | NavigateResult
     | CreateResult
     | CloseResult
-    | CaptureScreenshotResult;
+    | CaptureScreenshotResult
+    | PrintResult;
   export type Event =
     | LoadEvent
     | DomContentLoadedEvent
@@ -739,6 +741,70 @@ export namespace BrowsingContext {
   }
 
   export type CaptureScreenshotResult = {
+    result: {
+      data: string;
+    };
+  };
+
+  export type PrintCommand = {
+    method: 'browsingContext.print';
+    params: PrintParameters;
+  };
+
+  // All units are in cm.
+  const PrintPageSchema = zod.object({
+    height: zod.number().min(0.0).default(27.94).optional(),
+    width: zod.number().min(0.0).default(21.59).optional(),
+  });
+
+  // All units are in cm.
+  const PrintMarginSchema = zod.object({
+    bottom: zod.number().min(0.0).default(1.0).optional(),
+    left: zod.number().min(0.0).default(1.0).optional(),
+    right: zod.number().min(0.0).default(1.0).optional(),
+    top: zod.number().min(0.0).default(1.0).optional(),
+  });
+
+  /** @see https://w3c.github.io/webdriver/#dfn-parse-a-page-range */
+  const PrintPageRangesSchema = zod
+    .array(
+      zod.union([
+        zod.string().min(1),
+        zod
+          .number()
+          .int()
+          .min(0)
+          .transform((n) => String(n)),
+      ])
+    )
+    .refine((pageRanges: string[]) => {
+      return pageRanges.every((pageRange: string) =>
+        // matches: '2' | '2-' | '-2' | '2-4'
+        pageRange.match(/^((?:\d+)|(?:\d+[-])|(?:[-]\d+)|(?:\d+[-]\d+))$/)
+      );
+    });
+  export type PrintPageRanges = zod.infer<typeof PrintPageRangesSchema>;
+
+  const PrintParametersSchema = zod.object({
+    context: CommonDataTypes.BrowsingContextSchema,
+    background: zod.boolean().default(false).optional(),
+    margin: PrintMarginSchema.optional(),
+    orientation: zod
+      .enum(['portrait', 'landscape'])
+      .default('portrait')
+      .optional(),
+    page: PrintPageSchema.optional(),
+    pageRanges: PrintPageRangesSchema.default([]).optional(),
+    scale: zod.number().min(0.1).max(2.0).default(1.0).optional(),
+    shrinkToFit: zod.boolean().default(true).optional(),
+  });
+  export type PrintParameters = zod.infer<typeof PrintParametersSchema>;
+
+  export function parsePrintParams(params: object): PrintParameters {
+    return parseObject(params, PrintParametersSchema);
+  }
+
+  export type PrintResult = {
     result: {
       data: string;
     };

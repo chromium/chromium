@@ -248,6 +248,15 @@ export class BrowsingContextProcessor {
     return context.captureScreenshot();
   }
 
+  async process_browsingContext_print(
+    params: BrowsingContext.PrintParameters
+  ): Promise<BrowsingContext.PrintResult> {
+    const context = this.#browsingContextStorage.getKnownContext(
+      params.context
+    );
+    return context.print(params);
+  }
+
   async #getRealm(target: Script.Target): Promise<Realm> {
     if ('realm' in target) {
       return this.#realmStorage.getRealm({
