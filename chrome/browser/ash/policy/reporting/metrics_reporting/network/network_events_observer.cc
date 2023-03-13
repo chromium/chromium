@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/task/bind_post_task.h"
 #include "chrome/browser/ash/net/network_health/network_health_manager.h"
@@ -33,6 +34,10 @@ bool IsConnectedWifiNetwork(const ash::NetworkState* network_state) {
 }
 
 }  // namespace
+
+BASE_FEATURE(kEnableWifiSignalEventsReporting,
+             "EnableWifiSignalEventsReporting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 NetworkEventsObserver::NetworkEventsObserver()
     : MojoServiceEventsObserverBase<
@@ -152,6 +157,10 @@ void NetworkEventsObserver::SetReportingEnabled(bool is_enabled) {
 
 void NetworkEventsObserver::CheckForSignalStrengthEvent(
     const ash::NetworkState* network_state) {
+  if (!base::FeatureList::IsEnabled(kEnableWifiSignalEventsReporting)) {
+    return;
+  }
+
   auto wifi_signal_rssi_cb = base::BindOnce(
       &NetworkEventsObserver::OnSignalStrengthChangedRssiValueReceived,
       weak_ptr_factory_.GetWeakPtr(), network_state->guid(),

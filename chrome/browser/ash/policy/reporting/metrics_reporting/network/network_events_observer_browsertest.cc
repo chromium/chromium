@@ -5,10 +5,12 @@
 #include <memory>
 #include <string>
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_mixin.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/network/network_events_observer.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
@@ -52,6 +54,7 @@ class NetworkEventsBrowserTest : public ::policy::DevicePolicyCrosBrowserTest {
  protected:
   NetworkEventsBrowserTest() {
     crypto_home_mixin_.MarkUserAsExisting(affiliation_mixin_.account_id());
+    scoped_feature_list_.InitAndEnableFeature(kEnableWifiSignalEventsReporting);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -99,6 +102,7 @@ class NetworkEventsBrowserTest : public ::policy::DevicePolicyCrosBrowserTest {
   ::policy::AffiliationMixin affiliation_mixin_{&mixin_host_, &test_helper_};
   ash::CryptohomeMixin crypto_home_mixin_{&mixin_host_};
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(NetworkEventsBrowserTest,

@@ -13,6 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/repeating_test_future.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
@@ -123,11 +124,19 @@ class NetworkEventsObserverSignalStrengthTest : public ::testing::Test {
     return network_events_observer_test_helper_.network_handler_test_helper();
   }
 
+  void SetFeatureEnabled(bool enabled) {
+    scoped_feature_list_.InitWithFeatureState(kEnableWifiSignalEventsReporting,
+                                              enabled);
+  }
+
  private:
   NetworkEventsObserverTestHelper network_events_observer_test_helper_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(NetworkEventsObserverSignalStrengthTest, InitiallyLowSignal) {
+  SetFeatureEnabled(true);
+
   const std::string service_config_low_signal = base::StringPrintf(
       kWifiConfig, kWifiGuid, shill::kStateReady, kLowSignalStrengthRssi);
   std::string service_path = network_handler_test_helper()->ConfigureService(
@@ -207,6 +216,8 @@ TEST_F(NetworkEventsObserverSignalStrengthTest, InitiallyLowSignal) {
 }
 
 TEST_F(NetworkEventsObserverSignalStrengthTest, WifiNotConnected) {
+  SetFeatureEnabled(true);
+
   network_handler_test_helper()->ResetDevicesAndServices();
   auto* const service_client = network_handler_test_helper()->service_test();
   service_client->AddService(kWifiIdleServicePath, kWifiIdleGuid,
@@ -236,6 +247,8 @@ TEST_F(NetworkEventsObserverSignalStrengthTest, WifiNotConnected) {
 }
 
 TEST_F(NetworkEventsObserverSignalStrengthTest, WifiConnecting) {
+  SetFeatureEnabled(true);
+
   network_handler_test_helper()->ResetDevicesAndServices();
   auto* const service_client = network_handler_test_helper()->service_test();
   service_client->AddService(kWifiServicePath, kWifiGuid, "wifi-name",
@@ -265,6 +278,8 @@ TEST_F(NetworkEventsObserverSignalStrengthTest, WifiConnecting) {
 }
 
 TEST_F(NetworkEventsObserverSignalStrengthTest, Cellular) {
+  SetFeatureEnabled(true);
+
   std::string service_config_good_signal = base::StringPrintf(
       kWifiConfig, kWifiGuid, shill::kStateReady, kGoodSignalStrengthRssi);
   std::string service_path = network_handler_test_helper()->ConfigureService(
@@ -287,6 +302,8 @@ TEST_F(NetworkEventsObserverSignalStrengthTest, Cellular) {
 }
 
 TEST_F(NetworkEventsObserverSignalStrengthTest, InvalidGuid) {
+  SetFeatureEnabled(true);
+
   NetworkEventsObserver network_events_observer;
   bool event_reported = false;
   auto cb =
@@ -296,6 +313,30 @@ TEST_F(NetworkEventsObserverSignalStrengthTest, InvalidGuid) {
   network_events_observer.SetReportingEnabled(/*is_enabled=*/true);
   network_events_observer.OnSignalStrengthChanged(
       "invalid_guid",
+      ::chromeos::network_health::mojom::UInt32Value::New(kSignalStrength));
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_FALSE(event_reported);
+}
+
+TEST_F(NetworkEventsObserverSignalStrengthTest, FeatureDisabled) {
+  SetFeatureEnabled(false);
+
+  const std::string service_config_low_signal = base::StringPrintf(
+      kWifiConfig, kWifiGuid, shill::kStateReady, kLowSignalStrengthRssi);
+  std::string service_path = network_handler_test_helper()->ConfigureService(
+      service_config_low_signal);
+  ASSERT_THAT(service_path, Eq(kWifiServicePath));
+
+  NetworkEventsObserver network_events_observer;
+  bool event_reported = false;
+  auto cb =
+      base::BindLambdaForTesting([&](MetricData) { event_reported = true; });
+
+  network_events_observer.SetOnEventObservedCallback(std::move(cb));
+  network_events_observer.SetReportingEnabled(/*is_enabled=*/true);
+  network_events_observer.OnSignalStrengthChanged(
+      kWifiGuid,
       ::chromeos::network_health::mojom::UInt32Value::New(kSignalStrength));
   base::RunLoop().RunUntilIdle();
 
