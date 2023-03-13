@@ -294,6 +294,12 @@ export class WallpaperImages extends WithPersonalizationStore {
             tile.assetId === pendingSelectedAssetId);
   }
 
+  private isTimeOfDayWallpaper_(tile: number|ImageTile): boolean {
+    // TODO(b/272565838): Add better check when we construct Time of Day
+    // wallpaper tile.
+    return this.isImageTile_(tile) && tile.preview.length === 4;
+  }
+
   private onImageSelected_(e: WallpaperGridItemSelectedEvent&
                            {model: {item: ImageTile}}) {
     const assetId = e.model.item.assetId;

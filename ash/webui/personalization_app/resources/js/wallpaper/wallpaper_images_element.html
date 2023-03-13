@@ -1,4 +1,8 @@
-<style include="common wallpaper"></style>
+<style include="common wallpaper">
+  wallpaper-grid-item[data-is-time-of-day-wallpaper] {
+    --personalization-app-grid-item-border-radius: 40px;
+  }
+</style>
 <main id="main" tabindex="-1"
     aria-label$="[[getMainAriaLabel_(collectionId, collections_)]]">
   <iron-media-query query="(prefers-color-scheme: dark)"
@@ -11,6 +15,7 @@
         <wallpaper-grid-item
             aria-label$="[[getAriaLabel_(item)]]"
             aria-posinset$="[[getAriaIndex_(index)]]"
+            data-is-time-of-day-wallpaper="[[isTimeOfDayWallpaper_(item)]]"
             disabled="[[isLoadingTile_(item)]]"
             index="[[index]]"
             on-wallpaper-grid-item-selected="onImageSelected_"
