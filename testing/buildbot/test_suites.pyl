@@ -4747,6 +4747,22 @@
       },
     },
 
+    'pixel_experimental_browser_tests_gtests': {
+      'pixel_experimental_browser_tests': {
+        'name': 'pixel_experimental_browser_tests',
+        'args': [
+          '--browser-ui-tests-verify-pixels',
+          '--enable-pixel-output-in-tests',
+          '--gtest_filter=KioskPixelTest.*',
+        ],
+        'experiment_percentage': 100,
+        'test': 'browser_tests',
+        'mixins': [
+          'skia_gold_test',
+        ],
+      },
+    },
+
     'private_code_failure_test_isolated_scripts': {
       'private_code_failure_test': {}
     },
@@ -6625,6 +6641,7 @@
       'linux_chromeos_browser_tests_require_lacros',
       'linux_flavor_specific_chromium_gtests',
       'non_android_chromium_gtests',
+      'pixel_experimental_browser_tests_gtests',
       'ash_pixel_gtests',
     ],
 

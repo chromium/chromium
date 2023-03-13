@@ -3760,6 +3760,7 @@ if (!is_android) {
         "../browser/ash/app_mode/kiosk_app_manager_browsertest.cc",
         "../browser/ash/app_mode/kiosk_app_update_service_browsertest.cc",
         "../browser/ash/app_mode/kiosk_crash_restore_browsertest.cc",
+        "../browser/ash/app_mode/kiosk_pixel_browsertest.cc",
         "../browser/ash/app_mode/kiosk_troubleshooting_tools_browsertest.cc",
         "../browser/ash/app_mode/web_app/web_kiosk_app_data_browsertest.cc",
         "../browser/ash/app_mode/web_app/web_kiosk_browser_controller_ash_browsertest.cc",
