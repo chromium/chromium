@@ -183,11 +183,16 @@ class HostedOrWebAppTest : public extensions::ExtensionBrowserTest,
   HostedOrWebAppTest()
       : app_browser_(nullptr),
         https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    scoped_feature_list_.InitWithFeatures({}, {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{
+          // TODO(crbug.com/1394910): Remove this and use HTTPS URLs in the
+          // tests.
+          features::kHttpsUpgrades,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      features::kWebAppsCrosapi, ash::features::kLacrosPrimary
+              features::kWebAppsCrosapi, ash::features::kLacrosPrimary
 #endif
-    });
+        });
   }
 
   HostedOrWebAppTest(const HostedOrWebAppTest&) = delete;
