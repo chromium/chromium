@@ -65,6 +65,9 @@ extern const char kGoogleApiKey[];
 // Used to tell the WebEngine executable to run the ContextProvider service.
 extern const char kContextProvider[];
 
+// Equivalent to Chrome's --proxy-bypass-list switch.
+extern const char kProxyBypassList[];
+
 }  // namespace switches
 
 #endif  // FUCHSIA_WEB_WEBENGINE_SWITCHES_H_

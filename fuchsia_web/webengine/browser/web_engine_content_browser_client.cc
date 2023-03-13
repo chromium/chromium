@@ -52,6 +52,32 @@
 
 namespace {
 
+constexpr net::NetworkTrafficAnnotationTag kProxyConfigTrafficAnnotation =
+    net::DefineNetworkTrafficAnnotation("webview_proxy_config", R"(
+      semantics {
+        sender: "Proxy configuration via a command line flag"
+        description:
+          "Used to fetch HTTP/HTTPS/SOCKS5/PAC proxy configuration when "
+          "proxy is configured by the --proxy-server command line flag. "
+          "When proxy implies automatic configuration, it can send network "
+          "requests in the scope of this annotation."
+        trigger:
+          "Whenever a network request is made when the system proxy settings "
+          "are used, and they indicate to use a proxy server."
+        data:
+          "Proxy configuration."
+        destination: OTHER
+        destination_other: "The proxy server specified in the configuration."
+      }
+      policy {
+        cookies_allowed: NO
+        setting:
+          "This request cannot be disabled in settings. However it will never "
+          "be made if user does not run with the '--proxy-server' switch."
+        policy_exception_justification:
+          "Not implemented, behaviour only available behind a switch."
+      })");
+
 class DevToolsManagerDelegate final : public content::DevToolsManagerDelegate {
  public:
   explicit DevToolsManagerDelegate(WebEngineBrowserMainParts* main_parts)
@@ -339,6 +365,23 @@ void WebEngineContentBrowserClient::ConfigureNetworkContextParams(
     network::mojom::NetworkContextParams* network_context_params,
     cert_verifier::mojom::CertVerifierCreationParams*
         cert_verifier_creation_params) {
+  const base::CommandLine& command_line =
+      *base::CommandLine::ForCurrentProcess();
+  std::string proxy = command_line.GetSwitchValueASCII(switches::kProxyServer);
+  if (!proxy.empty()) {
+    net::ProxyConfig proxy_config;
+    proxy_config.proxy_rules().ParseFromString(proxy);
+    std::string bypass_list =
+        command_line.GetSwitchValueASCII(switches::kProxyBypassList);
+    if (!bypass_list.empty()) {
+      proxy_config.proxy_rules().bypass_rules.ParseFromString(bypass_list);
+    }
+
+    network_context_params->initial_proxy_config =
+        net::ProxyConfigWithAnnotation(proxy_config,
+                                       kProxyConfigTrafficAnnotation);
+  }
+
   network_context_params->user_agent = GetUserAgent();
   network_context_params->accept_language =
       net::HttpUtil::GenerateAcceptLanguageHeader(GetAcceptLangs(context));
