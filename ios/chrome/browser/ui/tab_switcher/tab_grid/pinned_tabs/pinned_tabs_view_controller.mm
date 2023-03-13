@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/grid_transition_layout.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -71,8 +72,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   // Background color of the view.
   UIColor* _backgroundColor;
 
-  // UILabel displayed when the collection view is empty.
-  UILabel* _emptyCollectionViewLabel;
+  // View displayed during an external drag action.
+  UIView* _dropOverlayView;
 
   // Tracks if the view is available.
   BOOL _available;
@@ -81,7 +82,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   BOOL _visible;
 
   // Tracks if a drag action is in progress.
-  BOOL _dragActionInProgress;
+  BOOL _dragSessionEnabled;
+  BOOL _localDragActionInProgress;
 
   // YES if the dragged tab moved to a new index.
   BOOL _dragEndAtNewIndex;
@@ -104,12 +106,13 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
   _available = YES;
   _visible = YES;
-  _dragActionInProgress = NO;
+  _dragSessionEnabled = NO;
+  _localDragActionInProgress = NO;
   _dropAnimationInProgress = NO;
   _contentAppeared = NO;
 
   [self configureCollectionView];
-  [self configureEmptyCollectionViewLabel];
+  [self configureDropOverlayView];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -136,18 +139,18 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 }
 
 - (void)dragSessionEnabled:(BOOL)enabled {
-  if (_dropAnimationInProgress) {
+  if (_dropAnimationInProgress || (_dragSessionEnabled == enabled)) {
     return;
   }
 
-  _dragActionInProgress = enabled;
+  _dragSessionEnabled = enabled;
 
   [UIView animateWithDuration:kPinnedViewDragAnimationTime
                    animations:^{
                      self->_dragEnabledConstraint.active = enabled;
                      self->_defaultConstraint.active = !enabled;
-
-                     [self resetCollectionViewBackground];
+                     [self updateDropOverlayViewVisibility];
+                     [self resetViewBackgrounds];
                      [self.view.superview layoutIfNeeded];
                    }
                    completion:nil];
@@ -158,14 +161,14 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
   // The view is visible if `_items` is not empty or if a drag action is in
   // progress.
-  bool visible = _available && (_items.count || _dragActionInProgress);
+  bool visible = _available && (_items.count || _dragSessionEnabled);
   if (visible == _visible) {
     return;
   }
 
   // Show the view if `visible` is true to ensure smooth animation.
   if (visible) {
-    [self updateEmptyCollectionViewLabelVisibility];
+    [self updateDropOverlayViewVisibility];
     self.view.hidden = NO;
   }
 
@@ -261,7 +264,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   _items = [items mutableCopy];
   _selectedItemID = selectedItemID;
 
-  [self updateEmptyCollectionViewLabelVisibility];
+  [self updateDropOverlayViewVisibility];
 
   [self.delegate pinnedTabsViewController:self didChangeItemCount:items.count];
 
@@ -451,6 +454,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 - (void)collectionView:(UICollectionView*)collectionView
     dragSessionWillBegin:(id<UIDragSession>)session {
   _dragEndAtNewIndex = NO;
+  _localDragActionInProgress = YES;
   base::UmaHistogramEnumeration(kUmaPinnedViewDragDropTabs,
                                 DragDropTabs::kDragBegin);
 
@@ -459,6 +463,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 - (void)collectionView:(UICollectionView*)collectionView
      dragSessionDidEnd:(id<UIDragSession>)session {
+  _localDragActionInProgress = NO;
   DragDropTabs dragEvent = _dragEndAtNewIndex
                                ? DragDropTabs::kDragEndAtNewIndex
                                : DragDropTabs::kDragEndAtSameIndex;
@@ -496,19 +501,20 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 - (void)collectionView:(UICollectionView*)collectionView
     dropSessionDidEnter:(id<UIDropSession>)session {
+  _dropOverlayView.backgroundColor = [UIColor colorNamed:kBlueColor];
   self.collectionView.backgroundColor = [UIColor colorNamed:kBlueColor];
   self.collectionView.backgroundView.hidden = YES;
 }
 
 - (void)collectionView:(UICollectionView*)collectionView
     dropSessionDidExit:(id<UIDropSession>)session {
-  [self resetCollectionViewBackground];
+  [self resetViewBackgrounds];
 }
 
 - (void)collectionView:(UICollectionView*)collectionView
      dropSessionDidEnd:(id<UIDropSession>)session {
   // Reset the background if the drop cames from another app.
-  [self resetCollectionViewBackground];
+  [self resetViewBackgrounds];
 }
 
 - (UICollectionViewDropProposal*)
@@ -517,10 +523,14 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     withDestinationIndexPath:(NSIndexPath*)destinationIndexPath {
   UIDropOperation dropOperation =
       [self.dragDropHandler dropOperationForDropSession:session];
-  return [[UICollectionViewDropProposal alloc]
-      initWithDropOperation:dropOperation
-                     intent:
-                         UICollectionViewDropIntentInsertAtDestinationIndexPath];
+
+  UICollectionViewDropIntent intent =
+      _localDragActionInProgress
+          ? UICollectionViewDropIntentInsertAtDestinationIndexPath
+          : UICollectionViewDropIntentUnspecified;
+  return
+      [[UICollectionViewDropProposal alloc] initWithDropOperation:dropOperation
+                                                           intent:intent];
 }
 
 - (void)collectionView:(UICollectionView*)collectionView
@@ -543,9 +553,17 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     NSIndexPath* dropIndexPath = CreateIndexPath(destinationIndex);
     // Drop synchronously if local object is available.
     if (item.dragItem.localObject) {
+      _dropAnimationInProgress = YES;
+
+      if (_localDragActionInProgress) {
+        __weak __typeof(self) weakSelf = self;
+        [[coordinator dropItem:item.dragItem toItemAtIndexPath:dropIndexPath]
+            addCompletion:^(UIViewAnimatingPosition finalPosition) {
+              [weakSelf dropAnimationDidEnd];
+            }];
+      }
       // The sourceIndexPath is non-nil if the drop item is from this same
       // collection view.
-      _dropAnimationInProgress = YES;
       [self.dragDropHandler dropItem:item.dragItem
                              toIndex:destinationIndex
                   fromSameCollection:(item.sourceIndexPath != nil)];
@@ -596,7 +614,6 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   [self.delegate pinnedTabsViewController:self didChangeItemCount:_items.count];
 
   [self.collectionView insertItemsAtIndexPaths:@[ CreateIndexPath(index) ]];
-  [self updateEmptyCollectionViewLabelVisibility];
 }
 
 // Performs (in batch) all the actions needed to remove an item at the
@@ -668,26 +685,31 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   _defaultConstraint.active = YES;
 }
 
-// Configures `_emptyCollectionViewLabel`.
-- (void)configureEmptyCollectionViewLabel {
-  _emptyCollectionViewLabel = [[UILabel alloc] init];
-  _emptyCollectionViewLabel.numberOfLines = 0;
-  _emptyCollectionViewLabel.font =
-      [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
-  _emptyCollectionViewLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
-  _emptyCollectionViewLabel.text =
-      l10n_util::GetNSString(IDS_IOS_PINNED_TABS_DRAG_TO_PIN_LABEL);
-  _emptyCollectionViewLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  [self.view addSubview:_emptyCollectionViewLabel];
+// Configures `dropOverlayView`.
+- (void)configureDropOverlayView {
+  _dropOverlayView = [[UIView alloc] init];
+  _dropOverlayView.translatesAutoresizingMaskIntoConstraints = NO;
+  _dropOverlayView.backgroundColor =
+      [UIColor colorNamed:kPrimaryBackgroundColor];
+  [self.view addSubview:_dropOverlayView];
 
+  UILabel* label = [[UILabel alloc] init];
+  label.numberOfLines = 0;
+  label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+  label.textColor = [UIColor colorNamed:kTextPrimaryColor];
+  label.text = l10n_util::GetNSString(IDS_IOS_PINNED_TABS_DRAG_TO_PIN_LABEL);
+  label.translatesAutoresizingMaskIntoConstraints = NO;
+  [_dropOverlayView addSubview:label];
+
+  AddSameConstraints(_dropOverlayView, self.collectionView.backgroundView);
   [NSLayoutConstraint activateConstraints:@[
-    [_emptyCollectionViewLabel.centerYAnchor
-        constraintEqualToAnchor:self.view.centerYAnchor],
-    [_emptyCollectionViewLabel.centerXAnchor
-        constraintEqualToAnchor:self.view.centerXAnchor],
+    [label.centerYAnchor
+        constraintEqualToAnchor:_dropOverlayView.centerYAnchor],
+    [label.centerXAnchor
+        constraintEqualToAnchor:_dropOverlayView.centerXAnchor],
   ]];
 
-  [self updateEmptyCollectionViewLabelVisibility];
+  [self updateDropOverlayViewVisibility];
 }
 
 // Configures `cell`'s identifier and title synchronously, favicon and snapshot
@@ -752,9 +774,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   [self.delegate pinnedTabsViewControllerVisibilityDidChange:self];
 }
 
-// Hides `_emptyCollectionViewLabel` when the collection view is not empty.
-- (void)updateEmptyCollectionViewLabelVisibility {
-  _emptyCollectionViewLabel.hidden = _items.count > 0;
+// Shows `_dropOverlayView` when a external drag action is in progress.
+- (void)updateDropOverlayViewVisibility {
+  BOOL visible = _dragSessionEnabled && !_localDragActionInProgress;
+  _dropOverlayView.alpha = visible ? 1 : 0;
 }
 
 // Updates the collection view after an item insertion with the previously
@@ -768,7 +791,6 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   // disappear from the user's sight.
   [self scrollCollectionViewToLastItemAnimated:YES];
 
-  [self dropAnimationDidEnd];
   [self pinnedTabsAvailable:_available];
 }
 
@@ -818,8 +840,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   [self.delegate pinnedTabsViewController:self didSelectItemWithID:itemID];
 }
 
-// Resets the `collectionView` background.
-- (void)resetCollectionViewBackground {
+// Resets view backgrounds.
+- (void)resetViewBackgrounds {
+  _dropOverlayView.backgroundColor =
+      [UIColor colorNamed:kPrimaryBackgroundColor];
   self.collectionView.backgroundColor = _backgroundColor;
   self.collectionView.backgroundView.hidden = NO;
 }

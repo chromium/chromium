@@ -57,6 +57,7 @@ source_set("pinned_tabs_ui") {
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/transitions",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/elements",
+    "//ios/chrome/common/ui/util",
     "//ios/third_party/material_components_ios",
     "//ui/base",
   ]
