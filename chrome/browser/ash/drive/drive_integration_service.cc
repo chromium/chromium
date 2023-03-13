@@ -91,7 +91,10 @@ namespace {
 
 using content::BrowserContext;
 using content::BrowserThread;
+using drivefs::mojom::DriveFs;
 using drivefs::pinning::PinManager;
+using network::NetworkConnectionTracker;
+using network::mojom::ConnectionType;
 
 // Name of the directory used to store metadata.
 const base::FilePath::CharType kMetadataDirectory[] = FILE_PATH_LITERAL("meta");
@@ -362,7 +365,7 @@ bool ClearCache(base::FilePath cache_path, base::FilePath logs_path) {
 
 // Observes drive disable Preference's change.
 class DriveIntegrationService::PreferenceWatcher
-    : public network::NetworkConnectionTracker::NetworkConnectionObserver,
+    : public NetworkConnectionTracker::NetworkConnectionObserver,
       public ash::NetworkStateHandlerObserver {
  public:
   explicit PreferenceWatcher(PrefService* pref_service)
@@ -413,8 +416,8 @@ class DriveIntegrationService::PreferenceWatcher
   }
 
   void UpdateSyncPauseState() {
-    auto type = network::mojom::ConnectionType::CONNECTION_UNKNOWN;
-    if (content::GetNetworkConnectionTracker()->GetConnectionType(
+    if (ConnectionType type = ConnectionType::CONNECTION_UNKNOWN;
+        content::GetNetworkConnectionTracker()->GetConnectionType(
             &type, base::BindOnce(&DriveIntegrationService::PreferenceWatcher::
                                       OnConnectionChanged,
                                   weak_ptr_factory_.GetWeakPtr()))) {
@@ -490,16 +493,18 @@ class DriveIntegrationService::PreferenceWatcher
     ash::NetworkHandler::Get()->network_state_handler()->RemoveObserver(this);
   }
 
-  // network::NetworkConnectionTracker::NetworkConnectionObserver
-  void OnConnectionChanged(network::mojom::ConnectionType type) override {
-    if (!integration_service_->GetDriveFsInterface()) {
-      return;
-    }
+  // NetworkConnectionTracker::NetworkConnectionObserver
+  void OnConnectionChanged(ConnectionType type) override {
+    DCHECK(integration_service_);
+    if (DriveFs* const drivefs = integration_service_->GetDriveFsInterface()) {
+      const bool pause_syncing =
+          NetworkConnectionTracker::IsConnectionCellular(type) &&
+          pref_service_->GetBoolean(prefs::kDisableDriveOverCellular);
 
-    integration_service_->GetDriveFsInterface()->UpdateNetworkState(
-        network::NetworkConnectionTracker::IsConnectionCellular(type) &&
-            pref_service_->GetBoolean(prefs::kDisableDriveOverCellular),
-        type == network::mojom::ConnectionType::CONNECTION_NONE);
+      const bool is_offline = type == ConnectionType::CONNECTION_NONE;
+
+      drivefs->UpdateNetworkState(pause_syncing, is_offline);
+    }
   }
 
   PrefService* pref_service_;
@@ -910,7 +915,7 @@ drivefs::DriveFsHost* DriveIntegrationService::GetDriveFsHost() const {
   return drivefs_holder_->drivefs_host();
 }
 
-drivefs::mojom::DriveFs* DriveIntegrationService::GetDriveFsInterface() const {
+DriveFs* DriveIntegrationService::GetDriveFsInterface() const {
   return GetDriveFsHost()->GetDriveFsInterface();
 }
 
@@ -1430,7 +1435,7 @@ bool DriveIntegrationService::IsMirroringEnabled() {
 
 void DriveIntegrationService::GetMetadata(
     const base::FilePath& local_path,
-    drivefs::mojom::DriveFs::GetMetadataCallback callback) {
+    DriveFs::GetMetadataCallback callback) {
   if (!IsMounted() || !GetDriveFsInterface()) {
     std::move(callback).Run(drive::FILE_ERROR_SERVICE_UNAVAILABLE, nullptr);
     return;
@@ -1450,7 +1455,7 @@ void DriveIntegrationService::GetMetadata(
 
 void DriveIntegrationService::LocateFilesByItemIds(
     const std::vector<std::string>& item_ids,
-    drivefs::mojom::DriveFs::LocateFilesByItemIdsCallback callback) {
+    DriveFs::LocateFilesByItemIdsCallback callback) {
   if (!IsMounted() || !GetDriveFsInterface()) {
     std::move(callback).Run({});
     return;
@@ -1459,7 +1464,7 @@ void DriveIntegrationService::LocateFilesByItemIds(
 }
 
 void DriveIntegrationService::GetQuotaUsage(
-    drivefs::mojom::DriveFs::GetQuotaUsageCallback callback) {
+    DriveFs::GetQuotaUsageCallback callback) {
   if (!IsMounted() || !GetDriveFsInterface()) {
     std::move(callback).Run(drive::FILE_ERROR_SERVICE_UNAVAILABLE, nullptr);
     return;
@@ -1471,7 +1476,7 @@ void DriveIntegrationService::GetQuotaUsage(
 }
 
 void DriveIntegrationService::GetPooledQuotaUsage(
-    drivefs::mojom::DriveFs::GetPooledQuotaUsageCallback callback) {
+    DriveFs::GetPooledQuotaUsageCallback callback) {
   if (!IsMounted() || !GetDriveFsInterface()) {
     std::move(callback).Run(drive::FILE_ERROR_SERVICE_UNAVAILABLE, nullptr);
     return;
@@ -1489,79 +1494,78 @@ void DriveIntegrationService::RestartDrive() {
 void DriveIntegrationService::SetStartupArguments(
     std::string arguments,
     base::OnceCallback<void(bool)> callback) {
-  if (!GetDriveFsInterface()) {
+  if (DriveFs* const drivefs = GetDriveFsInterface()) {
+    drivefs->SetStartupArguments(arguments, std::move(callback));
+  } else {
     std::move(callback).Run(false);
-    return;
   }
-  GetDriveFsInterface()->SetStartupArguments(arguments, std::move(callback));
 }
 
 void DriveIntegrationService::GetStartupArguments(
     base::OnceCallback<void(const std::string&)> callback) {
-  if (!GetDriveFsInterface()) {
+  if (DriveFs* const drivefs = GetDriveFsInterface()) {
+    drivefs->GetStartupArguments(std::move(callback));
+  } else {
     std::move(callback).Run("");
-    return;
   }
-  GetDriveFsInterface()->GetStartupArguments(std::move(callback));
 }
 
 void DriveIntegrationService::SetTracingEnabled(bool enabled) {
-  if (GetDriveFsInterface()) {
-    GetDriveFsInterface()->SetTracingEnabled(enabled);
+  if (DriveFs* const drivefs = GetDriveFsInterface()) {
+    drivefs->SetTracingEnabled(enabled);
   }
 }
 
 void DriveIntegrationService::SetNetworkingEnabled(bool enabled) {
-  if (GetDriveFsInterface()) {
-    GetDriveFsInterface()->SetNetworkingEnabled(enabled);
+  if (DriveFs* const drivefs = GetDriveFsInterface()) {
+    drivefs->SetNetworkingEnabled(enabled);
   }
 }
 
 void DriveIntegrationService::ForcePauseSyncing(bool enabled) {
-  if (GetDriveFsInterface()) {
-    GetDriveFsInterface()->ForcePauseSyncing(enabled);
+  if (DriveFs* const drivefs = GetDriveFsInterface()) {
+    drivefs->ForcePauseSyncing(enabled);
   }
 }
 
 void DriveIntegrationService::DumpAccountSettings() {
-  if (GetDriveFsInterface()) {
-    GetDriveFsInterface()->DumpAccountSettings();
+  if (DriveFs* const drivefs = GetDriveFsInterface()) {
+    drivefs->DumpAccountSettings();
   }
 }
 
 void DriveIntegrationService::LoadAccountSettings() {
-  if (GetDriveFsInterface()) {
-    GetDriveFsInterface()->LoadAccountSettings();
+  if (DriveFs* const drivefs = GetDriveFsInterface()) {
+    drivefs->LoadAccountSettings();
   }
 }
 
 void DriveIntegrationService::GetThumbnail(const base::FilePath& path,
                                            bool crop_to_square,
                                            GetThumbnailCallback callback) {
-  if (GetDriveFsInterface()) {
-    GetDriveFsInterface()->GetThumbnail(path, crop_to_square,
-                                        std::move(callback));
+  if (DriveFs* const drivefs = GetDriveFsInterface()) {
+    drivefs->GetThumbnail(path, crop_to_square, std::move(callback));
   }
 }
 
 void DriveIntegrationService::ToggleMirroring(
     bool enabled,
-    drivefs::mojom::DriveFs::ToggleMirroringCallback callback) {
+    DriveFs::ToggleMirroringCallback callback) {
   if (!ash::features::IsDriveFsMirroringEnabled()) {
     std::move(callback).Run(
         drivefs::mojom::MirrorSyncStatus::kFeatureNotEnabled);
     return;
   }
 
-  if (GetDriveFsInterface()) {
-    GetDriveFsInterface()->ToggleMirroring(enabled, std::move(callback));
+  if (DriveFs* const drivefs = GetDriveFsInterface()) {
+    drivefs->ToggleMirroring(enabled, std::move(callback));
   }
 }
 
 void DriveIntegrationService::ToggleSyncForPath(
     const base::FilePath& path,
     drivefs::mojom::MirrorPathStatus status,
-    drivefs::mojom::DriveFs::ToggleSyncForPathCallback callback) {
+    DriveFs::ToggleSyncForPathCallback callback) {
   if (!ash::features::IsDriveFsMirroringEnabled() || !IsMirroringEnabled()) {
     std::move(callback).Run(drive::FILE_ERROR_SERVICE_UNAVAILABLE);
     return;
@@ -1576,35 +1580,35 @@ void DriveIntegrationService::ToggleSyncForPath(
     return;
   }
 
-  if (GetDriveFsInterface()) {
-    GetDriveFsInterface()->ToggleSyncForPath(path, status, std::move(callback));
+  if (DriveFs* const drivefs = GetDriveFsInterface()) {
+    drivefs->ToggleSyncForPath(path, status, std::move(callback));
   }
 }
 
 void DriveIntegrationService::ToggleSyncForPathIfDirectoryExists(
     const base::FilePath& path,
-    drivefs::mojom::DriveFs::ToggleSyncForPathCallback callback,
+    DriveFs::ToggleSyncForPathCallback callback,
     bool exists) {
   if (!exists) {
     std::move(callback).Run(drive::FILE_ERROR_NOT_FOUND);
     return;
   }
 
-  if (GetDriveFsInterface()) {
-    GetDriveFsInterface()->ToggleSyncForPath(
-        path, drivefs::mojom::MirrorPathStatus::kStart, std::move(callback));
+  if (DriveFs* const drivefs = GetDriveFsInterface()) {
+    drivefs->ToggleSyncForPath(path, drivefs::mojom::MirrorPathStatus::kStart,
+                               std::move(callback));
   }
 }
 
 void DriveIntegrationService::GetSyncingPaths(
-    drivefs::mojom::DriveFs::GetSyncingPathsCallback callback) {
+    DriveFs::GetSyncingPathsCallback callback) {
   if (!ash::features::IsDriveFsMirroringEnabled() || !IsMirroringEnabled()) {
     std::move(callback).Run(drive::FILE_ERROR_SERVICE_UNAVAILABLE, {});
     return;
   }
 
-  if (GetDriveFsInterface()) {
-    GetDriveFsInterface()->GetSyncingPaths(std::move(callback));
+  if (DriveFs* const drivefs = GetDriveFsInterface()) {
+    drivefs->GetSyncingPaths(std::move(callback));
   }
 }
 
@@ -1614,8 +1618,8 @@ drivefs::SyncState DriveIntegrationService::GetSyncStateForPath(
 }
 
 void DriveIntegrationService::PollHostedFilePinStates() {
-  if (GetDriveFsInterface()) {
-    GetDriveFsInterface()->PollHostedFilePinStates();
+  if (DriveFs* const drivefs = GetDriveFsInterface()) {
+    drivefs->PollHostedFilePinStates();
   }
 }
 
