@@ -7,7 +7,6 @@ package org.chromium.chrome.browser;
 import static org.chromium.chrome.browser.ui.IncognitoRestoreAppLaunchDrawBlocker.IS_INCOGNITO_SELECTED;
 
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.ShortcutManager;
 import android.content.res.Configuration;
 import android.os.Build;
@@ -518,8 +517,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 // Crash if intent came from us, but only in debug builds and only if we weren't
                 // explicitly told not to. Hopefully we'll get enough reports to find where
                 // these intents come from.
-                if (externalId == IntentHandler.ExternalAppId.CHROME
-                        && 0 != (getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE)
+                if (externalId == IntentHandler.ExternalAppId.CHROME && BuildInfo.isDebugApp()
                         && !CommandLine.getInstance().hasSwitch(
                                 ChromeSwitches.DONT_CRASH_ON_VIEW_MAIN_INTENTS)) {
                     String intentInfo = intent.toString();

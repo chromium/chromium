@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.base;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
@@ -181,12 +180,9 @@ public class SplitCompatApplication extends Application {
                     COMMAND_LINE_FILE, SplitCompatApplication::shouldUseDebugFlags);
 
             // Enable ATrace on debug OS or app builds.
-            int applicationFlags = context.getApplicationInfo().flags;
-            boolean isAppDebuggable = (applicationFlags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
-            boolean isOsDebuggable = BuildInfo.isDebugAndroid();
             // Requires command-line flags.
             TraceEvent.maybeEnableEarlyTracing(
-                    (isAppDebuggable || isOsDebuggable) ? TraceEvent.ATRACE_TAG_APP : 0,
+                    BuildInfo.isDebugAndroidOrApp() ? TraceEvent.ATRACE_TAG_APP : 0,
                     /*readCommandLine=*/true);
             TraceEvent.begin(ATTACH_BASE_CONTEXT_EVENT);
 

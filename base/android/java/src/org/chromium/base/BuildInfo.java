@@ -226,11 +226,28 @@ public class BuildInfo {
     }
 
     /**
-     * Check if this is a debuggable build of Android. Use this to enable developer-only features.
+     * Check if this is a debuggable build of Android.
      * This is a rough approximation of the hidden API {@code Build.IS_DEBUGGABLE}.
      */
     public static boolean isDebugAndroid() {
         return "eng".equals(Build.TYPE) || "userdebug".equals(Build.TYPE);
+    }
+
+    /*
+     * Check if the app is declared debuggable in its manifest.
+     * In WebView, this refers to the host app.
+     */
+    public static boolean isDebugApp() {
+        int appFlags = ContextUtils.getApplicationContext().getApplicationInfo().flags;
+        return (appFlags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
+    }
+
+    /**
+     * Check if this is either a debuggable build of Android or of the host app.
+     * Use this to enable developer-only features.
+     */
+    public static boolean isDebugAndroidOrApp() {
+        return isDebugAndroid() || isDebugApp();
     }
 
     /**
