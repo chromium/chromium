@@ -55,6 +55,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/cxx17_backports.h"
 #include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/guid.h"
 #include "base/i18n/number_formatting.h"
@@ -2102,27 +2103,11 @@ void DesksController::NotifyFullScreenStateChangedAcrossDesksIfNeeded(
   }
 }
 
-// Temporary helper for crash debugging. Produces a comma separated a list of
-// the given window and its parents up to the root.
-static std::string WindowAncestry(aura::Window* window) {
-  std::string result = base::StringPrintf("%p", window);
-  while ((window = window->parent())) {
-    base::StringAppendF(&result, ",%p", window);
-  }
-  return result;
-}
-
 void DesksController::RestackVisibleOnAllDesksWindowsOnActiveDesk() {
   if (features::IsPerDeskZOrderEnabled()) {
     active_desk_->RestackAllDeskWindows();
     return;
   }
-
-  // TODO(b/252556509): Clean this up once the issue has been resolved.
-  SCOPED_CRASH_KEY_NUMBER("Restack", "adw_count",
-                          visible_on_all_desks_windows_.size());
-  SCOPED_CRASH_KEY_NUMBER("Restack", "root_count",
-                          Shell::GetAllRootWindows().size());
 
   auto mru_windows =
       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
@@ -2132,46 +2117,25 @@ void DesksController::RestackVisibleOnAllDesksWindowsOnActiveDesk() {
     if (visible_on_all_desks_window_iter == mru_windows.end())
       continue;
 
-    SCOPED_CRASH_KEY_NUMBER("Restack", "adw_type",
-                            visible_on_all_desks_window->GetType());
-    SCOPED_CRASH_KEY_NUMBER(
-        "Restack", "adw_app_type",
-        visible_on_all_desks_window->GetProperty(aura::client::kAppType));
-    SCOPED_CRASH_KEY_STRING256("Restack", "adw_ancestry",
-                               WindowAncestry(visible_on_all_desks_window));
-
-    WindowState* window_state = WindowState::Get(visible_on_all_desks_window);
-    SCOPED_CRASH_KEY_BOOL("Restack", "state_exists", !!window_state);
-    SCOPED_CRASH_KEY_NUMBER(
-        "Restack", "state_type",
-        window_state && static_cast<int>(window_state->GetStateType()));
-    SCOPED_CRASH_KEY_BOOL("Restack", "adw_is_minimized",
-                          window_state && window_state->IsMinimized());
-    SCOPED_CRASH_KEY_BOOL("Restack", "adw_is_maximized",
-                          window_state && window_state->IsMaximized());
-    SCOPED_CRASH_KEY_BOOL("Restack", "adw_is_fullscreen",
-                          window_state && window_state->IsFullscreen());
-    SCOPED_CRASH_KEY_BOOL("Restack", "adw_is_snapped",
-                          window_state && window_state->IsSnapped());
-    SCOPED_CRASH_KEY_BOOL("Restack", "adw_is_pinned",
-                          window_state && window_state->IsPinned());
-    SCOPED_CRASH_KEY_BOOL("Restack", "adw_is_trustedpinned",
-                          window_state && window_state->IsTrustedPinned());
-    SCOPED_CRASH_KEY_BOOL("Restack", "adw_is_pip",
-                          window_state && window_state->IsPip());
-    SCOPED_CRASH_KEY_BOOL("Restack", "adw_is_floated",
-                          window_state && window_state->IsFloated());
-    SCOPED_CRASH_KEY_BOOL("Restack", "adw_is_active",
-                          window_state && window_state->IsActive());
-    SCOPED_CRASH_KEY_BOOL("Restack", "adw_userpositionable",
-                          window_state && window_state->IsUserPositionable());
-
     auto* desk_container =
         visible_on_all_desks_window->GetRootWindow()->GetChildById(
             active_desk_->container_id());
-    DCHECK_EQ(desk_container, visible_on_all_desks_window->parent());
-    SCOPED_CRASH_KEY_STRING256("Restack", "container_ancestry",
-                               WindowAncestry(desk_container));
+    if (desk_container != visible_on_all_desks_window->parent()) {
+      // TODO(b/252556509): Clean this up when the root cause has been resolved.
+      // This can sometimes happen and we're still trying to nail down the root
+      // cause. Rather than proceeding to stack the window (which will crash),
+      // we'll log some info and skip the window.
+      SCOPED_CRASH_KEY_NUMBER("Restack", "adw_type",
+                              visible_on_all_desks_window->GetType());
+      SCOPED_CRASH_KEY_NUMBER(
+          "Restack", "adw_app_type",
+          visible_on_all_desks_window->GetProperty(aura::client::kAppType));
+      SCOPED_CRASH_KEY_STRING32(
+          "Restack", "adw_app_id",
+          full_restore::GetAppId(visible_on_all_desks_window));
+      base::debug::DumpWithoutCrashing();
+      continue;
+    }
 
     // Search through the MRU list for the next element that shares the same
     // parent. This will be used to stack |visible_on_all_desks_window| in
