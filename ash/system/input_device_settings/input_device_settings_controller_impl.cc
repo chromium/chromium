@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -57,9 +58,13 @@ mojom::KeyboardPtr BuildMojomKeyboard(const ui::InputDevice& keyboard) {
   mojom_keyboard->device_key = BuildDeviceKey(keyboard);
   mojom_keyboard->is_external =
       keyboard.type != ui::InputDeviceType::INPUT_DEVICE_INTERNAL;
-  mojom_keyboard->modifier_keys =
-      Shell::Get()->keyboard_capability()->GetModifierKeys(keyboard);
-  mojom_keyboard->meta_key = GetMetaKeyForKeyboard(keyboard);
+  // Enable only when flag is enabled to avoid crashing while problem is
+  // addressed. See b/272960076
+  if (features::IsInputDeviceSettingsSplitEnabled()) {
+    mojom_keyboard->modifier_keys =
+        Shell::Get()->keyboard_capability()->GetModifierKeys(keyboard);
+    mojom_keyboard->meta_key = GetMetaKeyForKeyboard(keyboard);
+  }
   return mojom_keyboard;
 }
 
