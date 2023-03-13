@@ -9,7 +9,7 @@ $ = function(id) {
 var hasReceivedTrackEndedEvent = false;
 var hasReceivedDeviceChangeEventReceived = false;
 
-function startVideoCaptureAndVerifySize(video_width, video_height) {
+async function startVideoCaptureAndVerifySize(video_width, video_height) {
   console.log('Calling getUserMediaAndWaitForVideoRendering.');
   var constraints = {
     video: {
@@ -17,53 +17,56 @@ function startVideoCaptureAndVerifySize(video_width, video_height) {
       height: {exact: video_height},
     }
   };
-  navigator.mediaDevices.getUserMedia(constraints)
-      .then(function(stream) {
-        waitForVideoStreamToSatisfyRequirementFunction(
-            stream, detectVideoWithDimensionPlaying, video_width, video_height);
-      })
-      .catch(failedCallback);
+  let stream;
+  try {
+    stream = await navigator.mediaDevices.getUserMedia(constraints);
+  } catch (err) {
+    return failedCallback(err);
+  }
+  return waitForVideoStreamToSatisfyRequirementFunction(
+      stream, detectVideoWithDimensionPlaying, video_width, video_height);
 }
 
-function startVideoCaptureFromVirtualDeviceAndVerifyUniformColorVideoWithSize(
+async function startVideoCaptureFromVirtualDeviceAndVerifyUniformColorVideoWithSize(
     video_width, video_height) {
   console.log('Trying to find device named "Virtual Device".');
-  navigator.mediaDevices.enumerateDevices().then(function(devices) {
-    var target_device;
-    devices.forEach(function(device) {
-      if (device.kind == 'videoinput') {
-        console.log('Found videoinput device with label ' + device.label);
-        if (device.label == 'Virtual Device') {
-          target_device = device;
-        }
+  const devices = await navigator.mediaDevices.enumerateDevices();
+  var target_device;
+  devices.forEach(function(device) {
+    if (device.kind == 'videoinput') {
+      console.log('Found videoinput device with label ' + device.label);
+      if (device.label == 'Virtual Device') {
+        target_device = device;
       }
-    });
-    if (target_device == null) {
-      failTest(
-          'No video input device was found with label = Virtual ' +
-          'Device');
-      return;
     }
-    var device_specific_constraints = {
-      video: {
-        width: {exact: video_width},
-        height: {exact: video_height},
-        deviceId: {exact: target_device.deviceId}
-      }
-    };
-    navigator.mediaDevices.getUserMedia(device_specific_constraints)
-        .then(function(stream) {
-          waitForVideoStreamToSatisfyRequirementFunction(
-              stream, detectUniformColorVideoWithDimensionPlaying, video_width,
-              video_height);
-        })
-        .catch(failedCallback);
   });
+  if (target_device == null) {
+    return toStackTrace(
+        'No video input device was found with label = Virtual ' +
+        'Device');
+  }
+  var device_specific_constraints = {
+    video: {
+      width: {exact: video_width},
+      height: {exact: video_height},
+      deviceId: {exact: target_device.deviceId}
+    }
+  };
+  let stream;
+  try {
+    stream =
+      await navigator.mediaDevices.getUserMedia(device_specific_constraints);
+  } catch (err) {
+    return failedCallback(err);
+  }
+  return waitForVideoStreamToSatisfyRequirementFunction(
+            stream, detectUniformColorVideoWithDimensionPlaying, video_width,
+            video_height);
 }
 
 function enumerateVideoCaptureDevicesAndVerifyCount(expected_count) {
   console.log('Enumerating devices and verifying count.');
-  navigator.mediaDevices.enumerateDevices().then(function(devices) {
+  return navigator.mediaDevices.enumerateDevices().then(function(devices) {
     var actual_count = 0;
     devices.forEach(function(device) {
       if (device.kind == 'videoinput') {
@@ -72,9 +75,9 @@ function enumerateVideoCaptureDevicesAndVerifyCount(expected_count) {
       }
     });
     if (actual_count == expected_count) {
-      reportTestSuccess();
+      return logSuccess();
     } else {
-      failTest(
+      return toStackTrace(
           'Device count ' + actual_count + ' did not match expectation of ' +
           expected_count);
     }
@@ -82,10 +85,10 @@ function enumerateVideoCaptureDevicesAndVerifyCount(expected_count) {
 }
 
 function failedCallback(error) {
-  failTest('GetUserMedia call failed with code ' + error.code);
+  return toStackTrace('GetUserMedia call failed with code ' + error.code);
 }
 
-function waitForVideoStreamToSatisfyRequirementFunction(
+async function waitForVideoStreamToSatisfyRequirementFunction(
     stream, requirementFunction, video_width, video_height) {
   var localView = $('local-view');
   localView.width = video_width;
@@ -98,33 +101,31 @@ function waitForVideoStreamToSatisfyRequirementFunction(
 
   var videoTracks = stream.getVideoTracks();
   if (videoTracks.length == 0) {
-    failTest('Did not receive any video tracks');
+    return toStackTrace('Did not receive any video tracks');
   }
   var videoTrack = videoTracks[0];
   videoTrack.onended = function() {
     hasReceivedTrackEndedEvent = true;
   };
 
-  requirementFunction('local-view', video_width, video_height).then(() => {
-    if (localView.videoWidth == video_width) {
-      reportTestSuccess();
-    } else {
-      failTest('Video has unexpected width.');
-    }
-  });
+  await requirementFunction('local-view', video_width, video_height);
+  if (localView.videoWidth == video_width) {
+    return logSuccess();
+  } else {
+    return toStackTrace('Video has unexpected width.');
+  }
 }
 
-function waitForVideoToTurnBlack() {
-  detectBlackVideo('local-view').then(() => {
-    reportTestSuccess();
-  });
+async function waitForVideoToTurnBlack() {
+  await detectBlackVideo('local-view');
+  return logSuccess();
 }
 
 function verifyHasReceivedTrackEndedEvent() {
   if (hasReceivedTrackEndedEvent) {
-    reportTestSuccess();
+    return logSuccess();
   } else {
-    failTest('Did not receive ended event from track.');
+    return toStackTrace('Did not receive ended event from track.');
   }
 }
 
@@ -134,13 +135,12 @@ function registerForDeviceChangeEvent() {
   };
 }
 
-function waitForDeviceChangeEvent() {
-  if (hasReceivedDeviceChangeEventReceived) {
-    reportTestSuccess();
-  } else {
+async function waitForDeviceChangeEvent() {
+  while (!hasReceivedDeviceChangeEventReceived) {
     console.log('still waiting for device change event');
-    setTimeout(waitForDeviceChangeEvent, 200);
+    await new Promise(resolve => setTimeout(resolve, 200));
   }
+  return logSuccess();
 }
 
 function resetHasReceivedChangedEventFlag() {

@@ -81,8 +81,7 @@ class WebRtcVideoCaptureSharedDeviceBrowserTest : public ContentBrowserTest {
     const std::string javascript_to_execute = base::StringPrintf(
         kStartVideoCaptureAndVerify, kVideoSize.width(), kVideoSize.height());
     // Start video capture and wait until it started rendering
-    ASSERT_EQ("OK", EvalJs(shell(), javascript_to_execute,
-                           EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+    ASSERT_EQ("OK", EvalJs(shell(), javascript_to_execute));
   }
 
  protected:

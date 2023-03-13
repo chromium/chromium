@@ -89,9 +89,7 @@ class WebRtcImageCaptureStressBrowserTest
 
     LookupAndLogNameAndIdOfFirstCamera();
 
-    std::string result =
-        EvalJs(shell(), command, EXECUTE_SCRIPT_USE_MANUAL_REPLY)
-            .ExtractString();
+    std::string result = EvalJs(shell(), command).ExtractString();
     DLOG_IF(ERROR, result != "OK") << result;
     return result == "OK";
   }
