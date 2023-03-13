@@ -83,39 +83,7 @@ base::Value::Dict BuildIndexJson() {
 base::Value::Dict BuildInstalledWebAppsJson(web_app::WebAppProvider& provider) {
   base::Value::Dict root;
 
-  base::Value::Dict& installed_web_apps = *root.EnsureDict(kInstalledWebApps);
-
-  std::vector<const web_app::WebApp*> web_apps;
-  for (const web_app::WebApp& web_app :
-       provider.registrar_unsafe().GetAppsIncludingStubs()) {
-    web_apps.push_back(&web_app);
-  }
-  base::ranges::sort(web_apps, {}, &web_app::WebApp::untranslated_name);
-
-  // Prefix with a ! so this appears at the top when serialized.
-  base::Value::Dict& index = *installed_web_apps.EnsureDict("!Index");
-  for (const web_app::WebApp* web_app : web_apps) {
-    const std::string& key = web_app->untranslated_name();
-    base::Value* existing_entry = index.Find(key);
-    if (!existing_entry) {
-      index.Set(key, web_app->app_id());
-      continue;
-    }
-    // If any web apps share identical names then collect a list of app IDs.
-    const std::string* existing_id = existing_entry->GetIfString();
-    if (existing_id) {
-      base::Value::List id_list;
-      id_list.Append(*existing_id);
-      index.Set(key, std::move(id_list));
-    }
-    index.FindList(key)->Append(web_app->app_id());
-  }
-
-  base::Value::List& web_app_details =
-      *installed_web_apps.EnsureList("Details");
-  for (const web_app::WebApp* web_app : web_apps) {
-    web_app_details.Append(web_app->AsDebugValue());
-  }
+  root.Set(kInstalledWebApps, provider.registrar_unsafe().AsDebugValue());
 
   return root;
 }

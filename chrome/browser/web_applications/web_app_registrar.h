@@ -459,6 +459,10 @@ class WebAppRegistrar : public ProfileManagerObserver {
   // is a subset of GetAppsIncludingStubs().
   AppSet GetApps() const;
 
+  // Returns a dict with debug values for each app in the registry, including
+  // registrar-evaluated effective fields.
+  base::Value AsDebugValue() const;
+
  protected:
   Profile* profile() const { return profile_; }
 
