@@ -6,6 +6,7 @@ import 'chrome://resources/js/action_link.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {addWebUiListener} from 'chrome://resources/js/cr.js';
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {$, getRequiredElement} from 'chrome://resources/js/util_ts.js';
 
 // Note: keep these values in sync with the values in
@@ -425,7 +426,17 @@ function formatValue(
   }  // ellipsis
 
   const span = document.createElement('span');
-  const content = ' ' + text + ' ';
+  let unescapedText = text;
+  if (property === 'name') {
+    unescapedText = new DOMParser()
+                        .parseFromString(
+                            sanitizeInnerHtml(text) as unknown as string,
+                            'text/html',
+                            )
+                        .documentElement.textContent ||
+        text;
+  }
+  const content = ' ' + unescapedText + ' ';
   if (property === 'name') {
     const id = getIdFromData(data);
     insertHeadingInline(span, content, id);
