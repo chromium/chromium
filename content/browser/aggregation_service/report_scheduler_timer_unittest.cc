@@ -59,8 +59,11 @@ class ReportSchedulerTimerTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  raw_ptr<MockReportSchedulerTimerDelegate> timer_delegate_;
+
+  // Must outlive `timer_delegate_`.
   std::unique_ptr<ReportSchedulerTimer> timer_;
+
+  raw_ptr<MockReportSchedulerTimerDelegate> timer_delegate_;
 };
 
 TEST_F(ReportSchedulerTimerTest, SetTimer_FiredAtAppropriateTime) {
