@@ -28,7 +28,7 @@ BASE_FEATURE(kUseUtilityThreadGroup,
 
 BASE_FEATURE(kNoWorkerThreadReclaim,
              "NoWorkerThreadReclaim",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // static
 BASE_FEATURE(kNoWakeUpsForCanceledTasks,
