@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
+#include "chrome/common/accessibility/read_anything_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
@@ -85,6 +86,28 @@ class ReadAnythingToolbarViewTest : public InProcessBrowserTest {
     toolbar_view_->GetAccessibleNodeData(node_data);
   }
 
+  void OnReadAnythingThemeChanged(
+      const std::string& font_name,
+      double font_scale,
+      ui::ColorId foreground_color_id,
+      ui::ColorId background_color_id,
+      ui::ColorId separator_color_id,
+      ui::ColorId dropdown_color_id,
+      read_anything::mojom::LineSpacing line_spacing,
+      read_anything::mojom::LetterSpacing letter_spacing) {
+    toolbar_view_->OnReadAnythingThemeChanged(
+        font_name, font_scale, foreground_color_id, background_color_id,
+        separator_color_id, dropdown_color_id, line_spacing, letter_spacing);
+  }
+
+  views::Button::ButtonState GetDecreaseSizeButtonState() {
+    return toolbar_view_->decrease_text_size_button_->GetStateForTesting();
+  }
+
+  views::Button::ButtonState GetIncreaseSizeButtonState() {
+    return toolbar_view_->increase_text_size_button_->GetStateForTesting();
+  }
+
  protected:
   MockReadAnythingToolbarViewDelegate toolbar_delegate_;
   MockReadAnythingFontComboboxDelegate font_combobox_delegate_;
@@ -94,11 +117,46 @@ class ReadAnythingToolbarViewTest : public InProcessBrowserTest {
   std::unique_ptr<MockReadAnythingCoordinator> coordinator_;
 };
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingToolbarViewTest,
+                       DecreaseButtonDisabledAtMin) {
+  OnReadAnythingThemeChanged(
+      "", kReadAnythingMinimumFontScale, kColorReadAnythingForeground,
+      kColorReadAnythingForeground, kColorReadAnythingForeground,
+      kColorReadAnythingForeground,
+      read_anything::mojom::LineSpacing::kStandard,
+      read_anything::mojom::LetterSpacing::kStandard);
+
+  EXPECT_EQ(GetDecreaseSizeButtonState(),
+            views::Button::ButtonState::STATE_DISABLED);
+  EXPECT_EQ(GetIncreaseSizeButtonState(),
+            views::Button::ButtonState::STATE_NORMAL);
+}
+
 IN_PROC_BROWSER_TEST_F(ReadAnythingToolbarViewTest, DecreaseFontSizeCallback) {
   EXPECT_CALL(toolbar_delegate_, OnFontSizeChanged(false)).Times(1);
   EXPECT_CALL(toolbar_delegate_, OnFontSizeChanged(true)).Times(0);
 
   DecreaseFontSizeCallback();
+
+  EXPECT_EQ(GetDecreaseSizeButtonState(),
+            views::Button::ButtonState::STATE_NORMAL);
+  EXPECT_EQ(GetIncreaseSizeButtonState(),
+            views::Button::ButtonState::STATE_NORMAL);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingToolbarViewTest,
+                       IncreaseButtonDisabledAtMax) {
+  OnReadAnythingThemeChanged(
+      "", kReadAnythingMaximumFontScale, kColorReadAnythingForeground,
+      kColorReadAnythingForeground, kColorReadAnythingForeground,
+      kColorReadAnythingForeground,
+      read_anything::mojom::LineSpacing::kStandard,
+      read_anything::mojom::LetterSpacing::kStandard);
+
+  EXPECT_EQ(GetDecreaseSizeButtonState(),
+            views::Button::ButtonState::STATE_NORMAL);
+  EXPECT_EQ(GetIncreaseSizeButtonState(),
+            views::Button::ButtonState::STATE_DISABLED);
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingToolbarViewTest, IncreaseFontSizeCallback) {

@@ -158,6 +158,17 @@ void ReadAnythingToolbarView::OnReadAnythingThemeChanged(
     ui::ColorId dropdown_color_id,
     read_anything::mojom::LineSpacing line_spacing,
     read_anything::mojom::LetterSpacing letter_spacing) {
+  if (font_scale > kReadAnythingMinimumFontScale) {
+    decrease_text_size_button_->Enable();
+  } else {
+    decrease_text_size_button_->Disable();
+  }
+  if (font_scale < kReadAnythingMaximumFontScale) {
+    increase_text_size_button_->Enable();
+  } else {
+    increase_text_size_button_->Disable();
+  }
+
   if (!GetColorProvider())
     return;
 

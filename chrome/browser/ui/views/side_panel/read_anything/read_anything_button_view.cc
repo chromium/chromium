@@ -45,6 +45,18 @@ void ReadAnythingButtonView::UpdateIcon(const gfx::VectorIcon& icon,
                                          icon_color);
 }
 
+void ReadAnythingButtonView::Enable() {
+  button_->SetState(views::Button::ButtonState::STATE_NORMAL);
+}
+
+void ReadAnythingButtonView::Disable() {
+  button_->SetState(views::Button::ButtonState::STATE_DISABLED);
+}
+
+views::Button::ButtonState ReadAnythingButtonView::GetStateForTesting() {
+  return button_->GetState();
+}
+
 BEGIN_METADATA(ReadAnythingButtonView, views::View)
 END_METADATA
 
