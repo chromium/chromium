@@ -5,7 +5,6 @@
 #ifndef BASE_THREADING_SCOPED_BLOCKING_CALL_INTERNAL_H_
 #define BASE_THREADING_SCOPED_BLOCKING_CALL_INTERNAL_H_
 
-#include "base/auto_reset.h"
 #include "base/base_export.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -50,10 +49,10 @@ class BASE_EXPORT BlockingObserver {
   virtual void BlockingEnded() = 0;
 };
 
-// Registers |new_blocking_observer| on the current thread. It is invalid to
-// call this on a thread where there is an active ScopedBlockingCall.
+// Registers |blocking_observer| on the current thread. It is invalid to call
+// this on a thread where there is an active ScopedBlockingCall.
 BASE_EXPORT void SetBlockingObserverForCurrentThread(
-    BlockingObserver* new_blocking_observer);
+    BlockingObserver* blocking_observer);
 
 BASE_EXPORT void ClearBlockingObserverForCurrentThread();
 
@@ -61,7 +60,7 @@ BASE_EXPORT void ClearBlockingObserverForCurrentThread();
 // second happening during that period will be reported to it. It will then
 // report via the IOJankReportingCallback in |reporting_callback_storage()| if
 // it's non-null. https://bit.ly/chrome-io-jank-metric.
-class BASE_EXPORT [[maybe_unused, nodiscard]] IOJankMonitoringWindow
+class BASE_EXPORT IOJankMonitoringWindow
     : public RefCountedThreadSafe<IOJankMonitoringWindow> {
  public:
   explicit IOJankMonitoringWindow(TimeTicks start_time);
@@ -72,7 +71,7 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] IOJankMonitoringWindow
   // Cancels monitoring and clears this class' static state.
   static void CancelMonitoringForTesting();
 
-  class [[maybe_unused, nodiscard]] ScopedMonitoredCall {
+  class ScopedMonitoredCall {
    public:
     // Stores a ref to the current IOJankMonitoringWindow if monitoring is
     // active, keeping it alive at least until the monitored call completes or
@@ -169,7 +168,7 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] IOJankMonitoringWindow
 
 // Common implementation class for both ScopedBlockingCall and
 // ScopedBlockingCallWithBaseSyncPrimitives without assertions.
-class BASE_EXPORT [[maybe_unused, nodiscard]] UncheckedScopedBlockingCall {
+class BASE_EXPORT UncheckedScopedBlockingCall {
  public:
   enum class BlockingCallType {
     kRegular,
@@ -190,8 +189,6 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] UncheckedScopedBlockingCall {
 
   // Previous ScopedBlockingCall instantiated on this thread.
   const raw_ptr<UncheckedScopedBlockingCall> previous_scoped_blocking_call_;
-
-  const base::AutoReset<UncheckedScopedBlockingCall*> resetter_;
 
   // Whether the BlockingType of the current thread was WILL_BLOCK after this
   // ScopedBlockingCall was instantiated.
