@@ -1,9 +1,0 @@
-rootWebArea name='done'
-++genericContainer ignored
-++++genericContainer
-++++++button expanded name='Will expand'
-++++++++staticText name='Will expand'
-++++++++++inlineTextBox name='Will expand'
-++++++group ispopup=auto
-++++++++staticText name='Popover'
-++++++++++inlineTextBox name='Popover'

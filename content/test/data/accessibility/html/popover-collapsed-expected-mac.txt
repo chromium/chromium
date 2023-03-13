@@ -1,3 +1,0 @@
-AXWebArea AXTitle='done'
-++AXGroup
-++++AXButton AXTitle='Will collapse'
