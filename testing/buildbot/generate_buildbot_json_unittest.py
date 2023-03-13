@@ -1897,7 +1897,7 @@ GPU_TELEMETRY_TEST_OUTPUT_SKYLAB = """\
           "-v",
           "--stable-jobs"
         ],
-        "autotest_name": "chromium_GPU",
+        "autotest_name": "chromium_Graphics",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc",
         "merge": {
           "args": [],

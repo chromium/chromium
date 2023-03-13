@@ -5360,7 +5360,7 @@
           "-v",
           "--stable-jobs"
         ],
-        "autotest_name": "chromium_GPU",
+        "autotest_name": "chromium_Graphics",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
         "cros_img": "kevin-public/R110-15277.0.0",
@@ -5391,7 +5391,7 @@
           "-v",
           "--stable-jobs"
         ],
-        "autotest_name": "chromium_GPU",
+        "autotest_name": "chromium_Graphics",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
         "cros_img": "kevin-public/R110-15277.0.0",
@@ -5422,7 +5422,7 @@
           "-v",
           "--stable-jobs"
         ],
-        "autotest_name": "chromium_GPU",
+        "autotest_name": "chromium_Graphics",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
         "cros_img": "kevin-public/R110-15277.0.0",
@@ -5457,7 +5457,7 @@
           "--expected-device-id",
           "0"
         ],
-        "autotest_name": "chromium_GPU",
+        "autotest_name": "chromium_Graphics",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
         "cros_img": "kevin-public/R110-15277.0.0",
@@ -5493,7 +5493,7 @@
           "--git-revision=${got_revision}",
           "--service-account=/creds/service_accounts/skylab-drone.json"
         ],
-        "autotest_name": "chromium_GPU",
+        "autotest_name": "chromium_Graphics",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
         "cros_img": "kevin-public/R110-15277.0.0",
@@ -5529,7 +5529,7 @@
           "-v",
           "--stable-jobs"
         ],
-        "autotest_name": "chromium_GPU",
+        "autotest_name": "chromium_Graphics",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
         "cros_img": "kevin-public/R110-15277.0.0",
@@ -5565,7 +5565,7 @@
           "--git-revision=${got_revision}",
           "--service-account=/creds/service_accounts/skylab-drone.json"
         ],
-        "autotest_name": "chromium_GPU",
+        "autotest_name": "chromium_Graphics",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
         "cros_img": "kevin-public/R110-15277.0.0",
@@ -5602,7 +5602,7 @@
           "--stable-jobs",
           "--dont-restore-color-profile-after-test"
         ],
-        "autotest_name": "chromium_GPU",
+        "autotest_name": "chromium_Graphics",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
         "cros_img": "kevin-public/R110-15277.0.0",
@@ -5633,7 +5633,7 @@
           "-v",
           "--stable-jobs"
         ],
-        "autotest_name": "chromium_GPU",
+        "autotest_name": "chromium_Graphics",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
         "cros_img": "kevin-public/R110-15277.0.0",
@@ -5664,7 +5664,7 @@
           "-v",
           "--stable-jobs"
         ],
-        "autotest_name": "chromium_GPU",
+        "autotest_name": "chromium_Graphics",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
         "cros_img": "kevin-public/R110-15277.0.0",
@@ -5698,7 +5698,7 @@
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl2_conformance_tests_output.json",
           "--jobs=1"
         ],
-        "autotest_name": "chromium_GPU",
+        "autotest_name": "chromium_Graphics",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
         "cros_img": "kevin-public/R110-15277.0.0",
@@ -5732,7 +5732,7 @@
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl2_conformance_tests_output.json",
           "--jobs=1"
         ],
-        "autotest_name": "chromium_GPU",
+        "autotest_name": "chromium_Graphics",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
         "cros_img": "kevin-public/R110-15277.0.0",
@@ -5765,7 +5765,7 @@
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl_conformance_tests_output.json",
           "--jobs=1"
         ],
-        "autotest_name": "chromium_GPU",
+        "autotest_name": "chromium_Graphics",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
         "cros_img": "kevin-public/R110-15277.0.0",
