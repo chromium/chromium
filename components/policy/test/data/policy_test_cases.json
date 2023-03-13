@@ -16399,7 +16399,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "fuchsia"
+      "fuchsia",
+      "android"
     ],
     "policy_pref_mapping_tests": [
       {

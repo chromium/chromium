@@ -2314,6 +2314,9 @@ extern const char
 extern const char kSafeModeForCachedFlagsName[];
 extern const char kSafeModeForCachedFlagsDescription[];
 
+extern const char kSafeSitesFilterBehaviorPolicyAndroidName[];
+extern const char kSafeSitesFilterBehaviorPolicyAndroidDescription[];
+
 extern const char kScreenshotsForAndroidV2Name[];
 extern const char kScreenshotsForAndroidV2Description[];
 

@@ -34,6 +34,10 @@ BASE_FEATURE(kDmTokenDeletion,
 BASE_FEATURE(kPolicyLogsPageAndroid,
              "PolicyLogsPageAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSafeSitesFilterBehaviorPolicyAndroid,
+             "SafeSitesFilterBehaviorPolicyAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kPolicyMergeMultiSource,

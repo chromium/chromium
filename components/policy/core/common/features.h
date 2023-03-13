@@ -37,6 +37,9 @@ POLICY_EXPORT BASE_DECLARE_FEATURE(kDmTokenDeletion);
 #if BUILDFLAG(IS_ANDROID)
 // Enable logging and chrome://policy/logs page on Android.
 POLICY_EXPORT BASE_DECLARE_FEATURE(kPolicyLogsPageAndroid);
+
+// Enable SafeSitesFilterBehavior policy on Android.
+POLICY_EXPORT BASE_DECLARE_FEATURE(kSafeSitesFilterBehaviorPolicyAndroid);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Prevent policies set by a single source from being treated as merged.
