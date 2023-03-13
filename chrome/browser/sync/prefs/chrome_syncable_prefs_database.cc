@@ -657,12 +657,6 @@ const auto& SyncablePreferences() {
 }
 }  // namespace
 
-bool ChromeSyncablePrefsDatabase::IsPreferenceSyncable(
-    const std::string& pref_name) const {
-  return sync_preferences::SyncablePrefsDatabase::IsPreferenceSyncable(
-      pref_name);
-}
-
 absl::optional<sync_preferences::SyncablePrefMetadata>
 ChromeSyncablePrefsDatabase::GetSyncablePrefMetadata(
     const std::string& pref_name) const {

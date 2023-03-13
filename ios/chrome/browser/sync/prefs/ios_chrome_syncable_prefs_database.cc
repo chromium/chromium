@@ -60,12 +60,6 @@ const auto& SyncablePreferences() {
 }
 }  // namespace
 
-bool IOSChromeSyncablePrefsDatabase::IsPreferenceSyncable(
-    const std::string& pref_name) const {
-  return sync_preferences::SyncablePrefsDatabase::IsPreferenceSyncable(
-      pref_name);
-}
-
 absl::optional<sync_preferences::SyncablePrefMetadata>
 IOSChromeSyncablePrefsDatabase::GetSyncablePrefMetadata(
     const std::string& pref_name) const {

@@ -43,9 +43,6 @@ const std::unordered_map<std::string, SyncablePrefMetadata>
 
 class TestSyncablePrefsDatabase : public SyncablePrefsDatabase {
  public:
-  bool IsPreferenceSyncable(const std::string& pref_name) const override {
-    return SyncablePrefsDatabase::IsPreferenceSyncable(pref_name);
-  }
   absl::optional<SyncablePrefMetadata> GetSyncablePrefMetadata(
       const std::string& pref_name) const override {
     if (auto it = kSyncablePrefsDatabase.find(pref_name);

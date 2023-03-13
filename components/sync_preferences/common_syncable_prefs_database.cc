@@ -234,11 +234,6 @@ const auto& SyncablePreferences() {
 }
 }  // namespace
 
-bool CommonSyncablePrefsDatabase::IsPreferenceSyncable(
-    const std::string& pref_name) const {
-  return SyncablePrefsDatabase::IsPreferenceSyncable(pref_name);
-}
-
 absl::optional<SyncablePrefMetadata>
 CommonSyncablePrefsDatabase::GetSyncablePrefMetadata(
     const std::string& pref_name) const {

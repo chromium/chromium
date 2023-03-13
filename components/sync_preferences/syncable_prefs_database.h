@@ -38,11 +38,7 @@ class SyncablePrefsDatabase {
 
   // Returns true if `pref_name` is part of the allowlist of syncable
   // preferences.
-  // TODO(crbug.com/1422534): Unmark as virtual and use default implementation
-  // once GetSyncablePrefMetadata() has been implemented by all.
-  // Note: This is marked as pure virtual but still has implementation to not
-  // give the false impression that the default impl is ready for use.
-  virtual bool IsPreferenceSyncable(const std::string& pref_name) const = 0;
+  bool IsPreferenceSyncable(const std::string& pref_name) const;
 };
 
 }  // namespace sync_preferences
