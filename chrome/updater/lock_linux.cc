@@ -8,11 +8,14 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
+#include <unistd.h>
 
 #include <memory>
 #include <string>
 #include <utility>
 
+#include "base/files/file.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
@@ -63,6 +66,18 @@ std::unique_ptr<ScopedLockImpl> ScopedLockImpl::TryCreate(
   }
 
   if (shm_fd < 0) {
+    return nullptr;
+  }
+
+  base::stat_wrapper_t shm_stat;
+  if (base::File::Fstat(shm_fd, &shm_stat) < 0) {
+    PLOG(ERROR) << "Cannot stat shared memory " << shared_mem_name;
+    return nullptr;
+  }
+  if (shm_stat.st_uid != getuid() ||
+      (shm_stat.st_mode & 0777) != (S_IRUSR | S_IWUSR)) {
+    LOG(ERROR) << "Refusing to use shared memory region " << shared_mem_name
+               << " with incorrect permissions";
     return nullptr;
   }
 
