@@ -75,7 +75,9 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Executors;
@@ -123,6 +125,13 @@ public class WebViewBrowserActivity extends AppCompatActivity {
         sPermissions.put(PermissionRequest.RESOURCE_VIDEO_CAPTURE,
                 Manifest.permission.CAMERA);
     }
+
+    // This set of models will always bypass strict mode.
+    // Google pre-release hardware models do not belong here.
+    private static final HashSet<String> STRICT_MODE_BYPASS_MODELS =
+            new HashSet<>(Arrays.asList(
+                    "humuhumu titan" // See https://crbug.com/1090841#c76
+            ));
 
     private EditText mUrlBar;
     private WebView mWebView;
@@ -273,52 +282,17 @@ public class WebViewBrowserActivity extends AppCompatActivity {
      */
     private void enableStrictMode() {
         String manufacturer = Build.MANUFACTURER.toLowerCase(Locale.US);
+        String model = Build.MODEL.toLowerCase(Locale.US);
 
         StrictMode.ThreadPolicy.Builder threadPolicyBuilder =
                 new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog().penaltyDeath();
 
-        if (manufacturer.equals("samsung")) {
-            // See crbug.com/1056368, Samsung device has an internal method
-            // "android.util.GeneralUtil#isSupportedGloveModeInternal", which reads file and
-            // violates strict mode policy. This method is called when showing the dropdown menu
-            // after user clicks the 3-dots menu. However this showing code is part of Android
-            // framework and not controlled by this app, so we need to permit disk read for the UI
-            // thread.
-            threadPolicyBuilder = threadPolicyBuilder.permitDiskReads();
-            // See crbug.com/1082701 and https://crbug.com/1090841#c38, Samsung device uses OEM
-            // specific clipboard API, which will need to read the disk on UI thread. This app can't
-            // control it because it is in the framework. We need to permit disk write for the UI
-            // thread.
-            //
-            // Also: https://crbug.com/1090841#c31
-            threadPolicyBuilder = threadPolicyBuilder.permitDiskWrites();
-        } else if (manufacturer.equals("htc")) {
-            // https://crbug.com/1090841#c30
-            threadPolicyBuilder = threadPolicyBuilder.permitDiskReads();
-        } else if (manufacturer.equals("huawei")) {
-            // https://crbug.com/1090841#c32
-            threadPolicyBuilder = threadPolicyBuilder.permitDiskReads();
-        } else if (manufacturer.equals("lge")) {
-            // https://crbug.com/1090841#c33
-            threadPolicyBuilder = threadPolicyBuilder.permitDiskReads();
-            // https://crbug.com/1198139
-            threadPolicyBuilder = threadPolicyBuilder.permitDiskWrites();
-        } else if (manufacturer.equals("oneplus")) {
-            // https://crbug.com/1090841#c37
-            threadPolicyBuilder = threadPolicyBuilder.permitDiskReads();
-        } else if (manufacturer.equals("oppo")) {
-            // https://crbug.com/1177779
-            threadPolicyBuilder = threadPolicyBuilder.permitDiskReads();
-        } else if (manufacturer.equals("nokia")) {
-            // https://crbug.com/1385924
-            threadPolicyBuilder = threadPolicyBuilder.permitDiskReads();
-        } else if (manufacturer.equals("xiaomi")) {
-            // https://crbug.com/1401331
-            threadPolicyBuilder = threadPolicyBuilder.permitDiskReads();
-        } else if (manufacturer.equals("realme")) {
-            // https://crbug.com/1418348
-            threadPolicyBuilder = threadPolicyBuilder.permitDiskReads();
+        if (!manufacturer.equalsIgnoreCase("google")
+                || STRICT_MODE_BYPASS_MODELS.contains(model)) {
+            threadPolicyBuilder.permitDiskReads();
+            threadPolicyBuilder.permitDiskWrites();
         }
+
         StrictMode.setThreadPolicy(threadPolicyBuilder.build());
 
         // Omissions:
