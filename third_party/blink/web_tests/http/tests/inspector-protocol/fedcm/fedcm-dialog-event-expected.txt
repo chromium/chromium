@@ -5,8 +5,22 @@ accounts: [
         email : john_doe@idp.example
         givenName : John
         idpConfigUrl : https://devtools.test:8443/resources/fedcm/fedcm.json
+        idpSigninUrl : https://idp.example/signin
+        loginState : SignIn
         name : John Doe
         pictureUrl : https://idp.example/profile/123
+    }
+    [1] : {
+        accountId : 5678
+        email : aisha@idp.example
+        givenName : Aisha
+        idpConfigUrl : https://devtools.test:8443/resources/fedcm/fedcm.json
+        idpSigninUrl : https://idp.example/signin
+        loginState : SignUp
+        name : Aisha Ahmad
+        pictureUrl : https://idp.example/profile/567
+        privacyPolicyUrl : https://rp.example/privacy_policy.html
+        termsOfServiceUrl : https://rp.example/terms_of_service.html
     }
 ]
 token: 1234

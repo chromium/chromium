@@ -9,6 +9,7 @@
 #include "content/browser/webid/federated_auth_request_impl.h"
 #include "content/browser/webid/federated_auth_request_page_data.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content::protocol {
 
@@ -73,6 +74,21 @@ void FedCmHandler::OnDialogShown() {
   auto accounts = std::make_unique<Array<FedCm::Account>>();
   for (const auto& data : *idp_data) {
     for (const IdentityRequestAccount& account : data.accounts) {
+      FedCm::LoginState login_state;
+      absl::optional<std::string> tos_url;
+      absl::optional<std::string> pp_url;
+      switch (*account.login_state) {
+        case IdentityRequestAccount::LoginState::kSignUp:
+          login_state = FedCm::LoginStateEnum::SignUp;
+          // Because TOS and PP URLs are only used when the login state is
+          // sign up, we only populate them in that case.
+          pp_url = data.client_metadata.privacy_policy_url.spec();
+          tos_url = data.client_metadata.terms_of_service_url.spec();
+          break;
+        case IdentityRequestAccount::LoginState::kSignIn:
+          login_state = FedCm::LoginStateEnum::SignIn;
+          break;
+      }
       std::unique_ptr<FedCm::Account> entry =
           FedCm::Account::Create()
               .SetAccountId(account.id)
@@ -81,7 +97,15 @@ void FedCmHandler::OnDialogShown() {
               .SetGivenName(account.given_name)
               .SetPictureUrl(account.picture.spec())
               .SetIdpConfigUrl(data.idp_metadata.config_url.spec())
+              .SetIdpSigninUrl(data.idp_metadata.idp_signin_url.spec())
+              .SetLoginState(login_state)
               .Build();
+      if (pp_url) {
+        entry->SetPrivacyPolicyUrl(*pp_url);
+      }
+      if (tos_url) {
+        entry->SetTermsOfServiceUrl(*tos_url);
+      }
       accounts->push_back(std::move(entry));
     }
   }

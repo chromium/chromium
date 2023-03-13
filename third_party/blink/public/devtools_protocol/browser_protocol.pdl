@@ -10905,6 +10905,13 @@ experimental domain Preload
 
 # This domain allows interacting with the FedCM dialog.
 experimental domain FedCm
+  # Whether this is a sign-up or sign-in action for this account, i.e.
+  # whether this account has ever been used to sign in to this RP before.
+  type LoginState extends string
+    enum
+      SignIn
+      SignUp
+
   # Corresponds to IdentityRequestAccount
   type Account extends object
     properties
@@ -10914,6 +10921,11 @@ experimental domain FedCm
       string givenName
       string pictureUrl
       string idpConfigUrl
+      string idpSigninUrl
+      LoginState loginState
+      # These two are only set if the loginState is signUp
+      optional string termsOfServiceUrl
+      optional string privacyPolicyUrl
 
   event dialogShown
     parameters
