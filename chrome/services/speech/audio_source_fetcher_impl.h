@@ -94,6 +94,8 @@ class AudioSourceFetcherImpl
 
   void SendAudioToResample(std::unique_ptr<media::AudioBus> audio_data);
 
+  void SendAudioEndToSpeechRecognitionService();
+
   media::AudioCapturerSource* GetAudioCapturerSource();
 
   // Sends audio to the speech recognition recognizer.
