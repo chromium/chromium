@@ -30,6 +30,7 @@ if (enable_rust) {
     visibility = [ ":rust_gtest_interop" ]
     crate_name = "rust_gtest_interop"
     crate_root = "rust_gtest_interop.rs"
+    allow_unsafe = true
     sources = [
       "expect_macros.rs",
       "rust_gtest_interop.rs",

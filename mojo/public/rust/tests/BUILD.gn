@@ -11,6 +11,7 @@ assert(can_build_rust_unit_tests)
 
 rust_unit_test("mojo_rust_system_tests") {
   testonly = true
+  allow_unsafe = true
   crate_root = "system/lib.rs"
   sources = [
     "system/lib.rs",
@@ -26,6 +27,7 @@ rust_unit_test("mojo_rust_system_tests") {
 
 rust_unit_test("mojo_rust_integration_tests") {
   testonly = true
+  allow_unsafe = true
   crate_root = "integration/lib.rs"
   sources = [
     "integration/encoding.rs",
@@ -44,6 +46,7 @@ rust_unit_test("mojo_rust_integration_tests") {
 
 rust_static_library("test_util") {
   testonly = true
+  allow_unsafe = true
   crate_root = "util/lib.rs"
   edition = "2021"
   sources = [ "util/lib.rs" ]

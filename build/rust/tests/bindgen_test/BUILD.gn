@@ -27,6 +27,7 @@ rust_bindgen("c_lib_bindgen") {
 }
 
 rust_static_library("bindgen_test_lib") {
+  allow_unsafe = true
   deps = [
     ":c_lib",
     ":c_lib_bindgen",

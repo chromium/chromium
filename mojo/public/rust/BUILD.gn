@@ -39,6 +39,7 @@ rust_bindgen("mojo_c_system_binding") {
 rust_static_library("mojo_rust_system") {
   crate_root = "system/lib.rs"
   crate_name = "mojo_system"
+  allow_unsafe = true
 
   sources = [
     "system/core.rs",
@@ -70,6 +71,7 @@ rust_static_library("mojo_rust_system") {
 rust_static_library("mojo_rust_bindings") {
   crate_root = "bindings/lib.rs"
   crate_name = "mojo_bindings"
+  allow_unsafe = true
 
   sources = [
     "bindings/decoding.rs",

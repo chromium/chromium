@@ -15,6 +15,7 @@ import("//build/rust/rust_unit_tests_group.gni")
 #
 #   sources
 #   edition (optional)
+#   allow_unsafe (optional)
 #   configs (optional)
 #   deps (optional)
 #   crate_root (optional)
@@ -90,6 +91,7 @@ template("rust_unit_test") {
     forward_variables_from(invoker,
                            "*",
                            [
+                             "allow_unsafe",
                              "edition",
                              "features",
                              "rustflags",
