@@ -45,3 +45,10 @@ crbug.com/1405639 wpt_internal/webgpu/web_platform/reftests/canvas_composite_alp
 crbug.com/1409154 [ Linux ] wpt_internal/webgpu/web_platform/reftests/canvas_colorspace_bgra8unorm.https.html [ Skip ]
 crbug.com/1409154 [ Linux ] wpt_internal/webgpu/web_platform/reftests/canvas_colorspace_rgba16float.https.html [ Skip ]
 crbug.com/1409154 [ Linux ] wpt_internal/webgpu/web_platform/reftests/canvas_colorspace_rgba8unorm.https.html [ Skip ]
+
+# Incorrect texture filtering: crbug.com/1285023 and crbug.com/1405548
+crbug.com/1405548 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_colorspace_bgra8unorm.https.html [ Failure ]
+crbug.com/1405548 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_colorspace_rgba16float.https.html [ Failure ]
+crbug.com/1405548 [ Win ] wpt_internal/webgpu/web_platform/reftests/canvas_colorspace_bgra8unorm.https.html [ Failure ]
+crbug.com/1405548 [ Win ] wpt_internal/webgpu/web_platform/reftests/canvas_colorspace_rgba16float.https.html [ Failure ]
+crbug.com/1405548 [ Win ] wpt_internal/webgpu/web_platform/reftests/canvas_colorspace_rgba8unorm.https.html [ Failure ]

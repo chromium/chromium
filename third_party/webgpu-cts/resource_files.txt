@@ -1,8 +1,11 @@
 README.md
-red-green.bt2020.vp9.webm
-red-green.bt601.vp9.webm
-red-green.bt709.vp9.webm
-red-green.mp4
-red-green.theora.ogv
-red-green.webmvp8.webm
+four-colors-h264-bt601-rotate-180.mp4
+four-colors-h264-bt601-rotate-270.mp4
+four-colors-h264-bt601-rotate-90.mp4
+four-colors-h264-bt601.mp4
+four-colors-theora-bt601.ogv
+four-colors-vp8-bt601.webm
+four-colors-vp9-bt601.webm
+four-colors-vp9-bt709.webm
+four-colors.png
 webgpu.png
