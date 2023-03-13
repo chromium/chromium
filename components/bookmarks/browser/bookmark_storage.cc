@@ -14,7 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/guid.h"
 #include "base/json/json_file_value_serializer.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_writer.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -90,11 +90,14 @@ BookmarkStorage::GetSerializedDataProducerForBackgroundSequence() {
       codec.Encode(model_, model_->client()->EncodeBookmarkSyncMetadata()));
 
   return base::BindOnce(
-      [](base::Value value, std::string* output) {
+      [](base::Value value) -> absl::optional<std::string> {
         // This runs on the background sequence.
-        JSONStringValueSerializer serializer(output);
-        serializer.set_pretty_print(true);
-        return serializer.Serialize(value);
+        std::string output;
+        if (!base::JSONWriter::WriteWithOptions(
+                value, base::JSONWriter::OPTIONS_PRETTY_PRINT, &output)) {
+          return absl::nullopt;
+        }
+        return output;
       },
       std::move(value));
 }

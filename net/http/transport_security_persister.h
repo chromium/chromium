@@ -42,6 +42,7 @@
 #include "base/memory/weak_ptr.h"
 #include "net/base/net_export.h"
 #include "net/http/transport_security_state.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -112,7 +113,7 @@ class NET_EXPORT TransportSecurityPersister
   // The reason for hashing them is so that the stored state does not
   // trivially reveal a user's browsing history to an attacker reading the
   // serialized state on disk.
-  bool SerializeData(std::string* data) override;
+  absl::optional<std::string> SerializeData() override;
 
   // Clears any existing non-static entries, and then re-populates
   // |transport_security_state_|.

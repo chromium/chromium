@@ -105,7 +105,7 @@ class LoopbackServer : public base::ImportantFileWriter::DataSerializer {
           const LoopbackServerEntity& entity)>;
 
   // ImportantFileWriter::DataSerializer:
-  bool SerializeData(std::string* data) override;
+  absl::optional<std::string> SerializeData() override;
 
   // Gets LoopbackServer ready for syncing.
   void Init();

@@ -913,7 +913,7 @@ TEST_F(JsonPrefStoreCallbackTest, TestPostWriteCallbacks) {
   // RegisterOnNextSuccessfulWriteReply.
   successful_write_reply_observer_.ObserveNextWriteCallback(pref_store.get());
   write_callback_observer_.ObserveNextWriteCallback(pref_store.get());
-  file_writer->WriteNow(std::make_unique<std::string>("foo"));
+  file_writer->WriteNow("foo");
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(successful_write_reply_observer_.GetAndResetObservationState());
   EXPECT_TRUE(write_callback_observer_.GetAndResetPreWriteObservationState());
@@ -924,7 +924,7 @@ TEST_F(JsonPrefStoreCallbackTest, TestPostWriteCallbacks) {
   // RegisterOnNextWriteSynchronousCallbacks.
   successful_write_reply_observer_.ObserveNextWriteCallback(pref_store.get());
   write_callback_observer_.ObserveNextWriteCallback(pref_store.get());
-  file_writer->WriteNow(std::make_unique<std::string>("foo"));
+  file_writer->WriteNow("foo");
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(successful_write_reply_observer_.GetAndResetObservationState());
   EXPECT_TRUE(write_callback_observer_.GetAndResetPreWriteObservationState());
@@ -933,7 +933,7 @@ TEST_F(JsonPrefStoreCallbackTest, TestPostWriteCallbacks) {
 
   // Test RegisterOnNextSuccessfulWriteReply only.
   successful_write_reply_observer_.ObserveNextWriteCallback(pref_store.get());
-  file_writer->WriteNow(std::make_unique<std::string>("foo"));
+  file_writer->WriteNow("foo");
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(successful_write_reply_observer_.GetAndResetObservationState());
   EXPECT_FALSE(write_callback_observer_.GetAndResetPreWriteObservationState());
@@ -942,7 +942,7 @@ TEST_F(JsonPrefStoreCallbackTest, TestPostWriteCallbacks) {
 
   // Test RegisterOnNextWriteSynchronousCallbacks only.
   write_callback_observer_.ObserveNextWriteCallback(pref_store.get());
-  file_writer->WriteNow(std::make_unique<std::string>("foo"));
+  file_writer->WriteNow("foo");
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(successful_write_reply_observer_.GetAndResetObservationState());
   EXPECT_TRUE(write_callback_observer_.GetAndResetPreWriteObservationState());
@@ -986,7 +986,7 @@ TEST_F(JsonPrefStoreCallbackTest, TestPostWriteCallbacksWithFakeFailure) {
   // Do a real write, and confirm that the successful observer was invoked after
   // being set by |PostWriteCallback| by the last TriggerFakeWriteCallback.
   ImportantFileWriter* file_writer = GetImportantFileWriter(pref_store.get());
-  file_writer->WriteNow(std::make_unique<std::string>("foo"));
+  file_writer->WriteNow("foo");
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(successful_write_reply_observer_.GetAndResetObservationState());
   EXPECT_EQ(NOT_CALLED,
@@ -1005,7 +1005,7 @@ TEST_F(JsonPrefStoreCallbackTest, TestPostWriteCallbacksDuringProfileDeath) {
         soon_out_of_scope_pref_store.get());
     write_callback_observer_.ObserveNextWriteCallback(
         soon_out_of_scope_pref_store.get());
-    file_writer->WriteNow(std::make_unique<std::string>("foo"));
+    file_writer->WriteNow("foo");
   }
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(successful_write_reply_observer_.GetAndResetObservationState());

@@ -8,7 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_writer.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/task_traits.h"
@@ -222,11 +222,14 @@ BrowsingTopicsState::GetSerializedDataProducerForBackgroundSequence() {
   DCHECK(loaded_);
 
   return base::BindOnce(
-      [](base::Value value, std::string* output) {
+      [](base::Value value) -> absl::optional<std::string> {
         // This runs on the background sequence.
-        JSONStringValueSerializer serializer(output);
-        serializer.set_pretty_print(true);
-        return serializer.Serialize(value);
+        std::string output;
+        if (!base::JSONWriter::WriteWithOptions(
+                value, base::JSONWriter::OPTIONS_PRETTY_PRINT, &output)) {
+          return absl::nullopt;
+        }
+        return output;
       },
       base::Value(ToDictValue()));
 }

@@ -122,8 +122,9 @@ void ImportantFileWriter::ProduceAndWriteStringToFileAtomically(
     OnceCallback<void(bool success)> after_write_callback,
     const std::string& histogram_suffix) {
   // Produce the actual data string on the background sequence.
-  std::string data;
-  if (!std::move(data_producer_for_background_sequence).Run(&data)) {
+  absl::optional<std::string> data =
+      std::move(data_producer_for_background_sequence).Run();
+  if (!data) {
     DLOG(WARNING) << "Failed to serialize data to be saved in " << path.value();
     return;
   }
@@ -134,7 +135,7 @@ void ImportantFileWriter::ProduceAndWriteStringToFileAtomically(
   // Calling the impl by way of the private
   // ProduceAndWriteStringToFileAtomically, which originated from an
   // ImportantFileWriter instance, so |from_instance| is true.
-  const bool result = WriteFileAtomicallyImpl(path, data, histogram_suffix,
+  const bool result = WriteFileAtomicallyImpl(path, *data, histogram_suffix,
                                               /*from_instance=*/true);
 
   if (!after_write_callback.is_null())
@@ -302,19 +303,16 @@ bool ImportantFileWriter::HasPendingWrite() const {
   return timer().IsRunning();
 }
 
-void ImportantFileWriter::WriteNow(std::unique_ptr<std::string> data) {
+void ImportantFileWriter::WriteNow(std::string data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!IsValueInRangeForNumericType<int32_t>(data->length())) {
+  if (!IsValueInRangeForNumericType<int32_t>(data.length())) {
     NOTREACHED();
     return;
   }
 
   WriteNowWithBackgroundDataProducer(base::BindOnce(
-      [](std::string data, std::string* output) {
-        *output = std::move(data);
-        return true;
-      },
-      std::move(*data)));
+      [](std::string data) { return absl::make_optional(std::move(data)); },
+      std::move(data)));
 }
 
 void ImportantFileWriter::WriteNowWithBackgroundDataProducer(
@@ -376,27 +374,19 @@ void ImportantFileWriter::DoScheduledWrite() {
   BackgroundDataProducerCallback data_producer_for_background_sequence;
 
   if (absl::holds_alternative<DataSerializer*>(serializer_)) {
-    std::string data;
-
-    // Pre-allocate previously needed memory plus 1kB for potential growth of
-    // data. Reduces the number of memory allocations to grow |data| step by
-    // step from tiny to very large.
-    data.reserve(previous_data_size_ + 1024);
-
-    if (!absl::get<DataSerializer*>(serializer_)->SerializeData(&data)) {
+    absl::optional<std::string> data;
+    data = absl::get<DataSerializer*>(serializer_)->SerializeData();
+    if (!data) {
       DLOG(WARNING) << "Failed to serialize data to be saved in "
                     << path_.value();
       ClearPendingWrite();
       return;
     }
 
-    previous_data_size_ = data.size();
+    previous_data_size_ = data->size();
     data_producer_for_background_sequence = base::BindOnce(
-        [](std::string data, std::string* result) {
-          *result = std::move(data);
-          return true;
-        },
-        std::move(data));
+        [](std::string data) { return absl::make_optional(std::move(data)); },
+        std::move(data).value());
   } else {
     data_producer_for_background_sequence =
         absl::get<BackgroundDataSerializer*>(serializer_)

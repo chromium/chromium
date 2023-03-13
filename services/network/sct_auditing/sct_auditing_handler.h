@@ -21,6 +21,7 @@
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/sct_auditing/sct_auditing_cache.h"
 #include "services/network/sct_auditing/sct_auditing_reporter.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace sct_auditing {
@@ -77,7 +78,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingHandler
   //
   // Each entry in the dictionary includes sufficient information to deserialize
   // and recreate the entries in the SCTAuditingHandler's pending reporters set.
-  bool SerializeData(std::string* output) override;
+  absl::optional<std::string> SerializeData() override;
 
   void DeserializeData(const std::string& serialized);
 

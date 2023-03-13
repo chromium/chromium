@@ -17,10 +17,11 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_file_value_serializer.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram.h"
+#include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -152,21 +153,18 @@ const char* GetHistogramSuffix(const base::FilePath& path) {
   return it != kAllowList.end() ? *it : "";
 }
 
-bool DoSerialize(base::ValueView value,
-                 const base::FilePath& path,
-                 std::string* output) {
-  JSONStringValueSerializer serializer(output);
-  serializer.set_pretty_print(false);
-  const bool success = serializer.Serialize(value);
-  if (!success) {
+absl::optional<std::string> DoSerialize(base::ValueView value,
+                                        const base::FilePath& path) {
+  std::string output;
+  if (!base::JSONWriter::Write(value, &output)) {
     // Failed to serialize prefs file. Backup the existing prefs file and
     // crash.
     BackupPrefsFile(path);
-    CHECK(false) << "Failed to serialize preferences : " << path
-                 << "\nBacked up under "
-                 << path.ReplaceExtension(kBadExtension);
+    NOTREACHED_NORETURN() << "Failed to serialize preferences : " << path
+                          << "\nBacked up under "
+                          << path.ReplaceExtension(kBadExtension);
   }
-  return success;
+  return output;
 }
 
 }  // namespace
@@ -511,9 +509,9 @@ JsonPrefStore::~JsonPrefStore() {
   CommitPendingWrite();
 }
 
-bool JsonPrefStore::SerializeData(std::string* output) {
+absl::optional<std::string> JsonPrefStore::SerializeData() {
   PerformPreserializationTasks();
-  return DoSerialize(prefs_, path_, output);
+  return DoSerialize(prefs_, path_);
 }
 
 base::ImportantFileWriter::BackgroundDataProducerCallback

@@ -22,6 +22,7 @@
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -40,10 +41,9 @@ class DataSerializer : public ImportantFileWriter::DataSerializer {
   explicit DataSerializer(const std::string& data) : data_(data) {
   }
 
-  bool SerializeData(std::string* output) override {
+  absl::optional<std::string> SerializeData() override {
     EXPECT_TRUE(sequence_checker_.CalledOnValidSequence());
-    output->assign(data_);
-    return true;
+    return data_;
   }
 
  private:
@@ -53,7 +53,7 @@ class DataSerializer : public ImportantFileWriter::DataSerializer {
 
 class FailingDataSerializer : public ImportantFileWriter::DataSerializer {
  public:
-  bool SerializeData(std::string* output) override { return false; }
+  absl::optional<std::string> SerializeData() override { return absl::nullopt; }
 };
 
 class BackgroundDataSerializer
@@ -162,7 +162,7 @@ TEST_F(ImportantFileWriterTest, Basic) {
                              SingleThreadTaskRunner::GetCurrentDefault());
   EXPECT_FALSE(PathExists(writer.path()));
   EXPECT_EQ(NOT_CALLED, write_callback_observer_.GetAndResetObservationState());
-  writer.WriteNow(std::make_unique<std::string>("foo"));
+  writer.WriteNow("foo");
   RunLoop().RunUntilIdle();
 
   EXPECT_EQ(NOT_CALLED, write_callback_observer_.GetAndResetObservationState());
@@ -178,7 +178,7 @@ TEST_F(ImportantFileWriterTest, WriteWithObserver) {
 
   // Confirm that the observer is invoked.
   write_callback_observer_.ObserveNextWriteCallbacks(&writer);
-  writer.WriteNow(std::make_unique<std::string>("foo"));
+  writer.WriteNow("foo");
   RunLoop().RunUntilIdle();
 
   EXPECT_EQ(CALLED_WITH_SUCCESS,
@@ -189,7 +189,7 @@ TEST_F(ImportantFileWriterTest, WriteWithObserver) {
   // Confirm that re-installing the observer works for another write.
   EXPECT_EQ(NOT_CALLED, write_callback_observer_.GetAndResetObservationState());
   write_callback_observer_.ObserveNextWriteCallbacks(&writer);
-  writer.WriteNow(std::make_unique<std::string>("bar"));
+  writer.WriteNow("bar");
   RunLoop().RunUntilIdle();
 
   EXPECT_EQ(CALLED_WITH_SUCCESS,
@@ -200,7 +200,7 @@ TEST_F(ImportantFileWriterTest, WriteWithObserver) {
   // Confirm that writing again without re-installing the observer doesn't
   // result in a notification.
   EXPECT_EQ(NOT_CALLED, write_callback_observer_.GetAndResetObservationState());
-  writer.WriteNow(std::make_unique<std::string>("baz"));
+  writer.WriteNow("baz");
   RunLoop().RunUntilIdle();
 
   EXPECT_EQ(NOT_CALLED, write_callback_observer_.GetAndResetObservationState());
@@ -216,7 +216,7 @@ TEST_F(ImportantFileWriterTest, FailedWriteWithObserver) {
   EXPECT_FALSE(PathExists(writer.path()));
   EXPECT_EQ(NOT_CALLED, write_callback_observer_.GetAndResetObservationState());
   write_callback_observer_.ObserveNextWriteCallbacks(&writer);
-  writer.WriteNow(std::make_unique<std::string>("foo"));
+  writer.WriteNow("foo");
   RunLoop().RunUntilIdle();
 
   // Confirm that the write observer was invoked with its boolean parameter set
@@ -242,7 +242,7 @@ TEST_F(ImportantFileWriterTest, CallbackRunsOnWriterThread) {
                                 base::Unretained(&wait_helper)));
 
   write_callback_observer_.ObserveNextWriteCallbacks(&writer);
-  writer.WriteNow(std::make_unique<std::string>("foo"));
+  writer.WriteNow("foo");
   RunLoop().RunUntilIdle();
 
   // Expect the callback to not have been executed before the
@@ -337,7 +337,7 @@ TEST_F(ImportantFileWriterTest, ScheduleWrite_WriteNow) {
   DataSerializer serializer("foo");
   writer.ScheduleWrite(&serializer);
   EXPECT_TRUE(writer.HasPendingWrite());
-  writer.WriteNow(std::make_unique<std::string>("bar"));
+  writer.WriteNow("bar");
   EXPECT_FALSE(writer.HasPendingWrite());
   EXPECT_FALSE(timer.IsRunning());
 
@@ -380,11 +380,10 @@ TEST_F(ImportantFileWriterTest, ScheduleWriteWithBackgroundDataSerializer) {
   EXPECT_FALSE(writer.HasPendingWrite());
   ASSERT_FALSE(file_writer_thread.task_runner()->RunsTasksInCurrentSequence());
   BackgroundDataSerializer serializer(
-      base::BindLambdaForTesting([&](std::string* data) {
+      base::BindLambdaForTesting([&]() -> absl::optional<std::string> {
         EXPECT_TRUE(
             file_writer_thread.task_runner()->RunsTasksInCurrentSequence());
-        *data = "foo";
-        return true;
+        return "foo";
       }));
   writer.ScheduleWriteWithBackgroundDataSerializer(&serializer);
   EXPECT_TRUE(writer.HasPendingWrite());
@@ -417,10 +416,10 @@ TEST_F(ImportantFileWriterTest,
   EXPECT_FALSE(writer.HasPendingWrite());
   ASSERT_FALSE(file_writer_thread.task_runner()->RunsTasksInCurrentSequence());
   BackgroundDataSerializer serializer(
-      base::BindLambdaForTesting([&](std::string* data) {
+      base::BindLambdaForTesting([&]() -> absl::optional<std::string> {
         EXPECT_TRUE(
             file_writer_thread.task_runner()->RunsTasksInCurrentSequence());
-        return false;
+        return absl::nullopt;
       }));
   writer.ScheduleWriteWithBackgroundDataSerializer(&serializer);
   EXPECT_TRUE(writer.HasPendingWrite());
