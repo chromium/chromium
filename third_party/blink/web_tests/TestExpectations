@@ -6893,5 +6893,3 @@ crbug.com/1422630 external/wpt/long-animation-frame/tentative/loaf-script-block.
 crbug.com/1422653 external/wpt/long-animation-frame/tentative/* [ Failure Pass ]
 crbug.com/1422653 virtual/threaded/external/wpt/long-animation-frame/tentative/* [ Failure Pass ]
 
-# Sheriff 2023-03-10
-crbug.com/1423232 paint/invalidation/selection/selection-in-composited-scrolling-container.html [ Failure Pass ]
