@@ -6293,6 +6293,20 @@ New install
         Update and shut down
       </message>
 
+      <!-- Guest session confirmation dialog -->
+      <message name="IDS_GUEST_SESSION_CONFIRMATION_DIALOG_TITLE" desc="Title of the dialog for switching to device guest mode.">
+        Sign out now?
+      </message>
+      <message name="IDS_GUEST_SESSION_CONFIRMATION_DIALOG_TEXT" desc="Content of the dialog for switching to device guest mode.">
+        To use the device as guest, you need to sign out and then select Browse as Guest at the bottom of the screen.
+      </message>
+      <message name="IDS_GUEST_SESSION_CONFIRMATION_DIALOG_SIGN_OUT" desc="Sign out button.">
+        Sign out
+      </message>
+      <message name="IDS_GUEST_SESSION_CONFIRMATION_DIALOG_CANCEL" desc="Cancel button.">
+        Cancel
+      </message>
+
       <!-- Glanceables -->
       <message name="IDS_GLANCEABLES_WELCOME_LABEL" desc="Personalized greeting / welcome message shown on glanceables surfaces (welcome screen and overview mode).">
         Welcome back, <ph name="GIVEN_NAME">$1<ex>John</ex></ph>

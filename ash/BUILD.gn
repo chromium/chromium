@@ -1804,6 +1804,8 @@ component("ash") {
     "system/scheduled_feature/scheduled_feature.h",
     "system/screen_layout_observer.cc",
     "system/screen_layout_observer.h",
+    "system/session/guest_session_confirmation_dialog.cc",
+    "system/session/guest_session_confirmation_dialog.h",
     "system/session/logout_button_tray.cc",
     "system/session/logout_button_tray.h",
     "system/session/logout_confirmation_controller.cc",

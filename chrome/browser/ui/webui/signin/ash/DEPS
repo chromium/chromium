@@ -1,0 +1,6 @@
+include_rules = [
+  # //chrome/browser/ui/webui/signin/ash is conceptually part of "ash". See the
+  # "Lacros: ChromeOS source code directory migration" design doc at
+  # https://docs.google.com/document/d/1g-98HpzA8XcoGBWUv1gQNr4rbnD5yfvbtYZyPDDbkaE
+  "+ash/system/session",
+]
