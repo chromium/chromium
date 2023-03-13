@@ -357,8 +357,8 @@ std::string GetDesktopEntryStringValueFromFromDesktopFile(
 
 // Allows LaunchXdgUtility to join a process.
 // thread_restrictions.h assumes it to be in shell_integration_linux namespace.
-class [[maybe_unused, nodiscard]] LaunchXdgUtilityScopedAllowBaseSyncPrimitives
-    : public base::ScopedAllowBaseSyncPrimitives{};
+class LaunchXdgUtilityScopedAllowBaseSyncPrimitives
+    : public base::ScopedAllowBaseSyncPrimitives {};
 
 bool LaunchXdgUtility(const std::vector<std::string>& argv, int* exit_code) {
   // xdg-settings internally runs xdg-mime, which uses mv to move newly-created

@@ -31,9 +31,7 @@ class CaptureStdStream {
   int pipes_[2] = {-1, -1};
   bool capturing_ = false;
 
-  // TODO(https://github.com/llvm/llvm-project/issues/61334): Explicit
-  // [[maybe_unused]] attribute shouuld not be necessary here.
-  [[maybe_unused]] base::ScopedAllowBlockingForTesting allow_blocking_calls_;
+  base::ScopedAllowBlockingForTesting allow_blocking_calls_;
 };
 
 class CaptureStdOut : public CaptureStdStream {
