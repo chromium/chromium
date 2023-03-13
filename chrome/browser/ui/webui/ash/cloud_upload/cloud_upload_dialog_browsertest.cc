@@ -432,8 +432,8 @@ class FixUpFlowBrowserTest : public InProcessBrowserTest {
 
   void AddFakeOfficePWA() {
     file_manager::test::AddFakeWebApp(
-        web_app::kMicrosoftOfficeAppId, kDocMimeType, kDocFileExtension, "",
-        true, apps::AppServiceProxyFactory::GetForProfile(profile()));
+        web_app::kMicrosoft365AppId, kDocMimeType, kDocFileExtension, "", true,
+        apps::AppServiceProxyFactory::GetForProfile(profile()));
   }
 
  protected:

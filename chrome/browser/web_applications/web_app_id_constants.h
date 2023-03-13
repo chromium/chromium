@@ -112,9 +112,8 @@ inline constexpr char kMessagesDogfoodDeprecatedAppId[] =
     "gkgiochgbaoelfjibmnaomdepldjceib";
 
 // Generated as: web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(
-//     "https://www.office.com/?from=Homescreen"))
-inline constexpr char kMicrosoftOfficeAppId[] =
-    "ocdlmjhbenodhlknglojajgokahchlkk";
+//     "https://www.microsoft365.com/?from=Homescreen"))
+inline constexpr char kMicrosoft365AppId[] = "onhfoihkhodaeblmangmjjgfpfehnlkm";
 
 // Generated as: web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(
 //     "chrome://test-system-app/pwa.html"))

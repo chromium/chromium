@@ -82,7 +82,6 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
-#include "extensions/common/constants.h"
 #include "extensions/common/extension_set.h"
 #include "net/base/mime_util.h"
 #include "pdf/buildflags.h"
@@ -339,8 +338,7 @@ void PostProcessFoundTasks(Profile* profile,
     disabled_actions.emplace(kActionIdWebDriveOfficePowerPoint);
   } else {
     // Hide the office PWA File Handler.
-    RemoveActionsForApp(extension_misc::kOfficePwaAppId,
-                        &resulting_tasks->tasks);
+    RemoveActionsForApp(web_app::kMicrosoft365AppId, &resulting_tasks->tasks);
 
     // Hack around the fact that App Service will only return one task for each
     // app. We want both tasks to be available, so add the office task if the

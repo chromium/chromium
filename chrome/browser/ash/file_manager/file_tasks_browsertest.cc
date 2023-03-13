@@ -75,7 +75,6 @@
 #include "extensions/browser/api/file_handlers/mime_util.h"
 #include "extensions/browser/entry_info.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/common/constants.h"
 #include "net/base/mime_util.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "storage/browser/file_system/external_mount_points.h"
@@ -831,7 +830,7 @@ IN_PROC_BROWSER_TEST_F(NonManagedAccount, OfficePwaHandlerHidden) {
        "vnd.openxmlformats-officedocument.wordprocessingml.document"}};
 
   for (FakeOfficeFileType& fake_office_file_type : fake_office_file_types) {
-    file_manager::test::AddFakeWebApp(extension_misc::kOfficePwaAppId,
+    file_manager::test::AddFakeWebApp(web_app::kMicrosoft365AppId,
                                       fake_office_file_type.mime_type,
                                       fake_office_file_type.file_extension,
                                       "something", true, app_service_proxy());
@@ -844,7 +843,7 @@ IN_PROC_BROWSER_TEST_F(NonManagedAccount, OfficePwaHandlerHidden) {
                                             test_file_path);
 
     for (FullTaskDescriptor& task : tasks) {
-      EXPECT_NE(extension_misc::kOfficePwaAppId, task.task_descriptor.app_id)
+      EXPECT_NE(web_app::kMicrosoft365AppId, task.task_descriptor.app_id)
           << " for extension: " << fake_office_file_type.file_extension;
     }
   }
@@ -1323,8 +1322,8 @@ class FakeWebAppPublisher : public apps::AppPublisher {
     RegisterPublisher(apps::AppType::kWeb);
 
     std::vector<apps::AppPtr> apps;
-    auto ms_web_app = std::make_unique<apps::App>(
-        apps::AppType::kWeb, web_app::kMicrosoftOfficeAppId);
+    auto ms_web_app = std::make_unique<apps::App>(apps::AppType::kWeb,
+                                                  web_app::kMicrosoft365AppId);
     ms_web_app->readiness = apps::Readiness::kReady;
     apps.push_back(std::move(ms_web_app));
     Publish(std::move(apps), apps::AppType::kWeb,
@@ -1537,7 +1536,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OfficeFallbackTryAgain) {
 
   auto launches = web_app_publisher_->GetLaunches();
   ASSERT_EQ(1u, launches.size());
-  CHECK_EQ(launches[0].app_id, web_app::kMicrosoftOfficeAppId);
+  CHECK_EQ(launches[0].app_id, web_app::kMicrosoft365AppId);
   CHECK_EQ(launches[0].intent_url, kODFSSampleUrl);
 }
 
@@ -1604,7 +1603,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OpenFileFromODFS) {
 
   auto launches = web_app_publisher_->GetLaunches();
   ASSERT_EQ(1u, launches.size());
-  CHECK_EQ(launches[0].app_id, web_app::kMicrosoftOfficeAppId);
+  CHECK_EQ(launches[0].app_id, web_app::kMicrosoft365AppId);
   CHECK_EQ(launches[0].intent_url, kODFSSampleUrl);
 }
 
@@ -1659,7 +1658,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OpenFileFromAndroidOneDriveViaODFS) {
 
   auto launches = web_app_publisher_->GetLaunches();
   ASSERT_EQ(1u, launches.size());
-  CHECK_EQ(launches[0].app_id, web_app::kMicrosoftOfficeAppId);
+  CHECK_EQ(launches[0].app_id, web_app::kMicrosoft365AppId);
   // Check that the ODFS URL was opened.
   CHECK_EQ(launches[0].intent_url, kODFSSampleUrl);
 }
