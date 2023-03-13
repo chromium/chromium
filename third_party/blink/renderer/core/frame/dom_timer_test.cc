@@ -88,48 +88,6 @@ class DOMTimerTest : public RenderingTest {
   }
 };
 
-class DOMTimerTestWithMaxUnthrottledTimeoutNestingLevelPolicyOverride
-    : public DOMTimerTest {
- public:
-  DOMTimerTestWithMaxUnthrottledTimeoutNestingLevelPolicyOverride() = default;
-
-  void SetUp() override {
-    DOMTimerTest::SetUp();
-    features::ClearUnthrottledNestedTimeoutOverrideCacheForTesting();
-  }
-
-  void TearDown() override {
-    features::ClearUnthrottledNestedTimeoutOverrideCacheForTesting();
-    DOMTimerTest::TearDown();
-  }
-
-  // This should only be called once per test, and prior to the
-  // DomTimer logic actually parsing the policy switch.
-  void SetPolicyOverride(bool enabled) {
-    DCHECK(!scoped_command_line_.GetProcessCommandLine()->HasSwitch(
-        switches::kUnthrottledNestedTimeoutPolicy));
-    scoped_command_line_.GetProcessCommandLine()->AppendSwitchASCII(
-        switches::kUnthrottledNestedTimeoutPolicy,
-        enabled ? switches::kUnthrottledNestedTimeoutPolicy_ForceEnable
-                : switches::kUnthrottledNestedTimeoutPolicy_ForceDisable);
-  }
-
- private:
-  base::test::ScopedCommandLine scoped_command_line_;
-};
-
-TEST_F(DOMTimerTestWithMaxUnthrottledTimeoutNestingLevelPolicyOverride,
-       PolicyForceEnable) {
-  SetPolicyOverride(/* enabled = */ true);
-  EXPECT_TRUE(blink::features::IsMaxUnthrottledTimeoutNestingLevelEnabled());
-}
-
-TEST_F(DOMTimerTestWithMaxUnthrottledTimeoutNestingLevelPolicyOverride,
-       PolicyForceDisable) {
-  SetPolicyOverride(/* enabled = */ false);
-  EXPECT_FALSE(blink::features::IsMaxUnthrottledTimeoutNestingLevelEnabled());
-}
-
 const char* const kSetTimeout0ScriptText =
     "var last = performance.now();"
     "var elapsed;"

@@ -244,7 +244,6 @@ source_set("policy_specific_browser_tests") {
       "test/quic_allowed_browsertest.cc",
       "test/signed_exchange_browsertest.cc",
       "test/task_manager_end_process_enabled_browsertest.cc",
-      "test/unthrottled_nested_timeout_policy_browsertest.cc",
       "test/web_rtc_event_log_collection_allowed_policy_browsertest.cc",
       "test/web_rtc_local_ips_allowed_urls_policy_browsertest.cc",
       "test/window_management_policy_browsertest.cc",

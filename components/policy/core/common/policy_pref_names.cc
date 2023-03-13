@@ -80,11 +80,6 @@ const char kNativeWindowOcclusionEnabled[] =
 const char kIntensiveWakeUpThrottlingEnabled[] =
     "policy.intensive_wake_up_throttling_enabled";
 
-// Boolean policy preference for force enabling or disabling the
-// MaxUnthrottledTimeoutNestingLevel web feature.
-const char kUnthrottledNestedTimeoutEnabled[] =
-    "policy.unthrottled_nested_timeout";
-
 #if BUILDFLAG(IS_ANDROID)
 // Boolean policy preference to disable the BackForwardCache feature.
 const char kBackForwardCacheEnabled[] = "policy.back_forward_cache_enabled";

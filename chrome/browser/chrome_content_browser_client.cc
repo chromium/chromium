@@ -1579,8 +1579,6 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
   registry->RegisterListPref(prefs::kSSLErrorOverrideAllowedForOrigins);
   registry->RegisterBooleanPref(
       prefs::kSuppressDifferentOriginSubframeJSDialogs, true);
-  registry->RegisterBooleanPref(
-      policy::policy_prefs::kUnthrottledNestedTimeoutEnabled, false);
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(prefs::kWebXRImmersiveArEnabled, true);
 #endif
@@ -2710,18 +2708,6 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
         command_line->AppendSwitch(switches::kDisableScrollToTextFragment);
       }
 
-      // Override MaxUnthrottledTimeoutNestingLevel feature if its Enterprise
-      // Policy is specified.
-      if (prefs->HasPrefPath(
-              policy::policy_prefs::kUnthrottledNestedTimeoutEnabled)) {
-        command_line->AppendSwitchASCII(
-            blink::switches::kUnthrottledNestedTimeoutPolicy,
-            prefs->GetBoolean(
-                policy::policy_prefs::kUnthrottledNestedTimeoutEnabled)
-                ? blink::switches::kUnthrottledNestedTimeoutPolicy_ForceEnable
-                : blink::switches::
-                      kUnthrottledNestedTimeoutPolicy_ForceDisable);
-      }
       // Override EventPath feature if its Enterprise Policy is specified.
       if (prefs->HasPrefPath(policy::policy_prefs::kEventPathEnabled)) {
         command_line->AppendSwitchASCII(
