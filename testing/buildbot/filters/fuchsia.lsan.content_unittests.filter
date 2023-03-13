@@ -4,6 +4,7 @@
 # TODO(http://crbug.com/1339448): Add suppression in source code.
 -SharedStorageAddModuleTest*
 -SharedStorageObjectMethodTest*
+-SharedStorageObjectPropertyTest*
 -SharedStorageRunOperationTest*
 -SharedStorageWorkletGlobalScopeTest*
 -SharedStoragePrivateAggregationTest*
