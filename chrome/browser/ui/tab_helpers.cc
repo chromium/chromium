@@ -129,6 +129,7 @@
 #include "components/performance_manager/embedder/performance_manager_registry.h"
 #include "components/performance_manager/public/features.h"
 #include "components/permissions/features.h"
+#include "components/permissions/permission_recovery_success_rate_tracker.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/unused_site_permissions_service.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer.h"
@@ -380,6 +381,8 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
     pm_registry->SetPageType(web_contents, performance_manager::PageType::kTab);
   }
   permissions::PermissionRequestManager::CreateForWebContents(web_contents);
+  permissions::PermissionRecoverySuccessRateTracker::CreateForWebContents(
+      web_contents);
   // The PopupBlockerTabHelper has an implicit dependency on
   // ChromeSubresourceFilterClient being available in its constructor.
   blocked_content::PopupBlockerTabHelper::CreateForWebContents(web_contents);

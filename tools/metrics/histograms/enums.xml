@@ -81077,6 +81077,18 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="3" label="Reset from allowed state"/>
 </enum>
 
+<enum name="PermissionChangeInfo">
+  <int value="0" label="Infobar shown, page reloaded, permission used"/>
+  <int value="1" label="Infobar shown, page reloaded, permission not used"/>
+  <int value="2" label="Infobar shown, no page reloaded, permission used"/>
+  <int value="3" label="Infobar shown, no page reloaded, permission not used"/>
+  <int value="4" label="Infobar not shown, page reloaded, permission used"/>
+  <int value="5" label="Infobar not shown, page reloaded, permission not used"/>
+  <int value="6" label="Infobar not shown, no page reloaded, permission used"/>
+  <int value="7"
+      label="Infobar not shown, no page reloaded, permission not used"/>
+</enum>
+
 <enum name="PermissionEmbargoStatus">
   <int value="0" label="NOT_EMBARGOED"/>
   <int value="1" label="BLACKLISTED"/>

@@ -21,6 +21,7 @@
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/permissions/permission_recovery_success_rate_tracker.h"
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "components/guest_view/browser/guest_view_base.h"
 #endif
@@ -79,6 +80,33 @@ PageSpecificContentSettingsDelegate::FromWebContents(
 
 void PageSpecificContentSettingsDelegate::UpdateLocationBar() {
   content_settings::UpdateLocationBarUiForWebContents(web_contents());
+
+  PageSpecificContentSettings* pscs = PageSpecificContentSettings::GetForFrame(
+      web_contents()->GetPrimaryMainFrame());
+
+  if (pscs == nullptr) {
+    // There are cases, e.g. MPArch, where there is no active instance of
+    // PageSpecificContentSettings for a frame.
+    return;
+  }
+
+  PageSpecificContentSettings::MicrophoneCameraState state =
+      pscs->GetMicrophoneCameraState();
+
+  if ((state & PageSpecificContentSettings::CAMERA_ACCESSED) ||
+      (state & PageSpecificContentSettings::MICROPHONE_ACCESSED)) {
+    auto* permission_tracker =
+        permissions::PermissionRecoverySuccessRateTracker::FromWebContents(
+            web_contents());
+
+    if (state & PageSpecificContentSettings::MICROPHONE_ACCESSED) {
+      permission_tracker->TrackUsage(ContentSettingsType::MEDIASTREAM_MIC);
+    }
+
+    if (state & PageSpecificContentSettings::CAMERA_ACCESSED) {
+      permission_tracker->TrackUsage(ContentSettingsType::MEDIASTREAM_CAMERA);
+    }
+  }
 }
 
 PrefService* PageSpecificContentSettingsDelegate::GetPrefs() {

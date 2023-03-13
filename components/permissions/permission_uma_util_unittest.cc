@@ -347,6 +347,81 @@ TEST_F(PermissionsDelegationUmaUtilTest, UsageAndPromptInTopLevelFrame) {
                               0);
 }
 
+TEST_F(PermissionUmaUtilTest, PageInfoPermissionReallowedTest) {
+  base::HistogramTester histograms;
+
+  PermissionUmaUtil::RecordPermissionRecoverySuccessRate(
+      ContentSettingsType::MEDIASTREAM_CAMERA, /*is_used=*/true,
+      /*show_infobar=*/true, /*page_reload=*/true);
+  histograms.ExpectBucketCount(
+      "Permissions.PageInfo.Changed.VideoCapture.Reallowed.Outcome",
+      permissions::PermissionChangeInfo::kInfobarShownPageReloadPermissionUsed,
+      1);
+
+  PermissionUmaUtil::RecordPermissionRecoverySuccessRate(
+      ContentSettingsType::MEDIASTREAM_CAMERA, /*is_used=*/false,
+      /*show_infobar=*/true, /*page_reload=*/true);
+  histograms.ExpectBucketCount(
+      "Permissions.PageInfo.Changed.VideoCapture.Reallowed.Outcome",
+      permissions::PermissionChangeInfo::
+          kInfobarShownPageReloadPermissionNotUsed,
+      1);
+
+  PermissionUmaUtil::RecordPermissionRecoverySuccessRate(
+      ContentSettingsType::MEDIASTREAM_CAMERA, /*is_used=*/true,
+      /*show_infobar=*/true, /*page_reload=*/false);
+  histograms.ExpectBucketCount(
+      "Permissions.PageInfo.Changed.VideoCapture.Reallowed.Outcome",
+      permissions::PermissionChangeInfo::
+          kInfobarShownNoPageReloadPermissionUsed,
+      1);
+
+  PermissionUmaUtil::RecordPermissionRecoverySuccessRate(
+      ContentSettingsType::MEDIASTREAM_CAMERA, /*is_used=*/false,
+      /*show_infobar=*/true, /*page_reload=*/false);
+  histograms.ExpectBucketCount(
+      "Permissions.PageInfo.Changed.VideoCapture.Reallowed.Outcome",
+      permissions::PermissionChangeInfo::
+          kInfobarShownNoPageReloadPermissionNotUsed,
+      1);
+
+  PermissionUmaUtil::RecordPermissionRecoverySuccessRate(
+      ContentSettingsType::MEDIASTREAM_CAMERA, /*is_used=*/true,
+      /*show_infobar=*/false, /*page_reload=*/true);
+  histograms.ExpectBucketCount(
+      "Permissions.PageInfo.Changed.VideoCapture.Reallowed.Outcome",
+      permissions::PermissionChangeInfo::
+          kInfobarNotShownPageReloadPermissionUsed,
+      1);
+
+  PermissionUmaUtil::RecordPermissionRecoverySuccessRate(
+      ContentSettingsType::MEDIASTREAM_CAMERA, /*is_used=*/false,
+      /*show_infobar=*/false, /*page_reload=*/true);
+  histograms.ExpectBucketCount(
+      "Permissions.PageInfo.Changed.VideoCapture.Reallowed.Outcome",
+      permissions::PermissionChangeInfo::
+          kInfobarNotShownPageReloadPermissionNotUsed,
+      1);
+
+  PermissionUmaUtil::RecordPermissionRecoverySuccessRate(
+      ContentSettingsType::MEDIASTREAM_CAMERA, /*is_used=*/true,
+      /*show_infobar=*/false, /*page_reload=*/false);
+  histograms.ExpectBucketCount(
+      "Permissions.PageInfo.Changed.VideoCapture.Reallowed.Outcome",
+      permissions::PermissionChangeInfo::
+          kInfobarNotShownNoPageReloadPermissionUsed,
+      1);
+
+  PermissionUmaUtil::RecordPermissionRecoverySuccessRate(
+      ContentSettingsType::MEDIASTREAM_CAMERA, /*is_used=*/false,
+      /*show_infobar=*/false, /*page_reload=*/false);
+  histograms.ExpectBucketCount(
+      "Permissions.PageInfo.Changed.VideoCapture.Reallowed.Outcome",
+      permissions::PermissionChangeInfo::
+          kInfobarNotShownNoPageReloadPermissionNotUsed,
+      1);
+}
+
 TEST_F(PermissionsDelegationUmaUtilTest, SameOriginFrame) {
   base::HistogramTester histograms;
   auto* main_frame = GetMainFrameAndNavigate(kTopLevelUrl);

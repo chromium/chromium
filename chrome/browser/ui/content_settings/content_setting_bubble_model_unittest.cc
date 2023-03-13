@@ -41,6 +41,7 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
+#include "components/permissions/permission_recovery_success_rate_tracker.h"
 #include "components/permissions/permission_result.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -73,6 +74,9 @@ class ContentSettingBubbleModelTest : public ChromeRenderViewHostTestHarness {
         std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
             web_contents()));
     infobars::ContentInfoBarManager::CreateForWebContents(web_contents());
+
+    permissions::PermissionRecoverySuccessRateTracker::CreateForWebContents(
+        web_contents());
   }
 
   TestingProfile::TestingFactories GetTestingFactories() const override {
