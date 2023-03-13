@@ -86,8 +86,6 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   private setCredentialsChangedListener_: CredentialsChangedListener|null =
       null;
 
-  private addShortcutDescription_: string;
-
   private hasPasswordsToExport_: boolean;
 
   private trustedVaultBannerState_: TrustedVaultBannerState;
@@ -101,9 +99,6 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
         blockedSites => this.blockedSites_ = blockedSites);
     PasswordManagerImpl.getInstance().addBlockedSitesListChangedListener(
         this.setBlockedSitesListListener_);
-
-    this.addShortcutDescription_ =
-        this.i18n('addShortcutDescription', this.i18n('localPasswordManager'));
 
     this.setCredentialsChangedListener_ =
         (passwords: chrome.passwordsPrivate.PasswordUiEntry[]) => {
@@ -168,7 +163,8 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   // </if>
 
   private getShortcutBannerDescription_(): string {
-    return this.addShortcutDescription_;
+    return this.i18n(
+        'addShortcutDescription', this.i18n('localPasswordManager'));
   }
 
   private onTrustedVaultBannerClick_() {
