@@ -267,11 +267,11 @@ void CommandBufferService::SetGetBuffer(int32_t transfer_buffer_id) {
   ++state_.set_get_buffer_count;
 
   // If the buffer is invalid we handle it gracefully.
-  // This means ring_buffer_ can be nullptr.
-  ring_buffer_ = GetTransferBuffer(transfer_buffer_id);
-  if (ring_buffer_) {
-    uint32_t size = ring_buffer_->size();
-    volatile void* memory = ring_buffer_->memory();
+  // This means `transfer_buffer` can be nullptr.
+  auto transfer_buffer = GetTransferBuffer(transfer_buffer_id);
+  if (transfer_buffer) {
+    uint32_t size = transfer_buffer->size();
+    volatile void* memory = transfer_buffer->memory();
     // check proper alignments.
     DCHECK_EQ(
         0u, (reinterpret_cast<intptr_t>(memory)) % alignof(CommandBufferEntry));
@@ -283,7 +283,7 @@ void CommandBufferService::SetGetBuffer(int32_t transfer_buffer_id) {
     num_entries_ = 0;
     buffer_ = nullptr;
   }
-
+  ring_buffer_ = std::move(transfer_buffer);
   UpdateState();
 }
 
