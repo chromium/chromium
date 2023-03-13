@@ -63,18 +63,18 @@ class CONTENT_EXPORT PreloadingDecider
   DOCUMENT_USER_DATA_KEY_DECL();
 
   // Prefetches the |url| if it is safe and eligible to be prefetched. Returns
-  // false if no on-standby candidate is found for the given |url|, or the
-  // Prefetcher does not accept the candidate.
-  bool MaybePrefetch(const GURL& url);
+  // false if no suitable (given |predictor|) on-standby candidate is found for
+  // the given |url|, or the Prefetcher does not accept the candidate.
+  bool MaybePrefetch(const GURL& url, const PreloadingPredictor& predictor);
 
   // Returns true if a prefetch was attempted for the |url| and is not failed or
   // discarded by Prefetcher yet, and we should wait for it to finish.
   bool ShouldWaitForPrefetchResult(const GURL& url);
 
   // Prerenders the |url| if it is safe and eligible to be prerendered. Returns
-  // false if no on-standby candidate is found for the given |url|, or the
-  // Prerenderer does not accept the candidate.
-  bool MaybePrerender(const GURL& url);
+  // false if no suitable (given |predictor|) on-standby candidate is found for
+  // the given |url|, or the Prerenderer does not accept the candidate.
+  bool MaybePrerender(const GURL& url, const PreloadingPredictor& predictor);
 
   // Returns true if a prerender was attempted for the |url| and is not failed
   // or discarded by Prerenderer yet, and we should wait for it to finish.
@@ -83,6 +83,12 @@ class CONTENT_EXPORT PreloadingDecider
   // Helper function to add a preloading prediction for the |url|
   void AddPreloadingPrediction(const GURL& url, PreloadingPredictor predictor);
 
+  // Return true if |candidate| can be selected in response to a prediction by
+  // |predictor|.
+  bool IsSuitableCandidate(
+      const blink::mojom::SpeculationCandidatePtr& candidate,
+      const PreloadingPredictor& predictor) const;
+
   using SpeculationCandidateKey =
       std::pair<GURL, blink::mojom::SpeculationAction>;
 
@@ -90,7 +96,8 @@ class CONTENT_EXPORT PreloadingDecider
   // action pairs that are safe to perform but are not marked as |kEager| and
   // should be performed when we are confident enough that the user will most
   // likely navigate to the target URL.
-  std::map<SpeculationCandidateKey, blink::mojom::SpeculationCandidatePtr>
+  std::map<SpeculationCandidateKey,
+           std::vector<blink::mojom::SpeculationCandidatePtr>>
       on_standby_candidates_;
 
   // |processed_candidates_| stores all target URL, action pairs that are
@@ -98,6 +105,11 @@ class CONTENT_EXPORT PreloadingDecider
   // avoid adding such candidates back to |on_standby_candidates_| whenever
   // there is an update in speculation rules.
   std::set<SpeculationCandidateKey> processed_candidates_;
+
+  // Behavior determined dynamically. Stored on this object rather than globally
+  // so that it does not span unit tests.
+  struct BehaviorConfig;
+  std::unique_ptr<const BehaviorConfig> behavior_config_;
 
   raw_ptr<PreloadingDeciderObserverForTesting> observer_for_testing_;
   Preconnector preconnector_;
