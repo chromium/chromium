@@ -47,20 +47,6 @@ struct HardwareRendererDrawParams {
 
 class HardwareRenderer {
  public:
-  // Two rules:
-  // 1) Never wait on |new_frame| on the UI thread, or in kModeSync. Otherwise
-  //    this defeats the purpose of having a future.
-  // 2) Never replace a non-empty frames with an empty frame.
-  // The only way to do both is to hold up to two frames. This helper function
-  // will wait on all frames in the queue, then only keep the last non-empty
-  // frame and return the rest (non-empty) frames. It takes care to not drop
-  // other data such as readback requests.
-  // A common pattern for appending a new frame is:
-  // * WaitAndPrune the existing frame, after which there is at most one frame
-  //   is left in queue.
-  // * Append new frame without waiting on it.
-  static ChildFrameQueue WaitAndPruneFrameQueue(ChildFrameQueue* child_frames);
-
   HardwareRenderer(const HardwareRenderer&) = delete;
   HardwareRenderer& operator=(const HardwareRenderer&) = delete;
 
@@ -69,9 +55,6 @@ class HardwareRenderer {
   void Draw(const HardwareRendererDrawParams& params,
             const OverlaysParams& overlays_params);
   void CommitFrame();
-  virtual void RemoveOverlays(
-      OverlaysParams::MergeTransactionFn merge_transaction) = 0;
-  virtual void AbandonContext() = 0;
 
   void SetChildFrameForTesting(std::unique_ptr<ChildFrame> child_frame);
 

@@ -83,7 +83,7 @@ std::unique_ptr<ChildFrame> RenderThreadManager::SetFrameOnUI(
   std::unique_ptr<ChildFrame> uncommitted_frame;
   DCHECK_LE(child_frames_.size(), 2u);
   ChildFrameQueue pruned_frames =
-      HardwareRenderer::WaitAndPruneFrameQueue(&child_frames_);
+      HardwareRendererViz::WaitAndPruneFrameQueue(&child_frames_);
   DCHECK_LE(pruned_frames.size(), 1u);
   if (pruned_frames.size())
     uncommitted_frame = std::move(pruned_frames.front());

@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "android_webview/browser/gfx/hardware_renderer_viz.h"
 #include "android_webview/browser/gfx/parent_compositor_draw_constraints.h"
 #include "android_webview/browser/gfx/render_thread_manager.h"
 #include "android_webview/common/aw_features.h"
@@ -106,8 +107,10 @@ void HardwareRenderer::CommitFrame() {
     child_frame_queue_.emplace_back(std::move(child_frames.front()));
     child_frames.pop_front();
   }
-  for (auto& pruned_frame : WaitAndPruneFrameQueue(&child_frame_queue_))
+  for (auto& pruned_frame :
+       HardwareRendererViz::WaitAndPruneFrameQueue(&child_frame_queue_)) {
     ReturnChildFrame(std::move(pruned_frame));
+  }
   DCHECK_LE(child_frame_queue_.size(), 1u);
   child_frame_queue_.emplace_back(std::move(child_frames.front()));
 }
@@ -129,8 +132,10 @@ void HardwareRenderer::Draw(const HardwareRendererDrawParams& params,
                             const OverlaysParams& overlays_params) {
   TRACE_EVENT0("android_webview", "HardwareRenderer::Draw");
 
-  for (auto& pruned_frame : WaitAndPruneFrameQueue(&child_frame_queue_))
+  for (auto& pruned_frame :
+       HardwareRendererViz::WaitAndPruneFrameQueue(&child_frame_queue_)) {
     ReturnChildFrame(std::move(pruned_frame));
+  }
   DCHECK_LE(child_frame_queue_.size(), 1u);
   if (!child_frame_queue_.empty()) {
     child_frame_ = std::move(child_frame_queue_.front());
@@ -187,72 +192,6 @@ void HardwareRenderer::ReturnResourcesToCompositor(
     return;
   render_thread_manager_->InsertReturnedResourcesOnRT(
       std::move(resources), frame_sink_id, layer_tree_frame_sink_id);
-}
-
-namespace {
-
-void MoveCopyRequests(CopyOutputRequestQueue* from,
-                      CopyOutputRequestQueue* to) {
-  std::move(from->begin(), from->end(), std::back_inserter(*to));
-  from->clear();
-}
-
-viz::BeginFrameArgs NewerBeginFrameArgs(const viz::BeginFrameArgs& args1,
-                                        const viz::BeginFrameArgs& args2) {
-  return args1.frame_id.IsNextInSequenceTo(args2.frame_id) ? args1 : args2;
-}
-
-}  // namespace
-
-// static
-ChildFrameQueue HardwareRenderer::WaitAndPruneFrameQueue(
-    ChildFrameQueue* child_frames_ptr) {
-  ChildFrameQueue& child_frames = *child_frames_ptr;
-  ChildFrameQueue pruned_frames;
-  if (child_frames.empty())
-    return pruned_frames;
-
-  // First find the last non-empty frame.
-  int remaining_frame_index = -1;
-  for (size_t i = 0; i < child_frames.size(); ++i) {
-    auto& child_frame = *child_frames[i];
-    child_frame.WaitOnFutureIfNeeded();
-    if (child_frame.frame)
-      remaining_frame_index = i;
-  }
-  // If all empty, keep the last one.
-  if (remaining_frame_index < 0)
-    remaining_frame_index = child_frames.size() - 1;
-
-  // Prune end.
-  while (child_frames.size() > static_cast<size_t>(remaining_frame_index + 1)) {
-    std::unique_ptr<ChildFrame> frame = std::move(child_frames.back());
-    child_frames.pop_back();
-    MoveCopyRequests(&frame->copy_requests,
-                     &child_frames[remaining_frame_index]->copy_requests);
-
-    // If we're dropping frames at the end, we need update begin frame args.
-    child_frames[remaining_frame_index]->begin_frame_args = NewerBeginFrameArgs(
-        child_frames[remaining_frame_index]->begin_frame_args,
-        frame->begin_frame_args);
-    DCHECK(!frame->frame);
-  }
-  DCHECK_EQ(static_cast<size_t>(remaining_frame_index),
-            child_frames.size() - 1);
-
-  // Prune front.
-  while (child_frames.size() > 1) {
-    std::unique_ptr<ChildFrame> frame = std::move(child_frames.front());
-    child_frames.pop_front();
-    MoveCopyRequests(&frame->copy_requests,
-                     &child_frames.back()->copy_requests);
-    // We shouldn't drop newer frames.
-    DCHECK(!frame->begin_frame_args.frame_id.IsNextInSequenceTo(
-        child_frames.back()->begin_frame_args.frame_id));
-    if (frame->frame)
-      pruned_frames.emplace_back(std::move(frame));
-  }
-  return pruned_frames;
 }
 
 void HardwareRenderer::SetChildFrameForTesting(
