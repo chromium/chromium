@@ -28,6 +28,7 @@
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_service_launcher.h"
+#include "chrome/browser/ash/crosapi/browser_data_back_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/login/app_mode/force_install_observer.h"
@@ -331,11 +332,20 @@ void KioskLaunchController::OnProfileLoaded(Profile* profile) {
   // TODO(b/257210467): Remove the need for CHECK_IS_TEST
   if (!user) {
     CHECK_IS_TEST();
-  } else if (BrowserDataMigratorImpl::MaybeRestartToMigrate(
-                 user->GetAccountId(), user->username_hash(),
-                 crosapi::browser_util::PolicyInitState::kAfterInit)) {
-    LOG(WARNING) << "Restarting chrome to run profile migration.";
-    return;
+  } else {
+    if (BrowserDataMigratorImpl::MaybeRestartToMigrate(
+            user->GetAccountId(), user->username_hash(),
+            crosapi::browser_util::PolicyInitState::kAfterInit)) {
+      LOG(WARNING) << "Restarting chrome to run profile migration.";
+      return;
+    }
+
+    if (BrowserDataBackMigrator::MaybeRestartToMigrateBack(
+            user->GetAccountId(), user->username_hash(),
+            crosapi::browser_util::PolicyInitState::kAfterInit)) {
+      LOG(WARNING) << "Restarting chrome to run backward profile migration.";
+      return;
+    }
   }
 
   // This is needed to trigger input method extensions being loaded.
