@@ -131,6 +131,12 @@ class DualReadingListModel : public ReadingListModel,
   void NotifyObserversWithDidUpdateEntry(const GURL& url);
   void NotifyObserversWithDidApplyChanges();
 
+  // Convenience function that safely "casts" to ReadingListModelImpl for
+  // codepaths where model is guaranteed to be either local_or_syncable_model_
+  // or account_model_.
+  const ReadingListModelImpl* ToReadingListModelImpl(
+      const ReadingListModel* model);
+
   const std::unique_ptr<ReadingListModelImpl> local_or_syncable_model_;
   const std::unique_ptr<ReadingListModelImpl> account_model_;
 

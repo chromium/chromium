@@ -488,17 +488,42 @@ void DualReadingListModel::ReadingListModelLoaded(
 void DualReadingListModel::ReadingListWillRemoveEntry(
     const ReadingListModel* model,
     const GURL& url) {
-  if (!suppress_observer_notifications_) {
-    NotifyObserversWithWillRemoveEntry(url);
+  if (suppress_observer_notifications_) {
+    return;
   }
+
+  DCHECK(ToReadingListModelImpl(model)->IsTrackingSyncMetadata());
+
+  if (model == account_model_.get() &&
+      local_or_syncable_model_->GetEntryByURL(url)) {
+    // The entry was removed via sync from `account_model_`, but the fact that
+    // the entry also exists in `local_or_syncable_model_` means the result is
+    // not an actual deletion but, at most, an update.
+    NotifyObserversWithWillUpdateEntry(url);
+    return;
+  }
+
+  NotifyObserversWithWillRemoveEntry(url);
 }
 
 void DualReadingListModel::ReadingListDidRemoveEntry(
     const ReadingListModel* model,
     const GURL& url) {
-  if (!suppress_observer_notifications_) {
-    NotifyObserversWithDidRemoveEntry(url);
+  if (suppress_observer_notifications_) {
+    return;
   }
+
+  DCHECK(ToReadingListModelImpl(model)->IsTrackingSyncMetadata());
+
+  if (local_or_syncable_model_->GetEntryByURL(url)) {
+    // The entry is still present in `local_or_syncable_model_`, so this is an
+    // update rather than a deletion.
+    DCHECK(model == account_model_.get());
+    NotifyObserversWithDidUpdateEntry(url);
+    return;
+  }
+
+  NotifyObserversWithDidRemoveEntry(url);
 }
 
 void DualReadingListModel::ReadingListWillAddEntry(
@@ -604,6 +629,17 @@ void DualReadingListModel::NotifyObserversWithDidApplyChanges() {
   for (auto& observer : observers_) {
     observer.ReadingListDidApplyChanges(this);
   }
+}
+
+const ReadingListModelImpl* DualReadingListModel::ToReadingListModelImpl(
+    const ReadingListModel* model) {
+  DCHECK(model == account_model_.get() ||
+         model == local_or_syncable_model_.get());
+
+  // It is safe to use static_cast because both `account_model_` and
+  // `local_or_syncable_model_` are ReadingListModelImpl, and hence it is also
+  // the case for model.
+  return static_cast<const ReadingListModelImpl*>(model);
 }
 
 }  // namespace reading_list
