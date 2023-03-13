@@ -41,6 +41,11 @@ extern const base::FeatureParam<bool> kShowSampleContent;
 BASE_DECLARE_FEATURE(kPageInfoAboutThisSiteMoreInfo);
 
 #if !BUILDFLAG(IS_ANDROID)
+// Experiment with different secondary icons.
+BASE_DECLARE_FEATURE(kPageInfoAboutThisSiteSecondaryIcon);
+// Parameter to select one of the icons from AboutThisSiteSeconaryIcon;
+extern const base::FeatureParam<int> kAboutThisSiteSecondaryIconId;
+
 // Enables the history section for Page Info on desktop.
 BASE_DECLARE_FEATURE(kPageInfoHistoryDesktop);
 

@@ -421,6 +421,12 @@ const ui::ImageModel PageInfoViewFactory::GetLaunchIcon() {
 }
 
 // static
+const ui::ImageModel PageInfoViewFactory::GetSidePanelIcon() {
+  return ui::ImageModel::FromVectorIcon(kSidePanelIcon, ui::kColorIconSecondary,
+                                        GetIconSize());
+}
+
+// static
 const ui::ImageModel PageInfoViewFactory::GetConnectionNotSecureIcon() {
   return ui::ImageModel::FromVectorIcon(vector_icons::kNotSecureWarningIcon,
                                         ui::kColorAlertHighSeverity);

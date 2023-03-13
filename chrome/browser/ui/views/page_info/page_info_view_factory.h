@@ -104,6 +104,9 @@ class PageInfoViewFactory {
   // cookies dialog or site settings page).
   static const ui::ImageModel GetLaunchIcon();
 
+  // Returns the icon for the side panel.
+  static const ui::ImageModel GetSidePanelIcon();
+
   // Returns the not secure state icon for the SecurityInformationView.
   static const ui::ImageModel GetConnectionNotSecureIcon();
 
