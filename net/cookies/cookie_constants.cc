@@ -332,8 +332,6 @@ CookieSourceSchemeName GetSchemeNameEnum(const GURL& url) {
     return CookieSourceSchemeName::kJavaScriptScheme;
   } else if (url.SchemeIs(url::kMailToScheme)) {
     return CookieSourceSchemeName::kMailToScheme;
-  } else if (url.SchemeIs(url::kQuicTransportScheme)) {
-    return CookieSourceSchemeName::kQuicTransportScheme;
   } else if (url.SchemeIs(url::kTelScheme)) {
     return CookieSourceSchemeName::kTelScheme;
   } else if (url.SchemeIs(url::kUrnScheme)) {

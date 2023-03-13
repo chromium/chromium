@@ -27,7 +27,7 @@ enum class UrlScheme {
   kHttps = 10,
   kJavascript = 11,
   kMailTo = 12,
-  kQuicTransport = 13,
+  kQuicTransport_Obsoleted = 13,
   kTel = 14,
   kUrn = 15,
   kUuidInPackage = 16,

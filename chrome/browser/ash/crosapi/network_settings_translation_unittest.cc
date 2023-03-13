@@ -183,10 +183,6 @@ TEST(NetworkSettingsTranslationTest, CrosapiProxyToProxyConfigManual) {
   location->port = 86;
   location->scheme = crosapi::mojom::ProxyLocation::Scheme::kSocks5;
   manual->http_proxies.push_back(location.Clone());
-  location->host = "proxy7";
-  location->port = 87;
-  location->scheme = crosapi::mojom::ProxyLocation::Scheme::kQuic;
-  manual->http_proxies.push_back(location.Clone());
   location->host = "secure_proxy";
   location->port = 81;
   location->scheme = crosapi::mojom::ProxyLocation::Scheme::kHttps;
@@ -204,7 +200,6 @@ TEST(NetworkSettingsTranslationTest, CrosapiProxyToProxyConfigManual) {
       GetManualProxyConfig("http=http://proxy1:80;http=https://proxy2:80;"
                            "http=http://proxy3:83;http=invalid://proxy4:84;"
                            "http=direct://proxy5:85;http=socks5://proxy6:86;"
-                           "http=quic-transport://proxy7:87;"
                            "https=https://secure_proxy:81;"
                            "socks=socks://socks_proxy:82",
                            /*bypass_list=*/"localhost;google.com"));

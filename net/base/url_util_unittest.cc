@@ -739,7 +739,6 @@ TEST(UrlUtilTest, SchemeHasNetworkHost) {
   EXPECT_TRUE(IsStandardSchemeWithNetworkHost(url::kHttpsScheme));
   EXPECT_TRUE(IsStandardSchemeWithNetworkHost(url::kWsScheme));
   EXPECT_TRUE(IsStandardSchemeWithNetworkHost(url::kWssScheme));
-  EXPECT_TRUE(IsStandardSchemeWithNetworkHost(url::kQuicTransportScheme));
   EXPECT_TRUE(IsStandardSchemeWithNetworkHost(url::kFtpScheme));
   EXPECT_TRUE(IsStandardSchemeWithNetworkHost(url::kFileScheme));
   EXPECT_TRUE(IsStandardSchemeWithNetworkHost(

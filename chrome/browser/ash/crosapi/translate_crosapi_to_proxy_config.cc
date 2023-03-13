@@ -57,7 +57,7 @@ std::string FormatProxyUri(const char* request_scheme,
       proxy_scheme_string = url::kHttpsScheme;
       break;
     case crosapi::mojom::ProxyLocation::Scheme::kQuic:
-      proxy_scheme_string = url::kQuicTransportScheme;
+      NOTREACHED();
       break;
   }
 
