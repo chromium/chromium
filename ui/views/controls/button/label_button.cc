@@ -36,6 +36,11 @@
 
 namespace views {
 
+namespace {
+constexpr Button::ButtonState kEnabledStates[] = {
+    Button::STATE_NORMAL, Button::STATE_HOVERED, Button::STATE_PRESSED};
+}  // namespace
+
 LabelButton::LabelButton(PressedCallback callback,
                          const std::u16string& text,
                          int button_context)
@@ -146,29 +151,22 @@ void LabelButton::SetFocusRingCornerRadius(float radius) {
 }
 
 void LabelButton::SetEnabledTextColors(absl::optional<SkColor> color) {
-  ButtonState states[] = {STATE_NORMAL, STATE_HOVERED, STATE_PRESSED};
   if (color.has_value()) {
-    for (auto state : states)
+    for (auto state : kEnabledStates) {
       SetTextColor(state, color.value());
-    return;
-  }
-  for (auto state : states)
-    explicitly_set_colors_[state] = false;
-  ResetColorsFromNativeTheme();
-}
-
-void LabelButton::SetEnabledTextColorIds(absl::optional<ui::ColorId> color_id) {
-  ButtonState states[] = {STATE_NORMAL, STATE_HOVERED, STATE_PRESSED};
-  if (color_id.has_value()) {
-    for (auto state : states) {
-      SetTextColorId(state, color_id.value());
     }
     return;
   }
-  for (auto state : states) {
+  for (auto state : kEnabledStates) {
     explicitly_set_colors_[state] = false;
   }
   ResetColorsFromNativeTheme();
+}
+
+void LabelButton::SetEnabledTextColorIds(ui::ColorId color_id) {
+  for (auto state : kEnabledStates) {
+    SetTextColorId(state, color_id);
+  }
 }
 
 SkColor LabelButton::GetCurrentTextColor() const {
@@ -643,16 +641,18 @@ void LabelButton::ResetColorsFromNativeTheme() {
 }
 
 void LabelButton::ResetLabelEnabledColor() {
-  if (GetState() != STATE_DISABLED) {
-    const absl::variant<SkColor, ui::ColorId>& color =
-        button_state_colors_[GetState()];
-    if (absl::holds_alternative<SkColor>(color) &&
-        label_->GetEnabledColor() != absl::get<SkColor>(color)) {
-      label_->SetEnabledColor(absl::get<SkColor>(color));
-    } else if (absl::holds_alternative<ui::ColorId>(color) &&
-               label_->GetEnabledColorId() != absl::get<ui::ColorId>(color)) {
-      label_->SetEnabledColorId(absl::get<ui::ColorId>(color));
-    }
+  if (GetState() == STATE_DISABLED) {
+    return;
+  }
+  const absl::variant<SkColor, ui::ColorId>& color =
+      button_state_colors_[GetState()];
+  if (absl::holds_alternative<SkColor>(color) &&
+      label_->GetEnabledColor() != absl::get<SkColor>(color)) {
+    label_->SetEnabledColor(absl::get<SkColor>(color));
+  } else if (absl::holds_alternative<ui::ColorId>(color)) {
+    // Omitting the check that the new color id differs from the existing color
+    // id, because the setter already does that check.
+    label_->SetEnabledColorId(absl::get<ui::ColorId>(color));
   }
 }
 

@@ -20,6 +20,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -242,7 +243,7 @@ void DownloadBubbleSecurityView::UpdateButton(
     DownloadUIModel::BubbleUIInfo::SubpageButton button_info,
     bool is_secondary_button,
     bool has_checkbox,
-    SkColor color) {
+    ui::ColorId color_id) {
   ui::DialogButton button_type =
       is_secondary_button ? ui::DIALOG_BUTTON_CANCEL : ui::DIALOG_BUTTON_OK;
 
@@ -254,7 +255,7 @@ void DownloadBubbleSecurityView::UpdateButton(
     bubble_delegate_->SetCancelCallback(std::move(callback));
     bubble_delegate_->SetButtonEnabled(button_type, !has_checkbox);
     views::LabelButton* button = bubble_delegate_->GetCancelButton();
-    button->SetEnabledTextColors(color);
+    button->SetEnabledTextColorIds(color_id);
     secondary_button_ = button;
   } else {
     bubble_delegate_->SetAcceptCallback(std::move(callback));
@@ -280,18 +281,14 @@ void DownloadBubbleSecurityView::UpdateButtons() {
   if (ui_info.subpage_buttons.size() > 0) {
     bubble_delegate_->SetButtons(ui::DIALOG_BUTTON_OK);
     UpdateButton(ui_info.subpage_buttons[0], /*is_secondary_button=*/false,
-                 ui_info.has_checkbox,
-                 GetColorProvider()->GetColor(
-                     download_row_view_->ui_info().GetColorForSecondaryText()));
+                 ui_info.has_checkbox, ui_info.GetColorForSecondaryText());
   }
 
   if (ui_info.subpage_buttons.size() > 1) {
     bubble_delegate_->SetButtons(ui::DIALOG_BUTTON_OK |
                                  ui::DIALOG_BUTTON_CANCEL);
     UpdateButton(ui_info.subpage_buttons[1], /*is_secondary_button=*/true,
-                 ui_info.has_checkbox,
-                 GetColorProvider()->GetColor(
-                     download_row_view_->ui_info().GetColorForSecondaryText()));
+                 ui_info.has_checkbox, ui_info.GetColorForSecondaryText());
   }
 }
 

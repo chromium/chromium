@@ -68,16 +68,20 @@ class VIEWS_EXPORT LabelButton : public Button, public NativeThemeDelegate {
   void ShrinkDownThenClearText();
 
   // Sets the text color shown for the specified button |for_state| to |color|.
+  // TODO(crbug.com/1421316): Get rid of SkColor versions of these functions in
+  // favor of the ColorId versions.
   void SetTextColor(ButtonState for_state, SkColor color);
 
   // Sets the text color as above but using ColorId.
   void SetTextColorId(ButtonState for_state, ui::ColorId color_id);
 
   // Sets the text colors shown for the non-disabled states to |color|.
+  // TODO(crbug.com/1421316): Get rid of SkColor versions of these functions in
+  // favor of the ColorId versions.
   virtual void SetEnabledTextColors(absl::optional<SkColor> color);
 
   // Sets the text colors shown for the non-disabled states to |color_id|.
-  void SetEnabledTextColorIds(absl::optional<ui::ColorId> color_id);
+  void SetEnabledTextColorIds(ui::ColorId color_id);
 
   // Gets the current state text color.
   SkColor GetCurrentTextColor() const;
