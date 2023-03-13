@@ -954,8 +954,15 @@ TEST_F(TranslateManagerTest, CanManuallyTranslate_EmptySourceLanguage) {
 
   translate_manager_->GetLanguageState()->LanguageDetermined("", true);
 
-  EXPECT_FALSE(translate_manager_->CanManuallyTranslate());
-  EXPECT_FALSE(translate_manager_->CanManuallyTranslate(true));
+  // Manual translation when source language is empty is only supported on
+  // Android.
+  bool empty_source_supported = false;
+#if BUILDFLAG(IS_ANDROID)
+  empty_source_supported = true;
+#endif
+  EXPECT_EQ(translate_manager_->CanManuallyTranslate(), empty_source_supported);
+  EXPECT_EQ(translate_manager_->CanManuallyTranslate(true),
+            empty_source_supported);
 }
 
 TEST_F(TranslateManagerTest, CanManuallyTranslate_UndefinedSourceLanguage) {

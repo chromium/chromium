@@ -208,6 +208,11 @@ bool TranslateManager::CanManuallyTranslate(bool menuLogging) {
   }
 
   const std::string source_language = language_state_.source_language();
+  // The source language is empty when language detection has not finished
+  // running. In this case, Android queues the translation and waits until the
+  // source language has been determined. Android is the only platform that
+  // supports manual translation in this case.
+#if !BUILDFLAG(IS_ANDROID)
   if (source_language.empty()) {
     if (!menuLogging)
       return false;
@@ -216,6 +221,8 @@ bool TranslateManager::CanManuallyTranslate(bool menuLogging) {
             kSourceLangUnknown);
     can_translate = false;
   }
+#endif
+
   bool unknown_source_supported = translate::IsForceTranslateEnabled();
   if (!unknown_source_supported &&
       source_language == translate::kUnknownLanguageCode) {
