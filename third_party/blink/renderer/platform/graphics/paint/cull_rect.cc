@@ -92,8 +92,9 @@ bool CullRect::ApplyScrollTranslation(
   if (disable_expansion) {
     return false;
   }
-  // Don't expand for non-composited scrolling.
-  if (!scroll_translation.HasDirectCompositingReasons()) {
+  if (!RuntimeEnabledFeatures::UnifiedScrollPaintingEnabled() &&
+      // Don't expand for non-composited scrolling.
+      !scroll_translation.HasDirectCompositingReasons()) {
     return false;
   }
 
@@ -362,7 +363,8 @@ bool CullRect::HasScrolledEnough(
     const gfx::Vector2dF& delta,
     const TransformPaintPropertyNode& scroll_translation) {
   if (!scroll_translation.ScrollNode() ||
-      !scroll_translation.HasDirectCompositingReasons()) {
+      (!RuntimeEnabledFeatures::UnifiedScrollPaintingEnabled() &&
+       !scroll_translation.HasDirectCompositingReasons())) {
     return !delta.IsZero();
   }
   if (std::abs(delta.x()) < kChangedEnoughMinimumDistance &&
