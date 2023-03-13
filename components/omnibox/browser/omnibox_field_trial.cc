@@ -579,7 +579,7 @@ const base::FeatureParam<int>
     OmniboxFieldTrial::kFuzzyUrlSuggestionsMinInputLength(
         &omnibox::kOmniboxFuzzyUrlSuggestions,
         "FuzzyUrlSuggestionsMinInputLength",
-        2);
+        3);
 
 // Note about this default, which produces good results for most inputs:
 // Using 10% reasonably took a 1334 relevance match down to 1200,
