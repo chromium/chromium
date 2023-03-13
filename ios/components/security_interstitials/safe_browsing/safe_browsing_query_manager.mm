@@ -44,8 +44,10 @@ SafeBrowsingQueryManager::~SafeBrowsingQueryManager() {
     observer.SafeBrowsingQueryManagerDestroyed(this);
   }
 
-  web::GetIOThreadTaskRunner({})->DeleteSoon(FROM_HERE,
-                                             url_checker_client_.release());
+  if (!base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
+    web::GetIOThreadTaskRunner({})->DeleteSoon(FROM_HERE,
+                                               url_checker_client_.release());
+  }
 }
 
 void SafeBrowsingQueryManager::AddObserver(Observer* observer) {
@@ -176,7 +178,10 @@ SafeBrowsingQueryManager::Result::~Result() = default;
 SafeBrowsingQueryManager::UrlCheckerClient::UrlCheckerClient() = default;
 
 SafeBrowsingQueryManager::UrlCheckerClient::~UrlCheckerClient() {
-  DCHECK_CURRENTLY_ON(web::WebThread::IO);
+  DCHECK_CURRENTLY_ON(
+      base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
+          ? web::WebThread::UI
+          : web::WebThread::IO);
 }
 
 void SafeBrowsingQueryManager::UrlCheckerClient::CheckUrl(
