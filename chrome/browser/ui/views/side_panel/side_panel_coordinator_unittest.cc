@@ -1322,6 +1322,70 @@ TEST_F(SidePanelCoordinatorTest,
             coordinator_->GetCurrentSidePanelEntryForTesting());
 }
 
+// Tests that DeregisterAndReturnView returns the deregistered entry's view if
+// it exists, whether or not the entry is showing.
+TEST_F(SidePanelCoordinatorTest, DeregisterAndReturnView) {
+  // A view with a counter as an internal state, used to check that the correct
+  // view is returned by DeregisterAndReturnView.
+  class ViewWithCounter : public views::View {
+   public:
+    explicit ViewWithCounter(int counter) : views::View(), counter_(counter) {}
+    ~ViewWithCounter() override = default;
+
+    int counter() { return counter_; }
+
+   private:
+    int counter_ = 0;
+  };
+
+  SidePanelEntry::Key side_search_key(SidePanelEntry::Id::kSideSearch);
+  SidePanelEntry::Key extension_key(SidePanelEntry::Id::kExtension,
+                                    "extension");
+
+  auto create_entry_with_counter = [](const SidePanelEntry::Key& key,
+                                      int counter) {
+    return std::make_unique<SidePanelEntry>(
+        key, u"basic entry",
+        ui::ImageModel::FromVectorIcon(kReadLaterIcon, ui::kColorIcon),
+        base::BindRepeating(
+            [](int counter) -> std::unique_ptr<views::View> {
+              return std::make_unique<ViewWithCounter>(counter);
+            },
+            counter));
+  };
+
+  // Register the entry but don't show it.
+  global_registry_->Register(create_entry_with_counter(extension_key, 11));
+
+  // Since the entry was never shown, its view was never created and
+  // `returned_view` should be null.
+  std::unique_ptr<views::View> returned_view =
+      global_registry_->DeregisterAndReturnView(extension_key);
+  EXPECT_FALSE(returned_view);
+
+  // Register the entry and show it.
+  global_registry_->Register(create_entry_with_counter(extension_key, 22));
+  coordinator_->Show(extension_key);
+
+  // Since the entry was shown, its view was created. Check that the correct
+  // view is returned by checking its state that was set at creation time.
+  returned_view = global_registry_->DeregisterAndReturnView(extension_key);
+  ASSERT_TRUE(returned_view);
+  EXPECT_EQ(22, static_cast<ViewWithCounter*>(returned_view.get())->counter());
+
+  // Register the entry, show it, then show another entry so the entry for
+  // `extension_key` has its view cached.
+  global_registry_->Register(create_entry_with_counter(extension_key, 33));
+  coordinator_->Show(extension_key);
+  coordinator_->Show(side_search_key);
+
+  // Since the entry was shown, its view was created. Check that the correct
+  // view is returned by checking its state that was set at creation time.
+  returned_view = global_registry_->DeregisterAndReturnView(extension_key);
+  ASSERT_TRUE(returned_view);
+  EXPECT_EQ(33, static_cast<ViewWithCounter*>(returned_view.get())->counter());
+}
+
 // Test that the SidePanelCoordinator behaves and updates corrected when dealing
 // with entries that load/display asynchronously.
 class SidePanelCoordinatorLoadingContentTest : public SidePanelCoordinatorTest {

@@ -736,6 +736,12 @@ void SidePanelCoordinator::OnEntryWillDeregister(SidePanelRegistry* registry,
     last_active_global_entry_key_ = absl::nullopt;
   }
 
+  // Save the entry's view: if it has a cached view, retrieve it. Otherwise if
+  // the entry is shown, get it from the side panel view. This is necessary so
+  // the view can be preserved so it won't be destroyed by Close().
+  std::unique_ptr<views::View> entry_view =
+      entry->CachedView() ? entry->GetContent() : nullptr;
+
   // Update the current entry to make sure we don't show an entry that is being
   // removed or close the panel if the entry being deregistered is the only one
   // that has been visible.
@@ -745,7 +751,21 @@ void SidePanelCoordinator::OnEntryWillDeregister(SidePanelRegistry* registry,
     // key is shown, do nothing.
     if (registry == global_registry_ &&
         GetActiveContextualEntryForKey(entry->key())) {
+      entry->CacheView(std::move(entry_view));
       return;
+    }
+
+    // Fetch the entry's view from the side panel container if it is shown.
+    auto* content_wrapper =
+        GetContentView()->GetViewByID(kSidePanelContentWrapperViewId);
+    DCHECK(content_wrapper);
+    if (content_wrapper->children().size() == 1) {
+      entry_view = content_wrapper->RemoveChildViewT(
+          content_wrapper->children().front());
+      // TODO(crbug.com/1423211): Log the time elapsed between when this view is
+      // removed, to when the new active entry's view is shown. This can
+      // determine if the user will notice a flash in the side panel in between
+      // different entries being shown.
     }
 
     if (auto* new_active_entry =
@@ -756,6 +776,10 @@ void SidePanelCoordinator::OnEntryWillDeregister(SidePanelRegistry* registry,
       Close();
     }
   }
+
+  // Cache the deregistering entry's view. This needs to be done after Close()
+  // might be called because Close() clears all cached views.
+  entry->CacheView(std::move(entry_view));
 }
 
 void SidePanelCoordinator::OnEntryIconUpdated(SidePanelEntry* entry) {

@@ -12,6 +12,7 @@
 #include "base/supports_user_data.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
+#include "ui/views/view.h"
 
 namespace content {
 class WebContents;
@@ -46,9 +47,16 @@ class SidePanelRegistry final : public base::SupportsUserData::Data,
   // registered and false if a SidePanelEntry already exists in the registry for
   // the provided SidePanelEntry::Id.
   bool Register(std::unique_ptr<SidePanelEntry> entry);
+
   // Deregisters the entry for the given SidePanelEntry::Key. Returns true if
-  // successful and false if there is no entry registered for the |key|.
+  // successful and false if there is no entry registered for the `key`.
   bool Deregister(const SidePanelEntry::Key& key);
+
+  // Deregisters the entry for the given SidePanelEntry::Key and returns the
+  // view for the entry or nullptr if one does not exist.
+  std::unique_ptr<views::View> DeregisterAndReturnView(
+      const SidePanelEntry::Key& key);
+
   // Set the active entry in the side panel to be |entry|.
   void SetActiveEntry(SidePanelEntry* entry);
 
