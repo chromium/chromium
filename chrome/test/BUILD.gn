@@ -397,6 +397,18 @@ static_library("test_support") {
     public_deps += [ "//pdf" ]
   }
 
+  if (enable_printing) {
+    sources += [
+      "../browser/printing/print_test_utils.cc",
+      "../browser/printing/print_test_utils.h",
+    ]
+
+    public_deps += [
+      "//printing",
+      "//printing/backend",
+    ]
+  }
+
   if (enable_supervised_users) {
     public_deps += [
       "//chrome/browser/supervised_user:test_support",
@@ -8667,8 +8679,6 @@ test("unit_tests") {
     sources += [
       "../browser/policy/printing_restrictions_policy_handler_unittest.cc",
       "../browser/printing/print_job_unittest.cc",
-      "../browser/printing/print_test_utils.cc",
-      "../browser/printing/print_test_utils.h",
     ]
 
     deps += [

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/json/json_writer.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_handler.h"
 #include "printing/mojom/print.mojom.h"
@@ -16,6 +17,11 @@
 namespace printing {
 
 const char kDummyPrinterName[] = "DefaultPrinter";
+
+const std::vector<gfx::Size> kTestPrinterCapabilitiesDefaultDpis{
+    kTestPrinterCapabilitiesDpi};
+const PrinterBasicInfoOptions kTestDummyPrintInfoOptions{{"opt1", "123"},
+                                                         {"opt2", "456"}};
 
 base::Value::Dict GetPrintTicket(mojom::PrinterType type) {
   DCHECK_NE(type, mojom::PrinterType::kPrivetDeprecated);
@@ -68,6 +74,33 @@ base::Value::Dict GetPrintTicket(mojom::PrinterType type) {
   }
 
   return ticket;
+}
+
+std::unique_ptr<PrintSettings> MakeDefaultPrintSettings(
+    const std::string& printer_name) {
+  // Setup a sample page setup, which is needed to pass checks in
+  // `PrintRenderFrameHelper` that the print params are valid.
+  constexpr gfx::Size kPhysicalSize = gfx::Size(200, 200);
+  constexpr gfx::Rect kPrintableArea = gfx::Rect(0, 0, 200, 200);
+  const PageMargins kRequestedMargins(0, 0, 5, 5, 5, 5);
+  const PageSetup kPageSetup(kPhysicalSize, kPrintableArea, kRequestedMargins,
+                             /*forced_margins=*/false,
+                             /*text_height=*/0);
+
+  auto settings = std::make_unique<PrintSettings>();
+  settings->set_copies(kTestPrintSettingsCopies);
+  settings->set_dpi(kTestPrinterDefaultRenderDpi);
+  settings->set_page_setup_device_units(kPageSetup);
+  settings->set_device_name(base::ASCIIToUTF16(printer_name));
+  return settings;
+}
+
+std::unique_ptr<PrintSettings> MakeUserModifiedPrintSettings(
+    const std::string& printer_name) {
+  std::unique_ptr<PrintSettings> settings =
+      MakeDefaultPrintSettings(printer_name);
+  settings->set_copies(kTestPrintSettingsCopies + 1);
+  return settings;
 }
 
 }  // namespace printing

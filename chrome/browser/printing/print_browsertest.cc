@@ -19,7 +19,6 @@
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
@@ -30,6 +29,7 @@
 #include "chrome/browser/printing/print_error_dialog.h"
 #include "chrome/browser/printing/print_job.h"
 #include "chrome/browser/printing/print_job_manager.h"
+#include "chrome/browser/printing/print_test_utils.h"
 #include "chrome/browser/printing/print_view_manager.h"
 #include "chrome/browser/printing/print_view_manager_common.h"
 #include "chrome/browser/printing/printer_query.h"
@@ -139,41 +139,12 @@ using OnDidShowErrorDialog = base::RepeatingClosure;
 
 namespace {
 
-constexpr int kTestPrintingDpi = 72;
 constexpr int kTestPrinterCapabilitiesMaxCopies = 99;
-constexpr gfx::Size kTestPrinterCapabilitiesDpi(kTestPrintingDpi,
-                                                kTestPrintingDpi);
-constexpr int kTestPrintSettingsCopies = 42;
-
-const std::vector<gfx::Size> kTestPrinterCapabilitiesDefaultDpis{
-    kTestPrinterCapabilitiesDpi};
-const PrinterBasicInfoOptions kTestDummyPrintInfoOptions{{"opt1", "123"},
-                                                         {"opt2", "456"}};
-
 constexpr int kDefaultDocumentCookie = 1234;
 
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 constexpr char kFakeDmToken[] = "fake-dm-token";
 #endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
-
-std::unique_ptr<PrintSettings> MakeDefaultPrintSettings(
-    const std::string& printer_name) {
-  // Setup a sample page setup, which is needed to pass checks in
-  // `PrintRenderFrameHelper` that the print params are valid.
-  constexpr gfx::Size kPhysicalSize = gfx::Size(200, 200);
-  constexpr gfx::Rect kPrintableArea = gfx::Rect(0, 0, 200, 200);
-  const PageMargins kRequestedMargins(0, 0, 5, 5, 5, 5);
-  const PageSetup kPageSetup(kPhysicalSize, kPrintableArea, kRequestedMargins,
-                             /*forced_margins=*/false,
-                             /*text_height=*/0);
-
-  auto settings = std::make_unique<PrintSettings>();
-  settings->set_copies(kTestPrintSettingsCopies);
-  settings->set_dpi(kTestPrintingDpi);
-  settings->set_page_setup_device_units(kPageSetup);
-  settings->set_device_name(base::ASCIIToUTF16(printer_name));
-  return settings;
-}
 
 std::unique_ptr<TestPrintingContext> MakeDefaultTestPrintingContext(
     PrintingContext::Delegate* delegate,
@@ -185,16 +156,6 @@ std::unique_ptr<TestPrintingContext> MakeDefaultTestPrintingContext(
   context->SetDeviceSettings(printer_name,
                              MakeDefaultPrintSettings(printer_name));
   return context;
-}
-
-// Make some settings which are different than the generated defaults, to
-// be used if test calls `AskUserForSettings()`.
-std::unique_ptr<PrintSettings> MakeUserModifiedPrintSettings(
-    const std::string& printer_name) {
-  std::unique_ptr<PrintSettings> settings =
-      MakeDefaultPrintSettings(printer_name);
-  settings->set_copies(kTestPrintSettingsCopies + 1);
-  return settings;
 }
 
 class BrowserPrintingContextFactoryForTest
