@@ -14871,9 +14871,11 @@ void RenderFrameHostImpl::CookieChangeListener::OnCookieChange(
     const net::CookieChangeInfo& change) {
   // TODO (https://crbug.com/1399741): After adding the invalidation signals
   // API, we could mark the page as ineligible for BFCache as soon as the cookie
-  // change event is received.
-  cookie_change_info_.http_only_cookie_modified |= change.cookie.IsHttpOnly();
-  cookie_change_info_.cookie_modified = true;
+  // change event is received after the navigation is committed.
+  cookie_change_info_.cookie_modification_count_++;
+  if (change.cookie.IsHttpOnly()) {
+    cookie_change_info_.http_only_cookie_modification_count_++;
+  }
 }
 
 RenderFrameHostImpl::CookieChangeListener::CookieChangeInfo

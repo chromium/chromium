@@ -36,6 +36,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_conversion_helper.h"
 #include "base/types/optional_util.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/attribution_reporting/os_registration.h"
@@ -102,6 +103,7 @@
 #include "content/public/browser/client_hints_controller_delegate.h"
 #include "content/public/browser/commit_deferring_condition.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_ui_data.h"
@@ -126,6 +128,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
+#include "net/cookies/canonical_cookie.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/url_request/redirect_info.h"
@@ -8237,6 +8240,25 @@ void NavigationRequest::OnCookiesAccessed(
     GetDelegate()->OnCookiesAccessed(this, allowed);
   if (!blocked.cookie_list.empty())
     GetDelegate()->OnCookiesAccessed(this, blocked);
+
+  // When determining the BFCache eligibility, we explicitly ignore the cookie
+  // changes from the navigation itself because we want the
+  // `CookieChangeListener` to only track the cookie changes that potentially
+  // make the document initially rendered by the navigation request outdated.
+  if (allowed.type == CookieAccessDetails::Type::kChange) {
+    uint64_t cookie_modification_count = allowed.cookie_list.size();
+    uint64_t http_only_cookie_modification_count = 0u;
+    for (net::CanonicalCookie& cookie : allowed.cookie_list) {
+      if (cookie.IsHttpOnly()) {
+        http_only_cookie_modification_count++;
+      }
+    }
+    if (cookie_change_listener_) {
+      cookie_change_listener_->RemoveNavigationCookieModificationCount(
+          base::PassKey<NavigationRequest>(), cookie_modification_count,
+          http_only_cookie_modification_count);
+    }
+  }
 }
 
 void NavigationRequest::Clone(

@@ -1158,8 +1158,8 @@ IN_PROC_BROWSER_TEST_F(
           BlockListedFeatures()));
 }
 
-// Test that a page with cache-control:no-store gets evicted if a cookie is set
-// when the page is loaded.
+// Test that a page with cache-control:no-store gets restored if the only cookie
+// modification comes from the response of the `NavigationRequest`.
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheBrowserTestRestoreCacheControlNoStoreUnlessCookieChange,
     PagesWithCacheControlNoStoreNotBFCachedWithCookieSetInResponse) {
@@ -1187,15 +1187,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
 
-  // 3) Go back. |rfh_a| should be evicted upon restoration.
+  // 3) Go back. |rfh_a| should be restored.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
-  ExpectNotRestored({NotRestoredReason::kCacheControlNoStoreCookieModified}, {},
-                    {}, {}, {}, FROM_HERE);
-  EXPECT_THAT(GetTreeResult()->GetDocumentResult(),
-              MatchesDocumentResult(
-                  NotRestoredReasons(
-                      NotRestoredReason::kCacheControlNoStoreCookieModified),
-                  BlockListedFeatures()));
+  ExpectRestored(FROM_HERE);
 }
 
 // Test that a page with `Cache-control: no-store` header gets evicted if some
@@ -1621,8 +1615,8 @@ IN_PROC_BROWSER_TEST_F(
           BlockListedFeatures()));
 }
 
-// Test that a page with cache-control:no-store gets evicted if an HTTPOnly
-// cookie is set when the page is loaded.
+// Test that a page with cache-control:no-store gets restored if the HTTPOnly
+// cookie modification comes from the response of the `NavigationRequest`.
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheBrowserTestRestoreUnlessHTTPOnlyCookieChange,
     PagesWithCacheControlNoStoreNotBFCachedWithHTTPOnlyCookieSetInResponse) {
@@ -1650,17 +1644,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
 
-  // 3) Go back. |rfh_a| should be evicted upon restoration.
+  // 3) Go back. |rfh_a| should be restored.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
-  ExpectNotRestored(
-      {NotRestoredReason::kCacheControlNoStoreHTTPOnlyCookieModified}, {}, {},
-      {}, {}, FROM_HERE);
-  EXPECT_THAT(
-      GetTreeResult()->GetDocumentResult(),
-      MatchesDocumentResult(
-          NotRestoredReasons(
-              NotRestoredReason::kCacheControlNoStoreHTTPOnlyCookieModified),
-          BlockListedFeatures()));
+  ExpectRestored(FROM_HERE);
 }
 
 // Test that a page with cache-control:no-store gets evicted if some HTTPOnly
@@ -1726,6 +1712,8 @@ IN_PROC_BROWSER_TEST_F(
   CreateHttpsServer();
   net::test_server::ControllableHttpResponse response(https_server(),
                                                       "/title1.html");
+  net::test_server::ControllableHttpResponse response2(https_server(),
+                                                       "/title1.html");
 
   ASSERT_TRUE(https_server()->Start());
 
@@ -1733,31 +1721,42 @@ IN_PROC_BROWSER_TEST_F(
   GURL url_a2(https_server()->GetURL("a.com", "/title1.html#foo"));
   GURL url_b(https_server()->GetURL("b.com", "/title1.html"));
 
-  // 1) Load the document and specify no-store for the main resource, the
-  // response also sets a cookie.
-  TestNavigationObserver observer(web_contents());
-  shell()->LoadURL(url_a);
+  Shell* tab_to_be_bfcached = shell();
+  Shell* tab_to_modify_cookie = CreateBrowser();
+
+  // 1) Load the document and specify no-store for the main resource.
+  TestNavigationObserver observer(tab_to_be_bfcached->web_contents());
+  tab_to_be_bfcached->LoadURL(url_a);
   RenderFrameHostImplWrapper rfh_a(current_frame_host());
   response.WaitForRequest();
-  response.Send(kResponseWithNoCacheWithHTTPOnlyCookie);
+  response.Send(kResponseWithNoCache);
   response.Done();
   observer.Wait();
   rfh_a->GetBackForwardCacheMetrics()->SetObserverForTesting(this);
 
-  // 2) Perform a same document navigation.
+  // 2) Modify the HTTPOnly cookie from another tab.
+  TestNavigationObserver observer2(tab_to_modify_cookie->web_contents());
+  tab_to_modify_cookie->LoadURL(url_a);
+  response2.WaitForRequest();
+  response2.Send(kResponseWithNoCacheWithHTTPOnlyCookie);
+  response2.Done();
+  observer2.Wait();
+
+  // 3) Perform a same document navigation.
   EXPECT_TRUE(ExecJs(shell(), JsReplace("location = $1", url_a2.spec())));
-  EXPECT_TRUE(WaitForLoadStop(web_contents()));
-  EXPECT_EQ(url_a2,
-            web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
+  EXPECT_TRUE(WaitForLoadStop(tab_to_be_bfcached->web_contents()));
+  EXPECT_EQ(url_a2, tab_to_be_bfcached->web_contents()
+                        ->GetPrimaryMainFrame()
+                        ->GetLastCommittedURL());
   EXPECT_TRUE(rfh_a->IsActive());
 
-  // 3) Navigate away. |rfh_a| should enter the bfcache since we only evict
+  // 4) Navigate away. |rfh_a| should enter the bfcache since we only evict
   // before restoration.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
 
-  // 4) Go back. |rfh_a| should be evicted upon restoration.
-  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  // 5) Go back. |rfh_a| should be evicted upon restoration.
+  ASSERT_TRUE(HistoryGoBack(tab_to_be_bfcached->web_contents()));
   ExpectNotRestored(
       {NotRestoredReason::kCacheControlNoStoreHTTPOnlyCookieModified}, {}, {},
       {}, {}, FROM_HERE);

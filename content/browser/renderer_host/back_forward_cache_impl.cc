@@ -609,10 +609,12 @@ void BackForwardCacheImpl::UpdateCanStoreToIncludeCacheControlNoStore(
   // Note that kCacheControlNoStoreHTTPOnlyCookieModified,
   // kCacheControlNoStoreCookieModified and kCacheControlNoStore are mutually
   // exclusive.
-  if (render_frame_host->GetCookieChangeInfo().http_only_cookie_modified) {
+  if (render_frame_host->GetCookieChangeInfo()
+          .http_only_cookie_modification_count_ > 0) {
     result.No(BackForwardCacheMetrics::NotRestoredReason::
                   kCacheControlNoStoreHTTPOnlyCookieModified);
-  } else if (render_frame_host->GetCookieChangeInfo().cookie_modified) {
+  } else if (render_frame_host->GetCookieChangeInfo()
+                 .cookie_modification_count_ > 0) {
     // JavaScript cookies are modified but not HTTP cookies. Only restore based
     // on the experiment level.
     if (GetCacheControlNoStoreLevel() <=

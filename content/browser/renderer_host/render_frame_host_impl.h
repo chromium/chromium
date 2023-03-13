@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <cstdint>
 #include <list>
 #include <map>
 #include <memory>
@@ -1382,10 +1383,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   class CookieChangeListener : public network::mojom::CookieChangeListener {
    public:
     struct CookieChangeInfo {
-      // Indicates whether any cookie modification has been observed.
-      bool cookie_modified = false;
-      // Indicates whether any HTTPOnly cookie modification has been observed.
-      bool http_only_cookie_modified = false;
+      // The number of observed cookie modifications.
+      int64_t cookie_modification_count_ = 0;
+      // The number of observed HTTPOnly cookie modifications.
+      int64_t http_only_cookie_modification_count_ = 0;
     };
 
     CookieChangeListener(StoragePartition* storage_partition, GURL& url);
@@ -1395,6 +1396,21 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
     // Returns a copy of the `cookie_change_info_`.
     CookieChangeInfo cookie_change_info() { return cookie_change_info_; }
+
+    // We don't want to count the cookie modification made by the
+    // `NavigationRequest` itself, so provide this function to allow the count
+    // adjustment.
+    // Passing the `base::PassKey` to restrict the caller of this method to
+    // `NavigationRequest` only.
+    void RemoveNavigationCookieModificationCount(
+        base::PassKey<content::NavigationRequest> navigation_request,
+        uint64_t cookie_modification_count_delta,
+        uint64_t http_only_cookie_modification_count_delta) {
+      cookie_change_info_.cookie_modification_count_ -=
+          cookie_modification_count_delta;
+      cookie_change_info_.http_only_cookie_modification_count_ -=
+          http_only_cookie_modification_count_delta;
+    }
 
    private:
     // network::mojom::CookieChangeListener
