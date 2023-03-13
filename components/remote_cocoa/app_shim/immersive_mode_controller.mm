@@ -348,6 +348,7 @@ ImmersiveModeController::~ImmersiveModeController() {
 void ImmersiveModeController::Enable() {
   DCHECK(!enabled_);
   enabled_ = true;
+  immersive_mode_titlebar_view_controller_.get().hidden = YES;
   [browser_window_ addTitlebarAccessoryViewController:
                        immersive_mode_titlebar_view_controller_];
 
@@ -356,11 +357,18 @@ void ImmersiveModeController::Enable() {
   ObserveOverlayChildWindows();
   ReparentChildWindows(browser_window_, overlay_window_);
 
+  thin_titlebar_view_controller_.get().hidden = YES;
   [browser_window_
       addTitlebarAccessoryViewController:thin_titlebar_view_controller_];
+
   NSRect frame = thin_titlebar_view_controller_.get().view.frame;
   frame.size.height = kThinControllerHeight;
   thin_titlebar_view_controller_.get().view.frame = frame;
+}
+
+void ImmersiveModeController::FullscreenTransitionCompleted() {
+  fullscreen_transition_complete_ = true;
+  UpdateToolbarVisibility(last_used_style_);
 }
 
 void ImmersiveModeController::OnTopViewBoundsChanged(const gfx::Rect& bounds) {
@@ -390,7 +398,8 @@ void ImmersiveModeController::UpdateToolbarVisibility(
   last_used_style_ = style;
 
   // Only make changes if there are no outstanding reveal locks.
-  if (titlebar_lock_count_ > 0 || reveal_lock_count_ > 0) {
+  if (!fullscreen_transition_complete_ || titlebar_lock_count_ > 0 ||
+      reveal_lock_count_ > 0) {
     return;
   }
 

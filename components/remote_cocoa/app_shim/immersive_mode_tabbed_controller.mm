@@ -43,7 +43,6 @@ ImmersiveModeTabbedController::ImmersiveModeTabbedController(
                               std::move(callback)),
       tab_window_(tab_window) {
   browser_window.titleVisibility = NSWindowTitleHidden;
-  browser_window.toolbar = [[[NSToolbar alloc] init] autorelease];
 
   tab_titlebar_view_controller_.reset([[TabTitlebarViewController alloc] init]);
   tab_titlebar_view_controller_.get().view =
@@ -90,8 +89,22 @@ void ImmersiveModeTabbedController::Enable() {
   // See the comment there for more details.
   tab_window_.ignoresMouseEvents = YES;
 
+  tab_titlebar_view_controller_.get().hidden = YES;
   [browser_window()
       addTitlebarAccessoryViewController:tab_titlebar_view_controller_];
+}
+
+void ImmersiveModeTabbedController::FullscreenTransitionCompleted() {
+  // The presence of a visible NSToolbar causes the titlebar to be revealed.
+  // Keep the titlebar hidden until the fullscreen transition is complete.
+  ImmersiveModeController::FullscreenTransitionCompleted();
+  tab_titlebar_view_controller_.get().hidden = NO;
+  NSToolbar* toolbar = [[[NSToolbar alloc] init] autorelease];
+  toolbar.visible = NO;
+  ImmersiveModeController::browser_window().toolbar = toolbar;
+
+  // `UpdateToolbarVisibility()` will make the toolbar visible as necessary.
+  UpdateToolbarVisibility(ImmersiveModeController::last_used_style());
 }
 
 void ImmersiveModeTabbedController::UpdateToolbarVisibility(
@@ -137,24 +150,26 @@ void ImmersiveModeTabbedController::RevealUnlock() {
 void ImmersiveModeTabbedController::TitlebarReveal() {
   // This -1 hack is needed to make the titlebar visible if it is hidden.
   // TODO(https://crbug.com/1414521): Get rid of this shrink hack.
+  NSWindow* browser_window = ImmersiveModeController::browser_window();
   if (@available(macOS 10.15, *)) {
-    browser_window().titlebarHeight = tab_window_.frame.size.height - 1;
+    browser_window.titlebarHeight = tab_window_.frame.size.height - 1;
   }
-  browser_window().toolbar.visible = YES;
+  browser_window.toolbar.visible = YES;
   if (@available(macOS 10.15, *)) {
-    browser_window().titlebarHeight = tab_window_.frame.size.height;
+    browser_window.titlebarHeight = tab_window_.frame.size.height;
   }
 }
 
 void ImmersiveModeTabbedController::TitlebarHide() {
   // Similarly this -1 hack will cause the titlebar to hide.
   // TODO(https://crbug.com/1414521): Get rid of this shrink hack.
+  NSWindow* browser_window = ImmersiveModeController::browser_window();
   if (@available(macOS 10.15, *)) {
-    browser_window().titlebarHeight = tab_window_.frame.size.height - 1;
+    browser_window.titlebarHeight = tab_window_.frame.size.height - 1;
   }
-  browser_window().toolbar.visible = NO;
+  browser_window.toolbar.visible = NO;
   if (@available(macOS 10.15, *)) {
-    browser_window().titlebarHeight = tab_window_.frame.size.height;
+    browser_window.titlebarHeight = tab_window_.frame.size.height;
   }
 }
 

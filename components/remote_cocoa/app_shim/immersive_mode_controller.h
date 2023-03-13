@@ -39,6 +39,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
   virtual ~ImmersiveModeController();
 
   virtual void Enable();
+  virtual void FullscreenTransitionCompleted();
   virtual void OnTopViewBoundsChanged(const gfx::Rect& bounds);
   virtual void UpdateToolbarVisibility(mojom::ToolbarVisibilityStyle style);
   mojom::ToolbarVisibilityStyle last_used_style() { return last_used_style_; }
@@ -132,6 +133,10 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
 
   bool titlebar_fully_visible_ = false;
   bool titlebar_frame_change_barrier_ = false;
+
+  // Keeps the view controllers hidden until the fullscreen transition is
+  // complete.
+  bool fullscreen_transition_complete_ = false;
 
   base::WeakPtrFactory<ImmersiveModeController> weak_ptr_factory_;
 };

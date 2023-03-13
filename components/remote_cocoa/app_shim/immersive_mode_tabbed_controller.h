@@ -28,6 +28,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeTabbedController
 
   // ImmersiveModeController overrides
   void Enable() override;
+  void FullscreenTransitionCompleted() override;
   void UpdateToolbarVisibility(mojom::ToolbarVisibilityStyle style) override;
   void OnTopViewBoundsChanged(const gfx::Rect& bounds) override;
   void RevealLock() override;

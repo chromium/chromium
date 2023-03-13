@@ -1279,7 +1279,11 @@ void NativeWidgetNSWindowBridge::FullscreenControllerTransitionComplete(
 
   // Add any children that were skipped during the fullscreen transition.
   OrderChildren();
+
   host_->OnWindowFullscreenTransitionComplete(is_fullscreen);
+  if (is_fullscreen && immersive_mode_controller_) {
+    immersive_mode_controller_->FullscreenTransitionCompleted();
+  }
 }
 
 void NativeWidgetNSWindowBridge::FullscreenControllerSetFrame(

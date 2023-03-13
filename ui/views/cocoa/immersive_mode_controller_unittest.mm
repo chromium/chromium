@@ -330,6 +330,29 @@ TEST_F(CocoaImmersiveModeControllerTest, TitlebarObserver) {
   fullscreen_window.reset();
 }
 
+// Test ImmersiveModeController toolbar visibility.
+TEST_F(CocoaImmersiveModeControllerTest, ToolbarVisibility) {
+  // Controller under test.
+  auto immersive_mode_controller = std::make_unique<ImmersiveModeController>(
+      browser(), overlay(), base::DoNothing());
+  immersive_mode_controller->Enable();
+
+  // The controller will be hidden until the fullscreen transition is complete.
+  immersive_mode_controller->UpdateToolbarVisibility(
+      mojom::ToolbarVisibilityStyle::kAlways);
+  EXPECT_TRUE(browser().titlebarAccessoryViewControllers.firstObject.hidden);
+  immersive_mode_controller->FullscreenTransitionCompleted();
+  EXPECT_FALSE(browser().titlebarAccessoryViewControllers.firstObject.hidden);
+
+  immersive_mode_controller->UpdateToolbarVisibility(
+      mojom::ToolbarVisibilityStyle::kNone);
+  EXPECT_TRUE(browser().titlebarAccessoryViewControllers.firstObject.hidden);
+
+  immersive_mode_controller->UpdateToolbarVisibility(
+      mojom::ToolbarVisibilityStyle::kAutohide);
+  EXPECT_FALSE(browser().titlebarAccessoryViewControllers.firstObject.hidden);
+}
+
 // Test ImmersiveModeTabbedController construction and destruction.
 TEST_F(CocoaImmersiveModeControllerTest, Tabbed) {
   bool view_will_appear_ran = false;
@@ -352,6 +375,7 @@ TEST_F(CocoaImmersiveModeControllerTest, TabbedRevealLock) {
       std::make_unique<ImmersiveModeTabbedController>(
           browser(), overlay(), tab_overlay(), base::DoNothing());
   immersive_mode_controller->Enable();
+  immersive_mode_controller->FullscreenTransitionCompleted();
 
   // Autohide top chrome.
   immersive_mode_controller->UpdateToolbarVisibility(
