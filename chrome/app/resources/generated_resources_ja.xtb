@@ -1884,6 +1884,7 @@
 <translation id="2642111877055905627">サッカーボール</translation>
 <translation id="2643064289437760082">広告測定データは、閲覧データを削除することでいつでも削除できます</translation>
 <translation id="2643698698624765890">[ウィンドウ] メニューの [拡張機能] をクリックして拡張機能を管理できます。</translation>
+<translation id="2643887015830197688">移動先を HTTPS にアップグレードし、HTTPS をサポートしていないサイトは読み込む前に警告を表示します。高度な保護機能が有効になっているため、この設定は変更できません。</translation>
 <translation id="2645047101481282803">このデバイスは <ph name="PROFILE_NAME" /> によって管理されています。</translation>
 <translation id="2645388244376970260">このタブを <ph name="DEVICE_NAME" /> にキャストしています</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
