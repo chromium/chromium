@@ -2,7 +2,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//testing/test.gni")
+
+declare_args() {
+  use_jank_tracker_for_experiments = false
+}
+
+buildflag_header("jank_tracker_for_experiments_buildflags") {
+  header = "jank_tracker_for_experiments_buildflags.h"
+  header_dir = "ui/latency"
+
+  flags = [ "JANK_TRACKER_FOR_EXPERIMENTS=$use_jank_tracker_for_experiments" ]
+}
 
 source_set("latency") {
   sources = [
@@ -11,6 +23,12 @@ source_set("latency") {
     "latency_tracker.cc",
     "latency_tracker.h",
   ]
+  if (use_jank_tracker_for_experiments) {
+    sources += [
+      "janky_duration_tracker.cc",
+      "janky_duration_tracker.h",
+    ]
+  }
 
   deps = [
     "//base",
@@ -19,7 +37,10 @@ source_set("latency") {
     "//ui/gfx",
   ]
 
-  public_deps = [ "//services/metrics/public/cpp:metrics_cpp" ]
+  public_deps = [
+    ":jank_tracker_for_experiments_buildflags",
+    "//services/metrics/public/cpp:metrics_cpp",
+  ]
 }
 
 source_set("test_support") {
