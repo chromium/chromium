@@ -14,10 +14,12 @@
 #include <string>
 #include <utility>
 
+#include "base/barrier_callback.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -76,6 +78,10 @@
 #include "components/omnibox/browser/history_cluster_provider.h"
 #include "components/open_from_clipboard/clipboard_recent_content_generic.h"
 #endif
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+#include "components/omnibox/browser/autocomplete_scoring_model_service.h"
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
 namespace {
 
@@ -961,10 +967,14 @@ void AutocompleteController::UpdateResult(
 
   static bool single_sort_and_cull_pass =
       base::FeatureList::IsEnabled(omnibox::kSingleSortAndCullPass);
-  // If `done_`, the below `SortAndCull()` is skipped, so this is the single
-  // pass.
-  if (!single_sort_and_cull_pass || done_)
+  // If not all providers are done, merge the old and new matches before
+  // sorting. Otherwise, do a final pass at sorting, skipping the second call to
+  // `SortAndCull()` below.  The async ml scoring is only run on the final pass
+  // after all providers are done.
+  if (!single_sort_and_cull_pass || done_) {
+    RunUrlScoringModel();
     result_.SortAndCull(input_, template_url_service_, preserve_default_match);
+  }
 
   if (!done_) {
     // This conditional needs to match the conditional in Start that invokes
@@ -1441,4 +1451,54 @@ bool AutocompleteController::ShouldRunProvider(
 
   // Otherwise, run all providers.
   return true;
+}
+
+void AutocompleteController::OnUrlScoringModelDone(
+    base::OnceCallback<void(AutocompleteMatch)> callback,
+    AutocompleteMatch match,
+    const absl::optional<std::vector<float>>& output) {
+  // TODO(crbug/1405555): Populate this callback.  This callback should process
+  //  `output` from the scoring model, updates the relevance score in the copy
+  //  of the AutocompleteMatch, and passes that the final callback.
+  std::move(callback).Run(match);
+}
+
+void AutocompleteController::OnUrlScoringModelDoneForAllMatches(
+    const std::vector<AutocompleteMatch>& matches) {
+  // TODO(crbug/1405555): Populate this callback. This callback receives a list
+  // of matches with the updated relevance scores from the scoring model.  This
+  // should do any necessary (re-)processing of the matches, e.g. determining
+  // which match should be default, and then swaps out the matches in the final
+  // autocomplete result.
+
+  result_.matches_ = matches;
+}
+
+void AutocompleteController::RunUrlScoringModel() {
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  if (!OmniboxFieldTrial::IsMlRelevanceScoringEnabled()) {
+    return;
+  }
+
+  AutocompleteScoringModelService* scoring_model_service =
+      provider_client_->GetAutocompleteScoringModelService();
+  if (scoring_model_service == nullptr ||
+      !scoring_model_service->UrlScoringModelAvailable()) {
+    return;
+  }
+
+  auto barrier_callback = base::BarrierCallback<AutocompleteMatch>(
+      result_.size(),
+      base::BindOnce(
+          &AutocompleteController::OnUrlScoringModelDoneForAllMatches,
+          weak_ptr_factory_.GetWeakPtr()));
+
+  for (auto match : result_.matches_) {
+    scoring_model_service->ScoreAutocompleteUrlMatch(
+        match.scoring_signals,
+        base::BindOnce(&AutocompleteController::OnUrlScoringModelDone,
+                       weak_ptr_factory_.GetWeakPtr(), barrier_callback,
+                       match));
+  }
+#endif // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 }

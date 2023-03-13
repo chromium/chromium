@@ -341,16 +341,39 @@ class AutocompleteController : public AutocompleteProviderListener,
       const base::trace_event::MemoryDumpArgs& args,
       base::trace_event::ProcessMemoryDump* process_memory_dump) override;
 
-  base::ObserverList<Observer> observers_;
-
-  // The client passed to the providers.
-  std::unique_ptr<AutocompleteProviderClient> provider_client_;
-
   // Returns whether the given provider should be ran based on whether we're in
   // keyword mode and which keyword we're searching. Currently runs all enabled
   // providers unless in a Starter Pack scope, except for OpenTabProvider which
   // only runs on Lacros and the @tabs scope.
   bool ShouldRunProvider(AutocompleteProvider* provider) const;
+
+  // This is called each time the model returns for a match.  This processes the
+  // output and passes a copy of the match with the updated relevance score
+  // to the final callback.  `OnUrlScoringModelDoneForAllMatches()` runs only
+  // after it has been called for all matches and receives a vector of matches
+  // with the updated relevance scores.
+  void OnUrlScoringModelDone(
+      base::OnceCallback<void(AutocompleteMatch)> callback,
+      AutocompleteMatch match,
+      const absl::optional<std::vector<float>>& output);
+
+  // This callback is called when the model finishes running for all matches in
+  // `results_.matches_`. This re-processes the result given the new relevance
+  // scores, then updates the final set of matches in `results_`.
+  void OnUrlScoringModelDoneForAllMatches(
+      const std::vector<AutocompleteMatch>& matches);
+
+  // When ML Relevance Scoring is enabled, this asynchronously runs the ML
+  // scoring model for all `matches_` in `results_`.  It registers the
+  // `OnUrlScoringModelOutput()` callback which runs every time the model
+  // finishes scoring each match, and `OnUrlScoringModelDoneForAllMatches()`
+  // which only runs once when the scoring is complete for ALL matches.
+  void RunUrlScoringModel();
+
+  base::ObserverList<Observer> observers_;
+
+  // The client passed to the providers.
+  std::unique_ptr<AutocompleteProviderClient> provider_client_;
 
   // A list of all providers.
   Providers providers_;
@@ -466,6 +489,8 @@ class AutocompleteController : public AutocompleteProviderListener,
   bool search_service_worker_signal_sent_;
 
   raw_ptr<TemplateURLService> template_url_service_;
+
+  base::WeakPtrFactory<AutocompleteController> weak_ptr_factory_{this};
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_CONTROLLER_H_
