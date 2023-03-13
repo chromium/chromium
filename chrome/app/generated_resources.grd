@@ -13374,6 +13374,18 @@ Please help our engineers fix this problem. Tell us what happened right before y
           =1 {Your Incognito window won't reopen.}
           other {Your # Incognito windows won't reopen.}}
       </message>
+      <message name="IDS_IDLE_TIMEOUT_CLOSE_COUNTDOWN" desc="In the Idle Timeout dialog, a countdown that ticks every second. When it reaches zero, Chrome closes all browsers.">
+        {0, plural,
+          =0 {Closing now.}
+          =1 {Closing in: 1 second}
+          other {Closing in: # seconds}}
+      </message>
+      <message name="IDS_IDLE_TIMEOUT_CLEAR_COUNTDOWN" desc="In the Idle Timeout dialog, a countdown that ticks every second. When it reaches zero, Chrome clears browsing data.">
+        {0, plural,
+          =0 {Deleting now.}
+          =1 {Deleting in: 1 second}
+          other {Deleting in: # seconds}}
+      </message>
     </if>
 
     <!-- Web-modal dialog shown during Web Authenticaton API requests. -->

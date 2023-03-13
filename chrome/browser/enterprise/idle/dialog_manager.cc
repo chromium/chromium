@@ -9,13 +9,40 @@
 #include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
-#include "chrome/browser/ui/idle_dialog.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace enterprise_idle {
 
 namespace {
 
 constexpr base::TimeDelta kDialogTimeout = base::Seconds(30);
+
+IdleDialog::ActionSet ActionsToActionSet(
+    const base::flat_set<ActionType>& action_types) {
+  IdleDialog::ActionSet action_set = {.close = false, .clear = false};
+  for (ActionType action_type : action_types) {
+    switch (action_type) {
+      case ActionType::kCloseBrowsers:
+        action_set.close = true;
+        break;
+
+      case ActionType::kShowProfilePicker:
+        break;
+
+      case ActionType::kClearBrowsingHistory:
+      case ActionType::kClearDownloadHistory:
+      case ActionType::kClearCookiesAndOtherSiteData:
+      case ActionType::kClearCachedImagesAndFiles:
+      case ActionType::kClearPasswordSignin:
+      case ActionType::kClearAutofill:
+      case ActionType::kClearSiteSettings:
+      case ActionType::kClearHostedAppData:
+        action_set.clear = true;
+        break;
+    }
+  }
+  return action_set;
+}
 
 }  // namespace
 
@@ -30,6 +57,7 @@ DialogManager* DialogManager::GetInstance() {
 
 base::CallbackListSubscription DialogManager::ShowDialog(
     base::TimeDelta threshold,
+    const base::flat_set<ActionType>& action_types,
     FinishedCallback on_finished) {
   // Passed the guards: we're really going to show the dialog and close
   // browsers.
@@ -42,9 +70,9 @@ base::CallbackListSubscription DialogManager::ShowDialog(
   }
 
   dialog_ = IdleDialog::Show(
-      kDialogTimeout, threshold,
-      base::BindRepeating(&DialogManager::OnDialogDismissedByUser,
-                          base::Unretained(this)));
+      kDialogTimeout, threshold, ActionsToActionSet(action_types),
+      base::BindOnce(&DialogManager::OnDialogDismissedByUser,
+                     base::Unretained(this)));
   dialog_timer_.Start(
       FROM_HERE, kDialogTimeout,
       base::BindOnce(&DialogManager::OnDialogExpired, base::Unretained(this)));

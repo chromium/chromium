@@ -18,6 +18,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/test/views/chrome_views_test_base.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 namespace enterprise_idle {
 
 using content::BrowsingDataRemover;
@@ -337,13 +341,20 @@ class FakeBrowsingDataRemover : public BrowsingDataRemover {
   raw_ptr<Observer> observer_ = nullptr;
 };
 
-class IdleActionRunnerClearDataTest : public testing::Test {
+#if !BUILDFLAG(IS_ANDROID)
+class IdleActionRunnerClearDataTest : public ChromeViewsTestBase {
  protected:
+  void SetUp() override {
+    set_native_widget_type(NativeWidgetType::kDesktop);
+    ChromeViewsTestBase::SetUp();
+  }
+
+  void TearDown() override { ChromeViewsTestBase::TearDown(); }
+
   TestingProfile* profile() { return &profile_; }
   FakeBrowsingDataRemover* remover() { return &browsing_data_remover_; }
 
  private:
-  content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   FakeBrowsingDataRemover browsing_data_remover_;
 };
@@ -357,6 +368,7 @@ TEST_F(IdleActionRunnerClearDataTest, ClearBrowsingHistory) {
   ActionFactory::GetInstance()->SetBrowsingDataRemoverForTesting(remover());
   ActionRunner runner(profile(), ActionFactory::GetInstance());
   runner.Run();
+  task_environment()->FastForwardBy(base::Seconds(30));
   EXPECT_EQ(chrome_browsing_data_remover::DATA_TYPE_HISTORY,
             remover()->GetLastUsedRemovalMaskForTesting());
 }
@@ -370,6 +382,7 @@ TEST_F(IdleActionRunnerClearDataTest, ClearDownloadHistory) {
   ActionFactory::GetInstance()->SetBrowsingDataRemoverForTesting(remover());
   ActionRunner runner(profile(), ActionFactory::GetInstance());
   runner.Run();
+  task_environment()->FastForwardBy(base::Seconds(30));
 
   EXPECT_EQ(BrowsingDataRemover::DATA_TYPE_DOWNLOADS,
             remover()->GetLastUsedRemovalMaskForTesting());
@@ -384,6 +397,7 @@ TEST_F(IdleActionRunnerClearDataTest, ClearCookies) {
   ActionFactory::GetInstance()->SetBrowsingDataRemoverForTesting(remover());
   ActionRunner runner(profile(), ActionFactory::GetInstance());
   runner.Run();
+  task_environment()->FastForwardBy(base::Seconds(30));
 
   EXPECT_EQ(chrome_browsing_data_remover::DATA_TYPE_SITE_DATA,
             remover()->GetLastUsedRemovalMaskForTesting());
@@ -400,6 +414,7 @@ TEST_F(IdleActionRunnerClearDataTest, ClearCache) {
   ActionFactory::GetInstance()->SetBrowsingDataRemoverForTesting(remover());
   ActionRunner runner(profile(), ActionFactory::GetInstance());
   runner.Run();
+  task_environment()->FastForwardBy(base::Seconds(30));
 
   EXPECT_EQ(BrowsingDataRemover::DATA_TYPE_CACHE,
             remover()->GetLastUsedRemovalMaskForTesting());
@@ -414,6 +429,7 @@ TEST_F(IdleActionRunnerClearDataTest, ClearPasswordSignin) {
   ActionFactory::GetInstance()->SetBrowsingDataRemoverForTesting(remover());
   ActionRunner runner(profile(), ActionFactory::GetInstance());
   runner.Run();
+  task_environment()->FastForwardBy(base::Seconds(30));
 
   EXPECT_EQ(chrome_browsing_data_remover::DATA_TYPE_PASSWORDS,
             remover()->GetLastUsedRemovalMaskForTesting());
@@ -428,6 +444,7 @@ TEST_F(IdleActionRunnerClearDataTest, ClearAutofill) {
   ActionFactory::GetInstance()->SetBrowsingDataRemoverForTesting(remover());
   ActionRunner runner(profile(), ActionFactory::GetInstance());
   runner.Run();
+  task_environment()->FastForwardBy(base::Seconds(30));
 
   EXPECT_EQ(chrome_browsing_data_remover::DATA_TYPE_FORM_DATA,
             remover()->GetLastUsedRemovalMaskForTesting());
@@ -442,6 +459,7 @@ TEST_F(IdleActionRunnerClearDataTest, ClearSiteSettings) {
   ActionFactory::GetInstance()->SetBrowsingDataRemoverForTesting(remover());
   ActionRunner runner(profile(), ActionFactory::GetInstance());
   runner.Run();
+  task_environment()->FastForwardBy(base::Seconds(30));
 
   EXPECT_EQ(chrome_browsing_data_remover::DATA_TYPE_CONTENT_SETTINGS,
             remover()->GetLastUsedRemovalMaskForTesting());
@@ -456,6 +474,7 @@ TEST_F(IdleActionRunnerClearDataTest, ClearHostedAppData) {
   ActionFactory::GetInstance()->SetBrowsingDataRemoverForTesting(remover());
   ActionRunner runner(profile(), ActionFactory::GetInstance());
   runner.Run();
+  task_environment()->FastForwardBy(base::Seconds(30));
 
   EXPECT_EQ(chrome_browsing_data_remover::DATA_TYPE_SITE_DATA,
             remover()->GetLastUsedRemovalMaskForTesting());
@@ -474,6 +493,7 @@ TEST_F(IdleActionRunnerClearDataTest, MultipleTypes) {
   ActionFactory::GetInstance()->SetBrowsingDataRemoverForTesting(remover());
   ActionRunner runner(profile(), ActionFactory::GetInstance());
   runner.Run();
+  task_environment()->FastForwardBy(base::Seconds(30));
 
   EXPECT_EQ(chrome_browsing_data_remover::DATA_TYPE_HISTORY |
                 BrowsingDataRemover::DATA_TYPE_DOWNLOADS |
@@ -492,7 +512,10 @@ TEST_F(IdleActionRunnerClearDataTest, MultipleTypesAndFailure) {
       profile(),
       {ActionType::kClearBrowsingHistory, ActionType::kClearDownloadHistory,
        ActionType::kClearAutofill});
-  ASSERT_EQ(1u, actions.size());
+  ASSERT_EQ(2u, actions.size());
+
+  ASSERT_EQ(-1, actions.top()->priority());  // ShowDialogAction
+  actions.pop();
 
   // The callback should run with success=false.
   base::MockCallback<Action::Continuation> cb;
@@ -503,5 +526,6 @@ TEST_F(IdleActionRunnerClearDataTest, MultipleTypesAndFailure) {
   actions.top()->Run(profile(), cb.Get());
   run_loop.Run();
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace enterprise_idle

@@ -6,12 +6,14 @@
 #define CHROME_BROWSER_ENTERPRISE_IDLE_DIALOG_MANAGER_H_
 
 #include "base/callback_list.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/enterprise/idle/action.h"
+#include "chrome/browser/ui/idle_dialog.h"
 #include "ui/views/widget/widget.h"
 
 namespace enterprise_idle {
@@ -26,8 +28,10 @@ class DialogManager {
 
   // Show a 30s dialog--or if it's already visible, re-use the existing one.
   // Run `on_finished` after 30s, or if the user dismisses the dialog.
-  base::CallbackListSubscription ShowDialog(base::TimeDelta threshold,
-                                            FinishedCallback on_finished);
+  base::CallbackListSubscription ShowDialog(
+      base::TimeDelta threshold,
+      const base::flat_set<ActionType>& action_types,
+      FinishedCallback on_finished);
 
   void DismissDialogForTesting();
   bool IsDialogOpenForTesting() const;

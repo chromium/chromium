@@ -50,7 +50,8 @@ bool ProfileHasBrowsers(const Profile* profile) {
 // ActionFactory if appropriate.
 class ShowDialogAction : public Action {
  public:
-  ShowDialogAction() : Action(/*priority=*/-1) {}
+  explicit ShowDialogAction(base::flat_set<ActionType> action_types)
+      : Action(/*priority=*/-1), action_types_(action_types) {}
 
   void Run(Profile* profile, Continuation continuation) override {
     base::TimeDelta timeout =
@@ -59,8 +60,9 @@ class ShowDialogAction : public Action {
     // Action object's lifetime extends until it calls `continuation_`, so
     // passing `this` as a raw pointer is safe.
     subscription_ = DialogManager::GetInstance()->ShowDialog(
-        timeout, base::BindOnce(&ShowDialogAction::OnCloseFinished,
-                                base::Unretained(this)));
+        timeout, action_types_,
+        base::BindOnce(&ShowDialogAction::OnCloseFinished,
+                       base::Unretained(this)));
   }
 
   bool ShouldNotifyUserOfPendingDestructiveAction(Profile* profile) override {
@@ -73,6 +75,7 @@ class ShowDialogAction : public Action {
     std::move(continuation_).Run(/*success=*/expired);
   }
 
+  base::flat_set<ActionType> action_types_;
   Action::Continuation continuation_;
   base::CallbackListSubscription subscription_;
 };
@@ -174,7 +177,7 @@ class ClearBrowsingDataAction : public Action,
   }
 
   bool ShouldNotifyUserOfPendingDestructiveAction(Profile* profile) override {
-    return false;
+    return true;
   }
 
   // content::BrowsingDataRemoverObserver::Observer:
@@ -300,7 +303,8 @@ ActionFactory::ActionQueue ActionFactory::Build(
     return a->ShouldNotifyUserOfPendingDestructiveAction(profile);
   });
   if (needs_dialog) {
-    actions.push_back(std::make_unique<ShowDialogAction>());
+    actions.push_back(std::make_unique<ShowDialogAction>(
+        base::flat_set<ActionType>(action_types)));
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
