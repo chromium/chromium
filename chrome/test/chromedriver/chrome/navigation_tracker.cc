@@ -282,12 +282,13 @@ Status NavigationTracker::OnEvent(DevToolsClient* client,
     frame_to_state_map_[*frame_id] = kUnknown;
   } else if (method == "Page.frameDetached") {
     const std::string* frame_id = params.FindString("frameId");
-    if (!frame_id)
+    if (!frame_id) {
       return Status(kUnknownError, "missing or invalid 'frameId'");
-
-    frame_to_state_map_.erase(*frame_id);
-    if (*frame_id == current_frame_id_)
+    }
+    if (*frame_id == current_frame_id_) {
       SetCurrentFrameInvalid();
+    }
+    frame_to_state_map_.erase(*frame_id);
   } else if (method == "Page.frameStartedLoading") {
     // If frame that started loading is the current frame
     // set loading_state_ to loading. If it is another subframe

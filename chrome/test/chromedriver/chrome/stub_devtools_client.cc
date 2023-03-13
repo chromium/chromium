@@ -107,6 +107,13 @@ void StubDevToolsClient::AddListener(DevToolsEventListener* listener) {
   listeners_.push_back(listener);
 }
 
+void StubDevToolsClient::RemoveListener(DevToolsEventListener* listener) {
+  auto it = std::find(listeners_.begin(), listeners_.end(), listener);
+  if (it != listeners_.end()) {
+    listeners_.erase(it);
+  }
+}
+
 Status StubDevToolsClient::HandleEventsUntil(
     const ConditionalFunc& conditional_func,
     const Timeout& timeout) {

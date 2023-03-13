@@ -644,6 +644,23 @@ void DevToolsClientImpl::AddListener(DevToolsEventListener* listener) {
   listeners_.push_back(listener);
 }
 
+void DevToolsClientImpl::RemoveListener(DevToolsEventListener* listener) {
+  auto it = std::find(listeners_.begin(), listeners_.end(), listener);
+  if (it != listeners_.end()) {
+    listeners_.erase(it);
+  }
+  it = std::find(unnotified_connect_listeners_.begin(),
+                 unnotified_connect_listeners_.end(), listener);
+  if (it != unnotified_connect_listeners_.end()) {
+    unnotified_connect_listeners_.erase(it);
+  }
+  it = std::find(unnotified_event_listeners_.begin(),
+                 unnotified_event_listeners_.end(), listener);
+  if (it != unnotified_event_listeners_.end()) {
+    unnotified_event_listeners_.erase(it);
+  }
+}
+
 Status DevToolsClientImpl::HandleReceivedEvents() {
   return HandleEventsUntil(base::BindRepeating(&ConditionIsMet),
                            Timeout(base::TimeDelta()));
