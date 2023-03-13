@@ -294,16 +294,6 @@ export class Background extends ChromeVoxState {
     }
   }
 
-  /** @private */
-  async setCurrentRangeToFocus_() {
-    const focus = await AsyncUtil.getFocus();
-    if (focus) {
-      ChromeVoxRange.set(CursorRange.fromNode(focus));
-    } else {
-      ChromeVoxRange.set(null);
-    }
-  }
-
   /**
    * @param {!CursorRange} range
    * @param {CursorRange} prevRange
