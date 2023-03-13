@@ -393,31 +393,32 @@ IN_PROC_BROWSER_TEST_F(TracingControllerTest,
   // values are not checked to ensure the test is robust.
   absl::optional<base::Value> trace_json = base::JSONReader::Read(last_data());
   ASSERT_TRUE(trace_json);
-  auto* metadata_json = trace_json->FindDictKey("metadata");
+  ASSERT_TRUE(trace_json->is_dict());
+  auto* metadata_json = trace_json->GetDict().FindDict("metadata");
   ASSERT_TRUE(metadata_json);
 
-  std::string* network_type = metadata_json->FindStringKey("network-type");
+  std::string* network_type = metadata_json->FindString("network-type");
   ASSERT_TRUE(network_type);
   EXPECT_FALSE(network_type->empty());
 
-  std::string* user_agent = metadata_json->FindStringKey("user-agent");
+  std::string* user_agent = metadata_json->FindString("user-agent");
   ASSERT_TRUE(user_agent);
   EXPECT_FALSE(user_agent->empty());
 
-  std::string* os_name = metadata_json->FindStringKey("os-name");
+  std::string* os_name = metadata_json->FindString("os-name");
   ASSERT_TRUE(os_name);
   EXPECT_FALSE(os_name->empty());
 
-  std::string* command_line = metadata_json->FindStringKey("command_line");
+  std::string* command_line = metadata_json->FindString("command_line");
   ASSERT_TRUE(command_line);
   EXPECT_FALSE(command_line->empty());
 
-  std::string* trace_config = metadata_json->FindStringKey("trace-config");
+  std::string* trace_config = metadata_json->FindString("trace-config");
   ASSERT_TRUE(trace_config);
   EXPECT_EQ(TraceConfig().ToString(), *trace_config);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::string* hardware_class = metadata_json->FindStringKey("hardware-class");
+  std::string* hardware_class = metadata_json->FindString("hardware-class");
   ASSERT_TRUE(hardware_class);
   EXPECT_EQ(*hardware_class, "test-hardware-class");
 #endif

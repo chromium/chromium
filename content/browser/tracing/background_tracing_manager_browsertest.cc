@@ -1142,11 +1142,11 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
   absl::optional<base::Value> trace_json =
       base::JSONReader::Read(trace_receiver_helper.json_file_contents());
   ASSERT_TRUE(trace_json);
-  auto* metadata_json = trace_json->FindDictKey("metadata");
+  ASSERT_TRUE(trace_json->is_dict());
+  auto* metadata_json = trace_json->GetDict().FindDict("metadata");
   ASSERT_TRUE(metadata_json);
 
-  const std::string* trace_config =
-      metadata_json->FindStringKey("trace-config");
+  const std::string* trace_config = metadata_json->FindString("trace-config");
   ASSERT_TRUE(trace_config);
   EXPECT_NE(trace_config->find("record-continuously"), trace_config->npos)
       << *trace_config;
@@ -1214,11 +1214,11 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
   absl::optional<base::Value> trace_json =
       base::JSONReader::Read(trace_receiver_helper.json_file_contents());
   ASSERT_TRUE(trace_json);
-  auto* metadata_json = trace_json->FindDictKey("metadata");
+  ASSERT_TRUE(trace_json->is_dict());
+  auto* metadata_json = trace_json->GetDict().FindDict("metadata");
   ASSERT_TRUE(metadata_json);
 
-  const std::string* trace_config =
-      metadata_json->FindStringKey("trace-config");
+  const std::string* trace_config = metadata_json->FindString("trace-config");
   ASSERT_TRUE(trace_config);
   EXPECT_NE(trace_config->find("record-until-full"), trace_config->npos)
       << *trace_config;
