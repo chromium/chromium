@@ -669,7 +669,7 @@ void LayerTreeImpl::DrawChildrenAndAppendQuads(
   gfx::RectF clip(layer.bounds().width(), layer.bounds().height());
   clip.Intersect(clip_in_layer);
   if (!clip_in_layer.IsEmpty() && layer.HasDrawableContent()) {
-    layer.AppendQuads(render_pass, data, transform_to_target,
+    layer.AppendQuads(render_pass, data, transform_to_root, transform_to_target,
                       clip_in_target ? &integer_clip_in_target : nullptr,
                       /*visible_rect=*/gfx::ToEnclosingRect(clip));
   }

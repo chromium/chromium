@@ -153,11 +153,12 @@ void SurfaceLayer::SetSurfaceRange(const viz::SurfaceRange& surface_range) {
 
 void SurfaceLayer::AppendQuads(viz::CompositorRenderPass& render_pass,
                                FrameData& data,
-                               const gfx::Transform& transform,
+                               const gfx::Transform& transform_to_root,
+                               const gfx::Transform& transform_to_target,
                                const gfx::Rect* clip_in_target,
                                const gfx::Rect& visible_rect) {
   viz::SharedQuadState* quad_state = CreateAndAppendSharedQuadState(
-      render_pass, transform, clip_in_target, visible_rect);
+      render_pass, transform_to_target, clip_in_target, visible_rect);
 
   if (surface_range_.IsValid()) {
     auto* quad = render_pass.CreateAndAppendDrawQuad<viz::SurfaceDrawQuad>();
@@ -187,7 +188,7 @@ void SurfaceLayer::AppendQuads(viz::CompositorRenderPass& render_pass,
     hit_test_region.frame_sink_id = surface_range_.end().frame_sink_id();
     hit_test_region.rect = quad_state->visible_quad_layer_rect;
     // False will set transform to identity.
-    bool rv = transform.GetInverse(&hit_test_region.transform);
+    bool rv = transform_to_root.GetInverse(&hit_test_region.transform);
     if (!rv || !hit_test_region.transform.Preserves2dAxisAlignment()) {
       hit_test_region.flags |= viz::HitTestRegionFlags::kHitTestAsk;
       hit_test_region.async_hit_test_reasons |=

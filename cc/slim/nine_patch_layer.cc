@@ -83,7 +83,8 @@ void NinePatchLayer::SetNearestNeighbor(bool nearest_neighbor) {
 
 void NinePatchLayer::AppendQuads(viz::CompositorRenderPass& render_pass,
                                  FrameData& data,
-                                 const gfx::Transform& transform,
+                                 const gfx::Transform& transform_to_root,
+                                 const gfx::Transform& transform_to_target,
                                  const gfx::Rect* clip_in_target,
                                  const gfx::Rect& visible_rect) {
   LayerTreeImpl* layer_tree_impl = static_cast<LayerTreeImpl*>(layer_tree());
@@ -94,7 +95,7 @@ void NinePatchLayer::AppendQuads(viz::CompositorRenderPass& render_pass,
   }
 
   viz::SharedQuadState* quad_state = CreateAndAppendSharedQuadState(
-      render_pass, transform, clip_in_target, visible_rect);
+      render_pass, transform_to_target, clip_in_target, visible_rect);
 
   constexpr gfx::Rect kOcclusion;
   const gfx::Size image_bounds =

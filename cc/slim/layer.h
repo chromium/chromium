@@ -202,9 +202,14 @@ class COMPONENT_EXPORT(CC_SLIM) Layer : public base::RefCounted<Layer> {
   void UpdateDrawsContent();
   virtual bool HasDrawableContent() const;
 
+  // `transform_to_target` is the transform from this layer's space to the
+  // space of target render pass this is layer is drawn to.
+  // `transform_to_root` is similar and transform to the root render pass.
+  // They are the same if this layer draws to the root render pass.
   virtual void AppendQuads(viz::CompositorRenderPass& render_pass,
                            FrameData& data,
-                           const gfx::Transform& transform,
+                           const gfx::Transform& transform_to_root,
+                           const gfx::Transform& transform_to_target,
                            const gfx::Rect* clip_in_target,
                            const gfx::Rect& visible_rect);
 
@@ -212,7 +217,7 @@ class COMPONENT_EXPORT(CC_SLIM) Layer : public base::RefCounted<Layer> {
   void NotifyPropertyChanged();
   virtual viz::SharedQuadState* CreateAndAppendSharedQuadState(
       viz::CompositorRenderPass& render_pass,
-      const gfx::Transform& transform,
+      const gfx::Transform& transform_to_target,
       const gfx::Rect* clip_in_target,
       const gfx::Rect& visible_rect);
 

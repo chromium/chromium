@@ -140,7 +140,8 @@ void UIResourceLayer::SetUIResourceIdInternal(cc::UIResourceId resource_id) {
 
 void UIResourceLayer::AppendQuads(viz::CompositorRenderPass& render_pass,
                                   FrameData& data,
-                                  const gfx::Transform& transform,
+                                  const gfx::Transform& transform_to_root,
+                                  const gfx::Transform& transform_to_target,
                                   const gfx::Rect* clip_in_target,
                                   const gfx::Rect& visible_rect) {
   viz::ResourceId viz_resource_id =
@@ -150,7 +151,7 @@ void UIResourceLayer::AppendQuads(viz::CompositorRenderPass& render_pass,
   }
 
   viz::SharedQuadState* quad_state = CreateAndAppendSharedQuadState(
-      render_pass, transform, clip_in_target, visible_rect);
+      render_pass, transform_to_target, clip_in_target, visible_rect);
 
   viz::TextureDrawQuad* quad =
       render_pass.CreateAndAppendDrawQuad<viz::TextureDrawQuad>();

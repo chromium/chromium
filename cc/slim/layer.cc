@@ -409,7 +409,8 @@ bool Layer::HasFilters() {
 
 void Layer::AppendQuads(viz::CompositorRenderPass& render_pass,
                         FrameData& data,
-                        const gfx::Transform& transform,
+                        const gfx::Transform& transform_to_root,
+                        const gfx::Transform& transform_to_target,
                         const gfx::Rect* clip_in_target,
                         const gfx::Rect& visible_rect) {}
 
@@ -431,7 +432,7 @@ void Layer::NotifyPropertyChanged() {
 
 viz::SharedQuadState* Layer::CreateAndAppendSharedQuadState(
     viz::CompositorRenderPass& render_pass,
-    const gfx::Transform& transform,
+    const gfx::Transform& transform_to_target,
     const gfx::Rect* clip_in_target,
     const gfx::Rect& visible_rect) {
   DCHECK(!HasFilters() || render_pass.filters.IsEmpty());
@@ -444,9 +445,9 @@ viz::SharedQuadState* Layer::CreateAndAppendSharedQuadState(
   if (clip_in_target) {
     clip_opt = *clip_in_target;
   }
-  quad_state->SetAll(transform, layer_rect, visible_rect, gfx::MaskFilterInfo(),
-                     std::move(clip_opt), contents_opaque(), opacity(),
-                     SkBlendMode::kSrcOver, 0);
+  quad_state->SetAll(transform_to_target, layer_rect, visible_rect,
+                     gfx::MaskFilterInfo(), clip_opt, contents_opaque(),
+                     opacity(), SkBlendMode::kSrcOver, 0);
   return quad_state;
 }
 

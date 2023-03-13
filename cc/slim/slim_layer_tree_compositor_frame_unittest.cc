@@ -930,6 +930,46 @@ TEST_F(SlimLayerTreeCompositorFrameTest, SimpleHitTestRegionList) {
   }
 }
 
+TEST_F(SlimLayerTreeCompositorFrameTest, HitTestRegionInNonRootPass) {
+  auto root_layer = CreateSolidColorLayer(viewport_.size(), SkColors::kGray);
+  layer_tree_->SetRoot(root_layer);
+
+  auto filter_layer = Layer::Create();
+  filter_layer->SetBounds(gfx::Size(50, 50));
+  filter_layer->SetPosition(gfx::PointF(10.0f, 10.0f));
+  // Add a filter to force non-root render pass.
+  filter_layer->SetFilters({cc::slim::Filter::CreateBrightness(0.5f)});
+
+  auto surface_layer = SurfaceLayer::Create();
+  surface_layer->SetBounds(gfx::Size(100, 100));
+  surface_layer->SetIsDrawable(true);
+  surface_layer->SetTransform(gfx::Transform::MakeScale(0.5));
+
+  base::UnguessableToken token = base::UnguessableToken::Create();
+  viz::SurfaceId surface_id(viz::FrameSinkId(1u, 2u),
+                            viz::LocalSurfaceId(3u, 4u, token));
+  cc::DeadlinePolicy deadline_policy = cc::DeadlinePolicy::UseDefaultDeadline();
+  surface_layer->SetSurfaceId(surface_id, deadline_policy);
+
+  root_layer->AddChild(filter_layer);
+  filter_layer->AddChild(surface_layer);
+
+  {
+    absl::optional<viz::HitTestRegionList> hit_test_region_list;
+    viz::CompositorFrame frame = ProduceFrame(&hit_test_region_list);
+    ASSERT_TRUE(hit_test_region_list);
+    EXPECT_EQ(hit_test_region_list->bounds, viewport_);
+
+    ASSERT_EQ(hit_test_region_list->regions.size(), 1u);
+    auto& hit_test_region = hit_test_region_list->regions.front();
+    EXPECT_EQ(hit_test_region.frame_sink_id, viz::FrameSinkId(1u, 2u));
+    EXPECT_EQ(hit_test_region.rect, gfx::Rect(100, 100));
+    EXPECT_EQ(hit_test_region.transform,
+              gfx::Transform::MakeScale(2.0f) *
+                  gfx::Transform::MakeTranslation(-10.0f, -10.0f));
+  }
+}
+
 TEST_F(SlimLayerTreeCompositorFrameTest, NonInvertibleTransform) {
   auto root_layer = CreateSolidColorLayer(viewport_.size(), SkColors::kGray);
   layer_tree_->SetRoot(root_layer);
