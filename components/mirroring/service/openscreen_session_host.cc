@@ -320,7 +320,7 @@ OpenscreenSessionHost::OpenscreenSessionHost(
 OpenscreenSessionHost::~OpenscreenSessionHost() {
   StopSession();
 
-  // If we provided access to our nextwork context proxy, we need to clear it.
+  // If we provided access to our network context proxy, we need to clear it.
   if (set_network_context_proxy_) {
     openscreen_platform::ClearNetworkContextGetter();
   }
@@ -468,7 +468,8 @@ void OpenscreenSessionHost::OnNegotiated(
         // This is safe since it is only called synchronously and we own
         // the video sender instance.
         base::BindRepeating(&OpenscreenSessionHost::GetSuggestedVideoBitrate,
-                            base::Unretained(this)));
+                            base::Unretained(this), video_config->min_bitrate,
+                            video_config->max_bitrate));
     video_stream_ = std::make_unique<VideoRtpStream>(
         std::move(video_sender), weak_factory_.GetWeakPtr(),
         mirror_settings_.refresh_interval());
@@ -930,41 +931,49 @@ void OpenscreenSessionHost::ProcessFeedback(
   }
 }
 
-int OpenscreenSessionHost::GetSuggestedVideoBitrate() const {
-  int suggested = bandwidth_being_utilized_;
+int OpenscreenSessionHost::GetSuggestedVideoBitrate(int min_bitrate,
+                                                    int max_bitrate) const {
+  // First take the suggested bitrate based on the current bandwidth
+  // utilization.
+  int suggested = usable_bandwidth_;
   if (audio_stream_) {
     suggested -= audio_stream_->GetEncoderBitrate();
   }
-  return suggested;
+
+  // Then limit it based on the frame sender configuration.
+  // TODO(https://crbug.com/1423486): we should also factor in device
+  // capability when determining which bitrate to use.
+  return std::clamp(suggested, min_bitrate, max_bitrate);
 }
 
 void OpenscreenSessionHost::UpdateBandwidthEstimate() {
-  bandwidth_estimate_ = forced_bandwidth_estimate_ > 0
-                            ? forced_bandwidth_estimate_
-                            : session_->GetEstimatedNetworkBandwidth();
+  int bandwidth_estimate = forced_bandwidth_estimate_for_testing_ > 0
+                               ? forced_bandwidth_estimate_for_testing_
+                               : session_->GetEstimatedNetworkBandwidth();
 
   // Nothing to do yet.
-  if (bandwidth_estimate_ <= 0)
+  if (bandwidth_estimate <= 0) {
     return;
+  }
 
   // Don't ever try to use *all* of the network bandwidth! However, don't go
   // below the absolute minimum requirement either.
   constexpr double kGoodNetworkCitizenFactor = 0.8;
   const int usable_bandwidth = std::max<int>(
-      kGoodNetworkCitizenFactor * bandwidth_estimate_, kMinRequiredBitrate);
+      kGoodNetworkCitizenFactor * bandwidth_estimate, kMinRequiredBitrate);
 
-  if (usable_bandwidth > bandwidth_being_utilized_) {
+  if (usable_bandwidth > usable_bandwidth_) {
     constexpr double kConservativeIncrease = 1.1;
-    bandwidth_being_utilized_ = std::min<int>(
-        bandwidth_being_utilized_ * kConservativeIncrease, usable_bandwidth);
+    usable_bandwidth_ = std::min<int>(usable_bandwidth_ * kConservativeIncrease,
+                                      usable_bandwidth);
   } else {
-    bandwidth_being_utilized_ = usable_bandwidth;
+    usable_bandwidth_ = usable_bandwidth;
   }
 
-  VLOG(2) << ": updated bandwidth to " << bandwidth_being_utilized_ << "/"
-          << bandwidth_estimate_ << " ("
-          << static_cast<int>(static_cast<float>(bandwidth_being_utilized_) *
-                              100 / bandwidth_estimate_)
+  VLOG(2) << ": updated available bandwidth to " << usable_bandwidth_ << "/"
+          << bandwidth_estimate << " ("
+          << static_cast<int>(static_cast<float>(usable_bandwidth_) * 100 /
+                              bandwidth_estimate)
           << "%).";
 }
 

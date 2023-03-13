@@ -736,32 +736,42 @@ TEST_F(OpenscreenSessionHostTest, UpdateBandwidthEstimate) {
   CreateSession(SessionType::VIDEO_ONLY);
   StartSession();
 
+  constexpr int kMinVideoBitrate = 393216;
+  constexpr int kMaxVideoBitrate = 1250000;
   // Default bitrate should be twice the minimum.
-  EXPECT_EQ(786432, session_host().GetSuggestedVideoBitrate());
+  EXPECT_EQ(786432, session_host().GetSuggestedVideoBitrate(kMinVideoBitrate,
+                                                            kMaxVideoBitrate));
 
   // If the estimate is below the minimum, it should stay at the minimum.
-  session_host().forced_bandwidth_estimate_ = 1000;
+  session_host().forced_bandwidth_estimate_for_testing_ = 1000;
   session_host().UpdateBandwidthEstimate();
-  EXPECT_EQ(393216, session_host().GetSuggestedVideoBitrate());
+  EXPECT_EQ(kMinVideoBitrate, session_host().GetSuggestedVideoBitrate(
+                                  kMinVideoBitrate, kMaxVideoBitrate));
 
-  // It should go up gradually instead of all the way to the max.
-  session_host().forced_bandwidth_estimate_ = 1000000;
+  // It should gradually reach the max bandwidth estimate when raised.
+  session_host().forced_bandwidth_estimate_for_testing_ = 1000000;
   session_host().UpdateBandwidthEstimate();
-  EXPECT_EQ(432537, session_host().GetSuggestedVideoBitrate());
-
-  session_host().UpdateBandwidthEstimate();
-  EXPECT_EQ(475790, session_host().GetSuggestedVideoBitrate());
-
-  session_host().UpdateBandwidthEstimate();
-  EXPECT_EQ(523369, session_host().GetSuggestedVideoBitrate());
+  EXPECT_EQ(432537, session_host().GetSuggestedVideoBitrate(kMinVideoBitrate,
+                                                            kMaxVideoBitrate));
 
   session_host().UpdateBandwidthEstimate();
-  EXPECT_EQ(575705, session_host().GetSuggestedVideoBitrate());
+  EXPECT_EQ(475790, session_host().GetSuggestedVideoBitrate(kMinVideoBitrate,
+                                                            kMaxVideoBitrate));
+  for (int i = 0; i < 20; ++i) {
+    session_host().UpdateBandwidthEstimate();
+  }
+  // The max should be 80% of `forced_bandwidth_estimate_for_testing_`.
+  EXPECT_EQ(800000, session_host().GetSuggestedVideoBitrate(kMinVideoBitrate,
+                                                            kMaxVideoBitrate));
 
-  // Should continue to climb at a reasonable rate if the estimate goes up.
-  session_host().forced_bandwidth_estimate_ = 10000000;
-  session_host().UpdateBandwidthEstimate();
-  EXPECT_EQ(633275, session_host().GetSuggestedVideoBitrate());
+  // The video bitrate should stay saturated at the cap when reached.
+  session_host().forced_bandwidth_estimate_for_testing_ = kMaxVideoBitrate + 1;
+  for (int i = 0; i < 20; ++i) {
+    session_host().UpdateBandwidthEstimate();
+  }
+  // The max should be 80% of `kMaxVideoBitrate`.
+  EXPECT_EQ(1000000, session_host().GetSuggestedVideoBitrate(kMinVideoBitrate,
+                                                             kMaxVideoBitrate));
 
   StopSession();
 }
