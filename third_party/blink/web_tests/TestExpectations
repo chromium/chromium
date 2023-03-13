@@ -6884,12 +6884,3 @@ crbug.com/1414607 http/tests/devtools/tracing/timeline-js/timeline-js-line-level
 
 crbug.com/1409713 virtual/view-transition/external/wpt/css/css-view-transitions/content-with-clip-max-texture-size.html [ Failure ]
 crbug.com/1409713 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/content-with-clip-max-texture-size.html [ Failure ]
-
-# Sheriff 2023-03-08
-crbug.com/1422630 external/wpt/long-animation-frame/tentative/loaf-promise.html [ Failure ]
-crbug.com/1422630 external/wpt/long-animation-frame/tentative/loaf-script-block.html [ Failure ]
-
-# Sheriff 2023-03-09
-crbug.com/1422653 external/wpt/long-animation-frame/tentative/* [ Failure Pass ]
-crbug.com/1422653 virtual/threaded/external/wpt/long-animation-frame/tentative/* [ Failure Pass ]
-
