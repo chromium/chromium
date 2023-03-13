@@ -23989,7 +23989,7 @@ be describing additional metrics about the same event.
     Features of a web app recorded at most once per day if a user interacted
     with the web app. Recorded for installed and/or promotable (installable) web
     apps unless noted otherwise on the metric. Keyed by start_url of the app.
-    Note: Changed in Feb 2022 to only record when App sync is enabled.
+    Note: Changed in Feb 2023 to only record when App sync is enabled.
   </summary>
   <metric name="BackgroundDuration">
     <summary>
