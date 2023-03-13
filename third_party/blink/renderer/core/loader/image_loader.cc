@@ -676,13 +676,8 @@ void ImageLoader::UpdateFromElement(UpdateFromElementBehavior update_behavior,
     if (image) {
       image->RemoveObserver(this);
     }
-    image_content_ = nullptr;
-    image_content_for_image_document_ = nullptr;
-    delay_until_image_notify_finished_ = nullptr;
-    if (lazy_image_load_state_ != LazyImageLoadState::kNone) {
-      LazyImageHelper::StopMonitoring(GetElement());
-      lazy_image_load_state_ = LazyImageLoadState::kNone;
-    }
+    UpdateImageState(nullptr);
+    lazy_image_load_state_ = LazyImageLoadState::kNone;
   }
 
   // Don't load images for inactive documents or active documents without V8
@@ -953,6 +948,7 @@ void ImageLoader::LoadDeferredImage(bool force_blocking,
   if (lazy_image_load_state_ != LazyImageLoadState::kDeferred)
     return;
   DCHECK(!image_complete_);
+  LazyImageHelper::StopMonitoring(GetElement());
   lazy_image_load_state_ = LazyImageLoadState::kFullImage;
 
   // If the image has been fully deferred (no placeholder fetch), report it as
