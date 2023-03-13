@@ -8,8 +8,10 @@
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -129,6 +131,45 @@ IN_PROC_BROWSER_TEST_F(BrowserDataBackMigratorOnSignIn,
   profile_prepared.Wait();
   EXPECT_FALSE(FakeSessionManagerClient::Get()
                    ->request_browser_data_backward_migration_called());
+}
+
+class BrowserDataBackMigratorForKiosk : public KioskBaseTest {
+ public:
+  BrowserDataBackMigratorForKiosk() = default;
+  BrowserDataBackMigratorForKiosk(BrowserDataBackMigratorForKiosk&) = delete;
+  BrowserDataBackMigratorForKiosk& operator=(BrowserDataBackMigratorForKiosk&) =
+      delete;
+  ~BrowserDataBackMigratorForKiosk() override = default;
+
+  void SetUp() override {
+    feature_list_.InitWithFeatures(
+        {ash::features::kLacrosProfileBackwardMigration}, {});
+
+    KioskBaseTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(BrowserDataBackMigratorForKiosk, MigrateOnKioskLaunch) {
+  // Register the test app with `KioskAppManager` so that the `AccountId` can be
+  // retrieved.
+  PrepareAppLaunch();
+  KioskAppManager::App app;
+  CHECK(KioskAppManager::Get());
+  CHECK(KioskAppManager::Get()->GetApp(test_app_id(), &app));
+  CreateLacrosDirectoryForProfile(app.account_id);
+
+  base::RunLoop run_loop;
+  ScopedBackMigratorRestartAttemptForTesting
+      scoped_back_migrator_restart_attempt(
+          base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
+  StartAppLaunchFromLoginScreen(
+      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+  run_loop.Run();
+  EXPECT_TRUE(FakeSessionManagerClient::Get()
+                  ->request_browser_data_backward_migration_called());
 }
 
 }  // namespace ash
