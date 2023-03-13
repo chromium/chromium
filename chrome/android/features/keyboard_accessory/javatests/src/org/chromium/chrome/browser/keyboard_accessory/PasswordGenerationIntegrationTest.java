@@ -123,7 +123,6 @@ public class PasswordGenerationIntegrationTest {
 
     @Test
     @IntegrationTest
-    @DisabledTest(message = "crbug.com/1422975")
     public void testAutomaticGenerationCancel() throws InterruptedException, TimeoutException {
         waitForGenerationLabel();
         focusField(PASSWORD_NODE_ID);
