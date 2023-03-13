@@ -10608,6 +10608,21 @@
             ]
         }
     ],
+    "RetryGetVideoCaptureDeviceInfos": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RetryGetVideoCaptureDeviceInfos"
+                    ]
+                }
+            ]
+        }
+    ],
     "RunTasksByBatches": [
         {
             "platforms": [
