@@ -11745,9 +11745,11 @@ interface XRSession : EventTarget
     getter domOverlayState
     getter enabledFeatures
     getter environmentBlendMode
+    getter frameRate
     getter inputSources
     getter interactionMode
     getter onend
+    getter onframeratechange
     getter oninputsourceschange
     getter onselect
     getter onselectend
@@ -11758,6 +11760,7 @@ interface XRSession : EventTarget
     getter onvisibilitychange
     getter preferredReflectionFormat
     getter renderState
+    getter supportedFrameRates
     getter visibilityState
     method cancelAnimationFrame
     method constructor
@@ -11769,7 +11772,9 @@ interface XRSession : EventTarget
     method requestLightProbe
     method requestReferenceSpace
     method updateRenderState
+    method updateTargetFrameRate
     setter onend
+    setter onframeratechange
     setter oninputsourceschange
     setter onselect
     setter onselectend

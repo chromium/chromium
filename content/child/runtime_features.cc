@@ -313,6 +313,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableWebXR, raw_ref(features::kWebXr)},
 #if BUILDFLAG(ENABLE_VR)
     {wf::EnableWebXRFrontFacing, raw_ref(device::features::kWebXrIncubations)},
+    {wf::EnableWebXRFrameRate, raw_ref(device::features::kWebXrIncubations)},
     {wf::EnableWebXRHandInput, raw_ref(device::features::kWebXrHandInput)},
     {wf::EnableWebXRImageTracking,
      raw_ref(device::features::kWebXrIncubations)},

@@ -119,6 +119,9 @@ const char kImageTrackingFeatureNotSupported[] =
 const char kEntityTypesNotSpecified[] =
     "No entityTypes specified: the array cannot be empty!";
 
+const char kSessionNotHaveSetFrameRate[] =
+    "Session does not have a set frame rate.";
+
 const float kMinDefaultFramebufferScale = 0.1f;
 const float kMaxDefaultFramebufferScale = 1.0f;
 
@@ -588,6 +591,13 @@ void XRSession::UpdateStageParameters(
     stage_parameters_id_ = stage_parameters_id;
     stage_parameters_ = stage_parameters.Clone();
   }
+}
+
+ScriptPromise XRSession::updateTargetFrameRate(float rate,
+    ExceptionState& exception_state) {
+  exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                    kSessionNotHaveSetFrameRate);
+  return ScriptPromise();
 }
 
 ScriptPromise XRSession::requestReferenceSpace(

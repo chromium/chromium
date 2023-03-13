@@ -3900,6 +3900,13 @@
       status: "stable",
     },
     {
+      name: "WebXRFrameRate",
+      depends_on: ["WebXR"],
+      public: true,
+      status: "experimental",
+      base_feature: "none",
+    },
+    {
       name: "WebXRFrontFacing",
       depends_on: ["WebXR"],
       public: true,

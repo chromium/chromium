@@ -11,10 +11,12 @@
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_light_probe_init.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/xr/xr_frame_request_callback_collection.h"
 #include "third_party/blink/renderer/modules/xr/xr_input_source.h"
 #include "third_party/blink/renderer/modules/xr/xr_input_source_array.h"
@@ -132,6 +134,8 @@ class XRSession final
   const String& interactionMode() const { return interaction_mode_string_; }
   XRDOMOverlayState* domOverlayState() const { return dom_overlay_state_; }
   const String visibilityState() const;
+  absl::optional<float> frameRate() const { return absl::nullopt; }
+  DOMFloat32Array* supportedFrameRates() const { return nullptr; }
   XRRenderState* renderState() const { return render_state_; }
 
   // ARCore by default returns textures in RGBA half-float HDR format and no
@@ -157,12 +161,16 @@ class XRSession final
   DEFINE_ATTRIBUTE_EVENT_LISTENER(squeeze, kSqueeze)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(squeezestart, kSqueezestart)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(squeezeend, kSqueezeend)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(frameratechange, kFrameratechange)
 
   void updateRenderState(XRRenderStateInit* render_state_init,
                          ExceptionState& exception_state);
 
   const String& depthUsage(ExceptionState& exception_state);
   const String& depthDataFormat(ExceptionState& exception_state);
+
+  ScriptPromise updateTargetFrameRate(float rate,
+                                      ExceptionState&);
 
   ScriptPromise requestReferenceSpace(ScriptState* script_state,
                                       const String& type,
