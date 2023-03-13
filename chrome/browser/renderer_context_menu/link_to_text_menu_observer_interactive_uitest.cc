@@ -36,16 +36,13 @@ class MockLinkToTextMenuObserver : public LinkToTextMenuObserver {
       return nullptr;
     }
 
-    return base::WrapUnique(new MockLinkToTextMenuObserver(
-        proxy, render_frame_host_id, base::BindOnce([]() {})));
+    return base::WrapUnique(
+        new MockLinkToTextMenuObserver(proxy, render_frame_host_id));
   }
   MockLinkToTextMenuObserver(
       RenderViewContextMenuProxy* proxy,
-      content::GlobalRenderFrameHostId render_frame_host_id,
-      CompletionCallback callback)
-      : LinkToTextMenuObserver(proxy,
-                               render_frame_host_id,
-                               std::move(callback)) {}
+      content::GlobalRenderFrameHostId render_frame_host_id)
+      : LinkToTextMenuObserver(proxy, render_frame_host_id) {}
 
   void SetGenerationResults(
       std::string selector,

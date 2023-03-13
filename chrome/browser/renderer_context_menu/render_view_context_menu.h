@@ -357,11 +357,6 @@ class RenderViewContextMenu
   // ProtocolHandlerRegistry::Observer:
   void OnProtocolHandlerRegistryChanged() override;
 
-  // Cleans |link_to_text_menu_observer_|. It is useful to clean unused
-  // resources as |RenderViewContextMenu| gets destroyed only with next context
-  // menu is opened.
-  void OnLinkToTextMenuCompleted();
-
   // Whether or not translation on this page can be triggered. This method
   // checks multiple criteria, e.g. whether translation is disabled by a policy
   // or whether the current page can be translated.

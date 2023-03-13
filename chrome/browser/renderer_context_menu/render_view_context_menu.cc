@@ -1927,9 +1927,7 @@ void RenderViewContextMenu::AppendLinkToTextItems() {
 
   link_to_text_menu_observer_ = LinkToTextMenuObserver::Create(
       this,
-      content::GlobalRenderFrameHostId(render_process_id_, render_frame_id_),
-      base::BindOnce(&RenderViewContextMenu::OnLinkToTextMenuCompleted,
-                     weak_pointer_factory_.GetWeakPtr()));
+      content::GlobalRenderFrameHostId(render_process_id_, render_frame_id_));
   if (link_to_text_menu_observer_) {
     observers_.AddObserver(link_to_text_menu_observer_.get());
     link_to_text_menu_observer_->InitMenu(params_);
@@ -3990,11 +3988,6 @@ void RenderViewContextMenu::PluginActionAt(
 
 Browser* RenderViewContextMenu::GetBrowser() const {
   return chrome::FindBrowserWithWebContents(embedder_web_contents_);
-}
-
-void RenderViewContextMenu::OnLinkToTextMenuCompleted() {
-  observers_.RemoveObserver(link_to_text_menu_observer_.get());
-  link_to_text_menu_observer_.reset();
 }
 
 bool RenderViewContextMenu::CanTranslate(bool menu_logging) {
