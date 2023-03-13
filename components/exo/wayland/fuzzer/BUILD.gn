@@ -76,7 +76,7 @@ wayland_templater("corpus") {
   script_override = "wayland_sequencer.py"
 }
 
-if (use_libfuzzer) {
+if (use_fuzzing_engine_with_lpm) {
   fuzzer_test("wayland_fuzzer") {
     sources = [ "fuzzer.cc" ]
 
