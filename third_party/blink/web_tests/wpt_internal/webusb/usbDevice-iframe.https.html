@@ -45,7 +45,7 @@ usb_test(() => {
         }
       };
 
-      iframe.contentWindow.postMessage('Ready', '*');
+      iframe.contentWindow.postMessage('ConnectEvent', '*');
     });
   });
 }, 'events are not delivered to detached frames');
