@@ -120,12 +120,16 @@ class SegmentationPlatformTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(SegmentationPlatformTest, PRE_RunDefaultModel) {
+  // Model is not run yet, the result is not available.
+  ExpectSegmentSelectionResult(kChromeLowUserEngagementSegmentationKey,
+                               /*result_expected=*/false);
+
   WaitForPlatformInit();
   // The default model is executed and result stored in prefs.
   WaitForPrefUpdate();
 
-  // The result from platform is not available since it only returns result from
-  // a previous session.
+  // The service returns the same result during the session as the previous call
+  // even if model was run.
   ExpectSegmentSelectionResult(kChromeLowUserEngagementSegmentationKey,
                                /*result_expected=*/false);
 }
