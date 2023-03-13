@@ -1846,5 +1846,14 @@
     ],
     "args": ["--disable-blink-features=RTCLegacyCallbackBasedGetStats"],
     "expires": "Dec 21, 2023"
+  },
+  {
+    "prefix": "allow-rtc-encoded-video-frame-set-metadata-csrcs",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "fast/peerconnection/RTCEncodedVideoFrame-set-metadata.html"
+    ],
+    "args": ["--enable-features=AllowRTCEncodedVideoFrameSetMetadataCsrcs"],
+    "expires": "Jul 1, 2023"
   }
 ]

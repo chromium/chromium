@@ -25,6 +25,11 @@ BASE_FEATURE(kAllowRTCEncodedVideoFrameSetMetadataAllFields,
              "AllowRTCEncodedVideoFrameSetMetadataAllFields",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Allow CSRCs to be set when calling RTCEncodedVideoFrame.setMetadata.
+BASE_FEATURE(kAllowRTCEncodedVideoFrameSetMetadataCsrcs,
+             "AllowRTCEncodedVideoFrameSetMetadataCsrcs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 V8RTCDecodeTargetIndication
 V8RTCDecodeTargetIndicationFromDecodeTargetIndication(
     webrtc::DecodeTargetIndication decode_target_indication) {
@@ -188,8 +193,10 @@ void SetCodecSpecificsVP8(webrtc::VideoFrameMetadata& webrtc_metadata,
 bool IsAllowedSetMetadataChange(
     const RTCEncodedVideoFrameMetadata* original_metadata,
     const RTCEncodedVideoFrameMetadata* metadata) {
-  return metadata->contributingSources() ==
-             original_metadata->contributingSources() &&
+  return (metadata->contributingSources() ==
+              original_metadata->contributingSources() ||
+          base::FeatureList::IsEnabled(
+              kAllowRTCEncodedVideoFrameSetMetadataCsrcs)) &&
          (metadata->hasFrameId() == original_metadata->hasFrameId() &&
           (metadata->hasFrameId()
                ? metadata->frameId() == original_metadata->frameId()
