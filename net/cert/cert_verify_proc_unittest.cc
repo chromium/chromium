@@ -4365,6 +4365,17 @@ TEST_P(CertVerifyProcConstraintsTest, BasicConstraintsNotPresentRoot) {
   }
 }
 
+TEST_P(CertVerifyProcConstraintsTest, BasicConstraintsNotPresentRootX509V1) {
+  chain_[3]->SetCertificateVersion(CertificateVersion::V1);
+  chain_[3]->ClearExtensions();
+
+  EXPECT_THAT(Verify(), IsOk());
+  if (VerifyProcTypeIsBuiltin()) {
+    EXPECT_THAT(VerifyWithExpiryAndConstraints(), IsOk());
+    EXPECT_THAT(VerifyWithExpiryAndFullConstraints(), IsOk());
+  }
+}
+
 TEST_P(CertVerifyProcConstraintsTest, BasicConstraintsNotPresentIntermediate) {
   chain_[2]->EraseExtension(der::Input(kBasicConstraintsOid));
 

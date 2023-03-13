@@ -6,6 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -361,6 +362,11 @@ std::vector<uint8_t> CertBuilder::BuildNameWithCommonNameOfType(
   return FinishCBBToVector(cbb.get());
 }
 
+void CertBuilder::SetCertificateVersion(CertificateVersion version) {
+  version_ = version;
+  Invalidate();
+}
+
 void CertBuilder::SetExtension(const der::Input& oid,
                                std::string value,
                                bool critical) {
@@ -374,6 +380,11 @@ void CertBuilder::SetExtension(const der::Input& oid,
 void CertBuilder::EraseExtension(const der::Input& oid) {
   extensions_.erase(oid.AsString());
 
+  Invalidate();
+}
+
+void CertBuilder::ClearExtensions() {
+  extensions_.clear();
   Invalidate();
 }
 
@@ -1103,9 +1114,17 @@ void CertBuilder::InitFromCert(const der::Input& cert) {
   ASSERT_TRUE(certificate.ReadSequence(&tbs_certificate));
 
   // version
-  bool unused;
+  bool has_version;
   ASSERT_TRUE(tbs_certificate.SkipOptionalTag(
-      der::kTagConstructed | der::kTagContextSpecific | 0, &unused));
+      der::kTagConstructed | der::kTagContextSpecific | 0, &has_version));
+  if (has_version) {
+    // TODO(mattm): could actually parse the version here instead of assuming
+    // V3.
+    version_ = CertificateVersion::V3;
+  } else {
+    version_ = CertificateVersion::V1;
+  }
+
   // serialNumber
   ASSERT_TRUE(tbs_certificate.SkipTag(der::kInteger));
 
@@ -1135,6 +1154,7 @@ void CertBuilder::InitFromCert(const der::Input& cert) {
   default_pkey_id_ = EVP_PKEY_id(public_key.get());
 
   // issuerUniqueID
+  bool unused;
   ASSERT_TRUE(tbs_certificate.SkipOptionalTag(der::ContextSpecificPrimitive(1),
                                               &unused));
   // subjectUniqueID
@@ -1164,11 +1184,21 @@ void CertBuilder::BuildTBSCertificate(base::StringPiece signature_algorithm_tlv,
 
   ASSERT_TRUE(CBB_init(cbb.get(), 64));
   ASSERT_TRUE(CBB_add_asn1(cbb.get(), &tbs_cert, CBS_ASN1_SEQUENCE));
-  ASSERT_TRUE(
-      CBB_add_asn1(&tbs_cert, &version,
-                   CBS_ASN1_CONTEXT_SPECIFIC | CBS_ASN1_CONSTRUCTED | 0));
-  // Always use v3 certificates.
-  ASSERT_TRUE(CBB_add_asn1_uint64(&version, 2));
+  if (version_ != CertificateVersion::V1) {
+    ASSERT_TRUE(
+        CBB_add_asn1(&tbs_cert, &version,
+                     CBS_ASN1_CONTEXT_SPECIFIC | CBS_ASN1_CONSTRUCTED | 0));
+    switch (version_) {
+      case CertificateVersion::V2:
+        ASSERT_TRUE(CBB_add_asn1_uint64(&version, 1));
+        break;
+      case CertificateVersion::V3:
+        ASSERT_TRUE(CBB_add_asn1_uint64(&version, 2));
+        break;
+      case CertificateVersion::V1:
+        NOTREACHED_NORETURN();
+    }
+  }
   ASSERT_TRUE(CBB_add_asn1_uint64(&tbs_cert, GetSerialNumber()));
   ASSERT_TRUE(CBBAddBytes(&tbs_cert, signature_algorithm_tlv));
   ASSERT_TRUE(CBBAddBytes(&tbs_cert, issuer_tlv_.has_value()
