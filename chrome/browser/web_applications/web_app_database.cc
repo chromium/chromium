@@ -1523,8 +1523,6 @@ void WebAppDatabase::OnDatabaseOpened(
   }
 
   store_ = std::move(store);
-  // TODO(loyso): Use ReadAllDataAndPreprocess to parse protos in the background
-  // sequence.
   store_->ReadAllData(base::BindOnce(&WebAppDatabase::OnAllDataRead,
                                      weak_ptr_factory_.GetWeakPtr(),
                                      std::move(callback)));

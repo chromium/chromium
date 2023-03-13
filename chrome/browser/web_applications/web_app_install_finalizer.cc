@@ -274,8 +274,6 @@ void WebAppInstallFinalizer::UninstallExternalWebAppByUrl(
 bool WebAppInstallFinalizer::CanUserUninstallWebApp(const AppId& app_id) const {
   DCHECK(started_);
 
-  // TODO(loyso): Policy Apps: Implement ManagementPolicy taking
-  // extensions::ManagementPolicy::UserMayModifySettings as inspiration.
   const WebApp* app = GetWebAppRegistrar().GetAppById(app_id);
   return app ? app->CanUserUninstallWebApp() : false;
 }

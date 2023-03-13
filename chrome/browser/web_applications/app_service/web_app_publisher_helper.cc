@@ -731,7 +731,7 @@ apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
 apps::AppPtr WebAppPublisherHelper::ConvertUninstalledWebApp(
     const WebApp* web_app) {
   auto app = std::make_unique<apps::App>(app_type(), web_app->app_id());
-  // TODO(loyso): Plumb uninstall source (reason) here.
+  // TODO(crbug.com/1423775): Plumb uninstall source (reason) here.
   app->readiness = apps::Readiness::kUninstalledByUser;
 
   SetWebAppShowInFields(web_app, *app);

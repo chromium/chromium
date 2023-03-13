@@ -455,9 +455,6 @@ void WebAppSyncBridge::UpdateSync(
     // Include the app in the sync "view" if IsSynced flag becomes true. Update
     // the app if IsSynced flag stays true. Exclude the app from the sync "view"
     // if IsSynced flag becomes false.
-    //
-    // TODO(loyso): Send an update to sync server only if any sync-specific
-    // data was changed. Implement some dirty flags in WebApp setter methods.
     if (new_state->IsSynced()) {
       change_processor()->Put(app_id, CreateSyncEntityData(*new_state),
                               metadata_change_list);

@@ -5703,7 +5703,7 @@ static_library("ui") {
     deps += [
       "//apps",
       "//chrome/browser/apps:icon_standardizer",
-      "//chrome/browser/apps/platform_apps",  # TODO(loyso): Remove this dep.
+      "//chrome/browser/apps/platform_apps",
       "//chrome/browser/apps/platform_apps/api",
       "//chrome/browser/extensions",
       "//chrome/browser/web_share_target",

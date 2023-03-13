@@ -134,7 +134,6 @@ void WebAppDataRetriever::GetIcons(content::WebContents* web_contents,
   CHECK(!get_icons_callback_);
   get_icons_callback_ = std::move(callback);
 
-  // TODO(loyso): Refactor WebAppIconDownloader: crbug.com/907296.
   icon_downloader_ = std::make_unique<WebAppIconDownloader>(
       web_contents, std::move(icon_urls),
       base::BindOnce(&WebAppDataRetriever::OnIconsDownloaded,

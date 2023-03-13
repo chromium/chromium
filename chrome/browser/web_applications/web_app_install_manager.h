@@ -46,7 +46,6 @@ class WebAppSyncBridge;
 class WebAppTranslationManager;
 class WebAppIconManager;
 
-// TODO(loyso): Unify the API and merge similar InstallWebAppZZZZ functions.
 class WebAppInstallManager {
  public:
   explicit WebAppInstallManager(Profile* profile);

@@ -299,7 +299,6 @@ std::vector<WebAppShortcutsMenuItemInfo> CreateShortcutsMenuItemInfos(
 }
 
 std::string GenerateApplicationNameFromInfo(const ShortcutInfo& shortcut_info) {
-  // TODO(loyso): Remove this empty()/non-empty difference.
   if (shortcut_info.app_id.empty()) {
     return GenerateApplicationNameFromURL(shortcut_info.url);
   }
