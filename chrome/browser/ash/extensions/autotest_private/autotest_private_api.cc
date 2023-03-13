@@ -1407,6 +1407,17 @@ ExtensionFunction::ResponseAction AutotestPrivateLoginStatusFunction::Run() {
                                        ->IsAnimating());
     result.Set("isReadyForPassword",
                ash::LoginScreen::Get()->IsReadyForPassword());
+
+    const user_manager::UserList& users = user_manager->GetUsers();
+    bool user_images_loaded = true;
+    for (const user_manager::User* user : users) {
+      if (user->image_is_loading()) {
+        user_images_loaded = false;
+        break;
+      }
+    }
+    result.Set("areAllUserImagesLoaded", user_images_loaded);
+
     if (user_manager->IsUserLoggedIn()) {
       result.Set("isRegularUser",
                  user_manager->IsLoggedInAsUserWithGaiaAccount());
