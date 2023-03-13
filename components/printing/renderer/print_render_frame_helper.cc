@@ -2316,12 +2316,11 @@ bool PrintRenderFrameHelper::PrintPagesNative(
   const mojom::PrintPagesParams& params = *print_pages_params_;
   const mojom::PrintParams& print_params = *params.params;
 
+  // Provide a typeface context to use with serializing to the print compositor.
+  ContentProxySet typeface_content_info;
   MetafileSkia metafile(print_params.printed_doc_type,
                         print_params.document_cookie);
   CHECK(metafile.Init());
-
-  // Provide a typeface context to use with serializing to the print compositor.
-  ContentProxySet typeface_content_info;
   metafile.UtilizeTypefaceContext(&typeface_content_info);
 
   // If tagged PDF exporting is enabled, we also need to capture an
