@@ -19,7 +19,6 @@
 #include "build/build_config.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
-#include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type_histogram.h"
 #include "components/sync/base/features.h"
@@ -29,10 +28,10 @@
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/model_type_processor_metrics.h"
 #include "components/sync/engine/model_type_processor_proxy.h"
-#include "components/sync/engine/model_type_worker.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/type_entities_count.h"
 #include "components/sync/protocol/bookmark_model_metadata.pb.h"
+#include "components/sync/protocol/model_type_state_helper.h"
 #include "components/sync/protocol/proto_value_conversions.h"
 #include "components/sync_bookmarks/bookmark_local_changes_builder.h"
 #include "components/sync_bookmarks/bookmark_model_merger.h"
@@ -40,7 +39,6 @@
 #include "components/sync_bookmarks/bookmark_remote_updates_handler.h"
 #include "components/sync_bookmarks/bookmark_specifics_conversions.h"
 #include "components/sync_bookmarks/parent_guid_preprocessing.h"
-#include "components/sync_bookmarks/switches.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker_entity.h"
 #include "components/undo/bookmark_undo_utils.h"
 #include "ui/base/models/tree_node_iterator.h"
@@ -342,6 +340,9 @@ void BookmarkModelTypeProcessor::ModelReadyToSync(
 
   sync_pb::BookmarkModelMetadata model_metadata;
   model_metadata.ParseFromString(metadata_str);
+
+  syncer::MigrateLegacyInitialSyncDone(
+      *model_metadata.mutable_model_type_state(), syncer::BOOKMARKS);
 
   if (pending_clear_metadata_) {
     pending_clear_metadata_ = false;

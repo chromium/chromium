@@ -64,8 +64,11 @@ class UpdateHandler {
       const SyncEntityList& applicable_updates,
       StatusController* status) = 0;
 
-  // Called at the end of a GetUpdates loop to apply any unapplied updates.
-  virtual void ApplyUpdates(StatusController* status) = 0;
+  // Called whenever any unapplied updates should be applied. This is usually
+  // at the end of a sync cycle, but for data types in
+  // ApplyUpdatesImmediatelyTypes() it already happens while the download loop
+  // is still ongoing.
+  virtual void ApplyUpdates(StatusController* status, bool cycle_done) = 0;
 };
 
 }  // namespace syncer

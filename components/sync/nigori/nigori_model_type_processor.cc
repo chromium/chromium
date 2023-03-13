@@ -14,12 +14,12 @@
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/forwarding_model_type_processor.h"
 #include "components/sync/engine/model_type_processor_metrics.h"
-#include "components/sync/engine/model_type_worker.h"
 #include "components/sync/model/processor_entity.h"
 #include "components/sync/model/type_entities_count.h"
 #include "components/sync/nigori/nigori_sync_bridge.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/model_type_state_helper.h"
 #include "components/sync/protocol/proto_memory_estimations.h"
 #include "components/sync/protocol/proto_value_conversions.h"
 
@@ -313,6 +313,8 @@ void NigoriModelTypeProcessor::ModelReadyToSync(
   if (model_error_) {
     return;
   }
+
+  MigrateLegacyInitialSyncDone(nigori_metadata.model_type_state, NIGORI);
 
   if (nigori_metadata.model_type_state.initial_sync_done() &&
       nigori_metadata.entity_metadata) {
