@@ -42401,6 +42401,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4493" label="DanglingMarkupInTarget"/>
   <int value="4494" label="DanglingMarkupInTargetNotEndsWithGT"/>
   <int value="4495" label="DanglingMarkupInTargetNotEndsWithNewLineOrGT"/>
+  <int value="4496" label="AttributionFencedFrameReportingBeacon"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

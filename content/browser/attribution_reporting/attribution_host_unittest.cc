@@ -14,6 +14,7 @@
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_beacon_id.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
+#include "content/browser/attribution_reporting/attribution_features.h"
 #include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
@@ -581,7 +582,28 @@ TEST_F(AttributionHostTest, DataHost_RegisteredWithFencedFrame) {
   EXPECT_FALSE(bad_message_observer.got_bad_message());
 }
 
+TEST_F(AttributionHostTest, FeatureDisabled_FencedFrameReportingBeaconDropped) {
+  contents()->NavigateAndCommit(GURL("https:/secure.com"));
+
+  EXPECT_CALL(*mock_data_host_manager(),
+              NotifyFencedFrameReportingBeaconStarted)
+      .Times(0);
+
+  RenderFrameHost* fenced_frame =
+      RenderFrameHostTester::For(main_rfh())
+          ->AppendFencedFrame(blink::mojom::FencedFrameMode::kOpaqueAds);
+  fenced_frame = NavigationSimulatorImpl::NavigateAndCommitFromDocument(
+      GURL("https://fencedframe.example"), fenced_frame);
+
+  conversion_host()->NotifyFencedFrameReportingBeaconStarted(
+      NavigationBeaconId(123), static_cast<RenderFrameHostImpl*>(fenced_frame));
+}
+
 TEST_F(AttributionHostTest, NotifyFencedFrameReportingBeaconStarted) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kAttributionFencedFrameReportingBeacon);
+
   const struct {
     const char* source_origin;
     bool expected_valid;
@@ -621,6 +643,10 @@ TEST_F(AttributionHostTest, NotifyFencedFrameReportingBeaconStarted) {
 }
 
 TEST_F(AttributionHostTest, FencedFrameReportingBeacon_FeaturePolicyChecked) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kAttributionFencedFrameReportingBeacon);
+
   contents()->NavigateAndCommit(GURL("https://secure.com"));
 
   RenderFrameHost* fenced_frame =
