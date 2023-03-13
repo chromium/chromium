@@ -19,6 +19,7 @@ source_set("credential_provider_promo") {
   deps = [
     ":credential_provider_promo_ui",
     "//base",
+    "//components/feature_engagement/public",
     "//components/prefs",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/application_context",

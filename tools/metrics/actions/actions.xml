@@ -36841,6 +36841,11 @@ should be able to be added at any place in this file.
       label="For iOSDefaultBrowserOverflowMenuBadge feature"/>
   <suffix name="iOSDefaultBrowserSettingsBadge"
       label="For iOSDefaultBrowserSettingsBadge feature"/>
+  <suffix name="iOSPromoAppStore" label="For iOSPromoAppStore feature"/>
+  <suffix name="iOSPromoCredentialProviderExtension"
+      label="For iOSPromoCredentialProviderExtension feature"/>
+  <suffix name="iOSPromoPostRestore" label="For iOSPromoPostRestore feature"/>
+  <suffix name="iOSPromoWhatsNew" label="For iOSPromoWhatsNew feature"/>
   <suffix name="KeyboardAccessoryAddressFilling"
       label="For KeyboardAccessoryAddressFilling feature."/>
   <suffix name="KeyboardAccessoryBarSwiping"

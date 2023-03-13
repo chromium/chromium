@@ -8,6 +8,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/feature_engagement/public/feature_constants.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/promos_manager/constants.h"
@@ -57,7 +58,8 @@
 #pragma mark - PromoProtocol
 
 - (PromoConfig)config {
-  return PromoConfig([self identifier]);
+  return PromoConfig([self identifier],
+                     &feature_engagement::kIPHiOSPromoPostRestoreFeature);
 }
 
 - (void)promoWasDisplayed {

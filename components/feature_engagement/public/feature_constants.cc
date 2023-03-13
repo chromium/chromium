@@ -436,12 +436,21 @@ BASE_FEATURE(kIPHiOSDefaultBrowserOverflowMenuBadgeFeature,
 BASE_FEATURE(kIPHiOSDefaultBrowserSettingsBadgeFeature,
              "IPH_iOSDefaultBrowserSettingsBadge",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHiOSAppStorePromoFeature,
-             "IPH_iOSAppStorePromo",
+BASE_FEATURE(kIPHiOSPromoAppStoreFeature,
+             "IPH_iOSPromoAppStore",
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHTabPinnedFeature,
              "IPH_TabPinnedFeature",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHiOSPromoWhatsNewFeature,
+             "IPH_iOSPromoWhatsNew",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHiOSPromoPostRestoreFeature,
+             "IPH_iOSPromoPostRestore",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHiOSPromoCredentialProviderExtensionFeature,
+             "IPH_iOSPromoCredentialProviderExtension",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \

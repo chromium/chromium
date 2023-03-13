@@ -163,6 +163,14 @@ chromium-metrics-reviews@google.com.
       summary="default browser badge promo on the overflow menu"/>
   <variant name="IPH_iOSDefaultBrowserSettingsBadge"
       summary="default browser badge promo on the settings menu row"/>
+  <variant name="IPH_iOSPromoAppStore"
+      summary="showing the App Store Promo on iOS"/>
+  <variant name="IPH_iOSPromoCredentialProviderExtension"
+      summary="showing the Credential Provider Extension Promo on iOS"/>
+  <variant name="IPH_iOSPromoPostRestore"
+      summary="showing the Post Restore Promo on iOS"/>
+  <variant name="IPH_iOSPromoWhatsNew"
+      summary="showing the Whats New Promo on iOS"/>
   <variant name="IPH_KeyboardAccessoryAddressFilling"
       summary="address autofill suggestions"/>
   <variant name="IPH_KeyboardAccessoryPasswordFilling"
