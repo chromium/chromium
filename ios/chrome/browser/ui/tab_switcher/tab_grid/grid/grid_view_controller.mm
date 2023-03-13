@@ -906,11 +906,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     // Don't support dropping items if the drag&drop handler is not set.
     return NO;
   }
-  if (_mode != TabGridModeSearch) {
-    // Prevent dropping tabs into grid while displaying search results.
-    return NO;
-  }
-  return YES;
+  // Prevent dropping tabs into grid while displaying search results.
+  return (_mode != TabGridModeSearch);
 }
 
 - (UICollectionViewDropProposal*)
