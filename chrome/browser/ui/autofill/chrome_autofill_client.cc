@@ -20,6 +20,7 @@
 #include "chrome/browser/autofill/autocomplete_history_manager_factory.h"
 #include "chrome/browser/autofill/autofill_offer_manager_factory.h"
 #include "chrome/browser/autofill/iban_manager_factory.h"
+#include "chrome/browser/autofill/manual_filling_controller.h"
 #include "chrome/browser/autofill/merchant_promo_code_manager_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/strike_database_factory.h"
@@ -786,6 +787,16 @@ bool ChromeAutofillClient::ShowTouchToFillCreditCard(
     base::WeakPtr<TouchToFillDelegate> delegate,
     base::span<const autofill::CreditCard> cards_to_suggest) {
 #if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillVirtualCardsOnTouchToFillAndroid)) {
+    // Create the manual filling controller which will be used to show the
+    // unmasked virtual card details in the manual fallback.
+    ManualFillingController::GetOrCreate(web_contents())
+        ->UpdateSourceAvailability(
+            ManualFillingController::FillingSource::CREDIT_CARD_FALLBACKS,
+            !cards_to_suggest.empty());
+  }
+
   return touch_to_fill_credit_card_controller_.Show(
       std::make_unique<TouchToFillCreditCardViewImpl>(web_contents()), delegate,
       std::move(cards_to_suggest));
