@@ -494,16 +494,23 @@ class DriveIntegrationService::PreferenceWatcher
   }
 
   // NetworkConnectionTracker::NetworkConnectionObserver
-  void OnConnectionChanged(ConnectionType type) override {
+  void OnConnectionChanged(const ConnectionType type) override {
     DCHECK(integration_service_);
+
+    const bool online = type != ConnectionType::CONNECTION_NONE;
+    const bool pause_syncing =
+        NetworkConnectionTracker::IsConnectionCellular(type) &&
+        pref_service_->GetBoolean(prefs::kDisableDriveOverCellular);
+
+    VLOG(1) << "OnConnectionChanged {type: " << type << ", online: " << online
+            << ", pause_syncing: " << pause_syncing << "}";
+
     if (DriveFs* const drivefs = integration_service_->GetDriveFsInterface()) {
-      const bool pause_syncing =
-          NetworkConnectionTracker::IsConnectionCellular(type) &&
-          pref_service_->GetBoolean(prefs::kDisableDriveOverCellular);
+      drivefs->UpdateNetworkState(pause_syncing, !online);
+    }
 
-      const bool is_offline = type == ConnectionType::CONNECTION_NONE;
-
-      drivefs->UpdateNetworkState(pause_syncing, is_offline);
+    if (PinManager* const pin_manager = integration_service_->GetPinManager()) {
+      pin_manager->SetOnline(online);
     }
   }
 
@@ -1033,6 +1040,7 @@ bool DriveIntegrationService::AddDriveMountPointAfterMounted() {
   if (preference_watcher_) {
     preference_watcher_->UpdateSyncPauseState();
   }
+
   if (!GetPrefs()->GetBoolean(prefs::kDriveFsPinnedMigrated)) {
     MigratePinnedFiles();
   }

@@ -17,8 +17,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
-#include "chromeos/ash/components/network/network_handler.h"
-#include "chromeos/ash/components/network/network_state.h"
 #include "components/drive/file_errors.h"
 #include "third_party/cros_system_api/constants/cryptohome.h"
 
@@ -249,18 +247,6 @@ ostream& operator<<(ostream& out, Quoter<mojom::DriveError> q) {
   const mojom::DriveError& e = q.value;
   return out << "{" << Quote(e.type) << " " << PinManager::Id(e.stable_id)
              << " " << Quote(e.path) << "}";
-}
-
-ostream& operator<<(ostream& out, Quoter<ash::NetworkState> q) {
-  const auto& ip = q.value.GetIpAddress();
-  return out << "{type: " << q.value.type()
-             << ", device: " << q.value.device_path()
-             << ", guid: " << q.value.guid()
-             << ", ip: " << (ip.empty() ? "(none)" : ip)
-             << ", connection_state: " << q.value.connection_state()
-             << ", portal_state: " << q.value.GetPortalState()
-             << ", connected: " << q.value.IsConnectedState()
-             << ", online: " << q.value.IsOnline() << "}";
 }
 
 // Rounds the given size to the next multiple of 4-KB.
@@ -580,16 +566,11 @@ PinManager::PinManager(Path profile_path, mojom::DriveFs* const drivefs)
       drivefs_(drivefs),
       space_getter_(base::BindRepeating(&GetFreeSpace)) {
   DCHECK(drivefs_);
-  RegisterNetworkObserver();
 }
 
 PinManager::~PinManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!InProgress(progress_.stage)) << "Pin manager is " << progress_.stage;
-
-  if (network_state_handler_) {
-    network_state_handler_->RemoveObserver(this, FROM_HERE);
-  }
 
   for (Observer& observer : observers_) {
     observer.OnDrop();
@@ -1183,43 +1164,9 @@ void PinManager::OnMetadataForModifiedFile(
   }
 }
 
-void PinManager::RegisterNetworkObserver() {
-  using ash::NetworkHandler;
-  if (!NetworkHandler::IsInitialized()) {
-    // Probably in test environment.
-    LOG(WARNING) << "No network handler";
-    return;
-  }
-
-  NetworkHandler* const network_handler = NetworkHandler::Get();
-  DCHECK(network_handler);
-
+void PinManager::SetOnline(const bool online) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!network_state_handler_);
-  network_state_handler_ = network_handler->network_state_handler();
-  DCHECK(network_state_handler_);
-  network_state_handler_->AddObserver(this, FROM_HERE);
-
-  DefaultNetworkChanged(network_state_handler_->DefaultNetwork());
-}
-
-void PinManager::OnShuttingDown() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(network_state_handler_);
-  network_state_handler_->RemoveObserver(this, FROM_HERE);
-  network_state_handler_ = nullptr;
-}
-
-void PinManager::DefaultNetworkChanged(const NetworkState* const network) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (network) {
-    VLOG(1) << "Default network changed to " << Quote(*network);
-    is_online_ = network->IsOnline();
-  } else {
-    VLOG(1) << "Default network changed to no network";
-    is_online_ = false;
-  }
+  is_online_ = online;
 
   if (!is_online_ && InProgress(progress_.stage)) {
     VLOG(1) << "Going offline...";
@@ -1229,42 +1176,6 @@ void PinManager::DefaultNetworkChanged(const NetworkState* const network) {
   if (is_online_ && progress_.stage == Stage::kPaused) {
     VLOG(1) << "Coming back online...";
     return Start();
-  }
-}
-
-void PinManager::PortalStateChanged(const NetworkState* const network,
-                                    const PortalState portal_state) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (network) {
-    DCHECK_EQ(portal_state, network->GetPortalState());
-    VLOG(2) << "Network portal state changed to " << Quote(*network);
-  } else {
-    DCHECK_EQ(portal_state, PortalState::kUnknown);
-    VLOG(2) << "Network portal state changed to no network";
-  }
-}
-
-void PinManager::ActiveNetworksChanged(
-    const std::vector<const NetworkState*>& networks) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  switch (networks.size()) {
-    case 0:
-      VLOG(2) << "There are no active networks";
-      break;
-
-    case 1:
-      VLOG(2) << "There is 1 active network";
-      break;
-
-    default:
-      VLOG(2) << "There are " << networks.size() << " active networks";
-  }
-
-  int i = 0;
-  for (const NetworkState* const network : networks) {
-    DCHECK(network);
-    VLOG(2) << "Network #" << i++ << ": " << Quote(*network);
   }
 }
 
