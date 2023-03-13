@@ -104,7 +104,7 @@ source_set("unit_tests_support") {
   ]
 }
 
-if (use_libfuzzer) {
+if (use_fuzzing_engine_with_lpm) {
   # TODO(crbug.com/1353965): Re-enable for Linux ASAN Debug build.
   if (!is_linux || !is_debug || !is_asan) {
     fuzzer_test("client_side_phishing_fuzzer") {
