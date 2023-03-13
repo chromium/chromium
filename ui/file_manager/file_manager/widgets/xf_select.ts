@@ -363,6 +363,9 @@ function getCSS(): CSSResultGroup {
       --focus-shadow-color: none;
       padding: 0 12px;
     }
+    cr-button.dropdown-item:hover {
+      background-color: var(--cros-ripple-color);
+    }
     cr-button.dropdown-item-center {
       justify-content: center;
     }
