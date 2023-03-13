@@ -5,6 +5,7 @@
 import '../cr_hidden_style.css.js';
 import '../cr_icons.css.js';
 import '../cr_shared_vars.css.js';
+import '//resources/cr_elements/cr_auto_img/cr_auto_img.js';
 
 import {assert} from '//resources/js/assert_ts.js';
 import {FocusOutlineManager} from '//resources/js/focus_outline_manager.js';
@@ -68,6 +69,7 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
       },
       title: String,
       url: String,
+      imageUrl: String,
     };
   }
 
@@ -81,6 +83,7 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
   size: CrUrlListItemSize;
   override title: string;
   url?: string;
+  imageUrl: string;
 
   override ready() {
     super.ready();
@@ -133,7 +136,17 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
   }
 
   private shouldShowFavicon_(): boolean {
-    return this.url !== undefined;
+    return this.url !== undefined &&
+        (this.size === CrUrlListItemSize.COMPACT || !this.imageUrl);
+  }
+
+  private shouldShowUrlImage_(): boolean {
+    return this.url !== undefined &&
+        !(this.size === CrUrlListItemSize.COMPACT || !this.imageUrl);
+  }
+
+  private shouldShowFolderCount_(): boolean {
+    return this.url === undefined;
   }
 }
 

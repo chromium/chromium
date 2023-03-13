@@ -170,6 +170,16 @@ UrlKeyedDataCollectionConsentHelper::NewPersonalizedDataCollectionConsentHelper(
                         {syncer::ModelType::HISTORY_DELETE_DIRECTIVES}));
 }
 
+// static
+std::unique_ptr<UrlKeyedDataCollectionConsentHelper>
+UrlKeyedDataCollectionConsentHelper::
+    NewPersonalizedBookmarksDataCollectionConsentHelper(
+        syncer::SyncService* sync_service) {
+  return std::make_unique<SyncBasedUrlKeyedDataCollectionConsentHelper>(
+      sync_service,
+      std::set<syncer::ModelType>({syncer::ModelType::BOOKMARKS}));
+}
+
 void UrlKeyedDataCollectionConsentHelper::AddObserver(Observer* observer) {
   observer_list_.AddObserver(observer);
 }

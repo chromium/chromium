@@ -1059,6 +1059,11 @@ void PopulateChromeWebUIFrameBinders(
       shopping_list::mojom::ShoppingListHandlerFactory, BookmarksSidePanelUI>(
       map);
 
+  if (base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel)) {
+    RegisterWebUIControllerInterfaceBinder<
+        image_service::mojom::ImageServiceHandler, BookmarksSidePanelUI>(map);
+  }
+
   if (base::FeatureList::IsEnabled(features::kSidePanelSearchCompanion)) {
     RegisterWebUIControllerInterfaceBinder<
         side_panel::mojom::SearchCompanionPageHandlerFactory,

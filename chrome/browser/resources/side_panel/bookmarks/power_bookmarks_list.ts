@@ -180,6 +180,7 @@ export class PowerBookmarksListElement extends PolymerElement {
   private labels_: Label[];
   private compactDescriptions_ = new Map<string, string>();
   private expandedDescriptions_ = new Map<string, string>();
+  private imageUrls_ = new Map<string, string>();
   private activeSortIndex_: number;
   private sortTypes_: SortOption[];
   private searchQuery_: string|undefined;
@@ -255,6 +256,10 @@ export class PowerBookmarksListElement extends PolymerElement {
   setExpandedDescription(
       bookmark: chrome.bookmarks.BookmarkTreeNode, description: string) {
     this.set(`expandedDescriptions_.${bookmark.id}`, description);
+  }
+
+  setImageUrl(bookmark: chrome.bookmarks.BookmarkTreeNode, url: string) {
+    this.set(`imageUrls_.${bookmark.id.toString()}`, url);
   }
 
   onBookmarksLoaded() {
@@ -420,6 +425,11 @@ export class PowerBookmarksListElement extends PolymerElement {
     return description;
   }
 
+  private getBookmarkImageUrl_(bookmark: chrome.bookmarks.BookmarkTreeNode):
+      string {
+    return this.get(`imageUrls_.${bookmark.id.toString()}`);
+  }
+
   private getActiveFolderLabel_(): string {
     return this.getFolderLabel_(this.getActiveFolder_());
   }
@@ -458,6 +468,7 @@ export class PowerBookmarksListElement extends PolymerElement {
     this.shownBookmarks_ = this.bookmarksService_.filterBookmarks(
         this.getActiveFolder_(), this.activeSortIndex_, this.searchQuery_,
         this.labels_);
+    this.bookmarksService_.refreshDataForBookmarks(this.shownBookmarks_);
   }
 
   private canAddCurrentUrl_(): boolean {

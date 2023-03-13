@@ -49,6 +49,10 @@ export class PowerBookmarkRowElement extends PolymerElement {
         reflectToAttribute: true,
         value: false,
       },
+      imageUrl: {
+        type: String,
+        value: '',
+      },
       rowAriaDescription: {
         type: String,
         value: '',
@@ -78,6 +82,7 @@ export class PowerBookmarkRowElement extends PolymerElement {
   rowAriaLabel: string;
   trailingIcon: string;
   trailingIconAriaLabel: string;
+  imageUrl: string;
 
   override connectedCallback() {
     super.connectedCallback();

@@ -59,6 +59,7 @@
     height: 40px;
     justify-content: center;
     margin-inline-end: 16px;
+    overflow: hidden;
     width: 40px;
   }
 
@@ -264,14 +265,24 @@
       ::slotted(cr-icon-button[slot=suffix-icon]) {
     display: block;
   }
+
+  .url-image {
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+    width: 100%;
+  }
 </style>
 
 <slot name="prefix"></slot>
 <div id="iconContainer">
-  <div class="favicon" hidden$="[[!shouldShowFavicon_(url, count)]]"
+  <div class="favicon" hidden$="[[!shouldShowFavicon_(url, size, imageUrl, count)]]"
       style$="background-image: [[getFavicon_(url)]];">
   </div>
-  <div class="folder-and-count" hidden$="[[shouldShowFavicon_(url, count)]]">
+  <img class="url-image" is="cr-auto-img"
+      hidden$="[[!shouldShowUrlImage_(url, size, imageUrl)]]"
+      auto-src="[[imageUrl]]">
+  <div class="folder-and-count" hidden$="[[!shouldShowFolderCount_(url, count)]]">
     <div class="folder cr-icon icon-folder-open"></div>
     <div class="count">[[getDisplayedCount_(count)]]</div>
   </div>

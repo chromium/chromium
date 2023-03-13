@@ -94,6 +94,10 @@ class ImageService : public KeyedService {
   std::unique_ptr<unified_consent::UrlKeyedDataCollectionConsentHelper>
       personalized_data_collection_consent_helper_;
 
+  // The Bookmarks consent filter.
+  std::unique_ptr<unified_consent::UrlKeyedDataCollectionConsentHelper>
+      bookmarks_data_collection_consent_helper_;
+
   base::WeakPtrFactory<ImageService> weak_factory_{this};
 };
 

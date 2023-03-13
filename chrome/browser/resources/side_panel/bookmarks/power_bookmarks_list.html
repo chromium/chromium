@@ -197,7 +197,8 @@
               on-input-change="onRename_"
               row-aria-label="[[getBookmarkAllyLabel_(item)]]"
               row-aria-description="[[getBookmarkA11yDescription_(item)]]"
-              tabindex$="[[tabIndex]]">
+              tabindex$="[[tabIndex]]"
+              image-url="[[getBookmarkImageUrl_(item, imageUrls_.*)]]">
             <template is="dom-if" restamp
                 if="[[isPriceTracked(item, trackedProductInfos_.*)]]">
               <sp-list-item-badge slot="badges"

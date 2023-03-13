@@ -151,7 +151,11 @@ ImageService::ImageService(
     : autocomplete_provider_client_(std::move(autocomplete_provider_client)),
       personalized_data_collection_consent_helper_(
           unified_consent::UrlKeyedDataCollectionConsentHelper::
-              NewPersonalizedDataCollectionConsentHelper(sync_service)) {
+              NewPersonalizedDataCollectionConsentHelper(sync_service)),
+      bookmarks_data_collection_consent_helper_(
+          unified_consent::UrlKeyedDataCollectionConsentHelper::
+              NewPersonalizedBookmarksDataCollectionConsentHelper(
+                  sync_service)) {
   if (opt_guide && base::FeatureList::IsEnabled(
                        kImageServiceOptimizationGuideSalientImages)) {
     opt_guide_ = opt_guide;
@@ -179,8 +183,8 @@ bool ImageService::HasPermissionToFetchImage(mojom::ClientId client_id) const {
       // TODO(b/244507194): Figure out consent story for NTP realbox case.
       return false;
     case mojom::ClientId::Bookmarks:
-      // TODO(b/244507194): Add Bookmark-sync keyed consent helper.
-      return false;
+      return bookmarks_data_collection_consent_helper_ &&
+             bookmarks_data_collection_consent_helper_->IsEnabled();
   }
 }
 
