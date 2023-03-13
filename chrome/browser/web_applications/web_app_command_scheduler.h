@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_COMMAND_SCHEDULER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_COMMAND_SCHEDULER_H_
 
-#include "base/containers/flat_map.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -27,10 +26,6 @@ struct WebAppInstallInfo;
 namespace content {
 class WebContents;
 }  // namespace content
-
-namespace url {
-class Origin;
-}  // namespace url
 
 class ScopedKeepAlive;
 class ScopedProfileKeepAlive;
@@ -163,11 +158,6 @@ class WebAppCommandScheduler {
                              const IsolatedWebAppLocation& location,
                              InstallIsolatedWebAppCallback callback,
                              const base::Location& call_location = FROM_HERE);
-
-  // Computes the browsing data size of all installed Isolated Web Apps.
-  void GetIsolatedWebAppBrowsingData(
-      base::OnceCallback<void(base::flat_map<url::Origin, int64_t>)> callback,
-      const base::Location& call_location = FROM_HERE);
 
   // Scheduler a command that installs a web app from sync.
   void InstallFromSync(const WebApp& web_app,
