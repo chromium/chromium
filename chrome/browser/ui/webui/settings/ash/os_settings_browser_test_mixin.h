@@ -43,8 +43,11 @@ class OSSettingsBrowserTestMixin : public InProcessBrowserTestMixin {
   void SetUpOnMainThread() override;
 
   // Opens the ChromeOS settings webui. Returns the mojo remote that can be
-  // used in C++ browser tests to perform UI actions.
-  mojo::Remote<mojom::OSSettingsDriver> OpenOSSettings();
+  // used in C++ browser tests to perform UI actions. Optionally, a
+  // domain-relative URL (e.g. "/osPrivacy/lockScreen?settingId=1234") can be
+  // provided to open a specific page in the settings webui.
+  mojo::Remote<mojom::OSSettingsDriver> OpenOSSettings(
+      const std::string& relative_url = std::string());
 
  private:
   class BrowserProcessServer : public mojom::OSSettingsBrowserProcess {

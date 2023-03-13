@@ -29,15 +29,11 @@ void OSSettingsLockScreenBrowserTestBase::SetUpOnMainThread() {
 
 mojom::LockScreenSettingsAsyncWaiter
 OSSettingsLockScreenBrowserTestBase::OpenLockScreenSettings() {
-  os_settings_driver_remote_ =
-      mojo::Remote{os_settings_mixin_.OpenOSSettings()};
-
-  lock_screen_settings_remote_ = mojo::Remote{
-      mojom::OSSettingsDriverAsyncWaiter{os_settings_driver_remote_.get()}
-          .GoToLockScreenSettings()};
-
-  return mojom::LockScreenSettingsAsyncWaiter{
-      lock_screen_settings_remote_.get()};
+  auto os_settings_driver = OpenOSSettings();
+  lock_screen_settings_remote_ =
+      mojo::Remote(os_settings_driver.GoToLockScreenSettings());
+  return mojom::LockScreenSettingsAsyncWaiter(
+      lock_screen_settings_remote_.get());
 }
 
 mojom::LockScreenSettingsAsyncWaiter
@@ -52,8 +48,32 @@ OSSettingsLockScreenBrowserTestBase::OpenLockScreenSettingsAndAuthenticate() {
       lock_screen_settings_remote_.get()};
 }
 
+mojom::LockScreenSettingsAsyncWaiter OSSettingsLockScreenBrowserTestBase::
+    OpenLockScreenSettingsDeepLinkAndAuthenticate(
+        const std::string& setting_id) {
+  std::string relative_url = "/osPrivacy/lockScreen?settingId=";
+  relative_url += setting_id;
+  auto os_settings_driver = OpenOSSettings(relative_url);
+
+  lock_screen_settings_remote_ =
+      mojo::Remote(os_settings_driver.AssertOnLockScreenSettings());
+  mojom::LockScreenSettingsAsyncWaiter(lock_screen_settings_remote_.get())
+      .Authenticate(kPassword);
+
+  return mojom::LockScreenSettingsAsyncWaiter(
+      lock_screen_settings_remote_.get());
+}
+
 const AccountId& OSSettingsLockScreenBrowserTestBase::GetAccountId() {
   return logged_in_user_mixin_.GetAccountId();
+}
+
+mojom::OSSettingsDriverAsyncWaiter
+OSSettingsLockScreenBrowserTestBase::OpenOSSettings(
+    const std::string& relative_url) {
+  os_settings_driver_remote_ =
+      mojo::Remote(os_settings_mixin_.OpenOSSettings(relative_url));
+  return mojom::OSSettingsDriverAsyncWaiter(os_settings_driver_remote_.get());
 }
 
 }  // namespace ash::settings

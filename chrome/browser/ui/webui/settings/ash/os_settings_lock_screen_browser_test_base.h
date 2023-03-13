@@ -40,6 +40,11 @@ class OSSettingsLockScreenBrowserTestBase
   // Calls `OpenLockScreenSettings` and authenticates.
   mojom::LockScreenSettingsAsyncWaiter OpenLockScreenSettingsAndAuthenticate();
 
+  // Opens the ChromeOS settings app with a deep link to an item on the "lock
+  // screen" section and authenticates.
+  mojom::LockScreenSettingsAsyncWaiter
+  OpenLockScreenSettingsDeepLinkAndAuthenticate(const std::string& setting_id);
+
   // The account ID of the user set up by this fixture.
   const AccountId& GetAccountId();
 
@@ -51,6 +56,11 @@ class OSSettingsLockScreenBrowserTestBase
   OSSettingsBrowserTestMixin os_settings_mixin_{&mixin_host_};
 
  private:
+  // Opens the os settings page and saves the test api remote in
+  // `os_settings_driver_remote_`. Returns an async waiter to the remote.
+  mojom::OSSettingsDriverAsyncWaiter OpenOSSettings(
+      const std::string& relative_url = "");
+
   mojo::Remote<mojom::OSSettingsDriver> os_settings_driver_remote_;
   mojo::Remote<mojom::LockScreenSettings> lock_screen_settings_remote_;
 };
