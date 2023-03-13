@@ -7,12 +7,14 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autofill/mock_autofill_popup_controller.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_pixel_test.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/aliases.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,13 +48,18 @@ std::vector<Suggestion> CreateAutofillProfileSuggestions() {
   return suggestions;
 }
 
+std::vector<Suggestion> CreateAutocompleteSuggestions() {
+  return {Suggestion("Autocomplete entry 1", "", "", 0),
+          Suggestion("Autocomplete entry 2", "", "", 0)};
+}
+
 }  // namespace
 
-class PopupViewViewsBrowsertest
+class PopupViewViewsBrowsertestBase
     : public PopupPixelTest<PopupViewViews, MockAutofillPopupController> {
  public:
-  PopupViewViewsBrowsertest() = default;
-  ~PopupViewViewsBrowsertest() override = default;
+  PopupViewViewsBrowsertestBase() = default;
+  ~PopupViewViewsBrowsertestBase() override = default;
 
   void PrepareSuggestions(std::vector<Suggestion> suggestions) {
     controller().set_suggestions(std::move(suggestions));
@@ -73,9 +80,20 @@ class PopupViewViewsBrowsertest
   absl::optional<CellIndex> selected_cell_;
 };
 
+class PopupViewViewsBrowsertest : public PopupViewViewsBrowsertestBase {
+ public:
+  PopupViewViewsBrowsertest() {
+    feature_list_.InitAndDisableFeature(
+        features::kAutofillShowAutocompleteDeleteButton);
+  }
+  ~PopupViewViewsBrowsertest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_Autocomplete) {
-  PrepareSuggestions({Suggestion("Autocomplete entry 1", "", "", 0),
-                      Suggestion("Autocomplete entry 2", "", "", 0)});
+  PrepareSuggestions(CreateAutocompleteSuggestions());
   ShowAndVerifyUi();
 }
 
@@ -147,6 +165,42 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
 INSTANTIATE_TEST_SUITE_P(All,
                          PopupViewViewsBrowsertest,
                          Combine(Bool(), Bool()),
-                         PopupViewViewsBrowsertest::GetTestSuffix);
+                         PopupViewViewsBrowsertestBase::GetTestSuffix);
+
+class PopupViewViewsBrowsertestShowAutocompleteDeleteButton
+    : public PopupViewViewsBrowsertestBase {
+ public:
+  PopupViewViewsBrowsertestShowAutocompleteDeleteButton()
+      : feature_list_{features::kAutofillShowAutocompleteDeleteButton} {}
+  ~PopupViewViewsBrowsertestShowAutocompleteDeleteButton() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertestShowAutocompleteDeleteButton,
+                       InvokeUi_Autocomplete) {
+  PrepareSuggestions(CreateAutocompleteSuggestions());
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertestShowAutocompleteDeleteButton,
+                       InvokeUi_AutocompleteWith_Selected_Content) {
+  PrepareSuggestions(CreateAutocompleteSuggestions());
+  PrepareSelectedCell(CellIndex{1, CellType::kContent});
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertestShowAutocompleteDeleteButton,
+                       InvokeUi_Autofill_Profile_Selected_Profile) {
+  PrepareSuggestions(CreateAutofillProfileSuggestions());
+  PrepareSelectedCell(CellIndex{0, CellType::kContent});
+  ShowAndVerifyUi();
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PopupViewViewsBrowsertestShowAutocompleteDeleteButton,
+                         Combine(Bool(), Bool()),
+                         PopupViewViewsBrowsertestBase::GetTestSuffix);
 
 }  // namespace autofill
