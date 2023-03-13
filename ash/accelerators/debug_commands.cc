@@ -116,10 +116,6 @@ void HandleToggleWallpaperMode() {
   }
 }
 
-void HandleDumpCalendarModel() {
-  accelerators::DumpCalendarModel();
-}
-
 void HandleToggleDarkMode() {
   // Toggling dark mode requires that the active user session has started
   // since the feature is backed by user preferences.
@@ -265,9 +261,6 @@ void PerformDebugActionIfEnabled(AcceleratorAction action) {
     return;
 
   switch (action) {
-    case DEBUG_DUMP_CALENDAR_MODEL:
-      HandleDumpCalendarModel();
-      break;
     case DEBUG_KEYBOARD_BACKLIGHT_TOGGLE:
       HandleToggleKeyboardBacklight();
       break;

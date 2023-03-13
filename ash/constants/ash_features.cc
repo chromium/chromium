@@ -286,11 +286,6 @@ BASE_FEATURE(kBorealisStorageBallooning,
              "BorealisStorageBallooning",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable or disable debug mode for CalendarModel.
-BASE_FEATURE(kCalendarModelDebugMode,
-             "CalendarModelDebugMode",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enable or disable calendar jelly.
 BASE_FEATURE(kCalendarJelly,
              "CalendarJelly",
@@ -2379,10 +2374,6 @@ bool IsBentoBarEnabled() {
 
 bool IsBluetoothQualityReportEnabled() {
   return base::FeatureList::IsEnabled(kBluetoothQualityReport);
-}
-
-bool IsCalendarModelDebugModeEnabled() {
-  return base::FeatureList::IsEnabled(kCalendarModelDebugMode);
 }
 
 bool IsCalendarJellyEnabled() {

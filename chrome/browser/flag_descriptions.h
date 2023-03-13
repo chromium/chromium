@@ -2868,9 +2868,6 @@ extern const char kBluetoothUseLLPrivacyDescription[];
 extern const char kCalendarJellyName[];
 extern const char kCalendarJellyDescription[];
 
-extern const char kCalendarModelDebugModeName[];
-extern const char kCalendarModelDebugModeDescription[];
-
 extern const char kCaptureModeDemoToolsName[];
 extern const char kCaptureModeDemoToolsDescription[];
 

@@ -63,7 +63,6 @@ static_assert(kDeprecatedAcceleratorsLength ==
 
 const AcceleratorData kDebugAcceleratorData[] = {
     {true, ui::VKEY_N, kDebugModifier, TOGGLE_WIFI},
-    {true, ui::VKEY_C, kDebugModifier, DEBUG_DUMP_CALENDAR_MODEL},
     {true, ui::VKEY_X, kDebugModifier, DEBUG_KEYBOARD_BACKLIGHT_TOGGLE},
     {true, ui::VKEY_M, kDebugModifier, DEBUG_MICROPHONE_MUTE_TOGGLE},
     {true, ui::VKEY_O, kDebugModifier, DEBUG_SHOW_TOAST},
@@ -225,7 +224,6 @@ const size_t kActionsAllowedAtPowerMenuLength =
 const AcceleratorAction kActionsAllowedAtModalWindow[] = {
     BRIGHTNESS_DOWN,
     BRIGHTNESS_UP,
-    DEBUG_DUMP_CALENDAR_MODEL,
     DEBUG_KEYBOARD_BACKLIGHT_TOGGLE,
     DEBUG_MICROPHONE_MUTE_TOGGLE,
     DEBUG_TOGGLE_TOUCH_PAD,
@@ -306,7 +304,6 @@ const size_t kRepeatableActionsLength = std::size(kRepeatableActions);
 const AcceleratorAction kActionsAllowedInAppModeOrPinnedMode[] = {
     BRIGHTNESS_DOWN,
     BRIGHTNESS_UP,
-    DEBUG_DUMP_CALENDAR_MODEL,
     DEBUG_KEYBOARD_BACKLIGHT_TOGGLE,
     DEBUG_MICROPHONE_MUTE_TOGGLE,
     DEBUG_PRINT_LAYER_HIERARCHY,
@@ -400,7 +397,6 @@ const size_t kActionsNeedingWindowLength = std::size(kActionsNeedingWindow);
 const AcceleratorAction kActionsKeepingMenuOpen[] = {
     BRIGHTNESS_DOWN,
     BRIGHTNESS_UP,
-    DEBUG_DUMP_CALENDAR_MODEL,
     DEBUG_KEYBOARD_BACKLIGHT_TOGGLE,
     DEBUG_MICROPHONE_MUTE_TOGGLE,
     DEBUG_TOGGLE_TOUCH_PAD,

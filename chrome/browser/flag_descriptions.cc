@@ -5001,15 +5001,6 @@ const char kCaptureModeGifRecordingName[] =
 const char kCaptureModeGifRecordingDescription[] =
     "Enables the ability to record the screen into animated GIFs";
 
-const char kCalendarModelDebugModeName[] = "Monthly Calendar Model Debug Mode";
-const char kCalendarModelDebugModeDescription[] =
-    "Debug mode for Monthly Calendar Model. This helps a lot in diagnosing any "
-    "bugs in the calendar's event fetching/caching functionality. WARNING: DO "
-    "NOT enable this flag unless you're OK with information about your "
-    "calendar events, such as start/end times and summaries, being dumped to "
-    "the system logs, where they are potentially visible to all users of the "
-    "device.";
-
 extern const char kDesks16Name[] = "Enable up to 16 virtual desks";
 extern const char kDesks16Description[] =
     "When enabled, up to 16 virtual desks are allowed.";

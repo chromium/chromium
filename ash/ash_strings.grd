@@ -3474,9 +3474,6 @@ Connect your device to power.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_MINIMIZE_TOP_WINDOW_ON_BACK" translateable="false" desc="Label for accelerator action - Minimize top window on back.">
         Minimize top window on back
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DEBUG_DUMP_CALENDAR_MODEL" translateable="false" desc="Label for accelerator action - Dump calendar model.">
-        Dump calendar model
-      </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DEBUG_KEYBOARD_BACKLIGHT_TOGGLE" translateable="false" desc="Label for accelerator action - Turn keyboard backlight on or off.">
         Turn keyboard backlight on or off
       </message>

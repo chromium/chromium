@@ -662,10 +662,6 @@ void DisableCapsLock() {
   Shell::Get()->ime_controller()->SetCapsLockEnabled(false);
 }
 
-void DumpCalendarModel() {
-  Shell::Get()->system_tray_model()->calendar_model()->DebugDump();
-}
-
 void FocusCameraPreview() {
   auto* camera_controller = CaptureModeController::Get()->camera_controller();
   DCHECK(camera_controller);

@@ -134,9 +134,6 @@ ASH_EXPORT void CycleUser(CycleUserDirection direction);
 // Disables caps-lock.
 ASH_EXPORT void DisableCapsLock();
 
-// Logs a dump of CalendarModel internal data.
-ASH_EXPORT void DumpCalendarModel();
-
 // Focuses the camera preview if it is present.
 ASH_EXPORT void FocusCameraPreview();
 
