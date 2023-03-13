@@ -17,7 +17,10 @@
 
 import argparse from 'argparse';
 import debug from 'debug';
-import puppeteer from 'puppeteer';
+import puppeteer, {
+  ChromeReleaseChannel,
+  PuppeteerLaunchOptions,
+} from 'puppeteer';
 
 import {ITransport} from '../utils/transport.js';
 
@@ -30,7 +33,7 @@ const log = debug('bidiServer:log');
 function parseArguments() {
   const parser = new argparse.ArgumentParser({
     add_help: true,
-    exit_on_error: false,
+    exit_on_error: true,
   });
 
   parser.add_argument('-p', '--port', {
@@ -49,13 +52,10 @@ function parseArguments() {
   });
 
   parser.add_argument('-hl', '--headless', {
-    help:
-      'Sets if browser should run in headless or headful mode. Default is ' +
-      '`--headless=true`.',
+    help: 'Sets if browser should run in headless or headful mode. Default is true.',
     default: true,
   });
 
-  // `parse_known_args` puts known args in the first element of the result.
   const args = parser.parse_known_args();
   return args[0];
 }
@@ -89,15 +89,13 @@ function parseArguments() {
  */
 async function onNewBidiConnectionOpen(
   headless: boolean,
-  chromeChannel: string,
+  chromeChannel: ChromeReleaseChannel,
   bidiTransport: ITransport
-): Promise<() => void> {
-  const browserLaunchOptions: any = {
+) {
+  const browserLaunchOptions: PuppeteerLaunchOptions = {
     headless,
+    channel: chromeChannel,
   };
-  if (chromeChannel) {
-    browserLaunchOptions.channel = chromeChannel;
-  }
 
   // 1. Launch Chromium (using Puppeteer for now).
   // Puppeteer should have downloaded Chromium during the installation.
