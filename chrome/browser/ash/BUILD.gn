@@ -6403,7 +6403,7 @@ fuzzer_test("zeroconf_printer_detector_fuzzer") {
   ]
 }
 
-if (use_libfuzzer) {
+if (use_fuzzing_engine_with_lpm) {
   fuzzer_test("policy_fuzzer") {
     sources = [ "policy/fuzzer/policy_fuzzer.cc" ]
 
