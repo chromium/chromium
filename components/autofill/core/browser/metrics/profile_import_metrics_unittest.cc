@@ -110,36 +110,6 @@ TEST_F(AutofillProfileImportMetricsTest, ProfileImportStatus_RegularImport) {
                  Bucket(Metric::SECTION_UNION_IMPORT, 0)));
 }
 
-// Test that the ProfileImportStatus logs a section union mport.
-TEST_F(AutofillProfileImportMetricsTest, ProfileImportStatus_UnionImport) {
-  // Set up our form data.
-  FormData form = GetAndAddSeenForm(
-      {.description_for_logging = "ProfileImportStatus_UnionImport",
-       .fields = {
-           {.role = NAME_FULL, .value = u"Elvis Aaron Presley"},
-           {.role = ADDRESS_HOME_LINE1, .value = u"3734 Elvis Presley Blvd."},
-           {.role = ADDRESS_HOME_ZIP, .value = u"37373"},
-           {.role = ADDRESS_HOME_COUNTRY, .value = u"USA"},
-           {.role = PHONE_HOME_CITY_AND_NUMBER, .value = u"2345678901"},
-           {.role = ADDRESS_HOME_CITY,
-            .value = u"New York",
-            .autocomplete_attribute = "section-billing locality"},
-           // Add the last field of the form into a new section.
-           {.role = ADDRESS_HOME_STATE,
-            .value = u"CA",
-            .autocomplete_attribute = "section-shipping address-level1"}}});
-
-  FillTestProfile(form);
-  base::HistogramTester histogram_tester;
-  SubmitForm(form);
-  using Metric = AddressProfileImportStatusMetric;
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.AddressProfileImportStatus"),
-      BucketsAre(Bucket(Metric::REGULAR_IMPORT, 0),
-                 Bucket(Metric::NO_IMPORT, 0),
-                 Bucket(Metric::SECTION_UNION_IMPORT, 1)));
-}
-
 // Test that the ProfileImportRequirements are all counted as fulfilled for a
 // 'perfect' profile import.
 TEST_F(AutofillProfileImportMetricsTest,

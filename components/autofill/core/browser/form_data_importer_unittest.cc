@@ -790,38 +790,40 @@ class FormDataImporterTest
   }
 };
 
-TEST_P(FormDataImporterTest, ComplementCountry) {
-  auto ImportWithCountry =
-      [this](const std::string& form_country,
-             const std::vector<AutofillProfile>& expected_profiles) {
-        // Remove existing profiles, to prevent an update instead of an import.
-        personal_data_manager_->ClearAllLocalData();
-
-        std::unique_ptr<FormStructure> form_structure =
-            ConstructFormStructureFromTypeValuePairs(
-                GetDefaultProfileTypeValuePairsWithOverriddenCountry(
-                    form_country));
-        ExtractAddressProfilesAndVerifyExpectation(*form_structure,
-                                                   expected_profiles);
-      };
-
-  AutofillProfile kDefaultUSProfile =
-      ConstructDefaultProfileWithOverriddenCountry("US");
-  // The German profile doesn't expect a state.
+// Tests that the country is not complemented if a country is part of the form.
+TEST_P(FormDataImporterTest, ComplementCountry_PartOfForm) {
   AutofillProfile kDefaultGermanProfile =
       ConstructDefaultProfileWithOverriddenCountry("DE");
   kDefaultGermanProfile.ClearFields({ADDRESS_HOME_STATE});
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromTypeValuePairs(
+          GetDefaultProfileTypeValuePairsWithOverriddenCountry("Germany"));
+  ExtractAddressProfilesAndVerifyExpectation(*form_structure,
+                                             {kDefaultGermanProfile});
+}
 
-  // Country part of the form:
-  // If a valid country was entered, use that.
-  ImportWithCountry("Germany", {kDefaultGermanProfile});
-  // Country not part of the form: Complement using
-  // `FormDataImporter::GetPredictedCountryCode()`. Since no variation config
-  // country code is available, it defaults to the locale (US).
-  ImportWithCountry("", {kDefaultUSProfile});
-  // Prefer the variation config country code over locale.
+// Tests that the complemented country prefers the variation country code over
+// the app locale (US). The form's country field is left empty.
+TEST_P(FormDataImporterTest, ComplementCountry_VariationCountryCode) {
+  AutofillProfile kDefaultGermanProfile =
+      ConstructDefaultProfileWithOverriddenCountry("DE");
+  kDefaultGermanProfile.ClearFields({ADDRESS_HOME_STATE});
   autofill_client_->SetVariationConfigCountryCode("DE");
-  ImportWithCountry("", {kDefaultGermanProfile});
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromTypeValuePairs(
+          GetDefaultProfileTypeValuePairsWithOverriddenCountry(""));
+  ExtractAddressProfilesAndVerifyExpectation(*form_structure,
+                                             {kDefaultGermanProfile});
+}
+
+// Tests that without a variation country code, the country is complemented by
+// the app locale. The form's country field is left empty.
+TEST_P(FormDataImporterTest, ComplementCountry_VariationConfigCountryCode) {
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromTypeValuePairs(
+          GetDefaultProfileTypeValuePairsWithOverriddenCountry(""));
+  ExtractAddressProfilesAndVerifyExpectation(
+      *form_structure, {ConstructDefaultProfileWithOverriddenCountry("US")});
 }
 
 // Tests that the country is complemented before parsing the phone number. This
@@ -1649,15 +1651,11 @@ TEST_P(FormDataImporterTest, ImportAddressProfiles_InsufficientAddress) {
   ImportAddressProfileAndVerifyImportOfNoProfile(*form_structure);
 }
 
+// Tests that a profile with an empty name is not imported.
 TEST_P(FormDataImporterTest, ImportAddressProfiles_MissingName) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       features::kAutofillRequireNameForProfileImport);
-  // A full profile will be imported as usual.
-  ExtractAddressProfileAndVerifyExtractionOfDefaultProfile(
-      *ConstructDefaultProfileFormStructure());
-  // The same profile won't be imported if its name component is empty.
-  personal_data_manager_->ClearAllLocalData();
   TypeValuePairs type_value_pairs = GetDefaultProfileTypeValuePairs();
   SetValueForType(type_value_pairs, NAME_FIRST, "");
   SetValueForType(type_value_pairs, NAME_LAST, "");

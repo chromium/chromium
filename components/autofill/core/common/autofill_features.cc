@@ -220,16 +220,16 @@ BASE_FEATURE(kAutofillEnableImportWhenMultiplePhoneNumbers,
 // importing from multi-step input flows possible.
 BASE_FEATURE(kAutofillEnableMultiStepImports,
              "AutofillEnableMultiStepImports",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 // When enabled, imported profiles are stored as multi-step candidates too,
 // which enables complementing a recently imported profile during later steps of
 // a multi-step input flow.
 const base::FeatureParam<bool> kAutofillEnableMultiStepImportComplements{
-    &kAutofillEnableMultiStepImports, "enable_multistep_complement", false};
+    &kAutofillEnableMultiStepImports, "enable_multistep_complement", true};
 // Configures the TTL of multi-step import candidates.
 const base::FeatureParam<base::TimeDelta> kAutofillMultiStepImportCandidateTTL{
     &kAutofillEnableMultiStepImports, "multistep_candidate_ttl",
-    base::Minutes(30)};
+    base::Minutes(5)};
 
 // When enabled, phone number local heuristics match empty labels when looking
 // for composite phone number inputs. E.g. Phone number <input><input>.

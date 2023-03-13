@@ -1065,42 +1065,6 @@
             ]
         }
     ],
-    "AutofillEnableMultiStepImports": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_WithComplement",
-                    "params": {
-                        "enable_multistep_complement": "true",
-                        "multistep_candidate_ttl": "5m"
-                    },
-                    "enable_features": [
-                        "AutofillEnableMultiStepImports"
-                    ]
-                },
-                {
-                    "name": "Enabled_WithoutComplement",
-                    "params": {
-                        "enable_multistep_complement": "false",
-                        "multistep_candidate_ttl": "5m"
-                    },
-                    "enable_features": [
-                        "AutofillEnableMultiStepImports"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillEnableSupportForParsingWithSharedLabels": [
         {
             "platforms": [
