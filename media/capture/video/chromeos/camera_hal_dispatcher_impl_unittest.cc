@@ -132,22 +132,21 @@ class MockCameraActiveClientObserver : public CameraActiveClientObserver {
 // dispatcher_->SetCameraEffects.
 class MockCameraEffectObserver : public CameraEffectObserver {
  public:
-  MockCameraEffectObserver()
-      : expected_camera_effects_config_(
-            GetDefaultCameraEffectsConfigForTesting()) {}
-
   // Observers are notified when dispatcher_->SetCameraEffects is complete.
-  // A caller should first set `expected_camera_effects_config_`, this function
-  // will then compare that the notification is indeed sending these expected
-  // values.
+  // The `new_effects` is saved internally, and compared later on with expected
+  // effects.
   void OnCameraEffectChanged(
       const cros::mojom::EffectsConfigPtr& new_effects) override {
-    EXPECT_EQ(expected_camera_effects_config_, new_effects);
+    new_effects_ = new_effects.Clone();
     DoOnCameraEffectChanged();
   }
+
   MOCK_METHOD0(DoOnCameraEffectChanged, void());
 
-  cros::mojom::EffectsConfigPtr expected_camera_effects_config_;
+  const cros::mojom::EffectsConfigPtr& new_effects() { return new_effects_; }
+
+ private:
+  cros::mojom::EffectsConfigPtr new_effects_;
 };
 
 }  // namespace
@@ -171,8 +170,7 @@ class CameraHalDispatcherImplTest : public ::testing::Test {
 
     // Initialize camera effects parameters. These require threads
     // to be running.
-    dispatcher_->SetInitialCameraEffects(
-        GetDefaultCameraEffectsConfigForTesting());
+    dispatcher_->initial_effects_ = GetDefaultCameraEffectsConfigForTesting();
   }
 
   void TearDown() override { delete dispatcher_; }
@@ -639,7 +637,6 @@ TEST_F(CameraHalDispatcherImplTest, CameraEffectObserver) {
       .Times(1)
       .WillOnce(
           InvokeWithoutArgs(this, &CameraHalDispatcherImplTest::QuitRunLoop));
-  observer.expected_camera_effects_config_ = config.Clone();
   GetProxyTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&CameraHalDispatcherImplTest::SetCameraEffectsComplete,
@@ -647,6 +644,7 @@ TEST_F(CameraHalDispatcherImplTest, CameraEffectObserver) {
                      /*is_from_register=*/true,
                      cros::mojom::SetEffectResult::kOk));
   RunLoop();
+  EXPECT_EQ(observer.new_effects(), config);
 
   cros::mojom::EffectsConfigPtr new_config =
       GetDefaultCameraEffectsConfigForTesting();
@@ -660,7 +658,6 @@ TEST_F(CameraHalDispatcherImplTest, CameraEffectObserver) {
       .Times(1)
       .WillOnce(
           InvokeWithoutArgs(this, &CameraHalDispatcherImplTest::QuitRunLoop));
-  observer.expected_camera_effects_config_ = cros::mojom::EffectsConfig::New();
   GetProxyTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&CameraHalDispatcherImplTest::SetCameraEffectsComplete,
@@ -668,6 +665,7 @@ TEST_F(CameraHalDispatcherImplTest, CameraEffectObserver) {
                      /*is_from_register=*/true,
                      cros::mojom::SetEffectResult::kError));
   RunLoop();
+  EXPECT_EQ(observer.new_effects(), cros::mojom::EffectsConfig::New());
 
   // Fire previous config if the setting is not from register and failed.
   CreateLoop(1);
@@ -675,7 +673,6 @@ TEST_F(CameraHalDispatcherImplTest, CameraEffectObserver) {
       .Times(1)
       .WillOnce(
           InvokeWithoutArgs(this, &CameraHalDispatcherImplTest::QuitRunLoop));
-  observer.expected_camera_effects_config_ = cros::mojom::EffectsConfig::New();
   GetProxyTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&CameraHalDispatcherImplTest::SetCameraEffectsComplete,
@@ -683,6 +680,7 @@ TEST_F(CameraHalDispatcherImplTest, CameraEffectObserver) {
                      /*is_from_register=*/false,
                      cros::mojom::SetEffectResult::kError));
   RunLoop();
+  EXPECT_EQ(observer.new_effects(), cros::mojom::EffectsConfig::New());
 
   // Fire new config is the setting is successful.
   CreateLoop(1);
@@ -690,7 +688,6 @@ TEST_F(CameraHalDispatcherImplTest, CameraEffectObserver) {
       .Times(1)
       .WillOnce(
           InvokeWithoutArgs(this, &CameraHalDispatcherImplTest::QuitRunLoop));
-  observer.expected_camera_effects_config_ = new_config.Clone();
   GetProxyTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&CameraHalDispatcherImplTest::SetCameraEffectsComplete,
@@ -698,6 +695,7 @@ TEST_F(CameraHalDispatcherImplTest, CameraEffectObserver) {
                      /*is_from_register=*/false,
                      cros::mojom::SetEffectResult::kOk));
   RunLoop();
+  EXPECT_EQ(observer.new_effects(), new_config);
 }
 
 // Test that SetCameraEffects behave correctly.
@@ -711,9 +709,9 @@ TEST_F(CameraHalDispatcherImplTest, SetCameraEffects) {
       .Times(1)
       .WillOnce(
           InvokeWithoutArgs(this, &CameraHalDispatcherImplTest::QuitRunLoop));
-  observer.expected_camera_effects_config_ = cros::mojom::EffectsConfigPtr();
   SetCameraEffectsWithDispatcher(config.Clone());
   RunLoop();
+  EXPECT_EQ(observer.new_effects(), cros::mojom::EffectsConfigPtr());
 
   auto mock_server = std::make_unique<MockCameraHalServer>();
 
@@ -735,8 +733,6 @@ TEST_F(CameraHalDispatcherImplTest, SetCameraEffects) {
       .Times(1)
       .WillOnce(
           InvokeWithoutArgs(this, &CameraHalDispatcherImplTest::QuitRunLoop));
-  observer.expected_camera_effects_config_ =
-      GetDefaultCameraEffectsConfigForTesting();
 
   auto server = mock_server->GetPendingRemote();
   GetProxyTaskRunner()->PostTask(
@@ -747,6 +743,7 @@ TEST_F(CameraHalDispatcherImplTest, SetCameraEffects) {
           base::BindOnce(&CameraHalDispatcherImplTest::OnRegisteredServer,
                          base::Unretained(this))));
   RunLoop();
+  EXPECT_EQ(observer.new_effects(), config);
 
   // Case (3) if mock_server->SetCameraEffect succeeds, the expected camera
   // effects should be updated.
@@ -762,10 +759,11 @@ TEST_F(CameraHalDispatcherImplTest, SetCameraEffects) {
       .Times(1)
       .WillOnce(
           InvokeWithoutArgs(this, &CameraHalDispatcherImplTest::QuitRunLoop));
-  observer.expected_camera_effects_config_ = config.Clone();
 
+  config->blur_enabled = true;
   SetCameraEffectsWithDispatcher(config.Clone());
   RunLoop();
+  EXPECT_EQ(observer.new_effects(), config);
 
   // Case (4) if mock_server->SetCameraEffect fails, the expected camera effects
   // should not be updated.
@@ -783,9 +781,9 @@ TEST_F(CameraHalDispatcherImplTest, SetCameraEffects) {
       .WillOnce(
           InvokeWithoutArgs(this, &CameraHalDispatcherImplTest::QuitRunLoop));
 
-  config = GetDefaultCameraEffectsConfigForTesting();
-  SetCameraEffectsWithDispatcher(config.Clone());
+  SetCameraEffectsWithDispatcher(GetDefaultCameraEffectsConfigForTesting());
   RunLoop();
+  EXPECT_EQ(observer.new_effects(), config);
 }
 
 }  // namespace media

@@ -300,10 +300,6 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   // `CameraEffectsController` instead.
   void SetCameraEffects(cros::mojom::EffectsConfigPtr config);
 
-  // Sets what should be the initial camera effects state when the camera
-  // server is registered.
-  void SetInitialCameraEffects(cros::mojom::EffectsConfigPtr config);
-
  private:
   friend struct base::DefaultSingletonTraits<CameraHalDispatcherImpl>;
   // Allow the test to construct the class directly.

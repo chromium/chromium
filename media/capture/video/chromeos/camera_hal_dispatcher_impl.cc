@@ -1038,25 +1038,6 @@ void CameraHalDispatcherImpl::GetAutoFramingSupportedOnProxyThread(
   camera_hal_server_->GetAutoFramingSupported(std::move(callback));
 }
 
-void CameraHalDispatcherImpl::SetInitialCameraEffects(
-    cros::mojom::EffectsConfigPtr config) {
-  if (!proxy_thread_.IsRunning()) {
-    // The camera hal dispatcher is not running, ignore the request.
-    return;
-  }
-  proxy_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &CameraHalDispatcherImpl::SetInitialCameraEffectsOnProxyThread,
-          base::Unretained(this), std::move(config)));
-}
-
-void CameraHalDispatcherImpl::SetInitialCameraEffectsOnProxyThread(
-    cros::mojom::EffectsConfigPtr config) {
-  DCHECK(proxy_task_runner_->BelongsToCurrentThread());
-  initial_effects_ = std::move(config);
-}
-
 void CameraHalDispatcherImpl::SetCameraEffects(
     cros::mojom::EffectsConfigPtr config) {
   if (!proxy_thread_.IsRunning()) {
@@ -1089,6 +1070,10 @@ void CameraHalDispatcherImpl::SetCameraEffectsOnProxyThread(
             base::Unretained(this), config.Clone(), is_from_register));
 
   } else {
+    // Save the config to initial_effects_ so that it will be applied when the
+    // server becomes ready.
+    initial_effects_ = std::move(config);
+
     LOG(ERROR) << "Cannot change camera effects, no camera server registered.";
     // Notify with nullopt as no camera server has been registered and camera
     // effects cannot be set in this case.

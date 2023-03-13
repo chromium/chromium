@@ -167,9 +167,6 @@ void CameraEffectsController::OnActiveUserPrefServiceChanged(
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(pref_service);
 
-  // Initialize camera effects for the first time. Set the expected initial
-  // state in case camera server isn't registered.
-  SetInitialCameraEffects(GetEffectsConfigFromPref());
   // If the camera has started, it won't get the previous setting so call it
   // here too. If the camera service isn't ready it this call will be ignored.
   SetCameraEffects(GetEffectsConfigFromPref());
@@ -291,12 +288,6 @@ void CameraEffectsController::SetCameraEffects(
     media::CameraHalDispatcherImpl::GetInstance()->SetCameraEffects(
         std::move(config));
   }
-}
-
-void CameraEffectsController::SetInitialCameraEffects(
-    cros::mojom::EffectsConfigPtr config) {
-  media::CameraHalDispatcherImpl::GetInstance()->SetInitialCameraEffects(
-      std::move(config));
 }
 
 cros::mojom::EffectsConfigPtr
