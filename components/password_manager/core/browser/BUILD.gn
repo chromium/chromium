@@ -798,7 +798,7 @@ source_set("unit_tests") {
   }
 }
 
-if (use_libfuzzer) {
+if (use_fuzzing_engine_with_lpm) {
   fuzzer_test("lookup_affiliation_response_parser_fuzzer") {
     sources = [ "affiliation/lookup_affiliation_response_parser_fuzzer.cc" ]
     deps = [
