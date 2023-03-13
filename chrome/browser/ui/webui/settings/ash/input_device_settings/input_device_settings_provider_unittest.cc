@@ -15,10 +15,12 @@
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/webui/settings/ash/input_device_settings/input_device_settings_provider.mojom.h"
 #include "content/public/test/browser_task_environment.h"
+#include "mojo/public/cpp/bindings/clone_traits.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::settings {
@@ -36,6 +38,14 @@ const ::ash::mojom::Keyboard kKeyboard2 =
                            /*is_external=*/true,
                            /*id=*/2,
                            /*device_key=*/"fake-device-key2",
+                           /*meta_key=*/::ash::mojom::MetaKey::kExternalMeta,
+                           /*modifier_keys=*/{},
+                           ::ash::mojom::KeyboardSettings::New());
+const ::ash::mojom::Keyboard kKeyboard3 =
+    ::ash::mojom::Keyboard(/*name=*/"HP 910 White Bluetooth Keyboard",
+                           /*is_external=*/true,
+                           /*id=*/3,
+                           /*device_key=*/"fake-device-key3",
                            /*meta_key=*/::ash::mojom::MetaKey::kExternalMeta,
                            /*modifier_keys=*/{},
                            ::ash::mojom::KeyboardSettings::New());
@@ -75,29 +85,30 @@ const ::ash::mojom::Mouse kMouse2 =
                         /*id=*/8,
                         /*device_key=*/"fake-device-key8",
                         ::ash::mojom::MouseSettings::New());
-template <typename T>
+template <bool sorted = false, typename T>
 void ExpectListsEqual(const std::vector<T>& expected_list,
                       const std::vector<T>& actual_list) {
   ASSERT_EQ(expected_list.size(), actual_list.size());
-  for (size_t i = 0; i < actual_list.size(); i++) {
-    EXPECT_EQ(expected_list[i], actual_list[i]);
+  if constexpr (sorted) {
+    for (size_t i = 0; i < expected_list.size(); i++) {
+      EXPECT_EQ(expected_list[i], actual_list[i]);
+    }
+    return;
+  }
+
+  for (size_t i = 0; i < expected_list.size(); i++) {
+    auto actual_iter = base::ranges::find(actual_list, expected_list[i]);
+    EXPECT_NE(actual_list.end(), actual_iter);
+    if (actual_iter != actual_list.end()) {
+      EXPECT_EQ(expected_list[i], *actual_iter);
+    }
   }
 }
 
-template <typename T>
+template <bool sorted = false, typename T>
 void ExpectListsEqualByValue(std::vector<T> expected_list,
                              std::vector<T> actual_list) {
-  ExpectListsEqual(expected_list, actual_list);
-}
-
-template <typename T>
-std::vector<T> CloneMojomVector(const std::vector<T>& devices) {
-  std::vector<T> devices_copy;
-  devices_copy.reserve(devices.size());
-  for (const auto& device : devices) {
-    devices_copy.push_back(device->Clone());
-  }
-  return devices_copy;
+  ExpectListsEqual<sorted, T>(expected_list, actual_list);
 }
 
 class FakeKeyboardSettingsObserver : public mojom::KeyboardSettingsObserver {
@@ -182,17 +193,17 @@ class FakeInputDeviceSettingsController : public InputDeviceSettingsController {
  public:
   // InputDeviceSettingsController:
   std::vector<::ash::mojom::KeyboardPtr> GetConnectedKeyboards() override {
-    return CloneMojomVector(keyboards_);
+    return mojo::Clone(keyboards_);
   }
   std::vector<::ash::mojom::TouchpadPtr> GetConnectedTouchpads() override {
-    return CloneMojomVector(touchpads_);
+    return mojo::Clone(touchpads_);
   }
   std::vector<::ash::mojom::MousePtr> GetConnectedMice() override {
-    return CloneMojomVector(mice_);
+    return mojo::Clone(mice_);
   }
   std::vector<::ash::mojom::PointingStickPtr> GetConnectedPointingSticks()
       override {
-    return CloneMojomVector(pointing_sticks_);
+    return mojo::Clone(pointing_sticks_);
   }
   const ::ash::mojom::KeyboardSettings* GetKeyboardSettings(
       DeviceId id) override {
@@ -351,15 +362,15 @@ TEST_F(InputDeviceSettingsProviderTest, TestGetConnectedKeyboards) {
   std::vector<::ash::mojom::KeyboardPtr> expected_keyboards;
   expected_keyboards.push_back(kKeyboard1.Clone());
   controller_->AddKeyboard(kKeyboard1.Clone());
-  provider_->GetConnectedKeyboards(
-      base::BindOnce(ExpectListsEqualByValue<::ash::mojom::KeyboardPtr>,
-                     CloneMojomVector(expected_keyboards)));
+  provider_->GetConnectedKeyboards(base::BindOnce(
+      ExpectListsEqualByValue</*sorted=*/false, ::ash::mojom::KeyboardPtr>,
+      mojo::Clone(expected_keyboards)));
 
   expected_keyboards.push_back(kKeyboard2.Clone());
   controller_->AddKeyboard(kKeyboard2.Clone());
-  provider_->GetConnectedKeyboards(
-      base::BindOnce(ExpectListsEqualByValue<::ash::mojom::KeyboardPtr>,
-                     CloneMojomVector(expected_keyboards)));
+  provider_->GetConnectedKeyboards(base::BindOnce(
+      ExpectListsEqualByValue</*sorted=*/false, ::ash::mojom::KeyboardPtr>,
+      mojo::Clone(expected_keyboards)));
 }
 
 TEST_F(InputDeviceSettingsProviderTest, TestSetKeyboardSettings) {
@@ -446,6 +457,93 @@ TEST_F(InputDeviceSettingsProviderTest, TestKeyboardSettingsObeserver) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(3, fake_observer.num_times_called());
   ExpectListsEqual(expected_keyboards, fake_observer.keyboards());
+}
+
+TEST_F(InputDeviceSettingsProviderTest, TestDuplicatesRemoved) {
+  std::vector<::ash::mojom::KeyboardPtr> expected_keyboards;
+
+  auto keyboard1 = kKeyboard1.Clone();
+  keyboard1->device_key = "test-key1";
+  expected_keyboards.push_back(keyboard1.Clone());
+  controller_->AddKeyboard(keyboard1.Clone());
+
+  FakeKeyboardSettingsObserver fake_observer;
+  provider_->ObserveKeyboardSettings(
+      fake_observer.receiver.BindNewPipeAndPassRemote());
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1, fake_observer.num_times_called());
+  ExpectListsEqual</*sorted=*/true>(expected_keyboards,
+                                    fake_observer.keyboards());
+
+  auto keyboard2 = kKeyboard2.Clone();
+  keyboard2->device_key = "test-key1";
+  controller_->AddKeyboard(keyboard2.Clone());
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(2, fake_observer.num_times_called());
+  ExpectListsEqual</*sorted=*/true>(expected_keyboards,
+                                    fake_observer.keyboards());
+
+  controller_->RemoveKeyboard(kKeyboard2.id);
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(3, fake_observer.num_times_called());
+  ExpectListsEqual</*sorted=*/true>(expected_keyboards,
+                                    fake_observer.keyboards());
+}
+
+TEST_F(InputDeviceSettingsProviderTest, TestSortingExternalFirst) {
+  std::vector<::ash::mojom::KeyboardPtr> expected_keyboards;
+
+  auto keyboard1 = kKeyboard1.Clone();
+  auto keyboard2 = kKeyboard2.Clone();
+
+  // Guarantee that keyboard 1 which is internal, has a higher id than keyboard
+  // 2 to properly test that external devices always come first in the list.
+  keyboard1->id = 2;
+  keyboard2->id = 1;
+  ASSERT_FALSE(keyboard1->is_external);
+  ASSERT_TRUE(keyboard2->is_external);
+
+  controller_->AddKeyboard(keyboard1->Clone());
+  controller_->AddKeyboard(keyboard2->Clone());
+  expected_keyboards.push_back(keyboard2->Clone());
+  expected_keyboards.push_back(keyboard1->Clone());
+
+  FakeKeyboardSettingsObserver fake_observer;
+  provider_->ObserveKeyboardSettings(
+      fake_observer.receiver.BindNewPipeAndPassRemote());
+
+  base::RunLoop().RunUntilIdle();
+  ExpectListsEqual</*sorted=*/true>(expected_keyboards,
+                                    fake_observer.keyboards());
+}
+
+TEST_F(InputDeviceSettingsProviderTest, TestSortingExternalFirstThenById) {
+  std::vector<::ash::mojom::KeyboardPtr> expected_keyboards;
+
+  controller_->AddKeyboard(kKeyboard1.Clone());
+  ASSERT_FALSE(kKeyboard1.is_external);
+
+  controller_->AddKeyboard(kKeyboard2.Clone());
+  ASSERT_TRUE(kKeyboard2.is_external);
+
+  controller_->AddKeyboard(kKeyboard3.Clone());
+  ASSERT_TRUE(kKeyboard3.is_external);
+  ASSERT_LT(kKeyboard2.id, kKeyboard3.id);
+
+  expected_keyboards.push_back(kKeyboard3.Clone());
+  expected_keyboards.push_back(kKeyboard2.Clone());
+  expected_keyboards.push_back(kKeyboard1.Clone());
+
+  FakeKeyboardSettingsObserver fake_observer;
+  provider_->ObserveKeyboardSettings(
+      fake_observer.receiver.BindNewPipeAndPassRemote());
+
+  base::RunLoop().RunUntilIdle();
+  ExpectListsEqual</*sorted=*/true>(expected_keyboards,
+                                    fake_observer.keyboards());
 }
 
 TEST_F(InputDeviceSettingsProviderTest, TestMouseSettingsObeserver) {

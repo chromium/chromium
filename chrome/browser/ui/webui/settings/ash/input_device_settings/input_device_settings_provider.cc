@@ -7,8 +7,41 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
+#include "base/containers/flat_set.h"
+#include "base/ranges/algorithm.h"
+#include "mojo/public/cpp/bindings/clone_traits.h"
 
 namespace ash::settings {
+
+namespace {
+
+template <typename T>
+struct CustomDeviceComparator {
+  bool operator()(const T& device1, const T& device2) const {
+    // If two devices have the same device_key, this should always return false
+    // so they are removed as duplicates.
+    if (device1->device_key == device2->device_key) {
+      return false;
+    }
+
+    // Guarantees that external devices appear first in the list.
+    if (device1->is_external != device2->is_external) {
+      return device1->is_external;
+    }
+
+    // Otherwise sort by most recently connected device (aka id in descending
+    // order).
+    return device1->id > device2->id;
+  }
+};
+
+template <typename T>
+std::vector<T> SanitizeAndSortDeviceList(std::vector<T> devices) {
+  base::flat_set<T, CustomDeviceComparator<T>> device_set(std::move(devices));
+  return std::move(device_set).extract();
+}
+
+}  // namespace
 
 InputDeviceSettingsProvider::InputDeviceSettingsProvider() {
   auto* controller = InputDeviceSettingsController::Get();
@@ -73,8 +106,8 @@ void InputDeviceSettingsProvider::GetConnectedKeyboards(
     GetConnectedKeyboardsCallback callback) {
   DCHECK(features::IsInputDeviceSettingsSplitEnabled());
   DCHECK(InputDeviceSettingsController::Get());
-  std::move(callback).Run(
-      InputDeviceSettingsController::Get()->GetConnectedKeyboards());
+  std::move(callback).Run(SanitizeAndSortDeviceList(
+      InputDeviceSettingsController::Get()->GetConnectedKeyboards()));
 }
 
 void InputDeviceSettingsProvider::ObserveKeyboardSettings(
@@ -83,7 +116,8 @@ void InputDeviceSettingsProvider::ObserveKeyboardSettings(
   DCHECK(InputDeviceSettingsController::Get());
   const auto id = keyboard_settings_observers_.Add(std::move(observer));
   keyboard_settings_observers_.Get(id)->OnKeyboardListUpdated(
-      InputDeviceSettingsController::Get()->GetConnectedKeyboards());
+      SanitizeAndSortDeviceList(
+          InputDeviceSettingsController::Get()->GetConnectedKeyboards()));
 }
 
 void InputDeviceSettingsProvider::ObserveTouchpadSettings(
@@ -92,7 +126,8 @@ void InputDeviceSettingsProvider::ObserveTouchpadSettings(
   DCHECK(InputDeviceSettingsController::Get());
   const auto id = touchpad_settings_observers_.Add(std::move(observer));
   touchpad_settings_observers_.Get(id)->OnTouchpadListUpdated(
-      InputDeviceSettingsController::Get()->GetConnectedTouchpads());
+      SanitizeAndSortDeviceList(
+          InputDeviceSettingsController::Get()->GetConnectedTouchpads()));
 }
 
 void InputDeviceSettingsProvider::ObservePointingStickSettings(
@@ -101,7 +136,8 @@ void InputDeviceSettingsProvider::ObservePointingStickSettings(
   DCHECK(InputDeviceSettingsController::Get());
   const auto id = pointing_stick_settings_observers_.Add(std::move(observer));
   pointing_stick_settings_observers_.Get(id)->OnPointingStickListUpdated(
-      InputDeviceSettingsController::Get()->GetConnectedPointingSticks());
+      SanitizeAndSortDeviceList(
+          InputDeviceSettingsController::Get()->GetConnectedPointingSticks()));
 }
 
 void InputDeviceSettingsProvider::ObserveMouseSettings(
@@ -110,7 +146,8 @@ void InputDeviceSettingsProvider::ObserveMouseSettings(
   DCHECK(InputDeviceSettingsController::Get());
   const auto id = mouse_settings_observers_.Add(std::move(observer));
   mouse_settings_observers_.Get(id)->OnMouseListUpdated(
-      InputDeviceSettingsController::Get()->GetConnectedMice());
+      SanitizeAndSortDeviceList(
+          InputDeviceSettingsController::Get()->GetConnectedMice()));
 }
 
 void InputDeviceSettingsProvider::OnKeyboardConnected(
@@ -155,33 +192,37 @@ void InputDeviceSettingsProvider::OnMouseDisconnected(
 
 void InputDeviceSettingsProvider::NotifyKeyboardsUpdated() {
   DCHECK(InputDeviceSettingsController::Get());
+  auto keyboards = SanitizeAndSortDeviceList(
+      InputDeviceSettingsController::Get()->GetConnectedKeyboards());
   for (const auto& observer : keyboard_settings_observers_) {
-    observer->OnKeyboardListUpdated(
-        InputDeviceSettingsController::Get()->GetConnectedKeyboards());
+    observer->OnKeyboardListUpdated(mojo::Clone(keyboards));
   }
 }
 
 void InputDeviceSettingsProvider::NotifyTouchpadsUpdated() {
   DCHECK(InputDeviceSettingsController::Get());
+  auto touchpads = SanitizeAndSortDeviceList(
+      InputDeviceSettingsController::Get()->GetConnectedTouchpads());
   for (const auto& observer : touchpad_settings_observers_) {
-    observer->OnTouchpadListUpdated(
-        InputDeviceSettingsController::Get()->GetConnectedTouchpads());
+    observer->OnTouchpadListUpdated(mojo::Clone(touchpads));
   }
 }
 
 void InputDeviceSettingsProvider::NotifyPointingSticksUpdated() {
   DCHECK(InputDeviceSettingsController::Get());
+  auto pointing_sticks = SanitizeAndSortDeviceList(
+      InputDeviceSettingsController::Get()->GetConnectedPointingSticks());
   for (const auto& observer : pointing_stick_settings_observers_) {
-    observer->OnPointingStickListUpdated(
-        InputDeviceSettingsController::Get()->GetConnectedPointingSticks());
+    observer->OnPointingStickListUpdated(mojo::Clone(pointing_sticks));
   }
 }
 
 void InputDeviceSettingsProvider::NotifyMiceUpdated() {
   DCHECK(InputDeviceSettingsController::Get());
+  auto mice = SanitizeAndSortDeviceList(
+      InputDeviceSettingsController::Get()->GetConnectedMice());
   for (const auto& observer : mouse_settings_observers_) {
-    observer->OnMouseListUpdated(
-        InputDeviceSettingsController::Get()->GetConnectedMice());
+    observer->OnMouseListUpdated(mojo::Clone(mice));
   }
 }
 
