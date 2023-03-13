@@ -122,12 +122,14 @@ class AppPlatformMetricsServiceTestBase : public ::testing::Test {
     return test_ukm_recorder_.get();
   }
 
+  // Creates test user and profile with the specified email for testing
+  // purposes.
+  void AddRegularUser(const std::string& email);
+
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
  private:
-  void AddRegularUser(const std::string& email);
-
   std::unique_ptr<TestingProfile> testing_profile_;
   raw_ptr<syncer::TestSyncService> sync_service_ = nullptr;
   base::HistogramTester histogram_tester_;

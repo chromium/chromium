@@ -79,6 +79,7 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
 
   apps::InstanceRegistry& InstanceRegistry();
   apps::AppPlatformMetrics* AppPlatformMetrics();
+  apps::AppPlatformMetricsService* AppPlatformMetricsService();
 
   apps::BrowserAppInstanceTracker* BrowserAppInstanceTracker();
   apps::BrowserAppInstanceRegistry* BrowserAppInstanceRegistry();

@@ -137,6 +137,22 @@ class MockAppPlatformMetricsObserver : public AppPlatformMetrics::Observer {
   MOCK_METHOD(void, OnAppPlatformMetricsDestroyed, (), (override));
 };
 
+// Mock observer implementation for the `AppPlatformMetricsService` component.
+class MockObserver : public AppPlatformMetricsService::Observer {
+ public:
+  MockObserver() = default;
+  MockObserver(const MockObserver&) = delete;
+  MockObserver& operator=(const MockObserver&) = delete;
+  ~MockObserver() override = default;
+
+  MOCK_METHOD(void,
+              OnAppPlatformMetricsInit,
+              (AppPlatformMetrics * app_platform_metrics),
+              (override));
+
+  MOCK_METHOD(void, OnAppPlatformMetricsServiceWillBeDestroyed, (), (override));
+};
+
 class FakePublisher : public AppPublisher {
  public:
   FakePublisher(AppServiceProxy* proxy, AppType app_type)
@@ -3074,5 +3090,83 @@ TEST_P(AppDiscoveryMetricsTest, AppActivityMetricsRecorded) {
 INSTANTIATE_TEST_SUITE_P(All,
                          AppDiscoveryMetricsTest,
                          testing::Bool() /* IsLacrosPrimary */);
+
+class AppPlatformMetricsServiceObserverTest
+    : public AppPlatformMetricsServiceTestBase,
+      public ::testing::WithParamInterface<bool> {
+ protected:
+  void SetUp() override {
+    if (IsLacrosPrimary()) {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{ash::features::kLacrosSupport,
+                                ash::features::kLacrosPrimary},
+          {});
+    } else {
+      feature_list_.InitWithFeatures(
+          {},
+          /*disabled_features=*/{ash::features::kLacrosSupport,
+                                 ash::features::kLacrosPrimary});
+    }
+
+    // Set up test user.
+    AddRegularUser("test@test.com");
+  }
+
+  bool IsLacrosPrimary() const { return GetParam(); }
+
+  MockObserver* observer() { return &observer_; }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+
+  // Mock observer for the `AppPlatformMetricsService` component. Needs to
+  // outlive the lifetime of the component for testing purposes.
+  MockObserver observer_;
+};
+
+TEST_P(AppPlatformMetricsServiceObserverTest,
+       NotifyObserversOnAppPlatformMetricsInit) {
+  MockObserver* const observer_ptr = observer();
+  AppPlatformMetricsService app_platform_metrics_service(profile());
+  app_platform_metrics_service.AddObserver(observer_ptr);
+  EXPECT_CALL(*observer_ptr, OnAppPlatformMetricsInit(_))
+      .WillOnce([&](AppPlatformMetrics* app_platform_metrics) {
+        EXPECT_THAT(app_platform_metrics,
+                    Eq(app_platform_metrics_service.AppPlatformMetrics()));
+      });
+  app_platform_metrics_service.Start(
+      AppServiceProxyFactory::GetForProfile(profile())->AppRegistryCache(),
+      AppServiceProxyFactory::GetForProfile(profile())->InstanceRegistry());
+}
+
+TEST_P(AppPlatformMetricsServiceObserverTest,
+       ShouldNotNotifyObserversOnAppPlatformMetricsInitIfUnregistered) {
+  MockObserver* const observer_ptr = observer();
+  AppPlatformMetricsService app_platform_metrics_service(profile());
+
+  // Unregister registered observer before init and verify observer is not
+  // notified.
+  app_platform_metrics_service.AddObserver(observer_ptr);
+  app_platform_metrics_service.RemoveObserver(observer_ptr);
+  EXPECT_CALL(*observer_ptr, OnAppPlatformMetricsInit(_)).Times(0);
+  app_platform_metrics_service.Start(
+      AppServiceProxyFactory::GetForProfile(profile())->AppRegistryCache(),
+      AppServiceProxyFactory::GetForProfile(profile())->InstanceRegistry());
+}
+
+TEST_P(AppPlatformMetricsServiceObserverTest,
+       ShouldNotifyObserverOnDestruction) {
+  MockObserver* const observer_ptr = observer();
+  auto app_platform_metrics_service =
+      std::make_unique<AppPlatformMetricsService>(profile());
+  app_platform_metrics_service->AddObserver(observer_ptr);
+  EXPECT_CALL(*observer_ptr, OnAppPlatformMetricsServiceWillBeDestroyed)
+      .Times(1);
+  app_platform_metrics_service.reset();
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AppPlatformMetricsServiceObserverTest,
+                         ::testing::Bool() /* IsLacrosPrimary */);
 
 }  // namespace apps

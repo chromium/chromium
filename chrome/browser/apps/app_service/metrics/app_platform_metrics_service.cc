@@ -40,6 +40,11 @@ AppPlatformMetricsService::AppPlatformMetricsService(Profile* profile)
 
 AppPlatformMetricsService::~AppPlatformMetricsService() {
   timer_.Stop();
+
+  // Also notify observers.
+  for (auto& observer : observers_) {
+    observer.OnAppPlatformMetricsServiceWillBeDestroyed();
+  }
 }
 
 // static
@@ -89,6 +94,21 @@ void AppPlatformMetricsService::Start(
   noisy_appkm_reporting_interval_timer_.Start(
       FROM_HERE, kNoisyAppKMReportInterval, this,
       &AppPlatformMetricsService::CheckForNoisyAppKMReportingInterval);
+
+  // Also notify observers.
+  for (auto& observer : observers_) {
+    observer.OnAppPlatformMetricsInit(app_platform_app_metrics_.get());
+  }
+}
+
+void AppPlatformMetricsService::AddObserver(
+    AppPlatformMetricsService::Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void AppPlatformMetricsService::RemoveObserver(
+    AppPlatformMetricsService::Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 void AppPlatformMetricsService::SetWebsiteMetricsForTesting(
