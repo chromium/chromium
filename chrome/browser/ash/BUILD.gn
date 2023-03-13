@@ -2309,6 +2309,8 @@ source_set("ash") {
     "policy/enrollment/enrollment_handler.h",
     "policy/enrollment/enrollment_requisition_manager.cc",
     "policy/enrollment/enrollment_requisition_manager.h",
+    "policy/enrollment/enrollment_state_fetcher.cc",
+    "policy/enrollment/enrollment_state_fetcher.h",
     "policy/enrollment/enrollment_status.cc",
     "policy/enrollment/enrollment_status.h",
     "policy/enrollment/psm/construct_rlwe_id.cc",
