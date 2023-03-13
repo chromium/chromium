@@ -39,7 +39,8 @@ Page* GetContainingPage(HTMLVideoElement& video) {
 VideoWakeLock::VideoWakeLock(HTMLVideoElement& video)
     : PageVisibilityObserver(GetContainingPage(video)),
       ExecutionContextLifecycleStateObserver(video.GetExecutionContext()),
-      video_element_(video) {
+      video_element_(video),
+      wake_lock_service_(video.GetExecutionContext()) {
   VideoElement().addEventListener(event_type_names::kPlaying, this, true);
   VideoElement().addEventListener(event_type_names::kPause, this, true);
   VideoElement().addEventListener(event_type_names::kEmptied, this, true);
@@ -90,6 +91,7 @@ void VideoWakeLock::Trace(Visitor* visitor) const {
   ExecutionContextLifecycleStateObserver::Trace(visitor);
   visitor->Trace(video_element_);
   visitor->Trace(intersection_observer_);
+  visitor->Trace(wake_lock_service_);
 }
 
 void VideoWakeLock::Invoke(ExecutionContext*, Event* event) {
@@ -178,10 +180,10 @@ void VideoWakeLock::EnsureWakeLockService() {
   mojo::Remote<blink::mojom::blink::WakeLockService> service;
   frame->GetBrowserInterfaceBroker().GetInterface(
       service.BindNewPipeAndPassReceiver(task_runner));
-  service->GetWakeLock(device::mojom::WakeLockType::kPreventDisplaySleep,
-                       device::mojom::blink::WakeLockReason::kVideoPlayback,
-                       "Video Wake Lock",
-                       wake_lock_service_.BindNewPipeAndPassReceiver());
+  service->GetWakeLock(
+      device::mojom::WakeLockType::kPreventDisplaySleep,
+      device::mojom::blink::WakeLockReason::kVideoPlayback, "Video Wake Lock",
+      wake_lock_service_.BindNewPipeAndPassReceiver(task_runner));
   wake_lock_service_.set_disconnect_handler(WTF::BindOnce(
       &VideoWakeLock::OnConnectionError, WrapWeakPersistent(this)));
 }
