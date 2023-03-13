@@ -30433,8 +30433,16 @@ should be able to be added at any place in this file.
 
 <action name="Signin_AddAccountToDevice">
   <owner>gogerald@chromium.org</owner>
+  <description>Recorded when the add account dialog is opened.</description>
+</action>
+
+<action name="Signin_AddAccountToDevice_DismissedWithError"
+    not_user_triggered="true">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
   <description>
-    Recorded when the user chooses to add an account to device.
+    Recorded when the add account view is dismissed with an error. Recorded for
+    iOS only.
   </description>
 </action>
 
