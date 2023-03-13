@@ -103224,12 +103224,18 @@ Full version information for the fingerprint enum values:
 
 <enum name="TranslateLanguageVerification">
   <int value="0" label="(deprecated) Model is disabled"/>
-  <int value="1" label="No Content-Language"/>
-  <int value="2" label="Model can not determine a language"/>
+  <int value="1" label="Model only (no Content-Language)"/>
+  <int value="2" label="Model unkown (use Content-Language)"/>
   <int value="3" label="Model agrees with Content-Language"/>
   <int value="4" label="Model disagrees with Content-Language"/>
-  <int value="5" label="Model can be trusted"/>
-  <int value="6" label="Model can complement a sub code"/>
+  <int value="5" label="Model overrides 'en' Content-Language">
+    If the model predicts a language in 'kWellKnownCodesOnWrongConfiguration'
+    but the Content-Language is 'en' we use the model language.
+  </int>
+  <int value="6" label="Model compliments country code">
+    A country code is required for zh, use the model version if the page
+    language does not include one.
+  </int>
 </enum>
 
 <enum name="TranslateRankerDecision">
