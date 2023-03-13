@@ -229,7 +229,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   // Get the index in the parent's list of unignored children. Returns `nullopt`
   // if an unignored parent is unavailable, e.g. if this node is at the root of
   // all accessibility trees.
-  virtual absl::optional<size_t> GetIndexInParent();
+  virtual absl::optional<size_t> GetIndexInParent() const;
 
   // Get the number of children of this node.
   //
@@ -246,26 +246,26 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   // returns only unignored children. All ignored nodes are recursively removed.
   // (An ignored node means that the node should not be exposed to platform
   // APIs: See `IsIgnored`.)
-  virtual gfx::NativeViewAccessible ChildAtIndex(size_t index);
+  virtual gfx::NativeViewAccessible ChildAtIndex(size_t index) const;
 
   // Returns true if this node is within a modal dialog.
   virtual bool HasModalDialog() const;
 
   // Gets the first unignored child of this node, or nullptr if no children
   // exist.
-  virtual gfx::NativeViewAccessible GetFirstChild();
+  virtual gfx::NativeViewAccessible GetFirstChild() const;
 
   // Gets the last unignored child of this node, or nullptr if no children
   // exist.
-  virtual gfx::NativeViewAccessible GetLastChild();
+  virtual gfx::NativeViewAccessible GetLastChild() const;
 
   // Gets the next unignored sibling of this node, or nullptr if no such node
   // exists.
-  virtual gfx::NativeViewAccessible GetNextSibling();
+  virtual gfx::NativeViewAccessible GetNextSibling() const;
 
   // Gets the previous sibling of this node, or nullptr if no such node
   // exists.
-  virtual gfx::NativeViewAccessible GetPreviousSibling();
+  virtual gfx::NativeViewAccessible GetPreviousSibling() const;
 
   // Returns true if an ancestor of this node (not including itself) is a
   // leaf node, meaning that this node is not actually exposed to any
@@ -334,8 +334,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   // If within a table, returns the node representing the table.
   virtual gfx::NativeViewAccessible GetTableAncestor() const;
 
-  virtual std::unique_ptr<ChildIterator> ChildrenBegin();
-  virtual std::unique_ptr<ChildIterator> ChildrenEnd();
+  virtual std::unique_ptr<ChildIterator> ChildrenBegin() const;
+  virtual std::unique_ptr<ChildIterator> ChildrenEnd() const;
 
   // Returns the accessible name for this node. This could either be derived
   // from visible text, such as the node's contents or an associated label, or

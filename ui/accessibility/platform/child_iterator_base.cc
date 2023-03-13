@@ -8,7 +8,7 @@
 
 namespace ui {
 
-ChildIteratorBase::ChildIteratorBase(AXPlatformNodeDelegate* parent,
+ChildIteratorBase::ChildIteratorBase(const AXPlatformNodeDelegate* parent,
                                      size_t index)
     : parent_(parent), index_(index) {
   DCHECK(parent);

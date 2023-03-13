@@ -33,8 +33,9 @@ namespace autofill {
 
 namespace {
 
-ui::AXPlatformNodeDelegate* FindNode(ui::AXPlatformNodeDelegate* root,
-                                     const std::string& class_name) {
+const ui::AXPlatformNodeDelegate* FindNode(
+    const ui::AXPlatformNodeDelegate* root,
+    const std::string& class_name) {
   if (!root) {
     return nullptr;
   }
@@ -45,7 +46,8 @@ ui::AXPlatformNodeDelegate* FindNode(ui::AXPlatformNodeDelegate* root,
   }
 
   for (auto it = root->ChildrenBegin(); *it != *root->ChildrenEnd(); ++(*it)) {
-    ui::AXPlatformNodeDelegate* child_found = FindNode(it->get(), class_name);
+    const ui::AXPlatformNodeDelegate* child_found =
+        FindNode(it->get(), class_name);
     if (child_found) {
       return child_found;
     }
@@ -433,7 +435,7 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewAxTest, PopupInAxTree) {
 
   ui::AXPlatformNode* root_node = ui::AXPlatformNode::FromNativeWindow(window);
   ui::AXPlatformNodeDelegate* root_node_delegate = root_node->GetDelegate();
-  ui::AXPlatformNodeDelegate* node_delegate =
+  const ui::AXPlatformNodeDelegate* node_delegate =
       FindNode(root_node_delegate,
                "PasswordGenerationPopupViewViews::GeneratedPasswordBox");
 

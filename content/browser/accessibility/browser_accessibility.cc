@@ -942,35 +942,36 @@ size_t BrowserAccessibility::GetChildCount() const {
   return PlatformChildCount();
 }
 
-gfx::NativeViewAccessible BrowserAccessibility::ChildAtIndex(size_t index) {
+gfx::NativeViewAccessible BrowserAccessibility::ChildAtIndex(
+    size_t index) const {
   BrowserAccessibility* child = PlatformGetChild(index);
   if (!child)
     return nullptr;
   return child->GetNativeViewAccessible();
 }
 
-gfx::NativeViewAccessible BrowserAccessibility::GetFirstChild() {
+gfx::NativeViewAccessible BrowserAccessibility::GetFirstChild() const {
   BrowserAccessibility* child = PlatformGetFirstChild();
   if (!child)
     return nullptr;
   return child->GetNativeViewAccessible();
 }
 
-gfx::NativeViewAccessible BrowserAccessibility::GetLastChild() {
+gfx::NativeViewAccessible BrowserAccessibility::GetLastChild() const {
   BrowserAccessibility* child = PlatformGetLastChild();
   if (!child)
     return nullptr;
   return child->GetNativeViewAccessible();
 }
 
-gfx::NativeViewAccessible BrowserAccessibility::GetNextSibling() {
+gfx::NativeViewAccessible BrowserAccessibility::GetNextSibling() const {
   BrowserAccessibility* sibling = PlatformGetNextSibling();
   if (!sibling)
     return nullptr;
   return sibling->GetNativeViewAccessible();
 }
 
-gfx::NativeViewAccessible BrowserAccessibility::GetPreviousSibling() {
+gfx::NativeViewAccessible BrowserAccessibility::GetPreviousSibling() const {
   BrowserAccessibility* sibling = PlatformGetPreviousSibling();
   if (!sibling)
     return nullptr;
@@ -1106,11 +1107,11 @@ BrowserAccessibility* BrowserAccessibility::PlatformChildIterator::operator->()
   return platform_iterator.get();
 }
 
-std::unique_ptr<ui::ChildIterator> BrowserAccessibility::ChildrenBegin() {
+std::unique_ptr<ui::ChildIterator> BrowserAccessibility::ChildrenBegin() const {
   return std::make_unique<PlatformChildIterator>(PlatformChildrenBegin());
 }
 
-std::unique_ptr<ui::ChildIterator> BrowserAccessibility::ChildrenEnd() {
+std::unique_ptr<ui::ChildIterator> BrowserAccessibility::ChildrenEnd() const {
   return std::make_unique<PlatformChildIterator>(PlatformChildrenEnd());
 }
 
@@ -1156,7 +1157,7 @@ ui::AXPlatformNode* BrowserAccessibility::GetFromTreeIDAndNodeID(
   return node->GetAXPlatformNode();
 }
 
-absl::optional<size_t> BrowserAccessibility::GetIndexInParent() {
+absl::optional<size_t> BrowserAccessibility::GetIndexInParent() const {
   if (manager()->GetBrowserAccessibilityRoot() == this &&
       PlatformGetParent() == nullptr) {
     // If it is a root node of WebContent, it doesn't have a parent and a

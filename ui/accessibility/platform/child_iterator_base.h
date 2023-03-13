@@ -12,7 +12,7 @@ namespace ui {
 
 class COMPONENT_EXPORT(AX_PLATFORM) ChildIteratorBase : public ChildIterator {
  public:
-  ChildIteratorBase(AXPlatformNodeDelegate* parent, size_t index);
+  ChildIteratorBase(const AXPlatformNodeDelegate* parent, size_t index);
   ChildIteratorBase(const ChildIteratorBase& it);
   ~ChildIteratorBase() override = default;
   ChildIteratorBase& operator++() override;
@@ -28,7 +28,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) ChildIteratorBase : public ChildIterator {
   AXPlatformNodeDelegate* operator->() const override;
 
  private:
-  raw_ptr<AXPlatformNodeDelegate> parent_;
+  raw_ptr<const AXPlatformNodeDelegate> parent_;
   size_t index_;
 };
 
