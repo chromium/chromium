@@ -19,8 +19,12 @@ MediaFoundationClearKeyDecryptor::~MediaFoundationClearKeyDecryptor() {
   DVLOG_FUNC(1);
 }
 
-HRESULT MediaFoundationClearKeyDecryptor::RuntimeClassInitialize() {
+HRESULT MediaFoundationClearKeyDecryptor::RuntimeClassInitialize(
+    _In_ scoped_refptr<AesDecryptor> aes_decryptor) {
   DVLOG_FUNC(1);
+
+  aes_decryptor_ = std::move(aes_decryptor);
+
   return S_OK;
 }
 

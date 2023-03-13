@@ -4,19 +4,24 @@
 
 #include "media/cdm/win/test/media_foundation_clear_key_cdm_access.h"
 
+#include <mfapi.h>
 #include <mferror.h>
-#include <wrl/implements.h>
 
 #include "base/notreached.h"
+#include "base/win/core_winrt_util.h"
+#include "base/win/scoped_hstring.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/cdm/clear_key_cdm_common.h"
 #include "media/cdm/win/test/media_foundation_clear_key_cdm.h"
 
 namespace media {
 
+using Microsoft::WRL::ComPtr;
 using Microsoft::WRL::MakeAndInitialize;
 
-MediaFoundationClearKeyCdmAccess::MediaFoundationClearKeyCdmAccess() = default;
+MediaFoundationClearKeyCdmAccess::MediaFoundationClearKeyCdmAccess() {
+  DVLOG_FUNC(1);
+}
 
 MediaFoundationClearKeyCdmAccess::~MediaFoundationClearKeyCdmAccess() {
   DVLOG_FUNC(1);
@@ -39,15 +44,23 @@ STDMETHODIMP MediaFoundationClearKeyCdmAccess::CreateContentDecryptionModule(
     return MF_E_UNEXPECTED;
   }
 
+  *cdm = nullptr;
+
+  ComPtr<IMFContentDecryptionModule> mf_cdm;
   RETURN_IF_FAILED((
       MakeAndInitialize<MediaFoundationClearKeyCdm, IMFContentDecryptionModule>(
-          cdm, properties)));
+          &mf_cdm, properties)));
+
+  *cdm = mf_cdm.Detach();
 
   return S_OK;
 }
 
 STDMETHODIMP MediaFoundationClearKeyCdmAccess::GetConfiguration(
     _COM_Outptr_ IPropertyStore** output) {
+  DVLOG_FUNC(3);
+
+  // API not used.
   NOTIMPLEMENTED();
   return E_NOTIMPL;
 }

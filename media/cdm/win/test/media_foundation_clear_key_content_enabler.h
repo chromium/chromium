@@ -10,8 +10,6 @@
 
 namespace media {
 
-// Content Enabler must implement IMFAttributes in order for the infrastructure
-// to do resource management.
 class MediaFoundationClearKeyContentEnabler
     : public Microsoft::WRL::RuntimeClass<
           Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,

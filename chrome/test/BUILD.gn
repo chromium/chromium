@@ -4638,6 +4638,10 @@ if (!is_android) {
         "//third_party/widevine/cdm",
       ]
     }
+    if (is_win) {
+      # Runtime dependencies.
+      data_deps += [ "//media/cdm/win/test:media_foundation_clear_key_cdm" ]
+    }
     if (enable_oop_printing) {
       sources += [ "../browser/printing/print_backend_browsertest.cc" ]
       deps += [

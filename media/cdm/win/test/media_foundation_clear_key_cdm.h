@@ -8,13 +8,17 @@
 #include <mfcontentdecryptionmodule.h>
 #include <mferror.h>
 #include <mfidl.h>
+#include <windows.media.protection.h>
 #include <wrl/client.h>
 #include <wrl/implements.h>
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
+#include "media/cdm/aes_decryptor.h"
+#include "media/cdm/win/test/media_foundation_clear_key_session.h"
 
 namespace media {
 
@@ -54,7 +58,6 @@ class MediaFoundationClearKeyCdm final
   STDMETHODIMP GetProtectionSystemIds(_Outptr_result_buffer_(*system_ids)
                                           GUID** system_ids,
                                       _Out_ DWORD* count) override;
-
   // IMFGetService
   STDMETHODIMP GetService(__RPC__in REFGUID guid_service,
                           __RPC__in REFIID riid,
@@ -65,6 +68,33 @@ class MediaFoundationClearKeyCdm final
   STDMETHODIMP GetShutdownStatus(MFSHUTDOWN_STATUS* status) override;
 
  private:
+  scoped_refptr<AesDecryptor> GetAesDecryptor();
+  void OnSessionMessage(const std::string& session_id,
+                        CdmMessageType message_type,
+                        const std::vector<uint8_t>& message);
+  void OnSessionClosed(const std::string& session_id,
+                       CdmSessionClosedReason reason);
+  void OnSessionKeysChange(const std::string& session_id,
+                           bool has_additional_usable_key,
+                           CdmKeysInfo keys_info);
+  void OnSessionIdCreated(
+      const std::string& session_id,
+      Microsoft::WRL::ComPtr<IMFContentDecryptionModuleSession> session);
+  void OnSessionIdRemoved(const std::string& session_id);
+  MediaFoundationClearKeySession* FindSession(const std::string& session_id);
+
+  // To use the hardware protection layer, we need to create an in-process PMP
+  // server.
+  Microsoft::WRL::ComPtr<
+      ABI::Windows::Media::Protection::IMediaProtectionPMPServer>
+      media_protection_pmp_server_;
+  scoped_refptr<AesDecryptor> aes_decryptor_;
+
+  // Session ID to session map.
+  std::map<std::string,
+           Microsoft::WRL::ComPtr<IMFContentDecryptionModuleSession>>
+      sessions_;
+
   HRESULT GetShutdownStatus() {
     base::AutoLock lock(lock_);
     return (is_shutdown_) ? MF_E_SHUTDOWN : S_OK;
@@ -82,6 +112,9 @@ class MediaFoundationClearKeyCdm final
 
   // Thread checker to enforce that this object is used on a specific thread.
   THREAD_CHECKER(thread_checker_);
+
+  // NOTE: Weak pointers must be invalidated before all other member variables.
+  base::WeakPtrFactory<MediaFoundationClearKeyCdm> weak_factory_{this};
 };
 
 }  // namespace media

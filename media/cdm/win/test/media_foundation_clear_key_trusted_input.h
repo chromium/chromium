@@ -8,11 +8,14 @@
 #include <mfidl.h>
 #include <wrl/implements.h>
 
+#include "base/memory/scoped_refptr.h"
+#include "media/cdm/aes_decryptor.h"
+
 namespace media {
 
 class MediaFoundationClearKeyTrustedInput final
     : public Microsoft::WRL::RuntimeClass<
-          Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
+          Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::WinRtClassicComMix>,
           IMFTrustedInput,
           Microsoft::WRL::FtmBase> {
  public:
@@ -23,13 +26,17 @@ class MediaFoundationClearKeyTrustedInput final
   MediaFoundationClearKeyTrustedInput& operator=(
       const MediaFoundationClearKeyTrustedInput&) = delete;
 
-  HRESULT RuntimeClassInitialize();
+  HRESULT RuntimeClassInitialize(
+      _In_ scoped_refptr<AesDecryptor> aes_decryptor);
 
   // IMFTrustedInput
   STDMETHODIMP GetInputTrustAuthority(
       _In_ DWORD stream_id,
       _In_ REFIID riid,
       _COM_Outptr_ IUnknown** authority) override;
+
+ private:
+  scoped_refptr<AesDecryptor> aes_decryptor_;
 };
 
 }  // namespace media

@@ -32,11 +32,13 @@ MediaFoundationClearKeyInputTrustAuthority::
 }
 
 HRESULT MediaFoundationClearKeyInputTrustAuthority::RuntimeClassInitialize(
-    _In_ UINT32 stream_id) {
+    _In_ UINT32 stream_id,
+    _In_ scoped_refptr<AesDecryptor> aes_decryptor) {
   DVLOG_FUNC(1) << "stream_id=" << stream_id;
 
-  NOTIMPLEMENTED();
-  return E_NOTIMPL;
+  aes_decryptor_ = std::move(aes_decryptor);
+
+  return S_OK;
 }
 
 // IMFInputTrustAuthority
@@ -47,12 +49,11 @@ STDMETHODIMP MediaFoundationClearKeyInputTrustAuthority::GetDecrypter(
   RETURN_IF_FAILED(GetShutdownStatus());
 
   ComPtr<IMFTransform> mf_decryptor;
-  HRESULT hr =
-      MakeAndInitialize<MediaFoundationClearKeyDecryptor, IMFTransform>(
-          &mf_decryptor);
-  RETURN_IF_FAILED(hr);
-  RETURN_IF_FAILED(mf_decryptor.CopyTo(riid, ppv));
+  RETURN_IF_FAILED(
+      (MakeAndInitialize<MediaFoundationClearKeyDecryptor, IMFTransform>(
+          &mf_decryptor, aes_decryptor_)));
 
+  RETURN_IF_FAILED(mf_decryptor.CopyTo(riid, ppv));
   return S_OK;
 }
 
@@ -81,30 +82,48 @@ STDMETHODIMP MediaFoundationClearKeyInputTrustAuthority::RequestAccess(
 
   *content_enabler_activate = activate.Detach();
 
-  return NS_E_LICENSE_REQUIRED;
+  // Return S_OK to pretend the user has permission to perform this action.
+  return S_OK;
 }
 
 STDMETHODIMP MediaFoundationClearKeyInputTrustAuthority::GetPolicy(
     _In_ MFPOLICYMANAGER_ACTION action,
     _COM_Outptr_ IMFOutputPolicy** policy) {
+  DVLOG_FUNC(1);
   NOTIMPLEMENTED();
   return E_NOTIMPL;
 }
 
 STDMETHODIMP MediaFoundationClearKeyInputTrustAuthority::BindAccess(
     _In_ MFINPUTTRUSTAUTHORITY_ACCESS_PARAMS* params) {
-  NOTIMPLEMENTED();
-  return E_NOTIMPL;
+  DVLOG_FUNC(1);
+  RETURN_IF_FAILED(GetShutdownStatus());
+
+  if (params == nullptr || params->dwVer != 0) {
+    return E_INVALIDARG;
+  }
+
+  for (DWORD i = 0; i < params->cActions; ++i) {
+    MFPOLICYMANAGER_ACTION action = params->rgOutputActions[i].Action;
+    if (action != PEACTION_PLAY && action != PEACTION_EXTRACT &&
+        action != PEACTION_NO) {
+      return MF_E_UNEXPECTED;
+    }
+  }
+
+  return S_OK;
 }
 
 STDMETHODIMP MediaFoundationClearKeyInputTrustAuthority::UpdateAccess(
     _In_ MFINPUTTRUSTAUTHORITY_ACCESS_PARAMS* params) {
-  NOTIMPLEMENTED();
-  return E_NOTIMPL;
+  DVLOG_FUNC(1);
+  return BindAccess(params);
 }
 
 STDMETHODIMP MediaFoundationClearKeyInputTrustAuthority::Reset() {
-  RETURN_IF_FAILED(GetShutdownStatus());
+  DVLOG_FUNC(1);
+
+  // API not used.
   NOTIMPLEMENTED();
   return E_NOTIMPL;
 }
@@ -112,6 +131,8 @@ STDMETHODIMP MediaFoundationClearKeyInputTrustAuthority::Reset() {
 // IMFShutdown
 STDMETHODIMP MediaFoundationClearKeyInputTrustAuthority::GetShutdownStatus(
     _Out_ MFSHUTDOWN_STATUS* status) {
+  DVLOG_FUNC(1);
+
   base::AutoLock lock(lock_);
   if (is_shutdown_) {
     *status = MFSHUTDOWN_COMPLETED;
@@ -122,6 +143,7 @@ STDMETHODIMP MediaFoundationClearKeyInputTrustAuthority::GetShutdownStatus(
 }
 
 STDMETHODIMP MediaFoundationClearKeyInputTrustAuthority::Shutdown() {
+  DVLOG_FUNC(1);
   base::AutoLock lock(lock_);
 
   if (is_shutdown_) {

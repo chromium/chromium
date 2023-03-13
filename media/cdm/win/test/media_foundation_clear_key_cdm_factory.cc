@@ -22,8 +22,10 @@ using Microsoft::WRL::MakeAndInitialize;
 
 ActivatableClass(MediaFoundationClearKeyCdmFactory);
 
-MediaFoundationClearKeyCdmFactory::MediaFoundationClearKeyCdmFactory() =
-    default;
+MediaFoundationClearKeyCdmFactory::MediaFoundationClearKeyCdmFactory() {
+  DVLOG_FUNC(1);
+}
+
 MediaFoundationClearKeyCdmFactory::~MediaFoundationClearKeyCdmFactory() {
   DVLOG_FUNC(1);
 }

@@ -25,31 +25,41 @@ MediaFoundationClearKeyActivate::~MediaFoundationClearKeyActivate() {
 
 HRESULT MediaFoundationClearKeyActivate::RuntimeClassInitialize() {
   DVLOG_FUNC(1);
-  NOTIMPLEMENTED();
-  return E_NOTIMPL;
+  return S_OK;
 }
 
 STDMETHODIMP MediaFoundationClearKeyActivate::ActivateObject(
     _In_ REFIID riid,
     _COM_Outptr_ void** ppv) {
+  DVLOG_FUNC(1);
+
   *ppv = nullptr;
+
   ComPtr<IMFContentEnabler> content_enabler;
   RETURN_IF_FAILED(MakeAndInitialize<MediaFoundationClearKeyContentEnabler>(
       &content_enabler));
 
-  return content_enabler.CopyTo(riid, ppv);
+  RETURN_IF_FAILED(content_enabler.CopyTo(riid, ppv));
+  return S_OK;
 }
 
 STDMETHODIMP MediaFoundationClearKeyActivate::ShutdownObject() {
+  DVLOG_FUNC(3);
+
+  // API not used.
   NOTIMPLEMENTED();
   return E_NOTIMPL;
 }
 
 STDMETHODIMP MediaFoundationClearKeyActivate::DetachObject() {
+  DVLOG_FUNC(3);
+
+  // API not used.
   NOTIMPLEMENTED();
   return E_NOTIMPL;
 }
 
+// IMFAttributes inherited by IMFActivate
 STDMETHODIMP MediaFoundationClearKeyActivate::GetItem(
     __RPC__in REFGUID guidKey,
     __RPC__inout_opt PROPVARIANT* pValue) {
