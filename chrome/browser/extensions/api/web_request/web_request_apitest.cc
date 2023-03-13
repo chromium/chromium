@@ -143,6 +143,10 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ui/ozone/buildflags.h"
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
+
 using content::WebContents;
 
 namespace extensions {
@@ -6181,11 +6185,19 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest, TestOnAuthRequired) {
   EXPECT_TRUE(navigation_observer.last_navigation_succeeded());
 }
 
+// The build flag OZONE_PLATFORM_WAYLAND is only available on
+// Linux or ChromeOS, so this simplifies the next set of ifdefs.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(OZONE_PLATFORM_WAYLAND)
+#define OZONE_PLATFORM_WAYLAND
+#endif  // BUILDFLAG(OZONE_PLATFORM_WAYLAND)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Tests the behavior of an extension that registers an event listener
 // asynchronously.
 // Regression test for https://crbug.com/1397879.
-// Flaky on linux-lacros. See https://crbug.com/1423241
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// Flaky on linux-lacros and linux-wayland-rel. See https://crbug.com/1423018
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OZONE_PLATFORM_WAYLAND)
 #define MAYBE_AsyncListenerRegistration DISABLED_AsyncListenerRegistration
 #else
 #define MAYBE_AsyncListenerRegistration AsyncListenerRegistration
