@@ -33,7 +33,8 @@ class CloudUploadNotificationManager
   CloudUploadNotificationManager(Profile* profile,
                                  const std::string& file_name,
                                  const std::string& cloud_provider_name,
-                                 const std::string& target_app_name);
+                                 const std::string& target_app_name,
+                                 int num_files);
 
   // Creates the notification with "in progress" state if it doesn't exist, or
   // updates the progress bar if it does. |progress| is within the 0-100 range.
@@ -123,6 +124,7 @@ class CloudUploadNotificationManager
   std::string notification_id_;
   std::string target_app_name_;
   std::u16string display_source_;
+  int num_files_;
   base::FilePath destination_path_;
   base::OnceClosure callback_;
   HandleNotificationClickCallback callback_for_testing_;

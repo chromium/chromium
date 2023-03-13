@@ -60,22 +60,46 @@ export class MoveConfirmationPageElement extends HTMLElement {
     if (cloudProvider === CloudProvider.ONE_DRIVE) {
       return {
         name: 'Microsoft OneDrive',
-        appName: 'Microsoft 365',
         shortName: 'OneDrive',
       };
     }
-    // TODO(b/260141250): Display Slides or Sheets when appropriate instead?
-    return {name: 'Google Drive', appName: 'Google Docs', shortName: 'Drive'};
+    // TODO(b/260141250): Display Slides or Sheets when appropriate instead or
+    // remove shortName?
+    return {name: 'Google Drive', shortName: 'Drive'};
+  }
+
+  setNumFiles(numFiles: number) {
+    this.shadowRoot!.getElementById('number-of-files')!.innerText =
+        numFiles.toString();
+    this.shadowRoot!.getElementById('files-text')!.innerText = 'files';
+    if (numFiles == 1) {
+      this.shadowRoot!.getElementById('files-text')!.innerText = 'file';
+    }
   }
 
   setCloudProvider(cloudProvider: CloudProvider) {
     this.cloudProvider = cloudProvider;
 
-    const {name, appName, shortName} = this.getProviderText(this.cloudProvider);
+    const {name} = this.getProviderText(this.cloudProvider);
     this.shadowRoot!.getElementById('provider-name')!.innerText = name;
-    this.shadowRoot!.getElementById('app-name')!.innerText = appName;
-    this.shadowRoot!.getElementById('provider-short-name')!.innerText =
-        shortName;
+
+    const bodyText = this.$('#body-text');
+    const checkbox = this.$<CrCheckboxElement>('#always-move-checkbox');
+    if (cloudProvider === CloudProvider.ONE_DRIVE) {
+      bodyText.innerText =
+          'Microsoft 365 requires files to be stored in OneDrive. ' +
+          'You can move files to OneDrive at any time.';
+      if (checkbox) {
+        checkbox.innerText = 'Move to OneDrive without asking each time';
+      }
+    } else {
+      bodyText.innerText =
+          'Google Docs, Sheets, and Slides require files to be stored in ' +
+          'Google Drive. You can move files to Google Drive at any time.';
+      if (checkbox) {
+        checkbox.innerText = 'Move to Google Drive without asking each time';
+      }
+    }
 
     const animationUrl = this.cloudProvider === CloudProvider.ONE_DRIVE ?
         'move_confirmation_animation_onedrive.json' :

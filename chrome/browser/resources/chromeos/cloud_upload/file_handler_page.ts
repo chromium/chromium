@@ -64,19 +64,19 @@ export class FileHandlerPageElement extends HTMLElement {
       assert(dialogArgs.args.tasks);
       // Adjust the dialog's size if there are no local tasks to display.
       if (dialogArgs.args.tasks.length == 0) {
-        this.style.height = '411px';
+        this.style.height = '310px';
       }
 
-      const fileNameElement = this.$<HTMLSpanElement>('#file-name');
-      assert(fileNameElement);
-      fileNameElement.innerText = dialogArgs.args.fileNames[0] || '';
+      const {name, icon, type} =
+          this.getDriveAppInfo(dialogArgs.args.fileNames);
 
-      const {name, icon} = this.getDriveAppInfo(dialogArgs.args.fileNames);
+      const fileTypeElement = this.$<HTMLSpanElement>('#file-type');
+      assert(fileTypeElement);
+      fileTypeElement.innerText = type;
 
       const driveCard = new CloudProviderCardElement();
       driveCard.setParameters(
-          CloudProviderType.DRIVE, name,
-          'Requires Google Drive storage &#x2022; Free');
+          CloudProviderType.DRIVE, name, 'Uses Google Drive');
       driveCard.setIconClass(icon);
       driveCard.id = 'drive';
       this.addCloudProviderCard(driveCard);
@@ -84,8 +84,7 @@ export class FileHandlerPageElement extends HTMLElement {
       const officeCard = new CloudProviderCardElement();
       officeCard.setParameters(
           CloudProviderType.ONE_DRIVE, 'Microsoft 365',
-          'Requires Microsoft OneDrive storage &#x2022; ' +
-              'Subscription fees may apply');
+          'Uses Microsoft OneDrive');
       officeCard.setIconClass('office');
       officeCard.id = 'onedrive';
       this.addCloudProviderCard(officeCard);
@@ -212,11 +211,11 @@ export class FileHandlerPageElement extends HTMLElement {
     // TODO(b:254586358): i18n these names.
     const fileName = fileNames[0] || '';
     if (/\.xlsx?$/.test(fileName)) {
-      return {name: 'Google Sheets', icon: 'sheets'};
+      return {name: 'Google Sheets', icon: 'sheets', type: 'Excel'};
     } else if (/\.pptx?$/.test(fileName)) {
-      return {name: 'Google Slides', icon: 'slides'};
+      return {name: 'Google Slides', icon: 'slides', type: 'Powerpoint'};
     } else {
-      return {name: 'Google Docs', icon: 'docs'};
+      return {name: 'Google Docs', icon: 'docs', type: 'Word'};
     }
   }
 

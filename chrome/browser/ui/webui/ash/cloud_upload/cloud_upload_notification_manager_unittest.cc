@@ -64,7 +64,7 @@ class CloudUploadNotificationManagerTest : public testing::Test {
     return notification().has_value() &&
            notification()->type() ==
                message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE &&
-           notification()->title().starts_with(u"foo.docx moved to ") &&
+           notification()->title().starts_with(u"Moved ") &&
            notification()->display_source() ==
                l10n_util::GetStringUTF16(
                    IDS_ASH_MESSAGE_CENTER_SYSTEM_APP_NAME_FILES) &&
@@ -76,7 +76,7 @@ class CloudUploadNotificationManagerTest : public testing::Test {
     return notification().has_value() &&
            notification()->type() ==
                message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE &&
-           notification()->title().starts_with(u"Failed") &&
+           notification()->title().starts_with(u"Can't move file") &&
            notification()->display_source() ==
                l10n_util::GetStringUTF16(
                    IDS_ASH_MESSAGE_CENTER_SYSTEM_APP_NAME_FILES);
@@ -94,7 +94,7 @@ TEST_F(CloudUploadNotificationManagerTest,
        ShowUploadProgressCreatesNotification) {
   scoped_refptr<CloudUploadNotificationManager> manager =
       base::MakeRefCounted<CloudUploadNotificationManager>(
-          profile(), file_name_, "Google Drive", "Google Docs");
+          profile(), file_name_, "Google Drive", "Google Docs", 1);
 
   ASSERT_EQ(absl::nullopt, notification());
   manager->ShowUploadProgress(1);
@@ -106,7 +106,7 @@ TEST_F(CloudUploadNotificationManagerTest,
 TEST_F(CloudUploadNotificationManagerTest, MinimumTiming) {
   scoped_refptr<CloudUploadNotificationManager> manager =
       base::MakeRefCounted<CloudUploadNotificationManager>(
-          profile(), file_name_, "Google Drive", "Google Docs");
+          profile(), file_name_, "Google Drive", "Google Docs", 1);
 
   manager->ShowUploadProgress(1);
   manager->ShowUploadProgress(100);
@@ -134,7 +134,7 @@ TEST_F(CloudUploadNotificationManagerTest, MinimumTiming) {
 TEST_F(CloudUploadNotificationManagerTest, CompleteWithoutProgress) {
   scoped_refptr<CloudUploadNotificationManager> manager =
       base::MakeRefCounted<CloudUploadNotificationManager>(
-          profile(), file_name_, "Google Drive", "Google Docs");
+          profile(), file_name_, "Google Drive", "Google Docs", 1);
 
   manager->SetDestinationPath(file_path_);
   manager->MarkUploadComplete();
@@ -152,7 +152,7 @@ TEST_F(CloudUploadNotificationManagerTest, CompleteWithoutProgress) {
 TEST_F(CloudUploadNotificationManagerTest, ShowInFolderClick) {
   scoped_refptr<CloudUploadNotificationManager> manager =
       base::MakeRefCounted<CloudUploadNotificationManager>(
-          profile(), file_name_, "Google Drive", "Google Docs");
+          profile(), file_name_, "Google Drive", "Google Docs", 1);
 
   manager->SetDestinationPath(file_path_);
   manager->MarkUploadComplete();
@@ -180,7 +180,7 @@ TEST_F(CloudUploadNotificationManagerTest, ShowInFolderClick) {
 TEST_F(CloudUploadNotificationManagerTest, ErrorStaysOpen) {
   scoped_refptr<CloudUploadNotificationManager> manager =
       base::MakeRefCounted<CloudUploadNotificationManager>(
-          profile(), file_name_, "Google Drive", "Google Docs");
+          profile(), file_name_, "Google Drive", "Google Docs", 1);
 
   manager->ShowUploadProgress(1);
   manager->ShowUploadProgress(100);
@@ -199,7 +199,7 @@ TEST_F(CloudUploadNotificationManagerTest, ManagerLifetime) {
   {
     scoped_refptr<CloudUploadNotificationManager> manager =
         base::MakeRefCounted<CloudUploadNotificationManager>(
-            profile(), file_name_, "Google Drive", "Google Docs");
+            profile(), file_name_, "Google Drive", "Google Docs", 1);
 
     manager->ShowUploadProgress(1);
     manager->ShowUploadError("error");

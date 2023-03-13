@@ -75,8 +75,10 @@ DriveUploadHandler::DriveUploadHandler(Profile* profile,
           base::MakeRefCounted<CloudUploadNotificationManager>(
               profile,
               source_url.path().BaseName().value(),
-              "Drive",
-              GetTargetAppName(source_url.path()))),
+              "Google Drive",
+              GetTargetAppName(source_url.path()),
+              // TODO(b/242685536) Update when support for multi-files is added.
+              /*num_files=*/1)),
       source_url_(source_url) {
   observed_task_id_ = -1;
 }

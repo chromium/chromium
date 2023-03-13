@@ -19,13 +19,6 @@
     padding-inline: 24px;
   }
 
-  #description {
-    color: var(--cros-text-color-secondary);
-    font: var(--cros-body-2-font);
-    padding-block-end: 18px;
-    padding-inline: 24px;
-  }
-
   #content {
     border-top: 1px solid transparent;
     flex-grow: 1;
@@ -80,11 +73,7 @@
 <!-- autofocus for screen reader to read header on dialog open-->
 <div id="header" autofocus tabindex="-1">
   <div id="title">
-    Choose an application to open “<span id="file-name"></span>”
-  </div>
-  <div id="description">
-    Choose how you'd like to open files like this. You can always change this
-    later by right-clicking on a file.
+    Choose an app to open <span id="file-type"></span> files
   </div>
 </div>
 <div id="content" role="listbox" 

@@ -64,21 +64,14 @@
 <cr-lottie id="animation" aria-hidden="true" autoplay>
 </cr-lottie>
 <div class="body-wrapper">
-  <div id="content" autofocus tabindex="-1">
-    <div class="title">
-      Move file to <span id="provider-name"></span> to open
-    </div>
-    <div class="normal-text">
-      The <span id="app-name"></span> app requires files to be in
-      <span id="provider-short-name"></span>. We can move your files
-      whenever you choose to open them.
-    </div>
+  <div class="title">
+    Move <span id="number-of-files"></span> <span id="files-text"></span> to
+    <span id="provider-name"></span> to open?
   </div>
-  <cr-checkbox id="always-move-checkbox">
-    <span class="checkbox-text">Do this automatically next time</span>
-  </cr-checkbox>
+  <div class="normal-text" id="body-text"> </div>
+  <cr-checkbox id="always-move-checkbox"> </cr-checkbox>
   <div id="button-container">
     <cr-button class="cancel-button">$i18n{cancel}</cr-button>
-    <cr-button class="action-button">Move & open file</cr-button>
+    <cr-button class="action-button">Move and open</cr-button>
   </div>
 </div>

@@ -34,7 +34,7 @@ export class OfficePwaInstallPageElement extends BaseSetupPageElement {
 
     assertInstanceof(event.target, CrButtonElement);
     const actionButton = event.target;
-    actionButton.innerText = 'Installing...';
+    actionButton.innerText = 'Installing';
     actionButton.classList.replace('install', 'installing');
     actionButton.disabled = true;
 

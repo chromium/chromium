@@ -53,8 +53,10 @@ OneDriveUploadHandler::OneDriveUploadHandler(Profile* profile,
           base::MakeRefCounted<CloudUploadNotificationManager>(
               profile,
               source_url.path().BaseName().value(),
-              "OneDrive",
-              "Microsoft 365")),
+              "Microsoft OneDrive",
+              "Microsoft 365",
+              // TODO(b/242685536) Update when support for multi-files is added.
+              /*num_files=*/1)),
       source_url_(source_url) {
   observed_task_id_ = -1;
 }
