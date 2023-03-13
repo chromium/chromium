@@ -272,6 +272,14 @@ TrayBackgroundView::TrayBackgroundView(
   views::View::SetVisible(false);
 }
 
+void TrayBackgroundView::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void TrayBackgroundView::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void TrayBackgroundView::SetPressedCallback(
     base::RepeatingCallback<void(const ui::Event& event)> pressed_callback) {
   pressed_callback_ = std::move(pressed_callback);
@@ -308,6 +316,9 @@ void TrayBackgroundView::SetVisiblePreferred(bool visible_preferred) {
     return;
 
   visible_preferred_ = visible_preferred;
+  for (auto& observer : observers_) {
+    observer.OnVisiblePreferredChanged(visible_preferred_);
+  }
   base::UmaHistogramEnumeration(
       visible_preferred_ ? "Ash.StatusArea.TrayBackgroundView.Shown"
                          : "Ash.StatusArea.TrayBackgroundView.Hidden",

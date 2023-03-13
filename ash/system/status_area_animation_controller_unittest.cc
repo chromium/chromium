@@ -271,4 +271,46 @@ TEST_F(StatusAreaAnimationControllerTest,
   EXPECT_TRUE(test_api->GetTray()->GetVisible());
 }
 
+// Tests that scheduling the show animation while the hide animation is running
+// results in the `TrayBackgroundView` being visible once all animations are
+// finished.
+TEST_F(StatusAreaAnimationControllerTest, ShowWhileHideAnimationIsRunning) {
+  // Show the tray by adding a notification. Note that animations still finish
+  // immediately at this stage of the test.
+  auto id = test_api->AddNotification();
+  ASSERT_TRUE(test_api->IsTrayShown());
+  ASSERT_FALSE(test_api->GetTray()->layer()->GetAnimator()->is_animating());
+
+  // Set the animation duration scale to some small non-zero value for the rest
+  // of the test.
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Remove the initial notification, causing the notification counter to hide.
+  test_api->RemoveNotification(id);
+
+  // Verify that the tray's hide animation is running.
+  EXPECT_TRUE(test_api->GetTray()->layer()->GetAnimator()->is_animating());
+  EXPECT_FALSE(test_api->GetTray()->layer()->GetTargetVisibility());
+  EXPECT_EQ(test_api->GetTray()->layer()->GetTargetOpacity(), 0);
+
+  // Add another notification to show the tray again.
+  test_api->AddNotification();
+
+  // Verify that the tray is still animating, but this time it is the show
+  // animation that is running.
+  EXPECT_TRUE(test_api->GetTray()->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(test_api->GetTray()->layer()->GetTargetVisibility());
+  EXPECT_EQ(test_api->GetTray()->layer()->GetTargetOpacity(), 1);
+
+  // Wait for the show animation to finish.
+  ui::LayerAnimationStoppedWaiter notification_center_tray_waiter;
+  notification_center_tray_waiter.Wait(test_api->GetTray()->layer());
+  ASSERT_FALSE(test_api->GetTray()->layer()->GetAnimator()->is_animating());
+
+  // Verify that the tray is visible.
+  EXPECT_TRUE(test_api->GetTray()->GetVisible());
+  EXPECT_EQ(test_api->GetTray()->layer()->opacity(), 1);
+}
+
 }  // namespace ash

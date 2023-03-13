@@ -33,13 +33,9 @@ StatusAreaAnimationController::~StatusAreaAnimationController() {
   }
 }
 
-void StatusAreaAnimationController::OnViewVisibilityChanged(
-    views::View* observed_view,
-    views::View* starting_view) {
-  if (starting_view && starting_view == notification_center_tray_ &&
-      notification_center_tray_->IsShowAnimationEnabled()) {
-    PerformAnimation(starting_view->GetVisible());
-  }
+void StatusAreaAnimationController::OnVisiblePreferredChanged(
+    bool visible_preferred) {
+  PerformAnimation(visible_preferred);
 }
 
 void StatusAreaAnimationController::

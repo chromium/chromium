@@ -159,7 +159,7 @@ void StatusAreaWidget::Initialize() {
   if (features::IsQsRevampEnabled()) {
     notification_center_tray_ =
         AddTrayButton(std::make_unique<NotificationCenterTray>(shelf_));
-    notification_center_tray_->AddObserver(this);
+    notification_center_tray_->views::View::AddObserver(this);
   }
 
   auto unified_system_tray = std::make_unique<UnifiedSystemTray>(shelf_);
@@ -208,7 +208,7 @@ StatusAreaWidget::~StatusAreaWidget() {
   // some unittests. During the test environment tear-down, removing the
   // observer will lead to a crash.
   if (features::IsQsRevampEnabled() && notification_center_tray_) {
-    notification_center_tray_->RemoveObserver(this);
+    notification_center_tray_->views::View::RemoveObserver(this);
   }
 
   // If QsRevamp flag is enabled, reset `animation_controller_` before
