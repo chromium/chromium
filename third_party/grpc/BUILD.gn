@@ -123,6 +123,7 @@ grpc_so("grpc++") {
     ":grpc++_repeated1",
     ":grpc++_repeated2",
     ":grpc++_repeated3",
+    ":grpc++_repeated4",
   ]
   public_deps = [ ":grpc++_h" ]
 }
@@ -411,6 +412,7 @@ source_set("grpc++_h") {
     "src/src/core/ext/filters/client_channel/client_channel.h",
     "src/src/core/ext/filters/client_channel/client_channel_channelz.h",
     "src/src/core/ext/filters/client_channel/client_channel_factory.h",
+    "src/src/core/ext/filters/client_channel/client_channel_internal.h",
     "src/src/core/ext/filters/client_channel/client_channel_service_config.h",
     "src/src/core/ext/filters/client_channel/config_selector.h",
     "src/src/core/ext/filters/client_channel/connector.h",
@@ -418,7 +420,6 @@ source_set("grpc++_h") {
     "src/src/core/ext/filters/client_channel/global_subchannel_pool.h",
     "src/src/core/ext/filters/client_channel/health/health_check_client.h",
     "src/src/core/ext/filters/client_channel/http_proxy.h",
-    "src/src/core/ext/filters/client_channel/lb_call_state_internal.h",
     "src/src/core/ext/filters/client_channel/lb_policy/address_filtering.h",
     "src/src/core/ext/filters/client_channel/lb_policy/backend_metric_data.h",
     "src/src/core/ext/filters/client_channel/lb_policy/child_policy_handler.h",
@@ -879,6 +880,7 @@ source_set("grpc++_h") {
     "src/src/core/lib/event_engine/windows/win_socket.h",
     "src/src/core/lib/event_engine/windows/windows_endpoint.h",
     "src/src/core/lib/event_engine/windows/windows_engine.h",
+    "src/src/core/lib/event_engine/windows/windows_listener.h",
     "src/src/core/lib/experiments/config.h",
     "src/src/core/lib/experiments/experiments.h",
     "src/src/core/lib/gpr/alloc.h",
@@ -1649,55 +1651,37 @@ source_set("grpc++_cc") {
     "src/src/core/lib/event_engine/windows/win_socket.cc",
     "src/src/core/lib/event_engine/windows/windows_endpoint.cc",
     "src/src/core/lib/event_engine/windows/windows_engine.cc",
+    "src/src/core/lib/event_engine/windows/windows_listener.cc",
     "src/src/core/lib/experiments/config.cc",
     "src/src/core/lib/experiments/experiments.cc",
     "src/src/core/lib/gpr/alloc.cc",
+    "src/src/core/lib/gpr/android/log.cc",
     "src/src/core/lib/gpr/atm.cc",
-    "src/src/core/lib/gpr/cpu_iphone.cc",
-    "src/src/core/lib/gpr/cpu_linux.cc",
-    "src/src/core/lib/gpr/cpu_posix.cc",
-    "src/src/core/lib/gpr/cpu_windows.cc",
-    "src/src/core/lib/gpr/log.cc",
-    "src/src/core/lib/gpr/log_android.cc",
-    "src/src/core/lib/gpr/log_linux.cc",
-    "src/src/core/lib/gpr/log_posix.cc",
-    "src/src/core/lib/gpr/log_windows.cc",
-    "src/src/core/lib/gpr/string.cc",
-    "src/src/core/lib/gpr/string_posix.cc",
-    "src/src/core/lib/gpr/string_util_windows.cc",
-    "src/src/core/lib/gpr/string_windows.cc",
-    "src/src/core/lib/gpr/sync.cc",
+    "src/src/core/lib/gpr/iphone/cpu.cc",
+    "src/src/core/lib/gpr/msys/tmpfile.cc",
+    "src/src/core/lib/gpr/posix/string.cc",
+    "src/src/core/lib/gpr/posix/sync.cc",
+    "src/src/core/lib/gpr/posix/time.cc",
     "src/src/core/lib/gpr/sync_abseil.cc",
-    "src/src/core/lib/gpr/sync_posix.cc",
-    "src/src/core/lib/gpr/sync_windows.cc",
-    "src/src/core/lib/gpr/time.cc",
-    "src/src/core/lib/gpr/time_posix.cc",
     "src/src/core/lib/gpr/time_precise.cc",
-    "src/src/core/lib/gpr/time_windows.cc",
-    "src/src/core/lib/gpr/tmpfile_msys.cc",
-    "src/src/core/lib/gpr/tmpfile_posix.cc",
-    "src/src/core/lib/gpr/tmpfile_windows.cc",
+    "src/src/core/lib/gpr/windows/string_util.cc",
 
     # gRPC memcpy wrapping logic isn't useful here.
     # See https://crbug.com/661171
     # "src/src/core/lib/gpr/wrap_memcpy.cc",
     "src/src/core/lib/gprpp/crash.cc",
-    "src/src/core/lib/gprpp/env_linux.cc",
-    "src/src/core/lib/gprpp/env_posix.cc",
-    "src/src/core/lib/gprpp/env_windows.cc",
     "src/src/core/lib/gprpp/examine_stack.cc",
     "src/src/core/lib/gprpp/fork.cc",
     "src/src/core/lib/gprpp/global_config_env.cc",
     "src/src/core/lib/gprpp/host_port.cc",
+    "src/src/core/lib/gprpp/linux/env.cc",
     "src/src/core/lib/gprpp/load_file.cc",
     "src/src/core/lib/gprpp/mpscq.cc",
-    "src/src/core/lib/gprpp/stat_posix.cc",
-    "src/src/core/lib/gprpp/stat_windows.cc",
+    "src/src/core/lib/gprpp/posix/stat.cc",
+    "src/src/core/lib/gprpp/posix/thd.cc",
     "src/src/core/lib/gprpp/status_helper.cc",
     "src/src/core/lib/gprpp/strerror.cc",
     "src/src/core/lib/gprpp/tchar.cc",
-    "src/src/core/lib/gprpp/thd_posix.cc",
-    "src/src/core/lib/gprpp/thd_windows.cc",
     "src/src/core/lib/gprpp/time_averaged_stats.cc",
     "src/src/core/lib/gprpp/validation_errors.cc",
     "src/src/core/lib/gprpp/work_serializer.cc",
@@ -2040,8 +2024,16 @@ source_set("grpc++_repeated1") {
     "src/src/core/ext/upbdefs-generated/xds/type/v3/cel.upbdefs.c",
     "src/src/core/lib/event_engine/tcp_socket_utils.cc",
     "src/src/core/lib/event_engine/trace.cc",
-    "src/src/core/lib/gprpp/time.cc",
+    "src/src/core/lib/gpr/linux/cpu.cc",
+    "src/src/core/lib/gpr/linux/log.cc",
+    "src/src/core/lib/gpr/posix/tmpfile.cc",
+    "src/src/core/lib/gpr/string.cc",
+    "src/src/core/lib/gpr/sync.cc",
+    "src/src/core/lib/gpr/time.cc",
+    "src/src/core/lib/gprpp/posix/env.cc",
     "src/src/core/lib/gprpp/time_util.cc",
+    "src/src/core/lib/gprpp/windows/stat.cc",
+    "src/src/core/lib/gprpp/windows/thd.cc",
     "src/src/core/lib/iomgr/ev_epoll1_linux.cc",
     "src/src/core/lib/iomgr/ev_poll_posix.cc",
     "src/src/core/lib/iomgr/event_engine_shims/closure.cc",
@@ -2090,6 +2082,13 @@ source_set("grpc++_repeated2") {
     "src/src/core/ext/upb-generated/xds/type/v3/range.upb.c",
     "src/src/core/ext/upbdefs-generated/xds/annotations/v3/status.upbdefs.c",
     "src/src/core/ext/upbdefs-generated/xds/type/v3/range.upbdefs.c",
+    "src/src/core/lib/gpr/log.cc",
+    "src/src/core/lib/gpr/posix/cpu.cc",
+    "src/src/core/lib/gpr/windows/string.cc",
+    "src/src/core/lib/gpr/windows/sync.cc",
+    "src/src/core/lib/gpr/windows/time.cc",
+    "src/src/core/lib/gpr/windows/tmpfile.cc",
+    "src/src/core/lib/gprpp/windows/env.cc",
     "src/src/core/lib/promise/trace.cc",
   ]
 
@@ -2112,7 +2111,33 @@ source_set("grpc++_repeated2") {
   }
 }
 source_set("grpc++_repeated3") {
-  sources = [ "src/src/core/lib/resource_quota/trace.cc" ]
+  sources = [
+    "src/src/core/lib/gpr/posix/log.cc",
+    "src/src/core/lib/gpr/windows/cpu.cc",
+    "src/src/core/lib/gprpp/time.cc",
+    "src/src/core/lib/resource_quota/trace.cc",
+  ]
+
+  deps = [
+    ":address_sorting",
+    ":cares",
+    ":grpc++_h",
+    ":upb",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/boringssl",
+    "//third_party/protobuf:protobuf_lite",
+    "//third_party/zlib",
+  ]
+  public_configs = [ ":grpc_config" ]
+  configs += [ ":grpc_config_private" ]
+  visibility = [ "./*" ]
+  if (!grpc_use_static_linking) {
+    configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
+    configs += [ "//build/config/gcc:symbol_visibility_default" ]
+  }
+}
+source_set("grpc++_repeated4") {
+  sources = [ "src/src/core/lib/gpr/windows/log.cc" ]
 
   deps = [
     ":address_sorting",
