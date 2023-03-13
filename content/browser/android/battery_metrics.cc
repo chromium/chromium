@@ -375,8 +375,8 @@ void AndroidBatteryMetrics::UpdateAndReportRadio() {
   if (!net::android::traffic_stats::GetTotalRxBytes(&rx_bytes))
     rx_bytes = -1;
 
-  if (last_tx_bytes_ > 0 && tx_bytes > 0 && last_rx_bytes_ > 0 &&
-      rx_bytes > 0) {
+  if (last_tx_bytes_ > 0 && last_rx_bytes_ > 0 && tx_bytes >= last_tx_bytes_ &&
+      rx_bytes >= last_rx_bytes_) {
     Report30SecondRadioUsage(tx_bytes - last_tx_bytes_,
                              rx_bytes - last_rx_bytes_, radio_wakeups_);
   }
