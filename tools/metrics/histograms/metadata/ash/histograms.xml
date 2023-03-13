@@ -3402,7 +3402,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.MessageCenter.Scroll.PresentationTime.MaxLatency"
-    units="ms" expires_after="2023-04-16">
+    units="ms" expires_after="2024-04-16">
   <owner>leandre@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
@@ -3651,7 +3651,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.NotificationView.ConvertSingleToGroup.{Animation}.AnimationSmoothness"
-    units="%" expires_after="2023-05-14">
+    units="%" expires_after="2024-05-14">
   <owner>leandre@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
@@ -3678,7 +3678,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.NotificationView.ExpandButton.ClickAction"
-    enum="ExpandButtonClickAction" expires_after="2023-04-30">
+    enum="ExpandButtonClickAction" expires_after="2024-04-30">
   <owner>leandre@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
@@ -3690,7 +3690,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.NotificationView.ExpandButton.ConvertSingleToGroup.{Animation}.AnimationSmoothness"
-    units="%" expires_after="2023-05-14">
+    units="%" expires_after="2024-05-14">
   <owner>leandre@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
