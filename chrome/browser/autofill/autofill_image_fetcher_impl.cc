@@ -144,9 +144,14 @@ void AutofillImageFetcherImpl::FetchImageForURL(
           "https://www.gstatic.com/autofill/virtualcard/icon/capitalone.png")) {
     url = card_art_url;
   } else {
-    // A FIFE image fetching param suffix is appended to the URL. This means the
-    // image should be of Size(32, 20), and should be center cropped.
-    url = GURL(card_art_url.spec() + "=w32-h20-n");
+    // A FIFE image fetching param suffix is appended to the URL. The image
+    // should be center cropped and of Size(32, 20) unless the
+    // kAutofillEnableNewCardArtAndNetworkImages feature is enabled, in which
+    // case the image is of Size(40, 24).
+    url = base::FeatureList::IsEnabled(
+              features::kAutofillEnableNewCardArtAndNetworkImages)
+              ? GURL(card_art_url.spec() + "=w40-h24-n")
+              : GURL(card_art_url.spec() + "=w32-h20-n");
   }
 
   image_fetcher::ImageFetcherParams params(kCardArtImageTrafficAnnotation,
