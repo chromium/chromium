@@ -176,9 +176,6 @@ chromium-metrics-reviews@google.com.
   <variant name="Oauth-enrollment.Completed"/>
   <variant name="Offline-login.Back"/>
   <variant name="Offline-login.ReloadOnlineLogin"/>
-  <variant name="Oobe-eula-md.AcceptedWithoutStats"/>
-  <variant name="Oobe-eula-md.AcceptedWithStats"/>
-  <variant name="Oobe-eula-md.Back"/>
   <variant name="Oobe-update.UpdateError"/>
   <variant name="Oobe-update.UpdateNotRequired"/>
   <variant name="Packaged-license.DontEnroll"/>
@@ -221,7 +218,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="OOBE.ArcTermsOfServiceScreen.ReviewFollowingSetup"
-    enum="BooleanChecked" expires_after="2023-04-01">
+    enum="BooleanChecked" expires_after="2023-12-01">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -282,28 +279,6 @@ chromium-metrics-reviews@google.com.
   <token key="OOBEScreenShownBeforeNetworkError"
       variants="OOBEScreenShownBeforeNetworkError"/>
   <token key="OOBENetworkError" variants="OOBENetworkError"/>
-</histogram>
-
-<histogram name="OOBE.EulaScreen.UserActions" enum="EulaScreenUserAction"
-    expires_after="2023-04-01">
-  <owner>dkuzmin@google.com</owner>
-  <owner>cros-oac@google.com</owner>
-  <summary>
-    Tracks all user actions on the EULA screen. Recorded when user clicks on
-    buttons on the EULA screen.
-  </summary>
-</histogram>
-
-<histogram name="OOBE.EULAToSignInTime" units="ms" expires_after="never">
-<!-- expires-never: Core metric for monitoring initial Gaia loading regressions.
--->
-
-  <owner>rsorokin@chromium.org</owner>
-  <owner>alemate@chromium.org</owner>
-  <owner>cros-oac@google.com</owner>
-  <summary>
-    Time from acceptance of the EULA until the login screen is first displayed.
-  </summary>
 </histogram>
 
 <histogram name="OOBE.FingerprintSetupScreen.UserActions"
@@ -558,7 +533,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.RecommendApps.Fetcher.AppCount" units="apps"
-    expires_after="2023-04-01">
+    expires_after="2023-12-01">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <owner>chromesky-eng@google.com</owner>
@@ -566,7 +541,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.RecommendApps.Fetcher.DownloadTime" units="ms"
-    expires_after="2023-04-01">
+    expires_after="2023-12-01">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <owner>chromesky-eng@google.com</owner>
@@ -574,7 +549,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.RecommendApps.Fetcher.ResponseCode"
-    enum="HttpResponseCode" expires_after="2023-04-01">
+    enum="HttpResponseCode" expires_after="2023-12-01">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <owner>chromesky-eng@google.com</owner>
@@ -582,7 +557,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.RecommendApps.Fetcher.ResponseParseResult"
-    enum="RecommendAppsResponseParseResult" expires_after="2023-04-01">
+    enum="RecommendAppsResponseParseResult" expires_after="2023-12-01">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <owner>chromesky-eng@google.com</owner>
@@ -606,7 +581,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.RecommendApps.Screen.SelectedRecommendedPercentage"
-    units="%" expires_after="2023-04-01">
+    units="%" expires_after="2023-12-01">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <owner>chromesky-eng@google.com</owner>
@@ -635,7 +610,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OOBE.StepCompletionTimeByExitReason.{OOBEScreenName_ExitReason}"
-    units="ms" expires_after="2023-04-01">
+    units="ms" expires_after="2023-12-01">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>Time spent on specific OOBE screen grouped by exit reason.</summary>
@@ -763,7 +738,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.UpdateScreen.UpdateDownloadingTime" units="ms"
-    expires_after="2023-04-01">
+    expires_after="2023-12-01">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
