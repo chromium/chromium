@@ -813,6 +813,14 @@ mojom::DeviceSettingsPtr GetDeviceSettings() {
         result->device_variations_restrict_parameter =
             device_variations_restrict_parameter;
       }
+
+      bool device_guest_mode_enabled = false;
+      if (cros_settings->GetBoolean(ash::kAccountsPrefAllowGuest,
+                                    &device_guest_mode_enabled)) {
+        result->device_guest_mode_enabled = device_guest_mode_enabled
+                                                ? MojoOptionalBool::kTrue
+                                                : MojoOptionalBool::kFalse;
+      }
     } else {
       LOG(WARNING) << "Unexpected crossettings trusted values status: "
                    << trusted_result;

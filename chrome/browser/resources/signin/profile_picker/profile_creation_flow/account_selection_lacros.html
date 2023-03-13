@@ -3,6 +3,11 @@
     --account-button-hover-color: var(--md-background-color);
   }
 
+  a {
+    color: var(--cr-link-color);
+    text-decoration: none;
+  }
+
   #accountsContainer {
     --account-container-min-width: 416px;
     --account-container-max-width: 582px;
@@ -180,7 +185,7 @@
       role="presentation">
   <div id="textContainer">
     <h1 class="title">$i18n{accountSelectionLacrosTitle}</h1>
-    <div class="subtitle">$i18n{accountSelectionLacrosSubtitle}</div>
+    <div class="subtitle" inner-h-t-m-l="[[getSubtitle_()]]"></div>
   </div>
   <button id="other-account-button" class="account-button"
           on-click="onOtherAccountClick_" disabled$="[[accountSelected_]]">

@@ -164,7 +164,9 @@ export interface ManageProfilesBrowserProxy {
   cancelProfileSwitch(): void;
 
   // <if expr="chromeos_lacros">
-  /** Gets the available accounts, through WebUIListener. */
+  /**
+   * Gets the available accounts, through WebUIListener.
+   */
   getAvailableAccounts(): void;
 
   /**
@@ -176,6 +178,14 @@ export interface ManageProfilesBrowserProxy {
    * Select an existing account to be added in Chrome on Lacros.
    */
   selectExistingAccountLacros(profileColor: number|null, gaiaId: string): void;
+
+  /**
+   * Called when the user clicks the 'use device guest' link in the Lacros
+   * account selection dialog. Opens a Ash dialog that allows the user to log
+   * out of their device session and explains how to select `Browse as Guest` on
+   * the login screen.
+   */
+  openDeviceGuestLinkLacros(): void;
   // </if>
 }
 
@@ -268,6 +278,10 @@ export class ManageProfilesBrowserProxyImpl {
 
   selectExistingAccountLacros(profileColor: number|null, gaiaId: string) {
     chrome.send('selectExistingAccountLacros', [profileColor, gaiaId]);
+  }
+
+  openDeviceGuestLinkLacros() {
+    chrome.send('openDeviceGuestLinkLacros');
   }
   // </if>
 
