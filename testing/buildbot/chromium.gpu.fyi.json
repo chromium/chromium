@@ -10092,7 +10092,7 @@
       },
       {
         "args": [
-          "--gtest_filter=*Detection*:-FaceDetectionImplMacTest.ScanOneFace*",
+          "--gtest_filter=*Detection*",
           "--use-gpu-in-tests"
         ],
         "merge": {
