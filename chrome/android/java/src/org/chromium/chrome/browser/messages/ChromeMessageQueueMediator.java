@@ -174,7 +174,17 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
     @Override
     public void onRequestShowing(Runnable runnable) {
         if (mBrowserControlsManager == null) return;
-        assert mBrowserControlsToken == TokenHolder.INVALID_TOKEN : "Already requested.";
+        if (mBrowserControlsToken != TokenHolder.INVALID_TOKEN) {
+            // It is possible for #onRequestShowing to be invoked for a second message even after
+            // the first message has acquired the browser controls token and is being displayed, if
+            // the tab browser controls constraints state changes while browser controls is not
+            // fully visible, before the second message is enqueued.
+            assert !areBrowserControlsReady()
+                : "Should not be requested when browser controls is ready.";
+            assert !mBrowserControlsObserver.isRequesting();
+            mBrowserControlsObserver.setOneTimeRunnableOnControlsFullyVisible(runnable);
+            return;
+        }
         mBrowserControlsToken =
                 mBrowserControlsManager.getBrowserVisibilityDelegate().showControlsPersistent();
 
@@ -237,7 +247,8 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
         mQueueController.resume(token);
     }
 
-    private boolean areBrowserControlsReady() {
+    @VisibleForTesting
+    boolean areBrowserControlsReady() {
         final Tab tab = mActivityTabProvider.get();
         return TabBrowserControlsConstraintsHelper.getConstraints(tab)
                 == BrowserControlsState.HIDDEN
