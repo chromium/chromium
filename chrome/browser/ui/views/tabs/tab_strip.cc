@@ -605,7 +605,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
     int source_view_index = static_cast<int>(
         base::ranges::find(views, source_view) - views.begin());
 
-    const auto should_animate_tab = [=](int index_in_views) {
+    const auto should_animate_tab = [=, &views, this](int index_in_views) {
       // If the tab at `index_in_views` is already animating, don't interrupt
       // it.
       if (bounds_animator_.IsAnimating(views[index_in_views]))
