@@ -170,6 +170,8 @@
 #include "ash/touch/touch_devices_controller.h"
 #include "ash/touch/touch_selection_magnifier_runner_ash.h"
 #include "ash/tray_action/tray_action.h"
+#include "ash/user_education/user_education_controller.h"
+#include "ash/user_education/user_education_delegate.h"
 #include "ash/utility/occlusion_tracker_pauser.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/ash_focus_rules.h"
@@ -1604,6 +1606,11 @@ void Shell::Init(
   if (features::IsFederatedServiceEnabled()) {
     federated_service_controller_ =
         std::make_unique<federated::FederatedServiceControllerImpl>();
+  }
+
+  if (features::IsWelcomeTourEnabled()) {
+    user_education_controller_ = std::make_unique<UserEducationController>(
+        shell_delegate_->CreateUserEducationDelegate());
   }
 
   // Injects the factory which fulfills the implementation of the text context

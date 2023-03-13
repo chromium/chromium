@@ -69,6 +69,11 @@ TestShellDelegate::CreateSystemSoundsDelegate() const {
   return std::make_unique<TestSystemSoundsDelegate>();
 }
 
+std::unique_ptr<UserEducationDelegate>
+TestShellDelegate::CreateUserEducationDelegate() const {
+  return nullptr;
+}
+
 scoped_refptr<network::SharedURLLoaderFactory>
 TestShellDelegate::GetGeolocationUrlLoaderFactory() const {
   return static_cast<scoped_refptr<network::SharedURLLoaderFactory>>(

@@ -43,6 +43,7 @@
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_ui.h"
 #include "chrome/browser/ui/ash/session_util.h"
 #include "chrome/browser/ui/ash/system_sounds_delegate_impl.h"
+#include "chrome/browser/ui/ash/user_education/chrome_user_education_delegate.h"
 #include "chrome/browser/ui/ash/window_pin_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
@@ -167,6 +168,11 @@ ChromeShellDelegate::CreateSavedDeskDelegate() const {
 std::unique_ptr<ash::SystemSoundsDelegate>
 ChromeShellDelegate::CreateSystemSoundsDelegate() const {
   return std::make_unique<SystemSoundsDelegateImpl>();
+}
+
+std::unique_ptr<ash::UserEducationDelegate>
+ChromeShellDelegate::CreateUserEducationDelegate() const {
+  return std::make_unique<ChromeUserEducationDelegate>();
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>

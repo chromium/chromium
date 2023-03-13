@@ -232,6 +232,7 @@ class ClipboardHistoryControllerImpl;
 class TouchDevicesController;
 class TouchSelectionMagnifierRunnerAsh;
 class TrayAction;
+class UserEducationController;
 class UserMetricsRecorder;
 class VideoActivityNotifier;
 class VideoDetector;
@@ -993,6 +994,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<ClipboardHistoryControllerImpl> clipboard_history_controller_;
   std::unique_ptr<TouchDevicesController> touch_devices_controller_;
   std::unique_ptr<TrayAction> tray_action_;
+  std::unique_ptr<UserEducationController> user_education_controller_;
   std::unique_ptr<WallpaperControllerImpl> wallpaper_controller_;
   std::unique_ptr<WindowCycleController> window_cycle_controller_;
   std::unique_ptr<WindowRestoreController> window_restore_controller_;

@@ -2122,6 +2122,9 @@ BASE_FEATURE(kWebUITabStripTabDragIntegration,
              "WebUITabStripTabDragIntegration",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the Welcome Tour that walks new users through ChromeOS System UI.
+BASE_FEATURE(kWelcomeTour, "WelcomeTour", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether to enable MAC Address Randomization on WiFi connection.
 BASE_FEATURE(kWifiConnectMacAddressRandomization,
              "WifiConnectMacAddressRandomization",
@@ -3228,6 +3231,10 @@ bool IsWallpaperPerDeskEnabled() {
 
 bool IsWebUITabStripTabDragIntegrationEnabled() {
   return base::FeatureList::IsEnabled(kWebUITabStripTabDragIntegration);
+}
+
+bool IsWelcomeTourEnabled() {
+  return base::FeatureList::IsEnabled(kWelcomeTour);
 }
 
 bool IsWifiSyncAndroidEnabled() {

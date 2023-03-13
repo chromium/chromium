@@ -2547,6 +2547,8 @@ static_library("ui") {
       "ash/touch_selection_menu_chromeos.h",
       "ash/touch_selection_menu_runner_chromeos.cc",
       "ash/touch_selection_menu_runner_chromeos.h",
+      "ash/user_education/chrome_user_education_delegate.cc",
+      "ash/user_education/chrome_user_education_delegate.h",
       "ash/vpn_list_forwarder.cc",
       "ash/vpn_list_forwarder.h",
       "ash/wallpaper_controller_client_impl.cc",
