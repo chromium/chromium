@@ -103,10 +103,9 @@ table {
   border-collapse: collapse;
   margin: 0;
   padding: 0;
-  width: 100%;
 }
 
 table td {
-  padding: 10px;
+  padding: 15px;
 }
 
