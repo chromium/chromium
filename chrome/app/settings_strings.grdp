@@ -1732,28 +1732,28 @@
 
   <!-- Anti-abuse Page -->
   <message name="IDS_SETTINGS_ANTI_ABUSE_ENABLED_SUB_LABEL" desc="The label used for the anti-abuse site settings sub-label when the anti-abuse setting is turned on.">
-    Spam and fraud reduction is on
+    Sites can help verify you're not a bot
   </message>
   <message name="IDS_SETTINGS_ANTI_ABUSE_DISABLED_SUB_LABEL" desc="The label used for the anti-abuse site settings sub-label when the anti-abuse setting is turned off.">
-    Spam and fraud reduction is off
+    Sites can't help verify you're not a bot
   </message>
   <message name="IDS_SETTINGS_ANTI_ABUSE_DESCRIPTION" desc="The label used for the anti-abuse site settings description.">
-    Sites you visit can validate that you're a real user and not a bot.
+    Sites you visit can verify that you're a real person and not a bot
   </message>
   <message name="IDS_SETTINGS_ANTI_ABUSE_WHEN_ON_HEADER" desc="The header used for the section that informs users of the anti-abuse features.">
     When on
   </message>
   <message name="IDS_SETTINGS_ANTI_ABUSE_WHEN_ON_SECTION_ONE" desc="A description that informs users how their browsing could be helped by the anti-abuse features.">
-    Browsing is smoother, as you're more likely trusted from one site to the next.
+    Browsing is faster because a site is less likely to ask you to verify you're a real person
   </message>
   <message name="IDS_SETTINGS_ANTI_ABUSE_WHEN_ON_SECTION_TWO" desc="A description that informs users that the anti-abuse features do not reveal their browsing history.">
-    This setting works without identifying you or allowing sites to see your browsing history.
+    This setting works without identifying you or allowing sites to see your browsing history
   </message>
   <message name="IDS_SETTINGS_ANTI_ABUSE_THINGS_TO_CONSIDER_HEADER" desc="The header used for the section that informs users of additional things to consider when the anti-abuse features are enabled.">
     Things to consider
   </message>
   <message name="IDS_SETTINGS_ANTI_ABUSE_THINGS_TO_CONSIDER_SECTION_ONE" desc="A description that informs users that site can save info with Chrome when the anti-abuse features are enabled.">
-    A site you visit can save info with Chrome that validates that you're a real user. As you keep browsing, sites can check with Chrome and verify from the first site that you're likely a trusted user.
+    A site you visit can save info with Chrome that validates you're not a bot. As you keep browsing, sites can check with Chrome and verify with a previous site you've visited that you're likely a real person
   </message>
 
   <!-- Privacy Sandbox -->

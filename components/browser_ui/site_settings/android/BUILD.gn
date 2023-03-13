@@ -220,6 +220,7 @@ android_resources("java_resources") {
     "java/res/drawable/ic_account_attention.xml",
     "java/res/drawable/ic_background_replace.xml",
     "java/res/drawable/ic_block.xml",
+    "java/res/drawable/ic_check_circle_outline.xml",
     "java/res/drawable/ic_dashboard.xml",
     "java/res/drawable/ic_person_24dp.xml",
     "java/res/drawable/settings_bluetooth.xml",

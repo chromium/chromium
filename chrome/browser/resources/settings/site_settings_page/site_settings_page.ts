@@ -53,7 +53,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
           loadTimeData.getBoolean('enableSafeBrowsingSubresourceFilter'),
     },
     {
-      route: routes.SITE_SETTINGS_ANTI_ABUSE,
+      route: routes.SITE_SETTINGS_AUTO_VERIFY,
       id: Id.ANTI_ABUSE,
       label: 'siteSettingsAntiAbuse',
       icon: 'settings20:account-attention',
@@ -419,13 +419,13 @@ export class SettingsSiteSettingsPageElement extends
             ]),
             contentAdvanced: buildItemListFromIds([
               Id.SOUND,
-              Id.ANTI_ABUSE,
               Id.ADS,
               Id.ZOOM_LEVELS,
               Id.PDF_DOCUMENTS,
               Id.PROTECTED_CONTENT,
               Id.MIXEDSCRIPT,
               Id.FEDERATED_IDENTITY_API,
+              Id.ANTI_ABUSE,
               Id.SITE_DATA,
             ]),
           };

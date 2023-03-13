@@ -92,6 +92,6 @@ found in the LICENSE file.
     <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="anti_abuse_things_to_consider_section_one"
         android:summary="@string/anti_abuse_things_to_consider_section_one"
-        android:icon="@drawable/ic_account_attention"
+        android:icon="@drawable/ic_check_circle_outline"
         app:allowDividerBelow="false" />
 </PreferenceScreen>
