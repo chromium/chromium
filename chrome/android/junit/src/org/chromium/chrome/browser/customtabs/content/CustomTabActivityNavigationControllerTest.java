@@ -71,11 +71,12 @@ public class CustomTabActivityNavigationControllerTest {
     }
 
     @Test
-    public void finishes_IfBackNavigationClosesTheOnlyTab() {
+    public void finishes_IfBackNavigationClosesTheOnlyTabWithNoUnloadEvents() {
         HistogramWatcher histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
                 MinimizeAppAndCloseTabBackPressHandler.getHistogramNameForTesting(),
                 MinimizeAppAndCloseTabType.MINIMIZE_APP);
         when(mTabController.onlyOneTabRemaining()).thenReturn(true);
+        when(mTabController.doesCurrentTabNeedToFireBeforeUnload()).thenReturn(false);
 
         mNavigationController.navigateOnBack();
         histogramWatcher.assertExpected();
@@ -91,6 +92,18 @@ public class CustomTabActivityNavigationControllerTest {
             env.tabProvider.swapTab(env.prepareTab());
             return null;
         }).when(mTabController).closeTab();
+
+        mNavigationController.navigateOnBack();
+        histogramWatcher.assertExpected();
+        verify(mFinishHandler, never()).onFinish(anyInt());
+    }
+
+    @Test
+    public void doesntFinish_IfBackNavigationHappensWithBeforeUnloadHandler() {
+        HistogramWatcher histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
+                MinimizeAppAndCloseTabBackPressHandler.getHistogramNameForTesting(),
+                MinimizeAppAndCloseTabType.CLOSE_TAB);
+        when(mTabController.doesCurrentTabNeedToFireBeforeUnload()).thenReturn(true);
 
         mNavigationController.navigateOnBack();
         histogramWatcher.assertExpected();

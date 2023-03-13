@@ -192,21 +192,31 @@ public class CustomTabActivityTabController implements InflationObserver {
     }
 
     /**
-     * Closes the current tab. This doesn't necessarily lead to closing the entire activity, in
-     * case links with target="_blank" were followed. See the comment to
+     * Closes the current tab based on beforeunload handlers, if there's any then we need to
+     * dispatch then first. This doesn't necessarily lead to closing the entire activity, in case
+     * links with target="_blank" were followed. See the comment to
      * {@link CustomTabActivityTabProvider.Observer#onAllTabsClosed}.
      */
     public void closeTab() {
         TabModel model = mTabFactory.getTabModelSelector().getCurrentModel();
         Tab currentTab = mTabProvider.getTab();
         if (!maybeStoreTab(currentTab)) {
-            model.closeTab(currentTab, false, false, false);
+            if (currentTab.getWebContents().needToFireBeforeUnloadOrUnloadEvents()) {
+                currentTab.getWebContents().dispatchBeforeUnload(false);
+            } else {
+                model.closeTab(currentTab, false, false, false);
+            }
         }
     }
 
     public boolean onlyOneTabRemaining() {
         TabModel model = mTabFactory.getTabModelSelector().getCurrentModel();
         return model.getCount() == 1;
+    }
+
+    public boolean doesCurrentTabNeedToFireBeforeUnload() {
+        Tab currentTab = mTabProvider.getTab();
+        return currentTab.getWebContents().needToFireBeforeUnloadOrUnloadEvents();
     }
 
     public void closeAndForgetTab() {

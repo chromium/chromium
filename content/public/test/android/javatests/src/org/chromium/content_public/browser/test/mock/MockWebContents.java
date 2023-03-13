@@ -322,4 +322,9 @@ public class MockWebContents implements WebContents {
 
     @Override
     public void tearDownDialogOverlays() {}
+
+    @Override
+    public boolean needToFireBeforeUnloadOrUnloadEvents() {
+        return false;
+    }
 }

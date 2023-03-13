@@ -1096,6 +1096,13 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
         }
     }
 
+    @Override
+    public boolean needToFireBeforeUnloadOrUnloadEvents() {
+        if (mNativeWebContentsAndroid == 0) return false;
+        return WebContentsImplJni.get().needToFireBeforeUnloadOrUnloadEvents(
+                mNativeWebContentsAndroid);
+    }
+
     public void addTearDownDialogOverlaysHandler(Runnable handler) {
         if (mTearDownDialogOverlaysHandlers == null) {
             mTearDownDialogOverlaysHandlers = new ObserverList<>();
@@ -1207,5 +1214,6 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
         void notifyRendererPreferenceUpdate(long nativeWebContentsAndroid);
         void notifyBrowserControlsHeightChanged(long nativeWebContentsAndroid);
         boolean isBeingDestroyed(long nativeWebContentsAndroid);
+        boolean needToFireBeforeUnloadOrUnloadEvents(long nativeWebContentsAndroid);
     }
 }
