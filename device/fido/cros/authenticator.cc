@@ -423,11 +423,15 @@ void ChromeOSAuthenticator::IsUVPlatformAuthenticatorAvailable(
           return;
         }
 
-        // TODO(hcyang): Call u2fd here when u2fd is able to decide whether one
-        // of the user verification methods exists. Currently WebAuthn
-        // supports password authentication so every device with u2fd should
-        // be able to perform user verification.
-        std::move(callback).Run(true);
+        chromeos::U2FClient::Get()->IsUvpaa(
+            u2f::IsUvpaaRequest(),
+            base::BindOnce(
+                [](base::OnceCallback<void(bool is_available)> callback,
+                   absl::optional<u2f::IsUvpaaResponse> response) {
+                  std::move(callback).Run(response &&
+                                          !response->not_available());
+                },
+                std::move(callback)));
       },
       std::move(callback)));
 }

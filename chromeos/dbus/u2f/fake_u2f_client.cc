@@ -20,7 +20,7 @@ FakeU2FClient::~FakeU2FClient() = default;
 void FakeU2FClient::IsUvpaa(const u2f::IsUvpaaRequest& request,
                             DBusMethodCallback<u2f::IsUvpaaResponse> callback) {
   u2f::IsUvpaaResponse response;
-  response.set_available(false);
+  response.set_not_available(true);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(response)));
 }
