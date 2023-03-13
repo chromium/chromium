@@ -346,7 +346,9 @@ bool SharedImageFormat::HasAlpha() const {
     switch (resource_format()) {
       case ResourceFormat::RGBA_8888:
       case ResourceFormat::RGBA_4444:
+      case ResourceFormat::RGBA_1010102:
       case ResourceFormat::BGRA_8888:
+      case ResourceFormat::BGRA_1010102:
       case ResourceFormat::ALPHA_8:
       case ResourceFormat::RGBA_F16:
       case ResourceFormat::YUVA_420_TRIPLANAR:
