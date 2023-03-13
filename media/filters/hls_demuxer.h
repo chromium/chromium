@@ -9,6 +9,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "media/base/container_names.h"
 #include "media/base/demuxer.h"
@@ -17,6 +18,7 @@
 #include "media/base/media_log.h"
 #include "media/base/media_track.h"
 #include "media/base/pipeline_status.h"
+#include "media/filters/hls_data_source_provider.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
@@ -25,9 +27,8 @@ class MEDIA_EXPORT HlsDemuxer final : public Demuxer {
  public:
   explicit HlsDemuxer(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
-      /* TODO(crbug/1266991) add HLS data source provider here */
-      /* TODO(crbug/1266991) add GURL here for the root playlist uri */
-      /* TODO(crbug/1266991) add progress_cb here? */
+      base::SequenceBound<HlsDataSourceProvider> data_source_provider,
+      GURL root_playlist_uri,
       MediaLog* media_log);
   ~HlsDemuxer() override;
   HlsDemuxer(const HlsDemuxer&) = delete;

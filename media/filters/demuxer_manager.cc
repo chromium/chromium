@@ -20,6 +20,10 @@
 #include "media/filters/ffmpeg_demuxer.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(ENABLE_HLS_DEMUXER)
+#include "media/filters/hls_demuxer.h"
+#endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
+
 namespace media {
 
 namespace {
@@ -372,9 +376,10 @@ PipelineStatus DemuxerManager::CreateDemuxer(
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
   if (hls_fallback_ == HlsFallbackImplementation::kBuiltinHlsPlayer) {
-    // TODO(crbug/1266991) Implement the CreateHlsDemuxer method.
-    NOTREACHED();
-    return DEMUXER_ERROR_COULD_NOT_OPEN;
+    SetDemuxer(CreateHlsDemuxer());
+    return std::move(on_demuxer_created)
+        .Run(demuxer_.get(), Pipeline::StartType::kNormal,
+             /*is_streaming=*/false, /*is_static=*/false);
   }
 #endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
 
@@ -557,6 +562,14 @@ std::unique_ptr<Demuxer> DemuxerManager::CreateFFmpegDemuxer() {
       media_log_.get(), IsLocalFile(loaded_url_));
 }
 #endif  // BUILDFLAG(ENABLE_FFMPEG)
+
+#if BUILDFLAG(ENABLE_HLS_DEMUXER)
+std::unique_ptr<Demuxer> DemuxerManager::CreateHlsDemuxer() {
+  return std::make_unique<HlsDemuxer>(media_task_runner_,
+                                      client_->GetHlsDataSourceProvider(),
+                                      loaded_url_, media_log_.get());
+}
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
 std::unique_ptr<Demuxer> DemuxerManager::CreateMediaUrlDemuxer(

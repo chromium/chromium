@@ -24,6 +24,11 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(ENABLE_HLS_DEMUXER)
+#include "base/threading/sequence_bound.h"
+#include "media/filters/hls_data_source_provider.h"
+#endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
+
 namespace media {
 
 enum class HlsFallbackImplementation {
@@ -80,6 +85,11 @@ class MEDIA_EXPORT DemuxerManager {
                                const std::string& language,
                                bool is_first_track) = 0;
 #endif  // BUILDFLAG(ENABLE_FFMPEG)
+
+#if BUILDFLAG(ENABLE_HLS_DEMUXER)
+    virtual base::SequenceBound<HlsDataSourceProvider>
+    GetHlsDataSourceProvider() = 0;
+#endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
 
     // Returns true if playback would be able to start if data is present.
     virtual bool CouldPlayIfEnoughData() = 0;
@@ -160,12 +170,19 @@ class MEDIA_EXPORT DemuxerManager {
  private:
   // Demuxer creation and helper methods
   std::unique_ptr<media::Demuxer> CreateChunkDemuxer();
+
 #if BUILDFLAG(ENABLE_FFMPEG)
   std::unique_ptr<media::Demuxer> CreateFFmpegDemuxer();
 #endif  // BUILDFLAG(ENABLE_FFMPEG)
+
+#if BUILDFLAG(ENABLE_HLS_DEMUXER)
+  std::unique_ptr<Demuxer> CreateHlsDemuxer();
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<media::Demuxer> CreateMediaUrlDemuxer(bool hls_content);
 #endif  // BUILDFLAG(IS_ANDROID)
+
   void SetDemuxer(std::unique_ptr<Demuxer> demuxer);
 
   // Memory pressure listener specifically for when using ChunkDemuxer.

@@ -98,6 +98,10 @@
 #include "third_party/blink/renderer/platform/media/web_media_source_impl.h"
 #include "ui/gfx/geometry/size.h"
 
+#if BUILDFLAG(ENABLE_HLS_DEMUXER)
+#include "third_party/blink/renderer/platform/media/hls_data_source_provider_impl.h"
+#endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
+
 #if BUILDFLAG(IS_ANDROID)
 #include "media/base/android/media_codec_util.h"
 #endif
@@ -1570,6 +1574,15 @@ void WebMediaPlayerImpl::AddVideoTrack(const std::string& id,
                          WebString::FromUTF8(language), is_first_track);
 }
 #endif  // BUILDFLAG(ENABLE_FFMPEG)
+
+#if BUILDFLAG(ENABLE_HLS_DEMUXER)
+base::SequenceBound<media::HlsDataSourceProvider>
+WebMediaPlayerImpl::GetHlsDataSourceProvider() {
+  return base::SequenceBound<HlsDataSourceProviderImpl>(
+      main_task_runner_, media_log_.get(), url_index_, main_task_runner_,
+      media_task_runner_, tick_clock_);
+}
+#endif
 
 void WebMediaPlayerImpl::SetCdmInternal(WebContentDecryptionModule* cdm) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());

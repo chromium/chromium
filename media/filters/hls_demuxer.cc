@@ -19,11 +19,15 @@
 
 namespace media {
 
-HlsDemuxer::HlsDemuxer(scoped_refptr<base::SequencedTaskRunner> task_runner,
-                       MediaLog* media_log)
+HlsDemuxer::HlsDemuxer(
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    base::SequenceBound<HlsDataSourceProvider> data_source_provider,
+    GURL root_playlist_uri,
+    MediaLog* media_log)
     : media_log_(media_log), task_runner_(std::move(task_runner)) {
   DCHECK(task_runner_);
   MEDIA_LOG(INFO, media_log_) << GetDisplayName();
+  DCHECK(data_source_provider);
 }
 
 HlsDemuxer::~HlsDemuxer() {

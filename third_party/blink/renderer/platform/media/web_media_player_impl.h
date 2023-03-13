@@ -434,6 +434,11 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
                      bool is_first_track) override;
 #endif  // BUILDFLAG(ENABLE_FFMPEG)
 
+#if BUILDFLAG(ENABLE_HLS_DEMUXER)
+  base::SequenceBound<media::HlsDataSourceProvider> GetHlsDataSourceProvider()
+      override;
+#endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
+
   // Simplified watch time reporting.
   void OnSimpleWatchTimerTick();
 
