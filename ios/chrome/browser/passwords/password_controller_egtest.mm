@@ -172,7 +172,13 @@ BOOL WaitForKeyboardToAppear() {
 }
 
 // Tests password generation flow.
-- (void)testPasswordGeneration {
+// TODO(crbug.com/1423865): The test fails on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testPasswordGeneration FLAKY_testPasswordGeneration
+#else
+#define MAYBE_testPasswordGeneration testPasswordGeneration
+#endif
+- (void)MAYBE_testPasswordGeneration {
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:base::Seconds(10)];
