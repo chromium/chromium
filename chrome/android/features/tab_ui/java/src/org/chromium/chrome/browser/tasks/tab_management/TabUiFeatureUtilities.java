@@ -74,7 +74,8 @@ public class TabUiFeatureUtilities {
     private static final String TAB_SELECTION_EDITOR_V2_SHARE_PARAM = "enable_share";
     public static final BooleanCachedFieldTrialParameter ENABLE_TAB_SELECTION_EDITOR_V2_SHARE =
             new BooleanCachedFieldTrialParameter(ChromeFeatureList.TAB_SELECTION_EDITOR_V2,
-                    TAB_SELECTION_EDITOR_V2_SHARE_PARAM, false);
+                    TAB_SELECTION_EDITOR_V2_SHARE_PARAM, true);
+
     // Field trial parameter for controlling longpress entry into TabSelectionEditorV2 from
     // TabGridDialog and TabSwitcher.
     private static final String TAB_SELECTION_EDITOR_V2_LONGPRESS_ENTRY_PARAM =
@@ -88,7 +89,7 @@ public class TabUiFeatureUtilities {
     private static final String TAB_SELECTION_EDITOR_V2_BOOKMARKS_PARAM = "enable_bookmarks";
     public static final BooleanCachedFieldTrialParameter ENABLE_TAB_SELECTION_EDITOR_V2_BOOKMARKS =
             new BooleanCachedFieldTrialParameter(ChromeFeatureList.TAB_SELECTION_EDITOR_V2,
-                    TAB_SELECTION_EDITOR_V2_BOOKMARKS_PARAM, false);
+                    TAB_SELECTION_EDITOR_V2_BOOKMARKS_PARAM, true);
 
     private static Boolean sTabManagementModuleSupportedForTesting;
     private static Boolean sGridTabSwitcherDelayCreationEnabledForTesting;
