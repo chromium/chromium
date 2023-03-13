@@ -63,6 +63,24 @@ source_set("download_test_utils") {
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
+source_set("javascript_test") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+
+  deps = [
+    ":util",
+    "//base",
+    "//testing/gtest",
+  ]
+
+  sources = [
+    "javascript_test.h",
+    "javascript_test.mm",
+  ]
+
+  frameworks = [ "WebKit.framework" ]
+}
+
 # Those fixtures *must* not be used directly from //ios/chrome code as they
 # create web::BrowserState* as the BrowserState which violates one important
 # invariant of //ios/chrome code (the invariant that all BrowserStates are of
