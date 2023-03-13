@@ -348,12 +348,83 @@ TEST_F(AmbientManagedPhotoControllerTest, CallingStartScreenAgainIsANoOp) {
 
 TEST_F(AmbientManagedPhotoControllerTest, InvalidFileTest) {
   managed_photo_controller()->UpdateImageFilePaths(
-      {base::FilePath(FILE_PATH_LITERAL("invalid_path"))});
+      {base::FilePath(FILE_PATH_LITERAL("invalid_path_1")),
+       base::FilePath(FILE_PATH_LITERAL("invalid_path_2"))});
   StartScreenUpdate();
   task_environment()->FastForwardBy(base::Minutes(1));
   EXPECT_THAT(
       managed_photo_controller()->ambient_backend_model()->all_decoded_topics(),
       IsEmpty());
+}
+
+TEST_F(AmbientManagedPhotoControllerTest, ValidFileNotLoadedTwice) {
+  const std::vector<base::FilePath>& image_file_paths = GetImageFilePaths();
+  managed_photo_controller()->UpdateImageFilePaths({
+      base::FilePath(FILE_PATH_LITERAL("invalid_path_1")),
+      image_file_paths[0],
+      base::FilePath(FILE_PATH_LITERAL("invalid_path_2")),
+  });
+  StartScreenUpdate();
+  RunUntilNextImagesAdded(/*expected_topics=*/1);
+  task_environment()->FastForwardBy(base::Minutes(1));
+
+  EXPECT_EQ(managed_photo_controller()
+                ->ambient_backend_model()
+                ->all_decoded_topics()
+                .size(),
+            1u);
+
+  // Case: Marker hit when max tries exceeded.
+  managed_photo_controller()->OnMarkerHit(
+      AmbientPhotoConfig::Marker::kUiCycleEnded);
+  task_environment()->FastForwardBy(base::Minutes(1));
+  EXPECT_EQ(managed_photo_controller()
+                ->ambient_backend_model()
+                ->all_decoded_topics()
+                .size(),
+            1u);
+
+  // Case: Updating image file paths resets retry limit
+  managed_photo_controller()->UpdateImageFilePaths(
+      {image_file_paths[0], image_file_paths[1]});
+  RunUntilNextImagesAdded(/*expected_topics=*/2);
+
+  EXPECT_EQ(managed_photo_controller()
+                ->ambient_backend_model()
+                ->all_decoded_topics()
+                .size(),
+            2u);
+}
+
+TEST_F(AmbientManagedPhotoControllerTest, InvalidAndValidFileTest) {
+  const std::vector<base::FilePath>& image_file_paths = GetImageFilePaths();
+  managed_photo_controller()->UpdateImageFilePaths(
+      {image_file_paths[0], base::FilePath(FILE_PATH_LITERAL("invalid_path_1")),
+       base::FilePath(FILE_PATH_LITERAL("invalid_path_2")),
+       base::FilePath(FILE_PATH_LITERAL("invalid_path_3")),
+       image_file_paths[1]});
+  StartScreenUpdate();
+  RunUntilImagesReady();
+  EXPECT_EQ(managed_photo_controller()
+                ->ambient_backend_model()
+                ->all_decoded_topics()
+                .size(),
+            2u);
+
+  PhotoWithDetails first_image, second_image;
+  managed_photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(
+      &first_image, &second_image);
+  EXPECT_FALSE(AreImagesEqual(gfx::Image(first_image.photo),
+                              gfx::Image(second_image.photo)));
+  // Case: Marker hit in a mix of valid and invalid files.
+  managed_photo_controller()->OnMarkerHit(
+      AmbientPhotoConfig::Marker::kUiCycleEnded);
+  RunUntilNextImagesAdded(/*expected_topics=*/1);
+  PhotoWithDetails third_image, fourth_image;
+  managed_photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(
+      &third_image, &fourth_image);
+  EXPECT_FALSE(AreImagesEqual(gfx::Image(third_image.photo),
+                              gfx::Image(fourth_image.photo)));
 }
 
 TEST_F(AmbientManagedPhotoControllerTest, AddingEmptyImagesIsANoOP) {

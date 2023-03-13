@@ -54,18 +54,42 @@ class ASH_EXPORT AmbientManagedPhotoController
   void OnMarkerHit(AmbientPhotoConfig::Marker marker) override;
 
  private:
+  enum class State {
+    kStarted,
+    // The controller was started but we failed to load a sufficient number of
+    // images to continue even after trying to load all the provided images from
+    // disk.
+    kStartedPhotoLoadFailure,
+    kStopped
+  };
+
   // Load and decode images
   void LoadImages();
-  void LoadNextImage();
-  void OnPhotoDecoded(const gfx::ImageSkia& image);
+  size_t GetMaxImageAttempts() const;
+  // Loads `images_to_load` no of images in an asynchronous but sequential
+  // manner and waits for the previous image to load before starting to load the
+  // next image. `success` denotes that the previous load was successful. Note:
+  // In case `success` is false or `images_to_load` is 0 this method will be  a
+  // no-op.
+  void LoadImagesInternal(size_t images_to_load, bool success);
+  void LoadNextImage(base::OnceCallback<void(bool success)> callback);
+  void OnPhotoDecoded(base::OnceCallback<void(bool success)> callback,
+                      const gfx::ImageSkia& image);
+  void HandlePhotoDecodingFailure(
+      base::OnceCallback<void(bool success)> callback);
 
   AmbientBackendModel ambient_backend_model_;
+
+  // The current number of tries for loading the next image, once it reaches the
+  // max tries, we will log an error and stop retrying. This is reset as soon as
+  // an image is decoded successfully.
+  size_t image_attempt_no_ = 0;
 
   // Current index of cached file to read and display.
   size_t current_image_index_ = 0;
 
-  // Flag indicating whether the photo controller is active or not.
-  bool is_active_ = false;
+  // State used to determine whether the controller is active.
+  State state_ = State::kStopped;
 
   // The list of image filepaths that are used as the sources for the images to
   // show.
