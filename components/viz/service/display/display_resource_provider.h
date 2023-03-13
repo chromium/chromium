@@ -28,7 +28,6 @@
 #include "components/viz/service/display/resource_fence.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/sync_token.h"
-#include "third_party/khronos/GLES2/gl2.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 
