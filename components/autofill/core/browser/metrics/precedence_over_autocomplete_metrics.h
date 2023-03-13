@@ -15,7 +15,7 @@ namespace autofill::autofill_metrics {
 // annotate fields that are being predicted by the server or heuristics as
 // street name or house number.
 enum class AutocompleteValueForStructuredAddressPredictedFieldsMetric {
-  kAddressLine1Or2 = 0,
+  kAddressLine1And2 = 0,
   kOtherRecognized = 1,
   kUnrecognized = 2,
   kUnspecified = 3,

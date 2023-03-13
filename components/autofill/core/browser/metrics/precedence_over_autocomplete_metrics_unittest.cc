@@ -80,7 +80,7 @@ TEST_F(
 
   EXPECT_THAT(histogram_tester.GetAllSamples(histogram_name(
                   house_number_field_type, heuristic_prediction_type)),
-              BucketsAre(Bucket(AutocompleteCategory::kAddressLine1Or2, 1)));
+              BucketsAre(Bucket(AutocompleteCategory::kAddressLine1And2, 1)));
 
   EXPECT_THAT(histogram_tester.GetAllSamples(histogram_name(
                   street_name_field_type, heuristic_prediction_type)),
@@ -88,7 +88,7 @@ TEST_F(
 
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   histogram_name(any_field_type, heuristic_prediction_type)),
-              BucketsAre(Bucket(AutocompleteCategory::kAddressLine1Or2, 1),
+              BucketsAre(Bucket(AutocompleteCategory::kAddressLine1And2, 1),
                          Bucket(AutocompleteCategory::kUnrecognized, 1)));
 
   EXPECT_THAT(histogram_tester.GetAllSamples(histogram_name(
@@ -97,29 +97,29 @@ TEST_F(
 
   EXPECT_THAT(histogram_tester.GetAllSamples(histogram_name(
                   street_name_field_type, server_prediction_type)),
-              BucketsAre(Bucket(AutocompleteCategory::kAddressLine1Or2, 1),
+              BucketsAre(Bucket(AutocompleteCategory::kAddressLine1And2, 1),
                          Bucket(AutocompleteCategory::kOtherRecognized, 1)));
 
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   histogram_name(any_field_type, server_prediction_type)),
-              BucketsAre(Bucket(AutocompleteCategory::kAddressLine1Or2, 1),
+              BucketsAre(Bucket(AutocompleteCategory::kAddressLine1And2, 1),
                          Bucket(AutocompleteCategory::kOtherRecognized, 1),
                          Bucket(AutocompleteCategory::kUnspecified, 1)));
 
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   histogram_name(house_number_field_type, any_prediction_type)),
-              BucketsAre(Bucket(AutocompleteCategory::kAddressLine1Or2, 1),
+              BucketsAre(Bucket(AutocompleteCategory::kAddressLine1And2, 1),
                          Bucket(AutocompleteCategory::kUnspecified, 1)));
 
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   histogram_name(street_name_field_type, any_prediction_type)),
-              BucketsAre(Bucket(AutocompleteCategory::kAddressLine1Or2, 1),
+              BucketsAre(Bucket(AutocompleteCategory::kAddressLine1And2, 1),
                          Bucket(AutocompleteCategory::kOtherRecognized, 1),
                          Bucket(AutocompleteCategory::kUnrecognized, 1)));
 
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   histogram_name(any_field_type, any_prediction_type)),
-              BucketsAre(Bucket(AutocompleteCategory::kAddressLine1Or2, 2),
+              BucketsAre(Bucket(AutocompleteCategory::kAddressLine1And2, 2),
                          Bucket(AutocompleteCategory::kOtherRecognized, 1),
                          Bucket(AutocompleteCategory::kUnrecognized, 1),
                          Bucket(AutocompleteCategory::kUnspecified, 1)));

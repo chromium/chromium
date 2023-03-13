@@ -22,7 +22,7 @@ void LogHtmlTypesForAutofilledFieldWithStreetNameOrHouseNumberPredictions(
     case HtmlFieldType::kAddressLine2:
       autocomplete_metric =
           AutocompleteValueForStructuredAddressPredictedFieldsMetric::
-              kAddressLine1Or2;
+              kAddressLine1And2;
       break;
     case HtmlFieldType::kUnrecognized:
       autocomplete_metric =

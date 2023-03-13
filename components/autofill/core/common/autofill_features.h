@@ -115,7 +115,7 @@ BASE_DECLARE_FEATURE(
 // `kAutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete` is enabled.
 enum class PrecedenceOverAutocompleteScope {
   kNone = 0,
-  kAddressLine1Or2 = 1,
+  kAddressLine1And2 = 1,
   kRecognized = 2,
   kSpecified = 3,
   kMaxValue = kSpecified

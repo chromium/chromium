@@ -137,7 +137,7 @@ DenseSet<HtmlFieldType> BelievedHtmlTypes(ServerFieldType heuristic_prediction,
           case features::PrecedenceOverAutocompleteScope::kRecognized:
             believed_html_types = {HtmlFieldType::kUnrecognized};
             break;
-          case features::PrecedenceOverAutocompleteScope::kAddressLine1Or2:
+          case features::PrecedenceOverAutocompleteScope::kAddressLine1And2:
             believed_html_types.erase_all(
                 {HtmlFieldType::kAddressLine1, HtmlFieldType::kAddressLine2});
             break;
