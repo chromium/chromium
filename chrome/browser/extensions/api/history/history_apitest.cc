@@ -20,8 +20,13 @@
 
 namespace extensions {
 
-class HistoryApiTest : public ExtensionApiTest {
+using ContextType = ExtensionBrowserTest::ContextType;
+
+class HistoryApiTest : public ExtensionApiTest,
+                       public testing::WithParamInterface<ContextType> {
  public:
+  HistoryApiTest() : ExtensionApiTest(GetParam()) {}
+
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
 
@@ -40,22 +45,37 @@ class HistoryApiTest : public ExtensionApiTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(HistoryApiTest, MiscSearch) {
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         HistoryApiTest,
+                         ::testing::Values(ContextType::kPersistentBackground));
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         HistoryApiTest,
+                         ::testing::Values(ContextType::kServiceWorker));
+
+IN_PROC_BROWSER_TEST_P(HistoryApiTest, MiscSearch) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("history/regular/misc_search")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(HistoryApiTest, TimedSearch) {
+IN_PROC_BROWSER_TEST_P(HistoryApiTest, TimedSearch) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("history/regular/timed_search")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(HistoryApiTest, Delete) {
+// TODO(crbug.com/1423419): This tests fails when the extension uses a
+// service worker. Only run the legacy background page version for now.
+using HistoryApiBackgroundPageTest = HistoryApiTest;
+
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         HistoryApiBackgroundPageTest,
+                         ::testing::Values(ContextType::kPersistentBackground));
+
+IN_PROC_BROWSER_TEST_P(HistoryApiBackgroundPageTest, Delete) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("history/regular/delete")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(HistoryApiTest, DeleteProhibited) {
+IN_PROC_BROWSER_TEST_P(HistoryApiTest, DeleteProhibited) {
   browser()->profile()->GetPrefs()->
       SetBoolean(prefs::kAllowDeletingBrowserHistory, false);
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -63,19 +83,19 @@ IN_PROC_BROWSER_TEST_F(HistoryApiTest, DeleteProhibited) {
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(HistoryApiTest, GetVisits) {
+IN_PROC_BROWSER_TEST_P(HistoryApiTest, GetVisits) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("history/regular/get_visits")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(HistoryApiTest, SearchAfterAdd) {
+IN_PROC_BROWSER_TEST_P(HistoryApiTest, SearchAfterAdd) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("history/regular/search_after_add")) << message_;
 }
 
 // Test when History API is used from incognito mode, it has access to the
 // regular mode history and actual incognito navigation has no effect on it.
-IN_PROC_BROWSER_TEST_F(HistoryApiTest, Incognito) {
+IN_PROC_BROWSER_TEST_P(HistoryApiTest, Incognito) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   // Setup.
   Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
