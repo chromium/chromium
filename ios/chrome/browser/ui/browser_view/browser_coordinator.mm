@@ -873,6 +873,8 @@ enum class ToolbarKind {
       WebNavigationBrowserAgent::FromBrowser(self.browser);
   _viewControllerDependencies.layoutGuideCenter =
       LayoutGuideCenterForBrowser(self.browser);
+  _viewControllerDependencies.webStateList =
+      self.browser->GetWebStateList()->AsWeakPtr();
 }
 
 - (void)updateViewControllerDependencies {

@@ -247,6 +247,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // Whether or not Incognito* is enabled.
   BOOL _isOffTheRecord;
 
+  // The Browser's WebStateList.
+  base::WeakPtr<WebStateList> _webStateList;
+
   // Whether the current content is incognito and requires biometric
   // authentication from the user before it can be accessed.
   BOOL _itemsRequireAuthentication;
@@ -497,6 +500,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     _tabUsageRecorderBrowserAgent = dependencies.tabUsageRecorderBrowserAgent;
     _webNavigationBrowserAgent = dependencies.webNavigationBrowserAgent;
     _layoutGuideCenter = dependencies.layoutGuideCenter;
+    _webStateList = dependencies.webStateList;
 
     dependencies.lensCoordinator.delegate = self;
 
@@ -617,7 +621,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
         initWithState:[[MainContentUIState alloc] init]];
     _webMainContentUIForwarder = [[WebScrollViewMainContentUIForwarder alloc]
         initWithUpdater:_mainContentUIUpdater
-           webStateList:self.browser->GetWebStateList()];
+           webStateList:self.webStateList];
     StartBroadcastingMainContentUI(self, broadcaster);
 
     _fullscreenUIUpdater =
@@ -722,8 +726,16 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 }
 
 - (web::WebState*)currentWebState {
-  return self.browser ? self.browser->GetWebStateList()->GetActiveWebState()
-                      : nullptr;
+  return self.webStateList ? _webStateList->GetActiveWebState() : nullptr;
+}
+
+- (WebStateList*)webStateList {
+  WebStateList* webStateList = _webStateList.get();
+  return webStateList ? webStateList : nullptr;
+}
+
+- (int)webStateListSize {
+  return self.webStateList ? _webStateList->count() : 0;
 }
 
 #pragma mark - Public methods
@@ -731,7 +743,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 - (void)setPrimary:(BOOL)primary {
   if (_tabUsageRecorderBrowserAgent) {
     _tabUsageRecorderBrowserAgent->RecordPrimaryBrowserChange(
-        primary, _browser->GetWebStateList()->GetActiveWebState());
+        primary, self.currentWebState);
   }
   if (primary) {
     [self updateBroadcastState];
@@ -874,13 +886,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   }
   [self.helpHandler hideAllHelpBubbles];
   [_voiceSearchController dismissMicPermissionHelp];
-
-  web::WebState* webState = self.currentWebState;
-
-  if (webState) {
-    [self.findInPageCommandsHandler closeFindInPage];
-    [self.textZoomHandler closeTextZoom];
-  }
+  [self.findInPageCommandsHandler closeFindInPage];
+  [self.textZoomHandler closeTextZoom];
 
   [self.popupMenuCommandsHandler dismissPopupMenuAnimated:NO];
 
@@ -1147,9 +1154,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 - (void)viewWillDisappear:(BOOL)animated {
   self.viewVisible = NO;
   [self updateBroadcastState];
-  web::WebState* activeWebState =
-      self.browser ? self.browser->GetWebStateList()->GetActiveWebState()
-                   : nullptr;
+  web::WebState* activeWebState = self.currentWebState;
   if (activeWebState) {
     activeWebState->WasHidden();
     if (!self.presentedViewController)
@@ -2020,7 +2025,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     return self.ntpCoordinator.started ? self.ntpCoordinator.viewController.view
                                        : nil;
   }
-  DCHECK(self.browser->GetWebStateList()->GetIndexOfWebState(webState) !=
+  DCHECK(self.webStateList->GetIndexOfWebState(webState) !=
          WebStateList::kInvalidIndex);
   // TODO(crbug.com/904588): Move `RecordPageLoadStart` to TabUsageRecorder.
   if (webState->IsEvicted() && _tabUsageRecorderBrowserAgent) {
@@ -2284,16 +2289,13 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
       // Translate all web states' offset so web states from other tabs are also
       // updated.
-      if (self.browser) {
-        WebStateList* webStateList = self.browser->GetWebStateList();
-        for (int index = 0; index < webStateList->count(); ++index) {
-          web::WebState* webState = webStateList->GetWebStateAt(index);
-          CRWWebViewScrollViewProxy* scrollProxy =
-              webState->GetWebViewProxy().scrollViewProxy;
-          CGPoint scrollOffset = scrollProxy.contentOffset;
-          scrollOffset.y += toolbarHeight;
-          scrollProxy.contentOffset = scrollOffset;
-        }
+      for (int index = 0; index < self.webStateListSize; ++index) {
+        web::WebState* webState = self.webStateList->GetWebStateAt(index);
+        CRWWebViewScrollViewProxy* scrollProxy =
+            webState->GetWebViewProxy().scrollViewProxy;
+        CGPoint scrollOffset = scrollProxy.contentOffset;
+        scrollOffset.y += toolbarHeight;
+        scrollProxy.contentOffset = scrollOffset;
       }
 
       // This alerts the fullscreen controller to use the correct new content
@@ -2391,17 +2393,14 @@ NSString* const kBrowserViewControllerSnackbarCategory =
         [self viewForWebState:self.currentWebState].frame = webStateViewFrame;
       }
 
-      if (self.browser) {
-        WebStateList* webStateList = self.browser->GetWebStateList();
-        for (int index = 0; index < webStateList->count(); ++index) {
-          web::WebState* webState = webStateList->GetWebStateAt(index);
-          CRWWebViewScrollViewProxy* scrollProxy =
-              webState->GetWebViewProxy().scrollViewProxy;
+      for (int index = 0; index < self.webStateListSize; ++index) {
+        web::WebState* webState = self.webStateList->GetWebStateAt(index);
+        CRWWebViewScrollViewProxy* scrollProxy =
+            webState->GetWebViewProxy().scrollViewProxy;
 
-          CGPoint scrollOffset = scrollProxy.contentOffset;
-          scrollOffset.y -= toolbarHeight;
-          scrollProxy.contentOffset = scrollOffset;
-        }
+        CGPoint scrollOffset = scrollProxy.contentOffset;
+        scrollOffset.y -= toolbarHeight;
+        scrollProxy.contentOffset = scrollOffset;
       }
     }
   } else if (currentViewRevealState == ViewRevealState::Peeked) {
@@ -2527,15 +2526,14 @@ NSString* const kBrowserViewControllerSnackbarCategory =
         transitionType:(ui::PageTransition)transitionType {
   [_bookmarksCoordinator dismissBookmarkModalControllerAnimated:YES];
 
-  WebStateList* webStateList = self.browser->GetWebStateList();
-  web::WebState* current_web_state = webStateList->GetActiveWebState();
-  if (current_web_state &&
+  web::WebState* currentWebState = self.currentWebState;
+  if (currentWebState &&
       (transitionType & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR)) {
     bool isExpectingVoiceSearch =
-        VoiceSearchNavigationTabHelper::FromWebState(current_web_state)
+        VoiceSearchNavigationTabHelper::FromWebState(currentWebState)
             ->IsExpectingVoiceSearch();
     new_tab_page_uma::RecordActionFromOmnibox(
-        self.browserState, current_web_state, URL, transitionType,
+        self.browserState, currentWebState, URL, transitionType,
         isExpectingVoiceSearch);
   }
 }
@@ -2553,7 +2551,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   if ([self canShowTabStrip])
     return;
 
-  WebStateList* webStateList = self.browser->GetWebStateList();
+  WebStateList* webStateList = self.webStateList;
   web::WebState* webStateBeingActivated =
       webStateList->GetWebStateAt(newWebStateIndex);
 

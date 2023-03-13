@@ -9,6 +9,7 @@
 
 #import "base/ios/block_types.h"
 
+#import "base/memory/weak_ptr.h"
 #import "ios/chrome/browser/metrics/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
@@ -28,6 +29,7 @@
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web/web_navigation_ntp_delegate.h"
 #import "ios/chrome/browser/web/web_state_container_view_provider.h"
+#import "ios/chrome/browser/web_state_list/web_state_list.h"
 
 @protocol ApplicationCommands;
 class Browser;
@@ -98,6 +100,7 @@ typedef struct {
   TabUsageRecorderBrowserAgent* tabUsageRecorderBrowserAgent;
   WebNavigationBrowserAgent* webNavigationBrowserAgent;
   LayoutGuideCenter* layoutGuideCenter;
+  base::WeakPtr<WebStateList> webStateList;
 } BrowserViewControllerDependencies;
 
 // The top-level view controller for the browser UI. Manages other controllers
