@@ -607,26 +607,18 @@ IN_PROC_BROWSER_TEST_F(PasswordManagementRevampedBubbleInteractiveUiTest,
   static_cast<ManagePasswordsView*>(bubble)->DisplayDetailsOfPasswordForTesting(
       *test_form());
 
-  auto* edit_username_row = bubble->GetViewByID(static_cast<int>(
-      password_manager::ManagePasswordsViewIDs::kEditUsernameRow));
-  auto* read_username_row = bubble->GetViewByID(static_cast<int>(
-      password_manager::ManagePasswordsViewIDs::kReadUsernameRow));
-  ASSERT_FALSE(edit_username_row->GetVisible());
-  ASSERT_TRUE(read_username_row->GetVisible());
-  ASSERT_EQ(static_cast<views::Label*>(
-                bubble->GetViewByID(static_cast<int>(
-                    password_manager::ManagePasswordsViewIDs::kUsernameLabel)))
-                ->GetText(),
-            u"No username");
-
-  ClickOnView(bubble->GetViewByID(static_cast<int>(
-      password_manager::ManagePasswordsViewIDs::kEditUsernameButton)));
-  EXPECT_TRUE(edit_username_row->GetVisible());
-  EXPECT_FALSE(read_username_row->GetVisible());
-
+  auto* username_label =
+      static_cast<views::Label*>(bubble->GetViewByID(static_cast<int>(
+          password_manager::ManagePasswordsViewIDs::kUsernameLabel)));
   auto* username_textfield =
       static_cast<views::Textfield*>(bubble->GetViewByID(static_cast<int>(
           password_manager::ManagePasswordsViewIDs::kUsernameTextField)));
+  ASSERT_EQ(username_label->GetText(), u"No username");
+  ASSERT_FALSE(username_textfield->IsDrawn());
+
+  ClickOnView(bubble->GetViewByID(static_cast<int>(
+      password_manager::ManagePasswordsViewIDs::kEditUsernameButton)));
+  EXPECT_FALSE(username_label->IsDrawn());
   EXPECT_EQ(username_textfield->GetText(), u"");
 
   username_textfield->SetText(u"new_username");
@@ -636,6 +628,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagementRevampedBubbleInteractiveUiTest,
                     password_manager::ManagePasswordsViewIDs::kUsernameLabel)))
                 ->GetText(),
             u"new_username");
+  EXPECT_FALSE(bubble->GetViewByID(static_cast<int>(
+      password_manager::ManagePasswordsViewIDs::kUsernameTextField)));
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples(

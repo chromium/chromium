@@ -333,16 +333,12 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
             &ManagePasswordsDetailsView::SwitchToEditUsernameMode,
             base::Unretained(this)),
         ManagePasswordsViewIDs::kEditUsernameButton));
-    read_username_row_->SetID(
-        static_cast<int>(ManagePasswordsViewIDs::kReadUsernameRow));
     edit_username_row_ = AddChildView(
         CreateEditUsernameRow(password_form, &username_textfield_));
     text_changed_subscriptions_.push_back(
         username_textfield_->AddTextChangedCallback(
             base::BindRepeating(&ManagePasswordsDetailsView::OnUserInputChanged,
                                 base::Unretained(this))));
-    edit_username_row_->SetID(
-        static_cast<int>(ManagePasswordsViewIDs::kEditUsernameRow));
     edit_username_row_->SetVisible(false);
   }
 
