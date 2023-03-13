@@ -12,11 +12,8 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-namespace absl {
-class uint128;
-}  // namespace absl
 
 namespace attribution_reporting {
 
