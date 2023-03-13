@@ -538,7 +538,7 @@ absl::optional<base::Value> RecommendAppsFetcherImpl::ParseResponse(
   //   {"Error code":"error code","Error message":"Error message"}
   if (parsed_json.is_dict()) {
     const std::string* response_error_code_str =
-        parsed_json.FindStringKey("Error code");
+        parsed_json.GetDict().FindString("Error code");
     if (!response_error_code_str) {
       LOG(ERROR) << "Unable to find error code";
       RecordUmaResponseParseResult(

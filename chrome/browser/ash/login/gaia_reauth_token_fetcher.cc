@@ -121,7 +121,7 @@ void GaiaReauthTokenFetcher::OnSimpleLoaderComplete(
     auto message_value = base::JSONReader::Read(*response_body);
     if (message_value && message_value->is_dict()) {
       const std::string* token =
-          message_value->FindStringKey("encodedReauthRequestToken");
+          message_value->GetDict().FindString("encodedReauthRequestToken");
       if (token != nullptr) {
         VLOG(1) << "Successfully fetched reauth request token.";
         base::UmaHistogramTimes("Login.ReauthToken.FetchDuration.Success",
