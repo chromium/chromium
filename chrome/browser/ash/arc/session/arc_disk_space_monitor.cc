@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/session/arc_disk_space_monitor.h"
 
+#include "ash/components/arc/arc_util.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/logging.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -22,6 +23,19 @@
 
 namespace arc {
 
+namespace {
+
+// Returns whether ArcDiskSpaceMonitor should be activated.
+bool ShouldActivate() {
+  DCHECK(ArcSessionManager::Get());
+  DCHECK(ArcSessionManager::Get()->profile());
+  // Activate if and only if virtio-blk is used for /data.
+  return ShouldUseVirtioBlkData(
+      ArcSessionManager::Get()->profile()->GetPrefs());
+}
+
+}  // namespace
+
 ArcDiskSpaceMonitor::ArcDiskSpaceMonitor() {
   ArcSessionManager::Get()->AddObserver(this);
 }
@@ -31,6 +45,12 @@ ArcDiskSpaceMonitor::~ArcDiskSpaceMonitor() {
 }
 
 void ArcDiskSpaceMonitor::OnArcStarted() {
+  if (!ShouldActivate()) {
+    VLOG(1) << "Skipping Activation of ArcDiskSpaceMonitor because virtio-blk "
+               "is not used for /data";
+    return;
+  }
+
   VLOG(1) << "ARC started. Activating ArcDiskSpaceMonitor.";
 
   // Calling ScheduleCheckDiskSpace(Seconds(0)) instead of CheckDiskSpace()
@@ -40,6 +60,9 @@ void ArcDiskSpaceMonitor::OnArcStarted() {
 }
 
 void ArcDiskSpaceMonitor::OnArcSessionStopped(ArcStopReason stop_reason) {
+  if (!ShouldActivate()) {
+    return;
+  }
   VLOG(1) << "ARC stopped. Deactivating ArcDiskSpaceMonitor.";
   timer_.Stop();
 }

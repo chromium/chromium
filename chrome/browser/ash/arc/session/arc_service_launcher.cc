@@ -152,8 +152,10 @@ ArcServiceLauncher::ArcServiceLauncher(
   DCHECK(g_arc_service_launcher == nullptr);
   g_arc_service_launcher = this;
 
-  if (base::FeatureList::IsEnabled(kEnableVirtioBlkForData))
+  if (base::FeatureList::IsEnabled(kEnableVirtioBlkForData) ||
+      base::FeatureList::IsEnabled(kEnableArcVmDataMigration)) {
     arc_disk_space_monitor_ = std::make_unique<ArcDiskSpaceMonitor>();
+  }
 }
 
 ArcServiceLauncher::~ArcServiceLauncher() {
