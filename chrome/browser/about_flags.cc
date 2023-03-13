@@ -2832,17 +2832,6 @@ const FeatureEntry::FeatureVariation kLargeFaviconFromGoogleVariations[] = {
      std::size(kLargeFaviconFromGoogle128), nullptr}};
 
 #if BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kGridTabSwitcherForTabletsDelayCreation[] = {
-    {"delay_creation", "true"}};
-
-const FeatureEntry::FeatureVariation kGridTabSwitcherForTabletsVariations[] = {
-    {"(DelayCreate)", kGridTabSwitcherForTabletsDelayCreation,
-     std::size(kGridTabSwitcherForTabletsDelayCreation), nullptr},
-};
-
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kContentVisibilityDelay10[] = {
     {"content_visibility_delay", "10"}};
 const FeatureEntry::FeatureParam kContentVisibilityDelay5[] = {
@@ -8510,13 +8499,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)
-    {"grid-tab-switcher-for-tablets",
-     flag_descriptions::kGridTabSwitcherForTabletsName,
-     flag_descriptions::kGridTabSwitcherForTabletsDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kGridTabSwitcherForTablets,
-                                    kGridTabSwitcherForTabletsVariations,
-                                    "GridTabSwitcherForTablets")},
-
     {"enable-tab-groups-for-tablets",
      flag_descriptions::kTabGroupsForTabletsName,
      flag_descriptions::kTabGroupsForTabletsDescription, kOsAndroid,

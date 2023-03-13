@@ -2154,9 +2154,6 @@ extern const char kFeedVideoInlinePlaybackDescription[];
 extern const char kFeedDiscoFeedEndpointName[];
 extern const char kFeedDiscoFeedEndpointDescription[];
 
-extern const char kGridTabSwitcherForTabletsName[];
-extern const char kGridTabSwitcherForTabletsDescription[];
-
 extern const char kHighlightManagedPrefDisclaimerAndroidName[];
 extern const char kHighlightManagedPrefDisclaimerAndroidDescription[];
 

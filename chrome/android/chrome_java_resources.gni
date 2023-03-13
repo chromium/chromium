@@ -512,7 +512,6 @@ chrome_java_resources = [
   "java/res/layout/divider_line_menu_item.xml",
   "java/res/layout/editable_option_editor_icons.xml",
   "java/res/layout/empty_accessory_sheet.xml",
-  "java/res/layout/empty_background_view_tablet.xml",
   "java/res/layout/fake_search_box_layout.xml",
   "java/res/layout/find_in_page.xml",
   "java/res/layout/find_toolbar.xml",

@@ -3759,10 +3759,6 @@ const char kFeedDiscoFeedEndpointName[] =
 const char kFeedDiscoFeedEndpointDescription[] =
     "Uses the DiscoFeed endpoint for serving the feed instead of GWS.";
 
-const char kGridTabSwitcherForTabletsName[] = "Grid tab switcher for tablets";
-const char kGridTabSwitcherForTabletsDescription[] =
-    "Enable grid tab switcher for tablets, replacing the tab strip.";
-
 const char kHighlightManagedPrefDisclaimerAndroidName[] =
     "Highlight managed disclaimer for preferences";
 const char kHighlightManagedPrefDisclaimerAndroidDescription[] =

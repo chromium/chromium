@@ -556,7 +556,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             mHistoricalTabModelObserver =
                     new HistoricalTabModelObserver(mTabModelSelector.getModel(false));
 
-            if (TabUiFeatureUtilities.isTabletGridTabSwitcherEnabled(this)) {
+            if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(this)) {
                 mTabModelSelector.addObserver(new TabModelSelectorObserver() {
                     @Override
                     public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
@@ -649,13 +649,12 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             return;
         }
 
-        boolean gridTabSwitcherEnabled = TabUiFeatureUtilities.isTabletGridTabSwitcherEnabled(this);
         boolean overviewVisible = mLayoutManager.isLayoutVisible(LayoutType.TAB_SWITCHER);
         boolean hasNextTab = !(getTabModelSelector().getTotalTabCount() == 0
                 || (!getTabModelSelector().isIncognitoSelected()
                         && getTabModelSelector().getModel(false).getCount() == 0));
 
-        if (gridTabSwitcherEnabled && !overviewVisible && !hasNextTab) {
+        if (!overviewVisible && !hasNextTab) {
             mLayoutManager.showLayout(LayoutType.TAB_SWITCHER, false);
         }
     }
@@ -695,13 +694,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         try (TraceEvent e = TraceEvent.scoped(
                      "ChromeTabbedActivity.setupCompositorContentPreNativeForTablet")) {
             CompositorViewHolder compositorViewHolder = getCompositorViewHolderSupplier().get();
-
-            // TODO(1239025): Remove all GTS enabled checks after GTS is enabled by default on
-            // tablets.
-            if (TabUiFeatureUtilities.isGridTabSwitcherEnabled(this)
-                    && !TabUiFeatureUtilities.isTabletGridTabSwitcherDelayCreationEnabled()) {
-                createAndSetStartSurfaceForTablet();
-            }
 
             // clang-format off
             ViewGroup tabSwitcherViewHolder = findViewById(R.id.grid_tab_switcher_view_holder);

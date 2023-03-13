@@ -103,12 +103,10 @@ import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuBlocker;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.FullScreenSyncPromoUtil;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
-import org.chromium.chrome.browser.ui.tablet.emptybackground.EmptyBackgroundViewWrapper;
 import org.chromium.chrome.browser.webapps.AddToHomescreenIPHController;
 import org.chromium.chrome.browser.webapps.AddToHomescreenMostVisitedTileClickObserver;
 import org.chromium.chrome.features.start_surface.StartSurface;
@@ -140,7 +138,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private static boolean sDisableStatusIndicatorAnimations;
     private final RootUiTabObserver mRootUiTabObserver;
     private TabbedSystemUiCoordinator mSystemUiCoordinator;
-    private @Nullable EmptyBackgroundViewWrapper mEmptyBackgroundViewWrapper;
 
     private StatusIndicatorCoordinator mStatusIndicatorCoordinator;
     private StatusIndicatorCoordinator.StatusIndicatorObserver mStatusIndicatorObserver;
@@ -334,7 +331,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         FeatureNotificationUtils.unregisterIPHCallback(FeatureType.DEFAULT_BROWSER);
 
         if (mSystemUiCoordinator != null) mSystemUiCoordinator.destroy();
-        if (mEmptyBackgroundViewWrapper != null) mEmptyBackgroundViewWrapper.destroy();
 
         if (mOfflineIndicatorController != null) {
             mOfflineIndicatorController.destroy();
@@ -506,17 +502,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             }
         };
         mRootUiTabObserver.swapToTab(mActivityTabProvider.get());
-
-        // TODO(twellington): Supply TabModelSelector as well and move initialization earlier.
-        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
-            AppMenuHandler appMenuHandler =
-                    mAppMenuCoordinator == null ? null : mAppMenuCoordinator.getAppMenuHandler();
-            mEmptyBackgroundViewWrapper =
-                    new EmptyBackgroundViewWrapper(mTabModelSelectorSupplier.get(),
-                            mTabCreatorManagerSupplier.get().getTabCreator(false), mActivity,
-                            appMenuHandler, mSnackbarManagerSupplier.get(), mLayoutManagerSupplier);
-            mEmptyBackgroundViewWrapper.initialize();
-        }
 
         if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)
                 && TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mActivity)) {

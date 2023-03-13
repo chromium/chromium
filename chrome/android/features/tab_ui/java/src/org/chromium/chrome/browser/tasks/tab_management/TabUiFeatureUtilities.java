@@ -58,12 +58,6 @@ public class TabUiFeatureUtilities {
             new BooleanCachedFieldTrialParameter(ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
                     SHOW_OPEN_IN_TAB_GROUP_MENU_ITEM_FIRST_PARAM, false);
 
-    // Field trial parameter for controlling delay grid tab switcher creation for tablets.
-    private static final String DELAY_GTS_CREATION_PARAM = "delay_creation";
-    public static final BooleanCachedFieldTrialParameter DELAY_GTS_CREATION =
-            new BooleanCachedFieldTrialParameter(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS,
-                    DELAY_GTS_CREATION_PARAM, true);
-
     // Field trial parameter for defining tab width for tab strip improvements.
     private static final String TAB_STRIP_IMPROVEMENTS_TAB_WIDTH_PARAM = "min_tab_width";
     public static final DoubleCachedFieldTrialParameter TAB_STRIP_TAB_WIDTH =
@@ -92,7 +86,6 @@ public class TabUiFeatureUtilities {
                     TAB_SELECTION_EDITOR_V2_BOOKMARKS_PARAM, true);
 
     private static Boolean sTabManagementModuleSupportedForTesting;
-    private static Boolean sGridTabSwitcherDelayCreationEnabledForTesting;
 
     /**
      * Set whether the tab management module is supported for testing.
@@ -118,21 +111,12 @@ public class TabUiFeatureUtilities {
      */
     public static boolean isGridTabSwitcherEnabled(Context context) {
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
-            return isTabletGridTabSwitcherEnabled(context);
+            return true;
         }
 
         // Having Tab Groups or Start implies Grid Tab Switcher.
         return isTabManagementModuleSupported() || isTabGroupsAndroidEnabled(context)
                 || ReturnToChromeUtil.isStartSurfaceEnabled(context);
-    }
-
-    /**
-     * @return Whether the tablet Grid Tab Switcher UI is enabled and available for use.
-     * @param context The activity context.
-     */
-    public static boolean isTabletGridTabSwitcherEnabled(Context context) {
-        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
-                && ChromeFeatureList.sGridTabSwitcherForTablets.isEnabled();
     }
 
     /**
@@ -150,29 +134,9 @@ public class TabUiFeatureUtilities {
      */
     public static boolean isTabletTabGroupsEnabled(Context context) {
         return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
-                && ChromeFeatureList.sGridTabSwitcherForTablets.isEnabled()
                 && ChromeFeatureList.sTabStripImprovements.isEnabled()
                 && ChromeFeatureList.sTabGroupsForTablets.isEnabled()
                 && !DeviceClassManager.enableAccessibilityLayout(context);
-    }
-
-    /**
-     * Set whether the tablet grid tab switcher polish is enabled for testing.
-     */
-    public static void setGtsDelayCreationEnabledForTesting(@Nullable Boolean enabled) {
-        sGridTabSwitcherDelayCreationEnabledForTesting = enabled;
-    }
-
-    /**
-     * @return Whether the tablet Grid Tab Switcher creation should be delayed to on GTS load
-     *         instead of on startup.
-     */
-    public static boolean isTabletGridTabSwitcherDelayCreationEnabled() {
-        if (sGridTabSwitcherDelayCreationEnabledForTesting != null) {
-            return sGridTabSwitcherDelayCreationEnabledForTesting;
-        }
-
-        return DELAY_GTS_CREATION.getValue();
     }
 
     /**

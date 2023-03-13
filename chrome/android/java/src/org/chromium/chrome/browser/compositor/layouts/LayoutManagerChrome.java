@@ -44,6 +44,7 @@ import org.chromium.chrome.features.start_surface.StartSurfaceDelegate;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
 import java.util.List;
@@ -184,7 +185,7 @@ public class LayoutManagerChrome
                     scrimCoordinator);
         }
 
-        if (TabUiFeatureUtilities.isTabletGridTabSwitcherEnabled(mHost.getContext())) {
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mHost.getContext())) {
             mTabSwitcherFocusLayoutStateObserver = new LayoutStateObserver() {
                 @Override
                 public void onFinishedShowing(int layoutType) {

@@ -148,13 +148,6 @@ found in the LICENSE file.
             android:inflatedId="@+id/status_indicator"
             android:layout="@layout/status_indicator_container" />
 
-        <ViewStub
-            android:id="@+id/empty_container_stub"
-            android:inflatedId="@+id/empty_container"
-            android:layout="@layout/empty_background_view_tablet"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
         <FrameLayout
             android:id="@+id/sheet_container"
             android:layout_width="match_parent"

@@ -68,8 +68,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 // clang-format off
 @Features.EnableFeatures({ChromeFeatureList.TAB_STRIP_IMPROVEMENTS,
-        ChromeFeatureList.TAB_STRIP_REDESIGN, ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS,
-        ChromeFeatureList.TAB_GROUPS_FOR_TABLETS})
+        ChromeFeatureList.TAB_STRIP_REDESIGN, ChromeFeatureList.TAB_GROUPS_FOR_TABLETS})
 @Config(manifest = Config.NONE, qualifiers = "sw600dp", shadows = {ShadowAppCompatResources.class})
 
 public class StripLayoutHelperTest {

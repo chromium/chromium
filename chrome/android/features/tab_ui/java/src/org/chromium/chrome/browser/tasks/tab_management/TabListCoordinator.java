@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardPropert
 import org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView.RecyclerViewPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -268,7 +269,7 @@ public class TabListCoordinator
 
         if (mMode == TabListMode.GRID) {
             mGlobalLayoutListener = this::updateThumbnailLocation;
-            if (TabUiFeatureUtilities.isTabletGridTabSwitcherEnabled(mContext)) {
+            if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
                 mListLayoutListener = (view, left, top, right, bottom, oldLeft, oldTop, oldRight,
                         oldBottom) -> updateGridCardLayout(right - left);
             }
