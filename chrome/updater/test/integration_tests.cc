@@ -599,16 +599,15 @@ TEST_F(IntegrationTest, CheckForUpdate_UpdaterNotInstalled) {
   update_service->CheckForUpdate(
       "test", UpdateService::Priority::kForeground,
       UpdateService::PolicySameVersionUpdate::kNotAllowed, base::DoNothing(),
-      base::BindLambdaForTesting([&loop](UpdateService::Result result_unused) {
-        EXPECT_EQ(result_unused, UpdateService::Result::kServiceFailed);
+      base::BindLambdaForTesting([&loop](UpdateService::Result result) {
+        EXPECT_TRUE(result == UpdateService::Result::kServiceFailed ||
+                    result == UpdateService::Result::kIPCConnectionFailed)
+            << "result == " << result;
         loop.Quit();
       }));
   loop.Run();
 }
 
-// TODO(crbug.com/1396103): enable this test on POSIX after making the Mojo
-// changes to remote the function `CheckForUpdate`.
-#if BUILDFLAG(IS_WIN)
 TEST_F(IntegrationTest, CheckForUpdate) {
   ScopedServer test_server(test_commands_);
   ASSERT_NO_FATAL_FAILURE(Install());
@@ -622,7 +621,6 @@ TEST_F(IntegrationTest, CheckForUpdate) {
 
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
-#endif  // IS_WIN
 
 TEST_F(IntegrationTest, UpdateApp) {
   ScopedServer test_server(test_commands_);

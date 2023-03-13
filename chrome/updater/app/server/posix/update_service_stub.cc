@@ -195,6 +195,16 @@ class UpdateServiceStubUntrusted : public mojom::UpdateService {
     observer->OnComplete(mojom::UpdateService_Result::kPermissionDenied);
   }
 
+  void CheckForUpdate(
+      const std::string& app_id,
+      UpdateService::Priority priority,
+      UpdateService::PolicySameVersionUpdate policy_same_version_update,
+      UpdateCallback callback) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    impl_->CheckForUpdate(app_id, priority, policy_same_version_update,
+                          std::move(callback));
+  }
+
  private:
   void OnClientDisconnected();
 
@@ -285,19 +295,27 @@ void UpdateServiceStub::Update(
     bool do_update_check_only,
     UpdateCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!do_update_check_only);
   task_start_listener_.Run();
   auto observer = std::make_unique<mojo::Remote<mojom::StateChangeObserver>>();
   std::move(callback).Run(observer->BindNewPipeAndPassReceiver());
 
   auto [state_change_callback, on_complete_callback] =
       MakeStateChangeObserverCallbacks(std::move(observer));
-  impl_->Update(app_id, install_data_index,
-                static_cast<updater::UpdateService::Priority>(priority),
-                static_cast<updater::UpdateService::PolicySameVersionUpdate>(
-                    policy_same_version_update),
-                state_change_callback,
-                std::move(on_complete_callback).Then(task_end_listener_));
+  if (do_update_check_only) {
+    impl_->CheckForUpdate(
+        app_id, static_cast<updater::UpdateService::Priority>(priority),
+        static_cast<updater::UpdateService::PolicySameVersionUpdate>(
+            policy_same_version_update),
+        state_change_callback,
+        std::move(on_complete_callback).Then(task_end_listener_));
+  } else {
+    impl_->Update(app_id, install_data_index,
+                  static_cast<updater::UpdateService::Priority>(priority),
+                  static_cast<updater::UpdateService::PolicySameVersionUpdate>(
+                      policy_same_version_update),
+                  state_change_callback,
+                  std::move(on_complete_callback).Then(task_end_listener_));
+  }
 }
 
 void UpdateServiceStub::Install(mojom::RegistrationRequestPtr registration,
@@ -344,6 +362,25 @@ void UpdateServiceStub::RunInstaller(const std::string& app_id,
   impl_->RunInstaller(app_id, installer_path, install_args, install_data,
                       install_settings, std::move(state_change_callback),
                       std::move(on_complete_callback).Then(task_end_listener_));
+}
+
+void UpdateServiceStub::CheckForUpdate(
+    const std::string& app_id,
+    UpdateService::Priority priority,
+    UpdateService::PolicySameVersionUpdate policy_same_version_update,
+    UpdateCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  task_start_listener_.Run();
+  auto observer = std::make_unique<mojo::Remote<mojom::StateChangeObserver>>();
+  std::move(callback).Run(observer->BindNewPipeAndPassReceiver());
+  auto [state_change_callback, on_complete_callback] =
+      MakeStateChangeObserverCallbacks(std::move(observer));
+  impl_->CheckForUpdate(
+      app_id, static_cast<updater::UpdateService::Priority>(priority),
+      static_cast<updater::UpdateService::PolicySameVersionUpdate>(
+          policy_same_version_update),
+      state_change_callback,
+      std::move(on_complete_callback).Then(task_end_listener_));
 }
 
 UpdateServiceStub::UpdateServiceStub(

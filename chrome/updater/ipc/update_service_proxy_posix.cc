@@ -275,16 +275,23 @@ void UpdateServiceProxy::RunPeriodicTasks(base::OnceClosure callback) {
   remote_->RunPeriodicTasks(std::move(wrapped_callback));
 }
 
-// TODO(crbug.com/1396103): implement.
 void UpdateServiceProxy::CheckForUpdate(
     const std::string& app_id,
     UpdateService::Priority priority,
     PolicySameVersionUpdate policy_same_version_update,
     StateChangeCallback state_update,
     Callback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
-  OnCurrentSequence(std::move(callback)).Run(Result::kServiceFailed);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  EnsureConnecting();
+  mojom::UpdateService::UpdateCallback state_change_observer_callback =
+      MakeStateChangeObserver(OnCurrentSequence(state_update),
+                              OnCurrentSequence(std::move(callback)));
+  remote_->CheckForUpdate(
+      app_id, static_cast<mojom::UpdateService::Priority>(priority),
+      static_cast<mojom::UpdateService::PolicySameVersionUpdate>(
+          policy_same_version_update),
+      std::move(state_change_observer_callback));
 }
 
 void UpdateServiceProxy::Update(
