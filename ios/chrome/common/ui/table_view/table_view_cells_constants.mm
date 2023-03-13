@@ -37,6 +37,9 @@ NSString* const kTableViewURLCellFaviconBadgeViewID =
 NSString* const kImproveChromeItemAccessibilityIdentifier =
     @"ImproveChromeItemAccessibilityIdentifier";
 
+NSString* const kTableViewActivityIndicatorHeaderFooterViewId =
+    @"TableViewActivityIndicatorHeaderFooterViewId";
+
 CGFloat HorizontalPadding() {
   if (!IsSmallDevice())
     return 0;

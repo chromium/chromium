@@ -52,6 +52,9 @@
 - (instancetype)initWithReuseIdentifier:(NSString*)reuseIdentifier {
   self = [super initWithReuseIdentifier:reuseIdentifier];
   if (self) {
+    self.accessibilityIdentifier =
+        kTableViewActivityIndicatorHeaderFooterViewId;
+
     // Labels, set font sizes using dynamic type.
     self.titleLabel = [[UILabel alloc] init];
     self.titleLabel.font =

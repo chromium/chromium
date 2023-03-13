@@ -74,4 +74,7 @@ extern CGFloat HorizontalPadding();
 // settings.
 extern NSString* const kImproveChromeItemAccessibilityIdentifier;
 
+// Accessibility identifier for TableViewActivityIndicatorHeaderFooterView.
+extern NSString* const kTableViewActivityIndicatorHeaderFooterViewId;
+
 #endif  // IOS_CHROME_COMMON_UI_TABLE_VIEW_TABLE_VIEW_CELLS_CONSTANTS_H_
