@@ -218,7 +218,7 @@ void AddCredentialsCallback(
 }
 
 bool HasConflicts(
-    const std::map<std::u16string, std::vector<const CredentialUIEntry>>&
+    const std::map<std::u16string, std::vector<CredentialUIEntry>>&
         credentials_by_username,
     const CredentialUIEntry& imported_credential) {
   auto it = credentials_by_username.find(imported_credential.username);
@@ -339,7 +339,7 @@ void PasswordImporter::ConsumePasswords(
   add_credentials.reserve(seq->csv_passwords.size());
 
   // Used to compute conflicts and duplicates.
-  std::map<std::u16string, std::vector<const CredentialUIEntry>>
+  std::map<std::u16string, std::vector<CredentialUIEntry>>
       credentials_by_username;
   for (const CredentialUIEntry& credential : presenter_->GetSavedPasswords()) {
     // Don't consider credentials from a store other than the target store.
