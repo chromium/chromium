@@ -124,6 +124,7 @@ gfx::CALayerResult FromSolidColorDrawQuad(const SolidColorDrawQuad* quad,
     return gfx::kCALayerSuccess;
   }
   ca_layer_overlay->color = quad->color;
+  ca_layer_overlay->is_solid_color = true;
   return gfx::kCALayerSuccess;
 }
 

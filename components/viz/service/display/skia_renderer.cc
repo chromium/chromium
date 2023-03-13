@@ -2666,73 +2666,41 @@ void SkiaRenderer::ScheduleOverlays() {
   DCHECK(output_surface_->capabilities().supports_surfaceless);
 #endif
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
-  // CrOS, Android SurfaceControl, and Windows use this code path.
   for (auto& overlay : current_frame()->overlay_list) {
     if (overlay.is_root_render_pass) {
       continue;
     }
-    // Resources will be unlocked after the next SwapBuffers() is completed.
-    locks.emplace_back(resource_provider(), overlay.resource_id);
-    auto& lock = locks.back();
 
-    // Sync tokens ensure the texture to be overlaid is available before
-    // scheduling it for display.
-    if (lock.sync_token().HasData())
-      sync_tokens.push_back(lock.sync_token());
-
-    overlay.mailbox = lock.mailbox();
-    DCHECK(!overlay.mailbox.IsZero());
-  }
-#elif BUILDFLAG(IS_APPLE)
-  for (OverlayCandidate& ca_layer_overlay : current_frame()->overlay_list) {
-    if (ca_layer_overlay.rpdq) {
-      PrepareRenderPassOverlay(&ca_layer_overlay);
-      locks.emplace_back(ca_layer_overlay.mailbox);
-      continue;
-    }
-    // Some overlays are for solid-color layers.
-    if (!ca_layer_overlay.resource_id) {
-      continue;
-    }
-
-    // TODO(https://crbug.com/894929): Track IOSurface in-use instead of just
-    // unlocking after the next SwapBuffers is completed.
-    locks.emplace_back(resource_provider(), ca_layer_overlay.resource_id);
-    auto& lock = locks.back();
-
-    // Sync tokens ensure the texture to be overlaid is available before
-    // scheduling it for display.
-    if (lock.sync_token().HasData())
-      sync_tokens.push_back(lock.sync_token());
-
-    // Populate the |mailbox| of the CALayerOverlay which will be used to look
-    // up the corresponding GLImageIOSurface when building the CALayer tree.
-    ca_layer_overlay.mailbox = lock.mailbox();
-    DCHECK(!ca_layer_overlay.mailbox.IsZero());
-  }
-#elif BUILDFLAG(IS_OZONE)
-  // Only Wayland uses this code path.
-  for (auto& overlay : current_frame()->overlay_list) {
-    if (overlay.is_root_render_pass) {
-      continue;
-    }
+#if BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_APPLE)
     if (overlay.rpdq) {
       PrepareRenderPassOverlay(&overlay);
       locks.emplace_back(overlay.mailbox);
       continue;
     }
-    // If non-backed solid color overlays aren't supported (e.g. Lacros on
-    // Linux) then we need to create buffers to send over Wayland.
+#else
+    DCHECK(!overlay.rpdq);
+#endif
+
     if (overlay.is_solid_color) {
+      DCHECK(overlay.color);
+      DCHECK(!overlay.resource_id);
+
+#if BUILDFLAG(IS_OZONE)
+      // If non-backed solid color overlays aren't supported (e.g. Lacros on
+      // Linux) then we need to create buffers to send over Wayland.
       if (!output_surface_->capabilities()
                .supports_non_backed_solid_color_overlays) {
-        DCHECK(overlay.color);
         overlay.mailbox = GetImageMailboxForColor(*overlay.color);
         // This can now be treated as a regular overlay with a mailbox backing.
         overlay.is_solid_color = false;
         locks.emplace_back(overlay.mailbox);
       }
+#else
+      // All other platforms that support solid color overlays don't need fake
+      // buffer.
+      DCHECK(output_surface_->capabilities()
+                 .supports_non_backed_solid_color_overlays);
+#endif
       continue;
     }
 
@@ -2748,12 +2716,6 @@ void SkiaRenderer::ScheduleOverlays() {
     overlay.mailbox = lock.mailbox();
     DCHECK(!overlay.mailbox.IsZero());
   }
-#else
-  // For platforms that don't support overlays, the
-  // current_frame()->overlay_list should be empty, and this code should not be
-  // reached.
-  NOTREACHED();
-#endif
 
   DCHECK(!current_gpu_commands_completed_fence_->was_set());
   DCHECK(!current_release_fence_->was_set());
