@@ -56,4 +56,6 @@ build_webui("build") {
     "//ui/webui/resources/mojo:build_ts",
   ]
   ts_definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
+
+  enable_source_maps = enable_webui_inline_sourcemaps
 }
