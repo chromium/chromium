@@ -185,6 +185,17 @@ void AmbientController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDoublePref(
       ambient::prefs::kAmbientModeAnimationPlaybackSpeed,
       kAnimationPlaybackSpeed);
+
+  registry->RegisterBooleanPref(
+      ash::ambient::prefs::kAmbientModeManagedScreensaverEnabled, false);
+
+  registry->RegisterIntegerPref(
+      ambient::prefs::kAmbientModeManagedScreensaverIdleTimeoutSeconds,
+      kManagedScreensaverInactivityTimeout.InSeconds());
+
+  registry->RegisterIntegerPref(
+      ambient::prefs::kAmbientModeManagedScreensaverImageDisplayIntervalSeconds,
+      kManagedScreensaverImageRefreshInterval.InSeconds());
 }
 
 AmbientController::AmbientController(

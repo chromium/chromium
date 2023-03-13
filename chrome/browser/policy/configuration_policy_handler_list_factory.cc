@@ -151,6 +151,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_prefs.h"
 #include "chrome/browser/ash/accessibility/magnifier_type.h"
 #include "chrome/browser/ash/app_restore/full_restore_prefs.h"
@@ -1411,7 +1412,15 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kWallpaperGooglePhotosIntegrationEnabled,
     wallpaper_handlers::prefs::kWallpaperGooglePhotosIntegrationEnabled,
     base::Value::Type::BOOLEAN },
-
+  { key::kScreensaverLockScreenEnabled,
+    ash::ambient::prefs::kAmbientModeManagedScreensaverEnabled,
+    base::Value::Type::BOOLEAN },
+    { key::kScreensaverLockScreenIdleTimeoutSeconds,
+    ash::ambient::prefs::kAmbientModeManagedScreensaverIdleTimeoutSeconds,
+    base::Value::Type::INTEGER },
+    { key::kScreensaverLockScreenImageDisplayIntervalSeconds,
+    ash::ambient::prefs::kAmbientModeManagedScreensaverImageDisplayIntervalSeconds,
+    base::Value::Type::INTEGER },
 #endif // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_LINUX)

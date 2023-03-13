@@ -43,6 +43,15 @@ constexpr char kAmbientModeAnimationPlaybackSpeed[] =
 constexpr char kAmbientModePhotoRefreshIntervalSeconds[] =
     "ash.ambient.photo_refresh_interval";
 
+constexpr char kAmbientModeManagedScreensaverEnabled[] =
+    "ash.ambient.managed_screensaver.enabled";
+
+constexpr char kAmbientModeManagedScreensaverIdleTimeoutSeconds[] =
+    "ash.ambient.managed_screensaver.idle_timeout_seconds";
+
+constexpr char kAmbientModeManagedScreensaverImageDisplayIntervalSeconds[] =
+    "ash.ambient.managed_screensaver.image_display_interval_seconds";
+
 }  // namespace prefs
 }  // namespace ambient
 }  // namespace ash
