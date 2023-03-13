@@ -34,6 +34,7 @@
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #include "components/translate/core/common/translate_constants.h"
+#include "components/translate/core/common/translate_util.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "components/variations/variations_associated_data.h"
 #include "net/base/mock_network_change_notifier.h"
@@ -978,12 +979,9 @@ TEST_F(TranslateManagerTest, CanManuallyTranslate_UndefinedSourceLanguage) {
   translate_manager_->GetLanguageState()->LanguageDetermined(
       kUnknownLanguageCode, true);
 
-  // Manual translation of unknown source language pages is not supported on
-  // iOS.
-  bool unknown_source_supported = true;
-#if BUILDFLAG(IS_IOS)
-  unknown_source_supported = false;
-#endif
+  // Manual translation of unknown source language pages is supported
+  // experimentally on iOS and is fully supported on all other platforms.
+  bool unknown_source_supported = translate::IsForceTranslateEnabled();
   EXPECT_EQ(translate_manager_->CanManuallyTranslate(),
             unknown_source_supported);
 }
