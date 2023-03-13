@@ -241,8 +241,8 @@ void WebAppShortcutManager::RegisterShortcutsMenuWithOs(
   base::FilePath shortcut_data_dir =
       internals::GetShortcutDataDir(*shortcut_info);
   web_app::RegisterShortcutsMenuWithOs(
-      shortcut_info->extension_id, shortcut_info->profile_path,
-      shortcut_data_dir, shortcuts_menu_item_infos, shortcuts_menu_icon_bitmaps,
+      shortcut_info->app_id, shortcut_info->profile_path, shortcut_data_dir,
+      shortcuts_menu_item_infos, shortcuts_menu_icon_bitmaps,
       std::move(callback));
 }
 
@@ -412,7 +412,7 @@ std::unique_ptr<ShortcutInfo> WebAppShortcutManager::BuildShortcutInfoForWebApp(
     const WebApp* app) {
   auto shortcut_info = std::make_unique<ShortcutInfo>();
 
-  shortcut_info->extension_id = app->app_id();
+  shortcut_info->app_id = app->app_id();
   shortcut_info->url = app->start_url();
   shortcut_info->title =
       base::UTF8ToUTF16(registrar_->GetAppShortName(app->app_id()));

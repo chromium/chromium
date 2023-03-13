@@ -190,7 +190,7 @@ std::unique_ptr<ShortcutInfo> BuildShortcutInfoWithoutFavicon(
     const proto::WebAppOsIntegrationState& state) {
   auto shortcut_info = std::make_unique<ShortcutInfo>();
 
-  shortcut_info->extension_id = app_id;
+  shortcut_info->app_id = app_id;
   shortcut_info->url = start_url;
   DCHECK(state.has_shortcut());
   const proto::ShortcutDescription& shortcut_state = state.shortcut();
@@ -300,10 +300,11 @@ std::vector<WebAppShortcutsMenuItemInfo> CreateShortcutsMenuItemInfos(
 
 std::string GenerateApplicationNameFromInfo(const ShortcutInfo& shortcut_info) {
   // TODO(loyso): Remove this empty()/non-empty difference.
-  if (shortcut_info.extension_id.empty())
+  if (shortcut_info.app_id.empty()) {
     return GenerateApplicationNameFromURL(shortcut_info.url);
+  }
 
-  return GenerateApplicationNameFromAppId(shortcut_info.extension_id);
+  return GenerateApplicationNameFromAppId(shortcut_info.app_id);
 }
 
 base::FilePath GetOsIntegrationResourcesDirectoryForApp(
@@ -434,9 +435,8 @@ scoped_refptr<base::SequencedTaskRunner> GetShortcutIOTaskRunner() {
 }
 
 base::FilePath GetShortcutDataDir(const ShortcutInfo& shortcut_info) {
-  return GetOsIntegrationResourcesDirectoryForApp(shortcut_info.profile_path,
-                                                  shortcut_info.extension_id,
-                                                  shortcut_info.url);
+  return GetOsIntegrationResourcesDirectoryForApp(
+      shortcut_info.profile_path, shortcut_info.app_id, shortcut_info.url);
 }
 
 #if !BUILDFLAG(IS_MAC)

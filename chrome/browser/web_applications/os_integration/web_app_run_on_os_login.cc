@@ -44,7 +44,7 @@ void ScheduleRegisterRunOnOsLogin(WebAppSyncBridge* sync_bridge,
   //  OsIntegrationManager::Synchronize() is running fine.
   if (!AreSubManagersExecuteEnabled()) {
     ScopedRegistryUpdate update(sync_bridge);
-    update->UpdateApp(shortcut_info->extension_id)
+    update->UpdateApp(shortcut_info->app_id)
         ->SetRunOnOsLoginOsIntegrationState(RunOnOsLoginMode::kWindowed);
   }
 

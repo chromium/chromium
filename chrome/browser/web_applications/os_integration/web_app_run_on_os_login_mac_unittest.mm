@@ -123,7 +123,7 @@ class WebAppRunOnOsLoginMacTest : public WebAppTest {
 
   std::unique_ptr<ShortcutInfo> GetShortcutInfo() {
     std::unique_ptr<ShortcutInfo> info(new ShortcutInfo);
-    info->extension_id = "app-id";
+    info->app_id = "app-id";
     info->title = kAppTitle;
     info->url = GURL("http://example.com/");
     info->profile_path = user_data_dir_.Append("Profile 1");
@@ -165,9 +165,8 @@ TEST_F(WebAppRunOnOsLoginMacTest, Unregister) {
   EXPECT_EQ(auto_login_util_mock_->GetRemoveFromLoginItemsCalledCount(), 0);
 
   auto_login_util_mock_->ResetCounts();
-  EXPECT_EQ(Result::kOk,
-            internals::UnregisterRunOnOsLogin(
-                info_->extension_id, info_->profile_path, info_->title));
+  EXPECT_EQ(Result::kOk, internals::UnregisterRunOnOsLogin(
+                             info_->app_id, info_->profile_path, info_->title));
   EXPECT_EQ(auto_login_util_mock_->GetRemoveFromLoginItemsCalledCount(), 1);
   EXPECT_TRUE(base::PathExists(shim_path_));
   EXPECT_TRUE(base::DeletePathRecursively(shim_path_));

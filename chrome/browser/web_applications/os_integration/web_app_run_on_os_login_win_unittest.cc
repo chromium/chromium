@@ -43,7 +43,7 @@ class WebAppRunOnOsLoginWinTest : public WebAppTest {
 
   std::unique_ptr<ShortcutInfo> GetShortcutInfo() {
     auto shortcut_info = std::make_unique<ShortcutInfo>();
-    shortcut_info->extension_id = "app-id";
+    shortcut_info->app_id = "app-id";
     shortcut_info->title = kAppTitle;
     shortcut_info->profile_path = profile()->GetPath();
 
@@ -120,8 +120,8 @@ TEST_F(WebAppRunOnOsLoginWinTest, Unregister) {
   EXPECT_TRUE(result);
   VerifyShortcutCreated();
 
-  internals::UnregisterRunOnOsLogin(shortcut_info->extension_id,
-                                    profile()->GetPath(), kAppTitle);
+  internals::UnregisterRunOnOsLogin(shortcut_info->app_id, profile()->GetPath(),
+                                    kAppTitle);
   VerifyShortcutDeleted();
 }
 

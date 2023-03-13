@@ -169,7 +169,7 @@ bool CreateShortcutsInPaths(const base::FilePath& web_app_path,
 
   base::CommandLine cmd_line(base::CommandLine::NO_PROGRAM);
   cmd_line = shell_integration::CommandLineArgsForLauncher(
-      shortcut_info.url, shortcut_info.extension_id, shortcut_info.profile_path,
+      shortcut_info.url, shortcut_info.app_id, shortcut_info.profile_path,
       run_on_os_login_mode);
 
   // TODO(evan): we rely on the fact that command_line_string() is
@@ -183,10 +183,10 @@ bool CreateShortcutsInPaths(const base::FilePath& web_app_path,
   if (description.length() >= MAX_PATH)
     description.resize(MAX_PATH - 1);
 
-  // Generates app id from the browser's appid, and the app's extension_id or
+  // Generates app id from the browser's appid, and the app's app_id or
   // web app url, and the profile path.
   std::string app_name(GenerateApplicationNameFromInfo(shortcut_info));
-  std::wstring app_id(shell_integration::win::GetAppUserModelIdForApp(
+  std::wstring win_app_id(shell_integration::win::GetAppUserModelIdForApp(
       base::UTF8ToWide(app_name), shortcut_info.profile_path));
 
   bool success = true;
@@ -217,7 +217,7 @@ bool CreateShortcutsInPaths(const base::FilePath& web_app_path,
     shortcut_properties.set_arguments(wide_switches);
     shortcut_properties.set_description(base::AsWString(description));
     shortcut_properties.set_icon(icon_file, 0);
-    shortcut_properties.set_app_id(app_id);
+    shortcut_properties.set_app_id(win_app_id);
     shortcut_properties.set_dual_mode(false);
     if (!base::PathExists(shortcut_file.DirName()) &&
         !base::CreateDirectory(shortcut_file.DirName())) {
@@ -444,8 +444,8 @@ void CreateIconAndSetRelaunchDetails(const base::FilePath& web_app_path,
                                      const ShortcutInfo& shortcut_info) {
   base::CommandLine command_line =
       shell_integration::CommandLineArgsForLauncher(
-          shortcut_info.url, shortcut_info.extension_id,
-          shortcut_info.profile_path, "");
+          shortcut_info.url, shortcut_info.app_id, shortcut_info.profile_path,
+          "");
 
   command_line.SetProgram(GetChromeProxyPath());
   ui::win::SetRelaunchDetailsForWindow(command_line.GetCommandLineString(),
@@ -527,8 +527,7 @@ void OnShortcutInfoLoadedForSetRelaunchDetails(
   // Set window's icon to the one we're about to create/update in the web app
   // path. The icon cache will refresh on icon creation.
   base::FilePath web_app_path = GetOsIntegrationResourcesDirectoryForApp(
-      shortcut_info->profile_path, shortcut_info->extension_id,
-      shortcut_info->url);
+      shortcut_info->profile_path, shortcut_info->app_id, shortcut_info->url);
   base::FilePath icon_file =
       GetIconFilePath(web_app_path, shortcut_info->title);
 

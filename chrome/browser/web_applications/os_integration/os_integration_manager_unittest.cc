@@ -42,7 +42,7 @@ const std::u16string kFakeAppTitle(u"fake title");
 std::unique_ptr<ShortcutInfo> CreateTestShorcutInfo(const AppId& app_id) {
   auto shortcut_info = std::make_unique<ShortcutInfo>();
   shortcut_info->profile_path = base::FilePath(kFakeProfilePath);
-  shortcut_info->extension_id = app_id;
+  shortcut_info->app_id = app_id;
   shortcut_info->url = GURL(kFakeAppUrl);
   shortcut_info->title = kFakeAppTitle;
   return shortcut_info;
