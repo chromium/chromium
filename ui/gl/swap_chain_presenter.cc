@@ -1618,25 +1618,31 @@ bool SwapChainPresenter::VideoProcessorBlt(
         hr);
 
     if (FAILED(hr)) {
-      DLOG(ERROR) << "VideoProcessorBlt failed with error 0x" << std::hex << hr;
-
+      // Retry VideoProcessorBlt with vp super resolution off if it was on.
       if (use_vp_super_resolution) {
-        // Retry with VpSuperResolution off.
+        DLOG(ERROR) << "Retry VideoProcessorBlt with VpSuperResolution off "
+                       "after it failed with error 0x"
+                    << std::hex << hr;
+
         ToggleVpSuperResolution(gpu_vendor_id_, video_context.Get(),
                                 video_processor.Get(), false);
-
         hr = video_context->VideoProcessorBlt(
             video_processor.Get(), output_view_.Get(), 0, 1, &stream);
-        if (FAILED(hr)) {
-          DLOG(ERROR) << "VideoProcessorBlt after retry with vp super "
-                         "resolution off failed with error 0x"
-                      << std::hex << hr;
-          return false;
+
+        // We shouldn't use VpSuperResolution if it was the reason that caused
+        // the VideoProcessorBlt failure.
+        force_vp_super_resolution_off_ = SUCCEEDED(hr);
+      }
+
+      if (FAILED(hr)) {
+        DLOG(ERROR) << "VideoProcessorBlt failed with error 0x" << std::hex
+                    << hr;
+
+        // To prevent it from failing in all coming frames, disable overlay if
+        // VideoProcessorBlt is not implemented in the GPU driver.
+        if (hr == E_NOTIMPL) {
+          DisableDirectCompositionOverlays();
         }
-        // We shouldn't use VpSuperResolution if it previously caused the
-        // VideoProcessorBlt error.
-        force_vp_super_resolution_off_ = true;
-      } else {
         return false;
       }
     }
