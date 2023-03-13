@@ -13,7 +13,6 @@
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "device/bluetooth/bluetooth_adapter_win.h"
-#include "device/bluetooth/bluetooth_remote_gatt_service_win.h"
 #include "device/bluetooth/bluetooth_service_record_win.h"
 #include "device/bluetooth/bluetooth_socket_thread.h"
 #include "device/bluetooth/bluetooth_socket_win.h"
@@ -40,19 +39,7 @@ BluetoothDeviceWin::BluetoothDeviceWin(
   Update(device_state);
 }
 
-BluetoothDeviceWin::~BluetoothDeviceWin() {
-  // Explicitly take and erase GATT services one by one to ensure that calling
-  // GetGattService on removed service in GattServiceRemoved returns null.
-  std::vector<std::string> service_keys;
-  for (const auto& gatt_service : gatt_services_) {
-    service_keys.push_back(gatt_service.first);
-  }
-  for (const auto& key : service_keys) {
-    std::unique_ptr<BluetoothRemoteGattService> service =
-        std::move(gatt_services_[key]);
-    gatt_services_.erase(key);
-  }
-}
+BluetoothDeviceWin::~BluetoothDeviceWin() = default;
 
 uint32_t BluetoothDeviceWin::GetBluetoothClass() const {
   return bluetooth_class_;
@@ -104,9 +91,7 @@ bool BluetoothDeviceWin::IsConnected() const {
 }
 
 bool BluetoothDeviceWin::IsGattConnected() const {
-  // If a BLE device is not GATT connected, Windows will automatically
-  // reconnect.
-  return is_low_energy_;
+  return false;
 }
 
 bool BluetoothDeviceWin::IsConnectable() const {
@@ -228,7 +213,6 @@ bool BluetoothDeviceWin::IsEqual(
       bluetooth_class_ != device_state.bluetooth_class ||
       visible_ != device_state.visible ||
       connected_ != device_state.connected ||
-      is_low_energy_ == device_state.is_bluetooth_classic() ||
       paired_ != device_state.authenticated) {
     return false;
   }
@@ -269,24 +253,8 @@ void BluetoothDeviceWin::Update(
   bluetooth_class_ = device_state.bluetooth_class;
   visible_ = device_state.visible;
   connected_ = device_state.connected;
-  is_low_energy_ = !device_state.is_bluetooth_classic();
   paired_ = device_state.authenticated;
   UpdateServices(device_state);
-}
-
-void BluetoothDeviceWin::GattServiceDiscoveryComplete(
-    BluetoothRemoteGattServiceWin* service) {
-  DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(BluetoothDeviceWin::IsGattServiceDiscovered(
-      service->GetUUID(), service->GetAttributeHandle()));
-
-  discovery_completed_included_services_.insert(
-      {service->GetUUID(), service->GetAttributeHandle()});
-  if (discovery_completed_included_services_.size() != gatt_services_.size())
-    return;
-
-  SetGattServicesDiscoveryComplete(true);
-  adapter_->NotifyGattServicesDiscovered(this);
 }
 
 void BluetoothDeviceWin::CreateGattConnectionImpl(
@@ -314,83 +282,6 @@ void BluetoothDeviceWin::UpdateServices(
         record_state->gatt_uuid);
     uuids_.insert(service_record->uuid());
     service_record_list_.push_back(std::move(service_record));
-  }
-
-  if (!device_state.is_bluetooth_classic())
-    UpdateGattServices(device_state.service_record_states);
-}
-
-bool BluetoothDeviceWin::IsGattServiceDiscovered(const BluetoothUUID& uuid,
-                                                 uint16_t attribute_handle) {
-  for (const auto& gatt_service : gatt_services_) {
-    uint16_t it_att_handle =
-        static_cast<BluetoothRemoteGattServiceWin*>(gatt_service.second.get())
-            ->GetAttributeHandle();
-    BluetoothUUID it_uuid = gatt_service.second->GetUUID();
-    if (attribute_handle == it_att_handle && uuid == it_uuid) {
-      return true;
-    }
-  }
-  return false;
-}
-
-bool BluetoothDeviceWin::DoesGattServiceExist(
-    const std::vector<std::unique_ptr<
-        BluetoothTaskManagerWin::ServiceRecordState>>& service_state,
-    BluetoothRemoteGattService* service) {
-  uint16_t attribute_handle =
-      static_cast<BluetoothRemoteGattServiceWin*>(service)
-          ->GetAttributeHandle();
-  BluetoothUUID uuid = service->GetUUID();
-  for (const auto& record_state : service_state) {
-    if (attribute_handle == record_state->attribute_handle &&
-        uuid == record_state->gatt_uuid) {
-      return true;
-    }
-  }
-  return false;
-}
-
-void BluetoothDeviceWin::UpdateGattServices(
-    const std::vector<
-        std::unique_ptr<BluetoothTaskManagerWin::ServiceRecordState>>&
-        service_state) {
-  // First, remove no longer existent GATT service.
-  {
-    std::vector<std::string> to_be_removed_services;
-    for (const auto& gatt_service : gatt_services_) {
-      if (!DoesGattServiceExist(service_state, gatt_service.second.get())) {
-        to_be_removed_services.push_back(gatt_service.first);
-      }
-    }
-    for (const auto& service : to_be_removed_services) {
-      std::unique_ptr<BluetoothRemoteGattService> service_ptr =
-          std::move(gatt_services_[service]);
-      gatt_services_.erase(service);
-    }
-    // Update previously discovered services.
-    for (const auto& gatt_service : gatt_services_) {
-      static_cast<BluetoothRemoteGattServiceWin*>(gatt_service.second.get())
-          ->Update();
-    }
-  }
-
-  // Return if no new services have been added.
-  if (gatt_services_.size() == service_state.size())
-    return;
-
-  // Add new services.
-  for (const auto& record_state : service_state) {
-    if (!IsGattServiceDiscovered(record_state->gatt_uuid,
-                                 record_state->attribute_handle)) {
-      BluetoothRemoteGattServiceWin* primary_service =
-          new BluetoothRemoteGattServiceWin(
-              this, record_state->path, record_state->gatt_uuid,
-              record_state->attribute_handle, true, nullptr, ui_task_runner_);
-      gatt_services_[primary_service->GetIdentifier()] =
-          base::WrapUnique(primary_service);
-      adapter_->NotifyGattServiceAdded(primary_service);
-    }
   }
 }
 

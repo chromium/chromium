@@ -21,7 +21,6 @@
 namespace device {
 
 class BluetoothAdapterWin;
-class BluetoothRemoteGattServiceWin;
 class BluetoothServiceRecordWin;
 class BluetoothSocketThread;
 class BluetoothUUID;
@@ -98,10 +97,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceWin
   // |device_state|.
   void Update(const BluetoothTaskManagerWin::DeviceState& device_state);
 
-  // Notify |service| discovery complete, |service| is a remote GATT service of
-  // this device.
-  void GattServiceDiscoveryComplete(BluetoothRemoteGattServiceWin* service);
-
  protected:
   // BluetoothDevice override
   void CreateGattConnectionImpl(
@@ -117,24 +112,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceWin
 
   // Updates the services with services stored in |device_state|.
   void UpdateServices(const BluetoothTaskManagerWin::DeviceState& device_state);
-
-  // Checks if GATT service with |uuid| and |attribute_handle| has already been
-  // discovered.
-  bool IsGattServiceDiscovered(const BluetoothUUID& uuid,
-                               uint16_t attribute_handle);
-
-  // Checks if |service| still exist on device according to newly discovered
-  // |service_state|.
-  bool DoesGattServiceExist(
-      const std::vector<std::unique_ptr<
-          BluetoothTaskManagerWin::ServiceRecordState>>& service_state,
-      BluetoothRemoteGattService* service);
-
-  // Updates the GATT services with the services stored in |service_state|.
-  void UpdateGattServices(
-      const std::vector<
-          std::unique_ptr<BluetoothTaskManagerWin::ServiceRecordState>>&
-          service_state);
 
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
   scoped_refptr<BluetoothSocketThread> socket_thread_;
@@ -153,7 +130,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceWin
   // the device.
   bool paired_;
   bool connected_;
-  bool is_low_energy_;
 
   // Used to send change notifications when a device disappears during
   // discovery.
@@ -164,11 +140,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceWin
 
   // The service records retrieved from SDP.
   std::vector<std::unique_ptr<BluetoothServiceRecordWin>> service_record_list_;
-
-  // The element of the set is the uuid / attribute handle pair of the
-  // BluetoothRemoteGattServiceWin instance.
-  std::set<std::pair<BluetoothUUID, uint16_t>>
-      discovery_completed_included_services_;
 };
 
 }  // namespace device

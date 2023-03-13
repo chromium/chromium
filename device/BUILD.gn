@@ -97,7 +97,6 @@ test("device_unittests") {
     sources += [
       "bluetooth/bluetooth_adapter_win_unittest.cc",
       "bluetooth/bluetooth_device_win_unittest.cc",
-      "bluetooth/bluetooth_low_energy_win_unittest.cc",
       "bluetooth/bluetooth_service_record_win_unittest.cc",
       "bluetooth/bluetooth_task_manager_win_unittest.cc",
       "bluetooth/test/bluetooth_test_win.cc",
