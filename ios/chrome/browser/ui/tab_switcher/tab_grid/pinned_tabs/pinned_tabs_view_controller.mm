@@ -538,13 +538,14 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
         (id<UICollectionViewDropCoordinator>)coordinator {
   NSArray<id<UICollectionViewDropItem>>* items = coordinator.items;
   for (id<UICollectionViewDropItem> item in items) {
-    // Append to the end of the collection, unless drop index is specified.
+    // Append to the end of the collection, unless drop is from the same
+    // collection view and its index is specified.
     // The sourceIndexPath is nil if the drop item is not from the same
     // collection view. Set the destinationIndex to reflect the addition of an
     // item.
     NSUInteger destinationIndex =
         item.sourceIndexPath ? _items.count - 1 : _items.count;
-    if (coordinator.destinationIndexPath) {
+    if (coordinator.destinationIndexPath && item.sourceIndexPath) {
       destinationIndex =
           base::checked_cast<NSUInteger>(coordinator.destinationIndexPath.item);
     }
