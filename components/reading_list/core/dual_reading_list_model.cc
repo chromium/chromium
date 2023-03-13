@@ -534,6 +534,7 @@ void DualReadingListModel::ReadingListWillAddEntry(
   if (local_or_syncable_model_->GetEntryByURL(entry.URL())) {
     // The presence of the entry in `local_or_syncable_model_` indicates that
     // this is an update, not an insertion.
+    DCHECK_EQ(model, account_model_.get());
     DCHECK(account_model_->IsTrackingSyncMetadata());
     NotifyObserversWithWillUpdateEntry(entry.URL());
     return;
