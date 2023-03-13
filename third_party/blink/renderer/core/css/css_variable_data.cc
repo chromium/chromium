@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
@@ -62,6 +63,10 @@ scoped_refptr<CSSVariableData> CSSVariableData::Create(
     CSSTokenizedValue value,
     bool is_animation_tainted,
     bool needs_variable_resolution) {
+  int num_tokens_for_ablation =
+      RuntimeEnabledFeatures::CSSCustomPropertiesAblationEnabled()
+          ? value.range.size()
+          : -1;
   bool has_font_units = false;
   bool has_root_font_units = false;
   bool has_line_height_units = false;
@@ -69,8 +74,9 @@ scoped_refptr<CSSVariableData> CSSVariableData::Create(
     ExtractFeatures(value.range.Consume(), has_font_units, has_root_font_units,
                     has_line_height_units);
   }
-  return Create(value.text, is_animation_tainted, needs_variable_resolution,
-                has_font_units, has_root_font_units, has_line_height_units);
+  return Create(value.text, num_tokens_for_ablation, is_animation_tainted,
+                needs_variable_resolution, has_font_units, has_root_font_units,
+                has_line_height_units);
 }
 
 scoped_refptr<CSSVariableData> CSSVariableData::Create(
@@ -82,12 +88,18 @@ scoped_refptr<CSSVariableData> CSSVariableData::Create(
   bool has_line_height_units = false;
   CSSTokenizer tokenizer(original_text);
   CSSParserTokenStream stream(tokenizer);
+  int num_tokens = 0;
   while (!stream.AtEnd()) {
+    ++num_tokens;
     ExtractFeatures(stream.ConsumeRaw(), has_font_units, has_root_font_units,
                     has_line_height_units);
   }
-  return Create(original_text, is_animation_tainted, needs_variable_resolution,
-                has_font_units, has_root_font_units, has_line_height_units);
+  int num_tokens_for_ablation =
+      RuntimeEnabledFeatures::CSSCustomPropertiesAblationEnabled() ? num_tokens
+                                                                   : -1;
+  return Create(original_text, num_tokens_for_ablation, is_animation_tainted,
+                needs_variable_resolution, has_font_units, has_root_font_units,
+                has_line_height_units);
 }
 
 String CSSVariableData::Serialize() const {

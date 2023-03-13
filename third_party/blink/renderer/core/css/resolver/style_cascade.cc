@@ -858,10 +858,14 @@ void StyleCascade::TokenSequence::Append(const CSSParserToken& token,
 
 scoped_refptr<CSSVariableData>
 StyleCascade::TokenSequence::BuildVariableData() {
-  return CSSVariableData::Create(original_text_, is_animation_tainted_,
-                                 /*needs_variable_resolution=*/false,
-                                 has_font_units_, has_root_font_units_,
-                                 has_line_height_units_);
+  int num_tokens_for_ablation =
+      RuntimeEnabledFeatures::CSSCustomPropertiesAblationEnabled()
+          ? tokens_.size()
+          : -1;
+  return CSSVariableData::Create(
+      original_text_, num_tokens_for_ablation, is_animation_tainted_,
+      /*needs_variable_resolution=*/false, has_font_units_,
+      has_root_font_units_, has_line_height_units_);
 }
 
 const CSSValue* StyleCascade::Resolve(const CSSProperty& property,
