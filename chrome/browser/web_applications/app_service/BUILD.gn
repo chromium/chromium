@@ -95,3 +95,31 @@ source_set("unit_tests") {
     deps += [ "//chrome/browser/ash/system_web_apps/test_support" ]
   }
 }
+
+source_set("test_support") {
+  testonly = true
+
+  sources = []
+  deps = []
+
+  if (is_chromeos_lacros) {
+    sources += [
+      "test/loopback_crosapi_app_service_proxy.cc",
+      "test/loopback_crosapi_app_service_proxy.h",
+    ]
+
+    deps += [
+      ":app_service",
+      "//base",
+      "//build:chromeos_buildflags",
+      "//chrome/browser/apps/app_service",
+      "//chromeos/crosapi/mojom",
+      "//components/services/app_service/public/cpp:app_types",
+      "//components/services/app_service/public/cpp:app_update",
+      "//components/services/app_service/public/cpp:icon_types",
+      "//components/services/app_service/public/cpp:intents",
+      "//components/services/app_service/public/cpp:preferred_app",
+      "//mojo/public/cpp/bindings",
+    ]
+  }
+}

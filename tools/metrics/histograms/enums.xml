@@ -108056,6 +108056,17 @@ others/histograms.xml -->
   <int value="2" label="ParseFailedInvalidJson"/>
 </enum>
 
+<enum name="WebAppPreinstalledWindowExperimentUserGroup">
+  <summary>
+    User group for an experiment on opening preinstalled apps in windows vs
+    tabs.
+  </summary>
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Control"/>
+  <int value="2" label="Window"/>
+  <int value="3" label="Tab"/>
+</enum>
+
 <enum name="WebappUninstallDialogAction">
   <int value="0" label="Uninstall only"/>
   <int value="1" label="Uninstall and remove data"/>

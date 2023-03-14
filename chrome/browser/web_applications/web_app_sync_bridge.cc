@@ -484,6 +484,13 @@ void WebAppSyncBridge::OnDatabaseOpened(
   registrar_->InitRegistry(std::move(registry));
   std::move(callback).Run();
 
+  // Already have data stored in web app system and shouldn't expect further
+  // callbacks once `IsTrackingMetadata` is true.
+  if (!on_sync_connected_.is_signaled() &&
+      change_processor()->IsTrackingMetadata()) {
+    on_sync_connected_.Signal();
+  }
+
   MaybeUninstallAppsPendingUninstall();
   MaybeInstallAppsFromSyncAndPendingInstallation();
 }
@@ -673,6 +680,11 @@ absl::optional<syncer::ModelError> WebAppSyncBridge::MergeSyncData(
                      weak_ptr_factory_.GetWeakPtr(), base::DoNothing()));
 
   ApplySyncChangesToRegistrar(std::move(update_local_data));
+
+  if (!on_sync_connected_.is_signaled()) {
+    on_sync_connected_.Signal();
+  }
+
   return absl::nullopt;
 }
 
@@ -694,6 +706,11 @@ absl::optional<syncer::ModelError> WebAppSyncBridge::ApplySyncChanges(
                      weak_ptr_factory_.GetWeakPtr(), base::DoNothing()));
 
   ApplySyncChangesToRegistrar(std::move(update_local_data));
+
+  if (!on_sync_connected_.is_signaled()) {
+    on_sync_connected_.Signal();
+  }
+
   return absl::nullopt;
 }
 

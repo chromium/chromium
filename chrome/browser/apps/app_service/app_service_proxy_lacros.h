@@ -245,6 +245,10 @@ class AppServiceProxyLacros : public KeyedService,
       std::unique_ptr<apps::WebsiteMetricsServiceLacros>
           website_metrics_service);
 
+  // Exposes AppServiceSubscriber methods to allow tests to fake calls that
+  // would normally come from Ash via the mojo interface.
+  crosapi::mojom::AppServiceSubscriber* AsAppServiceSubscriberForTesting();
+
   base::WeakPtr<AppServiceProxyLacros> GetWeakPtr();
 
  protected:

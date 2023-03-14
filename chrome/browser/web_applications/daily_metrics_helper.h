@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_DAILY_METRICS_HELPER_H_
 
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -25,11 +26,17 @@ struct DailyInteraction {
   bool installed = false;
   absl::optional<int> install_source;
   int effective_display_mode = 0;
+  bool captures_links = false;
   bool promotable = false;
   // Durations and sessions emitted iff non-zero.
   base::TimeDelta foreground_duration;
   base::TimeDelta background_duration;
   int num_sessions = 0;
+#if BUILDFLAG(IS_CHROMEOS)
+  absl::optional<int> preinstalled_web_app_window_experiment_user_group;
+  absl::optional<bool>
+      preinstalled_web_app_window_experiment_has_launched_before;
+#endif
 
   DailyInteraction();
   explicit DailyInteraction(GURL start_url);

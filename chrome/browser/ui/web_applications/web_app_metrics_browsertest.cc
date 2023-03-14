@@ -2,30 +2,65 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <stdint.h>
 #include <memory>
+#include <string>
 #include <utility>
+#include <vector>
 
-#include "base/strings/utf_string_conversions.h"
+#include "base/check.h"
+#include "base/numerics/clamped_math.h"
+#include "base/run_loop.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_mock_clock_override.h"
+#include "base/time/time.h"
+#include "base/time/time_override.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
+#include "chrome/browser/apps/intent_helper/preferred_apps_test_util.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/ui/web_applications/web_app_metrics.h"
 #include "chrome/browser/web_applications/daily_metrics_helper.h"
-#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/common/chrome_features.h"
+#include "components/keyed_service/core/keyed_service.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/test/browser_test.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/mojom/ukm_interface.mojom.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
+#include "url/gurl.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/web_applications/preinstalled_web_app_window_experiment_utils.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/web_applications/app_service/test/loopback_crosapi_app_service_proxy.h"
+#endif
+
+namespace content {
+class BrowserContext;
+}
 
 namespace web_app {
 
@@ -54,8 +89,6 @@ class WebAppMetricsBrowserTest : public WebAppControllerBrowserTest {
               return std::make_unique<syncer::TestSyncService>();
             }));
   }
-
-  void SetUp() override { WebAppControllerBrowserTest::SetUp(); }
 
   void SetUpOnMainThread() override {
     WebAppControllerBrowserTest::SetUpOnMainThread();
@@ -100,6 +133,8 @@ IN_PROC_BROWSER_TEST_F(WebAppMetricsBrowserTest,
   ukm_recorder.ExpectEntrySourceHasUrl(entry, GetInstallableAppURL());
   ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(entry, UkmEntry::kUsedName,
                                                  true);
+  // Not installed, so should not record install source, foreground/background
+  // durations, or sessions.
   ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
       entry, UkmEntry::kInstalledName, false);
   EXPECT_FALSE(ukm::TestAutoSetUkmRecorder::EntryHasMetric(
@@ -108,8 +143,9 @@ IN_PROC_BROWSER_TEST_F(WebAppMetricsBrowserTest,
       entry, UkmEntry::kDisplayModeName,
       static_cast<int>(DisplayMode::kStandalone));
   ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+      entry, UkmEntry::kCapturesLinksName, false);
+  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
       entry, UkmEntry::kPromotableName, true);
-  // Not installed, so should not have any session count or time.
   EXPECT_FALSE(ukm::TestAutoSetUkmRecorder::EntryHasMetric(
       entry, UkmEntry::kForegroundDurationName));
   EXPECT_FALSE(ukm::TestAutoSetUkmRecorder::EntryHasMetric(
@@ -171,6 +207,8 @@ IN_PROC_BROWSER_TEST_F(WebAppMetricsBrowserTest,
       entry, UkmEntry::kDisplayModeName,
       static_cast<int>(DisplayMode::kStandalone));
   ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+      entry, UkmEntry::kCapturesLinksName, false);
+  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
       entry, UkmEntry::kPromotableName, true);
   // Not in window, so should not have any session count or time.
   EXPECT_FALSE(ukm::TestAutoSetUkmRecorder::EntryHasMetric(
@@ -181,10 +219,75 @@ IN_PROC_BROWSER_TEST_F(WebAppMetricsBrowserTest,
       entry, UkmEntry::kNumSessionsName));
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppMetricsBrowserTest,
+                       PreinstalledWebAppInTab_RecordsDailyInteraction) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  LoopbackCrosapiAppServiceProxy loopback(profile());
+#endif
+
+  auto web_app_info = std::make_unique<WebAppInstallInfo>();
+  web_app_info->start_url = GetInstallableAppURL();
+  web_app_info->title = u"A Web App";
+  web_app_info->display_mode = DisplayMode::kBrowser;
+  web_app_info->user_display_mode = mojom::UserDisplayMode::kBrowser;
+  web_app::test::InstallWebApp(profile(), std::move(web_app_info),
+                               /*overwrite_existing_manifest_fields=*/false,
+                               webapps::WebappInstallSource::EXTERNAL_DEFAULT);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  preinstalled_web_app_window_experiment_utils::SetUserGroupPref(
+      profile()->GetPrefs(),
+      features::PreinstalledWebAppWindowExperimentUserGroup::kWindow);
+#endif
+
+  AddBlankTabAndShow(browser());
+  NavigateAndAwaitInstallabilityCheck(browser(), GetInstallableAppURL());
+
+  ForceEmitMetricsNow();
+
+  auto entries = ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
+  ASSERT_EQ(entries.size(), 1U);
+  auto* entry = entries[0];
+  ukm_recorder.ExpectEntrySourceHasUrl(entry, GetInstallableAppURL());
+  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(entry, UkmEntry::kUsedName,
+                                                 true);
+  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+      entry, UkmEntry::kInstalledName, true);
+  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+      entry, UkmEntry::kInstallSourceName,
+      static_cast<int>(webapps::WebappInstallSource::EXTERNAL_DEFAULT));
+  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+      entry, UkmEntry::kDisplayModeName,
+      static_cast<int>(DisplayMode::kBrowser));
+  // Note kCapturesLinksName would be true if PreinstalledWebAppWindowExperiment
+  // was really enabled and ran its setup (covered by its own browsertest).
+  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+      entry, UkmEntry::kCapturesLinksName, false);
+  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+      entry, UkmEntry::kPromotableName, false);
+  // Not in window, but is preinstalled, so should have session count (and would
+  // be expected to have session time upon further interaction).
+  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(entry,
+                                                 UkmEntry::kNumSessionsName, 1);
+#if BUILDFLAG(IS_CHROMEOS)
+  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+      entry, UkmEntry::kPreinstalledWindowExperimentUserGroupName,
+      static_cast<int>(
+          features::PreinstalledWebAppWindowExperimentUserGroup::kWindow));
+  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+      entry, UkmEntry::kPreinstalledWindowExperimentHasLaunchedBeforeName,
+      false);
+#endif
+}
+
 IN_PROC_BROWSER_TEST_F(
     WebAppMetricsBrowserTest,
     InstalledWebAppInWindow_RecordsDailyInteractionWithSessionDurations) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  LoopbackCrosapiAppServiceProxy loopback(profile());
+#endif
 
   auto web_app_info = std::make_unique<WebAppInstallInfo>();
   web_app_info->start_url = GetInstallableAppURL();
@@ -193,6 +296,16 @@ IN_PROC_BROWSER_TEST_F(
   web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
   AppId app_id =
       web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+
+  apps_util::SetSupportedLinksPreferenceAndWait(profile(), app_id);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  preinstalled_web_app_window_experiment_utils::SetUserGroupPref(
+      profile()->GetPrefs(),
+      features::PreinstalledWebAppWindowExperimentUserGroup::kTab);
+  preinstalled_web_app_window_experiment_utils::SetHasLaunchedAppsBeforePref(
+      profile()->GetPrefs(), {app_id});
+#endif
 
   LaunchWebAppBrowserAndAwaitInstallabilityCheck(app_id);
 
@@ -214,6 +327,8 @@ IN_PROC_BROWSER_TEST_F(
       entry, UkmEntry::kDisplayModeName,
       static_cast<int>(DisplayMode::kStandalone));
   ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+      entry, UkmEntry::kCapturesLinksName, true);
+  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
       entry, UkmEntry::kPromotableName, true);
   // No further interactions after navigating to the page, so no counted session
   // time is ok, but should count 1 session.
@@ -223,6 +338,16 @@ IN_PROC_BROWSER_TEST_F(
       entry, UkmEntry::kBackgroundDurationName));
   ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(entry,
                                                  UkmEntry::kNumSessionsName, 1);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+      entry, UkmEntry::kPreinstalledWindowExperimentUserGroupName,
+      static_cast<int>(
+          features::PreinstalledWebAppWindowExperimentUserGroup::kTab));
+  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+      entry, UkmEntry::kPreinstalledWindowExperimentHasLaunchedBeforeName,
+      true);
+#endif
 }
 
 // Flaky test: crbug.com/1170786

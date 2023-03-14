@@ -954,6 +954,16 @@ absl::optional<mojom::UserDisplayMode> WebAppRegistrar::GetAppUserDisplayMode(
     return absl::nullopt;
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(
+          features::kPreinstalledWebAppWindowExperiment)) {
+    auto it = user_display_mode_overrides_for_experiment_.find(app_id);
+    if (it != user_display_mode_overrides_for_experiment_.end()) {
+      return it->second;
+    }
+  }
+#endif
+
   return web_app->user_display_mode();
 }
 
@@ -1170,6 +1180,15 @@ WebAppRegistrar::AppSet WebAppRegistrar::GetApps() const {
       },
       /*empty=*/registry_profile_being_deleted_);
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+void WebAppRegistrar::SetUserDisplayModeOverridesForExperiment(
+    base::flat_map<AppId, mojom::UserDisplayMode> overrides) {
+  DCHECK(base::FeatureList::IsEnabled(
+      features::kPreinstalledWebAppWindowExperiment));
+  user_display_mode_overrides_for_experiment_ = std::move(overrides);
+}
+#endif
 
 base::Value WebAppRegistrar::AsDebugValue() const {
   base::Value::Dict root;

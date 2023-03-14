@@ -16,14 +16,18 @@ PreferredAppUpdateWaiter::PreferredAppUpdateWaiter(
     std::string app_id,
     bool is_preferred_app)
     : waiting_app_id_(std::move(app_id)),
-      waiting_is_preferred_app_(is_preferred_app) {
+      waiting_is_preferred_app_(is_preferred_app),
+      preferred_apps_(handle) {
   observation_.Observe(&handle);
 }
 
 PreferredAppUpdateWaiter::~PreferredAppUpdateWaiter() = default;
 
 void PreferredAppUpdateWaiter::Wait() {
-  run_loop_.Run();
+  if (preferred_apps_->IsPreferredAppForSupportedLinks(waiting_app_id_) !=
+      waiting_is_preferred_app_) {
+    run_loop_.Run();
+  }
 }
 
 void PreferredAppUpdateWaiter::OnPreferredAppChanged(const std::string& app_id,
@@ -44,6 +48,15 @@ void SetSupportedLinksPreferenceAndWait(Profile* profile,
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
   PreferredAppUpdateWaiter update_waiter(proxy->PreferredAppsList(), app_id);
   proxy->SetSupportedLinksPreference(app_id);
+  update_waiter.Wait();
+}
+
+void RemoveSupportedLinksPreferenceAndWait(Profile* profile,
+                                           const std::string& app_id) {
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
+  PreferredAppUpdateWaiter update_waiter(proxy->PreferredAppsList(), app_id,
+                                         /*is_preferred_app=*/false);
+  proxy->RemoveSupportedLinksPreference(app_id);
   update_waiter.Wait();
 }
 
