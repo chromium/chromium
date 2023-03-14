@@ -93,7 +93,7 @@ void AbortPostTaskCallbackTraceEventData(perfetto::TracedValue trace_context,
 
 DOMTask::DOMTask(ScriptPromiseResolver* resolver,
                  V8SchedulerPostTaskCallback* callback,
-                 AbortSignal* signal,
+                 DOMTaskSignal* signal,
                  DOMScheduler::DOMTaskQueue* task_queue,
                  base::TimeDelta delay)
     : callback_(callback),
@@ -105,10 +105,11 @@ DOMTask::DOMTask(ScriptPromiseResolver* resolver,
       queue_time_(delay.is_zero() ? base::TimeTicks::Now() : base::TimeTicks()),
       delay_(delay),
       task_id_for_tracing_(NextIdForTracing()) {
-  DCHECK(task_queue_);
-  DCHECK(callback_);
+  CHECK(task_queue_);
+  CHECK(callback_);
+  CHECK(signal_);
 
-  if (signal_) {
+  if (signal_->CanAbort()) {
     abort_handle_ = signal_->AddAlgorithm(
         WTF::BindOnce(&DOMTask::OnAbort, WrapWeakPersistent(this)));
   }

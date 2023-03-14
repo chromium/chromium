@@ -37,6 +37,20 @@ class RepeatingCallbackAlgorithm final : public DOMTaskSignal::Algorithm {
 
 }  // namespace
 
+// static
+DOMTaskSignal* DOMTaskSignal::CreateFixedPriorityTaskSignal(
+    ScriptState* script_state,
+    const AtomicString& priority) {
+  if (RuntimeEnabledFeatures::AbortSignalCompositionEnabled()) {
+    HeapVector<Member<AbortSignal>> source_abort_signals;
+    return MakeGarbageCollected<DOMTaskSignal>(script_state, priority, nullptr,
+                                               source_abort_signals);
+  } else {
+    return MakeGarbageCollected<DOMTaskSignal>(
+        ExecutionContext::From(script_state), priority, SignalType::kInternal);
+  }
+}
+
 DOMTaskSignal::DOMTaskSignal(ExecutionContext* context,
                              const AtomicString& priority,
                              SignalType signal_type)
@@ -53,7 +67,7 @@ DOMTaskSignal::DOMTaskSignal(
     ScriptState* script_state,
     const AtomicString& priority,
     DOMTaskSignal* priority_source_signal,
-    HeapVector<Member<AbortSignal>> abort_source_signals)
+    HeapVector<Member<AbortSignal>>& abort_source_signals)
     : AbortSignal(script_state, abort_source_signals), priority_(priority) {
   DCHECK(RuntimeEnabledFeatures::AbortSignalCompositionEnabled());
 
@@ -87,6 +101,7 @@ AtomicString DOMTaskSignal::priority() {
 
 DOMTaskSignal::AlgorithmHandle* DOMTaskSignal::AddPriorityChangeAlgorithm(
     base::RepeatingClosure algorithm) {
+  CHECK_NE(GetSignalType(), SignalType::kInternal);
   if (RuntimeEnabledFeatures::AbortSignalCompositionEnabled() &&
       priority_composition_manager_->IsSettled()) {
     return nullptr;
@@ -101,6 +116,7 @@ DOMTaskSignal::AlgorithmHandle* DOMTaskSignal::AddPriorityChangeAlgorithm(
 
 void DOMTaskSignal::SignalPriorityChange(const AtomicString& priority,
                                          ExceptionState& exception_state) {
+  CHECK_NE(GetSignalType(), SignalType::kInternal);
   if (is_priority_changing_) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
@@ -152,7 +168,7 @@ bool DOMTaskSignal::HasFixedPriority() const {
   if (RuntimeEnabledFeatures::AbortSignalCompositionEnabled()) {
     return priority_composition_manager_->IsSettled();
   }
-  return false;
+  return GetSignalType() == SignalType::kInternal;
 }
 
 void DOMTaskSignal::DetachFromController() {
