@@ -15,6 +15,7 @@ import androidx.annotation.IntDef;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
@@ -457,7 +458,8 @@ public abstract class Layout {
             mNextTabId = Tab.INVALID_TAB_ID;
         }
         mUpdateHost.doneHiding();
-        if (mRenderHost != null && mRenderHost.getResourceManager() != null) {
+        if (mRenderHost != null && mRenderHost.getResourceManager() != null
+                && !ChromeFeatureList.isEnabled(ChromeFeatureList.KEEP_ANDROID_TINTED_RESOURCES)) {
             mRenderHost.getResourceManager().clearTintedResourceCache();
         }
 

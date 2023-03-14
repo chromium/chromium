@@ -426,6 +426,10 @@ BASE_FEATURE(kUseToastManager,
 bool UseToastManager() {
   return base::FeatureList::IsEnabled(kUseToastManager);
 }
+
+BASE_FEATURE(kKeepAndroidTintedResources,
+             "KeepAndroidTintedResources",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kEnableVariableRefreshRate,
