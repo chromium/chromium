@@ -1379,8 +1379,8 @@ Iterator GpuImageDecodeCache::RemoveFromPersistentCache(Iterator it) {
   }
 
   auto entries_it = paint_image_entries_.find(it->second->paint_image_id);
-  DCHECK(entries_it != paint_image_entries_.end());
-  DCHECK_GT(entries_it->second.count, 0u);
+  CHECK(entries_it != paint_image_entries_.end());
+  CHECK_GT(entries_it->second.count, 0u);
 
   // If this is the last entry for this image, remove its tracking.
   --entries_it->second.count;

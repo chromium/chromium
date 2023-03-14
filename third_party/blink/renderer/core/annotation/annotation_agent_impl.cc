@@ -117,7 +117,7 @@ void AnnotationAgentImpl::ScrollIntoView() const {
 
   EphemeralRangeInFlatTree range = attached_range_->ToEphemeralRange();
 
-  DCHECK(range.Nodes().begin() != range.Nodes().end());
+  CHECK(range.Nodes().begin() != range.Nodes().end());
 
   Node& first_node = *range.Nodes().begin();
 
