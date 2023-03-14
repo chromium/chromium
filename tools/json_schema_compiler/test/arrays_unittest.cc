@@ -117,8 +117,8 @@ TEST(JsonSchemaCompilerArrayTest, EnumArrayMixed) {
             enum_array_mixed.infile_enums);
 
   test::api::enums::Enumeration expected_external_types[] = {
-      test::api::enums::ENUMERATION_ONE, test::api::enums::ENUMERATION_TWO,
-      test::api::enums::ENUMERATION_THREE};
+      test::api::enums::Enumeration::kOne, test::api::enums::Enumeration::kTwo,
+      test::api::enums::Enumeration::kThree};
   EXPECT_EQ(std::vector<test::api::enums::Enumeration>(
                 expected_external_types,
                 expected_external_types + std::size(expected_external_types)),

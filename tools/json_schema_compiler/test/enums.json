@@ -2,6 +2,9 @@
   {
     "namespace": "enums",
     "description": "The enums API.",
+    "compiler_options": {
+      "modernised_enums": true
+    },
     "types": [
       {
         "id": "Enumeration",
@@ -53,6 +56,15 @@
             "optional": true
           }
         }
+      },
+      {
+        "id": "EnumNameTransformation",
+        "type": "string",
+        "enum": ["FIRST_ENTRY_EXAMPLE",
+                "second_entry_example",
+                "thirdEntryExample",
+                "FourthEntryExample",
+                "FIFTH_ENTRY_EXAMPLE_1234"]
       }
     ],
     "functions": [

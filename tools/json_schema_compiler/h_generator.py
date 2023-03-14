@@ -25,6 +25,8 @@ class _Generator(object):
     self._type_helper = cpp_type_generator
     self._generate_error_messages = namespace.compiler_options.get(
         'generate_error_messages', False)
+    self._modernised_enums = namespace.compiler_options.get(
+        'modernised_enums', False)
 
   def Generate(self):
     """Generates a Code object with the .h for a single namespace.
@@ -148,13 +150,20 @@ class _Generator(object):
     """Generate a code object with the  declaration of a C++ enum.
     """
     c = Code()
-    c.Sblock('enum %s {' % enum_name)
-    c.Append(self._type_helper.GetEnumNoneValue(type_) + ',')
+    c.Sblock('enum {enum_type} {name} {{'.format(
+      enum_type=('class' if self._modernised_enums else ''),
+      name=enum_name))
+    c.Append(self._type_helper.GetEnumNoneValue(type_, full_name=False) + ',')
+
     for value in type_.enum_values:
-      current_enum_string = self._type_helper.GetEnumValue(type_, value)
+      current_enum_string = (
+        self._type_helper.GetEnumValue(type_, value, full_name=False))
       c.Append(current_enum_string + ',')
-    c.Append('%s = %s,' % (
-        self._type_helper.GetEnumLastValue(type_), current_enum_string))
+
+    c.Append('{last_key} = {last_key_value},'.format(
+        last_key=self._type_helper.GetEnumLastValue(type_),
+        last_key_value=current_enum_string))
+
     c.Eblock('};')
     return c
 

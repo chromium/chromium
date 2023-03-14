@@ -40,10 +40,13 @@ class Model(object):
   def AddNamespace(self,
                    json,
                    source_file,
-                   include_compiler_options=False,
+                   include_compiler_options=True,
                    environment=None):
     """Add a namespace's json to the model and returns the namespace.
     """
+    # TODO(crbug.com/1421546): Revert to include_compiler_options=False once all
+    # enums are migrated to enum modernised codegen.
+
     namespace = Namespace(json,
                           source_file,
                           include_compiler_options=include_compiler_options,

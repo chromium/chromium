@@ -431,7 +431,7 @@ TEST(JsonSchemaCompilerSimpleTest, ManifestKeyParsing_Success_AllKeys) {
   EXPECT_TRUE(manifest_keys.key_obj->obj_bool);
   ASSERT_TRUE(manifest_keys.key_obj->obj_optional_enum_array);
   EXPECT_THAT(*manifest_keys.key_obj->obj_optional_enum_array,
-              ::testing::ElementsAre(enums::ENUMERATION_THREE));
+              ::testing::ElementsAre(enums::Enumeration::kThree));
 
   EXPECT_EQ(simple_api::TEST_ENUM_ONE, manifest_keys.key_enum);
 
@@ -444,7 +444,7 @@ TEST(JsonSchemaCompilerSimpleTest, ManifestKeyParsing_Success_AllKeys) {
   ASSERT_TRUE(manifest_keys.key_ref.array);
   EXPECT_THAT(*manifest_keys.key_ref.array,
               ::testing::ElementsAre("one", "two"));
-  EXPECT_EQ(enums::ENUMERATION_TWO, manifest_keys.key_ref.opt_external_enum);
+  EXPECT_EQ(enums::Enumeration::kTwo, manifest_keys.key_ref.opt_external_enum);
   EXPECT_THAT(manifest_keys.key_enum_array,
               ::testing::ElementsAre(simple_api::TEST_ENUM_TWO,
                                      simple_api::TEST_ENUM_ONE));
@@ -479,6 +479,6 @@ TEST(JsonSchemaCompilerSimpleTest,
   EXPECT_DOUBLE_EQ(25.4, manifest_keys.key_ref.number);
   EXPECT_EQ(32, manifest_keys.key_ref.integer);
   EXPECT_FALSE(manifest_keys.key_ref.array);
-  EXPECT_EQ(enums::ENUMERATION_NONE, manifest_keys.key_ref.opt_external_enum);
+  EXPECT_EQ(enums::Enumeration::kNone, manifest_keys.key_ref.opt_external_enum);
   EXPECT_EQ(simple_api::_3D_NONE, manifest_keys._3d_key);
 }
