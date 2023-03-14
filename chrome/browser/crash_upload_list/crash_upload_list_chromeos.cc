@@ -18,12 +18,12 @@ CrashUploadListChromeOS::CrashUploadListChromeOS(
 CrashUploadListChromeOS::~CrashUploadListChromeOS() = default;
 
 std::unique_ptr<UploadList::UploadInfo>
-CrashUploadListChromeOS::TryParseJsonLogEntry(const base::Value& dict) {
+CrashUploadListChromeOS::TryParseJsonLogEntry(const base::Value::Dict& dict) {
   auto upload_info = std::make_unique<CrashUploadInfo>(
       std::move(*TextLogUploadList::TryParseJsonLogEntry(dict)));
 
   if (const std::string* fatal_crash_type =
-          dict.FindStringKey(kJsonLogKeyFatalCrashType)) {
+          dict.FindString(kJsonLogKeyFatalCrashType)) {
     if (*fatal_crash_type == "kernel") {
       upload_info->fatal_crash_type = CrashUploadInfo::FatalCrashType::Kernel;
     } else if (*fatal_crash_type == "ec") {

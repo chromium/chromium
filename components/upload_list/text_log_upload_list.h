@@ -61,7 +61,7 @@ class TextLogUploadList : public UploadList {
   // UploadInfo entry. If the conversion succeeds, it returns a valid
   // UploadInfo instance. Otherwise, it returns nullptr.
   virtual std::unique_ptr<UploadList::UploadInfo> TryParseJsonLogEntry(
-      const base::Value& dict);
+      const base::Value::Dict& dict);
 
   // Parses upload log lines, converting them to UploadInfo entries.
   // The method also reverse the order of the entries (the first entry in
