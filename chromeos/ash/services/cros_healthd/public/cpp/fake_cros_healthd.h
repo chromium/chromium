@@ -15,6 +15,7 @@
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_exception.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_health_types.mojom-forward.h"
@@ -311,6 +312,8 @@ class FakeCrosHealthd final : public mojom::CrosHealthdDiagnosticsService,
       ash::cros_healthd::mojom::EventCategoryEnum category,
       mojo::PendingRemote<ash::cros_healthd::mojom::EventObserver> observer)
       override;
+  void IsEventSupported(ash::cros_healthd::mojom::EventCategoryEnum category,
+                        IsEventSupportedCallback callback) override;
 
   // CrosHealthdProbeService overrides:
   void ProbeTelemetryInfo(

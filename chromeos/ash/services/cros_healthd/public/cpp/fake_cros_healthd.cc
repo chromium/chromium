@@ -738,6 +738,12 @@ void FakeCrosHealthd::AddEventObserver(
   it->second.Add(std::move(observer));
 }
 
+void FakeCrosHealthd::IsEventSupported(
+    ash::cros_healthd::mojom::EventCategoryEnum category,
+    IsEventSupportedCallback callback) {
+  std::move(callback).Run(nullptr);
+}
+
 void FakeCrosHealthd::ProbeTelemetryInfo(
     const std::vector<mojom::ProbeCategoryEnum>& categories,
     ProbeTelemetryInfoCallback callback) {
