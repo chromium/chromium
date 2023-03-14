@@ -130,18 +130,29 @@ void PasswordStore::AddLogins(const std::vector<PasswordForm>& forms,
 
 void PasswordStore::UpdateLogin(const PasswordForm& form,
                                 base::OnceClosure completion) {
+  UpdateLogins({form}, std::move(completion));
+}
+
+void PasswordStore::UpdateLogins(const std::vector<PasswordForm>& forms,
+                                 base::OnceClosure completion) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(!form.blocked_by_user ||
-         (form.username_value.empty() && form.password_value.empty()));
+
   if (!backend_) {
     return;  // Once the shutdown started, ignore new requests.
   }
-  backend_->UpdateLoginAsync(
-      form, base::BindOnce(&GetPasswordChangesOrNulloptOnFailure)
-                .Then(base::BindOnce(
-                    &PasswordStore::NotifyLoginsChangedOnMainSequence, this,
-                    LoginsChangedTrigger::Update))
-                .Then(std::move(completion)));
+
+  auto barrier_callback = base::BarrierCallback<PasswordChangesOrError>(
+      forms.size(), base::BindOnce(&JoinPasswordStoreChanges)
+                        .Then(base::BindOnce(
+                            &PasswordStore::NotifyLoginsChangedOnMainSequence,
+                            this, LoginsChangedTrigger::Update))
+                        .Then(std::move(completion)));
+
+  for (const PasswordForm& form : forms) {
+    CHECK(!form.blocked_by_user ||
+          (form.username_value.empty() && form.password_value.empty()));
+    backend_->UpdateLoginAsync(form, barrier_callback);
+  }
 }
 
 void PasswordStore::UpdateLoginWithPrimaryKey(

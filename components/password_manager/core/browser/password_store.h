@@ -87,6 +87,8 @@ class PasswordStore : public PasswordStoreInterface {
                  base::OnceClosure completion = base::DoNothing()) override;
   void UpdateLogin(const PasswordForm& form,
                    base::OnceClosure completion = base::DoNothing()) override;
+  void UpdateLogins(const std::vector<PasswordForm>& forms,
+                    base::OnceClosure completion = base::DoNothing()) override;
   void UpdateLoginWithPrimaryKey(
       const PasswordForm& new_form,
       const PasswordForm& old_primary_key,
