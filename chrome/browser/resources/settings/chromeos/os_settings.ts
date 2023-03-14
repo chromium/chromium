@@ -121,6 +121,7 @@ export {SettingsPerDeviceKeyboardElement} from './device_page/per_device_keyboar
 export {SettingsPerDeviceKeyboardRemapKeysElement} from './device_page/per_device_keyboard_remap_keys.js';
 export {SettingsPerDeviceKeyboardSubsectionElement} from './device_page/per_device_keyboard_subsection.js';
 export {SettingsPerDeviceMouseSubsectionElement} from './device_page/per_device_mouse_subsection.js';
+export {SettingsPerDevicePointingStickElement} from './device_page/per_device_pointing_stick.js';
 export {SettingsPerDevicePointingStickSubsectionElement} from './device_page/per_device_pointing_stick_subsection.js';
 export {SettingsPerDeviceTouchpadSubsectionElement} from './device_page/per_device_touchpad_subsection.js';
 export {InternetPageBrowserProxy, InternetPageBrowserProxyImpl} from './internet_page/internet_page_browser_proxy.js';
