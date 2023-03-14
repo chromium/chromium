@@ -29,6 +29,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "crypto/sha2.h"
 
 using content::WebContents;
 
@@ -76,8 +77,15 @@ ReferrerChainEntry::URLType GetURLTypeAndAdjustAttributionResult(
   }
 }
 
-std::string GetOrigin(const std::string& url) {
-  return GURL(url).DeprecatedGetOriginAsURL().spec();
+std::string ShortOriginForReporting(const std::string& url) {
+  GURL gurl(url);
+  if (gurl.SchemeIsLocal()) {
+    std::string sha_url = crypto::SHA256HashString(url);
+    return gurl.scheme() + "://" +
+           base::HexEncode(sha_url.data(), sha_url.size());
+  } else {
+    return gurl.DeprecatedGetOriginAsURL().spec();
+  }
 }
 
 }  // namespace
@@ -350,17 +358,19 @@ void SafeBrowsingNavigationObserverManager::SanitizeReferrerChain(
     ReferrerChainEntry entry_copy(*entry);
     entry->Clear();
     if (entry_copy.has_url())
-      entry->set_url(GetOrigin(entry_copy.url()));
+      entry->set_url(ShortOriginForReporting(entry_copy.url()));
     if (entry_copy.has_main_frame_url())
-      entry->set_main_frame_url(GetOrigin(entry_copy.main_frame_url()));
+      entry->set_main_frame_url(
+          ShortOriginForReporting(entry_copy.main_frame_url()));
     entry->set_type(entry_copy.type());
     for (int j = 0; j < entry_copy.ip_addresses_size(); j++)
       entry->add_ip_addresses(entry_copy.ip_addresses(j));
     if (entry_copy.has_referrer_url())
-      entry->set_referrer_url(GetOrigin(entry_copy.referrer_url()));
+      entry->set_referrer_url(
+          ShortOriginForReporting(entry_copy.referrer_url()));
     if (entry_copy.has_referrer_main_frame_url())
       entry->set_referrer_main_frame_url(
-          GetOrigin(entry_copy.referrer_main_frame_url()));
+          ShortOriginForReporting(entry_copy.referrer_main_frame_url()));
     entry->set_is_retargeting(entry_copy.is_retargeting());
     entry->set_navigation_time_msec(entry_copy.navigation_time_msec());
     entry->set_navigation_initiation(entry_copy.navigation_initiation());
@@ -369,7 +379,7 @@ void SafeBrowsingNavigationObserverManager::SanitizeReferrerChain(
           entry->add_server_redirect_chain();
       if (entry_copy.server_redirect_chain(j).has_url()) {
         server_redirect_entry->set_url(
-            GetOrigin(entry_copy.server_redirect_chain(j).url()));
+            ShortOriginForReporting(entry_copy.server_redirect_chain(j).url()));
       }
     }
   }

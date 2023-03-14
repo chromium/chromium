@@ -900,4 +900,50 @@ TEST_F(SBNavigationObserverTest, TestGetLatestPendingNavigationEvent) {
   EXPECT_EQ(now, event->last_updated);
 }
 
+TEST_F(SBNavigationObserverTest, SanitizesDataUrls) {
+  base::Time now = base::Time::Now();
+  base::Time one_hour_ago =
+      base::Time::FromDoubleT(now.ToDoubleT() - 60.0 * 60.0);
+
+  SessionID tab_id = SessionID::NewUnique();
+
+  // Add two navigations. The first is renderer initiated from A to a data://
+  // URL. The second is from the data:// URL to B.
+  std::unique_ptr<NavigationEvent> first_navigation =
+      std::make_unique<NavigationEvent>();
+  first_navigation->source_url = GURL("http://a.com/");
+  first_navigation->original_request_url = GURL("data://private_data");
+  first_navigation->last_updated = one_hour_ago;
+  first_navigation->navigation_initiation =
+      ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE;
+  first_navigation->source_tab_id = tab_id;
+  first_navigation->target_tab_id = tab_id;
+  navigation_event_list()->RecordNavigationEvent(std::move(first_navigation));
+
+  std::unique_ptr<NavigationEvent> second_navigation =
+      std::make_unique<NavigationEvent>();
+  second_navigation->source_url = GURL("data://private_data");
+  second_navigation->original_request_url = GURL("http://b.com/");
+  second_navigation->last_updated = now;
+  second_navigation->navigation_initiation =
+      ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE;
+  second_navigation->source_tab_id = tab_id;
+  second_navigation->target_tab_id = tab_id;
+  navigation_event_list()->RecordNavigationEvent(std::move(second_navigation));
+
+  ReferrerChain referrer_chain;
+  navigation_observer_manager_->IdentifyReferrerChainByEventURL(
+      GURL("http://b.com/"), SessionID::InvalidValue(),
+      content::GlobalRenderFrameHostId(), 10, &referrer_chain);
+
+  SafeBrowsingNavigationObserverManager::SanitizeReferrerChain(&referrer_chain);
+  ASSERT_EQ(2, referrer_chain.size());
+  EXPECT_EQ(referrer_chain[0].referrer_url(),
+            "data://"
+            "A2368FB9B5FF3EDDF2860EF4998750024F7E4C6E2697F77269A13ADC84DCAD0E");
+  EXPECT_EQ(referrer_chain[1].url(),
+            "data://"
+            "A2368FB9B5FF3EDDF2860EF4998750024F7E4C6E2697F77269A13ADC84DCAD0E");
+}
+
 }  // namespace safe_browsing
