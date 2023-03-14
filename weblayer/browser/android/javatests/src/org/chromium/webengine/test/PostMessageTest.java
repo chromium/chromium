@@ -63,7 +63,7 @@ public class PostMessageTest {
         CountDownLatch titleUpdateLatch = new CountDownLatch(2);
         TabObserver observer = new TabObserver() {
             @Override
-            public void onTitleUpdated(String title) {
+            public void onTitleUpdated(Tab tab, String title) {
                 titleUpdateLatch.countDown();
             }
         };
@@ -84,7 +84,7 @@ public class PostMessageTest {
         CountDownLatch postMessageLatch = new CountDownLatch(1);
         TabObserver observer = new TabObserver() {
             @Override
-            public void onTitleUpdated(String title) {
+            public void onTitleUpdated(Tab tab, String title) {
                 holder.mResult = title;
                 postMessageLatch.countDown();
             }

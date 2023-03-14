@@ -21,14 +21,15 @@ import org.chromium.webengine.interfaces.ITabParams;
 class TabListObserverDelegate extends ITabListObserverDelegate.Stub {
     private final Handler mHandler = new Handler(Looper.getMainLooper());
 
+    private WebEngine mWebEngine;
     private TabRegistry mTabRegistry;
     private ObserverList<TabListObserver> mTabListObservers = new ObserverList<TabListObserver>();
     private Callback<Void> mInitializationFinishedCallback;
 
-    public TabListObserverDelegate(TabRegistry tabRegistry) {
+    public TabListObserverDelegate(WebEngine webEngine, TabRegistry tabRegistry) {
         // Assert on UI thread as ObserverList can only be accessed from one thread.
         ThreadCheck.ensureOnUiThread();
-
+        mWebEngine = webEngine;
         mTabRegistry = tabRegistry;
     }
 
@@ -65,7 +66,7 @@ class TabListObserverDelegate extends ITabListObserverDelegate.Stub {
             }
             mTabRegistry.setActiveTab(tab);
             for (TabListObserver observer : mTabListObservers) {
-                observer.onActiveTabChanged(tab);
+                observer.onActiveTabChanged(mWebEngine, tab);
             }
         });
     }
@@ -75,7 +76,7 @@ class TabListObserverDelegate extends ITabListObserverDelegate.Stub {
         mHandler.post(() -> {
             Tab tab = mTabRegistry.getOrCreateTab(tabParams);
             for (TabListObserver observer : mTabListObservers) {
-                observer.onTabAdded(tab);
+                observer.onTabAdded(mWebEngine, tab);
             }
         });
     }
@@ -86,7 +87,7 @@ class TabListObserverDelegate extends ITabListObserverDelegate.Stub {
             Tab tab = mTabRegistry.getOrCreateTab(tabParams);
             mTabRegistry.removeTab(tab);
             for (TabListObserver observer : mTabListObservers) {
-                observer.onTabRemoved(tab);
+                observer.onTabRemoved(mWebEngine, tab);
             }
         });
     }
@@ -95,7 +96,7 @@ class TabListObserverDelegate extends ITabListObserverDelegate.Stub {
     public void notifyWillDestroyBrowserAndAllTabs() {
         mHandler.post(() -> {
             for (TabListObserver observer : mTabListObservers) {
-                observer.onWillDestroyFragmentAndAllTabs();
+                observer.onWillDestroyFragmentAndAllTabs(mWebEngine);
             }
         });
     }

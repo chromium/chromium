@@ -40,6 +40,8 @@ public class WebEngineNavigationTestActivity extends AppCompatActivity {
 
     private WebSandbox mWebSandbox;
 
+    private DefaultObservers mDefaultObservers = new DefaultObservers();
+
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -114,11 +116,9 @@ public class WebEngineNavigationTestActivity extends AppCompatActivity {
         Tab activeTab = tabManager.getActiveTab();
         activeTab.getNavigationController().navigate("https://google.com");
 
-        activeTab.registerTabObserver(new DefaultObservers.DefaultTabObserver());
-        activeTab.getNavigationController().registerNavigationObserver(
-                new DefaultObservers.DefaultNavigationObserver());
-
-        tabManager.registerTabListObserver(new DefaultObservers.DefaultTabListObserver());
+        activeTab.registerTabObserver(mDefaultObservers);
+        activeTab.getNavigationController().registerNavigationObserver(mDefaultObservers);
+        tabManager.registerTabListObserver(mDefaultObservers);
 
         getSupportFragmentManager()
                 .beginTransaction()

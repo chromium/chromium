@@ -102,7 +102,7 @@ public class WebEngineTest {
             activeTab.getNavigationController().registerNavigationObserver(
                     new NavigationObserver() {
                         @Override
-                        public void onNavigationCompleted(@NonNull Navigation navigation) {
+                        public void onNavigationCompleted(Tab tab, @NonNull Navigation navigation) {
                             navigationCompletedLatch.countDown();
                         }
                     });
@@ -131,7 +131,8 @@ public class WebEngineTest {
         runOnUiThreadBlocking(() -> {
             mWebEngine.getTabManager().registerTabListObserver(new TabListObserver() {
                 @Override
-                public void onActiveTabChanged(@NonNull Tab activeTab) {
+                public void onActiveTabChanged(
+                        @NonNull WebEngine webEngine, @NonNull Tab activeTab) {
                     secondTabActiveLatch.countDown();
                 }
             });
@@ -149,11 +150,12 @@ public class WebEngineTest {
         runOnUiThreadBlocking(() -> {
             mWebEngine.getTabManager().registerTabListObserver(new TabListObserver() {
                 @Override
-                public void onActiveTabChanged(@NonNull Tab activeTab) {
+                public void onActiveTabChanged(
+                        @NonNull WebEngine webEngine, @NonNull Tab activeTab) {
                     activeTabChangedLatch.countDown();
                 }
                 @Override
-                public void onTabRemoved(@NonNull Tab activeTab) {
+                public void onTabRemoved(@NonNull WebEngine webEngine, @NonNull Tab activeTab) {
                     prevTabRemovedLatch.countDown();
                 }
             });

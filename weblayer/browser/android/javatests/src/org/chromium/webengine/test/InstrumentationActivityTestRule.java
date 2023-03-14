@@ -121,11 +121,11 @@ public class InstrumentationActivityTestRule
         runOnUiThreadBlocking(() -> {
             tab.getNavigationController().registerNavigationObserver(new NavigationObserver() {
                 @Override
-                public void onNavigationCompleted(Navigation navigation) {
+                public void onNavigationCompleted(Tab tab, Navigation navigation) {
                     navigationCompleteLatch.countDown();
                 }
                 @Override
-                public void onNavigationFailed(Navigation navigation) {
+                public void onNavigationFailed(Tab tab, Navigation navigation) {
                     failed.set(true);
                     navigationCompleteLatch.countDown();
                 }
@@ -142,7 +142,7 @@ public class InstrumentationActivityTestRule
         runOnUiThreadBlocking(() -> {
             webEngine.getTabManager().registerTabListObserver(new TabListObserver() {
                 @Override
-                public void onActiveTabChanged(Tab activeTab) {
+                public void onActiveTabChanged(WebEngine webEngine, Tab activeTab) {
                     setActiveLatch.countDown();
                 }
             });

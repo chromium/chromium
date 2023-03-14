@@ -50,7 +50,8 @@ public class Tab {
         mGuid = tabParams.tabGuid;
         mUri = Uri.parse(tabParams.uri);
         mTabObserverDelegate = new TabObserverDelegate(this);
-        mTabNavigationController = new TabNavigationController(tabParams.navigationControllerProxy);
+        mTabNavigationController =
+                new TabNavigationController(this, tabParams.navigationControllerProxy);
         mFullscreenCallbackDelegate = new FullscreenCallbackDelegate(mWebEngine, this);
 
         try {
@@ -58,6 +59,10 @@ public class Tab {
             mTabProxy.setFullscreenCallbackDelegate(mFullscreenCallbackDelegate);
         } catch (RemoteException e) {
         }
+    }
+
+    public WebEngine getWebEngine() {
+        return mWebEngine;
     }
 
     public Uri getDisplayUri() {

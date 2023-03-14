@@ -78,7 +78,8 @@ public class TabNavigationControllerTest {
         runOnUiThreadBlocking(() -> {
             mNavigationController.registerNavigationObserver(new NavigationObserver() {
                 @Override
-                public void onNavigationCompleted(@NonNull Navigation navigation) {
+                public void onNavigationCompleted(
+                        @NonNull Tab tab, @NonNull Navigation navigation) {
                     navigationCompleted.countDown();
                 }
             });
@@ -122,7 +123,8 @@ public class TabNavigationControllerTest {
         runOnUiThreadBlocking(() -> {
             mNavigationController.registerNavigationObserver(new NavigationObserver() {
                 @Override
-                public void onNavigationCompleted(@NonNull Navigation navigation) {
+                public void onNavigationCompleted(
+                        @NonNull Tab tab, @NonNull Navigation navigation) {
                     navigationCompleted.countDown();
                 }
             });
@@ -148,7 +150,8 @@ public class TabNavigationControllerTest {
         runOnUiThreadBlocking(() -> {
             mNavigationController.registerNavigationObserver(new NavigationObserver() {
                 @Override
-                public void onNavigationCompleted(@NonNull Navigation navigation) {
+                public void onNavigationCompleted(
+                        @NonNull Tab tab, @NonNull Navigation navigation) {
                     backNavigationCompleted.countDown();
                 }
             });
@@ -163,7 +166,8 @@ public class TabNavigationControllerTest {
         runOnUiThreadBlocking(() -> {
             mNavigationController.registerNavigationObserver(new NavigationObserver() {
                 @Override
-                public void onNavigationCompleted(@NonNull Navigation navigation) {
+                public void onNavigationCompleted(
+                        @NonNull Tab tab, @NonNull Navigation navigation) {
                     forwardNavigationCompleted.countDown();
                 }
             });
@@ -184,15 +188,16 @@ public class TabNavigationControllerTest {
         runOnUiThreadBlocking(() -> {
             mNavigationController.registerNavigationObserver(new NavigationObserver() {
                 @Override
-                public void onNavigationStarted(@NonNull Navigation navigation) {
+                public void onNavigationStarted(@NonNull Tab tab, @NonNull Navigation navigation) {
                     navigationStarted.countDown();
                 }
                 @Override
-                public void onNavigationCompleted(@NonNull Navigation navigation) {
+                public void onNavigationCompleted(
+                        @NonNull Tab tab, @NonNull Navigation navigation) {
                     navigationCompleted.countDown();
                 }
                 @Override
-                public void onLoadProgressChanged(double progress) {
+                public void onLoadProgressChanged(@NonNull Tab tab, double progress) {
                     if (progress == 1.0) {
                         finishedLoadProgress.countDown();
                     }

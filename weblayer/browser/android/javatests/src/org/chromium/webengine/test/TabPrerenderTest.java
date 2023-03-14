@@ -63,14 +63,15 @@ public class TabPrerenderTest {
         String url = mDALServerRule.getServer().setResponse("/page.html", pageContents, null);
 
         CountDownLatch navigationCompletedLatch = new CountDownLatch(1);
-        runOnUiThreadBlocking(()-> mTab.getNavigationController().registerNavigationObserver(
-            new NavigationObserver() {
-                @Override
-                public void onNavigationCompleted(Navigation navigation) {
-                    navigationCompletedLatch.countDown();
-                }
-            }
-        ));
+        runOnUiThreadBlocking(()
+                                      -> mTab.getNavigationController().registerNavigationObserver(
+                                              new NavigationObserver() {
+                                                  @Override
+                                                  public void onNavigationCompleted(
+                                                          Tab tab, Navigation navigation) {
+                                                      navigationCompletedLatch.countDown();
+                                                  }
+                                              }));
 
         runOnUiThreadBlocking(() -> mTab.getNavigationController().navigate(url));
         navigationCompletedLatch.await();

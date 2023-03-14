@@ -10,33 +10,38 @@ import androidx.annotation.Nullable;
 /**
  * An interface for observing changes to the set of Tabs in a WebFragment.
  */
-public abstract class TabListObserver {
+public interface TabListObserver {
     /**
      * The active tab has changed.
      *
+     * @param webEngine the webEngine associated with this event.
      * @param activeTab The newly active tab, null if no tab is active.
      */
-    public void onActiveTabChanged(@Nullable Tab activeTab) {}
+    public default void onActiveTabChanged(@NonNull WebEngine webEngine, @Nullable Tab activeTab) {}
 
     /**
      * A tab was added to the WebFragment.
      *
+     * @param webEngine the webEngine associated with this event.
      * @param tab The tab that was added.
      */
-    public void onTabAdded(@NonNull Tab tab) {}
+    public default void onTabAdded(@NonNull WebEngine webEngine, @NonNull Tab tab) {}
 
     /**
      * A tab was removed from the WebFragment.
      *
      * WARNING: this is *not* called when the  WebFragment is destroyed.
      *
+     * @param webEngine the webEngine associated with this event.
      * @param tab The tab that was removed.
      */
-    public void onTabRemoved(@NonNull Tab tab) {}
+    public default void onTabRemoved(@NonNull WebEngine webEngine, @NonNull Tab tab) {}
 
     /**
      * Called when the WebFragment is about to be destroyed. After this
      * call the WebFragment with all Tabs are destroyed and can not be used.
+     *
+     * @param webEngine the webEngine associated with this event.
      */
-    public void onWillDestroyFragmentAndAllTabs() {}
+    public default void onWillDestroyFragmentAndAllTabs(@NonNull WebEngine webEngine) {}
 }

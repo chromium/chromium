@@ -32,6 +32,7 @@ import org.chromium.base.Log;
 import org.chromium.webengine.CookieManager;
 import org.chromium.webengine.FullscreenCallback;
 import org.chromium.webengine.Navigation;
+import org.chromium.webengine.NavigationObserver;
 import org.chromium.webengine.Tab;
 import org.chromium.webengine.TabListObserver;
 import org.chromium.webengine.TabManager;
@@ -64,6 +65,8 @@ public class WebEngineShellActivity extends AppCompatActivity implements Fullscr
     private WebSandbox mWebSandbox;
     private TabManager mTabManager;
 
+    private DefaultObservers mDefaultTabListObserver;
+
     private int mSystemVisibilityToRestore;
 
     @Override
@@ -71,6 +74,7 @@ public class WebEngineShellActivity extends AppCompatActivity implements Fullscr
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         mContext = getApplicationContext();
+        mDefaultTabListObserver = new DefaultObservers();
 
         setupActivitySpinner((Spinner) findViewById(R.id.activity_nav), this, 0);
 
@@ -157,19 +161,20 @@ public class WebEngineShellActivity extends AppCompatActivity implements Fullscr
         activeTab.setFullscreenCallback(this);
         mTabManager.registerTabListObserver(new TabListObserver() {
             @Override
-            public void onTabAdded(@NonNull Tab tab) {
+            public void onTabAdded(@NonNull WebEngine webEngine, @NonNull Tab tab) {
                 tab.setFullscreenCallback(WebEngineShellActivity.this);
             }
         });
-        mTabManager.registerTabListObserver(new DefaultObservers.DefaultTabListObserver());
-        activeTab.getNavigationController().registerNavigationObserver(
-                new DefaultObservers.DefaultNavigationObserver() {
-                    @Override
-                    public void onNavigationCompleted(@NonNull Navigation navigation) {
-                        super.onNavigationCompleted(navigation);
-                        ListenableFuture<String> scriptResultFuture =
-                                activeTab.executeScript("1+1", true);
-                        Futures.addCallback(scriptResultFuture, new FutureCallback<String>() {
+        activeTab.registerTabObserver(mDefaultTabListObserver);
+        activeTab.getNavigationController().registerNavigationObserver(mDefaultTabListObserver);
+        mTabManager.registerTabListObserver(mDefaultTabListObserver);
+
+        activeTab.getNavigationController().registerNavigationObserver(new NavigationObserver() {
+            @Override
+            public void onNavigationCompleted(@NonNull Tab tab, @NonNull Navigation navigation) {
+                ListenableFuture<String> scriptResultFuture = activeTab.executeScript("1+1", true);
+                Futures.addCallback(
+                        scriptResultFuture, new FutureCallback<String>() {
                             @Override
                             public void onSuccess(String result) {
                                 Log.w(TAG, "executeScript result: " + result);
@@ -179,9 +184,9 @@ public class WebEngineShellActivity extends AppCompatActivity implements Fullscr
                                 Log.w(TAG, "executeScript failed: " + thrown);
                             }
                         }, ContextCompat.getMainExecutor(mContext));
-                    }
-                });
-        activeTab.getNavigationController().navigate("https://www.google.com");
+            }
+        });
+        activeTab.getNavigationController().navigate("https://google.com");
 
         activeTab.registerWebMessageCallback(new WebMessageCallback() {
             @Override
@@ -189,15 +194,7 @@ public class WebEngineShellActivity extends AppCompatActivity implements Fullscr
                 Log.i(TAG, "received WebMessage: " + message);
                 replyProxy.postMessage("Bouncing answer from tab: " + message);
             }
-
-            @Override
-            public void onWebMessageReplyProxyClosed(WebMessageReplyProxy replyProxy) {}
-
-            @Override
-            public void onWebMessageReplyProxyActiveStateChanged(WebMessageReplyProxy proxy) {}
         }, "x", Arrays.asList("*"));
-
-        activeTab.registerTabObserver(new DefaultObservers.DefaultTabObserver());
 
         activeTab.addMessageEventListener((Tab source, String message) -> {
             Log.w(TAG, "Received post message from web content: " + message);

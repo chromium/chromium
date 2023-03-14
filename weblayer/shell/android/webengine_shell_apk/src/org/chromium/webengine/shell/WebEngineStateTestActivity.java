@@ -24,6 +24,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 import org.chromium.base.Log;
 import org.chromium.webengine.Tab;
+import org.chromium.webengine.TabListObserver;
 import org.chromium.webengine.TabManager;
 import org.chromium.webengine.WebEngine;
 import org.chromium.webengine.WebSandbox;
@@ -42,6 +43,8 @@ public class WebEngineStateTestActivity extends AppCompatActivity {
     private Context mContext;
 
     private WebSandbox mWebSandbox;
+
+    private DefaultObservers mDefaultObservers = new DefaultObservers();
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -186,34 +189,31 @@ public class WebEngineStateTestActivity extends AppCompatActivity {
         TabManager tabManager = webEngine.getTabManager();
         setNumberOfTabsText(tabManager.getAllTabs().size());
 
-        tabManager.registerTabListObserver(new DefaultObservers.DefaultTabListObserver() {
+        tabManager.registerTabListObserver(new TabListObserver() {
             @Override
-            public void onTabAdded(@NonNull Tab tab) {
-                super.onTabAdded(tab);
+            public void onTabAdded(@NonNull WebEngine webEngine, @NonNull Tab tab) {
                 setNumberOfTabsText(tabManager.getAllTabs().size());
                 // Recursively add tab and navigation observers to any new tab.
-                tab.registerTabObserver(new DefaultObservers.DefaultTabObserver());
-                tab.getNavigationController().registerNavigationObserver(
-                        new DefaultObservers.DefaultNavigationObserver());
+                tab.registerTabObserver(mDefaultObservers);
+                tab.getNavigationController().registerNavigationObserver(mDefaultObservers);
             }
 
             @Override
-            public void onTabRemoved(@NonNull Tab tab) {
-                super.onTabRemoved(tab);
+            public void onTabRemoved(@NonNull WebEngine webEngine, @NonNull Tab tab) {
                 setNumberOfTabsText(tabManager.getAllTabs().size());
             }
 
             @Override
-            public void onWillDestroyFragmentAndAllTabs() {
-                super.onWillDestroyFragmentAndAllTabs();
+            public void onWillDestroyFragmentAndAllTabs(@NonNull WebEngine webEngine) {
                 setNumberOfTabsText(tabManager.getAllTabs().size());
             }
         });
 
         Tab activeTab = tabManager.getActiveTab();
-        activeTab.registerTabObserver(new DefaultObservers.DefaultTabObserver());
-        activeTab.getNavigationController().registerNavigationObserver(
-                new DefaultObservers.DefaultNavigationObserver());
+        activeTab.registerTabObserver(mDefaultObservers);
+        activeTab.getNavigationController().registerNavigationObserver(mDefaultObservers);
+        tabManager.registerTabListObserver(mDefaultObservers);
+
         activeTab.getNavigationController().navigate("https://www.google.com");
     }
 

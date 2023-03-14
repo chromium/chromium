@@ -61,7 +61,7 @@ public class TabManager {
         mDelegate = delegate;
         mWebEngine = webEngine;
         mTabRegistry = new TabRegistry(mWebEngine);
-        mTabListObserverDelegate = new TabListObserverDelegate(mTabRegistry);
+        mTabListObserverDelegate = new TabListObserverDelegate(mWebEngine, mTabRegistry);
         try {
             mDelegate.setTabListObserverDelegate(mTabListObserverDelegate);
         } catch (RemoteException e) {

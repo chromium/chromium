@@ -138,18 +138,18 @@ public class TabManagerTest {
         runOnUiThreadBlocking(
                 () -> webEngine.getTabManager().registerTabListObserver(new TabListObserver() {
                     @Override
-                    public void onTabAdded(Tab tab) {
+                    public void onTabAdded(WebEngine webEngine, Tab tab) {
                         holder.mAddedTab = tab;
                     }
 
                     @Override
-                    public void onActiveTabChanged(Tab tab) {
+                    public void onActiveTabChanged(WebEngine webEngine, Tab tab) {
                         holder.mActiveTab = tab;
                         activeLatch.countDown();
                     }
 
                     @Override
-                    public void onTabRemoved(Tab tab) {
+                    public void onTabRemoved(WebEngine webEngine, Tab tab) {
                         holder.mRemovedTab = tab;
                         removeLatch.countDown();
                     }

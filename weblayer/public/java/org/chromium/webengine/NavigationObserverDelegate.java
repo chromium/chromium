@@ -20,12 +20,16 @@ import org.chromium.webengine.interfaces.INavigationParams;
 class NavigationObserverDelegate extends INavigationObserverDelegate.Stub {
     private final Handler mHandler = new Handler(Looper.getMainLooper());
 
+    private Tab mTab;
+
     private ObserverList<NavigationObserver> mNavigationObservers =
             new ObserverList<NavigationObserver>();
 
-    public NavigationObserverDelegate() {
+    public NavigationObserverDelegate(Tab tab) {
         // Assert on UI thread as ObserverList can only be accessed from one thread.
         ThreadCheck.ensureOnUiThread();
+
+        mTab = tab;
     }
 
     /**
@@ -52,7 +56,7 @@ class NavigationObserverDelegate extends INavigationObserverDelegate.Stub {
     public void notifyNavigationStarted(@NonNull INavigationParams navigation) {
         mHandler.post(() -> {
             for (NavigationObserver observer : mNavigationObservers) {
-                observer.onNavigationStarted(new Navigation(navigation));
+                observer.onNavigationStarted(mTab, new Navigation(navigation));
             }
         });
     }
@@ -61,7 +65,7 @@ class NavigationObserverDelegate extends INavigationObserverDelegate.Stub {
     public void notifyNavigationRedirected(@NonNull INavigationParams navigation) {
         mHandler.post(() -> {
             for (NavigationObserver observer : mNavigationObservers) {
-                observer.onNavigationRedirected(new Navigation(navigation));
+                observer.onNavigationRedirected(mTab, new Navigation(navigation));
             }
         });
     }
@@ -70,7 +74,7 @@ class NavigationObserverDelegate extends INavigationObserverDelegate.Stub {
     public void notifyNavigationCompleted(@NonNull INavigationParams navigation) {
         mHandler.post(() -> {
             for (NavigationObserver observer : mNavigationObservers) {
-                observer.onNavigationCompleted(new Navigation(navigation));
+                observer.onNavigationCompleted(mTab, new Navigation(navigation));
             }
         });
     }
@@ -79,7 +83,7 @@ class NavigationObserverDelegate extends INavigationObserverDelegate.Stub {
     public void notifyNavigationFailed(@NonNull INavigationParams navigation) {
         mHandler.post(() -> {
             for (NavigationObserver observer : mNavigationObservers) {
-                observer.onNavigationFailed(new Navigation(navigation));
+                observer.onNavigationFailed(mTab, new Navigation(navigation));
             }
         });
     }
@@ -88,7 +92,7 @@ class NavigationObserverDelegate extends INavigationObserverDelegate.Stub {
     public void notifyLoadProgressChanged(double progress) {
         mHandler.post(() -> {
             for (NavigationObserver observer : mNavigationObservers) {
-                observer.onLoadProgressChanged(progress);
+                observer.onLoadProgressChanged(mTab, progress);
             }
         });
     }
