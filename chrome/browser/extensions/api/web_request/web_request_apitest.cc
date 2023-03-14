@@ -349,7 +349,13 @@ class ExtensionWebRequestApiTest : public ExtensionApiTest {
  public:
   explicit ExtensionWebRequestApiTest(
       ContextType context_type = ContextType::kFromManifest)
-      : ExtensionApiTest(context_type) {}
+      : ExtensionApiTest(context_type) {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        // TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having to
+        // disable this feature.
+        /*disabled_features=*/{features::kHttpsUpgrades});
+  }
   ExtensionWebRequestApiTest(const ExtensionWebRequestApiTest&) = delete;
   ExtensionWebRequestApiTest& operator=(const ExtensionWebRequestApiTest&) =
       delete;
@@ -407,6 +413,7 @@ class ExtensionWebRequestApiTest : public ExtensionApiTest {
   }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   std::vector<std::unique_ptr<TestExtensionDir>> test_dirs_;
   std::unique_ptr<NavigateTabMessageHandler> navigationHandler_;
 };
@@ -436,6 +443,12 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
 
 class DevToolsFrontendInWebRequestApiTest : public ExtensionApiTest {
  public:
+  DevToolsFrontendInWebRequestApiTest() {
+    // TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having to
+    // disable this feature.
+    feature_list_.InitAndDisableFeature(features::kHttpsUpgrades);
+  }
+
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -510,6 +523,7 @@ class DevToolsFrontendInWebRequestApiTest : public ExtensionApiTest {
         base::StringPrintf("HTTP/1.0 200 OK\n%s\n", content_type.c_str());
   }
 
+  base::test::ScopedFeatureList feature_list_;
   base::FilePath test_root_dir_;
   std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
   std::unique_ptr<NavigateTabMessageHandler> navigationHandler_;
@@ -4884,7 +4898,12 @@ class RedirectInfoWebRequestApiTest
     : public testing::WithParamInterface<RITestParams>,
       public ExtensionApiTest {
  public:
-  RedirectInfoWebRequestApiTest() : ExtensionApiTest(GetParam().context_type) {}
+  RedirectInfoWebRequestApiTest() : ExtensionApiTest(GetParam().context_type) {
+    // TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having to
+    // disable this feature.
+    feature_list_.InitAndDisableFeature(features::kHttpsUpgrades);
+  }
+
   ~RedirectInfoWebRequestApiTest() override = default;
   RedirectInfoWebRequestApiTest(const RedirectInfoWebRequestApiTest&) = delete;
   RedirectInfoWebRequestApiTest& operator=(
@@ -4931,6 +4950,7 @@ class RedirectInfoWebRequestApiTest
 
  private:
   TestExtensionDir test_dir_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
