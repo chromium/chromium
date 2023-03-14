@@ -149,18 +149,23 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
 
   enum AppState {
     kCreatingProfile = 0,   // Profile is being created.
-    kInitNetwork,           // Waiting for the network to initialize.
+    kInitLauncher,          // Launcher is initializing
     kInstallingApp,         // App is being installed.
     kInstallingExtensions,  // Force-installed extensions are being installed.
     kInstalled,  // Everything is installed, waiting for the splash screen timer
                  // to fire.
-    kLaunched    // App is being launched.
+    kLaunched,   // App is being launched.
+    kInitNetwork,  // Waiting for the network to initialize.
   };
 
   enum NetworkUIState {
-    kNotShowing = 0,  // Network configure UI is not being shown.
-    kNeedToShow,      // We need to show the UI as soon as we can.
-    kShowing          // Network configure UI is being shown.
+    kNotShowing = 0,     // Network configure UI is not being shown.
+    kNeedToShow,         // We need to show the UI as soon as we can.
+    kShowing,            // Network configure UI is being shown.
+    kWaitingForNetwork,  // App requested network. In this case we first wait
+                         // for 10s to see if network appears. If it does, we
+                         // continue the app launch, otherwise we show the
+                         // config network UI
   };
 
   void OnCancelAppLaunch();
@@ -193,7 +198,6 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
       std::unique_ptr<UserContext> user_context) override;
 
   KioskAppManagerBase::App GetAppData();
-  void OnOwnerSigninSuccess();
 
   // Whether the network could be configured during launching.
   bool CanConfigureNetwork();
@@ -214,6 +218,8 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
       app_mode::ForceInstallObserver::Result result);
 
   void OnNetworkWaitTimedOut();
+  void OnNetworkOnline();
+  void OnNetworkOffline();
   void OnTimerFire();
   void CloseSplashScreen();
   void CleanUp();
