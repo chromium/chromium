@@ -1140,29 +1140,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.CompromisedCredentials2.{Issue}"
-    units="credentials" expires_after="M115">
-  <obsolete>
-    Obsolete in M110 after PasswordStore is no longer created for non-regular,
-    guest, system and incognito profiles.
-  </obsolete>
-  <owner>vasilii@chromium.org</owner>
-  <owner>vsemeniuk@google.com</owner>
-  <summary>
-    Count of known {Issue}. Recorded once per Chrome profile at most once per
-    day.
-  </summary>
-  <token key="Issue">
-    <variant name="CountLeaked" summary="leaked credentials in the database"/>
-    <variant name="CountLeakedAfterBulkCheck"
-        summary="leaked credentials in the database if password bulk check
-                 was executed at least once"/>
-    <variant name="CountPhished" summary="phished credentials in the database"/>
-  </token>
-</histogram>
-
 <histogram name="PasswordManager.CompromisedCredentials3.{Issue}"
-    units="credentials" expires_after="M114">
+    units="credentials" expires_after="M118">
   <owner>vasilii@chromium.org</owner>
   <owner>vsemeniuk@google.com</owner>
   <summary>
