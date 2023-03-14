@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/bytes_consumer.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 #include "v8/include/v8.h"
 
@@ -141,12 +142,15 @@ class FetchLoaderClient final : public GarbageCollected<FetchLoaderClient>,
                                 public FetchDataLoader::Client {
  public:
   FetchLoaderClient(
-      std::unique_ptr<ServiceWorkerEventQueue::StayAwakeToken> token)
-      : token_(std::move(token)) {
+      std::unique_ptr<ServiceWorkerEventQueue::StayAwakeToken> token,
+      ServiceWorkerGlobalScope* service_worker,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+      : callback_(service_worker), token_(std::move(token)) {
     // We need to make |callback_| callable in the first place because some
     // DidFetchDataLoadXXX() accessing it may be called synchronously from
     // StartLoading().
-    callback_receiver_ = callback_.BindNewPipeAndPassReceiver();
+    callback_receiver_ =
+        callback_.BindNewPipeAndPassReceiver(std::move(task_runner));
   }
 
   FetchLoaderClient(const FetchLoaderClient&) = delete;
@@ -182,6 +186,7 @@ class FetchLoaderClient final : public GarbageCollected<FetchLoaderClient>,
   }
 
   void Trace(Visitor* visitor) const override {
+    visitor->Trace(callback_);
     FetchDataLoader::Client::Trace(visitor);
   }
 
@@ -190,8 +195,7 @@ class FetchLoaderClient final : public GarbageCollected<FetchLoaderClient>,
   mojo::PendingReceiver<mojom::blink::ServiceWorkerStreamCallback>
       callback_receiver_;
 
-  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
-  mojo::Remote<mojom::blink::ServiceWorkerStreamCallback> callback_;
+  HeapMojoRemote<mojom::blink::ServiceWorkerStreamCallback> callback_;
   std::unique_ptr<ServiceWorkerEventQueue::StayAwakeToken> token_;
 };
 
@@ -365,7 +369,8 @@ void FetchRespondWithObserver::OnResponseFulfilled(
     // handle will be passed to the FetchLoaderClient on start.
     FetchLoaderClient* fetch_loader_client =
         MakeGarbageCollected<FetchLoaderClient>(
-            service_worker_global_scope->CreateStayAwakeToken());
+            service_worker_global_scope->CreateStayAwakeToken(),
+            service_worker_global_scope, task_runner_);
     buffer->StartLoading(FetchDataLoader::CreateLoaderAsDataPipe(task_runner_),
                          fetch_loader_client, exception_state);
     if (exception_state.HadException()) {
