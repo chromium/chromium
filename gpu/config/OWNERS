@@ -1,3 +1,5 @@
 kbr@chromium.org
 zmo@chromium.org
 magchen@chromium.org
+
+per-file webgpu*=file://third_party/blink/renderer/modules/webgpu/OWNERS
