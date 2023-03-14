@@ -471,22 +471,23 @@ void ImmersiveModeController::SetTitlebarPinned(bool pinned) {
 
 void ImmersiveModeController::ObserveOverlayChildWindows() {
   // Watch the overlay Widget for new child Widgets.
-  auto observe_window = [this](NSWindow* window) {
-    [window addObserver:immersive_mode_window_observer_
-             forKeyPath:@"visible"
-                options:NSKeyValueObservingOptionInitial |
-                        NSKeyValueObservingOptionNew
-                context:nullptr];
-  };
   NativeWidgetMacNSWindow* overlay_window =
       base::mac::ObjCCastStrict<NativeWidgetMacNSWindow>(overlay_window_);
   overlay_window.childWindowAddedHandler = ^(NSWindow* child) {
-    // Ignore non-visible children.
-    if (!child.visible) {
-      return;
-    }
-    observe_window(child);
+    OnChildWindowAdded(child);
   };
+}
+
+void ImmersiveModeController::OnChildWindowAdded(NSWindow* child) {
+  // Ignore non-visible children.
+  if (!child.visible) {
+    return;
+  }
+  [child addObserver:immersive_mode_window_observer_
+          forKeyPath:@"visible"
+             options:NSKeyValueObservingOptionInitial |
+                     NSKeyValueObservingOptionNew
+             context:nullptr];
 }
 
 void ImmersiveModeController::ReparentChildWindows(NSWindow* source,

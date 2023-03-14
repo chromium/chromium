@@ -36,6 +36,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeTabbedController
   void TitlebarLock() override;
   void TitlebarUnlock() override;
   void OnTitlebarFrameDidChange(NSRect frame) override;
+  void OnChildWindowAdded(NSWindow* child) override;
 
  private:
   void TitlebarReveal();

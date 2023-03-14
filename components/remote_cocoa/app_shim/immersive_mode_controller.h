@@ -66,6 +66,9 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
   // Called when the NSTitlebarContainerView frame changes.
   virtual void OnTitlebarFrameDidChange(NSRect frame);
 
+  // Called when a child window is added to the overlay_window_.
+  virtual void OnChildWindowAdded(NSWindow* child);
+
   NSWindow* browser_window() { return browser_window_; }
   NSWindow* overlay_window() { return overlay_window_; }
   BridgedContentView* overlay_content_view() { return overlay_content_view_; }

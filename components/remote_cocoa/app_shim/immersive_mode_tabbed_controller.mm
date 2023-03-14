@@ -192,4 +192,13 @@ void ImmersiveModeTabbedController::OnTitlebarFrameDidChange(NSRect frame) {
   [tab_window_ setFrameOrigin:point_on_screen];
 }
 
+void ImmersiveModeTabbedController::OnChildWindowAdded(NSWindow* child) {
+  // The `tab_window_` is a child of the `overlay_window_`. Ignore the
+  // `tab_window_`.
+  if (child == tab_window_) {
+    return;
+  }
+  ImmersiveModeController::OnChildWindowAdded(child);
+}
+
 }  // namespace remote_cocoa
