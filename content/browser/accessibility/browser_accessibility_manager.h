@@ -188,15 +188,6 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   void DidActivatePortal(WebContents* predecessor_contents,
                          base::TimeTicks activation_time) override;
 
-  // Keep track of if this page is hidden by an interstitial, in which case
-  // we need to suppress all events.
-  void set_hidden_by_interstitial_page(bool hidden) {
-    hidden_by_interstitial_page_ = hidden;
-  }
-  bool hidden_by_interstitial_page() const {
-    return hidden_by_interstitial_page_;
-  }
-
   // For testing only, register a function to be called when
   // a generated event is fired from this BrowserAccessibilityManager.
   void SetGeneratedEventCallbackForTesting(
@@ -532,10 +523,6 @@ class CONTENT_EXPORT BrowserAccessibilityManager
 
   // True if the user has initiated a navigation to another page.
   bool user_is_navigating_away_;
-
-  // Interstitial page, like an SSL warning.
-  // If so we need to suppress any events.
-  bool hidden_by_interstitial_page_ = false;
 
   // If the load complete event is suppressed due to CanFireEvents() returning
   // false, this is set to true and the event will be fired later.

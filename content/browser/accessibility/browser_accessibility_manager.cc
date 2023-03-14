@@ -219,13 +219,6 @@ bool BrowserAccessibilityManager::CanFireEvents() const {
   if (!root_manager)
     return false;
 
-  // Do not fire events if a page is obscured by an interstitial page -- see
-  // crbug.com/730910.
-  // TODO(accessibility) Look into what happens if an interstitial page is only
-  // hiding an iframe.
-  if (root_manager->hidden_by_interstitial_page())
-    return false;
-
   // Do not fire events when the page is frozen inside the back/forward cache.
   // Rationale for the back/forward cache behavior:
   // https://docs.google.com/document/d/1_jaEAXurfcvriwcNU-5u0h8GGioh0LelagUIIGFfiuU/
