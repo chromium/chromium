@@ -86,6 +86,14 @@ void OnConfigureUpstartJobs(std::deque<JobDesc> jobs,
   ConfigureUpstartJobs(std::move(jobs), std::move(callback));
 }
 
+int64_t GetRequiredDiskImageSizeForArcVmDataMigrationInBytes(
+    uint64_t android_data_size_in_bytes) {
+  // Reserved disk space for virtio-blk /data disk image (128 MB). Defined in
+  // the guest's arc-mkfs-blk-data.
+  constexpr uint64_t kReservedDiskSpaceInBytes = 128ULL << 20;
+  return android_data_size_in_bytes * 11ULL / 10ULL + kReservedDiskSpaceInBytes;
+}
+
 }  // namespace
 
 bool IsArcAvailable() {
@@ -470,6 +478,50 @@ int GetDaysUntilArcVmDataMigrationDeadline(PrefService* prefs) {
 
 bool ArcVmDataMigrationShouldBeDismissible(int days_until_deadline) {
   return days_until_deadline > 1;
+}
+
+uint64_t GetDesiredDiskImageSizeForArcVmDataMigrationInBytes(
+    uint64_t android_data_size_in_bytes,
+    uint64_t free_disk_space_in_bytes) {
+  // Mask to make the disk image size a multiple of the block size (4096 bytes).
+  constexpr uint64_t kDiskImageSizeMaskInBytes = ~((4ULL << 10) - 1);
+
+  // Minimum disk image size for virtio-blk /data (4 GB).
+  constexpr uint64_t kMinimumDiskImageSizeInBytes = 4ULL << 30;
+
+  // The default disk image size set by Concierge.
+  const uint64_t default_disk_image_size_in_bytes =
+      free_disk_space_in_bytes * 9ULL / 10ULL;
+
+  const uint64_t required_disk_image_size_in_bytes =
+      GetRequiredDiskImageSizeForArcVmDataMigrationInBytes(
+          android_data_size_in_bytes);
+
+  return std::max(default_disk_image_size_in_bytes +
+                      required_disk_image_size_in_bytes,
+                  kMinimumDiskImageSizeInBytes) &
+         kDiskImageSizeMaskInBytes;
+}
+
+uint64_t GetRequiredFreeDiskSpaceForArcVmDataMigrationInBytes(
+    uint64_t android_data_size_in_bytes,
+    uint64_t free_disk_space_in_bytes) {
+  // Mask to make the required free disk space a multiple of 512 MB.
+  constexpr uint64_t kRequiredFreeDiskSpaceMaskInBytes = ~((512ULL << 20) - 1);
+
+  // Minimum required free disk space for ARCVM /data migration (1 GB).
+  constexpr uint64_t kMinimumRequiredFreeDiskSpaceInBytes = 1ULL << 30;
+
+  const uint64_t required_disk_image_size_in_bytes =
+      GetRequiredDiskImageSizeForArcVmDataMigrationInBytes(
+          android_data_size_in_bytes);
+
+  const uint64_t maximum_disk_space_overhead_in_bytes =
+      required_disk_image_size_in_bytes - android_data_size_in_bytes;
+
+  return (kMinimumRequiredFreeDiskSpaceInBytes +
+          maximum_disk_space_overhead_in_bytes) &
+         kRequiredFreeDiskSpaceMaskInBytes;
 }
 
 }  // namespace arc

@@ -47,8 +47,12 @@ constexpr char kGaiaId[] = "1234567890";
 constexpr char kUserActionUpdate[] = "update";
 constexpr char kUserActionResume[] = "resume";
 
-constexpr int64_t kFreeDiskSpaceLessThanThreshold = 1LL << 29;
-constexpr int64_t kFreeDiskSpaceMoreThanThreshold = 1LL << 31;
+constexpr uint64_t kDefaultAndroidDataSize = 8ULL << 30;
+
+// These values assume the default Android /data size.
+constexpr uint64_t kFreeDiskSpaceLessThanThreshold = 512ULL << 20;
+constexpr uint64_t kFreeDiskSpaceMoreThanThreshold = 2ULL << 30;
+
 constexpr double kBatteryPercentLessThanThreshold = 20.0;
 constexpr double kBatteryPercentMoreThanThreshold = 40.0;
 
@@ -101,7 +105,7 @@ class FakeArcVmDataMigrationScreenView : public ArcVmDataMigrationScreenView {
  private:
   void Show() override { shown_ = true; }
   void SetUIState(UIState state) override { state_ = state; }
-  void SetRequiredFreeDiskSpace(int64_t required_free_disk_space) override {
+  void SetRequiredFreeDiskSpace(uint64_t required_free_disk_space) override {
     minimum_free_disk_space_set_ = true;
     has_enough_free_disk_space_ = false;
   }
@@ -189,6 +193,8 @@ class ArcVmDataMigrationScreenTest : public ChromeAshTestBase,
     // Set the default states. They can be overwritten by individual test cases.
     arc::SetArcVmDataMigrationStatus(profile_->GetPrefs(),
                                      arc::ArcVmDataMigrationStatus::kConfirmed);
+    FakeArcVmDataMigratorClient::Get()->set_android_data_size(
+        kDefaultAndroidDataSize);
     SetFreeDiskSpace(/*enough=*/true);
     SetBatteryState(/*enough=*/true, /*connected=*/true);
 
@@ -435,7 +441,8 @@ TEST_F(ArcVmDataMigrationScreenTest, StopArcUpstartJobs) {
   FakeUpstartClient::Get()->set_stop_job_cb(base::BindLambdaForTesting(
       [&jobs_to_be_stopped](const std::string& job_name,
                             const std::vector<std::string>& env) {
-        EXPECT_TRUE(jobs_to_be_stopped.contains(job_name));
+        // Do not check the existence of the job in |job_to_be_stopped|, because
+        // some jobs can be stopped multiple times.
         jobs_to_be_stopped.erase(job_name);
         return (jobs_to_be_stopped.size() % 2) == 0;
       }));
@@ -447,15 +454,37 @@ TEST_F(ArcVmDataMigrationScreenTest, StopArcUpstartJobs) {
   EXPECT_FALSE(screen_->encountered_retriable_fatal_error());
 }
 
-TEST_F(ArcVmDataMigrationScreenTest, ArcVmDataMigratorStartFailureIsFatal) {
+TEST_F(ArcVmDataMigrationScreenTest,
+       ArcVmDataMigratorStartFailureOnGetAndroidDataSizeIsFatal) {
   FakeUpstartClient::Get()->set_start_job_cb(base::BindLambdaForTesting(
       [](const std::string& job_name, const std::vector<std::string>& env) {
         return job_name != arc::kArcVmDataMigratorJobName;
       }));
+
+  screen_->Show(wizard_context_.get());
+  task_environment()->RunUntilIdle();
+  EXPECT_TRUE(screen_->encountered_retriable_fatal_error());
+}
+
+TEST_F(ArcVmDataMigrationScreenTest,
+       ArcVmDataMigratorStartFailureOnStartMigrateIsFatal) {
   screen_->Show(wizard_context_.get());
   task_environment()->RunUntilIdle();
 
+  FakeUpstartClient::Get()->set_start_job_cb(base::BindLambdaForTesting(
+      [](const std::string& job_name, const std::vector<std::string>& env) {
+        return job_name != arc::kArcVmDataMigratorJobName;
+      }));
+
   PressUpdateButton();
+  task_environment()->RunUntilIdle();
+  EXPECT_TRUE(screen_->encountered_retriable_fatal_error());
+}
+
+TEST_F(ArcVmDataMigrationScreenTest, GetAndroidDataSizeFailureIsFatal) {
+  FakeArcVmDataMigratorClient::Get()->set_android_data_size(absl::nullopt);
+
+  screen_->Show(wizard_context_.get());
   task_environment()->RunUntilIdle();
   EXPECT_TRUE(screen_->encountered_retriable_fatal_error());
 }

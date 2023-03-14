@@ -27,6 +27,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
+#include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/device_service.h"
@@ -39,8 +40,7 @@ namespace {
 constexpr char kArcRemoveDataJobName[] = "arc_2dremove_2ddata";
 
 constexpr char kPathToCheckFreeDiskSpace[] = "/home/chronos/user";
-// TODO(b/258278176): Set appropriate thresholds based on experiments.
-constexpr int64_t kMinimumFreeDiskSpaceForMigration = 1LL << 30;  // 1 GB.
+
 constexpr double kMinimumBatteryPercent = 30.0;
 
 // |average_speed_| is calculated using the smooth factor k as:
@@ -65,6 +65,38 @@ constexpr char kUserActionReport[] = "report";
 std::string GetChromeOsUsername(Profile* profile) {
   const AccountId account(multi_user_util::GetAccountIdFromProfile(profile));
   return cryptohome::CreateAccountIdentifierFromAccountId(account).account_id();
+}
+
+void StartArcVmDataMigrator(const std::string& username,
+                            chromeos::VoidDBusMethodCallback callback) {
+  std::vector<std::string> environment = {"CHROMEOS_USER=" + username};
+  std::deque<arc::JobDesc> jobs{arc::JobDesc{
+      arc::kArcVmDataMigratorJobName, arc::UpstartOperation::JOB_STOP_AND_START,
+      std::move(environment)}};
+  arc::ConfigureUpstartJobs(std::move(jobs), std::move(callback));
+}
+
+void OnArcVmDataMigratorStartedForGetAndroidDataSize(
+    const std::string& username,
+    chromeos::DBusMethodCallback<int64_t> callback,
+    bool result) {
+  if (!result) {
+    LOG(ERROR) << "Failed to start arcvm_data_migrator";
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
+  arc::data_migrator::GetAndroidDataSizeRequest request;
+  request.set_username(username);
+  ArcVmDataMigratorClient::Get()->GetAndroidDataSize(std::move(request),
+                                                     std::move(callback));
+}
+
+void GetAndroidDataSize(const std::string& username,
+                        chromeos::DBusMethodCallback<int64_t> callback) {
+  StartArcVmDataMigrator(
+      username, base::BindOnce(&OnArcVmDataMigratorStartedForGetAndroidDataSize,
+                               username, std::move(callback)));
 }
 
 }  // namespace
@@ -261,10 +293,39 @@ void ArcVmDataMigrationScreen::OnGetFreeDiskSpace(
     return;
   }
 
-  const int64_t free_disk_space = reply.value();
+  const uint64_t free_disk_space = reply.value();
   VLOG(1) << "Free disk space is " << free_disk_space;
-  if (free_disk_space < kMinimumFreeDiskSpaceForMigration) {
-    view_->SetRequiredFreeDiskSpace(kMinimumFreeDiskSpaceForMigration);
+
+  GetAndroidDataSize(
+      GetChromeOsUsername(profile_),
+      base::BindOnce(&ArcVmDataMigrationScreen::OnGetAndroidDataSizeResponse,
+                     weak_ptr_factory_.GetWeakPtr(), free_disk_space));
+}
+
+void ArcVmDataMigrationScreen::OnGetAndroidDataSizeResponse(
+    uint64_t free_disk_space,
+    absl::optional<int64_t> response) {
+  if (!response.has_value()) {
+    LOG(ERROR) << "Failed to get the size of Android /data";
+    HandleSetupFailure();
+    return;
+  }
+
+  const uint64_t android_data_size = response.value();
+  VLOG(1) << "Size of Android /data is " << android_data_size;
+
+  disk_size_ = arc::GetDesiredDiskImageSizeForArcVmDataMigrationInBytes(
+      android_data_size, free_disk_space);
+  VLOG(1) << "Desired disk size for the migration is " << disk_size_;
+
+  const uint64_t required_free_disk_space =
+      arc::GetRequiredFreeDiskSpaceForArcVmDataMigrationInBytes(
+          android_data_size, free_disk_space);
+  VLOG(1) << "Required free disk space for the migration is "
+          << required_free_disk_space;
+  if (free_disk_space < required_free_disk_space) {
+    // TODO(b/272151802): Report the unmet required free disk space to UMA.
+    view_->SetRequiredFreeDiskSpace(required_free_disk_space);
     // Update the UI to show the low disk space warning and return, because the
     // user cannot free up the disk space while in the screen, and thus there is
     // no point in reporting the battery state in this case.
@@ -337,12 +398,15 @@ void ArcVmDataMigrationScreen::SetUpDestinationAndTriggerMigration() {
     return;
   }
 
+  DCHECK(disk_size_);
   vm_tools::concierge::CreateDiskImageRequest request;
   request.set_cryptohome_id(user_id_hash_);
   request.set_vm_name(arc::kArcVmName);
   request.set_image_type(vm_tools::concierge::DISK_IMAGE_AUTO);
   request.set_storage_location(vm_tools::concierge::STORAGE_CRYPTOHOME_ROOT);
   request.set_filesystem_type(vm_tools::concierge::FilesystemType::EXT4);
+  request.set_disk_size(disk_size_);
+  request.set_allocation_type(vm_tools::concierge::DISK_ALLOCATION_TYPE_SPARSE);
   // Keep the options in sync with the guest side ones set by arc-mkfs-blk-data.
   constexpr std::array<const char*, 4> kMkfsOpts{
       "-b4096",                                  // block-size
@@ -397,13 +461,8 @@ void ArcVmDataMigrationScreen::OnCreateDiskImageResponse(
 }
 
 void ArcVmDataMigrationScreen::TriggerMigration() {
-  std::vector<std::string> environment = {"CHROMEOS_USER=" +
-                                          GetChromeOsUsername(profile_)};
-  std::deque<arc::JobDesc> jobs{arc::JobDesc{
-      arc::kArcVmDataMigratorJobName, arc::UpstartOperation::JOB_STOP_AND_START,
-      std::move(environment)}};
-  arc::ConfigureUpstartJobs(
-      std::move(jobs),
+  StartArcVmDataMigrator(
+      GetChromeOsUsername(profile_),
       base::BindOnce(&ArcVmDataMigrationScreen::OnArcVmDataMigratorStarted,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -432,7 +491,7 @@ void ArcVmDataMigrationScreen::OnArcVmDataMigratorStarted(bool result) {
           ? arc::data_migrator::LVM_DEVICE
           : arc::data_migrator::CROSVM_DISK);
   ArcVmDataMigratorClient::Get()->StartMigration(
-      request,
+      std::move(request),
       base::BindOnce(&ArcVmDataMigrationScreen::OnStartMigrationResponse,
                      weak_ptr_factory_.GetWeakPtr()));
 }

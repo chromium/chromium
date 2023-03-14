@@ -252,6 +252,20 @@ int GetDaysUntilArcVmDataMigrationDeadline(PrefService* prefs);
 // GetDaysUntilArcVmDataMigrationDeadline().
 bool ArcVmDataMigrationShouldBeDismissible(int days_until_deadline);
 
+// Calculates and returns the desired disk image size for the destination of
+// ARCVM /data migration based on the size of the source (existing Android
+// /data) and free disk space.
+uint64_t GetDesiredDiskImageSizeForArcVmDataMigrationInBytes(
+    uint64_t android_data_size,
+    uint64_t free_disk_space);
+
+// Calculates and returns how much free disk space should be there to start
+// ARCVM /data migration based on the size of existing Android /data and free
+// disk space.
+uint64_t GetRequiredFreeDiskSpaceForArcVmDataMigrationInBytes(
+    uint64_t android_data_size,
+    uint64_t free_disk_space);
+
 }  // namespace arc
 
 #endif  // ASH_COMPONENTS_ARC_ARC_UTIL_H_

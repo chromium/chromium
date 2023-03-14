@@ -62,6 +62,9 @@ class ArcVmDataMigrationScreen : public BaseScreen,
 
   void OnGetFreeDiskSpace(absl::optional<int64_t> reply);
 
+  void OnGetAndroidDataSizeResponse(uint64_t free_disk_space,
+                                    absl::optional<int64_t> response);
+
   void CheckBatteryState();
 
   // chromeos::PowerManagerClient::Observer override:
@@ -113,6 +116,8 @@ class ArcVmDataMigrationScreen : public BaseScreen,
 
   ArcVmDataMigrationScreenView::UIState current_ui_state_ =
       ArcVmDataMigrationScreenView::UIState::kLoading;
+
+  uint64_t disk_size_ = 0;
 
   double battery_percent_ = 100.0;
   bool is_connected_to_charger_ = true;

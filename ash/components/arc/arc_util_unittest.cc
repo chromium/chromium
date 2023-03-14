@@ -737,5 +737,35 @@ TEST_F(ArcUtilTest, GetDaysUntilArcVmDataMigrationDeadline_Overdue) {
   EXPECT_EQ(GetDaysUntilArcVmDataMigrationDeadline(profile_prefs()), 1);
 }
 
+TEST_F(ArcUtilTest, GetDesiredDiskImageSizeForArcVmDataMigrationInBytes) {
+  EXPECT_EQ(GetDesiredDiskImageSizeForArcVmDataMigrationInBytes(0, 0),
+            4ULL << 30 /* kMinimumDiskImageSizeInBytes = 4 GB */);
+
+  EXPECT_EQ(GetDesiredDiskImageSizeForArcVmDataMigrationInBytes(
+                4ULL << 30 /* android_data_size_in_bytes = 4 GB */,
+                32ULL << 30 /* free_disk_space_in_bytes = 32 GB */),
+            35782443008ULL /* ~33 GB */);
+
+  EXPECT_EQ(GetDesiredDiskImageSizeForArcVmDataMigrationInBytes(
+                32ULL << 30 /* android_data_size_in_bytes = 32 GB */,
+                4ULL << 30 /* free_disk_space_in_bytes = 4 GB */),
+            41795399680ULL /* ~39 GB */);
+}
+
+TEST_F(ArcUtilTest, GetRequiredFreeDiskSpaceForArcVmDataMigrationInBytes) {
+  EXPECT_EQ(GetRequiredFreeDiskSpaceForArcVmDataMigrationInBytes(0, 0),
+            1ULL << 30 /* kMinimumRequiredFreeDiskSpaceInBytes = 1 GB */);
+
+  EXPECT_EQ(GetRequiredFreeDiskSpaceForArcVmDataMigrationInBytes(
+                4ULL << 30 /* android_data_size_in_bytes = 4 GB */,
+                32ULL << 30 /* free_disk_space_in_bytes = 32 GB */),
+            3ULL * (512ULL << 20) /* 1.5 GB */);
+
+  EXPECT_EQ(GetRequiredFreeDiskSpaceForArcVmDataMigrationInBytes(
+                32ULL << 30 /* android_data_size_in_bytes = 32 GB */,
+                4ULL << 30 /* free_disk_space_in_bytes = 4 GB */),
+            4ULL << 30 /* 4 GB */);
+}
+
 }  // namespace
 }  // namespace arc

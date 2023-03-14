@@ -34,7 +34,7 @@ class ArcVmDataMigrationScreenView
 
   virtual void Show() = 0;
   virtual void SetUIState(UIState state) = 0;
-  virtual void SetRequiredFreeDiskSpace(int64_t required_free_disk_space) = 0;
+  virtual void SetRequiredFreeDiskSpace(uint64_t required_free_disk_space) = 0;
   virtual void SetMinimumBatteryPercent(double percent) = 0;
   virtual void SetBatteryState(bool enough, bool connected) = 0;
   virtual void SetMigrationProgress(double progress) = 0;
@@ -61,7 +61,7 @@ class ArcVmDataMigrationScreenHandler : public BaseScreenHandler,
   // ArcVmDataMigrationScreenView overrides:
   void Show() override;
   void SetUIState(UIState state) override;
-  void SetRequiredFreeDiskSpace(int64_t required_free_disk_space) override;
+  void SetRequiredFreeDiskSpace(uint64_t required_free_disk_space) override;
   void SetMinimumBatteryPercent(double percent) override;
   void SetBatteryState(bool enough, bool connected) override;
   void SetMigrationProgress(double progress) override;

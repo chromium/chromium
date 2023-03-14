@@ -74,7 +74,7 @@ void ArcVmDataMigrationScreenHandler::SetUIState(UIState state) {
 }
 
 void ArcVmDataMigrationScreenHandler::SetRequiredFreeDiskSpace(
-    int64_t required_free_disk_space) {
+    uint64_t required_free_disk_space) {
   CallExternalAPI("setRequiredFreeDiskSpace",
                   ui::FormatBytes(required_free_disk_space));
 }
