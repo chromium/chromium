@@ -287,10 +287,16 @@ public class ProxyChangeListener {
             ContextUtils.registerProtectedBroadcastReceiver(
                     ContextUtils.getApplicationContext(), mProxyReceiver, filter);
         } else {
-            // Register the instance of ProxyReceiver with an empty intent filter, so that it is
-            // still found via reflection, but is not called by the system. See: crbug.com/851995
-            ContextUtils.registerNonExportedBroadcastReceiver(
-                    ContextUtils.getApplicationContext(), mProxyReceiver, new IntentFilter());
+            if (!ContextUtils.isSdkSandboxProcess()) {
+                // Register the instance of ProxyReceiver with an empty intent filter, so that it is
+                // still found via reflection, but is not called by the system. See:
+                // crbug.com/851995
+                //
+                // Don't do this within an SDK Sandbox, because neither reflection nor registering a
+                // broadcast receiver with a blank IntentFilter is allowed.
+                ContextUtils.registerNonExportedBroadcastReceiver(
+                        ContextUtils.getApplicationContext(), mProxyReceiver, new IntentFilter());
+            }
 
             // Create a BroadcastReceiver that uses M+ APIs to fetch the proxy confuguration from
             // ConnectionManager.
