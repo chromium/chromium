@@ -782,6 +782,16 @@ class CacheStorageManagerTest : public testing::Test {
     return future.Get();
   }
 
+  blink::mojom::QuotaStatusCode DeleteStorageKeyData(
+      const std::set<blink::StorageKey>& storage_keys,
+      storage::mojom::CacheStorageOwner owner =
+          storage::mojom::CacheStorageOwner::kCacheAPI) {
+    base::test::TestFuture<::blink::mojom::QuotaStatusCode> future;
+    cache_manager_->DeleteStorageKeyData(storage_keys, owner,
+                                         future.GetCallback());
+    return future.Get();
+  }
+
   blink::mojom::QuotaStatusCode DeleteBucketData(
       const storage::BucketLocator& bucket_locator,
       storage::mojom::CacheStorageOwner owner =
@@ -2823,6 +2833,46 @@ TEST_P(CacheStorageManagerTestP, StoragePutPartialContentForBackgroundFetch) {
       /* match_options= */ nullptr,
       storage::mojom::CacheStorageOwner::kBackgroundFetch));
   EXPECT_EQ(206, callback_cache_handle_response_->status_code);
+}
+
+TEST_P(CacheStorageManagerTestP, BatchDeleteStorageKeyData) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      net::features::kThirdPartyStoragePartitioning);
+
+  const auto partitioned_storage_key1 = blink::StorageKey::Create(
+      url::Origin::Create(GURL("http://example1.com")),
+      net::SchemefulSite(GURL("http://example3.com")),
+      blink::mojom::AncestorChainBit::kCrossSite);
+
+  const auto partitioned_default_bucket_locator1 =
+      GetOrCreateBucket(partitioned_storage_key1, storage::kDefaultBucketName);
+
+  GURL test_url = GURL("http://example.com/foo");
+
+  for (const storage::mojom::CacheStorageOwner owner :
+       {storage::mojom::CacheStorageOwner::kCacheAPI,
+        storage::mojom::CacheStorageOwner::kBackgroundFetch}) {
+    EXPECT_TRUE(Open(bucket_locator1_, "foo", owner));
+    EXPECT_TRUE(CachePut(callback_cache_handle_.value(), test_url));
+
+    EXPECT_TRUE(Open(bucket_locator2_, "foo", owner));
+    EXPECT_TRUE(CachePut(callback_cache_handle_.value(), test_url));
+
+    EXPECT_TRUE(Open(partitioned_default_bucket_locator1, "baz", owner));
+    EXPECT_TRUE(CachePut(callback_cache_handle_.value(), test_url));
+
+    EXPECT_EQ(3ULL, GetStorageKeys(owner).size());
+
+    std::set<blink::StorageKey> to_delete = {storage_key1_, storage_key2_,
+                                             partitioned_storage_key1};
+
+    EXPECT_EQ(DeleteStorageKeyData(to_delete, owner),
+              blink::mojom::QuotaStatusCode::kOk);
+
+    auto storage_keys = GetStorageKeys(owner);
+    EXPECT_EQ(0ULL, storage_keys.size());
+  }
 }
 
 TEST_P(CacheStorageManagerTestP, DeleteStorageKeyData) {

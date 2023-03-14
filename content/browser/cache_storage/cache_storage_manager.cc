@@ -805,8 +805,8 @@ void CacheStorageManager::GetStorageKeys(
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
 }
 
-void CacheStorageManager::DeleteStorageKeyDataGotAllBucketInfo(
-    const blink::StorageKey storage_key,
+void CacheStorageManager::DeleteStorageKeysDataGotAllBucketInfo(
+    const std::set<blink::StorageKey>& storage_keys,
     storage::mojom::CacheStorageOwner owner,
     base::OnceCallback<void(std::vector<blink::mojom::QuotaStatusCode>)>
         callback,
@@ -827,7 +827,7 @@ void CacheStorageManager::DeleteStorageKeyDataGotAllBucketInfo(
        usage_tuples) {
     const storage::BucketLocator bucket_locator = std::get<0>(usage_tuple);
     if (!bucket_locator.is_default ||
-        storage_key != bucket_locator.storage_key) {
+        !storage_keys.contains(bucket_locator.storage_key)) {
       continue;
     }
     instance_count += 1;
@@ -842,7 +842,7 @@ void CacheStorageManager::DeleteStorageKeyDataGotAllBucketInfo(
        usage_tuples) {
     const storage::BucketLocator bucket_locator = std::get<0>(usage_tuple);
     if (!bucket_locator.is_default ||
-        storage_key != bucket_locator.storage_key) {
+        !storage_keys.contains(bucket_locator.storage_key)) {
       continue;
     }
     if (!bucket_locator.is_null()) {
@@ -868,7 +868,22 @@ void CacheStorageManager::DeleteStorageKeyData(
     storage::mojom::QuotaClient::DeleteBucketDataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  std::set<blink::StorageKey> storage_key_set{storage_key};
+  DeleteStorageKeyData(storage_key_set, owner, std::move(callback));
+}
+
+void CacheStorageManager::DeleteStorageKeyData(
+    const std::set<blink::StorageKey>& storage_keys,
+    storage::mojom::CacheStorageOwner owner,
+    storage::mojom::QuotaClient::DeleteBucketDataCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (IsMemoryBacked()) {
+    std::vector<
+        std::tuple<storage::BucketLocator, storage::mojom::StorageUsageInfoPtr>>
+        to_delete;
+    to_delete.reserve(storage_keys.size());
+
     // Note: since the number of CacheStorage instances is usually small, just
     // search for the corresponding `storage::BucketLocator` key given a
     // `blink::StorageKey`.
@@ -877,15 +892,18 @@ void CacheStorageManager::DeleteStorageKeyData(
         continue;
       const storage::BucketLocator& bucket_locator = key_value.first.first;
       if (!bucket_locator.is_default ||
-          bucket_locator.storage_key != storage_key)
+          !storage_keys.contains(bucket_locator.storage_key)) {
         continue;
-      DeleteBucketDataDidGetExists(owner, std::move(callback), bucket_locator,
-                                   /*exists=*/true);
-      return;
+      }
+      to_delete.emplace_back(bucket_locator,
+                             storage::mojom::StorageUsageInfo::New(
+                                 bucket_locator.storage_key, 0, base::Time()));
     }
-    scheduler_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  blink::mojom::QuotaStatusCode::kOk));
+
+    DeleteStorageKeysDataGotAllBucketInfo(
+        storage_keys, owner,
+        base::BindOnce(&DeleteStorageKeyDidDeleteAllData, std::move(callback)),
+        std::move(to_delete));
     return;
   }
   // Note that we can't call `QuotaManagerProxy::GetBucket()` and then use the
@@ -904,8 +922,8 @@ void CacheStorageManager::DeleteStorageKeyData(
           base::WrapRefCounted(scheduler_task_runner_.get()),
           std::move(usage_tuples), profile_path_, owner,
           base::BindOnce(
-              &CacheStorageManager::DeleteStorageKeyDataGotAllBucketInfo,
-              weak_ptr_factory_.GetWeakPtr(), storage_key, owner,
+              &CacheStorageManager::DeleteStorageKeysDataGotAllBucketInfo,
+              weak_ptr_factory_.GetWeakPtr(), storage_keys, owner,
               base::BindOnce(&DeleteStorageKeyDidDeleteAllData,
                              std::move(callback)))));
 }

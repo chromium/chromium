@@ -97,6 +97,10 @@ class CONTENT_EXPORT CacheStorageManager
       const blink::StorageKey& storage_key,
       storage::mojom::CacheStorageOwner owner,
       storage::mojom::QuotaClient::DeleteBucketDataCallback callback);
+  void DeleteStorageKeyData(
+      const std::set<blink::StorageKey>& storage_keys,
+      storage::mojom::CacheStorageOwner owner,
+      storage::mojom::QuotaClient::DeleteBucketDataCallback callback);
   void DeleteBucketData(
       const storage::BucketLocator& bucket_locator,
       storage::mojom::CacheStorageOwner owner,
@@ -156,8 +160,8 @@ class CONTENT_EXPORT CacheStorageManager
                              storage::mojom::StorageUsageInfoPtr>>
           usage_tuples);
 
-  void DeleteStorageKeyDataGotAllBucketInfo(
-      const blink::StorageKey storage_key,
+  void DeleteStorageKeysDataGotAllBucketInfo(
+      const std::set<blink::StorageKey>& storage_keys,
       storage::mojom::CacheStorageOwner owner,
       base::OnceCallback<void(std::vector<blink::mojom::QuotaStatusCode>)>
           callback,
