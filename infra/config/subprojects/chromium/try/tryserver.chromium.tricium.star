@@ -60,16 +60,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "ios-clang-tidy-rel",
-    executable = "recipe:tricium_clang_tidy_wrapper",
-    builderless = False,
-    cores = None,
-    os = os.MAC_DEFAULT,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
-    xcode = xcode.x13main,
-)
-
-try_.builder(
     name = "linux-chromeos-clang-tidy-rel",
     executable = "recipe:tricium_clang_tidy_wrapper",
     os = os.LINUX_DEFAULT,

@@ -1387,7 +1387,6 @@
     'tryserver.chromium.tricium': {
       'android-clang-tidy-rel': 'android_release_trybot_reclient_cxx17_no_werror',
       'fuchsia-clang-tidy-rel': 'release_trybot_fuchsia_reclient_cxx17_no_werror',
-      'ios-clang-tidy-rel': 'ios_device_release_compile_only_cxx17_no_werror',
       'linux-chromeos-clang-tidy-rel': 'chromeos_with_codecs_release_trybot_reclient_cxx17_no_werror',
       'linux-clang-tidy-rel': 'release_trybot_reclient_cxx17_no_werror',
       'linux-lacros-clang-tidy-rel': 'lacros_on_linux_release_trybot_reclient_cxx17_no_werror',
@@ -2855,10 +2854,6 @@
       'ios_device_release_compile_only',
     ],
 
-    'ios_device_release_compile_only_cxx17_no_werror': [
-      'ios_device_release_compile_only_reclient', 'force_cxx17', 'no_werror',
-    ],
-
     'ios_device_release_compile_only_reclient': [
         'compile_only', 'ios', 'ios_device', 'ios_cpu_arm64', 'ios_google_cert', 'ios_disable_code_signing', 'release_bot_reclient',
     ],
@@ -4256,12 +4251,6 @@
     'ios_device_release_compile_only': {
       'mixins': [
         'compile_only', 'ios', 'ios_device', 'ios_cpu_arm64', 'ios_google_cert', 'ios_disable_code_signing', 'release_bot',
-      ],
-    },
-
-    'ios_device_release_compile_only_reclient': {
-      'mixins': [
-        'compile_only', 'ios', 'ios_device', 'ios_cpu_arm64', 'ios_google_cert', 'ios_disable_code_signing', 'release_bot_reclient',
       ],
     },
 

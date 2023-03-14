@@ -27,22 +27,6 @@
       "use_remoteexec": true
     }
   },
-  "ios-clang-tidy-rel": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "ios_code_signing_identity_description": "Apple Development",
-      "ios_enable_code_signing": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 0,
-      "target_cpu": "arm64",
-      "target_environment": "device",
-      "target_os": "ios",
-      "treat_warnings_as_errors": false,
-      "use_cxx17": true,
-      "use_remoteexec": true
-    }
-  },
   "linux-chromeos-clang-tidy-rel": {
     "gn_args": {
       "dcheck_always_on": true,
