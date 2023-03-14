@@ -8,21 +8,28 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
+#include "third_party/blink/renderer/core/css/parser/css_nesting_type.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
-class StyleSheetContents;
 class Element;
+class StyleRule;
+class StyleSheetContents;
 
 class CORE_EXPORT StyleScope final : public GarbageCollected<StyleScope> {
  public:
   // Construct a StyleScope with explicit roots specified by elements matching
-  // the `from` selector list. The (optional) `to` parameter selects the the
-  // limit elements, i.e. the extent of the scope.
-  StyleScope(CSSSelectorList* from, CSSSelectorList* to);
+  // the `from` selector list (within the StyleRule). The (optional) `to`
+  // parameter selects the the limit elements, i.e. the extent of the scope.
+  //
+  // Note that the `from` selector list is represented here as a "dummy"
+  // StyleRule instead of a CSSSelectorList, because scopes need to behave
+  // as style rules to integrate with CSS Nesting.
+  // https://drafts.csswg.org/css-nesting-1/#nesting-at-scope
+  StyleScope(StyleRule* from, CSSSelectorList* to);
   // Construct a StyleScope with implicit roots at the parent nodes of the
   // stylesheet's owner nodes.
   explicit StyleScope(StyleSheetContents* contents);
@@ -56,7 +63,7 @@ class CORE_EXPORT StyleScope final : public GarbageCollected<StyleScope> {
   // If `contents_` is not nullptr, then this is a prelude-less @scope rule
   // which is implicitly scoped to the owner node's parent.
   Member<StyleSheetContents> contents_;
-  Member<CSSSelectorList> from_;  // May be nullptr.
+  Member<StyleRule> from_;        // May be nullptr.
   Member<CSSSelectorList> to_;    // May be nullptr.
   Member<const StyleScope> parent_;
   mutable absl::optional<unsigned> specificity_;

@@ -136,11 +136,12 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeSelector(
 absl::optional<base::span<CSSSelector>> CSSSelectorParser::ParseScopeBoundary(
     CSSParserTokenRange range,
     const CSSParserContext* context,
+    CSSNestingType nesting_type,
+    const StyleRule* parent_rule_for_nesting,
     StyleSheetContents* style_sheet,
     HeapVector<CSSSelector>& arena) {
-  CSSSelectorParser parser(context, CSSNestingType::kNone,
-                           /*parent_rule_for_nesting=*/nullptr, style_sheet,
-                           arena);
+  CSSSelectorParser parser(context, nesting_type, parent_rule_for_nesting,
+                           style_sheet, arena);
   DisallowPseudoElementsScope disallow_pseudo_elements(&parser);
 
   range.ConsumeWhitespace();

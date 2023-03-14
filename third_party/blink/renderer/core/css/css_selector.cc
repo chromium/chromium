@@ -62,6 +62,8 @@ unsigned MaximumSpecificity(const CSSSelectorList* list) {
   return list->MaximumSpecificity();
 }
 
+}  // namespace
+
 unsigned MaximumSpecificity(const CSSSelector* first_selector) {
   unsigned specificity = 0;
   for (const CSSSelector* s = first_selector; s;
@@ -70,8 +72,6 @@ unsigned MaximumSpecificity(const CSSSelector* first_selector) {
   }
   return specificity;
 }
-
-}  // namespace
 
 struct SameSizeAsCSSSelector {
   unsigned bitfields;

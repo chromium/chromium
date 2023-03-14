@@ -95,6 +95,8 @@ class CORE_EXPORT CSSSelectorParser {
   static absl::optional<base::span<CSSSelector>> ParseScopeBoundary(
       CSSParserTokenRange,
       const CSSParserContext*,
+      CSSNestingType,
+      const StyleRule* parent_rule_for_nesting,
       StyleSheetContents*,
       HeapVector<CSSSelector>&);
 

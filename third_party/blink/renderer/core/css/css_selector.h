@@ -845,6 +845,11 @@ inline void swap(CSSSelector& a, CSSSelector& b) {
 CSSSelector::RelationType ConvertRelationToRelative(
     CSSSelector::RelationType relation);
 
+// Returns the maximum specificity within a list of selectors. This is typically
+// used to calculate the specificity of selectors that have an inner selector
+// list, e.g. :is(), :where() etc.
+unsigned MaximumSpecificity(const CSSSelector* first_selector);
+
 }  // namespace blink
 
 namespace WTF {

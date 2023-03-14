@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<title>@scope - nesting (&)</title>
+<link rel="help" href="https://drafts.csswg.org/css-cascade-6/#scope-atrule">
+<link rel="help" href="https://drafts.csswg.org/css-nesting-1/#nest-selector">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<main id=main></main>
+
+<template id=test_nest_scope_end>
+  <div>
+    <style>
+      @scope (.a) to (& > &) {
+        * { z-index:1; }
+      }
+    </style>
+    <div class=a> <!-- This scope is limited by the element below. -->
+      <div class=a> <!-- This scope is limited by its own root. -->
+        <div id=below></div>
+      </div>
+    </div>
+  </div>
+  <div id=outside></div>
+</template>
+<script>
+test((t) => {
+  t.add_cleanup(() => main.replaceChildren());
+  main.append(test_nest_scope_end.content.cloneNode(true));
+
+  assert_equals(getComputedStyle(below).zIndex, 'auto');
+  assert_equals(getComputedStyle(outside).zIndex, 'auto');
+}, 'Nesting-selector in <scope-end>');
+</script>
