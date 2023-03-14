@@ -44,7 +44,7 @@ export interface EmojiPicker {
 
 export class EmojiPicker extends PolymerElement {
   static get is() {
-    return 'emoji-picker';
+    return 'emoji-picker' as const;
   }
 
   static get template() {
@@ -294,7 +294,7 @@ export class EmojiPicker extends PolymerElement {
     // already added and shown.
     const remainingData = dataUrls.slice(1);
 
-    let prevFetchPromise = Promise.resolve();
+    let prevFetchPromise: Promise<EmojiGroupData> = Promise.resolve([]);
     let prevRenderPromise = Promise.resolve();
 
     // Create a chain of promises for fetching and rendering data of
@@ -303,26 +303,24 @@ export class EmojiPicker extends PolymerElement {
         (dataUrl, index) => {
           // Fetch the url only after the previous url is fetched.
           prevFetchPromise =
-              prevFetchPromise.then(
-                  () => this.fetchOrderingData(dataUrl.url)) as Promise<void>;
+              prevFetchPromise.then(() => this.fetchOrderingData(dataUrl.url));
 
           // Update category data after the data is fetched and the previous
           // category data update/rendering completed successfully.
-          prevRenderPromise =
-              Promise
-                  .all(
-                      [prevRenderPromise, prevFetchPromise],
-                      )
-                  // Hacky cast below, but should be safe
-                  .then((values) => values[1] as unknown as EmojiGroupData)
-                  .then(
-                      (data) => this.updateCategoryData(
-                          data,
-                          dataUrl.category,
-                          dataUrl.categoryLastPartition,
-                          index === remainingData.length - 1,
-                          ),
-                  );
+          prevRenderPromise = Promise
+                                  .all(
+                                      [prevRenderPromise, prevFetchPromise],
+                                      )
+                                  // Hacky cast below, but should be safe
+                                  .then((values) => values[1])
+                                  .then(
+                                      (data) => this.updateCategoryData(
+                                          data,
+                                          dataUrl.category,
+                                          dataUrl.categoryLastPartition,
+                                          index === remainingData.length - 1,
+                                          ),
+                                  );
         },
     );
 
@@ -332,7 +330,7 @@ export class EmojiPicker extends PolymerElement {
   }
 
   private fetchAndProcessGifData(
-      prevFetchPromise = Promise.resolve(),
+      prevFetchPromise: Promise<EmojiGroupData> = Promise.resolve([]),
       prevRenderPromise = Promise.resolve()) {
     this.validateRecentlyUsedGifs();
 
@@ -1452,5 +1450,12 @@ export class EmojiPicker extends PolymerElement {
     return new Date(stored);
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [EmojiPicker.is]: EmojiPicker;
+  }
+}
+
 
 customElements.define(EmojiPicker.is, EmojiPicker);

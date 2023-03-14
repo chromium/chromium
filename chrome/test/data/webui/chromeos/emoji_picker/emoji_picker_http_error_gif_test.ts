@@ -52,8 +52,7 @@ suite('emoji-picker-offline-gif', () => {
       },
     });
 
-    emojiPicker =
-        (document.createElement('emoji-picker')) as unknown as EmojiPicker;
+    emojiPicker = document.createElement('emoji-picker');
 
     findInEmojiPicker = (...path) => deepQuerySelector(emojiPicker, path);
 
@@ -66,7 +65,7 @@ suite('emoji-picker-offline-gif', () => {
         resolve();
       });
       document.body.appendChild(emojiPicker);
-      emojiSearch = findInEmojiPicker('emoji-search') as unknown as EmojiSearch;
+      emojiSearch = findInEmojiPicker('emoji-search') as EmojiSearch;
     });
   });
 

@@ -59,8 +59,7 @@ export function categoryTestSuite(category: string) {
         },
       });
 
-      emojiPicker =
-          (document.createElement('emoji-picker')) as unknown as EmojiPicker;
+      emojiPicker = document.createElement('emoji-picker');
 
       findInEmojiPicker = (...path) => deepQuerySelector(emojiPicker, path);
 

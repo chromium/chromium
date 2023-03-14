@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://emoji-picker/emoji_search.js';
+
 import {EmojiPicker} from 'chrome://emoji-picker/emoji_picker.js';
 import {EmojiPickerApiProxyImpl} from 'chrome://emoji-picker/emoji_picker_api_proxy.js';
 import {EmojiSearch} from 'chrome://emoji-picker/emoji_search.js';
@@ -43,8 +45,7 @@ suite('emoji-picker-extension', () => {
       },
     });
 
-    emojiPicker =
-        (document.createElement('emoji-picker')) as unknown as EmojiPicker;
+    emojiPicker = document.createElement('emoji-picker');
 
     findInEmojiPicker = (...path) => deepQuerySelector(emojiPicker, path);
 
@@ -159,9 +160,8 @@ suite('emoji-picker-extension', () => {
         await waitForCondition(
             () => emojiGroups!.scrollTop === targetScroll,
             'Wait for scrolling to complete');
-        assertFalse(
-            (findInEmojiPicker('emoji-search') as unknown as EmojiSearch)
-                .searchNotEmpty());
+        assertFalse((findInEmojiPicker('emoji-search') as EmojiSearch)
+                        .searchNotEmpty());
       });
 
   test(

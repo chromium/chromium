@@ -412,4 +412,11 @@ declare global {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    [EmojiSearch.is]: EmojiSearch;
+  }
+}
+
+
 customElements.define(EmojiSearch.is, EmojiSearch);

@@ -42,8 +42,7 @@ suite('<emoji-picker>', () => {
       },
     });
 
-    emojiPicker =
-        document.createElement('emoji-picker') as unknown as EmojiPicker;
+    emojiPicker = document.createElement('emoji-picker');
 
     findInEmojiPicker = (...path) => deepQuerySelector(emojiPicker, path);
 
@@ -251,12 +250,11 @@ suite('<emoji-picker>', () => {
     };
 
     setup(async () => {
-      firstEmojiButton =
-          (await waitForCondition(
-              () => findInEmojiPicker(
-                  '[data-group="0"] > emoji-group',
-                  '.emoji-button-container:nth-child(3)'),
-              'ensure all emoji are rendered')) as unknown as EmojiButton;
+      firstEmojiButton = (await waitForCondition(
+                             () => findInEmojiPicker(
+                                 '[data-group="0"] > emoji-group',
+                                 '.emoji-button-container:nth-child(3)'),
+                             'ensure all emoji are rendered')) as EmojiButton;
 
       // right click and wait for variants to appear.
       const variantsPromise = waitForEvent(emojiPicker, EMOJI_VARIANTS_SHOWN);
@@ -271,9 +269,7 @@ suite('<emoji-picker>', () => {
 
     test('right clicking emoji again should close popup', async () => {
       // right click again and variants should disappear.
-      dispatchMouseEvent(
-          firstEmojiButton.querySelector('button') as unknown as EmojiButton,
-          2);
+      dispatchMouseEvent(firstEmojiButton.querySelector('button')!, 2);
       await waitForCondition(
           () => !findEmojiVariants(firstEmojiButton),
           'emoji-variants failed to disappear.');
@@ -370,13 +366,11 @@ suite('<emoji-picker>', () => {
       // This test just ensures that no errors are thrown.
       const enterEvent = new KeyboardEvent(
           'keydown', {cancelable: true, key: 'Enter', keyCode: 13});
-      const search =
-          findInEmojiPicker('emoji-search') as unknown as EmojiSearch;
+      const search = findInEmojiPicker('emoji-search') as EmojiSearch;
       search.onSearchKeyDown(enterEvent);
     });
     test('finds results in the second group', async () => {
-      const search =
-          findInEmojiPicker('emoji-search') as unknown as EmojiSearch;
+      const search = findInEmojiPicker('emoji-search') as EmojiSearch;
       // This particular emoji only appears in the third tab of the test
       // ordering
       search.setSearchQuery('face with tears of joy');
@@ -386,14 +380,13 @@ suite('<emoji-picker>', () => {
           'wait for search results to exist');
     });
     test('finds no results for garbage search', async () => {
-      const search =
-          findInEmojiPicker('emoji-search') as unknown as EmojiSearch;
-      search.setSearchQuery('THIS string should not match anything');
+      const search = findInEmojiPicker('emoji-search') as EmojiSearch;
+      search!.setSearchQuery('THIS string should not match anything');
 
       await waitForCondition(
           () => findInEmojiPicker('emoji-search', '.no-result'),
           'wait for no results');
-      assertEquals(search.getNumSearchResults(), 0);
+      assertEquals(search!.getNumSearchResults(), 0);
     });
   });
 });
