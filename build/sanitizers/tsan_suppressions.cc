@@ -105,14 +105,6 @@ char kTSanDefaultSuppressions[] =
     // https://crbug.com/977085
     "race:vp3_update_thread_context\n"
 
-    // Benign data race in libjpeg-turbo, won't fix
-    // (https://github.com/libjpeg-turbo/libjpeg-turbo/issues/87).
-    // https://crbug.com/1056011
-    "race:third_party/libjpeg_turbo/simd/x86_64/jsimd.c\n"
-
-    // https://crbug.com/1158622
-    "race:absl::synchronization_internal::Waiter::Post\n"
-
     // Harmless data races, see WTF::StringImpl::Release code comments.
     "race:scoped_refptr<WTF::StringImpl>::AddRef\n"
     "race:scoped_refptr<WTF::StringImpl>::Release\n"
