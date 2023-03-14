@@ -136,6 +136,7 @@ void PopupRowView::SetSelectedCell(absl::optional<CellType> cell) {
   if (PopupCellView* new_view = view_from_type(selected_cell_)) {
     new_view->SetSelected(true);
     GetA11ySelectionDelegate().NotifyAXSelection(*new_view);
+    NotifyAccessibilityEvent(ax::mojom::Event::kSelectedChildrenChanged, true);
   } else {
     // Set the selected cell to none in case an invalid choice was made (e.g.
     // selecting a control cell when none exists).

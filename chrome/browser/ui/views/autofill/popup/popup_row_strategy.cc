@@ -564,7 +564,8 @@ DeleteButtonAccessibilityDelegate::DeleteButtonAccessibilityDelegate(
 void DeleteButtonAccessibilityDelegate::GetAccessibleNodeData(
     bool is_selected,
     ui::AXNodeData* node_data) const {
-  node_data->role = ax::mojom::Role::kButton;
+  node_data->role = ax::mojom::Role::kMenuItem;
+  node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, is_selected);
   node_data->SetNameChecked(voice_over_string_);
 }
 

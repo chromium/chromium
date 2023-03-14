@@ -172,7 +172,6 @@ void PopupViewViews::SetSelectedCell(absl::optional<CellIndex> cell_index) {
   } else {
     row_with_selected_cell_ = absl::nullopt;
   }
-  NotifyAccessibilityEvent(ax::mojom::Event::kSelectedChildrenChanged, true);
 }
 
 bool PopupViewViews::HandleKeyPressEvent(

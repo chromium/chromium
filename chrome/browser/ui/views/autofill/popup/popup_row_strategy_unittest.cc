@@ -231,15 +231,30 @@ TEST_F(PopupRowStrategyTest, AutocompleteDeleteButtonSetsAccessibility) {
 
   std::unique_ptr<PopupCellView> cell = strategy->CreateControl();
   ASSERT_THAT(cell, NotNull());
+  ASSERT_FALSE(cell->GetSelected());
+  {
+    ui::AXNodeData node_data;
+    cell->GetAccessibleNodeData(&node_data);
 
-  ui::AXNodeData node_data;
-  cell->GetAccessibleNodeData(&node_data);
+    EXPECT_EQ(node_data.role, ax::mojom::Role::kMenuItem);
+    EXPECT_FALSE(
+        node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+    EXPECT_EQ(
+        l10n_util::GetStringFUTF16(
+            IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_A11Y_HINT,
+            u"John Miller"),
+        node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+  }
 
-  EXPECT_EQ(node_data.role, ax::mojom::Role::kButton);
-  EXPECT_EQ(l10n_util::GetStringFUTF16(
-                IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_A11Y_HINT,
-                u"John Miller"),
-            node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+  cell->SetSelected(true);
+  ASSERT_TRUE(cell->GetSelected());
+  {
+    ui::AXNodeData node_data;
+    cell->GetAccessibleNodeData(&node_data);
+
+    EXPECT_TRUE(
+        node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+  }
 }
 
 TEST_F(PopupRowStrategyTest, AutocompleteDeleteButtonHasTooltip) {
