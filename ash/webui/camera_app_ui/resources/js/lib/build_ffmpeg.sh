@@ -22,7 +22,6 @@ do_copy_ffmpeg() {
 
   # checkout specific commit to keep code base consistent to the patch
   # TODO(b/199980849): Fix pthread issue to be able to use latest FFMpeg update.
-  # TODO(b/199980849): Remove video_size patch once the PR is sent upstream.
   local build_commit=90810bb
   (
     cd $ffmpeg_dir;
@@ -86,7 +85,6 @@ do_configure() {
     --enable-swscale
     --enable-protocol=file
     --enable-protocol=pipe
-    --enable-demuxer=h264
     --enable-demuxer=matroska
     --enable-demuxer=rawvideo
     --enable-muxer=gif
