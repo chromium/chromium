@@ -536,7 +536,7 @@ public class WebsitePermissionsFetcherTest {
                 new ContentSettingException(ContentSettingsType.AUTOMATIC_DOWNLOADS, googleOrigin,
                         ContentSettingValues.DEFAULT, preferenceSource, /*isEmbargoed=*/false));
         websitePreferenceBridge.addContentSettingException(new ContentSettingException(
-                ContentSettingsType.INSECURE_PRIVATE_NETWORK, googleOrigin,
+                ContentSettingsType.INSECURE_LOCAL_NETWORK, googleOrigin,
                 ContentSettingValues.DEFAULT, preferenceSource, /*isEmbargoed=*/false));
         websitePreferenceBridge.addContentSettingException(
                 new ContentSettingException(ContentSettingsType.JAVASCRIPT_JIT, googleOrigin,

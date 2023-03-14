@@ -55,7 +55,7 @@ const char kManagedDefaultFileSystemWriteGuardSetting[] =
     "profile.managed_default_content_settings.file_system_write_guard";
 const char kManagedDefaultSerialGuardSetting[] =
     "profile.managed_default_content_settings.serial_guard";
-const char kManagedDefaultInsecurePrivateNetworkSetting[] =
+const char kManagedDefaultInsecureLocalNetworkSetting[] =
     "profile.managed_default_content_settings.insecure_private_network";
 const char kManagedDefaultJavaScriptJitSetting[] =
     "profile.managed_default_content_settings.javascript_jit";
@@ -126,7 +126,7 @@ const char kManagedLegacyCookieAccessAllowedForDomains[] =
 const char kManagedSerialAskForUrls[] = "profile.managed_serial_ask_for_urls";
 const char kManagedSerialBlockedForUrls[] =
     "profile.managed_serial_blocked_for_urls";
-const char kManagedInsecurePrivateNetworkAllowedForUrls[] =
+const char kManagedInsecureLocalNetworkAllowedForUrls[] =
     "profile.managed_insecure_private_network_allowed_for_urls";
 const char kManagedJavaScriptJitAllowedForSites[] =
     "profile.managed_javascript_jit_allowed_for_sites";

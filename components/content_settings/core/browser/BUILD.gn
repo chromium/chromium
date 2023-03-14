@@ -36,8 +36,8 @@ static_library("browser") {
     "cookie_settings.h",
     "host_content_settings_map.cc",
     "host_content_settings_map.h",
-    "private_network_settings.cc",
-    "private_network_settings.h",
+    "local_network_settings.cc",
+    "local_network_settings.h",
     "user_modifiable_provider.h",
     "website_settings_info.cc",
     "website_settings_info.h",
@@ -65,8 +65,8 @@ static_library("browser") {
     sources += [
       "cookie_settings_policy_handler.cc",
       "cookie_settings_policy_handler.h",
-      "insecure_private_network_policy_handler.cc",
-      "insecure_private_network_policy_handler.h",
+      "insecure_local_network_policy_handler.cc",
+      "insecure_local_network_policy_handler.h",
     ]
   }
 

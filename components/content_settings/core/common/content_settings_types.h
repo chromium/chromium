@@ -209,10 +209,10 @@ enum class ContentSettingsType : int32_t {
   // screens. See also: https://w3c.github.io/window-placement
   WINDOW_MANAGEMENT,
 
-  // Stores whether to allow insecure websites to make private network requests.
-  // See also: https://wicg.github.io/cors-rfc1918
+  // Stores whether to allow insecure websites to make local network requests.
+  // See also: https://wicg.github.io/local-network-access
   // Set through enterprise policies only.
-  INSECURE_PRIVATE_NETWORK,
+  INSECURE_LOCAL_NETWORK,
 
   // Content setting which stores whether or not a site can access low-level
   // locally installed font data using the Local Fonts Access API.

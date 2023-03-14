@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/content_settings/core/browser/insecure_private_network_policy_handler.h"
+#include "components/content_settings/core/browser/insecure_local_network_policy_handler.h"
 
 #include "base/values.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -20,22 +20,22 @@ ContentSetting ConvertBooleanToContentSetting(bool is_allowed) {
 
 }  // namespace
 
-InsecurePrivateNetworkPolicyHandler::InsecurePrivateNetworkPolicyHandler()
+InsecureLocalNetworkPolicyHandler::InsecureLocalNetworkPolicyHandler()
     : TypeCheckingPolicyHandler(
           policy::key::kInsecurePrivateNetworkRequestsAllowed,
           base::Value::Type::BOOLEAN) {}
 
-InsecurePrivateNetworkPolicyHandler::~InsecurePrivateNetworkPolicyHandler() =
+InsecureLocalNetworkPolicyHandler::~InsecureLocalNetworkPolicyHandler() =
     default;
 
-void InsecurePrivateNetworkPolicyHandler::ApplyPolicySettings(
+void InsecureLocalNetworkPolicyHandler::ApplyPolicySettings(
     const policy::PolicyMap& policies,
     PrefValueMap* prefs) {
   const base::Value* value =
       policies.GetValue(policy_name(), base::Value::Type::BOOLEAN);
   if (value) {
     prefs->SetValue(
-        prefs::kManagedDefaultInsecurePrivateNetworkSetting,
+        prefs::kManagedDefaultInsecureLocalNetworkSetting,
         base::Value(ConvertBooleanToContentSetting(value->GetBool())));
   }
 }

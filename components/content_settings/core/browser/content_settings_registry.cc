@@ -479,7 +479,7 @@ void ContentSettingsRegistry::Init() {
            ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
            ContentSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
 
-  Register(ContentSettingsType::INSECURE_PRIVATE_NETWORK,
+  Register(ContentSettingsType::INSECURE_LOCAL_NETWORK,
            "insecure-private-network", CONTENT_SETTING_BLOCK,
            WebsiteSettingsInfo::UNSYNCABLE, /*allowlisted_schemes=*/{},
            /*valid_settings=*/{CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK},
