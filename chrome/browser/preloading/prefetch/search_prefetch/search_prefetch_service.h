@@ -172,6 +172,13 @@ class SearchPrefetchService : public KeyedService,
   SearchPrefetchURLLoader::RequestHandler TakePrerenderFromMemoryCache(
       const network::ResourceRequest& tentative_resource_request);
 
+  // Creates a response reader if this instance has prefetched a response for
+  // the given `tentative_resource_request`, and the caller can read the
+  // response with the returned value. Returns an empty callback if the response
+  // is not found.
+  SearchPrefetchURLLoader::RequestHandler MaybeCreateResponseReader(
+      const network::ResourceRequest& tentative_resource_request);
+
   // Reports the status of a prefetch for a given search suggestion URL.
   absl::optional<SearchPrefetchStatus> GetSearchPrefetchStatusForTesting(
       const GURL& canonical_search_url);

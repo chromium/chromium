@@ -1116,7 +1116,7 @@ class SearchPreloadUnifiedHoldbackBrowserTest
 
 // Tests that we log correct metrics for Prerender holdback in case of Search
 // Prerender.
-// TODO(https://crbug.com/1350862): This test is flaky on all platforms.
+// TODO(https://crbug.com/1350776): This test is flaky on all platforms.
 IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedHoldbackBrowserTest,
                        DISABLED_PrerenderUnifiedHoldbackTest) {
   base::HistogramTester histogram_tester;
@@ -1581,6 +1581,196 @@ IN_PROC_BROWSER_TEST_F(NoCancelSearchPreloadUnifiedBrowserTest,
         << content::test::ActualVsExpectedUkmEntriesToString(ukm_entries,
                                                              expected_entries);
   }
+}
+
+class SearchPreloadUnifiedFallbackBrowserTest
+    : public SearchPreloadUnifiedBrowserTest {
+ public:
+  SearchPreloadUnifiedFallbackBrowserTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {
+            {features::kSupportSearchSuggestionForPrerender2,
+             {{"implementation_type", "use_prefetch"},
+              {"shareable_cache", "enabled"}}},
+            {kSearchPrefetchServicePrefetching,
+             {{"max_attempts_per_caching_duration", "3"},
+              {"device_memory_threshold_MB", "0"}}},
+        },
+        /*disabled_features=*/{kSearchPrefetchBlockBeforeHeaders});
+  }
+  ~SearchPreloadUnifiedFallbackBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests prerender is cancelled after SearchPrefetchService cancels prefetch
+// requests.
+IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedFallbackBrowserTest,
+                       FetchPrerenderFetch) {
+  base::HistogramTester histogram_tester;
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
+  const GURL kNavigatedUrl = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(GetActiveWebContents());
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), kInitialUrl));
+  SetUpContext();
+  content::test::PrerenderHostRegistryObserver registry_observer(
+      *GetActiveWebContents());
+
+  // 1. Type the first query.
+  std::string search_query_1 = "pre";
+  std::string prerender_query = "prerender";
+  GURL expected_prerender_url =
+      GetSearchUrl(prerender_query, UrlType::kPrerender);
+  ChangeAutocompleteResult(search_query_1, prerender_query,
+                           PrerenderHint::kEnabled, PrefetchHint::kEnabled);
+  WaitUntilStatusChangesTo(
+      GetCanonicalSearchURL(expected_prerender_url),
+      {SearchPrefetchStatus::kCanBeServed, SearchPrefetchStatus::kComplete});
+
+  // 2. Prefetch and prerender should be triggered, and chrome is waiting for
+  // the body.
+  registry_observer.WaitForTrigger(expected_prerender_url);
+  prerender_helper().WaitForPrerenderLoadCompletion(*GetActiveWebContents(),
+                                                    expected_prerender_url);
+
+  EXPECT_TRUE(prerender_manager()->HasSearchResultPagePrerendered());
+  absl::optional<SearchPrefetchStatus> prefetch_status =
+      search_prefetch_service()->GetSearchPrefetchStatusForTesting(
+          GetCanonicalSearchURL(expected_prerender_url));
+  EXPECT_TRUE(prefetch_status.has_value());
+  EXPECT_NE(prefetch_status.value(), SearchPrefetchStatus::kPrerendered);
+
+  // 3. Cancel the prerenders
+  int host_id = prerender_helper().GetHostForUrl(expected_prerender_url);
+  content::test::PrerenderHostObserver prerender_observer(
+      *GetActiveWebContents(), host_id);
+  prerender_helper().CancelPrerenderedPage(host_id);
+  prerender_observer.WaitForDestroyed();
+
+  // 4. Prefetch should still exist.
+  prefetch_status =
+      search_prefetch_service()->GetSearchPrefetchStatusForTesting(
+          GetCanonicalSearchURL(expected_prerender_url));
+  EXPECT_TRUE(prefetch_status.has_value());
+
+  // TODO: Use another metric to trigger whether prerender takes a prefetched
+  // response.
+
+  // Navigate away to flush the metrics.
+  ASSERT_TRUE(
+      content::NavigateToURL(GetActiveWebContents(), expected_prerender_url));
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.SearchPrefetch.PrefetchFinalStatus.SuggestionPrefetch",
+      SearchPrefetchStatus::kPrefetchServedForRealNavigation, 1);
+}
+
+// Tests prerender is cancelled after SearchPrefetchService cancels prefetch
+// requests.
+IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedFallbackBrowserTest,
+                       FetchPrerenderActivated) {
+  base::HistogramTester histogram_tester;
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
+  const GURL kNavigatedUrl = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(GetActiveWebContents());
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), kInitialUrl));
+  SetUpContext();
+  content::test::PrerenderHostRegistryObserver registry_observer(
+      *GetActiveWebContents());
+
+  // 1. Type the first query.
+  std::string search_query_1 = "pre";
+  std::string prerender_query = "prerender";
+  GURL expected_prerender_url =
+      GetSearchUrl(prerender_query, UrlType::kPrerender);
+  ChangeAutocompleteResult(search_query_1, prerender_query,
+                           PrerenderHint::kEnabled, PrefetchHint::kEnabled);
+  WaitUntilStatusChangesTo(
+      GetCanonicalSearchURL(expected_prerender_url),
+      {SearchPrefetchStatus::kCanBeServed, SearchPrefetchStatus::kComplete});
+
+  // 2. Prefetch and prerender should be triggered, and chrome is waiting for
+  // the body.
+  registry_observer.WaitForTrigger(expected_prerender_url);
+  prerender_helper().WaitForPrerenderLoadCompletion(*GetActiveWebContents(),
+                                                    expected_prerender_url);
+
+  EXPECT_TRUE(prerender_manager()->HasSearchResultPagePrerendered());
+  absl::optional<SearchPrefetchStatus> prefetch_status =
+      search_prefetch_service()->GetSearchPrefetchStatusForTesting(
+          GetCanonicalSearchURL(expected_prerender_url));
+  EXPECT_TRUE(prefetch_status.has_value());
+  EXPECT_NE(prefetch_status.value(), SearchPrefetchStatus::kPrerendered);
+
+  // TODO: Use another metric to trigger whether prerender takes a prefetched
+  // response.
+  content::test::PrerenderHostObserver prerender_observer(
+      *GetActiveWebContents(), expected_prerender_url);
+  NavigateToPrerenderedResult(expected_prerender_url);
+  prerender_observer.WaitForActivation();
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.SearchPrefetch.PrefetchFinalStatus.SuggestionPrefetch",
+      SearchPrefetchStatus::kPrerenderActivated, 1);
+}
+
+// Tests that the SearchSuggestionService can trigger prerendering if it
+// receives prerender hints after the previous prefetch request succeeds.
+IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedFallbackBrowserTest,
+                       PrerenderHintReceivedAfterCompletion) {
+  base::HistogramTester histogram_tester;
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(GetActiveWebContents());
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), kInitialUrl));
+  SetUpContext();
+
+  std::string search_query_1 = "pre";
+  std::string prerender_query = "prerender";
+  GURL expected_prefetch_url =
+      GetSearchUrl(prerender_query, UrlType::kPrefetch);
+  GURL expected_prerender_url =
+      GetSearchUrl(prerender_query, UrlType::kPrerender);
+  content::test::PrerenderHostRegistryObserver registry_observer(
+      *GetActiveWebContents());
+
+  ChangeAutocompleteResult(search_query_1, prerender_query,
+                           PrerenderHint::kDisabled, PrefetchHint::kEnabled);
+
+  // Wait until prefetch request succeeds.
+  absl::optional<SearchPrefetchStatus> prefetch_status =
+      search_prefetch_service()->GetSearchPrefetchStatusForTesting(
+          GetCanonicalSearchURL(expected_prefetch_url));
+  EXPECT_TRUE(prefetch_status.has_value());
+  WaitUntilStatusChangesTo(GetCanonicalSearchURL(expected_prefetch_url),
+                           {SearchPrefetchStatus::kComplete});
+  std::string search_query_2 = "prer";
+  ChangeAutocompleteResult(search_query_2, prerender_query,
+                           PrerenderHint::kEnabled, PrefetchHint::kEnabled);
+
+  // The suggestion service should hint `expected_prefetch_url`, and
+  // prerendering for this url should start.
+  registry_observer.WaitForTrigger(expected_prerender_url);
+  prerender_helper().WaitForPrerenderLoadCompletion(*GetActiveWebContents(),
+                                                    expected_prerender_url);
+
+  // No prerender requests went through network, so there should be only one
+  // request and it is with the prefetch flag attached.
+  EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_prefetch_url));
+  EXPECT_EQ(0, prerender_helper().GetRequestCount(expected_prerender_url));
+
+  // Activate.
+  content::test::PrerenderHostObserver prerender_observer(
+      *GetActiveWebContents(), expected_prerender_url);
+  content::NavigationHandleObserver activation_observer(GetActiveWebContents(),
+                                                        expected_prerender_url);
+  NavigateToPrerenderedResult(expected_prerender_url);
+  prerender_observer.WaitForActivation();
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.SearchPrefetch.PrefetchFinalStatus.SuggestionPrefetch",
+      SearchPrefetchStatus::kPrerenderActivated, 1);
+
+  // No prerender requests went through network.
+  EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_prefetch_url));
+  EXPECT_EQ(0, prerender_helper().GetRequestCount(expected_prerender_url));
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)

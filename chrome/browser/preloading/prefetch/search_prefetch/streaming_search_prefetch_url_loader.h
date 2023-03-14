@@ -35,6 +35,75 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
                                          public SearchPrefetchURLLoader,
                                          public mojo::DataPipeDrainer::Client {
  public:
+  // Used to reading the prefetched response from
+  // `StreamingSearchPrefetchURLLoader`'s data cache.
+  class ResponseReader : public network::mojom::URLLoader {
+   public:
+    ResponseReader(
+        mojo::PendingReceiver<network::mojom::URLLoader> forward_receiver,
+        mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client,
+        absl::optional<network::URLLoaderCompletionStatus>,
+        int complete_size_bytes_to_transfer);
+    ~ResponseReader() override;
+
+    // Not copyable nor movable.
+    ResponseReader(const ResponseReader&) = delete;
+    ResponseReader& operator=(const ResponseReader&) = delete;
+    ResponseReader(ResponseReader&&) = delete;
+    ResponseReader& operator=(ResponseReader&&) = delete;
+
+    // network::mojom::URLLoader implementation:
+    void FollowRedirect(
+        const std::vector<std::string>& removed_headers,
+        const net::HttpRequestHeaders& modified_headers,
+        const net::HttpRequestHeaders& modified_cors_exempt_headers,
+        const absl::optional<GURL>& new_url) override;
+    void SetPriority(net::RequestPriority priority,
+                     int32_t intra_priority_value) override;
+    void PauseReadingBodyFromNet() override;
+    void ResumeReadingBodyFromNet() override;
+
+    void StartReadingResponseFromData(
+        network::mojom::URLResponseHeadPtr& resource_response);
+    void PushData(int bytes_of_raw_data_to_transfer,
+                  const std::string& response_body);
+
+    void OnResponseDataComplete(int bytes_of_raw_data_to_transfer,
+                                const std::string& response_body);
+    void OnStatusCodeReady(const network::URLLoaderCompletionStatus& status);
+
+   private:
+    // Checks if all data have be pushed to its consumer and the corresponding
+    // loader has completed fetching. If so, inform the forwarding client.
+    void MaybeSendCompletionSignal();
+
+    // Records the position where to read the next body from.
+    // content-----------------------------
+    //            ^                       ^
+    //   read     |  to be read.          |
+    //            write_position_         end of response body.
+    int write_position_ = 0;
+
+    // Sets upon the corresponding URLLoader has read all data from network.
+    // Set to -1 when the URLLoader has not drained all data.
+    int complete_size_bytes_to_transfer_ = -1;
+
+    // Data pipe for pushing the received response to the client.
+    mojo::ScopedDataPipeProducerHandle producer_handle_;
+    std::unique_ptr<mojo::SimpleWatcher> handle_watcher_;
+
+    // Forwarding prefetched response to another loader.
+    mojo::Receiver<network::mojom::URLLoader> forwarding_receiver_{this};
+    mojo::Remote<network::mojom::URLLoaderClient> forwarding_client_;
+
+    // Records the completion status for the corresponding network loader.
+    absl::optional<network::URLLoaderCompletionStatus>
+        url_loader_completion_status_;
+
+    // TODO(crbug.com/1400881): We'd have a failure strategy to determine
+    // whether to fallback real navigation or to discard the reader's caller.
+  };
+
   // Creates a network service URLLoader, binds to the URL Loader, and starts
   // the request.
   StreamingSearchPrefetchURLLoader(
@@ -55,6 +124,11 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
   // Record whether the navigation url and the |prefetch_url_| match. Only
   // recorded when |navigation_prefetch_| is true.
   void RecordNavigationURLHistogram(const GURL& navigation_url);
+
+  // Returns a callback which can connect a navigation request with this
+  // instance, and the request can read `this`'s received response.
+  SearchPrefetchURLLoader::RequestHandler
+  GetCallbackForReadingViaResponseReader();
 
  private:
   // mojo::DataPipeDrainer::Client:
@@ -135,6 +209,14 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
       mojo::PendingReceiver<network::mojom::URLLoader> receiver,
       mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client);
 
+  // Similar to `SetUpForwardingClient`, but sets up mojo forwarding to
+  // the prerender navigation path. This method does not require `this` to own
+  // itself; its owner should continue owning this instance.
+  void CreateResponseReaderForPrerender(
+      const network::ResourceRequest& resource_request,
+      mojo::PendingReceiver<network::mojom::URLLoader> receiver,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client);
+
   // Forwards all queued events to |forwarding_client_|.
   void RunEventQueue();
 
@@ -186,11 +268,20 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
   mojo::Receiver<network::mojom::URLLoader> receiver_{this};
   mojo::Remote<network::mojom::URLLoaderClient> forwarding_client_;
 
+  // DataPipe for forwarding the stored response body `body_content_` to the
+  // forwarding client.
   mojo::ScopedDataPipeProducerHandle producer_handle_;
   std::unique_ptr<mojo::SimpleWatcher> handle_watcher_;
 
+  // TODO(https://crbug.com/1400881): Migrate `receiver_`, `forwarding_client_`,
+  // `producer_handle_`, `handle_watcher_` and `write_position_` into
+  // ResponseReader.
+
   // Set when this manages it's own lifetime.
   std::unique_ptr<SearchPrefetchURLLoader> self_pointer_;
+
+  // TODO(https://crbug.com/1400881): Make it a generic reader.
+  std::unique_ptr<ResponseReader> response_reader_for_prerender_;
 
   // Set to true when we encounter an error in between when the prefetch request
   // owns this loader and the loader has started. When the forwarding client is

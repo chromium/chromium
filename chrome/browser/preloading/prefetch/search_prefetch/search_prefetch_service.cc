@@ -20,6 +20,7 @@
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/cache_alias_search_prefetch_url_loader.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
+#include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_request.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_url_loader.h"
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
@@ -456,6 +457,7 @@ void SearchPrefetchService::OnPrerenderedRequestUsed(
 SearchPrefetchURLLoader::RequestHandler
 SearchPrefetchService::TakePrerenderFromMemoryCache(
     const network::ResourceRequest& tentative_resource_request) {
+  DCHECK(!prerender_utils::SearchPreloadShareableCacheIsEnabled());
   SearchPrefetchServingReasonRecorder recorder{/*for_prerender=*/true};
   auto iter =
       RetrieveSearchTermsInMemoryCache(tentative_resource_request, recorder);
@@ -481,6 +483,21 @@ SearchPrefetchService::TakePrerenderFromMemoryCache(
   // Do not remove the corresponding entry from `prefetches_` for now, to avoid
   // prefetching the same response over again. The entry will be removed on
   // prerendering activation or other cases.
+}
+
+SearchPrefetchURLLoader::RequestHandler
+SearchPrefetchService::MaybeCreateResponseReader(
+    const network::ResourceRequest& tentative_resource_request) {
+  DCHECK(prerender_utils::SearchPreloadShareableCacheIsEnabled());
+  SearchPrefetchServingReasonRecorder recorder{/*for_prerender=*/true};
+  auto iter =
+      RetrieveSearchTermsInMemoryCache(tentative_resource_request, recorder);
+  if (iter == prefetches_.end()) {
+    return {};
+  }
+  DCHECK_NE(iter->second->current_status(),
+            SearchPrefetchStatus::kRequestFailed);
+  return iter->second->CreateResponseReader();
 }
 
 absl::optional<SearchPrefetchStatus>
@@ -518,6 +535,10 @@ SearchPrefetchService::TakePrefetchResponseFromMemoryCache(
   bool is_servable =
       status == SearchPrefetchStatus::kComplete ||
       status == SearchPrefetchStatus::kCanBeServedAndUserClicked ||
+      (prerender_utils::IsSearchSuggestionPrerenderEnabled() &&
+       prerender_utils::SearchPreloadShareableCacheIsEnabled() &&
+       (status == SearchPrefetchStatus::kPrerendered ||
+        status == SearchPrefetchStatus::kPrerenderedAndClicked)) ||
       (SearchPrefetchSkipsCancel() &&
        status == SearchPrefetchStatus::kCanBeServed);
 
