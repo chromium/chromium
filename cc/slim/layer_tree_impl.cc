@@ -434,7 +434,8 @@ void LayerTreeImpl::GenerateCompositorFrame(
   Draw(*root_, out_frame, *render_pass, frame_data,
        /*parent_transform_to_root=*/gfx::Transform(),
        /*parent_transform_to_target=*/gfx::Transform(),
-       /*parent_clip_in_target=*/nullptr, gfx::RectF(device_viewport_rect_));
+       /*parent_clip_in_target=*/nullptr, gfx::RectF(device_viewport_rect_),
+       /*opacity=*/1.0f);
 
   render_pass->copy_requests = std::move(copy_requests_for_next_frame_);
   copy_requests_for_next_frame_.clear();
@@ -470,9 +471,10 @@ void LayerTreeImpl::Draw(Layer& layer,
                          const gfx::Transform& parent_transform_to_root,
                          const gfx::Transform& parent_transform_to_target,
                          const gfx::RectF* parent_clip_in_target,
-                         const gfx::RectF& clip_in_parent) {
+                         const gfx::RectF& clip_in_parent,
+                         float parent_opacity) {
   DCHECK(!clip_in_parent.IsEmpty());
-  if (layer.hide_layer_and_subtree()) {
+  if (layer.hide_layer_and_subtree() || layer.opacity() == 0.0f) {
     return;
   }
 
@@ -505,11 +507,14 @@ void LayerTreeImpl::Draw(Layer& layer,
   }
 
   {
-    const bool has_filters = layer.HasFilters();
-    const bool axis_aligned_clip =
-        !layer.masks_to_bounds() ||
-        transform_to_target.Preserves2dAxisAlignment();
-    if ((!has_filters && axis_aligned_clip) || root_.get() == &layer) {
+    const bool is_root = root_.get() == &layer;
+    const bool filters_needs_pass = layer.HasFilters() && !is_root;
+    const bool clip_needs_pass =
+        !is_root && layer.masks_to_bounds() &&
+        !transform_to_target.Preserves2dAxisAlignment();
+    const bool opacity_needs_pass =
+        layer.opacity() != 1.0f && layer.GetNumDrawingLayersInSubtree() > 1;
+    if (!filters_needs_pass && !clip_needs_pass && !opacity_needs_pass) {
       // Does not need new render pass.
       // Compute new clip in target space.
       gfx::RectF new_clip_in_target(gfx::SizeF(layer.bounds()));
@@ -526,7 +531,8 @@ void LayerTreeImpl::Draw(Layer& layer,
 
       DrawChildrenAndAppendQuads(layer, frame, parent_pass, data,
                                  transform_to_root, transform_to_target,
-                                 clip_in_target, clip_in_layer);
+                                 clip_in_target, clip_in_layer,
+                                 parent_opacity * layer.opacity());
       return;
     }
   }
@@ -592,8 +598,8 @@ void LayerTreeImpl::Draw(Layer& layer,
   // clip applied.
   const gfx::RectF* clip_in_target = nullptr;
   DrawChildrenAndAppendQuads(layer, frame, *new_pass, data, transform_to_root,
-                             transform_to_target, clip_in_target,
-                             clip_in_layer);
+                             transform_to_target, clip_in_target, clip_in_layer,
+                             /*opacity=*/1.0f);
 
   if (new_pass->quad_list.empty()) {
     // Throw away new pass if it has no quads.
@@ -613,7 +619,8 @@ void LayerTreeImpl::Draw(Layer& layer,
   shared_quad_state->SetAll(
       transform_new_pass_to_parent_target, new_pass_content_bounds,
       new_pass_content_bounds, gfx::MaskFilterInfo(), clip_opt,
-      /*contents_opaque=*/false, /*opacity_f=*/1.0f, SkBlendMode::kSrcOver, 0);
+      /*contents_opaque=*/false, parent_opacity * layer.opacity(),
+      SkBlendMode::kSrcOver, 0);
   auto* quad =
       parent_pass.CreateAndAppendDrawQuad<viz::CompositorRenderPassDrawQuad>();
 
@@ -653,10 +660,11 @@ void LayerTreeImpl::DrawChildrenAndAppendQuads(
     const gfx::Transform& transform_to_root,
     const gfx::Transform& transform_to_target,
     const gfx::RectF* clip_in_target,
-    const gfx::RectF& clip_in_layer) {
+    const gfx::RectF& clip_in_layer,
+    float opacity) {
   for (auto& child : base::Reversed(layer.children())) {
     Draw(*child, frame, render_pass, data, transform_to_root,
-         transform_to_target, clip_in_target, clip_in_layer);
+         transform_to_target, clip_in_target, clip_in_layer, opacity);
   }
 
   gfx::Rect integer_clip_in_target;
@@ -671,7 +679,7 @@ void LayerTreeImpl::DrawChildrenAndAppendQuads(
   if (!clip_in_layer.IsEmpty() && layer.HasDrawableContent()) {
     layer.AppendQuads(render_pass, data, transform_to_root, transform_to_target,
                       clip_in_target ? &integer_clip_in_target : nullptr,
-                      /*visible_rect=*/gfx::ToEnclosingRect(clip));
+                      /*visible_rect=*/gfx::ToEnclosingRect(clip), opacity);
   }
 }
 

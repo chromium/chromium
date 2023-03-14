@@ -148,7 +148,8 @@ class COMPONENT_EXPORT(CC_SLIM) LayerTreeImpl : public LayerTree,
             const gfx::Transform& parent_transform_to_root,
             const gfx::Transform& parent_transform_to_target,
             const gfx::RectF* parent_clip_in_target,
-            const gfx::RectF& clip_in_parent);
+            const gfx::RectF& clip_in_parent,
+            float opacity);
   void DrawChildrenAndAppendQuads(Layer& layer,
                                   viz::CompositorFrame& frame,
                                   viz::CompositorRenderPass& render_pass,
@@ -156,7 +157,8 @@ class COMPONENT_EXPORT(CC_SLIM) LayerTreeImpl : public LayerTree,
                                   const gfx::Transform& transform_to_root,
                                   const gfx::Transform& transform_to_target,
                                   const gfx::RectF* clip_in_target,
-                                  const gfx::RectF& clip_in_layer);
+                                  const gfx::RectF& clip_in_layer,
+                                  float opacity);
 
   const raw_ptr<LayerTreeClient> client_;
   const uint32_t num_unneeded_begin_frame_before_stop_;

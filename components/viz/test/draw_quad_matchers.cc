@@ -114,4 +114,9 @@ testing::Matcher<const DrawQuad*> HasTransform(
       testing::Eq(transform)));
 }
 
+testing::Matcher<const DrawQuad*> HasOpacity(float opacity) {
+  return HasSharedQuadState(testing::Field("opacity", &SharedQuadState::opacity,
+                                           testing::Eq(opacity)));
+}
+
 }  // namespace viz

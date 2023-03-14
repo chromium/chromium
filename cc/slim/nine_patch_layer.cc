@@ -86,7 +86,8 @@ void NinePatchLayer::AppendQuads(viz::CompositorRenderPass& render_pass,
                                  const gfx::Transform& transform_to_root,
                                  const gfx::Transform& transform_to_target,
                                  const gfx::Rect* clip_in_target,
-                                 const gfx::Rect& visible_rect) {
+                                 const gfx::Rect& visible_rect,
+                                 float opacity) {
   LayerTreeImpl* layer_tree_impl = static_cast<LayerTreeImpl*>(layer_tree());
   viz::ResourceId viz_resource_id =
       layer_tree_impl->GetVizResourceId(resource_id());
@@ -95,7 +96,7 @@ void NinePatchLayer::AppendQuads(viz::CompositorRenderPass& render_pass,
   }
 
   viz::SharedQuadState* quad_state = CreateAndAppendSharedQuadState(
-      render_pass, transform_to_target, clip_in_target, visible_rect);
+      render_pass, transform_to_target, clip_in_target, visible_rect, opacity);
 
   constexpr gfx::Rect kOcclusion;
   const gfx::Size image_bounds =

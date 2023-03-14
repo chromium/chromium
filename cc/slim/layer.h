@@ -168,6 +168,10 @@ class COMPONENT_EXPORT(CC_SLIM) Layer : public base::RefCounted<Layer> {
   // given SetIsDrawable(true).
   bool draws_content() const;
 
+  // Returns the number of layers in this layers subtree (excluding itself) for
+  // which DrawsContent() is true.
+  int NumDescendantsThatDrawContent() const;
+
   // Set or get if this layer and its subtree should be part of the compositor's
   // output to the screen. When set to true, the layer's subtree does not appear
   // to the user, but still remains part of the tree with all its normal drawing
@@ -197,7 +201,10 @@ class COMPONENT_EXPORT(CC_SLIM) Layer : public base::RefCounted<Layer> {
   // Called by LayerTree.
   gfx::Transform ComputeTransformToParent() const;
   absl::optional<gfx::Transform> ComputeTransformFromParent() const;
-  bool HasFilters();
+  bool HasFilters() const;
+  // This method counts this layer, This is different from
+  // `NumDescendantsThatDrawContent` which counts descendent layers only.
+  int GetNumDrawingLayersInSubtree() const;
 
   void UpdateDrawsContent();
   virtual bool HasDrawableContent() const;
@@ -206,20 +213,25 @@ class COMPONENT_EXPORT(CC_SLIM) Layer : public base::RefCounted<Layer> {
   // space of target render pass this is layer is drawn to.
   // `transform_to_root` is similar and transform to the root render pass.
   // They are the same if this layer draws to the root render pass.
+  // `opacity` parameter cumulative opacity when drawing this layer.
+  // `SetOpacity` applies to the entire subtree, `opacity` parameter contains
+  // opacity from parents and may be different from `opacity()` method.
   virtual void AppendQuads(viz::CompositorRenderPass& render_pass,
                            FrameData& data,
                            const gfx::Transform& transform_to_root,
                            const gfx::Transform& transform_to_target,
                            const gfx::Rect* clip_in_target,
-                           const gfx::Rect& visible_rect);
-
-  void NotifyTreeChanged();
-  void NotifyPropertyChanged();
+                           const gfx::Rect& visible_rect,
+                           float opacity);
   virtual viz::SharedQuadState* CreateAndAppendSharedQuadState(
       viz::CompositorRenderPass& render_pass,
       const gfx::Transform& transform_to_target,
       const gfx::Rect* clip_in_target,
-      const gfx::Rect& visible_rect);
+      const gfx::Rect& visible_rect,
+      float opacity);
+
+  void NotifyTreeChanged();
+  void NotifyPropertyChanged();
 
   const scoped_refptr<cc::Layer> cc_layer_;
 
@@ -231,12 +243,16 @@ class COMPONENT_EXPORT(CC_SLIM) Layer : public base::RefCounted<Layer> {
   void WillAddChildSlim(Layer* child);
   void InsertChildSlim(scoped_refptr<Layer> child, size_t position);
   void RemoveFromParentSlim();
+  void SetParentSlim(Layer* parent);
+  void ChangeDrawableDescendantsBySlim(int num);
 
   const int id_;
   raw_ptr<Layer> parent_ = nullptr;
   std::vector<scoped_refptr<Layer>> children_;
 
   raw_ptr<LayerTree, DanglingUntriaged> layer_tree_ = nullptr;
+
+  int num_descendants_that_draw_content_ = 0;
 
   gfx::PointF position_;
   gfx::Size bounds_;

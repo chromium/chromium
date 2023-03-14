@@ -16,6 +16,7 @@
 #include "cc/slim/layer.h"
 #include "cc/slim/layer_tree.h"
 #include "cc/slim/nine_patch_layer.h"
+#include "cc/slim/solid_color_layer.h"
 #include "cc/slim/surface_layer.h"
 #include "cc/slim/test_layer_tree_client.h"
 #include "cc/slim/ui_resource_layer.h"
@@ -230,6 +231,55 @@ TEST_P(SlimLayerTest, NinePatchLayerProperties) {
   EXPECT_EQ(layer_tree->GetUIResourceManager()
                 ->owned_shared_resources_size_for_test(),
             1u);
+}
+
+TEST_P(SlimLayerTest, NumDescendantsThatDrawContent) {
+  auto layer0 = Layer::Create();
+  auto layer1 = Layer::Create();
+  auto layer2 = Layer::Create();
+
+  layer0->AddChild(layer1);
+  layer0->AddChild(layer2);
+
+  EXPECT_EQ(layer0->NumDescendantsThatDrawContent(), 0);
+  EXPECT_EQ(layer1->NumDescendantsThatDrawContent(), 0);
+  EXPECT_EQ(layer2->NumDescendantsThatDrawContent(), 0);
+
+  auto drawing_layer0 = SolidColorLayer::Create();
+  auto drawing_layer1 = SolidColorLayer::Create();
+  auto drawing_layer2 = SolidColorLayer::Create();
+  drawing_layer0->SetIsDrawable(true);
+  drawing_layer1->SetIsDrawable(true);
+  drawing_layer2->SetIsDrawable(true);
+  EXPECT_TRUE(drawing_layer0->draws_content());
+  EXPECT_TRUE(drawing_layer1->draws_content());
+  EXPECT_TRUE(drawing_layer2->draws_content());
+
+  layer1->AddChild(drawing_layer0);
+  EXPECT_EQ(layer0->NumDescendantsThatDrawContent(), 1);
+  EXPECT_EQ(layer1->NumDescendantsThatDrawContent(), 1);
+  EXPECT_EQ(layer2->NumDescendantsThatDrawContent(), 0);
+
+  drawing_layer0->AddChild(drawing_layer1);
+  EXPECT_EQ(layer0->NumDescendantsThatDrawContent(), 2);
+  EXPECT_EQ(layer1->NumDescendantsThatDrawContent(), 2);
+  EXPECT_EQ(layer2->NumDescendantsThatDrawContent(), 0);
+  EXPECT_EQ(drawing_layer0->NumDescendantsThatDrawContent(), 1);
+
+  layer1->AddChild(drawing_layer2);
+  EXPECT_EQ(layer0->NumDescendantsThatDrawContent(), 3);
+  EXPECT_EQ(layer1->NumDescendantsThatDrawContent(), 3);
+  EXPECT_EQ(layer2->NumDescendantsThatDrawContent(), 0);
+
+  drawing_layer0->RemoveFromParent();
+  EXPECT_EQ(layer0->NumDescendantsThatDrawContent(), 1);
+  EXPECT_EQ(layer1->NumDescendantsThatDrawContent(), 1);
+  EXPECT_EQ(layer2->NumDescendantsThatDrawContent(), 0);
+
+  layer2->AddChild(drawing_layer0);
+  EXPECT_EQ(layer0->NumDescendantsThatDrawContent(), 3);
+  EXPECT_EQ(layer1->NumDescendantsThatDrawContent(), 1);
+  EXPECT_EQ(layer2->NumDescendantsThatDrawContent(), 2);
 }
 
 INSTANTIATE_TEST_SUITE_P(All, SlimLayerTest, testing::Bool());

@@ -179,11 +179,11 @@ TEST_F(SlimLayerTreeCompositorFrameTest, OneSolidColorQuad) {
   EXPECT_EQ(pass->damage_rect, viewport_);
   EXPECT_EQ(pass->transform_to_root_target, gfx::Transform());
 
-  ASSERT_THAT(
-      pass->quad_list,
-      ElementsAre(AllOf(viz::IsSolidColorQuad(SkColors::kGray),
-                        viz::HasRect(viewport_), viz::HasVisibleRect(viewport_),
-                        viz::HasTransform(gfx::Transform()))));
+  ASSERT_THAT(pass->quad_list,
+              ElementsAre(AllOf(
+                  viz::IsSolidColorQuad(SkColors::kGray),
+                  viz::HasRect(viewport_), viz::HasVisibleRect(viewport_),
+                  viz::HasTransform(gfx::Transform()), viz::HasOpacity(1.0f))));
   auto* quad = pass->quad_list.back();
   auto* shared_quad_state = quad->shared_quad_state;
 
@@ -191,7 +191,6 @@ TEST_F(SlimLayerTreeCompositorFrameTest, OneSolidColorQuad) {
   EXPECT_EQ(shared_quad_state->visible_quad_layer_rect, viewport_);
   EXPECT_EQ(shared_quad_state->clip_rect, absl::nullopt);
   EXPECT_EQ(shared_quad_state->are_contents_opaque, true);
-  EXPECT_EQ(shared_quad_state->opacity, 1.0f);
   EXPECT_EQ(shared_quad_state->blend_mode, SkBlendMode::kSrcOver);
 }
 
@@ -1210,6 +1209,80 @@ TEST_F(SlimLayerTreeCompositorFrameTest, Filters) {
     EXPECT_EQ(shared_quad_state->visible_quad_layer_rect, gfx::Rect(40, 40));
     EXPECT_EQ(shared_quad_state->clip_rect, absl::nullopt);
   }
+}
+
+TEST_F(SlimLayerTreeCompositorFrameTest, Opacity) {
+  auto root_layer = CreateSolidColorLayer(viewport_.size(), SkColors::kGray);
+  layer_tree_->SetRoot(root_layer);
+
+  // Child will require a render pass to blend correctly.
+  auto child_layer = CreateSolidColorLayer(gfx::Size(80, 80), SkColors::kRed);
+  child_layer->SetOpacity(0.75f);
+
+  // Grand child does not need another render pass because it does not have
+  // 2 drawing layers.
+  auto grand_child_layer =
+      CreateSolidColorLayer(gfx::Size(40, 40), SkColors::kGreen);
+  grand_child_layer->SetOpacity(0.5f);
+
+  child_layer->AddChild(std::move(grand_child_layer));
+  root_layer->AddChild(std::move(child_layer));
+
+  viz::CompositorFrame frame = ProduceFrame();
+  ASSERT_EQ(frame.render_pass_list.size(), 2u);
+
+  auto& child_pass = frame.render_pass_list.front();
+  EXPECT_EQ(child_pass->output_rect, gfx::Rect(80, 80));
+  EXPECT_EQ(child_pass->damage_rect, gfx::Rect(80, 80));
+  EXPECT_EQ(child_pass->transform_to_root_target, gfx::Transform());
+  ASSERT_THAT(
+      child_pass->quad_list,
+      ElementsAre(
+          AllOf(viz::IsSolidColorQuad(SkColors::kGreen),
+                viz::HasRect(gfx::Rect(40, 40)),
+                viz::HasVisibleRect(gfx::Rect(40, 40)),
+                viz::HasTransform(gfx::Transform()),
+                // The pass is drawn with the child_layer's opacity, so there is
+                // no multiplicative opacity here.
+                viz::HasOpacity(0.5f)),
+          AllOf(viz::IsSolidColorQuad(SkColors::kRed),
+                viz::HasRect(gfx::Rect(80, 80)),
+                viz::HasVisibleRect(gfx::Rect(80, 80)),
+                viz::HasTransform(gfx::Transform()), viz::HasOpacity(1.0f))));
+
+  auto& root_pass = frame.render_pass_list.back();
+  ASSERT_THAT(
+      root_pass->quad_list,
+      ElementsAre(
+          AllOf(viz::IsCompositorRenderPassQuad(child_pass->id),
+                viz::HasRect(gfx::Rect(80, 80)),
+                viz::HasVisibleRect(gfx::Rect(80, 80)),
+                viz::HasTransform(gfx::Transform()), viz::HasOpacity(0.75f)),
+          AllOf(viz::IsSolidColorQuad(SkColors::kGray), viz::HasRect(viewport_),
+                viz::HasVisibleRect(viewport_),
+                viz::HasTransform(gfx::Transform()))));
+}
+
+TEST_F(SlimLayerTreeCompositorFrameTest, SkipZeroOpacitySubtree) {
+  auto root_layer = CreateSolidColorLayer(viewport_.size(), SkColors::kGray);
+  layer_tree_->SetRoot(root_layer);
+
+  auto child_layer = CreateSolidColorLayer(gfx::Size(80, 80), SkColors::kRed);
+  child_layer->SetOpacity(0.0f);
+  auto grand_child_layer =
+      CreateSolidColorLayer(gfx::Size(40, 40), SkColors::kGreen);
+  child_layer->AddChild(std::move(grand_child_layer));
+  root_layer->AddChild(std::move(child_layer));
+
+  viz::CompositorFrame frame = ProduceFrame();
+  ASSERT_EQ(frame.render_pass_list.size(), 1u);
+
+  auto& root_pass = frame.render_pass_list.back();
+  EXPECT_THAT(
+      root_pass->quad_list,
+      ElementsAre(AllOf(viz::IsSolidColorQuad(SkColors::kGray),
+                        viz::HasRect(viewport_), viz::HasVisibleRect(viewport_),
+                        viz::HasTransform(gfx::Transform()))));
 }
 
 }  // namespace

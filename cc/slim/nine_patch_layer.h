@@ -48,7 +48,8 @@ class COMPONENT_EXPORT(CC_SLIM) NinePatchLayer : public UIResourceLayer {
                    const gfx::Transform& transform_to_root,
                    const gfx::Transform& transform_to_target,
                    const gfx::Rect* clip_in_target,
-                   const gfx::Rect& visible_rect) override;
+                   const gfx::Rect& visible_rect,
+                   float opacity) override;
 
  private:
   explicit NinePatchLayer(scoped_refptr<cc::NinePatchLayer> cc_layer);
