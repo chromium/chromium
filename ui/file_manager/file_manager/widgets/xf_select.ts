@@ -361,7 +361,7 @@ function getCSS(): CSSResultGroup {
     }
     cr-button.dropdown-item {
       --focus-shadow-color: none;
-      padding: 0 12px;
+      padding: 0 16px;
     }
     cr-button.dropdown-item:hover {
       background-color: var(--cros-ripple-color);
