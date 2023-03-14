@@ -6,23 +6,22 @@
 
 #include "base/cancelable_callback.h"
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_local.h"
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace base {
 
 namespace {
 
-ThreadLocalPointer<RunLoop::Delegate>& GetTlsDelegate() {
-  static NoDestructor<ThreadLocalPointer<RunLoop::Delegate>> instance;
-  return *instance;
-}
+ABSL_CONST_INIT thread_local RunLoop::Delegate* delegate = nullptr;
+ABSL_CONST_INIT thread_local const RunLoop::RunLoopTimeout* run_loop_timeout =
+    nullptr;
 
 // Runs |closure| immediately if this is called on |task_runner|, otherwise
 // forwards |closure| to it.
@@ -33,11 +32,6 @@ void ProxyToTaskRunner(scoped_refptr<SequencedTaskRunner> task_runner,
     return;
   }
   task_runner->PostTask(FROM_HERE, std::move(closure));
-}
-
-ThreadLocalPointer<const RunLoop::RunLoopTimeout>& RunLoopTimeoutTLS() {
-  static NoDestructor<ThreadLocalPointer<const RunLoop::RunLoopTimeout>> tls;
-  return *tls;
 }
 
 void OnRunLoopTimeout(RunLoop* run_loop,
@@ -62,8 +56,8 @@ RunLoop::Delegate::~Delegate() {
   // be on its creation thread (e.g. a Thread that fails to start) and
   // shouldn't disrupt that thread's state.
   if (bound_) {
-    DCHECK_EQ(this, GetTlsDelegate().Get());
-    GetTlsDelegate().Set(nullptr);
+    DCHECK_EQ(this, delegate);
+    delegate = nullptr;
   }
 }
 
@@ -78,22 +72,22 @@ bool RunLoop::Delegate::ShouldQuitWhenIdle() {
 }
 
 // static
-void RunLoop::RegisterDelegateForCurrentThread(Delegate* delegate) {
+void RunLoop::RegisterDelegateForCurrentThread(Delegate* new_delegate) {
   // Bind |delegate| to this thread.
-  DCHECK(!delegate->bound_);
-  DCHECK_CALLED_ON_VALID_THREAD(delegate->bound_thread_checker_);
+  DCHECK(!new_delegate->bound_);
+  DCHECK_CALLED_ON_VALID_THREAD(new_delegate->bound_thread_checker_);
 
   // There can only be one RunLoop::Delegate per thread.
-  DCHECK(!GetTlsDelegate().Get())
+  DCHECK(!delegate)
       << "Error: Multiple RunLoop::Delegates registered on the same thread.\n\n"
          "Hint: You perhaps instantiated a second "
          "MessageLoop/TaskEnvironment on a thread that already had one?";
-  GetTlsDelegate().Set(delegate);
+  delegate = new_delegate;
   delegate->bound_ = true;
 }
 
 RunLoop::RunLoop(Type type)
-    : delegate_(GetTlsDelegate().Get()),
+    : delegate_(delegate),
       type_(type),
       origin_task_runner_(SingleThreadTaskRunner::GetCurrentDefault()) {
   DCHECK(delegate_) << "A RunLoop::Delegate must be bound to this thread prior "
@@ -232,26 +226,22 @@ bool RunLoop::AnyQuitCalled() {
 
 // static
 bool RunLoop::IsRunningOnCurrentThread() {
-  Delegate* delegate = GetTlsDelegate().Get();
   return delegate && !delegate->active_run_loops_.empty();
 }
 
 // static
 bool RunLoop::IsNestedOnCurrentThread() {
-  Delegate* delegate = GetTlsDelegate().Get();
   return delegate && delegate->active_run_loops_.size() > 1;
 }
 
 // static
 void RunLoop::AddNestingObserverOnCurrentThread(NestingObserver* observer) {
-  Delegate* delegate = GetTlsDelegate().Get();
   DCHECK(delegate);
   delegate->nesting_observers_.AddObserver(observer);
 }
 
 // static
 void RunLoop::RemoveNestingObserverOnCurrentThread(NestingObserver* observer) {
-  Delegate* delegate = GetTlsDelegate().Get();
   DCHECK(delegate);
   delegate->nesting_observers_.RemoveObserver(observer);
 }
@@ -259,7 +249,6 @@ void RunLoop::RemoveNestingObserverOnCurrentThread(NestingObserver* observer) {
 // static
 void RunLoop::QuitCurrentDeprecated() {
   DCHECK(IsRunningOnCurrentThread());
-  Delegate* delegate = GetTlsDelegate().Get();
   DCHECK(delegate->active_run_loops_.top()->allow_quit_current_deprecated_)
       << "Please migrate off QuitCurrentDeprecated(), e.g. to QuitClosure().";
   delegate->active_run_loops_.top()->Quit();
@@ -268,7 +257,6 @@ void RunLoop::QuitCurrentDeprecated() {
 // static
 void RunLoop::QuitCurrentWhenIdleDeprecated() {
   DCHECK(IsRunningOnCurrentThread());
-  Delegate* delegate = GetTlsDelegate().Get();
   DCHECK(delegate->active_run_loops_.top()->allow_quit_current_deprecated_)
       << "Please migrate off QuitCurrentWhenIdleDeprecated(), e.g. to "
          "QuitWhenIdleClosure().";
@@ -278,7 +266,6 @@ void RunLoop::QuitCurrentWhenIdleDeprecated() {
 // static
 RepeatingClosure RunLoop::QuitCurrentWhenIdleClosureDeprecated() {
   // TODO(844016): Fix callsites and enable this check, or remove the API.
-  // Delegate* delegate = GetTlsDelegate().Get();
   // DCHECK(delegate->active_run_loops_.top()->allow_quit_current_deprecated_)
   //     << "Please migrate off QuitCurrentWhenIdleClosureDeprecated(), e.g to "
   //        "QuitWhenIdleClosure().";
@@ -287,16 +274,15 @@ RepeatingClosure RunLoop::QuitCurrentWhenIdleClosureDeprecated() {
 
 #if DCHECK_IS_ON()
 ScopedDisallowRunningRunLoop::ScopedDisallowRunningRunLoop()
-    : current_delegate_(GetTlsDelegate().Get()),
-      previous_run_allowance_(
-          current_delegate_ ? current_delegate_->allow_running_for_testing_
-                            : false) {
+    : current_delegate_(delegate),
+      previous_run_allowance_(current_delegate_ &&
+                              current_delegate_->allow_running_for_testing_) {
   if (current_delegate_)
     current_delegate_->allow_running_for_testing_ = false;
 }
 
 ScopedDisallowRunningRunLoop::~ScopedDisallowRunningRunLoop() {
-  DCHECK_EQ(current_delegate_, GetTlsDelegate().Get());
+  DCHECK_EQ(current_delegate_, delegate);
   if (current_delegate_)
     current_delegate_->allow_running_for_testing_ = previous_run_allowance_;
 }
@@ -314,12 +300,17 @@ RunLoop::RunLoopTimeout::~RunLoopTimeout() = default;
 
 // static
 void RunLoop::SetTimeoutForCurrentThread(const RunLoopTimeout* timeout) {
-  RunLoopTimeoutTLS().Set(timeout);
+  run_loop_timeout = timeout;
 }
 
 // static
 const RunLoop::RunLoopTimeout* RunLoop::GetTimeoutForCurrentThread() {
-  return RunLoopTimeoutTLS().Get();
+  // Workaround false-positive MSAN use-of-uninitialized-value on
+  // thread_local storage for loaded libraries:
+  // https://github.com/google/sanitizers/issues/1265
+  MSAN_UNPOISON(&run_loop_timeout, sizeof(RunLoopTimeout*));
+
+  return run_loop_timeout;
 }
 
 bool RunLoop::BeforeRun() {

@@ -249,7 +249,7 @@ class BASE_EXPORT RunLoop {
   // Registers |delegate| on the current thread. Must be called once and only
   // once per thread before using RunLoop methods on it. |delegate| is from then
   // on forever bound to that thread (including its destruction).
-  static void RegisterDelegateForCurrentThread(Delegate* delegate);
+  static void RegisterDelegateForCurrentThread(Delegate* new_delegate);
 
   // Quits the active RunLoop (when idle) -- there must be one. These were
   // introduced as prefered temporary replacements to the long deprecated
@@ -347,7 +347,7 @@ class BASE_EXPORT RunLoop {
 // single RunLoop::Delegate per thread and RunLoop::Run() should only be invoked
 // from it (or it would result in incorrectly driving TaskRunner A while in
 // TaskRunner B's context).
-class BASE_EXPORT ScopedDisallowRunningRunLoop {
+class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedDisallowRunningRunLoop {
  public:
   ScopedDisallowRunningRunLoop();
   ScopedDisallowRunningRunLoop(const ScopedDisallowRunningRunLoop&) = delete;

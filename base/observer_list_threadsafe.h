@@ -8,13 +8,13 @@
 #include <unordered_map>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/base_export.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
 #include "base/functional/bind.h"
-#include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -22,8 +22,8 @@
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_local.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -60,6 +60,14 @@ namespace internal {
 class BASE_EXPORT ObserverListThreadSafeBase
     : public RefCountedThreadSafe<ObserverListThreadSafeBase> {
  public:
+  struct NotificationDataBase {
+    NotificationDataBase(void* observer_list_in, const Location& from_here_in)
+        : observer_list(observer_list_in), from_here(from_here_in) {}
+
+    raw_ptr<void> observer_list;
+    Location from_here;
+  };
+
   ObserverListThreadSafeBase() = default;
   ObserverListThreadSafeBase(const ObserverListThreadSafeBase&) = delete;
   ObserverListThreadSafeBase& operator=(const ObserverListThreadSafeBase&) =
@@ -78,18 +86,9 @@ class BASE_EXPORT ObserverListThreadSafeBase
     }
   };
 
-  struct NotificationDataBase {
-    NotificationDataBase(void* observer_list_in, const Location& from_here_in)
-        : observer_list(observer_list_in), from_here(from_here_in) {}
-
-    raw_ptr<void> observer_list;
-    Location from_here;
-  };
+  static const NotificationDataBase*& GetCurrentNotification();
 
   virtual ~ObserverListThreadSafeBase() = default;
-
-  static LazyInstance<ThreadLocalPointer<const NotificationDataBase>>::Leaky
-      tls_current_notification_;
 
  private:
   friend class RefCountedThreadSafe<ObserverListThreadSafeBase>;
@@ -147,9 +146,9 @@ class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
     // may not make it to |observer| depending on the outcome of the race to
     // |lock_|).
     if (policy_ == ObserverListPolicy::ALL) {
-      const NotificationDataBase* current_notification =
-          tls_current_notification_.Get().Get();
-      if (current_notification && current_notification->observer_list == this) {
+      if (const NotificationDataBase* const current_notification =
+              GetCurrentNotification();
+          current_notification && current_notification->observer_list == this) {
         const NotificationData* notification_data =
             static_cast<const NotificationData*>(current_notification);
         task_runner->PostTask(
@@ -253,20 +252,14 @@ class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
     // Keep track of the notification being dispatched on the current thread.
     // This will be used if the callback below calls AddObserver().
     //
-    // Note: |tls_current_notification_| may not be nullptr if this runs in a
+    // Note: GetCurrentNotification() may not return null if this runs in a
     // nested loop started by a notification callback. In that case, it is
     // important to save the previous value to restore it later.
-    auto& tls_current_notification = tls_current_notification_.Get();
-    const NotificationDataBase* const previous_notification =
-        tls_current_notification.Get();
-    tls_current_notification.Set(&notification);
+    const AutoReset<const NotificationDataBase*> resetter_(
+        &GetCurrentNotification(), &notification);
 
     // Invoke the callback.
     notification.method.Run(observer);
-
-    // Reset the notification being dispatched on the current thread to its
-    // previous value.
-    tls_current_notification.Set(previous_notification);
   }
 
   const ObserverListPolicy policy_ = ObserverListPolicy::ALL;
