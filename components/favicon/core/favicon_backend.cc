@@ -186,7 +186,7 @@ FaviconBackend::GetFaviconsForUrl(const GURL& page_url,
 
   if (desired_sizes.size() == 1 && !bitmap_results.empty()) {
     bitmap_results.assign(1, favicon_base::ResizeFaviconBitmapResult(
-                                 bitmap_results, desired_sizes[0]));
+                                 desired_sizes[0], bitmap_results));
   }
   return bitmap_results;
 }
@@ -200,7 +200,7 @@ FaviconBackend::GetFaviconForId(favicon_base::FaviconID favicon_id,
       GetFaviconBitmapResultsForBestMatch({favicon_id}, {desired_size});
   if (!bitmap_results.empty()) {
     bitmap_results.assign(1, favicon_base::ResizeFaviconBitmapResult(
-                                 bitmap_results, desired_size));
+                                 desired_size, bitmap_results));
   }
 
   return bitmap_results;

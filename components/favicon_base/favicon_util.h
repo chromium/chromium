@@ -41,9 +41,9 @@ gfx::Image SelectFaviconFramesFromPNGs(
 // the set, it just returns that; otherwise, it will decode the PNG, scale,
 // and encode a new PNG.
 favicon_base::FaviconRawBitmapResult ResizeFaviconBitmapResult(
+    int desired_size_in_pixel,
     const std::vector<favicon_base::FaviconRawBitmapResult>&
-        favicon_bitmap_results,
-    int desired_size_in_pixel);
+        favicon_bitmap_results);
 
 }  // namespace favicon_base
 

@@ -147,19 +147,9 @@ class FaviconServiceImpl : public FaviconService {
   // so that history service can deal solely with FaviconResultsCallback.
   // Builds favicon_base::FaviconImageResult from |favicon_bitmap_results| and
   // runs |callback|.
-  void RunFaviconImageCallbackWithBitmapResults(
+  static void RunFaviconImageCallbackWithBitmapResults(
       favicon_base::FaviconImageCallback callback,
       int desired_size_in_dip,
-      const std::vector<favicon_base::FaviconRawBitmapResult>&
-          favicon_bitmap_results);
-
-  // Intermediate callback for GetRawFavicon() and GetRawFaviconForPageURL()
-  // so that history service can deal solely with FaviconResultsCallback.
-  // Resizes favicon_base::FaviconRawBitmapResult if necessary and runs
-  // |callback|.
-  void RunFaviconRawBitmapCallbackWithBitmapResults(
-      favicon_base::FaviconRawBitmapCallback callback,
-      int desired_size_in_pixel,
       const std::vector<favicon_base::FaviconRawBitmapResult>&
           favicon_bitmap_results);
 
