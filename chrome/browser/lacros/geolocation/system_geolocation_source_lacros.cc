@@ -23,6 +23,7 @@ SystemGeolocationSourceLacros::SystemGeolocationSourceLacros()
   lacros_service->GetRemote<crosapi::mojom::Prefs>()->AddObserver(
       crosapi::mojom::PrefPath::kGeolocationAllowed,
       receiver_.BindNewPipeAndPassRemoteWithVersion());
+  CHECK(receiver_.is_bound());
 }
 
 SystemGeolocationSourceLacros::~SystemGeolocationSourceLacros() = default;
@@ -37,8 +38,19 @@ SystemGeolocationSourceLacros::CreateGeolocationManagerOnLacros() {
 void SystemGeolocationSourceLacros::RegisterPermissionUpdateCallback(
     PermissionUpdateCallback callback) {
   permission_update_callback_ = std::move(callback);
-  if (current_status_ !=
+  if (current_status_ ==
       device::LocationSystemPermissionStatus::kNotDetermined) {
+    // This is here to support older versions of Ash that do send the system
+    // geolocation switch via crosapi.
+    // The original behavior before the system wide switch was introduced was to
+    // allow, so we keep this as the default behavior when the system doesn't
+    // indicate othervise.
+    // TODO(272426671): clean this up when we can safely assume that Ash
+    // provides the value.
+    permission_update_callback_.Run(
+        device::LocationSystemPermissionStatus::kAllowed);
+    return;
+  } else {
     // If available, pass the (up-to-date) status into the new callback
     permission_update_callback_.Run(current_status_);
   }

@@ -24,6 +24,18 @@ IN_PROC_BROWSER_TEST_F(SystemGeolocationSourceLacrosTests, PrefChange) {
   ASSERT_TRUE(lacros_service);
   ASSERT_TRUE(lacros_service->IsAvailable<crosapi::mojom::Prefs>());
 
+  // As we are adding the crosapi change to ash in the same commit, we may be
+  // missing the Pref when run with older versions of ash. Hence we'll skip this
+  // test when the preference is not available.
+  const int min_version = 8;
+  const int version = chromeos::LacrosService::Get()
+                          ->GetInterfaceVersion<crosapi::mojom::Prefs>();
+  if (min_version > version) {
+    GTEST_SKIP() << "Skipping as the geolocation pref is not available in the"
+                    "current version of crosapi ("
+                 << version << ")";
+  }
+
   absl::optional<::base::Value> out_value;
   crosapi::mojom::PrefsAsyncWaiter async_waiter(
       chromeos::LacrosService::Get()->GetRemote<crosapi::mojom::Prefs>().get());
@@ -32,16 +44,8 @@ IN_PROC_BROWSER_TEST_F(SystemGeolocationSourceLacrosTests, PrefChange) {
   async_waiter.GetPref(crosapi::mojom::PrefPath::kGeolocationAllowed,
                        &out_value);
 
-  // As we are adding the crosapi change to ash in the same commit, we may be
-  // missing the Pref when run with older versions of ash. Hence we'll skip this
-  // test when the preference is not available.
-  if (!out_value.has_value()) {
-    GTEST_SKIP() << "Skipping as the geolocation pref is not available in the "
-                    "current version of Ash";
-  }
-
-  ASSERT_TRUE(out_value.has_value());
-  ASSERT_TRUE(out_value.value().GetBool());
+  EXPECT_TRUE(out_value.has_value());
+  EXPECT_TRUE(out_value.value().GetBool());
 
   // Set up the system source to save the pref changes into a future object
   SystemGeolocationSourceLacros source;
@@ -83,7 +87,7 @@ IN_PROC_BROWSER_TEST_F(SystemGeolocationSourceLacrosTests,
   };
 
   device::GeolocationManager* manager =
-      g_browser_process->platform_part()->geolocation_manager();
+      g_browser_process->geolocation_manager();
   ASSERT_TRUE(manager);
 
   Observer observer;

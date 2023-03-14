@@ -11,6 +11,7 @@
 #include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
 #include "chrome/browser/apps/app_shim/web_app_shim_manager_delegate_mac.h"
 #include "chrome/browser/apps/platform_apps/extension_app_shim_manager_delegate_mac.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_browser_application_mac.h"
 #include "services/device/public/cpp/geolocation/system_geolocation_source_mac.h"
 
@@ -72,9 +73,9 @@ void BrowserProcessPlatformPart::PreMainMessageLoopRun() {
   DCHECK(!app_shim_listener_.get());
   app_shim_listener_ = new AppShimListener;
 
-  if (!geolocation_manager_) {
-    geolocation_manager_ =
-        device::SystemGeolocationSourceMac::CreateGeolocationManagerOnMac();
+  if (!g_browser_process->geolocation_manager()) {
+    g_browser_process->SetGeolocationManager(
+        device::SystemGeolocationSourceMac::CreateGeolocationManagerOnMac());
   }
 }
 
@@ -84,13 +85,4 @@ apps::AppShimManager* BrowserProcessPlatformPart::app_shim_manager() {
 
 AppShimListener* BrowserProcessPlatformPart::app_shim_listener() {
   return app_shim_listener_.get();
-}
-
-device::GeolocationManager* BrowserProcessPlatformPart::geolocation_manager() {
-  return geolocation_manager_.get();
-}
-
-void BrowserProcessPlatformPart::SetGeolocationManagerForTesting(
-    std::unique_ptr<device::GeolocationManager> fake_geolocation_manager) {
-  geolocation_manager_ = std::move(fake_geolocation_manager);
 }

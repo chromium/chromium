@@ -593,7 +593,7 @@ bool ContentSettingGeolocationImageModel::UpdateAndGetVisibility(
 #if BUILDFLAG(IS_MAC)
 bool ContentSettingGeolocationImageModel::IsGeolocationAllowedOnASystemLevel() {
   device::GeolocationManager* geolocation_manager =
-      g_browser_process->platform_part()->geolocation_manager();
+      g_browser_process->geolocation_manager();
   device::LocationSystemPermissionStatus permission =
       geolocation_manager->GetSystemPermission();
 
@@ -602,7 +602,7 @@ bool ContentSettingGeolocationImageModel::IsGeolocationAllowedOnASystemLevel() {
 
 bool ContentSettingGeolocationImageModel::IsGeolocationPermissionDetermined() {
   device::GeolocationManager* geolocation_manager =
-      g_browser_process->platform_part()->geolocation_manager();
+      g_browser_process->geolocation_manager();
   device::LocationSystemPermissionStatus permission =
       geolocation_manager->GetSystemPermission();
 

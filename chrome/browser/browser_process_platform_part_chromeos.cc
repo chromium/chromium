@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
-#include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -39,16 +38,6 @@ BrowserProcessPlatformPartChromeOS::BrowserRestoreObserver::
         const BrowserProcessPlatformPartChromeOS* browser_process_platform_part)
     : browser_process_platform_part_(browser_process_platform_part) {
   BrowserList::AddObserver(this);
-}
-
-device::GeolocationManager*
-BrowserProcessPlatformPartChromeOS::geolocation_manager() {
-  return geolocation_manager_.get();
-}
-
-void BrowserProcessPlatformPartChromeOS::SetGeolocationManager(
-    std::unique_ptr<device::GeolocationManager> mgr) {
-  geolocation_manager_ = std::move(mgr);
 }
 
 BrowserProcessPlatformPartChromeOS::BrowserRestoreObserver::

@@ -138,6 +138,7 @@
 #include "net/log/net_log.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
+#include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "ui/base/idle/idle.h"
@@ -660,6 +661,11 @@ void BrowserProcessImpl::FlushLocalStateAndReply(base::OnceClosure reply) {
   local_state_->CommitPendingWrite(std::move(reply));
 }
 
+device::GeolocationManager* BrowserProcessImpl::geolocation_manager() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return geolocation_manager_.get();
+}
+
 void BrowserProcessImpl::EndSession() {
   // Mark all the profiles as clean.
   ProfileManager* pm = profile_manager();
@@ -741,6 +747,12 @@ BrowserProcessImpl::GetMetricsServicesManager() {
 metrics::MetricsService* BrowserProcessImpl::metrics_service() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return GetMetricsServicesManager()->GetMetricsService();
+}
+
+void BrowserProcessImpl::SetGeolocationManager(
+    std::unique_ptr<device::GeolocationManager> geolocation_manager) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  geolocation_manager_ = std::move(geolocation_manager);
 }
 
 SystemNetworkContextManager*

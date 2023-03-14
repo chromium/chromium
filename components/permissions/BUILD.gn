@@ -138,10 +138,10 @@ source_set("permissions") {
     "//ui/base",
     "//url",
   ]
-  if (is_mac) {
+  if (is_mac || is_chromeos) {
     sources += [
-      "contexts/geolocation_permission_context_mac.cc",
-      "contexts/geolocation_permission_context_mac.h",
+      "contexts/geolocation_permission_context_system.cc",
+      "contexts/geolocation_permission_context_system.h",
     ]
   }
   if (is_android) {

@@ -82,6 +82,7 @@ class TestingBrowserProcess : public BrowserProcess {
   metrics_services_manager::MetricsServicesManager* GetMetricsServicesManager()
       override;
   metrics::MetricsService* metrics_service() override;
+  device::GeolocationManager* geolocation_manager() override;
   SystemNetworkContextManager* system_network_context_manager() override;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory()
       override;
@@ -98,6 +99,8 @@ class TestingBrowserProcess : public BrowserProcess {
   void set_background_mode_manager_for_test(
       std::unique_ptr<BackgroundModeManager> manager) override;
 #endif
+  void SetGeolocationManager(
+      std::unique_ptr<device::GeolocationManager>) override;
   StatusTray* status_tray() override;
   safe_browsing::SafeBrowsingService* safe_browsing_service() override;
   subresource_filter::RulesetService* subresource_filter_ruleset_service()
@@ -189,6 +192,7 @@ class TestingBrowserProcess : public BrowserProcess {
   bool created_browser_policy_connector_ = false;
   std::unique_ptr<network::TestNetworkQualityTracker>
       test_network_quality_tracker_;
+  std::unique_ptr<device::GeolocationManager> geolocation_manager_;
   std::unique_ptr<ProfileManager> profile_manager_;
 
 #if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)

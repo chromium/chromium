@@ -306,9 +306,8 @@ TEST_F(ContentSettingImageModelTest, GeolocationAccessPermissionsChanged) {
       std::make_unique<device::FakeGeolocationManager>();
   device::FakeGeolocationManager* geolocation_manager =
       test_geolocation_manager.get();
-  TestingBrowserProcess::GetGlobal()
-      ->GetTestPlatformPart()
-      ->SetGeolocationManager(std::move(test_geolocation_manager));
+  TestingBrowserProcess::GetGlobal()->SetGeolocationManager(
+      std::move(test_geolocation_manager));
 
   PageSpecificContentSettings::CreateForWebContents(
       web_contents(),
@@ -366,9 +365,8 @@ TEST_F(ContentSettingImageModelTest, GeolocationAccessPermissionsUndetermined) {
       std::make_unique<device::FakeGeolocationManager>();
   test_geolocation_manager->SetSystemPermission(
       device::LocationSystemPermissionStatus::kNotDetermined);
-  TestingBrowserProcess::GetGlobal()
-      ->GetTestPlatformPart()
-      ->SetGeolocationManager(std::move(test_geolocation_manager));
+  TestingBrowserProcess::GetGlobal()->SetGeolocationManager(
+      std::move(test_geolocation_manager));
 
   PageSpecificContentSettings::CreateForWebContents(
       web_contents(),
@@ -415,9 +413,8 @@ TEST_F(ContentSettingImageModelTest, GeolocationAccessDeniedExperiment) {
       std::make_unique<device::FakeGeolocationManager>();
   device::FakeGeolocationManager* geolocation_manager =
       test_geolocation_manager.get();
-  TestingBrowserProcess::GetGlobal()
-      ->GetTestPlatformPart()
-      ->SetGeolocationManager(std::move(test_geolocation_manager));
+  TestingBrowserProcess::GetGlobal()->SetGeolocationManager(
+      std::move(test_geolocation_manager));
 
   PageSpecificContentSettings::CreateForWebContents(
       web_contents(),

@@ -87,7 +87,6 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/media/webrtc/system_media_capture_permissions_mac.h"
 #include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #endif
@@ -1264,7 +1263,7 @@ ContentSettingGeolocationBubbleModel::ContentSettingGeolocationBubbleModel(
       content_settings->IsContentAllowed(ContentSettingsType::GEOLOCATION);
 
   device::GeolocationManager* geolocation_manager =
-      g_browser_process->platform_part()->geolocation_manager();
+      g_browser_process->geolocation_manager();
   LocationSystemPermissionStatus permission =
       geolocation_manager->GetSystemPermission();
   if (permission != LocationSystemPermissionStatus::kAllowed && is_allowed) {

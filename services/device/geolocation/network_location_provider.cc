@@ -59,6 +59,7 @@ NetworkLocationProvider::NetworkLocationProvider(
                               base::Unretained(this)))) {
   DCHECK(position_cache_);
 #if BUILDFLAG(IS_MAC)
+  DCHECK(geolocation_manager);
   geolocation_manager_ = geolocation_manager;
   permission_observers_ = geolocation_manager->GetObserverList();
   permission_observers_->AddObserver(this);

@@ -66,12 +66,12 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
       std::make_unique<WebLayerCameraPanTiltZoomPermissionContextDelegate>();
   delegates.geolocation_permission_context_delegate =
       std::make_unique<GeolocationPermissionContextDelegate>();
-#if BUILDFLAG(IS_MAC)
-  // TODO(crbug.com/1200933): macOS uses GeolocationPermissionContextMac which
-  // requires a GeolocationManager for construction. In Chrome this object is
-  // owned by the BrowserProcess. An equivalent object will need to be created
-  // in WebLayer and passed into the PermissionContextDelegates here before it
-  // supports macOS.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+  // TODO(crbug.com/1200933): macOS and ChromeOS uses
+  // GeolocationPermissionContextSystem which requires a GeolocationManager for
+  // construction. In Chrome this object is owned by the BrowserProcess. An
+  // equivalent object will need to be created in WebLayer and passed into the
+  // PermissionContextDelegates here before it supports macOS.
   NOTREACHED();
 #endif  // BUILDFLAG(IS_MAC)
   delegates.media_stream_device_enumerator = GetMediaStreamDeviceEnumerator();

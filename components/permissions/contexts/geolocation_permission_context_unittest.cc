@@ -70,8 +70,8 @@
 #include "components/prefs/pref_service.h"
 #endif
 
-#if BUILDFLAG(IS_MAC)
-#include "components/permissions/contexts/geolocation_permission_context_mac.h"
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+#include "components/permissions/contexts/geolocation_permission_context_system.h"
 #include "services/device/public/cpp/test/fake_geolocation_manager.h"
 #endif
 
@@ -195,7 +195,7 @@ class GeolocationPermissionContextTests
   std::vector<std::unique_ptr<MockPermissionPromptFactory>>
       mock_permission_prompt_factories_;
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<device::FakeGeolocationManager> fake_geolocation_manager_;
 #endif
 
@@ -346,12 +346,12 @@ void GeolocationPermissionContextTests::SetUp() {
   MockLocationSettings::SetLocationSettingsDialogStatus(false /* enabled */,
                                                         GRANTED);
   MockLocationSettings::ClearHasShownLocationSettingsDialog();
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
   fake_geolocation_manager_ =
       std::make_unique<device::FakeGeolocationManager>();
   fake_geolocation_manager_->SetSystemPermission(
       device::LocationSystemPermissionStatus::kAllowed);
-  auto context = std::make_unique<GeolocationPermissionContextMac>(
+  auto context = std::make_unique<GeolocationPermissionContextSystem>(
       browser_context(), std::move(delegate), fake_geolocation_manager_.get());
 #else
   auto context = std::make_unique<GeolocationPermissionContext>(
@@ -1057,7 +1057,7 @@ TEST_F(GeolocationPermissionContextTests, GeolocationStatusSystemDisabled) {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 TEST_F(GeolocationPermissionContextTests,
        AllSystemAndSitePermissionCombinations) {
   GURL requesting_frame("https://www.example.com/geolocation");

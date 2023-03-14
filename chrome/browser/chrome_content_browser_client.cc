@@ -3424,14 +3424,12 @@ std::string ChromeContentBrowserClient::GetGeolocationApiKey() {
   return google_apis::GetAPIKey();
 }
 
+#if BUILDFLAG(IS_MAC)
 device::GeolocationManager*
 ChromeContentBrowserClient::GetGeolocationManager() {
-#if BUILDFLAG(IS_MAC)
-  return g_browser_process->platform_part()->geolocation_manager();
-#else
-  return nullptr;
-#endif
+  return g_browser_process->geolocation_manager();
 }
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
 bool ChromeContentBrowserClient::ShouldUseGmsCoreGeolocationProvider() {

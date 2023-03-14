@@ -202,7 +202,7 @@ class ChromeBrowserMainExtraPartsBrowserProcessInjection
         std::make_unique<device::FakeGeolocationManager>();
     fake_geolocation_manager->SetSystemPermission(
         device::LocationSystemPermissionStatus::kAllowed);
-    g_browser_process->platform_part()->SetGeolocationManagerForTesting(
+    g_browser_process->SetGeolocationManager(
         std::move(fake_geolocation_manager));
   }
 

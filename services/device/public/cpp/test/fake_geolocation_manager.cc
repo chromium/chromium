@@ -18,6 +18,12 @@ class FakeGeolocationSource : public SystemGeolocationSource {
       PermissionUpdateCallback callback) override {
     permission_callback_ = callback;
   }
+  void SetSystemPermission(LocationSystemPermissionStatus status) {
+    status_ = status;
+    permission_callback_.Run(status_);
+  }
+
+#if BUILDFLAG(IS_MAC)
   void RegisterPositionUpdateCallback(
       PositionUpdateCallback callback) override {
     position_callback_ = callback;
@@ -27,22 +33,20 @@ class FakeGeolocationSource : public SystemGeolocationSource {
   }
   void StopWatchingPosition() override { watching_position_ = false; }
   bool watching_position() { return watching_position_; }
-
-  void SetSystemPermission(LocationSystemPermissionStatus status) {
-    status_ = status;
-    permission_callback_.Run(status_);
-  }
-
   void FakePositionUpdated(const mojom::Geoposition& position) {
     position_callback_.Run(position);
   }
+#endif  // BUILDFLAG(IS_MAC)
 
  private:
   LocationSystemPermissionStatus status_ =
       LocationSystemPermissionStatus::kDenied;
-  bool watching_position_ = false;
   PermissionUpdateCallback permission_callback_;
+
+#if BUILDFLAG(IS_MAC)
+  bool watching_position_ = false;
   PositionUpdateCallback position_callback_;
+#endif  // BUILDFLAG(IS_MAC)
 };
 }  // namespace
 
@@ -55,6 +59,7 @@ void FakeGeolocationManager::SetSystemPermission(
       .SetSystemPermission(status);
 }
 
+#if BUILDFLAG(IS_MAC)
 bool FakeGeolocationManager::watching_position() {
   return static_cast<FakeGeolocationSource&>(SystemGeolocationSourceForTest())
       .watching_position();
@@ -65,5 +70,6 @@ void FakeGeolocationManager::FakePositionUpdated(
   return static_cast<FakeGeolocationSource&>(SystemGeolocationSourceForTest())
       .FakePositionUpdated(position);
 }
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace device

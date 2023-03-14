@@ -139,9 +139,12 @@ class BrowserProcessImpl : public BrowserProcess,
   // BrowserProcess implementation.
   void EndSession() override;
   void FlushLocalStateAndReply(base::OnceClosure reply) override;
+  device::GeolocationManager* geolocation_manager() override;
   metrics_services_manager::MetricsServicesManager* GetMetricsServicesManager()
       override;
   metrics::MetricsService* metrics_service() override;
+  void SetGeolocationManager(
+      std::unique_ptr<device::GeolocationManager> geolocation_manager) override;
   // TODO(qinmin): Remove this method as callers can retrieve the global
   // instance from SystemNetworkContextManager directly.
   SystemNetworkContextManager* system_network_context_manager() override;
@@ -254,6 +257,8 @@ class BrowserProcessImpl : public BrowserProcess,
   // Must be destroyed before |browser_policy_connector_|.
   bool created_profile_manager_ = false;
   std::unique_ptr<ProfileManager> profile_manager_;
+
+  std::unique_ptr<device::GeolocationManager> geolocation_manager_;
 
   const std::unique_ptr<PrefService> local_state_;
 

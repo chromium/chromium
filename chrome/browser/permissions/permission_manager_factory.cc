@@ -41,10 +41,9 @@
 #include "chrome/browser/geolocation/geolocation_permission_context_delegate_android.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
-#endif  // BUILDFLAG(IS_MAC)
+#endif
 
 namespace {
 
@@ -59,10 +58,10 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
   delegates.geolocation_permission_context_delegate =
       std::make_unique<GeolocationPermissionContextDelegate>(profile);
 #endif  // BUILDFLAG(IS_ANDROID)
-#if BUILDFLAG(IS_MAC)
-  delegates.geolocation_manager =
-      g_browser_process->platform_part()->geolocation_manager();
-#endif  // BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+  delegates.geolocation_manager = g_browser_process->geolocation_manager();
+  DCHECK(delegates.geolocation_manager);
+#endif
   delegates.media_stream_device_enumerator =
       MediaCaptureDevicesDispatcher::GetInstance();
   delegates.camera_pan_tilt_zoom_permission_context_delegate =
@@ -165,8 +164,7 @@ PermissionManagerFactory::PermissionManagerFactory()
   DependsOn(HostContentSettingsMapFactory::GetInstance());
 }
 
-PermissionManagerFactory::~PermissionManagerFactory() {
-}
+PermissionManagerFactory::~PermissionManagerFactory() {}
 
 KeyedService* PermissionManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

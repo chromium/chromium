@@ -259,8 +259,8 @@ void ChromeBrowserMainExtraPartsLacros::PostProfileInit(
                                                              textfield);
           }));
 
-  DCHECK(!g_browser_process->platform_part()->geolocation_manager());
-  g_browser_process->platform_part()->SetGeolocationManager(
+  DCHECK(!g_browser_process->geolocation_manager());
+  g_browser_process->SetGeolocationManager(
       SystemGeolocationSourceLacros::CreateGeolocationManagerOnLacros());
 }
 
@@ -273,5 +273,5 @@ void ChromeBrowserMainExtraPartsLacros::PostMainMessageLoopRun() {
   kiosk_session_service_.reset();
 
   // Initialized in PreProfileInit.
-  g_browser_process->platform_part()->SetGeolocationManager(nullptr);
+  g_browser_process->SetGeolocationManager(nullptr);
 }

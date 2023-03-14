@@ -326,7 +326,7 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
   TabScrubberChromeOS::GetInstance();
 
   // Create geolocation manager
-  g_browser_process->platform_part()->SetGeolocationManager(
+  g_browser_process->SetGeolocationManager(
       ash::SystemGeolocationSource::CreateGeolocationManagerOnAsh());
 }
 
@@ -375,7 +375,7 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   }
 
   // Initialized in PreProfileInit (which may not get called in some tests).
-  g_browser_process->platform_part()->SetGeolocationManager(nullptr);
+  g_browser_process->SetGeolocationManager(nullptr);
   system_tray_client_.reset();
   session_controller_client_.reset();
   ime_controller_client_.reset();

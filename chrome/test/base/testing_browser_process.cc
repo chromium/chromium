@@ -39,10 +39,15 @@
 #include "extensions/buildflags/buildflags.h"
 #include "media/media_buildflags.h"
 #include "printing/buildflags/buildflags.h"
+#include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "services/network/test/test_network_quality_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+#include "services/device/public/cpp/test/fake_geolocation_manager.h"
+#endif
 
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
 #include "chrome/browser/background/background_mode_manager.h"
@@ -95,6 +100,14 @@ void TestingBrowserProcess::CreateInstance() {
   // ChromeExtensionsBrowserClient).
   g_browser_process = process;
   process->Init();
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+  auto fake_geolocation_manager =
+      std::make_unique<device::FakeGeolocationManager>();
+  fake_geolocation_manager->SetSystemPermission(
+      device::LocationSystemPermissionStatus::kAllowed);
+  process->SetGeolocationManager(std::move(fake_geolocation_manager));
+#endif
 }
 
 // static
@@ -179,6 +192,10 @@ TestingBrowserProcess::GetMetricsServicesManager() {
 
 metrics::MetricsService* TestingBrowserProcess::metrics_service() {
   return nullptr;
+}
+
+device::GeolocationManager* TestingBrowserProcess::geolocation_manager() {
+  return geolocation_manager_.get();
 }
 
 SystemNetworkContextManager*
@@ -286,6 +303,11 @@ void TestingBrowserProcess::set_background_mode_manager_for_test(
   NOTREACHED();
 }
 #endif
+
+void TestingBrowserProcess::SetGeolocationManager(
+    std::unique_ptr<device::GeolocationManager> geolocation_manager) {
+  geolocation_manager_ = std::move(geolocation_manager);
+}
 
 StatusTray* TestingBrowserProcess::status_tray() {
   return status_tray_.get();
