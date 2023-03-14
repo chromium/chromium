@@ -384,21 +384,41 @@ void SetTitleHeaderProperties(views::Label* label) {
                                /*adjust_height_for_width =*/true));
 }
 
+// Returns the title to be shown in the dialog. This does not include the
+// subtitle. For screen reader purposes, GetAccessibleTitle() is used instead.
+std::u16string GetTitle(
+    const std::u16string& top_frame_for_display,
+    const absl::optional<std::u16string>& iframe_for_display,
+    const absl::optional<std::u16string>& idp_title,
+    blink::mojom::RpContext rp_context) {
+  std::u16string frame_in_title = iframe_for_display.has_value()
+                                      ? iframe_for_display.value()
+                                      : top_frame_for_display;
+  return idp_title.has_value()
+             ? l10n_util::GetStringFUTF16(
+                   SelectSingleIdpTitleResourceId(rp_context), frame_in_title,
+                   idp_title.value())
+             : l10n_util::GetStringFUTF16(
+                   IDS_MULTI_IDP_ACCOUNT_SELECTION_SHEET_TITLE_EXPLICIT,
+                   frame_in_title);
+}
+
+std::u16string GetSubtitle(const std::u16string& top_frame_for_display) {
+  return l10n_util::GetStringFUTF16(IDS_ACCOUNT_SELECTION_SHEET_SUBTITLE,
+                                    top_frame_for_display);
+}
+
+// Returns the title combined with the subtitle for screen reader purposes.
 std::u16string GetAccessibleTitle(
     const std::u16string& top_frame_for_display,
     const absl::optional<std::u16string>& iframe_for_display,
     const absl::optional<std::u16string>& idp_title,
     blink::mojom::RpContext rp_context) {
-  std::u16string frame_for_display = iframe_for_display.has_value()
-                                         ? iframe_for_display.value()
-                                         : top_frame_for_display;
-  return idp_title.has_value()
-             ? l10n_util::GetStringFUTF16(
-                   SelectSingleIdpTitleResourceId(rp_context),
-                   frame_for_display, idp_title.value())
-             : l10n_util::GetStringFUTF16(
-                   IDS_MULTI_IDP_ACCOUNT_SELECTION_SHEET_TITLE_EXPLICIT,
-                   frame_for_display);
+  std::u16string title = GetTitle(top_frame_for_display, iframe_for_display,
+                                  idp_title, rp_context);
+  return iframe_for_display.has_value()
+             ? title + u" " + GetSubtitle(top_frame_for_display)
+             : title;
 }
 
 }  // namespace
@@ -442,13 +462,14 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
 
   rp_context_ = rp_context;
   show_auto_reauthn_checkbox_ = show_auto_reauthn_checkbox;
+  title_ = GetTitle(top_frame_for_display, iframe_for_display, idp_title,
+                    rp_context);
   accessible_title_ = GetAccessibleTitle(
       top_frame_for_display, iframe_for_display, idp_title, rp_context);
   SetAccessibleTitle(accessible_title_);
 
   if (iframe_for_display.has_value()) {
-    subtitle_ = l10n_util::GetStringFUTF16(IDS_ACCOUNT_SELECTION_SHEET_SUBTITLE,
-                                           top_frame_for_display);
+    subtitle_ = ::GetSubtitle(top_frame_for_display);
   }
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -466,8 +487,8 @@ void AccountSelectionBubbleView::ShowMultiAccountPicker(
   // passed will be unused since there will be no `header_icon_view_`.
   // Therefore, it is fine to pass the first one into UpdateHeader().
   DCHECK(idp_display_data_list.size() == 1u || !header_icon_view_);
-  UpdateHeader(idp_display_data_list[0].idp_metadata, accessible_title_,
-               subtitle_, /*show_back_button=*/false);
+  UpdateHeader(idp_display_data_list[0].idp_metadata, title_, subtitle_,
+               /*show_back_button=*/false);
 
   RemoveNonHeaderChildViews();
   AddChildView(std::make_unique<views::Separator>());
@@ -521,8 +542,8 @@ void AccountSelectionBubbleView::ShowSingleAccountConfirmDialog(
     const IdentityProviderDisplayData& idp_display_data,
     bool show_back_button) {
   std::u16string title =
-      GetAccessibleTitle(top_frame_for_display, iframe_for_display,
-                         idp_display_data.idp_etld_plus_one, rp_context_);
+      GetTitle(top_frame_for_display, iframe_for_display,
+               idp_display_data.idp_etld_plus_one, rp_context_);
   UpdateHeader(idp_display_data.idp_metadata, title, subtitle_,
                show_back_button);
 
@@ -632,7 +653,7 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateHeaderView(
 
   // Add the title.
   title_label_ = header->AddChildView(std::make_unique<views::Label>(
-      accessible_title_, views::style::CONTEXT_DIALOG_BODY_TEXT,
+      title_, views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::STYLE_PRIMARY));
   SetTitleHeaderProperties(title_label_);
 

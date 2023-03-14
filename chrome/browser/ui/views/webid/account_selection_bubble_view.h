@@ -151,6 +151,9 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   // The accessible title.
   std::u16string accessible_title_;
 
+  // The initial title for the dialog.
+  std::u16string title_;
+
   // The initial subtitle for the dialog.
   std::u16string subtitle_;
 
