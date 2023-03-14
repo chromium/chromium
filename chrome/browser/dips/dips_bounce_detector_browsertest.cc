@@ -9,8 +9,10 @@
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/dips/dips_test_utils.h"
 #include "chrome/browser/dips/dips_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/navigation_handle.h"
@@ -151,6 +153,16 @@ WEB_CONTENTS_USER_DATA_KEY_IMPL(WCOCallbackLogger);
 
 class DIPSBounceDetectorBrowserTest : public PlatformBrowserTest {
  protected:
+  DIPSBounceDetectorBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{
+            // TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having
+            // to disable this feature.
+            features::kHttpsUpgrades,
+        });
+  }
+
   void SetUpOnMainThread() override {
     ASSERT_TRUE(embedded_test_server()->Start());
     host_resolver()->AddRule("a.test", "127.0.0.1");
@@ -215,6 +227,8 @@ class DIPSBounceDetectorBrowserTest : public PlatformBrowserTest {
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
   raw_ptr<DIPSWebContentsObserver, DanglingUntriaged> web_contents_observer_ =
       nullptr;
 };
