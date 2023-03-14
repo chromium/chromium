@@ -103,18 +103,7 @@ void PasswordStore::Init(
 
 void PasswordStore::AddLogin(const PasswordForm& form,
                              base::OnceClosure completion) {
-  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(!form.blocked_by_user ||
-         (form.username_value.empty() && form.password_value.empty()));
-  if (!backend_) {
-    return;  // Once the shutdown started, ignore new requests.
-  }
-  backend_->AddLoginAsync(
-      form, base::BindOnce(&GetPasswordChangesOrNulloptOnFailure)
-                .Then(base::BindOnce(
-                          &PasswordStore::NotifyLoginsChangedOnMainSequence,
-                          this, LoginsChangedTrigger::Addition)
-                          .Then(std::move(completion))));
+  AddLogins({form}, std::move(completion));
 }
 
 void PasswordStore::AddLogins(const std::vector<PasswordForm>& forms,
