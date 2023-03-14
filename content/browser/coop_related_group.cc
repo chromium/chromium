@@ -100,9 +100,10 @@ void CoopRelatedGroup::UnregisterBrowsingInstance(
 scoped_refptr<SiteInstanceImpl>
 CoopRelatedGroup::GetCoopRelatedSiteInstanceForURL(const UrlInfo& url_info,
                                                    bool allow_default_si) {
-  // TODO(https://crbug.com/1411599): Once we've disabled COOP inside fenced
-  // frames, add a CHECK verifying that is_fenced_ is false, as this function
-  // should not be reachable under those circumstances anymore.
+  // Fenced frames should never be able to request other SiteInstances in the
+  // same CoopRelatedGroup, as they cannot open popups without noopener and COOP
+  // is not enforced within the frame.
+  DCHECK(!is_fenced_);
   scoped_refptr<BrowsingInstance> target_browsing_instance =
       GetOrCreateBrowsingInstanceForCoopPolicy(
           url_info.common_coop_origin,

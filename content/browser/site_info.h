@@ -48,10 +48,16 @@ class CONTENT_EXPORT SiteInfo {
   // associated with a guest. Similarly, when process isolation for fenced
   // frames is enabled, error pages inside fenced frames will be isolated from
   // embedders.
+  //
+  // `web_exposed_isolation_info` describes the isolation state of the error
+  // page. Top-level error pages use a non-isolated WebExposedIsolationInfo,
+  // while subframes and embedded content (including fenced frames, protals,
+  // etc.) inherit this value from their embedder.
   static SiteInfo CreateForErrorPage(
       const StoragePartitionConfig storage_partition_config,
       bool is_guest,
-      bool is_fenced);
+      bool is_fenced,
+      const WebExposedIsolationInfo& web_exposed_isolation_info);
 
   // Helper to create a SiteInfo for default SiteInstances.  Default
   // SiteInstances are used for non-isolated sites on platforms without strict

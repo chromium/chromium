@@ -11,7 +11,8 @@
 promise_test(async () => {
   const fenced_frame = attachFencedFrameContext();
 
-  // Set the fenced frame's `window.name` and navigate it to a cross-origin page
+  // This test verifies that COOP is not enabled in fenced frames. To do so, we
+  // set the fenced frame's `window.name` and navigate it to a cross-origin page
   // with the `Cross-Origin-Opener-Policy: same-origin` response header.
   await fenced_frame.execute(() => {
     const remote_origin = get_host_info().REMOTE_ORIGIN;
@@ -30,9 +31,9 @@ promise_test(async () => {
     });
   });
 
-  // Verify that the fenced frame's `window.name` has been cleared.
+  // Verify that the fenced frame's `window.name` is still there
   await fenced_frame.execute(() => {
-    assert_equals(window.name, '');
+    assert_equals(window.name, 'test');
   });
 
 }, "window.name after bcg swap");

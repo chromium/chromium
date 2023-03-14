@@ -21,6 +21,11 @@
 //
 // This test is a basic smoke test that sending input through this setup works
 // and doesn't cause any crashes. See linked bug for more details.
+//
+// TODO(https://crbug.com/1411599): COOP is no longer taken into account inside
+// fenced frames. To test the "speculative" frame host route, we might only need
+// to do a cross-site navigation. Once figured out, use the new approach to test
+// that route.
 promise_test(async () => {
   const frame = attachFencedFrameContext({
     headers: [["Cross-Origin-Opener-Policy", "same-origin-allow-popups"]]

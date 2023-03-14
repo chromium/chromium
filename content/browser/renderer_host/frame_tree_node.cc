@@ -326,7 +326,7 @@ Navigator& FrameTreeNode::navigator() {
   return frame_tree().navigator();
 }
 
-bool FrameTreeNode::IsOutermostMainFrame() {
+bool FrameTreeNode::IsOutermostMainFrame() const {
   return !GetParentOrOuterDocument();
 }
 
@@ -343,7 +343,7 @@ void FrameTreeNode::ResetForNavigation() {
       blink::mojom::UserActivationNotificationType::kNone);
 }
 
-RenderFrameHostImpl* FrameTreeNode::GetParentOrOuterDocument() {
+RenderFrameHostImpl* FrameTreeNode::GetParentOrOuterDocument() const {
   return GetParentOrOuterDocumentHelper(/*escape_guest_view=*/false,
                                         /*include_prospective=*/true);
 }
@@ -355,7 +355,7 @@ RenderFrameHostImpl* FrameTreeNode::GetParentOrOuterDocumentOrEmbedder() {
 
 RenderFrameHostImpl* FrameTreeNode::GetParentOrOuterDocumentHelper(
     bool escape_guest_view,
-    bool include_prospective) {
+    bool include_prospective) const {
   // Find the parent in the FrameTree (iframe).
   if (parent_) {
     return parent_;

@@ -181,12 +181,13 @@ bool GetGuestPartitionConfigForSite(
 SiteInfo SiteInfo::CreateForErrorPage(
     const StoragePartitionConfig storage_partition_config,
     bool is_guest,
-    bool is_fenced) {
+    bool is_fenced,
+    const WebExposedIsolationInfo& web_exposed_isolation_info) {
   return SiteInfo(GetErrorPageSiteAndLockURL(), GetErrorPageSiteAndLockURL(),
                   false /* requires_origin_keyed_process */,
                   false /* is_sandboxed */, UrlInfo::kInvalidUniqueSandboxId,
-                  storage_partition_config,
-                  WebExposedIsolationInfo::CreateNonIsolated(), is_guest,
+                  storage_partition_config, web_exposed_isolation_info,
+                  is_guest,
                   false /* does_site_request_dedicated_process_for_coop */,
                   false /* is_jit_disabled */, false /* is_pdf */, is_fenced);
 }
@@ -299,9 +300,12 @@ SiteInfo SiteInfo::CreateInternal(const IsolationContext& isolation_context,
   DCHECK(storage_partition_config.has_value());
 
   if (url_info.url.SchemeIs(kChromeErrorScheme)) {
-    return CreateForErrorPage(storage_partition_config.value(),
-                              /*is_guest=*/isolation_context.is_guest(),
-                              /*is_fenced=*/isolation_context.is_fenced());
+    return CreateForErrorPage(
+        storage_partition_config.value(),
+        /*is_guest=*/isolation_context.is_guest(),
+        /*is_fenced=*/isolation_context.is_fenced(),
+        url_info.web_exposed_isolation_info.value_or(
+            WebExposedIsolationInfo::CreateNonIsolated()));
   }
   // We should only set |requires_origin_keyed_process| if we are actually
   // creating separate SiteInstances for OAC isolation. When we do same-process

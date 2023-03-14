@@ -8758,9 +8758,13 @@ NavigationRequest::ComputeWebExposedIsolationInfo() {
   // Iframes have to pass COEP tests in |OnResponseStarted| before being loaded
   // and inheriting this cross-origin isolated state.
   //
+  // Embedded content that cannot always provide a separate process (Fenced
+  // frames, portals, etc.) should use the crossOriginIsolated state of their
+  // parent. Therefore we use IsOutermostMainFrame.
+  //
   // TODO(crbug.com/1206150): This may change as we work out the model for
   // isolation mechanisms beyond "cross-origin isolation".
-  if (!frame_tree_node_->IsMainFrame()) {
+  if (!frame_tree_node_->IsOutermostMainFrame()) {
     return frame_tree_node_->current_frame_host()
         ->GetMainFrame()
         ->GetSiteInstance()
@@ -8803,10 +8807,13 @@ NavigationRequest::ComputeWebExposedIsolationInfo() {
 }
 
 absl::optional<url::Origin> NavigationRequest::ComputeCommonCoopOrigin() {
-  // Iframes cannot set COOP, but live in the same BrowsingInstance as their
-  // parent. For proper BrowsingInstance reuse with COOP: restrict-properties it
-  // is important that they inherit this state.
-  if (!frame_tree_node_->IsMainFrame()) {
+  // Embedded content that cannot set COOP directly should inherit their COOP
+  // common origin from their embedder. For iframes, this is to ensure that they
+  // do not reuse a SiteInstance in the wrong page. For other embedded
+  // content it is simply for consistency as they should never try to get
+  // another SiteInstance in the same CoopRelatedGroup anyway. For this reason
+  // we use IsOutermostMainFrame.
+  if (!frame_tree_node_->IsOutermostMainFrame()) {
     return frame_tree_node_->current_frame_host()
         ->GetMainFrame()
         ->GetSiteInstance()

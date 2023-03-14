@@ -109,7 +109,7 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // IsOutermostMainFrame will be true for the outermost main frame in an inner
   // guest view.
   bool IsMainFrame() const;
-  bool IsOutermostMainFrame();
+  bool IsOutermostMainFrame() const;
 
   // Clears any state in this node which was set by the document itself (CSP &
   // UserActivationState) and notifies proxies as appropriate. Invoked after
@@ -146,7 +146,7 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
 
   // See `RenderFrameHost::GetParentOrOuterDocument()` for
   // documentation.
-  RenderFrameHostImpl* GetParentOrOuterDocument();
+  RenderFrameHostImpl* GetParentOrOuterDocument() const;
 
   // See `RenderFrameHostImpl::GetParentOrOuterDocumentOrEmbedder()` for
   // documentation.
@@ -512,8 +512,9 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // GetParentOrOuterDocumentOrEmbedder for details.
   // `include_prospective` includes embedders which own our frame tree, but have
   // not yet attached it to the outer frame tree.
-  RenderFrameHostImpl* GetParentOrOuterDocumentHelper(bool escape_guest_view,
-                                                      bool include_prospective);
+  RenderFrameHostImpl* GetParentOrOuterDocumentHelper(
+      bool escape_guest_view,
+      bool include_prospective) const;
 
   // Sets the unique_name and name fields on replication_state_. To be used in
   // prerender activation to make sure the FrameTreeNode replication state is

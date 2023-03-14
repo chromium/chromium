@@ -270,7 +270,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // If this is a RenderFrameHostManager for a main frame, this method returns
   // the FrameTreeNode for the frame in the outer WebContents (if any) that
   // contains the inner WebContents.
-  FrameTreeNode* GetOuterDelegateNode();
+  FrameTreeNode* GetOuterDelegateNode() const;
 
   // Return a proxy for this frame in the parent frame's SiteInstance.  Returns
   // nullptr if this is a main frame or if such a proxy does not exist (for

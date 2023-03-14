@@ -16,6 +16,6 @@ promise_test(async(t) => {
     fencedframe_blocked.then(() => "blocked"),
     fencedframe_loaded.then(() => "loaded"),
   ]), "fenced frame should not be loaded.");
-}, 'Create fencedframe with COOP:same-origin and COEP:require-corp');
+}, 'Create a fencedframe without COEP from an embedder setting COEP');
 </script>
 </body>
