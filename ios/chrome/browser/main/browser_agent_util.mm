@@ -105,7 +105,9 @@ void AttachBrowserAgents(Browser* browser) {
   if (!browser->GetBrowserState()->IsOffTheRecord())
     StartSurfaceRecentTabBrowserAgent::CreateForBrowser(browser);
 
-  SyncErrorBrowserAgent::CreateForBrowser(browser);
+  if (!browser->IsInactive()) {
+    SyncErrorBrowserAgent::CreateForBrowser(browser);
+  }
 
   UpgradeCenterBrowserAgent::CreateForBrowser(browser,
                                               [UpgradeCenter sharedInstance]);

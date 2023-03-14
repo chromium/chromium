@@ -7,7 +7,8 @@
 
 class Browser;
 
-// Attaches browser agents to `browser`.
+// Attaches browser agents to `browser`. If the Browser is inactive, or off the
+// record, some of the browser agents won't be attached because they are unused.
 void AttachBrowserAgents(Browser* browser);
 
 #endif  // IOS_CHROME_BROWSER_MAIN_BROWSER_AGENT_UTIL_H_

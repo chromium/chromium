@@ -35,6 +35,8 @@ void SyncErrorBrowserAgent::SetUIProviders(
   signin_presenter_provider_ = signin_presenter_provider;
   sync_presenter_provider_ = sync_presenter_provider;
 
+  // Re-evaluate all web states.
+  web_state_observations_.RemoveAllObservations();
   WebStateList* web_state_list = browser_->GetWebStateList();
   for (int i = 0; i < web_state_list->count(); i++) {
     web::WebState* web_state = web_state_list->GetWebStateAt(i);
@@ -93,11 +95,12 @@ void SyncErrorBrowserAgent::WebStateRealized(web::WebState* web_state) {
 
 void SyncErrorBrowserAgent::CreateReSignInInfoBarDelegate(
     web::WebState* web_state) {
-  if (!signin_presenter_provider_ || !sync_presenter_provider_)
-    return;
-
   if (!web_state->IsRealized()) {
     web_state_observations_.AddObservation(web_state);
+    return;
+  }
+
+  if (!signin_presenter_provider_ || !sync_presenter_provider_) {
     return;
   }
 
