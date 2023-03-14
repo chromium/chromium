@@ -898,26 +898,22 @@ void VaapiVideoEncodeAccelerator::EncodePendingInputs() {
       jobs.emplace_back(std::move(job));
     }
 
-    // TODO(b/257368998): Submit SVC EncodeTask in parallel.
+    for (auto& job : jobs) {
+      TRACE_EVENT0("media,gpu", "VAVEA::Encode");
+      if (!encoder_->Encode(*job)) {
+        NOTIFY_ERROR(kPlatformFailureError, "Failed encoding job");
+        return;
+      }
+    }
     for (auto&& job : jobs) {
-      {
-        TRACE_EVENT0("media,gpu", "VAVEA::Encode");
-        if (!encoder_->Encode(*job)) {
-          NOTIFY_ERROR(kPlatformFailureError, "Failed encoding job");
-          return;
-        }
+      TRACE_EVENT0("media,gpu", "VAVEA::GetEncodeResult");
+      absl::optional<EncodeResult> result =
+          encoder_->GetEncodeResult(std::move(job));
+      if (!result) {
+        NOTIFY_ERROR(kPlatformFailureError, "Failed getting encode result");
+        return;
       }
-
-      {
-        TRACE_EVENT0("media,gpu", "VAVEA::GetEncodeResult");
-        absl::optional<EncodeResult> result =
-            encoder_->GetEncodeResult(std::move(job));
-        if (!result) {
-          NOTIFY_ERROR(kPlatformFailureError, "Failed getting encode result");
-          return;
-        }
-        pending_encode_results_.push(std::move(result));
-      }
+      pending_encode_results_.push(std::move(result));
     }
 
     // Invalidates |input_frame| here; it notifies a client |input_frame.frame|
