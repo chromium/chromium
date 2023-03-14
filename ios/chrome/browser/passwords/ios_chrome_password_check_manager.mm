@@ -72,12 +72,6 @@ PasswordCheckState ConvertBulkCheckState(State state) {
   NOTREACHED();
   return PasswordCheckState::kIdle;
 }
-
-// Returns true if the Password Checkup feature flag is enabled.
-bool IsPasswordCheckupEnabled() {
-  return base::FeatureList::IsEnabled(
-      password_manager::features::kIOSPasswordCheckup);
-}
 }  // namespace
 
 IOSChromePasswordCheckManager::IOSChromePasswordCheckManager(
@@ -122,7 +116,7 @@ void IOSChromePasswordCheckManager::StartPasswordCheck() {
     bulk_leak_check_service_adapter_.StartBulkLeakCheck(kPasswordCheckDataKey,
                                                         &data);
 
-    if (IsPasswordCheckupEnabled()) {
+    if (password_manager::features::IsPasswordCheckupEnabled()) {
       insecure_credentials_manager_.StartWeakCheck(base::BindOnce(
           &IOSChromePasswordCheckManager::OnWeakOrReuseCheckFinished,
           weak_ptr_factory_.GetWeakPtr()));

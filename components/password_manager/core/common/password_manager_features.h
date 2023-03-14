@@ -207,6 +207,11 @@ bool RequiresMigrationForUnifiedPasswordManager();
 bool ManagesLocalPasswordsInUnifiedPasswordManager();
 #endif  // IS_ANDROID
 
+#if BUILDFLAG(IS_IOS)
+// Returns true if the Password Checkup feature flag is enabled.
+bool IsPasswordCheckupEnabled();
+#endif  // IS_IOS
+
 }  // namespace password_manager::features
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_COMMON_PASSWORD_MANAGER_FEATURES_H_

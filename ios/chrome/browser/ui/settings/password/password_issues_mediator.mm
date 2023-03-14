@@ -34,18 +34,8 @@
 #endif
 
 using password_manager::CredentialUIEntry;
-
-namespace {
-
 using password_manager::WarningType;
-
-// Returns true if the Password Checkup feature flag is enabled.
-bool IsPasswordCheckupEnabled() {
-  return base::FeatureList::IsEnabled(
-      password_manager::features::kIOSPasswordCheckup);
-}
-
-}  // namespace
+using password_manager::features::IsPasswordCheckupEnabled;
 
 @interface PasswordIssuesMediator () <PasswordCheckObserver,
                                       SavedPasswordsPresenterObserver> {

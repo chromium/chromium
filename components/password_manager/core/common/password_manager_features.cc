@@ -410,4 +410,11 @@ bool ManagesLocalPasswordsInUnifiedPasswordManager() {
 }
 #endif  // IS_ANDROID
 
+#if BUILDFLAG(IS_IOS)
+bool IsPasswordCheckupEnabled() {
+  return base::FeatureList::IsEnabled(
+      password_manager::features::kIOSPasswordCheckup);
+}
+#endif  // IS_IOS
+
 }  // namespace password_manager::features

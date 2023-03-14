@@ -95,10 +95,11 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
-
 using base::UmaHistogramEnumeration;
+using password_manager::features::IsPasswordCheckupEnabled;
 using password_manager::metrics_util::PasswordCheckInteraction;
+
+namespace {
 
 typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeHeader,
@@ -139,12 +140,6 @@ bool IsPasswordGroupingEnabled() {
 bool ShouldShowSettingsUI() {
   return !base::FeatureList::IsEnabled(
       password_manager::features::kIOSPasswordUISplit);
-}
-
-// Returns true if the Password Checkup feature flag is enabled.
-bool IsPasswordCheckupEnabled() {
-  return base::FeatureList::IsEnabled(
-      password_manager::features::kIOSPasswordCheckup);
 }
 
 bool IsPasswordNotesWithBackupEnabled() {

@@ -52,8 +52,7 @@ base::flat_set<std::u16string> ExtractPasswords(
 bool IsCheckForReusedPasswordsEnabled() {
 #if BUILDFLAG(IS_IOS)
   // Weak and reused checks are controlled by the Password Checkup feature.
-  return base::FeatureList::IsEnabled(
-      password_manager::features::kIOSPasswordCheckup);
+  return password_manager::features::IsPasswordCheckupEnabled();
 #else
   return base::FeatureList::IsEnabled(
       password_manager::features::kPasswordManagerRedesign);
@@ -63,8 +62,7 @@ bool IsCheckForReusedPasswordsEnabled() {
 bool IsCheckForWeakPasswordsEnabled() {
 #if BUILDFLAG(IS_IOS)
   // Weak and reused checks are controlled by the Password Checkup feature.
-  return base::FeatureList::IsEnabled(
-      password_manager::features::kIOSPasswordCheckup);
+  return password_manager::features::IsPasswordCheckupEnabled();
 #else
   return true;
 #endif
