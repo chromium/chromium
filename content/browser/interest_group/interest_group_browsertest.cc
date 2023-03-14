@@ -2631,6 +2631,36 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   std::string origin_string = url::Origin::Create(url).Serialize();
   ASSERT_TRUE(NavigateToURL(shell(), url));
 
+  bool logged_interest_group_counts = false, logged_latency_stats = false,
+       logged_group_by_origin = false;
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetFilter(base::BindLambdaForTesting(
+      [&logged_interest_group_counts, &logged_latency_stats,
+       &logged_group_by_origin](
+          const WebContentsConsoleObserver::Message& message) {
+        const std::u16string& text = message.message;
+
+        if (text ==
+            u"Enum SellerCapabilities used deprecated value "
+            u"interestGroupCounts -- \"dashed-naming\" should be used instead "
+            u"of \"camelCase\".") {
+          logged_interest_group_counts = true;
+        } else if (text ==
+                   u"Enum SellerCapabilities used deprecated value "
+                   u"latencyStats -- \"dashed-naming\" should be used instead "
+                   u"of \"camelCase\".") {
+          logged_latency_stats = true;
+        } else if (text ==
+                   u"Enum executionMode used deprecated value groupByOrigin "
+                   u"-- \"dashed-naming\" should be used instead of "
+                   u"\"camelCase\".") {
+          logged_group_by_origin = true;
+        }
+
+        return logged_interest_group_counts && logged_latency_stats &&
+               logged_group_by_origin;
+      }));
+
   EXPECT_EQ("done", EvalJs(shell(), JsReplace(R"(
 (async function() {
   try {
@@ -2649,6 +2679,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 })())",
                                               origin_string.c_str())));
   WaitForAccessObserved({});
+  EXPECT_TRUE(console_observer.Wait());
 
   WaitForInterestGroupsSatisfying(
       url::Origin::Create(url),

@@ -306,6 +306,34 @@ String WarningPermissionsPolicy(const String& feature, const String& api) {
       feature.Utf8().c_str(), api.Utf8().c_str());
 }
 
+// Console warnings.
+
+void AddWarningMessageToConsole(ScriptState* script_state,
+                                const String& feature,
+                                const String& api) {
+  auto* window = To<LocalDOMWindow>(ExecutionContext::From(script_state));
+  WebLocalFrameImpl::FromFrame(window->GetFrame())
+      ->AddMessageToConsole(
+          WebConsoleMessage(mojom::blink::ConsoleMessageLevel::kWarning,
+                            WarningPermissionsPolicy(feature, api)),
+          /*discard_duplicates=*/true);
+}
+
+void ConsoleWarnDeprecatedEnum(const ExecutionContext& execution_context,
+                               String enum_name,
+                               String deprecated_value) {
+  auto* window = To<LocalDOMWindow>(&execution_context);
+  WebLocalFrameImpl::FromFrame(window->GetFrame())
+      ->AddMessageToConsole(
+          WebConsoleMessage(
+              mojom::blink::ConsoleMessageLevel::kWarning,
+              String::Format(
+                  "Enum %s used deprecated value %s -- \"dashed-naming\" "
+                  "should be used instead of \"camelCase\".",
+                  enum_name.Utf8().c_str(), deprecated_value.Utf8().c_str())),
+          /*discard_duplicates=*/true);
+}
+
 // JSON and Origin conversion helpers.
 
 bool Jsonify(const ScriptState& script_state,
@@ -408,13 +436,20 @@ WTF::HashMap<WTF::String, double> ConvertSparseVectorIdlToMojo(
 }
 
 mojom::blink::SellerCapabilitiesPtr ConvertSellerCapabilitiesTypeFromIdlToMojo(
+    const ExecutionContext& execution_context,
     const Vector<String>& capabilities_vector) {
   auto seller_capabilities = mojom::blink::SellerCapabilities::New();
   for (const String& capability_str : capabilities_vector) {
+    const bool used_deprecated_names =
+        capability_str == "interestGroupCounts" ||
+        capability_str == "latencyStats";
     base::UmaHistogramBoolean(
         "Ads.InterestGroup.EnumNaming.Renderer.SellerCapabilities",
-        capability_str == "interestGroupCounts" ||
-            capability_str == "latencyStats");
+        used_deprecated_names);
+    if (used_deprecated_names) {
+      ConsoleWarnDeprecatedEnum(execution_context, "SellerCapabilities",
+                                capability_str);
+    }
     if (capability_str == "interest-group-counts" ||
         capability_str == "interestGroupCounts") {
       seller_capabilities->allows_interest_group_counts = true;
@@ -429,9 +464,11 @@ mojom::blink::SellerCapabilitiesPtr ConvertSellerCapabilitiesTypeFromIdlToMojo(
   return seller_capabilities;
 }
 
-bool CopySellerCapabilitiesFromIdlToMojo(ExceptionState& exception_state,
-                                         const AuctionAdInterestGroup& input,
-                                         mojom::blink::InterestGroup& output) {
+bool CopySellerCapabilitiesFromIdlToMojo(
+    const ExecutionContext& execution_context,
+    ExceptionState& exception_state,
+    const AuctionAdInterestGroup& input,
+    mojom::blink::InterestGroup& output) {
   output.all_sellers_capabilities = mojom::blink::SellerCapabilities::New();
   if (!input.hasSellerCapabilities())
     return true;
@@ -439,7 +476,8 @@ bool CopySellerCapabilitiesFromIdlToMojo(ExceptionState& exception_state,
   for (const auto& [origin_string, capabilities_vector] :
        input.sellerCapabilities()) {
     mojom::blink::SellerCapabilitiesPtr seller_capabilities =
-        ConvertSellerCapabilitiesTypeFromIdlToMojo(capabilities_vector);
+        ConvertSellerCapabilitiesTypeFromIdlToMojo(execution_context,
+                                                   capabilities_vector);
     if (origin_string == "*") {
       output.all_sellers_capabilities = std::move(seller_capabilities);
     } else {
@@ -460,9 +498,14 @@ bool CopyExecutionModeFromIdlToMojo(const ExecutionContext& execution_context,
                                     mojom::blink::InterestGroup& output) {
   if (!input.hasExecutionMode())
     return true;
+  const bool used_deprecated_names = input.executionMode() == "groupByOrigin";
   base::UmaHistogramBoolean(
       "Ads.InterestGroup.EnumNaming.Renderer.WorkletExecutionMode",
-      input.executionMode() == "groupByOrigin");
+      used_deprecated_names);
+  if (used_deprecated_names) {
+    ConsoleWarnDeprecatedEnum(execution_context, "executionMode",
+                              input.executionMode());
+  }
 
   // TODO(crbug.com/1330341): Support "frozen-context".
   if (input.executionMode() == "compatibility") {
@@ -1633,6 +1676,7 @@ bool CopyAuctionReportBuyersFromIdlToMojo(
 }
 
 bool CopyRequiredSellerSignalsFromIdlToMojo(
+    const ExecutionContext& execution_context,
     ExceptionState& exception_state,
     const AuctionAdConfig& input,
     mojom::blink::AuctionAdConfig& output) {
@@ -1644,7 +1688,7 @@ bool CopyRequiredSellerSignalsFromIdlToMojo(
 
   output.auction_ad_config_non_shared_params->required_seller_capabilities =
       ConvertSellerCapabilitiesTypeFromIdlToMojo(
-          input.requiredSellerCapabilities());
+          execution_context, input.requiredSellerCapabilities());
   return true;
 }
 
@@ -1707,7 +1751,7 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
                                                *mojo_config) ||
       !CopyAuctionReportBuyersFromIdlToMojo(exception_state, config,
                                             *mojo_config) ||
-      !CopyRequiredSellerSignalsFromIdlToMojo(exception_state, config,
+      !CopyRequiredSellerSignalsFromIdlToMojo(context, exception_state, config,
                                               *mojo_config)) {
     return mojom::blink::AuctionAdConfigPtr();
   }
@@ -1802,17 +1846,6 @@ bool FeatureWouldBeBlockedByRestrictedPermissionsPolicy(Navigator& navigator) {
     frame = frame->Tree().Parent();
   }
   return false;
-}
-
-void AddWarningMessageToConsole(ScriptState* script_state,
-                                const String& feature,
-                                const String& api) {
-  auto* window = To<LocalDOMWindow>(ExecutionContext::From(script_state));
-  WebLocalFrameImpl::FromFrame(window->GetFrame())
-      ->AddMessageToConsole(
-          WebConsoleMessage(mojom::ConsoleMessageLevel::kWarning,
-                            WarningPermissionsPolicy(feature, api)),
-          /*discard_duplicates=*/true);
 }
 
 void RecordCommonFledgeUseCounters(Document* document) {
@@ -2090,7 +2123,7 @@ ScriptPromise NavigatorAuction::joinAdInterestGroup(
         ConvertSparseVectorIdlToMojo(group->prioritySignalsOverrides());
   }
 
-  if (!CopySellerCapabilitiesFromIdlToMojo(exception_state, *group,
+  if (!CopySellerCapabilitiesFromIdlToMojo(*context, exception_state, *group,
                                            *mojo_group)) {
     return ScriptPromise();
   }
