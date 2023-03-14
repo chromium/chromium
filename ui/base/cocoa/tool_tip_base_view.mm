@@ -192,9 +192,11 @@ const NSTrackingRectTag kTrackingRectTag = 0xBADFACE;
     return;
   }
 
+#if MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_VERSION_13_0
   if (_toolTip) {
     [self _sendToolTipMouseExited];
   }
+#endif  // MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_VERSION_13_0
 
   _toolTip.reset([toolTip copy]);
 
@@ -229,7 +231,9 @@ const NSTrackingRectTag kTrackingRectTag = 0xBADFACE;
     _lastToolTipTag = [self addToolTipRect:wideOpenRect
                                      owner:self
                                   userData:NULL];
+#if MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_VERSION_13_0
     [self _sendToolTipMouseEntered];
+#endif  // MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_VERSION_13_0
   }
 }
 
