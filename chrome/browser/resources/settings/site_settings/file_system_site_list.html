@@ -1,0 +1,18 @@
+<template is="dom-repeat" items="[[allowedGrants_]]"
+    as="allowedGrantsPerOrigin">
+  <h2>[[allowedGrantsPerOrigin.origin]]</h2>
+  <div>
+    <h3>$i18n{siteSettingsFileSystemSiteListEditHeader}</h3>
+    <template is="dom-repeat" items="[[allowedGrantsPerOrigin.editGrants]]"
+        as="editGrant">
+      <div class="display-name">[[editGrant.displayName]]</div>
+    </template>
+  </div>
+  <div>
+    <h3>$i18n{siteSettingsFileSystemSiteListViewHeader}</h3>
+    <template is="dom-repeat" items="[[allowedGrantsPerOrigin.viewGrants]]"
+        as="viewGrant">
+      <div class="display-name">[[viewGrant.displayName]]</div>
+    </template>
+  </div>
+</template>

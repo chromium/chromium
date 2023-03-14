@@ -41,6 +41,7 @@ build_webui_tests("build") {
     "dropdown_menu_tests.ts",
     "extension_controlled_indicator_tests.ts",
     "fake_settings_private.ts",
+    "file_system_site_list_tests.ts",
     "help_page_test.ts",
     "idle_load_tests.ts",
     "on_startup_page_tests.ts",

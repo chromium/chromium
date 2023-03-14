@@ -204,6 +204,7 @@ build_webui("build") {
     "site_settings/chooser_exception_list.ts",
     "site_settings/site_details_permission_device_entry.ts",
     "site_settings/edit_exception_dialog.ts",
+    "site_settings/file_system_site_list.ts",
     "site_settings/media_picker.ts",
     "site_settings/review_notification_permissions.ts",
     "site_settings_page/recent_site_permissions.ts",

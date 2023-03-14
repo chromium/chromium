@@ -5,7 +5,7 @@
 // clang-format off
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {AppProtocolEntry, ChooserType, ContentSetting, ContentSettingsTypes, HandlerEntry, NotificationPermission, ProtocolEntry, RawChooserException, RawSiteException, RecentSitePermissions, SiteGroup, SiteSettingSource, SiteSettingsPrefsBrowserProxy, ZoomLevelEntry} from 'chrome://settings/lazy_load.js';
+import {AppProtocolEntry, ChooserType, ContentSetting, ContentSettingsTypes, HandlerEntry, NotificationPermission, FileSystemGrantsForOrigin, ProtocolEntry, RawChooserException, RawSiteException, RecentSitePermissions, SiteGroup, SiteSettingSource, SiteSettingsPrefsBrowserProxy, ZoomLevelEntry} from 'chrome://settings/lazy_load.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 import {createOriginInfo, createSiteGroup,createSiteSettingsPrefs, getContentSettingsTypeFromChooserType, SiteSettingsPref} from './test_util.js';
@@ -31,6 +31,7 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
   private cookieSettingDesciption_: string = '';
   private recentSitePermissions_: RecentSitePermissions[] = [];
   private reviewNotificationList_: NotificationPermission[] = [];
+  private fileSystemGrantsList_: FileSystemGrantsForOrigin[] = [];
 
   constructor() {
     super([
@@ -76,6 +77,7 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
       'getFpsMembershipLabel',
       'getNumCookiesString',
       'getExtensionName',
+      'getFileSystemGrants',
     ]);
 
 
@@ -655,5 +657,15 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
   getExtensionName(id: string) {
     this.methodCalled('getExtensionName', id);
     return Promise.resolve(`Test Extension ${id}`);
+  }
+
+  setFileSystemGrants(fileSystemGrantsForOriginList:
+                          FileSystemGrantsForOrigin[]): void {
+    this.fileSystemGrantsList_ = fileSystemGrantsForOriginList;
+  }
+
+  getFileSystemGrants(): Promise<FileSystemGrantsForOrigin[]> {
+    this.methodCalled('getFileSystemGrants');
+    return Promise.resolve(this.fileSystemGrantsList_);
   }
 }

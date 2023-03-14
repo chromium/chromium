@@ -900,6 +900,7 @@ TEST_F('CrSettingsMenuTest', 'All', function() {
  ['DownloadsPage', 'downloads_page_test.js'],
  ['DropdownMenu', 'dropdown_menu_tests.js'],
  ['ExtensionControlledIndicator', 'extension_controlled_indicator_tests.js'],
+ ['FileSystemSettings', 'file_system_site_list_tests.js'],
  ['HelpPage', 'help_page_test.js'],
  ['PasswordView', 'password_view_test.js'],
  ['PasswordsExportDialog', 'passwords_export_dialog_test.js'],

@@ -184,13 +184,22 @@ export interface NotificationPermission {
 }
 
 /**
- * The File System Access permission grant information
- * passed from site_settings_handler.cc.
+ * TODO(crbug.com/1373962): Remove the origin key from `RawFileSystemGrant`
+ * before the launch of the Persistent Permissions settings page UI.
  */
-export interface FileSystemPermissionGrant {
-  displayName: string;
+export interface RawFileSystemGrant {
+  origin: string;
+  filePath: string;
   isWritable: boolean;
   isDirectory: boolean;
+}
+
+export interface FileSystemGrantsForOrigin {
+  origin: string;
+  directoryReadGrants: RawFileSystemGrant[];
+  directoryWriteGrants: RawFileSystemGrant[];
+  fileReadGrants: RawFileSystemGrant[];
+  fileWriteGrants: RawFileSystemGrant[];
 }
 
 export interface SiteSettingsPrefsBrowserProxy {
@@ -256,6 +265,11 @@ export interface SiteSettingsPrefsBrowserProxy {
    */
   getExceptionList(contentType: ContentSettingsTypes):
       Promise<RawSiteException[]>;
+
+  /**
+   * Gets the File System Access permission grants, grouped by origin.
+   */
+  getFileSystemGrants(): Promise<FileSystemGrantsForOrigin[]>;
 
   /**
    * Gets a list of category permissions for a given origin. Note that this
@@ -536,6 +550,10 @@ export class SiteSettingsPrefsBrowserProxyImpl implements
 
   getExceptionList(contentType: ContentSettingsTypes) {
     return sendWithPromise('getExceptionList', contentType);
+  }
+
+  getFileSystemGrants() {
+    return sendWithPromise('getFileSystemGrants');
   }
 
   getOriginPermissions(origin: string, contentTypes: ContentSettingsTypes[]) {
