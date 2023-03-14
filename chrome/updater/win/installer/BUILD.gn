@@ -24,8 +24,9 @@ source_set("lib") {
     "string.h",
   ]
 
+  public_deps = [ "//base" ]
+
   deps = [
-    "//base",
     "//chrome/installer/util:constants",
     "//chrome/installer/util:metainstaller_utils",
     "//chrome/updater:base",
