@@ -145,8 +145,8 @@ class BASE_EXPORT RunLoop {
   // Note that Quit() itself is thread-safe and may be invoked directly if you
   // have access to the RunLoop reference from another thread (e.g. from a
   // capturing lambda or test observer).
-  RepeatingClosure QuitClosure();
-  RepeatingClosure QuitWhenIdleClosure();
+  [[nodiscard]] RepeatingClosure QuitClosure();
+  [[nodiscard]] RepeatingClosure QuitWhenIdleClosure();
 
   // Returns true if Quit() or QuitWhenIdle() was called.
   bool AnyQuitCalled();
@@ -259,7 +259,7 @@ class BASE_EXPORT RunLoop {
   // instance and increase readability.
   static void QuitCurrentDeprecated();
   static void QuitCurrentWhenIdleDeprecated();
-  static RepeatingClosure QuitCurrentWhenIdleClosureDeprecated();
+  [[nodiscard]] static RepeatingClosure QuitCurrentWhenIdleClosureDeprecated();
 
   // Support for //base/test/scoped_run_loop_timeout.h.
   // This must be public for access by the implementation code in run_loop.cc.

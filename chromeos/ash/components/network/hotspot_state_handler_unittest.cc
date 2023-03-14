@@ -90,9 +90,9 @@ class HotspotStateHandlerTest : public ::testing::Test {
         base::BindLambdaForTesting(
             [&](hotspot_config::mojom::SetHotspotConfigResult success) {
               result = success;
-              run_loop.QuitClosure();
+              run_loop.Quit();
             }));
-    run_loop.RunUntilIdle();
+    run_loop.Run();
     return result;
   }
 

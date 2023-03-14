@@ -113,9 +113,10 @@ class HotspotControllerTest : public ::testing::Test {
     hotspot_controller_->EnableHotspot(base::BindLambdaForTesting(
         [&](hotspot_config::mojom::HotspotControlResult result) {
           return_result = result;
-          run_loop.QuitClosure();
+          run_loop.Quit();
         }));
-    run_loop.RunUntilIdle();
+    run_loop.Run();
+    FlushMojoCalls();
     return return_result;
   }
 
@@ -126,10 +127,11 @@ class HotspotControllerTest : public ::testing::Test {
         base::BindLambdaForTesting(
             [&](hotspot_config::mojom::HotspotControlResult result) {
               return_result = result;
-              run_loop.QuitClosure();
+              run_loop.Quit();
             }),
         hotspot_config::mojom::DisableReason::kUserInitiated);
-    run_loop.RunUntilIdle();
+    run_loop.Run();
+    FlushMojoCalls();
     return return_result;
   }
 
@@ -139,9 +141,10 @@ class HotspotControllerTest : public ::testing::Test {
     hotspot_controller_->PrepareEnableWifi(
         base::BindLambdaForTesting([&](bool result) {
           prepare_success = result;
-          run_loop.QuitClosure();
+          run_loop.Quit();
         }));
-    run_loop.RunUntilIdle();
+    run_loop.Run();
+    FlushMojoCalls();
     return prepare_success;
   }
 
@@ -154,21 +157,29 @@ class HotspotControllerTest : public ::testing::Test {
   void EnableAndDisableHotspot(
       hotspot_config::mojom::HotspotControlResult& enable_result,
       hotspot_config::mojom::HotspotControlResult& disable_result) {
-    base::RunLoop run_loop;
-    hotspot_controller_->EnableHotspot(base::BindLambdaForTesting(
-        [&](hotspot_config::mojom::HotspotControlResult result) {
-          enable_result = result;
-          run_loop.QuitClosure();
-        }));
-    hotspot_controller_->DisableHotspot(
-        base::BindLambdaForTesting(
-            [&](hotspot_config::mojom::HotspotControlResult result) {
-              disable_result = result;
-              run_loop.QuitClosure();
-            }),
-        hotspot_config::mojom::DisableReason::kUserInitiated);
-    run_loop.RunUntilIdle();
+    {
+      base::RunLoop run_loop;
+      hotspot_controller_->EnableHotspot(base::BindLambdaForTesting(
+          [&](hotspot_config::mojom::HotspotControlResult result) {
+            enable_result = result;
+            run_loop.Quit();
+          }));
+      run_loop.Run();
+    }
+    {
+      base::RunLoop run_loop;
+      hotspot_controller_->DisableHotspot(
+          base::BindLambdaForTesting(
+              [&](hotspot_config::mojom::HotspotControlResult result) {
+                disable_result = result;
+                run_loop.Quit();
+              }),
+          hotspot_config::mojom::DisableReason::kUserInitiated);
+      run_loop.Run();
+    }
   }
+
+  void FlushMojoCalls() { base::RunLoop().RunUntilIdle(); }
 
   hotspot_config::HotspotEnabledStateTestObserver* hotspotStateObserver() {
     return hotspot_enabled_state_observer_.get();

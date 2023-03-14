@@ -79,9 +79,9 @@ class HotspotCapabilitiesProviderTest : public ::testing::Test {
             [&](HotspotCapabilitiesProvider::CheckTetheringReadinessResult
                     result) {
               return_result = result;
-              run_loop.QuitClosure();
+              run_loop.Quit();
             }));
-    run_loop.RunUntilIdle();
+    run_loop.Run();
     return return_result;
   }
 

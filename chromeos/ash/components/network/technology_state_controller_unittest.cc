@@ -71,9 +71,9 @@ class TechnologyStateControllerTest : public ::testing::Test {
         base::BindLambdaForTesting([&](bool success, bool wifi_off) {
           prepare_success = success;
           wifi_turned_off = wifi_off;
-          run_loop.QuitClosure();
+          run_loop.Quit();
         }));
-    run_loop.RunUntilIdle();
+    run_loop.Run();
     return std::make_pair(prepare_success, wifi_turned_off);
   }
 
@@ -194,11 +194,10 @@ TEST_F(TechnologyStateControllerTest, ChangePhysicalTechnologies) {
 }
 
 TEST_F(TechnologyStateControllerTest, EnableWifiWhenHotspotOn) {
-  base::RunLoop run_loop;
   technology_state_controller_->SetTechnologiesEnabled(
       NetworkTypePattern::WiFi(), /*enabled=*/false,
       network_handler::ErrorCallback());
-  run_loop.RunUntilIdle();
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(
       NetworkStateHandler::TECHNOLOGY_AVAILABLE,
       network_state_test_helper_.network_state_handler()->GetTechnologyState(
@@ -210,20 +209,21 @@ TEST_F(TechnologyStateControllerTest, EnableWifiWhenHotspotOn) {
                   shill::kTetheringStateActive);
   network_state_test_helper_.manager_test()->SetManagerProperty(
       shill::kTetheringStatusProperty, base::Value(status_dict.Clone()));
-  run_loop.RunUntilIdle();
+  base::RunLoop().RunUntilIdle();
 
   // Simulate disable hotspot will fail.
   network_state_test_helper_.manager_test()->SetSimulateTetheringEnableResult(
       FakeShillSimulatedResult::kSuccess, "network_failure");
 
   std::string error;
+  base::RunLoop run_loop;
   technology_state_controller_->SetTechnologiesEnabled(
       NetworkTypePattern::WiFi(), /*enabled=*/true,
       base::BindLambdaForTesting([&](const std::string& error_name) {
         error = error_name;
-        run_loop.QuitClosure();
+        run_loop.Quit();
       }));
-  run_loop.RunUntilIdle();
+  run_loop.Run();
   EXPECT_EQ(TechnologyStateController::kErrorDisableHotspot, error);
   EXPECT_EQ(
       NetworkStateHandler::TECHNOLOGY_AVAILABLE,
@@ -242,7 +242,7 @@ TEST_F(TechnologyStateControllerTest, EnableWifiWhenHotspotOn) {
   technology_state_controller_->SetTechnologiesEnabled(
       NetworkTypePattern::WiFi(), /*enabled=*/true,
       network_handler::ErrorCallback());
-  run_loop.RunUntilIdle();
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(
       NetworkStateHandler::TECHNOLOGY_ENABLED,
       network_state_test_helper_.network_state_handler()->GetTechnologyState(

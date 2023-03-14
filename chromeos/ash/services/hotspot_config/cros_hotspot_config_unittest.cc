@@ -136,9 +136,9 @@ class CrosHotspotConfigTest : public testing::Test {
     cros_hotspot_config_->GetHotspotInfo(
         base::BindLambdaForTesting([&](mojom::HotspotInfoPtr result) {
           out_result = std::move(result);
-          run_loop.QuitClosure();
+          run_loop.Quit();
         }));
-    run_loop.RunUntilIdle();
+    run_loop.Run();
     return out_result;
   }
 
@@ -150,9 +150,10 @@ class CrosHotspotConfigTest : public testing::Test {
         std::move(mojom_config),
         base::BindLambdaForTesting([&](mojom::SetHotspotConfigResult result) {
           out_result = result;
-          run_loop.QuitClosure();
+          run_loop.Quit();
         }));
-    run_loop.RunUntilIdle();
+    run_loop.Run();
+    FlushMojoCalls();
     return out_result;
   }
 
@@ -162,9 +163,10 @@ class CrosHotspotConfigTest : public testing::Test {
     cros_hotspot_config_->EnableHotspot(
         base::BindLambdaForTesting([&](mojom::HotspotControlResult result) {
           out_result = result;
-          run_loop.QuitClosure();
+          run_loop.Quit();
         }));
-    run_loop.RunUntilIdle();
+    run_loop.Run();
+    FlushMojoCalls();
     return out_result;
   }
 
@@ -174,9 +176,10 @@ class CrosHotspotConfigTest : public testing::Test {
     cros_hotspot_config_->DisableHotspot(
         base::BindLambdaForTesting([&](mojom::HotspotControlResult result) {
           out_result = result;
-          run_loop.QuitClosure();
+          run_loop.Quit();
         }));
-    run_loop.RunUntilIdle();
+    run_loop.Run();
+    FlushMojoCalls();
     return out_result;
   }
 
@@ -185,6 +188,8 @@ class CrosHotspotConfigTest : public testing::Test {
                                         LoginState::LOGGED_IN_USER_REGULAR);
     task_environment_.RunUntilIdle();
   }
+
+  void FlushMojoCalls() { base::RunLoop().RunUntilIdle(); }
 
   NetworkHandlerTestHelper* helper() {
     return network_handler_test_helper_.get();
