@@ -309,7 +309,7 @@ class FormForestTest : public content::RenderViewHostTestHarness {
   //   origins.
   // Child frames inherit the policy from their parents.
   // "Shared-autofill" restricts cross-origin filling (see
-  // FormForest::GetBrowserFormOfRendererForm() for details).
+  // FormForest::GetBrowserForm() for details).
   enum class Policy { kDefault, kSharedAutofill, kNoSharedAutofill };
 
   explicit FormForestTest(bool relax_shared_autofill = false) {
@@ -1360,14 +1360,14 @@ TEST_F(FormForestTestUpdateTree, RemoveFrame) {
   EXPECT_THAT(ff, Equals(flattened_forms_));
 }
 
-// Tests of FormForest::GetBrowserFormOfRendererForm().
+// Tests of FormForest::GetBrowserForm().
 
 class FormForestTestFlatten : public FormForestTestWithMockedTree {
  protected:
   // The subject of this test fixture.
-  FormData GetBrowserFormOfRendererForm(base::StringPiece form_name) {
-    return flattened_forms_.GetBrowserFormOfRendererForm(
-        GetMockedForm(form_name));
+  FormData GetBrowserForm(base::StringPiece form_name) {
+    return *flattened_forms_.GetBrowserForm(
+        GetMockedForm(form_name).global_id());
   }
 };
 
@@ -1375,8 +1375,7 @@ class FormForestTestFlatten : public FormForestTestWithMockedTree {
 TEST_F(FormForestTestFlatten, SingleFrame) {
   MockFormForest({.url = kMainUrl, .forms = {{.name = "main"}}});
   MockFlattening({{"main"}});
-  EXPECT_THAT(GetBrowserFormOfRendererForm("main"),
-              Equals(GetFlattenedForm("main")));
+  EXPECT_THAT(GetBrowserForm("main"), Equals(GetFlattenedForm("main")));
 }
 
 class FormForestTestFlattenHierarchy
@@ -1393,8 +1392,7 @@ TEST_P(FormForestTestFlattenHierarchy, TwoFrames) {
             .frames = {{.forms = {{.name = "child3"}, {.name = "child4"}}}}}}});
   MockFlattening({{"main"}, {"child1"}, {"child2"}});
   MockFlattening({{"main2"}, {"child3"}, {"child4"}});
-  EXPECT_THAT(GetBrowserFormOfRendererForm(GetParam()),
-              Equals(GetFlattenedForm("main")));
+  EXPECT_THAT(GetBrowserForm(GetParam()), Equals(GetFlattenedForm("main")));
 }
 
 INSTANTIATE_TEST_SUITE_P(FormForestTest,

@@ -56,6 +56,8 @@ namespace autofill {
 using ::testing::_;
 using ::testing::DoAll;
 using ::testing::ElementsAre;
+using ::testing::Field;
+using ::testing::Gt;
 using ::testing::Return;
 using ::testing::SaveArg;
 
@@ -449,17 +451,26 @@ TEST_P(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfForm_AboutScheme) {
   EXPECT_TRUE(form.url.is_empty());
 }
 
+// Tests that the FormData::version of forms passed to AutofillManager
+// increases.
 TEST_P(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfForm_Version) {
-  NavigateAndCommit(GURL("about:blank"));
-  ASSERT_TRUE(main_rfh()->GetLastCommittedURL().IsAboutBlank());
+  FormData form;
+  test::CreateTestAddressFormData(&form);
 
-  FormData form1;
-  test_api(driver()).SetFrameAndFormMetaData(form1, nullptr);
-
-  FormData form2;
-  test_api(driver()).SetFrameAndFormMetaData(form2, nullptr);
-
-  EXPECT_LT(form1.version, form2.version);
+  std::vector<FormData> augmented_forms;
+  EXPECT_CALL(*manager(), ShouldParseForms(_))
+      .WillOnce(DoAll(SaveArg<0>(&augmented_forms), Return(false)));
+  driver()->renderer_events().FormsSeen(/*updated_forms=*/{form},
+                                        /*removed_forms=*/{});
+  ASSERT_EQ(augmented_forms.size(), 1u);
+  FormVersion previous_version = augmented_forms[0].version;
+  EXPECT_CALL(
+      *manager(),
+      ShouldParseForms(ElementsAre(Field(
+          "FormData::version", &FormData::version, Gt(previous_version)))))
+      .WillOnce(Return(false));
+  driver()->renderer_events().FormsSeen(/*updated_forms=*/{form},
+                                        /*removed_forms=*/{});
 }
 
 // Test that forms in "about:" subframes inherit the URL of their next

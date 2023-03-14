@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -54,7 +55,7 @@ namespace autofill::internal {
 //
 // The three key functions of FormForest are:
 // - UpdateTreeOfRendererForm()
-// - GetBrowserFormOfRendererForm()
+// - GetBrowserForm()
 // - GetRendererFormsOfBrowserForm()
 //
 // UpdateTreeOfRendererForm() incrementally builds up a graph of frames, forms,
@@ -95,9 +96,9 @@ namespace autofill::internal {
 // There is no meaningful order between the fields and frames in these flattened
 // forms.
 //
-// GetBrowserFormOfRendererForm(renderer_form) simply retrieves the form node
-// of |renderer_form| and returns the root form, along with its field children
-// For example, if |renderer_form| is form B, it returns form A with fields 1–4.
+// GetBrowserForm(renderer_form) simply retrieves the form node of
+// |renderer_form| and returns the root form, along with its field children. For
+// example, if |renderer_form| is form B, it returns form A with fields 1–4.
 //
 // GetRendererFormsOfBrowserForm(browser_form) returns the individual renderer
 // forms that constitute |browser_form|, with their fields reinstated. For
@@ -126,23 +127,25 @@ namespace autofill::internal {
 //   identified by FormFieldData::host_frame and FormFieldData::host_form_id.
 //
 // Reasonable usage of FormForest follows this protocol:
-// 1. Call any of the functions only for forms and fields which have the
-//    following attributes set:
+// 1. Call UpdateTreeOfRendererForm(renderer_form) whenever a renderer form is
+//    seen to make FormForest aware of the (new or potentially changed) form.
+// 2. Call GetBrowserForm(renderer_form.global_id()) directly afterwards (as
+//    long as the renderer form is known to the FormForest).
+// 3. Call GetRendererFormsOfBrowserForm(browser_form) only if |browser_form|
+//    was previously returned by GetBrowserForm(), perhaps with
+//    different FormFieldData::value, FormFieldData::is_autofilled.
+//
+// For FormForest to be memory safe,
+// 1. UpdateTreeOfRendererForm() and GetRendererFormsOfBrowserForm() must only
+//    be called for forms which have the following attributes set:
 //    - FormData::host_frame
 //    - FormData::unique_renderer_id
 //    - FormFieldData::host_frame
 //    - FormFieldData::unique_renderer_id
 //    - FormFieldData::host_form_id
-// 2. Call UpdateTreeOfRendererForm(renderer_form) whenever a renderer form is
-//    seen to make FormForest aware of the (new or potentially changed) form.
-// 3. Call GetBrowserFormOfRendererForm(renderer_form) only after a preceding
-//    UpdateTreeOfRendererForm(some_renderer_form) call where |renderer_form|
-//    typically is identical to |some_renderer_form|, but technically it
-//    suffices if both forms have the same global_id().
-// 4. Call GetRendererFormsOfBrowserForm(browser_form) only if |browser_form|
-//    was previously returned by GetBrowserFormOfRendererForm(), perhaps with
-//    different FormFieldData::value, FormFieldData::is_autofilled.
-// Items 1 and 3 are mandatory for FormForest to be memory-safe.
+// 2. GetBrowserForm() must only be called for known renderer forms. A renderer
+//    form is *known* after a corresponding UpdateTreeOfRendererForm() call
+//    until it is erased by EraseForm() or EraseFrame().
 class FormForest {
  public:
   // A FrameData is a frame node in the form tree. Its children are FormData
@@ -197,14 +200,16 @@ class FormForest {
 
   // Adds or updates |renderer_form| and |driver| to/in the relevant tree, where
   // |driver| must be the ContentAutofillDriver of `renderer_form.host_frame`.
+  // Afterwards, `renderer_form.global_id()` is a known renderer form.
   void UpdateTreeOfRendererForm(FormData renderer_form,
                                 ContentAutofillDriver* driver) {
     UpdateTreeOfRendererForm(&renderer_form, driver);
   }
 
-  // Returns the browser form of |renderer_form|.
-  const FormData& GetBrowserFormOfRendererForm(
-      const FormData& renderer_form) const;
+  // Returns the non-null browser form of a known |renderer_form|.
+  // Returns null if |renderer_form| is unknown browser form; this may change to
+  // undefined behavior in the future.
+  const FormData* GetBrowserForm(FormGlobalId renderer_form) const;
 
   struct RendererForms {
     RendererForms();
@@ -267,12 +272,16 @@ class FormForest {
       const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map)
       const;
 
-  // Deletes all forms and fields that originate from |form| and unsets the
-  // FrameData::parent_form pointers of all child forms.
-  void EraseForm(FormGlobalId form);
+  // Deletes all forms and fields that originate from the |renderer_form| and
+  // unsets the FrameData::parent_form pointers of all child forms.
+  //
+  // Afterwards, the |renderer_form| is unknown.
+  void EraseForm(FormGlobalId renderer_form);
 
   // Deletes all forms and fields that originate from |frame| and unsets the
   // FrameData::parent_form pointers of all child forms.
+  //
+  // Afterwards, all renderer forms in |frame| are unknown.
   void EraseFrame(LocalFrameToken frame);
 
   // Returns the set of FrameData nodes of the forest.
@@ -345,8 +354,7 @@ class FormForest {
   // Beware of invalidating the returned form pointer by changing its host
   // frame's FrameData::host_forms.
   // May be used in const qualified methods if the return value is not mutated.
-  FormData* GetFormData(const FormGlobalId& form,
-                        FrameData* frame_data = nullptr);
+  FormData* GetFormData(FormGlobalId form, FrameData* frame_data = nullptr);
 
   // Returns the non-null root frame and form of the tree that contains |form|.
   // Beware of invalidating the returned form pointer by changing its host
@@ -356,16 +364,24 @@ class FormForest {
 
   // Helper for EraseFrame() and EraseForm() that removes all fields that
   // originate from |frame_or_form| and unsets FrameData::parent_form pointer of
-  // |frame_or_form|'s children. We intentionally iterate over all frames and
-  // forms to search for fields from |frame_or_form|. Alternatively, we could
-  // limit this to the root form of |frame_or_form|. However, this would rely on
-  // |frame_or_form| being erased before its ancestors, since otherwise
-  // |frame_or_form| is disconnected from its root already.
+  // |frame_or_form|'s children.
+  //
+  // Afterwards, all renderer forms in |frame_or_form| (if it is a frame) or the
+  // renderer form |frame_or_form| (if it is a form) are unknown.
+  //
+  // We intentionally iterate over all frames and forms to search for fields
+  // from |frame_or_form|. Alternatively, we could limit this to the root form
+  // of |frame_or_form|. However, this would rely on |frame_or_form| being
+  // erased before its ancestors, since otherwise |frame_or_form| is
+  // disconnected from its root already.
   void EraseReferencesTo(
       absl::variant<LocalFrameToken, FormGlobalId> frame_or_form);
 
   // Adds |renderer_form| and |driver| to the relevant tree, where |driver| must
   // be the ContentAutofillDriver of the |renderer_form|'s FormData::host_frame.
+  //
+  // Afterwards, `renderer_form->global_id()` is a known renderer form.
+  //
   // Leaves `*renderer_form` in a valid but unspecified state (like after a
   // move). In particular, `*renderer_form` and its members can be reassigned.
   void UpdateTreeOfRendererForm(FormData* renderer_form,

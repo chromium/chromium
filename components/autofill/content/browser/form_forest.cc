@@ -120,8 +120,7 @@ FormForest::FrameData* FormForest::GetFrameData(LocalFrameToken frame) {
   return it != frame_datas_.end() ? it->get() : nullptr;
 }
 
-FormData* FormForest::GetFormData(const FormGlobalId& form,
-                                  FrameData* frame_data) {
+FormData* FormForest::GetFormData(FormGlobalId form, FrameData* frame_data) {
   DCHECK(!frame_data || frame_data == GetFrameData(form.frame_token));
   if (!frame_data)
     frame_data = GetFrameData(form.frame_token);
@@ -546,19 +545,16 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
   }
 }
 
-const FormData& FormForest::GetBrowserFormOfRendererForm(
-    const FormData& renderer_form) const {
+const FormData* FormForest::GetBrowserForm(FormGlobalId renderer_form) const {
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
       "Autofill.FormForest.GetBrowserFormOfRendererForm.Duration");
-  AFCHECK(renderer_form.host_frame, return renderer_form);
+  AFCHECK(renderer_form.frame_token, return nullptr);
 
   // For calling non-const-qualified getters.
   FormForest& mutable_this = *const_cast<FormForest*>(this);
-  FormData* form = mutable_this.GetRoot(renderer_form.global_id()).form;
-  AFCHECK(form, return renderer_form);
-  DCHECK_LE(form->version, renderer_form.version);
-  form->version = renderer_form.version;
-  return *form;
+  FormData* form = mutable_this.GetRoot(renderer_form).form;
+  AFCHECK(form, return nullptr);
+  return form;
 }
 
 FormForest::RendererForms::RendererForms() = default;

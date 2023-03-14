@@ -240,10 +240,12 @@ void ContentAutofillRouter::FormsSeen(
   std::vector<FormData> browser_forms;
   browser_forms.reserve(renderer_forms.size());
   for (const FormData& form : renderer_forms) {
-    FormData browser_form = form_forest_.GetBrowserFormOfRendererForm(form);
-    if (!base::Contains(browser_forms, browser_form.global_id(),
+    const FormData* browser_form =
+        form_forest_.GetBrowserForm(form.global_id());
+    AFCHECK(browser_form, return);
+    if (!base::Contains(browser_forms, browser_form->global_id(),
                         &FormData::global_id)) {
-      browser_forms.push_back(std::move(browser_form));
+      browser_forms.push_back(*browser_form);
     }
   }
   DCHECK(browser_forms.size() == renderer_forms.size() ||
@@ -257,7 +259,7 @@ void ContentAutofillRouter::FormsSeen(
     }));
     ContentAutofillDriver* target = DriverOfFrame(frame);
     AFCHECK(target, return );
-    callback(target, std::move(browser_forms), removed_forms);
+    callback(target, browser_forms, removed_forms);
   }
 }
 
@@ -280,11 +282,11 @@ void ContentAutofillRouter::SetFormToBeProbablySubmitted(
 
   form_forest_.UpdateTreeOfRendererForm(*form, source);
 
-  const FormData& browser_form =
-      form_forest_.GetBrowserFormOfRendererForm(*form);
-  auto* target = DriverOfFrame(browser_form.host_frame);
+  const FormData* browser_form = form_forest_.GetBrowserForm(form->global_id());
+  AFCHECK(browser_form, return);
+  auto* target = DriverOfFrame(browser_form->host_frame);
   AFCHECK(target, return );
-  callback(target, absl::make_optional(browser_form));
+  callback(target, absl::make_optional(*browser_form));
 }
 
 void ContentAutofillRouter::FormSubmitted(
@@ -305,11 +307,11 @@ void ContentAutofillRouter::FormSubmitted(
 
   form_forest_.UpdateTreeOfRendererForm(form, source);
 
-  const FormData& browser_form =
-      form_forest_.GetBrowserFormOfRendererForm(form);
-  auto* target = DriverOfFrame(browser_form.host_frame);
+  const FormData* browser_form = form_forest_.GetBrowserForm(form.global_id());
+  AFCHECK(browser_form, return);
+  auto* target = DriverOfFrame(browser_form->host_frame);
   AFCHECK(target, return );
-  callback(target, browser_form, known_success, submission_source);
+  callback(target, *browser_form, known_success, submission_source);
 }
 
 void ContentAutofillRouter::TextFieldDidChange(
@@ -334,11 +336,11 @@ void ContentAutofillRouter::TextFieldDidChange(
 
   TriggerReparseExcept(source);
 
-  const FormData& browser_form =
-      form_forest_.GetBrowserFormOfRendererForm(form);
-  auto* target = DriverOfFrame(browser_form.host_frame);
+  const FormData* browser_form = form_forest_.GetBrowserForm(form.global_id());
+  AFCHECK(browser_form, return);
+  auto* target = DriverOfFrame(browser_form->host_frame);
   AFCHECK(target, return );
-  callback(target, browser_form, field, bounding_box, timestamp);
+  callback(target, *browser_form, field, bounding_box, timestamp);
 }
 
 void ContentAutofillRouter::TextFieldDidScroll(
@@ -361,11 +363,11 @@ void ContentAutofillRouter::TextFieldDidScroll(
 
   TriggerReparseExcept(source);
 
-  const FormData& browser_form =
-      form_forest_.GetBrowserFormOfRendererForm(form);
-  auto* target = DriverOfFrame(browser_form.host_frame);
+  const FormData* browser_form = form_forest_.GetBrowserForm(form.global_id());
+  AFCHECK(browser_form, return);
+  auto* target = DriverOfFrame(browser_form->host_frame);
   AFCHECK(target, return );
-  callback(target, browser_form, field, bounding_box);
+  callback(target, *browser_form, field, bounding_box);
 }
 
 void ContentAutofillRouter::SelectControlDidChange(
@@ -388,11 +390,11 @@ void ContentAutofillRouter::SelectControlDidChange(
 
   TriggerReparseExcept(source);
 
-  const FormData& browser_form =
-      form_forest_.GetBrowserFormOfRendererForm(form);
-  auto* target = DriverOfFrame(browser_form.host_frame);
+  const FormData* browser_form = form_forest_.GetBrowserForm(form.global_id());
+  AFCHECK(browser_form, return);
+  auto* target = DriverOfFrame(browser_form->host_frame);
   AFCHECK(target, return );
-  callback(target, browser_form, field, bounding_box);
+  callback(target, *browser_form, field, bounding_box);
 }
 
 void ContentAutofillRouter::AskForValuesToFill(
@@ -420,13 +422,13 @@ void ContentAutofillRouter::AskForValuesToFill(
 
   TriggerReparseExcept(source);
 
-  const FormData& browser_form =
-      form_forest_.GetBrowserFormOfRendererForm(form);
-  auto* target = DriverOfFrame(browser_form.host_frame);
+  const FormData* browser_form = form_forest_.GetBrowserForm(form.global_id());
+  AFCHECK(browser_form, return);
+  auto* target = DriverOfFrame(browser_form->host_frame);
   AFCHECK(target, return );
   SetLastQueriedSource(source);
   SetLastQueriedTarget(target);
-  callback(target, browser_form, field, bounding_box,
+  callback(target, *browser_form, field, bounding_box,
            autoselect_first_suggestion, form_element_was_clicked);
 }
 
@@ -513,11 +515,11 @@ void ContentAutofillRouter::FocusOnFormField(
 
   TriggerReparseExcept(source);
 
-  const FormData& browser_form =
-      form_forest_.GetBrowserFormOfRendererForm(form);
-  auto* target = DriverOfFrame(browser_form.host_frame);
+  const FormData* browser_form = form_forest_.GetBrowserForm(form.global_id());
+  AFCHECK(browser_form, return);
+  auto* target = DriverOfFrame(browser_form->host_frame);
   AFCHECK(target, return );
-  callback(target, browser_form, field, bounding_box);
+  callback(target, *browser_form, field, bounding_box);
 }
 
 void ContentAutofillRouter::DidFillAutofillFormData(
@@ -536,13 +538,13 @@ void ContentAutofillRouter::DidFillAutofillFormData(
 
   form_forest_.UpdateTreeOfRendererForm(form, source);
 
-  const FormData& browser_form =
-      form_forest_.GetBrowserFormOfRendererForm(form);
+  const FormData* browser_form = form_forest_.GetBrowserForm(form.global_id());
+  AFCHECK(browser_form, return);
   DCHECK(!last_queried_target_ ||
-         last_queried_target_ == DriverOfFrame(browser_form.host_frame));
-  auto* target = DriverOfFrame(browser_form.host_frame);
+         last_queried_target_ == DriverOfFrame(browser_form->host_frame));
+  auto* target = DriverOfFrame(browser_form->host_frame);
   AFCHECK(target, return );
-  callback(target, browser_form, timestamp);
+  callback(target, *browser_form, timestamp);
 }
 
 void ContentAutofillRouter::DidPreviewAutofillFormData(
@@ -591,11 +593,11 @@ void ContentAutofillRouter::SelectFieldOptionsDidChange(
 
   TriggerReparseExcept(source);
 
-  const FormData& browser_form =
-      form_forest_.GetBrowserFormOfRendererForm(form);
-  auto* target = DriverOfFrame(browser_form.host_frame);
+  const FormData* browser_form = form_forest_.GetBrowserForm(form.global_id());
+  AFCHECK(browser_form, return);
+  auto* target = DriverOfFrame(browser_form->host_frame);
   AFCHECK(target, return );
-  callback(target, browser_form);
+  callback(target, *browser_form);
 }
 
 void ContentAutofillRouter::JavaScriptChangedAutofilledValue(
@@ -618,11 +620,11 @@ void ContentAutofillRouter::JavaScriptChangedAutofilledValue(
 
   TriggerReparseExcept(source);
 
-  const FormData& browser_form =
-      form_forest_.GetBrowserFormOfRendererForm(form);
-  auto* target = DriverOfFrame(browser_form.host_frame);
+  const FormData* browser_form = form_forest_.GetBrowserForm(form.global_id());
+  AFCHECK(browser_form, return);
+  auto* target = DriverOfFrame(browser_form->host_frame);
   AFCHECK(target, return);
-  callback(target, browser_form, field, old_value);
+  callback(target, *browser_form, field, old_value);
 }
 
 void ContentAutofillRouter::OnContextMenuShownInField(
