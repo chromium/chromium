@@ -145,11 +145,19 @@ arc::mojom::WindowInfoPtr WindowPredictor::PredictAppWindowInfo(
         window_info->display_id, &disp);
   }
 
+  if (ash::TabletMode::Get()->IsInTabletMode()) {
+    window_info->state =
+        static_cast<int32_t>(chromeos::WindowStateType::kMaximized);
+    window_info->bounds = disp.work_area();
+    return window_info;
+  }
+
   const auto& layout = app_info.initial_window_layout;
   switch (layout.type) {
     case arc::mojom::WindowSizeType::kMaximize:
       window_info->state =
           static_cast<int32_t>(chromeos::WindowStateType::kMaximized);
+      window_info->bounds = disp.work_area();
       break;
     case arc::mojom::WindowSizeType::kTabletSize:
       window_info->state =
