@@ -56,6 +56,10 @@ const char HotspotMetricsHelper::kHotspotUsageDuration[] =
     "Network.Ash.Hotspot.Upstream.Cellular.Usage.Duration";
 
 // static
+const char HotspotMetricsHelper::kHotspotMaxClientCount[] =
+    "Network.Ash.Hotspot.Upstream.Cellular.Usage.MaxConnectedDeviceCount";
+
+// static
 void HotspotMetricsHelper::RecordSetTetheringEnabledResult(
     bool enabled,
     hotspot_config::mojom::HotspotControlResult result) {
@@ -156,10 +160,14 @@ HotspotMetricsHelper::~HotspotMetricsHelper() {
   // if the user logout while hotspot is active.
   if (is_hotspot_active_) {
     LogUsageDuration();
+    LogMaxClientCount();
   }
   if (hotspot_capabilities_provider_ &&
       hotspot_capabilities_provider_->HasObserver(this)) {
     hotspot_capabilities_provider_->RemoveObserver(this);
+  }
+  if (hotspot_state_handler_ && hotspot_state_handler_->HasObserver(this)) {
+    hotspot_state_handler_->RemoveObserver(this);
   }
 
   if (LoginState::IsInitialized()) {
@@ -172,6 +180,7 @@ void HotspotMetricsHelper::Init(
     HotspotStateHandler* hotspot_state_handler,
     HotspotController* hotspot_controller) {
   hotspot_state_handler_ = hotspot_state_handler;
+  hotspot_state_handler_->AddObserver(this);
   hotspot_capabilities_provider_ = hotspot_capabilities_provider;
   hotspot_capabilities_provider_->AddObserver(this);
   if (LoginState::IsInitialized()) {
@@ -280,17 +289,29 @@ void HotspotMetricsHelper::LogUsageDuration() {
   base::UmaHistogramLongTimes(kHotspotUsageDuration, usage_duration);
 }
 
+void HotspotMetricsHelper::LogMaxClientCount() {
+  base::UmaHistogramCounts100(kHotspotMaxClientCount, max_client_count_);
+}
+
 void HotspotMetricsHelper::OnHotspotTurnedOn(bool wifi_turned_off) {
   is_hotspot_active_ = true;
   LogUsageConfig();
 
   usage_timer_ = base::ElapsedTimer();
+  max_client_count_ = 0;
 }
 
 void HotspotMetricsHelper::OnHotspotTurnedOff(
     hotspot_config::mojom::DisableReason reason) {
   is_hotspot_active_ = false;
   LogUsageDuration();
+  LogMaxClientCount();
+  max_client_count_ = 0;
+}
+
+void HotspotMetricsHelper::OnHotspotStatusChanged() {
+  size_t client_count = hotspot_state_handler_->GetHotspotActiveClientCount();
+  max_client_count_ = std::max(max_client_count_, client_count);
 }
 
 }  // namespace ash

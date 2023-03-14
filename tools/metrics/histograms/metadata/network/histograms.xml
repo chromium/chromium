@@ -349,6 +349,17 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Network.Ash.Hotspot.Upstream.Cellular.Usage.MaxConnectedDeviceCount"
+    units="count" expires_after="2023-10-01">
+  <owner>jiajunz@google.com</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Records the number of maximum connected device count per hotspot session.
+    Emitted whenever the hotspot session is torn down.
+  </summary>
+</histogram>
+
+<histogram
     name="Network.Ash.Hotspot.Upstream.Cellular.{Operation}.OperationResult"
     enum="HotspotSetEnabledResult" expires_after="2023-10-01">
   <owner>jiajunz@google.com</owner>

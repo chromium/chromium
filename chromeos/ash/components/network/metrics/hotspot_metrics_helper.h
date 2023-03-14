@@ -11,6 +11,7 @@
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/network/hotspot_capabilities_provider.h"
+#include "chromeos/ash/components/network/hotspot_state_handler.h"
 #include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -18,13 +19,13 @@
 namespace ash {
 
 class HotspotController;
-class HotspotStateHandler;
 
 // This class is used to track the hotspot capabilities and status update and
 // emits UMA metrics to the related histogram.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
     : public LoginState::Observer,
       public HotspotCapabilitiesProvider::Observer,
+      public HotspotStateHandler::Observer,
       public hotspot_config::mojom::HotspotEnabledStateObserver {
  public:
   // Emits enable/disable hotspot operation result to related UMA histogram.
@@ -57,6 +58,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
                            HotspotUsageConfigHistogram);
   FRIEND_TEST_ALL_PREFIXES(HotspotMetricsHelperTest,
                            HotspotUsageDurationHistogram);
+  FRIEND_TEST_ALL_PREFIXES(HotspotMetricsHelperTest,
+                           HotspotMaxClientCountHistogram);
   FRIEND_TEST_ALL_PREFIXES(HotspotControllerTest, EnableTetheringSuccess);
   FRIEND_TEST_ALL_PREFIXES(HotspotControllerTest,
                            EnableTetheringReadinessCheckFailure);
@@ -81,6 +84,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
   static const char kHotspotUsageConfigMAR[];
   static const char kHotspotUsageConfigCompatibilityMode[];
   static const char kHotspotUsageDuration[];
+  static const char kHotspotMaxClientCount[];
   static const base::TimeDelta kLogAllowStatusAtLoginTimeout;
 
   static HotspotMetricsCheckReadinessResult GetCheckReadinessMetricsResult(
@@ -148,6 +152,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
   // HotspotCapabilitiesProvider::Observer:
   void OnHotspotCapabilitiesChanged() override;
 
+  // HotspotStateHandler::Observer:
+  void OnHotspotStatusChanged() override;
+
   // LoginState::Observer:
   void LoggedInStateChanged() override;
 
@@ -159,6 +166,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
   void LogAllowStatusAtLogin();
   void LogUsageConfig();
   void LogUsageDuration();
+  void LogMaxClientCount();
 
   // Retrieves the latest hotspot allow status and converts to
   // HotspotMetricsAllowStatus enum. Return absl::nullopt if it is disallowed
@@ -171,6 +179,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
   // A timer to wait for user connecting to their upstream cellular network
   // after login.
   base::OneShotTimer timer_;
+
+  // Tracks the maximum connected client count per hotspot session.
+  size_t max_client_count_ = 0;
 
   // Tracks whether the metrics are already logged for this session.
   bool is_metrics_logged_ = false;
