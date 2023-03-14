@@ -19,7 +19,6 @@ interface CaptureController {
 
   [
     RaisesException,
-    RuntimeEnabled=ConditionalFocus,
     MeasureAs=ConditionalFocus
   ]
   void setFocusBehavior(CaptureStartFocusBehavior focusBehavior);

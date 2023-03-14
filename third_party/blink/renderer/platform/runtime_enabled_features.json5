@@ -637,12 +637,6 @@
       status: "experimental",
     },
     {
-      name: "ConditionalFocus",
-      depends_on: ["CaptureController"],
-      status: {"Android": "", "default": "stable"},
-      base_feature: "none",
-    },
-    {
       name: "ConfirmationOfAction",
       status: "test",
       base_feature: "none",
