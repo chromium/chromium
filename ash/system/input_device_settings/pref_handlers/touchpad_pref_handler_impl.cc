@@ -69,7 +69,7 @@ void TouchpadPrefHandlerImpl::InitializeTouchpadSettings(
     touchpad->settings = GetNewTouchpadSettings(pref_service, *touchpad);
   } else {
     touchpad->settings =
-        RetreiveTouchpadSettings(pref_service, *touchpad, *settings_dict);
+        RetrieveTouchpadSettings(pref_service, *touchpad, *settings_dict);
   }
   DCHECK(touchpad->settings);
 
@@ -135,7 +135,7 @@ mojom::TouchpadSettingsPtr TouchpadPrefHandlerImpl::GetNewTouchpadSettings(
   return GetDefaultTouchpadSettings();
 }
 
-mojom::TouchpadSettingsPtr TouchpadPrefHandlerImpl::RetreiveTouchpadSettings(
+mojom::TouchpadSettingsPtr TouchpadPrefHandlerImpl::RetrieveTouchpadSettings(
     PrefService* pref_service,
     const mojom::Touchpad& touchpad,
     const base::Value::Dict& settings_dict) {

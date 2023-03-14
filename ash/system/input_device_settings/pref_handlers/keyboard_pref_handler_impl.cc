@@ -113,14 +113,14 @@ void KeyboardPrefHandlerImpl::InitializeKeyboardSettings(
     keyboard->settings = GetNewKeyboardSettings(pref_service, *keyboard);
   } else {
     keyboard->settings =
-        RetreiveKeyboardSettings(pref_service, *keyboard, *settings_dict);
+        RetrieveKeyboardSettings(pref_service, *keyboard, *settings_dict);
   }
   DCHECK(keyboard->settings);
 
   UpdateKeyboardSettings(pref_service, *keyboard);
 }
 
-mojom::KeyboardSettingsPtr KeyboardPrefHandlerImpl::RetreiveKeyboardSettings(
+mojom::KeyboardSettingsPtr KeyboardPrefHandlerImpl::RetrieveKeyboardSettings(
     PrefService* pref_service,
     const mojom::Keyboard& keyboard,
     const base::Value::Dict& settings_dict) {

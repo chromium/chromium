@@ -29,7 +29,7 @@ class ASH_EXPORT MousePrefHandlerImpl : public MousePrefHandler {
  private:
   mojom::MouseSettingsPtr GetNewMouseSettings(PrefService* prefs,
                                               const mojom::Mouse& Mouse);
-  mojom::MouseSettingsPtr RetreiveMouseSettings(
+  mojom::MouseSettingsPtr RetrieveMouseSettings(
       PrefService* prefs,
       const mojom::Mouse& mouse,
       const base::Value::Dict& settings_dict);

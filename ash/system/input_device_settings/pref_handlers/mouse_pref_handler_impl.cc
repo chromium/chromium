@@ -57,7 +57,7 @@ void MousePrefHandlerImpl::InitializeMouseSettings(PrefService* pref_service,
     mouse->settings = GetNewMouseSettings(pref_service, *mouse);
   } else {
     mouse->settings =
-        RetreiveMouseSettings(pref_service, *mouse, *settings_dict);
+        RetrieveMouseSettings(pref_service, *mouse, *settings_dict);
   }
   DCHECK(mouse->settings);
 
@@ -112,7 +112,7 @@ mojom::MouseSettingsPtr MousePrefHandlerImpl::GetNewMouseSettings(
   return GetDefaultMouseSettings();
 }
 
-mojom::MouseSettingsPtr MousePrefHandlerImpl::RetreiveMouseSettings(
+mojom::MouseSettingsPtr MousePrefHandlerImpl::RetrieveMouseSettings(
     PrefService* pref_service,
     const mojom::Mouse& mouse,
     const base::Value::Dict& settings_dict) {

@@ -30,7 +30,7 @@ class ASH_EXPORT KeyboardPrefHandlerImpl : public KeyboardPrefHandler {
   mojom::KeyboardSettingsPtr GetNewKeyboardSettings(
       PrefService* prefs,
       const mojom::Keyboard& keyboard);
-  mojom::KeyboardSettingsPtr RetreiveKeyboardSettings(
+  mojom::KeyboardSettingsPtr RetrieveKeyboardSettings(
       PrefService* prefs,
       const mojom::Keyboard& keyboard,
       const base::Value::Dict& settings_dict);

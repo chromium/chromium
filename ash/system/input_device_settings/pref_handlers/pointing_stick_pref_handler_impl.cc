@@ -55,7 +55,7 @@ void PointingStickPrefHandlerImpl::InitializePointingStickSettings(
     pointing_stick->settings =
         GetNewPointingStickSettings(pref_service, *pointing_stick);
   } else {
-    pointing_stick->settings = RetreivePointingStickSettings(
+    pointing_stick->settings = RetrievePointingStickSettings(
         pref_service, *pointing_stick, *settings_dict);
   }
   DCHECK(pointing_stick->settings);
@@ -113,7 +113,7 @@ PointingStickPrefHandlerImpl::GetNewPointingStickSettings(
 }
 
 mojom::PointingStickSettingsPtr
-PointingStickPrefHandlerImpl::RetreivePointingStickSettings(
+PointingStickPrefHandlerImpl::RetrievePointingStickSettings(
     PrefService* pref_service,
     const mojom::PointingStick& pointing_stick,
     const base::Value::Dict& settings_dict) {

@@ -34,7 +34,7 @@ class ASH_EXPORT PointingStickPrefHandlerImpl
   mojom::PointingStickSettingsPtr GetNewPointingStickSettings(
       PrefService* prefs,
       const mojom::PointingStick& pointing_stick);
-  mojom::PointingStickSettingsPtr RetreivePointingStickSettings(
+  mojom::PointingStickSettingsPtr RetrievePointingStickSettings(
       PrefService* prefs,
       const mojom::PointingStick& pointing_stick,
       const base::Value::Dict& settings_dict);
