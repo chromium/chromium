@@ -77,6 +77,7 @@ export class FakeInputDeviceSettingsProvider implements
   private methods: FakeMethodResolver = new FakeMethodResolver();
   private keyboardObservers: KeyboardObserverInterface[] = [];
   private pointingStickObservers: PointingStickObserverInterface[] = [];
+  private mouseObservers: MouseObserverInterface[] = [];
 
   constructor() {
     // Setup method resolvers.
@@ -105,6 +106,7 @@ export class FakeInputDeviceSettingsProvider implements
 
   setFakeMice(mice: Mouse[]): void {
     this.methods.setResult('fakeMice', mice);
+    this.notifyMouseListUpdated();
   }
 
   getConnectedMouseSettings(): Promise<Mouse[]> {
@@ -174,6 +176,13 @@ export class FakeInputDeviceSettingsProvider implements
     }
   }
 
+  notifyMouseListUpdated(): void {
+    const mice = this.methods.getResult('fakeMice');
+    for (const observer of this.mouseObservers) {
+      observer.onMouseListUpdated(mice);
+    }
+  }
+
   observeKeyboardSettings(observer: KeyboardObserverInterface): void {
     this.keyboardObservers.push(observer);
     this.notifyKeboardListUpdated();
@@ -183,8 +192,9 @@ export class FakeInputDeviceSettingsProvider implements
     // TODO(yyhyyh): Implement observeTouchpadSettings().
   }
 
-  observeMouseSettings(_observer: MouseObserverInterface): void {
-    // TODO(yyhyyh): Implement observeMouseSettings().
+  observeMouseSettings(observer: MouseObserverInterface): void {
+    this.mouseObservers.push(observer);
+    this.notifyMouseListUpdated();
   }
 
   observePointingStickSettings(observer: PointingStickObserverInterface): void {

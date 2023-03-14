@@ -120,6 +120,7 @@ export {KeyboardRemapModifierKeyRowElement} from './device_page/keyboard_remap_m
 export {SettingsPerDeviceKeyboardElement} from './device_page/per_device_keyboard.js';
 export {SettingsPerDeviceKeyboardRemapKeysElement} from './device_page/per_device_keyboard_remap_keys.js';
 export {SettingsPerDeviceKeyboardSubsectionElement} from './device_page/per_device_keyboard_subsection.js';
+export {SettingsPerDeviceMouseElement} from './device_page/per_device_mouse.js';
 export {SettingsPerDeviceMouseSubsectionElement} from './device_page/per_device_mouse_subsection.js';
 export {SettingsPerDevicePointingStickElement} from './device_page/per_device_pointing_stick.js';
 export {SettingsPerDevicePointingStickSubsectionElement} from './device_page/per_device_pointing_stick_subsection.js';

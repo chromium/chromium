@@ -32,7 +32,8 @@ import {getTemplate} from './per_device_mouse.html.js';
 
 const SettingsPerDeviceMouseElementBase = RouteObserverMixin(PolymerElement);
 
-class SettingsPerDeviceMouseElement extends SettingsPerDeviceMouseElementBase {
+export class SettingsPerDeviceMouseElement extends
+    SettingsPerDeviceMouseElementBase {
   static get is(): string {
     return 'settings-per-device-mouse';
   }
@@ -55,7 +56,7 @@ class SettingsPerDeviceMouseElement extends SettingsPerDeviceMouseElementBase {
 
   constructor() {
     super();
-    this.fetchConnectedMice();
+    this.observeMouseSettings();
   }
 
   override currentRouteChanged(route: Route): void {
@@ -65,9 +66,12 @@ class SettingsPerDeviceMouseElement extends SettingsPerDeviceMouseElementBase {
     }
   }
 
-  private async fetchConnectedMice(): Promise<void> {
-    this.mice =
-        await this.inputDeviceSettingsProvider.getConnectedMouseSettings();
+  private async observeMouseSettings(): Promise<void> {
+    this.inputDeviceSettingsProvider.observeMouseSettings(this);
+  }
+
+  onMouseListUpdated(mice: Mouse[]): void {
+    this.mice = mice;
   }
 }
 
