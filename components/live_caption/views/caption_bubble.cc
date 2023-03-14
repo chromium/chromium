@@ -1097,9 +1097,9 @@ void CaptionBubble::ShowInactive() {
 
   // The first time that the caption bubble is shown, reposition it to the
   // bottom center of the context widget for the currently set model.
-  model_->GetContext()->GetBounds(
-      base::BindOnce(&CaptionBubble::RepositionInContextRect,
-                     weak_ptr_factory_.GetWeakPtr(), model_));
+  model_->GetContext()->GetBounds(base::BindOnce(
+      &CaptionBubble::RepositionInContextRect, weak_ptr_factory_.GetWeakPtr(),
+      base::UnsafeDanglingUntriaged(model_)));
 }
 
 void CaptionBubble::Hide() {
