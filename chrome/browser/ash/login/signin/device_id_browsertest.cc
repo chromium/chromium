@@ -12,7 +12,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/path_service.h"
-#include "base/run_loop.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
@@ -57,7 +57,7 @@ class DeviceIDTest : public OobeBaseTest,
   }
 
   void SetUpOnMainThread() override {
-    user_removal_loop_ = std::make_unique<base::RunLoop>();
+    user_removal_signal_ = std::make_unique<base::test::TestFuture<void>>();
     OobeBaseTest::SetUpOnMainThread();
     LoadRefreshTokenToDeviceIdMap();
     user_manager::UserManager::Get()->AddObserver(this);
@@ -135,12 +135,14 @@ class DeviceIDTest : public OobeBaseTest,
 
   void RemoveUser(const AccountId& account_id) {
     ASSERT_TRUE(LoginScreenTestApi::RemoveUser(account_id));
-    user_removal_loop_->Run();
+    EXPECT_TRUE(user_removal_signal_->Wait());
   }
 
  private:
   void LocalStateChanged(user_manager::UserManager* manager) override {
-    user_removal_loop_->Quit();
+    if (user_removal_signal_ && !user_removal_signal_->IsReady()) {
+      user_removal_signal_->SetValue();
+    }
   }
 
   base::FilePath GetRefreshTokenToDeviceIdMapFilePath() const {
@@ -185,7 +187,7 @@ class DeviceIDTest : public OobeBaseTest,
     }
   }
 
-  std::unique_ptr<base::RunLoop> user_removal_loop_;
+  std::unique_ptr<base::test::TestFuture<void>> user_removal_signal_;
   FakeGaiaMixin fake_gaia_{&mixin_host_};
 };
 
