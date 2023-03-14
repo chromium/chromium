@@ -158,12 +158,6 @@ public interface SurfaceActionsHandler {
      */
     default void openWebFeed(String webFeedName) {}
 
-    /** Requests that a sign-in prompt be shown. */
-    @Deprecated
-    default void showSignInPrompt() {
-        showSyncConsentPrompt();
-    }
-
     /** Requests that a sync consent prompt be shown. */
     default void showSyncConsentPrompt() {}
 
