@@ -685,12 +685,18 @@ class VisitedLinkRenderProcessHostFactory
       content::SiteInstance* site_instance) override {
     auto rph = std::make_unique<VisitRelayingRenderProcessHost>(browser_context,
                                                                 context_.get());
-
     content::RenderProcessHost* result = rph.get();
-    creation_observer_->OnRenderProcessHostCreated(result);
-
     processes_.push_back(std::move(rph));
     return result;
+  }
+
+  // RenderProcessHostImpl::OnProcessLaunched only notifies once the child
+  // process has launched. This is after RenderWidgetHost has been created. We
+  // will notify at the end of SetUp.
+  void NotifyProcessLaunced() {
+    for (auto& rph : processes_) {
+      creation_observer_->OnRenderProcessHostCreated(rph.get());
+    }
   }
 
   void SetRenderProcessHostCreationObserver(
@@ -715,6 +721,7 @@ class VisitedLinkEventsTest : public content::RenderViewHostTestHarness {
   void SetUp() override {
     SetRenderProcessHostFactory(&vc_rph_factory_);
     content::RenderViewHostTestHarness::SetUp();
+    vc_rph_factory_.NotifyProcessLaunced();
   }
 
   void TearDown() override {

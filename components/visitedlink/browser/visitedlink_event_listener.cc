@@ -14,6 +14,7 @@
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host.h"
+#include "content/public/browser/render_widget_host_iterator.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 using base::Time;
@@ -121,10 +122,7 @@ class VisitedLinkUpdater {
 VisitedLinkEventListener::VisitedLinkEventListener(
     content::BrowserContext* browser_context)
     : coalesce_timer_(&default_coalesce_timer_),
-      browser_context_(browser_context) {
-  registrar_.Add(this, content::NOTIFICATION_RENDER_WIDGET_VISIBILITY_CHANGED,
-                 content::NotificationService::AllBrowserContextsAndSources());
-}
+      browser_context_(browser_context) {}
 
 VisitedLinkEventListener::~VisitedLinkEventListener() {
   if (!pending_visited_links_.empty())
@@ -195,6 +193,14 @@ void VisitedLinkEventListener::OnRenderProcessHostCreated(
   if (!table_region_.IsValid())
     return;
 
+  std::unique_ptr<content::RenderWidgetHostIterator> widgets(
+      content::RenderWidgetHost::GetRenderWidgetHosts());
+  while (auto* rwh = widgets->GetNextHost()) {
+    if (!widget_observation_.IsObservingSource(rwh)) {
+      widget_observation_.AddObservation(rwh);
+    }
+  }
+
   updaters_[rph->GetID()] = std::make_unique<VisitedLinkUpdater>(rph->GetID());
   updaters_[rph->GetID()]->SendVisitedLinkTable(&table_region_);
 
@@ -211,22 +217,19 @@ void VisitedLinkEventListener::RenderProcessHostDestroyed(
   }
 }
 
-void VisitedLinkEventListener::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  switch (type) {
-    case content::NOTIFICATION_RENDER_WIDGET_VISIBILITY_CHANGED: {
-      RenderWidgetHost* widget =
-          content::Source<RenderWidgetHost>(source).ptr();
-      int child_id = widget->GetProcess()->GetID();
-      if (updaters_.count(child_id))
-        updaters_[child_id]->Update();
-      break;
-    }
-    default:
-      NOTREACHED();
-      break;
+void VisitedLinkEventListener::RenderWidgetHostVisibilityChanged(
+    content::RenderWidgetHost* rwh,
+    bool became_visible) {
+  int child_id = rwh->GetProcess()->GetID();
+  if (updaters_.count(child_id)) {
+    updaters_[child_id]->Update();
+  }
+}
+
+void VisitedLinkEventListener::RenderWidgetHostDestroyed(
+    content::RenderWidgetHost* rwh) {
+  if (widget_observation_.IsObservingSource(rwh)) {
+    widget_observation_.RemoveObservation(rwh);
   }
 }
 
