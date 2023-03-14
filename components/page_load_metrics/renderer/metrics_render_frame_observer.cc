@@ -344,12 +344,6 @@ void MetricsRenderFrameObserver::DidCommitProvisionalLoad(
   if (HasNoRenderFrame())
     return;
 
-  // Update metadata once the load has been committed. There is no guarantee
-  // that the provisional resource will have been reported as an ad by this
-  // point. Therefore, need to update metadata for the resource after the load.
-  // Consumers may receive the correct ad information late.
-  UpdateResourceMetadata(provisional_frame_resource_data_use_->resource_id());
-
   provisional_frame_resource_id_ =
       provisional_frame_resource_data_use_->resource_id();
 
@@ -459,8 +453,7 @@ MetricsRenderFrameObserver::Timing& MetricsRenderFrameObserver::Timing::
 operator=(Timing&&) = default;
 
 void MetricsRenderFrameObserver::UpdateResourceMetadata(int request_id) {
-  if (!page_timing_metrics_sender_)
-    return;
+  DCHECK(page_timing_metrics_sender_);
 
   // If the request is an ad, pop it off the list of known ad requests.
   auto ad_resource_it = ad_request_ids_.find(request_id);
