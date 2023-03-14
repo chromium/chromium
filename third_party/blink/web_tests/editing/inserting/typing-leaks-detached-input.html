@@ -2,6 +2,7 @@
 <title>Tests that typing should not retain detached subtree</title>
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/gc.js"></script>
 
 <div id="root"></div>
 
@@ -30,7 +31,7 @@ promise_setup(async () => {
 })
 
 promise_test(async () => {
-  gc();
+  await asyncGC();
   let nodesBefore = internals.numberOfLiveNodes();
 
   createSubtree();
@@ -42,13 +43,11 @@ promise_test(async () => {
 
   await raf();
   await raf();
+  await asyncGC();
 
-  gc();
   let nodesAfter = internals.numberOfLiveNodes();
 
-  // Give the test some leeway, which should be safe since the size of the
-  // detached subtree is much larger than this.
-  assert_less_than_equal(nodesAfter, nodesBefore + 20);
+  assert_equals(nodesAfter, nodesBefore);
   assert_false(internals.hasLastEditCommand(document));
 }, 'Typing should not retain detached subtree');
 
@@ -61,8 +60,8 @@ promise_test(async () => {
 
   await raf();
   await raf();
+  await asyncGC();
 
-  gc();
   assert_true(internals.hasLastEditCommand(document));
 }, 'Last edit command should be retained if node is still connected');
 </script>
