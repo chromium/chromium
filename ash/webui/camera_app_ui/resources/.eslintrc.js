@@ -738,6 +738,9 @@ module.exports = {
     'jsdoc/require-yields-check': 'error',
     'jsdoc/tag-lines': 'error',
     'jsdoc/valid-types': 'error',
+
+    'no-invalid-this': 'off',
+    '@typescript-eslint/no-invalid-this': 'error',
   }),
   overrides: [{
     files: ['**/*.ts'],

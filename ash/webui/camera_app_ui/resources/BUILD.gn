@@ -4,6 +4,7 @@
 
 import("//ash/webui/camera_app_ui/resources/images/images.gni")
 import("//ash/webui/camera_app_ui/resources/js/js.gni")
+import("//ash/webui/tools/ash_ts_library.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/typescript/ts_library.gni")
@@ -55,15 +56,20 @@ mojo_files_deps = [
 ]
 
 preprocess_if_expr("copy_mojo_ts") {
-  visibility = [ ":build_ts" ]
+  visibility = [
+    ":build_ts",
+    ":build_ts__ts_library",
+  ]
   deps = mojo_files_deps
   in_folder = root_gen_dir
   out_folder = "$target_gen_dir/mojom"
   in_files = mojo_files
 }
 
-ts_library("build_ts") {
+ash_ts_library("build_ts") {
   deps = [ "//ui/webui/resources/mojo:build_ts" ]
+
+  use_lit = true
 
   tsconfig_base = "tsconfig_base.json"
   root_dir = target_gen_dir
