@@ -65,6 +65,7 @@ android_library("java") {
     "org/chromium/weblayer/FindInPageCallback.java",
     "org/chromium/weblayer/FindInPageController.java",
     "org/chromium/weblayer/FullscreenCallback.java",
+    "org/chromium/weblayer/FullscreenCallbackDelegate.java",
     "org/chromium/weblayer/GoogleAccountAccessTokenFetcher.java",
     "org/chromium/weblayer/GoogleAccountServiceType.java",
     "org/chromium/weblayer/GoogleAccountsCallback.java",
@@ -190,6 +191,7 @@ android_aidl("webengine_aidl") {
   sources = [
     "org/chromium/webengine/interfaces/IBooleanCallback.aidl",
     "org/chromium/webengine/interfaces/ICookieManagerDelegate.aidl",
+    "org/chromium/webengine/interfaces/IFullscreenCallbackDelegate.aidl",
     "org/chromium/webengine/interfaces/INavigationObserverDelegate.aidl",
     "org/chromium/webengine/interfaces/INavigationParams.aidl",
     "org/chromium/webengine/interfaces/IPostMessageCallback.aidl",
@@ -227,6 +229,8 @@ android_library("webengine_java") {
   sources = [
     "org/chromium/webengine/CookieManager.java",
     "org/chromium/webengine/ExceptionHelper.java",
+    "org/chromium/webengine/FullscreenCallback.java",
+    "org/chromium/webengine/FullscreenCallbackDelegate.java",
     "org/chromium/webengine/MessageEventListener.java",
     "org/chromium/webengine/Navigation.java",
     "org/chromium/webengine/NavigationObserver.java",

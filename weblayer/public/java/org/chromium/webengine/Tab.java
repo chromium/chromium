@@ -28,6 +28,7 @@ import java.util.List;
  * Tab controls the tab content and state.
  */
 public class Tab {
+    private WebEngine mWebEngine;
     private ITabProxy mTabProxy;
     private TabNavigationController mTabNavigationController;
     private TabObserverDelegate mTabObserverDelegate;
@@ -36,21 +37,25 @@ public class Tab {
     private ObserverList<MessageEventListenerProxy> mMessageEventListenerProxies =
             new ObserverList<>();
     private boolean mPostMessageReady;
+    private FullscreenCallbackDelegate mFullscreenCallbackDelegate;
 
-    Tab(@NonNull ITabParams tabParams) {
+    Tab(WebEngine webEngine, @NonNull ITabParams tabParams) {
         assert tabParams.tabProxy != null;
         assert tabParams.tabGuid != null;
         assert tabParams.navigationControllerProxy != null;
         assert tabParams.uri != null;
 
+        mWebEngine = webEngine;
         mTabProxy = tabParams.tabProxy;
         mGuid = tabParams.tabGuid;
         mUri = Uri.parse(tabParams.uri);
         mTabObserverDelegate = new TabObserverDelegate(this);
         mTabNavigationController = new TabNavigationController(tabParams.navigationControllerProxy);
+        mFullscreenCallbackDelegate = new FullscreenCallbackDelegate(mWebEngine, this);
 
         try {
             mTabProxy.setTabObserverDelegate(mTabObserverDelegate);
+            mTabProxy.setFullscreenCallbackDelegate(mFullscreenCallbackDelegate);
         } catch (RemoteException e) {
         }
     }
@@ -329,6 +334,10 @@ public class Tab {
             mTabProxy.postMessage(message, targetOrigin);
         } catch (RemoteException e) {
         }
+    }
+
+    public void setFullscreenCallback(FullscreenCallback callback) {
+        mFullscreenCallbackDelegate.setFullscreenCallback(callback);
     }
 
     @Override

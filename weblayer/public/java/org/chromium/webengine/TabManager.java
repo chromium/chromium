@@ -30,8 +30,10 @@ import java.util.Set;
  */
 public class TabManager {
     private ITabManagerDelegate mDelegate;
+    private WebEngine mWebEngine;
 
-    private TabRegistry mTabRegistry = new TabRegistry();
+    private TabRegistry mTabRegistry;
+
     private final TabListObserverDelegate mTabListObserverDelegate;
 
     private Callback mInitializedTabsCallback;
@@ -55,8 +57,10 @@ public class TabManager {
         }
     };
 
-    TabManager(ITabManagerDelegate delegate) {
+    TabManager(ITabManagerDelegate delegate, WebEngine webEngine) {
         mDelegate = delegate;
+        mWebEngine = webEngine;
+        mTabRegistry = new TabRegistry(mWebEngine);
         mTabListObserverDelegate = new TabListObserverDelegate(mTabRegistry);
         try {
             mDelegate.setTabListObserverDelegate(mTabListObserverDelegate);

@@ -5,6 +5,7 @@
 package org.chromium.webengine.shell;
 
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -42,6 +43,10 @@ public class InstrumentationActivity extends AppCompatActivity {
                 .setReorderingAllowed(true)
                 .add(R.id.fragment_container_view, fragment)
                 .commitNow();
+    }
+
+    public View getFragmentContainerView() {
+        return findViewById(R.id.fragment_container_view);
     }
 
     public void detachFragment(WebFragment fragment) {

@@ -9,6 +9,7 @@ import android.os.Looper;
 import android.os.RemoteException;
 
 import org.chromium.webengine.interfaces.ExceptionType;
+import org.chromium.webengine.interfaces.IFullscreenCallbackDelegate;
 import org.chromium.webengine.interfaces.IPostMessageCallback;
 import org.chromium.webengine.interfaces.IStringCallback;
 import org.chromium.webengine.interfaces.ITabObserverDelegate;
@@ -32,6 +33,8 @@ class TabProxy extends ITabProxy.Stub {
     private WebFragmentTabDelegate mTabObserverDelegate = new WebFragmentTabDelegate();
     private WebFragmentNavigationDelegate mNavigationObserverDelegate =
             new WebFragmentNavigationDelegate();
+    private FullscreenCallbackDelegate mFullscreenCallbackDelegate =
+            new FullscreenCallbackDelegate();
 
     // Only use one callback for all the message event listeners. This is to avoid sending the same
     // message over multiple times. The message can then be proxied to all valid listeners.
@@ -45,6 +48,7 @@ class TabProxy extends ITabProxy.Stub {
         mGuid = tab.getGuid();
 
         tab.registerTabCallback(mTabObserverDelegate);
+        tab.setFullscreenCallback(mFullscreenCallbackDelegate);
     }
 
     void invalidate() {
@@ -203,5 +207,11 @@ class TabProxy extends ITabProxy.Stub {
             mMessageEventListenerCallback.onPostMessage(message, origin);
         } catch (RemoteException e) {
         }
+    }
+
+    @Override
+    public void setFullscreenCallbackDelegate(
+            IFullscreenCallbackDelegate fullscreenCallbackDelegate) {
+        mFullscreenCallbackDelegate.setDelegate(fullscreenCallbackDelegate);
     }
 }

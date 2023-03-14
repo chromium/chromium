@@ -19,17 +19,20 @@ import java.util.Set;
  * For internal use only.
  */
 class TabRegistry {
+    private WebEngine mWebEngine;
     private Map<String, Tab> mGuidToTab = new HashMap<String, Tab>();
 
     @Nullable
     private Tab mActiveTab;
 
-    TabRegistry() {}
+    TabRegistry(WebEngine webEngine) {
+        mWebEngine = webEngine;
+    }
 
     Tab getOrCreateTab(ITabParams tabParams) {
         Tab tab = mGuidToTab.get(tabParams.tabGuid);
         if (tab == null) {
-            tab = new Tab(tabParams);
+            tab = new Tab(mWebEngine, tabParams);
             mGuidToTab.put(tabParams.tabGuid, tab);
         }
         return tab;

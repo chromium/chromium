@@ -4,12 +4,13 @@
 
 package org.chromium.webengine.interfaces;
 
+import org.chromium.webengine.interfaces.IFullscreenCallbackDelegate;
 import org.chromium.webengine.interfaces.IPostMessageCallback;
 import org.chromium.webengine.interfaces.IStringCallback;
+import org.chromium.webengine.interfaces.ITabObserverDelegate;
 import org.chromium.webengine.interfaces.IWebMessageCallback;
 
 import java.util.List;
-import org.chromium.webengine.interfaces.ITabObserverDelegate;
 
 oneway interface ITabProxy {
   void setActive() = 1;
@@ -26,4 +27,7 @@ oneway interface ITabProxy {
   void createMessageEventListener(in IPostMessageCallback callback, in List<String> allowedOrigins) = 8;
   void addMessageEventListener(in List<String> allowedOrigins) = 9;
   void removeMessageEventListener(in List<String> allowedOrigins) = 10;
+
+  // Fullscreen mode:
+  void setFullscreenCallbackDelegate(in IFullscreenCallbackDelegate fullscreenCallbackDelegate) = 11;
 }

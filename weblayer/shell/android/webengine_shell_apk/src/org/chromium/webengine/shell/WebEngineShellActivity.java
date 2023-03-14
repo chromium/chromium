@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -29,8 +30,10 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 import org.chromium.base.Log;
 import org.chromium.webengine.CookieManager;
+import org.chromium.webengine.FullscreenCallback;
 import org.chromium.webengine.Navigation;
 import org.chromium.webengine.Tab;
+import org.chromium.webengine.TabListObserver;
 import org.chromium.webengine.TabManager;
 import org.chromium.webengine.WebEngine;
 import org.chromium.webengine.WebFragment;
@@ -51,7 +54,7 @@ import java.util.Arrays;
  *  - Move cookie test to manual-test activity
  *  - Move registerWebMessageCallback to manual-test activity
  */
-public class WebEngineShellActivity extends AppCompatActivity {
+public class WebEngineShellActivity extends AppCompatActivity implements FullscreenCallback {
     private static final String TAG = "WebEngineShell";
 
     private static final String WEB_FRAGMENT_TAG = "WEB_FRAGMENT_TAG";
@@ -60,6 +63,8 @@ public class WebEngineShellActivity extends AppCompatActivity {
 
     private WebSandbox mWebSandbox;
     private TabManager mTabManager;
+
+    private int mSystemVisibilityToRestore;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -116,6 +121,10 @@ public class WebEngineShellActivity extends AppCompatActivity {
             assert webSandbox.getWebEngines().size() == 1;
 
             mTabManager = webEngine.getTabManager();
+
+            for (Tab tab : mTabManager.getAllTabs()) {
+                tab.setFullscreenCallback(this);
+            }
             return;
         }
 
@@ -145,6 +154,13 @@ public class WebEngineShellActivity extends AppCompatActivity {
                                     tabCountButton, tabListSpinner),
                 mTabManager);
 
+        activeTab.setFullscreenCallback(this);
+        mTabManager.registerTabListObserver(new TabListObserver() {
+            @Override
+            public void onTabAdded(@NonNull Tab tab) {
+                tab.setFullscreenCallback(WebEngineShellActivity.this);
+            }
+        });
         mTabManager.registerTabListObserver(new DefaultObservers.DefaultTabListObserver());
         activeTab.getNavigationController().registerNavigationObserver(
                 new DefaultObservers.DefaultNavigationObserver() {
@@ -220,6 +236,15 @@ public class WebEngineShellActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mTabManager == null) return;
+        for (Tab tab : mTabManager.getAllTabs()) {
+            tab.setFullscreenCallback(null);
+        }
+    }
+
+    @Override
     public void onBackPressed() {
         WebFragment fragment =
                 (WebFragment) getSupportFragmentManager().findFragmentByTag(WEB_FRAGMENT_TAG);
@@ -275,5 +300,43 @@ public class WebEngineShellActivity extends AppCompatActivity {
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}
         });
+    }
+
+    @Override
+    public void onEnterFullscreen(WebEngine webEngine, Tab tab) {
+        final WindowManager.LayoutParams attrs = getWindow().getAttributes();
+        attrs.flags |= WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
+        getWindow().setAttributes(attrs);
+
+        findViewById(R.id.activity_nav).setVisibility(View.GONE);
+        findViewById(R.id.version).setVisibility(View.GONE);
+        findViewById(R.id.app_bar).setVisibility(View.GONE);
+        findViewById(R.id.progress_bar).setVisibility(View.GONE);
+
+        View decorView = getWindow().getDecorView();
+
+        mSystemVisibilityToRestore = decorView.getSystemUiVisibility();
+        decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+                | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+                | View.SYSTEM_UI_FLAG_LOW_PROFILE | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+    }
+
+    @Override
+    public void onExitFullscreen(WebEngine webEngine, Tab tab) {
+        View decorView = getWindow().getDecorView();
+        decorView.setSystemUiVisibility(mSystemVisibilityToRestore);
+
+        findViewById(R.id.activity_nav).setVisibility(View.VISIBLE);
+        findViewById(R.id.version).setVisibility(View.VISIBLE);
+        findViewById(R.id.app_bar).setVisibility(View.VISIBLE);
+        findViewById(R.id.progress_bar).setVisibility(View.VISIBLE);
+
+        final WindowManager.LayoutParams attrs = getWindow().getAttributes();
+        if ((attrs.flags & WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS) != 0) {
+            attrs.flags &= ~WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
+            getWindow().setAttributes(attrs);
+        }
     }
 }

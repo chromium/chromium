@@ -49,7 +49,7 @@ public class WebEngine {
             mFragment.initialize(webSandbox, this, fragmentEventsDelegate);
         } catch (RemoteException e) {
         }
-        mTabManager = new TabManager(tabManagerDelegate);
+        mTabManager = new TabManager(tabManagerDelegate, this);
         mCookieManager = new CookieManager(cookieManagerDelegate);
     }
 
