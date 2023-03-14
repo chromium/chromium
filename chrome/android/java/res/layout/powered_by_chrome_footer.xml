@@ -22,6 +22,7 @@ found in the LICENSE file.
         android:maxLines="1"
         android:drawableStart="@mipmap/app_icon"
         android:drawablePadding="@dimen/custom_tabs_menu_footer_margin_horizontal"
+        android:ellipsize="end"
         app:drawableWidth="@dimen/custom_tabs_menu_footer_icon_size"
         app:drawableHeight="@dimen/custom_tabs_menu_footer_icon_size"
         style="@style/TextAppearance.TextSmall.Secondary" />
