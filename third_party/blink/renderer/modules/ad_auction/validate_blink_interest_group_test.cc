@@ -180,17 +180,17 @@ TEST_F(ValidateBlinkInterestGroupTest, NonHttpsOriginRejected) {
   blink_interest_group->owner =
       SecurityOrigin::CreateFromString(String::FromUTF8("http://origin.test/"));
   ExpectInterestGroupIsNotValid(
-      blink_interest_group, "owner" /* expected_error_field_name */,
-      "http://origin.test" /* expected_error_field_value */,
-      "owner origin must be HTTPS." /* expected_error */);
+      blink_interest_group, /*expected_error_field_name=*/"owner",
+      /*expected_error_field_value=*/"http://origin.test",
+      /*expected_error=*/"owner origin must be HTTPS.");
 
   blink_interest_group->owner =
       SecurityOrigin::CreateFromString(String::FromUTF8("data:,foo"));
   // Data URLs have opaque origins, which are mapped to the string "null".
   ExpectInterestGroupIsNotValid(
-      blink_interest_group, "owner" /* expected_error_field_name */,
-      "null" /* expected_error_field_value */,
-      "owner origin must be HTTPS." /* expected_error */);
+      blink_interest_group, /*expected_error_field_name=*/"owner",
+      /*expected_error_field_value=*/"null",
+      /*expected_error=*/"owner origin must be HTTPS.");
 }
 
 // Same as NonHttpsOriginRejected, but for `seller_capabilities`.
@@ -305,36 +305,35 @@ TEST_F(ValidateBlinkInterestGroupTest, RejectedUrls) {
         CreateMinimalInterestGroup();
     blink_interest_group->bidding_url = rejected_url;
     ExpectInterestGroupIsNotValid(
-        blink_interest_group, "biddingUrl" /* expected_error_field_name */,
-        rejected_url.GetString().Utf8() /* expected_error_field_value */,
-        kBadBiddingUrlError /* expected_error */);
+        blink_interest_group, /*expected_error_field_name=*/"biddingUrl",
+        /*expected_error_field_value=*/rejected_url.GetString().Utf8(),
+        /*expected_error=*/kBadBiddingUrlError);
 
     // Test `bidding_wasm_helper_url`
     blink_interest_group = CreateMinimalInterestGroup();
     blink_interest_group->bidding_wasm_helper_url = rejected_url;
     ExpectInterestGroupIsNotValid(
         blink_interest_group,
-        "biddingWasmHelperUrl" /* expected_error_field_name */,
-        rejected_url.GetString().Utf8() /* expected_error_field_value */,
-        kBadBiddingWasmHelperUrlError /* expected_error */);
+        /*expected_error_field_name=*/"biddingWasmHelperUrl",
+        /*expected_error_field_value=*/rejected_url.GetString().Utf8(),
+        /*expected_error=*/kBadBiddingWasmHelperUrlError);
 
     // Test `update_url`.
     blink_interest_group = CreateMinimalInterestGroup();
     blink_interest_group->update_url = rejected_url;
     ExpectInterestGroupIsNotValid(
-        blink_interest_group, "updateUrl" /* expected_error_field_name */,
-        rejected_url.GetString().Utf8() /* expected_error_field_value */,
-        // expected_error
-        kBadUpdateUrlError /* expected_error */);
+        blink_interest_group, /*expected_error_field_name=*/"updateUrl",
+        /*expected_error_field_value=*/rejected_url.GetString().Utf8(),
+        /*expected_error=*/kBadUpdateUrlError);
 
     // Test `trusted_bidding_signals_url`.
     blink_interest_group = CreateMinimalInterestGroup();
     blink_interest_group->trusted_bidding_signals_url = rejected_url;
     ExpectInterestGroupIsNotValid(
         blink_interest_group,
-        "trustedBiddingSignalsUrl" /* expected_error_field_name */,
-        rejected_url.GetString().Utf8() /* expected_error_field_value */,
-        kBadTrustedBiddingSignalsUrlError /* expected_error */);
+        /*expected_error_field_name=*/"trustedBiddingSignalsUrl",
+        /*expected_error_field_value=*/rejected_url.GetString().Utf8(),
+        /*expected_error=*/kBadTrustedBiddingSignalsUrlError);
   }
 
   // `trusted_bidding_signals_url` also can't include query strings.
@@ -344,9 +343,9 @@ TEST_F(ValidateBlinkInterestGroupTest, RejectedUrls) {
   blink_interest_group->trusted_bidding_signals_url = rejected_url;
   ExpectInterestGroupIsNotValid(
       blink_interest_group,
-      "trustedBiddingSignalsUrl" /* expected_error_field_name */,
-      rejected_url.GetString().Utf8() /* expected_error_field_value */,
-      kBadTrustedBiddingSignalsUrlError /* expected_error */);
+      /*expected_error_field_name=*/"trustedBiddingSignalsUrl",
+      /*expected_error_field_value=*/rejected_url.GetString().Utf8(),
+      /*expected_error=*/kBadTrustedBiddingSignalsUrlError);
 }
 
 // Tests valid and invalid ad render URLs.
@@ -393,15 +392,15 @@ TEST_F(ValidateBlinkInterestGroupTest, AdRenderUrlValidation) {
         CreateMinimalInterestGroup();
     blink_interest_group->ads.emplace();
     blink_interest_group->ads->emplace_back(mojom::blink::InterestGroupAd::New(
-        test_case_url, String() /* metadata */));
+        test_case_url, /*metadata=*/String()));
     if (test_case.expect_allowed) {
       ExpectInterestGroupIsValid(blink_interest_group);
     } else {
       ExpectInterestGroupIsNotValid(
           blink_interest_group,
-          "ads[0].renderUrl" /* expected_error_field_name */,
-          test_case_url.GetString().Utf8() /* expected_error_field_value */,
-          kBadAdUrlError /* expected_error */);
+          /*expected_error_field_name=*/"ads[0].renderUrl",
+          /*expected_error_field_value=*/test_case_url.GetString().Utf8(),
+          /*expected_error=*/kBadAdUrlError);
     }
 
     // Add an InterestGroup with the test cases's URL as the second ad's URL.
@@ -409,17 +408,17 @@ TEST_F(ValidateBlinkInterestGroupTest, AdRenderUrlValidation) {
     blink_interest_group->ads.emplace();
     blink_interest_group->ads->emplace_back(mojom::blink::InterestGroupAd::New(
         KURL(String::FromUTF8("https://origin.test/")),
-        String() /* metadata */));
+        /*metadata=*/String()));
     blink_interest_group->ads->emplace_back(mojom::blink::InterestGroupAd::New(
-        test_case_url, String() /* metadata */));
+        test_case_url, /*metadata=*/String()));
     if (test_case.expect_allowed) {
       ExpectInterestGroupIsValid(blink_interest_group);
     } else {
       ExpectInterestGroupIsNotValid(
           blink_interest_group,
-          "ads[1].renderUrl" /* expected_error_field_name */,
-          test_case_url.GetString().Utf8() /* expected_error_field_value */,
-          kBadAdUrlError /* expected_error */);
+          /*expected_error_field_name=*/"ads[1].renderUrl",
+          /*expected_error_field_value=*/test_case_url.GetString().Utf8(),
+          /*expected_error=*/kBadAdUrlError);
     }
   }
 }
@@ -470,15 +469,15 @@ TEST_F(ValidateBlinkInterestGroupTest, AdComponentRenderUrlValidation) {
     blink_interest_group->ad_components.emplace();
     blink_interest_group->ad_components->emplace_back(
         mojom::blink::InterestGroupAd::New(test_case_url,
-                                           String() /* metadata */));
+                                           /*metadata=*/String()));
     if (test_case.expect_allowed) {
       ExpectInterestGroupIsValid(blink_interest_group);
     } else {
       ExpectInterestGroupIsNotValid(
           blink_interest_group,
-          "adComponents[0].renderUrl" /* expected_error_field_name */,
-          test_case_url.GetString().Utf8() /* expected_error_field_value */,
-          kBadAdUrlError /* expected_error */);
+          /*expected_error_field_name=*/"adComponents[0].renderUrl",
+          /*expected_error_field_value=*/test_case_url.GetString().Utf8(),
+          /*expected_error=*/kBadAdUrlError);
     }
 
     // Add an InterestGroup with the test cases's URL as the second ad
@@ -488,18 +487,18 @@ TEST_F(ValidateBlinkInterestGroupTest, AdComponentRenderUrlValidation) {
     blink_interest_group->ad_components->emplace_back(
         mojom::blink::InterestGroupAd::New(
             KURL(String::FromUTF8("https://origin.test/")),
-            String() /* metadata */));
+            /*metadata=*/String()));
     blink_interest_group->ad_components->emplace_back(
         mojom::blink::InterestGroupAd::New(test_case_url,
-                                           String() /* metadata */));
+                                           /*metadata=*/String()));
     if (test_case.expect_allowed) {
       ExpectInterestGroupIsValid(blink_interest_group);
     } else {
       ExpectInterestGroupIsNotValid(
           blink_interest_group,
-          "adComponents[1].renderUrl" /* expected_error_field_name */,
-          test_case_url.GetString().Utf8() /* expected_error_field_value */,
-          kBadAdUrlError /* expected_error */);
+          /*expected_error_field_name=*/"adComponents[1].renderUrl",
+          /*expected_error_field_value=*/test_case_url.GetString().Utf8(),
+          /*expected_error=*/kBadAdUrlError);
     }
   }
 }
@@ -523,7 +522,7 @@ TEST_F(ValidateBlinkInterestGroupTest, MalformedUrl) {
   blink_interest_group->name = kName;
   blink_interest_group->ads.emplace();
   blink_interest_group->ads->emplace_back(mojom::blink::InterestGroupAd::New(
-      KURL(kMalformedUrl), String() /* metadata */));
+      KURL(kMalformedUrl), /*metadata=*/String()));
   String error_field_name;
   String error_field_value;
   String error;
@@ -828,9 +827,9 @@ TEST_F(ValidateBlinkInterestGroupTest, InvalidPriority) {
         CreateMinimalInterestGroup();
     blink_interest_group->priority = test_case.priority;
     ExpectInterestGroupIsNotValid(
-        blink_interest_group, "priority" /* expected_error_field_name */,
-        test_case.priority_text, /*expected_error_field_value */
-        "priority must be finite." /* expected_error */);
+        blink_interest_group, /*expected_error_field_name=*/"priority",
+        /*expected_error_field_value=*/test_case.priority_text,
+        /*expected_error=*/"priority must be finite.");
   }
 }
 
@@ -847,9 +846,9 @@ TEST_F(ValidateBlinkInterestGroupTest, InvalidExecutionMode) {
         CreateMinimalInterestGroup();
     blink_interest_group->execution_mode = test_case.execution_mode;
     ExpectInterestGroupIsNotValid(
-        blink_interest_group, "executionMode" /* expected_error_field_name */,
-        test_case.execution_mode_text, /*expected_error_field_value */
-        "execution mode is not valid." /* expected_error */);
+        blink_interest_group, /*expected_error_field_name=*/"executionMode",
+        /*expected_error_field_value=*/test_case.execution_mode_text,
+        /*expected_error=*/"execution mode is not valid.");
   }
 }
 
@@ -897,7 +896,7 @@ TEST_F(ValidateBlinkInterestGroupTest, InvalidAdSizes) {
                                test_case.width, test_case.width_units,
                                test_case.height, test_case.height_units));
     ExpectInterestGroupIsNotValid(
-        blink_interest_group, "adSizes" /* expected_error_field_name */,
+        blink_interest_group, /*expected_error_field_name=*/"adSizes",
         test_case.expected_error_field_value, test_case.expected_error);
   }
 }
@@ -933,7 +932,7 @@ TEST_F(ValidateBlinkInterestGroupTest, InvalidSizeGroups) {
     blink_interest_group->size_groups->insert(
         test_case.size_group, WTF::Vector<WTF::String>(1, test_case.size_name));
     ExpectInterestGroupIsNotValid(
-        blink_interest_group, "sizeGroups" /* expected_error_field_name */,
+        /*expected_error_field_name=*/blink_interest_group, "sizeGroups",
         test_case.expected_error_field_value, test_case.expected_error);
   }
 }
