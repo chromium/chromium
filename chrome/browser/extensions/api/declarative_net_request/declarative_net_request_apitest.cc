@@ -9,6 +9,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "chrome/common/chrome_features.h"
 #include "components/version_info/version_info.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
@@ -24,9 +25,21 @@ using extensions::ScopedCurrentChannel;
 
 class DeclarativeNetRequestApiTest : public extensions::ExtensionApiTest {
  public:
-  DeclarativeNetRequestApiTest() = default;
+  DeclarativeNetRequestApiTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        // TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having to
+        // disable this feature.
+        /*disabled_features=*/{features::kHttpsUpgrades});
+  }
   explicit DeclarativeNetRequestApiTest(ContextType context_type)
-      : ExtensionApiTest(context_type) {}
+      : ExtensionApiTest(context_type) {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        // TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having to
+        // disable this feature.
+        /*disabled_features=*/{features::kHttpsUpgrades});
+  }
   ~DeclarativeNetRequestApiTest() override = default;
   DeclarativeNetRequestApiTest(const DeclarativeNetRequestApiTest&) = delete;
   DeclarativeNetRequestApiTest& operator=(const DeclarativeNetRequestApiTest&) =
@@ -58,6 +71,7 @@ class DeclarativeNetRequestApiTest : public extensions::ExtensionApiTest {
 
  private:
   base::ScopedTempDir temp_dir_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 class DeclarativeNetRequestLazyApiTest
@@ -127,7 +141,9 @@ class DeclarativeNetRequestApiFencedFrameTest
     feature_list_.InitWithFeaturesAndParameters(
         {{blink::features::kFencedFrames, {{}}},
          {features::kPrivacySandboxAdsAPIsOverride, {}}},
-        {/* disabled_features */});
+        // TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having to
+        // disable this feature.
+        /*disabled_features=*/{features::kHttpsUpgrades});
     // Fenced frames are only allowed in secure contexts.
     UseHttpsTestServer();
   }

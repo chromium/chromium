@@ -55,6 +55,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -192,7 +193,9 @@ class DeclarativeNetRequestBrowserTest
          blink::features::kFencedFrames,
          features::kPrivacySandboxAdsAPIsOverride},
         /*disabled_features=*/
-        {});
+        {// TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid
+         // having to disable this feature.
+         features::kHttpsUpgrades});
     net::test_server::RegisterDefaultHandlers(embedded_test_server());
   }
 
