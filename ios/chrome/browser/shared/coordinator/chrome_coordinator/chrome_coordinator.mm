@@ -4,20 +4,25 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+#import "base/memory/weak_ptr.h"
 #import "ios/chrome/browser/main/browser.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-@implementation ChromeCoordinator
+@implementation ChromeCoordinator {
+  base::WeakPtr<Browser> _browser;
+}
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser {
   if (self = [super init]) {
     _baseViewController = viewController;
     _childCoordinators = [MutableCoordinatorArray array];
-    _browser = browser;
+    if (browser) {
+      _browser = browser->AsWeakPtr();
+    }
   }
   return self;
 }
@@ -28,6 +33,10 @@
   // By default the active child is the one most recently added to the child
   // array, but subclasses can override this.
   return self.childCoordinators.lastObject;
+}
+
+- (Browser*)browser {
+  return _browser.get();
 }
 
 #pragma mark - Public
