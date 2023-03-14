@@ -36,6 +36,7 @@ BASE_DECLARE_FEATURE(kCloseTabSuggestions);
 BASE_DECLARE_FEATURE(kCriticalPersistedTabData);
 BASE_DECLARE_FEATURE(kCommerceCoupons);
 BASE_DECLARE_FEATURE(kCastDeviceFilter);
+BASE_DECLARE_FEATURE(kCCTAllowCrossUidActivitySwitchFromBelow);
 BASE_DECLARE_FEATURE(kCCTBackgroundTab);
 BASE_DECLARE_FEATURE(kCCTBottomBarSwipeUpGesture);
 BASE_DECLARE_FEATURE(kCCTBrandTransparency);
