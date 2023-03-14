@@ -93,6 +93,17 @@ class QRCodeGenerator {
       absl::optional<int> min_version = absl::nullopt,
       absl::optional<uint8_t> mask = absl::nullopt);
 
+  // kMaxInputSize is the maximum number of bytes that `Generate` will try to
+  // process. Inputs larger than this will certainly fail, but could otherwise
+  // take a long time to do so as the code tries to calculate an optimum
+  // segmentation before it realises that it's hopeless.
+  //
+  // To calculate this value, consider the table at
+  // https://www.qrcode.com/en/about/version.html. Take the largest capacity QR
+  // format supported by the code, find the value for "numeric" encoding, and
+  // round up a little.
+  static constexpr size_t kMaxInputSize = 700;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(QRCodeGenerator, Segmentation);
   FRIEND_TEST_ALL_PREFIXES(QRCodeGenerator, SegmentationValid);

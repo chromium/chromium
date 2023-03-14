@@ -258,6 +258,9 @@ constexpr QRVersionInfo version_infos[] = {
         // Alignment locations
         {6, 32, 58},
     },
+
+    // Adding larger sizes here? Consider whether `kMaxInputSize` needs to be
+    // updated.
 };
 
 const QRVersionInfo* GetVersionForDataSize(size_t num_data_bytes,
@@ -580,6 +583,10 @@ absl::optional<QRCodeGenerator::GeneratedCode> QRCodeGenerator::Generate(
     absl::optional<int> min_version,
     absl::optional<uint8_t> mask) {
   CHECK(!mask || *mask <= kMaxMask);
+
+  if (in.size() > kMaxInputSize) {
+    return absl::nullopt;
+  }
 
   std::vector<Segment> segments;
   const QRVersionInfo* version_info = nullptr;

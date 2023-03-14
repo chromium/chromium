@@ -219,3 +219,9 @@ TEST(QRCodeGenerator, SegmentationValid) {
     ASSERT_TRUE(QRCodeGenerator::NoSuperfluousSegments(segments));
   }
 }
+
+TEST(QRCodeGenerator, HugeInput) {
+  std::vector<uint8_t> huge_input(QRCodeGenerator::kMaxInputSize + 1);
+  QRCodeGenerator qr;
+  ASSERT_FALSE(qr.Generate(huge_input));
+}
