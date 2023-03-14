@@ -170,7 +170,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FastPair.SubsequentPairing"
-    enum="FastPairSubsequentSuccessFunnelEvent" expires_after="2023-07-02">
+    enum="FastPairSubsequentSuccessFunnelEvent" expires_after="2023-09-10">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>

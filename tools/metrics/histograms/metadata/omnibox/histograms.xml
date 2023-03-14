@@ -897,7 +897,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.IPv4AddressPartsCount" units="count"
-    expires_after="2023-07-09">
+    expires_after="2023-09-10">
   <owner>gjc@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -1383,7 +1383,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.ResumeJourneyShown.ClusterKeywordScore" units="count"
-    expires_after="2023-06-18">
+    expires_after="2023-09-10">
   <owner>junzou@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
