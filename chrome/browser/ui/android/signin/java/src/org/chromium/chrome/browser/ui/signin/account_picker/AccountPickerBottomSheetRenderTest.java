@@ -36,6 +36,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
+import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator.EntryPoint;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -310,12 +311,13 @@ public class AccountPickerBottomSheetRenderTest {
     private void buildAndShowCollapsedBottomSheet() {
         AccountPickerBottomSheetStrings accountPickerBottomSheetStrings =
                 mAccountPickerDelegate.getEntryPoint() == EntryPoint.SEND_TAB_TO_SELF
-                ? new AccountPickerBottomSheetSendTabToSelfStrings()
-                : new AccountPickerBottomSheetDefaultStrings();
+                ? new SendTabToSelfCoordinator.BottomSheetStrings()
+                : new AccountPickerBottomSheetStrings() {};
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mCoordinator = new AccountPickerBottomSheetCoordinator(
                     mActivityTestRule.getActivity().getWindowAndroid(), getBottomSheetController(),
                     mAccountPickerDelegate, accountPickerBottomSheetStrings);
+
         });
         CriteriaHelper.pollUiThread(mCoordinator.getBottomSheetViewForTesting().findViewById(
                 R.id.account_picker_selected_account)::isShown);

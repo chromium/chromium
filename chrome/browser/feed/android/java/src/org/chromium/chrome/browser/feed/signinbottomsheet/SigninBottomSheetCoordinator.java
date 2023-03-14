@@ -26,8 +26,7 @@ import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider
 import org.chromium.ui.base.WindowAndroid;
 
 /** Coordinator for displaying the signin flow in the bottom sheet. */
-public class SigninBottomSheetCoordinator
-        implements AccountPickerDelegate, AccountPickerBottomSheetStrings {
+public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
     private final Profile mProfile;
     private final WindowAndroid mWindowAndroid;
     private final BottomSheetController mController;
@@ -79,8 +78,8 @@ public class SigninBottomSheetCoordinator
     }
 
     public void show() {
-        mAccountPickerBottomSheetCoordinator =
-                new AccountPickerBottomSheetCoordinator(mWindowAndroid, mController, this, this);
+        mAccountPickerBottomSheetCoordinator = new AccountPickerBottomSheetCoordinator(
+                mWindowAndroid, mController, this, new BottomSheetStrings());
     }
 
     @VisibleForTesting
@@ -88,27 +87,31 @@ public class SigninBottomSheetCoordinator
         return mAccountPickerBottomSheetCoordinator.getBottomSheetViewForTesting();
     }
 
-    /** Returns the title string for the bottom sheet dialog. */
-    @Override
-    public @StringRes int getTitle() {
-        return R.string.signin_account_picker_bottom_sheet_title_for_back_of_card_menu_signin;
-    }
-
-    /** Returns the subtitle string for the bottom sheet dialog. */
-    @Override
-    public @StringRes int getSubtitle() {
-        return R.string.signin_account_picker_bottom_sheet_subtitle_for_back_of_card_menu_signin;
-    }
-
-    /** Returns the cancel button string for the bottom sheet dialog. */
-    @Override
-    public @StringRes int getCancelButton() {
-        return R.string.cancel;
-    }
-
     @VisibleForTesting
     public void setAccountPickerBottomSheetCoordinator(
             AccountPickerBottomSheetCoordinator accountPickerBottomSheetCoordinator) {
         this.mAccountPickerBottomSheetCoordinator = accountPickerBottomSheetCoordinator;
+    }
+
+    /** Stores bottom sheet strings for signin from back of card entry point */
+    public static class BottomSheetStrings implements AccountPickerBottomSheetStrings {
+        /** Returns the title string for the bottom sheet dialog. */
+        @Override
+        public @StringRes int getTitle() {
+            return R.string.signin_account_picker_bottom_sheet_title_for_back_of_card_menu_signin;
+        }
+
+        /** Returns the subtitle string for the bottom sheet dialog. */
+        @Override
+        public @StringRes int getSubtitle() {
+            return R.string
+                    .signin_account_picker_bottom_sheet_subtitle_for_back_of_card_menu_signin;
+        }
+
+        /** Returns the cancel button string for the bottom sheet dialog. */
+        @Override
+        public @StringRes int getCancelButton() {
+            return R.string.cancel;
+        }
     }
 }
