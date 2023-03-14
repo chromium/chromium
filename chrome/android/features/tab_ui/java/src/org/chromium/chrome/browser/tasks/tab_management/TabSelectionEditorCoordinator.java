@@ -310,8 +310,7 @@ class TabSelectionEditorCoordinator {
 
         if (numRelatedTabs == 1) return tab.getTitle();
 
-        return context.getResources().getQuantityString(
-                R.plurals.bottom_tab_grid_title_placeholder, numRelatedTabs, numRelatedTabs);
+        return TabGroupTitleEditor.getDefaultTitle(context, numRelatedTabs);
     }
 
     private TabListMediator.ThumbnailProvider initThumbnailProvider(

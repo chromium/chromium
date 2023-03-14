@@ -4,12 +4,15 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import android.content.Context;
+
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_groups.EmptyTabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
@@ -18,11 +21,13 @@ import org.chromium.ui.modelutil.PropertyModel;
  * PropertyModel} update.
  */
 public abstract class TabGroupTitleEditor {
+    private final Context mContext;
     private final TabModelSelector mTabModelSelector;
     private final TabModelObserver mTabModelObserver;
     private final TabGroupModelFilter.Observer mFilterObserver;
 
-    public TabGroupTitleEditor(TabModelSelector tabModelSelector) {
+    public TabGroupTitleEditor(Context context, TabModelSelector tabModelSelector) {
+        mContext = context;
         mTabModelSelector = tabModelSelector;
 
         mTabModelObserver = new TabModelObserver() {
@@ -91,6 +96,27 @@ public abstract class TabGroupTitleEditor {
         ((TabGroupModelFilter) mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(
                  true))
                 .addTabGroupObserver(mFilterObserver);
+    }
+
+    /**
+     * @param context Context for accessing resources.
+     * @param numRelatedTabs The number of related tabs.
+     * @return the default title for the tab group.
+     */
+    public static String getDefaultTitle(Context context, int numRelatedTabs) {
+        return context.getResources().getQuantityString(
+                R.plurals.bottom_tab_grid_title_placeholder, numRelatedTabs, numRelatedTabs);
+    }
+
+    /**
+     * @param newTitle the new title.
+     * @param numRelatedTabs the number of related tabs in the group.
+     * @return whether the newTitle is a match for the default string.
+     */
+    public boolean isDefaultTitle(String newTitle, int numRelatedTabs) {
+        // TODO(crbug/1419842): Consider broadening this check for differing numbers of related
+        // tabs. This is difficult due to this being a translated plural string.
+        return newTitle.equals(getDefaultTitle(mContext, numRelatedTabs));
     }
 
     /**

@@ -1057,7 +1057,7 @@ class TabListMediator {
         }
 
         if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mContext)) {
-            mTabGroupTitleEditor = new TabGroupTitleEditor(mTabModelSelector) {
+            mTabGroupTitleEditor = new TabGroupTitleEditor(mContext, mTabModelSelector) {
                 @Override
                 protected void updateTabGroupTitle(Tab tab, String title) {
                     // Only update title in PropertyModel for tab switcher.

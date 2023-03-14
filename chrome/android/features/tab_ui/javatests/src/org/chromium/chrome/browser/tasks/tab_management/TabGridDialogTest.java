@@ -149,8 +149,6 @@ public class TabGridDialogTest {
     // clang-format on
     private static final String CUSTOMIZED_TITLE1 = "wfh tips";
     private static final String CUSTOMIZED_TITLE2 = "wfh funs";
-    private static final String TAB_GROUP_LAUNCH_POLISH_PARAMS =
-            "force-fieldtrial-params=Study.Group:enable_launch_polish/true";
     private static final String PAGE_WITH_HTTPS_CANONICAL_URL =
             "/chrome/test/data/android/share/link_share_https_canonical.html";
     private static final String PAGE_WITH_HTTP_CANONICAL_URL =
@@ -1029,8 +1027,7 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     // clang-format off
-    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study"})
-    @CommandLineFlags.Add({"force-fieldtrials=Study/Group", TAB_GROUP_LAUNCH_POLISH_PARAMS})
+    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
     public void testTabGroupNaming_KeyboardVisibility() throws ExecutionException {
         // clang-format on
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -1056,6 +1053,61 @@ public class TabGridDialogTest {
             openDialogFromStripAndVerify(cta, 2, null);
             testTitleTextFocus(cta);
         }
+    }
+
+    // Regression test for https://crbug.com/1419842
+    @Test
+    @MediumTest
+    // clang-format off
+    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+    public void testTabGroupNaming_afterFocusNoTitleSaved() throws ExecutionException {
+        // clang-format on
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        createTabs(cta, false, 3);
+        enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 3);
+
+        // Create a tab group.
+        mergeAllNormalTabsToAGroup(cta);
+        verifyTabSwitcherCardCount(cta, 1);
+        openDialogFromTabSwitcherAndVerify(cta, 3,
+                cta.getResources().getQuantityString(
+                        R.plurals.bottom_tab_grid_title_placeholder, 3, 3));
+
+        // Click on the title this should not save the title.
+        onView(allOf(withParent(withId(R.id.main_content)), withId(R.id.title))).perform(click());
+        verifyTitleTextFocus(cta, true);
+        Espresso.pressBack();
+        verifyTitleTextFocus(cta, false);
+        verifyShowingDialog(cta, 3, null);
+
+        // Close a tab and exit dialog.
+        closeFirstTabInDialog();
+        clickScrimToExitDialog(cta);
+        waitForDialogHidingAnimation(cta);
+
+        // Verify the default title updated.
+        verifyTabSwitcherCardCount(cta, 1);
+        String twoTabsString = cta.getResources().getQuantityString(
+                R.plurals.bottom_tab_grid_title_placeholder, 2, 2);
+        verifyFirstCardTitle(twoTabsString);
+        openDialogFromTabSwitcherAndVerify(cta, 2, twoTabsString);
+
+        // Click on the title.
+        onView(allOf(withParent(withId(R.id.main_content)), withId(R.id.title))).perform(click());
+        verifyTitleTextFocus(cta, true);
+        Espresso.pressBack();
+        verifyTitleTextFocus(cta, false);
+        verifyShowingDialog(cta, 2, null);
+
+        // Confirm actually changing the title works.
+        editDialogTitle(cta, CUSTOMIZED_TITLE1);
+
+        // Verify the title is updated in both tab switcher and dialog.
+        clickScrimToExitDialog(cta);
+        waitForDialogHidingAnimation(cta);
+        verifyFirstCardTitle(CUSTOMIZED_TITLE1);
+        openDialogFromTabSwitcherAndVerify(cta, 2, CUSTOMIZED_TITLE1);
     }
 
     // Regression test for https://crbug.com/1378226.
@@ -1264,8 +1316,7 @@ public class TabGridDialogTest {
     @MediumTest
     @DisabledTest(message = "TODO(crbug.com/1128345): Fix flakiness.")
     // clang-format off
-    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study"})
-    @CommandLineFlags.Add({"force-fieldtrials=Study/Group", TAB_GROUP_LAUNCH_POLISH_PARAMS})
+    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
     public void testAccessibilityString() throws ExecutionException {
         // clang-format on
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
