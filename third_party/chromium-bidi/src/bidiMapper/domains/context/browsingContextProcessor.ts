@@ -23,13 +23,14 @@ import {
   Script,
 } from '../../../protocol/protocol.js';
 import {CdpClient, CdpConnection} from '../../CdpConnection.js';
-import {LogType, LoggerFn} from '../../../utils/log.js';
+import {LoggerFn, LogType} from '../../../utils/log.js';
 import {IEventManager} from '../events/EventManager.js';
 import {Realm} from '../script/realm.js';
 import {RealmStorage} from '../script/realmStorage.js';
 
 import {BrowsingContextStorage} from './browsingContextStorage.js';
 import {BrowsingContextImpl} from './browsingContextImpl.js';
+import {CdpTarget} from './cdpTarget.js';
 
 export class BrowsingContextProcessor {
   readonly #browsingContextStorage: BrowsingContextStorage;
@@ -38,7 +39,6 @@ export class BrowsingContextProcessor {
   readonly #logger?: LoggerFn;
   readonly #realmStorage: RealmStorage;
   readonly #selfTargetId: string;
-  readonly #sessions: Set<string>;
 
   constructor(
     realmStorage: RealmStorage,
@@ -54,15 +54,15 @@ export class BrowsingContextProcessor {
     this.#logger = logger;
     this.#realmStorage = realmStorage;
     this.#selfTargetId = selfTargetId;
-    this.#sessions = new Set();
 
-    this.#setBrowserClientEventListeners(this.#cdpConnection.browserClient());
+    this.#setTargetEventListeners(this.#cdpConnection.browserClient());
   }
 
-  #setBrowserClientEventListeners(browserClient: CdpClient) {
-    this.#setTargetEventListeners(browserClient);
-  }
-
+  /**
+   * `BrowsingContextProcessor` is responsible for creating and destroying all
+   * the targets and browsing contexts. This method is called for each CDP
+   * session.
+   */
   #setTargetEventListeners(cdpClient: CdpClient) {
     cdpClient.on('Target.attachedToTarget', async (params) => {
       await this.#handleAttachedToTargetEvent(params, cdpClient);
@@ -72,60 +72,17 @@ export class BrowsingContextProcessor {
     });
   }
 
-  #setSessionEventListeners(sessionId: string) {
-    if (this.#sessions.has(sessionId)) {
-      return;
-    }
-    this.#sessions.add(sessionId);
-
-    const sessionCdpClient = this.#cdpConnection.getCdpClient(sessionId);
-
-    this.#setTargetEventListeners(sessionCdpClient);
-
-    sessionCdpClient.on('*', async (method, params) => {
-      await this.#eventManager.registerEvent(
-        {
-          method: CDP.EventNames.EventReceivedEvent,
-          params: {
-            cdpMethod: method,
-            cdpParams: params || {},
-            cdpSession: sessionId,
-          },
-        },
-        null
-      );
-    });
-
-    sessionCdpClient.on(
-      'Page.frameAttached',
-      async (params: Protocol.Page.FrameAttachedEvent) => {
-        await BrowsingContextImpl.createFrameContext(
-          this.#realmStorage,
-          params.frameId,
-          params.parentFrameId,
-          sessionCdpClient,
-          sessionId,
-          this.#eventManager,
-          this.#browsingContextStorage,
-          this.#logger
-        );
-      }
-    );
-  }
-
   async #handleAttachedToTargetEvent(
     params: Protocol.Target.AttachedToTargetEvent,
     parentSessionCdpClient: CdpClient
   ) {
     const {sessionId, targetInfo} = params;
 
-    const targetSessionCdpClient = this.#cdpConnection.getCdpClient(sessionId);
+    const targetCdpClient = this.#cdpConnection.getCdpClient(sessionId);
 
     if (!this.#isValidTarget(targetInfo)) {
       // DevTools or some other not supported by BiDi target.
-      await targetSessionCdpClient.sendCommand(
-        'Runtime.runIfWaitingForDebugger'
-      );
+      await targetCdpClient.sendCommand('Runtime.runIfWaitingForDebugger');
       await parentSessionCdpClient.sendCommand(
         'Target.detachFromTarget',
         params
@@ -139,20 +96,29 @@ export class BrowsingContextProcessor {
       JSON.stringify(params, null, 2)
     );
 
-    this.#setSessionEventListeners(sessionId);
+    this.#setTargetEventListeners(targetCdpClient);
+
+    const cdpTarget = CdpTarget.create(
+      targetInfo.targetId,
+      targetCdpClient,
+      sessionId,
+      this.#realmStorage,
+      this.#eventManager,
+      this.#browsingContextStorage,
+      this.#logger
+    );
 
     if (this.#browsingContextStorage.hasKnownContext(targetInfo.targetId)) {
       // OOPiF.
       this.#browsingContextStorage
         .getKnownContext(targetInfo.targetId)
-        .convertFrameToTargetContext(targetSessionCdpClient, sessionId);
+        .updateCdpTarget(cdpTarget);
     } else {
-      await BrowsingContextImpl.createTargetContext(
+      await BrowsingContextImpl.create(
+        cdpTarget,
         this.#realmStorage,
         targetInfo.targetId,
         null,
-        targetSessionCdpClient,
-        sessionId,
         this.#eventManager,
         this.#browsingContextStorage,
         this.#logger

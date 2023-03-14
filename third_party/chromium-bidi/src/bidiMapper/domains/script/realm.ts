@@ -261,7 +261,6 @@ export class Realm {
    * Gets the string representation of an object. This is equivalent to
    * calling toString() on the object value.
    * @param cdpObject CDP remote object representing an object.
-   * @param realm
    * @return string The stringified object.
    */
   async stringifyObject(

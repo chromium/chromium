@@ -53,13 +53,13 @@ export interface IEventManager {
   registerEvent(
     event: Message.EventMessage,
     contextId: CommonDataTypes.BrowsingContext | null
-  ): Promise<void>;
+  ): void;
 
   registerPromiseEvent(
     event: Promise<Message.EventMessage>,
     contextId: CommonDataTypes.BrowsingContext | null,
     eventName: string
-  ): Promise<void>;
+  ): void;
 
   subscribe(
     events: Session.SubscribeParametersEvent[],
@@ -115,7 +115,7 @@ export class EventManager implements IEventManager {
   /**
    * Returns consistent key to be used to access value maps.
    */
-  #getMapKey(
+  static #getMapKey(
     eventName: string,
     browsingContext: CommonDataTypes.BrowsingContext | null,
     channel: string | null | undefined = undefined
@@ -123,22 +123,18 @@ export class EventManager implements IEventManager {
     return JSON.stringify({eventName, browsingContext, channel});
   }
 
-  async registerEvent(
+  registerEvent(
     event: Message.EventMessage,
     contextId: CommonDataTypes.BrowsingContext | null
-  ): Promise<void> {
-    await this.registerPromiseEvent(
-      Promise.resolve(event),
-      contextId,
-      event.method
-    );
+  ): void {
+    this.registerPromiseEvent(Promise.resolve(event), contextId, event.method);
   }
 
-  async registerPromiseEvent(
+  registerPromiseEvent(
     event: Promise<Message.EventMessage>,
     contextId: CommonDataTypes.BrowsingContext | null,
     eventName: Session.SubscribeParametersEvent
-  ): Promise<void> {
+  ): void {
     const eventWrapper = new EventWrapper(event, contextId);
     const sortedChannels =
       this.#subscriptionManager.getChannelsSubscribedToEvent(
@@ -202,7 +198,10 @@ export class EventManager implements IEventManager {
       // Do nothing if the event is no buffer-able.
       return;
     }
-    const bufferMapKey = this.#getMapKey(eventName, eventWrapper.contextId);
+    const bufferMapKey = EventManager.#getMapKey(
+      eventName,
+      eventWrapper.contextId
+    );
     if (!this.#eventBuffers.has(bufferMapKey)) {
       this.#eventBuffers.set(
         bufferMapKey,
@@ -230,7 +229,7 @@ export class EventManager implements IEventManager {
       return;
     }
 
-    const lastSentMapKey = this.#getMapKey(
+    const lastSentMapKey = EventManager.#getMapKey(
       eventName,
       eventWrapper.contextId,
       channel
@@ -249,8 +248,12 @@ export class EventManager implements IEventManager {
     contextId: CommonDataTypes.BrowsingContext | null,
     channel: string | null
   ): EventWrapper[] {
-    const bufferMapKey = this.#getMapKey(eventName, contextId);
-    const lastSentMapKey = this.#getMapKey(eventName, contextId, channel);
+    const bufferMapKey = EventManager.#getMapKey(eventName, contextId);
+    const lastSentMapKey = EventManager.#getMapKey(
+      eventName,
+      contextId,
+      channel
+    );
     const lastSentMessageId =
       this.#lastMessageSent.get(lastSentMapKey) ?? -Infinity;
 

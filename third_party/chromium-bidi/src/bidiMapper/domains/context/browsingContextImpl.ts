@@ -19,20 +19,18 @@ import {Protocol} from 'devtools-protocol';
 
 import {inchesFromCm} from '../../../utils/unitConversions.js';
 import {BrowsingContext, Message} from '../../../protocol/protocol.js';
-import {LogType, LoggerFn} from '../../../utils/log.js';
-import {CdpClient} from '../../CdpConnection.js';
+import {LoggerFn, LogType} from '../../../utils/log.js';
 import {Deferred} from '../../../utils/deferred.js';
 import {IEventManager} from '../events/EventManager.js';
-import {LogManager} from '../log/logManager.js';
 import {Realm} from '../script/realm.js';
 import {RealmStorage} from '../script/realmStorage.js';
 
 import {BrowsingContextStorage} from './browsingContextStorage.js';
+import {CdpTarget} from './cdpTarget';
 
 export class BrowsingContextImpl {
-  readonly #targetDefers = {
+  readonly #defers = {
     documentInitialized: new Deferred<void>(),
-    targetUnblocked: new Deferred<void>(),
     Page: {
       navigatedWithinDocument:
         new Deferred<Protocol.Page.NavigatedWithinDocumentEvent>(),
@@ -51,11 +49,10 @@ export class BrowsingContextImpl {
 
   #url = 'about:blank';
   #loaderId: string | null = null;
-  #cdpSessionId: string;
-  #cdpClient: CdpClient;
+  #cdpTarget: CdpTarget;
   #maybeDefaultRealm: Realm | undefined;
-  #browsingContextStorage: BrowsingContextStorage;
-  #logger?: LoggerFn;
+  readonly #browsingContextStorage: BrowsingContextStorage;
+  readonly #logger?: LoggerFn;
 
   get #defaultRealm(): Realm {
     if (this.#maybeDefaultRealm === undefined) {
@@ -67,85 +64,47 @@ export class BrowsingContextImpl {
   }
 
   private constructor(
+    cdpTarget: CdpTarget,
     realmStorage: RealmStorage,
     contextId: string,
     parentId: string | null,
-    cdpClient: CdpClient,
-    cdpSessionId: string,
     eventManager: IEventManager,
     browsingContextStorage: BrowsingContextStorage,
     logger?: LoggerFn
   ) {
+    this.#cdpTarget = cdpTarget;
     this.#realmStorage = realmStorage;
     this.#contextId = contextId;
     this.#parentId = parentId;
-    this.#cdpClient = cdpClient;
     this.#eventManager = eventManager;
-    this.#cdpSessionId = cdpSessionId;
     this.#browsingContextStorage = browsingContextStorage;
     this.#logger = logger;
 
     this.#initListeners();
-
-    this.#browsingContextStorage.addContext(this);
   }
 
-  static async createFrameContext(
+  static async create(
+    cdpTarget: CdpTarget,
     realmStorage: RealmStorage,
     contextId: string,
     parentId: string | null,
-    cdpClient: CdpClient,
-    cdpSessionId: string,
     eventManager: IEventManager,
     browsingContextStorage: BrowsingContextStorage,
     logger?: LoggerFn
   ): Promise<void> {
     const context = new BrowsingContextImpl(
+      cdpTarget,
       realmStorage,
       contextId,
       parentId,
-      cdpClient,
-      cdpSessionId,
-      eventManager,
-      browsingContextStorage,
-      logger
-    );
-    context.#targetDefers.targetUnblocked.resolve();
-
-    await eventManager.registerEvent(
-      {
-        method: BrowsingContext.EventNames.ContextCreatedEvent,
-        params: context.serializeToBidiValue(),
-      },
-      context.contextId
-    );
-  }
-
-  static async createTargetContext(
-    realmStorage: RealmStorage,
-    contextId: string,
-    parentId: string | null,
-    cdpClient: CdpClient,
-    cdpSessionId: string,
-    eventManager: IEventManager,
-    browsingContextStorage: BrowsingContextStorage,
-    logger?: LoggerFn
-  ): Promise<void> {
-    const context = new BrowsingContextImpl(
-      realmStorage,
-      contextId,
-      parentId,
-      cdpClient,
-      cdpSessionId,
       eventManager,
       browsingContextStorage,
       logger
     );
 
-    // No need in awaiting for target to be unblocked.
-    context.#unblockAttachedTarget();
+    browsingContextStorage.addContext(context);
 
-    await eventManager.registerEvent(
+    eventManager.registerEvent(
       {
         method: BrowsingContext.EventNames.ContextCreatedEvent,
         params: context.serializeToBidiValue(),
@@ -159,10 +118,9 @@ export class BrowsingContextImpl {
     return this.#loaderId;
   }
 
-  convertFrameToTargetContext(cdpClient: CdpClient, cdpSessionId: string) {
-    this.#updateConnection(cdpClient, cdpSessionId);
-    // No need in awaiting for target to be unblocked.
-    this.#unblockAttachedTarget();
+  updateCdpTarget(cdpTarget: CdpTarget) {
+    this.#cdpTarget = cdpTarget;
+    this.#initListeners();
   }
 
   async delete() {
@@ -180,7 +138,7 @@ export class BrowsingContextImpl {
       parent.#children.delete(this.contextId);
     }
 
-    await this.#eventManager.registerEvent(
+    this.#eventManager.registerEvent(
       {
         method: BrowsingContext.EventNames.ContextDestroyedEvent,
         params: this.serializeToBidiValue(),
@@ -194,44 +152,6 @@ export class BrowsingContextImpl {
     await Promise.all(this.children.map((child) => child.delete()));
   }
 
-  #updateConnection(cdpClient: CdpClient, cdpSessionId: string) {
-    if (this.#targetDefers.targetUnblocked.isFinished) {
-      this.#targetDefers.targetUnblocked = new Deferred<void>();
-    } else {
-      this.#logger?.(
-        LogType.browsingContexts,
-        'targetUnblocked postponed because of OOPiF'
-      );
-    }
-
-    this.#cdpClient = cdpClient;
-    this.#cdpSessionId = cdpSessionId;
-
-    this.#initListeners();
-  }
-
-  async #unblockAttachedTarget() {
-    LogManager.create(
-      this.#realmStorage,
-      this.#cdpClient,
-      this.#cdpSessionId,
-      this.#eventManager
-    );
-    await this.#cdpClient.sendCommand('Runtime.enable');
-    await this.#cdpClient.sendCommand('Page.enable');
-    await this.#cdpClient.sendCommand('Page.setLifecycleEventsEnabled', {
-      enabled: true,
-    });
-    await this.#cdpClient.sendCommand('Target.setAutoAttach', {
-      autoAttach: true,
-      waitForDebuggerOnStart: true,
-      flatten: true,
-    });
-
-    await this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger');
-    this.#targetDefers.targetUnblocked.resolve();
-  }
-
   get contextId(): string {
     return this.#contextId;
   }
@@ -241,7 +161,7 @@ export class BrowsingContextImpl {
   }
 
   get cdpSessionId(): string {
-    return this.#cdpSessionId;
+    return this.#cdpTarget.cdpSessionId;
   }
 
   get children(): BrowsingContextImpl[] {
@@ -257,11 +177,11 @@ export class BrowsingContextImpl {
   }
 
   async awaitLoaded(): Promise<void> {
-    await this.#targetDefers.Page.lifecycleEvent.load;
+    await this.#defers.Page.lifecycleEvent.load;
   }
 
   async awaitUnblocked(): Promise<void> {
-    await this.#targetDefers.targetUnblocked;
+    return this.#cdpTarget.targetUnblocked;
   }
 
   serializeToBidiValue(
@@ -282,7 +202,7 @@ export class BrowsingContextImpl {
   }
 
   #initListeners() {
-    this.#cdpClient.on(
+    this.#cdpTarget.cdpClient.on(
       'Target.targetInfoChanged',
       (params: Protocol.Target.TargetInfoChangedEvent) => {
         if (this.contextId !== params.targetInfo.targetId) {
@@ -292,7 +212,7 @@ export class BrowsingContextImpl {
       }
     );
 
-    this.#cdpClient.on(
+    this.#cdpTarget.cdpClient.on(
       'Page.frameNavigated',
       async (params: Protocol.Page.FrameNavigatedEvent) => {
         if (this.contextId !== params.frame.id) {
@@ -310,7 +230,7 @@ export class BrowsingContextImpl {
       }
     );
 
-    this.#cdpClient.on(
+    this.#cdpTarget.cdpClient.on(
       'Page.navigatedWithinDocument',
       (params: Protocol.Page.NavigatedWithinDocumentEvent) => {
         if (this.contextId !== params.frameId) {
@@ -318,11 +238,11 @@ export class BrowsingContextImpl {
         }
 
         this.#url = params.url;
-        this.#targetDefers.Page.navigatedWithinDocument.resolve(params);
+        this.#defers.Page.navigatedWithinDocument.resolve(params);
       }
     );
 
-    this.#cdpClient.on(
+    this.#cdpTarget.cdpClient.on(
       'Page.lifecycleEvent',
       async (params: Protocol.Page.LifecycleEventEvent) => {
         if (this.contextId !== params.frameId) {
@@ -337,7 +257,7 @@ export class BrowsingContextImpl {
 
         if (params.name === 'init') {
           this.#documentChanged(params.loaderId);
-          this.#targetDefers.documentInitialized.resolve();
+          this.#defers.documentInitialized.resolve();
         }
 
         if (params.name === 'commit') {
@@ -351,10 +271,8 @@ export class BrowsingContextImpl {
 
         switch (params.name) {
           case 'DOMContentLoaded':
-            this.#targetDefers.Page.lifecycleEvent.DOMContentLoaded.resolve(
-              params
-            );
-            await this.#eventManager.registerEvent(
+            this.#defers.Page.lifecycleEvent.DOMContentLoaded.resolve(params);
+            this.#eventManager.registerEvent(
               {
                 method: BrowsingContext.EventNames.DomContentLoadedEvent,
                 params: {
@@ -369,8 +287,8 @@ export class BrowsingContextImpl {
             break;
 
           case 'load':
-            this.#targetDefers.Page.lifecycleEvent.load.resolve(params);
-            await this.#eventManager.registerEvent(
+            this.#defers.Page.lifecycleEvent.load.resolve(params);
+            this.#eventManager.registerEvent(
               {
                 method: BrowsingContext.EventNames.LoadEvent,
                 params: {
@@ -387,7 +305,7 @@ export class BrowsingContextImpl {
       }
     );
 
-    this.#cdpClient.on(
+    this.#cdpTarget.cdpClient.on(
       'Runtime.executionContextCreated',
       (params: Protocol.Runtime.ExecutionContextCreatedEvent) => {
         if (params.context.auxData.frameId !== this.contextId) {
@@ -410,8 +328,8 @@ export class BrowsingContextImpl {
           params.context.auxData.type === 'isolated'
             ? params.context.name
             : undefined,
-          this.#cdpSessionId,
-          this.#cdpClient
+          this.#cdpTarget.cdpSessionId,
+          this.#cdpTarget.cdpClient
         );
 
         if (params.context.auxData.isDefault) {
@@ -420,11 +338,11 @@ export class BrowsingContextImpl {
       }
     );
 
-    this.#cdpClient.on(
+    this.#cdpTarget.cdpClient.on(
       'Runtime.executionContextDestroyed',
       (params: Protocol.Runtime.ExecutionContextDestroyedEvent) => {
         this.#realmStorage.deleteRealms({
-          cdpSessionId: this.#cdpSessionId,
+          cdpSessionId: this.#cdpTarget.cdpSessionId,
           executionContextId: params.executionContextId,
         });
       }
@@ -446,28 +364,28 @@ export class BrowsingContextImpl {
   #documentChanged(loaderId?: string) {
     // Same document navigation.
     if (loaderId === undefined || this.#loaderId === loaderId) {
-      if (this.#targetDefers.Page.navigatedWithinDocument.isFinished) {
-        this.#targetDefers.Page.navigatedWithinDocument =
+      if (this.#defers.Page.navigatedWithinDocument.isFinished) {
+        this.#defers.Page.navigatedWithinDocument =
           new Deferred<Protocol.Page.NavigatedWithinDocumentEvent>();
       }
       return;
     }
 
-    if (this.#targetDefers.documentInitialized.isFinished) {
-      this.#targetDefers.documentInitialized = new Deferred<void>();
+    if (this.#defers.documentInitialized.isFinished) {
+      this.#defers.documentInitialized = new Deferred<void>();
     } else {
       this.#logger?.(LogType.browsingContexts, 'Document changed');
     }
 
-    if (this.#targetDefers.Page.lifecycleEvent.DOMContentLoaded.isFinished) {
-      this.#targetDefers.Page.lifecycleEvent.DOMContentLoaded =
+    if (this.#defers.Page.lifecycleEvent.DOMContentLoaded.isFinished) {
+      this.#defers.Page.lifecycleEvent.DOMContentLoaded =
         new Deferred<Protocol.Page.LifecycleEventEvent>();
     } else {
       this.#logger?.(LogType.browsingContexts, 'Document changed');
     }
 
-    if (this.#targetDefers.Page.lifecycleEvent.load.isFinished) {
-      this.#targetDefers.Page.lifecycleEvent.load =
+    if (this.#defers.Page.lifecycleEvent.load.isFinished) {
+      this.#defers.Page.lifecycleEvent.load =
         new Deferred<Protocol.Page.LifecycleEventEvent>();
     } else {
       this.#logger?.(LogType.browsingContexts, 'Document changed');
@@ -480,10 +398,10 @@ export class BrowsingContextImpl {
     url: string,
     wait: BrowsingContext.ReadinessState
   ): Promise<BrowsingContext.NavigateResult> {
-    await this.#targetDefers.targetUnblocked;
+    await this.awaitUnblocked();
 
     // TODO: handle loading errors.
-    const cdpNavigateResult = await this.#cdpClient.sendCommand(
+    const cdpNavigateResult = await this.#cdpTarget.cdpClient.sendCommand(
       'Page.navigate',
       {
         url,
@@ -505,18 +423,18 @@ export class BrowsingContextImpl {
       case 'interactive':
         // No `loaderId` means same-document navigation.
         if (cdpNavigateResult.loaderId === undefined) {
-          await this.#targetDefers.Page.navigatedWithinDocument;
+          await this.#defers.Page.navigatedWithinDocument;
         } else {
-          await this.#targetDefers.Page.lifecycleEvent.DOMContentLoaded;
+          await this.#defers.Page.lifecycleEvent.DOMContentLoaded;
         }
         break;
 
       case 'complete':
         // No `loaderId` means same-document navigation.
         if (cdpNavigateResult.loaderId === undefined) {
-          await this.#targetDefers.Page.navigatedWithinDocument;
+          await this.#defers.Page.navigatedWithinDocument;
         } else {
-          await this.#targetDefers.Page.lifecycleEvent.load;
+          await this.#defers.Page.lifecycleEvent.load;
         }
         break;
 
@@ -543,7 +461,7 @@ export class BrowsingContextImpl {
     });
 
     if (maybeSandboxes.length === 0) {
-      await this.#cdpClient.sendCommand('Page.createIsolatedWorld', {
+      await this.#cdpTarget.cdpClient.sendCommand('Page.createIsolatedWorld', {
         frameId: this.contextId,
         worldName: sandbox,
       });
@@ -565,8 +483,8 @@ export class BrowsingContextImpl {
       // TODO: Either make this a proposal in the BiDi spec, or focus the
       // original tab right after the screenshot is taken.
       // The screenshot command gets blocked until we focus the active tab.
-      this.#cdpClient.sendCommand('Page.bringToFront'),
-      this.#cdpClient.sendCommand('Page.captureScreenshot', {}),
+      this.#cdpTarget.cdpClient.sendCommand('Page.bringToFront'),
+      this.#cdpTarget.cdpClient.sendCommand('Page.captureScreenshot', {}),
     ]);
     return {
       result: {
@@ -605,7 +523,7 @@ export class BrowsingContextImpl {
       printToPdfCdpParams.paperWidth = inchesFromCm(params.page.width);
     }
 
-    const result = await this.#cdpClient.sendCommand(
+    const result = await this.#cdpTarget.cdpClient.sendCommand(
       'Page.printToPDF',
       printToPdfCdpParams
     );

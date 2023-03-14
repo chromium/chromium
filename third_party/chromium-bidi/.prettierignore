@@ -1,5 +1,7 @@
 examples/*.html
 lib/
+logs/
 src/.build
 tests/__pycache__
 wpt/
+wpt-metadata/*/
