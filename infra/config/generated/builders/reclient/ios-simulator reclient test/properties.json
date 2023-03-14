@@ -26,7 +26,7 @@
               "legacy_gclient_config": {
                 "apply_configs": [
                   "use_clang_coverage",
-                  "reclient_experimental"
+                  "reclient_test"
                 ],
                 "config": "ios"
               }
@@ -46,14 +46,12 @@
   "$build/reclient": {
     "bootstrap_env": {
       "GLOG_vmodule": "bridge*=2",
-      "GOMA_COMPILER_PROXY_ENABLE_CRASH_DUMP": "false",
-      "RBE_compression_threshold": "4000000",
-      "RBE_deps_cache_mode": "reproxy",
-      "RBE_experimental_goma_deps_cache": "True",
-      "RBE_ip_reset_min_delay": "-1s"
+      "GOMA_COMPILER_PROXY_ENABLE_CRASH_DUMP": "true",
+      "RBE_compression_threshold": "4000000"
     },
     "instance": "rbe-chromium-trusted-test",
-    "metrics_project": "chromium-reclient-metrics"
+    "metrics_project": "chromium-reclient-metrics",
+    "scandeps_server": true
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],

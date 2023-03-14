@@ -59,7 +59,7 @@ def fyi_reclient_staging_builder(
             "chromium-cq-staging-builder@chops-service-accounts.iam.gserviceaccount.com"
         ),
         reclient_version = "staging",
-        reclient_scandeps_server = False,
+        reclient_scandeps_server = True,
         **kwargs):
     trusted_instance = reclient_instance % "trusted"
     unstrusted_instance = reclient_instance % "untrusted"
@@ -163,7 +163,6 @@ fyi_reclient_test_builder(
     ),
     os = os.LINUX_DEFAULT,
     console_view_category = "linux",
-    reclient_scandeps_server = True,
 )
 
 fyi_reclient_staging_builder(
@@ -200,7 +199,7 @@ fyi_reclient_test_builder(
             gclient_config = structs.extend(
                 spec.gclient_config,
                 apply_configs = [
-                    "reclient_experimental",
+                    "reclient_test",
                 ],
             ),
             build_gs_bucket = "chromium-fyi-archive",
@@ -241,7 +240,6 @@ fyi_reclient_test_builder(
         "GLOG_vmodule": "bridge*=2",
     },
     reclient_profiler_service = "reclient-mac",
-    reclient_scandeps_server = True,
 )
 
 fyi_reclient_staging_builder(
@@ -264,6 +262,7 @@ fyi_reclient_staging_builder(
     os = os.WINDOWS_ANY,
     console_view_category = "win",
     execution_timeout = 5 * time.hour,
+    reclient_scandeps_server = False,
 )
 
 fyi_reclient_test_builder(
@@ -286,6 +285,7 @@ fyi_reclient_test_builder(
     os = os.WINDOWS_ANY,
     console_view_category = "win",
     execution_timeout = 5 * time.hour,
+    reclient_scandeps_server = False,
 )
 
 fyi_reclient_staging_builder(
@@ -308,6 +308,7 @@ fyi_reclient_staging_builder(
     ),
     os = os.LINUX_DEFAULT,
     console_view_category = "linux",
+    reclient_scandeps_server = False,
 )
 
 fyi_reclient_test_builder(
@@ -330,6 +331,7 @@ fyi_reclient_test_builder(
     ),
     os = os.LINUX_DEFAULT,
     console_view_category = "linux",
+    reclient_scandeps_server = False,
 )
 
 fyi_reclient_test_builder(
@@ -341,7 +343,7 @@ fyi_reclient_test_builder(
             gclient_config = structs.extend(
                 spec.gclient_config,
                 apply_configs = [
-                    "reclient_experimental",
+                    "reclient_test",
                 ],
             ),
             build_gs_bucket = "chromium-fyi-archive",
@@ -381,7 +383,6 @@ fyi_reclient_test_builder(
     reclient_bootstrap_env = {
         "GLOG_vmodule": "bridge*=2",
     },
-    reclient_scandeps_server = True,
     xcode = xcode.x14main,
 )
 
@@ -484,7 +485,6 @@ fyi_reclient_test_builder(
     reclient_bootstrap_env = {
         "GLOG_vmodule": "bridge*=2",
     },
-    reclient_scandeps_server = True,
 )
 
 ci.builder(
