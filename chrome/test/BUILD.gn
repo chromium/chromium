@@ -1094,7 +1094,6 @@ if (is_android) {
       "$root_gen_dir/chrome/android/chrome_apk_paks/resources.pak",
       "$root_gen_dir/components/components_resources.pak",
       "$root_gen_dir/components/dev_ui_components_resources.pak",
-      "$root_out_dir/browser_tests.pak",
       "//components/test/data/ads_observer/",
       "//components/test/data/payments/",
       "//chrome/test/data/android/customtabs/",
@@ -1186,10 +1185,6 @@ if (is_android) {
       "$root_gen_dir/components/components_resources.pak",
       "$root_gen_dir/components/dev_ui_components_resources.pak",
     ]
-
-    # These are repack() rules so they are in $root_out_dir.
-    deps += [ "//chrome:browser_tests_pak" ]
-    sources += [ "$root_out_dir/browser_tests.pak" ]
 
     # These are assets rules so we can just depend on them.
     deps += [

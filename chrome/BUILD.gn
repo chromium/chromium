@@ -1582,14 +1582,18 @@ if (!is_android) {
   }
 }
 
-repack("browser_tests_pak") {
-  testonly = true
-  sources = [ "$root_gen_dir/chrome/webui_test_resources.pak" ]
-  output = "$root_out_dir/browser_tests.pak"
-  deps = [ "//chrome/test/data:webui_test_resources" ]
-  if (!is_android) {
-    sources += [ "$root_gen_dir/chrome/webui_generated_test_resources.pak" ]
-    deps += [ "//chrome/test/data/webui:resources" ]
+if (!is_android) {
+  repack("browser_tests_pak") {
+    testonly = true
+    sources = [
+      "$root_gen_dir/chrome/webui_generated_test_resources.pak",
+      "$root_gen_dir/chrome/webui_test_resources.pak",
+    ]
+    output = "$root_out_dir/browser_tests.pak"
+    deps = [
+      "//chrome/test/data:webui_test_resources",
+      "//chrome/test/data/webui:resources",
+    ]
   }
 }
 
