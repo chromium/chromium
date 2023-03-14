@@ -5,7 +5,9 @@
 #ifndef BASE_PROCESS_CURRENT_PROCESS_H_
 #define BASE_PROCESS_CURRENT_PROCESS_H_
 
+#include <atomic>
 #include <string>
+
 #include "base/base_export.h"
 #include "base/no_destructor.h"
 #include "base/process/process_handle.h"
