@@ -296,11 +296,6 @@ BASE_FEATURE(kCameraAppLowStorageWarning,
              "CameraAppLowStorageWarning",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables to allow time-lapse video recording in the camera app.
-BASE_FEATURE(kCameraAppTimeLapse,
-             "CameraAppTimeLapse",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether the camera privacy switch toasts and notification should be
 // displayed.
 BASE_FEATURE(kCameraPrivacySwitchNotifications,

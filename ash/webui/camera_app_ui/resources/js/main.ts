@@ -12,7 +12,6 @@ import {ModeConstraints} from './device/type.js';
 import * as dom from './dom.js';
 import {reportError} from './error.js';
 import * as expert from './expert.js';
-import {Flag} from './flag.js';
 import {GalleryButton} from './gallerybutton.js';
 import {I18nString} from './i18n_string.js';
 import {Intent} from './intent.js';
@@ -119,7 +118,6 @@ export class App {
     this.setupToggles();
     localStorage.cleanup();
     this.setupEffect();
-    this.setupExperimentalFeatures();
 
     // Set up views navigation by their DOM z-order.
     nav.setup([
@@ -215,13 +213,6 @@ export class App {
       subtree: true,
       childList: true,
     });
-  }
-
-  private setupExperimentalFeatures() {
-    if (loadTimeData.getChromeFlag(Flag.TIME_LAPSE)) {
-      const modeButton = dom.get('#time-lapse-mode', HTMLDivElement);
-      modeButton.classList.remove('hidden');
-    }
   }
 
   /**

@@ -2958,9 +2958,6 @@ extern const char kBruschettaAlphaMigrateDescription[];
 extern const char kCameraAppLowStorageWarningName[];
 extern const char kCameraAppLowStorageWarningDescription[];
 
-extern const char kCameraAppTimeLapseName[];
-extern const char kCameraAppTimeLapseDescription[];
-
 extern const char kDisableBufferBWCompressionName[];
 extern const char kDisableBufferBWCompressionDescription[];
 

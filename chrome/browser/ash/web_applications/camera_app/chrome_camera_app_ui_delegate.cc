@@ -311,8 +311,6 @@ void ChromeCameraAppUIDelegate::PopulateLoadTimeData(
   source->AddBoolean(
       "lowStorageWarning",
       base::FeatureList::IsEnabled(ash::features::kCameraAppLowStorageWarning));
-  source->AddBoolean("timeLapse", base::FeatureList::IsEnabled(
-                                      ash::features::kCameraAppTimeLapse));
 }
 
 bool ChromeCameraAppUIDelegate::IsMetricsAndCrashReportingEnabled() {

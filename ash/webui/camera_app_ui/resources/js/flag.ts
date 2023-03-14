@@ -7,5 +7,5 @@
  */
 export enum Flag {
   LOW_STORAGE_WARNING = 'lowStorageWarning',
-  TIME_LAPSE = 'timeLapse',
+  PLACEHOLDER_FLAG = '',
 }
