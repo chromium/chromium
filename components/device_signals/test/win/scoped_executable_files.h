@@ -49,7 +49,9 @@ class ScopedExecutableFiles {
   bool CreateTempFile(const base::FilePath& file_path,
                       const base::StringPiece& file_data);
 
-  base::ScopedAllowBlockingForTesting allow_blocking_;
+  // TODO(https://github.com/llvm/llvm-project/issues/61334): Explicit
+  // [[maybe_unused]] attribute shouuld not be necessary here.
+  [[maybe_unused]] base::ScopedAllowBlockingForTesting allow_blocking_;
   base::ScopedTempDir scoped_dir_;
 };
 

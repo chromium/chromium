@@ -620,7 +620,7 @@ TEST_F(HangWatcherSnapshotTest, NonActionableReport) {
     WatchHangsInScope expires_instantly(base::TimeDelta{});
 
     internal::HangWatchState* current_hang_watch_state =
-        internal::HangWatchState::GetHangWatchStateForCurrentThread()->Get();
+        internal::HangWatchState::GetHangWatchStateForCurrentThread();
 
     // Simulate the deadline changing concurrently during the capture. This
     // makes the capture fail since marking of the deadline fails.

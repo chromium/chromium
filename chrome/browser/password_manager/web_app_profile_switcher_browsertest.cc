@@ -54,7 +54,9 @@ Profile* CreateAdditionalProfile() {
 class WebAppProfileSwitcherBrowserTest
     : public web_app::WebAppControllerBrowserTest {
  private:
-  base::ScopedAllowBlockingForTesting allow_blocking_;
+  // TODO(https://github.com/llvm/llvm-project/issues/61334): Explicit
+  // [[maybe_unused]] attribute shouuld not be necessary here.
+  [[maybe_unused]] base::ScopedAllowBlockingForTesting allow_blocking_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppProfileSwitcherBrowserTest,

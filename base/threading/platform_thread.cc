@@ -4,9 +4,8 @@
 
 #include "base/threading/platform_thread.h"
 
-#include "base/no_destructor.h"
 #include "base/task/current_thread.h"
-#include "base/threading/thread_local_storage.h"
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 #if BUILDFLAG(IS_FUCHSIA)
 #include "base/fuchsia/scheduler.h"
@@ -16,30 +15,8 @@ namespace base {
 
 namespace {
 
-// Returns ThreadLocalStorage slot used to store type of the current thread.
-// The value is stored as an integer value converted to a pointer. 1 is added to
-// the integer value in order to distinguish the case when the TLS slot is not
-// initialized.
-base::ThreadLocalStorage::Slot* GetThreadTypeTlsSlot() {
-  static base::NoDestructor<base::ThreadLocalStorage::Slot> tls_slot;
-  return tls_slot.get();
-}
-
-void SaveThreadTypeToTls(ThreadType thread_type) {
-  GetThreadTypeTlsSlot()->Set(
-      reinterpret_cast<void*>(static_cast<uintptr_t>(thread_type) + 1));
-}
-
-ThreadType GetThreadTypeFromTls() {
-  uintptr_t value = reinterpret_cast<uintptr_t>(GetThreadTypeTlsSlot()->Get());
-
-  // Thread type is set to kNormal by default.
-  if (value == 0)
-    return ThreadType::kDefault;
-
-  DCHECK_LE(value - 1, static_cast<uintptr_t>(ThreadType::kMaxValue));
-  return static_cast<ThreadType>(value - 1);
-}
+ABSL_CONST_INIT thread_local ThreadType current_thread_type =
+    ThreadType::kDefault;
 
 }  // namespace
 
@@ -59,7 +36,7 @@ void PlatformThread::SetCurrentThreadType(ThreadType thread_type) {
 
 // static
 ThreadType PlatformThread::GetCurrentThreadType() {
-  return GetThreadTypeFromTls();
+  return current_thread_type;
 }
 
 // static
@@ -79,8 +56,9 @@ namespace internal {
 
 void SetCurrentThreadType(ThreadType thread_type,
                           MessagePumpType pump_type_hint) {
+  CHECK_LE(thread_type, ThreadType::kMaxValue);
   SetCurrentThreadTypeImpl(thread_type, pump_type_hint);
-  SaveThreadTypeToTls(thread_type);
+  current_thread_type = thread_type;
 }
 
 }  // namespace internal

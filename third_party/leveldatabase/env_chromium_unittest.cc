@@ -665,7 +665,9 @@ class ChromiumLevelDBRebuildTest : public ::testing::Test {
   const base::FilePath& temp_path() const { return scoped_temp_dir_.GetPath(); }
 
  private:
-  base::ScopedAllowBlockingForTesting allow_blocking_;
+  // TODO(https://github.com/llvm/llvm-project/issues/61334): Explicit
+  // [[maybe_unused]] attribute shouuld not be necessary here.
+  [[maybe_unused]] base::ScopedAllowBlockingForTesting allow_blocking_;
   base::ScopedTempDir scoped_temp_dir_;
 };
 
