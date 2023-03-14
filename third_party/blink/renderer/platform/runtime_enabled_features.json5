@@ -3727,7 +3727,6 @@
     {
       name: "WebGPU",
       base_feature: "none",
-      public: true,
       // Note that this isn't enough to enable WebGPU and that access to
       // WebGPU is further gated on the "WebGPUService" feature exposing GPU
       // process access to WebGPU to the renderer process.

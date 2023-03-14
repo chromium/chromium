@@ -219,9 +219,6 @@ absl::optional<int> ContentMainDelegateImpl::BasicStartupComplete() {
 
   ConfigureFeaturesIfNotSet(enabled_features, disabled_features);
 
-  // TODO(crbug.com/1097105): Support Web GPU on WebLayer.
-  blink::WebRuntimeFeatures::EnableWebGPU(false);
-
   // TODO(crbug.com/1338402): Add support for WebLayer. Disabling autofill is
   // not yet supported.
   blink::WebRuntimeFeatures::EnableAnonymousIframe(false);
