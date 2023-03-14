@@ -15,10 +15,10 @@ From the CSS2 spec on [inline formatting context]:
 an inline formatting context is established by a block container box
 that contains no [block-level] boxes.
 
-[block-level]: https://drafts.csswg.org/css2/visuren.html#block-level
-[CSS normal flow]: https://drafts.csswg.org/css2/visuren.html#normal-flow
-[inline formatting context]: https://drafts.csswg.org/css2/visuren.html#inline-formatting
-[inline-level]: https://drafts.csswg.org/css2/visuren.html#inline-level
+[block-level]: https://drafts.csswg.org/css2/#block-level
+[CSS normal flow]: https://drafts.csswg.org/css2/#normal-flow
+[inline formatting context]: https://drafts.csswg.org/css2/#inline-formatting
+[inline-level]: https://drafts.csswg.org/css2/#inline-level
 
 *** note
 Current code determines [inline formatting context]
@@ -144,7 +144,7 @@ This phase:
 
 [ShapingLineBreaker] is... TODO(kojii): fill out.
 
-[CSS Calculating widths and margins]: https://drafts.csswg.org/css2/visudet.html#Computing_widths_and_margins
+[CSS Calculating widths and margins]: https://drafts.csswg.org/css2/#Computing_widths_and_margins
 
 ### <a name="create-line">Line Box Construction</a> ###
 [line Box Construction]: #create-line
@@ -224,8 +224,8 @@ the list is append-only during the process.
 When all operations are done,
 `OnEndPlaceItems()` turns the list into the final fragment tree structure.
 
-[height of inline, non-replaced elements depends on the content area]: https://drafts.csswg.org/css2/visudet.html#inline-non-replaced
-[vertical-align]: https://drafts.csswg.org/css2/visudet.html#propdef-vertical-align
+[height of inline, non-replaced elements depends on the content area]: https://drafts.csswg.org/css2/#inline-non-replaced
+[vertical-align]: https://drafts.csswg.org/css2/#propdef-vertical-align
 
 #### Box Fragments in Line Box Fragments ####
 
@@ -369,7 +369,7 @@ positions in the context. See [design doc](https://goo.gl/CJbxky) for details.
 [UAX#9 Resolving Embedding Levels]: http://www.unicode.org/reports/tr9/#Resolving_Embedding_Levels
 [UAX#9 Reordering Resolved Levels]: http://www.unicode.org/reports/tr9/#Reordering_Resolved_Levels
 
-[FontBaseline]: ../../../platform/fonts/FontBaseline.h
+[FontBaseline]: ../../../platform/fonts/font_baseline.h
 [NGBaselineAlgorithmType]: ng_baseline.h
 [NGBaselineRequest]: ng_baseline.h
 [NGBidiParagraph]: ng_bidi_paragraph.h
@@ -394,5 +394,5 @@ positions in the context. See [design doc](https://goo.gl/CJbxky) for details.
 [NGPhysicalFragment]: ../ng_physical_fragment.h
 [NGPhysicalLineBoxFragment]: ng_physical_line_box_fragment.h
 [NGPhysicalTextFragment]: ng_physical_text_fragment.h
-[ShapeResult]: ../../../platform/fonts/shaping/ShapeResult.h
-[ShapingLineBreaker]: ../../../platform/fonts/shaping/ShapingLineBreaker.h
+[ShapeResult]: ../../../platform/fonts/shaping/shape_result.h
+[ShapingLineBreaker]: ../../../platform/fonts/shaping/shaping_line_breaker.h
