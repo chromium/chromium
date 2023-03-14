@@ -63,7 +63,6 @@ class ChromeWebUIControllerFactory : public content::WebUIControllerFactory {
   std::vector<GURL> GetListOfAcceptableURLs();
 
   // Determines if the given URL can be handled by any known handler.
-  // Note that the provided |url| needs to be sanitized.
   bool CanHandleUrl(const GURL& url);
 #endif
 

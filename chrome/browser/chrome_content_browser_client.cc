@@ -7372,10 +7372,57 @@ bool ChromeContentBrowserClient::OpenExternally(
     const GURL& url,
     WindowOpenDisposition disposition) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  // This code is all about the following: When Lacros is the only browser, we
+  // must not open full-blown Ash browser windows.
+
+  if (!crosapi::lacros_startup_state::IsLacrosPrimaryEnabled()) {
+    // We're running neither Lacros-Primary nor Lacros-Only, nothing to do.
+    return false;
+  }
+
+  if (profiles::IsKioskSession()) {
+    // Kiosk sessions already hide the navigation bar and block window creation.
+    // Moreover, they don't support SWAs which we might end up trying to run
+    // below.
+    return false;
+  }
+
+  if (disposition == WindowOpenDisposition::NEW_POPUP) {
+    // Some applications still open popup windows that need to stay in Ash:
+    // - Gallery (chrome://media-app), see OPEN_IN_SANDBOXED_VIEWER in
+    //   ash/webui/media_app_ui/resources/js/launch.js.
+    // - nassh, see showLoginPopup in nassh/js/nassh_relay_corp.js.
+    return false;
+  }
+
+  // Handle capturing system apps directly, as otherwise an additional empty
+  // browser window could be created.
+  Profile* profile = Profile::FromBrowserContext(opener->GetBrowserContext());
+  const absl::optional<ash::SystemWebAppType> capturing_system_app_type =
+      ash::GetCapturingSystemAppForURL(profile, url);
+  if (capturing_system_app_type) {
+    ash::SystemAppLaunchParams swa_params;
+    swa_params.url = url;
+    ash::LaunchSystemWebAppAsync(profile, capturing_system_app_type.value(),
+                                 swa_params);
+    return true;
+  }
+
   const bool from_webui = opener->GetWebUI() != nullptr;
-  const bool is_lacros_primary =
-      crosapi::lacros_startup_state::IsLacrosPrimaryEnabled();
   const bool is_lacros_only = !crosapi::browser_util::IsAshWebBrowserEnabled();
+
+  // If Lacros is the only browser, we forcibly open various URLs (mostly
+  // chrome://) in the OS_URL_HANDLER SWA.
+  if (is_lacros_only &&
+      // Terminal's tabs must remain in the Terminal SWA.
+      // TODO(neis): Actually limit this exception to Terminal if possible.
+      // Also, remove Terminal from ChromeWebUIControllerFactory's
+      // GetListOfAcceptableURLs or at least make TryLaunchOsUrlHandler return
+      // false for it somehow.
+      !url.SchemeIs(content::kChromeUIUntrustedScheme) &&
+      ash::TryLaunchOsUrlHandler(url)) {
+    return true;
+  }
 
   // If Lacros is the primary browser, we intercept requests from Ash WebUIs and
   // redirect them to Lacros via crosapi. This is to make window.open and <a
@@ -7388,14 +7435,13 @@ bool ChromeContentBrowserClient::OpenExternally(
   // in Ash.
   // If Lacros is the only browser, we do this even for non-WebUI sources.
   bool should_open_in_lacros =
-      (is_lacros_only || (is_lacros_primary && from_webui)) &&
-      disposition != WindowOpenDisposition::NEW_POPUP &&
+      (is_lacros_only || from_webui) &&
       !url.SchemeIs(content::kChromeDevToolsScheme) &&
       !url.SchemeIs(content::kChromeUIScheme) &&
       // Terminal's tabs must remain in Ash.
       !url.SchemeIs(content::kChromeUIUntrustedScheme) &&
-      // OS Settings's Accessibility section links to chrome-extensions:// URLs
-      // for Text-to-Speech engines that are installed in Ash.
+      // OS Settings's Accessibility section links to chrome-extensions://
+      // URLs for Text-to-Speech engines that are installed in Ash.
       !url.SchemeIs(extensions::kExtensionScheme);
   if (should_open_in_lacros) {
     ash::NewWindowDelegate::GetPrimary()->OpenUrl(
@@ -7404,29 +7450,25 @@ bool ChromeContentBrowserClient::OpenExternally(
     return true;
   }
 
-  Profile* profile = Profile::FromBrowserContext(opener->GetBrowserContext());
-
-  // Handle capturing system apps directly, as otherwise an additional empty
-  // browser window could be created.
-  const absl::optional<ash::SystemWebAppType> capturing_system_app_type =
-      ash::GetCapturingSystemAppForURL(profile, url);
-  if (capturing_system_app_type) {
-    ash::SystemAppLaunchParams swa_params;
-    swa_params.url = url;
-    ash::LaunchSystemWebAppAsync(profile, capturing_system_app_type.value(),
-                                 swa_params);
-    return true;
-  }
-
-  // If Lacros is the only browser, we intercept any WebUI URLs that would be
-  // opened in a regular browser window. We open these with the OsUrlHandler SWA
-  // instead, which will load them in an app window (no navigation bar).
-  if (from_webui && is_lacros_only &&
-      // Kiosk sessions don't support SWA and already hide the navigation bar.
-      !profiles::IsKioskSession() &&
-      // Terminal's tabs must remain in the Terminal SWA.
-      !url.SchemeIs(content::kChromeUIUntrustedScheme)) {
-    return ash::TryLaunchOsUrlHandler(url);
+  // If Lacros is the only browser, we should get here only in exceptional
+  // cases. Some of these exceptions may not even be needed anymore. Record a
+  // crash dump for various cases so that we can better understand the
+  // situation. For now, continue as usual afterwards (i.e. don't handle the
+  // request here).
+  if (is_lacros_only) {
+    if (url.SchemeIs(content::kChromeDevToolsScheme)) {
+      crash_reporter::DumpWithoutCrashing();
+    } else if (url.SchemeIs(content::kChromeUIUntrustedScheme) &&
+               !base::StartsWith(url.PathForRequestPiece(), "/terminal")) {
+      crash_reporter::DumpWithoutCrashing();
+    } else if (url.SchemeIs(content::kChromeUIScheme)) {
+      crash_reporter::DumpWithoutCrashing();
+    } else if (url.SchemeIs(extensions::kExtensionScheme)) {
+      crash_reporter::DumpWithoutCrashing();
+    } else {
+      DCHECK(url.SchemeIs(content::kChromeUIUntrustedScheme));
+      DCHECK(base::StartsWith(url.PathForRequestPiece(), "/terminal"));
+    }
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

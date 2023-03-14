@@ -59,12 +59,8 @@ OmniboxLacrosProvider::~OmniboxLacrosProvider() = default;
 
 void OmniboxLacrosProvider::Start(const std::u16string& query) {
   if (!search_provider_ || !search_provider_->IsSearchControllerConnected()) {
-    const GURL sanitized_url =
-        crosapi::gurl_os_handler_utils::SanitizeAshURL(GURL(query));
     const bool is_system_url =
-        ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(
-            sanitized_url);
-
+        ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(GURL(query));
     if (is_system_url) {
       AutocompleteInput input;
 

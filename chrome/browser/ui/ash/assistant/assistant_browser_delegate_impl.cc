@@ -157,11 +157,7 @@ void AssistantBrowserDelegateImpl::RequestNetworkConfig(
 
 void AssistantBrowserDelegateImpl::OpenUrl(GURL url) {
   if (crosapi::browser_util::IsLacrosPrimaryBrowser() &&
-      ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(
-          crosapi::gurl_os_handler_utils::SanitizeAshURL(url))) {
-    // Note that the unsanitized URL is passed to OpenUrl here, since OpenUrl
-    // internally does sanitization again if needed, but CanHandleUrl requires
-    // a sanitized URL to be passed in.
+      ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(url)) {
     crosapi::UrlHandlerAsh().OpenUrl(url);
   } else {
     // The new tab should be opened with a user activation since the user

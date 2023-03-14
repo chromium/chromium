@@ -1608,8 +1608,9 @@ std::vector<GURL> ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
 }
 
 bool ChromeWebUIControllerFactory::CanHandleUrl(const GURL& url) {
-  return crosapi::gurl_os_handler_utils::IsUrlInList(url,
-                                                     GetListOfAcceptableURLs());
+  return crosapi::gurl_os_handler_utils::IsUrlInList(
+      crosapi::gurl_os_handler_utils::SanitizeAshURL(url),
+      GetListOfAcceptableURLs());
 }
 
 #endif
