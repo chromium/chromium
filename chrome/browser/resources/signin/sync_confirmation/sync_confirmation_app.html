@@ -332,13 +332,13 @@
     --work-icon-size: 14px;
   }
 
-  .dialog-main-container.tangible-sync-style #title {
+  .dialog-main-container.tangible-sync-style .title {
     font-size: 1.25rem;
     line-height: 24px;
     margin: 16px 0 12px
   }
 
-  .dialog-main-container.tangible-sync-style #subtitle {
+  .dialog-main-container.tangible-sync-style .subtitle {
     font-size: 0.94rem;
     line-height: 24px;
   }
@@ -394,14 +394,14 @@
     width: 328px;
   }
 
-  #tangible-sync-style-left-banner {
+  .tangible-sync-style-left-banner {
     animation-duration: 500ms;
     animation-name: left-illustration-slide-animation, fade-in-animation;
     content: url(./images/tangible_sync_window_left_illustration.svg);
     transition-timing-function: ease-in-out;
   }
 
-  #tangible-sync-style-right-banner {
+  .tangible-sync-style-right-banner {
     animation-duration: 500ms;
     animation-name: right-illustration-slide-animation, fade-in-animation;
     content: url(./images/tangible_sync_window_right_illustration.svg);
@@ -439,11 +439,11 @@
         url(images/sync_confirmation_refreshed_illustration_dark.svg);
     }
 
-    #tangible-sync-style-left-banner {
+    .tangible-sync-style-left-banner {
       content: url(./images/tangible_sync_window_left_illustration_dark.svg);
     }
 
-    #tangible-sync-style-right-banner {
+    .tangible-sync-style-right-banner {
       content: url(./images/tangible_sync_window_right_illustration_dark.svg);
     }
 
@@ -590,9 +590,9 @@
   <div class$="tangible-sync-style [[getMainContainerClass_()]]">
     <img id="tangible-sync-dialog-illustration" alt=""
         hidden="[[!isModalDialog_]]">
-    <img id="tangible-sync-style-left-banner" alt=""
+    <img class="tangible-sync-style-left-banner" alt=""
         hidden="[[isModalDialog_]]">
-    <img id="tangible-sync-style-right-banner" alt=""
+    <img class="tangible-sync-style-right-banner" alt=""
         hidden="[[isModalDialog_]]">
     <div id="contentContainer" class$="[[getAnimationClass_()]]">
       <div id="avatarContainer">
@@ -601,10 +601,10 @@
           <iron-icon icon="cr:domain" alt=""></iron-icon>
         </div>
       </div>
-      <h1 id="title" consent-description>
+      <h1 class="title" consent-description>
         $i18n{syncConfirmationTitle}
       </h1>
-      <div id="subtitle" consent-description>
+      <div class="subtitle" consent-description>
         $i18n{syncConfirmationSyncInfoTitle}
       </div>
       <div id="syncBenefitsList">

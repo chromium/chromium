@@ -28,16 +28,16 @@
   min-width: 133px;
 }
 
-#tangible-sync-style-left-banner {
+.tangible-sync-style-left-banner {
   left: 0;
 }
 
-#tangible-sync-style-right-banner {
+.tangible-sync-style-right-banner {
   right: 0;
 }
 
-#tangible-sync-style-left-banner,
-#tangible-sync-style-right-banner {
+.tangible-sync-style-left-banner,
+.tangible-sync-style-right-banner {
   max-width: 320px;
   position: absolute;
   top: 0;
@@ -68,28 +68,29 @@
   width: var(--work-icon-size);
 }
 
-.tangible-sync-style #title {
+.tangible-sync-style .title {
   font-family: 'Google Sans', arial, sans-serif;
   font-size: 2.25rem;
   font-weight: 500;
-  line-height: 43px;
+  line-height: 44px;
   margin: 24px 0 16px;
 }
 
-.tangible-sync-style #subtitle {
+.tangible-sync-style .subtitle {
   color: var(--cr-secondary-text-color);
   font-family: Roboto, arial, sans-serif;
   font-size: 1.25rem;
+  font-weight: 400;
   line-height: 24px;
 }
 
 @media screen and ((max-width: 780px) or (max-height: 600px)) {
-  .tangible-sync-style #title {
+  .tangible-sync-style .title {
     font-size: 1.5rem;
     line-height: 32px;
   }
 
-  .tangible-sync-style #subtitle {
+  .tangible-sync-style .subtitle {
     font-size: 0.94rem;
     line-height: 22px;
   }

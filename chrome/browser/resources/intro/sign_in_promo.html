@@ -1,6 +1,5 @@
-<style include="cr-icons">
+<style include="cr-icons tangible-sync-style-shared">
   :host {
-    --background-image-width: 17vw;
     --cr-button-height: 36px;
     --btn-container-height: calc(2 * var(--btn-margin) + var(--cr-button-height));
     --btn-margin: 24px;
@@ -32,9 +31,6 @@
     </if>
     --scrollbar-background: var(--google-grey-100);
     --scrollbar-width: 4px;
-    --subtitle-font-size: 1.25rem;
-    --title-font-size: 2.25rem;
-    --title-line-height: 44px;
     color: var(--cr-primary-text-color);
     font-family: 'Google Sans', arial, sans-serif;
   }
@@ -58,9 +54,6 @@
       --card-description-font-size: 0.75rem;
       --card-title-font-size: 0.81rem;
       --card-width: 152px;
-      --title-font-size: 1.5rem;
-      --title-line-height: 32px;
-      --subtitle-font-size: 0.94rem;
       --product-logo-size: 60px;
     }
   }
@@ -80,7 +73,7 @@
 
   @keyframes left-background-slide-animation {
     0% {
-      transform: translateX(calc(-1 * var(--background-image-width)));
+      transform: translateX(calc(-1 * var(--tangible-sync-style-banner-width)));
     }
     100% {
       transform: translateX(0);
@@ -89,7 +82,7 @@
 
   @keyframes right-background-slide-animation {
     0% {
-      transform: translateX(var(--background-image-width));
+      transform: translateX(var(--tangible-sync-style-banner-width));
     }
     100% {
       transform: translateX(0);
@@ -118,13 +111,6 @@
 
   p {
     margin: 0;
-  }
-
-  h1 {
-    font-size: var(--title-font-size);
-    font-weight: 500;
-    line-height: var(--title-line-height);
-    margin: 24px 0 16px;
   }
 
   h2 {
@@ -206,17 +192,10 @@
   </if>
 
   #buttonContainer > cr-button {
-    font-size: 0.75rem;
     margin-top: var(--btn-margin);
-    min-width: 133px;
   }
 
-  #subtitle {
-    color: var(--cr-secondary-text-color);
-    font-family: Roboto, arial, sans-serif;
-    font-size: var(--subtitle-font-size);
-    font-weight: 400;
-    line-height: 24px;
+  .subtitle {
     margin: 0 0 32px;
   }
 
@@ -233,26 +212,21 @@
     border-radius: var(--scrollbar-width);
   }
 
-  .background-image {
-    max-width: 320px;
-    position: fixed;
-    top: 0;
-    width: var(--background-image-width);
-  }
-
-  #left-background-image {
-    animation-duration: 500ms;
+  .tangible-sync-style-left-banner {
     animation-name: left-background-slide-animation, fade-in-animation;
     content: var(--left-background-image-url);
-    left: 0;
-    transition-timing-function: ease-in-out;
   }
 
-  #right-background-image {
-    animation-duration: 500ms;
+  .tangible-sync-style-right-banner {
     animation-name: right-background-slide-animation, fade-in-animation;
     content: var(--right-background-image-url);
-    right: 0;
+  }
+
+  .tangible-sync-style-left-banner,
+  .tangible-sync-style-right-banner {
+    animation-duration: 500ms;
+    position: fixed;
+    transition-timing-function: ease-in-out;
   }
 
   #safeZone {
@@ -339,15 +313,15 @@
   }
 </style>
 
-<img id="left-background-image" class="background-image" alt="">
-<img id="right-background-image" class="background-image" alt="">
+<img class="tangible-sync-style-left-banner" alt="">
+<img class="tangible-sync-style-right-banner" alt="">
 
-<div class="custom-scrollbar" id="safeZone">
+<div id="safeZone" class="tangible-sync-style custom-scrollbar">
   <div id="contentArea">
     <img id="product-logo" src="images/product-logo.svg"
         alt="$i18n{productLogoAltText}">
-    <h1 class="fade-in">$i18n{pageTitle}</h1>
-    <p class="fade-in" id="subtitle">$i18n{pageSubtitle}</p>
+    <h1 class="title fade-in">$i18n{pageTitle}</h1>
+    <p class="subtitle fade-in">$i18n{pageSubtitle}</p>
     <div id="benefit-cards-container">
       <template is="dom-repeat" items="[[benefitCards_]]">
         <div class="benefit-card fade-in">
@@ -357,8 +331,9 @@
         </div>
       </template>
     </div>
-    <div class$="[[getDisclaimerVisibilityClass_(isDeviceManaged_, managedDeviceDisclaimer_)]]"
-      id="managedDeviceDisclaimer">
+    <div id="managedDeviceDisclaimer"
+        class$="[[getDisclaimerVisibilityClass_(isDeviceManaged_,
+            managedDeviceDisclaimer_)]]">
       <div id="icon-container">
         <iron-icon icon="cr:domain" alt=""></iron-icon>
       </div>
@@ -369,14 +344,14 @@
   </div>
 </div>
 
-<div class="fade-in" id="buttonRow">
+<div id="buttonRow" class="fade-in tangible-sync-style">
   <div id="buttonContainer">
     <cr-button id="declineSignInButton"
       disabled="[[areButtonsDisabled_(isDeviceManaged_, managedDeviceDisclaimer_
                   ,anyButtonClicked_)]]"
       on-click="onContinueWithoutAccountClick_">$i18n{declineSignInButtonTitle}</cr-button>
     </cr-button>
-    <cr-button class="action-button" id="acceptSignInButton"
+    <cr-button id="acceptSignInButton" class="action-button"
       disabled="[[areButtonsDisabled_(isDeviceManaged_, managedDeviceDisclaimer_
                   ,anyButtonClicked_)]]"
       on-click="onContinueWithAccountClick_">$i18n{acceptSignInButtonTitle}</cr-button>

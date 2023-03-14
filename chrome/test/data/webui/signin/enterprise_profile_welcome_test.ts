@@ -155,13 +155,13 @@ suite('EnterpriseProfileWelcomeTest', function() {
     function checkTextValues(
         expectedTitle: string, expectedSubtitle: string,
         expectedEnterpriseInfo: string, expectedProceedLabel: string) {
-      assertTrue(isChildVisible(app, '#title'));
+      assertTrue(isChildVisible(app, '.title'));
       const titleElement =
-          app.shadowRoot!.querySelector<HTMLElement>('#title')!;
+          app.shadowRoot!.querySelector<HTMLElement>('.title')!;
       assertEquals(expectedTitle, titleElement.textContent!.trim());
-      assertTrue(isChildVisible(app, '#subtitle'));
+      assertTrue(isChildVisible(app, '.subtitle'));
       const subtitleElement =
-          app.shadowRoot!.querySelector<HTMLElement>('#subtitle')!;
+          app.shadowRoot!.querySelector<HTMLElement>('.subtitle')!;
       assertEquals(expectedSubtitle, subtitleElement.textContent!.trim());
       assertTrue(isChildVisible(app, '#enterpriseInfo'));
       const enterpriseInfoElement =

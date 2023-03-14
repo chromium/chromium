@@ -32,7 +32,7 @@
     width: 512px;
   }
 
-  :host([is-modal-dialog_]) #title {
+  :host([is-modal-dialog_]) .title {
     margin-top: 0;
   }
 
@@ -137,7 +137,7 @@
     text-align: center;
   }
 
-  #title {
+  .title {
     font-size: 1.85em;
     font-weight: normal;
     margin-bottom: 8px;
@@ -208,11 +208,11 @@
     margin: 16px 32px;
   }
 
-  #tangible-sync-style-left-banner {
+  .tangible-sync-style-left-banner {
     content: url(images/left-banner.svg);
   }
 
-  #tangible-sync-style-right-banner {
+  .tangible-sync-style-right-banner {
     content: url(images/right-banner.svg);
   }
 
@@ -228,7 +228,7 @@
     transform: translate(-50%, -50%);
   }
 
-  .tangible-sync-style #subtitle {
+  .tangible-sync-style .subtitle {
     margin-top: 0;
   }
 
@@ -254,11 +254,11 @@
       background-color: var(--google-grey-700);
     }
 
-    #tangible-sync-style-right-banner {
+    .tangible-sync-style-right-banner {
       content: url(images/right-banner-dark.svg);
     }
 
-    #tangible-sync-style-left-banner {
+    .tangible-sync-style-left-banner {
       content: url(images/left-banner-dark.svg);
     }
   }
@@ -267,10 +267,10 @@
 <div id="main-container"
     class$="[[getTangibleSyncStyleClass_(isTangibleSyncStyleEnabled_,
         isModalDialog_)]]">
-  <img id="tangible-sync-style-left-banner"
+  <img class="tangible-sync-style-left-banner"
       hidden="[[!getTangibleSyncStyleClass_(isTangibleSyncStyleEnabled_,
           isModalDialog_)]]">
-  <img id="tangible-sync-style-right-banner"
+  <img class="tangible-sync-style-right-banner"
       hidden="[[!getTangibleSyncStyleClass_(isTangibleSyncStyleEnabled_,
           isModalDialog_)]]">
   <div id="content-container">
@@ -286,12 +286,12 @@
     </div>
     <div id="text-container">
       <template is="dom-if" if="[[title_]]">
-        <h2 id="title">
+        <h2 class="title">
           [[title_]]
         </h2>
       </template>
       <template is="dom-if" if="[[subtitle_]]">
-        <p id="subtitle" class="secondary">
+        <p class="subtitle secondary">
           [[subtitle_]]
         </p>
       </template>
