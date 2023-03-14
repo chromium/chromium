@@ -47,15 +47,6 @@ class MODULES_EXPORT MLGraphXnnpack final : public MLGraph {
 
   ~MLGraphXnnpack() override;
 
-  // Return the operators in topological order by searching from the named
-  // output operands. It ensures operator 'j' appears before operator 'i' in the
-  // result, if 'i' depends on 'j'.
-  //
-  // The sorted operators will be used by CreateXnnSubgraphAndRuntime() that
-  // defines the subgraph Nodes for operators in topological order.
-  static HeapVector<Member<const MLOperator>>* GetOperatorsInTopologicalOrder(
-      const MLNamedOperands& named_outputs);
-
   const ExternalValueIdMap& GetInputExternalValueIdMapForTesting() const;
   const ExternalValueIdMap& GetOutputExternalValueIdMapForTesting() const;
   const Vector<xnn_external_value>& GetXnnExternalValuesTesting() const;

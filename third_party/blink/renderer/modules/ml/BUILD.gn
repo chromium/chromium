@@ -29,6 +29,8 @@ blink_modules_sources("ml") {
     "webnn/ml_graph.h",
     "webnn/ml_graph_builder.cc",
     "webnn/ml_graph_builder.h",
+    "webnn/ml_graph_utils.cc",
+    "webnn/ml_graph_utils.h",
     "webnn/ml_operand.cc",
     "webnn/ml_operand.h",
     "webnn/ml_operator.cc",

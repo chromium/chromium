@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder_utils.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_test_base.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_xnnpack.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
@@ -84,7 +85,7 @@ TEST_F(MLGraphXnnpackTest, TopoSortOperatorsTest) {
     ASSERT_NE(relu, nullptr);
 
     auto* toposorted_operators =
-        MLGraphXnnpack::GetOperatorsInTopologicalOrder({{"output", relu}});
+        GetOperatorsInTopologicalOrder({{"output", relu}});
     EXPECT_EQ(toposorted_operators->size(), static_cast<wtf_size_t>(3));
     EXPECT_EQ(toposorted_operators->at(0), conv2d->Operator());
     EXPECT_EQ(toposorted_operators->at(1), add->Operator());
@@ -109,8 +110,8 @@ TEST_F(MLGraphXnnpackTest, TopoSortOperatorsTest) {
     auto* conv2d_1 = BuildConv2d(scope, builder, conv2d_0, filter, options);
     auto* conv2d_2 = BuildConv2d(scope, builder, conv2d_0, filter, options);
     auto* add = builder->add(conv2d_1, conv2d_2, scope.GetExceptionState());
-    auto* toposorted_operators = MLGraphXnnpack::GetOperatorsInTopologicalOrder(
-        {{"add", add}, {"output", conv2d_2}});
+    auto* toposorted_operators =
+        GetOperatorsInTopologicalOrder({{"add", add}, {"output", conv2d_2}});
     EXPECT_EQ(toposorted_operators->size(), static_cast<wtf_size_t>(4));
     EXPECT_EQ(toposorted_operators->at(0), conv2d_0->Operator());
     EXPECT_TRUE((toposorted_operators->at(1) == conv2d_1->Operator() &&
