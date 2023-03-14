@@ -33,9 +33,6 @@ if (optimize_webui) {
     ]
 
     excludes = [
-      "chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js",
-      "chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js",
-      "chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js",
       "chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js",
       "chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js",
       "chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js",

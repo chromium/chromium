@@ -23,13 +23,8 @@ if (optimize_webui) {
 
     out_manifest = "$target_gen_dir/$build_manifest"
     excludes = [
-      "chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js",
-      "chrome://resources/mojo/mojo/public/mojom/base/time.mojom-lite.js",
-      "chrome://resources/mojo/chromeos/ash/components/multidevice/mojom/multidevice_types.mojom-lite.js",
       "chrome://resources/mojo/chromeos/ash/components/multidevice/mojom/multidevice_types.mojom-webui.js",
-      "chrome://resources/mojo/chromeos/ash/services/device_sync/public/mojom/device_sync.mojom-lite.js",
       "chrome://resources/mojo/chromeos/ash/services/device_sync/public/mojom/device_sync.mojom-webui.js",
-      "chrome://resources/mojo/chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-lite.js",
       "chrome://resources/mojo/chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-webui.js",
     ]
 
