@@ -346,6 +346,31 @@ PermissionsManager::UserSiteSetting PermissionsManager::GetUserSiteSetting(
   return UserSiteSetting::kCustomizeByExtension;
 }
 
+PermissionsManager::UserSiteAccess PermissionsManager::GetUserSiteAccess(
+    const Extension& extension,
+    const GURL& gurl) const {
+  DCHECK(
+      !extension.permissions_data()->IsRestrictedUrl(gurl, /*error=*/nullptr));
+
+  // Extension with no host permissions but with active tab permission has "on
+  // click" access.
+  if (!CanAffectExtension(extension) &&
+      HasActiveTabAndCanAccess(extension, gurl)) {
+    return UserSiteAccess::kOnClick;
+  }
+
+  DCHECK(CanAffectExtension(extension));
+
+  ExtensionSiteAccess site_access = GetSiteAccess(extension, gurl);
+  if (site_access.has_all_sites_access) {
+    return UserSiteAccess::kOnAllSites;
+  }
+  if (site_access.has_site_access) {
+    return UserSiteAccess::kOnSite;
+  }
+  return UserSiteAccess::kOnClick;
+}
+
 PermissionsManager::ExtensionSiteAccess PermissionsManager::GetSiteAccess(
     const Extension& extension,
     const GURL& url) const {

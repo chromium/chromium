@@ -163,17 +163,17 @@ ExtensionContextMenuModel::ContextMenuAction CommandIdToContextMenuAction(
   return ContextMenuAction::kNoAction;
 }
 
-SitePermissionsHelper::SiteAccess CommandIdToSiteAccess(int command_id) {
+PermissionsManager::UserSiteAccess CommandIdToSiteAccess(int command_id) {
   switch (command_id) {
     case ExtensionContextMenuModel::PAGE_ACCESS_RUN_ON_CLICK:
-      return SitePermissionsHelper::SiteAccess::kOnClick;
+      return PermissionsManager::UserSiteAccess::kOnClick;
     case ExtensionContextMenuModel::PAGE_ACCESS_RUN_ON_SITE:
-      return SitePermissionsHelper::SiteAccess::kOnSite;
+      return PermissionsManager::UserSiteAccess::kOnSite;
     case ExtensionContextMenuModel::PAGE_ACCESS_RUN_ON_ALL_SITES:
-      return SitePermissionsHelper::SiteAccess::kOnAllSites;
+      return PermissionsManager::UserSiteAccess::kOnAllSites;
   }
   NOTREACHED();
-  return SitePermissionsHelper::SiteAccess::kOnClick;
+  return PermissionsManager::UserSiteAccess::kOnClick;
 }
 
 // Logs a user action when an option is selected in the page access section of
@@ -285,10 +285,10 @@ bool ExtensionContextMenuModel::IsCommandIdChecked(int command_id) const {
     if (!web_contents)
       return false;
 
-    SitePermissionsHelper permissions(profile_);
-    SitePermissionsHelper::SiteAccess current_access =
-        permissions.GetSiteAccess(*extension,
-                                  web_contents->GetLastCommittedURL());
+    auto* permissions = PermissionsManager::Get(profile_);
+    PermissionsManager::UserSiteAccess current_access =
+        permissions->GetUserSiteAccess(*extension,
+                                       web_contents->GetLastCommittedURL());
     return current_access == CommandIdToSiteAccess(command_id);
   }
 
@@ -562,11 +562,11 @@ bool ExtensionContextMenuModel::IsPageAccessCommandEnabled(
       const GURL& url = web_contents->GetLastCommittedURL();
       auto* permissions_manager = PermissionsManager::Get(profile_);
       SitePermissionsHelper permissions_helper(profile_);
-      DCHECK(
-          permissions_manager->HasActiveTabAndCanAccess(extension, url) ||
-          permissions_manager->CanAffectExtension(extension) &&
-              permissions_helper.CanSelectSiteAccess(
-                  extension, url, SitePermissionsHelper::SiteAccess::kOnClick));
+      DCHECK(permissions_manager->HasActiveTabAndCanAccess(extension, url) ||
+             permissions_manager->CanAffectExtension(extension) &&
+                 permissions_helper.CanSelectSiteAccess(
+                     extension, url,
+                     PermissionsManager::UserSiteAccess::kOnClick));
 
       // TODO(devlin): This can lead to some fun race-like conditions, where the
       // menu is constructed during navigation. Since we get the URL both here
@@ -627,7 +627,8 @@ void ExtensionContextMenuModel::CreatePageAccessItems(
         // The extension wants site access but cant't run on the page if it does
         // not have at least "on click" access.
         if (!SitePermissionsHelper(profile_).CanSelectSiteAccess(
-                *extension, url, SitePermissionsHelper::SiteAccess::kOnClick)) {
+                *extension, url,
+                PermissionsManager::UserSiteAccess::kOnClick)) {
           AddItemWithStringId(PAGE_ACCESS_CANT_ACCESS,
                               IDS_EXTENSIONS_CONTEXT_MENU_CANT_ACCESS_PAGE);
           return;
@@ -662,7 +663,7 @@ void ExtensionContextMenuModel::CreatePageAccessItems(
     // The extension wants site access but cant't run on the page if it does
     // not have at least "on click" access.
     if (!SitePermissionsHelper(profile_).CanSelectSiteAccess(
-            *extension, url, SitePermissionsHelper::SiteAccess::kOnClick)) {
+            *extension, url, PermissionsManager::UserSiteAccess::kOnClick)) {
       AddItemWithStringId(PAGE_ACCESS_CANT_ACCESS,
                           IDS_EXTENSIONS_CONTEXT_MENU_CANT_ACCESS_PAGE);
       return;

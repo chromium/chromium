@@ -40,7 +40,7 @@ namespace extensions {
 
 namespace {
 
-using SiteAccess = SitePermissionsHelper::SiteAccess;
+using UserSiteAccess = PermissionsManager::UserSiteAccess;
 using UserSiteSetting = PermissionsManager::UserSiteSetting;
 
 const char kAllHostsScheme[] = "*://*/*";
@@ -428,8 +428,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerBrowserTest, RunAction) {
   ASSERT_TRUE(runner);
   EXPECT_TRUE(runner->WantsToRun(extension));
   EXPECT_FALSE(DidInjectScript(web_contents));
-  SitePermissionsHelper permissions(profile());
-  EXPECT_EQ(permissions.GetSiteAccess(*extension, url), SiteAccess::kOnClick);
+  auto* permissions = PermissionsManager::Get(browser()->profile());
+  EXPECT_EQ(permissions->GetUserSiteAccess(*extension, url),
+            UserSiteAccess::kOnClick);
 
   // Run the action without changing permissions, and reject the bubble
   // prompting for page reload.
@@ -457,7 +458,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerBrowserTest, RunAction) {
   EXPECT_GE(web_controller.GetLastCommittedEntry()->GetUniqueID(), nav_id);
   EXPECT_TRUE(DidInjectScript(web_contents));
   EXPECT_FALSE(runner->WantsToRun(extension));
-  EXPECT_EQ(permissions.GetSiteAccess(*extension, url), SiteAccess::kOnClick);
+  EXPECT_EQ(permissions->GetUserSiteAccess(*extension, url),
+            UserSiteAccess::kOnClick);
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerBrowserTest,
@@ -487,14 +489,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerBrowserTest,
   ASSERT_TRUE(runner);
   EXPECT_TRUE(runner->WantsToRun(extension));
   EXPECT_FALSE(DidInjectScript(web_contents));
-  SitePermissionsHelper permissions(profile());
-  EXPECT_EQ(permissions.GetSiteAccess(*extension, url), SiteAccess::kOnClick);
+  auto* permissions = PermissionsManager::Get(browser()->profile());
+  EXPECT_EQ(permissions->GetUserSiteAccess(*extension, url),
+            UserSiteAccess::kOnClick);
 
   // Request a permission increase, and accept the bubble prompting for page
   // refresh.
   runner->accept_bubble_for_testing(true);
-  runner->HandlePageAccessModified(extension, SiteAccess::kOnClick,
-                                   SiteAccess::kOnSite);
+  runner->HandlePageAccessModified(extension, UserSiteAccess::kOnClick,
+                                   UserSiteAccess::kOnSite);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
 
@@ -504,13 +507,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerBrowserTest,
   EXPECT_GE(web_controller.GetLastCommittedEntry()->GetUniqueID(), nav_id);
   EXPECT_TRUE(DidInjectScript(web_contents));
   EXPECT_FALSE(runner->WantsToRun(extension));
-  EXPECT_EQ(permissions.GetSiteAccess(*extension, url), SiteAccess::kOnSite);
+  EXPECT_EQ(permissions->GetUserSiteAccess(*extension, url),
+            UserSiteAccess::kOnSite);
 
   // Request a permission decrease, and accept the blocked action bubble
   // prompting for page refresh.
   runner->accept_bubble_for_testing(true);
-  runner->HandlePageAccessModified(extension, SiteAccess::kOnSite,
-                                   SiteAccess::kOnClick);
+  runner->HandlePageAccessModified(extension, UserSiteAccess::kOnSite,
+                                   UserSiteAccess::kOnClick);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
 
@@ -520,7 +524,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerBrowserTest,
   EXPECT_GE(web_controller.GetLastCommittedEntry()->GetUniqueID(), nav_id);
   EXPECT_FALSE(DidInjectScript(web_contents));
   EXPECT_TRUE(runner->WantsToRun(extension));
-  EXPECT_EQ(permissions.GetSiteAccess(*extension, url), SiteAccess::kOnClick);
+  EXPECT_EQ(permissions->GetUserSiteAccess(*extension, url),
+            UserSiteAccess::kOnClick);
 }
 
 // If we don't withhold permissions, extensions should execute normally.
@@ -767,8 +772,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerWithUserHostControlsBrowserTest,
   // extension should have injected.
   EXPECT_EQ(permissions_manager()->GetUserSiteSetting(url_origin),
             UserSiteSetting::kCustomizeByExtension);
-  EXPECT_EQ(SitePermissionsHelper(profile()).GetSiteAccess(*extension, url),
-            SiteAccess::kOnAllSites);
+  EXPECT_EQ(permissions_manager()->GetUserSiteAccess(*extension, url),
+            UserSiteAccess::kOnAllSites);
   EXPECT_TRUE(DidInjectScript(web_contents()));
 
   // "customize by extension (on site)" -> "block all extensions":
@@ -825,8 +830,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerWithUserHostControlsBrowserTest,
   // click" site access. The extension should not have injected.
   EXPECT_EQ(permissions_manager()->GetUserSiteSetting(url_origin),
             UserSiteSetting::kCustomizeByExtension);
-  EXPECT_EQ(SitePermissionsHelper(profile()).GetSiteAccess(*extension, url),
-            SiteAccess::kOnClick);
+  EXPECT_EQ(permissions_manager()->GetUserSiteAccess(*extension, url),
+            UserSiteAccess::kOnClick);
   EXPECT_FALSE(DidInjectScript(web_contents()));
 
   // "customize by extension (on click)" -> "block all extensions":
@@ -892,8 +897,8 @@ IN_PROC_BROWSER_TEST_F(
   // extension should have injected.
   EXPECT_EQ(permissions_manager()->GetUserSiteSetting(url_origin),
             UserSiteSetting::kCustomizeByExtension);
-  EXPECT_EQ(SitePermissionsHelper(profile()).GetSiteAccess(*extension, url),
-            SiteAccess::kOnAllSites);
+  EXPECT_EQ(permissions_manager()->GetUserSiteAccess(*extension, url),
+            UserSiteAccess::kOnAllSites);
   EXPECT_TRUE(DidInjectScript(web_contents()));
 
   // "customize by extension (on site) -> "grant all extensions":
@@ -986,8 +991,8 @@ IN_PROC_BROWSER_TEST_F(
   // click" site access. The extension should not have injected.
   EXPECT_EQ(permissions_manager()->GetUserSiteSetting(url_origin),
             UserSiteSetting::kCustomizeByExtension);
-  EXPECT_EQ(SitePermissionsHelper(profile()).GetSiteAccess(*extension, url),
-            SiteAccess::kOnClick);
+  EXPECT_EQ(permissions_manager()->GetUserSiteAccess(*extension, url),
+            UserSiteAccess::kOnClick);
   EXPECT_FALSE(DidInjectScript(web_contents()));
 
   // "customize by extension (on click) -> "grant all extensions":

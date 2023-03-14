@@ -157,12 +157,11 @@ void ExtensionActionRunner::GrantTabPermissions(
   // Every extension that wants tab permission is currently blocked and must
   // have "on click" access.
   const GURL& url = web_contents()->GetLastCommittedURL();
-  auto permissions =
-      SitePermissionsHelper(Profile::FromBrowserContext(browser_context_));
+  auto* permissions = PermissionsManager::Get(browser_context_);
   DCHECK(base::ranges::all_of(
       extensions, [url, &permissions](const Extension* extension) {
-        return permissions.GetSiteAccess(*extension, url) ==
-               SitePermissionsHelper::SiteAccess::kOnClick;
+        return permissions->GetUserSiteAccess(*extension, url) ==
+               PermissionsManager::UserSiteAccess::kOnClick;
       }));
 
   std::vector<ExtensionId> extension_ids = GetExtensionIds(extensions);
@@ -175,11 +174,11 @@ void ExtensionActionRunner::GrantTabPermissions(
 
 void ExtensionActionRunner::HandlePageAccessModified(
     const Extension* extension,
-    SitePermissionsHelper::SiteAccess current_access,
-    SitePermissionsHelper::SiteAccess new_access) {
+    PermissionsManager::UserSiteAccess current_access,
+    PermissionsManager::UserSiteAccess new_access) {
   DCHECK_NE(current_access, new_access);
   bool revoking_permissions =
-      new_access == SitePermissionsHelper::SiteAccess::kOnClick;
+      new_access == PermissionsManager::UserSiteAccess::kOnClick;
   int blocked_actions = GetBlockedActions(extension->id());
 
   // Show the reload page dialog if revoking permissions, or increasing
@@ -279,12 +278,12 @@ void ExtensionActionRunner::HandleUserSiteSettingModified(
         // Refresh the page if any extension that had site access will lose it.
         // Since every extension currently has access via user site
         // settings, only extensions with "on click" site access will lose
-        // access. This is because `SitePermissionsHelper::SiteAccess` does not
+        // access. This is because `PermissionsManager::UserSiteAccess` does not
         // take into account user site settings, which means granting all
         // extensions access doesn't change the extension's specific site
         // access.
-        // TODO(emiliapaz): `SitePermissionsHelper::SiteAccess` should take into
-        // account user site settings. This is not a problem now, because
+        // TODO(emiliapaz): `PermissionsManager::UserSiteAccess` should take
+        // into account user site settings. This is not a problem now, because
         // `SitePermissionsHelper::GetSiteAccess` is called only after checking
         // a) user site setting is "customize by extension" or b) selecting site
         // access is possible (e.g. is not a policy restricted site, extension
@@ -293,10 +292,10 @@ void ExtensionActionRunner::HandleUserSiteSettingModified(
         // permissions struct and enums will be needed.
         refresh_required = base::ranges::any_of(
             extensions,
-            [&permissions_helper, this](const Extension* extension) {
-              return permissions_helper.GetSiteAccess(
+            [&permissions_manager, this](const Extension* extension) {
+              return permissions_manager->GetUserSiteAccess(
                          *extension, web_contents()->GetLastCommittedURL()) ==
-                     SitePermissionsHelper::SiteAccess::kOnClick;
+                     PermissionsManager::UserSiteAccess::kOnClick;
             });
         break;
       }
@@ -573,8 +572,8 @@ void ExtensionActionRunner::
     OnReloadPageBubbleAcceptedForExtensionSiteAccessChange(
         const ExtensionId& extension_id,
         const GURL& page_url,
-        SitePermissionsHelper::SiteAccess current_access,
-        SitePermissionsHelper::SiteAccess new_access) {
+        PermissionsManager::UserSiteAccess current_access,
+        PermissionsManager::UserSiteAccess new_access) {
   DCHECK_NE(current_access, new_access);
   // If the web contents have navigated to a different origin, do nothing.
   if (!url::IsSameOriginWith(page_url, web_contents()->GetLastCommittedURL()))
@@ -612,8 +611,8 @@ void ExtensionActionRunner::OnReloadPageBubbleAcceptedForUserSiteSettingsChange(
 
 void ExtensionActionRunner::UpdatePageAccessSettings(
     const Extension* extension,
-    SitePermissionsHelper::SiteAccess current_access,
-    SitePermissionsHelper::SiteAccess new_access) {
+    PermissionsManager::UserSiteAccess current_access,
+    PermissionsManager::UserSiteAccess new_access) {
   DCHECK_NE(current_access, new_access);
 
   const GURL& url = web_contents()->GetLastCommittedURL();
@@ -623,7 +622,7 @@ void ExtensionActionRunner::UpdatePageAccessSettings(
   DCHECK(permissions_manager->CanAffectExtension(*extension));
 
   switch (new_access) {
-    case SitePermissionsHelper::SiteAccess::kOnClick:
+    case PermissionsManager::UserSiteAccess::kOnClick:
       if (permissions_manager->HasBroadGrantedHostPermissions(*extension))
         modifier.RemoveBroadGrantedHostPermissions();
       // Note: SetWithholdHostPermissions() is a no-op if host permissions are
@@ -632,7 +631,7 @@ void ExtensionActionRunner::UpdatePageAccessSettings(
       if (permissions_manager->HasGrantedHostPermission(*extension, url))
         modifier.RemoveGrantedHostPermission(url);
       break;
-    case SitePermissionsHelper::SiteAccess::kOnSite:
+    case PermissionsManager::UserSiteAccess::kOnSite:
       if (permissions_manager->HasBroadGrantedHostPermissions(*extension))
         modifier.RemoveBroadGrantedHostPermissions();
       // Note: SetWithholdHostPermissions() is a no-op if host permissions are
@@ -641,7 +640,7 @@ void ExtensionActionRunner::UpdatePageAccessSettings(
       if (!permissions_manager->HasGrantedHostPermission(*extension, url))
         modifier.GrantHostPermission(url);
       break;
-    case SitePermissionsHelper::SiteAccess::kOnAllSites:
+    case PermissionsManager::UserSiteAccess::kOnAllSites:
       modifier.SetWithholdHostPermissions(false);
       break;
   }

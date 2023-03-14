@@ -75,8 +75,8 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   // changed.
   void HandlePageAccessModified(
       const Extension* extension,
-      SitePermissionsHelper::SiteAccess current_access,
-      SitePermissionsHelper::SiteAccess new_access);
+      PermissionsManager::UserSiteAccess current_access,
+      PermissionsManager::UserSiteAccess new_access);
 
   // Notifies the ExtensionActionRunner that the user site setting for `origin`
   // with `action_ids` has changed.
@@ -205,8 +205,8 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   void OnReloadPageBubbleAcceptedForExtensionSiteAccessChange(
       const ExtensionId& extension_id,
       const GURL& page_url,
-      SitePermissionsHelper::SiteAccess current_access,
-      SitePermissionsHelper::SiteAccess new_access);
+      PermissionsManager::UserSiteAccess current_access,
+      PermissionsManager::UserSiteAccess new_access);
 
   // Called when the reload page bubble is accepted. Updates user site setting
   // of `origin` to `site_settings`.
@@ -218,8 +218,8 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   // |extension|.
   void UpdatePageAccessSettings(
       const Extension* extension,
-      SitePermissionsHelper::SiteAccess current_access,
-      SitePermissionsHelper::SiteAccess new_access);
+      PermissionsManager::UserSiteAccess current_access,
+      PermissionsManager::UserSiteAccess new_access);
 
   // Runs any actions that were blocked for the given |extension|. As a
   // requirement, this will grant activeTab permission to the extension.

@@ -23,14 +23,10 @@ class Extension;
 // in the Extensions toolbar (e.g: ExtensionContextMenuModel).
 class SitePermissionsHelper {
  public:
-  enum class SiteAccess {
-    kOnClick,
-    kOnSite,
-    kOnAllSites,
-  };
-
   // The interaction of the extension with the site. This is independent
   // of the action's clickability.
+  // TODO(crbug.com/1289441): Move enum and related methods to
+  // PermissionsManager.
   enum class SiteInteraction {
     // The extension cannot run on the site.
     kNone,
@@ -48,12 +44,6 @@ class SitePermissionsHelper {
   const SitePermissionsHelper& operator=(const SitePermissionsHelper&) = delete;
   ~SitePermissionsHelper();
 
-  // Returns the site access for `extension` in `gurl`. This can only be called
-  // if the url is not restricted, and if the user can configure site access for
-  // the extension (which excludes things like policy extensions) or if the
-  // extension has active tab permission.
-  SiteAccess GetSiteAccess(const Extension& extension, const GURL& gurl) const;
-
   // Returns the site interaction for `extension` in the current site pointed by
   // `web_contents`.
   SiteInteraction GetSiteInteraction(const Extension& extension,
@@ -64,7 +54,7 @@ class SitePermissionsHelper {
   // that site.
   void UpdateSiteAccess(const Extension& extension,
                         content::WebContents* web_contents,
-                        SiteAccess new_access);
+                        PermissionsManager::UserSiteAccess new_access);
 
   // Updates the user site settings pointed to by `web_contents` to
   // `site_setting` for `action_ids`.
@@ -75,9 +65,11 @@ class SitePermissionsHelper {
 
   // Returns whether `site_access` option can be selected for `extension` in
   // `url`.
-  bool CanSelectSiteAccess(const Extension& extension,
-                           const GURL& gurl,
-                           SiteAccess site_access) const;
+  // TODO(crbug.com/1289441): Move to PermissionsManager.
+  bool CanSelectSiteAccess(
+      const Extension& extension,
+      const GURL& gurl,
+      PermissionsManager::UserSiteAccess site_access) const;
 
   // Returns whether the `extension` has been blocked on the given
   // `web_contents`.

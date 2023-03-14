@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_unittest.h"
 #include "chrome/grit/generated_resources.h"
+#include "extensions/browser/permissions_manager.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/test/permissions_manager_waiter.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -318,14 +319,14 @@ TEST_F(ExtensionsToolbarControlsUnitTest,
   constexpr char kActivatedUserAction[] =
       "Extensions.Toolbar.ExtensionsActivatedFromRequestAccessButton";
   base::UserActionTester user_action_tester;
-  extensions::SitePermissionsHelper permissions(browser()->profile());
+  auto* permissions = extensions::PermissionsManager::Get(profile());
 
   // Request access button is visible because extension A is requesting
   // access.
   ASSERT_TRUE(request_access_button()->GetVisible());
   EXPECT_EQ(user_action_tester.GetActionCount(kActivatedUserAction), 0);
-  EXPECT_EQ(permissions.GetSiteAccess(*extension, url),
-            extensions::SitePermissionsHelper::SiteAccess::kOnClick);
+  EXPECT_EQ(permissions->GetUserSiteAccess(*extension, url),
+            extensions::PermissionsManager::UserSiteAccess::kOnClick);
 
   ClickButton(request_access_button());
 
@@ -337,8 +338,8 @@ TEST_F(ExtensionsToolbarControlsUnitTest,
   // button grants one time access.
   ASSERT_FALSE(request_access_button()->GetVisible());
   EXPECT_EQ(user_action_tester.GetActionCount(kActivatedUserAction), 1);
-  EXPECT_EQ(permissions.GetSiteAccess(*extension, url),
-            extensions::SitePermissionsHelper::SiteAccess::kOnClick);
+  EXPECT_EQ(permissions->GetUserSiteAccess(*extension, url),
+            extensions::PermissionsManager::UserSiteAccess::kOnClick);
 }
 
 class ExtensionsToolbarControlsWithPermittedSitesUnitTest
