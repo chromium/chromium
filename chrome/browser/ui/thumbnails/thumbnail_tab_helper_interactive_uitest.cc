@@ -154,14 +154,13 @@ class ThumbnailTabHelperInteractiveTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-#if defined(THREAD_SANITIZER) || defined(ADDRESS_SANITIZER) || \
-    defined(MEMORY_SANITIZER)
-// TODO(crbug.com/1288117, crbug.com/1336124): Flakes on macOS and various
-// MSAN/TSAN/ASAN builders.
+#if BUILDFLAG(IS_CHROMEOS) || defined(THREAD_SANITIZER) || \
+    defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
+// TODO(crbug.com/1399402) flakes on ChromeOS and MSAN/TSAN/ASAN builders.
 #define MAYBE_TabLoadTriggersScreenshot DISABLED_TabLoadTriggersScreenshot
 #else
 #define MAYBE_TabLoadTriggersScreenshot TabLoadTriggersScreenshot
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperInteractiveTest,
                        MAYBE_TabLoadTriggersScreenshot) {
@@ -173,13 +172,13 @@ IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperInteractiveTest,
   WaitForAndVerifyThumbnail(browser(), 1);
 }
 
-// TODO(crbug.com/1399402): Times out on MSan bot.
-#if defined(MEMORY_SANITIZER)
+// TODO(crbug.com/1399402) flakes on ChromeOS and MSAN/TSAN/ASAN builders.
+#if BUILDFLAG(IS_CHROMEOS) || defined(MEMORY_SANITIZER)
 #define MAYBE_TabDiscardPreservesScreenshot \
   DISABLED_TabDiscardPreservesScreenshot
 #else
 #define MAYBE_TabDiscardPreservesScreenshot TabDiscardPreservesScreenshot
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperInteractiveTest,
                        MAYBE_TabDiscardPreservesScreenshot) {
   ui_test_utils::NavigateToURLWithDisposition(
@@ -213,10 +212,11 @@ IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperInteractiveTest,
 
 // On browser restore, some tabs may not be loaded. Requesting a
 // thumbnail for one of these tabs should trigger load and capture.
-// TODO(crbug.com/1294473, crbug.com/1294473): Flaky on Mac and various
-// sanitizer builds.
-#if BUILDFLAG(IS_MAC) || defined(THREAD_SANITIZER) || \
-    defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
+// TODO(crbug.com/1399402): Flaky on Mac, ChromeOS,
+// and various sanitizer builds.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) ||             \
+    defined(THREAD_SANITIZER) || defined(ADDRESS_SANITIZER) || \
+    defined(MEMORY_SANITIZER)
 #define MAYBE_CapturesRestoredTabWhenRequested \
   DISABLED_CapturesRestoredTabWhenRequested
 #else
