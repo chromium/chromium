@@ -93,7 +93,7 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
   // This optional damage is in target render pass coordinate space.
   absl::optional<gfx::Rect> damage_rect;
 
-  struct RoundedDisplayMasksInfo {
+  struct VIZ_COMMON_EXPORT RoundedDisplayMasksInfo {
     static constexpr size_t kMaxRoundedDisplayMasksCount = 2;
     static constexpr size_t kOriginRoundedDisplayMaskIndex = 0;
     static constexpr size_t kOtherRoundedDisplayMaskIndex = 1;
@@ -107,7 +107,7 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
 
     bool IsEmpty() const;
 
-    bool is_horizontally_positioned : 1;
+    bool is_horizontally_positioned = true;
 
     // Radii of display's rounded corners masks in pixels.
     uint8_t radii[kMaxRoundedDisplayMasksCount] = {0, 0};

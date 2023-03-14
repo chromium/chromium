@@ -64,6 +64,22 @@ viz::DrawQuad* AllocateAndConstruct(
 }
 
 // static
+bool StructTraits<viz::mojom::RoundedDisplayMasksInfoDataView,
+                  viz::TextureDrawQuad::RoundedDisplayMasksInfo>::
+    Read(viz::mojom::RoundedDisplayMasksInfoDataView data,
+         viz::TextureDrawQuad::RoundedDisplayMasksInfo* out) {
+  viz::TextureDrawQuad::RoundedDisplayMasksInfo* info =
+      static_cast<viz::TextureDrawQuad::RoundedDisplayMasksInfo*>(out);
+  base::span<uint8_t> radii_array(info->radii);
+  if (!data.ReadRadii(&radii_array)) {
+    return false;
+  }
+
+  info->is_horizontally_positioned = data.is_horizontally_positioned();
+  return true;
+}
+
+// static
 bool StructTraits<viz::mojom::DebugBorderQuadStateDataView, viz::DrawQuad>::
     Read(viz::mojom::DebugBorderQuadStateDataView data, viz::DrawQuad* out) {
   viz::DebugBorderDrawQuad* quad = static_cast<viz::DebugBorderDrawQuad*>(out);
@@ -150,7 +166,8 @@ bool StructTraits<viz::mojom::TextureQuadStateDataView, viz::DrawQuad>::Read(
       !data.ReadProtectedVideoType(&protected_video_type) ||
       !data.ReadHdrMode(&quad->hdr_mode) ||
       !data.ReadHdrMetadata(&quad->hdr_metadata) ||
-      !data.ReadOverlayPriorityHint(&overlay_priority_hint)) {
+      !data.ReadOverlayPriorityHint(&overlay_priority_hint) ||
+      !data.ReadRoundedDisplayMasksInfo(&quad->rounded_display_masks_info)) {
     return false;
   }
   quad->protected_video_type = protected_video_type;

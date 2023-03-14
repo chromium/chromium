@@ -14,6 +14,7 @@
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/debug_border_draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
+#include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/resources/resource_settings.h"
 #include "components/viz/common/resources/returned_resource.h"
@@ -1046,15 +1047,39 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   const gfx::Rect rect6(321, 765, 11109, 151413);
   const bool needs_blending6 = false;
   const ResourceId resource_id6(1234);
-  const gfx::Size resource_size_in_pixels(1234, 5678);
+  const gfx::Size resource_size_in_pixels6(1234, 5678);
   const float stream_draw_quad_opacity[] = {1, 1, 1, 1};
   TextureDrawQuad* stream_video_draw_quad =
       render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   stream_video_draw_quad->SetAll(
-      sqs, rect6, rect6, needs_blending6, resource_id6, resource_size_in_pixels,
-      false, uv_top_left, uv_bottom_right, SkColors::kTransparent,
-      stream_draw_quad_opacity, false, false, false, protected_video_type);
+      sqs, rect6, rect6, needs_blending6, resource_id6,
+      resource_size_in_pixels6, false, uv_top_left, uv_bottom_right,
+      SkColors::kTransparent, stream_draw_quad_opacity, false, false, false,
+      protected_video_type);
   stream_video_draw_quad->is_stream_video = true;
+
+  // Create a TextureDrawQuad with rounded-display masks.
+  const gfx::Rect rect7(421, 865, 11109, 151413);
+  const bool needs_blending7 = false;
+  const ResourceId resource_id7(4834);
+  const gfx::Size resource_size_in_pixels7(12894, 8878);
+  const float rounded_display_mask_quad_opacity[] = {1.0, 1.5, 1.8, 1.1};
+  const int origin_rounded_display_mask_radius = 10;
+  const int other_rounded_display_mask_radius = 15;
+  const bool is_horizontally_positioned = false;
+
+  TextureDrawQuad* rounded_display_mask_quad =
+      render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
+  rounded_display_mask_quad->SetAll(
+      sqs, rect7, rect7, needs_blending7, resource_id7,
+      resource_size_in_pixels7, false, uv_top_left, uv_bottom_right,
+      SkColors::kTransparent, rounded_display_mask_quad_opacity, false, false,
+      false, protected_video_type);
+
+  rounded_display_mask_quad->rounded_display_masks_info =
+      TextureDrawQuad::RoundedDisplayMasksInfo::CreateRoundedDisplayMasksInfo(
+          origin_rounded_display_mask_radius, other_rounded_display_mask_radius,
+          is_horizontally_positioned);
 
   std::unique_ptr<CompositorRenderPass> output;
   mojo::test::SerializeAndDeserialize<mojom::CompositorRenderPass>(render_pass,
@@ -1137,10 +1162,33 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   EXPECT_EQ(rect6, out_stream_video_draw_quad->visible_rect);
   EXPECT_EQ(needs_blending6, out_stream_video_draw_quad->needs_blending);
   EXPECT_EQ(resource_id6, out_stream_video_draw_quad->resource_id());
-  EXPECT_EQ(resource_size_in_pixels,
+  EXPECT_EQ(resource_size_in_pixels6,
             out_stream_video_draw_quad->resource_size_in_pixels());
   EXPECT_EQ(uv_top_left, out_stream_video_draw_quad->uv_top_left);
   EXPECT_EQ(uv_bottom_right, out_stream_video_draw_quad->uv_bottom_right);
+
+  const TextureDrawQuad* out_rounded_display_mask_quad =
+      TextureDrawQuad::MaterialCast(output->quad_list.ElementAt(6));
+  EXPECT_FALSE(out_rounded_display_mask_quad->is_stream_video);
+  EXPECT_EQ(rect7, out_rounded_display_mask_quad->rect);
+  EXPECT_EQ(rect7, out_rounded_display_mask_quad->visible_rect);
+  EXPECT_EQ(needs_blending7, out_rounded_display_mask_quad->needs_blending);
+  EXPECT_EQ(resource_id7, out_rounded_display_mask_quad->resource_id());
+  EXPECT_EQ(resource_size_in_pixels7,
+            out_rounded_display_mask_quad->resource_size_in_pixels());
+  EXPECT_EQ(uv_top_left, out_rounded_display_mask_quad->uv_top_left);
+  EXPECT_EQ(uv_bottom_right, out_rounded_display_mask_quad->uv_bottom_right);
+  EXPECT_EQ(origin_rounded_display_mask_radius,
+            out_rounded_display_mask_quad->rounded_display_masks_info
+                .radii[TextureDrawQuad::RoundedDisplayMasksInfo::
+                           kOriginRoundedDisplayMaskIndex]);
+  EXPECT_EQ(other_rounded_display_mask_radius,
+            out_rounded_display_mask_quad->rounded_display_masks_info
+                .radii[TextureDrawQuad::RoundedDisplayMasksInfo::
+                           kOtherRoundedDisplayMaskIndex]);
+  EXPECT_EQ(is_horizontally_positioned,
+            out_rounded_display_mask_quad->rounded_display_masks_info
+                .is_horizontally_positioned);
 }
 
 TEST_F(StructTraitsTest, SurfaceId) {
