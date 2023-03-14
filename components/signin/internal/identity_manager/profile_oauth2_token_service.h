@@ -32,9 +32,8 @@ class PrefRegistrySimple;
 class OAuth2AccessTokenConsumer;
 class ProfileOAuth2TokenServiceDelegate;
 
-// ProfileOAuth2TokenService is a KeyedService that retrieves
-// OAuth2 access tokens for a given set of scopes using the OAuth2 login
-// refresh tokens.
+// ProfileOAuth2TokenService retrieves OAuth2 access tokens for a given set of
+// scopes using the OAuth2 login refresh tokens.
 //
 // To use this service, call StartRequest() with a given set of scopes and a
 // consumer of the request results. The consumer is required to outlive the
