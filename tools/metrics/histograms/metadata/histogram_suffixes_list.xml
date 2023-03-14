@@ -4140,13 +4140,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Touchpad.ScrollSensitivity"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="PreferenceFileNames" separator=".">
-  <suffix name="Local_State" label="Local State file"/>
-  <suffix name="Preferences" label="Preferences file"/>
-  <suffix name="Secure_Preferences" label="Secure Preferences file"/>
-  <affected-histogram name="Settings.JsonDataReadSizeKilobytes"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="Prefetch" separator="_">
   <suffix name="ContentPrefetchPrefetchOff"
       label="Prefetch is completely disabled."/>
