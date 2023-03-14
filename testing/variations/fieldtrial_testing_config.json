@@ -6447,21 +6447,6 @@
             ]
         }
     ],
-    "IOSPasswordManagerUISplit": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IOSPasswordUISplit"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSRestoreSessionFromCache": [
         {
             "platforms": [
