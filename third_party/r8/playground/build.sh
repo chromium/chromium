@@ -24,7 +24,7 @@ DEXDUMP=$(get_path ../../android_sdk/public/build-tools/*/dexdump)
 R8_PATH=$(get_path ../lib/r8.jar)
 JAVA_HOME=../../jdk/current
 JAVA_BIN=../../jdk/current/bin
-MIN_API=21
+MIN_API=24
 
 # E.g.:
 # EXTRA_JARS=../../../out/Release/obj/components/autofill_assistant/browser/proto_java.javac.jar:../../../out/Release/obj/clank/third_party/google3/protobuf.processed.jar
@@ -33,7 +33,7 @@ MIN_API=21
 # DUMP_INPUTS=-Dcom.android.tools.r8.dumpinputtofile=r8inputs.zip
 
 rm -f *.class
-$JAVA_BIN/javac -cp $ANDROID_JAR:$EXTRA_JARS -target 11 -source 11 *.java
+$JAVA_BIN/javac -cp $ANDROID_JAR:$EXTRA_JARS --release 11 *.java
 $JAVA_BIN/java -cp $R8_PATH $DUMP_INPUTS com.android.tools.r8.R8 \
     --min-api $MIN_API \
     --lib "$JAVA_HOME" \
