@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 340 tests; 325 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 340 tests; 326 PASS, 14 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Setup
 PASS isolation (type: discrete) has testInterpolation function
 PASS isolation uses discrete animation when animating between "auto" and "isolate" with linear easing
@@ -309,7 +309,7 @@ PASS translate (type: translateList) has testInterpolation function
 PASS translate with two unspecified values
 PASS translate with one unspecified value
 PASS translate with all three values specified
-FAIL translate with combination of percentages and lengths assert_equals: The value should be calc(0% + 200px) calc(25% - 50.5px) 200px at 500ms expected "calc(0% + 200px) calc(25% - 50.5px) 200px" but got "200px calc(25% - 50.5px) 200px"
+PASS translate with combination of percentages and lengths
 PASS scale (type: scaleList) has testInterpolation function
 PASS scale with two unspecified values
 PASS scale with one unspecified value

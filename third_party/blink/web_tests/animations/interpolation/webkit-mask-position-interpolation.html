@@ -48,13 +48,13 @@ assertInterpolation({
   from: 'initial',
   to: '20px 20px',
 }, [
-  {at: -0.25, is: '-5px -5px, -5px -5px, -5px -5px, -5px -5px'},
+  {at: -0.25, is: 'calc(0% - 5px) calc(0% - 5px), calc(0% - 5px) calc(0% - 5px), calc(0% - 5px) calc(0% - 5px), calc(0% - 5px) calc(0% - 5px)'},
   {at: 0, is: '0% 0%, 0% 0%, 0% 0%, 0% 0%'},
-  {at: 0.25, is: '5px 5px, 5px 5px, 5px 5px, 5px 5px'},
-  {at: 0.5, is: '10px 10px, 10px 10px, 10px 10px, 10px 10px'},
-  {at: 0.75, is: '15px 15px, 15px 15px, 15px 15px, 15px 15px'},
-  {at: 1, is: '20px 20px, 20px 20px, 20px 20px, 20px 20px'},
-  {at: 1.25, is: '25px 25px, 25px 25px, 25px 25px, 25px 25px'},
+  {at: 0.25, is: 'calc(0% + 5px) calc(0% + 5px), calc(0% + 5px) calc(0% + 5px), calc(0% + 5px) calc(0% + 5px), calc(0% + 5px) calc(0% + 5px)'},
+  {at: 0.5, is: 'calc(0% + 10px) calc(0% + 10px), calc(0% + 10px) calc(0% + 10px), calc(0% + 10px) calc(0% + 10px), calc(0% + 10px) calc(0% + 10px)'},
+  {at: 0.75, is: 'calc(0% + 15px) calc(0% + 15px), calc(0% + 15px) calc(0% + 15px), calc(0% + 15px) calc(0% + 15px), calc(0% + 15px) calc(0% + 15px)'},
+  {at: 1, is: 'calc(0% + 20px) calc(0% + 20px), calc(0% + 20px) calc(0% + 20px), calc(0% + 20px) calc(0% + 20px), calc(0% + 20px) calc(0% + 20px)'},
+  {at: 1.25, is: 'calc(0% + 25px) calc(0% + 25px), calc(0% + 25px) calc(0% + 25px), calc(0% + 25px) calc(0% + 25px), calc(0% + 25px) calc(0% + 25px)'},
 ]);
 
 // inherit
@@ -78,13 +78,13 @@ assertInterpolation({
   from: 'unset',
   to: '20px 20px',
 }, [
-  {at: -0.25, is: '-5px -5px, -5px -5px, -5px -5px, -5px -5px'},
+  {at: -0.25, is: 'calc(0% - 5px) calc(0% - 5px), calc(0% - 5px) calc(0% - 5px), calc(0% - 5px) calc(0% - 5px), calc(0% - 5px) calc(0% - 5px)'},
   {at: 0, is: '0% 0%, 0% 0%, 0% 0%, 0% 0%'},
-  {at: 0.25, is: '5px 5px, 5px 5px, 5px 5px, 5px 5px'},
-  {at: 0.5, is: '10px 10px, 10px 10px, 10px 10px, 10px 10px'},
-  {at: 0.75, is: '15px 15px, 15px 15px, 15px 15px, 15px 15px'},
-  {at: 1, is: '20px 20px, 20px 20px, 20px 20px, 20px 20px'},
-  {at: 1.25, is: '25px 25px, 25px 25px, 25px 25px, 25px 25px'},
+  {at: 0.25, is: 'calc(0% + 5px) calc(0% + 5px), calc(0% + 5px) calc(0% + 5px), calc(0% + 5px) calc(0% + 5px), calc(0% + 5px) calc(0% + 5px)'},
+  {at: 0.5, is: 'calc(0% + 10px) calc(0% + 10px), calc(0% + 10px) calc(0% + 10px), calc(0% + 10px) calc(0% + 10px), calc(0% + 10px) calc(0% + 10px)'},
+  {at: 0.75, is: 'calc(0% + 15px) calc(0% + 15px), calc(0% + 15px) calc(0% + 15px), calc(0% + 15px) calc(0% + 15px), calc(0% + 15px) calc(0% + 15px)'},
+  {at: 1, is: 'calc(0% + 20px) calc(0% + 20px), calc(0% + 20px) calc(0% + 20px), calc(0% + 20px) calc(0% + 20px), calc(0% + 20px) calc(0% + 20px)'},
+  {at: 1.25, is: 'calc(0% + 25px) calc(0% + 25px), calc(0% + 25px) calc(0% + 25px), calc(0% + 25px) calc(0% + 25px), calc(0% + 25px) calc(0% + 25px)'},
 ]);
 
 // Test equal number of position values as background images.

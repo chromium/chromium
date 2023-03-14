@@ -958,10 +958,7 @@ TEST_F(ComputedStyleTest, StrokeWidthZoomAndCalc) {
                                  *style, nullptr /* layout_object */,
                                  false /* allow_visited_style */);
   ASSERT_TRUE(computed_value);
-  auto* numeric_value = DynamicTo<CSSNumericLiteralValue>(computed_value);
-  ASSERT_TRUE(numeric_value);
-  EXPECT_TRUE(numeric_value->IsPx());
-  EXPECT_EQ(10, numeric_value->DoubleValue());
+  ASSERT_EQ("calc(0\% + 10px)", computed_value->CssText());
 }
 
 TEST_F(ComputedStyleTest, InitialVariableNamesEmpty) {

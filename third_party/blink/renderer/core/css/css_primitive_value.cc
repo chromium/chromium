@@ -232,21 +232,14 @@ CSSPrimitiveValue* CSSPrimitiveValue::CreateFromLength(const Length& length,
                                             UnitType::kPixels);
     case Length::kCalculated: {
       const CalculationValue& calc = length.GetCalculationValue();
-      if (calc.IsExpression() || (calc.Pixels() && calc.Percent())) {
+      if (calc.IsExpression() || calc.Pixels()) {
         return CSSMathFunctionValue::Create(length, zoom);
       }
-      if (!calc.Pixels()) {
-        double num = calc.Percent();
-        if (num < 0 && calc.IsNonNegative()) {
-          num = 0;
-        }
-        return CSSNumericLiteralValue::Create(num, UnitType::kPercentage);
-      }
-      double num = calc.Pixels() / zoom;
+      double num = calc.Percent();
       if (num < 0 && calc.IsNonNegative()) {
         num = 0;
       }
-      return CSSNumericLiteralValue::Create(num, UnitType::kPixels);
+      return CSSNumericLiteralValue::Create(num, UnitType::kPercentage);
     }
     default:
       break;
