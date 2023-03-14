@@ -47,11 +47,11 @@
 #include "base/threading/simple_thread.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker_impl.h"
+#include "base/threading/thread_local_storage.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -594,7 +594,7 @@ TEST_F(BackgroundThreadGroupImplTest, UpdatePriorityBlockingStarted) {
 
 namespace {
 
-ABSL_CONST_INIT thread_local bool value_set = false;
+constexpr size_t kMagicTlsValue = 42;
 
 class ThreadGroupImplCheckTlsReuse : public ThreadGroupImplImplTest {
  public:
@@ -603,14 +603,13 @@ class ThreadGroupImplCheckTlsReuse : public ThreadGroupImplImplTest {
       delete;
 
   void SetTlsValueAndWait() {
-    value_set = true;
+    slot_.Set(reinterpret_cast<void*>(kMagicTlsValue));
     waiter_.Wait();
   }
 
-  void CountUnsetTlsValuesAndWait(TestWaitableEvent* count_waiter) {
-    if (!value_set) {
-      subtle::NoBarrier_AtomicIncrement(&unset_tls_values_, 1);
-    }
+  void CountZeroTlsValuesAndWait(TestWaitableEvent* count_waiter) {
+    if (!slot_.Get())
+      subtle::NoBarrier_AtomicIncrement(&zero_tls_values_, 1);
 
     count_waiter->Signal();
     waiter_.Wait();
@@ -623,8 +622,12 @@ class ThreadGroupImplCheckTlsReuse : public ThreadGroupImplImplTest {
     CreateAndStartThreadGroup(kReclaimTimeForCleanupTests, kMaxTasks);
   }
 
-  subtle::Atomic32 unset_tls_values_ = 0;
+  subtle::Atomic32 zero_tls_values_ = 0;
+
   TestWaitableEvent waiter_;
+
+ private:
+  ThreadLocalStorage::Slot slot_;
 };
 
 }  // namespace

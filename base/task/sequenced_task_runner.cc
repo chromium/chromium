@@ -7,16 +7,22 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/no_destructor.h"
 #include "base/task/default_delayed_task_handle_delegate.h"
+#include "base/threading/thread_local.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace base {
 
 namespace {
 
-ABSL_CONST_INIT thread_local SequencedTaskRunner::CurrentDefaultHandle*
-    current_default_handle = nullptr;
+ThreadLocalPointer<SequencedTaskRunner::CurrentDefaultHandle>&
+CurrentDefaultHandleTls() {
+  static NoDestructor<
+      ThreadLocalPointer<SequencedTaskRunner::CurrentDefaultHandle>>
+      instance;
+  return *instance;
+}
 
 }  // namespace
 
@@ -80,28 +86,31 @@ bool SequencedTaskRunner::PostDelayedTaskAt(
 // static
 const scoped_refptr<SequencedTaskRunner>&
 SequencedTaskRunner::GetCurrentDefault() {
-  CHECK(current_default_handle)
+  const CurrentDefaultHandle* current_default = CurrentDefaultHandleTls().Get();
+  CHECK(current_default)
       << "Error: This caller requires a sequenced context (i.e. the current "
          "task needs to run from a SequencedTaskRunner). If you're in a test "
          "refer to //docs/threading_and_tasks_testing.md.";
-  return current_default_handle->task_runner_;
+  return current_default->task_runner_;
 }
 
 // static
 bool SequencedTaskRunner::HasCurrentDefault() {
-  return !!current_default_handle;
+  return !!CurrentDefaultHandleTls().Get();
 }
 
 SequencedTaskRunner::CurrentDefaultHandle::CurrentDefaultHandle(
     scoped_refptr<SequencedTaskRunner> task_runner)
-    : resetter_(&current_default_handle, this, nullptr),
-      task_runner_(std::move(task_runner)) {
+    : task_runner_(std::move(task_runner)) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  DCHECK(!SequencedTaskRunner::HasCurrentDefault());
+  CurrentDefaultHandleTls().Set(this);
 }
 
 SequencedTaskRunner::CurrentDefaultHandle::~CurrentDefaultHandle() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  DCHECK_EQ(current_default_handle, this);
+  DCHECK_EQ(CurrentDefaultHandleTls().Get(), this);
+  CurrentDefaultHandleTls().Set(nullptr);
 }
 
 bool SequencedTaskRunner::DeleteOrReleaseSoonInternal(

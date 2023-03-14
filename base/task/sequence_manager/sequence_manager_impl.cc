@@ -17,6 +17,7 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/rand_util.h"
@@ -31,19 +32,23 @@
 #include "base/task/sequence_manager/work_queue_sets.h"
 #include "base/task/task_features.h"
 #include "base/threading/thread_id_name_manager.h"
+#include "base/threading/thread_local.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace sequence_manager {
 namespace {
 
-ABSL_CONST_INIT thread_local internal::SequenceManagerImpl*
-    thread_local_sequence_manager = nullptr;
+base::ThreadLocalPointer<internal::SequenceManagerImpl>*
+GetTLSSequenceManagerImpl() {
+  static NoDestructor<ThreadLocalPointer<internal::SequenceManagerImpl>>
+      lazy_tls_ptr;
+  return lazy_tls_ptr.get();
+}
 
 class TracedBaseValue : public trace_event::ConvertableToTraceFormat {
  public:
@@ -75,10 +80,10 @@ std::unique_ptr<SequenceManager> CreateSequenceManagerOnCurrentThread(
 std::unique_ptr<SequenceManager> CreateSequenceManagerOnCurrentThreadWithPump(
     std::unique_ptr<MessagePump> message_pump,
     SequenceManager::Settings settings) {
-  std::unique_ptr<SequenceManager> manager =
+  std::unique_ptr<SequenceManager> sequence_manager =
       internal::SequenceManagerImpl::CreateUnbound(std::move(settings));
-  manager->BindToMessagePump(std::move(message_pump));
-  return manager;
+  sequence_manager->BindToMessagePump(std::move(message_pump));
+  return sequence_manager;
 }
 
 std::unique_ptr<SequenceManager> CreateUnboundSequenceManager(
@@ -159,7 +164,7 @@ bool g_explicit_high_resolution_timer_win = false;
 
 // static
 SequenceManagerImpl* SequenceManagerImpl::GetCurrent() {
-  return thread_local_sequence_manager;
+  return GetTLSSequenceManagerImpl()->Get();
 }
 
 SequenceManagerImpl::SequenceManagerImpl(
@@ -229,8 +234,8 @@ SequenceManagerImpl::~SequenceManagerImpl() {
 
   // OK, now make it so that no one can find us.
   if (GetMessagePump()) {
-    DCHECK_EQ(this, thread_local_sequence_manager);
-    thread_local_sequence_manager = nullptr;
+    DCHECK_EQ(this, GetTLSSequenceManagerImpl()->Get());
+    GetTLSSequenceManagerImpl()->Set(nullptr);
   }
 }
 
@@ -257,7 +262,8 @@ SequenceManagerImpl::MainThreadOnly::~MainThreadOnly() = default;
 std::unique_ptr<ThreadControllerImpl>
 SequenceManagerImpl::CreateThreadControllerImplForCurrentThread(
     const TickClock* clock) {
-  return ThreadControllerImpl::Create(thread_local_sequence_manager, clock);
+  auto* sequence_manager = GetTLSSequenceManagerImpl()->Get();
+  return ThreadControllerImpl::Create(sequence_manager, clock);
 }
 
 // static
@@ -352,9 +358,9 @@ void SequenceManagerImpl::CompleteInitializationOnBoundThread() {
   controller_->AddNestingObserver(this);
   main_thread_only().nesting_observer_registered_ = true;
   if (GetMessagePump()) {
-    DCHECK(!thread_local_sequence_manager)
+    DCHECK(!GetTLSSequenceManagerImpl()->Get())
         << "Can't register a second SequenceManagerImpl on the same thread.";
-    thread_local_sequence_manager = this;
+    GetTLSSequenceManagerImpl()->Set(this);
   }
 }
 

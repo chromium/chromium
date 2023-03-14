@@ -4,29 +4,37 @@
 
 #include "base/task/scoped_set_task_priority_for_current_thread.h"
 
-#include "third_party/abseil-cpp/absl/base/attributes.h"
+#include "base/check_op.h"
+#include "base/lazy_instance.h"
+#include "base/threading/thread_local.h"
 
 namespace base {
 namespace internal {
 
 namespace {
 
-ABSL_CONST_INIT thread_local TaskPriority task_priority_for_current_thread =
-    TaskPriority::USER_BLOCKING;
+LazyInstance<ThreadLocalPointer<const TaskPriority>>::Leaky
+    tls_task_priority_for_current_thread = LAZY_INSTANCE_INITIALIZER;
 
 }  // namespace
 
 ScopedSetTaskPriorityForCurrentThread::ScopedSetTaskPriorityForCurrentThread(
     TaskPriority priority)
-    : resetter_(&task_priority_for_current_thread,
-                priority,
-                TaskPriority::USER_BLOCKING) {}
+    : priority_(priority) {
+  DCHECK(!tls_task_priority_for_current_thread.Get().Get());
+  tls_task_priority_for_current_thread.Get().Set(&priority_);
+}
 
 ScopedSetTaskPriorityForCurrentThread::
-    ~ScopedSetTaskPriorityForCurrentThread() = default;
+    ~ScopedSetTaskPriorityForCurrentThread() {
+  DCHECK_EQ(&priority_, tls_task_priority_for_current_thread.Get().Get());
+  tls_task_priority_for_current_thread.Get().Set(nullptr);
+}
 
 TaskPriority GetTaskPriorityForCurrentThread() {
-  return task_priority_for_current_thread;
+  const TaskPriority* priority =
+      tls_task_priority_for_current_thread.Get().Get();
+  return priority ? *priority : TaskPriority::USER_BLOCKING;
 }
 
 }  // namespace internal

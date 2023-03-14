@@ -4,7 +4,8 @@
 
 #include "base/task/common/scoped_defer_task_posting.h"
 
-#include "third_party/abseil-cpp/absl/base/attributes.h"
+#include "base/no_destructor.h"
+#include "base/threading/thread_local.h"
 
 namespace base {
 
@@ -12,8 +13,10 @@ namespace {
 
 // Holds a thread-local pointer to the current scope or null when no
 // scope is active.
-ABSL_CONST_INIT thread_local ScopedDeferTaskPosting* scoped_defer_task_posting =
-    nullptr;
+ThreadLocalPointer<ScopedDeferTaskPosting>& GetScopedDeferTaskPostingTLS() {
+  static NoDestructor<ThreadLocalPointer<ScopedDeferTaskPosting>> tls;
+  return *tls;
+}
 
 }  // namespace
 
@@ -35,7 +38,7 @@ void ScopedDeferTaskPosting::PostOrDefer(
 
 // static
 ScopedDeferTaskPosting* ScopedDeferTaskPosting::Get() {
-  return scoped_defer_task_posting;
+  return GetScopedDeferTaskPostingTLS().Get();
 }
 
 // static
@@ -44,7 +47,7 @@ bool ScopedDeferTaskPosting::Set(ScopedDeferTaskPosting* scope) {
   // get nested scopes. In this case ignore all except the top one.
   if (Get() && scope)
     return false;
-  scoped_defer_task_posting = scope;
+  GetScopedDeferTaskPostingTLS().Set(scope);
   return true;
 }
 
