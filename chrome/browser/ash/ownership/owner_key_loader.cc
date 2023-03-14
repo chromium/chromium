@@ -197,9 +197,12 @@ void OwnerKeyLoader::Run() {
   }
 
   // Try loading the public key first. Most of the time it should already exist.
+  // Use TaskPriority::USER_VISIBLE priority because some user visible features
+  // need to know whether the current user is the owner or not (e.g.
+  // UsersPrivate API).
   base::ThreadPool::PostTask(
       FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&LoadPublicKeyOnlyOnWorkerThread, owner_key_util_,
                      base::BindOnce(&OwnerKeyLoader::OnPublicKeyLoaded,
