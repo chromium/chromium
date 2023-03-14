@@ -76,6 +76,7 @@ chromium-metrics-reviews@google.com.
   <variant name="SegmentInfoDatabase"
       summary="Segmentation platform metadata database."/>
   <variant name="SharedDb" summary="Shared database"/>
+  <variant name="SharedProtoDB" summary="Shared Proto database."/>
   <variant name="ShareHistoryDatabase"
       summary="Database for third-party share history."/>
   <variant name="ShareRankingDatabase"
