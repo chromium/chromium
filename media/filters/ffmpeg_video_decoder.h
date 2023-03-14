@@ -14,8 +14,8 @@
 #include "media/base/supported_video_decoder_config.h"
 #include "media/base/video_decoder.h"
 #include "media/base/video_decoder_config.h"
-#include "media/base/video_frame_pool.h"
 #include "media/ffmpeg/ffmpeg_deleters.h"
+#include "media/filters/frame_buffer_pool.h"
 
 struct AVCodecContext;
 struct AVFrame;
@@ -89,7 +89,7 @@ class MEDIA_EXPORT FFmpegVideoDecoder : public VideoDecoder {
 
   VideoDecoderConfig config_;
 
-  VideoFramePool frame_pool_;
+  scoped_refptr<FrameBufferPool> frame_pool_;
 
   bool decode_nalus_ = false;
 

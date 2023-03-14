@@ -4,6 +4,8 @@
 
 #include "media/filters/frame_buffer_pool.h"
 
+#include "base/logging.h"
+
 #include "base/check_op.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
@@ -33,32 +35,41 @@ struct FrameBufferPool::FrameBuffer {
   base::TimeTicks last_use_time;
 };
 
-FrameBufferPool::FrameBufferPool()
-    : tick_clock_(base::DefaultTickClock::GetInstance()) {
-  DETACH_FROM_SEQUENCE(sequence_checker_);
-}
+FrameBufferPool::FrameBufferPool(bool zero_initialize_memory)
+    : zero_initialize_memory_(zero_initialize_memory),
+      tick_clock_(base::DefaultTickClock::GetInstance()),
+      task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
 FrameBufferPool::~FrameBufferPool() {
+  base::AutoLock lock(lock_);
   DCHECK(in_shutdown_);
 
   // May be destructed on any thread.
 }
 
 uint8_t* FrameBufferPool::GetFrameBuffer(size_t min_size, void** fb_priv) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::AutoLock lock(lock_);
   DCHECK(!in_shutdown_);
 
   if (!registered_dump_provider_) {
+    // We tell the dump provider to call us on `task_runner_`, which will also
+    // be the thread that will call `Shutdown()` to unregister us.  This lets
+    // the call to `Shutdown()` unregister us synchronously with respect to
+    // calls into `OnMemoryDump()`, so that there won't be calls into
+    // `OnMemoryDump()` after `Shutdown()` completes.  The alternative is to
+    // give the `MemoryDumpManager` ownership of `this`, so that it can delete
+    // it after any outstanding dump requests are complete.  Since we're
+    // refcounted, that would require a wrapper object to own the ref.  This is
+    // much simpler.
     base::trace_event::MemoryDumpManager::GetInstance()
         ->RegisterDumpProviderWithSequencedTaskRunner(
-            this, "FrameBufferPool",
-            base::SequencedTaskRunner::GetCurrentDefault(),
+            this, "FrameBufferPool", task_runner_,
             MemoryDumpProvider::Options());
     registered_dump_provider_ = true;
   }
 
   // Check if a free frame buffer exists.
-  auto it = base::ranges::find_if_not(frame_buffers_, &IsUsed,
+  auto it = base::ranges::find_if_not(frame_buffers_, &IsUsedLocked,
                                       &std::unique_ptr<FrameBuffer>::get);
 
   // If not, create one.
@@ -75,9 +86,24 @@ uint8_t* FrameBufferPool::GetFrameBuffer(size_t min_size, void** fb_priv) {
     frame_buffer->data.reset();
 
     uint8_t* data = nullptr;
-    if (force_allocation_error_ ||
-        !base::UncheckedMalloc(min_size, reinterpret_cast<void**>(&data)) ||
-        !data) {
+    if (!force_allocation_error_) {
+      bool result = false;
+      if (zero_initialize_memory_) {
+        result = base::UncheckedCalloc(1u, min_size,
+                                       reinterpret_cast<void**>(&data));
+      } else {
+        result =
+            base::UncheckedMalloc(min_size, reinterpret_cast<void**>(&data));
+      }
+
+      // Unclear why, but the docs indicate both that `data` will be null on
+      // failure, and also that the return value must not be discarded.
+      if (!result) {
+        data = nullptr;
+      }
+    }
+
+    if (!data) {
       frame_buffers_.erase(it);
       return nullptr;
     }
@@ -92,6 +118,7 @@ uint8_t* FrameBufferPool::GetFrameBuffer(size_t min_size, void** fb_priv) {
 }
 
 void FrameBufferPool::ReleaseFrameBuffer(void* fb_priv) {
+  base::AutoLock lock(lock_);
   DCHECK(fb_priv);
 
   // Note: The library may invoke this method multiple times for the same frame,
@@ -99,16 +126,18 @@ void FrameBufferPool::ReleaseFrameBuffer(void* fb_priv) {
   auto* frame_buffer = static_cast<FrameBuffer*>(fb_priv);
   frame_buffer->held_by_library = false;
 
-  if (!IsUsed(frame_buffer))
+  if (!IsUsedLocked(frame_buffer)) {
     frame_buffer->last_use_time = tick_clock_->NowTicks();
+  }
 }
 
 uint8_t* FrameBufferPool::AllocateAlphaPlaneForFrameBuffer(size_t min_size,
                                                            void* fb_priv) {
+  base::AutoLock lock(lock_);
   DCHECK(fb_priv);
 
   auto* frame_buffer = static_cast<FrameBuffer*>(fb_priv);
-  DCHECK(IsUsed(frame_buffer));
+  DCHECK(IsUsedLocked(frame_buffer));
   if (frame_buffer->alpha_data_size < min_size) {
     // Free the existing |alpha_data| first so that the memory can be reused,
     // if possible. Note that the new array is purposely not initialized.
@@ -126,20 +155,23 @@ uint8_t* FrameBufferPool::AllocateAlphaPlaneForFrameBuffer(size_t min_size,
 }
 
 base::OnceClosure FrameBufferPool::CreateFrameCallback(void* fb_priv) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::AutoLock lock(lock_);
 
   auto* frame_buffer = static_cast<FrameBuffer*>(fb_priv);
   ++frame_buffer->held_by_frame;
 
   return base::BindOnce(&FrameBufferPool::OnVideoFrameDestroyed, this,
-                        base::SequencedTaskRunner::GetCurrentDefault(),
                         frame_buffer);
 }
 
 bool FrameBufferPool::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* pmd) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // While there's nothing thread-unsafe about this method, if we're ever not
+  // called on `task_runner_`, it likely means that `MemoryDumpManager` is using
+  // the wrong ownership semantics.  See `GetFrameBuffer()` for details.
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  base::AutoLock lock(lock_);
 
   base::trace_event::MemoryAllocatorDump* memory_dump =
       pmd->CreateAllocatorDump(
@@ -150,14 +182,17 @@ bool FrameBufferPool::OnMemoryDump(
           base::StringPrintf("media/frame_buffers/memory_pool/used/0x%" PRIXPTR,
                              reinterpret_cast<uintptr_t>(this)));
 
-  pmd->AddSuballocation(memory_dump->guid(),
-                        base::trace_event::MemoryDumpManager::GetInstance()
-                            ->system_allocator_pool_name());
+  auto* pool_name = base::trace_event::MemoryDumpManager::GetInstance()
+                        ->system_allocator_pool_name();
+  if (pool_name) {
+    pmd->AddSuballocation(memory_dump->guid(), pool_name);
+  }
   size_t bytes_used = 0;
   size_t bytes_reserved = 0;
   for (const auto& frame_buffer : frame_buffers_) {
-    if (IsUsed(frame_buffer.get()))
+    if (IsUsedLocked(frame_buffer.get())) {
       bytes_used += frame_buffer->data_size + frame_buffer->alpha_data_size;
+    }
     bytes_reserved += frame_buffer->data_size + frame_buffer->alpha_data_size;
   }
 
@@ -172,7 +207,11 @@ bool FrameBufferPool::OnMemoryDump(
 }
 
 void FrameBufferPool::Shutdown() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // The memory dump manager requires that we unregister on the same thread that
+  // we're expecting memory dump requests on.
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+
+  base::AutoLock lock(lock_);
   in_shutdown_ = true;
 
   if (registered_dump_provider_) {
@@ -186,47 +225,40 @@ void FrameBufferPool::Shutdown() {
   for (const auto& frame_buffer : frame_buffers_)
     frame_buffer->held_by_library = false;
 
-  EraseUnusedResources();
+  EraseUnusedResourcesLocked();
 }
 
 // static
-bool FrameBufferPool::IsUsed(const FrameBuffer* buf) {
+bool FrameBufferPool::IsUsedLocked(const FrameBuffer* buf) {
+  // Static, so can't check that `lock_` is acquired.
   return buf->held_by_library || buf->held_by_frame > 0;
 }
 
-void FrameBufferPool::EraseUnusedResources() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+void FrameBufferPool::EraseUnusedResourcesLocked() {
+  lock_.AssertAcquired();
   base::EraseIf(frame_buffers_, [](const std::unique_ptr<FrameBuffer>& buf) {
-    return !IsUsed(buf.get());
+    return !IsUsedLocked(buf.get());
   });
 }
 
-void FrameBufferPool::OnVideoFrameDestroyed(
-    scoped_refptr<base::SequencedTaskRunner> task_runner,
-    FrameBuffer* frame_buffer) {
-  if (!task_runner->RunsTasksInCurrentSequence()) {
-    task_runner->PostTask(
-        FROM_HERE, base::BindOnce(&FrameBufferPool::OnVideoFrameDestroyed, this,
-                                  task_runner, frame_buffer));
-    return;
-  }
-
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+void FrameBufferPool::OnVideoFrameDestroyed(FrameBuffer* frame_buffer) {
+  base::AutoLock lock(lock_);
   DCHECK_GT(frame_buffer->held_by_frame, 0);
   --frame_buffer->held_by_frame;
 
   if (in_shutdown_) {
     // If we're in shutdown we can be sure that the library has been destroyed.
-    EraseUnusedResources();
+    EraseUnusedResourcesLocked();
     return;
   }
 
   const base::TimeTicks now = tick_clock_->NowTicks();
-  if (!IsUsed(frame_buffer))
+  if (!IsUsedLocked(frame_buffer)) {
     frame_buffer->last_use_time = now;
+  }
 
   base::EraseIf(frame_buffers_, [now](const std::unique_ptr<FrameBuffer>& buf) {
-    return !IsUsed(buf.get()) &&
+    return !IsUsedLocked(buf.get()) &&
            now - buf->last_use_time > base::Seconds(kStaleFrameLimitSecs);
   });
 }

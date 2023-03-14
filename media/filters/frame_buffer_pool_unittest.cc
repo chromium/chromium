@@ -113,4 +113,21 @@ TEST(FrameBufferPool, DeferredDestruction) {
   pool->Shutdown();
 }
 
+TEST(FrameBufferPool, DoesClearAllocations) {
+  base::TestMessageLoop message_loop;
+  scoped_refptr<FrameBufferPool> pool =
+      new FrameBufferPool(/*clear_allocations=*/true);
+
+  // Certainly this is not foolproof, but even flaky failures here indicate that
+  // something is broken.
+  void* priv1 = nullptr;
+  uint8_t* buf = pool->GetFrameBuffer(kBufferSize, &priv1);
+  bool nonzero = false;
+  for (size_t i = 0; i < kBufferSize; i++) {
+    nonzero |= !!buf[i];
+  }
+  EXPECT_FALSE(nonzero);
+  pool->Shutdown();
+}
+
 }  // namespace media

@@ -168,6 +168,14 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
                             const gfx::Rect& visible_rect,
                             const gfx::Size& natural_size);
 
+  // Compute a strided layout for `format` and `coded_size`, and return a fully
+  // specified layout including offsets and plane sizes. Except that VideoFrame
+  // knows how to compute plane sizes, this method should be in
+  // `VideoFrameLayout`, probably just folded into `CreateWithStrides()`.
+  static absl::optional<VideoFrameLayout> CreateFullySpecifiedLayoutWithStrides(
+      VideoPixelFormat format,
+      const gfx::Size& coded_size);
+
   // Creates a new frame in system memory with given parameters. Buffers for the
   // frame are allocated but not initialized. The caller must not make
   // assumptions about the actual underlying size(s), but check the returned
@@ -752,13 +760,18 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // false if this would cause an out of memory error.
   [[nodiscard]] bool AllocateMemory(bool zero_initialize_memory);
 
-  // Calculates plane size.
-  // It first considers buffer size layout_ object provides. If layout's
+  // Return plane sizes for the given layout.
+  //
+  // It first considers buffer size layout object provides. If layout's
   // number of buffers equals to number of planes, and buffer size is assigned
   // (non-zero), it returns buffers' size.
+  //
   // Otherwise, it uses the first (num_buffers - 1) assigned buffers' size as
   // plane size. Then for the rest unassigned planes, calculates their size
   // based on format, coded size and stride for the plane.
+  static std::vector<size_t> CalculatePlaneSize(const VideoFrameLayout& layout);
+
+  // Calculates plane size for `layout_`.
   std::vector<size_t> CalculatePlaneSize() const;
 
   // Returns true iff the frame has a shared memory storage type, and the
