@@ -733,6 +733,12 @@ void CaptureModeController::PerformCapture() {
 }
 
 void CaptureModeController::EndVideoRecording(EndRecordingReason reason) {
+  if (!is_recording_in_progress()) {
+    // A user may click on the stop recording button multiple times while still
+    // in the process of hiding. See http://b/270625738.
+    return;
+  }
+
   RecordEndRecordingReason(reason);
   recording_service_remote_->StopRecording();
   TerminateRecordingUiElements();
