@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://github.com/w3c/mediacapture-screen-share/pull/222/files
+// https://w3c.github.io/mediacapture-screen-share/#systemaudiopreferenceenum
 enum SystemAudioPreferenceEnum {
   "include",
   "exclude"
 };
 
-// https://github.com/w3c/mediacapture-screen-share/pull/216/files
+// https://w3c.github.io/mediacapture-screen-share/#selfcapturepreferenceenum
 enum SelfCapturePreferenceEnum {
   "include",
   "exclude"
 };
 
-// https://github.com/w3c/mediacapture-screen-share/pull/225/files
+// https://w3c.github.io/mediacapture-screen-share/#surfaceswitchingpreferenceenum
 enum SurfaceSwitchingPreferenceEnum {
   "include",
   "exclude"
@@ -47,20 +47,9 @@ dictionary DisplayMediaStreamOptions {
       RuntimeEnabled = CaptureController
     ] CaptureController controller;
 
-    // https://github.com/w3c/mediacapture-screen-share/pull/216/files
-    [
-      RuntimeEnabled = SelfBrowserSurfaceConstraint
-    ] SelfCapturePreferenceEnum selfBrowserSurface;
-
-    // https://github.com/w3c/mediacapture-screen-share/pull/222/files
-    [
-      RuntimeEnabled = SystemAudioConstraint
-    ] SystemAudioPreferenceEnum systemAudio;
-
-    // https://github.com/w3c/mediacapture-screen-share/pull/225/files
-    [
-      RuntimeEnabled = SurfaceSwitchingConstraint
-    ] SurfaceSwitchingPreferenceEnum surfaceSwitching;
+    SelfCapturePreferenceEnum selfBrowserSurface;
+    SystemAudioPreferenceEnum systemAudio;
+    SurfaceSwitchingPreferenceEnum surfaceSwitching;
 };
 
 // This dictionnary is used internally to hold all members from

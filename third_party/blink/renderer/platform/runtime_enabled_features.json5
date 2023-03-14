@@ -2983,16 +2983,6 @@
       base_feature: "none",
     },
     {
-      // When a Web application calls getDisplayMedia() and asks for video,
-      // allow a hint to be provided as to whether the current tab should be
-      // excluded from the list of tabs offered to the user.
-      //
-      // https://github.com/w3c/mediacapture-screen-share/pull/216/files
-      name: "SelfBrowserSurfaceConstraint",
-      status: "stable",
-      base_feature: "none",
-    },
-    {
       name: "SendBeaconThrowForBlobWithNonSimpleType",
       public: true,
       status: "stable",
@@ -3241,25 +3231,6 @@
       base_feature: "none",
     },
     {
-      // Allow an application that's capturing a tab, to control whether
-      // the local audio playback of the captured tab is suppressed.
-      //
-      // https://w3c.github.io/mediacapture-screen-share/#dfn-suppresslocalaudioplayback
-      name: "SuppressLocalAudioPlayback",
-      status: "stable",
-      base_feature: "none",
-    },
-    {
-      // When a Web application calls getDisplayMedia() and asks for video,
-      // allow a hint to be provided to offer the user an option to
-      // dynamically switch the source display surface during the capture.
-      //
-      // https://github.com/w3c/mediacapture-screen-share/pull/225/files
-      name: "SurfaceSwitchingConstraint",
-      status: "stable",
-      base_feature: "none",
-    },
-    {
       // crbug.com/1393223
       name: "SvgContainersRejectSvgInDisplayContents",
       status: "stable",
@@ -3271,16 +3242,6 @@
     {
       name: "SynthesizedKeyboardEventsForAccessibilityActions",
       status: "experimental",
-      base_feature: "none",
-    },
-    {
-      // When a Web application calls getDisplayMedia() and asks for audio,
-      // allow a hint to be provided as to whether the Web application is
-      // interested in system-audio being among the options offered to the user.
-      //
-      // https://github.com/w3c/mediacapture-screen-share/pull/222/files
-      name: "SystemAudioConstraint",
-      status: "stable",
       base_feature: "none",
     },
     {

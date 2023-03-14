@@ -49,9 +49,8 @@ dictionary MediaTrackSupportedConstraints {
     // W3C Media Capture Extensions
     [RuntimeEnabled=MediaCaptureBackgroundBlur] boolean backgroundBlur = true;
 
-    // https://github.com/w3c/mediacapture-screen-share/pull/186/files
-    [RuntimeEnabled=DisplaySurfaceConstraint] boolean displaySurface = true;
-
-    // https://w3c.github.io/mediacapture-screen-share/#dfn-suppresslocalaudioplayback
-    [RuntimeEnabled=SuppressLocalAudioPlayback] boolean suppressLocalAudioPlayback = true;
+    // Screen Capture API
+    // https://w3c.github.io/mediacapture-screen-share/#extensions-to-mediatracksupportedconstraints
+    boolean displaySurface = true;
+    boolean suppressLocalAudioPlayback = true;
 };

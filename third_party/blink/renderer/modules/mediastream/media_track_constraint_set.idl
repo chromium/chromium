@@ -51,11 +51,10 @@ dictionary MediaTrackConstraintSet {
     // W3C Media Capture Extensions
     [RuntimeEnabled=MediaCaptureBackgroundBlur] ConstrainBoolean backgroundBlur;
 
-    // https://github.com/w3c/mediacapture-screen-share/pull/186/files
-    [RuntimeEnabled=DisplaySurfaceConstraint] ConstrainDOMString displaySurface;
-
-    // https://w3c.github.io/mediacapture-screen-share/#dfn-suppresslocalaudioplayback
-    [RuntimeEnabled=SuppressLocalAudioPlayback] ConstrainBoolean suppressLocalAudioPlayback;
+    // Screen Capture API
+    // https://w3c.github.io/mediacapture-screen-share/#extensions-to-mediatrackconstraintset
+    ConstrainDOMString displaySurface;
+    ConstrainBoolean suppressLocalAudioPlayback;
 
     // The "mandatory" and "_optional" members are retained for conformance
     // with https://www.w3.org/TR/2013/WD-mediacapture-streams-20130903/
