@@ -218,13 +218,10 @@ suite('<bookmarks-list> command manager integration test', function() {
   test('show context menu', async () => {
     const commandManager =
         app.shadowRoot!.querySelector('bookmarks-command-manager')!;
-    proxy.resetResolver('recordInHistogram');
     const list = app.shadowRoot!.querySelector('bookmarks-list')!;
     list.dispatchEvent(new CustomEvent(
         'contextmenu',
         {bubbles: true, composed: true, detail: {clientX: 0, clientY: 0}}));
-
-    await proxy.whenCalled('recordInHistogram');
 
     assertEquals(MenuSource.LIST, commandManager.getMenuSourceForTesting());
     const menuCommands =

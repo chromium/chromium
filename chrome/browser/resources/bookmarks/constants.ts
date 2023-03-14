@@ -51,9 +51,7 @@ export enum Command {
 }
 
 /**
- * Where the menu was opened from. This enum is also used for metrics and should
- * be kept in sync with BookmarkManagerMenuSource in enums.xml. Values must
- * never be renumbered or reused.
+ * Where the menu was opened from. Values must never be renumbered or reused.
  */
 export enum MenuSource {
   NONE = 0,

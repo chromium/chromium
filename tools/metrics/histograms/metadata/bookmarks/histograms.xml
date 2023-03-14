@@ -41,15 +41,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="BookmarkManager.CommandMenuOpened"
-    enum="BookmarkManagerMenuSource" expires_after="2020-06-14">
-  <owner>johntlee@chromium.org</owner>
-  <summary>
-    Logs where the menu was opened from when a user action opens the command
-    menu in the bookmark manager.
-  </summary>
-</histogram>
-
 <histogram name="BookmarkManager.NumDragged" units="bookmarks"
     expires_after="M85">
   <owner>johntlee@chromium.org</owner>

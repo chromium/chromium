@@ -777,9 +777,6 @@ export class BookmarksCommandManagerElement extends
     } else {
       this.openCommandMenuAtPosition(e.detail.x!, e.detail.y!, e.detail.source);
     }
-    this.browserProxy_.recordInHistogram(
-        'BookmarkManager.CommandMenuOpened', e.detail.source,
-        MenuSource.NUM_VALUES);
   }
 
   private onCommandClick_(e: Event) {

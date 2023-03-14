@@ -11761,14 +11761,6 @@ Called by update_bad_message_reasons.py.-->
   <int value="22" label="Open folder (via double-click / enter)"/>
 </enum>
 
-<enum name="BookmarkManagerMenuSource">
-  <int value="0" label="None"/>
-  <int value="1" label="Item"/>
-  <int value="2" label="Tree"/>
-  <int value="3" label="Toolbar"/>
-  <int value="4" label="List"/>
-</enum>
-
 <enum name="BookmarksEntryPoint">
   <int value="0" label="Accelerator(Ctrl+D)"/>
   <int value="1" label="Gesture"/>
