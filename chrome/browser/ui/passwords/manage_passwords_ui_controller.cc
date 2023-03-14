@@ -200,6 +200,8 @@ bool ManagePasswordsUIController::OnChooseCredentials(
   DCHECK(!local_credentials.empty());
   if (!HasBrowserWindow())
     return false;
+  // Delete any existing window from the screen.
+  dialog_controller_.reset();
   // If |local_credentials| contains PSL matches they shouldn't be propagated to
   // the state (unless they are also web affiliations) because PSL matches
   // aren't saved for current page. This logic is implemented here because
