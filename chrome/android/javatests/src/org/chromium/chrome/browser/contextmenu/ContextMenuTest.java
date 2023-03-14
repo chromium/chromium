@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.contextmenu;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator.ListItemType.CONTEXT_MENU_ITEM;
@@ -13,6 +16,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Looper;
 import android.support.test.InstrumentationRegistry;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 
 import androidx.test.filters.LargeTest;
@@ -26,7 +30,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
@@ -45,8 +51,11 @@ import org.chromium.chrome.browser.download.DownloadTestRule;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.LensUtils;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
+import org.chromium.chrome.browser.share.ShareDelegateSupplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
@@ -56,6 +65,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.contextmenu.ContextMenuUtils;
+import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.policy.test.annotations.Policies;
@@ -138,6 +148,7 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
 
     @Before
     public void setUp() {
+        MockitoAnnotations.initMocks(this);
         TestThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(true));
         setupLensChipDelegate();
     }
@@ -881,7 +892,6 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
     @SmallTest
     @Feature({"Browser", "ContextMenu"})
     public void testContextMenuOpenedFromHighlight() {
-        MockitoAnnotations.initMocks(this);
         when(mItemDelegate.isIncognito()).thenReturn(false);
         when(mItemDelegate.getPageTitle()).thenReturn("");
 
@@ -911,6 +921,72 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
             contextMenuHelper.showContextMenuForTesting(
                     populatorFactory, params, null, tab.getView(), 0);
         });
+    }
+
+    @Test
+    @SmallTest
+    public void testShareImage() throws Exception {
+        hardcodeTestImageForSharing(TEST_JPG_IMAGE_FILE_EXTENSION);
+
+        Tab tab = mDownloadTestRule.getActivity().getActivityTab();
+        // Set share delegate before triggering context menu, so the mocked share delegate is used.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            var supplier = (ShareDelegateSupplier) ShareDelegateSupplier.from(
+                    mDownloadTestRule.getActivity().getWindowAndroid());
+            Mockito.doReturn(true).when(mShareDelegate).isSharingHubEnabled();
+            supplier.set(mShareDelegate);
+        });
+
+        // Allow all thread policies temporarily in main thread to avoid
+        // DiskWrite and UnBufferedIo violations during copying under
+        // emulator environment.
+        try (CloseableOnMainThread ignored =
+                        CloseableOnMainThread.StrictMode.allowAllThreadPolicies()) {
+            ContextMenuUtils.selectContextMenuItem(InstrumentationRegistry.getInstrumentation(),
+                    mDownloadTestRule.getActivity(), tab, "testImage",
+                    R.id.contextmenu_share_image);
+        }
+
+        ArgumentCaptor<ShareParams> shareParamsCaptor = ArgumentCaptor.forClass(ShareParams.class);
+        ArgumentCaptor<ChromeShareExtras> chromeExtrasCaptor =
+                ArgumentCaptor.forClass(ChromeShareExtras.class);
+        verify(mShareDelegate)
+                .share(shareParamsCaptor.capture(), chromeExtrasCaptor.capture(),
+                        eq(ShareOrigin.CONTEXT_MENU));
+
+        Assert.assertTrue("Content being shared is expected to be image.",
+                shareParamsCaptor.getValue().getFileContentType().startsWith("image"));
+        Assert.assertTrue("Share with share sheet expect to record the last used.",
+                chromeExtrasCaptor.getValue().saveLastUsed());
+    }
+
+    @Test
+    @SmallTest
+    public void testShareLink() throws Exception {
+        Tab tab = mDownloadTestRule.getActivity().getActivityTab();
+
+        // Set share delegate before triggering context menu, so the mocked share delegate is used.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            var supplier = (ShareDelegateSupplier) ShareDelegateSupplier.from(
+                    mDownloadTestRule.getActivity().getWindowAndroid());
+            supplier.set(mShareDelegate);
+        });
+        ContextMenuUtils.selectContextMenuItem(InstrumentationRegistry.getInstrumentation(),
+                mDownloadTestRule.getActivity(), tab, "testImage", R.id.contextmenu_share_link);
+
+        verify(mShareDelegate).share(any(), any(), eq(ShareOrigin.CONTEXT_MENU));
+
+        ArgumentCaptor<ShareParams> shareParamsCaptor = ArgumentCaptor.forClass(ShareParams.class);
+        ArgumentCaptor<ChromeShareExtras> chromeExtrasCaptor =
+                ArgumentCaptor.forClass(ChromeShareExtras.class);
+        verify(mShareDelegate)
+                .share(shareParamsCaptor.capture(), chromeExtrasCaptor.capture(),
+                        eq(ShareOrigin.CONTEXT_MENU));
+
+        Assert.assertFalse("Link being shared is empty.",
+                TextUtils.isEmpty(shareParamsCaptor.getValue().getUrl()));
+        Assert.assertTrue("Share with share sheet expect to record the last used.",
+                chromeExtrasCaptor.getValue().saveLastUsed());
     }
 
     // TODO(benwgold): Add more test coverage for histogram recording of other context menu types.
