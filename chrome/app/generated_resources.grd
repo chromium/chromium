@@ -12054,6 +12054,18 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_MANAGE_PASSWORDS_HIDE_PASSWORD" desc="The tooltip of a button that is used in the manage pending password bubble for hiding the password.">
         Hide password
       </message>
+      <message name="IDS_MANAGE_PASSWORDS_EMPTY_NOTE" desc="The text displayed in the note label when the note is empty in the credential details view of the password management bubble.">
+        No note added
+      </message>
+      <message name="IDS_MANAGE_PASSWORDS_EDIT_USERNAME_TOOLTIP" desc="The tooltip of a button that is used in the credential details view of the password management bubble for editing the username.">
+        Edit username
+      </message>
+      <message name="IDS_MANAGE_PASSWORDS_EDIT_NOTE_TOOLTIP" desc="The tooltip of a button that is used in the credential details view of the password management bubble for editing the note attached to the password.">
+        Edit note
+      </message>
+      <message name="IDS_MANAGE_PASSWORDS_UPDATE" desc="The text of the button to update the credential details in the password management bubble.">
+        Update
+      </message>
 
       <message name="IDS_MANAGE_PASSWORDS_AUTO_SIGNIN_TITLE_MD" desc="The title of the auto-signin toast in Material Design mode.">
         Signing in as

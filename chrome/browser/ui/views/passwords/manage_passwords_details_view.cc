@@ -169,8 +169,8 @@ std::unique_ptr<views::View> CreatePasswordLabelWithEyeIconView(
 
 std::unique_ptr<views::View> CreateNoteLabel(
     const password_manager::PasswordForm& form) {
-  // TODO(crbug.com/1382017): use internationalized string.
-  std::u16string note_to_display = u"No note added";
+  std::u16string note_to_display =
+      l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_EMPTY_NOTE);
   absl::optional<std::u16string> note =
       form.GetNoteWithEmptyUniqueDisplayName();
   // TODO(crbug.com/1408790): Consider adding another API to the password form
@@ -325,12 +325,9 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
         std::move(copy_username_button_callback),
         ManagePasswordsViewIDs::kCopyUsernameButton));
   } else {
-    // TODO(crbug.com/1408790): use internationalized string for the username
-    // action
-    // button tooltip text.
     read_username_row_ = AddChildView(CreateDetailsRow(
         kAccountCircleIcon, std::move(username_label), vector_icons::kEditIcon,
-        u"Edit Username",
+        l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_EDIT_USERNAME_TOOLTIP),
         base::BindRepeating(
             &ManagePasswordsDetailsView::SwitchToEditUsernameMode,
             base::Unretained(this)),
@@ -367,14 +364,12 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
       std::move(copy_password_button_callback),
       ManagePasswordsViewIDs::kCopyPasswordButton));
 
-  // TODO(crbug.com/1408790): use internationalized string for the note action
-  // button tooltip text.
   // Add two rows: one for reading the note which is visible by default, and
   // another to edit the note, which is hidden by default. Clicking the Edit
   // icon next to the note row will hide the read row, and show the edit row.
   read_note_row_ = AddChildView(CreateDetailsRow(
       kNotesIcon, CreateNoteLabel(password_form), vector_icons::kEditIcon,
-      u"Edit Note",
+      l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_EDIT_NOTE_TOOLTIP),
       base::BindRepeating(&ManagePasswordsDetailsView::SwitchToEditNoteMode,
                           base::Unretained(this)),
       ManagePasswordsViewIDs::kEditNoteButton));

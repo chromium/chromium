@@ -160,8 +160,9 @@ ManagePasswordsView::CreatePasswordDetailsView() {
       base::BindRepeating(
           [](ManagePasswordsView* view) {
             view->SetButtons(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
-            // TODO(crbug.com/1408790): use internationalized string.
-            view->SetButtonLabel(ui::DIALOG_BUTTON_OK, u"Update");
+            view->SetButtonLabel(
+                ui::DIALOG_BUTTON_OK,
+                l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_UPDATE));
             view->PreferredSizeChanged();
             view->SizeToContents();
           },
