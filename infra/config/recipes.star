@@ -160,6 +160,10 @@ build_recipe(
 )
 
 build_recipe(
+    name = "recipe:chromium/fuzz",
+)
+
+build_recipe(
     name = "recipe:chromium_clang_coverage_tot",
 )
 

@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 """Definitions of builders in the chromium.fuzz builder group."""
 
+load("//lib/args.star", "args")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "os", "reclient", "sheriff_rotations", "xcode")
 load("//lib/ci.star", "ci")
@@ -27,6 +28,7 @@ consoles.console_view(
     ordering = {
         None: [
             "afl",
+            "centipede",
             "win asan",
             "mac asan",
             "cros asan",
@@ -209,6 +211,19 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "afl",
         short_name = "afl",
+    ),
+)
+
+ci.builder(
+    name = "Centipede Upload Linux ASan",
+    executable = "recipe:chromium/fuzz",
+    triggering_policy = scheduler.greedy_batching(
+        max_concurrent_invocations = 4,
+    ),
+    sheriff_rotations = args.ignore_default(None),
+    console_view_entry = consoles.console_view_entry(
+        category = "centipede",
+        short_name = "centipede",
     ),
 )
 
