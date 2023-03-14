@@ -35,6 +35,7 @@
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"

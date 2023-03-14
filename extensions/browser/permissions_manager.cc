@@ -452,6 +452,16 @@ bool PermissionsManager::HasWithheldHostPermissions(
   return extension_prefs_->GetWithholdingPermissions(extension.id());
 }
 
+bool PermissionsManager::HasActiveTabAndCanAccess(const Extension& extension,
+                                                  const GURL& url) const {
+  return extension.permissions_data()->HasAPIPermission(
+             mojom::APIPermissionID::kActiveTab) &&
+         !extension.permissions_data()->IsRestrictedUrl(url,
+                                                        /*error=*/nullptr) &&
+         (!url.SchemeIsFile() ||
+          util::AllowFileAccess(extension.id(), browser_context_));
+}
+
 std::unique_ptr<PermissionSet>
 PermissionsManager::GetRuntimePermissionsFromPrefs(
     const Extension& extension) const {

@@ -40,7 +40,7 @@ SitePermissionsHelper::SiteAccess SitePermissionsHelper::GetSiteAccess(
   // Extension with no host permissions but with active tab permission has "on
   // click" access.
   if (!permissions_manager->CanAffectExtension(extension) &&
-      HasActiveTabAndCanAccess(extension, gurl)) {
+      permissions_manager->HasActiveTabAndCanAccess(extension, gurl)) {
     return SiteAccess::kOnClick;
   }
 
@@ -95,7 +95,8 @@ SitePermissionsHelper::GetSiteInteraction(
     return SiteInteraction::kWithheld;
   }
 
-  if (HasActiveTabAndCanAccess(extension, url)) {
+  if (PermissionsManager::Get(profile_)->HasActiveTabAndCanAccess(extension,
+                                                                  url)) {
     return SiteInteraction::kActiveTab;
   }
 
@@ -148,12 +149,12 @@ bool SitePermissionsHelper::CanSelectSiteAccess(const Extension& extension,
 
   // The "on click" option is enabled if the extension has active tab,
   // regardless of its granted host permissions.
+  PermissionsManager* permissions_manager = PermissionsManager::Get(profile_);
   if (site_access == SiteAccess::kOnClick &&
-      HasActiveTabAndCanAccess(extension, url)) {
+      permissions_manager->HasActiveTabAndCanAccess(extension, url)) {
     return true;
   }
 
-  PermissionsManager* permissions_manager = PermissionsManager::Get(profile_);
   if (!permissions_manager->CanAffectExtension(extension)) {
     return false;
   }
@@ -186,16 +187,6 @@ bool SitePermissionsHelper::HasBeenBlocked(
   ExtensionActionRunner* action_runner =
       ExtensionActionRunner::GetForWebContents(web_contents);
   return action_runner && action_runner->WantsToRun(&extension);
-}
-
-bool SitePermissionsHelper::HasActiveTabAndCanAccess(const Extension& extension,
-                                                     const GURL& url) const {
-  return extension.permissions_data()->HasAPIPermission(
-             mojom::APIPermissionID::kActiveTab) &&
-         !extension.permissions_data()->IsRestrictedUrl(url,
-                                                        /*error=*/nullptr) &&
-         (!url.SchemeIsFile() ||
-          util::AllowFileAccess(extension.id(), profile_));
 }
 
 bool SitePermissionsHelper::ShowAccessRequestsInToolbar(

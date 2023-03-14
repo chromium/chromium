@@ -48,10 +48,6 @@ void SetIsIncognitoEnabled(const std::string& extension_id,
                            content::BrowserContext* context,
                            bool enabled);
 
-// Returns true if this extension can inject scripts into pages with file URLs.
-bool AllowFileAccess(const std::string& extension_id,
-                     content::BrowserContext* context);
-
 // Sets whether |extension_id| can inject scripts into pages with file URLs.
 // Reloads the extension if it's enabled since this permission is applied at
 // loading time only. Note than an ExtensionService must exist.

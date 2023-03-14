@@ -5,6 +5,7 @@
 #include "extensions/browser/extension_util.h"
 
 #include "base/barrier_closure.h"
+#include "base/command_line.h"
 #include "base/no_destructor.h"
 #include "build/chromeos_buildflags.h"
 #include "components/crx_file/id_util.h"
@@ -24,6 +25,7 @@
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/manifest_handlers/shared_module_info.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "extensions/common/switches.h"
 #include "extensions/grit/extensions_browser_resources.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -85,6 +87,13 @@ bool CanCrossIncognito(const Extension* extension,
   CHECK(extension);
   return IsIncognitoEnabled(extension->id(), context) &&
          !IncognitoInfo::IsSplitMode(extension);
+}
+
+bool AllowFileAccess(const ExtensionId& extension_id,
+                     content::BrowserContext* context) {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+             switches::kDisableExtensionsFileAccessCheck) ||
+         ExtensionPrefs::Get(context)->AllowFileAccess(extension_id);
 }
 
 const std::string& GetPartitionDomainForExtension(const Extension* extension) {

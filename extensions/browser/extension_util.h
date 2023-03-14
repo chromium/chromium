@@ -48,8 +48,12 @@ bool IsIncognitoEnabled(const ExtensionId& extension_id,
 
 // Returns true if |extension| can see events and data from another sub-profile
 // (incognito to original profile, or vice versa).
-bool CanCrossIncognito(const extensions::Extension* extension,
+bool CanCrossIncognito(const Extension* extension,
                        content::BrowserContext* context);
+
+// Returns true if this extension can inject scripts into pages with file URLs.
+bool AllowFileAccess(const ExtensionId& extension_id,
+                     content::BrowserContext* context);
 
 // Returns the StoragePartition domain for |extension|.
 // Note: The reference returned has the same lifetime as |extension|.

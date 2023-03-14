@@ -20,6 +20,7 @@
 #include "chrome/browser/extensions/scripting_permissions_modifier.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest_handlers/permissions_parser.h"

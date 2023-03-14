@@ -184,6 +184,16 @@ class PermissionsManager : public KeyedService {
   // which CanAffectExtension() returns true). Anything else will DCHECK.
   bool HasWithheldHostPermissions(const Extension& extension) const;
 
+  // Returns true if this extension uses the activeTab permission and would
+  // probably be able to to access the given `url`. The actual checks when an
+  // activeTab extension tries to run are a little more complicated and can be
+  // seen in ExtensionActionRunner and ActiveTabPermissionGranter.
+  // Note: The rare cases where this gets it wrong should only be for false
+  // positives, where it reports that the extension wants access but it can't
+  // actually be given access when it tries to run.
+  bool HasActiveTabAndCanAccess(const Extension& extension,
+                                const GURL& url) const;
+
   // Returns the effective list of runtime-granted permissions for a given
   // `extension` from its prefs. ExtensionPrefs doesn't store the valid schemes
   // for URLPatterns, which results in the chrome:-scheme being included for

@@ -197,11 +197,6 @@ const char kDisableExtensions[] = "disable-extensions";
 // Disable extensions except those specified in a comma-separated list.
 const char kDisableExtensionsExcept[] = "disable-extensions-except";
 
-// Disable checking for user opt-in for extensions that want to inject script
-// into file URLs (ie, always allow it). This is used during automated testing.
-const char kDisableExtensionsFileAccessCheck[] =
-    "disable-extensions-file-access-check";
-
 // Disables print preview (For testing, and for users who don't like us. :[ )
 const char kDisablePrintPreview[] = "disable-print-preview";
 

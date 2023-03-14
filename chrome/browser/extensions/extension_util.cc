@@ -17,7 +17,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/api/url_handlers/url_handlers_parser.h"
 #include "chrome/common/extensions/sync_helper.h"
 #include "components/variations/variations_associated_data.h"
@@ -151,21 +150,15 @@ void SetIsIncognitoEnabled(const std::string& extension_id,
   }
 }
 
-bool AllowFileAccess(const std::string& extension_id,
-                     content::BrowserContext* context) {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-             ::switches::kDisableExtensionsFileAccessCheck) ||
-         ExtensionPrefs::Get(context)->AllowFileAccess(extension_id);
-}
-
 void SetAllowFileAccess(const std::string& extension_id,
                         content::BrowserContext* context,
                         bool allow) {
   // Reload to update browser state if the value changed. We need to reload even
   // if the extension is disabled, in order to make sure file access is
   // reinitialized correctly.
-  if (allow == AllowFileAccess(extension_id, context))
+  if (allow == util::AllowFileAccess(extension_id, context)) {
     return;
+  }
 
   ExtensionPrefs::Get(context)->SetAllowFileAccess(extension_id, allow);
 

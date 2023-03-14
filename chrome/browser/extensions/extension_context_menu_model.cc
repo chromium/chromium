@@ -460,10 +460,10 @@ void ExtensionContextMenuModel::InitMenu(const Extension* extension,
   // Add page access items if active web contents exist and the extension
   // wants site access (either by requesting host permissions or active tab).
   auto* web_contents = GetActiveWebContents();
-  if (web_contents &&
-      (PermissionsManager::Get(profile_)->CanAffectExtension(*extension) ||
-       SitePermissionsHelper(profile_).HasActiveTabAndCanAccess(
-           *extension, web_contents->GetLastCommittedURL()))) {
+  auto* permissions_manager = PermissionsManager::Get(profile_);
+  if (web_contents && (permissions_manager->CanAffectExtension(*extension) ||
+                       permissions_manager->HasActiveTabAndCanAccess(
+                           *extension, web_contents->GetLastCommittedURL()))) {
     CreatePageAccessItems(extension, web_contents);
     AddSeparator(ui::NORMAL_SEPARATOR);
   }
@@ -560,20 +560,21 @@ bool ExtensionContextMenuModel::IsPageAccessCommandEnabled(
       // Verify the extension wants access to the page - that's the only time
       // these commands should be shown.
       const GURL& url = web_contents->GetLastCommittedURL();
-      SitePermissionsHelper permissions(profile_);
+      auto* permissions_manager = PermissionsManager::Get(profile_);
+      SitePermissionsHelper permissions_helper(profile_);
       DCHECK(
-          permissions.HasActiveTabAndCanAccess(extension, url) ||
-          (PermissionsManager::Get(profile_)->CanAffectExtension(extension) &&
-           permissions.CanSelectSiteAccess(
-               extension, url, SitePermissionsHelper::SiteAccess::kOnClick)));
+          permissions_manager->HasActiveTabAndCanAccess(extension, url) ||
+          permissions_manager->CanAffectExtension(extension) &&
+              permissions_helper.CanSelectSiteAccess(
+                  extension, url, SitePermissionsHelper::SiteAccess::kOnClick));
 
       // TODO(devlin): This can lead to some fun race-like conditions, where the
       // menu is constructed during navigation. Since we get the URL both here
       // and in execution of the command, there's a chance we'll find two
       // different URLs. This would be solved if we maintained the URL that the
       // menu was showing for.
-      return permissions.CanSelectSiteAccess(extension, url,
-                                             CommandIdToSiteAccess(command_id));
+      return permissions_helper.CanSelectSiteAccess(
+          extension, url, CommandIdToSiteAccess(command_id));
   }
 
   NOTREACHED() << "Unexpected command id: " << command_id;

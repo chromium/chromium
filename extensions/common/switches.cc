@@ -32,6 +32,11 @@ const char kEnableBLEAdvertising[] = "enable-ble-advertising-in-apps";
 const char kEnableExperimentalExtensionApis[] =
     "enable-experimental-extension-apis";
 
+// Disable checking for user opt-in for extensions that want to inject script
+// into file URLs (ie, always allow it). This is used during automated testing.
+const char kDisableExtensionsFileAccessCheck[] =
+    "disable-extensions-file-access-check";
+
 // Disable the net::URLRequestThrottlerManager functionality for
 // requests originating from extensions.
 const char kDisableExtensionsHttpThrottling[] =

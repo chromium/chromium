@@ -28,7 +28,6 @@
 #include "chrome/browser/extensions/extension_management_test_util.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
-#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -56,6 +55,8 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
+#include "extensions/browser/browsertest_util.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/url_loader_factory_manager.h"
 #include "extensions/common/extension_features.h"
@@ -1332,8 +1333,9 @@ IN_PROC_BROWSER_TEST_F(
 
   // Make sure the permission propagates correctly after a network service
   // crash.
-  if (!content::IsOutOfProcessNetworkService())
+  if (!content::IsOutOfProcessNetworkService()) {
     return;
+  }
   SimulateNetworkServiceCrash();
   active_web_contents()
       ->GetPrimaryMainFrame()
@@ -2358,8 +2360,9 @@ IN_PROC_BROWSER_TEST_F(OriginHeaderExtensionBrowserTest,
   std::string actual_origin_header = "<none>";
   const auto& headers_map = http_request.http_request()->headers;
   auto it = headers_map.find("Origin");
-  if (it != headers_map.end())
+  if (it != headers_map.end()) {
     actual_origin_header = it->second;
+  }
 
   // Verify the Origin header uses the page's origin (not the extension
   // origin).
@@ -2407,8 +2410,9 @@ IN_PROC_BROWSER_TEST_F(OriginHeaderExtensionBrowserTest,
   std::string actual_origin_header = "<none>";
   const auto& headers_map = http_request.http_request()->headers;
   auto it = headers_map.find("Origin");
-  if (it != headers_map.end())
+  if (it != headers_map.end()) {
     actual_origin_header = it->second;
+  }
 
   // Verify the Origin header uses the page's origin (not the extension
   // origin).

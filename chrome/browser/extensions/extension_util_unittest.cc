@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/test/web_contents_tester.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/permissions/permissions_data.h"

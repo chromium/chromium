@@ -38,6 +38,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/user_script_loader.h"
 #include "extensions/browser/user_script_manager.h"
@@ -120,7 +121,8 @@ class ExtensionStartupTestBase : public InProcessBrowserTest {
           load_extensions_, base::FilePath::StringType(1, ','));
       command_line->AppendSwitchNative(extensions::switches::kLoadExtension,
                                        paths);
-      command_line->AppendSwitch(switches::kDisableExtensionsFileAccessCheck);
+      command_line->AppendSwitch(
+          extensions::switches::kDisableExtensionsFileAccessCheck);
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
     } else {
       // In Windows and MacOS builds, it is not possible to disable settings
