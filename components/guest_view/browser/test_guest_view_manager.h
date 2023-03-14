@@ -62,7 +62,7 @@ class TestGuestViewManager : public GuestViewManager {
 
   // Returns the number of guests currently still alive at the time of calling
   // this method.
-  size_t GetNumGuestsActive() const;
+  size_t GetCurrentGuestCount() const;
 
   // Returns the size of the set of removed instance IDs.
   size_t GetNumRemovedInstanceIDs() const;

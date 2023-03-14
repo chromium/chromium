@@ -341,7 +341,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessPDFTest,
       "document.body.removeChild(document.querySelector('iframe'));"));
   test_guest_view_manager()->WaitForLastGuestDeleted();
 
-  EXPECT_EQ(0U, test_guest_view_manager()->GetNumGuestsActive());
+  EXPECT_EQ(0U, test_guest_view_manager()->GetCurrentGuestCount());
 }
 
 // A helper class to verify that a "mailto:" external protocol request succeeds.

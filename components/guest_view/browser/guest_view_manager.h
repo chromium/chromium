@@ -209,10 +209,9 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
   static bool GetFullPageGuestHelper(content::WebContents** result,
                                      content::WebContents* guest_web_contents);
 
-  // Contains guests' WebContents, mapping from their instance ids.
-  // TODO(1261928): This should be a map to GuestViewBases.
-  using GuestInstanceMap = std::map<int, content::WebContents*>;
-  GuestInstanceMap guest_web_contents_by_instance_id_;
+  // Contains guests, mapping from their instance ids.
+  using GuestInstanceMap = std::map<int, GuestViewBase*>;
+  GuestInstanceMap guests_by_instance_id_;
 
   using WebContentsGuestViewMap =
       std::map<const content::WebContents*, GuestViewBase*>;
@@ -227,7 +226,6 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
                        int element_instance_id);
 
     bool operator<(const ElementInstanceKey& other) const;
-    bool operator==(const ElementInstanceKey& other) const;
   };
 
   using GuestInstanceIDMap = std::map<ElementInstanceKey, int>;

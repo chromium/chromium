@@ -42,8 +42,8 @@ TestGuestViewManager::TestGuestViewManager(
 
 TestGuestViewManager::~TestGuestViewManager() = default;
 
-size_t TestGuestViewManager::GetNumGuestsActive() const {
-  return guest_web_contents_by_instance_id_.size();
+size_t TestGuestViewManager::GetCurrentGuestCount() const {
+  return guests_by_instance_id_.size();
 }
 
 size_t TestGuestViewManager::GetNumRemovedInstanceIDs() const {
@@ -91,7 +91,7 @@ void TestGuestViewManager::WaitForLastGuestDeleted() {
 
 content::RenderFrameHost*
 TestGuestViewManager::WaitForSingleGuestRenderFrameHostCreated() {
-  if (!GetNumGuestsActive()) {
+  if (!GetCurrentGuestCount()) {
     // Guests have been created and subsequently destroyed.
     if (num_guests_created() > 0)
       return nullptr;

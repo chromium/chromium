@@ -177,20 +177,20 @@ TEST_F(GuestViewManagerTest, ReuseIdForRecreatedGuestPage) {
 
   std::unique_ptr<StubGuestView> guest1(CreateGuest(owner_web_contents));
   manager->AddGuest(guest1.get());
-  EXPECT_EQ(1U, manager->GetNumGuestsActive());
+  EXPECT_EQ(1U, manager->GetCurrentGuestCount());
 
   manager->RemoveGuest(guest1.get(), /*invalidate_id=*/false);
-  EXPECT_EQ(0U, manager->GetNumGuestsActive());
+  EXPECT_EQ(1U, manager->GetCurrentGuestCount());
   EXPECT_EQ(0, manager->last_instance_id_removed());
   ASSERT_TRUE(manager->CanUseGuestInstanceID(1));
 
   guest1->AssignNewGuestContents(CreateWebContents());
 
   manager->AddGuest(guest1.get());
-  EXPECT_EQ(1U, manager->GetNumGuestsActive());
+  EXPECT_EQ(1U, manager->GetCurrentGuestCount());
 
   manager->RemoveGuest(guest1.get(), /*invalidate_id=*/true);
-  EXPECT_EQ(0U, manager->GetNumGuestsActive());
+  EXPECT_EQ(0U, manager->GetCurrentGuestCount());
   EXPECT_EQ(1, manager->last_instance_id_removed());
   ASSERT_FALSE(manager->CanUseGuestInstanceID(1));
 }

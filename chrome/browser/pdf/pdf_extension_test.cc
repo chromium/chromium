@@ -303,12 +303,12 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PdfExtensionLoadedWhileOldPdfCloses) {
   // Close the first tab, destroying the first PDF while the second PDF is in
   // the middle of initialization. In https://crbug.com/1295431, the extension
   // process exited here and caused a crash when the second PDF resumed.
-  EXPECT_EQ(2U, GetGuestViewManager()->GetNumGuestsActive());
+  EXPECT_EQ(2U, GetGuestViewManager()->GetCurrentGuestCount());
   ASSERT_TRUE(browser()->tab_strip_model()->CloseWebContentsAt(
       0, TabCloseTypes::CLOSE_USER_GESTURE));
   // `TestGuestViewManager` manages the guests by the order of creation.
   GetGuestViewManager()->WaitForFirstGuestDeleted();
-  EXPECT_EQ(1U, GetGuestViewManager()->GetNumGuestsActive());
+  EXPECT_EQ(1U, GetGuestViewManager()->GetCurrentGuestCount());
   primary_main_frame = new_web_contents->GetPrimaryMainFrame();
 
   // Now resume the guest attachment and ensure the second PDF loads without
@@ -3011,7 +3011,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionPrerenderAndFencedFrameTest,
   TestMimeHandlerViewGuest::WaitForGuestLoadStartThenStop(guest_view);
 
   // Ensure that the fenced frame's navigation should not abort the PDF stream.
-  EXPECT_EQ(1U, GetGuestViewManager()->GetNumGuestsActive());
+  EXPECT_EQ(1U, GetGuestViewManager()->GetCurrentGuestCount());
 }
 
 // Test that ensures we cannot navigate a fenced frame to a PDF because PDF
