@@ -113,7 +113,7 @@ void RecordUrlLoadStatsOnProfileLoad(const UrlLoadStats& stats) {
                   stats.total_url_bookmark_count;
   }
   base::UmaHistogramPercentage(
-      "Bookmarks.Utilization.OnProfileLoad.PercentUsed", utilization);
+      "Bookmarks.Utilization.OnProfileLoad.PercentageUsed", utilization);
   base::UmaHistogramCounts1000("Bookmarks.Utilization.OnProfileLoad.TotalUsed",
                                stats.used_url_bookmark_count);
   base::UmaHistogramCounts1000(
