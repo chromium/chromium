@@ -14,6 +14,7 @@ import multiprocessing
 import os
 import re
 import shutil
+import subprocess
 import sys
 import warnings
 from typing import List, Optional, Tuple
@@ -31,6 +32,7 @@ from blinkpy.web_tests.port.base import ARTIFACTS_SUB_DIR, Port
 
 path_finder.add_testing_dir_to_sys_path()
 path_finder.add_build_android_to_sys_path()
+path_finder.add_build_ios_to_sys_path()
 path_finder.bootstrap_wpt_imports()
 
 import mozlog
@@ -54,6 +56,12 @@ try:
     _ANDROID_ENABLED = True
 except ImportError:
     _ANDROID_ENABLED = False
+
+try:
+    import xcode_util as xcode
+    _IOS_ENABLED = True
+except ImportError:
+    _IOS_ENABLED = False
 
 
 def _make_log_enabled_grouping_formatter():
@@ -223,6 +231,10 @@ class WPTAdapter:
             self.add_android_arguments(parser)
         else:
             warnings.warn('Android tools not found')
+        if _IOS_ENABLED:
+            self.add_ios_arguments(parser)
+        else:
+            warnings.warn('iOS tools not found')
         # Nightly installation is not supported, so just add defaults.
         parser.set_defaults(
             prompt=False,
@@ -705,6 +717,16 @@ class WPTAdapter:
             help='Install WebView from release channel. (WebView only.)')
         return group
 
+    def add_ios_arguments(self, parser):
+        group = parser.add_argument_group(
+            'iOS specific arguments', 'Options for configuring iOS tooling.')
+        group.add_argument(
+            '--xcode-build-version',
+            help='Xcode build version to install. Use chrome_ios'
+            ' product to enable this',
+            metavar='build_id')
+        return group
+
 
 class IsolatedScriptTestFilterAction(argparse.Action):
     def __init__(self, finder, *args, **kwargs):
@@ -911,6 +933,34 @@ class ChromeiOS(Product):
                 os.path.dirname(__file__),
                 '../../../ios/chrome/test/wpt/tools/'
                 'run_cwt_chromedriver_wrapper.py'))
+
+    @contextlib.contextmanager
+    def test_env(self):
+        with super().test_env():
+            self.update_options()
+            if self._options.xcode_build_version:
+                try:
+                    runtime_cache_folder = xcode.construct_runtime_cache_folder(
+                        '../../Runtime-ios-', '16.0')
+                    os.makedirs(runtime_cache_folder, exist_ok=True)
+                    xcode.install('../../mac_toolchain',
+                                  self._options.xcode_build_version,
+                                  '../../Xcode.app',
+                                  runtime_cache_folder=runtime_cache_folder,
+                                  ios_version='16.0')
+                    xcode.select('../../Xcode.app')
+                except subprocess.CalledProcessError as e:
+                    logger.error(
+                        'Xcode build version %s failed to install: %s ',
+                        self._options.xcode_build_version, e)
+                else:
+                    logger.info(
+                        'Xcode build version %s successfully installed.',
+                        self._options.xcode_build_version)
+            else:
+                logger.warning('Skip the Xcode installation, no '
+                               '--xcode-build-version')
+            yield
 
 
 @contextlib.contextmanager

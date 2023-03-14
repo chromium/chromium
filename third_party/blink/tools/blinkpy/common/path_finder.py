@@ -68,6 +68,12 @@ def add_build_android_to_sys_path():
         sys.path.insert(0, path)
 
 
+def add_build_ios_to_sys_path():
+    path = get_build_ios_dir()
+    if path not in sys.path:
+        sys.path.insert(0, path)
+
+
 def bootstrap_wpt_imports():
     """Bootstrap the availability of all wpt-vended packages."""
     path = os.path.join(get_wpt_tools_wpt_dir(), 'tools')
@@ -113,6 +119,11 @@ def get_testing_dir():
 
 def get_build_android_dir():
     return os.path.join(get_chromium_src_dir(), 'build', 'android')
+
+
+def get_build_ios_dir():
+    return os.path.join(get_chromium_src_dir(), 'ios', 'build', 'bots',
+                        'scripts')
 
 
 def get_typ_dir():
