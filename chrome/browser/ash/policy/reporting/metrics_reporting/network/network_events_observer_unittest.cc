@@ -374,11 +374,36 @@ class NetworkEventsObserverConnectionStateTest
                 Eq(expected_connection_state));
   }
 
+  void SetFeatureEnabled(bool enabled) {
+    scoped_feature_list_.InitWithFeatureState(
+        kEnableNetworkConnectionStateEventsReporting, enabled);
+  }
+
  private:
   NetworkEventsObserverTestHelper network_events_observer_test_helper_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+TEST_F(NetworkEventsObserverConnectionStateTest, FeatureDisabled) {
+  SetFeatureEnabled(false);
+
+  bool event_reported = false;
+
+  NetworkEventsObserver network_events_observer;
+  MetricData result_metric_data;
+  auto cb =
+      base::BindLambdaForTesting([&](MetricData) { event_reported = true; });
+
+  network_events_observer.SetOnEventObservedCallback(std::move(cb));
+  network_events_observer.OnConnectionStateChanged(kWifiGuid,
+                                                   NetworkState::kNotConnected);
+
+  EXPECT_FALSE(event_reported);
+}
+
 TEST_F(NetworkEventsObserverConnectionStateTest, VirtualConnection) {
+  SetFeatureEnabled(true);
+
   bool event_reported = false;
 
   NetworkEventsObserver network_events_observer;
@@ -396,6 +421,8 @@ TEST_F(NetworkEventsObserverConnectionStateTest, VirtualConnection) {
 }
 
 TEST_F(NetworkEventsObserverConnectionStateTest, MultipleEvents) {
+  SetFeatureEnabled(true);
+
   bool event_reported = false;
 
   NetworkEventsObserver network_events_observer;
@@ -456,6 +483,8 @@ TEST_F(NetworkEventsObserverConnectionStateTest, MultipleEvents) {
 }
 
 TEST_P(NetworkEventsObserverConnectionStateTest, Default) {
+  SetFeatureEnabled(true);
+
   const NetworkConnectionStateTestCase& test_case = GetParam();
   bool event_reported = false;
 

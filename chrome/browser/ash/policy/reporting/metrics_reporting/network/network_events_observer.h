@@ -17,6 +17,7 @@
 namespace reporting {
 
 BASE_DECLARE_FEATURE(kEnableWifiSignalEventsReporting);
+BASE_DECLARE_FEATURE(kEnableNetworkConnectionStateEventsReporting);
 
 class NetworkEventsObserver
     : public ::chromeos::network_health::mojom::NetworkEventsObserver,

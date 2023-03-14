@@ -38,6 +38,9 @@ bool IsConnectedWifiNetwork(const ash::NetworkState* network_state) {
 BASE_FEATURE(kEnableWifiSignalEventsReporting,
              "EnableWifiSignalEventsReporting",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableNetworkConnectionStateEventsReporting,
+             "EnableNetworkConnectionStateEventsReporting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 NetworkEventsObserver::NetworkEventsObserver()
     : MojoServiceEventsObserverBase<
@@ -52,6 +55,11 @@ void NetworkEventsObserver::OnConnectionStateChanged(
     chromeos::network_health::mojom::NetworkState state) {
   using NetworkStateMojom = chromeos::network_health::mojom::NetworkState;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!base::FeatureList::IsEnabled(
+          kEnableNetworkConnectionStateEventsReporting)) {
+    return;
+  }
 
   const auto* network_state = ::ash::NetworkHandler::Get()
                                   ->network_state_handler()

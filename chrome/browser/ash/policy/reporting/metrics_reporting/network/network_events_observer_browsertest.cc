@@ -54,7 +54,10 @@ class NetworkEventsBrowserTest : public ::policy::DevicePolicyCrosBrowserTest {
  protected:
   NetworkEventsBrowserTest() {
     crypto_home_mixin_.MarkUserAsExisting(affiliation_mixin_.account_id());
-    scoped_feature_list_.InitAndEnableFeature(kEnableWifiSignalEventsReporting);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{kEnableWifiSignalEventsReporting,
+                              kEnableNetworkConnectionStateEventsReporting},
+        /*disabled_features=*/{});
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
