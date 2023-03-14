@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/policy/policy_constants.h"
@@ -15,7 +16,11 @@
 
 namespace policy {
 
-SafeSearchPolicyTest::SafeSearchPolicyTest() = default;
+SafeSearchPolicyTest::SafeSearchPolicyTest() {
+  // TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having to
+  // disable this feature.
+  feature_list_.InitAndDisableFeature(features::kHttpsUpgrades);
+}
 
 SafeSearchPolicyTest::~SafeSearchPolicyTest() = default;
 
