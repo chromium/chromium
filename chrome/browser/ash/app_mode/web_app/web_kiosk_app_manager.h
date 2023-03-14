@@ -9,13 +9,13 @@
 #include <vector>
 
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_data.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_update_observer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/account_id/account_id.h"
 #include "url/gurl.h"
 
-class Browser;
 class PrefRegistrySimple;
 class Profile;
 struct WebAppInstallInfo;
@@ -68,8 +68,11 @@ class WebKioskAppManager : public KioskAppManagerBase {
   // Adds fake apps in tests.
   void AddAppForTesting(const AccountId& account_id, const GURL& install_url);
 
-  // Initialize current app session with the browser that is running the app.
-  void InitSession(Browser* browser, Profile* profile);
+  // Initialize current app session.
+  // `app_name` indicates the name of the app if it's running in Ash
+  void InitSession(Profile* profile,
+                   const KioskAppId& kiosk_app_id,
+                   const absl::optional<std::string>& app_name);
 
   // Starts observing web app updates from App Service in a Kiosk session.
   void StartObservingAppUpdate(Profile* profile, const AccountId& account_id);

@@ -8,6 +8,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -53,7 +54,8 @@ class KioskAppLauncher {
     virtual void OnAppInstalling() {}
     virtual void OnAppPrepared() {}
     virtual void OnAppLaunched() {}
-    virtual void OnAppWindowCreated() {}
+    virtual void OnAppWindowCreated(
+        const absl::optional<std::string>& app_name) {}
     virtual void OnLaunchFailed(KioskAppLaunchError::Error error) {}
   };
 
@@ -71,7 +73,8 @@ class KioskAppLauncher {
     void NotifyAppInstalling();
     void NotifyAppPrepared();
     void NotifyAppLaunched();
-    void NotifyAppWindowCreated();
+    void NotifyAppWindowCreated(
+        const absl::optional<std::string>& app_id = absl::nullopt);
     void NotifyLaunchFailed(KioskAppLaunchError::Error error);
 
    private:

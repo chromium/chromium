@@ -249,7 +249,7 @@ class AppSessionBaseTest
   void StartChromeAppKioskSession() {
     app_session_ = std::make_unique<AppSession>(profile(), base::DoNothing(),
                                                 local_state());
-    app_session_->Init(kTestAppId);
+    app_session_->InitForChromeAppKiosk(kTestAppId);
   }
 
   // Waits until |app_session_| handles creation of |new_browser_window| and

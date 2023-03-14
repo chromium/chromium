@@ -61,10 +61,6 @@ class WebKioskBrowserControllerBase : public web_app::AppBrowserController {
   void OnTabInserted(content::WebContents* contents) override;
   void OnTabRemoved(content::WebContents* contents) override;
 
-  // Initializes app session and installs Kiosk window handler if not
-  // initialized.
-  virtual void MaybeInitAppSession() = 0;
-
  private:
   const raw_ref<web_app::WebAppRegistrar> registrar() const;
 

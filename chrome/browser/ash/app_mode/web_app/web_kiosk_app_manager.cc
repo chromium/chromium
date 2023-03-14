@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "chrome/browser/ash/app_mode/app_session_ash.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
@@ -127,17 +128,14 @@ void WebKioskAppManager::AddAppForTesting(const AccountId& account_id,
   NotifyKioskAppsChanged();
 }
 
-void WebKioskAppManager::InitSession(Browser* browser, Profile* profile) {
+void WebKioskAppManager::InitSession(
+    Profile* profile,
+    const KioskAppId& kiosk_app_id,
+    const absl::optional<std::string>& app_name) {
   LOG_IF(FATAL, app_session_) << "Kiosk session is already initialized.";
 
-  app_session_ = std::make_unique<AppSessionAsh>(profile);
-  if (crosapi::browser_util::IsLacrosEnabledInWebKioskSession()) {
-    // When Lacros is enabled, ash-side does not have a browser and should not
-    // pass any browser-related arguments.
-    app_session_->InitForWebKiosk(absl::nullopt);
-  } else {
-    app_session_->InitForWebKiosk(browser->app_name());
-  }
+  app_session_ =
+      std::make_unique<AppSessionAsh>(profile, kiosk_app_id, app_name);
 
   NotifySessionInitialized();
 }

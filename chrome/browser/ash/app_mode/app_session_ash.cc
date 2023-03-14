@@ -6,7 +6,9 @@
 #include <memory>
 
 #include "ash/public/cpp/accessibility_controller.h"
+#include "base/notreached.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_update_service.h"
 #include "chrome/browser/ash/app_mode/kiosk_mode_idle_app_name_notification.h"
 #include "chrome/browser/ash/app_mode/metrics/network_connectivity_metrics_service.h"
@@ -18,6 +20,7 @@
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/manifest_handlers/offline_enabled_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -52,17 +55,32 @@ bool IsOfflineEnabledForApp(const std::string& app_id, Profile* profile) {
 
 }  // namespace
 
-AppSessionAsh::AppSessionAsh(Profile* profile)
+AppSessionAsh::AppSessionAsh(Profile* profile,
+                             const KioskAppId& kiosk_app_id,
+                             const absl::optional<std::string>& app_name)
     : AppSession(profile),
+      kiosk_app_id_(kiosk_app_id),
       network_metrics_service_(
           std::make_unique<NetworkConnectivityMetricsService>()),
       periodic_metrics_service_(std::make_unique<PeriodicMetricsService>(
-          g_browser_process->local_state())) {}
+          g_browser_process->local_state())) {
+  switch (kiosk_app_id_.type) {
+    case KioskAppType::kChromeApp:
+      InitForChromeAppKiosk();
+      break;
+    case KioskAppType::kWebApp:
+      InitForWebKiosk(app_name);
+      break;
+    case KioskAppType::kArcApp:
+      NOTREACHED();
+  }
+}
 
 AppSessionAsh::~AppSessionAsh() = default;
 
-void AppSessionAsh::Init(const std::string& app_id) {
-  chromeos::AppSession::Init(app_id);
+void AppSessionAsh::InitForChromeAppKiosk() {
+  const std::string& app_id = kiosk_app_id_.app_id.value();
+  chromeos::AppSession::InitForChromeAppKiosk(app_id);
   StartFloatingAccessibilityMenu();
   InitKioskAppUpdateService(app_id);
   SetRebootAfterUpdateIfNecessary();
@@ -73,8 +91,8 @@ void AppSessionAsh::Init(const std::string& app_id) {
 }
 
 void AppSessionAsh::InitForWebKiosk(
-    const absl::optional<std::string>& web_app_name) {
-  chromeos::AppSession::InitForWebKiosk(web_app_name);
+    const absl::optional<std::string>& app_name) {
+  chromeos::AppSession::InitForWebKiosk(app_name);
   StartFloatingAccessibilityMenu();
 
   periodic_metrics_service_->RecordPreviousSessionMetrics();

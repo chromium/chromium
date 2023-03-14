@@ -191,9 +191,8 @@ void WebKioskAppLauncher::LaunchApp() {
   CHECK(browser_->window());
   browser_->window()->Show();
 
-  WebKioskAppManager::Get()->InitSession(browser_, browser_->profile());
   observers_.NotifyAppLaunched();
-  observers_.NotifyAppWindowCreated();
+  observers_.NotifyAppWindowCreated(browser_->app_name());
 }
 
 void WebKioskAppLauncher::RestartLauncher() {
@@ -217,7 +216,6 @@ void WebKioskAppLauncher::OnExoWindowCreated(aura::Window* window) {
 
   CHECK(crosapi::browser_util::IsLacrosWindow(window));
   exo::WMHelper::GetInstance()->RemoveExoWindowObserver(this);
-  WebKioskAppManager::Get()->InitSession(nullptr, profile_);
 
   // NOTE: There is a known issue (crbug/1220680) that causes an obvious twinkle
   // when an exo window is launched in a fullscreen mode. This short delay is

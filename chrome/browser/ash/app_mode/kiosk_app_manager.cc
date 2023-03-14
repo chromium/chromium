@@ -26,6 +26,7 @@
 #include "chrome/browser/ash/app_mode/app_session_ash.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_data.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
 #include "chrome/browser/ash/app_mode/kiosk_external_updater.h"
 #include "chrome/browser/ash/app_mode/pref_names.h"
@@ -125,11 +126,12 @@ std::unique_ptr<chromeos::ExternalCache> CreateExternalCache(
   return cache;
 }
 
-std::unique_ptr<AppSessionAsh> CreateAppSession(Profile* profile) {
+std::unique_ptr<AppSessionAsh> CreateAppSession(Profile* profile,
+                                                const KioskAppId& app_id) {
   if (g_test_overrides) {
     return g_test_overrides->CreateAppSession();
   }
-  return std::make_unique<AppSessionAsh>(profile);
+  return std::make_unique<AppSessionAsh>(profile, app_id);
 }
 
 base::Version GetPlatformVersion() {
@@ -258,11 +260,11 @@ void KioskAppManager::SetExtensionDownloaderBackoffPolicy(
   external_cache_->SetBackoffPolicy(backoff_policy);
 }
 
-void KioskAppManager::InitSession(Profile* profile, const std::string& app_id) {
+void KioskAppManager::InitSession(Profile* profile, const KioskAppId& app_id) {
   LOG_IF(FATAL, app_session_) << "Kiosk session is already initialized.";
 
   base::CommandLine session_flags(base::CommandLine::NO_PROGRAM);
-  if (GetSwitchesForSessionRestore(app_id, &session_flags)) {
+  if (GetSwitchesForSessionRestore(app_id.app_id.value(), &session_flags)) {
     base::CommandLine::StringVector flags;
     // argv[0] is the program name |base::CommandLine::NO_PROGRAM|.
     flags.assign(session_flags.argv().begin() + 1, session_flags.argv().end());
@@ -277,10 +279,7 @@ void KioskAppManager::InitSession(Profile* profile, const std::string& app_id) {
         flags);
   }
 
-  app_session_ = CreateAppSession(profile);
-  if (app_session_) {
-    app_session_->Init(app_id);
-  }
+  app_session_ = CreateAppSession(profile, app_id);
   NotifySessionInitialized();
 }
 

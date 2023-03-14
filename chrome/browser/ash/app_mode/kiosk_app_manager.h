@@ -14,6 +14,7 @@
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/extensions/external_cache.h"
 #include "chrome/browser/ash/extensions/external_cache_delegate.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
@@ -255,7 +256,7 @@ class KioskAppManager : public KioskAppManagerBase,
       absl::optional<net::BackoffEntry::Policy> backoff_policy);
 
   // Initialize |app_session_|.
-  void InitSession(Profile* profile, const std::string& app_id);
+  void InitSession(Profile* profile, const KioskAppId& app_id);
 
   // Adds an app with the given meta data directly and skips meta data fetching
   // for test.

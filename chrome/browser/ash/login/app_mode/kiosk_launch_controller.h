@@ -184,7 +184,7 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
   void OnAppPrepared() override;
   void OnAppLaunched() override;
   void OnAppDataUpdated() override;
-  void OnAppWindowCreated() override;
+  void OnAppWindowCreated(const absl::optional<std::string>& app_name) override;
 
   // `KioskProfileLoader::Delegate`
   void OnProfileLoaded(Profile* profile) override;

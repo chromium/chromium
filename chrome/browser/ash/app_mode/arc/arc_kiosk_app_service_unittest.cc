@@ -58,7 +58,8 @@ class FakeController : public KioskAppLauncher::NetworkDelegate,
   bool IsNetworkReady() const override { return true; }
   bool IsShowingNetworkConfigScreen() const override { return false; }
 
-  void OnAppWindowCreated() override {
+  void OnAppWindowCreated(
+      const absl::optional<std::string>& app_name) override {
     window_created_semaphore_.AddValue(true);
   }
 

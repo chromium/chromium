@@ -13,12 +13,12 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/syslog_logging.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/app_mode/app_launch_utils.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_service.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
@@ -686,11 +686,13 @@ void KioskLaunchController::OnAppLaunched() {
   session_manager::SessionManager::Get()->SessionStarted();
 }
 
-void KioskLaunchController::OnAppWindowCreated() {
+void KioskLaunchController::OnAppWindowCreated(
+    const absl::optional<std::string>& app_name) {
   SYSLOG(INFO) << "App window created, closing splash screen.";
 
   SetKioskLaunchStateCrashKey(KioskLaunchState::kAppWindowCreated);
 
+  CreateAppSession(kiosk_app_id_, profile_, app_name);
   // If timer is running, do not remove splash screen for a few
   // more seconds to give the user ability to exit kiosk session.
   if (splash_wait_timer_.IsRunning()) {
@@ -848,8 +850,8 @@ void KioskLaunchController::OnNetworkConfigFinished() {
 
 void KioskLaunchController::OnNetworkStateChanged(bool online) {
   if (app_state_ == AppState::kInitNetwork && online) {
-    // If the network timed out, we should exit network config dialog as soon
-    // as we are back online.
+    // If the network timed out, we should exit network config dialog as
+    // soon as we are back online.
     if (network_ui_state_ == NetworkUIState::kNotShowing ||
         network_wait_timedout_) {
       network_wait_timer_.Stop();

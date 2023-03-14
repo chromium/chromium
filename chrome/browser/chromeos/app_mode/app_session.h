@@ -11,10 +11,10 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "base/time/time.h"
 #include "chrome/browser/chromeos/app_mode/app_session_browser_window_handler.h"
 #include "chrome/browser/chromeos/app_mode/app_session_metrics_service.h"
 #include "ppapi/buildflags/buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -56,11 +56,11 @@ class AppSession {
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // Initializes an app session for Chrome App Kiosk.
-  virtual void Init(const std::string& app_id);
+  void InitForChromeAppKiosk(const std::string& app_id);
 
   // Initializes an app session for Web kiosk.
   // `web_app_name` is absl::nullopt for ash-side of the web kiosk with Lacros.
-  virtual void InitForWebKiosk(const absl::optional<std::string>& web_app_name);
+  void InitForWebKiosk(const absl::optional<std::string>& web_app_name);
 
   // Invoked when GuestViewManager adds a guest web contents.
   void OnGuestAdded(content::WebContents* guest_web_contents);

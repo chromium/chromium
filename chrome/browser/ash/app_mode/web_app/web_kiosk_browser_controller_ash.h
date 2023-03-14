@@ -19,10 +19,6 @@ class WebKioskBrowserControllerAsh : public WebKioskBrowserControllerBase {
   WebKioskBrowserControllerAsh& operator=(const WebKioskBrowserControllerAsh&) =
       delete;
   ~WebKioskBrowserControllerAsh() override;
-
- private:
-  // WebKioskBrowserControllerBase overrides:
-  void MaybeInitAppSession() override;
 };
 
 }  // namespace ash

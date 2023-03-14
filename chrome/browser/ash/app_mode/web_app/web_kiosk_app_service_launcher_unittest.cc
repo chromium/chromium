@@ -44,6 +44,7 @@
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -84,7 +85,7 @@ class MockAppLauncherObserver : public KioskAppLauncher::Observer {
   MOCK_METHOD0(OnAppInstalling, void());
   MOCK_METHOD0(OnAppPrepared, void());
   MOCK_METHOD0(OnAppLaunched, void());
-  MOCK_METHOD0(OnAppWindowCreated, void());
+  MOCK_METHOD(void, OnAppWindowCreated, (const absl::optional<std::string>&));
   MOCK_METHOD1(OnLaunchFailed, void(KioskAppLaunchError::Error));
 };
 

@@ -49,9 +49,10 @@ void KioskAppLauncher::ObserverList::NotifyAppLaunched() {
   }
 }
 
-void KioskAppLauncher::ObserverList::NotifyAppWindowCreated() {
+void KioskAppLauncher::ObserverList::NotifyAppWindowCreated(
+    const absl::optional<std::string>& app_name) {
   for (auto& observer : observers_) {
-    observer.OnAppWindowCreated();
+    observer.OnAppWindowCreated(app_name);
   }
 }
 

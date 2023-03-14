@@ -4,9 +4,6 @@
 
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_browser_controller_ash.h"
 
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
-#include "chrome/browser/ui/browser.h"
-
 namespace ash {
 
 WebKioskBrowserControllerAsh::WebKioskBrowserControllerAsh(
@@ -16,11 +13,5 @@ WebKioskBrowserControllerAsh::WebKioskBrowserControllerAsh(
     : WebKioskBrowserControllerBase(provider, browser, app_id) {}
 
 WebKioskBrowserControllerAsh::~WebKioskBrowserControllerAsh() = default;
-
-void WebKioskBrowserControllerAsh::MaybeInitAppSession() {
-  if (!WebKioskAppManager::Get()->app_session()) {
-    WebKioskAppManager::Get()->InitSession(browser(), browser()->profile());
-  }
-}
 
 }  // namespace ash

@@ -349,7 +349,6 @@ void StartupAppLauncher::OnLaunchComplete(
 
   switch (result) {
     case ChromeKioskAppLauncher::LaunchResult::kSuccess:
-      KioskAppManager::Get()->InitSession(profile_, app_id_);
       OnLaunchSuccess();
       return;
     case ChromeKioskAppLauncher::LaunchResult::kUnableToLaunch:

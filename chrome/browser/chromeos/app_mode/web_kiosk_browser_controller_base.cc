@@ -90,8 +90,6 @@ void WebKioskBrowserControllerBase::OnTabInserted(
   // tabbed browser window (e.g. via "Open in Chrome" menu item), it is still
   // considered "appy".
   web_app::WebAppTabHelper::FromWebContents(contents)->set_acting_as_app(true);
-
-  MaybeInitAppSession();
 }
 
 void WebKioskBrowserControllerBase::OnTabRemoved(

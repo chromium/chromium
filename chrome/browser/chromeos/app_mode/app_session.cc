@@ -35,6 +35,7 @@
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "ppapi/buildflags/buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "chrome/browser/chromeos/app_mode/kiosk_session_plugin_handler.h"
@@ -224,7 +225,7 @@ void AppSession::RegisterProfilePrefs(
                                 false);
 }
 
-void AppSession::Init(const std::string& app_id) {
+void AppSession::InitForChromeAppKiosk(const std::string& app_id) {
   app_window_handler_ = std::make_unique<AppWindowHandler>(this);
   app_window_handler_->Init(profile(), app_id);
   CreateBrowserWindowHandler(absl::nullopt);

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_APP_MODE_APP_LAUNCH_UTILS_H_
 
 #include <string>
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 class Profile;
@@ -33,6 +34,9 @@ void SetEphemeralKioskPreferencesListForTesting(std::vector<std::string>*);
 bool ShouldAutoLaunchKioskApp(const base::CommandLine& command_line,
                               PrefService* local_state);
 
+void CreateAppSession(const KioskAppId& kiosk_app_id,
+                      Profile* profile,
+                      const absl::optional<std::string>& app_name);
 }  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_APP_MODE_APP_LAUNCH_UTILS_H_

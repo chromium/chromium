@@ -10,9 +10,11 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/syslog_logging.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/ash/app_mode/app_session_ash.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_service_launcher.h"
 #include "chrome/browser/extensions/extension_special_storage_policy.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/webapps/browser/install_result_code.h"
@@ -154,7 +156,9 @@ void WebKioskAppServiceLauncher::OnAppLaunched(bool success) {
 }
 
 void WebKioskAppServiceLauncher::OnAppBecomesVisible() {
-  observers_.NotifyAppWindowCreated();
+  // TODO(b/242023891): Make sure we send a absl::nullopt when Lacros is enabled
+  observers_.NotifyAppWindowCreated(
+      web_app::GenerateApplicationNameFromAppId(app_id_));
 }
 
 void WebKioskAppServiceLauncher::RestartLauncher() {

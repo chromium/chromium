@@ -55,7 +55,7 @@ void KioskSessionServiceLacros::InitChromeKioskSession(
       base::BindOnce(&KioskSessionServiceLacros::AttemptUserExit,
                      weak_factory_.GetWeakPtr()),
       g_browser_process->local_state());
-  app_session_->Init(app_id);
+  app_session_->InitForChromeAppKiosk(app_id);
 }
 
 void KioskSessionServiceLacros::InitWebKioskSession(Browser* browser,
