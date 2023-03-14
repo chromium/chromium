@@ -1159,6 +1159,16 @@ void BookmarkCurrentTab(Browser* browser) {
     return;
   }
   bool was_bookmarked_by_user = bookmarks::IsBookmarkedByUser(model, url);
+#if !BUILDFLAG(IS_ANDROID)
+  PrefService* prefs = browser->profile()->GetPrefs();
+  if (base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel) &&
+      !prefs->GetBoolean(
+          bookmarks::prefs::kAddedBookmarkSincePowerBookmarksLaunch)) {
+    bookmarks::AddIfNotBookmarked(model, url, title, model->other_node());
+    prefs->SetBoolean(bookmarks::prefs::kAddedBookmarkSincePowerBookmarksLaunch,
+                      true);
+  }
+#endif
   bookmarks::AddIfNotBookmarked(model, url, title);
   bool is_bookmarked_by_user = bookmarks::IsBookmarkedByUser(model, url);
   // Make sure the model actually added a bookmark before showing the star. A

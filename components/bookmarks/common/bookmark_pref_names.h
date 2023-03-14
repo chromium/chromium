@@ -10,6 +10,7 @@
 namespace bookmarks {
 namespace prefs {
 
+extern const char kAddedBookmarkSincePowerBookmarksLaunch[];
 extern const char kBookmarkEditorExpandedNodes[];
 extern const char kEditBookmarksEnabled[];
 extern const char kManagedBookmarks[];

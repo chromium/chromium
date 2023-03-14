@@ -7,6 +7,11 @@
 namespace bookmarks {
 namespace prefs {
 
+// Boolean which specifies whether the user has added any new bookmarks
+// following the launch of the power bookmarks feature.
+const char kAddedBookmarkSincePowerBookmarksLaunch[] =
+    "bookmarks.added_since_power_bookmarks_launch";
+
 // Boolean which specifies the ids of the bookmark nodes that are expanded in
 // the bookmark editor.
 const char kBookmarkEditorExpandedNodes[] = "bookmark_editor.expanded_nodes";

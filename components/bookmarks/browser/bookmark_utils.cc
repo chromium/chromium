@@ -452,6 +452,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(
       prefs::kShowManagedBookmarksInBookmarkBar, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(prefs::kAddedBookmarkSincePowerBookmarksLaunch,
+                                false);
   RegisterManagedBookmarksPrefs(registry);
 }
 
@@ -498,13 +500,16 @@ void DeleteBookmarkFolders(BookmarkModel* model,
 
 const BookmarkNode* AddIfNotBookmarked(BookmarkModel* model,
                                        const GURL& url,
-                                       const std::u16string& title) {
+                                       const std::u16string& title,
+                                       const BookmarkNode* parent) {
   // Nothing to do, a user bookmark with that url already exists.
   if (IsBookmarkedByUser(model, url))
     return nullptr;
   model->client()->RecordAction(base::UserMetricsAction("BookmarkAdded"));
-  const BookmarkNode* parent = GetParentForNewNodes(model);
-  return model->AddNewURL(parent, parent->children().size(), title, url);
+
+  const auto* parent_to_use = parent ? parent : GetParentForNewNodes(model);
+  return model->AddNewURL(parent_to_use, parent_to_use->children().size(),
+                          title, url);
 }
 
 void RemoveAllBookmarks(BookmarkModel* model, const GURL& url) {
