@@ -73,6 +73,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/common/chrome_constants.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -166,11 +167,20 @@ class SessionRestoreTest : public InProcessBrowserTest {
  public:
   SessionRestoreTest() {
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    // Disable What's New for non-branded builds where the welcome page will be
-    // disabled. Otherwise the bots may run with a configuration (What's New
-    // enabled + Welcome disabled) that does not actually occur in production,
-    // and causes tests to flake.
-    scoped_feature_list_.InitAndDisableFeature(features::kChromeWhatsNewUI);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{// Disable What's New for non-branded builds
+                               // where the welcome page will be
+                               // disabled. Otherwise the bots may run with a
+                               // configuration (What's New
+                               // enabled + Welcome disabled) that does not
+                               // actually occur in production,
+                               // and causes tests to flake.
+                               features::kChromeWhatsNewUI,
+                               // TODO(crbug.com/1394910): Use HTTPS URLs in
+                               // tests to avoid having to
+                               // disable this feature.
+                               features::kHttpsUpgrades});
 #endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
   }
   ~SessionRestoreTest() override = default;
