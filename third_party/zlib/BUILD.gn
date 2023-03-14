@@ -33,7 +33,7 @@ config("zlib_internal_config") {
     # Build code using -O3, see: crbug.com/1084371.
     configs = [ "//build/config/compiler:optimize_speed" ]
   }
-  if (is_debug || use_libfuzzer) {
+  if (is_debug || use_fuzzing_engine) {
     # Enable zlib's asserts in debug and fuzzer builds.
     defines += [ "ZLIB_DEBUG" ]
   }
