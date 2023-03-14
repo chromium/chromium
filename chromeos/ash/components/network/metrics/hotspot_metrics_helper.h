@@ -41,6 +41,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
   static void RecordSetHotspotConfigResult(
       hotspot_config::mojom::SetHotspotConfigResult result);
 
+  // Emits hotspot enable operation latency to related UMA histogram.
+  static void RecordEnableHotspotLatency(const base::TimeDelta& latency);
+
   HotspotMetricsHelper();
   HotspotMetricsHelper(const HotspotMetricsHelper&) = delete;
   HotspotMetricsHelper& operator=(const HotspotMetricsHelper&) = delete;
@@ -92,6 +95,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
   static const char kHotspotUsageDuration[];
   static const char kHotspotMaxClientCount[];
   static const char kHotspotIsDeviceManaged[];
+  static const char kHotspotEnableLatency[];
   static const base::TimeDelta kLogAllowStatusAtLoginTimeout;
 
   static HotspotMetricsCheckReadinessResult GetCheckReadinessMetricsResult(

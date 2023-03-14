@@ -10,6 +10,7 @@
 #include "base/component_export.h"
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/elapsed_timer.h"
 #include "chromeos/ash/components/network/hotspot_capabilities_provider.h"
 #include "chromeos/ash/components/network/hotspot_state_handler.h"
 #include "chromeos/ash/components/network/technology_state_controller.h"
@@ -70,8 +71,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotController
 
     bool enabled;
     bool wifi_turned_off = false;
-    // Set for disable requests and will be null for enable requests.
+    // Set for disable requests and will be nullopt for enable requests.
     absl::optional<hotspot_config::mojom::DisableReason> disable_reason;
+    // Tracks the latency of enable hotspot operation and will be nullopt for
+    // disable requests.
+    absl::optional<base::ElapsedTimer> enable_latency_timer;
     HotspotControlCallback callback;
   };
 

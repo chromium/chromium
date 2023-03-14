@@ -71,6 +71,7 @@ void HotspotController::ProcessRequestQueue() {
   // Need to check the capabilities and do a final round of check tethering
   // readiness before enabling hotspot.
   if (current_request_->enabled) {
+    current_request_->enable_latency_timer = base::ElapsedTimer();
     CheckTetheringReadiness();
     return;
   }
@@ -148,6 +149,10 @@ void HotspotController::OnSetTetheringEnabledFailure(
 
 void HotspotController::CompleteCurrentRequest(
     hotspot_config::mojom::HotspotControlResult result) {
+  if (current_request_->enabled) {
+    HotspotMetricsHelper::RecordEnableHotspotLatency(
+        current_request_->enable_latency_timer->Elapsed());
+  }
   HotspotMetricsHelper::RecordSetTetheringEnabledResult(
       current_request_->enabled, result);
 

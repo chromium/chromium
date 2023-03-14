@@ -304,6 +304,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Network.Ash.Hotspot.Upstream.Cellular.EnableHotspot.Latency"
+    units="ms" expires_after="2023-10-01">
+  <owner>jiajunz@google.com</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Tracks how long the user needs to wait once the hotspot is requested to turn
+    on until the hotspot is ready to use.
+  </summary>
+</histogram>
+
 <histogram
     name="Network.Ash.Hotspot.Upstream.Cellular.Usage.Config.AutoDisable"
     enum="BooleanEnabled" expires_after="2023-10-01">

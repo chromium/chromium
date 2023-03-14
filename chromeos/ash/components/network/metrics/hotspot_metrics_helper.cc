@@ -65,6 +65,10 @@ const char HotspotMetricsHelper::kHotspotIsDeviceManaged[] =
     "ManagedStateWhenHotspotEnabled";
 
 // static
+const char HotspotMetricsHelper::kHotspotEnableLatency[] =
+    "Network.Ash.Hotspot.Upstream.Cellular.EnableHotspot.Latency";
+
+// static
 void HotspotMetricsHelper::RecordSetTetheringEnabledResult(
     bool enabled,
     hotspot_config::mojom::HotspotControlResult result) {
@@ -90,6 +94,12 @@ void HotspotMetricsHelper::RecordSetHotspotConfigResult(
     hotspot_config::mojom::SetHotspotConfigResult result) {
   base::UmaHistogramEnumeration(kHotspotSetConfigResultHistogram,
                                 GetSetConfigMetricsResult(result));
+}
+
+// static
+void HotspotMetricsHelper::RecordEnableHotspotLatency(
+    const base::TimeDelta& latency) {
+  base::UmaHistogramMediumTimes(kHotspotEnableLatency, latency);
 }
 
 HotspotMetricsHelper::HotspotMetricsSetEnabledResult

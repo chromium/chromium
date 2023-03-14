@@ -215,6 +215,8 @@ TEST_F(HotspotControllerTest, EnableTetheringSuccess) {
           NetworkTypePattern::WiFi()));
 
   histogram_tester_.ExpectTotalCount(
+      HotspotMetricsHelper::kHotspotEnableLatency, 1);
+  histogram_tester_.ExpectTotalCount(
       HotspotMetricsHelper::kHotspotCheckReadinessResultHistogram, 2);
   histogram_tester_.ExpectBucketCount(
       HotspotMetricsHelper::kHotspotCheckReadinessResultHistogram,
@@ -252,6 +254,8 @@ TEST_F(HotspotControllerTest, EnableTetheringReadinessCheckFailure) {
       hotspot_config::mojom::HotspotAllowStatus::kDisallowedReadinessCheckFail,
       hotspot_capabilities_provider_->GetHotspotCapabilities().allow_status);
 
+  histogram_tester_.ExpectTotalCount(
+      HotspotMetricsHelper::kHotspotEnableLatency, 1);
   histogram_tester_.ExpectTotalCount(
       HotspotMetricsHelper::kHotspotCheckReadinessResultHistogram, 2);
   histogram_tester_.ExpectBucketCount(
@@ -295,6 +299,8 @@ TEST_F(HotspotControllerTest, EnableTetheringNetworkSetupFailure) {
       network_state_test_helper_.network_state_handler()->GetTechnologyState(
           NetworkTypePattern::WiFi()));
 
+  histogram_tester_.ExpectTotalCount(
+      HotspotMetricsHelper::kHotspotEnableLatency, 1);
   histogram_tester_.ExpectTotalCount(
       HotspotMetricsHelper::kHotspotCheckReadinessResultHistogram, 2);
   histogram_tester_.ExpectBucketCount(
