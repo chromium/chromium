@@ -30,12 +30,12 @@ public class TaskTraits {
     // running, it may be descheduled if higher priority work arrives (in this
     // process or another) and its running on a non-critical thread. This is the
     // lowest possible priority.
-    public static final TaskTraits BEST_EFFORT =
-            new TaskTraits().taskPriority(TaskPriority.BEST_EFFORT);
+    public static final TaskTraits BEST_EFFORT = new TaskTraits(TaskPriority.BEST_EFFORT, false);
 
     // This is a lowest-priority task which may block, for example non-urgent
     // logging or deletion of temporary files as clean-up.
-    public static final TaskTraits BEST_EFFORT_MAY_BLOCK = BEST_EFFORT.mayBlock();
+    public static final TaskTraits BEST_EFFORT_MAY_BLOCK =
+            new TaskTraits(TaskPriority.BEST_EFFORT, true);
 
     // This task affects UI or responsiveness of future user interactions. It is
     // not an immediate response to a user interaction. Most tasks are likely to
@@ -44,77 +44,55 @@ public class TaskTraits {
     // - Updating the UI to reflect progress on a long task.
     // - Loading data that might be shown in the UI after a future user
     //   interaction.
-    public static final TaskTraits USER_VISIBLE =
-            new TaskTraits().taskPriority(TaskPriority.USER_VISIBLE);
+    public static final TaskTraits USER_VISIBLE = new TaskTraits(TaskPriority.USER_VISIBLE, false);
 
     // USER_VISIBLE + may block.
-    public static final TaskTraits USER_VISIBLE_MAY_BLOCK = USER_VISIBLE.mayBlock();
+    public static final TaskTraits USER_VISIBLE_MAY_BLOCK =
+            new TaskTraits(TaskPriority.USER_VISIBLE, true);
 
     // This task affects UI immediately after a user interaction.
     // Example: Generating data shown in the UI immediately after a click.
     public static final TaskTraits USER_BLOCKING =
-            new TaskTraits().taskPriority(TaskPriority.USER_BLOCKING);
+            new TaskTraits(TaskPriority.USER_BLOCKING, false);
 
     // USER_BLOCKING + may block.
-    public static final TaskTraits USER_BLOCKING_MAY_BLOCK = USER_BLOCKING.mayBlock();
-
-    // For tasks that should run on the thread pool instead of the main thread.
-    // Note that currently also tasks which lack this trait will execute on the
-    // thread pool unless a trait for a named thread is given.
-    public static final TaskTraits THREAD_POOL =
-            new TaskTraits().threadPool().taskPriority(TaskPriority.USER_BLOCKING);
-    public static final TaskTraits THREAD_POOL_USER_BLOCKING =
-            THREAD_POOL.taskPriority(TaskPriority.USER_BLOCKING);
-    public static final TaskTraits THREAD_POOL_USER_VISIBLE =
-            THREAD_POOL.taskPriority(TaskPriority.USER_VISIBLE);
-    public static final TaskTraits THREAD_POOL_BEST_EFFORT =
-            THREAD_POOL.taskPriority(TaskPriority.BEST_EFFORT);
+    public static final TaskTraits USER_BLOCKING_MAY_BLOCK =
+            new TaskTraits(TaskPriority.USER_BLOCKING, true);
 
     // For convenience of the JNI code, we use primitive types only.
     // Note shutdown behavior is not supported on android.
-    int mPriority;
-    boolean mMayBlock;
-    boolean mUseThreadPool;
-    byte mExtensionId;
-    byte mExtensionData[];
+    final int mPriority;
+    final boolean mMayBlock;
+    final boolean mUseThreadPool;
+    final byte mExtensionId;
+    final byte mExtensionData[];
 
-    // Derive custom traits from existing trait constants.
-    private TaskTraits() {
-        // Assume USER_BLOCKING by default.
-        mPriority = TaskPriority.USER_BLOCKING;
+    // For ThreadPool TaskTraits
+    private TaskTraits(int priority, boolean mayBlock) {
+        mPriority = priority;
+        mMayBlock = mayBlock;
+        mUseThreadPool = true;
+        mExtensionId = INVALID_EXTENSION_ID;
+        mExtensionData = null;
     }
 
-    private TaskTraits(TaskTraits other) {
-        mPriority = other.mPriority;
-        mMayBlock = other.mMayBlock;
-        mUseThreadPool = other.mUseThreadPool;
-        mExtensionId = other.mExtensionId;
-        mExtensionData = other.mExtensionData;
+    // For Extensions. MayBlock and ThreadPool are currently unused.
+    private TaskTraits(int priority, byte extensionId, byte extensionData[]) {
+        mPriority = priority;
+        mMayBlock = false;
+        mUseThreadPool = false;
+        mExtensionId = extensionId;
+        mExtensionData = extensionData;
     }
 
-    public TaskTraits taskPriority(int taskPriority) {
-        TaskTraits taskTraits = new TaskTraits(this);
-        taskTraits.mPriority = taskPriority;
-        return taskTraits;
-    }
+    public static <Extension> TaskTraits forExtension(int priority,
+            TaskTraitsExtensionDescriptor<Extension> descriptor, Extension extension) {
+        int id = descriptor.getId();
+        byte[] data = descriptor.toSerializedData(extension);
+        assert id > INVALID_EXTENSION_ID && id <= MAX_EXTENSION_ID;
+        assert data.length <= EXTENSION_STORAGE_SIZE;
 
-    /**
-     * Tasks with this trait may block. This includes but is not limited to tasks that wait on
-     * synchronous file I/O operations: read or write a file from disk, interact with a pipe or a
-     * socket, rename or delete a file, enumerate files in a directory, etc. This trait isn't
-     * required for the mere use of locks. The thread pool uses this property to work out if
-     * additional threads are required.
-     */
-    public TaskTraits mayBlock() {
-        TaskTraits taskTraits = new TaskTraits(this);
-        taskTraits.mMayBlock = true;
-        return taskTraits;
-    }
-
-    public TaskTraits threadPool() {
-        TaskTraits taskTraits = new TaskTraits(this);
-        taskTraits.mUseThreadPool = true;
-        return taskTraits;
+        return new TaskTraits(priority, (byte) id, data);
     }
 
     /**
@@ -135,34 +113,6 @@ public class TaskTraits {
         } else {
             return null;
         }
-    }
-
-    public <Extension> TaskTraits withExtension(
-            TaskTraitsExtensionDescriptor<Extension> descriptor, Extension extension) {
-        int id = descriptor.getId();
-        byte[] data = descriptor.toSerializedData(extension);
-        assert id > INVALID_EXTENSION_ID && id <= MAX_EXTENSION_ID;
-        assert data.length <= EXTENSION_STORAGE_SIZE;
-
-        TaskTraits taskTraits = new TaskTraits(this);
-        taskTraits.mExtensionId = (byte) id;
-        taskTraits.mExtensionData = data;
-        return taskTraits;
-    }
-
-    /**
-     * Returns a TaskTraits with an explicit destination.
-     *
-     * The C++ side enforces that a destination _must_ be specified. The Java
-     * side loosely considers lack of destination as implying THREAD_POOL
-     * destination.
-     * TODO(1026641): Bring the Java side inline with the C++ side.
-     */
-    public TaskTraits withExplicitDestination() {
-        if (!mUseThreadPool && !hasExtension()) {
-            return this.threadPool();
-        }
-        return this;
     }
 
     @Override

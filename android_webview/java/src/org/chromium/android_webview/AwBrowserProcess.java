@@ -445,7 +445,7 @@ public final class AwBrowserProcess {
                 mHasConnected = true;
                 // onServiceConnected is called on the UI thread, so punt this back to the
                 // background thread.
-                PostTask.postTask(TaskTraits.THREAD_POOL_BEST_EFFORT, () -> {
+                PostTask.postTask(TaskTraits.BEST_EFFORT, () -> {
                     try {
                         IMetricsBridgeService metricsService =
                                 IMetricsBridgeService.Stub.asInterface(service);

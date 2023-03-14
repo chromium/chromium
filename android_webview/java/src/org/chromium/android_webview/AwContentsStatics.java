@@ -138,7 +138,7 @@ public class AwContentsStatics {
 
     public static void logFlagOverridesWithNative(Map<String, Boolean> flagOverrides) {
         // Do work asynchronously to avoid blocking startup.
-        PostTask.postTask(TaskTraits.THREAD_POOL_BEST_EFFORT, () -> {
+        PostTask.postTask(TaskTraits.BEST_EFFORT, () -> {
             FlagOverrideHelper helper =
                     new FlagOverrideHelper(ProductionSupportedFlagList.sFlagList);
             ArrayList<String> switches = new ArrayList<>();

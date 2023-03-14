@@ -97,10 +97,9 @@ public class PostTask {
         if (!sNativeInitialized) {
             getTaskExecutorForTraits(taskTraits).postDelayedTask(taskTraits, task, delay);
         } else {
-            TaskTraits postedTraits = taskTraits.withExplicitDestination();
-            PostTaskJni.get().postDelayedTask(postedTraits.mPriority, postedTraits.mMayBlock,
-                    postedTraits.mUseThreadPool, postedTraits.mExtensionId,
-                    postedTraits.mExtensionData, task, delay, task.getClass().getName());
+            PostTaskJni.get().postDelayedTask(taskTraits.mPriority, taskTraits.mMayBlock,
+                    taskTraits.mUseThreadPool, taskTraits.mExtensionId, taskTraits.mExtensionData,
+                    task, delay, task.getClass().getName());
         }
     }
 

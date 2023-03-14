@@ -41,16 +41,25 @@ public class TaskTraitsTest {
         }
     }
 
+    private static class OtherTaskTraitsExtensionDescriptor
+            extends FakeTaskTraitsExtensionDescriptor {
+        @Override
+        public int getId() {
+            return super.getId() + 1;
+        }
+    }
+
     private static final FakeTaskTraitsExtensionDescriptor DESC =
             new FakeTaskTraitsExtensionDescriptor();
+
+    private static final OtherTaskTraitsExtensionDescriptor DESC2 =
+            new OtherTaskTraitsExtensionDescriptor();
 
     @Test
     @SmallTest
     public void testExtensionPresent() {
         String input = "Blub";
-        TaskTraits traits = TaskTraits.USER_VISIBLE.mayBlock();
-        traits.mExtensionId = FakeTaskTraitsExtensionDescriptor.ID;
-        traits.mExtensionData = input.getBytes();
+        TaskTraits traits = TaskTraits.forExtension(TaskPriority.USER_VISIBLE, DESC, input);
         String extension = traits.getExtension(DESC);
         assertEquals(input, extension);
     }
@@ -59,19 +68,8 @@ public class TaskTraitsTest {
     @SmallTest
     public void testExtensionNotPresent() {
         String input = "Blub";
-        TaskTraits traits = TaskTraits.USER_VISIBLE.mayBlock();
-        traits.mExtensionId = 3;
-        traits.mExtensionData = input.getBytes();
-        String extension = traits.getExtension(DESC);
+        TaskTraits traits = TaskTraits.forExtension(TaskPriority.USER_VISIBLE, DESC, input);
+        String extension = traits.getExtension(DESC2);
         assertNull(extension);
-    }
-
-    @Test
-    @SmallTest
-    public void testSerializeDeserialize() {
-        String input = "Blub";
-        TaskTraits traits = TaskTraits.USER_VISIBLE;
-        String extension = traits.withExtension(DESC, input).getExtension(DESC);
-        assertEquals(input, extension);
     }
 }

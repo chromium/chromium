@@ -214,7 +214,7 @@ public class ComponentsProviderService extends Service {
             }
             return null;
         });
-        PostTask.postTask(TaskTraits.THREAD_POOL_BEST_EFFORT, mDeleteTask);
+        PostTask.postTask(TaskTraits.BEST_EFFORT, mDeleteTask);
     }
 
     /**

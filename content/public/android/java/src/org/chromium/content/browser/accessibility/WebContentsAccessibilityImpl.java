@@ -336,7 +336,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                         mIsCurrentlyAutoDisabled = true;
                     }
                 };
-                autoDisableTask.executeWithTaskTraits(TaskTraits.THREAD_POOL_BEST_EFFORT);
+                autoDisableTask.executeWithTaskTraits(TaskTraits.BEST_EFFORT);
             }
         });
 

@@ -26,15 +26,12 @@ import org.chromium.content.browser.UiThreadTaskTraitsImpl;
 public class BrowserTaskExecutor implements TaskExecutor {
     private static boolean sRegistered;
 
-    private final SingleThreadTaskRunner mDefaultTaskRunner;
     private final SingleThreadTaskRunner mBestEffortTaskRunner;
     private final SingleThreadTaskRunner mUserVisibleTaskRunner;
     private final SingleThreadTaskRunner mUserBlockingTaskRunner;
 
     public BrowserTaskExecutor() {
         Handler handler = ThreadUtils.getUiThreadHandler();
-        mDefaultTaskRunner =
-                new SingleThreadTaskRunnerImpl(handler, UiThreadTaskTraitsImpl.DEFAULT);
         mBestEffortTaskRunner =
                 new SingleThreadTaskRunnerImpl(handler, UiThreadTaskTraitsImpl.BEST_EFFORT);
         mUserVisibleTaskRunner =
@@ -55,9 +52,7 @@ public class BrowserTaskExecutor implements TaskExecutor {
 
     @Override
     public SingleThreadTaskRunner createSingleThreadTaskRunner(TaskTraits taskTraits) {
-        if (UiThreadTaskTraitsImpl.DEFAULT.equals(taskTraits)) {
-            return mDefaultTaskRunner;
-        } else if (UiThreadTaskTraitsImpl.BEST_EFFORT.equals(taskTraits)) {
+        if (UiThreadTaskTraitsImpl.BEST_EFFORT.equals(taskTraits)) {
             return mBestEffortTaskRunner;
         } else if (UiThreadTaskTraitsImpl.USER_VISIBLE.equals(taskTraits)) {
             return mUserVisibleTaskRunner;
