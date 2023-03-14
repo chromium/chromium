@@ -33,6 +33,35 @@
 #endif
 
 namespace metrics_util = password_manager::metrics_util;
+namespace {
+
+// Reports a metric based on the change between the `current_note` and the
+// `updated_note`.
+void LogNoteChangesInPasswordManagementBubble(
+    const absl::optional<std::u16string>& current_note,
+    const absl::optional<std::u16string>& updated_note) {
+  std::u16string current_note_value = current_note.value_or(std::u16string());
+  std::u16string updated_note_value = updated_note.value_or(std::u16string());
+  if (current_note_value == updated_note_value) {
+    return;
+  }
+
+  if (current_note_value.empty()) {
+    metrics_util::LogUserInteractionsInPasswordManagementBubble(
+        metrics_util::PasswordManagementBubbleInteractions::kNoteAdded);
+    return;
+  }
+  if (updated_note_value.empty()) {
+    metrics_util::LogUserInteractionsInPasswordManagementBubble(
+        metrics_util::PasswordManagementBubbleInteractions::kNoteDeleted);
+    return;
+  }
+
+  metrics_util::LogUserInteractionsInPasswordManagementBubble(
+      metrics_util::PasswordManagementBubbleInteractions::kNoteEdited);
+}
+
+}  // namespace
 
 ItemsBubbleController::ItemsBubbleController(
     base::WeakPtr<PasswordsModelDelegate> delegate)
@@ -124,6 +153,10 @@ void ItemsBubbleController::UpdateSelectedCredentialInPasswordStore(
   }
   scoped_refptr<password_manager::PasswordStoreInterface> password_store =
       PasswordStoreForForm(currently_selected_password_.value());
+
+  LogNoteChangesInPasswordManagementBubble(
+      currently_selected_password_->GetNoteWithEmptyUniqueDisplayName(),
+      updated_form.GetNoteWithEmptyUniqueDisplayName());
 
   if (currently_selected_password_.value().username_value ==
       updated_form.username_value) {

@@ -196,6 +196,7 @@ std::unique_ptr<views::View> CreateNoteLabel(
                                    views::DISTANCE_RELATED_CONTROL_HORIZONTAL) -
                            2 * kIconSize;
   note_label->SetMaximumWidth(kNoteLabelMaxWidth);
+  note_label->SetID(static_cast<int>(ManagePasswordsViewIDs::kNoteLabel));
 
   int line_height = views::style::GetLineHeight(note_label->GetTextContext(),
                                                 note_label->GetTextStyle());
@@ -264,6 +265,7 @@ std::unique_ptr<views::View> CreateEditNoteRow(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
                                views::MaximumFlexSizeRule::kUnbounded));
+  (*textarea)->SetID(static_cast<int>(ManagePasswordsViewIDs::kNoteTextarea));
   return row;
 }
 
@@ -432,6 +434,8 @@ void ManagePasswordsDetailsView::SwitchToEditNoteMode() {
   DCHECK(note_textarea_);
   on_activity_callback_.Run();
   note_textarea_->RequestFocus();
+  LogUserInteractionsInPasswordManagementBubble(
+      PasswordManagementBubbleInteractions::kNoteEditButtonClicked);
 }
 
 void ManagePasswordsDetailsView::OnUserInputChanged() {

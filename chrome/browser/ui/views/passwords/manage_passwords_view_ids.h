@@ -26,6 +26,8 @@ enum class ManagePasswordsViewIDs {
 
   // The following ids are for note in the details views.
   kEditNoteButton,
+  kNoteTextarea,
+  kNoteLabel,
 };
 
 }  // namespace password_manager
