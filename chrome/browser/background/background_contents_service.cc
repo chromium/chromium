@@ -199,7 +199,7 @@ void ShowBalloon(const Extension* extension, Profile* profile) {
       base::BindOnce(
           &NotificationImageReady, extension->name(), extension->id(), message,
           base::MakeRefCounted<CrashNotificationDelegate>(profile, extension),
-          profile));
+          base::UnsafeDanglingUntriaged(profile)));
 }
 
 void ReloadExtension(const std::string& extension_id, Profile* profile) {
