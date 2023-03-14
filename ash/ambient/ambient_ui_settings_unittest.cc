@@ -49,14 +49,14 @@ TEST_F(AmbientUiSettingsTest, PrefManagement) {
       AmbientUiSettings::ReadFromPrefService(test_pref_service_).theme(),
       Eq(AmbientTheme::kFloatOnBy));
 
-  AmbientUiSettings(AmbientTheme::kVideo, AmbientVideo::kVideoClouds)
+  AmbientUiSettings(AmbientTheme::kVideo, AmbientVideo::kClouds)
       .WriteToPrefService(test_pref_service_);
   EXPECT_THAT(
       AmbientUiSettings::ReadFromPrefService(test_pref_service_).theme(),
       Eq(AmbientTheme::kVideo));
   EXPECT_THAT(
       AmbientUiSettings::ReadFromPrefService(test_pref_service_).video(),
-      Eq(AmbientVideo::kVideoClouds));
+      Eq(AmbientVideo::kClouds));
 }
 
 TEST_F(AmbientUiSettingsTest, HandlesCorruptedPrefStorage) {
@@ -98,8 +98,7 @@ TEST_F(AmbientUiSettingsTest, CrashesWithInvalidSettings) {
 TEST_F(AmbientUiSettingsTest, ToString) {
   EXPECT_THAT(AmbientUiSettings().ToString(), Eq("SlideShow"));
   EXPECT_THAT(
-      AmbientUiSettings(AmbientTheme::kVideo, AmbientVideo::kVideoClouds)
-          .ToString(),
+      AmbientUiSettings(AmbientTheme::kVideo, AmbientVideo::kClouds).ToString(),
       Eq("Video.Clouds"));
 }
 

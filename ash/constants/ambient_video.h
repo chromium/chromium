@@ -19,9 +19,9 @@ namespace ash {
 // These values are persisted in user pref storage and logs, so they should
 // never be renumbered or reused.
 enum class AmbientVideo {
-  kVideoNewMexico = 0,
-  kVideoClouds = 1,
-  kMaxValue = kVideoClouds,
+  kNewMexico = 0,
+  kClouds = 1,
+  kMaxValue = kClouds,
 };
 
 // The returned StringPiece is guaranteed to be null-terminated and point to

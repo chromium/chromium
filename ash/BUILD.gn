@@ -228,6 +228,8 @@ component("ash") {
     "ambient/ui/ambient_info_view.h",
     "ambient/ui/ambient_shield_view.cc",
     "ambient/ui/ambient_shield_view.h",
+    "ambient/ui/ambient_video_utils.cc",
+    "ambient/ui/ambient_video_utils.h",
     "ambient/ui/ambient_video_view.cc",
     "ambient/ui/ambient_video_view.h",
     "ambient/ui/ambient_view_delegate.h",

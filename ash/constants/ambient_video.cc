@@ -11,9 +11,9 @@ base::StringPiece ToString(AmbientVideo video) {
   // are currently used for metrics purposes, so they cannot be arbitrarily
   // renamed.
   switch (video) {
-    case AmbientVideo::kVideoNewMexico:
+    case AmbientVideo::kNewMexico:
       return "NewMexico";
-    case AmbientVideo::kVideoClouds:
+    case AmbientVideo::kClouds:
       return "Clouds";
   }
 }
