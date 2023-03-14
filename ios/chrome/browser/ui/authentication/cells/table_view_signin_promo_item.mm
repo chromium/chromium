@@ -5,10 +5,10 @@
 #import "ios/chrome/browser/ui/authentication/cells/table_view_signin_promo_item.h"
 
 #import "base/mac/foundation_util.h"
+#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
-#import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

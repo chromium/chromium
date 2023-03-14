@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/table_view/cells/table_view_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
 
 // Bring-your-own-text-field: Item that hosts a text field provided by the user
 // of this class.

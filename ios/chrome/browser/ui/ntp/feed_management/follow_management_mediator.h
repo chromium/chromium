@@ -7,9 +7,9 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
 #import "ios/chrome/browser/ui/ntp/feed_management/follow_management_follow_delegate.h"
 #import "ios/chrome/browser/ui/ntp/feed_management/followed_web_channels_data_source.h"
-#import "ios/chrome/browser/ui/table_view/table_view_favicon_data_source.h"
 
 class Browser;
 @protocol FollowManagementUIUpdater;

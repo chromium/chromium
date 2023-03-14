@@ -5,8 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_UI_POPUP_MENU_PUBLIC_POPUP_MENU_TABLE_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_UI_POPUP_MENU_PUBLIC_POPUP_MENU_TABLE_VIEW_CONTROLLER_H_
 
+#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_consumer.h"
-#import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 
 @protocol PopupMenuItem;
 @protocol PopupMenuMetricsHandler;

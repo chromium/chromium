@@ -8,9 +8,9 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/history/core/browser/browsing_history_service.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/history/history_entry_item_delegate.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_url_item.h"
-#import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 

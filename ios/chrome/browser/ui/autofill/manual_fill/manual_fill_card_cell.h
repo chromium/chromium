@@ -7,8 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_credit_card.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_item.h"
 
 @protocol CardListDelegate;
 @protocol ManualFillContentInjector;

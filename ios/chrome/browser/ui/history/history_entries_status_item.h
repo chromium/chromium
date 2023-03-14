@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_HISTORY_HISTORY_ENTRIES_STATUS_ITEM_H_
 #define IOS_CHROME_BROWSER_UI_HISTORY_HISTORY_ENTRIES_STATUS_ITEM_H_
 
-#import "ios/chrome/browser/ui/table_view/cells/table_view_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
 
 // Model item for HistoryEntriesStatusCell. Contains information on what type of
 // History entries are being displayed.

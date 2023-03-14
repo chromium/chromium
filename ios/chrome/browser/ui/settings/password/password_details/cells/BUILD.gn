@@ -9,7 +9,7 @@ source_set("cells") {
     "table_view_stacked_details_item.mm",
   ]
   deps = [
-    "//ios/chrome/browser/ui/table_view/cells",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/common/ui/util",
@@ -23,7 +23,7 @@ source_set("unit_tests") {
   sources = [ "table_view_stacked_details_item_unittest.mm" ]
   deps = [
     ":cells",
-    "//ios/chrome/browser/ui/table_view:styler",
+    "//ios/chrome/browser/shared/ui/table_view:styler",
     "//testing/gtest",
   ]
 }

@@ -7,11 +7,11 @@
 #import "base/check.h"
 #import "base/check_op.h"
 #import "base/mac/foundation_util.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/settings/price_notifications/price_notifications_mediator.h"
 #import "ios/chrome/browser/ui/settings/price_notifications/price_notifications_navigation_commands.h"
 #import "ios/chrome/browser/ui/settings/price_notifications/price_notifications_view_controller.h"
 #import "ios/chrome/browser/ui/settings/price_notifications/tracking_price/tracking_price_coordinator.h"
-#import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

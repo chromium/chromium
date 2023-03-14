@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_NTP_FEED_MANAGEMENT_FOLLOWED_WEB_CHANNEL_ITEM_H_
 #define IOS_CHROME_BROWSER_UI_NTP_FEED_MANAGEMENT_FOLLOWED_WEB_CHANNEL_ITEM_H_
 
-#import "ios/chrome/browser/ui/table_view/cells/table_view_url_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
 
 @class FollowedWebChannel;
 

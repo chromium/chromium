@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/ui/settings/cells/table_view_clear_browsing_data_item.h"
 
 #import "base/mac/foundation_util.h"
+#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 

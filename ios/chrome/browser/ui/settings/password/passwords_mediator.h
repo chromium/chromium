@@ -8,11 +8,11 @@
 #import <Foundation/Foundation.h>
 
 #include "base/memory/scoped_refptr.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
 #include "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/settings/utils/password_auto_fill_status_observer.h"
-#import "ios/chrome/browser/ui/table_view/table_view_favicon_data_source.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 
 class FaviconLoader;

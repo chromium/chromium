@@ -5,8 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_UI_POPUP_MENU_CELLS_POPUP_MENU_TOOLS_ITEM_H_
 #define IOS_CHROME_BROWSER_UI_POPUP_MENU_CELLS_POPUP_MENU_TOOLS_ITEM_H_
 
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
 #import "ios/chrome/browser/ui/popup_menu/public/cells/popup_menu_item.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_item.h"
 
 // Item for a tools menu item.
 @interface PopupMenuToolsItem : TableViewItem<PopupMenuItem>

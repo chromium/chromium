@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_WHATS_NEW_WHATS_NEW_TABLE_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_UI_WHATS_NEW_WHATS_NEW_TABLE_VIEW_CONTROLLER_H_
 
-#import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_mediator_consumer.h"
 
 @protocol WhatsNewTableViewDelegate;

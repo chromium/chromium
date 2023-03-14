@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORDS_TABLE_VIEW_CONSTANTS_H_
 
 #import <Foundation/Foundation.h>
-#import "ios/chrome/browser/ui/list_model/list_model.h"
+#import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 
 // The accessibility identifier of the password details table view.
 extern NSString* const kPasswordsTableViewId;

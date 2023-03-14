@@ -57,6 +57,9 @@ source_set("google_services") {
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/list_model",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:system_identity",
@@ -69,7 +72,6 @@ source_set("google_services") {
     "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
     "//ios/chrome/browser/ui/icons",
     "//ios/chrome/browser/ui/icons:symbols",
-    "//ios/chrome/browser/ui/list_model",
     "//ios/chrome/browser/ui/settings:constants",
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings/cells",
@@ -77,8 +79,6 @@ source_set("google_services") {
     "//ios/chrome/browser/ui/settings/sync",
     "//ios/chrome/browser/ui/settings/sync/utils",
     "//ios/chrome/browser/ui/settings/utils",
-    "//ios/chrome/browser/ui/table_view",
-    "//ios/chrome/browser/ui/table_view:utils",
     "//ios/chrome/browser/url:constants",
     "//ios/chrome/browser/url_loading",
     "//ios/chrome/common/ui/colors",
@@ -99,7 +99,7 @@ source_set("constants") {
     "manage_sync_settings_constants.h",
     "manage_sync_settings_constants.mm",
   ]
-  deps = [ "//ios/chrome/browser/ui/list_model" ]
+  deps = [ "//ios/chrome/browser/shared/ui/list_model" ]
 }
 
 source_set("eg_app_support+eg2") {
@@ -201,6 +201,9 @@ source_set("unit_tests") {
     "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view:test_support",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:fake_system_identity",
     "//ios/chrome/browser/signin:fake_system_identity_manager",
@@ -209,9 +212,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/sync:test_support",
     "//ios/chrome/browser/ui/settings/cells",
     "//ios/chrome/browser/ui/settings/google_services:constants",
-    "//ios/chrome/browser/ui/table_view",
-    "//ios/chrome/browser/ui/table_view:test_support",
-    "//ios/chrome/browser/ui/table_view/cells",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gtest",

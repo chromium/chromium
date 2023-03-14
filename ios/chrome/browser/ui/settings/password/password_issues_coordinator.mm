@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_utils.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_coordinator.h"
@@ -24,7 +25,6 @@
 #import "ios/chrome/browser/ui/settings/password/password_issues_mediator.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues_presenter.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues_table_view_controller.h"
-#import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ui/base/l10n/l10n_util.h"
 

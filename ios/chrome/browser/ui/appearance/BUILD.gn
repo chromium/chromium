@@ -11,8 +11,8 @@ source_set("appearance") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/ui/settings:settings_root",
-    "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/common/ui/colors",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]

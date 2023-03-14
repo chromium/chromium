@@ -18,7 +18,7 @@ source_set("password_checkup") {
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/passwords",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
-    "//ios/chrome/browser/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
   ]
 }
 
@@ -40,10 +40,10 @@ source_set("password_checkup_ui") {
     "resources:password_checkup_header_yellow",
     "//base",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings/cells",
-    "//ios/chrome/browser/ui/table_view/cells",
     "//ios/chrome/common/ui/colors",
     "//ui/base",
   ]
@@ -96,10 +96,10 @@ source_set("unit_tests") {
     "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/passwords",
     "//ios/chrome/browser/passwords:store_factory",
+    "//ios/chrome/browser/shared/ui/table_view:test_support",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/ui/settings/cells",
-    "//ios/chrome/browser/ui/table_view:test_support",
-    "//ios/chrome/browser/ui/table_view:utils",
-    "//ios/chrome/browser/ui/table_view/cells",
     "//ios/chrome/common/ui/colors",
     "//ios/web/public/test",
     "//testing/gtest",

@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SETTINGS_PASSWORD_SETTINGS_CONSTANTS_H_
 
 #import <Foundation/Foundation.h>
-#import "ios/chrome/browser/ui/list_model/list_model.h"
+#import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 
 // Accessibility ID for the dialog asking users to confirm the export of their
 // passwords.

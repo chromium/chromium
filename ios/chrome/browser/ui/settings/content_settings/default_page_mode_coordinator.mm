@@ -8,9 +8,9 @@
 #import "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/settings/content_settings/default_page_mode_mediator.h"
 #import "ios/chrome/browser/ui/settings/content_settings/default_page_mode_table_view_controller.h"
-#import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

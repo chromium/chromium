@@ -21,12 +21,12 @@ source_set("signed_in_accounts") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:system_identity",
     "//ios/chrome/browser/ui/authentication/cells",
     "//ios/chrome/browser/ui/image_util",
-    "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
   ]

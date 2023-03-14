@@ -15,11 +15,11 @@
 #import "ios/chrome/browser/overlays/public/infobar_modal/translate_infobar_modal_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/translate_infobar_modal_overlay_responses.h"
 #import "ios/chrome/browser/overlays/public/overlay_response.h"
+#import "ios/chrome/browser/shared/ui/list_model/list_model.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/translate/translate_constants.h"
 #import "ios/chrome/browser/translate/translate_infobar_metrics_recorder.h"
-#import "ios/chrome/browser/ui/list_model/list_model.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_mediator+subclassing.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

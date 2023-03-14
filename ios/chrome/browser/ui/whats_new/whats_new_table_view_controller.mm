@@ -5,9 +5,9 @@
 #import "ios/chrome/browser/ui/whats_new/whats_new_table_view_controller.h"
 
 #import "base/metrics/histogram_functions.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_header_footer_item.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_text_header_footer_item.h"
-#import "ios/chrome/browser/ui/table_view/table_view_utils.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_header_footer_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/whats_new/cells/whats_new_table_view_banner_item.h"
 #import "ios/chrome/browser/ui/whats_new/cells/whats_new_table_view_fake_header_item.h"
 #import "ios/chrome/browser/ui/whats_new/cells/whats_new_table_view_item.h"

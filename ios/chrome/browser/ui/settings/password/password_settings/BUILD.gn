@@ -57,8 +57,8 @@ source_set("password_settings_ui") {
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/ui/table_view",
-    "//ios/chrome/browser/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/reauthentication",
     "//ui/base",
@@ -73,7 +73,7 @@ source_set("password_settings_constants") {
     "password_settings_constants.h",
     "password_settings_constants.mm",
   ]
-  deps = [ "//ios/chrome/browser/ui/list_model" ]
+  deps = [ "//ios/chrome/browser/shared/ui/list_model" ]
 }
 
 source_set("common") {

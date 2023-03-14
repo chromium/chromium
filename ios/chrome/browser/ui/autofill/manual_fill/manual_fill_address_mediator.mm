@@ -8,6 +8,8 @@
 
 #import "base/metrics/user_metrics.h"
 #import "components/autofill/core/browser/data_model/autofill_profile.h"
+#import "ios/chrome/browser/shared/ui/list_model/list_model.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/address_consumer.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/address_list_delegate.h"
@@ -16,8 +18,6 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_address.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_address_cell.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_content_injector.h"
-#import "ios/chrome/browser/ui/list_model/list_model.h"
-#import "ios/chrome/browser/ui/table_view/table_view_model.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 

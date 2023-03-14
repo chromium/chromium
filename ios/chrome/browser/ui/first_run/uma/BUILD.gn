@@ -14,7 +14,7 @@ source_set("uma") {
     ":uma_ui",
     "//base",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
-    "//ios/chrome/browser/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/common",
     "//ui/base",
   ]
@@ -29,9 +29,9 @@ source_set("uma_ui") {
   deps = [
     "//base",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/ui/list_model",
-    "//ios/chrome/browser/ui/table_view",
-    "//ios/chrome/browser/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/list_model",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/table_view:cells_constants",

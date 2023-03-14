@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_AUTOFILL_CELLS_CVC_HEADER_ITEM_H_
 #define IOS_CHROME_BROWSER_UI_AUTOFILL_CELLS_CVC_HEADER_ITEM_H_
 
-#import "ios/chrome/browser/ui/table_view/cells/table_view_header_footer_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_header_footer_item.h"
 
 // Item to represent and configure a CVCHeaderCell
 @interface CVCHeaderItem : TableViewHeaderFooterItem

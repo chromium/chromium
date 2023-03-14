@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/table_view/cells/table_view_header_footer_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_header_footer_item.h"
 
 // SafeBrowsingHeaderItem displays an image and a title. This item uses
 // multi-lines text field.

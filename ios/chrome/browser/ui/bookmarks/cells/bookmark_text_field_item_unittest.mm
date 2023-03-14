@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_text_field_item.h"
 
-#import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
+#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"

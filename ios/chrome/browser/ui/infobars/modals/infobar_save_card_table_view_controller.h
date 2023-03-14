@@ -5,8 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_UI_INFOBARS_MODALS_INFOBAR_SAVE_CARD_TABLE_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_UI_INFOBARS_MODALS_INFOBAR_SAVE_CARD_TABLE_VIEW_CONTROLLER_H_
 
+#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_save_card_modal_consumer.h"
-#import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 
 @protocol InfobarSaveCardModalDelegate;
 @class SaveCardMessageWithLinks;

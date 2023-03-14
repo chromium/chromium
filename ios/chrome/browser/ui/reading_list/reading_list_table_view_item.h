@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_READING_LIST_READING_LIST_TABLE_VIEW_ITEM_H_
 #define IOS_CHROME_BROWSER_UI_READING_LIST_READING_LIST_TABLE_VIEW_ITEM_H_
 
-#import "ios/chrome/browser/ui/table_view/cells/table_view_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
 
 #import "ios/chrome/browser/ui/reading_list/reading_list_list_item.h"
 

@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/ui/list_model/list_model.h"
+#import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 
 // Sections used in Settings page.
 typedef NS_ENUM(NSInteger, SettingsSectionIdentifier) {

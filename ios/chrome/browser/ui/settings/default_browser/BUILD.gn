@@ -14,11 +14,11 @@ source_set("default_browser") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/default_browser",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/ui/settings:constants",
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings/resources:settings",
-    "//ios/chrome/browser/ui/table_view:utils",
-    "//ios/chrome/browser/ui/table_view/cells",
     "//ios/chrome/common/ui/colors",
     "//ui/base",
   ]
@@ -33,8 +33,8 @@ source_set("unit_tests") {
     ":default_browser",
     "//base",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/table_view:test_support",
     "//ios/chrome/browser/ui/settings",
-    "//ios/chrome/browser/ui/table_view:test_support",
     "//testing/gtest",
   ]
 }

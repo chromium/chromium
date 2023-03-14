@@ -6,10 +6,10 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_consumer.h"
 #import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/keyboard/key_command_actions.h"
-#import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 
 @protocol BookmarksEditorMutator;
 class Browser;

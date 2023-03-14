@@ -5,10 +5,10 @@
 #import "ios/chrome/browser/ui/autofill/cells/expiration_date_edit_item.h"
 
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/autofill/cells/expiration_date_edit_item+private.h"
 #import "ios/chrome/browser/ui/autofill/cells/expiration_date_edit_item_delegate.h"
 #import "ios/chrome/browser/ui/autofill/expiration_date_picker.h"
-#import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ui/base/l10n/l10n_util.h"
 

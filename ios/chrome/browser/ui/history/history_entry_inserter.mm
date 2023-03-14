@@ -7,10 +7,10 @@
 #import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
+#import "ios/chrome/browser/shared/ui/list_model/list_model.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/ui/history/history_entry_item_interface.h"
 #import "ios/chrome/browser/ui/history/history_util.h"
-#import "ios/chrome/browser/ui/list_model/list_model.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

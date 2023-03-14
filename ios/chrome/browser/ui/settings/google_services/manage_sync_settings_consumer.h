@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/table_view/table_view_model.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 
 // Consumer protocol for manage sync settings.
 @protocol ManageSyncSettingsConsumer <NSObject>

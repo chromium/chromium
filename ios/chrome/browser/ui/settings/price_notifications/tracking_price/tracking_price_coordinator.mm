@@ -9,10 +9,10 @@
 #import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
 #import "ios/chrome/browser/ui/settings/price_notifications/tracking_price/tracking_price_mediator.h"
 #import "ios/chrome/browser/ui/settings/price_notifications/tracking_price/tracking_price_view_controller.h"
-#import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 

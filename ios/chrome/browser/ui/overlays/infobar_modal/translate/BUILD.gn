@@ -25,14 +25,14 @@ source_set("translate") {
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/common/infobars",
     "//ios/chrome/browser/overlays/public/infobar_modal",
+    "//ios/chrome/browser/shared/ui/list_model",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/translate:public",
     "//ios/chrome/browser/ui/infobars/coordinators:translate_public",
     "//ios/chrome/browser/ui/infobars/modals",
-    "//ios/chrome/browser/ui/list_model",
     "//ios/chrome/browser/ui/overlays:coordinators",
     "//ios/chrome/browser/ui/overlays/infobar_modal:coordinators",
     "//ios/chrome/browser/ui/overlays/infobar_modal:mediators",
-    "//ios/chrome/browser/ui/table_view/cells",
     "//ui/base",
   ]
 }

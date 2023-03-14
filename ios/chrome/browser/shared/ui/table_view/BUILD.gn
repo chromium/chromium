@@ -1,0 +1,111 @@
+# Copyright 2018 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("table_view") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "chrome_table_view_consumer.h",
+    "chrome_table_view_controller.h",
+    "chrome_table_view_controller.mm",
+    "table_view_favicon_data_source.h",
+    "table_view_model.h",
+    "table_view_model.mm",
+    "table_view_navigation_controller.h",
+    "table_view_navigation_controller.mm",
+  ]
+  deps = [
+    ":styler",
+    ":views",
+    "//base",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/list_model",
+    "//ios/chrome/common/ui/colors",
+    "//ios/third_party/material_components_ios",
+  ]
+  public_deps = [
+    ":constants",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+  ]
+}
+
+source_set("constants") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "table_view_constants.h",
+    "table_view_constants.mm",
+    "table_view_navigation_controller_constants.h",
+    "table_view_navigation_controller_constants.mm",
+  ]
+}
+
+source_set("styler") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "chrome_table_view_styler.h",
+    "chrome_table_view_styler.mm",
+  ]
+  public_deps = [
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/colors",
+  ]
+}
+
+source_set("views") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "chrome_empty_table_view_background.h",
+    "table_view_empty_view.h",
+    "table_view_empty_view.mm",
+    "table_view_illustrated_empty_view.h",
+    "table_view_illustrated_empty_view.mm",
+    "table_view_loading_view.h",
+    "table_view_loading_view.mm",
+  ]
+  deps = [
+    ":constants",
+    "//base",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/third_party/material_components_ios",
+  ]
+}
+
+source_set("test_support") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "chrome_table_view_controller_test.h",
+    "chrome_table_view_controller_test.mm",
+  ]
+  deps = [
+    ":table_view",
+    "//base",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/test:test_support",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [ "chrome_table_view_controller_unittest.mm" ]
+  deps = [
+    ":table_view",
+    ":test_support",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//testing/gtest",
+  ]
+}
+
+source_set("utils") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "table_view_utils.h",
+    "table_view_utils.mm",
+  ]
+  deps = [ "//ios/chrome/common/ui/util" ]
+}

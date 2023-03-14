@@ -11,7 +11,7 @@ source_set("cells") {
   ]
   deps = [
     "resources:popup_menu_separator_color",
-    "//ios/chrome/browser/ui/table_view/cells",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
   ]
   frameworks = [ "UIKit.framework" ]
 }

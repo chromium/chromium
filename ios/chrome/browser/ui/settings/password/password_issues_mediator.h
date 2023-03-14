@@ -7,8 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
 #include "ios/chrome/browser/sync/sync_service_factory.h"
-#import "ios/chrome/browser/ui/table_view/table_view_favicon_data_source.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 
 namespace password_manager {

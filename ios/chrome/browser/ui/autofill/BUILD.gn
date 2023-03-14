@@ -80,15 +80,16 @@ source_set("bridges") {
     "//components/autofill/core/browser",
     "//components/strings",
     "//ios/chrome/browser/net:crurl",
+    "//ios/chrome/browser/shared/ui/list_model",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/autofill/cells",
-    "//ios/chrome/browser/ui/list_model",
-    "//ios/chrome/browser/ui/table_view:utils",
     "//ios/chrome/common/ui/colors",
     "//ui/base",
     "//url",
   ]
-  public_deps = [ "//ios/chrome/browser/ui/table_view" ]
+  public_deps = [ "//ios/chrome/browser/shared/ui/table_view" ]
   frameworks = [ "UIKit.framework" ]
 }
 
@@ -232,8 +233,8 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/autofill/core/browser",
     "//components/prefs:test_support",
+    "//ios/chrome/browser/shared/ui/table_view:test_support",
     "//ios/chrome/browser/ui/autofill/cells",
-    "//ios/chrome/browser/ui/table_view:test_support",
     "//ios/chrome/test:test_support",
     "//testing/gmock",
     "//testing/gtest",

@@ -5,9 +5,9 @@
 #import "ios/chrome/browser/ui/infobars/modals/autofill_address_profile/infobar_save_address_profile_table_view_controller.h"
 
 #import "base/mac/foundation_util.h"
+#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type.h"
 #import "ios/chrome/browser/ui/infobars/modals/autofill_address_profile/infobar_save_address_profile_modal_delegate.h"
-#import "ios/chrome/browser/ui/table_view/chrome_table_view_controller_test.h"
 #import "testing/gtest_mac.h"
 
 #import "third_party/ocmock/OCMock/OCMock.h"

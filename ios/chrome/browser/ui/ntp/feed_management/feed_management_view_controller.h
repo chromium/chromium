@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_NTP_FEED_MANAGEMENT_FEED_MANAGEMENT_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_UI_NTP_FEED_MANAGEMENT_FEED_MANAGEMENT_VIEW_CONTROLLER_H_
 
-#import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
 
 @protocol FeedManagementFollowDelegate;
 @protocol FeedManagementNavigationDelegate;

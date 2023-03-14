@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/popup_menu/cells/popup_menu_navigation_item.h"
 
+#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_ui_constants.h"
-#import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 

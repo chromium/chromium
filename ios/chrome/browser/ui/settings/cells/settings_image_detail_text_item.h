@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/ui/table_view/cells/table_view_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
 
 // SettingsImageDetailTextItem is an item that displays an image, a title and
 // a detail text (optional). This item uses multi-lines text field.

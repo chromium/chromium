@@ -5,8 +5,8 @@
 #import "ios/chrome/test/earl_grey/chrome_actions_app_interface.h"
 
 #import "base/mac/foundation_util.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_switch_cell.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_switch_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/testing/earl_grey/earl_grey_app.h"
 #import "ios/web/public/test/earl_grey/web_view_actions.h"

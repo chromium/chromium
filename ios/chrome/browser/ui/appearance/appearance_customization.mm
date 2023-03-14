@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/appearance/appearance_customization.h"
 
 #import "base/mac/foundation_util.h"
-#import "ios/chrome/browser/ui/table_view/table_view_navigation_controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_CELLS_PASSPHRASE_ERROR_ITEM_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_CELLS_PASSPHRASE_ERROR_ITEM_H_
 
-#import "ios/chrome/browser/ui/table_view/cells/table_view_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
 
 // Item to display an error when the passphrase is incorrect.
 @interface PassphraseErrorItem : TableViewItem

@@ -14,8 +14,8 @@ source_set("cells") {
   ]
 
   deps = [
+    "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/ui/autofill:autofill_ui_type",
-    "//ios/chrome/browser/ui/table_view/cells",
     "//ios/chrome/common/ui/table_view:cells_constants",
   ]
 

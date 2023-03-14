@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/table_view/cells/table_view_header_footer_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_header_footer_item.h"
 
 // IdentityChooserHeaderItem holds the model data for "Choose an Account" header
 // cell.

@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/ui/table_view/cells/table_view_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
 
 // SendTabToSelfImageDetailTextItem is an item that displays an image, a title
 // and a detail text. This item uses multi-lines text field.

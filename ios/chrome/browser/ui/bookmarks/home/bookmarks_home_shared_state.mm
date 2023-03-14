@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/ui/bookmarks/home/bookmarks_home_shared_state.h"
 
 #import "base/check.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_table_cell_title_editing.h"
-#import "ios/chrome/browser/ui/table_view/table_view_model.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

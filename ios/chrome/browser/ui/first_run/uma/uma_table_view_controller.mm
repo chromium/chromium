@@ -6,9 +6,9 @@
 
 #import "base/check_op.h"
 #import "base/mac/foundation_util.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_attributed_string_header_footer_item.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_switch_cell.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_switch_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_attributed_string_header_footer_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"

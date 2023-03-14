@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_PASSPHRASE_TABLE_VIEW_CONTROLLER_TEST_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PASSPHRASE_TABLE_VIEW_CONTROLLER_TEST_H_
 
-#include "ios/chrome/browser/ui/table_view/chrome_table_view_controller_test.h"
+#include "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
 
 #include "base/compiler_specific.h"
 #include "components/keyed_service/core/keyed_service.h"

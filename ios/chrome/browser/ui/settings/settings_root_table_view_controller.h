@@ -7,9 +7,9 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/settings_root_view_controlling.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
-#import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 
 // SettingsRootTableViewController is a base class for integrating UITableViews
 // into the Settings UI. This class is made to be subclassed and contains the

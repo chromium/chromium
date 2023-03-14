@@ -5,8 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_UI_HISTORY_HISTORY_ENTRY_ITEM_H_
 #define IOS_CHROME_BROWSER_UI_HISTORY_HISTORY_ENTRY_ITEM_H_
 
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
 #import "ios/chrome/browser/ui/history/history_entry_item_interface.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_item.h"
 
 @protocol HistoryEntryItemDelegate;
 

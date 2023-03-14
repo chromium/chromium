@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #include "base/memory/ref_counted.h"
-#import "ios/chrome/browser/ui/table_view/table_view_favicon_data_source.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
 
 @protocol ManualFillContentInjector;
 @class ManualFillPasswordMediator;

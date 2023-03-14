@@ -7,9 +7,9 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
-#import "ios/chrome/browser/ui/table_view/chrome_table_view_consumer.h"
-#import "ios/chrome/browser/ui/table_view/table_view_model.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_consumer.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 
 // Consumer protocol for safety check.
 @protocol SafetyCheckConsumer <ChromeTableViewConsumer>

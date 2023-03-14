@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/ui/list_model/list_model.h"
+#import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #include "url/gurl.h"
 
 namespace password_manager {

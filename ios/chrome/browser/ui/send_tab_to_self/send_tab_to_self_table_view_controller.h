@@ -7,7 +7,7 @@
 
 #import <vector>
 
-#import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
 
 namespace send_tab_to_self {
 struct TargetDeviceInfo;

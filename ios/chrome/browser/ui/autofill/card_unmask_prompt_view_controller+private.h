@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_AUTOFILL_CARD_UNMASK_PROMPT_VIEW_CONTROLLER_PRIVATE_H_
 #define IOS_CHROME_BROWSER_UI_AUTOFILL_CARD_UNMASK_PROMPT_VIEW_CONTROLLER_PRIVATE_H_
 
-#import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
 
 @interface CardUnmaskPromptViewController (Private)
 // Exposed to simulate form submissions.

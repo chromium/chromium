@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_CELLS_ACCOUNT_SIGN_IN_ITEM_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_CELLS_ACCOUNT_SIGN_IN_ITEM_H_
 
-#import "ios/chrome/browser/ui/table_view/cells/table_view_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
 
 // Item to display a non-personnalized sign-in cell.
 @interface AccountSignInItem : TableViewItem

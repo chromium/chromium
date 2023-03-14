@@ -6,8 +6,8 @@
 
 #import "base/check_op.h"
 #import "base/mac/foundation_util.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/first_run/uma/uma_table_view_controller.h"
-#import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

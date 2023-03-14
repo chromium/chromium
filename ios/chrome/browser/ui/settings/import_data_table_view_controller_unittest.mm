@@ -6,9 +6,9 @@
 
 #import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
-#import "ios/chrome/browser/ui/table_view/chrome_table_view_controller_test.h"
-#import "ios/chrome/browser/ui/table_view/table_view_model.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest/include/gtest/gtest.h"

@@ -5,9 +5,9 @@
 #import "ios/chrome/browser/ui/autofill/cells/expiration_date_edit_item.h"
 
 #import "base/mac/foundation_util.h"
+#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/autofill/cells/expiration_date_edit_item_delegate.h"
 #import "ios/chrome/browser/ui/autofill/expiration_date_picker.h"
-#import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"

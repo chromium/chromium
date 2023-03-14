@@ -11,7 +11,7 @@
 #import "components/autofill/core/common/autofill_features.h"
 #import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/ui/list_model/list_model.h"
+#import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_profile_edit_consumer.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_profile_edit_mediator_delegate.h"
 #import "ios/chrome/browser/ui/settings/autofill/cells/country_item.h"

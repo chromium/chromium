@@ -8,5 +8,5 @@ source_set("cells") {
     "language_item.h",
     "language_item.mm",
   ]
-  deps = [ "//ios/chrome/browser/ui/table_view/cells" ]
+  deps = [ "//ios/chrome/browser/shared/ui/table_view/cells" ]
 }

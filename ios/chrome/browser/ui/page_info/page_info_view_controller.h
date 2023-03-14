@@ -7,9 +7,9 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
 #import "ios/chrome/browser/ui/page_info/page_info_site_security_description.h"
 #import "ios/chrome/browser/ui/permissions/permissions_consumer.h"
-#import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 
 @protocol PageInfoCommands;
 @protocol PermissionsDelegate;

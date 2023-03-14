@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/table_view/cells/table_view_cell.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_cell.h"
 
 // Cell representation for SettingsCheckItem.
 //  +---------------------------------------------------------+

@@ -5,8 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_UI_AUTOFILL_CELLS_EXPIRATION_DATE_EDIT_ITEM_H_
 #define IOS_CHROME_BROWSER_UI_AUTOFILL_CELLS_EXPIRATION_DATE_EDIT_ITEM_H_
 
-#import "ios/chrome/browser/ui/table_view/cells/table_view_item.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_text_edit_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
 
 @protocol ExpirationDateEditItemDelegate;
 @class ExpirationDatePicker;

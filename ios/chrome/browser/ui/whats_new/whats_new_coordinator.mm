@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/ui/table_view/table_view_navigation_controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_detail_coordinator.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_detail_view_controller.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_mediator.h"

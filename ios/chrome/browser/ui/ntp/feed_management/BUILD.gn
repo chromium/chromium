@@ -17,9 +17,9 @@ source_set("feed_management") {
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/ui/follow",
     "//ios/chrome/browser/ui/ntp/metrics",
-    "//ios/chrome/browser/ui/table_view",
   ]
   public_deps = [ ":navigation_delegate" ]
 }
@@ -34,8 +34,8 @@ source_set("feed_management_ui") {
   deps = [
     ":navigation_delegate",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/ui/table_view",
-    "//ios/chrome/browser/ui/table_view/cells",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ui/base",
   ]
 }
@@ -56,8 +56,8 @@ source_set("follow_management") {
     "//ios/chrome/browser/follow:browser_agent",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/net:crurl",
+    "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/ui/follow",
-    "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/common/ui/favicon:favicon_constants",
   ]
 }
@@ -81,11 +81,11 @@ source_set("follow_management_ui") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/follow:enums",
     "//ios/chrome/browser/net:crurl",
+    "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/ui/follow",
     "//ios/chrome/browser/ui/ntp:feature_flags",
     "//ios/chrome/browser/ui/ntp/feed_management:navigation_delegate",
     "//ios/chrome/browser/ui/ntp/metrics",
-    "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/common/ui/favicon",
     "//ui/base",
   ]

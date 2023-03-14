@@ -7,8 +7,8 @@
 
 #include <string>
 
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/autofill/cells/autofill_address_profile_source.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_multi_detail_text_item.h"
 
 // Item for autofill profile (address).
 @interface AutofillProfileItem : TableViewMultiDetailTextItem
