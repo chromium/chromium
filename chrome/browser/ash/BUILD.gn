@@ -596,6 +596,8 @@ source_set("ash") {
     "arc/user_session/arc_user_session_service.h",
     "arc/video/gpu_arc_video_service_host.cc",
     "arc/video/gpu_arc_video_service_host.h",
+    "arc/vmm/arc_system_state_bridge.cc",
+    "arc/vmm/arc_system_state_bridge.h",
     "arc/vmm/arc_vmm_manager.cc",
     "arc/vmm/arc_vmm_manager.h",
     "arc/vmm/arc_vmm_swap_scheduler.cc",
