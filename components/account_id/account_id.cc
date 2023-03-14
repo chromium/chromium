@@ -244,11 +244,11 @@ bool AccountId::Deserialize(const std::string& serialized,
     return false;
 
   AccountType account_type = AccountType::GOOGLE;
-  const std::string* gaia_id = value->FindStringKey(kGaiaIdKey);
-  const std::string* user_email = value->FindStringKey(kEmailKey);
-  const std::string* obj_guid = value->FindStringKey(kObjGuid);
-  const std::string* account_type_string =
-      value->FindStringKey(kAccountTypeKey);
+  base::Value::Dict& dict = value->GetDict();
+  const std::string* gaia_id = dict.FindString(kGaiaIdKey);
+  const std::string* user_email = dict.FindString(kEmailKey);
+  const std::string* obj_guid = dict.FindString(kObjGuid);
+  const std::string* account_type_string = dict.FindString(kAccountTypeKey);
   if (account_type_string)
     account_type = StringToAccountType(*account_type_string);
 
