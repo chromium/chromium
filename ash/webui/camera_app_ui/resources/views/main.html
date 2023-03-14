@@ -174,10 +174,11 @@
                aria-hidden="true"></div>
         </div>
         <div class="item hidden" id="time-lapse-mode">
-          <!-- TODO(b/236800499): Add i18n-aria and put under expert mode -->
           <input type="radio" tabindex="0" name="record-type"
-                 data-state="record-type-time-lapse">
-          <div class="label" aria-hidden="true">Time-lapse</div>
+                 data-state="record-type-time-lapse"
+                 i18n-aria="record_time_lapse_video_option">
+          <div class="label" i18n-text="label_record_time_lapse_video_option"
+               aria-hidden="true"></div>
         </div>
       </div>
       <div id="video-snapshot-holder" class="buttons right-stripe circle">
