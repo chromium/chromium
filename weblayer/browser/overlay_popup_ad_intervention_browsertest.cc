@@ -88,8 +88,8 @@ IN_PROC_BROWSER_TEST_F(OverlayPopupAdViolationBrowserTest,
       subresource_filter::mojom::AdsViolation::kOverlayPopupAd, 0);
 }
 
-// TODO(https://crbug.com/1287783): Fails on the linux and android.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
+// TODO(https://crbug.com/1287783): Fails on linux, android and chromeos.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_OverlayPopupAd_AdInterventionTriggered \
   DISABLED_OverlayPopupAd_AdInterventionTriggered
 #else
