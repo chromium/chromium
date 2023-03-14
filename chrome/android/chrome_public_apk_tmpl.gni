@@ -259,14 +259,8 @@ template("chrome_public_common_apk_or_module_tmpl") {
       manifest_package = _manifest_package
     }
 
-    if (!defined(min_sdk_version)) {
-      if (_is_trichrome) {
-        min_sdk_version = 29
-      } else if (_is_monochrome) {
-        min_sdk_version = 24
-      } else {
-        min_sdk_version = default_min_sdk_version
-      }
+    if (!defined(min_sdk_version) && _is_trichrome) {
+      min_sdk_version = 29
     }
     if (defined(expected_android_manifest)) {
       expected_android_manifest_version_code_offset = chrome_version_code

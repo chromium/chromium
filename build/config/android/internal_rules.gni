@@ -2735,7 +2735,14 @@ if (enable_java_templates) {
         _args += [ "--best-compression" ]
       }
     }
-    if (defined(invoker.uncompress_dex) && invoker.uncompress_dex) {
+    if (defined(invoker.uncompress_dex)) {
+      _uncompress_dex = invoker.uncompress_dex
+    } else {
+      # Uncompressed dex support started on Android P.
+      _uncompress_dex = invoker.min_sdk_version >= 28
+    }
+
+    if (_uncompress_dex) {
       _args += [ "--uncompress-dex" ]
     }
     if (defined(invoker.library_always_compress)) {

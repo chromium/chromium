@@ -99,6 +99,14 @@ template("chrome_bundle") {
     }
   }
 
+  if (defined(invoker.min_sdk_version)) {
+    _min_sdk_version = invoker.min_sdk_version
+  } else if (_is_trichrome) {
+    _min_sdk_version = 29
+  } else {
+    _min_sdk_version = default_min_sdk_version
+  }
+
   foreach(_module_desc, _module_descs) {
     assert(_package_id > 2, "Too many modules, ran out of package IDs!")
 
@@ -118,7 +126,6 @@ template("chrome_bundle") {
                                "base_module_target",
                                "is_64_bit_browser",
                                "manifest_package",
-                               "min_sdk_version",
                                "target_sdk_version",
                              ])
       is_monochrome = _is_monochrome
@@ -126,6 +133,7 @@ template("chrome_bundle") {
       module_desc = _module_desc
       version_name = chrome_version_name
       version_code = _version_code
+      min_sdk_version = _min_sdk_version
 
       if (defined(_module_desc.uses_split)) {
         assert(
@@ -190,12 +198,11 @@ template("chrome_bundle") {
                              "lint_min_sdk_version",
                              "lint_suppressions_file",
                              "lint_suppressions_dep",
-                             "min_sdk_version",
                              "proguard_android_sdk_dep",
                              "rotation_config",
                              "static_library_provider",
                            ])
-    version_code = _version_code
+    min_sdk_version = _min_sdk_version
     command_line_flags_file = "chrome-command-line"
     proguard_enabled = !is_java_debug
     enable_language_splits = true

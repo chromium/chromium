@@ -106,7 +106,6 @@ android_apk("weblayer_support_apk") {
 
   apk_name = "WebLayerSupport"
   android_manifest = weblayer_support_manifest
-  min_sdk_version = default_min_sdk_version
   target_sdk_version = 28
   android_manifest_dep = ":weblayer_support_manifest"
   shared_resources = true
@@ -197,7 +196,6 @@ template("webengine_shell_apk_helper") {
 
     android_manifest = _webengine_shell_manifest
     android_manifest_dep = ":$_manifest_target"
-    min_sdk_version = default_min_sdk_version
     target_sdk_version = 28
   }
 }
@@ -244,7 +242,6 @@ android_apk("browser_sandbox_apk") {
   apk_name = "WESandbox"
   android_manifest = webengine_services_manifest
   android_manifest_dep = ":webengine_services_manifest"
-  min_sdk_version = default_min_sdk_version
   target_sdk_version = 28
   shared_resources = true
 }

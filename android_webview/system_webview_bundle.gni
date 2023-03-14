@@ -8,6 +8,7 @@ import("//components/crash/android/silent_java_assert_reporting.gni")
 import("//weblayer/variables.gni")
 
 template("system_webview_bundle") {
+  _is_trichrome = defined(invoker.is_trichrome) && invoker.is_trichrome
   _base_target_name = get_label_info(invoker.base_module_target, "name")
   _base_target_gen_dir =
       get_label_info(invoker.base_module_target, "target_gen_dir")
@@ -17,6 +18,9 @@ template("system_webview_bundle") {
       rebase_path(_base_module_build_config, root_build_dir)
   _base_module_version_code =
       "@FileArg($_rebased_base_module_build_config:deps_info:version_code)"
+
+  assert(_is_trichrome == defined(invoker.static_library_provider))
+
   if (webview_includes_weblayer && weblayer_in_split) {
     # TODO(crbug.com/1105096): If WebView starts using
     # //components/module_installer, it will probably make sense to refactor
@@ -66,6 +70,9 @@ template("system_webview_bundle") {
       version_code = _base_module_version_code
       manifest_package =
           "@FileArg($_rebased_base_module_build_config:deps_info:package_name)"
+      if (!defined(min_sdk_version) && _is_trichrome) {
+        min_sdk_version = 29
+      }
 
       if (enable_silent_java_assert_reporting) {
         custom_assertion_handler = crash_reporting_assertion_handler
@@ -77,7 +84,11 @@ template("system_webview_bundle") {
     command_line_flags_file = "webview-command-line"
     proguard_enabled = !is_java_debug
     enable_language_splits = true
-    version_code = _base_module_version_code
+    if (_is_trichrome) {
+      min_sdk_version = 29
+    } else {
+      compress_shared_libraries = true
+    }
     if (webview_includes_weblayer && weblayer_in_split) {
       extra_modules = [ _weblayer_module_desc ]
     }
