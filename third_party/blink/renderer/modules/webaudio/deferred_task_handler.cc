@@ -122,7 +122,7 @@ void DeferredTaskHandler::HandleDirtyAudioSummingJunctions() {
 void DeferredTaskHandler::HandleDirtyAudioNodeOutputs() {
   AssertGraphOwner();
 
-  HashSet<AudioNodeOutput*> dirty_outputs;
+  HashSet<AudioNodeOutput*, recordreplay::ReplayPtrHash<AudioNodeOutput>> dirty_outputs;
   dirty_audio_node_outputs_.swap(dirty_outputs);
 
   // Note: the updating of rendering state may cause output nodes
@@ -156,7 +156,7 @@ void DeferredTaskHandler::RemoveAutomaticPullNode(AudioHandler* node) {
 bool DeferredTaskHandler::HasAutomaticPullNodes() {
   DCHECK(IsAudioThread());
 
-  base::AutoTryLock try_locker(automatic_pull_handlers_lock_);
+  recordreplay::ReplayAutoTryLock try_locker(automatic_pull_handlers_lock_);
 
   // This assumes there is one or more automatic pull nodes when the mutex
   // is held by AddAutomaticPullNode() or RemoveAutomaticPullNode() method.
@@ -168,7 +168,7 @@ void DeferredTaskHandler::UpdateAutomaticPullNodes() {
   AssertGraphOwner();
 
   if (automatic_pull_handlers_need_updating_) {
-    base::AutoTryLock try_locker(automatic_pull_handlers_lock_);
+    recordreplay::ReplayAutoTryLock try_locker(automatic_pull_handlers_lock_);
     if (try_locker.is_acquired()) {
       rendering_automatic_pull_handlers_.assign(automatic_pull_handlers_);
       automatic_pull_handlers_need_updating_ = false;
@@ -180,7 +180,7 @@ void DeferredTaskHandler::ProcessAutomaticPullNodes(
     uint32_t frames_to_process) {
   DCHECK(IsAudioThread());
 
-  base::AutoTryLock try_locker(automatic_pull_handlers_lock_);
+  recordreplay::ReplayAutoTryLock try_locker(automatic_pull_handlers_lock_);
   if (try_locker.is_acquired()) {
     for (auto& rendering_automatic_pull_handler :
          rendering_automatic_pull_handlers_) {
@@ -369,7 +369,7 @@ void DeferredTaskHandler::ClearHandlersToBeDeleted() {
   DCHECK(IsMainThread());
 
   {
-    base::AutoLock locker(automatic_pull_handlers_lock_);
+    recordreplay::ReplayAutoLock locker(automatic_pull_handlers_lock_);
     rendering_automatic_pull_handlers_.clear();
   }
 

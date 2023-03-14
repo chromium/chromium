@@ -8,6 +8,7 @@
 #define BASE_RECORD_REPLAY_H_
 
 #include "base/check.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 
@@ -41,6 +42,26 @@ struct AutoOrderedLock {
   AutoOrderedLock(int id) : id_(id) { OrderedLock(id_); }
   ~AutoOrderedLock() { OrderedUnlock(id_); }
   int id_;
+};
+
+// Drop in replacement for base::Lock that can be used with
+// mixed 'auto' and 'try' lockers.
+class LOCKABLE ReplayBaseLock {
+public:
+
+  ReplayBaseLock(const char* ordered_name = nullptr);
+  ~ReplayBaseLock();
+
+  void Acquire() EXCLUSIVE_LOCK_FUNCTION();
+
+  void Release() UNLOCK_FUNCTION();
+
+  bool Try() EXCLUSIVE_TRYLOCK_FUNCTION(true);
+
+private:
+  base::Lock lock_;
+  int ordered_id_;
+  const char* ordered_name_;
 };
 
 void InvalidateRecording(const char* why);
@@ -169,6 +190,67 @@ struct CompareMemberByPointerId {
   }
 };
 
+inline unsigned HashInt(uint32_t key) {
+  key += ~(key << 15);
+  key ^= (key >> 10);
+  key += (key << 3);
+  key ^= (key >> 6);
+  key += ~(key << 11);
+  key ^= (key >> 16);
+  return key;
+}
+
+inline unsigned HashInt(uint64_t key) {
+  key += ~(key << 32);
+  key ^= (key >> 22);
+  key += ~(key << 13);
+  key ^= (key >> 8);
+  key += (key << 3);
+  key ^= (key >> 15);
+  key += ~(key << 27);
+  key ^= (key >> 31);
+  return static_cast<unsigned>(key);
+}
+
+// Replay's hashing function for pointers, using the registered pointer id.
+template <typename T>
+struct ReplayPtrHash {
+  static unsigned GetHash(T* key) {
+    if (!recordreplay::IsRecordingOrReplaying("pointer-ids")) {
+      return HashInt((uint64_t)key);
+    }
+
+    int ptr = recordreplay::PointerId(key);
+    CHECK(ptr != 0);
+    return HashInt((uint32_t)ptr);
+  }
+  static bool Equal(T* a, T* b) { return a == b; }
+  static bool Equal(std::nullptr_t, T* b) { return !b; }
+  static bool Equal(T* a, std::nullptr_t) { return !a; }
+  static const bool safe_to_compare_to_empty_or_deleted = true;
+};
+
+// Replay's hashing function for scoped pointers, using the registered pointer id.
+template <typename T>
+struct ReplayRefPtrHash : ReplayPtrHash<T> {
+  using ReplayPtrHash<T>::GetHash;
+  static unsigned GetHash(const scoped_refptr<T>& key) {
+    if (!recordreplay::IsRecordingOrReplaying("pointer-ids")) {
+      return HashInt((uint64_t)key.get());
+    }
+
+    int ptr = recordreplay::PointerId(key.get());
+    CHECK(ptr != 0);
+    return HashInt((uint32_t)ptr);
+  }
+  using ReplayPtrHash<T>::Equal;
+  static bool Equal(const scoped_refptr<T>& a, const scoped_refptr<T>& b) {
+    return a == b;
+  }
+  static bool Equal(T* a, const scoped_refptr<T>& b) { return a == b; }
+  static bool Equal(const scoped_refptr<T>& a, T* b) { return a == b; }
+};
+
 
 // For taking ordered locks when events might be disallowed. Passes through
 // events during the acquire to avoid generating a warning.
@@ -191,6 +273,42 @@ class SCOPED_LOCKABLE AutoUnlockMaybeEventsDisallowed {
  private:
   base::Lock& lock_;
 };
+
+
+
+class SCOPED_LOCKABLE ReplayAutoLock {
+public:
+  explicit ReplayAutoLock(ReplayBaseLock& lock) EXCLUSIVE_LOCK_FUNCTION(lock);
+
+  ReplayAutoLock(const ReplayAutoLock&) = delete;
+  ReplayAutoLock& operator=(const ReplayAutoLock&) = delete;
+
+  ~ReplayAutoLock() UNLOCK_FUNCTION();
+
+private:
+  ReplayBaseLock& lock_;
+
+};
+
+
+
+class SCOPED_LOCKABLE ReplayAutoTryLock {
+ public:
+  explicit ReplayAutoTryLock(ReplayBaseLock& lock) EXCLUSIVE_LOCK_FUNCTION(lock);
+
+  ReplayAutoTryLock(const ReplayAutoTryLock&) = delete;
+  ReplayAutoTryLock& operator=(const ReplayAutoTryLock&) = delete;
+
+  ~ReplayAutoTryLock() UNLOCK_FUNCTION();
+
+  bool is_acquired() const;
+
+private:
+  ReplayBaseLock& lock_;
+  bool is_acquired_;
+};
+
+
 
 // This drop-in replacement for unique_ptr purposefully leaks owned memory
 // in non-deterministic execution paths, so as not to perform cleanup operations

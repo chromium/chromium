@@ -55,7 +55,7 @@ class ScriptProcessorHandler final
     return number_of_output_channels_;
   }
 
-  base::Lock& GetBufferLock() LOCK_RETURNED(buffer_lock_) {
+  recordreplay::ReplayBaseLock& GetBufferLock() LOCK_RETURNED(buffer_lock_) {
     return buffer_lock_;
   }
 
@@ -79,7 +79,7 @@ class ScriptProcessorHandler final
   void SwapBuffers() { double_buffer_index_ = 1 - double_buffer_index_; }
   uint32_t double_buffer_index_ = 0;
 
-  mutable base::Lock buffer_lock_;
+  mutable recordreplay::ReplayBaseLock buffer_lock_;
   WTF::Vector<std::unique_ptr<SharedAudioBuffer>> shared_input_buffers_
       GUARDED_BY(buffer_lock_);
   WTF::Vector<std::unique_ptr<SharedAudioBuffer>> shared_output_buffers_

@@ -359,6 +359,82 @@ AutoUnlockMaybeEventsDisallowed::~AutoUnlockMaybeEventsDisallowed() {
   }
 }
 
+
+
+
+ReplayBaseLock::ReplayBaseLock(const char* ordered_name) {
+  ordered_name_ = ordered_name != nullptr ? ordered_name : "ReplayBaseLock"; 
+  ordered_id_ = CreateOrderedLock(ordered_name_);
+}
+
+ReplayBaseLock::~ReplayBaseLock() {
+}
+
+void ReplayBaseLock::Acquire() EXCLUSIVE_LOCK_FUNCTION() {
+  if (IsRecording()) {
+    lock_.Acquire();
+  }
+
+  OrderedLock(ordered_id_);
+}
+
+void ReplayBaseLock::Release() UNLOCK_FUNCTION() {
+
+  OrderedUnlock(ordered_id_);
+
+  if (IsRecording()) {
+    lock_.Release();
+  }
+}
+
+bool ReplayBaseLock::Try() EXCLUSIVE_TRYLOCK_FUNCTION(true) {
+  bool recorded_try_success = lock_.Try();
+  bool is_acquired = RecordReplayValue(ordered_name_, recorded_try_success);
+
+  if (is_acquired) {
+    OrderedLock(ordered_id_);
+  }
+  
+  if (IsReplaying() && recorded_try_success) {
+    lock_.Release();
+  }
+
+  return is_acquired;
+}
+
+
+
+ReplayAutoLock::ReplayAutoLock(ReplayBaseLock& lock) EXCLUSIVE_LOCK_FUNCTION(lock)
+  : lock_(lock) 
+{
+  lock.Acquire();
+}
+
+ReplayAutoLock::~ReplayAutoLock() UNLOCK_FUNCTION() {
+  lock_.Release();
+}
+
+
+
+ReplayAutoTryLock::ReplayAutoTryLock(ReplayBaseLock& lock) EXCLUSIVE_LOCK_FUNCTION(lock)
+  : lock_(lock) 
+{
+  is_acquired_ = lock.Try();
+}
+
+ReplayAutoTryLock::~ReplayAutoTryLock() UNLOCK_FUNCTION() {
+  if (is_acquired_) {
+    lock_.Release();
+  }
+}
+
+bool ReplayAutoTryLock::is_acquired() const { 
+  return is_acquired_; 
+}
+
+
+
+
 bool IsMainThread() {
   return V8IsMainThread();
 }

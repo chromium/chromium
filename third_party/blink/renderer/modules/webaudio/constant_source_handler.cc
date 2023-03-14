@@ -49,7 +49,7 @@ void ConstantSourceHandler::Process(uint32_t frames_to_process) {
   }
 
   // The audio thread can't block on this lock, so we call tryLock() instead.
-  base::AutoTryLock try_locker(process_lock_);
+  recordreplay::ReplayAutoTryLock try_locker(process_lock_);
   if (!try_locker.is_acquired()) {
     // Too bad - the tryLock() failed.
     output_bus->Zero();
@@ -109,7 +109,7 @@ bool ConstantSourceHandler::PropagatesSilence() const {
 void ConstantSourceHandler::HandleStoppableSourceNode() {
   double now = Context()->currentTime();
 
-  base::AutoTryLock try_locker(process_lock_);
+  recordreplay::ReplayAutoTryLock try_locker(process_lock_);
   if (!try_locker.is_acquired()) {
     // Can't get the lock, so just return.  It's ok to handle these at a later
     // time; this was just a hint anyway so stopping them a bit later is ok.

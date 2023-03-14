@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/threading/platform_thread.h"
+#include "base/record_replay.h"
 
 namespace WTF {
 
@@ -52,6 +53,60 @@ bool RecursiveMutex::TryLock() {
 }
 
 void RecursiveMutex::UpdateStateAfterLockAcquired(
+    base::PlatformThreadId thread_id) {
+  lock_depth_++;  // uint64_t, no overflow.
+  owner_.store(thread_id, std::memory_order_relaxed);
+}
+
+
+
+ReplayOrderedRecursiveMutex::ReplayOrderedRecursiveMutex() {
+  lock_number_ = recordreplay::CreateOrderedLock("ReplayOrderedRecursiveMutex");
+}
+
+void ReplayOrderedRecursiveMutex::lock() {
+  auto thread_id = base::PlatformThread::CurrentId();
+  // Even though the thread checker doesn't complain, we are not guaranteed to
+  // hold the lock here. However, reading |owner_| is fine because it is only
+  // ever set to |CurrentId()| when the current thread owns the lock. It is
+  // reset to another value before releasing the lock.
+  //
+  // So the observed values can be:
+  // 1. Us: we hold the lock
+  // 2. Stale kInvalidThreadId, or some other ID: not a problem, cannot be the
+  //    current thread ID (as it would be set by the current thread, and thus
+  //    not stale, back to case (1))
+  // 3. Partial value: not possible, std::atomic<> protects from load shearing.
+  if (owner_.load(std::memory_order_relaxed) != thread_id) {
+    recordreplay::OrderedLock(lock_number_);
+    DCHECK_EQ(lock_depth_, 0u);
+  }
+  UpdateStateAfterLockAcquired(thread_id);
+}
+
+void ReplayOrderedRecursiveMutex::unlock() {
+  AssertAcquired();
+  CHECK_GT(lock_depth_, 0u);  // No underflow.
+  lock_depth_--;
+  if (lock_depth_ == 0) {
+    owner_.store(base::kInvalidThreadId, std::memory_order_relaxed);
+    recordreplay::OrderedUnlock(lock_number_);
+  }
+}
+
+bool ReplayOrderedRecursiveMutex::TryLock() {
+  // We cannot support a 'try' for recording/replaying
+  auto thread_id = base::PlatformThread::CurrentId();
+  // See comment above about reading |owner_|.
+  if (owner_.load(std::memory_order_relaxed) != thread_id) {
+    recordreplay::OrderedLock(lock_number_);
+  }
+
+  UpdateStateAfterLockAcquired(thread_id);
+  return true;
+}
+
+void ReplayOrderedRecursiveMutex::UpdateStateAfterLockAcquired(
     base::PlatformThreadId thread_id) {
   lock_depth_++;  // uint64_t, no overflow.
   owner_.store(thread_id, std::memory_order_relaxed);

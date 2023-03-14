@@ -25,6 +25,8 @@ AudioHandler::AudioHandler(NodeType node_type,
     : node_(&node),
       context_(node.context()),
       deferred_task_handler_(&context_->GetDeferredTaskHandler()) {
+  recordreplay::RegisterPointer("AudioHandler", this);
+
   SetNodeType(node_type);
   SetInternalChannelCountMode(kMax);
   SetInternalChannelInterpretation(AudioBus::kSpeakers);
@@ -52,6 +54,8 @@ AudioHandler::AudioHandler(NodeType node_type,
 
 AudioHandler::~AudioHandler() {
   DCHECK(IsMainThread());
+  recordreplay::UnregisterPointer(this);
+
   InstanceCounters::DecrementCounter(InstanceCounters::kAudioHandlerCounter);
 #if DEBUG_AUDIONODE_REFERENCES
   --node_count_[GetNodeType()];
