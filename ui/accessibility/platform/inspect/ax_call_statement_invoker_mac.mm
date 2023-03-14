@@ -150,10 +150,7 @@ AXOptionalNSObject AXCallStatementInvoker::Invoke(
   if (!property_node.key.empty())
     (*storage_)[property_node.key] = target;
 
-  // When dumping tree, return NULL values as NotApplicable in order to
-  // easily filter them out of the dump.
-  return IsDumpingTree() ? AXOptionalNSObject::NotNullOrNotApplicable(target)
-                         : AXOptionalNSObject(target);
+  return AXOptionalNSObject(target);
 }
 
 AXOptionalNSObject AXCallStatementInvoker::InvokeFor(

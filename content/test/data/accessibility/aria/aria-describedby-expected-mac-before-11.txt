@@ -1,5 +1,0 @@
-AXWebArea AXRoleDescription='HTML content'
-++AXTextField AXHelp='Your username should be your email id' AXRoleDescription='text field'
-++AXGroup AXSubrole=AXUserInterfaceTooltip AXRoleDescription='tooltip' AXTitle='Your username should be your email id'
-++++AXStaticText AXRoleDescription='text' AXValue='Your username should be your email id'
-++AXTextField AXHelp='mmddyy' AXRoleDescription='text field'

@@ -813,10 +813,11 @@ void CollectAncestorRoles(
 }
 
 - (NSString*)descriptionIfFromAriaDescription {
+  // TODO(crbug.com/1373178): Eventually this should include the DescriptionFrom
+  // for content from aria-describedby, kRelatedContent.
   ax::mojom::DescriptionFrom descFrom = static_cast<ax::mojom::DescriptionFrom>(
       _node->GetIntAttribute(ax::mojom::IntAttribute::kDescriptionFrom));
-  if (descFrom == ax::mojom::DescriptionFrom::kAriaDescription ||
-      descFrom == ax::mojom::DescriptionFrom::kRelatedElement) {
+  if (descFrom == ax::mojom::DescriptionFrom::kAriaDescription) {
     return [self getStringAttribute:ax::mojom::StringAttribute::kDescription];
   }
   return nil;
