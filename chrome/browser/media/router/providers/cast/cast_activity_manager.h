@@ -306,6 +306,19 @@ class CastActivityManager : public CastActivityManagerBase,
   void MaybeShowIssueAtLaunch(const MediaSource& media_source,
                               const MediaSink::Id& sink_id);
 
+  void HandleMissingSinkOnJoin(
+      mojom::MediaRouteProvider::JoinRouteCallback callback,
+      const std::string& sink_id,
+      const std::string& source_id,
+      const std::string& session_id);
+  void HandleMissingSessionIdOnJoin(
+      mojom::MediaRouteProvider::JoinRouteCallback callback);
+  void HandleMissingSessionOnJoin(
+      mojom::MediaRouteProvider::JoinRouteCallback callback,
+      const std::string& sink_id,
+      const std::string& source_id,
+      const std::string& session_id);
+
   static CastActivityFactoryForTest* cast_activity_factory_for_test_;
 
   // This map contains all activities--both presentation activities and
