@@ -48,15 +48,19 @@ WEB_CONTENTS_USER_DATA_KEY_IMPL(PolicyAuditorBridge);
 
 void PolicyAuditorBridge::DidFinishNavigation(
     NavigationHandle* navigation_handle) {
-  Java_PolicyAuditorBridge_notifyAuditEventForDidFinishNavigation(
-      AttachCurrentThread(), navigation_handle->GetJavaNavigationHandle(),
-      android_policy_auditor_);
+  if (navigation_handle->IsInPrimaryMainFrame()) {
+    Java_PolicyAuditorBridge_notifyAuditEventForDidFinishNavigation(
+        AttachCurrentThread(), navigation_handle->GetJavaNavigationHandle(),
+        android_policy_auditor_);
+  }
 }
 
 void PolicyAuditorBridge::DidFinishLoad(RenderFrameHost* render_frame_host,
                                         const GURL& validated_url) {
-  JNIEnv* env = AttachCurrentThread();
-  Java_PolicyAuditorBridge_notifyAuditEventForDidFinishLoad(
-      env, GURLAndroid::FromNativeGURL(env, validated_url),
-      android_policy_auditor_);
+  if (render_frame_host->IsInPrimaryMainFrame()) {
+    JNIEnv* env = AttachCurrentThread();
+    Java_PolicyAuditorBridge_notifyAuditEventForDidFinishLoad(
+        env, GURLAndroid::FromNativeGURL(env, validated_url),
+        android_policy_auditor_);
+  }
 }
