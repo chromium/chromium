@@ -17,14 +17,6 @@
             "description": "fuchsia LTS",
             "sheriff_rotation": "fuchsia"
         },
-        "ios": {
-            "description": "beta/stable",
-            "sheriff_rotation": "chrome_browser_release"
-        },
-        "linux": {
-            "description": "beta/stable",
-            "sheriff_rotation": "chrome_browser_release"
-        },
         "mac": {
             "description": "desktop extended stable",
             "sheriff_rotation": "chrome_browser_release"
