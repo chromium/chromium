@@ -177,12 +177,11 @@ bool BrowserLoader::WillLoadStatefulComponentBuilds() {
   if (!lacros_chrome_path.empty())
     return false;
 
-  // If the user has set the lacros selection to rootfs this will always be
-  // loaded and component manager builds are ignored.
-  const base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
-  if (cmdline->HasSwitch(browser_util::kLacrosSelectionSwitch) &&
-      (cmdline->GetSwitchValueASCII(browser_util::kLacrosSelectionSwitch) ==
-       browser_util::kLacrosSelectionRootfs)) {
+  // If the lacros selection is forced by the user or by policy to rootfs it
+  // will always be loaded and stateful component manager builds are ignored.
+  absl::optional<browser_util::LacrosSelection> lacros_selection =
+      browser_util::DetermineLacrosSelection();
+  if (lacros_selection == browser_util::LacrosSelection::kRootfs) {
     return false;
   }
 

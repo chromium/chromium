@@ -86,6 +86,7 @@ class BrowserLoaderTest : public testing::Test {
     browser_loader_ = std::make_unique<BrowserLoader>(
         component_manager_, &mock_component_update_service_,
         &fake_upstart_client_);
+    EXPECT_TRUE(BrowserLoader::WillLoadStatefulComponentBuilds());
   }
 
   ~BrowserLoaderTest() override {
@@ -276,6 +277,7 @@ TEST_F(BrowserLoaderTest, OnLoadSelectionPolicyIsRootfs) {
 
   const LacrosSelection selection = future.Get<1>();
   EXPECT_EQ(selection, LacrosSelection::kRootfs);
+  EXPECT_FALSE(BrowserLoader::WillLoadStatefulComponentBuilds());
 }
 
 TEST_F(BrowserLoaderTest,
@@ -293,6 +295,7 @@ TEST_F(BrowserLoaderTest,
 
   const LacrosSelection selection = future.Get<1>();
   EXPECT_EQ(selection, LacrosSelection::kRootfs);
+  EXPECT_FALSE(BrowserLoader::WillLoadStatefulComponentBuilds());
 }
 
 TEST_F(BrowserLoaderTest,
@@ -310,6 +313,7 @@ TEST_F(BrowserLoaderTest,
 
   const LacrosSelection selection = future.Get<1>();
   EXPECT_EQ(selection, LacrosSelection::kStateful);
+  EXPECT_TRUE(BrowserLoader::WillLoadStatefulComponentBuilds());
 }
 
 }  // namespace crosapi
