@@ -563,8 +563,9 @@ class RenderWidgetHostTest : public testing::Test {
     delegate_ = std::make_unique<MockRenderWidgetHostDelegate>();
     process_ =
         std::make_unique<RenderWidgetHostProcess>(browser_context_.get());
-    site_instance_group_ = base::WrapRefCounted(new SiteInstanceGroup(
-        SiteInstanceImpl::NextBrowsingInstanceId(), process_.get()));
+    site_instance_group_ =
+        base::WrapRefCounted(SiteInstanceGroup::CreateForTesting(
+            browser_context_.get(), process_.get()));
     sink_ = &process_->sink();
 #if defined(USE_AURA) || BUILDFLAG(IS_APPLE)
     ImageTransportFactory::SetFactory(

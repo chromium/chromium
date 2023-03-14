@@ -46,7 +46,7 @@ SiteInstanceGroupManager::GetOrCreateGroupForNewSiteInstance(
   // SiteInstance here. When grouping policies are introduced, this function may
   // return an existing SiteInstanceGroup for a new SiteInstance.
   scoped_refptr<SiteInstanceGroup> site_instance_group = base::WrapRefCounted(
-      new SiteInstanceGroup(site_instance->GetBrowsingInstanceId(), process));
+      new SiteInstanceGroup(site_instance->browsing_instance(), process));
   site_instance_group->AddSiteInstance(site_instance);
   return site_instance_group;
 }

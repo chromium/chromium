@@ -2542,6 +2542,7 @@ test("content_unittests") {
     "../browser/service_worker/service_worker_version_unittest.cc",
     "../browser/shareable_file_reference_unittest.cc",
     "../browser/shared_storage/shared_storage_url_loader_factory_proxy_unittest.cc",
+    "../browser/site_instance_group_unittest.cc",
     "../browser/site_instance_impl_unittest.cc",
     "../browser/site_isolation_policy_unittest.cc",
     "../browser/sms/sms_fetcher_impl_unittest.cc",

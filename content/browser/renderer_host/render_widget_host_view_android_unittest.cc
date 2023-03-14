@@ -205,8 +205,9 @@ void RenderWidgetHostViewAndroidTest::SetUp() {
 
   delegate_ = std::make_unique<MockRenderWidgetHostDelegate>();
   process_ = std::make_unique<MockRenderProcessHost>(browser_context_.get());
-  site_instance_group_ = base::WrapRefCounted(new SiteInstanceGroup(
-      site_instance_->GetBrowsingInstanceId(), process_.get()));
+  site_instance_group_ =
+      base::WrapRefCounted(SiteInstanceGroup::CreateForTesting(
+          browser_context_.get(), process_.get()));
   // Initialized before ownership is given to `render_view_host_`.
   std::unique_ptr<MockRenderWidgetHost> mock_host =
       MockRenderWidgetHost::Create(frame_tree_.get(), delegate_.get(),

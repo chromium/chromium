@@ -27,6 +27,7 @@ class GURL;
 
 namespace content {
 class SiteInfo;
+class SiteInstanceGroup;
 class SiteInstanceImpl;
 struct UrlInfo;
 
@@ -52,9 +53,10 @@ struct UrlInfo;
 // Thus, they must be rendered in the same process.
 //
 // A BrowsingInstance is live as long as any SiteInstance has a reference to
-// it.  A SiteInstance is live as long as any NavigationEntry or RenderViewHost
-// have references to it.  Because both classes are RefCounted, they do not
-// need to be manually deleted.
+// it, and thus as long as any SiteInstanceGroup within it exists.  A
+// SiteInstance is live as long as any NavigationEntry or RenderFrameHost have
+// references to it.  Because both classes are RefCounted, they do not need to
+// be manually deleted.
 //
 // BrowsingInstance has no public members, as it is designed to be
 // visible only from the SiteInstance and CoopRelatedGroup classes. To get a new
@@ -75,8 +77,10 @@ class CONTENT_EXPORT BrowsingInstance final
 
  private:
   friend class base::RefCounted<BrowsingInstance>;
+  friend class SiteInstanceGroup;
   friend class SiteInstanceImpl;
   friend class CoopRelatedGroup;
+  FRIEND_TEST_ALL_PREFIXES(SiteInstanceGroupTest, BrowsingInstanceLifetime);
   FRIEND_TEST_ALL_PREFIXES(SiteInstanceTest, OneSiteInstancePerSite);
   FRIEND_TEST_ALL_PREFIXES(SiteInstanceTest,
                            OneSiteInstancePerSiteInBrowserContext);

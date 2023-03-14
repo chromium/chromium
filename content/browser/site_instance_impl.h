@@ -468,8 +468,12 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   // BrowsingInstance.
   RenderProcessHost* GetDefaultProcessForBrowsingInstance();
 
+  // Sets the process for `this`, creating a SiteInstanceGroup if necessary.
+  void SetProcessForTesting(RenderProcessHost* process);
+
  private:
   friend class BrowsingInstance;
+  friend class SiteInstanceGroupManager;
   friend class SiteInstanceTestBrowserClient;
 
   // Friend tests that need direct access to IsSameSite().
@@ -558,6 +562,9 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
       const IsolationContext& isolation_context,
       const GURL& url,
       const SiteInfo& site_info);
+
+  // This getter is only used to construct SiteInstanceGroups.
+  BrowsingInstance* browsing_instance() { return browsing_instance_.get(); }
 
   // A unique ID for this SiteInstance.
   SiteInstanceId id_;

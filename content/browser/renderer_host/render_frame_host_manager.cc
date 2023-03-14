@@ -3883,8 +3883,9 @@ RenderFrameHostManager::GetFrameTokenForSiteInstanceGroup(
   if (features::GetBrowsingContextMode() ==
           features::BrowsingContextStateImplementationType::
               kSwapForCrossBrowsingInstanceNavigations &&
-      render_frame_host_->GetSiteInstance()->group()->browsing_instance_id() !=
-          site_instance_group->browsing_instance_id()) {
+      !render_frame_host_->GetSiteInstance()
+           ->group()
+           ->IsRelatedSiteInstanceGroup(site_instance_group)) {
     return absl::nullopt;
   }
   if (render_frame_host_->GetSiteInstance()->group() == site_instance_group)

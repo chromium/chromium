@@ -87,8 +87,9 @@ class FlingSchedulerTest : public testing::Test,
     process_host_ =
         std::make_unique<MockRenderProcessHost>(browser_context_.get());
     process_host_->Init();
-    site_instance_group_ = base::WrapRefCounted(new SiteInstanceGroup(
-        SiteInstanceImpl::NextBrowsingInstanceId(), process_host_.get()));
+    site_instance_group_ =
+        base::WrapRefCounted(SiteInstanceGroup::CreateForTesting(
+            browser_context_.get(), process_host_.get()));
     int32_t routing_id = process_host_->GetNextRoutingID();
     delegate_ = std::make_unique<MockRenderWidgetHostDelegate>();
     widget_host_ = TestRenderWidgetHost::Create(

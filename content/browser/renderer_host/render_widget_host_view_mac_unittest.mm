@@ -491,8 +491,9 @@ class RenderWidgetHostViewMacTest : public RenderViewHostImplTestHarness {
     process_host_ =
         std::make_unique<MockRenderProcessHost>(browser_context_.get());
     process_host_->Init();
-    site_instance_group_ = base::WrapRefCounted(new SiteInstanceGroup(
-        SiteInstanceImpl::NextBrowsingInstanceId(), process_host_.get()));
+    site_instance_group_ =
+        base::WrapRefCounted(SiteInstanceGroup::CreateForTesting(
+            browser_context_.get(), process_host_.get()));
     host_ = std::make_unique<MockRenderWidgetHostImpl>(
         &delegate_, site_instance_group_->GetSafeRef(),
         process_host_->GetNextRoutingID(),
@@ -1241,9 +1242,8 @@ TEST_F(RenderWidgetHostViewMacTest,
   TestBrowserContext browser_context;
   MockRenderProcessHost process_host(&browser_context);
   process_host.Init();
-  scoped_refptr<SiteInstanceGroup> site_instance_group =
-      base::WrapRefCounted(new SiteInstanceGroup(
-          SiteInstanceImpl::NextBrowsingInstanceId(), &process_host));
+  scoped_refptr<SiteInstanceGroup> site_instance_group = base::WrapRefCounted(
+      SiteInstanceGroup::CreateForTesting(&browser_context, &process_host));
   MockRenderWidgetHostDelegate delegate;
   int32_t routing_id = process_host.GetNextRoutingID();
   auto host = std::make_unique<MockRenderWidgetHostImpl>(
@@ -1306,9 +1306,8 @@ TEST_F(RenderWidgetHostViewMacTest,
   TestBrowserContext browser_context;
   MockRenderProcessHost process_host(&browser_context);
   process_host.Init();
-  scoped_refptr<SiteInstanceGroup> site_instance_group =
-      base::WrapRefCounted(new SiteInstanceGroup(
-          SiteInstanceImpl::NextBrowsingInstanceId(), &process_host));
+  scoped_refptr<SiteInstanceGroup> site_instance_group = base::WrapRefCounted(
+      SiteInstanceGroup::CreateForTesting(&browser_context, &process_host));
   MockRenderWidgetHostDelegate delegate;
   int32_t routing_id = process_host.GetNextRoutingID();
   auto host = std::make_unique<MockRenderWidgetHostImpl>(
@@ -1368,9 +1367,8 @@ TEST_F(RenderWidgetHostViewMacTest,
   MockRenderProcessHost process_host(&browser_context);
   process_host.Init();
   MockRenderWidgetHostDelegate delegate;
-  scoped_refptr<SiteInstanceGroup> site_instance_group =
-      base::WrapRefCounted(new SiteInstanceGroup(
-          SiteInstanceImpl::NextBrowsingInstanceId(), &process_host));
+  scoped_refptr<SiteInstanceGroup> site_instance_group = base::WrapRefCounted(
+      SiteInstanceGroup::CreateForTesting(&browser_context, &process_host));
   int32_t routing_id = process_host.GetNextRoutingID();
   auto host = std::make_unique<MockRenderWidgetHostImpl>(
       &delegate, site_instance_group->GetSafeRef(), routing_id,
@@ -1687,9 +1685,9 @@ class InputMethodMacTest : public RenderWidgetHostViewMacTest {
     child_process_host_ =
         std::make_unique<MockRenderProcessHost>(child_browser_context_.get());
     child_process_host_->Init();
-    child_site_instance_group_ = base::WrapRefCounted(
-        new SiteInstanceGroup(site_instance_group_->browsing_instance_id(),
-                              child_process_host_.get()));
+    child_site_instance_group_ =
+        base::WrapRefCounted(SiteInstanceGroup::CreateForTesting(
+            site_instance_group_.get(), child_process_host_.get()));
     child_widget_ = std::make_unique<MockRenderWidgetHostImpl>(
         &delegate_, child_site_instance_group_->GetSafeRef(),
         child_process_host_->GetNextRoutingID(), /*for_frame_widget=*/false);
