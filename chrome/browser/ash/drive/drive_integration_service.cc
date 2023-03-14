@@ -368,6 +368,10 @@ class DriveIntegrationService::PreferenceWatcher
     : public NetworkConnectionTracker::NetworkConnectionObserver,
       public ash::NetworkStateHandlerObserver {
  public:
+  using NetworkHandler = ash::NetworkHandler;
+  using NetworkState = ash::NetworkState;
+  using PortalState = NetworkState::PortalState;
+
   explicit PreferenceWatcher(PrefService* pref_service)
       : pref_service_(pref_service) {
     DCHECK(pref_service);
@@ -401,9 +405,8 @@ class DriveIntegrationService::PreferenceWatcher
     if (integration_service_) {
       content::GetNetworkConnectionTracker()->RemoveNetworkConnectionObserver(
           this);
-      if (ash::NetworkHandler::IsInitialized()) {
-        ash::NetworkHandler::Get()->network_state_handler()->RemoveObserver(
-            this);
+      if (NetworkHandler::IsInitialized()) {
+        NetworkHandler::Get()->network_state_handler()->RemoveObserver(this);
       }
     }
   }
@@ -425,10 +428,7 @@ class DriveIntegrationService::PreferenceWatcher
     }
   }
 
-  bool is_offline() const {
-    return portal_state_ != ash::NetworkState::PortalState::kOnline &&
-           portal_state_ != ash::NetworkState::PortalState::kUnknown;
-  }
+  bool IsOnline() const { return portal_state_ == PortalState::kOnline; }
 
  private:
   void OnPreferenceChanged() {
@@ -462,35 +462,37 @@ class DriveIntegrationService::PreferenceWatcher
   }
 
   void AddNetworkPortalDetectorObserver() {
-    if (!ash::NetworkHandler::IsInitialized()) {
+    if (!NetworkHandler::IsInitialized()) {
       return;  // Test environment.
     }
-    ash::NetworkStateHandler* handler =
-        ash::NetworkHandler::Get()->network_state_handler();
+    ash::NetworkStateHandler* const handler =
+        NetworkHandler::Get()->network_state_handler();
+    DCHECK(handler);
     handler->AddObserver(this);
-    const ash::NetworkState* default_network = handler->DefaultNetwork();
-    ash::NetworkState::PortalState portal_state =
-        default_network ? default_network->GetPortalState()
-                        : ash::NetworkState::PortalState::kUnknown;
-    PortalStateChanged(default_network, portal_state);
+    const NetworkState* const network = handler->DefaultNetwork();
+    PortalStateChanged(
+        network, network ? network->GetPortalState() : PortalState::kUnknown);
   }
 
-  // ash::NetworkStateHandlerObserver
-  void PortalStateChanged(
-      const ash::NetworkState* default_network,
-      ash::NetworkState::PortalState portal_state) override {
+  // NetworkStateHandlerObserver
+  void PortalStateChanged(const NetworkState* default_network,
+                          PortalState portal_state) override {
+    VLOG(1) << "PortalStateChanged: " << portal_state;
     portal_state_ = portal_state;
 
-    if (integration_service_->remount_when_online_ &&
-        portal_state == ash::NetworkState::PortalState::kOnline) {
+    if (integration_service_->remount_when_online_ && IsOnline()) {
       integration_service_->remount_when_online_ = false;
       integration_service_->mount_start_ = {};
       integration_service_->AddDriveMountPoint();
     }
+
+    if (PinManager* const pin_manager = integration_service_->GetPinManager()) {
+      pin_manager->SetOnline(IsOnline());
+    }
   }
 
   void OnShuttingDown() override {
-    ash::NetworkHandler::Get()->network_state_handler()->RemoveObserver(this);
+    NetworkHandler::Get()->network_state_handler()->RemoveObserver(this);
   }
 
   // NetworkConnectionTracker::NetworkConnectionObserver
@@ -502,23 +504,18 @@ class DriveIntegrationService::PreferenceWatcher
         NetworkConnectionTracker::IsConnectionCellular(type) &&
         pref_service_->GetBoolean(prefs::kDisableDriveOverCellular);
 
-    VLOG(1) << "OnConnectionChanged {type: " << type << ", online: " << online
+    VLOG(1) << "OnConnectionChanged: {type: " << type << ", online: " << online
             << ", pause_syncing: " << pause_syncing << "}";
 
     if (DriveFs* const drivefs = integration_service_->GetDriveFsInterface()) {
       drivefs->UpdateNetworkState(pause_syncing, !online);
-    }
-
-    if (PinManager* const pin_manager = integration_service_->GetPinManager()) {
-      pin_manager->SetOnline(online);
     }
   }
 
   PrefService* pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
   DriveIntegrationService* integration_service_ = nullptr;
-  ash::NetworkState::PortalState portal_state_ =
-      ash::NetworkState::PortalState::kUnknown;
+  PortalState portal_state_ = PortalState::kUnknown;
 
   base::WeakPtrFactory<PreferenceWatcher> weak_ptr_factory_{this};
 };
@@ -1082,9 +1079,9 @@ void DriveIntegrationService::MaybeRemountFileSystem(
 
   if (!remount_delay) {
     if (failed_to_mount && preference_watcher_ &&
-        preference_watcher_->is_offline()) {
+        !preference_watcher_->IsOnline()) {
       logger_->Log(logging::LOG_WARNING,
-                   "DriveFs failed to start, will retry when online.");
+                   "DriveFs failed to start; will retry when online");
       remount_when_online_ = true;
       return;
     }
@@ -1147,12 +1144,19 @@ void DriveIntegrationService::OnMounted(const base::FilePath& mount_path) {
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
+  // Enable bulk-pinning if the feature is enabled.
   if (ash::features::IsDriveFsBulkPinningEnabled()) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    DCHECK(!pin_manager_);
     pin_manager_ = std::make_unique<PinManager>(profile_->GetPath(),
                                                 GetDriveFsInterface());
     pin_manager_->ShouldCheckStalledFiles(true);
     GetDriveFsHost()->AddObserver(pin_manager_.get());
+
+    if (preference_watcher_) {
+      pin_manager_->SetOnline(preference_watcher_->IsOnline());
+    }
+
     ToggleBulkPinning();
   }
 }

@@ -301,7 +301,7 @@ ostream& operator<<(ostream& out, HumanReadableSize size) {
     unit++;
   }
 
-  return out << " (" << std::setprecision(3) << d << " " << *unit << ")";
+  return out << " (" << std::setprecision(4) << d << " " << *unit << ")";
 }
 
 ostream& operator<<(ostream& out, const Stage stage) {
@@ -587,6 +587,7 @@ void PinManager::Start() {
     return;
   }
 
+  VLOG(1) << "Starting";
   progress_ = {};
   files_to_pin_.clear();
   files_to_track_.clear();
@@ -597,7 +598,7 @@ void PinManager::Start() {
     return Complete(Stage::kPaused);
   }
 
-  VLOG(2) << "Getting free space...";
+  VLOG(2) << "Getting free space";
   timer_ = base::ElapsedTimer();
   progress_.stage = Stage::kGettingFreeSpace;
   NotifyProgress();
@@ -638,7 +639,7 @@ void PinManager::OnFreeSpaceRetrieved1(const int64_t free_space) {
   progress_.free_space = free_space;
   VLOG(1) << "Free space: " << HumanReadableSize(free_space);
 
-  VLOG(1) << "Listing files...";
+  VLOG(1) << "Listing files";
   timer_ = base::ElapsedTimer();
   progress_.stage = Stage::kListingFiles;
   NotifyProgress();
@@ -651,7 +652,7 @@ void PinManager::OnFreeSpaceRetrieved1(const int64_t free_space) {
 void PinManager::CheckFreeSpace() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  VLOG(2) << "Getting free space...";
+  VLOG(2) << "Getting free space";
   space_getter_.Run(
       profile_path_.AppendASCII("GCache"),
       base::BindOnce(&PinManager::OnFreeSpaceRetrieved2, GetWeakPtr()));
@@ -682,7 +683,7 @@ void PinManager::GetNextPage() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(progress_.stage, Stage::kListingFiles);
   DCHECK(search_query_);
-  VLOG(2) << "Getting next batch of items...";
+  VLOG(2) << "Getting next batch of items";
   search_query_->GetNextPage(
       base::BindOnce(&PinManager::OnSearchResult, GetWeakPtr()));
 }
@@ -702,7 +703,7 @@ void PinManager::OnSearchResult(
       case drive::FILE_ERROR_NO_CONNECTION:
       case drive::FILE_ERROR_SERVICE_UNAVAILABLE:
         const TimeDelta delay = base::Seconds(5);
-        VLOG(1) << "Will retry in " << Quote(delay) << "...";
+        LOG(ERROR) << "Will retry in " << Quote(delay);
         SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
             FROM_HERE, base::BindOnce(&PinManager::GetNextPage, GetWeakPtr()),
             delay);
@@ -712,12 +713,12 @@ void PinManager::OnSearchResult(
 
   DCHECK(items);
   if (items->empty()) {
+    VLOG(1) << "No more files to list";
     search_query_.reset();
     return StartPinning();
   }
 
-  VLOG(2) << "Iterating over " << items->size()
-          << " items for space calculation";
+  VLOG(2) << "Iterating over " << items->size() << " items";
   for (const mojom::QueryItemPtr& item : *items) {
     DCHECK(item);
     DCHECK(item->metadata);
@@ -835,8 +836,8 @@ void PinManager::PinSomeFiles() {
 
   VLOG(1) << "Progress "
           << Percentage(progress_.pinned_bytes, progress_.bytes_to_pin)
-          << "%: synced " << HumanReadableSize(progress_.pinned_bytes)
-          << " and " << progress_.pinned_files << " files, syncing "
+          << "%: Synced " << HumanReadableSize(progress_.pinned_bytes)
+          << " and " << progress_.pinned_files << " files, Syncing "
           << progress_.syncing_files << " files";
 
   if (files_to_track_.empty() && !progress_.emptied_queue) {
@@ -1185,16 +1186,17 @@ void PinManager::OnMetadataForModifiedFile(
 }
 
 void PinManager::SetOnline(const bool online) {
+  VLOG(2) << "Online: " << online;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   is_online_ = online;
 
   if (!is_online_ && InProgress(progress_.stage)) {
-    VLOG(1) << "Going offline...";
+    VLOG(1) << "Going offline";
     return Complete(Stage::kPaused);
   }
 
   if (is_online_ && progress_.stage == Stage::kPaused) {
-    VLOG(1) << "Coming back online...";
+    VLOG(1) << "Coming back online";
     return Start();
   }
 }
