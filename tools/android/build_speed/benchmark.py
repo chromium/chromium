@@ -379,11 +379,7 @@ def _run_benchmark(benchmark: Benchmark, out_dir: pathlib.Path, target: str,
     if not benchmark.can_install:
         emulator = None
     prep_time = _run_and_maybe_install(out_dir, target, emulator, j)
-    logging.info(f'Took {prep_time:.1f}s to prep. Sleeping for 1 minute.')
-    # 60s is enough to sufficiently reduce load and improve consistency. 30s
-    # did not sufficiently lower standard deviation and 90s did not further
-    # reduce standard deviation compared to 60s.
-    time.sleep(60)
+    logging.info(f'Took {prep_time:.1f}s to prep.')
     logging.info(f'Starting actual test...')
     change_file_path = _SRC_ROOT / benchmark.change_file
     with _backup_file(change_file_path):
