@@ -130,9 +130,6 @@ template("system_webview_apk_or_module_tmpl") {
         defined(invoker.exclude_weblayer_java) && invoker.exclude_weblayer_java
     _omit_dex = defined(invoker.omit_dex) && invoker.omit_dex
 
-    if (!defined(min_sdk_version) && _is_trichrome) {
-      min_sdk_version = 29
-    }
     if (defined(expected_android_manifest)) {
       expected_android_manifest_version_code_offset = chrome_version_code
       expected_android_manifest_library_version_offset = chrome_version_code
