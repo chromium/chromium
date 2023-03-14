@@ -606,7 +606,6 @@ crbug.com/874695 [ Debug Mac12 ] http/tests/fetch/workers/body-mixin-base-https-
 crbug.com/874695 [ Release ] http/tests/fetch/workers/body-mixin-base-https-other-https.html [ Slow ]
 crbug.com/874695 [ Release ] http/tests/fetch/workers/body-mixin.html [ Slow ]
 crbug.com/874695 [ Debug Linux ] http/tests/fetch/workers/stream-reader-base-https-other-https.html [ Slow ]
-crbug.com/874695 [ Debug Mac12 ] http/tests/fetch/workers/stream-reader-base-https-other-https.html [ Slow ]
 crbug.com/874695 [ Release ] http/tests/fetch/workers/stream-reader-base-https-other-https.html [ Slow ]
 crbug.com/874695 [ Release ] http/tests/fetch/workers/stream-reader.html [ Slow ]
 crbug.com/874695 http/tests/fetch/workers/thorough/* [ Slow ]
@@ -776,7 +775,6 @@ crbug.com/874695 [ Debug Mac12 ] virtual/threaded/synthetic_gestures/synthetic-p
 crbug.com/874695 [ Release ] virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchscreen-zoom-in-slow-desktop.html [ Slow ]
 crbug.com/874695 [ Linux ] virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchscreen-zoom-in-slow.html [ Slow ]
 crbug.com/874695 [ Debug Mac12 ] virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchscreen-zoom-in-slow.html [ Slow ]
-crbug.com/874695 [ Debug Mac13-arm64 ] virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchscreen-zoom-in-slow.html [ Slow ]
 crbug.com/874695 [ Mac Release ] virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchscreen-zoom-in-slow.html [ Slow ]
 crbug.com/874695 [ Release Win ] virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchscreen-zoom-in-slow.html [ Slow ]
 
