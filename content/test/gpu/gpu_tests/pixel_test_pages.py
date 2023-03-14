@@ -627,6 +627,9 @@ class PixelTestPages():
     unaccelerated_args = [
         cba.DISABLE_ACCELERATED_2D_CANVAS,
         cba.DISABLE_GPU_COMPOSITING,
+        # Temporarily force unaccelerated (CPU) tests to use AAA
+        # (https://crbug.com/1421297)
+        '--force-skia-analytic-aa',
     ]
 
     return [
