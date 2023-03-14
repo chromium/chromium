@@ -101,7 +101,7 @@ export {GetUserMediaProxy, getWebcamUtils, setWebcamUtilsForTesting} from './use
 export {getCountText, getNumberOfGridItemsPerRow, getSanitizedDefaultImageUrl, staticColorIds} from './utils.js';
 export {DefaultImageSymbol, DisplayableImage, kDefaultImageSymbol, kMaximumLocalImagePreviews} from './wallpaper/constants.js';
 export {GooglePhotosAlbums} from './wallpaper/google_photos_albums_element.js';
-export {GooglePhotosCollection} from './wallpaper/google_photos_collection_element.js';
+export {GooglePhotosCollection, GooglePhotosTab} from './wallpaper/google_photos_collection_element.js';
 export {GooglePhotosPhotosByAlbumId} from './wallpaper/google_photos_photos_by_album_id_element.js';
 export {GooglePhotosPhotos, GooglePhotosPhotosRow, GooglePhotosPhotosSection} from './wallpaper/google_photos_photos_element.js';
 export {GooglePhotosSharedAlbumDialog, AcceptEvent} from './wallpaper/google_photos_shared_album_dialog_element.js';

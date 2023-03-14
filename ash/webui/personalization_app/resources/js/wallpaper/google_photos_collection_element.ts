@@ -10,6 +10,7 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import '../../css/wallpaper.css.js';
 import '../../css/common.css.js';
+import './google_photos_zero_state_element.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 
@@ -45,10 +46,10 @@ function isEmptyArray(maybeArray: unknown): maybeArray is[] {
 }
 
 /** Enumeration of supported tabs. */
-enum Tab {
-  ALBUMS,
-  PHOTOS,
-  PHOTOS_BY_ALBUM_ID,
+export enum GooglePhotosTab {
+  ALBUMS = 'albums',
+  PHOTOS = 'photos',
+  PHOTOS_BY_ALBUM_ID = 'photos_by_album_id',
 }
 
 export interface GooglePhotosCollection {
@@ -90,7 +91,7 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
 
       tab_: {
         type: String,
-        value: Tab.PHOTOS,
+        value: GooglePhotosTab.PHOTOS,
       },
 
       isSharedAlbumsEnabled_: {
@@ -150,7 +151,7 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
   private photosLoading_: boolean|undefined;
 
   /** The currently selected tab. */
-  private tab_: Tab;
+  private tab_: GooglePhotosTab;
 
   /** The singleton wallpaper provider interface. */
   private wallpaperProvider_: WallpaperProviderInterface =
@@ -191,7 +192,8 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
 
   /** Invoked on changes to the currently selected |albumId|. */
   private onAlbumIdChanged_(albumId: GooglePhotosCollection['albumId']) {
-    this.tab_ = albumId ? Tab.PHOTOS_BY_ALBUM_ID : Tab.ALBUMS;
+    this.tab_ =
+        albumId ? GooglePhotosTab.PHOTOS_BY_ALBUM_ID : GooglePhotosTab.ALBUMS;
   }
 
   /** Invoked on changes to this element's |hidden| state. */
@@ -242,10 +244,10 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
     const currentTarget: HTMLElement = e.currentTarget as HTMLElement;
     switch (currentTarget.id) {
       case 'albumsTab':
-        this.tab_ = Tab.ALBUMS;
+        this.tab_ = GooglePhotosTab.ALBUMS;
         return;
       case 'photosTab':
-        this.tab_ = Tab.PHOTOS;
+        this.tab_ = GooglePhotosTab.PHOTOS;
         return;
       default:
         assertNotReached();
@@ -266,7 +268,7 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
 
   /** Whether the albums tab is currently selected. */
   private isAlbumsTabSelected_(tab: GooglePhotosCollection['tab_']): boolean {
-    return tab === Tab.ALBUMS;
+    return tab === GooglePhotosTab.ALBUMS;
   }
 
   /** Whether the albums tab content is currently visible. */
@@ -279,7 +281,7 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
   /** Whether the photos by album id tab is currently selected. */
   private isPhotosByAlbumIdTabSelected_(tab: GooglePhotosCollection['tab_']):
       boolean {
-    return tab === Tab.PHOTOS_BY_ALBUM_ID;
+    return tab === GooglePhotosTab.PHOTOS_BY_ALBUM_ID;
   }
 
   /** Whether the photos by album id tab content is currently visible. */
@@ -305,7 +307,7 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
 
   /** Whether the photos tab is currently selected. */
   private isPhotosTabSelected_(tab: GooglePhotosCollection['tab_']): boolean {
-    return tab === Tab.PHOTOS;
+    return tab === GooglePhotosTab.PHOTOS;
   }
 
   /** Whether the photos tab content is currently visible. */
@@ -339,11 +341,11 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
       photosByAlbumId: GooglePhotosCollection['photosByAlbumId_'],
       tab: GooglePhotosCollection['tab_']): boolean {
     switch (tab) {
-      case Tab.ALBUMS:
+      case GooglePhotosTab.ALBUMS:
         return false;
-      case Tab.PHOTOS:
+      case GooglePhotosTab.PHOTOS:
         return this.isPhotosTabZeroStateVisible_(photos, tab);
-      case Tab.PHOTOS_BY_ALBUM_ID:
+      case GooglePhotosTab.PHOTOS_BY_ALBUM_ID:
         return this.isPhotosByAlbumIdTabZeroStateVisible_(
             albumId, photosByAlbumId, tab);
       default:

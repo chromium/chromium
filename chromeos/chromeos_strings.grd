@@ -2269,16 +2269,16 @@
           Shared
         </message>
         <message name="IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_SHARED_ALBUM_DIALOG_TITLE" desc="Title for the dialog warning about daily refresh from shared Google Photos albums.">
-          Shared albums can be updated by other users
+          Shared albums can be updated by other people
         </message>
         <message name="IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_SHARED_ALBUM_DIALOG_CONTENT" desc="Content for the dialog warning about daily refresh from shared Google Photos albums.">
-          Photos in shared albums can be updated by other users. Change daily might show wallpapers not currently in the album.
+          You’ve selected a shared album. Other people can add or change photos. Your wallpaper might use photos that are not currently in this album.
         </message>
         <message name="IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_SHARED_ALBUM_DIALOG_CLOSE_BUTTON" desc="Label for the button to close the dialog warning about daily refresh from shared Google Photos albums.">
           Cancel
         </message>
         <message name="IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_SHARED_ALBUM_DIALOG_ACCEPT_BUTTON" desc="Label for the button to accept the dialog warning about daily refresh from shared Google Photos albums.">
-          Proceed
+          Change Daily
         </message>
         <message name="IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_ALBUMS_TAB" desc="Label for the Albums tab in the Google Photos page in the wallpaper app.">
           Albums
@@ -2288,6 +2288,9 @@
         </message>
         <message name="IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_ZERO_STATE_MESSAGE" desc="Message shown in the Google Photos page in the wallpaper app when the user has no photos.">
           No image available. To add photos, go to <ph name="LINK">$1<ex>photos.google.com</ex></ph>
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_ALBUM_ZERO_STATE_MESSAGE" desc="Message shown in the Google Photos page in the wallpaper app when the user views an album with no photos.">
+          This album doesn't have any photos. To add photos, go to <ph name="LINK">$1<ex>photos.google.com</ex></ph>
         </message>
         <message name="IDS_PERSONALIZATION_APP_MY_IMAGES" desc="Label for the local images page in wallpaper app.">
           My Images

@@ -9,11 +9,16 @@
 import '../../css/wallpaper.css.js';
 import '../../css/common.css.js';
 
-import {WithPersonalizationStore} from '../personalization_store.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {GooglePhotosTab} from './google_photos_collection_element.js';
 import {getTemplate} from './google_photos_zero_state_element.html.js';
 
-export class GooglePhotosZeroState extends WithPersonalizationStore {
+const Base = I18nMixin(PolymerElement);
+
+export class GooglePhotosZeroState extends Base {
   static get is() {
     return 'google-photos-zero-state';
   }
@@ -24,6 +29,7 @@ export class GooglePhotosZeroState extends WithPersonalizationStore {
 
   static get properties() {
     return {
+      tab: String,
       isDarkModeActive_: {
         type: Boolean,
         value: false,
@@ -31,12 +37,27 @@ export class GooglePhotosZeroState extends WithPersonalizationStore {
     };
   }
 
+  tab: GooglePhotosTab;
   /** Whether the page is being rendered in dark mode. */
   private isDarkModeActive_: boolean;
 
+  private getMessageLabel_(tab: GooglePhotosTab): string {
+    switch (tab) {
+      case GooglePhotosTab.ALBUMS:
+      case GooglePhotosTab.PHOTOS:
+        return 'googlePhotosZeroStateMessage';
+      case GooglePhotosTab.PHOTOS_BY_ALBUM_ID:
+        return 'googlePhotosAlbumZeroStateMessage';
+      default:
+        assertNotReached(
+            `valid 'GooglePhotosTab' expected but received ${tab}`);
+    }
+  }
+
   /** Returns the message to be displayed. */
-  private getMessage_(): TrustedHTML {
-    return this.i18nAdvanced('googlePhotosZeroStateMessage', {
+  private getMessage_(tab: GooglePhotosTab): TrustedHTML {
+    const label = this.getMessageLabel_(tab);
+    return this.i18nAdvanced(label, {
       substitutions: [
         '<a target="_blank" href="https://photos.google.com">photos.google.com</a>',
       ],

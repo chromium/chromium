@@ -75,6 +75,7 @@
   </template>
   <template is="dom-if"
     if="[[isZeroStateVisible_(albumId, photos_, photosByAlbumId_, tab_)]]">
-    <google-photos-zero-state id="zeroState"></google-photos-zero-state>
+    <google-photos-zero-state id="zeroState" tab="[[tab_]]">
+    </google-photos-zero-state>
   </template>
 </main>
