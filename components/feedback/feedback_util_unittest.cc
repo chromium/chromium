@@ -143,27 +143,26 @@ TEST_F(FeedbackUtilTest, LogsToStringShouldSkipFeedbackUserCtlConsentKey) {
 TEST_F(FeedbackUtilTest, RemoveUrlsFromAutofillData) {
   base::Value::Dict autofill_data = base::test::ParseJsonDict(
       R"({
-        "form_structures": [
+        "formStructures": [
           {
-            "form_signature": "123",
-            "source_url": "https://www.example.com",
-            "main_frame_url": "https://www.example.com"
+            "formSignature": "123",
+            "sourceUrl": "https://www.example.com",
+            "mainFrameUrl": "https://www.example.com"
           },
           {
-            "form_signature": "456",
-            "source_url": "https://www.another-example.com",
-            "main_frame_url": "https://www.another-example.com"
+            "formSignature": "456",
+            "sourceUrl": "https://www.another-example.com",
+            "mainFrameUrl": "https://www.another-example.com"
           }
         ]})");
   std::string autofill_data_str;
   base::JSONWriter::Write(autofill_data, &autofill_data_str);
 
-  base::Value::List* form_structures =
-      autofill_data.FindList("form_structures");
+  base::Value::List* form_structures = autofill_data.FindList("formStructures");
   ASSERT_TRUE(form_structures);
   for (base::Value& item : *form_structures) {
-    item.RemoveKey("source_url");
-    item.RemoveKey("main_frame_url");
+    item.RemoveKey("sourceUrl");
+    item.RemoveKey("mainFrameUrl");
   }
 
   std::string expected_autofill_data_str;

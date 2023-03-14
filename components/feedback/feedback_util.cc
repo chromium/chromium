@@ -93,10 +93,10 @@ void RemoveUrlsFromAutofillData(std::string& autofill_metadata) {
 
   base::Value::Dict& autofill_data = properties->GetDict();
   if (base::Value::List* form_structures =
-          autofill_data.FindList("form_structures")) {
+          autofill_data.FindList("formStructures")) {
     for (base::Value& item : *form_structures) {
-      item.RemoveKey("source_url");
-      item.RemoveKey("main_frame_url");
+      item.RemoveKey("sourceUrl");
+      item.RemoveKey("mainFrameUrl");
     }
   }
   base::JSONWriter::Write(properties.value(), &autofill_metadata);
