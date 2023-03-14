@@ -398,6 +398,14 @@ def CopyDlls(target_dir, configuration, target_cpu):
   if configuration == 'Debug':
     _CopyRuntime(target_dir, runtime_dir, target_cpu, debug=True)
   _CopyDebugger(target_dir, target_cpu)
+  if target_cpu == 'arm64':
+    target_dir = os.path.join(target_dir, 'win_clang_x64')
+    target_cpu = 'x64'
+    os.makedirs(target_dir, exist_ok=True)
+    _CopyRuntime(target_dir, runtime_dir, target_cpu, debug=False)
+    if configuration == 'Debug':
+      _CopyRuntime(target_dir, runtime_dir, target_cpu, debug=True)
+    _CopyDebugger(target_dir, target_cpu)
 
 
 def _CopyDebugger(target_dir, target_cpu):
