@@ -115,16 +115,6 @@ StyleElement::ProcessingResult StyleElement::Process(Element& element) {
 
   WTF::String text = element.TextFromChildren();
 
-  // https://linear.app/replay/issue/RUN-1065
-  // Ensure text content is the same between recording and replaying.
-  uint64_t hash[(base::kSHA1Length + sizeof(uint64_t) - 1) / sizeof(uint64_t)] = { 0 };
-  base::SHA1HashBytes(
-    reinterpret_cast<const unsigned char*>(text.Utf8().data()),
-    text.length(),
-    reinterpret_cast<unsigned char*>(hash));
-  recordreplay::Assert("[RUN-1065] StyleElement::Process textHash=%016llx",
-    hash[0]);
-
   return CreateSheet(element, text);
 }
 
