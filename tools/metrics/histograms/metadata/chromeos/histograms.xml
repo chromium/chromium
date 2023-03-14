@@ -1221,6 +1221,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
     of a survey and when a user answers any question on a HaTS survey.
   </summary>
   <token key="Survey">
+    <variant name="Audio"/>
     <variant name="General"/>
     <variant name="Performance"/>
     <variant name="Stability"/>
