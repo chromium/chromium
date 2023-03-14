@@ -387,7 +387,7 @@ class WPTResultsProcessor:
             except StreamShutdown:
                 _log.info('Stopping results stream worker thread.')
                 return
-            except EventProcessingError as error:
+            except Exception as error:
                 _log.error('Unable to process event %r: %s', event, error)
 
     def process_event(self, raw_event: Dict[str, Any]):
@@ -589,10 +589,8 @@ class WPTResultsProcessor:
         """
         actual_subpath = self.port.output_filename(
             test_name, test_failures.FILENAME_SUFFIX_ACTUAL, '.txt')
-        artifacts.CreateArtifact('actual_text',
-                                 actual_subpath,
-                                 actual_text,
-                                 write_as_text=True)
+        artifacts.CreateArtifact('actual_text', actual_subpath,
+                                 actual_text.encode())
 
         try:
             expected_text = self._read_expected_metadata(test_name, file_path)
@@ -605,10 +603,8 @@ class WPTResultsProcessor:
             return
         expected_subpath = self.port.output_filename(
             test_name, test_failures.FILENAME_SUFFIX_EXPECTED, '.txt')
-        artifacts.CreateArtifact('expected_text',
-                                 expected_subpath,
-                                 expected_text,
-                                 write_as_text=True)
+        artifacts.CreateArtifact('expected_text', expected_subpath,
+                                 expected_text.encode())
 
         diff_content = unified_diff(
             expected_text,
@@ -618,18 +614,14 @@ class WPTResultsProcessor:
         )
         diff_subpath = self.port.output_filename(
             test_name, test_failures.FILENAME_SUFFIX_DIFF, '.txt')
-        artifacts.CreateArtifact('text_diff',
-                                 diff_subpath,
-                                 diff_content,
-                                 write_as_text=True)
+        artifacts.CreateArtifact('text_diff', diff_subpath,
+                                 diff_content.encode())
 
         html_diff_content = html_diff(expected_text, actual_text)
         html_diff_subpath = self.port.output_filename(
             test_name, test_failures.FILENAME_SUFFIX_HTML_DIFF, '.html')
-        artifacts.CreateArtifact('pretty_text_diff',
-                                 html_diff_subpath,
-                                 html_diff_content,
-                                 write_as_text=True)
+        artifacts.CreateArtifact('pretty_text_diff', html_diff_subpath,
+                                 html_diff_content.encode())
 
     def _write_screenshots(self, test_name: str, artifacts: Artifacts,
                            screenshots: List[ReftestScreenshot]):
@@ -691,10 +683,8 @@ class WPTResultsProcessor:
                    artifact_id: str, suffix: str, lines: List[str]):
         log_subpath = self.port.output_filename(test_name, suffix, '.txt')
         # Each line should already end in a newline.
-        artifacts.CreateArtifact(artifact_id,
-                                 log_subpath,
-                                 ''.join(lines),
-                                 write_as_text=True)
+        artifacts.CreateArtifact(artifact_id, log_subpath,
+                                 ''.join(lines).encode())
         lines.clear()
 
     def _extract_artifacts(self, result: WPTResult, extra) -> Artifacts:

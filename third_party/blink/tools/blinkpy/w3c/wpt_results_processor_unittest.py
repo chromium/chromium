@@ -598,11 +598,13 @@ class WPTResultsProcessorTest(LoggingTestCase):
                     command='git rev-parse HEAD',
                     data='[ERROR] Do not log this line')
         self._event(action='test_start', test='/test.html')
-        self._event(action='test_status',
-                    test='/test.html',
-                    status='PASS',
-                    subtest='subtest',
-                    message='assert_eq(a, b)')
+        self._event(
+            action='test_status',
+            test='/test.html',
+            status='PASS',
+            # The Greek letter pi, which 'cp1252' cannot represent.
+            subtest='subtest with Unicode \u03c0',
+            message='assert_eq(a, b)')
         self._event(action='test_end',
                     test='/test.html',
                     status='OK',
@@ -614,7 +616,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
                              'layout-test-results', 'test-stderr.txt')),
             textwrap.dedent("""\
                 Harness: Test ran to completion.
-                subtest: assert_eq(a, b)
+                subtest with Unicode \u03c0: assert_eq(a, b)
                 """))
         self.assertEqual(
             self.fs.read_text_file(
@@ -626,7 +628,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
 
     def test_unknown_event(self):
         self._event(action='unknown', time=1000)
-        message, = self.logMessages()
+        (message, ) = self.logMessages()
         self.assertRegex(message,
                          "WARNING: 'unknown' event received, but not handled")
 
