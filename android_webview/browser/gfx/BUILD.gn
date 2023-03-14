@@ -34,8 +34,6 @@ source_set("gfx") {
     "display_webview.h",
     "gpu_service_webview.cc",
     "gpu_service_webview.h",
-    "hardware_renderer.cc",
-    "hardware_renderer.h",
     "hardware_renderer_viz.cc",
     "hardware_renderer_viz.h",
     "java_browser_view_renderer_helper.cc",
