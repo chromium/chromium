@@ -40,7 +40,7 @@ void SystemGeolocationSourceLacros::RegisterPermissionUpdateCallback(
   permission_update_callback_ = std::move(callback);
   if (current_status_ ==
       device::LocationSystemPermissionStatus::kNotDetermined) {
-    // This is here to support older versions of Ash that do send the system
+    // This is here to support older versions of Ash that do not send the system
     // geolocation switch via crosapi.
     // The original behavior before the system wide switch was introduced was to
     // allow, so we keep this as the default behavior when the system doesn't
@@ -50,10 +50,9 @@ void SystemGeolocationSourceLacros::RegisterPermissionUpdateCallback(
     permission_update_callback_.Run(
         device::LocationSystemPermissionStatus::kAllowed);
     return;
-  } else {
-    // If available, pass the (up-to-date) status into the new callback
-    permission_update_callback_.Run(current_status_);
   }
+  // If available, pass the (up-to-date) status into the new callback
+  permission_update_callback_.Run(current_status_);
 }
 
 void SystemGeolocationSourceLacros::OnPrefChanged(base::Value value) {
