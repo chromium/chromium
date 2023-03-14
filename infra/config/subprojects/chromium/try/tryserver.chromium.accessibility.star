@@ -28,8 +28,6 @@ try_.builder(
     name = "fuchsia-x64-accessibility-rel",
     mirrors = ["ci/fuchsia-x64-accessibility-rel"],
     tryjob = try_.job(
-        # TODO(crbug.com/1406618): Remove when this is confirmed to work.
-        experiment_percentage = 100,
         location_filters = [
             "third_party/blink/renderer/modules/accessibility/.+",
             "content/renderer/accessibility/.+",

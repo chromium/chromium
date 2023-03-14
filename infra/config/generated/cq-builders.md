@@ -286,6 +286,14 @@ builder.
   * [`//fuchsia/.+`](https://cs.chromium.org/chromium/src/fuchsia/)
   * [`//media/fuchsia/.+`](https://cs.chromium.org/chromium/src/media/fuchsia/)
 
+* [fuchsia-x64-accessibility-rel](https://ci.chromium.org/p/chromium/builders/try/fuchsia-x64-accessibility-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""fuchsia-x64-accessibility-rel""))
+
+  Location filters:
+  * [`//third_party/blink/renderer/modules/accessibility/.+`](https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/accessibility/)
+  * [`//content/renderer/accessibility/.+`](https://cs.chromium.org/chromium/src/content/renderer/accessibility/)
+  * [`//content/browser/accessibility/.+`](https://cs.chromium.org/chromium/src/content/browser/accessibility/)
+  * [`//ui/accessibility/.+`](https://cs.chromium.org/chromium/src/ui/accessibility/)
+
 * [ios-simulator-cronet](https://ci.chromium.org/p/chromium/builders/try/ios-simulator-cronet) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""ios-simulator-cronet""))
 
   Location filters:
@@ -495,15 +503,6 @@ as required builders.
 
   Location filters:
   * [`//third_party/nearby/README.chromium`](https://cs.chromium.org/search?q=+file:third_party/nearby/README.chromium)
-
-* [fuchsia-x64-accessibility-rel](https://ci.chromium.org/p/chromium/builders/try/fuchsia-x64-accessibility-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""fuchsia-x64-accessibility-rel""))
-  * Experiment percentage: 100.0
-
-  Location filters:
-  * [`//third_party/blink/renderer/modules/accessibility/.+`](https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/accessibility/)
-  * [`//content/renderer/accessibility/.+`](https://cs.chromium.org/chromium/src/content/renderer/accessibility/)
-  * [`//content/browser/accessibility/.+`](https://cs.chromium.org/chromium/src/content/browser/accessibility/)
-  * [`//ui/accessibility/.+`](https://cs.chromium.org/chromium/src/ui/accessibility/)
 
 * [gpu-fyi-cq-android-arm64](https://ci.chromium.org/p/chromium/builders/try/gpu-fyi-cq-android-arm64) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""gpu-fyi-cq-android-arm64""))
   * Experiment percentage: 100.0
