@@ -399,7 +399,7 @@ TEST_F(ValidateBlinkInterestGroupTest, AdRenderUrlValidation) {
     } else {
       ExpectInterestGroupIsNotValid(
           blink_interest_group,
-          "ad[0].renderUrl" /* expected_error_field_name */,
+          "ads[0].renderUrl" /* expected_error_field_name */,
           test_case_url.GetString().Utf8() /* expected_error_field_value */,
           kBadAdUrlError /* expected_error */);
     }
@@ -417,7 +417,7 @@ TEST_F(ValidateBlinkInterestGroupTest, AdRenderUrlValidation) {
     } else {
       ExpectInterestGroupIsNotValid(
           blink_interest_group,
-          "ad[1].renderUrl" /* expected_error_field_name */,
+          "ads[1].renderUrl" /* expected_error_field_name */,
           test_case_url.GetString().Utf8() /* expected_error_field_value */,
           kBadAdUrlError /* expected_error */);
     }
@@ -476,7 +476,7 @@ TEST_F(ValidateBlinkInterestGroupTest, AdComponentRenderUrlValidation) {
     } else {
       ExpectInterestGroupIsNotValid(
           blink_interest_group,
-          "adComponent[0].renderUrl" /* expected_error_field_name */,
+          "adComponents[0].renderUrl" /* expected_error_field_name */,
           test_case_url.GetString().Utf8() /* expected_error_field_value */,
           kBadAdUrlError /* expected_error */);
     }
@@ -497,7 +497,7 @@ TEST_F(ValidateBlinkInterestGroupTest, AdComponentRenderUrlValidation) {
     } else {
       ExpectInterestGroupIsNotValid(
           blink_interest_group,
-          "adComponent[1].renderUrl" /* expected_error_field_name */,
+          "adComponents[1].renderUrl" /* expected_error_field_name */,
           test_case_url.GetString().Utf8() /* expected_error_field_value */,
           kBadAdUrlError /* expected_error */);
     }
@@ -529,7 +529,7 @@ TEST_F(ValidateBlinkInterestGroupTest, MalformedUrl) {
   String error;
   EXPECT_FALSE(ValidateBlinkInterestGroup(
       *blink_interest_group, error_field_name, error_field_value, error));
-  EXPECT_EQ(error_field_name, String::FromUTF8("ad[0].renderUrl"));
+  EXPECT_EQ(error_field_name, String::FromUTF8("ads[0].renderUrl"));
   // The invalid ^ gets escaped.
   EXPECT_EQ(error_field_value, String::FromUTF8("https://invalid%5E/"));
   EXPECT_EQ(error, String::FromUTF8(kBadAdUrlError));
