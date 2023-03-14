@@ -275,12 +275,9 @@ void BlinkGCPluginConsumer::CheckClass(RecordInfo* info) {
         reporter_.ClassContainsGCRoots(info, visitor.gc_roots());
     }
 
-    if (options_.enable_forbidden_fields_check) {
-      CheckForbiddenFieldsVisitor visitor(options_);
-      if (visitor.ContainsForbiddenFields(info)) {
-        reporter_.ClassContainsForbiddenFields(info,
-                                               visitor.forbidden_fields());
-      }
+    CheckForbiddenFieldsVisitor visitor(options_);
+    if (visitor.ContainsForbiddenFields(info)) {
+      reporter_.ClassContainsForbiddenFields(info, visitor.forbidden_fields());
     }
 
     if (info->NeedsFinalization())

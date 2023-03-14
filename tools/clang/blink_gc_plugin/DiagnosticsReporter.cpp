@@ -72,6 +72,16 @@ const char kMojoRemoteInGCManagedClassNote[] =
 const char kMojoReceiverInGCManagedClassNote[] =
     "[blink-gc] mojo::Receiver field %0 used within a garbage collected "
     "context. "
+    "Consider using blink::HeapMojoAssociatedRemote instead.";
+
+const char kMojoAssociatedRemoteInGCManagedClassNote[] =
+    "[blink-gc] mojo::AssociatedRemote field %0 used within a garbage "
+    "collected context. "
+    "Consider using blink::HeapMojoAssociatedReceiver instead.";
+
+const char kMojoAssociatedReceiverInGCManagedClassNote[] =
+    "[blink-gc] mojo::AssociatedReceiver field %0 used within a garbage "
+    "collected context. "
     "Consider using blink::HeapMojoReceiver instead.";
 
 const char kForbiddenFieldPartObjectClassNote[] =
@@ -266,6 +276,10 @@ DiagnosticsReporter::DiagnosticsReporter(
       DiagnosticsEngine::Note, kMojoRemoteInGCManagedClassNote);
   diag_mojo_receiver_in_gc_class_note = diagnostic_.getCustomDiagID(
       DiagnosticsEngine::Note, kMojoReceiverInGCManagedClassNote);
+  diag_mojo_associated_remote_in_gc_class_note = diagnostic_.getCustomDiagID(
+      DiagnosticsEngine::Note, kMojoAssociatedRemoteInGCManagedClassNote);
+  diag_mojo_associated_receiver_in_gc_class_note = diagnostic_.getCustomDiagID(
+      DiagnosticsEngine::Note, kMojoAssociatedReceiverInGCManagedClassNote);
   diag_forbidden_field_part_object_class_note = diagnostic_.getCustomDiagID(
       DiagnosticsEngine::Note, kForbiddenFieldPartObjectClassNote);
   diag_unique_ptr_to_gc_managed_class_note_ = diagnostic_.getCustomDiagID(
@@ -439,6 +453,12 @@ void DiagnosticsReporter::ClassContainsForbiddenFields(
     } else if (error.second ==
                CheckForbiddenFieldsVisitor::Error::kMojoReceiverInGCManaged) {
       note = diag_mojo_receiver_in_gc_class_note;
+    } else if (error.second == CheckForbiddenFieldsVisitor::Error::
+                                   kMojoAssociatedRemoteInGCManaged) {
+      note = diag_mojo_associated_remote_in_gc_class_note;
+    } else if (error.second == CheckForbiddenFieldsVisitor::Error::
+                                   kMojoAssociatedReceiverInGCManaged) {
+      note = diag_mojo_associated_receiver_in_gc_class_note;
     } else {
       llvm_unreachable("Unknown field error.");
     }

@@ -21,6 +21,8 @@ class CheckForbiddenFieldsVisitor : public RecursiveEdgeVisitor {
     kTaskRunnerInGCManaged,
     kMojoRemoteInGCManaged,
     kMojoReceiverInGCManaged,
+    kMojoAssociatedRemoteInGCManaged,
+    kMojoAssociatedReceiverInGCManaged,
   };
 
   using RootPath = std::vector<FieldPoint*>;
@@ -56,6 +58,9 @@ class CheckForbiddenFieldsVisitor : public RecursiveEdgeVisitor {
 
   // The actual fields that were found while inspecting the record.
   Errors forbidden_fields_;
+
+  // Option to handle mojo::Associated{Remote,Receiver}.
+  bool forbid_associated_remote_receiver_ = false;
 };
 
 #endif  // TOOLS_CLANG_BLINK_GC_PLUGIN_CHECKFORBIDDENFIELDSVISITOR_H_

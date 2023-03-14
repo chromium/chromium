@@ -155,6 +155,8 @@ class DiagnosticsReporter {
   unsigned diag_forbidden_field_part_object_class_note;
   unsigned diag_mojo_remote_in_gc_class_note;
   unsigned diag_mojo_receiver_in_gc_class_note;
+  unsigned diag_mojo_associated_remote_in_gc_class_note;
+  unsigned diag_mojo_associated_receiver_in_gc_class_note;
 
   unsigned diag_unique_ptr_used_with_gc_;
   unsigned diag_optional_field_used_with_gc_;

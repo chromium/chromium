@@ -5,12 +5,13 @@
 #include "CheckForbiddenFieldsVisitor.h"
 #include "BlinkGCPluginOptions.h"
 
-#include <string_view>
-
 #include "llvm/ADT/STLExtras.h"
+#include "llvm/ADT/StringRef.h"
 
 CheckForbiddenFieldsVisitor::CheckForbiddenFieldsVisitor(
-    const BlinkGCPluginOptions& options) {}
+    const BlinkGCPluginOptions& options)
+    : forbid_associated_remote_receiver_(
+          options.forbid_associated_remote_receiver) {}
 
 CheckForbiddenFieldsVisitor::Errors&
 CheckForbiddenFieldsVisitor::forbidden_fields() {
@@ -82,11 +83,16 @@ void CheckForbiddenFieldsVisitor::VisitArrayEdge(ArrayEdge* edge) {
 }
 
 bool CheckForbiddenFieldsVisitor::ContainsInvalidFieldTypes(Value* edge) {
-  constexpr std::array<std::pair<std::string_view, Error>, 3> kErrors = {{
+  constexpr std::pair<llvm::StringRef, Error> kErrors[] = {
       {"blink::TaskRunnerTimer", Error::kTaskRunnerInGCManaged},
       {"mojo::Receiver", Error::kMojoReceiverInGCManaged},
       {"mojo::Remote", Error::kMojoRemoteInGCManaged},
-  }};
+  };
+
+  constexpr std::pair<llvm::StringRef, Error> kOptionalAssociatedErrors[] = {
+      {"mojo::AssociatedRemote", Error::kMojoAssociatedRemoteInGCManaged},
+      {"mojo::AssociatedReceiver", Error::kMojoAssociatedReceiverInGCManaged},
+  };
 
   auto* decl = edge->value()->record()->getDefinition();
   if (!decl) {
@@ -95,13 +101,24 @@ bool CheckForbiddenFieldsVisitor::ContainsInvalidFieldTypes(Value* edge) {
 
   auto type_name = decl->getQualifiedNameAsString();
   auto it = std::find_if(
-      kErrors.begin(), kErrors.end(),
+      std::begin(kErrors), std::end(kErrors),
       [&type_name](const auto& val) { return val.first == type_name; });
 
-  if (it == kErrors.end()) {
-    return false;
+  if (it != std::end(kErrors)) {
+    forbidden_fields_.push_back({current_, it->second});
+    return true;
   }
 
-  forbidden_fields_.push_back(std::make_pair(current_, it->second));
-  return true;
+  if (forbid_associated_remote_receiver_) {
+    it = std::find_if(
+        std::begin(kOptionalAssociatedErrors),
+        std::end(kOptionalAssociatedErrors),
+        [&type_name](const auto& val) { return val.first == type_name; });
+    if (it != std::end(kOptionalAssociatedErrors)) {
+      forbidden_fields_.push_back({current_, it->second});
+      return true;
+    }
+  }
+
+  return false;
 }

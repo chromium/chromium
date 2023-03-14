@@ -132,14 +132,6 @@ config("config") {
         "dump-graph",
       ]
     }
-
-    # Enable GC plugin forbidden fields feature:
-    cflags += [
-      "-Xclang",
-      "-plugin-arg-blink-gc-plugin",
-      "-Xclang",
-      "enable-forbidden-fields-check",
-    ]
   }
 }
 
