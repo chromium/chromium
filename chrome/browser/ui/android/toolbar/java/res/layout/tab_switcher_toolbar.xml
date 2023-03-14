@@ -32,6 +32,7 @@ found in the LICENSE file.
             android:paddingEnd="16dp"
             app:tint="@macro/default_icon_color"
             app:srcCompat="@drawable/new_tab_icon"
+            android:duplicateParentState="true"
             android:contentDescription="@string/accessibility_toolbar_btn_new_tab"/>
         <TextView
             android:id="@+id/new_tab_view_desc"
@@ -40,6 +41,7 @@ found in the LICENSE file.
             android:paddingEnd="16dp"
             android:gravity="center_vertical"
             android:text="@string/button_new_tab"
+            android:duplicateParentState="true"
             android:textAppearance="@style/TextAppearance.TextMediumThick.Primary" />
     </LinearLayout>
 

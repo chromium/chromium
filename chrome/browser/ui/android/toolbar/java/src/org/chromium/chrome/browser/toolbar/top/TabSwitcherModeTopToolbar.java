@@ -353,7 +353,7 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
             ((ImageView) mNewTabViewButton.findViewById(R.id.new_tab_view_button))
                     .setImageTintList(tint);
             final TextView newTabViewDesc = mNewTabViewButton.findViewById(R.id.new_tab_view_desc);
-            newTabViewDesc.setTextColor(tint.getDefaultColor());
+            newTabViewDesc.setTextColor(tint);
         }
 
         if (mMenuButton != null) {

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.incognito.reauth;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -113,12 +114,10 @@ public class TabSwitcherIncognitoReauthViewTest {
     private void openIncognitoReauth(ChromeTabbedActivity cta) {
         // Open incognito tab.
         createTabs(cta, true, 1);
-
         assertTrue(cta.getActivityTab().isIncognito());
 
         // Enter tab switcher in incognito mode.
         enterTabSwitcher(cta);
-
         assertTrue(cta.getTabModelSelector().isIncognitoSelected());
 
         // Reload chrome to trigger incognito reauth screen.
@@ -133,6 +132,18 @@ public class TabSwitcherIncognitoReauthViewTest {
         openIncognitoReauth(cta);
 
         onView(withId(org.chromium.chrome.R.id.tab_switcher_toolbar)).check(matches(isDisplayed()));
+
+        if (!cta.isTablet()) {
+            onView(withId(org.chromium.chrome.browser.toolbar.R.id.new_tab_button))
+                    .check(matches(not(isEnabled())));
+        } else {
+            onView(withId(org.chromium.chrome.browser.toolbar.R.id.new_tab_view))
+                    .check(matches(not(isEnabled())));
+            onView(withId(org.chromium.chrome.browser.toolbar.R.id.new_tab_view_button))
+                    .check(matches(not(isEnabled())));
+            onView(withId(org.chromium.chrome.browser.toolbar.R.id.new_tab_view_desc))
+                    .check(matches(not(isEnabled())));
+        }
 
         onView(withId(R.id.incognito_reauth_menu_button)).check(matches(not(isDisplayed())));
         onView(withId(R.id.incognito_reauth_unlock_incognito_button)).check(matches(isDisplayed()));
