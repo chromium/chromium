@@ -28,9 +28,11 @@ namespace {
 // Constant for timeout while waiting for asynchronous sync operations.
 constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 
-// Waits for `entity_count` entities of type `entity_type`, and fails with
-// a GREYAssert if the condition is not met, within a short period of time.
-void WaitForNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
+// Waits for `entity_count` entities of type `entity_type` on the fake server,
+// and fails with a GREYAssert if the condition is not met, within a short
+// period of time.
+void WaitForEntitiesOnFakeServer(int entity_count,
+                                 syncer::ModelType entity_type) {
   ConditionBlock condition = ^{
     return [ChromeEarlGrey numberOfSyncEntitiesWithType:entity_type] ==
            entity_count;
@@ -65,7 +67,7 @@ void WaitForAutofillProfileLocallyPresent(const std::string& guid,
   [ChromeEarlGrey clearBookmarks];
 
   [ChromeEarlGrey clearSyncServerData];
-  WaitForNumberOfEntities(0, syncer::AUTOFILL_PROFILE);
+  WaitForEntitiesOnFakeServer(0, syncer::AUTOFILL_PROFILE);
 
   [super tearDown];
 }
@@ -75,9 +77,9 @@ void WaitForAutofillProfileLocallyPresent(const std::string& guid,
 
   [ChromeEarlGrey clearSyncServerData];
 
-  WaitForNumberOfEntities(0, syncer::AUTOFILL_PROFILE);
-  WaitForNumberOfEntities(0, syncer::BOOKMARKS);
-  WaitForNumberOfEntities(0, syncer::TYPED_URLS);
+  WaitForEntitiesOnFakeServer(0, syncer::AUTOFILL_PROFILE);
+  WaitForEntitiesOnFakeServer(0, syncer::BOOKMARKS);
+  WaitForEntitiesOnFakeServer(0, syncer::TYPED_URLS);
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
@@ -108,7 +110,7 @@ void WaitForAutofillProfileLocallyPresent(const std::string& guid,
   // Assert that the correct number of bookmarks have been synced.
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:kSyncOperationTimeout];
-  WaitForNumberOfEntities(1, syncer::BOOKMARKS);
+  WaitForEntitiesOnFakeServer(1, syncer::BOOKMARKS);
 }
 
 // Tests that a bookmark added on the client is uploaded to the Sync server.
@@ -121,7 +123,7 @@ void WaitForAutofillProfileLocallyPresent(const std::string& guid,
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:kSyncOperationTimeout];
   [BookmarkEarlGrey addBookmarkWithTitle:@"goo" URL:@"https://www.goo.com"];
-  WaitForNumberOfEntities(1, syncer::BOOKMARKS);
+  WaitForEntitiesOnFakeServer(1, syncer::BOOKMARKS);
 }
 
 // Tests that a bookmark injected in the FakeServer is synced down to the
@@ -136,9 +138,8 @@ void WaitForAutofillProfileLocallyPresent(const std::string& guid,
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
 
-  [ChromeEarlGrey waitForSyncEngineInitialized:YES
-                                   syncTimeout:kSyncOperationTimeout];
-  WaitForNumberOfEntities(1, syncer::BOOKMARKS);
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
   [BookmarkEarlGrey verifyBookmarksWithTitle:@"hoo" expectedCount:1];
 }
 
@@ -345,7 +346,7 @@ void WaitForAutofillProfileLocallyPresent(const std::string& guid,
   // Verify the sessions on the sync server.
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:kSyncOperationTimeout];
-  WaitForNumberOfEntities(3, syncer::SESSIONS);
+  WaitForEntitiesOnFakeServer(3, syncer::SESSIONS);
 
   NSArray<NSString*>* specs = @[
     base::SysUTF8ToNSString(URL1.spec()),
@@ -441,7 +442,7 @@ void WaitForAutofillProfileLocallyPresent(const std::string& guid,
 
   // Trigger sync and wait for typed URL to be deleted.
   [ChromeEarlGrey triggerSyncCycleForType:syncer::TYPED_URLS];
-  WaitForNumberOfEntities(0, syncer::TYPED_URLS);
+  WaitForEntitiesOnFakeServer(0, syncer::TYPED_URLS);
 }
 
 // Test that typed url is deleted from client after server sends tombstone for
@@ -478,8 +479,7 @@ void WaitForAutofillProfileLocallyPresent(const std::string& guid,
 }
 
 // Tests download of two legacy bookmarks with the same item id.
-// TODO(crbug.com/1423865): The test is flaky on all devices.
-- (void)FLAKY_testDownloadTwoPre2015BookmarksWithSameItemId {
+- (void)testDownloadTwoPre2015BookmarksWithSameItemId {
   const GURL URL1 = web::test::HttpServer::MakeUrl("http://page1.com");
   const GURL URL2 = web::test::HttpServer::MakeUrl("http://page2.com");
   NSString* title1 = @"title1";
@@ -504,9 +504,8 @@ void WaitForAutofillProfileLocallyPresent(const std::string& guid,
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
 
-  [ChromeEarlGrey waitForSyncEngineInitialized:YES
-                                   syncTimeout:kSyncOperationTimeout];
-  WaitForNumberOfEntities(2, syncer::BOOKMARKS);
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
 
   [BookmarkEarlGrey verifyBookmarksWithTitle:title1 expectedCount:1];
   [BookmarkEarlGrey verifyBookmarksWithTitle:title2 expectedCount:1];
@@ -520,7 +519,7 @@ void WaitForAutofillProfileLocallyPresent(const std::string& guid,
 
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:kSyncOperationTimeout];
-  WaitForNumberOfEntities(1, syncer::DEVICE_INFO);
+  WaitForEntitiesOnFakeServer(1, syncer::DEVICE_INFO);
   [ChromeEarlGrey waitForSyncInvalidationFields];
 }
 
