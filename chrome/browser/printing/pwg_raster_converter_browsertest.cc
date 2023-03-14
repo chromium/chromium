@@ -25,8 +25,8 @@ namespace printing {
 namespace {
 
 // Note that for some reason the generated PWG varies depending on the
-// platform (32 or 64 bits) on Linux.
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(ARCH_CPU_32_BITS)
+// platform (32 or 64 bits) on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_32_BITS)
 constexpr char kPdfToPwgRasterColorTestFile[] = "pdf_to_pwg_raster_test_32.pwg";
 constexpr char kPdfToPwgRasterMonoTestFile[] =
     "pdf_to_pwg_raster_mono_test_32.pwg";
