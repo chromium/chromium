@@ -183,9 +183,9 @@ ShapeSysTokens GetShapeSysToken(ShapeContextTokens id) {
           {ShapeContextTokens::kButtonRadius, ShapeSysTokens::kFull},
           {ShapeContextTokens::kComboboxRadius, ShapeSysTokens::kSmall},
           {ShapeContextTokens::kDialogRadius, ShapeSysTokens::kMediumSmall},
-          {ShapeContextTokens::kMenuRadius, ShapeSysTokens::kMedium},
-          {ShapeContextTokens::kMenuAuxRadius, ShapeSysTokens::kMedium},
-          {ShapeContextTokens::kMenuTouchRadius, ShapeSysTokens::kMedium},
+          {ShapeContextTokens::kMenuRadius, ShapeSysTokens::kSmall},
+          {ShapeContextTokens::kMenuAuxRadius, ShapeSysTokens::kSmall},
+          {ShapeContextTokens::kMenuTouchRadius, ShapeSysTokens::kSmall},
           {ShapeContextTokens::kTextfieldRadius, ShapeSysTokens::kSmall},
       });
   const auto* it = shape_token_map.find(id);
