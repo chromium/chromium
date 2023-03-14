@@ -72,6 +72,8 @@ void WebAppUninstallJob::Start(const url::Origin& app_origin,
   DCHECK(state_ == State::kNotStarted);
   state_ = State::kPendingDataDeletion;
 
+  install_manager_->NotifyWebAppWillBeUninstalled(app_id_);
+
   // Note: It is supported to re-start an uninstall on startup, so
   // `is_uninstalling()` is not checked. It is a class invariant that there can
   // never be more than one uninstall task operating on the same web app at the
@@ -82,7 +84,6 @@ void WebAppUninstallJob::Start(const url::Origin& app_origin,
     DCHECK(app);
     app->SetIsUninstalling(true);
   }
-  install_manager_->NotifyWebAppWillBeUninstalled(app_id_);
 
   auto synchronize_barrier = OsIntegrationManager::GetBarrierForSynchronize(
       base::BindOnce(&WebAppUninstallJob::OnOsHooksUninstalled,

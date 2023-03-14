@@ -167,7 +167,7 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
 
   // Constructs an App with only the information required to identify an
   // uninstallation.
-  apps::AppPtr ConvertUninstalledWebApp(const WebApp* web_app);
+  apps::AppPtr ConvertUninstalledWebApp(const AppId& app_id);
 
   // Constructs an App with only the information required to update
   // last launch time.
@@ -317,7 +317,7 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
   void OnWebAppInstalledWithOsHooks(const AppId& app_id) override;
   void OnWebAppManifestUpdated(const AppId& app_id,
                                base::StringPiece old_name) override;
-  void OnWebAppWillBeUninstalled(const AppId& app_id) override;
+  void OnWebAppUninstalled(const AppId& app_id) override;
   void OnWebAppInstallManagerDestroyed() override;
 
   // AppRegistrarObserver:
