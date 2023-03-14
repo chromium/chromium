@@ -1,3 +1,5 @@
 {
+  "require": ["source-map-support/register"],
+  "source-maps": true,
   "spec": "lib/**/*.spec.js"
 }
