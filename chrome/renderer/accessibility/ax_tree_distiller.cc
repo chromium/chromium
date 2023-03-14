@@ -127,7 +127,9 @@ void AXTreeDistiller::DistillViaScreen2x(const ui::AXTree& tree,
   main_content_extractor_->ExtractMainContent(
       snapshot, ukm_source_id,
       base::BindOnce(&AXTreeDistiller::ProcessScreen2xResult,
-                     weak_ptr_factory_.GetWeakPtr(), std::cref(tree)));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     base::UnsafeDanglingUntriaged(
+                         base::raw_ref<const ui::AXTree>(tree))));
 }
 
 void AXTreeDistiller::ProcessScreen2xResult(
