@@ -53,6 +53,13 @@ async function processOneFile(
   const mapGenerator = SourceMapGenerator.fromSourceMap(mapConsumer);
   mapConsumer.destroy();
 
+  // Create a new 1:1 sourcemap of tsc generated js to itself.
+  const jsToJsMapGenerator = new SourceMapGenerator(
+      { file: mapGenerator._file, sourceRoot: originalDirectory });
+  mapGenerator._mappings.unsortedForEach(mapping => {
+    addMapping(jsToJsMapGenerator, file, mapping.generatedLine, mapping.generatedColumn, mapping.generatedLine, mapping.generatedColumn);
+  });
+
   // `changedMappings` contains a list of lines and their changes. Convert this
   // to a map of changedLine to change information for easier lookup.
   const changedLinesMap = new Map();
@@ -61,15 +68,17 @@ async function processOneFile(
     changedLinesMap.set(mapping.lineNum, mapping);
   }
 
-  // We rewrite the sourcemap from scratch by iterating the original sourcemap
-  // and changing affected mappings.
+  // We rewrite the sourcemap by iterating the in-place 1:1 js sourcemap and
+  // changing affected mappings.
+  const pathToGeneratedJs = `${process.cwd()}/${originalDirectory}/`
   const rewriteImportsMapGenerator = new SourceMapGenerator(
-      {file: mapGenerator._file, sourceRoot: mapGenerator._sourceRoot});
-  // We iterate over the generated raw sourcemap mappings, if the mapping is
+      { file: mapGenerator._file, sourceRoot: pathToGeneratedJs });
+
+  // We iterate over the in-place 1:1 js sourcemap mapping, if the mapping is
   // affected (it is in an affected line after the column change by
   // rewrite_imports.py), we create a new mapping with the correct delta.
   // Otherwise, the original mapping persists.
-  mapGenerator._mappings.unsortedForEach(mapping => {
+  jsToJsMapGenerator._mappings.unsortedForEach(mapping => {
     // Check if mapping is in a changed line after the rewritten column.
     const changedLineMapping = changedLinesMap.get(mapping.generatedLine);
     if (changedLineMapping &&
@@ -85,12 +94,12 @@ async function processOneFile(
       // straight from the original to the rewritten step, we are treating the
       // rewritten file as the (new) generated file.
       addMapping(
-          rewriteImportsMapGenerator, mapping.source, mapping.originalLine,
+          rewriteImportsMapGenerator, file, mapping.originalLine,
           mapping.originalColumn, mapping.generatedLine,
           mapping.generatedColumn + delta)
     } else {
       addMapping(
-          rewriteImportsMapGenerator, mapping.source, mapping.originalLine,
+          rewriteImportsMapGenerator, file, mapping.originalLine,
           mapping.originalColumn, mapping.generatedLine,
           mapping.generatedColumn);
     }
