@@ -151,7 +151,14 @@ class SearchPrefetchRequest {
   void RecordClickTime();
 
   // Takes ownership of underlying data/objects needed to serve the response.
-  std::unique_ptr<SearchPrefetchURLLoader> TakeSearchPrefetchURLLoader();
+  std::unique_ptr<StreamingSearchPrefetchURLLoader>
+  TakeSearchPrefetchURLLoader();
+
+  // If the loader is still serving to a navigation, we should not destroy the
+  // loader because it results in serving an incomplete response.
+  // TODO(https://crbug.com/1400881): We may need to consider using
+  // scoped_refptr. Figure out the safer one.
+  void TransferLoaderOwnershipIfStillServing();
 
   // Instead of completely letting a navigation stack own the prefetch loader,
   // creates a copy of the prefetched response so that it can be shared among

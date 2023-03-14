@@ -16,6 +16,7 @@
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
+#include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_request.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_preload_test_response_utils.h"
@@ -1708,9 +1709,6 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedFallbackBrowserTest,
       *GetActiveWebContents(), expected_prerender_url);
   NavigateToPrerenderedResult(expected_prerender_url);
   prerender_observer.WaitForActivation();
-  histogram_tester.ExpectUniqueSample(
-      "Omnibox.SearchPrefetch.PrefetchFinalStatus.SuggestionPrefetch",
-      SearchPrefetchStatus::kPrerenderActivated, 1);
 }
 
 // Tests that the SearchSuggestionService can trigger prerendering if it
@@ -1764,13 +1762,97 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedFallbackBrowserTest,
                                                         expected_prerender_url);
   NavigateToPrerenderedResult(expected_prerender_url);
   prerender_observer.WaitForActivation();
-  histogram_tester.ExpectUniqueSample(
-      "Omnibox.SearchPrefetch.PrefetchFinalStatus.SuggestionPrefetch",
-      SearchPrefetchStatus::kPrerenderActivated, 1);
 
   // No prerender requests went through network.
   EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_prefetch_url));
   EXPECT_EQ(0, prerender_helper().GetRequestCount(expected_prerender_url));
+}
+
+// Edge case: when the prerendering navigation is still reading from the cache,
+// the loader would not be deleted until finishing reading.
+IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedFallbackBrowserTest,
+                       ServingToPrerenderingUntilCompletion) {
+  base::HistogramTester histogram_tester;
+  set_service_deferral_type(
+      SearchPreloadTestResponseDeferralType::kDeferChunkedResponseBody);
+
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
+  const GURL kNavigatedUrl = embedded_test_server()->GetURL("/title1.html");
+
+  ASSERT_TRUE(GetActiveWebContents());
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), kInitialUrl));
+  SetUpContext();
+
+  // 1. Type the first query.
+  std::string search_query = "prer";
+  std::string prerender_query = "prerender";
+
+  GURL expected_prefetch_url =
+      GetSearchUrl(prerender_query, UrlType::kPrefetch);
+  GURL expected_prerender_url =
+      GetSearchUrl(prerender_query, UrlType::kPrerender);
+
+  content::test::PrerenderHostRegistryObserver registry_observer(
+      *GetActiveWebContents());
+  ChangeAutocompleteResult(search_query.substr(0, search_query.size() - 1),
+                           prerender_query, PrerenderHint::kDisabled,
+                           PrefetchHint::kEnabled);
+
+  // 2. Trigger prefetch and serve the first part of response body.
+  WaitUntilStatusChangesTo(GetCanonicalSearchURL(expected_prerender_url),
+                           {SearchPrefetchStatus::kCanBeServed});
+
+  DispatchDelayedResponseTask();
+
+  // 3. Trigger prerender.
+  ChangeAutocompleteResult(search_query, prerender_query,
+                           PrerenderHint::kEnabled, PrefetchHint::kEnabled);
+  registry_observer.WaitForTrigger(expected_prerender_url);
+  content::test::PrerenderHostObserver prerender_observer(
+      *GetActiveWebContents(), expected_prerender_url);
+
+  // 4. Activate the prerendered page.
+  NavigateToPrerenderedResult(expected_prerender_url);
+
+  prerender_observer.WaitForActivation();
+
+  // 5. After activation, the request would be deleted from the prefetched
+  // request list.
+  absl::optional<SearchPrefetchStatus> status =
+      search_prefetch_service()->GetSearchPrefetchStatusForTesting(
+          GetCanonicalSearchURL(expected_prerender_url));
+  ASSERT_EQ(status, absl::nullopt);
+
+  // 6. And then we can dispatch the result.
+  DispatchDelayedResponseTask();
+  content::WaitForLoadStop(GetActiveWebContents());
+
+  // TODO(https://crbug.com/1415185):
+  // `content::WaitForLoadStop(GetActiveWebContents())` would end before the
+  // page actually finishes loading. This is the workaround to ensure that the
+  // page is fully loaded.
+  std::string script_string = R"(
+      function get_inner_html () {
+        if(document.documentElement){
+          return document.documentElement.innerHTML;
+        }
+        return "";
+      }
+      get_inner_html();
+    )";
+  while (true) {
+    std::string inner_html =
+        content::EvalJs(GetActiveWebContents(), script_string).ExtractString();
+    if (base::Contains(inner_html, "PREFETCH")) {
+      break;
+    }
+    base::RunLoop run_loop;
+    run_loop.RunUntilIdle();
+  }
+
+  // Prerender should not retry the request.
+  EXPECT_EQ(0, prerender_helper().GetRequestCount(expected_prerender_url));
+  EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_prefetch_url));
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)

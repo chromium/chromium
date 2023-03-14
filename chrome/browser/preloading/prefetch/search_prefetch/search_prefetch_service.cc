@@ -22,6 +22,7 @@
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_request.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_url_loader.h"
+#include "chrome/browser/preloading/prefetch/search_prefetch/streaming_search_prefetch_url_loader.h"
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -450,7 +451,12 @@ void SearchPrefetchService::OnPrerenderedRequestUsed(
     return;
   }
   AddCacheEntry(navigation_url, request_it->second->prefetch_url());
-  request_it->second->MarkPrefetchAsPrerenderActivated();
+  if (!prerender_utils::SearchPreloadShareableCacheIsEnabled()) {
+    // For the shareable cases, it is possible that a response is used for two
+    // real navigations. So do not use the prefetch request to track the final
+    // status.
+    request_it->second->MarkPrefetchAsPrerenderActivated();
+  }
   DeletePrefetch(canonical_search_url);
 }
 
@@ -550,7 +556,7 @@ SearchPrefetchService::TakePrefetchResponseFromMemoryCache(
     return {};
   }
 
-  std::unique_ptr<SearchPrefetchURLLoader> response =
+  std::unique_ptr<StreamingSearchPrefetchURLLoader> response =
       iter->second->TakeSearchPrefetchURLLoader();
 
   iter->second->MarkPrefetchAsServed();
@@ -590,11 +596,24 @@ void SearchPrefetchService::DeletePrefetch(GURL canonical_search_url) {
   DCHECK(prefetches_.find(canonical_search_url) != prefetches_.end());
   DCHECK(prefetch_expiry_timers_.find(canonical_search_url) !=
          prefetch_expiry_timers_.end());
-  RecordFinalStatus(prefetches_[canonical_search_url]->current_status(),
-                    prefetches_[canonical_search_url]->navigation_prefetch());
+
+  std::unique_ptr<SearchPrefetchRequest> request =
+      std::move(prefetches_[canonical_search_url]);
+
+  RecordFinalStatus(request->current_status(), request->navigation_prefetch());
 
   prefetches_.erase(canonical_search_url);
   prefetch_expiry_timers_.erase(canonical_search_url);
+
+  if (!prerender_utils::IsSearchSuggestionPrerenderEnabled() ||
+      !prerender_utils::SearchPreloadShareableCacheIsEnabled()) {
+    return;
+  }
+  // If it is still serving, transfer the ownership to itself and let it manage
+  // the deletion. A loader may still serving to a prerendering navigation when
+  // this gets canceled due to expiration, in which case it should ensure it has
+  // finished serving.
+  request->TransferLoaderOwnershipIfStillServing();
 }
 
 void SearchPrefetchService::ReportFetchResult(bool error) {
