@@ -89,8 +89,8 @@ class TransparentButton : public Button {
           // This button will be used like a LabelButton, so use the same
           // foreground base color as a label button.
           return color_utils::DeriveDefaultIconColor(
-              views::style::GetColor(*host, views::style::CONTEXT_BUTTON,
-                                     views::style::STYLE_PRIMARY));
+              host->GetColorProvider()->GetColor(views::style::GetColorId(
+                  views::style::CONTEXT_BUTTON, views::style::STYLE_PRIMARY)));
         },
         this));
     InkDrop::Get(this)->SetCreateRippleCallback(base::BindRepeating(

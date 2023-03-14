@@ -365,12 +365,8 @@ DownloadBubbleRowView::DownloadBubbleRowView(
   views::InkDrop::UseInkDropForFloodFillRipple(views::InkDrop::Get(this),
                                                /*highlight_on_hover=*/true,
                                                /*highlight_on_focus=*/true);
-  views::InkDrop::Get(this)->SetBaseColorCallback(base::BindRepeating(
-      [](views::View* host) {
-        return views::style::GetColor(*host, views::style::CONTEXT_BUTTON,
-                                      views::style::STYLE_SECONDARY);
-      },
-      this));
+  views::InkDrop::Get(this)->SetBaseColorId(views::style::GetColorId(
+      views::style::CONTEXT_BUTTON, views::style::STYLE_SECONDARY));
 
   const int icon_label_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_RELATED_LABEL_HORIZONTAL);
@@ -822,12 +818,8 @@ views::ImageButton* DownloadBubbleRowView::AddQuickAction(
   quick_action->SetProperty(views::kMarginsKey, kRowInterElementPadding);
   quick_action->SetVisible(false);
   views::InkDrop::Get(quick_action)
-      ->SetBaseColorCallback(base::BindRepeating(
-          [](views::View* host) {
-            return views::style::GetColor(*host, views::style::CONTEXT_BUTTON,
-                                          views::style::STYLE_SECONDARY);
-          },
-          quick_action));
+      ->SetBaseColorId(views::style::GetColorId(views::style::CONTEXT_BUTTON,
+                                                views::style::STYLE_SECONDARY));
   return quick_action;
 }
 

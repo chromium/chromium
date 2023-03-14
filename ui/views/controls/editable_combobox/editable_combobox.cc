@@ -113,10 +113,11 @@ class Arrow : public Button {
     gfx::Rect arrow_bounds = GetLocalBounds();
     arrow_bounds.ClampToCenteredSize(ComboboxArrowSize());
     // Make sure the arrow use the same color as the text in the combobox.
-    PaintComboboxArrow(style::GetColor(*this, style::CONTEXT_TEXTFIELD,
-                                       GetEnabled() ? style::STYLE_PRIMARY
-                                                    : style::STYLE_DISABLED),
-                       arrow_bounds, canvas);
+    PaintComboboxArrow(
+        GetColorProvider()->GetColor(style::GetColorId(
+            style::CONTEXT_TEXTFIELD,
+            GetEnabled() ? style::STYLE_PRIMARY : style::STYLE_DISABLED)),
+        arrow_bounds, canvas);
   }
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
