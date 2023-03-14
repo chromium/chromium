@@ -38,7 +38,13 @@ class WaylandDisplayOutputTest : public test::WaylandServerTest {
 
 }  // namespace
 
-TEST_F(WaylandDisplayOutputTest, DelayedSelfDestruct) {
+// TODO(crbug.com/1421232): Re-enable this test
+#if defined(LEAK_SANITIZER)
+#define MAYBE_DelayedSelfDestruct DISABLED_DelayedSelfDestruct
+#else
+#define MAYBE_DelayedSelfDestruct DelayedSelfDestruct
+#endif
+TEST_F(WaylandDisplayOutputTest, MAYBE_DelayedSelfDestruct) {
   class ClientData : public test::TestClient::CustomData {
    public:
     wl_output* output = nullptr;
