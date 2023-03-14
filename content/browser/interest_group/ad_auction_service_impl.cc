@@ -260,7 +260,7 @@ void AdAuctionServiceImpl::RunAdAuction(
       base::BindOnce(&AdAuctionServiceImpl::OnAuctionComplete,
                      base::Unretained(this), std::move(callback),
                      std::move(urn_uuid.value()),
-                     base::Unretained(&fenced_frame_urls_map)));
+                     base::UnsafeDanglingUntriaged(&fenced_frame_urls_map)));
   AuctionRunner* raw_auction = auction.get();
   auctions_.emplace(raw_auction, std::move(auction));
 }
