@@ -66,7 +66,7 @@ export class SettingsPerDeviceMouseElement extends
     }
   }
 
-  private async observeMouseSettings(): Promise<void> {
+  private observeMouseSettings(): void {
     this.inputDeviceSettingsProvider.observeMouseSettings(this);
   }
 

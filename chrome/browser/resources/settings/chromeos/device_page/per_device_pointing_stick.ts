@@ -67,7 +67,7 @@ export class SettingsPerDevicePointingStickElement extends
     }
   }
 
-  private async observePointingStickSettings(): Promise<void> {
+  private observePointingStickSettings(): void {
     this.inputDeviceSettingsProvider.observePointingStickSettings(this);
   }
 

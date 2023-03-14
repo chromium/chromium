@@ -90,7 +90,7 @@ export class SettingsPerDeviceKeyboardElement extends
     this.attemptDeepLink();
   }
 
-  private async observeKeyboardSettings(): Promise<void> {
+  private observeKeyboardSettings(): void {
     this.inputDeviceSettingsProvider.observeKeyboardSettings(this);
   }
 

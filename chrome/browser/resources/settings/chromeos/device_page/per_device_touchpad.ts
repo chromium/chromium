@@ -66,7 +66,7 @@ export class SettingsPerDeviceTouchpadElement extends
     }
   }
 
-  private async observeTouchpadSettings(): Promise<void> {
+  private observeTouchpadSettings(): void {
     this.inputDeviceSettingsProvider.observeTouchpadSettings(this);
   }
 
