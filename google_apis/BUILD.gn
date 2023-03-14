@@ -308,6 +308,7 @@ bundle_data("google_apis_unittest_bundle_data") {
     "test/data/calendar/event_self_response_statuses.json",
     "test/data/calendar/event_statuses.json",
     "test/data/calendar/event_with_invalid_conference_data_uri.json",
+    "test/data/calendar/event_with_missing_entry_point_type.json",
     "test/data/calendar/events.json",
     "test/data/calendar/invalid_events.json",
     "test/data/gaia/all_base_urls.json",

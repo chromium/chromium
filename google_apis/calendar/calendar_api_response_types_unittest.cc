@@ -89,6 +89,19 @@ TEST(CalendarAPIResponseTypesTest, ParseInvalidConferenceDataUri) {
   EXPECT_TRUE(event_list->items()[0]->conference_data_uri().is_empty());
 }
 
+TEST(CalendarAPIResponseTypesTest, ParseMissingConferenceDataEntryPointType) {
+  std::unique_ptr<base::Value> events = test_util::LoadJSONFile(
+      "calendar/event_with_missing_entry_point_type.json");
+  ASSERT_TRUE(events.get());
+
+  ASSERT_EQ(base::Value::Type::DICT, events->type());
+  auto event_list = EventList::CreateFrom(*events);
+
+  EXPECT_EQ(1U, event_list->items().size());
+
+  EXPECT_TRUE(event_list->items()[0]->conference_data_uri().is_empty());
+}
+
 TEST(CalendarAPIResponseTypesTest, ParseEventListWithCorrectEventStatuses) {
   std::unique_ptr<base::Value> events =
       test_util::LoadJSONFile("calendar/event_statuses.json");

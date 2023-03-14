@@ -1,0 +1,95 @@
+{
+  "kind": "calendar#events",
+  "etag": "\"p32ofplf5q6gf20g\"",
+  "summary": "test1@google.com",
+  "updated": "2021-06-18T07:17:10.718Z",
+  "timeZone": "America/Los_Angeles",
+  "accessRole": "owner",
+  "defaultReminders": [
+    {
+      "method": "popup",
+      "minutes": 10
+    }
+  ],
+  "nextSyncToken": "CLD81eXRoPECtest",
+  "items": [
+    {
+      "kind": "calendar#event",
+      "etag": "\"3231955547274000\"",
+      "id": "or8221sirt4ogftest",
+      "status": "confirmed",
+      "htmlLink": "https://www.google.com/calendar/event?eid=b3I4MjIxc2lydDRvZ2Ztest",
+      "created": "2018-05-14T18:55:59.000Z",
+      "updated": "2021-03-17T10:42:53.637Z",
+      "summary": "Mobile weekly team meeting ",
+      "description": "\u003ca href=\"https://docs.google.com/document/d/1BSA5pn6dpPQOIBuvtest/edit\"\u003eMeeting agenda and notes\u003c/a\u003e",
+      "colorId": "3",
+      "creator": {
+        "email": "test2@google.com",
+        "displayName": "test2 testlatname2"
+      },
+      "organizer": {
+        "email": "test3@google.com"
+      },
+      "start": {
+        "dateTime": "2020-11-02T10:00:00-08:00",
+        "timeZone": "America/Los_Angeles"
+      },
+      "end": {
+        "dateTime": "2020-11-02T10:30:00-08:00",
+        "timeZone": "America/Los_Angeles"
+      },
+      "recurrence": [
+        "RRULE:FREQ=WEEKLY;UNTIL=20201109T075959Z;BYDAY=MO"
+      ],
+      "iCalUID": "or8221test@google.com",
+      "sequence": 6,
+      "attendees": [
+        {
+          "email": "test4@google.com",
+          "responseStatus": "needsAction"
+        },
+        {
+          "email": "google.com_726f6f6d5f75735f6d7test@resource.calendar.google.com",
+          "displayName": "MTV-1055-2-Pellucid (3) [GVC, Jamboard, Phone]",
+          "resource": true,
+          "responseStatus": "declined"
+        },
+        {
+          "email": "test1@google.com",
+          "displayName": "test1 testlatname1",
+          "self": true,
+          "responseStatus": "needsAction"
+        },
+        {
+          "email": "test2@google.com",
+          "displayName": "test2 testlatname2",
+          "responseStatus": "accepted"
+        }
+      ],
+      "hangoutLink": "https://meet.google.com/jbe-test",
+      "conferenceData": {
+        "entryPoints": [
+          {
+            "uri": "https://stream.meet.google.com/stream/120a3b93-b566-4e2f-9ef9-c974a45e68b7",
+            "label": "stream.meet.google.com/stream/120a3b93-b566-4e2f-9ef9-c974a45e68b7"
+          }
+        ],
+        "conferenceSolution": {
+          "key": {
+            "type": "hangoutsMeet"
+          },
+          "name": "Google Meet",
+          "iconUri": "https://fonts.gstatic.com/s/i/productlogos/meet_2020q4/v6/web-512dp/logo_meet_2020q4_color_2x_web_512dp.png"
+        },
+        "conferenceId": "jbe-test",
+        "signature": "ACn9hYFMw8sU85VncET68xXqnRrE"
+      },
+      "guestsCanModify": true,
+      "reminders": {
+        "useDefault": true
+      },
+      "eventType": "default"
+    }
+  ]
+}

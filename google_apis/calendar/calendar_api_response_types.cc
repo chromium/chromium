@@ -166,12 +166,24 @@ GURL GetConferenceDataUri(const base::Value& value) {
   const auto video_conference_entry_point = base::ranges::find_if(
       entry_points->GetList().begin(), entry_points->GetList().end(),
       [](const auto& entry_point) {
-        return *entry_point.GetDict().FindString(kEntryPointType) ==
-               kVideoConferenceValue;
+        const std::string* entry_point_type =
+            entry_point.GetDict().FindString(kEntryPointType);
+        if (!entry_point_type) {
+          return false;
+        }
+        return *entry_point_type == kVideoConferenceValue;
       });
 
-  const GURL entry_point_url =
-      GURL(*video_conference_entry_point->GetDict().FindString(kEntryPointUri));
+  if (video_conference_entry_point == entry_points->GetList().end()) {
+    return GURL();
+  }
+
+  const std::string* entry_point_uri =
+      video_conference_entry_point->GetDict().FindString(kEntryPointUri);
+  if (!entry_point_uri) {
+    return GURL();
+  }
+  const GURL entry_point_url = GURL(*entry_point_uri);
   if (entry_point_url.is_valid()) {
     return entry_point_url;
   }
