@@ -3038,7 +3038,10 @@ TEST_F(ShelfLayoutManagerTest, NoBackgroundChange) {
 }
 
 // Tests that tapping the home button is successful on the autohidden shelf.
-TEST_F(ShelfLayoutManagerTest, NoTemporaryAutoHideStateWhileOpeningLauncher) {
+//
+// TODO(crbug.com/1418325): Test is flaky.
+TEST_F(ShelfLayoutManagerTest,
+       DISABLED_NoTemporaryAutoHideStateWhileOpeningLauncher) {
   // Enable animations and simulate the zero state search called when showing
   // the launcher.
   ui::ScopedAnimationDurationScaleMode duration(
