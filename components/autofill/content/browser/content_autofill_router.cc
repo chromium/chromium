@@ -227,8 +227,8 @@ void ContentAutofillRouter::FormsSeen(
 
   some_rfh_for_debugging_ = source->render_frame_host()->GetGlobalId();
 
-  for (FormGlobalId form : removed_forms)
-    form_forest_.EraseForm(form);
+  base::flat_set<FormGlobalId> forms_with_removed_fields =
+      form_forest_.EraseForms(removed_forms);
 
   for (const FormData& form : renderer_forms)
     form_forest_.UpdateTreeOfRendererForm(form, source);
@@ -250,6 +250,15 @@ void ContentAutofillRouter::FormsSeen(
   }
   DCHECK(browser_forms.size() == renderer_forms.size() ||
          browser_forms.size() == 1);
+
+  for (const FormGlobalId form_id : forms_with_removed_fields) {
+    const FormData* browser_form = form_forest_.GetBrowserForm(form_id);
+    AFCHECK(browser_form, continue);
+    if (!base::Contains(browser_forms, browser_form->global_id(),
+                        &FormData::global_id)) {
+      browser_forms.push_back(*browser_form);
+    }
+  }
 
   // Send the browser forms to the individual frames.
   if (!browser_forms.empty()) {

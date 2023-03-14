@@ -35,6 +35,7 @@ using FrameDataSet =
 
 using ::testing::AllOf;
 using ::testing::ByRef;
+using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 using ::testing::Eq;
 using ::testing::Field;
@@ -986,7 +987,8 @@ TEST_F(FormForestTestUpdateTree, EraseForm_FieldRemoval) {
   UpdateTreeOfRendererForm(ff, "inner");
   UpdateTreeOfRendererForm(ff, "leaf");
   FormGlobalId removed_form = GetMockedForm("leaf").global_id();
-  ff.EraseForm(removed_form);
+  EXPECT_THAT(ff.EraseForms(std::array{removed_form}),
+              ElementsAre(GetMockedForm("main").global_id()));
   base::EraseIf(
       (*frame_datas(mocked_forms_).find(removed_form.frame_token))->child_forms,
       [&](const FormData& form) { return form.global_id() == removed_form; });
@@ -1010,7 +1012,8 @@ TEST_F(FormForestTestUpdateTree, EraseForm_ParentReset) {
   UpdateTreeOfRendererForm(ff, "inner");
   UpdateTreeOfRendererForm(ff, "leaf");
   FormGlobalId removed_form = GetMockedForm("inner").global_id();
-  ff.EraseForm(removed_form);
+  EXPECT_THAT(ff.EraseForms(std::array{removed_form}),
+              ElementsAre(GetMockedForm("main").global_id()));
   base::EraseIf(
       (*frame_datas(mocked_forms_).find(removed_form.frame_token))->child_forms,
       [&](const FormData& form) { return form.global_id() == removed_form; });

@@ -145,7 +145,7 @@ namespace autofill::internal {
 //    - FormFieldData::host_form_id
 // 2. GetBrowserForm() must only be called for known renderer forms. A renderer
 //    form is *known* after a corresponding UpdateTreeOfRendererForm() call
-//    until it is erased by EraseForm() or EraseFrame().
+//    until it is erased by EraseForms() or EraseFrame().
 class FormForest {
  public:
   // A FrameData is a frame node in the form tree. Its children are FormData
@@ -272,11 +272,15 @@ class FormForest {
       const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map)
       const;
 
-  // Deletes all forms and fields that originate from the |renderer_form| and
+  // Deletes all forms and fields that originate from the |renderer_forms| and
   // unsets the FrameData::parent_form pointers of all child forms.
   //
-  // Afterwards, the |renderer_form| is unknown.
-  void EraseForm(FormGlobalId renderer_form);
+  // Afterwards, the |renderer_forms| are unknown.
+  //
+  // Returns the forms that lost fields due to the removal, which are known
+  // renderer forms.
+  base::flat_set<FormGlobalId> EraseForms(
+      base::span<const FormGlobalId> renderer_forms);
 
   // Deletes all forms and fields that originate from |frame| and unsets the
   // FrameData::parent_form pointers of all child forms.
@@ -362,12 +366,15 @@ class FormForest {
   // May be used in const qualified methods if the return value is not mutated.
   FrameAndForm GetRoot(FormGlobalId form);
 
-  // Helper for EraseFrame() and EraseForm() that removes all fields that
+  // Helper for EraseFrame() and EraseForms() that removes all fields that
   // originate from |frame_or_form| and unsets FrameData::parent_form pointer of
   // |frame_or_form|'s children.
   //
   // Afterwards, all renderer forms in |frame_or_form| (if it is a frame) or the
   // renderer form |frame_or_form| (if it is a form) are unknown.
+  //
+  // Adds every known renderer form from which a field is removed is to
+  // |forms_with_removed_fields|.
   //
   // We intentionally iterate over all frames and forms to search for fields
   // from |frame_or_form|. Alternatively, we could limit this to the root form
@@ -375,7 +382,8 @@ class FormForest {
   // erased before its ancestors, since otherwise |frame_or_form| is
   // disconnected from its root already.
   void EraseReferencesTo(
-      absl::variant<LocalFrameToken, FormGlobalId> frame_or_form);
+      absl::variant<LocalFrameToken, FormGlobalId> frame_or_form,
+      base::flat_set<FormGlobalId>* forms_with_removed_fields);
 
   // Adds |renderer_form| and |driver| to the relevant tree, where |driver| must
   // be the ContentAutofillDriver of the |renderer_form|'s FormData::host_frame.
