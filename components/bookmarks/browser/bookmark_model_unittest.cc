@@ -33,6 +33,7 @@
 #include "components/bookmarks/browser/titled_url_match.h"
 #include "components/bookmarks/browser/url_and_title.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
+#include "components/bookmarks/common/storage_type.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/favicon_base/favicon_callback.h"
@@ -1685,7 +1686,7 @@ TEST(BookmarkModelLoadTest, TitledUrlIndexPopulatedOnLoad) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<BookmarkModel> model =
       std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
-  model->Load(nullptr, tmp_dir.GetPath());
+  model->Load(tmp_dir.GetPath(), StorageType::kLocalOrSyncable);
   test::WaitForBookmarkModelToLoad(model.get());
   const GURL node_url("http://google.com");
   model->AddURL(model->bookmark_bar_node(), 0, u"User", node_url);
@@ -1697,7 +1698,7 @@ TEST(BookmarkModelLoadTest, TitledUrlIndexPopulatedOnLoad) {
   // was added.
   model =
       std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
-  model->Load(nullptr, tmp_dir.GetPath());
+  model->Load(tmp_dir.GetPath(), StorageType::kLocalOrSyncable);
   test::WaitForBookmarkModelToLoad(model.get());
 
   std::vector<TitledUrlMatch> matches = model->GetBookmarksMatching(

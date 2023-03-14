@@ -9,7 +9,8 @@
 
 namespace bookmarks {
 
-extern const base::FilePath::CharType kBookmarksFileName[];
+extern const base::FilePath::CharType kLocalOrSyncableBookmarksFileName[];
+extern const base::FilePath::CharType kAccountBookmarksFileName[];
 
 }  // namespace bookmarks
 

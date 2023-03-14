@@ -24,7 +24,7 @@ enum class SnapshotItemId {
   kHistory = 5,
   kFavicons = 6,
   kTopSites = 7,
-  kBookmarks = 8,
+  kLocalOrSyncableBookmarks = 8,
   kLegacyCurrentTabSession = 9,  // TODO(crbug.com/1103458): Remove in M89
   kLegacyCurrentSession = 10,    // TODO(crbug.com/1103458): Remove in M89
   kGAIAPicture = 11,

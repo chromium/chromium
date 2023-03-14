@@ -19,6 +19,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
+#include "components/bookmarks/common/storage_type.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_bookmarks/bookmark_sync_service.h"
 #include "components/undo/bookmark_undo_service.h"
@@ -47,7 +48,8 @@ std::unique_ptr<KeyedService> BuildBookmarkModel(
   BookmarkExpandedStateTrackerFactory::GetForProfile(profile)->Init(
       bookmark_model.get());
 #endif
-  bookmark_model->Load(profile->GetPrefs(), profile->GetPath());
+  bookmark_model->Load(profile->GetPath(),
+                       bookmarks::StorageType::kLocalOrSyncable);
   BookmarkUndoServiceFactory::GetForProfile(profile)->Start(
       bookmark_model.get());
   return bookmark_model;

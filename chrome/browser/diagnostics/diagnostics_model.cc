@@ -161,7 +161,7 @@ class DiagnosticsModelWin : public DiagnosticsModelImpl {
     tests_.push_back(MakeDiskSpaceTest());
     tests_.push_back(MakePreferencesTest());
     tests_.push_back(MakeLocalStateTest());
-    tests_.push_back(MakeBookMarksTest());
+    tests_.push_back(MakeLocalOrSyncableBookmarksTest());
     tests_.push_back(MakeSqliteWebDataDbTest());
     tests_.push_back(MakeSqliteCookiesDbTest());
     tests_.push_back(MakeSqliteFaviconsDbTest());
@@ -185,7 +185,7 @@ class DiagnosticsModelMac : public DiagnosticsModelImpl {
     tests_.push_back(MakeDiskSpaceTest());
     tests_.push_back(MakePreferencesTest());
     tests_.push_back(MakeLocalStateTest());
-    tests_.push_back(MakeBookMarksTest());
+    tests_.push_back(MakeLocalOrSyncableBookmarksTest());
     tests_.push_back(MakeSqliteWebDataDbTest());
     tests_.push_back(MakeSqliteCookiesDbTest());
     tests_.push_back(MakeSqliteFaviconsDbTest());
@@ -211,7 +211,7 @@ class DiagnosticsModelPosix : public DiagnosticsModelImpl {
     tests_.push_back(MakeDiskSpaceTest());
     tests_.push_back(MakePreferencesTest());
     tests_.push_back(MakeLocalStateTest());
-    tests_.push_back(MakeBookMarksTest());
+    tests_.push_back(MakeLocalOrSyncableBookmarksTest());
     tests_.push_back(MakeSqliteWebDataDbTest());
     tests_.push_back(MakeSqliteCookiesDbTest());
     tests_.push_back(MakeSqliteFaviconsDbTest());
@@ -242,7 +242,7 @@ class DiagnosticsModelFuchsia : public DiagnosticsModelImpl {
     tests_.push_back(MakeDiskSpaceTest());
     tests_.push_back(MakePreferencesTest());
     tests_.push_back(MakeLocalStateTest());
-    tests_.push_back(MakeBookMarksTest());
+    tests_.push_back(MakeLocalOrSyncableBookmarksTest());
     tests_.push_back(MakeSqliteWebDataDbTest());
     tests_.push_back(MakeSqliteCookiesDbTest());
     tests_.push_back(MakeSqliteFaviconsDbTest());

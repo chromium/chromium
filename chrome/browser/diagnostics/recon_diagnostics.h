@@ -45,7 +45,7 @@ enum OutcomeCodes {
   DIAG_RECON_PARSE_ERROR,
 };
 
-std::unique_ptr<DiagnosticsTest> MakeBookMarksTest();
+std::unique_ptr<DiagnosticsTest> MakeLocalOrSyncableBookmarksTest();
 std::unique_ptr<DiagnosticsTest> MakeDictonaryDirTest();
 std::unique_ptr<DiagnosticsTest> MakeDiskSpaceTest();
 std::unique_ptr<DiagnosticsTest> MakeInstallTypeTest();

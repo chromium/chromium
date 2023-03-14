@@ -12,6 +12,7 @@ static_library("common") {
     "bookmark_metrics.h",
     "bookmark_pref_names.cc",
     "bookmark_pref_names.h",
+    "storage_type.h",
     "url_load_stats.h",
   ]
 

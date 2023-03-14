@@ -21,6 +21,7 @@
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
+#include "components/bookmarks/common/storage_type.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/bookmarks/test/mock_bookmark_model_observer.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
@@ -66,7 +67,8 @@ class ManagedBookmarksTrackerTest : public testing::Test {
 
     model_->AddObserver(&observer_);
     EXPECT_CALL(observer_, BookmarkModelLoaded(model_.get(), _));
-    model_->Load(&prefs_, scoped_temp_dir_.GetPath());
+    model_->Load(scoped_temp_dir_.GetPath(),
+                 bookmarks::StorageType::kLocalOrSyncable);
     test::WaitForBookmarkModelToLoad(model_.get());
     Mock::VerifyAndClearExpectations(&observer_);
 

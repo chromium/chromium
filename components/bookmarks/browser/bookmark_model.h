@@ -27,12 +27,11 @@
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_undo_provider.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
+#include "components/bookmarks/common/storage_type.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
-
-class PrefService;
 
 namespace base {
 class FilePath;
@@ -87,8 +86,13 @@ class BookmarkModel : public BookmarkUndoProvider,
   // Triggers the loading of bookmarks, which is an asynchronous operation with
   // most heavy-lifting taking place in a background sequence. Upon completion,
   // loaded() will return true and observers will be notified via
-  // BookmarkModelLoaded().
-  void Load(PrefService* pref_service, const base::FilePath& profile_path);
+  // BookmarkModelLoaded(). Uses different files depending on
+  // |sync_storage_type| to support local and account storages.
+  // Please note that for the time being the local storage is also used when
+  // sync is on.
+  // TODO(crbug.com/1422201): Update the note above when the local storage is
+  //                          no longer used for sync.
+  void Load(const base::FilePath& profile_path, StorageType storage_type);
 
   // Returns true if the model finished loading.
   bool loaded() const {
@@ -428,7 +432,7 @@ class BookmarkModel : public BookmarkUndoProvider,
                                          const base::Time delete_begin,
                                          const base::Time delete_end);
 
-  std::unique_ptr<BookmarkClient> client_;
+  const std::unique_ptr<BookmarkClient> client_;
 
   // Whether the initial set of data has been loaded.
   bool loaded_ = false;

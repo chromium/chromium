@@ -324,9 +324,9 @@ std::unique_ptr<DiagnosticsTest> MakeInstallTypeTest() {
   return std::make_unique<InstallTypeTest>();
 }
 
-std::unique_ptr<DiagnosticsTest> MakeBookMarksTest() {
+std::unique_ptr<DiagnosticsTest> MakeLocalOrSyncableBookmarksTest() {
   base::FilePath path = DiagnosticsTest::GetUserDefaultProfileDir();
-  path = path.Append(bookmarks::kBookmarksFileName);
+  path = path.Append(bookmarks::kLocalOrSyncableBookmarksFileName);
   return std::make_unique<JSONTest>(path, DIAGNOSTICS_JSON_BOOKMARKS_TEST,
                                     2 * kOneMegabyte, JSONTest::NON_CRITICAL);
 }
