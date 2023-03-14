@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
+#include "chrome/browser/ui/ui_features.h"
 
 #include <memory>
 #include <string>
@@ -293,6 +294,10 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase {
   ~BookmarkBarViewEventTestBase() override = default;
 
   void SetUp() override {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(
+        features::kPowerBookmarksSidePanel);
+
     content_client_ = std::make_unique<ChromeContentClient>();
     content::SetContentClient(content_client_.get());
     browser_content_client_ = std::make_unique<ChromeContentBrowserClient>();

@@ -59,6 +59,8 @@
 #include "chrome/browser/ui/views/event_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_background.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_switches.h"
@@ -858,7 +860,7 @@ void BookmarkBarView::Layout() {
     x += bookmarks_separator_pref.width();
   }
 
-  // The "Other Bookmarks" button.
+  // The "All/Other Bookmarks" button.
   if (other_bookmarks_button_->GetVisible()) {
     other_bookmarks_button_->SetBounds(x, y, other_bookmarks_pref.width(),
                                        button_height);
@@ -1102,9 +1104,12 @@ void BookmarkBarView::BookmarkModelLoaded(BookmarkModel* model,
   // once, or we didn't properly clear things. Either of which shouldn't happen.
   // The actual bookmark buttons are added from Layout().
   DCHECK(bookmark_buttons_.empty());
-  DCHECK(model->other_node());
-  other_bookmarks_button_->SetAccessibleName(model->other_node()->GetTitle());
-  other_bookmarks_button_->SetText(model->other_node()->GetTitle());
+  const std::u16string other_bookmarks_button_text =
+      base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel)
+          ? l10n_util::GetStringUTF16(IDS_BOOKMARKS_ALL_BOOKMARKS)
+          : model->other_node()->GetTitle();
+  other_bookmarks_button_->SetAccessibleName(other_bookmarks_button_text);
+  other_bookmarks_button_->SetText(other_bookmarks_button_text);
   const auto managed_title = managed_->managed_node()->GetTitle();
   managed_bookmarks_button_->SetAccessibleName(
       GetFolderButtonAccessibleName(managed_title));
@@ -1439,14 +1444,27 @@ size_t BookmarkBarView::GetFirstHiddenNodeIndex() const {
 }
 
 std::unique_ptr<MenuButton> BookmarkBarView::CreateOtherBookmarksButton() {
-  // Title is set in Loaded.
-  auto button = std::make_unique<BookmarkFolderButton>(base::BindRepeating(
-      [](BookmarkBarView* bar, const ui::Event& event) {
-        bar->OnMenuButtonPressed(bar->bookmark_model_->other_node(), event);
-      },
-      base::Unretained(this)));
+  std::unique_ptr<MenuButton> button;
+  if (base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel)) {
+    // Title is set in Loaded.
+    button = std::make_unique<BookmarkFolderButton>(base::BindRepeating(
+        [](BookmarkBarView* bar, const ui::Event& event) {
+          bar->browser_view_->side_panel_coordinator()->Show(
+              SidePanelEntry::Id::kBookmarks,
+              SidePanelUtil::SidePanelOpenTrigger::kBookmarkBar);
+        },
+        base::Unretained(this)));
+  } else {
+    // Title is set in Loaded.
+    button = std::make_unique<BookmarkFolderButton>(base::BindRepeating(
+        [](BookmarkBarView* bar, const ui::Event& event) {
+          bar->OnMenuButtonPressed(bar->bookmark_model_->other_node(), event);
+        },
+        base::Unretained(this)));
+
+    button->set_context_menu_controller(this);
+  }
   button->SetID(VIEW_ID_OTHER_BOOKMARKS);
-  button->set_context_menu_controller(this);
   return button;
 }
 
@@ -1850,11 +1868,14 @@ void BookmarkBarView::UpdateAppearanceForTheme() {
 
   const SkColor color = color_provider->GetColor(kColorBookmarkBarForeground);
   other_bookmarks_button_->SetEnabledTextColors(color);
+  if (!base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel)) {
+    other_bookmarks_button_->SetImageModel(
+        views::Button::STATE_NORMAL,
+        chrome::GetBookmarkFolderIcon(chrome::BookmarkFolderIconType::kNormal,
+                                      kColorBookmarkFolderIcon));
+  }
+
   managed_bookmarks_button_->SetEnabledTextColors(color);
-  other_bookmarks_button_->SetImageModel(
-      views::Button::STATE_NORMAL,
-      chrome::GetBookmarkFolderIcon(chrome::BookmarkFolderIconType::kNormal,
-                                    kColorBookmarkFolderIcon));
   managed_bookmarks_button_->SetImageModel(
       views::Button::STATE_NORMAL,
       chrome::GetBookmarkFolderIcon(chrome::BookmarkFolderIconType::kManaged,
@@ -1876,12 +1897,21 @@ void BookmarkBarView::UpdateAppearanceForTheme() {
 }
 
 bool BookmarkBarView::UpdateOtherAndManagedButtonsVisibility() {
-  bool has_other_children = !bookmark_model_->other_node()->children().empty();
-  bool update_other =
-      has_other_children != other_bookmarks_button_->GetVisible();
-  if (update_other) {
-    other_bookmarks_button_->SetVisible(has_other_children);
-    UpdateBookmarksSeparatorVisibility();
+  bool update_other;
+  if (base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel)) {
+    update_other = !other_bookmarks_button_->GetVisible();
+    if (update_other) {
+      other_bookmarks_button_->SetVisible(true);
+      UpdateBookmarksSeparatorVisibility();
+    }
+  } else {
+    bool has_other_children =
+        !bookmark_model_->other_node()->children().empty();
+    update_other = has_other_children != other_bookmarks_button_->GetVisible();
+    if (update_other) {
+      other_bookmarks_button_->SetVisible(has_other_children);
+      UpdateBookmarksSeparatorVisibility();
+    }
   }
 
   bool show_managed = !managed_->managed_node()->children().empty() &&
@@ -1927,7 +1957,7 @@ void BookmarkBarView::InsertBookmarkButtonAtIndex(
 // All of the secondary buttons are always in the view hierarchy, even if
 // they're not visible. The order should be: [Apps shortcut] [Managed bookmark
 // button] [saved tab group bar] [..bookmark buttons..] [Overflow chevron]
-// [Other bookmarks]
+// [All/Other bookmarks]
 #if DCHECK_IS_ON()
   auto i = children().cbegin();
   DCHECK_EQ(*i++, apps_page_shortcut_);

@@ -33,7 +33,8 @@ class SidePanelUtil {
     kContextMenuSearchOption = 8,
     kReadAnythingContextMenu = 9,
     kExtensionEntryRegistered = 10,
-    kMaxValue = kExtensionEntryRegistered,
+    kBookmarkBar = 11,
+    kMaxValue = kBookmarkBar,
   };
 
   static void PopulateGlobalEntries(Browser* browser,
