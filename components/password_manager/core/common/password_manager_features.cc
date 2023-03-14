@@ -79,7 +79,7 @@ BASE_FEATURE(kFillOnAccountSelect,
 // Enables logging the content of chrome://password-manager-internals to the
 // terminal.
 BASE_FEATURE(kPasswordManagerLogToTerminal,
-             "PasswordManagerLoggingToTerminal",
+             "PasswordManagerLogToTerminal",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

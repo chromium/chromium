@@ -705,7 +705,7 @@ BASE_FEATURE(kAutofillCreateAccountProfilesFromSettings,
 
 // Enables logging the content of chrome://autofill-internals to the terminal.
 BASE_FEATURE(kAutofillLogToTerminal,
-             "AutofillLoggingToTerminal",
+             "AutofillLogToTerminal",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables or Disables (mostly for hermetic testing) autofill server
