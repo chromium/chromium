@@ -516,8 +516,6 @@ void PrefetchContainer::OnPrefetchProbeResult(
 
   switch (probe_result) {
     case PrefetchProbeResult::kNoProbing:
-      SetPrefetchStatus(PrefetchStatus::kPrefetchUsedNoProbe);
-      break;
     case PrefetchProbeResult::kDNSProbeSuccess:
     case PrefetchProbeResult::kTLSProbeSuccess:
       SetPrefetchStatus(PrefetchStatus::kPrefetchResponseUsed);

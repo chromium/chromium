@@ -92,6 +92,9 @@ class CONTENT_EXPORT PrefetchURLLoaderInterceptor
   // reported to the tab helper.
   absl::optional<base::TimeTicks> probe_start_time_;
 
+  // Result of the most recent probe.
+  PrefetchProbeResult probe_result_{PrefetchProbeResult::kNoProbing};
+
   // The time when we started waiting for cookies to be copied, delaying the
   // navigation. Used to calculate total cookie wait time.
   absl::optional<base::TimeTicks> cookie_copy_start_time_;

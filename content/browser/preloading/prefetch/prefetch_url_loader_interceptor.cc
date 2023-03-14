@@ -141,14 +141,7 @@ void PrefetchURLLoaderInterceptor::OnGotPrefetchToServce(
     return;
   }
 
-  prefetch_container->OnPrefetchProbeResult(PrefetchProbeResult::kNoProbing);
-  PrefetchServingPageMetricsContainer* serving_page_metrics_container =
-      PrefetchServingPageMetricsContainerFromFrameTreeNodeId(
-          frame_tree_node_id_);
-  if (serving_page_metrics_container)
-    serving_page_metrics_container->SetPrefetchStatus(
-        prefetch_container->GetPrefetchStatus());
-
+  probe_result_ = PrefetchProbeResult::kNoProbing;
   EnsureCookiesCopiedAndInterceptPrefetchedNavigation(tenative_resource_request,
                                                       prefetch_container);
 }
@@ -190,17 +183,20 @@ void PrefetchURLLoaderInterceptor::OnProbeComplete(
     serving_page_metrics_container->SetProbeLatency(base::TimeTicks::Now() -
                                                     probe_start_time_.value());
 
-  if (prefetch_container) {
-    prefetch_container->OnPrefetchProbeResult(result);
-
-    if (serving_page_metrics_container)
-      serving_page_metrics_container->SetPrefetchStatus(
-          prefetch_container->GetPrefetchStatus());
-  }
+  probe_result_ = result;
 
   if (PrefetchProbeResultIsSuccess(result)) {
     std::move(on_success_callback).Run();
     return;
+  }
+
+  if (prefetch_container) {
+    prefetch_container->OnPrefetchProbeResult(probe_result_);
+
+    if (serving_page_metrics_container) {
+      serving_page_metrics_container->SetPrefetchStatus(
+          prefetch_container->GetPrefetchStatus());
+    }
   }
 
   DoNotInterceptNavigation();
@@ -239,19 +235,24 @@ void PrefetchURLLoaderInterceptor::InterceptPrefetchedNavigation(
     RecordCookieWaitTime(wait_time);
   }
 
-  if (!prefetch_container) {
+  if (!prefetch_container ||
+      !prefetch_container->IsPrefetchServable(PrefetchCacheableDuration())) {
     DoNotInterceptNavigation();
     return;
   }
 
-  // This can only happen when probing is required and probing is successful.
-  // `PrefetchURLLoaderInterceptor::InterceptPrefetchedNavigation` is reached
-  // from a different code path, see
-  // `PrefetchURLLoaderInterceptor::MaybeCreateLoader`.
-  if (const auto status = prefetch_container->GetPrefetchStatus();
-      status != PrefetchStatus::kPrefetchResponseUsed) {
-    prefetch_container->SetPrefetchStatus(
-        PrefetchStatus::kPrefetchResponseUsed);
+  // Delay updating the prefetch with the probe result in case it becomes not
+  // servable.
+  if (prefetch_container) {
+    prefetch_container->OnPrefetchProbeResult(probe_result_);
+
+    PrefetchServingPageMetricsContainer* serving_page_metrics_container =
+        PrefetchServingPageMetricsContainerFromFrameTreeNodeId(
+            frame_tree_node_id_);
+    if (serving_page_metrics_container) {
+      serving_page_metrics_container->SetPrefetchStatus(
+          prefetch_container->GetPrefetchStatus());
+    }
   }
 
   // Set up a URL loader factory to "create" the streaming URL loader from the

@@ -888,5 +888,76 @@ TEST_F(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(ProbeFailure)) {
                        PreloadingTriggeringOutcome::kReady);
 }
 
+TEST_F(PrefetchURLLoaderInterceptorTest,
+       DISABLE_ASAN(PrefetchStreamingURLLoaderReleased)) {
+  // It is possible for a prefetch to initially be marked as servable, but
+  // becomes not servable at some point between PrefetchURLLoaderInterceptor
+  // gets the prefetch and when it tries to serve it. This can happen when
+  // waiting for a probe to complete or the cookie copy to complete.
+
+  const GURL kTestUrl("https://example.com");
+
+  std::unique_ptr<PrefetchContainer> prefetch_container =
+      std::make_unique<PrefetchContainer>(
+          main_rfh()->GetGlobalId(), kTestUrl,
+          PrefetchType(/*use_isolated_network_context=*/true,
+                       /*use_prefetch_proxy=*/true,
+                       blink::mojom::SpeculationEagerness::kEager),
+          blink::mojom::Referrer(), nullptr);
+  prefetch_container->SimulateAttemptAtInterceptorForTest();
+
+  prefetch_container->TakeStreamingURLLoader(
+      MakeServableStreamingURLLoaderForTest(
+          network::mojom::URLResponseHead::New(), "test body"));
+
+  // Simulate the cookie copy process starting, but not finishing until after
+  // |MaybeCreateLoader| is called.
+  prefetch_container->OnIsolatedCookieCopyStart();
+  task_environment()->FastForwardBy(base::Milliseconds(10));
+
+  interceptor()->AddPrefetch(prefetch_container->GetWeakPtr());
+
+  interceptor()->TakePrefetchOriginProber(
+      std::make_unique<TestPrefetchOriginProber>(
+          browser_context(), /*should_probe_origins_response=*/false, kTestUrl,
+          PrefetchProbeResult::kNoProbing));
+
+  network::ResourceRequest request;
+  request.url = kTestUrl;
+  request.resource_type =
+      static_cast<int>(blink::mojom::ResourceType::kMainFrame);
+  request.method = "GET";
+
+  interceptor()->MaybeCreateLoader(
+      request, browser_context(),
+      base::BindOnce(&PrefetchURLLoaderInterceptorTest::LoaderCallback,
+                     base::Unretained(this)),
+      base::BindOnce([](bool) { NOTREACHED(); }));
+
+  // A decision on whether the navigation should be intercepted shouldn't be
+  // made until after the cookie copy process is completed.
+  EXPECT_FALSE(was_intercepted().has_value());
+
+  task_environment()->FastForwardBy(base::Milliseconds(20));
+
+  // Simulate the prefetch becoming not servable anymore.
+  prefetch_container->ResetStreamingLoader();
+  task_environment()->RunUntilIdle();
+
+  prefetch_container->OnIsolatedCookieCopyComplete();
+  WaitForCallback();
+
+  EXPECT_TRUE(was_intercepted().has_value());
+  EXPECT_FALSE(was_intercepted().value());
+
+  histogram_tester().ExpectUniqueTimeSample(
+      "PrefetchProxy.AfterClick.Mainframe.CookieWaitTime",
+      base::Milliseconds(20), 1);
+
+  EXPECT_EQ(interceptor()->num_probes(), 0);
+  ExpectCorrectUkmLogs(kTestUrl, /*is_accurate_trigger=*/true,
+                       PreloadingTriggeringOutcome::kReady);
+}
+
 }  // namespace
 }  // namespace content
