@@ -63,8 +63,9 @@ TEST_F(PolicyLoggerTest, PolicyLoggingEnabled) {
   AddLogs("when the feature is enabled.", policy_logger);
 
   EXPECT_EQ(policy_logger->GetAsList().size(), logs_size_before_adding + 1);
-  EXPECT_EQ(*(policy_logger->GetAsList()[logs_size_before_adding].FindStringKey(
-                "message")),
+  EXPECT_EQ(*(policy_logger->GetAsList()[logs_size_before_adding]
+                  .GetDict()
+                  .FindString("message")),
             "Element added: when the feature is enabled.");
 }
 
@@ -85,8 +86,9 @@ TEST_F(PolicyLoggerTest, DeleteOldLogs) {
   task_environment.FastForwardBy(first_time_elapsed);
   task_environment.RunUntilIdle();
   EXPECT_EQ(policy_logger->GetAsList().size(), size_t(1));
-  EXPECT_EQ(*(policy_logger->GetAsList()[logs_size_before_adding].FindStringKey(
-                "message")),
+  EXPECT_EQ(*(policy_logger->GetAsList()[logs_size_before_adding]
+                  .GetDict()
+                  .FindString("message")),
             "Element added: Third log at t=TimeToLive/2.");
 
   // Check that the last log was deleted after `kTimeToLive` minutes to ensure

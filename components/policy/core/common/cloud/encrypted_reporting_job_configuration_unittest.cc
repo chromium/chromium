@@ -116,7 +116,7 @@ class RequestPayloadBuilder {
 class ResponseValueBuilder {
  public:
   static base::Value::Dict CreateResponse(
-      const base::Value& sequence_information,
+      const base::Value::Dict& sequence_information,
       absl::optional<base::Value> upload_failure) {
     base::Value::Dict response;
 
@@ -213,7 +213,8 @@ class EncryptedReportingJobConfigurationTest : public testing::Test {
   TestUpload CreateTestUpload(const base::Value& record_value) {
     TestUpload test_upload;
     test_upload.response = ResponseValueBuilder::CreateResponse(
-        *record_value.FindDictKey(kSequenceInformationKey), absl::nullopt);
+        *record_value.GetDict().FindDict(kSequenceInformationKey),
+        absl::nullopt);
     test_upload.completion_cb = std::make_unique<StrictMock<MockCompleteCb>>();
     test_upload.configuration =
         std::make_unique<EncryptedReportingJobConfiguration>(
@@ -257,9 +258,9 @@ class EncryptedReportingJobConfigurationTest : public testing::Test {
   }
 
   void GetRecordList(EncryptedReportingJobConfiguration* configuration,
-                     base::Value** record_list) {
+                     base::Value::List** record_list) {
     base::Value* const payload = GetPayload(configuration);
-    *record_list = payload->FindListKey(kEncryptedRecordListKey);
+    *record_list = payload->GetDict().FindList(kEncryptedRecordListKey);
     ASSERT_TRUE(*record_list);
   }
 
@@ -358,13 +359,13 @@ TEST_F(EncryptedReportingJobConfigurationTest, CorrectlyAddEncryptedRecord) {
       kClientId,
       base::BindOnce(&MockCompleteCb::Call, base::Unretained(&completion_cb)));
 
-  base::Value* record_list = nullptr;
+  base::Value::List* record_list = nullptr;
   GetRecordList(&configuration, &record_list);
-  EXPECT_EQ(record_list->GetList().size(), 1u);
-  EXPECT_EQ(record_list->GetList()[0], record_value);
+  EXPECT_EQ(record_list->size(), 1u);
+  EXPECT_EQ((*record_list)[0], record_value);
 
   std::string* encrypted_wrapped_record =
-      record_list->GetList()[0].FindStringKey(kEncryptedWrappedRecordKey);
+      (*record_list)[0].GetDict().FindString(kEncryptedWrappedRecordKey);
   ASSERT_THAT(encrypted_wrapped_record, NotNull());
 
   std::string decoded_record;
@@ -390,14 +391,14 @@ TEST_F(EncryptedReportingJobConfigurationTest, CorrectlyAddsMultipleRecords) {
       builder.Build(), kDmToken, kClientId,
       base::BindOnce(&MockCompleteCb::Call, base::Unretained(&completion_cb)));
 
-  base::Value* record_list = nullptr;
+  base::Value::List* record_list = nullptr;
   GetRecordList(&configuration, &record_list);
 
-  EXPECT_EQ(record_list->GetList().size(), records.size());
+  EXPECT_EQ(record_list->size(), records.size());
 
   size_t counter = 0;
   for (const auto& record : records) {
-    EXPECT_EQ(record_list->GetList()[counter++], record);
+    EXPECT_EQ((*record_list)[counter++], record);
   }
 
   EXPECT_FALSE(GetAttachEncryptionSettings(&configuration));
@@ -415,10 +416,10 @@ TEST_F(EncryptedReportingJobConfigurationTest,
       builder.Build(), kDmToken, kClientId,
       base::BindOnce(&MockCompleteCb::Call, base::Unretained(&completion_cb)));
 
-  base::Value* record_list = nullptr;
+  base::Value::List* record_list = nullptr;
   GetRecordList(&configuration, &record_list);
 
-  EXPECT_TRUE(record_list->GetList().empty());
+  EXPECT_TRUE(record_list->empty());
 
   EXPECT_TRUE(GetAttachEncryptionSettings(&configuration));
 }
@@ -441,14 +442,14 @@ TEST_F(EncryptedReportingJobConfigurationTest,
       builder.Build(), kDmToken, kClientId,
       base::BindOnce(&MockCompleteCb::Call, base::Unretained(&completion_cb)));
 
-  base::Value* record_list = nullptr;
+  base::Value::List* record_list = nullptr;
   GetRecordList(&configuration, &record_list);
 
-  EXPECT_EQ(record_list->GetList().size(), records.size());
+  EXPECT_EQ(record_list->size(), records.size());
 
   size_t counter = 0;
   for (const auto& record : records) {
-    EXPECT_EQ(record_list->GetList()[counter++], record);
+    EXPECT_EQ((*record_list)[counter++], record);
   }
 
   EXPECT_TRUE(GetAttachEncryptionSettings(&configuration));

@@ -201,11 +201,14 @@ void UserCloudSigninRestrictionPolicyFetcher::
 
   if (error.state() == GoogleServiceAuthError::NONE && response_body) {
     auto result = base::JSONReader::Read(*response_body, base::JSON_PARSE_RFC);
-    if (result && result->FindStringKey("policyValue"))
-      restriction = *result->FindStringKey("policyValue");
-    else
+    std::string* policy_value =
+        result ? result->GetDict().FindString("policyValue") : nullptr;
+    if (policy_value) {
+      restriction = *policy_value;
+    } else {
       LOG_POLICY(WARNING, POLICY_AUTH)
           << "Failed to ManagedAccountsSigninRestriction response";
+    }
   }
 
   std::move(callback).Run(std::move(restriction));

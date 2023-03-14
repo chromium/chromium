@@ -208,11 +208,11 @@ TEST_F(RealtimeReportingJobConfigurationTest, ValidatePayload) {
                                  ReportingJobConfigurationBase::
                                      DeviceDictionaryBuilder::GetNamePath()));
 
-  base::Value* events =
-      payload->FindListKey(RealtimeReportingJobConfiguration::kEventListKey);
-  EXPECT_EQ(kIds.size(), events->GetList().size());
+  base::Value::List* events = payload->GetDict().FindList(
+      RealtimeReportingJobConfiguration::kEventListKey);
+  EXPECT_EQ(kIds.size(), events->size());
   int i = -1;
-  for (const base::Value& event_val : events->GetList()) {
+  for (const base::Value& event_val : *events) {
     const base::Value::Dict& event = event_val.GetDict();
     const std::string& id = CHECK_DEREF(event.FindString(kEventId));
     EXPECT_EQ(kIds[++i], id);
@@ -335,11 +335,11 @@ TEST_F(RealtimeReportingJobConfigurationTest, OnBeforeRetry_PartialBatch) {
                                 response_string);
   absl::optional<base::Value> payload =
       base::JSONReader::Read(configuration_->GetPayload());
-  base::Value* events =
-      payload->FindListKey(RealtimeReportingJobConfiguration::kEventListKey);
-  EXPECT_EQ(1u, events->GetList().size());
-  auto& event = events->GetList()[0];
-  EXPECT_EQ(kIds[1], *event.FindStringKey(kEventId));
+  base::Value::List* events = payload->GetDict().FindList(
+      RealtimeReportingJobConfiguration::kEventListKey);
+  EXPECT_EQ(1u, events->size());
+  auto& event = (*events)[0];
+  EXPECT_EQ(kIds[1], *event.GetDict().FindString(kEventId));
 }
 
 }  // namespace policy
