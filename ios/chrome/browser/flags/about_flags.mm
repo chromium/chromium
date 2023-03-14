@@ -1601,6 +1601,52 @@ NSMutableDictionary* CreateExperimentalTestingPolicies() {
     [testing_policies addEntriesFromDictionary:@{password_manager_key : @NO}];
     [allowed_experimental_policies addObject:password_manager_key];
   }
+  if ([defaults boolForKey:@"AddManagedBookmarks"]) {
+    NSString* managed_bookmarks_key =
+        base::SysUTF8ToNSString(policy::key::kManagedBookmarks);
+    NSString* managed_bookmarks_value =
+        base::SysUTF8ToNSString("["
+                                // The following gets filtered out from
+                                // the JSON string when parsed.
+                                "  {"
+                                "    \"toplevel_name\": \"abc 123\""
+                                "  },"
+                                "  {"
+                                "    \"name\": \"Google\","
+                                "    \"url\": \"google.com\""
+                                "  },"
+                                "  {"
+                                "    \"name\": \"Empty Folder\","
+                                "    \"children\": []"
+                                "  },"
+                                "  {"
+                                "    \"name\": \"Big Folder\","
+                                "    \"children\": ["
+                                "      {"
+                                "        \"name\": \"Youtube\","
+                                "        \"url\": \"youtube.com\""
+                                "      },"
+                                "      {"
+                                "        \"name\": \"Chromium\","
+                                "        \"url\": \"chromium.org\""
+                                "      },"
+                                "      {"
+                                "        \"name\": \"More Stuff\","
+                                "        \"children\": ["
+                                "          {"
+                                "            \"name\": \"Bugs\","
+                                "            \"url\": \"crbug.com\""
+                                "          }"
+                                "        ]"
+                                "      }"
+                                "    ]"
+                                "  }"
+                                "]");
+    [testing_policies addEntriesFromDictionary:@{
+      managed_bookmarks_key : managed_bookmarks_value
+    }];
+    [allowed_experimental_policies addObject:managed_bookmarks_key];
+  }
 
   // If any experimental policy was allowed, set the EnableExperimentalPolicies
   // policy.
