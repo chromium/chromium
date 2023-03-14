@@ -189,6 +189,10 @@ void ReadAnythingModel::IncreaseTextSize() {
   NotifyThemeChanged();
 }
 
+void ReadAnythingModel::OnSystemThemeChanged() {
+  NotifyThemeChanged();
+}
+
 void ReadAnythingModel::NotifyThemeChanged() {
   for (Observer& obs : observers_) {
     obs.OnReadAnythingThemeChanged(font_name_, font_scale_,

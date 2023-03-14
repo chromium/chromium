@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_menu_button.h"
 #include "chrome/common/accessibility/read_anything_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -106,6 +107,13 @@ ReadAnythingToolbarView::ReadAnythingToolbarView(
   coordinator_->AddModelObserver(this);
 }
 
+void ReadAnythingToolbarView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  if (delegate_) {
+    delegate_->OnSystemThemeChanged();
+  }
+}
+
 // After this view is added to the widget, we have access to the color provider
 // to apply the initial theme skcolors.
 void ReadAnythingToolbarView::AddedToWidget() {
@@ -172,33 +180,27 @@ void ReadAnythingToolbarView::OnReadAnythingThemeChanged(
   if (!GetColorProvider())
     return;
 
-  const SkColor background_skcolor =
-      GetColorProvider()->GetColor(background_color_id);
-  const SkColor foreground_skcolor =
-      GetColorProvider()->GetColor(foreground_color_id);
-
-  SetBackground(views::CreateSolidBackground(background_skcolor));
-  font_combobox_->SetBackground(
-      views::CreateSolidBackground(background_skcolor));
+  SetBackground(views::CreateThemedSolidBackground(background_color_id));
+  font_combobox_->SetBackgroundColorId(background_color_id);
   colors_button_->SetBackground(
-      views::CreateSolidBackground(background_skcolor));
+      views::CreateThemedSolidBackground(background_color_id));
   line_spacing_button_->SetBackground(
-      views::CreateSolidBackground(background_skcolor));
+      views::CreateThemedSolidBackground(background_color_id));
   letter_spacing_button_->SetBackground(
-      views::CreateSolidBackground(background_skcolor));
+      views::CreateThemedSolidBackground(background_color_id));
 
   decrease_text_size_button_->UpdateIcon(kTextDecreaseIcon, kIconSize,
-                                         foreground_skcolor);
+                                         foreground_color_id);
 
   increase_text_size_button_->UpdateIcon(kTextIncreaseIcon, kIconSize,
-                                         foreground_skcolor);
+                                         foreground_color_id);
 
-  colors_button_->SetIcon(kPaletteIcon, kIconSize, foreground_skcolor);
+  colors_button_->SetIcon(kPaletteIcon, kIconSize, foreground_color_id);
 
   line_spacing_button_->SetIcon(kLineSpacingIcon, kIconSize,
-                                foreground_skcolor);
+                                foreground_color_id);
   letter_spacing_button_->SetIcon(kLetterSpacingIcon, kIconSize,
-                                  foreground_skcolor);
+                                  foreground_color_id);
 
   // TODO(1266555): Pass the dropdown color to the combobox and menu models.
 

@@ -29,8 +29,8 @@ ReadAnythingButtonView::ReadAnythingButtonView(
 
   // Create the image button.
   auto button = views::CreateVectorImageButton(std::move(callback));
-  views::SetImageFromVectorIconWithColor(button.get(), icon, icon_size,
-                                         icon_color, icon_color);
+  views::SetImageFromVectorIconWithColorId(button.get(), icon, icon_color,
+                                           icon_color, icon_size);
   views::InstallCircleHighlightPathGenerator(button.get());
   button->SetTooltipText(tooltip);
 
@@ -40,9 +40,9 @@ ReadAnythingButtonView::ReadAnythingButtonView(
 
 void ReadAnythingButtonView::UpdateIcon(const gfx::VectorIcon& icon,
                                         int icon_size,
-                                        SkColor icon_color) {
-  views::SetImageFromVectorIconWithColor(button_, icon, icon_size, icon_color,
-                                         icon_color);
+                                        ui::ColorId icon_color) {
+  views::SetImageFromVectorIconWithColorId(button_, icon, icon_color,
+                                           icon_color, icon_size);
 }
 
 void ReadAnythingButtonView::Enable() {

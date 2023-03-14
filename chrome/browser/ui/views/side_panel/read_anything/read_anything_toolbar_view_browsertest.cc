@@ -27,6 +27,7 @@ class MockReadAnythingToolbarViewDelegate
   MOCK_METHOD(ReadAnythingMenuModel*, GetLineSpacingModel, (), (override));
   MOCK_METHOD(void, OnLetterSpacingChanged, (int new_index), (override));
   MOCK_METHOD(ReadAnythingMenuModel*, GetLetterSpacingModel, (), (override));
+  MOCK_METHOD(void, OnSystemThemeChanged, (), (override));
 };
 
 class MockReadAnythingFontComboboxDelegate
@@ -81,6 +82,8 @@ class ReadAnythingToolbarViewTest : public InProcessBrowserTest {
   void ChangeLetterSpacingCallback() {
     toolbar_view_->ChangeLetterSpacingCallback();
   }
+
+  void OnThemeChanged() { toolbar_view_->OnThemeChanged(); }
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) {
     toolbar_view_->GetAccessibleNodeData(node_data);
@@ -164,6 +167,12 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingToolbarViewTest, IncreaseFontSizeCallback) {
   EXPECT_CALL(toolbar_delegate_, OnFontSizeChanged(true)).Times(1);
 
   IncreaseFontSizeCallback();
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingToolbarViewTest, OnThemeChanged) {
+  EXPECT_CALL(toolbar_delegate_, OnSystemThemeChanged()).Times(1);
+
+  OnThemeChanged();
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingToolbarViewTest, ChangeColorsCallback) {

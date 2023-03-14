@@ -32,7 +32,7 @@ class ReadAnythingButtonView : public views::View {
 
   void UpdateIcon(const gfx::VectorIcon& icon,
                   int icon_size,
-                  SkColor icon_color);
+                  ui::ColorId icon_color);
 
   void Enable();
   void Disable();

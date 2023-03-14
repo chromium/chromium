@@ -72,6 +72,7 @@ class ReadAnythingController : public ui::AXActionHandlerObserver,
   ReadAnythingMenuModel* GetLineSpacingModel() override;
   void OnLetterSpacingChanged(int new_index) override;
   ReadAnythingMenuModel* GetLetterSpacingModel() override;
+  void OnSystemThemeChanged() override;
 
   // ReadAnythingPageHandler::Delegate:
   void OnUIReady() override;

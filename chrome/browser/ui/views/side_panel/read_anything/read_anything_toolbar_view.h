@@ -44,6 +44,7 @@ class ReadAnythingToolbarView : public views::View,
     virtual ReadAnythingMenuModel* GetLineSpacingModel() = 0;
     virtual void OnLetterSpacingChanged(int new_index) = 0;
     virtual ReadAnythingMenuModel* GetLetterSpacingModel() = 0;
+    virtual void OnSystemThemeChanged() = 0;
   };
 
   ReadAnythingToolbarView(
@@ -80,6 +81,8 @@ class ReadAnythingToolbarView : public views::View,
   // views::View:
   void AddedToWidget() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  // Called when the system theme changes.
+  void OnThemeChanged() override;
 
   std::unique_ptr<views::View> Separator();
 

@@ -7,7 +7,6 @@
 
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/button/menu_button.h"
 
 namespace views {
@@ -30,7 +29,9 @@ class ReadAnythingMenuButton : public views::MenuButton {
   void SetMenuModel(ReadAnythingMenuModel* menu_model);
   ReadAnythingMenuModel* GetMenuModel() const;
   absl::optional<size_t> GetSelectedIndex() const;
-  void SetIcon(const gfx::VectorIcon& icon, int icon_size, SkColor icon_color);
+  void SetIcon(const gfx::VectorIcon& icon,
+               int icon_size,
+               ui::ColorId icon_color);
 
  private:
   void ButtonPressed();

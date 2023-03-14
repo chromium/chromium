@@ -124,6 +124,10 @@ ReadAnythingMenuModel* ReadAnythingController::GetLetterSpacingModel() {
   return model_->GetLetterSpacingModel();
 }
 
+void ReadAnythingController::OnSystemThemeChanged() {
+  model_->OnSystemThemeChanged();
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // ReadAnythingPageHandler::Delegate:
 ///////////////////////////////////////////////////////////////////////////////

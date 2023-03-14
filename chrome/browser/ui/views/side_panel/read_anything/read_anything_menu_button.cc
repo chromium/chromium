@@ -64,10 +64,9 @@ absl::optional<size_t> ReadAnythingMenuButton::GetSelectedIndex() const {
 
 void ReadAnythingMenuButton::SetIcon(const gfx::VectorIcon& icon,
                                      int icon_size,
-                                     SkColor icon_color) {
+                                     ui::ColorId icon_color) {
   SetImageModel(views::Button::STATE_NORMAL,
-                ui::ImageModel::FromImageSkia(
-                    gfx::CreateVectorIcon(icon, icon_size, icon_color)));
+                ui::ImageModel::FromVectorIcon(icon, icon_color, icon_size));
   views::InkDrop::Get(this)->SetBaseColor(icon_color);
 }
 

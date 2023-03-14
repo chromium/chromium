@@ -207,6 +207,16 @@ TEST_F(ReadAnythingModelTest, NotificationsOnSetSelectedLetterSpacingIndex) {
   model_->SetSelectedLetterSpacingByIndex(2);
 }
 
+TEST_F(ReadAnythingModelTest, NotificationsOnSystemThemeChanged) {
+  model_->AddObserver(&model_observer_1_);
+
+  EXPECT_CALL(model_observer_1_,
+              OnReadAnythingThemeChanged(_, _, _, _, _, _, _, _))
+      .Times(1);
+
+  model_->OnSystemThemeChanged();
+}
+
 TEST_F(ReadAnythingModelTest, MinimumFontScaleIsEnforced) {
   std::string font_name;
   model_->Init(font_name, 0.5, read_anything::mojom::Colors::kDefaultValue,
