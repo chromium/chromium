@@ -12,7 +12,6 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/platform/modules/mediastream/web_media_stream.h"
 #include "third_party/blink/public/web/modules/mediastream/encoded_video_frame.h"
 #include "third_party/blink/renderer/modules/mediarecorder/audio_track_recorder.h"
 #include "third_party/blink/renderer/modules/mediarecorder/video_track_recorder.h"
@@ -47,8 +46,7 @@ struct WebMediaConfiguration;
 // is used to guarantee this, since VideoTrackRecorder sends back frames on IO
 // thread.)
 class MODULES_EXPORT MediaRecorderHandler final
-    : public GarbageCollected<MediaRecorderHandler>,
-      public WebMediaStreamObserver {
+    : public GarbageCollected<MediaRecorderHandler> {
  public:
   MediaRecorderHandler() = default;
   MediaRecorderHandler(const MediaRecorderHandler&) = delete;
@@ -91,10 +89,6 @@ class MODULES_EXPORT MediaRecorderHandler final
   friend class MediaRecorderHandlerFixture;
   friend class MediaRecorderHandlerPassthroughTest;
 
-  // WebMediaStreamObserver overrides.
-  void TrackAdded(const WebString& track_id) override;
-  void TrackRemoved(const WebString& track_id) override;
-
   // Called to indicate there is encoded video data available. |encoded_alpha|
   // represents the encode output of alpha channel when available, can be
   // nullptr otherwise.
@@ -118,8 +112,8 @@ class MODULES_EXPORT MediaRecorderHandler final
                       base::TimeTicks timestamp);
   void WriteData(base::StringPiece data);
 
-  // Updates recorded tracks live and enabled.
-  void UpdateTracksLiveAndEnabled();
+  // Updates |video_tracks_|,|audio_tracks_| and returns true if any changed.
+  bool UpdateTracksAndCheckIfChanged();
 
   // Stops recording if all sources are ended
   void OnSourceReadyStateChanged();
@@ -167,9 +161,6 @@ class MODULES_EXPORT MediaRecorderHandler final
 
   bool invalidated_ = false;
   bool recording_ = false;
-
-  // True if we're observing track changes to `media_stream_`.
-  bool is_media_stream_observer_ = false;
   // The MediaStream being recorded.
   Member<MediaStreamDescriptor> media_stream_;
   HeapVector<Member<MediaStreamComponent>> video_tracks_;

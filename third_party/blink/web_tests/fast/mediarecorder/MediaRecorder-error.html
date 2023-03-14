@@ -21,7 +21,7 @@ function drawSomethingOnCanvas(canvas) {
 }
 
 recorderOnDataAvailable = test.step_func(function(event) {
-  recorder.onerror = recorderOnError;
+  recorder.onstop = recorderOnStop;
 
   // Add another track to the MediaStream to force an error.
   stream.addTrack(stream.getVideoTracks()[0].clone());
@@ -29,12 +29,13 @@ recorderOnDataAvailable = test.step_func(function(event) {
 });
 
 recorderOnStop = test.step_func(function() {
+  recorder.onstop = test.unreached_func('Unexpected stop event');
   recorder.ondataavailable = test.unreached_func('Unexpected data event');
-  test.done();
+  recorder.onerror = recorderOnError;
 });
 
 recorderOnError = test.step_func(function() {
-  recorder.onstop = recorderOnStop;
+  test.done();
 });
 
 var step = test.step_func(function() {

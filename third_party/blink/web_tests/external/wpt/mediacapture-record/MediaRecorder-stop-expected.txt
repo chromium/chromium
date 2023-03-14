@@ -5,7 +5,6 @@ PASS MediaRecorder will not fire an exception when stopped after creation
 PASS MediaRecorder will not fire an exception when stopped after having just been stopped
 PASS MediaRecorder will not fire an exception when stopped after having just been spontaneously stopped
 FAIL MediaRecorder will fire start event even if stopped synchronously assert_array_equals: lengths differ, expected array ["start", "stop"] length 2, got ["stop"] length 1
-FAIL MediaRecorder will fire start event even if a track is removed synchronously assert_array_equals: lengths differ, expected array ["start", "error", "data", "stop"] length 4, got ["error", "data", "stop"] length 3
-PASS MediaRecorder will fire only start and stop events in a basic recording flow.
+FAIL MediaRecorder will fire start event even if a track is removed synchronously assert_array_equals: lengths differ, expected array ["start", "error", "data", "stop"] length 4, got [] length 0
 Harness: the test ran to completion.
 
