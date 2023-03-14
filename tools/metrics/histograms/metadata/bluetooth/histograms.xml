@@ -1894,16 +1894,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Bluetooth.Web.ChooserInteraction" enum="BooleanInvalid"
-    expires_after="2023-04-25">
-  <owner>reillyg@chromium.org</owner>
-  <owner>deviceapi-team@google.com</owner>
-  <summary>
-    Counts how many times users interact with a regular chooser vs. an invalid
-    chooser. (A chooser is invalid when it's event handler becomes null.)
-  </summary>
-</histogram>
-
 <histogram name="Bluetooth.Web.ConnectGATT.Outcome"
     enum="WebBluetoothConnectGATTOutcome" expires_after="2023-08-27">
   <owner>reillyg@chromium.org</owner>
@@ -1927,7 +1917,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.Web.GetCharacteristics.Characteristic"
-    enum="GATTCharacteristicHash" expires_after="2023-04-25">
+    enum="GATTCharacteristicHash" expires_after="2024-04-25">
   <owner>reillyg@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>
@@ -1938,7 +1928,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.Web.GetPrimaryService.Services"
-    enum="GATTServiceHash" expires_after="2023-04-25">
+    enum="GATTServiceHash" expires_after="2024-04-25">
   <owner>reillyg@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>
@@ -1949,7 +1939,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.Web.GetPrimaryServices.Services"
-    enum="GATTServiceHash" expires_after="2023-04-25">
+    enum="GATTServiceHash" expires_after="2024-04-25">
   <owner>reillyg@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>
@@ -1960,7 +1950,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.Web.RequestDevice.RSSISignalStrength" units="dBm"
-    expires_after="2023-08-27">
+    expires_after="2024-04-25">
   <owner>reillyg@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>
@@ -1973,7 +1963,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.Web.RequestDevice.RSSISignalStrengthLevel"
-    enum="WebBluetoothRSSISignalStrengthLevel" expires_after="2023-04-25">
+    enum="WebBluetoothRSSISignalStrengthLevel" expires_after="2024-04-25">
   <owner>reillyg@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>

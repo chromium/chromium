@@ -6,7 +6,6 @@
 
 #include "base/check_op.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
@@ -14,14 +13,6 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace permissions {
-
-namespace {
-
-void RecordInteractionWithChooser(bool has_null_handler) {
-  UMA_HISTOGRAM_BOOLEAN("Bluetooth.Web.ChooserInteraction", has_null_handler);
-}
-
-}  // namespace
 
 BluetoothChooserController::BluetoothChooserController(
     content::RenderFrameHost* owner,
@@ -97,7 +88,6 @@ std::u16string BluetoothChooserController::GetOption(size_t index) const {
 }
 
 void BluetoothChooserController::RefreshOptions() {
-  RecordInteractionWithChooser(event_handler_.is_null());
   if (event_handler_.is_null())
     return;
   ClearAllDevices();
@@ -107,7 +97,6 @@ void BluetoothChooserController::RefreshOptions() {
 void BluetoothChooserController::Select(const std::vector<size_t>& indices) {
   DCHECK_EQ(1u, indices.size());
   size_t index = indices[0];
-  RecordInteractionWithChooser(event_handler_.is_null());
   if (event_handler_.is_null()) {
     return;
   }
@@ -118,7 +107,6 @@ void BluetoothChooserController::Select(const std::vector<size_t>& indices) {
 }
 
 void BluetoothChooserController::Cancel() {
-  RecordInteractionWithChooser(event_handler_.is_null());
   if (event_handler_.is_null())
     return;
   event_handler_.Run(content::BluetoothChooserEvent::CANCELLED, std::string());
@@ -126,7 +114,6 @@ void BluetoothChooserController::Cancel() {
 }
 
 void BluetoothChooserController::Close() {
-  RecordInteractionWithChooser(event_handler_.is_null());
   if (event_handler_.is_null())
     return;
   event_handler_.Run(content::BluetoothChooserEvent::CANCELLED, std::string());
