@@ -2175,7 +2175,6 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "expiration": 21600,
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -2214,7 +2213,6 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "expiration": 21600,
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -2253,7 +2251,6 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "expiration": 21600,
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -2292,7 +2289,6 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "expiration": 21600,
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -2331,7 +2327,6 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "expiration": 21600,
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -2374,7 +2369,6 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "expiration": 21600,
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -2422,7 +2416,6 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "expiration": 21600,
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -2470,7 +2463,6 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "expiration": 21600,
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -2509,7 +2501,6 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "expiration": 21600,
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -2548,7 +2539,6 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "expiration": 21600,
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -2596,7 +2586,6 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "expiration": 21600,
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -2644,7 +2633,6 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "expiration": 21600,
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -2684,7 +2672,6 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "expiration": 21600,
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -2724,7 +2711,6 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "expiration": 21600,
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -2763,7 +2749,6 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "expiration": 21600,
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -2802,7 +2787,6 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "expiration": 21600,
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -2843,7 +2827,6 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "expiration": 21600,
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 6
@@ -2885,7 +2868,6 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "expiration": 21600,
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 6

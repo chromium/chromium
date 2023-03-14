@@ -4345,7 +4345,6 @@
         'mixins': [
           'android_t',
           'has_native_resultdb_integration',
-          'limited_capacity_bot',
           'oriole',
           'gpu-swarming-pool',
         ],

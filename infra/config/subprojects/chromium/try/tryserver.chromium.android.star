@@ -677,6 +677,50 @@ try_.gpu.optional_tests_builder(
     ),
 )
 
+try_.gpu.optional_tests_builder(
+    name = "gpu-fyi-cq-android-arm64",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
+    mirrors = [
+        "ci/GPU FYI Android arm64 Builder",
+        "ci/Android FYI Release (Pixel 6)",
+    ],
+    try_settings = builder_config.try_settings(
+        retry_failed_shards = False,
+    ),
+    check_for_flakiness = True,
+    main_list_view = "try",
+    tryjob = try_.job(
+        experiment_percentage = 100,
+        location_filters = [
+            cq.location_filter(path_regexp = "cc/.+"),
+            cq.location_filter(path_regexp = "chrome/browser/vr/.+"),
+            cq.location_filter(path_regexp = "content/browser/xr/.+"),
+            cq.location_filter(path_regexp = "components/viz/.+"),
+            cq.location_filter(path_regexp = "content/test/gpu/.+"),
+            cq.location_filter(path_regexp = "gpu/.+"),
+            cq.location_filter(path_regexp = "media/audio/.+"),
+            cq.location_filter(path_regexp = "media/base/.+"),
+            cq.location_filter(path_regexp = "media/capture/.+"),
+            cq.location_filter(path_regexp = "media/filters/.+"),
+            cq.location_filter(path_regexp = "media/gpu/.+"),
+            cq.location_filter(path_regexp = "media/mojo/.+"),
+            cq.location_filter(path_regexp = "media/renderers/.+"),
+            cq.location_filter(path_regexp = "media/video/.+"),
+            cq.location_filter(path_regexp = "services/viz/.+"),
+            cq.location_filter(path_regexp = "testing/buildbot/chromium.gpu.fyi.json"),
+            cq.location_filter(path_regexp = "testing/trigger_scripts/.+"),
+            cq.location_filter(path_regexp = "third_party/blink/renderer/modules/mediastream/.+"),
+            cq.location_filter(path_regexp = "third_party/blink/renderer/modules/webcodecs/.+"),
+            cq.location_filter(path_regexp = "third_party/blink/renderer/modules/webgl/.+"),
+            cq.location_filter(path_regexp = "third_party/blink/renderer/modules/webgpu/.+"),
+            cq.location_filter(path_regexp = "third_party/blink/renderer/platform/graphics/gpu/.+"),
+            cq.location_filter(path_regexp = "tools/clang/scripts/update.py"),
+            cq.location_filter(path_regexp = "tools/mb/mb_config_expectations/tryserver.chromium.android.json"),
+            cq.location_filter(path_regexp = "ui/gl/.+"),
+        ],
+    ),
+)
+
 try_.builder(
     name = "android-code-coverage",
     mirrors = ["ci/android-code-coverage"],

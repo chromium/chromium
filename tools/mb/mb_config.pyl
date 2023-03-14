@@ -1082,6 +1082,7 @@
       'android_n5x_swarming_dbg': 'android_debug_trybot_arm64_reclient',
       'android_optional_gpu_tests_rel': 'gpu_tests_android_release_trybot_reclient',
       'android_unswarmed_pixel_aosp': 'android_debug_trybot_arm64_reclient',
+      'gpu-fyi-cq-android-arm64': 'gpu_tests_android_release_trybot_arm64_reclient',
       'gpu-fyi-try-android-m-nexus-5x-64': 'gpu_tests_android_release_trybot_arm64_reclient',
       'gpu-fyi-try-android-nvidia-shield-tv': 'gpu_tests_android_release_trybot_reclient',
       'gpu-fyi-try-android-p-pixel-2-32': 'gpu_tests_android_release_trybot_reclient',
