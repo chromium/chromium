@@ -60,6 +60,13 @@ bool IsPasswordSyncActive(const syncer::SyncService* sync_service);
 absl::optional<std::string> GetSyncingAccount(
     const syncer::SyncService* sync_service);
 
+// Returns the account where passwords are being saved, or nullopt if passwords
+// are being saved only locally. In practice, this returns a non-empty
+// value if the user is syncing or signed in and opted in to account storage.
+absl::optional<std::string> GetAccountForSaving(
+    const PrefService* pref_service,
+    const syncer::SyncService* sync_service);
+
 }  // namespace sync_util
 
 }  // namespace password_manager

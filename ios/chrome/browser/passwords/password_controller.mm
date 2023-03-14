@@ -424,10 +424,9 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
 
   absl::optional<std::string> accountToStorePassword = absl::nullopt;
   if (self.browserState) {
-    syncer::SyncService* syncService =
-        SyncServiceFactory::GetForBrowserState(self.browserState);
-    accountToStorePassword =
-        password_manager::sync_util::GetSyncingAccount(syncService);
+    accountToStorePassword = password_manager::sync_util::GetAccountForSaving(
+        self.browserState->GetPrefs(),
+        SyncServiceFactory::GetForBrowserState(self.browserState));
   }
 
   infobars::InfoBarManager* infoBarManager =
