@@ -9,10 +9,11 @@
 
 namespace fre_mobile_identity_consistency_field_trial {
 
-std::string GetFREFieldTrialGroup() {
+std::string GetFREFieldTrialGroupName() {
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jstring> group =
-      Java_FREMobileIdentityConsistencyFieldTrial_getFirstRunTrialGroup(env);
+      Java_FREMobileIdentityConsistencyFieldTrial_getFirstRunVariationsTrialGroupName(
+          env);
   return base::android::ConvertJavaStringToUTF8(env, group);
 }
 

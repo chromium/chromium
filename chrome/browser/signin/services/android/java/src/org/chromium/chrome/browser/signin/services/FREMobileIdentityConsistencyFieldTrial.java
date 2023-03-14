@@ -11,10 +11,8 @@ import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.CommandLine;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.components.metrics.LowEntropySource;
@@ -24,7 +22,6 @@ import org.chromium.components.version_info.VersionConstants;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.Random;
 
 /**
  * Creates a Field Trial to control the MobileIdentityConsistencyFRE feature. This feature is used
@@ -37,17 +34,11 @@ import java.util.Random;
  */
 public class FREMobileIdentityConsistencyFieldTrial {
     private static final Object LOCK = new Object();
-    private static final String ENABLED_GROUP = "Enabled10";
-    @VisibleForTesting
-    public static final String DISABLED_GROUP = "Disabled10";
-    private static final String DEFAULT_GROUP = "Default";
-    @VisibleForTesting
-    public static final String OLD_FRE_WITH_UMA_DIALOG_GROUP = "OldFreWithUmaDialog10";
 
     /**
      * Used as a seed while selecting the group for the trial.
      */
-    private static final int STUDY_RANDOMIZATION_SALT = 0xf2689bf8;
+    private static final int STUDY_RANDOMIZATION_SALT = 0xee9a496f;
 
     /**
      * The group variation values should be consecutive starting from zero. WELCOME_TO_CHROME acts
@@ -60,7 +51,7 @@ public class FREMobileIdentityConsistencyFieldTrial {
             VariationsGroup.DEFAULT,
             VariationsGroup.WELCOME_TO_CHROME,
             VariationsGroup.WELCOME_TO_CHROME_MOST_OUT_OF_CHROME,
-            VariationsGroup.WELCOME_TO_CHROME_STRONGEST_SECURITY,
+            VariationsGroup.WELCOME_TO_CHROME_ADDITIONAL_FEATURES,
             VariationsGroup.WELCOME_TO_CHROME_EASIER_ACROSS_DEVICES,
             VariationsGroup.MOST_OUT_OF_CHROME,
             VariationsGroup.MAKE_CHROME_YOUR_OWN,
@@ -86,9 +77,9 @@ public class FREMobileIdentityConsistencyFieldTrial {
         int WELCOME_TO_CHROME_MOST_OUT_OF_CHROME = 1;
         /**
          * Title: 'Welcome to Chrome'
-         * Subtitle: 'Sign in for additional features and Chrome's strongest security'
+         * Subtitle: 'Sign in for additional features'
          */
-        int WELCOME_TO_CHROME_STRONGEST_SECURITY = 2;
+        int WELCOME_TO_CHROME_ADDITIONAL_FEATURES = 2;
         /**
          * Title: 'Welcome to Chrome'
          * Subtitle: 'Sign in to browse easier across devices'
@@ -112,74 +103,86 @@ public class FREMobileIdentityConsistencyFieldTrial {
         int MAX_VALUE = 6;
     }
 
-    @MainThread
-    public static boolean shouldShowOldFreWithUmaDialog() {
-        // Switch used for tests.
-        if (CommandLine.getInstance().hasSwitch(ChromeSwitches.FORCE_DISABLE_SIGNIN_FRE)) {
-            return false;
-        }
-        return OLD_FRE_WITH_UMA_DIALOG_GROUP.equals(getFirstRunTrialGroup());
-    }
-
-    @CalledByNative
     @AnyThread
-    public static String getFirstRunTrialGroup() {
+    @VariationsGroup
+    private static int getFirstRunTrialGroup() {
         synchronized (LOCK) {
-            return SharedPreferencesManager.getInstance().readString(
-                    ChromePreferenceKeys.FIRST_RUN_FIELD_TRIAL_GROUP, DEFAULT_GROUP);
+            return SharedPreferencesManager.getInstance().readInt(
+                    ChromePreferenceKeys.FIRST_RUN_VARIATIONS_FIELD_TRIAL_GROUP,
+                    VariationsGroup.DEFAULT);
         }
     }
 
     @CalledByNative
     @AnyThread
     private static int getFirstRunTrialVariationId(int lowEntropySource, int lowEntropySize) {
-        String groupFromLowEntropySource =
-                generateFirstRunTrialGroup(lowEntropySource, lowEntropySize);
-        boolean isGroupConsistent = getFirstRunTrialGroup().equals(groupFromLowEntropySource);
+        @VariationsGroup
+        int groupFromPrefs = getFirstRunTrialGroup();
+        final int variationsEmptyID = 0; // This should be identical to variations::EMPTY_ID.
+        if (groupFromPrefs == VariationsGroup.DEFAULT) {
+            return variationsEmptyID; // Do not send variations ID if the user is the default group.
+        }
+
+        @VariationsGroup
+        int groupFromLowEntropySource =
+                generateFirstRunStringVariationsGroup(lowEntropySource, lowEntropySize);
+        boolean isGroupConsistent = groupFromPrefs == groupFromLowEntropySource;
         RecordHistogram.recordBooleanHistogram(
                 "Signin.AndroidIsFREStudyGroupConsistent", isGroupConsistent);
 
-        final int variationsEmptyID = 0; // This should be identical to variations::EMPTY_ID.
         if (!isGroupConsistent) {
             return variationsEmptyID; // Do not send variations ID if there's a mismatch.
         }
         if (VersionConstants.CHANNEL == Channel.STABLE) {
             // IDs in this method were obtained following go/finch-allocating-gws-ids.
-            switch (getFirstRunTrialGroup()) {
-                case DISABLED_GROUP:
-                    return 3354002;
-                case ENABLED_GROUP:
-                    return 3354003;
-                case OLD_FRE_WITH_UMA_DIALOG_GROUP:
-                    return 3354004;
-                default:
-                    break;
+            switch (groupFromPrefs) {
+                case VariationsGroup.WELCOME_TO_CHROME:
+                    return 3362112;
+                case VariationsGroup.WELCOME_TO_CHROME_MOST_OUT_OF_CHROME:
+                    return 3362113;
+                case VariationsGroup.WELCOME_TO_CHROME_ADDITIONAL_FEATURES:
+                    return 3362114;
+                case VariationsGroup.WELCOME_TO_CHROME_EASIER_ACROSS_DEVICES:
+                    return 3362115;
+                case VariationsGroup.MOST_OUT_OF_CHROME:
+                    return 3362116;
+                case VariationsGroup.MAKE_CHROME_YOUR_OWN:
+                    return 3362117;
+                case VariationsGroup.MAX_VALUE:
+                    return variationsEmptyID;
             }
         } else if (VersionConstants.CHANNEL == Channel.BETA) {
-            switch (getFirstRunTrialGroup()) {
-                case DISABLED_GROUP:
-                    return 3356552;
-                case ENABLED_GROUP:
-                    return 3356553;
-                case OLD_FRE_WITH_UMA_DIALOG_GROUP:
-                    return 3356554;
-                default:
-                    break;
+            switch (groupFromPrefs) {
+                case VariationsGroup.WELCOME_TO_CHROME:
+                    return 3362120;
+                case VariationsGroup.WELCOME_TO_CHROME_MOST_OUT_OF_CHROME:
+                    return 3362121;
+                case VariationsGroup.WELCOME_TO_CHROME_ADDITIONAL_FEATURES:
+                    return 3362122;
+                case VariationsGroup.WELCOME_TO_CHROME_EASIER_ACROSS_DEVICES:
+                    return 3362123;
+                case VariationsGroup.MOST_OUT_OF_CHROME:
+                    return 3362124;
+                case VariationsGroup.MAKE_CHROME_YOUR_OWN:
+                    return 3362125;
+                case VariationsGroup.MAX_VALUE:
+                    return variationsEmptyID;
             }
         }
         return variationsEmptyID; // In other channels, the experiment is not GWS-visible.
     }
 
+    @CalledByNative
     @AnyThread
-    public static String getFirstRunVariationsTrialGroup() {
+    public static String getFirstRunVariationsTrialGroupName() {
         @VariationsGroup
-        final int group = getFirstRunVariationsTrialGroupInternal();
+        final int group = getFirstRunTrialGroup();
         switch (group) {
             case VariationsGroup.WELCOME_TO_CHROME:
                 return "Control";
             case VariationsGroup.WELCOME_TO_CHROME_MOST_OUT_OF_CHROME:
                 return "WelcomeToChrome_MostOutOfChrome";
-            case VariationsGroup.WELCOME_TO_CHROME_STRONGEST_SECURITY:
+            case VariationsGroup.WELCOME_TO_CHROME_ADDITIONAL_FEATURES:
                 return "WelcomeToChrome_StrongestSecurity";
             case VariationsGroup.WELCOME_TO_CHROME_EASIER_ACROSS_DEVICES:
                 return "WelcomeToChrome_EasierAcrossDevices";
@@ -201,13 +204,13 @@ public class FREMobileIdentityConsistencyFieldTrial {
     @MainThread
     public static Pair<Integer, Integer> getVariationTitleAndSubtitle() {
         @VariationsGroup
-        final int group = getFirstRunVariationsTrialGroupInternal();
+        final int group = getFirstRunTrialGroup();
         switch (group) {
             case VariationsGroup.WELCOME_TO_CHROME:
                 return new Pair(R.string.fre_welcome, 0);
             case VariationsGroup.WELCOME_TO_CHROME_MOST_OUT_OF_CHROME:
                 return new Pair(R.string.fre_welcome, R.string.signin_fre_subtitle_variation_1);
-            case VariationsGroup.WELCOME_TO_CHROME_STRONGEST_SECURITY:
+            case VariationsGroup.WELCOME_TO_CHROME_ADDITIONAL_FEATURES:
                 return new Pair(R.string.fre_welcome, R.string.signin_fre_subtitle_variation_2);
             case VariationsGroup.WELCOME_TO_CHROME_EASIER_ACROSS_DEVICES:
                 return new Pair(R.string.fre_welcome, R.string.signin_fre_subtitle_variation_3);
@@ -221,93 +224,9 @@ public class FREMobileIdentityConsistencyFieldTrial {
         }
     }
 
-    /**
-     * This method should be only called once during FRE in
-     * {@link org.chromium.chrome.browser.firstrun.FirstRunActivity} so that subsequent chrome runs
-     * don't override FRE experiment group information.
-     *
-     * FRE is launched either after first install of chrome or after a power wash. So there is be no
-     * previous experiment group information available when this method is called.
-     *
-     * The group information is registered as a synthetic field trial in native code inside
-     * ChromeBrowserFieldTrials::RegisterSyntheticTrials().
-     */
-    @MainThread
-    public static void createFirstRunTrial() {
-        synchronized (LOCK) {
-            // Don't create a new group if the user was already assigned a group. Can happen when
-            // the user dismisses FRE without finishing the flow and cold starts chrome again.
-            if (SharedPreferencesManager.getInstance().readString(
-                        ChromePreferenceKeys.FIRST_RUN_FIELD_TRIAL_GROUP, null)
-                    != null) {
-                return;
-            }
-        }
-
-        String group = generateFirstRunTrialGroup(
-                LowEntropySource.generateLowEntropySourceForFirstRunTrial(),
-                LowEntropySource.MAX_LOW_ENTROPY_SIZE);
-        synchronized (LOCK) {
-            SharedPreferencesManager.getInstance().writeString(
-                    ChromePreferenceKeys.FIRST_RUN_FIELD_TRIAL_GROUP, group);
-        }
-    }
-
-    private static String generateFirstRunTrialGroup(int lowEntropyValue, int lowEntropySize) {
-        // Tweak these values for different builds to create the percentage of group population.
-        // For A/B testing all 3 experiment groups should have the same percentages.
-        int enabledPercent = 0;
-        int disabledPercent = 0;
-        int oldFreWithUmaDialogPercent = 0;
-        switch (VersionConstants.CHANNEL) {
-            case Channel.DEFAULT:
-            case Channel.CANARY:
-            case Channel.DEV:
-            case Channel.BETA:
-            case Channel.STABLE:
-                enabledPercent = 100;
-                disabledPercent = 0;
-                oldFreWithUmaDialogPercent = 0;
-        }
-        assert enabledPercent + disabledPercent + oldFreWithUmaDialogPercent <= 100;
-
-        NormalizedMurmurHashEntropyProvider entropyProvider =
-                new NormalizedMurmurHashEntropyProvider(lowEntropyValue, lowEntropySize);
-        double entropyForTrial = entropyProvider.getEntropyForTrial(STUDY_RANDOMIZATION_SALT);
-        double randomBucket = entropyForTrial * 100;
-
-        if (randomBucket < enabledPercent) return ENABLED_GROUP;
-        randomBucket -= enabledPercent;
-
-        if (randomBucket < disabledPercent) return DISABLED_GROUP;
-        randomBucket -= disabledPercent;
-
-        if (randomBucket < oldFreWithUmaDialogPercent) return OLD_FRE_WITH_UMA_DIALOG_GROUP;
-        randomBucket -= oldFreWithUmaDialogPercent;
-
-        return DEFAULT_GROUP;
-    }
-
-    /**
-     * Returns whether the title and the subtitle should be hidden until native code and policies
-     * are loaded on device.
-     */
-    @MainThread
-    public static boolean shouldHideTitleUntilPoliciesAreLoaded() {
-        @VariationsGroup
-        final int group = getFirstRunVariationsTrialGroupInternal();
-        return group != VariationsGroup.DEFAULT && group != VariationsGroup.WELCOME_TO_CHROME;
-    }
-
-    /**
-     * Creates variations of the FRE signin welcome screen with different title/subtitle
-     * combinations.
-     *
-     * The group information is registered as a synthetic field trial in native code inside
-     * ChromeBrowserFieldTrials::RegisterSyntheticTrials().
-     */
-    @MainThread
-    private static void createFirstRunVariationsTrial() {
+    @VariationsGroup
+    private static int generateFirstRunStringVariationsGroup(
+            int lowEntropyValue, int lowEntropySize) {
         int variationsPercentage = 0;
         switch (VersionConstants.CHANNEL) {
             case Channel.DEFAULT:
@@ -321,23 +240,44 @@ public class FREMobileIdentityConsistencyFieldTrial {
         // For A/B testing all experiment groups should have the same percentages.
         assert variationsPercentage * VariationsGroup.MAX_VALUE <= 100;
 
-        final int randomBucket = new Random().nextInt(100);
-        int group = VariationsGroup.DEFAULT;
+        NormalizedMurmurHashEntropyProvider entropyProvider =
+                new NormalizedMurmurHashEntropyProvider(lowEntropyValue, lowEntropySize);
+        double entropyForTrial = entropyProvider.getEntropyForTrial(STUDY_RANDOMIZATION_SALT);
+        double randomBucket = entropyForTrial * 100;
+
         if (randomBucket < variationsPercentage * VariationsGroup.MAX_VALUE) {
-            group = randomBucket / variationsPercentage;
+            return (int) (randomBucket / variationsPercentage);
         }
+
+        return VariationsGroup.DEFAULT;
+    }
+
+    /**
+     * Returns whether the title and the subtitle should be hidden until native code and policies
+     * are loaded on device.
+     */
+    @MainThread
+    public static boolean shouldHideTitleUntilPoliciesAreLoaded() {
+        @VariationsGroup
+        final int group = getFirstRunTrialGroup();
+        return group != VariationsGroup.DEFAULT && group != VariationsGroup.WELCOME_TO_CHROME;
+    }
+
+    /**
+     * Creates variations of the FRE signin welcome screen with different title/subtitle
+     * combinations.
+     *
+     * The group information is registered as a synthetic field trial in native code inside
+     * ChromeBrowserFieldTrials::RegisterSyntheticTrials().
+     */
+    @MainThread
+    public static void createFirstRunVariationsTrial() {
+        int group = generateFirstRunStringVariationsGroup(
+                LowEntropySource.generateLowEntropySourceForFirstRunTrial(),
+                LowEntropySource.MAX_LOW_ENTROPY_SIZE);
         synchronized (LOCK) {
             SharedPreferencesManager.getInstance().writeInt(
                     ChromePreferenceKeys.FIRST_RUN_VARIATIONS_FIELD_TRIAL_GROUP, group);
-        }
-    }
-
-    @AnyThread
-    private static int getFirstRunVariationsTrialGroupInternal() {
-        synchronized (LOCK) {
-            return SharedPreferencesManager.getInstance().readInt(
-                    ChromePreferenceKeys.FIRST_RUN_VARIATIONS_FIELD_TRIAL_GROUP,
-                    VariationsGroup.DEFAULT);
         }
     }
 

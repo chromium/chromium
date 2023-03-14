@@ -11,12 +11,12 @@
 
 namespace fre_mobile_identity_consistency_field_trial {
 
-// Returns the field trial group created in Java code.
+// Returns the name of the field trial group created in Java code.
 // The groups are created in FREMobileIdentityConsistencyFieldTrial.java.
-std::string GetFREFieldTrialGroup();
+std::string GetFREFieldTrialGroupName();
 
 // Returns VariationID that should be associated with the selected group for
-// FREMobileIdentityConsistencySynthetic. Returns variations::EMPTY_ID if no
+// FREMobileIdentityConsistencyFieldTrial. Returns variations::EMPTY_ID if no
 // VariationID should be associated.
 //
 // `low_entropy_source` and `low_entropy_size` should contain the low entropy

@@ -1038,9 +1038,9 @@ public class SigninFirstRunFragmentTest {
 
     @Test
     @MediumTest
-    public void testFragment_WelcomeToChrome_StrongestSecurity() {
+    public void testFragment_WelcomeToChrome_AdditionalFeatures() {
         FREMobileIdentityConsistencyFieldTrial.setFirstRunVariationsTrialGroupForTesting(
-                VariationsGroup.WELCOME_TO_CHROME_STRONGEST_SECURITY);
+                VariationsGroup.WELCOME_TO_CHROME_ADDITIONAL_FEATURES);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { mNativeInitializationPromise = new Promise<>(); });
         launchActivityWithFragment();

@@ -206,7 +206,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     public void triggerLayoutInflation() {
         // Generate trial group as early as possible to guarantee it's available by the time native
         // needs to register the synthetic trial group. See https://crbug.com/1295692 for details.
-        FREMobileIdentityConsistencyFieldTrial.createFirstRunTrial();
+        FREMobileIdentityConsistencyFieldTrial.createFirstRunVariationsTrial();
 
         super.triggerLayoutInflation();
 

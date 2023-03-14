@@ -3012,7 +3012,7 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Sign in to get the most out of Chrome
       </message>
       <message name="IDS_SIGNIN_FRE_SUBTITLE_VARIATION_2" desc="Subtitle shown below a welcoming title on the very first screen after opening Chrome for the first time. Asks the user to sign in to Chrome with their Google Account to use additional features that are only available to signed-in users. Try to limit translations to 50 characters. Do not exceed 75 characters.">
-        Sign in for additional features and Chrome\u2019s strongest security
+        Sign in for additional features
       </message>
       <message name="IDS_SIGNIN_FRE_SUBTITLE_VARIATION_3" desc="Subtitle shown below a welcoming title on the very first screen after opening Chrome for the first time. Asks the user to sign in to Chrome with their Google Account to get more useful features when they're signed in across multiple devices (like phones and computers). Try to limit translations to 50 characters. Do not exceed 75 characters.">
         Sign in to browse easier across devices

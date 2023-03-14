@@ -404,14 +404,14 @@ public class SigninFirstRunFragmentRenderTest extends BlankUiTestActivityTestCas
     @MediumTest
     @Feature("RenderTest")
     @ParameterAnnotations.UseMethodParameter(NightModeAndOrientationParameterProvider.class)
-    public void testFragment_WelcomeToChrome_StrongestSecurity(
+    public void testFragment_WelcomeToChrome_AdditionalFeatures(
             boolean nightModeEnabled, int orientation) throws IOException {
         FREMobileIdentityConsistencyFieldTrial.setFirstRunVariationsTrialGroupForTesting(
-                VariationsGroup.WELCOME_TO_CHROME_STRONGEST_SECURITY);
+                VariationsGroup.WELCOME_TO_CHROME_ADDITIONAL_FEATURES);
         launchActivityWithFragment(orientation);
 
         mRenderTestRule.render(mFragment.getView(),
-                "signin_first_run_fragment_welcome_to_chrome_strongest_security");
+                "signin_first_run_fragment_welcome_to_chrome_additional_features");
     }
 
     @Test
