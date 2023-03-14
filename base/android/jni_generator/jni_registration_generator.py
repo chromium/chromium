@@ -15,6 +15,7 @@ import functools
 import hashlib
 import multiprocessing
 import os
+import re
 import string
 import sys
 import zipfile
@@ -97,8 +98,9 @@ def _Generate(options, java_file_paths):
     module_name = next(iter(combined_dicts))
     combined_dict = combined_dicts[module_name]
 
-    combined_dict['HEADER_GUARD'] = \
-        os.path.splitext(options.header_path)[0].replace('/', '_').replace('.', '_').upper() + '_'
+    header_guard = os.path.splitext(options.header_path)[0].upper() + '_'
+    header_guard = re.sub(r'[/.-]', '_', header_guard)
+    combined_dict['HEADER_GUARD'] = header_guard
     combined_dict['NAMESPACE'] = options.namespace
     header_content = CreateFromDict(options, module_name, combined_dict)
     with build_utils.AtomicOutput(options.header_path, mode='w') as f:
