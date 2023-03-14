@@ -4,7 +4,7 @@
 
 import {Metadata} from '../type.js';
 
-import {VideoSaver} from './video_saver.js';
+import {TimeLapseSaver, VideoSaver} from './video_saver.js';
 
 /**
  * Handles captured result photos and video.
@@ -41,5 +41,5 @@ export interface ResultSaver {
    *
    * @param video Contains the video result to be saved.
    */
-  finishSaveVideo(video: VideoSaver): Promise<void>;
+  finishSaveVideo(video: TimeLapseSaver|VideoSaver): Promise<void>;
 }
