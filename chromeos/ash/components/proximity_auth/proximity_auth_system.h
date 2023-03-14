@@ -57,8 +57,7 @@ class ProximityAuthSystem : public ScreenlockBridge::Observer {
       absl::optional<ash::multidevice::RemoteDeviceRef> local_device);
 
   // Returns the RemoteDevices registered for |account_id|. Returns an empty
-  // list
-  // if no devices are registered for |account_id|.
+  // list if no devices are registered for |account_id|.
   ash::multidevice::RemoteDeviceRefList GetRemoteDevicesForUser(
       const AccountId& account_id) const;
 

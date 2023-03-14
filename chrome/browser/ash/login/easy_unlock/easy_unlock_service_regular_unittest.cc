@@ -300,15 +300,15 @@ class EasyUnlockServiceRegularTest : public testing::Test {
         is_locked ? fake_lock_handler_.get() : nullptr);
   }
 
-  void VerifyGetRemoteDevices(bool are_local_and_remote_devices_expected) {
-    const base::Value::List* remote_devices =
+  void VerifyGetRemoteDevices(bool are_remote_devices_expected) {
+    const multidevice::RemoteDeviceRefList remote_devices =
         static_cast<EasyUnlockService*>(easy_unlock_service_regular_.get())
-            ->GetRemoteDevices();
-    if (are_local_and_remote_devices_expected)
-      // 2 devices are expected: the local device and the remote device.
-      EXPECT_EQ(2u, remote_devices->size());
-    else
-      EXPECT_FALSE(remote_devices);
+            ->GetRemoteDevicesForTesting();
+    if (are_remote_devices_expected) {
+      EXPECT_FALSE(remote_devices.empty());
+    } else {
+      EXPECT_TRUE(remote_devices.empty());
+    }
   }
 
   void SetDisplaySize(const gfx::Size& size) {
@@ -403,13 +403,13 @@ TEST_F(EasyUnlockServiceRegularTest, GetProximityAuthPrefManager) {
 
 TEST_F(EasyUnlockServiceRegularTest, GetRemoteDevices) {
   InitializeService(true /* should_initialize_all_dependencies */);
-  VerifyGetRemoteDevices(true /* are_local_and_remote_devices_expected */);
+  VerifyGetRemoteDevices(true /* are_remote_devices_expected */);
 }
 
 TEST_F(EasyUnlockServiceRegularTest, GetRemoteDevices_InitiallyNotReady) {
   SetIsEnabled(true /* is_enabled */);
   InitializeService(false /* should_initialize_all_dependencies */);
-  VerifyGetRemoteDevices(false /* are_local_and_remote_devices_expected */);
+  VerifyGetRemoteDevices(false /* are_remote_devices_expected */);
 
   EXPECT_CALL(*mock_notification_controller_,
               ShowChromebookAddedNotification());
@@ -417,7 +417,7 @@ TEST_F(EasyUnlockServiceRegularTest, GetRemoteDevices_InitiallyNotReady) {
   fake_device_sync_client_->NotifyReady();
   SetLocalDevice(test_local_device_);
   SetSyncedDevices(test_remote_devices_);
-  VerifyGetRemoteDevices(true /* are_local_and_remote_devices_expected */);
+  VerifyGetRemoteDevices(true /* are_remote_devices_expected */);
 }
 
 TEST_F(EasyUnlockServiceRegularTest,
@@ -427,13 +427,13 @@ TEST_F(EasyUnlockServiceRegularTest,
   SetSyncedDevices(multidevice::RemoteDeviceRefList() /* synced_devices */);
   SetIsEnabled(true /* is_enabled */);
   InitializeService(false /* should_initialize_all_dependencies */);
-  VerifyGetRemoteDevices(false /* are_local_and_remote_devices_expected */);
+  VerifyGetRemoteDevices(false /* are_remote_devices_expected */);
 
   EXPECT_CALL(*mock_notification_controller_,
               ShowChromebookAddedNotification());
 
   SetSyncedDevices(test_remote_devices_);
-  VerifyGetRemoteDevices(true /* are_local_and_remote_devices_expected */);
+  VerifyGetRemoteDevices(true /* are_remote_devices_expected */);
 }
 
 // Test that the "Chromebook added" notification does not show while the
@@ -454,7 +454,7 @@ TEST_F(
   SetSyncedDevices(multidevice::RemoteDeviceRefList() /* synced_devices */);
   SetIsEnabled(true /* is_enabled */);
   InitializeService(false /* should_initialize_all_dependencies */);
-  VerifyGetRemoteDevices(false /* are_local_and_remote_devices_expected */);
+  VerifyGetRemoteDevices(false /* are_remote_devices_expected */);
 
   // Calling SetSyncedDevices() below would usually cause the "Chromebook added"
   // notification to appear, but it shouldn't because MultiDeviceSetupDialog is
@@ -462,7 +462,7 @@ TEST_F(
   EXPECT_CALL(*mock_notification_controller_, ShowChromebookAddedNotification())
       .Times(0);
   SetSyncedDevices(test_remote_devices_);
-  VerifyGetRemoteDevices(true /* are_local_and_remote_devices_expected */);
+  VerifyGetRemoteDevices(true /* are_remote_devices_expected */);
 
   // Now expect the "Chromebook added" notification to appear, and close the
   // dialog by deleting it (this indirectly calls the dialog close callbacks).
@@ -481,26 +481,26 @@ TEST_F(EasyUnlockServiceRegularTest, GetRemoteDevices_InitiallyNotEnabled) {
   SetSyncedDevices(test_remote_devices_);
   SetIsEnabled(false /* is_enabled */);
   InitializeService(false /* should_initialize_all_dependencies */);
-  VerifyGetRemoteDevices(false /* are_local_and_remote_devices_expected */);
+  VerifyGetRemoteDevices(false /* are_remote_devices_expected */);
 
   SetIsEnabled(true /* is_enabled */);
-  VerifyGetRemoteDevices(true /* are_local_and_remote_devices_expected */);
+  VerifyGetRemoteDevices(true /* are_remote_devices_expected */);
 }
 
 TEST_F(EasyUnlockServiceRegularTest,
        GetRemoteDevices_DeferDeviceLoadUntilScreenIsUnlocked) {
   SetScreenLockState(true /* is_locked */);
   InitializeService(true /* should_initialize_all_dependencies */);
-  VerifyGetRemoteDevices(false /* are_local_and_remote_devices_expected */);
+  VerifyGetRemoteDevices(false /* are_remote_devices_expected */);
 
   SetScreenLockState(false /* is_locked */);
-  VerifyGetRemoteDevices(true /* are_local_and_remote_devices_expected */);
+  VerifyGetRemoteDevices(true /* are_remote_devices_expected */);
 }
 
 TEST_F(EasyUnlockServiceRegularTest, GetRemoteDevices_SmartLockHostChanged) {
   InitializeService(true /* should_initialize_all_dependencies */);
   SetScreenLockState(true /* is_locked */);
-  VerifyGetRemoteDevices(true /* are_local_and_remote_devices_expected */);
+  VerifyGetRemoteDevices(true /* are_remote_devices_expected */);
 
   auto new_remote_device =
       multidevice::RemoteDeviceRefBuilder()
@@ -513,7 +513,7 @@ TEST_F(EasyUnlockServiceRegularTest, GetRemoteDevices_SmartLockHostChanged) {
 
   EXPECT_CALL(*mock_notification_controller_, ShowPairingChangeNotification());
   SetSyncedDevices(new_remote_devices /* synced_devices */);
-  VerifyGetRemoteDevices(true /* are_local_and_remote_devices_expected */);
+  VerifyGetRemoteDevices(true /* are_remote_devices_expected */);
 
   EXPECT_CALL(*mock_notification_controller_,
               ShowPairingChangeAppliedNotification(testing::_));

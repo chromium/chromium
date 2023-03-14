@@ -69,14 +69,10 @@ class EasyUnlockServiceRegular
   void UseLoadedRemoteDevices(
       const multidevice::RemoteDeviceRefList& remote_devices);
 
-  // Persists Smart Lock host and local device to prefs.
-  void SetStoredRemoteDevices(const base::Value::List& devices);
-
   // EasyUnlockService implementation:
   proximity_auth::ProximityAuthPrefManager* GetProximityAuthPrefManager()
       override;
   AccountId GetAccountId() const override;
-  const base::Value::List* GetRemoteDevices() const override;
   void InitializeInternal() override;
   void ShutdownInternal() override;
   bool IsAllowedInternal() const override;

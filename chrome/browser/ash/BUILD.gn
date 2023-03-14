@@ -1561,8 +1561,6 @@ source_set("ash") {
     "login/easy_unlock/chrome_proximity_auth_client.h",
     "login/easy_unlock/easy_unlock_auth_attempt.cc",
     "login/easy_unlock/easy_unlock_auth_attempt.h",
-    "login/easy_unlock/easy_unlock_key_names.cc",
-    "login/easy_unlock/easy_unlock_key_names.h",
     "login/easy_unlock/easy_unlock_metrics.cc",
     "login/easy_unlock/easy_unlock_metrics.h",
     "login/easy_unlock/easy_unlock_notification_controller.cc",

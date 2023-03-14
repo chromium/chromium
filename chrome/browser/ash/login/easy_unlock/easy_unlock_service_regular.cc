@@ -4,26 +4,9 @@
 
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service_regular.h"
 
-#include <stdint.h>
-
-#include <memory>
-#include <utility>
-
-#include "apps/app_lifetime_monitor_factory.h"
-#include "base/base64url.h"
-#include "base/command_line.h"
-#include "base/functional/bind.h"
-#include "base/json/json_string_value_serializer.h"
-#include "base/linux_util.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/stringprintf.h"
-#include "base/system/sys_info.h"
-#include "base/time/default_clock.h"
-#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/login/easy_unlock/chrome_proximity_auth_client.h"
-#include "chrome/browser/ash/login/easy_unlock/easy_unlock_key_names.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_notification_controller.h"
 #include "chrome/browser/ash/login/easy_unlock/smartlock_feature_usage_metrics.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
@@ -44,7 +27,6 @@
 #include "components/gcm_driver/gcm_profile_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
-#include "components/prefs/scoped_user_pref_update.h"
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "components/version_info/version_info.h"
@@ -57,9 +39,6 @@
 namespace ash {
 
 namespace {
-
-// Key name of the remote device list in kEasyUnlockPairing.
-const char kKeyDevices[] = "devices";
 
 enum class SmartLockToggleFeature { DISABLE = false, ENABLE = true };
 
@@ -189,95 +168,6 @@ void EasyUnlockServiceRegular::UseLoadedRemoteDevices(
   }
 
   SetProximityAuthDevices(GetAccountId(), remote_devices, local_device);
-
-  // We need to store a copy of `local_and_remote_devices` in the TPM, so it can
-  // be retrieved on the sign-in screen when a user session has not been started
-  // yet. This expects a final size of 2 (the one remote device, and the local
-  // device).
-  // TODO(crbug.com/856380): For historical reasons, the local and remote device
-  // are persisted together in a list. This is awkward and hacky; they should
-  // be persisted in a dictionary.
-  multidevice::RemoteDeviceRefList local_and_remote_devices;
-  local_and_remote_devices.push_back(remote_devices[0]);
-  local_and_remote_devices.push_back(*local_device);
-
-  base::Value::List device_list;
-  for (const auto& device : local_and_remote_devices) {
-    base::Value::Dict dict;
-    std::string b64_public_key, b64_psk;
-    base::Base64UrlEncode(device.public_key(),
-                          base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                          &b64_public_key);
-    base::Base64UrlEncode(device.persistent_symmetric_key(),
-                          base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                          &b64_psk);
-
-    dict.Set(key_names::kKeyPsk, b64_psk);
-
-    // TODO(jhawkins): Remove the bluetoothAddress field from this proto.
-    dict.Set(key_names::kKeyBluetoothAddress, std::string());
-
-    dict.SetByDottedPath(
-        key_names::kKeyPermitPermitId,
-        base::StringPrintf(
-            key_names::kPermitPermitIdFormat,
-            gaia::CanonicalizeEmail(GetAccountId().GetUserEmail()).c_str()));
-
-    dict.SetByDottedPath(key_names::kKeyPermitId, b64_public_key);
-    dict.SetByDottedPath(key_names::kKeyPermitType,
-                         key_names::kPermitTypeLicence);
-    dict.SetByDottedPath(key_names::kKeyPermitData, b64_public_key);
-
-    base::Value::List beacon_seed_list;
-    for (const auto& beacon_seed : device.beacon_seeds()) {
-      std::string b64_beacon_seed;
-      base::Base64UrlEncode(
-          multidevice::ToCryptAuthSeed(beacon_seed).SerializeAsString(),
-          base::Base64UrlEncodePolicy::INCLUDE_PADDING, &b64_beacon_seed);
-      beacon_seed_list.Append(b64_beacon_seed);
-    }
-
-    std::string serialized_beacon_seeds;
-    JSONStringValueSerializer serializer(&serialized_beacon_seeds);
-    serializer.Serialize(beacon_seed_list);
-    dict.Set(key_names::kKeySerializedBeaconSeeds, serialized_beacon_seeds);
-
-    // This differentiates the local device from the remote device.
-    bool unlock_key = device.GetSoftwareFeatureState(
-                          multidevice::SoftwareFeature::kSmartLockHost) ==
-                      multidevice::SoftwareFeatureState::kEnabled;
-    dict.Set(key_names::kKeyUnlockKey, unlock_key);
-
-    PA_LOG(VERBOSE) << "Storing RemoteDevice: { "
-                    << "name: " << device.name()
-                    << ", unlock_key: " << unlock_key
-                    << ", id: " << device.GetTruncatedDeviceIdForLogs()
-                    << " }.";
-    device_list.Append(std::move(dict));
-  }
-
-  if (device_list.size() != 2u) {
-    PA_LOG(ERROR) << "There should only be 2 devices persisted, the host and "
-                     "the client, but there are: "
-                  << device_list.size();
-    NOTREACHED();
-  }
-
-  SetStoredRemoteDevices(device_list);
-}
-
-void EasyUnlockServiceRegular::SetStoredRemoteDevices(
-    const base::Value::List& devices) {
-  std::string remote_devices_json;
-  JSONStringValueSerializer serializer(&remote_devices_json);
-  serializer.Serialize(devices);
-
-  ScopedDictPrefUpdate pairing_update(profile()->GetPrefs(),
-                                      prefs::kEasyUnlockPairing);
-  if (devices.empty())
-    pairing_update->Remove(kKeyDevices);
-  else
-    pairing_update->Set(kKeyDevices, devices.Clone());
 }
 
 proximity_auth::ProximityAuthPrefManager*
@@ -290,13 +180,6 @@ AccountId EasyUnlockServiceRegular::GetAccountId() const {
       user_manager::UserManager::Get()->GetPrimaryUser();
   DCHECK(primary_user);
   return primary_user->GetAccountId();
-}
-
-const base::Value::List* EasyUnlockServiceRegular::GetRemoteDevices() const {
-  const base::Value::Dict& pairing_dict =
-      profile()->GetPrefs()->GetDict(prefs::kEasyUnlockPairing);
-
-  return pairing_dict.FindList(kKeyDevices);
 }
 
 void EasyUnlockServiceRegular::InitializeInternal() {

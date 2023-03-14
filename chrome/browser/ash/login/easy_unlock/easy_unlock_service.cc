@@ -749,4 +749,13 @@ std::string EasyUnlockService::GetLastRemoteStatusUnlockForLogging() {
   return std::string();
 }
 
+const multidevice::RemoteDeviceRefList
+EasyUnlockService::GetRemoteDevicesForTesting() const {
+  if (!proximity_auth_system_) {
+    return multidevice::RemoteDeviceRefList();
+  }
+
+  return proximity_auth_system_->GetRemoteDevicesForUser(GetAccountId());
+}
+
 }  // namespace ash

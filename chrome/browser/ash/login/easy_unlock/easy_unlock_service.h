@@ -76,11 +76,6 @@ class EasyUnlockService : public KeyedService,
   // Returns the user currently associated with the service.
   virtual AccountId GetAccountId() const = 0;
 
-  // Retrieve the stored remote devices list:
-  //   * If in regular context, device list is retrieved from prefs.
-  //   * If in sign-in context, device list is retrieved from TPM.
-  virtual const base::Value::List* GetRemoteDevices() const = 0;
-
   // Sets the service up and schedules service initialization.
   void Initialize();
 
@@ -150,6 +145,10 @@ class EasyUnlockService : public KeyedService,
   // choice for unlock. Returns the empty string if the ProximityAuthSystem or
   // the UnlockManager is uninitialized.
   std::string GetLastRemoteStatusUnlockForLogging();
+
+  // Retrieves the remote device list stored for the account in
+  // |proximity_auth_system_|.
+  const multidevice::RemoteDeviceRefList GetRemoteDevicesForTesting() const;
 
  protected:
   EasyUnlockService(Profile* profile,
