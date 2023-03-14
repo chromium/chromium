@@ -8,6 +8,7 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
 GEN('#include "build/build_config.h"');
 GEN('#include "build/chromeos_buildflags.h"');
+GEN('#include "components/history_clusters/core/features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
 class NewTabPageBrowserTest extends PolymerTest {
@@ -396,6 +397,15 @@ var NewTabPageModulesHistoryClustersModuleTest =
   /** @override */
   get browsePreload() {
     return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/modules/history_clusters/module_test.js';
+  }
+
+  /** @override */
+  get featureList() {
+    return {
+      enabled: [
+        'history_clusters::internal::kJourneysImages',
+      ],
+    };
   }
 };
 

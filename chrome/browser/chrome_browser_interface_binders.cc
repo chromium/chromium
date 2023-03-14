@@ -982,7 +982,7 @@ void PopulateChromeWebUIFrameBinders(
     if (history_clusters_service->IsJourneysImagesEnabled()) {
       RegisterWebUIControllerInterfaceBinder<
           image_service::mojom::ImageServiceHandler, HistoryUI,
-          HistoryClustersSidePanelUI>(map);
+          HistoryClustersSidePanelUI, NewTabPageUI>(map);
     }
   }
 

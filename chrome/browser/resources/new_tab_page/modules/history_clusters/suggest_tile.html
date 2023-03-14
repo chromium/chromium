@@ -58,8 +58,7 @@
 <div id="content">
   <template is="dom-repeat" items="[[relatedSearches]]"
             filter="[[filterRelatedSearches_]]">
-    <a class="related-search" href="[[computeSearchUrl_(item.query)]]"
-       on-click="onClick_" on-auxclick="onClick_">
+    <a class="related-search" href="[[computeSearchUrl_(item.query)]]">
       <div class="icon"
            style="-webkit-mask-image:
            url(//resources/images/icon_search.svg);"></div>

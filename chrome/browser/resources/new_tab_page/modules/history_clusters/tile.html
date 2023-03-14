@@ -28,6 +28,7 @@
   #image {
     background: red;
     border-radius: 25px;
+    overflow: hidden;
   }
 
   :host([large-format]) #image {
@@ -44,6 +45,12 @@
 
   :host([small-format]) #image {
     display: none;
+  }
+
+  #image img {
+    height: 100%;
+    object-fit: cover;
+    width: 100%;
   }
 
   #icon {
@@ -117,7 +124,13 @@
   }
 </style>
 <a id="content" href="[[visit.normalizedUrl.url]]">
-  <div id="image"></div>
+  <div id="image">
+    <template is="dom-if" if="[[hasImageUrl_(imageUrl_)]]">
+      <img is="cr-auto-img" auto-src="[[imageUrl_.url]]"
+          draggable="false">
+      </img>
+    </template>
+  </div>
   <div id="text-container">
     <div id="title" class="truncate">[[visit.pageTitle]]</div>
     <div id="info-container">
