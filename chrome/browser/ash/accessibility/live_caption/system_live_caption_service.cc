@@ -52,31 +52,19 @@ void SystemLiveCaptionService::OnSpeechResult(
     bool /*is_final*/,
     const absl::optional<media::SpeechRecognitionResult>& result) {
   DCHECK(result.has_value());
-  if (!controller_ || !controller_->DispatchTranscription(&context_, *result)) {
+  if (!controller_ || !controller_->DispatchTranscription(&context_, *result))
     StopRecognizing();
-    // Hard and fast stop.
-    client_.reset();
-  }
 }
 
 void SystemLiveCaptionService::OnSpeechSoundLevelChanged(int16_t level) {}
 
 void SystemLiveCaptionService::OnSpeechRecognitionStateChanged(
     SpeechRecognizerStatus new_state) {
-  if (current_recognizer_status_ ==
-          SpeechRecognizerStatus::SPEECH_RECOGNITION_STOPPING &&
-      new_state == SpeechRecognizerStatus::SPEECH_RECOGNIZER_READY) {
-    // Client finished stopping, let's make a new one.
-    CreateClient();
-  }
-
   current_recognizer_status_ = new_state;
   if (!controller_)
     return;
 
-  if (!client_) {
-    CreateClient();
-  }
+  DCHECK(client_);
 
   if (new_state == SpeechRecognizerStatus::SPEECH_RECOGNIZER_READY) {
     if (output_running_) {
@@ -98,14 +86,11 @@ void SystemLiveCaptionService::OnSpeechRecognitionStateChanged(
           [](::captions::CaptionBubbleErrorType error_type, bool checked) {}));
 
   StopRecognizing();
-  client_.reset();
 }
 
 void SystemLiveCaptionService::OnSpeechRecognitionStopped() {
-  if (controller_) {
+  if (controller_)
     controller_->OnAudioStreamEnd(&context_);
-  }
-  client_.reset();
 }
 
 void SystemLiveCaptionService::SpeechRecognitionAvailabilityChanged(
@@ -142,19 +127,12 @@ void SystemLiveCaptionService::StopRecognizing() {
   if (!client_)
     return;
   client_->Stop();
+  client_.reset();
 }
 
 void SystemLiveCaptionService::OnNonChromeOutputStarted() {
   if (!output_running_) {
     stop_countdown_timer_.reset();  // delete a death timeout.
-    if (current_recognizer_status_ ==
-        SpeechRecognizerStatus::SPEECH_RECOGNITION_STOPPING) {
-      // The audio restarted during stop, so that means we need to restart a new
-      // recognizer, etc.
-      CreateClient();
-      current_recognizer_status_ =
-          SpeechRecognizerStatus::SPEECH_RECOGNIZER_READY;
-    }
     if (current_recognizer_status_ ==
         SpeechRecognizerStatus::SPEECH_RECOGNIZER_READY) {
       if (!client_) {
@@ -163,7 +141,6 @@ void SystemLiveCaptionService::OnNonChromeOutputStarted() {
       client_->Start();
     }
   }
-
   output_running_ = true;
 }
 
@@ -182,8 +159,6 @@ void SystemLiveCaptionService::StopTimeoutFinished() {
 }
 
 void SystemLiveCaptionService::CreateClient() {
-  // We must reset first to detach everything first, and then reattach.
-  client_.reset();
   client_ = std::make_unique<SpeechRecognitionRecognizerClientImpl>(
       weak_ptr_factory_.GetWeakPtr(), profile_,
       media::AudioDeviceDescription::kLoopbackWithoutChromeId,
