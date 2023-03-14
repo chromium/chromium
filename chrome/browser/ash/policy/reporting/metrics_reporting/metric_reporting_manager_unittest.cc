@@ -933,10 +933,10 @@ INSTANTIATE_TEST_SUITE_P(
     EventDrivenTelemetryCollectorPoolTests,
     EventDrivenTelemetryCollectorPoolTest,
     ::testing::ValuesIn<EventDrivenTelemetryCollectorPoolTestCase>(
-        {{"SignalStrengthLow", MetricEventType::NETWORK_SIGNAL_STRENGTH_LOW,
+        {{"SignalStrengthLow", MetricEventType::WIFI_SIGNAL_STRENGTH_LOW,
           ash::kReportDeviceSignalStrengthEventDrivenTelemetry},
          {"SignalStrengthRecovered",
-          MetricEventType::NETWORK_SIGNAL_STRENGTH_RECOVERED,
+          MetricEventType::WIFI_SIGNAL_STRENGTH_RECOVERED,
           ash::kReportDeviceSignalStrengthEventDrivenTelemetry}}),
     [](const testing::TestParamInfo<
         EventDrivenTelemetryCollectorPoolTest::ParamType>& info) {

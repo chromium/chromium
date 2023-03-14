@@ -246,8 +246,7 @@ TEST_F(MetricEventObserverManagerTest, DefaultDisabled) {
 TEST_F(MetricEventObserverManagerTest, EventDrivenTelemetry) {
   settings_->SetBoolean(kEventEnableSettingPath, true);
   auto* event_observer_ptr = event_observer_.get();
-  MetricEventType network_event =
-      MetricEventType::NETWORK_CONNECTION_STATE_CHANGE;
+  MetricEventType network_event = MetricEventType::WIFI_SIGNAL_STRENGTH_LOW;
 
   MockCollector network_collector1;
   MockCollector network_collector2;

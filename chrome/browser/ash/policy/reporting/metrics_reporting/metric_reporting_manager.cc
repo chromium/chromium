@@ -166,8 +166,8 @@ std::vector<CollectorBase*> MetricReportingManager::GetTelemetryCollectors(
     MetricEventType event_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (event_type) {
-    case NETWORK_SIGNAL_STRENGTH_LOW:
-    case NETWORK_SIGNAL_STRENGTH_RECOVERED:
+    case WIFI_SIGNAL_STRENGTH_LOW:
+    case WIFI_SIGNAL_STRENGTH_RECOVERED:
       return GetTelemetryCollectorsFromSetting(
           ::ash::kReportDeviceSignalStrengthEventDrivenTelemetry);
     case USB_ADDED:
