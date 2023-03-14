@@ -52,7 +52,9 @@ class BASE_EXPORT PooledSequencedTaskRunner
  private:
   ~PooledSequencedTaskRunner() override;
 
-  const raw_ptr<PooledTaskRunnerDelegate> pooled_task_runner_delegate_;
+  // Dangling usage guarded by MatchesCurrentDelegate() checks.
+  const raw_ptr<PooledTaskRunnerDelegate, DisableDanglingPtrDetection>
+      pooled_task_runner_delegate_;
 
   // Sequence for all Tasks posted through this TaskRunner.
   const scoped_refptr<Sequence> sequence_;
