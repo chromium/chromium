@@ -251,12 +251,21 @@ public class IPHCommandBuilder {
 
             if (mContentString == null) {
                 assert mResources != null;
-                mContentString = mResources.getString(mStringId);
+                if (mStringArgs != null) {
+                    mContentString = mResources.getString(mStringId, mStringArgs);
+                } else {
+                    mContentString = mResources.getString(mStringId);
+                }
             }
 
             if (mAccessibilityText == null) {
                 assert mResources != null;
-                mAccessibilityText = mResources.getString(mAccessibilityStringId);
+                if (mAccessibilityStringArgs != null) {
+                    mAccessibilityText =
+                            mResources.getString(mAccessibilityStringId, mAccessibilityStringArgs);
+                } else {
+                    mAccessibilityText = mResources.getString(mAccessibilityStringId);
+                }
             }
 
             if (mInsetRect == null && mAnchorRect == null) {
