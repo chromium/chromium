@@ -5125,6 +5125,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "ntp-reduced-logo-space",
+    "owners": [ "//components/search/OWNERS" ],
+    "expiry_milestone": 115
+  },
+  {
     "name": "ntp-safe-browsing-module",
     "owners": [ "tiborg" ],
     "expiry_milestone": 105

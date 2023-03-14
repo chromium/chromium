@@ -200,6 +200,9 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   source->AddBoolean("logoEnabled",
                      base::FeatureList::IsEnabled(ntp_features::kNtpLogo));
   source->AddBoolean(
+      "reducedLogoSpaceEnabled",
+      base::FeatureList::IsEnabled(ntp_features::kNtpReducedLogoSpace));
+  source->AddBoolean(
       "middleSlotPromoEnabled",
       base::FeatureList::IsEnabled(ntp_features::kNtpMiddleSlotPromo) &&
           profile->GetPrefs()->GetBoolean(prefs::kNtpPromoVisible));

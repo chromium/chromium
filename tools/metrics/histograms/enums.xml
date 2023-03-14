@@ -59107,6 +59107,7 @@ from previous Chrome versions.
   <int value="-1589720671"
       label="DebugHistoryInterventionNoUserActivation:disabled"/>
   <int value="-1588702520" label="WebOTPCrossDevice:disabled"/>
+  <int value="-1588221814" label="NtpReducedLogoSpace:disabled"/>
   <int value="-1586642651" label="MaterialDesignExtensions:disabled"/>
   <int value="-1586295595" label="SidePanelWebView:disabled"/>
   <int value="-1585733447" label="ContextualSearchUnityIntegration:disabled"/>
@@ -65448,6 +65449,7 @@ from previous Chrome versions.
   <int value="1942174659" label="ArcSyncInstallPriority:enabled"/>
   <int value="1942271908" label="FeedBottomSyncBanner:disabled"/>
   <int value="1942542793" label="CrosPrivacyHubV0:disabled"/>
+  <int value="1942607039" label="NtpReducedLogoSpace:enabled"/>
   <int value="1942911276" label="enable-grouped-history"/>
   <int value="1943083555" label="NotificationScheduleService:enabled"/>
   <int value="1944156526" label="sync-url"/>

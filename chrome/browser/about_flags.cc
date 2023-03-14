@@ -5867,6 +5867,10 @@ const FeatureEntry kFeatureEntries[] = {
                                     kNtpHistoryClustersModuleVariations,
                                     "DesktopNtpModules")},
 
+    {"ntp-reduced-logo-space", flag_descriptions::kNtpReducedLogoSpaceName,
+     flag_descriptions::kNtpReducedLogoSpaceDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpReducedLogoSpace)},
+
     {"ntp-middle-slot-promo-dismissal",
      flag_descriptions::kNtpMiddleSlotPromoDismissalName,
      flag_descriptions::kNtpMiddleSlotPromoDismissalDescription, kOsDesktop,

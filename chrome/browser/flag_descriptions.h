@@ -2548,6 +2548,9 @@ extern const char kNtpRealboxUseGoogleGIconDescription[];
 extern const char kNtpRecipeTasksModuleName[];
 extern const char kNtpRecipeTasksModuleDescription[];
 
+extern const char kNtpReducedLogoSpaceName[];
+extern const char kNtpReducedLogoSpaceDescription[];
+
 extern const char kNtpSafeBrowsingModuleName[];
 extern const char kNtpSafeBrowsingModuleDescription[];
 

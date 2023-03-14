@@ -115,6 +115,11 @@ BASE_FEATURE(kNtpHandleMostVisitedNavigationExplicitly,
 // If enabled, logo will be shown.
 BASE_FEATURE(kNtpLogo, "NtpLogo", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, logo will fill up less vertical space.
+BASE_FEATURE(kNtpReducedLogoSpace,
+             "NtpReducedLogoSpace",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, middle slot promo will be shown.
 BASE_FEATURE(kNtpMiddleSlotPromo,
              "NtpMiddleSlotPromo",

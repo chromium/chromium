@@ -40,6 +40,7 @@ BASE_DECLARE_FEATURE(kNtpDummyModules);
 BASE_DECLARE_FEATURE(kNtpComprehensiveTheming);
 BASE_DECLARE_FEATURE(kNtpComprehensiveThemeRealbox);
 BASE_DECLARE_FEATURE(kNtpLogo);
+BASE_DECLARE_FEATURE(kNtpReducedLogoSpace);
 BASE_DECLARE_FEATURE(kNtpMiddleSlotPromo);
 BASE_DECLARE_FEATURE(kNtpMiddleSlotPromoDismissal);
 BASE_DECLARE_FEATURE(kNtpModulesLoadTimeoutMilliseconds);
