@@ -8,6 +8,7 @@
 #import "base/ios/ios_util.h"
 #import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/attributed_string_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/ui/incognito_interstitial/incognito_interstitial_constants.h"
@@ -38,6 +39,9 @@ NSString* const kIncognitoInterstitialBannerName =
 
 // Maximum number of lines for the URL label, before the user unfolds it.
 const int kURLLabelDefaultNumberOfLines = 3;
+
+// Line height multiple for the title label.
+const CGFloat kTitleLabelLineHeightMultiple = 1.3;
 
 }  // namespace
 
@@ -92,6 +96,9 @@ const int kURLLabelDefaultNumberOfLines = 3;
   // constraints can only be activated once the complete view hierarchy has been
   // constructed and relevant views belong to the same hierarchy.
   [super viewDidLoad];
+
+  // Fix the line height multiple of `self.titleLabel`.
+  [self fixTitleLabelLineHeightMultiple];
 
   self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
   self.modalInPresentation = YES;
@@ -376,6 +383,25 @@ const int kURLLabelDefaultNumberOfLines = 3;
 - (void)expandURLButtonWasTapped {
   self.URLIsExpanded = YES;
   [self.view setNeedsLayout];
+}
+
+// Set the `attributedText` attribute of `self.titleLabel` to customize the line
+// height multiple.
+- (void)fixTitleLabelLineHeightMultiple {
+  NSMutableAttributedString* titleAttributedText =
+      [NSAttributedStringFromUILabel(self.titleLabel) mutableCopy];
+  NSMutableDictionary* attributes = [NSMutableDictionary
+      dictionaryWithDictionary:[titleAttributedText attributesAtIndex:0
+                                                       effectiveRange:nil]];
+  NSMutableParagraphStyle* paragraphStyle =
+      [[NSMutableParagraphStyle alloc] init];
+  [paragraphStyle setParagraphStyle:attributes[NSParagraphStyleAttributeName]];
+  paragraphStyle.lineHeightMultiple = kTitleLabelLineHeightMultiple;
+  attributes[NSParagraphStyleAttributeName] = paragraphStyle;
+  [titleAttributedText
+      setAttributes:attributes
+              range:NSMakeRange(0, titleAttributedText.length)];
+  self.titleLabel.attributedText = titleAttributedText;
 }
 
 @end

@@ -41,3 +41,22 @@ NSInteger NumberOfLinesOfAttributedString(NSAttributedString* attributedString,
       round(wrappingStringSize.height / wrappingString.size.height);
   return numberOfLines;
 }
+
+NSAttributedString* NSAttributedStringFromUILabel(UILabel* label) {
+  NSShadow* shadow = [[NSShadow alloc] init];
+  shadow.shadowColor = label.shadowColor;
+  shadow.shadowOffset = label.shadowOffset;
+  NSMutableParagraphStyle* paragraphStyle =
+      [[NSMutableParagraphStyle alloc] init];
+  paragraphStyle.alignment = label.textAlignment;
+  paragraphStyle.lineBreakMode = label.lineBreakMode;
+  NSAttributedString* attributedText = [[NSAttributedString alloc]
+      initWithString:label.text
+          attributes:@{
+            NSFontAttributeName : label.font,
+            NSForegroundColorAttributeName : label.textColor,
+            NSShadowAttributeName : shadow,
+            NSParagraphStyleAttributeName : paragraphStyle
+          }];
+  return attributedText;
+}
