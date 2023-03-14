@@ -33,8 +33,6 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.url.GURL;
 
 import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
 
@@ -128,10 +126,8 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
                     final String sheetTitle = getShareSheetTitle();
                     ShareParams params =
                             new ShareParams.Builder(mWindowAndroid, sheetTitle, mShareUrl)
-                                    .setFileUris(
-                                            new ArrayList<>(Collections.singletonList(imageUri)))
-                                    .setFileAltTexts(new ArrayList<>(
-                                            Collections.singletonList(mSelectedText)))
+                                    .setSingleImageUri(imageUri)
+                                    .setImageAltText(mSelectedText)
                                     .setFileContentType(PNG_MIME_TYPE)
                                     .setCallback(new ShareParams.TargetChosenCallback() {
                                         @Override

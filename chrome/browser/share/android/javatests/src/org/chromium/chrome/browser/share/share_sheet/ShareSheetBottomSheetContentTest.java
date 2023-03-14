@@ -137,7 +137,7 @@ public final class ShareSheetBottomSheetContentTest {
         mPreviewUrl = UrlFormatter.formatUrlForDisplayOmitSchemeOmitTrivialSubdomains(sUrl);
         mShareParams = new ShareParams.Builder(/*window=*/null, sTitle, sUrl)
                                .setText(sText)
-                               .setFileUris(new ArrayList<>(ImmutableList.of(sImageUri)))
+                               .setSingleImageUri(sImageUri)
                                .setLinkToTextSuccessful(true)
                                .build();
         // Pretend the feature engagement feature is already initialized. Otherwise
@@ -173,7 +173,7 @@ public final class ShareSheetBottomSheetContentTest {
         ShareSheetBottomSheetContent shareSheetBottomSheetContent =
                 new ShareSheetBottomSheetContent(mActivity, new MockLargeIconBridge(), null,
                         new ShareParams.Builder(/*window=*/null, /*title=*/"", /*url=*/"")
-                                .setFileUris(new ArrayList<>(ImmutableList.of(sImageUri)))
+                                .setSingleImageUri(sImageUri)
                                 .setFileContentType(fileContentType)
                                 .build(),
                         mFeatureEngagementTracker);
@@ -204,7 +204,7 @@ public final class ShareSheetBottomSheetContentTest {
                         mFeatureEngagementTracker);
 
         shareSheetBottomSheetContent.createRecyclerViews(ImmutableList.of(), ImmutableList.of(),
-                ImmutableSet.of(ContentType.IMAGE), fileContentType,
+                ImmutableSet.of(ContentType.OTHER_FILE_TYPE), fileContentType,
                 DetailedContentType.NOT_SPECIFIED, mShareSheetLinkToggleCoordinator);
 
         TextView titleView =
@@ -330,7 +330,7 @@ public final class ShareSheetBottomSheetContentTest {
         ShareSheetBottomSheetContent shareSheetBottomSheetContent =
                 new ShareSheetBottomSheetContent(mActivity, new MockLargeIconBridge(), null,
                         new ShareParams.Builder(/*window=*/null, /*title=*/"", /*url=*/"")
-                                .setFileUris(new ArrayList<>(ImmutableList.of(sImageUri)))
+                                .setSingleImageUri(sImageUri)
                                 .setFileContentType(fileContentType)
                                 .build(),
                         mFeatureEngagementTracker);
@@ -358,7 +358,7 @@ public final class ShareSheetBottomSheetContentTest {
         ShareSheetBottomSheetContent shareSheetBottomSheetContent =
                 new ShareSheetBottomSheetContent(mActivity, new MockLargeIconBridge(), null,
                         new ShareParams.Builder(/*window=*/null, /*title=*/"", /*url=*/"")
-                                .setFileUris(new ArrayList<>(ImmutableList.of(sImageUri)))
+                                .setSingleImageUri(sImageUri)
                                 .setFileContentType(fileContentType)
                                 .build(),
                         mFeatureEngagementTracker);
@@ -382,7 +382,7 @@ public final class ShareSheetBottomSheetContentTest {
         ShareSheetBottomSheetContent shareSheetBottomSheetContent =
                 new ShareSheetBottomSheetContent(mActivity, new MockLargeIconBridge(), null,
                         new ShareParams.Builder(/*window=*/null, /*title=*/"", /*url=*/"")
-                                .setFileUris(new ArrayList<>(ImmutableList.of(sImageUri)))
+                                .setSingleImageUri(sImageUri)
                                 .setFileContentType(fileContentType)
                                 .build(),
                         mFeatureEngagementTracker);
@@ -414,7 +414,7 @@ public final class ShareSheetBottomSheetContentTest {
         ShareSheetBottomSheetContent shareSheetBottomSheetContent =
                 new ShareSheetBottomSheetContent(mActivity, new MockLargeIconBridge(), null,
                         new ShareParams.Builder(/*window=*/null, /*title=*/"", /*url=*/"")
-                                .setFileUris(new ArrayList<>(ImmutableList.of(sImageUri)))
+                                .setSingleImageUri(sImageUri)
                                 .setFileContentType(fileContentType)
                                 .build(),
                         mFeatureEngagementTracker);

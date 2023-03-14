@@ -20,8 +20,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
 
@@ -105,13 +103,12 @@ class ScreenshotShareSheetMediator {
                                  .format(new Date(System.currentTimeMillis()));
         String title = mContext.getString(R.string.screenshot_title_for_share, isoDate);
         Callback<Uri> callback = (bitmapUri) -> {
-            ShareParams params =
-                    new ShareParams.Builder(mWindowAndroid, title, /*url=*/"")
-                            .setFileUris(new ArrayList<>(Collections.singletonList(bitmapUri)))
-                            .setFileContentType(mWindowAndroid.getApplicationContext()
-                                                        .getContentResolver()
-                                                        .getType(bitmapUri))
-                            .build();
+            ShareParams params = new ShareParams.Builder(mWindowAndroid, title, /*url=*/"")
+                                         .setSingleImageUri(bitmapUri)
+                                         .setFileContentType(mWindowAndroid.getApplicationContext()
+                                                                     .getContentResolver()
+                                                                     .getType(bitmapUri))
+                                         .build();
 
             mChromeOptionShareCallback.showThirdPartyShareSheet(params,
                     new ChromeShareExtras.Builder()

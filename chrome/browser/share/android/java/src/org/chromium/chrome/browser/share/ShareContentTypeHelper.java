@@ -79,7 +79,7 @@ public class ShareContentTypeHelper {
         if (hasUrl && !TextUtils.isEmpty(params.getText())) {
             contentTypes.add(ContentType.LINK_AND_TEXT);
         }
-        if (params.getFileUris() != null) {
+        if (params.getFileUris() != null || params.getImageUriToShare() != null) {
             if (!TextUtils.isEmpty(params.getFileContentType())
                     && params.getFileContentType().startsWith(IMAGE_TYPE)) {
                 if (hasUrl) {

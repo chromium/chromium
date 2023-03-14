@@ -249,7 +249,8 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
 
         if (contentTypes.contains(ContentType.IMAGE)
                 || contentTypes.contains(ContentType.IMAGE_AND_LINK)) {
-            setImageForPreviewFromUri(mParams.getFileUris().get(0));
+            assert mParams.getImageUriToShare() != null;
+            setImageForPreviewFromUri(mParams.getImageUriToShare());
             if (TextUtils.isEmpty(subtitle)) {
                 subtitle = getFileType(fileContentType);
             }

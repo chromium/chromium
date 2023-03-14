@@ -178,7 +178,7 @@ public final class ShareSheetPropertyModelBuilderTest {
     @MediumTest
     public void getContentTypes_hasImageContentType() {
         ShareParams shareParams = new ShareParams.Builder(null, "", "")
-                                          .setFileUris(new ArrayList<>(ImmutableSet.of(Uri.EMPTY)))
+                                          .setSingleImageUri(Uri.EMPTY)
                                           .setFileContentType(IMAGE_TYPE)
                                           .build();
         ChromeShareExtras shareExtras = new ChromeShareExtras.Builder().build();

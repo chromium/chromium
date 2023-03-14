@@ -271,7 +271,7 @@ public class ShareHelper {
                 | Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(EXTRA_TASK_ID, params.getWindow().getActivity().get().getTaskId());
 
-        Uri imageUri = params.getSingleImageUri();
+        Uri imageUri = params.getImageUriToShare();
         if (imageUri != null) {
             intent.putExtra(Intent.EXTRA_STREAM, imageUri);
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -282,6 +282,9 @@ public class ShareHelper {
             intent.setClipData(ClipData.newUri(resolver, null, imageUri));
             if (!TextUtils.isEmpty(params.getUrl())) {
                 intent.putExtra(Intent.EXTRA_TEXT, params.getUrl());
+            }
+            if (!TextUtils.isEmpty(params.getImageAltText())) {
+                intent.putExtra(EXTRA_STREAM_ALT_TEXT, params.getImageAltText());
             }
 
             return intent;
@@ -303,20 +306,11 @@ public class ShareHelper {
             if (isFileShare) {
                 intent.setType(params.getFileContentType());
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                final boolean hasAltText =
-                        params.getFileAltTexts() != null && !params.getFileAltTexts().isEmpty();
 
                 if (isMultipleFileShare) {
                     intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, params.getFileUris());
-                    if (hasAltText) {
-                        intent.putStringArrayListExtra(
-                                EXTRA_STREAM_ALT_TEXT, params.getFileAltTexts());
-                    }
                 } else {
                     intent.putExtra(Intent.EXTRA_STREAM, params.getFileUris().get(0));
-                    if (hasAltText) {
-                        intent.putExtra(EXTRA_STREAM_ALT_TEXT, params.getFileAltTexts().get(0));
-                    }
                 }
             } else {
                 intent.setType("text/plain");

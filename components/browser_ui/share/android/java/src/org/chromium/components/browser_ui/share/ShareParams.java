@@ -43,7 +43,7 @@ public class ShareParams {
     private final ArrayList<Uri> mFileUris;
 
     /** The alt-text for the shared files. */
-    private final ArrayList<String> mFileAltTexts;
+    private final String mImageAltText;
 
     /** The Uri to the offline MHTML file to be shared. */
     private final Uri mOfflineUri;
@@ -71,10 +71,9 @@ public class ShareParams {
 
     private ShareParams(WindowAndroid window, String title, String text, String textFormat,
             String url, @Nullable String fileContentType, @Nullable ArrayList<Uri> fileUris,
-            @Nullable ArrayList<String> fileAltTexts, @Nullable Uri offlineUri,
-            @Nullable Uri singleImageUri, @Nullable TargetChosenCallback callback,
-            @Nullable Boolean linkToTextSuccessful, @Nullable String previewText,
-            String previewTextFormat) {
+            @Nullable String imageAltText, @Nullable Uri offlineUri, @Nullable Uri singleImageUri,
+            @Nullable TargetChosenCallback callback, @Nullable Boolean linkToTextSuccessful,
+            @Nullable String previewText, String previewTextFormat) {
         mWindow = window;
         mTitle = title;
         mText = text;
@@ -82,7 +81,7 @@ public class ShareParams {
         mUrl = url;
         mFileContentType = fileContentType;
         mFileUris = fileUris;
-        mFileAltTexts = fileAltTexts;
+        mImageAltText = imageAltText;
         mOfflineUri = offlineUri;
         mSingleImageUri = singleImageUri;
         mCallback = callback;
@@ -167,11 +166,11 @@ public class ShareParams {
     }
 
     /**
-     * @return The alt-texts related to the files to be shared.
+     * @return The alt-texts related to the single image to be shared.
      */
     @Nullable
-    public ArrayList<String> getFileAltTexts() {
-        return mFileAltTexts;
+    public String getImageAltText() {
+        return mImageAltText;
     }
 
     /**
@@ -222,6 +221,22 @@ public class ShareParams {
                                           : String.format(mPreviewTextFormat, mPreviewText);
     }
 
+    /**
+     * A helper function returning the image Uri to share if image is passed as image URI, or as a
+     * single file.
+     */
+    @Nullable
+    public Uri getImageUriToShare() {
+        if (getSingleImageUri() != null) {
+            return getSingleImageUri();
+        }
+        if (getFileUris() != null && getFileUris().size() == 1 && getFileContentType() != null
+                && getFileContentType().startsWith("image")) {
+            return getFileUris().get(0);
+        }
+        return null;
+    }
+
     /** The builder for {@link ShareParams} objects. */
     public static class Builder {
         private WindowAndroid mWindow;
@@ -231,7 +246,7 @@ public class ShareParams {
         private String mUrl;
         private String mFileContentType;
         private ArrayList<Uri> mFileUris;
-        private ArrayList<String> mFileAltTexts;
+        private String mImageAltText;
         private Uri mOfflineUri;
         private Uri mSingleImageUri;
         private TargetChosenCallback mCallback;
@@ -289,10 +304,10 @@ public class ShareParams {
         }
 
         /**
-         * Sets the alt-texts associated with the files to be shared.
+         * Sets the alt-texts associated with the single image to be shared.
          */
-        public Builder setFileAltTexts(@Nullable ArrayList<String> fileAltTexts) {
-            mFileAltTexts = fileAltTexts;
+        public Builder setImageAltText(@Nullable String imageAltText) {
+            mImageAltText = imageAltText;
             return this;
         }
 
@@ -344,7 +359,7 @@ public class ShareParams {
                 mUrl = DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(mUrl);
             }
             return new ShareParams(mWindow, mTitle, mText, mTextFormat, mUrl, mFileContentType,
-                    mFileUris, mFileAltTexts, mOfflineUri, mSingleImageUri, mCallback,
+                    mFileUris, mImageAltText, mOfflineUri, mSingleImageUri, mCallback,
                     mLinkToTextSuccessful, mPreviewText, mPreviewTextFormat);
         }
     }

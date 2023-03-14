@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.net.Uri;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -324,8 +325,9 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
                         DetailedContentType.WEB_NOTES, DetailedContentType.NOT_SPECIFIED)
                 .setFeatureNameForMetrics(USER_ACTION_COPY_GIF_SELECTED)
                 .setOnClickCallback((view) -> {
-                    if (!mShareParams.getFileUris().isEmpty()) {
-                        Clipboard.getInstance().setImageUri(mShareParams.getFileUris().get(0));
+                    Uri imageUri = mShareParams.getImageUriToShare();
+                    if (imageUri != null) {
+                        Clipboard.getInstance().setImageUri(imageUri);
                         Toast.makeText(mActivity, R.string.gif_copied, Toast.LENGTH_SHORT).show();
                     }
                 })
@@ -338,8 +340,9 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
                 .setFeatureNameForMetrics(USER_ACTION_COPY_IMAGE_SELECTED)
                 .setDetailedContentTypesToDisableFor(DetailedContentType.GIF)
                 .setOnClickCallback((view) -> {
-                    if (!mShareParams.getFileUris().isEmpty()) {
-                        Clipboard.getInstance().setImageUri(mShareParams.getFileUris().get(0));
+                    Uri imageUri = mShareParams.getImageUriToShare();
+                    if (imageUri != null) {
+                        Clipboard.getInstance().setImageUri(imageUri);
                         Toast.makeText(mActivity, R.string.image_copied, Toast.LENGTH_SHORT).show();
                     }
                 })
@@ -417,10 +420,10 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
                 .setIcon(R.drawable.save_to_device, R.string.sharing_save_image)
                 .setFeatureNameForMetrics(USER_ACTION_SAVE_IMAGE_SELECTED)
                 .setOnClickCallback((view) -> {
-                    if (mShareParams.getFileUris().isEmpty()) return;
-
+                    Uri imageUri = mShareParams.getImageUriToShare();
+                    if (imageUri == null) return;
                     ShareImageFileUtils.getBitmapFromUriAsync(
-                            mActivity, mShareParams.getFileUris().get(0), (bitmap) -> {
+                            mActivity, imageUri, (bitmap) -> {
                                 SaveBitmapDelegate saveBitmapDelegate = new SaveBitmapDelegate(
                                         mActivity, bitmap, R.string.save_image_filename_prefix,
                                         null, mShareParams.getWindow());
