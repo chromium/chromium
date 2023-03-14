@@ -269,7 +269,7 @@ void ArCoreDevice::OnSessionEnded() {
   arcore_session_utils_->EndSession();
 
   // The GL thread had initialized its context with a drawing_widget based on
-  // the ArImmersiveOverlay's Surface, and the one it has is no longer valid.
+  // the XrImmersiveOverlay's Surface, and the one it has is no longer valid.
   // For now, just destroy the GL thread so that it is recreated for the next
   // session with fresh associated resources. Also go through these steps in
   // case the GL thread hadn't completed, or had initialized partially, to

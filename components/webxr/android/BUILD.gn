@@ -88,6 +88,7 @@ android_library("xr_java") {
     sources += [
       "//components/webxr/android/java/src/org/chromium/components/webxr/ArDelegate.java",
       "//components/webxr/android/java/src/org/chromium/components/webxr/XrDelegateImpl.java",
+      "//components/webxr/android/java/src/org/chromium/components/webxr/XrImmersiveOverlay.java",
     ]
 
     deps += [ "//third_party/androidx:androidx_annotation_annotation_java" ]
@@ -105,7 +106,7 @@ android_library("xr_java") {
       "//components/webxr/android/java/src/org/chromium/components/webxr/ArCoreShim.java",
       "//components/webxr/android/java/src/org/chromium/components/webxr/ArCoreShimImpl.java",
       "//components/webxr/android/java/src/org/chromium/components/webxr/ArDelegateImpl.java",
-      "//components/webxr/android/java/src/org/chromium/components/webxr/ArImmersiveOverlay.java",
+      "//components/webxr/android/java/src/org/chromium/components/webxr/ArOverlayDelegate.java",
     ]
 
     # We have to use the bundle templates to include some of the native ARCore

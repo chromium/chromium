@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,11 @@ package org.chromium.components.webxr;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
-import android.graphics.PixelFormat;
 import android.os.Build;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 
@@ -28,24 +26,71 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Provides a fullscreen overlay for immersive AR mode.
+ * Provides a fullscreen overlay for immersive sessions, allows tailoring setup/etc. due to the
+ * particular needs of AR/VR sessions via the XrImmersiveOverlay.Delegate interface.
  */
-public class ArImmersiveOverlay
+public class XrImmersiveOverlay
         implements SurfaceHolder.Callback2, View.OnTouchListener, ScreenOrientationDelegate {
-    private static final String TAG = "ArImmersiveOverlay";
+    /**
+     * Abstraction layer for runtime-specific configuration that needs to happen when setting up a
+     * SurfaceView.
+     */
+    public interface Delegate {
+        /**
+         * Called to allow for any configuration that may need to happen (e.g. in the Chrome
+         * compositor), before a SurfaceView is created. This is required so that AR can ensure that
+         * it ends up on top of the DOM surface if we don't need to show it.
+         */
+        void prepareToCreateSurfaceView();
+
+        /**
+         * Configure any Z-order, transparency, or other configuration details that may need to be
+         * attached to the surfaceView. The SurfaceView should not yet be parented or made visible.
+         * The SurfaceView will already be configured to keep the screen on.
+         */
+        void configureSurfaceView(SurfaceView surfaceView);
+
+        /**
+         * Add the SurfaceView to the Scene Hierarchy in the appropriate place and ensure that it
+         * (and any relevant parents) are visible.
+         */
+        void parentAndShowSurfaceView(SurfaceView surfaceView);
+
+        /**
+         * Called when the surfaceView is no longer being used. It may or may not have been
+         * destroyed or unparented just yet (See DEFER_SURFACE_VIEW_DESTRUCTION comments),; but
+         * there may be some other system configuration that can/should be undone.
+         */
+        void onStopUsingSurfaceView();
+
+        /**
+         * Remove the SurfaceView from the Scene Hierarchy and ensure that it is hidden. Also
+         * provides an opportunity to restore any state that may have been setup by
+         * @{link parentAndShowSurfaceView}.
+         */
+        void removeAndHideSurfaceView(SurfaceView surfaceView);
+
+        /**
+         * This allows the delegate the opportunity to forward any touch events that would have
+         * otherwise been consumed by the XrImmersiveOverlay; e.g. to the compositor.
+         */
+        void maybeForwardTouchEvent(MotionEvent ev);
+    }
+
+    private static final String TAG = "XrImmersiveOverlay";
     private static final boolean DEBUG_LOGS = false;
 
-    // See class comment for ArSurfaceViewImpl below.
+    // See class comment for XrSurfaceViewImpl below.
     private static final boolean DEFER_SURFACE_VIEW_DESTRUCTION =
             (Build.VERSION.SDK_INT < Build.VERSION_CODES.O);
 
     private ArCoreJavaUtils mArCoreJavaUtils;
-    private ArCompositorDelegate mArCompositorDelegate;
+    private Delegate mOverlayDelegate;
     private Activity mActivity;
     private boolean mSurfaceReportedReady;
     private Integer mRestoreOrientation;
     private boolean mCleanupInProgress;
-    private ArSurfaceView mArSurfaceView;
+    private XrSurfaceView mXrSurfaceView;
     private WebContents mWebContents;
     private boolean mUseOverlay;
 
@@ -54,25 +99,22 @@ public class ArImmersiveOverlay
     // ID of primary pointer (if present).
     private Integer mPrimaryPointerId;
 
-    public void show(@NonNull ArCompositorDelegate compositorDelegate,
-            @NonNull WebContents webContents, @NonNull ArCoreJavaUtils caller, boolean useOverlay,
-            boolean canRenderDomContent) {
+    public void show(@NonNull Delegate overlayDelegate, @NonNull WebContents webContents,
+            @NonNull ArCoreJavaUtils caller) {
         if (DEBUG_LOGS) Log.i(TAG, "constructor");
         mArCoreJavaUtils = caller;
 
         mWebContents = webContents;
-        mArCompositorDelegate = compositorDelegate;
+        mOverlayDelegate = overlayDelegate;
 
         mActivity = ArCoreJavaUtils.getActivity(webContents);
 
         mPointerIdToData = new HashMap<Integer, PointerData>();
         mPrimaryPointerId = null;
 
-        mUseOverlay = useOverlay;
-
         // Choose a concrete implementation to create a drawable Surface and make it fullscreen.
-        // It forwards SurfaceHolder callbacks and touch events to this ArImmersiveOverlay object.
-        mArSurfaceView = new ArSurfaceView(canRenderDomContent);
+        // It forwards SurfaceHolder callbacks and touch events to this XrImmersiveOverlay object.
+        mXrSurfaceView = new XrSurfaceView();
     }
 
     private class PointerData {
@@ -87,7 +129,7 @@ public class ArImmersiveOverlay
         }
     }
 
-    private class ArSurfaceView {
+    private class XrSurfaceView {
         private SurfaceView mSurfaceView;
         private WebContentsObserver mWebContentsObserver;
         private boolean mDomSurfaceNeedsConfiguring;
@@ -103,8 +145,8 @@ public class ArImmersiveOverlay
         // OS's where this is necessary, the SurfaceView is only *actually* detached from the
         // window after the parent onWindowVisibilityChanged event has finished processing
         // (assuming that the onWindowVisibilityChanged event would have caused the destruction).
-        private class ArSurfaceViewImpl extends SurfaceView {
-            public ArSurfaceViewImpl(Activity activity) {
+        private class XrSurfaceViewImpl extends SurfaceView {
+            public XrSurfaceViewImpl(Activity activity) {
                 super(activity);
             }
 
@@ -123,47 +165,19 @@ public class ArImmersiveOverlay
         }
 
         @SuppressLint("ClickableViewAccessibility")
-        public ArSurfaceView(boolean canRenderDomContent) {
-            // If we need to show the dom content, but can't render it on top of the camera/gl
-            // layers manually, then we need to configure the DOM content's surface view to
-            // overlay ours. We need to track this so that we ensure we teardown everything
-            // we need to teardown as well.
-            mDomSurfaceNeedsConfiguring = mUseOverlay && !canRenderDomContent;
+        public XrSurfaceView() {
+            mOverlayDelegate.prepareToCreateSurfaceView();
 
-            // Enable alpha channel for the compositor and make the background transparent.
-            // Note that this needs to happen before we create and parent our SurfaceView, so that
-            // it ends up on top if the Dom Surface did not need configuring.
-            if (DEBUG_LOGS) {
-                Log.i(TAG, "calling mArCompositorDelegate.setOverlayImmersiveArMode(true)");
-            }
-
-            // While it's fine to omit if the page does not use DOMOverlay, once the page does
-            // use DOMOverlay, something appears to have changed such that it becomes required,
-            // otherwies the DOM SurfaceView will be in front of the XR content.
-            mArCompositorDelegate.setOverlayImmersiveArMode(true, mDomSurfaceNeedsConfiguring);
-
-            mSurfaceView = new ArSurfaceViewImpl(mActivity);
-            mSurfaceView.getHolder().setFormat(PixelFormat.TRANSLUCENT);
-            mSurfaceView.getHolder().addCallback(ArImmersiveOverlay.this);
+            mSurfaceView = new XrSurfaceViewImpl(mActivity);
             mSurfaceView.setKeepScreenOn(true);
-
-            // Exactly one surface view needs to call setZOrderMediaOverlay(true) otherwise the
-            // resulting z-order is undefined. The DOM content's surface will set it to true if
-            // |mDomSurfaceNeedsConfiguring| is set so we need to do the opposite here.
-            mSurfaceView.setZOrderMediaOverlay(!mDomSurfaceNeedsConfiguring);
+            mSurfaceView.getHolder().addCallback(XrImmersiveOverlay.this);
+            mOverlayDelegate.configureSurfaceView(mSurfaceView);
 
             // Process touch input events for XR input. This consumes them, they'll be resent to
             // the compositor view via forwardMotionEvent.
-            mSurfaceView.setOnTouchListener(ArImmersiveOverlay.this);
+            mSurfaceView.setOnTouchListener(XrImmersiveOverlay.this);
 
-            ViewGroup parent = mArCompositorDelegate.getArSurfaceParent();
-
-            // If we need to toggle the parent's visibility, do it before we add the surfaceView.
-            if (mArCompositorDelegate.shouldToggleArSurfaceParentVisibility()) {
-                parent.setVisibility(View.VISIBLE);
-            }
-
-            parent.addView(mSurfaceView);
+            mOverlayDelegate.parentAndShowSurfaceView(mSurfaceView);
 
             mWebContentsObserver = new WebContentsObserver() {
                 @Override
@@ -194,23 +208,12 @@ public class ArImmersiveOverlay
                 mSurfaceViewNeedsDestruction = true;
             }
 
-            mArCompositorDelegate.setOverlayImmersiveArMode(false, mDomSurfaceNeedsConfiguring);
+            mOverlayDelegate.onStopUsingSurfaceView();
         }
 
         private void removeAndDestroySurfaceView() {
             if (mSurfaceView == null) return;
-            ViewGroup parent = (ViewGroup) mSurfaceView.getParent();
-
-            if (parent != null) {
-                // Remove the surfaceView before changing the parent's visibility, so that we
-                // don't trigger any duplicate destruction events.
-                parent.removeView(mSurfaceView);
-
-                if (mArCompositorDelegate.shouldToggleArSurfaceParentVisibility()) {
-                    parent.setVisibility(View.GONE);
-                }
-            }
-
+            mOverlayDelegate.removeAndHideSurfaceView(mSurfaceView);
             mSurfaceView = null;
         }
     }
@@ -254,7 +257,8 @@ public class ArImmersiveOverlay
                     // Not much we can do here, just log and continue.
                     Log.w(TAG,
                             "New pointer with ID " + pointerId
-                                    + " introduced by ACTION_DOWN when old pointer with the same ID already exists.");
+                                    + " introduced by ACTION_DOWN when old pointer with the same ID"
+                                    + " already exists.");
                 }
 
                 // Send the events to the device.
@@ -288,7 +292,8 @@ public class ArImmersiveOverlay
                     // Not much we can do here, just log and continue.
                     Log.w(TAG,
                             "New pointer with ID " + pointerId
-                                    + " introduced by ACTION_POINTER_DOWN when old pointer with the same ID already exists.");
+                                    + " introduced by ACTION_POINTER_DOWN when old pointer with the"
+                                    + " same ID already exists.");
                 }
 
                 if (DEBUG_LOGS) {
@@ -314,7 +319,8 @@ public class ArImmersiveOverlay
                     // Nevertheless, it happens in the wild, so ignore the pointer to prevent crash.
                     Log.w(TAG,
                             "Pointer with ID " + pointerId
-                                    + " not found in mPointerIdToData, ignoring ACTION_POINTER_UP for it.");
+                                    + " not found in mPointerIdToData, ignoring ACTION_POINTER_UP"
+                                    + " for it.");
                 } else {
                     // Send the events to the device.
                     // The pointer that was raised needs to no longer be `touching`.
@@ -355,7 +361,8 @@ public class ArImmersiveOverlay
                         // to prevent crash.
                         Log.w(TAG,
                                 "Pointer with ID " + pointerId + "(index " + i
-                                        + ") not found in mPointerIdToData, ignoring ACTION_MOVE for it.");
+                                        + ") not found in mPointerIdToData, ignoring ACTION_MOVE"
+                                        + " for it.");
                         continue;
                     }
 
@@ -369,10 +376,9 @@ public class ArImmersiveOverlay
 
         // We need to consume the touch (returning true) to ensure that we get
         // followup events such as MOVE and UP. DOM Overlay mode needs to forward
-        // the touch to the content view so that its UI elements keep working.
-        if (mUseOverlay) {
-            mArCompositorDelegate.dispatchTouchEvent(ev);
-        }
+        // the touch to the content view so that its UI elements keep working, so
+        // we need to afford the particular session the chance to forward the event.
+        mOverlayDelegate.maybeForwardTouchEvent(ev);
         return true;
     }
 
@@ -446,7 +452,7 @@ public class ArImmersiveOverlay
 
         // While it would be preferable to wait until the surface is at the desired fullscreen
         // resolution, i.e. via mActivity.getFullscreenManager().getPersistentFullscreenMode(), that
-        // causes a chicken-and-egg problem for ArSurfaceView mode as used for DOM overlay.
+        // causes a chicken-and-egg problem for XrSurfaceView mode as used for DOM overlay.
         // Chrome's fullscreen mode is triggered by the Blink side setting an element fullscreen
         // after the session starts, but the session doesn't start until we report the drawing
         // surface being ready (including a configured size), so we use the reported size of the
@@ -495,7 +501,7 @@ public class ArImmersiveOverlay
         // the destroy callbacks to ensure consistent state after non-exiting lifecycle events.
         mArCoreJavaUtils.onDrawingSurfaceDestroyed();
 
-        mArSurfaceView.destroy();
+        mXrSurfaceView.destroy();
 
         // The JS app may have put an element into fullscreen mode during the immersive session,
         // even if this wasn't visible to the user. Ensure that we fully exit out of any active

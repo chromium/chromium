@@ -35,13 +35,13 @@ public class ArCoreJavaUtils {
 
     // The native ArCoreDevice runtime creates a ArCoreJavaUtils instance in its constructor,
     // and keeps a strong reference to it for the lifetime of the device. It creates and
-    // owns an ArImmersiveOverlay for the duration of an immersive-ar session, which in
+    // owns an XrImmersiveOverlay for the duration of an immersive session, which in
     // turn contains a reference to ArCoreJavaUtils for making JNI calls back to the device.
-    private ArImmersiveOverlay mArImmersiveOverlay;
+    private XrImmersiveOverlay mImmersiveOverlay;
 
     // ArDelegateImpl needs to know if there's an active immersive session so that it can handle
     // back button presses from ChromeActivity's onBackPressed(). It's only set while a session is
-    // in progress, and reset to null on session end. The ArImmersiveOverlay member has a strong
+    // in progress, and reset to null on session end. The XrImmersiveOverlay member has a strong
     // reference to the ChromeActivity, and that shouldn't be retained beyond the duration of a
     // session.
     private static ArCoreJavaUtils sActiveSessionInstance;
@@ -90,20 +90,21 @@ public class ArCoreJavaUtils {
     private void startSession(final ArCompositorDelegateProvider compositorDelegateProvider,
             final WebContents webContents, boolean useOverlay, boolean canRenderDomContent) {
         if (DEBUG_LOGS) Log.i(TAG, "startSession");
-        mArImmersiveOverlay = new ArImmersiveOverlay();
+        XrImmersiveOverlay.Delegate overlayDelegate = new ArOverlayDelegate(
+                compositorDelegateProvider.create(webContents), useOverlay, canRenderDomContent);
         sActiveSessionInstance = this;
         sActiveSessionAvailableSupplier.set(true);
-        mArImmersiveOverlay.show(compositorDelegateProvider.create(webContents), webContents, this,
-                useOverlay, canRenderDomContent);
+        mImmersiveOverlay = new XrImmersiveOverlay();
+        mImmersiveOverlay.show(overlayDelegate, webContents, this);
     }
 
     @CalledByNative
     private void endSession() {
         if (DEBUG_LOGS) Log.i(TAG, "endSession");
-        if (mArImmersiveOverlay == null) return;
+        if (mImmersiveOverlay == null) return;
 
-        mArImmersiveOverlay.cleanupAndExit();
-        mArImmersiveOverlay = null;
+        mImmersiveOverlay.cleanupAndExit();
+        mImmersiveOverlay = null;
         sActiveSessionInstance = null;
         sActiveSessionAvailableSupplier.set(false);
     }

@@ -385,7 +385,7 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
   absl::optional<float> floor_height_estimate_;
 
   // Touch-related data.
-  // Android will report touch events via MotionEvent - see ArImmersiveOverlay
+  // Android will report touch events via MotionEvent - see XrImmersiveOverlay
   // for details.
   struct ScreenTouchEvent {
     gfx::PointF screen_last_touch;
