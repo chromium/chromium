@@ -40,6 +40,8 @@
 #if BUILDFLAG(ENABLE_LIBVPX)
 #include "media/filters/vpx_video_decoder.h"
 #include "media/video/vpx_video_encoder.h"
+#include "third_party/libvpx/source/libvpx/vpx/vp8cx.h"
+#include "third_party/libvpx/source/libvpx/vpx/vpx_codec.h"
 #endif
 
 #if BUILDFLAG(ENABLE_LIBAOM)
@@ -74,6 +76,9 @@ class SoftwareVideoEncoderTest
     pixel_format_ = args.pixel_format;
     codec_ = args.codec;
     encoder_ = CreateEncoder(codec_);
+    if (!encoder_) {
+      GTEST_SKIP() << "Encoder is not supported on the platform";
+    }
   }
 
   void TearDown() override {
@@ -200,6 +205,12 @@ class SoftwareVideoEncoderTest
       case media::VideoCodec::kVP8:
       case media::VideoCodec::kVP9:
 #if BUILDFLAG(ENABLE_LIBVPX)
+        if (profile_ == VP9PROFILE_PROFILE2) {
+          vpx_codec_caps_t codec_caps = vpx_codec_get_caps(vpx_codec_vp9_cx());
+          if ((codec_caps & VPX_CODEC_CAP_HIGHBITDEPTH) == 0) {
+            return nullptr;
+          }
+        }
         return std::make_unique<media::VpxVideoEncoder>();
 #else
         return nullptr;
@@ -301,6 +312,11 @@ class SoftwareVideoEncoderTest
       }
     }
     return diff_cnt;
+  }
+
+  VideoPixelFormat GetExpectedOutputPixelFormat(VideoCodecProfile profile) {
+    return profile == VP9PROFILE_PROFILE2 ? PIXEL_FORMAT_YUV420P10
+                                          : PIXEL_FORMAT_I420;
   }
 
  protected:
@@ -488,7 +504,7 @@ TEST_P(SoftwareVideoEncoderTest, EncodeAndDecode) {
     EXPECT_EQ(decoded_frame->timestamp(), original_frame->timestamp());
     EXPECT_EQ(decoded_frame->visible_rect().size(),
               original_frame->visible_rect().size());
-    EXPECT_EQ(decoded_frame->format(), PIXEL_FORMAT_I420);
+    EXPECT_EQ(decoded_frame->format(), GetExpectedOutputPixelFormat(profile_));
     if (decoded_frame->format() == original_frame->format()) {
       EXPECT_LE(CountDifferentPixels(*decoded_frame, *original_frame),
                 original_frame->visible_rect().width());
@@ -890,6 +906,9 @@ SwVideoTestParams kVpxParams[] = {
     {VideoCodec::kVP9, VP9PROFILE_PROFILE0, PIXEL_FORMAT_I420},
     {VideoCodec::kVP9, VP9PROFILE_PROFILE0, PIXEL_FORMAT_NV12},
     {VideoCodec::kVP9, VP9PROFILE_PROFILE0, PIXEL_FORMAT_XRGB},
+    {VideoCodec::kVP9, VP9PROFILE_PROFILE2, PIXEL_FORMAT_I420},
+    {VideoCodec::kVP9, VP9PROFILE_PROFILE2, PIXEL_FORMAT_NV12},
+    {VideoCodec::kVP9, VP9PROFILE_PROFILE2, PIXEL_FORMAT_XRGB},
     {VideoCodec::kVP8, VP8PROFILE_ANY, PIXEL_FORMAT_I420},
     {VideoCodec::kVP8, VP8PROFILE_ANY, PIXEL_FORMAT_XRGB}};
 
