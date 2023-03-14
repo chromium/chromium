@@ -298,7 +298,9 @@ IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest,
   VerifyVideoFileAndDelete(video_path, /*allow_empty=*/true);
 }
 
-IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest, SuccessiveRecording) {
+// TODO(crbug.com/1423872): Flaky.
+IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest,
+                       DISABLED_SuccessiveRecording) {
   ash::CaptureModeTestApi test_api;
   // Do a fullscreen recording, followed by a region recording.
   test_api.StartForFullscreen(/*for_video=*/true);
@@ -309,8 +311,9 @@ IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest, SuccessiveRecording) {
 }
 
 // Tests that recording will be interrupted once screen capture becomes locked.
+// TODO(crbug.com/1423872): Flaky.
 IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest,
-                       RecordingInterruptedOnCaptureLocked) {
+                       DISABLED_RecordingInterruptedOnCaptureLocked) {
   ash::CaptureModeTestApi test_api;
   test_api.StartForFullscreen(/*for_video=*/true);
   test_api.PerformCapture();
