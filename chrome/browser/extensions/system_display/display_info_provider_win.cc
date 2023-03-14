@@ -43,8 +43,9 @@ BOOL CALLBACK EnumMonitorCallback(HMONITOR monitor,
 
   DISPLAY_DEVICE device;
   device.cb = sizeof(device);
-  if (!EnumDisplayDevices(monitor_info.szDevice, 0, &device, 0))
+  if (!EnumDisplayDevices(monitor_info.szDevice, 0, &device, 0)) {
     return FALSE;
+  }
 
   std::string id = base::NumberToString(
       display::win::ScreenWin::DeviceIdFromDeviceName(monitor_info.szDevice));

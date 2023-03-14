@@ -49,14 +49,14 @@ void ErrorCallback(std::string* result,
 
 class DisplayInfoProviderChromeosTest : public ChromeAshTestBase {
  public:
-  DisplayInfoProviderChromeosTest() {}
+  DisplayInfoProviderChromeosTest() = default;
 
   DisplayInfoProviderChromeosTest(const DisplayInfoProviderChromeosTest&) =
       delete;
   DisplayInfoProviderChromeosTest& operator=(
       const DisplayInfoProviderChromeosTest&) = delete;
 
-  ~DisplayInfoProviderChromeosTest() override {}
+  ~DisplayInfoProviderChromeosTest() override = default;
 
   void SetUp() override {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
@@ -1442,12 +1442,14 @@ TEST_F(DisplayInfoProviderChromeosTest, DisplayMode) {
   const api::system_display::DisplayMode* cur_mode = nullptr;
   const api::system_display::DisplayMode* other_mode = nullptr;
   for (const auto& mode : secondary_info.modes) {
-    if (mode.is_selected)
+    if (mode.is_selected) {
       cur_mode = &mode;
-    else if (!other_mode)
+    } else if (!other_mode) {
       other_mode = &mode;
-    if (cur_mode && other_mode)
+    }
+    if (cur_mode && other_mode) {
       break;
+    }
   }
   ASSERT_TRUE(cur_mode);
   ASSERT_TRUE(other_mode);
@@ -1487,10 +1489,12 @@ TEST_F(DisplayInfoProviderChromeosTest, GetDisplayZoomFactor) {
   DisplayUnitInfoList displays = GetAllDisplaysInfo();
 
   for (const auto& display : displays) {
-    if (display.id == base::NumberToString(display_id_list[0]))
+    if (display.id == base::NumberToString(display_id_list[0])) {
       EXPECT_EQ(display.display_zoom_factor, zoom_factor_1);
-    if (display.id == base::NumberToString(display_id_list[1]))
+    }
+    if (display.id == base::NumberToString(display_id_list[1])) {
       EXPECT_EQ(display.display_zoom_factor, zoom_factor_2);
+    }
   }
 }
 
@@ -1581,14 +1585,14 @@ TEST_F(DisplayInfoProviderChromeosTest, SetDisplayZoomFactor) {
 class DisplayInfoProviderChromeosTouchviewTest
     : public DisplayInfoProviderChromeosTest {
  public:
-  DisplayInfoProviderChromeosTouchviewTest() {}
+  DisplayInfoProviderChromeosTouchviewTest() = default;
 
   DisplayInfoProviderChromeosTouchviewTest(
       const DisplayInfoProviderChromeosTouchviewTest&) = delete;
   DisplayInfoProviderChromeosTouchviewTest& operator=(
       const DisplayInfoProviderChromeosTouchviewTest&) = delete;
 
-  ~DisplayInfoProviderChromeosTouchviewTest() override {}
+  ~DisplayInfoProviderChromeosTouchviewTest() override = default;
 
   void SetUp() override {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(

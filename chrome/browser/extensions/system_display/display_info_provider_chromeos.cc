@@ -32,8 +32,9 @@ namespace {
 
 int64_t GetDisplayId(const std::string& display_id_str) {
   int64_t display_id;
-  if (!base::StringToInt64(display_id_str, &display_id))
+  if (!base::StringToInt64(display_id_str, &display_id)) {
     display_id = display::kInvalidDisplayId;
+  }
   return display_id;
 }
 
@@ -115,20 +116,23 @@ absl::optional<std::string> ValidateDisplayPropertiesInput(
     const std::string& display_id_str,
     const system_display::DisplayProperties& info) {
   int64_t id = GetDisplayId(display_id_str);
-  if (id == display::kInvalidDisplayId)
+  if (id == display::kInvalidDisplayId) {
     return "Invalid display id";
+  }
 
   const display::Display& primary =
       display::Screen::GetScreen()->GetPrimaryDisplay();
   bool is_primary = id == primary.id() || (info.is_primary && *info.is_primary);
 
   if (info.is_unified) {
-    if (!is_primary)
+    if (!is_primary) {
       return "Unified desktop mode can only be set for the primary display.";
+    }
     // Setting isUnfied may change the display layout so no other properties
     // should be set.
-    if (info.mirroring_source_id)
+    if (info.mirroring_source_id) {
       return "Unified desktop mode can not be set with mirroringSourceId.";
+    }
     if (info.bounds_origin_x || info.bounds_origin_y || info.rotation ||
         info.overscan || info.display_mode || info.display_zoom_factor) {
       LOG(WARNING)
@@ -147,8 +151,9 @@ absl::optional<std::string> ValidateDisplayPropertiesInput(
   }
 
   // Verify the rotation value is valid.
-  if (info.rotation && !IsValidRotation(*info.rotation))
+  if (info.rotation && !IsValidRotation(*info.rotation)) {
     return "Invalid rotation.";
+  }
 
   return absl::nullopt;
 }
@@ -207,8 +212,9 @@ system_display::DisplayUnitInfo GetDisplayUnitInfoFromMojo(
   }
   if (!info.modes.empty()) {
     int index = mojo_info.selected_display_mode_index;
-    if (index < 0 || index >= static_cast<int>(info.modes.size()))
+    if (index < 0 || index >= static_cast<int>(info.modes.size())) {
       index = 0;
+    }
     info.modes[index].is_selected = true;
   }
   info.has_touch_support = mojo_info.has_touch_support;
@@ -236,16 +242,18 @@ void SetDisplayUnitInfoLayoutProperties(
   if (layout.mirror_source_id) {
     display->mirroring_source_id = *layout.mirror_source_id;
     if (layout.mirror_destination_ids) {
-      for (const std::string& id : *layout.mirror_destination_ids)
+      for (const std::string& id : *layout.mirror_destination_ids) {
         display->mirroring_destination_ids.push_back(id);
+      }
     }
   }
 }
 
 void RunResultCallback(DisplayInfoProvider::ErrorCallback callback,
                        absl::optional<std::string> error) {
-  if (error)
+  if (error) {
     LOG(ERROR) << "API call failed: " << *error;
+  }
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(error)));
 }
@@ -294,8 +302,9 @@ absl::optional<std::string> GetStringResult(
 
 void LogErrorResult(crosapi::mojom::DisplayConfigResult result) {
   absl::optional<std::string> str_result = GetStringResult(result);
-  if (!str_result)
+  if (!str_result) {
     return;
+  }
   LOG(ERROR) << *str_result;
 }
 
@@ -347,10 +356,14 @@ void DisplayInfoProviderChromeOS::SetDisplayProperties(
 
       int64_t mirroring_id =
           GetDisplayForId(*properties.mirroring_source_id).id();
-      if (mirroring_id == display::kInvalidDisplayId)
+      if (mirroring_id == display::kInvalidDisplayId) {
         RunResultCallback(std::move(callback), "Invalid mirroring source id");
-      if (mirroring_id == GetDisplayId(display_id_str))
+        return;
+      }
+      if (mirroring_id == GetDisplayId(display_id_str)) {
         RunResultCallback(std::move(callback), "Not allowed to mirror self");
+        return;
+      }
     }
     api::system_display::MirrorModeInfo info;
     info.mode = system_display::MIRROR_MODE_NORMAL;
@@ -362,8 +375,9 @@ void DisplayInfoProviderChromeOS::SetDisplayProperties(
   auto config_properties = crosapi::mojom::DisplayConfigProperties::New();
   config_properties->set_primary =
       properties.is_primary ? *properties.is_primary : false;
-  if (properties.overscan)
+  if (properties.overscan) {
     config_properties->overscan = GetInsets(*properties.overscan);
+  }
   if (properties.rotation) {
     config_properties->rotation = crosapi::mojom::DisplayRotation::New(
         GetMojomDisplayRotationOptions(*properties.rotation));
@@ -371,14 +385,17 @@ void DisplayInfoProviderChromeOS::SetDisplayProperties(
   if (properties.bounds_origin_x || properties.bounds_origin_y) {
     gfx::Point bounds_origin;
     display::Display display = GetDisplayForId(display_id_str);
-    if (display.id() != display::kInvalidDisplayId)
+    if (display.id() != display::kInvalidDisplayId) {
       bounds_origin = display.bounds().origin();
-    else
+    } else {
       DLOG(ERROR) << "Unable to get origin for display: " << display_id_str;
-    if (properties.bounds_origin_x)
+    }
+    if (properties.bounds_origin_x) {
       bounds_origin.set_x(*properties.bounds_origin_x);
-    if (properties.bounds_origin_y)
+    }
+    if (properties.bounds_origin_y) {
       bounds_origin.set_y(*properties.bounds_origin_y);
+    }
     LOG(ERROR) << "Bounds origin: " << bounds_origin.ToString();
     config_properties->bounds_origin = std::move(bounds_origin);
   }
@@ -575,8 +592,9 @@ void DisplayInfoProviderChromeOS::CallTouchCalibration(
       base::BindOnce(
           [](ErrorCallback callback,
              crosapi::mojom::DisplayConfigResult result) {
-            if (!callback)
+            if (!callback) {
               return;
+            }
             std::move(callback).Run(
                 result == crosapi::mojom::DisplayConfigResult::kSuccess
                     ? absl::nullopt
