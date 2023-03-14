@@ -1,64 +1,33 @@
 This is a testharness.js-based test.
-Found 60 tests; 0 PASS, 60 FAIL, 0 TIMEOUT, 0 NOTRUN.
-FAIL slice float32 1D tensor default axes options / cpu / sync builder[operationName] is not a function
-FAIL slice float32 2D tensor default axes options / cpu / sync builder[operationName] is not a function
-FAIL slice float32 3D tensor default axes options / cpu / sync builder[operationName] is not a function
-FAIL slice float32 4D tensor default axes options / cpu / sync builder[operationName] is not a function
-FAIL slice float32 5D tensor default axes options / cpu / sync builder[operationName] is not a function
-FAIL slice float32 3D tensor negative starts / cpu / sync builder[operationName] is not a function
-FAIL slice float32 4D tensor negative starts / cpu / sync builder[operationName] is not a function
-FAIL slice float32 4D tensor sizes having special value of -1 / cpu / sync builder[operationName] is not a function
-FAIL slice float32 5D tensor sizes having special value of -1 / cpu / sync builder[operationName] is not a function
-FAIL slice float32 1D tensor options.axes=[0] / cpu / sync builder[operationName] is not a function
-FAIL slice float32 2D tensor positive options.axes=[1] / cpu / sync builder[operationName] is not a function
-FAIL slice float32 3D tensor positive options.axes=[1, 2] / cpu / sync builder[operationName] is not a function
-FAIL slice float32 4D tensor positive options.axes=[0, 2, 3] / cpu / sync builder[operationName] is not a function
-FAIL slice float32 3D tensor negative options.axes=[-2, -1] / cpu / sync builder[operationName] is not a function
-FAIL slice float32 4D tensor negative options.axes=[-4, -2, -1] / cpu / sync builder[operationName] is not a function
-FAIL slice float32 1D tensor default axes options / gpu / sync builder[operationName] is not a function
-FAIL slice float32 2D tensor default axes options / gpu / sync builder[operationName] is not a function
-FAIL slice float32 3D tensor default axes options / gpu / sync builder[operationName] is not a function
-FAIL slice float32 4D tensor default axes options / gpu / sync builder[operationName] is not a function
-FAIL slice float32 5D tensor default axes options / gpu / sync builder[operationName] is not a function
-FAIL slice float32 3D tensor negative starts / gpu / sync builder[operationName] is not a function
-FAIL slice float32 4D tensor negative starts / gpu / sync builder[operationName] is not a function
-FAIL slice float32 4D tensor sizes having special value of -1 / gpu / sync builder[operationName] is not a function
-FAIL slice float32 5D tensor sizes having special value of -1 / gpu / sync builder[operationName] is not a function
-FAIL slice float32 1D tensor options.axes=[0] / gpu / sync builder[operationName] is not a function
-FAIL slice float32 2D tensor positive options.axes=[1] / gpu / sync builder[operationName] is not a function
-FAIL slice float32 3D tensor positive options.axes=[1, 2] / gpu / sync builder[operationName] is not a function
-FAIL slice float32 4D tensor positive options.axes=[0, 2, 3] / gpu / sync builder[operationName] is not a function
-FAIL slice float32 3D tensor negative options.axes=[-2, -1] / gpu / sync builder[operationName] is not a function
-FAIL slice float32 4D tensor negative options.axes=[-4, -2, -1] / gpu / sync builder[operationName] is not a function
-FAIL slice float32 1D tensor default axes options / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL slice float32 2D tensor default axes options / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL slice float32 3D tensor default axes options / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL slice float32 4D tensor default axes options / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL slice float32 5D tensor default axes options / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL slice float32 3D tensor negative starts / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL slice float32 4D tensor negative starts / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL slice float32 4D tensor sizes having special value of -1 / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL slice float32 5D tensor sizes having special value of -1 / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL slice float32 1D tensor options.axes=[0] / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL slice float32 2D tensor positive options.axes=[1] / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL slice float32 3D tensor positive options.axes=[1, 2] / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL slice float32 4D tensor positive options.axes=[0, 2, 3] / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL slice float32 3D tensor negative options.axes=[-2, -1] / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL slice float32 4D tensor negative options.axes=[-4, -2, -1] / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL slice float32 1D tensor default axes options / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL slice float32 2D tensor default axes options / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL slice float32 3D tensor default axes options / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL slice float32 4D tensor default axes options / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL slice float32 5D tensor default axes options / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL slice float32 3D tensor negative starts / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL slice float32 4D tensor negative starts / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL slice float32 4D tensor sizes having special value of -1 / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL slice float32 5D tensor sizes having special value of -1 / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL slice float32 1D tensor options.axes=[0] / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL slice float32 2D tensor positive options.axes=[1] / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL slice float32 3D tensor positive options.axes=[1, 2] / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL slice float32 4D tensor positive options.axes=[0, 2, 3] / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL slice float32 3D tensor negative options.axes=[-2, -1] / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL slice float32 4D tensor negative options.axes=[-4, -2, -1] / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL slice float32 1D tensor default axes options / sync builder[operationName] is not a function
+FAIL slice float32 2D tensor default axes options / sync builder[operationName] is not a function
+FAIL slice float32 3D tensor default axes options / sync builder[operationName] is not a function
+FAIL slice float32 4D tensor default axes options / sync builder[operationName] is not a function
+FAIL slice float32 5D tensor default axes options / sync builder[operationName] is not a function
+FAIL slice float32 3D tensor negative starts / sync builder[operationName] is not a function
+FAIL slice float32 4D tensor negative starts / sync builder[operationName] is not a function
+FAIL slice float32 4D tensor sizes having special value of -1 / sync builder[operationName] is not a function
+FAIL slice float32 5D tensor sizes having special value of -1 / sync builder[operationName] is not a function
+FAIL slice float32 1D tensor options.axes=[0] / sync builder[operationName] is not a function
+FAIL slice float32 2D tensor positive options.axes=[1] / sync builder[operationName] is not a function
+FAIL slice float32 3D tensor positive options.axes=[1, 2] / sync builder[operationName] is not a function
+FAIL slice float32 4D tensor positive options.axes=[0, 2, 3] / sync builder[operationName] is not a function
+FAIL slice float32 3D tensor negative options.axes=[-2, -1] / sync builder[operationName] is not a function
+FAIL slice float32 4D tensor negative options.axes=[-4, -2, -1] / sync builder[operationName] is not a function
+FAIL slice float32 1D tensor default axes options / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL slice float32 2D tensor default axes options / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL slice float32 3D tensor default axes options / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL slice float32 4D tensor default axes options / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL slice float32 5D tensor default axes options / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL slice float32 3D tensor negative starts / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL slice float32 4D tensor negative starts / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL slice float32 4D tensor sizes having special value of -1 / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL slice float32 5D tensor sizes having special value of -1 / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL slice float32 1D tensor options.axes=[0] / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL slice float32 2D tensor positive options.axes=[1] / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL slice float32 3D tensor positive options.axes=[1, 2] / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL slice float32 4D tensor positive options.axes=[0, 2, 3] / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL slice float32 3D tensor negative options.axes=[-2, -1] / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL slice float32 4D tensor negative options.axes=[-4, -2, -1] / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 Harness: the test ran to completion.
 

@@ -2921,6 +2921,9 @@ crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protoc
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 [ Linux ] external/wpt/long-animation-frame/tentative/loaf-script-block.html [ Skip Timeout ]
+crbug.com/626703 [ Mac11-arm64 ] external/wpt/long-animation-frame/tentative/loaf-script-block.html [ Skip Timeout ]
+crbug.com/626703 [ Mac13 ] external/wpt/long-animation-frame/tentative/loaf-script-block.html [ Skip Timeout ]
+crbug.com/626703 [ Mac13-arm64 ] external/wpt/long-animation-frame/tentative/loaf-script-block.html [ Skip Timeout ]
 crbug.com/626703 [ Mac12-arm64 ] external/wpt/long-animation-frame/tentative/loaf-script-block.html [ Skip Timeout ]
 crbug.com/626703 [ Linux ] virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-script-block.html [ Skip Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-script-block.html [ Skip Timeout ]
@@ -6895,10 +6898,7 @@ crbug.com/1422630 [ Mac10.13 ] external/wpt/long-animation-frame/tentative/loaf-
 crbug.com/1422630 [ Mac10.14 ] external/wpt/long-animation-frame/tentative/loaf-script-block.html [ Failure ]
 crbug.com/1422630 [ Mac10.15 ] external/wpt/long-animation-frame/tentative/loaf-script-block.html [ Failure ]
 crbug.com/1422630 [ Mac11 ] external/wpt/long-animation-frame/tentative/loaf-script-block.html [ Failure ]
-crbug.com/1422630 [ Mac11-arm64 ] external/wpt/long-animation-frame/tentative/loaf-script-block.html [ Failure ]
 crbug.com/1422630 [ Mac12 ] external/wpt/long-animation-frame/tentative/loaf-script-block.html [ Failure ]
-crbug.com/1422630 [ Mac13 ] external/wpt/long-animation-frame/tentative/loaf-script-block.html [ Failure ]
-crbug.com/1422630 [ Mac13-arm64 ] external/wpt/long-animation-frame/tentative/loaf-script-block.html [ Failure ]
 crbug.com/1422630 [ Win ] external/wpt/long-animation-frame/tentative/loaf-script-block.html [ Failure ]
 crbug.com/1422630 external/wpt/long-animation-frame/tentative/loaf-desired-exec-time.html [ Failure ]
 crbug.com/1422630 [ Fuchsia ] virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-script-block.html [ Failure ]

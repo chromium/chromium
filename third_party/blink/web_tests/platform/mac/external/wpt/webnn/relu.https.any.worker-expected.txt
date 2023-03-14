@@ -1,23 +1,13 @@
 This is a testharness.js-based test.
-FAIL relu float32 1D tensor / cpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
-FAIL relu float32 2D tensor / cpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
-FAIL relu float32 3D tensor / cpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
-FAIL relu float32 4D tensor / cpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
-FAIL relu float32 5D tensor / cpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
-FAIL relu float32 1D tensor / gpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
-FAIL relu float32 2D tensor / gpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
-FAIL relu float32 3D tensor / gpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
-FAIL relu float32 4D tensor / gpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
-FAIL relu float32 5D tensor / gpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
-FAIL relu float32 1D tensor / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
-FAIL relu float32 2D tensor / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
-FAIL relu float32 3D tensor / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
-FAIL relu float32 4D tensor / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
-FAIL relu float32 5D tensor / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
-FAIL relu float32 1D tensor / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
-FAIL relu float32 2D tensor / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
-FAIL relu float32 3D tensor / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
-FAIL relu float32 4D tensor / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
-FAIL relu float32 5D tensor / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
+FAIL relu float32 1D tensor / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+FAIL relu float32 2D tensor / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+FAIL relu float32 3D tensor / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+FAIL relu float32 4D tensor / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+FAIL relu float32 5D tensor / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+FAIL relu float32 1D tensor / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
+FAIL relu float32 2D tensor / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
+FAIL relu float32 3D tensor / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
+FAIL relu float32 4D tensor / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
+FAIL relu float32 5D tensor / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 Harness: the test ran to completion.
 
