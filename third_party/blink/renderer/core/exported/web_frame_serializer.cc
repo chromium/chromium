@@ -44,7 +44,6 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_frame_serializer_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/mhtml/mhtml_archive.h"
 #include "third_party/blink/renderer/platform/mhtml/serialized_resource.h"
@@ -94,8 +93,6 @@ WebThreadSafeData WebFrameSerializer::GenerateMHTMLParts(
                      "WebFrameSerializer::generateMHTMLParts serializing");
   Deque<SerializedResource> resources;
   {
-    SCOPED_BLINK_UMA_HISTOGRAM_TIMER(
-        "PageSerialization.MhtmlGeneration.SerializationTime.SingleFrame");
     HeapHashSet<WeakMember<const Element>> shadow_template_elements;
     FrameSerializerDelegateImpl core_delegate(*web_delegate,
                                               shadow_template_elements);
@@ -114,8 +111,6 @@ WebThreadSafeData WebFrameSerializer::GenerateMHTMLParts(
   // Encode serialized resources as MHTML.
   scoped_refptr<RawData> output = RawData::Create();
   {
-    SCOPED_BLINK_UMA_HISTOGRAM_TIMER(
-        "PageSerialization.MhtmlGeneration.EncodingTime.SingleFrame");
     // Frame is the 1st resource (see FrameSerializer::serializeFrame doc
     // comment). Frames get a Content-ID header.
     MHTMLArchive::GenerateMHTMLPart(

@@ -3084,21 +3084,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageSerialization.MhtmlGeneration.EncodingTime.SingleFrame"
-    units="ms" expires_after="2020-12-01">
-  <owner>sclittle@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Time taken to encode into MTHML the fully serialized contents of a frame.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
 <histogram name="PageSerialization.MhtmlGeneration.FinalSaveStatus"
     enum="MhtmlGenerationFinalSaveStatus" expires_after="2021-08-08">
   <owner>sclittle@chromium.org</owner>
@@ -3146,17 +3131,6 @@ chromium-metrics-reviews@google.com.
     value reported in
     PageSerialization.MhtmlGeneration.RendererMainThreadTime.SingleFrame for one
     page save operation.
-  </summary>
-</histogram>
-
-<histogram
-    name="PageSerialization.MhtmlGeneration.SerializationTime.SingleFrame"
-    units="ms" expires_after="2020-12-01">
-  <owner>sclittle@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Time taken to fully serialize the contents of a frame, including HTML and
-    CSS and image resources.
   </summary>
 </histogram>
 
