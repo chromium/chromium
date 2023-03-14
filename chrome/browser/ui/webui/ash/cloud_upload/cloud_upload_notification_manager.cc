@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_notification_manager.h"
 
 #include "ash/public/cpp/notification_utils.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "base/check.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
-#include "ui/gfx/vector_icon_types.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
 namespace ash::cloud_upload {
@@ -96,7 +96,7 @@ CloudUploadNotificationManager::CreateUploadProgressNotification() {
           base::BindRepeating(
               &CloudUploadNotificationManager::CloseNotification,
               weak_ptr_factory_.GetWeakPtr())),
-      /*small_image=*/gfx::VectorIcon(),
+      /*small_image=*/ash::kFolderIcon,
       /*warning_level=*/message_center::SystemNotificationWarningLevel::NORMAL);
 }
 
@@ -118,7 +118,7 @@ CloudUploadNotificationManager::CreateUploadCompleteNotification() {
           base::BindRepeating(
               &CloudUploadNotificationManager::HandleNotificationClick,
               weak_ptr_factory_.GetWeakPtr())),
-      /*small_image=*/gfx::VectorIcon(),
+      /*small_image=*/ash::kFolderIcon,
       /*warning_level=*/
       message_center::SystemNotificationWarningLevel::NORMAL);
 
@@ -149,7 +149,7 @@ CloudUploadNotificationManager::CreateUploadErrorNotification(
           base::BindRepeating(
               &CloudUploadNotificationManager::CloseNotification,
               weak_ptr_factory_.GetWeakPtr())),
-      /*small_image=*/gfx::VectorIcon(),
+      /*small_image=*/ash::kFolderIcon,
       /*warning_level=*/
       message_center::SystemNotificationWarningLevel::WARNING);
 }
