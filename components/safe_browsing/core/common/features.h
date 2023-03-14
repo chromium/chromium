@@ -175,9 +175,6 @@ BASE_DECLARE_FEATURE(kNestedArchives);
 // managed browsers.
 BASE_DECLARE_FEATURE(kRealTimeUrlFilteringForEnterprise);
 
-// Bypass RealTime URL Lookup allowlist for enterprise users.
-BASE_DECLARE_FEATURE(kRealTimeUrlLookupForEnterpriseAllowlistBypass);
-
 // Enables modifying key parameters on the navigation event collection used to
 // populate referrer chains.
 BASE_DECLARE_FEATURE(kReferrerChainParameters);

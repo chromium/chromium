@@ -97,14 +97,8 @@ bool ChromeEnterpriseRealTimeUrlLookupService::CanCheckSafeBrowsingDb() const {
 bool ChromeEnterpriseRealTimeUrlLookupService::
     CanCheckSafeBrowsingHighConfidenceAllowlist() const {
   // Check allowlist if it can check database and allowlist bypass is
-  // disabled. Check the feature value at the end. This ensures that with the
-  // finch experiment set to starts_active false, the active users in our
-  // control and experimental arms will be a comparable population (Enterprise
-  // users with SafeBrowsing and RTLookup enabled)
-  return CanCheckSafeBrowsingDb() &&
-         (!CanPerformFullURLLookup() ||
-          !base::FeatureList::IsEnabled(
-              safe_browsing::kRealTimeUrlLookupForEnterpriseAllowlistBypass));
+  // disabled.
+  return CanCheckSafeBrowsingDb() && !CanPerformFullURLLookup();
 }
 
 void ChromeEnterpriseRealTimeUrlLookupService::GetAccessToken(

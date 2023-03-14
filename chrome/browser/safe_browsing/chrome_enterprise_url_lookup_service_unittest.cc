@@ -277,9 +277,6 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
 
 TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
        TestCanCheckSafeBrowsingHighConfidenceAllowlist_BypassAllowlistFeature) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {safe_browsing::kRealTimeUrlLookupForEnterpriseAllowlistBypass}, {});
   test_profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
   SetDMTokenForTesting(policy::DMToken::CreateValidTokenForTesting("dm_token"));
 
@@ -297,21 +294,6 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
       prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
       REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
   EXPECT_FALSE(
-      enterprise_rt_service()->CanCheckSafeBrowsingHighConfidenceAllowlist());
-}
-
-TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
-       TestCanCheckSafeBrowsingHighConfidenceAllowlist_CheckAllowlist) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {}, {safe_browsing::kRealTimeUrlLookupForEnterpriseAllowlistBypass});
-  test_profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
-  SetDMTokenForTesting(policy::DMToken::CreateValidTokenForTesting("dm_token"));
-
-  test_profile_->GetPrefs()->SetInteger(
-      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
-      REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
-  EXPECT_TRUE(
       enterprise_rt_service()->CanCheckSafeBrowsingHighConfidenceAllowlist());
 }
 
