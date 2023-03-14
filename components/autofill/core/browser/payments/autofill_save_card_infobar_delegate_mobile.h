@@ -61,7 +61,7 @@ class AutofillSaveCardInfoBarDelegateMobile : public ConfirmInfoBarDelegate {
   const std::u16string& card_label() const { return card_label_; }
   const std::u16string& card_sub_label() const { return card_sub_label_; }
   const LegalMessageLines& legal_message_lines() const {
-    return *legal_message_lines_;
+    return legal_message_lines_;
   }
   const std::u16string& card_last_four_digits() const {
     return card_last_four_digits_;
@@ -171,7 +171,7 @@ class AutofillSaveCardInfoBarDelegateMobile : public ConfirmInfoBarDelegate {
   std::u16string expiration_date_year_;
 
   // The legal message lines to show in the content of the infobar.
-  const raw_ref<const LegalMessageLines> legal_message_lines_;
+  LegalMessageLines legal_message_lines_;
 
   // Information the infobar should display about the account where the card
   // will be saved. Both the email and avatar can be empty, e.g. if the card
