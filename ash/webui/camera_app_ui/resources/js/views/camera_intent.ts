@@ -59,7 +59,6 @@ export class CameraIntent extends Camera {
             return VideoSaver.createForIntent(intent, outputVideoRotation);
           },
           finishSaveVideo: async (video) => {
-            assert(video instanceof VideoSaver);
             this.videoResultFile = await video.endWrite();
           },
           saveGif: () => {

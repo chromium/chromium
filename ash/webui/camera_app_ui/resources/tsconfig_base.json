@@ -3,8 +3,6 @@
   "compilerOptions": {
     "typeRoots": ["../../../../third_party/node/node_modules/@types"],
     "types": [
-      "dom-mediacapture-transform",
-      "dom-webcodecs",
       "google.analytics",
       "offscreencanvas",
       "trusted-types",
