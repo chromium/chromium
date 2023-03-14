@@ -102,7 +102,7 @@ BASE_FEATURE(kInferConfirmationPasswordField,
 // Password Manager view.
 BASE_FEATURE(kIOSPasswordUISplit,
              "IOSPasswordUISplit",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables password saving and filling in cross-origin iframes on IOS.
 BASE_FEATURE(kIOSPasswordManagerCrossOriginIframeSupport,
