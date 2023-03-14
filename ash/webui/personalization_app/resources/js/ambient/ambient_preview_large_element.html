@@ -411,8 +411,8 @@
             <div aria-hidden="true"
                 class$="[[getThumbnailContainerClass_(thumbnailImages_)]]"
                 id="thumbnailContainer"
-                on-click="onClickPhotoThumbnail_"
-                on-keypress="onClickPhotoThumbnail_">
+                on-click="onClickPreviewImage_"
+                on-keypress="onClickPreviewImage_">
               <template is="dom-repeat" items="[[thumbnailImages_]]">
                 <div class="thumbnail-item">
                   <img auto-src="[[item.url]]"
@@ -506,8 +506,8 @@
           <div aria-hidden="true"
               class$="[[getCollageContainerClass_(collageImages_)]]"
               id="collageContainer"
-              on-click="onClickPhotoThumbnail_"
-              on-keypress="onClickPhotoThumbnail_">
+              on-click="onClickPhotoCollage_"
+              on-keypress="onClickPhotoCollage_">
             <template is="dom-repeat" items="[[collageImages_]]">
               <img auto-src="[[item.url]]"
                   class="collage-item"

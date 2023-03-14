@@ -188,7 +188,7 @@ suite('AmbientPreviewLargeTest', function() {
         'navigates to google photos topic source');
   });
 
-  test('click ambient thumbnail goes to ambient albums subpage', async () => {
+  test('click ambient thumbnail goes to ambient subpage', async () => {
     loadTimeData.overrideValues({isPersonalizationJellyEnabled: true});
 
     personalizationStore.data.ambient = {
@@ -202,43 +202,25 @@ suite('AmbientPreviewLargeTest', function() {
     personalizationStore.notifyObservers();
     await waitAfterNextRender(ambientPreviewLargeElement);
 
-    function setFakeRouter() {
-      const original = PersonalizationRouter.instance;
-      return new Promise<TopicSource>(resolve => {
-        PersonalizationRouter.instance = () => {
-          return {
-            selectAmbientAlbums(topicSource: TopicSource) {
-              resolve(topicSource);
-              PersonalizationRouter.instance = original;
-            },
-          } as PersonalizationRouter;
-        };
-      });
-    }
-
-    const artGalleryPromise = setFakeRouter();
+    const original = PersonalizationRouter.instance;
+    const goToRoutePromise = new Promise<[Paths, Object]>(resolve => {
+      PersonalizationRouter.instance = () => {
+        return {
+          goToRoute(path: Paths, queryParams: Object = {}) {
+            resolve([path, queryParams]);
+            PersonalizationRouter.instance = original;
+          },
+        } as PersonalizationRouter;
+      };
+    });
 
     ambientPreviewLargeElement.shadowRoot!.getElementById(
                                               'thumbnailContainer')!.click();
 
-    let topicSource = await artGalleryPromise;
-    assertEquals(
-        topicSource, TopicSource.kArtGallery,
-        'navigates to art gallery topic source');
+    const [path, queryParams] = await goToRoutePromise;
 
-    // Set the topic source to kGooglePhotos and check that clicking the photo
-    // collage goes to kGooglePhotos subpage.
-    personalizationStore.data.ambient.topicSource = TopicSource.kGooglePhotos;
-    personalizationStore.notifyObservers();
-    const googlePhotosPromise = setFakeRouter();
-
-    ambientPreviewLargeElement.shadowRoot!.getElementById(
-                                              'thumbnailContainer')!.click();
-
-    topicSource = await googlePhotosPromise;
-    assertEquals(
-        topicSource, TopicSource.kGooglePhotos,
-        'navigates to google photos topic source');
+    assertEquals(Paths.AMBIENT, path, 'navigates to ambient subpage');
+    assertDeepEquals({}, queryParams, 'no query params set');
   });
 
   test('displays zero state message before UI change', async () => {

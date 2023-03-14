@@ -114,7 +114,7 @@ export class AmbientPreviewLarge extends AmbientPreviewBase {
    * Navigate directly to photo selection subpage. Should only be possible to
    * call this function if |topic_source| is set and thumbnail is visible.
    */
-  private onClickPhotoThumbnail_(event: Event) {
+  private onClickPhotoCollage_(event: Event) {
     assert(typeof this.topicSource_ === 'number', 'topic source required');
     event.stopPropagation();
     PersonalizationRouter.instance().selectAmbientAlbums(this.topicSource_);
