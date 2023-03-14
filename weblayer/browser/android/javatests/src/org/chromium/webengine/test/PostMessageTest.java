@@ -201,20 +201,4 @@ public class PostMessageTest {
         } catch (Exception e) {
         }
     }
-
-    @Test
-    @MediumTest
-    public void receivePostMessageFromSavedPort() throws Exception {
-        runOnUiThreadBlocking(() -> mTab.postMessage("hello - delayed", "*"));
-        Assert.assertEquals("message: hello - delayed, source: app://org.chromium.webengine.shell",
-                waitForPostMessage());
-        Assert.assertEquals("message: hello - delayed2, source: app://org.chromium.webengine.shell",
-                waitForPostMessage());
-        Assert.assertEquals("message: hello - delayed3, source: app://org.chromium.webengine.shell",
-                waitForPostMessage());
-
-        runOnUiThreadBlocking(() -> mTab.postMessage("hello", "*"));
-        Assert.assertEquals(
-                "message: hello, source: app://org.chromium.webengine.shell", waitForPostMessage());
-    }
 }

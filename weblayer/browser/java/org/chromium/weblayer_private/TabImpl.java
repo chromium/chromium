@@ -52,7 +52,6 @@ import org.chromium.content_public.browser.GestureListenerManager;
 import org.chromium.content_public.browser.GestureStateListener;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.MessagePayload;
-import org.chromium.content_public.browser.MessagePayloadType;
 import org.chromium.content_public.browser.MessagePort;
 import org.chromium.content_public.browser.MessagePort.MessageCallback;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -985,26 +984,19 @@ public final class TabImpl extends ITab.Stub {
     @Override
     public void postMessage(String message, String targetOrigin) {
         StrictModeWorkaround.apply();
-
-        if (mChannel == null || mChannel[0].isClosed() || mChannel[0].isTransferred()
-                || mChannel[1].isClosed() || mChannel[1].isTransferred()) {
-            mChannel = mWebContents.createMessageChannel();
-            mChannel[0].setMessageCallback(new MessageCallback() {
-                @Override
-                public void onMessage(MessagePayload messagePayload, MessagePort[] sentPorts) {
-                    try {
-                        if (messagePayload.getType() == MessagePayloadType.ARRAY_BUFFER) {
-                            // TODO(rayankans): Consider supporting passing array buffers.
-                            return;
-                        }
-                        mClient.onPostMessage(messagePayload.getAsString(),
-                                mWebContents.getVisibleUrl().getOrigin().getSpec());
-                    } catch (RemoteException e) {
-                    }
+        mChannel = mWebContents.createMessageChannel();
+        mChannel[0].setMessageCallback(new MessageCallback() {
+            @Override
+            public void onMessage(MessagePayload messagePayload, MessagePort[] sentPorts) {
+                try {
+                    // TODO(rayankans): Convert the byte buffer to a string as well.
+                    mClient.onPostMessage(messagePayload.getAsString(),
+                            mWebContents.getVisibleUrl().getOrigin().getSpec());
+                } catch (RemoteException e) {
                 }
-            }, null);
-        }
-
+            }
+        }, null);
+        // TODO(rayankans): Work out channel lifetime so the web content can hold on to the port.
         mWebContents.postMessageToMainFrame(new MessagePayload(message), getAppOrigin(),
                 targetOrigin, new MessagePort[] {mChannel[1]});
     }
