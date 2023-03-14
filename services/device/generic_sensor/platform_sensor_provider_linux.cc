@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/thread_pool.h"
 #include "services/device/generic_sensor/linux/sensor_data_linux.h"
+#include "services/device/generic_sensor/linux/sensor_device_manager.h"
 #include "services/device/generic_sensor/platform_sensor_linux.h"
 #include "services/device/generic_sensor/platform_sensor_reader_linux.h"
 
@@ -42,39 +43,36 @@ void PlatformSensorProviderLinux::CreateSensorInternal(
     CreateSensorCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  switch (enumeration_status_) {
-    case SensorEnumerationState::kNotEnumerated: {
-      // Unretained() is safe because the deletion of |sensor_device_manager_|
-      // is scheduled on |blocking_task_runner_| when
-      // PlatformSensorProviderLinux is deleted.
-      const bool will_run = blocking_task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(&SensorDeviceManager::Start,
-                         base::Unretained(sensor_device_manager_.get())));
-      if (will_run)
-        enumeration_status_ = SensorEnumerationState::kEnumerationStarted;
+  blocking_task_runner_->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(&SensorDeviceManager::MaybeStartEnumeration,
+                     // Unretained() is safe because the deletion of
+                     // |sensor_device_manager_|
+                     // is scheduled on |blocking_task_runner_| when
+                     // PlatformSensorProviderLinux is deleted.
+                     base::Unretained(sensor_device_manager_.get())),
+      base::BindOnce(&PlatformSensorProviderLinux::DidEnumerateSensors,
+                     weak_ptr_factory_.GetWeakPtr(), type, reading_buffer,
+                     std::move(callback)));
+}
 
-      [[fallthrough]];
-    }
-    case SensorEnumerationState::kEnumerationStarted:
-      return;
-    case SensorEnumerationState::kEnumerationFinished:
-      if (IsFusionSensorType(type)) {
-        CreateFusionSensor(type, reading_buffer, std::move(callback));
-        return;
-      }
-
-      SensorInfoLinux* sensor_device = GetSensorDevice(type);
-      if (!sensor_device) {
-        std::move(callback).Run(nullptr);
-        return;
-      }
-
-      std::move(callback).Run(base::MakeRefCounted<PlatformSensorLinux>(
-          type, reading_buffer, this, sensor_device));
-
-      break;
+void PlatformSensorProviderLinux::DidEnumerateSensors(
+    mojom::SensorType type,
+    SensorReadingSharedBuffer* reading_buffer,
+    CreateSensorCallback callback) {
+  if (IsFusionSensorType(type)) {
+    CreateFusionSensor(type, reading_buffer, std::move(callback));
+    return;
   }
+
+  SensorInfoLinux* sensor_device = GetSensorDevice(type);
+  if (!sensor_device) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  std::move(callback).Run(base::MakeRefCounted<PlatformSensorLinux>(
+      type, reading_buffer, this, sensor_device));
 }
 
 void PlatformSensorProviderLinux::FreeResources() {
@@ -100,51 +98,6 @@ void PlatformSensorProviderLinux::SetSensorDeviceManagerForTesting(
     std::unique_ptr<SensorDeviceManager> sensor_device_manager) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   sensor_device_manager_.reset(sensor_device_manager.release());
-}
-
-void PlatformSensorProviderLinux::ProcessStoredRequests() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  std::vector<mojom::SensorType> request_types = GetPendingRequestTypes();
-  if (request_types.empty())
-    return;
-
-  for (auto const& type : request_types) {
-    if (IsFusionSensorType(type)) {
-      SensorReadingSharedBuffer* reading_buffer =
-          GetSensorReadingSharedBufferForType(type);
-      CreateFusionSensor(
-          type, reading_buffer,
-          base::BindOnce(&PlatformSensorProviderLinux::NotifySensorCreated,
-                         base::Unretained(this), type));
-      continue;
-    }
-
-    SensorInfoLinux* device = nullptr;
-    auto device_entry = sensor_devices_by_type_.find(type);
-    if (device_entry != sensor_devices_by_type_.end())
-      device = device_entry->second.get();
-    CreateSensorAndNotify(type, device);
-  }
-}
-
-void PlatformSensorProviderLinux::CreateSensorAndNotify(
-    mojom::SensorType type,
-    SensorInfoLinux* sensor_device) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  scoped_refptr<PlatformSensorLinux> sensor;
-  SensorReadingSharedBuffer* reading_buffer =
-      GetSensorReadingSharedBufferForType(type);
-  if (sensor_device && reading_buffer) {
-    sensor = new PlatformSensorLinux(type, reading_buffer, this, sensor_device);
-  }
-  NotifySensorCreated(type, sensor);
-}
-
-void PlatformSensorProviderLinux::OnSensorNodesEnumerated() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK_EQ(enumeration_status_, SensorEnumerationState::kEnumerationStarted);
-  enumeration_status_ = SensorEnumerationState::kEnumerationFinished;
-  ProcessStoredRequests();
 }
 
 void PlatformSensorProviderLinux::OnDeviceAdded(

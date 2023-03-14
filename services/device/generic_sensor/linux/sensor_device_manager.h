@@ -25,10 +25,6 @@ class SensorDeviceManager : public UdevWatcher::Observer {
  public:
   class Delegate {
    public:
-    // Called when SensorDeviceManager has enumerated through all possible
-    // iio udev devices.
-    virtual void OnSensorNodesEnumerated() = 0;
-
     // Called after SensorDeviceManager has identified a udev device, which
     // belongs to "iio" subsystem.
     virtual void OnDeviceAdded(mojom::SensorType type,
@@ -51,8 +47,9 @@ class SensorDeviceManager : public UdevWatcher::Observer {
   ~SensorDeviceManager() override;
 
   // Starts monitoring sensor-related udev events, and enumerates existing
-  // sensors. This method must be run from a task runner that can block.
-  virtual void Start();
+  // sensors. If enumeration has already completed, does nothing.
+  // This method must be run from a task runner that can block.
+  virtual void MaybeStartEnumeration();
 
  protected:
   using SensorDeviceMap = std::unordered_map<std::string, mojom::SensorType>;

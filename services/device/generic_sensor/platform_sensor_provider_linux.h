@@ -54,30 +54,15 @@ class PlatformSensorProviderLinux : public PlatformSensorProviderLinuxBase,
   // enumeration is ready.
   SensorInfoLinux* GetSensorDevice(mojom::SensorType type) const;
 
-  // Processed stored requests in |request_map_|.
-  void ProcessStoredRequests();
-
-  // Called when sensors are created asynchronously after enumeration is done.
-  void CreateSensorAndNotify(mojom::SensorType type,
-                             SensorInfoLinux* sensor_device);
+  void DidEnumerateSensors(mojom::SensorType type,
+                           SensorReadingSharedBuffer* reading_buffer,
+                           CreateSensorCallback callback);
 
   // SensorDeviceManager::Delegate overrides:
-  void OnSensorNodesEnumerated() override;
   void OnDeviceAdded(mojom::SensorType type,
                      std::unique_ptr<SensorInfoLinux> sensor_device) override;
   void OnDeviceRemoved(mojom::SensorType type,
                        const std::string& device_node) override;
-
-  enum class SensorEnumerationState : uint8_t {
-    // Original state.
-    kNotEnumerated,
-
-    // |sensor_device_manager_| has started to enumerate sensors.
-    kEnumerationStarted,
-
-    // Sensor enumeration has finished.
-    kEnumerationFinished
-  } enumeration_status_ = SensorEnumerationState::kNotEnumerated;
 
   // Stores all available sensor devices by type.
   SensorDeviceMap sensor_devices_by_type_;

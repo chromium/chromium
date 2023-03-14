@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/read_only_shared_memory_region.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/numerics/math_constants.h"
 #include "base/run_loop.h"
@@ -18,6 +19,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/chromeos_buildflags.h"
 #include "services/device/generic_sensor/generic_sensor_consts.h"
@@ -134,18 +136,10 @@ class MockSensorDeviceManager : public SensorDeviceManager {
   MOCK_METHOD1(GetUdevDeviceGetDevnode, std::string(udev_device* dev));
   MOCK_METHOD2(GetUdevDeviceGetSysattrValue,
                std::string(udev_device*, const std::string&));
-  MOCK_METHOD0(Start, void());
+  MOCK_METHOD0(MaybeStartEnumeration, void());
 
   const base::FilePath& GetSensorsBasePath() const {
     return sensors_dir_.GetPath();
-  }
-
-  void EnumerationReady() {
-    bool success = delegate_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&SensorDeviceManager::Delegate::OnSensorNodesEnumerated,
-                       delegate_));
-    ASSERT_TRUE(success);
   }
 
   void DeviceAdded() {
@@ -282,10 +276,9 @@ class PlatformSensorAndProviderLinuxTest : public ::testing::Test {
   // devices are added, tells manager its ready.
   void SetServiceStart() {
     auto* manager = mock_sensor_device_manager();
-    EXPECT_CALL(*manager, Start()).WillOnce(Invoke([manager]() {
-      manager->DeviceAdded();
-      manager->EnumerationReady();
-    }));
+    EXPECT_CALL(*manager, MaybeStartEnumeration())
+        .WillOnce(Invoke([manager]() { manager->DeviceAdded(); }))
+        .WillRepeatedly(Return());
   }
 
   // Waits before OnSensorReadingChanged is called.
@@ -1024,6 +1017,62 @@ TEST_F(PlatformSensorAndProviderLinuxTest,
 
   ASSERT_TRUE(accelerometer);
   ASSERT_TRUE(linear_acceleration);
+}
+
+// Tests that queued sensor creation requests are all processed.
+TEST_F(PlatformSensorAndProviderLinuxTest, SensorCreationQueueManagement) {
+  double sensor_values[kSensorValuesSize] = {1, 2, 3};
+  InitializeSupportedSensor(SensorType::ACCELEROMETER,
+                            kAccelerometerFrequencyValue, kZero, kZero,
+                            sensor_values);
+  InitializeSupportedSensor(SensorType::AMBIENT_LIGHT,
+                            kAccelerometerFrequencyValue, kZero, kZero,
+                            sensor_values);
+
+  SetServiceStart();
+
+  using CreateSensorFuture =
+      base::test::TestFuture<scoped_refptr<PlatformSensor>>;
+
+  CreateSensorFuture accelerometer1;
+  CreateSensorFuture accelerometer2;
+  CreateSensorFuture als;
+  provider_->CreateSensor(SensorType::ACCELEROMETER,
+                          accelerometer1.GetCallback());
+  provider_->CreateSensor(SensorType::ACCELEROMETER,
+                          accelerometer2.GetCallback());
+  provider_->CreateSensor(SensorType::AMBIENT_LIGHT, als.GetCallback());
+
+  // Sensor creation is asynchronous. Expect false until polling the futures.
+  EXPECT_FALSE(provider_->GetSensor(SensorType::ACCELEROMETER));
+  EXPECT_FALSE(provider_->GetSensor(SensorType::AMBIENT_LIGHT));
+
+  ASSERT_TRUE(accelerometer1.Get());
+  ASSERT_TRUE(accelerometer2.Get());
+  ASSERT_TRUE(als.Get());
+  ASSERT_TRUE(provider_->GetSensor(SensorType::ACCELEROMETER));
+  ASSERT_TRUE(provider_->GetSensor(SensorType::AMBIENT_LIGHT));
+}
+
+// Tests that there are no crashes if PlatformSensorProviderLinux is destroyed
+// before DidEnumerateSensors() is called.
+TEST_F(PlatformSensorAndProviderLinuxTest, EarlyProviderDeletion) {
+  double sensor_values[kSensorValuesSize] = {1, 2, 3};
+  InitializeSupportedSensor(SensorType::ACCELEROMETER,
+                            kAccelerometerFrequencyValue, kZero, kZero,
+                            sensor_values);
+  SetServiceStart();
+
+  provider_->CreateSensor(
+      SensorType::ACCELEROMETER,
+      base::BindOnce([](scoped_refptr<PlatformSensor>) {
+        NOTREACHED() << "CreateSensor() callback should not have been called";
+      }));
+
+  // Delete the provider synchronously before DidEnumerateSensors() is called
+  // and run all pending asynchronous tasks.
+  provider_.reset();
+  task_environment_.RunUntilIdle();
 }
 
 }  // namespace device

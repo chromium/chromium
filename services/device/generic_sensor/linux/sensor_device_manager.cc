@@ -32,22 +32,21 @@ SensorDeviceManager::~SensorDeviceManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void SensorDeviceManager::Start() {
+void SensorDeviceManager::MaybeStartEnumeration() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!udev_watcher_);
+
+  if (udev_watcher_) {
+    return;
+  }
 
   udev_watcher_ = UdevWatcher::StartWatching(this);
-  if (!udev_watcher_)
+  if (!udev_watcher_) {
     return;
+  }
 
-  // OnDeviceAdded() will be called synchronously for every device found in the
-  // enumeration.
+  // OnDeviceAdded() will be called synchronously for every device found in
+  // the enumeration.
   udev_watcher_->EnumerateExistingDevices();
-
-  delegate_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&SensorDeviceManager::Delegate::OnSensorNodesEnumerated,
-                     delegate_));
 }
 
 std::string SensorDeviceManager::GetUdevDeviceGetSubsystem(udev_device* dev) {
