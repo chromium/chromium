@@ -366,9 +366,8 @@ class CartServiceTest : public testing::Test {
     return *res;
   }
 
-  void CacheUsedDiscounts(const cart_db::ChromeCartContentProto& proto,
-                          bool is_code_based_rbd) {
-    service_->CacheUsedDiscounts(proto, is_code_based_rbd);
+  void CacheUsedDiscounts(const cart_db::ChromeCartContentProto& proto) {
+    service_->CacheUsedDiscounts(proto);
   }
 
   void CleanUpDiscounts(const cart_db::ChromeCartContentProto& proto) {
@@ -463,7 +462,7 @@ TEST_F(CartServiceTest, TestUpdateDiscounts) {
                                    run_loop[2].QuitClosure(), expected));
   run_loop[2].Run();
 
-  CacheUsedDiscounts(cart_with_discount_proto, false);
+  CacheUsedDiscounts(cart_with_discount_proto);
   service_->UpdateDiscounts(GURL(kMockMerchantURLA), cart_with_discount_proto,
                             kNotATester);
   cart_db->LoadCart(
@@ -487,7 +486,7 @@ TEST_F(CartServiceTest, TestUpdateDiscounts_CodeBasedRBD) {
   cart_db::ChromeCartContentProto proto =
       BuildProto(kMockMerchantA, kMockMerchantURLA);
 
-  base::RunLoop run_loop[4];
+  base::RunLoop run_loop[3];
   cart_db->AddCart(
       kMockMerchantA, proto,
       base::BindOnce(&CartServiceTest::OperationEvaluation,
@@ -517,15 +516,6 @@ TEST_F(CartServiceTest, TestUpdateDiscounts_CodeBasedRBD) {
                                    base::Unretained(this),
                                    run_loop[2].QuitClosure(), expected));
   run_loop[2].Run();
-
-  CacheUsedDiscounts(cart_with_coupon_proto, true);
-  service_->UpdateDiscounts(GURL(kMockMerchantURLA), cart_with_coupon_proto,
-                            kNotATester);
-  cart_db->LoadCart(
-      kMockMerchantA,
-      base::BindOnce(&CartServiceTest::GetEvaluationEmptyDiscount,
-                     base::Unretained(this), run_loop[3].QuitClosure()));
-  run_loop[3].Run();
 }
 
 // Test adding a cart with the same key and no product image won't overwrite
@@ -1195,7 +1185,7 @@ TEST_F(CartServiceTest, TestCacheUsedDiscounts) {
       kMockMerchantADiscountRuleId, kMockMerchantADiscountsPercentOff,
       kMockMerchantADiscountsRawMerchantOfferId);
 
-  CacheUsedDiscounts(cart_with_discount_proto, false);
+  CacheUsedDiscounts(cart_with_discount_proto);
   EXPECT_TRUE(service_->IsDiscountUsed(kMockMerchantADiscountRuleId));
 }
 
@@ -1275,7 +1265,7 @@ TEST_F(CartServiceTest, TestUpdateDiscountsTesterByPassCachedRuleId) {
   const ShoppingCarts has_discount_cart = {
       {kMockMerchantA, cart_with_discount_proto}};
 
-  CacheUsedDiscounts(cart_with_discount_proto, false);
+  CacheUsedDiscounts(cart_with_discount_proto);
   EXPECT_TRUE(service_->IsDiscountUsed(kMockMerchantADiscountRuleId));
 
   base::RunLoop run_loop[2];
@@ -1783,7 +1773,7 @@ TEST_F(CartServiceDiscountTest, TestNoDiscountedURLFetchForCouponDiscount) {
 // fetching.
 TEST_F(CartServiceDiscountTest,
        TestNoDiscountedURLFetchForCodeBasedRuleDiscount) {
-  base::RunLoop run_loop[4];
+  base::RunLoop run_loop[3];
   const double timestamp = 1;
   GURL discount_url("https://www.discount.com");
   SetCartDiscountURLForTesting(discount_url, /*expect_call=*/false);
@@ -1815,12 +1805,6 @@ TEST_F(CartServiceDiscountTest,
                                       false, 0);
   histogram_tester_.ExpectBucketCount("NewTabPage.Carts.ClickCart.HasDiscount",
                                       true, 1);
-
-  service_->GetDB()->LoadCart(
-      kMockMerchantA,
-      base::BindOnce(&CartServiceTest::GetEvaluationEmptyDiscount,
-                     base::Unretained(this), run_loop[3].QuitClosure()));
-  run_loop[3].Run();
 }
 
 // Tests CartService returning fetched discount URL.
