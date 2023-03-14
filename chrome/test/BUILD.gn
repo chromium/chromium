@@ -6697,6 +6697,7 @@ test("unit_tests") {
       "//chrome/browser:profile_token",
       "//chrome/browser:usage_stats_proto",
       "//chrome/browser/android/httpclient:unittests",
+      "//chrome/browser/android/webapk:webapk_sources",
       "//chrome/browser/commerce/merchant_viewer:merchant_viewer_data_manager",
       "//chrome/browser/flags:flags_android",
       "//chrome/browser/long_screenshots:services",

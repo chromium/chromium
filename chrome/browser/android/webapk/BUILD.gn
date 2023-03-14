@@ -4,11 +4,32 @@
 
 import("//chrome/android/webapk/shell_apk/request_update_for_version.gni")
 
-source_set("webapk_features") {
+source_set("webapk_sources") {
   sources = [
     "webapk_features.cc",
     "webapk_features.h",
+    "webapk_handler_delegate.cc",
+    "webapk_handler_delegate.h",
+    "webapk_info.cc",
+    "webapk_info.h",
+    "webapk_metrics.cc",
+    "webapk_metrics.h",
+    "webapk_post_share_target_navigator.cc",
+    "webapk_post_share_target_navigator.h",
+    "webapk_ukm_recorder.cc",
+    "webapk_ukm_recorder.h",
+    "webapk_update_data_fetcher.cc",
+    "webapk_update_data_fetcher.h",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//chrome/android:jni_headers",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/web_share_target",
+    "//components/webapps/browser",
+    "//content/public/browser",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//third_party/smhasher:murmurhash2",
+    "//ui/android",
+  ]
   defines = [ "REQUEST_UPDATE_FOR_SHELL_APK_VERSION_VALUE=$request_update_for_shell_apk_version" ]
 }
