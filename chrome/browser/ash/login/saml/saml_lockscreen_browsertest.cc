@@ -206,6 +206,32 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, Login) {
   UnlockWithSAML();
 }
 
+// Test that SAML notice message mentions user's idp host.
+IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, SamlNoticeMessage) {
+  fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");
+
+  Login();
+
+  // Lock the screen and trigger the lock screen SAML reauth dialog.
+  ScreenLockerTester().Lock();
+
+  absl::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
+      LockScreenReauthDialogTestHelper::StartSamlAndWaitForIdpPageLoad();
+
+  test::JSChecker dialog_frame_js = reauth_dialog_helper->DialogJS();
+
+  // Check that SAML notice message contains idp host .
+  const test::UIPath kSamlNoticeMessage = {"main-element", "samlNoticeMessage"};
+  dialog_frame_js.ExpectVisiblePath(kSamlNoticeMessage);
+  std::string js = "$SamlNoticeMessagePath.textContent.indexOf('$Host') > -1";
+  base::ReplaceSubstringsAfterOffset(
+      &js, 0, "$SamlNoticeMessagePath",
+      test::GetOobeElementPath(kSamlNoticeMessage));
+  base::ReplaceSubstringsAfterOffset(&js, 0, "$Host",
+                                     fake_saml_idp()->GetIdpHost());
+  dialog_frame_js.ExpectTrue(js);
+}
+
 // Tests that we can switch from SAML page to GAIA page on the lock screen.
 IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, SamlSwitchToGaia) {
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");

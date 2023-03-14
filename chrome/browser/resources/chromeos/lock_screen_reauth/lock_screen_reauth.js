@@ -175,7 +175,7 @@ class LockReauth extends LockReauthBase {
     this.signinFrame_ = this.getSigninFrame_();
     this.authenticator_ = new Authenticator(this.signinFrame_);
     this.authenticator_.addEventListener('authDomainChange', (e) => {
-      this.authDomain_ = e.newValue;
+      this.authDomain_ = e.detail.newValue;
     });
     this.authenticator_.addEventListener(
         'authCompleted', (e) => void this.onAuthCompletedMessage_(e));
